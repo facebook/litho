@@ -36,8 +36,4 @@ public class Output<T> {
   public @Nullable T get() {
     return mT;
   }
-
-  void release() {
-    mT = null;
-  }
 }

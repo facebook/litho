@@ -190,7 +190,7 @@ public class DelegateMethodGenerator {
       } else if (methodParamModel instanceof DiffPropModel
           || methodParamModel instanceof DiffStateParamModel) {
         acquireStatements.addStatement(
-            "$T $L = ($T) acquireDiff(_prevImpl == null ? null : _prevImpl.$L, "
+            "$T $L = ($T) new Diff(_prevImpl == null ? null : _prevImpl.$L, "
                 + "_nextImpl == null ? null : _nextImpl.$L)",
             methodParamModel.getTypeName(),
             methodParamModel.getName(),
@@ -199,11 +199,10 @@ public class DelegateMethodGenerator {
             ComponentBodyGenerator.getImplAccessor(specModel, methodParamModel));
         delegationParams.add(
             ParamTypeAndName.create(methodParamModel.getTypeName(), methodParamModel.getName()));
-        releaseStatements.addStatement("releaseDiff($L)", methodParamModel.getName());
       } else if (isOutputType(methodParamModel.getTypeName())) {
         String localOutputName = methodParamModel.getName() + "Tmp";
         acquireStatements.add(
-            "$T $L = acquireOutput();\n", methodParamModel.getTypeName(), localOutputName);
+            "$T $L = new Output<>();\n", methodParamModel.getTypeName(), localOutputName);
         delegationParams.add(
             ParamTypeAndName.create(methodParamModel.getTypeName(), localOutputName));
 
@@ -218,7 +217,6 @@ public class DelegateMethodGenerator {
         if (isPropOutput) {
           releaseStatements.endControlFlow();
         }
-        releaseStatements.addStatement("releaseOutput($L)", localOutputName);
       } else if (isStateValueType(methodParamModel.getTypeName())) {
         acquireStatements.add(
             "$T $L = new StateValue<>();\n",
@@ -244,7 +242,7 @@ public class DelegateMethodGenerator {
         final String diffName = "_" + methodParamModel.getName() + "Diff";
         CodeBlock block =
             CodeBlock.builder()
-                .add("$T $L = acquireDiff(\n", methodParamModel.getTypeName(), diffName)
+                .add("$T $L = new Diff(\n", methodParamModel.getTypeName(), diffName)
                 .indent()
                 .add(
                     "$L == null ? null : $L.$L,\n",
@@ -255,7 +253,6 @@ public class DelegateMethodGenerator {
                 .unindent()
                 .build();
         acquireStatements.add(block);
-        releaseStatements.addStatement("releaseDiff($L)", diffName);
         delegationParams.add(ParamTypeAndName.create(methodParamModel.getTypeName(), diffName));
       } else {
         delegationParams.add(

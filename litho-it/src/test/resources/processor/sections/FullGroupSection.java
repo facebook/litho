@@ -362,11 +362,10 @@ final class FullGroupSection<T> extends Section implements TestTag {
     boolean _result;
     Diff<Integer> prop1 =
         (Diff)
-            acquireDiff(
+            new Diff(
                 _prevImpl == null ? null : _prevImpl.prop1,
                 _nextImpl == null ? null : _nextImpl.prop1);
     _result = (boolean) FullGroupSectionSpec.shouldUpdate((Diff<Integer>) prop1);
-    releaseDiff(prop1);
     return _result;
   }
 

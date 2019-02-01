@@ -491,24 +491,6 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     onLoadStyle(c);
   }
 
-  protected Output acquireOutput() {
-    return ComponentsPools.acquireOutput();
-  }
-
-  protected void releaseOutput(Output output) {
-    ComponentsPools.release(output);
-  }
-
-  protected final <T> Diff<T> acquireDiff(T previousValue, T nextValue) {
-    Diff<T> diff =  ComponentsPools.acquireDiff(previousValue, nextValue);
-
-    return diff;
-  }
-
-  protected void releaseDiff(Diff diff) {
-    ComponentsPools.release(diff);
-  }
-
   /**
    * Retrieves all of the tree props used by this Component from the TreeProps map
    * and sets the tree props as fields on the ComponentImpl.

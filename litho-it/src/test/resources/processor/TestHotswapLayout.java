@@ -169,8 +169,8 @@ public final class TestLayout<S extends View> extends Component implements TestT
   @SuppressWarnings("unchecked")
   @Override
   protected void onLoadStyle(ComponentContext c) {
-    Output<Boolean> prop2Tmp = acquireOutput();
-    Output<Object> prop3Tmp = acquireOutput();
+    Output<Boolean> prop2Tmp = new Output<>();
+    Output<Object> prop3Tmp = new Output<>();
     ClassLoader classLoader = HotswapManager.getClassLoader();
     if (classLoader == null) {
       TestLayoutSpec.onLoadStyle(
@@ -198,11 +198,9 @@ public final class TestLayout<S extends View> extends Component implements TestT
     if (prop2Tmp.get() != null) {
       prop2 = prop2Tmp.get();
     }
-    releaseOutput(prop2Tmp);
     if (prop3Tmp.get() != null) {
       prop3 = prop3Tmp.get();
     }
-    releaseOutput(prop3Tmp);
   }
 
   @Override
@@ -333,7 +331,7 @@ public final class TestLayout<S extends View> extends Component implements TestT
   protected Transition onCreateTransition(ComponentContext c) {
     Transition _result;
     Diff<Integer> _state3Diff =
-        acquireDiff(
+        new Diff(
             mPreviousRenderData == null ? null : mPreviousRenderData.state3,
             mStateContainer.state3);
     ClassLoader classLoader = HotswapManager.getClassLoader();
@@ -371,7 +369,6 @@ public final class TestLayout<S extends View> extends Component implements TestT
         throw new RuntimeException(_e);
       }
     }
-    releaseDiff(_state3Diff);
     return _result;
   }
 

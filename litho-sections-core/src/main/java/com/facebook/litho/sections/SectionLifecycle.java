@@ -17,17 +17,13 @@
 package com.facebook.litho.sections;
 
 import android.support.annotation.Nullable;
-import com.facebook.litho.ComponentsPools;
-import com.facebook.litho.Diff;
 import com.facebook.litho.EventDispatcher;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.EventTrigger;
 import com.facebook.litho.EventTriggerTarget;
-import com.facebook.litho.Output;
 import com.facebook.litho.StateContainer;
 import com.facebook.litho.TreeProps;
 import com.facebook.litho.annotations.OnCreateTreeProp;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.sections.annotations.DiffSectionSpec;
 import com.facebook.litho.sections.annotations.GroupSectionSpec;
 import com.facebook.litho.sections.annotations.OnDataBound;
@@ -158,28 +154,6 @@ public abstract class SectionLifecycle implements EventDispatcher, EventTriggerT
     }
 
     return dirty || shouldUpdate(previous, next);
-  }
-
-  protected final <T> Diff<T> acquireDiff(T previousValue, T nextValue) {
-    Diff diff = ComponentsPools.acquireDiff(previousValue, nextValue);
-
-    return diff;
-  }
-
-  protected void releaseDiff(Diff diff) {
-    if (ComponentsConfiguration.disablePools) {
-      return;
-    }
-    ComponentsPools.release(diff);
-  }
-
-  protected Output acquireOutput() {
-    //TODO 11953296
-    return new Output();
-  }
-
-  protected void releaseOutput(Output output) {
-    //TODO 11953296
   }
 
   protected boolean shouldUpdate(Section previous, Section next) {

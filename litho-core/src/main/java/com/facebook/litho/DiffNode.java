@@ -16,7 +16,6 @@
 
 package com.facebook.litho;
 
-import com.facebook.litho.config.ComponentsConfiguration;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -147,30 +146,5 @@ class DiffNode implements Cloneable {
 
   void setHost(LayoutOutput host) {
     mHost = host;
-  }
-
-  void release() {
-    if (ComponentsConfiguration.disablePools) {
-      return;
-    }
-
-    mComponent = null;
-
-    mContent = null;
-    mBackground = null;
-    mForeground = null;
-    mBorder = null;
-    mHost = null;
-    mVisibilityOutput = null;
-
-    mLastMeasuredWidth = UNSPECIFIED;
-    mLastMeasuredHeight = UNSPECIFIED;
-    mLastWidthSpec = UNSPECIFIED;
-    mLastHeightSpec = UNSPECIFIED;
-
-    for (int i = 0, size = mChildren.size(); i < size; i++) {
-      ComponentsPools.release(mChildren.get(i));
-    }
-    mChildren.clear();
   }
 }

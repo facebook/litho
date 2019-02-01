@@ -167,18 +167,16 @@ public final class TestLayout<S extends View> extends Component implements TestT
   @SuppressWarnings("unchecked")
   @Override
   protected void onLoadStyle(ComponentContext c) {
-    Output<Boolean> prop2Tmp = acquireOutput();
-    Output<Object> prop3Tmp = acquireOutput();
+    Output<Boolean> prop2Tmp = new Output<>();
+    Output<Object> prop3Tmp = new Output<>();
     TestLayoutSpec.onLoadStyle(
         (ComponentContext) c, (Output<Boolean>) prop2Tmp, (Output<Object>) prop3Tmp);
     if (prop2Tmp.get() != null) {
       prop2 = prop2Tmp.get();
     }
-    releaseOutput(prop2Tmp);
     if (prop3Tmp.get() != null) {
       prop3 = prop3Tmp.get();
     }
-    releaseOutput(prop3Tmp);
   }
 
   @Override
@@ -220,7 +218,7 @@ public final class TestLayout<S extends View> extends Component implements TestT
   protected Transition onCreateTransition(ComponentContext c) {
     Transition _result;
     Diff<Integer> _state3Diff =
-        acquireDiff(
+        new Diff(
             mPreviousRenderData == null ? null : mPreviousRenderData.state3,
             mStateContainer.state3);
     _result =
@@ -230,7 +228,6 @@ public final class TestLayout<S extends View> extends Component implements TestT
                 (Object) prop3,
                 (long) mStateContainer.state1,
                 (Diff<Integer>) _state3Diff);
-    releaseDiff(_state3Diff);
     return _result;
   }
 

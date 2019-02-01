@@ -28,7 +28,6 @@ import android.support.v7.util.DiffUtil;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentsLogger;
-import com.facebook.litho.ComponentsPools;
 import com.facebook.litho.ComponentsSystrace;
 import com.facebook.litho.Diff;
 import com.facebook.litho.EventHandler;
@@ -458,12 +457,12 @@ public class DataDiffSectionSpec<T> {
       callback.mTrimmedHeadItemsCount = headTrimmedCount;
 
       if (headTrimmedCount > 0 || tailTrimmedCount > 0) {
-        return ComponentsPools.acquireDiff(
+        return new Diff<>(
             previousData.subList(headTrimmedCount, previousDataSize - tailTrimmedCount),
             nextData.subList(headTrimmedCount, nextDataSize - tailTrimmedCount));
       }
 
-      return ComponentsPools.acquireDiff(previousData, nextData);
+      return new Diff<>(previousData, nextData);
     }
 
     private static <T> boolean shouldTrim(

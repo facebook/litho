@@ -90,13 +90,6 @@ public class VisibilityOutputTest {
     assertThat(focusedHandler).isSameAs(mVisibilityOutput.getFocusedEventHandler());
     assertThat(unfocusedHandler).isSameAs(mVisibilityOutput.getUnfocusedEventHandler());
     assertThat(fullImpressionHandler).isSameAs(mVisibilityOutput.getFullImpressionEventHandler());
-
-    mVisibilityOutput.release();
-    assertThat(mVisibilityOutput.getVisibleEventHandler()).isNull();
-    assertThat(mVisibilityOutput.getInvisibleEventHandler()).isNull();
-    assertThat(mVisibilityOutput.getFocusedEventHandler()).isNull();
-    assertThat(mVisibilityOutput.getUnfocusedEventHandler()).isNull();
-    assertThat(mVisibilityOutput.getFullImpressionEventHandler()).isNull();
   }
 
   @Test

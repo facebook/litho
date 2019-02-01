@@ -22,7 +22,6 @@ import android.support.v4.util.Pools.SynchronizedPool;
 import android.support.v7.util.ListUpdateCallback;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentsPools;
 import com.facebook.litho.ComponentsReporter;
 import com.facebook.litho.ComponentsSystrace;
 import com.facebook.litho.Diff;
@@ -101,9 +100,7 @@ public class RecyclerBinderUpdateCallback<T> implements ListUpdateCallback {
     for (int i = 0, size = updatesCallback.mPlaceholders.size(); i < size; i++) {
       updatesCallback.mPlaceholders.get(i).release();
     }
-    for (int i = 0, size = updatesCallback.mDataHolders.size(); i < size; i++) {
-      ComponentsPools.release(updatesCallback.mDataHolders.get(i));
-    }
+    updatesCallback.mDataHolders.clear();
     updatesCallback.mComponentRenderer = null;
     updatesCallback.mOperationExecutor = null;
     updatesCallback.mHeadOffset = 0;
@@ -132,7 +129,7 @@ public class RecyclerBinderUpdateCallback<T> implements ListUpdateCallback {
     mDataHolders = new ArrayList<>();
     for (int i = 0; i < mOldDataSize; i++) {
       mPlaceholders.add(ComponentContainer.acquire());
-      mDataHolders.add(ComponentsPools.acquireDiff(mPrevData.get(i), null));
+      mDataHolders.add(new Diff(mPrevData.get(i), null));
     }
   }
 
@@ -148,7 +145,7 @@ public class RecyclerBinderUpdateCallback<T> implements ListUpdateCallback {
       mPlaceholders.add(index, componentContainer);
       placeholders.add(componentContainer);
 
-      final Diff dataHolder = ComponentsPools.acquireDiff(null, null);
+      final Diff dataHolder = new Diff(null, null);
       mDataHolders.add(index, dataHolder);
       dataHolders.add(dataHolder);
     }
@@ -218,14 +215,11 @@ public class RecyclerBinderUpdateCallback<T> implements ListUpdateCallback {
         mOperations.get(i).release();
       }
       mOperations.clear();
-      for (int i = 0, size = mDataHolders.size(); i < size; i++) {
-        ComponentsPools.release(mDataHolders.get(i));
-      }
       mDataHolders.clear();
 
       final List<Diff> prevDataHolders = new ArrayList<>();
       for (int i = 0; i < mOldDataSize; i++) {
-        prevDataHolders.add(ComponentsPools.acquireDiff(mPrevData.get(i), null));
+        prevDataHolders.add(new Diff(mPrevData.get(i), null));
       }
       mDataHolders.addAll(prevDataHolders);
       mOperations.add(Operation.acquire(Operation.DELETE, 0, mOldDataSize, null, prevDataHolders));
@@ -244,7 +238,7 @@ public class RecyclerBinderUpdateCallback<T> implements ListUpdateCallback {
           ComponentsSystrace.endSection();
         }
         placeholders.add(i, componentContainer);
-        dataHolders.add(ComponentsPools.acquireDiff(null, model));
+        dataHolders.add(new Diff(null, model));
       }
       mPlaceholders = placeholders;
       mDataHolders.addAll(dataHolders);

@@ -17,8 +17,6 @@
 package com.facebook.litho.reference;
 
 import android.content.Context;
-import com.facebook.litho.ComponentsPools;
-import com.facebook.litho.Diff;
 
 /**
  * ReferenceLifecycle objects which are able retreive resources at runtime without needing to keep
@@ -36,16 +34,6 @@ public abstract class ReferenceLifecycle<T> {
   protected abstract T onAcquire(Context context, Reference<T> reference);
 
   protected void onRelease(Context context, T value, Reference<T> reference) {}
-
-  protected final <R> Diff<R> acquireDiff(R previousValue, R nextValue) {
-    Diff diff = ComponentsPools.acquireDiff(previousValue, nextValue);
-
-    return diff;
-  }
-
-  protected void releaseDiff(Diff diff) {
-    ComponentsPools.release(diff);
-  }
 
   protected boolean shouldUpdate(Reference<T> previous, Reference<T> next) {
     return !previous.equals(next);

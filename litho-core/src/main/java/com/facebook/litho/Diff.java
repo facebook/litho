@@ -16,7 +16,6 @@
 
 package com.facebook.litho;
 
-import android.support.annotation.VisibleForTesting;
 import com.facebook.litho.annotations.ShouldUpdate;
 
 /**
@@ -26,11 +25,12 @@ import com.facebook.litho.annotations.ShouldUpdate;
  */
 public final class Diff<T> {
 
-  T mPrevious;
+  final T mPrevious;
   T mNext;
 
-  public Diff() {
-
+  public Diff(T previous, T next) {
+    mPrevious = previous;
+    mNext = next;
   }
 
   public T getPrevious() {
@@ -43,17 +43,6 @@ public final class Diff<T> {
 
   public void setNext(T next) {
     mNext = next;
-  }
-
-  @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-  public void init(T previous, T next) {
-    mPrevious = previous;
-    mNext = next;
-  }
-
-  void release() {
-    mPrevious = null;
-    mNext = null;
   }
 
   @Override

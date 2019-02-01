@@ -431,7 +431,7 @@ class LayoutState {
     final EventHandler<InvisibleEvent> invisibleHandler = node.getInvisibleHandler();
     final EventHandler<VisibilityChangedEvent> visibleRectChangedEventHandler =
         node.getVisibilityChangedHandler();
-    final VisibilityOutput visibilityOutput = ComponentsPools.acquireVisibilityOutput();
+    final VisibilityOutput visibilityOutput = new VisibilityOutput();
 
     visibilityOutput.setComponent(node.getRootComponent());
     visibilityOutput.setBounds(l, t, r, b);
@@ -1843,7 +1843,7 @@ class LayoutState {
   }
 
   static DiffNode createDiffNode(InternalNode node, DiffNode parent) {
-    DiffNode diffNode = ComponentsPools.acquireDiffNode();
+    DiffNode diffNode = new DiffNode();
 
     diffNode.setLastWidthSpec(node.getLastWidthSpec());
     diffNode.setLastHeightSpec(node.getLastHeightSpec());
@@ -2088,10 +2088,6 @@ class LayoutState {
       mOutputsIdToPositionMap.clear();
       mComponentKeyToBounds.clear();
       mComponents.clear();
-
-      for (int i = 0, size = mVisibilityOutputs.size(); i < size; i++) {
-        ComponentsPools.release(mVisibilityOutputs.get(i));
-      }
       mVisibilityOutputs.clear();
 
       if (mTestOutputs != null) {
@@ -2103,7 +2099,6 @@ class LayoutState {
       mAccessibilityEnabled = false;
 
       if (mDiffTreeRoot != null) {
-        ComponentsPools.release(mDiffTreeRoot);
         mDiffTreeRoot = null;
       }
       clearLayoutStateOutputIdCalculator();

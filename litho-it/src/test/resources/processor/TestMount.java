@@ -213,18 +213,16 @@ public final class TestMount<S extends View> extends Component implements TestTa
   @SuppressWarnings("unchecked")
   @Override
   protected void onLoadStyle(ComponentContext c) {
-    Output<Boolean> prop2Tmp = acquireOutput();
-    Output<Object> prop3Tmp = acquireOutput();
+    Output<Boolean> prop2Tmp = new Output<>();
+    Output<Object> prop3Tmp = new Output<>();
     TestMountSpec.onLoadStyle(
         (ComponentContext) c, (Output<Boolean>) prop2Tmp, (Output<Object>) prop3Tmp);
     if (prop2Tmp.get() != null) {
       prop2 = prop2Tmp.get();
     }
-    releaseOutput(prop2Tmp);
     if (prop3Tmp.get() != null) {
       prop3 = prop3Tmp.get();
     }
-    releaseOutput(prop3Tmp);
   }
 
   @Override
@@ -239,7 +237,7 @@ public final class TestMount<S extends View> extends Component implements TestTa
   @Override
   protected void onMeasure(
       ComponentContext context, ComponentLayout layout, int widthSpec, int heightSpec, Size size) {
-    Output<Long> measureOutputTmp = acquireOutput();
+    Output<Long> measureOutputTmp = new Output<>();
     TestMountSpec.onMeasure(
         (ComponentContext) context,
         (ComponentLayout) layout,
@@ -248,7 +246,6 @@ public final class TestMount<S extends View> extends Component implements TestTa
         (Size) size,
         (Output<Long>) measureOutputTmp);
     measureOutput = measureOutputTmp.get();
-    releaseOutput(measureOutputTmp);
   }
 
   @Override
@@ -258,7 +255,7 @@ public final class TestMount<S extends View> extends Component implements TestTa
 
   @Override
   protected void onBoundsDefined(ComponentContext c, ComponentLayout layout) {
-    Output<Integer> boundsDefinedOutputTmp = acquireOutput();
+    Output<Integer> boundsDefinedOutputTmp = new Output<>();
     TestMountSpec.onBoundsDefined(
         (ComponentContext) c,
         (ComponentLayout) layout,
@@ -267,7 +264,6 @@ public final class TestMount<S extends View> extends Component implements TestTa
         (Long) measureOutput,
         (Output<Integer>) boundsDefinedOutputTmp);
     boundsDefinedOutput = boundsDefinedOutputTmp.get();
-    releaseOutput(boundsDefinedOutputTmp);
   }
 
   @Override
@@ -356,9 +352,8 @@ public final class TestMount<S extends View> extends Component implements TestTa
     TestMount _prevImpl = (TestMount) _prevAbstractImpl;
     TestMount _nextImpl = (TestMount) _nextAbstractImpl;
     boolean _result;
-    Diff<Integer> prop1 = (Diff) acquireDiff(_prevImpl == null ? null : _prevImpl.prop1, _nextImpl == null ? null : _nextImpl.prop1);
+    Diff<Integer> prop1 = (Diff) new Diff(_prevImpl == null ? null : _prevImpl.prop1, _nextImpl == null ? null : _nextImpl.prop1);
     _result = (boolean) TestMountSpec.shouldUpdate((Diff<Integer>) prop1);
-    releaseDiff(prop1);
     return _result;
   }
 

@@ -86,18 +86,8 @@ public class ComponentsPools {
   private static final Map<Context, SparseArray<MountContentPool>> sMountContentPoolsByContext =
       new HashMap<>(4);
 
-  static final RecyclePool<VisibilityOutput> sVisibilityOutputPool =
-      new RecyclePool<>("VisibilityOutput", 64, true);
-
   static final RecyclePool<VisibilityItem> sVisibilityItemPool =
       new RecyclePool<>("VisibilityItem", 64, true);
-
-  static final RecyclePool<Output<?>> sOutputPool = new RecyclePool<>("Output", 20, true);
-
-  static final RecyclePool<DiffNode> sDiffNodePool =
-      new RecyclePool<>("DiffNode", PoolsConfig.sDiffNodeSize, true);
-
-  static final RecyclePool<Diff<?>> sDiffPool = new RecyclePool<>("Diff", 20, true);
 
   static final RecyclePool<ComponentTree.Builder> sComponentTreeBuilderPool =
       new RecyclePool<>("ComponentTree.Builder", 2, true);
@@ -235,16 +225,6 @@ public class ComponentsPools {
     return output;
   }
 
-  static VisibilityOutput acquireVisibilityOutput() {
-    VisibilityOutput output =
-        ComponentsConfiguration.disablePools ? null : sVisibilityOutputPool.acquire();
-    if (output == null) {
-      output = new VisibilityOutput();
-    }
-
-    return output;
-  }
-
   static VisibilityItem acquireVisibilityItem(
       String globalKey,
       EventHandler<InvisibleEvent> invisibleHandler,
@@ -262,34 +242,6 @@ public class ComponentsPools {
     item.setVisibilityChangedHandler(visibilityChangedHandler);
 
     return item;
-  }
-
-  static Output acquireOutput() {
-    Output output = ComponentsConfiguration.disablePools ? null : sOutputPool.acquire();
-    if (output == null) {
-      output = new Output();
-    }
-
-    return output;
-  }
-
-  static DiffNode acquireDiffNode() {
-    DiffNode node = ComponentsConfiguration.disablePools ? null : sDiffNodePool.acquire();
-    if (node == null) {
-      node = new DiffNode();
-    }
-
-    return node;
-  }
-
-  public static <T> Diff acquireDiff(T previous, T next) {
-    Diff diff = ComponentsConfiguration.disablePools ? null : sDiffPool.acquire();
-    if (diff == null) {
-      diff = new Diff();
-    }
-    diff.init(previous, next);
-
-    return diff;
   }
 
   static ComponentTree.Builder acquireComponentTreeBuilder(ComponentContext c, Component root) {
@@ -383,48 +335,12 @@ public class ComponentsPools {
   }
 
   @ThreadSafe(enableChecks = false)
-  static void release(VisibilityOutput output) {
-    if (ComponentsConfiguration.disablePools) {
-      return;
-    }
-    output.release();
-    sVisibilityOutputPool.release(output);
-  }
-
-  @ThreadSafe(enableChecks = false)
   static void release(VisibilityItem item) {
     if (ComponentsConfiguration.disablePools) {
       return;
     }
     item.release();
     sVisibilityItemPool.release(item);
-  }
-
-  @ThreadSafe(enableChecks = false)
-  static void release(DiffNode node) {
-    if (ComponentsConfiguration.disablePools) {
-      return;
-    }
-    node.release();
-    sDiffNodePool.release(node);
-  }
-
-  @ThreadSafe(enableChecks = false)
-  static void release(Output output) {
-    if (ComponentsConfiguration.disablePools) {
-      return;
-    }
-    output.release();
-    sOutputPool.release(output);
-  }
-
-  @ThreadSafe(enableChecks = false)
-  public static void release(Diff diff) {
-    if (ComponentsConfiguration.disablePools) {
-      return;
-    }
-    diff.release();
-    sDiffPool.release(diff);
   }
 
   static Object acquireMountContent(Context context, ComponentLifecycle lifecycle) {
@@ -612,11 +528,7 @@ public class ComponentsPools {
     sViewNodeInfoPool.clear();
     sMountItemPool.clear();
     sLayoutOutputPool.clear();
-    sVisibilityOutputPool.clear();
     sVisibilityItemPool.clear();
-    sOutputPool.clear();
-    sDiffNodePool.clear();
-    sDiffPool.clear();
     sComponentTreeBuilderPool.clear();
     sStateHandlerPool.clear();
     sMountItemScrapArrayPool.clear();

@@ -132,18 +132,4 @@ class VisibilityOutput {
   EventHandler<VisibilityChangedEvent> getVisibilityChangedEventHandler() {
     return mVisibilityChangedEventHandler;
   }
-
-  void release() {
-    mVisibleHeightRatio = 0;
-    mVisibleWidthRatio = 0;
-    mComponent = null;
-    mVisibleEventHandler = null;
-    mFocusedEventHandler = null;
-    mUnfocusedEventHandler = null;
-    mFullImpressionEventHandler = null;
-    mInvisibleEventHandler = null;
-    mVisibilityChangedEventHandler = null;
-
-    mBounds.setEmpty();
-  }
 }

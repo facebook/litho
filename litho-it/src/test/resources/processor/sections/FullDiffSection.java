@@ -248,17 +248,17 @@ public final class FullDiffSection<T> extends Section implements TestTag {
     FullDiffSection _nextImpl = (FullDiffSection) _nextAbstractImpl;
     Diff<List<T>> data =
         (Diff)
-            acquireDiff(
+            new Diff(
                 _prevImpl == null ? null : _prevImpl.data,
                 _nextImpl == null ? null : _nextImpl.data);
     Diff<Component> prop3 =
         (Diff)
-            acquireDiff(
+            new Diff(
                 _prevImpl == null ? null : _prevImpl.prop3,
                 _nextImpl == null ? null : _nextImpl.prop3);
     Diff<Object> state1 =
         (Diff)
-            acquireDiff(
+            new Diff(
                 _prevImpl == null ? null : _prevImpl.mStateContainer.state1,
                 _nextImpl == null ? null : _nextImpl.mStateContainer.state1);
     FullDiffSectionSpec.onDiff(
@@ -267,9 +267,6 @@ public final class FullDiffSection<T> extends Section implements TestTag {
         (Diff<List<T>>) data,
         (Diff<Component>) prop3,
         (Diff<Object>) state1);
-    releaseDiff(data);
-    releaseDiff(prop3);
-    releaseDiff(state1);
   }
 
   @Override
@@ -327,11 +324,10 @@ public final class FullDiffSection<T> extends Section implements TestTag {
     boolean _result;
     Diff<Integer> prop1 =
         (Diff)
-            acquireDiff(
+            new Diff(
                 _prevImpl == null ? null : _prevImpl.prop1,
                 _nextImpl == null ? null : _nextImpl.prop1);
     _result = (boolean) FullDiffSectionSpec.shouldUpdate((Diff<Integer>) prop1);
-    releaseDiff(prop1);
     return _result;
   }
 
