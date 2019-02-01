@@ -456,7 +456,7 @@ class LayoutState {
     final int r = l + node.getWidth();
     final int b = t + node.getHeight();
 
-    final TestOutput output = ComponentsPools.acquireTestOutput();
+    final TestOutput output = new TestOutput();
     output.setTestKey(node.getTestKey());
     output.setBounds(l, t, r, b);
     output.setHostMarker(layoutState.mCurrentHostMarker);
@@ -936,7 +936,7 @@ class LayoutState {
     }
 
     if (component != null) {
-      final Rect rect = ComponentsPools.acquireRect();
+      final Rect rect = new Rect();
       if (layoutOutput != null) {
         rect.set(layoutOutput.getBounds());
       } else {
@@ -950,7 +950,7 @@ class LayoutState {
         ComponentsSystrace.beginSection("keepComponentDelegates:" + component.getSimpleName());
       }
       for (Component delegate : node.getComponents()) {
-        final Rect copyRect = ComponentsPools.acquireRect();
+        final Rect copyRect = new Rect();
         copyRect.set(rect);
 
         // Keep a list of the components we created during this layout calculation. If the layout is
@@ -970,7 +970,6 @@ class LayoutState {
       if (isTracing) {
         ComponentsSystrace.endSection();
       }
-      ComponentsPools.release(rect);
     }
 
     // 10. If enabled, show a debug foreground layer covering the whole LithoView showing which
@@ -2087,10 +2086,6 @@ class LayoutState {
       mMountableOutputTops.clear();
       mMountableOutputBottoms.clear();
       mOutputsIdToPositionMap.clear();
-
-      for (Rect rect : mComponentKeyToBounds.values()) {
-        ComponentsPools.release(rect);
-      }
       mComponentKeyToBounds.clear();
       mComponents.clear();
 
@@ -2100,9 +2095,6 @@ class LayoutState {
       mVisibilityOutputs.clear();
 
       if (mTestOutputs != null) {
-        for (int i = 0, size = mTestOutputs.size(); i < size; i++) {
-          ComponentsPools.release(mTestOutputs.get(i));
-        }
         mTestOutputs.clear();
       }
 

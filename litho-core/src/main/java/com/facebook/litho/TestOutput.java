@@ -64,11 +64,4 @@ class TestOutput {
   void setLayoutOutputId(long layoutOutputId) {
     mLayoutOutputId = layoutOutputId;
   }
-
-  void release() {
-    mTestKey = null;
-    mLayoutOutputId = -1;
-    mHostMarker = -1;
-    mBounds.setEmpty();
-  }
 }

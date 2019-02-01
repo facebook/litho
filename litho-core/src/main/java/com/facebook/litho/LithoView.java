@@ -581,13 +581,10 @@ public class LithoView extends ComponentHost {
     }
 
     if (isVisible) {
-      final Rect currentVisibleArea = ComponentsPools.acquireRect();
-
-      if (getLocalVisibleRect(currentVisibleArea)) {
+      if (getLocalVisibleRect(new Rect())) {
         mComponentTree.processVisibilityOutputs();
       }
       // if false: no-op, doesn't have visible area, is not ready or not attached
-      ComponentsPools.release(currentVisibleArea);
     } else {
       mMountState.clearVisibilityItems();
     }
@@ -599,10 +596,7 @@ public class LithoView extends ComponentHost {
       if (mTransientStateCount == 0
           && mComponentTree != null
           && mComponentTree.isIncrementalMountEnabled()) {
-        final Rect rect = ComponentsPools.acquireRect();
-        rect.set(0, 0, getWidth(), getHeight());
-        performIncrementalMount(rect, false);
-        ComponentsPools.release(rect);
+        performIncrementalMount(new Rect(0, 0, getWidth(), getHeight()), false);
       }
       mTransientStateCount++;
     } else {
@@ -718,16 +712,13 @@ public class LithoView extends ComponentHost {
       return;
     }
 
-    final Rect rect = ComponentsPools.acquireRect();
+    final Rect rect = new Rect();
     if (!getLocalVisibleRect(rect)) {
       // View is not visible at all, nothing to do.
-      ComponentsPools.release(rect);
       return;
     }
 
     performIncrementalMount(rect, true);
-
-    ComponentsPools.release(rect);
   }
 
   /**
@@ -790,7 +781,6 @@ public class LithoView extends ComponentHost {
   }
 
   void mount(LayoutState layoutState, Rect currentVisibleArea, boolean processVisibilityOutputs) {
-    boolean rectNeedsRelease = false;
     if (mTransientStateCount > 0
         && mComponentTree != null
         && mComponentTree.isIncrementalMountEnabled()) {
@@ -800,9 +790,7 @@ public class LithoView extends ComponentHost {
       if (!mMountState.isDirty()) {
         return;
       } else {
-        currentVisibleArea = ComponentsPools.acquireRect();
-        currentVisibleArea.set(0, 0, getWidth(), getHeight());
-        rectNeedsRelease = true;
+        currentVisibleArea = new Rect(0, 0, getWidth(), getHeight());
         processVisibilityOutputs = false;
       }
     }
@@ -814,10 +802,6 @@ public class LithoView extends ComponentHost {
     }
 
     mMountState.mount(layoutState, currentVisibleArea, processVisibilityOutputs);
-
-    if (rectNeedsRelease) {
-      ComponentsPools.release(currentVisibleArea);
-    }
   }
 
   void processVisibilityOutputs(LayoutState layoutState, Rect currentVisibleArea) {

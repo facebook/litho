@@ -82,7 +82,7 @@ class ViewNodeInfo {
           "ViewNodeInfo.");
     }
 
-    mPadding = ComponentsPools.acquireRect();
+    mPadding = new Rect();
     mPadding.set(l, t, r, b);
   }
 
@@ -119,7 +119,7 @@ class ViewNodeInfo {
           "ViewNodeInfo.");
     }
 
-    mExpandedTouchBounds = ComponentsPools.acquireRect();
+    mExpandedTouchBounds = new Rect();
     mExpandedTouchBounds.set(
         l - touchExpansionLeft,
         t - touchExpansionTop,
@@ -240,12 +240,10 @@ class ViewNodeInfo {
     mStateListAnimatorRes = 0;
 
     if (mPadding != null) {
-      ComponentsPools.release(mPadding);
       mPadding = null;
     }
 
     if (mExpandedTouchBounds != null) {
-      ComponentsPools.release(mExpandedTouchBounds);
       mExpandedTouchBounds = null;
     }
 

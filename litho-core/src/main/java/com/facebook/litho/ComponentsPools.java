@@ -23,8 +23,6 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.ContextWrapper;
-import android.graphics.Rect;
-import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -91,10 +89,6 @@ public class ComponentsPools {
   static final RecyclePool<VisibilityOutput> sVisibilityOutputPool =
       new RecyclePool<>("VisibilityOutput", 64, true);
 
-  // These are lazily initialized as they are only needed when we're in a test environment.
-  static RecyclePool<TestOutput> sTestOutputPool = null;
-  static RecyclePool<TestItem> sTestItemPool = null;
-
   static final RecyclePool<VisibilityItem> sVisibilityItemPool =
       new RecyclePool<>("VisibilityItem", 64, true);
 
@@ -113,10 +107,6 @@ public class ComponentsPools {
 
   static final RecyclePool<SparseArrayCompat<MountItem>> sMountItemScrapArrayPool =
       new RecyclePool<>("MountItemScrapArray", 8, false);
-
-  static final RecyclePool<RectF> sRectFPool = new RecyclePool<>("RectF", 4, true);
-
-  static final RecyclePool<Rect> sRectPool = new RecyclePool<>("Rect", 30, true);
 
   static final RecyclePool<Edges> sEdgesPool = new RecyclePool<>("Edges", 30, true);
 
@@ -274,31 +264,6 @@ public class ComponentsPools {
     return item;
   }
 
-  static TestOutput acquireTestOutput() {
-    if (sTestOutputPool == null) {
-      sTestOutputPool = new RecyclePool<>("TestOutput", 64, true);
-    }
-    TestOutput output = ComponentsConfiguration.disablePools ? null : sTestOutputPool.acquire();
-    if (output == null) {
-      output = new TestOutput();
-    }
-
-    return output;
-  }
-
-  static TestItem acquireTestItem() {
-    if (sTestItemPool == null) {
-      sTestItemPool = new RecyclePool<>("TestItem", 64, true);
-    }
-    TestItem item = ComponentsConfiguration.disablePools ? null : sTestItemPool.acquire();
-    if (item == null) {
-      item = new TestItem();
-    }
-    item.setAcquired();
-
-    return item;
-  }
-
   static Output acquireOutput() {
     Output output = ComponentsConfiguration.disablePools ? null : sOutputPool.acquire();
     if (output == null) {
@@ -436,24 +401,6 @@ public class ComponentsPools {
   }
 
   @ThreadSafe(enableChecks = false)
-  static void release(TestOutput testOutput) {
-    if (ComponentsConfiguration.disablePools) {
-      return;
-    }
-    testOutput.release();
-    sTestOutputPool.release(testOutput);
-  }
-
-  @ThreadSafe(enableChecks = false)
-  static void release(TestItem testItem) {
-    if (ComponentsConfiguration.disablePools) {
-      return;
-    }
-    testItem.release();
-    sTestItemPool.release(testItem);
-  }
-
-  @ThreadSafe(enableChecks = false)
   static void release(DiffNode node) {
     if (ComponentsConfiguration.disablePools) {
       return;
@@ -563,42 +510,6 @@ public class ComponentsPools {
     sMountItemScrapArrayPool.release(sparseArray);
   }
 
-  static RectF acquireRectF() {
-    RectF rect = ComponentsConfiguration.disablePools ? null : sRectFPool.acquire();
-    if (rect == null) {
-      rect = new RectF();
-    }
-
-    return rect;
-  }
-
-  @ThreadSafe(enableChecks = false)
-  static void releaseRectF(RectF rect) {
-    if (ComponentsConfiguration.disablePools) {
-      return;
-    }
-    rect.setEmpty();
-    sRectFPool.release(rect);
-  }
-
-  static Rect acquireRect() {
-    Rect rect = ComponentsConfiguration.disablePools ? null : sRectPool.acquire();
-    if (rect == null) {
-      rect = new Rect();
-    }
-
-    return rect;
-  }
-
-  @ThreadSafe(enableChecks = false)
-  static void release(Rect rect) {
-    if (ComponentsConfiguration.disablePools) {
-      return;
-    }
-    rect.setEmpty();
-    sRectPool.release(rect);
-  }
-
   static Edges acquireEdges() {
     Edges spacing = ComponentsConfiguration.disablePools ? null : sEdgesPool.acquire();
     if (spacing == null) {
@@ -703,19 +614,12 @@ public class ComponentsPools {
     sLayoutOutputPool.clear();
     sVisibilityOutputPool.clear();
     sVisibilityItemPool.clear();
-    if (sTestOutputPool != null) {
-      sTestOutputPool.clear();
-    }
-    if (sTestItemPool != null) {
-      sTestItemPool.clear();
-    }
     sOutputPool.clear();
     sDiffNodePool.clear();
     sDiffPool.clear();
     sComponentTreeBuilderPool.clear();
     sStateHandlerPool.clear();
     sMountItemScrapArrayPool.clear();
-    sRectFPool.clear();
     sEdgesPool.clear();
     sDisplayListDrawablePool.clear();
     sArraySetPool.clear();

@@ -63,7 +63,6 @@ import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.reference.Reference;
 import java.util.ArrayList;
 import java.util.BitSet;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
@@ -687,11 +686,6 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       return;
     }
 
-    for (Collection<TestItem> items : mTestItemMap.values()) {
-      for (TestItem item : items) {
-        ComponentsPools.release(item);
-      }
-    }
     mTestItemMap.clear();
 
     for (int i = 0, size = layoutState.getTestOutputCount(); i < size; i++) {
@@ -700,7 +694,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       final long layoutOutputId = testOutput.getLayoutOutputId();
       final MountItem mountItem =
           layoutOutputId == -1 ? null : mIndexToItemMap.get(layoutOutputId);
-      final TestItem testItem = ComponentsPools.acquireTestItem();
+      final TestItem testItem = new TestItem();
       testItem.setHost(hostMarker == -1 ? null : mHostsByMarker.get(hostMarker));
       testItem.setBounds(testOutput.getBounds());
       testItem.setTestKey(testOutput.getTestKey());
@@ -2300,10 +2294,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       final LithoView lithoView = (LithoView) view;
       if (lithoView.isIncrementalMountEnabled()) {
         if (!processVisibilityOutputs) {
-          final Rect rect = ComponentsPools.acquireRect();
-          rect.set(0, 0, view.getWidth(), view.getHeight());
-          lithoView.performIncrementalMount(rect, false);
-          ComponentsPools.release(rect);
+          lithoView.performIncrementalMount(
+              new Rect(0, 0, view.getWidth(), view.getHeight()), false);
         } else {
           lithoView.performIncrementalMount();
         }

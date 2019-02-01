@@ -1890,7 +1890,7 @@ class InternalNode implements ComponentLayout {
     }
     final T drawable = Reference.acquire(mComponentContext.getAndroidContext(), ref);
     if (drawable != null) {
-      final Rect backgroundPadding = ComponentsPools.acquireRect();
+      final Rect backgroundPadding = new Rect();
       if (getDrawablePadding(drawable, backgroundPadding)) {
         paddingPx(LEFT, backgroundPadding.left);
         paddingPx(TOP, backgroundPadding.top);
@@ -1899,7 +1899,6 @@ class InternalNode implements ComponentLayout {
       }
 
       Reference.release(mComponentContext.getAndroidContext(), drawable, ref);
-      ComponentsPools.release(backgroundPadding);
     }
   }
 

@@ -627,7 +627,7 @@ public class ComponentTree {
 
     // Per ComponentTree visible area. Because LithoViews can be nested and mounted
     // not in "depth order", this variable cannot be static.
-    final Rect currentVisibleArea = ComponentsPools.acquireRect();
+    final Rect currentVisibleArea = new Rect();
 
     if (ComponentsConfiguration.incrementalMountWhenNotVisible) {
       boolean isVisible = mIsAttached && mLithoView.getLocalVisibleRect(currentVisibleArea);
@@ -649,8 +649,6 @@ public class ComponentTree {
       }
       // if false: no-op, doesn't have visible area, is not ready or not attached
     }
-
-    ComponentsPools.release(currentVisibleArea);
   }
 
   void processVisibilityOutputs() {
@@ -670,12 +668,11 @@ public class ComponentTree {
       return;
     }
 
-    final Rect currentVisibleArea = ComponentsPools.acquireRect();
+    final Rect currentVisibleArea = new Rect();
     if (mLithoView.getLocalVisibleRect(currentVisibleArea)) {
       mLithoView.processVisibilityOutputs(mMainThreadLayoutState, currentVisibleArea);
     }
     // if false: no-op, doesn't have visible area, is not ready or not attached
-    ComponentsPools.release(currentVisibleArea);
   }
 
   private boolean animatingRootBoundsFromZero(Rect currentVisibleArea) {

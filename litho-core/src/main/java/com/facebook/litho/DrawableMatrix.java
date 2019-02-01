@@ -119,19 +119,14 @@ public final class DrawableMatrix extends Matrix {
       result.setScale(scale, scale);
       result.postTranslate(dx, dy);
     } else {
-      RectF src = ComponentsPools.acquireRectF();
-      RectF dest = ComponentsPools.acquireRectF();
+      RectF src = new RectF();
+      RectF dest = new RectF();
 
-      try {
-        // Generate the required transform.
-        src.set(0, 0, intrinsicWidth, intrinsicHeight);
-        dest.set(0, 0, width, height);
+      // Generate the required transform.
+      src.set(0, 0, intrinsicWidth, intrinsicHeight);
+      dest.set(0, 0, width, height);
 
-        result.setRectToRect(src, dest, scaleTypeToScaleToFit(scaleType));
-      } finally {
-        ComponentsPools.releaseRectF(src);
-        ComponentsPools.releaseRectF(dest);
-      }
+      result.setRectToRect(src, dest, scaleTypeToScaleToFit(scaleType));
     }
 
     return result;

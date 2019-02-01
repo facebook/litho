@@ -48,20 +48,10 @@ public final class LithoDebugInfo {
     pools.add(ComponentsPools.sComponentTreeBuilderPool);
     pools.add(ComponentsPools.sStateHandlerPool);
     pools.add(ComponentsPools.sMountItemScrapArrayPool);
-    pools.add(ComponentsPools.sRectFPool);
-    pools.add(ComponentsPools.sRectPool);
     pools.add(ComponentsPools.sEdgesPool);
     pools.add(ComponentsPools.sDisplayListDrawablePool);
     pools.add(ComponentsPools.sArraySetPool);
     pools.add(ComponentsPools.sArrayDequePool);
-
-    if (ComponentsPools.sTestOutputPool != null) {
-      pools.add(ComponentsPools.sTestOutputPool);
-    }
-
-    if (ComponentsPools.sTestItemPool != null) {
-      pools.add(ComponentsPools.sTestItemPool);
-    }
 
     return pools;
   }
