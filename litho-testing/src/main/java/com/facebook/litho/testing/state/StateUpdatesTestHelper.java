@@ -180,11 +180,6 @@ public final class StateUpdatesTestHelper {
     Whitebox.setInternalState(context, "mComponentScope", component);
     Whitebox.setInternalState(context, "mComponentTree", componentTree);
 
-    final Object mainThreadLayoutState =
-        Whitebox.invokeMethod(componentTree, "getMainThreadLayoutState");
-    // Bump the internal refcount by one, so we avoid releasing the InternalNode.
-    Whitebox.invokeMethod(mainThreadLayoutState, "acquireRef");
-
     final LithoViewTestHelper.InternalNodeRef rootLayoutNode =
         LithoViewTestHelper.getRootLayoutRef(lithoView);
 

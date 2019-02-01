@@ -53,9 +53,6 @@ public class ComponentsPools {
   private static final Object sMountContentLock = new Object();
   private static final Object sYogaConfigLock = new Object();
 
-  static final RecyclePool<LayoutState> sLayoutStatePool =
-      new RecyclePool<>("LayoutState", PoolsConfig.sLayoutStateSize, true);
-
   static final RecyclePool<InternalNode> sInternalNodePool =
       new RecyclePool<>("InternalNode", PoolsConfig.sInternalNodeSize, true);
 
@@ -79,16 +76,6 @@ public class ComponentsPools {
    * passed a context for which we have no record.
    */
   static boolean sIsManualCallbacks;
-
-  static LayoutState acquireLayoutState(ComponentContext context) {
-    LayoutState state = ComponentsConfiguration.disablePools ? null : sLayoutStatePool.acquire();
-    if (state == null) {
-      state = new LayoutState();
-    }
-    state.init(context);
-
-    return state;
-  }
 
   static YogaNode acquireYogaNode() {
     initYogaConfigIfNecessary();
@@ -114,11 +101,6 @@ public class ComponentsPools {
 
     node.init(acquireYogaNode(), componentContext);
     return node;
-  }
-
-  @ThreadSafe(enableChecks = false)
-  static void release(LayoutState state) {
-    sLayoutStatePool.release(state);
   }
 
   @ThreadSafe(enableChecks = false)
@@ -281,7 +263,6 @@ public class ComponentsPools {
 
   /** Clear pools for all the internal util objects, excluding mount content. */
   public static void clearInternalUtilPools() {
-    sLayoutStatePool.clear();
     sYogaNodePool.clear();
     sInternalNodePool.clear();
   }

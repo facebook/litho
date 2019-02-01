@@ -464,7 +464,6 @@ public class ComponentTree {
       return;
     }
 
-    LayoutState toRelease;
     final boolean layoutStateUpdated;
     final int componentRootId;
     synchronized (this) {
@@ -474,14 +473,9 @@ public class ComponentTree {
       }
 
       final LayoutState oldMainThreadLayoutState = mMainThreadLayoutState;
-      toRelease = setBestMainThreadLayoutAndReturnOldLayout();
+      setBestMainThreadLayoutAndReturnOldLayout();
       layoutStateUpdated = (mMainThreadLayoutState != oldMainThreadLayoutState);
       componentRootId = mRoot.getId();
-    }
-
-    if (toRelease != null) {
-      toRelease.releaseRef();
-      toRelease = null;
     }
 
     if (!layoutStateUpdated) {
@@ -542,14 +536,13 @@ public class ComponentTree {
       mIncrementalMountHelper.onAttach(mLithoView);
     }
 
-    LayoutState toRelease;
     final int componentRootId;
     synchronized (this) {
       // We need to track that we are attached regardless...
       mIsAttached = true;
 
       // ... and then we do state transfer
-      toRelease = setBestMainThreadLayoutAndReturnOldLayout();
+      setBestMainThreadLayoutAndReturnOldLayout();
 
       if (mRoot == null) {
         throw new IllegalStateException(
@@ -560,11 +553,6 @@ public class ComponentTree {
       }
 
       componentRootId = mRoot.getId();
-    }
-
-    if (toRelease != null) {
-      toRelease.releaseRef();
-      toRelease = null;
     }
 
     // We defer until measure if we don't yet have a width/height
@@ -909,7 +897,6 @@ public class ComponentTree {
 
     Component component = null;
     TreeProps treeProps = null;
-    LayoutState toRelease;
     synchronized (this) {
       mIsMeasuring = true;
 
@@ -917,7 +904,7 @@ public class ComponentTree {
       mWidthSpec = widthSpec;
       mHeightSpec = heightSpec;
 
-      toRelease = setBestMainThreadLayoutAndReturnOldLayout();
+      setBestMainThreadLayoutAndReturnOldLayout();
 
       // We don't check if mRoot is compatible here since if it doesn't match mMainThreadLayout,
       // that means we're computing an async layout with a new root which can just be applied when
@@ -938,22 +925,14 @@ public class ComponentTree {
       }
     }
 
-    if (toRelease != null) {
-      toRelease.releaseRef();
-      toRelease = null;
-    }
-
     if (component != null) {
       // TODO: We should re-use the existing CSSNodeDEPRECATED tree instead of re-creating it.
       if (mMainThreadLayoutState != null) {
         // It's beneficial to delete the old layout state before we start creating a new one since
         // we'll be able to re-use some of the layout nodes.
-        final LayoutState localLayoutState;
         synchronized (this) {
-          localLayoutState = mMainThreadLayoutState;
           mMainThreadLayoutState = null;
         }
-        localLayoutState.releaseRef();
       }
 
       // We have no layout that matches the given spec, so we need to compute it on the main thread.
@@ -979,7 +958,6 @@ public class ComponentTree {
 
         localLayoutState.clearComponents();
         mMainThreadLayoutState = localLayoutState;
-        localLayoutState = null;
       }
 
       bindEventAndTriggerHandlers(components);
@@ -1088,9 +1066,9 @@ public class ComponentTree {
 
     synchronized (this) {
       if (mMainThreadLayoutState != null) {
-        toPrePopulate = mMainThreadLayoutState.acquireRef();
+        toPrePopulate = mMainThreadLayoutState;
       } else if (mBackgroundLayoutState != null) {
-        toPrePopulate = mBackgroundLayoutState.acquireRef();
+        toPrePopulate = mBackgroundLayoutState;
       } else {
         return;
       }
@@ -1107,8 +1085,6 @@ public class ComponentTree {
     if (logger != null) {
       logger.logPerfEvent(event);
     }
-
-    toPrePopulate.releaseRef();
   }
 
   public void setRootAsync(Component rootComponent) {
@@ -1708,7 +1684,7 @@ public class ComponentTree {
       root = mRoot.makeShallowCopy();
 
       if (mMainThreadLayoutState != null) {
-        previousLayoutState = mMainThreadLayoutState.acquireRef();
+        previousLayoutState = mMainThreadLayoutState;
       }
     }
 
@@ -1758,11 +1734,6 @@ public class ComponentTree {
       output.height = localLayoutState.getHeight();
     }
 
-    if (previousLayoutState != null) {
-      previousLayoutState.releaseRef();
-      previousLayoutState = null;
-    }
-
     List<Component> components = null;
 
     final boolean noCompatibleComponent;
@@ -1797,11 +1768,8 @@ public class ComponentTree {
           localLayoutState.clearComponents();
         }
 
-        // Set the new layout state, and remember the old layout state so we
-        // can release it.
-        final LayoutState tmp = mBackgroundLayoutState;
+        // Set the new layout state.
         mBackgroundLayoutState = localLayoutState;
-        localLayoutState = tmp;
         layoutStateUpdated = true;
       }
     }
@@ -1812,11 +1780,6 @@ public class ComponentTree {
 
     if (components != null) {
       bindEventAndTriggerHandlers(components);
-    }
-
-    if (localLayoutState != null) {
-      localLayoutState.releaseRef();
-      localLayoutState = null;
     }
 
     if (layoutStateUpdated) {
@@ -1874,8 +1837,6 @@ public class ComponentTree {
       throw new IllegalStateException("Releasing a ComponentTree that is currently being mounted");
     }
 
-    LayoutState mainThreadLayoutState;
-    LayoutState backgroundLayoutState;
     synchronized (this) {
       sMainThreadHandler.removeMessages(MESSAGE_WHAT_BACKGROUND_LAYOUT_STATE_UPDATED, this);
 
@@ -1915,25 +1876,11 @@ public class ComponentTree {
       // dispatch OnExitRange events.
       clearWorkingRangeStatusHandler();
 
-      mainThreadLayoutState = mMainThreadLayoutState;
       mMainThreadLayoutState = null;
-
-      backgroundLayoutState = mBackgroundLayoutState;
       mBackgroundLayoutState = null;
-
       mStateHandler = null;
       mPreviousRenderState = null;
       mPreviousRenderStateSetFromBuilder = false;
-    }
-
-    if (mainThreadLayoutState != null) {
-      mainThreadLayoutState.releaseRef();
-      mainThreadLayoutState = null;
-    }
-
-    if (backgroundLayoutState != null) {
-      backgroundLayoutState.releaseRef();
-      backgroundLayoutState = null;
     }
 
     synchronized (mEventTriggersContainer) {
@@ -2228,7 +2175,6 @@ public class ComponentTree {
                           extraAttribution);
                   synchronized (LayoutStateFuture.this) {
                     if (released) {
-                      result.releaseRef();
                       return null;
                     } else {
                       layoutState = result;
@@ -2243,10 +2189,7 @@ public class ComponentTree {
       if (released) {
         return;
       }
-      if (layoutState != null) {
-        layoutState.releaseRef();
-        layoutState = null;
-      }
+      layoutState = null;
       released = true;
     }
 
@@ -2334,7 +2277,7 @@ public class ComponentTree {
         if (released) {
           return null;
         }
-        return result.acquireRef();
+        return result;
       }
     }
 

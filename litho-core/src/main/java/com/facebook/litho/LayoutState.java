@@ -138,7 +138,7 @@ class LayoutState {
   private final Map<String, Rect> mComponentKeyToBounds = new HashMap<>();
   private final List<Component> mComponents = new ArrayList<>();
 
-  private volatile ComponentContext mContext;
+  private final ComponentContext mContext;
 
   private Component mComponent;
 
@@ -153,15 +153,13 @@ class LayoutState {
 
   @Nullable private LayoutStateOutputIdCalculator mLayoutStateOutputIdCalculator;
 
-  private List<TestOutput> mTestOutputs;
+  private final List<TestOutput> mTestOutputs;
 
   @Nullable InternalNode mLayoutRoot;
   @Nullable TransitionId mRootTransitionId;
   @Nullable String mRootComponentName;
 
   private DiffNode mDiffTreeRoot;
-  // Reference count will be initialized to 1 in init().
-  private final AtomicInteger mReferenceCount = new AtomicInteger(-1);
 
   private int mWidth;
   private int mHeight;
@@ -180,7 +178,7 @@ class LayoutState {
 
   private boolean mShouldGenerateDiffTree = false;
   private int mComponentTreeId = -1;
-  private int mId;
+  private final int mId;
   // Id of the layout state (if any) that was used in comparisons with this layout state.
   private int mPreviousLayoutStateId = NO_PREVIOUS_LAYOUT_STATE_ID;
 
@@ -196,26 +194,23 @@ class LayoutState {
       new LinkedHashMap<>();
   private final Set<TransitionId> mDuplicatedTransitionIds = new HashSet<>();
   private List<Transition> mTransitions;
-  private int mOrientation;
+  private final int mOrientation;
 
   private static final Object debugLock = new Object();
   @Nullable private static Map<Integer, List<Boolean>> layoutCalculationsOnMainThread;
 
   @Nullable WorkingRangeContainer mWorkingRangeContainer;
 
-  LayoutState() {
-    if (!ComponentsConfiguration.lazilyInitializeLayoutStateOutputIdCalculator) {
-      mLayoutStateOutputIdCalculator = new LayoutStateOutputIdCalculator();
-    }
-  }
-
-  void init(ComponentContext context) {
+  LayoutState(ComponentContext context) {
     mContext = context;
     mId = sIdGenerator.getAndIncrement();
     mStateHandler = mContext.getStateHandler();
-    mReferenceCount.set(1);
     mTestOutputs = ComponentsConfiguration.isEndToEndTestRun ? new ArrayList<TestOutput>(8) : null;
     mOrientation = context.getResources().getConfiguration().orientation;
+
+    if (!ComponentsConfiguration.lazilyInitializeLayoutStateOutputIdCalculator) {
+      mLayoutStateOutputIdCalculator = new LayoutStateOutputIdCalculator();
+    }
   }
 
   /**
@@ -1354,7 +1349,7 @@ class LayoutState {
       // Detect errors internal to components
       component.markLayoutStarted();
 
-      layoutState = ComponentsPools.acquireLayoutState(c);
+      layoutState = new LayoutState(c);
       layoutState.mShouldGenerateDiffTree = shouldGenerateDiffTree;
       layoutState.mComponentTreeId = componentTreeId;
       layoutState.mPreviousLayoutStateId =
@@ -2044,111 +2039,6 @@ class LayoutState {
    */
   int getPreviousLayoutStateId() {
     return mPreviousLayoutStateId;
-  }
-
-  /**
-   * See {@link LayoutState#acquireRef} Call this when you are done using the reference to the
-   * LayoutState.
-   */
-  @ThreadSafe(enableChecks = false)
-  void releaseRef() {
-    int count = mReferenceCount.decrementAndGet();
-    if (count < 0) {
-      throw new IllegalStateException("Trying to releaseRef a recycled LayoutState");
-    }
-
-    if (ComponentsConfiguration.disablePools) {
-      return;
-    }
-
-    if (count == 0) {
-      mContext = null;
-      mComponent = null;
-
-      mWidth = 0;
-      mHeight = 0;
-
-      mCurrentX = 0;
-      mCurrentY = 0;
-      mCurrentHostMarker = -1;
-      mCurrentHostOutputPosition = -1;
-      mComponentTreeId = -1;
-      mId = -1;
-      mPreviousLayoutStateId = NO_PREVIOUS_LAYOUT_STATE_ID;
-
-      mShouldDuplicateParentState = true;
-
-      for (int i = 0, size = mMountableOutputs.size(); i < size; i++) {
-        mMountableOutputs.get(i).getComponent().reset();
-      }
-      mMountableOutputs.clear();
-      mMountableOutputTops.clear();
-      mMountableOutputBottoms.clear();
-      mOutputsIdToPositionMap.clear();
-      mComponentKeyToBounds.clear();
-      mComponents.clear();
-      mVisibilityOutputs.clear();
-
-      if (mTestOutputs != null) {
-        mTestOutputs.clear();
-      }
-
-      mShouldGenerateDiffTree = false;
-      mAccessibilityManager = null;
-      mAccessibilityEnabled = false;
-
-      if (mDiffTreeRoot != null) {
-        mDiffTreeRoot = null;
-      }
-      clearLayoutStateOutputIdCalculator();
-
-      if (mTransitions != null) {
-        mTransitions.clear();
-        mTransitions = null;
-      }
-
-      // This should only ever be true in non-release builds as we need this for Stetho integration
-      // (or for as long as the ComponentsConfiguration.persistInternalNodeTree experiment runs).
-      // Otherwise, in release builds the node tree is released in calculateLayout().
-      if (mLayoutRoot != null) {
-        releaseNodeTree(mLayoutRoot, false /* isNestedTree */);
-        mLayoutRoot = null;
-      }
-
-      mRootTransitionId = null;
-      mRootComponentName = null;
-
-      if (mComponentsNeedingPreviousRenderData != null) {
-        mComponentsNeedingPreviousRenderData.clear();
-      }
-
-      mCurrentLayoutOutputAffinityGroup = null;
-      mTransitionIdMapping.clear();
-      mDuplicatedTransitionIds.clear();
-
-      mWorkingRangeContainer = null;
-
-      ComponentsPools.release(this);
-    }
-  }
-
-  /**
-   * The lifecycle of LayoutState is generally controlled by ComponentTree. Since sometimes we need
-   * an old LayoutState to be passed to a new LayoutState to implement Tree diffing, We use
-   * reference counting to avoid releasing a LayoutState that is not used by ComponentTree anymore
-   * but could be used by another LayoutState. The rule is that whenever you need to pass the
-   * LayoutState outside of ComponentTree, you acquire a reference and then you release it as soon
-   * as you are done with it
-   *
-   * @return The same LayoutState instance with an higher reference count.
-   */
-  @CheckReturnValue
-  LayoutState acquireRef() {
-    if (mReferenceCount.getAndIncrement() == 0) {
-      throw new IllegalStateException("Trying to use a released LayoutState");
-    }
-
-    return this;
   }
 
   /**

@@ -243,7 +243,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     if (componentTreeId != mLastMountedComponentTreeId) {
       // If we're mounting a new ComponentTree, don't keep around and use the previous LayoutState
       // since things like transition animations aren't relevant.
-      releaseLastMountedLayoutState();
+      mLastMountedLayoutState = null;
     }
 
     final PerfEvent mountPerfEvent =
@@ -383,9 +383,9 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       mPreviousLocalVisibleRect.set(localVisibleRect);
     }
 
-    releaseLastMountedLayoutState();
+    mLastMountedLayoutState = null;
     mLastMountedComponentTreeId = componentTreeId;
-    mLastMountedLayoutState = layoutState.acquireRef();
+    mLastMountedLayoutState = layoutState;
 
     processTestOutputs(layoutState);
 
@@ -3154,12 +3154,5 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   private ComponentContext getContextForComponent(Component component) {
     final ComponentContext c = component.getScopedContext();
     return c == null ? mContext : c;
-  }
-
-  private void releaseLastMountedLayoutState() {
-    if (mLastMountedLayoutState != null) {
-      mLastMountedLayoutState.releaseRef();
-      mLastMountedLayoutState = null;
-    }
   }
 }
