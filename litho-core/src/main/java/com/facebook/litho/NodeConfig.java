@@ -66,6 +66,12 @@ public class NodeConfig {
     }
   }
 
+  /** Allows access to the internal YogaConfig instance */
+  public static YogaConfig getYogaConfig() {
+    initYogaConfigIfNecessary();
+    return sYogaConfig;
+  }
+
   private static void initYogaConfigIfNecessary() {
     if (sYogaConfig == null) {
       synchronized (sYogaConfigLock) {
