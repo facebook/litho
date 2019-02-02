@@ -43,12 +43,15 @@ public class NodeConfig {
   /** Factory to create custom InternalNodes for Components. */
   @Nullable public static volatile InternalNodeFactory sInternalNodeFactory = null;
 
-  private static volatile YogaConfig sYogaConfig;
+  private static final YogaConfig sYogaConfig = new YogaConfig();
   private static final Object sYogaConfigLock = new Object();
+
+  static {
+    sYogaConfig.setUseWebDefaults(true);
+  }
 
   @Nullable
   static YogaNode createYogaNode() {
-    initYogaConfigIfNecessary();
     return NodeConfig.sYogaNodeFactory != null
         ? NodeConfig.sYogaNodeFactory.create(sYogaConfig)
         : new YogaNode(sYogaConfig);
@@ -60,7 +63,6 @@ public class NodeConfig {
    * @param enable whether to print logs or not
    */
   public static void setPrintYogaDebugLogs(boolean enable) {
-    initYogaConfigIfNecessary();
     synchronized (sYogaConfigLock) {
       sYogaConfig.setPrintTreeFlag(enable);
     }
@@ -68,18 +70,7 @@ public class NodeConfig {
 
   /** Allows access to the internal YogaConfig instance */
   public static YogaConfig getYogaConfig() {
-    initYogaConfigIfNecessary();
     return sYogaConfig;
   }
 
-  private static void initYogaConfigIfNecessary() {
-    if (sYogaConfig == null) {
-      synchronized (sYogaConfigLock) {
-        if (sYogaConfig == null) {
-          sYogaConfig = new YogaConfig();
-          sYogaConfig.setUseWebDefaults(true);
-        }
-      }
-    }
-  }
 }
