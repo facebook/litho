@@ -204,10 +204,8 @@ public abstract class Section extends SectionLifecycle
     return mChildren;
   }
 
-  /**
-   * @return the parent of this {@link Section} in the tree.
-   */
-  Section getParent() {
+  /** @return the parent of this {@link Section} in the tree. */
+  public Section getParent() {
     return mParent;
   }
 

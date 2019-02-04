@@ -267,7 +267,7 @@ public final class FullDiffSection<T> extends Section implements TestTag {
   }
 
   @Override
-  protected boolean isDiffSectionSpec() {
+  public boolean isDiffSectionSpec() {
     return true;
   }
 

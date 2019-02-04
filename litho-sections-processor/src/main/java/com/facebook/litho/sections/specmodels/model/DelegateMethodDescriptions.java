@@ -179,7 +179,7 @@ public class DelegateMethodDescriptions {
               ImmutableList.of(
                   MethodSpec.methodBuilder("isDiffSectionSpec")
                       .addAnnotation(Override.class)
-                      .addModifiers(Modifier.PROTECTED)
+                      .addModifiers(Modifier.PUBLIC)
                       .returns(TypeName.BOOLEAN)
                       .addStatement("return true")
                       .build()))

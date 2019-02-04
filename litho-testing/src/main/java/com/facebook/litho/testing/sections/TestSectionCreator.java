@@ -147,7 +147,7 @@ public class TestSectionCreator {
     }
 
     @Override
-    protected boolean isDiffSectionSpec() {
+    public boolean isDiffSectionSpec() {
       return true;
     }
 

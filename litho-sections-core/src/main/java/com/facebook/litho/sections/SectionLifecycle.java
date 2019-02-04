@@ -162,9 +162,9 @@ public abstract class SectionLifecycle implements EventDispatcher, EventTriggerT
 
   /**
    * @return true if this lifecycle will generate a changeSet. If false this lifecycle will instead
-   * implement createChildren.
+   *     implement createChildren.
    */
-  protected boolean isDiffSectionSpec() {
+  public boolean isDiffSectionSpec() {
     return false;
   }
 
