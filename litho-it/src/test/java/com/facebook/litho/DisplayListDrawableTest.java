@@ -24,6 +24,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
@@ -36,6 +37,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.mockito.verification.VerificationMode;
+import org.robolectric.RuntimeEnvironment;
 
 /**
  * Test for {@link DisplayListDrawable}
@@ -47,6 +49,7 @@ public class DisplayListDrawableTest  {
   private Drawable mDrawable;
   private Canvas mCanvas;
   private Canvas mDlCanvas;
+  private Context mContext;
 
   @Before
   public void setup() throws DisplayListException {
@@ -54,6 +57,8 @@ public class DisplayListDrawableTest  {
     mDrawable = Mockito.mock(Drawable.class);
     mCanvas = Mockito.mock(Canvas.class);
     mDlCanvas = Mockito.mock(Canvas.class);
+    mContext = RuntimeEnvironment.application;
+
     when(mDisplayList.isValid()).thenReturn(true);
     when(mDrawable.getBounds()).thenReturn(new Rect());
     when(mDisplayList.start(anyInt(), anyInt())).thenReturn(mDlCanvas);
@@ -61,7 +66,7 @@ public class DisplayListDrawableTest  {
 
   @Test
   public void testDrawing() throws DisplayListException {
-    DisplayListDrawable displayListDrawable = new DisplayListDrawable(mDrawable);
+    DisplayListDrawable displayListDrawable = new DisplayListDrawable(mContext, mDrawable);
     displayListDrawable.setDisplayList(mDisplayList);
     displayListDrawable.draw(mCanvas);
     verify(mDisplayList).start(anyInt(), anyInt());
@@ -72,7 +77,7 @@ public class DisplayListDrawableTest  {
 
   @Test
   public void testInvalidationSuppression() {
-    DisplayListDrawable displayListDrawable = new DisplayListDrawable(mDrawable);
+    DisplayListDrawable displayListDrawable = new DisplayListDrawable(mContext, mDrawable);
     displayListDrawable.setDisplayList(mDisplayList);
     displayListDrawable.draw(mCanvas);
     verify(mDrawable, times(1)).draw((Canvas) anyObject());
@@ -86,7 +91,7 @@ public class DisplayListDrawableTest  {
 
   @Test
   public void testInvalidation() {
-    DisplayListDrawable displayListDrawable = new DisplayListDrawable(mDrawable);
+    DisplayListDrawable displayListDrawable = new DisplayListDrawable(mContext, mDrawable);
     displayListDrawable.setDisplayList(mDisplayList);
     displayListDrawable.draw(mCanvas);
     verify(mDrawable, times(1)).draw((Canvas) anyObject());
@@ -100,7 +105,7 @@ public class DisplayListDrawableTest  {
   public void testNotAttemptingToUseDisplayListAfterFailure() throws DisplayListException {
     doThrow(new DisplayListException(null)).when(mDisplayList).draw(anyObject());
 
-    DisplayListDrawable displayListDrawable = new DisplayListDrawable(mDrawable);
+    DisplayListDrawable displayListDrawable = new DisplayListDrawable(mContext, mDrawable);
     displayListDrawable.setDisplayList(mDisplayList);
     displayListDrawable.draw(mCanvas);
     // Should draw mDrawable into mDisplayList, attempt to draw mDisplayList onto a canvas, fail,
@@ -117,7 +122,7 @@ public class DisplayListDrawableTest  {
   @Test
   public void testTransferringBounds() {
     TestDrawable drawable = new TestDrawable();
-    DisplayListDrawable displayListDrawable = new DisplayListDrawable(drawable);
+    DisplayListDrawable displayListDrawable = new DisplayListDrawable(mContext, drawable);
 
     Rect bounds = new Rect(100, 100, 200, 200);
     displayListDrawable.setBounds(bounds);
@@ -132,7 +137,7 @@ public class DisplayListDrawableTest  {
 
   @Test
   public void testInvalidatingOnBoundsChange() throws DisplayListException {
-    DisplayListDrawable displayListDrawable = new DisplayListDrawable(new TestDrawable());
+    DisplayListDrawable displayListDrawable = new DisplayListDrawable(mContext, new TestDrawable());
     Rect bounds = new Rect(100, 100, 200, 200);
     displayListDrawable.setBounds(bounds);
     displayListDrawable.setDisplayList(mDisplayList);

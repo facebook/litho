@@ -82,4 +82,8 @@ public class ContextUtils {
     // This might only happen on ICS.
     return true;
   }
+
+  public static int getTargetSdkVersion(Context context) {
+    return context.getApplicationContext().getApplicationInfo().targetSdkVersion;
+  }
 }

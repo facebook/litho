@@ -43,6 +43,7 @@ import static com.facebook.litho.ThreadUtils.assertMainThread;
 
 import android.animation.AnimatorInflater;
 import android.animation.StateListAnimator;
+import android.content.Context;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.RippleDrawable;
@@ -1424,7 +1425,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     item.setIsBound(true);
 
     final boolean doNotWrapIntoDL = mLithoView.getComponentTree().doNotWrapIntoDisplayLists();
-    item.setWrappedContent(wrapContentIfNeeded(component, content, doNotWrapIntoDL));
+    item.setWrappedContent(
+        wrapContentIfNeeded(mContext.getApplicationContext(), component, content, doNotWrapIntoDL));
 
     // 6. Apply the bounds to the Mount content now. It's important to do so after bind as calling
     // bind might have triggered a layout request within a View.
@@ -1450,7 +1452,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   @VisibleForTesting
   @Nullable
   static Object wrapContentIfNeeded(
-      Component component, Object content, boolean doNotWrapIntoDisplayLists) {
+      Context context, Component component, Object content, boolean doNotWrapIntoDisplayLists) {
     // For the time being the only wrapping we may do is of a Drawable into a DisplayListDrawable,
     // but this may be expanded
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && !doNotWrapIntoDisplayLists) {
@@ -1466,7 +1468,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       if (component.shouldUseDisplayList()
           || ((content instanceof Drawable)
               && ComponentsConfiguration.useDisplayListForAllDrawables)) {
-        return new DisplayListDrawable((Drawable) content);
+        return new DisplayListDrawable(context, (Drawable) content);
       }
     }
     return null;

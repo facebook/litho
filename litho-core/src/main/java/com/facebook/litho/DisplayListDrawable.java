@@ -17,6 +17,7 @@
 package com.facebook.litho;
 
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -53,8 +54,11 @@ class DisplayListDrawable extends Drawable implements Drawable.Callback, Touchab
   private boolean mIgnoreInvalidations;
   private boolean mInvalidated; // If the DL is up-to-date
   private boolean mDoNotAttemptDLDrawing = false;
+  private final Context mApplicationContext;
 
-  DisplayListDrawable(Drawable drawable) {
+  DisplayListDrawable(Context context, Drawable drawable) {
+    mApplicationContext = context.getApplicationContext();
+
     // When we are wrapping drawable with DisplayListDrawable we need to make sure that
     // wrapped DisplayListDrawable has the same view callback as original one had for correct
     // view invalidations.
@@ -80,7 +84,7 @@ class DisplayListDrawable extends Drawable implements Drawable.Callback, Touchab
     }
 
     if (mDisplayList == null) {
-      final DisplayList displayList = DisplayList.createDisplayList(mName);
+      final DisplayList displayList = DisplayList.createDisplayList(mApplicationContext, mName);
 
       if (displayList == null) {
         // DL was not created, just draw the drawable itself and return

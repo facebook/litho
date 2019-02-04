@@ -16,10 +16,12 @@
 
 package com.facebook.litho.displaylist;
 
+import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.os.Build;
 import android.support.annotation.Nullable;
+import com.facebook.litho.ContextUtils;
 
 /**
  * A DisplayList is a cache for drawing commands. Calling {@link DisplayList#start(int, int)}
@@ -43,8 +45,8 @@ public class DisplayList {
 
   /** Creates a new DisplayList for a specific Context with a Debug name. */
   @Nullable
-  public static DisplayList createDisplayList(@Nullable String name) {
-    final PlatformDisplayList platformDisplayList = createPlatformDisplayList(name);
+  public static DisplayList createDisplayList(Context context, @Nullable String name) {
+    final PlatformDisplayList platformDisplayList = createPlatformDisplayList(context, name);
     if (platformDisplayList == null) {
       return null;
     }
@@ -52,9 +54,14 @@ public class DisplayList {
   }
 
   @Nullable
-  private static PlatformDisplayList createPlatformDisplayList(@Nullable String name) {
+  private static PlatformDisplayList createPlatformDisplayList(
+      Context context, @Nullable String name) {
     final int sdkVersion = Build.VERSION.SDK_INT;
-    if (sdkVersion >= Build.VERSION_CODES.N) {
+    if (sdkVersion >= 28 /* Build.VERSION_CODES.P */
+        && ContextUtils.getTargetSdkVersion(context) >= 28 /* Build.VERSION_CODES.P */) {
+      // Google blocks attempts to use internal APIs, such as RenderNode, since Android P (9)
+      return null;
+    } else if (sdkVersion >= Build.VERSION_CODES.N) {
       return DisplayListPostMarshmallow.createDisplayList(name);
     } else if (sdkVersion >= Build.VERSION_CODES.M) {
       return DisplayListMarshmallow.createDisplayList(name);
