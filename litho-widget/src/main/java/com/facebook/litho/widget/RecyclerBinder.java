@@ -3242,7 +3242,7 @@ public class RecyclerBinder
     }
 
     @Override
-    public synchronized ComponentTreeHolder next() {
+    public synchronized @Nullable ComponentTreeHolder next() {
       if (!hasNext()) {
         return null;
       }
