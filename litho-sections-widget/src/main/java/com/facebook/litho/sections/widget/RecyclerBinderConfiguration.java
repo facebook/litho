@@ -30,7 +30,6 @@ import java.util.List;
 public class RecyclerBinderConfiguration {
   private final float mRangeRatio;
   @Nullable private final LayoutHandlerFactory mLayoutHandlerFactory;
-  private final boolean mCanPrefetchDisplayLists;
   private final boolean mIsCircular;
   private final boolean mIsWrapContent;
   // TODO T34627443 make all fields final after removing setters
@@ -67,18 +66,8 @@ public class RecyclerBinderConfiguration {
   public RecyclerBinderConfiguration(
       double rangeRatio,
       @Nullable LayoutHandlerFactory idleExecutor,
-      boolean canPrefetchDisplayLists) {
-    this(rangeRatio, idleExecutor, canPrefetchDisplayLists, false);
-  }
-
-  /** Use {@link #create()} instead. */
-  @Deprecated
-  public RecyclerBinderConfiguration(
-      double rangeRatio,
-      @Nullable LayoutHandlerFactory idleExecutor,
-      boolean canPrefetchDisplayLists,
       boolean isCircular) {
-    this(rangeRatio, idleExecutor, canPrefetchDisplayLists, isCircular, false);
+    this(rangeRatio, idleExecutor, isCircular, false);
   }
 
   /** Use {@link #create()} instead. */
@@ -86,12 +75,10 @@ public class RecyclerBinderConfiguration {
   public RecyclerBinderConfiguration(
       double rangeRatio,
       @Nullable LayoutHandlerFactory idleExecutor,
-      boolean canPrefetchDisplayLists,
       boolean isCircular,
       boolean isWrapContent) {
     mRangeRatio = rangeRatio > 0 ? (float) rangeRatio : Builder.DEFAULT_RANGE;
     mLayoutHandlerFactory = idleExecutor;
-    mCanPrefetchDisplayLists = canPrefetchDisplayLists;
     mIsCircular = isCircular;
     mIsWrapContent = isWrapContent;
   }
@@ -99,7 +86,6 @@ public class RecyclerBinderConfiguration {
   RecyclerBinderConfiguration(
       float rangeRatio,
       @Nullable LayoutHandlerFactory layoutHandlerFactory,
-      boolean canPrefetchDisplayLists,
       boolean circular,
       boolean wrapContent,
       @Nullable List<ComponentLogParams> invalidStateLogParamsList,
@@ -113,7 +99,6 @@ public class RecyclerBinderConfiguration {
       boolean asyncInitRange) {
     mRangeRatio = rangeRatio;
     mLayoutHandlerFactory = layoutHandlerFactory;
-    mCanPrefetchDisplayLists = canPrefetchDisplayLists;
     mIsCircular = circular;
     mIsWrapContent = wrapContent;
     mInvalidStateLogParamsList = invalidStateLogParamsList;
@@ -133,10 +118,6 @@ public class RecyclerBinderConfiguration {
 
   public @Nullable LayoutHandlerFactory getLayoutHandlerFactory() {
     return mLayoutHandlerFactory;
-  }
-
-  public boolean canPrefetchDisplayLists() {
-    return mCanPrefetchDisplayLists;
   }
 
   public boolean isCircular() {
@@ -193,7 +174,6 @@ public class RecyclerBinderConfiguration {
     @Nullable private String mSplitLayoutTag;
     private LayoutThreadPoolConfiguration mThreadPoolConfiguration = DEFAULT_THREAD_POOL_CONFIG;
     private float mRangeRatio = DEFAULT_RANGE;
-    private boolean mCanPrefetchDisplayLists = false;
     private boolean mCircular = false;
     private boolean mWrapContent = false;
     private boolean mDynamicItemHeight = false;
@@ -248,16 +228,6 @@ public class RecyclerBinderConfiguration {
      */
     public Builder rangeRatio(float rangeRatio) {
       mRangeRatio = rangeRatio > 0 ? rangeRatio : DEFAULT_RANGE;
-      return this;
-    }
-
-    /**
-     * @param canPrefetchDisplayLists If this is true, displaylists for the Android Views and
-     *     Drawables that are not collected during the ComponentTree layout computation will be
-     *     collected whenever the UI thread is free.
-     */
-    public Builder canPrefetchDisplayLists(boolean canPrefetchDisplayLists) {
-      mCanPrefetchDisplayLists = canPrefetchDisplayLists;
       return this;
     }
 
@@ -324,7 +294,6 @@ public class RecyclerBinderConfiguration {
       return new RecyclerBinderConfiguration(
           mRangeRatio,
           mLayoutHandlerFactory,
-          mCanPrefetchDisplayLists,
           mCircular,
           mWrapContent,
           mInvalidStateLogParamsList,

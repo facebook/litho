@@ -102,8 +102,6 @@ public class ComponentTreeHolder {
   public static class Builder {
     private RenderInfo renderInfo;
     private LayoutHandler layoutHandler;
-    private boolean canPrefetchDisplayLists;
-    private boolean canCacheDrawingDisplayLists;
     private ComponentTreeMeasureListenerFactory componentTreeMeasureListenerFactory;
     private String splitLayoutTag;
     private @Nullable LayoutHandler preallocateMountContentHandler;
@@ -120,16 +118,6 @@ public class ComponentTreeHolder {
 
     public Builder layoutHandler(LayoutHandler layoutHandler) {
       this.layoutHandler = layoutHandler;
-      return this;
-    }
-
-    public Builder canPrefetchDisplayLists(boolean canPrefetchDisplayLists) {
-      this.canPrefetchDisplayLists = canPrefetchDisplayLists;
-      return this;
-    }
-
-    public Builder canCacheDrawingDisplayLists(boolean canCacheDrawingDisplayLists) {
-      this.canCacheDrawingDisplayLists = canCacheDrawingDisplayLists;
       return this;
     }
 

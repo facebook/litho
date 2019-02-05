@@ -239,8 +239,6 @@ public class RecyclerBinder
   private SmoothScrollAlignmentType mSmoothScrollAlignmentType;
   private @Nullable volatile RangeCalculationResult mRange;
   private StickyHeaderController mStickyHeaderController;
-  private final boolean mCanPrefetchDisplayLists;
-  private final boolean mCanCacheDrawingDisplayLists;
   private final boolean mUseSharedLayoutStateFuture;
   private final @Nullable LayoutHandler mThreadPoolHandler;
   private final @Nullable LayoutThreadPoolConfiguration mThreadPoolConfig;
@@ -333,8 +331,6 @@ public class RecyclerBinder
     ComponentTreeHolder create(
         RenderInfo renderInfo,
         LayoutHandler layoutHandler,
-        boolean canPrefetchDisplayLists,
-        boolean canCacheDrawingDisplayLists,
         boolean useSharedLayoutStateFuture,
         ComponentTreeMeasureListenerFactory measureListenerFactory,
         String splitLayoutTag);
@@ -346,16 +342,12 @@ public class RecyclerBinder
         public ComponentTreeHolder create(
             RenderInfo renderInfo,
             LayoutHandler layoutHandler,
-            boolean canPrefetchDisplayLists,
-            boolean canCacheDrawingDisplayLists,
             boolean useSharedLayoutStateFuture,
             ComponentTreeMeasureListenerFactory measureListenerFactory,
             String splitLayoutTag) {
           return ComponentTreeHolder.create()
               .renderInfo(renderInfo)
               .layoutHandler(layoutHandler)
-              .canPrefetchDisplayLists(canPrefetchDisplayLists)
-              .canCacheDrawingDisplayLists(canCacheDrawingDisplayLists)
               .useSharedLayoutStateFuture(useSharedLayoutStateFuture)
               .componentTreeMeasureListenerFactory(measureListenerFactory)
               .splitLayoutTag(splitLayoutTag)
@@ -369,8 +361,6 @@ public class RecyclerBinder
     private float rangeRatio = DEFAULT_RANGE_RATIO;
     private LayoutInfo layoutInfo;
     private @Nullable LayoutHandlerFactory layoutHandlerFactory;
-    private boolean canPrefetchDisplayLists;
-    private boolean canCacheDrawingDisplayLists;
     private ComponentTreeHolderFactory componentTreeHolderFactory =
         DEFAULT_COMPONENT_TREE_HOLDER_FACTORY;
     private ComponentContext componentContext;
@@ -428,16 +418,6 @@ public class RecyclerBinder
 
     public Builder lithoViewFactory(LithoViewFactory lithoViewFactory) {
       this.lithoViewFactory = lithoViewFactory;
-      return this;
-    }
-
-    public Builder canPrefetchDisplayLists(boolean canPrefetchDisplayLists) {
-      this.canPrefetchDisplayLists = canPrefetchDisplayLists;
-      return this;
-    }
-
-    public Builder canCacheDrawingDisplayLists(boolean canCacheDrawingDisplayLists) {
-      this.canCacheDrawingDisplayLists = canCacheDrawingDisplayLists;
       return this;
     }
 
@@ -688,8 +668,6 @@ public class RecyclerBinder
     mLayoutInfo = builder.layoutInfo;
     mLayoutHandlerFactory = builder.layoutHandlerFactory;
     mLithoViewFactory = builder.lithoViewFactory;
-    mCanPrefetchDisplayLists = builder.canPrefetchDisplayLists;
-    mCanCacheDrawingDisplayLists = builder.canCacheDrawingDisplayLists;
     mUseSharedLayoutStateFuture = builder.useSharedLayoutStateFuture;
 
     if (mLayoutHandlerFactory == null) {
@@ -3101,8 +3079,6 @@ public class RecyclerBinder
     return mComponentTreeHolderFactory.create(
         renderInfo,
         layoutHandler,
-        mCanPrefetchDisplayLists,
-        mCanCacheDrawingDisplayLists,
         mUseSharedLayoutStateFuture,
         mComponentTreeMeasureListenerFactory,
         mSplitLayoutTag);

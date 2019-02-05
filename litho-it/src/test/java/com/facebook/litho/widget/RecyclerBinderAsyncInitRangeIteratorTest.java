@@ -75,8 +75,6 @@ public class RecyclerBinderAsyncInitRangeIteratorTest {
           public ComponentTreeHolder create(
               RenderInfo renderInfo,
               LayoutHandler layoutHandler,
-              boolean canPrefetchDisplayLists,
-              boolean canCacheDrawingDisplayLists,
               boolean useSharedLayoutStateFuture,
               ComponentTreeHolder.ComponentTreeMeasureListenerFactory
                   componentTreeMeasureListenerFactory,

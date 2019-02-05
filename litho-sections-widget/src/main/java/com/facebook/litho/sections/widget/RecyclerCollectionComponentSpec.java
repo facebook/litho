@@ -287,7 +287,6 @@ public class RecyclerCollectionComponentSpec {
             .threadPoolConfig(binderConfiguration.getThreadPoolConfiguration())
             .asyncInitRange(binderConfiguration.getAsyncInitRange())
             .hscrollAsyncMode(binderConfiguration.getHScrollAsyncMode())
-            .canPrefetchDisplayLists(binderConfiguration.canPrefetchDisplayLists())
             .isCircular(binderConfiguration.isCircular())
             .hasDynamicItemHeight(binderConfiguration.hasDynamicItemHeight())
             .splitLayoutTag(binderConfiguration.getSplitLayoutTag())
