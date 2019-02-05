@@ -32,7 +32,10 @@ import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
+import com.squareup.javapoet.TypeVariableName;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import javax.lang.model.element.Modifier;
 
 /**
@@ -266,11 +269,17 @@ public class StateGenerator {
       SpecModel specModel,
       SpecMethodModel<UpdateStateMethod, Void> updateStateMethod,
       boolean withTransition) {
+
+    final Map<String, TypeVariableName> types = new HashMap<>();
+
     final TypeSpec.Builder stateUpdateClassBuilder =
         TypeSpec.classBuilder(getStateUpdateClassName(updateStateMethod))
             .addModifiers(Modifier.PRIVATE, Modifier.STATIC)
-            .addTypeVariables(specModel.getTypeVariables())
             .addSuperinterface(specModel.getUpdateStateInterface());
+
+    for (TypeVariableName t : specModel.getTypeVariables()) {
+      types.put(t.name, t);
+    }
 
     MethodSpec.Builder updateStateMethodBuilder =
         MethodSpec.methodBuilder(STATE_UPDATE_METHOD_NAME)
@@ -297,8 +306,9 @@ public class StateGenerator {
             .addStatement("$L = $L", getMemberName(methodParam), methodParam.getName());
 
         if (!specModel.hasInjectedDependencies()) {
-          stateUpdateClassBuilder.addTypeVariables(
-              MethodParamModelUtils.getTypeVariables(methodParam));
+          for (TypeVariableName t : MethodParamModelUtils.getTypeVariables(methodParam)) {
+            types.put(t.name, t);
+          }
         }
       } else {
         // Must be a StateValue<>.
@@ -357,6 +367,8 @@ public class StateGenerator {
             methodParamModel.getName());
       }
     }
+
+    stateUpdateClassBuilder.addTypeVariables(types.values());
 
     return TypeSpecDataHolder.newBuilder()
         .addType(stateUpdateClassBuilder

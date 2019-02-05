@@ -19,6 +19,7 @@ package com.facebook.litho.specmodels.generator;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
+import com.facebook.litho.StateValue;
 import com.facebook.litho.Transition;
 import com.facebook.litho.animation.AnimatedProperties;
 import com.facebook.litho.annotations.LayoutSpec;
@@ -35,6 +36,8 @@ import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.processor.LayoutSpecModelFactory;
 import com.google.testing.compile.CompilationRule;
+import java.util.List;
+import java.util.function.Function;
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
@@ -130,12 +133,35 @@ public class StateGeneratorTest {
     static <T> void onCreateInitialState(@State(canUpdateLazily = true) T arg1) {}
   }
 
+  @LayoutSpec
+  private static class TestWithSameGenericMultipleTimes<T> {
+
+    @OnCreateLayout
+    static <T> void onCreateLayout(@State List<T> values) {}
+
+    @OnUpdateState
+    static <T> void updateValues(StateValue<List<T>> values, @Param List<T> foos) {}
+  }
+
+  @LayoutSpec
+  private static class TestWithMultipleGenerics<T, E, D> {
+
+    @OnCreateLayout
+    static <E, D> void onCreateLayout(@State Function<E, D> functions) {}
+
+    @OnUpdateState
+    static <T, E, D> void updateValues(
+        StateValue<Function<E, D>> functions, @Param Function<T, D> foos) {}
+  }
+
   private SpecModel mSpecModelWithState;
   private SpecModel mSpecModelWithoutState;
   private SpecModel mSpecModelWithStateWithTransition;
   private SpecModel mSpecModelWithBothStates;
   private SpecModel mSpecModelWithLazyGeneric;
   private SpecModel mSpecModelWithLazyMethodGeneric;
+  private SpecModel mSpecWithSameGenericMultipleTimes;
+  private SpecModel mSpecWithMultipleGenerics;
 
   @Before
   public void setUp() {
@@ -207,6 +233,30 @@ public class StateGeneratorTest {
             elements,
             types,
             typeElementWithLazyMethodGeneric,
+            mock(Messager.class),
+            RunMode.normal(),
+            null,
+            null);
+
+    final TypeElement typeElementWithSameGenericMultipleTimes =
+        elements.getTypeElement(TestWithSameGenericMultipleTimes.class.getCanonicalName());
+    mSpecWithSameGenericMultipleTimes =
+        mLayoutSpecModelFactory.create(
+            elements,
+            types,
+            typeElementWithSameGenericMultipleTimes,
+            mock(Messager.class),
+            RunMode.normal(),
+            null,
+            null);
+
+    final TypeElement typeElementWithMultipleGenerics =
+        elements.getTypeElement(TestWithMultipleGenerics.class.getCanonicalName());
+    mSpecWithMultipleGenerics =
+        mLayoutSpecModelFactory.create(
+            elements,
+            types,
+            typeElementWithMultipleGenerics,
             mock(Messager.class),
             RunMode.normal(),
             null,
@@ -498,5 +548,35 @@ public class StateGeneratorTest {
                 + "  };\n"
                 + "  c.updateStateLazy(_stateUpdate);\n"
                 + "}\n");
+  }
+
+  @Test
+  public void testGenerateStateUpdateMethodsForSpecWithSameGenericMultipleTimes() {
+    TypeSpecDataHolder dataHolder;
+
+    dataHolder = StateGenerator.generateStateUpdateClasses(mSpecWithSameGenericMultipleTimes);
+    assertThat(dataHolder.getTypeSpecs()).hasSize(1);
+    assertThat(dataHolder.getTypeSpecs().get(0).typeVariables).hasSize(1);
+
+    dataHolder = StateGenerator.generateOnStateUpdateMethods(mSpecWithSameGenericMultipleTimes);
+    assertThat(dataHolder.getMethodSpecs()).hasSize(3);
+    assertThat(dataHolder.getMethodSpecs().get(0).typeVariables).hasSize(1);
+    assertThat(dataHolder.getMethodSpecs().get(1).typeVariables).hasSize(1);
+    assertThat(dataHolder.getMethodSpecs().get(2).typeVariables).hasSize(1);
+  }
+
+  @Test
+  public void testGenerateStateUpdateMethodsForSpecWithMultipleGenerics() {
+    TypeSpecDataHolder dataHolder;
+
+    dataHolder = StateGenerator.generateStateUpdateClasses(mSpecWithMultipleGenerics);
+    assertThat(dataHolder.getTypeSpecs()).hasSize(1);
+    assertThat(dataHolder.getTypeSpecs().get(0).typeVariables).hasSize(3);
+
+    dataHolder = StateGenerator.generateOnStateUpdateMethods(mSpecWithMultipleGenerics);
+    assertThat(dataHolder.getMethodSpecs()).hasSize(3);
+    assertThat(dataHolder.getMethodSpecs().get(0).typeVariables).hasSize(2);
+    assertThat(dataHolder.getMethodSpecs().get(1).typeVariables).hasSize(2);
+    assertThat(dataHolder.getMethodSpecs().get(2).typeVariables).hasSize(2);
   }
 }
