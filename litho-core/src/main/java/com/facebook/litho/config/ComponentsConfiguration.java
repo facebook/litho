@@ -132,7 +132,7 @@ public class ComponentsConfiguration {
    * Configuration for creating a thread pool of threads used for background layout. If null, a
    * single default thread will be used for background layout.
    */
-  public static LayoutThreadPoolConfiguration threadPoolForBackgroundThreadsConfig = null;
+  public static @Nullable LayoutThreadPoolConfiguration threadPoolForBackgroundThreadsConfig = null;
 
   /** If true, a single thread pool will be used instead of creating one per RecyclerBinder. */
   public static boolean useSingleThreadPool = false;
@@ -175,7 +175,7 @@ public class ComponentsConfiguration {
   /**
    * If non-null, a thread pool will be used for async layouts instead of a single layout thread.
    */
-  public static LayoutThreadPoolConfiguration threadPoolConfiguration = null;
+  public static @Nullable LayoutThreadPoolConfiguration threadPoolConfiguration = null;
 
   public static boolean enableThreadTracingStacktrace = false;
 
