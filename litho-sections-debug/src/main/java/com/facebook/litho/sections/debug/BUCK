@@ -1,0 +1,22 @@
+# Copyright (c) 2017-present, Facebook, Inc.
+#
+# This source code is licensed under the Apache 2.0 license found in the
+# LICENSE file in the root directory of this source tree.
+# of patent rights can be found in the PATENTS file in the same directory.
+
+load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_ANDROIDSUPPORT_TARGET", "LITHO_JAVA_TARGET", "LITHO_SECTIONS_TARGET", "litho_android_library", "make_dep_path")
+
+litho_android_library(
+    name = "debug",
+    srcs = glob(["*.java"]),
+    required_for_source_only_abi = True,
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = [
+        LITHO_SECTIONS_TARGET,
+        LITHO_JAVA_TARGET,
+        LITHO_ANDROIDSUPPORT_TARGET,
+        make_dep_path("litho-sections-debug/src/main/java/com/facebook/litho/sections/debug/widget:widget"),
+    ],
+)
