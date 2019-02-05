@@ -17,6 +17,7 @@
 package com.facebook.litho;
 
 import com.facebook.litho.annotations.ShouldUpdate;
+import javax.annotation.Nullable;
 
 /**
  * Represents a diff between two values T. It should be used when defining the
@@ -25,23 +26,25 @@ import com.facebook.litho.annotations.ShouldUpdate;
  */
 public final class Diff<T> {
 
-  final T mPrevious;
-  T mNext;
+  final @Nullable T mPrevious;
+  @Nullable T mNext;
 
-  public Diff(T previous, T next) {
+  public Diff(@Nullable T previous, @Nullable T next) {
     mPrevious = previous;
     mNext = next;
   }
 
+  @Nullable
   public T getPrevious() {
     return mPrevious;
   }
 
+  @Nullable
   public T getNext() {
     return mNext;
   }
 
-  public void setNext(T next) {
+  public void setNext(@Nullable T next) {
     mNext = next;
   }
 
