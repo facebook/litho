@@ -466,6 +466,10 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
     return getOrCreateOtherProps().mTransitionKeyType;
   }
 
+  void useHeightAsBaseline(boolean useHeightAsBaseline) {
+    getOrCreateOtherProps().useHeightAsBaseline(useHeightAsBaseline);
+  }
+
   @Nullable
   NodeInfo getNullableNodeInfo() {
     return mNodeInfo;
@@ -561,6 +565,7 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
     private static final long PFLAG_STATE_LIST_ANIMATOR_RES_IS_SET = 1L << 39;
     private static final long PFLAG_VISIBILITY_CHANGED_HANDLER_IS_SET = 1L << 40;
     private static final long PFLAG_TRANSITION_KEY_TYPE_IS_SET = 1L << 41;
+    private static final long PFLAG_USE_HEIGHT_AS_BASELINE_IS_SET = 1L << 42;
 
     private long mPrivateFlags;
 
@@ -605,6 +610,7 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
     @Nullable private Border mBorder;
     @Nullable private StateListAnimator mStateListAnimator;
     @DrawableRes private int mStateListAnimatorRes;
+    @Nullable private boolean mUseHeightAsBaseline;
 
     private void layoutDirection(YogaDirection direction) {
       mPrivateFlags |= PFLAG_LAYOUT_DIRECTION_IS_SET;
@@ -837,7 +843,12 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
       mStateListAnimatorRes = resId;
     }
 
-    void copyInto(InternalNode node) {
+    private void useHeightAsBaseline(boolean useHeightAsBaseline) {
+      mPrivateFlags |= PFLAG_USE_HEIGHT_AS_BASELINE_IS_SET;
+      mUseHeightAsBaseline = useHeightAsBaseline;
+    }
+
+    void copyInto(final InternalNode node) {
       if ((mPrivateFlags & PFLAG_LAYOUT_DIRECTION_IS_SET) != 0L) {
         node.layoutDirection(mLayoutDirection);
       }
@@ -977,6 +988,9 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
       }
       if ((mPrivateFlags & PFLAG_STATE_LIST_ANIMATOR_RES_IS_SET) != 0L) {
         node.stateListAnimatorRes(mStateListAnimatorRes);
+      }
+      if ((mPrivateFlags & PFLAG_USE_HEIGHT_AS_BASELINE_IS_SET) != 0L) {
+        node.useHeightAsBaselineFunction(mUseHeightAsBaseline);
       }
     }
   }

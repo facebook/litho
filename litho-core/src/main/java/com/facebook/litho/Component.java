@@ -1748,6 +1748,11 @@ public abstract class Component extends ComponentLifecycle
       return getThis();
     }
 
+    public T useHeightAsBaseline(boolean useHeightAsBaseline) {
+      mComponent.getOrCreateCommonPropsHolder().useHeightAsBaseline(useHeightAsBaseline);
+      return getThis();
+    }
+
     private Component getOwner() {
       return mContext.getComponentScope();
     }

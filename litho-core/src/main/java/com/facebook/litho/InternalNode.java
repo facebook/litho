@@ -114,6 +114,7 @@ class InternalNode implements ComponentLayout {
   private static final long PFLAG_STATE_LIST_ANIMATOR_RES_SET = 1L << 30;
   private static final long PFLAG_VISIBLE_RECT_CHANGED_HANDLER_IS_SET = 1L << 31;
   private static final long PFLAG_TRANSITION_KEY_TYPE_IS_SET = 1L << 32;
+  private static final long PFLAG_USE_HEIGHT_AS_BASELINE_IS_SET = 1L << 33;
 
   // NoOpInternalNode will have both YogaNode and ComponentContext null.
   protected final @Nullable YogaNode mYogaNode;
@@ -1199,6 +1200,19 @@ class InternalNode implements ComponentLayout {
 
   void setBaselineFunction(YogaBaselineFunction baselineFunction) {
     mYogaNode.setBaselineFunction(baselineFunction);
+  }
+
+  void useHeightAsBaselineFunction(boolean useHeightAsBaselineFunction) {
+    mPrivateFlags |= PFLAG_USE_HEIGHT_AS_BASELINE_IS_SET;
+    if (useHeightAsBaselineFunction) {
+      mYogaNode.setBaselineFunction(
+          new YogaBaselineFunction() {
+            @Override
+            public float baseline(YogaNode yogaNode, float width, float height) {
+              return height;
+            }
+          });
+    }
   }
 
   boolean hasNewLayout() {
