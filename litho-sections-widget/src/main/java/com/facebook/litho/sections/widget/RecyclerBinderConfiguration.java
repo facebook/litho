@@ -48,42 +48,7 @@ public class RecyclerBinderConfiguration {
     return new Builder();
   }
 
-  /** Use {@link #create()} instead. */
-  @Deprecated
-  public RecyclerBinderConfiguration(double rangeRatio) {
-    this(rangeRatio, null, false);
-  }
-
-  /** Use {@link #create()} instead. */
-  @Deprecated
-  public RecyclerBinderConfiguration(
-      double rangeRatio, @Nullable LayoutHandlerFactory idleExecutor) {
-    this(rangeRatio, idleExecutor, false);
-  }
-
-  /** Use {@link #create()} instead. */
-  @Deprecated
-  public RecyclerBinderConfiguration(
-      double rangeRatio,
-      @Nullable LayoutHandlerFactory idleExecutor,
-      boolean isCircular) {
-    this(rangeRatio, idleExecutor, isCircular, false);
-  }
-
-  /** Use {@link #create()} instead. */
-  @Deprecated
-  public RecyclerBinderConfiguration(
-      double rangeRatio,
-      @Nullable LayoutHandlerFactory idleExecutor,
-      boolean isCircular,
-      boolean isWrapContent) {
-    mRangeRatio = rangeRatio > 0 ? (float) rangeRatio : Builder.DEFAULT_RANGE;
-    mLayoutHandlerFactory = idleExecutor;
-    mIsCircular = isCircular;
-    mIsWrapContent = isWrapContent;
-  }
-
-  RecyclerBinderConfiguration(
+  private RecyclerBinderConfiguration(
       float rangeRatio,
       @Nullable LayoutHandlerFactory layoutHandlerFactory,
       boolean circular,
