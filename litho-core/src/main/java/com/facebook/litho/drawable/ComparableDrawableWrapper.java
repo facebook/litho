@@ -22,6 +22,7 @@ import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.Region;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.Nullable;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.view.View;
 import com.facebook.infer.annotation.OkToExtend;
@@ -178,7 +179,7 @@ public abstract class ComparableDrawableWrapper extends ComparableDrawable
   }
 
   @Override
-  public void setColorFilter(ColorFilter filter) {
+  public void setColorFilter(@Nullable ColorFilter filter) {
     mDrawable.setColorFilter(filter);
   }
 
