@@ -26,16 +26,9 @@ import com.squareup.javapoet.TypeVariableName;
 import java.util.EnumSet;
 import java.util.List;
 import javax.annotation.Nullable;
-import javax.lang.model.element.TypeElement;
 
 /** A model that represents a ComponentSpec. */
 public interface SpecModel {
-
-  /**
-   * Used for Gradle incremental annotation processing.
-   *
-   * @return the originating Element of the Spec. */
-  TypeElement getOriginatingElement();
 
   /** @return the name of the spec. */
   String getSpecName();

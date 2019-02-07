@@ -101,7 +101,6 @@ public class LayoutSpecModelFactory implements SpecModelFactory<LayoutSpecModel>
       @Nullable InterStageStore interStageStore) {
 
     return new LayoutSpecModel(
-        element,
         element.getQualifiedName().toString(),
         element.getAnnotation(LayoutSpec.class).value(),
         DelegateMethodExtractor.getDelegateMethods(

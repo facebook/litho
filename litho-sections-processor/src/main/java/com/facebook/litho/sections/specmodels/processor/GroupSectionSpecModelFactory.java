@@ -129,7 +129,6 @@ public class GroupSectionSpecModelFactory implements SpecModelFactory<GroupSecti
       @Nullable DependencyInjectionHelper dependencyInjectionHelper,
       EnumSet<RunMode> runMode) {
     return new GroupSectionSpecModel(
-        element,
         element.getQualifiedName().toString(),
         element.getAnnotation(GroupSectionSpec.class).value(),
         DelegateMethodExtractor.getDelegateMethods(

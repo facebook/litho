@@ -52,7 +52,6 @@ import com.squareup.javapoet.TypeVariableName;
 import java.util.EnumSet;
 import java.util.List;
 import javax.annotation.Nullable;
-import javax.lang.model.element.TypeElement;
 
 /**
  * Model that is an abstract representation of a {@link
@@ -65,7 +64,6 @@ public class GroupSectionSpecModel implements SpecModel, HasService {
   private final SpecGenerator<GroupSectionSpecModel> mGroupSectionSpecGenerator;
 
   public GroupSectionSpecModel(
-      TypeElement originatingElement,
       String qualifiedSpecClassName,
       String componentClassName,
       ImmutableList<SpecMethodModel<DelegateMethod, Void>> delegateMethods,
@@ -88,7 +86,6 @@ public class GroupSectionSpecModel implements SpecModel, HasService {
       ImmutableList<FieldModel> fields) {
     mSpecModel =
         SpecModelImpl.newBuilder()
-            .originatingElement(originatingElement)
             .qualifiedSpecClassName(qualifiedSpecClassName)
             .componentClassName(componentClassName)
             .componentClass(SectionClassNames.SECTION)
@@ -112,11 +109,6 @@ public class GroupSectionSpecModel implements SpecModel, HasService {
             .build();
     mServiceParam = SectionSpecModelUtils.createServiceParam(mSpecModel);
     mGroupSectionSpecGenerator = groupSectionSpecGenerator;
-  }
-
-  @Override
-  public TypeElement getOriginatingElement() {
-    return mSpecModel.getOriginatingElement();
   }
 
   @Override
