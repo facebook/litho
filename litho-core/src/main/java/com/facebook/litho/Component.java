@@ -1748,6 +1748,12 @@ public abstract class Component extends ComponentLifecycle
       return getThis();
     }
 
+    /**
+     * When set to true, overrides the default behaviour of baseline calculation and uses height of
+     * component as baseline. By default the baseline of a component is the baseline of first child
+     * of component (If the component does not have any child then baseline is height of the
+     * component)
+     */
     public T useHeightAsBaseline(boolean useHeightAsBaseline) {
       mComponent.getOrCreateCommonPropsHolder().useHeightAsBaseline(useHeightAsBaseline);
       return getThis();
