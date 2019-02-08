@@ -1303,6 +1303,7 @@ class LayoutState {
                   .append(sourceToString(source))
                   .toString())
           .arg("treeId", componentTreeId)
+          .arg("rootId", component.getId())
           .arg("widthSpec", SizeSpec.toString(widthSpec))
           .arg("heightSpec", SizeSpec.toString(heightSpec))
           .flush();
