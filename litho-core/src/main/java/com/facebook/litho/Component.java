@@ -1318,6 +1318,24 @@ public abstract class Component extends ComponentLifecycle
      */
     @Deprecated
     public T background(@Nullable Reference<? extends Drawable> background) {
+      /**
+       * We want to test the effect of not using References so if we come into this method with an
+       * actual reference (that is not a DrawableReference) we turn it into a DrawableReference to
+       * force it to behave as a proper Drawable. This is actually going to be slightly worse for
+       * memory than just having a reference to the Drawable directly.
+       */
+      if (ComponentsConfiguration.dontUseReferences
+          && background != null
+          && !(background instanceof DrawableReference)) {
+        final Drawable backgroundDrawable =
+            Reference.acquire(getContext().getAndroidContext(), background);
+
+        if (backgroundDrawable != null) {
+          background =
+              DrawableReference.create(DefaultComparableDrawable.create(backgroundDrawable));
+        }
+      }
+
       mComponent.getOrCreateCommonPropsHolder().background(background);
       return getThis();
     }
