@@ -72,22 +72,21 @@ import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nullable;
 
 /**
- * Component that renders a text input using an android EditText.
+ * Component that renders an editable text input using an android EditText.
  *
  * <p>Performance is critical for good user experience. Follow these tips for good performance:
  *
  * <ul>
- *   <li>Ensure you use Litho's setRootAsync to avoid any UI thread component operations.
  *   <li>Avoid changing props at all costs as it forces expensive EditText reconfiguration.
- *   <li>Same applies to states. Avoid updating state, use Event trigger to update text, request
- *       view focus or set selection. {@link TextInput#setText(ComponentContext, String,
- *       CharSequence)}
- *   <li>If using custom inputFilters, take special care to implement equals correctly or the text
- *       field must be reconfigured on every mount. (Better yet, store your InputFilter in a static
- *       or LruCache so that you're not constantly creating new instances.)
+ *   <li>Avoid updating state, use Event trigger to update text, request view focus or set
+ *       selection. {@code TextInput.setText(c, key, text)}.
+ *   <li>Using custom inputFilters take special care to implement equals correctly or the text field
+ *       must be reconfigured on every mount. (Better yet, store your InputFilter in a static or
+ *       LruCache so that you're not constantly creating new instances.)
  * </ul>
  *
- * <p>Example multiline editable text with custom color and a text length limit:
+ * <p>Because this component is backed by the android EditText all {@link InputFilter} abilities
+ * should apply here. Example multiline editable text with custom color and a text length limit:
  *
  * <pre>{@code
  * private static final InputFilter lenFilter = new InputFilter.LengthFilter(maxLength);
