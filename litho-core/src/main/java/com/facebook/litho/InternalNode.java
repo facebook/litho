@@ -715,11 +715,6 @@ class InternalNode implements ComponentLayout {
     return this;
   }
 
-  InternalNode isReferenceBaseline(boolean isReferenceBaseline) {
-    mYogaNode.setIsReferenceBaseline(isReferenceBaseline);
-    return this;
-  }
-
   private boolean shouldApplyTouchExpansion() {
     return mTouchExpansion != null && mNodeInfo != null && mNodeInfo.hasTouchEventHandlers();
   }

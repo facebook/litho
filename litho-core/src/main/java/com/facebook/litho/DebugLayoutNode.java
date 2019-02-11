@@ -380,10 +380,6 @@ public final class DebugLayoutNode {
     return mNode.mYogaNode.getBorder(edge);
   }
 
-  public void isReferenceBaseline(boolean isReferenceBaseline) {
-    mNode.isReferenceBaseline(isReferenceBaseline);
-  }
-
   @Nullable
   public EventHandler getClickHandler() {
     return mNode.getClickHandler();

@@ -394,11 +394,6 @@ class NoOpInternalNode extends InternalNode {
   }
 
   @Override
-  public InternalNode isReferenceBaseline(boolean isReferenceBaseline) {
-    return this;
-  }
-
-  @Override
   void setNestedTree(InternalNode nestedTree) {}
 
   @Override
