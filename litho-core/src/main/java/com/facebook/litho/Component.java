@@ -1289,6 +1289,11 @@ public abstract class Component extends ComponentLifecycle
       return getThis();
     }
 
+    public T isReferenceBaseline(boolean isReferenceBaseline) {
+      mComponent.getOrCreateCommonPropsHolder().isReferenceBaseline(isReferenceBaseline);
+      return getThis();
+    }
+
     public T touchExpansionPx(@Nullable YogaEdge edge, @Px int touchExpansion) {
       mComponent.getOrCreateCommonPropsHolder().touchExpansionPx(edge, touchExpansion);
       return getThis();
