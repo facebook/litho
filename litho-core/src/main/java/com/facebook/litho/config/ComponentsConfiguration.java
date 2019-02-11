@@ -23,7 +23,6 @@ import static android.os.Build.VERSION_CODES.LOLLIPOP_MR1;
 
 import android.support.annotation.Nullable;
 import com.facebook.litho.BuildConfig;
-import com.facebook.litho.boost.LithoAffinityBoosterFactory;
 import com.facebook.yoga.YogaLogger;
 
 /**
@@ -195,20 +194,6 @@ public class ComponentsConfiguration {
   public static boolean inheritPriorityFromUiThread = false;
 
   public static boolean disablePools = false;
-
-  public static @Nullable LithoAffinityBoosterFactory affinityBoosterFactory = null;
-
-  /**
-   * If true, the {@link #affinityBoosterFactory} will be used to bump the LayoutStateFuture thread
-   * that the main thread is waiting on a powerful core.
-   */
-  public static boolean boostAffinityLayoutStateFuture;
-
-  /**
-   * If true, the {@link #affinityBoosterFactory} will be used to bump all threads that are
-   * calculating a layout to a powerful core.
-   */
-  public static boolean boostAffinityLithoLayouts;
 
   /**
    * Whether the OnShouldCreateLayoutWithNewSizeSpec is used with Layout Spec with size spec. This

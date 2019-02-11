@@ -49,8 +49,6 @@ import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.animation.AnimatedProperties;
 import com.facebook.litho.animation.AnimatedProperty;
 import com.facebook.litho.annotations.MountSpec;
-import com.facebook.litho.boost.LithoAffinityBooster;
-import com.facebook.litho.boost.LithoAffinityBoosterFactory;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.stats.LithoStats;
 import java.lang.annotation.Retention;
@@ -93,9 +91,6 @@ public class ComponentTree {
   private static final int SCHEDULE_LAYOUT_ASYNC = 1;
   private static final int SCHEDULE_LAYOUT_SYNC = 2;
   private final @Nullable String mSplitLayoutTag;
-  private final @Nullable LithoAffinityBoosterFactory mAffinityBoosterFactory;
-  private final boolean mBoostAfinityLayoutStateFuture;
-  private final boolean mBoostAffinityLithoLayouts;
   private final boolean mDoNotWrapIntoDisplayLists;
   private boolean mReleased;
   private String mReleasedComponent;
@@ -286,9 +281,6 @@ public class ComponentTree {
     mSplitLayoutTag = builder.splitLayoutTag;
     mNestedTreeResolutionExperimentEnabled = builder.nestedTreeResolutionExperimentEnabled;
     mUseSharedLayoutStateFuture = builder.useSharedLayoutStateFuture;
-    mAffinityBoosterFactory = builder.affinityBoosterFactory;
-    mBoostAfinityLayoutStateFuture = builder.boostAffinityLayoutStateFuture;
-    mBoostAffinityLithoLayouts = builder.boostAffinityLithoLayouts;
     mDoNotWrapIntoDisplayLists = builder.doNotWrapIntoDisplayLists;
     mIsPersistenceEnabled = builder.isPersistenceEnabled;
     mExtraMemorySize = builder.extraMemorySize;
@@ -1702,17 +1694,6 @@ public class ComponentTree {
       layoutEvent.markerAnnotate(PARAM_ATTRIBUTION, extraAttribution);
     }
 
-    LithoAffinityBooster booster = null;
-
-    if (mBoostAffinityLithoLayouts) {
-      booster =
-          mAffinityBoosterFactory.acquireInstance(
-              Thread.currentThread().getName(), Process.myTid());
-      if (booster != null) {
-        booster.request();
-      }
-    }
-
     LayoutState localLayoutState =
         calculateLayoutState(
             mContext,
@@ -1724,10 +1705,6 @@ public class ComponentTree {
             treeProps,
             source,
             extraAttribution);
-
-    if (booster != null) {
-      booster.release();
-    }
 
     if (output != null) {
       output.width = localLayoutState.getWidth();
@@ -2219,7 +2196,6 @@ public class ComponentTree {
       final int runningThreadId = this.runningThreadId.get();
       final int originalThreadPriority;
       final boolean didRaiseThreadPriority;
-      LithoAffinityBooster booster = null;
 
       if (isMainThread() && !futureTask.isDone() && runningThreadId != Process.myTid()) {
         // Main thread is about to be blocked, raise the running thread priority.
@@ -2229,15 +2205,6 @@ public class ComponentTree {
                 : ThreadUtils.tryRaiseThreadPriority(
                     runningThreadId, Process.THREAD_PRIORITY_DISPLAY);
         didRaiseThreadPriority = true;
-
-        if (mBoostAfinityLayoutStateFuture) {
-          booster =
-              mAffinityBoosterFactory.acquireInstance(
-                  "LayoutStateFuture_" + runningThreadId, runningThreadId);
-          if (booster != null) {
-            booster.request();
-          }
-        }
 
       } else {
         originalThreadPriority = THREAD_PRIORITY_DEFAULT;
@@ -2262,10 +2229,6 @@ public class ComponentTree {
           try {
             Process.setThreadPriority(runningThreadId, originalThreadPriority);
           } catch (IllegalArgumentException | SecurityException ignored) {
-          } finally {
-            if (booster != null) {
-              booster.release();
-            }
           }
         }
       }
@@ -2409,9 +2372,6 @@ public class ComponentTree {
     private boolean nestedTreeResolutionExperimentEnabled =
         ComponentsConfiguration.isNestedTreeResolutionExperimentEnabled;
     private boolean useSharedLayoutStateFuture = false;
-    private @Nullable final LithoAffinityBoosterFactory affinityBoosterFactory;
-    private final boolean boostAffinityLayoutStateFuture;
-    private final boolean boostAffinityLithoLayouts;
     private boolean doNotWrapIntoDisplayLists = ComponentsConfiguration.disableDisplayListWrapping;
     private boolean isPersistenceEnabled = ComponentsConfiguration.isPersistenceEnabled;
     private int extraMemorySize = ComponentsConfiguration.extraMemorySize;
@@ -2419,15 +2379,6 @@ public class ComponentTree {
     protected Builder(ComponentContext context, Component root) {
       this.context = context;
       this.root = root;
-      /** Right now we don't care about testing this per surface, so we'll use the config value. */
-      this.affinityBoosterFactory = ComponentsConfiguration.affinityBoosterFactory;
-      this.boostAffinityLithoLayouts =
-          this.affinityBoosterFactory != null && ComponentsConfiguration.boostAffinityLithoLayouts;
-      // If all Litho threads should be boosted, we don't want to boost only for LayoutStateFuture.
-      this.boostAffinityLayoutStateFuture =
-          !this.boostAffinityLithoLayouts
-              && this.affinityBoosterFactory != null
-              && ComponentsConfiguration.boostAffinityLayoutStateFuture;
     }
 
     /**
