@@ -39,6 +39,156 @@ public class YogaAlignBaselineTest {
   }
 
   @Test
+  public void testAlignItemsBaselineNestedTreeColumn() {
+    final LithoView lithoView =
+        mountComponent(
+            mContext,
+            new InlineLayoutSpec() {
+              @Override
+              protected Component onCreateLayout(ComponentContext c) {
+                return Row.create(c)
+                    .child(Column.create(c).widthPx(500).heightPx(600).wrapInView())
+                    .child(
+                        Column.create(c)
+                            .widthPx(500)
+                            .heightPx(800)
+                            .child(Column.create(c).widthPx(500).heightPx(300).wrapInView())
+                            .child(Column.create(c).widthPx(500).heightPx(400).wrapInView()))
+                    .alignItems(BASELINE)
+                    .widthPx(1000)
+                    .heightPx(1000)
+                    .build();
+              }
+            });
+
+    final View child0 = lithoView.getChildAt(0);
+    final View child1_child0 = lithoView.getChildAt(1);
+    final View child1_child1 = lithoView.getChildAt(2);
+
+    assertThat(child0.getLeft()).isEqualTo(0);
+    assertThat(child0.getTop()).isEqualTo(0);
+
+    assertThat(child1_child0.getLeft()).isEqualTo(500);
+    assertThat(child1_child0.getTop()).isEqualTo(300);
+
+    assertThat(child1_child1.getLeft()).isEqualTo(500);
+    assertThat(child1_child1.getTop()).isEqualTo(600);
+  }
+
+  @Test
+  public void testAlignItemsBaselineNestedTreeColumnCustomBaselineFunction() {
+    final LithoView lithoView =
+        mountComponent(
+            mContext,
+            new InlineLayoutSpec() {
+              @Override
+              protected Component onCreateLayout(ComponentContext c) {
+                return Row.create(c)
+                    .child(Column.create(c).widthPx(500).heightPx(600).wrapInView())
+                    .child(
+                        Column.create(c)
+                            .widthPx(500)
+                            .heightPx(800)
+                            .child(Column.create(c).widthPx(500).heightPx(300).wrapInView())
+                            .child(Column.create(c).widthPx(500).heightPx(400).wrapInView())
+                            .useHeightAsBaseline(true))
+                    .alignItems(BASELINE)
+                    .widthPx(1000)
+                    .heightPx(1000)
+                    .build();
+              }
+            });
+
+    final View child0 = lithoView.getChildAt(0);
+    final View child1_child0 = lithoView.getChildAt(1);
+    final View child1_child1 = lithoView.getChildAt(2);
+
+    assertThat(child0.getLeft()).isEqualTo(0);
+    assertThat(child0.getTop()).isEqualTo(200);
+
+    assertThat(child1_child0.getLeft()).isEqualTo(500);
+    assertThat(child1_child0.getTop()).isEqualTo(0);
+
+    assertThat(child1_child1.getLeft()).isEqualTo(500);
+    assertThat(child1_child1.getTop()).isEqualTo(300);
+  }
+
+  @Test
+  public void testAlignItemsBaselineNestedTreeRow() {
+    final LithoView lithoView =
+        mountComponent(
+            mContext,
+            new InlineLayoutSpec() {
+              @Override
+              protected Component onCreateLayout(ComponentContext c) {
+                return Row.create(c)
+                    .child(Column.create(c).widthPx(500).heightPx(600).wrapInView())
+                    .child(
+                        Row.create(c)
+                            .widthPx(1000)
+                            .heightPx(800)
+                            .child(Column.create(c).widthPx(500).heightPx(300).wrapInView())
+                            .child(Column.create(c).widthPx(500).heightPx(400).wrapInView()))
+                    .alignItems(BASELINE)
+                    .widthPx(2000)
+                    .heightPx(2000)
+                    .build();
+              }
+            });
+
+    final View child0 = lithoView.getChildAt(0);
+    final View child1_child0 = lithoView.getChildAt(1);
+    final View child1_child1 = lithoView.getChildAt(2);
+
+    assertThat(child0.getLeft()).isEqualTo(0);
+    assertThat(child0.getTop()).isEqualTo(0);
+
+    assertThat(child1_child0.getLeft()).isEqualTo(500);
+    assertThat(child1_child0.getTop()).isEqualTo(300);
+
+    assertThat(child1_child1.getLeft()).isEqualTo(1000);
+    assertThat(child1_child1.getTop()).isEqualTo(300);
+  }
+
+  @Test
+  public void testAlignItemsBaselineNestedTreeRowCustomBaselineFunction() {
+    final LithoView lithoView =
+        mountComponent(
+            mContext,
+            new InlineLayoutSpec() {
+              @Override
+              protected Component onCreateLayout(ComponentContext c) {
+                return Row.create(c)
+                    .child(Column.create(c).widthPx(500).heightPx(600).wrapInView())
+                    .child(
+                        Row.create(c)
+                            .widthPx(1000)
+                            .heightPx(800)
+                            .child(Column.create(c).widthPx(500).heightPx(300).wrapInView())
+                            .child(Column.create(c).widthPx(500).heightPx(400).wrapInView())
+                            .useHeightAsBaseline(true))
+                    .alignItems(BASELINE)
+                    .widthPx(2000)
+                    .heightPx(2000)
+                    .build();
+              }
+            });
+
+    final View child0 = lithoView.getChildAt(0);
+    final View child1_child0 = lithoView.getChildAt(1);
+    final View child1_child1 = lithoView.getChildAt(2);
+
+    assertThat(child0.getLeft()).isEqualTo(0);
+    assertThat(child0.getTop()).isEqualTo(200);
+
+    assertThat(child1_child0.getLeft()).isEqualTo(500);
+    assertThat(child1_child0.getTop()).isEqualTo(0);
+
+    assertThat(child1_child1.getLeft()).isEqualTo(1000);
+    assertThat(child1_child1.getTop()).isEqualTo(0);
+  }
+
+  @Test
   public void testIsReferenceBaselineUsingChildInColumnAsReference() {
     final LithoView lithoView =
         mountComponent(
