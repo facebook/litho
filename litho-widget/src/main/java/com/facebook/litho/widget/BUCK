@@ -44,5 +44,6 @@ litho_android_library(
         LITHO_TEXTLAYOUTBUILDER_UTILS_TARGET + [
             LITHO_WIDGET_ACCESSIBILITIES_TARGET,
             LITHO_RES_TARGET,
+            make_dep_path("litho-sections-debug/src/main/java/com/facebook/litho/sections/debug/widget:widget"),
         ],
 )

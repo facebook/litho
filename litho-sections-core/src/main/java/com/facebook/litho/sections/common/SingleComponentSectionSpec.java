@@ -16,10 +16,13 @@
 
 package com.facebook.litho.sections.common;
 
+import static com.facebook.litho.sections.debug.widget.RenderInfoDebugInfoRegistry.SONAR_SECTIONS_DEBUG_INFO_TAG;
+
 import android.support.annotation.Nullable;
 import com.facebook.litho.Component;
 import com.facebook.litho.Diff;
 import com.facebook.litho.annotations.Prop;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.sections.ChangeSet;
 import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.annotations.DiffSectionSpec;
@@ -67,7 +70,7 @@ public class SingleComponentSectionSpec {
     if (component.getPrevious() == null) {
       changeSet.insert(
           0,
-          addCustomAttributes(ComponentRenderInfo.create(), customAttributes.getNext())
+          addCustomAttributes(ComponentRenderInfo.create(), customAttributes.getNext(), context)
               .component(component.getNext())
               .isSticky(isNextSticky)
               .spanSize(nextSpanSize)
@@ -104,7 +107,7 @@ public class SingleComponentSectionSpec {
         || !customAttributesEqual) {
       changeSet.update(
           0,
-          addCustomAttributes(ComponentRenderInfo.create(), customAttributes.getNext())
+          addCustomAttributes(ComponentRenderInfo.create(), customAttributes.getNext(), context)
               .component(component.getNext())
               .isSticky(isNextSticky)
               .spanSize(nextSpanSize)
@@ -117,7 +120,13 @@ public class SingleComponentSectionSpec {
   }
 
   private static ComponentRenderInfo.Builder addCustomAttributes(
-      ComponentRenderInfo.Builder builder, @Nullable Map<String, Object> attributes) {
+      ComponentRenderInfo.Builder builder,
+      @Nullable Map<String, Object> attributes,
+      SectionContext c) {
+    if (ComponentsConfiguration.isRenderInfoDebuggingEnabled()) {
+      builder.debugInfo(SONAR_SECTIONS_DEBUG_INFO_TAG, c.getSectionScope());
+    }
+
     if (attributes == null) {
       return builder;
     }

@@ -247,4 +247,12 @@ public class ComponentsConfiguration {
    * impact of this change in terms of memory footprint and mount performance
    */
   public static boolean dontUseReferences = false;
+
+  // TODO T39526148 Remove once Flipper plugin is usable.
+  /** If true, information about RenderInfos will be passed to Flipper's layout inspector. */
+  public static boolean enableRenderInfoDebugging = false;
+
+  public static boolean isRenderInfoDebuggingEnabled() {
+    return isDebugModeEnabled && enableRenderInfoDebugging;
+  }
 }

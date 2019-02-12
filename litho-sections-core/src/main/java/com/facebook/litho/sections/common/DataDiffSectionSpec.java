@@ -17,6 +17,7 @@
 package com.facebook.litho.sections.common;
 
 import static com.facebook.litho.FrameworkLogEvents.EVENT_SECTIONS_DATA_DIFF_CALCULATE_DIFF;
+import static com.facebook.litho.sections.debug.widget.RenderInfoDebugInfoRegistry.SONAR_SECTIONS_DEBUG_INFO_TAG;
 import static com.facebook.litho.widget.RecyclerBinderUpdateCallback.acquire;
 import static com.facebook.litho.widget.RecyclerBinderUpdateCallback.release;
 
@@ -36,6 +37,7 @@ import com.facebook.litho.PerfEvent;
 import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.PropDefault;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.sections.ChangeSet;
 import com.facebook.litho.sections.Section;
 import com.facebook.litho.sections.SectionContext;
@@ -115,7 +117,7 @@ public class DataDiffSectionSpec<T> {
     final List<T> previousData = data.getPrevious();
     final List<T> nextData = data.getNext();
     final ComponentRenderer componentRenderer =
-        new ComponentRenderer(DataDiffSection.getRenderEventHandler(c));
+        new ComponentRenderer(DataDiffSection.getRenderEventHandler(c), c);
     final DiffSectionOperationExecutor operationExecutor =
         new DiffSectionOperationExecutor(changeSet);
     final RecyclerBinderUpdateCallback<T> updatesCallback;
@@ -284,14 +286,24 @@ public class DataDiffSectionSpec<T> {
   private static class ComponentRenderer implements RecyclerBinderUpdateCallback.ComponentRenderer {
 
     private final EventHandler<RenderEvent> mRenderEventEventHandler;
+    private final SectionContext mSectionContext;
 
-    private ComponentRenderer(EventHandler<RenderEvent> renderEventEventHandler) {
+    private ComponentRenderer(
+        EventHandler<RenderEvent> renderEventEventHandler, SectionContext sectionContext) {
       mRenderEventEventHandler = renderEventEventHandler;
+      mSectionContext = sectionContext;
     }
 
     @Override
     public RenderInfo render(Object o, int index) {
-      return DataDiffSection.dispatchRenderEvent(mRenderEventEventHandler, index, o, null);
+      final RenderInfo renderInfo =
+          DataDiffSection.dispatchRenderEvent(mRenderEventEventHandler, index, o, null);
+
+      if (ComponentsConfiguration.isRenderInfoDebuggingEnabled()) {
+        renderInfo.addDebugInfo(SONAR_SECTIONS_DEBUG_INFO_TAG, mSectionContext.getSectionScope());
+      }
+
+      return renderInfo;
     }
   }
 

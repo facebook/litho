@@ -41,7 +41,7 @@ public class RenderInfoDebugInfoRegistry {
     return sViewToRenderInfo.get(view);
   }
 
-  static void setRenderInfoToViewMapping(View view, Object renderInfoSectionDebugInfo) {
+  public static void setRenderInfoToViewMapping(View view, Object renderInfoSectionDebugInfo) {
     if (sViewToRenderInfo == null) {
       sViewToRenderInfo = new WeakHashMap<>();
     }
