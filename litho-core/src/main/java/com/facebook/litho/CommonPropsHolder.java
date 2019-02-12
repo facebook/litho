@@ -229,6 +229,10 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
     getOrCreateOtherProps().aspectRatio(aspectRatio);
   }
 
+  void isReferenceBaseline(boolean isReferenceBaseline) {
+    getOrCreateOtherProps().isReferenceBaseline(isReferenceBaseline);
+  }
+
   void touchExpansionPx(@Nullable YogaEdge edge, @Px int touchExpansion) {
     getOrCreateOtherProps().touchExpansionPx(edge, touchExpansion);
   }
@@ -566,6 +570,7 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
     private static final long PFLAG_VISIBILITY_CHANGED_HANDLER_IS_SET = 1L << 40;
     private static final long PFLAG_TRANSITION_KEY_TYPE_IS_SET = 1L << 41;
     private static final long PFLAG_USE_HEIGHT_AS_BASELINE_IS_SET = 1L << 42;
+    private static final long PFLAG_IS_REFERENCE_BASELINE_IS_SET = 1L << 43;
 
     private long mPrivateFlags;
 
@@ -604,6 +609,7 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
     @Px private int mMaxHeightPx;
     private float mMaxHeightPercent;
     private float mAspectRatio;
+    private boolean mIsReferenceBaseline;
     @Nullable private ComparableDrawable mForeground;
     @Nullable private String mTransitionKey;
     @Nullable private Transition.TransitionKeyType mTransitionKeyType;
@@ -766,6 +772,11 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
     private void aspectRatio(float aspectRatio) {
       mPrivateFlags |= PFLAG_ASPECT_RATIO_IS_SET;
       mAspectRatio = aspectRatio;
+    }
+
+    private void isReferenceBaseline(boolean isReferenceBaseline) {
+      mPrivateFlags |= PFLAG_IS_REFERENCE_BASELINE_IS_SET;
+      mIsReferenceBaseline = isReferenceBaseline;
     }
 
     private void touchExpansionPx(YogaEdge edge, @Px int touchExpansion) {
@@ -949,6 +960,9 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
       }
       if ((mPrivateFlags & PFLAG_ASPECT_RATIO_IS_SET) != 0L) {
         node.aspectRatio(mAspectRatio);
+      }
+      if ((mPrivateFlags & PFLAG_IS_REFERENCE_BASELINE_IS_SET) != 0L) {
+        node.isReferenceBaseline(mIsReferenceBaseline);
       }
       if ((mPrivateFlags & PFLAG_MARGIN_IS_SET) != 0L) {
         for (int i = 0; i < mMargins.size(); i++) {
