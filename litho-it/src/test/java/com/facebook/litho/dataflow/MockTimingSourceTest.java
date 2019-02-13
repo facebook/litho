@@ -21,7 +21,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
-import com.facebook.litho.dataflow.ChoreographerCompat.FrameCallback;
+import com.facebook.litho.choreographercompat.ChoreographerCompat.FrameCallback;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import java.util.ArrayList;
 import org.junit.Before;

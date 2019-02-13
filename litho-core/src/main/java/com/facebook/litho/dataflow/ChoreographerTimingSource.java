@@ -16,6 +16,9 @@
 
 package com.facebook.litho.dataflow;
 
+import com.facebook.litho.choreographercompat.ChoreographerCompat;
+import com.facebook.litho.choreographercompat.ChoreographerCompatImpl;
+
 /**
  * The default {@link TimingSource} hooked into Android's Choreographer.
  */

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.dataflow;
+package com.facebook.litho.choreographercompat;
 
 import android.annotation.TargetApi;
 import android.os.Build;
@@ -22,6 +22,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.VisibleForTesting;
 import android.view.Choreographer;
+import com.facebook.litho.ThreadUtils;
 
 /**
  * Wrapper class for abstracting away availability of the JellyBean Choreographer. If Choreographer
@@ -44,6 +45,8 @@ public class ChoreographerCompatImpl implements ChoreographerCompat {
    *     ChoreographerCompat} but interfaces don't support static methods until Java 8.
    */
   public static ChoreographerCompat getInstance() {
+    ThreadUtils.assertMainThread();
+
     if (sInstance == null) {
       sInstance = new ChoreographerCompatImpl();
     }

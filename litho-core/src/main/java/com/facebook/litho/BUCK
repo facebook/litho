@@ -10,6 +10,7 @@ litho_android_library(
     srcs = glob([
         "*.java",
         "animation/*.java",
+        "choreographercompat/*.java",
         "dataflow/**/*.java",
         "displaylist/*.java",
         "reference/*.java",

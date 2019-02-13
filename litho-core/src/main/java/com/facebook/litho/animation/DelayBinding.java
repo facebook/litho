@@ -15,8 +15,8 @@
  */
 package com.facebook.litho.animation;
 
-import com.facebook.litho.dataflow.ChoreographerCompat;
-import com.facebook.litho.dataflow.ChoreographerCompatImpl;
+import com.facebook.litho.choreographercompat.ChoreographerCompat;
+import com.facebook.litho.choreographercompat.ChoreographerCompatImpl;
 import java.util.ArrayList;
 
 /** An {@link AnimationBinding} that adds a delay to the provided {@link AnimationBinding} */
