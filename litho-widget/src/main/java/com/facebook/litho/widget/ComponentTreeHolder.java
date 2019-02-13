@@ -30,7 +30,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.GuardedBy;
-import javax.annotation.concurrent.ThreadSafe;
 
 /**
  * A class used to store the data backing a {@link RecyclerBinder}. For each item the
@@ -86,6 +85,7 @@ public class ComponentTreeHolder {
   private boolean mCanPreallocateOnDefaultHandler;
   private boolean mShouldPreallocatePerMountSpec;
   private boolean mUseSharedLayoutStateFuture;
+  private boolean mUseIncrementalMount;
   private String mSplitLayoutTag;
   private boolean mIsInserted = true;
   private boolean mHasMounted = false;
@@ -108,6 +108,7 @@ public class ComponentTreeHolder {
     private boolean canPreallocateOnDefaultHandler;
     private boolean shouldPreallocatePerMountSpec;
     private boolean useSharedLayoutStateFuture;
+    private boolean useIncrementalMount = true;
 
     private Builder() {}
 
@@ -153,6 +154,11 @@ public class ComponentTreeHolder {
       return this;
     }
 
+    public Builder useIncrementalMount(boolean useIncrementalMount) {
+      this.useIncrementalMount = useIncrementalMount;
+      return this;
+    }
+
     public ComponentTreeHolder build() {
       ensureMandatoryParams();
 
@@ -167,6 +173,7 @@ public class ComponentTreeHolder {
       componentTreeHolder.mCanPreallocateOnDefaultHandler = canPreallocateOnDefaultHandler;
       componentTreeHolder.mShouldPreallocatePerMountSpec = shouldPreallocatePerMountSpec;
       componentTreeHolder.mUseSharedLayoutStateFuture = useSharedLayoutStateFuture;
+      componentTreeHolder.mUseIncrementalMount = useIncrementalMount;
       componentTreeHolder.mComponentTreeMeasureListenerFactory =
           componentTreeMeasureListenerFactory;
       componentTreeHolder.mSplitLayoutTag = splitLayoutTag;
@@ -435,6 +442,7 @@ public class ComponentTreeHolder {
                       : mComponentTreeMeasureListenerFactory.create(this))
               .splitLayoutTag(mSplitLayoutTag)
               .hasMounted(mHasMounted)
+              .incrementalMount(mUseIncrementalMount)
               .build();
       if (mPendingNewLayoutListener != null) {
         mComponentTree.setNewLayoutStateReadyListener(mPendingNewLayoutListener);

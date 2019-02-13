@@ -250,6 +250,7 @@ public class RecyclerBinder
   private final boolean mUseSharedLayoutStateFuture;
   private final @Nullable LayoutHandler mThreadPoolHandler;
   private final @Nullable LayoutThreadPoolConfiguration mThreadPoolConfig;
+  private final boolean mUseIncrementalMount;
   private EventHandler<ReMeasureEvent> mReMeasureEventEventHandler;
   private volatile boolean mHasAsyncOperations = false;
   private boolean mIsInitMounted = false; // Set to true when the first mount() is called.
@@ -341,6 +342,7 @@ public class RecyclerBinder
         RenderInfo renderInfo,
         LayoutHandler layoutHandler,
         boolean useSharedLayoutStateFuture,
+        boolean useIncrementalMount,
         ComponentTreeMeasureListenerFactory measureListenerFactory,
         String splitLayoutTag);
   }
@@ -352,6 +354,7 @@ public class RecyclerBinder
             RenderInfo renderInfo,
             LayoutHandler layoutHandler,
             boolean useSharedLayoutStateFuture,
+            boolean useIncrementalMount,
             ComponentTreeMeasureListenerFactory measureListenerFactory,
             String splitLayoutTag) {
           return ComponentTreeHolder.create()
@@ -360,6 +363,7 @@ public class RecyclerBinder
               .useSharedLayoutStateFuture(useSharedLayoutStateFuture)
               .componentTreeMeasureListenerFactory(measureListenerFactory)
               .splitLayoutTag(splitLayoutTag)
+              .useIncrementalMount(useIncrementalMount)
               .build();
         }
       };
@@ -391,6 +395,7 @@ public class RecyclerBinder
     private boolean canMeasure;
     private boolean hscrollAsyncMode = false;
     private boolean singleThreadPool = ComponentsConfiguration.useSingleThreadPool;
+    private boolean useIncrementalMount = true;
 
     /**
      * @param rangeRatio specifies how big a range this binder should try to compute. The range is
@@ -597,6 +602,12 @@ public class RecyclerBinder
       return this;
     }
 
+    /** Toggle whether new ComponentTree instance will enable incremental mount or not */
+    public Builder useIncrementalMount(boolean useIncrementalMount) {
+      this.useIncrementalMount = useIncrementalMount;
+      return this;
+    }
+
     /** @param c The {@link ComponentContext} the RecyclerBinder will use. */
     public RecyclerBinder build(ComponentContext c) {
       componentContext =
@@ -750,6 +761,8 @@ public class RecyclerBinder
     mAsyncInitRange = builder.asyncInitRange;
     mBgScheduleAllInitRange = builder.bgScheduleAllInitRange;
     mHScrollAsyncMode = builder.hscrollAsyncMode;
+
+    mUseIncrementalMount = builder.useIncrementalMount;
   }
 
   /**
@@ -3122,6 +3135,7 @@ public class RecyclerBinder
         renderInfo,
         layoutHandler,
         mUseSharedLayoutStateFuture,
+        mUseIncrementalMount,
         mComponentTreeMeasureListenerFactory,
         mSplitLayoutTag);
   }
