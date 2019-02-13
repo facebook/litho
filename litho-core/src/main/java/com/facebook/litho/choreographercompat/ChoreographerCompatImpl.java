@@ -23,6 +23,7 @@ import android.os.Looper;
 import android.support.annotation.VisibleForTesting;
 import android.view.Choreographer;
 import com.facebook.litho.ThreadUtils;
+import javax.annotation.Nullable;
 
 /**
  * Wrapper class for abstracting away availability of the JellyBean Choreographer. If Choreographer
@@ -35,21 +36,16 @@ public class ChoreographerCompatImpl implements ChoreographerCompat {
   private static final long ONE_FRAME_MILLIS = 17;
   private static final boolean IS_JELLYBEAN_OR_HIGHER =
       Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN;
-  private static ChoreographerCompat sInstance;
-
-  private Handler mHandler;
-  private Choreographer mChoreographer;
+  private static ChoreographerCompat sInstance = new ChoreographerCompatImpl();
 
   /**
-   * @return a {@link ChoreographerCompat} instance. This should really be on {@link
-   *     ChoreographerCompat} but interfaces don't support static methods until Java 8.
+   * @return a {@link ChoreographerCompat} instance for the main thread. This should really be on
+   *     {@link ChoreographerCompat} but interfaces don't support static methods until Java 8.
+   *     <p>NB: Unlike android.view.Choreographer#getInstance(), this method ALWAYS returns an
+   *     instance that posts to the MAIN THREAD android Choreographer (and main thread Handler for
+   *     API<16).
    */
   public static ChoreographerCompat getInstance() {
-    ThreadUtils.assertMainThread();
-
-    if (sInstance == null) {
-      sInstance = new ChoreographerCompatImpl();
-    }
     return sInstance;
   }
 
@@ -59,9 +55,25 @@ public class ChoreographerCompatImpl implements ChoreographerCompat {
     sInstance = choreographerCompat;
   }
 
-  private ChoreographerCompatImpl() {
+  private final @Nullable Handler mHandler;
+  private Choreographer mChoreographer;
+
+  @VisibleForTesting
+  ChoreographerCompatImpl() {
     if (IS_JELLYBEAN_OR_HIGHER) {
-      mChoreographer = getChoreographer();
+      if (ThreadUtils.isMainThread()) {
+        mChoreographer = getChoreographer();
+        mHandler = null;
+      } else {
+        mHandler = new Handler(Looper.getMainLooper());
+        mHandler.post(
+            new Runnable() {
+              @Override
+              public void run() {
+                mChoreographer = getChoreographer();
+              }
+            });
+      }
     } else {
       mHandler = new Handler(Looper.getMainLooper());
     }
@@ -69,7 +81,7 @@ public class ChoreographerCompatImpl implements ChoreographerCompat {
 
   @Override
   public void postFrameCallback(FrameCallback callbackWrapper) {
-    if (IS_JELLYBEAN_OR_HIGHER) {
+    if (IS_JELLYBEAN_OR_HIGHER && mChoreographer != null) {
       choreographerPostFrameCallback(callbackWrapper.getFrameCallback());
     } else {
       mHandler.postDelayed(callbackWrapper.getRunnable(), 0);
@@ -78,7 +90,7 @@ public class ChoreographerCompatImpl implements ChoreographerCompat {
 
   @Override
   public void postFrameCallbackDelayed(FrameCallback callbackWrapper, long delayMillis) {
-    if (IS_JELLYBEAN_OR_HIGHER) {
+    if (IS_JELLYBEAN_OR_HIGHER && mChoreographer != null) {
       choreographerPostFrameCallbackDelayed(callbackWrapper.getFrameCallback(), delayMillis);
     } else {
       mHandler.postDelayed(callbackWrapper.getRunnable(), delayMillis + ONE_FRAME_MILLIS);
@@ -87,7 +99,7 @@ public class ChoreographerCompatImpl implements ChoreographerCompat {
 
   @Override
   public void removeFrameCallback(FrameCallback callbackWrapper) {
-    if (IS_JELLYBEAN_OR_HIGHER) {
+    if (IS_JELLYBEAN_OR_HIGHER && mChoreographer != null) {
       choreographerRemoveFrameCallback(callbackWrapper.getFrameCallback());
     } else {
       mHandler.removeCallbacks(callbackWrapper.getRunnable());
@@ -113,5 +125,10 @@ public class ChoreographerCompatImpl implements ChoreographerCompat {
   @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
   private void choreographerRemoveFrameCallback(Choreographer.FrameCallback frameCallback) {
     mChoreographer.removeFrameCallback(frameCallback);
+  }
+
+  @VisibleForTesting
+  boolean isUsingChoreographer() {
+    return mChoreographer != null;
   }
 }

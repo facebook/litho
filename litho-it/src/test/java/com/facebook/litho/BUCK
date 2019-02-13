@@ -10,6 +10,7 @@ components_robolectric_test(
     srcs = glob([
         "*Test.java",
         "animation/*.java",
+        "choreographercompat/*.java",
         "dataflow/*.java",
         "reference/*Test.java",
         "drawable/*.java",
