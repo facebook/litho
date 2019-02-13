@@ -21,8 +21,8 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.LithoViewTestHelper;
+import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.helper.ComponentTestHelper;
-import org.powermock.reflect.Whitebox;
 import org.robolectric.shadows.ShadowLooper;
 
 /** Helper for writing state update unit tests. */
