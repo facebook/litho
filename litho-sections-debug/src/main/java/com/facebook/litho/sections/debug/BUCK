@@ -4,7 +4,7 @@
 # LICENSE file in the root directory of this source tree.
 # of patent rights can be found in the PATENTS file in the same directory.
 
-load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_ANDROIDSUPPORT_TARGET", "LITHO_JAVA_TARGET", "LITHO_SECTIONS_TARGET", "litho_android_library", "make_dep_path")
+load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_ANDROIDSUPPORT_TARGET", "LITHO_JAVA_TARGET", "LITHO_SECTIONS_TARGET", "LITHO_WIDGET_TARGET", "litho_android_library")
 
 litho_android_library(
     name = "debug",
@@ -15,8 +15,8 @@ litho_android_library(
     ],
     deps = [
         LITHO_SECTIONS_TARGET,
+        LITHO_WIDGET_TARGET,
         LITHO_JAVA_TARGET,
         LITHO_ANDROIDSUPPORT_TARGET,
-        make_dep_path("litho-sections-debug/src/main/java/com/facebook/litho/sections/debug/widget:widget"),
     ],
 )

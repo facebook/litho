@@ -17,9 +17,9 @@
 package com.facebook.litho.sections.common;
 
 import static com.facebook.litho.FrameworkLogEvents.EVENT_SECTIONS_DATA_DIFF_CALCULATE_DIFF;
-import static com.facebook.litho.sections.debug.widget.RenderInfoDebugInfoRegistry.SONAR_SECTIONS_DEBUG_INFO_TAG;
 import static com.facebook.litho.widget.RecyclerBinderUpdateCallback.acquire;
 import static com.facebook.litho.widget.RecyclerBinderUpdateCallback.release;
+import static com.facebook.litho.widget.RenderInfoDebugInfoRegistry.SONAR_SECTIONS_DEBUG_INFO_TAG;
 
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;

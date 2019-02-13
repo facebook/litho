@@ -22,7 +22,6 @@ import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 import static com.facebook.infer.annotation.ThreadConfined.UI;
 import static com.facebook.litho.MeasureComparisonUtils.isMeasureSpecCompatible;
-import static com.facebook.litho.sections.debug.widget.RenderInfoDebugInfoRegistry.SONAR_SECTIONS_DEBUG_INFO_TAG;
 import static com.facebook.litho.widget.ComponentTreeHolder.RENDER_UNINITIALIZED;
 import static com.facebook.litho.widget.RenderInfoViewCreatorController.DEFAULT_COMPONENT_VIEW_TYPE;
 
@@ -63,7 +62,6 @@ import com.facebook.litho.ThreadPoolLayoutHandler;
 import com.facebook.litho.ThreadUtils;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.config.LayoutThreadPoolConfiguration;
-import com.facebook.litho.sections.debug.widget.RenderInfoDebugInfoRegistry;
 import com.facebook.litho.viewcompat.ViewBinder;
 import com.facebook.litho.viewcompat.ViewCreator;
 import com.facebook.litho.widget.ComponentTreeHolder.ComponentTreeMeasureListenerFactory;
@@ -1803,6 +1801,7 @@ public class RecyclerBinder
                       + "Recycler if dynamic measurement is not allowed");
             }
 
+
             measuredHeight = SizeSpec.getSize(heightSpec);
 
             if (SizeSpec.getMode(widthSpec) == SizeSpec.EXACTLY || !canMeasure) {
@@ -2941,7 +2940,8 @@ public class RecyclerBinder
 
       if (ComponentsConfiguration.isRenderInfoDebuggingEnabled()) {
         RenderInfoDebugInfoRegistry.setRenderInfoToViewMapping(
-            holder.itemView, renderInfo.getDebugInfo(SONAR_SECTIONS_DEBUG_INFO_TAG));
+            holder.itemView,
+            renderInfo.getDebugInfo(RenderInfoDebugInfoRegistry.SONAR_SECTIONS_DEBUG_INFO_TAG));
       }
     }
 

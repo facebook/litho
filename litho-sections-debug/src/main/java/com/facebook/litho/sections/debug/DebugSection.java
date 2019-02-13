@@ -20,7 +20,7 @@ import android.graphics.Rect;
 import android.support.annotation.Nullable;
 import android.view.View;
 import com.facebook.litho.sections.Section;
-import com.facebook.litho.sections.debug.widget.RenderInfoDebugInfoRegistry;
+import com.facebook.litho.widget.RenderInfoDebugInfoRegistry;
 import java.util.ArrayList;
 import java.util.List;
 

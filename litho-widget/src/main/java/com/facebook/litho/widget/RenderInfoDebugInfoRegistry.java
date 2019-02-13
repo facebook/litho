@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.facebook.litho.sections.debug.widget;
+package com.facebook.litho.widget;
 
 import android.support.annotation.Nullable;
 import android.view.View;
