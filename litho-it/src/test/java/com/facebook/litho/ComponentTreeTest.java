@@ -20,17 +20,18 @@ import static com.facebook.litho.ComponentTree.create;
 import static com.facebook.litho.SizeSpec.AT_MOST;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
+import static com.facebook.litho.testing.Whitebox.getInternalState;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.fail;
-import static org.powermock.reflect.Whitebox.getInternalState;
 
 import android.os.Looper;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestLayoutComponent;
+import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -39,7 +40,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.powermock.reflect.Whitebox;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
 import org.robolectric.shadows.ShadowLooper;
@@ -1014,7 +1014,7 @@ public class ComponentTreeTest {
       // Need to hold the lock on componentTree here otherwise the invocation of hasCssSpec
       // will fail.
       synchronized (componentTree) {
-        hasCssSpec = Whitebox.invokeMethod(componentTree, ComponentTree.class, "hasSizeSpec");
+        hasCssSpec = Whitebox.invokeMethod(componentTree, "hasSizeSpec");
       }
       return hasCssSpec;
     } catch (Exception e) {

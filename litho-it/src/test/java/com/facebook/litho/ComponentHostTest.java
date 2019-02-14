@@ -51,6 +51,7 @@ import android.view.ViewGroup;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestViewComponent;
+import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.yoga.YogaDirection;
 import java.util.List;
@@ -58,7 +59,6 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.powermock.reflect.Whitebox;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 

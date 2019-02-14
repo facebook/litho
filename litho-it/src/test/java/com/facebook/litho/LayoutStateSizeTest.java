@@ -19,11 +19,11 @@ package com.facebook.litho;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import com.facebook.litho.testing.TestLayoutComponent;
+import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.powermock.reflect.Whitebox;
 import org.robolectric.RuntimeEnvironment;
 
 @RunWith(ComponentsTestRunner.class)

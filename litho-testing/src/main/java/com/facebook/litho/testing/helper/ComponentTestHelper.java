@@ -36,10 +36,10 @@ import com.facebook.litho.LithoView;
 import com.facebook.litho.TestComponentTree;
 import com.facebook.litho.TreeProps;
 import com.facebook.litho.VisibleEvent;
+import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.subcomponents.SubComponent;
 import java.util.ArrayList;
 import java.util.List;
-import org.powermock.reflect.Whitebox;
 import org.robolectric.shadows.ShadowLooper;
 
 /**

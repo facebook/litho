@@ -27,11 +27,11 @@ import static org.mockito.Mockito.verify;
 
 import android.os.Looper;
 import com.facebook.litho.testing.TestDrawableComponent;
+import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.powermock.reflect.Whitebox;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
 import org.robolectric.shadows.ShadowLooper;

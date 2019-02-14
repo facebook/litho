@@ -29,6 +29,7 @@ import static com.facebook.litho.SizeSpec.AT_MOST;
 import static com.facebook.litho.SizeSpec.getMode;
 import static com.facebook.litho.SizeSpec.getSize;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
+import static com.facebook.litho.testing.Whitebox.getInternalState;
 import static com.facebook.yoga.YogaAlign.FLEX_START;
 import static com.facebook.yoga.YogaConstants.UNDEFINED;
 import static com.facebook.yoga.YogaEdge.ALL;
@@ -45,7 +46,6 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.powermock.reflect.Whitebox.getInternalState;
 import static org.robolectric.RuntimeEnvironment.application;
 
 import android.graphics.Color;
@@ -56,13 +56,13 @@ import com.facebook.litho.drawable.ComparableDrawable;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestSizeDependentComponent;
+import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
 import com.facebook.yoga.YogaMeasureFunction;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.powermock.reflect.Whitebox;
 import org.robolectric.RuntimeEnvironment;
 
 @RunWith(ComponentsTestRunner.class)

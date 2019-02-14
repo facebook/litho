@@ -52,7 +52,6 @@ dependencies {
     implementation deps.jsr305
     implementation deps.junit
     implementation deps.mockitoCore
-    implementation deps.powermockReflect
     implementation deps.robolectric
     implementation deps.supportAppCompat
     implementation deps.textlayoutbuilder

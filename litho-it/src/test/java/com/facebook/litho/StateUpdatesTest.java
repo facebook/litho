@@ -23,6 +23,7 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import android.os.Looper;
 import com.facebook.litho.stats.LithoStats;
+import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.helper.ComponentTestHelper;
 import com.facebook.litho.testing.logging.TestComponentsLogger;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
@@ -33,7 +34,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.powermock.reflect.Whitebox;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
 import org.robolectric.shadows.ShadowLooper;

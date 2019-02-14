@@ -19,9 +19,9 @@ package com.facebook.litho;
 import static android.view.View.MeasureSpec.EXACTLY;
 import static android.view.View.MeasureSpec.makeMeasureSpec;
 import static com.facebook.litho.testing.TestDrawableComponent.create;
+import static com.facebook.litho.testing.Whitebox.getInternalState;
 import static com.facebook.litho.testing.helper.ComponentTestHelper.mountComponent;
 import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.powermock.reflect.Whitebox.getInternalState;
 
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -31,6 +31,7 @@ import com.facebook.litho.drawable.ComparableDrawable;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestViewComponent;
+import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.helper.ComponentTestHelper;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.widget.EditText;
@@ -40,7 +41,6 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.powermock.reflect.Whitebox;
 import org.robolectric.RuntimeEnvironment;
 
 @RunWith(ComponentsTestRunner.class)

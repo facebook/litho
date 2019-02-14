@@ -22,6 +22,7 @@ import android.view.View;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.TestDrawableComponent;
+import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
 import com.facebook.yoga.YogaEdge;
@@ -31,7 +32,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.powermock.reflect.Whitebox;
 import org.robolectric.RuntimeEnvironment;
 
 @RunWith(ComponentsTestRunner.class)

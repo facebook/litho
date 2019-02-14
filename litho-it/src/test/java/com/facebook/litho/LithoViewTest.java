@@ -40,6 +40,7 @@ import android.util.DisplayMetrics;
 import android.view.ViewGroup;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.TestDrawableComponent;
+import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.assertj.LithoViewAssert;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
@@ -49,7 +50,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
-import org.powermock.reflect.Whitebox;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.shadows.ShadowView;
 

@@ -16,9 +16,9 @@
 
 package com.facebook.litho;
 
+import static com.facebook.litho.testing.Whitebox.getInternalState;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
-import static org.powermock.reflect.Whitebox.getInternalState;
 
 import android.os.Handler;
 import android.os.Looper;
