@@ -473,6 +473,8 @@ public final class ComponentTestHelper {
 
     lithoView.performIncrementalMount();
 
+    eventHandler.mHasEventDispatcher = component;
+
     try {
       Whitebox.invokeMethod(
           component.getEventDispatcher(), "dispatchOnEvent", eventHandler, eventInstance);
