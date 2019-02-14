@@ -22,6 +22,7 @@ import static com.facebook.litho.SizeSpec.UNSPECIFIED;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
 import static com.facebook.litho.widget.ComponentRenderInfo.create;
 import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.assertj.core.api.Java6Assertions.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyLong;
@@ -4733,6 +4734,80 @@ public class RecyclerBinderTest {
     binder.insertItemAt(0, ComponentRenderInfo.create().component(component).build());
 
     assertThat(mHoldersForComponents.get(component).mLayoutHandler).isSameAs(layoutHandler);
+  }
+
+  @Test
+  public void testDoNotApplyReadyBatchesWhileRecyclerViewIsInScrollOrLayout() {
+    ShadowLooper.pauseMainLooper();
+
+    final RecyclerBinder recyclerBinder =
+        new RecyclerBinder.Builder()
+            .layoutInfo(new LinearLayoutInfo(mComponentContext, OrientationHelper.VERTICAL, false))
+            .rangeRatio(10)
+            .build(mComponentContext);
+    final RecyclerView recyclerView = mock(RecyclerView.class);
+    when(recyclerView.isComputingLayout()).thenReturn(true);
+    recyclerBinder.mount(recyclerView);
+
+    final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
+    for (int i = 0; i < 5; i++) {
+      final Component component =
+          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+      renderInfos.add(ComponentRenderInfo.create().component(component).build());
+    }
+    recyclerBinder.measure(
+        new Size(), makeSizeSpec(200, EXACTLY), makeSizeSpec(200, EXACTLY), null);
+    recyclerBinder.insertRangeAtAsync(0, renderInfos);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+
+    // Run for a bit -- runTasks causes the test to hang because of how ShadowLooper is implemented
+    for (int i = 0; i < 10; i++) {
+      ShadowLooper.runMainLooperOneTask();
+    }
+
+    assertThat(recyclerBinder.getItemCount()).isEqualTo(0);
+
+    System.err.println("done");
+    when(recyclerView.isComputingLayout()).thenReturn(false);
+
+    ShadowLooper.runUiThreadTasks();
+
+    assertThat(recyclerBinder.getItemCount()).isEqualTo(5);
+  }
+
+  @Test(expected = RuntimeException.class)
+  public void testApplyReadyBatchesInfiniteLoop() {
+    ShadowLooper.pauseMainLooper();
+
+    final RecyclerBinder recyclerBinder =
+        new RecyclerBinder.Builder()
+            .layoutInfo(new LinearLayoutInfo(mComponentContext, OrientationHelper.VERTICAL, false))
+            .rangeRatio(10)
+            .build(mComponentContext);
+    final RecyclerView recyclerView = mock(RecyclerView.class);
+    when(recyclerView.isComputingLayout()).thenReturn(true);
+    recyclerBinder.mount(recyclerView);
+
+    final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
+    for (int i = 0; i < 5; i++) {
+      final Component component =
+          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+      renderInfos.add(ComponentRenderInfo.create().component(component).build());
+    }
+    recyclerBinder.measure(
+        new Size(), makeSizeSpec(200, EXACTLY), makeSizeSpec(200, EXACTLY), null);
+    recyclerBinder.insertRangeAtAsync(0, renderInfos);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+
+    for (int i = 0; i < 10000; i++) {
+      ShadowLooper.runMainLooperOneTask();
+    }
+
+    fail("Should have escaped infinite retries with exception.");
   }
 
   private RecyclerBinder createRecyclerBinderWithMockAdapter(RecyclerView.Adapter adapterMock) {

@@ -60,6 +60,8 @@ import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
 import com.facebook.litho.ThreadPoolLayoutHandler;
 import com.facebook.litho.ThreadUtils;
+import com.facebook.litho.choreographercompat.ChoreographerCompat;
+import com.facebook.litho.choreographercompat.ChoreographerCompatImpl;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.config.LayoutThreadPoolConfiguration;
 import com.facebook.litho.viewcompat.ViewBinder;
@@ -205,12 +207,7 @@ public class RecyclerBinder
         @UiThread
         @Override
         public void onNewLayoutStateReady(ComponentTree componentTree) {
-          if (mMountedView == null) {
-            applyReadyBatches();
-          } else {
-            // When mounted, always apply binder mutations on frame boundaries
-            ViewCompat.postOnAnimation(mMountedView, mApplyReadyBatchesRunnable);
-          }
+          applyReadyBatches();
         }
       };
 
@@ -221,6 +218,17 @@ public class RecyclerBinder
         @UiThread
         @Override
         public void run() {
+          applyReadyBatches();
+        }
+      };
+
+  @VisibleForTesting
+  final ChoreographerCompat.FrameCallback mApplyReadyBatchesCallback =
+      new ChoreographerCompat.FrameCallback() {
+
+        @UiThread
+        @Override
+        public void doFrame(long frameTimeNanos) {
           applyReadyBatches();
         }
       };
@@ -247,6 +255,7 @@ public class RecyclerBinder
   private boolean mIsInitMounted = false; // Set to true when the first mount() is called.
   private @CommitPolicy int mCommitPolicy = CommitPolicy.IMMEDIATE;
   private boolean mHasFilledViewport = false;
+  private int mApplyReadyBatchesRetries = 0;
 
   @GuardedBy("this")
   private @Nullable AsyncBatch mCurrentBatch = null;
@@ -850,6 +859,14 @@ public class RecyclerBinder
     }
   }
 
+  private void ensureApplyReadyBatches() {
+    if (ThreadUtils.isMainThread()) {
+      applyReadyBatches();
+    } else {
+      ChoreographerCompatImpl.getInstance().postFrameCallback(mApplyReadyBatchesCallback);
+    }
+  }
+
   @UiThread
   private void applyReadyBatches() {
     ThreadUtils.assertMainThread();
@@ -862,9 +879,27 @@ public class RecyclerBinder
       // Fast check that doesn't acquire lock -- measure() is locking and will post a call to
       // applyReadyBatches when it completes.
       if (!mHasAsyncBatchesToCheck.get() || !mIsMeasured.get() || mIsInMeasure.get()) {
+        mApplyReadyBatchesRetries = 0;
         return;
       }
 
+      // If applyReadyBatches happens to be called from scroll of the RecyclerView (e.g. a scroll
+      // event triggers a new sections root synchronously which adds a component and calls
+      // applyReadyBatches), we need to postpone changing the adapter since RecyclerView asserts
+      // that changes don't happen while it's in scroll/layout.
+      if (mMountedView != null && mMountedView.isComputingLayout()) {
+        // Sanity check that we don't get stuck in an infinite loop
+        mApplyReadyBatchesRetries++;
+        if (mApplyReadyBatchesRetries > 100) {
+          throw new RuntimeException("Too many retries -- RecyclerView is stuck in layout.");
+        }
+
+        // Making changes to the adapter here will crash us. Just post to the next frame boundary.
+        ChoreographerCompatImpl.getInstance().postFrameCallback(mApplyReadyBatchesCallback);
+        return;
+      }
+
+      mApplyReadyBatchesRetries = 0;
       boolean appliedBatch = false;
       while (true) {
         final AsyncBatch batch;
@@ -1869,7 +1904,7 @@ public class RecyclerBinder
     } finally {
       mIsInMeasure.set(false);
       if (mHasAsyncOperations) {
-        mMainThreadHandler.post(mApplyReadyBatchesRunnable);
+        ensureApplyReadyBatches();
       }
     }
   }
