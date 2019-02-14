@@ -44,6 +44,8 @@ LITHO_TESTING_CORE_TARGET = make_dep_path("litho-testing/src/main/java/com/faceb
 
 LITHO_TESTING_TARGET = make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing:testing")
 
+LITHO_TESTING_WHITEBOX_TARGET = make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing:whitebox")
+
 LITHO_TESTING_ASSERTJ_TARGET = make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/assertj:assertj")
 
 LITHO_TESTING_HELPER_TARGET = make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/helper:helper")
@@ -119,8 +121,6 @@ LITHO_COMPILE_TESTING_TARGET = make_dep_path("lib/compile-testing:compile-testin
 LITHO_TRUTH_TARGET = make_dep_path("lib/truth:truth")
 
 LITHO_MOCKITO_TARGET = make_dep_path("lib/mockito:mockito")
-
-LITHO_POWERMOCK_REFLECT_TARGET = make_dep_path("lib/powermock:powermock-reflect")
 
 LITHO_POWERMOCK_MOCKITO_TARGET = make_dep_path("lib/powermock:powermock-mockito")
 
