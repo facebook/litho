@@ -24,9 +24,6 @@ public class NodeConfig {
 
   public interface YogaNodeFactory {
     @Nullable
-    YogaNode create();
-
-    @Nullable
     YogaNode create(YogaConfig config);
   }
 
