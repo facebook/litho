@@ -254,6 +254,8 @@ public class ComponentsConfiguration {
 
   public static boolean disableAllClipProps = false;
 
+  public static boolean disableClipOnRecyclers = false;
+
   public static boolean isRenderInfoDebuggingEnabled() {
     return isDebugModeEnabled && enableRenderInfoDebugging;
   }
