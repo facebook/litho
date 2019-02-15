@@ -46,7 +46,7 @@ public class RenderInfoViewCreatorController {
 
   @UiThread
   public void maybeTrackViewCreator(RenderInfo renderInfo) {
-    if (!renderInfo.rendersView()) {
+    if (!renderInfo.rendersView() || renderInfo == AdapterProxy.PROXY_RENDER_INFO) {
       return;
     }
 
