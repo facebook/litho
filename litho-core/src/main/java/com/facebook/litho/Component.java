@@ -1592,6 +1592,10 @@ public abstract class Component extends ComponentLifecycle
      *     the parent itself.
      */
     public T clipChildren(boolean clipChildren) {
+      if (ComponentsConfiguration.disableAllClipProps) {
+        return getThis();
+      }
+
       mComponent.getOrCreateCommonPropsHolder().clipChildren(clipChildren);
       return getThis();
     }
