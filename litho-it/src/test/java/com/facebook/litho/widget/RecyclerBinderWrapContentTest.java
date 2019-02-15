@@ -270,7 +270,6 @@ public class RecyclerBinderWrapContentTest {
             .wrapContent(true)
             .build(mComponentContext);
 
-    mockRecyclerBinderToCallApplyBatches(mRecyclerView, recyclerBinder);
     recyclerBinder.mount(mRecyclerView);
 
     final Component component =
@@ -317,7 +316,6 @@ public class RecyclerBinderWrapContentTest {
             .wrapContent(true)
             .build(mComponentContext);
 
-    mockRecyclerBinderToCallApplyBatches(mRecyclerView, recyclerBinder);
     recyclerBinder.mount(mRecyclerView);
 
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
@@ -676,7 +674,6 @@ public class RecyclerBinderWrapContentTest {
             .wrapContent(true)
             .build(mComponentContext);
 
-    mockRecyclerBinderToCallApplyBatches(mRecyclerView, recyclerBinder);
     recyclerBinder.mount(mRecyclerView);
 
     final Component component =
@@ -725,7 +722,6 @@ public class RecyclerBinderWrapContentTest {
             .wrapContent(true)
             .build(mComponentContext);
 
-    mockRecyclerBinderToCallApplyBatches(mRecyclerView, recyclerBinder);
     recyclerBinder.mount(mRecyclerView);
 
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
@@ -776,7 +772,6 @@ public class RecyclerBinderWrapContentTest {
         prepareBinderWithMeasuredChildSize(
             widthSpec, heightSpec, 8, OrientationHelper.HORIZONTAL, 100, true);
 
-    mockRecyclerBinderToCallApplyBatches(mRecyclerView, recyclerBinder);
     recyclerBinder.mount(mRecyclerView);
 
     recyclerBinder.removeItemAt(0);
@@ -802,7 +797,6 @@ public class RecyclerBinderWrapContentTest {
         prepareBinderWithMeasuredChildSize(
             widthSpec, heightSpec, 8, OrientationHelper.HORIZONTAL, 100, true);
 
-    mockRecyclerBinderToCallApplyBatches(mRecyclerView, recyclerBinder);
     recyclerBinder.mount(mRecyclerView);
 
     recyclerBinder.removeRangeAt(0, 3);
@@ -828,7 +822,6 @@ public class RecyclerBinderWrapContentTest {
         prepareBinderWithMeasuredChildSize(
             widthSpec, heightSpec, 8, OrientationHelper.HORIZONTAL, 100, true);
 
-    mockRecyclerBinderToCallApplyBatches(mRecyclerView, recyclerBinder);
     recyclerBinder.mount(mRecyclerView);
 
     final Component newComponent =
@@ -862,7 +855,6 @@ public class RecyclerBinderWrapContentTest {
         prepareBinderWithMeasuredChildSize(
             widthSpec, heightSpec, 8, OrientationHelper.HORIZONTAL, 100, true);
 
-    mockRecyclerBinderToCallApplyBatches(mRecyclerView, recyclerBinder);
     recyclerBinder.mount(mRecyclerView);
 
     final ArrayList<RenderInfo> newRenderInfos = new ArrayList<>();
@@ -913,20 +905,6 @@ public class RecyclerBinderWrapContentTest {
 
     verify(changeSetCompleteCallback).onDataRendered(eq(true), anyLong());
     verify(mRecyclerView, never()).postOnAnimation(recyclerBinder.mRemeasureRunnable);
-  }
-
-  private void mockRecyclerBinderToCallApplyBatches(
-      RecyclerView recyclerView, RecyclerBinder recyclerBinder) {
-    doAnswer(
-            new Answer() {
-              @Override
-              public Void answer(InvocationOnMock invocation) {
-                ((Runnable) invocation.getArguments()[0]).run();
-                return null;
-              }
-            })
-        .when(mRecyclerView)
-        .postOnAnimation(recyclerBinder.mApplyReadyBatchesRunnable);
   }
 
   private RecyclerBinder prepareBinderWithMeasuredChildSize(

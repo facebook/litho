@@ -211,19 +211,7 @@ public class RecyclerBinder
         }
       };
 
-  @VisibleForTesting
-  final Runnable mApplyReadyBatchesRunnable =
-      new Runnable() {
-
-        @UiThread
-        @Override
-        public void run() {
-          applyReadyBatches();
-        }
-      };
-
-  @VisibleForTesting
-  final ChoreographerCompat.FrameCallback mApplyReadyBatchesCallback =
+  private final ChoreographerCompat.FrameCallback mApplyReadyBatchesCallback =
       new ChoreographerCompat.FrameCallback() {
 
         @UiThread
@@ -1444,7 +1432,7 @@ public class RecyclerBinder
       } else {
         // measure() will post this for us
         if (mIsMeasured.get()) {
-          mMainThreadHandler.post(mApplyReadyBatchesRunnable);
+          ChoreographerCompatImpl.getInstance().postFrameCallback(mApplyReadyBatchesCallback);
         }
       }
       clearThreadForChangeSet();
@@ -1509,7 +1497,7 @@ public class RecyclerBinder
             insertsInFirstBatch, 0, mMeasuredSize.width, mMeasuredSize.height, null);
       }
 
-      mMainThreadHandler.post(mApplyReadyBatchesRunnable);
+      ChoreographerCompatImpl.getInstance().postFrameCallback(mApplyReadyBatchesCallback);
     }
 
     mHasFilledViewport = true;
