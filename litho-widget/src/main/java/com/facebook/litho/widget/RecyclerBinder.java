@@ -1725,6 +1725,43 @@ public class RecyclerBinder
     // Nothing to do here.
   }
 
+  private static void validateMeasureSpecs(
+      int widthSpec, int heightSpec, boolean canRemeasure, int scrollDirection) {
+    switch (scrollDirection) {
+      case HORIZONTAL:
+        if (SizeSpec.getMode(widthSpec) == SizeSpec.UNSPECIFIED) {
+          throw new IllegalStateException(
+              "Width mode has to be EXACTLY OR AT MOST for an horizontal scrolling RecyclerView");
+        }
+
+        if (!canRemeasure && SizeSpec.getMode(heightSpec) == SizeSpec.UNSPECIFIED) {
+          throw new IllegalStateException(
+              "Can't use Unspecified height on an horizontal "
+                  + "scrolling Recycler if dynamic measurement is not allowed");
+        }
+
+        break;
+
+      case VERTICAL:
+        if (SizeSpec.getMode(heightSpec) == SizeSpec.UNSPECIFIED) {
+          throw new IllegalStateException(
+              "Height mode has to be EXACTLY OR AT MOST for a vertical scrolling RecyclerView");
+        }
+
+        if (!canRemeasure && SizeSpec.getMode(widthSpec) == SizeSpec.UNSPECIFIED) {
+          throw new IllegalStateException(
+              "Can't use Unspecified width on a vertical scrolling "
+                  + "Recycler if dynamic measurement is not allowed");
+        }
+        break;
+
+      default:
+        throw new UnsupportedOperationException(
+            "The orientation defined by LayoutInfo should be"
+                + " either OrientationHelper.HORIZONTAL or OrientationHelper.VERTICAL");
+    }
+  }
+
   /**
    * A component mounting a RecyclerView can use this method to determine its size. A Recycler that
    * scrolls horizontally will leave the width unconstrained and will measure its children with a
@@ -1753,33 +1790,18 @@ public class RecyclerBinder
     // to acquire the lock or bail and let measure schedule it as a runnable. This can go away
     // once we break up the locking in measure.
     // TODO(t37195892): Do not hold lock throughout measure call in RecyclerBinder
+    final boolean canRemeasure = reMeasureEventHandler != null;
+    final int scrollDirection = mLayoutInfo.getScrollDirection();
+
+    validateMeasureSpecs(widthSpec, heightSpec, canRemeasure, scrollDirection);
+
+    final int measuredWidth;
+    final int measuredHeight;
+
     mIsInMeasure.set(true);
 
     try {
       synchronized (this) {
-        final int scrollDirection = mLayoutInfo.getScrollDirection();
-
-        switch (scrollDirection) {
-          case HORIZONTAL:
-            if (SizeSpec.getMode(widthSpec) == SizeSpec.UNSPECIFIED) {
-              throw new IllegalStateException(
-                  "Width mode has to be EXACTLY OR AT MOST for an horizontal scrolling RecyclerView");
-            }
-            break;
-
-          case VERTICAL:
-            if (SizeSpec.getMode(heightSpec) == SizeSpec.UNSPECIFIED) {
-              throw new IllegalStateException(
-                  "Height mode has to be EXACTLY OR AT MOST for a vertical scrolling RecyclerView");
-            }
-            break;
-
-          default:
-            throw new UnsupportedOperationException(
-                "The orientation defined by LayoutInfo should be"
-                    + " either OrientationHelper.HORIZONTAL or OrientationHelper.VERTICAL");
-        }
-
         if (mLastWidthSpec != LayoutManagerOverrideParams.UNINITIALIZED
             && !mRequiresRemeasure.get()) {
           switch (scrollDirection) {
@@ -1824,22 +1846,12 @@ public class RecyclerBinder
         // At this point we might still not have a range. In this situation we should return the
         // best
         // size we can detect from the size spec and update it when the first item comes in.
-        final boolean canMeasure = reMeasureEventHandler != null;
-        final int measuredWidth;
-        final int measuredHeight;
 
         switch (scrollDirection) {
           case OrientationHelper.VERTICAL:
-            if (!canMeasure && SizeSpec.getMode(widthSpec) == SizeSpec.UNSPECIFIED) {
-              throw new IllegalStateException(
-                  "Can't use Unspecified width on a vertical scrolling "
-                      + "Recycler if dynamic measurement is not allowed");
-            }
-
-
             measuredHeight = SizeSpec.getSize(heightSpec);
 
-            if (SizeSpec.getMode(widthSpec) == SizeSpec.EXACTLY || !canMeasure) {
+            if (SizeSpec.getMode(widthSpec) == SizeSpec.EXACTLY || !canRemeasure) {
               measuredWidth = SizeSpec.getSize(widthSpec);
               mReMeasureEventEventHandler = mWrapContent ? reMeasureEventHandler : null;
               mRequiresRemeasure.set(mWrapContent);
@@ -1856,15 +1868,9 @@ public class RecyclerBinder
 
           case OrientationHelper.HORIZONTAL:
           default:
-            if (!canMeasure && SizeSpec.getMode(heightSpec) == SizeSpec.UNSPECIFIED) {
-              throw new IllegalStateException(
-                  "Can't use Unspecified height on an horizontal "
-                      + "scrolling Recycler if dynamic measurement is not allowed");
-            }
-
             measuredWidth = SizeSpec.getSize(widthSpec);
 
-            if (SizeSpec.getMode(heightSpec) == SizeSpec.EXACTLY || !canMeasure) {
+            if (SizeSpec.getMode(heightSpec) == SizeSpec.EXACTLY || !canRemeasure) {
               measuredHeight = SizeSpec.getSize(heightSpec);
               mReMeasureEventEventHandler =
                   (mHasDynamicItemHeight || mWrapContent) ? reMeasureEventHandler : null;
@@ -1882,14 +1888,15 @@ public class RecyclerBinder
             break;
         }
 
-        final Size wrapSize = mWrapContent ? new Size() : null;
-
         if (mWrapContent) {
+          final Size wrapSize = new Size();
           fillListViewport(measuredWidth, measuredHeight, wrapSize);
+          outSize.width = wrapSize.width;
+          outSize.height = wrapSize.height;
+        } else {
+          outSize.width = measuredWidth;
+          outSize.height = measuredHeight;
         }
-
-        outSize.width = mWrapContent ? wrapSize.width : measuredWidth;
-        outSize.height = mWrapContent ? wrapSize.height : measuredHeight;
 
         mMeasuredSize = new Size(outSize.width, outSize.height);
         mIsMeasured.set(true);
