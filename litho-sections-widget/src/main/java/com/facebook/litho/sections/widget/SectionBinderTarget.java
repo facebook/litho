@@ -40,15 +40,11 @@ public class SectionBinderTarget implements Target, Binder<RecyclerView> {
   private final RecyclerBinder mRecyclerBinder;
   private final boolean mUseBackgroundChangeSets;
 
-  public static SectionBinderTarget createWithBackgroundChangeSets(RecyclerBinder recyclerBinder) {
-    return new SectionBinderTarget(recyclerBinder, true);
-  }
-
   public SectionBinderTarget(RecyclerBinder recyclerBinder) {
     this(recyclerBinder, SectionsConfiguration.useBackgroundChangeSets);
   }
 
-  SectionBinderTarget(RecyclerBinder recyclerBinder, boolean useBackgroundChangeSets) {
+  public SectionBinderTarget(RecyclerBinder recyclerBinder, boolean useBackgroundChangeSets) {
     mRecyclerBinder = recyclerBinder;
     mUseBackgroundChangeSets = useBackgroundChangeSets;
   }
