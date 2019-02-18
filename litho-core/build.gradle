@@ -54,7 +54,7 @@ android {
 
 dependencies {
     // Project dependencies
-    compileOnly project(':litho-annotations')
+    api project(':litho-annotations')
     compileOnly project(':litho-stubs')
 
     // Annotations

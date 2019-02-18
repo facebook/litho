@@ -31,7 +31,6 @@ android {
 
 dependencies {
     // Project dependencies
-    compileOnly project(':litho-annotations')
     compileOnly project(':litho-sections-annotations')
     implementation project(':litho-sections-core')
     implementation project(':litho-core')

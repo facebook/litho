@@ -59,12 +59,10 @@ dependencies {
     implementation project(':litho-sections-core')
     implementation deps.supportAppCompat
 
-    compileOnly project(':litho-annotations')
     compileOnly project(':litho-sections-annotations')
     annotationProcessor project(':litho-sections-processor')
 
     // Test project dependencies
-    testCompileOnly project(':litho-annotations')
     testCompileOnly project(':litho-sections-annotations')
     testImplementation project(':litho-testing')
     testImplementation project(':litho-widget')

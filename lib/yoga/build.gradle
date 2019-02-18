@@ -14,8 +14,7 @@ dependencies {
     implementation deps.soloader
     implementation deps.jsr305
     implementation deps.inferAnnotations
-
-    compileOnly project(':litho-annotations')
+    implementation project(':litho-annotations')
 }
 
 // Our current NDK setup only gets us half-way there to a way to run Yoga

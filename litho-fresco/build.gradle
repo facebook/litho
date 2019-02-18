@@ -33,7 +33,6 @@ android {
 
 dependencies {
     implementation project(':litho-core')
-    compileOnly project(':litho-annotations')
     annotationProcessor project(':litho-processor')
 
     // Annotations

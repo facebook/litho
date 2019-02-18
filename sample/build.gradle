@@ -39,7 +39,6 @@ dependencies {
     implementation project(':litho-fresco')
     implementation project(':litho-sections-core')
     implementation project(':litho-sections-widget')
-    compileOnly project(':litho-annotations')
     compileOnly project(':litho-sections-annotations')
     annotationProcessor project(':litho-processor')
     annotationProcessor project(':litho-sections-processor')
@@ -50,9 +49,6 @@ dependencies {
     implementation(deps.flipper) {
         exclude group: 'com.facebook.flipper', module: 'fbjni'
     }
-
-    // Flipper may reflect on annotations, requiring them to be present at runtime.
-    debugImplementation project(':litho-annotations')
 
     // Annotations
     compileOnly deps.jsr305
@@ -70,7 +66,6 @@ dependencies {
 
     // Unit test only
     testImplementation project(':litho-testing')
-    testImplementation project(':litho-annotations')
     testCompileOnly deps.jsr305
     testAnnotationProcessor project(':litho-processor')
     testImplementation deps.junit
