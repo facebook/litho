@@ -189,13 +189,19 @@ class InternalNode implements ComponentLayout {
     return node;
   }
 
+  static YogaNode createYogaNode(ComponentContext componentContext) {
+    return componentContext.mYogaNodeFactory != null
+        ? componentContext.mYogaNodeFactory.create()
+        : NodeConfig.createYogaNode();
+  }
+
   protected InternalNode() {
     mYogaNode = null;
     mComponentContext = null;
   }
 
   protected InternalNode(ComponentContext componentContext) {
-    this(componentContext, NodeConfig.createYogaNode(), true);
+    this(componentContext, createYogaNode(componentContext), true);
   }
 
   protected InternalNode(ComponentContext componentContext, YogaNode yogaNode) {
@@ -203,7 +209,7 @@ class InternalNode implements ComponentLayout {
   }
 
   protected InternalNode(ComponentContext componentContext, boolean createDebugComponentsInCtor) {
-    this(componentContext, NodeConfig.createYogaNode());
+    this(componentContext, createYogaNode(componentContext));
   }
 
   private InternalNode(

@@ -28,6 +28,7 @@ import android.support.annotation.StyleRes;
 import android.support.annotation.VisibleForTesting;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.yoga.YogaNode;
 
 /**
  * A Context subclass for use within the Components framework. Contains extra bookkeeping
@@ -35,12 +36,17 @@ import com.facebook.litho.config.ComponentsConfiguration;
  */
 public class ComponentContext {
 
+  interface YogaNodeFactory {
+    YogaNode create();
+  };
+
   static final InternalNode NULL_LAYOUT = new NoOpInternalNode();
 
   private final Context mContext;
   private final String mLogTag;
   private final ComponentsLogger mLogger;
   private final @Nullable StateHandler mStateHandler;
+  final YogaNodeFactory mYogaNodeFactory = null;
 
   /** TODO: (T38237241) remove the usage of the key handler post the nested tree experiment */
   private final @Nullable KeyHandler mKeyHandler;
