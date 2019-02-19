@@ -252,11 +252,15 @@ public class ComponentsConfiguration {
   /** If true, information about RenderInfos will be passed to Flipper's layout inspector. */
   public static boolean enableRenderInfoDebugging = false;
 
+  public static boolean isRenderInfoDebuggingEnabled() {
+    return isDebugModeEnabled && enableRenderInfoDebugging;
+  }
+
   public static boolean disableAllClipProps = false;
 
   public static boolean disableClipOnRecyclers = false;
 
-  public static boolean isRenderInfoDebuggingEnabled() {
-    return isDebugModeEnabled && enableRenderInfoDebugging;
-  }
+  public static boolean isPoolBisectEnabled = false;
+  public static String disablePoolsStart = "aaaaa";
+  public static String disablePoolsEnd = "zzzzz";
 }

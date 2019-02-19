@@ -40,8 +40,8 @@ import org.robolectric.util.ActivityController;
 public class ComponentsPoolsTest {
 
   private static final int POOL_SIZE = 2;
-  private final ComponentLifecycle mLifecycle =
-      new ComponentLifecycle() {
+  private final Component mLifecycle =
+      new Component("Lifecycle") {
         @Override
         int getTypeId() {
           return 1;
@@ -58,8 +58,8 @@ public class ComponentsPoolsTest {
         }
       };
 
-  private final ComponentLifecycle mLifecycleWithEmptyPoolSize =
-      new ComponentLifecycle() {
+  private final Component mLifecycleWithEmptyPoolSize =
+      new Component("LifecycleWithEmptyPoolSize") {
         @Override
         int getTypeId() {
           return 2;
