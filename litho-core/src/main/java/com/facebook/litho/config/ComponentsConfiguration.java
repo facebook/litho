@@ -263,4 +263,8 @@ public class ComponentsConfiguration {
   public static boolean isPoolBisectEnabled = false;
   public static String disablePoolsStart = "aaaaa";
   public static String disablePoolsEnd = "zzzzz";
+
+  public static boolean prioritizeRenderingOnParallel = true;
+
+  public static boolean useSharedFutureOnParallel = true;
 }
