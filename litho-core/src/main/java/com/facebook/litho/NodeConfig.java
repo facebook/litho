@@ -51,7 +51,7 @@ public class NodeConfig {
   static YogaNode createYogaNode() {
     return NodeConfig.sYogaNodeFactory != null
         ? NodeConfig.sYogaNodeFactory.create(sYogaConfig)
-        : new YogaNode(sYogaConfig);
+        : YogaNode.create(sYogaConfig);
   }
 
   /**

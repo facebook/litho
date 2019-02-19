@@ -76,7 +76,7 @@ public class ComponentLifecycleTest {
 
     mDiffNode = mock(DiffNode.class);
     mNode = mock(InternalNode.class);
-    mYogaNode = new YogaNode();
+    mYogaNode = YogaNode.create();
     mYogaNode.setData(mNode);
 
     when(mNode.getLastWidthSpec()).thenReturn(-1);
