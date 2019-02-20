@@ -972,10 +972,6 @@ public class ComponentHost extends ViewGroup {
 
   @Override
   public boolean requestFocus(int direction, Rect previouslyFocusedRect) {
-    if (!ComponentsConfiguration.suppressFocusRequestWhileMounting) {
-      return super.requestFocus(direction, previouslyFocusedRect);
-    }
-
     // Arguments for equivalent call to View.requestFocus().
     final boolean nullArgumentsRequestFocusCall =
         (direction == View.FOCUS_DOWN && previouslyFocusedRect == null);

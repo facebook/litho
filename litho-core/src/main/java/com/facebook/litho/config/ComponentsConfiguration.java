@@ -230,9 +230,6 @@ public class ComponentsConfiguration {
   /** set the size of the extra memory internal node tree should take */
   public static int extraMemorySize = 0;
 
-  /** If true, it's going to suppress getRootView().requestFocus() calls during mounting. */
-  public static boolean suppressFocusRequestWhileMounting = false;
-
   /**
    * Controls if DisplayList wrapping should be disabled by default. Would have no effect if
    * ComponentTree explicitly set up to enable wrapping

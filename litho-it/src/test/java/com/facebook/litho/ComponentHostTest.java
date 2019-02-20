@@ -612,8 +612,6 @@ public class ComponentHostTest {
 
   @Test
   public void testSuppressRequestFocus() {
-    ComponentsConfiguration.suppressFocusRequestWhileMounting = true;
-
     mHost.requestFocus();
     assertThat(mHost.getFocusRequestCount()).isEqualTo(1);
 
@@ -624,8 +622,6 @@ public class ComponentHostTest {
     mHost.suppressInvalidations(false);
 
     assertThat(mHost.getFocusRequestCount()).isEqualTo(2);
-
-    ComponentsConfiguration.suppressFocusRequestWhileMounting = false;
   }
 
   @Test
