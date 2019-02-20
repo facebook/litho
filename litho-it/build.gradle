@@ -84,7 +84,6 @@ dependencies {
     testImplementation deps.supportAppCompat
     testImplementation deps.supportCoreUi
     testImplementation deps.supportRecyclerView
-    testImplementation deps.powermockReflect
     testImplementation deps.khronos
     testImplementation files(Jvm.current().getToolsJar())
     testImplementation files(Jvm.current().getJre().homeDir.getAbsolutePath() + '/lib/rt.jar')
