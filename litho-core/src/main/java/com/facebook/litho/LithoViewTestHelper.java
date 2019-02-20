@@ -118,23 +118,24 @@ public class LithoViewTestHelper {
     }
     final StringBuilder sb = new StringBuilder();
     int depth = embedded ? getLithoViewDepthInAndroid(view) : 0;
-    viewToString(view.getLeft(), view.getTop(), root, sb, embedded, depth);
+    DebugComponentDescriptionHelper.addViewDescription(
+        view.getLeft(), view.getTop(), root, sb, embedded);
+    viewToString(root, sb, embedded, depth);
     return sb.toString();
   }
 
+  /** For E2E tests we remove non-layout components because they break view-hierarchy parsing. */
   private static void viewToString(
-      int left,
-      int top,
-      DebugComponent debugComponent,
-      StringBuilder sb,
-      boolean embedded,
-      int depth) {
-
-    DebugComponentDescriptionHelper.addViewDescription(left, top, debugComponent, sb, embedded);
-
-    for (DebugComponent child : debugComponent.getChildComponents()) {
-      writeNewLineWithIndentByDepth(sb, depth);
-      viewToString(0, 0, child, sb, embedded, depth + 1);
+      DebugComponent component, StringBuilder sb, boolean embedded, int depth) {
+    for (DebugComponent child : component.getChildComponents()) {
+      int nextDepth = depth;
+      // TODO(T37986749): add unit test for this scenario (need to create non-layout somehow)
+      if (!ComponentsConfiguration.isEndToEndTestRun || child.isLayoutNode()) {
+        writeNewLineWithIndentByDepth(sb, nextDepth);
+        DebugComponentDescriptionHelper.addViewDescription(0, 0, child, sb, embedded);
+        nextDepth++;
+      }
+      viewToString(child, sb, embedded, nextDepth);
     }
   }
 
