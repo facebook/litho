@@ -27,6 +27,7 @@ import static com.facebook.litho.it.R.drawable.test_bg;
 import static com.facebook.litho.reference.Reference.acquire;
 import static com.facebook.yoga.YogaEdge.LEFT;
 import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.robolectric.Shadows.shadowOf;
 
 import android.graphics.drawable.Drawable;
 import android.view.ContextThemeWrapper;
@@ -57,7 +58,8 @@ public class ResolveAttributeTest {
     Drawable d = mContext.getResources().getDrawable(test_bg);
     ComparableDrawableWrapper comparable =
         (ComparableDrawableWrapper) acquire(mContext.getAndroidContext(), node.getBackground());
-    assertThat(comparable.getWrappedDrawable()).isEqualTo(d);
+    assertThat(shadowOf(comparable.getWrappedDrawable()).getCreatedFromResId())
+        .isEqualTo(shadowOf(d).getCreatedFromResId());
   }
 
   @Test
@@ -81,7 +83,8 @@ public class ResolveAttributeTest {
     Drawable d = mContext.getResources().getDrawable(test_bg);
     ComparableDrawableWrapper comparable =
         (ComparableDrawableWrapper) acquire(mContext.getAndroidContext(), node.getBackground());
-    assertThat(comparable.getWrappedDrawable()).isEqualTo(d);
+    assertThat(shadowOf(comparable.getWrappedDrawable()).getCreatedFromResId())
+        .isEqualTo(shadowOf(d).getCreatedFromResId());
   }
 
   @Test
