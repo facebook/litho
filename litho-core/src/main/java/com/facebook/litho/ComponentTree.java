@@ -476,6 +476,11 @@ public class ComponentTree {
 
     dispatchNewLayoutStateReady();
 
+    // Dispatching the listener may have detached us -- verify that's not the case
+    if (!mIsAttached) {
+      return;
+    }
+
     // We defer until measure if we don't yet have a width/height
     final int viewWidth = mLithoView.getMeasuredWidth();
     final int viewHeight = mLithoView.getMeasuredHeight();

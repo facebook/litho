@@ -973,6 +973,46 @@ public class ComponentTreeTest {
     lockOnCreateLayoutFinish.countDown();
   }
 
+  @Test
+  public void testAttachFromListenerDoesntCrash() {
+    final Component component = TestLayoutComponent.create(mContext).build();
+    final LithoView lithoView = new LithoView(mContext);
+
+    final ComponentTree componentTree = ComponentTree.create(mContext, component).build();
+    lithoView.setComponentTree(componentTree);
+
+    componentTree.setNewLayoutStateReadyListener(
+        new ComponentTree.NewLayoutStateReadyListener() {
+          @Override
+          public void onNewLayoutStateReady(ComponentTree componentTree) {
+            lithoView.onAttachedToWindow();
+          }
+        });
+
+    componentTree.setRootAndSizeSpec(mComponent, mWidthSpec, mHeightSpec);
+  }
+
+  @Test
+  public void testDetachFromListenerDoesntCrash() {
+    final Component component = TestLayoutComponent.create(mContext).build();
+    final LithoView lithoView = new LithoView(mContext);
+
+    final ComponentTree componentTree = ComponentTree.create(mContext, component).build();
+    lithoView.setComponentTree(componentTree);
+    lithoView.onAttachedToWindow();
+
+    componentTree.setNewLayoutStateReadyListener(
+        new ComponentTree.NewLayoutStateReadyListener() {
+          @Override
+          public void onNewLayoutStateReady(ComponentTree componentTree) {
+            lithoView.onDetachedFromWindow();
+            componentTree.clearLithoView();
+          }
+        });
+
+    componentTree.setRootAndSizeSpec(mComponent, mWidthSpec, mHeightSpec);
+  }
+
   class MyTestComponent extends Component {
 
     CountDownLatch unlockWaitingOnCreateLayout;
