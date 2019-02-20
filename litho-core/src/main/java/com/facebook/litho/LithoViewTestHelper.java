@@ -26,9 +26,9 @@ import com.facebook.proguard.annotations.DoNotStrip;
 import java.util.Deque;
 
 /**
- * Helper class to access metadata from {@link LithoView} that is relevant during end to end
- * tests. In order for the data to be collected, {@link
- * ComponentsConfiguration#isEndToEndTestRun} must be enabled.
+ * Helper class to access metadata from {@link LithoView} that is relevant during end to end tests.
+ * In order for the data to be collected, {@link ComponentsConfiguration#isEndToEndTestRun} must be
+ * enabled.
  */
 @DoNotStrip
 public class LithoViewTestHelper {
@@ -112,43 +112,48 @@ public class LithoViewTestHelper {
    */
   @DoNotStrip
   public static String viewToString(LithoView view, boolean embedded) {
-    int left = 0;
-    int top = 0;
-    int depth = 0;
-    if (embedded) {
-      left = view.getLeft();
-      top = view.getTop();
-      depth = 2;
-      ViewParent parent = view.getParent();
-      while (parent != null) {
-        depth++;
-        parent = parent.getParent();
-      }
+    DebugComponent root = DebugComponent.getRootInstance(view);
+    if (root == null) {
+      return "";
     }
     final StringBuilder sb = new StringBuilder();
-    viewToString(left, top, DebugComponent.getRootInstance(view), sb, embedded, depth);
+    int depth = embedded ? getLithoViewDepthInAndroid(view) : 0;
+    viewToString(view.getLeft(), view.getTop(), root, sb, embedded, depth);
     return sb.toString();
   }
 
   private static void viewToString(
       int left,
       int top,
-      @Nullable DebugComponent debugComponent,
+      DebugComponent debugComponent,
       StringBuilder sb,
       boolean embedded,
       int depth) {
-    if (debugComponent == null) {
-      return;
-    }
 
     DebugComponentDescriptionHelper.addViewDescription(left, top, debugComponent, sb, embedded);
 
     for (DebugComponent child : debugComponent.getChildComponents()) {
-      sb.append("\n");
-      for (int i = 0; i <= depth; i++) {
-        sb.append("  ");
-      }
+      writeNewLineWithIndentByDepth(sb, depth);
       viewToString(0, 0, child, sb, embedded, depth + 1);
+    }
+  }
+
+  /** calculate the depth on the litho components in general android view hierarchy */
+  private static int getLithoViewDepthInAndroid(LithoView view) {
+    int depth = 2;
+    ViewParent parent = view.getParent();
+    while (parent != null) {
+      depth++;
+      parent = parent.getParent();
+    }
+    return depth;
+  }
+
+  /** Add new line and two-space indent for each level to match android view hierarchy dump */
+  private static void writeNewLineWithIndentByDepth(StringBuilder sb, int depth) {
+    sb.append("\n");
+    for (int i = 0; i <= depth; i++) {
+      sb.append("  ");
     }
   }
 
