@@ -192,7 +192,10 @@ public class RecyclerBinderConfiguration {
      *     visible item to be computed = 5 * 10 = 50
      */
     public Builder rangeRatio(float rangeRatio) {
-      mRangeRatio = rangeRatio >= 0 ? rangeRatio : DEFAULT_RANGE;
+      if (rangeRatio < 0) {
+        throw new IllegalArgumentException("Range ratio cannot be negative: " + rangeRatio);
+      }
+      mRangeRatio = rangeRatio;
       return this;
     }
 
