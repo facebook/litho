@@ -920,7 +920,7 @@ public class ComponentHostTest {
     assertThat(drawables).hasSize(1);
     assertThat(drawables).contains(d3);
 
-    unmount(2, mountItem2);
+    unmount(1, mountItem2);
 
     drawables = mHost.getDrawables();
     assertThat(drawables).hasSize(1);

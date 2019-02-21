@@ -76,9 +76,9 @@ public class DrawableResourcesCacheTest {
     mCache.release(drawable2, 1);
     mCache.release(drawable3, 1);
 
-    assertThat(mCache.get(1, resources)).isEqualTo(drawable);
-    assertThat(mCache.get(1, resources)).isEqualTo(drawable2);
-    assertThat(mCache.get(1, resources)).isEqualTo(drawable3);
+    assertThat(mCache.get(1, resources)).isSameAs(drawable3);
+    assertThat(mCache.get(1, resources)).isSameAs(drawable2);
+    assertThat(mCache.get(1, resources)).isSameAs(drawable);
   }
 
 }
