@@ -4811,6 +4811,98 @@ public class RecyclerBinderTest {
     fail("Should have escaped infinite retries with exception.");
   }
 
+  @Test
+  public void tesLayoutAsyncInRegisterAsyncInsertWhenRemesureIsNotNeeded() {
+    final boolean checkNeedsRemeasure = ComponentsConfiguration.checkNeedsRemeasure;
+    ComponentsConfiguration.checkNeedsRemeasure = true;
+    final int NUM_TO_INSERT = 5;
+
+    final ArrayList<Component> components = new ArrayList<>();
+    final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
+    for (int i = 0; i < NUM_TO_INSERT; i++) {
+      final Component component =
+          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+      components.add(component);
+      renderInfos.add(ComponentRenderInfo.create().component(component).build());
+    }
+
+    mRecyclerBinder.measure(
+        new Size(),
+        makeSizeSpec(1000, EXACTLY),
+        makeSizeSpec(1000, EXACTLY),
+        mock(EventHandler.class));
+
+    runOnBackgroundThreadSync(
+        new Runnable() {
+          @Override
+          public void run() {
+            mRecyclerBinder.insertRangeAtAsync(0, renderInfos);
+            mRecyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+          }
+        });
+
+    assertThat(mRecyclerBinder.getItemCount()).isEqualTo(0);
+
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+    ShadowLooper.runUiThreadTasks();
+
+    assertThat(mRecyclerBinder.getItemCount()).isEqualTo(NUM_TO_INSERT);
+
+    for (int i = 0; i < NUM_TO_INSERT; i++) {
+      final TestComponentTreeHolder holder =
+          mHoldersForComponents.get(renderInfos.get(i).getComponent());
+      assertThat(holder.mLayoutAsyncCalled).isTrue();
+    }
+
+    ComponentsConfiguration.checkNeedsRemeasure = checkNeedsRemeasure;
+  }
+
+  @Test
+  public void testNoLayoutAsyncInRegisterAsyncInsertWhenRemesureIsNeeded() {
+    final boolean checkNeedsRemeasure = ComponentsConfiguration.checkNeedsRemeasure;
+    ComponentsConfiguration.checkNeedsRemeasure = true;
+    final int NUM_TO_INSERT = 5;
+
+    final ArrayList<Component> components = new ArrayList<>();
+    final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
+    for (int i = 0; i < NUM_TO_INSERT; i++) {
+      final Component component =
+          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+      components.add(component);
+      renderInfos.add(ComponentRenderInfo.create().component(component).build());
+    }
+
+    mRecyclerBinder.measure(
+        new Size(),
+        makeSizeSpec(1000, AT_MOST),
+        makeSizeSpec(1000, EXACTLY),
+        mock(EventHandler.class));
+
+    runOnBackgroundThreadSync(
+        new Runnable() {
+          @Override
+          public void run() {
+            mRecyclerBinder.insertRangeAtAsync(0, renderInfos);
+            mRecyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+          }
+        });
+
+    assertThat(mRecyclerBinder.getItemCount()).isEqualTo(0);
+
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+    ShadowLooper.runUiThreadTasks();
+
+    assertThat(mRecyclerBinder.getItemCount()).isEqualTo(NUM_TO_INSERT);
+
+    for (int i = 0; i < NUM_TO_INSERT; i++) {
+      final TestComponentTreeHolder holder =
+          mHoldersForComponents.get(renderInfos.get(i).getComponent());
+      assertThat(holder.mLayoutAsyncCalled).isFalse();
+    }
+
+    ComponentsConfiguration.checkNeedsRemeasure = checkNeedsRemeasure;
+  }
+
   private RecyclerBinder createRecyclerBinderWithMockAdapter(RecyclerView.Adapter adapterMock) {
     return new RecyclerBinder.Builder()
         .rangeRatio(RANGE_RATIO)

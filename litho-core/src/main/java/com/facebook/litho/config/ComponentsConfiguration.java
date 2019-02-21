@@ -264,4 +264,10 @@ public class ComponentsConfiguration {
   public static boolean prioritizeRenderingOnParallel = true;
 
   public static boolean useSharedFutureOnParallel = true;
+
+  /**
+   * If true, we also check if the RecyclerBinder needs remeasuring when checking if it's been
+   * measured.
+   */
+  public static boolean checkNeedsRemeasure = false;
 }

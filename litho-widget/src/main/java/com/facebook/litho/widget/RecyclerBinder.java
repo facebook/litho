@@ -1008,9 +1008,8 @@ public class RecyclerBinder
 
     final ComponentTreeHolder holder = operation.mHolder;
     holder.setNewLayoutReadyListener(mAsyncLayoutReadyListener);
-
     // Otherwise, we'll kick off the layout at the end of measure
-    if (mIsMeasured.get()) {
+    if (isMeasured()) {
       computeLayoutAsync(holder);
     }
   }
@@ -1916,6 +1915,13 @@ public class RecyclerBinder
     }
   }
 
+  /** @return true if the view is measured and doesn't need remeasuring. */
+  private synchronized boolean isMeasured() {
+    return ComponentsConfiguration.checkNeedsRemeasure
+        ? mIsMeasured.get() && !mRequiresRemeasure.get()
+        : mIsMeasured.get();
+  }
+
   @GuardedBy("this")
   private void fillListViewport(int maxWidth, int maxHeight, @Nullable Size outSize) {
     ComponentsSystrace.beginSection("fillListViewport");
@@ -2600,7 +2606,7 @@ public class RecyclerBinder
     final int treeHoldersSize;
 
     synchronized (this) {
-      if (!mIsMeasured.get() || mRange == null) {
+      if (!isMeasured() || mRange == null) {
         return;
       }
 
