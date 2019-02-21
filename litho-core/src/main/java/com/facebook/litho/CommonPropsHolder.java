@@ -29,6 +29,7 @@ import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.drawable.ComparableDrawable;
 import com.facebook.litho.reference.Reference;
 import com.facebook.yoga.YogaAlign;
+import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
 import com.facebook.yoga.YogaPositionType;
@@ -53,7 +54,7 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
   @Nullable private NodeInfo mNodeInfo;
 
   @Nullable private YogaPositionType mPositionType;
-  @Nullable private YogaEdgesWithInts mPositions;
+  @Nullable private Edges mPositions;
   private int mWidthPx;
   private int mHeightPx;
   @Nullable private Reference<? extends Drawable> mBackground;
@@ -83,10 +84,10 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
   void positionPx(@Nullable YogaEdge edge, @Px int position) {
     mPrivateFlags |= PFLAG_POSITION_IS_SET;
     if (mPositions == null) {
-      mPositions = new YogaEdgesWithInts();
+      mPositions = new Edges();
     }
 
-    mPositions.add(edge, position);
+    mPositions.set(edge, position);
   }
 
   void widthPx(@Px int width) {
@@ -505,8 +506,12 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
       node.positionType(mPositionType);
     }
     if ((mPrivateFlags & PFLAG_POSITION_IS_SET) != 0L) {
-      for (int i = 0; i < mPositions.size(); i++) {
-        node.positionPx(mPositions.getEdge(i), mPositions.getValue(i));
+      for (int i = 0, length = YogaEdge.values().length; i < length; i++) {
+        final YogaEdge edge = YogaEdge.fromInt(i);
+        final float value = mPositions.getRaw(edge);
+        if (!YogaConstants.isUndefined(value)) {
+          node.positionPx(edge, (int) value);
+        }
       }
     }
     if ((mPrivateFlags & PFLAG_WIDTH_IS_SET) != 0L) {
@@ -591,13 +596,13 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
     private float mFlexBasisPercent;
     private int mImportantForAccessibility;
     private boolean mDuplicateParentState;
-    @Nullable private YogaEdgesWithInts mMargins;
-    @Nullable private YogaEdgesWithFloats mMarginPercents;
+    @Nullable private Edges mMargins;
+    @Nullable private Edges mMarginPercents;
     @Nullable private List<YogaEdge> mMarginAutos;
-    @Nullable private YogaEdgesWithInts mPaddings;
-    @Nullable private YogaEdgesWithFloats mPaddingPercents;
-    @Nullable private YogaEdgesWithFloats mPositionPercents;
-    @Nullable private YogaEdgesWithInts mTouchExpansions;
+    @Nullable private Edges mPaddings;
+    @Nullable private Edges mPaddingPercents;
+    @Nullable private Edges mPositionPercents;
+    @Nullable private Edges mTouchExpansions;
     private float mWidthPercent;
     @Px private int mMinWidthPx;
     private float mMinWidthPercent;
@@ -667,17 +672,17 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
       mPrivateFlags |= PFLAG_MARGIN_IS_SET;
 
       if (mMargins == null) {
-        mMargins = new YogaEdgesWithInts();
+        mMargins = new Edges();
       }
-      mMargins.add(edge, margin);
+      mMargins.set(edge, margin);
     }
 
     private void marginPercent(@Nullable YogaEdge edge, float percent) {
       mPrivateFlags |= PFLAG_MARGIN_PERCENT_IS_SET;
       if (mMarginPercents == null) {
-        mMarginPercents = new YogaEdgesWithFloats();
+        mMarginPercents = new Edges();
       }
-      mMarginPercents.add(edge, percent);
+      mMarginPercents.set(edge, percent);
     }
 
     private void marginAuto(@Nullable YogaEdge edge) {
@@ -691,17 +696,17 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
     private void paddingPx(@Nullable YogaEdge edge, @Px int padding) {
       mPrivateFlags |= PFLAG_PADDING_IS_SET;
       if (mPaddings == null) {
-        mPaddings = new YogaEdgesWithInts();
+        mPaddings = new Edges();
       }
-      mPaddings.add(edge, padding);
+      mPaddings.set(edge, padding);
     }
 
     private void paddingPercent(@Nullable YogaEdge edge, float percent) {
       mPrivateFlags |= PFLAG_PADDING_PERCENT_IS_SET;
       if (mPaddingPercents == null) {
-        mPaddingPercents = new YogaEdgesWithFloats();
+        mPaddingPercents = new Edges();
       }
-      mPaddingPercents.add(edge, percent);
+      mPaddingPercents.set(edge, percent);
     }
 
     private void border(@Nullable Border border) {
@@ -714,9 +719,9 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
     private void positionPercent(YogaEdge edge, float percent) {
       mPrivateFlags |= PFLAG_POSITION_PERCENT_IS_SET;
       if (mPositionPercents == null) {
-        mPositionPercents = new YogaEdgesWithFloats();
+        mPositionPercents = new Edges();
       }
-      mPositionPercents.add(edge, percent);
+      mPositionPercents.set(edge, percent);
     }
 
     private void widthPercent(float percent) {
@@ -782,9 +787,9 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
     private void touchExpansionPx(YogaEdge edge, @Px int touchExpansion) {
       mPrivateFlags |= PFLAG_TOUCH_EXPANSION_IS_SET;
       if (mTouchExpansions == null) {
-        mTouchExpansions = new YogaEdgesWithInts();
+        mTouchExpansions = new Edges();
       }
-      mTouchExpansions.add(edge, touchExpansion);
+      mTouchExpansions.set(edge, touchExpansion);
     }
 
     private void foreground(@Nullable ComparableDrawable foreground) {
@@ -909,8 +914,12 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
         node.alignSelf(mAlignSelf);
       }
       if ((mPrivateFlags & PFLAG_POSITION_PERCENT_IS_SET) != 0L) {
-        for (int i = 0; i < mPositionPercents.mNumEntries; i++) {
-          node.positionPercent(mPositionPercents.mEdges[i], mPositionPercents.mValues[i]);
+        for (int i = 0, length = YogaEdge.values().length; i < length; i++) {
+          final YogaEdge edge = YogaEdge.fromInt(i);
+          final float value = mPositionPercents.getRaw(edge);
+          if (!YogaConstants.isUndefined(value)) {
+            node.positionPercent(edge, value);
+          }
         }
       }
       if ((mPrivateFlags & PFLAG_FLEX_IS_SET) != 0L) {
@@ -965,13 +974,21 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
         node.isReferenceBaseline(mIsReferenceBaseline);
       }
       if ((mPrivateFlags & PFLAG_MARGIN_IS_SET) != 0L) {
-        for (int i = 0; i < mMargins.size(); i++) {
-          node.marginPx(mMargins.getEdge(i), mMargins.getValue(i));
+        for (int i = 0, length = YogaEdge.values().length; i < length; i++) {
+          final YogaEdge edge = YogaEdge.fromInt(i);
+          final float value = mMargins.getRaw(edge);
+          if (!YogaConstants.isUndefined(value)) {
+            node.marginPx(edge, (int) value);
+          }
         }
       }
       if ((mPrivateFlags & PFLAG_MARGIN_PERCENT_IS_SET) != 0L) {
-        for (int i = 0; i < mMarginPercents.mNumEntries; i++) {
-          node.marginPercent(mMarginPercents.mEdges[i], mMarginPercents.mValues[i]);
+        for (int i = 0, length = YogaEdge.values().length; i < length; i++) {
+          final YogaEdge edge = YogaEdge.fromInt(i);
+          final float value = mMarginPercents.getRaw(edge);
+          if (!YogaConstants.isUndefined(value)) {
+            node.marginPercent(edge, value);
+          }
         }
       }
       if ((mPrivateFlags & PFLAG_MARGIN_AUTO_IS_SET) != 0L) {
@@ -980,18 +997,30 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
         }
       }
       if ((mPrivateFlags & PFLAG_PADDING_IS_SET) != 0L) {
-        for (int i = 0; i < mPaddings.size(); i++) {
-          node.paddingPx(mPaddings.getEdge(i), mPaddings.getValue(i));
+        for (int i = 0, length = YogaEdge.values().length; i < length; i++) {
+          final YogaEdge edge = YogaEdge.fromInt(i);
+          final float value = mPaddings.getRaw(edge);
+          if (!YogaConstants.isUndefined(value)) {
+            node.paddingPx(edge, (int) value);
+          }
         }
       }
       if ((mPrivateFlags & PFLAG_PADDING_PERCENT_IS_SET) != 0L) {
-        for (int i = 0; i < mPaddingPercents.mNumEntries; i++) {
-          node.paddingPercent(mPaddingPercents.mEdges[i], mPaddingPercents.mValues[i]);
+        for (int i = 0, length = YogaEdge.values().length; i < length; i++) {
+          final YogaEdge edge = YogaEdge.fromInt(i);
+          final float value = mPaddingPercents.getRaw(edge);
+          if (!YogaConstants.isUndefined(value)) {
+            node.paddingPercent(edge, value);
+          }
         }
       }
       if ((mPrivateFlags & PFLAG_TOUCH_EXPANSION_IS_SET) != 0L) {
-        for (int i = 0; i < mTouchExpansions.size(); i++) {
-          node.touchExpansionPx(mTouchExpansions.getEdge(i), mTouchExpansions.getValue(i));
+        for (int i = 0, length = YogaEdge.values().length; i < length; i++) {
+          final YogaEdge edge = YogaEdge.fromInt(i);
+          final float value = mTouchExpansions.getRaw(edge);
+          if (!YogaConstants.isUndefined(value)) {
+            node.touchExpansionPx(edge, (int) value);
+          }
         }
       }
       if ((mPrivateFlags & PFLAG_BORDER_IS_SET) != 0L) {
@@ -1006,87 +1035,6 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
       if ((mPrivateFlags & PFLAG_USE_HEIGHT_AS_BASELINE_IS_SET) != 0L) {
         node.useHeightAsBaselineFunction(mUseHeightAsBaseline);
       }
-    }
-  }
-
-  static class YogaEdgesWithInts {
-
-    private long mEdges;
-    @Nullable private int[] mValues;
-
-    public void add(YogaEdge yogaEdge, int value) {
-      int index = addEdge(yogaEdge);
-      if (value != 0) {
-        if (mValues == null) {
-          mValues = createArray(Math.max(2, index + 1));
-        } else if (index >= mValues.length) {
-          int[] oldValues = mValues;
-          mValues = new int[oldValues.length * 2];
-          System.arraycopy(oldValues, 0, mValues, 0, oldValues.length);
-        }
-        mValues[index] = value;
-      }
-    }
-
-    private static int[] createArray(int size) {
-      return new int[size];
-    }
-
-    private int addEdge(YogaEdge yogaEdge) {
-      int size = lookup(0);
-      insert(size + 1, yogaEdge.intValue());
-      insert(0, size + 1);
-      return size;
-    }
-
-    private int lookup(final int pos) {
-      return (int) ((mEdges >> (pos * 4)) & 15);
-    }
-
-    private void insert(final int pos, final int val) {
-      mEdges &= ~((long) (0xF) << (pos * 4));
-      mEdges |= ((long) val << (pos * 4));
-    }
-
-    public int size() {
-      return lookup(0);
-    }
-
-    public YogaEdge getEdge(int index) {
-      return YogaEdge.fromInt(lookup(index + 1));
-    }
-
-    public int getValue(int index) {
-      return (mValues == null || mValues.length <= index) ? 0 : mValues[index];
-    }
-  }
-
-  private static class YogaEdgesWithFloats {
-    private YogaEdge[] mEdges = new YogaEdge[2];
-    private float[] mValues = new float[2];
-    private int mNumEntries;
-    private int mSize = 2;
-
-    private void add(YogaEdge yogaEdge, float value) {
-      if (mNumEntries == mSize) {
-        increaseSize();
-      }
-
-      mEdges[mNumEntries] = yogaEdge;
-      mValues[mNumEntries] = value;
-      mNumEntries++;
-    }
-
-    private void increaseSize() {
-      YogaEdge[] oldEdges = mEdges;
-      float[] oldValues = mValues;
-
-      mSize *= 2;
-      mEdges = new YogaEdge[mSize];
-      mValues = new float[mSize];
-
-      System.arraycopy(oldEdges, 0, mEdges, 0, mNumEntries);
-      System.arraycopy(oldValues, 0, mValues, 0, mNumEntries);
     }
   }
 }

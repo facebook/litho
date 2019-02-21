@@ -18,51 +18,48 @@ package com.facebook.litho;
 
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaEdge;
+import java.util.Arrays;
 
 public class Edges {
 
-  private static final int[] sFlagsMap = {
-    1, /*LEFT*/
-    2, /*TOP*/
-    4, /*RIGHT*/
-    8, /*BOTTOM*/
-    16, /*START*/
-    32, /*END*/
-    64, /*HORIZONTAL*/
-    128, /*VERTICAL*/
-    256, /*ALL*/
-  };
+  // The index of a value is represented by 4 bits. 0xF ('1111') represents an undefined index.
+  private static final byte UNDEFINED_INDEX = 0xF;
+  private static final byte INDEX_MASK = 0xF;
+  private static final float DEFAULT_VALUE = 0;
 
-  private final float[] mEdges = new float[] {
-      YogaConstants.UNDEFINED,
-      YogaConstants.UNDEFINED,
-      YogaConstants.UNDEFINED,
-      YogaConstants.UNDEFINED,
-      YogaConstants.UNDEFINED,
-      YogaConstants.UNDEFINED,
-      YogaConstants.UNDEFINED,
-      YogaConstants.UNDEFINED,
-      YogaConstants.UNDEFINED,
-  };
-
-  private int mValueFlags = 0;
-  private final float mDefaultValue = 0;
+  // This long maps the indexes of the YogaEdges within the mValue array.
+  // Each group of 4 bits represent an index and the position of these 4 bits is related to the
+  // YogaEdge.intValue(). For example, YogaEdge.TOP is position 1. Therefore bits representing TOP
+  // are 4..7.
+  // We initialize the long to be all "1"s representing all indexes to be undefined.
+  private long mEdgesToValuesIndex = ~0;
+  private float[] mValues;
   private boolean mHasAliasesSet;
 
-  public boolean set(YogaEdge edge, float value) {
-    if (!floatsEqual(mEdges[edge.intValue()], value)) {
-      mEdges[edge.intValue()] = value;
+  public boolean set(YogaEdge yogaEdge, float value) {
+    if (!floatsEqual(getRaw(yogaEdge), value)) {
+      final byte edgeIndex = getIndex(yogaEdge);
 
+      // If we need to "unset" a previously set edge.
       if (YogaConstants.isUndefined(value)) {
-        mValueFlags &= ~sFlagsMap[edge.intValue()];
+        unsetIndex(yogaEdge);
+        mValues[edgeIndex] = YogaConstants.UNDEFINED;
+
+        // If we need to insert a new edge value.
+      } else if (edgeIndex == UNDEFINED_INDEX) {
+        final byte newIndex = getFirstAvailableIndex();
+        setIndex(yogaEdge, newIndex);
+        mValues[newIndex] = value;
+
+        // Otherwise we need to overwrite an existing value.
       } else {
-        mValueFlags |= sFlagsMap[edge.intValue()];
+        mValues[edgeIndex] = value;
       }
 
       mHasAliasesSet =
-          (mValueFlags & sFlagsMap[YogaEdge.ALL.intValue()]) != 0 ||
-          (mValueFlags & sFlagsMap[YogaEdge.VERTICAL.intValue()]) != 0 ||
-          (mValueFlags & sFlagsMap[YogaEdge.HORIZONTAL.intValue()]) != 0;
+          getIndex(YogaEdge.ALL) != UNDEFINED_INDEX
+              || getIndex(YogaEdge.VERTICAL) != UNDEFINED_INDEX
+              || getIndex(YogaEdge.HORIZONTAL) != UNDEFINED_INDEX;
 
       return true;
     }
@@ -71,26 +68,29 @@ public class Edges {
   }
 
   public float get(YogaEdge edge) {
-    float defaultValue = (edge == YogaEdge.START || edge == YogaEdge.END
-        ? YogaConstants.UNDEFINED
-        : mDefaultValue);
+    float defaultValue =
+        (edge == YogaEdge.START || edge == YogaEdge.END ? YogaConstants.UNDEFINED : DEFAULT_VALUE);
 
-    if (mValueFlags == 0) {
+    // Nothing is set.
+    if (mEdgesToValuesIndex == ~0) {
       return defaultValue;
     }
 
-    if ((mValueFlags & sFlagsMap[edge.intValue()]) != 0) {
-      return mEdges[edge.intValue()];
+    final byte edgeIndex = getIndex(edge);
+    if (edgeIndex != UNDEFINED_INDEX) {
+      return mValues[edgeIndex];
     }
 
     if (mHasAliasesSet) {
-      YogaEdge secondType = edge == YogaEdge.TOP || edge == YogaEdge.BOTTOM
-          ? YogaEdge.VERTICAL
-          : YogaEdge.HORIZONTAL;
-      if ((mValueFlags & sFlagsMap[secondType.intValue()]) != 0) {
-        return mEdges[secondType.intValue()];
-      } else if ((mValueFlags & sFlagsMap[YogaEdge.ALL.intValue()]) != 0) {
-        return mEdges[YogaEdge.ALL.intValue()];
+      final YogaEdge secondType =
+          edge == YogaEdge.TOP || edge == YogaEdge.BOTTOM ? YogaEdge.VERTICAL : YogaEdge.HORIZONTAL;
+      final byte secondTypeEdgeIndex = getIndex(secondType);
+
+      if (secondTypeEdgeIndex != UNDEFINED_INDEX) {
+        return mValues[secondTypeEdgeIndex];
+
+      } else if (getIndex(YogaEdge.ALL) != UNDEFINED_INDEX) {
+        return mValues[getIndex(YogaEdge.ALL)];
       }
     }
 
@@ -98,7 +98,55 @@ public class Edges {
   }
 
   public float getRaw(YogaEdge edge) {
-    return mEdges[edge.intValue()];
+    final byte edgeIndex = getIndex(edge);
+    if (edgeIndex == UNDEFINED_INDEX) {
+      return YogaConstants.UNDEFINED;
+    }
+
+    return mValues[edgeIndex];
+  }
+
+  private byte getIndex(YogaEdge edge) {
+    return (byte) ((mEdgesToValuesIndex >> (edge.intValue() * 4)) & INDEX_MASK);
+  }
+
+  // Set the 4 bits representing the edge as undefined ('1111').
+  private void unsetIndex(YogaEdge edge) {
+    mEdgesToValuesIndex |= ((long) UNDEFINED_INDEX << (edge.intValue() * 4));
+  }
+
+  private void setIndex(YogaEdge edge, byte index) {
+    if (index >= YogaEdge.values().length || index > INDEX_MASK) {
+      throw new IllegalStateException(
+          "The index of the array cannot be bigger than the amount of " + "Yoga Edges.");
+    }
+
+    // Clear the bits at the index position.
+    mEdgesToValuesIndex &= ~((long) (0xF) << (edge.intValue() * 4));
+    // Then set the actual 4 bits value of the index. Leaving this as two steps for clarity.
+    mEdgesToValuesIndex |= ((long) index << (edge.intValue() * 4));
+  }
+
+  private byte getFirstAvailableIndex() {
+    if (mValues == null) {
+      mValues = new float[2];
+      Arrays.fill(mValues, YogaConstants.UNDEFINED);
+      return 0;
+    }
+
+    for (int i = 0; i < mValues.length; i++) {
+      if (YogaConstants.isUndefined(mValues[i])) {
+        return (byte) i;
+      }
+    }
+
+    // We traversed the array without finding an empty spot. We need to increase the array.
+    float[] oldValues = mValues;
+    mValues = new float[Math.min(oldValues.length * 2, YogaEdge.values().length)];
+    System.arraycopy(oldValues, 0, mValues, 0, oldValues.length);
+    Arrays.fill(mValues, oldValues.length, mValues.length, YogaConstants.UNDEFINED);
+
+    return (byte) oldValues.length;
   }
 
   private static boolean floatsEqual(float f1, float f2) {
