@@ -121,6 +121,7 @@ public class RecyclerBinder
   private @Nullable List<ComponentLogParams> mInvalidStateLogParamsList;
   private final RecyclerRangeTraverser mRangeTraverser;
   private final boolean mHScrollAsyncMode;
+  private final boolean mIncrementalMountEnabled;
   private boolean mAsyncInitRange;
 
   private String mSplitLayoutTag;
@@ -330,7 +331,8 @@ public class RecyclerBinder
         LayoutHandler layoutHandler,
         boolean useSharedLayoutStateFuture,
         ComponentTreeMeasureListenerFactory measureListenerFactory,
-        String splitLayoutTag);
+        String splitLayoutTag,
+        boolean incrementalMountEnabled);
   }
 
   static final ComponentTreeHolderFactory DEFAULT_COMPONENT_TREE_HOLDER_FACTORY =
@@ -341,13 +343,15 @@ public class RecyclerBinder
             LayoutHandler layoutHandler,
             boolean useSharedLayoutStateFuture,
             ComponentTreeMeasureListenerFactory measureListenerFactory,
-            String splitLayoutTag) {
+            String splitLayoutTag,
+            boolean incrementalMountEnabled) {
           return ComponentTreeHolder.create()
               .renderInfo(renderInfo)
               .layoutHandler(layoutHandler)
               .useSharedLayoutStateFuture(useSharedLayoutStateFuture)
               .componentTreeMeasureListenerFactory(measureListenerFactory)
               .splitLayoutTag(splitLayoutTag)
+              .incrementalMount(incrementalMountEnabled)
               .build();
         }
       };
@@ -379,6 +383,7 @@ public class RecyclerBinder
     private boolean canMeasure;
     private boolean hscrollAsyncMode = false;
     private boolean singleThreadPool = ComponentsConfiguration.useSingleThreadPool;
+    private boolean incrementalMount = true;
 
     /**
      * @param rangeRatio specifies how big a range this binder should try to compute. The range is
@@ -585,6 +590,12 @@ public class RecyclerBinder
       return this;
     }
 
+    /** Don't use this. If false, turns off incremental mount for all subviews of this Recycler. */
+    public Builder incrementalMount(boolean incrementalMount) {
+      this.incrementalMount = incrementalMount;
+      return this;
+    }
+
     /** @param c The {@link ComponentContext} the RecyclerBinder will use. */
     public RecyclerBinder build(ComponentContext c) {
       componentContext =
@@ -738,6 +749,7 @@ public class RecyclerBinder
     mAsyncInitRange = builder.asyncInitRange;
     mBgScheduleAllInitRange = builder.bgScheduleAllInitRange;
     mHScrollAsyncMode = builder.hscrollAsyncMode;
+    mIncrementalMountEnabled = builder.incrementalMount;
   }
 
   /**
@@ -3118,7 +3130,8 @@ public class RecyclerBinder
         layoutHandler,
         mUseSharedLayoutStateFuture,
         mComponentTreeMeasureListenerFactory,
-        mSplitLayoutTag);
+        mSplitLayoutTag,
+        mIncrementalMountEnabled);
   }
 
   private void updateHolder(ComponentTreeHolder holder, RenderInfo renderInfo) {

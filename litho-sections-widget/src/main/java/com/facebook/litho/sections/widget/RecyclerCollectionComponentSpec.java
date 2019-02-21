@@ -113,6 +113,7 @@ public class RecyclerCollectionComponentSpec {
 
   @PropDefault public static final boolean clipToPadding = true;
   @PropDefault public static final boolean clipChildren = true;
+  @PropDefault public static final boolean incrementalMount = true;
   @PropDefault public static final int refreshProgressBarColor = 0XFF4267B2; // blue
   private static final int MIN_SCROLL_FOR_PAGE = 20;
 
@@ -265,6 +266,8 @@ public class RecyclerCollectionComponentSpec {
       @Prop(optional = true) boolean ignoreLoadingUpdates,
       @Prop(optional = true) String sectionTreeTag,
       @Prop(optional = true) boolean canMeasureRecycler,
+      // Don't use this. If false, off incremental mount for all subviews of this Recycler.
+      @Prop(optional = true) boolean incrementalMount,
       StateValue<SnapHelper> snapHelper,
       StateValue<SectionTree> sectionTree,
       StateValue<RecyclerCollectionLoadEventsHandler> recyclerCollectionLoadEventsHandler,
@@ -290,6 +293,7 @@ public class RecyclerCollectionComponentSpec {
             .isCircular(binderConfiguration.isCircular())
             .hasDynamicItemHeight(binderConfiguration.hasDynamicItemHeight())
             .splitLayoutTag(binderConfiguration.getSplitLayoutTag())
+            .incrementalMount(incrementalMount)
             .build(c);
 
     SectionBinderTarget targetBinder =

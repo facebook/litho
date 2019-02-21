@@ -78,7 +78,8 @@ public class RecyclerBinderAsyncInitRangeIteratorTest {
               boolean useSharedLayoutStateFuture,
               ComponentTreeHolder.ComponentTreeMeasureListenerFactory
                   componentTreeMeasureListenerFactory,
-              String splitLayoutTag) {
+              String splitLayoutTag,
+              boolean incrementalMountEnabled) {
             final TestComponentTreeHolder holder = new TestComponentTreeHolder(renderInfo);
             mAllHoldersList.add(holder);
 

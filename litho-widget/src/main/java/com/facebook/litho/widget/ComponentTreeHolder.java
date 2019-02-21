@@ -89,6 +89,7 @@ public class ComponentTreeHolder {
   private String mSplitLayoutTag;
   private boolean mIsInserted = true;
   private boolean mHasMounted = false;
+  private boolean mIncrementalMount = true;
 
   interface ComponentTreeMeasureListenerFactory {
     @Nullable
@@ -108,6 +109,7 @@ public class ComponentTreeHolder {
     private boolean canPreallocateOnDefaultHandler;
     private boolean shouldPreallocatePerMountSpec;
     private boolean useSharedLayoutStateFuture;
+    private boolean incrementalMount = true;
 
     private Builder() {}
 
@@ -153,6 +155,11 @@ public class ComponentTreeHolder {
       return this;
     }
 
+    public Builder incrementalMount(boolean incrementalMount) {
+      this.incrementalMount = incrementalMount;
+      return this;
+    }
+
     public ComponentTreeHolder build() {
       ensureMandatoryParams();
 
@@ -172,6 +179,7 @@ public class ComponentTreeHolder {
       componentTreeHolder.mSplitLayoutTag = splitLayoutTag;
       componentTreeHolder.acquireId();
       componentTreeHolder.mIsReleased.set(false);
+      componentTreeHolder.mIncrementalMount = incrementalMount;
 
       return componentTreeHolder;
     }
@@ -403,6 +411,7 @@ public class ComponentTreeHolder {
     mLastRequestedHeightSpec = UNINITIALIZED;
     mIsInserted = true;
     mHasMounted = false;
+    mIncrementalMount = true;
     mRenderState.set(RENDER_UNINITIALIZED);
     if (mIsReleased.getAndSet(true)) {
       throw new RuntimeException("Releasing already released ComponentTreeHolder!");
@@ -435,6 +444,7 @@ public class ComponentTreeHolder {
                       : mComponentTreeMeasureListenerFactory.create(this))
               .splitLayoutTag(mSplitLayoutTag)
               .hasMounted(mHasMounted)
+              .incrementalMount(mIncrementalMount)
               .build();
       if (mPendingNewLayoutListener != null) {
         mComponentTree.setNewLayoutStateReadyListener(mPendingNewLayoutListener);
