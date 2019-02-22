@@ -29,6 +29,7 @@ import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
 import com.facebook.yoga.YogaFlexDirection;
 import com.facebook.yoga.YogaJustify;
+import com.facebook.yoga.YogaMeasureFunction;
 import com.facebook.yoga.YogaPositionType;
 import com.facebook.yoga.YogaWrap;
 
@@ -123,6 +124,11 @@ class NoOpInternalNode extends InternalNode {
   void setDiffNode(DiffNode diffNode) {}
 
   @Override
+  public YogaDirection getResolvedLayoutDirection() {
+    return YogaDirection.INHERIT;
+  }
+
+  @Override
   public InternalNode layoutDirection(YogaDirection direction) {
     return this;
   }
@@ -183,6 +189,11 @@ class NoOpInternalNode extends InternalNode {
   }
 
   @Override
+  InternalNode flexBasisAuto() {
+    return this;
+  }
+
+  @Override
   public InternalNode flexBasisPercent(float percent) {
     return this;
   }
@@ -228,6 +239,15 @@ class NoOpInternalNode extends InternalNode {
   }
 
   @Override
+  void setBorderWidth(YogaEdge edge, @Px int borderWidth) {
+  }
+
+  @Override
+  int getLayoutBorder(YogaEdge edge) {
+    return 0;
+  }
+
+  @Override
   public InternalNode positionPx(YogaEdge edge, @Px int position) {
     return this;
   }
@@ -239,6 +259,11 @@ class NoOpInternalNode extends InternalNode {
 
   @Override
   public InternalNode widthPx(@Px int width) {
+    return this;
+  }
+
+  @Override
+  InternalNode widthAuto() {
     return this;
   }
 
@@ -273,6 +298,11 @@ class NoOpInternalNode extends InternalNode {
   }
 
   @Override
+  InternalNode heightAuto() {
+    return this;
+  }
+
+  @Override
   public InternalNode heightPercent(float percent) {
     return this;
   }
@@ -294,6 +324,11 @@ class NoOpInternalNode extends InternalNode {
 
   @Override
   public InternalNode maxHeightPercent(float percent) {
+    return this;
+  }
+
+  @Override
+    InternalNode aspectRatio(float aspectRatio) {
     return this;
   }
 
@@ -414,6 +449,92 @@ class NoOpInternalNode extends InternalNode {
   void applyAttributes(TypedArray a) {}
 
   @Override
+  void setMeasureFunction(YogaMeasureFunction measureFunction) {
+  }
+
+  @Override
   void setBaselineFunction(YogaBaselineFunction baselineFunction) {
+  }
+
+  @Override
+  boolean hasNewLayout() {
+    return false;
+  }
+
+  @Override
+  void markLayoutSeen() {
+  }
+
+  @Override
+  float getStyleWidth() {
+    return 0f;
+  }
+
+  @Override
+  float getMinWidth() {
+    return 0f;
+  }
+
+  @Override
+  float getMaxWidth() {
+    return 0f;
+  }
+
+  @Override
+  float getStyleHeight() {
+    return 0f;
+  }
+
+  @Override
+  float getMinHeight() {
+    return 0f;
+  }
+
+  @Override
+  float getMaxHeight() {
+    return 0f;
+  }
+
+  @Override
+  void calculateLayout(float width, float height) {
+  }
+
+  @Override
+  int getChildCount() {
+    return 0;
+  }
+
+  @Override
+  com.facebook.yoga.YogaDirection getStyleDirection() {
+    return YogaDirection.INHERIT;
+  }
+
+  @Override
+  InternalNode getChildAt(int index) {
+    return null;
+  }
+
+  @Override
+  int getChildIndex(InternalNode child) {
+    return -1;
+  }
+
+  @Override
+  InternalNode getParent() {
+    return null;
+  }
+
+  @Override
+  void addChildAt(InternalNode child, int index) {
+  }
+
+  @Override
+  InternalNode removeChildAt(int index) {
+    return null;
+  }
+
+  @Override
+  boolean shouldDrawBorders() {
+    return false;
   }
 }
