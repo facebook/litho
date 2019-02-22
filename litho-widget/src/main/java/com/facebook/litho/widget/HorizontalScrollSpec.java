@@ -22,6 +22,7 @@ import static com.facebook.litho.SizeSpec.UNSPECIFIED;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.support.v4.util.Pools.SynchronizedPool;
+import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.HorizontalScrollView;
 import com.facebook.litho.Component;
@@ -173,6 +174,7 @@ class HorizontalScrollSpec {
       @Prop Component contentProps,
       @Prop(optional = true, resType = ResType.BOOL) boolean scrollbarEnabled,
       @Prop(optional = true) HorizontalScrollEventsController eventsController,
+      @Prop(optional = true) View.OnScrollChangeListener onScrollChangeListener,
       @State final ScrollPosition lastScrollPosition,
       @FromBoundsDefined int componentWidth,
       @FromBoundsDefined int componentHeight,
@@ -203,6 +205,14 @@ class HorizontalScrollSpec {
         new ViewTreeObserver.OnScrollChangedListener() {
           @Override
           public void onScrollChanged() {
+            if (onScrollChangeListener != null) {
+              onScrollChangeListener.onScrollChange(
+                  horizontalScrollLithoView,
+                  horizontalScrollLithoView.getScrollX(),
+                  0,
+                  lastScrollPosition.x,
+                  0);
+            }
             lastScrollPosition.x = horizontalScrollLithoView.getScrollX();
           }
         });
