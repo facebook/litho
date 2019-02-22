@@ -36,7 +36,7 @@ import com.facebook.yoga.YogaNode;
  */
 public class ComponentContext {
 
-  interface YogaNodeFactory {
+  public interface YogaNodeFactory {
     YogaNode create();
   };
 
@@ -280,6 +280,10 @@ public class ComponentContext {
 
   public String getLogTag() {
     return mLogTag;
+  }
+
+  public YogaNodeFactory getYogaNodeFactory() {
+    return mYogaNodeFactory;
   }
 
   public @Nullable String getSplitLayoutTag() {
