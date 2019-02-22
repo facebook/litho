@@ -46,7 +46,7 @@ public class ComponentContext {
   private final String mLogTag;
   private final ComponentsLogger mLogger;
   private final @Nullable StateHandler mStateHandler;
-  final YogaNodeFactory mYogaNodeFactory = null;
+  final YogaNodeFactory mYogaNodeFactory;
 
   /** TODO: (T38237241) remove the usage of the key handler post the nested tree experiment */
   private final @Nullable KeyHandler mKeyHandler;
@@ -83,7 +83,8 @@ public class ComponentContext {
       ComponentsLogger logger,
       @Nullable StateHandler stateHandler,
       @Nullable KeyHandler keyHandler,
-      @Nullable TreeProps treeProps) {
+      @Nullable TreeProps treeProps,
+      YogaNodeFactory yogaNodeFactory) {
 
     if (logger != null && logTag == null) {
       throw new IllegalStateException("When a ComponentsLogger is set, a LogTag must be set");
@@ -96,6 +97,7 @@ public class ComponentContext {
     mLogTag = logTag;
     mStateHandler = stateHandler;
     mKeyHandler = keyHandler;
+    mYogaNodeFactory = yogaNodeFactory;
   }
 
   public ComponentContext(
@@ -112,10 +114,21 @@ public class ComponentContext {
     mComponentTree = context.mComponentTree;
     mLogger = context.mLogger;
     mLogTag = context.mLogTag;
+    mYogaNodeFactory = context.mYogaNodeFactory;
 
     mStateHandler = stateHandler != null ? stateHandler : context.mStateHandler;
     mKeyHandler = keyHandler != null ? keyHandler : context.mKeyHandler;
     mTreeProps = treeProps != null ? treeProps : context.mTreeProps;
+  }
+
+  public ComponentContext(
+      Context context,
+      String logTag,
+      ComponentsLogger logger,
+      @Nullable StateHandler stateHandler,
+      @Nullable KeyHandler keyHandler,
+      @Nullable TreeProps treeProps) {
+    this(context, logTag, logger, stateHandler, keyHandler, treeProps, null);
   }
 
   public ComponentContext(
@@ -137,6 +150,10 @@ public class ComponentContext {
 
   public ComponentContext(Context context, StateHandler stateHandler) {
     this(context, null, null, stateHandler, null, null);
+  }
+
+  public ComponentContext(Context context, YogaNodeFactory yogaNodeFactory) {
+    this(context, null, null, null, null, null, yogaNodeFactory);
   }
 
   public ComponentContext(ComponentContext context) {
