@@ -67,6 +67,11 @@ class HorizontalScrollSpec {
   private static final SynchronizedPool<Size> sSizePool =
       new SynchronizedPool<>(2);
 
+  /** Scroll change listener invoked when the scroll position changes. */
+  public interface OnScrollChangeListener {
+    void onScrollChange(View v, int scrollX, int oldScrollX);
+  }
+
   @OnLoadStyle
   static void onLoadStyle(
       ComponentContext c,
@@ -174,7 +179,7 @@ class HorizontalScrollSpec {
       @Prop Component contentProps,
       @Prop(optional = true, resType = ResType.BOOL) boolean scrollbarEnabled,
       @Prop(optional = true) HorizontalScrollEventsController eventsController,
-      @Prop(optional = true) final View.OnScrollChangeListener onScrollChangeListener,
+      @Prop(optional = true) final OnScrollChangeListener onScrollChangeListener,
       @State final ScrollPosition lastScrollPosition,
       @FromBoundsDefined int componentWidth,
       @FromBoundsDefined int componentHeight,
@@ -209,9 +214,7 @@ class HorizontalScrollSpec {
               onScrollChangeListener.onScrollChange(
                   horizontalScrollLithoView,
                   horizontalScrollLithoView.getScrollX(),
-                  0,
-                  lastScrollPosition.x,
-                  0);
+                  lastScrollPosition.x);
             }
             lastScrollPosition.x = horizontalScrollLithoView.getScrollX();
           }
