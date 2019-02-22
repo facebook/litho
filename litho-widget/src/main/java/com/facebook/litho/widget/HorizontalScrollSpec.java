@@ -174,7 +174,7 @@ class HorizontalScrollSpec {
       @Prop Component contentProps,
       @Prop(optional = true, resType = ResType.BOOL) boolean scrollbarEnabled,
       @Prop(optional = true) HorizontalScrollEventsController eventsController,
-      @Prop(optional = true) View.OnScrollChangeListener onScrollChangeListener,
+      @Prop(optional = true) final View.OnScrollChangeListener onScrollChangeListener,
       @State final ScrollPosition lastScrollPosition,
       @FromBoundsDefined int componentWidth,
       @FromBoundsDefined int componentHeight,
