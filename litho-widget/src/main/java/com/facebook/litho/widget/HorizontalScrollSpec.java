@@ -127,16 +127,19 @@ class HorizontalScrollSpec {
       ComponentContext context,
       ComponentLayout layout,
       @Prop Component contentProps,
+      @Prop(optional = true) boolean fillViewport,
       @FromMeasure Integer measuredComponentWidth,
       @FromMeasure Integer measuredComponentHeight,
       Output<Integer> componentWidth,
       Output<Integer> componentHeight,
       Output<YogaDirection> layoutDirection) {
 
+    final int layoutWidth = layout.getWidth() - layout.getPaddingLeft() - layout.getPaddingRight();
+
     // If onMeasure() has been called, this means the content component already
     // has a defined size, no need to calculate it again.
     if (measuredComponentWidth != null && measuredComponentHeight != null) {
-      componentWidth.set(measuredComponentWidth);
+      componentWidth.set(Math.max(measuredComponentWidth, fillViewport ? layoutWidth : 0));
       componentHeight.set(measuredComponentHeight);
     } else {
       final int measuredWidth;
@@ -149,7 +152,7 @@ class HorizontalScrollSpec {
           SizeSpec.makeSizeSpec(layout.getHeight(), EXACTLY),
           contentSize);
 
-      measuredWidth = contentSize.width;
+      measuredWidth = Math.max(contentSize.width, fillViewport ? layoutWidth : 0);
       measuredHeight = contentSize.height;
 
       releaseSize(contentSize);
