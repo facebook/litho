@@ -600,7 +600,13 @@ public class RecyclerBinder
     public RecyclerBinder build(ComponentContext c) {
       componentContext =
           new ComponentContext(
-              c.getAndroidContext(), c.getLogTag(), c.getLogger(), c.getTreePropsCopy());
+              c.getAndroidContext(),
+              c.getLogTag(),
+              c.getLogger(),
+              null,
+              null,
+              c.getTreePropsCopy(),
+              c.getYogaNodeFactory());
 
       if (layoutInfo == null) {
         layoutInfo = new LinearLayoutInfo(c.getAndroidContext(), VERTICAL, false);
