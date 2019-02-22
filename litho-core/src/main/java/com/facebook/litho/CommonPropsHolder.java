@@ -456,6 +456,10 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
     getOrCreateOtherProps().transitionKey(key);
   }
 
+  void transition(Transition transition) {
+    getOrCreateOtherProps().setTransition(transition);
+  }
+
   @Override
   @Nullable
   public String getTransitionKey() {
@@ -576,6 +580,7 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
     private static final long PFLAG_TRANSITION_KEY_TYPE_IS_SET = 1L << 41;
     private static final long PFLAG_USE_HEIGHT_AS_BASELINE_IS_SET = 1L << 42;
     private static final long PFLAG_IS_REFERENCE_BASELINE_IS_SET = 1L << 43;
+    private static final long PFLAG_TRANSITION_IS_SET = 1L << 44;
 
     private long mPrivateFlags;
 
@@ -617,6 +622,7 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
     private boolean mIsReferenceBaseline;
     @Nullable private ComparableDrawable mForeground;
     @Nullable private String mTransitionKey;
+    @Nullable private Transition mTransition;
     @Nullable private Transition.TransitionKeyType mTransitionKeyType;
     @Nullable private Border mBorder;
     @Nullable private StateListAnimator mStateListAnimator;
@@ -844,6 +850,11 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
       mTransitionKey = key;
     }
 
+    private void setTransition(Transition transition) {
+      mPrivateFlags |= PFLAG_TRANSITION_IS_SET;
+      mTransition = transition;
+    }
+
     private void transitionKeyType(Transition.TransitionKeyType type) {
       mPrivateFlags |= PFLAG_TRANSITION_KEY_TYPE_IS_SET;
       mTransitionKeyType = type;
@@ -900,6 +911,9 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
       }
       if ((mPrivateFlags & PFLAG_TRANSITION_KEY_IS_SET) != 0L) {
         node.transitionKey(mTransitionKey);
+      }
+      if ((mPrivateFlags & PFLAG_TRANSITION_IS_SET) != 0L) {
+        node.addTransition(mTransition);
       }
       if ((mPrivateFlags & PFLAG_TRANSITION_KEY_TYPE_IS_SET) != 0L) {
         node.transitionKeyType(mTransitionKeyType);
