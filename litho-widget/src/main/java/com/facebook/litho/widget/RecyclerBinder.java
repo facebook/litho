@@ -2425,6 +2425,13 @@ public class RecyclerBinder
 
     mViewportManager.removeViewportChangedListener(mViewportChangedListener);
 
+    synchronized (this) {
+      int treeHoldersSize = mComponentTreeHolders.size();
+      for (int i = treeHoldersSize - 1; i >= 0; i--) {
+        mComponentTreeHolders.remove(i).release();
+      }
+    }
+
     // We might have already unmounted this view when calling mount with a different view. In this
     // case we can just return here.
     if (mMountedView != view) {

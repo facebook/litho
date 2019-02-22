@@ -64,4 +64,13 @@ public interface RenderInfo {
    * UnsupportedOperationException}.
    */
   void setViewType(int viewType);
+
+  /**
+   * Perform any cleanup necessary when the ComponentTree gets released. The ComponentTree holds the
+   * layout state, so it is the object that RecyclerBinder holds onto when an item is within the
+   * concurrent layout range. This callback is called when RecyclerBinder releases the ComponentTree
+   * (and thus any associated layout state). Note that this is shorter lived than @State, which is
+   * held onto even if the ComponentTree is released.
+   */
+  void onComponentTreeReleased();
 }

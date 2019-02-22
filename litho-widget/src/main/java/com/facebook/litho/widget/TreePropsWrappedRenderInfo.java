@@ -143,6 +143,11 @@ public class TreePropsWrappedRenderInfo implements RenderInfo {
     return mRenderInfo.getDebugInfo(key);
   }
 
+  @Override
+  public void onComponentTreeReleased() {
+    // No default implementation.
+  }
+
   /**
    * Set viewType of current {@link RenderInfo} if it was created through {@link
    * ViewRenderInfo#create()} and a custom viewType was not set, or otherwise it will throw {@link

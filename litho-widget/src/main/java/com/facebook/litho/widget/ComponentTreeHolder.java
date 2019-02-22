@@ -457,6 +457,7 @@ public class ComponentTreeHolder {
     if (mComponentTree != null) {
       mComponentTree.release();
       mComponentTree = null;
+      mRenderInfo.onComponentTreeReleased();
     }
 
     mIsTreeValid = false;
