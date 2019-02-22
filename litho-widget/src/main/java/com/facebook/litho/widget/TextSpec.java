@@ -696,12 +696,26 @@ class TextSpec {
     // Identify the X position at which to truncate the final line:
     final float ellipsisTarget = newLayout.getLineMax(ellipsizedLineNumber) - bounds.width();
     // Get character offset number corresponding to that X position:
-    final int ellipsisOffset =
+    int ellipsisOffset =
         newLayout.getOffsetForHorizontal(ellipsizedLineNumber, ellipsisTarget);
     if (ellipsisOffset > 0) {
       // getOffsetForHorizontal returns the closest character, but we need to guarantee no
       // truncation, so subtract 1 from the result:
-      return TextUtils.concat(text.subSequence(0, ellipsisOffset - 1), customEllipsisText);
+      ellipsisOffset -= 1;
+
+      // Ensure that we haven't chosen an ellipsisOffset that's past the end of the ellipsis start.
+      // This can occur when the width of customEllipsisText is less than the width of the default
+      // ellipsis character. In that case, getOffsetForHorizontal will return the end of the string
+      // because our ellipsisTarget was in the middle of the ellipsis character.
+      if (newLayout.getEllipsisCount(ellipsizedLineNumber) > 0) {
+        final int ellipsisStart =
+            newLayout.getLineStart(ellipsizedLineNumber)
+                + newLayout.getEllipsisStart(ellipsizedLineNumber);
+        if (ellipsisOffset > ellipsisStart) {
+          ellipsisOffset = ellipsisStart;
+        }
+      }
+      return TextUtils.concat(text.subSequence(0, ellipsisOffset), customEllipsisText);
     } else {
       return text;
     }
