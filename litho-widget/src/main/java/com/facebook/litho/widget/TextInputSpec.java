@@ -646,6 +646,16 @@ class TextInputSpec {
     }
   }
 
+  @OnTrigger(GetTextEvent.class)
+  @Nullable
+  static CharSequence getText(
+      ComponentContext c,
+      @State AtomicReference<EditTextWithEventHandlers> mountedView,
+      @State AtomicReference<CharSequence> savedText) {
+    final EditTextWithEventHandlers view = mountedView.get();
+    return view == null ? savedText.get() : view.getText();
+  }
+
   @OnTrigger(SetTextEvent.class)
   static void setText(
       ComponentContext c,
@@ -674,7 +684,7 @@ class TextInputSpec {
       view.dispatchKeyEvent(keyEvent);
     }
   }
-
+  
   @OnTrigger(SetSelectionEvent.class)
   static void setSelection(
       ComponentContext c,
