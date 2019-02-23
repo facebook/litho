@@ -1707,6 +1707,11 @@ public abstract class Component extends ComponentLifecycle
       return getThis();
     }
 
+    public T transition(Transition transition) {
+      mComponent.getOrCreateCommonPropsHolder().transition(transition);
+      return getThis();
+    }
+
     public T transitionKeyType(Transition.TransitionKeyType type) {
       if (type == null) {
         throw new IllegalArgumentException("TransitionKeyType must not be null");
