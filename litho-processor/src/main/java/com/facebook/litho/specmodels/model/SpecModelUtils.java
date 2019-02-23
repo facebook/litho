@@ -218,6 +218,11 @@ public class SpecModelUtils {
         null);
   }
 
+  public static boolean isTypeElement(final SpecModel specModel) {
+    final Object representedObject = specModel.getRepresentedObject();
+    return representedObject instanceof TypeElement;
+  }
+
   /**
    * There are a few cases of classes with typeArgs (e.g. {@literal MyClass<SomeClass, ..>}) where
    *
