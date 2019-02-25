@@ -22,7 +22,6 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.AttrRes;
 import android.support.annotation.Nullable;
 import android.support.annotation.StyleRes;
-import android.support.v4.util.Pools;
 import android.support.v4.view.accessibility.AccessibilityNodeInfoCompat;
 import android.support.v4.widget.ExploreByTouchHelper;
 import android.view.View;
@@ -96,21 +95,8 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
   private static final YogaMeasureFunction sMeasureFunction =
       new YogaMeasureFunction() {
 
-        private final Pools.SynchronizedPool<Size> mSizePool = new Pools.SynchronizedPool<>(2);
-
         private Size acquireSize(int initialValue) {
-          Size size = mSizePool.acquire();
-          if (size == null) {
-            size = new Size();
-          }
-
-          size.width = initialValue;
-          size.height = initialValue;
-          return size;
-        }
-
-        private void releaseSize(Size size) {
-          mSizePool.release(size);
+          return new Size(initialValue, initialValue);
         }
 
         @Override
@@ -182,25 +168,21 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
           } else {
             final Size size = acquireSize(Integer.MIN_VALUE /* initialValue */);
 
-            try {
-              component.onMeasure(component.getScopedContext(), node, widthSpec, heightSpec, size);
+            component.onMeasure(component.getScopedContext(), node, widthSpec, heightSpec, size);
 
-              if (size.width < 0 || size.height < 0) {
-                throw new IllegalStateException(
-                    "MeasureOutput not set, ComponentLifecycle is: " + component);
-              }
+            if (size.width < 0 || size.height < 0) {
+              throw new IllegalStateException(
+                  "MeasureOutput not set, ComponentLifecycle is: " + component);
+            }
 
-              outputWidth = size.width;
-              outputHeight = size.height;
+            outputWidth = size.width;
+            outputHeight = size.height;
 
-              if (node.getDiffNode() != null) {
-                node.getDiffNode().setLastWidthSpec(widthSpec);
-                node.getDiffNode().setLastHeightSpec(heightSpec);
-                node.getDiffNode().setLastMeasuredWidth(outputWidth);
-                node.getDiffNode().setLastMeasuredHeight(outputHeight);
-              }
-            } finally {
-              releaseSize(size);
+            if (node.getDiffNode() != null) {
+              node.getDiffNode().setLastWidthSpec(widthSpec);
+              node.getDiffNode().setLastHeightSpec(heightSpec);
+              node.getDiffNode().setLastMeasuredWidth(outputWidth);
+              node.getDiffNode().setLastMeasuredHeight(outputHeight);
             }
           }
 
