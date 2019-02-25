@@ -1391,11 +1391,9 @@ public class RecyclerBinder
 
     final ComponentTreeHolder holder;
     synchronized (this) {
-      holder = mComponentTreeHolders.remove(position);
+      mComponentTreeHolders.remove(position);
     }
     mInternalAdapter.notifyItemRemoved(position);
-
-    holder.release();
 
     mViewportManager.setShouldUpdate(mViewportManager.removeAffectsVisibleRange(position, 1));
   }
@@ -1416,8 +1414,7 @@ public class RecyclerBinder
 
     synchronized (this) {
       for (int i = 0; i < count; i++) {
-        final ComponentTreeHolder holder = mComponentTreeHolders.remove(position);
-        holder.release();
+        mComponentTreeHolders.remove(position);
       }
     }
     mInternalAdapter.notifyItemRangeRemoved(position, count);
@@ -1697,11 +1694,7 @@ public class RecyclerBinder
 
   @Override
   public final synchronized RenderInfo getRenderInfoAt(int position) {
-    final ComponentTreeHolder holder = mComponentTreeHolders.get(position);
-    if (holder.isReleased()) {
-      throw new RuntimeException("Trying to access released ComponentTreeHolder!");
-    }
-    return holder.getRenderInfo();
+    return mComponentTreeHolders.get(position).getRenderInfo();
   }
 
   @VisibleForTesting

@@ -1237,10 +1237,6 @@ public class RecyclerBinderTest {
 
     mRecyclerBinder.removeItemAt(rangeTotal + 1);
     mRecyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
-
-    final TestComponentTreeHolder holder =
-        mHoldersForComponents.get(components.get(rangeTotal + 1).getComponent());
-    assertThat(holder.mReleased).isTrue();
   }
 
   @Test
@@ -1253,7 +1249,6 @@ public class RecyclerBinderTest {
 
     final TestComponentTreeHolder holder =
         mHoldersForComponents.get(components.get(rangeTotal).getComponent());
-    assertThat(holder.mReleased).isTrue();
 
     final TestComponentTreeHolder holderMovedInRange =
         mHoldersForComponents.get(components.get(rangeTotal + 1).getComponent());
@@ -1270,13 +1265,6 @@ public class RecyclerBinderTest {
 
     mRecyclerBinder.removeRangeAt(0, RANGE_SIZE);
     mRecyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
-
-    // The elements that were removed have been released.
-    for (int i = 0; i < RANGE_SIZE; i++) {
-      final TestComponentTreeHolder holder =
-          mHoldersForComponents.get(components.get(i).getComponent());
-      assertThat(holder.mReleased).isTrue();
-    }
 
     // The elements that are now in the range get their layout computed
     for (int i = rangeTotal + 1; i <= rangeTotal + RANGE_SIZE; i++) {

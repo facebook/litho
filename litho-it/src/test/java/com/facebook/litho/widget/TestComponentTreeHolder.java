@@ -32,7 +32,6 @@ public class TestComponentTreeHolder extends ComponentTreeHolder {
   boolean mLayoutAsyncCalled;
   boolean mLayoutSyncCalled;
   boolean mDidAcquireStateHandler;
-  boolean mReleased;
   int mChildWidth;
   int mChildHeight;
   boolean mCheckWorkingRangeCalled;
@@ -41,12 +40,8 @@ public class TestComponentTreeHolder extends ComponentTreeHolder {
   private int mLastRequestedHeightSpec;
 
   TestComponentTreeHolder(RenderInfo renderInfo) {
+    super(ComponentTreeHolder.create().renderInfo(renderInfo));
     mRenderInfo = renderInfo;
-  }
-
-  @Override
-  public void release() {
-    mReleased = true;
   }
 
   @Override
