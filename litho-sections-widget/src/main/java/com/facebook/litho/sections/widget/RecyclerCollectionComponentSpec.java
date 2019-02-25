@@ -83,8 +83,13 @@ import java.util.List;
  * verticalPadding and recyclerViewId {@link Prop}s will be directly applied to the {@link Recycler}
  * component.
  *
- * <p>The {@link RecyclerCollectionEventsController} {@link Prop} is a way to sent commands to the
+ * <p>The {@link RecyclerCollectionEventsController} {@link Prop} is a way to send commands to the
  * {@link RecyclerCollectionComponentSpec}, such as scrollTo(position) and refresh().
+ *
+ * <p>To trigger scrolling from the Section use {@link
+ * com.facebook.litho.sections.SectionLifecycle#requestFocus(SectionContext, int)}. For more
+ * information please refer to the following:
+ * https://fblitho.com/docs/communicating-with-the-ui#scrolling-requestfocus.
  */
 @LayoutSpec(events = PTRRefreshEvent.class)
 public class RecyclerCollectionComponentSpec {
