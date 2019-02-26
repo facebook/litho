@@ -72,21 +72,31 @@ import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nullable;
 
 /**
- * Component that renders an editable text input using an android EditText.
+ * Component that renders an editable text input using an android {@link EditText}.
  *
  * <p>Performance is critical for good user experience. Follow these tips for good performance:
  *
  * <ul>
  *   <li>Avoid changing props at all costs as it forces expensive EditText reconfiguration.
- *   <li>Avoid updating state, use Event trigger to update text, request view focus or set
- *       selection. {@code TextInput.setText(c, key, text)}.
+ *   <li>Avoid updating state, use Event trigger {@link OnTrigger} to update text, request view
+ *       focus or set selection. {@code TextInput.setText(c, key, text)}.
  *   <li>Using custom inputFilters take special care to implement equals correctly or the text field
  *       must be reconfigured on every mount. (Better yet, store your InputFilter in a static or
  *       LruCache so that you're not constantly creating new instances.)
  * </ul>
  *
- * <p>Because this component is backed by the android EditText all {@link InputFilter} abilities
- * should apply here. Example multiline editable text with custom color and a text length limit:
+ * <p>Because this component is backed by android {@link EditText} many native capabilities are
+ * applicable:
+ *
+ * <ul>
+ *   <li>Use {@link InputFilter} to set a text length limit or modify text input.
+ *   <li>Remove android EditText underline by removing background.
+ *   <li>Change the input representation by passing one of the {@link android.text.InputType}
+ *       constants.
+ * </ul>
+ *
+ * <p>Example of multiline editable text with custom text color, text length limit, removed
+ * underline drawable, and capital first letter of each sentence:
  *
  * <pre>{@code
  * private static final InputFilter lenFilter = new InputFilter.LengthFilter(maxLength);
@@ -96,8 +106,9 @@ import javax.annotation.Nullable;
  *   .textColorStateList(ColorStateList.valueOf(color))
  *   .multiline(true)
  *   .inputFilter(lenFilter)
+ *   .backgroundColor(Color.TRANSPARENT)
+ *   .inputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES)
  *   .build();
- *
  * }</pre>
  *
  * @prop initialText Initial text to display. If set, the value is set on the EditText exactly once:
