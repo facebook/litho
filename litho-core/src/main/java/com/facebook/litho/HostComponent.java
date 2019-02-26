@@ -18,11 +18,20 @@ package com.facebook.litho;
 
 import android.content.Context;
 import android.os.Build;
+import com.facebook.litho.config.ComponentsConfiguration;
 
 class HostComponent extends Component {
 
   protected HostComponent() {
     super("HostComponent");
+  }
+
+  @Override
+  protected MountContentPool onCreateMountContentPool() {
+    if (ComponentsConfiguration.disableComponentHostPool) {
+      return new DisabledMountContentPool();
+    }
+    return super.onCreateMountContentPool();
   }
 
   @Override

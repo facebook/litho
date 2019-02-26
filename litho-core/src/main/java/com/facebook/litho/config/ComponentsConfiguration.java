@@ -270,4 +270,7 @@ public class ComponentsConfiguration {
    * measured.
    */
   public static boolean checkNeedsRemeasure = false;
+
+  /** (Hopefully) temporary measure as we're investigating a major crash in libhwui. */
+  public static boolean disableComponentHostPool = true;
 }
