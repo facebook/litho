@@ -1040,10 +1040,6 @@ class InternalNode implements ComponentLayout {
     mYogaNode.setMeasureFunction(measureFunction);
   }
 
-  void setBaselineFunction(YogaBaselineFunction baselineFunction) {
-    mYogaNode.setBaselineFunction(baselineFunction);
-  }
-
   void useHeightAsBaselineFunction(boolean useHeightAsBaselineFunction) {
     if (useHeightAsBaselineFunction) {
       mYogaNode.setBaselineFunction(
