@@ -1304,40 +1304,40 @@ class InternalNode implements ComponentLayout {
     }
     if ((node.mPrivateFlags & PFLAG_IMPORTANT_FOR_ACCESSIBILITY_IS_SET) == 0L
         || node.mImportantForAccessibility == ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO) {
-      node.mImportantForAccessibility = mImportantForAccessibility;
+      node.importantForAccessibility(mImportantForAccessibility);
     }
     if ((mPrivateFlags & PFLAG_DUPLICATE_PARENT_STATE_IS_SET) != 0L) {
-      node.mDuplicateParentState = mDuplicateParentState;
+      node.duplicateParentState(mDuplicateParentState);
     }
     if ((mPrivateFlags & PFLAG_BACKGROUND_IS_SET) != 0L) {
-      node.mBackground = mBackground;
+      node.background(mBackground);
     }
     if ((mPrivateFlags & PFLAG_FOREGROUND_IS_SET) != 0L) {
-      node.mForeground = mForeground;
+      node.foreground(mForeground);
     }
     if (mForceViewWrapping) {
-      node.mForceViewWrapping = true;
+      node.wrapInView();
     }
     if ((mPrivateFlags & PFLAG_VISIBLE_HANDLER_IS_SET) != 0L) {
-      node.mVisibleHandler = mVisibleHandler;
+      node.visibleHandler(mVisibleHandler);
     }
     if ((mPrivateFlags & PFLAG_FOCUSED_HANDLER_IS_SET) != 0L) {
-      node.mFocusedHandler = mFocusedHandler;
+      node.focusedHandler(mFocusedHandler);
     }
     if ((mPrivateFlags & PFLAG_FULL_IMPRESSION_HANDLER_IS_SET) != 0L) {
-      node.mFullImpressionHandler = mFullImpressionHandler;
+      node.fullImpressionHandler(mFullImpressionHandler);
     }
     if ((mPrivateFlags & PFLAG_INVISIBLE_HANDLER_IS_SET) != 0L) {
-      node.mInvisibleHandler = mInvisibleHandler;
+      node.invisibleHandler(mInvisibleHandler);
     }
     if ((mPrivateFlags & PFLAG_UNFOCUSED_HANDLER_IS_SET) != 0L) {
-      node.mUnfocusedHandler = mUnfocusedHandler;
+      node.unfocusedHandler(mUnfocusedHandler);
     }
     if ((mPrivateFlags & PFLAG_VISIBLE_RECT_CHANGED_HANDLER_IS_SET) != 0L) {
-      node.mVisibilityChangedHandler = mVisibilityChangedHandler;
+      node.visibilityChangedHandler(mVisibilityChangedHandler);
     }
     if (mTestKey != null) {
-      node.mTestKey = mTestKey;
+      node.testKey(mTestKey);
     }
     if ((mPrivateFlags & PFLAG_PADDING_IS_SET) != 0L) {
       if (mNestedTreePadding == null) {

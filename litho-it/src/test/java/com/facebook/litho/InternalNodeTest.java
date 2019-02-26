@@ -36,6 +36,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.robolectric.RuntimeEnvironment.application;
 
+import android.graphics.drawable.ColorDrawable;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.widget.Text;
@@ -318,6 +319,36 @@ public class InternalNodeTest {
     holderNode.copyInto(nestedTree);
 
     assertThat(nestedTree.getStyleDirection()).isEqualTo(RTL);
+  }
+
+  @Test
+  public void testCopyIntoNodeSetFlags() {
+    InternalNode orig = acquireInternalNode();
+    InternalNode dest = acquireInternalNode();
+
+    orig.importantForAccessibility(0);
+    orig.duplicateParentState(true);
+    orig.background(new ColorDrawable());
+    orig.foreground(null);
+    orig.visibleHandler(null);
+    orig.focusedHandler(null);
+    orig.fullImpressionHandler(null);
+    orig.invisibleHandler(null);
+    orig.unfocusedHandler(null);
+    orig.visibilityChangedHandler(null);
+
+    orig.copyInto(dest);
+
+    assertThat(isFlagSet(dest, "PFLAG_IMPORTANT_FOR_ACCESSIBILITY_IS_SET")).isTrue();
+    assertThat(isFlagSet(dest, "PFLAG_DUPLICATE_PARENT_STATE_IS_SET")).isTrue();
+    assertThat(isFlagSet(dest, "PFLAG_BACKGROUND_IS_SET")).isTrue();
+    assertThat(isFlagSet(dest, "PFLAG_FOREGROUND_IS_SET")).isTrue();
+    assertThat(isFlagSet(dest, "PFLAG_VISIBLE_HANDLER_IS_SET")).isTrue();
+    assertThat(isFlagSet(dest, "PFLAG_FOCUSED_HANDLER_IS_SET")).isTrue();
+    assertThat(isFlagSet(dest, "PFLAG_FULL_IMPRESSION_HANDLER_IS_SET")).isTrue();
+    assertThat(isFlagSet(dest, "PFLAG_INVISIBLE_HANDLER_IS_SET")).isTrue();
+    assertThat(isFlagSet(dest, "PFLAG_UNFOCUSED_HANDLER_IS_SET")).isTrue();
+    assertThat(isFlagSet(dest, "PFLAG_VISIBLE_RECT_CHANGED_HANDLER_IS_SET")).isTrue();
   }
 
   @Test
