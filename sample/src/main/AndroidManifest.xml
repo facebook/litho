@@ -42,6 +42,7 @@
     <activity android:name=".bordereffects.BorderEffectsActivity" />
     <activity android:name=".errors.ErrorHandlingActivity" />
     <activity android:name=".hscroll.HorizontalScrollWithSnapActivity" />
+    <activity android:name=".staticscroll.horizontalscroll.HorizontalScrollActivity" />
     <activity android:name=".animations.animatedbadge.AnimatedBadgeActivity" />
     <activity android:name=".animations.animationcomposition.ComposedAnimationsActivity" />
     <activity android:name=".animations.expandableelement.ExpandableElementActivity" />

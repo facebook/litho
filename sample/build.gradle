@@ -49,6 +49,7 @@ dependencies {
     implementation(deps.flipper) {
         exclude group: 'com.facebook.flipper', module: 'fbjni'
     }
+    implementation deps.guava
 
     // Annotations
     compileOnly deps.jsr305
