@@ -49,6 +49,7 @@ import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.State;
 import com.facebook.yoga.YogaDirection;
+import javax.annotation.Nullable;
 
 /**
  * A component that wraps another component and allow it to be horizontally scrollable. It's
@@ -182,7 +183,8 @@ class HorizontalScrollSpec {
       @FromBoundsDefined final YogaDirection layoutDirection) {
 
     horizontalScrollLithoView.setHorizontalScrollBarEnabled(scrollbarEnabled);
-    horizontalScrollLithoView.mount(contentProps, componentWidth, componentHeight);
+    horizontalScrollLithoView.mount(
+        contentProps, lastScrollPosition, componentWidth, componentHeight);
     final ViewTreeObserver viewTreeObserver = horizontalScrollLithoView.getViewTreeObserver();
     viewTreeObserver.addOnPreDrawListener(
         new ViewTreeObserver.OnPreDrawListener() {
@@ -200,13 +202,6 @@ class HorizontalScrollSpec {
             }
 
             return true;
-          }
-        });
-    viewTreeObserver.addOnScrollChangedListener(
-        new ViewTreeObserver.OnScrollChangedListener() {
-          @Override
-          public void onScrollChanged() {
-            lastScrollPosition.x = horizontalScrollLithoView.getScrollX();
           }
         });
 
@@ -245,10 +240,21 @@ class HorizontalScrollSpec {
     private int mComponentWidth;
     private int mComponentHeight;
 
+    @Nullable private ScrollPosition mScrollPosition;
+
     public HorizontalScrollLithoView(Context context) {
       super(context);
       mLithoView = new LithoView(context);
       addView(mLithoView);
+    }
+
+    @Override
+    protected void onScrollChanged(int l, int t, int oldl, int oldt) {
+      super.onScrollChanged(l, t, oldl, oldt);
+
+      if (mScrollPosition != null) {
+        mScrollPosition.x = getScrollX();
+      }
     }
 
     @Override
@@ -267,7 +273,7 @@ class HorizontalScrollSpec {
           MeasureSpec.getSize(heightMeasureSpec));
     }
 
-    void mount(Component component, int width, int height) {
+    void mount(Component component, final ScrollPosition scrollPosition, int width, int height) {
       if (mLithoView.getComponentTree() == null) {
         mLithoView.setComponentTree(
             ComponentTree.create(mLithoView.getComponentContext(), component)
@@ -276,6 +282,7 @@ class HorizontalScrollSpec {
       } else {
         mLithoView.setComponent(component);
       }
+      mScrollPosition = scrollPosition;
       mComponentWidth = width;
       mComponentHeight = height;
     }
@@ -285,6 +292,7 @@ class HorizontalScrollSpec {
       mLithoView.unbind();
       mComponentWidth = 0;
       mComponentHeight = 0;
+      mScrollPosition = null;
     }
   }
 
