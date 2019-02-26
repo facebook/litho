@@ -41,22 +41,13 @@ import java.util.List;
 class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
 
   // Flags used to indicate that a certain attribute was explicitly set on the node.
-  private static final byte PFLAG_POSITION_TYPE_IS_SET = 1 << 1;
-  private static final byte PFLAG_POSITION_IS_SET = 1 << 2;
-  private static final byte PFLAG_WIDTH_IS_SET = 1 << 3;
-  private static final byte PFLAG_HEIGHT_IS_SET = 1 << 4;
-  private static final byte PFLAG_BACKGROUND_IS_SET = 1 << 5;
-  private static final byte PFLAG_TEST_KEY_IS_SET = 1 << 6;
-
-  @Nullable private OtherProps mOtherProps;
+  private static final byte PFLAG_BACKGROUND_IS_SET = 1 << 0;
+  private static final byte PFLAG_TEST_KEY_IS_SET = 1 << 1;
 
   private byte mPrivateFlags;
+  @Nullable private OtherProps mOtherProps;
   @Nullable private NodeInfo mNodeInfo;
-
-  @Nullable private YogaPositionType mPositionType;
-  @Nullable private Edges mPositions;
-  private int mWidthPx;
-  private int mHeightPx;
+  @Nullable private LayoutProps mLayoutProps;
   @Nullable private Reference<? extends Drawable> mBackground;
   @Nullable private String mTestKey;
   private boolean mWrapInView;
@@ -71,33 +62,33 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
     return mOtherProps;
   }
 
+  private LayoutProps getOrCreateLayoutProps() {
+    if (mLayoutProps == null) {
+      mLayoutProps = new LayoutProps();
+    }
+
+    return mLayoutProps;
+  }
+
   void setStyle(@AttrRes int defStyleAttr, @StyleRes int defStyleRes) {
     mDefStyleAttr = defStyleAttr;
     mDefStyleRes = defStyleRes;
   }
 
-  void positionType(@Nullable YogaPositionType positionType) {
-    mPrivateFlags |= PFLAG_POSITION_TYPE_IS_SET;
-    mPositionType = positionType;
+  void positionType(YogaPositionType positionType) {
+    getOrCreateLayoutProps().positionType(positionType);
   }
 
-  void positionPx(@Nullable YogaEdge edge, @Px int position) {
-    mPrivateFlags |= PFLAG_POSITION_IS_SET;
-    if (mPositions == null) {
-      mPositions = new Edges();
-    }
-
-    mPositions.set(edge, position);
+  void positionPx(YogaEdge edge, @Px int position) {
+    getOrCreateLayoutProps().positionPx(edge, position);
   }
 
   void widthPx(@Px int width) {
-    mPrivateFlags |= PFLAG_WIDTH_IS_SET;
-    mWidthPx = width;
+    getOrCreateLayoutProps().widthPx(width);
   }
 
   void heightPx(@Px int height) {
-    mPrivateFlags |= PFLAG_HEIGHT_IS_SET;
-    mHeightPx = height;
+    getOrCreateLayoutProps().heightPx(height);
   }
 
   void background(@Nullable Reference<? extends Drawable> background) {
@@ -115,31 +106,31 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
   }
 
   void layoutDirection(YogaDirection direction) {
-    getOrCreateOtherProps().layoutDirection(direction);
+    getOrCreateLayoutProps().layoutDirection(direction);
   }
 
   void alignSelf(YogaAlign alignSelf) {
-    getOrCreateOtherProps().alignSelf(alignSelf);
+    getOrCreateLayoutProps().alignSelf(alignSelf);
   }
 
   void flex(float flex) {
-    getOrCreateOtherProps().flex(flex);
+    getOrCreateLayoutProps().flex(flex);
   }
 
   void flexGrow(float flexGrow) {
-    getOrCreateOtherProps().flexGrow(flexGrow);
+    getOrCreateLayoutProps().flexGrow(flexGrow);
   }
 
   void flexShrink(float flexShrink) {
-    getOrCreateOtherProps().flexShrink(flexShrink);
+    getOrCreateLayoutProps().flexShrink(flexShrink);
   }
 
   void flexBasisPx(@Px int flexBasis) {
-    getOrCreateOtherProps().flexBasisPx(flexBasis);
+    getOrCreateLayoutProps().flexBasisPx(flexBasis);
   }
 
   void flexBasisPercent(float percent) {
-    getOrCreateOtherProps().flexBasisPercent(percent);
+    getOrCreateLayoutProps().flexBasisPercent(percent);
   }
 
   void importantForAccessibility(int importantForAccessibility) {
@@ -151,23 +142,23 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
   }
 
   void marginPx(YogaEdge edge, @Px int margin) {
-    getOrCreateOtherProps().marginPx(edge, margin);
+    getOrCreateLayoutProps().marginPx(edge, margin);
   }
 
   void marginPercent(YogaEdge edge, float percent) {
-    getOrCreateOtherProps().marginPercent(edge, percent);
+    getOrCreateLayoutProps().marginPercent(edge, percent);
   }
 
   void marginAuto(YogaEdge edge) {
-    getOrCreateOtherProps().marginAuto(edge);
+    getOrCreateLayoutProps().marginAuto(edge);
   }
 
   void paddingPx(YogaEdge edge, @Px int padding) {
-    getOrCreateOtherProps().paddingPx(edge, padding);
+    getOrCreateLayoutProps().paddingPx(edge, padding);
   }
 
   void paddingPercent(YogaEdge edge, float percent) {
-    getOrCreateOtherProps().paddingPercent(edge, percent);
+    getOrCreateLayoutProps().paddingPercent(edge, percent);
   }
 
   void border(Border border) {
@@ -183,55 +174,59 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
   }
 
   void positionPercent(YogaEdge edge, float percent) {
-    getOrCreateOtherProps().positionPercent(edge, percent);
+    getOrCreateLayoutProps().positionPercent(edge, percent);
   }
 
   void widthPercent(float percent) {
-    getOrCreateOtherProps().widthPercent(percent);
+    getOrCreateLayoutProps().widthPercent(percent);
   }
 
   void minWidthPx(@Px int minWidth) {
-    getOrCreateOtherProps().minWidthPx(minWidth);
+    getOrCreateLayoutProps().minWidthPx(minWidth);
   }
 
   void minWidthPercent(float percent) {
-    getOrCreateOtherProps().minWidthPercent(percent);
+    getOrCreateLayoutProps().minWidthPercent(percent);
   }
 
   void maxWidthPx(@Px int maxWidth) {
-    getOrCreateOtherProps().maxWidthPx(maxWidth);
+    getOrCreateLayoutProps().maxWidthPx(maxWidth);
   }
 
   void maxWidthPercent(float percent) {
-    getOrCreateOtherProps().maxWidthPercent(percent);
+    getOrCreateLayoutProps().maxWidthPercent(percent);
   }
 
   void heightPercent(float percent) {
-    getOrCreateOtherProps().heightPercent(percent);
+    getOrCreateLayoutProps().heightPercent(percent);
   }
 
   void minHeightPx(@Px int minHeight) {
-    getOrCreateOtherProps().minHeightPx(minHeight);
+    getOrCreateLayoutProps().minHeightPx(minHeight);
   }
 
   void minHeightPercent(float percent) {
-    getOrCreateOtherProps().minHeightPercent(percent);
+    getOrCreateLayoutProps().minHeightPercent(percent);
   }
 
   void maxHeightPx(@Px int maxHeight) {
-    getOrCreateOtherProps().maxHeightPx(maxHeight);
+    getOrCreateLayoutProps().maxHeightPx(maxHeight);
   }
 
   void maxHeightPercent(float percent) {
-    getOrCreateOtherProps().maxHeightPercent(percent);
+    getOrCreateLayoutProps().maxHeightPercent(percent);
   }
 
   void aspectRatio(float aspectRatio) {
-    getOrCreateOtherProps().aspectRatio(aspectRatio);
+    getOrCreateLayoutProps().aspectRatio(aspectRatio);
   }
 
   void isReferenceBaseline(boolean isReferenceBaseline) {
-    getOrCreateOtherProps().isReferenceBaseline(isReferenceBaseline);
+    getOrCreateLayoutProps().isReferenceBaseline(isReferenceBaseline);
+  }
+
+  void useHeightAsBaseline(boolean useHeightAsBaseline) {
+    getOrCreateLayoutProps().useHeightAsBaseline(useHeightAsBaseline);
   }
 
   void touchExpansionPx(YogaEdge edge, @Px int touchExpansion) {
@@ -474,10 +469,6 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
     return getOrCreateOtherProps().mTransitionKeyType;
   }
 
-  void useHeightAsBaseline(boolean useHeightAsBaseline) {
-    getOrCreateOtherProps().useHeightAsBaseline(useHeightAsBaseline);
-  }
-
   @Nullable
   NodeInfo getNullableNodeInfo() {
     return mNodeInfo;
@@ -499,31 +490,16 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
       mNodeInfo.copyInto(node);
     }
 
+    if (mLayoutProps != null) {
+      mLayoutProps.copyInto(node);
+    }
+
     if ((mPrivateFlags & PFLAG_BACKGROUND_IS_SET) != 0L) {
       node.background(mBackground);
     }
     if ((mPrivateFlags & PFLAG_TEST_KEY_IS_SET) != 0L) {
       node.testKey(mTestKey);
     }
-    if ((mPrivateFlags & PFLAG_POSITION_TYPE_IS_SET) != 0L) {
-      node.positionType(mPositionType);
-    }
-    if ((mPrivateFlags & PFLAG_POSITION_IS_SET) != 0L) {
-      for (int i = 0, length = YogaEdge.values().length; i < length; i++) {
-        final YogaEdge edge = YogaEdge.fromInt(i);
-        final float value = mPositions.getRaw(edge);
-        if (!YogaConstants.isUndefined(value)) {
-          node.positionPx(edge, (int) value);
-        }
-      }
-    }
-    if ((mPrivateFlags & PFLAG_WIDTH_IS_SET) != 0L) {
-      node.widthPx(mWidthPx);
-    }
-    if ((mPrivateFlags & PFLAG_HEIGHT_IS_SET) != 0L) {
-      node.heightPx(mHeightPx);
-    }
-
     if (mWrapInView) {
       node.wrapInView();
     }
@@ -535,52 +511,26 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
 
   private static class OtherProps {
     // Flags used to indicate that a certain attribute was explicitly set on the node.
-    private static final long PFLAG_LAYOUT_DIRECTION_IS_SET = 1L << 0;
-    private static final long PFLAG_ALIGN_SELF_IS_SET = 1L << 1;
-    private static final long PFLAG_FLEX_IS_SET = 1L << 2;
-    private static final long PFLAG_FLEX_GROW_IS_SET = 1L << 3;
-    private static final long PFLAG_FLEX_SHRINK_IS_SET = 1L << 4;
-    private static final long PFLAG_FLEX_BASIS_IS_SET = 1L << 5;
-    private static final long PFLAG_IMPORTANT_FOR_ACCESSIBILITY_IS_SET = 1L << 6;
-    private static final long PFLAG_DUPLICATE_PARENT_STATE_IS_SET = 1L << 7;
-    private static final long PFLAG_MARGIN_IS_SET = 1L << 8;
-    private static final long PFLAG_PADDING_IS_SET = 1L << 9;
-    private static final long PFLAG_POSITION_PERCENT_IS_SET = 1L << 10;
-    private static final long PFLAG_MIN_WIDTH_IS_SET = 1L << 11;
-    private static final long PFLAG_MAX_WIDTH_IS_SET = 1L << 12;
-    private static final long PFLAG_MIN_HEIGHT_IS_SET = 1L << 13;
-    private static final long PFLAG_MAX_HEIGHT_IS_SET = 1L << 14;
-    private static final long PFLAG_FOREGROUND_IS_SET = 1L << 15;
-    private static final long PFLAG_VISIBLE_HANDLER_IS_SET = 1L << 16;
-    private static final long PFLAG_FOCUSED_HANDLER_IS_SET = 1L << 17;
-    private static final long PFLAG_FULL_IMPRESSION_HANDLER_IS_SET = 1L << 18;
-    private static final long PFLAG_INVISIBLE_HANDLER_IS_SET = 1L << 19;
-    private static final long PFLAG_UNFOCUSED_HANDLER_IS_SET = 1L << 20;
-    private static final long PFLAG_TOUCH_EXPANSION_IS_SET = 1L << 21;
-    private static final long PFLAG_ASPECT_RATIO_IS_SET = 1L << 22;
-    private static final long PFLAG_TRANSITION_KEY_IS_SET = 1L << 23;
-    private static final long PFLAG_WRAP_IN_VIEW_IS_SET = 1L << 24;
-    private static final long PFLAG_VISIBLE_HEIGHT_RATIO_IS_SET = 1L << 25;
-    private static final long PFLAG_VISIBLE_WIDTH_RATIO_IS_SET = 1L << 26;
-    private static final long PFLAG_FLEX_BASIS_PERCENT_IS_SET = 1L << 27;
-    private static final long PFLAG_MARGIN_PERCENT_IS_SET = 1L << 28;
-    private static final long PFLAG_MARGIN_AUTO_IS_SET = 1L << 29;
-    private static final long PFLAG_PADDING_PERCENT_IS_SET = 1L << 30;
-    private static final long PFLAG_WIDTH_PERCENT_IS_SET = 1L << 31;
-    private static final long PFLAG_MIN_WIDTH_PERCENT_IS_SET = 1L << 32;
-    private static final long PFLAG_MAX_WIDTH_PERCENT_IS_SET = 1L << 33;
-    private static final long PFLAG_HEIGHT_PERCENT_IS_SET = 1L << 34;
-    private static final long PFLAG_MIN_HEIGHT_PERCENT_IS_SET = 1L << 35;
-    private static final long PFLAG_MAX_HEIGHT_PERCENT_IS_SET = 1L << 36;
-    private static final long PFLAG_BORDER_IS_SET = 1L << 37;
-    private static final long PFLAG_STATE_LIST_ANIMATOR_IS_SET = 1L << 38;
-    private static final long PFLAG_STATE_LIST_ANIMATOR_RES_IS_SET = 1L << 39;
-    private static final long PFLAG_VISIBILITY_CHANGED_HANDLER_IS_SET = 1L << 40;
-    private static final long PFLAG_TRANSITION_KEY_TYPE_IS_SET = 1L << 41;
-    private static final long PFLAG_USE_HEIGHT_AS_BASELINE_IS_SET = 1L << 42;
-    private static final long PFLAG_IS_REFERENCE_BASELINE_IS_SET = 1L << 43;
+    private static final int PFLAG_IMPORTANT_FOR_ACCESSIBILITY_IS_SET = 1 << 0;
+    private static final int PFLAG_DUPLICATE_PARENT_STATE_IS_SET = 1 << 1;
+    private static final int PFLAG_FOREGROUND_IS_SET = 1 << 2;
+    private static final int PFLAG_VISIBLE_HANDLER_IS_SET = 1 << 3;
+    private static final int PFLAG_FOCUSED_HANDLER_IS_SET = 1 << 4;
+    private static final int PFLAG_FULL_IMPRESSION_HANDLER_IS_SET = 1 << 5;
+    private static final int PFLAG_INVISIBLE_HANDLER_IS_SET = 1 << 6;
+    private static final int PFLAG_UNFOCUSED_HANDLER_IS_SET = 1 << 7;
+    private static final int PFLAG_TOUCH_EXPANSION_IS_SET = 1 << 8;
+    private static final int PFLAG_TRANSITION_KEY_IS_SET = 1 << 9;
+    private static final int PFLAG_WRAP_IN_VIEW_IS_SET = 1 << 10;
+    private static final int PFLAG_VISIBLE_HEIGHT_RATIO_IS_SET = 1 << 11;
+    private static final int PFLAG_VISIBLE_WIDTH_RATIO_IS_SET = 1 << 12;
+    private static final int PFLAG_BORDER_IS_SET = 1 << 13;
+    private static final int PFLAG_STATE_LIST_ANIMATOR_IS_SET = 1 << 14;
+    private static final int PFLAG_STATE_LIST_ANIMATOR_RES_IS_SET = 1 << 15;
+    private static final int PFLAG_VISIBILITY_CHANGED_HANDLER_IS_SET = 1 << 16;
+    private static final int PFLAG_TRANSITION_KEY_TYPE_IS_SET = 1 << 17;
 
-    private long mPrivateFlags;
+    private int mPrivateFlags;
 
     private float mVisibleHeightRatio;
     private float mVisibleWidthRatio;
@@ -590,76 +540,15 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
     @Nullable private EventHandler<FullImpressionVisibleEvent> mFullImpressionHandler;
     @Nullable private EventHandler<InvisibleEvent> mInvisibleHandler;
     @Nullable private EventHandler<VisibilityChangedEvent> mVisibilityChangedHandler;
-    @Nullable private YogaDirection mLayoutDirection;
-    @Nullable private YogaAlign mAlignSelf;
-    private float mFlex;
-    private float mFlexGrow;
-    private float mFlexShrink;
-    @Px private int mFlexBasisPx;
-    private float mFlexBasisPercent;
     private int mImportantForAccessibility;
     private boolean mDuplicateParentState;
-    @Nullable private Edges mMargins;
-    @Nullable private Edges mMarginPercents;
-    @Nullable private List<YogaEdge> mMarginAutos;
-    @Nullable private Edges mPaddings;
-    @Nullable private Edges mPaddingPercents;
-    @Nullable private Edges mPositionPercents;
     @Nullable private Edges mTouchExpansions;
-    private float mWidthPercent;
-    @Px private int mMinWidthPx;
-    private float mMinWidthPercent;
-    @Px private int mMaxWidthPx;
-    private float mMaxWidthPercent;
-    private float mHeightPercent;
-    @Px private int mMinHeightPx;
-    private float mMinHeightPercent;
-    @Px private int mMaxHeightPx;
-    private float mMaxHeightPercent;
-    private float mAspectRatio;
-    private boolean mIsReferenceBaseline;
     @Nullable private ComparableDrawable mForeground;
     @Nullable private String mTransitionKey;
     @Nullable private Transition.TransitionKeyType mTransitionKeyType;
     @Nullable private Border mBorder;
     @Nullable private StateListAnimator mStateListAnimator;
     @DrawableRes private int mStateListAnimatorRes;
-    @Nullable private boolean mUseHeightAsBaseline;
-
-    private void layoutDirection(YogaDirection direction) {
-      mPrivateFlags |= PFLAG_LAYOUT_DIRECTION_IS_SET;
-      mLayoutDirection = direction;
-    }
-
-    private void alignSelf(YogaAlign alignSelf) {
-      mPrivateFlags |= PFLAG_ALIGN_SELF_IS_SET;
-      mAlignSelf = alignSelf;
-    }
-
-    private void flex(float flex) {
-      mPrivateFlags |= PFLAG_FLEX_IS_SET;
-      mFlex = flex;
-    }
-
-    private void flexGrow(float flexGrow) {
-      mPrivateFlags |= PFLAG_FLEX_GROW_IS_SET;
-      mFlexGrow = flexGrow;
-    }
-
-    private void flexShrink(float flexShrink) {
-      mPrivateFlags |= PFLAG_FLEX_SHRINK_IS_SET;
-      mFlexShrink = flexShrink;
-    }
-
-    private void flexBasisPx(@Px int flexBasis) {
-      mPrivateFlags |= PFLAG_FLEX_BASIS_IS_SET;
-      mFlexBasisPx = flexBasis;
-    }
-
-    private void flexBasisPercent(float percent) {
-      mPrivateFlags |= PFLAG_FLEX_BASIS_PERCENT_IS_SET;
-      mFlexBasisPercent = percent;
-    }
 
     private void importantForAccessibility(int importantForAccessibility) {
       mPrivateFlags |= PFLAG_IMPORTANT_FOR_ACCESSIBILITY_IS_SET;
@@ -671,120 +560,11 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
       mDuplicateParentState = duplicateParentState;
     }
 
-    private void marginPx(YogaEdge edge, @Px int margin) {
-      mPrivateFlags |= PFLAG_MARGIN_IS_SET;
-
-      if (mMargins == null) {
-        mMargins = new Edges();
-      }
-      mMargins.set(edge, margin);
-    }
-
-    private void marginPercent(YogaEdge edge, float percent) {
-      mPrivateFlags |= PFLAG_MARGIN_PERCENT_IS_SET;
-      if (mMarginPercents == null) {
-        mMarginPercents = new Edges();
-      }
-      mMarginPercents.set(edge, percent);
-    }
-
-    private void marginAuto(YogaEdge edge) {
-      mPrivateFlags |= PFLAG_MARGIN_AUTO_IS_SET;
-      if (mMarginAutos == null) {
-        mMarginAutos = new ArrayList<>(2);
-      }
-      mMarginAutos.add(edge);
-    }
-
-    private void paddingPx(YogaEdge edge, @Px int padding) {
-      mPrivateFlags |= PFLAG_PADDING_IS_SET;
-      if (mPaddings == null) {
-        mPaddings = new Edges();
-      }
-      mPaddings.set(edge, padding);
-    }
-
-    private void paddingPercent(YogaEdge edge, float percent) {
-      mPrivateFlags |= PFLAG_PADDING_PERCENT_IS_SET;
-      if (mPaddingPercents == null) {
-        mPaddingPercents = new Edges();
-      }
-      mPaddingPercents.set(edge, percent);
-    }
-
     private void border(@Nullable Border border) {
       if (border != null) {
         mPrivateFlags |= PFLAG_BORDER_IS_SET;
         mBorder = border;
       }
-    }
-
-    private void positionPercent(YogaEdge edge, float percent) {
-      mPrivateFlags |= PFLAG_POSITION_PERCENT_IS_SET;
-      if (mPositionPercents == null) {
-        mPositionPercents = new Edges();
-      }
-      mPositionPercents.set(edge, percent);
-    }
-
-    private void widthPercent(float percent) {
-      mPrivateFlags |= PFLAG_WIDTH_PERCENT_IS_SET;
-      mWidthPercent = percent;
-    }
-
-    private void minWidthPx(@Px int minWidth) {
-      mPrivateFlags |= PFLAG_MIN_WIDTH_IS_SET;
-      mMinWidthPx = minWidth;
-    }
-
-    private void minWidthPercent(float percent) {
-      mPrivateFlags |= PFLAG_MIN_WIDTH_PERCENT_IS_SET;
-      mMinWidthPercent = percent;
-    }
-
-    private void maxWidthPx(@Px int maxWidth) {
-      mPrivateFlags |= PFLAG_MAX_WIDTH_IS_SET;
-      mMaxWidthPx = maxWidth;
-    }
-
-    private void maxWidthPercent(float percent) {
-      mPrivateFlags |= PFLAG_MAX_WIDTH_PERCENT_IS_SET;
-      mMaxWidthPercent = percent;
-    }
-
-    private void heightPercent(float percent) {
-      mPrivateFlags |= PFLAG_HEIGHT_PERCENT_IS_SET;
-      mHeightPercent = percent;
-    }
-
-    private void minHeightPx(@Px int minHeight) {
-      mPrivateFlags |= PFLAG_MIN_HEIGHT_IS_SET;
-      mMinHeightPx = minHeight;
-    }
-
-    private void minHeightPercent(float percent) {
-      mPrivateFlags |= PFLAG_MIN_HEIGHT_PERCENT_IS_SET;
-      mMinHeightPercent = percent;
-    }
-
-    private void maxHeightPx(@Px int maxHeight) {
-      mPrivateFlags |= PFLAG_MAX_HEIGHT_IS_SET;
-      mMaxHeightPx = maxHeight;
-    }
-
-    private void maxHeightPercent(float percent) {
-      mPrivateFlags |= PFLAG_MAX_HEIGHT_PERCENT_IS_SET;
-      mMaxHeightPercent = percent;
-    }
-
-    private void aspectRatio(float aspectRatio) {
-      mPrivateFlags |= PFLAG_ASPECT_RATIO_IS_SET;
-      mAspectRatio = aspectRatio;
-    }
-
-    private void isReferenceBaseline(boolean isReferenceBaseline) {
-      mPrivateFlags |= PFLAG_IS_REFERENCE_BASELINE_IS_SET;
-      mIsReferenceBaseline = isReferenceBaseline;
     }
 
     private void touchExpansionPx(YogaEdge edge, @Px int touchExpansion) {
@@ -862,15 +642,7 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
       mStateListAnimatorRes = resId;
     }
 
-    private void useHeightAsBaseline(boolean useHeightAsBaseline) {
-      mPrivateFlags |= PFLAG_USE_HEIGHT_AS_BASELINE_IS_SET;
-      mUseHeightAsBaseline = useHeightAsBaseline;
-    }
-
-    void copyInto(final InternalNode node) {
-      if ((mPrivateFlags & PFLAG_LAYOUT_DIRECTION_IS_SET) != 0L) {
-        node.layoutDirection(mLayoutDirection);
-      }
+    void copyInto(InternalNode node) {
       if ((mPrivateFlags & PFLAG_IMPORTANT_FOR_ACCESSIBILITY_IS_SET) != 0L) {
         node.importantForAccessibility(mImportantForAccessibility);
       }
@@ -913,32 +685,268 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
       if ((mPrivateFlags & PFLAG_VISIBLE_WIDTH_RATIO_IS_SET) != 0L) {
         node.visibleWidthRatio(mVisibleWidthRatio);
       }
-      if ((mPrivateFlags & PFLAG_ALIGN_SELF_IS_SET) != 0L) {
-        node.alignSelf(mAlignSelf);
-      }
-      if ((mPrivateFlags & PFLAG_POSITION_PERCENT_IS_SET) != 0L) {
+      if ((mPrivateFlags & PFLAG_TOUCH_EXPANSION_IS_SET) != 0L) {
         for (int i = 0, length = YogaEdge.values().length; i < length; i++) {
           final YogaEdge edge = YogaEdge.fromInt(i);
-          final float value = mPositionPercents.getRaw(edge);
+          final float value = mTouchExpansions.getRaw(edge);
           if (!YogaConstants.isUndefined(value)) {
-            node.positionPercent(edge, value);
+            node.touchExpansionPx(edge, (int) value);
           }
         }
       }
-      if ((mPrivateFlags & PFLAG_FLEX_IS_SET) != 0L) {
-        node.flex(mFlex);
+      if ((mPrivateFlags & PFLAG_BORDER_IS_SET) != 0L) {
+        node.border(mBorder);
       }
-      if ((mPrivateFlags & PFLAG_FLEX_GROW_IS_SET) != 0L) {
-        node.flexGrow(mFlexGrow);
+      if ((mPrivateFlags & PFLAG_STATE_LIST_ANIMATOR_IS_SET) != 0L) {
+        node.stateListAnimator(mStateListAnimator);
       }
-      if ((mPrivateFlags & PFLAG_FLEX_SHRINK_IS_SET) != 0L) {
-        node.flexShrink(mFlexShrink);
+      if ((mPrivateFlags & PFLAG_STATE_LIST_ANIMATOR_RES_IS_SET) != 0L) {
+        node.stateListAnimatorRes(mStateListAnimatorRes);
       }
-      if ((mPrivateFlags & PFLAG_FLEX_BASIS_IS_SET) != 0L) {
-        node.flexBasisPx(mFlexBasisPx);
+    }
+  }
+
+  static class LayoutProps {
+    private static final int PFLAG_WIDTH_IS_SET = 1 << 0;
+    private static final int PFLAG_WIDTH_PERCENT_IS_SET = 1 << 1;
+    private static final int PFLAG_MIN_WIDTH_IS_SET = 1 << 2;
+    private static final int PFLAG_MIN_WIDTH_PERCENT_IS_SET = 1 << 3;
+    private static final int PFLAG_MAX_WIDTH_IS_SET = 1 << 4;
+    private static final int PFLAG_MAX_WIDTH_PERCENT_IS_SET = 1 << 5;
+    private static final int PFLAG_HEIGHT_IS_SET = 1 << 6;
+    private static final int PFLAG_HEIGHT_PERCENT_IS_SET = 1 << 7;
+    private static final int PFLAG_MIN_HEIGHT_IS_SET = 1 << 8;
+    private static final int PFLAG_MIN_HEIGHT_PERCENT_IS_SET = 1 << 9;
+    private static final int PFLAG_MAX_HEIGHT_IS_SET = 1 << 10;
+    private static final int PFLAG_MAX_HEIGHT_PERCENT_IS_SET = 1 << 11;
+    private static final int PFLAG_LAYOUT_DIRECTION_IS_SET = 1 << 12;
+    private static final int PFLAG_ALIGN_SELF_IS_SET = 1 << 13;
+    private static final int PFLAG_FLEX_IS_SET = 1 << 14;
+    private static final int PFLAG_FLEX_GROW_IS_SET = 1 << 15;
+    private static final int PFLAG_FLEX_SHRINK_IS_SET = 1 << 16;
+    private static final int PFLAG_FLEX_BASIS_IS_SET = 1 << 17;
+    private static final int PFLAG_FLEX_BASIS_PERCENT_IS_SET = 1 << 18;
+    private static final int PFLAG_ASPECT_RATIO_IS_SET = 1 << 19;
+    private static final int PFLAG_POSITION_TYPE_IS_SET = 1 << 20;
+    private static final int PFLAG_POSITION_IS_SET = 1 << 21;
+    private static final int PFLAG_POSITION_PERCENT_IS_SET = 1 << 22;
+    private static final int PFLAG_PADDING_IS_SET = 1 << 23;
+    private static final int PFLAG_PADDING_PERCENT_IS_SET = 1 << 24;
+    private static final int PFLAG_MARGIN_IS_SET = 1 << 25;
+    private static final int PFLAG_MARGIN_PERCENT_IS_SET = 1 << 26;
+    private static final int PFLAG_MARGIN_AUTO_IS_SET = 1 << 27;
+    private static final int PFLAG_IS_REFERENCE_BASELINE_IS_SET = 1 << 28;
+    private static final int PFLAG_USE_HEIGHT_AS_BASELINE_IS_SET = 1 << 29;
+
+    private int mPrivateFlags;
+
+    @Px private int mWidthPx;
+    private float mWidthPercent;
+    @Px private int mMinWidthPx;
+    private float mMinWidthPercent;
+    @Px private int mMaxWidthPx;
+    private float mMaxWidthPercent;
+    @Px private int mHeightPx;
+    private float mHeightPercent;
+    @Px private int mMinHeightPx;
+    private float mMinHeightPercent;
+    @Px private int mMaxHeightPx;
+    private float mMaxHeightPercent;
+    private float mFlex;
+    private float mFlexGrow;
+    private float mFlexShrink;
+    @Px private int mFlexBasisPx;
+    private float mFlexBasisPercent;
+    private float mAspectRatio;
+    @Nullable private YogaDirection mLayoutDirection;
+    @Nullable private YogaAlign mAlignSelf;
+    @Nullable private YogaPositionType mPositionType;
+    @Nullable private Edges mPositions;
+    @Nullable private Edges mMargins;
+    @Nullable private Edges mMarginPercents;
+    @Nullable private List<YogaEdge> mMarginAutos;
+    @Nullable private Edges mPaddings;
+    @Nullable private Edges mPaddingPercents;
+    @Nullable private Edges mPositionPercents;
+    private boolean mIsReferenceBaseline;
+    private boolean mUseHeightAsBaseline;
+
+    void widthPx(@Px int width) {
+      mPrivateFlags |= PFLAG_WIDTH_IS_SET;
+      mWidthPx = width;
+    }
+
+    private void widthPercent(float percent) {
+      mPrivateFlags |= PFLAG_WIDTH_PERCENT_IS_SET;
+      mWidthPercent = percent;
+    }
+
+    private void minWidthPx(@Px int minWidth) {
+      mPrivateFlags |= PFLAG_MIN_WIDTH_IS_SET;
+      mMinWidthPx = minWidth;
+    }
+
+    private void maxWidthPx(@Px int maxWidth) {
+      mPrivateFlags |= PFLAG_MAX_WIDTH_IS_SET;
+      mMaxWidthPx = maxWidth;
+    }
+
+    private void minWidthPercent(float percent) {
+      mPrivateFlags |= PFLAG_MIN_WIDTH_PERCENT_IS_SET;
+      mMinWidthPercent = percent;
+    }
+
+    private void maxWidthPercent(float percent) {
+      mPrivateFlags |= PFLAG_MAX_WIDTH_PERCENT_IS_SET;
+      mMaxWidthPercent = percent;
+    }
+
+    void heightPx(@Px int height) {
+      mPrivateFlags |= PFLAG_HEIGHT_IS_SET;
+      mHeightPx = height;
+    }
+
+    private void heightPercent(float percent) {
+      mPrivateFlags |= PFLAG_HEIGHT_PERCENT_IS_SET;
+      mHeightPercent = percent;
+    }
+
+    private void minHeightPx(@Px int minHeight) {
+      mPrivateFlags |= PFLAG_MIN_HEIGHT_IS_SET;
+      mMinHeightPx = minHeight;
+    }
+
+    private void maxHeightPx(@Px int maxHeight) {
+      mPrivateFlags |= PFLAG_MAX_HEIGHT_IS_SET;
+      mMaxHeightPx = maxHeight;
+    }
+
+    private void minHeightPercent(float percent) {
+      mPrivateFlags |= PFLAG_MIN_HEIGHT_PERCENT_IS_SET;
+      mMinHeightPercent = percent;
+    }
+
+    private void maxHeightPercent(float percent) {
+      mPrivateFlags |= PFLAG_MAX_HEIGHT_PERCENT_IS_SET;
+      mMaxHeightPercent = percent;
+    }
+
+    private void layoutDirection(YogaDirection direction) {
+      mPrivateFlags |= PFLAG_LAYOUT_DIRECTION_IS_SET;
+      mLayoutDirection = direction;
+    }
+
+    private void alignSelf(YogaAlign alignSelf) {
+      mPrivateFlags |= PFLAG_ALIGN_SELF_IS_SET;
+      mAlignSelf = alignSelf;
+    }
+
+    private void flex(float flex) {
+      mPrivateFlags |= PFLAG_FLEX_IS_SET;
+      mFlex = flex;
+    }
+
+    private void flexGrow(float flexGrow) {
+      mPrivateFlags |= PFLAG_FLEX_GROW_IS_SET;
+      mFlexGrow = flexGrow;
+    }
+
+    private void flexShrink(float flexShrink) {
+      mPrivateFlags |= PFLAG_FLEX_SHRINK_IS_SET;
+      mFlexShrink = flexShrink;
+    }
+
+    private void flexBasisPx(@Px int flexBasis) {
+      mPrivateFlags |= PFLAG_FLEX_BASIS_IS_SET;
+      mFlexBasisPx = flexBasis;
+    }
+
+    private void flexBasisPercent(float percent) {
+      mPrivateFlags |= PFLAG_FLEX_BASIS_PERCENT_IS_SET;
+      mFlexBasisPercent = percent;
+    }
+
+    private void aspectRatio(float aspectRatio) {
+      mPrivateFlags |= PFLAG_ASPECT_RATIO_IS_SET;
+      mAspectRatio = aspectRatio;
+    }
+
+    void positionType(@Nullable YogaPositionType positionType) {
+      mPrivateFlags |= PFLAG_POSITION_TYPE_IS_SET;
+      mPositionType = positionType;
+    }
+
+    void positionPx(YogaEdge edge, @Px int position) {
+      mPrivateFlags |= PFLAG_POSITION_IS_SET;
+      if (mPositions == null) {
+        mPositions = new Edges();
       }
-      if ((mPrivateFlags & PFLAG_FLEX_BASIS_PERCENT_IS_SET) != 0L) {
-        node.flexBasisPercent(mFlexBasisPercent);
+
+      mPositions.set(edge, position);
+    }
+
+    private void positionPercent(YogaEdge edge, float percent) {
+      mPrivateFlags |= PFLAG_POSITION_PERCENT_IS_SET;
+      if (mPositionPercents == null) {
+        mPositionPercents = new Edges();
+      }
+      mPositionPercents.set(edge, percent);
+    }
+
+    private void paddingPx(YogaEdge edge, @Px int padding) {
+      mPrivateFlags |= PFLAG_PADDING_IS_SET;
+      if (mPaddings == null) {
+        mPaddings = new Edges();
+      }
+      mPaddings.set(edge, padding);
+    }
+
+    private void paddingPercent(YogaEdge edge, float percent) {
+      mPrivateFlags |= PFLAG_PADDING_PERCENT_IS_SET;
+      if (mPaddingPercents == null) {
+        mPaddingPercents = new Edges();
+      }
+      mPaddingPercents.set(edge, percent);
+    }
+
+    private void marginPx(YogaEdge edge, @Px int margin) {
+      mPrivateFlags |= PFLAG_MARGIN_IS_SET;
+
+      if (mMargins == null) {
+        mMargins = new Edges();
+      }
+      mMargins.set(edge, margin);
+    }
+
+    private void marginPercent(YogaEdge edge, float percent) {
+      mPrivateFlags |= PFLAG_MARGIN_PERCENT_IS_SET;
+      if (mMarginPercents == null) {
+        mMarginPercents = new Edges();
+      }
+      mMarginPercents.set(edge, percent);
+    }
+
+    private void marginAuto(YogaEdge edge) {
+      mPrivateFlags |= PFLAG_MARGIN_AUTO_IS_SET;
+      if (mMarginAutos == null) {
+        mMarginAutos = new ArrayList<>(2);
+      }
+      mMarginAutos.add(edge);
+    }
+
+    private void isReferenceBaseline(boolean isReferenceBaseline) {
+      mPrivateFlags |= PFLAG_IS_REFERENCE_BASELINE_IS_SET;
+      mIsReferenceBaseline = isReferenceBaseline;
+    }
+
+    private void useHeightAsBaseline(boolean useHeightAsBaseline) {
+      mPrivateFlags |= PFLAG_USE_HEIGHT_AS_BASELINE_IS_SET;
+      mUseHeightAsBaseline = useHeightAsBaseline;
+    }
+
+    void copyInto(InternalNode node) {
+      if ((mPrivateFlags & PFLAG_WIDTH_IS_SET) != 0L) {
+        node.widthPx(mWidthPx);
       }
       if ((mPrivateFlags & PFLAG_WIDTH_PERCENT_IS_SET) != 0L) {
         node.widthPercent(mWidthPercent);
@@ -955,6 +963,9 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
       if ((mPrivateFlags & PFLAG_MAX_WIDTH_PERCENT_IS_SET) != 0L) {
         node.maxWidthPercent(mMaxWidthPercent);
       }
+      if ((mPrivateFlags & PFLAG_HEIGHT_IS_SET) != 0L) {
+        node.heightPx(mHeightPx);
+      }
       if ((mPrivateFlags & PFLAG_HEIGHT_PERCENT_IS_SET) != 0L) {
         node.heightPercent(mHeightPercent);
       }
@@ -970,11 +981,68 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
       if ((mPrivateFlags & PFLAG_MAX_HEIGHT_PERCENT_IS_SET) != 0L) {
         node.maxHeightPercent(mMaxHeightPercent);
       }
+      if ((mPrivateFlags & PFLAG_LAYOUT_DIRECTION_IS_SET) != 0L) {
+        node.layoutDirection(mLayoutDirection);
+      }
+      if ((mPrivateFlags & PFLAG_ALIGN_SELF_IS_SET) != 0L) {
+        node.alignSelf(mAlignSelf);
+      }
+      if ((mPrivateFlags & PFLAG_FLEX_IS_SET) != 0L) {
+        node.flex(mFlex);
+      }
+      if ((mPrivateFlags & PFLAG_FLEX_GROW_IS_SET) != 0L) {
+        node.flexGrow(mFlexGrow);
+      }
+      if ((mPrivateFlags & PFLAG_FLEX_SHRINK_IS_SET) != 0L) {
+        node.flexShrink(mFlexShrink);
+      }
+      if ((mPrivateFlags & PFLAG_FLEX_BASIS_IS_SET) != 0L) {
+        node.flexBasisPx(mFlexBasisPx);
+      }
+      if ((mPrivateFlags & PFLAG_FLEX_BASIS_PERCENT_IS_SET) != 0L) {
+        node.flexBasisPercent(mFlexBasisPercent);
+      }
       if ((mPrivateFlags & PFLAG_ASPECT_RATIO_IS_SET) != 0L) {
         node.aspectRatio(mAspectRatio);
       }
-      if ((mPrivateFlags & PFLAG_IS_REFERENCE_BASELINE_IS_SET) != 0L) {
-        node.isReferenceBaseline(mIsReferenceBaseline);
+      if ((mPrivateFlags & PFLAG_POSITION_TYPE_IS_SET) != 0L) {
+        node.positionType(mPositionType);
+      }
+      if ((mPrivateFlags & PFLAG_POSITION_IS_SET) != 0L) {
+        for (int i = 0, length = YogaEdge.values().length; i < length; i++) {
+          final YogaEdge edge = YogaEdge.fromInt(i);
+          final float value = mPositions.getRaw(edge);
+          if (!YogaConstants.isUndefined(value)) {
+            node.positionPx(edge, (int) value);
+          }
+        }
+      }
+      if ((mPrivateFlags & PFLAG_POSITION_PERCENT_IS_SET) != 0L) {
+        for (int i = 0, length = YogaEdge.values().length; i < length; i++) {
+          final YogaEdge edge = YogaEdge.fromInt(i);
+          final float value = mPositionPercents.getRaw(edge);
+          if (!YogaConstants.isUndefined(value)) {
+            node.positionPercent(edge, value);
+          }
+        }
+      }
+      if ((mPrivateFlags & PFLAG_PADDING_IS_SET) != 0L) {
+        for (int i = 0, length = YogaEdge.values().length; i < length; i++) {
+          final YogaEdge edge = YogaEdge.fromInt(i);
+          final float value = mPaddings.getRaw(edge);
+          if (!YogaConstants.isUndefined(value)) {
+            node.paddingPx(edge, (int) value);
+          }
+        }
+      }
+      if ((mPrivateFlags & PFLAG_PADDING_PERCENT_IS_SET) != 0L) {
+        for (int i = 0, length = YogaEdge.values().length; i < length; i++) {
+          final YogaEdge edge = YogaEdge.fromInt(i);
+          final float value = mPaddingPercents.getRaw(edge);
+          if (!YogaConstants.isUndefined(value)) {
+            node.paddingPercent(edge, value);
+          }
+        }
       }
       if ((mPrivateFlags & PFLAG_MARGIN_IS_SET) != 0L) {
         for (int i = 0, length = YogaEdge.values().length; i < length; i++) {
@@ -999,41 +1067,8 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
           node.marginAuto(edge);
         }
       }
-      if ((mPrivateFlags & PFLAG_PADDING_IS_SET) != 0L) {
-        for (int i = 0, length = YogaEdge.values().length; i < length; i++) {
-          final YogaEdge edge = YogaEdge.fromInt(i);
-          final float value = mPaddings.getRaw(edge);
-          if (!YogaConstants.isUndefined(value)) {
-            node.paddingPx(edge, (int) value);
-          }
-        }
-      }
-      if ((mPrivateFlags & PFLAG_PADDING_PERCENT_IS_SET) != 0L) {
-        for (int i = 0, length = YogaEdge.values().length; i < length; i++) {
-          final YogaEdge edge = YogaEdge.fromInt(i);
-          final float value = mPaddingPercents.getRaw(edge);
-          if (!YogaConstants.isUndefined(value)) {
-            node.paddingPercent(edge, value);
-          }
-        }
-      }
-      if ((mPrivateFlags & PFLAG_TOUCH_EXPANSION_IS_SET) != 0L) {
-        for (int i = 0, length = YogaEdge.values().length; i < length; i++) {
-          final YogaEdge edge = YogaEdge.fromInt(i);
-          final float value = mTouchExpansions.getRaw(edge);
-          if (!YogaConstants.isUndefined(value)) {
-            node.touchExpansionPx(edge, (int) value);
-          }
-        }
-      }
-      if ((mPrivateFlags & PFLAG_BORDER_IS_SET) != 0L) {
-        node.border(mBorder);
-      }
-      if ((mPrivateFlags & PFLAG_STATE_LIST_ANIMATOR_IS_SET) != 0L) {
-        node.stateListAnimator(mStateListAnimator);
-      }
-      if ((mPrivateFlags & PFLAG_STATE_LIST_ANIMATOR_RES_IS_SET) != 0L) {
-        node.stateListAnimatorRes(mStateListAnimatorRes);
+      if ((mPrivateFlags & PFLAG_IS_REFERENCE_BASELINE_IS_SET) != 0L) {
+        node.isReferenceBaseline(mIsReferenceBaseline);
       }
       if ((mPrivateFlags & PFLAG_USE_HEIGHT_AS_BASELINE_IS_SET) != 0L) {
         node.useHeightAsBaselineFunction(mUseHeightAsBaseline);
