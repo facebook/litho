@@ -76,7 +76,7 @@ public final class DebugLayoutNode {
   }
 
   public void setFocusable(boolean focusable) {
-    mNode.focusable(focusable);
+    mNode.getOrCreateNodeInfo().setFocusable(focusable);
   }
 
   @Nullable
@@ -89,7 +89,7 @@ public final class DebugLayoutNode {
   }
 
   public void setContentDescription(CharSequence contentDescription) {
-    mNode.contentDescription(contentDescription);
+    mNode.getOrCreateNodeInfo().setContentDescription(contentDescription);
   }
 
   public void setLayoutDirection(YogaDirection yogaDirection) {
@@ -386,6 +386,6 @@ public final class DebugLayoutNode {
 
   @Nullable
   public EventHandler getClickHandler() {
-    return mNode.getClickHandler();
+    return mNode.getNodeInfo() != null ? mNode.getNodeInfo().getClickHandler() : null;
   }
 }

@@ -114,11 +114,11 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
     mWrapInView = true;
   }
 
-  void layoutDirection(@Nullable YogaDirection direction) {
+  void layoutDirection(YogaDirection direction) {
     getOrCreateOtherProps().layoutDirection(direction);
   }
 
-  void alignSelf(@Nullable YogaAlign alignSelf) {
+  void alignSelf(YogaAlign alignSelf) {
     getOrCreateOtherProps().alignSelf(alignSelf);
   }
 
@@ -182,7 +182,7 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
     getOrCreateOtherProps().stateListAnimatorRes(resId);
   }
 
-  void positionPercent(@Nullable YogaEdge edge, float percent) {
+  void positionPercent(YogaEdge edge, float percent) {
     getOrCreateOtherProps().positionPercent(edge, percent);
   }
 
@@ -234,7 +234,7 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
     getOrCreateOtherProps().isReferenceBaseline(isReferenceBaseline);
   }
 
-  void touchExpansionPx(@Nullable YogaEdge edge, @Px int touchExpansion) {
+  void touchExpansionPx(YogaEdge edge, @Px int touchExpansion) {
     getOrCreateOtherProps().touchExpansionPx(edge, touchExpansion);
   }
 
@@ -441,14 +441,17 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
   }
 
   void scale(float scale) {
+    wrapInView();
     getOrCreateNodeInfo().setScale(scale);
   }
 
   void alpha(float alpha) {
+    wrapInView();
     getOrCreateNodeInfo().setAlpha(alpha);
   }
 
   void rotation(float rotation) {
+    wrapInView();
     getOrCreateNodeInfo().setRotation(rotation);
   }
 
@@ -668,7 +671,7 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
       mDuplicateParentState = duplicateParentState;
     }
 
-    private void marginPx(@Nullable YogaEdge edge, @Px int margin) {
+    private void marginPx(YogaEdge edge, @Px int margin) {
       mPrivateFlags |= PFLAG_MARGIN_IS_SET;
 
       if (mMargins == null) {
@@ -677,7 +680,7 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
       mMargins.set(edge, margin);
     }
 
-    private void marginPercent(@Nullable YogaEdge edge, float percent) {
+    private void marginPercent(YogaEdge edge, float percent) {
       mPrivateFlags |= PFLAG_MARGIN_PERCENT_IS_SET;
       if (mMarginPercents == null) {
         mMarginPercents = new Edges();
@@ -685,7 +688,7 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
       mMarginPercents.set(edge, percent);
     }
 
-    private void marginAuto(@Nullable YogaEdge edge) {
+    private void marginAuto(YogaEdge edge) {
       mPrivateFlags |= PFLAG_MARGIN_AUTO_IS_SET;
       if (mMarginAutos == null) {
         mMarginAutos = new ArrayList<>(2);
@@ -693,7 +696,7 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
       mMarginAutos.add(edge);
     }
 
-    private void paddingPx(@Nullable YogaEdge edge, @Px int padding) {
+    private void paddingPx(YogaEdge edge, @Px int padding) {
       mPrivateFlags |= PFLAG_PADDING_IS_SET;
       if (mPaddings == null) {
         mPaddings = new Edges();
@@ -701,7 +704,7 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
       mPaddings.set(edge, padding);
     }
 
-    private void paddingPercent(@Nullable YogaEdge edge, float percent) {
+    private void paddingPercent(YogaEdge edge, float percent) {
       mPrivateFlags |= PFLAG_PADDING_PERCENT_IS_SET;
       if (mPaddingPercents == null) {
         mPaddingPercents = new Edges();

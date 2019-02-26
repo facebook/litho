@@ -333,21 +333,6 @@ class NoOpInternalNode extends InternalNode {
   }
 
   @Override
-  public InternalNode clickHandler(EventHandler<ClickEvent> clickHandler) {
-    return this;
-  }
-
-  @Override
-  public InternalNode focusChangeHandler(EventHandler<FocusChangedEvent> focusChangeHandler) {
-    return this;
-  }
-
-  @Override
-  public InternalNode touchHandler(EventHandler<TouchEvent> touchHandler) {
-    return this;
-  }
-
-  @Override
   public InternalNode visibleHandler(EventHandler<VisibleEvent> visibleHandler) {
     return this;
   }
@@ -370,21 +355,6 @@ class NoOpInternalNode extends InternalNode {
 
   @Override
   public InternalNode unfocusedHandler(EventHandler<UnfocusedVisibleEvent> unfocusedHandler) {
-    return this;
-  }
-
-  @Override
-  public InternalNode contentDescription(CharSequence contentDescription) {
-    return this;
-  }
-
-  @Override
-  public InternalNode viewTag(Object viewTag) {
-    return this;
-  }
-
-  @Override
-  public InternalNode viewTags(SparseArray<Object> viewTags) {
     return this;
   }
 

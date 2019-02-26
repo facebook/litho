@@ -684,89 +684,95 @@ class NodeInfo {
   }
 
   void copyInto(InternalNode layout) {
+    final NodeInfo layoutNodeInfo = layout.getOrCreateNodeInfo();
     if ((mPrivateFlags & PFLAG_CLICK_HANDLER_IS_SET) != 0) {
-      layout.clickHandler(mClickHandler);
+      layoutNodeInfo.setClickHandler(mClickHandler);
     }
     if ((mPrivateFlags & PFLAG_LONG_CLICK_HANDLER_IS_SET) != 0) {
-      layout.longClickHandler(mLongClickHandler);
+      layoutNodeInfo.setLongClickHandler(mLongClickHandler);
     }
     if ((mPrivateFlags & PFLAG_FOCUS_CHANGE_HANDLER_IS_SET) != 0) {
-      layout.focusChangeHandler(mFocusChangeHandler);
+      layoutNodeInfo.setFocusChangeHandler(mFocusChangeHandler);
     }
     if ((mPrivateFlags & PFLAG_TOUCH_HANDLER_IS_SET) != 0) {
-      layout.touchHandler(mTouchHandler);
+      layoutNodeInfo.setTouchHandler(mTouchHandler);
     }
     if ((mPrivateFlags & PFLAG_INTERCEPT_TOUCH_HANDLER_IS_SET) != 0) {
-      layout.interceptTouchHandler(mInterceptTouchHandler);
+      layoutNodeInfo.setInterceptTouchHandler(mInterceptTouchHandler);
     }
     if ((mPrivateFlags & PFLAG_ACCESSIBILITY_ROLE_IS_SET) != 0) {
-      layout.accessibilityRole(mAccessibilityRole);
+      layoutNodeInfo.setAccessibilityRole(mAccessibilityRole);
     }
     if ((mPrivateFlags & PFLAG_ACCESSIBILITY_ROLE_DESCRIPTION_IS_SET) != 0) {
-      layout.accessibilityRoleDescription(mAccessibilityRoleDescription);
+      layoutNodeInfo.setAccessibilityRoleDescription(mAccessibilityRoleDescription);
     }
     if ((mPrivateFlags & PFLAG_DISPATCH_POPULATE_ACCESSIBILITY_EVENT_HANDLER_IS_SET) != 0) {
-      layout.dispatchPopulateAccessibilityEventHandler(mDispatchPopulateAccessibilityEventHandler);
+      layoutNodeInfo.setDispatchPopulateAccessibilityEventHandler(
+          mDispatchPopulateAccessibilityEventHandler);
     }
     if ((mPrivateFlags & PFLAG_ON_INITIALIZE_ACCESSIBILITY_EVENT_HANDLER_IS_SET) != 0) {
-      layout.onInitializeAccessibilityEventHandler(mOnInitializeAccessibilityEventHandler);
+      layoutNodeInfo.setOnInitializeAccessibilityEventHandler(
+          mOnInitializeAccessibilityEventHandler);
     }
     if ((mPrivateFlags & PFLAG_ON_INITIALIZE_ACCESSIBILITY_NODE_INFO_HANDLER_IS_SET) != 0) {
-      layout.onInitializeAccessibilityNodeInfoHandler(mOnInitializeAccessibilityNodeInfoHandler);
+      layoutNodeInfo.setOnInitializeAccessibilityNodeInfoHandler(
+          mOnInitializeAccessibilityNodeInfoHandler);
     }
     if ((mPrivateFlags & PFLAG_ON_POPULATE_ACCESSIBILITY_EVENT_HANDLER_IS_SET) != 0) {
-      layout.onPopulateAccessibilityEventHandler(mOnPopulateAccessibilityEventHandler);
+      layoutNodeInfo.setOnPopulateAccessibilityEventHandler(mOnPopulateAccessibilityEventHandler);
     }
     if ((mPrivateFlags & PFLAG_ON_REQUEST_SEND_ACCESSIBILITY_EVENT_HANDLER_IS_SET) != 0) {
-      layout.onRequestSendAccessibilityEventHandler(mOnRequestSendAccessibilityEventHandler);
+      layoutNodeInfo.setOnRequestSendAccessibilityEventHandler(
+          mOnRequestSendAccessibilityEventHandler);
     }
     if ((mPrivateFlags & PFLAG_PERFORM_ACCESSIBILITY_ACTION_HANDLER_IS_SET) != 0) {
-      layout.performAccessibilityActionHandler(mPerformAccessibilityActionHandler);
+      layoutNodeInfo.setPerformAccessibilityActionHandler(mPerformAccessibilityActionHandler);
     }
     if ((mPrivateFlags & PFLAG_SEND_ACCESSIBILITY_EVENT_HANDLER_IS_SET) != 0) {
-      layout.sendAccessibilityEventHandler(mSendAccessibilityEventHandler);
+      layoutNodeInfo.setSendAccessibilityEventHandler(mSendAccessibilityEventHandler);
     }
     if ((mPrivateFlags & PFLAG_SEND_ACCESSIBILITY_EVENT_UNCHECKED_HANDLER_IS_SET) != 0) {
-      layout.sendAccessibilityEventUncheckedHandler(mSendAccessibilityEventUncheckedHandler);
+      layoutNodeInfo.setSendAccessibilityEventUncheckedHandler(
+          mSendAccessibilityEventUncheckedHandler);
     }
     if ((mPrivateFlags & PFLAG_CONTENT_DESCRIPTION_IS_SET) != 0) {
-      layout.contentDescription(mContentDescription);
+      layoutNodeInfo.setContentDescription(mContentDescription);
     }
     if ((mPrivateFlags & PFLAG_SHADOW_ELEVATION_IS_SET) != 0) {
-      layout.shadowElevationPx(mShadowElevation);
+      layoutNodeInfo.setShadowElevation(mShadowElevation);
     }
     if ((mPrivateFlags & PFLAG_OUTINE_PROVIDER_IS_SET) != 0) {
-      layout.outlineProvider(mOutlineProvider);
+      layoutNodeInfo.setOutlineProvider(mOutlineProvider);
     }
     if ((mPrivateFlags & PFLAG_CLIP_TO_OUTLINE_IS_SET) != 0) {
-      layout.clipToOutline(mClipToOutline);
+      layoutNodeInfo.setClipToOutline(mClipToOutline);
     }
     if ((mPrivateFlags & PFLAG_CLIP_CHILDREN_IS_SET) != 0) {
-      layout.clipChildren(mClipChildren);
+      layoutNodeInfo.setClipChildren(mClipChildren);
     }
     if (mViewTag != null) {
-      layout.viewTag(mViewTag);
+      layoutNodeInfo.setViewTag(mViewTag);
     }
     if (mViewTags != null) {
-      layout.viewTags(mViewTags);
+      layoutNodeInfo.setViewTags(mViewTags);
     }
     if (getFocusState() != FOCUS_UNSET) {
-      layout.focusable(getFocusState() == FOCUS_SET_TRUE);
+      layoutNodeInfo.setFocusable(getFocusState() == FOCUS_SET_TRUE);
     }
     if (getEnabledState() != ENABLED_UNSET) {
-      layout.enabled(getEnabledState() == ENABLED_SET_TRUE);
+      layoutNodeInfo.setEnabled(getEnabledState() == ENABLED_SET_TRUE);
     }
     if (getSelectedState() != SELECTED_UNSET) {
-      layout.selected(getSelectedState() == SELECTED_SET_TRUE);
+      layoutNodeInfo.setSelected(getSelectedState() == SELECTED_SET_TRUE);
     }
     if ((mPrivateFlags & PFLAG_SCALE_IS_SET) != 0) {
-      layout.scale(mScale);
+      layoutNodeInfo.setScale(mScale);
     }
     if ((mPrivateFlags & PFLAG_ALPHA_IS_SET) != 0) {
-      layout.alpha(mAlpha);
+      layoutNodeInfo.setAlpha(mAlpha);
     }
     if ((mPrivateFlags & PFLAG_ROTATION_IS_SET) != 0) {
-      layout.rotation(mRotation);
+      layoutNodeInfo.setRotation(mRotation);
     }
   }
 }

@@ -663,7 +663,7 @@ class LayoutState {
 
     // If the parent of this node is disabled, this node has to be disabled too.
     if (layoutState.mParentEnabledState == ENABLED_SET_FALSE) {
-      node.enabled(false);
+      node.getOrCreateNodeInfo().setEnabled(false);
     }
 
     final boolean needsHostView = needsHostView(node, layoutState);

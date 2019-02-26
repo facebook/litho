@@ -43,8 +43,6 @@ import android.support.annotation.DrawableRes;
 import android.support.annotation.Px;
 import android.support.v4.view.ViewCompat;
 import android.text.TextUtils;
-import android.util.SparseArray;
-import android.view.ViewOutlineProvider;
 import com.facebook.infer.annotation.ReturnsOwnership;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.config.ComponentsConfiguration;
@@ -885,50 +883,6 @@ class InternalNode implements ComponentLayout {
     return mForceViewWrapping;
   }
 
-  EventHandler<ClickEvent> getClickHandler() {
-    return getOrCreateNodeInfo().getClickHandler();
-  }
-
-  InternalNode clickHandler(EventHandler<ClickEvent> clickHandler) {
-    getOrCreateNodeInfo().setClickHandler(clickHandler);
-    return this;
-  }
-
-  InternalNode longClickHandler(EventHandler<LongClickEvent> longClickHandler) {
-    getOrCreateNodeInfo().setLongClickHandler(longClickHandler);
-    return this;
-  }
-
-  InternalNode focusChangeHandler(EventHandler<FocusChangedEvent> focusChangeHandler) {
-    getOrCreateNodeInfo().setFocusChangeHandler(focusChangeHandler);
-    return this;
-  }
-
-  InternalNode touchHandler(EventHandler<TouchEvent> touchHandler) {
-    getOrCreateNodeInfo().setTouchHandler(touchHandler);
-    return this;
-  }
-
-  InternalNode interceptTouchHandler(EventHandler interceptTouchHandler) {
-    getOrCreateNodeInfo().setInterceptTouchHandler(interceptTouchHandler);
-    return this;
-  }
-
-  InternalNode focusable(boolean isFocusable) {
-    getOrCreateNodeInfo().setFocusable(isFocusable);
-    return this;
-  }
-
-  InternalNode enabled(boolean isEnabled) {
-    getOrCreateNodeInfo().setEnabled(isEnabled);
-    return this;
-  }
-
-  InternalNode selected(boolean isSelected) {
-    getOrCreateNodeInfo().setSelected(isSelected);
-    return this;
-  }
-
   InternalNode visibleHeightRatio(float visibleHeightRatio) {
     mVisibleHeightRatio = visibleHeightRatio;
     return this;
@@ -1028,130 +982,8 @@ class InternalNode implements ComponentLayout {
     return new DelegatingEventHandler<>(existingEventHandler, newEventHandler);
   }
 
-  InternalNode contentDescription(CharSequence contentDescription) {
-    getOrCreateNodeInfo().setContentDescription(contentDescription);
-    return this;
-  }
-
-  InternalNode viewTag(Object viewTag) {
-    getOrCreateNodeInfo().setViewTag(viewTag);
-    return this;
-  }
-
-  InternalNode viewTags(SparseArray<Object> viewTags) {
-    getOrCreateNodeInfo().setViewTags(viewTags);
-    return this;
-  }
-
-  InternalNode shadowElevationPx(float shadowElevation) {
-    getOrCreateNodeInfo().setShadowElevation(shadowElevation);
-    return this;
-  }
-
-  InternalNode outlineProvider(ViewOutlineProvider outlineProvider) {
-    getOrCreateNodeInfo().setOutlineProvider(outlineProvider);
-    return this;
-  }
-
-  InternalNode clipToOutline(boolean clipToOutline) {
-    getOrCreateNodeInfo().setClipToOutline(clipToOutline);
-    return this;
-  }
-
-  InternalNode clipChildren(boolean clipChildren) {
-    getOrCreateNodeInfo().setClipChildren(clipChildren);
-    return this;
-  }
-
   InternalNode testKey(String testKey) {
     mTestKey = testKey;
-    return this;
-  }
-
-  InternalNode scale(float scale) {
-    wrapInView();
-
-    getOrCreateNodeInfo().setScale(scale);
-    return this;
-  }
-
-  InternalNode alpha(float alpha) {
-    wrapInView();
-
-    getOrCreateNodeInfo().setAlpha(alpha);
-    return this;
-  }
-
-  InternalNode rotation(float rotation) {
-    wrapInView();
-
-    getOrCreateNodeInfo().setRotation(rotation);
-    return this;
-  }
-
-  InternalNode accessibilityRole(@AccessibilityRole.AccessibilityRoleType String role) {
-    getOrCreateNodeInfo().setAccessibilityRole(role);
-    return this;
-  }
-
-  InternalNode accessibilityRoleDescription(CharSequence roleDescription) {
-    getOrCreateNodeInfo().setAccessibilityRoleDescription(roleDescription);
-    return this;
-  }
-
-  InternalNode dispatchPopulateAccessibilityEventHandler(
-      EventHandler<DispatchPopulateAccessibilityEventEvent>
-          dispatchPopulateAccessibilityEventHandler) {
-    getOrCreateNodeInfo().setDispatchPopulateAccessibilityEventHandler(
-        dispatchPopulateAccessibilityEventHandler);
-    return this;
-  }
-
-  InternalNode onInitializeAccessibilityEventHandler(
-      EventHandler<OnInitializeAccessibilityEventEvent> onInitializeAccessibilityEventHandler) {
-    getOrCreateNodeInfo().setOnInitializeAccessibilityEventHandler(
-        onInitializeAccessibilityEventHandler);
-    return this;
-  }
-
-  InternalNode onInitializeAccessibilityNodeInfoHandler(
-      EventHandler<OnInitializeAccessibilityNodeInfoEvent>
-          onInitializeAccessibilityNodeInfoHandler) {
-    getOrCreateNodeInfo().setOnInitializeAccessibilityNodeInfoHandler(
-        onInitializeAccessibilityNodeInfoHandler);
-    return this;
-  }
-
-  InternalNode onPopulateAccessibilityEventHandler(
-      EventHandler<OnPopulateAccessibilityEventEvent> onPopulateAccessibilityEventHandler) {
-    getOrCreateNodeInfo().setOnPopulateAccessibilityEventHandler(
-        onPopulateAccessibilityEventHandler);
-    return this;
-  }
-
-  InternalNode onRequestSendAccessibilityEventHandler(
-      EventHandler<OnRequestSendAccessibilityEventEvent> onRequestSendAccessibilityEventHandler) {
-    getOrCreateNodeInfo().setOnRequestSendAccessibilityEventHandler(
-        onRequestSendAccessibilityEventHandler);
-    return this;
-  }
-
-  InternalNode performAccessibilityActionHandler(
-      EventHandler<PerformAccessibilityActionEvent> performAccessibilityActionHandler) {
-    getOrCreateNodeInfo().setPerformAccessibilityActionHandler(performAccessibilityActionHandler);
-    return this;
-  }
-
-  InternalNode sendAccessibilityEventHandler(
-      EventHandler<SendAccessibilityEventEvent> sendAccessibilityEventHandler) {
-    getOrCreateNodeInfo().setSendAccessibilityEventHandler(sendAccessibilityEventHandler);
-    return this;
-  }
-
-  InternalNode sendAccessibilityEventUncheckedHandler(
-      EventHandler<SendAccessibilityEventUncheckedEvent> sendAccessibilityEventUncheckedHandler) {
-    getOrCreateNodeInfo().setSendAccessibilityEventUncheckedHandler(
-        sendAccessibilityEventUncheckedHandler);
     return this;
   }
 
@@ -1717,7 +1549,7 @@ class InternalNode implements ComponentLayout {
           foregroundRes(a.getResourceId(attr, -1));
         }
       } else if (attr == R.styleable.ComponentLayout_android_contentDescription) {
-        contentDescription(a.getString(attr));
+        getOrCreateNodeInfo().setContentDescription(a.getString(attr));
       } else if (attr == R.styleable.ComponentLayout_flex_direction) {
         flexDirection(YogaFlexDirection.fromInt(a.getInteger(attr, 0)));
       } else if (attr == R.styleable.ComponentLayout_flex_wrap) {
@@ -1750,7 +1582,7 @@ class InternalNode implements ComponentLayout {
     }
   }
 
-  private NodeInfo getOrCreateNodeInfo() {
+  NodeInfo getOrCreateNodeInfo() {
     if (mNodeInfo == null) {
       mNodeInfo = new NodeInfo();
     }
