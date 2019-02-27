@@ -20,9 +20,8 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
 
 /**
- * An animator that disables all animations in a {@link RecyclerView}
- *
- * From java/com/facebook/fbreact/views/recyclerview/NotAnimatedItemAnimator.java
+ * This implementation of {@link RecyclerView.ItemAnimator} disables all animations in a {@link
+ * RecyclerView}.
  */
 public class NotAnimatedItemAnimator extends SimpleItemAnimator {
 

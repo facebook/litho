@@ -23,7 +23,6 @@ import static com.facebook.yoga.YogaPositionType.ABSOLUTE;
 import android.support.annotation.IdRes;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
-import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.ItemAnimator;
@@ -90,6 +89,10 @@ import java.util.List;
  * com.facebook.litho.sections.SectionLifecycle#requestFocus(SectionContext, int)}. For more
  * information please refer to the following:
  * https://fblitho.com/docs/communicating-with-the-ui#scrolling-requestfocus.
+ *
+ * @prop itemAnimator This prop defines the animations that take place on items as changes are made.
+ *     To remove change animation use {@link NoUpdateItemAnimator}. To completely disable all
+ *     animations use {@link NotAnimatedItemAnimator}.
  */
 @LayoutSpec(events = PTRRefreshEvent.class)
 public class RecyclerCollectionComponentSpec {
@@ -506,14 +509,6 @@ public class RecyclerCollectionComponentSpec {
       if (delegate != null) {
         delegate.onInitialLoad();
       }
-    }
-  }
-
-  public static class NoUpdateItemAnimator extends DefaultItemAnimator {
-
-    public NoUpdateItemAnimator() {
-      super();
-      setSupportsChangeAnimations(false);
     }
   }
 }
