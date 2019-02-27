@@ -17,8 +17,6 @@
 package com.facebook.litho.sections.common;
 
 import static com.facebook.litho.FrameworkLogEvents.EVENT_SECTIONS_DATA_DIFF_CALCULATE_DIFF;
-import static com.facebook.litho.widget.RecyclerBinderUpdateCallback.acquire;
-import static com.facebook.litho.widget.RecyclerBinderUpdateCallback.release;
 import static com.facebook.litho.widget.RenderInfoDebugInfoRegistry.SONAR_SECTIONS_DEBUG_INFO_TAG;
 
 import android.support.annotation.Nullable;
@@ -156,7 +154,7 @@ public class DataDiffSectionSpec<T> {
     }
 
     updatesCallback =
-        acquire(
+        new RecyclerBinderUpdateCallback<>(
             previousData,
             nextData,
             componentRenderer,
@@ -165,7 +163,6 @@ public class DataDiffSectionSpec<T> {
     result.dispatchUpdatesTo(updatesCallback);
 
     updatesCallback.applyChangeset(c);
-    release(updatesCallback);
   }
 
   /**
