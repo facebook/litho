@@ -444,7 +444,7 @@ public class DataDiffSectionSpecTest {
     mSectionContext = SectionContext.withScope(mSectionContext, builder.build());
 
     final DataDiffSectionSpec.Callback<String> callback =
-        DataDiffSectionSpec.Callback.acquire(
+        new DataDiffSectionSpec.Callback(
             mSectionContext,
             previousData,
             nextData,
@@ -478,7 +478,7 @@ public class DataDiffSectionSpecTest {
     mSectionContext = SectionContext.withScope(mSectionContext, builder.build());
 
     final DataDiffSectionSpec.Callback<String> callback =
-        DataDiffSectionSpec.Callback.acquire(
+        new DataDiffSectionSpec.Callback(
             mSectionContext,
             previousData,
             nextData,
@@ -518,7 +518,7 @@ public class DataDiffSectionSpecTest {
     mSectionContext = SectionContext.withScope(mSectionContext, builder.build());
 
     final DataDiffSectionSpec.Callback<String> callback =
-        DataDiffSectionSpec.Callback.acquire(
+        new DataDiffSectionSpec.Callback(
             mSectionContext,
             previousData,
             nextData,
@@ -580,7 +580,7 @@ public class DataDiffSectionSpecTest {
     builder.setScopedContext(mSectionContext);
 
     final DataDiffSectionSpec.Callback<String> callback =
-        DataDiffSectionSpec.Callback.acquire(
+        new DataDiffSectionSpec.Callback(
             mSectionContext,
             previousData,
             nextData,

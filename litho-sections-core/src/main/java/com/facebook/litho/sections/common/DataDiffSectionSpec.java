@@ -23,8 +23,6 @@ import static com.facebook.litho.widget.RenderInfoDebugInfoRegistry.SONAR_SECTIO
 
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
-import android.support.v4.util.Pools.Pool;
-import android.support.v4.util.Pools.SynchronizedPool;
 import android.support.v7.util.DiffUtil;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
@@ -134,7 +132,7 @@ public class DataDiffSectionSpec<T> {
             : trimSameInstancesOnly.getNext().booleanValue();
 
     final Callback<T> callback =
-        Callback.acquire(
+        new Callback<>(
             c, data.getPrevious(), data.getNext(), shouldTrim, shouldTrimSameInstanceOnly);
 
     final ComponentsLogger logger = c.getLogger();
@@ -165,8 +163,6 @@ public class DataDiffSectionSpec<T> {
             operationExecutor,
             callback.getTrimmedHeadItemsCount());
     result.dispatchUpdatesTo(updatesCallback);
-
-    Callback.release(callback);
 
     updatesCallback.applyChangeset(c);
     release(updatesCallback);
@@ -309,16 +305,15 @@ public class DataDiffSectionSpec<T> {
 
   @VisibleForTesting
   static class Callback<T> extends DiffUtil.Callback {
-    private static final Pool<Callback> sCallbackPool = new SynchronizedPool<>(2);
 
-    private List<T> mPreviousData;
-    private List<T> mNextData;
-    private SectionContext mSectionContext;
-    private EventHandler<OnCheckIsSameItemEvent> mIsSameItemEventHandler;
-    private EventHandler<OnCheckIsSameContentEvent> mIsSameContentEventHandler;
+    private final List<T> mPreviousData;
+    private final List<T> mNextData;
+    private final SectionContext mSectionContext;
+    private final EventHandler<OnCheckIsSameItemEvent> mIsSameItemEventHandler;
+    private final EventHandler<OnCheckIsSameContentEvent> mIsSameContentEventHandler;
     private int mTrimmedHeadItemsCount;
 
-    void init(
+    Callback(
         SectionContext sectionContext,
         List<T> previousData,
         List<T> nextData,
@@ -395,32 +390,6 @@ public class DataDiffSectionSpec<T> {
       }
 
       return previous.equals(next);
-    }
-
-    @VisibleForTesting
-    static <T> Callback<T> acquire(
-        SectionContext sectionContext,
-        List<T> previousData,
-        List<T> nextData,
-        boolean trimHeadAndTail,
-        boolean trimSameInstancesOnly) {
-      Callback callback = sCallbackPool.acquire();
-      if (callback == null) {
-        callback = new Callback();
-      }
-      callback.init(sectionContext, previousData, nextData, trimHeadAndTail, trimSameInstancesOnly);
-
-      return callback;
-    }
-
-    private static void release(Callback callback) {
-      callback.mNextData = null;
-      callback.mPreviousData = null;
-      callback.mSectionContext = null;
-      callback.mIsSameItemEventHandler = null;
-      callback.mIsSameContentEventHandler = null;
-      callback.mTrimmedHeadItemsCount = 0;
-      sCallbackPool.release(callback);
     }
 
     @VisibleForTesting
