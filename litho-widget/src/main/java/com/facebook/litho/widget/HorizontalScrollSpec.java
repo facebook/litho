@@ -21,6 +21,7 @@ import static com.facebook.litho.SizeSpec.UNSPECIFIED;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.HorizontalScrollView;
 import com.facebook.litho.Component;
@@ -62,6 +63,11 @@ class HorizontalScrollSpec {
   private static final int LAST_SCROLL_POSITION_UNSET = -1;
 
   @PropDefault static final boolean scrollbarEnabled = true;
+
+  /** Scroll change listener invoked when the scroll position changes. */
+  public interface OnScrollChangeListener {
+    void onScrollChange(View v, int scrollX, int oldScrollX);
+  }
 
   @OnLoadStyle
   static void onLoadStyle(
@@ -169,6 +175,7 @@ class HorizontalScrollSpec {
       @Prop Component contentProps,
       @Prop(optional = true, resType = ResType.BOOL) boolean scrollbarEnabled,
       @Prop(optional = true) HorizontalScrollEventsController eventsController,
+      @Prop(optional = true) final OnScrollChangeListener onScrollChangeListener,
       @State final ScrollPosition lastScrollPosition,
       @FromBoundsDefined int componentWidth,
       @FromBoundsDefined int componentHeight,
@@ -176,7 +183,7 @@ class HorizontalScrollSpec {
 
     horizontalScrollLithoView.setHorizontalScrollBarEnabled(scrollbarEnabled);
     horizontalScrollLithoView.mount(
-        contentProps, lastScrollPosition, componentWidth, componentHeight);
+        contentProps, lastScrollPosition, onScrollChangeListener, componentWidth, componentHeight);
     final ViewTreeObserver viewTreeObserver = horizontalScrollLithoView.getViewTreeObserver();
     viewTreeObserver.addOnPreDrawListener(
         new ViewTreeObserver.OnPreDrawListener() {
@@ -233,6 +240,7 @@ class HorizontalScrollSpec {
     private int mComponentHeight;
 
     @Nullable private ScrollPosition mScrollPosition;
+    @Nullable private HorizontalScrollSpec.OnScrollChangeListener mOnScrollChangeListener;
 
     public HorizontalScrollLithoView(Context context) {
       super(context);
@@ -245,6 +253,9 @@ class HorizontalScrollSpec {
       super.onScrollChanged(l, t, oldl, oldt);
 
       if (mScrollPosition != null) {
+        if (mOnScrollChangeListener != null) {
+          mOnScrollChangeListener.onScrollChange(this, getScrollX(), mScrollPosition.x);
+        }
         mScrollPosition.x = getScrollX();
       }
     }
@@ -265,7 +276,12 @@ class HorizontalScrollSpec {
           MeasureSpec.getSize(heightMeasureSpec));
     }
 
-    void mount(Component component, final ScrollPosition scrollPosition, int width, int height) {
+    void mount(
+        Component component,
+        final ScrollPosition scrollPosition,
+        HorizontalScrollSpec.OnScrollChangeListener onScrollChangeListener,
+        int width,
+        int height) {
       if (mLithoView.getComponentTree() == null) {
         mLithoView.setComponentTree(
             ComponentTree.create(mLithoView.getComponentContext(), component)
@@ -275,6 +291,7 @@ class HorizontalScrollSpec {
         mLithoView.setComponent(component);
       }
       mScrollPosition = scrollPosition;
+      mOnScrollChangeListener = onScrollChangeListener;
       mComponentWidth = width;
       mComponentHeight = height;
     }
@@ -285,6 +302,7 @@ class HorizontalScrollSpec {
       mComponentWidth = 0;
       mComponentHeight = 0;
       mScrollPosition = null;
+      mOnScrollChangeListener = null;
     }
   }
 
