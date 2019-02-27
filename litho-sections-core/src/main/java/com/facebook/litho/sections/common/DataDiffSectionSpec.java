@@ -50,20 +50,31 @@ import java.util.List;
 /**
  * A {@link DiffSectionSpec} that creates a changeSet diffing a generic {@link List<T>} of data.
  * This {@link Section} emits the following events:
- * <p>
- * {@link RenderEvent} whenever it needs a {@link Component} to render a model T from the list of
- * data. Providing an handler for this {@link OnEvent} is mandatory.
- * <p>
- * {@link OnCheckIsSameItemEvent} whenever during a diffing it wants to check whether two items
+ *
+ * <p>{@link RenderEvent} whenever it needs a {@link Component} to render a model T from the {@code
+ * List<T> data}. Providing a handler for this {@link OnEvent} is mandatory.
+ *
+ * <p>{@link OnCheckIsSameItemEvent} whenever during a diffing it wants to check whether two items
  * represent the same piece of data.
- * <p>
- * {@link OnCheckIsSameContentEvent} whenever during a diffing it wants to check whether two items
- * that represent the same piece of data have exactly the same content.
  *
- * <p> For example:
- * <pre>
- * {@code
+ * <p>{@link OnCheckIsSameContentEvent} whenever during a diffing it wants to check whether two
+ * items that represent the same piece of data have exactly the same content.
  *
+ * <p>Diffing happens when the new {@code List<T> data} is provided. Changes in {@link
+ * com.facebook.litho.annotations.State} alone will not trigger diffing.
+ *
+ * <ul>
+ *   <li>If {@link OnCheckIsSameItemEvent} returns false {@link RenderEvent} is triggered. Otherwise
+ *       {@link OnCheckIsSameContentEvent} is called.
+ *   <li>If {@link OnCheckIsSameContentEvent} returns false {@link RenderEvent} is triggered.
+ * </ul>
+ *
+ * If {@link OnCheckIsSameItemEvent} is not implemented, new {@code List<T> data} is considered to
+ * be completely different and relayout will happen on every data update.
+ *
+ * <p>Example usage:
+ *
+ * <pre>{@code
  * @GroupSectionSpec
  * public class MyGroupSectionSpec {
  *
@@ -72,7 +83,7 @@ import java.util.List;
  *     SectionContext c,
  *     @Prop List<Model> modelList) {
  *
- *     Children.create().child(DataDiffSection.create(c)
+ *     return Children.create().child(DataDiffSection.create(c)
  *       .data(modelList)
  *       .renderEventHandler(MyGroupSection.onRender(c))
  *       .onCheckIsSameItemEventHandler(MyGroupSection.onCheckIsSameItem(c))
@@ -91,7 +102,8 @@ import java.util.List;
  *       .component(MyComponent.create(c).model(model).build())
  *       .build();
  *   }
- * </pre>
+ * }
+ * }</pre>
  */
 @DiffSectionSpec(
   events = {OnCheckIsSameContentEvent.class, OnCheckIsSameItemEvent.class, RenderEvent.class}
