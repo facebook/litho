@@ -686,11 +686,10 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
         node.visibleWidthRatio(mVisibleWidthRatio);
       }
       if ((mPrivateFlags & PFLAG_TOUCH_EXPANSION_IS_SET) != 0L) {
-        for (int i = 0, length = YogaEdge.values().length; i < length; i++) {
-          final YogaEdge edge = YogaEdge.fromInt(i);
-          final float value = mTouchExpansions.getRaw(edge);
+        for (int i = 0; i < Edges.EDGES_LENGTH; i++) {
+          final float value = mTouchExpansions.getRaw(i);
           if (!YogaConstants.isUndefined(value)) {
-            node.touchExpansionPx(edge, (int) value);
+            node.touchExpansionPx(YogaEdge.fromInt(i), (int) value);
           }
         }
       }
@@ -1009,56 +1008,50 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
         node.positionType(mPositionType);
       }
       if ((mPrivateFlags & PFLAG_POSITION_IS_SET) != 0L) {
-        for (int i = 0, length = YogaEdge.values().length; i < length; i++) {
-          final YogaEdge edge = YogaEdge.fromInt(i);
-          final float value = mPositions.getRaw(edge);
+        for (int i = 0; i < Edges.EDGES_LENGTH; i++) {
+          final float value = mPositions.getRaw(i);
           if (!YogaConstants.isUndefined(value)) {
-            node.positionPx(edge, (int) value);
+            node.positionPx(YogaEdge.fromInt(i), (int) value);
           }
         }
       }
       if ((mPrivateFlags & PFLAG_POSITION_PERCENT_IS_SET) != 0L) {
-        for (int i = 0, length = YogaEdge.values().length; i < length; i++) {
-          final YogaEdge edge = YogaEdge.fromInt(i);
-          final float value = mPositionPercents.getRaw(edge);
+        for (int i = 0; i < Edges.EDGES_LENGTH; i++) {
+          final float value = mPositionPercents.getRaw(i);
           if (!YogaConstants.isUndefined(value)) {
-            node.positionPercent(edge, value);
+            node.positionPercent(YogaEdge.fromInt(i), value);
           }
         }
       }
       if ((mPrivateFlags & PFLAG_PADDING_IS_SET) != 0L) {
-        for (int i = 0, length = YogaEdge.values().length; i < length; i++) {
-          final YogaEdge edge = YogaEdge.fromInt(i);
-          final float value = mPaddings.getRaw(edge);
+        for (int i = 0; i < Edges.EDGES_LENGTH; i++) {
+          final float value = mPaddings.getRaw(i);
           if (!YogaConstants.isUndefined(value)) {
-            node.paddingPx(edge, (int) value);
+            node.paddingPx(YogaEdge.fromInt(i), (int) value);
           }
         }
       }
       if ((mPrivateFlags & PFLAG_PADDING_PERCENT_IS_SET) != 0L) {
-        for (int i = 0, length = YogaEdge.values().length; i < length; i++) {
-          final YogaEdge edge = YogaEdge.fromInt(i);
-          final float value = mPaddingPercents.getRaw(edge);
+        for (int i = 0; i < Edges.EDGES_LENGTH; i++) {
+          final float value = mPaddingPercents.getRaw(i);
           if (!YogaConstants.isUndefined(value)) {
-            node.paddingPercent(edge, value);
+            node.paddingPercent(YogaEdge.fromInt(i), value);
           }
         }
       }
       if ((mPrivateFlags & PFLAG_MARGIN_IS_SET) != 0L) {
-        for (int i = 0, length = YogaEdge.values().length; i < length; i++) {
-          final YogaEdge edge = YogaEdge.fromInt(i);
-          final float value = mMargins.getRaw(edge);
+        for (int i = 0; i < Edges.EDGES_LENGTH; i++) {
+          final float value = mMargins.getRaw(i);
           if (!YogaConstants.isUndefined(value)) {
-            node.marginPx(edge, (int) value);
+            node.marginPx(YogaEdge.fromInt(i), (int) value);
           }
         }
       }
       if ((mPrivateFlags & PFLAG_MARGIN_PERCENT_IS_SET) != 0L) {
-        for (int i = 0, length = YogaEdge.values().length; i < length; i++) {
-          final YogaEdge edge = YogaEdge.fromInt(i);
-          final float value = mMarginPercents.getRaw(edge);
+        for (int i = 0; i < Edges.EDGES_LENGTH; i++) {
+          final float value = mMarginPercents.getRaw(i);
           if (!YogaConstants.isUndefined(value)) {
-            node.marginPercent(edge, value);
+            node.marginPercent(YogaEdge.fromInt(i), value);
           }
         }
       }

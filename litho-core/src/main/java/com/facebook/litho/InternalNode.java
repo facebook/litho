@@ -1344,58 +1344,16 @@ class InternalNode implements ComponentLayout {
       final YogaNode yogaNode = node.mYogaNode;
 
       node.mPrivateFlags |= PFLAG_PADDING_IS_SET;
-      if (isPaddingPercent(LEFT)) {
-        yogaNode.setPaddingPercent(LEFT, mNestedTreePadding.getRaw(YogaEdge.LEFT));
-      } else {
-        yogaNode.setPadding(LEFT, mNestedTreePadding.getRaw(YogaEdge.LEFT));
-      }
-
-      if (isPaddingPercent(TOP)) {
-        yogaNode.setPaddingPercent(TOP, mNestedTreePadding.getRaw(YogaEdge.TOP));
-      } else {
-        yogaNode.setPadding(TOP, mNestedTreePadding.getRaw(YogaEdge.TOP));
-      }
-
-      if (isPaddingPercent(RIGHT)) {
-        yogaNode.setPaddingPercent(RIGHT, mNestedTreePadding.getRaw(YogaEdge.RIGHT));
-      } else {
-        yogaNode.setPadding(RIGHT, mNestedTreePadding.getRaw(YogaEdge.RIGHT));
-      }
-
-      if (isPaddingPercent(BOTTOM)) {
-        yogaNode.setPaddingPercent(BOTTOM, mNestedTreePadding.getRaw(YogaEdge.BOTTOM));
-      } else {
-        yogaNode.setPadding(BOTTOM, mNestedTreePadding.getRaw(YogaEdge.BOTTOM));
-      }
-
-      if (isPaddingPercent(VERTICAL)) {
-        yogaNode.setPaddingPercent(VERTICAL, mNestedTreePadding.getRaw(YogaEdge.VERTICAL));
-      } else {
-        yogaNode.setPadding(VERTICAL, mNestedTreePadding.getRaw(YogaEdge.VERTICAL));
-      }
-
-      if (isPaddingPercent(HORIZONTAL)) {
-        yogaNode.setPaddingPercent(HORIZONTAL, mNestedTreePadding.getRaw(YogaEdge.HORIZONTAL));
-      } else {
-        yogaNode.setPadding(HORIZONTAL, mNestedTreePadding.getRaw(YogaEdge.HORIZONTAL));
-      }
-
-      if (isPaddingPercent(START)) {
-        yogaNode.setPaddingPercent(START, mNestedTreePadding.getRaw(YogaEdge.START));
-      } else {
-        yogaNode.setPadding(START, mNestedTreePadding.getRaw(YogaEdge.START));
-      }
-
-      if (isPaddingPercent(END)) {
-        yogaNode.setPaddingPercent(END, mNestedTreePadding.getRaw(YogaEdge.END));
-      } else {
-        yogaNode.setPadding(END, mNestedTreePadding.getRaw(YogaEdge.END));
-      }
-
-      if (isPaddingPercent(ALL)) {
-        yogaNode.setPaddingPercent(ALL, mNestedTreePadding.getRaw(YogaEdge.ALL));
-      } else {
-        yogaNode.setPadding(ALL, mNestedTreePadding.getRaw(YogaEdge.ALL));
+      for (int i = 0; i < Edges.EDGES_LENGTH; i++) {
+        float value = mNestedTreePadding.getRaw(i);
+        if (!YogaConstants.isUndefined(value)) {
+          final YogaEdge edge = YogaEdge.fromInt(i);
+          if (isPaddingPercent(edge)) {
+            yogaNode.setPaddingPercent(edge, value);
+          } else {
+            yogaNode.setPadding(edge, (int) value);
+          }
+        }
       }
     }
 
