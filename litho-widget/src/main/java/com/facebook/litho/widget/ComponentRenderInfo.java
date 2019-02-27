@@ -17,7 +17,6 @@
 package com.facebook.litho.widget;
 
 import android.support.annotation.Nullable;
-import android.support.v4.util.Pools;
 import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
@@ -29,18 +28,11 @@ public class ComponentRenderInfo extends BaseRenderInfo {
 
   public static final String LAYOUT_DIFFING_ENABLED = "layout_diffing_enabled";
 
-  private static final Pools.Pool<Builder> sBuilderPool = new Pools.SynchronizedPool<>(2);
-
   private final Component mComponent;
   @Nullable private final EventHandler<RenderCompleteEvent> mRenderCompleteEventHandler;
 
   public static Builder create() {
-    Builder builder = sBuilderPool.acquire();
-    if (builder == null) {
-      builder = new Builder();
-    }
-
-    return builder;
+    return new Builder();
   }
 
   private ComponentRenderInfo(Builder builder) {
@@ -101,18 +93,7 @@ public class ComponentRenderInfo extends BaseRenderInfo {
     }
 
     public ComponentRenderInfo build() {
-      final ComponentRenderInfo renderInfo = new ComponentRenderInfo(this);
-      release();
-
-      return renderInfo;
-    }
-
-    @Override
-    void release() {
-      super.release();
-      mComponent = null;
-      mRenderCompleteEventEventHandler = null;
-      sBuilderPool.release(this);
+      return new ComponentRenderInfo(this);
     }
   }
 

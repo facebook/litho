@@ -16,14 +16,11 @@
 
 package com.facebook.litho.widget;
 
-import android.support.v4.util.Pools;
 import com.facebook.litho.viewcompat.ViewBinder;
 import com.facebook.litho.viewcompat.ViewCreator;
 
 /** {@link RenderInfo} that can render views. */
 public class ViewRenderInfo extends BaseRenderInfo {
-
-  private static final Pools.Pool<Builder> sBuilderPool = new Pools.SynchronizedPool<>(2);
 
   private final ViewBinder mViewBinder;
   private final ViewCreator mViewCreator;
@@ -32,12 +29,7 @@ public class ViewRenderInfo extends BaseRenderInfo {
   private int mViewType;
 
   public static Builder create() {
-    Builder builder = sBuilderPool.acquire();
-    if (builder == null) {
-      builder = new Builder();
-    }
-
-    return builder;
+    return new Builder();
   }
 
   private ViewRenderInfo(Builder builder) {
@@ -128,25 +120,12 @@ public class ViewRenderInfo extends BaseRenderInfo {
         throw new IllegalStateException("Both viewCreator and viewBinder must be provided.");
       }
 
-      final ViewRenderInfo viewRenderInfo = new ViewRenderInfo(this);
-      release();
-
-      return viewRenderInfo;
+      return new ViewRenderInfo(this);
     }
 
     @Override
     public Builder isFullSpan(boolean isFullSpan) {
       throw new UnsupportedOperationException("ViewRenderInfo does not support isFullSpan.");
-    }
-
-    @Override
-    void release() {
-      super.release();
-      viewBinder = null;
-      viewCreator = null;
-      hasCustomViewType = false;
-      viewType = 0;
-      sBuilderPool.release(this);
     }
   }
 }

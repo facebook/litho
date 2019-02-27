@@ -232,10 +232,5 @@ public abstract class BaseRenderInfo implements RenderInfo {
 
       return (T) this;
     }
-
-    void release() {
-      mCustomAttributes = null;
-      mDebugInfo = null;
-    }
   }
 }
