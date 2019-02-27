@@ -21,7 +21,6 @@ import static com.facebook.litho.SizeSpec.UNSPECIFIED;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.support.v4.util.Pools.SynchronizedPool;
 import android.view.ViewTreeObserver;
 import android.widget.HorizontalScrollView;
 import com.facebook.litho.Component;
@@ -64,9 +63,6 @@ class HorizontalScrollSpec {
 
   @PropDefault static final boolean scrollbarEnabled = true;
 
-  private static final SynchronizedPool<Size> sSizePool =
-      new SynchronizedPool<>(2);
-
   @OnLoadStyle
   static void onLoadStyle(
       ComponentContext c,
@@ -101,7 +97,7 @@ class HorizontalScrollSpec {
     final int measuredWidth;
     final int measuredHeight;
 
-    final Size contentSize = acquireSize();
+    final Size contentSize = new Size();
 
     // Measure the component with undefined width spec, as the contents of the
     // hscroll have unlimited horizontal space.
@@ -109,8 +105,6 @@ class HorizontalScrollSpec {
 
     measuredWidth = contentSize.width;
     measuredHeight = contentSize.height;
-
-    releaseSize(contentSize);
 
     measuredComponentWidth.set(measuredWidth);
     measuredComponentHeight.set(measuredHeight);
@@ -146,7 +140,7 @@ class HorizontalScrollSpec {
       final int measuredWidth;
       final int measuredHeight;
 
-      Size contentSize = acquireSize();
+      Size contentSize = new Size();
       contentProps.measure(
           context,
           SizeSpec.makeSizeSpec(0, UNSPECIFIED),
@@ -155,8 +149,6 @@ class HorizontalScrollSpec {
 
       measuredWidth = Math.max(contentSize.width, fillViewport ? layoutWidth : 0);
       measuredHeight = contentSize.height;
-
-      releaseSize(contentSize);
 
       componentWidth.set(measuredWidth);
       componentHeight.set(measuredHeight);
@@ -294,19 +286,6 @@ class HorizontalScrollSpec {
       mComponentHeight = 0;
       mScrollPosition = null;
     }
-  }
-
-  private static Size acquireSize() {
-    Size size = sSizePool.acquire();
-    if (size == null) {
-      size = new Size();
-    }
-
-    return size;
-  }
-
-  private static void releaseSize(Size size) {
-    sSizePool.release(size);
   }
 
   static class ScrollPosition {
