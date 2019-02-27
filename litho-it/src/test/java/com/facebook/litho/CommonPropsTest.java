@@ -16,8 +16,11 @@
 
 package com.facebook.litho;
 
+import static com.facebook.litho.it.R.drawable.background_with_padding;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -29,6 +32,7 @@ import android.util.SparseArray;
 import com.facebook.litho.annotations.ImportantForAccessibility;
 import com.facebook.litho.drawable.ComparableColorDrawable;
 import com.facebook.litho.drawable.ComparableDrawable;
+import com.facebook.litho.drawable.ComparableResDrawable;
 import com.facebook.litho.reference.DrawableReference;
 import com.facebook.litho.reference.Reference;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
@@ -39,6 +43,8 @@ import com.facebook.yoga.YogaPositionType;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InOrder;
+import org.mockito.Mockito;
 import org.robolectric.RuntimeEnvironment;
 
 @RunWith(ComponentsTestRunner.class)
@@ -343,5 +349,46 @@ public class CommonPropsTest {
 
     verify(mNodeInfo).setRotation(5);
     verify(mNode).wrapInView();
+  }
+
+  @Test
+  public void testPaddingFromDrawable() {
+    final InternalNode node = spy(new InternalNode(mComponentContext));
+
+    mCommonProps.background(
+        DrawableReference.create(
+            ComparableResDrawable.create(
+                mComponentContext.getAndroidContext(), background_with_padding)));
+
+    mCommonProps.copyInto(mComponentContext, node);
+
+    verify(node).paddingPx(YogaEdge.LEFT, 48);
+    verify(node).paddingPx(YogaEdge.TOP, 0);
+    verify(node).paddingPx(YogaEdge.RIGHT, 0);
+    verify(node).paddingPx(YogaEdge.BOTTOM, 0);
+  }
+
+  @Test
+  public void testPaddingFromDrawableIsOverwritten() {
+    final InternalNode node = spy(new InternalNode(mComponentContext));
+
+    mCommonProps.background(
+        DrawableReference.create(
+            ComparableResDrawable.create(
+                mComponentContext.getAndroidContext(), background_with_padding)));
+    mCommonProps.paddingPx(YogaEdge.LEFT, 0);
+    mCommonProps.paddingPx(YogaEdge.TOP, 0);
+    mCommonProps.paddingPx(YogaEdge.RIGHT, 0);
+    mCommonProps.paddingPx(YogaEdge.BOTTOM, 0);
+
+    mCommonProps.copyInto(mComponentContext, node);
+
+    InOrder inOrder = Mockito.inOrder(node);
+    inOrder.verify(node).paddingPx(YogaEdge.LEFT, 48);
+    inOrder.verify(node).paddingPx(YogaEdge.LEFT, 0);
+
+    verify(node, times(2)).paddingPx(YogaEdge.TOP, 0);
+    verify(node, times(2)).paddingPx(YogaEdge.RIGHT, 0);
+    verify(node, times(2)).paddingPx(YogaEdge.BOTTOM, 0);
   }
 }

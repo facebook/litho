@@ -28,6 +28,10 @@ import static com.facebook.yoga.YogaAlign.STRETCH;
 import static com.facebook.yoga.YogaDirection.INHERIT;
 import static com.facebook.yoga.YogaDirection.RTL;
 import static com.facebook.yoga.YogaEdge.ALL;
+import static com.facebook.yoga.YogaEdge.BOTTOM;
+import static com.facebook.yoga.YogaEdge.LEFT;
+import static com.facebook.yoga.YogaEdge.RIGHT;
+import static com.facebook.yoga.YogaEdge.TOP;
 import static com.facebook.yoga.YogaPositionType.ABSOLUTE;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Matchers.anyInt;
@@ -41,6 +45,7 @@ import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.widget.Text;
 import com.facebook.yoga.YogaAlign;
+import com.facebook.yoga.YogaNode;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
@@ -353,11 +358,18 @@ public class InternalNodeTest {
 
   @Test
   public void testPaddingIsSetFromDrawable() {
-    InternalNode node = acquireInternalNode();
+    YogaNode yogaNode = mock(YogaNode.class);
+    InternalNode node =
+        new InternalNode(new ComponentContext(RuntimeEnvironment.application), yogaNode);
 
     node.backgroundRes(background_with_padding);
 
     assertThat(isFlagSet(node, "PFLAG_PADDING_IS_SET")).isTrue();
+
+    verify(yogaNode).setPadding(LEFT, 48);
+    verify(yogaNode).setPadding(TOP, 0);
+    verify(yogaNode).setPadding(RIGHT, 0);
+    verify(yogaNode).setPadding(BOTTOM, 0);
   }
 
   @Test

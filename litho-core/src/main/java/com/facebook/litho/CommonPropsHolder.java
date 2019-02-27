@@ -490,10 +490,6 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
       mNodeInfo.copyInto(node);
     }
 
-    if (mLayoutProps != null) {
-      mLayoutProps.copyInto(node);
-    }
-
     if ((mPrivateFlags & PFLAG_BACKGROUND_IS_SET) != 0L) {
       node.background(mBackground);
     }
@@ -502,6 +498,10 @@ class CommonPropsHolder implements CommonProps, CommonPropsCopyable {
     }
     if (mWrapInView) {
       node.wrapInView();
+    }
+
+    if (mLayoutProps != null) {
+      mLayoutProps.copyInto(node);
     }
 
     if (mOtherProps != null) {
