@@ -18,6 +18,7 @@ package com.facebook.litho;
 
 import android.support.v4.util.Pools;
 import com.facebook.litho.annotations.Prop;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaFlexDirection;
 import com.facebook.yoga.YogaJustify;
@@ -69,11 +70,20 @@ public final class Column extends Component {
   }
 
   public static Builder create(ComponentContext context, int defStyleAttr, int defStyleRes) {
+    final Builder builder = acquire();
+    builder.init(context, defStyleAttr, defStyleRes, new Column());
+    return builder;
+  }
+
+  static Builder acquire() {
+    if (ComponentsConfiguration.disableCommonBuilderPools) {
+      return new Builder();
+    }
+
     Builder builder = sBuilderPool.acquire();
     if (builder == null) {
       builder = new Builder();
     }
-    builder.init(context, defStyleAttr, defStyleRes, new Column());
     return builder;
   }
 
@@ -238,6 +248,10 @@ public final class Column extends Component {
 
     @Override
     protected void release() {
+      if (ComponentsConfiguration.disableCommonBuilderPools) {
+        return;
+      }
+
       super.release();
       mColumn = null;
       mContext = null;
