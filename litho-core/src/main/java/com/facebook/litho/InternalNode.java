@@ -121,9 +121,6 @@ class InternalNode implements ComponentLayout {
   private final List<Component> mComponents = new ArrayList<>(1);
   private int mImportantForAccessibility = ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
   private boolean mDuplicateParentState;
-  private boolean mIsNestedTreeHolder;
-  private InternalNode mNestedTree;
-  private InternalNode mNestedTreeHolder;
   private long mPrivateFlags;
 
   private @Nullable Reference<? extends Drawable> mBackground;
@@ -134,6 +131,7 @@ class InternalNode implements ComponentLayout {
   private @Nullable StateListAnimator mStateListAnimator;
   private @DrawableRes int mStateListAnimatorRes;
 
+  private @Nullable NestedTreeProps mNestedTreeProps;
   private NodeInfo mNodeInfo;
   private boolean mForceViewWrapping;
   private String mTransitionKey;
@@ -148,8 +146,6 @@ class InternalNode implements ComponentLayout {
   private @Nullable EventHandler<VisibilityChangedEvent> mVisibilityChangedHandler;
   private String mTestKey;
   private Edges mTouchExpansion;
-  private Edges mNestedTreePadding;
-  private Edges mNestedTreeBorderWidth;
   private boolean[] mIsPaddingPercent;
 
   private float mResolvedTouchExpansionLeft = YogaConstants.UNDEFINED;
@@ -169,7 +165,6 @@ class InternalNode implements ComponentLayout {
   private @Nullable ArrayList<WorkingRangeContainer.Registration> mWorkingRangeRegistrations;
 
   private boolean mCachedMeasuresValid;
-  private TreeProps mPendingTreeProps;
 
   // Hold onto DebugComponents which reference InternalNode to tie there Vm lifecycles together.
   // DebugComponents are supposed to be help onto as weak references and have we want to ensure they
@@ -387,8 +382,8 @@ class InternalNode implements ComponentLayout {
    * Mark this node as a nested tree root holder.
    */
   void markIsNestedTreeHolder(TreeProps currentTreeProps) {
-    mIsNestedTreeHolder = true;
-    mPendingTreeProps = TreeProps.copy(currentTreeProps);
+    getOrCreateNestedTreeProps().mIsNestedTreeHolder = true;
+    getOrCreateNestedTreeProps().mPendingTreeProps = TreeProps.copy(currentTreeProps);
   }
 
   /**
@@ -396,7 +391,7 @@ class InternalNode implements ComponentLayout {
    *     creation {@link ComponentLifecycle#createLayout(ComponentContext, boolean)}.
    */
   boolean isNestedTreeHolder() {
-    return mIsNestedTreeHolder;
+    return mNestedTreeProps != null && mNestedTreeProps.mIsNestedTreeHolder;
   }
 
   @Override
@@ -524,16 +519,17 @@ class InternalNode implements ComponentLayout {
 
   @ReturnsOwnership
   private Edges getNestedTreePadding() {
-    if (mNestedTreePadding == null) {
-      mNestedTreePadding = new Edges();
+    NestedTreeProps props = getOrCreateNestedTreeProps();
+    if (props.mNestedTreePadding == null) {
+      props.mNestedTreePadding = new Edges();
     }
-    return mNestedTreePadding;
+    return props.mNestedTreePadding;
   }
 
   InternalNode paddingPx(YogaEdge edge, @Px int padding) {
     mPrivateFlags |= PFLAG_PADDING_IS_SET;
 
-    if (mIsNestedTreeHolder) {
+    if (mNestedTreeProps != null && mNestedTreeProps.mIsNestedTreeHolder) {
       getNestedTreePadding().set(edge, padding);
       setIsPaddingPercent(edge, false);
     } else {
@@ -546,7 +542,7 @@ class InternalNode implements ComponentLayout {
   InternalNode paddingPercent(YogaEdge edge, float percent) {
     mPrivateFlags |= PFLAG_PADDING_IS_SET;
 
-    if (mIsNestedTreeHolder) {
+    if (mNestedTreeProps != null && mNestedTreeProps.mIsNestedTreeHolder) {
       getNestedTreePadding().set(edge, percent);
       setIsPaddingPercent(edge, true);
     } else {
@@ -568,12 +564,13 @@ class InternalNode implements ComponentLayout {
   }
 
   void setBorderWidth(YogaEdge edge, @Px int borderWidth) {
-    if (mIsNestedTreeHolder) {
-      if (mNestedTreeBorderWidth == null) {
-        mNestedTreeBorderWidth = new Edges();
+    if (mNestedTreeProps != null && mNestedTreeProps.mIsNestedTreeHolder) {
+      NestedTreeProps props = getOrCreateNestedTreeProps();
+      if (props.mNestedTreeBorderWidth == null) {
+        props.mNestedTreeBorderWidth = new Edges();
       }
 
-      mNestedTreeBorderWidth.set(edge, borderWidth);
+      props.mNestedTreeBorderWidth.set(edge, borderWidth);
     } else {
       mYogaNode.setBorder(edge, borderWidth);
     }
@@ -1256,16 +1253,17 @@ class InternalNode implements ComponentLayout {
   }
 
   boolean hasNestedTree() {
-    return mNestedTree != null;
+    return mNestedTreeProps != null && mNestedTreeProps.mNestedTree != null;
   }
 
   @Nullable
   InternalNode getNestedTree() {
-    return mNestedTree;
+    return mNestedTreeProps != null ? mNestedTreeProps.mNestedTree : null;
   }
 
+  @Nullable
   InternalNode getNestedTreeHolder() {
-    return mNestedTreeHolder;
+    return mNestedTreeProps != null ? mNestedTreeProps.mNestedTreeHolder : null;
   }
 
   /**
@@ -1273,8 +1271,8 @@ class InternalNode implements ComponentLayout {
    * layout direction needed during measurement.
    */
   void setNestedTree(InternalNode nestedTree) {
-    nestedTree.mNestedTreeHolder = this;
-    mNestedTree = nestedTree;
+    nestedTree.getOrCreateNestedTreeProps().mNestedTreeHolder = this;
+    getOrCreateNestedTreeProps().mNestedTree = nestedTree;
   }
 
   NodeInfo getNodeInfo() {
@@ -1331,12 +1329,13 @@ class InternalNode implements ComponentLayout {
       node.testKey(mTestKey);
     }
     if ((mPrivateFlags & PFLAG_PADDING_IS_SET) != 0L) {
-      if (mNestedTreePadding == null) {
+      if (mNestedTreeProps == null || mNestedTreeProps.mNestedTreePadding == null) {
         throw new IllegalStateException("copyInto() must be used when resolving a nestedTree. " +
             "If padding was set on the holder node, we must have a mNestedTreePadding instance");
       }
 
       final YogaNode yogaNode = node.mYogaNode;
+      Edges mNestedTreePadding = mNestedTreeProps.mNestedTreePadding;
 
       node.mPrivateFlags |= PFLAG_PADDING_IS_SET;
       for (int i = 0; i < Edges.EDGES_LENGTH; i++) {
@@ -1353,13 +1352,14 @@ class InternalNode implements ComponentLayout {
     }
 
     if ((mPrivateFlags & PFLAG_BORDER_IS_SET) != 0L) {
-      if (mNestedTreeBorderWidth == null) {
+      if (mNestedTreeProps == null || mNestedTreeProps.mNestedTreeBorderWidth == null) {
         throw new IllegalStateException("copyInto() must be used when resolving a nestedTree. " +
             "If border width was set on the holder node, we must have a mNestedTreeBorderWidth " +
             "instance");
       }
 
       final YogaNode yogaNode = node.mYogaNode;
+      Edges mNestedTreeBorderWidth = mNestedTreeProps.mNestedTreeBorderWidth;
 
       node.mPrivateFlags |= PFLAG_BORDER_IS_SET;
       yogaNode.setBorder(LEFT, mNestedTreeBorderWidth.getRaw(YogaEdge.LEFT));
@@ -1613,8 +1613,8 @@ class InternalNode implements ComponentLayout {
     }
   }
 
-  public TreeProps getPendingTreeProps() {
-    return mPendingTreeProps;
+  public @Nullable TreeProps getPendingTreeProps() {
+    return mNestedTreeProps != null ? mNestedTreeProps.mPendingTreeProps : null;
   }
 
   private <T extends Drawable> void setPaddingFromDrawableReference(@Nullable Reference<T> ref) {
@@ -1654,5 +1654,21 @@ class InternalNode implements ComponentLayout {
     mResolvedY = YogaConstants.UNDEFINED;
     mResolvedWidth = YogaConstants.UNDEFINED;
     mResolvedHeight = YogaConstants.UNDEFINED;
+  }
+
+  NestedTreeProps getOrCreateNestedTreeProps() {
+    if (mNestedTreeProps == null) {
+      mNestedTreeProps = new NestedTreeProps();
+    }
+    return mNestedTreeProps;
+  }
+
+  static class NestedTreeProps {
+    private boolean mIsNestedTreeHolder;
+    private @Nullable InternalNode mNestedTree;
+    private @Nullable InternalNode mNestedTreeHolder;
+    private @Nullable Edges mNestedTreePadding;
+    private @Nullable Edges mNestedTreeBorderWidth;
+    private @Nullable TreeProps mPendingTreeProps;
   }
 }
