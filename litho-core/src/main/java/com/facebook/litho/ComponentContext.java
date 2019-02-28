@@ -484,12 +484,4 @@ public class ComponentContext {
       return false;
     }
   }
-
-  public int getExtraMemorySize() {
-    if (getComponentTree() != null) {
-      return getComponentTree().getExtraMemorySize();
-    } else {
-      return ComponentsConfiguration.extraMemorySize;
-    }
-  }
 }

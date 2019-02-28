@@ -171,8 +171,6 @@ class InternalNode implements ComponentLayout {
   // live exactly as long as InternalNodes.
   @Nullable private Set<DebugComponent> mDebugComponents = null;
 
-  @Nullable private int[] mExtraMemory;
-
   static InternalNode createInternalNode(ComponentContext componentContext) {
     final InternalNode node =
         NodeConfig.sInternalNodeFactory != null
@@ -212,9 +210,6 @@ class InternalNode implements ComponentLayout {
     }
     mYogaNode = yogaNode;
     mComponentContext = componentContext;
-    if (mComponentContext != null && mComponentContext.getExtraMemorySize() > 0) {
-      mExtraMemory = new int[mComponentContext.getExtraMemorySize()];
-    }
   }
 
   /**

@@ -252,7 +252,6 @@ public class ComponentTree {
   private boolean mForceLayout;
 
   private final boolean mIsPersistenceEnabled;
-  private final int mExtraMemorySize;
 
   public static Builder create(ComponentContext context, Component.Builder<?> root) {
     return create(context, root.build());
@@ -283,7 +282,6 @@ public class ComponentTree {
     mUseSharedLayoutStateFuture = builder.useSharedLayoutStateFuture;
     mDoNotWrapIntoDisplayLists = builder.doNotWrapIntoDisplayLists;
     mIsPersistenceEnabled = builder.isPersistenceEnabled;
-    mExtraMemorySize = builder.extraMemorySize;
 
     ensureLayoutThreadHandler();
 
@@ -1022,10 +1020,6 @@ public class ComponentTree {
   /** Whether the refactored implementation of nested tree resolution should be used. */
   public boolean isNestedTreeResolutionExperimentEnabled() {
     return mNestedTreeResolutionExperimentEnabled;
-  }
-
-  public int getExtraMemorySize() {
-    return mExtraMemorySize;
   }
 
   synchronized Component getRoot() {
@@ -2379,7 +2373,6 @@ public class ComponentTree {
     private boolean useSharedLayoutStateFuture = false;
     private boolean doNotWrapIntoDisplayLists = ComponentsConfiguration.disableDisplayListWrapping;
     private boolean isPersistenceEnabled = ComponentsConfiguration.isPersistenceEnabled;
-    private int extraMemorySize = ComponentsConfiguration.extraMemorySize;
 
     protected Builder(ComponentContext context, Component root) {
       this.context = context;
@@ -2559,12 +2552,6 @@ public class ComponentTree {
     /** Sets the if the internal node should be persisted */
     public Builder isPersistenceEnabled(boolean isPersistenceEnabled) {
       this.isPersistenceEnabled = isPersistenceEnabled;
-      return this;
-    }
-
-    /** set the size of the extra memory internal node tree should take */
-    public Builder setExtraMemorySize(int size) {
-      this.extraMemorySize = size;
       return this;
     }
 

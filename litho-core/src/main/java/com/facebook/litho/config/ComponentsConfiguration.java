@@ -227,9 +227,6 @@ public class ComponentsConfiguration {
   /** Sets if SparseCommonPropsHolder should be used */
   public static boolean isSparseCommonPropsHolderIsEnabled;
 
-  /** set the size of the extra memory internal node tree should take */
-  public static int extraMemorySize = 0;
-
   /**
    * Controls if DisplayList wrapping should be disabled by default. Would have no effect if
    * ComponentTree explicitly set up to enable wrapping
