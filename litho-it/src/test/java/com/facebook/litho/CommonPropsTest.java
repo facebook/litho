@@ -52,7 +52,7 @@ public class CommonPropsTest {
 
   private InternalNode mNode;
   private NodeInfo mNodeInfo;
-  private CommonPropsHolder mCommonProps;
+  private CommonProps mCommonProps;
   private ComponentContext mComponentContext;
 
   @Before
