@@ -221,8 +221,11 @@ public class ComponentsConfiguration {
 
   public static boolean shouldIncreaseThreadPriorityToUrgentDisplay = false;
 
-  /** Sets the if the internal node should be persisted */
+  /** Sets if the internal node should be persisted */
   public static boolean isPersistenceEnabled;
+
+  /** Sets if SparseCommonPropsHolder should be used */
+  public static boolean isSparseCommonPropsHolderIsEnabled;
 
   /** set the size of the extra memory internal node tree should take */
   public static int extraMemorySize = 0;
