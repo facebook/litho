@@ -20,7 +20,7 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.Row;
@@ -212,7 +212,7 @@ public class ComponentBodyGeneratorTest {
   public void testGenerateStateContainerImpl() {
     assertThat(ComponentBodyGenerator.generateStateContainer(mSpecModelDI).toString())
         .isEqualTo(
-            "@android.support.annotation.VisibleForTesting(\n"
+            "@androidx.annotation.VisibleForTesting(\n"
                 + "    otherwise = 2\n"
                 + ")\n"
                 + "static class TestStateContainer implements com.facebook.litho.StateContainer {\n"
@@ -228,7 +228,7 @@ public class ComponentBodyGeneratorTest {
   public void testGenerateStateContainerWithTransitionImpl() {
     assertThat(ComponentBodyGenerator.generateStateContainer(mSpecModelWithTransitionDI).toString())
         .isEqualTo(
-            "@android.support.annotation.VisibleForTesting(\n"
+            "@androidx.annotation.VisibleForTesting(\n"
                 + "    otherwise = 2\n"
                 + ")\n"
                 + "static class TestWithTransitionStateContainer implements com.facebook.litho.StateContainer, "
@@ -290,7 +290,7 @@ public class ComponentBodyGeneratorTest {
                 + "boolean arg0 = TestSpec.arg0;\n");
     assertThat(dataHolder.getFieldSpecs().get(1).toString())
         .isEqualTo(
-            "@android.support.annotation.Nullable\n"
+            "@androidx.annotation.Nullable\n"
                 + "@com.facebook.litho.annotations.Prop(\n"
                 + "    resType = com.facebook.litho.annotations.ResType.NONE,\n"
                 + "    optional = false\n"

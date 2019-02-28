@@ -16,7 +16,7 @@
 
 package com.facebook.litho;
 
-import android.support.v4.util.Pools;
+import androidx.core.util.Pools;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.config.ComponentsConfiguration;
 import java.util.BitSet;

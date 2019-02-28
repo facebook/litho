@@ -9,6 +9,7 @@ load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_ANDROIDSUPPORT_TARGET", "LI
 litho_android_library(
     name = "debug",
     srcs = glob(["*.java"]),
+    is_androidx = True,
     required_for_source_only_abi = True,
     visibility = [
         "PUBLIC",

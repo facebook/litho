@@ -16,7 +16,7 @@
 
 package com.facebook.litho.widget;
 
-import static android.support.v4.widget.ExploreByTouchHelper.INVALID_ID;
+import static androidx.customview.widget.ExploreByTouchHelper.INVALID_ID;
 import static com.facebook.litho.SizeSpec.AT_MOST;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.UNSPECIFIED;
@@ -35,12 +35,6 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.os.Build;
-import android.support.annotation.Nullable;
-import android.support.annotation.VisibleForTesting;
-import android.support.v4.text.TextDirectionHeuristicCompat;
-import android.support.v4.text.TextDirectionHeuristicsCompat;
-import android.support.v4.view.ViewCompat;
-import android.support.v4.view.accessibility.AccessibilityNodeInfoCompat;
 import android.text.Layout;
 import android.text.Layout.Alignment;
 import android.text.Spanned;
@@ -50,6 +44,12 @@ import android.text.TextUtils.TruncateAt;
 import android.text.style.ClickableSpan;
 import android.text.style.ImageSpan;
 import android.view.View;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
+import androidx.core.text.TextDirectionHeuristicCompat;
+import androidx.core.text.TextDirectionHeuristicsCompat;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import com.facebook.fbui.textlayoutbuilder.TextLayoutBuilder;
 import com.facebook.fbui.textlayoutbuilder.util.LayoutMeasureUtil;
 import com.facebook.litho.AccessibilityRole;

@@ -15,9 +15,9 @@
  */
 package com.facebook.litho.sections.treeprops;
 
-import static android.support.test.espresso.Espresso.onView;
-import static android.support.test.espresso.assertion.ViewAssertions.matches;
-import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static com.facebook.litho.testing.espresso.ComponentHostMatchers.componentHost;
 import static com.facebook.litho.testing.espresso.ComponentHostMatchers.withTagValue;
 import static com.facebook.litho.testing.espresso.ComponentHostMatchers.withText;
@@ -25,7 +25,7 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.core.AllOf.allOf;
 
-import android.support.test.runner.AndroidJUnit4;
+import androidx.test.runner.AndroidJUnit4;
 import com.facebook.litho.testing.espresso.LithoActivityTestRule;
 import org.junit.Rule;
 import org.junit.Test;

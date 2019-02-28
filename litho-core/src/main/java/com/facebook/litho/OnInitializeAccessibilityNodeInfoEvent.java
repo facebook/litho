@@ -16,15 +16,15 @@
 
 package com.facebook.litho;
 
-import android.support.v4.view.AccessibilityDelegateCompat;
-import android.support.v4.view.accessibility.AccessibilityNodeInfoCompat;
 import android.view.View;
+import androidx.core.view.AccessibilityDelegateCompat;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import com.facebook.litho.annotations.Event;
+
 /**
- * Components should implement an event of this type in order to receive callbacks to
- * {@link
- * android.support.v4.view.AccessibilityDelegateCompat#onInitializeAccessibilityNodeInfo(
- * View, AccessibilityNodeInfoCompat)}
+ * Components should implement an event of this type in order to receive callbacks to {@link
+ * androidx.core.view.AccessibilityDelegateCompat#onInitializeAccessibilityNodeInfo( View,
+ * AccessibilityNodeInfoCompat)}
  */
 @Event
 public class OnInitializeAccessibilityNodeInfoEvent {

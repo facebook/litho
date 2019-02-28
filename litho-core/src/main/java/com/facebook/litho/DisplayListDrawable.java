@@ -28,12 +28,12 @@ import android.graphics.Rect;
 import android.graphics.Region;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import android.support.annotation.Nullable;
-import android.support.annotation.UiThread;
-import android.support.annotation.VisibleForTesting;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
+import androidx.annotation.VisibleForTesting;
 import com.facebook.litho.displaylist.DisplayList;
 import com.facebook.litho.displaylist.DisplayListException;
 

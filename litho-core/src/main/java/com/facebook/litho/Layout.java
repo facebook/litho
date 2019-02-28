@@ -16,8 +16,8 @@
 
 package com.facebook.litho;
 
-import android.support.annotation.AttrRes;
-import android.support.annotation.StyleRes;
+import androidx.annotation.AttrRes;
+import androidx.annotation.StyleRes;
 
 /**
  * Utility class to create a new {@link InternalNode} from an existing {@link Component}. This is

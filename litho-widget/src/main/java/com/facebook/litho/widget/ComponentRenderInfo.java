@@ -16,7 +16,7 @@
 
 package com.facebook.litho.widget;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;

@@ -9,6 +9,7 @@ load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_ANDROIDSUPPORT_TARGET", "LI
 fb_instrumentation_test(
     name = "espresso",
     srcs = glob(["*Test.java"]),
+    is_androidx = True,
     manifest = "AndroidManifest.xml",
     deps = [
         ":build_config",
@@ -27,6 +28,7 @@ fb_instrumentation_test(
 fb_core_android_library(
     name = "testutil",
     srcs = glob(["MyComponentSpec.java"]),
+    is_androidx = True,
     plugins = [
         LITHO_PROCESSOR_TARGET,
     ],

@@ -16,12 +16,12 @@
 package com.facebook.litho.widget;
 
 import android.content.Context;
-import android.support.annotation.IntDef;
-import android.support.v7.widget.LinearSmoothScroller;
-import android.support.v7.widget.LinearSnapHelper;
-import android.support.v7.widget.PagerSnapHelper;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SnapHelper;
+import androidx.annotation.IntDef;
+import androidx.recyclerview.widget.LinearSmoothScroller;
+import androidx.recyclerview.widget.LinearSnapHelper;
+import androidx.recyclerview.widget.PagerSnapHelper;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.SnapHelper;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import javax.annotation.Nullable;
@@ -60,8 +60,8 @@ public class SnapUtil {
   }
 
   /**
-   * @return {@link android.support.v7.widget.RecyclerView.SmoothScroller} that takes snapping into
-   *     account.
+   * @return {@link androidx.recyclerview.widget.RecyclerView.SmoothScroller} that takes snapping
+   *     into account.
    */
   public static RecyclerView.SmoothScroller getSmoothScrollerWithOffset(
       Context context, final int offset, final SmoothScrollAlignmentType type) {

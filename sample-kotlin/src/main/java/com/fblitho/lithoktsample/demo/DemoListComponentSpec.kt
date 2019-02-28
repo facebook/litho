@@ -74,7 +74,7 @@ object DemoListComponentSpec {
 
   /**
    * Called during DataDiffSection's diffing to determine if two objects represent the same item.
-   * See [android.support.v7.util.DiffUtil.Callback.areItemsTheSame] for more info.
+   * See [androidx.recyclerview.widget.DiffUtil.Callback.areItemsTheSame] for more info.
    *
    * @return true if the two objects in the event represent the same item.
    */
@@ -87,7 +87,7 @@ object DemoListComponentSpec {
 
   /**
    * Called during DataDiffSection's diffing to determine if two objects contain the same data. This
-   * is used to detect of contents of an item have changed. See [ ][android.support.v7.util.DiffUtil.Callback.areContentsTheSame] for more info.
+   * is used to detect of contents of an item have changed. See [ ][androidx.recyclerview.widget.DiffUtil.Callback.areContentsTheSame] for more info.
    *
    * @return true if the two objects contain the same data.
    */

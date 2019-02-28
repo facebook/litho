@@ -21,10 +21,10 @@ import static com.facebook.litho.widget.SnapUtil.SNAP_TO_START;
 import static com.facebook.litho.widget.SnapUtil.SnapMode;
 
 import android.content.Context;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.OrientationHelper;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SnapHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.OrientationHelper;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.SnapHelper;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.sections.SectionTree;
 import com.facebook.litho.widget.Binder;
@@ -35,7 +35,7 @@ import javax.annotation.Nullable;
 
 /**
  * A configuration object for {@link RecyclerCollectionComponent} that will create a {@link
- * android.support.v7.widget.LinearLayoutManager} for the {@link RecyclerView}.
+ * androidx.recyclerview.widget.LinearLayoutManager} for the {@link RecyclerView}.
  */
 public class ListRecyclerConfiguration<T extends SectionTree.Target & Binder<RecyclerView>>
     implements RecyclerConfiguration {

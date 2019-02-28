@@ -16,26 +16,26 @@
 
 package com.facebook.litho;
 
-import static android.support.annotation.Dimension.DP;
+import static androidx.annotation.Dimension.DP;
 import static com.facebook.litho.ComponentKeyUtils.getKeyForChildPosition;
 
 import android.animation.AnimatorInflater;
 import android.animation.StateListAnimator;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import android.support.annotation.AttrRes;
-import android.support.annotation.ColorInt;
-import android.support.annotation.DimenRes;
-import android.support.annotation.Dimension;
-import android.support.annotation.DrawableRes;
-import android.support.annotation.GuardedBy;
-import android.support.annotation.Px;
-import android.support.annotation.StringRes;
-import android.support.annotation.StyleRes;
-import android.support.annotation.VisibleForTesting;
 import android.util.SparseArray;
 import android.util.SparseIntArray;
 import android.view.ViewOutlineProvider;
+import androidx.annotation.AttrRes;
+import androidx.annotation.ColorInt;
+import androidx.annotation.DimenRes;
+import androidx.annotation.Dimension;
+import androidx.annotation.DrawableRes;
+import androidx.annotation.GuardedBy;
+import androidx.annotation.Px;
+import androidx.annotation.StringRes;
+import androidx.annotation.StyleRes;
+import androidx.annotation.VisibleForTesting;
 import com.facebook.infer.annotation.ReturnsOwnership;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;

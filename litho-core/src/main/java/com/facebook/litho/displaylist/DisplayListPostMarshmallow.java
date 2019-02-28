@@ -16,8 +16,8 @@
 
 package com.facebook.litho.displaylist;
 
-import android.support.annotation.Nullable;
 import android.view.RenderNode;
+import androidx.annotation.Nullable;
 
 /** Implementation of {@link PlatformDisplayList} for Android Nougat. */
 public class DisplayListPostMarshmallow extends DisplayListMarshmallow {

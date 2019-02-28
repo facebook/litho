@@ -17,8 +17,8 @@
 package com.facebook.litho;
 
 import android.os.Bundle;
-import android.support.v4.view.AccessibilityDelegateCompat;
 import android.view.View;
+import androidx.core.view.AccessibilityDelegateCompat;
 import com.facebook.litho.annotations.Event;
 
 /**

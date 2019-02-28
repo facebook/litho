@@ -16,8 +16,8 @@
 
 package com.facebook.litho.animation;
 
-import android.support.annotation.Nullable;
 import android.view.animation.Interpolator;
+import androidx.annotation.Nullable;
 import com.facebook.litho.dataflow.ConstantNode;
 import com.facebook.litho.dataflow.InterpolatorNode;
 import com.facebook.litho.dataflow.MappingNode;

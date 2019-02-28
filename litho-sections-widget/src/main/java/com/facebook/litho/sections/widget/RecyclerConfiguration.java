@@ -16,8 +16,8 @@
 
 package com.facebook.litho.sections.widget;
 
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SnapHelper;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.SnapHelper;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.widget.LayoutInfo;
 import com.facebook.litho.widget.SnapUtil;

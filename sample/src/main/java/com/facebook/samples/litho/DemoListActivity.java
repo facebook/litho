@@ -13,7 +13,7 @@
 package com.facebook.samples.litho;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
 import com.facebook.samples.litho.animations.animatedbadge.AnimatedBadgeActivity;

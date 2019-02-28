@@ -18,8 +18,8 @@ package com.facebook.litho.sections;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_SECTION_CURRENT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_SECTION_NEXT;
 
-import android.support.annotation.IntDef;
-import android.support.annotation.Nullable;
+import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentsLogger;
 import com.facebook.litho.LogTreePopulator;

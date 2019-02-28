@@ -8,6 +8,7 @@ load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_ANDROIDSUPPORT_RECYCLERVIEW
 litho_android_library(
     name = "common",
     srcs = glob(["*.java"]),
+    is_androidx = True,
     plugins = [
         LITHO_SECTIONS_PROCESSOR_TARGET,
     ],

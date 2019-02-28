@@ -12,8 +12,8 @@
 package com.facebook.samples.litho.errors;
 
 import android.graphics.Typeface;
-import android.support.annotation.ColorInt;
 import android.util.Log;
+import androidx.annotation.ColorInt;
 import com.facebook.litho.ClickEvent;
 import com.facebook.litho.Column;
 import com.facebook.litho.Component;

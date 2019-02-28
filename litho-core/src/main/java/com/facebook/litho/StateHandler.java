@@ -18,8 +18,8 @@ package com.facebook.litho;
 
 import static com.facebook.litho.ComponentLifecycle.StateUpdate;
 
-import android.support.annotation.Nullable;
-import android.support.annotation.VisibleForTesting;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.stats.LithoStats;

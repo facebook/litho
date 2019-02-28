@@ -50,7 +50,7 @@ import static org.robolectric.RuntimeEnvironment.application;
 
 import android.graphics.Color;
 import android.graphics.Rect;
-import android.support.v4.util.SparseArrayCompat;
+import androidx.collection.SparseArrayCompat;
 import com.facebook.litho.drawable.ComparableColorDrawable;
 import com.facebook.litho.drawable.ComparableDrawable;
 import com.facebook.litho.testing.TestComponent;

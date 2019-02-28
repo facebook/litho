@@ -21,16 +21,16 @@ import static android.os.Build.VERSION_CODES.HONEYCOMB;
 
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.Nullable;
-import android.support.v4.content.res.ResourcesCompat;
-import android.support.v4.util.LruCache;
-import android.support.v4.util.Pools;
 import android.util.StateSet;
+import androidx.annotation.Nullable;
+import androidx.collection.LruCache;
+import androidx.core.content.res.ResourcesCompat;
+import androidx.core.util.Pools;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * A cache that holds Drawables retreived from Android {@link android.content.res.Resources} for
- * each resId this class keeps a {@link android.support.v4.util.Pools.SynchronizedPool} of
+ * each resId this class keeps a {@link androidx.core.util.Pools.SynchronizedPool} of
  * DRAWABLES_POOL_MAX_ITEMS. The cache has a maximum capacity of DRAWABLES_MAX_ENTRIES. When the
  * cache is full it starts clearing memory deleting the less recently used pool of resources
  */

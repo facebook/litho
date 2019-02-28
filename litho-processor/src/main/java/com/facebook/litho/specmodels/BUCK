@@ -29,6 +29,7 @@ fb_java_library(
             "*/testing/*.java",
         ]),
     ),
+    is_androidx = True,
     provided_deps = [
         LITHO_JAVAPOET_TARGET,
         LITHO_JSR_TARGET,

@@ -16,7 +16,7 @@
 
 package com.facebook.litho.sections;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import com.facebook.litho.EventDispatcher;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.EventTrigger;

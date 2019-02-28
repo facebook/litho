@@ -17,7 +17,7 @@
 package com.facebook.litho;
 
 import android.content.res.Configuration;
-import android.support.v4.util.LruCache;
+import androidx.collection.LruCache;
 import javax.annotation.Nullable;
 
 class LruResourceCache extends ResourceCache {

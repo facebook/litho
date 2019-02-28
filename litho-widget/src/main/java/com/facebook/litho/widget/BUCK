@@ -19,6 +19,7 @@ litho_android_library(
 litho_android_library(
     name = "widget-bare",
     srcs = glob(["*.java"]),
+    is_androidx = True,
     plugins = [
         LITHO_PROCESSOR_TARGET,
     ],

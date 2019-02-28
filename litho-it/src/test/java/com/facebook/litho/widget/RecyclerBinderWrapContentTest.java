@@ -31,8 +31,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import android.os.Looper;
-import android.support.v7.widget.OrientationHelper;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.OrientationHelper;
+import androidx.recyclerview.widget.RecyclerView;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;

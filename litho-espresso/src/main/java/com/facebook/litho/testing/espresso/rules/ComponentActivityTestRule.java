@@ -17,8 +17,8 @@
 package com.facebook.litho.testing.espresso.rules;
 
 import android.app.Instrumentation;
-import android.support.test.InstrumentationRegistry;
 import android.view.ViewGroup;
+import androidx.test.InstrumentationRegistry;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;

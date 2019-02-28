@@ -207,6 +207,9 @@ def components_robolectric_test(
         "//lib/fbjni:jni",
     ]
 
+    # T41117446 Remove after AndroidX conversion is done.
+    kwargs.pop("is_androidx", False)
+
     native.robolectric_test(
         name = name,
         *args,
@@ -215,6 +218,9 @@ def components_robolectric_test(
 
 def fb_java_test(*args, **kwargs):
     """Uses native java_test for OSS project."""
+
+    # T41117446 Remove after AndroidX conversion is done.
+    kwargs.pop("is_androidx", False)
     java_test(*args, **kwargs)
 
 def litho_android_library(name, srcs = None, *args, **kwargs):
@@ -222,24 +228,39 @@ def litho_android_library(name, srcs = None, *args, **kwargs):
 
     # This has no meaning in OSS.
     kwargs.pop("fblite", None)
+
+    # T41117446 Remove after AndroidX conversion is done.
+    kwargs.pop("is_androidx", False)
     native.android_library(name, srcs = srcs, *args, **kwargs)
 
 components_robolectric_powermock_test = components_robolectric_test
 
 def fb_xplat_cxx_library(*args, **kwargs):
     """Delegates to cxx_library for OSS project."""
+
+    # T41117446 Remove after AndroidX conversion is done.
+    kwargs.pop("is_androidx", False)
     native.cxx_library(*args, **kwargs)
 
 def fb_android_resource(**kwargs):
     """Delegates to native android_resource rule."""
+
+    # T41117446 Remove after AndroidX conversion is done.
+    kwargs.pop("is_androidx", False)
     android_resource(**kwargs)
 
 def fb_java_library(**kwargs):
     """Delegates to native java_library rule."""
+
+    # T41117446 Remove after AndroidX conversion is done.
+    kwargs.pop("is_androidx", False)
     native.java_library(**kwargs)
 
 def fb_android_library(**kwargs):
     """Delegates to native android_library rule."""
+
+    # T41117446 Remove after AndroidX conversion is done.
+    kwargs.pop("is_androidx", False)
     native.android_library(**kwargs)
 
 def fb_prebuilt_cxx_library(**kwargs):
@@ -251,10 +272,15 @@ def fb_instrumentation_test(**kwargs):
     We don't support this in the OSS build for now.
     Please use Gradle instead.
     """
+
+    # T41117446 Remove after AndroidX conversion is done.
+    kwargs.pop("is_androidx", False)
     _ignore = kwargs
     pass
 
 def fb_core_android_library(**kwargs):
+    # T41117446 Remove after AndroidX conversion is done.
+    kwargs.pop("is_androidx", False)
     native.android_library(**kwargs)
 
 def define_fbjni_targets():

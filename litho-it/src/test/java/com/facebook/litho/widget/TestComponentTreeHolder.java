@@ -17,7 +17,7 @@ package com.facebook.litho.widget;
 
 import static org.mockito.Mockito.mock;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.LayoutHandler;

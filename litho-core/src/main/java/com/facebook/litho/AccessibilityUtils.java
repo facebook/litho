@@ -20,9 +20,9 @@ import static android.content.Context.ACCESSIBILITY_SERVICE;
 
 import android.accessibilityservice.AccessibilityServiceInfo;
 import android.content.Context;
-import android.support.v4.accessibilityservice.AccessibilityServiceInfoCompat;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityManager;
+import androidx.core.accessibilityservice.AccessibilityServiceInfoCompat;
 import java.util.List;
 
 public class AccessibilityUtils {

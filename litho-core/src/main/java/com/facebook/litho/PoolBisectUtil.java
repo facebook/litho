@@ -16,7 +16,7 @@
 
 package com.facebook.litho;
 
-import android.support.annotation.VisibleForTesting;
+import androidx.annotation.VisibleForTesting;
 import com.facebook.litho.config.ComponentsConfiguration;
 
 /** A temporary utility to help with bisecting a problem with mount content pooling. See S168698. */

@@ -38,27 +38,26 @@ public interface ClassNames {
   ClassName ANDROID_CONTEXT = ClassName.bestGuess("android.content.Context");
 
   ClassName ACCESSIBILITY_NODE =
-      ClassName.bestGuess("android.support.v4.view.accessibility.AccessibilityNodeInfoCompat");
+      ClassName.bestGuess("androidx.core.view.accessibility.AccessibilityNodeInfoCompat");
 
-  ClassName STRING_RES = ClassName.bestGuess("android.support.annotation.StringRes");
-  ClassName INT_RES = ClassName.bestGuess("android.support.annotation.IntegerRes");
-  ClassName BOOL_RES = ClassName.bestGuess("android.support.annotation.BoolRes");
-  ClassName COLOR_RES = ClassName.bestGuess("android.support.annotation.ColorRes");
-  ClassName COLOR_INT = ClassName.bestGuess("android.support.annotation.ColorInt");
-  ClassName DIMEN_RES = ClassName.bestGuess("android.support.annotation.DimenRes");
-  ClassName ATTR_RES = ClassName.bestGuess("android.support.annotation.AttrRes");
-  ClassName DRAWABLE_RES = ClassName.bestGuess("android.support.annotation.DrawableRes");
-  ClassName ARRAY_RES = ClassName.bestGuess("android.support.annotation.ArrayRes");
-  ClassName DIMENSION = ClassName.bestGuess("android.support.annotation.Dimension");
-  ClassName PX = ClassName.bestGuess("android.support.annotation.Px");
+  ClassName STRING_RES = ClassName.bestGuess("androidx.annotation.StringRes");
+  ClassName INT_RES = ClassName.bestGuess("androidx.annotation.IntegerRes");
+  ClassName BOOL_RES = ClassName.bestGuess("androidx.annotation.BoolRes");
+  ClassName COLOR_RES = ClassName.bestGuess("androidx.annotation.ColorRes");
+  ClassName COLOR_INT = ClassName.bestGuess("androidx.annotation.ColorInt");
+  ClassName DIMEN_RES = ClassName.bestGuess("androidx.annotation.DimenRes");
+  ClassName ATTR_RES = ClassName.bestGuess("androidx.annotation.AttrRes");
+  ClassName DRAWABLE_RES = ClassName.bestGuess("androidx.annotation.DrawableRes");
+  ClassName ARRAY_RES = ClassName.bestGuess("androidx.annotation.ArrayRes");
+  ClassName DIMENSION = ClassName.bestGuess("androidx.annotation.Dimension");
+  ClassName PX = ClassName.bestGuess("androidx.annotation.Px");
 
   ClassName LIST = ClassName.get(List.class);
   ClassName ARRAY_LIST = ClassName.get(ArrayList.class);
   ClassName COLLECTIONS = ClassName.get(Collections.class);
   ClassName COLLECTION = ClassName.bestGuess("java.util.Collection");
 
-  ClassName SYNCHRONIZED_POOL =
-      ClassName.bestGuess("android.support.v4.util.Pools.SynchronizedPool");
+  ClassName SYNCHRONIZED_POOL = ClassName.bestGuess("androidx.core.util.Pools.SynchronizedPool");
   ClassName MOUNT_CONTENT_POOL = ClassName.bestGuess("com.facebook.litho.MountContentPool");
 
   ClassName LAYOUT_SPEC = ClassName.bestGuess("com.facebook.litho.annotations.LayoutSpec");

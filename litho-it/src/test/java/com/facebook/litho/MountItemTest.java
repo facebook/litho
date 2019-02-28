@@ -17,9 +17,9 @@
 package com.facebook.litho;
 
 import static android.content.res.Configuration.ORIENTATION_PORTRAIT;
-import static android.support.v4.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
-import static android.support.v4.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO;
-import static android.support.v4.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_YES;
+import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
+import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO;
+import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_YES;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import android.util.SparseArray;

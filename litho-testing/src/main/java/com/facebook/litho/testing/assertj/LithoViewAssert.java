@@ -18,7 +18,7 @@ package com.facebook.litho.testing.assertj;
 
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.DrawableRes;
+import androidx.annotation.DrawableRes;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.LithoViewTestHelper;
 import com.facebook.litho.TestItem;

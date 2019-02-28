@@ -16,9 +16,9 @@
 
 package com.facebook.litho;
 
-import android.support.v4.view.ViewCompat;
-import android.support.v4.view.ViewPager;
 import android.view.ViewParent;
+import androidx.core.view.ViewCompat;
+import androidx.viewpager.widget.ViewPager;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;

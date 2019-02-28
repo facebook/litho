@@ -40,10 +40,11 @@ dependencies {
     compileOnly deps.inferAnnotations
 
     // First-party
-    implementation deps.fresco
+    //T41117446 Replace this with proper version after Fresco releases their AndroidX version
+    implementation('com.github.facebook.fresco:fresco:67fd55d341')
 
     // Android Support Library
-    implementation deps.supportCoreUi
+    compileOnly deps.supportAnnotations
 }
 
 apply from: rootProject.file('gradle/release.gradle')

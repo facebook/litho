@@ -16,8 +16,8 @@
 
 package com.facebook.litho.sections;
 
-import android.support.annotation.Nullable;
-import android.support.annotation.UiThread;
+import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
 import com.facebook.litho.widget.SmoothScrollAlignmentType;
 
 /**

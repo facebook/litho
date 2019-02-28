@@ -16,7 +16,7 @@
 
 package com.facebook.litho;
 
-import static android.support.v4.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
+import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
 import static com.facebook.litho.Component.isHostSpec;
 import static com.facebook.litho.Component.isMountViewSpec;
 import static com.facebook.litho.ComponentHostUtils.maybeInvalidateAccessibilityState;
@@ -48,16 +48,16 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.RippleDrawable;
 import android.os.Build;
-import android.support.annotation.Nullable;
-import android.support.annotation.VisibleForTesting;
-import android.support.v4.util.LongSparseArray;
-import android.support.v4.view.ViewCompat;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewOutlineProvider;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
+import androidx.collection.LongSparseArray;
+import androidx.core.view.ViewCompat;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.animation.AnimatedProperties;
 import com.facebook.litho.config.ComponentsConfiguration;

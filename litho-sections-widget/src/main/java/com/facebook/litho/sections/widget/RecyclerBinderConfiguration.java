@@ -16,7 +16,7 @@
 
 package com.facebook.litho.sections.widget;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import com.facebook.litho.ComponentLogParams;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.config.LayoutThreadPoolConfiguration;
@@ -185,8 +185,8 @@ public class RecyclerBinderConfiguration {
 
     /**
      * @param rangeRatio Ratio to determine the number of components before and after the {@link
-     *     android.support.v7.widget.RecyclerView}'s total number of currently visible items to have
-     *     their Component layout computed ahead of time.
+     *     androidx.recyclerview.widget.RecyclerView}'s total number of currently visible items to
+     *     have their Component layout computed ahead of time.
      *     <p>e.g total number of visible items = 5 rangeRatio = 10 total number of items before the
      *     1st visible item to be computed = 5 * 10 = 50 total number of items after the last
      *     visible item to be computed = 5 * 10 = 50
