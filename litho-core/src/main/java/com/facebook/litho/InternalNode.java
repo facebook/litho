@@ -192,11 +192,6 @@ class InternalNode implements ComponentLayout {
         : NodeConfig.createYogaNode();
   }
 
-  protected InternalNode() {
-    mYogaNode = null;
-    mComponentContext = null;
-  }
-
   protected InternalNode(ComponentContext componentContext) {
     this(componentContext, createYogaNode(componentContext), true);
   }
