@@ -24,7 +24,7 @@ import android.app.Application;
 import android.app.Service;
 import android.content.Context;
 import android.content.ContextWrapper;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 public class ContextUtils {
 

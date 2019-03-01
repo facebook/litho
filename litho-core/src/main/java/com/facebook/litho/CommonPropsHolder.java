@@ -18,13 +18,13 @@ package com.facebook.litho;
 
 import android.animation.StateListAnimator;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.AttrRes;
-import android.support.annotation.DrawableRes;
-import android.support.annotation.Nullable;
-import android.support.annotation.Px;
-import android.support.annotation.StyleRes;
 import android.util.SparseArray;
 import android.view.ViewOutlineProvider;
+import androidx.annotation.AttrRes;
+import androidx.annotation.DrawableRes;
+import androidx.annotation.Nullable;
+import androidx.annotation.Px;
+import androidx.annotation.StyleRes;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.drawable.ComparableDrawable;
 import com.facebook.litho.reference.Reference;

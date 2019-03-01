@@ -16,8 +16,8 @@
 
 package com.facebook.litho;
 
-import android.support.annotation.AttrRes;
-import android.support.annotation.StyleRes;
+import androidx.annotation.AttrRes;
+import androidx.annotation.StyleRes;
 
 /**
  * {@link ComponentContext} for use within a test environment that is compatible with mock

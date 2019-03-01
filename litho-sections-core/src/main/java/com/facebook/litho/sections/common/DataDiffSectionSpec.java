@@ -19,9 +19,9 @@ package com.facebook.litho.sections.common;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_SECTIONS_DATA_DIFF_CALCULATE_DIFF;
 import static com.facebook.litho.widget.RenderInfoDebugInfoRegistry.SONAR_SECTIONS_DEBUG_INFO_TAG;
 
-import android.support.annotation.Nullable;
-import android.support.annotation.VisibleForTesting;
-import android.support.v7.util.DiffUtil;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
+import androidx.recyclerview.widget.DiffUtil;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentsLogger;

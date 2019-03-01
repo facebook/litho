@@ -16,9 +16,9 @@
 
 package com.facebook.litho.widget;
 
-import android.support.v7.widget.OrientationHelper;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.RecyclerView.LayoutManager;
+import androidx.recyclerview.widget.OrientationHelper;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView.LayoutManager;
 import java.util.List;
 
 /**

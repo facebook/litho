@@ -26,8 +26,8 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
-import android.support.annotation.VisibleForTesting;
 import android.text.Layout;
+import androidx.annotation.VisibleForTesting;
 import com.facebook.fbui.textlayoutbuilder.util.LayoutMeasureUtil;
 import java.lang.ref.WeakReference;
 

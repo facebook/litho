@@ -22,7 +22,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import com.facebook.litho.testing.logging.TestComponentsLogger;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import java.util.HashMap;

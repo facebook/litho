@@ -18,8 +18,8 @@ package com.facebook.litho;
 import static com.facebook.litho.ComponentContext.NULL_LAYOUT;
 
 import android.os.Looper;
-import android.support.annotation.GuardedBy;
-import android.support.annotation.VisibleForTesting;
+import androidx.annotation.GuardedBy;
+import androidx.annotation.VisibleForTesting;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.config.LayoutThreadPoolConfiguration;
 import java.util.HashMap;

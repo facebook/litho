@@ -3,6 +3,7 @@ load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_ANDROIDSUPPORT_TARGET", "LI
 litho_android_library(
     name = "assertj",
     srcs = glob(["*.java"]),
+    is_androidx = True,
     visibility = [
         "PUBLIC",
     ],

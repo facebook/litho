@@ -15,11 +15,11 @@ import static com.facebook.litho.widget.SnapUtil.SNAP_TO_CENTER;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import com.facebook.litho.annotations.FromEvent;
 import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.sections.Children;

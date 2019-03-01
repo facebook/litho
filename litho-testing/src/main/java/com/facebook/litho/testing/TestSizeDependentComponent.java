@@ -16,7 +16,7 @@
 
 package com.facebook.litho.testing;
 
-import android.support.v4.util.Pools;
+import androidx.core.util.Pools;
 import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;

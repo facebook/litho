@@ -16,8 +16,8 @@
 
 package com.facebook.litho.widget;
 
-import android.support.annotation.IntDef;
-import android.support.annotation.VisibleForTesting;
+import androidx.annotation.IntDef;
+import androidx.annotation.VisibleForTesting;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;

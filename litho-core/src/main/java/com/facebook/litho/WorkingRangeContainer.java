@@ -16,7 +16,7 @@
 
 package com.facebook.litho;
 
-import android.support.annotation.VisibleForTesting;
+import androidx.annotation.VisibleForTesting;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;

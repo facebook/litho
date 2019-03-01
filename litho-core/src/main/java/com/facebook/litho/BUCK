@@ -17,6 +17,7 @@ litho_android_library(
         "debug/*.java",
         "drawable/*.java",
     ]),
+    is_androidx = True,
     provided_deps = [
         LITHO_ANDROIDSUPPORT_TARGET,
         LITHO_DISPLAYLISTSTUBS_TARGET,

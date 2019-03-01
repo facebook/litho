@@ -17,10 +17,10 @@
 package com.facebook.litho.testing;
 
 import android.content.Context;
-import android.support.annotation.AttrRes;
-import android.support.annotation.StyleRes;
-import android.support.v4.util.Pools;
 import android.view.View;
+import androidx.annotation.AttrRes;
+import androidx.annotation.StyleRes;
+import androidx.core.util.Pools;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;

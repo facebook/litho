@@ -17,7 +17,7 @@ package com.facebook.litho;
 
 import android.content.Context;
 import android.provider.Settings;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import com.facebook.litho.animation.AnimatedProperty;
 import com.facebook.litho.config.ComponentsConfiguration;
 import java.util.ArrayList;

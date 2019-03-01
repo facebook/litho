@@ -7,6 +7,7 @@ load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_ANDROIDSUPPORT_TARGET", "fb
 fb_java_library(
     name = "annotations",
     srcs = glob(["*.java"]),
+    is_androidx = True,
     provided_deps = [
         LITHO_ANDROIDSUPPORT_TARGET,
     ],

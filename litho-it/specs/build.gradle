@@ -39,9 +39,6 @@ dependencies {
     annotationProcessor project(':litho-processor')
     annotationProcessor project(':test-processor')
 
-    // Android Support Library
-    implementation deps.supportCoreUi
-
     // Testing deps
     implementation deps.junit
     implementation deps.robolectric

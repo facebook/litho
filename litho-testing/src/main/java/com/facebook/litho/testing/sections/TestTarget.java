@@ -16,7 +16,7 @@
 
 package com.facebook.litho.testing.sections;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import com.facebook.litho.sections.SectionTree;
 import com.facebook.litho.widget.ChangeSetCompleteCallback;
 import com.facebook.litho.widget.RenderInfo;

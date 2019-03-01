@@ -17,8 +17,8 @@
 package com.facebook.litho.sections.debug;
 
 import android.graphics.Rect;
-import android.support.annotation.Nullable;
 import android.view.View;
+import androidx.annotation.Nullable;
 import com.facebook.litho.sections.Section;
 import com.facebook.litho.widget.RenderInfoDebugInfoRegistry;
 import java.util.ArrayList;

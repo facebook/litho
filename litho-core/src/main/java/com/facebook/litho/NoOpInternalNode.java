@@ -18,13 +18,11 @@ package com.facebook.litho;
 
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.Nullable;
-import android.support.annotation.Px;
-import android.util.SparseArray;
+import androidx.annotation.Nullable;
+import androidx.annotation.Px;
 import com.facebook.litho.drawable.ComparableDrawable;
 import com.facebook.litho.reference.Reference;
 import com.facebook.yoga.YogaAlign;
-import com.facebook.yoga.YogaBaselineFunction;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
 import com.facebook.yoga.YogaFlexDirection;

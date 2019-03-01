@@ -16,7 +16,7 @@
 package com.facebook.litho.testing.drawable;
 
 import android.graphics.drawable.ColorDrawable;
-import android.support.annotation.ColorInt;
+import androidx.annotation.ColorInt;
 
 /**
  * ColorDrawable with overridden equals method to fix the broken implementation of roboelectric

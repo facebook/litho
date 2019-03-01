@@ -43,7 +43,6 @@ dependencies {
     // Android Support Library
     compileOnly deps.supportAnnotations
     implementation deps.supportRecyclerView
-    implementation deps.supportCoreUi
 }
 
 apply from: rootProject.file('gradle/release.gradle')

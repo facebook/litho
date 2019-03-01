@@ -16,7 +16,7 @@
 
 package com.facebook.litho.testing.espresso.rules;
 
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.LithoView;

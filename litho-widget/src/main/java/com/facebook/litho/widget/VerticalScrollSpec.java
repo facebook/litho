@@ -22,9 +22,9 @@ import static com.facebook.litho.SizeSpec.UNSPECIFIED;
 
 import android.content.Context;
 import android.os.Build;
-import android.support.v4.widget.NestedScrollView;
-import android.support.v7.widget.RecyclerView;
 import android.view.ViewTreeObserver;
+import androidx.core.widget.NestedScrollView;
+import androidx.recyclerview.widget.RecyclerView;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;

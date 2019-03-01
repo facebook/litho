@@ -17,7 +17,7 @@
 package com.facebook.litho.sections.common;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.annotations.Event;
 import com.facebook.litho.widget.RenderInfo;

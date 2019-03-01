@@ -16,15 +16,15 @@
 
 package com.facebook.litho.widget;
 
-import static android.support.v7.widget.OrientationHelper.VERTICAL;
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
+import static androidx.recyclerview.widget.OrientationHelper.VERTICAL;
 
 import android.content.Context;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.OrientationHelper;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.RecyclerView.LayoutParams;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.OrientationHelper;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView.LayoutParams;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.SizeSpec;
 import java.util.List;

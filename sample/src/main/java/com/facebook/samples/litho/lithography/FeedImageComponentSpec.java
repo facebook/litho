@@ -13,9 +13,9 @@
 
 package com.facebook.samples.litho.lithography;
 
-import static android.support.v7.widget.LinearSmoothScroller.SNAP_TO_START;
+import static androidx.recyclerview.widget.LinearSmoothScroller.SNAP_TO_START;
 
-import android.support.v7.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.interfaces.DraweeController;
 import com.facebook.litho.Component;

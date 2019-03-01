@@ -19,6 +19,7 @@ litho_android_library(
         ["*.java"],
         exclude = ["Whitebox.java"],
     ),
+    is_androidx = True,
     plugins = [
         LITHO_PROCESSOR_TARGET,
     ],

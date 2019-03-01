@@ -18,7 +18,7 @@ package com.facebook.litho.testing;
 import android.graphics.Canvas;
 import android.graphics.ColorFilter;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 public class TestDrawable extends Drawable {
   @Override

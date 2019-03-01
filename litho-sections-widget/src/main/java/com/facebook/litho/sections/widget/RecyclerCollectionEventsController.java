@@ -22,10 +22,10 @@ import static com.facebook.litho.widget.SnapUtil.SNAP_TO_CENTER_CHILD;
 import static com.facebook.litho.widget.SnapUtil.SNAP_TO_END;
 import static com.facebook.litho.widget.SnapUtil.SNAP_TO_START;
 
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.View;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import com.facebook.litho.sections.SectionTree;
 import com.facebook.litho.widget.RecyclerEventsController;
 import com.facebook.litho.widget.SmoothScrollAlignmentType;

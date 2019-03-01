@@ -15,7 +15,7 @@
  */
 package com.facebook.litho;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 public class CommonUtils {
 

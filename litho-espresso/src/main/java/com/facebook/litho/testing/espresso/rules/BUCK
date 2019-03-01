@@ -8,6 +8,7 @@ load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_ANDROIDSUPPORT_APPCOMPAT_TA
 fb_core_android_library(
     name = "rules",
     srcs = glob(["*.java"]),
+    is_androidx = True,
     visibility = [
         "PUBLIC",
     ],

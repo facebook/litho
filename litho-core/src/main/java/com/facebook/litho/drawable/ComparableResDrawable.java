@@ -18,8 +18,8 @@ package com.facebook.litho.drawable;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.DrawableRes;
-import android.support.v4.content.ContextCompat;
+import androidx.annotation.DrawableRes;
+import androidx.core.content.ContextCompat;
 
 /** A comparable implementation of drawables sourced from android resources. */
 public class ComparableResDrawable extends ComparableDrawableWrapper {

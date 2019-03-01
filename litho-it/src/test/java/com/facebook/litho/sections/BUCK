@@ -8,6 +8,7 @@ load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_ANDROIDSUPPORT_TARGET", "LI
 components_robolectric_test(
     name = "sections",
     srcs = glob(["*Test.java"]),
+    is_androidx = True,
     source = "8",
     target = "8",
     deps = [

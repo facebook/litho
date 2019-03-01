@@ -16,8 +16,8 @@
 
 package com.facebook.litho.dataflow;
 
-import android.support.annotation.VisibleForTesting;
-import android.support.v4.util.SimpleArrayMap;
+import androidx.annotation.VisibleForTesting;
+import androidx.collection.SimpleArrayMap;
 import com.facebook.litho.internal.ArraySet;
 import java.util.ArrayDeque;
 import java.util.ArrayList;

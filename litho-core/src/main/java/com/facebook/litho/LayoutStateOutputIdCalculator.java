@@ -16,8 +16,8 @@
 
 package com.facebook.litho;
 
-import android.support.annotation.Nullable;
-import android.support.v4.util.LongSparseArray;
+import androidx.annotation.Nullable;
+import androidx.collection.LongSparseArray;
 import com.facebook.litho.config.ComponentsConfiguration;
 
 /**

@@ -18,8 +18,8 @@ package com.facebook.litho;
 
 import android.os.Looper;
 import android.os.Process;
-import android.support.annotation.IntDef;
-import android.support.annotation.VisibleForTesting;
+import androidx.annotation.IntDef;
+import androidx.annotation.VisibleForTesting;
 import com.facebook.litho.config.ComponentsConfiguration;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

@@ -15,11 +15,11 @@
  */
 package com.facebook.litho.sections.processor.integration.resources;
 
-import android.support.annotation.AttrRes;
-import android.support.annotation.StringRes;
-import android.support.annotation.VisibleForTesting;
-import android.support.v4.util.Pools;
 import android.widget.TextView;
+import androidx.annotation.AttrRes;
+import androidx.annotation.StringRes;
+import androidx.annotation.VisibleForTesting;
+import androidx.core.util.Pools;
 import com.facebook.litho.ClickEvent;
 import com.facebook.litho.Component;
 import com.facebook.litho.Diff;

@@ -21,7 +21,7 @@ import static com.facebook.litho.OutputUnitType.CONTENT;
 import static com.facebook.litho.OutputUnitType.FOREGROUND;
 import static com.facebook.litho.OutputUnitType.HOST;
 
-import android.support.annotation.IntDef;
+import androidx.annotation.IntDef;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 

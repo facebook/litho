@@ -19,12 +19,12 @@ package com.facebook.litho;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.support.v4.util.Pools;
-import android.support.v4.util.SparseArrayCompat;
 import android.view.MotionEvent;
 import android.view.TouchDelegate;
 import android.view.View;
 import android.view.ViewConfiguration;
+import androidx.collection.SparseArrayCompat;
+import androidx.core.util.Pools;
 
 /**
  * Compound touch delegate that forward touch events to recyclable

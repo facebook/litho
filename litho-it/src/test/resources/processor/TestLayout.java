@@ -16,12 +16,12 @@
 package com.facebook.litho.processor.integration.resources;
 
 import android.annotation.TargetApi;
-import android.support.annotation.AttrRes;
-import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
-import android.support.annotation.VisibleForTesting;
-import android.support.v4.util.Pools;
 import android.view.View;
+import androidx.annotation.AttrRes;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import androidx.annotation.VisibleForTesting;
+import androidx.core.util.Pools;
 import com.facebook.litho.ClickEvent;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;

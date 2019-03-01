@@ -24,7 +24,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import com.facebook.litho.ThreadUtils;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import org.junit.After;

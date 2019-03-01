@@ -19,9 +19,9 @@ package com.facebook.litho.sections;
 import static com.facebook.litho.sections.SectionLifecycle.StateUpdate;
 
 import android.content.Context;
-import android.support.annotation.Nullable;
-import android.support.annotation.VisibleForTesting;
 import android.util.Log;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentsLogger;
 import com.facebook.litho.EventHandler;

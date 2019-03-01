@@ -16,7 +16,7 @@
 package com.facebook.litho.drawable;
 
 import android.graphics.drawable.ColorDrawable;
-import android.support.annotation.ColorInt;
+import androidx.annotation.ColorInt;
 
 /** A comparable color drawable. */
 public class ComparableColorDrawable extends ComparableDrawableWrapper {

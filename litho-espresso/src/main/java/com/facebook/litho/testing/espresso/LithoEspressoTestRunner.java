@@ -18,7 +18,7 @@ package com.facebook.litho.testing.espresso;
 
 import android.app.Application;
 import android.content.Context;
-import android.support.test.runner.AndroidJUnitRunner;
+import androidx.test.runner.AndroidJUnitRunner;
 
 /**
  * An example test runner you can use to test your Litho apps in Espresso and standard integration

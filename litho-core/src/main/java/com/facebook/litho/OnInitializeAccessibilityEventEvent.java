@@ -16,15 +16,15 @@
 
 package com.facebook.litho;
 
-import android.support.v4.view.AccessibilityDelegateCompat;
 import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
+import androidx.core.view.AccessibilityDelegateCompat;
 import com.facebook.litho.annotations.Event;
 
 /**
- * Components should implement an event of this type in order to receive callbacks to
- * {@link android.support.v4.view.AccessibilityDelegateCompat#onInitializeAccessibilityEvent(
- * View, AccessibilityEvent)}
+ * Components should implement an event of this type in order to receive callbacks to {@link
+ * androidx.core.view.AccessibilityDelegateCompat#onInitializeAccessibilityEvent( View,
+ * AccessibilityEvent)}
  */
 @Event
 public class OnInitializeAccessibilityEventEvent {

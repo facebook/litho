@@ -28,7 +28,7 @@ import static org.assertj.core.condition.AnyOf.anyOf;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assume.assumeThat;
 
-import android.support.v7.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;

@@ -16,6 +16,7 @@ components_robolectric_test(
         "drawable/*.java",
     ]),
     contacts = ["oncall+components_for_android@xmail.facebook.com"],
+    is_androidx = True,
     provided_deps = [
         LITHO_ROBOLECTRIC_TARGET,
     ],

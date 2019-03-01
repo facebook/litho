@@ -12,6 +12,7 @@ load(
 fb_instrumentation_test(
     name = "tti",
     srcs = glob(["*Test.java"]),
+    is_androidx = True,
     manifest = "AndroidManifest.xml",
     deps = [
         LITHO_ANDROIDSUPPORT_TESTING_TARGET,
