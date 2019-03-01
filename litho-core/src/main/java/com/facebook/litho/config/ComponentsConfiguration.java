@@ -272,4 +272,7 @@ public class ComponentsConfiguration {
   public static boolean disableComponentHostPool = true;
 
   public static boolean disableCommonBuilderPools = false;
+
+  public static float defaultRangeRatio = -1;
+  public static int fixedRangeSize = -1;
 }

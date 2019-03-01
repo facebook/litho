@@ -678,7 +678,10 @@ public class RecyclerBinder
             ? builder.overrideInternalAdapter
             : new InternalAdapter();
 
-    mRangeRatio = builder.rangeRatio;
+    mRangeRatio =
+        ComponentsConfiguration.defaultRangeRatio >= 0
+            ? Math.min(builder.rangeRatio, ComponentsConfiguration.defaultRangeRatio)
+            : builder.rangeRatio;
     mLayoutInfo = builder.layoutInfo;
     mLayoutHandlerFactory = builder.layoutHandlerFactory;
     mLithoViewFactory = builder.lithoViewFactory;
@@ -2217,7 +2220,11 @@ public class RecyclerBinder
 
       mRange = new RangeCalculationResult();
       mRange.measuredSize = scrollDirection == HORIZONTAL ? size.height : size.width;
-      mRange.estimatedViewportCount = rangeSize;
+      mRange.estimatedViewportCount =
+          ComponentsConfiguration.fixedRangeSize >= 0
+              ? ComponentsConfiguration.fixedRangeSize
+              : rangeSize;
+
     } finally {
       ComponentsSystrace.endSection();
     }
