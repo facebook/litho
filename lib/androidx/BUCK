@@ -1,0 +1,262 @@
+# Copyright (c) 2017-present, Facebook, Inc.
+#
+# This source code is licensed under the Apache 2.0 license found in the
+# LICENSE file in the root directory of this source tree.
+load("//tools/build_defs/oss:fb_native_wrapper.bzl", "fb_native")
+load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_VISIBILITY", "fb_java_library", "litho_android_library")
+
+fb_native.android_prebuilt_aar(
+    name = "androidx-test-rules-aar",
+    aar = ":androidx-test-rules.aar",
+)
+
+fb_native.remote_file(
+    name = "androidx-test-rules.aar",
+    sha1 = "1bc1f460a52e13f6622b7b8691244dcbbf827c10",
+    url = "mvn:androidx.test:rules:aar:1.1.1",
+)
+
+fb_native.android_prebuilt_aar(
+    name = "androidx-test-runner-aar",
+    aar = ":androidx-test-runner.aar",
+)
+
+fb_native.remote_file(
+    name = "androidx-test-runner.aar",
+    sha1 = "810a7aacb5106d92cdf648b2497694c4ebf73500",
+    url = "mvn:androidx.test:runner:aar:1.1.1",
+)
+
+fb_native.android_prebuilt_aar(
+    name = "androidx-test-monitor-aar",
+    aar = ":androidx-test-monitor.aar",
+)
+
+fb_native.remote_file(
+    name = "androidx-test-monitor.aar",
+    sha1 = "443c2f33d4e19f868cd4e4437909ec8dcf43f053",
+    url = "mvn:androidx.test:monitor:aar:1.1.1",
+)
+
+fb_native.android_prebuilt_aar(
+    name = "androidx-core-aar",
+    aar = ":androidx-core.aar",
+)
+
+fb_native.remote_file(
+    name = "androidx-core.aar",
+    sha1 = "263deba7f9c24bd0cefb93c0aaaf402cc50828ee",
+    url = "mvn:androidx.core:core:aar:1.0.1",
+)
+
+fb_native.android_prebuilt_aar(
+    name = "androidx-legacy-support-core-ui-aar",
+    aar = ":androidx-legacy-support-core-ui.aar",
+)
+
+fb_native.remote_file(
+    name = "androidx-legacy-support-core-ui.aar",
+    sha1 = "61a264f996046e059f889914050fae1e75d3b702",
+    url = "mvn:androidx.legacy:legacy-support-core-ui:aar:1.0.0",
+)
+
+fb_native.android_prebuilt_aar(
+    name = "androidx-legacy-support-core-utils-aar",
+    aar = ":androidx-legacy-support-core-utils.aar",
+)
+
+fb_native.remote_file(
+    name = "androidx-legacy-support-core-utils.aar",
+    sha1 = "9b9570042115da8629519090dfeb71df75da59fc",
+    url = "mvn:androidx.legacy:legacy-support-core-utils:aar:1.0.0",
+)
+
+fb_native.android_prebuilt_aar(
+    name = "androidx-fragment-aar",
+    aar = ":androidx-fragment.aar",
+)
+
+fb_native.remote_file(
+    name = "androidx-fragment.aar",
+    sha1 = "0b40f6a2ae814f72d1e71a5df6dc1283c00cd52f",
+    url = "mvn:androidx.fragment:fragment:aar:1.0.0",
+)
+
+fb_native.android_prebuilt_aar(
+    name = "androidx-vectordrawable-aar",
+    aar = ":androidx-vectordrawable.aar",
+)
+
+fb_native.remote_file(
+    name = "androidx-vectordrawable.aar",
+    sha1 = "33d1eb71849dffbad12add134a25eb63cad4a1eb",
+    url = "mvn:androidx.vectordrawable:vectordrawable:aar:1.0.1",
+)
+
+fb_native.prebuilt_jar(
+    name = "androidx-annotations-jar",
+    binary_jar = ":androidx-annotations.jar",
+)
+
+fb_native.remote_file(
+    name = "androidx-annotations.jar",
+    sha1 = "02f1d597d48e5309e935ce1212eedf5ae69d3f97",
+    url = "mvn:androidx.annotation:annotation:jar:1.0.2",
+)
+
+fb_native.prebuilt_jar(
+    name = "androidx-collection-jar",
+    binary_jar = ":androidx-collection.jar",
+)
+
+fb_native.remote_file(
+    name = "androidx-collection.jar",
+    sha1 = "42858b26cafdaa69b6149f45dfc2894007bc2c7a",
+    url = "mvn:androidx.collection:collection:jar:1.0.0",
+)
+
+fb_native.android_prebuilt_aar(
+    name = "androidx-customview-aar",
+    aar = ":androidx-customview.aar",
+)
+
+fb_native.remote_file(
+    name = "androidx-customview.aar",
+    sha1 = "30f5ff6075d112f8076e733b24410e68159735b6",
+    url = "mvn:androidx.customview:customview:aar:1.0.0",
+)
+
+fb_native.android_prebuilt_aar(
+    name = "androidx-drawerlayout-aar",
+    aar = ":androidx-drawerlayout.aar",
+)
+
+fb_native.remote_file(
+    name = "androidx-drawerlayout.aar",
+    sha1 = "dd02c7e207136e1272b33815cc61e57676ed13a2",
+    url = "mvn:androidx.drawerlayout:drawerlayout:aar:1.0.0",
+)
+
+fb_native.prebuilt_jar(
+    name = "androidx-lifecycle-common-jar",
+    binary_jar = ":androidx-lifecycle-common.jar",
+)
+
+fb_native.remote_file(
+    name = "androidx-lifecycle-common.jar",
+    sha1 = "e070ffae07452331bc5684734fce6831d531785c",
+    url = "mvn:androidx.lifecycle:lifecycle-common:jar:2.0.0",
+)
+
+fb_native.android_prebuilt_aar(
+    name = "androidx-lifecycle-viewmodel-aar",
+    aar = ":androidx-lifecycle-viewmodel.aar",
+)
+
+fb_native.remote_file(
+    name = "androidx-lifecycle-viewmodel.aar",
+    sha1 = "6417c576c458137456d996914c50591e7f4acc24",
+    url = "mvn:androidx.lifecycle:lifecycle-viewmodel:aar:2.0.0",
+)
+
+fb_native.android_prebuilt_aar(
+    name = "androidx-viewpager-aar",
+    aar = ":androidx-viewpager.aar",
+)
+
+fb_native.remote_file(
+    name = "androidx-viewpager.aar",
+    sha1 = "1f90e13820f96c2fb868f9674079a551678d68b2",
+    url = "mvn:androidx.viewpager:viewpager:aar:1.0.0",
+)
+
+fb_native.android_prebuilt_aar(
+    name = "androidx-recyclerview-aar",
+    aar = ":recyclerview.aar",
+)
+
+fb_native.remote_file(
+    name = "recyclerview.aar",
+    sha1 = "ee3a2ad35bcfa91ab9eeebe991b0893ab40009cf",
+    url = "mvn:androidx.recyclerview:recyclerview:aar:1.0.0",
+)
+
+fb_native.android_prebuilt_aar(
+    name = "androidx-swiperefreshlayout-aar",
+    aar = ":androidx-swiperefreshlayout.aar",
+)
+
+fb_native.remote_file(
+    name = "androidx-swiperefreshlayout.aar",
+    sha1 = "4fd265b80a2b0fbeb062ab2bc4b1487521507762",
+    url = "mvn:androidx.swiperefreshlayout:swiperefreshlayout:aar:1.0.0",
+)
+
+fb_native.android_prebuilt_aar(
+    name = "androidx-interpolator-aar",
+    aar = ":androidx-interpolator.aar",
+)
+
+fb_native.remote_file(
+    name = "androidx-interpolator.aar",
+    sha1 = "8a01fa254a23b9388571eb6334b03707c7d122d7",
+    url = "mvn:androidx.interpolator:interpolator:aar:1.0.0",
+)
+
+fb_java_library(
+    name = "androidx",
+    visibility = LITHO_VISIBILITY,
+    exported_deps = [
+        ":androidx-annotations-jar",
+        ":androidx-collection-jar",
+        ":androidx-core-aar",
+        ":androidx-customview-aar",
+        ":androidx-fragment-aar",
+        ":androidx-legacy-support-core-ui-aar",
+        ":androidx-legacy-support-core-utils-aar",
+        ":androidx-vectordrawable-aar",
+        ":androidx-viewpager-aar",
+    ],
+)
+
+litho_android_library(
+    name = "androidx-testing",
+    visibility = LITHO_VISIBILITY,
+    exported_deps = [
+        ":androidx-test-monitor-aar",
+        ":androidx-test-rules-aar",
+        ":androidx-test-runner-aar",
+    ],
+)
+
+litho_android_library(
+    name = "androidx-recyclerview",
+    visibility = LITHO_VISIBILITY,
+    exported_deps = [
+        ":androidx-interpolator-aar",
+        ":androidx-recyclerview-aar",
+        ":androidx-swiperefreshlayout-aar",
+    ],
+)
+
+fb_native.android_prebuilt_aar(
+    name = "androidx-appcompat-aar",
+    aar = ":androidx-appcompat.aar",
+)
+
+fb_native.remote_file(
+    name = "androidx-appcompat.aar",
+    sha1 = "002533a36c928bb27a3cc6843a25f83754b3c3ae",
+    url = "mvn:androidx.appcompat:appcompat:aar:1.0.2",
+)
+
+fb_java_library(
+    name = "androidx-appcompat",
+    visibility = LITHO_VISIBILITY,
+    exported_deps = [
+        ":androidx-appcompat-aar",
+        ":androidx-drawerlayout-aar",
+        ":androidx-lifecycle-common-jar",
+        ":androidx-lifecycle-viewmodel-aar",
+    ],
+)

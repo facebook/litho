@@ -42,7 +42,8 @@ dependencies {
     kapt project(':litho-sections-processor')
 
     implementation deps.soloader
-    implementation deps.fresco
+    //T41117446 Replace this with proper version after Fresco releases their AndroidX version
+    implementation('com.github.facebook.fresco:fresco:67fd55d341')
 
     implementation deps.supportRecyclerView
     implementation deps.kotlinStandardLib
