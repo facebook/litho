@@ -90,13 +90,13 @@ LITHO_INFERANNOTATIONS_TARGET = make_dep_path("lib/infer-annotations:infer-annot
 
 LITHO_JSR_TARGET = make_dep_path("lib/jsr-305:jsr-305")
 
-LITHO_ANDROIDSUPPORT_TARGET = make_dep_path("lib/android-support:android-support")
+LITHO_ANDROIDSUPPORT_TARGET = make_dep_path("lib/androidx:androidx")
 
-LITHO_ANDROIDSUPPORT_RECYCLERVIEW_TARGET = make_dep_path("lib/android-support:android-support-recyclerview")
+LITHO_ANDROIDSUPPORT_RECYCLERVIEW_TARGET = make_dep_path("lib/androidx:androidx-recyclerview")
 
-LITHO_ANDROIDSUPPORT_APPCOMPAT_TARGET = make_dep_path("lib/appcompat:appcompat")
+LITHO_ANDROIDSUPPORT_APPCOMPAT_TARGET = make_dep_path("lib/androidx:androidx-appcompat")
 
-LITHO_ANDROIDSUPPORT_TESTING_TARGET = make_dep_path("lib/android-support:android-support-testing")
+LITHO_ANDROIDSUPPORT_TESTING_TARGET = make_dep_path("lib/androidx:androidx-testing")
 
 LITHO_YOGA_TARGET = make_dep_path("lib/yoga:yoga")
 

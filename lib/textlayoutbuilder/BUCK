@@ -22,8 +22,8 @@ fb_native.android_prebuilt_aar(
 
 fb_native.remote_file(
     name = "textlayoutbuilder-aar",
-    sha1 = "98f20042aa949d31cd03108531f7ba2c8d199fe0",
-    url = "mvn:com.facebook.fbui.textlayoutbuilder:textlayoutbuilder:aar:1.4.0",
+    sha1 = "cd8744d07aff110b916a99077187c89ef58f03a8",
+    url = "mvn:com.facebook.fbui.textlayoutbuilder:textlayoutbuilder:aar:1.5.0",
 )
 
 fb_native.prebuilt_jar(
@@ -33,6 +33,6 @@ fb_native.prebuilt_jar(
 
 fb_native.remote_file(
     name = "textlayoutbuilder-staticlayout-proxy.jar",
-    sha1 = "d2f3fa73a59fb415c3f9c305f1354099b39bd964",
-    url = "mvn:com.facebook.fbui.textlayoutbuilder:staticlayout-proxy:jar:1.4.0",
+    sha1 = "acd5bbdf80a847b966616efa1be23c0fea8134c3",
+    url = "mvn:com.facebook.fbui.textlayoutbuilder:staticlayout-proxy:jar:1.5.0",
 )
