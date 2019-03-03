@@ -275,4 +275,6 @@ public class ComponentsConfiguration {
 
   public static float defaultRangeRatio = -1;
   public static int fixedRangeSize = -1;
+
+  public static boolean clearComponentHostPressState = false;
 }
