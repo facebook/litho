@@ -28,7 +28,7 @@ class ColorComponentSpec {
     EventHandler handler = ColorComponent.getColorChangedEventHandler(c);
     if (handler != null) {
       ColorComponent.dispatchColorChangedEvent(
-          colorChangedHandler,
+          handler,
           color);
     }
     ...
