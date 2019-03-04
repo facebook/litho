@@ -144,6 +144,7 @@ public class RecyclerBinderTest {
   private LayoutInfo mCircularLayoutInfo;
   private ComponentContext mComponentContext;
   private ShadowLooper mLayoutThreadShadowLooper;
+  private RecyclerBinder.ComponentTreeHolderFactory mComponentTreeHolderFactory;
 
   @Before
   public void setup() throws Exception {
@@ -152,7 +153,7 @@ public class RecyclerBinderTest {
     mComponentContext = new ComponentContext(RuntimeEnvironment.application);
     mComponentContext.getAndroidContext().setTheme(0);
 
-    final RecyclerBinder.ComponentTreeHolderFactory componentTreeHolderFactory =
+    mComponentTreeHolderFactory =
         new RecyclerBinder.ComponentTreeHolderFactory() {
           @Override
           public ComponentTreeHolder create(
@@ -182,14 +183,14 @@ public class RecyclerBinderTest {
         new RecyclerBinder.Builder()
             .rangeRatio(RANGE_RATIO)
             .layoutInfo(mLayoutInfo)
-            .componentTreeHolderFactory(componentTreeHolderFactory);
+            .componentTreeHolderFactory(mComponentTreeHolderFactory);
 
     mRecyclerBinderForAsyncInitRangeBuilder =
         new RecyclerBinder.Builder()
             .rangeRatio(0)
             .asyncInitRange(true)
             .layoutInfo(mLayoutInfo)
-            .componentTreeHolderFactory(componentTreeHolderFactory);
+            .componentTreeHolderFactory(mComponentTreeHolderFactory);
 
     mRecyclerBinder = mRecyclerBinderBuilder.build(mComponentContext);
 
@@ -197,7 +198,7 @@ public class RecyclerBinderTest {
         new RecyclerBinder.Builder()
             .rangeRatio(RANGE_RATIO)
             .layoutInfo(mCircularLayoutInfo)
-            .componentTreeHolderFactory(componentTreeHolderFactory)
+            .componentTreeHolderFactory(mComponentTreeHolderFactory)
             .isCircular(true)
             .build(mComponentContext);
 
@@ -4339,6 +4340,102 @@ public class RecyclerBinderTest {
 
     assertThat(recyclerBinder.getComponentTreeHolderAt(2).isTreeValid()).isTrue();
     assertThat(syncLayouts.get(2)).isEqualTo(ASYNC);
+  }
+
+  @Test
+  public void testSyncLayoutForUnknownSizeSpec() {
+    final boolean splitInitRange = ComponentsConfiguration.checkNeedsRemeasure;
+    ComponentsConfiguration.splitLayoutForMeasureAndRangeEstimation = true;
+    final int NUM_TO_INSERT = 20;
+
+    final RecyclerBinder recyclerBinder =
+        new RecyclerBinder.Builder()
+            .layoutInfo(
+                new LinearLayoutInfo(mComponentContext, OrientationHelper.HORIZONTAL, false))
+            .componentTreeHolderFactory(mComponentTreeHolderFactory)
+            .build(mComponentContext);
+
+    final ArrayList<Component> components = new ArrayList<>();
+    final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
+    for (int i = 0; i < NUM_TO_INSERT; i++) {
+      final Component component =
+          TestDrawableComponent.create(mComponentContext)
+              .widthPx(100)
+              .heightPx(100)
+              .color(i)
+              .build();
+      components.add(component);
+      renderInfos.add(ComponentRenderInfo.create().component(component).build());
+    }
+
+    recyclerBinder.insertRangeAt(0, renderInfos);
+
+    recyclerBinder.measure(
+        new Size(),
+        makeSizeSpec(1000, AT_MOST),
+        makeSizeSpec(100, UNSPECIFIED),
+        mock(EventHandler.class));
+
+    assertThat(recyclerBinder.getItemCount()).isEqualTo(NUM_TO_INSERT);
+    assertThat(recyclerBinder.requiresRemeasure()).isFalse();
+    assertThat(recyclerBinder.mSizeForMeasure.height).isEqualTo(100);
+    assertThat(recyclerBinder.mEstimatedViewportCount).isEqualTo(10);
+
+    assertThat(mHoldersForComponents.get(renderInfos.get(0).getComponent()).mLayoutSyncCalled)
+        .isTrue();
+    assertThat(mHoldersForComponents.get(renderInfos.get(1).getComponent()).mLayoutAsyncCalled)
+        .isTrue();
+
+    ComponentsConfiguration.splitLayoutForMeasureAndRangeEstimation = splitInitRange;
+  }
+
+  @Test
+  public void testNoSyncLayoutForKnownSizeSpec() {
+    final boolean splitInitRange = ComponentsConfiguration.checkNeedsRemeasure;
+    ComponentsConfiguration.splitLayoutForMeasureAndRangeEstimation = true;
+    final int NUM_TO_INSERT = 20;
+
+    final RecyclerBinder recyclerBinder =
+        new RecyclerBinder.Builder()
+            .layoutInfo(
+                new LinearLayoutInfo(mComponentContext, OrientationHelper.HORIZONTAL, false))
+            .componentTreeHolderFactory(mComponentTreeHolderFactory)
+            .build(mComponentContext);
+
+    final ArrayList<Component> components = new ArrayList<>();
+    final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
+    for (int i = 0; i < NUM_TO_INSERT; i++) {
+      final Component component =
+          TestDrawableComponent.create(mComponentContext)
+              .widthPx(100)
+              .heightPx(100)
+              .color(i)
+              .build();
+      components.add(component);
+      renderInfos.add(ComponentRenderInfo.create().component(component).build());
+    }
+
+    recyclerBinder.insertRangeAt(0, renderInfos);
+
+    recyclerBinder.measure(
+        new Size(),
+        makeSizeSpec(1000, AT_MOST),
+        makeSizeSpec(100, EXACTLY),
+        mock(EventHandler.class));
+
+    assertThat(recyclerBinder.getItemCount()).isEqualTo(NUM_TO_INSERT);
+    assertThat(recyclerBinder.requiresRemeasure()).isFalse();
+
+    assertThat(mHoldersForComponents.get(renderInfos.get(0).getComponent()).mLayoutSyncCalled)
+        .isFalse();
+    assertThat(recyclerBinder.mSizeForMeasure).isNull();
+    assertThat(recyclerBinder.mEstimatedViewportCount).isEqualTo(10);
+    assertThat(mHoldersForComponents.get(renderInfos.get(0).getComponent()).mLayoutAsyncCalled)
+        .isTrue();
+    assertThat(mHoldersForComponents.get(renderInfos.get(1).getComponent()).mLayoutAsyncCalled)
+        .isTrue();
+
+    ComponentsConfiguration.splitLayoutForMeasureAndRangeEstimation = splitInitRange;
   }
 
   @Test

@@ -277,4 +277,7 @@ public class ComponentsConfiguration {
   public static int fixedRangeSize = -1;
 
   public static boolean clearComponentHostPressState = false;
+
+  // todo T40814333 clean up after running experiment.
+  public static boolean splitLayoutForMeasureAndRangeEstimation = false;
 }

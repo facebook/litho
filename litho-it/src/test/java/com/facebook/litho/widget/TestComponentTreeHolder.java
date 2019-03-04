@@ -63,7 +63,15 @@ public class TestComponentTreeHolder extends ComponentTreeHolder {
   @Override
   public synchronized void computeLayoutAsync(
       ComponentContext context, int widthSpec, int heightSpec) {
+    computeLayoutAsync(context, widthSpec, heightSpec, null);
+  }
 
+  @Override
+  public synchronized void computeLayoutAsync(
+      ComponentContext context,
+      int widthSpec,
+      int heightSpec,
+      @Nullable ComponentTree.MeasureListener measureListener) {
     mComponentTree = mock(ComponentTree.class);
     mTreeValid = true;
     mLastRequestedWidthSpec = widthSpec;
@@ -71,6 +79,9 @@ public class TestComponentTreeHolder extends ComponentTreeHolder {
     mLayoutAsyncCalled = true;
     mChildWidth = SizeSpec.getSize(widthSpec);
     mChildHeight = SizeSpec.getSize(heightSpec);
+    if (measureListener != null) {
+      measureListener.onSetRootAndSizeSpec(mChildWidth, mChildHeight);
+    }
   }
 
   @Override

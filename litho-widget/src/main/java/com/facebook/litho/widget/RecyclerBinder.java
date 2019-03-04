@@ -119,6 +119,7 @@ public class RecyclerBinder
   private final AtomicBoolean mRequiresRemeasure = new AtomicBoolean(false);
   private final boolean mEnableStableIds;
   private final boolean mBgScheduleAllInitRange;
+  private final boolean mSplitLayoutForMeasureAndRangeEstimation;
   private @Nullable List<ComponentLogParams> mInvalidStateLogParamsList;
   private final RecyclerRangeTraverser mRangeTraverser;
   private final boolean mHScrollAsyncMode;
@@ -235,10 +236,10 @@ public class RecyclerBinder
   private int mCurrentOffset;
   private SmoothScrollAlignmentType mSmoothScrollAlignmentType;
   // The estimated number of items needed to fill the viewport.
-  private int mEstimatedViewportCount = UNSET;
+  @VisibleForTesting int mEstimatedViewportCount = UNSET;
   // The size computed for the first Component to be used when we can't use the size specs passed to
   // measure.
-  private @Nullable volatile Size mSizeForMeasure;
+  @VisibleForTesting @Nullable volatile Size mSizeForMeasure;
   private StickyHeaderController mStickyHeaderController;
   private final boolean mUseSharedLayoutStateFuture;
   private final @Nullable LayoutHandler mThreadPoolHandler;
@@ -690,6 +691,8 @@ public class RecyclerBinder
     mLayoutHandlerFactory = builder.layoutHandlerFactory;
     mLithoViewFactory = builder.lithoViewFactory;
     mUseSharedLayoutStateFuture = builder.useSharedLayoutStateFuture;
+    mSplitLayoutForMeasureAndRangeEstimation =
+        ComponentsConfiguration.splitLayoutForMeasureAndRangeEstimation;
 
     if (mLayoutHandlerFactory == null) {
 
@@ -1619,8 +1622,52 @@ public class RecyclerBinder
     mCurrentBatch = null;
   }
 
-  private synchronized void maybeUpdateRangeOrRemeasureForMutation() {
-    synchronized (this) {
+  private void maybeUpdateRangeOrRemeasureForMutation() {
+    if (mSplitLayoutForMeasureAndRangeEstimation) {
+      maybeUpdateRangeOrRemeasureForMutationEstimateRangeSize();
+    } else {
+      maybeUpdateRangeOrRemeasureForMutationInitRange();
+    }
+  }
+
+  private void maybeUpdateRangeOrRemeasureForMutationInitRange() {
+    if (mSplitLayoutForMeasureAndRangeEstimation) {
+      throw new RuntimeException(
+          "This should only be invoked if ComponentsConfiguration.splitLayoutForMeasureAndRangeEstimation is false");
+    }
+
+    if (!mIsMeasured.get()) {
+      return;
+    }
+
+    if (mRequiresRemeasure.get()) {
+      requestRemeasure();
+      return;
+    }
+
+    if (!hasComputedRange()) {
+      final int initialComponentPosition =
+          findInitialComponentPosition(mComponentTreeHolders, mTraverseLayoutBackwards);
+      if (initialComponentPosition >= 0) {
+        final ComponentTreeHolderRangeInfo holderRangeInfo =
+            new ComponentTreeHolderRangeInfo(initialComponentPosition, mComponentTreeHolders);
+        initRange(
+            mMeasuredSize.width,
+            mMeasuredSize.height,
+            holderRangeInfo,
+            mLayoutInfo.getScrollDirection());
+      }
+    }
+
+    maybePostUpdateViewportAndComputeRange();
+  }
+
+  private void maybeUpdateRangeOrRemeasureForMutationEstimateRangeSize() {
+    if (!mSplitLayoutForMeasureAndRangeEstimation) {
+      throw new RuntimeException(
+          "This should only be invoked if ComponentsConfiguration.splitLayoutForMeasureAndRangeEstimation is true");
+    }
+
       if (!mIsMeasured.get()) {
         return;
       }
@@ -1636,16 +1683,18 @@ public class RecyclerBinder
         if (initialComponentPosition >= 0) {
           final ComponentTreeHolderRangeInfo holderRangeInfo =
               new ComponentTreeHolderRangeInfo(initialComponentPosition, mComponentTreeHolders);
-          initRange(
-              mMeasuredSize.width,
-              mMeasuredSize.height,
-              holderRangeInfo,
-              mLayoutInfo.getScrollDirection());
+        estimateRangeSize(
+            mMeasuredSize.width,
+            mMeasuredSize.height,
+            holderRangeInfo,
+            new EstimateRangeSizeListener() {
+              @Override
+              public void onFinish() {
+                maybePostUpdateViewportAndComputeRange();
+              }
+            });
         }
       }
-    }
-
-    maybePostUpdateViewportAndComputeRange();
   }
 
   private void assertSingleThreadForChangeSet() {
@@ -1808,6 +1857,7 @@ public class RecyclerBinder
 
     final boolean shouldMeasureItemForSize =
         shouldMeasureItemForSize(widthSpec, heightSpec, scrollDirection, canRemeasure);
+    ComponentTreeHolderRangeInfo holderForRangeInfo;
 
     mIsInMeasure.set(true);
 
@@ -1843,16 +1893,9 @@ public class RecyclerBinder
         mLastWidthSpec = widthSpec;
         mLastHeightSpec = heightSpec;
 
-        if (!hasComputedRange()) {
-          final ComponentTreeHolderRangeInfo holderForRangeInfo = getHolderForRangeInfo();
-          if (holderForRangeInfo != null) {
-            initRange(
-                SizeSpec.getSize(widthSpec),
-                SizeSpec.getSize(heightSpec),
-                holderForRangeInfo,
-                scrollDirection);
-          }
-        }
+        holderForRangeInfo = getHolderForRangeInfo();
+        maybeCalculateSyncLayoutForSize(
+            widthSpec, heightSpec, scrollDirection, shouldMeasureItemForSize, holderForRangeInfo);
 
         // At this point we might still not have a range. In this situation we should return the
         // best
@@ -1915,9 +1958,7 @@ public class RecyclerBinder
         maybeFillHScrollViewport();
         updateAsyncInsertOperations();
 
-        if (mEstimatedViewportCount != UNSET) {
-          computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition);
-        }
+        maybeComputeRangeAfterMeasure(widthSpec, heightSpec, holderForRangeInfo);
       }
     } finally {
       mIsInMeasure.set(false);
@@ -1932,6 +1973,57 @@ public class RecyclerBinder
     return ComponentsConfiguration.checkNeedsRemeasure
         ? mIsMeasured.get() && !mRequiresRemeasure.get()
         : mIsMeasured.get();
+  }
+
+  @VisibleForTesting
+  boolean requiresRemeasure() {
+    return mRequiresRemeasure.get();
+  }
+
+  /**
+   * Calculates a sync layout for the provided item because we need its size to be able to measure.
+   */
+  private void maybeCalculateSyncLayoutForSize(
+      int widthSpec,
+      int heightSpec,
+      int scrollDirection,
+      boolean shouldMeasureItemForSize,
+      ComponentTreeHolderRangeInfo holderForRangeInfo) {
+    if (holderForRangeInfo == null) {
+      return;
+    }
+
+    if (mSplitLayoutForMeasureAndRangeEstimation) {
+      if (shouldMeasureItemForSize && mSizeForMeasure == null) {
+        layoutItemForSize(holderForRangeInfo);
+      }
+    } else if (!hasComputedRange()) {
+      initRange(
+          SizeSpec.getSize(widthSpec),
+          SizeSpec.getSize(heightSpec),
+          holderForRangeInfo,
+          scrollDirection);
+    }
+  }
+
+  private void maybeComputeRangeAfterMeasure(
+      int widthSpec, int heightSpec, ComponentTreeHolderRangeInfo holderForRangeInfo) {
+    if (mSplitLayoutForMeasureAndRangeEstimation) {
+      estimateRangeSize(
+          SizeSpec.getSize(widthSpec),
+          SizeSpec.getSize(heightSpec),
+          holderForRangeInfo,
+          new EstimateRangeSizeListener() {
+            @Override
+            public void onFinish() {
+              computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition);
+            }
+          });
+    } else {
+      if (mEstimatedViewportCount != RecyclerView.NO_POSITION) {
+        computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition);
+      }
+    }
   }
 
   /**
@@ -1950,6 +2042,19 @@ public class RecyclerBinder
 
   @GuardedBy("this")
   private void fillListViewport(int maxWidth, int maxHeight, @Nullable Size outSize) {
+    if (mSplitLayoutForMeasureAndRangeEstimation) {
+      fillListViewportSetRangeSize(maxWidth, maxHeight, outSize);
+    } else {
+      fillListViewportInitRange(maxWidth, maxHeight, outSize);
+    }
+  }
+
+  @GuardedBy("this")
+  private void fillListViewportInitRange(int maxWidth, int maxHeight, @Nullable Size outSize) {
+    if (mSplitLayoutForMeasureAndRangeEstimation) {
+      throw new RuntimeException(
+          "This should only be invoked if ComponentsConfiguration.splitLayoutForMeasureAndRangeEstimation is false");
+    }
     ComponentsSystrace.beginSection("fillListViewport");
     final int firstVisiblePosition = mWrapContent ? 0 : mLayoutInfo.findFirstVisibleItemPosition();
 
@@ -1964,6 +2069,34 @@ public class RecyclerBinder
       final ComponentTreeHolderRangeInfo holderForRangeInfo = getHolderForRangeInfo();
       if (holderForRangeInfo != null) {
         initRange(maxWidth, maxHeight, holderForRangeInfo, mLayoutInfo.getScrollDirection());
+      }
+    }
+
+    ComponentsSystrace.endSection();
+  }
+
+  @GuardedBy("this")
+  private void fillListViewportSetRangeSize(int maxWidth, int maxHeight, @Nullable Size outSize) {
+    if (!mSplitLayoutForMeasureAndRangeEstimation) {
+      throw new RuntimeException(
+          "This should only be invoked if ComponentsConfiguration.splitLayoutForMeasureAndRangeEstimation is true");
+    }
+    ComponentsSystrace.beginSection("fillListViewport");
+    final int firstVisiblePosition = mWrapContent ? 0 : mLayoutInfo.findFirstVisibleItemPosition();
+
+    // NB: This does not handle 1) partially visible items 2) item decorations
+    final int startIndex =
+        firstVisiblePosition != RecyclerView.NO_POSITION ? firstVisiblePosition : 0;
+
+    final int itemCount =
+        computeLayoutsToFillListViewport(
+            mComponentTreeHolders, startIndex, maxWidth, maxHeight, outSize);
+
+    if (mEstimatedViewportCount == UNSET) {
+      final ComponentTreeHolderRangeInfo holderForRangeInfo = getHolderForRangeInfo();
+      if (holderForRangeInfo != null) {
+        setRangeSize(
+            outSize.width / itemCount, outSize.height / itemCount, outSize.width, outSize.height);
       }
     }
 
