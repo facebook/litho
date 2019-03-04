@@ -24,6 +24,7 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.annotation.StyleRes;
+import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.drawable.ComparableDrawable;
 import com.facebook.litho.reference.Reference;
 import com.facebook.yoga.YogaAlign;
@@ -32,6 +33,7 @@ import com.facebook.yoga.YogaEdge;
 import com.facebook.yoga.YogaPositionType;
 
 /** Common props that are accessible outside of the framework. */
+@ThreadConfined(ThreadConfined.ANY)
 public interface CommonProps extends CommonPropsCopyable {
 
   @Nullable
