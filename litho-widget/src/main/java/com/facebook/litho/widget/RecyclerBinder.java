@@ -96,6 +96,7 @@ public class RecyclerBinder
   private static final String TAG = RecyclerBinder.class.getSimpleName();
   private static final int POST_UPDATE_VIEWPORT_AND_COMPUTE_RANGE_MAX_ATTEMPTS = 3;
   private static final int DATA_RENDERED_CALLBACKS_QUEUE_MAX_SIZE = 20;
+  static final int UNSET = -1;
   private static ThreadPoolLayoutHandler sThreadPoolHandler;
 
   private static Field mViewHolderField;
@@ -186,10 +187,9 @@ public class RecyclerBinder
 
         holder.setMeasuredHeight(height);
 
-        final RangeCalculationResult range = RecyclerBinder.this.mRange;
+        final int sizeForMeasure = RecyclerBinder.this.getSizeForMeasuring();
 
-        if (range != null
-            && holder.getMeasuredHeight() <= RecyclerBinder.this.mRange.measuredSize) {
+        if (sizeForMeasure != UNSET && holder.getMeasuredHeight() <= sizeForMeasure) {
           return;
         }
 
@@ -234,7 +234,11 @@ public class RecyclerBinder
   @VisibleForTesting int mCurrentLastVisiblePosition = RecyclerView.NO_POSITION;
   private int mCurrentOffset;
   private SmoothScrollAlignmentType mSmoothScrollAlignmentType;
-  private @Nullable volatile RangeCalculationResult mRange;
+  // The estimated number of items needed to fill the viewport.
+  private int mEstimatedViewportCount = UNSET;
+  // The size computed for the first Component to be used when we can't use the size specs passed to
+  // measure.
+  private @Nullable volatile Size mSizeForMeasure;
   private StickyHeaderController mStickyHeaderController;
   private final boolean mUseSharedLayoutStateFuture;
   private final @Nullable LayoutHandler mThreadPoolHandler;
@@ -1007,8 +1011,7 @@ public class RecyclerBinder
     mComponentTreeHolders.add(operation.mPosition, operation.mHolder);
     operation.mHolder.setInserted(true);
     mInternalAdapter.notifyItemInserted(operation.mPosition);
-    mViewportManager.insertAffectsVisibleRange(
-        operation.mPosition, 1, mRange != null ? mRange.estimatedViewportCount : -1);
+    mViewportManager.insertAffectsVisibleRange(operation.mPosition, 1, mEstimatedViewportCount);
   }
 
   @GuardedBy("this")
@@ -1184,8 +1187,7 @@ public class RecyclerBinder
     mInternalAdapter.notifyItemInserted(position);
 
     mViewportManager.setShouldUpdate(
-        mViewportManager.insertAffectsVisibleRange(
-            position, 1, mRange != null ? mRange.estimatedViewportCount : -1));
+        mViewportManager.insertAffectsVisibleRange(position, 1, mEstimatedViewportCount));
   }
 
   private void requestRemeasure() {
@@ -1251,7 +1253,7 @@ public class RecyclerBinder
 
     mViewportManager.setShouldUpdate(
         mViewportManager.insertAffectsVisibleRange(
-            position, renderInfos.size(), mRange != null ? mRange.estimatedViewportCount : -1));
+            position, renderInfos.size(), mEstimatedViewportCount));
   }
 
   /**
@@ -1359,14 +1361,18 @@ public class RecyclerBinder
 
     final ComponentTreeHolder holder;
     final boolean isNewPositionInRange;
-    final int mRangeSize = mRange != null ? mRange.estimatedViewportCount : -1;
     synchronized (this) {
       holder = mComponentTreeHolders.remove(fromPosition);
       mComponentTreeHolders.add(toPosition, holder);
 
-      isNewPositionInRange = mRangeSize > 0 &&
-          toPosition >= mCurrentFirstVisiblePosition - (mRangeSize * mRangeRatio) &&
-          toPosition <= mCurrentFirstVisiblePosition + mRangeSize + (mRangeSize * mRangeRatio);
+      isNewPositionInRange =
+          mEstimatedViewportCount != UNSET
+              && toPosition
+                  >= mCurrentFirstVisiblePosition - (mEstimatedViewportCount * mRangeRatio)
+              && toPosition
+                  <= mCurrentFirstVisiblePosition
+                      + mEstimatedViewportCount
+                      + (mEstimatedViewportCount * mRangeRatio);
     }
     final boolean isTreeValid = holder.isTreeValid();
 
@@ -1376,7 +1382,8 @@ public class RecyclerBinder
     mInternalAdapter.notifyItemMoved(fromPosition, toPosition);
 
     mViewportManager.setShouldUpdate(
-        mViewportManager.moveAffectsVisibleRange(fromPosition, toPosition, mRangeSize));
+        mViewportManager.moveAffectsVisibleRange(
+            fromPosition, toPosition, mEstimatedViewportCount));
   }
 
   /**
@@ -1623,7 +1630,7 @@ public class RecyclerBinder
         return;
       }
 
-      if (mRange == null) {
+      if (!hasComputedRange()) {
         final int initialComponentPosition =
             findInitialComponentPosition(mComponentTreeHolders, mTraverseLayoutBackwards);
         if (initialComponentPosition >= 0) {
@@ -1833,7 +1840,7 @@ public class RecyclerBinder
         mLastWidthSpec = widthSpec;
         mLastHeightSpec = heightSpec;
 
-        if (mRange == null) {
+        if (!hasComputedRange()) {
           final ComponentTreeHolderRangeInfo holderForRangeInfo = getHolderForRangeInfo();
           if (holderForRangeInfo != null) {
             initRange(
@@ -1856,8 +1863,8 @@ public class RecyclerBinder
               measuredWidth = SizeSpec.getSize(widthSpec);
               mReMeasureEventEventHandler = mWrapContent ? reMeasureEventHandler : null;
               mRequiresRemeasure.set(mWrapContent);
-            } else if (mRange != null) {
-              measuredWidth = mRange.measuredSize;
+            } else if (mSizeForMeasure != null) {
+              measuredWidth = mSizeForMeasure.width;
               mReMeasureEventEventHandler = mWrapContent ? reMeasureEventHandler : null;
               mRequiresRemeasure.set(mWrapContent);
             } else {
@@ -1876,8 +1883,8 @@ public class RecyclerBinder
               mReMeasureEventEventHandler =
                   (mHasDynamicItemHeight || mWrapContent) ? reMeasureEventHandler : null;
               mRequiresRemeasure.set(mHasDynamicItemHeight || mWrapContent);
-            } else if (mRange != null) {
-              measuredHeight = mRange.measuredSize;
+            } else if (mSizeForMeasure != null) {
+              measuredHeight = mSizeForMeasure.height;
               mReMeasureEventEventHandler =
                   (mHasDynamicItemHeight || mWrapContent) ? reMeasureEventHandler : null;
               mRequiresRemeasure.set(mHasDynamicItemHeight || mWrapContent);
@@ -1905,7 +1912,7 @@ public class RecyclerBinder
         maybeFillHScrollViewport();
         updateAsyncInsertOperations();
 
-        if (mRange != null) {
+        if (mEstimatedViewportCount != UNSET) {
           computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition);
         }
       }
@@ -1936,7 +1943,7 @@ public class RecyclerBinder
     computeLayoutsToFillListViewport(
         mComponentTreeHolders, startIndex, maxWidth, maxHeight, outSize);
 
-    if (mRange == null) {
+    if (!hasComputedRange()) {
       final ComponentTreeHolderRangeInfo holderForRangeInfo = getHolderForRangeInfo();
       if (holderForRangeInfo != null) {
         initRange(maxWidth, maxHeight, holderForRangeInfo, mLayoutInfo.getScrollDirection());
@@ -2111,7 +2118,8 @@ public class RecyclerBinder
 
   @GuardedBy("this")
   private void invalidateLayoutData() {
-    mRange = null;
+    mEstimatedViewportCount = UNSET;
+    mSizeForMeasure = null;
     for (int i = 0, size = mComponentTreeHolders.size(); i < size; i++) {
       mComponentTreeHolders.get(i).invalidateTree();
     }
@@ -2151,7 +2159,7 @@ public class RecyclerBinder
         || mComponentTreeHolders == null
         || mComponentTreeHolders.isEmpty()
         || nextHolder == null
-        || mRange != null) {
+        || mEstimatedViewportCount != UNSET) {
       // checked null for tests
       return;
     }
@@ -2218,13 +2226,11 @@ public class RecyclerBinder
       final int rangeSize =
           Math.max(mLayoutInfo.approximateRangeSize(size.width, size.height, width, height), 1);
 
-      mRange = new RangeCalculationResult();
-      mRange.measuredSize = scrollDirection == HORIZONTAL ? size.height : size.width;
-      mRange.estimatedViewportCount =
+      mSizeForMeasure = size;
+      mEstimatedViewportCount =
           ComponentsConfiguration.fixedRangeSize >= 0
               ? ComponentsConfiguration.fixedRangeSize
               : rangeSize;
-
     } finally {
       ComponentsSystrace.endSection();
     }
@@ -2233,7 +2239,7 @@ public class RecyclerBinder
   @GuardedBy("this")
   private void resetMeasuredSize(int width) {
     // we will set a range anyway if it's null, no need to do this now.
-    if (mRange == null) {
+    if (mSizeForMeasure == null) {
       return;
     }
     int maxHeight = 0;
@@ -2246,7 +2252,7 @@ public class RecyclerBinder
       }
     }
 
-    if (maxHeight == mRange.measuredSize) {
+    if (maxHeight == mSizeForMeasure.height) {
       return;
     }
 
@@ -2259,8 +2265,8 @@ public class RecyclerBinder
                 maxHeight),
             1);
 
-    mRange.measuredSize = maxHeight;
-    mRange.estimatedViewportCount = rangeSize;
+    mSizeForMeasure.height = maxHeight;
+    mEstimatedViewportCount = rangeSize;
   }
 
   /**
@@ -2570,14 +2576,13 @@ public class RecyclerBinder
       int lastVisibleIndex,
       int firstFullyVisibleIndex,
       int lastFullyVisibleIndex) {
-    if (mRange == null
+    if (mEstimatedViewportCount == UNSET
         || firstVisibleIndex == RecyclerView.NO_POSITION
         || lastVisibleIndex == RecyclerView.NO_POSITION) {
       return;
     }
 
-    final int rangeSize =
-        Math.max(mRange.estimatedViewportCount, lastVisibleIndex - firstVisibleIndex);
+    final int rangeSize = Math.max(mEstimatedViewportCount, lastVisibleIndex - firstVisibleIndex);
     final int layoutRangeSize = (int) (rangeSize * mRangeRatio);
     final int rangeStart = Math.max(0, firstVisibleIndex - layoutRangeSize);
     final int rangeEnd =
@@ -2612,14 +2617,14 @@ public class RecyclerBinder
     final int treeHoldersSize;
 
     synchronized (this) {
-      if (!isMeasured() || mRange == null) {
+      if (!isMeasured() || mEstimatedViewportCount == UNSET) {
         return;
       }
 
       if (firstVisible == RecyclerView.NO_POSITION || lastVisible == RecyclerView.NO_POSITION) {
         firstVisible = lastVisible = 0;
       }
-      rangeSize = Math.max(mRange.estimatedViewportCount, lastVisible - firstVisible);
+      rangeSize = Math.max(mEstimatedViewportCount, lastVisible - firstVisible);
       treeHoldersSize = mComponentTreeHolders.size();
       if (mIsCircular) {
         rangeStart = 0;
@@ -2720,8 +2725,39 @@ public class RecyclerBinder
 
   @VisibleForTesting
   @Nullable
+  // todo T40814333 change tests so this isn't needed.
   RangeCalculationResult getRangeCalculationResult() {
-    return mRange;
+    if (mSizeForMeasure == null && mEstimatedViewportCount == UNSET) {
+      return null;
+    }
+
+    final RangeCalculationResult range = new RangeCalculationResult();
+    range.measuredSize = getSizeForMeasuring();
+    range.estimatedViewportCount = mEstimatedViewportCount;
+
+    return range;
+  }
+
+  private boolean hasComputedRange() {
+    return mSizeForMeasure != null && mEstimatedViewportCount != UNSET;
+  }
+
+  /**
+   * If measure is called with measure specs that cannot be used to measure the recyclerview, the
+   * size of one of an item will be used to determine how to measure instead.
+   *
+   * @return a size value that can be used to measure the dimension of the recycler that has unknown
+   *     size, which is width for vertical scrolling recyclers or height for horizontal scrolling
+   *     recyclers.
+   */
+  private int getSizeForMeasuring() {
+    if (mSizeForMeasure == null) {
+      return UNSET;
+    }
+
+    return mLayoutInfo.getScrollDirection() == OrientationHelper.HORIZONTAL
+        ? mSizeForMeasure.height
+        : mSizeForMeasure.width;
   }
 
   @GuardedBy("this")

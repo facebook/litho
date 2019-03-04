@@ -118,7 +118,7 @@ final class ViewportManager {
 
   @UiThread
   boolean insertAffectsVisibleRange(int position, int size, int viewportCount) {
-    if (shouldUpdate() || viewportCount == -1) {
+    if (shouldUpdate() || viewportCount == RecyclerBinder.UNSET) {
       return true;
     }
 
@@ -145,7 +145,7 @@ final class ViewportManager {
 
   @UiThread
   boolean moveAffectsVisibleRange(int fromPosition, int toPosition, int viewportCount) {
-    if (shouldUpdate() || viewportCount == -1) {
+    if (shouldUpdate() || viewportCount == RecyclerBinder.UNSET) {
       return true;
     }
 
