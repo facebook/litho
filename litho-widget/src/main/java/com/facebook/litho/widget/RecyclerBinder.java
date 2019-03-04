@@ -2253,6 +2253,98 @@ public class RecyclerBinder
     }
   }
 
+  private interface EstimateRangeSizeListener {
+    void onFinish();
+  }
+
+  /**
+   * Based on the existing measured layouts it estimates a size for the async range. If no layouts
+   * have been measured with valid size specs, schedules an async layout and estimates the range
+   * when it returns with an item size. When a range size is determined, either immediately or
+   * async, it optionally invokes the provided callback.
+   */
+  private void estimateRangeSize(
+      final int width,
+      final int height,
+      @Nullable ComponentTreeHolderRangeInfo holderRangeInfo,
+      @Nullable final EstimateRangeSizeListener listener) {
+    // There's already an estimated range size, we can go ahead with invoking the listener
+    // immediately.
+    if (mEstimatedViewportCount != UNSET) {
+      if (listener != null) {
+        listener.onFinish();
+      }
+      return;
+    }
+
+    // We don't have an estimation for a range size but we've already computed the layout for an
+    // item, use its measurements to estimate the range size.
+    if (mSizeForMeasure != null) {
+      setRangeSize(mSizeForMeasure.width, mSizeForMeasure.height, width, height);
+      if (listener != null) {
+        listener.onFinish();
+      }
+      return;
+    }
+
+    if (holderRangeInfo == null) {
+      return;
+    }
+
+    final ComponentTreeHolder holder = holderRangeInfo.mHolders.get(holderRangeInfo.mPosition);
+    final int childWidthSpec = getActualChildrenWidthSpec(holder);
+    final int childHeightSpec = getActualChildrenHeightSpec(holder);
+
+    // At this point, we need to layout an item to be able to estimate a range size. We can do that
+    // async since the range layouts don't need to be done synchronously.
+    // If the holder has already calculated a compatible layout this will immediately return
+    // without calculating a new layout.
+
+    ComponentsSystrace.beginSectionAsync("estimateRangeSize");
+    holder.computeLayoutAsync(
+        mComponentContext,
+        childWidthSpec,
+        childHeightSpec,
+        new MeasureListener() {
+          @Override
+          public void onSetRootAndSizeSpec(int itemWidth, int itemHeight) {
+            ComponentsSystrace.endSectionAsync("estimateRangeSize");
+            setRangeSize(itemWidth, itemHeight, width, height);
+            if (listener != null) {
+              listener.onFinish();
+            }
+            holder.updateMeasureListener(null);
+          }
+        });
+  }
+
+  private void setRangeSize(int itemWidth, int itemHeight, int width, int height) {
+    mEstimatedViewportCount =
+        Math.max(mLayoutInfo.approximateRangeSize(itemWidth, itemHeight, width, height), 1);
+  }
+
+  /**
+   * Called from {@link #measure(Size, int, int, EventHandler)}. Will only be called if the size
+   * specs provided can't be used to measure the view so we need to layout an item to determine the
+   * size. TODO T40814333 make this static and return size. Blocker is that children size specs
+   * depend on RecyclerBinder params.
+   */
+  private void layoutItemForSize(ComponentTreeHolderRangeInfo holderRangeInfo) {
+
+    final ComponentTreeHolder holder = holderRangeInfo.mHolders.get(holderRangeInfo.mPosition);
+    final int childWidthSpec = getActualChildrenWidthSpec(holder);
+    final int childHeightSpec = getActualChildrenHeightSpec(holder);
+
+    ComponentsSystrace.beginSection("layoutItemForSize");
+    try {
+      final Size size = new Size();
+      holder.computeLayoutSync(mComponentContext, childWidthSpec, childHeightSpec, size);
+      mSizeForMeasure = size;
+    } finally {
+      ComponentsSystrace.endSection();
+    }
+  }
+
   @GuardedBy("this")
   private void resetMeasuredSize(int width) {
     // we will set a range anyway if it's null, no need to do this now.
