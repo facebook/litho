@@ -59,7 +59,7 @@ or, if you prefer Gradle,
 
 ## Contributing
 
-Before contributing to Litho, please first read the the [Code of
+Before contributing to Litho, please first read the [Code of
 Conduct](https://code.facebook.com/codeofconduct) that we expect
 project participants to adhere to.
 
