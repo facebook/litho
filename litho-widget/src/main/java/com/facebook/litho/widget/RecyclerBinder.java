@@ -1806,6 +1806,9 @@ public class RecyclerBinder
     final int measuredWidth;
     final int measuredHeight;
 
+    final boolean shouldMeasureItemForSize =
+        shouldMeasureItemForSize(widthSpec, heightSpec, scrollDirection, canRemeasure);
+
     mIsInMeasure.set(true);
 
     try {
@@ -1859,7 +1862,7 @@ public class RecyclerBinder
           case OrientationHelper.VERTICAL:
             measuredHeight = SizeSpec.getSize(heightSpec);
 
-            if (SizeSpec.getMode(widthSpec) == SizeSpec.EXACTLY || !canRemeasure) {
+            if (!shouldMeasureItemForSize) {
               measuredWidth = SizeSpec.getSize(widthSpec);
               mReMeasureEventEventHandler = mWrapContent ? reMeasureEventHandler : null;
               mRequiresRemeasure.set(mWrapContent);
@@ -1878,7 +1881,7 @@ public class RecyclerBinder
           default:
             measuredWidth = SizeSpec.getSize(widthSpec);
 
-            if (SizeSpec.getMode(heightSpec) == SizeSpec.EXACTLY || !canRemeasure) {
+            if (!shouldMeasureItemForSize) {
               measuredHeight = SizeSpec.getSize(heightSpec);
               mReMeasureEventEventHandler =
                   (mHasDynamicItemHeight || mWrapContent) ? reMeasureEventHandler : null;
@@ -1929,6 +1932,20 @@ public class RecyclerBinder
     return ComponentsConfiguration.checkNeedsRemeasure
         ? mIsMeasured.get() && !mRequiresRemeasure.get()
         : mIsMeasured.get();
+  }
+
+  /**
+   * @return true if the measure specs we are trying to measure this with cannot be used and we need
+   *     to measure an item to get a size.
+   */
+  static final boolean shouldMeasureItemForSize(
+      int widthSpec, int heightSpec, int scrollDirection, boolean canRemeasure) {
+    final boolean canUseSizeSpec =
+        scrollDirection == VERTICAL
+            ? SizeSpec.getMode(widthSpec) == SizeSpec.EXACTLY
+            : SizeSpec.getMode(heightSpec) == SizeSpec.EXACTLY;
+
+    return !canUseSizeSpec && canRemeasure;
   }
 
   @GuardedBy("this")
