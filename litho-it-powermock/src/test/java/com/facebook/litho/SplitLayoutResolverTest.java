@@ -48,7 +48,7 @@ import org.robolectric.Shadows;
 import org.robolectric.shadows.ShadowLooper;
 
 @PrepareForTest({ThreadUtils.class})
-@PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*"})
+@PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "androidx.*", "android.*"})
 @RunWith(ComponentsTestRunner.class)
 public class SplitLayoutResolverTest {
 

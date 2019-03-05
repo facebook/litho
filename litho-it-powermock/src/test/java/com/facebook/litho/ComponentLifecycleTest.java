@@ -51,7 +51,7 @@ import org.robolectric.RuntimeEnvironment;
 
 /** Tests {@link ComponentLifecycle} */
 @PrepareForTest({InternalNode.class, DiffNode.class, LayoutState.class})
-@PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*"})
+@PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "androidx.*", "android.*"})
 @RunWith(ComponentsTestRunner.class)
 public class ComponentLifecycleTest {
 
