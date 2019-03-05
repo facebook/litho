@@ -22,6 +22,7 @@ import android.view.View;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView;
 import com.facebook.litho.ComponentTree;
+import com.facebook.litho.ComponentsLogger;
 import com.facebook.litho.LithoView;
 
 /**
@@ -110,14 +111,34 @@ class StickyHeaderController extends RecyclerView.OnScrollListener {
 
       final LithoView firstVisibleView = firstVisibleItemComponentTree.getLithoView();
 
-      // Translate first child, no need for sticky header.
-      //
-      // NOTE: Translate only if the next item is not also sticky header. If two sticky items are
-      // stacked we don't want to translate the first one, as it would hide the second one under
-      // the first one which is undesirable.
-      if (!mHasStickyHeader.isValidPosition(stickyHeaderPosition + 1) ||
-          !mHasStickyHeader.isSticky(stickyHeaderPosition + 1)) {
-        firstVisibleView.setTranslationY(-firstVisibleView.getTop());
+      if (firstVisibleView == null) {
+        // When RV has pending updates adapter position and layout position might not match
+        // and firstVisibleView might be null.
+        final ComponentsLogger logger = firstVisibleItemComponentTree.getContext().getLogger();
+        if (logger != null) {
+          logger.emitMessage(
+              ComponentsLogger.LogLevel.ERROR,
+              "First visible sticky header item is null"
+                  + ", RV.hasPendingAdapterUpdates: "
+                  + mSectionsRecyclerView.getRecyclerView().hasPendingAdapterUpdates()
+                  + ", first visible component: "
+                  + firstVisibleItemComponentTree.getSimpleName()
+                  + ", hasMounted: "
+                  + firstVisibleItemComponentTree.hasMounted()
+                  + ", isReleased: "
+                  + firstVisibleItemComponentTree.isReleased());
+        }
+      } else {
+
+        // Translate first child, no need for sticky header.
+        //
+        // NOTE: Translate only if the next item is not also sticky header. If two sticky items are
+        // stacked we don't want to translate the first one, as it would hide the second one under
+        // the first one which is undesirable.
+        if (!mHasStickyHeader.isValidPosition(stickyHeaderPosition + 1)
+            || !mHasStickyHeader.isSticky(stickyHeaderPosition + 1)) {
+          firstVisibleView.setTranslationY(-firstVisibleView.getTop());
+        }
       }
 
       lastTranslatedView = firstVisibleView;
