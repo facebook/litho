@@ -61,7 +61,7 @@ import androidx.core.view.ViewCompat;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.animation.AnimatedProperties;
 import com.facebook.litho.config.ComponentsConfiguration;
-import com.facebook.litho.drawable.DefaultComparableDrawable;
+import com.facebook.litho.drawable.ComparableDrawableWrapper;
 import com.facebook.litho.reference.Reference;
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -2179,10 +2179,10 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
       view.setBackgroundDrawable(drawable);
     } else if (Build.VERSION.SDK_INT >= 21
-        && drawable instanceof DefaultComparableDrawable
-        && ((DefaultComparableDrawable) drawable).getWrappedDrawable() instanceof RippleDrawable) {
+        && drawable instanceof ComparableDrawableWrapper
+        && ((ComparableDrawableWrapper) drawable).getWrappedDrawable() instanceof RippleDrawable) {
         // RippleDrawable does not work properly when it is wrapped, so unwrap it when setting it.
-        view.setBackground(((DefaultComparableDrawable) drawable).getWrappedDrawable());
+        view.setBackground(((ComparableDrawableWrapper) drawable).getWrappedDrawable());
     } else {
       view.setBackground(drawable);
     }
