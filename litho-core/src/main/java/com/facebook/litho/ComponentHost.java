@@ -1479,11 +1479,7 @@ public class ComponentHost extends ViewGroup {
   }
 
   private static String getMountItemName(MountItem mountItem) {
-    String traceName = mountItem.getComponent().getSimpleName();
-    if (mountItem.getContent() instanceof DisplayListDrawable) {
-      traceName += "DL";
-    }
-    return traceName;
+    return mountItem.getComponent().getSimpleName();
   }
 
   @Override
