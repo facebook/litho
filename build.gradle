@@ -23,8 +23,6 @@ subprojects {
         google()
         jcenter()
         mavenCentral()
-        //T41117446 Remove this once Flipper/Fresco releases their AndroidX versions
-        maven { url 'https://jitpack.io' }
         maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
     }
     afterEvaluate {
@@ -65,11 +63,11 @@ ext.deps = [
         // Arch
         archLifecycle      : 'androidx.lifecycle:lifecycle-extensions:2.0.0-rc01',
         // First-party
-        fresco             : 'com.facebook.fresco:fresco:1.10.0',
+        fresco             : 'com.facebook.fresco:fresco:1.13.0',
         soloader           : 'com.facebook.soloader:soloader:0.6.0',
         textlayoutbuilder  : 'com.facebook.fbui.textlayoutbuilder:textlayoutbuilder:1.5.0',
         screenshot         : 'com.facebook.testing.screenshot:core:0.5.0',
-        flipper            : 'com.facebook.flipper:flipper:0.16.3-SNAPSHOT',
+        flipper            : 'com.facebook.flipper:flipper:0.17.0',
         // Annotations
         jsr305             : 'com.google.code.findbugs:jsr305:3.0.1',
         inferAnnotations   : 'com.facebook.infer.annotation:infer-annotation:0.11.2',
