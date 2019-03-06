@@ -43,6 +43,7 @@ public class RecyclerBinderConfiguration {
   private boolean mAsyncInitRange = ComponentsConfiguration.asyncInitRange;
   @Nullable private String mSplitLayoutTag;
   @Nullable private List<ComponentLogParams> mInvalidStateLogParamsList;
+  private final boolean mSplitLayoutForMeasureAndRangeEstimation;
 
   public static Builder create() {
     return new Builder();
@@ -61,7 +62,8 @@ public class RecyclerBinderConfiguration {
       boolean hScrollAsyncMode,
       boolean enableStableIds,
       boolean useSharedLayoutStateFuture,
-      boolean asyncInitRange) {
+      boolean asyncInitRange,
+      boolean splitLayoutForMeasureAndRangeEstimation) {
     mRangeRatio = rangeRatio;
     mLayoutHandlerFactory = layoutHandlerFactory;
     mIsCircular = circular;
@@ -75,6 +77,7 @@ public class RecyclerBinderConfiguration {
     mEnableStableIds = enableStableIds;
     mUseSharedLayoutStateFuture = useSharedLayoutStateFuture;
     mAsyncInitRange = asyncInitRange;
+    mSplitLayoutForMeasureAndRangeEstimation = splitLayoutForMeasureAndRangeEstimation;
   }
 
   public float getRangeRatio() {
@@ -129,6 +132,10 @@ public class RecyclerBinderConfiguration {
     return mInvalidStateLogParamsList;
   }
 
+  public boolean splitLayoutForMeasureAndRangeEstimation() {
+    return mSplitLayoutForMeasureAndRangeEstimation;
+  }
+
   public static class Builder {
     public static final LayoutThreadPoolConfiguration DEFAULT_THREAD_POOL_CONFIG =
         ComponentsConfiguration.threadPoolConfiguration;
@@ -148,6 +155,8 @@ public class RecyclerBinderConfiguration {
     private boolean mUseSharedLayoutStateFuture =
         ComponentsConfiguration.useSharedLayoutStateFuture;
     private boolean mAsyncInitRange = ComponentsConfiguration.asyncInitRange;
+    private boolean mSplitLayoutForMeasureAndRangeEstimation =
+        ComponentsConfiguration.splitLayoutForMeasureAndRangeEstimation;
 
     Builder() {}
 
@@ -258,6 +267,12 @@ public class RecyclerBinderConfiguration {
       return this;
     }
 
+    public Builder splitLayoutForMeasureAndRangeEstimation(
+        boolean splitLayoutForMeasureAndRangeEstimation) {
+      mSplitLayoutForMeasureAndRangeEstimation = splitLayoutForMeasureAndRangeEstimation;
+      return this;
+    }
+
     public RecyclerBinderConfiguration build() {
       return new RecyclerBinderConfiguration(
           mRangeRatio,
@@ -272,7 +287,8 @@ public class RecyclerBinderConfiguration {
           mHScrollAsyncMode,
           mEnableStableIds,
           mUseSharedLayoutStateFuture,
-          mAsyncInitRange);
+          mAsyncInitRange,
+          mSplitLayoutForMeasureAndRangeEstimation);
     }
   }
 }

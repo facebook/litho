@@ -389,6 +389,8 @@ public class RecyclerBinder
     private boolean hscrollAsyncMode = false;
     private boolean singleThreadPool = ComponentsConfiguration.useSingleThreadPool;
     private boolean incrementalMount = true;
+    private boolean splitLayoutForMeasureAndRangeEstimation =
+        ComponentsConfiguration.splitLayoutForMeasureAndRangeEstimation;
 
     /**
      * @param rangeRatio specifies how big a range this binder should try to compute. The range is
@@ -598,6 +600,12 @@ public class RecyclerBinder
     /** Don't use this. If false, turns off incremental mount for all subviews of this Recycler. */
     public Builder incrementalMount(boolean incrementalMount) {
       this.incrementalMount = incrementalMount;
+      return this;
+    }
+
+    public Builder splitLayoutForMeasureAndRangeEstimation(
+        boolean splitLayoutForMeasureAndRangeEstimation) {
+      this.splitLayoutForMeasureAndRangeEstimation = splitLayoutForMeasureAndRangeEstimation;
       return this;
     }
 

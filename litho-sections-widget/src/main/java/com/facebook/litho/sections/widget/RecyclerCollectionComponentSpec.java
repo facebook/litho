@@ -302,6 +302,8 @@ public class RecyclerCollectionComponentSpec {
             .hasDynamicItemHeight(binderConfiguration.hasDynamicItemHeight())
             .splitLayoutTag(binderConfiguration.getSplitLayoutTag())
             .incrementalMount(incrementalMount)
+            .splitLayoutForMeasureAndRangeEstimation(
+                binderConfiguration.splitLayoutForMeasureAndRangeEstimation())
             .build(c);
 
     SectionBinderTarget targetBinder =
