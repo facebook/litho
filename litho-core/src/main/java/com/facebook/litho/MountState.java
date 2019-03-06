@@ -1424,9 +1424,6 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     component.bind(context, content);
     item.setIsBound(true);
 
-    item.setWrappedContent(
-        wrapContentIfNeeded(mContext.getApplicationContext(), component, content));
-
     // 6. Apply the bounds to the Mount content now. It's important to do so after bind as calling
     // bind might have triggered a layout request within a View.
     getActualBounds(layoutOutput, layoutState, mSkipMounting, sTempRect);
@@ -1446,30 +1443,6 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       mMountStats.extras.add(
           LogTreePopulator.getAnnotationBundleFromLogger(component, context.getLogger()));
     }
-  }
-
-  @VisibleForTesting
-  @Nullable
-  static Object wrapContentIfNeeded(Context context, Component component, Object content) {
-    // For the time being the only wrapping we may do is of a Drawable into a DisplayListDrawable,
-    // but this may be expanded
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      // We do not want to wrap RippleDrawables, as it doesn't play along with RenderNodeAnimator
-      // well
-      if (content instanceof RippleDrawable
-          || (content instanceof MatrixDrawable
-              && ((MatrixDrawable) content).getCurrent() instanceof RippleDrawable)) {
-        return null;
-      }
-
-      // DL can be used in general, let's check if the content is eligible
-      if (component.shouldUseDisplayList()
-          || ((content instanceof Drawable)
-              && ComponentsConfiguration.useDisplayListForAllDrawables)) {
-        return new DisplayListDrawable(context, (Drawable) content);
-      }
-    }
-    return null;
   }
 
   // The content might be null because it's the LayoutSpec for the root host
