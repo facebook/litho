@@ -91,7 +91,6 @@ public class ComponentTree {
   private static final int SCHEDULE_LAYOUT_ASYNC = 1;
   private static final int SCHEDULE_LAYOUT_SYNC = 2;
   private final @Nullable String mSplitLayoutTag;
-  private final boolean mDoNotWrapIntoDisplayLists;
   private boolean mReleased;
   private String mReleasedComponent;
 
@@ -280,7 +279,6 @@ public class ComponentTree {
     mSplitLayoutTag = builder.splitLayoutTag;
     mNestedTreeResolutionExperimentEnabled = builder.nestedTreeResolutionExperimentEnabled;
     mUseSharedLayoutStateFuture = builder.useSharedLayoutStateFuture;
-    mDoNotWrapIntoDisplayLists = builder.doNotWrapIntoDisplayLists;
     mIsPersistenceEnabled = builder.isPersistenceEnabled;
 
     ensureLayoutThreadHandler();
@@ -1008,13 +1006,6 @@ public class ComponentTree {
    */
   public boolean isIncrementalMountEnabled() {
     return mIncrementalMountEnabled;
-  }
-
-  /**
-   * Returns whether DisplayLists should not be used.
-   */
-  public boolean doNotWrapIntoDisplayLists() {
-    return mDoNotWrapIntoDisplayLists;
   }
 
   /** Whether the refactored implementation of nested tree resolution should be used. */
@@ -2371,7 +2362,6 @@ public class ComponentTree {
     private boolean nestedTreeResolutionExperimentEnabled =
         ComponentsConfiguration.isNestedTreeResolutionExperimentEnabled;
     private boolean useSharedLayoutStateFuture = false;
-    private boolean doNotWrapIntoDisplayLists = ComponentsConfiguration.disableDisplayListWrapping;
     private boolean isPersistenceEnabled = ComponentsConfiguration.isPersistenceEnabled;
 
     protected Builder(ComponentContext context, Component root) {
@@ -2538,14 +2528,6 @@ public class ComponentTree {
      */
     public Builder useSharedLayoutStateFuture(boolean useSharedLayoutStateFuture) {
       this.useSharedLayoutStateFuture = useSharedLayoutStateFuture;
-      return this;
-    }
-
-    /**
-     * Whether DisplayLists should not be used for this ComponentTree
-     */
-    public Builder doNotWrapIntoDisplayLists(boolean doNotWrapIntoDisplayLists) {
-      this.doNotWrapIntoDisplayLists = doNotWrapIntoDisplayLists;
       return this;
     }
 
