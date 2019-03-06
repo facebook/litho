@@ -251,7 +251,7 @@ public final class DebugComponent {
       final MountItem mountItem = mountState.getItemAt(i);
       final Component mountItemComponent = mountItem == null ? null : mountItem.getComponent();
       if (mountItemComponent != null && mountItemComponent.isEquivalentTo(component)) {
-        final Object content = mountItem.getBaseContent();
+        final Object content = mountItem.getContent();
 
         if (content instanceof TextContent) {
           for (CharSequence charSequence : ((TextContent) content).getTextItems()) {
@@ -373,7 +373,7 @@ public final class DebugComponent {
         final Component component = mountItem == null ? null : mountItem.getComponent();
 
         if (component != null && component == mNode.getRootComponent()) {
-          return mountItem.getMountableContent();
+          return mountItem.getContent();
         }
       }
     }

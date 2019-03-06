@@ -258,7 +258,7 @@ public class ComponentHostTest {
 
     mHost.onTouchEvent(mock(MotionEvent.class));
 
-    TouchableDrawable touchableDrawable = (TouchableDrawable) mountItem4.getBaseContent();
+    TouchableDrawable touchableDrawable = (TouchableDrawable) mountItem4.getContent();
     verify(touchableDrawable, times(1)).shouldHandleTouchEvent(any(MotionEvent.class));
     verify(touchableDrawable, times(1)).onTouchEvent(any(MotionEvent.class), any(View.class));
   }

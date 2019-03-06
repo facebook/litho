@@ -112,8 +112,7 @@ public class MountItemTest {
   public void testGetters() {
     assertThat(mMountItem.getComponent()).isSameAs((Component) mComponent);
     assertThat(mMountItem.getHost()).isSameAs(mComponentHost);
-    assertThat(mMountItem.getBaseContent()).isSameAs(mContent);
-    assertThat(mMountItem.getMountableContent()).isSameAs(mContent);
+    assertThat(mMountItem.getContent()).isSameAs(mContent);
     assertThat(mMountItem.getNodeInfo().getContentDescription()).isSameAs(mContentDescription);
     assertThat(mMountItem.getNodeInfo().getClickHandler()).isSameAs(mClickHandler);
     assertThat(mMountItem.getNodeInfo().getFocusChangeHandler()).isSameAs(mFocusChangeHandler);
@@ -305,25 +304,5 @@ public class MountItemTest {
 
     mountItem.update(layoutOutput);
     assertThat(mountItem.isViewClickable()).isFalse();
-  }
-
-  @Test
-  public void testWrappedContent() {
-    // Wrapped content isn't set
-    assertThat(mMountItem.getBaseContent()).isSameAs(mContent);
-    assertThat(mMountItem.getMountableContent()).isSameAs(mContent);
-
-    final Object wrappedContent = new View(RuntimeEnvironment.application);
-    mMountItem.setWrappedContent(wrappedContent);
-
-    // Wrapped content is set, which should not affect just content
-    assertThat(mMountItem.getBaseContent()).isSameAs(mContent);
-    assertThat(mMountItem.getMountableContent()).isSameAs(wrappedContent);
-
-    mMountItem.setWrappedContent(null);
-
-    // No wrapped content again
-    assertThat(mMountItem.getBaseContent()).isSameAs(mContent);
-    assertThat(mMountItem.getMountableContent()).isSameAs(mContent);
   }
 }
