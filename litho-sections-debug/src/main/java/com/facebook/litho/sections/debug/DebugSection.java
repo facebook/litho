@@ -84,7 +84,10 @@ public final class DebugSection {
     } else {
       final List<DebugSection> childrenDebugSections = new ArrayList<>();
       for (Section child : mSectionDebugNode.getChildren()) {
-        childrenDebugSections.add(new DebugSection(child, mViews));
+        final DebugSection debugSection = new DebugSection(child, mViews);
+        if (debugSection.getSectionChildren().size() > 0) {
+          childrenDebugSections.add(debugSection);
+        }
       }
 
       return childrenDebugSections;
