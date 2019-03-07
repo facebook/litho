@@ -15,6 +15,7 @@
  */
 package com.facebook.litho;
 
+import android.os.Build;
 import com.facebook.litho.config.ComponentsConfiguration;
 
 /**
@@ -33,6 +34,9 @@ public class HostComponentMountContentPool extends DefaultMountContentPool {
 
     if (ComponentsConfiguration.clearComponentHostPressState) {
       host.setPressed(false);
+      if (Build.VERSION.SDK_INT >= 19) {
+        host.cancelPendingInputEvents();
+      }
     }
 
     super.release(item);
