@@ -1279,7 +1279,7 @@ class InternalNode implements ComponentLayout {
       if (node.mNodeInfo == null) {
         node.mNodeInfo = mNodeInfo;
       } else {
-        node.mNodeInfo.updateWith(mNodeInfo);
+        mNodeInfo.copyInto(node.getOrCreateNodeInfo());
       }
     }
     if ((node.mPrivateFlags & PFLAG_LAYOUT_DIRECTION_IS_SET) == 0L
@@ -1526,7 +1526,7 @@ class InternalNode implements ComponentLayout {
 
   NodeInfo getOrCreateNodeInfo() {
     if (mNodeInfo == null) {
-      mNodeInfo = new NodeInfo();
+      mNodeInfo = new DefaultNodeInfo();
     }
 
     return mNodeInfo;

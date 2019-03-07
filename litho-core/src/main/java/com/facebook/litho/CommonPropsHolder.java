@@ -559,7 +559,7 @@ class CommonPropsHolder implements CommonProps {
   @Override
   public NodeInfo getOrCreateNodeInfo() {
     if (mNodeInfo == null) {
-      mNodeInfo = new NodeInfo();
+      mNodeInfo = new DefaultNodeInfo();
     }
 
     return mNodeInfo;
@@ -570,7 +570,7 @@ class CommonPropsHolder implements CommonProps {
     c.applyStyle(node, mDefStyleAttr, mDefStyleRes);
 
     if (mNodeInfo != null) {
-      mNodeInfo.copyInto(node);
+      mNodeInfo.copyInto(node.getOrCreateNodeInfo());
     }
 
     if ((mPrivateFlags & PFLAG_BACKGROUND_IS_SET) != 0L) {

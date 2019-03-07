@@ -18,14 +18,14 @@ package com.facebook.litho;
 
 import android.animation.StateListAnimator;
 import android.graphics.drawable.Drawable;
+import android.util.SparseArray;
+import android.util.SparseIntArray;
+import android.view.ViewOutlineProvider;
 import androidx.annotation.AttrRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.annotation.StyleRes;
-import android.util.SparseArray;
-import android.util.SparseIntArray;
-import android.view.ViewOutlineProvider;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.drawable.ComparableDrawable;
 import com.facebook.litho.internal.SparseFloatArray;
@@ -741,7 +741,7 @@ class SparseCommonPropsHolder implements CommonProps {
   @Override
   public NodeInfo getOrCreateNodeInfo() {
     if (mNodeInfo == null) {
-      mNodeInfo = new NodeInfo();
+      mNodeInfo = new DefaultNodeInfo();
     }
 
     return mNodeInfo;
@@ -754,7 +754,7 @@ class SparseCommonPropsHolder implements CommonProps {
     }
 
     if (mNodeInfo != null) {
-      mNodeInfo.copyInto(node);
+      mNodeInfo.copyInto(node.getOrCreateNodeInfo());
     }
 
     if ((mPrivateFlags & PFLAG_BACKGROUND_IS_SET) != 0L) {
