@@ -227,6 +227,9 @@ public class ComponentsConfiguration {
   /** Sets if SparseCommonPropsHolder should be used */
   public static boolean isSparseCommonPropsHolderIsEnabled;
 
+  /** Sets if SparseNodeInfo should be used */
+  public static boolean isSparseNodeInfoIsEnabled;
+
   /**
    * Controls if DisplayList wrapping should be disabled by default. Would have no effect if
    * ComponentTree explicitly set up to enable wrapping

@@ -1526,7 +1526,11 @@ class InternalNode implements ComponentLayout {
 
   NodeInfo getOrCreateNodeInfo() {
     if (mNodeInfo == null) {
-      mNodeInfo = new DefaultNodeInfo();
+      if (ComponentsConfiguration.isSparseNodeInfoIsEnabled) {
+        mNodeInfo = new SparseNodeInfo();
+      } else {
+        mNodeInfo = new DefaultNodeInfo();
+      }
     }
 
     return mNodeInfo;

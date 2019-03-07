@@ -27,6 +27,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.annotation.StyleRes;
 import com.facebook.infer.annotation.ThreadConfined;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.drawable.ComparableDrawable;
 import com.facebook.litho.internal.SparseFloatArray;
 import com.facebook.litho.reference.Reference;
@@ -741,7 +742,11 @@ class SparseCommonPropsHolder implements CommonProps {
   @Override
   public NodeInfo getOrCreateNodeInfo() {
     if (mNodeInfo == null) {
-      mNodeInfo = new DefaultNodeInfo();
+      if (ComponentsConfiguration.isSparseNodeInfoIsEnabled) {
+        mNodeInfo = new SparseNodeInfo();
+      } else {
+        mNodeInfo = new DefaultNodeInfo();
+      }
     }
 
     return mNodeInfo;
