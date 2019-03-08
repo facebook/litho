@@ -722,10 +722,9 @@ public class ComponentBodyGenerator {
             .endControlFlow();
         break;
 
-      case Comparable.REFERENCE:
+      case Comparable.COMPARABLE_DRAWABLE:
         codeBlock
-            .beginControlFlow(
-                "if (Reference.shouldUpdate($L, $L))", firstComparator, secondComparator)
+            .beginControlFlow("if (!$L.isEquivalantTo($L))", firstComparator, secondComparator)
             .addStatement("return false")
             .endControlFlow();
         break;
@@ -813,8 +812,8 @@ public class ComponentBodyGenerator {
     } else if (field.getTypeName().isPrimitive()) {
       return Comparable.PRIMITIVE;
 
-    } else if (field.getTypeName().equals(ClassNames.REFERENCE)) {
-      return Comparable.REFERENCE;
+    } else if (field.getTypeName().equals(ClassNames.COMPARABLE_DRAWABLE)) {
+      return Comparable.COMPARABLE_DRAWABLE;
 
     } else if (field.getTypeSpec().isSubInterface(ClassNames.COLLECTION)) {
       final int level =

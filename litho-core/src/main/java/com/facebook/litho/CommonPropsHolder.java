@@ -17,7 +17,6 @@
 package com.facebook.litho;
 
 import android.animation.StateListAnimator;
-import android.graphics.drawable.Drawable;
 import android.util.SparseArray;
 import android.view.ViewOutlineProvider;
 import androidx.annotation.AttrRes;
@@ -28,7 +27,6 @@ import androidx.annotation.StyleRes;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.drawable.ComparableDrawable;
-import com.facebook.litho.reference.Reference;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaDirection;
@@ -49,7 +47,7 @@ class CommonPropsHolder implements CommonProps {
   @Nullable private OtherProps mOtherProps;
   @Nullable private NodeInfo mNodeInfo;
   @Nullable private LayoutProps mLayoutProps;
-  @Nullable private Reference<? extends Drawable> mBackground;
+  @Nullable private ComparableDrawable mBackground;
   @Nullable private String mTestKey;
   private boolean mWrapInView;
   @AttrRes private int mDefStyleAttr;
@@ -98,7 +96,7 @@ class CommonPropsHolder implements CommonProps {
   }
 
   @Override
-  public void background(@Nullable Reference<? extends Drawable> background) {
+  public void background(@Nullable ComparableDrawable background) {
     mPrivateFlags |= PFLAG_BACKGROUND_IS_SET;
     mBackground = background;
   }
@@ -286,7 +284,7 @@ class CommonPropsHolder implements CommonProps {
 
   @Override
   @Nullable
-  public Reference<? extends Drawable> getBackground() {
+  public ComparableDrawable getBackground() {
     return mBackground;
   }
 

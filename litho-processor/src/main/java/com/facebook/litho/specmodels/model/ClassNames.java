@@ -91,11 +91,8 @@ public interface ClassNames {
   ClassName TRANSITION_CONTAINER =
       ClassName.bestGuess("com.facebook.litho.ComponentLifecycle.TransitionContainer");
 
-  ClassName REFERENCE = ClassName.bestGuess("com.facebook.litho.reference.Reference");
-  ClassName REFERENCE_BUILDER =
-      ClassName.bestGuess("com.facebook.litho.reference.Reference.Builder");
-  ClassName REFERENCE_LIFECYCLE =
-      ClassName.bestGuess("com.facebook.litho.reference.ReferenceLifecycle");
+  ClassName COMPARABLE_DRAWABLE =
+      ClassName.bestGuess("com.facebook.litho.drawable.ComparableDrawable");
 
   ClassName TREE_PROPS = ClassName.bestGuess("com.facebook.litho.TreeProps");
 

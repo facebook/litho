@@ -59,7 +59,7 @@ import androidx.core.view.ViewCompat;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.animation.AnimatedProperties;
 import com.facebook.litho.config.ComponentsConfiguration;
-import com.facebook.litho.reference.Reference;
+import com.facebook.litho.drawable.ComparableDrawable;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collections;
@@ -2126,18 +2126,17 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   }
 
   private static void setViewBackground(View view, ViewNodeInfo viewNodeInfo) {
-    final Reference<? extends Drawable> backgroundReference = viewNodeInfo.getBackground();
-    if (backgroundReference != null) {
-      setBackgroundCompat(view, Reference.acquire(view.getContext(), backgroundReference));
+    final ComparableDrawable background = viewNodeInfo.getBackground();
+    if (background != null) {
+      setBackgroundCompat(view, background);
     }
   }
 
   private static void unsetViewBackground(View view, ViewNodeInfo viewNodeInfo) {
-    final Reference<? extends Drawable> backgroundReference = viewNodeInfo.getBackground();
+    final ComparableDrawable background = viewNodeInfo.getBackground();
     final Drawable drawable = view.getBackground();
-    if (backgroundReference != null) {
+    if (background != null) {
       setBackgroundCompat(view, null);
-      Reference.release(view.getContext(), drawable, (Reference<Drawable>) backgroundReference);
     }
   }
 

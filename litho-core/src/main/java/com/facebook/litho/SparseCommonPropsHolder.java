@@ -30,7 +30,6 @@ import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.drawable.ComparableDrawable;
 import com.facebook.litho.internal.SparseFloatArray;
-import com.facebook.litho.reference.Reference;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaDirection;
@@ -503,7 +502,7 @@ class SparseCommonPropsHolder implements CommonProps {
   }
 
   @Override
-  public void background(@Nullable Reference<? extends Drawable> background) {
+  public void background(ComparableDrawable background) {
     mPrivateFlags |= PFLAG_BACKGROUND_IS_SET;
     getOrCreateObjectProps().append(INDEX_Background, background);
   }
@@ -521,8 +520,8 @@ class SparseCommonPropsHolder implements CommonProps {
 
   @Nullable
   @Override
-  public Reference<? extends Drawable> getBackground() {
-    return (Reference<? extends Drawable>) getOrCreateObjectProps().get(INDEX_Background);
+  public ComparableDrawable getBackground() {
+    return (ComparableDrawable) getOrCreateObjectProps().get(INDEX_Background);
   }
 
   @Override
@@ -763,7 +762,7 @@ class SparseCommonPropsHolder implements CommonProps {
     }
 
     if ((mPrivateFlags & PFLAG_BACKGROUND_IS_SET) != 0L) {
-      node.background((Reference<? extends Drawable>) mObjectProps.get(INDEX_Background));
+      node.background((ComparableDrawable) mObjectProps.get(INDEX_Background));
     }
     if ((mPrivateFlags & PFLAG_TEST_KEY_IS_SET) != 0L) {
       node.testKey((String) mObjectProps.get(INDEX_TestKey));

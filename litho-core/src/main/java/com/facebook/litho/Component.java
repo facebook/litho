@@ -45,8 +45,6 @@ import com.facebook.litho.drawable.ComparableColorDrawable;
 import com.facebook.litho.drawable.ComparableDrawable;
 import com.facebook.litho.drawable.ComparableResDrawable;
 import com.facebook.litho.drawable.DefaultComparableDrawable;
-import com.facebook.litho.reference.DrawableReference;
-import com.facebook.litho.reference.Reference;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
@@ -1326,27 +1324,12 @@ public abstract class Component extends ComponentLifecycle
      * @see ComparableDrawable
      */
     @Deprecated
-    public T background(@Nullable Reference<? extends Drawable> background) {
-      /**
-       * We want to test the effect of not using References so if we come into this method with an
-       * actual reference (that is not a DrawableReference) we turn it into a DrawableReference to
-       * force it to behave as a proper Drawable. This is actually going to be slightly worse for
-       * memory than just having a reference to the Drawable directly.
-       */
-      if (ComponentsConfiguration.dontUseReferences
-          && background != null
-          && !(background instanceof DrawableReference)) {
-        final Drawable backgroundDrawable =
-            Reference.acquire(getContext().getAndroidContext(), background);
-
-        if (backgroundDrawable != null) {
-          background =
-              DrawableReference.create(DefaultComparableDrawable.create(backgroundDrawable));
-        }
+    public T background(@Nullable Drawable background) {
+      if (background instanceof ComparableDrawable || background == null) {
+        return background((ComparableDrawable) background);
       }
 
-      mComponent.getOrCreateCommonProps().background(background);
-      return getThis();
+      return background(DefaultComparableDrawable.create(background));
     }
 
     /**
@@ -1359,19 +1342,8 @@ public abstract class Component extends ComponentLifecycle
      * @see ComparableDrawable
      */
     public T background(@Nullable ComparableDrawable background) {
-      return background(background != null ? DrawableReference.create(background) : null);
-    }
-
-    /**
-     * @deprecated use {@link #background(ComparableDrawable)} more efficient diffing of drawables.
-     * @see ComparableDrawable
-     */
-    @Deprecated
-    public T background(@Nullable Drawable background) {
-      if (background instanceof ComparableDrawable) {
-        return background((ComparableDrawable) background);
-      }
-      return background(background != null ? DefaultComparableDrawable.create(background) : null);
+      mComponent.getOrCreateCommonProps().background(background);
+      return getThis();
     }
 
     public T backgroundAttr(@AttrRes int resId, @DrawableRes int defaultResId) {
@@ -1413,7 +1385,7 @@ public abstract class Component extends ComponentLifecycle
      */
     @Deprecated
     public T foreground(@Nullable Drawable foreground) {
-      if (foreground instanceof ComparableDrawable) {
+      if (foreground instanceof ComparableDrawable || foreground == null) {
         return foreground((ComparableDrawable) foreground);
       }
       return foreground(foreground != null ? DefaultComparableDrawable.create(foreground) : null);

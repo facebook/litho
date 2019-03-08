@@ -50,7 +50,6 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.text.TextUtils;
 import android.view.View;
@@ -64,8 +63,6 @@ import com.facebook.litho.annotations.ImportantForAccessibility;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.drawable.BorderColorDrawable;
 import com.facebook.litho.drawable.ComparableDrawable;
-import com.facebook.litho.reference.DrawableReference;
-import com.facebook.litho.reference.Reference;
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
@@ -720,7 +717,7 @@ class LayoutState {
     }
 
     // 2. Add background if defined.
-    final Reference<? extends Drawable> background = node.getBackground();
+    final ComparableDrawable background = node.getBackground();
     if (background != null) {
       if (layoutOutput != null && layoutOutput.hasViewNodeInfo()) {
         layoutOutput.getViewNodeInfo().setBackground(background);
@@ -867,7 +864,7 @@ class LayoutState {
                 node,
                 layoutState,
                 convertForeground,
-                DrawableReference.create(foreground),
+                foreground,
                 OutputUnitType.FOREGROUND,
                 shouldAddHostLayoutOutput);
 
@@ -990,7 +987,7 @@ class LayoutState {
             node,
             layoutState,
             null,
-            DrawableReference.create(new DebugOverlayDrawable(mainThreadCalculations)),
+            new DebugOverlayDrawable(mainThreadCalculations),
             OutputUnitType.FOREGROUND,
             needsHostView);
       }
@@ -1053,10 +1050,10 @@ class LayoutState {
       InternalNode node,
       LayoutState layoutState,
       @Nullable LayoutOutput recycle,
-      Reference<? extends Drawable> reference,
+      ComparableDrawable drawable,
       @OutputUnitType int type,
       boolean matchHostBoundsTransitions) {
-    final Component drawableComponent = DrawableComponent.create(reference);
+    final Component drawableComponent = DrawableComponent.create(drawable);
     drawableComponent.setScopedContext(
         ComponentContext.withComponentScope(node.getContext(), drawableComponent));
     final boolean isOutputUpdated;
@@ -1084,7 +1081,7 @@ class LayoutState {
     return output;
   }
 
-  private static Reference<? extends Drawable> getBorderColorDrawable(InternalNode node) {
+  private static ComparableDrawable getBorderColorDrawable(InternalNode node) {
     if (!node.shouldDrawBorders()) {
       throw new RuntimeException("This node does not support drawing border color");
     }
@@ -1095,19 +1092,18 @@ class LayoutState {
     final YogaEdge leftEdge = isRtl ? YogaEdge.RIGHT : YogaEdge.LEFT;
     final YogaEdge rightEdge = isRtl ? YogaEdge.LEFT : YogaEdge.RIGHT;
 
-    return DrawableReference.create(
-        new BorderColorDrawable.Builder()
-            .pathEffect(node.getBorderPathEffect())
-            .borderLeftColor(Border.getEdgeColor(borderColors, leftEdge))
-            .borderTopColor(Border.getEdgeColor(borderColors, YogaEdge.TOP))
-            .borderRightColor(Border.getEdgeColor(borderColors, rightEdge))
-            .borderBottomColor(Border.getEdgeColor(borderColors, YogaEdge.BOTTOM))
-            .borderLeftWidth(node.getLayoutBorder(leftEdge))
-            .borderTopWidth(node.getLayoutBorder(YogaEdge.TOP))
-            .borderRightWidth(node.getLayoutBorder(rightEdge))
-            .borderBottomWidth(node.getLayoutBorder(YogaEdge.BOTTOM))
-            .borderRadius(borderRadius)
-            .build());
+    return new BorderColorDrawable.Builder()
+        .pathEffect(node.getBorderPathEffect())
+        .borderLeftColor(Border.getEdgeColor(borderColors, leftEdge))
+        .borderTopColor(Border.getEdgeColor(borderColors, YogaEdge.TOP))
+        .borderRightColor(Border.getEdgeColor(borderColors, rightEdge))
+        .borderBottomColor(Border.getEdgeColor(borderColors, YogaEdge.BOTTOM))
+        .borderLeftWidth(node.getLayoutBorder(leftEdge))
+        .borderTopWidth(node.getLayoutBorder(YogaEdge.TOP))
+        .borderRightWidth(node.getLayoutBorder(rightEdge))
+        .borderBottomWidth(node.getLayoutBorder(YogaEdge.BOTTOM))
+        .borderRadius(borderRadius)
+        .build();
   }
 
   private static void addLayoutOutputIdToPositionsMap(

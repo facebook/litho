@@ -76,7 +76,6 @@ import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.State;
-import com.facebook.litho.reference.Reference;
 import com.facebook.litho.utils.MeasureUtils;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -353,13 +352,11 @@ class EditTextSpec {
         requestFocus,
         cursorDrawableRes);
 
-    Reference<Drawable> backgroundRef = (Reference<Drawable>) layout.getBackground();
-    Drawable background =
-        backgroundRef != null ? Reference.acquire(c.getAndroidContext(), backgroundRef) : null;
+    Drawable background = layout.getBackground();
+
     if (background != null) {
       Rect rect = new Rect();
       background.getPadding(rect);
-      Reference.release(c.getAndroidContext(), background, backgroundRef);
 
       if (rect.left != 0 || rect.top != 0 || rect.right != 0 || rect.bottom != 0) {
         // Padding from the background will be added to the layout separately, so does not need to

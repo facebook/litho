@@ -449,12 +449,6 @@ public class BuilderGenerator {
               specModel, prop, requiredIndex, ClassNames.COMPONENT_BUILDER, true));
     }
 
-    if (getRawType(prop.getTypeName()).equals(ClassNames.REFERENCE)) {
-      dataHolder.addMethod(
-          builderBuilder(
-              specModel, prop, requiredIndex, ClassNames.REFERENCE_BUILDER, true));
-    }
-
     if (getRawType(prop.getTypeName()).equals(ClassNames.SECTION)) {
       dataHolder.addMethod(
           builderBuilder(specModel, prop, requiredIndex, ClassNames.SECTION_BUILDER, true));

@@ -12,7 +12,6 @@ components_robolectric_test(
         "animation/*.java",
         "choreographercompat/*.java",
         "dataflow/*.java",
-        "reference/*Test.java",
         "drawable/*.java",
     ]),
     contacts = ["oncall+components_for_android@xmail.facebook.com"],

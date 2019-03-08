@@ -21,7 +21,6 @@ import android.graphics.drawable.Drawable;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import com.facebook.litho.drawable.ComparableDrawable;
-import com.facebook.litho.reference.Reference;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
@@ -340,7 +339,7 @@ class NoOpInternalNode extends InternalNode {
   }
 
   @Override
-  public InternalNode background(Reference<? extends Drawable> builder) {
+  public InternalNode background(Drawable builder) {
     return this;
   }
 

@@ -26,7 +26,6 @@ import androidx.annotation.Px;
 import androidx.annotation.StyleRes;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.drawable.ComparableDrawable;
-import com.facebook.litho.reference.Reference;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
@@ -66,7 +65,7 @@ public interface CommonProps extends CommonPropsCopyable {
 
   void heightPx(@Px int height);
 
-  void background(@Nullable Reference<? extends Drawable> background);
+  void background(@Nullable ComparableDrawable background);
 
   void testKey(String testKey);
 
@@ -139,7 +138,7 @@ public interface CommonProps extends CommonPropsCopyable {
   void clickHandler(EventHandler<ClickEvent> clickHandler);
 
   @Nullable
-  Reference<? extends Drawable> getBackground();
+  ComparableDrawable getBackground();
 
   void longClickHandler(EventHandler<LongClickEvent> longClickHandler);
 

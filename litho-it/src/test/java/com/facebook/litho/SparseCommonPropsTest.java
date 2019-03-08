@@ -29,8 +29,6 @@ import android.util.SparseArray;
 import com.facebook.litho.annotations.ImportantForAccessibility;
 import com.facebook.litho.drawable.ComparableColorDrawable;
 import com.facebook.litho.drawable.ComparableDrawable;
-import com.facebook.litho.reference.DrawableReference;
-import com.facebook.litho.reference.Reference;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaDirection;
@@ -121,8 +119,7 @@ public class SparseCommonPropsTest {
     mCommonProps.touchExpansionPx(YogaEdge.LEFT, 23);
     mCommonProps.touchExpansionPx(YogaEdge.ALL, 21);
     ComparableDrawable background = ComparableColorDrawable.create(Color.RED);
-    Reference<ComparableDrawable> bgRef = DrawableReference.create(background);
-    mCommonProps.background(bgRef);
+    mCommonProps.background(background);
     ComparableDrawable foreground = ComparableColorDrawable.create(Color.BLACK);
     mCommonProps.foreground(foreground);
 
@@ -264,7 +261,7 @@ public class SparseCommonPropsTest {
     verify(mNode).touchExpansionPx(YogaEdge.LEFT, 23);
     verify(mNode).touchExpansionPx(YogaEdge.ALL, 21);
 
-    verify(mNode).background(bgRef);
+    verify(mNode).background(background);
     verify(mNode).foreground(foreground);
 
     verify(mNode).wrapInView();

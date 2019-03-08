@@ -50,8 +50,6 @@ import com.facebook.litho.drawable.ComparableColorDrawable;
 import com.facebook.litho.drawable.ComparableDrawable;
 import com.facebook.litho.drawable.ComparableResDrawable;
 import com.facebook.litho.drawable.DefaultComparableDrawable;
-import com.facebook.litho.reference.DrawableReference;
-import com.facebook.litho.reference.Reference;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaBaselineFunction;
 import com.facebook.yoga.YogaConstants;
@@ -123,7 +121,7 @@ class InternalNode implements ComponentLayout {
   private boolean mDuplicateParentState;
   private long mPrivateFlags;
 
-  private @Nullable Reference<? extends Drawable> mBackground;
+  private @Nullable ComparableDrawable mBackground;
   private @Nullable ComparableDrawable mForeground;
   private final int[] mBorderColors = new int[Border.EDGE_COUNT];
   private final float[] mBorderRadius = new float[Border.RADIUS_COUNT];
@@ -290,7 +288,7 @@ class InternalNode implements ComponentLayout {
   }
 
   @Override
-  public @Nullable Reference<? extends Drawable> getBackground() {
+  public @Nullable ComparableDrawable getBackground() {
     return mBackground;
   }
 
@@ -796,19 +794,11 @@ class InternalNode implements ComponentLayout {
     return this;
   }
 
-  /**
-   * @deprecated use {@link #background(ComparableDrawable)} more efficient diffing of drawables.
-   */
-  @Deprecated
-  InternalNode background(@Nullable Reference<? extends Drawable> background) {
+  InternalNode background(@Nullable ComparableDrawable background) {
     mPrivateFlags |= PFLAG_BACKGROUND_IS_SET;
     mBackground = background;
-    setPaddingFromDrawableReference(background);
+    setPaddingFromBackground(background);
     return this;
-  }
-
-  InternalNode background(@Nullable ComparableDrawable background) {
-    return background(background != null ? DrawableReference.create(background) : null);
   }
 
   /**
@@ -819,6 +809,7 @@ class InternalNode implements ComponentLayout {
     if (background instanceof ComparableDrawable) {
       return background((ComparableDrawable) background);
     }
+
     return background(background != null ? DefaultComparableDrawable.create(background) : null);
   }
 
@@ -839,6 +830,10 @@ class InternalNode implements ComponentLayout {
    */
   @Deprecated
   InternalNode foreground(@Nullable Drawable foreground) {
+    if (foreground instanceof ComparableDrawable) {
+      return foreground((ComparableDrawable) foreground);
+    }
+
     return foreground(foreground != null ? DefaultComparableDrawable.create(foreground) : null);
   }
 
@@ -1616,11 +1611,8 @@ class InternalNode implements ComponentLayout {
     return mNestedTreeProps != null ? mNestedTreeProps.mPendingTreeProps : null;
   }
 
-  private <T extends Drawable> void setPaddingFromDrawableReference(@Nullable Reference<T> ref) {
-    if (ref == null) {
-      return;
-    }
-    final T drawable = Reference.acquire(mComponentContext.getAndroidContext(), ref);
+  private <T extends Drawable> void setPaddingFromBackground(Drawable drawable) {
+
     if (drawable != null) {
       final Rect backgroundPadding = new Rect();
       if (getDrawablePadding(drawable, backgroundPadding)) {
@@ -1629,8 +1621,6 @@ class InternalNode implements ComponentLayout {
         paddingPx(RIGHT, backgroundPadding.right);
         paddingPx(BOTTOM, backgroundPadding.bottom);
       }
-
-      Reference.release(mComponentContext.getAndroidContext(), drawable, ref);
     }
   }
 

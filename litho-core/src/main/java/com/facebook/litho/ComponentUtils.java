@@ -17,7 +17,7 @@
 package com.facebook.litho;
 
 import com.facebook.litho.annotations.Comparable;
-import com.facebook.litho.reference.Reference;
+import com.facebook.litho.drawable.ComparableDrawable;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collection;
@@ -86,8 +86,8 @@ public class ComponentUtils {
           }
           break;
 
-        case Comparable.REFERENCE:
-          if (Reference.shouldUpdate((Reference) val1, (Reference) val2)) {
+        case Comparable.COMPARABLE_DRAWABLE:
+          if (!((ComparableDrawable) val1).isEquivalentTo((ComparableDrawable) val2)) {
             return false;
           }
           break;

@@ -33,8 +33,6 @@ import androidx.annotation.StyleRes;
 import com.facebook.litho.annotations.ImportantForAccessibility;
 import com.facebook.litho.drawable.ComparableColorDrawable;
 import com.facebook.litho.drawable.ComparableDrawable;
-import com.facebook.litho.reference.DrawableReference;
-import com.facebook.litho.reference.Reference;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestSizeDependentComponent;
@@ -324,7 +322,6 @@ public class LayoutStateCreateTreeTest {
   @TargetApi(Build.VERSION_CODES.LOLLIPOP)
   public void testAddingAllAttributes() {
     final ComparableDrawable background = ComparableColorDrawable.create(Color.RED);
-    final Reference<ComparableDrawable> bgRef = DrawableReference.create(background);
     final ComparableDrawable foreground = ComparableColorDrawable.create(Color.BLACK);
     final EventHandler<ClickEvent> clickHandler = mock(EventHandler.class);
     final EventHandler<LongClickEvent> longClickHandler = mock(EventHandler.class);
@@ -411,7 +408,7 @@ public class LayoutStateCreateTreeTest {
                 .touchExpansionPx(YogaEdge.RIGHT, 22)
                 .touchExpansionPx(YogaEdge.LEFT, 23)
                 .touchExpansionPx(YogaEdge.ALL, 21)
-                .background(bgRef)
+                .background(background)
                 .foreground(foreground)
                 .wrapInView()
                 .clickHandler(clickHandler)
@@ -515,7 +512,7 @@ public class LayoutStateCreateTreeTest {
     verify(node).touchExpansionPx(YogaEdge.LEFT, 23);
     verify(node).touchExpansionPx(YogaEdge.ALL, 21);
 
-    verify(node).background(bgRef);
+    verify(node).background(background);
     verify(node).foreground(foreground);
 
     verify(node).wrapInView();
