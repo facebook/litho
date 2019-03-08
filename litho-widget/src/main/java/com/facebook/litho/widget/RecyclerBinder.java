@@ -699,8 +699,7 @@ public class RecyclerBinder
     mLayoutHandlerFactory = builder.layoutHandlerFactory;
     mLithoViewFactory = builder.lithoViewFactory;
     mUseSharedLayoutStateFuture = builder.useSharedLayoutStateFuture;
-    mSplitLayoutForMeasureAndRangeEstimation =
-        ComponentsConfiguration.splitLayoutForMeasureAndRangeEstimation;
+    mSplitLayoutForMeasureAndRangeEstimation = builder.splitLayoutForMeasureAndRangeEstimation;
 
     if (mLayoutHandlerFactory == null) {
 
