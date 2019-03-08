@@ -21,10 +21,10 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.io.Resources;
 import com.google.common.truth.Truth;
 import com.google.testing.compile.JavaFileObjects;
-import com.google.testing.compile.JavaSourceSubjectFactory;
 import com.google.testing.compile.JavaSourcesSubjectFactory;
 import javax.tools.JavaFileObject;
 import javax.tools.StandardLocation;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class SectionsProcessorIntegrationTest {
@@ -32,83 +32,80 @@ public class SectionsProcessorIntegrationTest {
   private static final String RES_PACKAGE =
       "com.facebook.litho.sections.processor.integration.resources";
 
+  @Ignore("T41117446") //  Enable them after switching target to AndroidX
   @Test
   public void compilesFullGroupSectionSpecWithoutError() {
-    // T41117446 Enable them after switching target to AndroidX
+    final JavaFileObject javaFileObject =
+        JavaFileObjects.forResource(
+            Resources.getResource(getClass(), RES_PREFIX + "FullGroupSectionSpec.java"));
 
-//
-//    final JavaFileObject javaFileObject =
-//        JavaFileObjects.forResource(
-//            Resources.getResource(getClass(), RES_PREFIX + "FullGroupSectionSpec.java"));
-//
-//    final JavaFileObject testEventFileObject =
-//        JavaFileObjects.forResource(
-//            Resources.getResource(getClass(), RES_PREFIX + "TestEvent.java"));
-//
-//    final JavaFileObject testTagFileObject =
-//        JavaFileObjects.forResource(Resources.getResource(getClass(), RES_PREFIX + "TestTag.java"));
-//
-//    final JavaFileObject expectedOutput =
-//        JavaFileObjects.forResource(
-//            Resources.getResource(getClass(), RES_PREFIX + "FullGroupSection.java"));
-//
-//    Truth.assertAbout(JavaSourcesSubjectFactory.javaSources())
-//        .that(ImmutableList.of(javaFileObject, testEventFileObject, testTagFileObject))
-//        .processedWith(new SectionsComponentProcessor())
-//        .compilesWithoutError()
-//        .and()
-//        .generatesFileNamed(StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "FullGroupSection.class")
-//        .and()
-//        .generatesFileNamed(
-//            StandardLocation.CLASS_OUTPUT,
-//            RES_PACKAGE,
-//            "FullGroupSection$FullGroupSectionStateContainer.class")
-//        .and()
-//        .generatesFileNamed(
-//            StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "FullGroupSection$Builder.class")
-//        .and()
-//        .generatesFileNamed(
-//            StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "FullGroupSectionSpec.class")
-//        .and()
-//        .generatesSources(expectedOutput);
+    final JavaFileObject testEventFileObject =
+        JavaFileObjects.forResource(
+            Resources.getResource(getClass(), RES_PREFIX + "TestEvent.java"));
+
+    final JavaFileObject testTagFileObject =
+        JavaFileObjects.forResource(Resources.getResource(getClass(), RES_PREFIX + "TestTag.java"));
+
+    final JavaFileObject expectedOutput =
+        JavaFileObjects.forResource(
+            Resources.getResource(getClass(), RES_PREFIX + "FullGroupSection.java"));
+
+    Truth.assertAbout(JavaSourcesSubjectFactory.javaSources())
+        .that(ImmutableList.of(javaFileObject, testEventFileObject, testTagFileObject))
+        .processedWith(new SectionsComponentProcessor())
+        .compilesWithoutError()
+        .and()
+        .generatesFileNamed(StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "FullGroupSection.class")
+        .and()
+        .generatesFileNamed(
+            StandardLocation.CLASS_OUTPUT,
+            RES_PACKAGE,
+            "FullGroupSection$FullGroupSectionStateContainer.class")
+        .and()
+        .generatesFileNamed(
+            StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "FullGroupSection$Builder.class")
+        .and()
+        .generatesFileNamed(
+            StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "FullGroupSectionSpec.class")
+        .and()
+        .generatesSources(expectedOutput);
   }
 
+  @Ignore("T41117446") //  Enable them after switching target to AndroidX
   @Test
   public void compilesFullDiffSectionSpecWithoutError() {
-    // T41117446 Enable them after switching target to AndroidX
+    final JavaFileObject javaFileObject =
+        JavaFileObjects.forResource(
+            Resources.getResource(getClass(), RES_PREFIX + "FullDiffSectionSpec.java"));
 
-//    final JavaFileObject javaFileObject =
-//        JavaFileObjects.forResource(
-//            Resources.getResource(getClass(), RES_PREFIX + "FullDiffSectionSpec.java"));
-//
-//    final JavaFileObject testEventFileObject =
-//        JavaFileObjects.forResource(
-//            Resources.getResource(getClass(), RES_PREFIX + "TestEvent.java"));
-//
-//    final JavaFileObject testTagFileObject =
-//        JavaFileObjects.forResource(Resources.getResource(getClass(), RES_PREFIX + "TestTag.java"));
-//
-//    final JavaFileObject expectedOutput =
-//        JavaFileObjects.forResource(
-//            Resources.getResource(getClass(), RES_PREFIX + "FullDiffSection.java"));
-//
-//    Truth.assertAbout(JavaSourcesSubjectFactory.javaSources())
-//        .that(ImmutableList.of(javaFileObject, testEventFileObject, testTagFileObject))
-//        .processedWith(new SectionsComponentProcessor())
-//        .compilesWithoutError()
-//        .and()
-//        .generatesFileNamed(StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "FullDiffSection.class")
-//        .and()
-//        .generatesFileNamed(
-//            StandardLocation.CLASS_OUTPUT,
-//            RES_PACKAGE,
-//            "FullDiffSection$FullDiffSectionStateContainer.class")
-//        .and()
-//        .generatesFileNamed(
-//            StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "FullDiffSection$Builder.class")
-//        .and()
-//        .generatesFileNamed(StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "FullDiffSectionSpec.class")
-//        .and()
-//        .generatesSources(expectedOutput);
+    final JavaFileObject testEventFileObject =
+        JavaFileObjects.forResource(
+            Resources.getResource(getClass(), RES_PREFIX + "TestEvent.java"));
+
+    final JavaFileObject testTagFileObject =
+        JavaFileObjects.forResource(Resources.getResource(getClass(), RES_PREFIX + "TestTag.java"));
+
+    final JavaFileObject expectedOutput =
+        JavaFileObjects.forResource(
+            Resources.getResource(getClass(), RES_PREFIX + "FullDiffSection.java"));
+
+    Truth.assertAbout(JavaSourcesSubjectFactory.javaSources())
+        .that(ImmutableList.of(javaFileObject, testEventFileObject, testTagFileObject))
+        .processedWith(new SectionsComponentProcessor())
+        .compilesWithoutError()
+        .and()
+        .generatesFileNamed(StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "FullDiffSection.class")
+        .and()
+        .generatesFileNamed(
+            StandardLocation.CLASS_OUTPUT,
+            RES_PACKAGE,
+            "FullDiffSection$FullDiffSectionStateContainer.class")
+        .and()
+        .generatesFileNamed(
+            StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "FullDiffSection$Builder.class")
+        .and()
+        .generatesFileNamed(StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "FullDiffSectionSpec.class")
+        .and()
+        .generatesSources(expectedOutput);
   }
 }
