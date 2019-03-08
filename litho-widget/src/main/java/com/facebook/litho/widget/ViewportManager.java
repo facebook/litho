@@ -16,6 +16,8 @@
 
 package com.facebook.litho.widget;
 
+import androidx.annotation.AnyThread;
+import androidx.annotation.GuardedBy;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.recyclerview.widget.RecyclerView;
@@ -44,7 +46,8 @@ final class ViewportManager {
   private int mTotalItemCount;
   private boolean mShouldUpdate;
 
-  @Nullable private List<ViewportChanged> mViewportChangedListeners;
+  @GuardedBy("this")
+  private final List<ViewportChanged> mViewportChangedListeners;
 
   private final LayoutInfo mLayoutInfo;
   private final ViewportScrollListener mViewportScrollListener = new ViewportScrollListener();
@@ -57,6 +60,7 @@ final class ViewportManager {
     mCurrentLastFullyVisiblePosition = layoutInfo.findLastFullyVisibleItemPosition();
     mTotalItemCount = layoutInfo.getItemCount();
     mLayoutInfo = layoutInfo;
+    mViewportChangedListeners = new ArrayList<>(2);
   }
 
   /**
@@ -91,12 +95,16 @@ final class ViewportManager {
     mTotalItemCount = totalItemCount;
     mShouldUpdate = false;
 
-    if (mViewportChangedListeners == null || mViewportChangedListeners.isEmpty()) {
-      return;
+    final List<ViewportChanged> viewportChangedListeners;
+    synchronized (this) {
+      if (mViewportChangedListeners.isEmpty()) {
+        return;
+      }
+      viewportChangedListeners = new ArrayList<>(mViewportChangedListeners);
     }
 
-    for (int i = 0, size = mViewportChangedListeners.size(); i < size; i++) {
-      final ViewportChanged viewportChangedListener = mViewportChangedListeners.get(i);
+    for (int i = 0, size = viewportChangedListeners.size(); i < size; i++) {
+      final ViewportChanged viewportChangedListener = viewportChangedListeners.get(i);
       viewportChangedListener.viewportChanged(
           firstVisiblePosition,
           lastVisiblePosition,
@@ -178,26 +186,30 @@ final class ViewportManager {
     return mCurrentFirstVisiblePosition < 0 || mCurrentLastVisiblePosition < 0 || mShouldUpdate;
   }
 
-  @UiThread
+  @AnyThread
   void addViewportChangedListener(@Nullable ViewportChanged viewportChangedListener) {
     if (viewportChangedListener == null) {
       return;
     }
 
-    if (mViewportChangedListeners == null) {
-      mViewportChangedListeners = new ArrayList<>(2);
+    synchronized (this) {
+      mViewportChangedListeners.add(viewportChangedListener);
     }
-
-    mViewportChangedListeners.add(viewportChangedListener);
   }
 
-  @UiThread
+  @AnyThread
   void removeViewportChangedListener(@Nullable ViewportChanged viewportChangedListener) {
-    if (viewportChangedListener == null || mViewportChangedListeners == null) {
+    if (viewportChangedListener == null) {
       return;
     }
 
-    mViewportChangedListeners.remove(viewportChangedListener);
+    synchronized (this) {
+      if (mViewportChangedListeners.isEmpty()) {
+        return;
+      }
+
+      mViewportChangedListeners.remove(viewportChangedListener);
+    }
   }
 
   @UiThread
