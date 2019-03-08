@@ -637,14 +637,14 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
         }
 
         if (visibilityChangedHandler != null) {
-          final int visibleWidth = localVisibleRect.right - localVisibleRect.left;
-          final int visibleHeight = localVisibleRect.bottom - localVisibleRect.top;
+          final int visibleWidth = sTempRect.right - sTempRect.left;
+          final int visibleHeight = sTempRect.bottom - sTempRect.top;
           EventDispatcherUtils.dispatchOnVisibilityChanged(
               visibilityChangedHandler,
               visibleWidth,
               visibleHeight,
-              100f * visibleWidth / layoutState.getWidth(),
-              100f * visibleHeight / layoutState.getHeight());
+              100f * visibleWidth / visibilityOutputBounds.width(),
+              100f * visibleHeight / visibilityOutputBounds.height());
         }
       }
       if (isDoingPerfLog) {

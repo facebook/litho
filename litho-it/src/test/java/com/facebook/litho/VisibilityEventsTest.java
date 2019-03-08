@@ -461,6 +461,60 @@ public class VisibilityEventsTest {
   }
 
   @Test
+  public void testVisibleRectChangedEventLargeView() {
+    final TestComponent content = create(mContext).build();
+    final EventHandler<VisibilityChangedEvent> visibilityChangedHandler =
+        new EventHandler<>(content, 3);
+
+    final LithoView lithoView =
+        mountComponent(
+            mContext,
+            mLithoView,
+            Column.create(mContext)
+                .child(
+                    Wrapper.create(mContext)
+                        .delegate(content)
+                        .visibilityChangedHandler(visibilityChangedHandler)
+                        .widthPx(10)
+                        .heightPx(10))
+                .build(),
+            true,
+            10,
+            1000);
+
+    VisibilityChangedEvent visibilityChangedEvent =
+        (VisibilityChangedEvent) content.getEventState(visibilityChangedHandler);
+    assertThat(visibilityChangedEvent.visibleHeight).isEqualTo(10);
+    assertThat(visibilityChangedEvent.visibleWidth).isEqualTo(10);
+    assertThat(visibilityChangedEvent.percentVisibleHeight).isEqualTo(100f);
+    assertThat(visibilityChangedEvent.percentVisibleWidth).isEqualTo(100f);
+
+    content.getDispatchedEventHandlers().clear();
+
+    lithoView.performIncrementalMount(new Rect(LEFT, 0, RIGHT, 4), true);
+    assertThat(content.getDispatchedEventHandlers()).contains(visibilityChangedHandler);
+
+    visibilityChangedEvent =
+        (VisibilityChangedEvent) content.getEventState(visibilityChangedHandler);
+
+    assertThat(visibilityChangedEvent.visibleHeight).isEqualTo(4);
+    assertThat(visibilityChangedEvent.visibleWidth).isEqualTo(10);
+    assertThat(visibilityChangedEvent.percentVisibleHeight).isEqualTo(40f);
+    assertThat(visibilityChangedEvent.percentVisibleWidth).isEqualTo(100f);
+
+    lithoView.performIncrementalMount(new Rect(LEFT, 0, RIGHT, 5), true);
+    assertThat(content.getDispatchedEventHandlers()).contains(visibilityChangedHandler);
+
+    visibilityChangedEvent =
+        (VisibilityChangedEvent) content.getEventState(visibilityChangedHandler);
+
+    assertThat(visibilityChangedEvent.visibleHeight).isEqualTo(5);
+    assertThat(visibilityChangedEvent.visibleWidth).isEqualTo(10);
+    assertThat(visibilityChangedEvent.percentVisibleHeight).isEqualTo(50f);
+    assertThat(visibilityChangedEvent.percentVisibleWidth).isEqualTo(100f);
+  }
+
+  @Test
   public void testVisibleAndInvisibleEvents() {
     final TestComponent content = create(mContext).build();
     final EventHandler<VisibleEvent> visibleEventHandler = new EventHandler<>(content, 1);
