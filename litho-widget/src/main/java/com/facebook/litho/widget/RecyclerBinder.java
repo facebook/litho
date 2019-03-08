@@ -241,6 +241,7 @@ public class RecyclerBinder
   // measure.
   @VisibleForTesting @Nullable volatile Size mSizeForMeasure;
   private StickyHeaderController mStickyHeaderController;
+  private @Nullable StickyHeaderControllerFactory mStickyHeaderControllerFactory;
   private final boolean mUseSharedLayoutStateFuture;
   private final @Nullable LayoutHandler mThreadPoolHandler;
   private final @Nullable LayoutThreadPoolConfiguration mThreadPoolConfig;
@@ -391,6 +392,7 @@ public class RecyclerBinder
     private boolean incrementalMount = true;
     private boolean splitLayoutForMeasureAndRangeEstimation =
         ComponentsConfiguration.splitLayoutForMeasureAndRangeEstimation;
+    private @Nullable StickyHeaderControllerFactory stickyHeaderControllerFactory;
 
     /**
      * @param rangeRatio specifies how big a range this binder should try to compute. The range is
@@ -609,6 +611,13 @@ public class RecyclerBinder
       return this;
     }
 
+    /** Sets a factory to be used to create a custom controller for sticky section headers */
+    public Builder stickyHeaderControllerFactory(
+        @Nullable StickyHeaderControllerFactory stickyHeaderControllerFactory) {
+      this.stickyHeaderControllerFactory = stickyHeaderControllerFactory;
+      return this;
+    }
+
     /** @param c The {@link ComponentContext} the RecyclerBinder will use. */
     public RecyclerBinder build(ComponentContext c) {
       componentContext =
@@ -773,6 +782,7 @@ public class RecyclerBinder
     mBgScheduleAllInitRange = builder.bgScheduleAllInitRange;
     mHScrollAsyncMode = builder.hscrollAsyncMode;
     mIncrementalMountEnabled = builder.incrementalMount;
+    mStickyHeaderControllerFactory = builder.stickyHeaderControllerFactory;
   }
 
   /**
@@ -2629,8 +2639,12 @@ public class RecyclerBinder
     if (sectionsRecycler == null) {
       return;
     }
-    if (mStickyHeaderController == null) {
-      mStickyHeaderController = new StickyHeaderController(this);
+
+    if (mStickyHeaderControllerFactory == null) {
+      mStickyHeaderController = new StickyHeaderControllerImpl((HasStickyHeader) this);
+    } else {
+      mStickyHeaderController =
+          mStickyHeaderControllerFactory.getController((HasStickyHeader) this);
     }
 
     mStickyHeaderController.init(sectionsRecycler);

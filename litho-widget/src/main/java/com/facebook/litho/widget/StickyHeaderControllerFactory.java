@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-present Facebook, Inc.
+ * Copyright 2019-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,24 +16,10 @@
 
 package com.facebook.litho.widget;
 
-import com.facebook.litho.ComponentTree;
-
-public interface HasStickyHeader extends ViewportInfo {
+public interface StickyHeaderControllerFactory {
   /**
-   * @param position
-   * @return Whether the item at given position is *sticky*
+   * @param hasStickyHeader component binder which implements HasStickyHeader interface
+   * @return a new instance of a sticky header controller
    */
-  boolean isSticky(int position);
-
-  /**
-   * @param position
-   * @return Whether the item at given position is *valid*, i.e. whether such position exists.
-   */
-  boolean isValidPosition(int position);
-
-  /**
-   * @param position
-   * @return a component tree for the item at position.
-   */
-  ComponentTree getComponentForStickyHeaderAt(int position);
+  StickyHeaderController getController(HasStickyHeader hasStickyHeader);
 }

@@ -63,6 +63,7 @@ import com.facebook.litho.widget.PTRRefreshEvent;
 import com.facebook.litho.widget.Recycler;
 import com.facebook.litho.widget.RecyclerBinder;
 import com.facebook.litho.widget.RecyclerEventsController;
+import com.facebook.litho.widget.StickyHeaderControllerFactory;
 import com.facebook.litho.widget.ViewportInfo;
 import java.util.List;
 
@@ -259,6 +260,12 @@ public class RecyclerCollectionComponentSpec {
   @OnCreateInitialState
   static void createInitialState(
       final ComponentContext c,
+      StateValue<SnapHelper> snapHelper,
+      StateValue<SectionTree> sectionTree,
+      StateValue<RecyclerCollectionLoadEventsHandler> recyclerCollectionLoadEventsHandler,
+      StateValue<Binder<RecyclerView>> binder,
+      StateValue<LoadingState> loadingState,
+      StateValue<RecyclerCollectionEventsController> internalEventsController,
       @Prop Section section,
       @Prop(optional = true) RecyclerConfiguration recyclerConfiguration,
       @Prop(optional = true) RecyclerCollectionEventsController eventsController,
@@ -276,12 +283,7 @@ public class RecyclerCollectionComponentSpec {
       @Prop(optional = true) boolean canMeasureRecycler,
       // Don't use this. If false, off incremental mount for all subviews of this Recycler.
       @Prop(optional = true) boolean incrementalMount,
-      StateValue<SnapHelper> snapHelper,
-      StateValue<SectionTree> sectionTree,
-      StateValue<RecyclerCollectionLoadEventsHandler> recyclerCollectionLoadEventsHandler,
-      StateValue<Binder<RecyclerView>> binder,
-      StateValue<LoadingState> loadingState,
-      StateValue<RecyclerCollectionEventsController> internalEventsController) {
+      @Prop(optional = true) StickyHeaderControllerFactory stickyHeaderControllerFactory) {
 
     RecyclerBinderConfiguration binderConfiguration =
         recyclerConfiguration.getRecyclerBinderConfiguration();
@@ -304,6 +306,7 @@ public class RecyclerCollectionComponentSpec {
             .incrementalMount(incrementalMount)
             .splitLayoutForMeasureAndRangeEstimation(
                 binderConfiguration.splitLayoutForMeasureAndRangeEstimation())
+            .stickyHeaderControllerFactory(stickyHeaderControllerFactory)
             .build(c);
 
     SectionBinderTarget targetBinder =
