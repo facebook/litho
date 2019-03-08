@@ -322,6 +322,7 @@ public class RecyclerCollectionComponentSpec {
             .asyncPropUpdates(asyncPropUpdates)
             .asyncStateUpdates(asyncStateUpdates)
             .forceSyncStateUpdates(forceSyncStateUpdates)
+            .changeSetThreadHandler(binderConfiguration.getChangeSetThreadHandler())
             .build();
     sectionTree.set(sectionTreeInstance);
 

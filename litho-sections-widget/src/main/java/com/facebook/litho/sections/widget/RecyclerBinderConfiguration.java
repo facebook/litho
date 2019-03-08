@@ -16,6 +16,7 @@
 
 package com.facebook.litho.sections.widget;
 
+import android.os.Handler;
 import androidx.annotation.Nullable;
 import com.facebook.litho.ComponentLogParams;
 import com.facebook.litho.config.ComponentsConfiguration;
@@ -44,6 +45,7 @@ public class RecyclerBinderConfiguration {
   @Nullable private String mSplitLayoutTag;
   @Nullable private List<ComponentLogParams> mInvalidStateLogParamsList;
   private final boolean mSplitLayoutForMeasureAndRangeEstimation;
+  @Nullable private Handler mChangeSetThreadHandler;
 
   public static Builder create() {
     return new Builder();
@@ -63,7 +65,8 @@ public class RecyclerBinderConfiguration {
       boolean enableStableIds,
       boolean useSharedLayoutStateFuture,
       boolean asyncInitRange,
-      boolean splitLayoutForMeasureAndRangeEstimation) {
+      boolean splitLayoutForMeasureAndRangeEstimation,
+      @Nullable Handler changeSetThreadHandler) {
     mRangeRatio = rangeRatio;
     mLayoutHandlerFactory = layoutHandlerFactory;
     mIsCircular = circular;
@@ -78,6 +81,7 @@ public class RecyclerBinderConfiguration {
     mUseSharedLayoutStateFuture = useSharedLayoutStateFuture;
     mAsyncInitRange = asyncInitRange;
     mSplitLayoutForMeasureAndRangeEstimation = splitLayoutForMeasureAndRangeEstimation;
+    mChangeSetThreadHandler = changeSetThreadHandler;
   }
 
   public float getRangeRatio() {
@@ -132,6 +136,10 @@ public class RecyclerBinderConfiguration {
     return mInvalidStateLogParamsList;
   }
 
+  public @Nullable Handler getChangeSetThreadHandler() {
+    return mChangeSetThreadHandler;
+  }
+
   public boolean splitLayoutForMeasureAndRangeEstimation() {
     return mSplitLayoutForMeasureAndRangeEstimation;
   }
@@ -157,6 +165,7 @@ public class RecyclerBinderConfiguration {
     private boolean mAsyncInitRange = ComponentsConfiguration.asyncInitRange;
     private boolean mSplitLayoutForMeasureAndRangeEstimation =
         ComponentsConfiguration.splitLayoutForMeasureAndRangeEstimation;
+    @Nullable private Handler mChangeSetThreadHandler;
 
     Builder() {}
 
@@ -273,6 +282,11 @@ public class RecyclerBinderConfiguration {
       return this;
     }
 
+    public Builder changeSetThreadHandler(Handler changeSetThreadHandler) {
+      mChangeSetThreadHandler = changeSetThreadHandler;
+      return this;
+    }
+
     public RecyclerBinderConfiguration build() {
       return new RecyclerBinderConfiguration(
           mRangeRatio,
@@ -288,7 +302,8 @@ public class RecyclerBinderConfiguration {
           mEnableStableIds,
           mUseSharedLayoutStateFuture,
           mAsyncInitRange,
-          mSplitLayoutForMeasureAndRangeEstimation);
+          mSplitLayoutForMeasureAndRangeEstimation,
+          mChangeSetThreadHandler);
     }
   }
 }
