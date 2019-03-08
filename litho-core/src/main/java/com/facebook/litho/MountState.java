@@ -2406,7 +2406,14 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       mCanMountIncrementallyMountItems.delete(mLayoutOutputsIds[index]);
     }
 
-    item.releaseMountContent(mContext.getAndroidContext());
+    final String rootComponentName =
+        mLastMountedLayoutState == null
+            ? "null_layout"
+            : mLastMountedLayoutState.mRootComponentName;
+    if (!(isHostSpec(component)
+        && ComponentHostRecycleUtil.shouldSkipRecyclingComponentHost(index, rootComponentName))) {
+      item.releaseMountContent(mContext.getAndroidContext());
+    }
 
     if (mMountStats.isLoggingEnabled) {
       mMountStats.unmountedTimes.add((System.nanoTime() - startTime) / NS_IN_MS);

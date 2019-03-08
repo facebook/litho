@@ -283,4 +283,12 @@ public class ComponentsConfiguration {
 
   // todo T40814333 clean up after running experiment.
   public static boolean splitLayoutForMeasureAndRangeEstimation = false;
+
+  public static boolean isMountIndexBisectEnabled = false;
+  public static int mountIndexBisectStart = 0;
+  public static int mountIndexBisectEnd = 1000;
+
+  public static boolean isRootComponentBisectEnabled = false;
+  public static String rootComponentBisectStart = "aaaaa";
+  public static String rootComponentBisectEnd = "zzzzz";
 }
