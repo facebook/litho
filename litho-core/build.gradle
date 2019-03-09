@@ -37,7 +37,7 @@ android {
 
         debug {
             buildConfigField 'boolean', internalBuildField, 'true'
-            buildConfigField 'boolean', useIncrementalMountHelper, 'true'
+            buildConfigField 'boolean', usestIncrementalMountHelper, 'true'
         }
 
         release {
@@ -55,7 +55,6 @@ android {
 dependencies {
     // Project dependencies
     api project(':litho-annotations')
-    compileOnly project(':litho-stubs')
 
     // Annotations
     compileOnly deps.jsr305

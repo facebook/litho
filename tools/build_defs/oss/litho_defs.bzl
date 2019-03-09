@@ -4,10 +4,6 @@ LITHO_VISIBILITY = [
     "PUBLIC",
 ]
 
-LITHO_STUBS_VISIBILITY = [
-    "//litho-core/...",
-]
-
 LITHO_TESTING_UTIL_VISIBILITY = [
     "PUBLIC",
 ]
@@ -25,8 +21,6 @@ LITHO_JAVA_TARGET = make_dep_path("litho-core/src/main/java/com/facebook/litho:l
 LITHO_ANNOTATIONS_TARGET = make_dep_path("litho-annotations/src/main/java/com/facebook/litho/annotations:annotations")
 
 LITHO_CONFIG_TARGET = make_dep_path("litho-core/src/main/java/com/facebook/litho/config:config")
-
-LITHO_DISPLAYLISTSTUBS_TARGET = make_dep_path("litho-stubs:stubs")
 
 LITHO_VIEWCOMPAT_TARGET = make_dep_path("litho-core/src/main/java/com/facebook/litho/viewcompat:viewcompat")
 
