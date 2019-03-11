@@ -21,3 +21,5 @@ This is a selection of community contributions to Litho and projects.
   [@jayrambhia](https://github.com/jayrambhia/LithoGifSearch).
 - [Hunt](https://github.com/dbof10/hunt-android) - A products surfing app built with Litho by
   [@dbof10](https://github.com/dbof10/hunt-android).
+- [Slither](https://github.com/mishrabhilash/slither) - A component to show shimmer on Litho components
+  [@mishrabhilash](https://github.com/mishrabhilash).
