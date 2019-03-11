@@ -37,7 +37,7 @@ android {
 
         debug {
             buildConfigField 'boolean', internalBuildField, 'true'
-            buildConfigField 'boolean', usestIncrementalMountHelper, 'true'
+            buildConfigField 'boolean', useIncrementalMountHelper, 'true'
         }
 
         release {
