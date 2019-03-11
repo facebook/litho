@@ -16,6 +16,8 @@
 
 package com.facebook.litho;
 
+import static com.facebook.litho.ComponentContext.NULL_LAYOUT;
+
 import android.animation.StateListAnimator;
 import android.util.SparseArray;
 import android.view.ViewOutlineProvider;
@@ -570,6 +572,10 @@ class CommonPropsHolder implements CommonProps {
 
   @Override
   public void copyInto(ComponentContext c, InternalNode node) {
+    if (node == NULL_LAYOUT) {
+      return;
+    }
+
     c.applyStyle(node, mDefStyleAttr, mDefStyleRes);
 
     if (mNodeInfo != null) {

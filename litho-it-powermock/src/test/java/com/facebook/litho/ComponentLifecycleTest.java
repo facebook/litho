@@ -50,7 +50,7 @@ import org.powermock.reflect.Whitebox;
 import org.robolectric.RuntimeEnvironment;
 
 /** Tests {@link ComponentLifecycle} */
-@PrepareForTest({InternalNode.class, DiffNode.class, LayoutState.class})
+@PrepareForTest({DefaultInternalNode.class, DiffNode.class, LayoutState.class})
 @PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "androidx.*", "android.*"})
 @RunWith(ComponentsTestRunner.class)
 public class ComponentLifecycleTest {
@@ -63,7 +63,7 @@ public class ComponentLifecycleTest {
   private int mNestedTreeWidthSpec;
   private int mNestedTreeHeightSpec;
 
-  private InternalNode mNode;
+  private DefaultInternalNode mNode;
   private YogaNode mYogaNode;
   private DiffNode mDiffNode;
   private ComponentContext mContext;
@@ -72,10 +72,10 @@ public class ComponentLifecycleTest {
   @Before
   public void setUp() {
     mockStatic(LayoutState.class);
-    mockStatic(InternalNode.class);
+    mockStatic(DefaultInternalNode.class);
 
     mDiffNode = mock(DiffNode.class);
-    mNode = mock(InternalNode.class);
+    mNode = mock(DefaultInternalNode.class);
     mYogaNode = YogaNode.create();
     mYogaNode.setData(mNode);
 
@@ -83,7 +83,7 @@ public class ComponentLifecycleTest {
     when(mNode.getDiffNode()).thenReturn(mDiffNode);
     when(mDiffNode.getLastMeasuredWidth()).thenReturn(-1f);
     when(mDiffNode.getLastMeasuredHeight()).thenReturn(-1f);
-    when(InternalNode.createInternalNode(any(ComponentContext.class))).thenReturn(mNode);
+    when(DefaultInternalNode.createInternalNode(any(ComponentContext.class))).thenReturn(mNode);
 
     StateHandler stateHandler = mock(StateHandler.class);
     mContext = spy(new ComponentContext(RuntimeEnvironment.application, stateHandler));
@@ -233,7 +233,7 @@ public class ComponentLifecycleTest {
 
     PowerMockito.verifyStatic();
     // Calling here to verify static call.
-    InternalNode.createInternalNode(mContext);
+    DefaultInternalNode.createInternalNode(mContext);
     verify(component, never()).onCreateLayout(
         any(ComponentContext.class));
     verify(component, never()).onCreateLayoutWithSizeSpec(

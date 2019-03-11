@@ -360,7 +360,7 @@ public class InternalNodeTest {
   public void testPaddingIsSetFromDrawable() {
     YogaNode yogaNode = mock(YogaNode.class);
     InternalNode node =
-        new InternalNode(new ComponentContext(RuntimeEnvironment.application), yogaNode);
+        new DefaultInternalNode(new ComponentContext(RuntimeEnvironment.application), yogaNode);
 
     node.backgroundRes(background_with_padding);
 
@@ -409,7 +409,7 @@ public class InternalNodeTest {
 
   @Test
   public void testContextSpecificComponentAssertionPasses() {
-    InternalNode.assertContextSpecificStyleNotSet(acquireInternalNode());
+    InternalNodeUtils.assertContextSpecificStyleNotSet(acquireInternalNode());
   }
 
   @Test
@@ -422,7 +422,7 @@ public class InternalNodeTest {
     node.alignSelf(YogaAlign.AUTO);
     node.flex(1f);
 
-    InternalNode.assertContextSpecificStyleNotSet(node);
+    InternalNodeUtils.assertContextSpecificStyleNotSet(node);
     verify(componentsLogger)
         .emitMessage(
             ComponentsLogger.LogLevel.WARNING,
@@ -430,14 +430,14 @@ public class InternalNodeTest {
   }
 
   private static boolean isFlagSet(InternalNode internalNode, String flagName) {
-    long flagPosition = Whitebox.getInternalState(InternalNode.class, flagName);
+    long flagPosition = Whitebox.getInternalState(DefaultInternalNode.class, flagName);
     long flags = Whitebox.getInternalState(internalNode, "mPrivateFlags");
 
     return ((flags & flagPosition) != 0);
   }
 
   private static void clearFlag(InternalNode internalNode, String flagName) {
-    long flagPosition = Whitebox.getInternalState(InternalNode.class, flagName);
+    long flagPosition = Whitebox.getInternalState(DefaultInternalNode.class, flagName);
     long flags = Whitebox.getInternalState(internalNode, "mPrivateFlags");
     flags &= ~flagPosition;
     Whitebox.setInternalState(internalNode, "mPrivateFlags", flags);

@@ -16,8 +16,9 @@
 
 package com.facebook.litho;
 
+import static com.facebook.litho.ComponentContext.NULL_LAYOUT;
+
 import android.animation.StateListAnimator;
-import android.graphics.drawable.Drawable;
 import android.util.SparseArray;
 import android.util.SparseIntArray;
 import android.view.ViewOutlineProvider;
@@ -753,6 +754,10 @@ class SparseCommonPropsHolder implements CommonProps {
 
   @Override
   public void copyInto(ComponentContext c, InternalNode node) {
+    if (node == NULL_LAYOUT) {
+      return;
+    }
+
     if (mIntProps != null) {
       c.applyStyle(node, mIntProps.get(INDEX_DefStyleAttr), mIntProps.get(INDEX_DefStyleRes));
     }

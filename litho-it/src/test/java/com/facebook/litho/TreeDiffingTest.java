@@ -159,16 +159,10 @@ public class TreeDiffingTest {
           float heightConstraint) {
 
     final YogaMeasureFunction measureFunc =
-            Whitebox.getInternalState(
-                    node.mYogaNode,
-                    "mMeasureFunction");
+        Whitebox.getInternalState(node.getYogaNode(), "mMeasureFunction");
 
     return measureFunc.measure(
-            node.mYogaNode,
-            widthConstranint,
-            EXACTLY,
-            heightConstraint,
-            EXACTLY);
+        node.getYogaNode(), widthConstranint, EXACTLY, heightConstraint, EXACTLY);
   }
 
   @Test

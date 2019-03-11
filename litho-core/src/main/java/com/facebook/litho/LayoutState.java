@@ -1676,7 +1676,7 @@ class LayoutState {
     }
 
     // This is checking only nested tree roots however it will be moved to check all the tree roots.
-    InternalNode.assertContextSpecificStyleNotSet(resolvedLayout);
+    InternalNodeUtils.assertContextSpecificStyleNotSet(resolvedLayout);
 
     return resolvedLayout;
   }
@@ -1778,7 +1778,7 @@ class LayoutState {
       component.clearCachedLayout();
 
       final boolean hasValidDirection =
-          InternalNode.hasValidLayoutDirectionInNestedTree(holder, cachedLayout);
+          InternalNodeUtils.hasValidLayoutDirectionInNestedTree(holder, cachedLayout);
       final boolean hasCompatibleSizeSpec =
           hasCompatibleSizeSpec(
               cachedLayout.getLastWidthSpec(),

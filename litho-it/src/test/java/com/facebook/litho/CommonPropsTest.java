@@ -350,7 +350,7 @@ public class CommonPropsTest {
 
   @Test
   public void testPaddingFromDrawable() {
-    final InternalNode node = spy(new InternalNode(mComponentContext));
+    final InternalNode node = spy(new DefaultInternalNode(mComponentContext));
 
     mCommonProps.background(
             ComparableResDrawable.create(
@@ -366,7 +366,7 @@ public class CommonPropsTest {
 
   @Test
   public void testPaddingFromDrawableIsOverwritten() {
-    final InternalNode node = spy(new InternalNode(mComponentContext));
+    final InternalNode node = spy(new DefaultInternalNode(mComponentContext));
 
     mCommonProps.background(
             ComparableResDrawable.create(

@@ -638,7 +638,7 @@ public class LayoutStateCreateTreeTest {
     }
   }
 
-  private class TestInternalNode extends InternalNode {
+  private class TestInternalNode extends DefaultInternalNode {
     private int mFlexGrowCounter;
 
     protected TestInternalNode(ComponentContext componentContext) {
@@ -646,7 +646,7 @@ public class LayoutStateCreateTreeTest {
     }
 
     @Override
-    TestInternalNode flexGrow(float flex) {
+    public TestInternalNode flexGrow(float flex) {
       mFlexGrowCounter++;
       return (TestInternalNode) super.flexGrow(flex);
     }

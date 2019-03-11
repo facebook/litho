@@ -16,10 +16,8 @@
 
 package com.facebook.litho;
 
-/**
- * Used by the {@link com.facebook.litho.ViewNodeInfoTest}.
- */
-public class TouchExpansionTestInternalNode extends InternalNode {
+/** Used by the {@link com.facebook.litho.ViewNodeInfoTest}. */
+public class TouchExpansionTestInternalNode extends DefaultInternalNode {
 
   protected TouchExpansionTestInternalNode(ComponentContext c) {
     super(c);
@@ -46,27 +44,27 @@ public class TouchExpansionTestInternalNode extends InternalNode {
   }
 
   @Override
-  int getTouchExpansionLeft() {
+  public int getTouchExpansionLeft() {
     return 1;
   }
 
   @Override
-  int getTouchExpansionTop() {
+  public int getTouchExpansionTop() {
     return 2;
   }
 
   @Override
-  int getTouchExpansionRight() {
+  public int getTouchExpansionRight() {
     return 3;
   }
 
   @Override
-  int getTouchExpansionBottom() {
+  public int getTouchExpansionBottom() {
     return 4;
   }
 
   @Override
-  boolean hasTouchExpansion() {
+  public boolean hasTouchExpansion() {
     return true;
   }
 }
