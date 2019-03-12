@@ -16,6 +16,7 @@
 
 package com.facebook.litho.widget;
 
+import static android.graphics.Color.TRANSPARENT;
 import static android.os.Build.VERSION.SDK_INT;
 import static android.os.Build.VERSION_CODES.JELLY_BEAN;
 import static android.os.Build.VERSION_CODES.JELLY_BEAN_MR1;
@@ -154,6 +155,12 @@ import javax.annotation.Nullable;
   }
 )
 class TextInputSpec {
+  /**
+   * Dummy drawable used for differentiating user-provided null background drawable from default
+   * drawable of the spec
+   */
+  private static final Drawable UNSET_DRAWABLE = new ColorDrawable(TRANSPARENT);
+
   @PropDefault
   protected static final ColorStateList textColorStateList = ColorStateList.valueOf(Color.BLACK);
 
@@ -164,6 +171,7 @@ class TextInputSpec {
   @PropDefault static final CharSequence initialText = "";
   @PropDefault protected static final int shadowColor = Color.GRAY;
   @PropDefault protected static final int textSize = 13;
+  @PropDefault protected static final Drawable inputBackground = UNSET_DRAWABLE;
   @PropDefault protected static final Typeface typeface = Typeface.DEFAULT;
   @PropDefault protected static final int textAlignment = TEXT_ALIGNMENT_GRAVITY;
   @PropDefault protected static final int gravity = Gravity.CENTER_VERTICAL | Gravity.START;
@@ -620,15 +628,17 @@ class TextInputSpec {
 
   @Nullable
   static Drawable getBackgroundOrDefault(ComponentContext c, Drawable specifiedBackground) {
-    if (specifiedBackground != null) {
-      return specifiedBackground;
+    if (specifiedBackground == UNSET_DRAWABLE) {
+      final int[] attrs = {android.R.attr.background};
+      TypedArray a =
+          c.getAndroidContext()
+              .obtainStyledAttributes(null, attrs, android.R.attr.editTextStyle, 0);
+      Drawable defaultBackground = a.getDrawable(0);
+      a.recycle();
+      return defaultBackground;
     }
-    final int[] attrs = {android.R.attr.background};
-    TypedArray a =
-        c.getAndroidContext().obtainStyledAttributes(null, attrs, android.R.attr.editTextStyle, 0);
-    Drawable defaultBackground = a.getDrawable(0);
-    a.recycle();
-    return defaultBackground;
+
+    return specifiedBackground;
   }
 
   @OnTrigger(RequestFocusEvent.class)
@@ -695,7 +705,7 @@ class TextInputSpec {
       view.dispatchKeyEvent(keyEvent);
     }
   }
-  
+
   @OnTrigger(SetSelectionEvent.class)
   static void setSelection(
       ComponentContext c,

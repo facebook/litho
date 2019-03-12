@@ -20,6 +20,7 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import android.content.res.Resources;
 import android.content.res.TypedArray;
+import android.graphics.drawable.Drawable;
 import android.widget.TextView;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
@@ -104,6 +105,22 @@ public class TextInputSpecTest {
     f.get(editText);
 
     assertThat(f.get(editText)).isEqualTo(drawableRes);
+  }
+
+  @Test
+  public void testNullInputBackground() throws IllegalAccessException, NoSuchFieldException {
+    Component.Builder component = TextInput.create(mContext).inputBackground(null);
+    final android.widget.EditText editText = getEditText(component);
+    Drawable editTextBackground = editText.getBackground();
+    assertThat(editTextBackground).isEqualTo(null);
+  }
+
+  @Test
+  public void testDefaultInputBackground() throws IllegalAccessException, NoSuchFieldException {
+    Component.Builder component = TextInput.create(mContext);
+    final android.widget.EditText editText = getEditText(component);
+    Drawable editTextBackground = editText.getBackground();
+    assertThat(editTextBackground).isNotNull();
   }
 
   private static android.widget.EditText getEditText(Component.Builder component) {
