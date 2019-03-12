@@ -32,7 +32,6 @@ import com.facebook.yoga.YogaFlexDirection;
 import com.facebook.yoga.YogaJustify;
 import com.facebook.yoga.YogaMeasureFunction;
 import com.facebook.yoga.YogaNode;
-import com.facebook.yoga.YogaPositionType;
 import com.facebook.yoga.YogaWrap;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +39,7 @@ import javax.annotation.Nullable;
 
 /** Internal class representing a {@link ComponentLayout}. */
 @ThreadConfined(ThreadConfined.ANY)
-public interface InternalNode extends ComponentLayout {
+public interface InternalNode extends ComponentLayout, LayoutProps, Copyable<InternalNode> {
 
   void addChildAt(InternalNode child, int index);
 
@@ -54,13 +53,9 @@ public interface InternalNode extends ComponentLayout {
 
   InternalNode alignItems(YogaAlign alignItems);
 
-  InternalNode alignSelf(YogaAlign alignSelf);
-
   void appendComponent(Component component);
 
   boolean areCachedMeasuresValid();
-
-  InternalNode aspectRatio(float aspectRatio);
 
   InternalNode background(@Nullable ComparableDrawable background);
 
@@ -90,20 +85,10 @@ public interface InternalNode extends ComponentLayout {
 
   InternalNode duplicateParentState(boolean duplicateParentState);
 
-  InternalNode flex(float flex);
-
   /** Used by stetho to re-set auto value */
   InternalNode flexBasisAuto();
 
-  InternalNode flexBasisPercent(float percent);
-
-  InternalNode flexBasisPx(@Px int flexBasis);
-
   InternalNode flexDirection(YogaFlexDirection direction);
-
-  InternalNode flexGrow(float flexGrow);
-
-  InternalNode flexShrink(float flexShrink);
 
   InternalNode focusedHandler(@Nullable EventHandler<FocusedVisibleEvent> focusedHandler);
 
@@ -316,10 +301,6 @@ public interface InternalNode extends ComponentLayout {
   /** Used by stetho to re-set auto value */
   InternalNode heightAuto();
 
-  InternalNode heightPercent(float percent);
-
-  InternalNode heightPx(@Px int height);
-
   InternalNode importantForAccessibility(int importantForAccessibility);
 
   InternalNode invisibleHandler(@Nullable EventHandler<InvisibleEvent> invisibleHandler);
@@ -346,50 +327,14 @@ public interface InternalNode extends ComponentLayout {
 
   boolean isPaddingPercent(YogaEdge edge);
 
-  InternalNode isReferenceBaseline(boolean isReferenceBaseline);
-
   InternalNode justifyContent(YogaJustify justifyContent);
-
-  InternalNode layoutDirection(YogaDirection direction);
-
-  InternalNode marginAuto(YogaEdge edge);
-
-  InternalNode marginPercent(YogaEdge edge, float percent);
-
-  InternalNode marginPx(YogaEdge edge, @Px int margin);
 
   /** Mark this node as a nested tree root holder. */
   void markIsNestedTreeHolder(TreeProps currentTreeProps);
 
   void markLayoutSeen();
 
-  InternalNode maxHeightPercent(float percent);
-
-  InternalNode maxHeightPx(@Px int maxHeight);
-
-  InternalNode maxWidthPercent(float percent);
-
-  InternalNode maxWidthPx(@Px int maxWidth);
-
-  InternalNode minHeightPercent(float percent);
-
-  InternalNode minHeightPx(@Px int minHeight);
-
-  InternalNode minWidthPercent(float percent);
-
-  InternalNode minWidthPx(@Px int minWidth);
-
   void padding(Edges padding, @Nullable InternalNode holder);
-
-  InternalNode paddingPercent(YogaEdge edge, float percent);
-
-  InternalNode paddingPx(YogaEdge edge, @Px int padding);
-
-  InternalNode positionPercent(YogaEdge edge, float percent);
-
-  InternalNode positionPx(YogaEdge edge, @Px int position);
-
-  InternalNode positionType(YogaPositionType positionType);
 
   /** Continually walks the node hierarchy until a node returns a non inherited layout direction */
   YogaDirection recursivelyResolveLayoutDirection();
@@ -427,8 +372,6 @@ public interface InternalNode extends ComponentLayout {
 
   InternalNode unfocusedHandler(@Nullable EventHandler<UnfocusedVisibleEvent> unfocusedHandler);
 
-  void useHeightAsBaselineFunction(boolean useHeightAsBaselineFunction);
-
   InternalNode visibilityChangedHandler(
       @Nullable EventHandler<VisibilityChangedEvent> visibilityChangedHandler);
 
@@ -441,15 +384,9 @@ public interface InternalNode extends ComponentLayout {
   // Used by stetho to re-set auto value
   InternalNode widthAuto();
 
-  InternalNode widthPercent(float percent);
-
-  InternalNode widthPx(@Px int width);
-
   InternalNode wrap(YogaWrap wrap);
 
   InternalNode wrapInView();
-
-  void copyInto(InternalNode target);
 
   void applyAttributes(TypedArray a);
 

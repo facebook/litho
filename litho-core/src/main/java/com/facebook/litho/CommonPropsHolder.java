@@ -48,7 +48,7 @@ class CommonPropsHolder implements CommonProps {
   private byte mPrivateFlags;
   @Nullable private OtherProps mOtherProps;
   @Nullable private NodeInfo mNodeInfo;
-  @Nullable private LayoutProps mLayoutProps;
+  @Nullable private CopyableLayoutProps mLayoutProps;
   @Nullable private ComparableDrawable mBackground;
   @Nullable private String mTestKey;
   private boolean mWrapInView;
@@ -65,7 +65,7 @@ class CommonPropsHolder implements CommonProps {
 
   private LayoutProps getOrCreateLayoutProps() {
     if (mLayoutProps == null) {
-      mLayoutProps = new LayoutProps();
+      mLayoutProps = new DefaultLayoutProps();
     }
 
     return mLayoutProps;
@@ -78,7 +78,7 @@ class CommonPropsHolder implements CommonProps {
   }
 
   @Override
-  public void positionType(YogaPositionType positionType) {
+  public void positionType(@Nullable YogaPositionType positionType) {
     getOrCreateLayoutProps().positionType(positionType);
   }
 
@@ -797,7 +797,7 @@ class CommonPropsHolder implements CommonProps {
     }
   }
 
-  static class LayoutProps {
+  static class DefaultLayoutProps implements CopyableLayoutProps {
     private static final int PFLAG_WIDTH_IS_SET = 1 << 0;
     private static final int PFLAG_WIDTH_PERCENT_IS_SET = 1 << 1;
     private static final int PFLAG_MIN_WIDTH_IS_SET = 1 << 2;
@@ -862,112 +862,134 @@ class CommonPropsHolder implements CommonProps {
     private boolean mIsReferenceBaseline;
     private boolean mUseHeightAsBaseline;
 
-    void widthPx(@Px int width) {
+    @Override
+    public void widthPx(@Px int width) {
       mPrivateFlags |= PFLAG_WIDTH_IS_SET;
       mWidthPx = width;
     }
 
-    private void widthPercent(float percent) {
+    @Override
+    public void widthPercent(float percent) {
       mPrivateFlags |= PFLAG_WIDTH_PERCENT_IS_SET;
       mWidthPercent = percent;
     }
 
-    private void minWidthPx(@Px int minWidth) {
+    @Override
+    public void minWidthPx(@Px int minWidth) {
       mPrivateFlags |= PFLAG_MIN_WIDTH_IS_SET;
       mMinWidthPx = minWidth;
     }
 
-    private void maxWidthPx(@Px int maxWidth) {
+    @Override
+    public void maxWidthPx(@Px int maxWidth) {
       mPrivateFlags |= PFLAG_MAX_WIDTH_IS_SET;
       mMaxWidthPx = maxWidth;
     }
 
-    private void minWidthPercent(float percent) {
+    @Override
+    public void minWidthPercent(float percent) {
       mPrivateFlags |= PFLAG_MIN_WIDTH_PERCENT_IS_SET;
       mMinWidthPercent = percent;
     }
 
-    private void maxWidthPercent(float percent) {
+    @Override
+    public void maxWidthPercent(float percent) {
       mPrivateFlags |= PFLAG_MAX_WIDTH_PERCENT_IS_SET;
       mMaxWidthPercent = percent;
     }
 
-    void heightPx(@Px int height) {
+    @Override
+    public void heightPx(@Px int height) {
       mPrivateFlags |= PFLAG_HEIGHT_IS_SET;
       mHeightPx = height;
     }
 
-    private void heightPercent(float percent) {
+    @Override
+    public void heightPercent(float percent) {
       mPrivateFlags |= PFLAG_HEIGHT_PERCENT_IS_SET;
       mHeightPercent = percent;
     }
 
-    private void minHeightPx(@Px int minHeight) {
+    @Override
+    public void minHeightPx(@Px int minHeight) {
       mPrivateFlags |= PFLAG_MIN_HEIGHT_IS_SET;
       mMinHeightPx = minHeight;
     }
 
-    private void maxHeightPx(@Px int maxHeight) {
+    @Override
+    public void maxHeightPx(@Px int maxHeight) {
       mPrivateFlags |= PFLAG_MAX_HEIGHT_IS_SET;
       mMaxHeightPx = maxHeight;
     }
 
-    private void minHeightPercent(float percent) {
+    @Override
+    public void minHeightPercent(float percent) {
       mPrivateFlags |= PFLAG_MIN_HEIGHT_PERCENT_IS_SET;
       mMinHeightPercent = percent;
     }
 
-    private void maxHeightPercent(float percent) {
+    @Override
+    public void maxHeightPercent(float percent) {
       mPrivateFlags |= PFLAG_MAX_HEIGHT_PERCENT_IS_SET;
       mMaxHeightPercent = percent;
     }
 
-    private void layoutDirection(YogaDirection direction) {
+    @Override
+    public void layoutDirection(YogaDirection direction) {
       mPrivateFlags |= PFLAG_LAYOUT_DIRECTION_IS_SET;
       mLayoutDirection = direction;
     }
 
-    private void alignSelf(YogaAlign alignSelf) {
+    @Override
+    public void alignSelf(YogaAlign alignSelf) {
       mPrivateFlags |= PFLAG_ALIGN_SELF_IS_SET;
       mAlignSelf = alignSelf;
     }
 
-    private void flex(float flex) {
+    @Override
+    public void flex(float flex) {
       mPrivateFlags |= PFLAG_FLEX_IS_SET;
       mFlex = flex;
     }
 
-    private void flexGrow(float flexGrow) {
+    @Override
+    public void flexGrow(float flexGrow) {
       mPrivateFlags |= PFLAG_FLEX_GROW_IS_SET;
       mFlexGrow = flexGrow;
     }
 
-    private void flexShrink(float flexShrink) {
+    @Override
+    public void flexShrink(float flexShrink) {
       mPrivateFlags |= PFLAG_FLEX_SHRINK_IS_SET;
       mFlexShrink = flexShrink;
     }
 
-    private void flexBasisPx(@Px int flexBasis) {
+    @Override
+    public void flexBasisPx(@Px int flexBasis) {
       mPrivateFlags |= PFLAG_FLEX_BASIS_IS_SET;
       mFlexBasisPx = flexBasis;
     }
 
-    private void flexBasisPercent(float percent) {
+    @Override
+    public void flexBasisPercent(float percent) {
       mPrivateFlags |= PFLAG_FLEX_BASIS_PERCENT_IS_SET;
       mFlexBasisPercent = percent;
     }
 
-    private void aspectRatio(float aspectRatio) {
+    @Override
+    public void aspectRatio(float aspectRatio) {
       mPrivateFlags |= PFLAG_ASPECT_RATIO_IS_SET;
       mAspectRatio = aspectRatio;
     }
 
-    void positionType(@Nullable YogaPositionType positionType) {
+    @Override
+    public void positionType(@Nullable YogaPositionType positionType) {
       mPrivateFlags |= PFLAG_POSITION_TYPE_IS_SET;
       mPositionType = positionType;
     }
 
-    void positionPx(YogaEdge edge, @Px int position) {
+    @Override
+    public void positionPx(YogaEdge edge, @Px int position) {
       mPrivateFlags |= PFLAG_POSITION_IS_SET;
       if (mPositions == null) {
         mPositions = new Edges();
@@ -976,7 +998,8 @@ class CommonPropsHolder implements CommonProps {
       mPositions.set(edge, position);
     }
 
-    private void positionPercent(YogaEdge edge, float percent) {
+    @Override
+    public void positionPercent(YogaEdge edge, float percent) {
       mPrivateFlags |= PFLAG_POSITION_PERCENT_IS_SET;
       if (mPositionPercents == null) {
         mPositionPercents = new Edges();
@@ -984,7 +1007,8 @@ class CommonPropsHolder implements CommonProps {
       mPositionPercents.set(edge, percent);
     }
 
-    private void paddingPx(YogaEdge edge, @Px int padding) {
+    @Override
+    public void paddingPx(YogaEdge edge, @Px int padding) {
       mPrivateFlags |= PFLAG_PADDING_IS_SET;
       if (mPaddings == null) {
         mPaddings = new Edges();
@@ -992,7 +1016,8 @@ class CommonPropsHolder implements CommonProps {
       mPaddings.set(edge, padding);
     }
 
-    private void paddingPercent(YogaEdge edge, float percent) {
+    @Override
+    public void paddingPercent(YogaEdge edge, float percent) {
       mPrivateFlags |= PFLAG_PADDING_PERCENT_IS_SET;
       if (mPaddingPercents == null) {
         mPaddingPercents = new Edges();
@@ -1000,7 +1025,8 @@ class CommonPropsHolder implements CommonProps {
       mPaddingPercents.set(edge, percent);
     }
 
-    private void marginPx(YogaEdge edge, @Px int margin) {
+    @Override
+    public void marginPx(YogaEdge edge, @Px int margin) {
       mPrivateFlags |= PFLAG_MARGIN_IS_SET;
 
       if (mMargins == null) {
@@ -1009,7 +1035,8 @@ class CommonPropsHolder implements CommonProps {
       mMargins.set(edge, margin);
     }
 
-    private void marginPercent(YogaEdge edge, float percent) {
+    @Override
+    public void marginPercent(YogaEdge edge, float percent) {
       mPrivateFlags |= PFLAG_MARGIN_PERCENT_IS_SET;
       if (mMarginPercents == null) {
         mMarginPercents = new Edges();
@@ -1017,7 +1044,8 @@ class CommonPropsHolder implements CommonProps {
       mMarginPercents.set(edge, percent);
     }
 
-    private void marginAuto(YogaEdge edge) {
+    @Override
+    public void marginAuto(YogaEdge edge) {
       mPrivateFlags |= PFLAG_MARGIN_AUTO_IS_SET;
       if (mMarginAutos == null) {
         mMarginAutos = new ArrayList<>(2);
@@ -1025,85 +1053,88 @@ class CommonPropsHolder implements CommonProps {
       mMarginAutos.add(edge);
     }
 
-    private void isReferenceBaseline(boolean isReferenceBaseline) {
+    @Override
+    public void isReferenceBaseline(boolean isReferenceBaseline) {
       mPrivateFlags |= PFLAG_IS_REFERENCE_BASELINE_IS_SET;
       mIsReferenceBaseline = isReferenceBaseline;
     }
 
-    private void useHeightAsBaseline(boolean useHeightAsBaseline) {
+    @Override
+    public void useHeightAsBaseline(boolean useHeightAsBaseline) {
       mPrivateFlags |= PFLAG_USE_HEIGHT_AS_BASELINE_IS_SET;
       mUseHeightAsBaseline = useHeightAsBaseline;
     }
 
-    void copyInto(InternalNode node) {
+    @Override
+    public void copyInto(LayoutProps target) {
       if ((mPrivateFlags & PFLAG_WIDTH_IS_SET) != 0L) {
-        node.widthPx(mWidthPx);
+        target.widthPx(mWidthPx);
       }
       if ((mPrivateFlags & PFLAG_WIDTH_PERCENT_IS_SET) != 0L) {
-        node.widthPercent(mWidthPercent);
+        target.widthPercent(mWidthPercent);
       }
       if ((mPrivateFlags & PFLAG_MIN_WIDTH_IS_SET) != 0L) {
-        node.minWidthPx(mMinWidthPx);
+        target.minWidthPx(mMinWidthPx);
       }
       if ((mPrivateFlags & PFLAG_MIN_WIDTH_PERCENT_IS_SET) != 0L) {
-        node.minWidthPercent(mMinWidthPercent);
+        target.minWidthPercent(mMinWidthPercent);
       }
       if ((mPrivateFlags & PFLAG_MAX_WIDTH_IS_SET) != 0L) {
-        node.maxWidthPx(mMaxWidthPx);
+        target.maxWidthPx(mMaxWidthPx);
       }
       if ((mPrivateFlags & PFLAG_MAX_WIDTH_PERCENT_IS_SET) != 0L) {
-        node.maxWidthPercent(mMaxWidthPercent);
+        target.maxWidthPercent(mMaxWidthPercent);
       }
       if ((mPrivateFlags & PFLAG_HEIGHT_IS_SET) != 0L) {
-        node.heightPx(mHeightPx);
+        target.heightPx(mHeightPx);
       }
       if ((mPrivateFlags & PFLAG_HEIGHT_PERCENT_IS_SET) != 0L) {
-        node.heightPercent(mHeightPercent);
+        target.heightPercent(mHeightPercent);
       }
       if ((mPrivateFlags & PFLAG_MIN_HEIGHT_IS_SET) != 0L) {
-        node.minHeightPx(mMinHeightPx);
+        target.minHeightPx(mMinHeightPx);
       }
       if ((mPrivateFlags & PFLAG_MIN_HEIGHT_PERCENT_IS_SET) != 0L) {
-        node.minHeightPercent(mMinHeightPercent);
+        target.minHeightPercent(mMinHeightPercent);
       }
       if ((mPrivateFlags & PFLAG_MAX_HEIGHT_IS_SET) != 0L) {
-        node.maxHeightPx(mMaxHeightPx);
+        target.maxHeightPx(mMaxHeightPx);
       }
       if ((mPrivateFlags & PFLAG_MAX_HEIGHT_PERCENT_IS_SET) != 0L) {
-        node.maxHeightPercent(mMaxHeightPercent);
+        target.maxHeightPercent(mMaxHeightPercent);
       }
       if ((mPrivateFlags & PFLAG_LAYOUT_DIRECTION_IS_SET) != 0L) {
-        node.layoutDirection(mLayoutDirection);
+        target.layoutDirection(mLayoutDirection);
       }
       if ((mPrivateFlags & PFLAG_ALIGN_SELF_IS_SET) != 0L) {
-        node.alignSelf(mAlignSelf);
+        target.alignSelf(mAlignSelf);
       }
       if ((mPrivateFlags & PFLAG_FLEX_IS_SET) != 0L) {
-        node.flex(mFlex);
+        target.flex(mFlex);
       }
       if ((mPrivateFlags & PFLAG_FLEX_GROW_IS_SET) != 0L) {
-        node.flexGrow(mFlexGrow);
+        target.flexGrow(mFlexGrow);
       }
       if ((mPrivateFlags & PFLAG_FLEX_SHRINK_IS_SET) != 0L) {
-        node.flexShrink(mFlexShrink);
+        target.flexShrink(mFlexShrink);
       }
       if ((mPrivateFlags & PFLAG_FLEX_BASIS_IS_SET) != 0L) {
-        node.flexBasisPx(mFlexBasisPx);
+        target.flexBasisPx(mFlexBasisPx);
       }
       if ((mPrivateFlags & PFLAG_FLEX_BASIS_PERCENT_IS_SET) != 0L) {
-        node.flexBasisPercent(mFlexBasisPercent);
+        target.flexBasisPercent(mFlexBasisPercent);
       }
       if ((mPrivateFlags & PFLAG_ASPECT_RATIO_IS_SET) != 0L) {
-        node.aspectRatio(mAspectRatio);
+        target.aspectRatio(mAspectRatio);
       }
       if ((mPrivateFlags & PFLAG_POSITION_TYPE_IS_SET) != 0L) {
-        node.positionType(mPositionType);
+        target.positionType(mPositionType);
       }
       if ((mPrivateFlags & PFLAG_POSITION_IS_SET) != 0L) {
         for (int i = 0; i < Edges.EDGES_LENGTH; i++) {
           final float value = mPositions.getRaw(i);
           if (!YogaConstants.isUndefined(value)) {
-            node.positionPx(YogaEdge.fromInt(i), (int) value);
+            target.positionPx(YogaEdge.fromInt(i), (int) value);
           }
         }
       }
@@ -1111,7 +1142,7 @@ class CommonPropsHolder implements CommonProps {
         for (int i = 0; i < Edges.EDGES_LENGTH; i++) {
           final float value = mPositionPercents.getRaw(i);
           if (!YogaConstants.isUndefined(value)) {
-            node.positionPercent(YogaEdge.fromInt(i), value);
+            target.positionPercent(YogaEdge.fromInt(i), value);
           }
         }
       }
@@ -1119,7 +1150,7 @@ class CommonPropsHolder implements CommonProps {
         for (int i = 0; i < Edges.EDGES_LENGTH; i++) {
           final float value = mPaddings.getRaw(i);
           if (!YogaConstants.isUndefined(value)) {
-            node.paddingPx(YogaEdge.fromInt(i), (int) value);
+            target.paddingPx(YogaEdge.fromInt(i), (int) value);
           }
         }
       }
@@ -1127,7 +1158,7 @@ class CommonPropsHolder implements CommonProps {
         for (int i = 0; i < Edges.EDGES_LENGTH; i++) {
           final float value = mPaddingPercents.getRaw(i);
           if (!YogaConstants.isUndefined(value)) {
-            node.paddingPercent(YogaEdge.fromInt(i), value);
+            target.paddingPercent(YogaEdge.fromInt(i), value);
           }
         }
       }
@@ -1135,7 +1166,7 @@ class CommonPropsHolder implements CommonProps {
         for (int i = 0; i < Edges.EDGES_LENGTH; i++) {
           final float value = mMargins.getRaw(i);
           if (!YogaConstants.isUndefined(value)) {
-            node.marginPx(YogaEdge.fromInt(i), (int) value);
+            target.marginPx(YogaEdge.fromInt(i), (int) value);
           }
         }
       }
@@ -1143,20 +1174,20 @@ class CommonPropsHolder implements CommonProps {
         for (int i = 0; i < Edges.EDGES_LENGTH; i++) {
           final float value = mMarginPercents.getRaw(i);
           if (!YogaConstants.isUndefined(value)) {
-            node.marginPercent(YogaEdge.fromInt(i), value);
+            target.marginPercent(YogaEdge.fromInt(i), value);
           }
         }
       }
       if ((mPrivateFlags & PFLAG_MARGIN_AUTO_IS_SET) != 0L) {
         for (YogaEdge edge : mMarginAutos) {
-          node.marginAuto(edge);
+          target.marginAuto(edge);
         }
       }
       if ((mPrivateFlags & PFLAG_IS_REFERENCE_BASELINE_IS_SET) != 0L) {
-        node.isReferenceBaseline(mIsReferenceBaseline);
+        target.isReferenceBaseline(mIsReferenceBaseline);
       }
       if ((mPrivateFlags & PFLAG_USE_HEIGHT_AS_BASELINE_IS_SET) != 0L) {
-        node.useHeightAsBaselineFunction(mUseHeightAsBaseline);
+        target.useHeightAsBaseline(mUseHeightAsBaseline);
       }
     }
   }

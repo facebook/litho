@@ -646,9 +646,8 @@ public class LayoutStateCreateTreeTest {
     }
 
     @Override
-    public TestInternalNode flexGrow(float flex) {
+    public void flexGrow(float flex) {
       mFlexGrowCounter++;
-      return (TestInternalNode) super.flexGrow(flex);
     }
   }
 }

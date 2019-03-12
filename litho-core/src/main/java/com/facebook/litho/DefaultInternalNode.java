@@ -236,10 +236,9 @@ public class DefaultInternalNode implements InternalNode {
   }
 
   @Override
-  public InternalNode alignSelf(YogaAlign alignSelf) {
+  public void alignSelf(YogaAlign alignSelf) {
     mPrivateFlags |= PFLAG_ALIGN_SELF_IS_SET;
     mYogaNode.setAlignSelf(alignSelf);
-    return this;
   }
 
   @Override
@@ -253,10 +252,9 @@ public class DefaultInternalNode implements InternalNode {
   }
 
   @Override
-  public InternalNode aspectRatio(float aspectRatio) {
+  public void aspectRatio(float aspectRatio) {
     mPrivateFlags |= PFLAG_ASPECT_RATIO_IS_SET;
     mYogaNode.setAspectRatio(aspectRatio);
-    return this;
   }
 
   @Override
@@ -287,7 +285,7 @@ public class DefaultInternalNode implements InternalNode {
   @Override
   public InternalNode backgroundRes(@DrawableRes int resId) {
     if (resId == 0) {
-      return background((ComparableDrawable) null);
+      return background(null);
     }
 
     return background(ComparableResDrawable.create(mComponentContext.getAndroidContext(), resId));
@@ -368,10 +366,9 @@ public class DefaultInternalNode implements InternalNode {
   }
 
   @Override
-  public InternalNode flex(float flex) {
+  public void flex(float flex) {
     mPrivateFlags |= PFLAG_FLEX_IS_SET;
     mYogaNode.setFlex(flex);
-    return this;
   }
 
   // Used by stetho to re-set auto value
@@ -382,17 +379,15 @@ public class DefaultInternalNode implements InternalNode {
   }
 
   @Override
-  public InternalNode flexBasisPercent(float percent) {
+  public void flexBasisPercent(float percent) {
     mPrivateFlags |= PFLAG_FLEX_BASIS_IS_SET;
     mYogaNode.setFlexBasisPercent(percent);
-    return this;
   }
 
   @Override
-  public InternalNode flexBasisPx(@Px int flexBasis) {
+  public void flexBasisPx(@Px int flexBasis) {
     mPrivateFlags |= PFLAG_FLEX_BASIS_IS_SET;
     mYogaNode.setFlexBasis(flexBasis);
-    return this;
   }
 
   @Override
@@ -402,17 +397,15 @@ public class DefaultInternalNode implements InternalNode {
   }
 
   @Override
-  public InternalNode flexGrow(float flexGrow) {
+  public void flexGrow(float flexGrow) {
     mPrivateFlags |= PFLAG_FLEX_GROW_IS_SET;
     mYogaNode.setFlexGrow(flexGrow);
-    return this;
   }
 
   @Override
-  public InternalNode flexShrink(float flexShrink) {
+  public void flexShrink(float flexShrink) {
     mPrivateFlags |= PFLAG_FLEX_SHRINK_IS_SET;
     mYogaNode.setFlexShrink(flexShrink);
-    return this;
   }
 
   @Override
@@ -900,17 +893,15 @@ public class DefaultInternalNode implements InternalNode {
   }
 
   @Override
-  public InternalNode heightPercent(float percent) {
+  public void heightPercent(float percent) {
     mPrivateFlags |= PFLAG_HEIGHT_IS_SET;
     mYogaNode.setHeightPercent(percent);
-    return this;
   }
 
   @Override
-  public InternalNode heightPx(@Px int height) {
+  public void heightPx(@Px int height) {
     mPrivateFlags |= PFLAG_HEIGHT_IS_SET;
     mYogaNode.setHeight(height);
-    return this;
   }
 
   @Override
@@ -973,9 +964,8 @@ public class DefaultInternalNode implements InternalNode {
   }
 
   @Override
-  public InternalNode isReferenceBaseline(boolean isReferenceBaseline) {
+  public void isReferenceBaseline(boolean isReferenceBaseline) {
     mYogaNode.setIsReferenceBaseline(isReferenceBaseline);
-    return this;
   }
 
   @Override
@@ -985,31 +975,27 @@ public class DefaultInternalNode implements InternalNode {
   }
 
   @Override
-  public InternalNode layoutDirection(YogaDirection direction) {
+  public void layoutDirection(YogaDirection direction) {
     mPrivateFlags |= PFLAG_LAYOUT_DIRECTION_IS_SET;
     mYogaNode.setDirection(direction);
-    return this;
   }
 
   @Override
-  public InternalNode marginAuto(YogaEdge edge) {
+  public void marginAuto(YogaEdge edge) {
     mPrivateFlags |= PFLAG_MARGIN_IS_SET;
     mYogaNode.setMarginAuto(edge);
-    return this;
   }
 
   @Override
-  public InternalNode marginPercent(YogaEdge edge, float percent) {
+  public void marginPercent(YogaEdge edge, float percent) {
     mPrivateFlags |= PFLAG_MARGIN_IS_SET;
     mYogaNode.setMarginPercent(edge, percent);
-    return this;
   }
 
   @Override
-  public InternalNode marginPx(YogaEdge edge, @Px int margin) {
+  public void marginPx(YogaEdge edge, @Px int margin) {
     mPrivateFlags |= PFLAG_MARGIN_IS_SET;
     mYogaNode.setMargin(edge, margin);
-    return this;
   }
 
   /** Mark this node as a nested tree root holder. */
@@ -1025,59 +1011,51 @@ public class DefaultInternalNode implements InternalNode {
   }
 
   @Override
-  public InternalNode maxHeightPercent(float percent) {
+  public void maxHeightPercent(float percent) {
     mPrivateFlags |= PFLAG_MAX_HEIGHT_IS_SET;
     mYogaNode.setMaxHeightPercent(percent);
-    return this;
   }
 
   @Override
-  public InternalNode maxHeightPx(@Px int maxHeight) {
+  public void maxHeightPx(@Px int maxHeight) {
     mPrivateFlags |= PFLAG_MAX_HEIGHT_IS_SET;
     mYogaNode.setMaxHeight(maxHeight);
-    return this;
   }
 
   @Override
-  public InternalNode maxWidthPercent(float percent) {
+  public void maxWidthPercent(float percent) {
     mPrivateFlags |= PFLAG_MAX_WIDTH_IS_SET;
     mYogaNode.setMaxWidthPercent(percent);
-    return this;
   }
 
   @Override
-  public InternalNode maxWidthPx(@Px int maxWidth) {
+  public void maxWidthPx(@Px int maxWidth) {
     mPrivateFlags |= PFLAG_MAX_WIDTH_IS_SET;
     mYogaNode.setMaxWidth(maxWidth);
-    return this;
   }
 
   @Override
-  public InternalNode minHeightPercent(float percent) {
+  public void minHeightPercent(float percent) {
     mPrivateFlags |= PFLAG_MIN_HEIGHT_IS_SET;
     mYogaNode.setMinHeightPercent(percent);
-    return this;
   }
 
   @Override
-  public InternalNode minHeightPx(@Px int minHeight) {
+  public void minHeightPx(@Px int minHeight) {
     mPrivateFlags |= PFLAG_MIN_HEIGHT_IS_SET;
     mYogaNode.setMinHeight(minHeight);
-    return this;
   }
 
   @Override
-  public InternalNode minWidthPercent(float percent) {
+  public void minWidthPercent(float percent) {
     mPrivateFlags |= PFLAG_MIN_WIDTH_IS_SET;
     mYogaNode.setMinWidthPercent(percent);
-    return this;
   }
 
   @Override
-  public InternalNode minWidthPx(@Px int minWidth) {
+  public void minWidthPx(@Px int minWidth) {
     mPrivateFlags |= PFLAG_MIN_WIDTH_IS_SET;
     mYogaNode.setMinWidth(minWidth);
-    return this;
   }
 
   @Override
@@ -1097,52 +1075,43 @@ public class DefaultInternalNode implements InternalNode {
   }
 
   @Override
-  public InternalNode paddingPercent(YogaEdge edge, float percent) {
+  public void paddingPercent(YogaEdge edge, float percent) {
     mPrivateFlags |= PFLAG_PADDING_IS_SET;
-
     if (mNestedTreeProps != null && mNestedTreeProps.mIsNestedTreeHolder) {
       getNestedTreePadding().set(edge, percent);
       setIsPaddingPercent(edge, true);
     } else {
       mYogaNode.setPaddingPercent(edge, percent);
     }
-
-    return this;
   }
 
   @Override
-  public InternalNode paddingPx(YogaEdge edge, @Px int padding) {
+  public void paddingPx(YogaEdge edge, @Px int padding) {
     mPrivateFlags |= PFLAG_PADDING_IS_SET;
-
     if (mNestedTreeProps != null && mNestedTreeProps.mIsNestedTreeHolder) {
       getNestedTreePadding().set(edge, padding);
       setIsPaddingPercent(edge, false);
     } else {
       mYogaNode.setPadding(edge, padding);
     }
-
-    return this;
   }
 
   @Override
-  public InternalNode positionPercent(YogaEdge edge, float percent) {
+  public void positionPercent(YogaEdge edge, float percent) {
     mPrivateFlags |= PFLAG_POSITION_IS_SET;
     mYogaNode.setPositionPercent(edge, percent);
-    return this;
   }
 
   @Override
-  public InternalNode positionPx(YogaEdge edge, @Px int position) {
+  public void positionPx(YogaEdge edge, @Px int position) {
     mPrivateFlags |= PFLAG_POSITION_IS_SET;
     mYogaNode.setPosition(edge, position);
-    return this;
   }
 
   @Override
-  public InternalNode positionType(YogaPositionType positionType) {
+  public void positionType(@Nullable YogaPositionType positionType) {
     mPrivateFlags |= PFLAG_POSITION_TYPE_IS_SET;
     mYogaNode.setPositionType(positionType);
-    return this;
   }
 
   /** Continually walks the node hierarchy until a node returns a non inherited layout direction */
@@ -1302,7 +1271,7 @@ public class DefaultInternalNode implements InternalNode {
   }
 
   @Override
-  public void useHeightAsBaselineFunction(boolean useHeightAsBaselineFunction) {
+  public void useHeightAsBaseline(boolean useHeightAsBaselineFunction) {
     if (useHeightAsBaselineFunction) {
       mYogaNode.setBaselineFunction(
           new YogaBaselineFunction() {
@@ -1349,17 +1318,15 @@ public class DefaultInternalNode implements InternalNode {
   }
 
   @Override
-  public InternalNode widthPercent(float percent) {
+  public void widthPercent(float percent) {
     mPrivateFlags |= PFLAG_WIDTH_IS_SET;
     mYogaNode.setWidthPercent(percent);
-    return this;
   }
 
   @Override
-  public InternalNode widthPx(@Px int width) {
+  public void widthPx(@Px int width) {
     mPrivateFlags |= PFLAG_WIDTH_IS_SET;
     mYogaNode.setWidth(width);
-    return this;
   }
 
   @Override

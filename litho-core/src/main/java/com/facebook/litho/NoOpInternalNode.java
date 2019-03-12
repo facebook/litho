@@ -65,21 +65,11 @@ class NoOpInternalNode implements InternalNode {
   }
 
   @Override
-  public InternalNode alignSelf(YogaAlign alignSelf) {
-    return null;
-  }
-
-  @Override
   public void appendComponent(Component component) {}
 
   @Override
   public boolean areCachedMeasuresValid() {
     return false;
-  }
-
-  @Override
-  public InternalNode aspectRatio(float aspectRatio) {
-    return null;
   }
 
   @Override
@@ -132,12 +122,10 @@ class NoOpInternalNode implements InternalNode {
   }
 
   @Override
-  public InternalNode duplicateParentState(boolean duplicateParentState) {
-    return null;
-  }
+  public void copyInto(InternalNode target) {}
 
   @Override
-  public InternalNode flex(float flex) {
+  public InternalNode duplicateParentState(boolean duplicateParentState) {
     return null;
   }
 
@@ -147,27 +135,7 @@ class NoOpInternalNode implements InternalNode {
   }
 
   @Override
-  public InternalNode flexBasisPercent(float percent) {
-    return null;
-  }
-
-  @Override
-  public InternalNode flexBasisPx(int flexBasis) {
-    return null;
-  }
-
-  @Override
   public InternalNode flexDirection(YogaFlexDirection direction) {
-    return null;
-  }
-
-  @Override
-  public InternalNode flexGrow(float flexGrow) {
-    return null;
-  }
-
-  @Override
-  public InternalNode flexShrink(float flexShrink) {
     return null;
   }
 
@@ -612,16 +580,6 @@ class NoOpInternalNode implements InternalNode {
   }
 
   @Override
-  public InternalNode heightPercent(float percent) {
-    return null;
-  }
-
-  @Override
-  public InternalNode heightPx(int height) {
-    return null;
-  }
-
-  @Override
   public InternalNode importantForAccessibility(int importantForAccessibility) {
     return null;
   }
@@ -667,32 +625,7 @@ class NoOpInternalNode implements InternalNode {
   }
 
   @Override
-  public InternalNode isReferenceBaseline(boolean isReferenceBaseline) {
-    return null;
-  }
-
-  @Override
   public InternalNode justifyContent(YogaJustify justifyContent) {
-    return null;
-  }
-
-  @Override
-  public InternalNode layoutDirection(YogaDirection direction) {
-    return null;
-  }
-
-  @Override
-  public InternalNode marginAuto(YogaEdge edge) {
-    return null;
-  }
-
-  @Override
-  public InternalNode marginPercent(YogaEdge edge, float percent) {
-    return null;
-  }
-
-  @Override
-  public InternalNode marginPx(YogaEdge edge, int margin) {
     return null;
   }
 
@@ -703,72 +636,7 @@ class NoOpInternalNode implements InternalNode {
   public void markLayoutSeen() {}
 
   @Override
-  public InternalNode maxHeightPercent(float percent) {
-    return null;
-  }
-
-  @Override
-  public InternalNode maxHeightPx(int maxHeight) {
-    return null;
-  }
-
-  @Override
-  public InternalNode maxWidthPercent(float percent) {
-    return null;
-  }
-
-  @Override
-  public InternalNode maxWidthPx(int maxWidth) {
-    return null;
-  }
-
-  @Override
-  public InternalNode minHeightPercent(float percent) {
-    return null;
-  }
-
-  @Override
-  public InternalNode minHeightPx(int minHeight) {
-    return null;
-  }
-
-  @Override
-  public InternalNode minWidthPercent(float percent) {
-    return null;
-  }
-
-  @Override
-  public InternalNode minWidthPx(int minWidth) {
-    return null;
-  }
-
-  @Override
   public void padding(Edges padding, @Nullable InternalNode holder) {}
-
-  @Override
-  public InternalNode paddingPercent(YogaEdge edge, float percent) {
-    return null;
-  }
-
-  @Override
-  public InternalNode paddingPx(YogaEdge edge, int padding) {
-    return null;
-  }
-
-  @Override
-  public InternalNode positionPercent(YogaEdge edge, float percent) {
-    return null;
-  }
-
-  @Override
-  public InternalNode positionPx(YogaEdge edge, int position) {
-    return null;
-  }
-
-  @Override
-  public InternalNode positionType(YogaPositionType positionType) {
-    return null;
-  }
 
   @Override
   public YogaDirection recursivelyResolveLayoutDirection() {
@@ -843,9 +711,6 @@ class NoOpInternalNode implements InternalNode {
   }
 
   @Override
-  public void useHeightAsBaselineFunction(boolean useHeightAsBaselineFunction) {}
-
-  @Override
   public InternalNode visibilityChangedHandler(
       @Nullable EventHandler<VisibilityChangedEvent> visibilityChangedHandler) {
     return null;
@@ -872,14 +737,94 @@ class NoOpInternalNode implements InternalNode {
   }
 
   @Override
-  public InternalNode widthPercent(float percent) {
-    return null;
-  }
+  public void widthPx(int width) {}
 
   @Override
-  public InternalNode widthPx(int width) {
-    return null;
-  }
+  public void widthPercent(float percent) {}
+
+  @Override
+  public void minWidthPx(int minWidth) {}
+
+  @Override
+  public void maxWidthPx(int maxWidth) {}
+
+  @Override
+  public void minWidthPercent(float percent) {}
+
+  @Override
+  public void maxWidthPercent(float percent) {}
+
+  @Override
+  public void heightPx(int height) {}
+
+  @Override
+  public void heightPercent(float percent) {}
+
+  @Override
+  public void minHeightPx(int minHeight) {}
+
+  @Override
+  public void maxHeightPx(int maxHeight) {}
+
+  @Override
+  public void minHeightPercent(float percent) {}
+
+  @Override
+  public void maxHeightPercent(float percent) {}
+
+  @Override
+  public void layoutDirection(YogaDirection direction) {}
+
+  @Override
+  public void alignSelf(YogaAlign alignSelf) {}
+
+  @Override
+  public void flex(float flex) {}
+
+  @Override
+  public void flexGrow(float flexGrow) {}
+
+  @Override
+  public void flexShrink(float flexShrink) {}
+
+  @Override
+  public void flexBasisPx(int flexBasis) {}
+
+  @Override
+  public void flexBasisPercent(float percent) {}
+
+  @Override
+  public void aspectRatio(float aspectRatio) {}
+
+  @Override
+  public void positionType(@androidx.annotation.Nullable YogaPositionType positionType) {}
+
+  @Override
+  public void positionPx(YogaEdge edge, int position) {}
+
+  @Override
+  public void positionPercent(YogaEdge edge, float percent) {}
+
+  @Override
+  public void paddingPx(YogaEdge edge, int padding) {}
+
+  @Override
+  public void paddingPercent(YogaEdge edge, float percent) {}
+
+  @Override
+  public void marginPx(YogaEdge edge, int margin) {}
+
+  @Override
+  public void marginPercent(YogaEdge edge, float percent) {}
+
+  @Override
+  public void marginAuto(YogaEdge edge) {}
+
+  @Override
+  public void isReferenceBaseline(boolean isReferenceBaseline) {}
+
+  @Override
+  public void useHeightAsBaseline(boolean useHeightAsBaseline) {}
 
   @Override
   public InternalNode wrap(YogaWrap wrap) {
@@ -890,9 +835,6 @@ class NoOpInternalNode implements InternalNode {
   public InternalNode wrapInView() {
     return null;
   }
-
-  @Override
-  public void copyInto(InternalNode target) {}
 
   @Override
   public void applyAttributes(TypedArray a) {}

@@ -973,7 +973,7 @@ class SparseCommonPropsHolder implements CommonProps {
       node.stateListAnimatorRes(mIntProps.get(INDEX_StateListAnimatorRes));
     }
     if ((mPrivateFlags & PFLAG_USE_HEIGHT_AS_BASELINE_IS_SET) != 0L) {
-      node.useHeightAsBaselineFunction(mUseHeightAsBaseline);
+      node.useHeightAsBaseline(mUseHeightAsBaseline);
     }
   }
 

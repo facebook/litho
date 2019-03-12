@@ -16,7 +16,6 @@
 package com.facebook.litho;
 
 import android.animation.StateListAnimator;
-import android.graphics.drawable.Drawable;
 import android.util.SparseArray;
 import android.view.ViewOutlineProvider;
 import androidx.annotation.AttrRes;
@@ -26,14 +25,11 @@ import androidx.annotation.Px;
 import androidx.annotation.StyleRes;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.drawable.ComparableDrawable;
-import com.facebook.yoga.YogaAlign;
-import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
-import com.facebook.yoga.YogaPositionType;
 
 /** Common props that are accessible outside of the framework. */
 @ThreadConfined(ThreadConfined.ANY)
-public interface CommonProps extends CommonPropsCopyable {
+public interface CommonProps extends CommonPropsCopyable, LayoutProps {
 
   @Nullable
   EventHandler<ClickEvent> getClickHandler();
@@ -57,79 +53,22 @@ public interface CommonProps extends CommonPropsCopyable {
 
   void setStyle(@AttrRes int defStyleAttr, @StyleRes int defStyleRes);
 
-  void positionType(@Nullable YogaPositionType positionType);
-
-  void positionPx(YogaEdge edge, @Px int position);
-
-  void widthPx(@Px int width);
-
-  void heightPx(@Px int height);
-
   void background(@Nullable ComparableDrawable background);
 
   void testKey(String testKey);
 
   void wrapInView();
 
-  void layoutDirection(@Nullable YogaDirection direction);
-
-  void alignSelf(@Nullable YogaAlign alignSelf);
-
-  void flex(float flex);
-
-  void flexGrow(float flexGrow);
-
-  void flexShrink(float flexShrink);
-
-  void flexBasisPx(@Px int flexBasis);
-
-  void flexBasisPercent(float percent);
-
   void importantForAccessibility(int importantForAccessibility);
 
   void duplicateParentState(boolean duplicateParentState);
 
-  void marginPx(YogaEdge edge, @Px int margin);
-
-  void marginPercent(YogaEdge edge, float percent);
-
-  void marginAuto(YogaEdge edge);
-
-  void paddingPx(YogaEdge edge, @Px int padding);
-
-  void paddingPercent(YogaEdge edge, float percent);
 
   void border(Border border);
 
   void stateListAnimator(@Nullable StateListAnimator stateListAnimator);
 
   void stateListAnimatorRes(@DrawableRes int resId);
-
-  void positionPercent(@Nullable YogaEdge edge, float percent);
-
-  void widthPercent(float percent);
-
-  void minWidthPx(@Px int minWidth);
-
-  void minWidthPercent(float percent);
-
-  void maxWidthPx(@Px int maxWidth);
-
-  void maxWidthPercent(float percent);
-
-  void heightPercent(float percent);
-
-  void minHeightPx(@Px int minHeight);
-
-  void minHeightPercent(float percent);
-
-  void maxHeightPx(@Px int maxHeight);
-
-  void maxHeightPercent(float percent);
-
-  void aspectRatio(float aspectRatio);
-
-  void isReferenceBaseline(boolean isReferenceBaseline);
 
   void touchExpansionPx(@Nullable YogaEdge edge, @Px int touchExpansion);
 
@@ -235,9 +174,7 @@ public interface CommonProps extends CommonPropsCopyable {
   void transitionKeyType(@Nullable Transition.TransitionKeyType type);
 
   @Nullable
-  public Transition.TransitionKeyType getTransitionKeyType();
-
-  void useHeightAsBaseline(boolean useHeightAsBaseline);
+  Transition.TransitionKeyType getTransitionKeyType();
 
   @Nullable
   NodeInfo getNullableNodeInfo();
