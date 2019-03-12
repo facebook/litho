@@ -178,7 +178,7 @@ public class DefaultInternalNode implements InternalNode {
 
   protected DefaultInternalNode(
       ComponentContext componentContext, boolean createDebugComponentsInCtor) {
-    this(componentContext, createYogaNode(componentContext));
+    this(componentContext, createYogaNode(componentContext), createDebugComponentsInCtor);
   }
 
   private DefaultInternalNode(
