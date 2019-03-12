@@ -190,8 +190,6 @@ public class ComponentsConfiguration {
    */
   public static boolean inheritPriorityFromUiThread = false;
 
-  public static boolean disablePools = false;
-
   /**
    * Whether the OnShouldCreateLayoutWithNewSizeSpec is used with Layout Spec with size spec. This
    * will also disable the associated layout caching.
