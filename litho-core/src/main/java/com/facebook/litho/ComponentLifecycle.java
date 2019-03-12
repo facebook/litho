@@ -320,7 +320,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     InternalNode node;
     try {
       if (deferNestedTreeResolution) {
-        node = DefaultInternalNode.createInternalNode(context);
+        node = InternalNodeUtils.create(context);
         node.markIsNestedTreeHolder(context.getTreeProps());
       } else if (component.canResolve()) {
         context.setTreeProps(component.getScopedContext().getTreePropsCopy());

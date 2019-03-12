@@ -1714,12 +1714,6 @@ public class DefaultInternalNode implements InternalNode {
     }
   }
 
-  static DefaultInternalNode createInternalNode(ComponentContext componentContext) {
-    return NodeConfig.sInternalNodeFactory != null
-        ? NodeConfig.sInternalNodeFactory.create(componentContext)
-        : new DefaultInternalNode(componentContext);
-  }
-
   static YogaNode createYogaNode(ComponentContext componentContext) {
     return componentContext.mYogaNodeFactory != null
         ? componentContext.mYogaNodeFactory.create()

@@ -28,7 +28,7 @@ public class NodeConfig {
   }
 
   public interface InternalNodeFactory {
-    DefaultInternalNode create(ComponentContext componentContext);
+    InternalNode create(ComponentContext componentContext);
   }
 
   /**

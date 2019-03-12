@@ -50,7 +50,12 @@ import org.powermock.reflect.Whitebox;
 import org.robolectric.RuntimeEnvironment;
 
 /** Tests {@link ComponentLifecycle} */
-@PrepareForTest({DefaultInternalNode.class, DiffNode.class, LayoutState.class})
+@PrepareForTest({
+  DefaultInternalNode.class,
+  DiffNode.class,
+  LayoutState.class,
+  InternalNodeUtils.class
+})
 @PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "androidx.*", "android.*"})
 @RunWith(ComponentsTestRunner.class)
 public class ComponentLifecycleTest {
@@ -73,6 +78,7 @@ public class ComponentLifecycleTest {
   public void setUp() {
     mockStatic(LayoutState.class);
     mockStatic(DefaultInternalNode.class);
+    mockStatic(InternalNodeUtils.class);
 
     mDiffNode = mock(DiffNode.class);
     mNode = mock(DefaultInternalNode.class);
@@ -83,7 +89,7 @@ public class ComponentLifecycleTest {
     when(mNode.getDiffNode()).thenReturn(mDiffNode);
     when(mDiffNode.getLastMeasuredWidth()).thenReturn(-1f);
     when(mDiffNode.getLastMeasuredHeight()).thenReturn(-1f);
-    when(DefaultInternalNode.createInternalNode(any(ComponentContext.class))).thenReturn(mNode);
+    when(InternalNodeUtils.create(any(ComponentContext.class))).thenReturn(mNode);
 
     StateHandler stateHandler = mock(StateHandler.class);
     mContext = spy(new ComponentContext(RuntimeEnvironment.application, stateHandler));
@@ -233,7 +239,7 @@ public class ComponentLifecycleTest {
 
     PowerMockito.verifyStatic();
     // Calling here to verify static call.
-    DefaultInternalNode.createInternalNode(mContext);
+    InternalNodeUtils.create(mContext);
     verify(component, never()).onCreateLayout(
         any(ComponentContext.class));
     verify(component, never()).onCreateLayoutWithSizeSpec(

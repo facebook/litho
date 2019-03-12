@@ -40,7 +40,7 @@ class TestComponentContext extends ComponentContext {
       return super.newLayoutBuilder(component, defStyleAttr, defStyleRes);
     }
 
-    final InternalNode node = DefaultInternalNode.createInternalNode(this);
+    final InternalNode node = InternalNodeUtils.create(this);
     component.updateInternalChildState(this);
 
     node.appendComponent(new TestComponent(component));
@@ -54,7 +54,7 @@ class TestComponentContext extends ComponentContext {
       return super.resolveLayout(component);
     }
 
-    InternalNode node = DefaultInternalNode.createInternalNode(this);
+    InternalNode node = InternalNodeUtils.create(this);
     node.appendComponent(new TestComponent(component));
     return node;
   }

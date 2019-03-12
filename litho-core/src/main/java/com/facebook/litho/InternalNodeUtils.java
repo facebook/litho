@@ -19,6 +19,15 @@ import android.util.Log;
 
 public class InternalNodeUtils {
 
+  static InternalNode create(ComponentContext context) {
+    NodeConfig.InternalNodeFactory factory = NodeConfig.sInternalNodeFactory;
+    if (factory != null) {
+      return factory.create(context);
+    } else {
+      return new DefaultInternalNode(context);
+    }
+  }
+
   /**
    * Check that the root of the nested tree we are going to use, has valid layout directions with
    * its main tree holder node.
