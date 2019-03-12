@@ -1848,30 +1848,39 @@ class LayoutState {
    *     the diff node.
    */
   static void applyDiffNodeToUnchangedNodes(InternalNode layoutNode, DiffNode diffNode) {
-    // Root of the main tree or of a nested tree.
-    final boolean isTreeRoot = layoutNode.getParent() == null;
-    if (isLayoutSpecWithSizeSpec(layoutNode.getRootComponent()) && !isTreeRoot) {
-      layoutNode.setDiffNode(diffNode);
-      return;
-    }
-
-    if (!hostIsCompatible(layoutNode, diffNode)) {
-      return;
-    }
-
-    layoutNode.setDiffNode(diffNode);
-
-    final int layoutCount = layoutNode.getChildCount();
-    final int diffCount = diffNode.getChildCount();
-
-    if (layoutCount != 0 && diffCount != 0) {
-      for (int i = 0; i < layoutCount && i < diffCount; i++) {
-        applyDiffNodeToUnchangedNodes(layoutNode.getChildAt(i), diffNode.getChildAt(i));
+    try {
+      // Root of the main tree or of a nested tree.
+      final boolean isTreeRoot = layoutNode.getParent() == null;
+      if (isLayoutSpecWithSizeSpec(layoutNode.getRootComponent()) && !isTreeRoot) {
+        layoutNode.setDiffNode(diffNode);
+        return;
       }
 
-    // Apply the DiffNode to a leaf node (i.e. MountSpec) only if it should NOT update.
-    } else if (!shouldComponentUpdate(layoutNode, diffNode)) {
-      applyDiffNodeToLayoutNode(layoutNode, diffNode);
+      if (!hostIsCompatible(layoutNode, diffNode)) {
+        return;
+      }
+
+      layoutNode.setDiffNode(diffNode);
+
+      final int layoutCount = layoutNode.getChildCount();
+      final int diffCount = diffNode.getChildCount();
+
+      if (layoutCount != 0 && diffCount != 0) {
+        for (int i = 0; i < layoutCount && i < diffCount; i++) {
+          applyDiffNodeToUnchangedNodes(layoutNode.getChildAt(i), diffNode.getChildAt(i));
+        }
+
+        // Apply the DiffNode to a leaf node (i.e. MountSpec) only if it should NOT update.
+      } else if (!shouldComponentUpdate(layoutNode, diffNode)) {
+        applyDiffNodeToLayoutNode(layoutNode, diffNode);
+      }
+    } catch (Throwable t) {
+      final Component c = layoutNode.getRootComponent();
+      if (c != null) {
+        throw new ComponentsChainException(c, t);
+      }
+
+      throw t;
     }
   }
 

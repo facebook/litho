@@ -335,7 +335,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
         }
       }
     } catch (Throwable t) {
-      throw new CreateLayoutException((Component) this, t);
+      throw new ComponentsChainException((Component) this, t);
     }
 
     if (isTracing) {
@@ -881,16 +881,5 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
    */
   protected boolean shouldAlwaysRemeasure() {
     return false;
-  }
-
-  /**
-   * Exception class used to print the Components' hierarchy involved in a layout creation crash.
-   */
-  private static class CreateLayoutException extends RuntimeException {
-    CreateLayoutException(Component c, Throwable cause) {
-      super(c.getSimpleName());
-      initCause(cause);
-      setStackTrace(new StackTraceElement[0]);
-    }
   }
 }
