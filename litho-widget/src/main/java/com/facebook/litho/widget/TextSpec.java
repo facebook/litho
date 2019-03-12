@@ -37,9 +37,7 @@ import android.graphics.Typeface;
 import android.os.Build;
 import android.text.Layout;
 import android.text.Layout.Alignment;
-import android.text.Spannable;
 import android.text.Spanned;
-import android.text.SpannedString;
 import android.text.TextPaint;
 import android.text.TextUtils;
 import android.text.TextUtils.TruncateAt;
@@ -439,11 +437,6 @@ class TextSpec {
         break;
       default:
         throw new IllegalStateException("Unexpected size mode: " + SizeSpec.getMode(widthSpec));
-    }
-
-    if (text instanceof Spannable) {
-      // Spannable could mutate its Spans. For safety we create an immutable Spanned copy.
-      text = SpannedString.valueOf(text);
     }
 
     layoutBuilder
