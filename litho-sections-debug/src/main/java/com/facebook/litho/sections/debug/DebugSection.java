@@ -19,7 +19,9 @@ package com.facebook.litho.sections.debug;
 import android.graphics.Rect;
 import android.view.View;
 import androidx.annotation.Nullable;
+import com.facebook.litho.StateContainer;
 import com.facebook.litho.sections.Section;
+import com.facebook.litho.sections.SectionDebugUtil;
 import com.facebook.litho.widget.RenderInfoDebugInfoRegistry;
 import java.util.ArrayList;
 import java.util.List;
@@ -138,5 +140,13 @@ public final class DebugSection {
     }
 
     return rect;
+  }
+
+  public Section getSection() {
+    return mSectionDebugNode;
+  }
+
+  public @Nullable StateContainer getStateContainer() {
+    return SectionDebugUtil.getStateContainerDebug(mSectionDebugNode);
   }
 }
