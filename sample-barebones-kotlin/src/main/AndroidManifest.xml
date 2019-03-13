@@ -15,9 +15,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.facebook.samples.lithoktbarebones">
 
-  <uses-sdk android:targetSdkVersion="23"/>
-
-  <application
+    <application
       android:name="com.facebook.samples.lithoktbarebones.SampleApplication"
       android:label="Litho Kotlin Barebones"
       android:allowBackup="true">

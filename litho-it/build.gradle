@@ -26,6 +26,7 @@ android {
 
     defaultConfig {
         minSdkVersion rootProject.minSdkVersion
+        targetSdkVersion 16
 
         javaCompileOptions {
             annotationProcessorOptions {

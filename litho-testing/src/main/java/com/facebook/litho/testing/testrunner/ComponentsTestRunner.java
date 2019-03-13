@@ -78,7 +78,7 @@ public class ComponentsTestRunner extends RobolectricTestRunner {
     // We are hard-coding the path here instead of relying on BUCK internals
     // to allow for building with gradle in the Open Source version.
     return new Config.Implementation(config, new Config.Implementation(
-        new int[]{},
+        new int[]{ 16 },
         getResPrefix() + "AndroidManifest.xml",
         "",
         "",
