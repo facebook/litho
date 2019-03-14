@@ -15,6 +15,7 @@
  */
 package com.facebook.litho;
 
+import android.util.Log;
 import com.facebook.litho.config.ComponentsConfiguration;
 
 /**
@@ -89,13 +90,10 @@ public abstract class ThreadTracingRunnable implements Runnable {
       tracedRun(mTracingThrowable);
     } catch (Throwable t) {
       if (ComponentsConfiguration.enableThreadTracingStacktrace) {
-        Throwable lastThrowable = t;
-        while (lastThrowable.getCause() != null) {
-          lastThrowable = lastThrowable.getCause();
-        }
-        lastThrowable.initCause(mTracingThrowable);
+        Log.w("LithoThreadTracing", "--- start debug trace");
+        Log.w("LithoThreadTracing", "Thread tracing stacktrace", mTracingThrowable);
+        Log.w("LithoThreadTracing", "--- end debug trace");
       }
-
       throw t;
     }
   }
