@@ -1,0 +1,24 @@
+plugins {
+    id 'java'
+    id 'org.jetbrains.intellij' version '0.4.4'
+}
+
+group 'com.facebook.litho.intellij'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+apply plugin: 'idea'
+apply plugin: 'org.jetbrains.intellij'
+apply plugin: 'java'
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+intellij {
+    version '2018.1'
+}
