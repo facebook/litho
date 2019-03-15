@@ -9,6 +9,7 @@ sourceCompatibility = 1.8
 
 repositories {
     mavenCentral()
+    jcenter() // mockito
 }
 
 apply plugin: 'idea'
@@ -17,6 +18,7 @@ apply plugin: 'java'
 
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
+    testCompile "org.mockito:mockito-core:1.9.5"
 }
 
 intellij {

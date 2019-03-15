@@ -15,6 +15,7 @@
  */
 package com.facebook.litho.intellij;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.intellij.notification.NotificationGroup;
 import com.intellij.psi.PsiAnnotation;
 import com.intellij.psi.PsiClass;
@@ -87,7 +88,8 @@ public class LithoPluginUtils {
     return hasAnnotation(psiClass, startsWith("com.facebook.litho.annotations"));
   }
 
-  private static boolean hasAnnotation(
+  @VisibleForTesting
+  static boolean hasAnnotation(
       PsiModifierListOwner modifierListOwner, Predicate<String> nameFilter) {
     return Optional.of(modifierListOwner)
         .map(PsiModifierListOwner::getAnnotations)
@@ -100,7 +102,8 @@ public class LithoPluginUtils {
         .orElse(false);
   }
 
-  private static Predicate<String> startsWith(String prefix) {
+  @VisibleForTesting
+  static Predicate<String> startsWith(String prefix) {
     return name -> name.startsWith(prefix);
   }
 
