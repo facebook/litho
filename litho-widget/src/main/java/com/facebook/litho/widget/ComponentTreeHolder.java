@@ -384,12 +384,17 @@ public class ComponentTreeHolder {
   @GuardedBy("this")
   private void ensureComponentTree(ComponentContext context) {
     if (mComponentTree == null) {
+      final Object isPersistenceEnabled =
+          mRenderInfo.getCustomAttribute(ComponentRenderInfo.PERSISTENCE_ENABLED);
       final Object layoutDiffingEnabledAttr =
           mRenderInfo.getCustomAttribute(ComponentRenderInfo.LAYOUT_DIFFING_ENABLED);
       final ComponentTree.Builder builder =
           ComponentTree.create(context, mRenderInfo.getComponent());
       // If no custom attribute is set, defer default value to the builder.
-      if (layoutDiffingEnabledAttr != null) {
+      if (isPersistenceEnabled != null) {
+        builder.layoutDiffing((boolean) isPersistenceEnabled);
+        builder.isPersistenceEnabled((boolean) isPersistenceEnabled);
+      } else if (layoutDiffingEnabledAttr != null) {
         builder.layoutDiffing((boolean) layoutDiffingEnabledAttr);
       }
       mComponentTree =
