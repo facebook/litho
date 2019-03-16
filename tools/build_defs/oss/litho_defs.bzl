@@ -309,7 +309,7 @@ def define_fbjni_targets():
             "-fexceptions",
             "-frtti",
             "-Wall",
-            "-std=c++11",
+            "-std=c++11",  # FIXME
             "-DDISABLE_CPUCAP",
             "-DDISABLE_XPLAT",
         ],
@@ -361,7 +361,7 @@ def define_yogajni_targets():
             "-fexceptions",
             "-Wall",
             "-O3",
-            "-std=c++11",
+            "-std=c++11",  # FIXME
         ],
         soname = "libyoga.$(ext)",
         visibility = LITHO_VISIBILITY,
@@ -395,7 +395,7 @@ def define_cpp_yoga_targets():
             "-fno-omit-frame-pointer",
             "-fexceptions",
             "-Wall",
-            "-std=c++11",
+            "-std=c++11",  # FIXME
             "-O3",
         ],
         force_static = True,
