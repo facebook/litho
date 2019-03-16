@@ -2068,11 +2068,11 @@ public class ComponentTree {
         mId,
         widthSpec,
         heightSpec,
-        diffingEnabled,
+        !mIsPersistenceEnabled && diffingEnabled,
         previousLayoutState,
         source,
         extraAttribution,
-        mIsPersistenceEnabled);
+        mIsPersistenceEnabled && diffingEnabled);
   }
 
   @VisibleForTesting
