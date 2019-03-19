@@ -1717,6 +1717,24 @@ public abstract class Component extends ComponentLifecycle
     }
 
     /**
+     * Sets the degree that this component is rotated around the horizontal axis through the pivot
+     * point.
+     */
+    public T rotationX(float rotationX) {
+      mComponent.getOrCreateCommonProps().rotationX(rotationX);
+      return getThis();
+    }
+
+    /**
+     * Sets the degree that this component is rotated around the vertical axis through the pivot
+     * point.
+     */
+    public T rotationY(float rotationY) {
+      mComponent.getOrCreateCommonProps().rotationY(rotationY);
+      return getThis();
+    }
+
+    /**
      * Ports {@link android.view.View#setStateListAnimator(android.animation.StateListAnimator)}
      * into components world. However, since the aforementioned view's method is available only on
      * API 21 and above, calling this method on lower APIs will have no effect. On the legit

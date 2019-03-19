@@ -1564,6 +1564,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       setScale(view, nodeInfo);
       setAlpha(view, nodeInfo);
       setRotation(view, nodeInfo);
+      setRotationX(view, nodeInfo);
+      setRotationY(view, nodeInfo);
     }
 
     setImportantForAccessibility(view, item.getImportantForAccessibility());
@@ -1634,6 +1636,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       unsetScale(view, nodeInfo);
       unsetAlpha(view, nodeInfo);
       unsetRotation(view, nodeInfo);
+      unsetRotationX(view, nodeInfo);
+      unsetRotationY(view, nodeInfo);
     }
 
     view.setClickable(item.isViewClickable());
@@ -2101,6 +2105,38 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     if (Build.VERSION.SDK_INT >= 11) {
       if (nodeInfo.isRotationSet() && view.getRotation() != 0) {
         view.setRotation(0);
+      }
+    }
+  }
+
+  private static void setRotationX(View view, NodeInfo nodeInfo) {
+    if (Build.VERSION.SDK_INT >= 11) {
+      if (nodeInfo.isRotationXSet()) {
+        view.setRotationX(nodeInfo.getRotationX());
+      }
+    }
+  }
+
+  private static void unsetRotationX(View view, NodeInfo nodeInfo) {
+    if (Build.VERSION.SDK_INT >= 11) {
+      if (nodeInfo.isRotationXSet() && view.getRotationX() != 0) {
+        view.setRotationX(0);
+      }
+    }
+  }
+
+  private static void setRotationY(View view, NodeInfo nodeInfo) {
+    if (Build.VERSION.SDK_INT >= 11) {
+      if (nodeInfo.isRotationYSet()) {
+        view.setRotationY(nodeInfo.getRotationY());
+      }
+    }
+  }
+
+  private static void unsetRotationY(View view, NodeInfo nodeInfo) {
+    if (Build.VERSION.SDK_INT >= 11) {
+      if (nodeInfo.isRotationYSet() && view.getRotationY() != 0) {
+        view.setRotationY(0);
       }
     }
   }

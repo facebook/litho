@@ -75,6 +75,8 @@ class DefaultNodeInfo implements NodeInfo {
   // When this flag is set, clipChildren was explicitly set on this node.
   private static final int PFLAG_CLIP_CHILDREN_IS_SET = 1 << 23;
   private static final int PFLAG_ACCESSIBILITY_ROLE_DESCRIPTION_IS_SET = 1 << 24;
+  private static final int PFLAG_ROTATION_X_IS_SET = 1 << 25;
+  private static final int PFLAG_ROTATION_Y_IS_SET = 1 << 26;
 
   private @Nullable CharSequence mContentDescription;
   private @Nullable Object mViewTag;
@@ -87,6 +89,8 @@ class DefaultNodeInfo implements NodeInfo {
   private float mScale = 1;
   private float mAlpha = 1;
   private float mRotation = 0;
+  private float mRotationX = 0;
+  private float mRotationY = 0;
   private @Nullable EventHandler<ClickEvent> mClickHandler;
   private @Nullable EventHandler<FocusChangedEvent> mFocusChangeHandler;
   private @Nullable EventHandler<LongClickEvent> mLongClickHandler;
@@ -505,6 +509,38 @@ class DefaultNodeInfo implements NodeInfo {
     return (mPrivateFlags & PFLAG_ROTATION_IS_SET) != 0;
   }
 
+  @Override
+  public float getRotationX() {
+    return mRotationX;
+  }
+
+  @Override
+  public void setRotationX(float rotationX) {
+    mRotationX = rotationX;
+    mPrivateFlags |= PFLAG_ROTATION_X_IS_SET;
+  }
+
+  @Override
+  public boolean isRotationXSet() {
+    return (mPrivateFlags & PFLAG_ROTATION_X_IS_SET) != 0;
+  }
+
+  @Override
+  public float getRotationY() {
+    return mRotationY;
+  }
+
+  @Override
+  public void setRotationY(float rotationY) {
+    mRotationY = rotationY;
+    mPrivateFlags |= PFLAG_ROTATION_Y_IS_SET;
+  }
+
+  @Override
+  public boolean isRotationYSet() {
+    return (mPrivateFlags & PFLAG_ROTATION_Y_IS_SET) != 0;
+  }
+
   /**
    * Checks if this NodeInfo is equal to the {@param other}
    *
@@ -602,6 +638,12 @@ class DefaultNodeInfo implements NodeInfo {
     }
     if ((mPrivateFlags & PFLAG_ROTATION_IS_SET) != 0) {
       target.setRotation(mRotation);
+    }
+    if ((mPrivateFlags & PFLAG_ROTATION_X_IS_SET) != 0) {
+      target.setRotationX(mRotationX);
+    }
+    if ((mPrivateFlags & PFLAG_ROTATION_Y_IS_SET) != 0) {
+      target.setRotationY(mRotationY);
     }
   }
 

@@ -55,6 +55,8 @@ class SparseNodeInfo implements NodeInfo {
   private static final int PFLAG_ACCESSIBILITY_ROLE_IS_SET = 1 << 22;
   private static final int PFLAG_CLIP_CHILDREN_IS_SET = 1 << 23;
   private static final int PFLAG_ACCESSIBILITY_ROLE_DESCRIPTION_IS_SET = 1 << 24;
+  private static final int PFLAG_ROTATION_X_IS_SET = 1 << 25;
+  private static final int PFLAG_ROTATION_Y_IS_SET = 1 << 26;
 
   // Flags to track if properties were set to non null values
   private static final int OFLAG_HAS_FOCUS_CHANGE_HANDLER = 1;
@@ -99,6 +101,8 @@ class SparseNodeInfo implements NodeInfo {
   private float mScale = 1;
   private float mAlpha = 1;
   private float mRotation = 0;
+  private float mRotationX = 0;
+  private float mRotationY = 0;
   private float mShadowElevation = 0;
 
   private @FocusState int mFocusState = FOCUS_UNSET;
@@ -639,6 +643,38 @@ class SparseNodeInfo implements NodeInfo {
   @Override
   public boolean isRotationSet() {
     return (mPrivateFlags & PFLAG_ROTATION_IS_SET) != 0;
+  }
+
+  @Override
+  public float getRotationX() {
+    return mRotationX;
+  }
+
+  @Override
+  public void setRotationX(float rotationX) {
+    mRotationX = rotationX;
+    mPrivateFlags |= PFLAG_ROTATION_X_IS_SET;
+  }
+
+  @Override
+  public boolean isRotationXSet() {
+    return (mPrivateFlags & PFLAG_ROTATION_X_IS_SET) != 0;
+  }
+
+  @Override
+  public float getRotationY() {
+    return mRotationY;
+  }
+
+  @Override
+  public void setRotationY(float rotationY) {
+    mRotationY = rotationY;
+    mPrivateFlags |= PFLAG_ROTATION_Y_IS_SET;
+  }
+
+  @Override
+  public boolean isRotationYSet() {
+    return (mPrivateFlags & PFLAG_ROTATION_Y_IS_SET) != 0;
   }
 
   /**

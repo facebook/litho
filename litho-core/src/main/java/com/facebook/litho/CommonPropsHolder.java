@@ -530,6 +530,18 @@ class CommonPropsHolder implements CommonProps {
   }
 
   @Override
+  public void rotationX(float rotationX) {
+    wrapInView();
+    getOrCreateNodeInfo().setRotationX(rotationX);
+  }
+
+  @Override
+  public void rotationY(float rotationY) {
+    wrapInView();
+    getOrCreateNodeInfo().setRotationY(rotationY);
+  }
+
+  @Override
   public void transitionKey(@Nullable String key) {
     getOrCreateOtherProps().transitionKey(key);
   }

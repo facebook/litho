@@ -733,6 +733,18 @@ class SparseCommonPropsHolder implements CommonProps {
     wrapInView();
   }
 
+  @Override
+  public void rotationX(float rotationX) {
+    getOrCreateNodeInfo().setRotationX(rotationX);
+    wrapInView();
+  }
+
+  @Override
+  public void rotationY(float rotationY) {
+    getOrCreateNodeInfo().setRotationY(rotationY);
+    wrapInView();
+  }
+
   @Nullable
   @Override
   public NodeInfo getNullableNodeInfo() {

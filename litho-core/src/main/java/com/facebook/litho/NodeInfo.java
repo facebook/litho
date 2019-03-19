@@ -225,6 +225,18 @@ public interface NodeInfo {
 
   boolean isRotationSet();
 
+  float getRotationX();
+
+  void setRotationX(float rotationX);
+
+  boolean isRotationXSet();
+
+  float getRotationY();
+
+  void setRotationY(float rotationY);
+
+  boolean isRotationYSet();
+
   /**
    * Checks if this NodeInfo is equal to the {@param other}
    *
