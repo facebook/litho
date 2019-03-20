@@ -1780,6 +1780,14 @@ public abstract class Component extends ComponentLifecycle
       return getThis();
     }
 
+    public boolean hasClickHandlerSet() {
+      return mComponent.hasClickHandlerSet();
+    }
+
+    public boolean hasBackgroundSet() {
+      return mComponent.hasBackgroundSet();
+    }
+
     private Component getOwner() {
       return mContext.getComponentScope();
     }
