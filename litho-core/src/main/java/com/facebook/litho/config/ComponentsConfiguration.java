@@ -133,8 +133,6 @@ public class ComponentsConfiguration {
    */
   public static boolean useStateHandlers = true;
 
-  public static boolean prewarmImageTexture = false;
-
   /**
    * If true, the async range calculation isn't blocked on the first item finishing layout and it
    * will schedule one layout per bg thread during init range.

@@ -113,14 +113,6 @@ class ImageSpec {
         intrinsicHeight,
         aspectRatio,
         size);
-
-    if (ComponentsConfiguration.prewarmImageTexture) {
-      TextureWarmer.WarmDrawable warmDrawable = new TextureWarmer.WarmDrawable(
-          drawable,
-          size.width,
-          size.height);
-      TextureWarmer.getInstance().warmDrawable(warmDrawable);
-    }
   }
 
   @OnBoundsDefined
