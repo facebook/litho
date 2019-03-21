@@ -504,7 +504,7 @@ public final class ComponentTestHelper {
   }
 
   /** Access the default layout thread looper for testing purposes only. */
-  public static Looper getDefaultLayoutThreadLooper() throws Exception {
+  public static Looper getDefaultLayoutThreadLooper() {
     return (Looper) Whitebox.invokeMethod(ComponentTree.class, "getDefaultLayoutThreadLooper");
   }
 
