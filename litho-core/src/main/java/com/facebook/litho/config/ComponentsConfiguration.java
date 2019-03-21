@@ -213,12 +213,6 @@ public class ComponentsConfiguration {
   /** specifies if the ComparableAnimatedColorDrawable should be initialized in a lazy way */
   public static boolean lazyComparableAnimatedColorDrawable = false;
 
-  /**
-   * We want to completely remove Reference from Litho's API. This param will help us understand the
-   * impact of this change in terms of memory footprint and mount performance
-   */
-  public static boolean dontUseReferences = false;
-
   // TODO T39526148 Remove once Flipper plugin is usable.
   /** If true, information about RenderInfos will be passed to Flipper's layout inspector. */
   public static boolean enableRenderInfoDebugging = false;
