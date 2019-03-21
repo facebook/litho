@@ -457,18 +457,43 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
     final int line = mLayout.getLineForVertical(y);
 
     /**
-     * To determine the actual bounds of the line, we need the line's direction, leading margin, and
-     * extent, but only the first is available directly. The margin is given by either {@link
-     * Layout#getParagraphLeft} or {@link Layout#getParagraphRight} depending on line direction, and
-     * {@link Layout#getLineMax} gives the extent *plus* the leading margin, so we can figure out
-     * the rest from there.
+     * We use {@link Layout#getPrimaryHorizontal} on specific characters here because the functions
+     * of {@link Layout} that return line bounds or width have problems when used with indented
+     * lines. For instance, {@link Layout#getLineLeft} ignores indentation for left-aligned text,
+     * {@link Layout#getLineMax} includes leading margin and offers no way to subtract it, and
+     * {@link Layout#getParagraphLeft} is naturally only accurate at the paragraph level.
      */
-    final boolean rtl = mLayout.getParagraphDirection(line) == Layout.DIR_RIGHT_TO_LEFT;
-    final float left =
-        rtl ? mLayout.getWidth() - mLayout.getLineMax(line) : mLayout.getParagraphLeft(line);
-    final float right = rtl ? mLayout.getParagraphRight(line) : mLayout.getLineMax(line);
+    float start = getHorizontal(mLayout.getLineStart(line), line);
 
-    if (x < left || x > right) {
+    float end;
+    /**
+     * {@link Layout#getLineVisibleEnd} finds either the first trailing whitespace character of the
+     * line or the first character of the next line. To handle both cases, we locate the end of the
+     * line at the edge of the previous character opposite its primary horizontal position.
+     */
+    final int endOffset = mLayout.getLineVisibleEnd(line) - 1;
+    /**
+     * {@link Layout#getLineVisibleEnd} can also return 0 for a string's first line if that line is
+     * composed entirely of non-newline whitespace. The following fallback prevents an {@link
+     * IndexOutOfBoundsException} under these conditions.
+     */
+    if (endOffset < 0) {
+      end = mLayout.getPrimaryHorizontal(0);
+    } else {
+      final float[] endWidth = new float[1];
+      mLayout.getPaint().getTextWidths(mText, endOffset, endOffset + 1, endWidth);
+      end =
+          getHorizontal(endOffset, line) + (mLayout.isRtlCharAt(endOffset) ? -1 : 1) * endWidth[0];
+    }
+
+    if (start > end) {
+      // In RTL scenario
+      float temp = start;
+      start = end;
+      end = temp;
+    }
+
+    if (x < start || x > end) {
       return -1;
     }
 
@@ -479,6 +504,17 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
       // See https://android.googlesource.com/platform/frameworks/base/+/821e9bd5cc2be4b3210cb0226e40ba0f42b51aed
       return -1;
     }
+  }
+
+  /**
+   * {@link Layout#getPrimaryHorizontal} uses the paragraph direction, which is incorrect for
+   * characters that oppose the direction of the paragraph.
+   */
+  private float getHorizontal(int offset, int line) {
+    final boolean isRtlLine = mLayout.getParagraphDirection(line) == Layout.DIR_RIGHT_TO_LEFT;
+    return isRtlLine == mLayout.isRtlCharAt(offset)
+        ? mLayout.getPrimaryHorizontal(offset)
+        : mLayout.getSecondaryHorizontal(offset);
   }
 
   /**
