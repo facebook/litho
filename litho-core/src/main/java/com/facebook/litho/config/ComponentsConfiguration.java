@@ -176,11 +176,6 @@ public class ComponentsConfiguration {
    */
   public static boolean enableShouldCreateLayoutWithNewSizeSpec = false;
 
-  /**
-   * Whether we allow animating drawables' properties (other than bounds)
-   */
-  public static boolean allowAnimatingDrawables = false;
-
   /** Assign transition keys to all LayoutOutputs, this enables Transition.allLayout() */
   public static boolean assignTransitionKeysToAllOutputs = false;
 
