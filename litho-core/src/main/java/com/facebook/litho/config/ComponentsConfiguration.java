@@ -133,9 +133,6 @@ public class ComponentsConfiguration {
    */
   public static boolean useStateHandlers = true;
 
-  /** Default for ComponentHost#hasOverlappingRendering. */
-  public static boolean hostHasOverlappingRendering = true;
-
   public static boolean prewarmImageTexture = false;
 
   /**

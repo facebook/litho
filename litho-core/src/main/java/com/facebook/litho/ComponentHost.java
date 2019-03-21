@@ -1033,11 +1033,6 @@ public class ComponentHost extends ViewGroup {
   }
 
   @Override
-  public boolean hasOverlappingRendering() {
-    return ComponentsConfiguration.hostHasOverlappingRendering;
-  }
-
-  @Override
   public void setClipChildren(boolean clipChildren) {
     if (mClippingTemporaryDisabled) {
       mClippingToRestore = clipChildren;
