@@ -1121,16 +1121,12 @@ public class ComponentTree {
       return;
     }
 
-    final Handler handler;
+    final WeakReference<Handler> handlerWr = sSyncStateUpdatesHandler.get();
+    Handler handler = handlerWr != null ? handlerWr.get() : null;
 
-    synchronized (sSyncStateUpdatesHandler) {
-      final WeakReference<Handler> handlerWr = sSyncStateUpdatesHandler.get();
-      if (handlerWr != null && handlerWr.get() != null) {
-        handler = handlerWr.get();
-      } else {
-        handler = new Handler(looper);
-        sSyncStateUpdatesHandler.set(new WeakReference<>(handler));
-      }
+    if (handler == null) {
+      handler = new Handler(looper);
+      sSyncStateUpdatesHandler.set(new WeakReference<>(handler));
     }
 
     synchronized (mUpdateStateSyncRunnableLock) {
