@@ -197,8 +197,6 @@ public class ComponentsConfiguration {
   /** Whether the refactored implementation of nested tree resolution should be used. */
   public static boolean isNestedTreeResolutionExperimentEnabled = false;
 
-  public static boolean shouldIncreaseThreadPriorityToUrgentDisplay = false;
-
   /** Sets if the internal node should be persisted */
   public static boolean isPersistenceEnabled;
 
