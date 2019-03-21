@@ -1550,7 +1550,7 @@ public class SectionTree {
       HandlerThread defaultThread =
           new HandlerThread(
               DEFAULT_CHANGESET_THREAD_NAME,
-              ComponentsConfiguration.defaultChangeSetThreadPriority);
+              ComponentsConfiguration.DEFAULT_CHANGE_SET_THREAD_PRIORITY);
       defaultThread.start();
       sDefaultChangeSetThreadLooper = defaultThread.getLooper();
     }

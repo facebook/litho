@@ -58,6 +58,12 @@ public class ComponentsConfiguration {
   /** Whether we need to account for lack of synchronization while accessing Themes. */
   public static final boolean NEEDS_THEME_SYNCHRONIZATION = (SDK_INT <= LOLLIPOP_MR1);
 
+  /** The default priority for threads that perform background layout calculations. */
+  public static final int DEFAULT_BACKGROUND_THREAD_PRIORITY = 5;
+
+  /** The default priority for threads that perform background sections change set calculations. */
+  public static final int DEFAULT_CHANGE_SET_THREAD_PRIORITY = 0;
+
   /**
    * Option to enabled debug mode. This will save extra data asscociated with each node and allow
    * more info about the hierarchy to be retrieved. Used to enable stetho integration. It is highly
@@ -99,11 +105,6 @@ public class ComponentsConfiguration {
    * framework
    */
   public static boolean useGlobalKeys = true;
-
-  /** The default priority for threads that perform background layout calculations. */
-  public static final int DEFAULT_BACKGROUND_THREAD_PRIORITY = 5;
-
-  public static int defaultChangeSetThreadPriority = 0;
 
   /** If true then we'll lazily initialize the LayoutStateOutputIdCalculator */
   public static boolean lazilyInitializeLayoutStateOutputIdCalculator = false;
