@@ -50,7 +50,6 @@ import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.State;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.sections.BaseLoadEventsHandler;
 import com.facebook.litho.sections.LoadEventsHandler;
 import com.facebook.litho.sections.Section;
@@ -116,15 +115,12 @@ public class RecyclerCollectionComponentSpec {
   protected static final boolean asyncPropUpdates =
       SectionsConfiguration.sectionComponentsAsyncPropUpdates;
 
-  @PropDefault
-  protected static final boolean setRootAsync =
-      ComponentsConfiguration.setRootAsyncRecyclerCollectionComponent;
+  @PropDefault protected static final boolean setRootAsync = false;
 
   @PropDefault public static final boolean clipToPadding = true;
   @PropDefault public static final boolean clipChildren = true;
   @PropDefault public static final boolean incrementalMount = true;
   @PropDefault public static final int refreshProgressBarColor = 0XFF4267B2; // blue
-  private static final int MIN_SCROLL_FOR_PAGE = 20;
 
   @OnCreateLayout
   static @Nullable Component onCreateLayout(
