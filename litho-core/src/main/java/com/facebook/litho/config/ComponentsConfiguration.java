@@ -96,6 +96,12 @@ public class ComponentsConfiguration {
    */
   public static boolean isEndToEndTestRun = System.getProperty("IS_TESTING") != null;
 
+  /**
+   * By default end-to-end tests will disable transitions and this flag lets to explicitly enable
+   * transitions to test animation related behavior.
+   */
+  public static boolean forceEnableTransitionsForInstrumentationTests = false;
+
   /** Enable exception delegation to {@link com.facebook.litho.annotations.OnError}. */
   public static boolean enableOnErrorHandling = false;
 
@@ -111,12 +117,6 @@ public class ComponentsConfiguration {
 
   /** Whether to unmount all contents of LithoView when its ComponentTree is set to null. */
   public static boolean unmountAllWhenComponentTreeSetToNull = false;
-
-  /**
-   * By default end-to-end tests will disable transitions and this flag lets to explicitly enable
-   * transitions to test animation related behavior.
-   */
-  public static boolean forceEnableTransitionsForInstrumentationTests = false;
 
   /**
    * Configuration for creating a thread pool of threads used for background layout. If null, a
