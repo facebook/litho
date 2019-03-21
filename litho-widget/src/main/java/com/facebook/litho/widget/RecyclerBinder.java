@@ -2865,7 +2865,6 @@ public class RecyclerBinder
   private void maybePostUpdateViewportAndComputeRange() {
     if (mMountedView != null
         && (mUseSharedLayoutStateFuture
-            || ComponentsConfiguration.insertPostAsyncLayout
             || mViewportManager.shouldUpdate())) {
       mMountedView.removeCallbacks(mUpdateViewportRunnable);
       ViewCompat.postOnAnimation(mMountedView, mUpdateViewportRunnable);

@@ -94,13 +94,6 @@ public class ComponentsConfiguration {
   public static boolean enableOnErrorHandling = false;
 
   /**
-   * If true, insert operations with the {@link com.facebook.litho.widget.RecyclerBinder} will not
-   * start async layout calculations for the items in range, instead these layout calculations will
-   * be posted to the next frame.
-   */
-  public static boolean insertPostAsyncLayout = false;
-
-  /**
    * If false, global keys will not be generated (litho level state updates won't work). It's highly
    * discouraged to to change this to false, unless you handle all your updates outside of the litho
    * framework
