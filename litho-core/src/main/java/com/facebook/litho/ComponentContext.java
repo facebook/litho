@@ -216,11 +216,7 @@ public class ComponentContext {
       return;
     }
 
-    if (ComponentsConfiguration.updateStateAsync) {
-      mComponentTree.updateStateAsync(mComponentScope.getGlobalKey(), stateUpdate, attribution);
-    } else {
-      mComponentTree.updateStateSync(mComponentScope.getGlobalKey(), stateUpdate, attribution);
-    }
+    mComponentTree.updateStateSync(mComponentScope.getGlobalKey(), stateUpdate, attribution);
   }
 
   /**

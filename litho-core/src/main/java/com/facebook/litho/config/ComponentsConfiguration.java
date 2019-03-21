@@ -127,9 +127,6 @@ public class ComponentsConfiguration {
   /** If true, a single thread pool will be used instead of creating one per RecyclerBinder. */
   public static boolean useSingleThreadPool = false;
 
-  /** Configuration for asynchronous state update */
-  public static boolean updateStateAsync = false;
-
   /**
    * If false, we won't create state handlers. It's highly discouraged to to change this to false,
    * unless you handle all your updates outside of the litho framework
