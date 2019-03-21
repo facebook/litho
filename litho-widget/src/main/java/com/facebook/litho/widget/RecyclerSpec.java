@@ -55,7 +55,6 @@ import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.ShouldAlwaysRemeasure;
 import com.facebook.litho.annotations.ShouldUpdate;
 import com.facebook.litho.annotations.State;
-import com.facebook.litho.config.ComponentsConfiguration;
 import java.util.List;
 
 /**
@@ -173,14 +172,13 @@ class RecyclerSpec {
       throw new IllegalStateException(
           "RecyclerView not found, it should not be removed from SwipeRefreshLayout");
     }
-    final boolean disableClipping = ComponentsConfiguration.disableClipOnRecyclers;
     recyclerView.setContentDescription(contentDescription);
     recyclerView.setHasFixedSize(hasFixedSize);
-    recyclerView.setClipToPadding(clipToPadding || disableClipping);
-    sectionsRecycler.setClipToPadding(clipToPadding || disableClipping);
+    recyclerView.setClipToPadding(clipToPadding);
+    sectionsRecycler.setClipToPadding(clipToPadding);
     recyclerView.setPadding(leftPadding, topPadding, rightPadding, bottomPadding);
-    recyclerView.setClipChildren(clipChildren || disableClipping);
-    sectionsRecycler.setClipChildren(clipChildren || disableClipping);
+    recyclerView.setClipChildren(clipChildren);
+    sectionsRecycler.setClipChildren(clipChildren);
     recyclerView.setNestedScrollingEnabled(nestedScrollingEnabled);
     sectionsRecycler.setNestedScrollingEnabled(nestedScrollingEnabled);
     recyclerView.setScrollBarStyle(scrollBarStyle);

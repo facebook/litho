@@ -251,10 +251,6 @@ public class ComponentsConfiguration {
     return isDebugModeEnabled && enableRenderInfoDebugging;
   }
 
-  public static boolean disableAllClipProps = false;
-
-  public static boolean disableClipOnRecyclers = false;
-
   public static boolean isPoolBisectEnabled = false;
   public static String disablePoolsStart = "aaaaa";
   public static String disablePoolsEnd = "zzzzz";
