@@ -166,9 +166,6 @@ public class ComponentsConfiguration {
    */
   public static boolean incrementalMountWhenNotVisible = false;
 
-  /** Whether all drawables are eligible for wrapping into DisplayListDrawables */
-  public static boolean useDisplayListForAllDrawables = false;
-
   /**
    * Whether the background thread that's currently running the layout should have its priority
    * raised to the thread priority of the UI thread.
@@ -212,12 +209,6 @@ public class ComponentsConfiguration {
 
   /** Sets if SparseNodeInfo should be used */
   public static boolean isSparseNodeInfoIsEnabled;
-
-  /**
-   * Controls if DisplayList wrapping should be disabled by default. Would have no effect if
-   * ComponentTree explicitly set up to enable wrapping
-   */
-  public static boolean disableDisplayListWrapping = false;
 
   /** specifies if the ComparableAnimatedColorDrawable should be initialized in a lazy way */
   public static boolean lazyComparableAnimatedColorDrawable = false;
