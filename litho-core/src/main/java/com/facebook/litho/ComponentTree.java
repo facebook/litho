@@ -1883,10 +1883,16 @@ public class ComponentTree {
 
   @Nullable
   Object getCachedValue(Object cachedValueInputs) {
+    if (isReleased()) {
+      return null;
+    }
     return mStateHandler.getCachedValue(cachedValueInputs);
   }
 
   void putCachedValue(Object cachedValueInputs, Object cachedValue) {
+    if (isReleased()) {
+      return;
+    }
     mStateHandler.putCachedValue(cachedValueInputs, cachedValue);
   }
 
