@@ -56,8 +56,8 @@ public final class Row extends Component {
   private static final Pools.SynchronizedPool<Builder> sBuilderPool =
       new Pools.SynchronizedPool<>(2);
 
-  private Row() {
-    super("Row");
+  private Row(String simpleName) {
+    super(simpleName);
   }
 
   @Override
@@ -66,12 +66,21 @@ public final class Row extends Component {
   }
 
   public static Builder create(ComponentContext context) {
-    return create(context, 0, 0);
+    return create(context, 0, 0, "Row");
+  }
+
+  public static Builder create(ComponentContext context, String simpleName) {
+    return create(context, 0, 0, simpleName);
   }
 
   public static Builder create(ComponentContext context, int defStyleAttr, int defStyleRes) {
+    return create(context, defStyleAttr, defStyleRes, "Row");
+  }
+
+  public static Builder create(
+      ComponentContext context, int defStyleAttr, int defStyleRes, String simpleName) {
     final Builder builder = acquire();
-    builder.init(context, defStyleAttr, defStyleRes, new Row());
+    builder.init(context, defStyleAttr, defStyleRes, new Row(simpleName));
     return builder;
   }
 
