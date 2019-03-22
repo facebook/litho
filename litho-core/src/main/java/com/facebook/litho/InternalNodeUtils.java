@@ -15,8 +15,6 @@
  */
 package com.facebook.litho;
 
-import android.util.Log;
-
 public class InternalNodeUtils {
 
   static InternalNode create(ComponentContext context) {
@@ -35,14 +33,5 @@ public class InternalNodeUtils {
   static boolean hasValidLayoutDirectionInNestedTree(InternalNode holder, InternalNode nestedTree) {
     return nestedTree.isLayoutDirectionInherit()
         || (nestedTree.getResolvedLayoutDirection() == holder.getResolvedLayoutDirection());
-  }
-
-  /** Crash if the given node has context specific style set. */
-  static void assertContextSpecificStyleNotSet(InternalNode node) {
-    if (node instanceof DefaultInternalNode) {
-      DefaultInternalNode.assertContextSpecificStyleNotSet((DefaultInternalNode) node);
-    } else {
-      Log.e("Litho", node.getClass().getSimpleName() + " does not implement style assertions");
-    }
   }
 }

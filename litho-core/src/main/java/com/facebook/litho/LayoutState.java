@@ -1675,8 +1675,8 @@ class LayoutState {
       resolvedLayout = nestedTree;
     }
 
-    // This is checking only nested tree roots however it will be moved to check all the tree roots.
-    InternalNodeUtils.assertContextSpecificStyleNotSet(resolvedLayout);
+    // This is checking only nested tree roots however should be moved to check all the tree roots.
+    resolvedLayout.assertContextSpecificStyleNotSet();
 
     return resolvedLayout;
   }

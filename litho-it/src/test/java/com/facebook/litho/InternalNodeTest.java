@@ -409,7 +409,7 @@ public class InternalNodeTest {
 
   @Test
   public void testContextSpecificComponentAssertionPasses() {
-    InternalNodeUtils.assertContextSpecificStyleNotSet(acquireInternalNode());
+    acquireInternalNode().assertContextSpecificStyleNotSet();
   }
 
   @Test
@@ -422,7 +422,7 @@ public class InternalNodeTest {
     node.alignSelf(YogaAlign.AUTO);
     node.flex(1f);
 
-    InternalNodeUtils.assertContextSpecificStyleNotSet(node);
+    node.assertContextSpecificStyleNotSet();
     verify(componentsLogger)
         .emitMessage(
             ComponentsLogger.LogLevel.WARNING,

@@ -388,6 +388,8 @@ public interface InternalNode extends ComponentLayout, LayoutProps, Copyable<Int
 
   void applyAttributes(TypedArray a);
 
+  void assertContextSpecificStyleNotSet();
+
   class NestedTreeProps {
     boolean mIsNestedTreeHolder;
     @Nullable InternalNode mNestedTree;

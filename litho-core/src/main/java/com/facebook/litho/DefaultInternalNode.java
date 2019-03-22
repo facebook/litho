@@ -1681,34 +1681,35 @@ public class DefaultInternalNode implements InternalNode {
   }
 
   /** Crash if the given node has context specific style set. */
-  static void assertContextSpecificStyleNotSet(DefaultInternalNode node) {
+  @Override
+  public void assertContextSpecificStyleNotSet() {
     List<CharSequence> errorTypes = null;
-    if ((node.mPrivateFlags & PFLAG_ALIGN_SELF_IS_SET) != 0L) {
+    if ((mPrivateFlags & PFLAG_ALIGN_SELF_IS_SET) != 0L) {
       errorTypes = addOrCreateList(errorTypes, "alignSelf");
     }
-    if ((node.mPrivateFlags & PFLAG_POSITION_TYPE_IS_SET) != 0L) {
+    if ((mPrivateFlags & PFLAG_POSITION_TYPE_IS_SET) != 0L) {
       errorTypes = addOrCreateList(errorTypes, "positionType");
     }
-    if ((node.mPrivateFlags & PFLAG_FLEX_IS_SET) != 0L) {
+    if ((mPrivateFlags & PFLAG_FLEX_IS_SET) != 0L) {
       errorTypes = addOrCreateList(errorTypes, "flex");
     }
-    if ((node.mPrivateFlags & PFLAG_FLEX_GROW_IS_SET) != 0L) {
+    if ((mPrivateFlags & PFLAG_FLEX_GROW_IS_SET) != 0L) {
       errorTypes = addOrCreateList(errorTypes, "flexGrow");
     }
-    if ((node.mPrivateFlags & PFLAG_MARGIN_IS_SET) != 0L) {
+    if ((mPrivateFlags & PFLAG_MARGIN_IS_SET) != 0L) {
       errorTypes = addOrCreateList(errorTypes, "margin");
     }
 
     if (errorTypes != null) {
       final CharSequence errorStr = TextUtils.join(", ", errorTypes);
-      final ComponentsLogger logger = node.getContext().getLogger();
+      final ComponentsLogger logger = getContext().getLogger();
       if (logger != null) {
         logger.emitMessage(
             WARNING,
             "You should not set "
                 + errorStr
                 + " to a root layout in "
-                + node.getRootComponent().getClass().getSimpleName());
+                + getRootComponent().getClass().getSimpleName());
       }
     }
   }

@@ -836,4 +836,7 @@ class NoOpInternalNode implements InternalNode {
 
   @Override
   public void applyAttributes(TypedArray a) {}
+
+  @Override
+  public void assertContextSpecificStyleNotSet() {}
 }
