@@ -55,12 +55,12 @@ class NoOpInternalNode implements InternalNode {
   public void addWorkingRanges(List<WorkingRangeContainer.Registration> registrations) {}
 
   @Override
-  public InternalNode alignContent(YogaAlign alignContent) {
+  public @Nullable InternalNode alignContent(YogaAlign alignContent) {
     return null;
   }
 
   @Override
-  public InternalNode alignItems(YogaAlign alignItems) {
+  public @Nullable InternalNode alignItems(YogaAlign alignItems) {
     return null;
   }
 
@@ -73,27 +73,27 @@ class NoOpInternalNode implements InternalNode {
   }
 
   @Override
-  public InternalNode background(@Nullable ComparableDrawable background) {
+  public @Nullable InternalNode background(@Nullable ComparableDrawable background) {
     return null;
   }
 
   @Override
-  public InternalNode background(@Nullable Drawable background) {
+  public @Nullable InternalNode background(@Nullable Drawable background) {
     return null;
   }
 
   @Override
-  public InternalNode backgroundColor(int backgroundColor) {
+  public @Nullable InternalNode backgroundColor(int backgroundColor) {
     return null;
   }
 
   @Override
-  public InternalNode backgroundRes(int resId) {
+  public @Nullable InternalNode backgroundRes(int resId) {
     return null;
   }
 
   @Override
-  public InternalNode border(Border border) {
+  public @Nullable InternalNode border(Border border) {
     return null;
   }
 
@@ -107,17 +107,17 @@ class NoOpInternalNode implements InternalNode {
   public void calculateLayout() {}
 
   @Override
-  public InternalNode child(Component child) {
+  public @Nullable InternalNode child(Component child) {
     return null;
   }
 
   @Override
-  public InternalNode child(Component.Builder<?> child) {
+  public @Nullable InternalNode child(Component.Builder<?> child) {
     return null;
   }
 
   @Override
-  public InternalNode child(InternalNode child) {
+  public @Nullable InternalNode child(InternalNode child) {
     return null;
   }
 
@@ -125,47 +125,48 @@ class NoOpInternalNode implements InternalNode {
   public void copyInto(InternalNode target) {}
 
   @Override
-  public InternalNode duplicateParentState(boolean duplicateParentState) {
+  public @Nullable InternalNode duplicateParentState(boolean duplicateParentState) {
     return null;
   }
 
   @Override
-  public InternalNode flexBasisAuto() {
+  public @Nullable InternalNode flexBasisAuto() {
     return null;
   }
 
   @Override
-  public InternalNode flexDirection(YogaFlexDirection direction) {
+  public @Nullable InternalNode flexDirection(YogaFlexDirection direction) {
     return null;
   }
 
   @Override
-  public InternalNode focusedHandler(@Nullable EventHandler<FocusedVisibleEvent> focusedHandler) {
+  public @Nullable InternalNode focusedHandler(
+      @Nullable EventHandler<FocusedVisibleEvent> focusedHandler) {
     return null;
   }
 
   @Override
-  public InternalNode foreground(@Nullable Drawable foreground) {
+  public @Nullable InternalNode foreground(@Nullable Drawable foreground) {
     return null;
   }
 
   @Override
-  public InternalNode foreground(@Nullable ComparableDrawable foreground) {
+  public @Nullable InternalNode foreground(@Nullable ComparableDrawable foreground) {
     return null;
   }
 
   @Override
-  public InternalNode foregroundColor(int foregroundColor) {
+  public @Nullable InternalNode foregroundColor(int foregroundColor) {
     return null;
   }
 
   @Override
-  public InternalNode foregroundRes(int resId) {
+  public @Nullable InternalNode foregroundRes(int resId) {
     return null;
   }
 
   @Override
-  public InternalNode fullImpressionHandler(
+  public @Nullable InternalNode fullImpressionHandler(
       @Nullable EventHandler<FullImpressionVisibleEvent> fullImpressionHandler) {
     return null;
   }
@@ -203,7 +204,7 @@ class NoOpInternalNode implements InternalNode {
   }
 
   @Override
-  public List<Component> getComponents() {
+  public @Nullable List<Component> getComponents() {
     return null;
   }
 
@@ -214,7 +215,7 @@ class NoOpInternalNode implements InternalNode {
   }
 
   @Override
-  public ComponentContext getContext() {
+  public @Nullable ComponentContext getContext() {
     return null;
   }
 
@@ -276,7 +277,7 @@ class NoOpInternalNode implements InternalNode {
   }
 
   @Override
-  public YogaDirection getResolvedLayoutDirection() {
+  public @Nullable YogaDirection getResolvedLayoutDirection() {
     return null;
   }
 
@@ -394,12 +395,12 @@ class NoOpInternalNode implements InternalNode {
   public void setNodeInfo(NodeInfo nodeInfo) {}
 
   @Override
-  public NestedTreeProps getOrCreateNestedTreeProps() {
+  public @Nullable NestedTreeProps getOrCreateNestedTreeProps() {
     return null;
   }
 
   @Override
-  public NodeInfo getOrCreateNodeInfo() {
+  public @Nullable NodeInfo getOrCreateNodeInfo() {
     return null;
   }
 
@@ -436,7 +437,7 @@ class NoOpInternalNode implements InternalNode {
   }
 
   @Override
-  public YogaDirection getStyleDirection() {
+  public @Nullable YogaDirection getStyleDirection() {
     return null;
   }
 
@@ -535,7 +536,7 @@ class NoOpInternalNode implements InternalNode {
   }
 
   @Override
-  public YogaNode getYogaNode() {
+  public @Nullable YogaNode getYogaNode() {
     return null;
   }
 
@@ -575,17 +576,18 @@ class NoOpInternalNode implements InternalNode {
   }
 
   @Override
-  public InternalNode heightAuto() {
+  public @Nullable InternalNode heightAuto() {
     return null;
   }
 
   @Override
-  public InternalNode importantForAccessibility(int importantForAccessibility) {
+  public @Nullable InternalNode importantForAccessibility(int importantForAccessibility) {
     return null;
   }
 
   @Override
-  public InternalNode invisibleHandler(@Nullable EventHandler<InvisibleEvent> invisibleHandler) {
+  public @Nullable InternalNode invisibleHandler(
+      @Nullable EventHandler<InvisibleEvent> invisibleHandler) {
     return null;
   }
 
@@ -625,7 +627,7 @@ class NoOpInternalNode implements InternalNode {
   }
 
   @Override
-  public InternalNode justifyContent(YogaJustify justifyContent) {
+  public @Nullable InternalNode justifyContent(YogaJustify justifyContent) {
     return null;
   }
 
@@ -639,7 +641,7 @@ class NoOpInternalNode implements InternalNode {
   public void padding(Edges padding, @Nullable InternalNode holder) {}
 
   @Override
-  public YogaDirection recursivelyResolveLayoutDirection() {
+  public @Nullable YogaDirection recursivelyResolveLayoutDirection() {
     return null;
   }
 
@@ -647,7 +649,7 @@ class NoOpInternalNode implements InternalNode {
   public void registerDebugComponent(DebugComponent debugComponent) {}
 
   @Override
-  public InternalNode removeChildAt(int index) {
+  public @Nullable InternalNode removeChildAt(int index) {
     return null;
   }
 
@@ -675,64 +677,65 @@ class NoOpInternalNode implements InternalNode {
   }
 
   @Override
-  public InternalNode stateListAnimator(@Nullable StateListAnimator stateListAnimator) {
+  public @Nullable InternalNode stateListAnimator(@Nullable StateListAnimator stateListAnimator) {
     return null;
   }
 
   @Override
-  public InternalNode stateListAnimatorRes(int resId) {
+  public @Nullable InternalNode stateListAnimatorRes(int resId) {
     return null;
   }
 
   @Override
-  public InternalNode testKey(@Nullable String testKey) {
+  public @Nullable InternalNode testKey(@Nullable String testKey) {
     return null;
   }
 
   @Override
-  public InternalNode touchExpansionPx(YogaEdge edge, int touchExpansion) {
+  public @Nullable InternalNode touchExpansionPx(YogaEdge edge, int touchExpansion) {
     return null;
   }
 
   @Override
-  public InternalNode transitionKey(@Nullable String key) {
+  public @Nullable InternalNode transitionKey(@Nullable String key) {
     return null;
   }
 
   @Override
-  public InternalNode transitionKeyType(@Nullable Transition.TransitionKeyType type) {
+  public @Nullable InternalNode transitionKeyType(@Nullable Transition.TransitionKeyType type) {
     return null;
   }
 
   @Override
-  public InternalNode unfocusedHandler(
+  public @Nullable InternalNode unfocusedHandler(
       @Nullable EventHandler<UnfocusedVisibleEvent> unfocusedHandler) {
     return null;
   }
 
   @Override
-  public InternalNode visibilityChangedHandler(
+  public @Nullable InternalNode visibilityChangedHandler(
       @Nullable EventHandler<VisibilityChangedEvent> visibilityChangedHandler) {
     return null;
   }
 
   @Override
-  public InternalNode visibleHandler(@Nullable EventHandler<VisibleEvent> visibleHandler) {
+  public @Nullable InternalNode visibleHandler(
+      @Nullable EventHandler<VisibleEvent> visibleHandler) {
     return null;
   }
 
   @Override
-  public InternalNode visibleHeightRatio(float visibleHeightRatio) {
+  public @Nullable InternalNode visibleHeightRatio(float visibleHeightRatio) {
     return null;
   }
 
   @Override
-  public InternalNode visibleWidthRatio(float visibleWidthRatio) {
+  public @Nullable InternalNode visibleWidthRatio(float visibleWidthRatio) {
     return null;
   }
 
   @Override
-  public InternalNode widthAuto() {
+  public @Nullable InternalNode widthAuto() {
     return null;
   }
 
@@ -827,12 +830,12 @@ class NoOpInternalNode implements InternalNode {
   public void useHeightAsBaseline(boolean useHeightAsBaseline) {}
 
   @Override
-  public InternalNode wrap(YogaWrap wrap) {
+  public @Nullable InternalNode wrap(YogaWrap wrap) {
     return null;
   }
 
   @Override
-  public InternalNode wrapInView() {
+  public @Nullable InternalNode wrapInView() {
     return null;
   }
 
