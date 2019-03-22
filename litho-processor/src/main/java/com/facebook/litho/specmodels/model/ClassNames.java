@@ -57,7 +57,6 @@ public interface ClassNames {
   ClassName COLLECTIONS = ClassName.get(Collections.class);
   ClassName COLLECTION = ClassName.bestGuess("java.util.Collection");
 
-  ClassName SYNCHRONIZED_POOL = ClassName.bestGuess("androidx.core.util.Pools.SynchronizedPool");
   ClassName MOUNT_CONTENT_POOL = ClassName.bestGuess("com.facebook.litho.MountContentPool");
 
   ClassName LAYOUT_SPEC = ClassName.bestGuess("com.facebook.litho.annotations.LayoutSpec");
