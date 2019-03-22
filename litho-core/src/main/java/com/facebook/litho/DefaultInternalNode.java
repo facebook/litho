@@ -1058,22 +1058,6 @@ public class DefaultInternalNode implements InternalNode {
   }
 
   @Override
-  public void padding(Edges padding, @Nullable InternalNode holder) {
-    mPrivateFlags |= PFLAG_PADDING_IS_SET;
-    for (int i = 0; i < Edges.EDGES_LENGTH; i++) {
-      float value = padding.getRaw(i);
-      if (!YogaConstants.isUndefined(value)) {
-        final YogaEdge edge = YogaEdge.fromInt(i);
-        if (holder != null && ((DefaultInternalNode) holder).isPaddingPercent(edge)) {
-          mYogaNode.setPaddingPercent(edge, value);
-        } else {
-          mYogaNode.setPadding(edge, (int) value);
-        }
-      }
-    }
-  }
-
-  @Override
   public void paddingPercent(YogaEdge edge, float percent) {
     mPrivateFlags |= PFLAG_PADDING_IS_SET;
     if (mNestedTreeProps != null && mNestedTreeProps.mIsNestedTreeHolder) {
@@ -1476,7 +1460,17 @@ public class DefaultInternalNode implements InternalNode {
         throw new IllegalStateException(
             "copyInto() must be used when resolving a nestedTree. If padding was set on the holder node, we must have a mNestedTreePadding instance");
       }
-      target.padding(mNestedTreeProps.mNestedTreePadding, this);
+      for (int i = 0; i < Edges.EDGES_LENGTH; i++) {
+        float value = mNestedTreeProps.mNestedTreePadding.getRaw(i);
+        if (!YogaConstants.isUndefined(value)) {
+          final YogaEdge edge = YogaEdge.fromInt(i);
+          if (isPaddingPercent(edge)) {
+            target.paddingPercent(edge, value);
+          } else {
+            target.paddingPx(edge, (int) value);
+          }
+        }
+      }
     }
     if ((mPrivateFlags & PFLAG_BORDER_IS_SET) != 0L) {
       if (mNestedTreeProps == null || mNestedTreeProps.mNestedTreeBorderWidth == null) {

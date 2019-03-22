@@ -633,9 +633,6 @@ class NoOpInternalNode implements InternalNode {
   public void markLayoutSeen() {}
 
   @Override
-  public void padding(Edges padding, @Nullable InternalNode holder) {}
-
-  @Override
   public @Nullable YogaDirection recursivelyResolveLayoutDirection() {
     return null;
   }

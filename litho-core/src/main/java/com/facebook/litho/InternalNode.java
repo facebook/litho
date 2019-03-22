@@ -332,8 +332,6 @@ public interface InternalNode extends ComponentLayout, LayoutProps, Copyable<Int
 
   void markLayoutSeen();
 
-  void padding(Edges padding, @Nullable InternalNode holder);
-
   /** Continually walks the node hierarchy until a node returns a non inherited layout direction */
   YogaDirection recursivelyResolveLayoutDirection();
 
