@@ -958,8 +958,7 @@ public class DefaultInternalNode implements InternalNode {
     return mNestedTreeProps != null && mNestedTreeProps.mIsNestedTreeHolder;
   }
 
-  @Override
-  public boolean isPaddingPercent(YogaEdge edge) {
+  private boolean isPaddingPercent(YogaEdge edge) {
     return mIsPaddingPercent != null && mIsPaddingPercent[edge.intValue()];
   }
 
@@ -1065,7 +1064,7 @@ public class DefaultInternalNode implements InternalNode {
       float value = padding.getRaw(i);
       if (!YogaConstants.isUndefined(value)) {
         final YogaEdge edge = YogaEdge.fromInt(i);
-        if (holder != null && holder.isPaddingPercent(edge)) {
+        if (holder != null && ((DefaultInternalNode) holder).isPaddingPercent(edge)) {
           mYogaNode.setPaddingPercent(edge, value);
         } else {
           mYogaNode.setPadding(edge, (int) value);

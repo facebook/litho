@@ -325,8 +325,6 @@ public interface InternalNode extends ComponentLayout, LayoutProps, Copyable<Int
    */
   boolean isNestedTreeHolder();
 
-  boolean isPaddingPercent(YogaEdge edge);
-
   InternalNode justifyContent(YogaJustify justifyContent);
 
   /** Mark this node as a nested tree root holder. */

@@ -622,11 +622,6 @@ class NoOpInternalNode implements InternalNode {
   }
 
   @Override
-  public boolean isPaddingPercent(YogaEdge edge) {
-    return false;
-  }
-
-  @Override
   public @Nullable InternalNode justifyContent(YogaJustify justifyContent) {
     return null;
   }
