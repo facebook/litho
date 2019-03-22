@@ -33,7 +33,7 @@ public class InternalNodeUtils {
    * its main tree holder node.
    */
   static boolean hasValidLayoutDirectionInNestedTree(InternalNode holder, InternalNode nestedTree) {
-    return nestedTree.isLayoutDirectionSet()
+    return nestedTree.isLayoutDirectionInherit()
         || (nestedTree.getResolvedLayoutDirection() == holder.getResolvedLayoutDirection());
   }
 

@@ -612,7 +612,7 @@ class NoOpInternalNode implements InternalNode {
   }
 
   @Override
-  public boolean isLayoutDirectionSet() {
+  public boolean isLayoutDirectionInherit() {
     return false;
   }
 

@@ -944,7 +944,7 @@ public class DefaultInternalNode implements InternalNode {
   }
 
   @Override
-  public boolean isLayoutDirectionSet() {
+  public boolean isLayoutDirectionInherit() {
     return (mPrivateFlags & PFLAG_LAYOUT_DIRECTION_IS_SET) == 0L
         || getResolvedLayoutDirection() == YogaDirection.INHERIT;
   }
@@ -1433,7 +1433,7 @@ public class DefaultInternalNode implements InternalNode {
         mNodeInfo.copyInto(target.getOrCreateNodeInfo());
       }
     }
-    if (target.isLayoutDirectionSet()) {
+    if (target.isLayoutDirectionInherit()) {
       target.layoutDirection(getResolvedLayoutDirection());
     }
     if (target.isImportantForAccessibilityIsSet()) {

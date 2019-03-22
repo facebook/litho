@@ -317,7 +317,7 @@ public interface InternalNode extends ComponentLayout, LayoutProps, Copyable<Int
    */
   boolean isInitialized();
 
-  boolean isLayoutDirectionSet();
+  boolean isLayoutDirectionInherit();
 
   /**
    * @return Whether this node is holding a nested tree or not. The decision was made during tree
