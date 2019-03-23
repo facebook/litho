@@ -40,6 +40,14 @@ public interface NodeInfo {
   @Retention(RetentionPolicy.SOURCE)
   @interface FocusState {}
 
+  int CLICKABLE_UNSET = 0;
+  int CLICKABLE_SET_TRUE = 1;
+  int CLICKABLE_SET_FALSE = 2;
+
+  @IntDef({CLICKABLE_UNSET, CLICKABLE_SET_TRUE, CLICKABLE_SET_FALSE})
+  @Retention(RetentionPolicy.SOURCE)
+  @interface ClickableState {}
+
   int ENABLED_UNSET = 0;
   int ENABLED_SET_TRUE = 1;
   int ENABLED_SET_FALSE = 2;
@@ -196,6 +204,11 @@ public interface NodeInfo {
 
   @FocusState
   int getFocusState();
+
+  void setClickable(boolean isClickable);
+
+  @ClickableState
+  int getClickableState();
 
   void setEnabled(boolean isEnabled);
 

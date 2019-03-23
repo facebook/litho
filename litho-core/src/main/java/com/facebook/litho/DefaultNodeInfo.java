@@ -114,6 +114,7 @@ class DefaultNodeInfo implements NodeInfo {
   private @Nullable EventHandler<SendAccessibilityEventUncheckedEvent>
       mSendAccessibilityEventUncheckedHandler;
   private @FocusState int mFocusState = FOCUS_UNSET;
+  private @ClickableState int mClickableState = CLICKABLE_UNSET;
   private @EnabledState int mEnabledState = ENABLED_UNSET;
   private @SelectedState int mSelectedState = SELECTED_UNSET;
 
@@ -434,6 +435,20 @@ class DefaultNodeInfo implements NodeInfo {
   }
 
   @Override
+  public void setClickable(boolean isClickable) {
+    if (isClickable) {
+      mClickableState = ENABLED_SET_TRUE;
+    } else {
+      mClickableState = ENABLED_SET_FALSE;
+    }
+  }
+
+  @Override
+  public @ClickableState int getClickableState() {
+    return mClickableState;
+  }
+
+  @Override
   public void setEnabled(boolean isEnabled) {
     if (isEnabled) {
       mEnabledState = ENABLED_SET_TRUE;
@@ -623,6 +638,9 @@ class DefaultNodeInfo implements NodeInfo {
     }
     if (getFocusState() != FOCUS_UNSET) {
       target.setFocusable(getFocusState() == FOCUS_SET_TRUE);
+    }
+    if (getClickableState() != CLICKABLE_UNSET) {
+      target.setClickable(getClickableState() == CLICKABLE_SET_TRUE);
     }
     if (getEnabledState() != ENABLED_UNSET) {
       target.setEnabled(getEnabledState() == ENABLED_SET_TRUE);

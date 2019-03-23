@@ -351,6 +351,11 @@ class CommonPropsHolder implements CommonProps {
   }
 
   @Override
+  public void clickable(boolean isClickable) {
+    getOrCreateNodeInfo().setClickable(isClickable);
+  }
+
+  @Override
   public void enabled(boolean isEnabled) {
     getOrCreateNodeInfo().setEnabled(isEnabled);
   }

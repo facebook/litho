@@ -41,6 +41,7 @@ import static com.facebook.litho.MountItem.LAYOUT_FLAG_DUPLICATE_PARENT_STATE;
 import static com.facebook.litho.MountItem.LAYOUT_FLAG_MATCH_HOST_BOUNDS;
 import static com.facebook.litho.MountItem.LAYOUT_FLAG_PHANTOM;
 import static com.facebook.litho.MountState.ROOT_HOST_ID;
+import static com.facebook.litho.NodeInfo.CLICKABLE_SET_TRUE;
 import static com.facebook.litho.NodeInfo.ENABLED_SET_FALSE;
 import static com.facebook.litho.NodeInfo.ENABLED_UNSET;
 import static com.facebook.litho.NodeInfo.FOCUS_SET_TRUE;
@@ -523,6 +524,8 @@ class LayoutState {
     final boolean hasClipToOutline = (nodeInfo != null && nodeInfo.getClipToOutline());
     final boolean isFocusableSetTrue =
         (nodeInfo != null && nodeInfo.getFocusState() == FOCUS_SET_TRUE);
+    final boolean isClickableSetTrue =
+        (nodeInfo != null && nodeInfo.getClickableState() == CLICKABLE_SET_TRUE);
     final boolean hasClipChildrenSet = (nodeInfo != null && nodeInfo.isClipChildrenSet());
 
     return hasFocusChangeHandler
@@ -534,7 +537,8 @@ class LayoutState {
         || hasClipToOutline
         || hasClipChildrenSet
         || hasAccessibilityContent
-        || isFocusableSetTrue;
+        || isFocusableSetTrue
+        || isClickableSetTrue;
   }
 
   /**

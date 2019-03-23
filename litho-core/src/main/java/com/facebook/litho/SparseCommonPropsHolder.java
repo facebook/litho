@@ -590,6 +590,11 @@ class SparseCommonPropsHolder implements CommonProps {
     return getOrCreateNodeInfo().getFocusState() == NodeInfo.FOCUS_SET_TRUE;
   }
 
+  @Override
+  public void clickable(boolean isClickable) {
+    getOrCreateNodeInfo().setClickable(isClickable);
+  }
+
   @Nullable
   @Override
   public String getTransitionKey() {

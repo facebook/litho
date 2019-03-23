@@ -137,6 +137,7 @@ public class SparseCommonPropsTest {
     mCommonProps.interceptTouchHandler(interceptTouchHandler);
 
     mCommonProps.focusable(true);
+    mCommonProps.clickable(true);
     mCommonProps.selected(false);
     mCommonProps.enabled(false);
     mCommonProps.visibleHeightRatio(55);
@@ -273,6 +274,7 @@ public class SparseCommonPropsTest {
     verify(mNodeInfo).setInterceptTouchHandler(interceptTouchHandler);
 
     verify(mNodeInfo).setFocusable(true);
+    verify(mNodeInfo).setClickable(true);
     verify(mNodeInfo).setSelected(false);
     verify(mNodeInfo).setEnabled(false);
     verify(mNode).visibleHeightRatio(55);

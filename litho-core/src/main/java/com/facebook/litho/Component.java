@@ -1447,6 +1447,11 @@ public abstract class Component extends ComponentLifecycle
       return getThis();
     }
 
+    public T clickable(boolean isClickable) {
+      mComponent.getOrCreateCommonProps().clickable(isClickable);
+      return getThis();
+    }
+
     public T enabled(boolean isEnabled) {
       mComponent.getOrCreateCommonProps().enabled(isEnabled);
       return getThis();

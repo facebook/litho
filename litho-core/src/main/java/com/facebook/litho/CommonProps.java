@@ -89,6 +89,8 @@ public interface CommonProps extends CommonPropsCopyable, LayoutProps {
 
   void focusable(boolean isFocusable);
 
+  void clickable(boolean isClickable);
+
   void enabled(boolean isEnabled);
 
   void selected(boolean isSelected);

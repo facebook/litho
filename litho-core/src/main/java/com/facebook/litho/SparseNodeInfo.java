@@ -106,6 +106,7 @@ class SparseNodeInfo implements NodeInfo {
   private float mShadowElevation = 0;
 
   private @FocusState int mFocusState = FOCUS_UNSET;
+  private @ClickableState int mClickableState = CLICKABLE_UNSET;
   private @EnabledState int mEnabledState = ENABLED_UNSET;
   private @SelectedState int mSelectedState = SELECTED_UNSET;
 
@@ -567,6 +568,20 @@ class SparseNodeInfo implements NodeInfo {
   @Override
   public @FocusState int getFocusState() {
     return mFocusState;
+  }
+
+  @Override
+  public void setClickable(boolean isClickable) {
+    if (isClickable) {
+      mClickableState = ENABLED_SET_TRUE;
+    } else {
+      mClickableState = ENABLED_SET_FALSE;
+    }
+  }
+
+  @Override
+  public @ClickableState int getClickableState() {
+    return mClickableState;
   }
 
   @Override

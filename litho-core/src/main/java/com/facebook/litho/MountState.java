@@ -1559,6 +1559,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       setContentDescription(view, nodeInfo.getContentDescription());
 
       setFocusable(view, nodeInfo.getFocusState());
+      setClickable(view, nodeInfo.getClickableState());
       setEnabled(view, nodeInfo.getEnabledState());
       setSelected(view, nodeInfo.getSelectedState());
       setScale(view, nodeInfo);
@@ -2028,6 +2029,14 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
   private static void unsetFocusable(View view, MountItem mountItem) {
     view.setFocusable(mountItem.isViewFocusable());
+  }
+
+  private static void setClickable(View view, @NodeInfo.FocusState int clickableState) {
+    if (clickableState == NodeInfo.CLICKABLE_SET_TRUE) {
+      view.setClickable(true);
+    } else if (clickableState == NodeInfo.CLICKABLE_SET_FALSE) {
+      view.setClickable(false);
+    }
   }
 
   private static void setEnabled(View view, @NodeInfo.EnabledState int enabledState) {
