@@ -16,9 +16,7 @@
 
 package com.facebook.litho;
 
-import androidx.core.util.Pools;
 import com.facebook.litho.annotations.Prop;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaFlexDirection;
 import com.facebook.yoga.YogaJustify;
@@ -53,9 +51,6 @@ public final class Column extends Component {
   @Prop(optional = true)
   private boolean reverse;
 
-  private static final Pools.SynchronizedPool<Builder> sBuilderPool =
-      new Pools.SynchronizedPool<>(2);
-
   private Column(String simpleName) {
     super(simpleName);
   }
@@ -79,20 +74,8 @@ public final class Column extends Component {
 
   public static Builder create(
       ComponentContext context, int defStyleAttr, int defStyleRes, String simpleName) {
-    final Builder builder = acquire();
+    final Builder builder = new Builder();
     builder.init(context, defStyleAttr, defStyleRes, new Column(simpleName));
-    return builder;
-  }
-
-  static Builder acquire() {
-    if (ComponentsConfiguration.disableCommonBuilderPools) {
-      return new Builder();
-    }
-
-    Builder builder = sBuilderPool.acquire();
-    if (builder == null) {
-      builder = new Builder();
-    }
     return builder;
   }
 
@@ -250,21 +233,11 @@ public final class Column extends Component {
 
     @Override
     public Column build() {
-      Column column = mColumn;
-      release();
-      return column;
+      return mColumn;
     }
 
     @Override
     protected void release() {
-      if (ComponentsConfiguration.disableCommonBuilderPools) {
-        return;
-      }
-
-      super.release();
-      mColumn = null;
-      mContext = null;
-      sBuilderPool.release(this);
     }
   }
 }

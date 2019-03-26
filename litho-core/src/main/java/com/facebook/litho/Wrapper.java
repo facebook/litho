@@ -16,9 +16,7 @@
 
 package com.facebook.litho;
 
-import androidx.core.util.Pools;
 import com.facebook.litho.annotations.Prop;
-import com.facebook.litho.config.ComponentsConfiguration;
 import java.util.BitSet;
 import javax.annotation.Nullable;
 
@@ -29,9 +27,6 @@ import javax.annotation.Nullable;
 public final class Wrapper extends Component {
 
   @Nullable @Prop Component delegate;
-
-  private static final Pools.SynchronizedPool<Builder> sBuilderPool =
-      new Pools.SynchronizedPool<Builder>(2);
 
   private Wrapper() {
     super("Wrapper");
@@ -47,20 +42,8 @@ public final class Wrapper extends Component {
   }
 
   public static Builder create(ComponentContext context, int defStyleAttr, int defStyleRes) {
-    final Builder builder = acquire();
+    final Builder builder = new Builder();
     builder.init(context, defStyleAttr, defStyleRes, new Wrapper());
-    return builder;
-  }
-
-  static Builder acquire() {
-    if (ComponentsConfiguration.disableCommonBuilderPools) {
-      return new Builder();
-    }
-
-    Builder builder = sBuilderPool.acquire();
-    if (builder == null) {
-      builder = new Builder();
-    }
     return builder;
   }
 
@@ -129,21 +112,11 @@ public final class Wrapper extends Component {
     @Override
     public Wrapper build() {
       checkArgs(REQUIRED_PROPS_COUNT, mRequired, REQUIRED_PROPS_NAMES);
-      Wrapper wrapper = mWrapper;
-      release();
-      return wrapper;
+      return mWrapper;
     }
 
     @Override
     protected void release() {
-      if (ComponentsConfiguration.disableCommonBuilderPools) {
-        return;
-      }
-
-      super.release();
-      mRequired.clear();
-      mWrapper = null;
-      sBuilderPool.release(this);
     }
   }
 }
