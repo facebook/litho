@@ -20,7 +20,6 @@ import android.content.Context;
 import android.view.View;
 import androidx.annotation.AttrRes;
 import androidx.annotation.StyleRes;
-import androidx.core.util.Pools;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
@@ -29,9 +28,7 @@ import com.facebook.litho.SizeSpec;
 import javax.annotation.Nullable;
 
 public class TestViewComponent extends TestComponent {
-  private static final Pools.SynchronizedPool<Builder> sBuilderPool =
-      new Pools.SynchronizedPool<>(2);
-
+  
   private final boolean mCallsShouldUpdateOnMount;
   private final boolean mIsPureRender;
   private final boolean mCanMeasure;
@@ -171,10 +168,7 @@ public class TestViewComponent extends TestComponent {
       @AttrRes int defStyleAttr,
       @StyleRes int defStyleRes,
       TestViewComponent state) {
-    Builder builder = sBuilderPool.acquire();
-    if (builder == null) {
-      builder = new Builder();
-    }
+    final Builder builder = new Builder();
     builder.init(context, defStyleAttr, defStyleRes, state);
     return builder;
   }
@@ -222,16 +216,7 @@ public class TestViewComponent extends TestComponent {
 
     @Override
     public TestViewComponent build() {
-      TestViewComponent state = mState;
-      release();
-      return state;
-    }
-
-    @Override
-    protected void release() {
-      super.release();
-      mState = null;
-      sBuilderPool.release(this);
+      return mState;
     }
 
     @Override

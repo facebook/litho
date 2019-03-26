@@ -256,10 +256,7 @@ public class TestDrawableComponent extends TestComponent {
       @AttrRes int defStyleAttr,
       @StyleRes int defStyleRes,
       TestDrawableComponent state) {
-    Builder builder = sBuilderPool.acquire();
-    if (builder == null) {
-      builder = new Builder();
-    }
+    final Builder builder = new Builder();
     builder.init(context, defStyleAttr, defStyleRes, state);
     return builder;
   }
@@ -323,16 +320,7 @@ public class TestDrawableComponent extends TestComponent {
 
     @Override
     public TestDrawableComponent build() {
-      TestDrawableComponent component = mComponent;
-      release();
-      return component;
-    }
-
-    @Override
-    protected void release() {
-      super.release();
-      mComponent = null;
-      sBuilderPool.release(this);
+      return mComponent;
     }
 
     @Override

@@ -768,16 +768,7 @@ public final class TestMount<S extends View> extends Component implements TestTa
     @Override
     public TestMount build() {
       checkArgs(REQUIRED_PROPS_COUNT, mRequired, REQUIRED_PROPS_NAMES);
-      TestMount testMountRef = mTestMount;
-      release();
-      return testMountRef;
-    }
-
-    @Override
-    protected void release() {
-      super.release();
-      mTestMount = null;
-      mContext = null;
+      return mTestMount;
     }
   }
 

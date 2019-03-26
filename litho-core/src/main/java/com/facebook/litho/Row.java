@@ -233,9 +233,5 @@ public final class Row extends Component {
     public Row build() {
       return mRow;
     }
-
-    @Override
-    protected void release() {
-    }
   }
 }

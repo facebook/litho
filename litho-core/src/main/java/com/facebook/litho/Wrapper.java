@@ -114,9 +114,5 @@ public final class Wrapper extends Component {
       checkArgs(REQUIRED_PROPS_COUNT, mRequired, REQUIRED_PROPS_NAMES);
       return mWrapper;
     }
-
-    @Override
-    protected void release() {
-    }
   }
 }

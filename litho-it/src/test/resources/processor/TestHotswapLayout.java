@@ -926,16 +926,7 @@ public final class TestLayout<S extends View> extends Component implements TestT
     @Override
     public TestLayout build() {
       checkArgs(REQUIRED_PROPS_COUNT, mRequired, REQUIRED_PROPS_NAMES);
-      TestLayout testLayoutRef = mTestLayout;
-      release();
-      return testLayoutRef;
-    }
-
-    @Override
-    protected void release() {
-      super.release();
-      mTestLayout = null;
-      mContext = null;
+      return mTestLayout;
     }
   }
 

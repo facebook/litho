@@ -836,12 +836,6 @@ public abstract class Component extends ComponentLifecycle
       return getThis();
     }
 
-    protected void release() {
-      mContext = null;
-      mComponent = null;
-      mResourceResolver = null;
-    }
-
     /**
      * Checks that all the required props are supplied, and if not throws a useful exception
      *

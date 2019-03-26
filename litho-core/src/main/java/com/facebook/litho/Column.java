@@ -235,9 +235,5 @@ public final class Column extends Component {
     public Column build() {
       return mColumn;
     }
-
-    @Override
-    protected void release() {
-    }
   }
 }
