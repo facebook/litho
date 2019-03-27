@@ -53,28 +53,26 @@ public class RecyclerBinderUpdateCallback<T> implements ListUpdateCallback {
   private final List<Diff> mDataHolders;
   private final ComponentRenderer mComponentRenderer;
   private final OperationExecutor mOperationExecutor;
-  private final int mHeadOffset;
 
   public RecyclerBinderUpdateCallback(
       List<T> prevData,
       List<T> nextData,
       ComponentRenderer<T> componentRenderer,
       RecyclerBinder recyclerBinder) {
-    this(prevData, nextData, componentRenderer, new RecyclerBinderOperationExecutor(recyclerBinder), 0);
+    this(
+        prevData, nextData, componentRenderer, new RecyclerBinderOperationExecutor(recyclerBinder));
   }
 
   public RecyclerBinderUpdateCallback(
       List<T> prevData,
       List<T> nextData,
       ComponentRenderer<T> componentRenderer,
-      OperationExecutor operationExecutor,
-      int headOffset) {
+      OperationExecutor operationExecutor) {
     mPrevData = prevData;
     mOldDataSize = prevData != null ? prevData.size() : 0;
     mNextData = nextData;
     mComponentRenderer = componentRenderer;
     mOperationExecutor = operationExecutor;
-    mHeadOffset = headOffset;
 
     mOperations = new ArrayList<>();
     mPlaceholders = new ArrayList<>();
@@ -89,7 +87,6 @@ public class RecyclerBinderUpdateCallback<T> implements ListUpdateCallback {
   public void onInserted(int position, int count) {
     final List<ComponentContainer> placeholders = new ArrayList<>(count);
     final List<Diff> dataHolders = new ArrayList<>(count);
-    position += mHeadOffset;
     for (int i = 0; i < count; i++) {
       final int index = position + i;
       final ComponentContainer componentContainer = new ComponentContainer(null, true);
@@ -107,7 +104,6 @@ public class RecyclerBinderUpdateCallback<T> implements ListUpdateCallback {
   @Override
   public void onRemoved(int position, int count) {
     final List<Diff> dataHolders = new ArrayList<>(count);
-    position += mHeadOffset;
     for (int i = 0; i < count; i++) {
       mPlaceholders.remove(position);
 
@@ -121,8 +117,6 @@ public class RecyclerBinderUpdateCallback<T> implements ListUpdateCallback {
   @Override
   public void onMoved(int fromPosition, int toPosition) {
     final List<Diff> dataHolders = new ArrayList<>(1);
-    fromPosition += mHeadOffset;
-    toPosition += mHeadOffset;
 
     final ComponentContainer placeholder = mPlaceholders.remove(fromPosition);
     mPlaceholders.add(toPosition, placeholder);
@@ -139,7 +133,6 @@ public class RecyclerBinderUpdateCallback<T> implements ListUpdateCallback {
     final List<ComponentContainer> placeholders = new ArrayList<>();
     final List<Diff> dataHolders = new ArrayList<>(count);
 
-    position += mHeadOffset;
     for (int i = 0; i < count; i++) {
       final int index = position + i;
       final ComponentContainer placeholder = mPlaceholders.get(index);
