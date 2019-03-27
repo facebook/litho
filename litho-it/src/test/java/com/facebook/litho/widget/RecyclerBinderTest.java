@@ -159,7 +159,6 @@ public class RecyclerBinderTest {
           public ComponentTreeHolder create(
               RenderInfo renderInfo,
               LayoutHandler layoutHandler,
-              boolean useSharedLayoutStateFuture,
               ComponentTreeMeasureListenerFactory componentTreeMeasureListenerFactory,
               String splitLayoutTag,
               boolean incrementalMountEnabled) {

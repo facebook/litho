@@ -242,7 +242,6 @@ public class RecyclerBinder
   @VisibleForTesting @Nullable volatile Size mSizeForMeasure;
   private StickyHeaderController mStickyHeaderController;
   private @Nullable StickyHeaderControllerFactory mStickyHeaderControllerFactory;
-  private final boolean mUseSharedLayoutStateFuture;
   private final @Nullable LayoutHandler mThreadPoolHandler;
   private final @Nullable LayoutThreadPoolConfiguration mThreadPoolConfig;
   private EventHandler<ReMeasureEvent> mReMeasureEventEventHandler;
@@ -335,7 +334,6 @@ public class RecyclerBinder
     ComponentTreeHolder create(
         RenderInfo renderInfo,
         LayoutHandler layoutHandler,
-        boolean useSharedLayoutStateFuture,
         ComponentTreeMeasureListenerFactory measureListenerFactory,
         String splitLayoutTag,
         boolean incrementalMountEnabled);
@@ -347,14 +345,12 @@ public class RecyclerBinder
         public ComponentTreeHolder create(
             RenderInfo renderInfo,
             LayoutHandler layoutHandler,
-            boolean useSharedLayoutStateFuture,
             ComponentTreeMeasureListenerFactory measureListenerFactory,
             String splitLayoutTag,
             boolean incrementalMountEnabled) {
           return ComponentTreeHolder.create()
               .renderInfo(renderInfo)
               .layoutHandler(layoutHandler)
-              .useSharedLayoutStateFuture(useSharedLayoutStateFuture)
               .componentTreeMeasureListenerFactory(measureListenerFactory)
               .splitLayoutTag(splitLayoutTag)
               .incrementalMount(incrementalMountEnabled)
@@ -380,7 +376,6 @@ public class RecyclerBinder
     private @Nullable RecyclerView.Adapter overrideInternalAdapter;
     private String splitLayoutTag;
     private boolean enableStableIds;
-    private boolean useSharedLayoutStateFuture = ComponentsConfiguration.useSharedLayoutStateFuture;
     private @Nullable List<ComponentLogParams> invalidStateLogParamsList;
     private RecyclerRangeTraverser recyclerRangeTraverser;
     private LayoutThreadPoolConfiguration threadPoolConfig;
@@ -511,12 +506,6 @@ public class RecyclerBinder
      */
     public Builder invalidStateLogParamsList(@Nullable List<ComponentLogParams> logParamsList) {
       this.invalidStateLogParamsList = logParamsList;
-      return this;
-    }
-
-    /** Whether to share a single LayoutStateFuture between threads when calculating LayoutState. */
-    public Builder useSharedLayoutStateFuture(boolean useSharedLayoutStateFuture) {
-      this.useSharedLayoutStateFuture = useSharedLayoutStateFuture;
       return this;
     }
 
@@ -707,7 +696,6 @@ public class RecyclerBinder
     mLayoutInfo = builder.layoutInfo;
     mLayoutHandlerFactory = builder.layoutHandlerFactory;
     mLithoViewFactory = builder.lithoViewFactory;
-    mUseSharedLayoutStateFuture = builder.useSharedLayoutStateFuture;
     mSplitLayoutForMeasureAndRangeEstimation = builder.splitLayoutForMeasureAndRangeEstimation;
 
     if (mLayoutHandlerFactory == null) {
@@ -2880,9 +2868,7 @@ public class RecyclerBinder
   }
 
   private void maybePostUpdateViewportAndComputeRange() {
-    if (mMountedView != null
-        && (mUseSharedLayoutStateFuture
-            || mViewportManager.shouldUpdate())) {
+    if (mMountedView != null && mViewportManager.shouldUpdate()) {
       mMountedView.removeCallbacks(mUpdateViewportRunnable);
       ViewCompat.postOnAnimation(mMountedView, mUpdateViewportRunnable);
     }
@@ -3455,7 +3441,6 @@ public class RecyclerBinder
     return mComponentTreeHolderFactory.create(
         renderInfo,
         layoutHandler,
-        mUseSharedLayoutStateFuture,
         mComponentTreeMeasureListenerFactory,
         mSplitLayoutTag,
         mIncrementalMountEnabled);

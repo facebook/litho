@@ -38,7 +38,6 @@ public class RecyclerBinderConfiguration {
   private boolean mUseBackgroundChangeSets = SectionsConfiguration.useBackgroundChangeSets;
   private boolean mHScrollAsyncMode;
   private boolean mEnableStableIds;
-  private boolean mUseSharedLayoutStateFuture = ComponentsConfiguration.useSharedLayoutStateFuture;
   private LayoutThreadPoolConfiguration mThreadPoolConfiguration =
       ComponentsConfiguration.threadPoolConfiguration;
   private boolean mAsyncInitRange = ComponentsConfiguration.asyncInitRange;
@@ -63,7 +62,6 @@ public class RecyclerBinderConfiguration {
       boolean useBackgroundChangeSets,
       boolean hScrollAsyncMode,
       boolean enableStableIds,
-      boolean useSharedLayoutStateFuture,
       boolean asyncInitRange,
       boolean splitLayoutForMeasureAndRangeEstimation,
       @Nullable Handler changeSetThreadHandler) {
@@ -78,7 +76,6 @@ public class RecyclerBinderConfiguration {
     mUseBackgroundChangeSets = useBackgroundChangeSets;
     mHScrollAsyncMode = hScrollAsyncMode;
     mEnableStableIds = enableStableIds;
-    mUseSharedLayoutStateFuture = useSharedLayoutStateFuture;
     mAsyncInitRange = asyncInitRange;
     mSplitLayoutForMeasureAndRangeEstimation = splitLayoutForMeasureAndRangeEstimation;
     mChangeSetThreadHandler = changeSetThreadHandler;
@@ -114,10 +111,6 @@ public class RecyclerBinderConfiguration {
 
   public boolean getHScrollAsyncMode() {
     return mHScrollAsyncMode;
-  }
-
-  public boolean getUseSharedLayoutStateFuture() {
-    return mUseSharedLayoutStateFuture;
   }
 
   public LayoutThreadPoolConfiguration getThreadPoolConfiguration() {
@@ -160,8 +153,6 @@ public class RecyclerBinderConfiguration {
     private boolean mHScrollAsyncMode = false;
     private boolean mEnableStableIds = false;
     private boolean mUseBackgroundChangeSets = SectionsConfiguration.useBackgroundChangeSets;
-    private boolean mUseSharedLayoutStateFuture =
-        ComponentsConfiguration.useSharedLayoutStateFuture;
     private boolean mAsyncInitRange = ComponentsConfiguration.asyncInitRange;
     private boolean mSplitLayoutForMeasureAndRangeEstimation =
         ComponentsConfiguration.splitLayoutForMeasureAndRangeEstimation;
@@ -266,11 +257,6 @@ public class RecyclerBinderConfiguration {
       return this;
     }
 
-    public Builder useSharedLayoutStateFuture(boolean useSharedLayoutStateFuture) {
-      mUseSharedLayoutStateFuture = useSharedLayoutStateFuture;
-      return this;
-    }
-
     public Builder asyncInitRange(boolean asyncInitRange) {
       mAsyncInitRange = asyncInitRange;
       return this;
@@ -300,7 +286,6 @@ public class RecyclerBinderConfiguration {
           mUseBackgroundChangeSets,
           mHScrollAsyncMode,
           mEnableStableIds,
-          mUseSharedLayoutStateFuture,
           mAsyncInitRange,
           mSplitLayoutForMeasureAndRangeEstimation,
           mChangeSetThreadHandler);

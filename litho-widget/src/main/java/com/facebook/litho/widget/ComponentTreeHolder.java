@@ -60,7 +60,6 @@ public class ComponentTreeHolder {
   private final LayoutHandler mPreallocateMountContentHandler;
   private final boolean mCanPreallocateOnDefaultHandler;
   private final boolean mShouldPreallocatePerMountSpec;
-  private final boolean mUseSharedLayoutStateFuture;
   private final String mSplitLayoutTag;
   private final boolean mIncrementalMount;
 
@@ -109,7 +108,6 @@ public class ComponentTreeHolder {
     private @Nullable LayoutHandler preallocateMountContentHandler;
     private boolean canPreallocateOnDefaultHandler;
     private boolean shouldPreallocatePerMountSpec;
-    private boolean useSharedLayoutStateFuture;
     private boolean incrementalMount = true;
 
     private Builder() {}
@@ -151,11 +149,6 @@ public class ComponentTreeHolder {
       return this;
     }
 
-    public Builder useSharedLayoutStateFuture(boolean useSharedLayoutStateFuture) {
-      this.useSharedLayoutStateFuture = useSharedLayoutStateFuture;
-      return this;
-    }
-
     public Builder incrementalMount(boolean incrementalMount) {
       this.incrementalMount = incrementalMount;
       return this;
@@ -181,7 +174,6 @@ public class ComponentTreeHolder {
     mPreallocateMountContentHandler = builder.preallocateMountContentHandler;
     mCanPreallocateOnDefaultHandler = builder.canPreallocateOnDefaultHandler;
     mShouldPreallocatePerMountSpec = builder.shouldPreallocatePerMountSpec;
-    mUseSharedLayoutStateFuture = builder.useSharedLayoutStateFuture;
     mComponentTreeMeasureListenerFactory = builder.componentTreeMeasureListenerFactory;
     mSplitLayoutTag = builder.splitLayoutTag;
     mId = sIdGenerator.getAndIncrement();
@@ -404,7 +396,7 @@ public class ComponentTreeHolder {
               .preAllocateMountContentHandler(mPreallocateMountContentHandler)
               .preallocateOnDefaultHandler(mCanPreallocateOnDefaultHandler)
               .shouldPreallocateMountContentPerMountSpec(mShouldPreallocatePerMountSpec)
-              .useSharedLayoutStateFuture(mUseSharedLayoutStateFuture)
+              .useSharedLayoutStateFuture(true)
               .measureListener(
                   mComponentTreeMeasureListenerFactory == null
                       ? null

@@ -75,7 +75,6 @@ public class RecyclerBinderAsyncInitRangeIteratorTest {
           public ComponentTreeHolder create(
               RenderInfo renderInfo,
               LayoutHandler layoutHandler,
-              boolean useSharedLayoutStateFuture,
               ComponentTreeHolder.ComponentTreeMeasureListenerFactory
                   componentTreeMeasureListenerFactory,
               String splitLayoutTag,
