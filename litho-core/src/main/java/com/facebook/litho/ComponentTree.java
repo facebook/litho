@@ -2363,7 +2363,7 @@ public class ComponentTree {
     private String splitLayoutTag;
     private boolean nestedTreeResolutionExperimentEnabled =
         ComponentsConfiguration.isNestedTreeResolutionExperimentEnabled;
-    private boolean useSharedLayoutStateFuture = false;
+    private boolean useSharedLayoutStateFuture = ComponentsConfiguration.useSharedLayoutStateFuture;
     private boolean isPersistenceEnabled = ComponentsConfiguration.isPersistenceEnabled;
 
     protected Builder(ComponentContext context, Component root) {
