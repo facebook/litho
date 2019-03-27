@@ -297,7 +297,6 @@ public class RecyclerCollectionComponentSpec {
             .hscrollAsyncMode(binderConfiguration.getHScrollAsyncMode())
             .isCircular(binderConfiguration.isCircular())
             .hasDynamicItemHeight(binderConfiguration.hasDynamicItemHeight())
-            .splitLayoutTag(binderConfiguration.getSplitLayoutTag())
             .incrementalMount(incrementalMount)
             .splitLayoutForMeasureAndRangeEstimation(
                 binderConfiguration.splitLayoutForMeasureAndRangeEstimation())

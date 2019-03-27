@@ -282,14 +282,6 @@ public class ComponentContext {
     return mYogaNodeFactory;
   }
 
-  public @Nullable String getSplitLayoutTag() {
-    if (mComponentTree == null) {
-      return null;
-    }
-
-    return mComponentTree.getSplitLayoutTag();
-  }
-
   @Nullable
   public ComponentsLogger getLogger() {
     return mLogger;
@@ -381,7 +373,7 @@ public class ComponentContext {
 
     component = component.getThreadSafeInstance();
 
-    component.updateInternalChildState(this, true);
+    component.updateInternalChildState(this);
 
     if (ComponentsConfiguration.isDebugModeEnabled) {
       DebugComponent.applyOverrides(this, component);

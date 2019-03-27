@@ -41,7 +41,6 @@ public class RecyclerBinderConfiguration {
   private LayoutThreadPoolConfiguration mThreadPoolConfiguration =
       ComponentsConfiguration.threadPoolConfiguration;
   private boolean mAsyncInitRange = ComponentsConfiguration.asyncInitRange;
-  @Nullable private String mSplitLayoutTag;
   @Nullable private List<ComponentLogParams> mInvalidStateLogParamsList;
   private final boolean mSplitLayoutForMeasureAndRangeEstimation;
   @Nullable private Handler mChangeSetThreadHandler;
@@ -56,7 +55,6 @@ public class RecyclerBinderConfiguration {
       boolean circular,
       boolean wrapContent,
       @Nullable List<ComponentLogParams> invalidStateLogParamsList,
-      @Nullable String splitLayoutTag,
       LayoutThreadPoolConfiguration threadPoolConfiguration,
       boolean dynamicItemHeight,
       boolean useBackgroundChangeSets,
@@ -70,7 +68,6 @@ public class RecyclerBinderConfiguration {
     mIsCircular = circular;
     mIsWrapContent = wrapContent;
     mInvalidStateLogParamsList = invalidStateLogParamsList;
-    mSplitLayoutTag = splitLayoutTag;
     mThreadPoolConfiguration = threadPoolConfiguration;
     mHasDynamicItemHeight = dynamicItemHeight;
     mUseBackgroundChangeSets = useBackgroundChangeSets;
@@ -99,10 +96,6 @@ public class RecyclerBinderConfiguration {
 
   boolean hasDynamicItemHeight() {
     return mHasDynamicItemHeight;
-  }
-
-  public String getSplitLayoutTag() {
-    return mSplitLayoutTag;
   }
 
   public boolean getUseBackgroundChangeSets() {
@@ -144,7 +137,6 @@ public class RecyclerBinderConfiguration {
 
     @Nullable private LayoutHandlerFactory mLayoutHandlerFactory;
     @Nullable private List<ComponentLogParams> mInvalidStateLogParamsList;
-    @Nullable private String mSplitLayoutTag;
     private LayoutThreadPoolConfiguration mThreadPoolConfiguration = DEFAULT_THREAD_POOL_CONFIG;
     private float mRangeRatio = DEFAULT_RANGE;
     private boolean mCircular = false;
@@ -172,12 +164,6 @@ public class RecyclerBinderConfiguration {
     public Builder invalidStateLogParamsList(
         @Nullable List<ComponentLogParams> invalidStateLogParamsList) {
       mInvalidStateLogParamsList = invalidStateLogParamsList;
-      return this;
-    }
-
-    /** Experimental feature, do not enable! */
-    public Builder splitLayoutTag(@Nullable String splitLayoutTag) {
-      mSplitLayoutTag = splitLayoutTag;
       return this;
     }
 
@@ -280,7 +266,6 @@ public class RecyclerBinderConfiguration {
           mCircular,
           mWrapContent,
           mInvalidStateLogParamsList,
-          mSplitLayoutTag,
           mThreadPoolConfiguration,
           mDynamicItemHeight,
           mUseBackgroundChangeSets,

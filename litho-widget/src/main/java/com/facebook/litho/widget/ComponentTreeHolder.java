@@ -60,7 +60,6 @@ public class ComponentTreeHolder {
   private final LayoutHandler mPreallocateMountContentHandler;
   private final boolean mCanPreallocateOnDefaultHandler;
   private final boolean mShouldPreallocatePerMountSpec;
-  private final String mSplitLayoutTag;
   private final boolean mIncrementalMount;
 
   @GuardedBy("this")
@@ -104,7 +103,6 @@ public class ComponentTreeHolder {
     private RenderInfo renderInfo;
     private LayoutHandler layoutHandler;
     private ComponentTreeMeasureListenerFactory componentTreeMeasureListenerFactory;
-    private String splitLayoutTag;
     private @Nullable LayoutHandler preallocateMountContentHandler;
     private boolean canPreallocateOnDefaultHandler;
     private boolean shouldPreallocatePerMountSpec;
@@ -125,11 +123,6 @@ public class ComponentTreeHolder {
     public Builder componentTreeMeasureListenerFactory(
         @Nullable ComponentTreeMeasureListenerFactory componentTreeMeasureListenerFactory) {
       this.componentTreeMeasureListenerFactory = componentTreeMeasureListenerFactory;
-      return this;
-    }
-
-    public Builder splitLayoutTag(String splitLayoutTag) {
-      this.splitLayoutTag = splitLayoutTag;
       return this;
     }
 
@@ -175,7 +168,6 @@ public class ComponentTreeHolder {
     mCanPreallocateOnDefaultHandler = builder.canPreallocateOnDefaultHandler;
     mShouldPreallocatePerMountSpec = builder.shouldPreallocatePerMountSpec;
     mComponentTreeMeasureListenerFactory = builder.componentTreeMeasureListenerFactory;
-    mSplitLayoutTag = builder.splitLayoutTag;
     mId = sIdGenerator.getAndIncrement();
     mIncrementalMount = builder.incrementalMount;
   }
@@ -401,7 +393,6 @@ public class ComponentTreeHolder {
                   mComponentTreeMeasureListenerFactory == null
                       ? null
                       : mComponentTreeMeasureListenerFactory.create(this))
-              .splitLayoutTag(mSplitLayoutTag)
               .hasMounted(mHasMounted)
               .incrementalMount(mIncrementalMount)
               .build();

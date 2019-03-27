@@ -84,12 +84,6 @@ public abstract class Component extends ComponentLifecycle
   @GuardedBy("this")
   private AtomicBoolean mLayoutVersionGenerator = new AtomicBoolean();
 
-  /**
-   * Whether this Component should split the layout calculation of its direct children on multiple
-   * background threads.
-   */
-  protected boolean mSplitChildrenLayoutInThreadPool;
-
   @ThreadConfined(ThreadConfined.ANY)
   private @Nullable ComponentContext mScopedContext;
 
@@ -568,14 +562,6 @@ public abstract class Component extends ComponentLifecycle
   /** Called to install internal state based on a component's parent context. */
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
   protected void updateInternalChildState(ComponentContext parentContext) {
-    updateInternalChildState(parentContext, false);
-  }
-
-  /** Called to install internal state based on a component's parent context. */
-  @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-  protected void updateInternalChildState(
-      ComponentContext parentContext, boolean shouldForwardSplitLayoutStatus) {
-
     if (ComponentsConfiguration.isDebugModeEnabled || ComponentsConfiguration.useGlobalKeys) {
 
       // allow overriding global key if the NestedTreeResolution Experiment is disabled
@@ -593,30 +579,10 @@ public abstract class Component extends ComponentLifecycle
 
     applyStateUpdates(parentContext);
     generateErrorEventHandler(parentContext);
-    setSplitLayoutOnThreadPoolStatus(parentContext, shouldForwardSplitLayoutStatus);
 
     // Needed for tests, mocks can run into this.
     if (mLayoutVersionGenerator != null) {
       mLayoutVersionGenerator.set(true);
-    }
-  }
-
-  private void setSplitLayoutOnThreadPoolStatus(
-      ComponentContext parentContext, boolean shouldForwardSplitLayoutStatus) {
-    mSplitChildrenLayoutInThreadPool =
-        SplitBackgroundLayoutConfiguration.canSplitChildrenLayouts(parentContext, this);
-
-    final Component parent = parentContext.getComponentScope();
-    if (parent == null) {
-      return;
-    }
-
-    /**
-     * For parent components that enable split layout but wrap their children in a Row or Column,
-     * forward this flag to the Row or Column to split the layout of their children.
-     */
-    if (shouldForwardSplitLayoutStatus) {
-      mSplitChildrenLayoutInThreadPool = parent.mSplitChildrenLayoutInThreadPool;
     }
   }
 

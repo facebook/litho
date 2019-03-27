@@ -126,7 +126,6 @@ public class RecyclerBinder
   private final boolean mIncrementalMountEnabled;
   private boolean mAsyncInitRange;
 
-  private String mSplitLayoutTag;
   private AtomicLong mCurrentChangeSetThreadId = new AtomicLong(-1);
   @VisibleForTesting final boolean mTraverseLayoutBackwards;
 
@@ -335,7 +334,6 @@ public class RecyclerBinder
         RenderInfo renderInfo,
         LayoutHandler layoutHandler,
         ComponentTreeMeasureListenerFactory measureListenerFactory,
-        String splitLayoutTag,
         boolean incrementalMountEnabled);
   }
 
@@ -346,13 +344,11 @@ public class RecyclerBinder
             RenderInfo renderInfo,
             LayoutHandler layoutHandler,
             ComponentTreeMeasureListenerFactory measureListenerFactory,
-            String splitLayoutTag,
             boolean incrementalMountEnabled) {
           return ComponentTreeHolder.create()
               .renderInfo(renderInfo)
               .layoutHandler(layoutHandler)
               .componentTreeMeasureListenerFactory(measureListenerFactory)
-              .splitLayoutTag(splitLayoutTag)
               .incrementalMount(incrementalMountEnabled)
               .build();
         }
@@ -374,7 +370,6 @@ public class RecyclerBinder
     private boolean customViewTypeEnabled;
     private int componentViewType;
     private @Nullable RecyclerView.Adapter overrideInternalAdapter;
-    private String splitLayoutTag;
     private boolean enableStableIds;
     private @Nullable List<ComponentLogParams> invalidStateLogParamsList;
     private RecyclerRangeTraverser recyclerRangeTraverser;
@@ -540,11 +535,6 @@ public class RecyclerBinder
     @VisibleForTesting
     Builder overrideInternalAdapter(RecyclerView.Adapter overrideInternalAdapter) {
       this.overrideInternalAdapter = overrideInternalAdapter;
-      return this;
-    }
-
-    public Builder splitLayoutTag(String splitLayoutTag) {
-      this.splitLayoutTag = splitLayoutTag;
       return this;
     }
 
@@ -760,8 +750,6 @@ public class RecyclerBinder
     mViewportManager =
         new ViewportManager(
             mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition, builder.layoutInfo);
-
-    mSplitLayoutTag = builder.splitLayoutTag;
 
     mEnableStableIds = builder.enableStableIds;
     mInvalidStateLogParamsList = builder.invalidStateLogParamsList;
@@ -3442,7 +3430,6 @@ public class RecyclerBinder
         renderInfo,
         layoutHandler,
         mComponentTreeMeasureListenerFactory,
-        mSplitLayoutTag,
         mIncrementalMountEnabled);
   }
 

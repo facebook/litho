@@ -90,7 +90,6 @@ public class ComponentTree {
   private static final int SCHEDULE_NONE = 0;
   private static final int SCHEDULE_LAYOUT_ASYNC = 1;
   private static final int SCHEDULE_LAYOUT_SYNC = 2;
-  private final @Nullable String mSplitLayoutTag;
   private boolean mReleased;
   private String mReleasedComponent;
 
@@ -276,7 +275,6 @@ public class ComponentTree {
     mIsAsyncUpdateStateEnabled = builder.asyncStateUpdates;
     mHasMounted = builder.hasMounted;
     mMeasureListener = builder.mMeasureListener;
-    mSplitLayoutTag = builder.splitLayoutTag;
     mNestedTreeResolutionExperimentEnabled = builder.nestedTreeResolutionExperimentEnabled;
     mUseSharedLayoutStateFuture = builder.useSharedLayoutStateFuture;
     mIsPersistenceEnabled = builder.isPersistenceEnabled;
@@ -322,11 +320,6 @@ public class ComponentTree {
               : new ThreadPoolLayoutHandler(
                   ComponentsConfiguration.threadPoolForBackgroundThreadsConfig);
     }
-  }
-
-  @Nullable
-  String getSplitLayoutTag() {
-    return mSplitLayoutTag;
   }
 
   @Nullable
@@ -2360,7 +2353,6 @@ public class ComponentTree {
     private @Nullable MeasureListener mMeasureListener;
     private boolean shouldPreallocatePerMountSpec;
     private boolean canPreallocateOnDefaultHandler;
-    private String splitLayoutTag;
     private boolean nestedTreeResolutionExperimentEnabled =
         ComponentsConfiguration.isNestedTreeResolutionExperimentEnabled;
     private boolean useSharedLayoutStateFuture = ComponentsConfiguration.useSharedLayoutStateFuture;
@@ -2494,16 +2486,6 @@ public class ComponentTree {
 
     public Builder measureListener(MeasureListener measureListener) {
       this.mMeasureListener = measureListener;
-      return this;
-    }
-
-    /**
-     * Sets a tag on this ComponentTree that will be used to identify a configuration for splitting
-     * layout on multiple threads. If not set, layout splitting will not be enabled for components
-     * in this tree.
-     */
-    public Builder splitLayoutTag(String splitTag) {
-      this.splitLayoutTag = splitTag;
       return this;
     }
 
