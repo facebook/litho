@@ -17,9 +17,7 @@
 package com.facebook.litho.widget;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -27,7 +25,6 @@ import android.content.Context;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.ItemAnimator;
-import android.support.v7.widget.RecyclerView.OnScrollListener;
 import android.support.v7.widget.SnapHelper;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
@@ -48,20 +45,19 @@ import org.robolectric.RuntimeEnvironment;
 public class RecyclerSpecTest {
 
   private ComponentContext mComponentContext;
-  private SectionsRecyclerView mSectionsRecyclerView;
-  private LithoRecylerView mRecyclerView;
+  private TestSectionsRecyclerView mSectionsRecyclerView;
+  private TestLithoRecyclerView mRecyclerView;
   private ItemAnimator mAnimator;
 
   @Before
   public void setup() {
     mComponentContext = new ComponentContext(RuntimeEnvironment.application);
-    mSectionsRecyclerView = mock(SectionsRecyclerView.class);
-    mRecyclerView = mock(LithoRecylerView.class);
-    when(mSectionsRecyclerView.getRecyclerView()).thenReturn(mRecyclerView);
-    when(mSectionsRecyclerView.hasBeenDetachedFromWindow()).thenReturn(true);
-
+    mRecyclerView = new TestLithoRecyclerView(mComponentContext.getAndroidContext());
+    mSectionsRecyclerView =
+        new TestSectionsRecyclerView(mComponentContext.getAndroidContext(), mRecyclerView);
+    mSectionsRecyclerView.setHasBeenDetachedFromWindow(true);
     mAnimator = mock(RecyclerView.ItemAnimator.class);
-    when(mRecyclerView.getItemAnimator()).thenReturn(mAnimator);
+    mRecyclerView.setItemAnimator(mAnimator);
   }
 
   @Test
@@ -92,22 +88,25 @@ public class RecyclerSpecTest {
         onRefreshListener,
         oldAnimator);
 
-    verify(mSectionsRecyclerView).setEnabled(true);
-    verify(mSectionsRecyclerView).setOnRefreshListener(onRefreshListener);
-    verify(mSectionsRecyclerView, times(1)).getRecyclerView();
+    assertThat(mSectionsRecyclerView.isEnabled()).isTrue();
+    assertThat(mSectionsRecyclerView.getOnRefreshListener()).isEqualTo(onRefreshListener);
+
+    assertThat(mSectionsRecyclerView.getRecyclerView()).isSameAs(mRecyclerView);
+
     verify(oldAnimator).set(mAnimator);
-    verify(mRecyclerView).setItemAnimator(any(ItemAnimator.class));
-    verify(mRecyclerView, times(size)).addOnScrollListener(any(OnScrollListener.class));
-    verify(mRecyclerView).setTouchInterceptor(touchInterceptor);
+    assertThat(mRecyclerView.getItemAnimator()).isSameAs(mAnimator);
+    assertThat(mRecyclerView.getAddOnScrollListenersCount()).isEqualTo(size);
+    assertThat(mRecyclerView.getTouchInterceptor()).isSameAs(touchInterceptor);
+
     verify(binder).bind(mRecyclerView);
-    verify(mRecyclerView, times(1)).requestLayout();
-    verify(mSectionsRecyclerView).setHasBeenDetachedFromWindow(false);
+    assertThat(mRecyclerView.isLayoutRequested()).isTrue();
+    assertThat(mSectionsRecyclerView.hasBeenDetachedFromWindow()).isFalse();
     verify(snapHelper).attachToRecyclerView(mRecyclerView);
   }
 
   @Test
   public void testRecyclerSpecOnUnbind() {
-    when(mSectionsRecyclerView.hasBeenDetachedFromWindow()).thenReturn(true);
+    mSectionsRecyclerView.setHasBeenDetachedFromWindow(true);
 
     Binder<RecyclerView> binder = mock(Binder.class);
 
@@ -122,10 +121,10 @@ public class RecyclerSpecTest {
         scrollListeners,
         mAnimator);
 
-    verify(mRecyclerView).setItemAnimator(mAnimator);
+    assertThat(mRecyclerView.getItemAnimator()).isSameAs(mAnimator);
     verify(binder).unbind(mRecyclerView);
-    verify(mRecyclerView, times(size)).removeOnScrollListener(any(OnScrollListener.class));
-    verify(mSectionsRecyclerView).setOnRefreshListener(null);
+    assertThat(mRecyclerView.getRemoveOnScrollListenersCount()).isEqualTo(size);
+    assertThat(mSectionsRecyclerView.getOnRefreshListener()).isNull();
   }
 
   @Test
