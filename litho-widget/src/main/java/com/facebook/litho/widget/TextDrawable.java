@@ -32,6 +32,7 @@ import android.graphics.Region;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.text.Layout;
+import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.style.ClickableSpan;
 import android.text.style.ImageSpan;
@@ -77,6 +78,7 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
   private @Nullable Handler mLongClickHandler;
   private @Nullable LongClickRunnable mLongClickRunnable;
   private @Nullable ClickableSpanListener mSpanListener;
+  private @Nullable String mContextLogTag;
 
   @Override
   public void draw(Canvas canvas) {
@@ -91,9 +93,33 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
       canvas.clipRect(bounds);
     }
     canvas.translate(bounds.left, bounds.top + mLayoutTranslationY);
-    mLayout.draw(canvas, getSelectionPath(), mHighlightPaint, 0);
+    try {
+      mLayout.draw(canvas, getSelectionPath(), mHighlightPaint, 0);
+    } catch (ArrayIndexOutOfBoundsException e) {
+      throw new ArrayIndexOutOfBoundsException(e.getMessage() + getDebugInfo());
+    }
 
     canvas.restoreToCount(saveCount);
+  }
+
+  private String getDebugInfo() {
+    StringBuilder debugInfo = new StringBuilder();
+    debugInfo.append(" [");
+    debugInfo.append(mContextLogTag);
+    debugInfo.append("] ");
+    if (mText instanceof SpannableStringBuilder) {
+      Object[] spans = ((SpannableStringBuilder) mText).getSpans(0, mText.length(), Object.class);
+      debugInfo.append("spans: ");
+      for (Object span : spans) {
+        debugInfo.append(span.getClass().getSimpleName());
+        debugInfo.append(", ");
+      }
+    }
+    debugInfo.append("ellipsizedWidth: ");
+    debugInfo.append(mLayout.getEllipsizedWidth());
+    debugInfo.append(", lineCount: ");
+    debugInfo.append(mLayout.getLineCount());
+    return debugInfo.toString();
   }
 
   @Override
@@ -256,7 +282,22 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
       Layout layout,
       int userColor,
       ClickableSpan[] clickableSpans) {
-    mount(text, layout, 0, false, null, userColor, 0, clickableSpans, null, null, null, -1, -1, 0f);
+    mount(
+        text,
+        layout,
+        0,
+        false,
+        null,
+        userColor,
+        0,
+        clickableSpans,
+        null,
+        null,
+        null,
+        -1,
+        -1,
+        0f,
+        null);
   }
 
   public void mount(CharSequence text, Layout layout, int userColor, int highlightColor) {
@@ -274,7 +315,8 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
         null,
         -1,
         -1,
-        0f);
+        0f,
+        null);
   }
 
   public void mount(
@@ -299,7 +341,8 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
         null,
         -1,
         -1,
-        0f);
+        0f,
+        null);
   }
 
   public void mount(
@@ -316,7 +359,8 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
       TextOffsetOnTouchListener textOffsetOnTouchListener,
       int highlightStartOffset,
       int highlightEndOffset,
-      float clickableSpanExpandedOffset) {
+      float clickableSpanExpandedOffset,
+      String contextLogTag) {
     mLayout = layout;
     mLayoutTranslationY = layoutTranslationY;
     mClipToBounds = clipToBounds;
@@ -355,6 +399,7 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
       }
     }
     mImageSpans = imageSpans;
+    mContextLogTag = contextLogTag;
 
     invalidateSelf();
   }

@@ -43,7 +43,7 @@ public class ComponentContext {
   static final InternalNode NULL_LAYOUT = new NoOpInternalNode();
 
   private final Context mContext;
-  private final String mLogTag;
+  private final @Nullable String mLogTag;
   private final ComponentsLogger mLogger;
   private final @Nullable StateHandler mStateHandler;
   final YogaNodeFactory mYogaNodeFactory;
@@ -79,7 +79,7 @@ public class ComponentContext {
 
   public ComponentContext(
       Context context,
-      String logTag,
+      @Nullable String logTag,
       ComponentsLogger logger,
       @Nullable StateHandler stateHandler,
       @Nullable KeyHandler keyHandler,
@@ -113,7 +113,10 @@ public class ComponentContext {
     mComponentScope = context.mComponentScope;
     mComponentTree = context.mComponentTree;
     mLogger = context.mLogger;
-    mLogTag = context.mLogTag;
+    mLogTag =
+        context.mLogTag != null || mComponentTree == null
+            ? context.mLogTag
+            : mComponentTree.getSimpleName();
     mYogaNodeFactory = context.mYogaNodeFactory;
 
     mStateHandler = stateHandler != null ? stateHandler : context.mStateHandler;
@@ -123,7 +126,7 @@ public class ComponentContext {
 
   public ComponentContext(
       Context context,
-      String logTag,
+      @Nullable String logTag,
       ComponentsLogger logger,
       @Nullable StateHandler stateHandler,
       @Nullable KeyHandler keyHandler,
@@ -132,7 +135,10 @@ public class ComponentContext {
   }
 
   public ComponentContext(
-      Context context, String logTag, ComponentsLogger logger, @Nullable TreeProps treeProps) {
+      Context context,
+      @Nullable String logTag,
+      ComponentsLogger logger,
+      @Nullable TreeProps treeProps) {
     this(context, logTag, logger, null, null, treeProps);
   }
 
@@ -144,7 +150,7 @@ public class ComponentContext {
    * @param logTag Specify a log tag, to be used with the logger.
    * @param logger Specify the lifecycle logger to be used.
    */
-  public ComponentContext(Context context, String logTag, ComponentsLogger logger) {
+  public ComponentContext(Context context, @Nullable String logTag, ComponentsLogger logger) {
     this(context, logTag, logger, null, null, null);
   }
 

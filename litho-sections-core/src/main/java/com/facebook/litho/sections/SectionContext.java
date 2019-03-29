@@ -49,12 +49,15 @@ public class SectionContext extends ComponentContext {
         context.getTreePropsCopy());
   }
 
-  public SectionContext(Context context, String logTag, ComponentsLogger logger) {
+  public SectionContext(Context context, @Nullable String logTag, ComponentsLogger logger) {
     this(context, logTag, logger, null);
   }
 
   public SectionContext(
-      Context context, String logTag, ComponentsLogger logger, @Nullable TreeProps treeProps) {
+      Context context,
+      @Nullable String logTag,
+      ComponentsLogger logger,
+      @Nullable TreeProps treeProps) {
     super(context, logTag, logger);
     super.setTreeProps(treeProps);
     mKeyHandler = new KeyHandler();

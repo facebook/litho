@@ -771,7 +771,8 @@ class TextSpec {
         textOffsetOnTouchListener,
         highlightStartOffset,
         highlightEndOffset,
-        clickableSpanExpandedOffset);
+        clickableSpanExpandedOffset,
+        c.getLogTag());
 
     if (processedText instanceof MountableCharSequence) {
       ((MountableCharSequence) processedText).onMount(textDrawable);
