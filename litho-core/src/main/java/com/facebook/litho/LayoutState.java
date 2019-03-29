@@ -776,10 +776,13 @@ class LayoutState {
     }
 
     // 4. Extract the Transitions.
-    final Context scopedAndroidContext =
-        component.getScopedContext() == null
-            ? null
-            : component.getScopedContext().getAndroidContext();
+    final Context scopedAndroidContext;
+    if (component == null || component.getScopedContext() == null) {
+      scopedAndroidContext = null;
+    } else {
+      scopedAndroidContext = component.getScopedContext().getAndroidContext();
+    }
+
     if (TransitionUtils.areTransitionsEnabled(scopedAndroidContext)) {
       if (isTracing) {
         ComponentsSystrace.beginSection("extractTransitions:" + component.getSimpleName());
