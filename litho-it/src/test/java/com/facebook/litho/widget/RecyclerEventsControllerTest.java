@@ -16,29 +16,39 @@
 
 package com.facebook.litho.widget;
 
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
+import android.support.v7.widget.RecyclerView;
+import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ThreadUtils;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.RuntimeEnvironment;
 
 @RunWith(ComponentsTestRunner.class)
 public class RecyclerEventsControllerTest {
 
-  private SectionsRecyclerView mSectionsRecyclerView;
+  private TestSectionsRecyclerView mSectionsRecyclerView;
+  private RecyclerView mRecyclerView;
   private RecyclerEventsController mRecyclerEventsController;
+  private RecyclerEventsController.OnRecyclerUpdateListener mOnRecyclerUpdateListener;
+  private ComponentContext mComponentContext;
 
   @Before
   public void setup() {
+    mComponentContext = new ComponentContext(RuntimeEnvironment.application);
+    mRecyclerView = new RecyclerView(mComponentContext.getAndroidContext());
+    mSectionsRecyclerView =
+        new TestSectionsRecyclerView(mComponentContext.getAndroidContext(), mRecyclerView);
+    mOnRecyclerUpdateListener = mock(RecyclerEventsController.OnRecyclerUpdateListener.class);
     mRecyclerEventsController = new RecyclerEventsController();
     mSectionsRecyclerView = mock(SectionsRecyclerView.class);
     mRecyclerEventsController.setSectionsRecyclerView(mSectionsRecyclerView);
@@ -49,54 +59,68 @@ public class RecyclerEventsControllerTest {
     ThreadUtils.setMainThreadOverride(ThreadUtils.OVERRIDE_DISABLED);
   }
 
+  /**
+   * Used for setting up initial value required for tests and then resetting the fields of {@code
+   * mSectionsRecyclerView}.
+   *
+   * <p>This is useful when we want to mock certain behavior.
+   *
+   * <p>Example : when(mSectionsRecyclerView.isRefreshing()).thenReturn(true);
+   */
+  private void setUpInitialValues(boolean value) {
+    mSectionsRecyclerView.setRefreshing(value);
+    mSectionsRecyclerView.reset();
+  }
+
   @Test
   public void testClearRefreshingOnNotRefreshingView() {
-    when(mSectionsRecyclerView.isRefreshing()).thenReturn(false);
-
+    setUpInitialValues(false);
     mRecyclerEventsController.clearRefreshing();
 
-    verify(mSectionsRecyclerView, never()).setRefreshing(anyBoolean());
-    verify(mSectionsRecyclerView, never()).removeCallbacks(any(Runnable.class));
-    verify(mSectionsRecyclerView, never()).post(any(Runnable.class));
+    assertThat(mSectionsRecyclerView.getSetRefreshingValues()).isEmpty();
+    assertThat(mSectionsRecyclerView.getRemoveCallbackRunnableList()).isEmpty();
+    assertThat(mSectionsRecyclerView.getPostRunnableList()).isEmpty();
   }
 
   @Test
   public void testClearRefreshingFromUIThread() {
-    when(mSectionsRecyclerView.isRefreshing()).thenReturn(true);
+    setUpInitialValues(true);
     ThreadUtils.setMainThreadOverride(ThreadUtils.OVERRIDE_MAIN_THREAD_TRUE);
-
     mRecyclerEventsController.clearRefreshing();
 
-    verify(mSectionsRecyclerView).setRefreshing(false);
-    verify(mSectionsRecyclerView, never()).removeCallbacks(any(Runnable.class));
-    verify(mSectionsRecyclerView, never()).post(any(Runnable.class));
+    assertThat(mSectionsRecyclerView.getSetRefreshingValues().size()).isEqualTo(1);
+    assertThat(mSectionsRecyclerView.getSetRefreshingValues().get(0)).isFalse();
+    assertThat(mSectionsRecyclerView.getRemoveCallbackRunnableList()).isEmpty();
+    assertThat(mSectionsRecyclerView.getPostRunnableList()).isEmpty();
   }
 
   @Test
   public void testClearRefreshingFromNonUIThread() {
-    when(mSectionsRecyclerView.isRefreshing()).thenReturn(true);
+
+    setUpInitialValues(true);
     ThreadUtils.setMainThreadOverride(ThreadUtils.OVERRIDE_MAIN_THREAD_FALSE);
 
     mRecyclerEventsController.clearRefreshing();
-
-    verify(mSectionsRecyclerView, times(1)).removeCallbacks(any(Runnable.class));
-    verify(mSectionsRecyclerView, times(1)).post(any(Runnable.class));
+    assertThat(mSectionsRecyclerView.getRemoveCallbackRunnableList().size()).isEqualTo(1);
+    assertThat(mSectionsRecyclerView.getPostRunnableList().size()).isEqualTo(1);
   }
 
   @Test
   public void testShowRefreshingFromUIThread() {
-    when(mSectionsRecyclerView.isRefreshing()).thenReturn(false);
+    setUpInitialValues(false);
     ThreadUtils.setMainThreadOverride(ThreadUtils.OVERRIDE_MAIN_THREAD_TRUE);
 
     mRecyclerEventsController.showRefreshing();
-    verify(mSectionsRecyclerView).setRefreshing(true);
+    assertThat(mSectionsRecyclerView.getSetRefreshingValues().get(0)).isTrue();
+    assertThat(mSectionsRecyclerView.getSetRefreshingValues().size()).isEqualTo(1);
   }
 
   @Test
   public void testShowRefreshingAlreadyRefreshing() {
-    when(mSectionsRecyclerView.isRefreshing()).thenReturn(true);
-
+    setUpInitialValues(true);
     mRecyclerEventsController.showRefreshing();
-    verify(mSectionsRecyclerView, never()).setRefreshing(anyBoolean());
+
+    assertThat(mSectionsRecyclerView.getSetRefreshingValues().size()).isEqualTo(0);
   }
+
 }
