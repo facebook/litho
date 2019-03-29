@@ -19,7 +19,6 @@ import android.widget.TextView;
 import androidx.annotation.AttrRes;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
-import androidx.core.util.Pools;
 import com.facebook.litho.ClickEvent;
 import com.facebook.litho.Component;
 import com.facebook.litho.Diff;
@@ -56,9 +55,6 @@ import java.util.Objects;
  * @see com.facebook.litho.sections.processor.integration.resources.FullGroupSectionSpec
  */
 final class FullGroupSection<T> extends Section implements TestTag {
-  static final Pools.SynchronizedPool<TestEvent> sTestEventPool =
-      new Pools.SynchronizedPool<TestEvent>(2);
-
   @Comparable(type = 14)
   private FullGroupSectionStateContainer mStateContainer;
 
@@ -238,16 +234,10 @@ final class FullGroupSection<T> extends Section implements TestTag {
   }
 
   static boolean dispatchTestEvent(EventHandler _eventHandler, Object object) {
-    TestEvent _eventState = sTestEventPool.acquire();
-    if (_eventState == null) {
-      _eventState = new TestEvent();
-    }
+    final TestEvent _eventState = new TestEvent();
     _eventState.object = object;
     EventDispatcher _lifecycle = _eventHandler.mHasEventDispatcher.getEventDispatcher();
-    boolean result = (boolean) _lifecycle.dispatchOnEvent(_eventHandler, _eventState);
-    _eventState.object = null;
-    sTestEventPool.release(_eventState);
-    return result;
+    return (boolean) _lifecycle.dispatchOnEvent(_eventHandler, _eventState);
   }
 
   private void testEvent(
@@ -561,16 +551,7 @@ final class FullGroupSection<T> extends Section implements TestTag {
     @Override
     public FullGroupSection build() {
       checkArgs(REQUIRED_PROPS_COUNT, mRequired, REQUIRED_PROPS_NAMES);
-      FullGroupSection fullGroupSectionRef = mFullGroupSection;
-      release();
-      return fullGroupSectionRef;
-    }
-
-    @Override
-    protected void release() {
-      super.release();
-      mFullGroupSection = null;
-      mContext = null;
+      return mFullGroupSection;
     }
   }
 

@@ -21,7 +21,6 @@ import androidx.annotation.AttrRes;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
-import androidx.core.util.Pools;
 import com.facebook.litho.ClickEvent;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
@@ -67,8 +66,6 @@ import java.util.Objects;
  */
 @TargetApi(17)
 public final class TestLayout<S extends View> extends Component implements TestTag {
-  static final Pools.SynchronizedPool<TestEvent> sTestEventPool = new Pools.SynchronizedPool<TestEvent>(2);
-
   @Comparable(type = 14)
   private TestLayoutStateContainer mStateContainer;
 
@@ -380,17 +377,11 @@ public final class TestLayout<S extends View> extends Component implements TestT
   }
 
   static void dispatchTestEvent(EventHandler _eventHandler, View view, Object object) {
-    TestEvent _eventState = sTestEventPool.acquire();
-    if (_eventState == null) {
-      _eventState = new TestEvent();
-    }
+    final TestEvent _eventState = new TestEvent();
     _eventState.view = view;
     _eventState.object = object;
     EventDispatcher _lifecycle = _eventHandler.mHasEventDispatcher.getEventDispatcher();
     _lifecycle.dispatchOnEvent(_eventHandler, _eventState);
-    _eventState.view = null;
-    _eventState.object = null;
-    sTestEventPool.release(_eventState);
   }
 
   private void testLayoutEvent(

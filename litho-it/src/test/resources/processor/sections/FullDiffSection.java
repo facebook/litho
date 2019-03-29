@@ -17,7 +17,6 @@ package com.facebook.litho.sections.processor.integration.resources;
 
 import android.view.View;
 import androidx.annotation.VisibleForTesting;
-import androidx.core.util.Pools;
 import com.facebook.litho.ClickEvent;
 import com.facebook.litho.Component;
 import com.facebook.litho.Diff;
@@ -48,9 +47,6 @@ import java.util.Objects;
  * @see com.facebook.litho.sections.processor.integration.resources.FullDiffSectionSpec
  */
 public final class FullDiffSection<T> extends Section implements TestTag {
-  static final Pools.SynchronizedPool<TestEvent> sTestEventPool =
-      new Pools.SynchronizedPool<TestEvent>(2);
-
   @Comparable(type = 14)
   private FullDiffSectionStateContainer mStateContainer;
 
@@ -188,16 +184,10 @@ public final class FullDiffSection<T> extends Section implements TestTag {
   }
 
   static boolean dispatchTestEvent(EventHandler _eventHandler, Object object) {
-    TestEvent _eventState = sTestEventPool.acquire();
-    if (_eventState == null) {
-      _eventState = new TestEvent();
-    }
+    final TestEvent _eventState = new TestEvent();
     _eventState.object = object;
     EventDispatcher _lifecycle = _eventHandler.mHasEventDispatcher.getEventDispatcher();
-    boolean result = (boolean) _lifecycle.dispatchOnEvent(_eventHandler, _eventState);
-    _eventState.object = null;
-    sTestEventPool.release(_eventState);
-    return result;
+    return (boolean) _lifecycle.dispatchOnEvent(_eventHandler, _eventState);
   }
 
   private void testEvent(HasEventDispatcher _abstract, SectionContext c, View view, int someParam) {
@@ -453,16 +443,7 @@ public final class FullDiffSection<T> extends Section implements TestTag {
     @Override
     public FullDiffSection build() {
       checkArgs(REQUIRED_PROPS_COUNT, mRequired, REQUIRED_PROPS_NAMES);
-      FullDiffSection fullDiffSectionRef = mFullDiffSection;
-      release();
-      return fullDiffSectionRef;
-    }
-
-    @Override
-    protected void release() {
-      super.release();
-      mFullDiffSection = null;
-      mContext = null;
+      return mFullDiffSection;
     }
   }
 
