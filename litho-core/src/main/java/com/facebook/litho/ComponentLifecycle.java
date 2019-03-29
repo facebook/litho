@@ -92,7 +92,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
         }
       };
 
-  private static final YogaMeasureFunction sMeasureFunction =
+  static final YogaMeasureFunction sMeasureFunction =
       new YogaMeasureFunction() {
 
         private Size acquireSize(int initialValue) {
