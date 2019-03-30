@@ -16,9 +16,9 @@
 
 package com.facebook.litho.widget;
 
-import android.support.annotation.UiThread;
-import android.support.annotation.VisibleForTesting;
 import android.util.SparseArray;
+import androidx.annotation.UiThread;
+import androidx.annotation.VisibleForTesting;
 import com.facebook.litho.viewcompat.ViewCreator;
 import java.util.HashMap;
 import java.util.Map;

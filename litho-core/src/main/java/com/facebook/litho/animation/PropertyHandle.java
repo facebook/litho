@@ -15,22 +15,24 @@
  */
 package com.facebook.litho.animation;
 
+import com.facebook.litho.TransitionId;
+
 /**
  * A pair of transition key and {@link AnimatedProperty} which can be used to identify a single
  * animating component property at runtime.
  */
 final public class PropertyHandle {
 
-  private final String mTransitionKey;
+  private final TransitionId mTransitionId;
   private final AnimatedProperty mProperty;
 
-  public PropertyHandle(String transitionKey, AnimatedProperty property) {
-    mTransitionKey = transitionKey;
+  public PropertyHandle(TransitionId transitionId, AnimatedProperty property) {
+    mTransitionId = transitionId;
     mProperty = property;
   }
 
-  public String getTransitionKey() {
-    return mTransitionKey;
+  public TransitionId getTransitionId() {
+    return mTransitionId;
   }
 
   public AnimatedProperty getProperty() {
@@ -48,16 +50,16 @@ final public class PropertyHandle {
     }
 
     final PropertyHandle other = (PropertyHandle) o;
-    return mTransitionKey.equals(other.mTransitionKey) && mProperty.equals(other.mProperty);
+    return mTransitionId.equals(other.mTransitionId) && mProperty.equals(other.mProperty);
   }
 
   @Override
   public int hashCode() {
-    return 31 * mTransitionKey.hashCode() + mProperty.hashCode();
+    return 31 * mTransitionId.hashCode() + mProperty.hashCode();
   }
 
   @Override
   public String toString() {
-    return "PropertyHandle{ mTransitionKey='" + mTransitionKey + "', mProperty=" + mProperty + "}";
+    return "PropertyHandle{ mTransitionId='" + mTransitionId + "', mProperty=" + mProperty + "}";
   }
 }

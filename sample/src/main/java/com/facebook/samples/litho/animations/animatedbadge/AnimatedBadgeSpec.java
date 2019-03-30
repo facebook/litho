@@ -86,6 +86,7 @@ public class AnimatedBadgeSpec {
                                     .transitionKey(
                                         TRANSITION_KEY_TEXT) // still need transition keys for
                                     // appear/disappear animations
+                                    .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
                                     .key("text") // need this to prevent the global key of "+1" Text
                                     // from changing
                                     .marginDip(YogaEdge.LEFT, 8)
@@ -149,7 +150,7 @@ public class AnimatedBadgeSpec {
 
   @OnEvent(ClickEvent.class)
   static void onClick(ComponentContext c) {
-    AnimatedBadge.updateState(c);
+    AnimatedBadge.updateStateSync(c);
   }
 
   @OnUpdateState
@@ -161,12 +162,12 @@ public class AnimatedBadgeSpec {
   static Transition onCreateTransition(ComponentContext c) {
     return Transition.parallel(
         Transition.allLayout().animator(ANIMATOR),
-        Transition.create(TRANSITION_KEY_TEXT)
+        Transition.create(Transition.TransitionKeyType.GLOBAL, TRANSITION_KEY_TEXT)
             .animate(AnimatedProperties.WIDTH)
             .appearFrom(0f)
             .disappearTo(0f)
             .animator(ANIMATOR),
-        Transition.create(TRANSITION_KEY_TEXT)
+        Transition.create(Transition.TransitionKeyType.GLOBAL, TRANSITION_KEY_TEXT)
             .animate(AnimatedProperties.ALPHA)
             .appearFrom(0f)
             .disappearTo(0f)

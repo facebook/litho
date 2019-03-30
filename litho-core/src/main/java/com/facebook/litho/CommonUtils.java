@@ -15,7 +15,9 @@
  */
 package com.facebook.litho;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
+import java.util.LinkedList;
+import java.util.List;
 
 public class CommonUtils {
 
@@ -32,5 +34,21 @@ public class CommonUtils {
     }
 
     return a.equals(b);
+  }
+
+  /**
+   * Adds an item to a possibly null list to defer the allocation as long as possible.
+   *
+   * @param list the nullable list.
+   * @param item the item to add.
+   */
+  public static <A> List<A> addOrCreateList(@Nullable List<A> list, A item) {
+    if (list == null) {
+      list = new LinkedList<>();
+    }
+
+    list.add(item);
+
+    return list;
   }
 }

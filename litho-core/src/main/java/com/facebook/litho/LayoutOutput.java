@@ -16,15 +16,13 @@
 
 package com.facebook.litho;
 
-import static android.support.v4.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
+import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
 
 import android.graphics.Rect;
-import android.support.annotation.IntDef;
-import android.support.annotation.Nullable;
-import com.facebook.litho.displaylist.DisplayList;
+import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * The output of a layout pass for a given {@link Component}. It's used by
@@ -47,27 +45,24 @@ class LayoutOutput implements Cloneable, AnimatableItem {
   private int mHostTranslationX;
   private int mHostTranslationY;
   private int mFlags;
-  private long mHostMarker;
-  private AtomicInteger mRefCount = new AtomicInteger(0);
+  private long mHostMarker = -1L;
   private int mIndex;
 
-  private int mUpdateState;
-  private int mImportantForAccessibility;
-  private @Nullable DisplayListContainer mDisplayListContainer;
+  private int mUpdateState = STATE_UNKNOWN;
+  private int mImportantForAccessibility = IMPORTANT_FOR_ACCESSIBILITY_AUTO;
+  private int mOrientation;
 
-  private @Nullable String mTransitionKey;
-
-  public LayoutOutput() {
-    mUpdateState = STATE_UNKNOWN;
-    mImportantForAccessibility = IMPORTANT_FOR_ACCESSIBILITY_AUTO;
-    mHostMarker = -1L;
-  }
+  private @Nullable TransitionId mTransitionId;
 
   Component getComponent() {
     return mComponent;
   }
 
   void setComponent(Component component) {
+    if (component == null) {
+      throw new RuntimeException("Trying to set a null Component on a LayoutOutput!");
+    }
+
     mComponent = component;
   }
 
@@ -99,6 +94,16 @@ class LayoutOutput implements Cloneable, AnimatableItem {
   }
 
   @Override
+  public float getRotationX() {
+    return mNodeInfo != null ? mNodeInfo.getRotationX() : 0;
+  }
+
+  @Override
+  public float getRotationY() {
+    return mNodeInfo != null ? mNodeInfo.getRotationY() : 0;
+  }
+
+  @Override
   public boolean isScaleSet() {
     return mNodeInfo != null && mNodeInfo.isScaleSet();
   }
@@ -111,6 +116,16 @@ class LayoutOutput implements Cloneable, AnimatableItem {
   @Override
   public boolean isRotationSet() {
     return mNodeInfo != null && mNodeInfo.isRotationSet();
+  }
+
+  @Override
+  public boolean isRotationXSet() {
+    return mNodeInfo != null && mNodeInfo.isRotationXSet();
+  }
+
+  @Override
+  public boolean isRotationYSet() {
+    return mNodeInfo != null && mNodeInfo.isRotationYSet();
   }
 
   void setBounds(int l, int t, int r, int b) {
@@ -134,14 +149,18 @@ class LayoutOutput implements Cloneable, AnimatableItem {
   }
 
   /**
-   * Returns the id of the LayoutOutput that represents the host of this LayoutOutput.
+   * Returns the id of the LayoutOutput that represents the host of this LayoutOutput. This host may
+   * be phantom, meaning that the mount content that represents this LayoutOutput may be hosted
+   * inside one of higher level hosts {@see MountState#getActualComponentHost()}
    */
   long getHostMarker() {
     return mHostMarker;
   }
 
   /**
-   * hostMarker is the id of the LayoutOutput that represents the host of this LayoutOutput.
+   * hostMarker is the id of the LayoutOutput that represents the host of this LayoutOutput. This
+   * host may be phantom, meaning that the mount content that represents this LayoutOutput may be
+   * hosted inside one of higher level hosts {@see MountState#getActualComponentHost()}
    */
   void setHostMarker(long hostMarker) {
     mHostMarker = hostMarker;
@@ -167,7 +186,7 @@ class LayoutOutput implements Cloneable, AnimatableItem {
     if (mNodeInfo != null) {
       throw new IllegalStateException("NodeInfo set more than once on the same LayoutOutput.");
     } else if (nodeInfo != null) {
-      mNodeInfo = nodeInfo.acquireRef();
+      mNodeInfo = nodeInfo;
     }
   }
 
@@ -192,56 +211,12 @@ class LayoutOutput implements Cloneable, AnimatableItem {
     mImportantForAccessibility = importantForAccessibility;
   }
 
-  void initDisplayListContainer(String name, boolean canCacheDrawingDisplayList) {
-    if (mDisplayListContainer != null) {
-      throw new IllegalStateException("Trying to init displaylistcontainer but it already exists");
-    }
-    mDisplayListContainer = ComponentsPools.acquireDisplayListContainer();
-    mDisplayListContainer.init(name, canCacheDrawingDisplayList);
+  int getOrientation() {
+    return mOrientation;
   }
 
-  void setDisplayListContainer(DisplayListContainer displayListContainer) {
-    if (mDisplayListContainer != null) {
-      mDisplayListContainer.release();
-    }
-    mDisplayListContainer = displayListContainer;
-  }
-
-  @Nullable DisplayListContainer getDisplayListContainer() {
-    return mDisplayListContainer;
-  }
-
-  /*
-   * Usually if displaylists are supported, it means we initialized the displaylist container.
-   * However, there are cases when we need to query some displaylist data when this output has been
-   * released. In such cases we need to perform this check.
-   */
-  boolean hasDisplayListContainer() {
-    return mDisplayListContainer != null;
-  }
-
-  boolean hasValidDisplayList() {
-    if (mDisplayListContainer == null) {
-      throw new IllegalStateException(
-          "Trying to check displaylist validity when generating displaylist is not supported " +
-              "for this output");
-    }
-    return mDisplayListContainer.hasValidDisplayList();
-  }
-
-  @Nullable DisplayList getDisplayList() {
-    if (mDisplayListContainer == null) {
-      throw new IllegalStateException(
-          "Trying to get displaylist when generating displaylist is not supported for this output");
-    }
-    return mDisplayListContainer.getDisplayList();
-  }
-
-  void setDisplayList(DisplayList displayList) {
-    // We might have recycled the container already so we need to have this check.
-    if (mDisplayListContainer != null) {
-      mDisplayListContainer.setDisplayList(displayList);
-    }
+  void setOrientation(int orientation) {
+    mOrientation = orientation;
   }
 
   void setViewNodeInfo(ViewNodeInfo viewNodeInfo) {
@@ -249,7 +224,7 @@ class LayoutOutput implements Cloneable, AnimatableItem {
       throw new IllegalStateException("Try to set a new ViewNodeInfo in a LayoutOutput that" +
           " is already initialized with one.");
     }
-    mViewNodeInfo = viewNodeInfo.acquireRef();
+    mViewNodeInfo = viewNodeInfo;
   }
 
   boolean hasViewNodeInfo() {
@@ -260,63 +235,12 @@ class LayoutOutput implements Cloneable, AnimatableItem {
     return mViewNodeInfo;
   }
 
-  void setTransitionKey(String transitionKey) {
-    mTransitionKey = transitionKey;
+  public void setTransitionId(@Nullable TransitionId transitionId) {
+    this.mTransitionId = transitionId;
   }
 
   @Nullable
-  String getTransitionKey() {
-    return mTransitionKey;
-  }
-
-  void acquire() {
-    if (mRefCount.getAndSet(1) != 0) {
-      throw new RuntimeException(
-          "Tried to acquire a LayoutOutput that already had a non-zero ref count!");
-    }
-  }
-
-  public LayoutOutput acquireRef() {
-    if (mRefCount.getAndIncrement() < 1) {
-      throw new RuntimeException("Tried to acquire a reference to a released LayoutOutput!");
-    }
-
-    return this;
-  }
-
-  void release() {
-    final int count = mRefCount.decrementAndGet();
-    if (count < 0) {
-      throw new IllegalStateException("Trying to release a recycled LayoutOutput.");
-    } else if (count > 0) {
-      return;
-    }
-
-    if (mComponent != null) {
-      mComponent.release();
-      mComponent = null;
-    }
-    if (mNodeInfo != null) {
-      mNodeInfo.release();
-      mNodeInfo = null;
-    }
-    if (mViewNodeInfo != null) {
-      mViewNodeInfo.release();
-      mViewNodeInfo = null;
-    }
-    if (mDisplayListContainer != null) {
-      mDisplayListContainer.release();
-      mDisplayListContainer = null;
-    }
-    mBounds.setEmpty();
-    mHostTranslationX = 0;
-    mHostTranslationY = 0;
-    mFlags = 0;
-    mHostMarker = -1L;
-    mUpdateState = STATE_UNKNOWN;
-    mImportantForAccessibility = IMPORTANT_FOR_ACCESSIBILITY_AUTO;
-    mTransitionKey = null;
-
-    ComponentsPools.release(this);
+  public TransitionId getTransitionId() {
+    return mTransitionId;
   }
 }

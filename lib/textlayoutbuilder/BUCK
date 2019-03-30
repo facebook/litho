@@ -3,6 +3,7 @@
 # This source code is licensed under the Apache 2.0 license found in the
 # LICENSE file in the root directory of this source tree.
 
+load("//tools/build_defs/oss:fb_native_wrapper.bzl", "fb_native")
 load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_VISIBILITY", "fb_java_library")
 
 fb_java_library(
@@ -14,24 +15,24 @@ fb_java_library(
     ],
 )
 
-android_prebuilt_aar(
+fb_native.android_prebuilt_aar(
     name = "textlayoutbuilder-prebuilt-aar",
     aar = ":textlayoutbuilder-aar",
 )
 
-remote_file(
+fb_native.remote_file(
     name = "textlayoutbuilder-aar",
-    sha1 = "eedbbe94924232e1fe2ee602f04241b2769a7d96",
-    url = "mvn:com.facebook.fbui.textlayoutbuilder:textlayoutbuilder:aar:1.3.0",
+    sha1 = "cd8744d07aff110b916a99077187c89ef58f03a8",
+    url = "mvn:com.facebook.fbui.textlayoutbuilder:textlayoutbuilder:aar:1.5.0",
 )
 
-prebuilt_jar(
+fb_native.prebuilt_jar(
     name = "textlayoutbuilder-prebuilt-staticlayout-proxy-jar",
     binary_jar = ":textlayoutbuilder-staticlayout-proxy.jar",
 )
 
-remote_file(
+fb_native.remote_file(
     name = "textlayoutbuilder-staticlayout-proxy.jar",
-    sha1 = "12b83e0095b17b6fda8641f7caff56b0cf8e7d79",
-    url = "mvn:com.facebook.fbui.textlayoutbuilder:staticlayout-proxy:jar:1.3.0",
+    sha1 = "acd5bbdf80a847b966616efa1be23c0fea8134c3",
+    url = "mvn:com.facebook.fbui.textlayoutbuilder:staticlayout-proxy:jar:1.5.0",
 )

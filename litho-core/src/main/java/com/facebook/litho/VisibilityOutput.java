@@ -17,7 +17,7 @@
 package com.facebook.litho;
 
 import android.graphics.Rect;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * Stores information about a {@link Component} which has registered handlers for
@@ -131,19 +131,5 @@ class VisibilityOutput {
   @Nullable
   EventHandler<VisibilityChangedEvent> getVisibilityChangedEventHandler() {
     return mVisibilityChangedEventHandler;
-  }
-
-  void release() {
-    mVisibleHeightRatio = 0;
-    mVisibleWidthRatio = 0;
-    mComponent = null;
-    mVisibleEventHandler = null;
-    mFocusedEventHandler = null;
-    mUnfocusedEventHandler = null;
-    mFullImpressionEventHandler = null;
-    mInvisibleEventHandler = null;
-    mVisibilityChangedEventHandler = null;
-
-    mBounds.setEmpty();
   }
 }

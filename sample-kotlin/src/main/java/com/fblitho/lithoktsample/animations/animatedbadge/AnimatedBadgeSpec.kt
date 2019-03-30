@@ -87,6 +87,7 @@ object AnimatedBadgeSpec {
                                 Text.create(c)
                                     // still need transition keys for appear/disappear animations
                                     .transitionKey(TRANSITION_KEY_TEXT)
+                                    .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
                                     // need this to prevent the global key of "+1" Text from changing
                                     .key("text")
                                     .marginDip(YogaEdge.LEFT, 8f)
@@ -155,19 +156,19 @@ object AnimatedBadgeSpec {
 
   @OnUpdateState
   fun updateState(state: StateValue<Int>) {
-    state.set((state.get() + 1) % 4)
+    state.set((state.get()!! + 1) % 4)
   }
 
   @OnCreateTransition
   fun onCreateTransition(c: ComponentContext): Transition =
       Transition.parallel<BaseTransitionUnitsBuilder>(
           Transition.allLayout().animator(ANIMATOR),
-          Transition.create(TRANSITION_KEY_TEXT)
+          Transition.create(Transition.TransitionKeyType.GLOBAL, TRANSITION_KEY_TEXT)
               .animate(AnimatedProperties.WIDTH)
               .appearFrom(0f)
               .disappearTo(0f)
               .animator(ANIMATOR),
-          Transition.create(TRANSITION_KEY_TEXT)
+          Transition.create(Transition.TransitionKeyType.GLOBAL, TRANSITION_KEY_TEXT)
               .animate(AnimatedProperties.ALPHA)
               .appearFrom(0f)
               .disappearTo(0f)

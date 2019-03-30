@@ -3,7 +3,7 @@
 # This source code is licensed under the Apache 2.0 license found in the
 # LICENSE file in the root directory of this source tree.
 
-load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_ANDROIDSUPPORT_RECYCLERVIEW_TARGET", "LITHO_ANDROIDSUPPORT_TARGET", "LITHO_ASSERTJ_TARGET", "LITHO_BUILD_CONFIG_TARGET", "LITHO_JAVA_TARGET", "LITHO_JUNIT_TARGET", "LITHO_MOCKITO_TARGET", "LITHO_POWERMOCK_REFLECT_TARGET", "LITHO_ROBOLECTRIC_TARGET", "LITHO_SOLOADER_TARGET", "LITHO_TESTING_TARGET", "LITHO_VIEWCOMPAT_TARGET", "components_robolectric_test", "make_dep_path")
+load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_ANDROIDSUPPORT_RECYCLERVIEW_TARGET", "LITHO_ANDROIDSUPPORT_TARGET", "LITHO_ASSERTJ_TARGET", "LITHO_BUILD_CONFIG_TARGET", "LITHO_JAVA_TARGET", "LITHO_JUNIT_TARGET", "LITHO_MOCKITO_TARGET", "LITHO_ROBOLECTRIC_TARGET", "LITHO_SOLOADER_TARGET", "LITHO_TESTING_TARGET", "LITHO_TESTING_WHITEBOX_TARGET", "LITHO_VIEWCOMPAT_TARGET", "components_robolectric_test", "make_dep_path")
 
 components_robolectric_test(
     name = "widget",
@@ -12,6 +12,7 @@ components_robolectric_test(
         "Test*.java",
     ]),
     contacts = ["oncall+components_for_android@xmail.facebook.com"],
+    is_androidx = True,
     provided_deps = [
         LITHO_ROBOLECTRIC_TARGET,
     ],
@@ -25,10 +26,11 @@ components_robolectric_test(
         LITHO_JAVA_TARGET,
         LITHO_JUNIT_TARGET,
         LITHO_MOCKITO_TARGET,
-        LITHO_POWERMOCK_REFLECT_TARGET,
+        LITHO_TESTING_WHITEBOX_TARGET,
         LITHO_SOLOADER_TARGET,
         LITHO_TESTING_TARGET,
         LITHO_VIEWCOMPAT_TARGET,
+        make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/internal:internal"),
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/assertj:assertj"),
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/eventhandler:eventhandler"),
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/testrunner:testrunner"),

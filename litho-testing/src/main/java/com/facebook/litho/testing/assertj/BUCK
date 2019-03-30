@@ -1,8 +1,9 @@
-load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_ANDROIDSUPPORT_TARGET", "LITHO_ASSERTJ_TARGET", "LITHO_HAMCREST_CORE_TARGET", "LITHO_JAVA_TARGET", "LITHO_JSR_TARGET", "LITHO_POWERMOCK_REFLECT_TARGET", "LITHO_TESTING_HELPER_TARGET", "LITHO_TESTING_SUBCOMPONENTS_TARGET", "litho_android_library", "make_dep_path")
+load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_ANDROIDSUPPORT_TARGET", "LITHO_ASSERTJ_TARGET", "LITHO_HAMCREST_CORE_TARGET", "LITHO_JAVA_TARGET", "LITHO_JSR_TARGET", "LITHO_TESTING_HELPER_TARGET", "LITHO_TESTING_SUBCOMPONENTS_TARGET", "LITHO_TESTING_WHITEBOX_TARGET", "litho_android_library", "make_dep_path")
 
 litho_android_library(
     name = "assertj",
     srcs = glob(["*.java"]),
+    is_androidx = True,
     visibility = [
         "PUBLIC",
     ],
@@ -10,7 +11,7 @@ litho_android_library(
         LITHO_ANDROIDSUPPORT_TARGET,
         LITHO_JAVA_TARGET,
         LITHO_JSR_TARGET,
-        LITHO_POWERMOCK_REFLECT_TARGET,
+        LITHO_TESTING_WHITEBOX_TARGET,
         LITHO_TESTING_HELPER_TARGET,
         LITHO_TESTING_SUBCOMPONENTS_TARGET,
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/viewtree:viewtree"),

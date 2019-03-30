@@ -14,7 +14,7 @@ public class ColorChangedEvent {
 }
 ```
 
-In this example we will assume we have a component called `ColorComponent`. To indicate that a `ColorComponent` can dispatch a `ColorChangedEvent` our 'ColorComponentSpec' must be annotated with that information. This is done with the `events` parameter of the `@MountSpec` and `@LayoutSpec` annotations. A component may be annotated to dispatch multiple events.
+In this example we will assume we have a component called `ColorComponent`. To indicate that a `ColorComponent` can dispatch a `ColorChangedEvent` our `ColorComponentSpec` must be annotated with that information. This is done with the `events` parameter of the `@MountSpec` and `@LayoutSpec` annotations. A component may be annotated to dispatch multiple events.
 
 ```java
 @LayoutSpec(events = { ColorChangedEvent.class })
@@ -28,7 +28,7 @@ class ColorComponentSpec {
     EventHandler handler = ColorComponent.getColorChangedEventHandler(c);
     if (handler != null) {
       ColorComponent.dispatchColorChangedEvent(
-          colorChangedHandler,
+          handler,
           color);
     }
     ...

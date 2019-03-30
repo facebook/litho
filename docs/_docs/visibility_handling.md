@@ -39,7 +39,7 @@ class MyLayoutSpec {
             .invisibleHandler(MyLayout.onTitleInvisible(c))
             .focusedHandler(MyLayout.onComponentFocused(c, "someStringParam"))
             .fullImpressionHandler(MyLayout.onComponentFullImpression(c)))
-            .visibilityChangedhandler(MyLayout.onComponentVisibilityChanged(c))
+            .visibilityChangedHandler(MyLayout.onComponentVisibilityChanged(c))
         .build();
   }
 

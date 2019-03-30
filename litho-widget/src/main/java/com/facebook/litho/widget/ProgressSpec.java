@@ -21,8 +21,8 @@ import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-import android.support.v4.content.ContextCompat;
 import android.widget.ProgressBar;
+import androidx.core.content.ContextCompat;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.Output;
@@ -41,6 +41,7 @@ import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.utils.MeasureUtils;
+import javax.annotation.Nullable;
 
 /**
  * Renders an infinitely spinning progress bar.
@@ -127,7 +128,7 @@ class ProgressSpec {
     return new ProgressView(c);
   }
 
-  static Drawable getStyledIndeterminateDrawable(ComponentContext c, int defStyle) {
+  static @Nullable Drawable getStyledIndeterminateDrawable(ComponentContext c, int defStyle) {
     Drawable indeterminateDrawable = null;
 
     final TypedArray styledAttributes = c.obtainStyledAttributes(R.styleable.Progress, defStyle);
@@ -137,7 +138,8 @@ class ProgressSpec {
 
       if (attr == R.styleable.Progress_android_indeterminateDrawable) {
         indeterminateDrawable =
-            ContextCompat.getDrawable(c, styledAttributes.getResourceId(attr, 0));
+            ContextCompat.getDrawable(
+                c.getAndroidContext(), styledAttributes.getResourceId(attr, 0));
       }
     }
 

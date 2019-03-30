@@ -38,6 +38,7 @@ public class LayoutStateCalculateVisibilityOutputsTest {
 
   @Before
   public void setup() throws Exception {
+    ComponentsPools.clearMountContentPools();
   }
 
   @Test
@@ -272,11 +273,8 @@ public class LayoutStateCalculateVisibilityOutputsTest {
         heightSpec,
         false /* shouldGenerateDiffTree */,
         null /* previousDiffTreeRoot */,
-        false /* canPrefetchDisplayLists */,
-        false /* canCacheDrawingDisplayLists */,
-        true /* clipChildren */,
-        false,
         LayoutState.CalculateLayoutSource.TEST,
-        null);
+        null,
+        false);
   }
 }

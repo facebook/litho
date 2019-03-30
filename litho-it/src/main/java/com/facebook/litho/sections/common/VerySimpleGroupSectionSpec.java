@@ -80,6 +80,6 @@ public class VerySimpleGroupSectionSpec {
 
   @OnEvent(ClickEvent.class)
   static void onImageClick(SectionContext c) {
-    VerySimpleGroupSection.onUpdateState(c, 3);
+    VerySimpleGroupSection.onUpdateStateSync(c, 3);
   }
 }

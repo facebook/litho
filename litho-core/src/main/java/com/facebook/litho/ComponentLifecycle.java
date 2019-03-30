@@ -19,15 +19,16 @@ package com.facebook.litho;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.AttrRes;
-import android.support.annotation.Nullable;
-import android.support.annotation.StyleRes;
-import android.support.v4.util.Pools;
-import android.support.v4.view.accessibility.AccessibilityNodeInfoCompat;
-import android.support.v4.widget.ExploreByTouchHelper;
 import android.view.View;
+import androidx.annotation.AttrRes;
+import androidx.annotation.Nullable;
+import androidx.annotation.StyleRes;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
+import androidx.customview.widget.ExploreByTouchHelper;
 import com.facebook.infer.annotation.ThreadSafe;
+import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateTreeProp;
+import com.facebook.litho.annotations.OnShouldCreateLayoutWithNewSizeSpec;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.yoga.YogaBaselineFunction;
 import com.facebook.yoga.YogaMeasureFunction;
@@ -91,24 +92,11 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
         }
       };
 
-  private static final YogaMeasureFunction sMeasureFunction =
+  static final YogaMeasureFunction sMeasureFunction =
       new YogaMeasureFunction() {
 
-        private final Pools.SynchronizedPool<Size> mSizePool = new Pools.SynchronizedPool<>(2);
-
         private Size acquireSize(int initialValue) {
-          Size size = mSizePool.acquire();
-          if (size == null) {
-            size = new Size();
-          }
-
-          size.width = initialValue;
-          size.height = initialValue;
-          return size;
-        }
-
-        private void releaseSize(Size size) {
-          mSizePool.release(size);
+          return new Size(initialValue, initialValue);
         }
 
         @Override
@@ -145,8 +133,29 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
           int outputHeight = 0;
 
           if (Component.isNestedTree(component) || node.hasNestedTree()) {
+
+            ComponentContext context = node.getContext();
+
+            // TODO: (T39009736) evaluate why the parent is null sometimes
+            if (context.isNestedTreeResolutionExperimentEnabled()) {
+              if (node.getParent() != null) {
+                context = node.getParent().getContext();
+              } else if (context.getLogger() != null) {
+                context
+                    .getLogger()
+                    .emitMessage(
+                        ComponentsLogger.LogLevel.ERROR,
+                        "component "
+                            + component.getSimpleName()
+                            + " is a nested tree but does not have a parent component."
+                            + "[mGlobalKey:"
+                            + component.getGlobalKey()
+                            + "]");
+              }
+            }
+
             final InternalNode nestedTree =
-                LayoutState.resolveNestedTree(node, widthSpec, heightSpec);
+                LayoutState.resolveNestedTree(context, node, widthSpec, heightSpec);
 
             outputWidth = nestedTree.getWidth();
             outputHeight = nestedTree.getHeight();
@@ -159,25 +168,21 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
           } else {
             final Size size = acquireSize(Integer.MIN_VALUE /* initialValue */);
 
-            try {
-              component.onMeasure(component.getScopedContext(), node, widthSpec, heightSpec, size);
+            component.onMeasure(component.getScopedContext(), node, widthSpec, heightSpec, size);
 
-              if (size.width < 0 || size.height < 0) {
-                throw new IllegalStateException(
-                    "MeasureOutput not set, ComponentLifecycle is: " + component);
-              }
+            if (size.width < 0 || size.height < 0) {
+              throw new IllegalStateException(
+                  "MeasureOutput not set, ComponentLifecycle is: " + component);
+            }
 
-              outputWidth = size.width;
-              outputHeight = size.height;
+            outputWidth = size.width;
+            outputHeight = size.height;
 
-              if (node.getDiffNode() != null) {
-                node.getDiffNode().setLastWidthSpec(widthSpec);
-                node.getDiffNode().setLastHeightSpec(heightSpec);
-                node.getDiffNode().setLastMeasuredWidth(outputWidth);
-                node.getDiffNode().setLastMeasuredHeight(outputHeight);
-              }
-            } finally {
-              releaseSize(size);
+            if (node.getDiffNode() != null) {
+              node.getDiffNode().setLastWidthSpec(widthSpec);
+              node.getDiffNode().setLastHeightSpec(heightSpec);
+              node.getDiffNode().setLastMeasuredWidth(outputWidth);
+              node.getDiffNode().setLastMeasuredHeight(outputHeight);
             }
           }
 
@@ -224,13 +229,13 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
   }
 
   @ThreadSafe(enableChecks = false)
-  public Object createMountContent(ComponentContext c) {
+  public Object createMountContent(Context c) {
     final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
       ComponentsSystrace.beginSection("createMountContent:" + ((Component) this).getSimpleName());
     }
     try {
-      return onCreateMountContent(c.getBaseContext());
+      return onCreateMountContent(c);
     } finally {
       if (isTracing) {
         ComponentsSystrace.endSection();
@@ -312,10 +317,10 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
       ComponentsSystrace.beginSection("createLayout:" + ((Component) this).getSimpleName());
     }
 
-    InternalNode node = null;
+    InternalNode node;
     try {
       if (deferNestedTreeResolution) {
-        node = ComponentsPools.acquireInternalNode(context);
+        node = InternalNodeUtils.create(context);
         node.markIsNestedTreeHolder(context.getTreeProps());
       } else if (component.canResolve()) {
         context.setTreeProps(component.getScopedContext().getTreePropsCopy());
@@ -330,14 +335,14 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
         }
       }
     } catch (Throwable t) {
-      throw new CreateLayoutException((Component) this, t);
+      throw new ComponentsChainException((Component) this, t);
     }
 
     if (isTracing) {
       ComponentsSystrace.endSection();
     }
 
-    if (node == null) {
+    if (node == null || node == ComponentContext.NULL_LAYOUT) {
       return ComponentContext.NULL_LAYOUT;
     }
 
@@ -355,8 +360,6 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     // delegates its layout creation to another component i.e. the root node belongs to
     // another component.
     if (node.getRootComponent() == null) {
-      node.setBaselineFunction(sBaselineFunction);
-
       final boolean isMountSpecWithMeasure = canMeasure()
           && Component.isMountSpec((Component) this);
 
@@ -366,11 +369,11 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     }
 
     node.appendComponent((Component) this);
-    if (TransitionUtils.areTransitionsEnabled(context)) {
+    if (TransitionUtils.areTransitionsEnabled(context.getAndroidContext())) {
       if (needsPreviousRenderData()) {
         node.addComponentNeedingPreviousRenderData((Component) this);
       } else {
-        final Transition transition = onCreateTransition(context);
+        final Transition transition = createTransition(context);
         if (transition != null) {
           node.addTransition(transition);
         }
@@ -389,6 +392,15 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     return node;
   }
 
+  final @Nullable Transition createTransition(ComponentContext c) {
+    final Transition transition = onCreateTransition(c);
+    if (transition != null) {
+      TransitionUtils.setOwnerKey(transition, ((Component) this).getGlobalKey());
+    }
+    return transition;
+  }
+
+  @ThreadSafe(enableChecks = false)
   private Component createComponentLayout(ComponentContext context) {
     Component layoutComponent = null;
     if (Component.isLayoutSpecWithSizeSpec(((Component) this))) {
@@ -405,6 +417,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
         dispatchErrorEvent(context, e);
       }
     }
+
     return layoutComponent;
   }
 
@@ -456,24 +469,6 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     onLoadStyle(c);
   }
 
-  protected Output acquireOutput() {
-    return ComponentsPools.acquireOutput();
-  }
-
-  protected void releaseOutput(Output output) {
-    ComponentsPools.release(output);
-  }
-
-  protected final <T> Diff<T> acquireDiff(T previousValue, T nextValue) {
-    Diff<T> diff =  ComponentsPools.acquireDiff(previousValue, nextValue);
-
-    return diff;
-  }
-
-  protected void releaseDiff(Diff diff) {
-    ComponentsPools.release(diff);
-  }
-
   /**
    * Retrieves all of the tree props used by this Component from the TreeProps map
    * and sets the tree props as fields on the ComponentImpl.
@@ -498,19 +493,11 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
    * @param c The {@link ComponentContext} to build a {@link ComponentLayout} tree.
    */
   protected Component onCreateLayout(ComponentContext c) {
-    if (ComponentsConfiguration.usePlaceholderComponent) {
-      return PlaceholderComponent.createAndBuild();
-    }
-
     return Column.create(c).build();
   }
 
   protected Component onCreateLayoutWithSizeSpec(
       ComponentContext c, int widthSpec, int heightSpec) {
-    if (ComponentsConfiguration.usePlaceholderComponent) {
-      return PlaceholderComponent.createAndBuild();
-    }
-
     return Column.create(c).build();
   }
 
@@ -553,6 +540,14 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
    * to specific size constraints.
    */
   protected boolean canMeasure() {
+    return false;
+  }
+
+  /**
+   * @return {@code true} iff the {@link LayoutSpec} implements {@link
+   *     OnShouldCreateLayoutWithNewSizeSpec} to {@code true}.
+   */
+  protected boolean isLayoutSpecWithSizeSpecCheck() {
     return false;
   }
 
@@ -696,13 +691,11 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
   }
 
   /**
-   * Call this to transfer the {@link com.facebook.litho.annotations.State} annotated values
-   * between two {@link Component} with the same global scope.
+   * Call this to transfer the {@link com.facebook.litho.annotations.State} annotated values between
+   * two {@link Component} with the same global scope.
    */
   protected void transferState(
-      ComponentContext c,
-      StateContainer previousStateContainer) {
-  }
+      StateContainer previousStateContainer, StateContainer nextStateContainer) {}
 
   protected void createInitialState(ComponentContext c) {
 
@@ -722,7 +715,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
   }
 
   @Override
-  public Object dispatchOnEvent(EventHandler eventHandler, Object eventState) {
+  public @Nullable Object dispatchOnEvent(EventHandler eventHandler, Object eventState) {
     if (ComponentsConfiguration.enableOnErrorHandling && eventHandler.id == ERROR_EVENT_HANDLER_ID) {
       ((Component) this).getErrorHandler().dispatchEvent(((ErrorEvent) eventState));
     }
@@ -797,11 +790,22 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     return !previous.isEquivalentTo(next);
   }
 
+  boolean canUsePreviousLayout(ComponentContext context) {
+    return ComponentsConfiguration.enableShouldCreateLayoutWithNewSizeSpec
+        && !onShouldCreateLayoutWithNewSizeSpec(
+            context, context.getWidthSpec(), context.getHeightSpec());
+  }
+
+  protected boolean onShouldCreateLayoutWithNewSizeSpec(
+      ComponentContext context, int newWidthSpec, int newHeightSpec) {
+    return true;
+  }
+
   /**
    * @return a {@link TransitionSet} specifying how to animate this component to its new layout and
    *     props.
    */
-  protected Transition onCreateTransition(ComponentContext c) {
+  protected @Nullable Transition onCreateTransition(ComponentContext c) {
     return null;
   }
 
@@ -854,14 +858,14 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     return false;
   }
 
-  protected RenderData recordRenderData(RenderData toRecycle) {
+  protected @Nullable RenderData recordRenderData(RenderData toRecycle) {
     return null;
   }
 
   protected void applyPreviousRenderData(RenderData previousRenderData) {}
 
   public interface StateUpdate {
-    void updateState(StateContainer stateContainer, Component newComponent);
+    void updateState(StateContainer stateContainer);
   }
 
   /**
@@ -877,16 +881,5 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
    */
   protected boolean shouldAlwaysRemeasure() {
     return false;
-  }
-
-  /**
-   * Exception class used to print the Components' hierarchy involved in a layout creation crash.
-   */
-  private static class CreateLayoutException extends RuntimeException {
-    CreateLayoutException(Component c, Throwable cause) {
-      super(c.getSimpleName());
-      initCause(cause);
-      setStackTrace(new StackTraceElement[0]);
-    }
   }
 }

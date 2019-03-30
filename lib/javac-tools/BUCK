@@ -3,15 +3,16 @@
 # This source code is licensed under the Apache 2.0 license found in the
 # LICENSE file in the root directory of this source tree.
 
+load("//tools/build_defs/oss:fb_native_wrapper.bzl", "fb_native")
 load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_VISIBILITY")
 
-prebuilt_jar(
+fb_native.prebuilt_jar(
     name = "javac-tools",
     binary_jar = ":javac-tools.jar",
     visibility = LITHO_VISIBILITY,
 )
 
-remote_file(
+fb_native.remote_file(
     name = "javac-tools.jar",
     sha1 = "b131b8c9b481c4860cc3e08ede96f2c545a369ad",
     url = "mvn:com.sun:tools:jar:1.7.0.13",

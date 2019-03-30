@@ -15,6 +15,8 @@
  */
 package com.facebook.litho;
 
+import android.content.Context;
+
 /**
  * A pool dedicated to recycling mount content.
  *
@@ -28,7 +30,7 @@ public interface MountContentPool<T> extends PoolWithDebugInfo {
    *
    * <p>NB: This can be called from multiple threads, possibly at the same time!
    */
-  T acquire(ComponentContext c, ComponentLifecycle lifecycle);
+  T acquire(Context c, ComponentLifecycle lifecycle);
 
   /**
    * Release the given mount content into the pool.
@@ -44,5 +46,5 @@ public interface MountContentPool<T> extends PoolWithDebugInfo {
    *
    * <p>NB: This can be called from multiple threads, possibly at the same time!
    */
-  void maybePreallocateContent(ComponentContext c, ComponentLifecycle lifecycle);
+  void maybePreallocateContent(Context c, ComponentLifecycle lifecycle);
 }

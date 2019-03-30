@@ -19,18 +19,19 @@ package com.facebook.litho;
 import static android.view.View.MeasureSpec.EXACTLY;
 import static android.view.View.MeasureSpec.makeMeasureSpec;
 import static com.facebook.litho.testing.TestDrawableComponent.create;
+import static com.facebook.litho.testing.Whitebox.getInternalState;
 import static com.facebook.litho.testing.helper.ComponentTestHelper.mountComponent;
 import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.powermock.reflect.Whitebox.getInternalState;
 
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.support.v4.util.LongSparseArray;
+import android.graphics.drawable.Drawable;
 import android.view.View;
-import com.facebook.litho.config.ComponentsConfiguration;
+import androidx.collection.LongSparseArray;
+import com.facebook.litho.drawable.ComparableDrawable;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestViewComponent;
+import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.helper.ComponentTestHelper;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.widget.EditText;
@@ -40,7 +41,6 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.powermock.reflect.Whitebox;
 import org.robolectric.RuntimeEnvironment;
 
 @RunWith(ComponentsTestRunner.class)
@@ -100,9 +100,6 @@ public class MountStateRemountTest {
    */
   @Test
   public void testRemountDifferentMountType() throws IllegalAccessException, NoSuchFieldException {
-    clearPool("sLayoutOutputPool");
-    clearPool("sViewNodeInfoPool");
-
     final LithoView lithoView =
         ComponentTestHelper.mountComponent(mContext, TestViewComponent.create(mContext).build());
 
@@ -196,56 +193,67 @@ public class MountStateRemountTest {
 
   @Test
   public void testRemountOnNoLayoutChanges() {
-    ComponentsConfiguration.enableViewInfoDiffingForMountStateUpdates = true;
-
     final Component oldComponent =
         Column.create(mContext)
             .backgroundColor(Color.WHITE)
             .child(
                 EditText.create(mContext)
+                    .backgroundColor(Color.RED)
+                    .foregroundColor(Color.CYAN)
                     .text("Hello World")
                     .viewTag("Alpha")
                     .contentDescription("some description"))
             .build();
 
-    final LithoView lithoView = mountComponent(mContext, oldComponent, 400, 400);
+    final LithoView lithoView = new LithoView(mContext);
+    final ComponentTree componentTree =
+        ComponentTree.create(mContext, oldComponent)
+            .incrementalMount(false)
+            .layoutDiffing(true)
+            .build();
+
+    mountComponent(
+        lithoView, componentTree, makeMeasureSpec(400, EXACTLY), makeMeasureSpec(400, EXACTLY));
 
     final View oldView = lithoView.getChildAt(0);
 
     final Object oldTag = oldView.getTag();
     final String oldContentDescription = oldView.getContentDescription().toString();
+    final Drawable oldBackground = oldView.getBackground();
 
     final Component newComponent =
         Column.create(mContext)
             .backgroundColor(Color.WHITE)
             .child(
                 EditText.create(mContext)
+                    .backgroundColor(Color.RED)
+                    .foregroundColor(Color.CYAN)
                     .text("Hello World")
                     .viewTag("Alpha")
                     .contentDescription("some description"))
             .build();
 
-    mountComponent(mContext, lithoView, newComponent, 400, 400);
+    componentTree.setRootAndSizeSpec(
+        newComponent, makeMeasureSpec(400, EXACTLY), makeMeasureSpec(400, EXACTLY));
+
+    componentTree.setSizeSpec(makeMeasureSpec(400, EXACTLY), makeMeasureSpec(400, EXACTLY));
 
     View newView = lithoView.getChildAt(0);
 
     assertThat(newView).isSameAs(oldView);
 
-    Object newTag = newView.getTag();
-    String newContentDescription = newView.getContentDescription().toString();
+    final Object newTag = newView.getTag();
+    final String newContentDescription = newView.getContentDescription().toString();
+    final Drawable newBackground = newView.getBackground();
 
+    // Check that props were not set again
     assertThat(newTag).isSameAs(oldTag);
     assertThat(newContentDescription).isSameAs(oldContentDescription);
-
-    // TODO: (T33421916) add tests to assert if background and foreground remain the same
-
-    ComponentsConfiguration.enableViewInfoDiffingForMountStateUpdates = false;
+    assertThat(oldBackground).isSameAs(newBackground);
   }
 
   @Test
   public void testRemountOnNodeInfoLayoutChanges() {
-    ComponentsConfiguration.enableViewInfoDiffingForMountStateUpdates = true;
-
     final Component oldComponent =
         Column.create(mContext)
             .backgroundColor(Color.WHITE)
@@ -258,7 +266,15 @@ public class MountStateRemountTest {
                     .enabled(true))
             .build();
 
-    final LithoView lithoView = mountComponent(mContext, oldComponent, 400, 400);
+    final LithoView lithoView = new LithoView(mContext);
+    final ComponentTree componentTree =
+        ComponentTree.create(mContext, oldComponent)
+            .incrementalMount(false)
+            .layoutDiffing(true)
+            .build();
+
+    mountComponent(
+        lithoView, componentTree, makeMeasureSpec(400, EXACTLY), makeMeasureSpec(400, EXACTLY));
 
     final View oldView = lithoView.getChildAt(0);
 
@@ -277,7 +293,10 @@ public class MountStateRemountTest {
                     .enabled(false))
             .build();
 
-    mountComponent(mContext, lithoView, newComponent, 400, 400);
+    componentTree.setRootAndSizeSpec(
+        newComponent, makeMeasureSpec(400, EXACTLY), makeMeasureSpec(400, EXACTLY));
+
+    componentTree.setSizeSpec(makeMeasureSpec(400, EXACTLY), makeMeasureSpec(400, EXACTLY));
 
     final View newView = lithoView.getChildAt(0);
 
@@ -288,14 +307,10 @@ public class MountStateRemountTest {
 
     assertThat(newTag).isNotEqualTo(oldTag);
     assertThat(newIsEnabled).isNotEqualTo(oldIsEnabled);
-
-    ComponentsConfiguration.enableViewInfoDiffingForMountStateUpdates = false;
   }
 
   @Test
   public void testRemountOnViewNodeInfoLayoutChanges() {
-    ComponentsConfiguration.enableViewInfoDiffingForMountStateUpdates = true;
-
     final Component oldComponent =
         Column.create(mContext)
             .backgroundColor(Color.WHITE)
@@ -307,11 +322,19 @@ public class MountStateRemountTest {
                     .backgroundColor(Color.RED))
             .build();
 
-    final LithoView lithoView = mountComponent(mContext, oldComponent, 400, 400);
+    final LithoView lithoView = new LithoView(mContext);
+    final ComponentTree componentTree =
+        ComponentTree.create(mContext, oldComponent)
+            .incrementalMount(false)
+            .layoutDiffing(true)
+            .build();
+
+    mountComponent(
+        lithoView, componentTree, makeMeasureSpec(400, EXACTLY), makeMeasureSpec(400, EXACTLY));
 
     final View oldView = lithoView.getChildAt(0);
 
-    final ColorDrawable oldDrawable = (ColorDrawable) oldView.getBackground();
+    final ComparableDrawable oldDrawable = (ComparableDrawable) oldView.getBackground();
 
     final Component newComponent =
         Column.create(mContext)
@@ -324,17 +347,18 @@ public class MountStateRemountTest {
                     .backgroundColor(Color.CYAN))
             .build();
 
-    mountComponent(mContext, lithoView, newComponent, 400, 400);
+    componentTree.setRootAndSizeSpec(
+        newComponent, makeMeasureSpec(400, EXACTLY), makeMeasureSpec(400, EXACTLY));
+
+    componentTree.setSizeSpec(makeMeasureSpec(400, EXACTLY), makeMeasureSpec(400, EXACTLY));
 
     final View newView = lithoView.getChildAt(0);
 
     assertThat(newView).isSameAs(oldView);
 
-    final ColorDrawable newDrawable = (ColorDrawable) newView.getBackground();
+    final ComparableDrawable newDrawable = (ComparableDrawable) newView.getBackground();
 
-    assertThat(newDrawable.getColor()).isNotEqualTo(oldDrawable.getColor());
-
-    ComponentsConfiguration.enableViewInfoDiffingForMountStateUpdates = false;
+    assertThat(oldDrawable.isEquivalentTo(newDrawable)).isFalse();
   }
 
   private boolean containsRef(List<?> list, Object object) {

@@ -30,6 +30,7 @@ import android.graphics.drawable.Drawable;
 import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.view.ViewGroup;
+import com.facebook.litho.drawable.ComparableDrawableWrapper;
 import com.facebook.litho.it.R;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.TestDrawableComponent;
@@ -75,7 +76,11 @@ public class MountStateViewTest {
             });
 
     final View child = lithoView.getChildAt(0);
-    final Drawable background = child.getBackground();
+    Drawable background = child.getBackground();
+
+    if (background instanceof ComparableDrawableWrapper) {
+      background = ((ComparableDrawableWrapper) background).getWrappedDrawable();
+    }
 
     assertThat(child.getPaddingLeft()).isEqualTo(5);
     assertThat(child.getPaddingTop()).isEqualTo(6);
@@ -150,7 +155,8 @@ public class MountStateViewTest {
     assertThat(testComponent1.isMounted()).isTrue();
     assertThat(testComponent2.isMounted()).isTrue();
 
-    final ViewGroupWithLithoViewChildren viewGroup = new ViewGroupWithLithoViewChildren(mContext);
+    final ViewGroupWithLithoViewChildren viewGroup =
+        new ViewGroupWithLithoViewChildren(mContext.getAndroidContext());
     removeParent(child1);
     removeParent(child2);
     viewGroup.addView(child1);

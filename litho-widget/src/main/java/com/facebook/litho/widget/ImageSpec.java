@@ -70,7 +70,7 @@ class ImageSpec {
       final int attr = a.getIndex(i);
 
       if (attr == R.styleable.Image_android_src) {
-        drawable.set(c.getResources().getDrawable(a.getResourceId(attr, 0)));
+        drawable.set(c.getAndroidContext().getResources().getDrawable(a.getResourceId(attr, 0)));
       } else if (attr == R.styleable.Image_android_scaleType) {
         scaleType.set(SCALE_TYPE[a.getInteger(attr, -1)]);
       }
@@ -113,14 +113,6 @@ class ImageSpec {
         intrinsicHeight,
         aspectRatio,
         size);
-
-    if (ComponentsConfiguration.prewarmImageTexture) {
-      TextureWarmer.WarmDrawable warmDrawable = new TextureWarmer.WarmDrawable(
-          drawable,
-          size.width,
-          size.height);
-      TextureWarmer.getInstance().warmDrawable(warmDrawable);
-    }
   }
 
   @OnBoundsDefined

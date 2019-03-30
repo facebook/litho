@@ -1,3 +1,4 @@
+load("//tools/build_defs/oss:fb_native_wrapper.bzl", "fb_native")
 load("//tools/build_defs/oss:litho_defs.bzl", "fb_java_library")
 
 fb_java_library(
@@ -8,12 +9,12 @@ fb_java_library(
     ],
 )
 
-prebuilt_jar(
+fb_native.prebuilt_jar(
     name = "guava-prebuilt",
     binary_jar = ":guava.jar",
 )
 
-remote_file(
+fb_native.remote_file(
     name = "guava.jar",
     sha1 = "89507701249388e1ed5ddcf8c41f4ce1be7831ef",
     url = "mvn:com.google.guava:guava:jar:20.0",

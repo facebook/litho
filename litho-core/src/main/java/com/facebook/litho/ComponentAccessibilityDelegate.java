@@ -19,15 +19,17 @@ package com.facebook.litho;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.v4.view.AccessibilityDelegateCompat;
-import android.support.v4.view.accessibility.AccessibilityNodeInfoCompat;
-import android.support.v4.view.accessibility.AccessibilityNodeProviderCompat;
-import android.support.v4.widget.ExploreByTouchHelper;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
+import androidx.core.view.AccessibilityDelegateCompat;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
+import androidx.core.view.accessibility.AccessibilityNodeProviderCompat;
+import androidx.customview.widget.ExploreByTouchHelper;
 import java.util.List;
+import javax.annotation.Nullable;
 
 /**
  * Class that is used to set up accessibility for {@link ComponentHost}s.
@@ -42,15 +44,24 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
   private final AccessibilityDelegateCompat mSuperDelegate;
   private static final Rect sDefaultBounds = new Rect(0, 0, 1, 1);
 
-  ComponentAccessibilityDelegate(View view, NodeInfo nodeInfo) {
+  ComponentAccessibilityDelegate(
+      View view, NodeInfo nodeInfo, boolean originalFocus, int originalImportantForAccessibility) {
     super(view);
     mView = view;
     mNodeInfo = nodeInfo;
     mSuperDelegate = new SuperDelegate();
+
+    // We need to reset these two properties, as ExploreByTouchHelper sets focusable to "true" and
+    // importantForAccessibility to "Yes" (if it is Auto). If we don't reset these it would force
+    // every element that has this delegate attached to be focusable, and not allow for
+    // announcement coalescing.
+    mView.setFocusable(originalFocus);
+    ViewCompat.setImportantForAccessibility(mView, originalImportantForAccessibility);
   }
 
-  ComponentAccessibilityDelegate(View view) {
-    this(view, null);
+  ComponentAccessibilityDelegate(
+      View view, boolean originalFocus, int originalImportantForAccessibility) {
+    this(view, null, originalFocus, originalImportantForAccessibility);
   }
 
   /**
@@ -93,6 +104,16 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
     // override this one.
     if (mNodeInfo != null && mNodeInfo.getAccessibilityRole() != null) {
       node.setClassName(mNodeInfo.getAccessibilityRole());
+    }
+
+    if (mNodeInfo != null && mNodeInfo.getAccessibilityRoleDescription() != null) {
+      node.setRoleDescription(mNodeInfo.getAccessibilityRoleDescription());
+
+      // if no role was explicitly specified, set a role of "NONE".  This allows the role
+      // description to still be announced without changing any other behavior.
+      if (mNodeInfo.getAccessibilityRole() == null) {
+        node.setClassName(AccessibilityRole.NONE);
+      }
     }
   }
 
@@ -199,13 +220,12 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
   }
 
   /**
-   * Returns a {AccessibilityNodeProviderCompat} if the host contains a component
-   * that implements custom accessibility logic. Returns {@code NULL} otherwise.
-   * Components with accessibility content are automatically wrapped in hosts by
-   * {@link LayoutState}.
+   * Returns a {AccessibilityNodeProviderCompat} if the host contains a component that implements
+   * custom accessibility logic. Returns {@code NULL} otherwise. Components with accessibility
+   * content are automatically wrapped in hosts by {@link LayoutState}.
    */
   @Override
-  public AccessibilityNodeProviderCompat getAccessibilityNodeProvider(View host) {
+  public @Nullable AccessibilityNodeProviderCompat getAccessibilityNodeProvider(View host) {
     final MountItem mountItem = getAccessibleMountItem(mView);
     if (mountItem != null && mountItem.getComponent().implementsExtraAccessibilityNodes()) {
       return super.getAccessibilityNodeProvider(host);
@@ -214,7 +234,7 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
     return null;
   }
 
-  private static MountItem getAccessibleMountItem(View view) {
+  private static @Nullable MountItem getAccessibleMountItem(View view) {
     if (!(view instanceof ComponentHost)) {
       return null;
     }

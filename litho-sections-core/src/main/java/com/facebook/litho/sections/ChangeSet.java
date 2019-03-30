@@ -25,8 +25,8 @@ import static com.facebook.litho.sections.Change.MOVE;
 import static com.facebook.litho.sections.Change.UPDATE;
 import static com.facebook.litho.sections.Change.UPDATE_RANGE;
 
-import android.support.annotation.Nullable;
-import android.support.annotation.VisibleForTesting;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.TreeProps;
 import com.facebook.litho.sections.SectionTree.Target;
@@ -68,6 +68,10 @@ public final class ChangeSet {
    */
   public int getChangeCount() {
     return mChanges.size();
+  }
+
+  List<Change> getChanges() {
+    return mChanges;
   }
 
   /**
@@ -112,15 +116,29 @@ public final class ChangeSet {
   }
 
   public void insert(int index, RenderInfo renderInfo, @Nullable TreeProps treeProps) {
+    insert(index, renderInfo, treeProps, null);
+  }
+
+  public void insert(
+      int index, RenderInfo renderInfo, @Nullable TreeProps treeProps, @Nullable Object data) {
     // Null check for tests only. This should never be the case otherwise.
     if (mSection != null) {
       renderInfo.addDebugInfo(SectionsDebugParams.SECTION_GLOBAL_KEY, mSection.getGlobalKey());
     }
-    addChange(Change.insert(index, new TreePropsWrappedRenderInfo(renderInfo, treeProps)));
+    addChange(Change.insert(index, new TreePropsWrappedRenderInfo(renderInfo, treeProps), data));
   }
 
   public void insertRange(
       int index, int count, List<RenderInfo> renderInfos, @Nullable TreeProps treeProps) {
+    insertRange(index, count, renderInfos, treeProps, null);
+  }
+
+  public void insertRange(
+      int index,
+      int count,
+      List<RenderInfo> renderInfos,
+      @Nullable TreeProps treeProps,
+      @Nullable List<?> data) {
     // Null check for tests only. This should never be the case otherwise.
     if (mSection != null) {
       for (int i = 0, size = renderInfos.size(); i < size; i++) {
@@ -129,28 +147,64 @@ public final class ChangeSet {
             .addDebugInfo(SectionsDebugParams.SECTION_GLOBAL_KEY, mSection.getGlobalKey());
       }
     }
-    addChange(Change.insertRange(index, count, wrapTreePropRenderInfos(renderInfos, treeProps)));
+    addChange(
+        Change.insertRange(index, count, wrapTreePropRenderInfos(renderInfos, treeProps), data));
   }
 
   public void update(int index, RenderInfo renderInfo, @Nullable TreeProps treeProps) {
-    addChange(Change.update(index, new TreePropsWrappedRenderInfo(renderInfo, treeProps)));
+    update(index, renderInfo, treeProps, null, null);
+  }
+
+  public void update(
+      int index,
+      RenderInfo renderInfo,
+      @Nullable TreeProps treeProps,
+      @Nullable Object prevData,
+      @Nullable Object nextData) {
+    addChange(
+        Change.update(
+            index, new TreePropsWrappedRenderInfo(renderInfo, treeProps), prevData, nextData));
   }
 
   public void updateRange(
       int index, int count, List<RenderInfo> renderInfos, @Nullable TreeProps treeProps) {
-    addChange(Change.updateRange(index, count, wrapTreePropRenderInfos(renderInfos, treeProps)));
+    updateRange(index, count, renderInfos, treeProps, null, null);
+  }
+
+  public void updateRange(
+      int index,
+      int count,
+      List<RenderInfo> renderInfos,
+      @Nullable TreeProps treeProps,
+      @Nullable List<?> prevData,
+      @Nullable List<?> nextData) {
+    addChange(
+        Change.updateRange(
+            index, count, wrapTreePropRenderInfos(renderInfos, treeProps), prevData, nextData));
   }
 
   public void delete(int index) {
-    addChange(Change.remove(index));
+    delete(index, null);
+  }
+
+  public void delete(int index, @Nullable Object data) {
+    addChange(Change.remove(index, data));
   }
 
   public void deleteRange(int index, int count) {
-    addChange(Change.removeRange(index, count));
+    deleteRange(index, count, null);
+  }
+
+  public void deleteRange(int index, int count, @Nullable List<?> data) {
+    addChange(Change.removeRange(index, count, data));
   }
 
   public void move(int fromIndex, int toIndex) {
-    addChange(Change.move(fromIndex, toIndex));
+    move(fromIndex, toIndex, null);
+  }
+
+  public void move(int fromIndex, int toIndex, @Nullable Object data) {
+    addChange(Change.move(fromIndex, toIndex, data));
   }
 
   /**

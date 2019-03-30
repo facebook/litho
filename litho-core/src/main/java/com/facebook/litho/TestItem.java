@@ -17,7 +17,7 @@
 package com.facebook.litho;
 
 import android.graphics.Rect;
-import android.support.annotation.VisibleForTesting;
+import androidx.annotation.VisibleForTesting;
 import com.facebook.proguard.annotations.DoNotStrip;
 import java.util.Collections;
 import java.util.List;
@@ -32,7 +32,7 @@ public class TestItem {
   private ComponentHost mHost;
   private Object mContent;
   /** Unique key to identify if this test-item was reused */
-  private AcquireKey mAcquireKey;
+  private final AcquireKey mAcquireKey = new AcquireKey();
 
   @DoNotStrip
   @VisibleForTesting
@@ -98,18 +98,6 @@ public class TestItem {
   @DoNotStrip
   public AcquireKey getAcquireKey() {
     return mAcquireKey;
-  }
-
-  @DoNotStrip
-  void setAcquired() {
-    mAcquireKey = new AcquireKey();
-  }
-
-  void release() {
-    mTestKey = null;
-    mBounds.setEmpty();
-    mHost = null;
-    mAcquireKey = null;
   }
 
   @DoNotStrip

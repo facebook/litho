@@ -16,7 +16,7 @@
 
 package com.facebook.litho;
 
-import static android.support.annotation.Dimension.DP;
+import static androidx.annotation.Dimension.DP;
 
 import android.graphics.ComposePathEffect;
 import android.graphics.DashPathEffect;
@@ -24,14 +24,14 @@ import android.graphics.DiscretePathEffect;
 import android.graphics.Path;
 import android.graphics.PathDashPathEffect;
 import android.graphics.PathEffect;
-import android.support.annotation.AttrRes;
-import android.support.annotation.ColorInt;
-import android.support.annotation.ColorRes;
-import android.support.annotation.DimenRes;
-import android.support.annotation.Dimension;
-import android.support.annotation.IntDef;
-import android.support.annotation.Nullable;
-import android.support.annotation.Px;
+import androidx.annotation.AttrRes;
+import androidx.annotation.ColorInt;
+import androidx.annotation.ColorRes;
+import androidx.annotation.DimenRes;
+import androidx.annotation.Dimension;
+import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
+import androidx.annotation.Px;
 import com.facebook.yoga.YogaEdge;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -205,7 +205,7 @@ public class Border {
      * @param edge The {@link YogaEdge} that will have its width modified
      * @param width The desired width in density independent pixels
      */
-    public Builder widthDip(YogaEdge edge, @Dimension(unit = DP) int width) {
+    public Builder widthDip(YogaEdge edge, @Dimension(unit = DP) float width) {
       checkNotBuilt();
       return widthPx(edge, mResourceResolver.dipsToPixels(width));
     }

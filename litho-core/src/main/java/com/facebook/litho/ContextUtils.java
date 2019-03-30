@@ -24,7 +24,7 @@ import android.app.Application;
 import android.app.Service;
 import android.content.Context;
 import android.content.ContextWrapper;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 public class ContextUtils {
 
@@ -51,11 +51,6 @@ public class ContextUtils {
    */
   static Context getRootContext(Context context) {
     Context currentContext = context;
-
-    // Common case is there is exactly one wrapping ComponentContext
-    if (currentContext instanceof ComponentContext) {
-      currentContext = ((ComponentContext) currentContext).getBaseContext();
-    }
 
     while (currentContext instanceof ContextWrapper
         && !(currentContext instanceof Activity)
@@ -86,5 +81,9 @@ public class ContextUtils {
     // If we cannot guarantee that the activity is not destroyed we prefer to assume that it is.
     // This might only happen on ICS.
     return true;
+  }
+
+  public static int getTargetSdkVersion(Context context) {
+    return context.getApplicationContext().getApplicationInfo().targetSdkVersion;
   }
 }

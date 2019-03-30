@@ -16,7 +16,8 @@
 
 package com.facebook.litho.dataflow;
 
-import android.support.v4.util.Pair;
+import androidx.core.util.Pair;
+import com.facebook.litho.choreographercompat.ChoreographerCompat;
 import java.util.ArrayList;
 
 /** TimingSource and Choreographer implementation that allows manual stepping by frame in tests. */
@@ -59,12 +60,14 @@ public class MockTimingSource implements TimingSource, ChoreographerCompat {
   }
 
   private void fireChoreographerCallbacks() {
-    for (int i = 0; i < mChoreographerCallbacksToStartTimes.size(); i++) {
+    int size = mChoreographerCallbacksToStartTimes.size();
+    for (int i = 0; i < size; i++) {
       final Pair<FrameCallback, Long> entry = mChoreographerCallbacksToStartTimes.get(i);
       if (entry.second <= mCurrentTimeNanos) {
         entry.first.doFrame(mCurrentTimeNanos);
         mChoreographerCallbacksToStartTimes.remove(i);
         i--;
+        size--;
       }
     }
   }

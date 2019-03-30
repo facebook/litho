@@ -16,10 +16,9 @@
 
 package com.facebook.litho.widget;
 
-import static android.view.View.MeasureSpec.EXACTLY;
-import static android.view.View.MeasureSpec.UNSPECIFIED;
-import static android.view.View.MeasureSpec.makeMeasureSpec;
 import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -29,13 +28,11 @@ import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.text.Layout;
 import android.text.Spannable;
-import android.text.TextUtils;
 import android.text.style.ClickableSpan;
 import android.util.SparseArray;
 import android.view.MotionEvent;
 import android.view.View;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentTree;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.testing.eventhandler.EventHandlerTestHelper;
@@ -53,6 +50,9 @@ import org.robolectric.RuntimeEnvironment;
 @RunWith(ComponentsTestRunner.class)
 public class TextSpecTest {
   private ComponentContext mContext;
+
+  private static final int FULL_TEXT_WIDTH = 100;
+  private static final int MINIMAL_TEXT_WIDTH = 95;
 
   @Before
   public void setup() {
@@ -156,63 +156,6 @@ public class TextSpecTest {
     boolean handled = textDrawable.onTouchEvent(motionEvent, lithoView);
     // We don't consume touch events from TextTouchOffsetChange event
     assertThat(handled).isFalse();
-    assertThat(eventFired[0]).isTrue();
-  }
-
-  @Test
-  public void testCustomEllipsisTruncation() {
-    LithoView lithoView =
-        ComponentTestHelper.mountComponent(
-            new LithoView(mContext),
-            ComponentTree.create(
-                    mContext,
-                    Text.create(mContext)
-                        .text("Line 1\nLine 2\nLine 3")
-                        .ellipsize(TextUtils.TruncateAt.END)
-                        .maxLines(2)
-                        .customEllipsisText(" ...See More")
-                        .build())
-                .incrementalMount(false)
-                .layoutDiffing(false)
-                .build(),
-            makeMeasureSpec(480, EXACTLY),
-            makeMeasureSpec(0, UNSPECIFIED));
-    TextDrawable textDrawable = (TextDrawable) (lithoView.getDrawables().get(0));
-
-    assertThat(textDrawable.getText()).contains(" ...See More");
-  }
-
-  @Test
-  public void testCustomEllipsisTruncationEventHandlerFired() {
-    final boolean[] eventFired = new boolean[] {false};
-    EventHandler<CustomEllipsisTruncationEvent> eventHandler =
-        EventHandlerTestHelper.createMockEventHandler(
-            CustomEllipsisTruncationEvent.class,
-            new EventHandlerTestHelper.MockEventHandler<CustomEllipsisTruncationEvent, Void>() {
-              @Override
-              public Void handleEvent(CustomEllipsisTruncationEvent event) {
-                eventFired[0] = true;
-                return null;
-              }
-            });
-
-    ComponentTestHelper.mountComponent(
-        new LithoView(mContext),
-        ComponentTree.create(
-                mContext,
-                Text.create(mContext)
-                    .text("Line 1\nLine 2\nLine 3")
-                    .ellipsize(TextUtils.TruncateAt.END)
-                    .maxLines(2)
-                    .customEllipsisText(" ...See More")
-                    .customEllipsisHandler(eventHandler)
-                    .build())
-            .incrementalMount(false)
-            .layoutDiffing(false)
-            .build(),
-        makeMeasureSpec(480, EXACTLY),
-        makeMeasureSpec(0, UNSPECIFIED));
-
     assertThat(eventFired[0]).isTrue();
   }
 
@@ -372,5 +315,59 @@ public class TextSpecTest {
     assertThat(gotSparseArray)
         .isInstanceOf(SynchronizedTypefaceHelper.SynchronizedTypefaceSparseArray.class);
     assertThat(gotSparseArray.get(1)).isSameAs(Typeface.DEFAULT);
+  }
+
+  @Test
+  public void testFullWidthText() {
+    final Layout layout = setupWidthTestTextLayout();
+
+    final int resolvedWidth =
+        TextSpec.resolveWidth(
+            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+            layout,
+            false /* minimallyWide */,
+            0 /* minimallyWideThreshold */);
+
+    assertEquals(resolvedWidth, FULL_TEXT_WIDTH);
+  }
+
+  @Test
+  public void testMinimallyWideText() {
+    final Layout layout = setupWidthTestTextLayout();
+
+    final int resolvedWidth =
+        TextSpec.resolveWidth(
+            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+            layout,
+            true /* minimallyWide */,
+            FULL_TEXT_WIDTH - MINIMAL_TEXT_WIDTH - 1 /* minimallyWideThreshold */);
+
+    assertEquals(resolvedWidth, MINIMAL_TEXT_WIDTH);
+  }
+
+  @Test
+  public void testMinimallyWideThresholdText() {
+    final Layout layout = setupWidthTestTextLayout();
+
+    final int resolvedWidth =
+        TextSpec.resolveWidth(
+            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+            layout,
+            true /* minimallyWide */,
+            FULL_TEXT_WIDTH - MINIMAL_TEXT_WIDTH /* minimallyWideThreshold */);
+
+    assertEquals(resolvedWidth, FULL_TEXT_WIDTH);
+  }
+
+  private static Layout setupWidthTestTextLayout() {
+    final Layout layout = mock(Layout.class);
+    final int fullWidth = FULL_TEXT_WIDTH;
+    final int minimalWidth = MINIMAL_TEXT_WIDTH;
+
+    when(layout.getLineCount()).thenReturn(2);
+    when(layout.getWidth()).thenReturn(fullWidth);
+    when(layout.getLineRight(anyInt())).thenReturn((float) minimalWidth);
+
+    return layout;
   }
 }

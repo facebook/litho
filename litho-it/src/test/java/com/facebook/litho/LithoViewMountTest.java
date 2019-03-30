@@ -51,7 +51,7 @@ public class LithoViewMountTest {
   public void setup() {
     mContext = new ComponentContext(RuntimeEnvironment.application);
 
-    mLithoView = new TestLithoView(mContext);
+    mLithoView = new TestLithoView(mContext.getAndroidContext());
     mComponent =
         new InlineLayoutSpec() {
           @Override

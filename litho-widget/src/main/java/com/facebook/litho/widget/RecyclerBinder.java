@@ -16,31 +16,32 @@
 
 package com.facebook.litho.widget;
 
-import static android.support.v7.widget.OrientationHelper.HORIZONTAL;
-import static android.support.v7.widget.OrientationHelper.VERTICAL;
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
+import static androidx.recyclerview.widget.OrientationHelper.HORIZONTAL;
+import static androidx.recyclerview.widget.OrientationHelper.VERTICAL;
 import static com.facebook.infer.annotation.ThreadConfined.UI;
 import static com.facebook.litho.MeasureComparisonUtils.isMeasureSpecCompatible;
 import static com.facebook.litho.widget.ComponentTreeHolder.RENDER_UNINITIALIZED;
 import static com.facebook.litho.widget.RenderInfoViewCreatorController.DEFAULT_COMPONENT_VIEW_TYPE;
 
+import android.graphics.Rect;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
-import android.support.annotation.IntDef;
-import android.support.annotation.UiThread;
-import android.support.annotation.VisibleForTesting;
-import android.support.v4.view.ViewCompat;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.OrientationHelper;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.RecyclerView.LayoutManager;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import androidx.annotation.IntDef;
+import androidx.annotation.UiThread;
+import androidx.annotation.VisibleForTesting;
+import androidx.core.view.ViewCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.OrientationHelper;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView.LayoutManager;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
@@ -59,9 +60,10 @@ import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
 import com.facebook.litho.ThreadPoolLayoutHandler;
 import com.facebook.litho.ThreadUtils;
+import com.facebook.litho.choreographercompat.ChoreographerCompat;
+import com.facebook.litho.choreographercompat.ChoreographerCompatImpl;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.config.LayoutThreadPoolConfiguration;
-import com.facebook.litho.utils.DisplayListUtils;
 import com.facebook.litho.viewcompat.ViewBinder;
 import com.facebook.litho.viewcompat.ViewCreator;
 import com.facebook.litho.widget.ComponentTreeHolder.ComponentTreeMeasureListenerFactory;
@@ -73,9 +75,9 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Deque;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.GuardedBy;
@@ -90,10 +92,12 @@ public class RecyclerBinder
     implements Binder<RecyclerView>, LayoutInfo.RenderInfoCollection, HasStickyHeader {
 
   private static final Size sDummySize = new Size();
+  private static final Rect sDummyRect = new Rect();
   private static final String TAG = RecyclerBinder.class.getSimpleName();
   private static final int POST_UPDATE_VIEWPORT_AND_COMPUTE_RANGE_MAX_ATTEMPTS = 3;
-  @VisibleForTesting static final int MIN_RANGE_SIZE = 3;
   private static final int DATA_RENDERED_CALLBACKS_QUEUE_MAX_SIZE = 20;
+  static final int UNSET = -1;
+  private static ThreadPoolLayoutHandler sThreadPoolHandler;
 
   private static Field mViewHolderField;
 
@@ -106,8 +110,7 @@ public class RecyclerBinder
   private final LayoutInfo mLayoutInfo;
   private final RecyclerView.Adapter mInternalAdapter;
   private final ComponentContext mComponentContext;
-  private final RangeScrollListener mRangeScrollListener = new RangeScrollListener();
-  private final LayoutHandlerFactory mLayoutHandlerFactory;
+  @Nullable private final LayoutHandlerFactory mLayoutHandlerFactory;
   private final @Nullable LithoViewFactory mLithoViewFactory;
   private final ComponentTreeHolderFactory mComponentTreeHolderFactory;
   private final Handler mMainThreadHandler = new Handler(Looper.getMainLooper());
@@ -115,20 +118,24 @@ public class RecyclerBinder
   private final AtomicBoolean mIsMeasured = new AtomicBoolean(false);
   private final AtomicBoolean mRequiresRemeasure = new AtomicBoolean(false);
   private final boolean mEnableStableIds;
+  private final boolean mBgScheduleAllInitRange;
+  private final boolean mSplitLayoutForMeasureAndRangeEstimation;
   private @Nullable List<ComponentLogParams> mInvalidStateLogParamsList;
   private final RecyclerRangeTraverser mRangeTraverser;
-  private final AtomicBoolean mShouldComputeRangeAfterInit = new AtomicBoolean();
-  private final AtomicInteger mTotalItemsWithLayoutSize = new AtomicInteger();
-  private final AtomicInteger mTotalItemsWithLayoutCount = new AtomicInteger();
   private final boolean mHScrollAsyncMode;
+  private final boolean mIncrementalMountEnabled;
   private boolean mAsyncInitRange;
 
-  private String mSplitLayoutTag;
   private AtomicLong mCurrentChangeSetThreadId = new AtomicLong(-1);
+  @VisibleForTesting final boolean mTraverseLayoutBackwards;
 
   @GuardedBy("this")
   private final Deque<AsyncBatch> mAsyncBatches = new ArrayDeque<>();
 
+  private final AtomicBoolean mHasAsyncBatchesToCheck = new AtomicBoolean(false);
+  private final AtomicBoolean mIsInMeasure = new AtomicBoolean(false);
+
+  @ThreadConfined(ThreadConfined.UI)
   @VisibleForTesting
   final Deque<ChangeSetCompleteCallback> mDataRenderedCallbacks = new ArrayDeque<>();
 
@@ -168,21 +175,7 @@ public class RecyclerBinder
         }
       };
 
-  private final ComponentTreeMeasureListenerFactory mComponentTreeMeasureListenerFactory =
-      new ComponentTreeMeasureListenerFactory() {
-        @Override
-        public @Nullable MeasureListener create(final ComponentTreeHolder holder) {
-          if (mHasDynamicItemHeight) {
-            return getMeasureListener(holder);
-          }
-
-          if (!mCanMeasure && mAsyncInitRange) {
-            return getMeasureListenerForInitRange(holder);
-          }
-
-          return null;
-        }
-      };
+  private final @Nullable ComponentTreeMeasureListenerFactory mComponentTreeMeasureListenerFactory;
 
   private MeasureListener getMeasureListener(final ComponentTreeHolder holder) {
     return new MeasureListener() {
@@ -194,10 +187,9 @@ public class RecyclerBinder
 
         holder.setMeasuredHeight(height);
 
-        final RangeCalculationResult range = RecyclerBinder.this.mRange;
+        final int sizeForMeasure = RecyclerBinder.this.getSizeForMeasuring();
 
-        if (range != null
-            && holder.getMeasuredHeight() <= RecyclerBinder.this.mRange.measuredSize) {
+        if (sizeForMeasure != UNSET && holder.getMeasuredHeight() <= sizeForMeasure) {
           return;
         }
 
@@ -210,79 +202,22 @@ public class RecyclerBinder
     };
   }
 
-  // TODO T33427406 Merge this into NewLayoutStateReadyListener.
-  private MeasureListener getMeasureListenerForInitRange(final ComponentTreeHolder holder) {
-    return new MeasureListener() {
-      @Override
-      public void onSetRootAndSizeSpec(int width, int height) {
-
-        // For each new layout that is calculated, we recompute an average item size.
-        boolean hasVerticalLayout = mLayoutInfo.getScrollDirection() == OrientationHelper.VERTICAL;
-
-        int totalSize = mTotalItemsWithLayoutSize.addAndGet(hasVerticalLayout ? height : width);
-        int layoutCount = mTotalItemsWithLayoutCount.incrementAndGet();
-        float averageSize = 1.0f * totalSize / layoutCount;
-
-        // We only do this for the first layout, after the item is inserted.
-        holder.updateMeasureListener(null);
-
-        // Don't create range until we have finished the layouts for the minimum number of items
-        // to calculate an average.
-        if (layoutCount < MIN_RANGE_SIZE) {
-          return;
-        }
-
-        // We estimate how many items are needed to fill the RecyclerView's measured size based on
-        // the average size of the items. The precomputed range size will depend on this number
-        // and the range ratio.
-        int estimatedViewportCount =
-            averageSize == 0
-                ? 0
-                : (int)
-                    (SizeSpec.getSize(hasVerticalLayout ? mLastHeightSpec : mLastWidthSpec)
-                            / averageSize
-                        + 1);
-
-        synchronized (RecyclerBinder.this) {
-          if (mRange == null) {
-            mRange = new RangeCalculationResult();
-            mRange.measuredSize = hasVerticalLayout ? width : height;
-          }
-
-          mRange.estimatedViewportCount = estimatedViewportCount;
-
-          // As soon as we have an estimation for the range size, we can compute range if it was
-          // requested during measure.
-          if (mShouldComputeRangeAfterInit.compareAndSet(true, false)) {
-            computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition);
-          }
-        }
-      }
-    };
-  }
-
   private final ComponentTree.NewLayoutStateReadyListener mAsyncLayoutReadyListener =
       new ComponentTree.NewLayoutStateReadyListener() {
 
         @UiThread
         @Override
         public void onNewLayoutStateReady(ComponentTree componentTree) {
-          if (mMountedView == null) {
-            applyReadyBatches();
-          } else {
-            // When mounted, always apply binder mutations on frame boundaries
-            ViewCompat.postOnAnimation(mMountedView, mApplyReadyBatchesRunnable);
-          }
+          applyReadyBatches();
         }
       };
 
-  @VisibleForTesting
-  final Runnable mApplyReadyBatchesRunnable =
-      new Runnable() {
+  private final ChoreographerCompat.FrameCallback mApplyReadyBatchesCallback =
+      new ChoreographerCompat.FrameCallback() {
 
         @UiThread
         @Override
-        public void run() {
+        public void doFrame(long frameTimeNanos) {
           applyReadyBatches();
         }
       };
@@ -299,17 +234,21 @@ public class RecyclerBinder
   @VisibleForTesting int mCurrentLastVisiblePosition = RecyclerView.NO_POSITION;
   private int mCurrentOffset;
   private SmoothScrollAlignmentType mSmoothScrollAlignmentType;
-  private @Nullable RangeCalculationResult mRange;
+  // The estimated number of items needed to fill the viewport.
+  @VisibleForTesting int mEstimatedViewportCount = UNSET;
+  // The size computed for the first Component to be used when we can't use the size specs passed to
+  // measure.
+  @VisibleForTesting @Nullable volatile Size mSizeForMeasure;
   private StickyHeaderController mStickyHeaderController;
-  private final boolean mCanPrefetchDisplayLists;
-  private final boolean mCanCacheDrawingDisplayLists;
-  private final boolean mUseSharedLayoutStateFuture;
-  private final LayoutHandler mSharedLayoutStateFutureLayoutHandler;
+  private @Nullable StickyHeaderControllerFactory mStickyHeaderControllerFactory;
+  private final @Nullable LayoutHandler mThreadPoolHandler;
+  private final @Nullable LayoutThreadPoolConfiguration mThreadPoolConfig;
   private EventHandler<ReMeasureEvent> mReMeasureEventEventHandler;
   private volatile boolean mHasAsyncOperations = false;
   private boolean mIsInitMounted = false; // Set to true when the first mount() is called.
   private @CommitPolicy int mCommitPolicy = CommitPolicy.IMMEDIATE;
-  private boolean mIsFirstChangeSet = true;
+  private boolean mHasFilledViewport = false;
+  private int mApplyReadyBatchesRetries = 0;
 
   @GuardedBy("this")
   private @Nullable AsyncBatch mCurrentBatch = null;
@@ -394,11 +333,8 @@ public class RecyclerBinder
     ComponentTreeHolder create(
         RenderInfo renderInfo,
         LayoutHandler layoutHandler,
-        boolean canPrefetchDisplayLists,
-        boolean canCacheDrawingDisplayLists,
-        boolean useSharedLayoutStateFuture,
         ComponentTreeMeasureListenerFactory measureListenerFactory,
-        String splitLayoutTag);
+        boolean incrementalMountEnabled);
   }
 
   static final ComponentTreeHolderFactory DEFAULT_COMPONENT_TREE_HOLDER_FACTORY =
@@ -407,30 +343,23 @@ public class RecyclerBinder
         public ComponentTreeHolder create(
             RenderInfo renderInfo,
             LayoutHandler layoutHandler,
-            boolean canPrefetchDisplayLists,
-            boolean canCacheDrawingDisplayLists,
-            boolean useSharedLayoutStateFuture,
             ComponentTreeMeasureListenerFactory measureListenerFactory,
-            String splitLayoutTag) {
+            boolean incrementalMountEnabled) {
           return ComponentTreeHolder.create()
               .renderInfo(renderInfo)
               .layoutHandler(layoutHandler)
-              .canPrefetchDisplayLists(canPrefetchDisplayLists)
-              .canCacheDrawingDisplayLists(canCacheDrawingDisplayLists)
-              .useSharedLayoutStateFuture(useSharedLayoutStateFuture)
               .componentTreeMeasureListenerFactory(measureListenerFactory)
-              .splitLayoutTag(splitLayoutTag)
+              .incrementalMount(incrementalMountEnabled)
               .build();
         }
       };
 
   public static class Builder {
+    public static final float DEFAULT_RANGE_RATIO = 4f;
 
-    private float rangeRatio = 4f;
+    private float rangeRatio = DEFAULT_RANGE_RATIO;
     private LayoutInfo layoutInfo;
     private @Nullable LayoutHandlerFactory layoutHandlerFactory;
-    private boolean canPrefetchDisplayLists;
-    private boolean canCacheDrawingDisplayLists;
     private ComponentTreeHolderFactory componentTreeHolderFactory =
         DEFAULT_COMPONENT_TREE_HOLDER_FACTORY;
     private ComponentContext componentContext;
@@ -441,16 +370,19 @@ public class RecyclerBinder
     private boolean customViewTypeEnabled;
     private int componentViewType;
     private @Nullable RecyclerView.Adapter overrideInternalAdapter;
-    private String splitLayoutTag;
     private boolean enableStableIds;
-    private boolean useSharedLayoutStateFuture = ComponentsConfiguration.useSharedLayoutStateFuture;
     private @Nullable List<ComponentLogParams> invalidStateLogParamsList;
     private RecyclerRangeTraverser recyclerRangeTraverser;
-    private LayoutThreadPoolConfiguration threadPoolForSharedLayoutStateFutureConfig =
-        ComponentsConfiguration.sharedLayoutStateFutureThreadPoolConfig;
+    private LayoutThreadPoolConfiguration threadPoolConfig;
     private boolean asyncInitRange = ComponentsConfiguration.asyncInitRange;
+    private boolean bgScheduleAllInitRange = ComponentsConfiguration.bgScheduleAllInitRange;
     private boolean canMeasure;
     private boolean hscrollAsyncMode = false;
+    private boolean singleThreadPool = ComponentsConfiguration.useSingleThreadPool;
+    private boolean incrementalMount = true;
+    private boolean splitLayoutForMeasureAndRangeEstimation =
+        ComponentsConfiguration.splitLayoutForMeasureAndRangeEstimation;
+    private @Nullable StickyHeaderControllerFactory stickyHeaderControllerFactory;
 
     /**
      * @param rangeRatio specifies how big a range this binder should try to compute. The range is
@@ -477,26 +409,16 @@ public class RecyclerBinder
 
     /**
      * @param layoutHandlerFactory the RecyclerBinder will use this layoutHandlerFactory when
-     * creating {@link ComponentTree}s in order to specify on which thread layout calculation
-     * should happen.
+     *     creating {@link ComponentTree}s in order to specify on which thread layout calculation
+     *     should happen.
      */
-    public Builder layoutHandlerFactory(LayoutHandlerFactory layoutHandlerFactory) {
+    public Builder layoutHandlerFactory(@Nullable LayoutHandlerFactory layoutHandlerFactory) {
       this.layoutHandlerFactory = layoutHandlerFactory;
       return this;
     }
 
     public Builder lithoViewFactory(LithoViewFactory lithoViewFactory) {
       this.lithoViewFactory = lithoViewFactory;
-      return this;
-    }
-
-    public Builder canPrefetchDisplayLists(boolean canPrefetchDisplayLists) {
-      this.canPrefetchDisplayLists = canPrefetchDisplayLists;
-      return this;
-    }
-
-    public Builder canCacheDrawingDisplayLists(boolean canCacheDrawingDisplayLists) {
-      this.canCacheDrawingDisplayLists = canCacheDrawingDisplayLists;
       return this;
     }
 
@@ -582,15 +504,21 @@ public class RecyclerBinder
       return this;
     }
 
-    /** Whether to share a single LayoutStateFuture between threads when calculating LayoutState. */
-    public Builder useSharedLayoutStateFuture(boolean useSharedLayoutStateFuture) {
-      this.useSharedLayoutStateFuture = useSharedLayoutStateFuture;
+    /**
+     * @param config RecyclerBinder will use this {@link LayoutThreadPoolConfiguration} to create
+     *     {@link ThreadPoolLayoutHandler} which will be used to calculate layout in pool of
+     *     threads.
+     *     <p>Note: if {@link #layoutHandlerFactory(LayoutHandlerFactory)} is provided, the handler
+     *     created by the factory will be used instead of the one that would have been created by
+     *     this config.
+     */
+    public Builder threadPoolConfig(LayoutThreadPoolConfiguration config) {
+      this.threadPoolConfig = config;
       return this;
     }
 
-    public Builder threadPoolForSharedLayoutStateFutureConfig(
-        LayoutThreadPoolConfiguration config) {
-      this.threadPoolForSharedLayoutStateFutureConfig = config;
+    public Builder singleThreadPool(boolean singleThreadPool) {
+      this.singleThreadPool = singleThreadPool;
       return this;
     }
 
@@ -610,14 +538,21 @@ public class RecyclerBinder
       return this;
     }
 
-    public Builder splitLayoutTag(String splitLayoutTag) {
-      this.splitLayoutTag = splitLayoutTag;
+    /**
+     * If true, the async range calculation isn't blocked on the first item finishing layout.
+     * Instead it schedules one async layout per bg thread
+     */
+    public Builder asyncInitRange(boolean asyncInitRange) {
+      this.asyncInitRange = asyncInitRange;
       return this;
     }
 
-    /** If true, the async range calculation isn't blocked on the first item finishing layout */
-    public Builder asyncInitRange(boolean asyncInitRange) {
-      this.asyncInitRange = asyncInitRange;
+    /**
+     * If true, the async range calculation isn't blocked on the first item finishing layout.
+     * Instead it schedules async layouts until init range completes.
+     */
+    public Builder bgScheduleAllInitRange(boolean bgScheduleAllInitRange) {
+      this.bgScheduleAllInitRange = bgScheduleAllInitRange;
       return this;
     }
 
@@ -643,14 +578,39 @@ public class RecyclerBinder
       return this;
     }
 
+    /** Don't use this. If false, turns off incremental mount for all subviews of this Recycler. */
+    public Builder incrementalMount(boolean incrementalMount) {
+      this.incrementalMount = incrementalMount;
+      return this;
+    }
+
+    public Builder splitLayoutForMeasureAndRangeEstimation(
+        boolean splitLayoutForMeasureAndRangeEstimation) {
+      this.splitLayoutForMeasureAndRangeEstimation = splitLayoutForMeasureAndRangeEstimation;
+      return this;
+    }
+
+    /** Sets a factory to be used to create a custom controller for sticky section headers */
+    public Builder stickyHeaderControllerFactory(
+        @Nullable StickyHeaderControllerFactory stickyHeaderControllerFactory) {
+      this.stickyHeaderControllerFactory = stickyHeaderControllerFactory;
+      return this;
+    }
+
     /** @param c The {@link ComponentContext} the RecyclerBinder will use. */
     public RecyclerBinder build(ComponentContext c) {
       componentContext =
           new ComponentContext(
-              c.getBaseContext(), c.getLogTag(), c.getLogger(), c.getTreePropsCopy());
+              c.getAndroidContext(),
+              c.getLogTag(),
+              c.getLogger(),
+              null,
+              null,
+              c.getTreePropsCopy(),
+              c.getYogaNodeFactory());
 
       if (layoutInfo == null) {
-        layoutInfo = new LinearLayoutInfo(c, VERTICAL, false);
+        layoutInfo = new LinearLayoutInfo(c.getAndroidContext(), VERTICAL, false);
       }
 
       return new RecyclerBinder(this);
@@ -719,19 +679,40 @@ public class RecyclerBinder
             ? builder.overrideInternalAdapter
             : new InternalAdapter();
 
-    mRangeRatio = builder.rangeRatio;
+    mRangeRatio =
+        ComponentsConfiguration.defaultRangeRatio >= 0
+            ? Math.min(builder.rangeRatio, ComponentsConfiguration.defaultRangeRatio)
+            : builder.rangeRatio;
     mLayoutInfo = builder.layoutInfo;
     mLayoutHandlerFactory = builder.layoutHandlerFactory;
     mLithoViewFactory = builder.lithoViewFactory;
-    mCanPrefetchDisplayLists = builder.canPrefetchDisplayLists;
-    mCanCacheDrawingDisplayLists = builder.canCacheDrawingDisplayLists;
-    mUseSharedLayoutStateFuture = builder.useSharedLayoutStateFuture;
-    final LayoutThreadPoolConfiguration sharedLayoutFutureConfig =
-        builder.threadPoolForSharedLayoutStateFutureConfig;
-    if (mUseSharedLayoutStateFuture && sharedLayoutFutureConfig != null) {
-      mSharedLayoutStateFutureLayoutHandler = new ThreadPoolLayoutHandler(sharedLayoutFutureConfig);
+    mSplitLayoutForMeasureAndRangeEstimation = builder.splitLayoutForMeasureAndRangeEstimation;
+
+    if (mLayoutHandlerFactory == null) {
+
+      /**
+       * If a config is manually set, use it. If a global configuration is enabled, check if the
+       * configuration enables using a single thread pool for all RecyclerBinders or creates one per
+       * RecyclerBinder.
+       */
+      if (builder.threadPoolConfig != null) {
+        mThreadPoolConfig = builder.threadPoolConfig;
+        mThreadPoolHandler = new ThreadPoolLayoutHandler(mThreadPoolConfig);
+      } else if (ComponentsConfiguration.threadPoolConfiguration != null) {
+        mThreadPoolConfig = ComponentsConfiguration.threadPoolConfiguration;
+
+        if (builder.singleThreadPool) {
+          mThreadPoolHandler = getDefaultThreadPoolLayoutHandler();
+        } else {
+          mThreadPoolHandler = new ThreadPoolLayoutHandler(mThreadPoolConfig);
+        }
+      } else {
+        mThreadPoolConfig = null;
+        mThreadPoolHandler = null;
+      }
     } else {
-      mSharedLayoutStateFutureLayoutHandler = null;
+      mThreadPoolConfig = null;
+      mThreadPoolHandler = null;
     }
 
     mRenderInfoViewCreatorController =
@@ -744,12 +725,23 @@ public class RecyclerBinder
     mIsCircular = builder.isCircular;
     mHasDynamicItemHeight =
         mLayoutInfo.getScrollDirection() == HORIZONTAL ? builder.hasDynamicItemHeight : false;
+    mComponentTreeMeasureListenerFactory =
+        !mHasDynamicItemHeight
+            ? null
+            : new ComponentTreeMeasureListenerFactory() {
+              @Override
+              public @Nullable MeasureListener create(final ComponentTreeHolder holder) {
+                return getMeasureListener(holder);
+              }
+            };
+
     mWrapContent = builder.wrapContent;
     mCanMeasure = builder.canMeasure;
+    mTraverseLayoutBackwards = getStackFromEnd() ^ getReverseLayout();
 
     if (builder.recyclerRangeTraverser != null) {
       mRangeTraverser = builder.recyclerRangeTraverser;
-    } else if (getStackFromEnd() ^ getReverseLayout()) { // layout from end
+    } else if (mTraverseLayoutBackwards) { // layout from end
       mRangeTraverser = RecyclerRangeTraverser.BACKWARD_TRAVERSER;
     } else {
       mRangeTraverser = RecyclerRangeTraverser.FORWARD_TRAVERSER;
@@ -759,16 +751,14 @@ public class RecyclerBinder
         new ViewportManager(
             mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition, builder.layoutInfo);
 
-    mSplitLayoutTag = builder.splitLayoutTag;
-
     mEnableStableIds = builder.enableStableIds;
     mInvalidStateLogParamsList = builder.invalidStateLogParamsList;
 
     mAsyncInitRange = builder.asyncInitRange;
+    mBgScheduleAllInitRange = builder.bgScheduleAllInitRange;
     mHScrollAsyncMode = builder.hscrollAsyncMode;
-    if (mHScrollAsyncMode) {
-      mCommitPolicy = CommitPolicy.LAYOUT_BEFORE_INSERT;
-    }
+    mIncrementalMountEnabled = builder.incrementalMount;
+    mStickyHeaderControllerFactory = builder.stickyHeaderControllerFactory;
   }
 
   /**
@@ -817,6 +807,12 @@ public class RecyclerBinder
 
     assertNoInsertOperationIfCircular();
 
+    if (SectionsDebug.ENABLED) {
+      Log.d(
+          SectionsDebug.TAG,
+          "(" + hashCode() + ") insertItemAtAsync " + position + ", name: " + renderInfo.getName());
+    }
+
     assertNotNullRenderInfo(renderInfo);
     final AsyncInsertOperation operation = createAsyncInsertOperation(position, renderInfo);
 
@@ -840,6 +836,23 @@ public class RecyclerBinder
 
     assertNoInsertOperationIfCircular();
 
+    if (SectionsDebug.ENABLED) {
+      final String[] names = new String[renderInfos.size()];
+      for (int i = 0; i < renderInfos.size(); i++) {
+        names[i] = renderInfos.get(i).getName();
+      }
+      Log.d(
+          SectionsDebug.TAG,
+          "("
+              + hashCode()
+              + ") insertRangeAtAsync "
+              + position
+              + ", size: "
+              + renderInfos.size()
+              + ", names: "
+              + Arrays.toString(names));
+    }
+
     synchronized (this) {
       mHasAsyncOperations = true;
 
@@ -855,26 +868,74 @@ public class RecyclerBinder
     }
   }
 
+  private void ensureApplyReadyBatches() {
+    if (ThreadUtils.isMainThread()) {
+      applyReadyBatches();
+    } else {
+      ChoreographerCompatImpl.getInstance().postFrameCallback(mApplyReadyBatchesCallback);
+    }
+  }
+
   @UiThread
   private void applyReadyBatches() {
     ThreadUtils.assertMainThread();
 
-    synchronized (this) {
-      boolean appliedBatch = false;
-      while (!mAsyncBatches.isEmpty()) {
-        final AsyncBatch batch = mAsyncBatches.peekFirst();
-        if (!isBatchReady(batch)) {
-          break;
+    final boolean isTracing = ComponentsSystrace.isTracing();
+    if (isTracing) {
+      ComponentsSystrace.beginSection("applyReadyBatches");
+    }
+    try {
+      // Fast check that doesn't acquire lock -- measure() is locking and will post a call to
+      // applyReadyBatches when it completes.
+      if (!mHasAsyncBatchesToCheck.get() || !mIsMeasured.get() || mIsInMeasure.get()) {
+        mApplyReadyBatchesRetries = 0;
+        return;
+      }
+
+      // If applyReadyBatches happens to be called from scroll of the RecyclerView (e.g. a scroll
+      // event triggers a new sections root synchronously which adds a component and calls
+      // applyReadyBatches), we need to postpone changing the adapter since RecyclerView asserts
+      // that changes don't happen while it's in scroll/layout.
+      if (mMountedView != null && mMountedView.isComputingLayout()) {
+        // Sanity check that we don't get stuck in an infinite loop
+        mApplyReadyBatchesRetries++;
+        if (mApplyReadyBatchesRetries > 100) {
+          throw new RuntimeException("Too many retries -- RecyclerView is stuck in layout.");
         }
 
-        mAsyncBatches.pollFirst();
-        applyBatch(batch);
+        // Making changes to the adapter here will crash us. Just post to the next frame boundary.
+        ChoreographerCompatImpl.getInstance().postFrameCallback(mApplyReadyBatchesCallback);
+        return;
+      }
 
+      mApplyReadyBatchesRetries = 0;
+      boolean appliedBatch = false;
+      while (true) {
+        final AsyncBatch batch;
+        synchronized (this) {
+          if (mAsyncBatches.isEmpty()) {
+            mHasAsyncBatchesToCheck.set(false);
+            break;
+          }
+
+          batch = mAsyncBatches.peekFirst();
+          if (!isBatchReady(batch)) {
+            break;
+          }
+
+          mAsyncBatches.pollFirst();
+        }
+
+        applyBatch(batch);
         appliedBatch |= batch.mIsDataChanged;
       }
 
       if (appliedBatch) {
         maybeUpdateRangeOrRemeasureForMutation();
+      }
+    } finally {
+      if (isTracing) {
+        ComponentsSystrace.endSection();
       }
     }
   }
@@ -894,39 +955,40 @@ public class RecyclerBinder
     return true;
   }
 
-  @GuardedBy("this")
   @UiThread
   private void applyBatch(AsyncBatch batch) {
-    for (int i = 0, size = batch.mOperations.size(); i < size; i++) {
-      final AsyncOperation operation = batch.mOperations.get(i);
+    synchronized (this) {
+      for (int i = 0, size = batch.mOperations.size(); i < size; i++) {
+        final AsyncOperation operation = batch.mOperations.get(i);
 
-      switch (operation.mOperation) {
-        case Operation.INSERT:
-          applyAsyncInsert((AsyncInsertOperation) operation);
-          break;
-        case Operation.UPDATE:
-          final AsyncUpdateOperation updateOperation = (AsyncUpdateOperation) operation;
-          updateItemAt(updateOperation.mPosition, updateOperation.mRenderInfo);
-          break;
-        case Operation.UPDATE_RANGE:
-          final AsyncUpdateRangeOperation updateRangeOperation =
-              (AsyncUpdateRangeOperation) operation;
-          updateRangeAt(updateRangeOperation.mPosition, updateRangeOperation.mRenderInfos);
-          break;
-        case Operation.REMOVE:
-          removeItemAt(((AsyncRemoveOperation) operation).mPosition);
-          break;
-        case Operation.REMOVE_RANGE:
-          final AsyncRemoveRangeOperation removeRangeOperation =
-              (AsyncRemoveRangeOperation) operation;
-          removeRangeAt(removeRangeOperation.mPosition, removeRangeOperation.mCount);
-          break;
-        case Operation.MOVE:
-          final AsyncMoveOperation moveOperation = (AsyncMoveOperation) operation;
-          moveItem(moveOperation.mFromPosition, moveOperation.mToPosition);
-          break;
-        default:
-          throw new RuntimeException("Unhandled operation type: " + operation.mOperation);
+        switch (operation.mOperation) {
+          case Operation.INSERT:
+            applyAsyncInsert((AsyncInsertOperation) operation);
+            break;
+          case Operation.UPDATE:
+            final AsyncUpdateOperation updateOperation = (AsyncUpdateOperation) operation;
+            updateItemAt(updateOperation.mPosition, updateOperation.mRenderInfo);
+            break;
+          case Operation.UPDATE_RANGE:
+            final AsyncUpdateRangeOperation updateRangeOperation =
+                (AsyncUpdateRangeOperation) operation;
+            updateRangeAt(updateRangeOperation.mPosition, updateRangeOperation.mRenderInfos);
+            break;
+          case Operation.REMOVE:
+            removeItemAt(((AsyncRemoveOperation) operation).mPosition);
+            break;
+          case Operation.REMOVE_RANGE:
+            final AsyncRemoveRangeOperation removeRangeOperation =
+                (AsyncRemoveRangeOperation) operation;
+            removeRangeAt(removeRangeOperation.mPosition, removeRangeOperation.mCount);
+            break;
+          case Operation.MOVE:
+            final AsyncMoveOperation moveOperation = (AsyncMoveOperation) operation;
+            moveItem(moveOperation.mFromPosition, moveOperation.mToPosition);
+            break;
+          default:
+            throw new RuntimeException("Unhandled operation type: " + operation.mOperation);
+        }
       }
     }
 
@@ -945,8 +1007,7 @@ public class RecyclerBinder
     mComponentTreeHolders.add(operation.mPosition, operation.mHolder);
     operation.mHolder.setInserted(true);
     mInternalAdapter.notifyItemInserted(operation.mPosition);
-    mViewportManager.insertAffectsVisibleRange(
-        operation.mPosition, 1, mRange != null ? mRange.estimatedViewportCount : -1);
+    mViewportManager.insertAffectsVisibleRange(operation.mPosition, 1, mEstimatedViewportCount);
   }
 
   @GuardedBy("this")
@@ -955,9 +1016,8 @@ public class RecyclerBinder
 
     final ComponentTreeHolder holder = operation.mHolder;
     holder.setNewLayoutReadyListener(mAsyncLayoutReadyListener);
-
     // Otherwise, we'll kick off the layout at the end of measure
-    if (mIsMeasured.get()) {
+    if (isMeasured()) {
       computeLayoutAsync(holder);
     }
   }
@@ -1059,9 +1119,26 @@ public class RecyclerBinder
   @GuardedBy("this")
   private void addToCurrentBatch(AsyncOperation operation) {
     if (mCurrentBatch == null) {
-      mCurrentBatch = new AsyncBatch(mCommitPolicy, mIsFirstChangeSet);
+      mCurrentBatch = new AsyncBatch(mCommitPolicy);
     }
     mCurrentBatch.mOperations.add(operation);
+  }
+
+  /** Replaces all items in the {@link RecyclerBinder} with the provided {@link RenderInfo}s. */
+  @UiThread
+  public final void replaceAll(List<RenderInfo> renderInfos) {
+    synchronized (this) {
+      if (mHasAsyncOperations) {
+        throw new RuntimeException(
+            "Trying to do a sync replaceAll when using asynchronous mutations!");
+      }
+      mComponentTreeHolders.clear();
+      for (RenderInfo renderInfo : renderInfos) {
+        mComponentTreeHolders.add(createComponentTreeHolder(renderInfo));
+      }
+    }
+    mInternalAdapter.notifyDataSetChanged();
+    mViewportManager.setShouldUpdate(true);
   }
 
   /**
@@ -1123,8 +1200,7 @@ public class RecyclerBinder
     mInternalAdapter.notifyItemInserted(position);
 
     mViewportManager.setShouldUpdate(
-        mViewportManager.insertAffectsVisibleRange(
-            position, 1, mRange != null ? mRange.estimatedViewportCount : -1));
+        mViewportManager.insertAffectsVisibleRange(position, 1, mEstimatedViewportCount));
   }
 
   private void requestRemeasure() {
@@ -1171,9 +1247,8 @@ public class RecyclerBinder
               + Arrays.toString(names));
     }
 
-    for (int i = 0, size = renderInfos.size(); i < size; i++) {
-
-      synchronized (this) {
+    synchronized (this) {
+      for (int i = 0, size = renderInfos.size(); i < size; i++) {
         final RenderInfo renderInfo = renderInfos.get(i);
         assertNotNullRenderInfo(renderInfo);
 
@@ -1191,7 +1266,7 @@ public class RecyclerBinder
 
     mViewportManager.setShouldUpdate(
         mViewportManager.insertAffectsVisibleRange(
-            position, renderInfos.size(), mRange != null ? mRange.estimatedViewportCount : -1));
+            position, renderInfos.size(), mEstimatedViewportCount));
   }
 
   /**
@@ -1262,9 +1337,8 @@ public class RecyclerBinder
               + Arrays.toString(names));
     }
 
-    for (int i = 0, size = renderInfos.size(); i < size; i++) {
-
-      synchronized (this) {
+    synchronized (this) {
+      for (int i = 0, size = renderInfos.size(); i < size; i++) {
         final ComponentTreeHolder holder = mComponentTreeHolders.get(position + i);
         final RenderInfo newRenderInfo = renderInfos.get(i);
 
@@ -1300,14 +1374,18 @@ public class RecyclerBinder
 
     final ComponentTreeHolder holder;
     final boolean isNewPositionInRange;
-    final int mRangeSize = mRange != null ? mRange.estimatedViewportCount : -1;
     synchronized (this) {
       holder = mComponentTreeHolders.remove(fromPosition);
       mComponentTreeHolders.add(toPosition, holder);
 
-      isNewPositionInRange = mRangeSize > 0 &&
-          toPosition >= mCurrentFirstVisiblePosition - (mRangeSize * mRangeRatio) &&
-          toPosition <= mCurrentFirstVisiblePosition + mRangeSize + (mRangeSize * mRangeRatio);
+      isNewPositionInRange =
+          mEstimatedViewportCount != UNSET
+              && toPosition
+                  >= mCurrentFirstVisiblePosition - (mEstimatedViewportCount * mRangeRatio)
+              && toPosition
+                  <= mCurrentFirstVisiblePosition
+                      + mEstimatedViewportCount
+                      + (mEstimatedViewportCount * mRangeRatio);
     }
     final boolean isTreeValid = holder.isTreeValid();
 
@@ -1317,7 +1395,8 @@ public class RecyclerBinder
     mInternalAdapter.notifyItemMoved(fromPosition, toPosition);
 
     mViewportManager.setShouldUpdate(
-        mViewportManager.moveAffectsVisibleRange(fromPosition, toPosition, mRangeSize));
+        mViewportManager.moveAffectsVisibleRange(
+            fromPosition, toPosition, mEstimatedViewportCount));
   }
 
   /**
@@ -1335,11 +1414,9 @@ public class RecyclerBinder
 
     final ComponentTreeHolder holder;
     synchronized (this) {
-      holder = mComponentTreeHolders.remove(position);
+      mComponentTreeHolders.remove(position);
     }
     mInternalAdapter.notifyItemRemoved(position);
-
-    holder.release();
 
     mViewportManager.setShouldUpdate(mViewportManager.removeAffectsVisibleRange(position, 1));
   }
@@ -1360,8 +1437,7 @@ public class RecyclerBinder
 
     synchronized (this) {
       for (int i = 0; i < count; i++) {
-        final ComponentTreeHolder holder = mComponentTreeHolders.remove(position);
-        holder.release();
+        mComponentTreeHolders.remove(position);
       }
     }
     mInternalAdapter.notifyItemRangeRemoved(position, count);
@@ -1371,67 +1447,97 @@ public class RecyclerBinder
 
   /**
    * Called after all the change set operations (inserts, removes, etc.) in a batch have completed.
+   * Async variant, may be called off the main thread.
    */
-  @UiThread
-  public void notifyChangeSetComplete(
+  public void notifyChangeSetCompleteAsync(
       boolean isDataChanged, ChangeSetCompleteCallback changeSetCompleteCallback) {
-    if (SectionsDebug.ENABLED) {
-      Log.d(SectionsDebug.TAG, "(" + hashCode() + ") notifyChangeSetComplete");
-    }
+    ComponentsSystrace.beginSection("notifyChangeSetCompleteAsync");
+    try {
+      if (SectionsDebug.ENABLED) {
+        Log.d(SectionsDebug.TAG, "(" + hashCode() + ") notifyChangeSetCompleteAsync");
+      }
 
-    if (!mHasAsyncOperations) {
-      ThreadUtils.assertMainThread();
-      changeSetCompleteCallback.onDataBound();
-      mDataRenderedCallbacks.addLast(changeSetCompleteCallback);
-      maybeDispatchDataRendered();
-    } else {
+      mHasAsyncOperations = true;
+
       assertSingleThreadForChangeSet();
       closeCurrentBatch(isDataChanged, changeSetCompleteCallback);
       if (ThreadUtils.isMainThread()) {
         applyReadyBatches();
+        if (isDataChanged) {
+          maybeUpdateRangeOrRemeasureForMutation();
+        }
       } else {
-        mMainThreadHandler.post(mApplyReadyBatchesRunnable);
+        // measure() will post this for us
+        if (mIsMeasured.get()) {
+          ChoreographerCompatImpl.getInstance().postFrameCallback(mApplyReadyBatchesCallback);
+        }
       }
       clearThreadForChangeSet();
-    }
-
-    if (isDataChanged) {
-      maybeUpdateRangeOrRemeasureForMutation();
+    } finally {
+      ComponentsSystrace.endSection();
     }
   }
 
-  private synchronized void maybeFillFirstChangeSet() {
-    if (!mHScrollAsyncMode || mAsyncBatches.isEmpty()) {
+  /**
+   * Called after all the change set operations (inserts, removes, etc.) in a batch have completed.
+   */
+  @UiThread
+  public void notifyChangeSetComplete(
+      boolean isDataChanged, ChangeSetCompleteCallback changeSetCompleteCallback) {
+    ComponentsSystrace.beginSection("notifyChangeSetComplete");
+    try {
+      if (SectionsDebug.ENABLED) {
+        Log.d(SectionsDebug.TAG, "(" + hashCode() + ") notifyChangeSetComplete");
+      }
+
+      ThreadUtils.assertMainThread();
+
+      if (mHasAsyncOperations) {
+        throw new RuntimeException(
+            "Trying to do a sync notifyChangeSetComplete when using asynchronous mutations!");
+      }
+
+      changeSetCompleteCallback.onDataBound();
+      mDataRenderedCallbacks.addLast(changeSetCompleteCallback);
+      maybeDispatchDataRendered();
+
+      if (isDataChanged) {
+        maybeUpdateRangeOrRemeasureForMutation();
+      }
+    } finally {
+      ComponentsSystrace.endSection();
+    }
+  }
+
+  @GuardedBy("this")
+  private void maybeFillHScrollViewport() {
+    if (!mHScrollAsyncMode || mHasFilledViewport) {
       return;
     }
 
-    final AsyncBatch firstBatch = mAsyncBatches.getFirst();
-    if (!firstBatch.mIsFirstChangeSet) {
-      return;
-    }
+    // Now that we're filling, all new batches should be inserted async to not drop frames
+    mCommitPolicy = CommitPolicy.LAYOUT_BEFORE_INSERT;
 
     if (ThreadUtils.isMainThread()) {
-      firstBatch.mCommitPolicy = CommitPolicy.IMMEDIATE;
       applyReadyBatches();
     } else {
-      ComponentsSystrace.beginSection("fillFirstChangeSet");
-      try {
-        for (AsyncOperation operation : firstBatch.mOperations) {
+      if (!mComponentTreeHolders.isEmpty()) {
+        fillListViewport(mMeasuredSize.width, mMeasuredSize.height, null);
+      } else if (!mAsyncBatches.isEmpty()) {
+        List<ComponentTreeHolder> insertsInFirstBatch = new ArrayList<>();
+        for (AsyncOperation operation : mAsyncBatches.getFirst().mOperations) {
           if (operation instanceof AsyncInsertOperation) {
-            final ComponentTreeHolder holder = ((AsyncInsertOperation) operation).mHolder;
-            holder.computeLayoutSync(
-                mComponentContext,
-                getActualChildrenWidthSpec(holder),
-                getActualChildrenHeightSpec(holder),
-                null);
+            insertsInFirstBatch.add(((AsyncInsertOperation) operation).mHolder);
           }
         }
-
-        mMainThreadHandler.post(mApplyReadyBatchesRunnable);
-      } finally {
-        ComponentsSystrace.endSection();
+        computeLayoutsToFillListViewport(
+            insertsInFirstBatch, 0, mMeasuredSize.width, mMeasuredSize.height, null);
       }
+
+      ChoreographerCompatImpl.getInstance().postFrameCallback(mApplyReadyBatchesCallback);
     }
+
+    mHasFilledViewport = true;
   }
 
   @ThreadConfined(UI)
@@ -1449,16 +1555,15 @@ public class RecyclerBinder
     }
 
     // Execute onDataRendered callbacks immediately if the view has been unmounted, finishes
-    // dispatchDraw (no pending updates), is detached, or its visibility is GONE.
+    // dispatchDraw (no pending updates), is detached, or is visible.
     if (mMountedView == null
         || !mMountedView.hasPendingAdapterUpdates()
         || !mMountedView.isAttachedToWindow()
-        || mMountedView.getVisibility() == View.GONE) {
+        || !isVisibleToUser(mMountedView)) {
       final boolean isMounted = (mMountedView != null);
       final Deque<ChangeSetCompleteCallback> snapshotCallbacks =
           new ArrayDeque<>(mDataRenderedCallbacks);
       mDataRenderedCallbacks.clear();
-
       mMainThreadHandler.postAtFrontOfQueue(
           new Runnable() {
             @Override
@@ -1472,7 +1577,6 @@ public class RecyclerBinder
     } else {
       if (mDataRenderedCallbacks.size() > DATA_RENDERED_CALLBACKS_QUEUE_MAX_SIZE) {
         mDataRenderedCallbacks.clear();
-
         final ComponentsLogger logger = mComponentContext.getLogger();
         if (logger != null) {
           final StringBuilder messageBuilder = new StringBuilder();
@@ -1486,8 +1590,12 @@ public class RecyclerBinder
                 .append(mMountedView.hasPendingAdapterUpdates())
                 .append(", isAttachedToWindow(): ")
                 .append(mMountedView.isAttachedToWindow())
-                .append(", getVisibility(): ")
-                .append(mMountedView.getVisibility())
+                .append(", getWindowVisibility(): ")
+                .append(mMountedView.getWindowVisibility())
+                .append(", vie visible hierarchy: ")
+                .append(getVisibleHierarchy(mMountedView))
+                .append(", getGlobalVisibleRect(): ")
+                .append(mMountedView.getGlobalVisibleRect(sDummyRect))
                 .append(", isComputingLayout(): ")
                 .append(mMountedView.isComputingLayout());
           }
@@ -1514,19 +1622,62 @@ public class RecyclerBinder
       // We create a batch here even if it doesn't have any operations: this is so we can still
       // invoke the OnDataBoundListener at the appropriate time (after all preceding batches
       // complete)
-      mCurrentBatch = new AsyncBatch(mCommitPolicy, mIsFirstChangeSet);
+      mCurrentBatch = new AsyncBatch(mCommitPolicy);
     }
-
-    mIsFirstChangeSet = false;
 
     mCurrentBatch.mIsDataChanged = isDataChanged;
     mCurrentBatch.mChangeSetCompleteCallback = changeSetCompleteCallback;
     mAsyncBatches.addLast(mCurrentBatch);
+    mHasAsyncBatchesToCheck.set(true);
     mCurrentBatch = null;
   }
 
-  private synchronized void maybeUpdateRangeOrRemeasureForMutation() {
-    synchronized (this) {
+  private void maybeUpdateRangeOrRemeasureForMutation() {
+    if (mSplitLayoutForMeasureAndRangeEstimation) {
+      maybeUpdateRangeOrRemeasureForMutationEstimateRangeSize();
+    } else {
+      maybeUpdateRangeOrRemeasureForMutationInitRange();
+    }
+  }
+
+  private void maybeUpdateRangeOrRemeasureForMutationInitRange() {
+    if (mSplitLayoutForMeasureAndRangeEstimation) {
+      throw new RuntimeException(
+          "This should only be invoked if ComponentsConfiguration.splitLayoutForMeasureAndRangeEstimation is false");
+    }
+
+    if (!mIsMeasured.get()) {
+      return;
+    }
+
+    if (mRequiresRemeasure.get()) {
+      requestRemeasure();
+      return;
+    }
+
+    if (!hasComputedRange()) {
+      final int initialComponentPosition =
+          findInitialComponentPosition(mComponentTreeHolders, mTraverseLayoutBackwards);
+      if (initialComponentPosition >= 0) {
+        final ComponentTreeHolderRangeInfo holderRangeInfo =
+            new ComponentTreeHolderRangeInfo(initialComponentPosition, mComponentTreeHolders);
+        initRange(
+            mMeasuredSize.width,
+            mMeasuredSize.height,
+            holderRangeInfo,
+            mLayoutInfo.getScrollDirection());
+      }
+    }
+
+    maybePostUpdateViewportAndComputeRange();
+  }
+
+  private void maybeUpdateRangeOrRemeasureForMutationEstimateRangeSize() {
+    if (!mSplitLayoutForMeasureAndRangeEstimation) {
+      throw new RuntimeException(
+          "This should only be invoked if ComponentsConfiguration.splitLayoutForMeasureAndRangeEstimation is true");
+    }
+
       if (!mIsMeasured.get()) {
         return;
       }
@@ -1536,23 +1687,24 @@ public class RecyclerBinder
         return;
       }
 
-      if (mRange == null) {
-        int firstComponent = findFirstComponentPosition(mComponentTreeHolders);
-        if (firstComponent >= 0) {
-          final ComponentTreeHolder holder = mComponentTreeHolders.get(firstComponent);
-          initRange(
-              mMeasuredSize.width,
-              mMeasuredSize.height,
-              holder,
-              firstComponent,
-              getActualChildrenWidthSpec(holder),
-              getActualChildrenHeightSpec(holder),
-              mLayoutInfo.getScrollDirection());
+      if (!hasComputedRange()) {
+        final int initialComponentPosition =
+            findInitialComponentPosition(mComponentTreeHolders, mTraverseLayoutBackwards);
+        if (initialComponentPosition >= 0) {
+          final ComponentTreeHolderRangeInfo holderRangeInfo =
+              new ComponentTreeHolderRangeInfo(initialComponentPosition, mComponentTreeHolders);
+        estimateRangeSize(
+            mMeasuredSize.width,
+            mMeasuredSize.height,
+            holderRangeInfo,
+            new EstimateRangeSizeListener() {
+              @Override
+              public void onFinish() {
+                maybePostUpdateViewportAndComputeRange();
+              }
+            });
         }
       }
-    }
-
-    maybePostUpdateViewportAndComputeRange();
   }
 
   private void assertSingleThreadForChangeSet() {
@@ -1594,15 +1746,16 @@ public class RecyclerBinder
   @Override
   public final synchronized ComponentTree getComponentForStickyHeaderAt(int position) {
     final ComponentTreeHolder holder = mComponentTreeHolders.get(position);
-    if (holder.isTreeValid()) {
+    final int childrenWidthSpec = getActualChildrenWidthSpec(holder);
+    final int childrenHeightSpec = getActualChildrenHeightSpec(holder);
+
+    if (holder.isTreeValidForSizeSpecs(childrenWidthSpec, childrenHeightSpec)) {
       return holder.getComponentTree();
     }
 
     // This could happen when RecyclerView is populated with new data, and first position is not 0.
     // It is possible that sticky header is above the first visible position and also it is outside
     // calculated range and its layout has not been calculated yet.
-    final int childrenWidthSpec = getActualChildrenWidthSpec(holder);
-    final int childrenHeightSpec = getActualChildrenHeightSpec(holder);
     holder.computeLayoutSync(mComponentContext, childrenWidthSpec, childrenHeightSpec, null);
 
     return holder.getComponentTree();
@@ -1610,16 +1763,17 @@ public class RecyclerBinder
 
   @Override
   public final synchronized RenderInfo getRenderInfoAt(int position) {
-    final ComponentTreeHolder holder = mComponentTreeHolders.get(position);
-    if (holder.isReleased()) {
-      throw new RuntimeException("Trying to access released ComponentTreeHolder!");
-    }
-    return holder.getRenderInfo();
+    return mComponentTreeHolders.get(position).getRenderInfo();
   }
 
   @VisibleForTesting
   final synchronized ComponentTreeHolder getComponentTreeHolderAt(int position) {
     return mComponentTreeHolders.get(position);
+  }
+
+  @VisibleForTesting
+  final synchronized List<ComponentTreeHolder> getComponentTreeHolders() {
+    return mComponentTreeHolders;
   }
 
   private static void assertNotNullRenderInfo(RenderInfo renderInfo) {
@@ -1638,15 +1792,52 @@ public class RecyclerBinder
     // Nothing to do here.
   }
 
+  private static void validateMeasureSpecs(
+      int widthSpec, int heightSpec, boolean canRemeasure, int scrollDirection) {
+    switch (scrollDirection) {
+      case HORIZONTAL:
+        if (SizeSpec.getMode(widthSpec) == SizeSpec.UNSPECIFIED) {
+          throw new IllegalStateException(
+              "Width mode has to be EXACTLY OR AT MOST for an horizontal scrolling RecyclerView");
+        }
+
+        if (!canRemeasure && SizeSpec.getMode(heightSpec) == SizeSpec.UNSPECIFIED) {
+          throw new IllegalStateException(
+              "Can't use Unspecified height on an horizontal "
+                  + "scrolling Recycler if dynamic measurement is not allowed");
+        }
+
+        break;
+
+      case VERTICAL:
+        if (SizeSpec.getMode(heightSpec) == SizeSpec.UNSPECIFIED) {
+          throw new IllegalStateException(
+              "Height mode has to be EXACTLY OR AT MOST for a vertical scrolling RecyclerView");
+        }
+
+        if (!canRemeasure && SizeSpec.getMode(widthSpec) == SizeSpec.UNSPECIFIED) {
+          throw new IllegalStateException(
+              "Can't use Unspecified width on a vertical scrolling "
+                  + "Recycler if dynamic measurement is not allowed");
+        }
+        break;
+
+      default:
+        throw new UnsupportedOperationException(
+            "The orientation defined by LayoutInfo should be"
+                + " either OrientationHelper.HORIZONTAL or OrientationHelper.VERTICAL");
+    }
+  }
+
   /**
    * A component mounting a RecyclerView can use this method to determine its size. A Recycler that
    * scrolls horizontally will leave the width unconstrained and will measure its children with a
    * sizeSpec for the height matching the heightSpec passed to this method.
    *
-   * If padding is defined on the parent component it should be subtracted from the parent size
+   * <p>If padding is defined on the parent component it should be subtracted from the parent size
    * specs before passing them to this method.
    *
-   * Currently we can't support the equivalent of MATCH_PARENT on the scrollDirection (so for
+   * <p>Currently we can't support the equivalent of MATCH_PARENT on the scrollDirection (so for
    * example we don't support MATCH_PARENT on width in an horizontal RecyclerView). This is mainly
    * because we don't have the equivalent of LayoutParams in components. We can extend the api of
    * the binder in the future to provide some more layout hints in order to support this.
@@ -1657,163 +1848,223 @@ public class RecyclerBinder
    * @param reMeasureEventHandler the EventHandler to invoke in order to trigger a re-measure.
    */
   @Override
-  public synchronized void measure(
+  public void measure(
       Size outSize,
       int widthSpec,
       int heightSpec,
       @Nullable EventHandler<ReMeasureEvent> reMeasureEventHandler) {
+    // This is a hack to try to give a signal to applyReadyBatches whether it should even attempt
+    // to acquire the lock or bail and let measure schedule it as a runnable. This can go away
+    // once we break up the locking in measure.
+    // TODO(t37195892): Do not hold lock throughout measure call in RecyclerBinder
+    final boolean canRemeasure = reMeasureEventHandler != null;
     final int scrollDirection = mLayoutInfo.getScrollDirection();
 
-    switch (scrollDirection) {
-      case HORIZONTAL:
-        if (SizeSpec.getMode(widthSpec) == SizeSpec.UNSPECIFIED) {
-          throw new IllegalStateException(
-              "Width mode has to be EXACTLY OR AT MOST for an horizontal scrolling RecyclerView");
-        }
-        break;
+    validateMeasureSpecs(widthSpec, heightSpec, canRemeasure, scrollDirection);
 
-      case VERTICAL:
-        if (SizeSpec.getMode(heightSpec) == SizeSpec.UNSPECIFIED) {
-          throw new IllegalStateException(
-              "Height mode has to be EXACTLY OR AT MOST for a vertical scrolling RecyclerView");
-        }
-        break;
-
-      default:
-        throw new UnsupportedOperationException(
-            "The orientation defined by LayoutInfo should be" +
-                " either OrientationHelper.HORIZONTAL or OrientationHelper.VERTICAL");
-    }
-
-    if (mLastWidthSpec != LayoutManagerOverrideParams.UNINITIALIZED && !mRequiresRemeasure.get()) {
-      switch (scrollDirection) {
-        case VERTICAL:
-          if (MeasureComparisonUtils.isMeasureSpecCompatible(
-              mLastWidthSpec,
-              widthSpec,
-              mMeasuredSize.width)) {
-            outSize.width = mMeasuredSize.width;
-            outSize.height = mWrapContent ? mMeasuredSize.height : SizeSpec.getSize(heightSpec);
-
-            return;
-          }
-          break;
-        default:
-          if (MeasureComparisonUtils.isMeasureSpecCompatible(
-              mLastHeightSpec,
-              heightSpec,
-              mMeasuredSize.height)) {
-            outSize.width = mWrapContent ? mMeasuredSize.width : SizeSpec.getSize(widthSpec);
-            outSize.height = mMeasuredSize.height;
-
-            return;
-          }
-      }
-
-      mIsMeasured.set(false);
-      invalidateLayoutData();
-    }
-
-    // We have never measured before or the measures are not valid so we need to measure now.
-    mLastWidthSpec = widthSpec;
-    mLastHeightSpec = heightSpec;
-
-    if (mRange == null) {
-      ComponentTreeHolderRangeInfo holderForRangeInfo = getHolderForRangeInfo();
-
-      if (holderForRangeInfo != null) {
-        initRange(
-            SizeSpec.getSize(widthSpec),
-            SizeSpec.getSize(heightSpec),
-            holderForRangeInfo.mHolder,
-            holderForRangeInfo.mPosition,
-            getActualChildrenWidthSpec(holderForRangeInfo.mHolder),
-            getActualChildrenHeightSpec(holderForRangeInfo.mHolder),
-            scrollDirection);
-      }
-    }
-
-    // At this point we might still not have a range. In this situation we should return the best
-    // size we can detect from the size spec and update it when the first item comes in.
-    final boolean canMeasure = reMeasureEventHandler != null;
     final int measuredWidth;
     final int measuredHeight;
 
-    switch (scrollDirection) {
-      case OrientationHelper.VERTICAL:
-        if (!canMeasure && SizeSpec.getMode(widthSpec) == SizeSpec.UNSPECIFIED) {
-          throw new IllegalStateException("Can't use Unspecified width on a vertical scrolling " +
-              "Recycler if dynamic measurement is not allowed");
+    final boolean shouldMeasureItemForSize =
+        shouldMeasureItemForSize(widthSpec, heightSpec, scrollDirection, canRemeasure);
+    ComponentTreeHolderRangeInfo holderForRangeInfo;
+
+    mIsInMeasure.set(true);
+
+    try {
+      synchronized (this) {
+        if (mLastWidthSpec != LayoutManagerOverrideParams.UNINITIALIZED
+            && !mRequiresRemeasure.get()) {
+          switch (scrollDirection) {
+            case VERTICAL:
+              if (MeasureComparisonUtils.isMeasureSpecCompatible(
+                  mLastWidthSpec, widthSpec, mMeasuredSize.width)) {
+                outSize.width = mMeasuredSize.width;
+                outSize.height = mWrapContent ? mMeasuredSize.height : SizeSpec.getSize(heightSpec);
+
+                return;
+              }
+              break;
+            default:
+              if (MeasureComparisonUtils.isMeasureSpecCompatible(
+                  mLastHeightSpec, heightSpec, mMeasuredSize.height)) {
+                outSize.width = mWrapContent ? mMeasuredSize.width : SizeSpec.getSize(widthSpec);
+                outSize.height = mMeasuredSize.height;
+
+                return;
+              }
+          }
+
+          mIsMeasured.set(false);
+          invalidateLayoutData();
         }
 
-        measuredHeight = SizeSpec.getSize(heightSpec);
+        // We have never measured before or the measures are not valid so we need to measure now.
+        mLastWidthSpec = widthSpec;
+        mLastHeightSpec = heightSpec;
 
-        if (SizeSpec.getMode(widthSpec) == SizeSpec.EXACTLY || !canMeasure) {
-          measuredWidth = SizeSpec.getSize(widthSpec);
-          mReMeasureEventEventHandler = mWrapContent ? reMeasureEventHandler : null;
-          mRequiresRemeasure.set(mWrapContent);
-        } else if (mRange != null) {
-          measuredWidth = mRange.measuredSize;
-          mReMeasureEventEventHandler = mWrapContent ? reMeasureEventHandler : null;
-          mRequiresRemeasure.set(mWrapContent);
+        holderForRangeInfo = getHolderForRangeInfo();
+        maybeCalculateSyncLayoutForSize(
+            widthSpec, heightSpec, scrollDirection, shouldMeasureItemForSize, holderForRangeInfo);
+
+        // At this point we might still not have a range. In this situation we should return the
+        // best
+        // size we can detect from the size spec and update it when the first item comes in.
+
+        switch (scrollDirection) {
+          case OrientationHelper.VERTICAL:
+            measuredHeight = SizeSpec.getSize(heightSpec);
+
+            if (!shouldMeasureItemForSize) {
+              measuredWidth = SizeSpec.getSize(widthSpec);
+              mReMeasureEventEventHandler = mWrapContent ? reMeasureEventHandler : null;
+              mRequiresRemeasure.set(mWrapContent);
+            } else if (mSizeForMeasure != null) {
+              measuredWidth = mSizeForMeasure.width;
+              mReMeasureEventEventHandler = mWrapContent ? reMeasureEventHandler : null;
+              mRequiresRemeasure.set(mWrapContent);
+            } else {
+              measuredWidth = 0;
+              mRequiresRemeasure.set(true);
+              mReMeasureEventEventHandler = reMeasureEventHandler;
+            }
+            break;
+
+          case OrientationHelper.HORIZONTAL:
+          default:
+            measuredWidth = SizeSpec.getSize(widthSpec);
+
+            if (!shouldMeasureItemForSize) {
+              measuredHeight = SizeSpec.getSize(heightSpec);
+              mReMeasureEventEventHandler =
+                  (mHasDynamicItemHeight || mWrapContent) ? reMeasureEventHandler : null;
+              mRequiresRemeasure.set(mHasDynamicItemHeight || mWrapContent);
+            } else if (mSizeForMeasure != null) {
+              measuredHeight = mSizeForMeasure.height;
+              mReMeasureEventEventHandler =
+                  (mHasDynamicItemHeight || mWrapContent) ? reMeasureEventHandler : null;
+              mRequiresRemeasure.set(mHasDynamicItemHeight || mWrapContent);
+            } else {
+              measuredHeight = 0;
+              mRequiresRemeasure.set(true);
+              mReMeasureEventEventHandler = reMeasureEventHandler;
+            }
+            break;
+        }
+
+        if (mWrapContent) {
+          final Size wrapSize = new Size();
+          fillListViewport(measuredWidth, measuredHeight, wrapSize);
+          outSize.width = wrapSize.width;
+          outSize.height = wrapSize.height;
         } else {
-          measuredWidth = 0;
-          mRequiresRemeasure.set(true);
-          mReMeasureEventEventHandler = reMeasureEventHandler;
-        }
-        break;
-
-      case OrientationHelper.HORIZONTAL:
-      default:
-        if (!canMeasure && SizeSpec.getMode(heightSpec) == SizeSpec.UNSPECIFIED) {
-          throw new IllegalStateException("Can't use Unspecified height on an horizontal " +
-              "scrolling Recycler if dynamic measurement is not allowed");
+          outSize.width = measuredWidth;
+          outSize.height = measuredHeight;
         }
 
-        measuredWidth = SizeSpec.getSize(widthSpec);
+        mMeasuredSize = new Size(outSize.width, outSize.height);
+        mIsMeasured.set(true);
 
-        if (SizeSpec.getMode(heightSpec) == SizeSpec.EXACTLY || !canMeasure) {
-          measuredHeight = SizeSpec.getSize(heightSpec);
-          mReMeasureEventEventHandler =
-              (mHasDynamicItemHeight || mWrapContent) ? reMeasureEventHandler : null;
-          mRequiresRemeasure.set(mHasDynamicItemHeight || mWrapContent);
-        } else if (mRange != null) {
-          measuredHeight = mRange.measuredSize;
-          mReMeasureEventEventHandler =
-              (mHasDynamicItemHeight || mWrapContent) ? reMeasureEventHandler : null;
-          mRequiresRemeasure.set(mHasDynamicItemHeight || mWrapContent);
-        } else {
-          measuredHeight = 0;
-          mRequiresRemeasure.set(true);
-          mReMeasureEventEventHandler = reMeasureEventHandler;
-        }
-        break;
+        maybeFillHScrollViewport();
+        updateAsyncInsertOperations();
+
+        maybeComputeRangeAfterMeasure(widthSpec, heightSpec, holderForRangeInfo);
+      }
+    } finally {
+      mIsInMeasure.set(false);
+      if (mHasAsyncOperations) {
+        ensureApplyReadyBatches();
+      }
+    }
+  }
+
+  /** @return true if the view is measured and doesn't need remeasuring. */
+  private synchronized boolean isMeasured() {
+    return ComponentsConfiguration.checkNeedsRemeasure
+        ? mIsMeasured.get() && !mRequiresRemeasure.get()
+        : mIsMeasured.get();
+  }
+
+  @VisibleForTesting
+  boolean requiresRemeasure() {
+    return mRequiresRemeasure.get();
+  }
+
+  /**
+   * Calculates a sync layout for the provided item because we need its size to be able to measure.
+   */
+  private void maybeCalculateSyncLayoutForSize(
+      int widthSpec,
+      int heightSpec,
+      int scrollDirection,
+      boolean shouldMeasureItemForSize,
+      ComponentTreeHolderRangeInfo holderForRangeInfo) {
+    if (holderForRangeInfo == null) {
+      return;
     }
 
-    final Size wrapSize = mWrapContent ? new Size() : null;
-
-    if (mWrapContent) {
-      fillListViewport(measuredWidth, measuredHeight, wrapSize);
+    if (mSplitLayoutForMeasureAndRangeEstimation) {
+      if (shouldMeasureItemForSize && mSizeForMeasure == null) {
+        layoutItemForSize(holderForRangeInfo);
+      }
+    } else if (!hasComputedRange()) {
+      initRange(
+          SizeSpec.getSize(widthSpec),
+          SizeSpec.getSize(heightSpec),
+          holderForRangeInfo,
+          scrollDirection);
     }
+  }
 
-    outSize.width = mWrapContent ? wrapSize.width : measuredWidth;
-    outSize.height = mWrapContent ? wrapSize.height : measuredHeight;
-
-    mMeasuredSize = new Size(outSize.width, outSize.height);
-    mIsMeasured.set(true);
-
-    maybeFillFirstChangeSet();
-    updateAsyncInsertOperations();
-
-    if (mRange != null) {
-      computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition);
-    } else if (mAsyncInitRange) {
-      mShouldComputeRangeAfterInit.getAndSet(true);
+  private void maybeComputeRangeAfterMeasure(
+      int widthSpec, int heightSpec, ComponentTreeHolderRangeInfo holderForRangeInfo) {
+    if (mSplitLayoutForMeasureAndRangeEstimation) {
+      estimateRangeSize(
+          SizeSpec.getSize(widthSpec),
+          SizeSpec.getSize(heightSpec),
+          holderForRangeInfo,
+          new EstimateRangeSizeListener() {
+            @Override
+            public void onFinish() {
+              computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition);
+            }
+          });
+    } else {
+      if (mEstimatedViewportCount != RecyclerView.NO_POSITION) {
+        computeRange(mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition);
+      }
     }
+  }
+
+  /**
+   * @return true if the measure specs we are trying to measure this with cannot be used and we need
+   *     to measure an item to get a size.
+   */
+  static final boolean shouldMeasureItemForSize(
+      int widthSpec, int heightSpec, int scrollDirection, boolean canRemeasure) {
+    final boolean canUseSizeSpec =
+        scrollDirection == VERTICAL
+            ? SizeSpec.getMode(widthSpec) == SizeSpec.EXACTLY
+            : SizeSpec.getMode(heightSpec) == SizeSpec.EXACTLY;
+
+    return !canUseSizeSpec && canRemeasure;
   }
 
   @GuardedBy("this")
   private void fillListViewport(int maxWidth, int maxHeight, @Nullable Size outSize) {
+    if (mSplitLayoutForMeasureAndRangeEstimation) {
+      fillListViewportSetRangeSize(maxWidth, maxHeight, outSize);
+    } else {
+      fillListViewportInitRange(maxWidth, maxHeight, outSize);
+    }
+  }
+
+  @GuardedBy("this")
+  private void fillListViewportInitRange(int maxWidth, int maxHeight, @Nullable Size outSize) {
+    if (mSplitLayoutForMeasureAndRangeEstimation) {
+      throw new RuntimeException(
+          "This should only be invoked if ComponentsConfiguration.splitLayoutForMeasureAndRangeEstimation is false");
+    }
     ComponentsSystrace.beginSection("fillListViewport");
     final int firstVisiblePosition = mWrapContent ? 0 : mLayoutInfo.findFirstVisibleItemPosition();
 
@@ -1824,17 +2075,38 @@ public class RecyclerBinder
     computeLayoutsToFillListViewport(
         mComponentTreeHolders, startIndex, maxWidth, maxHeight, outSize);
 
-    if (mRange == null) {
+    if (!hasComputedRange()) {
       final ComponentTreeHolderRangeInfo holderForRangeInfo = getHolderForRangeInfo();
       if (holderForRangeInfo != null) {
-        initRange(
-            maxWidth,
-            maxHeight,
-            holderForRangeInfo.mHolder,
-            holderForRangeInfo.mPosition,
-            getActualChildrenWidthSpec(holderForRangeInfo.mHolder),
-            getActualChildrenHeightSpec(holderForRangeInfo.mHolder),
-            mLayoutInfo.getScrollDirection());
+        initRange(maxWidth, maxHeight, holderForRangeInfo, mLayoutInfo.getScrollDirection());
+      }
+    }
+
+    ComponentsSystrace.endSection();
+  }
+
+  @GuardedBy("this")
+  private void fillListViewportSetRangeSize(int maxWidth, int maxHeight, @Nullable Size outSize) {
+    if (!mSplitLayoutForMeasureAndRangeEstimation) {
+      throw new RuntimeException(
+          "This should only be invoked if ComponentsConfiguration.splitLayoutForMeasureAndRangeEstimation is true");
+    }
+    ComponentsSystrace.beginSection("fillListViewport");
+    final int firstVisiblePosition = mWrapContent ? 0 : mLayoutInfo.findFirstVisibleItemPosition();
+
+    // NB: This does not handle 1) partially visible items 2) item decorations
+    final int startIndex =
+        firstVisiblePosition != RecyclerView.NO_POSITION ? firstVisiblePosition : 0;
+
+    final int itemCount =
+        computeLayoutsToFillListViewport(
+            mComponentTreeHolders, startIndex, maxWidth, maxHeight, outSize);
+
+    if (mEstimatedViewportCount == UNSET) {
+      final ComponentTreeHolderRangeInfo holderForRangeInfo = getHolderForRangeInfo();
+      if (holderForRangeInfo != null) {
+        setRangeSize(
+            outSize.width / itemCount, outSize.height / itemCount, outSize.width, outSize.height);
       }
     }
 
@@ -1943,16 +2215,29 @@ public class RecyclerBinder
     // computation will be canceled (if it hasn't started) and this new one will run.
     final int widthSpec = getActualChildrenWidthSpec(holder);
     final int heightSpec = getActualChildrenHeightSpec(holder);
+
+    if (holder.isTreeValidForSizeSpecs(widthSpec, heightSpec)) {
+      return;
+    }
+
     holder.computeLayoutAsync(mComponentContext, widthSpec, heightSpec);
   }
 
-  private static int findFirstComponentPosition(List<ComponentTreeHolder> holders) {
-    for (int i = 0, size = holders.size(); i < size; i++) {
-      if (holders.get(i).getRenderInfo().rendersComponent()) {
-        return i;
+  static int findInitialComponentPosition(
+      List<ComponentTreeHolder> holders, boolean traverseBackwards) {
+    if (traverseBackwards) {
+      for (int i = holders.size() - 1; i >= 0; i--) {
+        if (holders.get(i).getRenderInfo().rendersComponent()) {
+          return i;
+        }
+      }
+    } else {
+      for (int i = 0, size = holders.size(); i < size; i++) {
+        if (holders.get(i).getRenderInfo().rendersComponent()) {
+          return i;
+        }
       }
     }
-
     return -1;
   }
 
@@ -1993,7 +2278,8 @@ public class RecyclerBinder
 
   @GuardedBy("this")
   private void invalidateLayoutData() {
-    mRange = null;
+    mEstimatedViewportCount = UNSET;
+    mSizeForMeasure = null;
     for (int i = 0, size = mComponentTreeHolders.size(); i < size; i++) {
       mComponentTreeHolders.get(i).invalidateTree();
     }
@@ -2009,15 +2295,60 @@ public class RecyclerBinder
   }
 
   @GuardedBy("this")
-  private void initRangeAsync(
-      int rangeStartPosition, int childrenWidthSpec, int childrenHeightSpec) {
-    final int rangeEndPosition =
-        rangeStartPosition + Math.min(mComponentTreeHolders.size(), MIN_RANGE_SIZE);
-
-    for (int i = rangeStartPosition; i < rangeEndPosition; i++) {
-      final ComponentTreeHolder holder = mComponentTreeHolders.get(i);
-      holder.computeLayoutAsync(mComponentContext, childrenWidthSpec, childrenHeightSpec);
+  private void maybeScheduleAsyncLayoutsDuringInitRange(
+      final ComponentAsyncInitRangeIterator asyncRangeIterator) {
+    if (!asyncInitRangeEnabled()
+        || mComponentTreeHolders == null
+        || mComponentTreeHolders.isEmpty()) {
+      // checked null for tests
+      return;
     }
+
+    int numItemsToSchedule = mThreadPoolConfig == null ? 1 : mThreadPoolConfig.getCorePoolSize();
+
+    for (int i = 0; i < numItemsToSchedule; i++) {
+      maybeScheduleOneAsyncLayoutDuringInitRange(asyncRangeIterator);
+    }
+  }
+
+  private void maybeScheduleOneAsyncLayoutDuringInitRange(
+      final ComponentAsyncInitRangeIterator asyncRangeIterator) {
+    final ComponentTreeHolder nextHolder = asyncRangeIterator.next();
+
+    if (!asyncInitRangeEnabled()
+        || mComponentTreeHolders == null
+        || mComponentTreeHolders.isEmpty()
+        || nextHolder == null
+        || mEstimatedViewportCount != UNSET) {
+      // checked null for tests
+      return;
+    }
+
+    final int childWidthSpec = getActualChildrenWidthSpec(nextHolder);
+    final int childHeightSpec = getActualChildrenHeightSpec(nextHolder);
+    if (nextHolder.isTreeValidForSizeSpecs(childWidthSpec, childHeightSpec)) {
+      return;
+    }
+
+    if (mBgScheduleAllInitRange) {
+      final MeasureListener measureListener =
+          new ComponentTree.MeasureListener() {
+            @Override
+            public void onSetRootAndSizeSpec(int w, int h) {
+              maybeScheduleOneAsyncLayoutDuringInitRange(asyncRangeIterator);
+              nextHolder.updateMeasureListener(null);
+            }
+          };
+
+      nextHolder.computeLayoutAsync(
+          mComponentContext, childWidthSpec, childHeightSpec, measureListener);
+    } else {
+      nextHolder.computeLayoutAsync(mComponentContext, childWidthSpec, childHeightSpec);
+    }
+  }
+
+  private boolean asyncInitRangeEnabled() {
+    return mAsyncInitRange || mBgScheduleAllInitRange;
   }
 
   @VisibleForTesting
@@ -2028,29 +2359,130 @@ public class RecyclerBinder
   @VisibleForTesting
   @GuardedBy("this")
   void initRange(
-      int width,
-      int height,
-      ComponentTreeHolder holder,
-      int holderPosition,
-      int childrenWidthSpec,
-      int childrenHeightSpec,
-      int scrollDirection) {
-    if (!mCanMeasure && mAsyncInitRange) {
-      initRangeAsync(holderPosition, childrenWidthSpec, childrenHeightSpec);
-      return;
+      int width, int height, ComponentTreeHolderRangeInfo holderRangeInfo, int scrollDirection) {
+
+    if (asyncInitRangeEnabled()) {
+      // We can schedule a maximum of number of items minus one (which is being calculated
+      // synchronously) to run at the same time as the sync layout.
+      final ComponentAsyncInitRangeIterator asyncInitRangeIterator =
+          new ComponentAsyncInitRangeIterator(
+              holderRangeInfo.mHolders,
+              holderRangeInfo.mPosition,
+              mComponentTreeHolders.size() - 1,
+              mTraverseLayoutBackwards);
+
+      maybeScheduleAsyncLayoutsDuringInitRange(asyncInitRangeIterator);
     }
+
+    final ComponentTreeHolder holder = holderRangeInfo.mHolders.get(holderRangeInfo.mPosition);
+    final int childWidthSpec = getActualChildrenWidthSpec(holder);
+    final int childHeightSpec = getActualChildrenHeightSpec(holder);
 
     ComponentsSystrace.beginSection("initRange");
     try {
       final Size size = new Size();
-      holder.computeLayoutSync(mComponentContext, childrenWidthSpec, childrenHeightSpec, size);
+      holder.computeLayoutSync(mComponentContext, childWidthSpec, childHeightSpec, size);
 
       final int rangeSize =
           Math.max(mLayoutInfo.approximateRangeSize(size.width, size.height, width, height), 1);
 
-      mRange = new RangeCalculationResult();
-      mRange.measuredSize = scrollDirection == HORIZONTAL ? size.height : size.width;
-      mRange.estimatedViewportCount = rangeSize;
+      mSizeForMeasure = size;
+      mEstimatedViewportCount =
+          ComponentsConfiguration.fixedRangeSize >= 0
+              ? ComponentsConfiguration.fixedRangeSize
+              : rangeSize;
+    } finally {
+      ComponentsSystrace.endSection();
+    }
+  }
+
+  private interface EstimateRangeSizeListener {
+    void onFinish();
+  }
+
+  /**
+   * Based on the existing measured layouts it estimates a size for the async range. If no layouts
+   * have been measured with valid size specs, schedules an async layout and estimates the range
+   * when it returns with an item size. When a range size is determined, either immediately or
+   * async, it optionally invokes the provided callback.
+   */
+  private void estimateRangeSize(
+      final int width,
+      final int height,
+      @Nullable ComponentTreeHolderRangeInfo holderRangeInfo,
+      @Nullable final EstimateRangeSizeListener listener) {
+    // There's already an estimated range size, we can go ahead with invoking the listener
+    // immediately.
+    if (mEstimatedViewportCount != UNSET) {
+      if (listener != null) {
+        listener.onFinish();
+      }
+      return;
+    }
+
+    // We don't have an estimation for a range size but we've already computed the layout for an
+    // item, use its measurements to estimate the range size.
+    if (mSizeForMeasure != null) {
+      setRangeSize(mSizeForMeasure.width, mSizeForMeasure.height, width, height);
+      if (listener != null) {
+        listener.onFinish();
+      }
+      return;
+    }
+
+    if (holderRangeInfo == null) {
+      return;
+    }
+
+    final ComponentTreeHolder holder = holderRangeInfo.mHolders.get(holderRangeInfo.mPosition);
+    final int childWidthSpec = getActualChildrenWidthSpec(holder);
+    final int childHeightSpec = getActualChildrenHeightSpec(holder);
+
+    // At this point, we need to layout an item to be able to estimate a range size. We can do that
+    // async since the range layouts don't need to be done synchronously.
+    // If the holder has already calculated a compatible layout this will immediately return
+    // without calculating a new layout.
+
+    ComponentsSystrace.beginSectionAsync("estimateRangeSize");
+    holder.computeLayoutAsync(
+        mComponentContext,
+        childWidthSpec,
+        childHeightSpec,
+        new MeasureListener() {
+          @Override
+          public void onSetRootAndSizeSpec(int itemWidth, int itemHeight) {
+            ComponentsSystrace.endSectionAsync("estimateRangeSize");
+            setRangeSize(itemWidth, itemHeight, width, height);
+            if (listener != null) {
+              listener.onFinish();
+            }
+            holder.updateMeasureListener(null);
+          }
+        });
+  }
+
+  private void setRangeSize(int itemWidth, int itemHeight, int width, int height) {
+    mEstimatedViewportCount =
+        Math.max(mLayoutInfo.approximateRangeSize(itemWidth, itemHeight, width, height), 1);
+  }
+
+  /**
+   * Called from {@link #measure(Size, int, int, EventHandler)}. Will only be called if the size
+   * specs provided can't be used to measure the view so we need to layout an item to determine the
+   * size. TODO T40814333 make this static and return size. Blocker is that children size specs
+   * depend on RecyclerBinder params.
+   */
+  private void layoutItemForSize(ComponentTreeHolderRangeInfo holderRangeInfo) {
+
+    final ComponentTreeHolder holder = holderRangeInfo.mHolders.get(holderRangeInfo.mPosition);
+    final int childWidthSpec = getActualChildrenWidthSpec(holder);
+    final int childHeightSpec = getActualChildrenHeightSpec(holder);
+
+    ComponentsSystrace.beginSection("layoutItemForSize");
+    try {
+      final Size size = new Size();
+      holder.computeLayoutSync(mComponentContext, childWidthSpec, childHeightSpec, size);
+      mSizeForMeasure = size;
     } finally {
       ComponentsSystrace.endSection();
     }
@@ -2059,7 +2491,7 @@ public class RecyclerBinder
   @GuardedBy("this")
   private void resetMeasuredSize(int width) {
     // we will set a range anyway if it's null, no need to do this now.
-    if (mRange == null) {
+    if (mSizeForMeasure == null) {
       return;
     }
     int maxHeight = 0;
@@ -2072,7 +2504,7 @@ public class RecyclerBinder
       }
     }
 
-    if (maxHeight == mRange.measuredSize) {
+    if (maxHeight == mSizeForMeasure.height) {
       return;
     }
 
@@ -2085,8 +2517,8 @@ public class RecyclerBinder
                 maxHeight),
             1);
 
-    mRange.measuredSize = maxHeight;
-    mRange.estimatedViewportCount = rangeSize;
+    mSizeForMeasure.height = maxHeight;
+    mEstimatedViewportCount = rangeSize;
   }
 
   /**
@@ -2140,7 +2572,6 @@ public class RecyclerBinder
 
     view.setLayoutManager(layoutManager);
     view.setAdapter(mInternalAdapter);
-    view.addOnScrollListener(mRangeScrollListener);
     view.addOnScrollListener(mViewportManager.getScrollListener());
 
     if (view instanceof HasPostDispatchDrawListener) {
@@ -2153,8 +2584,9 @@ public class RecyclerBinder
 
     mViewportManager.addViewportChangedListener(mViewportChangedListener);
 
-    if (mCurrentFirstVisiblePosition != RecyclerView.NO_POSITION &&
-        mCurrentFirstVisiblePosition >= 0) {
+    if (mCurrentFirstVisiblePosition != RecyclerView.NO_POSITION
+        && mCurrentFirstVisiblePosition >= 0
+        && !mIsCircular) {
       if (mSmoothScrollAlignmentType != null) {
         scrollSmoothToPosition(
             mCurrentFirstVisiblePosition, mCurrentOffset, mSmoothScrollAlignmentType);
@@ -2171,7 +2603,13 @@ public class RecyclerBinder
       final int jumpToMiddle = Integer.MAX_VALUE / 2;
       final int offsetFirstItem =
           mComponentTreeHolders.isEmpty() ? 0 : jumpToMiddle % mComponentTreeHolders.size();
-      view.scrollToPosition(jumpToMiddle - offsetFirstItem);
+      view.scrollToPosition(
+          jumpToMiddle
+              - offsetFirstItem
+              + (mCurrentFirstVisiblePosition != RecyclerView.NO_POSITION
+                      && mCurrentFirstVisiblePosition >= 0
+                  ? mCurrentFirstVisiblePosition
+                  : 0));
     }
 
     enableStickyHeader(mMountedView);
@@ -2194,8 +2632,12 @@ public class RecyclerBinder
     if (sectionsRecycler == null) {
       return;
     }
-    if (mStickyHeaderController == null) {
-      mStickyHeaderController = new StickyHeaderController(this);
+
+    if (mStickyHeaderControllerFactory == null) {
+      mStickyHeaderController = new StickyHeaderControllerImpl((HasStickyHeader) this);
+    } else {
+      mStickyHeaderController =
+          mStickyHeaderControllerFactory.getController((HasStickyHeader) this);
     }
 
     mStickyHeaderController.init(sectionsRecycler);
@@ -2237,7 +2679,6 @@ public class RecyclerBinder
       mCurrentOffset = 0;
     }
 
-    view.removeOnScrollListener(mRangeScrollListener);
     view.removeOnScrollListener(mViewportManager.getScrollListener());
 
     if (view instanceof HasPostDispatchDrawListener) {
@@ -2288,7 +2729,7 @@ public class RecyclerBinder
     final int target = type == SmoothScrollAlignmentType.SNAP_TO_CENTER ? position + 1 : position;
 
     final RecyclerView.SmoothScroller smoothScroller =
-        SnapUtil.getSmoothScrollerWithOffset(mComponentContext.getBaseContext(), offset, type);
+        SnapUtil.getSmoothScrollerWithOffset(mComponentContext.getAndroidContext(), offset, type);
     smoothScroller.setTargetPosition(target);
     mMountedView.getLayoutManager().startSmoothScroll(smoothScroller);
   }
@@ -2391,14 +2832,13 @@ public class RecyclerBinder
       int lastVisibleIndex,
       int firstFullyVisibleIndex,
       int lastFullyVisibleIndex) {
-    if (mRange == null
+    if (mEstimatedViewportCount == UNSET
         || firstVisibleIndex == RecyclerView.NO_POSITION
         || lastVisibleIndex == RecyclerView.NO_POSITION) {
       return;
     }
 
-    final int rangeSize =
-        Math.max(mRange.estimatedViewportCount, lastVisibleIndex - firstVisibleIndex);
+    final int rangeSize = Math.max(mEstimatedViewportCount, lastVisibleIndex - firstVisibleIndex);
     final int layoutRangeSize = (int) (rangeSize * mRangeRatio);
     final int rangeStart = Math.max(0, firstVisibleIndex - layoutRangeSize);
     final int rangeEnd =
@@ -2416,10 +2856,7 @@ public class RecyclerBinder
   }
 
   private void maybePostUpdateViewportAndComputeRange() {
-    if (mMountedView != null
-        && (mUseSharedLayoutStateFuture
-            || ComponentsConfiguration.insertPostAsyncLayout
-            || mViewportManager.shouldUpdate())) {
+    if (mMountedView != null && mViewportManager.shouldUpdate()) {
       mMountedView.removeCallbacks(mUpdateViewportRunnable);
       ViewCompat.postOnAnimation(mMountedView, mUpdateViewportRunnable);
     }
@@ -2433,14 +2870,14 @@ public class RecyclerBinder
     final int treeHoldersSize;
 
     synchronized (this) {
-      if (!mIsMeasured.get() || mRange == null) {
+      if (!isMeasured() || mEstimatedViewportCount == UNSET) {
         return;
       }
 
       if (firstVisible == RecyclerView.NO_POSITION || lastVisible == RecyclerView.NO_POSITION) {
         firstVisible = lastVisible = 0;
       }
-      rangeSize = Math.max(mRange.estimatedViewportCount, lastVisible - firstVisible);
+      rangeSize = Math.max(mEstimatedViewportCount, lastVisible - firstVisible);
       treeHoldersSize = mComponentTreeHolders.size();
       if (mIsCircular) {
         rangeStart = 0;
@@ -2489,7 +2926,7 @@ public class RecyclerBinder
     }
 
     if (index >= rangeStart && index <= rangeEnd) {
-      if (!holder.isTreeValid()) {
+      if (!holder.isTreeValidForSizeSpecs(childrenWidthSpec, childrenHeightSpec)) {
         holder.computeLayoutAsync(mComponentContext, childrenWidthSpec, childrenHeightSpec);
       }
     } else {
@@ -2541,8 +2978,39 @@ public class RecyclerBinder
 
   @VisibleForTesting
   @Nullable
+  // todo T40814333 change tests so this isn't needed.
   RangeCalculationResult getRangeCalculationResult() {
-    return mRange;
+    if (mSizeForMeasure == null && mEstimatedViewportCount == UNSET) {
+      return null;
+    }
+
+    final RangeCalculationResult range = new RangeCalculationResult();
+    range.measuredSize = getSizeForMeasuring();
+    range.estimatedViewportCount = mEstimatedViewportCount;
+
+    return range;
+  }
+
+  private boolean hasComputedRange() {
+    return mSizeForMeasure != null && mEstimatedViewportCount != UNSET;
+  }
+
+  /**
+   * If measure is called with measure specs that cannot be used to measure the recyclerview, the
+   * size of one of an item will be used to determine how to measure instead.
+   *
+   * @return a size value that can be used to measure the dimension of the recycler that has unknown
+   *     size, which is width for vertical scrolling recyclers or height for horizontal scrolling
+   *     recyclers.
+   */
+  private int getSizeForMeasuring() {
+    if (mSizeForMeasure == null) {
+      return UNSET;
+    }
+
+    return mLayoutInfo.getScrollDirection() == OrientationHelper.HORIZONTAL
+        ? mSizeForMeasure.height
+        : mSizeForMeasure.width;
   }
 
   @GuardedBy("this")
@@ -2699,25 +3167,13 @@ public class RecyclerBinder
    */
   private static final class AsyncBatch {
 
-    private final boolean mIsFirstChangeSet;
     private final ArrayList<AsyncOperation> mOperations = new ArrayList<>();
     private boolean mIsDataChanged;
     private ChangeSetCompleteCallback mChangeSetCompleteCallback;
     private @CommitPolicy int mCommitPolicy;
 
-    public AsyncBatch(@CommitPolicy int commitPolicy, boolean isFirstChangeSet) {
+    public AsyncBatch(@CommitPolicy int commitPolicy) {
       mCommitPolicy = commitPolicy;
-      mIsFirstChangeSet = isFirstChangeSet;
-    }
-  }
-
-  private class RangeScrollListener extends RecyclerView.OnScrollListener {
-
-    @Override
-    public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-      if (mCanPrefetchDisplayLists) {
-        DisplayListUtils.prefetchDisplayLists(recyclerView);
-      }
     }
   }
 
@@ -2732,7 +3188,8 @@ public class RecyclerBinder
     }
   }
 
-  private class InternalAdapter extends RecyclerView.Adapter<BaseViewHolder> {
+  private class InternalAdapter extends RecyclerView.Adapter<BaseViewHolder>
+      implements RecyclerBinderAdapter {
 
     InternalAdapter() {
       super();
@@ -2744,7 +3201,7 @@ public class RecyclerBinder
       final ViewCreator viewCreator = mRenderInfoViewCreatorController.getViewCreator(viewType);
 
       if (viewCreator != null) {
-        final View view = viewCreator.createView(mComponentContext, parent);
+        final View view = viewCreator.createView(mComponentContext.getAndroidContext(), parent);
         return new BaseViewHolder(view, false);
       } else {
         final LithoView lithoView =
@@ -2771,7 +3228,7 @@ public class RecyclerBinder
         lithoView.setInvalidStateLogParamsList(mInvalidStateLogParamsList);
         final int childrenWidthSpec = getActualChildrenWidthSpec(componentTreeHolder);
         final int childrenHeightSpec = getActualChildrenHeightSpec(componentTreeHolder);
-        if (!componentTreeHolder.isTreeValid()) {
+        if (!componentTreeHolder.isTreeValidForSizeSpecs(childrenWidthSpec, childrenHeightSpec)) {
           final Size size = new Size();
           componentTreeHolder.computeLayoutSync(
               mComponentContext, childrenWidthSpec, childrenHeightSpec, size);
@@ -2823,13 +3280,18 @@ public class RecyclerBinder
         holder.viewBinder = viewBinder;
         viewBinder.bind(holder.itemView);
       }
+
+      if (ComponentsConfiguration.isRenderInfoDebuggingEnabled()) {
+        RenderInfoDebugInfoRegistry.setRenderInfoToViewMapping(
+            holder.itemView,
+            renderInfo.getDebugInfo(RenderInfoDebugInfoRegistry.SONAR_SECTIONS_DEBUG_INFO_TAG));
+      }
     }
 
     @Override
     @GuardedBy("RecyclerBinder.this")
     public int getItemViewType(int position) {
-      final RenderInfo renderInfo =
-          mComponentTreeHolders.get(getNormalizedPosition(position)).getRenderInfo();
+      final RenderInfo renderInfo = getRenderInfoAt(position);
       if (renderInfo.rendersComponent()) {
         // Special value for LithoViews
         return mRenderInfoViewCreatorController.getComponentViewType();
@@ -2846,7 +3308,8 @@ public class RecyclerBinder
 
       // If the recycler is circular, we have to simulate having an infinite number of items in the
       // adapter by returning Integer.MAX_VALUE.
-      return mIsCircular ? Integer.MAX_VALUE : mComponentTreeHolders.size();
+      int size = mComponentTreeHolders.size();
+      return (mIsCircular && size > 0) ? Integer.MAX_VALUE : size;
     }
 
     @Override
@@ -2868,6 +3331,21 @@ public class RecyclerBinder
     @Override
     public long getItemId(int position) {
       return mComponentTreeHolders.get(position).getId();
+    }
+
+    @Override
+    public int findFirstVisibleItemPosition() {
+      return mLayoutInfo.findFirstVisibleItemPosition();
+    }
+
+    @Override
+    public int findLastVisibleItemPosition() {
+      return mLayoutInfo.findLastVisibleItemPosition();
+    }
+
+    @Override
+    public RenderInfo getRenderInfoAt(int position) {
+      return mComponentTreeHolders.get(getNormalizedPosition(position)).getRenderInfo();
     }
   }
 
@@ -2940,27 +3418,19 @@ public class RecyclerBinder
   }
 
   private ComponentTreeHolder createComponentTreeHolder(RenderInfo renderInfo) {
-    if (mSharedLayoutStateFutureLayoutHandler != null) {
-      return mComponentTreeHolderFactory.create(
-          renderInfo,
-          mSharedLayoutStateFutureLayoutHandler,
-          mCanPrefetchDisplayLists,
-          mCanCacheDrawingDisplayLists,
-          mUseSharedLayoutStateFuture,
-          mComponentTreeMeasureListenerFactory,
-          mSplitLayoutTag);
+    final LayoutHandler layoutHandler;
+    if (mLayoutHandlerFactory != null) {
+      layoutHandler = mLayoutHandlerFactory.createLayoutCalculationHandler(renderInfo);
+    } else if (mThreadPoolHandler != null) {
+      layoutHandler = mThreadPoolHandler;
+    } else {
+      layoutHandler = null;
     }
-
     return mComponentTreeHolderFactory.create(
         renderInfo,
-        mLayoutHandlerFactory != null
-            ? mLayoutHandlerFactory.createLayoutCalculationHandler(renderInfo)
-            : null,
-        mCanPrefetchDisplayLists,
-        mCanCacheDrawingDisplayLists,
-        mUseSharedLayoutStateFuture,
+        layoutHandler,
         mComponentTreeMeasureListenerFactory,
-        mSplitLayoutTag);
+        mIncrementalMountEnabled);
   }
 
   private void updateHolder(ComponentTreeHolder holder, RenderInfo renderInfo) {
@@ -2976,32 +3446,147 @@ public class RecyclerBinder
     ComponentTreeHolderRangeInfo holderForRangeInfo = null;
 
     if (!mComponentTreeHolders.isEmpty()) {
-      final int positionToComputeLayout = findFirstComponentPosition(mComponentTreeHolders);
+      final int positionToComputeLayout =
+          findInitialComponentPosition(mComponentTreeHolders, mTraverseLayoutBackwards);
       if (mCurrentFirstVisiblePosition < mComponentTreeHolders.size()
           && positionToComputeLayout >= 0) {
         holderForRangeInfo =
-            new ComponentTreeHolderRangeInfo(
-                positionToComputeLayout, mComponentTreeHolders.get(positionToComputeLayout));
+            new ComponentTreeHolderRangeInfo(positionToComputeLayout, mComponentTreeHolders);
       }
     } else if (!mAsyncComponentTreeHolders.isEmpty()) {
-      final int positionToComputeLayout = findFirstComponentPosition(mAsyncComponentTreeHolders);
+      final int positionToComputeLayout =
+          findInitialComponentPosition(mAsyncComponentTreeHolders, mTraverseLayoutBackwards);
       if (positionToComputeLayout >= 0) {
         holderForRangeInfo =
-            new ComponentTreeHolderRangeInfo(
-                positionToComputeLayout, mAsyncComponentTreeHolders.get(positionToComputeLayout));
+            new ComponentTreeHolderRangeInfo(positionToComputeLayout, mAsyncComponentTreeHolders);
       }
     }
 
     return holderForRangeInfo;
   }
 
-  private static class ComponentTreeHolderRangeInfo {
-    private final int mPosition;
-    private final ComponentTreeHolder mHolder;
-
-    private ComponentTreeHolderRangeInfo(int position, ComponentTreeHolder holder) {
-      mPosition = position;
-      mHolder = holder;
+  private static synchronized ThreadPoolLayoutHandler getDefaultThreadPoolLayoutHandler() {
+    if (sThreadPoolHandler == null) {
+      sThreadPoolHandler =
+          new ThreadPoolLayoutHandler(ComponentsConfiguration.threadPoolConfiguration);
     }
+
+    return sThreadPoolHandler;
+  }
+
+  /**
+   * @return true if the given view is visible to user, false otherwise. The logic is leveraged from
+   *     {@link View#isVisibleToUser()}.
+   */
+  private static boolean isVisibleToUser(View view) {
+    if (view.getWindowVisibility() != View.VISIBLE) {
+      return false;
+    }
+
+    Object current = view;
+    while (current instanceof View) {
+      final View currentView = (View) current;
+      if (currentView.getAlpha() <= 0 || currentView.getVisibility() != View.VISIBLE) {
+        return false;
+      }
+      current = currentView.getParent();
+    }
+
+    return view.getGlobalVisibleRect(sDummyRect);
+  }
+
+  /** @return a list of view's visibility, iterating from given view to its ancestor views. */
+  private static List<String> getVisibleHierarchy(View view) {
+    final List<String> hierarchy = new ArrayList<>();
+    Object current = view;
+    while (current instanceof View) {
+      final View currentView = (View) current;
+      hierarchy.add(
+          "view="
+              + currentView.getClass().getSimpleName()
+              + ", alpha="
+              + currentView.getAlpha()
+              + ", visibility="
+              + currentView.getVisibility());
+      if (currentView.getAlpha() <= 0 || currentView.getVisibility() != View.VISIBLE) {
+        break;
+      }
+      current = currentView.getParent();
+    }
+    return hierarchy;
+  }
+
+  @VisibleForTesting
+  static class ComponentTreeHolderRangeInfo {
+    private final int mPosition;
+    private final List<ComponentTreeHolder> mHolders;
+
+    @VisibleForTesting
+    ComponentTreeHolderRangeInfo(int position, List<ComponentTreeHolder> holders) {
+      mPosition = position;
+      mHolders = holders;
+    }
+  }
+
+  @VisibleForTesting
+  /** Used for finding components to calculate layout during async init range */
+  static class ComponentAsyncInitRangeIterator implements Iterator<ComponentTreeHolder> {
+
+    private final boolean mTraverseLayoutBackwards;
+    private final List<ComponentTreeHolder> mHolders;
+
+    private int mCurrentPosition;
+    private int mNumberOfItemsToProcess;
+
+    ComponentAsyncInitRangeIterator(
+        List<ComponentTreeHolder> holders,
+        int initialPosition,
+        int numberOfItemsToProcess,
+        boolean traverseLayoutBackwards) {
+      mHolders = holders;
+      mCurrentPosition = traverseLayoutBackwards ? initialPosition - 1 : initialPosition + 1;
+      mNumberOfItemsToProcess = numberOfItemsToProcess;
+      mTraverseLayoutBackwards = traverseLayoutBackwards;
+    }
+
+    @Override
+    public boolean hasNext() {
+      while (mNumberOfItemsToProcess > 0 && isValidPosition(mCurrentPosition)) {
+        final ComponentTreeHolder holder = mHolders.get(mCurrentPosition);
+        if (holder.getRenderInfo().rendersComponent() && !holder.isTreeValid()) {
+          return true;
+        } else {
+          shiftToNextPosition();
+        }
+      }
+      return false;
+    }
+
+    boolean isValidPosition(int position) {
+      return position >= 0 && position < mHolders.size();
+    }
+
+    @Override
+    public synchronized @Nullable ComponentTreeHolder next() {
+      if (!hasNext()) {
+        return null;
+      }
+
+      final ComponentTreeHolder holder = mHolders.get(mCurrentPosition);
+      shiftToNextPosition();
+      mNumberOfItemsToProcess--;
+      return holder;
+    }
+
+    private void shiftToNextPosition() {
+      if (mTraverseLayoutBackwards) {
+        mCurrentPosition--;
+      } else {
+        mCurrentPosition++;
+      }
+    }
+
+    @Override
+    public void remove() {}
   }
 }

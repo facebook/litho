@@ -18,8 +18,8 @@ package com.facebook.litho;
 
 import android.os.Looper;
 import android.os.Process;
-import android.support.annotation.IntDef;
-import android.support.annotation.VisibleForTesting;
+import androidx.annotation.IntDef;
+import androidx.annotation.VisibleForTesting;
 import com.facebook.litho.config.ComponentsConfiguration;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -84,6 +84,15 @@ public class ThreadUtils {
     if (Thread.holdsLock(lock)) {
       throw new IllegalStateException("This method should be called outside the lock.");
     }
+  }
+
+  /**
+   * Try to raise the priority of {@param threadId} to the priority of the calling thread
+   *
+   * @return the original thread priority of the target thread.
+   */
+  public static int tryInheritThreadPriorityFromCurrentThread(int threadId) {
+    return tryRaiseThreadPriority(threadId, Process.getThreadPriority(Process.myTid()));
   }
 
   /**

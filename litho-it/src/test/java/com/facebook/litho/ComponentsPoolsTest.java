@@ -40,8 +40,8 @@ import org.robolectric.util.ActivityController;
 public class ComponentsPoolsTest {
 
   private static final int POOL_SIZE = 2;
-  private final ComponentLifecycle mLifecycle =
-      new ComponentLifecycle() {
+  private final Component mLifecycle =
+      new Component("Lifecycle") {
         @Override
         int getTypeId() {
           return 1;
@@ -58,8 +58,8 @@ public class ComponentsPoolsTest {
         }
       };
 
-  private final ComponentLifecycle mLifecycleWithEmptyPoolSize =
-      new ComponentLifecycle() {
+  private final Component mLifecycleWithEmptyPoolSize =
+      new Component("LifecycleWithEmptyPoolSize") {
         @Override
         int getTypeId() {
           return 2;
@@ -76,23 +76,19 @@ public class ComponentsPoolsTest {
         }
       };
 
-  private ComponentContext mContext1;
-  private ComponentContext mContext2;
-  private ComponentContext mContext3;
+  private Context mContext1;
+  private Context mContext2;
   private ActivityController<Activity> mActivityController;
   private Activity mActivity;
-  private ComponentContext mActivityComponentContext;
   private ColorDrawable mMountContent;
   private View mNewMountContent;
 
   @Before
   public void setup() {
-    mContext1 = new ComponentContext(RuntimeEnvironment.application);
-    mContext2 = new ComponentContext(new ComponentContext(RuntimeEnvironment.application));
-    mContext3 = new ComponentContext(new ContextWrapper(RuntimeEnvironment.application));
+    mContext1 = RuntimeEnvironment.application;
+    mContext2 = new ContextWrapper(RuntimeEnvironment.application);
     mActivityController = Robolectric.buildActivity(Activity.class).create();
     mActivity = mActivityController.get();
-    mActivityComponentContext = new ComponentContext(mActivity);
     mMountContent = new ColorDrawable(Color.RED);
     mNewMountContent = new View(mContext1);
   }
@@ -112,39 +108,28 @@ public class ComponentsPoolsTest {
   }
 
   @Test
-  public void testAcquireMountContentWithSameUnderlyingContext() {
+  public void testAcquireMountContentWithSameRootContext() {
     assertThat(acquireMountContent(mContext1, mLifecycle)).isSameAs(mNewMountContent);
 
     release(mContext1, mLifecycle, mMountContent);
 
-    assertThat(mMountContent).isSameAs(acquireMountContent(mContext2, mLifecycle));
-  }
-
-  @Test
-  public void testAcquireMountContentWithDifferentUnderlyingContext() {
-    assertThat(acquireMountContent(mContext1, mLifecycle)).isSameAs(mNewMountContent);
-
-    release(mContext1, mLifecycle, mMountContent);
-
-    assertThat(acquireMountContent(mContext3, mLifecycle)).isSameAs(mNewMountContent);
+    assertThat(acquireMountContent(mContext2, mLifecycle)).isSameAs(mNewMountContent);
   }
 
   @Test
   public void testReleaseMountContentForDestroyedContextDoesNothing() {
     // Assert pooling was working before
-    assertThat(acquireMountContent(mActivityComponentContext, mLifecycle))
-        .isSameAs(mNewMountContent);
+    assertThat(acquireMountContent(mActivity, mLifecycle)).isSameAs(mNewMountContent);
 
-    release(mActivityComponentContext, mLifecycle, mMountContent);
+    release(mActivity, mLifecycle, mMountContent);
 
-    assertThat(mMountContent).isSameAs(acquireMountContent(mActivityComponentContext, mLifecycle));
+    assertThat(mMountContent).isSameAs(acquireMountContent(mActivity, mLifecycle));
 
     // Now destroy it and assert pooling no longer works
     mActivityController.destroy();
-    release(mActivityComponentContext, mLifecycle, mMountContent);
+    release(mActivity, mLifecycle, mMountContent);
 
-    assertThat(acquireMountContent(mActivityComponentContext, mLifecycle))
-        .isSameAs(mNewMountContent);
+    assertThat(acquireMountContent(mActivity, mLifecycle)).isSameAs(mNewMountContent);
   }
 
   @Test

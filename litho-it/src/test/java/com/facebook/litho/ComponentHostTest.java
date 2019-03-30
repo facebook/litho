@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import static android.content.res.Configuration.ORIENTATION_PORTRAIT;
 import static android.graphics.Color.BLACK;
 import static android.view.MotionEvent.obtain;
 import static android.view.View.GONE;
@@ -41,12 +42,15 @@ import android.content.Context;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.support.v4.util.SparseArrayCompat;
+import android.os.Build;
 import android.util.SparseArray;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import androidx.collection.SparseArrayCompat;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestViewComponent;
+import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.yoga.YogaDirection;
 import java.util.List;
@@ -54,8 +58,8 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.powermock.reflect.Whitebox;
 import org.robolectric.RuntimeEnvironment;
+import org.robolectric.annotation.Config;
 
 /**
  * Tests {@link ComponentHost}
@@ -108,7 +112,7 @@ public class ComponentHostTest {
     assertThat(mHost.getInvalidationCount()).isEqualTo(2);
     assertThat(mHost.getInvalidationRect()).isEqualTo(d2.getBounds());
 
-    View v1 = new View(mContext);
+    View v1 = new View(mContext.getAndroidContext());
     Rect v1Bounds = new Rect(0, 0, 10, 10);
     v1.measure(
         makeMeasureSpec(v1Bounds.width(), EXACTLY),
@@ -154,7 +158,7 @@ public class ComponentHostTest {
     mount(1, new ColorDrawable());
     assertThat(mHost.getMountItemCount()).isEqualTo(2);
 
-    MountItem mountItem3 = mount(2, new View(mContext));
+    MountItem mountItem3 = mount(2, new View(mContext.getAndroidContext()));
     assertThat(mHost.getMountItemCount()).isEqualTo(3);
 
     unmount(0, mountItem1);
@@ -177,7 +181,7 @@ public class ComponentHostTest {
     assertThat(mHost.getMountItemAt(2)).isNull();
 
     MountItem mountItem1 = mount(0, new ColorDrawable());
-    MountItem mountItem2 = mount(1, new View(mContext));
+    MountItem mountItem2 = mount(1, new View(mContext.getAndroidContext()));
     MountItem mountItem3 = mount(5, new ColorDrawable());
 
     assertThat(mHost.getMountItemAt(0)).isEqualTo(mountItem1);
@@ -209,7 +213,7 @@ public class ComponentHostTest {
 
     MountItem mountItem1 = mount(0, new ColorDrawable());
     MountItem mountItem2 = mount(1, touchableDrawableOnItem2);
-    MountItem mountItem3 = mount(2, new View(mContext));
+    MountItem mountItem3 = mount(2, new View(mContext.getAndroidContext()));
     MountItem mountItem4 = mount(5, touchableDrawableOnItem4);
 
     assertThat(mHost.getMountItemAt(0)).isEqualTo(mountItem1);
@@ -236,11 +240,11 @@ public class ComponentHostTest {
     MountItem mountItem1 = mount(0, new ColorDrawable());
     MountItem mountItem2 =
         mount(1, new TouchableDrawable(), MountItem.LAYOUT_FLAG_DISABLE_TOUCHABLE);
-    MountItem mountItem3 = mount(2, new View(mContext));
+    MountItem mountItem3 = mount(2, new View(mContext.getAndroidContext()));
     MountItem mountItem4 = mount(4, spy(new TouchableDrawable()));
     MountItem mountItem5 =
         mount(5, new TouchableDrawable(), MountItem.LAYOUT_FLAG_DISABLE_TOUCHABLE);
-    MountItem mountItem6 = mount(7, new View(mContext));
+    MountItem mountItem6 = mount(7, new View(mContext.getAndroidContext()));
     MountItem mountItem7 =
         mount(8, new TouchableDrawable(), MountItem.LAYOUT_FLAG_DISABLE_TOUCHABLE);
 
@@ -262,7 +266,7 @@ public class ComponentHostTest {
   @Test
   public void testMoveItem() {
     MountItem mountItem1 = mount(1, new ColorDrawable());
-    MountItem mountItem2 = mount(2, new View(mContext));
+    MountItem mountItem2 = mount(2, new View(mContext.getAndroidContext()));
 
     assertThat(mHost.getMountItemCount()).isEqualTo(2);
 
@@ -447,7 +451,7 @@ public class ComponentHostTest {
     Drawable d2 = new ColorDrawable();
     mount(1, d2);
 
-    MountItem mountItem3 = mount(2, new View(mContext));
+    MountItem mountItem3 = mount(2, new View(mContext.getAndroidContext()));
 
     List<Drawable> drawables = mHost.getDrawables();
     assertThat(drawables).hasSize(2);
@@ -606,6 +610,20 @@ public class ComponentHostTest {
   }
 
   @Test
+  public void testSuppressRequestFocus() {
+    mHost.requestFocus();
+    assertThat(mHost.getFocusRequestCount()).isEqualTo(1);
+
+    mHost.suppressInvalidations(true);
+    mHost.requestFocus();
+    assertThat(mHost.getFocusRequestCount()).isEqualTo(1);
+
+    mHost.suppressInvalidations(false);
+
+    assertThat(mHost.getFocusRequestCount()).isEqualTo(2);
+  }
+
+  @Test
   public void testGetContentDescriptions() {
     CharSequence hostContentDescription = "hostContentDescription";
     mHost.setContentDescription(hostContentDescription);
@@ -628,10 +646,10 @@ public class ComponentHostTest {
 
   @Test
   public void testGetChildDrawingOrder() {
-    View v1 = new View(mContext);
+    View v1 = new View(mContext.getAndroidContext());
     mount(2, v1);
 
-    View v2 = new View(mContext);
+    View v2 = new View(mContext.getAndroidContext());
     MountItem mountItem2 = mount(0, v2);
 
     assertThat(mHost.getChildDrawingOrder(mHost.getChildCount(), 0)).isEqualTo(1);
@@ -666,15 +684,79 @@ public class ComponentHostTest {
     assertThat(mHost.getChildDrawingOrder(mHost.getChildCount(), 1)).isEqualTo(1);
   }
 
+  /**
+   * {@link ViewGroup#getClipChildren()} method was only added in API 18, but plays important role
+   * here, so will need to run this test for two SDK versions. And since {@link
+   * ComponentsTestRunner} does not support multiple values for @Config.sdk, there are two separated
+   * test methods {@see #testTemporaryChildClippingDisablingJB} {@see
+   * #testTemporaryChildClippingDisablingLollipop}
+   */
+  private void testTemporaryChildClippingDisabling() {
+    ComponentHost componentHost = new ComponentHost(mContext);
+
+    assertThat(componentHost.getClipChildren()).isTrue();
+
+    // 1. Testing disable > restore
+    componentHost.temporaryDisableChildClipping();
+
+    assertThat(componentHost.getClipChildren()).isFalse();
+
+    componentHost.restoreChildClipping();
+
+    assertThat(componentHost.getClipChildren()).isTrue();
+
+    // 2. Testing disable > set > restore
+    componentHost.temporaryDisableChildClipping();
+    componentHost.setClipChildren(true);
+
+    assertThat(componentHost.getClipChildren()).isFalse();
+
+    componentHost.restoreChildClipping();
+
+    assertThat(componentHost.getClipChildren()).isTrue();
+
+    // 3. Same as 1 (disable > restore), but starting with clipping tuned off initially
+    componentHost.setClipChildren(false);
+    componentHost.temporaryDisableChildClipping();
+
+    assertThat(componentHost.getClipChildren()).isFalse();
+
+    componentHost.restoreChildClipping();
+
+    assertThat(componentHost.getClipChildren()).isFalse();
+
+    // 4. Same as 2 (disable > set > restore), with reverted values
+    componentHost.temporaryDisableChildClipping();
+    componentHost.setClipChildren(true);
+
+    assertThat(componentHost.getClipChildren()).isFalse();
+
+    componentHost.restoreChildClipping();
+
+    assertThat(componentHost.getClipChildren()).isTrue();
+  }
+
+  @Config(sdk = Build.VERSION_CODES.JELLY_BEAN)
+  @Test
+  public void testTemporaryChildClippingDisablingJB() {
+    testTemporaryChildClippingDisabling();
+  }
+
+  @Config(sdk = Build.VERSION_CODES.LOLLIPOP)
+  @Test
+  public void testTemporaryChildClippingDisablingLollipop() {
+    testTemporaryChildClippingDisabling();
+  }
+
   @Test
   public void testDisappearingItems() {
-    View v1 = new View(mContext);
+    View v1 = new View(mContext.getAndroidContext());
     mount(0, v1);
 
     Drawable d1 = new ColorDrawable(BLACK);
     MountItem mountItem1 = mount(1, d1);
 
-    View v2 = new View(mContext);
+    View v2 = new View(mContext.getAndroidContext());
     MountItem mountItem2 = mount(2, v2);
 
     Drawable d2 = new ColorDrawable(BLACK);
@@ -712,16 +794,16 @@ public class ComponentHostTest {
   @Ignore("t19681984")
   @Test
   public void testDisappearingItemDrawingOrder() {
-    View v1 = new View(mContext);
+    View v1 = new View(mContext.getAndroidContext());
     mount(5, v1);
 
-    View v2 = new View(mContext);
+    View v2 = new View(mContext.getAndroidContext());
     mount(2, v2);
 
-    View v3 = new View(mContext);
+    View v3 = new View(mContext.getAndroidContext());
     MountItem mountItem3 = mount(4, v3);
 
-    View v4 = new View(mContext);
+    View v4 = new View(mContext.getAndroidContext());
     MountItem mountItem4 = mount(0, v4);
 
     assertThat(mHost.getChildDrawingOrder(mHost.getChildCount(), 0)).isEqualTo(3);
@@ -837,7 +919,7 @@ public class ComponentHostTest {
     assertThat(drawables).hasSize(1);
     assertThat(drawables).contains(d3);
 
-    unmount(2, mountItem2);
+    unmount(1, mountItem2);
 
     drawables = mHost.getDrawables();
     assertThat(drawables).hasSize(1);
@@ -865,20 +947,20 @@ public class ComponentHostTest {
   }
 
   private MountItem mount(int index, Object content, int flags, CharSequence contentDescription) {
-    MountItem mountItem = new MountItem();
-    NodeInfo nodeInfo = NodeInfo.acquire();
+    NodeInfo nodeInfo = new DefaultNodeInfo();
     nodeInfo.setContentDescription(contentDescription);
 
-    mountItem.init(
-        content instanceof Drawable ? mDrawableComponent : mViewComponent,
-        null,
-        content,
-        nodeInfo,
-        null,
-        null,
-        flags,
-        IMPORTANT_FOR_ACCESSIBILITY_AUTO,
-        null);
+    MountItem mountItem =
+        new MountItem(
+            content instanceof Drawable ? mDrawableComponent : mViewComponent,
+            null,
+            content,
+            nodeInfo,
+            null,
+            flags,
+            IMPORTANT_FOR_ACCESSIBILITY_AUTO,
+            ORIENTATION_PORTRAIT,
+            null);
 
     mHost.mount(
         index,
@@ -888,8 +970,7 @@ public class ComponentHostTest {
   }
 
   private MountItem mountTouchExpansionItem(int index, Object content) {
-    final MountItem viewMountItem = new MountItem();
-    final ViewNodeInfo viewNodeInfo = ViewNodeInfo.acquire();
+    final ViewNodeInfo viewNodeInfo = new ViewNodeInfo();
     viewNodeInfo.setLayoutDirection(YogaDirection.LTR);
 
     InternalNode node = mock(InternalNode.class);
@@ -901,16 +982,17 @@ public class ComponentHostTest {
 
     viewNodeInfo.setExpandedTouchBounds(node, 1, 1, 1, 1);
 
-    viewMountItem.init(
-        mViewComponent,
-        null,
-        content,
-        null,
-        viewNodeInfo,
-        null,
-        0,
-        IMPORTANT_FOR_ACCESSIBILITY_AUTO,
-        null);
+    MountItem viewMountItem =
+        new MountItem(
+            mViewComponent,
+            null,
+            content,
+            null,
+            viewNodeInfo,
+            0,
+            IMPORTANT_FOR_ACCESSIBILITY_AUTO,
+            ORIENTATION_PORTRAIT,
+            null);
     mHost.mount(index, viewMountItem, new Rect());
 
     return viewMountItem;
@@ -924,6 +1006,7 @@ public class ComponentHostTest {
 
     private int mInvalidationCount = 0;
     private Rect mInvalidationRect = null;
+    private int mFocusRequestCount = 0;
 
     public TestableComponentHost(ComponentContext context) {
       super(context);
@@ -978,6 +1061,16 @@ public class ComponentHostTest {
           child.getTop(),
           child.getRight(),
           child.getBottom());
+    }
+
+    @Override
+    public int getDescendantFocusability() {
+      mFocusRequestCount++;
+      return super.getDescendantFocusability();
+    }
+
+    int getFocusRequestCount() {
+      return mFocusRequestCount;
     }
 
     int getInvalidationCount() {

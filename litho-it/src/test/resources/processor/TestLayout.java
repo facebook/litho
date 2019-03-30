@@ -16,12 +16,11 @@
 package com.facebook.litho.processor.integration.resources;
 
 import android.annotation.TargetApi;
-import android.support.annotation.AttrRes;
-import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
-import android.support.annotation.VisibleForTesting;
-import android.support.v4.util.Pools;
 import android.view.View;
+import androidx.annotation.AttrRes;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import androidx.annotation.VisibleForTesting;
 import com.facebook.litho.ClickEvent;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
@@ -39,15 +38,15 @@ import com.facebook.litho.StateContainer;
 import com.facebook.litho.StateValue;
 import com.facebook.litho.Transition;
 import com.facebook.litho.TreeProps;
+import com.facebook.litho.annotations.Comparable;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.annotations.TreeProp;
-import com.facebook.litho.config.ComponentsConfiguration;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.BitSet;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @prop-required aspectRatio float
@@ -65,65 +64,58 @@ import java.util.List;
  */
 @TargetApi(17)
 public final class TestLayout<S extends View> extends Component implements TestTag {
-  static final Pools.SynchronizedPool<TestEvent> sTestEventPool = new Pools.SynchronizedPool<TestEvent>(2);
-
+  @Comparable(type = 14)
   private TestLayoutStateContainer mStateContainer;
 
   private TestLayoutRenderData mPreviousRenderData;
 
   @Prop(resType = ResType.NONE, optional = false)
+  @Comparable(type = 0)
   float aspectRatio;
 
-  @Prop(
-      resType = ResType.NONE,
-      optional = false
-  )
+  @Prop(resType = ResType.NONE, optional = false)
+  @Comparable(type = 10)
   Component child;
 
   @Prop(resType = ResType.NONE, optional = false)
+  @Comparable(type = 3)
   boolean focusable;
 
   @Prop(resType = ResType.NONE, optional = false)
+  @Comparable(type = 12)
   EventHandler<ClickEvent> handler;
 
   @Prop(resType = ResType.STRING, optional = true)
+  @Comparable(type = 5)
   List<String> names = TestLayoutSpec.names;
 
-  @Prop(
-      resType = ResType.NONE,
-      optional = false
-  )
+  @Prop(resType = ResType.NONE, optional = false)
+  @Comparable(type = 3)
   int prop1;
 
-  @Prop(
-      resType = ResType.NONE,
-      optional = true
-  )
+  @Prop(resType = ResType.NONE, optional = true)
+  @Comparable(type = 3)
   boolean prop2 = TestLayoutSpec.prop2;
 
   @Nullable
   @Prop(resType = ResType.NONE, optional = false)
+  @Comparable(type = 13)
   Object prop3;
 
-  @Prop(
-      resType = ResType.NONE,
-      optional = false
-  )
+  @Prop(resType = ResType.NONE, optional = false)
+  @Comparable(type = 2)
   char[] prop4;
 
-  @Prop(
-      resType = ResType.NONE,
-      optional = false
-  )
+  @Prop(resType = ResType.NONE, optional = false)
+  @Comparable(type = 3)
   char prop5;
 
-  @Prop(
-      resType = ResType.NONE,
-      optional = false
-  )
+  @Prop(resType = ResType.NONE, optional = false)
+  @Comparable(type = 3)
   long prop6;
 
   @TreeProp
+  @Comparable(type = 13)
   TestTreeProp treeProp;
 
   EventHandler testEventHandler;
@@ -138,71 +130,6 @@ public final class TestLayout<S extends View> extends Component implements TestT
   @Override
   protected StateContainer getStateContainer() {
     return mStateContainer;
-  }
-
-  @Override
-  public boolean isEquivalentTo(Component other) {
-    if (ComponentsConfiguration.useNewIsEquivalentTo) {
-      return super.isEquivalentTo(other);
-    }
-    if (this == other) {
-      return true;
-    }
-    if (other == null || getClass() != other.getClass()) {
-      return false;
-    }
-    TestLayout testLayoutRef = (TestLayout) other;
-    if (this.getId() == testLayoutRef.getId()) {
-      return true;
-    }
-    if (Float.compare(aspectRatio, testLayoutRef.aspectRatio) != 0) {
-      return false;
-    }
-    if (child != null ? !child.isEquivalentTo(testLayoutRef.child) : testLayoutRef.child != null) {
-      return false;
-    }
-    if (focusable != testLayoutRef.focusable) {
-      return false;
-    }
-    if (handler != null
-        ? !handler.isEquivalentTo(testLayoutRef.handler)
-        : testLayoutRef.handler != null) {
-      return false;
-    }
-    if (names != null ? !names.equals(testLayoutRef.names) : testLayoutRef.names != null) {
-      return false;
-    }
-    if (prop1 != testLayoutRef.prop1) {
-      return false;
-    }
-    if (prop2 != testLayoutRef.prop2) {
-      return false;
-    }
-    if (prop3 != null ? !prop3.equals(testLayoutRef.prop3) : testLayoutRef.prop3 != null) {
-      return false;
-    }
-    if (!Arrays.equals(prop4, testLayoutRef.prop4)) {
-      return false;
-    }
-    if (prop5 != testLayoutRef.prop5) {
-      return false;
-    }
-    if (prop6 != testLayoutRef.prop6) {
-      return false;
-    }
-    if (mStateContainer.state1 != testLayoutRef.mStateContainer.state1) {
-      return false;
-    }
-    if (mStateContainer.state2 != null ? !mStateContainer.state2.equals(testLayoutRef.mStateContainer.state2) : testLayoutRef.mStateContainer.state2 != null) {
-      return false;
-    }
-    if (mStateContainer.state3 != testLayoutRef.mStateContainer.state3) {
-      return false;
-    }
-    if (treeProp != null ? !treeProp.equals(testLayoutRef.treeProp) : testLayoutRef.treeProp != null) {
-      return false;
-    }
-    return true;
   }
 
   private UpdateCurrentStateStateUpdate createUpdateCurrentStateStateUpdate(int someParam) {
@@ -237,23 +164,22 @@ public final class TestLayout<S extends View> extends Component implements TestT
   @SuppressWarnings("unchecked")
   @Override
   protected void onLoadStyle(ComponentContext c) {
-    Output<Boolean> prop2Tmp = acquireOutput();
-    Output<Object> prop3Tmp = acquireOutput();
-    TestLayoutSpec.onLoadStyle((ComponentContext) c, prop2Tmp, prop3Tmp);
+    Output<Boolean> prop2Tmp = new Output<>();
+    Output<Object> prop3Tmp = new Output<>();
+    TestLayoutSpec.onLoadStyle(
+        (ComponentContext) c, (Output<Boolean>) prop2Tmp, (Output<Object>) prop3Tmp);
     if (prop2Tmp.get() != null) {
       prop2 = prop2Tmp.get();
     }
-    releaseOutput(prop2Tmp);
     if (prop3Tmp.get() != null) {
       prop3 = prop3Tmp.get();
     }
-    releaseOutput(prop3Tmp);
   }
 
   @Override
   protected void createInitialState(ComponentContext c) {
     StateValue<S> state2 = new StateValue<>();
-    TestLayoutSpec.createInitialState((ComponentContext) c, (int) prop1, state2);
+    TestLayoutSpec.createInitialState((ComponentContext) c, (int) prop1, (StateValue<S>) state2);
     if (state2.get() != null) {
       mStateContainer.state2 = state2.get();
     }
@@ -261,20 +187,22 @@ public final class TestLayout<S extends View> extends Component implements TestT
 
   @Override
   protected Component onCreateLayout(ComponentContext context) {
-    Component _result =
+    Component _result;
+    _result =
         (Component)
             TestLayoutSpec.onCreateLayout(
                 (ComponentContext) context,
-                (boolean) prop2,
                 (Object) prop3,
                 (char[]) prop4,
                 (EventHandler<ClickEvent>) handler,
+                (Component) child,
+                (boolean) prop2,
                 (List<String>) names,
                 (long) mStateContainer.state1,
                 (S) mStateContainer.state2,
                 (int) mStateContainer.state3,
                 (TestTreeProp) treeProp,
-                (Component) child);
+                (Integer) getCached());
     return _result;
   }
 
@@ -285,15 +213,18 @@ public final class TestLayout<S extends View> extends Component implements TestT
 
   @Override
   protected Transition onCreateTransition(ComponentContext c) {
+    Transition _result;
     Diff<Integer> _state3Diff =
-        acquireDiff(
+        new Diff<Integer>(
             mPreviousRenderData == null ? null : mPreviousRenderData.state3,
             mStateContainer.state3);
-    Transition _result =
+    _result =
         (Transition)
             TestLayoutSpec.onCreateTransition(
-                (ComponentContext) c, (Object) prop3, (long) mStateContainer.state1, _state3Diff);
-    releaseDiff(_state3Diff);
+                (ComponentContext) c,
+                (Object) prop3,
+                (long) mStateContainer.state1,
+                (Diff<Integer>) _state3Diff);
     return _result;
   }
 
@@ -305,17 +236,11 @@ public final class TestLayout<S extends View> extends Component implements TestT
   }
 
   static void dispatchTestEvent(EventHandler _eventHandler, View view, Object object) {
-    TestEvent _eventState = sTestEventPool.acquire();
-    if (_eventState == null) {
-      _eventState = new TestEvent();
-    }
+    final TestEvent _eventState = new TestEvent();
     _eventState.view = view;
     _eventState.object = object;
     EventDispatcher _lifecycle = _eventHandler.mHasEventDispatcher.getEventDispatcher();
     _lifecycle.dispatchOnEvent(_eventHandler, _eventState);
-    _eventState.view = null;
-    _eventState.object = null;
-    sTestEventPool.release(_eventState);
   }
 
   private void testLayoutEvent(
@@ -447,11 +372,14 @@ public final class TestLayout<S extends View> extends Component implements TestT
 
   @Override
   protected void transferState(
-      ComponentContext context, StateContainer _prevStateContainer) {
-    TestLayoutStateContainer prevStateContainer = (TestLayoutStateContainer) _prevStateContainer;
-    mStateContainer.state1 = prevStateContainer.state1;
-    mStateContainer.state2 = prevStateContainer.state2;
-    mStateContainer.state3 = prevStateContainer.state3;
+      StateContainer _prevStateContainer, StateContainer _nextStateContainer) {
+    TestLayoutStateContainer<S> prevStateContainer =
+        (TestLayoutStateContainer<S>) _prevStateContainer;
+    TestLayoutStateContainer<S> nextStateContainer =
+        (TestLayoutStateContainer<S>) _nextStateContainer;
+    nextStateContainer.state1 = prevStateContainer.state1;
+    nextStateContainer.state2 = prevStateContainer.state2;
+    nextStateContainer.state3 = prevStateContainer.state3;
   }
 
   protected static void updateCurrentState(ComponentContext c, int someParam) {
@@ -461,7 +389,7 @@ public final class TestLayout<S extends View> extends Component implements TestT
     }
     TestLayout.UpdateCurrentStateStateUpdate _stateUpdate =
         ((TestLayout) _component).createUpdateCurrentStateStateUpdate(someParam);
-    c.updateStateSync(_stateUpdate, "TestLayout.updateCurrentState");
+    c.updateStateAsync(_stateUpdate, "TestLayout.updateCurrentState");
   }
 
   protected static void updateCurrentStateAsync(ComponentContext c, int someParam) {
@@ -490,12 +418,9 @@ public final class TestLayout<S extends View> extends Component implements TestT
     ComponentLifecycle.StateUpdate _stateUpdate =
         new ComponentLifecycle.StateUpdate() {
           @Override
-          public void updateState(
-              StateContainer _stateContainer, Component newComponent) {
-            TestLayout newComponentStateUpdate = (TestLayout) newComponent;
-            StateValue<Long> state1 = new StateValue<Long>();
-            state1.set(lazyUpdateValue);
-            newComponentStateUpdate.mStateContainer.state1 = state1.get();
+          public void updateState(StateContainer _stateContainer) {
+            TestLayoutStateContainer stateContainer = (TestLayoutStateContainer) _stateContainer;
+            stateContainer.state1 = lazyUpdateValue;
           }
         };
     c.updateStateLazy(_stateUpdate);
@@ -539,17 +464,36 @@ public final class TestLayout<S extends View> extends Component implements TestT
     return builder;
   }
 
+  private int getCached() {
+    ComponentContext c = getScopedContext();
+    final CachedInputs inputs = new CachedInputs(prop3, prop5, mStateContainer.state1);
+    Integer cached = (Integer) c.getCachedValue(inputs);
+    if (cached == null) {
+      cached = TestLayoutSpec.onCalculateCached(prop3, prop5, mStateContainer.state1);
+      c.putCachedValue(inputs, cached);
+    }
+    return cached;
+  }
+
+  @Override
+  protected Component getSimpleNameDelegate() {
+    return child;
+  }
+
   @VisibleForTesting(
       otherwise = 2
   )
   static class TestLayoutStateContainer<S extends View> implements StateContainer {
     @State
+    @Comparable(type = 3)
     long state1;
 
     @State
+    @Comparable(type = 13)
     S state2;
 
     @State
+    @Comparable(type = 3)
     int state3;
   }
 
@@ -566,7 +510,8 @@ public final class TestLayout<S extends View> extends Component implements TestT
     }
   }
 
-  private static class UpdateCurrentStateStateUpdate implements ComponentLifecycle.StateUpdate {
+  private static class UpdateCurrentStateStateUpdate<S extends View>
+      implements ComponentLifecycle.StateUpdate {
     private int mSomeParam;
 
     UpdateCurrentStateStateUpdate(int someParam) {
@@ -574,14 +519,12 @@ public final class TestLayout<S extends View> extends Component implements TestT
     }
 
     @Override
-    public void updateState(
-        StateContainer _stateContainer, Component newComponent) {
-      TestLayoutStateContainer stateContainer = (TestLayoutStateContainer) _stateContainer;
-      TestLayout newComponentStateUpdate = (TestLayout) newComponent;
+    public void updateState(StateContainer _stateContainer) {
+      TestLayoutStateContainer<S> stateContainer = (TestLayoutStateContainer<S>) _stateContainer;
       StateValue<Long> state1 = new StateValue<Long>();
       state1.set(stateContainer.state1);
       TestLayoutSpec.updateCurrentState(state1,mSomeParam);
-      newComponentStateUpdate.mStateContainer.state1 = state1.get();
+      stateContainer.state1 = state1.get();
     }
   }
 
@@ -833,16 +776,49 @@ public final class TestLayout<S extends View> extends Component implements TestT
     @Override
     public TestLayout build() {
       checkArgs(REQUIRED_PROPS_COUNT, mRequired, REQUIRED_PROPS_NAMES);
-      TestLayout testLayoutRef = mTestLayout;
-      release();
-      return testLayoutRef;
+      return mTestLayout;
+    }
+  }
+
+  private static class CachedInputs {
+    private final Object prop3;
+
+    private final char prop5;
+
+    private final long state1;
+
+    CachedInputs(Object prop3, char prop5, long state1) {
+      this.prop3 = prop3;
+      this.prop5 = prop5;
+      this.state1 = state1;
     }
 
     @Override
-    protected void release() {
-      super.release();
-      mTestLayout = null;
-      mContext = null;
+    public int hashCode() {
+      return Objects.hash(prop3, prop5, state1);
+    }
+
+    @Override
+    public boolean equals(Object other) {
+      if (this == other) {
+        return true;
+      }
+      if (other == null || !(other instanceof CachedInputs)) {
+        return false;
+      }
+      CachedInputs cachedValueInputs = (CachedInputs) other;
+      if (prop3 != null
+          ? !prop3.equals(cachedValueInputs.prop3)
+          : cachedValueInputs.prop3 != null) {
+        return false;
+      }
+      if (prop5 != cachedValueInputs.prop5) {
+        return false;
+      }
+      if (state1 != cachedValueInputs.state1) {
+        return false;
+      }
+      return true;
     }
   }
 }

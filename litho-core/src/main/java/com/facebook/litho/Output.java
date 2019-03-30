@@ -18,27 +18,22 @@ package com.facebook.litho;
 
 import com.facebook.infer.annotation.ReturnsOwnership;
 import com.facebook.infer.annotation.ThreadSafe;
+import javax.annotation.Nullable;
 
 /**
  * Type for parameters that are logical outputs.
  */
 public class Output<T> {
-  private T mT;
+  private @Nullable T mT;
 
-  /**
-   * Assumed thread-safe because the one write is before all the reads
-   */
+  /** Assumed thread-safe because the one write is before all the reads */
   @ThreadSafe(enableChecks = false)
-  public void set(T t) {
+  public void set(@Nullable T t) {
     mT = t;
   }
 
   @ReturnsOwnership
-  public T get() {
+  public @Nullable T get() {
     return mT;
-  }
-
-  void release() {
-    mT = null;
   }
 }

@@ -16,11 +16,10 @@
 
 package com.facebook.litho.sections.widget;
 
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SnapHelper;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.SnapHelper;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.sections.SectionTree;
-import com.facebook.litho.widget.Binder;
+import com.facebook.litho.widget.LayoutInfo;
 import com.facebook.litho.widget.SnapUtil;
 import javax.annotation.Nullable;
 
@@ -29,7 +28,6 @@ import javax.annotation.Nullable;
  * manager should be used for the {@link RecyclerView}
  */
 public interface RecyclerConfiguration {
-  <E extends Binder<RecyclerView> & SectionTree.Target> E buildTarget(ComponentContext c);
 
   @Nullable
   SnapHelper getSnapHelper();
@@ -39,5 +37,7 @@ public interface RecyclerConfiguration {
 
   int getOrientation();
 
-  boolean isWrapContent();
+  LayoutInfo getLayoutInfo(ComponentContext c);
+
+  RecyclerBinderConfiguration getRecyclerBinderConfiguration();
 }

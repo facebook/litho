@@ -14,7 +14,7 @@ package com.facebook.samples.litho.animations.expandableelement;
 import static com.facebook.samples.litho.animations.expandableelement.ExpandableElementUtil.TRANSITION_MSG_PARENT;
 
 import android.graphics.Color;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import com.facebook.litho.ClickEvent;
 import com.facebook.litho.Column;
 import com.facebook.litho.Component;
@@ -49,11 +49,13 @@ public class ExpandableElementMeSpec {
     return Column.create(c)
         .paddingDip(YogaEdge.TOP, 8)
         .transitionKey(TRANSITION_MSG_PARENT)
+        .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
         .clickHandler(ExpandableElementMe.onClick(c))
         .child(ExpandableElementUtil.maybeCreateTopDetailComponent(c, isExpanded, timestamp))
         .child(
             Column.create(c)
                 .transitionKey(ExpandableElementUtil.TRANSITION_TEXT_MESSAGE_WITH_BOTTOM)
+                .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
                 .child(
                     Row.create(c)
                         .justifyContent(YogaJustify.FLEX_END)
@@ -67,7 +69,7 @@ public class ExpandableElementMeSpec {
   @OnEvent(ClickEvent.class)
   static void onClick(ComponentContext c, @State Boolean expanded) {
     final boolean isExpanded = expanded == null ? false : expanded;
-    ExpandableElementMe.updateExpandedState(c, !isExpanded);
+    ExpandableElementMe.updateExpandedStateSync(c, !isExpanded);
   }
 
   @OnUpdateState
@@ -87,12 +89,12 @@ public class ExpandableElementMeSpec {
 
     return Transition.parallel(
         Transition.allLayout(),
-        Transition.create(TRANSITION_MSG_PARENT).animate(AnimatedProperties.HEIGHT).appearFrom(0),
-        Transition.create(ExpandableElementUtil.TRANSITION_TOP_DETAIL)
+        Transition.create(Transition.TransitionKeyType.GLOBAL, TRANSITION_MSG_PARENT).animate(AnimatedProperties.HEIGHT).appearFrom(0),
+        Transition.create(Transition.TransitionKeyType.GLOBAL, ExpandableElementUtil.TRANSITION_TOP_DETAIL)
             .animate(AnimatedProperties.HEIGHT)
             .appearFrom(0)
             .disappearTo(0),
-        Transition.create(ExpandableElementUtil.TRANSITION_BOTTOM_DETAIL)
+        Transition.create(Transition.TransitionKeyType.GLOBAL, ExpandableElementUtil.TRANSITION_BOTTOM_DETAIL)
             .animate(AnimatedProperties.HEIGHT)
             .appearFrom(0)
             .disappearTo(0));

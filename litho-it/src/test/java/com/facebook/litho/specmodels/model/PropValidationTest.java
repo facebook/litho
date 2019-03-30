@@ -188,8 +188,7 @@ public class PropValidationTest {
     assertThat(validationErrors.get(0).message).isEqualTo(
         "Props may not be declared with the following argument types: " +
             "[com.facebook.litho.ComponentLayout, " +
-            "com.facebook.litho.Component.Builder, " +
-            "com.facebook.litho.reference.Reference.Builder].");
+            "com.facebook.litho.Component.Builder].");
   }
 
   @Test
@@ -317,14 +316,14 @@ public class PropValidationTest {
     assertThat(validationErrors.get(0).message)
         .isEqualTo(
             "Props with resType DIMEN_OFFSET should not be annotated with "
-                + "android.support.annotation.Px or android.support.annotation.Dimension, since "
+                + "androidx.annotation.Px or androidx.annotation.Dimension, since "
                 + "these annotations will automatically be added to the relevant builder methods "
                 + "in the generated code.");
     assertThat(validationErrors.get(1).element).isEqualTo(mRepresentedObject2);
     assertThat(validationErrors.get(1).message)
         .isEqualTo(
             "Props with resType DIMEN_SIZE should not be annotated with "
-                + "android.support.annotation.Px or android.support.annotation.Dimension, since "
+                + "androidx.annotation.Px or androidx.annotation.Dimension, since "
                 + "these annotations will automatically be added to the relevant builder methods "
                 + "in the generated code.");
   }

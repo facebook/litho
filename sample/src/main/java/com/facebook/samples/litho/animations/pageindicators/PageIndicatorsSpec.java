@@ -55,6 +55,7 @@ class PageIndicatorsSpec {
               .radiusDip(2 * getIndicatorSize(size, firstVisibleIndex, position, selectedIndex))
               .color(index == selectedIndex ? COLOR_SELECTED : COLOR_NORMAL)
               .transitionKey("dot" + index)
+              .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
               .marginDip(YogaEdge.ALL, 2 * 1));
     }
     return row.build();
@@ -107,7 +108,7 @@ class PageIndicatorsSpec {
     }
 
     final boolean movingRight = movingDirection == DIRECTION_RIGHT;
-    return Transition.create(keys)
+    return Transition.create(Transition.TransitionKeyType.GLOBAL, keys)
         // moving existing
         .animate(
             AnimatedProperties.X,

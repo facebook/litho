@@ -86,7 +86,7 @@ public final class TextStylesHelper {
       Output<VerticalGravity> verticalGravity,
       Output<Typeface> typeface) {
 
-    final Resources.Theme theme = c.getTheme();
+    final Resources.Theme theme = c.getAndroidContext().getTheme();
 
     // check first if provided attributes contain textAppearance. As an analogy to TextView
     // behavior,

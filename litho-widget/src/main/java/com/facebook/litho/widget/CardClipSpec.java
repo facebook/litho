@@ -23,11 +23,14 @@ import static com.facebook.litho.widget.CardClipDrawable.TOP_LEFT;
 import static com.facebook.litho.widget.CardClipDrawable.TOP_RIGHT;
 
 import android.content.Context;
+import android.graphics.Color;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.annotations.MountSpec;
 import com.facebook.litho.annotations.OnCreateMountContent;
 import com.facebook.litho.annotations.OnMount;
+import com.facebook.litho.annotations.OnUnmount;
 import com.facebook.litho.annotations.Prop;
+import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.ResType;
 
 /**
@@ -44,6 +47,8 @@ import com.facebook.litho.annotations.ResType;
 @MountSpec(isPureRender = true)
 class CardClipSpec {
 
+  @PropDefault static final int clippingColor = Color.WHITE;
+
   @OnCreateMountContent
   static CardClipDrawable onCreateMountContent(Context c) {
     return new CardClipDrawable();
@@ -59,7 +64,6 @@ class CardClipSpec {
       @Prop(optional = true) boolean disableClipTopRight,
       @Prop(optional = true) boolean disableClipBottomLeft,
       @Prop(optional = true) boolean disableClipBottomRight) {
-
     cardClipDrawable.setClippingColor(clippingColor);
     cardClipDrawable.setCornerRadius(cornerRadius);
     int clipEdge =
@@ -68,5 +72,12 @@ class CardClipSpec {
         (disableClipBottomLeft ? BOTTOM_LEFT : NONE) |
         (disableClipBottomRight ? BOTTOM_RIGHT : NONE);
     cardClipDrawable.setDisableClip(clipEdge);
+  }
+
+  @OnUnmount
+  static void onUnmount(ComponentContext c, CardClipDrawable cardClipDrawable) {
+    cardClipDrawable.setCornerRadius(0);
+    cardClipDrawable.setClippingColor(Color.WHITE);
+    cardClipDrawable.setDisableClip(NONE);
   }
 }

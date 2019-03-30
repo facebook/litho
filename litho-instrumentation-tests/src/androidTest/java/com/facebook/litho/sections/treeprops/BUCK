@@ -13,6 +13,7 @@ load(
 fb_instrumentation_test(
     name = "treeprops",
     srcs = glob(["*Test.java"]),
+    is_androidx = True,
     manifest = "AndroidManifest.xml",
     deps = [
         make_dep_path("litho-instrumentation-tests/src/main/java/com/facebook/litho/sections/treeprops:treeprops"),

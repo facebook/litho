@@ -33,7 +33,7 @@ object CompositePathEffectBorderSpec {
                   .text("This component has a composite path effect of discrete + corner"))
           .border(
               Border.create(c)
-                  .widthDip(YogaEdge.ALL, 20)
+                  .widthDip(YogaEdge.ALL, 20f)
                   .color(YogaEdge.LEFT, NiceColor.RED)
                   .color(YogaEdge.TOP, NiceColor.ORANGE)
                   .color(YogaEdge.RIGHT, NiceColor.GREEN)

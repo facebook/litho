@@ -16,8 +16,7 @@
 
 package com.facebook.litho.dataflow;
 
-import android.support.annotation.VisibleForTesting;
-import com.facebook.litho.internal.ArraySet;
+import androidx.annotation.VisibleForTesting;
 import java.util.ArrayList;
 
 /**
@@ -32,7 +31,7 @@ public final class GraphBinding {
 
   private final DataFlowGraph mDataFlowGraph;
   private final Bindings mBindings = new Bindings();
-  private final ArraySet<ValueNode> mAllNodes = new ArraySet<>();
+  private final ArrayList<ValueNode> mAllNodes = new ArrayList<>();
   private BindingListener mListener;
   private boolean mIsActive = false;
   private boolean mHasBeenActivated = false;
@@ -71,10 +70,8 @@ public final class GraphBinding {
     addBinding(fromNode, toNode, ValueNode.DEFAULT_INPUT);
   }
 
-  /**
-   * @return all nodes that have a binding defined in this {@link GraphBinding}.
-   */
-  ArraySet<ValueNode> getAllNodes() {
+  /** @return all nodes that have a binding defined in this {@link GraphBinding}. */
+  ArrayList<ValueNode> getAllNodes() {
     return mAllNodes;
   }
 

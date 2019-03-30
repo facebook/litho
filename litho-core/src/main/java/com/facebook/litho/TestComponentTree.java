@@ -18,9 +18,9 @@ package com.facebook.litho;
 
 import android.graphics.Rect;
 import android.os.Looper;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.VisibleForTesting;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -64,12 +64,9 @@ public class TestComponentTree extends ComponentTree {
         heightSpec,
         diffingEnabled,
         previousLayoutState,
-        false /* canPrefetchDisplayLists */,
-        false /* canCacheDrawingDisplayLists */,
-        true /* clipChildren */,
-        false /* persistInternalNodeTree */,
         source,
-        extraAttribution);
+        extraAttribution,
+        false);
   }
 
   @VisibleForTesting

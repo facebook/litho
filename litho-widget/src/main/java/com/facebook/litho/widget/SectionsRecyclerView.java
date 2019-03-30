@@ -17,15 +17,16 @@
 package com.facebook.litho.widget;
 
 import android.content.Context;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.HasLithoViewChildren;
 import com.facebook.litho.LithoView;
 import java.util.List;
+import javax.annotation.Nullable;
 
 /**
  * Wrapper that encapsulates all the features {@link RecyclerSpec} provides such as sticky header
@@ -134,7 +135,7 @@ public class SectionsRecyclerView extends SwipeRefreshLayout implements HasLitho
         stickyHeaderTop + mStickyHeader.getMeasuredHeight());
   }
 
-  static SectionsRecyclerView getParentRecycler(RecyclerView recyclerView) {
+  static @Nullable SectionsRecyclerView getParentRecycler(RecyclerView recyclerView) {
     if (recyclerView.getParent() instanceof SectionsRecyclerView) {
       return (SectionsRecyclerView) recyclerView.getParent();
     }

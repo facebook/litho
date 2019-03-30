@@ -3,9 +3,10 @@
 # This source code is licensed under the Apache 2.0 license found in the
 # LICENSE file in the root directory of this source tree.
 
+load("//tools/build_defs/oss:fb_native_wrapper.bzl", "fb_native")
 load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_ANNOTATIONS_TARGET", "LITHO_PROCESSOR_LIB_TARGET", "LITHO_SECTIONS_ANNOTATIONS_TARGET", "fb_java_library", "make_dep_path")
 
-java_annotation_processor(
+fb_native.java_annotation_processor(
     name = "processor",
     processor_class = "com.facebook.litho.sections.specmodels.processor.SectionsComponentProcessor",
     visibility = [

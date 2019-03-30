@@ -34,7 +34,6 @@ import com.facebook.litho.specmodels.model.SpecMethodModel;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.SpecModelUtils;
 import com.squareup.javapoet.CodeBlock;
-import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
@@ -111,26 +110,15 @@ public class EventGenerator {
 
   static TypeSpecDataHolder generateEventDispatcher(EventDeclarationModel eventDeclaration) {
     final TypeSpecDataHolder.Builder typeSpecDataHolder = TypeSpecDataHolder.newBuilder();
-    final String poolName = "s" + eventDeclaration.name.simpleName() + "Pool";
-    final TypeName poolType =
-        ParameterizedTypeName.get(ClassNames.SYNCHRONIZED_POOL, eventDeclaration.name);
-    typeSpecDataHolder.addField(
-        FieldSpec.builder(poolType, poolName, Modifier.STATIC, Modifier.FINAL)
-            .initializer("new $T(2)", poolType)
-            .build());
 
     MethodSpec.Builder eventDispatcherMethod =
         MethodSpec.methodBuilder("dispatch" + eventDeclaration.name.simpleName())
             .addModifiers(Modifier.STATIC)
             .addParameter(ClassNames.EVENT_HANDLER, "_eventHandler");
 
-    eventDispatcherMethod
-        .addStatement("$T _eventState = $L.acquire()", eventDeclaration.name, poolName)
-        .beginControlFlow("if (_eventState == null)")
-        .addStatement("_eventState = new $T()", eventDeclaration.name)
-        .endControlFlow();
+    eventDispatcherMethod.addStatement(
+        "final $T _eventState = new $T()", eventDeclaration.name, eventDeclaration.name);
 
-    final CodeBlock.Builder resetCode = CodeBlock.builder();
     for (FieldModel fieldModel : eventDeclaration.fields) {
       if (fieldModel.field.modifiers.contains(Modifier.FINAL)) {
         continue;
@@ -138,28 +126,20 @@ public class EventGenerator {
       eventDispatcherMethod
           .addParameter(fieldModel.field.type, fieldModel.field.name)
           .addStatement("_eventState.$L = $L", fieldModel.field.name, fieldModel.field.name);
-      if (!fieldModel.field.type.isPrimitive()) {
-        resetCode.addStatement("_eventState.$L = null", fieldModel.field.name);
-      }
     }
 
     eventDispatcherMethod.addStatement(
         "$T _lifecycle = _eventHandler.mHasEventDispatcher.getEventDispatcher()",
         ClassNames.EVENT_DISPATCHER);
 
-    resetCode.addStatement("$L.release(_eventState)", poolName);
     if (eventDeclaration.returnType.equals(TypeName.VOID)) {
       eventDispatcherMethod.addStatement("_lifecycle.dispatchOnEvent(_eventHandler, _eventState)");
-      eventDispatcherMethod.addCode(resetCode.build());
     } else {
       eventDispatcherMethod
           .addStatement(
-              "$T result = ($T) _lifecycle.dispatchOnEvent(_eventHandler, _eventState)",
-              eventDeclaration.returnType,
+              "return ($T) _lifecycle.dispatchOnEvent(_eventHandler, _eventState)",
               eventDeclaration.returnType)
           .returns(eventDeclaration.returnType);
-      eventDispatcherMethod.addCode(resetCode.build());
-      eventDispatcherMethod.addStatement("return result");
     }
 
     return typeSpecDataHolder.addMethod(eventDispatcherMethod.build()).build();

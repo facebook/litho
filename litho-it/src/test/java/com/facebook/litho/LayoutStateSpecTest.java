@@ -19,11 +19,11 @@ package com.facebook.litho;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import com.facebook.litho.testing.TestLayoutComponent;
+import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.powermock.reflect.Whitebox;
 import org.robolectric.RuntimeEnvironment;
 
 @RunWith(ComponentsTestRunner.class)
@@ -46,7 +46,7 @@ public class LayoutStateSpecTest {
         .build();
     Whitebox.setInternalState(mComponent, "mId", COMPONENT_ID);
 
-    mLayoutState = new LayoutState();
+    mLayoutState = new LayoutState(mContext);
     Whitebox.setInternalState(mLayoutState, "mComponent", mComponent);
     Whitebox.setInternalState(mLayoutState, "mWidthSpec", mWidthSpec);
     Whitebox.setInternalState(mLayoutState, "mHeightSpec", mHeightSpec);

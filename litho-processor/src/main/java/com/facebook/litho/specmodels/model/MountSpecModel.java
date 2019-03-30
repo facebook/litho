@@ -23,6 +23,7 @@ import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeVariableName;
+import java.util.EnumSet;
 import java.util.List;
 import javax.annotation.Nullable;
 
@@ -108,7 +109,7 @@ public class MountSpecModel implements SpecModel, HasPureRender {
   }
 
   @Override
-  public TypeName getSpecTypeName() {
+  public ClassName getSpecTypeName() {
     return mSpecModel.getSpecTypeName();
   }
 
@@ -200,6 +201,11 @@ public class MountSpecModel implements SpecModel, HasPureRender {
   @Override
   public ImmutableList<StateParamModel> getStateValues() {
     return mSpecModel.getStateValues();
+  }
+
+  @Override
+  public ImmutableList<CachedValueParamModel> getCachedValues() {
+    return mSpecModel.getCachedValues();
   }
 
   @Override
@@ -333,13 +339,13 @@ public class MountSpecModel implements SpecModel, HasPureRender {
   }
 
   @Override
-  public List<SpecModelValidationError> validate(RunMode runMode) {
+  public List<SpecModelValidationError> validate(EnumSet<RunMode> runMode) {
     return SpecModelValidation.validateMountSpecModel(this, runMode);
   }
 
   @Override
-  public TypeSpec generate() {
-    return mMountSpecGenerator.generate(this);
+  public TypeSpec generate(EnumSet<RunMode> runMode) {
+    return mMountSpecGenerator.generate(this, runMode);
   }
 
   @Override
@@ -365,6 +371,11 @@ public class MountSpecModel implements SpecModel, HasPureRender {
 
   public TypeName getMountType() {
     return mMountType;
+  }
+
+  @Override
+  public boolean shouldGenerateIsEquivalentTo() {
+    return true;
   }
 
   @Override

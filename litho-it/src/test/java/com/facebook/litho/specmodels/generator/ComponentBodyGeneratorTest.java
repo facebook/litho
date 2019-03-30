@@ -20,11 +20,13 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.Row;
 import com.facebook.litho.annotations.LayoutSpec;
+import com.facebook.litho.annotations.MountSpec;
+import com.facebook.litho.annotations.OnBind;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.annotations.OnUpdateState;
@@ -46,6 +48,7 @@ import com.facebook.litho.specmodels.model.StateParamModel;
 import com.facebook.litho.specmodels.model.TypeSpec;
 import com.facebook.litho.specmodels.model.TypeSpec.DeclaredTypeSpec;
 import com.facebook.litho.specmodels.processor.LayoutSpecModelFactory;
+import com.facebook.litho.specmodels.processor.MountSpecModelFactory;
 import com.google.testing.compile.CompilationRule;
 import com.squareup.javapoet.ClassName;
 import java.util.List;
@@ -67,6 +70,7 @@ public class ComponentBodyGeneratorTest {
   @Mock private Messager mMessager;
 
   private final LayoutSpecModelFactory mLayoutSpecModelFactory = new LayoutSpecModelFactory();
+  private final MountSpecModelFactory mMountSpecModelFactory = new MountSpecModelFactory();
 
   @LayoutSpec
   static class TestSpec {
@@ -91,6 +95,34 @@ public class ComponentBodyGeneratorTest {
         @Param Object arg2,
         @TreeProp long arg3,
         @Prop @Nullable Component arg4) {}
+
+    @OnUpdateState
+    public void testUpdateStateMethod() {}
+  }
+
+  @MountSpec
+  static class MountTestSpec {
+    @PropDefault protected static boolean arg0 = true;
+
+    @OnBind
+    public void testDelegateMethod(
+        @Prop boolean arg0,
+        @Prop @Nullable Component arg4,
+        @Prop List<Component> arg5,
+        @Prop List<String> arg6,
+        @State int arg1,
+        @Param Object arg2,
+        @TreeProp long arg3,
+        @TreeProp Set<List<Row>> arg7,
+        @TreeProp Set<Integer> arg8) {}
+
+    @OnEvent(Object.class)
+    public void testEventMethod(
+        @Prop boolean arg0,
+        @Prop @Nullable Component arg4,
+        @State int arg1,
+        @Param Object arg2,
+        @TreeProp long arg3) {}
 
     @OnUpdateState
     public void testUpdateStateMethod() {}
@@ -132,6 +164,7 @@ public class ComponentBodyGeneratorTest {
   }
 
   private SpecModel mSpecModelDI;
+  private SpecModel mMountSpecModelDI;
   private SpecModel mSpecModelWithTransitionDI;
   private SpecModel mKotlinWildcardsSpecModel;
 
@@ -143,13 +176,24 @@ public class ComponentBodyGeneratorTest {
     TypeElement typeElement = elements.getTypeElement(TestSpec.class.getCanonicalName());
     mSpecModelDI =
         mLayoutSpecModelFactory.create(
-            elements, types, typeElement, mMessager, RunMode.NORMAL, null, null);
+            elements, types, typeElement, mMessager, RunMode.normal(), null, null);
+    // Here we are using the TestSpec that is declared as LayoutSpec but, because using
+    // the MountSpecModelFactory, is it going to be used as MountSpec anyway.
+    mMountSpecModelDI =
+        mMountSpecModelFactory.create(
+            elements,
+            types,
+            elements.getTypeElement(MountTestSpec.class.getCanonicalName()),
+            mMessager,
+            RunMode.normal(),
+            null,
+            null);
 
     TypeElement typeElementWithTransition =
         elements.getTypeElement(TestWithTransitionSpec.class.getCanonicalName());
     mSpecModelWithTransitionDI =
         mLayoutSpecModelFactory.create(
-            elements, types, typeElementWithTransition, mMessager, RunMode.NORMAL, null, null);
+            elements, types, typeElementWithTransition, mMessager, RunMode.normal(), null, null);
 
     TypeElement typeElementKotlinVarArgsWildcards =
         elements.getTypeElement(TestKotlinWildcardsSpec.class.getCanonicalName());
@@ -159,7 +203,7 @@ public class ComponentBodyGeneratorTest {
             types,
             typeElementKotlinVarArgsWildcards,
             mMessager,
-            RunMode.NORMAL,
+            RunMode.normal(),
             null,
             null);
   }
@@ -168,11 +212,14 @@ public class ComponentBodyGeneratorTest {
   public void testGenerateStateContainerImpl() {
     assertThat(ComponentBodyGenerator.generateStateContainer(mSpecModelDI).toString())
         .isEqualTo(
-            "@android.support.annotation.VisibleForTesting(\n"
+            "@androidx.annotation.VisibleForTesting(\n"
                 + "    otherwise = 2\n"
                 + ")\n"
                 + "static class TestStateContainer implements com.facebook.litho.StateContainer {\n"
                 + "  @com.facebook.litho.annotations.State\n"
+                + "  @com.facebook.litho.annotations.Comparable(\n"
+                + "      type = 3\n"
+                + "  )\n"
                 + "  int arg1;\n"
                 + "}\n");
   }
@@ -181,12 +228,15 @@ public class ComponentBodyGeneratorTest {
   public void testGenerateStateContainerWithTransitionImpl() {
     assertThat(ComponentBodyGenerator.generateStateContainer(mSpecModelWithTransitionDI).toString())
         .isEqualTo(
-            "@android.support.annotation.VisibleForTesting(\n"
+            "@androidx.annotation.VisibleForTesting(\n"
                 + "    otherwise = 2\n"
                 + ")\n"
                 + "static class TestWithTransitionStateContainer implements com.facebook.litho.StateContainer, "
                 + "com.facebook.litho.ComponentLifecycle.TransitionContainer {\n"
                 + "  @com.facebook.litho.annotations.State\n"
+                + "  @com.facebook.litho.annotations.Comparable(\n"
+                + "      type = 3\n"
+                + "  )\n"
                 + "  int arg1;\n"
                 + "\n"
                 + "  java.util.List<com.facebook.litho.Transition> _transitions = new java.util.ArrayList<>();\n"
@@ -234,13 +284,19 @@ public class ComponentBodyGeneratorTest {
                 + "    resType = com.facebook.litho.annotations.ResType.NONE,\n"
                 + "    optional = false\n"
                 + ")\n"
+                + "@com.facebook.litho.annotations.Comparable(\n"
+                + "    type = 3\n"
+                + ")\n"
                 + "boolean arg0 = TestSpec.arg0;\n");
     assertThat(dataHolder.getFieldSpecs().get(1).toString())
         .isEqualTo(
-            "@android.support.annotation.Nullable\n"
+            "@androidx.annotation.Nullable\n"
                 + "@com.facebook.litho.annotations.Prop(\n"
                 + "    resType = com.facebook.litho.annotations.ResType.NONE,\n"
                 + "    optional = false\n"
+                + ")\n"
+                + "@com.facebook.litho.annotations.Comparable(\n"
+                + "    type = 10\n"
                 + ")\n"
                 + "com.facebook.litho.Component arg4;\n");
   }
@@ -255,6 +311,9 @@ public class ComponentBodyGeneratorTest {
                 + "    resType = com.facebook.litho.annotations.ResType.NONE,\n"
                 + "    optional = false\n"
                 + ")\n"
+                + "@com.facebook.litho.annotations.Comparable(\n"
+                + "    type = 5\n"
+                + ")\n"
                 + "java.util.List<java.lang.Number> numbers;\n");
   }
 
@@ -263,7 +322,12 @@ public class ComponentBodyGeneratorTest {
     TypeSpecDataHolder dataHolder = ComponentBodyGenerator.generateTreeProps(mSpecModelDI);
     assertThat(dataHolder.getFieldSpecs()).hasSize(3);
     assertThat(dataHolder.getFieldSpecs().get(0).toString())
-        .isEqualTo("@com.facebook.litho.annotations.TreeProp\nlong arg3;\n");
+        .isEqualTo(
+            "@com.facebook.litho.annotations.TreeProp\n"
+            + "@com.facebook.litho.annotations.Comparable(\n"
+            + "    type = 3\n"
+            + ")\n"
+            + "long arg3;\n");
   }
 
   @Test
@@ -289,58 +353,55 @@ public class ComponentBodyGeneratorTest {
 
   @Test
   public void testGenerateIsEquivalentMethod() {
-    assertThat(ComponentBodyGenerator.generateIsEquivalentMethod(mSpecModelDI).toString())
+    assertThat(ComponentBodyGenerator.generateIsEquivalentMethod(mMountSpecModelDI).toString())
         .isEqualTo(
             "@java.lang.Override\n"
                 + "public boolean isEquivalentTo(com.facebook.litho.Component other) {\n"
-                + "  if (com.facebook.litho.config.ComponentsConfiguration.useNewIsEquivalentTo) {\n"
-                + "    return super.isEquivalentTo(other);\n"
-                + "  }\n"
                 + "  if (this == other) {\n"
                 + "    return true;\n"
                 + "  }\n"
                 + "  if (other == null || getClass() != other.getClass()) {\n"
                 + "    return false;\n"
                 + "  }\n"
-                + "  Test testRef = (Test) other;\n"
-                + "  if (this.getId() == testRef.getId()) {\n"
+                + "  MountTest mountTestRef = (MountTest) other;\n"
+                + "  if (this.getId() == mountTestRef.getId()) {\n"
                 + "    return true;\n"
                 + "  }\n"
-                + "  if (arg0 != testRef.arg0) {\n"
+                + "  if (arg0 != mountTestRef.arg0) {\n"
                 + "    return false;\n"
                 + "  }\n"
-                + "  if (arg4 != null ? !arg4.isEquivalentTo(testRef.arg4) : testRef.arg4 != null) {\n"
+                + "  if (arg4 != null ? !arg4.isEquivalentTo(mountTestRef.arg4) : mountTestRef.arg4 != null) {\n"
                 + "    return false;\n"
                 + "  }\n"
                 + "  if (arg5 != null) {\n"
-                + "    if (testRef.arg5 == null || arg5.size() != testRef.arg5.size()) {\n"
+                + "    if (mountTestRef.arg5 == null || arg5.size() != mountTestRef.arg5.size()) {\n"
                 + "      return false;\n"
                 + "    }\n"
                 + "    java.util.Iterator<com.facebook.litho.Component> _e1_1 = arg5.iterator();\n"
-                + "    java.util.Iterator<com.facebook.litho.Component> _e2_1 = testRef.arg5.iterator();\n"
+                + "    java.util.Iterator<com.facebook.litho.Component> _e2_1 = mountTestRef.arg5.iterator();\n"
                 + "    while (_e1_1.hasNext() && _e2_1.hasNext()) {\n"
                 + "      if (!_e1_1.next().isEquivalentTo(_e2_1.next())) {\n"
                 + "        return false;\n"
                 + "      }\n"
                 + "    }\n"
-                + "  } else if (testRef.arg5 != null) {\n"
+                + "  } else if (mountTestRef.arg5 != null) {\n"
                 + "    return false;\n"
                 + "  }\n"
-                + "  if (arg6 != null ? !arg6.equals(testRef.arg6) : testRef.arg6 != null) {\n"
+                + "  if (arg6 != null ? !arg6.equals(mountTestRef.arg6) : mountTestRef.arg6 != null) {\n"
                 + "    return false;\n"
                 + "  }\n"
-                + "  if (mStateContainer.arg1 != testRef.mStateContainer.arg1) {\n"
+                + "  if (mStateContainer.arg1 != mountTestRef.mStateContainer.arg1) {\n"
                 + "    return false;\n"
                 + "  }\n"
-                + "  if (arg3 != testRef.arg3) {\n"
+                + "  if (arg3 != mountTestRef.arg3) {\n"
                 + "    return false;\n"
                 + "  }\n"
                 + "  if (arg7 != null) {\n"
-                + "    if (testRef.arg7 == null || arg7.size() != testRef.arg7.size()) {\n"
+                + "    if (mountTestRef.arg7 == null || arg7.size() != mountTestRef.arg7.size()) {\n"
                 + "      return false;\n"
                 + "    }\n"
                 + "    java.util.Iterator<java.util.List<com.facebook.litho.Row>> _e1_2 = arg7.iterator();\n"
-                + "    java.util.Iterator<java.util.List<com.facebook.litho.Row>> _e2_2 = testRef.arg7.iterator();\n"
+                + "    java.util.Iterator<java.util.List<com.facebook.litho.Row>> _e2_2 = mountTestRef.arg7.iterator();\n"
                 + "    while (_e1_2.hasNext() && _e2_2.hasNext()) {\n"
                 + "      if (_e1_2.next().size() != _e2_2.next().size()) {\n"
                 + "        return false;\n"
@@ -353,10 +414,10 @@ public class ComponentBodyGeneratorTest {
                 + "        }\n"
                 + "      }\n"
                 + "    }\n"
-                + "  } else if (testRef.arg7 != null) {\n"
+                + "  } else if (mountTestRef.arg7 != null) {\n"
                 + "    return false;\n"
                 + "  }\n"
-                + "  if (arg8 != null ? !arg8.equals(testRef.arg8) : testRef.arg8 != null) {\n"
+                + "  if (arg8 != null ? !arg8.equals(mountTestRef.arg8) : mountTestRef.arg8 != null) {\n"
                 + "    return false;\n"
                 + "  }\n"
                 + "  return true;\n"

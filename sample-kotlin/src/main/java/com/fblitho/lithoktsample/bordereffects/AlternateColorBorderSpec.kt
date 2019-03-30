@@ -38,7 +38,7 @@ object AlternateColorBorderSpec {
                   .color(YogaEdge.TOP, NiceColor.YELLOW)
                   .color(YogaEdge.RIGHT, NiceColor.GREEN)
                   .color(YogaEdge.BOTTOM, NiceColor.BLUE)
-                  .widthDip(YogaEdge.ALL, 5)
+                  .widthDip(YogaEdge.ALL, 5f)
                   .build())
           .build()
 }

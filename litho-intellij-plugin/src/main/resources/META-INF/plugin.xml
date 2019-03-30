@@ -1,0 +1,55 @@
+<idea-plugin>
+  <id>com.facebook.litho.intellij</id>
+  <name>Litho</name>
+  <description>
+  <![CDATA[
+    <p>Litho is a declarative UI framework for Android. This plugin provides better
+      Litho integration in IntelliJ IDEA.
+    <p>
+      For more information checkout documentation:
+      <A HREF='https://fblitho.com/'>Litho: A declarative UI framework for Android</A>
+    </p>
+  ]]>
+  </description>
+  <version>0.0.1-SNAPSHOT</version>
+  <change-notes><![CDATA[
+    <h2>0.0.1</h2>
+    <ul>
+      <li>Generate menu contains OnEvent method creation option.</li>
+      <li>Command-click on a LithoSection takes you to the SectionSpec.</li>
+      <li>Command-click on a LithoComponent takes you to the ComponentSpec</li>
+      <li>@DefaultProp value is shown near the @Prop parameter as a folding.</li>
+      <li>@Prop and @State method parameters have completion suggestions.</li>
+    </ul>
+  ]]></change-notes>
+
+  <vendor email="kata@fb.com" url="www.facebook.com">Facebook, Inc.</vendor>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <gotoDeclarationHandler implementation="com.facebook.litho.intellij.navigation.SectionDeclarationHandler"/>
+    <gotoDeclarationHandler implementation="com.facebook.litho.intellij.navigation.ComponentDeclarationHandler"/>
+
+    <lang.foldingBuilder language="JAVA" implementationClass="com.facebook.litho.intellij.foldings.DefaultPropertyFoldingBuilder"/>
+
+     <localInspection groupName="Litho" language="JAVA"
+      shortName="UppercaseStatePropInspection"
+      displayName="Param name begin with uppercase letter"
+      hasStaticDescription="true"
+      enabledByDefault="true"
+      implementationClass="com.facebook.litho.intellij.inspections.UppercaseStatePropInspection"/>
+
+    <completion.contributor language="JAVA" implementationClass="com.facebook.litho.intellij.completion.StatePropCompletionContributor"/>
+  </extensions>
+
+  <!-- 181 is IntelliJ 2018.1 and/or Android Studio 3.2 -->
+  <idea-version since-build="181"/>
+
+  <actions>
+    <group id="litho.GenerateGroup" text="[Litho] Insert..." popup="true">
+      <add-to-group group-id="GenerateGroup" anchor="first"/>
+      <action id="litho.OnEventGenerateAction"
+          class="com.facebook.litho.intellij.actions.OnEventGenerateAction"
+          text="[Litho] @OnEvent..."/>
+    </group>
+  </actions>
+</idea-plugin>

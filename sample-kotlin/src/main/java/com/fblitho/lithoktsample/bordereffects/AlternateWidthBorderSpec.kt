@@ -35,10 +35,10 @@ object AlternateWidthBorderSpec {
           .border(
               Border.create(c)
                   .color(YogaEdge.ALL, NiceColor.MAGENTA)
-                  .widthDip(YogaEdge.LEFT, 2)
-                  .widthDip(YogaEdge.TOP, 4)
-                  .widthDip(YogaEdge.RIGHT, 8)
-                  .widthDip(YogaEdge.BOTTOM, 16)
+                  .widthDip(YogaEdge.LEFT, 2f)
+                  .widthDip(YogaEdge.TOP, 4f)
+                  .widthDip(YogaEdge.RIGHT, 8f)
+                  .widthDip(YogaEdge.BOTTOM, 16f)
                   .build())
           .build()
 

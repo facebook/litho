@@ -75,6 +75,7 @@ public class LifecycleMethodsTest {
     measureAndLayout(mLithoView);
     assertThat(mComponent.getCurrentStep()).isEqualTo(LifecycleStep.ON_UNMOUNT);
 
+    mComponent = mComponent.makeShallowCopyForTest();
     mComponentTree.setRoot(mComponent);
     measureAndLayout(mLithoView);
     assertThat(mComponent.getCurrentStep()).isEqualTo(LifecycleStep.ON_BIND);
@@ -235,6 +236,10 @@ public class LifecycleMethodsTest {
     @Override
     public Component makeShallowCopy() {
       return this;
+    }
+
+    public LifecycleMethodsComponent makeShallowCopyForTest() {
+      return (LifecycleMethodsComponent) super.makeShallowCopy();
     }
   }
 

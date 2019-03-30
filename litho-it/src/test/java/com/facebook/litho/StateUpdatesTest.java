@@ -22,6 +22,8 @@ import static com.facebook.litho.SizeSpec.makeSizeSpec;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import android.os.Looper;
+import com.facebook.litho.stats.LithoStats;
+import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.helper.ComponentTestHelper;
 import com.facebook.litho.testing.logging.TestComponentsLogger;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
@@ -32,7 +34,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.powermock.reflect.Whitebox;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
 import org.robolectric.shadows.ShadowLooper;
@@ -48,10 +49,9 @@ public class StateUpdatesTest {
   private static class TestStateUpdate implements StateUpdate {
 
     @Override
-    public void updateState(StateContainer stateContainer, Component component) {
+    public void updateState(StateContainer stateContainer) {
       TestStateContainer stateContainerImpl = (TestStateContainer) stateContainer;
-      TestComponent componentImpl = (TestComponent) component;
-      componentImpl.mStateContainer.mCount = stateContainerImpl.mCount + 1;
+      stateContainerImpl.mCount = stateContainerImpl.mCount + 1;
     }
   }
 
@@ -90,10 +90,10 @@ public class StateUpdatesTest {
 
     @Override
     protected void transferState(
-        ComponentContext c,
-        StateContainer stateContainer) {
-      TestStateContainer stateContainerImpl = (TestStateContainer) stateContainer;
-      mStateContainer.mCount = stateContainerImpl.mCount;
+        StateContainer prevStateContainer, StateContainer nextStateContainer) {
+      TestStateContainer prevStateContainerImpl = (TestStateContainer) prevStateContainer;
+      TestStateContainer nextStateContainerImpl = (TestStateContainer) nextStateContainer;
+      nextStateContainerImpl.mCount = prevStateContainerImpl.mCount;
     }
 
     int getCount() {
@@ -114,6 +114,9 @@ public class StateUpdatesTest {
     Component makeShallowCopyWithNewId() {
       shallowCopy = (TestComponent) super.makeShallowCopy();
       shallowCopy.mId = sIdGenerator.getAndIncrement();
+      if (getScopedContext().isNestedTreeResolutionExperimentEnabled()) {
+        shallowCopy.setGlobalKey(getGlobalKey());
+      }
       return shallowCopy;
     }
 
@@ -150,6 +153,10 @@ public class StateUpdatesTest {
 
   @Before
   public void setup() throws Exception {
+    setup(false);
+  }
+
+  public void setup(boolean enableNestedTreeResolutionExeperiment) throws Exception {
     mComponentsLogger = new TestComponentsLogger();
     mContext = new ComponentContext(RuntimeEnvironment.application, mLogTag, mComponentsLogger);
     mWidthSpec = makeSizeSpec(39, EXACTLY);
@@ -161,7 +168,10 @@ public class StateUpdatesTest {
             "getDefaultLayoutThreadLooper"));
     mTestComponent = new TestComponent();
 
-    mComponentTree = ComponentTree.create(mContext, mTestComponent).build();
+    mComponentTree =
+        ComponentTree.create(mContext, mTestComponent)
+            .enableNestedTreeResolutionExeperiment(enableNestedTreeResolutionExeperiment)
+            .build();
     mLithoView = new LithoView(mContext);
     mLithoView.setComponentTree(mComponentTree);
     mLithoView.onAttachedToWindow();
@@ -265,6 +275,36 @@ public class StateUpdatesTest {
   }
 
   @Test
+  public void testEnqueueStateUpdate_withExperiment() throws Exception {
+    setup(true);
+    mComponentTree.updateStateAsync(mTestComponent.getGlobalKey(), new TestStateUpdate(), "test");
+    assertThat(getPendingStateUpdatesForComponent(mTestComponent)).hasSize(1);
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+    mComponentTree.updateStateAsync(mTestComponent.getGlobalKey(), new TestStateUpdate(), "test");
+    assertThat(
+            ((TestStateContainer) getStateContainersMap().get(mTestComponent.getGlobalKey()))
+                .mCount)
+        .isEqualTo(INITIAL_COUNT_STATE_VALUE + 1);
+    assertThat(getPendingStateUpdatesForComponent(mTestComponent.getComponentForStateUpdate()))
+        .hasSize(1);
+  }
+
+  @Test
+  public void testEnqueueStateUpdate_withExperiment_checkAppliedStateUpdate() throws Exception {
+    setup(true);
+    mComponentTree.updateStateAsync(mTestComponent.getGlobalKey(), new TestStateUpdate(), "test");
+    assertThat(getPendingStateUpdatesForComponent(mTestComponent)).hasSize(1);
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+    assertThat(
+            mTestComponent
+                .getComponentForStateUpdate()
+                .getScopedContext()
+                .getStateHandler()
+                .getAppliedStateUpdates())
+        .hasSize(1);
+  }
+
+  @Test
   public void testSetInitialStateValue() {
     assertThat(mTestComponent.getCount()).isEqualTo(INITIAL_COUNT_STATE_VALUE);
   }
@@ -294,6 +334,42 @@ public class StateUpdatesTest {
     assertThat(mTestComponent.getComponentForStateUpdate().getCount()).isEqualTo(INITIAL_COUNT_STATE_VALUE + 2);
   }
 
+  @Test
+  public void testStateStatsTest() {
+    final long before = LithoStats.getStateUpdates();
+
+    mComponentTree.updateStateAsync(mTestComponent.getGlobalKey(), new TestStateUpdate(), "test");
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+
+    final long after = LithoStats.getStateUpdates();
+
+    assertThat(after - before).isEqualTo(1);
+  }
+
+  @Test
+  public void testSyncStateStatsWhenAsyncTest() {
+    final long before = LithoStats.getStateUpdatesSync();
+
+    mComponentTree.updateStateAsync(mTestComponent.getGlobalKey(), new TestStateUpdate(), "test");
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+
+    final long after = LithoStats.getStateUpdatesSync();
+
+    assertThat(after - before).isEqualTo(0);
+  }
+
+  @Test
+  public void testSyncStateStatsWhenSyncTest() {
+    final long before = LithoStats.getStateUpdatesSync();
+
+    mComponentTree.updateStateSync(mTestComponent.getGlobalKey(), new TestStateUpdate(), "test");
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+
+    final long after = LithoStats.getStateUpdatesSync();
+
+    assertThat(after - before).isEqualTo(1);
+  }
+
   private StateHandler getStateHandler() {
     return Whitebox.getInternalState(mComponentTree, "mStateHandler");
   }
@@ -308,5 +384,9 @@ public class StateUpdatesTest {
 
   private List<StateUpdate> getPendingStateUpdatesForComponent(Component component) {
     return getPendingStateUpdates().get(component.getGlobalKey());
+  }
+
+  private Map<String, List<StateUpdate>> getAppliedStateUpdates() {
+    return getStateHandler().getAppliedStateUpdates();
   }
 }

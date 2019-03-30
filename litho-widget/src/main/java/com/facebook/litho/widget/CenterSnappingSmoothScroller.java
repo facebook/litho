@@ -16,8 +16,8 @@
 package com.facebook.litho.widget;
 
 import android.content.Context;
-import android.support.v7.widget.LinearSmoothScroller;
 import android.util.DisplayMetrics;
+import androidx.recyclerview.widget.LinearSmoothScroller;
 
 /** LinearSmoothScroller subclass that snaps the target position to center. */
 public class CenterSnappingSmoothScroller extends LinearSmoothScroller {

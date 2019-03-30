@@ -19,18 +19,10 @@ package com.facebook.litho;
 import static com.facebook.litho.ComponentUtils.hasEquivalentFields;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
-import android.content.Context;
-import com.facebook.litho.annotations.Prop;
-import com.facebook.litho.annotations.State;
-import com.facebook.litho.annotations.TreeProp;
-import com.facebook.litho.reference.Reference;
-import com.facebook.litho.reference.ReferenceLifecycle;
+import com.facebook.litho.annotations.Comparable;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
-import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
-import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -48,24 +40,22 @@ public class ComponentUtilsTest {
   }
 
   @Test
-  public void levelOfComponentsInCollectionTest() {
-    Field[] fields = CollectionObject.class.getDeclaredFields();
+  public void hasEquivalentFieldsArrayIntPropTest() {
+    mC1.propArrayInt = new int[] {2, 5, 6};
+    mC2.propArrayInt = new int[] {2, 5, 6};
+    assertThat(hasEquivalentFields(mC1, mC2)).isTrue();
 
-    assertThat(ComponentUtils.levelOfComponentsInCollection(fields[0].getGenericType()))
-        .isEqualTo(1);
-    assertThat(ComponentUtils.levelOfComponentsInCollection(fields[1].getGenericType()))
-        .isEqualTo(2);
-    assertThat(ComponentUtils.levelOfComponentsInCollection(fields[2].getGenericType()))
-        .isEqualTo(0);
+    mC2.propArrayInt = new int[] {2, 3};
+    assertThat(hasEquivalentFields(mC1, mC2)).isFalse();
   }
 
   @Test
-  public void hasEquivalentFieldsArrayPropTest() {
-    mC1.propArray = new int[] {2, 5, 6};
-    mC2.propArray = new int[] {2, 5, 6};
+  public void hasEquivalentFieldsArrayCharPropTest() {
+    mC1.propArrayChar = new char[] {'a', 'c', '5'};
+    mC2.propArrayChar = new char[] {'a', 'c', '5'};
     assertThat(hasEquivalentFields(mC1, mC2)).isTrue();
 
-    mC2.propArray = new int[] {2, 3};
+    mC2.propArrayChar = new char[] {'a', 'c'};
     assertThat(hasEquivalentFields(mC1, mC2)).isFalse();
   }
 
@@ -110,6 +100,16 @@ public class ComponentUtilsTest {
   }
 
   @Test
+  public void hasEquivalentFieldsBytePropTest() {
+    mC1.propByte = 1;
+    mC2.propByte = 1;
+    assertThat(hasEquivalentFields(mC1, mC2)).isTrue();
+
+    mC2.propByte = 2;
+    assertThat(hasEquivalentFields(mC1, mC2)).isFalse();
+  }
+
+  @Test
   public void hasEquivalentFieldsShortPropTest() {
     mC1.propShort = 3;
     mC2.propShort = 3;
@@ -120,12 +120,58 @@ public class ComponentUtilsTest {
   }
 
   @Test
-  public void hasEquivalentFieldsReferencePropTest() {
-    mC1.propReference = new TestReference("aa");
-    mC2.propReference = new TestReference("aa");
+  public void hasEquivalentFieldsIntPropTest() {
+    mC1.propInt = 3;
+    mC2.propInt = 3;
     assertThat(hasEquivalentFields(mC1, mC2)).isTrue();
 
-    mC2.propReference = new TestReference("ab");
+    mC2.propInt = 2;
+    assertThat(hasEquivalentFields(mC1, mC2)).isFalse();
+  }
+
+  @Test
+  public void hasEquivalentFieldsLongPropTest() {
+    mC1.propLong = 3;
+    mC2.propLong = 3;
+    assertThat(hasEquivalentFields(mC1, mC2)).isTrue();
+
+    mC2.propLong = 2;
+    assertThat(hasEquivalentFields(mC1, mC2)).isFalse();
+  }
+
+  @Test
+  public void hasEquivalentFieldsBooleanPropTest() {
+    mC1.propBoolean = true;
+    mC2.propBoolean = true;
+    assertThat(hasEquivalentFields(mC1, mC2)).isTrue();
+
+    mC2.propBoolean = false;
+    assertThat(hasEquivalentFields(mC1, mC2)).isFalse();
+  }
+
+  @Test
+  public void hasEquivalentFieldsIntBoxedPropTest() {
+    mC1.propIntBoxed = new Integer(3);
+    mC2.propIntBoxed = new Integer(3);
+    assertThat(hasEquivalentFields(mC1, mC2)).isTrue();
+
+    mC2.propIntBoxed = new Integer(2);
+    assertThat(hasEquivalentFields(mC1, mC2)).isFalse();
+
+    mC2.propIntBoxed = null;
+    assertThat(hasEquivalentFields(mC1, mC2)).isFalse();
+  }
+
+  @Test
+  public void hasEquivalentFieldsStringPropTest() {
+    mC1.propString = "string";
+    mC2.propString = "string";
+    assertThat(hasEquivalentFields(mC1, mC2)).isTrue();
+
+    mC2.propString = "bla";
+    assertThat(hasEquivalentFields(mC1, mC2)).isFalse();
+
+    mC2.propString = null;
     assertThat(hasEquivalentFields(mC1, mC2)).isFalse();
   }
 
@@ -194,42 +240,72 @@ public class ComponentUtilsTest {
     assertThat(hasEquivalentFields(mC1, mC2)).isFalse();
   }
 
-  private static class CollectionObject {
-    List<Component> arg0;
-    List<Set<Component>> arg1;
-    Set<List<List<Integer>>> arg2;
-  }
-
   private static class ComponentTest extends Component {
-    @Prop int[] propArray;
-    @Prop double propDouble;
-    @Prop float propFloat;
-    @Prop char propChar;
-    @Prop short propShort;
-    @Prop Reference propReference;
-    @Prop Collection<String> propCollection;
-    @Prop Collection<Component> propCollectionWithComponents;
-    @Prop Component propComponent;
-    @Prop EventHandler propEventHandler;
+    @Comparable(type = Comparable.ARRAY)
+    int[] propArrayInt;
 
-    @TreeProp Object treePropObject;
+    @Comparable(type = Comparable.ARRAY)
+    char[] propArrayChar;
 
+    @Comparable(type = Comparable.DOUBLE)
+    double propDouble;
+
+    @Comparable(type = Comparable.FLOAT)
+    float propFloat;
+
+    @Comparable(type = Comparable.PRIMITIVE)
+    char propChar;
+
+    @Comparable(type = Comparable.PRIMITIVE)
+    byte propByte;
+
+    @Comparable(type = Comparable.PRIMITIVE)
+    short propShort;
+
+    @Comparable(type = Comparable.PRIMITIVE)
+    int propInt;
+
+    @Comparable(type = Comparable.PRIMITIVE)
+    long propLong;
+
+    @Comparable(type = Comparable.PRIMITIVE)
+    boolean propBoolean;
+
+    @Comparable(type = Comparable.OTHER)
+    Integer propIntBoxed;
+
+    @Comparable(type = Comparable.OTHER)
+    String propString;
+
+    @Comparable(type = Comparable.COLLECTION_COMPLEVEL_0)
+    Collection<String> propCollection;
+
+    @Comparable(type = Comparable.COLLECTION_COMPLEVEL_1)
+    Collection<Component> propCollectionWithComponents;
+
+    @Comparable(type = Comparable.COMPONENT)
+    Component propComponent;
+
+    @Comparable(type = Comparable.EVENT_HANDLER)
+    EventHandler propEventHandler;
+
+    @Comparable(type = Comparable.OTHER)
+    Object treePropObject;
+
+    @Comparable(type = Comparable.STATE_CONTAINER)
     StateTest stateContainer = new StateTest();
 
     protected ComponentTest() {
       super("test");
     }
-
-    @Override
-    public boolean isEquivalentTo(Component other) {
-      return hasEquivalentFields(this, other);
-    }
   }
 
   private static class StateTest implements StateContainer {
-    @State boolean state1;
+    @Comparable(type = Comparable.PRIMITIVE)
+    boolean state1;
 
-    @State float state2;
+    @Comparable(type = Comparable.FLOAT)
+    float state2;
 
     StateTest(boolean state1, float state2) {
       this.state1 = state1;
@@ -237,31 +313,5 @@ public class ComponentUtilsTest {
     }
 
     StateTest() {}
-  }
-
-  private static class TestReference extends Reference {
-    private String mVal;
-
-    TestReference(String val) {
-      super(
-          new ReferenceLifecycle<String>() {
-            @Override
-            protected String onAcquire(Context context, Reference<String> reference) {
-              return "";
-            }
-          });
-      mVal = val;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-      TestReference other = (TestReference) o;
-      return this == o || mVal.equals(other.mVal);
-    }
-
-    @Override
-    public String getSimpleName() {
-      return "TestReference";
-    }
   }
 }

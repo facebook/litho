@@ -71,7 +71,7 @@ public class LithoTooltipController {
     final ComponentTree componentTree = c.getComponentTree();
     final Component rootComponent = c.getComponentScope();
 
-    if (componentTree == null) {
+    if (componentTree == null || componentTree.isReleased() || !componentTree.hasMounted()) {
       return;
     }
 

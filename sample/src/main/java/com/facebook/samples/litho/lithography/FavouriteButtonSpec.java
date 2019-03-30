@@ -50,6 +50,6 @@ public class FavouriteButtonSpec {
   static void onClick(
       ComponentContext c,
       @FromEvent View view) {
-    FavouriteButton.toggleFavourited(c);
+    FavouriteButton.toggleFavouritedSync(c);
   }
 }

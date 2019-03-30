@@ -54,8 +54,7 @@ android {
 
 dependencies {
     // Project dependencies
-    compileOnly project(':litho-annotations')
-    compileOnly project(':litho-stubs')
+    api project(':litho-annotations')
 
     // Annotations
     compileOnly deps.jsr305
@@ -65,8 +64,9 @@ dependencies {
 
     // Android Support Library
     compileOnly deps.supportAnnotations
-    implementation deps.supportCoreUi
-    implementation deps.supportRecyclerView
+    implementation deps.supportCore
+    implementation deps.supportCustomView
+    implementation deps.supportViewPager
 
     // First-party dependencies
     if (project.isRelease()) {

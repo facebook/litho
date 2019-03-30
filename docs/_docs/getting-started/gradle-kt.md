@@ -26,7 +26,6 @@ dependencies {
   // Litho
   implementation 'com.facebook.litho:litho-core:{{site.litho-version}}'
   implementation 'com.facebook.litho:litho-widget:{{site.litho-version}}'
-  compileOnly 'com.facebook.litho:litho-annotations:{{site.litho-version}}'
 
   kapt 'com.facebook.litho:litho-processor:{{site.litho-version}}'
 
@@ -78,7 +77,6 @@ dependencies {
   // Litho
   implementation 'com.facebook.litho:litho-core:{{site.litho-snapshot-version}}'
   implementation 'com.facebook.litho:litho-widget:{{site.litho-snapshot-version}}'
-  compileOnly 'com.facebook.litho:litho-annotations:{{site.litho-snapshot-version}}'
 
   kapt 'com.facebook.litho:litho-processor:{{site.litho-snapshot-version}}'
 

@@ -3,9 +3,10 @@
 # This source code is licensed under the Apache 2.0 license found in the
 # LICENSE file in the root directory of this source tree.
 
+load("//tools/build_defs/oss:fb_native_wrapper.bzl", "fb_native")
 load("//tools/build_defs/oss:litho_defs.bzl", "make_dep_path")
 
-android_aar(
+fb_native.android_aar(
     name = "litho-widget",
     manifest_skeleton = "src/main/AndroidManifest.xml",
     visibility = [

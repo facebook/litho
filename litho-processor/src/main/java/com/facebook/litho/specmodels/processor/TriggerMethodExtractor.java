@@ -21,6 +21,7 @@ import static com.facebook.litho.specmodels.processor.EventDeclarationsExtractor
 import static com.facebook.litho.specmodels.processor.MethodExtractorUtils.getMethodParams;
 import static com.facebook.litho.specmodels.processor.MethodExtractorUtils.getTypeVariables;
 
+import com.facebook.litho.annotations.CachedValue;
 import com.facebook.litho.annotations.FromTrigger;
 import com.facebook.litho.annotations.InjectProp;
 import com.facebook.litho.annotations.OnTrigger;
@@ -39,6 +40,7 @@ import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeName;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.Element;
@@ -61,6 +63,7 @@ public class TriggerMethodExtractor {
     METHOD_PARAM_ANNOTATIONS.add(State.class);
     METHOD_PARAM_ANNOTATIONS.add(TreeProp.class);
     METHOD_PARAM_ANNOTATIONS.add(InjectProp.class);
+    METHOD_PARAM_ANNOTATIONS.add(CachedValue.class);
   }
 
   /** Get the delegate methods from the given {@link TypeElement}. */
@@ -70,7 +73,7 @@ public class TriggerMethodExtractor {
           TypeElement typeElement,
           List<Class<? extends Annotation>> permittedInterStageInputAnnotations,
           Messager messager,
-          RunMode runMode) {
+          EnumSet<RunMode> runMode) {
     final List<SpecMethodModel<EventMethod, EventDeclarationModel>> delegateMethods =
         new ArrayList<>();
 
@@ -97,9 +100,11 @@ public class TriggerMethodExtractor {
         final Element eventClass = eventClassDeclaredType.asElement();
 
         final TypeName returnType =
-            runMode == RunMode.ABI ? TypeName.VOID : getReturnType(elements, eventClass);
+            runMode.contains(RunMode.ABI) ? TypeName.VOID : getReturnType(elements, eventClass);
         final ImmutableList<FieldModel> fields =
-            runMode == RunMode.ABI ? ImmutableList.of() : FieldsExtractor.extractFields(eventClass);
+            runMode.contains(RunMode.ABI)
+                ? ImmutableList.of()
+                : FieldsExtractor.extractFields(eventClass);
 
         // Reuse EventMethodModel and EventDeclarationModel because we are capturing the same info
         final SpecMethodModel<EventMethod, EventDeclarationModel> eventMethod =

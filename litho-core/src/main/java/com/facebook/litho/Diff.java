@@ -16,8 +16,8 @@
 
 package com.facebook.litho;
 
-import android.support.annotation.VisibleForTesting;
 import com.facebook.litho.annotations.ShouldUpdate;
+import javax.annotation.Nullable;
 
 /**
  * Represents a diff between two values T. It should be used when defining the
@@ -26,30 +26,26 @@ import com.facebook.litho.annotations.ShouldUpdate;
  */
 public final class Diff<T> {
 
-  T mPrevious;
-  T mNext;
+  final @Nullable T mPrevious;
+  @Nullable T mNext;
 
-  public Diff() {
-
-  }
-
-  public T getPrevious() {
-    return mPrevious;
-  }
-
-  public T getNext() {
-    return mNext;
-  }
-
-  @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-  public void init(T previous, T next) {
+  public Diff(@Nullable T previous, @Nullable T next) {
     mPrevious = previous;
     mNext = next;
   }
 
-  void release() {
-    mPrevious = null;
-    mNext = null;
+  @Nullable
+  public T getPrevious() {
+    return mPrevious;
+  }
+
+  @Nullable
+  public T getNext() {
+    return mNext;
+  }
+
+  public void setNext(@Nullable T next) {
+    mNext = next;
   }
 
   @Override

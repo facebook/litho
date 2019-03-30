@@ -17,7 +17,7 @@
 package com.facebook.litho.testing.espresso;
 
 import android.app.Activity;
-import android.support.test.rule.ActivityTestRule;
+import androidx.test.rule.ActivityTestRule;
 import com.facebook.litho.config.ComponentsConfiguration;
 
 /**

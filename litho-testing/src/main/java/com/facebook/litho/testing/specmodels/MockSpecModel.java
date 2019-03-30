@@ -19,6 +19,7 @@ package com.facebook.litho.testing.specmodels;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.BuilderMethodModel;
+import com.facebook.litho.specmodels.model.CachedValueParamModel;
 import com.facebook.litho.specmodels.model.DelegateMethod;
 import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import com.facebook.litho.specmodels.model.EventDeclarationModel;
@@ -46,6 +47,7 @@ import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeVariableName;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
 import javax.annotation.Nullable;
@@ -55,7 +57,7 @@ import javax.annotation.concurrent.Immutable;
 @Immutable
 public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecModel {
   private final String mSpecName;
-  private final TypeName mSpecTypeName;
+  private final ClassName mSpecTypeName;
   private final String mComponentName;
   private final TypeName mComponentTypeName;
   private final ClassName mComponentClass;
@@ -74,6 +76,7 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
   private final ImmutableList<PropDefaultModel> mPropDefaults;
   private final ImmutableList<TypeVariableName> mTypeVariables;
   private final ImmutableList<StateParamModel> mStateValues;
+  private final ImmutableList<CachedValueParamModel> mCachedValues;
   private final ImmutableList<InterStageInputParamModel> mInterStageInputs;
   private final ImmutableList<TreePropModel> mTreeProps;
   private final ImmutableList<EventDeclarationModel> mEventDeclarations;
@@ -104,7 +107,7 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
 
   private MockSpecModel(
       String specName,
-      TypeName specTypeName,
+      ClassName specTypeName,
       String componentName,
       TypeName componentTypeName,
       ClassName componentClass,
@@ -122,6 +125,7 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
       ImmutableList<PropDefaultModel> propDefaults,
       ImmutableList<TypeVariableName> typeVariables,
       ImmutableList<StateParamModel> stateValues,
+      ImmutableList<CachedValueParamModel> cachedValues,
       ImmutableList<InterStageInputParamModel> interStageInputs,
       ImmutableList<TreePropModel> treeProps,
       ImmutableList<EventDeclarationModel> eventDeclarations,
@@ -168,6 +172,7 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
     mPropDefaults = propDefaults;
     mTypeVariables = typeVariables;
     mStateValues = stateValues;
+    mCachedValues = cachedValues;
     mInterStageInputs = interStageInputs;
     mTreeProps = treeProps;
     mEventDeclarations = eventDeclarations;
@@ -203,7 +208,7 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
   }
 
   @Override
-  public TypeName getSpecTypeName() {
+  public ClassName getSpecTypeName() {
     return mSpecTypeName;
   }
 
@@ -292,6 +297,11 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
   @Override
   public ImmutableList<StateParamModel> getStateValues() {
     return mStateValues;
+  }
+
+  @Override
+  public ImmutableList<CachedValueParamModel> getCachedValues() {
+    return mCachedValues;
   }
 
   @Override
@@ -426,12 +436,12 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
   }
 
   @Override
-  public List<SpecModelValidationError> validate(RunMode runMode) {
+  public List<SpecModelValidationError> validate(EnumSet<RunMode> runMode) {
     return mSpecModelValidationErrors;
   }
 
   @Override
-  public TypeSpec generate() {
+  public TypeSpec generate(EnumSet<RunMode> runMode) {
     return mGeneratedTypeSpec;
   }
 
@@ -449,9 +459,14 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
     return mIsPureRender;
   }
 
+  @Override
+  public boolean shouldGenerateIsEquivalentTo() {
+    return false;
+  }
+
   public static class Builder {
     private String mSpecName;
-    private TypeName mSpecTypeName;
+    private ClassName mSpecTypeName;
     private String mComponentName;
     private TypeName mComponentTypeName;
     private ClassName mComponentClass;
@@ -474,6 +489,7 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
     private ImmutableList<PropDefaultModel> mPropDefaults = ImmutableList.of();
     private ImmutableList<TypeVariableName> mTypeVariables = ImmutableList.of();
     private ImmutableList<StateParamModel> mStateValues = ImmutableList.of();
+    private ImmutableList<CachedValueParamModel> mCachedValues = ImmutableList.of();
     private ImmutableList<InterStageInputParamModel> mInterStageInputs = ImmutableList.of();
     private ImmutableList<TreePropModel> mTreeProps = ImmutableList.of();
     private ImmutableList<EventDeclarationModel> mEventDeclarations = ImmutableList.of();
@@ -507,7 +523,7 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
       return this;
     }
 
-    public Builder specTypeName(TypeName specTypeName) {
+    public Builder specTypeName(ClassName specTypeName) {
       mSpecTypeName = specTypeName;
       return this;
     }
@@ -600,6 +616,11 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
 
     public Builder stateValues(ImmutableList<StateParamModel> stateValues) {
       mStateValues = stateValues;
+      return this;
+    }
+
+    public Builder cachedValues(ImmutableList<CachedValueParamModel> cachedValues) {
+      mCachedValues = cachedValues;
       return this;
     }
 
@@ -762,6 +783,7 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
           mPropDefaults,
           mTypeVariables,
           mStateValues,
+          mCachedValues,
           mInterStageInputs,
           mTreeProps,
           mEventDeclarations,
@@ -819,6 +841,7 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
           && Objects.equals(mPropDefaults, builder.mPropDefaults)
           && Objects.equals(mTypeVariables, builder.mTypeVariables)
           && Objects.equals(mStateValues, builder.mStateValues)
+          && Objects.equals(mCachedValues, builder.mCachedValues)
           && Objects.equals(mInterStageInputs, builder.mInterStageInputs)
           && Objects.equals(mTreeProps, builder.mTreeProps)
           && Objects.equals(mEventDeclarations, builder.mEventDeclarations)
@@ -862,6 +885,7 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
           mPropDefaults,
           mTypeVariables,
           mStateValues,
+          mCachedValues,
           mInterStageInputs,
           mTreeProps,
           mEventDeclarations,

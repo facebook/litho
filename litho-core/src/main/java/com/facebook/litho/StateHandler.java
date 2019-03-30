@@ -18,10 +18,11 @@ package com.facebook.litho;
 
 import static com.facebook.litho.ComponentLifecycle.StateUpdate;
 
-import android.support.annotation.Nullable;
-import android.support.v4.util.Pools;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.litho.stats.LithoStats;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -36,28 +37,6 @@ public class StateHandler {
 
   private static final int INITIAL_STATE_UPDATE_LIST_CAPACITY = 4;
   private static final int INITIAL_MAP_CAPACITY = 4;
-  private static final int POOL_CAPACITY = 10;
-
-  @Nullable private static final Pools.SynchronizedPool<List<StateUpdate>> sStateUpdatesListPool;
-
-  @Nullable
-  private static final Pools.SynchronizedPool<Map<String, List<StateUpdate>>>
-      sPendingStateUpdatesMapPool;
-
-  @Nullable
-  private static final Pools.SynchronizedPool<Map<String, StateContainer>> sStateContainersMapPool;
-
-  static {
-    if (ComponentsConfiguration.useStateHandlers) {
-      sStateUpdatesListPool = new Pools.SynchronizedPool<>(POOL_CAPACITY);
-      sPendingStateUpdatesMapPool = new Pools.SynchronizedPool<>(POOL_CAPACITY);
-      sStateContainersMapPool = new Pools.SynchronizedPool<>(POOL_CAPACITY);
-    } else {
-      sStateUpdatesListPool = null;
-      sPendingStateUpdatesMapPool = null;
-      sStateContainersMapPool = null;
-    }
-  }
 
   /**
    * List of state updates that will be applied during the next layout pass.
@@ -69,6 +48,10 @@ public class StateHandler {
   @GuardedBy("this")
   @Nullable
   private Map<String, List<Transition>> mPendingStateUpdateTransitions;
+
+  /** List of transitions from state update that have been applied on next mount. */
+  @GuardedBy("this")
+  private Map<String, List<StateUpdate>> mAppliedStateUpdates;
 
   /**
    * Maps a component key to a component object that retains the current state values for that key.
@@ -83,22 +66,30 @@ public class StateHandler {
   @GuardedBy("this")
   public HashSet<String> mNeededStateContainers;
 
-  void init(@Nullable StateHandler stateHandler) {
+  /** Map of all cached values that are stored for the current ComponentTree. */
+  @GuardedBy("this")
+  @Nullable
+  private Map<Object, Object> mCachedValues;
+
+  public StateHandler() {
+    this(null);
+  }
+
+  public StateHandler(@Nullable StateHandler stateHandler) {
     if (stateHandler == null) {
       return;
     }
 
     synchronized (this) {
-      copyPendingStateUpdatesMap(stateHandler.getPendingStateUpdates());
+      copyStateUpdatesMap(
+          stateHandler.getPendingStateUpdates(), stateHandler.getAppliedStateUpdates());
       copyCurrentStateContainers(stateHandler.getStateContainers());
       copyPendingStateTransitions(stateHandler.getPendingStateUpdateTransitions());
     }
   }
 
-  public static StateHandler acquireNewInstance(@Nullable StateHandler stateHandler) {
-    return ComponentsConfiguration.useStateHandlers
-        ? ComponentsPools.acquireStateHandler(stateHandler)
-        : null;
+  public static @Nullable StateHandler createNewInstance(@Nullable StateHandler stateHandler) {
+    return ComponentsConfiguration.useStateHandlers ? new StateHandler(stateHandler) : null;
   }
 
   public synchronized boolean isEmpty() {
@@ -112,12 +103,12 @@ public class StateHandler {
    * @param stateUpdate the state update to apply to the component
    */
   synchronized void queueStateUpdate(String key, StateUpdate stateUpdate) {
-    maybeInitPendingUpdates();
+    maybeInitStateUpdatesMap();
 
     List<StateUpdate> pendingStateUpdatesForKey = mPendingStateUpdates.get(key);
 
     if (pendingStateUpdatesForKey == null) {
-      pendingStateUpdatesForKey = StateHandler.acquireStateUpdatesList();
+      pendingStateUpdatesForKey = StateHandler.createStateUpdatesList();
       mPendingStateUpdates.put(key, pendingStateUpdatesForKey);
     }
 
@@ -148,9 +139,7 @@ public class StateHandler {
     }
 
     if (currentStateContainer != null) {
-      component.transferState(
-          component.getScopedContext(),
-          currentStateContainer);
+      component.transferState(currentStateContainer, component.getStateContainer());
     } else {
       component.createInitialState(component.getScopedContext());
     }
@@ -166,7 +155,16 @@ public class StateHandler {
     // If there are no state updates pending for this component, simply store its current state.
     if (stateUpdatesForKey != null) {
       for (StateUpdate update : stateUpdatesForKey) {
-        update.updateState(component.getStateContainer(), component);
+        update.updateState(component.getStateContainer());
+      }
+
+      LithoStats.incStateUpdate(stateUpdatesForKey.size());
+
+      if (component.getScopedContext().isNestedTreeResolutionExperimentEnabled()) {
+        synchronized (this) {
+          mPendingStateUpdates.remove(key); // remove to pending
+          mAppliedStateUpdates.put(key, stateUpdatesForKey); // add to applied
+        }
       }
     }
 
@@ -186,11 +184,16 @@ public class StateHandler {
 
   /**
    * Removes a list of state updates that have been applied from the pending state updates list and
-   *  updates the map of current components with the given components.
+   * updates the map of current components with the given components.
+   *
    * @param stateHandler state handler that was used to apply state updates in a layout pass
+   * @param isNestedTreeResolutionExperimentEnabled is the NestedTree resolution experiment enabled
    */
-  void commit(StateHandler stateHandler) {
-    clearStateUpdates(stateHandler.getPendingStateUpdates());
+  void commit(StateHandler stateHandler, boolean isNestedTreeResolutionExperimentEnabled) {
+    clearStateUpdates(
+        isNestedTreeResolutionExperimentEnabled
+            ? stateHandler.getAppliedStateUpdates()
+            : stateHandler.getPendingStateUpdates());
     clearUnusedStateContainers(stateHandler);
     copyCurrentStateContainers(stateHandler.getStateContainers());
     copyPendingStateTransitions(stateHandler.getPendingStateUpdateTransitions());
@@ -220,51 +223,24 @@ public class StateHandler {
         synchronized (this) {
           mPendingStateUpdates.remove(key);
         }
-        releaseStateUpdatesList(pendingStateUpdatesForKey);
       } else {
         pendingStateUpdatesForKey.removeAll(appliedStateUpdatesForKey);
       }
     }
   }
 
-  synchronized void release() {
-    if (mPendingStateUpdates != null) {
-      mPendingStateUpdates.clear();
-      sPendingStateUpdatesMapPool.release(mPendingStateUpdates);
-      mPendingStateUpdates = null;
-    }
-
-    mPendingStateUpdateTransitions = null;
-
-    if (mStateContainers != null) {
-      mStateContainers.clear();
-      sStateContainersMapPool.release(mStateContainers);
-      mStateContainers = null;
-    }
-
-    mNeededStateContainers = null;
+  private static List<StateUpdate> createStateUpdatesList() {
+    return createStateUpdatesList(null);
   }
 
-  private static List<StateUpdate> acquireStateUpdatesList() {
-    return acquireStateUpdatesList(null);
-  }
-
-  private static List<StateUpdate> acquireStateUpdatesList(List<StateUpdate> copyFrom) {
-    List<StateUpdate> list = sStateUpdatesListPool.acquire();
-    if (list == null) {
-      list = new ArrayList<>(
-          copyFrom == null ? INITIAL_STATE_UPDATE_LIST_CAPACITY : copyFrom.size());
-    }
+  private static List<StateUpdate> createStateUpdatesList(List<StateUpdate> copyFrom) {
+    List<StateUpdate> list =
+        new ArrayList<>(copyFrom == null ? INITIAL_STATE_UPDATE_LIST_CAPACITY : copyFrom.size());
     if (copyFrom != null) {
       list.addAll(copyFrom);
     }
 
     return list;
-  }
-
-  private static void releaseStateUpdatesList(List<StateUpdate> list) {
-    list.clear();
-    sStateUpdatesListPool.release(list);
   }
 
   synchronized Map<String, StateContainer> getStateContainers() {
@@ -278,6 +254,11 @@ public class StateHandler {
   @Nullable
   synchronized Map<String, List<Transition>> getPendingStateUpdateTransitions() {
     return mPendingStateUpdateTransitions;
+  }
+
+  @VisibleForTesting
+  synchronized Map<String, List<StateUpdate>> getAppliedStateUpdates() {
+    return mAppliedStateUpdates;
   }
 
   @Nullable
@@ -295,20 +276,47 @@ public class StateHandler {
     mPendingStateUpdateTransitions = null;
   }
 
+  @Nullable
+  synchronized Object getCachedValue(Object cachedValueInputs) {
+    if (mCachedValues == null) {
+      mCachedValues = new HashMap<>();
+    }
+
+    return mCachedValues.get(cachedValueInputs);
+  }
+
+  synchronized void putCachedValue(Object cachedValueInputs, Object cachedValue) {
+    if (mCachedValues == null) {
+      mCachedValues = new HashMap<>();
+    }
+
+    mCachedValues.put(cachedValueInputs, cachedValue);
+  }
+
   /**
    * @return copy the information from the given map of state updates into the map of pending state
-   * updates.
+   *     updates.
    */
-  private void copyPendingStateUpdatesMap(
-      Map<String, List<StateUpdate>> pendingStateUpdates) {
-    if (pendingStateUpdates == null || pendingStateUpdates.isEmpty()) {
+  private void copyStateUpdatesMap(
+      Map<String, List<StateUpdate>> pendingStateUpdates,
+      Map<String, List<StateUpdate>> appliedStateUpdates) {
+
+    if ((pendingStateUpdates == null || pendingStateUpdates.isEmpty())
+        && (appliedStateUpdates == null || appliedStateUpdates.isEmpty())) {
       return;
     }
 
-    maybeInitPendingUpdates();
-    for (String key : pendingStateUpdates.keySet()) {
-      synchronized (this) {
-        mPendingStateUpdates.put(key, acquireStateUpdatesList(pendingStateUpdates.get(key)));
+    maybeInitStateUpdatesMap();
+    synchronized (this) {
+      if (pendingStateUpdates != null) {
+        for (String key : pendingStateUpdates.keySet()) {
+          mPendingStateUpdates.put(key, createStateUpdatesList(pendingStateUpdates.get(key)));
+        }
+      }
+      if (appliedStateUpdates != null) {
+        for (String key : appliedStateUpdates.keySet()) {
+          mAppliedStateUpdates.put(key, createStateUpdatesList(appliedStateUpdates.get(key)));
+        }
       }
     }
   }
@@ -359,10 +367,7 @@ public class StateHandler {
 
   private synchronized void maybeInitStateContainers() {
     if (mStateContainers == null) {
-      mStateContainers = sStateContainersMapPool.acquire();
-      if (mStateContainers == null) {
-        mStateContainers = new HashMap<>(INITIAL_MAP_CAPACITY);
-      }
+      mStateContainers = new HashMap<>(INITIAL_MAP_CAPACITY);
     }
   }
 
@@ -378,13 +383,13 @@ public class StateHandler {
     }
   }
 
-  private synchronized void maybeInitPendingUpdates() {
+  private synchronized void maybeInitStateUpdatesMap() {
     if (mPendingStateUpdates == null) {
-      mPendingStateUpdates = sPendingStateUpdatesMapPool.acquire();
-      if (mPendingStateUpdates == null) {
-        mPendingStateUpdates = new HashMap<>(INITIAL_MAP_CAPACITY);
-      }
+      mPendingStateUpdates = new HashMap<>(INITIAL_MAP_CAPACITY);
+    }
+
+    if (mAppliedStateUpdates == null) {
+      mAppliedStateUpdates = new HashMap<>(INITIAL_MAP_CAPACITY);
     }
   }
-
 }

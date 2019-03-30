@@ -16,12 +16,12 @@
 package com.facebook.litho.widget;
 
 import android.content.Context;
-import android.support.annotation.IntDef;
-import android.support.v7.widget.LinearSmoothScroller;
-import android.support.v7.widget.LinearSnapHelper;
-import android.support.v7.widget.PagerSnapHelper;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SnapHelper;
+import androidx.annotation.IntDef;
+import androidx.recyclerview.widget.LinearSmoothScroller;
+import androidx.recyclerview.widget.LinearSnapHelper;
+import androidx.recyclerview.widget.PagerSnapHelper;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.SnapHelper;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import javax.annotation.Nullable;
@@ -39,12 +39,22 @@ public class SnapUtil {
   /* This snap mode will cause a LinearSnapHelper to be used */
   public static final int SNAP_TO_CENTER_CHILD = Integer.MAX_VALUE - 1;
 
-  @IntDef({SNAP_NONE, SNAP_TO_END, SNAP_TO_START, SNAP_TO_CENTER, SNAP_TO_CENTER_CHILD})
+  /* This snap mode will cause a custom LinearSnapHelper to be used */
+  public static final int SNAP_TO_CENTER_CHILD_WITH_CUSTOM_SPEED = Integer.MAX_VALUE - 2;
+
+  @IntDef({
+    SNAP_NONE,
+    SNAP_TO_END,
+    SNAP_TO_START,
+    SNAP_TO_CENTER,
+    SNAP_TO_CENTER_CHILD,
+    SNAP_TO_CENTER_CHILD_WITH_CUSTOM_SPEED
+  })
   @Retention(RetentionPolicy.SOURCE)
   public @interface SnapMode {}
 
   @Nullable
-  public static SnapHelper getSnapHelper(@SnapMode int snapMode) {
+  public static SnapHelper getSnapHelper(@SnapMode int snapMode, int deltaJumpThreshold) {
     switch (snapMode) {
       case SNAP_TO_CENTER:
         return new PagerSnapHelper();
@@ -52,6 +62,8 @@ public class SnapUtil {
         return new StartSnapHelper();
       case SNAP_TO_CENTER_CHILD:
         return new LinearSnapHelper();
+      case SNAP_TO_CENTER_CHILD_WITH_CUSTOM_SPEED:
+        return new CustomSpeedLinearSnapHelper(deltaJumpThreshold);
       case SNAP_TO_END:
       case SNAP_NONE:
       default:
@@ -60,8 +72,8 @@ public class SnapUtil {
   }
 
   /**
-   * @return {@link android.support.v7.widget.RecyclerView.SmoothScroller} that takes snapping into
-   *     account.
+   * @return {@link androidx.recyclerview.widget.RecyclerView.SmoothScroller} that takes snapping
+   *     into account.
    */
   public static RecyclerView.SmoothScroller getSmoothScrollerWithOffset(
       Context context, final int offset, final SmoothScrollAlignmentType type) {

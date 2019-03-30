@@ -79,7 +79,7 @@ public class TestSectionCreator {
         String key,
         boolean forceShouldUpdate,
         @Nullable final Section... children) {
-      super(initialCount, key, forceShouldUpdate);
+      super("ChildrenSectionTest", initialCount, key, forceShouldUpdate);
       mChildren = children;
     }
 
@@ -127,7 +127,7 @@ public class TestSectionCreator {
         String key,
         boolean forceShouldUpdate,
         @Nullable final Change... changes) {
-      super(initialCount, key, forceShouldUpdate);
+      super("ChangeSetSection", initialCount, key, forceShouldUpdate);
       this.mChanges = changes;
     }
 
@@ -147,7 +147,7 @@ public class TestSectionCreator {
     }
 
     @Override
-    protected boolean isDiffSectionSpec() {
+    public boolean isDiffSectionSpec() {
       return true;
     }
 
@@ -185,10 +185,8 @@ public class TestSectionCreator {
     public int lastFullyVisibleIndex;
 
     protected TestSection(
-        int initialCount,
-        String key,
-        boolean forceShouldUpdate) {
-      super("TestSection");
+        String simpleName, int initialCount, String key, boolean forceShouldUpdate) {
+      super(simpleName);
       this.forceShouldUpdate = forceShouldUpdate;
       setCount(initialCount);
       setKey(key);

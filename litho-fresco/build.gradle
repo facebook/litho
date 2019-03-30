@@ -33,7 +33,6 @@ android {
 
 dependencies {
     implementation project(':litho-core')
-    compileOnly project(':litho-annotations')
     annotationProcessor project(':litho-processor')
 
     // Annotations
@@ -44,7 +43,7 @@ dependencies {
     implementation deps.fresco
 
     // Android Support Library
-    implementation deps.supportCoreUi
+    compileOnly deps.supportAnnotations
 }
 
 apply from: rootProject.file('gradle/release.gradle')

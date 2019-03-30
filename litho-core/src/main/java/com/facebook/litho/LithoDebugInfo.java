@@ -33,39 +33,6 @@ public final class LithoDebugInfo {
     List<PoolWithDebugInfo> pools = new ArrayList<>();
 
     pools.addAll(ComponentsPools.getMountContentPools());
-    pools.add(ComponentsPools.sLayoutStatePool);
-    pools.add(ComponentsPools.sInternalNodePool);
-    pools.add(ComponentsPools.sNodeInfoPool);
-    pools.add(ComponentsPools.sViewNodeInfoPool);
-    pools.add(ComponentsPools.sYogaNodePool);
-    pools.add(ComponentsPools.sMountItemPool);
-    pools.add(ComponentsPools.sLayoutOutputPool);
-    pools.add(ComponentsPools.sVisibilityOutputPool);
-    pools.add(ComponentsPools.sVisibilityItemPool);
-    pools.add(ComponentsPools.sOutputPool);
-    pools.add(ComponentsPools.sDiffNodePool);
-    pools.add(ComponentsPools.sDiffPool);
-    pools.add(ComponentsPools.sComponentTreeBuilderPool);
-    pools.add(ComponentsPools.sStateHandlerPool);
-    pools.add(ComponentsPools.sMountItemScrapArrayPool);
-    pools.add(ComponentsPools.sRectFPool);
-    pools.add(ComponentsPools.sRectPool);
-    pools.add(ComponentsPools.sEdgesPool);
-    pools.add(ComponentsPools.sDisplayListDrawablePool);
-    pools.add(ComponentsPools.sArraySetPool);
-    pools.add(ComponentsPools.sArrayDequePool);
-
-    if (ComponentsPools.sTestOutputPool != null) {
-      pools.add(ComponentsPools.sTestOutputPool);
-    }
-
-    if (ComponentsPools.sTestItemPool != null) {
-      pools.add(ComponentsPools.sTestItemPool);
-    }
-
-    if (ComponentsPools.sBorderColorDrawablePool != null) {
-      pools.add(ComponentsPools.sBorderColorDrawablePool);
-    }
 
     return pools;
   }

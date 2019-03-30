@@ -16,7 +16,9 @@
 
 package com.facebook.litho.specmodels.processor;
 
+import com.facebook.litho.annotations.FromCreateLayout;
 import com.facebook.litho.annotations.LayoutSpec;
+import com.facebook.litho.annotations.OnCalculateCachedValue;
 import com.facebook.litho.annotations.OnCreateTreeProp;
 import com.facebook.litho.annotations.OnEnteredRange;
 import com.facebook.litho.annotations.OnExitedRange;
@@ -31,6 +33,7 @@ import com.facebook.litho.specmodels.model.LayoutSpecModel;
 import com.facebook.litho.specmodels.model.SpecGenerator;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.Nullable;
@@ -42,18 +45,25 @@ import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
 /** Factory for creating {@link LayoutSpecModel}s. */
-public class LayoutSpecModelFactory implements SpecModelFactory {
+public class LayoutSpecModelFactory implements SpecModelFactory<LayoutSpecModel> {
+  public static final ImmutableList<Class<? extends Annotation>> DELEGATE_METHOD_ANNOTATIONS;
+
   static final List<Class<? extends Annotation>> INTER_STAGE_INPUT_ANNOTATIONS = new ArrayList<>();
-  static final List<Class<? extends Annotation>> DELEGATE_METHOD_ANNOTATIONS = new ArrayList<>();
 
   static {
-    DELEGATE_METHOD_ANNOTATIONS.addAll(
+    INTER_STAGE_INPUT_ANNOTATIONS.add(FromCreateLayout.class);
+
+    List<Class<? extends Annotation>> delegateMethodAnnotations = new ArrayList<>();
+    delegateMethodAnnotations.addAll(
         DelegateMethodDescriptions.LAYOUT_SPEC_DELEGATE_METHODS_MAP.keySet());
-    DELEGATE_METHOD_ANNOTATIONS.add(OnCreateTreeProp.class);
-    DELEGATE_METHOD_ANNOTATIONS.add(ShouldUpdate.class);
-    DELEGATE_METHOD_ANNOTATIONS.add(OnEnteredRange.class);
-    DELEGATE_METHOD_ANNOTATIONS.add(OnExitedRange.class);
-    DELEGATE_METHOD_ANNOTATIONS.add(OnRegisterRanges.class);
+    delegateMethodAnnotations.add(OnCreateTreeProp.class);
+    delegateMethodAnnotations.add(ShouldUpdate.class);
+    delegateMethodAnnotations.add(OnEnteredRange.class);
+    delegateMethodAnnotations.add(OnExitedRange.class);
+    delegateMethodAnnotations.add(OnRegisterRanges.class);
+    delegateMethodAnnotations.add(OnCalculateCachedValue.class);
+
+    DELEGATE_METHOD_ANNOTATIONS = ImmutableList.copyOf(delegateMethodAnnotations);
   }
 
   private final List<Class<? extends Annotation>> mLayoutSpecDelegateMethodAnnotations;
@@ -86,7 +96,7 @@ public class LayoutSpecModelFactory implements SpecModelFactory {
       Types types,
       TypeElement element,
       Messager messager,
-      RunMode runMode,
+      EnumSet<RunMode> runMode,
       @Nullable DependencyInjectionHelper dependencyInjectionHelper,
       @Nullable InterStageStore interStageStore) {
 
@@ -129,6 +139,7 @@ public class LayoutSpecModelFactory implements SpecModelFactory {
         element,
         mLayoutSpecGenerator,
         ImmutableList.copyOf(TypeVariablesExtractor.getTypeVariables(element)),
-        FieldsExtractor.extractFields(element));
+        FieldsExtractor.extractFields(element),
+        element.getAnnotation(LayoutSpec.class).simpleNameDelegate());
   }
 }

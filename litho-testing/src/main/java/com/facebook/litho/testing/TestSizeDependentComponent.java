@@ -16,16 +16,12 @@
 
 package com.facebook.litho.testing;
 
-import android.support.v4.util.Pools;
 import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.yoga.YogaEdge;
 
 public class TestSizeDependentComponent extends Component {
-
-  private static final Pools.SynchronizedPool<Builder> sBuilderPool =
-      new Pools.SynchronizedPool<>(2);
 
   private TestSizeDependentComponent() {
     super("TestSizeDependentComponent");
@@ -78,12 +74,8 @@ public class TestSizeDependentComponent extends Component {
   }
 
   public static Builder create(ComponentContext context) {
-    Builder builder = sBuilderPool.acquire();
-    if (builder == null) {
-      builder = new Builder();
-    }
+    final Builder builder = new Builder();
     builder.init(context, new TestSizeDependentComponent());
-
     return builder;
   }
 
@@ -132,16 +124,7 @@ public class TestSizeDependentComponent extends Component {
 
     @Override
     public Component build() {
-      TestSizeDependentComponent testSizeDependentComponent = mTestSizeDependentComponent;
-      release();
-      return testSizeDependentComponent;
-    }
-
-    @Override
-    protected void release() {
-      super.release();
-      mTestSizeDependentComponent = null;
-      sBuilderPool.release(this);
+      return mTestSizeDependentComponent;
     }
   }
 }

@@ -23,6 +23,7 @@ import com.facebook.litho.annotations.FromMeasureBaseline;
 import com.facebook.litho.annotations.FromPrepare;
 import com.facebook.litho.annotations.MountSpec;
 import com.facebook.litho.annotations.MountingType;
+import com.facebook.litho.annotations.OnCalculateCachedValue;
 import com.facebook.litho.annotations.OnCreateMountContent;
 import com.facebook.litho.annotations.OnCreateTreeProp;
 import com.facebook.litho.annotations.OnEnteredRange;
@@ -40,6 +41,7 @@ import com.facebook.litho.specmodels.model.SpecGenerator;
 import com.squareup.javapoet.TypeName;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.Nullable;
@@ -56,7 +58,7 @@ import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
 /** Factory for creating {@link MountSpecModel}s. */
-public class MountSpecModelFactory implements SpecModelFactory {
+public class MountSpecModelFactory implements SpecModelFactory<MountSpecModel> {
   private static final List<Class<? extends Annotation>> INTER_STAGE_INPUT_ANNOTATIONS =
       new ArrayList<>();
   private static final List<Class<? extends Annotation>> DELEGATE_METHOD_ANNOTATIONS =
@@ -75,6 +77,7 @@ public class MountSpecModelFactory implements SpecModelFactory {
     DELEGATE_METHOD_ANNOTATIONS.add(OnEnteredRange.class);
     DELEGATE_METHOD_ANNOTATIONS.add(OnExitedRange.class);
     DELEGATE_METHOD_ANNOTATIONS.add(OnRegisterRanges.class);
+    DELEGATE_METHOD_ANNOTATIONS.add(OnCalculateCachedValue.class);
   }
 
   private final SpecGenerator<MountSpecModel> mMountSpecGenerator;
@@ -102,7 +105,7 @@ public class MountSpecModelFactory implements SpecModelFactory {
       Types types,
       TypeElement element,
       Messager messager,
-      RunMode runMode,
+      EnumSet<RunMode> runMode,
       @Nullable DependencyInjectionHelper dependencyInjectionHelper,
       @Nullable InterStageStore interStageStore) {
     return new MountSpecModel(

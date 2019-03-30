@@ -81,7 +81,7 @@ public class OneByOneLeftRightBlocksComponentSpec {
 
   @OnEvent(ClickEvent.class)
   static void onClick(ComponentContext c) {
-    OneByOneLeftRightBlocksComponent.updateState(c);
+    OneByOneLeftRightBlocksComponent.updateStateSync(c);
   }
 
   @OnUpdateState

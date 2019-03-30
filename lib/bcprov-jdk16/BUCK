@@ -2,6 +2,7 @@
 #
 # This source code is licensed under the Apache 2.0 license found in the
 # LICENSE file in the root directory of this source tree.
+load("//tools/build_defs/oss:fb_native_wrapper.bzl", "fb_native")
 load("//tools/build_defs/oss:litho_defs.bzl", "fb_java_library")
 
 fb_java_library(
@@ -12,12 +13,12 @@ fb_java_library(
     ],
 )
 
-prebuilt_jar(
+fb_native.prebuilt_jar(
     name = "bcprov-jdk16-prebuilt",
     binary_jar = ":bcprov-jdk16.jar",
 )
 
-remote_file(
+fb_native.remote_file(
     name = "bcprov-jdk16.jar",
     sha1 = "ce091790943599535cbb4de8ede84535b0c1260c",
     url = "mvn:org.bouncycastle:bcprov-jdk16:jar:1.46",

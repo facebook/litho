@@ -16,9 +16,11 @@
 
 package com.facebook.litho.specmodels.model;
 
+import com.facebook.litho.specmodels.internal.RunMode;
 import com.squareup.javapoet.TypeSpec;
+import java.util.EnumSet;
 
 public interface SpecGenerator<T extends SpecModel> {
 
-  TypeSpec generate(T specModel);
+  TypeSpec generate(T specModel, EnumSet<RunMode> runMode);
 }

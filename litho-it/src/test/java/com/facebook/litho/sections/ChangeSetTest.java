@@ -20,6 +20,7 @@ import static com.facebook.litho.sections.Change.MOVE;
 import static com.facebook.litho.sections.ChangeSet.acquireChangeSet;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
+import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.widget.ComponentRenderInfo;
 import com.facebook.litho.widget.RenderInfo;
@@ -139,5 +140,44 @@ public class ChangeSetTest {
     changeSet.release();
     assertThat(changeSet.getCount()).isEqualTo(0);
     assertThat(changeSet.getChangeCount()).isEqualTo(0);
+  }
+
+  @Test
+  public void testAddChangeWithData() {
+    final ChangeSet changeSet = ChangeSet.acquireChangeSet(null, false);
+    final Object data1 = new Object();
+
+    changeSet.addChange(Change.insert(0, ComponentRenderInfo.createEmpty(), data1));
+    assertThat(changeSet.getCount()).isEqualTo(1);
+    assertThat(changeSet.getChanges().get(0).getPrevData()).isNull();
+    assertThat(changeSet.getChanges().get(0).getNextData()).isEqualTo(ImmutableList.of(data1));
+
+    changeSet.addChange(Change.remove(0, data1));
+    assertThat(changeSet.getCount()).isEqualTo(0);
+    assertThat(changeSet.getChanges().get(1).getPrevData()).isEqualTo(ImmutableList.of(data1));
+    assertThat(changeSet.getChanges().get(1).getNextData()).isNull();
+
+    final Object data2 = new Object();
+    changeSet.addChange(Change.insert(0, ComponentRenderInfo.createEmpty(), data2));
+    assertThat(changeSet.getCount()).isEqualTo(1);
+    assertThat(changeSet.getChanges().get(2).getPrevData()).isNull();
+    assertThat(changeSet.getChanges().get(2).getNextData()).isEqualTo(ImmutableList.of(data2));
+
+    final Object data3 = new Object();
+    changeSet.addChange(Change.update(0, ComponentRenderInfo.createEmpty(), data2, data3));
+    assertThat(changeSet.getCount()).isEqualTo(1);
+    assertThat(changeSet.getChanges().get(3).getPrevData()).isEqualTo(ImmutableList.of(data2));
+    assertThat(changeSet.getChanges().get(3).getNextData()).isEqualTo(ImmutableList.of(data3));
+
+    final Object data4 = new Object();
+    changeSet.addChange(Change.insert(0, ComponentRenderInfo.createEmpty(), data4));
+    assertThat(changeSet.getCount()).isEqualTo(2);
+    assertThat(changeSet.getChanges().get(4).getPrevData()).isNull();
+    assertThat(changeSet.getChanges().get(4).getNextData()).isEqualTo(ImmutableList.of(data4));
+
+    changeSet.addChange(Change.move(0, 1, data4));
+    assertThat(changeSet.getCount()).isEqualTo(2);
+    assertThat(changeSet.getChanges().get(5).getPrevData()).isEqualTo(ImmutableList.of(data4));
+    assertThat(changeSet.getChanges().get(5).getNextData()).isEqualTo(ImmutableList.of(data4));
   }
 }

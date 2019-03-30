@@ -20,6 +20,7 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.State;
+import com.facebook.litho.sections.ChangesInfo;
 import com.facebook.litho.sections.Children;
 import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.annotations.GroupSectionSpec;
@@ -70,6 +71,9 @@ public class GroupSectionSpecGeneratorTest {
         boolean isDataChanged,
         boolean isMounted,
         long uptimeMillis,
+        int firstVisibleIndex,
+        int lastVisibleIndex,
+        ChangesInfo changesInfo,
         @Prop boolean arg0,
         @State int arg1) {}
   }
@@ -85,7 +89,7 @@ public class GroupSectionSpecGeneratorTest {
         elements.getTypeElement(TestGroupSectionSpec.class.getCanonicalName());
     mSpecModel =
         mGroupSectionSpecModelFactory.create(
-            elements, types, typeElement, mMessager, RunMode.NORMAL, null, null);
+            elements, types, typeElement, mMessager, RunMode.normal(), null, null);
   }
 
   @Test
@@ -94,14 +98,16 @@ public class GroupSectionSpecGeneratorTest {
     final TypeSpecDataHolder dataHolder =
         DelegateMethodGenerator.generateDelegates(
             groupSectionSpecModel,
-            DelegateMethodDescriptions.getGroupSectionSpecDelegatesMap(groupSectionSpecModel));
+            DelegateMethodDescriptions.getGroupSectionSpecDelegatesMap(groupSectionSpecModel),
+            RunMode.normal());
 
     assertThat(dataHolder.getMethodSpecs()).hasSize(2);
     assertThat(dataHolder.getMethodSpecs().get(0).toString())
         .isEqualTo(
             "@java.lang.Override\n"
                 + "protected com.facebook.litho.sections.Children createChildren(com.facebook.litho.sections.SectionContext c) {\n"
-                + "  com.facebook.litho.sections.Children _result = (com.facebook.litho.sections.Children) TestGroupSectionSpec.onCreateChildren(\n"
+                + "  com.facebook.litho.sections.Children _result;\n"
+                + "  _result = (com.facebook.litho.sections.Children) TestGroupSectionSpec.onCreateChildren(\n"
                 + "    (com.facebook.litho.sections.SectionContext) c);\n"
                 + "  return _result;\n"
                 + "}\n");
@@ -109,12 +115,16 @@ public class GroupSectionSpecGeneratorTest {
         .isEqualTo(
             "@java.lang.Override\n"
                 + "protected void dataRendered(com.facebook.litho.sections.SectionContext c, boolean isDataChanged,\n"
-                + "    boolean isMounted, long uptimeMillis) {\n"
+                + "    boolean isMounted, long uptimeMillis, int firstVisibleIndex, int lastVisibleIndex,\n"
+                + "    com.facebook.litho.sections.ChangesInfo changesInfo) {\n"
                 + "  TestGroupSectionSpec.onDataRendered(\n"
                 + "    (com.facebook.litho.sections.SectionContext) c,\n"
                 + "    (boolean) isDataChanged,\n"
                 + "    (boolean) isMounted,\n"
                 + "    (long) uptimeMillis,\n"
+                + "    (int) firstVisibleIndex,\n"
+                + "    (int) lastVisibleIndex,\n"
+                + "    (com.facebook.litho.sections.ChangesInfo) changesInfo,\n"
                 + "    (boolean) arg0,\n"
                 + "    (int) mStateContainer.arg1);\n"
                 + "}\n");

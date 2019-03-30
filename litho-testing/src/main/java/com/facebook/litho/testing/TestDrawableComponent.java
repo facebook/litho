@@ -19,9 +19,9 @@ package com.facebook.litho.testing;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.support.annotation.AttrRes;
-import android.support.annotation.StyleRes;
-import android.support.v4.util.Pools;
+import androidx.annotation.AttrRes;
+import androidx.annotation.StyleRes;
+import androidx.core.util.Pools;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
@@ -29,6 +29,10 @@ import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
 
 public class TestDrawableComponent extends TestComponent {
+
+  public interface TestComponentListener {
+    void onPrepare();
+  }
 
   private static final Pools.SynchronizedPool<Builder> sBuilderPool =
       new Pools.SynchronizedPool<>(2);
@@ -46,6 +50,7 @@ public class TestDrawableComponent extends TestComponent {
   private int measuredWidth = -1;
   private int measuredHeight = -1;
   private boolean mReturnSelfInMakeShallowCopy;
+  private TestComponentListener mTestComponentListener;
 
   private TestDrawableComponent(long properties) {
     super("TestDrawableComponent");
@@ -148,6 +153,19 @@ public class TestDrawableComponent extends TestComponent {
     return super.makeShallowCopy();
   }
 
+  @Override
+  protected void onPrepare(ComponentContext c) {
+    if (mTestComponentListener != null) {
+      mTestComponentListener.onPrepare();
+    }
+
+    super.onPrepare(c);
+  }
+
+  public void setTestComponentListener(TestComponentListener listener) {
+    mTestComponentListener = listener;
+  }
+
   public static Builder create(
       ComponentContext context,
       @AttrRes int defStyleAttr,
@@ -238,10 +256,7 @@ public class TestDrawableComponent extends TestComponent {
       @AttrRes int defStyleAttr,
       @StyleRes int defStyleRes,
       TestDrawableComponent state) {
-    Builder builder = sBuilderPool.acquire();
-    if (builder == null) {
-      builder = new Builder();
-    }
+    final Builder builder = new Builder();
     builder.init(context, defStyleAttr, defStyleRes, state);
     return builder;
   }
@@ -305,16 +320,7 @@ public class TestDrawableComponent extends TestComponent {
 
     @Override
     public TestDrawableComponent build() {
-      TestDrawableComponent component = mComponent;
-      release();
-      return component;
-    }
-
-    @Override
-    protected void release() {
-      super.release();
-      mComponent = null;
-      sBuilderPool.release(this);
+      return mComponent;
     }
 
     @Override

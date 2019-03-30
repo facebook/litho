@@ -271,7 +271,7 @@ public class DelegateMethodValidationTest {
     assertThat(validationErrors.get(0).element).isEqualTo(mMethodParamObject2);
     assertThat(validationErrors.get(0).message)
         .isEqualTo(
-            "Not a valid parameter, should be one of the following: @Prop T somePropName. @TreeProp T someTreePropName. @State T someStateName. @InjectProp T someInjectPropName. ");
+            "Not a valid parameter, should be one of the following: @Prop T somePropName. @TreeProp T someTreePropName. @State T someStateName. @InjectProp T someInjectPropName. @CachedValue T value, where the cached value has a corresponding @OnCalculateCachedValue method. ");
   }
 
   @Test
@@ -641,6 +641,6 @@ public class DelegateMethodValidationTest {
     assertThat(validationErrors.get(0).element).isEqualTo(mMethodParamObject3);
     assertThat(validationErrors.get(0).message)
         .isEqualTo(
-            "Not a valid parameter, should be one of the following: @Prop T somePropName. @TreeProp T someTreePropName. @State T someStateName. @InjectProp T someInjectPropName. Or one of the following, where no annotations should be added to the parameter: java.lang.Integer matched. char unmatched. ");
+            "Not a valid parameter, should be one of the following: @Prop T somePropName. @TreeProp T someTreePropName. @State T someStateName. @InjectProp T someInjectPropName. @CachedValue T value, where the cached value has a corresponding @OnCalculateCachedValue method. Or one of the following, where no annotations should be added to the parameter: java.lang.Integer matched. char unmatched. ");
   }
 }

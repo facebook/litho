@@ -15,10 +15,11 @@
  */
 package com.facebook.litho;
 
-import com.facebook.litho.internal.ArraySet;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Keeps track of the last mounted @Prop/@State a component was rendered with for components that
@@ -28,7 +29,7 @@ import java.util.Map;
 public class RenderState {
 
   private final Map<String, ComponentLifecycle.RenderData> mRenderData = new HashMap<>();
-  private final ArraySet<String> mSeenGlobalKeys = new ArraySet<>();
+  private final Set<String> mSeenGlobalKeys = new HashSet<>();
 
   void recordRenderData(List<Component> components) {
     if (components == null) {
@@ -86,10 +87,5 @@ public class RenderState {
     final String key = component.getGlobalKey();
     final ComponentLifecycle.RenderData previousRenderData = mRenderData.get(key);
     component.applyPreviousRenderData(previousRenderData);
-  }
-
-  void reset() {
-    mRenderData.clear();
-    mSeenGlobalKeys.clear();
   }
 }

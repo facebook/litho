@@ -37,7 +37,7 @@ object AlternateColorPathEffectBorderSpec {
                   .color(YogaEdge.TOP, NiceColor.ORANGE)
                   .color(YogaEdge.RIGHT, NiceColor.GREEN)
                   .color(YogaEdge.BOTTOM, NiceColor.BLUE)
-                  .widthDip(YogaEdge.ALL, 5)
+                  .widthDip(YogaEdge.ALL, 5f)
                   .discreteEffect(5f, 10f)
                   .build())
           .build()

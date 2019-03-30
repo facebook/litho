@@ -116,13 +116,13 @@ public class BuilderGeneratorTest {
     TypeElement typeElement = elements.getTypeElement(TestSpec.class.getCanonicalName());
     mSpecModel =
         mLayoutSpecModelFactory.create(
-            elements, types, typeElement, mMessager, RunMode.NORMAL, null, null);
+            elements, types, typeElement, mMessager, RunMode.normal(), null, null);
 
     TypeElement resWithVarArgsElement =
         elements.getTypeElement(TestResTypeWithVarArgsSpec.class.getCanonicalName());
     mResTypeVarArgsSpecModel =
         mLayoutSpecModelFactory.create(
-            elements, types, resWithVarArgsElement, mMessager, RunMode.NORMAL, null, null);
+            elements, types, resWithVarArgsElement, mMessager, RunMode.normal(), null, null);
 
     TypeElement dimenResTypeWithBoxFloatArgElement =
         elements.getTypeElement(TestDimenResTypeWithBoxFloatArgSpec.class.getCanonicalName());
@@ -132,7 +132,7 @@ public class BuilderGeneratorTest {
             types,
             dimenResTypeWithBoxFloatArgElement,
             mMessager,
-            RunMode.NORMAL,
+            RunMode.normal(),
             null,
             null);
 
@@ -144,7 +144,7 @@ public class BuilderGeneratorTest {
             types,
             typeElementKotlinVarArgsWildcards,
             mMessager,
-            RunMode.NORMAL,
+            RunMode.normal(),
             null,
             null);
   }
@@ -258,16 +258,7 @@ public class BuilderGeneratorTest {
                 + "  @java.lang.Override\n"
                 + "  public com.facebook.litho.specmodels.generator.BuilderGeneratorTest.Test build() {\n"
                 + "    checkArgs(REQUIRED_PROPS_COUNT, mRequired, REQUIRED_PROPS_NAMES);\n"
-                + "    Test testRef = mTest;\n"
-                + "    release();\n"
-                + "    return testRef;\n"
-                + "  }\n"
-                + "\n"
-                + "  @java.lang.Override\n"
-                + "  protected void release() {\n"
-                + "    super.release();\n"
-                + "    mTest = null;\n"
-                + "    mContext = null;\n"
+                + "    return mTest;\n"
                 + "  }\n"
                 + "}\n");
   }
@@ -297,7 +288,7 @@ public class BuilderGeneratorTest {
                 + "    mRequired.clear();\n"
                 + "  }\n"
                 + "\n"
-                + "  public Builder sizePx(@android.support.annotation.Px float size) {\n"
+                + "  public Builder sizePx(@androidx.annotation.Px float size) {\n"
                 + "    if (this.mTestResTypeWithVarArgs.sizes == null) {\n"
                 + "      this.mTestResTypeWithVarArgs.sizes = new java.util.ArrayList<java.lang.Float>();\n"
                 + "    }\n"
@@ -322,7 +313,7 @@ public class BuilderGeneratorTest {
                 + "    return this;\n"
                 + "  }\n"
                 + "\n"
-                + "  public Builder sizeRes(@android.support.annotation.DimenRes int resId) {\n"
+                + "  public Builder sizeRes(@androidx.annotation.DimenRes int resId) {\n"
                 + "    if (this.mTestResTypeWithVarArgs.sizes == null) {\n"
                 + "      this.mTestResTypeWithVarArgs.sizes = new java.util.ArrayList<java.lang.Float>();\n"
                 + "    }\n"
@@ -347,8 +338,8 @@ public class BuilderGeneratorTest {
                 + "    return this;\n"
                 + "  }\n"
                 + "\n"
-                + "  public Builder sizeAttr(@android.support.annotation.AttrRes int attrResId,\n"
-                + "      @android.support.annotation.DimenRes int defResId) {\n"
+                + "  public Builder sizeAttr(@androidx.annotation.AttrRes int attrResId,\n"
+                + "      @androidx.annotation.DimenRes int defResId) {\n"
                 + "    if (this.mTestResTypeWithVarArgs.sizes == null) {\n"
                 + "      this.mTestResTypeWithVarArgs.sizes = new java.util.ArrayList<java.lang.Float>();\n"
                 + "    }\n"
@@ -358,7 +349,7 @@ public class BuilderGeneratorTest {
                 + "    return this;\n"
                 + "  }\n"
                 + "\n"
-                + "  public Builder sizeAttr(@android.support.annotation.AttrRes int attrResId) {\n"
+                + "  public Builder sizeAttr(@androidx.annotation.AttrRes int attrResId) {\n"
                 + "    if (this.mTestResTypeWithVarArgs.sizes == null) {\n"
                 + "      this.mTestResTypeWithVarArgs.sizes = new java.util.ArrayList<java.lang.Float>();\n"
                 + "    }\n"
@@ -369,7 +360,7 @@ public class BuilderGeneratorTest {
                 + "  }\n"
                 + "\n"
                 + "  public Builder sizesAttr(java.util.List<java.lang.Integer> attrResIds,\n"
-                + "      @android.support.annotation.DimenRes int defResId) {\n"
+                + "      @androidx.annotation.DimenRes int defResId) {\n"
                 + "    if (attrResIds == null) {\n"
                 + "      return this;\n"
                 + "    }\n"
@@ -399,7 +390,7 @@ public class BuilderGeneratorTest {
                 + "    return this;\n"
                 + "  }\n"
                 + "\n"
-                + "  public Builder sizeDip(@android.support.annotation.Dimension(unit = android.support.annotation.Dimension.DP) float dip) {\n"
+                + "  public Builder sizeDip(@androidx.annotation.Dimension(unit = androidx.annotation.Dimension.DP) float dip) {\n"
                 + "    if (this.mTestResTypeWithVarArgs.sizes == null) {\n"
                 + "      this.mTestResTypeWithVarArgs.sizes = new java.util.ArrayList<java.lang.Float>();\n"
                 + "    }\n"
@@ -424,7 +415,7 @@ public class BuilderGeneratorTest {
                 + "    return this;\n"
                 + "  }\n"
                 + "\n"
-                + "  public Builder sizeSp(@android.support.annotation.Dimension(unit = android.support.annotation.Dimension.SP) float sip) {\n"
+                + "  public Builder sizeSp(@androidx.annotation.Dimension(unit = androidx.annotation.Dimension.SP) float sip) {\n"
                 + "    if (this.mTestResTypeWithVarArgs.sizes == null) {\n"
                 + "      this.mTestResTypeWithVarArgs.sizes = new java.util.ArrayList<java.lang.Float>();\n"
                 + "    }\n"
@@ -457,16 +448,7 @@ public class BuilderGeneratorTest {
                 + "  @java.lang.Override\n"
                 + "  public com.facebook.litho.specmodels.generator.BuilderGeneratorTest.TestResTypeWithVarArgs build() {\n"
                 + "    checkArgs(REQUIRED_PROPS_COUNT, mRequired, REQUIRED_PROPS_NAMES);\n"
-                + "    TestResTypeWithVarArgs testResTypeWithVarArgsRef = mTestResTypeWithVarArgs;\n"
-                + "    release();\n"
-                + "    return testResTypeWithVarArgsRef;\n"
-                + "  }\n"
-                + "\n"
-                + "  @java.lang.Override\n"
-                + "  protected void release() {\n"
-                + "    super.release();\n"
-                + "    mTestResTypeWithVarArgs = null;\n"
-                + "    mContext = null;\n"
+                + "    return mTestResTypeWithVarArgs;\n"
                 + "  }\n"
                 + "}\n");
   }
@@ -497,38 +479,38 @@ public class BuilderGeneratorTest {
                 + "    mRequired.clear();\n"
                 + "  }\n"
                 + "\n"
-                + "  public Builder sizePx(@android.support.annotation.Px float size) {\n"
+                + "  public Builder sizePx(@androidx.annotation.Px float size) {\n"
                 + "    this.mTestDimenResTypeWithBoxFloatArg.size = size;\n"
                 + "    mRequired.set(0);\n"
                 + "    return this;\n"
                 + "  }\n"
                 + "\n"
-                + "  public Builder sizeRes(@android.support.annotation.DimenRes int resId) {\n"
+                + "  public Builder sizeRes(@androidx.annotation.DimenRes int resId) {\n"
                 + "    this.mTestDimenResTypeWithBoxFloatArg.size = (float) mResourceResolver.resolveDimenSizeRes(resId);\n"
                 + "    mRequired.set(0);\n"
                 + "    return this;\n"
                 + "  }\n"
                 + "\n"
-                + "  public Builder sizeAttr(@android.support.annotation.AttrRes int attrResId,\n"
-                + "      @android.support.annotation.DimenRes int defResId) {\n"
+                + "  public Builder sizeAttr(@androidx.annotation.AttrRes int attrResId,\n"
+                + "      @androidx.annotation.DimenRes int defResId) {\n"
                 + "    this.mTestDimenResTypeWithBoxFloatArg.size = (float) mResourceResolver.resolveDimenSizeAttr(attrResId, defResId);\n"
                 + "    mRequired.set(0);\n"
                 + "    return this;\n"
                 + "  }\n"
                 + "\n"
-                + "  public Builder sizeAttr(@android.support.annotation.AttrRes int attrResId) {\n"
+                + "  public Builder sizeAttr(@androidx.annotation.AttrRes int attrResId) {\n"
                 + "    this.mTestDimenResTypeWithBoxFloatArg.size = (float) mResourceResolver.resolveDimenSizeAttr(attrResId, 0);\n"
                 + "    mRequired.set(0);\n"
                 + "    return this;\n"
                 + "  }\n"
                 + "\n"
-                + "  public Builder sizeDip(@android.support.annotation.Dimension(unit = android.support.annotation.Dimension.DP) float dip) {\n"
+                + "  public Builder sizeDip(@androidx.annotation.Dimension(unit = androidx.annotation.Dimension.DP) float dip) {\n"
                 + "    this.mTestDimenResTypeWithBoxFloatArg.size = (float) mResourceResolver.dipsToPixels(dip);\n"
                 + "    mRequired.set(0);\n"
                 + "    return this;\n"
                 + "  }\n"
                 + "\n"
-                + "  public Builder sizeSp(@android.support.annotation.Dimension(unit = android.support.annotation.Dimension.SP) float sip) {\n"
+                + "  public Builder sizeSp(@androidx.annotation.Dimension(unit = androidx.annotation.Dimension.SP) float sip) {\n"
                 + "    this.mTestDimenResTypeWithBoxFloatArg.size = (float) mResourceResolver.sipsToPixels(sip);\n"
                 + "    mRequired.set(0);\n"
                 + "    return this;\n"
@@ -542,16 +524,7 @@ public class BuilderGeneratorTest {
                 + "  @java.lang.Override\n"
                 + "  public com.facebook.litho.specmodels.generator.BuilderGeneratorTest.TestDimenResTypeWithBoxFloatArg build() {\n"
                 + "    checkArgs(REQUIRED_PROPS_COUNT, mRequired, REQUIRED_PROPS_NAMES);\n"
-                + "    TestDimenResTypeWithBoxFloatArg testDimenResTypeWithBoxFloatArgRef = mTestDimenResTypeWithBoxFloatArg;\n"
-                + "    release();\n"
-                + "    return testDimenResTypeWithBoxFloatArgRef;\n"
-                + "  }\n"
-                + "\n"
-                + "  @java.lang.Override\n"
-                + "  protected void release() {\n"
-                + "    super.release();\n"
-                + "    mTestDimenResTypeWithBoxFloatArg = null;\n"
-                + "    mContext = null;\n"
+                + "    return mTestDimenResTypeWithBoxFloatArg;\n"
                 + "  }\n"
                 + "}\n");
   }
@@ -615,16 +588,7 @@ public class BuilderGeneratorTest {
                 + "  @java.lang.Override\n"
                 + "  public com.facebook.litho.specmodels.generator.BuilderGeneratorTest.TestKotlinVarArg build() {\n"
                 + "    checkArgs(REQUIRED_PROPS_COUNT, mRequired, REQUIRED_PROPS_NAMES);\n"
-                + "    TestKotlinVarArg testKotlinVarArgRef = mTestKotlinVarArg;\n"
-                + "    release();\n"
-                + "    return testKotlinVarArgRef;\n"
-                + "  }\n"
-                + "\n"
-                + "  @java.lang.Override\n"
-                + "  protected void release() {\n"
-                + "    super.release();\n"
-                + "    mTestKotlinVarArg = null;\n"
-                + "    mContext = null;\n"
+                + "    return mTestKotlinVarArg;\n"
                 + "  }\n"
                 + "}\n");
   }

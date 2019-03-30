@@ -15,9 +15,8 @@
  */
 package com.facebook.litho.sections.processor.integration.resources;
 
-import android.support.annotation.VisibleForTesting;
-import android.support.v4.util.Pools;
 import android.view.View;
+import androidx.annotation.VisibleForTesting;
 import com.facebook.litho.ClickEvent;
 import com.facebook.litho.Component;
 import com.facebook.litho.Diff;
@@ -26,17 +25,19 @@ import com.facebook.litho.EventHandler;
 import com.facebook.litho.HasEventDispatcher;
 import com.facebook.litho.StateContainer;
 import com.facebook.litho.StateValue;
+import com.facebook.litho.annotations.Comparable;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.State;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.sections.ChangeSet;
+import com.facebook.litho.sections.ChangesInfo;
 import com.facebook.litho.sections.LoadingEvent;
 import com.facebook.litho.sections.Section;
 import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.SectionLifecycle;
 import java.util.BitSet;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @prop-required data java.util.List<T>
@@ -46,21 +47,23 @@ import java.util.List;
  * @see com.facebook.litho.sections.processor.integration.resources.FullDiffSectionSpec
  */
 public final class FullDiffSection<T> extends Section implements TestTag {
-  static final Pools.SynchronizedPool<TestEvent> sTestEventPool =
-      new Pools.SynchronizedPool<TestEvent>(2);
-
+  @Comparable(type = 14)
   private FullDiffSectionStateContainer mStateContainer;
 
   @Prop(resType = ResType.NONE, optional = false)
+  @Comparable(type = 5)
   List<T> data;
 
   @Prop(resType = ResType.NONE, optional = false)
+  @Comparable(type = 13)
   Integer prop1;
 
   @Prop(resType = ResType.NONE, optional = true)
+  @Comparable(type = 13)
   String prop2;
 
   @Prop(resType = ResType.NONE, optional = false)
+  @Comparable(type = 10)
   Component prop3;
 
   String _service;
@@ -79,9 +82,6 @@ public final class FullDiffSection<T> extends Section implements TestTag {
 
   @Override
   public boolean isEquivalentTo(Section other) {
-    if (ComponentsConfiguration.useNewIsEquivalentTo) {
-      return super.isEquivalentTo(other);
-    }
     if (this == other) {
       return true;
     }
@@ -138,10 +138,12 @@ public final class FullDiffSection<T> extends Section implements TestTag {
 
   @Override
   protected void transferState(
-      SectionContext context, StateContainer _prevStateContainer) {
-    FullDiffSectionStateContainer prevStateContainer =
-        (FullDiffSectionStateContainer) _prevStateContainer;
-    mStateContainer.state1 = prevStateContainer.state1;
+      StateContainer _prevStateContainer, StateContainer _nextStateContainer) {
+    FullDiffSectionStateContainer<T> prevStateContainer =
+        (FullDiffSectionStateContainer<T>) _prevStateContainer;
+    FullDiffSectionStateContainer<T> nextStateContainer =
+        (FullDiffSectionStateContainer<T>) _nextStateContainer;
+    nextStateContainer.state1 = prevStateContainer.state1;
   }
 
   protected static void updateState(SectionContext c, Object param) {
@@ -151,7 +153,7 @@ public final class FullDiffSection<T> extends Section implements TestTag {
     }
     FullDiffSection.UpdateStateStateUpdate _stateUpdate =
         ((FullDiffSection) _component).createUpdateStateStateUpdate(param);
-    c.updateStateSync(_stateUpdate, "FullDiffSection.updateState");
+    c.updateStateAsync(_stateUpdate, "FullDiffSection.updateState");
   }
 
   protected static void updateStateAsync(SectionContext c, Object param) {
@@ -182,16 +184,10 @@ public final class FullDiffSection<T> extends Section implements TestTag {
   }
 
   static boolean dispatchTestEvent(EventHandler _eventHandler, Object object) {
-    TestEvent _eventState = sTestEventPool.acquire();
-    if (_eventState == null) {
-      _eventState = new TestEvent();
-    }
+    final TestEvent _eventState = new TestEvent();
     _eventState.object = object;
     EventDispatcher _lifecycle = _eventHandler.mHasEventDispatcher.getEventDispatcher();
-    boolean result = (boolean) _lifecycle.dispatchOnEvent(_eventHandler, _eventState);
-    _eventState.object = null;
-    sTestEventPool.release(_eventState);
-    return result;
+    return (boolean) _lifecycle.dispatchOnEvent(_eventHandler, _eventState);
   }
 
   private void testEvent(HasEventDispatcher _abstract, SectionContext c, View view, int someParam) {
@@ -230,7 +226,8 @@ public final class FullDiffSection<T> extends Section implements TestTag {
   @Override
   protected void createInitialState(SectionContext c) {
     StateValue<Object> state1 = new StateValue<>();
-    FullDiffSectionSpec.onCreateInitialState((SectionContext) c, (Integer) prop1, state1);
+    FullDiffSectionSpec.onCreateInitialState(
+        (SectionContext) c, (Integer) prop1, (StateValue<Object>) state1);
     mStateContainer.state1 = state1.get();
   }
 
@@ -240,34 +237,33 @@ public final class FullDiffSection<T> extends Section implements TestTag {
     FullDiffSection _prevImpl = (FullDiffSection) _prevAbstractImpl;
     FullDiffSection _nextImpl = (FullDiffSection) _nextAbstractImpl;
     Diff<List<T>> data =
-        (Diff)
-            acquireDiff(
+            new Diff<List<T>>(
                 _prevImpl == null ? null : _prevImpl.data,
                 _nextImpl == null ? null : _nextImpl.data);
     Diff<Component> prop3 =
-        (Diff)
-            acquireDiff(
+            new Diff<Component>(
                 _prevImpl == null ? null : _prevImpl.prop3,
                 _nextImpl == null ? null : _nextImpl.prop3);
     Diff<Object> state1 =
-        (Diff)
-            acquireDiff(
+            new Diff<Object>(
                 _prevImpl == null ? null : _prevImpl.mStateContainer.state1,
                 _nextImpl == null ? null : _nextImpl.mStateContainer.state1);
-    FullDiffSectionSpec.onDiff((SectionContext) c, (ChangeSet) changeSet, data, prop3, state1);
-    releaseDiff(data);
-    releaseDiff(prop3);
-    releaseDiff(state1);
+    FullDiffSectionSpec.onDiff(
+        (SectionContext) c,
+        (ChangeSet) changeSet,
+        (Diff<List<T>>) data,
+        (Diff<Component>) prop3,
+        (Diff<Object>) state1);
   }
 
   @Override
-  protected boolean isDiffSectionSpec() {
+  public boolean isDiffSectionSpec() {
     return true;
   }
 
   private String onCreateService(SectionContext c) {
-    String _result =
-        (String) FullDiffSectionSpec.onCreateService((SectionContext) c, (String) prop2);
+    String _result;
+    _result = (String) FullDiffSectionSpec.onCreateService((SectionContext) c, (String) prop2);
     return _result;
   }
 
@@ -290,17 +286,17 @@ public final class FullDiffSection<T> extends Section implements TestTag {
 
   @Override
   protected void bindService(SectionContext c) {
-    FullDiffSectionSpec.bindService((SectionContext) c, _service);
+    FullDiffSectionSpec.bindService((SectionContext) c, (String) _service);
   }
 
   @Override
   protected void unbindService(SectionContext c) {
-    FullDiffSectionSpec.unbindService((SectionContext) c, _service);
+    FullDiffSectionSpec.unbindService((SectionContext) c, (String) _service);
   }
 
   @Override
   protected void refresh(SectionContext c) {
-    FullDiffSectionSpec.onRefresh((SectionContext) c, _service);
+    FullDiffSectionSpec.onRefresh((SectionContext) c, (String) _service);
   }
 
   @Override
@@ -312,13 +308,12 @@ public final class FullDiffSection<T> extends Section implements TestTag {
   protected boolean shouldUpdate(Section _prevAbstractImpl, Section _nextAbstractImpl) {
     FullDiffSection _prevImpl = (FullDiffSection) _prevAbstractImpl;
     FullDiffSection _nextImpl = (FullDiffSection) _nextAbstractImpl;
+    boolean _result;
     Diff<Integer> prop1 =
-        (Diff)
-            acquireDiff(
-                _prevImpl == null ? null : _prevImpl.prop1,
-                _nextImpl == null ? null : _nextImpl.prop1);
-    boolean _result = (boolean) FullDiffSectionSpec.shouldUpdate(prop1);
-    releaseDiff(prop1);
+        new Diff<Integer>(
+            _prevImpl == null ? null : _prevImpl.prop1,
+            _nextImpl == null ? null : _nextImpl.prop1);
+    _result = (boolean) FullDiffSectionSpec.shouldUpdate((Diff<Integer>) prop1);
     return _result;
   }
 
@@ -341,18 +336,41 @@ public final class FullDiffSection<T> extends Section implements TestTag {
 
   @Override
   protected void dataRendered(
-      SectionContext c, boolean isDataChanged, boolean isMounted, long uptimeMillis) {
+      SectionContext c,
+      boolean isDataChanged,
+      boolean isMounted,
+      long uptimeMillis,
+      int firstVisibleIndex,
+      int lastVisibleIndex,
+      ChangesInfo changesInfo) {
     FullDiffSectionSpec.onDataRendered(
-      (SectionContext) c,
-      (boolean) isDataChanged,
-      (boolean) isMounted,
-      (long) uptimeMillis,
-      (Integer) prop1);
+        (SectionContext) c,
+        (boolean) isDataChanged,
+        (boolean) isMounted,
+        (long) uptimeMillis,
+        (int) firstVisibleIndex,
+        (int) lastVisibleIndex,
+        (ChangesInfo) changesInfo,
+        (Integer) prop1,
+        (Integer) getCached());
+  }
+
+  private int getCached() {
+    SectionContext c = getScopedContext();
+    final CachedInputs inputs = new CachedInputs(prop1);
+    Integer cached = (Integer) c.getCachedValue(inputs);
+    if (cached == null) {
+      cached = FullDiffSectionSpec.onCalculateCached(prop1);
+      c.putCachedValue(inputs, cached);
+    }
+    return cached;
   }
 
   @VisibleForTesting(otherwise = 2)
   static class FullDiffSectionStateContainer<T> implements StateContainer {
-    @State Object state1;
+    @State
+    @Comparable(type = 13)
+    Object state1;
   }
 
   public static class Builder<T> extends Section.Builder<Builder<T>> {
@@ -425,20 +443,11 @@ public final class FullDiffSection<T> extends Section implements TestTag {
     @Override
     public FullDiffSection build() {
       checkArgs(REQUIRED_PROPS_COUNT, mRequired, REQUIRED_PROPS_NAMES);
-      FullDiffSection fullDiffSectionRef = mFullDiffSection;
-      release();
-      return fullDiffSectionRef;
-    }
-
-    @Override
-    protected void release() {
-      super.release();
-      mFullDiffSection = null;
-      mContext = null;
+      return mFullDiffSection;
     }
   }
 
-  private static class UpdateStateStateUpdate implements SectionLifecycle.StateUpdate {
+  private static class UpdateStateStateUpdate<T> implements SectionLifecycle.StateUpdate {
     private Object mParam;
 
     UpdateStateStateUpdate(Object param) {
@@ -446,14 +455,43 @@ public final class FullDiffSection<T> extends Section implements TestTag {
     }
 
     @Override
-    public void updateState(StateContainer _stateContainer, Section newComponent) {
-      FullDiffSectionStateContainer stateContainer =
-          (FullDiffSectionStateContainer) _stateContainer;
-      FullDiffSection newComponentStateUpdate = (FullDiffSection) newComponent;
+    public void updateState(StateContainer _stateContainer) {
+      FullDiffSectionStateContainer<T> stateContainer =
+          (FullDiffSectionStateContainer<T>) _stateContainer;
       StateValue<Object> state1 = new StateValue<Object>();
       state1.set(stateContainer.state1);
       FullDiffSectionSpec.updateState(state1, mParam);
-      newComponentStateUpdate.mStateContainer.state1 = state1.get();
+      stateContainer.state1 = state1.get();
+    }
+  }
+
+  private static class CachedInputs {
+    private final Integer prop1;
+
+    CachedInputs(Integer prop1) {
+      this.prop1 = prop1;
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hash(prop1);
+    }
+
+    @Override
+    public boolean equals(Object other) {
+      if (this == other) {
+        return true;
+      }
+      if (other == null || !(other instanceof CachedInputs)) {
+        return false;
+      }
+      CachedInputs cachedValueInputs = (CachedInputs) other;
+      if (prop1 != null
+          ? !prop1.equals(cachedValueInputs.prop1)
+          : cachedValueInputs.prop1 != null) {
+        return false;
+      }
+      return true;
     }
   }
 }

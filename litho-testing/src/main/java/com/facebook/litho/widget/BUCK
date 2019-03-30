@@ -14,6 +14,7 @@ litho_android_library(
     annotation_processors = [
         "com.facebook.litho.specmodels.processor.testing.ComponentsTestingProcessor",
     ],
+    is_androidx = True,
     visibility = ["PUBLIC"],
     deps = [
         LITHO_JAVA_TARGET,
@@ -36,6 +37,7 @@ litho_android_library(
 litho_android_library(
     name = "widget_conditions",
     srcs = glob(["**/*.java"]),
+    is_androidx = True,
     visibility = [
         "PUBLIC",
     ],

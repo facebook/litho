@@ -24,6 +24,7 @@ import com.facebook.litho.specmodels.model.SpecModelValidationError;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
 
 public class SpecModelValidation {
@@ -32,7 +33,7 @@ public class SpecModelValidation {
       Arrays.asList("key", "loadingEventHandler");
 
   public static List<SpecModelValidationError> validateGroupSectionSpecModel(
-      GroupSectionSpecModel specModel, RunMode runMode) {
+      GroupSectionSpecModel specModel, EnumSet<RunMode> runMode) {
     List<SpecModelValidationError> validationErrors = new ArrayList<>();
     validationErrors.addAll(
         validateSpecModel(specModel, SECTIONS_RESERVED_PROP_NAMES, new ArrayList<>(), runMode));
@@ -45,7 +46,7 @@ public class SpecModelValidation {
   }
 
   public static List<SpecModelValidationError> validateDiffSectionSpecModel(
-      DiffSectionSpecModel specModel, RunMode runMode) {
+      DiffSectionSpecModel specModel, EnumSet<RunMode> runMode) {
     List<SpecModelValidationError> validationErrors = new ArrayList<>();
     validationErrors.addAll(
         validateSpecModel(specModel, SECTIONS_RESERVED_PROP_NAMES, new ArrayList<>(), runMode));

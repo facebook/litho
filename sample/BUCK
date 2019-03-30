@@ -4,13 +4,16 @@
 # This source code is licensed under the license found in the
 # LICENSE-examples file in the root directory of this source tree.
 
+load("//tools/build_defs/oss:fb_native_wrapper.bzl", "fb_native")
 load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_SAMPLE_JAVA", "fb_android_resource")
 
-android_binary(
+fb_native.android_binary(
     name = "sample",
     includes_vector_drawables = True,
     keystore = ":debug_keystore",
     manifest = "src/main/AndroidManifest.xml",
+    use_split_dex = True,
+    aapt_mode = "aapt2",
     deps = [
         LITHO_SAMPLE_JAVA,
     ],
@@ -25,7 +28,7 @@ fb_android_resource(
     ],
 )
 
-keystore(
+fb_native.keystore(
     name = "debug_keystore",
     properties = "debug.keystore.properties",
     store = "debug.keystore",

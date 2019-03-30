@@ -24,6 +24,7 @@ import com.facebook.litho.specmodels.model.DependencyInjectionHelperFactory;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.squareup.javapoet.JavaFile;
 import java.io.IOException;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -44,7 +45,7 @@ public abstract class AbstractComponentsProcessor extends AbstractProcessor {
   private final List<SpecModelFactory> mSpecModelFactories;
   private final boolean mShouldSavePropNames;
   private PropNameInterStageStore mPropNameInterStageStore;
-  private RunMode mRunMode;
+  private final EnumSet<RunMode> mRunMode = RunMode.normal();
 
   private final InterStageStore mInterStageStore =
       new InterStageStore() {
@@ -69,6 +70,11 @@ public abstract class AbstractComponentsProcessor extends AbstractProcessor {
     mShouldSavePropNames = shouldSavePropNames;
   }
 
+  /** Use this to force hotswap mode to be turned on. */
+  public void forceHotswapMode() {
+    mRunMode.add(RunMode.HOTSWAP);
+  }
+
   @Override
   public void init(ProcessingEnvironment processingEnv) {
     super.init(processingEnv);
@@ -76,7 +82,15 @@ public abstract class AbstractComponentsProcessor extends AbstractProcessor {
     Map<String, String> options = processingEnv.getOptions();
     boolean isGeneratingAbi =
         Boolean.valueOf(options.getOrDefault("com.facebook.buck.java.generating_abi", "false"));
-    mRunMode = isGeneratingAbi ? RunMode.ABI : RunMode.NORMAL;
+    if (isGeneratingAbi) {
+      mRunMode.add(RunMode.ABI);
+    }
+
+    boolean generateBuckHotswapCode =
+        Boolean.valueOf(options.getOrDefault("com.facebook.litho.hotswap", "false"));
+    if (generateBuckHotswapCode) {
+      mRunMode.add(RunMode.HOTSWAP);
+    }
   }
 
   @Override
@@ -105,7 +119,7 @@ public abstract class AbstractComponentsProcessor extends AbstractProcessor {
                   mInterStageStore);
 
           validate(specModel, mRunMode);
-          generate(specModel);
+          generate(specModel, mRunMode);
           afterGenerate(specModel);
         } catch (PrintableException e) {
           e.print(processingEnv.getMessager());
@@ -127,9 +141,9 @@ public abstract class AbstractComponentsProcessor extends AbstractProcessor {
     return false;
   }
 
-  protected void generate(SpecModel specModel) throws IOException {
+  protected void generate(SpecModel specModel, EnumSet<RunMode> runMode) throws IOException {
     final String packageName = getPackageName(specModel.getComponentTypeName());
-    JavaFile.builder(packageName, specModel.generate())
+    JavaFile.builder(packageName, specModel.generate(runMode))
         .skipJavaLangImports(true)
         .build()
         .writeTo(processingEnv.getFiler());

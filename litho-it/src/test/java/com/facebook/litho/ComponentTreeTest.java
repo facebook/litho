@@ -20,22 +20,26 @@ import static com.facebook.litho.ComponentTree.create;
 import static com.facebook.litho.SizeSpec.AT_MOST;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
+import static com.facebook.litho.testing.Whitebox.getInternalState;
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.fail;
-import static org.powermock.reflect.Whitebox.getInternalState;
 
 import android.os.Looper;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestLayoutComponent;
+import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.powermock.reflect.Whitebox;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
 import org.robolectric.shadows.ShadowLooper;
@@ -371,6 +375,31 @@ public class ComponentTreeTest {
   }
 
   @Test
+  public void testSetRootWithTreePropsThenMeasure() {
+    ComponentTree componentTree = create(mContext, mComponent).build();
+    componentTree.setLithoView(new LithoView(mContext));
+    componentTree.attach();
+
+    final TreeProps treeProps = new TreeProps();
+    treeProps.put(Object.class, "hello world");
+
+    componentTree.setRootAndSizeSpecAsync(
+        TestDrawableComponent.create(mContext).build(),
+        makeSizeSpec(100, EXACTLY),
+        makeSizeSpec(100, EXACTLY),
+        treeProps);
+
+    assertThat(componentTree.getBackgroundLayoutState()).isNull();
+
+    componentTree.measure(makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY), new int[2], true);
+
+    final ComponentContext c =
+        getInternalState(componentTree.getMainThreadLayoutState(), "mContext");
+    assertThat(c.getTreeProps()).isNotNull();
+    assertThat(c.getTreeProps().get(Object.class)).isEqualTo(treeProps.get(Object.class));
+  }
+
+  @Test
   public void testSetInput() {
     Component component = TestLayoutComponent.create(mContext)
         .build();
@@ -462,7 +491,7 @@ public class ComponentTreeTest {
   }
 
   @Test
-  public void testsetTreeToTwoViewsBothAttached() {
+  public void testSetTreeToTwoViewsBothAttached() {
     Component component = TestDrawableComponent.create(mContext)
         .build();
 
@@ -561,6 +590,168 @@ public class ComponentTreeTest {
   }
 
   @Test
+  public void testMeasureWithIncompatibleSetRootAsyncBeforeStart() {
+    ComponentTree componentTree = ComponentTree.create(mContext, mComponent).build();
+    componentTree.setLithoView(new LithoView(mContext));
+
+    int widthSpec1 = SizeSpec.makeSizeSpec(1000, SizeSpec.EXACTLY);
+    int heightSpec1 = SizeSpec.makeSizeSpec(1000, SizeSpec.AT_MOST);
+    int widthSpec2 = SizeSpec.makeSizeSpec(1000, SizeSpec.EXACTLY);
+    int heightSpec2 = SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED);
+
+    componentTree.measure(widthSpec2, heightSpec2, new int[2], false);
+    componentTree.attach();
+
+    componentTree.measure(widthSpec1, heightSpec1, new int[2], false);
+
+    Component newComponent = TestDrawableComponent.create(mContext).color(1234).build();
+    componentTree.setRootAsync(newComponent);
+
+    componentTree.measure(widthSpec2, heightSpec2, new int[2], false);
+
+    // Since the layout thread hasn't started the async layout, we know it will capture the updated
+    // size specs when it does run
+
+    assertThat(componentTree.getRoot()).isEqualTo(newComponent);
+    assertThat(componentTree.hasCompatibleLayout(widthSpec2, heightSpec2)).isTrue();
+    assertThat(componentTree.getMainThreadLayoutState().isForComponentId(mComponent.getId()))
+        .isTrue();
+
+    runOnBackgroundThreadSync(
+        new Runnable() {
+          @Override
+          public void run() {
+            mLayoutThreadShadowLooper.runToEndOfTasks();
+          }
+        });
+    ShadowLooper.runUiThreadTasks();
+
+    // Once the async layout finishes, the main thread should have the updated layout.
+
+    assertThat(componentTree.hasCompatibleLayout(widthSpec2, heightSpec2)).isTrue();
+    assertThat(componentTree.getMainThreadLayoutState().isForComponentId(newComponent.getId()))
+        .isTrue();
+  }
+
+  @Test
+  public void testMeasureWithIncompatibleSetRootAsyncThatFinishes() {
+    ComponentTree componentTree = ComponentTree.create(mContext, mComponent).build();
+    componentTree.setLithoView(new LithoView(mContext));
+
+    int widthSpec1 = SizeSpec.makeSizeSpec(1000, SizeSpec.EXACTLY);
+    int heightSpec1 = SizeSpec.makeSizeSpec(1000, SizeSpec.AT_MOST);
+    int widthSpec2 = SizeSpec.makeSizeSpec(1000, SizeSpec.EXACTLY);
+    int heightSpec2 = SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED);
+
+    componentTree.measure(widthSpec2, heightSpec2, new int[2], false);
+    componentTree.attach();
+
+    componentTree.measure(widthSpec1, heightSpec1, new int[2], false);
+
+    Component newComponent = TestDrawableComponent.create(mContext).color(1234).build();
+    componentTree.setRootAsync(newComponent);
+
+    runOnBackgroundThreadSync(
+        new Runnable() {
+          @Override
+          public void run() {
+            // "Commit" layout (it will fail since it doesn't have compatible size specs)
+            mLayoutThreadShadowLooper.runToEndOfTasks();
+          }
+        });
+
+    componentTree.measure(widthSpec2, heightSpec2, new int[2], false);
+
+    assertThat(componentTree.getRoot()).isEqualTo(newComponent);
+    assertThat(componentTree.hasCompatibleLayout(widthSpec2, heightSpec2)).isTrue();
+    assertThat(componentTree.getMainThreadLayoutState().isForComponentId(newComponent.getId()))
+        .isTrue()
+        .withFailMessage(
+            "The main thread should calculate a new layout synchronously because the async layout will not be used once it completes");
+  }
+
+  @Test
+  public void testMeasureWithIncompatibleSetRootAsync() throws InterruptedException {
+    ComponentTree componentTree = ComponentTree.create(mContext, mComponent).build();
+    componentTree.setLithoView(new LithoView(mContext));
+
+    int widthSpec1 = SizeSpec.makeSizeSpec(1000, SizeSpec.EXACTLY);
+    int heightSpec1 = SizeSpec.makeSizeSpec(1000, SizeSpec.AT_MOST);
+    int widthSpec2 = SizeSpec.makeSizeSpec(1000, SizeSpec.EXACTLY);
+    int heightSpec2 = SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED);
+
+    componentTree.measure(widthSpec2, heightSpec2, new int[2], false);
+    componentTree.attach();
+
+    componentTree.measure(widthSpec1, heightSpec1, new int[2], false);
+
+    final CountDownLatch unblockAsyncPrepare = new CountDownLatch(1);
+    final CountDownLatch onAsyncPrepareStart = new CountDownLatch(1);
+    TestDrawableComponent newComponent = TestDrawableComponent.create(mContext).color(1234).build();
+    newComponent.setTestComponentListener(
+        new TestDrawableComponent.TestComponentListener() {
+          @Override
+          public void onPrepare() {
+            // We only want to block/wait for the component instance that is created async
+            if (ThreadUtils.isMainThread()) {
+              return;
+            }
+
+            onAsyncPrepareStart.countDown();
+
+            try {
+              if (!unblockAsyncPrepare.await(5, TimeUnit.SECONDS)) {
+                throw new RuntimeException("Timed out waiting for prepare to unblock!");
+              }
+            } catch (InterruptedException e) {
+              throw new RuntimeException(e);
+            }
+          }
+        });
+
+    componentTree.setRootAsync(newComponent);
+
+    final CountDownLatch asyncLayoutFinish =
+        runOnBackgroundThread(
+            new Runnable() {
+              @Override
+              public void run() {
+                mLayoutThreadShadowLooper.runToEndOfTasks();
+              }
+            });
+
+    if (!onAsyncPrepareStart.await(5, TimeUnit.SECONDS)) {
+      throw new RuntimeException("Timeout!");
+    }
+
+    // At this point, the Layout thread is blocked in prepare (waiting for unblockAsyncPrepare) and
+    // will have already captured the "bad" specs, but not completed its layout. We expect the main
+    // thread to determine that this async layout will not be correct and that it needs to compute
+    // one in measure
+
+    componentTree.measure(widthSpec2, heightSpec2, new int[2], false);
+
+    assertThat(componentTree.getRoot()).isEqualTo(newComponent);
+    assertThat(componentTree.hasCompatibleLayout(widthSpec2, heightSpec2)).isTrue();
+    assertThat(componentTree.getMainThreadLayoutState().isForComponentId(newComponent.getId()))
+        .isTrue()
+        .withFailMessage(
+            "The main thread should calculate a new layout synchronously because the async layout will not have compatible size specs");
+
+    // Finally, let the async layout finish and make sure it doesn't replace the layout from measure
+
+    unblockAsyncPrepare.countDown();
+    if (!asyncLayoutFinish.await(5, TimeUnit.SECONDS)) {
+      throw new RuntimeException("Timeout!");
+    }
+
+    assertThat(componentTree.getRoot()).isEqualTo(newComponent);
+    assertThat(componentTree.hasCompatibleLayout(widthSpec2, heightSpec2)).isTrue();
+    assertThat(componentTree.getMainThreadLayoutState().isForComponentId(newComponent.getId()))
+        .isTrue();
+  }
+
+  @Test
   public void testSetRootAfterRelease() {
     ComponentTree componentTree = ComponentTree.create(mContext, mComponent).build();
 
@@ -568,6 +759,15 @@ public class ComponentTreeTest {
 
     // Verify we don't crash
     componentTree.setRoot(TestDrawableComponent.create(mContext).build());
+  }
+
+  @Test
+  public void testCachedValues() {
+    ComponentTree componentTree = ComponentTree.create(mContext, mComponent).build();
+    assertThat(componentTree.getCachedValue("key1")).isNull();
+    componentTree.putCachedValue("key1", "value1");
+    assertThat(componentTree.getCachedValue("key1")).isEqualTo("value1");
+    assertThat(componentTree.getCachedValue("key2")).isNull();
   }
 
   private static LithoView getLithoView(ComponentTree componentTree) {
@@ -582,17 +782,319 @@ public class ComponentTreeTest {
     return Whitebox.getInternalState(lithoView, "mComponentTree");
   }
 
+  // TODO(T37885964): Fix me
+  //@Test
+  public void testCreateOneLayoutStateFuture() {
+    MyTestComponent root1 = new MyTestComponent("MyTestComponent");
+    root1.testId = 1;
+
+    ThreadPoolLayoutHandler handler =
+        new ThreadPoolLayoutHandler(new LayoutThreadPoolConfigurationImpl(1, 1, 5));
+
+    ComponentTree componentTree =
+        ComponentTree.create(mContext, root1)
+            .layoutThreadHandler(handler)
+            .useSharedLayoutStateFuture(true)
+            .build();
+
+    componentTree.setLithoView(new LithoView(mContext));
+    componentTree.measure(mWidthSpec, mHeightSpec, new int[2], false);
+    componentTree.attach();
+
+    final CountDownLatch unlockWaitingOnCreateLayout = new CountDownLatch(1);
+
+    MyTestComponent root2 = new MyTestComponent("MyTestComponent");
+    root2.testId = 2;
+    root2.unlockWaitingOnCreateLayout = unlockWaitingOnCreateLayout;
+
+    componentTree.setRootAsync(root2);
+
+    try {
+      unlockWaitingOnCreateLayout.await(5, TimeUnit.SECONDS);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
+
+    assertEquals(1, componentTree.getLayoutStateFutures().size());
+    ComponentTree.LayoutStateFuture layoutStateFuture =
+        componentTree.getLayoutStateFutures().get(0);
+
+    handler.post(
+        new Runnable() {
+          @Override
+          public void run() {
+            assertEquals(1, layoutStateFuture.getWaitingCount());
+            layoutStateFuture.runAndGet();
+            assertEquals(0, layoutStateFuture.getWaitingCount());
+            assertEquals(0, componentTree.getLayoutStateFutures().size());
+          }
+        });
+  }
+
+  @Test
+  public void testLayoutStateFutureMainWaitingOnBg() {
+    MyTestComponent root1 = new MyTestComponent("MyTestComponent");
+    root1.testId = 1;
+
+    ThreadPoolLayoutHandler handler =
+        new ThreadPoolLayoutHandler(new LayoutThreadPoolConfigurationImpl(1, 1, 5));
+
+    ComponentTree componentTree =
+        ComponentTree.create(mContext, root1)
+            .layoutThreadHandler(handler)
+            .useSharedLayoutStateFuture(true)
+            .build();
+
+    componentTree.setLithoView(new LithoView(mContext));
+    componentTree.measure(mWidthSpec, mHeightSpec, new int[2], false);
+    componentTree.attach();
+
+    final CountDownLatch unlockWaitingOnCreateLayout = new CountDownLatch(1);
+    final CountDownLatch lockOnCreateLayoutFinish = new CountDownLatch(1);
+
+    MyTestComponent root2 = new MyTestComponent("MyTestComponent");
+    root2.testId = 2;
+    root2.unlockWaitingOnCreateLayout = unlockWaitingOnCreateLayout;
+    root2.lockOnCreateLayoutFinish = lockOnCreateLayoutFinish;
+
+    MyTestComponent root3 = new MyTestComponent("MyTestComponent");
+    root3.testId = 2;
+
+    componentTree.setRootAsync(root2);
+
+    // Wait for first thread to get into onCreateLayout
+    try {
+      unlockWaitingOnCreateLayout.await(5, TimeUnit.SECONDS);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
+
+    assertEquals(1, componentTree.getLayoutStateFutures().size());
+
+    Thread thread =
+        new Thread(
+            new Runnable() {
+              @Override
+              public void run() {
+                componentTree.calculateLayoutState(
+                    mContext,
+                    root3,
+                    mWidthSpec,
+                    mHeightSpec,
+                    true,
+                    null,
+                    null,
+                    LayoutState.CalculateLayoutSource.TEST,
+                    null);
+
+                // At this point, the current thread is unblocked after waiting for the first to
+                // finish layout.
+                assertFalse(root3.hasRunLayout);
+                assertTrue(root2.hasRunLayout);
+              }
+            });
+
+    // Schedule second thread to start
+    thread.start();
+
+    // Unblock the first thread to continue through onCreateLayout. The second thread will only
+    // unblock once the first thread's onCreateLayout finishes
+    lockOnCreateLayoutFinish.countDown();
+  }
+
+  @Test
+  public void testRecalculateDifferentRoots() {
+    MyTestComponent root1 = new MyTestComponent("MyTestComponent");
+    root1.testId = 1;
+
+    ThreadPoolLayoutHandler handler =
+        new ThreadPoolLayoutHandler(new LayoutThreadPoolConfigurationImpl(1, 1, 5));
+
+    ComponentTree componentTree =
+        ComponentTree.create(mContext, root1)
+            .layoutThreadHandler(handler)
+            .useSharedLayoutStateFuture(true)
+            .build();
+
+    componentTree.setLithoView(new LithoView(mContext));
+    componentTree.measure(mWidthSpec, mHeightSpec, new int[2], false);
+    componentTree.attach();
+
+    final CountDownLatch unlockWaitingOnCreateLayout = new CountDownLatch(1);
+    final CountDownLatch lockOnCreateLayoutFinish = new CountDownLatch(1);
+
+    MyTestComponent root2 = new MyTestComponent("MyTestComponent");
+    root2.testId = 2;
+    root2.unlockWaitingOnCreateLayout = unlockWaitingOnCreateLayout;
+    root2.lockOnCreateLayoutFinish = lockOnCreateLayoutFinish;
+
+    MyTestComponent root3 = new MyTestComponent("MyTestComponent");
+    root3.testId = 2;
+
+    componentTree.setRootAsync(root2);
+
+    // Wait for first thread to get into onCreateLayout
+    try {
+      unlockWaitingOnCreateLayout.await(5, TimeUnit.SECONDS);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
+
+    assertEquals(1, componentTree.getLayoutStateFutures().size());
+
+    Thread thread =
+        new Thread(
+            new Runnable() {
+              @Override
+              public void run() {
+                componentTree.calculateLayoutState(
+                    mContext,
+                    root3,
+                    mWidthSpec,
+                    mHeightSpec,
+                    true,
+                    null,
+                    null,
+                    LayoutState.CalculateLayoutSource.TEST,
+                    null);
+
+                // At this point, the current thread is unblocked after waiting for the first to
+                // finish layout.
+                assertTrue(root3.hasRunLayout);
+                assertTrue(root2.hasRunLayout);
+              }
+            });
+
+    // Schedule second thread to start
+    thread.start();
+
+    // Unblock the first thread to continue through onCreateLayout. The second thread will only
+    // unblock once the first thread's onCreateLayout finishes
+    lockOnCreateLayoutFinish.countDown();
+  }
+
+  @Test
+  public void testAttachFromListenerDoesntCrash() {
+    final Component component = TestLayoutComponent.create(mContext).build();
+    final LithoView lithoView = new LithoView(mContext);
+
+    final ComponentTree componentTree = ComponentTree.create(mContext, component).build();
+    lithoView.setComponentTree(componentTree);
+
+    componentTree.setNewLayoutStateReadyListener(
+        new ComponentTree.NewLayoutStateReadyListener() {
+          @Override
+          public void onNewLayoutStateReady(ComponentTree componentTree) {
+            lithoView.onAttachedToWindow();
+          }
+        });
+
+    componentTree.setRootAndSizeSpec(mComponent, mWidthSpec, mHeightSpec);
+  }
+
+  @Test
+  public void testDetachFromListenerDoesntCrash() {
+    final Component component = TestLayoutComponent.create(mContext).build();
+    final LithoView lithoView = new LithoView(mContext);
+
+    final ComponentTree componentTree = ComponentTree.create(mContext, component).build();
+    lithoView.setComponentTree(componentTree);
+    lithoView.onAttachedToWindow();
+
+    componentTree.setNewLayoutStateReadyListener(
+        new ComponentTree.NewLayoutStateReadyListener() {
+          @Override
+          public void onNewLayoutStateReady(ComponentTree componentTree) {
+            lithoView.onDetachedFromWindow();
+            componentTree.clearLithoView();
+          }
+        });
+
+    componentTree.setRootAndSizeSpec(mComponent, mWidthSpec, mHeightSpec);
+  }
+
+  class MyTestComponent extends Component {
+
+    CountDownLatch unlockWaitingOnCreateLayout;
+    CountDownLatch lockOnCreateLayoutFinish;
+    int testId;
+    boolean hasRunLayout;
+
+    protected MyTestComponent(String simpleName) {
+      super(simpleName);
+    }
+
+    @Override
+    protected Component onCreateLayout(ComponentContext c) {
+      if (unlockWaitingOnCreateLayout != null) {
+        unlockWaitingOnCreateLayout.countDown();
+      }
+
+      if (lockOnCreateLayoutFinish != null) {
+        try {
+          lockOnCreateLayoutFinish.await(5, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+          e.printStackTrace();
+        }
+      }
+
+      hasRunLayout = true;
+      return Column.create(c).build();
+    }
+
+    @Override
+    protected int getId() {
+      return testId;
+    }
+  }
+
   private static boolean componentTreeHasSizeSpec(ComponentTree componentTree) {
     try {
       boolean hasCssSpec;
       // Need to hold the lock on componentTree here otherwise the invocation of hasCssSpec
       // will fail.
       synchronized (componentTree) {
-        hasCssSpec = Whitebox.invokeMethod(componentTree, ComponentTree.class, "hasSizeSpec");
+        hasCssSpec = Whitebox.invokeMethod(componentTree, "hasSizeSpec");
       }
       return hasCssSpec;
     } catch (Exception e) {
       throw new IllegalArgumentException("Failed to invoke hasSizeSpec on ComponentTree for: "+e);
     }
+  }
+
+  private static void runOnBackgroundThreadSync(final Runnable runnable) {
+    final CountDownLatch latch = new CountDownLatch(1);
+
+    new Thread(
+            new Runnable() {
+              @Override
+              public void run() {
+                runnable.run();
+                latch.countDown();
+              }
+            })
+        .start();
+
+    try {
+      assertThat(latch.await(5000, TimeUnit.MILLISECONDS)).isTrue();
+    } catch (InterruptedException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  private static CountDownLatch runOnBackgroundThread(final Runnable runnable) {
+    final CountDownLatch latch = new CountDownLatch(1);
+
+    new Thread(
+            new Runnable() {
+              @Override
+              public void run() {
+                runnable.run();
+                latch.countDown();
+              }
+            })
+        .start();
+
+    return latch;
   }
 }

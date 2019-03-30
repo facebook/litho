@@ -21,10 +21,10 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.io.Resources;
 import com.google.common.truth.Truth;
 import com.google.testing.compile.JavaFileObjects;
-import com.google.testing.compile.JavaSourceSubjectFactory;
 import com.google.testing.compile.JavaSourcesSubjectFactory;
 import javax.tools.JavaFileObject;
 import javax.tools.StandardLocation;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class SectionsProcessorIntegrationTest {
@@ -32,52 +32,7 @@ public class SectionsProcessorIntegrationTest {
   private static final String RES_PACKAGE =
       "com.facebook.litho.sections.processor.integration.resources";
 
-  @Test
-  public void compilesGroupSpecWithoutError() {
-    final JavaFileObject javaFileObject =
-        JavaFileObjects.forResource(
-            Resources.getResource(getClass(), RES_PREFIX + "SimpleGroupSectionSpec.java"));
-
-    final JavaFileObject expectedOutput =
-        JavaFileObjects.forResource(
-            Resources.getResource(getClass(), RES_PREFIX + "SimpleGroupSection.java"));
-
-    Truth.assertAbout(JavaSourceSubjectFactory.javaSource())
-        .that(javaFileObject)
-        .processedWith(new SectionsComponentProcessor())
-        .compilesWithoutError()
-        .and()
-        .generatesFileNamed(StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "SimpleGroupSection.class")
-        .and()
-        .generatesFileNamed(
-            StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "SimpleGroupSectionSpec.class")
-        .and()
-        .generatesSources(expectedOutput);
-  }
-
-  @Test
-  public void compilesDiffSpecWithoutError() throws Exception {
-    final JavaFileObject javaFileObject =
-        JavaFileObjects.forResource(
-            Resources.getResource(getClass(), RES_PREFIX + "SimpleDiffSectionSpec.java"));
-
-    final JavaFileObject expectedOutput =
-        JavaFileObjects.forResource(
-            Resources.getResource(getClass(), RES_PREFIX + "SimpleDiffSection.java"));
-
-    Truth.assertAbout(JavaSourceSubjectFactory.javaSource())
-        .that(javaFileObject)
-        .processedWith(new SectionsComponentProcessor())
-        .compilesWithoutError()
-        .and()
-        .generatesFileNamed(StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "SimpleDiffSection.class")
-        .and()
-        .generatesFileNamed(
-            StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "SimpleDiffSectionSpec.class")
-        .and()
-        .generatesSources(expectedOutput);
-  }
-
+  @Ignore("T41117446") //  Enable them after switching target to AndroidX
   @Test
   public void compilesFullGroupSectionSpecWithoutError() {
     final JavaFileObject javaFileObject =
@@ -116,6 +71,7 @@ public class SectionsProcessorIntegrationTest {
         .generatesSources(expectedOutput);
   }
 
+  @Ignore("T41117446") //  Enable them after switching target to AndroidX
   @Test
   public void compilesFullDiffSectionSpecWithoutError() {
     final JavaFileObject javaFileObject =

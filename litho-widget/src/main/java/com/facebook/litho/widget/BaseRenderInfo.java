@@ -49,6 +49,7 @@ public abstract class BaseRenderInfo implements RenderInfo {
 
   BaseRenderInfo(Builder builder) {
     mCustomAttributes = builder.mCustomAttributes;
+    mDebugInfo = builder.mDebugInfo;
   }
 
   @Override
@@ -199,6 +200,7 @@ public abstract class BaseRenderInfo implements RenderInfo {
   public abstract static class Builder<T> {
 
     private @Nullable Map<String, Object> mCustomAttributes;
+    private @Nullable Map<String, Object> mDebugInfo;
 
     public T isSticky(boolean isSticky) {
       return customAttribute(IS_STICKY, isSticky);
@@ -221,8 +223,14 @@ public abstract class BaseRenderInfo implements RenderInfo {
       return (T) this;
     }
 
-    void release() {
-      mCustomAttributes = null;
+    public T debugInfo(String key, Object value) {
+      if (mDebugInfo == null) {
+        mDebugInfo = Collections.synchronizedMap(new HashMap<String, Object>());
+      }
+
+      mDebugInfo.put(key, value);
+
+      return (T) this;
     }
   }
 }

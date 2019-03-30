@@ -24,12 +24,13 @@ import static com.facebook.litho.it.R.dimen.default_dimen;
 import static com.facebook.litho.it.R.dimen.test_dimen;
 import static com.facebook.litho.it.R.dimen.test_dimen_float;
 import static com.facebook.litho.it.R.drawable.test_bg;
-import static com.facebook.litho.reference.Reference.acquire;
 import static com.facebook.yoga.YogaEdge.LEFT;
 import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.robolectric.Shadows.shadowOf;
 
 import android.graphics.drawable.Drawable;
 import android.view.ContextThemeWrapper;
+import com.facebook.litho.drawable.ComparableDrawableWrapper;
 import com.facebook.litho.it.R;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import org.junit.Before;
@@ -54,7 +55,10 @@ public class ResolveAttributeTest {
     InternalNode node = Layout.create(mContext, column);
 
     Drawable d = mContext.getResources().getDrawable(test_bg);
-    assertThat(acquire(mContext, node.getBackground())).isEqualTo(d);
+    ComparableDrawableWrapper comparable =
+        (ComparableDrawableWrapper)  node.getBackground();
+    assertThat(shadowOf(comparable.getWrappedDrawable()).getCreatedFromResId())
+        .isEqualTo(shadowOf(d).getCreatedFromResId());
   }
 
   @Test
@@ -76,7 +80,10 @@ public class ResolveAttributeTest {
     InternalNode node = Layout.create(mContext, column);
 
     Drawable d = mContext.getResources().getDrawable(test_bg);
-    assertThat(acquire(mContext, node.getBackground())).isEqualTo(d);
+    ComparableDrawableWrapper comparable =
+        (ComparableDrawableWrapper) node.getBackground();
+    assertThat(shadowOf(comparable.getWrappedDrawable()).getCreatedFromResId())
+        .isEqualTo(shadowOf(d).getCreatedFromResId());
   }
 
   @Test

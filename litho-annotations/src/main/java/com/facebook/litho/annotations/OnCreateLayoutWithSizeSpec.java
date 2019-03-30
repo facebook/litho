@@ -19,10 +19,6 @@ package com.facebook.litho.annotations;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/**
- * Whether the LayoutSpec component will perform measurement while computing its layout tree.
- */
+/** Whether the LayoutSpec component will perform measurement while computing its layout tree. */
 @Retention(RetentionPolicy.SOURCE)
-public @interface OnCreateLayoutWithSizeSpec {
-
-}
+public @interface OnCreateLayoutWithSizeSpec {}

@@ -70,6 +70,18 @@ public abstract class Transition {
       new SpringTransitionAnimator(SpringConfig.noOvershootConfig);
 
   /**
+   * The default TransitionKeyType, assigned to component and transitions when user does not specify
+   * what TransitionKeyType to use
+   */
+  static final Transition.TransitionKeyType DEFAULT_TRANSITION_KEY_TYPE =
+      TransitionKeyType.LOCAL;
+
+  public enum TransitionKeyType {
+    GLOBAL,
+    LOCAL
+  }
+
+  /**
    * The type of a {@link ComponentTarget}.
    */
   enum ComponentTargetType {
@@ -80,13 +92,19 @@ public abstract class Transition {
      */
     ALL,
 
-    /** Targets a set of transition keys. Expected extra data: String[] of transition keys. */
-    SET,
+    /** Targets one local transition key. Expected extra data: String, a transition key. */
+    LOCAL_KEY,
+
+    /** Targets a set of local transition keys. Expected extra data: String[] of transition keys. */
+    LOCAL_KEY_SET,
+
+    /** Targets one global transition key. Expected extra data: String, a transition key. */
+    GLOBAL_KEY,
 
     /**
-     * Targets one transition key. Expected extra data: String, a transition key.
+     * Targets a set of global transition keys. Expected extra data: String[] of transition keys.
      */
-    SINGLE,
+    GLOBAL_KEY_SET,
 
     /**
      * Used for automatic bounds transition. Targets all components in the Component tree which
@@ -181,14 +199,36 @@ public abstract class Transition {
    * Creates a Transition for the component with the given transition key.
    */
   public static TransitionUnitsBuilder create(String key) {
-    return new TransitionUnitsBuilder(ComponentTargetType.SINGLE, key);
+    return create(DEFAULT_TRANSITION_KEY_TYPE, key);
   }
 
   /**
    * Creates a Transition for the components with the given transition keys.
    */
   public static TransitionUnitsBuilder create(String... keys) {
-    return new TransitionUnitsBuilder(ComponentTargetType.SET, keys);
+    return create(DEFAULT_TRANSITION_KEY_TYPE, keys);
+  }
+
+  /** Creates a Transition for the component with the given transition key of the given type. */
+  public static TransitionUnitsBuilder create(TransitionKeyType type, String key) {
+    return new TransitionUnitsBuilder(getComponentTargetTypeForTransitionKeyType(type, true), key);
+  }
+
+  /** Creates a Transition for the components with the given transition keys of the given type. */
+  public static TransitionUnitsBuilder create(TransitionKeyType type, String... keys) {
+    return new TransitionUnitsBuilder(
+        getComponentTargetTypeForTransitionKeyType(type, false), keys);
+  }
+
+  private static ComponentTargetType getComponentTargetTypeForTransitionKeyType(
+      TransitionKeyType transitionKeyType, boolean isSingleKey) {
+    if (transitionKeyType == TransitionKeyType.GLOBAL) {
+      return isSingleKey ? ComponentTargetType.GLOBAL_KEY : ComponentTargetType.GLOBAL_KEY_SET;
+    } else if (transitionKeyType == TransitionKeyType.LOCAL) {
+      return isSingleKey ? ComponentTargetType.LOCAL_KEY : ComponentTargetType.LOCAL_KEY_SET;
+    } else {
+      throw new RuntimeException("Unhandled TransitionKeyType " + transitionKeyType);
+    }
   }
 
   /**
@@ -295,6 +335,7 @@ public abstract class Transition {
     private final RuntimeValue mAppearFrom;
     private final RuntimeValue mDisappearTo;
     @Nullable private final String mTraceName;
+    @Nullable private String mOwnerKey;
 
     TransitionUnit(
         AnimationTarget animationTarget,
@@ -340,16 +381,38 @@ public abstract class Transition {
       return mTraceName;
     }
 
-    boolean targetsKey(String key) {
+    void setOwnerKey(@Nullable String ownerKey) {
+      mOwnerKey = ownerKey;
+    }
+
+    @Nullable
+    String getOwnerKey() {
+      return mOwnerKey;
+    }
+
+    boolean targets(TransitionId transitionId) {
       switch (mAnimationTarget.componentTarget.componentTargetType) {
         case ALL:
         case AUTO_LAYOUT:
           return true;
-        case SET:
+
+        case LOCAL_KEY:
+          if (!CommonUtils.equals(mOwnerKey, transitionId.mExtraData)) {
+            return false;
+          }
+        case GLOBAL_KEY:
+          return transitionId.mReference.equals(
+              mAnimationTarget.componentTarget.componentTargetExtraData);
+
+        case LOCAL_KEY_SET:
+          if (!CommonUtils.equals(mOwnerKey, transitionId.mExtraData)) {
+            return false;
+          }
+        case GLOBAL_KEY_SET:
           return arrayContains(
-              (String[]) mAnimationTarget.componentTarget.componentTargetExtraData, key);
-        case SINGLE:
-          return key.equals(mAnimationTarget.componentTarget.componentTargetExtraData);
+              (String[]) mAnimationTarget.componentTarget.componentTargetExtraData,
+              transitionId.mReference);
+
         default:
           throw new RuntimeException(
               "Didn't handle type: " + mAnimationTarget.componentTarget.componentTargetType);
@@ -664,10 +727,10 @@ public abstract class Transition {
   static float getRootAppearFromValue(
       TransitionUnit transition, LayoutState layoutState, AnimatedProperty property) {
     final RootItemResolver resolver = new RootItemResolver(layoutState, property);
-    final String rootTransitionKey = layoutState.getRootTransitionKey();
+    final TransitionId rootTransitionId = layoutState.getRootTransitionId();
     return transition
         .getAppearFrom()
-        .resolve(resolver, new PropertyHandle(rootTransitionKey, property));
+        .resolve(resolver, new PropertyHandle(rootTransitionId, property));
   }
 
   /**

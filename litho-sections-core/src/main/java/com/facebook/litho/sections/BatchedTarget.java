@@ -27,11 +27,12 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * Batches single Insert/Update/Delete commands and batches them into range commands.
- * This logic was adapted from {@link android.support.v7.util.BatchingListUpdateCallback}
+ * Batches single Insert/Update/Delete commands and batches them into range commands. This logic was
+ * adapted from {@link androidx.recyclerview.widget.BatchingListUpdateCallback}
  *
- * We can't use that callback directly because {@link com.facebook.litho.sections.SectionTree.Target}
- * expects us to pass in {@link RenderInfo} with the insert/update/remove calls.
+ * <p>We can't use that callback directly because {@link
+ * com.facebook.litho.sections.SectionTree.Target} expects us to pass in {@link RenderInfo} with the
+ * insert/update/remove calls.
  */
 class BatchedTarget implements SectionTree.Target {
 

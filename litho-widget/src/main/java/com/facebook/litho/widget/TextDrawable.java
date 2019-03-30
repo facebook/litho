@@ -32,6 +32,7 @@ import android.graphics.Region;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.text.Layout;
+import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.style.ClickableSpan;
 import android.text.style.ImageSpan;
@@ -77,6 +78,7 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
   private @Nullable Handler mLongClickHandler;
   private @Nullable LongClickRunnable mLongClickRunnable;
   private @Nullable ClickableSpanListener mSpanListener;
+  private @Nullable String mContextLogTag;
 
   @Override
   public void draw(Canvas canvas) {
@@ -91,9 +93,33 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
       canvas.clipRect(bounds);
     }
     canvas.translate(bounds.left, bounds.top + mLayoutTranslationY);
-    mLayout.draw(canvas, getSelectionPath(), mHighlightPaint, 0);
+    try {
+      mLayout.draw(canvas, getSelectionPath(), mHighlightPaint, 0);
+    } catch (ArrayIndexOutOfBoundsException e) {
+      throw new ArrayIndexOutOfBoundsException(e.getMessage() + getDebugInfo());
+    }
 
     canvas.restoreToCount(saveCount);
+  }
+
+  private String getDebugInfo() {
+    StringBuilder debugInfo = new StringBuilder();
+    debugInfo.append(" [");
+    debugInfo.append(mContextLogTag);
+    debugInfo.append("] ");
+    if (mText instanceof SpannableStringBuilder) {
+      Object[] spans = ((SpannableStringBuilder) mText).getSpans(0, mText.length(), Object.class);
+      debugInfo.append("spans: ");
+      for (Object span : spans) {
+        debugInfo.append(span.getClass().getSimpleName());
+        debugInfo.append(", ");
+      }
+    }
+    debugInfo.append("ellipsizedWidth: ");
+    debugInfo.append(mLayout.getEllipsizedWidth());
+    debugInfo.append(", lineCount: ");
+    debugInfo.append(mLayout.getLineCount());
+    return debugInfo.toString();
   }
 
   @Override
@@ -256,7 +282,22 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
       Layout layout,
       int userColor,
       ClickableSpan[] clickableSpans) {
-    mount(text, layout, 0, false, null, userColor, 0, clickableSpans, null, null, null, -1, -1, 0f);
+    mount(
+        text,
+        layout,
+        0,
+        false,
+        null,
+        userColor,
+        0,
+        clickableSpans,
+        null,
+        null,
+        null,
+        -1,
+        -1,
+        0f,
+        null);
   }
 
   public void mount(CharSequence text, Layout layout, int userColor, int highlightColor) {
@@ -274,7 +315,8 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
         null,
         -1,
         -1,
-        0f);
+        0f,
+        null);
   }
 
   public void mount(
@@ -299,7 +341,8 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
         null,
         -1,
         -1,
-        0f);
+        0f,
+        null);
   }
 
   public void mount(
@@ -316,7 +359,8 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
       TextOffsetOnTouchListener textOffsetOnTouchListener,
       int highlightStartOffset,
       int highlightEndOffset,
-      float clickableSpanExpandedOffset) {
+      float clickableSpanExpandedOffset,
+      String contextLogTag) {
     mLayout = layout;
     mLayoutTranslationY = layoutTranslationY;
     mClipToBounds = clipToBounds;
@@ -355,6 +399,7 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
       }
     }
     mImageSpans = imageSpans;
+    mContextLogTag = contextLogTag;
 
     invalidateSelf();
   }
@@ -456,59 +501,43 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
   private int getTextOffsetAt(int x, int y) {
     final int line = mLayout.getLineForVertical(y);
 
-    /**
-     * We use {@link Layout#getPrimaryHorizontal} on specific characters here because the functions
-     * of {@link Layout} that return line bounds or width have problems when used with indented
-     * lines. For instance, {@link Layout#getLineLeft} ignores indentation for left-aligned text,
-     * {@link Layout#getLineMax} includes leading margin and offers no way to subtract it, and
-     * {@link Layout#getParagraphLeft} is naturally only accurate at the paragraph level.
-     */
-    float start = getHorizontal(mLayout.getLineStart(line), line);
+    final float left;
+    final float right;
 
-    float end;
-    /**
-     * {@link Layout#getLineVisibleEnd} finds either the first trailing whitespace character of the
-     * line or the first character of the next line. To handle both cases, we locate the end of the
-     * line at the edge of the previous character opposite its primary horizontal position.
-     */
-    final int endOffset = mLayout.getLineVisibleEnd(line) - 1;
-    /**
-     * {@link Layout#getLineVisibleEnd} can also return 0 for a string's first line if that line is
-     * composed entirely of non-newline whitespace. The following fallback prevents an {@link
-     * IndexOutOfBoundsException} under these conditions.
-     */
-    if (endOffset < 0) {
-      end = mLayout.getPrimaryHorizontal(0);
+    if (mLayout.getAlignment() == Layout.Alignment.ALIGN_CENTER) {
+      /**
+       * {@link Layout#getLineLeft} and {@link Layout#getLineRight} properly account for paragraph
+       * margins on centered text.
+       */
+      left = mLayout.getLineLeft(line);
+      right = mLayout.getLineRight(line);
     } else {
-      final float[] endWidth = new float[1];
-      mLayout.getPaint().getTextWidths(mText, endOffset, endOffset + 1, endWidth);
-      end =
-          getHorizontal(endOffset, line) + (mLayout.isRtlCharAt(endOffset) ? -1 : 1) * endWidth[0];
+      /**
+       * {@link Layout#getLineLeft} and {@link Layout#getLineRight} do NOT properly account for
+       * paragraph margins on non-centered text, so we need an alternative.
+       *
+       * <p>To determine the actual bounds of the line, we need the line's direction, leading
+       * margin, and extent, but only the first is available directly. The margin is given by either
+       * {@link Layout#getParagraphLeft} or {@link Layout#getParagraphRight} depending on line
+       * direction, and {@link Layout#getLineMax} gives the extent *plus* the leading margin, so we
+       * can figure out the rest from there.
+       */
+      final boolean rtl = mLayout.getParagraphDirection(line) == Layout.DIR_RIGHT_TO_LEFT;
+      left = rtl ? mLayout.getWidth() - mLayout.getLineMax(line) : mLayout.getParagraphLeft(line);
+      right = rtl ? mLayout.getParagraphRight(line) : mLayout.getLineMax(line);
     }
 
-    if (start > end) {
-      // In RTL scenario
-      float temp = start;
-      start = end;
-      end = temp;
-    }
-
-    if (x < start || x > end) {
+    if (x < left || x > right) {
       return -1;
     }
 
-    return mLayout.getOffsetForHorizontal(line, x);
-  }
-
-  /**
-   * {@link Layout#getPrimaryHorizontal} uses the paragraph direction, which is incorrect for
-   * characters that oppose the direction of the paragraph.
-   */
-  private float getHorizontal(int offset, int line) {
-    final boolean isRtlLine = mLayout.getParagraphDirection(line) == Layout.DIR_RIGHT_TO_LEFT;
-    return isRtlLine == mLayout.isRtlCharAt(offset)
-        ? mLayout.getPrimaryHorizontal(offset)
-        : mLayout.getSecondaryHorizontal(offset);
+    try {
+      return mLayout.getOffsetForHorizontal(line, x);
+    } catch (ArrayIndexOutOfBoundsException e) {
+      // This happens for bidi text on Android 7-8.
+      // See https://android.googlesource.com/platform/frameworks/base/+/821e9bd5cc2be4b3210cb0226e40ba0f42b51aed
+      return -1;
+    }
   }
 
   /**
@@ -558,7 +587,7 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
     return result;
   }
 
-  private Path getSelectionPath() {
+  private @Nullable Path getSelectionPath() {
     if (mSelectionStart == mSelectionEnd) {
       return null;
     }

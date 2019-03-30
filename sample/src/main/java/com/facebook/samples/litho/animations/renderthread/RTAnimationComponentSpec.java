@@ -65,7 +65,7 @@ public class RTAnimationComponentSpec {
 
   @OnEvent(ClickEvent.class)
   static void onClick(ComponentContext c) {
-    RTAnimationComponent.updateState(c);
+    RTAnimationComponent.updateStateSync(c);
   }
 
   @OnUpdateState
@@ -88,6 +88,7 @@ public class RTAnimationComponentSpec {
         .marginDip(YogaEdge.ALL, 8)
         .background(buildRoundedRect(c, color, 8))
         .transitionKey(key)
+        .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
         .build();
   }
 
@@ -99,7 +100,7 @@ public class RTAnimationComponentSpec {
   private static Transition buildRenderThreadTransition() {
     final Transition[] pieces = new Transition[1 + RED_KEYS.length];
     pieces[0] =
-        Transition.create(GRAY_KEYS)
+        Transition.create(Transition.TransitionKeyType.GLOBAL, GRAY_KEYS)
             .animate(AnimatedProperties.ALPHA)
             .animator(Transition.renderThread(FADE_IN_OUT_DURATION))
             .disappearTo(0);
@@ -107,7 +108,7 @@ public class RTAnimationComponentSpec {
     int delay = FADE_IN_DELAY;
     for (int i = 0; i < RED_KEYS.length; i++, delay += FADE_IN_STAGGER_DELAY) {
       pieces[i + 1] =
-          Transition.create(RED_KEYS[i])
+          Transition.create(Transition.TransitionKeyType.GLOBAL, RED_KEYS[i])
               .animate(AnimatedProperties.ALPHA)
               .animator(Transition.renderThread(delay, FADE_IN_OUT_DURATION))
               .appearFrom(0);
@@ -120,7 +121,7 @@ public class RTAnimationComponentSpec {
     final Transition.TransitionAnimator fadeInOutAnimator = Transition.timing(FADE_IN_OUT_DURATION);
 
     final Transition fadeOut =
-        Transition.create(GRAY_KEYS)
+        Transition.create(Transition.TransitionKeyType.GLOBAL, GRAY_KEYS)
             .animate(AnimatedProperties.ALPHA)
             .animator(fadeInOutAnimator)
             .disappearTo(0);
@@ -128,7 +129,7 @@ public class RTAnimationComponentSpec {
     final Transition[] fadeInPieces = new Transition[RED_KEYS.length];
     for (int i = 0; i < RED_KEYS.length; i++) {
       fadeInPieces[i] =
-          Transition.create(RED_KEYS[i])
+          Transition.create(Transition.TransitionKeyType.GLOBAL, RED_KEYS[i])
               .animate(AnimatedProperties.ALPHA)
               .animator(fadeInOutAnimator)
               .appearFrom(0);

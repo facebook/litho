@@ -16,13 +16,14 @@
 
 package com.facebook.litho;
 
-import static android.support.v4.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
-import static android.support.v4.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO;
+import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
+import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO;
 
+import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.Nullable;
 import android.view.View;
-import com.facebook.litho.displaylist.DisplayList;
+import androidx.annotation.Nullable;
+import com.facebook.yoga.YogaDirection;
 
 /**
  * Represents a mounted UI element in a {@link MountState}. It holds a
@@ -34,6 +35,7 @@ class MountItem {
   static final int LAYOUT_FLAG_DUPLICATE_PARENT_STATE = 1 << 0;
   static final int LAYOUT_FLAG_DISABLE_TOUCHABLE = 1 << 1;
   static final int LAYOUT_FLAG_MATCH_HOST_BOUNDS = 1 << 2;
+  static final int LAYOUT_FLAG_PHANTOM = 1 << 3;
 
   private static final int FLAG_VIEW_CLICKABLE = 1 << 0;
   private static final int FLAG_VIEW_LONG_CLICKABLE = 1 << 1;
@@ -44,12 +46,17 @@ class MountItem {
   private NodeInfo mNodeInfo;
   private ViewNodeInfo mViewNodeInfo;
   private Component mComponent;
+  /**
+   * Mount content created by the {@link MountItem#mComponent}. It will be properly recycled by a
+   * MountItem in {@link MountItem#release(ComponentContext)} ()}
+   */
   private Object mContent;
+
   private ComponentHost mHost;
   private boolean mIsBound;
-  private int mImportantForAccessibility;
-  private @Nullable DisplayListDrawable mDisplayListDrawable;
-  private @Nullable String mTransitionKey;
+  private int mImportantForAccessibility = IMPORTANT_FOR_ACCESSIBILITY_AUTO;
+  private @Nullable TransitionId mTransitionId;
+  private int mOrientation;
 
   // ComponentHost flags defined in the LayoutOutput specifying
   // the behaviour of this item when mounted.
@@ -58,66 +65,52 @@ class MountItem {
   // Flags that track view-related behaviour of mounted view content.
   private int mMountViewFlags;
 
-  /**
-   * Call this method when assigning a new {@link LayoutOutput} to an existing MountItem. In this
-   * case we don't want to update mMountViewFlags since those flags are only used to determine the
-   * initial state of the view content, which we will have already done in init(). If it is done
-   * again now some of the values may be wrong (e.g. the Litho framework may add a click listener to
-   * a view that was not originally clickable.
-   */
-  void update(LayoutOutput layoutOutput) {
-    mComponent = layoutOutput.getComponent();
-    mLayoutFlags = layoutOutput.getFlags();
-    mImportantForAccessibility = layoutOutput.getImportantForAccessibility();
-    mDisplayListDrawable =
-        acquireDisplayListDrawableIfNeeded(
-            mContent, layoutOutput.getDisplayListContainer(), mDisplayListDrawable);
-    mTransitionKey = layoutOutput.getTransitionKey();
-
-    releaseNodeInfos();
-
-    if (layoutOutput.getNodeInfo() != null) {
-      mNodeInfo = layoutOutput.getNodeInfo().acquireRef();
-    }
-
-    if (layoutOutput.getViewNodeInfo() != null) {
-      mViewNodeInfo = layoutOutput.getViewNodeInfo().acquireRef();
-    }
+  /** This mountItem represents the top-level root host (LithoView) which is always mounted. */
+  static MountItem createRootHostMountItem(LithoView lithoView) {
+    final ViewNodeInfo viewNodeInfo = new ViewNodeInfo();
+    viewNodeInfo.setLayoutDirection(YogaDirection.INHERIT);
+    MountItem item =
+        new MountItem(
+            HostComponent.create(),
+            lithoView,
+            lithoView,
+            null,
+            viewNodeInfo,
+            0,
+            IMPORTANT_FOR_ACCESSIBILITY_AUTO,
+            lithoView.getContext().getResources().getConfiguration().orientation,
+            null);
+    return item;
   }
 
-  void init(
-      Component component,
-      ComponentHost host,
-      Object content,
-      LayoutOutput layoutOutput,
-      @Nullable DisplayListDrawable displayListDrawable) {
-    displayListDrawable =
-        acquireDisplayListDrawableIfNeeded(
-            content, layoutOutput.getDisplayListContainer(), displayListDrawable);
-    init(
+  MountItem(Component component, ComponentHost host, Object content, LayoutOutput layoutOutput) {
+    this(
         component,
         host,
         content,
         layoutOutput.getNodeInfo(),
         layoutOutput.getViewNodeInfo(),
-        displayListDrawable,
         layoutOutput.getFlags(),
         layoutOutput.getImportantForAccessibility(),
-        layoutOutput.getTransitionKey());
+        layoutOutput.getOrientation(),
+        layoutOutput.getTransitionId());
   }
 
-  void init(
+  MountItem(
       Component component,
       ComponentHost host,
       Object content,
       NodeInfo nodeInfo,
       ViewNodeInfo viewNodeInfo,
-      @Nullable DisplayListDrawable displayListDrawable,
       int layoutFlags,
       int importantForAccessibility,
-      String transitionKey) {
+      int orientation,
+      TransitionId transitionId) {
     if (mHost != null) {
       throw new RuntimeException("Calling init() on a MountItem that has not been released!");
+    }
+    if (component == null) {
+      throw new RuntimeException("Calling init() on a MountItem with a null Component!");
     }
 
     mComponent = component;
@@ -125,15 +118,15 @@ class MountItem {
     mHost = host;
     mLayoutFlags = layoutFlags;
     mImportantForAccessibility = importantForAccessibility;
-    mDisplayListDrawable = displayListDrawable;
-    mTransitionKey = transitionKey;
+    mOrientation = orientation;
+    mTransitionId = transitionId;
 
     if (nodeInfo != null) {
-      mNodeInfo = nodeInfo.acquireRef();
+      mNodeInfo = nodeInfo;
     }
 
     if (viewNodeInfo != null) {
-      mViewNodeInfo = viewNodeInfo.acquireRef();
+      mViewNodeInfo = viewNodeInfo;
     }
 
     if (mContent instanceof View) {
@@ -161,37 +154,32 @@ class MountItem {
     }
   }
 
-  private static @Nullable DisplayListDrawable acquireDisplayListDrawableIfNeeded(
-      Object content,
-      @Nullable DisplayListContainer layoutOutputDisplayListContainer,
-      @Nullable DisplayListDrawable mountItemDisplayListDrawable) {
+  /**
+   * Call this method when assigning a new {@link LayoutOutput} to an existing MountItem. In this
+   * case we don't want to update mMountViewFlags since those flags are only used to determine the
+   * initial state of the view content, which we will have already done in init(). If it is done
+   * again now some of the values may be wrong (e.g. the Litho framework may add a click listener to
+   * a view that was not originally clickable.
+   */
+  void update(LayoutOutput layoutOutput) {
+    mComponent = layoutOutput.getComponent();
+    if (mComponent == null) {
+      throw new RuntimeException("Trying to update a MountItem with a null Component!");
+    }
+    mLayoutFlags = layoutOutput.getFlags();
+    mImportantForAccessibility = layoutOutput.getImportantForAccessibility();
+    mOrientation = layoutOutput.getOrientation();
+    mTransitionId = layoutOutput.getTransitionId();
+    mNodeInfo = null;
+    mViewNodeInfo = null;
 
-    if (layoutOutputDisplayListContainer == null) {
-      // If we do not have DisplayListContainer it would mean that we do not support generating
-      // displaylists, hence this mount item should not have DisplayListDrawable.
-      if (mountItemDisplayListDrawable != null) {
-        ComponentsPools.release(mountItemDisplayListDrawable);
-      }
-      return null;
+    if (layoutOutput.getNodeInfo() != null) {
+      mNodeInfo = layoutOutput.getNodeInfo();
     }
 
-    final DisplayList displayList = layoutOutputDisplayListContainer.getDisplayList();
-    if (mountItemDisplayListDrawable == null
-        && (layoutOutputDisplayListContainer.canCacheDrawingDisplayLists()
-            || displayList != null)) {
-      mountItemDisplayListDrawable =
-          ComponentsPools.acquireDisplayListDrawable(
-              (Drawable) content, layoutOutputDisplayListContainer);
-    } else if (mountItemDisplayListDrawable != null) {
-      mountItemDisplayListDrawable.setWrappedDrawable(
-          (Drawable) content, layoutOutputDisplayListContainer);
+    if (layoutOutput.getViewNodeInfo() != null) {
+      mViewNodeInfo = layoutOutput.getViewNodeInfo();
     }
-
-    if (displayList != null && mountItemDisplayListDrawable != null) {
-      mountItemDisplayListDrawable.suppressInvalidations(true);
-    }
-
-    return mountItemDisplayListDrawable;
   }
 
   @Nullable
@@ -207,6 +195,7 @@ class MountItem {
     return mHost;
   }
 
+  /** @return Mount content created by the component. */
   Object getContent() {
     return mContent;
   }
@@ -219,6 +208,10 @@ class MountItem {
     return mImportantForAccessibility;
   }
 
+  int getOrientation() {
+    return mOrientation;
+  }
+
   NodeInfo getNodeInfo() {
     return mNodeInfo;
   }
@@ -228,12 +221,12 @@ class MountItem {
   }
 
   @Nullable
-  String getTransitionKey() {
-    return mTransitionKey;
+  TransitionId getTransitionId() {
+    return mTransitionId;
   }
 
-  boolean hasTransitionKey() {
-    return mTransitionKey != null;
+  boolean hasTransitionId() {
+    return mTransitionId != null;
   }
 
   boolean isAccessible() {
@@ -249,36 +242,8 @@ class MountItem {
         || mComponent.implementsAccessibility();
   }
 
-  void release(ComponentContext context) {
+  void releaseMountContent(Context context) {
     ComponentsPools.release(context, mComponent, mContent);
-
-    if (mDisplayListDrawable != null) {
-      ComponentsPools.release(mDisplayListDrawable);
-      mDisplayListDrawable = null;
-    }
-
-    releaseNodeInfos();
-
-    mComponent = null;
-    mHost = null;
-    mContent = null;
-    mLayoutFlags = 0;
-    mMountViewFlags = 0;
-    mIsBound = false;
-    mImportantForAccessibility = IMPORTANT_FOR_ACCESSIBILITY_AUTO;
-    mTransitionKey = null;
-  }
-
-  private void releaseNodeInfos() {
-    if (mNodeInfo != null) {
-      mNodeInfo.release();
-      mNodeInfo = null;
-    }
-
-    if (mViewNodeInfo != null) {
-      mViewNodeInfo.release();
-      mViewNodeInfo = null;
-    }
   }
 
   static boolean isDuplicateParentState(int flags) {
@@ -327,10 +292,5 @@ class MountItem {
    */
   void setIsBound(boolean bound) {
     mIsBound = bound;
-  }
-
-  @Nullable
-  DisplayListDrawable getDisplayListDrawable() {
-    return mDisplayListDrawable;
   }
 }

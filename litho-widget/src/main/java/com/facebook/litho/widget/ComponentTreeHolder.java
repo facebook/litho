@@ -16,8 +16,8 @@
 
 package com.facebook.litho.widget;
 
-import android.support.annotation.IntDef;
-import android.support.v4.util.Pools;
+import androidx.annotation.IntDef;
+import androidx.annotation.VisibleForTesting;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
@@ -26,7 +26,6 @@ import com.facebook.litho.LayoutHandler;
 import com.facebook.litho.Size;
 import com.facebook.litho.StateHandler;
 import com.facebook.litho.TreeProps;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.GuardedBy;
@@ -43,9 +42,37 @@ public class ComponentTreeHolder {
   private static final int UNINITIALIZED = -1;
   private static final AtomicInteger sIdGenerator = new AtomicInteger(1);
 
-  private static final Pools.SynchronizedPool<ComponentTreeHolder> sComponentTreeHoldersPool =
-      new Pools.SynchronizedPool<>(8);
-  private ComponentTreeMeasureListenerFactory mComponentTreeMeasureListenerFactory;
+  @IntDef({RENDER_UNINITIALIZED, RENDER_ADDED, RENDER_DRAWN})
+  public @interface RenderState {}
+
+  static final int RENDER_UNINITIALIZED = 0;
+  static final int RENDER_ADDED = 1;
+  static final int RENDER_DRAWN = 2;
+
+  interface ComponentTreeMeasureListenerFactory {
+    @Nullable
+    MeasureListener create(ComponentTreeHolder holder);
+  }
+
+  private @Nullable final ComponentTreeMeasureListenerFactory mComponentTreeMeasureListenerFactory;
+  private final AtomicInteger mRenderState = new AtomicInteger(RENDER_UNINITIALIZED);
+  private final int mId;
+  private final LayoutHandler mPreallocateMountContentHandler;
+  private final boolean mCanPreallocateOnDefaultHandler;
+  private final boolean mShouldPreallocatePerMountSpec;
+  private final boolean mIncrementalMount;
+
+  @GuardedBy("this")
+  private boolean mIsTreeValid;
+
+  @GuardedBy("this")
+  private @Nullable LayoutHandler mLayoutHandler;
+
+  @GuardedBy("this")
+  private boolean mIsInserted = true;
+
+  @GuardedBy("this")
+  private boolean mHasMounted = false;
 
   @GuardedBy("this")
   private int mLastMeasuredHeight;
@@ -68,35 +95,6 @@ public class ComponentTreeHolder {
   @GuardedBy("this")
   private int mLastRequestedHeightSpec = UNINITIALIZED;
 
-  private final AtomicBoolean mIsReleased = new AtomicBoolean(false);
-
-  @IntDef({RENDER_UNINITIALIZED, RENDER_ADDED, RENDER_DRAWN})
-  public @interface RenderState {}
-
-  static final int RENDER_UNINITIALIZED = 0;
-  static final int RENDER_ADDED = 1;
-  static final int RENDER_DRAWN = 2;
-
-  private final AtomicInteger mRenderState = new AtomicInteger(RENDER_UNINITIALIZED);
-
-  private int mId;
-  private boolean mIsTreeValid;
-  private @Nullable LayoutHandler mLayoutHandler;
-  private boolean mCanPrefetchDisplayLists;
-  private boolean mCanCacheDrawingDisplayLists;
-  private LayoutHandler mPreallocateMountContentHandler;
-  private boolean mCanPreallocateOnDefaultHandler;
-  private boolean mShouldPreallocatePerMountSpec;
-  private boolean mUseSharedLayoutStateFuture;
-  private String mSplitLayoutTag;
-  private boolean mIsInserted = true;
-  private boolean mHasMounted = false;
-
-  interface ComponentTreeMeasureListenerFactory {
-    @Nullable
-    MeasureListener create(ComponentTreeHolder holder);
-  }
-
   public static Builder create() {
     return new Builder();
   }
@@ -104,14 +102,11 @@ public class ComponentTreeHolder {
   public static class Builder {
     private RenderInfo renderInfo;
     private LayoutHandler layoutHandler;
-    private boolean canPrefetchDisplayLists;
-    private boolean canCacheDrawingDisplayLists;
     private ComponentTreeMeasureListenerFactory componentTreeMeasureListenerFactory;
-    private String splitLayoutTag;
     private @Nullable LayoutHandler preallocateMountContentHandler;
     private boolean canPreallocateOnDefaultHandler;
     private boolean shouldPreallocatePerMountSpec;
-    private boolean useSharedLayoutStateFuture;
+    private boolean incrementalMount = true;
 
     private Builder() {}
 
@@ -125,24 +120,9 @@ public class ComponentTreeHolder {
       return this;
     }
 
-    public Builder canPrefetchDisplayLists(boolean canPrefetchDisplayLists) {
-      this.canPrefetchDisplayLists = canPrefetchDisplayLists;
-      return this;
-    }
-
-    public Builder canCacheDrawingDisplayLists(boolean canCacheDrawingDisplayLists) {
-      this.canCacheDrawingDisplayLists = canCacheDrawingDisplayLists;
-      return this;
-    }
-
     public Builder componentTreeMeasureListenerFactory(
-        ComponentTreeMeasureListenerFactory componentTreeMeasureListenerFactory) {
+        @Nullable ComponentTreeMeasureListenerFactory componentTreeMeasureListenerFactory) {
       this.componentTreeMeasureListenerFactory = componentTreeMeasureListenerFactory;
-      return this;
-    }
-
-    public Builder splitLayoutTag(String splitLayoutTag) {
-      this.splitLayoutTag = splitLayoutTag;
       return this;
     }
 
@@ -162,34 +142,14 @@ public class ComponentTreeHolder {
       return this;
     }
 
-    public Builder useSharedLayoutStateFuture(boolean useSharedLayoutStateFuture) {
-      this.useSharedLayoutStateFuture = useSharedLayoutStateFuture;
+    public Builder incrementalMount(boolean incrementalMount) {
+      this.incrementalMount = incrementalMount;
       return this;
     }
 
     public ComponentTreeHolder build() {
       ensureMandatoryParams();
-
-      ComponentTreeHolder componentTreeHolder = sComponentTreeHoldersPool.acquire();
-      if (componentTreeHolder == null) {
-        componentTreeHolder = new ComponentTreeHolder();
-      }
-
-      componentTreeHolder.mRenderInfo = renderInfo;
-      componentTreeHolder.mLayoutHandler = layoutHandler;
-      componentTreeHolder.mCanPrefetchDisplayLists = canPrefetchDisplayLists;
-      componentTreeHolder.mCanCacheDrawingDisplayLists = canCacheDrawingDisplayLists;
-      componentTreeHolder.mPreallocateMountContentHandler = preallocateMountContentHandler;
-      componentTreeHolder.mCanPreallocateOnDefaultHandler = canPreallocateOnDefaultHandler;
-      componentTreeHolder.mShouldPreallocatePerMountSpec = shouldPreallocatePerMountSpec;
-      componentTreeHolder.mUseSharedLayoutStateFuture = useSharedLayoutStateFuture;
-      componentTreeHolder.mComponentTreeMeasureListenerFactory =
-          componentTreeMeasureListenerFactory;
-      componentTreeHolder.mSplitLayoutTag = splitLayoutTag;
-      componentTreeHolder.acquireId();
-      componentTreeHolder.mIsReleased.set(false);
-
-      return componentTreeHolder;
+      return new ComponentTreeHolder(this);
     }
 
     private void ensureMandatoryParams() {
@@ -200,8 +160,16 @@ public class ComponentTreeHolder {
     }
   }
 
-  private void acquireId() {
+  @VisibleForTesting
+  ComponentTreeHolder(Builder builder) {
+    mRenderInfo = builder.renderInfo;
+    mLayoutHandler = builder.layoutHandler;
+    mPreallocateMountContentHandler = builder.preallocateMountContentHandler;
+    mCanPreallocateOnDefaultHandler = builder.canPreallocateOnDefaultHandler;
+    mShouldPreallocatePerMountSpec = builder.shouldPreallocatePerMountSpec;
+    mComponentTreeMeasureListenerFactory = builder.componentTreeMeasureListenerFactory;
     mId = sIdGenerator.getAndIncrement();
+    mIncrementalMount = builder.incrementalMount;
   }
 
   public synchronized void acquireStateAndReleaseTree() {
@@ -212,10 +180,6 @@ public class ComponentTreeHolder {
 
   synchronized void invalidateTree() {
     mIsTreeValid = false;
-  }
-
-  synchronized void clearStateHandler() {
-    mStateHandler = null;
   }
 
   synchronized void setNewLayoutReadyListener(
@@ -270,6 +234,14 @@ public class ComponentTreeHolder {
   }
 
   public void computeLayoutAsync(ComponentContext context, int widthSpec, int heightSpec) {
+    computeLayoutAsync(context, widthSpec, heightSpec, null);
+  }
+
+  public void computeLayoutAsync(
+      ComponentContext context,
+      int widthSpec,
+      int heightSpec,
+      @Nullable MeasureListener measureListener) {
 
     final ComponentTree componentTree;
     final Component component;
@@ -295,6 +267,10 @@ public class ComponentTreeHolder {
               : null;
     }
 
+    if (measureListener != null) {
+      componentTree.updateMeasureListener(measureListener);
+    }
+
     componentTree.setRootAndSizeSpecAsync(component, widthSpec, heightSpec, treeProps);
 
     synchronized (this) {
@@ -304,12 +280,24 @@ public class ComponentTreeHolder {
     }
   }
 
+  public synchronized void updateMeasureListener(@Nullable MeasureListener measureListener) {
+    if (mComponentTree != null) {
+      mComponentTree.updateMeasureListener(measureListener);
+    }
+  }
+
   public synchronized RenderInfo getRenderInfo() {
     return mRenderInfo;
   }
 
   public synchronized boolean isTreeValid() {
     return mIsTreeValid;
+  }
+
+  public synchronized boolean isTreeValidForSizeSpecs(int widthSpec, int heightSpec) {
+    return isTreeValid()
+        && mLastRequestedWidthSpec == widthSpec
+        && mLastRequestedHeightSpec == heightSpec;
   }
 
   public synchronized @Nullable ComponentTree getComponentTree() {
@@ -377,69 +365,36 @@ public class ComponentTreeHolder {
     mIsInserted = inserted;
   }
 
-  public boolean isReleased() {
-    return mIsReleased.get();
-  }
-
-  public synchronized void updateMeasureListener(@Nullable MeasureListener measureListener) {
-    if (mComponentTree != null) {
-      mComponentTree.updateMeasureListener(measureListener);
-    }
-  }
-
-  public synchronized void release() {
-    releaseTree();
-    clearStateHandler();
-    mRenderInfo = null;
-    mLayoutHandler = null;
-    mCanPrefetchDisplayLists = false;
-    mCanCacheDrawingDisplayLists = false;
-    mPreallocateMountContentHandler = null;
-    mShouldPreallocatePerMountSpec = false;
-    mCanPreallocateOnDefaultHandler = false;
-    mUseSharedLayoutStateFuture = false;
-    mPendingNewLayoutListener = null;
-    mLastRequestedWidthSpec = UNINITIALIZED;
-    mLastRequestedHeightSpec = UNINITIALIZED;
-    mIsInserted = true;
-    mHasMounted = false;
-    mRenderState.set(RENDER_UNINITIALIZED);
-    if (mIsReleased.getAndSet(true)) {
-      throw new RuntimeException("Releasing already released ComponentTreeHolder!");
-    }
-    sComponentTreeHoldersPool.release(this);
-  }
-
   @GuardedBy("this")
   private void ensureComponentTree(ComponentContext context) {
     if (mComponentTree == null) {
-      final Object clipChildrenAttr = mRenderInfo.getCustomAttribute(RenderInfo.CLIP_CHILDREN);
-      final boolean clipChildren = clipChildrenAttr == null ? true : (boolean) clipChildrenAttr;
+      final Object isPersistenceEnabled =
+          mRenderInfo.getCustomAttribute(ComponentRenderInfo.PERSISTENCE_ENABLED);
       final Object layoutDiffingEnabledAttr =
           mRenderInfo.getCustomAttribute(ComponentRenderInfo.LAYOUT_DIFFING_ENABLED);
       final ComponentTree.Builder builder =
           ComponentTree.create(context, mRenderInfo.getComponent());
       // If no custom attribute is set, defer default value to the builder.
-      if (layoutDiffingEnabledAttr != null) {
+      if (isPersistenceEnabled != null) {
+        builder.layoutDiffing((boolean) isPersistenceEnabled);
+        builder.isPersistenceEnabled((boolean) isPersistenceEnabled);
+      } else if (layoutDiffingEnabledAttr != null) {
         builder.layoutDiffing((boolean) layoutDiffingEnabledAttr);
       }
       mComponentTree =
           builder
               .layoutThreadHandler(mLayoutHandler)
               .stateHandler(mStateHandler)
-              .canPrefetchDisplayLists(mCanPrefetchDisplayLists)
-              .canCacheDrawingDisplayLists(mCanCacheDrawingDisplayLists)
-              .shouldClipChildren(clipChildren)
               .preAllocateMountContentHandler(mPreallocateMountContentHandler)
               .preallocateOnDefaultHandler(mCanPreallocateOnDefaultHandler)
               .shouldPreallocateMountContentPerMountSpec(mShouldPreallocatePerMountSpec)
-              .useSharedLayoutStateFuture(mUseSharedLayoutStateFuture)
+              .useSharedLayoutStateFuture(true)
               .measureListener(
                   mComponentTreeMeasureListenerFactory == null
                       ? null
                       : mComponentTreeMeasureListenerFactory.create(this))
-              .splitLayoutTag(mSplitLayoutTag)
               .hasMounted(mHasMounted)
+              .incrementalMount(mIncrementalMount)
               .build();
       if (mPendingNewLayoutListener != null) {
         mComponentTree.setNewLayoutStateReadyListener(mPendingNewLayoutListener);

@@ -18,12 +18,11 @@ package com.facebook.litho.processor.integration.resources;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.AttrRes;
-import android.support.annotation.StringRes;
-import android.support.annotation.VisibleForTesting;
-import android.support.v4.util.Pools;
-import android.support.v4.view.accessibility.AccessibilityNodeInfoCompat;
 import android.view.View;
+import androidx.annotation.AttrRes;
+import androidx.annotation.StringRes;
+import androidx.annotation.VisibleForTesting;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import com.facebook.litho.ClickEvent;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
@@ -42,13 +41,14 @@ import com.facebook.litho.Size;
 import com.facebook.litho.StateContainer;
 import com.facebook.litho.StateValue;
 import com.facebook.litho.TreeProps;
+import com.facebook.litho.annotations.Comparable;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.annotations.TreeProp;
-import com.facebook.litho.config.ComponentsConfiguration;
 import java.util.Arrays;
 import java.util.BitSet;
+import java.util.Objects;
 import javax.annotation.Nullable;
 
 /**
@@ -64,57 +64,44 @@ import javax.annotation.Nullable;
  */
 @TargetApi(17)
 public final class TestMount<S extends View> extends Component implements TestTag {
-  static final Pools.SynchronizedPool<TestEvent> sTestEventPool = new Pools.SynchronizedPool<TestEvent>(2);
-
+  @Comparable(type = 14)
   private TestMountStateContainer mStateContainer;
 
-  @Prop(
-      resType = ResType.NONE,
-      optional = false
-  )
+  @Prop(resType = ResType.NONE, optional = false)
+  @Comparable(type = 3)
   int prop1;
 
-  @Prop(
-      resType = ResType.NONE,
-      optional = true
-  )
+  @Prop(resType = ResType.NONE, optional = true)
+  @Comparable(type = 3)
   boolean prop2 = TestMountSpec.prop2;
 
-  @Prop(
-      resType = ResType.NONE,
-      optional = false
-  )
+  @Prop(resType = ResType.NONE, optional = false)
+  @Comparable(type = 13)
   Object prop3;
 
-  @Prop(
-      resType = ResType.NONE,
-      optional = false
-  )
+  @Prop(resType = ResType.NONE, optional = false)
+  @Comparable(type = 2)
   char[] prop4;
 
-  @Prop(
-      resType = ResType.NONE,
-      optional = false
-  )
+  @Prop(resType = ResType.NONE, optional = false)
+  @Comparable(type = 3)
   char prop5;
 
-  @Prop(
-      resType = ResType.NONE,
-      optional = false
-  )
+  @Prop(resType = ResType.NONE, optional = false)
+  @Comparable(type = 3)
   long prop6;
 
   @Nullable
   @Prop(resType = ResType.STRING, optional = false)
+  @Comparable(type = 13)
   CharSequence prop7;
 
-  @Prop(
-      resType = ResType.NONE,
-      optional = false
-  )
+  @Prop(resType = ResType.NONE, optional = false)
+  @Comparable(type = 3)
   long prop8;
 
   @TreeProp
+  @Comparable(type = 13)
   TestTreeProp treeProp;
 
   Integer boundsDefinedOutput;
@@ -137,9 +124,6 @@ public final class TestMount<S extends View> extends Component implements TestTa
 
   @Override
   public boolean isEquivalentTo(Component other) {
-    if (ComponentsConfiguration.useNewIsEquivalentTo) {
-      return super.isEquivalentTo(other);
-    }
     if (this == other) {
       return true;
     }
@@ -226,23 +210,22 @@ public final class TestMount<S extends View> extends Component implements TestTa
   @SuppressWarnings("unchecked")
   @Override
   protected void onLoadStyle(ComponentContext c) {
-    Output<Boolean> prop2Tmp = acquireOutput();
-    Output<Object> prop3Tmp = acquireOutput();
-    TestMountSpec.onLoadStyle((ComponentContext) c, prop2Tmp, prop3Tmp);
+    Output<Boolean> prop2Tmp = new Output<>();
+    Output<Object> prop3Tmp = new Output<>();
+    TestMountSpec.onLoadStyle(
+        (ComponentContext) c, (Output<Boolean>) prop2Tmp, (Output<Object>) prop3Tmp);
     if (prop2Tmp.get() != null) {
       prop2 = prop2Tmp.get();
     }
-    releaseOutput(prop2Tmp);
     if (prop3Tmp.get() != null) {
       prop3 = prop3Tmp.get();
     }
-    releaseOutput(prop3Tmp);
   }
 
   @Override
   protected void createInitialState(ComponentContext c) {
     StateValue<S> state2 = new StateValue<>();
-    TestMountSpec.createInitialState((ComponentContext) c, (int) prop1, state2);
+    TestMountSpec.createInitialState((ComponentContext) c, (int) prop1, (StateValue<S>) state2);
     if (state2.get() != null) {
       mStateContainer.state2 = state2.get();
     }
@@ -251,16 +234,15 @@ public final class TestMount<S extends View> extends Component implements TestTa
   @Override
   protected void onMeasure(
       ComponentContext context, ComponentLayout layout, int widthSpec, int heightSpec, Size size) {
-    Output<Long> measureOutputTmp = acquireOutput();
+    Output<Long> measureOutputTmp = new Output<>();
     TestMountSpec.onMeasure(
         (ComponentContext) context,
         (ComponentLayout) layout,
         (int) widthSpec,
         (int) heightSpec,
         (Size) size,
-        measureOutputTmp);
+        (Output<Long>) measureOutputTmp);
     measureOutput = measureOutputTmp.get();
-    releaseOutput(measureOutputTmp);
   }
 
   @Override
@@ -270,21 +252,21 @@ public final class TestMount<S extends View> extends Component implements TestTa
 
   @Override
   protected void onBoundsDefined(ComponentContext c, ComponentLayout layout) {
-    Output<Integer> boundsDefinedOutputTmp = acquireOutput();
+    Output<Integer> boundsDefinedOutputTmp = new Output<>();
     TestMountSpec.onBoundsDefined(
         (ComponentContext) c,
         (ComponentLayout) layout,
         (Object) prop3,
         (char[]) prop4,
         (Long) measureOutput,
-        boundsDefinedOutputTmp);
+        (Output<Integer>) boundsDefinedOutputTmp);
     boundsDefinedOutput = boundsDefinedOutputTmp.get();
-    releaseOutput(boundsDefinedOutputTmp);
   }
 
   @Override
   protected Object onCreateMountContent(Context c) {
-    Object _result = (Object) TestMountSpec.onCreateMountContent((Context) c);
+    Object _result;
+    _result = (Object) TestMountSpec.onCreateMountContent((Context) c);
     return _result;
   }
 
@@ -318,7 +300,8 @@ public final class TestMount<S extends View> extends Component implements TestTa
 
   @Override
   protected int getExtraAccessibilityNodesCount() {
-    int _result =
+    int _result;
+    _result =
         (int)
             TestMountSpec.getExtraAccessibilityNodesCount(
                 (int) prop1, (CharSequence) prop7, (Integer) boundsDefinedOutput);
@@ -338,6 +321,7 @@ public final class TestMount<S extends View> extends Component implements TestTa
         (int) componentBoundsTop,
         (Object) prop3,
         (CharSequence) prop7,
+        (Integer) getCached(),
         (Integer) boundsDefinedOutput);
   }
 
@@ -348,7 +332,8 @@ public final class TestMount<S extends View> extends Component implements TestTa
 
   @Override
   protected int getExtraAccessibilityNodeAt(int x, int y) {
-    int _result =
+    int _result;
+    _result =
         (int)
             TestMountSpec.getExtraAccessibilityNodeAt(
                 (int) x,
@@ -363,15 +348,16 @@ public final class TestMount<S extends View> extends Component implements TestTa
   protected boolean shouldUpdate(Component _prevAbstractImpl, Component _nextAbstractImpl) {
     TestMount _prevImpl = (TestMount) _prevAbstractImpl;
     TestMount _nextImpl = (TestMount) _nextAbstractImpl;
-    Diff<Integer> prop1 = (Diff) acquireDiff(_prevImpl == null ? null : _prevImpl.prop1, _nextImpl == null ? null : _nextImpl.prop1);
-    boolean _result = (boolean) TestMountSpec.shouldUpdate(prop1);
-    releaseDiff(prop1);
+    boolean _result;
+    Diff<Integer> prop1 = new Diff<Integer>(_prevImpl == null ? null : _prevImpl.prop1, _nextImpl == null ? null : _nextImpl.prop1);
+    _result = (boolean) TestMountSpec.shouldUpdate((Diff<Integer>) prop1);
     return _result;
   }
 
   @Override
   protected MountContentPool onCreateMountContentPool() {
-    MountContentPool _result = (MountContentPool) TestMountSpec.onCreateMountContentPool();
+    MountContentPool _result;
+    _result = (MountContentPool) TestMountSpec.onCreateMountContentPool();
     return _result;
   }
 
@@ -423,17 +409,11 @@ public final class TestMount<S extends View> extends Component implements TestTa
   }
 
   static void dispatchTestEvent(EventHandler _eventHandler, View view, Object object) {
-    TestEvent _eventState = sTestEventPool.acquire();
-    if (_eventState == null) {
-      _eventState = new TestEvent();
-    }
+    final TestEvent _eventState = new TestEvent();
     _eventState.view = view;
     _eventState.object = object;
     EventDispatcher _lifecycle = _eventHandler.mHasEventDispatcher.getEventDispatcher();
     _lifecycle.dispatchOnEvent(_eventHandler, _eventState);
-    _eventState.view = null;
-    _eventState.object = null;
-    sTestEventPool.release(_eventState);
   }
 
   private void testLayoutEvent(
@@ -441,11 +421,12 @@ public final class TestMount<S extends View> extends Component implements TestTa
     TestMount _ref = (TestMount) _abstract;
     TestMountSpec.testLayoutEvent(
         c,
-        view,
-        param1,
         (Object) _ref.prop3,
         (char) _ref.prop5,
-        (long) _ref.mStateContainer.state1);
+        view,
+        param1,
+        (long) _ref.mStateContainer.state1,
+        (Integer) _ref.getCached());
   }
 
   public static EventHandler<ClickEvent> testLayoutEvent(ComponentContext c, int param1) {
@@ -547,10 +528,13 @@ public final class TestMount<S extends View> extends Component implements TestTa
 
   @Override
   protected void transferState(
-      ComponentContext context, StateContainer _prevStateContainer) {
-    TestMountStateContainer prevStateContainer = (TestMountStateContainer) _prevStateContainer;
-    mStateContainer.state1 = prevStateContainer.state1;
-    mStateContainer.state2 = prevStateContainer.state2;
+      StateContainer _prevStateContainer, StateContainer _nextStateContainer) {
+    TestMountStateContainer<S> prevStateContainer =
+        (TestMountStateContainer<S>) _prevStateContainer;
+    TestMountStateContainer<S> nextStateContainer =
+        (TestMountStateContainer<S>) _nextStateContainer;
+    nextStateContainer.state1 = prevStateContainer.state1;
+    nextStateContainer.state2 = prevStateContainer.state2;
   }
 
   protected static void updateCurrentState(ComponentContext c, int someParam) {
@@ -560,7 +544,7 @@ public final class TestMount<S extends View> extends Component implements TestTa
     }
     TestMount.UpdateCurrentStateStateUpdate _stateUpdate =
         ((TestMount) _component).createUpdateCurrentStateStateUpdate(someParam);
-    c.updateStateSync(_stateUpdate, "TestMount.updateCurrentState");
+    c.updateStateAsync(_stateUpdate, "TestMount.updateCurrentState");
   }
 
   protected static void updateCurrentStateAsync(ComponentContext c, int someParam) {
@@ -589,12 +573,9 @@ public final class TestMount<S extends View> extends Component implements TestTa
     ComponentLifecycle.StateUpdate _stateUpdate =
         new ComponentLifecycle.StateUpdate() {
           @Override
-          public void updateState(
-              StateContainer _stateContainer, Component newComponent) {
-            TestMount newComponentStateUpdate = (TestMount) newComponent;
-            StateValue<Long> state1 = new StateValue<Long>();
-            state1.set(lazyUpdateValue);
-            newComponentStateUpdate.mStateContainer.state1 = state1.get();
+          public void updateState(StateContainer _stateContainer) {
+            TestMountStateContainer stateContainer = (TestMountStateContainer) _stateContainer;
+            stateContainer.state1 = lazyUpdateValue;
           }
         };
     c.updateStateLazy(_stateUpdate);
@@ -612,18 +593,32 @@ public final class TestMount<S extends View> extends Component implements TestTa
     return builder;
   }
 
+  private int getCached() {
+    ComponentContext c = getScopedContext();
+    final CachedInputs inputs = new CachedInputs(prop3, prop5, mStateContainer.state1);
+    Integer cached = (Integer) c.getCachedValue(inputs);
+    if (cached == null) {
+      cached = TestMountSpec.onCalculateCached(prop3, prop5, mStateContainer.state1);
+      c.putCachedValue(inputs, cached);
+    }
+    return cached;
+  }
+
   @VisibleForTesting(
       otherwise = 2
   )
   static class TestMountStateContainer<S extends View> implements StateContainer {
     @State
+    @Comparable(type = 3)
     long state1;
 
     @State
+    @Comparable(type = 13)
     S state2;
   }
 
-  private static class UpdateCurrentStateStateUpdate implements ComponentLifecycle.StateUpdate {
+  private static class UpdateCurrentStateStateUpdate<S extends View>
+      implements ComponentLifecycle.StateUpdate {
     private int mSomeParam;
 
     UpdateCurrentStateStateUpdate(int someParam) {
@@ -631,14 +626,12 @@ public final class TestMount<S extends View> extends Component implements TestTa
     }
 
     @Override
-    public void updateState(
-        StateContainer _stateContainer, Component newComponent) {
-      TestMountStateContainer stateContainer = (TestMountStateContainer) _stateContainer;
-      TestMount newComponentStateUpdate = (TestMount) newComponent;
+    public void updateState(StateContainer _stateContainer) {
+      TestMountStateContainer<S> stateContainer = (TestMountStateContainer<S>) _stateContainer;
       StateValue<Long> state1 = new StateValue<Long>();
       state1.set(stateContainer.state1);
       TestMountSpec.updateCurrentState(state1,mSomeParam);
-      newComponentStateUpdate.mStateContainer.state1 = state1.get();
+      stateContainer.state1 = state1.get();
     }
   }
 
@@ -766,16 +759,49 @@ public final class TestMount<S extends View> extends Component implements TestTa
     @Override
     public TestMount build() {
       checkArgs(REQUIRED_PROPS_COUNT, mRequired, REQUIRED_PROPS_NAMES);
-      TestMount testMountRef = mTestMount;
-      release();
-      return testMountRef;
+      return mTestMount;
+    }
+  }
+
+  private static class CachedInputs {
+    private final Object prop3;
+
+    private final char prop5;
+
+    private final long state1;
+
+    CachedInputs(Object prop3, char prop5, long state1) {
+      this.prop3 = prop3;
+      this.prop5 = prop5;
+      this.state1 = state1;
     }
 
     @Override
-    protected void release() {
-      super.release();
-      mTestMount = null;
-      mContext = null;
+    public int hashCode() {
+      return Objects.hash(prop3, prop5, state1);
+    }
+
+    @Override
+    public boolean equals(Object other) {
+      if (this == other) {
+        return true;
+      }
+      if (other == null || !(other instanceof CachedInputs)) {
+        return false;
+      }
+      CachedInputs cachedValueInputs = (CachedInputs) other;
+      if (prop3 != null
+          ? !prop3.equals(cachedValueInputs.prop3)
+          : cachedValueInputs.prop3 != null) {
+        return false;
+      }
+      if (prop5 != cachedValueInputs.prop5) {
+        return false;
+      }
+      if (state1 != cachedValueInputs.state1) {
+        return false;
+      }
+      return true;
     }
   }
 }

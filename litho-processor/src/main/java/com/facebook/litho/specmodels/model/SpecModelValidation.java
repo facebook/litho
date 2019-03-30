@@ -18,6 +18,7 @@ package com.facebook.litho.specmodels.model;
 
 import com.facebook.litho.specmodels.internal.RunMode;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 
 /** Class for validating that a {@link SpecModel} is well-formed. */
@@ -27,7 +28,7 @@ public class SpecModelValidation {
       SpecModel specModel,
       List<String> reservedPropNames,
       List<PropValidation.CommonPropModel> permittedCommonProps,
-      RunMode runMode) {
+      EnumSet<RunMode> runMode) {
     final List<SpecModelValidationError> validationErrors = new ArrayList<>();
     final DependencyInjectionHelper dependencyInjectionHelper =
         specModel.getDependencyInjectionHelper();
@@ -43,11 +44,13 @@ public class SpecModelValidation {
     validationErrors.addAll(DiffValidation.validate(specModel));
     validationErrors.addAll(TagValidation.validate(specModel));
     validationErrors.addAll(WorkingRangeValidation.validate(specModel));
+    validationErrors.addAll(CachedValueValidation.validate(specModel));
+    validationErrors.addAll(FieldsValidation.validate(specModel));
     return validationErrors;
   }
 
   public static List<SpecModelValidationError> validateLayoutSpecModel(
-      LayoutSpecModel specModel, RunMode runMode) {
+      LayoutSpecModel specModel, EnumSet<RunMode> runMode) {
     List<SpecModelValidationError> validationErrors = new ArrayList<>();
     validationErrors.addAll(
         validateSpecModel(
@@ -57,11 +60,12 @@ public class SpecModelValidation {
             runMode));
     validationErrors.addAll(PureRenderValidation.validate(specModel));
     validationErrors.addAll(DelegateMethodValidation.validateLayoutSpecModel(specModel));
+    validationErrors.addAll(SimpleNameDelegateValidation.validate(specModel));
     return validationErrors;
   }
 
   public static List<SpecModelValidationError> validateMountSpecModel(
-      MountSpecModel specModel, RunMode runMode) {
+      MountSpecModel specModel, EnumSet<RunMode> runMode) {
     List<SpecModelValidationError> validationErrors = new ArrayList<>();
     validationErrors.addAll(
         validateSpecModel(

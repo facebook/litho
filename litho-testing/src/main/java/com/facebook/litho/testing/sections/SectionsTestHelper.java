@@ -55,8 +55,11 @@ public class SectionsTestHelper extends Section {
   private final Map<Section, SectionContext> preparedSections;
 
   public SectionsTestHelper(Context c) {
+    this(new SectionContext(c));
+  }
+
+  public SectionsTestHelper(SectionContext base) {
     super("SectionComponentTestHelper");
-    final SectionContext base = new SectionContext(c);
     mSectionTree = SectionTree.create(base, new TestTarget()).build();
     mSectionContext = SectionContext.withSectionTree(base, mSectionTree);
     preparedSections = new HashMap<>();
@@ -97,7 +100,7 @@ public class SectionsTestHelper extends Section {
               public Object answer(InvocationOnMock invocation) throws Throwable {
                 final Section scope = ((SectionContext) invocation.getMock()).getSectionScope();
                 final StateUpdate stateUpdate = (StateUpdate) invocation.getArguments()[0];
-                stateUpdate.updateState(SectionLifecycleTestUtil.getStateContainer(scope), scope);
+                stateUpdate.updateState(SectionLifecycleTestUtil.getStateContainer(scope));
                 return null;
               }
             })
@@ -111,7 +114,7 @@ public class SectionsTestHelper extends Section {
               public Object answer(InvocationOnMock invocation) throws Throwable {
                 final Section scope = ((SectionContext) invocation.getMock()).getSectionScope();
                 final StateUpdate stateUpdate = (StateUpdate) invocation.getArguments()[0];
-                stateUpdate.updateState(SectionLifecycleTestUtil.getStateContainer(scope), scope);
+                stateUpdate.updateState(SectionLifecycleTestUtil.getStateContainer(scope));
                 return null;
               }
             })

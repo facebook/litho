@@ -16,7 +16,7 @@
 
 package com.facebook.litho.internal;
 
-import android.support.v4.util.SimpleArrayMap;
+import androidx.collection.SimpleArrayMap;
 import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.Iterator;
@@ -31,7 +31,13 @@ import javax.annotation.Nullable;
  * ArrayMap because Google's ArraySet is API23+ and not yet available from a support library.
  * Google's ArraySet should be a drop-in replacement for this class, and will be a little more
  * efficient and complete.
+ *
+ * @deprecated This collection uses SimpleArrayMap as backing array which static cache can be
+ *     corrupted when used in multi-threaded environment. When static cache gets corrupted, next
+ *     time instance is used it can crash with ClassCastException even if that instance is thread
+ *     confined.
  */
+@Deprecated
 public class ArraySet<E> implements Set<E> {
 
   // This could be any value other than null.

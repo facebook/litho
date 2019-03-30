@@ -47,7 +47,6 @@ dependencies {
     implementation project(':litho-sections-core')
     implementation project(':litho-sections-widget')
     implementation project(':litho-sections-annotations')
-    compileOnly project(':litho-annotations')
     annotationProcessor project(':litho-processor')
     annotationProcessor project(':litho-sections-processor')
 
@@ -65,7 +64,6 @@ dependencies {
 
     // Unit test only
     testImplementation project(':litho-testing')
-    testImplementation project(':litho-annotations')
     testCompileOnly deps.jsr305
     testAnnotationProcessor project(':litho-processor')
     testImplementation deps.junit

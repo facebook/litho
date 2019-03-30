@@ -49,7 +49,7 @@ public class InternalNodeTouchExpansionTest {
             makeSizeSpec(0, UNSPECIFIED),
             makeSizeSpec(0, UNSPECIFIED));
 
-    mInternalNode.touchHandler(new EventHandler(null, 1));
+    mInternalNode.getOrCreateNodeInfo().setTouchHandler(new EventHandler(null, 1));
   }
 
   private static void setDirection(InternalNode node, YogaDirection direction) {
@@ -59,28 +59,28 @@ public class InternalNodeTouchExpansionTest {
 
   @Test
   public void testTouchExpansionLeftWithoutTouchHandling() {
-    mInternalNode.touchHandler(null);
+    mInternalNode.getOrCreateNodeInfo().setTouchHandler(null);
     mInternalNode.touchExpansionPx(LEFT, 10);
     assertThat(mInternalNode.getTouchExpansionLeft()).isEqualTo(0);
   }
 
   @Test
   public void testTouchExpansionTopWithoutTouchHandling() {
-    mInternalNode.touchHandler(null);
+    mInternalNode.getOrCreateNodeInfo().setTouchHandler(null);
     mInternalNode.touchExpansionPx(TOP, 10);
     assertThat(mInternalNode.getTouchExpansionTop()).isEqualTo(0);
   }
 
   @Test
   public void testTouchExpansionRightWithoutTouchHandling() {
-    mInternalNode.touchHandler(null);
+    mInternalNode.getOrCreateNodeInfo().setTouchHandler(null);
     mInternalNode.touchExpansionPx(RIGHT, 10);
     assertThat(mInternalNode.getTouchExpansionRight()).isEqualTo(0);
   }
 
   @Test
   public void testTouchExpansionBottomWithoutTouchHandling() {
-    mInternalNode.touchHandler(null);
+    mInternalNode.getOrCreateNodeInfo().setTouchHandler(null);
     mInternalNode.touchExpansionPx(BOTTOM, 10);
     assertThat(mInternalNode.getTouchExpansionBottom()).isEqualTo(0);
   }
