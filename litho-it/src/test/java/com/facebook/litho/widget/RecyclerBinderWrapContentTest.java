@@ -950,20 +950,6 @@ public class RecyclerBinderWrapContentTest {
     assertThat(mRecyclerView.getPostAnimationRunnableList()).isEmpty();
   }
 
-  private void mockRecyclerBinderToCallApplyBatches(
-      RecyclerView recyclerView, RecyclerBinder recyclerBinder) {
-    doAnswer(
-            new Answer() {
-              @Override
-              public Void answer(InvocationOnMock invocation) {
-                ((Runnable) invocation.getArguments()[0]).run();
-                return null;
-              }
-            })
-        .when(mRecyclerView)
-        .postOnAnimation(recyclerBinder.mApplyReadyBatchesRunnable);
-  }
-
   private RecyclerBinder prepareBinderWithMeasuredChildSize(
       int widthSpec, int heightSpec, int count, int orientation, int childSize) {
     return prepareBinderWithMeasuredChildSize(
