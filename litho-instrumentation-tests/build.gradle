@@ -60,7 +60,6 @@ dependencies {
     annotationProcessor project(':litho-sections-processor')
 
     compileOnly deps.jsr305
-    compileOnly project(':litho-annotations')
     compileOnly project(':litho-sections-annotations')
 
     // Instrumentation test deps

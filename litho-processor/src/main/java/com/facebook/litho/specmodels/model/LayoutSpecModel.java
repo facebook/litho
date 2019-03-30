@@ -23,6 +23,7 @@ import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeVariableName;
+import java.util.EnumSet;
 import java.util.List;
 import javax.annotation.Nullable;
 
@@ -32,6 +33,7 @@ import javax.annotation.Nullable;
 public class LayoutSpecModel implements SpecModel, HasPureRender {
   private final SpecModelImpl mSpecModel;
   private final boolean mIsPureRender;
+  private final String mSimpleNameDelegate;
   private final SpecGenerator<LayoutSpecModel> mLayoutSpecGenerator;
 
   public LayoutSpecModel(
@@ -58,7 +60,8 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
       Object representedObject,
       SpecGenerator<LayoutSpecModel> layoutSpecGenerator,
       ImmutableList<TypeVariableName> typeVariables,
-      ImmutableList<FieldModel> fields) {
+      ImmutableList<FieldModel> fields,
+      String simpleNameDelegate) {
     mSpecModel =
         SpecModelImpl.newBuilder()
             .qualifiedSpecClassName(qualifiedSpecClassName)
@@ -87,6 +90,7 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
             .build();
     mIsPureRender = isPureRender;
     mLayoutSpecGenerator = layoutSpecGenerator;
+    mSimpleNameDelegate = simpleNameDelegate;
   }
 
   @Override
@@ -95,7 +99,7 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
   }
 
   @Override
-  public TypeName getSpecTypeName() {
+  public ClassName getSpecTypeName() {
     return mSpecModel.getSpecTypeName();
   }
 
@@ -184,6 +188,11 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
   @Override
   public ImmutableList<StateParamModel> getStateValues() {
     return mSpecModel.getStateValues();
+  }
+
+  @Override
+  public ImmutableList<CachedValueParamModel> getCachedValues() {
+    return mSpecModel.getCachedValues();
   }
 
   @Override
@@ -317,18 +326,27 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
   }
 
   @Override
-  public List<SpecModelValidationError> validate(RunMode runMode) {
+  public List<SpecModelValidationError> validate(EnumSet<RunMode> runMode) {
     return SpecModelValidation.validateLayoutSpecModel(this, runMode);
   }
 
   @Override
-  public TypeSpec generate() {
-    return mLayoutSpecGenerator.generate(this);
+  public TypeSpec generate(EnumSet<RunMode> runMode) {
+    return mLayoutSpecGenerator.generate(this, runMode);
   }
 
   @Override
   public boolean isPureRender() {
     return mIsPureRender;
+  }
+
+  @Override
+  public boolean shouldGenerateIsEquivalentTo() {
+    return false;
+  }
+
+  public String getSimpleNameDelegate() {
+    return mSimpleNameDelegate;
   }
 
   @Override

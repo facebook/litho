@@ -17,7 +17,7 @@
 package com.facebook.litho;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -56,7 +56,7 @@ public class TransitionManagerAnimationCreationTest {
         new TransitionManager(
             new TransitionManager.OnAnimationCompleteListener() {
               @Override
-              public void onAnimationComplete(String transitionKey) {}
+              public void onAnimationComplete(TransitionId transitionId) {}
             },
             mock(MountState.class));
     mTestVerificationAnimator = new Transition.TransitionAnimator() {
@@ -81,7 +81,7 @@ public class TransitionManagerAnimationCreationTest {
         createMockLayoutOutput("test", 0, 0));
     final LayoutState next = createMockLayoutState(
         Transition.parallel(
-            Transition.create("test")
+            Transition.create(Transition.TransitionKeyType.GLOBAL, "test")
                 .animate(AnimatedProperties.X)
                 .animator(mTestVerificationAnimator)),
         createMockLayoutOutput("test", 10, 10));
@@ -101,7 +101,7 @@ public class TransitionManagerAnimationCreationTest {
     final LayoutState next =
         createMockLayoutState(
             Transition.parallel(
-                Transition.create("test")
+                Transition.create(Transition.TransitionKeyType.GLOBAL, "test")
                     .animate(AnimatedProperties.X, AnimatedProperties.Y)
                     .animator(mTestVerificationAnimator)),
             createMockLayoutOutput("test", 10, 10));
@@ -122,7 +122,7 @@ public class TransitionManagerAnimationCreationTest {
     final LayoutState next =
         createMockLayoutState(
             Transition.parallel(
-                Transition.create("test")
+                Transition.create(Transition.TransitionKeyType.GLOBAL, "test")
                     .animate(AnimatedProperties.X, AnimatedProperties.Y)
                     .animator(mTestVerificationAnimator)),
             createMockLayoutOutput("test", 10, 0));
@@ -143,7 +143,7 @@ public class TransitionManagerAnimationCreationTest {
     final LayoutState next =
         createMockLayoutState(
             Transition.parallel(
-                Transition.create("test1", "test2")
+                Transition.create(Transition.TransitionKeyType.GLOBAL, "test1", "test2")
                     .animate(AnimatedProperties.X)
                     .animator(mTestVerificationAnimator)),
             createMockLayoutOutput("test1", 10, 10),
@@ -165,7 +165,7 @@ public class TransitionManagerAnimationCreationTest {
         createMockLayoutOutput("test2", 0, 0));
     final LayoutState next = createMockLayoutState(
         Transition.parallel(
-            Transition.create("test1", "test2")
+            Transition.create(Transition.TransitionKeyType.GLOBAL, "test1", "test2")
                 .animate(AnimatedProperties.X, AnimatedProperties.Y)
                 .animator(mTestVerificationAnimator)),
         createMockLayoutOutput("test1", 10, 10),
@@ -218,7 +218,7 @@ public class TransitionManagerAnimationCreationTest {
     final LayoutState next =
         createMockLayoutState(
             Transition.parallel(
-                Transition.create("test", "keydoesntexist")
+                Transition.create(Transition.TransitionKeyType.GLOBAL, "test", "keydoesntexist")
                     .animate(AnimatedProperties.X, AnimatedProperties.Y)
                     .animator(mTestVerificationAnimator)),
             createMockLayoutOutput("test", 10, 0));
@@ -235,10 +235,10 @@ public class TransitionManagerAnimationCreationTest {
     final LayoutState next =
         createMockLayoutState(
             Transition.parallel(
-                Transition.create("test", "keydoesntexist")
+                Transition.create(Transition.TransitionKeyType.GLOBAL, "test", "keydoesntexist")
                     .animate(AnimatedProperties.X, AnimatedProperties.Y)
                     .animator(mTestVerificationAnimator),
-                Transition.create("appearing")
+                Transition.create(Transition.TransitionKeyType.GLOBAL, "appearing")
                     .animate(AnimatedProperties.X)
                     .appearFrom(0)
                     .animator(mTestVerificationAnimator)),
@@ -262,14 +262,14 @@ public class TransitionManagerAnimationCreationTest {
     final LayoutState next =
         createMockLayoutState(
             Transition.parallel(
-                Transition.create("test", "keydoesntexist")
+                Transition.create(Transition.TransitionKeyType.GLOBAL, "test", "keydoesntexist")
                     .animate(AnimatedProperties.X, AnimatedProperties.Y)
                     .animator(mTestVerificationAnimator)),
             createMockLayoutOutput("test", 10, 0),
             createMockLayoutOutput("test2", 20, 0));
     final ArrayList<Transition> mountTimeTransitions = new ArrayList<>();
     mountTimeTransitions.add(
-        Transition.create("test2")
+        Transition.create(Transition.TransitionKeyType.GLOBAL, "test2")
             .animate(AnimatedProperties.X)
             .appearFrom(0)
             .animator(mTestVerificationAnimator));
@@ -298,12 +298,12 @@ public class TransitionManagerAnimationCreationTest {
             null, createMockLayoutOutput("test", 10, 0), createMockLayoutOutput("test2", 20, 0));
     final ArrayList<Transition> mountTimeTransitions = new ArrayList<>();
     mountTimeTransitions.add(
-        Transition.create("test2")
+        Transition.create(Transition.TransitionKeyType.GLOBAL, "test2")
             .animate(AnimatedProperties.X)
             .appearFrom(0)
             .animator(mTestVerificationAnimator));
     mountTimeTransitions.add(
-        Transition.create("test", "keydoesntexist")
+        Transition.create(Transition.TransitionKeyType.GLOBAL, "test", "keydoesntexist")
             .animate(AnimatedProperties.X, AnimatedProperties.Y)
             .animator(mTestVerificationAnimator));
 
@@ -336,14 +336,14 @@ public class TransitionManagerAnimationCreationTest {
         };
     final ArrayList<Transition> transitionsFromStateUpdate = new ArrayList<>();
     transitionsFromStateUpdate.add(
-        Transition.create("test1", "test2")
+        Transition.create(Transition.TransitionKeyType.GLOBAL, "test1", "test2")
             .animate(AnimatedProperties.Y)
             .animator(animatorForStateUpdate));
 
     final LayoutState next =
         createMockLayoutState(
             Transition.parallel(
-                Transition.create("test1", "test2")
+                Transition.create(Transition.TransitionKeyType.GLOBAL, "test1", "test2")
                     .animate(AnimatedProperties.X)
                     .animator(mTestVerificationAnimator)),
             createMockLayoutOutput("test1", 10, 20),
@@ -368,24 +368,25 @@ public class TransitionManagerAnimationCreationTest {
       String key,
       AnimatedProperty property,
       float endValue) {
-    return new PropertyAnimation(new PropertyHandle(key, property), endValue);
+    final TransitionId transitionId = new TransitionId(TransitionId.Type.GLOBAL, key, null);
+    return new PropertyAnimation(new PropertyHandle(transitionId, property), endValue);
   }
 
   /** @return a mock LayoutState that only has a transition key -> LayoutOutput mapping. */
   private LayoutState createMockLayoutState(
       TransitionSet transitions, LayoutOutput... layoutOutputs) {
-    final Map<String, OutputUnitsAffinityGroup<LayoutOutput>> transitionKeyMapping =
+    final Map<TransitionId, OutputUnitsAffinityGroup<LayoutOutput>> transitionIdMapping =
         new LinkedHashMap<>();
     for (int i = 0; i < layoutOutputs.length; i++) {
       final LayoutOutput layoutOutput = layoutOutputs[i];
-      final String transitionKey = layoutOutput.getTransitionKey();
-      if (transitionKey == null) {
+      final TransitionId transitionId = layoutOutput.getTransitionId();
+      if (transitionId == null) {
         continue;
       }
-      OutputUnitsAffinityGroup<LayoutOutput> group = transitionKeyMapping.get(transitionKey);
+      OutputUnitsAffinityGroup<LayoutOutput> group = transitionIdMapping.get(transitionId);
       if (group == null) {
         group = new OutputUnitsAffinityGroup<>();
-        transitionKeyMapping.put(transitionKey, group);
+        transitionIdMapping.put(transitionId, group);
       }
       final @OutputUnitType int type =
           LayoutStateOutputIdCalculator.getLevelFromId(layoutOutput.getId());
@@ -395,15 +396,15 @@ public class TransitionManagerAnimationCreationTest {
     final LayoutState layoutState = mock(LayoutState.class);
     when(layoutState.getTransitions())
         .thenReturn(transitions != null ? transitions.getChildren() : null);
-    when(layoutState.getTransitionKeyMapping()).thenReturn(transitionKeyMapping);
-    when(layoutState.getLayoutOutputsForTransitionKey(anyString()))
+    when(layoutState.getTransitionIdMapping()).thenReturn(transitionIdMapping);
+    when(layoutState.getLayoutOutputsForTransitionId(any()))
         .then(
             new Answer<OutputUnitsAffinityGroup<LayoutOutput>>() {
               @Override
               public OutputUnitsAffinityGroup<LayoutOutput> answer(InvocationOnMock invocation)
                   throws Throwable {
-                final String transitionKey = (String) invocation.getArguments()[0];
-                return transitionKeyMapping.get(transitionKey);
+                final TransitionId transitionId = (TransitionId) invocation.getArguments()[0];
+                return transitionIdMapping.get(transitionId);
               }
             });
     return layoutState;
@@ -418,9 +419,10 @@ public class TransitionManagerAnimationCreationTest {
   private static LayoutOutput createMockLayoutOutput(
       String transitionKey, int x, int y, int width, int height) {
     final LayoutOutput layoutOutput = mock(LayoutOutput.class);
-    when(layoutOutput.getTransitionKey()).thenReturn(transitionKey);
+    final TransitionId transitionId =
+        new TransitionId(TransitionId.Type.GLOBAL, transitionKey, null);
+    when(layoutOutput.getTransitionId()).thenReturn(transitionId);
     when(layoutOutput.getBounds()).thenReturn(new Rect(x, y, x + width, y + height));
-    when(layoutOutput.acquireRef()).thenReturn(layoutOutput);
     return layoutOutput;
   }
 }

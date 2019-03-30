@@ -19,6 +19,7 @@ package com.facebook.litho.sections.specmodels.model;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.BuilderMethodModel;
+import com.facebook.litho.specmodels.model.CachedValueParamModel;
 import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.DelegateMethod;
 import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
@@ -48,6 +49,7 @@ import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeVariableName;
+import java.util.EnumSet;
 import java.util.List;
 import javax.annotation.Nullable;
 
@@ -115,7 +117,7 @@ public class GroupSectionSpecModel implements SpecModel, HasService {
   }
 
   @Override
-  public TypeName getSpecTypeName() {
+  public ClassName getSpecTypeName() {
     return mSpecModel.getSpecTypeName();
   }
 
@@ -204,6 +206,11 @@ public class GroupSectionSpecModel implements SpecModel, HasService {
   @Override
   public ImmutableList<StateParamModel> getStateValues() {
     return mSpecModel.getStateValues();
+  }
+
+  @Override
+  public ImmutableList<CachedValueParamModel> getCachedValues() {
+    return mSpecModel.getCachedValues();
   }
 
   @Override
@@ -337,18 +344,23 @@ public class GroupSectionSpecModel implements SpecModel, HasService {
   }
 
   @Override
-  public List<SpecModelValidationError> validate(RunMode runMode) {
+  public List<SpecModelValidationError> validate(EnumSet<RunMode> runMode) {
     return SpecModelValidation.validateGroupSectionSpecModel(this, runMode);
   }
 
   @Override
-  public TypeSpec generate() {
-    return mGroupSectionSpecGenerator.generate(this);
+  public TypeSpec generate(EnumSet<RunMode> runMode) {
+    return mGroupSectionSpecGenerator.generate(this, runMode);
   }
 
   @Override
   public MethodParamModel getServiceParam() {
     return mServiceParam;
+  }
+
+  @Override
+  public boolean shouldGenerateIsEquivalentTo() {
+    return true;
   }
 
   @Override

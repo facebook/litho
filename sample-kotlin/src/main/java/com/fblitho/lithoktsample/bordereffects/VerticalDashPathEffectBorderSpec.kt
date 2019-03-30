@@ -34,7 +34,7 @@ object VerticalDashPathEffectBorderSpec {
           .border(
               Border.create(c)
                   .color(YogaEdge.VERTICAL, NiceColor.RED)
-                  .widthDip(YogaEdge.ALL, 5)
+                  .widthDip(YogaEdge.ALL, 5f)
                   .dashEffect(floatArrayOf(20f, 5f), 0f)
                   .build())
           .build()

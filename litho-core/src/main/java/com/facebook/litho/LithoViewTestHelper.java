@@ -16,21 +16,20 @@
 
 package com.facebook.litho;
 
-import android.graphics.Rect;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import android.view.View;
 import android.view.ViewParent;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.widget.NestedScrollView;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.proguard.annotations.DoNotStrip;
 import java.util.Deque;
 
 /**
- * Helper class to access metadata from {@link LithoView} that is relevant during end to end
- * tests. In order for the data to be collected, {@link
- * ComponentsConfiguration#isEndToEndTestRun} must be enabled.
+ * Helper class to access metadata from {@link LithoView} that is relevant during end to end tests.
+ * In order for the data to be collected, {@link ComponentsConfiguration#isEndToEndTestRun} must be
+ * enabled.
  */
 @DoNotStrip
 public class LithoViewTestHelper {
@@ -114,84 +113,59 @@ public class LithoViewTestHelper {
    */
   @DoNotStrip
   public static String viewToString(LithoView view, boolean embedded) {
-    int left = 0;
-    int top = 0;
-    int depth = 0;
-    if (embedded) {
-      left = view.getLeft();
-      top = view.getTop();
-      depth = 2;
-      ViewParent parent = view.getParent();
-      while (parent != null) {
-        depth++;
-        parent = parent.getParent();
-      }
+    DebugComponent root = DebugComponent.getRootInstance(view);
+    if (root == null) {
+      return "";
     }
+
     final StringBuilder sb = new StringBuilder();
-    viewToString(left, top, DebugComponent.getRootInstance(view), sb, embedded, depth);
+
+    int left = view.getLeft();
+    int top = view.getTop();
+    if (view.getParent() instanceof NestedScrollView) {
+      // TODO(T37986749): understand why we need it and not for RecyclerView
+      NestedScrollView scrollingParentView = (NestedScrollView) view.getParent();
+      left -= scrollingParentView.computeHorizontalScrollOffset();
+      top -= scrollingParentView.computeVerticalScrollOffset();
+    }
+    DebugComponentDescriptionHelper.addViewDescription(left, top, root, sb, embedded);
+
+    int depth = embedded ? getLithoViewDepthInAndroid(view) : 0;
+    viewToString(root, sb, embedded, depth);
     return sb.toString();
   }
 
+  /** For E2E tests we remove non-layout components because they break view-hierarchy parsing. */
   private static void viewToString(
-      int left,
-      int top,
-      @Nullable DebugComponent debugComponent,
-      StringBuilder sb,
-      boolean embedded,
-      int depth) {
-    if (debugComponent == null) {
-      return;
-    }
-
-    sb.append("litho.");
-    sb.append(debugComponent.getComponent().getSimpleName());
-
-    sb.append('{');
-    sb.append(Integer.toHexString(debugComponent.hashCode()));
-    sb.append(' ');
-
-    final LithoView lithoView = debugComponent.getLithoView();
-    final DebugLayoutNode layout = debugComponent.getLayoutNode();
-    sb.append(lithoView != null && lithoView.getVisibility() == View.VISIBLE ? "V" : ".");
-    sb.append(layout != null && layout.getFocusable() ? "F" : ".");
-    sb.append(lithoView != null && lithoView.isEnabled() ? "E" : ".");
-    sb.append(".");
-    sb.append(lithoView != null && lithoView.isHorizontalScrollBarEnabled() ? "H" : ".");
-    sb.append(lithoView != null && lithoView.isVerticalScrollBarEnabled() ? "V" : ".");
-    sb.append(layout != null && layout.getClickHandler() != null ? "C" : ".");
-    sb.append(". .. ");
-
-    final Rect bounds = debugComponent.getBounds();
-    sb.append(left + bounds.left);
-    sb.append(",");
-    sb.append(top + bounds.top);
-    sb.append("-");
-    sb.append(left + bounds.right);
-    sb.append(",");
-    sb.append(top + bounds.bottom);
-
-    final String testKey = debugComponent.getTestKey();
-    if (testKey != null && !TextUtils.isEmpty(testKey)) {
-      sb.append(String.format(" litho:id/%s", testKey.replace(' ', '_')));
-    }
-
-    final String textContent = debugComponent.getTextContent();
-    if (textContent != null && !TextUtils.isEmpty(textContent)) {
-      sb.append(String.format(" text=\"%s\"", textContent.replace("\n", "").replace("\"", "")));
-    }
-
-    if (!embedded && layout != null && layout.getClickHandler() != null) {
-      sb.append(" [clickable]");
-    }
-
-    sb.append('}');
-
-    for (DebugComponent child : debugComponent.getChildComponents()) {
-      sb.append("\n");
-      for (int i = 0; i <= depth; i++) {
-        sb.append("  ");
+      DebugComponent component, StringBuilder sb, boolean embedded, int depth) {
+    for (DebugComponent child : component.getChildComponents()) {
+      int nextDepth = depth;
+      // TODO(T37986749): add unit test for this scenario (need to create non-layout somehow)
+      if (!ComponentsConfiguration.isEndToEndTestRun || child.isLayoutNode()) {
+        writeNewLineWithIndentByDepth(sb, nextDepth);
+        DebugComponentDescriptionHelper.addViewDescription(0, 0, child, sb, embedded);
+        nextDepth++;
       }
-      viewToString(0, 0, child, sb, embedded, depth + 1);
+      viewToString(child, sb, embedded, nextDepth);
+    }
+  }
+
+  /** calculate the depth on the litho components in general android view hierarchy */
+  private static int getLithoViewDepthInAndroid(LithoView view) {
+    int depth = 2;
+    ViewParent parent = view.getParent();
+    while (parent != null) {
+      depth++;
+      parent = parent.getParent();
+    }
+    return depth;
+  }
+
+  /** Add new line and two-space indent for each level to match android view hierarchy dump */
+  private static void writeNewLineWithIndentByDepth(StringBuilder sb, int depth) {
+    sb.append("\n");
+    for (int i = 0; i <= depth; i++) {
+      sb.append("  ");
     }
   }
 

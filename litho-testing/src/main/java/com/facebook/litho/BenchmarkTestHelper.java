@@ -64,6 +64,6 @@ public class BenchmarkTestHelper {
   }
 
   public static Object getMountContent(ComponentContext c, Component component) {
-    return ComponentsPools.acquireMountContent(c, component);
+    return ComponentsPools.acquireMountContent(c.getAndroidContext(), component);
   }
 }

@@ -25,6 +25,7 @@ import static org.mockito.Mockito.mock;
 import android.os.Looper;
 import com.facebook.litho.Component;
 import com.facebook.litho.StateContainer;
+import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.sections.TestSectionCreator;
 import com.facebook.litho.testing.sections.TestTarget;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
@@ -42,7 +43,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.powermock.reflect.Whitebox;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
 import org.robolectric.shadows.ShadowLooper;
@@ -200,6 +200,37 @@ public class SectionTreeTest {
 
     assertChangeSetHandled(changeSetHandler);
     assertThat(changeSetHandler.getNumChanges()).isEqualTo(9);
+  }
+
+  @Test
+  public void testSetRootOfDifferentType() {
+    final Section leaf1 =
+        TestSectionCreator.createChangeSetComponent(
+            "leaf1", Change.insert(0, makeComponentInfo()), Change.insert(1, makeComponentInfo()));
+
+    final Section leaf2 =
+        TestSectionCreator.createChangeSetComponent("leaf2", Change.insert(0, makeComponentInfo()));
+
+    final Section root1 = TestSectionCreator.createSectionComponent("node1", leaf1, leaf2);
+
+    final Section root2 =
+        TestSectionCreator.createChangeSetComponent("leaf3", Change.insert(0, makeComponentInfo()));
+
+    final TestTarget changeSetHandler = new TestTarget();
+
+    SectionTree tree = SectionTree.create(mSectionContext, changeSetHandler).build();
+
+    tree.setRoot(root1);
+    assertChangeSetHandled(changeSetHandler);
+    assertThat(changeSetHandler.getNumChanges()).isEqualTo(3);
+
+    tree.setRoot(root2);
+    assertChangeSetHandled(changeSetHandler);
+    assertThat(changeSetHandler.getNumChanges()).isEqualTo(7); // count is cumulative
+
+    tree.setRoot(root1);
+    assertChangeSetHandled(changeSetHandler);
+    assertThat(changeSetHandler.getNumChanges()).isEqualTo(11); // count is cumulative
   }
 
   @Test
@@ -856,6 +887,17 @@ public class SectionTreeTest {
     }
   }
 
+  @Test
+  public void testCachedValues() {
+    final ThreadCheckingTarget target = new ThreadCheckingTarget(true);
+
+    SectionTree sectionTree = SectionTree.create(mSectionContext, target).build();
+    assertThat(sectionTree.getCachedValue("key1")).isNull();
+    sectionTree.putCachedValue("key1", "value1");
+    assertThat(sectionTree.getCachedValue("key1")).isEqualTo("value1");
+    assertThat(sectionTree.getCachedValue("key2")).isNull();
+  }
+
   private static void assertChangeSetHandled(TestTarget testTarget) {
     assertThat(testTarget.wereChangesHandled()).isTrue();
     assertThat(testTarget.wasNotifyChangeSetCompleteCalledWithChangedData()).isTrue();
@@ -871,7 +913,7 @@ public class SectionTreeTest {
     private boolean mUpdateStateCalled;
 
     @Override
-    public void updateState(StateContainer stateContainer, Section section) {
+    public void updateState(StateContainer stateContainer) {
       mUpdateStateCalled = true;
     }
   }

@@ -61,6 +61,6 @@ public class ErrorBoundarySpec {
 
   @OnError
   static void onError(ComponentContext c, Exception error) {
-    ErrorBoundary.updateError(c, error);
+    ErrorBoundary.updateErrorSync(c, error);
   }
 }

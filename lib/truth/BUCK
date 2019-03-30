@@ -2,6 +2,7 @@
 #
 # This source code is licensed under the Apache 2.0 license found in the
 # LICENSE file in the root directory of this source tree.
+load("//tools/build_defs/oss:fb_native_wrapper.bzl", "fb_native")
 load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_VISIBILITY", "fb_java_library")
 
 fb_java_library(
@@ -12,12 +13,12 @@ fb_java_library(
     ],
 )
 
-prebuilt_jar(
+fb_native.prebuilt_jar(
     name = "truth-prebuilt",
     binary_jar = ":truth.jar",
 )
 
-remote_file(
+fb_native.remote_file(
     name = "truth.jar",
     sha1 = "7485219d2c1d341097a19382c02bde07e69ff5d2",
     url = "mvn:com.google.truth:truth:jar:0.36",

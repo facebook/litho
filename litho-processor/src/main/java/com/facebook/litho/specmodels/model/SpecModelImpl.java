@@ -24,6 +24,7 @@ import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeVariableName;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
@@ -40,7 +41,7 @@ public final class SpecModelImpl implements SpecModel {
   private static final String SPEC_SUFFIX = "Spec";
 
   private final String mSpecName;
-  private final TypeName mSpecTypeName;
+  private final ClassName mSpecTypeName;
   private final String mComponentName;
   private final TypeName mComponentTypeName;
   private final ClassName mComponentClass;
@@ -60,6 +61,7 @@ public final class SpecModelImpl implements SpecModel {
   private final ImmutableList<PropDefaultModel> mPropDefaults;
   private final ImmutableList<TypeVariableName> mTypeVariables;
   private final ImmutableList<StateParamModel> mStateValues;
+  private final ImmutableList<CachedValueParamModel> mCachedValues;
   private final ImmutableList<InterStageInputParamModel> mInterStageInputs;
   private final ImmutableList<TreePropModel> mTreeProps;
   private final ImmutableList<EventDeclarationModel> mEventDeclarations;
@@ -125,9 +127,9 @@ public final class SpecModelImpl implements SpecModel {
     mProps = props.isEmpty() ? getProps(mRawProps, cachedPropNames, delegateMethods) : props;
     mRawInjectProps =
         getRawInjectProps(
-            delegateMethods, 
-            eventMethods, 
-            triggerMethods, 
+            delegateMethods,
+            eventMethods,
+            triggerMethods,
             workingRangeRegisterMethod,
             workingRangeMethods,
             updateStateMethods);
@@ -139,6 +141,14 @@ public final class SpecModelImpl implements SpecModel {
     mTypeVariables = typeVariables;
     mStateValues =
         getStateValues(
+            delegateMethods,
+            eventMethods,
+            triggerMethods,
+            workingRangeRegisterMethod,
+            workingRangeMethods,
+            updateStateMethods);
+    mCachedValues =
+        getCachedValues(
             delegateMethods,
             eventMethods,
             triggerMethods,
@@ -182,7 +192,7 @@ public final class SpecModelImpl implements SpecModel {
   }
 
   @Override
-  public TypeName getSpecTypeName() {
+  public ClassName getSpecTypeName() {
     return mSpecTypeName;
   }
 
@@ -272,6 +282,11 @@ public final class SpecModelImpl implements SpecModel {
   @Override
   public ImmutableList<StateParamModel> getStateValues() {
     return mStateValues;
+  }
+
+  @Override
+  public ImmutableList<CachedValueParamModel> getCachedValues() {
+    return mCachedValues;
   }
 
   @Override
@@ -401,7 +416,7 @@ public final class SpecModelImpl implements SpecModel {
   }
 
   @Override
-  public List<SpecModelValidationError> validate(RunMode runMode) {
+  public List<SpecModelValidationError> validate(EnumSet<RunMode> runMode) {
     throw new RuntimeException("Don't delegate to this method!");
   }
 
@@ -411,7 +426,12 @@ public final class SpecModelImpl implements SpecModel {
   }
 
   @Override
-  public TypeSpec generate() {
+  public boolean shouldGenerateIsEquivalentTo() {
+    throw new RuntimeException("Don't delegate to this method!");
+  }
+
+  @Override
+  public TypeSpec generate(EnumSet<RunMode> runMode) {
     throw new RuntimeException("Don't delegate to this method!");
   }
 
@@ -779,6 +799,75 @@ public final class SpecModelImpl implements SpecModel {
     }
 
     return ImmutableList.copyOf(new ArrayList<>(stateValues));
+  }
+
+  private static ImmutableList<CachedValueParamModel> getCachedValues(
+      ImmutableList<SpecMethodModel<DelegateMethod, Void>> delegateMethods,
+      ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> eventMethods,
+      ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> triggerMethods,
+      @Nullable SpecMethodModel<EventMethod, Void> workingRangeRegisterMethod,
+      ImmutableList<WorkingRangeMethodModel> workingRangeMethods,
+      ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> updateStateMethods) {
+    final Set<CachedValueParamModel> cachedValues =
+        new TreeSet<>(MethodParamModelUtils.shallowParamComparator());
+    for (SpecMethodModel<DelegateMethod, Void> delegateMethod : delegateMethods) {
+      for (MethodParamModel param : delegateMethod.methodParams) {
+        if (param instanceof CachedValueParamModel) {
+          cachedValues.add((CachedValueParamModel) param);
+        }
+      }
+    }
+
+    for (SpecMethodModel<EventMethod, EventDeclarationModel> eventMethod : eventMethods) {
+      for (MethodParamModel param : eventMethod.methodParams) {
+        if (param instanceof CachedValueParamModel) {
+          cachedValues.add((CachedValueParamModel) param);
+        }
+      }
+    }
+
+    for (SpecMethodModel<EventMethod, EventDeclarationModel> triggerMethod : triggerMethods) {
+      for (MethodParamModel param : triggerMethod.methodParams) {
+        if (param instanceof CachedValueParamModel) {
+          cachedValues.add((CachedValueParamModel) param);
+        }
+      }
+    }
+
+    if (workingRangeRegisterMethod != null) {
+      for (MethodParamModel param : workingRangeRegisterMethod.methodParams) {
+        if (param instanceof CachedValueParamModel) {
+          cachedValues.add((CachedValueParamModel) param);
+        }
+      }
+    }
+
+    for (WorkingRangeMethodModel workingRangeMethod : workingRangeMethods) {
+      if (workingRangeMethod.enteredRangeModel != null) {
+        for (MethodParamModel param : workingRangeMethod.enteredRangeModel.methodParams) {
+          if (param instanceof CachedValueParamModel) {
+            cachedValues.add((CachedValueParamModel) param);
+          }
+        }
+      }
+      if (workingRangeMethod.exitedRangeModel != null) {
+        for (MethodParamModel param : workingRangeMethod.exitedRangeModel.methodParams) {
+          if (param instanceof CachedValueParamModel) {
+            cachedValues.add((CachedValueParamModel) param);
+          }
+        }
+      }
+    }
+
+    for (SpecMethodModel<UpdateStateMethod, Void> updateStateMethod : updateStateMethods) {
+      for (MethodParamModel param : updateStateMethod.methodParams) {
+        if (param instanceof CachedValueParamModel) {
+          cachedValues.add((CachedValueParamModel) param);
+        }
+      }
+    }
+
+    return ImmutableList.copyOf(new ArrayList<>(cachedValues));
   }
 
   private static boolean hasSameUnderlyingStateParamModel(

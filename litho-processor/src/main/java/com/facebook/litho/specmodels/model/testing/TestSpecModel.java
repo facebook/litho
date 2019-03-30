@@ -16,10 +16,11 @@
 
 package com.facebook.litho.specmodels.model.testing;
 
-import android.support.annotation.VisibleForTesting;
+import androidx.annotation.VisibleForTesting;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.BuilderMethodModel;
+import com.facebook.litho.specmodels.model.CachedValueParamModel;
 import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.DelegateMethod;
 import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
@@ -48,6 +49,7 @@ import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeVariableName;
+import java.util.EnumSet;
 import java.util.List;
 import javax.annotation.Nullable;
 
@@ -103,7 +105,7 @@ public class TestSpecModel implements SpecModel, HasEnclosedSpecModel {
   }
 
   @Override
-  public TypeName getSpecTypeName() {
+  public ClassName getSpecTypeName() {
     return mSpecModel.getSpecTypeName();
   }
 
@@ -192,6 +194,11 @@ public class TestSpecModel implements SpecModel, HasEnclosedSpecModel {
   @Override
   public ImmutableList<StateParamModel> getStateValues() {
     return ImmutableList.of();
+  }
+
+  @Override
+  public ImmutableList<CachedValueParamModel> getCachedValues() {
+    return mSpecModel.getCachedValues();
   }
 
   @Override
@@ -326,17 +333,22 @@ public class TestSpecModel implements SpecModel, HasEnclosedSpecModel {
   }
 
   @Override
-  public List<SpecModelValidationError> validate(RunMode runMode) {
+  public List<SpecModelValidationError> validate(EnumSet<RunMode> runMode) {
     return TestSpecModelValidation.validateTestSpecModel(this);
   }
 
   @Override
-  public TypeSpec generate() {
+  public TypeSpec generate(EnumSet<RunMode> runMode) {
     return mTestSpecGenerator.generate(this);
   }
 
   @Override
   public SpecModel getEnclosedSpecModel() {
     return mEnclosedSpecModel;
+  }
+
+  @Override
+  public boolean shouldGenerateIsEquivalentTo() {
+    return false;
   }
 }

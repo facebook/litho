@@ -16,6 +16,7 @@
 
 package com.facebook.litho.sections.specmodels.processor;
 
+import com.facebook.litho.annotations.OnCalculateCachedValue;
 import com.facebook.litho.annotations.OnCreateInitialState;
 import com.facebook.litho.annotations.OnCreateTreeProp;
 import com.facebook.litho.annotations.ShouldUpdate;
@@ -37,7 +38,6 @@ import com.facebook.litho.specmodels.model.BuilderMethodModel;
 import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import com.facebook.litho.specmodels.model.SpecGenerator;
-import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.processor.AnnotationExtractor;
 import com.facebook.litho.specmodels.processor.DelegateMethodExtractor;
 import com.facebook.litho.specmodels.processor.EventDeclarationsExtractor;
@@ -55,6 +55,7 @@ import com.facebook.litho.specmodels.processor.UpdateStateMethodExtractor;
 import com.squareup.javapoet.ParameterizedTypeName;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.Nullable;
@@ -66,7 +67,7 @@ import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
 /** Factory for creating {@link DiffSectionSpecModel}s. */
-public class DiffSectionSpecModelFactory implements SpecModelFactory {
+public class DiffSectionSpecModelFactory implements SpecModelFactory<DiffSectionSpecModel> {
 
   private static final List<Class<? extends Annotation>> INTER_STAGE_INPUT_ANNOTATIONS =
       new ArrayList<>();
@@ -90,6 +91,7 @@ public class DiffSectionSpecModelFactory implements SpecModelFactory {
     DELEGATE_METHOD_ANNOTATIONS.add(OnRefresh.class);
     DELEGATE_METHOD_ANNOTATIONS.add(OnViewportChanged.class);
     DELEGATE_METHOD_ANNOTATIONS.add(OnCreateTreeProp.class);
+    DELEGATE_METHOD_ANNOTATIONS.add(OnCalculateCachedValue.class);
   }
 
   private final SpecGenerator<DiffSectionSpecModel> mSpecGenerator;
@@ -108,12 +110,12 @@ public class DiffSectionSpecModelFactory implements SpecModelFactory {
   }
 
   @Override
-  public SpecModel create(
+  public DiffSectionSpecModel create(
       Elements elements,
       Types types,
       TypeElement element,
       Messager messager,
-      RunMode runMode,
+      EnumSet<RunMode> runMode,
       @Nullable DependencyInjectionHelper dependencyInjectionHelper,
       @Nullable InterStageStore interStageStore) {
     return createModel(elements, types, element, messager, dependencyInjectionHelper, runMode);
@@ -125,7 +127,7 @@ public class DiffSectionSpecModelFactory implements SpecModelFactory {
       TypeElement element,
       Messager messager,
       @Nullable DependencyInjectionHelper dependencyInjectionHelper,
-      RunMode runMode) {
+      EnumSet<RunMode> runMode) {
     return new DiffSectionSpecModel(
         element.getQualifiedName().toString(),
         element.getAnnotation(DiffSectionSpec.class).value(),

@@ -7,6 +7,7 @@ load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_ANDROIDSUPPORT_TARGET", "LI
 fb_java_library(
     name = "testing",
     srcs = glob(["*.java"]),
+    is_androidx = True,
     source = "8",
     target = "8",
     tests = [

@@ -69,7 +69,7 @@ public class VerySimpleGroupSectionSpecTest {
 
     assertThat(mTester.getChildren(s).size()).isEqualTo(4);
 
-    VerySimpleGroupSection.onUpdateState(mTester.getScopedContext(s), 5);
+    VerySimpleGroupSection.onUpdateStateSync(mTester.getScopedContext(s), 5);
 
     assertThat(mTester.getChildren(s).size()).isGreaterThan(4);
   }
@@ -101,5 +101,13 @@ public class VerySimpleGroupSectionSpecTest {
         mTester.getStateContainer(s);
 
     assertThat(stateContainer.extra).isEqualTo(3);
+  }
+
+  @Test
+  public void testLogTag() {
+    Section s =
+        mTester.prepare(
+            VerySimpleGroupSection.create(mTester.getContext()).numberOfDummy(4).build());
+    assertThat(s.getLogTag()).isEqualTo(s.getClass().getSimpleName());
   }
 }

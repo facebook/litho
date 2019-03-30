@@ -31,9 +31,9 @@ import static com.facebook.litho.FrameworkLogEvents.PARAM_CURRENT_ROOT_COUNT;
 import static com.facebook.litho.sections.Section.acquireChildrenMap;
 import static com.facebook.litho.sections.Section.releaseChildrenMap;
 
-import android.support.annotation.Nullable;
-import android.support.v4.util.Pair;
 import android.util.SparseArray;
+import androidx.annotation.Nullable;
+import androidx.core.util.Pair;
 import com.facebook.litho.ComponentsLogger;
 import com.facebook.litho.ComponentsSystrace;
 import com.facebook.litho.PerfEvent;
@@ -82,18 +82,49 @@ public class ChangeSetState {
         SectionsLogEventUtils.getSectionsPerformanceEvent(
             sectionContext, EVENT_SECTIONS_GENERATE_CHANGESET, currentRoot, newRoot);
 
-    changeSetState.mChangeSet =
-        generateChangeSetRecursive(
-            sectionContext,
-            currentRoot,
-            newRoot,
-            changeSetState.mRemovedComponents,
-            sectionsDebugLogger,
-            sectionTreeTag,
-            currentPrefix,
-            nextPrefix,
-            Thread.currentThread().getName(),
-            enableStats);
+    if (currentRoot != null
+        && newRoot != null
+        && !currentRoot.getSimpleName().equals(newRoot.getSimpleName())) {
+      ChangeSet remove =
+          generateChangeSetRecursive(
+              sectionContext,
+              currentRoot,
+              null,
+              changeSetState.mRemovedComponents,
+              sectionsDebugLogger,
+              sectionTreeTag,
+              currentPrefix,
+              nextPrefix,
+              Thread.currentThread().getName(),
+              enableStats);
+
+      ChangeSet add =
+          generateChangeSetRecursive(
+              sectionContext,
+              null,
+              newRoot,
+              changeSetState.mRemovedComponents,
+              sectionsDebugLogger,
+              sectionTreeTag,
+              currentPrefix,
+              nextPrefix,
+              Thread.currentThread().getName(),
+              enableStats);
+      changeSetState.mChangeSet = ChangeSet.merge(remove, add);
+    } else {
+      changeSetState.mChangeSet =
+          generateChangeSetRecursive(
+              sectionContext,
+              currentRoot,
+              newRoot,
+              changeSetState.mRemovedComponents,
+              sectionsDebugLogger,
+              sectionTreeTag,
+              currentPrefix,
+              nextPrefix,
+              Thread.currentThread().getName(),
+              enableStats);
+    }
 
     if (logger != null && logEvent != null) {
       logEvent.markerAnnotate(

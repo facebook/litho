@@ -51,11 +51,13 @@ object ExpandableElementOtherSpec {
     return Column.create(c)
         .paddingDip(YogaEdge.TOP, 8f)
         .transitionKey(ExpandableElementUtil.TRANSITION_MSG_PARENT)
+        .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
         .clickHandler(ExpandableElementOther.onClick(c))
         .child(ExpandableElementUtil.maybeCreateTopDetailComponent(c, isExpanded, timestamp))
         .child(
             Column.create(c)
                 .transitionKey(ExpandableElementUtil.TRANSITION_TEXT_MESSAGE_WITH_BOTTOM)
+                .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
                 .child(
                     Row.create(c)
                         .paddingDip(YogaEdge.END, 5f)
@@ -77,11 +79,11 @@ object ExpandableElementOtherSpec {
 
     return Transition.parallel<BaseTransitionUnitsBuilder>(
         Transition.allLayout(),
-        Transition.create(ExpandableElementUtil.TRANSITION_TOP_DETAIL)
+        Transition.create(Transition.TransitionKeyType.GLOBAL, ExpandableElementUtil.TRANSITION_TOP_DETAIL)
             .animate(AnimatedProperties.HEIGHT)
             .appearFrom(0f)
             .disappearTo(0f),
-        Transition.create(ExpandableElementUtil.TRANSITION_BOTTOM_DETAIL)
+        Transition.create(Transition.TransitionKeyType.GLOBAL, ExpandableElementUtil.TRANSITION_BOTTOM_DETAIL)
             .animate(AnimatedProperties.HEIGHT)
             .appearFrom(0f)
             .disappearTo(0f))

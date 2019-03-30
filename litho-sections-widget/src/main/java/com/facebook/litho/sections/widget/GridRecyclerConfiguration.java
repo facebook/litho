@@ -18,59 +18,60 @@ package com.facebook.litho.sections.widget;
 
 import static com.facebook.litho.widget.SnapUtil.SNAP_NONE;
 
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SnapHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.SnapHelper;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.sections.SectionTree;
 import com.facebook.litho.widget.Binder;
 import com.facebook.litho.widget.GridLayoutInfo;
-import com.facebook.litho.widget.RecyclerBinder;
+import com.facebook.litho.widget.LayoutInfo;
 import javax.annotation.Nullable;
 
 /**
- * A configuration object for {@link RecyclerCollectionComponent} that will create a
- * {@link android.support.v7.widget.GridLayoutManager} for the {@link RecyclerView}.
+ * A configuration object for {@link RecyclerCollectionComponent} that will create a {@link
+ * androidx.recyclerview.widget.GridLayoutManager} for the {@link RecyclerView}.
  */
 public class GridRecyclerConfiguration<T extends SectionTree.Target & Binder<RecyclerView>>
     implements RecyclerConfiguration {
-
-  private static final RecyclerBinderConfiguration RECYCLER_BINDER_CONFIGURATION =
-      new RecyclerBinderConfiguration(4.0);
-
   private final int mOrientation;
   private final int mNumColumns;
   private final boolean mReverseLayout;
   private final RecyclerBinderConfiguration mRecyclerBinderConfiguration;
   private final boolean mAllowMeasureOverride;
 
-  /**
-   * Static factory method to create a recycler configuration
-   * with incremental mount optionally turned on.
-   */
-  public static GridRecyclerConfiguration createWithRecyclerBinderConfiguration(
-      int numColumns,
-      RecyclerBinderConfiguration recyclerBinderConfiguration) {
-
-    return new GridRecyclerConfiguration(
-        LinearLayoutManager.VERTICAL,
-        numColumns,
-        false,
-        recyclerBinderConfiguration);
+  public static GridRecyclerConfiguration.Builder create() {
+    return new Builder();
   }
 
+  /**
+   * Use {@link #create()} instead.
+   *
+   * <p>Static factory method to create a recycler configuration with incremental mount optionally
+   * turned on.
+   */
+  @Deprecated
+  public static GridRecyclerConfiguration createWithRecyclerBinderConfiguration(
+      int numColumns, RecyclerBinderConfiguration recyclerBinderConfiguration) {
+
+    return new GridRecyclerConfiguration(
+        LinearLayoutManager.VERTICAL, numColumns, false, recyclerBinderConfiguration);
+  }
+
+  /** Use {@link #create()} instead. */
+  @Deprecated
   public GridRecyclerConfiguration(int numColumns) {
     this(LinearLayoutManager.VERTICAL, numColumns, false);
   }
 
+  /** Use {@link #create()} instead. */
+  @Deprecated
   public GridRecyclerConfiguration(int orientation, int numColumns, boolean reverseLayout) {
-    this(
-        orientation,
-        numColumns,
-        reverseLayout,
-        RECYCLER_BINDER_CONFIGURATION);
+    this(orientation, numColumns, reverseLayout, Builder.RECYCLER_BINDER_CONFIGURATION);
   }
 
+  /** Use {@link #create()} instead. */
+  @Deprecated
   public GridRecyclerConfiguration(
       int orientation,
       int numColumns,
@@ -79,6 +80,8 @@ public class GridRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
     this(orientation, numColumns, reverseLayout, recyclerBinderConfiguration, false);
   }
 
+  /** Use {@link #create()} instead. */
+  @Deprecated
   public GridRecyclerConfiguration(
       int orientation,
       int numColumns,
@@ -88,34 +91,11 @@ public class GridRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
     mOrientation = orientation;
     mNumColumns = numColumns;
     mReverseLayout = reverseLayout;
-    mRecyclerBinderConfiguration = recyclerBinderConfiguration == null
-        ? RECYCLER_BINDER_CONFIGURATION
-        : recyclerBinderConfiguration;
+    mRecyclerBinderConfiguration =
+        recyclerBinderConfiguration == null
+            ? Builder.RECYCLER_BINDER_CONFIGURATION
+            : recyclerBinderConfiguration;
     mAllowMeasureOverride = allowMeasureOverride;
-  }
-
-  @Override
-  public T buildTarget(ComponentContext c) {
-    final RecyclerBinder recyclerBinder =
-        new RecyclerBinder.Builder()
-            .rangeRatio((float) mRecyclerBinderConfiguration.getRangeRatio())
-            .layoutInfo(
-                new GridLayoutInfo(
-                    c, mNumColumns, mOrientation, mReverseLayout, mAllowMeasureOverride))
-            .layoutHandlerFactory(mRecyclerBinderConfiguration.getLayoutHandlerFactory())
-            .wrapContent(mRecyclerBinderConfiguration.isWrapContent())
-            .enableStableIds(mRecyclerBinderConfiguration.getEnableStableIds())
-            .invalidStateLogParamsList(mRecyclerBinderConfiguration.getInvalidStateLogParamsList())
-            .useSharedLayoutStateFuture(
-                mRecyclerBinderConfiguration.getUseSharedLayoutStateFuture())
-            .threadPoolForSharedLayoutStateFutureConfig(
-                mRecyclerBinderConfiguration.getThreadPoolForSharedLayoutStateFutureConfig())
-            .asyncInitRange(mRecyclerBinderConfiguration.getAsyncInitRange())
-            .hscrollAsyncMode(mRecyclerBinderConfiguration.getHScrollAsyncMode())
-            .build(c);
-    return (T)
-        new SectionBinderTarget(
-            recyclerBinder, mRecyclerBinderConfiguration.getUseBackgroundChangeSets());
   }
 
   @Override
@@ -134,7 +114,65 @@ public class GridRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
   }
 
   @Override
-  public boolean isWrapContent() {
-    return mRecyclerBinderConfiguration.isWrapContent();
+  public LayoutInfo getLayoutInfo(ComponentContext c) {
+    return new GridLayoutInfo(
+        c.getAndroidContext(), mNumColumns, mOrientation, mReverseLayout, mAllowMeasureOverride);
+  }
+
+  @Override
+  public RecyclerBinderConfiguration getRecyclerBinderConfiguration() {
+    return mRecyclerBinderConfiguration;
+  }
+
+  public static class Builder {
+    static final RecyclerBinderConfiguration RECYCLER_BINDER_CONFIGURATION =
+        RecyclerBinderConfiguration.create().build();
+
+    private int mOrientation = LinearLayoutManager.VERTICAL;
+    private int mNumColumns = 2;
+    private boolean mReverseLayout = false;
+    private boolean mAllowMeasureOverride = false;
+    private RecyclerBinderConfiguration mRecyclerBinderConfiguration =
+        RECYCLER_BINDER_CONFIGURATION;
+
+    Builder() {}
+
+    public Builder orientation(int orientation) {
+      mOrientation = orientation;
+      return this;
+    }
+
+    public Builder numColumns(int numColumns) {
+      mNumColumns = numColumns;
+      return this;
+    }
+
+    public Builder reverseLayout(boolean reverseLayout) {
+      mReverseLayout = reverseLayout;
+      return this;
+    }
+
+    public Builder recyclerBinderConfiguration(
+        RecyclerBinderConfiguration recyclerBinderConfiguration) {
+      mRecyclerBinderConfiguration = recyclerBinderConfiguration;
+      return this;
+    }
+
+    public Builder allowMeasureOverride(boolean allowMeasureOverride) {
+      mAllowMeasureOverride = allowMeasureOverride;
+      return this;
+    }
+
+    /**
+     * Builds a {@link GridRecyclerConfiguration} using the parameters specified in this builder.
+     */
+    public GridRecyclerConfiguration build() {
+      return new GridRecyclerConfiguration(
+          mOrientation,
+          mNumColumns,
+          mReverseLayout,
+          mRecyclerBinderConfiguration,
+          mAllowMeasureOverride);
+    }
   }
 }

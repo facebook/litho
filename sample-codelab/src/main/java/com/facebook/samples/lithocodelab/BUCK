@@ -17,6 +17,7 @@ fb_core_android_library(
         "com.facebook.litho.specmodels.processor.ComponentsProcessor",
         "com.facebook.litho.sections.specmodels.processor.SectionsComponentProcessor",
     ],
+    is_androidx = True,
     visibility = [
         "PUBLIC",
     ],

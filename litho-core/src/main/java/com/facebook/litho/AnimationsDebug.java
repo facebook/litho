@@ -35,8 +35,15 @@ public class AnimationsDebug {
       final LayoutOutput output = layoutState.getMountableOutputAt(i);
       Log.d(
           TAG,
-          "" + i + " [" + output.getId() + "] (" + output.getTransitionKey() + ") host => (" +
-              output.getHostMarker() + ")");
+          ""
+              + i
+              + " ["
+              + output.getId()
+              + "] ("
+              + output.getTransitionId()
+              + ") host => ("
+              + output.getHostMarker()
+              + ")");
     }
   }
 
@@ -50,12 +57,18 @@ public class AnimationsDebug {
     if (animationLockedIndices != null) {
       for (int i = 0; i < animationLockedIndices.length; i++) {
         final LayoutOutput output = layoutState.getMountableOutputAt(i);
-        final String key = output.getTransitionKey();
-
         Log.d(
             TAG,
-            "" + i + " [" + output.getId() + "] (" + key + ") host => (" + output.getHostMarker() +
-                "), locked ref count: " + animationLockedIndices[i]);
+            ""
+                + i
+                + " ["
+                + output.getId()
+                + "] ("
+                + output.getTransitionId()
+                + ") host => ("
+                + output.getHostMarker()
+                + "), locked ref count: "
+                + animationLockedIndices[i]);
       }
     }
   }

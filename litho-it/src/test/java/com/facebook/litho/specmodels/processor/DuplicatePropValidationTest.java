@@ -66,10 +66,10 @@ public class DuplicatePropValidationTest {
     final TypeElement typeElement = elements.getTypeElement(DupeMountSpec.class.getCanonicalName());
     final MountSpecModel mountSpecModel =
         mFactory.create(
-            elements, types, typeElement, mock(Messager.class), RunMode.NORMAL, null, null);
+            elements, types, typeElement, mock(Messager.class), RunMode.normal(), null, null);
 
     final List<SpecModelValidationError> specModelValidationErrors =
-        SpecModelValidation.validateMountSpecModel(mountSpecModel, RunMode.NORMAL);
+        SpecModelValidation.validateMountSpecModel(mountSpecModel, RunMode.normal());
 
     assertThat(specModelValidationErrors)
         .extracting("message")

@@ -3,6 +3,7 @@
 # This source code is licensed under the Apache 2.0 license found in the
 # LICENSE file in the root directory of this source tree.
 
+load("//tools/build_defs/oss:fb_native_wrapper.bzl", "fb_native")
 load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_VISIBILITY", "litho_android_library")
 
 litho_android_library(
@@ -13,26 +14,26 @@ litho_android_library(
     ],
 )
 
-android_prebuilt_aar(
+fb_native.android_prebuilt_aar(
     name = "flipper-aar",
     aar = ":flipper-binary-aar",
     visibility = LITHO_VISIBILITY,
 )
 
-remote_file(
+fb_native.remote_file(
     name = "flipper-binary-aar",
-    sha1 = "c3682d05cc6d685928379806576b271982c729d0",
-    url = "mvn:com.facebook.flipper:flipper:aar:0.8.0",
+    sha1 = "d7f79d066ae292101f7def7f12a6fcf1cc33b651",
+    url = "mvn:com.facebook.flipper:flipper:aar:0.11.0",
 )
 
-android_prebuilt_aar(
+fb_native.android_prebuilt_aar(
     name = "fbjni-aar",
     aar = ":fbjni-binary-aar",
     visibility = LITHO_VISIBILITY,
 )
 
-remote_file(
+fb_native.remote_file(
     name = "fbjni-binary-aar",
     sha1 = "9a8784c15e5b41829feb35965ca44c831b8e84a6",
-    url = "mvn:com.facebook.flipper:fbjni:aar:0.8.0",
+    url = "mvn:com.facebook.flipper:fbjni:aar:0.11.0",
 )

@@ -18,8 +18,8 @@ package com.facebook.litho.processor.integration.resources;
 
 import android.annotation.TargetApi;
 import android.os.Build;
-import android.support.annotation.Nullable;
 import android.view.View;
+import androidx.annotation.Nullable;
 import com.facebook.litho.ClickEvent;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
@@ -28,9 +28,11 @@ import com.facebook.litho.EventHandler;
 import com.facebook.litho.Output;
 import com.facebook.litho.StateValue;
 import com.facebook.litho.Transition;
+import com.facebook.litho.annotations.CachedValue;
 import com.facebook.litho.annotations.FromEvent;
 import com.facebook.litho.annotations.FromTrigger;
 import com.facebook.litho.annotations.LayoutSpec;
+import com.facebook.litho.annotations.OnCalculateCachedValue;
 import com.facebook.litho.annotations.OnCreateInitialState;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.OnCreateTransition;
@@ -49,7 +51,7 @@ import com.facebook.litho.annotations.TreeProp;
 import java.util.ArrayList;
 import java.util.List;
 
-@LayoutSpec(events = TestEvent.class)
+@LayoutSpec(events = TestEvent.class, simpleNameDelegate = "child")
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
 public class TestLayoutSpec<S extends View> implements TestTag {
   @PropDefault protected static final boolean prop2 = true;
@@ -70,16 +72,17 @@ public class TestLayoutSpec<S extends View> implements TestTag {
   @OnCreateLayout
   static <S extends View> Component onCreateLayout(
       ComponentContext context,
-      @Prop(optional = true) boolean prop2,
       @Prop @Nullable Object prop3,
       @Prop char[] prop4,
       @Prop EventHandler<ClickEvent> handler,
+      @Prop Component child,
+      @Prop(optional = true) boolean prop2,
       @Prop(resType = ResType.STRING, optional = true, varArg = "name") List<String> names,
       @State(canUpdateLazily = true) long state1,
       @State S state2,
       @State int state3,
       @TreeProp TestTreeProp treeProp,
-      @Prop Component child) {
+      @CachedValue int cached) {
     return null;
   }
 
@@ -111,6 +114,12 @@ public class TestLayoutSpec<S extends View> implements TestTag {
       @Prop @Nullable Object prop3,
       @State(canUpdateLazily = true) long state1,
       @State Diff<Integer> state3) {
-    return Transition.parallel(Transition.create("testKey"));
+    return Transition.parallel(Transition.create(Transition.TransitionKeyType.GLOBAL, "testKey"));
+  }
+
+  @OnCalculateCachedValue(name = "cached")
+  static int onCalculateCached(
+      @Prop @Nullable Object prop3, @Prop char prop5, @State(canUpdateLazily = true) long state1) {
+    return 0;
   }
 }

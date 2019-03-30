@@ -19,6 +19,7 @@ package com.facebook.litho.specmodels.generator;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
+import com.facebook.litho.StateValue;
 import com.facebook.litho.Transition;
 import com.facebook.litho.animation.AnimatedProperties;
 import com.facebook.litho.annotations.LayoutSpec;
@@ -35,6 +36,8 @@ import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.processor.LayoutSpecModelFactory;
 import com.google.testing.compile.CompilationRule;
+import java.util.List;
+import java.util.function.Function;
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
@@ -108,7 +111,7 @@ public class StateGeneratorTest {
 
     @OnUpdateStateWithTransition
     Transition updateCurrentStateWithTransition() {
-      return Transition.create("key").animate(AnimatedProperties.X);
+      return Transition.create(Transition.TransitionKeyType.GLOBAL, "key").animate(AnimatedProperties.X);
     }
   }
 
@@ -130,12 +133,35 @@ public class StateGeneratorTest {
     static <T> void onCreateInitialState(@State(canUpdateLazily = true) T arg1) {}
   }
 
+  @LayoutSpec
+  private static class TestWithSameGenericMultipleTimes<T> {
+
+    @OnCreateLayout
+    static <T> void onCreateLayout(@State List<T> values) {}
+
+    @OnUpdateState
+    static <T> void updateValues(StateValue<List<T>> values, @Param List<T> foos) {}
+  }
+
+  @LayoutSpec
+  private static class TestWithMultipleGenerics<T, E, D> {
+
+    @OnCreateLayout
+    static <E, D> void onCreateLayout(@State Function<E, D> functions) {}
+
+    @OnUpdateState
+    static <T, E, D> void updateValues(
+        StateValue<Function<E, D>> functions, @Param Function<T, D> foos) {}
+  }
+
   private SpecModel mSpecModelWithState;
   private SpecModel mSpecModelWithoutState;
   private SpecModel mSpecModelWithStateWithTransition;
   private SpecModel mSpecModelWithBothStates;
   private SpecModel mSpecModelWithLazyGeneric;
   private SpecModel mSpecModelWithLazyMethodGeneric;
+  private SpecModel mSpecWithSameGenericMultipleTimes;
+  private SpecModel mSpecWithMultipleGenerics;
 
   @Before
   public void setUp() {
@@ -149,7 +175,7 @@ public class StateGeneratorTest {
             types,
             typeElementWithState,
             mock(Messager.class),
-            RunMode.NORMAL,
+            RunMode.normal(),
             null,
             null);
     TypeElement typeElementWithoutState =
@@ -160,7 +186,7 @@ public class StateGeneratorTest {
             types,
             typeElementWithoutState,
             mock(Messager.class),
-            RunMode.NORMAL,
+            RunMode.normal(),
             null,
             null);
 
@@ -172,7 +198,7 @@ public class StateGeneratorTest {
             types,
             typeElementWithStateWithTransition,
             mock(Messager.class),
-            RunMode.NORMAL,
+            RunMode.normal(),
             null,
             null);
 
@@ -184,7 +210,7 @@ public class StateGeneratorTest {
             types,
             typeElementWithBothStates,
             mock(Messager.class),
-            RunMode.NORMAL,
+            RunMode.normal(),
             null,
             null);
 
@@ -196,7 +222,7 @@ public class StateGeneratorTest {
             types,
             typeElementWithLazyGeneric,
             mock(Messager.class),
-            RunMode.NORMAL,
+            RunMode.normal(),
             null,
             null);
 
@@ -208,7 +234,31 @@ public class StateGeneratorTest {
             types,
             typeElementWithLazyMethodGeneric,
             mock(Messager.class),
-            RunMode.NORMAL,
+            RunMode.normal(),
+            null,
+            null);
+
+    final TypeElement typeElementWithSameGenericMultipleTimes =
+        elements.getTypeElement(TestWithSameGenericMultipleTimes.class.getCanonicalName());
+    mSpecWithSameGenericMultipleTimes =
+        mLayoutSpecModelFactory.create(
+            elements,
+            types,
+            typeElementWithSameGenericMultipleTimes,
+            mock(Messager.class),
+            RunMode.normal(),
+            null,
+            null);
+
+    final TypeElement typeElementWithMultipleGenerics =
+        elements.getTypeElement(TestWithMultipleGenerics.class.getCanonicalName());
+    mSpecWithMultipleGenerics =
+        mLayoutSpecModelFactory.create(
+            elements,
+            types,
+            typeElementWithMultipleGenerics,
+            mock(Messager.class),
+            RunMode.normal(),
             null,
             null);
   }
@@ -243,11 +293,12 @@ public class StateGeneratorTest {
     assertThat(dataHolder.getMethodSpecs().get(0).toString())
         .isEqualTo(
             "@java.lang.Override\n"
-                + "protected void transferState(com.facebook.litho.ComponentContext context,\n"
-                + "    com.facebook.litho.StateContainer _prevStateContainer) {\n"
-                + "  TestWithStateStateContainer prevStateContainer = (TestWithStateStateContainer) _prevStateContainer;\n"
-                + "  mStateContainer.arg1 = prevStateContainer.arg1;\n"
-                + "  mStateContainer.arg4 = prevStateContainer.arg4;\n"
+                + "protected void transferState(com.facebook.litho.StateContainer _prevStateContainer,\n"
+                + "    com.facebook.litho.StateContainer _nextStateContainer) {\n"
+                + "  TestWithStateStateContainer<T> prevStateContainer = (TestWithStateStateContainer<T>) _prevStateContainer;\n"
+                + "  TestWithStateStateContainer<T> nextStateContainer = (TestWithStateStateContainer<T>) _nextStateContainer;\n"
+                + "  nextStateContainer.arg1 = prevStateContainer.arg1;\n"
+                + "  nextStateContainer.arg4 = prevStateContainer.arg4;\n"
                 + "}\n");
   }
 
@@ -261,12 +312,15 @@ public class StateGeneratorTest {
     assertThat(dataHolder.getMethodSpecs().get(0).toString())
         .isEqualTo(
             "@java.lang.Override\n"
-                + "protected void transferState(com.facebook.litho.ComponentContext context,\n"
-                + "    com.facebook.litho.StateContainer _prevStateContainer) {\n"
-                + "  TestWithStateWithTransitionStateContainer prevStateContainer = (TestWithStateWithTransitionStateContainer) _prevStateContainer;\n"
-                + "  mStateContainer.arg1 = prevStateContainer.arg1;\n"
-                + "  mStateContainer.arg4 = prevStateContainer.arg4;\n"
-                + "  mStateContainer._transitions = prevStateContainer._transitions;\n"
+                + "protected void transferState(com.facebook.litho.StateContainer _prevStateContainer,\n"
+                + "    com.facebook.litho.StateContainer _nextStateContainer) {\n"
+                + "  TestWithStateWithTransitionStateContainer<T> prevStateContainer = (TestWithStateWithTransitionStateContainer<T>) _prevStateContainer;\n"
+                + "  TestWithStateWithTransitionStateContainer<T> nextStateContainer = (TestWithStateWithTransitionStateContainer<T>) _nextStateContainer;\n"
+                + "  nextStateContainer.arg1 = prevStateContainer.arg1;\n"
+                + "  nextStateContainer.arg4 = prevStateContainer.arg4;\n"
+                + "  synchronized (prevStateContainer._transitions) {\n"
+                + "    nextStateContainer._transitions = new ArrayList<>(prevStateContainer._transitions);\n"
+                + "  }\n"
                 + "}\n");
   }
 
@@ -292,7 +346,7 @@ public class StateGeneratorTest {
                 + "    return;\n"
                 + "  }\n"
                 + "  TestWithState.UpdateCurrentStateStateUpdate _stateUpdate = ((TestWithState) _component).createUpdateCurrentStateStateUpdate();\n"
-                + "  c.updateStateSync(_stateUpdate, \"TestWithState.updateCurrentState\");\n"
+                + "  c.updateStateAsync(_stateUpdate, \"TestWithState.updateCurrentState\");\n"
                 + "}\n");
 
     assertThat(dataHolder.getMethodSpecs().get(1).toString())
@@ -345,15 +399,13 @@ public class StateGeneratorTest {
 
     assertThat(dataHolder.getTypeSpecs().get(0).toString())
         .isEqualTo(
-            "private static class UpdateCurrentStateStateUpdate implements com.facebook.litho.ComponentLifecycle.StateUpdate {\n"
+            "private static class UpdateCurrentStateStateUpdate<T extends java.lang.CharSequence> implements com.facebook.litho.ComponentLifecycle.StateUpdate {\n"
                 + "  UpdateCurrentStateStateUpdate() {\n"
                 + "  }\n"
                 + "\n"
                 + "  @java.lang.Override\n"
-                + "  public void updateState(com.facebook.litho.StateContainer _stateContainer,\n"
-                + "      com.facebook.litho.Component newComponent) {\n"
-                + "    TestWithStateStateContainer stateContainer = (TestWithStateStateContainer) _stateContainer;\n"
-                + "    TestWithState newComponentStateUpdate = (TestWithState) newComponent;\n"
+                + "  public void updateState(com.facebook.litho.StateContainer _stateContainer) {\n"
+                + "    TestWithStateStateContainer<T> stateContainer = (TestWithStateStateContainer<T>) _stateContainer;\n"
                 + "    TestWithStateSpec.updateCurrentState();\n"
                 + "  }\n"
                 + "}\n");
@@ -368,18 +420,16 @@ public class StateGeneratorTest {
 
     assertThat(dataHolder.getTypeSpecs().get(0).toString())
         .isEqualTo(
-            "private static class UpdateCurrentStateStateUpdate implements com.facebook.litho.ComponentLifecycle.StateUpdate {\n"
+            "private static class UpdateCurrentStateStateUpdate<T extends java.lang.CharSequence> implements com.facebook.litho.ComponentLifecycle.StateUpdate {\n"
                 + "  UpdateCurrentStateStateUpdate() {\n"
                 + "  }\n"
                 + "\n"
                 + "  @java.lang.Override\n"
-                + "  public void updateState(com.facebook.litho.StateContainer _stateContainer,\n"
-                + "      com.facebook.litho.Component newComponent) {\n"
-                + "    TestWithStateWithTransitionStateContainer stateContainer = (TestWithStateWithTransitionStateContainer) _stateContainer;\n"
-                + "    TestWithStateWithTransition newComponentStateUpdate = (TestWithStateWithTransition) newComponent;\n"
+                + "  public void updateState(com.facebook.litho.StateContainer _stateContainer) {\n"
+                + "    TestWithStateWithTransitionStateContainer<T> stateContainer = (TestWithStateWithTransitionStateContainer<T>) _stateContainer;\n"
                 + "    com.facebook.litho.Transition transition = TestWithStateWithTransitionSpec.updateCurrentState();\n"
                 + "    if (transition != null) {\n"
-                + "      newComponentStateUpdate.mStateContainer._transitions.add(transition);\n"
+                + "      stateContainer._transitions.add(transition);\n"
                 + "    }\n"
                 + "  }\n"
                 + "}\n");
@@ -394,33 +444,29 @@ public class StateGeneratorTest {
 
     assertThat(dataHolder.getTypeSpecs().get(0).toString())
         .isEqualTo(
-            "private static class UpdateCurrentStateStateUpdate implements com.facebook.litho.ComponentLifecycle.StateUpdate {\n"
+            "private static class UpdateCurrentStateStateUpdate<T extends java.lang.CharSequence> implements com.facebook.litho.ComponentLifecycle.StateUpdate {\n"
                 + "  UpdateCurrentStateStateUpdate() {\n"
                 + "  }\n"
                 + "\n"
                 + "  @java.lang.Override\n"
-                + "  public void updateState(com.facebook.litho.StateContainer _stateContainer,\n"
-                + "      com.facebook.litho.Component newComponent) {\n"
-                + "    TestWithBothStatesStateContainer stateContainer = (TestWithBothStatesStateContainer) _stateContainer;\n"
-                + "    TestWithBothStates newComponentStateUpdate = (TestWithBothStates) newComponent;\n"
+                + "  public void updateState(com.facebook.litho.StateContainer _stateContainer) {\n"
+                + "    TestWithBothStatesStateContainer<T> stateContainer = (TestWithBothStatesStateContainer<T>) _stateContainer;\n"
                 + "    TestWithBothStatesSpec.updateCurrentState();\n"
                 + "  }\n"
                 + "}\n");
 
     assertThat(dataHolder.getTypeSpecs().get(1).toString())
         .isEqualTo(
-            "private static class UpdateCurrentStateWithTransitionStateUpdate implements com.facebook.litho.ComponentLifecycle.StateUpdate {\n"
+            "private static class UpdateCurrentStateWithTransitionStateUpdate<T extends java.lang.CharSequence> implements com.facebook.litho.ComponentLifecycle.StateUpdate {\n"
                 + "  UpdateCurrentStateWithTransitionStateUpdate() {\n"
                 + "  }\n"
                 + "\n"
                 + "  @java.lang.Override\n"
-                + "  public void updateState(com.facebook.litho.StateContainer _stateContainer,\n"
-                + "      com.facebook.litho.Component newComponent) {\n"
-                + "    TestWithBothStatesStateContainer stateContainer = (TestWithBothStatesStateContainer) _stateContainer;\n"
-                + "    TestWithBothStates newComponentStateUpdate = (TestWithBothStates) newComponent;\n"
+                + "  public void updateState(com.facebook.litho.StateContainer _stateContainer) {\n"
+                + "    TestWithBothStatesStateContainer<T> stateContainer = (TestWithBothStatesStateContainer<T>) _stateContainer;\n"
                 + "    com.facebook.litho.Transition transition = TestWithBothStatesSpec.updateCurrentStateWithTransition();\n"
                 + "    if (transition != null) {\n"
-                + "      newComponentStateUpdate.mStateContainer._transitions.add(transition);\n"
+                + "      stateContainer._transitions.add(transition);\n"
                 + "    }\n"
                 + "  }\n"
                 + "}\n");
@@ -443,12 +489,9 @@ public class StateGeneratorTest {
                 + "  }\n"
                 + "  com.facebook.litho.ComponentLifecycle.StateUpdate _stateUpdate = new com.facebook.litho.ComponentLifecycle.StateUpdate() {\n"
                 + "    @java.lang.Override\n"
-                + "    public void updateState(com.facebook.litho.StateContainer _stateContainer,\n"
-                + "        com.facebook.litho.Component newComponent) {\n"
-                + "      com.facebook.litho.specmodels.generator.StateGeneratorTest.TestWithState newComponentStateUpdate = (com.facebook.litho.specmodels.generator.StateGeneratorTest.TestWithState) newComponent;\n"
-                + "      com.facebook.litho.StateValue<java.lang.Boolean> arg4 = new com.facebook.litho.StateValue<java.lang.Boolean>();\n"
-                + "      arg4.set(lazyUpdateValue);\n"
-                + "      newComponentStateUpdate.mStateContainer.arg4 = arg4.get();\n"
+                + "    public void updateState(com.facebook.litho.StateContainer _stateContainer) {\n"
+                + "      TestWithStateStateContainer stateContainer = (TestWithStateStateContainer) _stateContainer;\n"
+                + "      stateContainer.arg4 = lazyUpdateValue;\n"
                 + "    }\n"
                 + "  };\n"
                 + "  c.updateStateLazy(_stateUpdate);\n"
@@ -472,12 +515,9 @@ public class StateGeneratorTest {
                 + "  }\n"
                 + "  com.facebook.litho.ComponentLifecycle.StateUpdate _stateUpdate = new com.facebook.litho.ComponentLifecycle.StateUpdate() {\n"
                 + "    @java.lang.Override\n"
-                + "    public void updateState(com.facebook.litho.StateContainer _stateContainer,\n"
-                + "        com.facebook.litho.Component newComponent) {\n"
-                + "      com.facebook.litho.specmodels.generator.StateGeneratorTest.TestWithLazyGen newComponentStateUpdate = (com.facebook.litho.specmodels.generator.StateGeneratorTest.TestWithLazyGen) newComponent;\n"
-                + "      com.facebook.litho.StateValue<T> arg0 = new com.facebook.litho.StateValue<T>();\n"
-                + "      arg0.set(lazyUpdateValue);\n"
-                + "      newComponentStateUpdate.mStateContainer.arg0 = arg0.get();\n"
+                + "    public void updateState(com.facebook.litho.StateContainer _stateContainer) {\n"
+                + "      TestWithLazyGenStateContainer stateContainer = (TestWithLazyGenStateContainer) _stateContainer;\n"
+                + "      stateContainer.arg0 = lazyUpdateValue;\n"
                 + "    }\n"
                 + "  };\n"
                 + "  c.updateStateLazy(_stateUpdate);\n"
@@ -501,15 +541,42 @@ public class StateGeneratorTest {
                 + "  }\n"
                 + "  com.facebook.litho.ComponentLifecycle.StateUpdate _stateUpdate = new com.facebook.litho.ComponentLifecycle.StateUpdate() {\n"
                 + "    @java.lang.Override\n"
-                + "    public void updateState(com.facebook.litho.StateContainer _stateContainer,\n"
-                + "        com.facebook.litho.Component newComponent) {\n"
-                + "      com.facebook.litho.specmodels.generator.StateGeneratorTest.TestWithLazyMethodGen newComponentStateUpdate = (com.facebook.litho.specmodels.generator.StateGeneratorTest.TestWithLazyMethodGen) newComponent;\n"
-                + "      com.facebook.litho.StateValue<T> arg1 = new com.facebook.litho.StateValue<T>();\n"
-                + "      arg1.set(lazyUpdateValue);\n"
-                + "      newComponentStateUpdate.mStateContainer.arg1 = arg1.get();\n"
+                + "    public void updateState(com.facebook.litho.StateContainer _stateContainer) {\n"
+                + "      TestWithLazyMethodGenStateContainer stateContainer = (TestWithLazyMethodGenStateContainer) _stateContainer;\n"
+                + "      stateContainer.arg1 = lazyUpdateValue;\n"
                 + "    }\n"
                 + "  };\n"
                 + "  c.updateStateLazy(_stateUpdate);\n"
                 + "}\n");
+  }
+
+  @Test
+  public void testGenerateStateUpdateMethodsForSpecWithSameGenericMultipleTimes() {
+    TypeSpecDataHolder dataHolder;
+
+    dataHolder = StateGenerator.generateStateUpdateClasses(mSpecWithSameGenericMultipleTimes);
+    assertThat(dataHolder.getTypeSpecs()).hasSize(1);
+    assertThat(dataHolder.getTypeSpecs().get(0).typeVariables).hasSize(1);
+
+    dataHolder = StateGenerator.generateOnStateUpdateMethods(mSpecWithSameGenericMultipleTimes);
+    assertThat(dataHolder.getMethodSpecs()).hasSize(3);
+    assertThat(dataHolder.getMethodSpecs().get(0).typeVariables).hasSize(1);
+    assertThat(dataHolder.getMethodSpecs().get(1).typeVariables).hasSize(1);
+    assertThat(dataHolder.getMethodSpecs().get(2).typeVariables).hasSize(1);
+  }
+
+  @Test
+  public void testGenerateStateUpdateMethodsForSpecWithMultipleGenerics() {
+    TypeSpecDataHolder dataHolder;
+
+    dataHolder = StateGenerator.generateStateUpdateClasses(mSpecWithMultipleGenerics);
+    assertThat(dataHolder.getTypeSpecs()).hasSize(1);
+    assertThat(dataHolder.getTypeSpecs().get(0).typeVariables).hasSize(3);
+
+    dataHolder = StateGenerator.generateOnStateUpdateMethods(mSpecWithMultipleGenerics);
+    assertThat(dataHolder.getMethodSpecs()).hasSize(3);
+    assertThat(dataHolder.getMethodSpecs().get(0).typeVariables).hasSize(2);
+    assertThat(dataHolder.getMethodSpecs().get(1).typeVariables).hasSize(2);
+    assertThat(dataHolder.getMethodSpecs().get(2).typeVariables).hasSize(2);
   }
 }

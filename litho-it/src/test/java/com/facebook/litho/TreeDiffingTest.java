@@ -18,7 +18,6 @@ package com.facebook.litho;
 
 import static android.R.drawable.btn_default;
 import static android.graphics.Color.BLACK;
-import static android.graphics.Color.RED;
 import static android.graphics.Color.TRANSPARENT;
 import static com.facebook.litho.Column.create;
 import static com.facebook.litho.LayoutOutput.STATE_DIRTY;
@@ -30,6 +29,7 @@ import static com.facebook.litho.SizeSpec.AT_MOST;
 import static com.facebook.litho.SizeSpec.getMode;
 import static com.facebook.litho.SizeSpec.getSize;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
+import static com.facebook.litho.testing.Whitebox.getInternalState;
 import static com.facebook.yoga.YogaAlign.FLEX_START;
 import static com.facebook.yoga.YogaConstants.UNDEFINED;
 import static com.facebook.yoga.YogaEdge.ALL;
@@ -40,37 +40,37 @@ import static com.facebook.yoga.YogaMeasureOutput.getWidth;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.junit.Assert.assertNotEquals;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.powermock.reflect.Whitebox.getInternalState;
 import static org.robolectric.RuntimeEnvironment.application;
 
 import android.graphics.Color;
 import android.graphics.Rect;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
-import android.support.v4.util.SparseArrayCompat;
+import androidx.collection.SparseArrayCompat;
+import com.facebook.litho.drawable.ComparableColorDrawable;
+import com.facebook.litho.drawable.ComparableDrawable;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestSizeDependentComponent;
+import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
 import com.facebook.yoga.YogaMeasureFunction;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.powermock.reflect.Whitebox;
 import org.robolectric.RuntimeEnvironment;
 
 @RunWith(ComponentsTestRunner.class)
 public class TreeDiffingTest {
 
-  private static Drawable sRedDrawable;
-  private static Drawable sBlackDrawable;
-  private static Drawable sTransparentDrawable;
+  private static ComparableDrawable sRedDrawable;
+  private static ComparableDrawable sBlackDrawable;
+  private static ComparableDrawable sTransparentDrawable;
 
   private int mUnspecifiedSpec;
 
@@ -80,10 +80,9 @@ public class TreeDiffingTest {
   public void setup() throws Exception {
     mContext = new ComponentContext(RuntimeEnvironment.application);
     mUnspecifiedSpec = SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED);
-
-    sRedDrawable = new ColorDrawable(RED);
-    sBlackDrawable = new ColorDrawable(BLACK);
-    sTransparentDrawable = new ColorDrawable(TRANSPARENT);
+    sRedDrawable = ComparableColorDrawable.create(Color.RED);
+    sBlackDrawable = ComparableColorDrawable.create(Color.BLACK);
+    sTransparentDrawable = ComparableColorDrawable.create(TRANSPARENT);
   }
 
   @Test
@@ -160,16 +159,10 @@ public class TreeDiffingTest {
           float heightConstraint) {
 
     final YogaMeasureFunction measureFunc =
-            Whitebox.getInternalState(
-                    node.mYogaNode,
-                    "mMeasureFunction");
+        Whitebox.getInternalState(node.getYogaNode(), "mMeasureFunction");
 
     return measureFunc.measure(
-            node.mYogaNode,
-            widthConstranint,
-            EXACTLY,
-            heightConstraint,
-            EXACTLY);
+        node.getYogaNode(), widthConstranint, EXACTLY, heightConstraint, EXACTLY);
   }
 
   @Test
@@ -410,9 +403,9 @@ public class TreeDiffingTest {
   @Test
   public void testComponentHostMoveItem() {
     ComponentHost hostHolder = new ComponentHost(mContext);
-    MountItem mountItem = new MountItem();
-    MountItem mountItem1 = new MountItem();
-    MountItem mountItem2 = new MountItem();
+    MountItem mountItem = mock(MountItem.class);
+    MountItem mountItem1 = mock(MountItem.class);
+    MountItem mountItem2 = mock(MountItem.class);
     hostHolder.mount(0, mountItem, new Rect());
     hostHolder.mount(1, mountItem1, new Rect());
     hostHolder.mount(2, mountItem2, new Rect());
@@ -429,9 +422,9 @@ public class TreeDiffingTest {
   @Test
   public void testComponentHostMoveItemPartial() {
     ComponentHost hostHolder = new ComponentHost(mContext);
-    MountItem mountItem = new MountItem();
-    MountItem mountItem1 = new MountItem();
-    MountItem mountItem2 = new MountItem();
+    MountItem mountItem = mock(MountItem.class);
+    MountItem mountItem1 = mock(MountItem.class);
+    MountItem mountItem2 = mock(MountItem.class);
     hostHolder.mount(0, mountItem, new Rect());
     hostHolder.mount(1, mountItem1, new Rect());
     hostHolder.mount(2, mountItem2, new Rect());
@@ -849,8 +842,7 @@ public class TreeDiffingTest {
         calculateLayoutStateWithDiffing(
             mContext, rootContainer1, widthSpecContainer, heightSpec, null);
 
-    // Make sure we reused the cached layout and it wasn't released.
-    verify(sizeDependentComponentSpy1, never()).releaseCachedLayout();
+    // Make sure we reused the cached layout.
     verify(sizeDependentComponentSpy1, times(1)).clearCachedLayout();
 
     LayoutState layoutState =
@@ -859,8 +851,7 @@ public class TreeDiffingTest {
 
     verify(sizeDependentComponentSpy1).makeShallowCopy();
 
-    // Make sure we reused the cached layout and it wasn't released.
-    verify(sizeDependentComponentSpy2, never()).releaseCachedLayout();
+    // Make sure we reused the cached layout.
     verify(sizeDependentComponentSpy2, never()).clearCachedLayout();
 
     // The nested root measure() was called in the first layout calculation.
@@ -887,12 +878,9 @@ public class TreeDiffingTest {
         heightSpec,
         false,
         null,
-        false /* canPrefetchDisplayLists */,
-        false /* canCacheDrawingDisplayLists */,
-        true /* clipChildren */,
-        false /* persistInternalNodeTree */,
         LayoutState.CalculateLayoutSource.TEST,
-        null);
+        null,
+        false);
   }
 
   private static LayoutState calculateLayoutStateWithDiffing(
@@ -909,12 +897,9 @@ public class TreeDiffingTest {
         heightSpec,
         true,
         previousLayoutState,
-        false /* canPrefetchDisplayLists */,
-        false /* canCacheDrawingDisplayLists */,
-        true /* clipChildren */,
-        false /* persistInternalNodeTree */,
         LayoutState.CalculateLayoutSource.TEST,
-        null);
+        null,
+        false);
   }
 
   private static void assertOutputsState(

@@ -16,9 +16,9 @@
 
 package com.facebook.litho;
 
+import static com.facebook.litho.testing.Whitebox.getInternalState;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
-import static org.powermock.reflect.Whitebox.getInternalState;
 
 import android.os.Handler;
 import android.os.Looper;
@@ -79,24 +79,6 @@ public class ComponentTreeBuilderTest {
 
     Handler handler = getInternalState(componentTree, "mLayoutThreadHandler");
     assertThat(mLooper).isSameAs(handler.getLooper());
-  }
-
-  @Test
-  public void testReleaseAndInit() {
-    mComponentTreeBuilder
-        .layoutThreadLooper(mLooper);
-
-    mComponentTreeBuilder.release();
-
-    Component root = TestLayoutComponent.create(mContext)
-        .build();
-
-    mComponentTreeBuilder.init(mContext, root);
-
-    ComponentTree componentTree = mComponentTreeBuilder.build();
-
-    assertSameAsInternalState(componentTree, root, "mRoot");
-    assertDefaults(componentTree);
   }
 
   private static void assertSameAsInternalState(

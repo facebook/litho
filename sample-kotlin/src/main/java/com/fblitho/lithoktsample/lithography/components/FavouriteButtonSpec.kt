@@ -40,7 +40,7 @@ object FavouriteButtonSpec {
           .build()
 
   @OnUpdateState
-  fun toggleFavourited(favourited: StateValue<Boolean>) = favourited.set(!favourited.get())
+  fun toggleFavourited(favourited: StateValue<Boolean>) = favourited.set(!(favourited.get()!!))
 
   @OnEvent(ClickEvent::class)
   fun onClick(c: ComponentContext): Unit = FavouriteButton.toggleFavourited(c)

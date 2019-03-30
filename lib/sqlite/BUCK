@@ -2,6 +2,7 @@
 #
 # This source code is licensed under the Apache 2.0 license found in the
 # LICENSE file in the root directory of this source tree.
+load("//tools/build_defs/oss:fb_native_wrapper.bzl", "fb_native")
 load("//tools/build_defs/oss:litho_defs.bzl", "fb_java_library")
 
 fb_java_library(
@@ -12,12 +13,12 @@ fb_java_library(
     ],
 )
 
-prebuilt_jar(
+fb_native.prebuilt_jar(
     name = "sqlite-prebuilt",
     binary_jar = ":sqlite.jar",
 )
 
-remote_file(
+fb_native.remote_file(
     name = "sqlite.jar",
     sha1 = "d6234e08ff4e1607ff5321da2579571f05ff778d",
     url = "mvn:com.almworks.sqlite4java:sqlite4java:jar:1.0.392",

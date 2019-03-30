@@ -24,7 +24,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
@@ -49,7 +49,7 @@ public class StickyHeaderControllerTest {
   @Before
   public void setup() {
     mHasStickyHeader = mock(HasStickyHeader.class);
-    mStickyHeaderController = new StickyHeaderController(mHasStickyHeader);
+    mStickyHeaderController = new StickyHeaderControllerImpl(mHasStickyHeader);
   }
 
   @Test
@@ -59,7 +59,7 @@ public class StickyHeaderControllerTest {
     when(recycler.getRecyclerView()).thenReturn(recyclerView);
 
     thrown.expect(RuntimeException.class);
-    thrown.expectMessage(StickyHeaderController.LAYOUTMANAGER_NOT_INITIALIZED);
+    thrown.expectMessage(StickyHeaderControllerImpl.LAYOUTMANAGER_NOT_INITIALIZED);
     mStickyHeaderController.init(recycler);
   }
 
@@ -77,14 +77,14 @@ public class StickyHeaderControllerTest {
     when(recycler2.getRecyclerView()).thenReturn(recyclerView2);
 
     thrown.expect(RuntimeException.class);
-    thrown.expectMessage(StickyHeaderController.RECYCLER_ALREADY_INITIALIZED);
+    thrown.expectMessage(StickyHeaderControllerImpl.RECYCLER_ALREADY_INITIALIZED);
     mStickyHeaderController.init(recycler2);
   }
 
   @Test
   public void testResetBeforeInit() {
     thrown.expect(RuntimeException.class);
-    thrown.expectMessage(StickyHeaderController.RECYCLER_NOT_INITIALIZED);
+    thrown.expectMessage(StickyHeaderControllerImpl.RECYCLER_NOT_INITIALIZED);
 
     mStickyHeaderController.reset();
   }

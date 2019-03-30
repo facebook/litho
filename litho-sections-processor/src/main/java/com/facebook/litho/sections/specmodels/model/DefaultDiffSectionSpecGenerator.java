@@ -17,6 +17,7 @@
 package com.facebook.litho.sections.specmodels.model;
 
 import com.facebook.litho.specmodels.generator.BuilderGenerator;
+import com.facebook.litho.specmodels.generator.CachedValueGenerator;
 import com.facebook.litho.specmodels.generator.ComponentBodyGenerator;
 import com.facebook.litho.specmodels.generator.DelegateMethodGenerator;
 import com.facebook.litho.specmodels.generator.EventGenerator;
@@ -26,12 +27,16 @@ import com.facebook.litho.specmodels.generator.StateGenerator;
 import com.facebook.litho.specmodels.generator.TagGenerator;
 import com.facebook.litho.specmodels.generator.TriggerGenerator;
 import com.facebook.litho.specmodels.generator.TypeSpecDataHolder;
+import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.SpecGenerator;
+import com.facebook.litho.specmodels.model.SpecModelUtils;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeSpec;
+import java.util.EnumSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import javax.lang.model.element.Modifier;
+import javax.lang.model.element.TypeElement;
 
 public class DefaultDiffSectionSpecGenerator implements SpecGenerator<DiffSectionSpecModel> {
 
@@ -46,11 +51,15 @@ public class DefaultDiffSectionSpecGenerator implements SpecGenerator<DiffSectio
   }
 
   @Override
-  public TypeSpec generate(DiffSectionSpecModel specModel) {
+  public TypeSpec generate(DiffSectionSpecModel specModel, EnumSet<RunMode> runMode) {
     final TypeSpec.Builder typeSpec =
         TypeSpec.classBuilder(specModel.getComponentName())
             .superclass(SectionClassNames.SECTION)
             .addTypeVariables(specModel.getTypeVariables());
+
+    if (SpecModelUtils.isTypeElement(specModel)) {
+      typeSpec.addOriginatingElement((TypeElement) specModel.getRepresentedObject());
+    }
 
     if (specModel.isPublic()) {
       typeSpec.addModifiers(Modifier.PUBLIC);
@@ -70,9 +79,12 @@ public class DefaultDiffSectionSpecGenerator implements SpecGenerator<DiffSectio
         .addTypeSpecDataHolder(EventGenerator.generate(specModel))
         .addTypeSpecDataHolder(
             DelegateMethodGenerator.generateDelegates(
-                specModel, DelegateMethodDescriptions.getDiffSectionSpecDelegatesMap(specModel)))
+                specModel,
+                DelegateMethodDescriptions.getDiffSectionSpecDelegatesMap(specModel),
+                runMode))
         .addTypeSpecDataHolder(TriggerGenerator.generate(specModel))
         .addTypeSpecDataHolder(TagGenerator.generate(specModel, mBlacklistedTagInterfaces))
+        .addTypeSpecDataHolder(CachedValueGenerator.generate(specModel))
         .build()
         .addToTypeSpec(typeSpec);
 

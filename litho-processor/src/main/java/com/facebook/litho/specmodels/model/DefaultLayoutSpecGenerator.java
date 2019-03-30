@@ -17,6 +17,7 @@
 package com.facebook.litho.specmodels.model;
 
 import com.facebook.litho.specmodels.generator.BuilderGenerator;
+import com.facebook.litho.specmodels.generator.CachedValueGenerator;
 import com.facebook.litho.specmodels.generator.ClassAnnotationsGenerator;
 import com.facebook.litho.specmodels.generator.ComponentBodyGenerator;
 import com.facebook.litho.specmodels.generator.DelegateMethodGenerator;
@@ -25,24 +26,32 @@ import com.facebook.litho.specmodels.generator.JavadocGenerator;
 import com.facebook.litho.specmodels.generator.PreambleGenerator;
 import com.facebook.litho.specmodels.generator.PureRenderGenerator;
 import com.facebook.litho.specmodels.generator.RenderDataGenerator;
+import com.facebook.litho.specmodels.generator.SimpleNameDelegateGenerator;
 import com.facebook.litho.specmodels.generator.StateGenerator;
 import com.facebook.litho.specmodels.generator.TagGenerator;
 import com.facebook.litho.specmodels.generator.TreePropGenerator;
 import com.facebook.litho.specmodels.generator.TriggerGenerator;
 import com.facebook.litho.specmodels.generator.TypeSpecDataHolder;
 import com.facebook.litho.specmodels.generator.WorkingRangeGenerator;
+import com.facebook.litho.specmodels.internal.RunMode;
 import com.squareup.javapoet.TypeSpec;
+import java.util.EnumSet;
 import java.util.LinkedHashSet;
 import javax.lang.model.element.Modifier;
+import javax.lang.model.element.TypeElement;
 
 public class DefaultLayoutSpecGenerator implements SpecGenerator<LayoutSpecModel> {
 
   @Override
-  public TypeSpec generate(LayoutSpecModel layoutSpecModel) {
+  public TypeSpec generate(LayoutSpecModel layoutSpecModel, EnumSet<RunMode> runMode) {
     final TypeSpec.Builder typeSpec =
         TypeSpec.classBuilder(layoutSpecModel.getComponentName())
             .superclass(ClassNames.COMPONENT)
             .addTypeVariables(layoutSpecModel.getTypeVariables());
+
+    if (SpecModelUtils.isTypeElement(layoutSpecModel)) {
+      typeSpec.addOriginatingElement((TypeElement) layoutSpecModel.getRepresentedObject());
+    }
 
     if (layoutSpecModel.isPublic()) {
       typeSpec.addModifiers(Modifier.PUBLIC);
@@ -60,7 +69,9 @@ public class DefaultLayoutSpecGenerator implements SpecGenerator<LayoutSpecModel
         .addTypeSpecDataHolder(TreePropGenerator.generate(layoutSpecModel))
         .addTypeSpecDataHolder(
             DelegateMethodGenerator.generateDelegates(
-                layoutSpecModel, DelegateMethodDescriptions.LAYOUT_SPEC_DELEGATE_METHODS_MAP))
+                layoutSpecModel,
+                DelegateMethodDescriptions.LAYOUT_SPEC_DELEGATE_METHODS_MAP,
+                runMode))
         .addTypeSpecDataHolder(PureRenderGenerator.generate(layoutSpecModel))
         .addTypeSpecDataHolder(EventGenerator.generate(layoutSpecModel))
         .addTypeSpecDataHolder(TriggerGenerator.generate(layoutSpecModel))
@@ -69,6 +80,8 @@ public class DefaultLayoutSpecGenerator implements SpecGenerator<LayoutSpecModel
         .addTypeSpecDataHolder(RenderDataGenerator.generate(layoutSpecModel))
         .addTypeSpecDataHolder(BuilderGenerator.generate(layoutSpecModel))
         .addTypeSpecDataHolder(TagGenerator.generate(layoutSpecModel, new LinkedHashSet<>()))
+        .addTypeSpecDataHolder(CachedValueGenerator.generate(layoutSpecModel))
+        .addTypeSpecDataHolder(SimpleNameDelegateGenerator.generate(layoutSpecModel))
         .build()
         .addToTypeSpec(typeSpec);
 

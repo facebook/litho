@@ -63,7 +63,7 @@ public class UpDownBlocksComponentSpec {
 
   @OnEvent(ClickEvent.class)
   static void onClick(ComponentContext c) {
-    UpDownBlocksComponent.updateState(c);
+    UpDownBlocksComponent.updateStateSync(c);
   }
 
   @OnUpdateState

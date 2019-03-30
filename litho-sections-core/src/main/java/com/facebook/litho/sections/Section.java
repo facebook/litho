@@ -16,9 +16,9 @@
 
 package com.facebook.litho.sections;
 
-import android.support.annotation.VisibleForTesting;
-import android.support.v4.util.Pair;
-import com.facebook.litho.ComponentUtils;
+import androidx.annotation.VisibleForTesting;
+import androidx.core.util.Pair;
+import com.facebook.litho.Equivalence;
 import com.facebook.litho.EventDispatcher;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.EventTriggersContainer;
@@ -45,7 +45,7 @@ import javax.annotation.Nullable;
  * to set values for individual props. {@link Section} instances are immutable after creation.
  */
 public abstract class Section extends SectionLifecycle
-    implements Cloneable, HasEventDispatcher, HasEventTrigger {
+    implements Cloneable, HasEventDispatcher, HasEventTrigger, Equivalence<Section> {
 
   private Section mParent;
   private boolean mInvalidated;
@@ -94,7 +94,7 @@ public abstract class Section extends SectionLifecycle
       mResourceResolver = new ResourceResolver(context);
     }
 
-    /** Sets the key of this {@link Section} local to his parent. */
+    /** Sets the key of this {@link Section} local to its parent. */
     public T key(String key) {
       mSection.setKey(key);
       return getThis();
@@ -204,10 +204,8 @@ public abstract class Section extends SectionLifecycle
     return mChildren;
   }
 
-  /**
-   * @return the parent of this {@link Section} in the tree.
-   */
-  Section getParent() {
+  /** @return the parent of this {@link Section} in the tree. */
+  public Section getParent() {
     return mParent;
   }
 
@@ -304,17 +302,12 @@ public abstract class Section extends SectionLifecycle
    * @param other the component to compare to
    * @return true if the components are of the same type and have the same props
    */
+  @Override
   public boolean isEquivalentTo(Section other) {
-    if (this == other) {
-      return true;
-    }
-    if (other == null || getClass() != other.getClass()) {
-      return false;
-    }
-
-    return ComponentUtils.hasEquivalentFields(this, other);
+    return this.equals(other);
   }
 
+  @Nullable
   protected StateContainer getStateContainer() {
     return null;
   }
@@ -386,5 +379,10 @@ public abstract class Section extends SectionLifecycle
 
   static void releaseChildrenMap(Map<String, Pair<Section, Integer>> newChildren) {
     //TODO use pools t11953296
+  }
+
+  @VisibleForTesting
+  public String getLogTag() {
+    return getSimpleName();
   }
 }

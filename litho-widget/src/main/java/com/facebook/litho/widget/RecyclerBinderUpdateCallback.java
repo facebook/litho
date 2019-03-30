@@ -16,12 +16,14 @@
 
 package com.facebook.litho.widget;
 
-import android.support.annotation.Nullable;
-import android.support.v4.util.Pools.SynchronizedPool;
-import android.support.v7.util.ListUpdateCallback;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
+import androidx.recyclerview.widget.ListUpdateCallback;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
+import com.facebook.litho.ComponentsReporter;
 import com.facebook.litho.ComponentsSystrace;
+import com.facebook.litho.Diff;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,10 +37,6 @@ import java.util.List;
  */
 public class RecyclerBinderUpdateCallback<T> implements ListUpdateCallback {
 
-  private static final SynchronizedPool<RecyclerBinderUpdateCallback> sUpdatesCallbackPool =
-      new SynchronizedPool<>(4);
-  private int mHeadOffset;
-
   public interface ComponentRenderer<T> {
     RenderInfo render(T t, int idx);
   }
@@ -47,142 +45,154 @@ public class RecyclerBinderUpdateCallback<T> implements ListUpdateCallback {
     void executeOperations(@Nullable ComponentContext c, List<Operation> operations);
   }
 
-  private List<T> mData;
-  private List<Operation> mOperations;
-  private List<ComponentContainer> mPlaceholders;
-  private ComponentRenderer mComponentRenderer;
-  private OperationExecutor mOperationExecutor;
+  private final int mOldDataSize;
+  private final List<T> mPrevData;
+  private final List<T> mNextData;
+  private final List<Operation> mOperations;
+  private final List<ComponentContainer> mPlaceholders;
+  private final List<Diff> mDataHolders;
+  private final ComponentRenderer mComponentRenderer;
+  private final OperationExecutor mOperationExecutor;
 
-  public static<T> RecyclerBinderUpdateCallback<T> acquire(
-      int oldDataSize,
-      List<T> data,
+  public RecyclerBinderUpdateCallback(
+      List<T> prevData,
+      List<T> nextData,
       ComponentRenderer<T> componentRenderer,
       RecyclerBinder recyclerBinder) {
-
-    return acquire(
-        oldDataSize,
-        data,
-        componentRenderer,
-        new RecyclerBinderOperationExecutor(recyclerBinder),
-        0);
+    this(
+        prevData, nextData, componentRenderer, new RecyclerBinderOperationExecutor(recyclerBinder));
   }
 
-  public static <T> RecyclerBinderUpdateCallback<T> acquire(
-      int oldDataSize,
-      List<T> data,
+  public RecyclerBinderUpdateCallback(
+      List<T> prevData,
+      List<T> nextData,
       ComponentRenderer<T> componentRenderer,
-      OperationExecutor operationExecutor,
-      int headOffset) {
-
-    RecyclerBinderUpdateCallback instance = sUpdatesCallbackPool.acquire();
-    if (instance == null) {
-      instance = new RecyclerBinderUpdateCallback();
-    }
-
-    instance.init(oldDataSize, data, componentRenderer, operationExecutor, headOffset);
-    return instance;
-  }
-
-  public static<T> void release(RecyclerBinderUpdateCallback<T> updatesCallback) {
-    final List<Operation> operations = updatesCallback.mOperations;
-    for (int i = 0, size = operations.size(); i < size; i++) {
-      operations.get(i).release();
-    }
-    updatesCallback.mOperations = null;
-
-    updatesCallback.mData = null;
-    for (int i = 0, size = updatesCallback.mPlaceholders.size(); i < size; i++) {
-      updatesCallback.mPlaceholders.get(i).release();
-    }
-    updatesCallback.mComponentRenderer = null;
-    updatesCallback.mOperationExecutor = null;
-    updatesCallback.mHeadOffset = 0;
-    sUpdatesCallbackPool.release(updatesCallback);
-  }
-
-  private RecyclerBinderUpdateCallback() {
-
-  }
-
-  private void init(
-      int oldDataSize,
-      List<T> data,
-      ComponentRenderer<T> componentRenderer,
-      OperationExecutor operationExecutor,
-      int headOffset) {
-    mData = data;
+      OperationExecutor operationExecutor) {
+    mPrevData = prevData;
+    mOldDataSize = prevData != null ? prevData.size() : 0;
+    mNextData = nextData;
     mComponentRenderer = componentRenderer;
     mOperationExecutor = operationExecutor;
-    mHeadOffset = headOffset;
 
     mOperations = new ArrayList<>();
     mPlaceholders = new ArrayList<>();
-    for (int i = 0; i < oldDataSize; i++) {
-      mPlaceholders.add(ComponentContainer.acquire());
+    mDataHolders = new ArrayList<>();
+    for (int i = 0; i < mOldDataSize; i++) {
+      mPlaceholders.add(new ComponentContainer(null, false));
+      mDataHolders.add(new Diff(mPrevData.get(i), null));
     }
   }
 
   @Override
   public void onInserted(int position, int count) {
-    final List<ComponentContainer> placeholders = new ArrayList<>();
-    position += mHeadOffset;
+    final List<ComponentContainer> placeholders = new ArrayList<>(count);
+    final List<Diff> dataHolders = new ArrayList<>(count);
     for (int i = 0; i < count; i++) {
       final int index = position + i;
-      final ComponentContainer componentContainer = ComponentContainer.acquire();
-      componentContainer.mNeedsComputation = true;
+      final ComponentContainer componentContainer = new ComponentContainer(null, true);
       mPlaceholders.add(index, componentContainer);
       placeholders.add(componentContainer);
+
+      final Diff dataHolder = new Diff(null, null);
+      mDataHolders.add(index, dataHolder);
+      dataHolders.add(dataHolder);
     }
 
-    mOperations.add(Operation.acquire(Operation.INSERT, position, -1, placeholders));
+    mOperations.add(new Operation(Operation.INSERT, position, -1, placeholders, dataHolders));
   }
 
   @Override
   public void onRemoved(int position, int count) {
-    position += mHeadOffset;
+    final List<Diff> dataHolders = new ArrayList<>(count);
     for (int i = 0; i < count; i++) {
-      final ComponentContainer componentContainer = mPlaceholders.remove(position);
-      componentContainer.release();
+      mPlaceholders.remove(position);
+
+      final Diff dataHolder = mDataHolders.remove(position);
+      dataHolders.add(dataHolder);
     }
 
-    mOperations.add(Operation.acquire(Operation.DELETE, position, count, null));
+    mOperations.add(new Operation(Operation.DELETE, position, count, null, dataHolders));
   }
 
   @Override
   public void onMoved(int fromPosition, int toPosition) {
-    fromPosition += mHeadOffset;
-    toPosition += mHeadOffset;
-    mOperations.add(Operation.acquire(Operation.MOVE, fromPosition, toPosition, null));
-    ComponentContainer placeholder = mPlaceholders.remove(fromPosition);
+    final List<Diff> dataHolders = new ArrayList<>(1);
+
+    final ComponentContainer placeholder = mPlaceholders.remove(fromPosition);
     mPlaceholders.add(toPosition, placeholder);
+
+    final Diff dataHolder = mDataHolders.remove(fromPosition);
+    dataHolders.add(dataHolder);
+    mDataHolders.add(toPosition, dataHolder);
+
+    mOperations.add(new Operation(Operation.MOVE, fromPosition, toPosition, null, dataHolders));
   }
 
   @Override
   public void onChanged(int position, int count, Object payload) {
     final List<ComponentContainer> placeholders = new ArrayList<>();
+    final List<Diff> dataHolders = new ArrayList<>(count);
 
-    position += mHeadOffset;
     for (int i = 0; i < count; i++) {
       final int index = position + i;
       final ComponentContainer placeholder = mPlaceholders.get(index);
       placeholder.mNeedsComputation = true;
       placeholders.add(placeholder);
+      dataHolders.add(mDataHolders.get(index));
     }
 
-    mOperations.add(Operation.acquire(Operation.UPDATE, position, -1, placeholders));
+    mOperations.add(new Operation(Operation.UPDATE, position, -1, placeholders, dataHolders));
   }
 
   public void applyChangeset(ComponentContext c) {
     final boolean isTracing = ComponentsSystrace.isTracing();
-    for (int i = 0, size = mPlaceholders.size(); i < size; i++) {
-      if (mPlaceholders.get(i).mNeedsComputation) {
-        final Object model = mData.get(i);
+
+    if (mNextData != null && mNextData.size() != mPlaceholders.size()) {
+      logErrorForInconsistentSize(c);
+
+      // Clear mPlaceholders and mOperations since they aren't matching with mNextData anymore.
+      mOperations.clear();
+      mDataHolders.clear();
+      mPlaceholders.clear();
+
+      final List<Diff> prevDataHolders = new ArrayList<>();
+      for (int i = 0; i < mOldDataSize; i++) {
+        prevDataHolders.add(new Diff(mPrevData.get(i), null));
+      }
+      mDataHolders.addAll(prevDataHolders);
+      mOperations.add(new Operation(Operation.DELETE, 0, mOldDataSize, null, prevDataHolders));
+
+      final int dataSize = mNextData.size();
+      final List<ComponentContainer> placeholders = new ArrayList<>(dataSize);
+      final List<Diff> dataHolders = new ArrayList<>(dataSize);
+      for (int i = 0; i < dataSize; i++) {
+        final Object model = mNextData.get(i);
         if (isTracing) {
           ComponentsSystrace.beginSection("renderInfo:" + getModelName(model));
         }
-        mPlaceholders.get(i).mRenderInfo = mComponentRenderer.render(model, i);
+        final RenderInfo renderInfo = mComponentRenderer.render(model, i);
         if (isTracing) {
           ComponentsSystrace.endSection();
+        }
+
+        placeholders.add(i, new ComponentContainer(renderInfo, false));
+        dataHolders.add(new Diff(null, model));
+      }
+      mPlaceholders.addAll(placeholders);
+      mDataHolders.addAll(dataHolders);
+      mOperations.add(new Operation(Operation.INSERT, 0, -1, placeholders, dataHolders));
+    } else {
+      for (int i = 0, size = mPlaceholders.size(); i < size; i++) {
+        if (mPlaceholders.get(i).mNeedsComputation) {
+          final Object model = mNextData.get(i);
+          if (isTracing) {
+            ComponentsSystrace.beginSection("renderInfo:" + getModelName(model));
+          }
+          mPlaceholders.get(i).mRenderInfo = mComponentRenderer.render(model, i);
+          if (isTracing) {
+            ComponentsSystrace.endSection();
+          }
+          mDataHolders.get(i).setNext(model);
         }
       }
     }
@@ -202,56 +212,69 @@ public class RecyclerBinderUpdateCallback<T> implements ListUpdateCallback {
         : model.getClass().getSimpleName();
   }
 
-  public static class Operation {
+  /** Emit a soft error if the size between mPlaceholders and mNextData aren't the same. */
+  private void logErrorForInconsistentSize(ComponentContext c) {
+    final StringBuilder message = new StringBuilder();
+    message
+        .append("Inconsistent size between mPlaceholders(")
+        .append(mPlaceholders.size())
+        .append(") and mNextData(")
+        .append(mNextData.size())
+        .append("); ");
 
-    private static final SynchronizedPool<Operation>
-        sOperationsPool = new SynchronizedPool<>(8);
+    message.append("mOperations: [");
+    for (int i = 0, size = mOperations.size(); i < size; i++) {
+      final Operation operation = mOperations.get(i);
+      message
+          .append("[type=")
+          .append(operation.getType())
+          .append(", index=")
+          .append(operation.getIndex())
+          .append(", toIndex=")
+          .append(operation.getToIndex());
+      if (operation.mComponentContainers != null) {
+        message.append(", count=").append(operation.mComponentContainers.size());
+      }
+      message.append("], ");
+    }
+    message.append("]; ");
+    message.append("mNextData: [");
+    for (int i = 0, size = mNextData.size(); i < size; i++) {
+      message.append("[").append(mNextData.get(i)).append("], ");
+    }
+    message.append("]");
+    ComponentsReporter.emitMessage(ComponentsReporter.LogLevel.ERROR, message.toString());
+  }
+
+  @VisibleForTesting
+  List<Operation> getOperations() {
+    return mOperations;
+  }
+
+  public static class Operation {
 
     public static final int INSERT = 0;
     public static final int UPDATE = 1;
     public static final int DELETE = 2;
     public static final int MOVE = 3;
 
-    private int mType;
-    private int mIndex;
-    private int mToIndex;
-    private List<ComponentContainer> mComponentContainers;
+    private final int mType;
+    private final int mIndex;
+    private final int mToIndex;
+    private final List<ComponentContainer> mComponentContainers;
+    private final List<Diff> mDataContainers;
 
-    private Operation() {
-    }
-
-    private void init(
+    private Operation(
         int type,
         int index,
         int toIndex,
-        List<ComponentContainer> placeholder) {
+        List<ComponentContainer> placeholder,
+        List<Diff> dataHolders) {
       mType = type;
       mIndex = index;
       mToIndex = toIndex;
       mComponentContainers = placeholder;
-    }
-
-    private static Operation acquire(
-        int type,
-        int index,
-        int toIndex,
-        List<ComponentContainer> placeholder) {
-      Operation operation = sOperationsPool.acquire();
-      if (operation == null) {
-        operation = new Operation();
-      }
-      operation.init(type, index, toIndex, placeholder);
-
-      return operation;
-    }
-
-    private void release() {
-      if (mComponentContainers != null) {
-        mComponentContainers.clear();
-        mComponentContainers = null;
-      }
-
-      sOperationsPool.release(this);
+      mDataContainers = dataHolders;
     }
 
     public int getType() {
@@ -269,28 +292,20 @@ public class RecyclerBinderUpdateCallback<T> implements ListUpdateCallback {
     public List<ComponentContainer> getComponentContainers() {
       return mComponentContainers;
     }
+
+    public List<Diff> getDataContainers() {
+      return mDataContainers;
+    }
   }
 
   public static class ComponentContainer {
-    private static final SynchronizedPool<ComponentContainer> sComponentContainerPool =
-        new SynchronizedPool<>(8);
 
     private RenderInfo mRenderInfo;
-    private boolean mNeedsComputation = false;
+    private boolean mNeedsComputation;
 
-    public static ComponentContainer acquire() {
-      ComponentContainer componentContainer = sComponentContainerPool.acquire();
-      if (componentContainer == null) {
-        componentContainer = new ComponentContainer();
-      }
-
-      return componentContainer;
-    }
-
-    public void release() {
-      mRenderInfo = null;
-      mNeedsComputation = false;
-      sComponentContainerPool.release(this);
+    public ComponentContainer(RenderInfo renderInfo, boolean needsComputation) {
+      mRenderInfo = renderInfo;
+      mNeedsComputation = needsComputation;
     }
 
     public RenderInfo getRenderInfo() {

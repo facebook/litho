@@ -19,15 +19,15 @@ package com.facebook.litho;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.ArrayRes;
-import android.support.annotation.AttrRes;
-import android.support.annotation.BoolRes;
-import android.support.annotation.ColorRes;
-import android.support.annotation.DimenRes;
-import android.support.annotation.DrawableRes;
-import android.support.annotation.IntegerRes;
-import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
+import androidx.annotation.ArrayRes;
+import androidx.annotation.AttrRes;
+import androidx.annotation.BoolRes;
+import androidx.annotation.ColorRes;
+import androidx.annotation.DimenRes;
+import androidx.annotation.DrawableRes;
+import androidx.annotation.IntegerRes;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 
 public class ResourceResolver {
   private Resources mResources;
@@ -44,8 +44,8 @@ public class ResourceResolver {
   }
 
   public void init(ComponentContext context) {
-    mResources = context.getResources();
-    mTheme = context.getTheme();
+    mResources = context.getAndroidContext().getResources();
+    mTheme = context.getAndroidContext().getTheme();
     mResourceCache = context.getResourceCache();
   }
 
@@ -59,7 +59,7 @@ public class ResourceResolver {
     return FastMath.round(dips * scale);
   }
 
-  public String resolveStringRes(@StringRes int resId) {
+  public @Nullable String resolveStringRes(@StringRes int resId) {
     if (resId != 0) {
       String cached = mResourceCache.get(resId);
       if (cached != null) {
@@ -75,7 +75,7 @@ public class ResourceResolver {
     return null;
   }
 
-  public String resolveStringRes(@StringRes int resId, Object... formatArgs) {
+  public @Nullable String resolveStringRes(@StringRes int resId, Object... formatArgs) {
     return resId != 0 ? mResources.getString(resId, formatArgs) : null;
   }
 

@@ -16,6 +16,8 @@
 
 package com.facebook.litho;
 
+import static android.content.res.Configuration.ORIENTATION_LANDSCAPE;
+import static android.content.res.Configuration.ORIENTATION_PORTRAIT;
 import static android.graphics.Color.BLACK;
 import static android.graphics.Color.WHITE;
 import static android.view.View.MeasureSpec.AT_MOST;
@@ -106,7 +108,30 @@ public class MountStateRemountInPlaceTest {
     assertThat(secondComponent.wasOnBindCalled()).isTrue();
     assertThat(firstComponent.wasOnUnmountCalled()).isFalse();
   }
-  
+
+  @Test
+  public void testMountUnmountWithNewOrientation() {
+    mContext.getResources().getConfiguration().orientation = ORIENTATION_PORTRAIT;
+    final TestComponent firstComponent = create(mContext).build();
+
+    final LithoView lithoView =
+        mountComponent(mContext, Column.create(mContext).child(firstComponent).build());
+
+    assertThat(firstComponent.wasOnMountCalled()).isTrue();
+    assertThat(firstComponent.wasOnBindCalled()).isTrue();
+    assertThat(firstComponent.wasOnUnmountCalled()).isFalse();
+
+    mContext.getResources().getConfiguration().orientation = ORIENTATION_LANDSCAPE;
+    final TestComponent secondComponent = create(mContext).build();
+
+    lithoView.getComponentTree().setRoot(Column.create(mContext).child(secondComponent).build());
+
+    assertThat(secondComponent.wasOnMountCalled()).isTrue();
+    assertThat(secondComponent.wasOnBindCalled()).isTrue();
+    assertThat(firstComponent.wasOnUnbindCalled()).isTrue();
+    assertThat(firstComponent.wasOnUnmountCalled()).isTrue();
+  }
+
   @Test
   public void testMountUnmountWithNoShouldUpdateAndDifferentSize() {
     final TestComponent firstComponent =

@@ -90,12 +90,13 @@ object BoundsAnimationComponentSpec {
 
   @OnUpdateState
   fun toggleABT(autoBoundsTransitionEnabled: StateValue<Boolean>) {
-    autoBoundsTransitionEnabled.set(!autoBoundsTransitionEnabled.get())
+    autoBoundsTransitionEnabled.set(!(autoBoundsTransitionEnabled.get()!!))
   }
 
   private fun affectedChildren(c: ComponentContext, flag1: Boolean): Component =
       Row.create(c)
           .transitionKey(TRANSITION_KEY_CONTAINER_1)
+          .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
           .heightDip((60 + 2 * 8).toFloat())
           .widthDip(3 * 60 * (if (flag1) 0.5f else 1f) + 4 * 8)
           .paddingDip(YogaEdge.ALL, 8f)
@@ -103,11 +104,13 @@ object BoundsAnimationComponentSpec {
           .child(
               Column.create(c)
                   .transitionKey(TRANSITION_KEY_CHILD_1_1)
+                  .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
                   .flex(1f)
                   .backgroundColor(Color.RED))
           .child(
               Column.create(c)
                   .transitionKey(TRANSITION_KEY_CHILD_1_2)
+                  .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
                   .flex(1f)
                   .backgroundColor(Color.RED)
                   .marginDip(YogaEdge.HORIZONTAL, 8f))
@@ -115,6 +118,7 @@ object BoundsAnimationComponentSpec {
               Column.create(c)
                   .flex(1f)
                   .transitionKey(TRANSITION_KEY_CHILD_1_3)
+                  .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
                   .backgroundColor(Color.RED))
           .clickHandler(BoundsAnimationComponent.onFirstComponentClick(c))
           .build()
@@ -126,12 +130,13 @@ object BoundsAnimationComponentSpec {
 
   @OnUpdateState
   fun toggleFlag1(flag1: StateValue<Boolean>) {
-    flag1.set(!flag1.get())
+    flag1.set(!(flag1.get()!!))
   }
 
   private fun affectedSiblings(c: ComponentContext, flag2: Boolean): Component =
       Row.create(c)
           .transitionKey(TRANSITION_KEY_CONTAINER_2)
+          .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
           .heightDip((60 + 2 * 8).toFloat())
           .widthDip((3 * 60 + 3 * 8).toFloat())
           .paddingDip(YogaEdge.ALL, 8f)
@@ -139,11 +144,13 @@ object BoundsAnimationComponentSpec {
           .child(
               Column.create(c)
                   .transitionKey(TRANSITION_KEY_CHILD_2_1)
+                  .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
                   .flex(1f)
                   .backgroundColor(Color.RED))
           .child(
               Column.create(c)
                   .transitionKey(TRANSITION_KEY_CHILD_2_2)
+                  .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
                   .flex((if (flag2) 1 else 2).toFloat())
                   .backgroundColor(Color.YELLOW)
                   .marginDip(YogaEdge.LEFT, 8f))
@@ -157,7 +164,7 @@ object BoundsAnimationComponentSpec {
 
   @OnUpdateState
   fun toggleFlag2(flag2: StateValue<Boolean>) {
-    flag2.set(!flag2.get())
+    flag2.set(!(flag2.get()!!))
   }
 
   private fun affectedParent(c: ComponentContext, flag3: Boolean): Component =
@@ -166,12 +173,14 @@ object BoundsAnimationComponentSpec {
           .child(
               Row.create(c)
                   .transitionKey(TRANSITION_KEY_CONTAINER_3)
+                  .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
                   .heightDip((60 + 2 * 8).toFloat())
                   .paddingDip(YogaEdge.ALL, 8f)
                   .backgroundColor(Color.LTGRAY)
                   .child(
                       Column.create(c)
                           .transitionKey(TRANSITION_KEY_CHILD_3_1)
+                          .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
                           .widthDip((60 * if (flag3) 1 else 2).toFloat())
                           .backgroundColor(Color.YELLOW))
                   .clickHandler(BoundsAnimationComponent.onThirdComponentClick(c)))
@@ -184,12 +193,13 @@ object BoundsAnimationComponentSpec {
 
   @OnUpdateState
   fun toggleFlag3(flag3: StateValue<Boolean>) {
-    flag3.set(!flag3.get())
+    flag3.set(!(flag3.get()!!))
   }
 
   private fun altogether(c: ComponentContext, flag4: Boolean): Component =
       Column.create(c)
           .transitionKey(TRANSITION_KEY_CONTAINER_4)
+          .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
           .marginDip(YogaEdge.TOP, 24f)
           .heightDip((60 * 2 + 3 * 8).toFloat())
           .paddingDip(YogaEdge.ALL, 8f)
@@ -197,23 +207,27 @@ object BoundsAnimationComponentSpec {
           .child(
               Row.create(c)
                   .transitionKey(TRANSITION_KEY_CONTAINER_4_1)
+                  .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
                   .heightDip(60f)
                   .paddingDip(YogaEdge.ALL, 6f)
                   .backgroundColor(Color.GRAY)
                   .child(
                       Column.create(c)
                           .transitionKey(TRANSITION_KEY_CHILD_4_1_1)
+                          .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
                           .marginDip(YogaEdge.RIGHT, 6f)
                           .flex(1f)
                           .backgroundColor(Color.RED))
                   .child(
                       Column.create(c)
                           .transitionKey(TRANSITION_KEY_CHILD_4_1_2)
+                          .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
                           .flex(1f)
                           .backgroundColor(Color.RED)))
           .child(
               Row.create(c)
                   .transitionKey(TRANSITION_KEY_CONTAINER_4_2)
+                  .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
                   .heightDip(60f)
                   .marginDip(YogaEdge.TOP, 8f)
                   .paddingDip(YogaEdge.ALL, 6f)
@@ -221,12 +235,14 @@ object BoundsAnimationComponentSpec {
                   .child(
                       Column.create(c)
                           .transitionKey(TRANSITION_KEY_CHILD_4_2_1)
+                          .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
                           .marginDip(YogaEdge.RIGHT, 6f)
                           .widthDip(100f)
                           .backgroundColor(Color.RED))
                   .child(
                       Column.create(c)
                           .transitionKey(TRANSITION_KEY_CHILD_4_2_2)
+                          .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
                           .widthDip((if (flag4) 200 else 100).toFloat())
                           .backgroundColor(Color.YELLOW)))
           .clickHandler(BoundsAnimationComponent.onFourthComponentClick(c))
@@ -239,7 +255,7 @@ object BoundsAnimationComponentSpec {
 
   @OnUpdateState
   fun toggleFlag4(flag4: StateValue<Boolean>) {
-    flag4.set(!flag4.get())
+    flag4.set(!(flag4.get()!!))
   }
 
   @OnCreateTransition
@@ -270,7 +286,7 @@ object BoundsAnimationComponentSpec {
           TRANSITION_KEY_CHILD_4_2_2)
     }
 
-    return Transition.create(*transitionKeys)
+    return Transition.create(Transition.TransitionKeyType.GLOBAL, *transitionKeys)
         .animate(AnimatedProperties.WIDTH, AnimatedProperties.X)
         .animator(Transition.timing(1000))
   }

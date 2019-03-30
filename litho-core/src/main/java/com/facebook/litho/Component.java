@@ -16,32 +16,35 @@
 
 package com.facebook.litho;
 
-import static android.support.annotation.Dimension.DP;
+import static androidx.annotation.Dimension.DP;
+import static com.facebook.litho.ComponentKeyUtils.getKeyForChildPosition;
 
 import android.animation.AnimatorInflater;
 import android.animation.StateListAnimator;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import android.support.annotation.AttrRes;
-import android.support.annotation.ColorInt;
-import android.support.annotation.DimenRes;
-import android.support.annotation.Dimension;
-import android.support.annotation.DrawableRes;
-import android.support.annotation.GuardedBy;
-import android.support.annotation.Px;
-import android.support.annotation.StringRes;
-import android.support.annotation.StyleRes;
-import android.support.annotation.VisibleForTesting;
-import android.support.v4.content.ContextCompat;
 import android.util.SparseArray;
+import android.util.SparseIntArray;
 import android.view.ViewOutlineProvider;
+import androidx.annotation.AttrRes;
+import androidx.annotation.ColorInt;
+import androidx.annotation.DimenRes;
+import androidx.annotation.Dimension;
+import androidx.annotation.DrawableRes;
+import androidx.annotation.GuardedBy;
+import androidx.annotation.Px;
+import androidx.annotation.StringRes;
+import androidx.annotation.StyleRes;
+import androidx.annotation.VisibleForTesting;
 import com.facebook.infer.annotation.ReturnsOwnership;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
+import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.config.ComponentsConfiguration;
-import com.facebook.litho.reference.DrawableReference;
-import com.facebook.litho.reference.Reference;
+import com.facebook.litho.drawable.ComparableColorDrawable;
+import com.facebook.litho.drawable.ComparableDrawable;
+import com.facebook.litho.drawable.ComparableResDrawable;
+import com.facebook.litho.drawable.DefaultComparableDrawable;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
@@ -51,9 +54,10 @@ import com.facebook.yoga.YogaWrap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nullable;
@@ -64,9 +68,13 @@ import javax.annotation.Nullable;
  * values for individual props. {@link Component} instances are immutable after creation.
  */
 public abstract class Component extends ComponentLifecycle
-    implements Cloneable, HasEventDispatcher, HasEventTrigger {
+    implements Cloneable, HasEventDispatcher, HasEventTrigger, Equivalence<Component> {
 
   private static final AtomicInteger sIdGenerator = new AtomicInteger(1);
+
+  boolean mIsNestedTreeResolutionExperimentEnabled =
+      ComponentsConfiguration.isNestedTreeResolutionExperimentEnabled;
+
   private int mId = sIdGenerator.getAndIncrement();
   @Nullable private String mOwnerGlobalKey;
   private String mGlobalKey;
@@ -76,12 +84,6 @@ public abstract class Component extends ComponentLifecycle
   @GuardedBy("this")
   private AtomicBoolean mLayoutVersionGenerator = new AtomicBoolean();
 
-  /**
-   * Whether this Component should split the layout calculation of its direct children on multiple
-   * background threads.
-   */
-  protected boolean mSplitChildrenLayoutInThreadPool;
-
   @ThreadConfined(ThreadConfined.ANY)
   private @Nullable ComponentContext mScopedContext;
 
@@ -89,15 +91,18 @@ public abstract class Component extends ComponentLifecycle
 
   // If we have a cachedLayout, onPrepare and onMeasure would have been called on it already.
   @ThreadConfined(ThreadConfined.ANY)
-  private InternalNode mLastMeasuredLayout;
+  @GuardedBy("this")
+  public @Nullable ConcurrentHashMap<Long, InternalNode> mThreadIdToLastMeasuredLayout;
 
-  @Nullable private CommonPropsHolder mCommonPropsHolder;
+  @Nullable private CommonProps mCommonProps;
 
   /**
    * Holds onto how many direct component children of each type this Component has. Used for
    * automatically generating unique global keys for all sibling components of the same type.
    */
-  @Nullable private Map<String, Integer> mChildCounters;
+  @Nullable private SparseIntArray mChildCounters;
+
+  @Nullable private Set<String> mManualKeys;
 
   /**
    * Holds an event handler with its dispatcher set to the parent component, or - in case that this
@@ -132,21 +137,35 @@ public abstract class Component extends ComponentLifecycle
     mSimpleName = simpleName;
   }
 
-  /** Mostly used by logging to provide more readable messages. */
+  /** Should only be used by logging to provide more readable messages. */
   public final String getSimpleName() {
-    return mSimpleName;
+    final Component delegate = getSimpleNameDelegate();
+    if (delegate == null) {
+      return mSimpleName;
+    }
+
+    return mSimpleName + "(" + getFirstNonSimpleNameDelegate(delegate).getSimpleName() + ")";
+  }
+
+  /**
+   * @return the Component this Component should delegate its getSimpleName calls to. See {@link
+   *     LayoutSpec#simpleNameDelegate()}
+   */
+  protected @Nullable Component getSimpleNameDelegate() {
+    return null;
   }
 
   /**
    * Compares this component to a different one to check if they are the same
    *
-   * This is used to be able to skip rendering a component again. We avoid using the
-   * {@link Object#equals(Object)} so we can optimize the code better over time since we don't have
-   * to adhere to the contract required for a equals method.
+   * <p>This is used to be able to skip rendering a component again. We avoid using the {@link
+   * Object#equals(Object)} so we can optimize the code better over time since we don't have to
+   * adhere to the contract required for a equals method.
    *
    * @param other the component to compare to
    * @return true if the components are of the same type and have the same props
    */
+  @Override
   public boolean isEquivalentTo(Component other) {
     if (this == other) {
       return true;
@@ -161,7 +180,7 @@ public abstract class Component extends ComponentLifecycle
     return ComponentUtils.hasEquivalentFields(this, other);
   }
 
-  protected StateContainer getStateContainer() {
+  protected @Nullable StateContainer getStateContainer() {
     return null;
   }
 
@@ -180,15 +199,15 @@ public abstract class Component extends ComponentLifecycle
   // TODO(t30797526): Remove
   private static void assertSameBaseContext(
       ComponentContext scopedContext, ComponentContext willRenderContext) {
-    if (scopedContext.getBaseContext() != willRenderContext.getBaseContext()) {
+    if (scopedContext.getAndroidContext() != willRenderContext.getAndroidContext()) {
       final ComponentsLogger logger = scopedContext.getLogger();
       if (logger != null) {
         logger.emitMessage(
             ComponentsLogger.LogLevel.ERROR,
             "Found mismatching base contexts between the Component's Context ("
-                + scopedContext.getBaseContext()
+                + scopedContext.getAndroidContext()
                 + ") and the Context used in willRender ("
-                + willRenderContext.getBaseContext()
+                + willRenderContext.getAndroidContext()
                 + ")!");
       }
     }
@@ -221,13 +240,18 @@ public abstract class Component extends ComponentLifecycle
 
   /**
    * Set a key for this component that is unique within its tree.
-   * @param key
    *
+   * @param key
    */
   // thread-safe because the one write is before all the reads
   @ThreadSafe(enableChecks = false)
-  private void setGlobalKey(String key) {
+  void setGlobalKey(String key) {
     mGlobalKey = key;
+  }
+
+  /** @return if has a manually set key */
+  boolean hasManualKey() {
+    return mHasManualKey;
   }
 
   /**
@@ -255,78 +279,113 @@ public abstract class Component extends ComponentLifecycle
    * children of the same type. If a manual key has been set on the child component using the .key()
    * method, return the manual key.
    *
+   * <p>TODO: (T38237241) remove the usage of the key handler post the nested tree experiment
+   *
    * @param component the child component for which we're finding a unique global key
    * @param key the key of the child component as determined by its lifecycle id or manual setting
    * @return a unique global key for this component relative to its siblings.
    */
   private String generateUniqueGlobalKeyForChild(Component component, String key) {
-
     final String childKey = ComponentKeyUtils.getKeyWithSeparator(getGlobalKey(), key);
     final KeyHandler keyHandler = mScopedContext.getKeyHandler();
 
-    /** Null check is for testing only, the keyHandler should never be null here otherwise. */
+    /* Null check is for testing only, the keyHandler should never be null here otherwise. */
     if (keyHandler == null) {
       return childKey;
     }
 
-    /** If the key is already unique, return it. */
-    if (!keyHandler.hasKey(childKey)) {
+    if (mIsNestedTreeResolutionExperimentEnabled) {
+      /*
+       Instead of relying on the KeyHandler to hold all registered keys and check for duplicates
+       against it; this implementation checks if the key (read child type) is unique within it's
+       parent. Which will recursively ensure that all global keys are unique.
+
+       This will also calculate the global keys for the descendants of a nested tree correctly if
+       it is resolved again, which causes clashes with the KeyHandler because the keys were
+       already registered during measure pass.
+      */
+
+      if (component.mHasManualKey) { // if the component has a manual key
+        if (mManualKeys == null) {
+          mManualKeys = new HashSet<>();
+        }
+        if (mManualKeys.contains(childKey)) { // if it is a duplicate
+          logDuplicateManualKeyWarning(component, key); // log a warning and generate a unique key
+        } else {
+          mManualKeys.add(childKey);
+          getChildCountAndIncrement(component); // to avoid subsequent clash with a generated key
+          return childKey; // return it
+        }
+      }
+
+      int childCount = getChildCountAndIncrement(component);
+
+      if (childCount == 0) { // if first child of type then return the child key
+        return childKey;
+      } else { // if NOT first child of type append the child count to the child key
+        return getKeyForChildPosition(childKey, childCount);
+      }
+
+    } else if (keyHandler.hasKey(childKey)) { // If the key is duplicate append it with child count
+
+      // The component has a manual key set on it but that key is a duplicate
+      if (component.mHasManualKey) {
+        logDuplicateManualKeyWarning(component, key); // log a warning and generate a key
+      }
+
+      return getKeyForChildPosition(childKey, getChildCountAndIncrement(component));
+    } else { // If the key is unique return it
       return childKey;
     }
-
-    /** The component has a manual key set on it but that key is a duplicate * */
-    if (component.mHasManualKey) {
-      final ComponentsLogger logger = mScopedContext.getLogger();
-      if (logger != null) {
-        logger.emitMessage(
-            ComponentsLogger.LogLevel.WARNING,
-            "The manual key "
-                + key
-                + " you are setting on this "
-                + component.getSimpleName()
-                + " is a duplicate and will be changed into a unique one. "
-                + "This will result in unexpected behavior if you don't change it.");
-      }
-    }
-
-    final String childType = component.getSimpleName();
-
-    if (mChildCounters == null) {
-      mChildCounters = new HashMap<>();
-    }
-
-    /**
-     * If the key is a duplicate, we append an index based on the child component's type that would
-     * uniquely identify it.
-     */
-    int childIndex = mChildCounters.containsKey(childType) ? mChildCounters.get(childType) : 0;
-
-    String uniqueKey = ComponentKeyUtils.getKeyForChildPosition(childKey, childIndex);
-
-    mChildCounters.put(childType, childIndex + 1);
-
-    return uniqueKey;
   }
 
-  Component makeCopyWithNullContext() {
-    try {
-      final Component component = (Component) super.clone();
-      component.mScopedContext = null;
-      return component;
-    } catch (CloneNotSupportedException e) {
-      throw new RuntimeException(e);
+  /**
+   * Returns the number of children of a given type {@code this} component has and then increments
+   * it by 1.
+   *
+   * @param component the child component
+   * @return the number of children of {@param component} type
+   */
+  private int getChildCountAndIncrement(Component component) {
+    if (mChildCounters == null) {
+      mChildCounters = new SparseIntArray();
+    }
+
+    final int typeId = component.getTypeId();
+    final int count = mChildCounters.get(typeId, 0);
+    mChildCounters.put(typeId, count + 1);
+
+    return count;
+  }
+
+  private void logDuplicateManualKeyWarning(Component component, String key) {
+    final ComponentsLogger logger = mScopedContext.getLogger();
+    if (logger != null) {
+      logger.emitMessage(
+          ComponentsLogger.LogLevel.WARNING,
+          "The manual key "
+              + key
+              + " you are setting on this "
+              + component.getSimpleName()
+              + " is a duplicate and will be changed into a unique one. "
+              + "This will result in unexpected behavior if you don't change it.");
     }
   }
 
   public Component makeShallowCopy() {
     try {
       final Component component = (Component) super.clone();
+
+      if (mIsNestedTreeResolutionExperimentEnabled) {
+        component.mGlobalKey = null;
+      }
+
       component.mIsLayoutStarted = false;
       component.mHasManualKey = false;
       component.mLayoutVersionGenerator = new AtomicBoolean();
       component.mScopedContext = null;
       component.mChildCounters = null;
-      component.mLastMeasuredLayout = null;
+      component.mManualKeys = null;
 
       return component;
     } catch (CloneNotSupportedException e) {
@@ -341,28 +400,24 @@ public abstract class Component extends ComponentLifecycle
     return component;
   }
 
-  boolean hasCachedLayout() {
-    return (mLastMeasuredLayout != null);
-  }
-
+  @Nullable
   InternalNode getCachedLayout() {
-    return mLastMeasuredLayout;
+    return mThreadIdToLastMeasuredLayout == null
+        ? null
+        : mThreadIdToLastMeasuredLayout.get(Thread.currentThread().getId());
   }
 
-  @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-  protected void releaseCachedLayout() {
-    if (mLastMeasuredLayout != null) {
-      LayoutState.releaseNodeTree(mLastMeasuredLayout, true /* isNestedTree */);
-      mLastMeasuredLayout = null;
+  /**
+   * Only use if absolutely needed! This removes the cached layout so this component will be
+   * remeasured even if it has alread been measured with the same size specs.
+   */
+  public void clearCachedLayout() {
+    if (getCachedLayout() != null) {
+      mThreadIdToLastMeasuredLayout.remove(Thread.currentThread().getId());
     }
   }
 
-  @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-  protected void clearCachedLayout() {
-    mLastMeasuredLayout = null;
-  }
-
-  void release() {
+  void reset() {
     mIsLayoutStarted = false;
   }
 
@@ -375,62 +430,79 @@ public abstract class Component extends ComponentLifecycle
    * @param outputSize Size object that will be set with the measured dimensions.
    */
   public void measure(ComponentContext c, int widthSpec, int heightSpec, Size outputSize) {
-    if (mLastMeasuredLayout == null
+    InternalNode lastMeasuredLayout = getCachedLayout();
+    if (lastMeasuredLayout == null
         || !MeasureComparisonUtils.isMeasureSpecCompatible(
-            mLastMeasuredLayout.getLastWidthSpec(), widthSpec, mLastMeasuredLayout.getWidth())
+            lastMeasuredLayout.getLastWidthSpec(), widthSpec, lastMeasuredLayout.getWidth())
         || !MeasureComparisonUtils.isMeasureSpecCompatible(
-            mLastMeasuredLayout.getLastHeightSpec(), heightSpec, mLastMeasuredLayout.getHeight())) {
-      releaseCachedLayout();
+            lastMeasuredLayout.getLastHeightSpec(), heightSpec, lastMeasuredLayout.getHeight())) {
+      clearCachedLayout();
 
-      mLastMeasuredLayout =
+      lastMeasuredLayout =
           LayoutState.createAndMeasureTreeForComponent(c, this, widthSpec, heightSpec);
+
+      // We just want to make sure this isn't initialized on multiple threads
+      synchronized (this) {
+        if (mThreadIdToLastMeasuredLayout == null) {
+          mThreadIdToLastMeasuredLayout = new ConcurrentHashMap<>(2);
+        }
+      }
+      mThreadIdToLastMeasuredLayout.put(Thread.currentThread().getId(), lastMeasuredLayout);
 
       // This component resolution won't be deferred nor onMeasure called if it's a layout spec.
       // In that case it needs to manually save the latest saze specs.
       // The size specs will be checked during the calculation (or collection) of the main tree.
       if (Component.isLayoutSpec(this)) {
-        mLastMeasuredLayout.setLastWidthSpec(widthSpec);
-        mLastMeasuredLayout.setLastHeightSpec(heightSpec);
-        mLastMeasuredLayout.setLastMeasuredWidth(mLastMeasuredLayout.getWidth());
-        mLastMeasuredLayout.setLastMeasuredHeight(mLastMeasuredLayout.getHeight());
+        lastMeasuredLayout.setLastWidthSpec(widthSpec);
+        lastMeasuredLayout.setLastHeightSpec(heightSpec);
+        lastMeasuredLayout.setLastMeasuredWidth(lastMeasuredLayout.getWidth());
+        lastMeasuredLayout.setLastMeasuredHeight(lastMeasuredLayout.getHeight());
       }
     }
 
-    outputSize.width = mLastMeasuredLayout.getWidth();
-    outputSize.height = mLastMeasuredLayout.getHeight();
+    outputSize.width = lastMeasuredLayout.getWidth();
+    outputSize.height = lastMeasuredLayout.getHeight();
   }
 
   protected void copyInterStageImpl(Component component) {
 
   }
 
-  static boolean isHostSpec(Component component) {
+  static boolean isHostSpec(@Nullable Component component) {
     return (component instanceof HostComponent);
   }
 
-  static boolean isLayoutSpec(Component component) {
+  static boolean isLayoutSpec(@Nullable Component component) {
     return (component != null && component.getMountType() == MountType.NONE);
   }
 
-  static boolean isMountSpec(Component component) {
+  static boolean isMountSpec(@Nullable Component component) {
     return (component != null && component.getMountType() != MountType.NONE);
   }
 
-  static boolean isMountDrawableSpec(Component component) {
+  static boolean isMountDrawableSpec(@Nullable Component component) {
     return (component != null && component.getMountType() == MountType.DRAWABLE);
   }
 
-  static boolean isMountViewSpec(Component component) {
+  static boolean isMountViewSpec(@Nullable Component component) {
     return (component != null && component.getMountType() == MountType.VIEW);
   }
 
-  static boolean isLayoutSpecWithSizeSpec(Component component) {
+  static boolean isLayoutSpecWithSizeSpec(@Nullable Component component) {
     return (isLayoutSpec(component) && component.canMeasure());
   }
 
-  static boolean isNestedTree(Component component) {
+  static boolean isNestedTree(@Nullable Component component) {
     return (isLayoutSpecWithSizeSpec(component)
-        || (component != null && component.hasCachedLayout()));
+        || (component != null && component.getCachedLayout() != null));
+  }
+
+  private static Component getFirstNonSimpleNameDelegate(Component component) {
+    Component current = component;
+    while (current.getSimpleNameDelegate() != null) {
+      current = current.getSimpleNameDelegate();
+    }
+    return current;
   }
 
   /**
@@ -490,17 +562,23 @@ public abstract class Component extends ComponentLifecycle
   /** Called to install internal state based on a component's parent context. */
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
   protected void updateInternalChildState(ComponentContext parentContext) {
-    updateInternalChildState(parentContext, false);
-  }
+    if (ComponentsConfiguration.isDebugModeEnabled || ComponentsConfiguration.useGlobalKeys) {
 
-  /** Called to install internal state based on a component's parent context. */
-  @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-  protected void updateInternalChildState(
-      ComponentContext parentContext, boolean shouldForwardSplitLayoutStatus) {
-    generateKey(parentContext);
+      // allow overriding global key if the NestedTreeResolution Experiment is disabled
+      if (!mIsNestedTreeResolutionExperimentEnabled || getGlobalKey() == null) {
+        String globalKey = generateKey(parentContext);
+        setGlobalKey(globalKey);
+
+        final KeyHandler keyHandler = parentContext.getKeyHandler();
+        // This is for testing, the keyHandler should never be null here otherwise.
+        if (!mIsNestedTreeResolutionExperimentEnabled && keyHandler != null) {
+          keyHandler.registerKey(this);
+        }
+      }
+    }
+
     applyStateUpdates(parentContext);
     generateErrorEventHandler(parentContext);
-    setSplitLayoutOnThreadPoolStatus(parentContext, shouldForwardSplitLayoutStatus);
 
     // Needed for tests, mocks can run into this.
     if (mLayoutVersionGenerator != null) {
@@ -508,53 +586,34 @@ public abstract class Component extends ComponentLifecycle
     }
   }
 
-  private void setSplitLayoutOnThreadPoolStatus(
-      ComponentContext parentContext, boolean shouldForwardSplitLayoutStatus) {
-    mSplitChildrenLayoutInThreadPool =
-        SplitBackgroundLayoutConfiguration.canSplitChildrenLayouts(parentContext, this);
+  private String generateKey(ComponentContext parentContext) {
+    final Component parentScope = parentContext.getComponentScope();
+    final String key = getKey();
+    final String globalKey;
 
-    final Component parent = parentContext.getComponentScope();
-    if (parent == null) {
-      return;
-    }
-
-    /**
-     * For parent components that enable split layout but wrap their children in a Row or Column,
-     * forward this flag to the Row or Column to split the layout of their children.
-     */
-    if (shouldForwardSplitLayoutStatus) {
-      mSplitChildrenLayoutInThreadPool = parent.mSplitChildrenLayoutInThreadPool;
-    }
-  }
-
-  private void generateKey(ComponentContext parentContext) {
-    if (ComponentsConfiguration.isDebugModeEnabled || ComponentsConfiguration.useGlobalKeys) {
-      final Component parentScope = parentContext.getComponentScope();
-      final String key = getKey();
-
-      if (parentScope == null) {
-        setGlobalKey(key);
-      } else {
-        if (parentScope.getGlobalKey() == null) {
-          final ComponentsLogger logger = parentContext.getLogger();
-          if (logger != null) {
-            logger.emitMessage(
-                ComponentsLogger.LogLevel.ERROR,
-                "Trying to generate parent-based key for component "
-                    + getSimpleName()
-                    + " , but parent "
-                    + parentScope.getSimpleName()
-                    + " has a null global key \"."
-                    + " This is most likely a configuration mistake, check the value of ComponentsConfiguration.useGlobalKeys.");
-          }
-
-          setGlobalKey("null" + key);
-        } else {
-          setGlobalKey(
-              parentScope == null ? key : parentScope.generateUniqueGlobalKeyForChild(this, key));
+    if (parentScope == null) {
+      globalKey = key;
+    } else {
+      if (parentScope.getGlobalKey() == null) {
+        final ComponentsLogger logger = parentContext.getLogger();
+        if (logger != null) {
+          logger.emitMessage(
+              ComponentsLogger.LogLevel.ERROR,
+              "Trying to generate parent-based key for component "
+                  + getSimpleName()
+                  + " , but parent "
+                  + parentScope.getSimpleName()
+                  + " has a null global key \"."
+                  + " This is most likely a configuration mistake, check the value of ComponentsConfiguration.useGlobalKeys.");
         }
+
+        globalKey = "null" + key;
+      } else {
+        globalKey = parentScope.generateUniqueGlobalKeyForChild(this, key);
       }
     }
+
+    return globalKey;
   }
 
   private void generateErrorEventHandler(ComponentContext parentContext) {
@@ -584,17 +643,7 @@ public abstract class Component extends ComponentLifecycle
    */
   private void applyStateUpdates(ComponentContext c) {
     setScopedContext(ComponentContext.withComponentScope(c, this));
-
     populateTreeProps(getScopedContext().getTreeProps());
-
-    if (ComponentsConfiguration.isDebugModeEnabled || ComponentsConfiguration.useGlobalKeys) {
-      final KeyHandler keyHandler = getScopedContext().getKeyHandler();
-      // This is for testing, the keyHandler should never be null here otherwise.
-      if (keyHandler != null && !ComponentsConfiguration.isEndToEndTestRun) {
-        keyHandler.registerKey(this);
-      }
-    }
-
     if (hasState()) {
       c.getStateHandler().applyStateUpdatesForComponent(this);
     }
@@ -631,20 +680,26 @@ public abstract class Component extends ComponentLifecycle
     return false;
   }
 
+  @Nullable
   CommonPropsCopyable getCommonPropsCopyable() {
-    return mCommonPropsHolder;
+    return mCommonProps;
   }
 
+  @Nullable
   public CommonProps getCommonProps() {
-    return mCommonPropsHolder;
+    return mCommonProps;
   }
 
-  private CommonPropsHolder getOrCreateCommonPropsHolder() {
-    if (mCommonPropsHolder == null) {
-      mCommonPropsHolder = new CommonPropsHolder();
+  private CommonProps getOrCreateCommonProps() {
+    if (mCommonProps == null) {
+      if (ComponentsConfiguration.isSparseCommonPropsHolderIsEnabled) {
+        mCommonProps = new SparseCommonPropsHolder();
+      } else {
+        mCommonProps = new CommonPropsHolder();
+      }
     }
 
-    return mCommonPropsHolder;
+    return mCommonProps;
   }
 
   @Deprecated
@@ -672,6 +727,16 @@ public abstract class Component extends ComponentLifecycle
         new WorkingRangeContainer.Registration(name, workingRange, component));
   }
 
+  public boolean hasBackgroundSet() {
+    return mCommonProps != null && mCommonProps.getBackground() != null;
+  }
+
+  public boolean hasClickHandlerSet() {
+    return mCommonProps != null
+        && mCommonProps.getNullableNodeInfo() != null
+        && mCommonProps.getNullableNodeInfo().getClickHandler() != null;
+  }
+
   /**
    * @param <T> the type of this builder. Required to ensure methods defined here in the abstract
    *     class correctly return the type of the concrete subclass.
@@ -691,13 +756,16 @@ public abstract class Component extends ComponentLifecycle
       mComponent = component;
       mContext = c;
 
+      mComponent.mIsNestedTreeResolutionExperimentEnabled =
+          mContext.isNestedTreeResolutionExperimentEnabled();
+
       final Component owner = getOwner();
       if (owner != null) {
         mComponent.mOwnerGlobalKey = owner.getGlobalKey();
       }
 
       if (defStyleAttr != 0 || defStyleRes != 0) {
-        mComponent.getOrCreateCommonPropsHolder().setStyle(defStyleAttr, defStyleRes);
+        mComponent.getOrCreateCommonProps().setStyle(defStyleAttr, defStyleRes);
         component.loadStyle(c, defStyleAttr, defStyleRes);
       }
     }
@@ -734,12 +802,6 @@ public abstract class Component extends ComponentLifecycle
       return getThis();
     }
 
-    protected void release() {
-      mContext = null;
-      mComponent = null;
-      mResourceResolver = null;
-    }
-
     /**
      * Checks that all the required props are supplied, and if not throws a useful exception
      *
@@ -773,7 +835,7 @@ public abstract class Component extends ComponentLifecycle
      * <p>Default: {@link YogaDirection#INHERIT}
      */
     public T layoutDirection(@Nullable YogaDirection layoutDirection) {
-      mComponent.getOrCreateCommonPropsHolder().layoutDirection(layoutDirection);
+      mComponent.getOrCreateCommonProps().layoutDirection(layoutDirection);
       return getThis();
     }
 
@@ -786,7 +848,7 @@ public abstract class Component extends ComponentLifecycle
      * <p>Default: {@link YogaAlign#AUTO}
      */
     public T alignSelf(@Nullable YogaAlign alignSelf) {
-      mComponent.getOrCreateCommonPropsHolder().alignSelf(alignSelf);
+      mComponent.getOrCreateCommonProps().alignSelf(alignSelf);
       return getThis();
     }
 
@@ -798,7 +860,7 @@ public abstract class Component extends ComponentLifecycle
      * <p>Default: {@link YogaPositionType#RELATIVE}
      */
     public T positionType(@Nullable YogaPositionType positionType) {
-      mComponent.getOrCreateCommonPropsHolder().positionType(positionType);
+      mComponent.getOrCreateCommonProps().positionType(positionType);
       return getThis();
     }
 
@@ -820,7 +882,7 @@ public abstract class Component extends ComponentLifecycle
      * <p>Default: 0
      */
     public T flex(float flex) {
-      mComponent.getOrCreateCommonPropsHolder().flex(flex);
+      mComponent.getOrCreateCommonProps().flex(flex);
       return getThis();
     }
 
@@ -834,7 +896,7 @@ public abstract class Component extends ComponentLifecycle
      * <p>Default: 0
      */
     public T flexGrow(float flexGrow) {
-      mComponent.getOrCreateCommonPropsHolder().flexGrow(flexGrow);
+      mComponent.getOrCreateCommonProps().flexGrow(flexGrow);
       return getThis();
     }
 
@@ -847,7 +909,7 @@ public abstract class Component extends ComponentLifecycle
      * <p>Default: 1
      */
     public T flexShrink(float flexShrink) {
-      mComponent.getOrCreateCommonPropsHolder().flexShrink(flexShrink);
+      mComponent.getOrCreateCommonProps().flexShrink(flexShrink);
       return getThis();
     }
 
@@ -864,7 +926,7 @@ public abstract class Component extends ComponentLifecycle
      * <p>Default: 0
      */
     public T flexBasisPx(@Px int flexBasis) {
-      mComponent.getOrCreateCommonPropsHolder().flexBasisPx(flexBasis);
+      mComponent.getOrCreateCommonProps().flexBasisPx(flexBasis);
       return getThis();
     }
 
@@ -873,7 +935,7 @@ public abstract class Component extends ComponentLifecycle
      * @param percent a value between 0 and 100.
      */
     public T flexBasisPercent(float percent) {
-      mComponent.getOrCreateCommonPropsHolder().flexBasisPercent(percent);
+      mComponent.getOrCreateCommonProps().flexBasisPercent(percent);
       return getThis();
     }
 
@@ -898,30 +960,28 @@ public abstract class Component extends ComponentLifecycle
     }
 
     public T importantForAccessibility(int importantForAccessibility) {
-      mComponent
-          .getOrCreateCommonPropsHolder()
-          .importantForAccessibility(importantForAccessibility);
+      mComponent.getOrCreateCommonProps().importantForAccessibility(importantForAccessibility);
       return getThis();
     }
 
     public T duplicateParentState(boolean duplicateParentState) {
-      mComponent.getOrCreateCommonPropsHolder().duplicateParentState(duplicateParentState);
+      mComponent.getOrCreateCommonProps().duplicateParentState(duplicateParentState);
       return getThis();
     }
 
     public T marginPx(@Nullable YogaEdge edge, @Px int margin) {
-      mComponent.getOrCreateCommonPropsHolder().marginPx(edge, margin);
+      mComponent.getOrCreateCommonProps().marginPx(edge, margin);
       return getThis();
     }
 
     /** @param percent a value between 0 and 100. */
     public T marginPercent(@Nullable YogaEdge edge, float percent) {
-      mComponent.getOrCreateCommonPropsHolder().marginPercent(edge, percent);
+      mComponent.getOrCreateCommonProps().marginPercent(edge, percent);
       return getThis();
     }
 
     public T marginAuto(@Nullable YogaEdge edge) {
-      mComponent.getOrCreateCommonPropsHolder().marginAuto(edge);
+      mComponent.getOrCreateCommonProps().marginAuto(edge);
       return getThis();
     }
 
@@ -942,13 +1002,13 @@ public abstract class Component extends ComponentLifecycle
     }
 
     public T paddingPx(@Nullable YogaEdge edge, @Px int padding) {
-      mComponent.getOrCreateCommonPropsHolder().paddingPx(edge, padding);
+      mComponent.getOrCreateCommonProps().paddingPx(edge, padding);
       return getThis();
     }
 
     /** @param percent a value between 0 and 100. */
     public T paddingPercent(@Nullable YogaEdge edge, float percent) {
-      mComponent.getOrCreateCommonPropsHolder().paddingPercent(edge, percent);
+      mComponent.getOrCreateCommonProps().paddingPercent(edge, percent);
       return getThis();
     }
 
@@ -969,7 +1029,7 @@ public abstract class Component extends ComponentLifecycle
     }
 
     public T border(@Nullable Border border) {
-      mComponent.getOrCreateCommonPropsHolder().border(border);
+      mComponent.getOrCreateCommonProps().border(border);
       return getThis();
     }
 
@@ -980,7 +1040,7 @@ public abstract class Component extends ComponentLifecycle
      * for more information.
      */
     public T positionPx(@Nullable YogaEdge edge, @Px int position) {
-      mComponent.getOrCreateCommonPropsHolder().positionPx(edge, position);
+      mComponent.getOrCreateCommonProps().positionPx(edge, position);
       return getThis();
     }
 
@@ -989,7 +1049,7 @@ public abstract class Component extends ComponentLifecycle
      * @param percent a value between 0 and 100.
      */
     public T positionPercent(@Nullable YogaEdge edge, float percent) {
-      mComponent.getOrCreateCommonPropsHolder().positionPercent(edge, percent);
+      mComponent.getOrCreateCommonProps().positionPercent(edge, percent);
       return getThis();
     }
 
@@ -1014,7 +1074,7 @@ public abstract class Component extends ComponentLifecycle
     }
 
     public T widthPx(@Px int width) {
-      mComponent.getOrCreateCommonPropsHolder().widthPx(width);
+      mComponent.getOrCreateCommonProps().widthPx(width);
       return getThis();
     }
 
@@ -1025,7 +1085,7 @@ public abstract class Component extends ComponentLifecycle
      * @param percent a value between 0 and 100.
      */
     public T widthPercent(float percent) {
-      mComponent.getOrCreateCommonPropsHolder().widthPercent(percent);
+      mComponent.getOrCreateCommonProps().widthPercent(percent);
       return getThis();
     }
 
@@ -1046,13 +1106,13 @@ public abstract class Component extends ComponentLifecycle
     }
 
     public T minWidthPx(@Px int minWidth) {
-      mComponent.getOrCreateCommonPropsHolder().minWidthPx(minWidth);
+      mComponent.getOrCreateCommonProps().minWidthPx(minWidth);
       return getThis();
     }
 
     /** @param percent a value between 0 and 100. */
     public T minWidthPercent(float percent) {
-      mComponent.getOrCreateCommonPropsHolder().minWidthPercent(percent);
+      mComponent.getOrCreateCommonProps().minWidthPercent(percent);
       return getThis();
     }
 
@@ -1073,13 +1133,13 @@ public abstract class Component extends ComponentLifecycle
     }
 
     public T maxWidthPx(@Px int maxWidth) {
-      mComponent.getOrCreateCommonPropsHolder().maxWidthPx(maxWidth);
+      mComponent.getOrCreateCommonProps().maxWidthPx(maxWidth);
       return getThis();
     }
 
     /** @param percent a value between 0 and 100. */
     public T maxWidthPercent(float percent) {
-      mComponent.getOrCreateCommonPropsHolder().maxWidthPercent(percent);
+      mComponent.getOrCreateCommonProps().maxWidthPercent(percent);
       return getThis();
     }
 
@@ -1100,7 +1160,7 @@ public abstract class Component extends ComponentLifecycle
     }
 
     public T heightPx(@Px int height) {
-      mComponent.getOrCreateCommonPropsHolder().heightPx(height);
+      mComponent.getOrCreateCommonProps().heightPx(height);
       return getThis();
     }
 
@@ -1112,7 +1172,7 @@ public abstract class Component extends ComponentLifecycle
      * @param percent a value between 0 and 100.
      */
     public T heightPercent(float percent) {
-      mComponent.getOrCreateCommonPropsHolder().heightPercent(percent);
+      mComponent.getOrCreateCommonProps().heightPercent(percent);
       return getThis();
     }
 
@@ -1133,13 +1193,13 @@ public abstract class Component extends ComponentLifecycle
     }
 
     public T minHeightPx(@Px int minHeight) {
-      mComponent.getOrCreateCommonPropsHolder().minHeightPx(minHeight);
+      mComponent.getOrCreateCommonProps().minHeightPx(minHeight);
       return getThis();
     }
 
     /** @param percent a value between 0 and 100. */
     public T minHeightPercent(float percent) {
-      mComponent.getOrCreateCommonPropsHolder().minHeightPercent(percent);
+      mComponent.getOrCreateCommonProps().minHeightPercent(percent);
       return getThis();
     }
 
@@ -1160,13 +1220,13 @@ public abstract class Component extends ComponentLifecycle
     }
 
     public T maxHeightPx(@Px int maxHeight) {
-      mComponent.getOrCreateCommonPropsHolder().maxHeightPx(maxHeight);
+      mComponent.getOrCreateCommonProps().maxHeightPx(maxHeight);
       return getThis();
     }
 
     /** @param percent a value between 0 and 100. */
     public T maxHeightPercent(float percent) {
-      mComponent.getOrCreateCommonPropsHolder().maxHeightPercent(percent);
+      mComponent.getOrCreateCommonProps().maxHeightPercent(percent);
       return getThis();
     }
 
@@ -1187,12 +1247,17 @@ public abstract class Component extends ComponentLifecycle
     }
 
     public T aspectRatio(float aspectRatio) {
-      mComponent.getOrCreateCommonPropsHolder().aspectRatio(aspectRatio);
+      mComponent.getOrCreateCommonProps().aspectRatio(aspectRatio);
+      return getThis();
+    }
+
+    public T isReferenceBaseline(boolean isReferenceBaseline) {
+      mComponent.getOrCreateCommonProps().isReferenceBaseline(isReferenceBaseline);
       return getThis();
     }
 
     public T touchExpansionPx(@Nullable YogaEdge edge, @Px int touchExpansion) {
-      mComponent.getOrCreateCommonPropsHolder().touchExpansionPx(edge, touchExpansion);
+      mComponent.getOrCreateCommonProps().touchExpansionPx(edge, touchExpansion);
       return getThis();
     }
 
@@ -1214,16 +1279,31 @@ public abstract class Component extends ComponentLifecycle
       return touchExpansionPx(edge, mResourceResolver.dipsToPixels(touchExpansion));
     }
 
-    /** @deprecated just use {@link #background(Drawable)} instead. */
+    /**
+     * @deprecated use {@link #background(ComparableDrawable)} more efficient diffing of drawables.
+     * @see ComparableDrawable
+     */
     @Deprecated
-    public T background(@Nullable Reference<? extends Drawable> background) {
-      mComponent.getOrCreateCommonPropsHolder().background(background);
-      return getThis();
+    public T background(@Nullable Drawable background) {
+      if (background instanceof ComparableDrawable || background == null) {
+        return background((ComparableDrawable) background);
+      }
+
+      return background(DefaultComparableDrawable.create(background));
     }
 
-    public T background(@Nullable Drawable background) {
-      return background(
-          background != null ? DrawableReference.create().drawable(background).build() : null);
+    /**
+     * Set the background of this component. The background drawable must extend {@link *
+     * ComparableDrawable} for more efficient diffing while when drawables are remounted or updated.
+     * * If the drawable does not extend {@link ComparableDrawable} then create a new class which *
+     * extends {@link ComparableDrawable} and implement the * {@link
+     * ComparableDrawable#isEquivalentTo(ComparableDrawable)}.
+     *
+     * @see ComparableDrawable
+     */
+    public T background(@Nullable ComparableDrawable background) {
+      mComponent.getOrCreateCommonProps().background(background);
+      return getThis();
     }
 
     public T backgroundAttr(@AttrRes int resId, @DrawableRes int defaultResId) {
@@ -1236,19 +1316,39 @@ public abstract class Component extends ComponentLifecycle
 
     public T backgroundRes(@DrawableRes int resId) {
       if (resId == 0) {
-        return background((Reference<? extends Drawable>) null);
+        return background((ComparableDrawable) null);
       }
 
-      return background(ContextCompat.getDrawable(mContext, resId));
+      return background(ComparableResDrawable.create(mContext.getAndroidContext(), resId));
     }
 
     public T backgroundColor(@ColorInt int backgroundColor) {
-      return background(new ColorDrawable(backgroundColor));
+      return background(ComparableColorDrawable.create(backgroundColor));
     }
 
-    public T foreground(@Nullable Drawable foreground) {
-      mComponent.getOrCreateCommonPropsHolder().foreground(foreground);
+    /**
+     * Set the foreground of this component. The foreground drawable must extend {@link
+     * ComparableDrawable} for more efficient diffing while when drawables are remounted or updated.
+     * If the drawable does not extend {@link ComparableDrawable} then create a new class which
+     * extends {@link ComparableDrawable} and implement the {@link
+     * ComparableDrawable#isEquivalentTo(ComparableDrawable)}.
+     *
+     * @see ComparableDrawable
+     */
+    public T foreground(@Nullable ComparableDrawable foreground) {
+      mComponent.getOrCreateCommonProps().foreground(foreground);
       return getThis();
+    }
+
+    /**
+     * @deprecated use {@link #foreground(ComparableDrawable)} more efficient diffing of drawables.
+     */
+    @Deprecated
+    public T foreground(@Nullable Drawable foreground) {
+      if (foreground instanceof ComparableDrawable || foreground == null) {
+        return foreground((ComparableDrawable) foreground);
+      }
+      return foreground(foreground != null ? DefaultComparableDrawable.create(foreground) : null);
     }
 
     public T foregroundAttr(@AttrRes int resId, @DrawableRes int defaultResId) {
@@ -1264,121 +1364,127 @@ public abstract class Component extends ComponentLifecycle
         return foreground(null);
       }
 
-      return foreground(ContextCompat.getDrawable(mContext, resId));
+      return foreground(ComparableResDrawable.create(mContext.getAndroidContext(), resId));
     }
 
     public T foregroundColor(@ColorInt int foregroundColor) {
-      return foreground(new ColorDrawable(foregroundColor));
+      return foreground(ComparableColorDrawable.create(foregroundColor));
     }
 
     public T wrapInView() {
-      mComponent.getOrCreateCommonPropsHolder().wrapInView();
+      mComponent.getOrCreateCommonProps().wrapInView();
       return getThis();
     }
 
     public T clickHandler(@Nullable EventHandler<ClickEvent> clickHandler) {
-      mComponent.getOrCreateCommonPropsHolder().clickHandler(clickHandler);
+      mComponent.getOrCreateCommonProps().clickHandler(clickHandler);
       return getThis();
     }
 
     public T longClickHandler(@Nullable EventHandler<LongClickEvent> longClickHandler) {
-      mComponent.getOrCreateCommonPropsHolder().longClickHandler(longClickHandler);
+      mComponent.getOrCreateCommonProps().longClickHandler(longClickHandler);
       return getThis();
     }
 
     public T focusChangeHandler(@Nullable EventHandler<FocusChangedEvent> focusChangeHandler) {
-      mComponent.getOrCreateCommonPropsHolder().focusChangeHandler(focusChangeHandler);
+      mComponent.getOrCreateCommonProps().focusChangeHandler(focusChangeHandler);
       return getThis();
     }
 
     public T touchHandler(@Nullable EventHandler<TouchEvent> touchHandler) {
-      mComponent.getOrCreateCommonPropsHolder().touchHandler(touchHandler);
+      mComponent.getOrCreateCommonProps().touchHandler(touchHandler);
       return getThis();
     }
 
     public T interceptTouchHandler(
         @Nullable EventHandler<InterceptTouchEvent> interceptTouchHandler) {
-      mComponent.getOrCreateCommonPropsHolder().interceptTouchHandler(interceptTouchHandler);
+      mComponent.getOrCreateCommonProps().interceptTouchHandler(interceptTouchHandler);
       return getThis();
     }
 
     public T focusable(boolean isFocusable) {
-      mComponent.getOrCreateCommonPropsHolder().focusable(isFocusable);
+      mComponent.getOrCreateCommonProps().focusable(isFocusable);
+      return getThis();
+    }
+
+    public T clickable(boolean isClickable) {
+      mComponent.getOrCreateCommonProps().clickable(isClickable);
       return getThis();
     }
 
     public T enabled(boolean isEnabled) {
-      mComponent.getOrCreateCommonPropsHolder().enabled(isEnabled);
+      mComponent.getOrCreateCommonProps().enabled(isEnabled);
       return getThis();
     }
 
     public T selected(boolean isSelected) {
-      mComponent.getOrCreateCommonPropsHolder().selected(isSelected);
+      mComponent.getOrCreateCommonProps().selected(isSelected);
       return getThis();
     }
 
     public T visibleHeightRatio(float visibleHeightRatio) {
-      mComponent.getOrCreateCommonPropsHolder().visibleHeightRatio(visibleHeightRatio);
+      mComponent.getOrCreateCommonProps().visibleHeightRatio(visibleHeightRatio);
       return getThis();
     }
 
     public T visibleWidthRatio(float visibleWidthRatio) {
-      mComponent.getOrCreateCommonPropsHolder().visibleWidthRatio(visibleWidthRatio);
+      mComponent.getOrCreateCommonProps().visibleWidthRatio(visibleWidthRatio);
       return getThis();
     }
 
     public T visibleHandler(@Nullable EventHandler<VisibleEvent> visibleHandler) {
-      mComponent.getOrCreateCommonPropsHolder().visibleHandler(visibleHandler);
+      mComponent.getOrCreateCommonProps().visibleHandler(visibleHandler);
       return getThis();
     }
 
     public T focusedHandler(@Nullable EventHandler<FocusedVisibleEvent> focusedHandler) {
-      mComponent.getOrCreateCommonPropsHolder().focusedHandler(focusedHandler);
+      mComponent.getOrCreateCommonProps().focusedHandler(focusedHandler);
       return getThis();
     }
 
     public T unfocusedHandler(@Nullable EventHandler<UnfocusedVisibleEvent> unfocusedHandler) {
-      mComponent.getOrCreateCommonPropsHolder().unfocusedHandler(unfocusedHandler);
+      mComponent.getOrCreateCommonProps().unfocusedHandler(unfocusedHandler);
       return getThis();
     }
 
     public T fullImpressionHandler(
         @Nullable EventHandler<FullImpressionVisibleEvent> fullImpressionHandler) {
-      mComponent.getOrCreateCommonPropsHolder().fullImpressionHandler(fullImpressionHandler);
+      mComponent.getOrCreateCommonProps().fullImpressionHandler(fullImpressionHandler);
       return getThis();
     }
 
     public T invisibleHandler(@Nullable EventHandler<InvisibleEvent> invisibleHandler) {
-      mComponent.getOrCreateCommonPropsHolder().invisibleHandler(invisibleHandler);
+      mComponent.getOrCreateCommonProps().invisibleHandler(invisibleHandler);
       return getThis();
     }
 
     public T visibilityChangedHandler(
         @Nullable EventHandler<VisibilityChangedEvent> visibilityChangedHandler) {
-      mComponent.getOrCreateCommonPropsHolder().visibilityChangedHandler(visibilityChangedHandler);
+      mComponent.getOrCreateCommonProps().visibilityChangedHandler(visibilityChangedHandler);
       return getThis();
     }
 
     public T contentDescription(@Nullable CharSequence contentDescription) {
-      mComponent.getOrCreateCommonPropsHolder().contentDescription(contentDescription);
+      mComponent.getOrCreateCommonProps().contentDescription(contentDescription);
       return getThis();
     }
 
     public T contentDescription(@StringRes int stringId) {
-      return contentDescription(mContext.getResources().getString(stringId));
+      return contentDescription(mContext.getAndroidContext().getResources().getString(stringId));
     }
 
     public T contentDescription(@StringRes int stringId, Object... formatArgs) {
-      return contentDescription(mContext.getResources().getString(stringId, formatArgs));
+      return contentDescription(
+          mContext.getAndroidContext().getResources().getString(stringId, formatArgs));
     }
 
     public T viewTag(@Nullable Object viewTag) {
-      mComponent.getOrCreateCommonPropsHolder().viewTag(viewTag);
+      mComponent.getOrCreateCommonProps().viewTag(viewTag);
       return getThis();
     }
 
     public T viewTags(@Nullable SparseArray<Object> viewTags) {
-      mComponent.getOrCreateCommonPropsHolder().viewTags(viewTags);
+      mComponent.getOrCreateCommonProps().viewTags(viewTags);
       return getThis();
     }
 
@@ -1387,7 +1493,7 @@ public abstract class Component extends ComponentLifecycle
      * android.os.Build.VERSION_CODES#LOLLIPOP} and above.
      */
     public T shadowElevationPx(float shadowElevation) {
-      mComponent.getOrCreateCommonPropsHolder().shadowElevationPx(shadowElevation);
+      mComponent.getOrCreateCommonProps().shadowElevationPx(shadowElevation);
       return getThis();
     }
 
@@ -1408,12 +1514,12 @@ public abstract class Component extends ComponentLifecycle
     }
 
     public T outlineProvider(@Nullable ViewOutlineProvider outlineProvider) {
-      mComponent.getOrCreateCommonPropsHolder().outlineProvider(outlineProvider);
+      mComponent.getOrCreateCommonProps().outlineProvider(outlineProvider);
       return getThis();
     }
 
     public T clipToOutline(boolean clipToOutline) {
-      mComponent.getOrCreateCommonPropsHolder().clipToOutline(clipToOutline);
+      mComponent.getOrCreateCommonProps().clipToOutline(clipToOutline);
       return getThis();
     }
 
@@ -1427,18 +1533,31 @@ public abstract class Component extends ComponentLifecycle
      *     the parent itself.
      */
     public T clipChildren(boolean clipChildren) {
-      mComponent.getOrCreateCommonPropsHolder().clipChildren(clipChildren);
+      mComponent.getOrCreateCommonProps().clipChildren(clipChildren);
       return getThis();
     }
 
     public T testKey(@Nullable String testKey) {
-      mComponent.getOrCreateCommonPropsHolder().testKey(testKey);
+      mComponent.getOrCreateCommonProps().testKey(testKey);
       return getThis();
     }
 
     public T accessibilityRole(@Nullable @AccessibilityRole.AccessibilityRoleType String role) {
-      mComponent.getOrCreateCommonPropsHolder().accessibilityRole(role);
+      mComponent.getOrCreateCommonProps().accessibilityRole(role);
       return getThis();
+    }
+
+    public T accessibilityRoleDescription(CharSequence roleDescription) {
+      mComponent.getOrCreateCommonProps().accessibilityRoleDescription(roleDescription);
+      return getThis();
+    }
+
+    public T accessibilityRoleDescription(@StringRes int stringId) {
+      return accessibilityRoleDescription(mContext.getResources().getString(stringId));
+    }
+
+    public T accessibilityRoleDescription(@StringRes int stringId, Object... formatArgs) {
+      return accessibilityRoleDescription(mContext.getResources().getString(stringId, formatArgs));
     }
 
     public T dispatchPopulateAccessibilityEventHandler(
@@ -1446,7 +1565,7 @@ public abstract class Component extends ComponentLifecycle
             EventHandler<DispatchPopulateAccessibilityEventEvent>
                 dispatchPopulateAccessibilityEventHandler) {
       mComponent
-          .getOrCreateCommonPropsHolder()
+          .getOrCreateCommonProps()
           .dispatchPopulateAccessibilityEventHandler(dispatchPopulateAccessibilityEventHandler);
       return getThis();
     }
@@ -1456,7 +1575,7 @@ public abstract class Component extends ComponentLifecycle
             EventHandler<OnInitializeAccessibilityEventEvent>
                 onInitializeAccessibilityEventHandler) {
       mComponent
-          .getOrCreateCommonPropsHolder()
+          .getOrCreateCommonProps()
           .onInitializeAccessibilityEventHandler(onInitializeAccessibilityEventHandler);
       return getThis();
     }
@@ -1466,7 +1585,7 @@ public abstract class Component extends ComponentLifecycle
             EventHandler<OnInitializeAccessibilityNodeInfoEvent>
                 onInitializeAccessibilityNodeInfoHandler) {
       mComponent
-          .getOrCreateCommonPropsHolder()
+          .getOrCreateCommonProps()
           .onInitializeAccessibilityNodeInfoHandler(onInitializeAccessibilityNodeInfoHandler);
       return getThis();
     }
@@ -1475,7 +1594,7 @@ public abstract class Component extends ComponentLifecycle
         @Nullable
             EventHandler<OnPopulateAccessibilityEventEvent> onPopulateAccessibilityEventHandler) {
       mComponent
-          .getOrCreateCommonPropsHolder()
+          .getOrCreateCommonProps()
           .onPopulateAccessibilityEventHandler(onPopulateAccessibilityEventHandler);
       return getThis();
     }
@@ -1485,7 +1604,7 @@ public abstract class Component extends ComponentLifecycle
             EventHandler<OnRequestSendAccessibilityEventEvent>
                 onRequestSendAccessibilityEventHandler) {
       mComponent
-          .getOrCreateCommonPropsHolder()
+          .getOrCreateCommonProps()
           .onRequestSendAccessibilityEventHandler(onRequestSendAccessibilityEventHandler);
       return getThis();
     }
@@ -1493,7 +1612,7 @@ public abstract class Component extends ComponentLifecycle
     public T performAccessibilityActionHandler(
         @Nullable EventHandler<PerformAccessibilityActionEvent> performAccessibilityActionHandler) {
       mComponent
-          .getOrCreateCommonPropsHolder()
+          .getOrCreateCommonProps()
           .performAccessibilityActionHandler(performAccessibilityActionHandler);
       return getThis();
     }
@@ -1501,7 +1620,7 @@ public abstract class Component extends ComponentLifecycle
     public T sendAccessibilityEventHandler(
         @Nullable EventHandler<SendAccessibilityEventEvent> sendAccessibilityEventHandler) {
       mComponent
-          .getOrCreateCommonPropsHolder()
+          .getOrCreateCommonProps()
           .sendAccessibilityEventHandler(sendAccessibilityEventHandler);
       return getThis();
     }
@@ -1511,19 +1630,31 @@ public abstract class Component extends ComponentLifecycle
             EventHandler<SendAccessibilityEventUncheckedEvent>
                 sendAccessibilityEventUncheckedHandler) {
       mComponent
-          .getOrCreateCommonPropsHolder()
+          .getOrCreateCommonProps()
           .sendAccessibilityEventUncheckedHandler(sendAccessibilityEventUncheckedHandler);
       return getThis();
     }
 
     public T transitionKey(@Nullable String key) {
-      mComponent.getOrCreateCommonPropsHolder().transitionKey(key);
+      mComponent.getOrCreateCommonProps().transitionKey(key);
+      if (mComponent.getOrCreateCommonProps().getTransitionKeyType() == null) {
+        // If TransitionKeyType isn't set, set to default type
+        transitionKeyType(Transition.DEFAULT_TRANSITION_KEY_TYPE);
+      }
+      return getThis();
+    }
+
+    public T transitionKeyType(Transition.TransitionKeyType type) {
+      if (type == null) {
+        throw new IllegalArgumentException("TransitionKeyType must not be null");
+      }
+      mComponent.getOrCreateCommonProps().transitionKeyType(type);
       return getThis();
     }
 
     /** Sets the alpha (opacity) of this component. */
     public T alpha(float alpha) {
-      mComponent.getOrCreateCommonPropsHolder().alpha(alpha);
+      mComponent.getOrCreateCommonProps().alpha(alpha);
       return getThis();
     }
 
@@ -1533,7 +1664,7 @@ public abstract class Component extends ComponentLifecycle
      * the standard layout properties to control the size of your component.
      */
     public T scale(float scale) {
-      mComponent.getOrCreateCommonPropsHolder().scale(scale);
+      mComponent.getOrCreateCommonProps().scale(scale);
       return getThis();
     }
 
@@ -1542,7 +1673,25 @@ public abstract class Component extends ComponentLifecycle
      * results in clockwise rotation. By default, the pivot point is centered on the component.
      */
     public T rotation(float rotation) {
-      mComponent.getOrCreateCommonPropsHolder().rotation(rotation);
+      mComponent.getOrCreateCommonProps().rotation(rotation);
+      return getThis();
+    }
+
+    /**
+     * Sets the degree that this component is rotated around the horizontal axis through the pivot
+     * point.
+     */
+    public T rotationX(float rotationX) {
+      mComponent.getOrCreateCommonProps().rotationX(rotationX);
+      return getThis();
+    }
+
+    /**
+     * Sets the degree that this component is rotated around the vertical axis through the pivot
+     * point.
+     */
+    public T rotationY(float rotationY) {
+      mComponent.getOrCreateCommonProps().rotationY(rotationY);
       return getThis();
     }
 
@@ -1555,7 +1704,7 @@ public abstract class Component extends ComponentLifecycle
      */
     public T stateListAnimator(@Nullable StateListAnimator stateListAnimator) {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-        mComponent.getOrCreateCommonPropsHolder().stateListAnimator(stateListAnimator);
+        mComponent.getOrCreateCommonProps().stateListAnimator(stateListAnimator);
       }
       return getThis();
     }
@@ -1572,12 +1721,32 @@ public abstract class Component extends ComponentLifecycle
         // We cannot do it on the versions prior to Android 8.0 since there is a possible race
         // condition when loading state list animators, thus we will avoid doing it off the UI
         // thread
-        return stateListAnimator(AnimatorInflater.loadStateListAnimator(mContext, resId));
+        return stateListAnimator(
+            AnimatorInflater.loadStateListAnimator(mContext.getAndroidContext(), resId));
       }
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-        mComponent.getOrCreateCommonPropsHolder().stateListAnimatorRes(resId);
+        mComponent.getOrCreateCommonProps().stateListAnimatorRes(resId);
       }
       return getThis();
+    }
+
+    /**
+     * When set to true, overrides the default behaviour of baseline calculation and uses height of
+     * component as baseline. By default the baseline of a component is the baseline of first child
+     * of component (If the component does not have any child then baseline is height of the
+     * component)
+     */
+    public T useHeightAsBaseline(boolean useHeightAsBaseline) {
+      mComponent.getOrCreateCommonProps().useHeightAsBaseline(useHeightAsBaseline);
+      return getThis();
+    }
+
+    public boolean hasClickHandlerSet() {
+      return mComponent.hasClickHandlerSet();
+    }
+
+    public boolean hasBackgroundSet() {
+      return mComponent.hasBackgroundSet();
     }
 
     private Component getOwner() {
@@ -1650,7 +1819,7 @@ public abstract class Component extends ComponentLifecycle
     public EventDispatcher getEventDispatcher() {
       return new EventDispatcher() {
         @Override
-        public Object dispatchOnEvent(EventHandler eventHandler, Object eventState) {
+        public @Nullable Object dispatchOnEvent(EventHandler eventHandler, Object eventState) {
           if (eventHandler.id == ERROR_EVENT_HANDLER_ID) {
             throw new RuntimeException(((ErrorEvent) eventState).exception);
           }

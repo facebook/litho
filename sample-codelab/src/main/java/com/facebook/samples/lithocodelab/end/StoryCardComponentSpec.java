@@ -96,6 +96,6 @@ class StoryCardComponentSpec {
 
   @OnEvent(ClickEvent.class)
   static void onClickSave(ComponentContext c) {
-    StoryCardComponent.onToggleSavedState(c);
+    StoryCardComponent.onToggleSavedStateSync(c);
   }
 }

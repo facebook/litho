@@ -51,8 +51,8 @@ object DemoListItemComponentSpec {
       DemoListActivity::class.java
     }
 
-    val intent = Intent(c, activityClass)
+    val intent = Intent(c.getAndroidContext(), activityClass)
     intent.putExtra(DemoListActivity.INDICES, currentIndices)
-    c.startActivity(intent)
+    c.getAndroidContext().startActivity(intent)
   }
 }

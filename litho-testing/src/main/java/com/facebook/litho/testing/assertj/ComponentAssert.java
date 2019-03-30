@@ -17,10 +17,11 @@
 package com.facebook.litho.testing.assertj;
 
 import android.graphics.drawable.Drawable;
-import android.support.annotation.DrawableRes;
+import androidx.annotation.DrawableRes;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
+import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.helper.ComponentTestHelper;
 import com.facebook.litho.testing.state.StateUpdatesTestHelper;
 import com.facebook.litho.testing.subcomponents.InspectableComponent;
@@ -31,7 +32,6 @@ import org.assertj.core.api.Java6Assertions;
 import org.assertj.core.api.ListAssert;
 import org.assertj.core.api.iterable.Extractor;
 import org.assertj.core.util.CheckReturnValue;
-import org.powermock.reflect.Whitebox;
 
 /**
  * Assertion methods for {@link Component}s.

@@ -43,6 +43,7 @@ object LeftRightBlocksSequenceComponentSpec {
                   .widthDip(40f)
                   .backgroundColor(Color.parseColor("#ee1111"))
                   .transitionKey("red")
+                  .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
                   .build())
           .child(
               Row.create(c)
@@ -50,6 +51,7 @@ object LeftRightBlocksSequenceComponentSpec {
                   .widthDip(40f)
                   .backgroundColor(Color.parseColor("#1111ee"))
                   .transitionKey("blue")
+                  .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
                   .build())
           .child(
               Row.create(c)
@@ -57,6 +59,7 @@ object LeftRightBlocksSequenceComponentSpec {
                   .widthDip(40f)
                   .backgroundColor(Color.parseColor("#11ee11"))
                   .transitionKey("green")
+                  .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
                   .build())
           .clickHandler(LeftRightBlocksSequenceComponent.onClick(c))
           .build()
@@ -74,7 +77,7 @@ object LeftRightBlocksSequenceComponentSpec {
   @OnCreateTransition
   fun onCreateTransition(c: ComponentContext): Transition =
       Transition.sequence<TransitionUnitsBuilder>(
-          Transition.create("red").animate(AnimatedProperties.X),
-          Transition.create("blue").animate(AnimatedProperties.X),
-          Transition.create("green").animate(AnimatedProperties.X))
+          Transition.create(Transition.TransitionKeyType.GLOBAL, "red").animate(AnimatedProperties.X),
+          Transition.create(Transition.TransitionKeyType.GLOBAL, "blue").animate(AnimatedProperties.X),
+          Transition.create(Transition.TransitionKeyType.GLOBAL, "green").animate(AnimatedProperties.X))
 }

@@ -18,12 +18,10 @@ package com.facebook.litho;
 
 import android.animation.StateListAnimator;
 import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
-import android.support.annotation.DrawableRes;
 import android.view.View;
-import com.facebook.litho.reference.Reference;
+import androidx.annotation.DrawableRes;
+import com.facebook.litho.drawable.ComparableDrawable;
 import com.facebook.yoga.YogaDirection;
-import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nullable;
 
 /**
@@ -32,29 +30,27 @@ import javax.annotation.Nullable;
  */
 class ViewNodeInfo {
 
-  private final AtomicInteger mReferenceCount = new AtomicInteger(0);
-
-  private Reference<Drawable> mBackground;
-  private Drawable mForeground;
+  private ComparableDrawable mBackground;
+  private ComparableDrawable mForeground;
   private Rect mPadding;
   private Rect mExpandedTouchBounds;
   private YogaDirection mLayoutDirection;
   private @Nullable StateListAnimator mStateListAnimator;
   private @DrawableRes int mStateListAnimatorRes;
 
-  void setBackground(Reference<? extends Drawable> background) {
-    mBackground = (Reference<Drawable>) background;
+  void setBackground(ComparableDrawable background) {
+    mBackground = background;
   }
 
-  Reference<Drawable> getBackground() {
+  ComparableDrawable getBackground() {
     return mBackground;
   }
 
-  void setForeground(Drawable foreground) {
+  void setForeground(ComparableDrawable foreground) {
     mForeground = foreground;
   }
 
-  Drawable getForeground() {
+  ComparableDrawable getForeground() {
     return mForeground;
   }
 
@@ -80,7 +76,7 @@ class ViewNodeInfo {
           "ViewNodeInfo.");
     }
 
-    mPadding = ComponentsPools.acquireRect();
+    mPadding = new Rect();
     mPadding.set(l, t, r, b);
   }
 
@@ -117,7 +113,7 @@ class ViewNodeInfo {
           "ViewNodeInfo.");
     }
 
-    mExpandedTouchBounds = ComponentsPools.acquireRect();
+    mExpandedTouchBounds = new Rect();
     mExpandedTouchBounds.set(
         l - touchExpansionLeft,
         t - touchExpansionTop,
@@ -125,6 +121,7 @@ class ViewNodeInfo {
         b + touchExpansionBottom);
   }
 
+  @Nullable
   Rect getExpandedTouchBounds() {
     if (mExpandedTouchBounds == null || mExpandedTouchBounds.isEmpty()) {
       return null;
@@ -166,12 +163,11 @@ class ViewNodeInfo {
       return false;
     }
 
-    // TODO: (T33421916) We need compare Drawables more accurately
-    if (!CommonUtils.equals(mBackground, other.mBackground)) {
+    if (!ComparableDrawable.isEquivalentTo(mBackground, other.mBackground)) {
       return false;
     }
 
-    if (!CommonUtils.equals(mForeground, other.mForeground)) {
+    if (!ComparableDrawable.isEquivalentTo(mForeground, other.mForeground)) {
       return false;
     }
 
@@ -197,51 +193,5 @@ class ViewNodeInfo {
     }
 
     return true;
-  }
-
-  static ViewNodeInfo acquire() {
-    final ViewNodeInfo viewNodeInfo = ComponentsPools.acquireViewNodeInfo();
-
-    if (viewNodeInfo.mReferenceCount.getAndSet(1) != 0) {
-      throw new IllegalStateException("The ViewNodeInfo reference acquired from the pool " +
-          " wasn't correctly released.");
-    }
-
-    return viewNodeInfo;
-  }
-
-  ViewNodeInfo acquireRef() {
-    if (mReferenceCount.getAndIncrement() < 1) {
-      throw new IllegalStateException("The ViewNodeInfo being acquired" +
-          " wasn't correctly initialized.");
-    }
-
-    return this;
-  }
-
-  void release() {
-    final int count = mReferenceCount.decrementAndGet();
-    if (count < 0) {
-      throw new IllegalStateException("Trying to release a recycled ViewNodeInfo.");
-    } else if (count > 0) {
-      return;
-    }
-
-    mBackground = null;
-    mForeground = null;
-    mLayoutDirection = YogaDirection.INHERIT;
-    mStateListAnimator = null;
-
-    if (mPadding != null) {
-      ComponentsPools.release(mPadding);
-      mPadding = null;
-    }
-
-    if (mExpandedTouchBounds != null) {
-      ComponentsPools.release(mExpandedTouchBounds);
-      mExpandedTouchBounds = null;
-    }
-
-    ComponentsPools.release(this);
   }
 }

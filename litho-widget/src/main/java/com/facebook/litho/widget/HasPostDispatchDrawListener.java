@@ -16,7 +16,7 @@
 
 package com.facebook.litho.widget;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 public interface HasPostDispatchDrawListener {
 

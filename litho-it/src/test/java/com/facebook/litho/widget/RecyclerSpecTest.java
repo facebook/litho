@@ -22,10 +22,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
-import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.RecyclerView.ItemAnimator;
-import android.support.v7.widget.SnapHelper;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView.ItemAnimator;
+import androidx.recyclerview.widget.SnapHelper;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLifecycle;
@@ -38,9 +38,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
 
-/**
- * Tests for {@link RecyclerSpec}
- */
+/** Tests for {@link RecyclerSpec} */
 @RunWith(ComponentsTestRunner.class)
 public class RecyclerSpecTest {
 
@@ -78,8 +76,8 @@ public class RecyclerSpecTest {
     RecyclerSpec.onBind(
         mComponentContext,
         mSectionsRecyclerView,
-        mAnimator,
         binder,
+        mAnimator,
         null,
         scrollListeners,
         snapHelper,
@@ -114,12 +112,7 @@ public class RecyclerSpecTest {
     List<RecyclerView.OnScrollListener> scrollListeners = createListOfScrollListeners(size);
 
     RecyclerSpec.onUnbind(
-        mComponentContext,
-        mSectionsRecyclerView,
-        binder,
-        null,
-        scrollListeners,
-        mAnimator);
+        mComponentContext, mSectionsRecyclerView, binder, null, scrollListeners, mAnimator);
 
     assertThat(mRecyclerView.getItemAnimator()).isSameAs(mAnimator);
     verify(binder).unbind(mRecyclerView);
@@ -131,7 +124,7 @@ public class RecyclerSpecTest {
   public void testUpdateStateAsyncWithRemeasureEvent() {
     final Recycler recycler = Recycler.create(mComponentContext).binder(mock(Binder.class)).build();
     final TestComponentContext testComponentContext =
-        new TestComponentContext(mComponentContext, recycler);
+        new TestComponentContext(mComponentContext.getAndroidContext(), recycler);
 
     RecyclerSpec.onRemeasure(testComponentContext, 0);
     assertThat(testComponentContext.isUpdateStateAsync()).isTrue();

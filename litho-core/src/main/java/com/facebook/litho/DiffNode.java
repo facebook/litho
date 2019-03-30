@@ -147,25 +147,4 @@ class DiffNode implements Cloneable {
   void setHost(LayoutOutput host) {
     mHost = host;
   }
-
-  void release() {
-    mComponent = null;
-
-    mContent = null;
-    mBackground = null;
-    mForeground = null;
-    mBorder = null;
-    mHost = null;
-    mVisibilityOutput = null;
-
-    mLastMeasuredWidth = UNSPECIFIED;
-    mLastMeasuredHeight = UNSPECIFIED;
-    mLastWidthSpec = UNSPECIFIED;
-    mLastHeightSpec = UNSPECIFIED;
-
-    for (int i = 0, size = mChildren.size(); i < size; i++) {
-      ComponentsPools.release(mChildren.get(i));
-    }
-    mChildren.clear();
-  }
 }

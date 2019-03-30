@@ -13,7 +13,7 @@
 package com.fblitho.lithoktsample.errors
 
 import android.graphics.Typeface
-import android.support.annotation.ColorInt
+import androidx.annotation.ColorInt
 import android.util.Log
 import com.facebook.litho.ClickEvent
 import com.facebook.litho.Column

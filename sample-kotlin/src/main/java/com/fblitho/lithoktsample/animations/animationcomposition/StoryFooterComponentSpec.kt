@@ -57,15 +57,18 @@ object StoryFooterComponentSpec {
                             .widthDip(24f)
                             .backgroundColor(Color.RED)
                             .transitionKey("icon_like"))
+                            .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
                     .child(
                         Text.create(c)
                             .textSizeSp(16f)
                             .text("Like")
                             .transitionKey("text_like")
+                            .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
                             .marginDip(YogaEdge.LEFT, 8f)))
             .child(
                 Row.create(c)
                     .transitionKey("cont_comment")
+                    .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
                     .widthPercent(33.3f)
                     .alignItems(YogaAlign.CENTER)
                     .justifyContent(YogaJustify.CENTER)
@@ -81,6 +84,7 @@ object StoryFooterComponentSpec {
                     .child(
                         Column.create(c)
                             .transitionKey("icon_share")
+                            .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
                             .heightDip(24f)
                             .widthDip(24f)
                             .backgroundColor(Color.RED))
@@ -89,6 +93,7 @@ object StoryFooterComponentSpec {
                             .textSizeSp(16f)
                             .text("Share")
                             .transitionKey("text_share")
+                            .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
                             .marginDip(YogaEdge.LEFT, 8f)))
             .build()
       } else {
@@ -105,6 +110,7 @@ object StoryFooterComponentSpec {
                     .child(
                         Column.create(c)
                             .transitionKey("icon_like")
+                            .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
                             .heightDip(24f)
                             .widthDip(24f)
                             .backgroundColor(Color.RED)))
@@ -112,10 +118,12 @@ object StoryFooterComponentSpec {
                 Column.create(c)
                     .flexGrow(1f)
                     .transitionKey("comment_editText")
+                    .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
                     .child(Text.create(c).text("Input here").textSizeSp(16f)))
             .child(
                 Row.create(c)
                     .transitionKey("cont_share")
+                    .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
                     .alignItems(YogaAlign.CENTER)
                     .clickHandler(StoryFooterComponent.onClick(c))
                     .paddingDip(YogaEdge.ALL, 16f)
@@ -123,6 +131,7 @@ object StoryFooterComponentSpec {
                     .child(
                         Column.create(c)
                             .transitionKey("icon_share")
+                            .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
                             .heightDip(24f)
                             .widthDip(24f)
                             .backgroundColor(Color.RED)))
@@ -145,19 +154,19 @@ object StoryFooterComponentSpec {
         null
       } else {
         Transition.parallel<TransitionUnitsBuilder>(
-            Transition.create("comment_editText")
+            Transition.create(Transition.TransitionKeyType.GLOBAL, "comment_editText")
                 .animate(AnimatedProperties.ALPHA)
                 .appearFrom(0f)
                 .disappearTo(0f)
                 .animate(AnimatedProperties.X)
                 .appearFrom(DimensionValue.widthPercentageOffset(-50f))
                 .disappearTo(DimensionValue.widthPercentageOffset(-50f)),
-            Transition.create("cont_comment")
+            Transition.create(Transition.TransitionKeyType.GLOBAL, "cont_comment")
                 .animate(AnimatedProperties.ALPHA)
                 .appearFrom(0f)
                 .disappearTo(0f),
-            Transition.create("icon_like", "icon_share").animate(AnimatedProperties.X),
-            Transition.create("text_like", "text_share")
+            Transition.create(Transition.TransitionKeyType.GLOBAL, "icon_like", "icon_share").animate(AnimatedProperties.X),
+            Transition.create(Transition.TransitionKeyType.GLOBAL, "text_like", "text_share")
                 .animate(AnimatedProperties.ALPHA)
                 .appearFrom(0f)
                 .disappearTo(0f)

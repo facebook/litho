@@ -31,7 +31,7 @@ import android.graphics.drawable.RippleDrawable;
 import android.os.Build;
 import android.view.MotionEvent;
 import android.view.View;
-import com.facebook.litho.config.ComponentsConfiguration;
+import javax.annotation.Nullable;
 
 /**
  * A Drawable that wraps another drawable.
@@ -227,12 +227,12 @@ public class MatrixDrawable<T extends Drawable> extends Drawable
   }
 
   @Override
-  public int[] getState() {
+  public @Nullable int[] getState() {
     return mDrawable == null ? null : mDrawable.getState();
   }
 
   @Override
-  public Drawable getCurrent() {
+  public @Nullable Drawable getCurrent() {
     return mDrawable == null ? null : mDrawable.getCurrent();
   }
 
@@ -249,7 +249,7 @@ public class MatrixDrawable<T extends Drawable> extends Drawable
   }
 
   @Override
-  public Region getTransparentRegion() {
+  public @Nullable Region getTransparentRegion() {
     return mDrawable == null ? null : mDrawable.getTransparentRegion();
   }
 

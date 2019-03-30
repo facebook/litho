@@ -36,8 +36,6 @@ import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import android.support.annotation.Nullable;
-import android.support.v4.view.ViewCompat;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.Layout;
@@ -51,6 +49,8 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
+import androidx.annotation.Nullable;
+import androidx.core.view.ViewCompat;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.EventHandler;
@@ -76,7 +76,6 @@ import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.State;
-import com.facebook.litho.reference.Reference;
 import com.facebook.litho.utils.MeasureUtils;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -308,10 +307,10 @@ class EditTextSpec {
       @Prop(optional = true) boolean requestFocus,
       @Prop(optional = true) int cursorDrawableRes,
       @Prop(optional = true, varArg = "inputFilter") List<InputFilter> inputFilters,
-      @State(canUpdateLazily = true) String input) {
+      @State(canUpdateLazily = true) CharSequence input) {
 
     // TODO(11759579) - don't allocate a new EditText in every measure.
-    final EditTextForMeasure editText = new EditTextForMeasure(c);
+    final EditTextForMeasure editText = new EditTextForMeasure(c.getAndroidContext());
 
     initEditText(
         editText,
@@ -353,12 +352,11 @@ class EditTextSpec {
         requestFocus,
         cursorDrawableRes);
 
-    Reference<Drawable> backgroundRef = (Reference<Drawable>) layout.getBackground();
-    Drawable background = backgroundRef != null ? Reference.acquire(c, backgroundRef) : null;
+    Drawable background = layout.getBackground();
+
     if (background != null) {
       Rect rect = new Rect();
       background.getPadding(rect);
-      Reference.release(c, background, backgroundRef);
 
       if (rect.left != 0 || rect.top != 0 || rect.right != 0 || rect.bottom != 0) {
         // Padding from the background will be added to the layout separately, so does not need to
@@ -428,7 +426,7 @@ class EditTextSpec {
       @Prop(optional = true, varArg = "inputFilter") List<InputFilter> inputFilters,
       @State AtomicReference<EditTextWithEventHandlers> mountedView,
       @State AtomicBoolean configuredInitialText,
-      @State(canUpdateLazily = true) String input) {
+      @State(canUpdateLazily = true) CharSequence input) {
 
     mountedView.set(editText);
 
@@ -510,7 +508,8 @@ class EditTextSpec {
     if (eventHandler != null) {
       if (eventHandler.requestFocus()) {
         InputMethodManager imm =
-            (InputMethodManager) c.getSystemService(Context.INPUT_METHOD_SERVICE);
+            (InputMethodManager)
+                c.getAndroidContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.showSoftInput(eventHandler, 0);
       }
     }
@@ -523,7 +522,7 @@ class EditTextSpec {
     if (eventHandler != null) {
       eventHandler.clearFocus();
       InputMethodManager imm =
-          (InputMethodManager) c.getSystemService(Context.INPUT_METHOD_SERVICE);
+          (InputMethodManager) c.getAndroidContext().getSystemService(Context.INPUT_METHOD_SERVICE);
       imm.hideSoftInputFromWindow(eventHandler.getWindowToken(), 0);
     }
   }
@@ -532,7 +531,7 @@ class EditTextSpec {
   static void setText(
       ComponentContext c,
       @State AtomicReference<EditTextWithEventHandlers> mountedView,
-      @FromTrigger String text) {
+      @FromTrigger CharSequence text) {
     ThreadUtils.assertMainThread();
 
     com.facebook.litho.widget.EditText.lazyUpdateInput(c, text);
@@ -544,7 +543,7 @@ class EditTextSpec {
   }
 
   @OnUpdateState
-  static void updateInput(StateValue<String> input, @Param String newInput) {
+  static void updateInput(StateValue<CharSequence> input, @Param CharSequence newInput) {
     input.set(newInput);
   }
 
@@ -662,13 +661,13 @@ class EditTextSpec {
       editText.setSelection(selection);
     }
 
-    if (textColor != 0) {
+    if (textColor != 0 || textColorStateList == null) {
       editText.setTextColor(textColor);
     } else {
       editText.setTextColor(textColorStateList);
     }
 
-    if (hintColor != 0) {
+    if (hintColor != 0 || hintColorStateList == null) {
       editText.setHintTextColor(hintColor);
     } else {
       editText.setHintTextColor(hintColorStateList);
@@ -758,7 +757,7 @@ class EditTextSpec {
         }
         if ((mStateUpdatePolicy == UPDATE_ON_LINE_COUNT_CHANGE && mPrevLineCount != getLineCount())
             || mStateUpdatePolicy == UPDATE_ON_TEXT_CHANGE) {
-          com.facebook.litho.widget.EditText.updateInput(mComponentContext, s.toString());
+          com.facebook.litho.widget.EditText.updateInputSync(mComponentContext, s.toString());
         } else if (mStateUpdatePolicy != NO_UPDATES) {
           com.facebook.litho.widget.EditText.lazyUpdateInput(mComponentContext, s.toString());
         }

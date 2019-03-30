@@ -15,11 +15,10 @@
  */
 package com.facebook.litho.sections.processor.integration.resources;
 
-import android.support.annotation.AttrRes;
-import android.support.annotation.StringRes;
-import android.support.annotation.VisibleForTesting;
-import android.support.v4.util.Pools;
 import android.widget.TextView;
+import androidx.annotation.AttrRes;
+import androidx.annotation.StringRes;
+import androidx.annotation.VisibleForTesting;
 import com.facebook.litho.ClickEvent;
 import com.facebook.litho.Component;
 import com.facebook.litho.Diff;
@@ -29,17 +28,19 @@ import com.facebook.litho.HasEventDispatcher;
 import com.facebook.litho.StateContainer;
 import com.facebook.litho.StateValue;
 import com.facebook.litho.TreeProps;
+import com.facebook.litho.annotations.Comparable;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.annotations.TreeProp;
-import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.litho.sections.ChangesInfo;
 import com.facebook.litho.sections.Children;
 import com.facebook.litho.sections.LoadingEvent;
 import com.facebook.litho.sections.Section;
 import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.SectionLifecycle;
 import java.util.BitSet;
+import java.util.Objects;
 
 /**
  * Comment to be copied in generated section
@@ -54,27 +55,31 @@ import java.util.BitSet;
  * @see com.facebook.litho.sections.processor.integration.resources.FullGroupSectionSpec
  */
 final class FullGroupSection<T> extends Section implements TestTag {
-  static final Pools.SynchronizedPool<TestEvent> sTestEventPool =
-      new Pools.SynchronizedPool<TestEvent>(2);
-
+  @Comparable(type = 14)
   private FullGroupSectionStateContainer mStateContainer;
 
   @Prop(resType = ResType.NONE, optional = false)
+  @Comparable(type = 3)
   int prop1;
 
   @Prop(resType = ResType.NONE, optional = true)
+  @Comparable(type = 13)
   String prop2;
 
   @Prop(resType = ResType.NONE, optional = false)
+  @Comparable(type = 10)
   Component prop3;
 
   @Prop(resType = ResType.STRING, optional = false)
+  @Comparable(type = 13)
   String prop4;
 
   @Prop(resType = ResType.NONE, optional = false)
+  @Comparable(type = 15)
   Section prop5;
 
   @TreeProp
+  @Comparable(type = 13)
   FullGroupSectionSpec.TreePropWrapper treeProp;
 
   String _service;
@@ -93,9 +98,6 @@ final class FullGroupSection<T> extends Section implements TestTag {
 
   @Override
   public boolean isEquivalentTo(Section other) {
-    if (ComponentsConfiguration.useNewIsEquivalentTo) {
-      return super.isEquivalentTo(other);
-    }
     if (this == other) {
       return true;
     }
@@ -168,11 +170,13 @@ final class FullGroupSection<T> extends Section implements TestTag {
 
   @Override
   protected void transferState(
-      SectionContext context, StateContainer _prevStateContainer) {
-    FullGroupSectionStateContainer prevStateContainer =
-        (FullGroupSectionStateContainer) _prevStateContainer;
-    mStateContainer.state1 = prevStateContainer.state1;
-    mStateContainer.state2 = prevStateContainer.state2;
+      StateContainer _prevStateContainer, StateContainer _nextStateContainer) {
+    FullGroupSectionStateContainer<T> prevStateContainer =
+        (FullGroupSectionStateContainer<T>) _prevStateContainer;
+    FullGroupSectionStateContainer<T> nextStateContainer =
+        (FullGroupSectionStateContainer<T>) _nextStateContainer;
+    nextStateContainer.state1 = prevStateContainer.state1;
+    nextStateContainer.state2 = prevStateContainer.state2;
   }
 
   protected static void updateState(SectionContext c, Object param) {
@@ -182,7 +186,7 @@ final class FullGroupSection<T> extends Section implements TestTag {
     }
     FullGroupSection.UpdateStateStateUpdate _stateUpdate =
         ((FullGroupSection) _component).createUpdateStateStateUpdate(param);
-    c.updateStateSync(_stateUpdate, "FullGroupSection.updateState");
+    c.updateStateAsync(_stateUpdate, "FullGroupSection.updateState");
   }
 
   protected static void updateStateAsync(SectionContext c, Object param) {
@@ -213,12 +217,10 @@ final class FullGroupSection<T> extends Section implements TestTag {
     SectionLifecycle.StateUpdate _stateUpdate =
         new SectionLifecycle.StateUpdate() {
           @Override
-          public void updateState(
-              StateContainer _stateContainer, Section newComponent) {
-            FullGroupSection newComponentStateUpdate = (FullGroupSection) newComponent;
-            StateValue<Object> state2 = new StateValue<Object>();
-            state2.set(lazyUpdateValue);
-            newComponentStateUpdate.mStateContainer.state2 = state2.get();
+          public void updateState(StateContainer _stateContainer) {
+            FullGroupSectionStateContainer stateContainer =
+                (FullGroupSectionStateContainer) _stateContainer;
+            stateContainer.state2 = lazyUpdateValue;
           }
         };
     c.updateStateLazy(_stateUpdate);
@@ -232,16 +234,10 @@ final class FullGroupSection<T> extends Section implements TestTag {
   }
 
   static boolean dispatchTestEvent(EventHandler _eventHandler, Object object) {
-    TestEvent _eventState = sTestEventPool.acquire();
-    if (_eventState == null) {
-      _eventState = new TestEvent();
-    }
+    final TestEvent _eventState = new TestEvent();
     _eventState.object = object;
     EventDispatcher _lifecycle = _eventHandler.mHasEventDispatcher.getEventDispatcher();
-    boolean result = (boolean) _lifecycle.dispatchOnEvent(_eventHandler, _eventState);
-    _eventState.object = null;
-    sTestEventPool.release(_eventState);
-    return result;
+    return (boolean) _lifecycle.dispatchOnEvent(_eventHandler, _eventState);
   }
 
   private void testEvent(
@@ -283,14 +279,15 @@ final class FullGroupSection<T> extends Section implements TestTag {
   protected void createInitialState(SectionContext c) {
     StateValue<T> state1 = new StateValue<>();
     StateValue<Object> state2 = new StateValue<>();
-    FullGroupSectionSpec.onCreateInitialState((SectionContext) c, (int) prop1, state1, state2);
+    FullGroupSectionSpec.onCreateInitialState(
+        (SectionContext) c, (int) prop1, (StateValue<T>) state1, (StateValue<Object>) state2);
     mStateContainer.state1 = state1.get();
     mStateContainer.state2 = state2.get();
   }
 
   private String onCreateService(SectionContext c) {
-    String _result =
-        (String) FullGroupSectionSpec.onCreateService((SectionContext) c, (String) prop2);
+    String _result;
+    _result = (String) FullGroupSectionSpec.onCreateService((SectionContext) c, (String) prop2);
     return _result;
   }
 
@@ -313,7 +310,8 @@ final class FullGroupSection<T> extends Section implements TestTag {
 
   @Override
   protected Children createChildren(SectionContext c) {
-    Children _result =
+    Children _result;
+    _result =
         (Children)
             FullGroupSectionSpec.onCreateChildren(
                 (SectionContext) c,
@@ -327,18 +325,18 @@ final class FullGroupSection<T> extends Section implements TestTag {
   @Override
   protected void bindService(SectionContext c) {
     FullGroupSectionSpec.bindService(
-        (SectionContext) c, _service, (int) prop1, (Object) mStateContainer.state2);
+        (SectionContext) c, (String) _service, (int) prop1, (Object) mStateContainer.state2);
   }
 
   @Override
   protected void unbindService(SectionContext c) {
     FullGroupSectionSpec.unbindService(
-        (SectionContext) c, _service, (int) prop1, (Object) mStateContainer.state2);
+        (SectionContext) c, (String) _service, (int) prop1, (Object) mStateContainer.state2);
   }
 
   @Override
   protected void refresh(SectionContext c) {
-    FullGroupSectionSpec.onRefresh((SectionContext) c, _service, (String) prop2);
+    FullGroupSectionSpec.onRefresh((SectionContext) c, (String) _service, (String) prop2);
   }
 
   @Override
@@ -351,13 +349,12 @@ final class FullGroupSection<T> extends Section implements TestTag {
   protected boolean shouldUpdate(Section _prevAbstractImpl, Section _nextAbstractImpl) {
     FullGroupSection _prevImpl = (FullGroupSection) _prevAbstractImpl;
     FullGroupSection _nextImpl = (FullGroupSection) _nextAbstractImpl;
+    boolean _result;
     Diff<Integer> prop1 =
-        (Diff)
-            acquireDiff(
-                _prevImpl == null ? null : _prevImpl.prop1,
-                _nextImpl == null ? null : _nextImpl.prop1);
-    boolean _result = (boolean) FullGroupSectionSpec.shouldUpdate(prop1);
-    releaseDiff(prop1);
+        new Diff<Integer>(
+            _prevImpl == null ? null : _prevImpl.prop1,
+            _nextImpl == null ? null : _nextImpl.prop1);
+    _result = (boolean) FullGroupSectionSpec.shouldUpdate((Diff<Integer>) prop1);
     return _result;
   }
 
@@ -385,14 +382,24 @@ final class FullGroupSection<T> extends Section implements TestTag {
 
   @Override
   protected void dataRendered(
-      SectionContext c, boolean isDataChanged, boolean isMounted, long uptimeMillis) {
+      SectionContext c,
+      boolean isDataChanged,
+      boolean isMounted,
+      long uptimeMillis,
+      int firstVisibleIndex,
+      int lastVisibleIndex,
+      ChangesInfo changesInfo) {
     FullGroupSectionSpec.onDataRendered(
-      (SectionContext) c,
-      (boolean) isDataChanged,
-      (boolean) isMounted,
-      (long) uptimeMillis,
-      (int) prop1,
-      (Object) mStateContainer.state2);
+        (SectionContext) c,
+        (boolean) isDataChanged,
+        (boolean) isMounted,
+        (long) uptimeMillis,
+        (int) firstVisibleIndex,
+        (int) lastVisibleIndex,
+        (ChangesInfo) changesInfo,
+        (int) prop1,
+        (Object) mStateContainer.state2,
+        (Integer) getCached());
   }
 
   @Override
@@ -416,11 +423,26 @@ final class FullGroupSection<T> extends Section implements TestTag {
     return childTreeProps;
   }
 
+  private int getCached() {
+    SectionContext c = getScopedContext();
+    final CachedInputs inputs = new CachedInputs(prop1);
+    Integer cached = (Integer) c.getCachedValue(inputs);
+    if (cached == null) {
+      cached = FullGroupSectionSpec.onCalculateCached(prop1);
+      c.putCachedValue(inputs, cached);
+    }
+    return cached;
+  }
+
   @VisibleForTesting(otherwise = 2)
   static class FullGroupSectionStateContainer<T> implements StateContainer {
-    @State T state1;
+    @State
+    @Comparable(type = 13)
+    T state1;
 
-    @State Object state2;
+    @State
+    @Comparable(type = 13)
+    Object state2;
   }
 
   public static class Builder<T> extends Section.Builder<Builder<T>> {
@@ -529,20 +551,11 @@ final class FullGroupSection<T> extends Section implements TestTag {
     @Override
     public FullGroupSection build() {
       checkArgs(REQUIRED_PROPS_COUNT, mRequired, REQUIRED_PROPS_NAMES);
-      FullGroupSection fullGroupSectionRef = mFullGroupSection;
-      release();
-      return fullGroupSectionRef;
-    }
-
-    @Override
-    protected void release() {
-      super.release();
-      mFullGroupSection = null;
-      mContext = null;
+      return mFullGroupSection;
     }
   }
 
-  private static class UpdateStateStateUpdate implements SectionLifecycle.StateUpdate {
+  private static class UpdateStateStateUpdate<T> implements SectionLifecycle.StateUpdate {
     private Object mParam;
 
     UpdateStateStateUpdate(Object param) {
@@ -550,14 +563,41 @@ final class FullGroupSection<T> extends Section implements TestTag {
     }
 
     @Override
-    public void updateState(StateContainer _stateContainer, Section newComponent) {
-      FullGroupSectionStateContainer stateContainer =
-          (FullGroupSectionStateContainer) _stateContainer;
-      FullGroupSection newComponentStateUpdate = (FullGroupSection) newComponent;
+    public void updateState(StateContainer _stateContainer) {
+      FullGroupSectionStateContainer<T> stateContainer =
+          (FullGroupSectionStateContainer<T>) _stateContainer;
       StateValue<Object> state2 = new StateValue<Object>();
       state2.set(stateContainer.state2);
       FullGroupSectionSpec.updateState(state2, mParam);
-      newComponentStateUpdate.mStateContainer.state2 = state2.get();
+      stateContainer.state2 = state2.get();
+    }
+  }
+
+  private static class CachedInputs {
+    private final int prop1;
+
+    CachedInputs(int prop1) {
+      this.prop1 = prop1;
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hash(prop1);
+    }
+
+    @Override
+    public boolean equals(Object other) {
+      if (this == other) {
+        return true;
+      }
+      if (other == null || !(other instanceof CachedInputs)) {
+        return false;
+      }
+      CachedInputs cachedValueInputs = (CachedInputs) other;
+      if (prop1 != cachedValueInputs.prop1) {
+        return false;
+      }
+      return true;
     }
   }
 }

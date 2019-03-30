@@ -19,9 +19,9 @@ import static com.facebook.litho.widget.SnapUtil.SNAP_TO_START;
 
 import android.graphics.Color;
 import android.graphics.Rect;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
@@ -155,7 +155,7 @@ public class HorizontalScrollWithSnapComponentSpec {
 
   @OnEvent(ItemSelectedEvent.class)
   static void onSnapModeSelected(ComponentContext c, @FromEvent String newSelection) {
-    HorizontalScrollWithSnapComponent.updateSnapMode(c, getSnapModeInt(newSelection));
+    HorizontalScrollWithSnapComponent.updateSnapModeSync(c, getSnapModeInt(newSelection));
   }
 
   @OnUpdateState

@@ -391,6 +391,8 @@ public class DelegateMethodValidation {
         return SpecModelUtils.isStateValue(specModel, methodParamModel);
       case DIFF:
         return methodParamModel instanceof RenderDataDiffModel;
+      case CACHED_VALUE:
+        return methodParamModel instanceof CachedValueParamModel;
     }
 
     return false;
@@ -472,6 +474,9 @@ public class DelegateMethodValidation {
       case DIFF:
         return "@State Diff<T> stateName or @Prop Diff<T> propName, where stateName/propName is " +
             "a declared state or prop param declared elsewhere in the spec.";
+      case CACHED_VALUE:
+        return "@CachedValue T value, where the cached value has a corresponding "
+            + "@OnCalculateCachedValue method";
     }
 
     return "Unexpected parameter type - please report to the Components team";

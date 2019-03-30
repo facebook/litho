@@ -8,6 +8,7 @@ load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_ANDROIDSUPPORT_RECYCLERVIEW
 litho_android_library(
     name = "utils",
     srcs = glob(["*.java"]),
+    is_androidx = True,
     tests = [
         make_dep_path("litho-it/src/test/java/com/facebook/litho/utils:utils"),
     ],

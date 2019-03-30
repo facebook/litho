@@ -25,6 +25,7 @@ Or with disabling the IPv6 stack in the JVM:
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE ViewPatterns #-}
 
 import Prelude hiding (FilePath)
 import Turtle
@@ -65,8 +66,15 @@ remoteRepositories =
 
 -- * Application logic
 
-parser :: Turtle.Parser Text
-parser = argText "VERSION" "Version number to verify"
+newtype Version = Version Text
+
+-- | Strip a leading 'v' if present and wrap in a newtype.
+parseVersion :: Text -> Version
+parseVersion (T.stripPrefix "v" -> Just v) = Version v
+parseVersion v                             = Version v
+
+parser :: Turtle.Parser Version
+parser = parseVersion <$> argText "VERSION" "Version number to verify"
 
 data MvnArtifact = MvnArtifact
   { mvnArtifactId :: Text
@@ -124,8 +132,8 @@ mvnArtifactToVersionedIdentifier :: MvnArtifact -> Text -> Text
 mvnArtifactToVersionedIdentifier MvnArtifact{..} version =
   format ("com.facebook.litho:"%s%":"%s%":"%s) mvnArtifactId version mvnPackaging
 
-buildMvnGetCommand :: MvnArtifact -> Text -> FilePath -> (T.Text, [T.Text])
-buildMvnGetCommand artifact version configDir =
+buildMvnGetCommand :: MvnArtifact -> Version -> FilePath -> (T.Text, [T.Text])
+buildMvnGetCommand artifact (Version version) configDir =
   ( "mvn"
   , [ "dependency:get"
     , "-gs"

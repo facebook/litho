@@ -22,6 +22,7 @@ import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.Prop;
 import java.util.List;
+import javax.annotation.Nullable;
 
 /**
  * Selects the first Component that will render by calling {@link
@@ -38,7 +39,7 @@ import java.util.List;
 public class LazySelectorComponentSpec {
 
   @OnCreateLayout
-  static Component onCreateLayout(
+  static @Nullable Component onCreateLayout(
       final ComponentContext c,
       final @Prop(varArg = "component", optional = true) List<ComponentCreator> components) {
     if (components == null) {

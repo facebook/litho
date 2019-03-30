@@ -18,6 +18,7 @@ package com.facebook.litho.specmodels.model;
 
 import static com.facebook.litho.specmodels.model.SpecMethodModelValidation.validateMethodIsStatic;
 
+import com.facebook.litho.annotations.CachedValue;
 import com.facebook.litho.annotations.FromEvent;
 import com.facebook.litho.annotations.InjectProp;
 import com.facebook.litho.annotations.Param;
@@ -29,6 +30,7 @@ import com.facebook.litho.specmodels.internal.RunMode;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeName;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.type.MirroredTypeException;
@@ -39,7 +41,7 @@ import javax.lang.model.type.MirroredTypeException;
  */
 public class EventValidation {
 
-  static List<SpecModelValidationError> validate(SpecModel specModel, RunMode runMode) {
+  static List<SpecModelValidationError> validate(SpecModel specModel, EnumSet<RunMode> runMode) {
     List<SpecModelValidationError> validationErrors = new ArrayList<>();
     validationErrors.addAll(validateEventDeclarations(specModel));
     validationErrors.addAll(validateOnEventMethods(specModel, runMode));
@@ -74,7 +76,7 @@ public class EventValidation {
   }
 
   static List<SpecModelValidationError> validateOnEventMethods(
-      SpecModel specModel, RunMode runMode) {
+      SpecModel specModel, EnumSet<RunMode> runMode) {
     final List<SpecModelValidationError> validationErrors = new ArrayList<>();
 
     final ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> eventMethods =
@@ -92,7 +94,7 @@ public class EventValidation {
       }
     }
 
-    if (runMode != RunMode.ABI) {
+    if (!runMode.contains(RunMode.ABI)) {
       for (SpecMethodModel<EventMethod, EventDeclarationModel> eventMethod : eventMethods) {
         validationErrors.addAll(validateMethodIsStatic(specModel, eventMethod));
 
@@ -138,7 +140,7 @@ public class EventValidation {
                 new SpecModelValidationError(
                     methodParam.getRepresentedObject(),
                     "Param must be annotated with one of @FromEvent, @Prop, @InjectProp, "
-                        + "@TreeProp, @State or @Param."));
+                        + "@TreeProp, @CachedValue, @State or @Param."));
           }
         }
       }
@@ -152,6 +154,7 @@ public class EventValidation {
         || MethodParamModelUtils.isAnnotatedWith(methodParam, Prop.class)
         || MethodParamModelUtils.isAnnotatedWith(methodParam, InjectProp.class)
         || MethodParamModelUtils.isAnnotatedWith(methodParam, TreeProp.class)
+        || MethodParamModelUtils.isAnnotatedWith(methodParam, CachedValue.class)
         || MethodParamModelUtils.isAnnotatedWith(methodParam, State.class)
         || MethodParamModelUtils.isAnnotatedWith(methodParam, Param.class);
   }

@@ -21,10 +21,10 @@ import static android.graphics.Color.GREEN;
 import static android.graphics.Color.RED;
 import static android.os.Build.VERSION.SDK_INT;
 import static android.os.Build.VERSION_CODES.M;
-import static android.support.v4.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
-import static android.support.v4.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO;
-import static android.support.v4.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS;
-import static android.support.v4.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_YES;
+import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
+import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO;
+import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS;
+import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_YES;
 import static com.facebook.litho.Column.create;
 import static com.facebook.litho.LayoutState.createAndMeasureTreeForComponent;
 import static com.facebook.litho.NodeInfo.ENABLED_SET_FALSE;
@@ -48,7 +48,6 @@ import static com.facebook.yoga.YogaPositionType.ABSOLUTE;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -60,12 +59,14 @@ import android.content.Context;
 import android.graphics.Rect;
 import android.util.SparseArray;
 import android.view.accessibility.AccessibilityManager;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestLayoutComponent;
 import com.facebook.litho.testing.TestNullLayoutComponent;
 import com.facebook.litho.testing.TestSizeDependentComponent;
 import com.facebook.litho.testing.TestViewComponent;
+import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
 import com.facebook.litho.widget.Text;
@@ -75,7 +76,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.powermock.reflect.Whitebox;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
 import org.robolectric.shadows.ShadowAccessibilityManager;
@@ -85,6 +85,10 @@ public class LayoutStateCalculateTest {
 
   @Before
   public void setup() throws Exception {
+    // invdalidate the cached accessibility value before each test runs so that we don't
+    // have a value already cached.  If we don't do this, accessibility tests will fail when run
+    // after non-accessibility tests, and vice-versa.
+    AccessibilityUtils.invalidateCachedIsAccessibilityEnabled();
   }
 
   @After
@@ -989,7 +993,7 @@ public class LayoutStateCalculateTest {
           @Override
           protected Component onCreateLayout(final ComponentContext c) {
             return create(c)
-                .child(Wrapper.create(c).delegate(innerComponent).widthPx(100).heightPx(100))
+                .child(Row.create(c).child(innerComponent).widthPx(100).heightPx(100))
                 .build();
           }
         };
@@ -1032,7 +1036,7 @@ public class LayoutStateCalculateTest {
           @Override
           protected Component onCreateLayout(final ComponentContext c) {
             return create(c)
-                .child(Wrapper.create(c).delegate(innerComponent).widthPx(100).heightPx(100))
+                .child(Row.create(c).child(innerComponent).widthPx(100).heightPx(100))
                 .build();
           }
         };
@@ -1115,9 +1119,7 @@ public class LayoutStateCalculateTest {
         new InlineLayoutSpec() {
           @Override
           protected Component onCreateLayout(final ComponentContext c) {
-            return create(c)
-                .child(Wrapper.create(c).delegate(innerComponent).flexShrink(0))
-                .build();
+            return create(c).child(Row.create(c).child(innerComponent).flexShrink(0)).build();
           }
         };
 
@@ -2096,7 +2098,7 @@ public class LayoutStateCalculateTest {
     doReturn(componentSpy).when(componentSpy).makeShallowCopy();
 
     // Check the cached measured component tree
-    assertThat(componentSpy.hasCachedLayout()).isTrue();
+    assertThat(componentSpy.getCachedLayout()).isNotNull();
     final InternalNode cachedLayout = componentSpy.getCachedLayout();
     assertThat(cachedLayout.getChildCount()).isEqualTo(1);
     assertThat(((InternalNode) cachedLayout.getChildAt(0)).getRootComponent())
@@ -2120,8 +2122,7 @@ public class LayoutStateCalculateTest {
 
     verify(componentSpy, times(1)).makeShallowCopy();
 
-    // Make sure we reused the cached layout and it wasn't released.
-    verify(componentSpy, never()).releaseCachedLayout();
+    // Make sure we reused the cached layout.
     verify(componentSpy, times(1)).clearCachedLayout();
 
     // Check total layout outputs.
@@ -2165,7 +2166,7 @@ public class LayoutStateCalculateTest {
     doReturn(sizeDependentComponentSpy).when(sizeDependentComponentSpy).makeShallowCopy();
 
     // Check the cached measured component tree
-    assertThat(sizeDependentComponentSpy.hasCachedLayout()).isTrue();
+    assertThat(sizeDependentComponentSpy.getCachedLayout()).isNotNull();
     final InternalNode cachedLayout = sizeDependentComponentSpy.getCachedLayout();
     assertThat(cachedLayout.getChildCount()).isEqualTo(2);
     assertThat(((InternalNode) cachedLayout.getChildAt(0)).getRootComponent())
@@ -2181,7 +2182,7 @@ public class LayoutStateCalculateTest {
             return create(c)
                 .flexShrink(0)
                 .paddingPx(HORIZONTAL, horizontalPadding)
-                .child(Wrapper.create(c).delegate(sizeDependentComponentSpy).flexShrink(0))
+                .child(sizeDependentComponentSpy)
                 .build();
           }
         };
@@ -2195,8 +2196,7 @@ public class LayoutStateCalculateTest {
 
     verify(sizeDependentComponentSpy, times(1)).makeShallowCopy();
 
-    // Make sure we reused the cached layout and it wasn't released.
-    verify(sizeDependentComponentSpy, never()).releaseCachedLayout();
+    // Make sure we reused the cached layout.
     verify(sizeDependentComponentSpy, times(1)).clearCachedLayout();
 
     // Check total layout outputs.
@@ -2245,7 +2245,7 @@ public class LayoutStateCalculateTest {
     doReturn(componentSpy).when(componentSpy).makeShallowCopy();
 
     // Check the cached measured component tree
-    assertThat(componentSpy.hasCachedLayout()).isTrue();
+    assertThat(componentSpy.getCachedLayout()).isNotNull();
     final InternalNode cachedLayout = componentSpy.getCachedLayout();
     assertThat(cachedLayout.getChildCount()).isEqualTo(0);
     assertThat(cachedLayout.getRootComponent()).isInstanceOf(TestDrawableComponent.class);
@@ -2268,8 +2268,7 @@ public class LayoutStateCalculateTest {
 
     verify(componentSpy, times(1)).makeShallowCopy();
 
-    // Make sure we reused the cached layout and it wasn't released.
-    verify(componentSpy, never()).releaseCachedLayout();
+    // Make sure we reused the cached layout.
     verify(componentSpy, times(1)).clearCachedLayout();
 
     // Check total layout outputs.
@@ -2313,7 +2312,7 @@ public class LayoutStateCalculateTest {
     doReturn(sizeDependentComponentSpy).when(sizeDependentComponentSpy).makeShallowCopy();
 
     // Check the cached measured component tree
-    assertThat(sizeDependentComponentSpy.hasCachedLayout()).isTrue();
+    assertThat(sizeDependentComponentSpy.getCachedLayout()).isNotNull();
     final InternalNode cachedLayout = sizeDependentComponentSpy.getCachedLayout();
     assertThat(cachedLayout.getChildCount()).isEqualTo(0);
     assertThat(cachedLayout.getRootComponent()).isInstanceOf(TestDrawableComponent.class);
@@ -2339,8 +2338,7 @@ public class LayoutStateCalculateTest {
 
     verify(sizeDependentComponentSpy, times(1)).makeShallowCopy();
 
-    // Make sure we reused the cached layout and it wasn't released.
-    verify(sizeDependentComponentSpy, never()).releaseCachedLayout();
+    // Make sure we reused the cached layout.
     verify(sizeDependentComponentSpy, times(1)).clearCachedLayout();
 
     // Check total layout outputs.
@@ -2629,7 +2627,11 @@ public class LayoutStateCalculateTest {
     assertThat(cachedLayout).isNotNull();
 
     calculateLayoutState(
-        c, componentSpy, -1, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));
+        c.getAndroidContext(),
+        componentSpy,
+        -1,
+        makeSizeSpec(100, EXACTLY),
+        makeSizeSpec(100, EXACTLY));
 
     assertThat(componentSpy.getLayoutCreatedInWillRenderForTesting()).isNull();
 
@@ -2704,7 +2706,8 @@ public class LayoutStateCalculateTest {
           }
         };
 
-    calculateLayoutState(c, root, -1, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));
+    calculateLayoutState(
+        c.getAndroidContext(), root, -1, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));
     verify(componentSpy, times(1)).updateInternalChildState(any(ComponentContext.class));
   }
 
@@ -2722,6 +2725,44 @@ public class LayoutStateCalculateTest {
 
     assertThat(Component.willRender(c, component)).isTrue();
     assertThat(component.getLayoutCreatedInWillRenderForTesting()).isEqualTo(cachedLayout);
+  }
+
+  @Test
+  public void testPhantomLayoutOutputForTransitionKey() {
+    ComponentsConfiguration.createPhantomLayoutOutputsForTransitions = true;
+
+    final String transitionKey = "column";
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(final ComponentContext c) {
+            return Column.create(c)
+                .child(
+                    Column.create(c)
+                        .transitionKey(transitionKey)
+                        .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
+                        .child(TestDrawableComponent.create(c)))
+                .build();
+          }
+        };
+
+    final TransitionId transitionId =
+        new TransitionId(TransitionId.Type.GLOBAL, transitionKey, null);
+    final LayoutState layoutState =
+        calculateLayoutState(
+            RuntimeEnvironment.application,
+            component,
+            -1,
+            SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY),
+            SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY));
+
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(3);
+
+    final LayoutOutput outputWithTransitionKey =
+        layoutState.getLayoutOutputsForTransitionId(transitionId).get(OutputUnitType.HOST);
+    assertThat((outputWithTransitionKey.getFlags() & MountItem.LAYOUT_FLAG_PHANTOM) != 0).isTrue();
+
+    ComponentsConfiguration.createPhantomLayoutOutputsForTransitions = false;
   }
 
   private void enableAccessibility() {

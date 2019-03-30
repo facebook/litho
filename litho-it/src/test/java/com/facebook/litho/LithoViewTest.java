@@ -32,12 +32,15 @@ import static org.mockito.Mockito.verify;
 import static org.robolectric.RuntimeEnvironment.application;
 import static org.robolectric.Shadows.shadowOf;
 
+import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.util.DisplayMetrics;
 import android.view.ViewGroup;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.TestDrawableComponent;
+import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.assertj.LithoViewAssert;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
@@ -47,7 +50,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
-import org.powermock.reflect.Whitebox;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.shadows.ShadowView;
 
@@ -287,7 +289,7 @@ public class LithoViewTest {
 
   private LithoView setupLithoViewForDoubleMeasureTest(
       int screenWidthDp, float density, int screenWidthPx) {
-    final ComponentContext context = spy(new ComponentContext(RuntimeEnvironment.application));
+    final Context context = spy(new ContextWrapper(RuntimeEnvironment.application));
     final Resources resources = spy(context.getResources());
 
     doReturn(resources).when(context).getResources();

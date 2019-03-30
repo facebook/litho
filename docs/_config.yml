@@ -35,8 +35,8 @@ ghrepo: "facebook/litho"
 repository: "facebook/litho"
 
 # These can be used in documentation with e.g. {{site.litho-version}}
-litho-version: 0.19.0
-litho-snapshot-version: 0.19.1-SNAPSHOT
+litho-version: 0.25.0
+litho-snapshot-version: 0.25.1-SNAPSHOT
 soloader-version: 0.5.1
 
 # Use these color settings to determine your colour scheme for the site.
@@ -97,3 +97,4 @@ plugins:
   - jekyll-feed
   - jekyll-seo-tag
   - jekyll-sitemap
+  

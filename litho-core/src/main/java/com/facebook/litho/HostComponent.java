@@ -18,11 +18,20 @@ package com.facebook.litho;
 
 import android.content.Context;
 import android.os.Build;
+import com.facebook.litho.config.ComponentsConfiguration;
 
 class HostComponent extends Component {
 
   protected HostComponent() {
     super("HostComponent");
+  }
+
+  @Override
+  protected MountContentPool onCreateMountContentPool() {
+    if (ComponentsConfiguration.disableComponentHostPool) {
+      return new DisabledMountContentPool();
+    }
+    return new HostComponentMountContentPool(poolSize(), true);
   }
 
   @Override
@@ -38,6 +47,20 @@ class HostComponent extends Component {
       // We need to do this in case an external user of this ComponentHost has manually set alpha
       // to 0, which will mean that it won't draw anything.
       host.setAlpha(1.0f);
+    }
+  }
+
+  @Override
+  protected void onUnmount(ComponentContext c, Object mountedContent) {
+    final ComponentHost host = (ComponentHost) mountedContent;
+
+    // Some hosts might be duplicating parent state which could be 'pressed' and under certain
+    // conditions that state might not be cleared from this host and carried to next reuse,
+    // therefore applying wrong drawable state. Particular case where this might happen is when
+    // host is unmounted as soon as click event is triggered, and host is unmounted before it has
+    // chance to reset its internal pressed state.
+    if (host.isPressed()) {
+      host.setPressed(false);
     }
   }
 

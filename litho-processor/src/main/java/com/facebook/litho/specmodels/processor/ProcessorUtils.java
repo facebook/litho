@@ -21,8 +21,10 @@ import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.SpecModelValidationError;
 import com.squareup.javapoet.TypeName;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.Nullable;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
@@ -43,7 +45,7 @@ public class ProcessorUtils {
    *     href="https://area-51.blog/2009/02/13/getting-class-values-from-annotations-in-an-annotationprocessor">this
    *     article</a> for more details.
    */
-  public static <T> T getAnnotationParameter(
+  public static @Nullable <T> T getAnnotationParameter(
       Elements elements,
       Element element,
       Class<?> annotationType,
@@ -87,7 +89,7 @@ public class ProcessorUtils {
    * processor for the given specmodel and throws a {@link MultiPrintableException} if any such
    * errors are found.
    */
-  public static final void validate(SpecModel specModel, RunMode runMode) {
+  public static final void validate(SpecModel specModel, EnumSet<RunMode> runMode) {
     List<SpecModelValidationError> validationErrors = specModel.validate(runMode);
 
     if (validationErrors == null || validationErrors.isEmpty()) {
@@ -107,7 +109,12 @@ public class ProcessorUtils {
   }
 
   public static String getPackageName(String qualifiedName) {
-    return qualifiedName.substring(0, qualifiedName.lastIndexOf('.'));
+    int lastDotIndex = qualifiedName.lastIndexOf('.');
+    if (lastDotIndex == -1) {
+      throw new IllegalArgumentException(
+          "Your class " + qualifiedName + " has no package declaration.");
+    }
+    return qualifiedName.substring(0, lastDotIndex);
   }
 
   public static String getPackageName(TypeName typeName) {

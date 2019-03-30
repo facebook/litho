@@ -31,11 +31,11 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
-import android.support.annotation.UiThread;
-import android.support.annotation.VisibleForTesting;
-import android.support.v4.util.Pair;
 import android.text.TextUtils;
 import android.util.Log;
+import androidx.annotation.UiThread;
+import androidx.annotation.VisibleForTesting;
+import androidx.core.util.Pair;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentsLogger;
@@ -58,6 +58,7 @@ import com.facebook.litho.widget.SectionsDebug;
 import com.facebook.litho.widget.SmoothScrollAlignmentType;
 import com.facebook.litho.widget.ViewportInfo;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -239,8 +240,10 @@ public class SectionTree {
   @GuardedBy("this")
   private List<ChangeSet> mPendingChangeSets;
 
+  /** Map of all cached values that are stored for the current ComponentTree. */
   @GuardedBy("this")
-  private Map<String, List<EventHandler>> mEventHandlers = new HashMap<>();
+  @Nullable
+  private Map<Object, Object> mCachedValues;
 
   private final EventHandlersController mEventHandlersController = new EventHandlersController();
 
@@ -443,26 +446,50 @@ public class SectionTree {
 
   @UiThread
   private void dataRendered(
-      Section currentSection, boolean isDataChanged, boolean isMounted, long uptimeMillis) {
+      Section currentSection,
+      boolean isDataChanged,
+      boolean isMounted,
+      long uptimeMillis,
+      ChangesInfo changesInfo) {
     ThreadUtils.assertMainThread();
 
     if (currentSection != null) {
-      dataRenderedRecursive(currentSection, isDataChanged, isMounted, uptimeMillis);
+      dataRenderedRecursive(currentSection, isDataChanged, isMounted, uptimeMillis, changesInfo);
     }
   }
 
   @UiThread
   private void dataRenderedRecursive(
-      Section section, boolean isDataChanged, boolean isMounted, long uptimeMillis) {
-    section.dataRendered(section.getScopedContext(), isDataChanged, isMounted, uptimeMillis);
-
+      Section section,
+      boolean isDataChanged,
+      boolean isMounted,
+      long uptimeMillis,
+      ChangesInfo changesInfo) {
     if (section.isDiffSectionSpec()) {
       return;
     }
 
+    int firstVisibleIndex = -1;
+    int lastVisibleIndex = -1;
+
+    final Range currentRange = mLastRanges.get(section.getGlobalKey());
+    if (currentRange != null) {
+      firstVisibleIndex = currentRange.firstVisibleIndex;
+      lastVisibleIndex = currentRange.lastVisibleIndex;
+    }
+
+    section.dataRendered(
+        section.getScopedContext(),
+        isDataChanged,
+        isMounted,
+        uptimeMillis,
+        firstVisibleIndex,
+        lastVisibleIndex,
+        changesInfo);
+
     final List<Section> children = section.getChildren();
     for (int i = 0, size = children.size(); i < size; i++) {
-      dataRenderedRecursive(children.get(i), isDataChanged, isMounted, uptimeMillis);
+      dataRenderedRecursive(children.get(i), isDataChanged, isMounted, uptimeMillis, changesInfo);
     }
   }
 
@@ -484,9 +511,10 @@ public class SectionTree {
   }
 
   /** Calculates the global starting index for each section in the hierarchy. */
+  @Nullable
   @UiThread
   private SectionLocationInfo findSectionForKeyRecursive(
-      Section root, String key, int prevChildrenCount) {
+      @Nullable Section root, String key, int prevChildrenCount) {
     if (root == null) {
       return null;
     }
@@ -771,7 +799,6 @@ public class SectionTree {
       mReleased = true;
       mCurrentSection = null;
       mNextSection = null;
-      mEventHandlers = null;
     }
 
     for (Range range : mLastRanges.values()) {
@@ -830,7 +857,24 @@ public class SectionTree {
     addStateUpdateInternal(key, stateUpdate, true);
   }
 
-  private static Section copy(Section section, boolean deep) {
+  @Nullable
+  synchronized Object getCachedValue(Object cachedValueInputs) {
+    if (mCachedValues == null) {
+      mCachedValues = new HashMap<>();
+    }
+
+    return mCachedValues.get(cachedValueInputs);
+  }
+
+  synchronized void putCachedValue(Object cachedValueInputs, Object cachedValue) {
+    if (mCachedValues == null) {
+      mCachedValues = new HashMap<>();
+    }
+
+    mCachedValues.put(cachedValueInputs, cachedValue);
+  }
+
+  private static @Nullable Section copy(Section section, boolean deep) {
     return section != null ? section.makeShallowCopy(deep) : null;
   }
 
@@ -1240,6 +1284,7 @@ public class SectionTree {
       ComponentsSystrace.beginSection("applyChangeSetToTarget");
     }
     boolean appliedChanges = false;
+    ChangeSet mergedChangeSet = null;
     try {
       for (int i = 0, size = changeSets.size(); i < size; i++) {
         final ChangeSet changeSet = changeSets.get(i);
@@ -1279,9 +1324,15 @@ public class SectionTree {
           }
           mTarget.dispatchLastEvent();
         }
+        mergedChangeSet = ChangeSet.merge(mergedChangeSet, changeSet);
       }
 
       final boolean isDataChanged = appliedChanges;
+      final ChangesInfo changesInfo =
+          new ChangesInfo(
+              mergedChangeSet != null
+                  ? mergedChangeSet.getChanges()
+                  : Collections.<Change>emptyList());
       mTarget.notifyChangeSetComplete(
           isDataChanged,
           new ChangeSetCompleteCallback() {
@@ -1305,7 +1356,7 @@ public class SectionTree {
 
             @Override
             public void onDataRendered(boolean isMounted, long uptimeMillis) {
-              dataRendered(currentSection, isDataChanged, isMounted, uptimeMillis);
+              dataRendered(currentSection, isDataChanged, isMounted, uptimeMillis, changesInfo);
             }
           });
     } finally {
@@ -1374,107 +1425,121 @@ public class SectionTree {
       throw new IllegalStateException("Can't generate a subtree with a null root");
     }
 
-    nextRoot.setScopedContext(SectionContext.withScope(context, nextRoot));
-    if (currentRoot != null) {
-      nextRoot.setCount(currentRoot.getCount());
+    final boolean isTracing = ComponentsSystrace.isTracing();
+    if (isTracing) {
+      ComponentsSystrace.beginSection("createChildren:" + nextRoot.getSimpleName());
     }
 
-    final boolean shouldTransferState =
-        currentRoot != null && currentRoot.getClass().equals(nextRoot.getClass());
+    try {
+      nextRoot.setScopedContext(SectionContext.withScope(context, nextRoot));
+      if (currentRoot != null) {
+        nextRoot.setCount(currentRoot.getCount());
+      }
 
-    if (currentRoot == null || !shouldTransferState) {
-      nextRoot.createInitialState(nextRoot.getScopedContext());
-      nextRoot.createService(nextRoot.getScopedContext());
-    } else {
-      if (currentRoot.getService(currentRoot) == null) {
+      final boolean shouldTransferState =
+          currentRoot != null && currentRoot.getClass().equals(nextRoot.getClass());
+
+      if (currentRoot == null || !shouldTransferState) {
+        nextRoot.createInitialState(nextRoot.getScopedContext());
         nextRoot.createService(nextRoot.getScopedContext());
-
-        if (nextRoot.getService(nextRoot) != null) {
-          final String errorMessage =
-              "We were about to transfer a null service from "
-                  + currentRoot
-                  + " to "
-                  + nextRoot
-                  + " while the later created a non-null service";
-          final ComponentsLogger logger = context.getLogger();
-          if (logger != null) {
-            logger.emitMessage(ERROR, errorMessage);
-          } else {
-            Log.e(SectionsDebug.TAG, errorMessage);
-          }
-        }
       } else {
-        nextRoot.transferService(nextRoot.getScopedContext(), currentRoot, nextRoot);
-      }
-      nextRoot.transferState(
-          nextRoot.getScopedContext(),
-          currentRoot.getStateContainer());
-    }
+        if (currentRoot.getService(currentRoot) == null) {
+          nextRoot.createService(nextRoot.getScopedContext());
 
-    // TODO: t18544409 Make sure this is absolutely the best solution as this is an anti-pattern
-    final List<StateUpdate> stateUpdates = pendingStateUpdates.get(nextRoot.getGlobalKey());
-    if (stateUpdates != null) {
-      for (int i = 0, size = stateUpdates.size(); i < size; i++) {
-        stateUpdates.get(i).updateState(nextRoot.getStateContainer(), nextRoot);
-      }
-
-      if (nextRoot.shouldComponentUpdate(currentRoot, nextRoot)) {
-        nextRoot.invalidate();
-      }
-    }
-
-    if (!nextRoot.isDiffSectionSpec()) {
-      final Map<String, Pair<Section, Integer>> currentComponentChildren = currentRoot == null ?
-          null :
-          Section.acquireChildrenMap(currentRoot);
-
-      final TreeProps parentTreeProps = context.getTreeProps();
-      nextRoot.populateTreeProps(parentTreeProps);
-      context.setTreeProps(
-          nextRoot.getTreePropsForChildren(context, parentTreeProps));
-
-      final ComponentsLogger logger = context.getLogger();
-      final PerfEvent logEvent =
-          SectionsLogEventUtils.getSectionsPerformanceEvent(
-              context, EVENT_SECTIONS_ON_CREATE_CHILDREN, null, nextRoot);
-
-      nextRoot.setChildren(nextRoot.createChildren(
-          nextRoot.getScopedContext()));
-
-      if (logger != null && logEvent != null) {
-        logger.logPerfEvent(logEvent);
+          if (nextRoot.getService(nextRoot) != null) {
+            final String errorMessage =
+                "We were about to transfer a null service from "
+                    + currentRoot
+                    + " to "
+                    + nextRoot
+                    + " while the later created a non-null service";
+            final ComponentsLogger logger = context.getLogger();
+            if (logger != null) {
+              logger.emitMessage(ERROR, errorMessage);
+            } else {
+              Log.e(SectionsDebug.TAG, errorMessage);
+            }
+          }
+        } else {
+          nextRoot.transferService(nextRoot.getScopedContext(), currentRoot, nextRoot);
+        }
+        nextRoot.transferState(currentRoot.getStateContainer(), nextRoot.getStateContainer());
       }
 
-      final List<Section> nextRootChildren = nextRoot.getChildren();
-
-      for (int i = 0, size = nextRootChildren.size(); i < size; i++) {
-        final Section child = nextRootChildren.get(i);
-        child.setParent(nextRoot);
-        final String childKey = child.getKey();
-        if (TextUtils.isEmpty(childKey)) {
-          final String errorMessage =
-              "Your Section "
-                  + child.getClass().getSimpleName()
-                  + " has an empty key. Please specify a key.";
-          throw new IllegalStateException(errorMessage);
+      // TODO: t18544409 Make sure this is absolutely the best solution as this is an anti-pattern
+      final List<StateUpdate> stateUpdates = pendingStateUpdates.get(nextRoot.getGlobalKey());
+      if (stateUpdates != null) {
+        for (int i = 0, size = stateUpdates.size(); i < size; i++) {
+          stateUpdates.get(i).updateState(nextRoot.getStateContainer());
         }
 
-        final String globalKey = nextRoot.getGlobalKey() + childKey;
-        child.generateKeyAndSet(nextRoot.getScopedContext(), globalKey);
-        child.setScopedContext(SectionContext.withScope(context, child));
-
-        final Pair<Section,Integer> valueAndIndex = currentComponentChildren == null ?
-            null :
-            currentComponentChildren.get(child.getGlobalKey());
-        final Section currentChild = valueAndIndex != null ? valueAndIndex.first : null;
-
-        createNewTreeAndApplyStateUpdates(
-            context, currentChild, child, pendingStateUpdates, sectionsDebugLogger, sectionTreeTag);
+        if (nextRoot.shouldComponentUpdate(currentRoot, nextRoot)) {
+          nextRoot.invalidate();
+        }
       }
 
-      final TreeProps contextTreeProps = context.getTreeProps();
-      if (contextTreeProps != parentTreeProps) {
-        context.setTreeProps(parentTreeProps);
+      if (!nextRoot.isDiffSectionSpec()) {
+        final Map<String, Pair<Section, Integer>> currentComponentChildren =
+            currentRoot == null || currentRoot.isDiffSectionSpec()
+                ? null
+                : Section.acquireChildrenMap(currentRoot);
+
+        final TreeProps parentTreeProps = context.getTreeProps();
+        nextRoot.populateTreeProps(parentTreeProps);
+        context.setTreeProps(nextRoot.getTreePropsForChildren(context, parentTreeProps));
+
+        final ComponentsLogger logger = context.getLogger();
+        final PerfEvent logEvent =
+            SectionsLogEventUtils.getSectionsPerformanceEvent(
+                context, EVENT_SECTIONS_ON_CREATE_CHILDREN, null, nextRoot);
+
+        nextRoot.setChildren(nextRoot.createChildren(nextRoot.getScopedContext()));
+
+        if (logger != null && logEvent != null) {
+          logger.logPerfEvent(logEvent);
+        }
+
+        final List<Section> nextRootChildren = nextRoot.getChildren();
+
+        for (int i = 0, size = nextRootChildren.size(); i < size; i++) {
+          final Section child = nextRootChildren.get(i);
+          child.setParent(nextRoot);
+          final String childKey = child.getKey();
+          if (TextUtils.isEmpty(childKey)) {
+            final String errorMessage =
+                "Your Section "
+                    + child.getClass().getSimpleName()
+                    + " has an empty key. Please specify a key.";
+            throw new IllegalStateException(errorMessage);
+          }
+
+          final String globalKey = nextRoot.getGlobalKey() + childKey;
+          child.generateKeyAndSet(nextRoot.getScopedContext(), globalKey);
+          child.setScopedContext(SectionContext.withScope(context, child));
+
+          final Pair<Section, Integer> valueAndIndex =
+              currentComponentChildren == null
+                  ? null
+                  : currentComponentChildren.get(child.getGlobalKey());
+          final Section currentChild = valueAndIndex != null ? valueAndIndex.first : null;
+
+          createNewTreeAndApplyStateUpdates(
+              context,
+              currentChild,
+              child,
+              pendingStateUpdates,
+              sectionsDebugLogger,
+              sectionTreeTag);
+        }
+
+        final TreeProps contextTreeProps = context.getTreeProps();
+        if (contextTreeProps != parentTreeProps) {
+          context.setTreeProps(parentTreeProps);
+        }
+      }
+    } finally {
+      if (isTracing) {
+        ComponentsSystrace.endSection();
       }
     }
   }
@@ -1485,7 +1550,7 @@ public class SectionTree {
       HandlerThread defaultThread =
           new HandlerThread(
               DEFAULT_CHANGESET_THREAD_NAME,
-              ComponentsConfiguration.defaultChangeSetThreadPriority);
+              ComponentsConfiguration.DEFAULT_CHANGE_SET_THREAD_PRIORITY);
       defaultThread.start();
       sDefaultChangeSetThreadLooper = defaultThread.getLooper();
     }

@@ -46,6 +46,14 @@ import com.facebook.litho.annotations.ResType;
  * @prop cornerRadius Corner radius for the card.
  * @prop elevation Elevation of the card.
  * @prop shadowBottomOverride Override of size of shadow at bottom of card.
+ * @prop disableClipTopLeft If set, opt out of clipping the top-left corner, elevation will force to
+ *     0 in this case.
+ * @prop disableClipTopRight If set, opt out of clipping the top-right corner, elevation will force
+ *     to 0 in this case.
+ * @prop disableClipBottomLeft If set, opt out of clipping the bottom-left corner, elevation will
+ *     force to 0 in this case.
+ * @prop disableClipBottomRight If set, opt out of clipping the bottom-right corner, elevation will
+ *     force to 0 in this case.
  */
 @LayoutSpec(isPureRender = true)
 class CardSpec {
@@ -76,9 +84,13 @@ class CardSpec {
       @Prop(optional = true, resType = ResType.COLOR) int shadowEndColor,
       @Prop(optional = true, resType = ResType.DIMEN_OFFSET) float cornerRadius,
       @Prop(optional = true, resType = ResType.DIMEN_OFFSET) float elevation,
-      @Prop(optional = true, resType = ResType.DIMEN_OFFSET) int shadowBottomOverride) {
+      @Prop(optional = true, resType = ResType.DIMEN_OFFSET) int shadowBottomOverride,
+      @Prop(optional = true) boolean disableClipTopLeft,
+      @Prop(optional = true) boolean disableClipTopRight,
+      @Prop(optional = true) boolean disableClipBottomLeft,
+      @Prop(optional = true) boolean disableClipBottomRight) {
 
-    final Resources resources = c.getResources();
+    final Resources resources = c.getAndroidContext().getResources();
 
     if (cornerRadius == -1) {
       cornerRadius = pixels(resources, DEFAULT_CORNER_RADIUS_DP);
@@ -97,8 +109,9 @@ class CardSpec {
         .child(
             Column.create(c)
                 .marginPx(HORIZONTAL, shadowHorizontal)
-                .marginPx(TOP, shadowTop)
-                .marginPx(BOTTOM, shadowBottom)
+                .marginPx(TOP, disableClipTopLeft && disableClipTopRight ? 0 : shadowTop)
+                .marginPx(
+                    BOTTOM, disableClipBottomLeft && disableClipBottomRight ? 0 : shadowBottom)
                 .backgroundColor(cardBackgroundColor)
                 .child(content)
                 .child(
@@ -106,7 +119,11 @@ class CardSpec {
                         .clippingColor(clippingColor)
                         .cornerRadiusPx(cornerRadius)
                         .positionType(ABSOLUTE)
-                        .positionPx(ALL, 0)))
+                        .positionPx(ALL, 0)
+                        .disableClipTopLeft(disableClipTopLeft)
+                        .disableClipTopRight(disableClipTopRight)
+                        .disableClipBottomLeft(disableClipBottomLeft)
+                        .disableClipBottomRight(disableClipBottomRight)))
         .child(
             elevation > 0
                 ? CardShadow.create(c)
@@ -114,6 +131,8 @@ class CardSpec {
                     .shadowEndColor(shadowEndColor)
                     .cornerRadiusPx(cornerRadius)
                     .shadowSizePx(elevation)
+                    .hideTopShadow(disableClipTopLeft && disableClipTopRight)
+                    .hideBottomShadow(disableClipBottomLeft && disableClipBottomRight)
                     .positionType(ABSOLUTE)
                     .positionPx(ALL, 0)
                 : null)

@@ -19,9 +19,9 @@ package com.facebook.litho.sections;
 import static com.facebook.litho.sections.SectionLifecycle.StateUpdate;
 
 import android.content.Context;
-import android.support.annotation.Nullable;
-import android.support.annotation.VisibleForTesting;
 import android.util.Log;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentsLogger;
 import com.facebook.litho.EventHandler;
@@ -43,18 +43,21 @@ public class SectionContext extends ComponentContext {
 
   public SectionContext(ComponentContext context) {
     this(
-        context.getBaseContext(),
+        context.getAndroidContext(),
         context.getLogTag(),
         context.getLogger(),
         context.getTreePropsCopy());
   }
 
-  public SectionContext(Context context, String logTag, ComponentsLogger logger) {
+  public SectionContext(Context context, @Nullable String logTag, ComponentsLogger logger) {
     this(context, logTag, logger, null);
   }
 
   public SectionContext(
-      Context context, String logTag, ComponentsLogger logger, @Nullable TreeProps treeProps) {
+      Context context,
+      @Nullable String logTag,
+      ComponentsLogger logger,
+      @Nullable TreeProps treeProps) {
     super(context, logTag, logger);
     super.setTreeProps(treeProps);
     mKeyHandler = new KeyHandler();

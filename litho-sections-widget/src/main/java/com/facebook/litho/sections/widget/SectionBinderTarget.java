@@ -16,8 +16,8 @@
 
 package com.facebook.litho.sections.widget;
 
-import android.support.annotation.Nullable;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.Size;
@@ -40,15 +40,11 @@ public class SectionBinderTarget implements Target, Binder<RecyclerView> {
   private final RecyclerBinder mRecyclerBinder;
   private final boolean mUseBackgroundChangeSets;
 
-  public static SectionBinderTarget createWithBackgroundChangeSets(RecyclerBinder recyclerBinder) {
-    return new SectionBinderTarget(recyclerBinder, true);
-  }
-
   public SectionBinderTarget(RecyclerBinder recyclerBinder) {
     this(recyclerBinder, SectionsConfiguration.useBackgroundChangeSets);
   }
 
-  SectionBinderTarget(RecyclerBinder recyclerBinder, boolean useBackgroundChangeSets) {
+  public SectionBinderTarget(RecyclerBinder recyclerBinder, boolean useBackgroundChangeSets) {
     mRecyclerBinder = recyclerBinder;
     mUseBackgroundChangeSets = useBackgroundChangeSets;
   }
@@ -146,7 +142,11 @@ public class SectionBinderTarget implements Target, Binder<RecyclerView> {
   @Override
   public void notifyChangeSetComplete(
       boolean isDataChanged, ChangeSetCompleteCallback changeSetCompleteCallback) {
-    mRecyclerBinder.notifyChangeSetComplete(isDataChanged, changeSetCompleteCallback);
+    if (mUseBackgroundChangeSets) {
+      mRecyclerBinder.notifyChangeSetCompleteAsync(isDataChanged, changeSetCompleteCallback);
+    } else {
+      mRecyclerBinder.notifyChangeSetComplete(isDataChanged, changeSetCompleteCallback);
+    }
   }
 
   @Override

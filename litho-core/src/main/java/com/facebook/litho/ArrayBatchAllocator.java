@@ -15,27 +15,17 @@
  */
 package com.facebook.litho;
 
-import android.support.annotation.Nullable;
-import com.facebook.litho.config.ComponentsConfiguration;
+import androidx.annotation.Nullable;
 
 public class ArrayBatchAllocator {
 
   private static int batchSize = 200;
-
-  private static boolean isStartup = true;
 
   @Nullable private static int[][] arrays = null;
   private static int index = 0;
 
   /** same as calling new int[2]; */
   public static int[] newArrayOfSize2() {
-    if (isStartup == true) {
-      isStartup = false;
-      batchSize = ComponentsConfiguration.arrayBatchAllocatorStartupSize;
-    } else {
-      batchSize = ComponentsConfiguration.arrayBatchAllocationRuntimeSize;
-    }
-
     if (arrays == null || arrays.length == index) {
       arrays = new int[batchSize][2];
       index = 0;

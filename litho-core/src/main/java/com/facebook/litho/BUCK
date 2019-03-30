@@ -3,20 +3,23 @@
 # This source code is licensed under the Apache 2.0 license found in the
 # LICENSE file in the root directory of this source tree.
 
-load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_ANDROIDSUPPORT_TARGET", "LITHO_ANNOTATIONS_TARGET", "LITHO_CONFIG_TARGET", "LITHO_DISPLAYLISTSTUBS_TARGET", "LITHO_INFERANNOTATIONS_TARGET", "LITHO_JSR_TARGET", "LITHO_PROGUARDANNOTATIONS_TARGET", "LITHO_RES_TARGET", "LITHO_TEST_TARGET", "LITHO_VIEWCOMPAT_TARGET", "LITHO_VISIBILITY", "LITHO_YOGA_TARGET", "litho_android_library", "make_dep_path")
+load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_ANDROIDSUPPORT_TARGET", "LITHO_ANNOTATIONS_TARGET", "LITHO_CONFIG_TARGET", "LITHO_INFERANNOTATIONS_TARGET", "LITHO_JSR_TARGET", "LITHO_PROGUARDANNOTATIONS_TARGET", "LITHO_RES_TARGET", "LITHO_STATS_TARGET", "LITHO_TEST_TARGET", "LITHO_VIEWCOMPAT_TARGET", "LITHO_VISIBILITY", "LITHO_YOGA_TARGET", "litho_android_library", "make_dep_path")
 
 litho_android_library(
     name = "litho",
     srcs = glob([
         "*.java",
         "animation/*.java",
+        "choreographercompat/*.java",
         "dataflow/**/*.java",
         "displaylist/*.java",
         "reference/*.java",
+        "debug/*.java",
+        "drawable/*.java",
     ]),
+    is_androidx = True,
     provided_deps = [
         LITHO_ANDROIDSUPPORT_TARGET,
-        LITHO_DISPLAYLISTSTUBS_TARGET,
         LITHO_YOGA_TARGET,
         LITHO_JSR_TARGET,
     ],
@@ -29,6 +32,7 @@ litho_android_library(
         LITHO_INFERANNOTATIONS_TARGET,
         LITHO_RES_TARGET,
         LITHO_VIEWCOMPAT_TARGET,
+        LITHO_STATS_TARGET,
     ],
     exported_deps = [
         LITHO_ANNOTATIONS_TARGET,

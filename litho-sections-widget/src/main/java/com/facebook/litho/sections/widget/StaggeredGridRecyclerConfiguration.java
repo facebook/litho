@@ -18,31 +18,34 @@ package com.facebook.litho.sections.widget;
 
 import static com.facebook.litho.widget.SnapUtil.SNAP_NONE;
 
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SnapHelper;
-import android.support.v7.widget.StaggeredGridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.SnapHelper;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.sections.SectionTree;
 import com.facebook.litho.widget.Binder;
-import com.facebook.litho.widget.RecyclerBinder;
+import com.facebook.litho.widget.LayoutInfo;
 import com.facebook.litho.widget.StaggeredGridLayoutInfo;
 import javax.annotation.Nullable;
 
 /**
  * A configuration object for {@link RecyclerCollectionComponent} that will create a {@link
- * android.support.v7.widget.StaggeredGridLayoutManager} for the {@link RecyclerView}.
+ * androidx.recyclerview.widget.StaggeredGridLayoutManager} for the {@link RecyclerView}.
  */
 public class StaggeredGridRecyclerConfiguration<T extends SectionTree.Target & Binder<RecyclerView>>
     implements RecyclerConfiguration {
-  private static final RecyclerBinderConfiguration RECYCLER_BINDER_CONFIGURATION =
-      new RecyclerBinderConfiguration(4.0);
-
   private final int mNumSpans;
   private final int mOrientation;
   private final boolean mReverseLayout;
   private final int mGapStrategy;
   private final RecyclerBinderConfiguration mRecyclerBinderConfiguration;
 
+  public static Builder create() {
+    return new Builder();
+  }
+
+  /** Use {@link #create()} instead. */
+  @Deprecated
   public static StaggeredGridRecyclerConfiguration createWithRecyclerBinderConfiguration(
       int numSpans, RecyclerBinderConfiguration recyclerBinderConfiguration) {
     return new StaggeredGridRecyclerConfiguration(
@@ -53,14 +56,20 @@ public class StaggeredGridRecyclerConfiguration<T extends SectionTree.Target & B
         recyclerBinderConfiguration);
   }
 
+  /** Use {@link #create()} instead. */
+  @Deprecated
   public StaggeredGridRecyclerConfiguration(int numSpans) {
     this(numSpans, StaggeredGridLayoutManager.VERTICAL, false);
   }
 
+  /** Use {@link #create()} instead. */
+  @Deprecated
   public StaggeredGridRecyclerConfiguration(int numSpans, int orientation, boolean reverseLayout) {
-    this(numSpans, orientation, reverseLayout, RECYCLER_BINDER_CONFIGURATION);
+    this(numSpans, orientation, reverseLayout, Builder.RECYCLER_BINDER_CONFIGURATION);
   }
 
+  /** Use {@link #create()} instead. */
+  @Deprecated
   public StaggeredGridRecyclerConfiguration(
       int numSpans,
       int orientation,
@@ -74,6 +83,8 @@ public class StaggeredGridRecyclerConfiguration<T extends SectionTree.Target & B
         recyclerBinderConfiguration);
   }
 
+  /** Use {@link #create()} instead. */
+  @Deprecated
   public StaggeredGridRecyclerConfiguration(
       int numSpans,
       int orientation,
@@ -86,31 +97,8 @@ public class StaggeredGridRecyclerConfiguration<T extends SectionTree.Target & B
     mGapStrategy = gapStrategy;
     mRecyclerBinderConfiguration =
         recyclerBinderConfiguration == null
-            ? RECYCLER_BINDER_CONFIGURATION
+            ? Builder.RECYCLER_BINDER_CONFIGURATION
             : recyclerBinderConfiguration;
-  }
-
-  @Override
-  public T buildTarget(ComponentContext c) {
-    final RecyclerBinder recyclerBinder =
-        new RecyclerBinder.Builder()
-            .rangeRatio((float) mRecyclerBinderConfiguration.getRangeRatio())
-            .layoutInfo(
-                new StaggeredGridLayoutInfo(mNumSpans, mOrientation, mReverseLayout, mGapStrategy))
-            .layoutHandlerFactory(mRecyclerBinderConfiguration.getLayoutHandlerFactory())
-            .wrapContent(mRecyclerBinderConfiguration.isWrapContent())
-            .enableStableIds(mRecyclerBinderConfiguration.getEnableStableIds())
-            .invalidStateLogParamsList(mRecyclerBinderConfiguration.getInvalidStateLogParamsList())
-            .useSharedLayoutStateFuture(
-                mRecyclerBinderConfiguration.getUseSharedLayoutStateFuture())
-            .threadPoolForSharedLayoutStateFutureConfig(
-                mRecyclerBinderConfiguration.getThreadPoolForSharedLayoutStateFutureConfig())
-            .asyncInitRange(mRecyclerBinderConfiguration.getAsyncInitRange())
-            .hscrollAsyncMode(mRecyclerBinderConfiguration.getHScrollAsyncMode())
-            .build(c);
-    return (T)
-        new SectionBinderTarget(
-            recyclerBinder, mRecyclerBinderConfiguration.getUseBackgroundChangeSets());
   }
 
   @Override
@@ -129,7 +117,61 @@ public class StaggeredGridRecyclerConfiguration<T extends SectionTree.Target & B
   }
 
   @Override
-  public boolean isWrapContent() {
-    return mRecyclerBinderConfiguration.isWrapContent();
+  public LayoutInfo getLayoutInfo(ComponentContext c) {
+    return new StaggeredGridLayoutInfo(mNumSpans, mOrientation, mReverseLayout, mGapStrategy);
+  }
+
+  @Override
+  public RecyclerBinderConfiguration getRecyclerBinderConfiguration() {
+    return mRecyclerBinderConfiguration;
+  }
+
+  public static class Builder {
+    static final RecyclerBinderConfiguration RECYCLER_BINDER_CONFIGURATION =
+        RecyclerBinderConfiguration.create().build();
+
+    private int mNumSpans = 2;
+    private int mOrientation = StaggeredGridLayoutManager.VERTICAL;
+    private boolean mReverseLayout = false;
+    private int mGapStrategy = StaggeredGridLayoutManager.GAP_HANDLING_NONE;
+    private RecyclerBinderConfiguration mRecyclerBinderConfiguration =
+        RECYCLER_BINDER_CONFIGURATION;
+
+    Builder() {}
+
+    public Builder numSpans(int numSpans) {
+      mNumSpans = numSpans;
+      return this;
+    }
+
+    public Builder orientation(int orientation) {
+      mOrientation = orientation;
+      return this;
+    }
+
+    public Builder reverseLayout(boolean reverseLayout) {
+      mReverseLayout = reverseLayout;
+      return this;
+    }
+
+    public Builder gapStrategy(int gapStrategy) {
+      mGapStrategy = gapStrategy;
+      return this;
+    }
+
+    public Builder recyclerBinderConfiguration(
+        RecyclerBinderConfiguration recyclerBinderConfiguration) {
+      mRecyclerBinderConfiguration = recyclerBinderConfiguration;
+      return this;
+    }
+
+    /**
+     * Builds a {@link StaggeredGridRecyclerConfiguration} using the parameters specified in this
+     * builder.
+     */
+    public StaggeredGridRecyclerConfiguration build() {
+      return new StaggeredGridRecyclerConfiguration(
+          mNumSpans, mOrientation, mReverseLayout, mGapStrategy, mRecyclerBinderConfiguration);
+    }
   }
 }

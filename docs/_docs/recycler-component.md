@@ -109,6 +109,7 @@ Here's an example of how `DiffUtil` can be used with Litho:
 
     diffResult.dispatchUpdatesTo(callback);
     callback.applyChangeset();
+    mRecyclerBinder.notifyChangeSetComplete(...);
     RecyclerBinderUpdateCallback.release(callback);
 }
 ```

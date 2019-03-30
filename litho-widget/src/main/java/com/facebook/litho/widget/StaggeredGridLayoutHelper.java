@@ -16,7 +16,7 @@
 
 package com.facebook.litho.widget;
 
-import android.support.v7.widget.StaggeredGridLayoutManager;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 public class StaggeredGridLayoutHelper {
   private static int[] mItemPositionsHolder;

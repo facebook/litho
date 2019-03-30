@@ -23,13 +23,13 @@ import static com.facebook.litho.ThreadUtils.assertMainThread;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Rect;
-import android.support.annotation.VisibleForTesting;
-import android.support.v4.view.accessibility.AccessibilityManagerCompat;
-import android.support.v4.view.accessibility.AccessibilityManagerCompat.AccessibilityStateChangeListenerCompat;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityManager;
+import androidx.annotation.VisibleForTesting;
+import androidx.core.view.accessibility.AccessibilityManagerCompat;
+import androidx.core.view.accessibility.AccessibilityManagerCompat.AccessibilityStateChangeListenerCompat;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.proguard.annotations.DoNotStrip;
 import java.lang.ref.WeakReference;
@@ -62,6 +62,7 @@ public class LithoView extends ComponentHost {
 
   @Nullable private ComponentTree mComponentTree;
   private final MountState mMountState;
+  private final ComponentContext mComponentContext;
   private boolean mIsAttached;
   // The bounds of the visible rect that was used for the previous incremental mount.
   private final Rect mPreviousMountVisibleRectBounds = new Rect();
@@ -134,8 +135,10 @@ public class LithoView extends ComponentHost {
   public LithoView(ComponentContext context, AttributeSet attrs) {
     super(context, attrs);
 
+    mComponentContext = context;
     mMountState = new MountState(this);
-    mAccessibilityManager = (AccessibilityManager) context.getSystemService(ACCESSIBILITY_SERVICE);
+    mAccessibilityManager =
+        (AccessibilityManager) context.getAndroidContext().getSystemService(ACCESSIBILITY_SERVICE);
   }
 
   private static void performLayoutOnChildrenIfNecessary(ComponentHost host) {
@@ -411,7 +414,7 @@ public class LithoView extends ComponentHost {
    * {@link Context} originally used to create this LithoView itself.
    */
   public ComponentContext getComponentContext() {
-    return (ComponentContext) getContext();
+    return mComponentContext;
   }
 
   @Override
@@ -578,13 +581,10 @@ public class LithoView extends ComponentHost {
     }
 
     if (isVisible) {
-      final Rect currentVisibleArea = ComponentsPools.acquireRect();
-
-      if (getLocalVisibleRect(currentVisibleArea)) {
+      if (getLocalVisibleRect(new Rect())) {
         mComponentTree.processVisibilityOutputs();
       }
       // if false: no-op, doesn't have visible area, is not ready or not attached
-      ComponentsPools.release(currentVisibleArea);
     } else {
       mMountState.clearVisibilityItems();
     }
@@ -595,20 +595,15 @@ public class LithoView extends ComponentHost {
     if (hasTransientState) {
       if (mTransientStateCount == 0
           && mComponentTree != null
-          && mComponentTree.isIncrementalMountEnabled()
-          && !mComponentTree.isIncrementalMountOnPreDraw()) {
-        final Rect rect = ComponentsPools.acquireRect();
-        rect.set(0, 0, getWidth(), getHeight());
-        performIncrementalMount(rect, false);
-        ComponentsPools.release(rect);
+          && mComponentTree.isIncrementalMountEnabled()) {
+        performIncrementalMount(new Rect(0, 0, getWidth(), getHeight()), false);
       }
       mTransientStateCount++;
     } else {
       mTransientStateCount--;
       if (mTransientStateCount == 0
           && mComponentTree != null
-          && mComponentTree.isIncrementalMountEnabled()
-          && !mComponentTree.isIncrementalMountOnPreDraw()) {
+          && mComponentTree.isIncrementalMountEnabled()) {
         // We mounted everything when the transient state was set on this view. We need to do this
         // partly to unmount content that is not visible but mostly to get the correct visibility
         // events to be fired.
@@ -693,7 +688,6 @@ public class LithoView extends ComponentHost {
   private void maybePerformIncrementalMountOnView() {
     if (mComponentTree == null
         || !mComponentTree.isIncrementalMountEnabled()
-        || mComponentTree.isIncrementalMountOnPreDraw()
         || !(getParent() instanceof View)) {
       return;
     }
@@ -718,16 +712,13 @@ public class LithoView extends ComponentHost {
       return;
     }
 
-    final Rect rect = ComponentsPools.acquireRect();
+    final Rect rect = new Rect();
     if (!getLocalVisibleRect(rect)) {
       // View is not visible at all, nothing to do.
-      ComponentsPools.release(rect);
       return;
     }
 
     performIncrementalMount(rect, true);
-
-    ComponentsPools.release(rect);
   }
 
   /**
@@ -755,10 +746,7 @@ public class LithoView extends ComponentHost {
     }
 
     if (mComponentTree.isIncrementalMountEnabled()) {
-      if (!mComponentTree.isIncrementalMountOnPreDraw()) {
-        // If we're going to mount in pre-draw then we don't need to bother with this.
-        mComponentTree.mountComponent(visibleRect, processVisibilityOutputs);
-      }
+      mComponentTree.mountComponent(visibleRect, processVisibilityOutputs);
     } else {
       throw new IllegalStateException("To perform incremental mounting, you need first to enable" +
           " it when creating the ComponentTree.");
@@ -771,9 +759,7 @@ public class LithoView extends ComponentHost {
     }
 
     if (mComponentTree.isIncrementalMountEnabled()) {
-      if (!mComponentTree.isIncrementalMountOnPreDraw()) {
-        mComponentTree.incrementalMountComponent();
-      }
+      mComponentTree.incrementalMountComponent();
     } else {
       throw new IllegalStateException("To perform incremental mounting, you need first to enable" +
           " it when creating the ComponentTree.");
@@ -795,20 +781,16 @@ public class LithoView extends ComponentHost {
   }
 
   void mount(LayoutState layoutState, Rect currentVisibleArea, boolean processVisibilityOutputs) {
-    boolean rectNeedsRelease = false;
     if (mTransientStateCount > 0
         && mComponentTree != null
-        && mComponentTree.isIncrementalMountEnabled()
-        && !mComponentTree.isIncrementalMountOnPreDraw()) {
+        && mComponentTree.isIncrementalMountEnabled()) {
       // If transient state is set but the MountState is dirty we want to re-mount everything.
       // Otherwise, we don't need to do anything as the entire LithoView was mounted when the
       // transient state was set.
       if (!mMountState.isDirty()) {
         return;
       } else {
-        currentVisibleArea = ComponentsPools.acquireRect();
-        currentVisibleArea.set(0, 0, getWidth(), getHeight());
-        rectNeedsRelease = true;
+        currentVisibleArea = new Rect(0, 0, getWidth(), getHeight());
         processVisibilityOutputs = false;
       }
     }
@@ -820,10 +802,6 @@ public class LithoView extends ComponentHost {
     }
 
     mMountState.mount(layoutState, currentVisibleArea, processVisibilityOutputs);
-
-    if (rectNeedsRelease) {
-      ComponentsPools.release(currentVisibleArea);
-    }
   }
 
   void processVisibilityOutputs(LayoutState layoutState, Rect currentVisibleArea) {
@@ -959,6 +937,7 @@ public class LithoView extends ComponentHost {
 
     @Override
     public void onAccessibilityStateChanged(boolean enabled) {
+      AccessibilityUtils.invalidateCachedIsAccessibilityEnabled();
       final LithoView lithoView = mLithoView.get();
       if (lithoView == null) {
         return;

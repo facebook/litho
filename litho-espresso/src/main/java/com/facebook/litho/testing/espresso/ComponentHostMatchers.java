@@ -19,8 +19,8 @@ package com.facebook.litho.testing.espresso;
 import static org.hamcrest.CoreMatchers.any;
 import static org.hamcrest.CoreMatchers.is;
 
-import android.support.test.espresso.matcher.ViewMatchers;
 import android.view.View;
+import androidx.test.espresso.matcher.ViewMatchers;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentHost;
 import com.facebook.litho.ComponentLifecycle;

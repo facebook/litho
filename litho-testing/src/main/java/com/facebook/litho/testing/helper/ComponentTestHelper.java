@@ -29,16 +29,17 @@ import android.widget.FrameLayout;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
-import com.facebook.litho.ComponentsPools;
 import com.facebook.litho.EventHandler;
+import com.facebook.litho.FocusedVisibleEvent;
+import com.facebook.litho.InvisibleEvent;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.TestComponentTree;
 import com.facebook.litho.TreeProps;
 import com.facebook.litho.VisibleEvent;
+import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.subcomponents.SubComponent;
 import java.util.ArrayList;
 import java.util.List;
-import org.powermock.reflect.Whitebox;
 import org.robolectric.shadows.ShadowLooper;
 
 /**
@@ -407,19 +408,58 @@ public final class ComponentTestHelper {
    * Mounts the component & triggers the visibility event. Requires that the component supports
    * incremental mounting.
    *
-   * {@link com.facebook.litho.VisibleEvent}
+   * <p>{@link com.facebook.litho.VisibleEvent}
    *
    * @param context A components context
    * @param onVisibleHandler SpecificComponent.onVisible(component)
    * @param component The component builder which to get the subcomponent from
    * @return A LithoView with the component mounted in it.
    */
-  public static LithoView dispatchVisibleEvent(
+  public static LithoView dispatchOnVisibleEvent(
+      ComponentContext context, EventHandler onVisibleHandler, Component component) {
+    return dispatchVisibilityEvent(context, onVisibleHandler, new VisibleEvent(), component);
+  }
+
+  /**
+   * Mounts the component & triggers the focused visibility event. Requires that the component
+   * supports incremental mounting.
+   *
+   * <p>{@link com.facebook.litho.FocusedVisibleEvent}
+   *
+   * @param context A components context
+   * @param onFocusedVisibleHandler SpecificComponent.onFocusedVisible(component)
+   * @param component The component builder which to get the subcomponent from
+   * @return A LithoView with the component mounted in it.
+   */
+  public static LithoView dispatchOnFocusedVisibleEvent(
+      ComponentContext context, EventHandler onFocusedVisibleHandler, Component component) {
+    return dispatchVisibilityEvent(
+        context, onFocusedVisibleHandler, new FocusedVisibleEvent(), component);
+  }
+
+  /**
+   * Mounts the component & triggers the invisible event. Requires that the component supports
+   * incremental mounting.
+   *
+   * <p>{@link com.facebook.litho.InvisibleEvent}
+   *
+   * @param context A components context
+   * @param onInvisibleHandler SpecificComponent.onInvisible(component)
+   * @param component The component builder which to get the subcomponent from
+   * @return A LithoView with the component mounted in it.
+   */
+  public static LithoView dispatchOnInvisibleEvent(
+      ComponentContext context, EventHandler onInvisibleHandler, Component component) {
+    return dispatchVisibilityEvent(context, onInvisibleHandler, new InvisibleEvent(), component);
+  }
+
+  private static LithoView dispatchVisibilityEvent(
       ComponentContext context,
-      EventHandler onVisibleHandler,
+      EventHandler eventHandler,
+      Object eventInstance,
       Component component) {
     LithoView lithoView = new LithoView(context);
-    FrameLayout parent = new FrameLayout(context);
+    FrameLayout parent = new FrameLayout(context.getAndroidContext());
 
     parent.addView(lithoView);
 
@@ -433,12 +473,11 @@ public final class ComponentTestHelper {
 
     lithoView.performIncrementalMount();
 
+    eventHandler.mHasEventDispatcher = component;
+
     try {
       Whitebox.invokeMethod(
-          component.getEventDispatcher(),
-          "dispatchOnEvent",
-          onVisibleHandler,
-          new VisibleEvent());
+          component.getEventDispatcher(), "dispatchOnEvent", eventHandler, eventInstance);
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
@@ -465,7 +504,7 @@ public final class ComponentTestHelper {
   }
 
   /** Access the default layout thread looper for testing purposes only. */
-  public static Looper getDefaultLayoutThreadLooper() throws Exception {
+  public static Looper getDefaultLayoutThreadLooper() {
     return (Looper) Whitebox.invokeMethod(ComponentTree.class, "getDefaultLayoutThreadLooper");
   }
 

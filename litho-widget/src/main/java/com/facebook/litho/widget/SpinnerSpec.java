@@ -28,14 +28,14 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import android.support.annotation.ColorInt;
-import android.support.annotation.RequiresApi;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListPopupWindow;
 import android.widget.PopupWindow;
+import androidx.annotation.ColorInt;
+import androidx.annotation.RequiresApi;
 import com.facebook.litho.AccessibilityRole;
 import com.facebook.litho.ClickEvent;
 import com.facebook.litho.Component;
@@ -107,8 +107,11 @@ public class SpinnerSpec {
       @Prop(resType = ResType.COLOR, optional = true) int selectedTextColor,
       @Prop(resType = ResType.DRAWABLE, optional = true) @Nullable Drawable caret) {
     assertAPI11orHigher();
-    caret = caret == null ? new CaretDrawable(c, DEFAULT_CARET_COLOR) : caret;
-    selectedTextSize = selectedTextSize == -1 ? spToPx(c, DEFAULT_TEXT_SIZE_SP) : selectedTextSize;
+    caret = caret == null ? new CaretDrawable(c.getAndroidContext(), DEFAULT_CARET_COLOR) : caret;
+    selectedTextSize =
+        selectedTextSize == -1
+            ? spToPx(c.getAndroidContext(), DEFAULT_TEXT_SIZE_SP)
+            : selectedTextSize;
 
     return Row.create(c)
         .minHeightDip(SPINNER_HEIGHT)
@@ -157,11 +160,11 @@ public class SpinnerSpec {
       @Prop final List<String> options,
       @Prop(resType = ResType.INT, optional = true) int itemLayout) {
     final EventHandler eventHandler = Spinner.getItemSelectedEventHandler(c);
-    final ListPopupWindow popup = new ListPopupWindow(c);
+    final ListPopupWindow popup = new ListPopupWindow(c.getAndroidContext());
     popup.setAnchorView(view);
     popup.setModal(true);
     popup.setPromptPosition(ListPopupWindow.POSITION_PROMPT_ABOVE);
-    popup.setAdapter(new ArrayAdapter<>(c, itemLayout, options));
+    popup.setAdapter(new ArrayAdapter<>(c.getAndroidContext(), itemLayout, options));
     popup.setOnItemClickListener(
         new AdapterView.OnItemClickListener() {
           @Override
@@ -171,18 +174,18 @@ public class SpinnerSpec {
               Spinner.dispatchItemSelectedEvent(eventHandler, newSelection);
             }
             popup.dismiss();
-            Spinner.updateSelection(c, newSelection);
+            Spinner.updateSelectionSync(c, newSelection);
           }
         });
     popup.setOnDismissListener(
         new PopupWindow.OnDismissListener() {
           @Override
           public void onDismiss() {
-            Spinner.updateIsShowingDropDown(c, false);
+            Spinner.updateIsShowingDropDownSync(c, false);
           }
         });
     popup.show();
-    Spinner.updateIsShowingDropDown(c, true);
+    Spinner.updateIsShowingDropDownSync(c, true);
   }
 
   @OnUpdateState

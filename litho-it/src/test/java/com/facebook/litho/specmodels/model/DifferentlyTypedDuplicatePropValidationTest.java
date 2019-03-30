@@ -65,10 +65,10 @@ public class DifferentlyTypedDuplicatePropValidationTest {
         elements.getTypeElement(DupeLayoutSpec.class.getCanonicalName());
     final LayoutSpecModel layoutSpecModel =
         mFactory.create(
-            elements, types, typeElement, mock(Messager.class), RunMode.NORMAL, null, null);
+            elements, types, typeElement, mock(Messager.class), RunMode.normal(), null, null);
 
     final List<SpecModelValidationError> specModelValidationErrors =
-        SpecModelValidation.validateLayoutSpecModel(layoutSpecModel, RunMode.NORMAL);
+        SpecModelValidation.validateLayoutSpecModel(layoutSpecModel, RunMode.normal());
 
     assertThat(specModelValidationErrors)
         .extracting("message")

@@ -240,10 +240,6 @@ public final class MatcherGenerator {
       dataHolder.addMethod(builderBuilder(specModel, prop, ClassNames.COMPONENT_BUILDER));
     }
 
-    if (getRawType(prop.getTypeName()).equals(ClassNames.REFERENCE)) {
-      dataHolder.addMethod(builderBuilder(specModel, prop, ClassNames.REFERENCE_BUILDER));
-    }
-
     return dataHolder.build();
   }
 

@@ -2,6 +2,7 @@
 #
 # This source code is licensed under the Apache 2.0 license found in the
 # LICENSE file in the root directory of this source tree.
+load("//tools/build_defs/oss:fb_native_wrapper.bzl", "fb_native")
 load("//tools/build_defs/oss:litho_defs.bzl", "fb_java_library")
 
 fb_java_library(
@@ -12,12 +13,12 @@ fb_java_library(
     ],
 )
 
-prebuilt_jar(
+fb_native.prebuilt_jar(
     name = "objenesis-prebuilt",
     binary_jar = ":objenesis.jar",
 )
 
-remote_file(
+fb_native.remote_file(
     name = "objenesis.jar",
     sha1 = "9b473564e792c2bdf1449da1f0b1b5bff9805704",
     url = "mvn:org.objenesis:objenesis:jar:1.0",

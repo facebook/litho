@@ -16,29 +16,39 @@
 
 package com.facebook.litho.widget;
 
-import android.support.annotation.Nullable;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
 import com.facebook.litho.ThreadUtils;
 
 /**
- * An controller that can be passed as {@link com.facebook.litho.annotations.Prop} to a
- * Recycler component to trigger events from outside the component hierarchy.
+ * An controller that can be passed as {@link com.facebook.litho.annotations.Prop} to a Recycler
+ * component to trigger events from outside the component hierarchy.
  */
 public class RecyclerEventsController {
 
-  private SectionsRecyclerView mSectionsRecyclerView;
+  public interface OnRecyclerUpdateListener {
 
-  private final Runnable mClearRefreshRunnable = new Runnable() {
-    @Override
-    public void run() {
-      if (mSectionsRecyclerView != null && mSectionsRecyclerView.isRefreshing()) {
-        mSectionsRecyclerView.setRefreshing(false);
-      }
-    }
-  };
+    void onUpdate(@Nullable RecyclerView recyclerView);
+  }
+
+  @Nullable private SectionsRecyclerView mSectionsRecyclerView;
+
+  @Nullable private OnRecyclerUpdateListener mOnRecyclerUpdateListener;
+
+  private final Runnable mClearRefreshRunnable =
+      new Runnable() {
+        @Override
+        public void run() {
+          SectionsRecyclerView sectionsRecyclerView = mSectionsRecyclerView;
+          if (sectionsRecyclerView != null && sectionsRecyclerView.isRefreshing()) {
+            sectionsRecyclerView.setRefreshing(false);
+          }
+        }
+      };
 
   /**
    * Send the Recycler a request to scroll the content to the first item in the binder.
+   *
    * @param animated if animated is set to true the scroll will happen with an animation.
    */
   public void requestScrollToTop(boolean animated) {
@@ -51,45 +61,59 @@ public class RecyclerEventsController {
    * @param animated if animated is set to true the scroll will happen with an animation.
    */
   public void requestScrollToPosition(final int position, final boolean animated) {
-    if (mSectionsRecyclerView == null) {
+    SectionsRecyclerView sectionsRecyclerView = mSectionsRecyclerView;
+    if (sectionsRecyclerView == null) {
       return;
     }
 
     if (animated) {
-      mSectionsRecyclerView.getRecyclerView().smoothScrollToPosition(position);
+      sectionsRecyclerView.getRecyclerView().smoothScrollToPosition(position);
       return;
     }
 
-    mSectionsRecyclerView.getRecyclerView().scrollToPosition(position);
+    sectionsRecyclerView.getRecyclerView().scrollToPosition(position);
   }
 
   public void clearRefreshing() {
-    if (mSectionsRecyclerView == null || !mSectionsRecyclerView.isRefreshing()) {
+    SectionsRecyclerView sectionsRecyclerView = mSectionsRecyclerView;
+    if (sectionsRecyclerView == null || !sectionsRecyclerView.isRefreshing()) {
       return;
     }
 
     if (ThreadUtils.isMainThread()) {
-      mSectionsRecyclerView.setRefreshing(false);
+      sectionsRecyclerView.setRefreshing(false);
       return;
     }
 
-    mSectionsRecyclerView.removeCallbacks(mClearRefreshRunnable);
-    mSectionsRecyclerView.post(mClearRefreshRunnable);
+    sectionsRecyclerView.removeCallbacks(mClearRefreshRunnable);
+    sectionsRecyclerView.post(mClearRefreshRunnable);
   }
 
   public void showRefreshing() {
-    if (mSectionsRecyclerView == null || mSectionsRecyclerView.isRefreshing()) {
+    SectionsRecyclerView sectionsRecyclerView = mSectionsRecyclerView;
+    if (sectionsRecyclerView == null || sectionsRecyclerView.isRefreshing()) {
       return;
     }
     ThreadUtils.assertMainThread();
-    mSectionsRecyclerView.setRefreshing(true);
+    sectionsRecyclerView.setRefreshing(true);
   }
 
-  void setSectionsRecyclerView(SectionsRecyclerView SectionsrecyclerView) {
-    mSectionsRecyclerView = SectionsrecyclerView;
+  void setSectionsRecyclerView(@Nullable SectionsRecyclerView sectionsRecyclerView) {
+    mSectionsRecyclerView = sectionsRecyclerView;
+
+    if (mOnRecyclerUpdateListener != null) {
+      mOnRecyclerUpdateListener.onUpdate(
+          sectionsRecyclerView == null ? null : sectionsRecyclerView.getRecyclerView());
+    }
   }
 
   public @Nullable RecyclerView getRecyclerView() {
-    return mSectionsRecyclerView == null ? null : mSectionsRecyclerView.getRecyclerView();
+    SectionsRecyclerView sectionsRecyclerView = mSectionsRecyclerView;
+    return sectionsRecyclerView == null ? null : sectionsRecyclerView.getRecyclerView();
+  }
+
+  public void setOnRecyclerUpdateListener(
+      @Nullable OnRecyclerUpdateListener onRecyclerUpdateListener) {
+    mOnRecyclerUpdateListener = onRecyclerUpdateListener;
   }
 }

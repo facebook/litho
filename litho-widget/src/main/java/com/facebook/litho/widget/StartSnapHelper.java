@@ -17,15 +17,15 @@
 package com.facebook.litho.widget;
 
 import android.graphics.PointF;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v7.widget.LinearSmoothScroller;
-import android.support.v7.widget.OrientationHelper;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.RecyclerView.LayoutManager;
-import android.support.v7.widget.SnapHelper;
 import android.util.DisplayMetrics;
 import android.view.View;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.LinearSmoothScroller;
+import androidx.recyclerview.widget.OrientationHelper;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView.LayoutManager;
+import androidx.recyclerview.widget.SnapHelper;
 
 public class StartSnapHelper extends SnapHelper {
 
@@ -115,7 +115,7 @@ public class StartSnapHelper extends SnapHelper {
   }
 
   @Override
-  protected LinearSmoothScroller createSnapScroller(LayoutManager layoutManager) {
+  protected @Nullable LinearSmoothScroller createSnapScroller(LayoutManager layoutManager) {
     if (!(layoutManager instanceof RecyclerView.SmoothScroller.ScrollVectorProvider)) {
       return null;
     }

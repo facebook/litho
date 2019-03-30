@@ -43,6 +43,7 @@ object UpDownBlocksComponentSpec {
                   .flexGrow(1f)
                   .backgroundColor(Color.parseColor("#ee1111"))
                   .transitionKey("red")
+                  .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
                   .build())
           .child(
               Row.create(c)
@@ -50,6 +51,7 @@ object UpDownBlocksComponentSpec {
                   .flexGrow(1f)
                   .backgroundColor(Color.parseColor("#1111ee"))
                   .transitionKey("blue")
+                  .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
                   .build())
           .child(
               Row.create(c)
@@ -57,6 +59,7 @@ object UpDownBlocksComponentSpec {
                   .flexGrow(1f)
                   .backgroundColor(Color.parseColor("#11ee11"))
                   .transitionKey("green")
+                  .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
                   .build())
           .clickHandler(UpDownBlocksComponent.onClick(c))
           .build()
@@ -68,14 +71,14 @@ object UpDownBlocksComponentSpec {
 
   @OnUpdateState
   fun updateState(top: StateValue<Boolean>) {
-    top.set(!top.get())
+    top.set(!(top.get()!!))
   }
 
   @OnCreateTransition
   fun onCreateTransition(c: ComponentContext): Transition =
       Transition.stagger<TransitionUnitsBuilder>(
           200,
-          Transition.create("red").animate(AnimatedProperties.Y),
-          Transition.create("blue").animate(AnimatedProperties.Y),
-          Transition.create("green").animate(AnimatedProperties.Y))
+          Transition.create(Transition.TransitionKeyType.GLOBAL, "red").animate(AnimatedProperties.Y),
+          Transition.create(Transition.TransitionKeyType.GLOBAL, "blue").animate(AnimatedProperties.Y),
+          Transition.create(Transition.TransitionKeyType.GLOBAL, "green").animate(AnimatedProperties.Y))
 }

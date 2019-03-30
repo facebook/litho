@@ -27,18 +27,16 @@ import static org.mockito.Mockito.when;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Rect;
-import android.support.v4.view.ViewPager;
-import com.facebook.litho.config.ComponentsConfiguration;
+import androidx.viewpager.widget.ViewPager;
 import com.facebook.litho.testing.TestDrawableComponent;
+import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.powermock.reflect.Whitebox;
 import org.robolectric.RuntimeEnvironment;
 
 @RunWith(ComponentsTestRunner.class)

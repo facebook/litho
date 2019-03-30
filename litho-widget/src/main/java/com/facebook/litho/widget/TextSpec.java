@@ -16,7 +16,7 @@
 
 package com.facebook.litho.widget;
 
-import static android.support.v4.widget.ExploreByTouchHelper.INVALID_ID;
+import static androidx.customview.widget.ExploreByTouchHelper.INVALID_ID;
 import static com.facebook.litho.SizeSpec.AT_MOST;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.UNSPECIFIED;
@@ -35,12 +35,6 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.os.Build;
-import android.support.annotation.Nullable;
-import android.support.v4.text.TextDirectionHeuristicCompat;
-import android.support.v4.text.TextDirectionHeuristicsCompat;
-import android.support.v4.util.Pools.SynchronizedPool;
-import android.support.v4.view.ViewCompat;
-import android.support.v4.view.accessibility.AccessibilityNodeInfoCompat;
 import android.text.Layout;
 import android.text.Layout.Alignment;
 import android.text.Spanned;
@@ -50,8 +44,15 @@ import android.text.TextUtils.TruncateAt;
 import android.text.style.ClickableSpan;
 import android.text.style.ImageSpan;
 import android.view.View;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
+import androidx.core.text.TextDirectionHeuristicCompat;
+import androidx.core.text.TextDirectionHeuristicsCompat;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import com.facebook.fbui.textlayoutbuilder.TextLayoutBuilder;
 import com.facebook.fbui.textlayoutbuilder.util.LayoutMeasureUtil;
+import com.facebook.litho.AccessibilityRole;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.ComponentsLogger;
@@ -75,7 +76,6 @@ import com.facebook.litho.annotations.OnUnmount;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.ResType;
-import com.facebook.litho.utils.DisplayListUtils;
 import com.facebook.widget.accessibility.delegates.AccessibleClickableSpan;
 import com.facebook.yoga.YogaDirection;
 
@@ -132,12 +132,19 @@ import com.facebook.yoga.YogaDirection;
  *     offset into the text. Will only fire on ACTION_DOWN events that occur at an index within the
  *     text.
  * @prop accessibleClickableSpans Whether the text can contain accessible clickable spans.
+ * @prop minimallyWide If set, multi-line text width is determined by the widest line, rather than
+ *     the overall layout width. This can eliminate empty space in word-wrapped text with line
+ *     breaks preceding lengthy words or spans.
+ * @prop minimallyWideThreshold If set, {@code minimallyWide} logic will not run for text whose
+ *     minimal width is smaller than its normal width by less than the threshold.
+ * @prop lineHeight Controls the line height of text (the amount of vertical space reserved for each
+ *     line of text).
  */
 @MountSpec(
   isPureRender = true,
   shouldUseDisplayList = true,
   poolSize = 30,
-  events = {TextOffsetOnTouchEvent.class, CustomEllipsisTruncationEvent.class}
+  events = {TextOffsetOnTouchEvent.class}
 )
 class TextSpec {
 
@@ -177,13 +184,11 @@ class TextSpec {
   @PropDefault protected static final int highlightStartOffset = -1;
   @PropDefault protected static final int highlightEndOffset = -1;
   @PropDefault protected static final boolean clipToBounds = true;
+  @PropDefault protected static final float lineHeight = Float.MAX_VALUE;
 
   private static final Path sTempPath = new Path();
   private static final Rect sTempRect = new Rect();
   private static final RectF sTempRectF = new RectF();
-
-  private static final SynchronizedPool<TextLayoutBuilder> sTextLayoutBuilderPool =
-      new SynchronizedPool<>(2);
 
   @OnLoadStyle
   static void onLoadStyle(
@@ -283,6 +288,9 @@ class TextSpec {
       @Prop(optional = true) int justificationMode,
       @Prop(optional = true) boolean glyphWarming,
       @Prop(optional = true) TextDirectionHeuristicCompat textDirection,
+      @Prop(optional = true) boolean minimallyWide,
+      @Prop(optional = true, resType = ResType.DIMEN_SIZE) int minimallyWideThreshold,
+      @Prop(optional = true, resType = ResType.DIMEN_TEXT) float lineHeight,
       Output<Layout> measureLayout,
       Output<Integer> measuredWidth,
       Output<Integer> measuredHeight) {
@@ -322,15 +330,16 @@ class TextSpec {
             maxEms,
             minTextWidth,
             maxTextWidth,
-            context.getResources().getDisplayMetrics().density,
+            context.getAndroidContext().getResources().getDisplayMetrics().density,
             breakStrategy,
             hyphenationFrequency,
             justificationMode,
-            textDirection);
+            textDirection,
+            lineHeight);
 
     measureLayout.set(newLayout);
 
-    size.width = SizeSpec.resolveSize(widthSpec, newLayout.getWidth());
+    size.width = resolveWidth(widthSpec, newLayout, minimallyWide, minimallyWideThreshold);
 
     // Adjust height according to the minimum number of lines.
     int preferredHeight = LayoutMeasureUtil.getHeight(newLayout);
@@ -338,9 +347,9 @@ class TextSpec {
     if (lineCount < minLines) {
       final TextPaint paint = newLayout.getPaint();
 
-      final int lineHeight =
+      final int layoutLineHeight =
           Math.round(paint.getFontMetricsInt(null) * spacingMultiplier + extraSpacing);
-      preferredHeight += lineHeight * (minLines - lineCount);
+      preferredHeight += layoutLineHeight * (minLines - lineCount);
     }
 
     size.height = SizeSpec.resolveSize(heightSpec, preferredHeight);
@@ -359,6 +368,22 @@ class TextSpec {
 
     measuredWidth.set(size.width);
     measuredHeight.set(size.height);
+  }
+
+  @VisibleForTesting
+  public static int resolveWidth(
+      int widthSpec, Layout layout, boolean minimallyWide, int minimallyWideThreshold) {
+    final int fullWidth = SizeSpec.resolveSize(widthSpec, layout.getWidth());
+
+    if (minimallyWide && layout.getLineCount() > 1) {
+      final int minimalWidth = SizeSpec.resolveSize(widthSpec, LayoutMeasureUtil.getWidth(layout));
+
+      if (fullWidth - minimalWidth > minimallyWideThreshold) {
+        return minimalWidth;
+      }
+    }
+
+    return fullWidth;
   }
 
   private static Layout createTextLayout(
@@ -392,14 +417,12 @@ class TextSpec {
       int breakStrategy,
       int hyphenationFrequency,
       int justificationMode,
-      TextDirectionHeuristicCompat textDirection) {
+      TextDirectionHeuristicCompat textDirection,
+      float lineHeight) {
     Layout newLayout;
 
-    TextLayoutBuilder layoutBuilder = sTextLayoutBuilderPool.acquire();
-    if (layoutBuilder == null) {
-      layoutBuilder = new TextLayoutBuilder();
-      layoutBuilder.setShouldCacheLayout(false);
-    }
+    TextLayoutBuilder layoutBuilder = new TextLayoutBuilder();
+    layoutBuilder.setShouldCacheLayout(false);
 
     @TextLayoutBuilder.MeasureMode final int textMeasureMode;
     switch (SizeSpec.getMode(widthSpec)) {
@@ -433,6 +456,10 @@ class TextSpec {
         .setJustificationMode(justificationMode)
         .setBreakStrategy(breakStrategy)
         .setHyphenationFrequency(hyphenationFrequency);
+
+    if (lineHeight != Float.MAX_VALUE) {
+      layoutBuilder.setLineHeight(lineHeight);
+    }
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
       layoutBuilder.setLetterSpacing(letterSpacing);
@@ -472,10 +499,8 @@ class TextSpec {
 
     newLayout = layoutBuilder.build();
 
-    layoutBuilder.setText(null);
-    sTextLayoutBuilderPool.release(layoutBuilder);
-
-    if (glyphWarming && !DisplayListUtils.isEligibleForCreatingDisplayLists()) {
+    if (glyphWarming) {
+      // TODO(T34488162): we also don't want this to happen when we are using DL (legacy?)
       TextureWarmer.getInstance().warmLayout(newLayout);
     }
 
@@ -515,7 +540,7 @@ class TextSpec {
       @Prop(optional = true) boolean glyphWarming,
       @Prop(optional = true) TextDirectionHeuristicCompat textDirection,
       @Prop(optional = true, resType = ResType.STRING) CharSequence customEllipsisText,
-      @Prop(optional = true) EventHandler customEllipsisHandler,
+      @Prop(optional = true, resType = ResType.DIMEN_TEXT) float lineHeight,
       @FromMeasure Layout measureLayout,
       @FromMeasure Integer measuredWidth,
       @FromMeasure Integer measuredHeight,
@@ -568,11 +593,12 @@ class TextSpec {
               maxEms,
               minTextWidth,
               maxTextWidth,
-              c.getResources().getDisplayMetrics().density,
+              c.getAndroidContext().getResources().getDisplayMetrics().density,
               breakStrategy,
               hyphenationFrequency,
               justificationMode,
-              textDirection));
+              textDirection,
+              lineHeight));
     }
 
     final float textHeight = LayoutMeasureUtil.getHeight(textLayout.get());
@@ -596,12 +622,7 @@ class TextSpec {
       final int ellipsizedLineNumber = getEllipsizedLineNumber(textLayout.get());
       if (ellipsizedLineNumber != -1) {
         final CharSequence truncated =
-            truncateText(
-                text,
-                customEllipsisText,
-                textLayout.get(),
-                ellipsizedLineNumber,
-                customEllipsisHandler);
+            truncateText(text, customEllipsisText, textLayout.get(), ellipsizedLineNumber);
 
         Layout newLayout =
             createTextLayout(
@@ -631,11 +652,12 @@ class TextSpec {
                 maxEms,
                 minTextWidth,
                 maxTextWidth,
-                c.getResources().getDisplayMetrics().density,
+                c.getAndroidContext().getResources().getDisplayMetrics().density,
                 breakStrategy,
                 hyphenationFrequency,
                 justificationMode,
-                textDirection);
+                textDirection,
+                lineHeight);
 
         processedText.set(truncated);
         textLayout.set(newLayout);
@@ -666,8 +688,7 @@ class TextSpec {
       CharSequence text,
       CharSequence customEllipsisText,
       Layout newLayout,
-      int ellipsizedLineNumber,
-      @Nullable EventHandler customEllipsisTruncationEventHandler) {
+      int ellipsizedLineNumber) {
     Rect bounds = new Rect();
     newLayout
         .getPaint()
@@ -678,9 +699,6 @@ class TextSpec {
     final int ellipsisOffset =
         newLayout.getOffsetForHorizontal(ellipsizedLineNumber, ellipsisTarget);
     if (ellipsisOffset > 0) {
-      if (customEllipsisTruncationEventHandler != null) {
-        Text.dispatchCustomEllipsisTruncationEvent(customEllipsisTruncationEventHandler);
-      }
       // getOffsetForHorizontal returns the closest character, but we need to guarantee no
       // truncation, so subtract 1 from the result:
       return TextUtils.concat(text.subSequence(0, ellipsisOffset - 1), customEllipsisText);
@@ -700,19 +718,7 @@ class TextSpec {
         return i;
       }
     }
-
-    // On versions kitkat and lower, there is a bug in layout.getEllipsisCount() where it does not
-    // return the correct value when a layout contains a newline. This double checks that the layout
-    // does not end in an ellipsis character if the os version is kitkat or less.
-    if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT && endsWithEllipsis(layout.getText())) {
-      return layout.getLineCount() - 1;
-    }
-
     return -1;
-  }
-
-  private static boolean endsWithEllipsis(CharSequence text) {
-    return text.length() > 0 && text.charAt(text.length() - 1) == '\u2026';
   }
 
   @OnCreateMountContent
@@ -765,7 +771,8 @@ class TextSpec {
         textOffsetOnTouchListener,
         highlightStartOffset,
         highlightEndOffset,
-        clickableSpanExpandedOffset);
+        clickableSpanExpandedOffset,
+        c.getLogTag());
 
     if (processedText instanceof MountableCharSequence) {
       ((MountableCharSequence) processedText).onMount(textDrawable);
@@ -867,9 +874,16 @@ class TextSpec {
     node.setEnabled(true);
     node.setVisibleToUser(true);
     if (span instanceof AccessibleClickableSpan) {
-      node.setText(((AccessibleClickableSpan) span).getAccessibilityDescription());
+      AccessibleClickableSpan accessibleClickableSpan = (AccessibleClickableSpan) span;
+      node.setText(accessibleClickableSpan.getAccessibilityDescription());
+      if (accessibleClickableSpan.getAccessibilityRole() != null) {
+        node.setClassName(accessibleClickableSpan.getAccessibilityRole());
+      } else {
+        node.setClassName(AccessibilityRole.BUTTON);
+      }
     } else {
       node.setText(spanned.subSequence(start, end));
+      node.setClassName(AccessibilityRole.BUTTON);
     }
   }
 

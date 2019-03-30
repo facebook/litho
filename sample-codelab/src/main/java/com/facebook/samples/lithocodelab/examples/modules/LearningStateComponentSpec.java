@@ -60,6 +60,6 @@ public class LearningStateComponentSpec {
 
   @OnEvent(ClickEvent.class)
   static void onClick(ComponentContext c) {
-    LearningStateComponent.incrementClickCount(c);
+    LearningStateComponent.incrementClickCountSync(c);
   }
 }

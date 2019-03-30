@@ -16,8 +16,8 @@
 
 package com.facebook.litho.widget;
 
-import static android.support.v7.widget.OrientationHelper.HORIZONTAL;
-import static android.support.v7.widget.OrientationHelper.VERTICAL;
+import static androidx.recyclerview.widget.OrientationHelper.HORIZONTAL;
+import static androidx.recyclerview.widget.OrientationHelper.VERTICAL;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.UNSPECIFIED;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
@@ -26,7 +26,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.robolectric.RuntimeEnvironment.application;
 
-import android.support.v7.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import com.facebook.litho.SizeSpec;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import java.util.ArrayList;

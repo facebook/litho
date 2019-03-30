@@ -16,92 +16,302 @@
 
 package com.facebook.litho;
 
+import android.animation.StateListAnimator;
 import android.content.res.TypedArray;
+import android.graphics.PathEffect;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.Px;
-import android.util.SparseArray;
-import com.facebook.litho.reference.Reference;
+import com.facebook.litho.drawable.ComparableDrawable;
 import com.facebook.yoga.YogaAlign;
-import com.facebook.yoga.YogaBaselineFunction;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
 import com.facebook.yoga.YogaFlexDirection;
 import com.facebook.yoga.YogaJustify;
+import com.facebook.yoga.YogaMeasureFunction;
 import com.facebook.yoga.YogaNode;
 import com.facebook.yoga.YogaPositionType;
 import com.facebook.yoga.YogaWrap;
+import java.util.ArrayList;
+import java.util.List;
+import javax.annotation.Nullable;
 
 /**
  * Class representing an empty InternalNode with a null ComponentLayout. All methods have been
  * overridden so no actions are performed, and no exceptions are thrown.
  */
-class NoOpInternalNode extends InternalNode {
+class NoOpInternalNode implements InternalNode {
+
+  NoOpInternalNode() {}
 
   @Override
-  void init(YogaNode cssNode, ComponentContext componentContext) {}
+  public void addChildAt(InternalNode child, int index) {}
 
   @Override
-  void appendComponent(Component component) {
+  public void addComponentNeedingPreviousRenderData(Component component) {}
+
+  @Override
+  public void addTransition(Transition transition) {}
+
+  @Override
+  public void addWorkingRanges(List<WorkingRangeContainer.Registration> registrations) {}
+
+  @Override
+  public @Nullable InternalNode alignContent(YogaAlign alignContent) {
+    return null;
   }
 
-  @Px
+  @Override
+  public @Nullable InternalNode alignItems(YogaAlign alignItems) {
+    return null;
+  }
+
+  @Override
+  public void appendComponent(Component component) {}
+
+  @Override
+  public boolean areCachedMeasuresValid() {
+    return false;
+  }
+
+  @Override
+  public @Nullable InternalNode background(@Nullable ComparableDrawable background) {
+    return null;
+  }
+
+  @Override
+  public @Nullable InternalNode background(@Nullable Drawable background) {
+    return null;
+  }
+
+  @Override
+  public @Nullable InternalNode backgroundColor(int backgroundColor) {
+    return null;
+  }
+
+  @Override
+  public @Nullable InternalNode backgroundRes(int resId) {
+    return null;
+  }
+
+  @Override
+  public @Nullable InternalNode border(Border border) {
+    return null;
+  }
+
+  @Override
+  public void border(Edges width, int[] colors, float[] radii) {}
+
+  @Override
+  public void calculateLayout(float width, float height) {}
+
+  @Override
+  public void calculateLayout() {}
+
+  @Override
+  public @Nullable InternalNode child(Component child) {
+    return null;
+  }
+
+  @Override
+  public @Nullable InternalNode child(Component.Builder<?> child) {
+    return null;
+  }
+
+  @Override
+  public @Nullable InternalNode child(InternalNode child) {
+    return null;
+  }
+
+  @Override
+  public void copyInto(InternalNode target) {}
+
+  @Override
+  public @Nullable InternalNode duplicateParentState(boolean duplicateParentState) {
+    return null;
+  }
+
+  @Override
+  public @Nullable InternalNode flexBasisAuto() {
+    return null;
+  }
+
+  @Override
+  public @Nullable InternalNode flexDirection(YogaFlexDirection direction) {
+    return null;
+  }
+
+  @Override
+  public @Nullable InternalNode focusedHandler(
+      @Nullable EventHandler<FocusedVisibleEvent> focusedHandler) {
+    return null;
+  }
+
+  @Override
+  public @Nullable InternalNode foreground(@Nullable Drawable foreground) {
+    return null;
+  }
+
+  @Override
+  public @Nullable InternalNode foreground(@Nullable ComparableDrawable foreground) {
+    return null;
+  }
+
+  @Override
+  public @Nullable InternalNode foregroundColor(int foregroundColor) {
+    return null;
+  }
+
+  @Override
+  public @Nullable InternalNode foregroundRes(int resId) {
+    return null;
+  }
+
+  @Override
+  public @Nullable InternalNode fullImpressionHandler(
+      @Nullable EventHandler<FullImpressionVisibleEvent> fullImpressionHandler) {
+    return null;
+  }
+
+  @Override
+  public int[] getBorderColors() {
+    return new int[0];
+  }
+
+  @Nullable
+  @Override
+  public PathEffect getBorderPathEffect() {
+    return null;
+  }
+
+  @Override
+  public float[] getBorderRadius() {
+    return new float[0];
+  }
+
+  @Nullable
+  @Override
+  public InternalNode getChildAt(int index) {
+    return null;
+  }
+
+  @Override
+  public int getChildCount() {
+    return 0;
+  }
+
+  @Override
+  public int getChildIndex(InternalNode child) {
+    return 0;
+  }
+
+  @Override
+  public @Nullable List<Component> getComponents() {
+    return null;
+  }
+
+  @Nullable
+  @Override
+  public ArrayList<Component> getComponentsNeedingPreviousRenderData() {
+    return null;
+  }
+
+  @Override
+  public @Nullable ComponentContext getContext() {
+    return null;
+  }
+
+  @Nullable
+  @Override
+  public DiffNode getDiffNode() {
+    return null;
+  }
+
   @Override
   public int getX() {
     return 0;
   }
 
-  @Px
   @Override
   public int getY() {
     return 0;
   }
 
-  @Px
   @Override
   public int getWidth() {
     return 0;
   }
 
-  @Px
   @Override
   public int getHeight() {
     return 0;
   }
 
-  @Px
-  @Override
-  public int getPaddingLeft() {
-    return 0;
-  }
-
-  @Px
   @Override
   public int getPaddingTop() {
     return 0;
   }
 
-  @Px
   @Override
   public int getPaddingRight() {
     return 0;
   }
 
-  @Px
   @Override
   public int getPaddingBottom() {
     return 0;
   }
 
   @Override
-  public void setCachedMeasuresValid(boolean valid) {}
-
-  @Override
-  public int getLastWidthSpec() {
+  public int getPaddingLeft() {
     return 0;
   }
 
   @Override
-  public void setLastWidthSpec(int widthSpec) {}
+  public boolean isPaddingSet() {
+    return false;
+  }
+
+  @androidx.annotation.Nullable
+  @Override
+  public ComparableDrawable getBackground() {
+    return null;
+  }
+
+  @Override
+  public @Nullable YogaDirection getResolvedLayoutDirection() {
+    return null;
+  }
+
+  @Override
+  public void setDiffNode(@Nullable DiffNode diffNode) {}
+
+  @Nullable
+  @Override
+  public EventHandler<FocusedVisibleEvent> getFocusedHandler() {
+    return null;
+  }
+
+  @Nullable
+  @Override
+  public ComparableDrawable getForeground() {
+    return null;
+  }
+
+  @Nullable
+  @Override
+  public EventHandler<FullImpressionVisibleEvent> getFullImpressionHandler() {
+    return null;
+  }
+
+  @Override
+  public int getImportantForAccessibility() {
+    return 0;
+  }
+
+  @Nullable
+  @Override
+  public EventHandler<InvisibleEvent> getInvisibleHandler() {
+    return null;
+  }
 
   @Override
   public int getLastHeightSpec() {
@@ -112,291 +322,518 @@ class NoOpInternalNode extends InternalNode {
   public void setLastHeightSpec(int heightSpec) {}
 
   @Override
-  void setLastMeasuredWidth(float lastMeasuredWidth) {}
-
-  @Override
-  void setLastMeasuredHeight(float lastMeasuredHeight) {}
-
-  @Override
-  void setDiffNode(DiffNode diffNode) {}
-
-  @Override
-  public InternalNode layoutDirection(YogaDirection direction) {
-    return this;
+  public float getLastMeasuredHeight() {
+    return 0;
   }
 
   @Override
-  public InternalNode flexDirection(YogaFlexDirection direction) {
-    return this;
+  public void setLastMeasuredHeight(float lastMeasuredHeight) {}
+
+  @Override
+  public float getLastMeasuredWidth() {
+    return 0;
   }
 
   @Override
-  public InternalNode wrap(YogaWrap wrap) {
-    return this;
+  public void setLastMeasuredWidth(float lastMeasuredWidth) {}
+
+  @Override
+  public int getLastWidthSpec() {
+    return 0;
   }
 
   @Override
-  public InternalNode justifyContent(YogaJustify justifyContent) {
-    return this;
+  public void setLastWidthSpec(int widthSpec) {}
+
+  @Override
+  public int getLayoutBorder(YogaEdge edge) {
+    return 0;
   }
 
   @Override
-  public InternalNode alignItems(YogaAlign alignItems) {
-    return this;
+  public float getMaxHeight() {
+    return 0;
   }
 
   @Override
-  public InternalNode alignContent(YogaAlign alignContent) {
-    return this;
+  public float getMaxWidth() {
+    return 0;
   }
 
   @Override
-  public InternalNode alignSelf(YogaAlign alignSelf) {
-    return this;
+  public float getMinHeight() {
+    return 0;
   }
 
   @Override
-  public InternalNode positionType(YogaPositionType positionType) {
-    return this;
+  public float getMinWidth() {
+    return 0;
+  }
+
+  @Nullable
+  @Override
+  public InternalNode getNestedTree() {
+    return null;
   }
 
   @Override
-  public InternalNode flex(float flex) {
-    return this;
+  public void setNestedTree(InternalNode nestedTree) {}
+
+  @Nullable
+  @Override
+  public InternalNode getNestedTreeHolder() {
+    return null;
+  }
+
+  @Nullable
+  @Override
+  public NodeInfo getNodeInfo() {
+    return null;
   }
 
   @Override
-  public InternalNode flexGrow(float flexGrow) {
-    return this;
+  public void setNodeInfo(NodeInfo nodeInfo) {}
+
+  @Override
+  public @Nullable NestedTreeProps getOrCreateNestedTreeProps() {
+    return null;
   }
 
   @Override
-  public InternalNode flexShrink(float flexShrink) {
-    return this;
+  public @Nullable NodeInfo getOrCreateNodeInfo() {
+    return null;
+  }
+
+  @Nullable
+  @Override
+  public InternalNode getParent() {
+    return null;
+  }
+
+  @Nullable
+  @Override
+  public TreeProps getPendingTreeProps() {
+    return null;
+  }
+
+  @Nullable
+  @Override
+  public Component getRootComponent() {
+    return null;
   }
 
   @Override
-  public InternalNode flexBasisPx(@Px int flexBasis) {
-    return this;
+  public void setRootComponent(Component component) {}
+
+  @Nullable
+  @Override
+  public StateListAnimator getStateListAnimator() {
+    return null;
   }
 
   @Override
-  public InternalNode flexBasisPercent(float percent) {
-    return this;
+  public int getStateListAnimatorRes() {
+    return 0;
   }
 
   @Override
-  public InternalNode importantForAccessibility(int importantForAccessibility) {
-    return this;
+  public @Nullable YogaDirection getStyleDirection() {
+    return null;
   }
 
   @Override
-  public InternalNode duplicateParentState(boolean duplicateParentState) {
-    return this;
+  public float getStyleHeight() {
+    return 0;
   }
 
   @Override
-  public InternalNode marginPx(YogaEdge edge, @Px int margin) {
-    return this;
+  public float getStyleWidth() {
+    return 0;
+  }
+
+  @Nullable
+  @Override
+  public String getTestKey() {
+    return null;
+  }
+
+  @Nullable
+  @Override
+  public Edges getTouchExpansion() {
+    return null;
   }
 
   @Override
-  public InternalNode marginPercent(YogaEdge edge, float percent) {
-    return this;
+  public int getTouchExpansionBottom() {
+    return 0;
   }
 
   @Override
-  public InternalNode marginAuto(YogaEdge edge) {
-    return this;
+  public int getTouchExpansionLeft() {
+    return 0;
   }
 
   @Override
-  public InternalNode border(Border border) {
-    return this;
+  public int getTouchExpansionRight() {
+    return 0;
   }
 
   @Override
-  public InternalNode paddingPx(YogaEdge edge, @Px int padding) {
-    return this;
+  public int getTouchExpansionTop() {
+    return 0;
+  }
+
+  @Nullable
+  @Override
+  public String getTransitionKey() {
+    return null;
+  }
+
+  @Nullable
+  @Override
+  public Transition.TransitionKeyType getTransitionKeyType() {
+    return null;
+  }
+
+  @Nullable
+  @Override
+  public ArrayList<Transition> getTransitions() {
+    return null;
+  }
+
+  @Nullable
+  @Override
+  public EventHandler<UnfocusedVisibleEvent> getUnfocusedHandler() {
+    return null;
+  }
+
+  @Nullable
+  @Override
+  public EventHandler<VisibilityChangedEvent> getVisibilityChangedHandler() {
+    return null;
+  }
+
+  @Nullable
+  @Override
+  public EventHandler<VisibleEvent> getVisibleHandler() {
+    return null;
   }
 
   @Override
-  public InternalNode paddingPercent(YogaEdge edge, float percent) {
-    return this;
+  public float getVisibleHeightRatio() {
+    return 0;
   }
 
   @Override
-  public InternalNode positionPx(YogaEdge edge, @Px int position) {
-    return this;
+  public float getVisibleWidthRatio() {
+    return 0;
+  }
+
+  @Nullable
+  @Override
+  public ArrayList<WorkingRangeContainer.Registration> getWorkingRangeRegistrations() {
+    return null;
   }
 
   @Override
-  public InternalNode positionPercent(YogaEdge edge, float percent) {
-    return this;
+  public @Nullable YogaNode getYogaNode() {
+    return null;
   }
 
   @Override
-  public InternalNode widthPx(@Px int width) {
-    return this;
+  public boolean hasBorderColor() {
+    return false;
   }
 
   @Override
-  public InternalNode widthPercent(float percent) {
-    return this;
+  public boolean hasNestedTree() {
+    return false;
   }
 
   @Override
-  public InternalNode minWidthPx(@Px int minWidth) {
-    return this;
+  public boolean hasNewLayout() {
+    return false;
   }
 
   @Override
-  public InternalNode minWidthPercent(float percent) {
-    return this;
+  public boolean hasStateListAnimatorResSet() {
+    return false;
   }
 
   @Override
-  public InternalNode maxWidthPx(@Px int maxWidth) {
-    return this;
+  public boolean hasTouchExpansion() {
+    return false;
   }
 
   @Override
-  public InternalNode maxWidthPercent(float percent) {
-    return this;
+  public boolean hasTransitionKey() {
+    return false;
   }
 
   @Override
-  public InternalNode heightPx(@Px int height) {
-    return this;
+  public boolean hasVisibilityHandlers() {
+    return false;
   }
 
   @Override
-  public InternalNode heightPercent(float percent) {
-    return this;
+  public @Nullable InternalNode heightAuto() {
+    return null;
   }
 
   @Override
-  public InternalNode minHeightPx(@Px int minHeight) {
-    return this;
+  public @Nullable InternalNode importantForAccessibility(int importantForAccessibility) {
+    return null;
   }
 
   @Override
-  public InternalNode minHeightPercent(float percent) {
-    return this;
+  public @Nullable InternalNode invisibleHandler(
+      @Nullable EventHandler<InvisibleEvent> invisibleHandler) {
+    return null;
   }
 
   @Override
-  public InternalNode maxHeightPx(@Px int maxHeight) {
-    return this;
+  public boolean isDuplicateParentStateEnabled() {
+    return false;
   }
 
   @Override
-  public InternalNode maxHeightPercent(float percent) {
-    return this;
+  public boolean isForceViewWrapping() {
+    return false;
   }
 
   @Override
-  public InternalNode child(Component child) {
-    return this;
+  public boolean isImportantForAccessibilityIsSet() {
+    return false;
   }
 
   @Override
-  public InternalNode child(Component.Builder<?> child) {
-    return this;
+  public boolean isInitialized() {
+    return false;
   }
 
   @Override
-  public InternalNode background(Reference<? extends Drawable> builder) {
-    return this;
+  public boolean isLayoutDirectionInherit() {
+    return false;
   }
 
   @Override
-  public InternalNode foreground(Drawable foreground) {
-    return this;
+  public boolean isNestedTreeHolder() {
+    return false;
   }
 
   @Override
-  public InternalNode wrapInView() {
-    return this;
+  public @Nullable InternalNode justifyContent(YogaJustify justifyContent) {
+    return null;
   }
 
   @Override
-  public InternalNode clickHandler(EventHandler<ClickEvent> clickHandler) {
-    return this;
+  public void markIsNestedTreeHolder(TreeProps currentTreeProps) {}
+
+  @Override
+  public void markLayoutSeen() {}
+
+  @Override
+  public @Nullable YogaDirection recursivelyResolveLayoutDirection() {
+    return null;
   }
 
   @Override
-  public InternalNode focusChangeHandler(EventHandler<FocusChangedEvent> focusChangeHandler) {
-    return this;
+  public void registerDebugComponent(DebugComponent debugComponent) {}
+
+  @Override
+  public @Nullable InternalNode removeChildAt(int index) {
+    return null;
   }
 
   @Override
-  public InternalNode touchHandler(EventHandler<TouchEvent> touchHandler) {
-    return this;
+  public void resetResolvedLayoutProperties() {}
+
+  @Override
+  public void setBorderWidth(YogaEdge edge, int borderWidth) {}
+
+  @Override
+  public void setCachedMeasuresValid(boolean valid) {}
+
+  @Override
+  public void setMeasureFunction(YogaMeasureFunction measureFunction) {}
+
+  @Override
+  public void setStyleHeightFromSpec(int heightSpec) {}
+
+  @Override
+  public void setStyleWidthFromSpec(int widthSpec) {}
+
+  @Override
+  public boolean shouldDrawBorders() {
+    return false;
   }
 
   @Override
-  public InternalNode visibleHandler(EventHandler<VisibleEvent> visibleHandler) {
-    return this;
+  public @Nullable InternalNode stateListAnimator(@Nullable StateListAnimator stateListAnimator) {
+    return null;
   }
 
   @Override
-  public InternalNode focusedHandler(EventHandler<FocusedVisibleEvent> focusedHandler) {
-    return this;
+  public @Nullable InternalNode stateListAnimatorRes(int resId) {
+    return null;
   }
 
   @Override
-  public InternalNode fullImpressionHandler(
-      EventHandler<FullImpressionVisibleEvent> fullImpressionHandler) {
-    return this;
+  public @Nullable InternalNode testKey(@Nullable String testKey) {
+    return null;
   }
 
   @Override
-  public InternalNode invisibleHandler(EventHandler<InvisibleEvent> invisibleHandler) {
-    return this;
+  public @Nullable InternalNode touchExpansionPx(YogaEdge edge, int touchExpansion) {
+    return null;
   }
 
   @Override
-  public InternalNode unfocusedHandler(EventHandler<UnfocusedVisibleEvent> unfocusedHandler) {
-    return this;
+  public @Nullable InternalNode transitionKey(@Nullable String key) {
+    return null;
   }
 
   @Override
-  public InternalNode contentDescription(CharSequence contentDescription) {
-    return this;
+  public @Nullable InternalNode transitionKeyType(@Nullable Transition.TransitionKeyType type) {
+    return null;
   }
 
   @Override
-  public InternalNode viewTag(Object viewTag) {
-    return this;
+  public @Nullable InternalNode unfocusedHandler(
+      @Nullable EventHandler<UnfocusedVisibleEvent> unfocusedHandler) {
+    return null;
   }
 
   @Override
-  public InternalNode viewTags(SparseArray<Object> viewTags) {
-    return this;
+  public @Nullable InternalNode visibilityChangedHandler(
+      @Nullable EventHandler<VisibilityChangedEvent> visibilityChangedHandler) {
+    return null;
   }
 
   @Override
-  public InternalNode transitionKey(String key) {
-    return this;
+  public @Nullable InternalNode visibleHandler(
+      @Nullable EventHandler<VisibleEvent> visibleHandler) {
+    return null;
   }
 
   @Override
-  void setNestedTree(InternalNode nestedTree) {}
-
-  @Override
-  void copyInto(InternalNode node) {}
-
-  @Override
-  void setStyleWidthFromSpec(int widthSpec) {}
-
-  @Override
-  void setStyleHeightFromSpec(int heightSpec) {}
-
-  @Override
-  void applyAttributes(TypedArray a) {}
-
-  @Override
-  void setBaselineFunction(YogaBaselineFunction baselineFunction) {
+  public @Nullable InternalNode visibleHeightRatio(float visibleHeightRatio) {
+    return null;
   }
+
+  @Override
+  public @Nullable InternalNode visibleWidthRatio(float visibleWidthRatio) {
+    return null;
+  }
+
+  @Override
+  public @Nullable InternalNode widthAuto() {
+    return null;
+  }
+
+  @Override
+  public void widthPx(int width) {}
+
+  @Override
+  public void widthPercent(float percent) {}
+
+  @Override
+  public void minWidthPx(int minWidth) {}
+
+  @Override
+  public void maxWidthPx(int maxWidth) {}
+
+  @Override
+  public void minWidthPercent(float percent) {}
+
+  @Override
+  public void maxWidthPercent(float percent) {}
+
+  @Override
+  public void heightPx(int height) {}
+
+  @Override
+  public void heightPercent(float percent) {}
+
+  @Override
+  public void minHeightPx(int minHeight) {}
+
+  @Override
+  public void maxHeightPx(int maxHeight) {}
+
+  @Override
+  public void minHeightPercent(float percent) {}
+
+  @Override
+  public void maxHeightPercent(float percent) {}
+
+  @Override
+  public void layoutDirection(YogaDirection direction) {}
+
+  @Override
+  public void alignSelf(YogaAlign alignSelf) {}
+
+  @Override
+  public void flex(float flex) {}
+
+  @Override
+  public void flexGrow(float flexGrow) {}
+
+  @Override
+  public void flexShrink(float flexShrink) {}
+
+  @Override
+  public void flexBasisPx(int flexBasis) {}
+
+  @Override
+  public void flexBasisPercent(float percent) {}
+
+  @Override
+  public void aspectRatio(float aspectRatio) {}
+
+  @Override
+  public void positionType(@androidx.annotation.Nullable YogaPositionType positionType) {}
+
+  @Override
+  public void positionPx(YogaEdge edge, int position) {}
+
+  @Override
+  public void positionPercent(YogaEdge edge, float percent) {}
+
+  @Override
+  public void paddingPx(YogaEdge edge, int padding) {}
+
+  @Override
+  public void paddingPercent(YogaEdge edge, float percent) {}
+
+  @Override
+  public void marginPx(YogaEdge edge, int margin) {}
+
+  @Override
+  public void marginPercent(YogaEdge edge, float percent) {}
+
+  @Override
+  public void marginAuto(YogaEdge edge) {}
+
+  @Override
+  public void isReferenceBaseline(boolean isReferenceBaseline) {}
+
+  @Override
+  public void useHeightAsBaseline(boolean useHeightAsBaseline) {}
+
+  @Override
+  public @Nullable InternalNode wrap(YogaWrap wrap) {
+    return null;
+  }
+
+  @Override
+  public @Nullable InternalNode wrapInView() {
+    return null;
+  }
+
+  @Override
+  public void applyAttributes(TypedArray a) {}
+
+  @Override
+  public void assertContextSpecificStyleNotSet() {}
 }

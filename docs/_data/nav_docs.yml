@@ -19,6 +19,7 @@
   - id: error-boundaries
   - id: border
   - id: recycler-collection-component
+  - id: cached-values
   - id: transition-animations
   - id: tooltips
   - id: glossary
@@ -27,6 +28,7 @@
   - id: events-overview
   - id: events-touch-handling
   - id: visibility-handling
+  - id: trigger-events
 - title: Sections
   items:
   - id: sections-intro

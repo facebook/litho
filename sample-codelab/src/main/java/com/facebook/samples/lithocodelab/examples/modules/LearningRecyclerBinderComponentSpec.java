@@ -11,7 +11,7 @@
  */
 package com.facebook.samples.lithocodelab.examples.modules;
 
-import android.support.v7.widget.OrientationHelper;
+import androidx.recyclerview.widget.OrientationHelper;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.annotations.LayoutSpec;

@@ -2,6 +2,7 @@
 #
 # This source code is licensed under the Apache 2.0 license found in the
 # LICENSE file in the root directory of this source tree.
+load("//tools/build_defs/oss:fb_native_wrapper.bzl", "fb_native")
 load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_VISIBILITY", "fb_java_library", "make_dep_path")
 
 fb_java_library(
@@ -15,13 +16,13 @@ fb_java_library(
     ],
 )
 
-prebuilt_jar(
+fb_native.prebuilt_jar(
     name = "compile-testing-prebuilt",
     binary_jar = ":compile-testing.jar",
     visibility = LITHO_VISIBILITY,
 )
 
-remote_file(
+fb_native.remote_file(
     name = "compile-testing.jar",
     sha1 = "3d9e885e2dfe4e6ceabc4402419abf3879c7429e",
     url = "mvn:com.google.testing.compile:compile-testing:jar:0.14",

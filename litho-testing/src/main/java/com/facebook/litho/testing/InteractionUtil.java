@@ -20,10 +20,10 @@ import android.app.Instrumentation;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.SystemClock;
-import android.support.test.InstrumentationRegistry;
-import android.support.v7.widget.RecyclerView;
 import android.view.MotionEvent;
 import android.view.View;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.test.InstrumentationRegistry;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.LithoViewTestHelper;
 import com.facebook.litho.TestItem;
@@ -33,6 +33,12 @@ import com.facebook.litho.TestItem;
  */
 public class InteractionUtil {
 
+  /**
+   * @deprecated as it is based on {@link RecyclerView#computeVerticalScrollOffset()} which only
+   *     returns estimated scroll position, which may lead to the method hanging forever (or until
+   *     hitting max iterations count) Please, consider using {@link Scroller} instead
+   */
+  @Deprecated
   public static void scrollTo(final RecyclerView recyclerView, final int targetScrollY) {
     final int MAX_ITERATIONS = 100;
 
@@ -40,18 +46,21 @@ public class InteractionUtil {
     while (targetScrollY != recyclerView.computeVerticalScrollOffset()) {
       if (iterations > MAX_ITERATIONS) {
         throw new RuntimeException(
-            "Timed out trying to get to the correct scroll position! target: " + targetScrollY +
-                ", final: " + recyclerView.computeVerticalScrollOffset());
+            "Timed out trying to get to the correct scroll position! target: "
+                + targetScrollY
+                + ", final: "
+                + recyclerView.computeVerticalScrollOffset());
       }
 
-      InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
-        @Override
-        public void run() {
-          recyclerView.smoothScrollBy(
-              0,
-              targetScrollY - recyclerView.computeVerticalScrollOffset());
-        }
-      });
+      InstrumentationRegistry.getInstrumentation()
+          .runOnMainSync(
+              new Runnable() {
+                @Override
+                public void run() {
+                  recyclerView.smoothScrollBy(
+                      0, targetScrollY - recyclerView.computeVerticalScrollOffset());
+                }
+              });
       InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
       // Sleep because waitForIdleSync doesn't factor in animations (e.g. the scroll animation) that
@@ -125,5 +134,75 @@ public class InteractionUtil {
     instrumentation.sendPointerSync(actionUpEvent);
 
     instrumentation.waitForIdleSync();
+  }
+
+  /**
+   * Class that keeps track of the scroll position of provided {@link RecyclerView}, and provides
+   * APIs to request scroll to a certain position
+   */
+  public static class Scroller extends RecyclerView.OnScrollListener {
+    private static final int MAX_ITERATIONS = 100;
+
+    private final RecyclerView mRecyclerView;
+    private int mScrollPositionX;
+    private int mScrollPositionY;
+
+    public Scroller(RecyclerView recyclerView) {
+      mRecyclerView = recyclerView;
+      recyclerView.addOnScrollListener(this);
+    }
+
+    @Override
+    public void onScrolled(RecyclerView rv, int dx, int dy) {
+      super.onScrolled(rv, dx, dy);
+      mScrollPositionX += dx;
+      mScrollPositionY += dy;
+    }
+
+    public void scrollToPositionX(int targetPositionX) {
+      scrollTo(true, targetPositionX);
+    }
+
+    public void scrollToPositionY(int targetPositionY) {
+      scrollTo(false, targetPositionY);
+    }
+
+    private void scrollTo(final boolean xAxis, final int targetPosition) {
+      int iterations = 0;
+      while (targetPosition != getScrollPosition(xAxis)) {
+        if (iterations > MAX_ITERATIONS) {
+          throw new RuntimeException(
+              "Timed out trying to get to the correct scroll position! target: "
+                  + targetPosition
+                  + ", final: "
+                  + getScrollPosition(xAxis));
+        }
+
+        InstrumentationRegistry.getInstrumentation()
+            .runOnMainSync(
+                new Runnable() {
+                  @Override
+                  public void run() {
+                    mRecyclerView.smoothScrollBy(0, targetPosition - getScrollPosition(xAxis));
+                  }
+                });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+
+        // Sleep because waitForIdleSync doesn't factor in animations (e.g. the scroll animation)
+        // that
+        // go through Choreographer
+        try {
+          Thread.sleep(1000);
+        } catch (InterruptedException e) {
+          throw new RuntimeException(e);
+        }
+
+        iterations++;
+      }
+    }
+
+    private int getScrollPosition(boolean xAxis) {
+      return xAxis ? mScrollPositionX : mScrollPositionY;
+    }
   }
 }

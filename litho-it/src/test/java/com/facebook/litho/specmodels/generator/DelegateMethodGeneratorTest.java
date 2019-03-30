@@ -20,12 +20,12 @@ import static com.facebook.litho.specmodels.generator.DelegateMethodGenerator.ge
 import static com.facebook.litho.specmodels.model.DelegateMethodDescriptions.LAYOUT_SPEC_DELEGATE_METHODS_MAP;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.specmodels.internal.ImmutableList;
+import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.DelegateMethod;
 import com.facebook.litho.specmodels.model.DelegateMethodDescription;
@@ -117,9 +117,7 @@ public class DelegateMethodGeneratorTest {
   @Test
   public void testGenerateWithoutDependencyInjection() {
     TypeSpecDataHolder typeSpecDataHolder =
-        generateDelegates(
-            mSpecModelWithoutDI,
-            LAYOUT_SPEC_DELEGATE_METHODS_MAP);
+        generateDelegates(mSpecModelWithoutDI, LAYOUT_SPEC_DELEGATE_METHODS_MAP, RunMode.normal());
 
     assertThat(typeSpecDataHolder.getFieldSpecs()).isEmpty();
     assertThat(typeSpecDataHolder.getMethodSpecs()).hasSize(1);
@@ -129,7 +127,8 @@ public class DelegateMethodGeneratorTest {
         .isEqualTo(
             "@java.lang.Override\n"
                 + "protected com.facebook.litho.Component onCreateLayout(com.facebook.litho.ComponentContext c) {\n"
-                + "  com.facebook.litho.Component _result = (com.facebook.litho.Component) TestSpec.onCreateLayout(\n"
+                + "  com.facebook.litho.Component _result;\n"
+                + "  _result = (com.facebook.litho.Component) TestSpec.onCreateLayout(\n"
                 + "    (com.facebook.litho.ComponentContext) c,\n"
                 + "    (boolean) prop,\n"
                 + "    (int) state);\n"
@@ -196,15 +195,16 @@ public class DelegateMethodGeneratorTest {
             .representedObject(new Object())
             .build();
 
-    TypeSpecDataHolder typeSpecDataHolder = generateDelegates(specModel, map);
+    TypeSpecDataHolder typeSpecDataHolder = generateDelegates(specModel, map, RunMode.normal());
 
     assertThat(typeSpecDataHolder.getMethodSpecs().get(0).toString())
         .isEqualTo(
             "@java.lang.Override\n"
                 + "protected com.facebook.litho.Component onCreateLayout(com.facebook.litho.ComponentContext c) {\n"
-                + "  com.facebook.litho.Component _result = (com.facebook.litho.Component) TestSpec.onCreateLayout(\n"
+                + "  com.facebook.litho.Component _result;\n"
+                + "  _result = (com.facebook.litho.Component) TestSpec.onCreateLayout(\n"
                 + "    (com.facebook.litho.ComponentContext) c,\n"
-                + "    optionalParam,\n"
+                + "    (char) optionalParam,\n"
                 + "    (boolean) prop);\n"
                 + "  return _result;\n"
                 + "}\n");

@@ -37,7 +37,6 @@ dependencies {
     implementation project(':litho-sections-core')
     implementation project(':litho-sections-widget')
 
-    compileOnly project(':litho-annotations')
     compileOnly project(':litho-sections-annotations')
     kapt project(':litho-processor')
     kapt project(':litho-sections-processor')

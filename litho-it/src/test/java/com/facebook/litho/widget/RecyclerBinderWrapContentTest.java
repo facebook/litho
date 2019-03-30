@@ -23,12 +23,14 @@ import static com.facebook.litho.widget.RecyclerBinderTest.NO_OP_CHANGE_SET_COMP
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 
 import android.os.Looper;
-import android.support.v7.widget.OrientationHelper;
+import androidx.recyclerview.widget.OrientationHelper;
+import androidx.recyclerview.widget.RecyclerView;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
@@ -274,7 +276,6 @@ public class RecyclerBinderWrapContentTest {
             .wrapContent(true)
             .build(mComponentContext);
 
-    mockRecyclerBinderToCallApplyBatches(mRecyclerView, recyclerBinder);
     recyclerBinder.mount(mRecyclerView);
 
     final Component component =
@@ -283,7 +284,7 @@ public class RecyclerBinderWrapContentTest {
         ComponentRenderInfo.create().component(component).build();
 
     recyclerBinder.insertItemAtAsync(0, renderInfo);
-    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     Shadows.shadowOf(mLayoutThreadShadowLooper).runToEndOfTasks();
 
@@ -299,7 +300,7 @@ public class RecyclerBinderWrapContentTest {
           TestDrawableComponent.create(mComponentContext).measuredHeight(100).build();
       recyclerBinder.insertItemAtAsync(
           i + 1, ComponentRenderInfo.create().component(newComponent).build());
-      recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+      recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
     }
 
     Shadows.shadowOf(mLayoutThreadShadowLooper).runToEndOfTasks();
@@ -323,7 +324,6 @@ public class RecyclerBinderWrapContentTest {
             .wrapContent(true)
             .build(mComponentContext);
 
-    mockRecyclerBinderToCallApplyBatches(mRecyclerView, recyclerBinder);
     recyclerBinder.mount(mRecyclerView);
 
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
@@ -334,7 +334,7 @@ public class RecyclerBinderWrapContentTest {
     }
 
     recyclerBinder.insertRangeAtAsync(0, renderInfos);
-    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     Shadows.shadowOf(mLayoutThreadShadowLooper).runToEndOfTasks();
 
@@ -353,7 +353,7 @@ public class RecyclerBinderWrapContentTest {
     }
 
     recyclerBinder.insertRangeAtAsync(0, newRenderInfos);
-    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     Shadows.shadowOf(mLayoutThreadShadowLooper).runToEndOfTasks();
 
@@ -379,7 +379,7 @@ public class RecyclerBinderWrapContentTest {
     recyclerBinder.mount(mRecyclerView);
 
     recyclerBinder.removeItemAtAsync(0);
-    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     Shadows.shadowOf(mLayoutThreadShadowLooper).runToEndOfTasks();
 
@@ -406,7 +406,7 @@ public class RecyclerBinderWrapContentTest {
     recyclerBinder.mount(mRecyclerView);
 
     recyclerBinder.removeRangeAtAsync(0, 3);
-    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     Shadows.shadowOf(mLayoutThreadShadowLooper).runToEndOfTasks();
 
@@ -442,7 +442,7 @@ public class RecyclerBinderWrapContentTest {
     final RenderInfo renderInfo = ComponentRenderInfo.create().component(newComponent).build();
 
     recyclerBinder.updateItemAtAsync(0, renderInfo);
-    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     Shadows.shadowOf(mLayoutThreadShadowLooper).runToEndOfTasks();
 
@@ -476,7 +476,7 @@ public class RecyclerBinderWrapContentTest {
       newRenderInfos.add(ComponentRenderInfo.create().component(component).build());
     }
     recyclerBinder.updateRangeAtAsync(0, newRenderInfos);
-    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     Shadows.shadowOf(mLayoutThreadShadowLooper).runToEndOfTasks();
 
@@ -704,7 +704,6 @@ public class RecyclerBinderWrapContentTest {
             .wrapContent(true)
             .build(mComponentContext);
 
-    mockRecyclerBinderToCallApplyBatches(mRecyclerView, recyclerBinder);
     recyclerBinder.mount(mRecyclerView);
 
     final Component component =
@@ -713,7 +712,7 @@ public class RecyclerBinderWrapContentTest {
         ComponentRenderInfo.create().component(component).build();
 
     recyclerBinder.insertItemAtAsync(0, renderInfo);
-    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     Shadows.shadowOf(mLayoutThreadShadowLooper).runToEndOfTasks();
 
@@ -729,7 +728,7 @@ public class RecyclerBinderWrapContentTest {
           TestDrawableComponent.create(mComponentContext).measuredWidth(100).build();
       recyclerBinder.insertItemAtAsync(
           i + 1, ComponentRenderInfo.create().component(newComponent).build());
-      recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+      recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
     }
 
     Shadows.shadowOf(mLayoutThreadShadowLooper).runToEndOfTasks();
@@ -755,7 +754,6 @@ public class RecyclerBinderWrapContentTest {
             .wrapContent(true)
             .build(mComponentContext);
 
-    mockRecyclerBinderToCallApplyBatches(mRecyclerView, recyclerBinder);
     recyclerBinder.mount(mRecyclerView);
 
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
@@ -766,7 +764,7 @@ public class RecyclerBinderWrapContentTest {
     }
 
     recyclerBinder.insertRangeAtAsync(0, renderInfos);
-    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     Shadows.shadowOf(mLayoutThreadShadowLooper).runToEndOfTasks();
 
@@ -785,7 +783,7 @@ public class RecyclerBinderWrapContentTest {
     }
 
     recyclerBinder.insertRangeAtAsync(0, newRenderInfos);
-    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     Shadows.shadowOf(mLayoutThreadShadowLooper).runToEndOfTasks();
 
@@ -808,7 +806,6 @@ public class RecyclerBinderWrapContentTest {
         prepareBinderWithMeasuredChildSize(
             widthSpec, heightSpec, 8, OrientationHelper.HORIZONTAL, 100, true);
 
-    mockRecyclerBinderToCallApplyBatches(mRecyclerView, recyclerBinder);
     recyclerBinder.mount(mRecyclerView);
 
     recyclerBinder.removeItemAt(0);
@@ -836,7 +833,6 @@ public class RecyclerBinderWrapContentTest {
         prepareBinderWithMeasuredChildSize(
             widthSpec, heightSpec, 8, OrientationHelper.HORIZONTAL, 100, true);
 
-    mockRecyclerBinderToCallApplyBatches(mRecyclerView, recyclerBinder);
     recyclerBinder.mount(mRecyclerView);
 
     recyclerBinder.removeRangeAt(0, 3);
@@ -864,7 +860,6 @@ public class RecyclerBinderWrapContentTest {
         prepareBinderWithMeasuredChildSize(
             widthSpec, heightSpec, 8, OrientationHelper.HORIZONTAL, 100, true);
 
-    mockRecyclerBinderToCallApplyBatches(mRecyclerView, recyclerBinder);
     recyclerBinder.mount(mRecyclerView);
 
     final Component newComponent =
@@ -900,7 +895,6 @@ public class RecyclerBinderWrapContentTest {
         prepareBinderWithMeasuredChildSize(
             widthSpec, heightSpec, 8, OrientationHelper.HORIZONTAL, 100, true);
 
-    mockRecyclerBinderToCallApplyBatches(mRecyclerView, recyclerBinder);
     recyclerBinder.mount(mRecyclerView);
 
     final ArrayList<RenderInfo> newRenderInfos = new ArrayList<>();
@@ -954,20 +948,6 @@ public class RecyclerBinderWrapContentTest {
 
     verify(changeSetCompleteCallback).onDataRendered(eq(true), anyLong());
     assertThat(mRecyclerView.getPostAnimationRunnableList()).isEmpty();
-  }
-
-  private void mockRecyclerBinderToCallApplyBatches(
-      RecyclerView recyclerView, RecyclerBinder recyclerBinder) {
-    doAnswer(
-            new Answer() {
-              @Override
-              public Void answer(InvocationOnMock invocation) {
-                ((Runnable) invocation.getArguments()[0]).run();
-                return null;
-              }
-            })
-        .when(mRecyclerView)
-        .postOnAnimation(recyclerBinder.mApplyReadyBatchesRunnable);
   }
 
   private RecyclerBinder prepareBinderWithMeasuredChildSize(

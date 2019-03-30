@@ -16,9 +16,9 @@
 
 package com.facebook.litho;
 
-import android.support.annotation.IntDef;
-import android.support.annotation.VisibleForTesting;
-import android.support.v4.util.SimpleArrayMap;
+import androidx.annotation.IntDef;
+import androidx.annotation.VisibleForTesting;
+import androidx.collection.SimpleArrayMap;
 import java.util.HashMap;
 import java.util.Map;
 

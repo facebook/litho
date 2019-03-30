@@ -16,7 +16,6 @@
 
 package com.facebook.litho;
 
-import android.support.v4.util.Pools;
 import com.facebook.litho.annotations.Prop;
 import java.util.BitSet;
 import javax.annotation.Nullable;
@@ -28,9 +27,6 @@ import javax.annotation.Nullable;
 public final class Wrapper extends Component {
 
   @Nullable @Prop Component delegate;
-
-  private static final Pools.SynchronizedPool<Builder> sBuilderPool =
-      new Pools.SynchronizedPool<Builder>(2);
 
   private Wrapper() {
     super("Wrapper");
@@ -46,10 +42,7 @@ public final class Wrapper extends Component {
   }
 
   public static Builder create(ComponentContext context, int defStyleAttr, int defStyleRes) {
-    Builder builder = sBuilderPool.acquire();
-    if (builder == null) {
-      builder = new Builder();
-    }
+    final Builder builder = new Builder();
     builder.init(context, defStyleAttr, defStyleRes, new Wrapper());
     return builder;
   }
@@ -86,6 +79,11 @@ public final class Wrapper extends Component {
     return true;
   }
 
+  @Override
+  protected Component getSimpleNameDelegate() {
+    return delegate;
+  }
+
   public static class Builder extends Component.Builder<Builder> {
     private static final String[] REQUIRED_PROPS_NAMES = new String[] {"delegate"};
     private static final int REQUIRED_PROPS_COUNT = 1;
@@ -99,9 +97,10 @@ public final class Wrapper extends Component {
       mWrapper = wrapper;
     }
 
-    public Builder delegate(Component delegate) {
+    public Builder delegate(@Nullable Component delegate) {
       mRequired.set(0);
       this.mWrapper.delegate = delegate;
+
       return this;
     }
 
@@ -113,17 +112,7 @@ public final class Wrapper extends Component {
     @Override
     public Wrapper build() {
       checkArgs(REQUIRED_PROPS_COUNT, mRequired, REQUIRED_PROPS_NAMES);
-      Wrapper wrapper = mWrapper;
-      release();
-      return wrapper;
-    }
-
-    @Override
-    protected void release() {
-      super.release();
-      mRequired.clear();
-      mWrapper = null;
-      sBuilderPool.release(this);
+      return mWrapper;
     }
   }
 }

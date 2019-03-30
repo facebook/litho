@@ -19,6 +19,7 @@ package com.facebook.litho;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.view.View;
+import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -107,6 +108,10 @@ public final class DebugComponent {
   }
 
   static void applyOverrides(ComponentContext context, InternalNode node) {
+    if (node.getComponents() == null || node.getComponents().isEmpty()) {
+      return;
+    }
+
     final String key = generateGlobalKey(context, node.getComponents().get(0));
     final Overrider overrider = sOverriders.get(key);
     if (overrider != null) {
@@ -256,6 +261,8 @@ public final class DebugComponent {
           for (CharSequence charSequence : ((TextContent) content).getTextItems()) {
             sb.append(charSequence);
           }
+        } else if (content instanceof TextView) {
+          sb.append(((TextView) content).getText());
         }
       }
     }

@@ -36,7 +36,6 @@ android {
 dependencies {
     implementation project(':litho-core')
     implementation deps.supportRecyclerView
-    compileOnly project(':litho-annotations')
     annotationProcessor project(':litho-processor')
 
     // Annotations
@@ -45,10 +44,6 @@ dependencies {
 
     // First-party
     implementation deps.textlayoutbuilder
-
-    // Android Support Library
-    implementation deps.supportCoreUi
-
 }
 
 apply from: rootProject.file('gradle/release.gradle')

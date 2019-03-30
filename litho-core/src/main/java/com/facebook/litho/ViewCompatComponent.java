@@ -16,7 +16,7 @@
 
 package com.facebook.litho;
 
-import android.support.v4.util.Pools;
+import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 import com.facebook.litho.viewcompat.ViewBinder;
@@ -35,11 +35,12 @@ import com.facebook.litho.viewcompat.ViewCreator;
 @Deprecated
 public class ViewCompatComponent<V extends View> extends Component {
 
-  private static final Pools.SynchronizedPool<Builder> sBuilderPool =
-      new Pools.SynchronizedPool<>(2);
+  private static final int UNSPECIFIED_POOL_SIZE = -1;
 
   private final ViewCreator mViewCreator;
   private ViewBinder<V> mViewBinder;
+
+  private int mPoolSize = UNSPECIFIED_POOL_SIZE;
 
   public static <V extends View> ViewCompatComponent<V> get(
       ViewCreator<V> viewCreator,
@@ -48,17 +49,13 @@ public class ViewCompatComponent<V extends View> extends Component {
   }
 
   public Builder<V> create(ComponentContext componentContext) {
-    Builder<V> builder = sBuilderPool.acquire();
-    if (builder == null) {
-      builder = new Builder<>();
-    }
+    Builder<V> builder = new Builder<>();
     builder.init(componentContext, this);
-
     return builder;
   }
 
   private ViewCompatComponent(ViewCreator viewCreator, String componentName) {
-    super("ViewCompatComponent_" + componentName, viewCreator);
+    super("ViewCompatComponent_" + componentName, System.identityHashCode(viewCreator));
     mViewCreator = viewCreator;
   }
 
@@ -75,7 +72,7 @@ public class ViewCompatComponent<V extends View> extends Component {
   @Override
   protected void onMeasure(
       ComponentContext c, ComponentLayout layout, int widthSpec, int heightSpec, Size size) {
-    final V toMeasure = (V) ComponentsPools.acquireMountContent(c, this);
+    final V toMeasure = (V) ComponentsPools.acquireMountContent(c.getAndroidContext(), this);
     final ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(size.width, size.height);
 
     toMeasure.setLayoutParams(layoutParams);
@@ -93,7 +90,7 @@ public class ViewCompatComponent<V extends View> extends Component {
 
     mViewBinder.unbind(toMeasure);
 
-    ComponentsPools.release(c, this, toMeasure);
+    ComponentsPools.release(c.getAndroidContext(), this, toMeasure);
   }
 
   @Override
@@ -118,7 +115,7 @@ public class ViewCompatComponent<V extends View> extends Component {
   }
 
   @Override
-  public V createMountContent(ComponentContext c) {
+  public V createMountContent(Context c) {
     return (V) mViewCreator.createView(c, null);
   }
 
@@ -136,6 +133,11 @@ public class ViewCompatComponent<V extends View> extends Component {
       return this;
     }
 
+    public Builder<V> contentPoolSize(int size) {
+      mViewCompatComponent.mPoolSize = size;
+      return this;
+    }
+
     @Override
     public Builder<V> getThis() {
       return this;
@@ -147,16 +149,12 @@ public class ViewCompatComponent<V extends View> extends Component {
         throw new IllegalStateException(
             "To create a ViewCompatComponent you must provide a ViewBinder.");
       }
-      ViewCompatComponent viewCompatComponent = mViewCompatComponent;
-      release();
-      return viewCompatComponent;
+      return mViewCompatComponent;
     }
+  }
 
-    @Override
-    protected void release() {
-      super.release();
-      mViewCompatComponent = null;
-      sBuilderPool.release(this);
-    }
+  @Override
+  protected int poolSize() {
+    return mPoolSize == UNSPECIFIED_POOL_SIZE ? super.poolSize() : mPoolSize;
   }
 }

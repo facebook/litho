@@ -33,7 +33,7 @@ public class TestSpecModelValidation {
             specModel,
             PropValidation.COMMON_PROP_NAMES,
             PropValidation.VALID_COMMON_PROPS,
-            RunMode.NORMAL));
+            RunMode.normal()));
     return validationErrors;
   }
 }

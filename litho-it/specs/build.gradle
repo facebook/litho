@@ -35,13 +35,9 @@ dependencies {
     implementation project(':litho-core')
     implementation project(':litho-testing')
     implementation project(':litho-widget')
-    compileOnly project(':litho-annotations')
 
     annotationProcessor project(':litho-processor')
     annotationProcessor project(':test-processor')
-
-    // Android Support Library
-    implementation deps.supportCoreUi
 
     // Testing deps
     implementation deps.junit

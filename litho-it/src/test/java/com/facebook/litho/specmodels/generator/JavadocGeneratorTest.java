@@ -26,6 +26,7 @@ import com.facebook.litho.specmodels.model.PropModel;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.testing.specmodels.MockMethodParamModel;
 import com.facebook.litho.testing.specmodels.MockSpecModel;
+import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeName;
 import org.junit.Test;
 
@@ -68,7 +69,7 @@ public class JavadocGeneratorTest {
         MockSpecModel.newBuilder()
             .classJavadoc("Test Javadoc")
             // Any class with a well-known path is fine here.
-            .specTypeName(TypeName.get(TypeSpecDataHolder.class))
+            .specTypeName(ClassName.get(TypeSpecDataHolder.class))
             .build();
 
     final TypeSpecDataHolder dataHolder = JavadocGenerator.generate(specModel);

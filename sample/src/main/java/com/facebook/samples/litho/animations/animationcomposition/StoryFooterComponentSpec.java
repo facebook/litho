@@ -128,7 +128,7 @@ public class StoryFooterComponentSpec {
 
   @OnEvent(ClickEvent.class)
   static void onClick(ComponentContext c) {
-    StoryFooterComponent.updateState(c);
+    StoryFooterComponent.updateStateSync(c);
   }
 
   @OnUpdateState

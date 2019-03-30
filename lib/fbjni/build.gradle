@@ -24,6 +24,6 @@ dependencies {
     // compileOnly dependencies
     compileOnly deps.jsr305
     compileOnly deps.inferAnnotations
-    compileOnly project(':litho-annotations')
     implementation deps.soloader
+    implementation project(':litho-annotations')
 }

@@ -18,14 +18,15 @@ package com.facebook.litho.widget;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.support.annotation.IdRes;
-import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.RecyclerView.ItemAnimator;
-import android.support.v7.widget.RecyclerView.OnScrollListener;
-import android.support.v7.widget.SnapHelper;
 import android.view.View;
+import androidx.annotation.IdRes;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView.ItemAnimator;
+import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
+import androidx.recyclerview.widget.SnapHelper;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.Diff;
@@ -67,16 +68,16 @@ import java.util.List;
  * @prop clipChildren Clip RecyclerView children to their bounds.
  * @prop nestedScrollingEnabled Enables nested scrolling on the RecyclerView.
  * @prop itemDecoration Item decoration for the RecyclerView.
+ * @prop refreshProgressBarBackgroundColor Color for progress background.
  * @prop refreshProgressBarColor Color for progress animation.
  * @prop recyclerViewId View ID for the RecyclerView.
  * @prop recyclerEventsController Controller to pass events from outside the component.
  * @prop onScrollListener Listener for RecyclerView's scroll events.
  */
 @MountSpec(
-  hasChildLithoViews = true,
-  isPureRender = true,
-  events = {PTRRefreshEvent.class}
-)
+    hasChildLithoViews = true,
+    isPureRender = true,
+    events = {PTRRefreshEvent.class})
 class RecyclerSpec {
 
   @PropDefault static final int scrollBarStyle = View.SCROLLBARS_INSIDE_OVERLAY;
@@ -93,6 +94,10 @@ class RecyclerSpec {
   @PropDefault static final int topPadding = 0;
   @PropDefault static final int bottomPadding = 0;
   @PropDefault static final boolean pullToRefresh = true;
+
+  // This is the default value for refresh spinner background from
+  // SwipeRefreshLayout.CIRCLE_BG_LIGHT which is unfortunately private.
+  static final int DEFAULT_REFRESH_SPINNER_BACKGROUND_COLOR = 0xFFFAFAFA;
 
   @OnMeasure
   static void onMeasure(
@@ -113,9 +118,7 @@ class RecyclerSpec {
   @OnBoundsDefined
   static void onBoundsDefined(
       ComponentContext context, ComponentLayout layout, @Prop Binder<RecyclerView> binder) {
-    binder.setSize(
-        layout.getWidth(),
-        layout.getHeight());
+    binder.setSize(layout.getWidth(), layout.getHeight());
   }
 
   @OnCreateMountContent
@@ -129,12 +132,13 @@ class RecyclerSpec {
       @Prop(optional = true) final EventHandler refreshHandler,
       Output<OnRefreshListener> onRefreshListener) {
     if (refreshHandler != null) {
-      onRefreshListener.set(new OnRefreshListener() {
-        @Override
-        public void onRefresh() {
-          Recycler.dispatchPTRRefreshEvent(refreshHandler);
-        }
-      });
+      onRefreshListener.set(
+          new OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+              Recycler.dispatchPTRRefreshEvent(refreshHandler);
+            }
+          });
     }
   }
 
@@ -149,11 +153,13 @@ class RecyclerSpec {
       @Prop(optional = true) int rightPadding,
       @Prop(optional = true) int topPadding,
       @Prop(optional = true) int bottomPadding,
+      @Prop(optional = true, resType = ResType.COLOR) @Nullable
+          Integer refreshProgressBarBackgroundColor,
+      @Prop(optional = true, resType = ResType.COLOR) int refreshProgressBarColor,
       @Prop(optional = true) boolean clipChildren,
       @Prop(optional = true) boolean nestedScrollingEnabled,
       @Prop(optional = true) int scrollBarStyle,
       @Prop(optional = true) RecyclerView.ItemDecoration itemDecoration,
-      @Prop(optional = true, resType = ResType.COLOR) int refreshProgressBarColor,
       @Prop(optional = true) boolean horizontalFadingEdgeEnabled,
       @Prop(optional = true) boolean verticalFadingEdgeEnabled,
       @Prop(optional = true, resType = ResType.DIMEN_SIZE) int fadingEdgeLength,
@@ -167,7 +173,6 @@ class RecyclerSpec {
           "RecyclerView not found, it should not be removed from SwipeRefreshLayout");
     }
     recyclerView.setContentDescription(contentDescription);
-    sectionsRecycler.setColorSchemeColors(refreshProgressBarColor);
     recyclerView.setHasFixedSize(hasFixedSize);
     recyclerView.setClipToPadding(clipToPadding);
     sectionsRecycler.setClipToPadding(clipToPadding);
@@ -183,6 +188,10 @@ class RecyclerSpec {
     // TODO (t14949498) determine if this is necessary
     recyclerView.setId(recyclerViewId);
     recyclerView.setOverScrollMode(overScrollMode);
+    if (refreshProgressBarBackgroundColor != null) {
+      sectionsRecycler.setProgressBackgroundColorSchemeColor(refreshProgressBarBackgroundColor);
+    }
+    sectionsRecycler.setColorSchemeColors(refreshProgressBarColor);
 
     if (itemDecoration != null) {
       recyclerView.addItemDecoration(itemDecoration);
@@ -195,8 +204,8 @@ class RecyclerSpec {
   protected static void onBind(
       ComponentContext context,
       SectionsRecyclerView sectionsRecycler,
-      @Prop(optional = true) ItemAnimator itemAnimator,
       @Prop Binder<RecyclerView> binder,
+      @Prop(optional = true) ItemAnimator itemAnimator,
       @Prop(optional = true) final RecyclerEventsController recyclerEventsController,
       @Prop(optional = true, varArg = "onScrollListener") List<OnScrollListener> onScrollListeners,
       @Prop(optional = true) SnapHelper snapHelper,
@@ -215,8 +224,8 @@ class RecyclerSpec {
 
     if (recyclerView == null) {
       throw new IllegalStateException(
-          "RecyclerView not found, it should not be removed from SwipeRefreshLayout " +
-              "before unmounting");
+          "RecyclerView not found, it should not be removed from SwipeRefreshLayout "
+              + "before unmounting");
     }
 
     oldAnimator.set(recyclerView.getItemAnimator());
@@ -266,8 +275,8 @@ class RecyclerSpec {
 
     if (recyclerView == null) {
       throw new IllegalStateException(
-          "RecyclerView not found, it should not be removed from SwipeRefreshLayout " +
-              "before unmounting");
+          "RecyclerView not found, it should not be removed from SwipeRefreshLayout "
+              + "before unmounting");
     }
 
     recyclerView.setItemAnimator(oldAnimator);
@@ -295,16 +304,23 @@ class RecyclerSpec {
       SectionsRecyclerView sectionsRecycler,
       @Prop Binder<RecyclerView> binder,
       @Prop(optional = true) RecyclerView.ItemDecoration itemDecoration,
+      @Prop(optional = true, resType = ResType.COLOR) @Nullable
+          Integer refreshProgressBarBackgroundColor,
       @Prop(optional = true) SnapHelper snapHelper) {
     final RecyclerView recyclerView = sectionsRecycler.getRecyclerView();
 
     if (recyclerView == null) {
       throw new IllegalStateException(
-          "RecyclerView not found, it should not be removed from SwipeRefreshLayout " +
-              "before unmounting");
+          "RecyclerView not found, it should not be removed from SwipeRefreshLayout "
+              + "before unmounting");
     }
 
     recyclerView.setId(RecyclerSpec.recyclerViewId);
+
+    if (refreshProgressBarBackgroundColor != null) {
+      sectionsRecycler.setProgressBackgroundColorSchemeColor(
+          DEFAULT_REFRESH_SPINNER_BACKGROUND_COLOR);
+    }
 
     if (itemDecoration != null) {
       recyclerView.removeItemDecoration(itemDecoration);
@@ -326,6 +342,9 @@ class RecyclerSpec {
       @Prop(optional = true) Diff<Integer> rightPadding,
       @Prop(optional = true) Diff<Integer> topPadding,
       @Prop(optional = true) Diff<Integer> bottomPadding,
+      @Prop(optional = true, resType = ResType.COLOR)
+          Diff<Integer> refreshProgressBarBackgroundColor,
+      @Prop(optional = true, resType = ResType.COLOR) Diff<Integer> refreshProgressBarColor,
       @Prop(optional = true) Diff<Boolean> clipChildren,
       @Prop(optional = true) Diff<Integer> scrollBarStyle,
       @Prop(optional = true) Diff<RecyclerView.ItemDecoration> itemDecoration,
@@ -383,6 +402,18 @@ class RecyclerSpec {
     }
 
     if (!fadingEdgeLength.getPrevious().equals(fadingEdgeLength.getNext())) {
+      return true;
+    }
+
+    Integer previousRefreshBgColor = refreshProgressBarBackgroundColor.getPrevious();
+    Integer nextRefreshBgColor = refreshProgressBarBackgroundColor.getNext();
+    if (previousRefreshBgColor == null
+        ? nextRefreshBgColor != null
+        : !previousRefreshBgColor.equals(nextRefreshBgColor)) {
+      return true;
+    }
+
+    if (!refreshProgressBarColor.getPrevious().equals(refreshProgressBarColor.getNext())) {
       return true;
     }
 

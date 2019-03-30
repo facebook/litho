@@ -16,8 +16,8 @@
 
 package com.facebook.litho;
 
-import android.support.annotation.Nullable;
-import android.support.v4.util.LongSparseArray;
+import androidx.annotation.Nullable;
+import androidx.collection.LongSparseArray;
 import com.facebook.litho.config.ComponentsConfiguration;
 
 /**
@@ -34,11 +34,11 @@ class LayoutStateOutputIdCalculator {
   private static final int MAX_LEVEL = 255; // (2^8 - 1)
 
   // 16 bits are for sequence, 2 for type and 8 for level.
-  private static final short COMPONENT_ID_SHIFT = 26;
+  private static final int COMPONENT_ID_SHIFT = 26;
   // 16 bits are sequence and then 2 for type.
-  private static final short LEVEL_SHIFT = 18;
+  private static final int LEVEL_SHIFT = 18;
   // Last 16 bits are for sequence.
-  private static final short TYPE_SHIFT = 16;
+  private static final int TYPE_SHIFT = 16;
 
   public LayoutStateOutputIdCalculator() {
     if (!ComponentsConfiguration.lazilyInitializeLayoutStateOutputIdCalculator) {
@@ -143,7 +143,7 @@ class LayoutStateOutputIdCalculator {
       mVisibilityCurrentSequenceForBaseId.clear();
     }
   }
-  
+
   /**
    * Calculates the final id for a LayoutOutput based on the baseId see
    * {@link LayoutStateOutputIdCalculator#calculateLayoutOutputBaseId(LayoutOutput, int, int)} and

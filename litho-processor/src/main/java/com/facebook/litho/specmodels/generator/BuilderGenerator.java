@@ -273,8 +273,7 @@ public class BuilderGenerator {
 
     propsBuilderClassBuilder
         .addMethod(generateGetThisMethod(specModel))
-        .addMethod(generateBuildMethod(specModel, numRequiredProps))
-        .addMethod(generateReleaseMethod(specModel));
+        .addMethod(generateBuildMethod(specModel, numRequiredProps));
 
     return TypeSpecDataHolder.newBuilder().addType(propsBuilderClassBuilder.build()).build();
   }
@@ -447,12 +446,6 @@ public class BuilderGenerator {
       dataHolder.addMethod(
           builderBuilder(
               specModel, prop, requiredIndex, ClassNames.COMPONENT_BUILDER, true));
-    }
-
-    if (getRawType(prop.getTypeName()).equals(ClassNames.REFERENCE)) {
-      dataHolder.addMethod(
-          builderBuilder(
-              specModel, prop, requiredIndex, ClassNames.REFERENCE_BUILDER, true));
     }
 
     if (getRawType(prop.getTypeName()).equals(ClassNames.SECTION)) {
@@ -1396,23 +1389,7 @@ public class BuilderGenerator {
     }
 
     return buildMethodBuilder
-        .addStatement(
-            "$L $L = $L",
-            specModel.getComponentName(),
-            ComponentBodyGenerator.getInstanceRefName(specModel),
-            getComponentMemberInstanceName(specModel))
-        .addStatement("release()")
-        .addStatement("return $L", ComponentBodyGenerator.getInstanceRefName(specModel))
-        .build();
-  }
-
-  private static MethodSpec generateReleaseMethod(SpecModel specModel) {
-    return MethodSpec.methodBuilder("release")
-        .addAnnotation(Override.class)
-        .addModifiers(Modifier.PROTECTED)
-        .addStatement("super.release()")
-        .addStatement(getComponentMemberInstanceName(specModel) + " = null")
-        .addStatement(CONTEXT_MEMBER_NAME + " = null")
+        .addStatement("return $L", getComponentMemberInstanceName(specModel))
         .build();
   }
 

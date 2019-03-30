@@ -52,35 +52,4 @@ public class TestOutputTest {
     assertThat(mTestOutput.getBounds().right).isEqualTo(3);
     assertThat(mTestOutput.getBounds().bottom).isEqualTo(4);
   }
-
-  @Test
-  public void testRelease() {
-    mTestOutput.setBounds(0, 1, 2, 3);
-    mTestOutput.setTestKey("testkey");
-    mTestOutput.setHostMarker(1337);
-
-    mTestOutput.release();
-
-    assertDefaultValues(mTestOutput);
-  }
-
-  @Test
-  public void testPoolRelease() {
-    final TestOutput testOutput = ComponentsPools.acquireTestOutput();
-    testOutput.setBounds(0, 1, 2, 3);
-    testOutput.setTestKey("testkey");
-    testOutput.setHostMarker(1337);
-    testOutput.setLayoutOutputId(42);
-
-    ComponentsPools.release(testOutput);
-
-    assertDefaultValues(testOutput);
-  }
-
-  private static void assertDefaultValues(TestOutput testOutput) {
-    assertThat(testOutput.getBounds()).isEqualTo(new Rect());
-    assertThat(testOutput.getTestKey()).isNull();
-    assertThat(testOutput.getHostMarker()).isEqualTo(-1);
-    assertThat(testOutput.getLayoutOutputId()).isEqualTo(-1);
-  }
 }

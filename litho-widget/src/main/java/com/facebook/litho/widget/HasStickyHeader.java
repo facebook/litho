@@ -18,7 +18,7 @@ package com.facebook.litho.widget;
 
 import com.facebook.litho.ComponentTree;
 
-interface HasStickyHeader extends ViewportInfo {
+public interface HasStickyHeader extends ViewportInfo {
   /**
    * @param position
    * @return Whether the item at given position is *sticky*

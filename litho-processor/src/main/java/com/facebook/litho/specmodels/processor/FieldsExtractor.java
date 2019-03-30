@@ -33,7 +33,7 @@ public class FieldsExtractor {
     final List<FieldModel> fields = new ArrayList<>();
 
     for (Element enclosedElement : element.getEnclosedElements()) {
-      if (enclosedElement.getKind().equals(ElementKind.FIELD)) {
+      if (ElementKind.FIELD.equals(enclosedElement.getKind())) {
         Set<Modifier> modifiers = enclosedElement.getModifiers();
         fields.add(
             new FieldModel(

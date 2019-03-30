@@ -63,7 +63,7 @@ public class LeftRightBlocksSequenceComponentSpec {
 
   @OnEvent(ClickEvent.class)
   static void onClick(ComponentContext c) {
-    LeftRightBlocksSequenceComponent.updateState(c);
+    LeftRightBlocksSequenceComponent.updateStateSync(c);
   }
 
   @OnUpdateState

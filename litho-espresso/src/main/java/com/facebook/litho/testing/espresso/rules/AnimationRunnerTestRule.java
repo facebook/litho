@@ -16,8 +16,8 @@
 
 package com.facebook.litho.testing.espresso.rules;
 
-import android.support.test.InstrumentationRegistry;
-import com.facebook.litho.dataflow.ChoreographerCompatImpl;
+import androidx.test.InstrumentationRegistry;
+import com.facebook.litho.choreographercompat.ChoreographerCompatImpl;
 import com.facebook.litho.dataflow.DataFlowGraph;
 import com.facebook.litho.dataflow.MockTimingSource;
 import com.facebook.litho.dataflow.springs.SpringConfig;

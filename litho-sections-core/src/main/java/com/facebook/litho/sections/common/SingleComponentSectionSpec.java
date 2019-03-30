@@ -16,10 +16,13 @@
 
 package com.facebook.litho.sections.common;
 
-import android.support.annotation.Nullable;
+import static com.facebook.litho.widget.RenderInfoDebugInfoRegistry.SONAR_SECTIONS_DEBUG_INFO_TAG;
+
+import androidx.annotation.Nullable;
 import com.facebook.litho.Component;
 import com.facebook.litho.Diff;
 import com.facebook.litho.annotations.Prop;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.sections.ChangeSet;
 import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.annotations.DiffSectionSpec;
@@ -28,6 +31,23 @@ import com.facebook.litho.utils.MapDiffUtils;
 import com.facebook.litho.widget.ComponentRenderInfo;
 import java.util.Map;
 
+/**
+ * This is the simplest Section within a Sections hierarchy and it can be used to represent one row
+ * in a complex list.
+ *
+ * <pre>{@code
+ * final Section loadingSection = SingleComponentSection.create(c)
+ *      .component(MyComponent.create(c).build())
+ *      .isFullSpan(true)
+ *      .build();
+ * }</pre>
+ *
+ * @prop component Component this section wraps.
+ * @prop sticky If this section is a sticky header.
+ * @prop spanSize Number of columns occupied by this section (relevant for multi-column layouts).
+ * @prop isFullSpan It is {@code false} by default making section fit one column. Set it to {@code
+ *     true} if this section should span all columns in a multi-column layout.
+ */
 @DiffSectionSpec
 public class SingleComponentSectionSpec {
 
@@ -39,10 +59,13 @@ public class SingleComponentSectionSpec {
       @Prop(optional = true) Diff<Boolean> sticky,
       @Prop(optional = true) Diff<Integer> spanSize,
       @Prop(optional = true) Diff<Boolean> isFullSpan,
-      @Prop(optional = true) Diff<Map<String, Object>> customAttributes) {
+      @Prop(optional = true) Diff<Map<String, Object>> customAttributes,
+      @Prop(optional = true) Diff<Object> data) {
+    final Object prevData = data.getPrevious();
+    final Object nextData = data.getNext();
 
     if (component.getNext() == null) {
-      changeSet.delete(0);
+      changeSet.delete(0, prevData);
       return;
     }
 
@@ -64,13 +87,14 @@ public class SingleComponentSectionSpec {
     if (component.getPrevious() == null) {
       changeSet.insert(
           0,
-          addCustomAttributes(ComponentRenderInfo.create(), customAttributes.getNext())
+          addCustomAttributes(ComponentRenderInfo.create(), customAttributes.getNext(), context)
               .component(component.getNext())
               .isSticky(isNextSticky)
               .spanSize(nextSpanSize)
               .isFullSpan(isNextFullSpan)
               .build(),
-          context.getTreePropsCopy());
+          context.getTreePropsCopy(),
+          nextData);
       return;
     }
 
@@ -100,18 +124,26 @@ public class SingleComponentSectionSpec {
         || !customAttributesEqual) {
       changeSet.update(
           0,
-          addCustomAttributes(ComponentRenderInfo.create(), customAttributes.getNext())
+          addCustomAttributes(ComponentRenderInfo.create(), customAttributes.getNext(), context)
               .component(component.getNext())
               .isSticky(isNextSticky)
               .spanSize(nextSpanSize)
               .isFullSpan(isNextFullSpan)
               .build(),
-          context.getTreePropsCopy());
+          context.getTreePropsCopy(),
+          prevData,
+          nextData);
     }
   }
 
   private static ComponentRenderInfo.Builder addCustomAttributes(
-      ComponentRenderInfo.Builder builder, @Nullable Map<String, Object> attributes) {
+      ComponentRenderInfo.Builder builder,
+      @Nullable Map<String, Object> attributes,
+      SectionContext c) {
+    if (ComponentsConfiguration.isRenderInfoDebuggingEnabled()) {
+      builder.debugInfo(SONAR_SECTIONS_DEBUG_INFO_TAG, c.getSectionScope());
+    }
+
     if (attributes == null) {
       return builder;
     }

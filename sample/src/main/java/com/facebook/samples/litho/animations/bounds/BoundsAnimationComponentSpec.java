@@ -86,7 +86,7 @@ public class BoundsAnimationComponentSpec {
 
   @OnEvent(ClickEvent.class)
   static void onABTClick(ComponentContext c) {
-    BoundsAnimationComponent.toggleABT(c);
+    BoundsAnimationComponent.toggleABTSync(c);
   }
 
   @OnUpdateState
@@ -97,6 +97,7 @@ public class BoundsAnimationComponentSpec {
   private static Component affectedChildren(ComponentContext c, boolean flag1) {
     return Row.create(c)
         .transitionKey(TRANSITION_KEY_CONTAINER_1)
+        .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
         .heightDip(60 + 2 * 8)
         .widthDip((3 * 60) * (flag1 ? 0.5f : 1) + 4 * 8)
         .paddingDip(YogaEdge.ALL, 8)
@@ -104,11 +105,13 @@ public class BoundsAnimationComponentSpec {
         .child(
             Column.create(c)
                 .transitionKey(TRANSITION_KEY_CHILD_1_1)
+                .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
                 .flex(1)
                 .backgroundColor(Color.RED))
         .child(
             Column.create(c)
                 .transitionKey(TRANSITION_KEY_CHILD_1_2)
+                .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
                 .flex(1)
                 .backgroundColor(Color.RED)
                 .marginDip(YogaEdge.HORIZONTAL, 8))
@@ -116,6 +119,7 @@ public class BoundsAnimationComponentSpec {
             Column.create(c)
                 .flex(1)
                 .transitionKey(TRANSITION_KEY_CHILD_1_3)
+                .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
                 .backgroundColor(Color.RED))
         .clickHandler(BoundsAnimationComponent.onFirstComponentClick(c))
         .build();
@@ -123,7 +127,7 @@ public class BoundsAnimationComponentSpec {
 
   @OnEvent(ClickEvent.class)
   static void onFirstComponentClick(ComponentContext c) {
-    BoundsAnimationComponent.toggleFlag1(c);
+    BoundsAnimationComponent.toggleFlag1Sync(c);
   }
 
   @OnUpdateState
@@ -134,6 +138,7 @@ public class BoundsAnimationComponentSpec {
   private static Component affectedSiblings(ComponentContext c, boolean flag2) {
     return Row.create(c)
         .transitionKey(TRANSITION_KEY_CONTAINER_2)
+        .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
         .heightDip(60 + 2 * 8)
         .widthDip(3 * 60 + 3 * 8)
         .paddingDip(YogaEdge.ALL, 8)
@@ -141,11 +146,13 @@ public class BoundsAnimationComponentSpec {
         .child(
             Column.create(c)
                 .transitionKey(TRANSITION_KEY_CHILD_2_1)
+                .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
                 .flex(1)
                 .backgroundColor(Color.RED))
         .child(
             Column.create(c)
                 .transitionKey(TRANSITION_KEY_CHILD_2_2)
+                .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
                 .flex(flag2 ? 1 : 2)
                 .backgroundColor(Color.YELLOW)
                 .marginDip(YogaEdge.LEFT, 8))
@@ -155,7 +162,7 @@ public class BoundsAnimationComponentSpec {
 
   @OnEvent(ClickEvent.class)
   static void onSecondComponentClick(ComponentContext c) {
-    BoundsAnimationComponent.toggleFlag2(c);
+    BoundsAnimationComponent.toggleFlag2Sync(c);
   }
 
   @OnUpdateState
@@ -169,12 +176,14 @@ public class BoundsAnimationComponentSpec {
         .child(
             Row.create(c)
                 .transitionKey(TRANSITION_KEY_CONTAINER_3)
+                .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
                 .heightDip(60 + 2 * 8)
                 .paddingDip(YogaEdge.ALL, 8)
                 .backgroundColor(Color.LTGRAY)
                 .child(
                     Column.create(c)
                         .transitionKey(TRANSITION_KEY_CHILD_3_1)
+                        .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
                         .widthDip(60 * (flag3 ? 1 : 2))
                         .backgroundColor(Color.YELLOW))
                 .clickHandler(BoundsAnimationComponent.onThirdComponentClick(c)))
@@ -183,7 +192,7 @@ public class BoundsAnimationComponentSpec {
 
   @OnEvent(ClickEvent.class)
   static void onThirdComponentClick(ComponentContext c) {
-    BoundsAnimationComponent.toggleFlag3(c);
+    BoundsAnimationComponent.toggleFlag3Sync(c);
   }
 
   @OnUpdateState
@@ -194,6 +203,7 @@ public class BoundsAnimationComponentSpec {
   private static Component altogether(ComponentContext c, boolean flag4) {
     return Column.create(c)
         .transitionKey(TRANSITION_KEY_CONTAINER_4)
+        .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
         .marginDip(YogaEdge.TOP, 24)
         .heightDip(60 * 2 + 3 * 8)
         .paddingDip(YogaEdge.ALL, 8)
@@ -201,23 +211,27 @@ public class BoundsAnimationComponentSpec {
         .child(
             Row.create(c)
                 .transitionKey(TRANSITION_KEY_CONTAINER_4_1)
+                .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
                 .heightDip(60)
                 .paddingDip(YogaEdge.ALL, 6)
                 .backgroundColor(Color.GRAY)
                 .child(
                     Column.create(c)
                         .transitionKey(TRANSITION_KEY_CHILD_4_1_1)
+                        .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
                         .marginDip(YogaEdge.RIGHT, 6)
                         .flex(1)
                         .backgroundColor(Color.RED))
                 .child(
                     Column.create(c)
                         .transitionKey(TRANSITION_KEY_CHILD_4_1_2)
+                        .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
                         .flex(1)
                         .backgroundColor(Color.RED)))
         .child(
             Row.create(c)
                 .transitionKey(TRANSITION_KEY_CONTAINER_4_2)
+                .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
                 .heightDip(60)
                 .marginDip(YogaEdge.TOP, 8)
                 .paddingDip(YogaEdge.ALL, 6)
@@ -225,12 +239,14 @@ public class BoundsAnimationComponentSpec {
                 .child(
                     Column.create(c)
                         .transitionKey(TRANSITION_KEY_CHILD_4_2_1)
+                        .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
                         .marginDip(YogaEdge.RIGHT, 6)
                         .widthDip(100)
                         .backgroundColor(Color.RED))
                 .child(
                     Column.create(c)
                         .transitionKey(TRANSITION_KEY_CHILD_4_2_2)
+                        .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
                         .widthDip(flag4 ? 200 : 100)
                         .backgroundColor(Color.YELLOW)))
         .clickHandler(BoundsAnimationComponent.onFourthComponentClick(c))
@@ -239,7 +255,7 @@ public class BoundsAnimationComponentSpec {
 
   @OnEvent(ClickEvent.class)
   static void onFourthComponentClick(ComponentContext c) {
-    BoundsAnimationComponent.toggleFlag4(c);
+    BoundsAnimationComponent.toggleFlag4Sync(c);
   }
 
   @OnUpdateState
@@ -275,7 +291,7 @@ public class BoundsAnimationComponentSpec {
               TRANSITION_KEY_CHILD_3_1,
               TRANSITION_KEY_CHILD_4_2_2
             };
-    return Transition.create(transitionKeys)
+    return Transition.create(Transition.TransitionKeyType.GLOBAL, transitionKeys)
         .animate(AnimatedProperties.WIDTH, AnimatedProperties.X)
         .animator(Transition.timing(1000));
   }

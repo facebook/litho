@@ -19,21 +19,20 @@ package com.facebook.litho;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.robolectric.RuntimeEnvironment.application;
 
 import android.animation.StateListAnimator;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
-import android.support.annotation.AttrRes;
-import android.support.annotation.StyleRes;
 import android.util.SparseArray;
+import androidx.annotation.AttrRes;
+import androidx.annotation.StyleRes;
 import com.facebook.litho.annotations.ImportantForAccessibility;
-import com.facebook.litho.reference.DrawableReference;
-import com.facebook.litho.reference.Reference;
+import com.facebook.litho.drawable.ComparableColorDrawable;
+import com.facebook.litho.drawable.ComparableDrawable;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestSizeDependentComponent;
@@ -322,8 +321,8 @@ public class LayoutStateCreateTreeTest {
   @Config(sdk = Build.VERSION_CODES.LOLLIPOP)
   @TargetApi(Build.VERSION_CODES.LOLLIPOP)
   public void testAddingAllAttributes() {
-    final Reference<Drawable> drawableReference = DrawableReference.create().build();
-    final Drawable foreground = new ColorDrawable(Color.BLACK);
+    final ComparableDrawable background = ComparableColorDrawable.create(Color.RED);
+    final ComparableDrawable foreground = ComparableColorDrawable.create(Color.BLACK);
     final EventHandler<ClickEvent> clickHandler = mock(EventHandler.class);
     final EventHandler<LongClickEvent> longClickHandler = mock(EventHandler.class);
     final EventHandler<TouchEvent> touchHandler = mock(EventHandler.class);
@@ -409,7 +408,7 @@ public class LayoutStateCreateTreeTest {
                 .touchExpansionPx(YogaEdge.RIGHT, 22)
                 .touchExpansionPx(YogaEdge.LEFT, 23)
                 .touchExpansionPx(YogaEdge.ALL, 21)
-                .background(drawableReference)
+                .background(background)
                 .foreground(foreground)
                 .wrapInView()
                 .clickHandler(clickHandler)
@@ -434,8 +433,10 @@ public class LayoutStateCreateTreeTest {
                 .shadowElevationPx(60)
                 .clipToOutline(false)
                 .transitionKey("transitionKey")
+                .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
                 .testKey("testKey")
                 .accessibilityRole(AccessibilityRole.BUTTON)
+                .accessibilityRoleDescription("Test Role Description")
                 .dispatchPopulateAccessibilityEventHandler(
                     dispatchPopulateAccessibilityEventHandler)
                 .onInitializeAccessibilityEventHandler(onInitializeAccessibilityEventHandler)
@@ -451,6 +452,7 @@ public class LayoutStateCreateTreeTest {
         };
 
     InternalNode node = LayoutState.createTree(component, mComponentContext);
+    NodeInfo nodeInfo = node.getOrCreateNodeInfo();
 
     verify(node).layoutDirection(YogaDirection.INHERIT);
     verify(node).alignSelf(YogaAlign.AUTO);
@@ -510,20 +512,20 @@ public class LayoutStateCreateTreeTest {
     verify(node).touchExpansionPx(YogaEdge.LEFT, 23);
     verify(node).touchExpansionPx(YogaEdge.ALL, 21);
 
-    verify(node).background(drawableReference);
+    verify(node).background(background);
     verify(node).foreground(foreground);
 
     verify(node).wrapInView();
 
-    verify(node).clickHandler(clickHandler);
-    verify(node).focusChangeHandler(focusChangedHandler);
-    verify(node).longClickHandler(longClickHandler);
-    verify(node).touchHandler(touchHandler);
-    verify(node).interceptTouchHandler(interceptTouchHandler);
+    verify(nodeInfo).setClickHandler(clickHandler);
+    verify(nodeInfo).setFocusChangeHandler(focusChangedHandler);
+    verify(nodeInfo).setLongClickHandler(longClickHandler);
+    verify(nodeInfo).setTouchHandler(touchHandler);
+    verify(nodeInfo).setInterceptTouchHandler(interceptTouchHandler);
 
-    verify(node).focusable(true);
-    verify(node).selected(false);
-    verify(node).enabled(false);
+    verify(nodeInfo).setFocusable(true);
+    verify(nodeInfo).setSelected(false);
+    verify(nodeInfo).setEnabled(false);
     verify(node).visibleHeightRatio(55);
     verify(node).visibleWidthRatio(56);
 
@@ -534,27 +536,33 @@ public class LayoutStateCreateTreeTest {
     verify(node).invisibleHandler(invisibleHandler);
     verify(node).visibilityChangedHandler(visibleRectChangedHandler);
 
-    verify(node).contentDescription("test");
+    verify(nodeInfo).setContentDescription("test");
 
-    verify(node).viewTag(viewTag);
-    verify(node).viewTags(viewTags);
+    verify(nodeInfo).setViewTag(viewTag);
+    verify(nodeInfo).setViewTags(viewTags);
 
-    verify(node).shadowElevationPx(60);
+    verify(nodeInfo).setShadowElevation(60);
 
-    verify(node).clipToOutline(false);
+    verify(nodeInfo).setClipToOutline(false);
     verify(node).transitionKey("transitionKey");
+    verify(node).transitionKeyType(Transition.TransitionKeyType.GLOBAL);
     verify(node).testKey("testKey");
 
-    verify(node).accessibilityRole(AccessibilityRole.BUTTON);
-    verify(node)
-        .dispatchPopulateAccessibilityEventHandler(dispatchPopulateAccessibilityEventHandler);
-    verify(node).onInitializeAccessibilityEventHandler(onInitializeAccessibilityEventHandler);
-    verify(node).onInitializeAccessibilityNodeInfoHandler(onInitializeAccessibilityNodeInfoHandler);
-    verify(node).onPopulateAccessibilityEventHandler(onPopulateAccessibilityEventHandler);
-    verify(node).onRequestSendAccessibilityEventHandler(onRequestSendAccessibilityEventHandler);
-    verify(node).performAccessibilityActionHandler(performAccessibilityActionHandler);
-    verify(node).sendAccessibilityEventHandler(sendAccessibilityEventHandler);
-    verify(node).sendAccessibilityEventUncheckedHandler(sendAccessibilityEventUncheckedHandler);
+    verify(nodeInfo).setAccessibilityRole(AccessibilityRole.BUTTON);
+    verify(nodeInfo).setAccessibilityRoleDescription("Test Role Description");
+    verify(nodeInfo)
+        .setDispatchPopulateAccessibilityEventHandler(dispatchPopulateAccessibilityEventHandler);
+    verify(nodeInfo)
+        .setOnInitializeAccessibilityEventHandler(onInitializeAccessibilityEventHandler);
+    verify(nodeInfo)
+        .setOnInitializeAccessibilityNodeInfoHandler(onInitializeAccessibilityNodeInfoHandler);
+    verify(nodeInfo).setOnPopulateAccessibilityEventHandler(onPopulateAccessibilityEventHandler);
+    verify(nodeInfo)
+        .setOnRequestSendAccessibilityEventHandler(onRequestSendAccessibilityEventHandler);
+    verify(nodeInfo).setPerformAccessibilityActionHandler(performAccessibilityActionHandler);
+    verify(nodeInfo).setSendAccessibilityEventHandler(sendAccessibilityEventHandler);
+    verify(nodeInfo)
+        .setSendAccessibilityEventUncheckedHandler(sendAccessibilityEventUncheckedHandler);
 
     verify(node).stateListAnimator(stateListAnimator);
   }
@@ -581,6 +589,8 @@ public class LayoutStateCreateTreeTest {
 
     protected ComponentLayout resolve(ComponentContext c) {
       InternalNode node = mock(InternalNode.class);
+      NodeInfo nodeInfo = mock(NodeInfo.class);
+      when(node.getOrCreateNodeInfo()).thenReturn(nodeInfo);
       ((Component) this).getCommonPropsCopyable().copyInto(c, node);
 
       return node;
@@ -619,24 +629,25 @@ public class LayoutStateCreateTreeTest {
     }
 
     InternalNode newLayoutBuilder(@AttrRes int defStyleAttr, @StyleRes int defStyleRes) {
-      TestInternalNode node = new TestInternalNode();
-      node.init(ComponentsPools.acquireYogaNode(), this);
-      return node;
+      return new TestInternalNode(this);
     }
 
     @Override
     ComponentContext makeNewCopy() {
-      return new MockInternalNodeComponentContext(this);
+      return new MockInternalNodeComponentContext(this.getAndroidContext());
     }
   }
 
-  private class TestInternalNode extends InternalNode {
+  private class TestInternalNode extends DefaultInternalNode {
     private int mFlexGrowCounter;
 
+    protected TestInternalNode(ComponentContext componentContext) {
+      super(componentContext);
+    }
+
     @Override
-    TestInternalNode flexGrow(float flex) {
+    public void flexGrow(float flex) {
       mFlexGrowCounter++;
-      return (TestInternalNode) super.flexGrow(flex);
     }
   }
 }

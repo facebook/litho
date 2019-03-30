@@ -65,12 +65,12 @@ public class PageIndicatorsRootComponentSpec {
 
   @OnEvent(ClickEvent.class)
   static void onPrevClick(ComponentContext c) {
-    PageIndicatorsRootComponent.updateSelectedPageIndex(c, false);
+    PageIndicatorsRootComponent.updateSelectedPageIndexSync(c, false);
   }
 
   @OnEvent(ClickEvent.class)
   static void onNextClick(ComponentContext c) {
-    PageIndicatorsRootComponent.updateSelectedPageIndex(c, true);
+    PageIndicatorsRootComponent.updateSelectedPageIndexSync(c, true);
   }
 
   @OnUpdateState

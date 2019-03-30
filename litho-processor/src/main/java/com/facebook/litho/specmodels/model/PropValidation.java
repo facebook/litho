@@ -168,7 +168,7 @@ public class PropValidation {
           new CommonPropModel(
               "background",
               ParameterizedTypeName.get(
-                  ClassNames.REFERENCE, WildcardTypeName.subtypeOf(ClassNames.DRAWABLE))),
+                  ClassNames.COMPARABLE_DRAWABLE, WildcardTypeName.subtypeOf(ClassNames.DRAWABLE))),
           new CommonPropModel("testKey", ClassNames.STRING),
           new CommonPropModel(
               "layoutDirection", ClassName.bestGuess("com.facebook.yoga.YogaDirection")),
@@ -294,10 +294,8 @@ public class PropValidation {
           new CommonPropModel("alpha", TypeName.FLOAT),
           new CommonPropModel("rotation", TypeName.FLOAT));
 
-  private static final List<TypeName> ILLEGAL_PROP_TYPES = Arrays.<TypeName>asList(
-      ClassNames.COMPONENT_LAYOUT,
-      ClassNames.COMPONENT_BUILDER,
-      ClassNames.REFERENCE_BUILDER);
+  private static final List<TypeName> ILLEGAL_PROP_TYPES =
+      Arrays.<TypeName>asList(ClassNames.COMPONENT_LAYOUT, ClassNames.COMPONENT_BUILDER);
 
   static List<SpecModelValidationError> validate(
       SpecModel specModel,

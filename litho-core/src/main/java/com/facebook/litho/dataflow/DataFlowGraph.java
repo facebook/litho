@@ -16,10 +16,8 @@
 
 package com.facebook.litho.dataflow;
 
-import android.support.annotation.VisibleForTesting;
-import android.support.v4.util.Pools;
-import android.support.v4.util.SimpleArrayMap;
-import com.facebook.litho.ComponentsPools;
+import androidx.annotation.VisibleForTesting;
+import androidx.collection.SimpleArrayMap;
 import com.facebook.litho.internal.ArraySet;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -49,18 +47,10 @@ public class DataFlowGraph {
     return sInstance;
   }
 
-  private static final Pools.SynchronizedPool<NodeState> sNodeStatePool =
-      new Pools.SynchronizedPool<>(20);
-
   private static class NodeState {
 
     private boolean isFinished = false;
     private int refCount = 0;
-
-    void reset() {
-      isFinished = false;
-      refCount = 0;
-    }
   }
 
   /**
@@ -158,13 +148,13 @@ public class DataFlowGraph {
       return;
     }
 
-    final ArraySet<ValueNode> leafNodes = ComponentsPools.acquireArraySet();
+    final ArraySet<ValueNode> leafNodes = new ArraySet<>();
     final SimpleArrayMap<ValueNode, Integer> nodesToOutputsLeft = new SimpleArrayMap<>();
 
     for (int i = 0, bindingsSize = mBindings.size(); i < bindingsSize; i++) {
-      final ArraySet<ValueNode> nodes = mBindings.get(i).getAllNodes();
+      final ArrayList<ValueNode> nodes = mBindings.get(i).getAllNodes();
       for (int j = 0, nodesSize = nodes.size(); j < nodesSize; j++) {
-        final ValueNode node = nodes.valueAt(j);
+        final ValueNode node = nodes.get(j);
         final int outputCount = node.getOutputCount();
         if (outputCount == 0) {
           leafNodes.add(node);
@@ -179,7 +169,7 @@ public class DataFlowGraph {
           "Graph has nodes, but they represent a cycle with no leaf nodes!");
     }
 
-    final ArrayDeque<ValueNode> nodesToProcess = ComponentsPools.acquireArrayDeque();
+    final ArrayDeque<ValueNode> nodesToProcess = new ArrayDeque<>();
     nodesToProcess.addAll(leafNodes);
 
     while (!nodesToProcess.isEmpty()) {
@@ -204,9 +194,6 @@ public class DataFlowGraph {
 
     Collections.reverse(mSortedNodes);
     mIsDirty = false;
-
-    ComponentsPools.release(nodesToProcess);
-    ComponentsPools.release(leafNodes);
   }
 
   @GuardedBy("this")
@@ -251,9 +238,9 @@ public class DataFlowGraph {
     for (int i = mBindings.size() - 1; i >= 0; i--) {
       final GraphBinding binding = mBindings.get(i);
       boolean allAreFinished = true;
-      final ArraySet<ValueNode> nodesToCheck = binding.getAllNodes();
+      final ArrayList<ValueNode> nodesToCheck = binding.getAllNodes();
       for (int j = 0, nodesSize = nodesToCheck.size(); j < nodesSize; j++) {
-        final NodeState nodeState = mNodeStates.get(nodesToCheck.valueAt(j));
+        final NodeState nodeState = mNodeStates.get(nodesToCheck.get(j));
         if (!nodeState.isFinished) {
           allAreFinished = false;
           break;
@@ -267,14 +254,14 @@ public class DataFlowGraph {
 
   @GuardedBy("this")
   private void registerNodes(GraphBinding binding) {
-    final ArraySet<ValueNode> nodes = binding.getAllNodes();
+    final ArrayList<ValueNode> nodes = binding.getAllNodes();
     for (int i = 0, size = nodes.size(); i < size; i++) {
-      final ValueNode node = nodes.valueAt(i);
+      final ValueNode node = nodes.get(i);
       final NodeState nodeState = mNodeStates.get(node);
       if (nodeState != null) {
         nodeState.refCount++;
       } else {
-        final NodeState newState = acquireNodeState();
+        final NodeState newState = new NodeState();
         newState.refCount = 1;
         mNodeStates.put(node, newState);
       }
@@ -283,28 +270,15 @@ public class DataFlowGraph {
 
   @GuardedBy("this")
   private void unregisterNodes(GraphBinding binding) {
-    final ArraySet<ValueNode> nodes = binding.getAllNodes();
+    final ArrayList<ValueNode> nodes = binding.getAllNodes();
     for (int i = 0, size = nodes.size(); i < size; i++) {
-      final ValueNode node = nodes.valueAt(i);
+      final ValueNode node = nodes.get(i);
       final NodeState nodeState = mNodeStates.get(node);
       nodeState.refCount--;
       if (nodeState.refCount == 0) {
-        release(mNodeStates.remove(node));
+        mNodeStates.remove(node);
       }
     }
-  }
-
-  private static NodeState acquireNodeState() {
-    final NodeState fromPool = sNodeStatePool.acquire();
-    if (fromPool != null) {
-      return fromPool;
-    }
-    return new NodeState();
-  }
-
-  private static void release(NodeState nodeState) {
-    nodeState.reset();
-    sNodeStatePool.release(nodeState);
   }
 
   @VisibleForTesting

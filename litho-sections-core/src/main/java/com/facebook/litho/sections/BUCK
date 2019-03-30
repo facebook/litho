@@ -9,6 +9,7 @@ load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_ANDROIDSUPPORT_TARGET", "LI
 litho_android_library(
     name = "sections",
     srcs = glob(["*.java"]),
+    is_androidx = True,
     required_for_source_only_abi = True,
     tests = [
         make_dep_path("litho-it/src/test/java/com/facebook/litho/sections:sections"),

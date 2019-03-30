@@ -14,7 +14,7 @@ android {
 
         externalNativeBuild {
             cmake {
-                arguments '-DANDROID_TOOLCHAIN=clang', '-DANDROID_STL=gnustl_shared'
+                arguments '-DANDROID_TOOLCHAIN=clang'
             }
         }
     }
@@ -22,6 +22,7 @@ android {
     externalNativeBuild {
         cmake {
             path 'src/main/cpp/CMakeLists.txt'
+            version '3.6.0-rc2'
         }
     }
 

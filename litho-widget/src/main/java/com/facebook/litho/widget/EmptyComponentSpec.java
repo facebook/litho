@@ -20,13 +20,14 @@ import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
+import javax.annotation.Nullable;
 
 /** A component that doesn't render anything. */
 @LayoutSpec
 class EmptyComponentSpec {
 
   @OnCreateLayout
-  static Component onCreateLayout(ComponentContext c) {
+  static @Nullable Component onCreateLayout(ComponentContext c) {
     return null;
   }
 }

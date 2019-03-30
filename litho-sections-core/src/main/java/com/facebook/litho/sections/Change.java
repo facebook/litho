@@ -16,9 +16,9 @@
 
 package com.facebook.litho.sections;
 
-import android.support.annotation.IntDef;
-import android.support.annotation.Nullable;
-import android.support.annotation.VisibleForTesting;
+import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import com.facebook.litho.Component;
 import com.facebook.litho.sections.annotations.DiffSectionSpec;
 import com.facebook.litho.widget.ComponentRenderInfo;
@@ -26,6 +26,7 @@ import com.facebook.litho.widget.RenderInfo;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -37,7 +38,6 @@ import java.util.List;
  * Change.insert(0, component);
  * </code>
  */
-@VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
 public final class Change {
 
   public static final int INSERT = 1; // INSERT(index, component)
@@ -61,21 +61,43 @@ public final class Change {
   private int mCount;
   private RenderInfo mRenderInfo;
   private List<RenderInfo> mRenderInfos;
+  private @Nullable List<?> mPrevData;
+  private @Nullable List<?> mNextData;
 
-  private Change(
+  @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+  public Change(
       @Type int ct,
       int index,
       int toIndex,
       int count,
       @Nullable RenderInfo renderInfo,
-      @Nullable List<RenderInfo> renderInfos) {
+      @Nullable List<RenderInfo> renderInfos,
+      @Nullable List<?> prevData,
+      @Nullable List<?> nextData) {
     mType = ct;
     mIndex = index;
     mToIndex = toIndex;
     mCount = count;
     mRenderInfo = renderInfo == null ? ComponentRenderInfo.createEmpty() : renderInfo;
-    mRenderInfos =
-        renderInfos == null ? EMPTY : renderInfos;
+
+    if (renderInfos == null) {
+      mRenderInfos = EMPTY;
+    } else {
+      int size = renderInfos.size();
+      mRenderInfos = new ArrayList<>(size);
+      for (int i = 0; i < size; i++) {
+        final RenderInfo renderInfoTemp = renderInfos.get(i);
+        mRenderInfos.add(
+            renderInfoTemp == null ? ComponentRenderInfo.createEmpty() : renderInfoTemp);
+      }
+    }
+
+    if (prevData != null) {
+      mPrevData = Collections.unmodifiableList(prevData);
+    }
+    if (nextData != null) {
+      mNextData = Collections.unmodifiableList(nextData);
+    }
   }
 
   /**
@@ -91,7 +113,9 @@ public final class Change {
         toIndex,
         change.mCount,
         change.mRenderInfo,
-        change.mRenderInfos);
+        change.mRenderInfos,
+        change.mPrevData,
+        change.mNextData);
   }
 
   /**
@@ -104,34 +128,53 @@ public final class Change {
         change.mToIndex,
         change.mCount,
         change.mRenderInfo,
-        change.mRenderInfos);
+        change.mRenderInfos,
+        change.mPrevData,
+        change.mNextData);
+  }
+
+  static Change insert(int index, RenderInfo renderInfo) {
+    return insert(index, renderInfo, null);
   }
 
   /**
    * Creates a Change of type INSERT. As a result of this Change the {@link Component} c will be
-   * rendered at index in the context of the
-   * {@link DiffSectionSpec} creating this Change.
+   * rendered at index in the context of the {@link DiffSectionSpec} creating this Change.
    */
-  static Change insert(int index, RenderInfo renderInfo) {
-    return acquireSingularChange(INSERT, index, renderInfo);
+  static Change insert(int index, RenderInfo renderInfo, @Nullable Object data) {
+    return acquireSingularChange(INSERT, index, renderInfo, null, data);
+  }
+
+  static Change insertRange(int index, int count, List<RenderInfo> renderInfos) {
+    return insertRange(index, count, renderInfos, null);
   }
 
   /**
    * Creates a Change of type INSERT_RANGE. As a result of this Change {@param count} number of
-   * components from {@param renderInfos} will be inserted starting at index {@param index}
-   * in the context of the {@link DiffSectionSpec} creating this Change.
+   * components from {@param renderInfos} will be inserted starting at index {@param index} in the
+   * context of the {@link DiffSectionSpec} creating this Change.
    */
-  static Change insertRange(int index, int count, List<RenderInfo> renderInfos) {
-    return acquireRangedChange(INSERT_RANGE, index, count, renderInfos);
+  static Change insertRange(
+      int index, int count, List<RenderInfo> renderInfos, @Nullable List<?> nextData) {
+    return acquireRangedChange(INSERT_RANGE, index, count, renderInfos, null, nextData);
+  }
+
+  static Change update(int index, RenderInfo renderInfo) {
+    return update(index, renderInfo, null, null);
   }
 
   /**
    * Creates a Change of type UPDATE. As a result of this Change the {@link Component} c substitute
-   * the current Component rendered at index in the context of the
-   * {@link DiffSectionSpec} creating this Change.
+   * the current Component rendered at index in the context of the {@link DiffSectionSpec} creating
+   * this Change.
    */
-  static Change update(int index, RenderInfo renderInfo) {
-    return acquireSingularChange(UPDATE, index, renderInfo);
+  static Change update(
+      int index, RenderInfo renderInfo, @Nullable Object prevData, @Nullable Object nextData) {
+    return acquireSingularChange(UPDATE, index, renderInfo, prevData, nextData);
+  }
+
+  static Change updateRange(int index, int count, List<RenderInfo> renderInfos) {
+    return updateRange(index, count, renderInfos, null, null);
   }
 
   /**
@@ -139,34 +182,50 @@ public final class Change {
    * components starting at {@param index} (in the context of the {@link DiffSectionSpec} creating
    * this change) will be replaces by components from {@param renderInfos}.
    */
-  static Change updateRange(int index, int count, List<RenderInfo> renderInfos) {
-    return acquireRangedChange(UPDATE_RANGE, index, count, renderInfos);
+  static Change updateRange(
+      int index,
+      int count,
+      List<RenderInfo> renderInfos,
+      @Nullable List<?> prevData,
+      @Nullable List<?> nextData) {
+    return acquireRangedChange(UPDATE_RANGE, index, count, renderInfos, prevData, nextData);
+  }
+
+  static Change remove(int index) {
+    return remove(index, null);
   }
 
   /**
    * Creates a Change of type DELETE. As a result of this Change item at index in the context of the
-   * {@link DiffSectionSpec} creating this Change will be
-   * removed.
+   * {@link DiffSectionSpec} creating this Change will be removed.
    */
-  static Change remove(int index) {
-    return acquireSingularChange(DELETE, index, ComponentRenderInfo.createEmpty());
+  static Change remove(int index, @Nullable Object data) {
+    return acquireSingularChange(DELETE, index, ComponentRenderInfo.createEmpty(), data, null);
+  }
+
+  static Change removeRange(int index, int count) {
+    return removeRange(index, count, null);
   }
 
   /**
-   * Creates a Change of type DELETE_RANGE. As a result of this Change {@param count} items
-   * starting at {@param index} in the context of the {@link DiffSectionSpec} creating this Change
-   * will be removed.
+   * Creates a Change of type DELETE_RANGE. As a result of this Change {@param count} items starting
+   * at {@param index} in the context of the {@link DiffSectionSpec} creating this Change will be
+   * removed.
    */
-  static Change removeRange(int index, int count) {
-    return acquireRangedChange(DELETE_RANGE, index, count, EMPTY);
+  static Change removeRange(int index, int count, @Nullable List<?> prevData) {
+    return acquireRangedChange(DELETE_RANGE, index, count, EMPTY, prevData, null);
+  }
+
+  static Change move(int fromIndex, int toIndex) {
+    return move(fromIndex, toIndex, null);
   }
 
   /**
    * Creates a Change of type MOVE. As a result of this Change item at fromIndex in the context of
    * the {@link DiffSectionSpec} creating this Change will be moved to toIndex.
    */
-  static Change move(int fromIndex, int toIndex) {
-    return acquireMoveChange(fromIndex, toIndex);
+  static Change move(int fromIndex, int toIndex, @Nullable Object data) {
+    return acquireMoveChange(fromIndex, toIndex, data);
   }
 
   /** @return the type of this Change. */
@@ -175,17 +234,15 @@ public final class Change {
     return mType;
   }
 
-  /**
-   * @return the index at which this change will be applied.
-   */
-  int getIndex() {
+  /** @return the index at which this change will be applied. */
+  public int getIndex() {
     return mIndex;
   }
 
   /**
    * @return the index to which this change will move its item. This is only valid if type is MOVE.
    */
-  int getToIndex() {
+  public int getToIndex() {
     return mToIndex;
   }
 
@@ -209,44 +266,67 @@ public final class Change {
     return mRenderInfos;
   }
 
-  //TODO t11953296
-  private static Change acquireMoveChange(
-      int index,
-      int toIndex) {
-    return acquire(MOVE, index, toIndex, 1, null, null);
+  public @Nullable List<?> getPrevData() {
+    return mPrevData;
   }
 
-  //TODO t11953296
+  public @Nullable List<?> getNextData() {
+    return mNextData;
+  }
+
+  // TODO t11953296
+  private static Change acquireMoveChange(int index, int toIndex, @Nullable Object data) {
+    final List<?> singleDataList = data != null ? Collections.singletonList(data) : null;
+    return acquire(MOVE, index, toIndex, 1, null, null, singleDataList, singleDataList);
+  }
+
+  // TODO t11953296
   private static Change acquireSingularChange(
       @Type int ct,
       int index,
-      RenderInfo renderInfo) {
-    return acquire(ct, index, -1, 1, renderInfo, null);
+      RenderInfo renderInfo,
+      @Nullable Object prevData,
+      @Nullable Object nextData) {
+    return acquire(
+        ct,
+        index,
+        -1,
+        1,
+        renderInfo,
+        null,
+        prevData != null ? Collections.singletonList(prevData) : null,
+        nextData != null ? Collections.singletonList(nextData) : null);
   }
 
-  //TODO t11953296
+  // TODO t11953296
   private static Change acquireRangedChange(
       @Type int ct,
       int index,
       int count,
-      List<RenderInfo> renderInfos) {
-    return acquire(ct, index, -1, count, null, renderInfos);
+      List<RenderInfo> renderInfos,
+      @Nullable List<?> prevData,
+      @Nullable List<?> nextData) {
+    return acquire(ct, index, -1, count, null, renderInfos, prevData, nextData);
   }
 
-  //TODO t11953296
+  // TODO t11953296
   private static Change acquire(
       @Type int ct,
       int index,
       int toIndex,
       int count,
-      RenderInfo renderInfo,
-      List<RenderInfo> renderInfos) {
-    return new Change(ct, index, toIndex, count, renderInfo, renderInfos);
+      @Nullable RenderInfo renderInfo,
+      @Nullable List<RenderInfo> renderInfos,
+      @Nullable List<?> prevData,
+      @Nullable List<?> nextData) {
+    return new Change(ct, index, toIndex, count, renderInfo, renderInfos, prevData, nextData);
   }
 
   //TODO t11953296
   void release() {
     mRenderInfo = null;
     mRenderInfos = null;
+    mPrevData = null;
+    mNextData = null;
   }
 }

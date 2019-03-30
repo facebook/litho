@@ -67,7 +67,7 @@ public class ErrorEventHandlerGeneratorTest {
     final Types types = mCompilationRule.getTypes();
     final LayoutSpecModel specModel =
         mLayoutSpecModelFactory.create(
-            elements, types, typeElement, mMessager, RunMode.NORMAL, null, null);
+            elements, types, typeElement, mMessager, RunMode.normal(), null, null);
 
     assertThat(ErrorEventHandlerGenerator.hasOnErrorDelegateMethod(specModel.getDelegateMethods()))
         .isTrue();
@@ -81,7 +81,7 @@ public class ErrorEventHandlerGeneratorTest {
     final Types types = mCompilationRule.getTypes();
     final LayoutSpecModel specModel =
         mLayoutSpecModelFactory.create(
-            elements, types, typeElement, mMessager, RunMode.NORMAL, null, null);
+            elements, types, typeElement, mMessager, RunMode.normal(), null, null);
 
     assertThat(ErrorEventHandlerGenerator.hasOnErrorDelegateMethod(specModel.getDelegateMethods()))
         .isFalse();

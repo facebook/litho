@@ -20,9 +20,9 @@ import static com.facebook.litho.it.R.attr.testAttrLargePadding;
 import static com.facebook.litho.it.R.attr.testAttrLargeText;
 import static com.facebook.litho.it.R.style.PaddingStyle;
 import static com.facebook.litho.it.R.style.TextSizeStyle;
+import static com.facebook.litho.testing.Whitebox.getInternalState;
 import static com.facebook.yoga.YogaEdge.ALL;
 import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.powermock.reflect.Whitebox.getInternalState;
 
 import android.view.ContextThemeWrapper;
 import com.facebook.litho.it.R;

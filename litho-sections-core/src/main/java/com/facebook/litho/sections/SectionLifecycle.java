@@ -16,14 +16,11 @@
 
 package com.facebook.litho.sections;
 
-import android.support.annotation.Nullable;
-import com.facebook.litho.ComponentsPools;
-import com.facebook.litho.Diff;
+import androidx.annotation.Nullable;
 import com.facebook.litho.EventDispatcher;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.EventTrigger;
 import com.facebook.litho.EventTriggerTarget;
-import com.facebook.litho.Output;
 import com.facebook.litho.StateContainer;
 import com.facebook.litho.TreeProps;
 import com.facebook.litho.annotations.OnCreateTreeProp;
@@ -37,11 +34,11 @@ import com.facebook.litho.widget.SmoothScrollAlignmentType;
 public abstract class SectionLifecycle implements EventDispatcher, EventTriggerTarget {
 
   /**
-   * This methods will delegate to the {@link GroupSectionSpec}
-   * method annotated with {@link com.facebook.litho.sections.annotations.OnCreateChildren}
+   * This methods will delegate to the {@link GroupSectionSpec} method annotated with {@link
+   * com.facebook.litho.sections.annotations.OnCreateChildren}
    */
-  protected Children createChildren(
-      SectionContext c) {
+  @Nullable
+  protected Children createChildren(SectionContext c) {
     return null;
   }
 
@@ -68,7 +65,13 @@ public abstract class SectionLifecycle implements EventDispatcher, EventTriggerT
    * OnDataRendered}.
    */
   protected void dataRendered(
-      SectionContext c, boolean isDataChanged, boolean isMounted, long uptimeMillis) {}
+      SectionContext c,
+      boolean isDataChanged,
+      boolean isMounted,
+      long uptimeMillis,
+      int firstVisibleIndex,
+      int lastVisibleIndex,
+      ChangesInfo changesInfo) {}
 
   protected void bindService(SectionContext c) {
 
@@ -86,6 +89,7 @@ public abstract class SectionLifecycle implements EventDispatcher, EventTriggerT
 
   }
 
+  @Nullable
   @Override
   public Object dispatchOnEvent(EventHandler eventHandler, Object eventState) {
     // Do nothing by default.
@@ -114,13 +118,11 @@ public abstract class SectionLifecycle implements EventDispatcher, EventTriggerT
   }
 
   /**
-   * Call this to transfer the {@link com.facebook.litho.annotations.State} annotated values
-   * between two {@link Section} with the same global scope.
+   * Call this to transfer the {@link com.facebook.litho.annotations.State} annotated values between
+   * two {@link Section} with the same global scope.
    */
   protected void transferState(
-      SectionContext c,
-      StateContainer stateContainer) {
-  }
+      StateContainer previousStateContainer, StateContainer nextStateContainer) {}
 
   /**
    * Call this to transfer the Services between two
@@ -132,6 +134,7 @@ public abstract class SectionLifecycle implements EventDispatcher, EventTriggerT
       Section newSection) {
   }
 
+  @Nullable
   protected Object getService(Section section) {
     return null;
   }
@@ -153,40 +156,16 @@ public abstract class SectionLifecycle implements EventDispatcher, EventTriggerT
     return dirty || shouldUpdate(previous, next);
   }
 
-  protected final <T> Diff<T> acquireDiff(T previousValue, T nextValue) {
-    Diff diff = ComponentsPools.acquireDiff(previousValue, nextValue);
-
-    return diff;
-  }
-
-  protected void releaseDiff(Diff diff) {
-    ComponentsPools.release(diff);
-  }
-
-  protected Output acquireOutput() {
-    //TODO 11953296
-    return new Output();
-  }
-
-  protected void releaseOutput(Output output) {
-    //TODO 11953296
-  }
-
   protected boolean shouldUpdate(Section previous, Section next) {
     return !(previous == next || (previous != null && previous.isEquivalentTo(next)));
   }
 
   /**
    * @return true if this lifecycle will generate a changeSet. If false this lifecycle will instead
-   * implement createChildren.
+   *     implement createChildren.
    */
-  protected boolean isDiffSectionSpec() {
+  public boolean isDiffSectionSpec() {
     return false;
-  }
-
-
-  String getLogTag() {
-    return getClass().getSimpleName();
   }
 
   protected static <E> EventHandler<E> newEventHandler(
@@ -234,7 +213,7 @@ public abstract class SectionLifecycle implements EventDispatcher, EventTriggerT
   }
 
   protected interface StateUpdate {
-    void updateState(StateContainer stateContainer, Section section);
+    void updateState(StateContainer stateContainer);
   }
 
   /**
@@ -253,6 +232,7 @@ public abstract class SectionLifecycle implements EventDispatcher, EventTriggerT
     return previousTreeProps;
   }
 
+  @Nullable
   public static EventHandler getLoadingEventHandler(SectionContext context) {
     Section scopedSection = context.getSectionScope();
     if (scopedSection == null) {

@@ -19,7 +19,6 @@ package com.facebook.litho.utils;
 import static com.facebook.litho.ThreadUtils.assertMainThread;
 
 import android.graphics.Rect;
-import android.support.v4.util.Pools;
 import android.view.View;
 import android.view.ViewGroup;
 import com.facebook.litho.LithoView;
@@ -39,9 +38,6 @@ public class IncrementalMountUtils {
      */
     View getWrappedView();
   }
-
-  private static final Pools.SynchronizedPool<Rect> sRectPool =
-      new Pools.SynchronizedPool<>(10);
 
   /** Performs incremental mount on all {@link LithoView}s within the given View. */
   public static void incrementallyMountLithoViews(View view) {
@@ -111,35 +107,18 @@ public class IncrementalMountUtils {
       return;
     }
 
-    final Rect rect = acquireRect();
-    rect.set(
-        Math.max(0, -left),
-        Math.max(0, -top),
-        Math.min(right, scrollingParentWidth) - left,
-        Math.min(bottom, scrollingParentHeight) - top);
+    final Rect rect =
+        new Rect(
+            Math.max(0, -left),
+            Math.max(0, -top),
+            Math.min(right, scrollingParentWidth) - left,
+            Math.min(bottom, scrollingParentHeight) - top);
 
     if (rect.isEmpty()) {
       // View is not visible at all, nothing to do.
-      release(rect);
       return;
     }
 
     lithoView.performIncrementalMount(rect, true);
-
-    release(rect);
-  }
-
-  private static Rect acquireRect() {
-    Rect rect = sRectPool.acquire();
-    if (rect == null) {
-      rect = new Rect();
-    }
-
-    return rect;
-  }
-
-  private static void release(Rect rect) {
-    rect.setEmpty();
-    sRectPool.release(rect);
   }
 }

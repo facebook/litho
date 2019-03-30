@@ -2,6 +2,7 @@
 #
 # This source code is licensed under the Apache 2.0 license found in the
 # LICENSE file in the root directory of this source tree.
+load("//tools/build_defs/oss:fb_native_wrapper.bzl", "fb_native")
 load("//tools/build_defs/oss:litho_defs.bzl", "fb_java_library", "make_dep_path")
 
 fb_java_library(
@@ -13,12 +14,12 @@ fb_java_library(
     ],
 )
 
-prebuilt_jar(
+fb_native.prebuilt_jar(
     name = "powermock-reflect-prebuilt",
     binary_jar = ":powermock-reflect.jar",
 )
 
-remote_file(
+fb_native.remote_file(
     name = "powermock-reflect.jar",
     sha1 = "962751c056e0d56edf1d419985e6d8032328555b",
     url = "mvn:org.powermock:powermock-reflect:jar:1.5.6",
@@ -40,89 +41,89 @@ fb_java_library(
     ],
 )
 
-prebuilt_jar(
+fb_native.prebuilt_jar(
     name = "powermock-junit-rule-prebuilt",
     binary_jar = ":powermock-junit-rule.jar",
 )
 
-remote_file(
+fb_native.remote_file(
     name = "powermock-junit-rule.jar",
     sha1 = "bc3a2edc6b0dd91ebe570507d4f38c93cd5ed53c",
     url = "mvn:org.powermock:powermock-module-junit4-rule:jar:1.5.6",
 )
 
-prebuilt_jar(
+fb_native.prebuilt_jar(
     name = "powermock-core",
     binary_jar = ":powermock-core.jar",
 )
 
-remote_file(
+fb_native.remote_file(
     name = "powermock-core.jar",
     sha1 = "2cf9445b015ff4831487b6cb7667068b3a306066",
     url = "mvn:org.powermock:powermock-core:jar:1.5.6",
 )
 
-prebuilt_jar(
+fb_native.prebuilt_jar(
     name = "powermock-api-support",
     binary_jar = ":powermock-api-support.jar",
 )
 
-remote_file(
+fb_native.remote_file(
     name = "powermock-api-support.jar",
     sha1 = "8884532ded864f892b03a0769fd212d34653d5f3",
     url = "mvn:org.powermock:powermock-api-support:jar:1.5.6",
 )
 
-prebuilt_jar(
+fb_native.prebuilt_jar(
     name = "powermock-classloading-base",
     binary_jar = ":powermock-classloading-base.jar",
 )
 
-remote_file(
+fb_native.remote_file(
     name = "powermock-classloading-base.jar",
     sha1 = "147d7c1a1dede5843f96993b6559e91b070d5f9b",
     url = "mvn:org.powermock:powermock-classloading-base:jar:1.5.6",
 )
 
-prebuilt_jar(
+fb_native.prebuilt_jar(
     name = "powermock-api-mockito",
     binary_jar = ":powermock-api-mockito.jar",
 )
 
-remote_file(
+fb_native.remote_file(
     name = "powermock-api-mockito.jar",
     sha1 = "97f1e2bfbedc1a0459c4eacfe3524e367d1918d0",
     url = "mvn:org.powermock:powermock-api-mockito:jar:1.5.6",
 )
 
-prebuilt_jar(
+fb_native.prebuilt_jar(
     name = "javassist-prebuilt",
     binary_jar = ":javassist.jar",
 )
 
-remote_file(
+fb_native.remote_file(
     name = "javassist.jar",
     sha1 = "1180a90fbad732b60fb728a6bbe8fcb3151423d7",
     url = "mvn:org.javassist:javassist:jar:3.18.2-GA",
 )
 
-prebuilt_jar(
+fb_native.prebuilt_jar(
     name = "powermock-classloading-xstream-prebuilt",
     binary_jar = ":powermock-classloading-xstream.jar",
 )
 
-remote_file(
+fb_native.remote_file(
     name = "powermock-classloading-xstream.jar",
     sha1 = "a46b270925c45fb318f31ad2341765f54ff90227",
     url = "mvn:org.powermock:powermock-classloading-xstream:jar:1.5.6",
 )
 
-prebuilt_jar(
+fb_native.prebuilt_jar(
     name = "xstream-prebuilt",
     binary_jar = ":xstream.jar",
 )
 
-remote_file(
+fb_native.remote_file(
     name = "xstream.jar",
     sha1 = "520d90f30f36a0d6ba2dc929d980831631ad6a92",
     url = "mvn:com.thoughtworks.xstream:xstream:jar:1.4.8",

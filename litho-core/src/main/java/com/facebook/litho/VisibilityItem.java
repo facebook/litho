@@ -17,7 +17,7 @@
 package com.facebook.litho;
 
 import android.graphics.Rect;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * Holds information about a VisibilityOutput (that is, about a component for which a visibility
@@ -32,28 +32,28 @@ class VisibilityItem {
   private static final int FLAG_BOTTOM_EDGE_VISIBLE = 1 << 4;
   private static final int FLAG_FOCUSED_RANGE = 1 << 5;
 
-  private String mGlobalKey;
+  private final String mGlobalKey;
   private int mFlags;
   // The invisible event and unfocused event handlers are required to make it possible to dispatch
   // the corresponding event when unbind is called or when the MountState is reset.
-  private EventHandler<InvisibleEvent> mInvisibleHandler;
-  private EventHandler<UnfocusedVisibleEvent> mUnfocusedHandler;
-  private @Nullable EventHandler<VisibilityChangedEvent> mVisibilityChangedHandler;
+  @Nullable private EventHandler<InvisibleEvent> mInvisibleHandler;
+  @Nullable private EventHandler<UnfocusedVisibleEvent> mUnfocusedHandler;
+  private @Nullable final EventHandler<VisibilityChangedEvent> mVisibilityChangedHandler;
   private boolean mDoNotClearInThisPass;
 
-  public VisibilityItem() {
-    mFlags = 0;
-    mInvisibleHandler = null;
-    mUnfocusedHandler = null;
-    mVisibilityChangedHandler = null;
+  public VisibilityItem(
+      String globalKey,
+      EventHandler<InvisibleEvent> invisibleHandler,
+      EventHandler<UnfocusedVisibleEvent> unfocusedHandler,
+      @Nullable EventHandler<VisibilityChangedEvent> visibilityChangedHandler) {
+    mGlobalKey = globalKey;
+    mInvisibleHandler = invisibleHandler;
+    mUnfocusedHandler = unfocusedHandler;
+    mVisibilityChangedHandler = visibilityChangedHandler;
   }
 
   String getGlobalKey() {
     return mGlobalKey;
-  }
-
-  void setGlobalKey(String globalKey) {
-    mGlobalKey = globalKey;
   }
 
   /**
@@ -63,9 +63,8 @@ class VisibilityItem {
     mInvisibleHandler = invisibleHandler;
   }
 
-  /**
-   * Returns the invisible event handler.
-   */
+  /** Returns the invisible event handler. */
+  @Nullable
   EventHandler<InvisibleEvent> getInvisibleHandler() {
     return mInvisibleHandler;
   }
@@ -77,15 +76,10 @@ class VisibilityItem {
     mUnfocusedHandler = unfocusedHandler;
   }
 
-  /**
-   * Returns the unfocused event handler.
-   */
+  /** Returns the unfocused event handler. */
+  @Nullable
   EventHandler<UnfocusedVisibleEvent> getUnfocusedHandler() {
     return mUnfocusedHandler;
-  }
-
-  void setVisibilityChangedHandler(EventHandler<VisibilityChangedEvent> visibilityChangedHandler) {
-    mVisibilityChangedHandler = visibilityChangedHandler;
   }
 
   @Nullable
@@ -144,13 +138,5 @@ class VisibilityItem {
 
   void setDoNotClearInThisPass(boolean doNotClearInThisPass) {
     mDoNotClearInThisPass = doNotClearInThisPass;
-  }
-
-  void release() {
-    mFlags = 0;
-    mInvisibleHandler = null;
-    mUnfocusedHandler = null;
-    mVisibilityChangedHandler = null;
-    mDoNotClearInThisPass = false;
   }
 }

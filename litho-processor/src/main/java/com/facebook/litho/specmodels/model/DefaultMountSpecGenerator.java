@@ -17,6 +17,7 @@
 package com.facebook.litho.specmodels.model;
 
 import com.facebook.litho.specmodels.generator.BuilderGenerator;
+import com.facebook.litho.specmodels.generator.CachedValueGenerator;
 import com.facebook.litho.specmodels.generator.ClassAnnotationsGenerator;
 import com.facebook.litho.specmodels.generator.ComponentBodyGenerator;
 import com.facebook.litho.specmodels.generator.DelegateMethodGenerator;
@@ -32,11 +33,14 @@ import com.facebook.litho.specmodels.generator.TreePropGenerator;
 import com.facebook.litho.specmodels.generator.TriggerGenerator;
 import com.facebook.litho.specmodels.generator.TypeSpecDataHolder;
 import com.facebook.litho.specmodels.generator.WorkingRangeGenerator;
+import com.facebook.litho.specmodels.internal.RunMode;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeSpec;
+import java.util.EnumSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import javax.lang.model.element.Modifier;
+import javax.lang.model.element.TypeElement;
 
 public class DefaultMountSpecGenerator implements SpecGenerator<MountSpecModel> {
 
@@ -51,11 +55,15 @@ public class DefaultMountSpecGenerator implements SpecGenerator<MountSpecModel> 
   }
 
   @Override
-  public TypeSpec generate(MountSpecModel mountSpecModel) {
+  public TypeSpec generate(MountSpecModel mountSpecModel, EnumSet<RunMode> runMode) {
     final TypeSpec.Builder typeSpec =
         TypeSpec.classBuilder(mountSpecModel.getComponentName())
             .superclass(ClassNames.COMPONENT)
             .addTypeVariables(mountSpecModel.getTypeVariables());
+
+    if (SpecModelUtils.isTypeElement(mountSpecModel)) {
+      typeSpec.addOriginatingElement((TypeElement) mountSpecModel.getRepresentedObject());
+    }
 
     if (mountSpecModel.isPublic()) {
       typeSpec.addModifiers(Modifier.PUBLIC);
@@ -73,7 +81,9 @@ public class DefaultMountSpecGenerator implements SpecGenerator<MountSpecModel> 
         .addTypeSpecDataHolder(TreePropGenerator.generate(mountSpecModel))
         .addTypeSpecDataHolder(
             DelegateMethodGenerator.generateDelegates(
-                mountSpecModel, DelegateMethodDescriptions.MOUNT_SPEC_DELEGATE_METHODS_MAP))
+                mountSpecModel,
+                DelegateMethodDescriptions.MOUNT_SPEC_DELEGATE_METHODS_MAP,
+                runMode))
         .addTypeSpecDataHolder(MountSpecGenerator.generateGetMountType(mountSpecModel))
         .addTypeSpecDataHolder(MountSpecGenerator.generatePoolSize(mountSpecModel))
         .addTypeSpecDataHolder(MountSpecGenerator.generateCanPreallocate(mountSpecModel))
@@ -89,6 +99,7 @@ public class DefaultMountSpecGenerator implements SpecGenerator<MountSpecModel> 
         .addTypeSpecDataHolder(RenderDataGenerator.generate(mountSpecModel))
         .addTypeSpecDataHolder(BuilderGenerator.generate(mountSpecModel))
         .addTypeSpecDataHolder(TagGenerator.generate(mountSpecModel, mBlacklistedTagInterfaces))
+        .addTypeSpecDataHolder(CachedValueGenerator.generate(mountSpecModel))
         .build()
         .addToTypeSpec(typeSpec);
 
