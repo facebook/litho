@@ -33,7 +33,6 @@ import com.facebook.yoga.YogaEdge;
 import com.google.common.collect.ImmutableList;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @LayoutSpec
 public class HorizontalScrollRootComponentSpec {
@@ -42,8 +41,8 @@ public class HorizontalScrollRootComponentSpec {
   static void createInitialState(
       ComponentContext c,
       StateValue<ImmutableList<Pair<String, Integer>>> items,
-      StateValue<AtomicInteger> prependCounter,
-      StateValue<AtomicInteger> appendCounter) {
+      StateValue<Integer> prependCounter,
+      StateValue<Integer> appendCounter) {
     final List<Pair<String, Integer>> initialItems = new ArrayList<>();
     initialItems.add(new Pair<>("Coral", 0xFFFF7F50));
     initialItems.add(new Pair<>("Ivory", 0xFFFFFFF0));
@@ -56,8 +55,8 @@ public class HorizontalScrollRootComponentSpec {
     initialItems.add(new Pair<>("Moccasin", 0xFFFFE4B5));
     initialItems.add(new Pair<>("LightYellow", 0xFFFFFFE0));
     items.set(new ImmutableList.Builder<Pair<String, Integer>>().addAll(initialItems).build());
-    prependCounter.set(new AtomicInteger(0));
-    appendCounter.set(new AtomicInteger(0));
+    prependCounter.set(0);
+    appendCounter.set(0);
   }
 
   @OnCreateLayout
@@ -81,11 +80,11 @@ public class HorizontalScrollRootComponentSpec {
                         .clickHandler(HorizontalScrollRootComponent.onClick(c, false))
                         .text("APPEND")
                         .textSizeSp(20)))
-        .child(HorizontalScroll.create(c).contentProps(createHorizonalScrollChildren(c, items)))
+        .child(HorizontalScroll.create(c).contentProps(createHorizontalScrollChildren(c, items)))
         .build();
   }
 
-  private static Component createHorizonalScrollChildren(
+  private static Component createHorizontalScrollChildren(
       ComponentContext c, List<Pair<String, Integer>> items) {
     final Row.Builder rowBuilder = Row.create(c);
     for (Pair<String, Integer> colorItem : items) {
@@ -106,17 +105,17 @@ public class HorizontalScrollRootComponentSpec {
   @OnEvent(ClickEvent.class)
   static void onClick(
       ComponentContext c,
-      @State AtomicInteger prependCounter,
-      @State AtomicInteger appendCounter,
+      @State(canUpdateLazily = true) int prependCounter,
+      @State(canUpdateLazily = true) int appendCounter,
       @State ImmutableList<Pair<String, Integer>> items,
       @Param boolean isPrepend) {
     final ArrayList<Pair<String, Integer>> updatedItems = new ArrayList<>(items);
     if (isPrepend) {
-      int counter = prependCounter.getAndAdd(1);
-      updatedItems.add(0, new Pair<>("Prepend#" + counter, 0xFF7CFC00));
+      updatedItems.add(0, new Pair<>("Prepend#" + prependCounter, 0xFF7CFC00));
+      HorizontalScrollRootComponent.lazyUpdatePrependCounter(c, ++prependCounter);
     } else {
-      int counter = appendCounter.getAndAdd(1);
-      updatedItems.add(new Pair<>("Append#" + counter, 0xFF6495ED));
+      updatedItems.add(new Pair<>("Append#" + appendCounter, 0xFF6495ED));
+      HorizontalScrollRootComponent.lazyUpdateAppendCounter(c, ++appendCounter);
     }
     HorizontalScrollRootComponent.updateItems(
         c, new ImmutableList.Builder<Pair<String, Integer>>().addAll(updatedItems).build());
