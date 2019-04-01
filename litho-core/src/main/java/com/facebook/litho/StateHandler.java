@@ -233,7 +233,7 @@ public class StateHandler {
     copyPendingStateTransitions(stateHandler.getPendingStateUpdateTransitions());
   }
 
-  private void clearStateUpdates(Map<String, List<StateUpdate>> appliedStateUpdates) {
+  private void clearStateUpdates(@Nullable Map<String, List<StateUpdate>> appliedStateUpdates) {
     synchronized (this) {
       if (appliedStateUpdates == null
           || mPendingStateUpdates == null
@@ -290,6 +290,7 @@ public class StateHandler {
     return mStateContainers;
   }
 
+  @Nullable
   synchronized Map<String, List<StateUpdate>> getPendingStateUpdates() {
     return mPendingStateUpdates;
   }
@@ -309,7 +310,6 @@ public class StateHandler {
     return mAppliedStateUpdates;
   }
 
-  @Nullable
   synchronized void consumePendingStateUpdateTransitions(
       List<Transition> outList, @Nullable String logContext) {
     if (mPendingStateUpdateTransitions == null) {
@@ -342,13 +342,13 @@ public class StateHandler {
   }
 
   /**
-   * @return copy the information from the given map of state updates into the map of pending state
-   *     updates.
+   * Copies the information from the given map of state updates into the map of pending state
+   * updates.
    */
   private void copyStateUpdatesMap(
-      Map<String, List<StateUpdate>> pendingStateUpdates,
-      Map<String, List<StateUpdate>> pendingLazyStateUpdates,
-      Map<String, List<StateUpdate>> appliedStateUpdates) {
+      @Nullable Map<String, List<StateUpdate>> pendingStateUpdates,
+      @Nullable Map<String, List<StateUpdate>> pendingLazyStateUpdates,
+      @Nullable Map<String, List<StateUpdate>> appliedStateUpdates) {
 
     if ((pendingStateUpdates == null || pendingStateUpdates.isEmpty())
         && (appliedStateUpdates == null || appliedStateUpdates.isEmpty())) {
@@ -377,8 +377,8 @@ public class StateHandler {
   }
 
   /**
-   * @return copy the list of given state containers into the map that holds the current
-   * state containers of components.
+   * Copies the list of given state containers into the map that holds the current state containers
+   * of components.
    */
   private void copyCurrentStateContainers(Map<String, StateContainer> stateContainers) {
     if (stateContainers == null || stateContainers.isEmpty()) {
