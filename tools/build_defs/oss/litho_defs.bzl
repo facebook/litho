@@ -1,3 +1,5 @@
+load(":glob_defs.bzl", "subdir_glob")
+
 LITHO_ROOT = "//"
 
 LITHO_VISIBILITY = [
@@ -324,7 +326,7 @@ def define_fbjni_targets():
         platform_srcs = [
             (
                 "^(?!android-arm$).*$",
-                glob([
+                native.glob([
                     "src/main/cpp/lyra/*.cpp",
                 ]),
             ),
