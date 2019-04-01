@@ -3,6 +3,7 @@
   nuiton = http://maven.nuiton.org/release/
   central = https://repo1.maven.org/maven2/
   google = https://maven.google.com/
+  jetbrains = https://www.jetbrains.com/intellij-repository/releases
 
 [ndk]
   ndk_version = 15.2.4203891
