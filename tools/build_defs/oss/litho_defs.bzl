@@ -126,6 +126,8 @@ LITHO_FBJNI_TARGET = make_dep_path("lib/fbjni:jni")
 
 LITHO_GUAVA_TARGET = make_dep_path("lib/guava:guava")
 
+INTELLIJ_PLUGIN_SDK = make_dep_path("lib/intellij-plugin-sdk:intellij-plugin-sdk")
+
 LITHO_DIFFUTILS_TARGET = make_dep_path("lib/diff-utils:diff-utils")
 
 LITHO_ESPRESSO_TARGET = make_dep_path("lib/espresso:espresso")
