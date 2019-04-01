@@ -20,6 +20,13 @@ import static com.facebook.litho.ComponentLifecycle.StateUpdate;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
 import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyBoolean;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 
 import android.os.Looper;
 import com.facebook.litho.stats.LithoStats;
@@ -46,12 +53,24 @@ public class StateUpdatesTest {
   private int mWidthSpec;
   private int mHeightSpec;
 
-  private static class TestStateUpdate implements StateUpdate {
+  private static class NoopStateUpdate implements StateUpdate {
+    @Override
+    public void updateState(StateContainer stateContainer) {}
+  }
 
+  private static class TestStateUpdate implements StateUpdate {
     @Override
     public void updateState(StateContainer stateContainer) {
       TestStateContainer stateContainerImpl = (TestStateContainer) stateContainer;
       stateContainerImpl.mCount = stateContainerImpl.mCount + 1;
+    }
+  }
+
+  private static class MultiplyStateUpdate implements StateUpdate {
+    @Override
+    public void updateState(StateContainer stateContainer) {
+      TestStateContainer stateContainerImpl = (TestStateContainer) stateContainer;
+      stateContainerImpl.mCount = stateContainerImpl.mCount * 2;
     }
   }
 
@@ -152,11 +171,11 @@ public class StateUpdatesTest {
   private LithoView mLithoView;
 
   @Before
-  public void setup() throws Exception {
-    setup(false);
+  public void setup() {
+    setup(false, false);
   }
 
-  public void setup(boolean enableNestedTreeResolutionExeperiment) throws Exception {
+  public void setup(boolean enableNestedTreeResolutionExperiment, boolean enableComponentTreeSpy) {
     mComponentsLogger = new TestComponentsLogger();
     mContext = new ComponentContext(RuntimeEnvironment.application, mLogTag, mComponentsLogger);
     mWidthSpec = makeSizeSpec(39, EXACTLY);
@@ -170,8 +189,13 @@ public class StateUpdatesTest {
 
     mComponentTree =
         ComponentTree.create(mContext, mTestComponent)
-            .enableNestedTreeResolutionExeperiment(enableNestedTreeResolutionExeperiment)
+            .enableNestedTreeResolutionExeperiment(enableNestedTreeResolutionExperiment)
             .build();
+
+    if (enableComponentTreeSpy) {
+      mComponentTree = spy(mComponentTree);
+    }
+
     mLithoView = new LithoView(mContext);
     mLithoView.setComponentTree(mComponentTree);
     mLithoView.onAttachedToWindow();
@@ -275,8 +299,8 @@ public class StateUpdatesTest {
   }
 
   @Test
-  public void testEnqueueStateUpdate_withExperiment() throws Exception {
-    setup(true);
+  public void testEnqueueStateUpdate_withExperiment() {
+    setup(true, false);
     mComponentTree.updateStateAsync(mTestComponent.getGlobalKey(), new TestStateUpdate(), "test");
     assertThat(getPendingStateUpdatesForComponent(mTestComponent)).hasSize(1);
     mLayoutThreadShadowLooper.runToEndOfTasks();
@@ -290,8 +314,8 @@ public class StateUpdatesTest {
   }
 
   @Test
-  public void testEnqueueStateUpdate_withExperiment_checkAppliedStateUpdate() throws Exception {
-    setup(true);
+  public void testEnqueueStateUpdate_withExperiment_checkAppliedStateUpdate() {
+    setup(true, false);
     mComponentTree.updateStateAsync(mTestComponent.getGlobalKey(), new TestStateUpdate(), "test");
     assertThat(getPendingStateUpdatesForComponent(mTestComponent)).hasSize(1);
     mLayoutThreadShadowLooper.runToEndOfTasks();
@@ -314,6 +338,51 @@ public class StateUpdatesTest {
     mComponentTree.updateStateAsync(mTestComponent.getGlobalKey(), new TestStateUpdate(), "test");
     mLayoutThreadShadowLooper.runToEndOfTasks();
     assertThat(mTestComponent.getComponentForStateUpdate().getCount()).isEqualTo(INITIAL_COUNT_STATE_VALUE + 1);
+  }
+
+  @Test
+  public void testLazyUpdateState_doesNotTriggerRelayout() {
+    setup(false, true);
+    reset(mComponentTree);
+
+    mComponentTree.updateStateLazy(mTestComponent.getGlobalKey(), new TestStateUpdate());
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+
+    verify(mComponentTree, never())
+        .calculateLayoutState(
+            any(), any(), anyInt(), anyInt(), anyBoolean(), any(), any(), anyInt(), any());
+  }
+
+  @Test
+  public void testLazyUpdateState_isCommittedOnlyOnRelayout() {
+    mComponentTree.updateStateLazy(mTestComponent.getGlobalKey(), new TestStateUpdate());
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+    assertThat(mTestComponent.getComponentForStateUpdate().getCount()).isEqualTo(INITIAL_COUNT_STATE_VALUE);
+
+    mComponentTree.updateStateAsync(mTestComponent.getGlobalKey(), new NoopStateUpdate(), "test");
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+    assertThat(mTestComponent.getComponentForStateUpdate().getCount()).isEqualTo(INITIAL_COUNT_STATE_VALUE + 1);
+  }
+
+  @Test
+  public void testLazyUpdateState_isCommittedInCorrectOrder() {
+    mComponentTree.updateStateLazy(mTestComponent.getGlobalKey(), new TestStateUpdate());
+    mComponentTree.updateStateLazy(mTestComponent.getGlobalKey(), new MultiplyStateUpdate());
+    mComponentTree.updateStateAsync(mTestComponent.getGlobalKey(), new TestStateUpdate(), "test");
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+    assertThat(mTestComponent.getComponentForStateUpdate().getCount())
+        .isEqualTo((INITIAL_COUNT_STATE_VALUE + 1) * 2 + 1);
+  }
+
+  @Test
+  public void testLazyUpdateState_everyLazyUpdateThatManagesToBeEnqueuedBeforeActualRelayoutGetsCommitted() {
+    mComponentTree.updateStateLazy(mTestComponent.getGlobalKey(), new TestStateUpdate());
+    mComponentTree.updateStateAsync(mTestComponent.getGlobalKey(), new MultiplyStateUpdate(), "test");
+
+    mComponentTree.updateStateLazy(mTestComponent.getGlobalKey(), new TestStateUpdate());
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+    assertThat(mTestComponent.getComponentForStateUpdate().getCount())
+        .isEqualTo((INITIAL_COUNT_STATE_VALUE + 1) * 2 + 1);
   }
 
   @Test

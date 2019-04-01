@@ -253,6 +253,14 @@ public class ComponentContext {
     mComponentTree.updateStateLazy(mComponentScope.getGlobalKey(), stateUpdate);
   }
 
+  public void applyLazyStateUpdatesForContainer(StateContainer container) {
+    if (mComponentTree == null) {
+      return;
+    }
+
+    mComponentTree.applyLazyStateUpdatesForContainer(mComponentScope.getGlobalKey(), container);
+  }
+
   void enterNoStateUpdatesMethod(String noStateUpdatesMethod) {
     mNoStateUpdatesMethod = noStateUpdatesMethod;
   }

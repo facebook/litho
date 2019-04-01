@@ -30,19 +30,20 @@ import java.util.List;
 import java.util.Map;
 import javax.annotation.concurrent.GuardedBy;
 
-/**
- * Holds information about the current State of the components in a Component Tree.
- */
+/** Holds information about the current State of the components in a Component Tree. */
 public class StateHandler {
 
   private static final int INITIAL_STATE_UPDATE_LIST_CAPACITY = 4;
   private static final int INITIAL_MAP_CAPACITY = 4;
 
-  /**
-   * List of state updates that will be applied during the next layout pass.
-   */
+  /** List of state updates that will be applied during the next layout pass. */
   @GuardedBy("this")
   private Map<String, List<StateUpdate>> mPendingStateUpdates;
+
+  /** List of lazy state updates. */
+  @GuardedBy("this")
+  @Nullable
+  private Map<String, List<StateUpdate>> mPendingLazyStateUpdates;
 
   /** List of transitions from state update that will be applied on next mount. */
   @GuardedBy("this")
@@ -82,7 +83,9 @@ public class StateHandler {
 
     synchronized (this) {
       copyStateUpdatesMap(
-          stateHandler.getPendingStateUpdates(), stateHandler.getAppliedStateUpdates());
+          stateHandler.getPendingStateUpdates(),
+          stateHandler.getPendingLazyStateUpdates(),
+          stateHandler.getAppliedStateUpdates());
       copyCurrentStateContainers(stateHandler.getStateContainers());
       copyPendingStateTransitions(stateHandler.getPendingStateUpdateTransitions());
     }
@@ -99,17 +102,30 @@ public class StateHandler {
   /**
    * Adds a state update to the list of the state updates that will be applied for the given
    * component key during the next layout pass.
+   *
    * @param key the global key of the component
    * @param stateUpdate the state update to apply to the component
+   * @param isLazyStateUpdate the flag to indicate if it's a lazy state update
    */
-  synchronized void queueStateUpdate(String key, StateUpdate stateUpdate) {
+  synchronized void queueStateUpdate(
+      String key, StateUpdate stateUpdate, boolean isLazyStateUpdate) {
     maybeInitStateUpdatesMap();
 
-    List<StateUpdate> pendingStateUpdatesForKey = mPendingStateUpdates.get(key);
+    addStateUpdateForKey(key, stateUpdate, mPendingStateUpdates);
+
+    if (isLazyStateUpdate) {
+      maybeInitLazyStateUpdatesMap();
+      addStateUpdateForKey(key, stateUpdate, mPendingLazyStateUpdates);
+    }
+  }
+
+  private static void addStateUpdateForKey(
+      String key, StateUpdate stateUpdate, Map<String, List<StateUpdate>> map) {
+    List<StateUpdate> pendingStateUpdatesForKey = map.get(key);
 
     if (pendingStateUpdatesForKey == null) {
       pendingStateUpdatesForKey = StateHandler.createStateUpdatesList();
-      mPendingStateUpdates.put(key, pendingStateUpdatesForKey);
+      map.put(key, pendingStateUpdatesForKey);
     }
 
     pendingStateUpdatesForKey.add(stateUpdate);
@@ -119,6 +135,7 @@ public class StateHandler {
    * Sets the initial value for a state or transfers the previous state value to the new component,
    * then applies all the states updates that have been enqueued for the new component's global key.
    * Assumed thread-safe because the one write is before all the reads.
+   *
    * @param component the new component
    */
   @ThreadSafe(enableChecks = false)
@@ -147,9 +164,7 @@ public class StateHandler {
     final List<StateUpdate> stateUpdatesForKey;
 
     synchronized (this) {
-      stateUpdatesForKey = mPendingStateUpdates == null
-          ? null
-          : mPendingStateUpdates.get(key);
+      stateUpdatesForKey = mPendingStateUpdates == null ? null : mPendingStateUpdates.get(key);
     }
 
     // If there are no state updates pending for this component, simply store its current state.
@@ -162,7 +177,10 @@ public class StateHandler {
 
       if (component.getScopedContext().isNestedTreeResolutionExperimentEnabled()) {
         synchronized (this) {
-          mPendingStateUpdates.remove(key); // remove to pending
+          mPendingStateUpdates.remove(key); // remove from pending
+          if (mPendingLazyStateUpdates != null) {
+            mPendingLazyStateUpdates.remove(key); // remove from pending lazy
+          }
           mAppliedStateUpdates.put(key, stateUpdatesForKey); // add to applied
         }
       }
@@ -178,6 +196,22 @@ public class StateHandler {
           maybeInitPendingStateUpdateTransitions();
           mPendingStateUpdateTransitions.put(key, transitions);
         }
+      }
+    }
+  }
+
+  @ThreadSafe(enableChecks = false)
+  void applyLazyStateUpdatesForContainer(String componentKey, StateContainer container) {
+    final List<StateUpdate> stateUpdatesForKey;
+
+    synchronized (this) {
+      stateUpdatesForKey =
+          mPendingLazyStateUpdates == null ? null : mPendingLazyStateUpdates.get(componentKey);
+    }
+
+    if (stateUpdatesForKey != null) {
+      for (StateUpdate update : stateUpdatesForKey) {
+        update.updateState(container);
       }
     }
   }
@@ -201,17 +235,20 @@ public class StateHandler {
 
   private void clearStateUpdates(Map<String, List<StateUpdate>> appliedStateUpdates) {
     synchronized (this) {
-      if (appliedStateUpdates == null ||
-          mPendingStateUpdates == null ||
-          mPendingStateUpdates.isEmpty()) {
+      if (appliedStateUpdates == null
+          || mPendingStateUpdates == null
+          || mPendingStateUpdates.isEmpty()) {
         return;
       }
     }
 
     for (String key : appliedStateUpdates.keySet()) {
       final List<StateUpdate> pendingStateUpdatesForKey;
+      final List<StateUpdate> pendingLazyStateUpdatesForKey;
       synchronized (this) {
         pendingStateUpdatesForKey = mPendingStateUpdates.get(key);
+        pendingLazyStateUpdatesForKey =
+            mPendingLazyStateUpdates == null ? null : mPendingLazyStateUpdates.get(key);
       }
 
       if (pendingStateUpdatesForKey == null) {
@@ -222,9 +259,15 @@ public class StateHandler {
       if (pendingStateUpdatesForKey.size() == appliedStateUpdatesForKey.size()) {
         synchronized (this) {
           mPendingStateUpdates.remove(key);
+          if (mPendingLazyStateUpdates != null) {
+            mPendingLazyStateUpdates.remove(key);
+          }
         }
       } else {
         pendingStateUpdatesForKey.removeAll(appliedStateUpdatesForKey);
+        if (pendingLazyStateUpdatesForKey != null) {
+          pendingLazyStateUpdatesForKey.removeAll(appliedStateUpdatesForKey);
+        }
       }
     }
   }
@@ -233,7 +276,7 @@ public class StateHandler {
     return createStateUpdatesList(null);
   }
 
-  private static List<StateUpdate> createStateUpdatesList(List<StateUpdate> copyFrom) {
+  private static List<StateUpdate> createStateUpdatesList(@Nullable List<StateUpdate> copyFrom) {
     List<StateUpdate> list =
         new ArrayList<>(copyFrom == null ? INITIAL_STATE_UPDATE_LIST_CAPACITY : copyFrom.size());
     if (copyFrom != null) {
@@ -249,6 +292,11 @@ public class StateHandler {
 
   synchronized Map<String, List<StateUpdate>> getPendingStateUpdates() {
     return mPendingStateUpdates;
+  }
+
+  @Nullable
+  synchronized Map<String, List<StateUpdate>> getPendingLazyStateUpdates() {
+    return mPendingLazyStateUpdates;
   }
 
   @Nullable
@@ -299,6 +347,7 @@ public class StateHandler {
    */
   private void copyStateUpdatesMap(
       Map<String, List<StateUpdate>> pendingStateUpdates,
+      Map<String, List<StateUpdate>> pendingLazyStateUpdates,
       Map<String, List<StateUpdate>> appliedStateUpdates) {
 
     if ((pendingStateUpdates == null || pendingStateUpdates.isEmpty())
@@ -311,6 +360,12 @@ public class StateHandler {
       if (pendingStateUpdates != null) {
         for (String key : pendingStateUpdates.keySet()) {
           mPendingStateUpdates.put(key, createStateUpdatesList(pendingStateUpdates.get(key)));
+        }
+      }
+      if (pendingLazyStateUpdates != null) {
+        maybeInitLazyStateUpdatesMap();
+        for (String key : pendingLazyStateUpdates.keySet()) {
+          mPendingLazyStateUpdates.put(key, createStateUpdatesList(pendingLazyStateUpdates.get(key)));
         }
       }
       if (appliedStateUpdates != null) {
@@ -390,6 +445,12 @@ public class StateHandler {
 
     if (mAppliedStateUpdates == null) {
       mAppliedStateUpdates = new HashMap<>(INITIAL_MAP_CAPACITY);
+    }
+  }
+
+  private synchronized void maybeInitLazyStateUpdatesMap() {
+    if (mPendingLazyStateUpdates == null) {
+      mPendingLazyStateUpdates = new HashMap<>(INITIAL_MAP_CAPACITY);
     }
   }
 }

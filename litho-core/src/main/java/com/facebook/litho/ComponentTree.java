@@ -1083,7 +1083,20 @@ public class ComponentTree {
       return;
     }
 
-    mStateHandler.queueStateUpdate(componentKey, stateUpdate);
+    mStateHandler.queueStateUpdate(componentKey, stateUpdate, true);
+  }
+
+  void applyLazyStateUpdatesForContainer(String componentKey, StateContainer container) {
+    StateHandler stateHandler;
+    synchronized (this) {
+      if (mRoot == null) {
+        return;
+      }
+
+      stateHandler = mStateHandler;
+    }
+
+    stateHandler.applyLazyStateUpdatesForContainer(componentKey, container);
   }
 
   void updateStateSync(String componentKey, StateUpdate stateUpdate, String attribution) {
@@ -1093,7 +1106,7 @@ public class ComponentTree {
         return;
       }
 
-      mStateHandler.queueStateUpdate(componentKey, stateUpdate);
+      mStateHandler.queueStateUpdate(componentKey, stateUpdate, false);
     }
 
     LithoStats.incStateUpdateSync(1);
@@ -1142,7 +1155,7 @@ public class ComponentTree {
         return;
       }
 
-      mStateHandler.queueStateUpdate(componentKey, stateUpdate);
+      mStateHandler.queueStateUpdate(componentKey, stateUpdate, false);
     }
 
     updateStateInternal(true, attribution);
