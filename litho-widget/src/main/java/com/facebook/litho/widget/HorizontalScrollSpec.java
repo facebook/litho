@@ -97,6 +97,7 @@ class HorizontalScrollSpec {
       int heightSpec,
       Size size,
       @Prop Component contentProps,
+      @State ComponentTree childComponentTree,
       Output<Integer> measuredComponentWidth,
       Output<Integer> measuredComponentHeight) {
 
@@ -107,6 +108,8 @@ class HorizontalScrollSpec {
 
     // Measure the component with undefined width spec, as the contents of the
     // hscroll have unlimited horizontal space.
+    childComponentTree.setRootAndSizeSpec(
+        contentProps, SizeSpec.makeSizeSpec(0, UNSPECIFIED), heightSpec, contentSize);
     contentProps.measure(context, SizeSpec.makeSizeSpec(0, UNSPECIFIED), heightSpec, contentSize);
 
     measuredWidth = contentSize.width;
@@ -129,6 +132,7 @@ class HorizontalScrollSpec {
       ComponentLayout layout,
       @Prop Component contentProps,
       @Prop(optional = true) boolean fillViewport,
+      @State ComponentTree childComponentTree,
       @FromMeasure Integer measuredComponentWidth,
       @FromMeasure Integer measuredComponentHeight,
       Output<Integer> componentWidth,
@@ -147,8 +151,8 @@ class HorizontalScrollSpec {
       final int measuredHeight;
 
       Size contentSize = new Size();
-      contentProps.measure(
-          context,
+      childComponentTree.setRootAndSizeSpec(
+          contentProps,
           SizeSpec.makeSizeSpec(0, UNSPECIFIED),
           SizeSpec.makeSizeSpec(layout.getHeight(), EXACTLY),
           contentSize);
@@ -172,18 +176,18 @@ class HorizontalScrollSpec {
   static void onMount(
       final ComponentContext context,
       final HorizontalScrollLithoView horizontalScrollLithoView,
-      @Prop Component contentProps,
       @Prop(optional = true, resType = ResType.BOOL) boolean scrollbarEnabled,
       @Prop(optional = true) HorizontalScrollEventsController eventsController,
       @Prop(optional = true) final OnScrollChangeListener onScrollChangeListener,
       @State final ScrollPosition lastScrollPosition,
+      @State ComponentTree childComponentTree,
       @FromBoundsDefined int componentWidth,
       @FromBoundsDefined int componentHeight,
       @FromBoundsDefined final YogaDirection layoutDirection) {
 
     horizontalScrollLithoView.setHorizontalScrollBarEnabled(scrollbarEnabled);
     horizontalScrollLithoView.mount(
-        contentProps, lastScrollPosition, onScrollChangeListener, componentWidth, componentHeight);
+        childComponentTree, lastScrollPosition, onScrollChangeListener, componentWidth, componentHeight);
     final ViewTreeObserver viewTreeObserver = horizontalScrollLithoView.getViewTreeObserver();
     viewTreeObserver.addOnPreDrawListener(
         new ViewTreeObserver.OnPreDrawListener() {
@@ -226,11 +230,20 @@ class HorizontalScrollSpec {
   static void onCreateInitialState(
       ComponentContext c,
       StateValue<ScrollPosition> lastScrollPosition,
+      StateValue<ComponentTree> childComponentTree,
+      @Prop Component contentProps,
       @Prop(optional = true) Integer initialScrollPosition) {
 
     lastScrollPosition.set(
         new ScrollPosition(
             initialScrollPosition == null ? LAST_SCROLL_POSITION_UNSET : initialScrollPosition));
+    childComponentTree.set(
+        ComponentTree.create(
+                new ComponentContext(
+                    c.getAndroidContext(), c.getLogTag(), c.getLogger(), c.getTreePropsCopy()),
+                contentProps)
+            .incrementalMount(false)
+            .build());
   }
 
   static class HorizontalScrollLithoView extends HorizontalScrollView {
@@ -277,19 +290,12 @@ class HorizontalScrollSpec {
     }
 
     void mount(
-        Component component,
+        ComponentTree componentTree,
         final ScrollPosition scrollPosition,
         HorizontalScrollSpec.OnScrollChangeListener onScrollChangeListener,
         int width,
         int height) {
-      if (mLithoView.getComponentTree() == null) {
-        mLithoView.setComponentTree(
-            ComponentTree.create(mLithoView.getComponentContext(), component)
-                .incrementalMount(false)
-                .build());
-      } else {
-        mLithoView.setComponent(component);
-      }
+      mLithoView.setComponentTree(componentTree);
       mScrollPosition = scrollPosition;
       mOnScrollChangeListener = onScrollChangeListener;
       mComponentWidth = width;
