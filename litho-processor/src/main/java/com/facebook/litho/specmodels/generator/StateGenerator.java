@@ -16,6 +16,7 @@
 
 package com.facebook.litho.specmodels.generator;
 
+import static com.facebook.litho.specmodels.generator.GeneratorConstants.STATE_CONTAINER_FIELD_NAME;
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.STATE_TRANSITIONS_FIELD_NAME;
 
 import com.facebook.litho.annotations.Param;
@@ -27,6 +28,7 @@ import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.SpecModelUtils;
 import com.facebook.litho.specmodels.model.StateParamModel;
 import com.facebook.litho.specmodels.model.UpdateStateMethod;
+import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterSpec;
@@ -38,10 +40,9 @@ import java.util.Locale;
 import java.util.Map;
 import javax.lang.model.element.Modifier;
 
-/**
- * Class that generates the state methods for a Component.
- */
+/** Class that generates the state methods for a Component. */
 public class StateGenerator {
+
   private static final String STATE_UPDATE_IMPL_NAME_SUFFIX = "StateUpdate";
   private static final String STATE_CONTAINER_PARAM_NAME = "_stateContainer";
   private static final String STATE_CONTAINER_NAME = "stateContainer";
@@ -55,13 +56,13 @@ public class StateGenerator {
     WITH_TRANSITION,
   }
 
-  private StateGenerator() {
-  }
+  private StateGenerator() {}
 
   public static TypeSpecDataHolder generate(SpecModel specModel) {
     return TypeSpecDataHolder.newBuilder()
         .addTypeSpecDataHolder(generateHasState(specModel))
         .addTypeSpecDataHolder(generateTransferState(specModel))
+        .addTypeSpecDataHolder(generateGetStateContainerWithLazyStateUpdatesApplied(specModel))
         .addTypeSpecDataHolder(generateOnStateUpdateMethods(specModel))
         .addTypeSpecDataHolder(generateStateUpdateClasses(specModel))
         .addTypeSpecDataHolder(generateLazyStateUpdateMethods(specModel))
@@ -128,6 +129,35 @@ public class StateGenerator {
     }
 
     return TypeSpecDataHolder.newBuilder().addMethod(methodSpec.build()).build();
+  }
+
+  static TypeSpecDataHolder generateGetStateContainerWithLazyStateUpdatesApplied(
+      SpecModel specModel) {
+    // Currently we limit Lazy State provisioning only to @OnEvent callbacks.
+    if (!SpecModelUtils.hasLazyState(specModel) || specModel.getEventMethods().size() == 0) {
+      return TypeSpecDataHolder.newBuilder().build();
+    }
+
+    String stateContainerClassName = ComponentBodyGenerator.getStateContainerClassName(specModel);
+    MethodSpec methodSpec =
+        MethodSpec.methodBuilder("getStateContainerWithLazyStateUpdatesApplied")
+            .addModifiers(Modifier.PRIVATE)
+            .returns(ClassName.bestGuess(stateContainerClassName))
+            .addParameter(ParameterSpec.builder(specModel.getContextClass(), "c").build())
+            .addParameter(
+                ParameterSpec.builder(specModel.getComponentTypeName(), "component").build())
+            .addStatement(
+                "$L $L = new $L()",
+                stateContainerClassName,
+                STATE_CONTAINER_NAME,
+                stateContainerClassName)
+            .addStatement(
+                "transferState(component.$L, $L)", STATE_CONTAINER_FIELD_NAME, STATE_CONTAINER_NAME)
+            .addStatement("c.applyLazyStateUpdatesForContainer($L)", STATE_CONTAINER_NAME)
+            .addStatement("return $L", STATE_CONTAINER_NAME)
+            .build();
+
+    return TypeSpecDataHolder.newBuilder().addMethod(methodSpec).build();
   }
 
   static TypeSpecDataHolder generateStateUpdateClasses(SpecModel specModel) {

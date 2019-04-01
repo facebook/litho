@@ -332,6 +332,32 @@ public class StateGeneratorTest {
   }
 
   @Test
+  public void testGenerateStateContainerWithLazyStateUpdatesApplied_noLazyState() {
+    TypeSpecDataHolder dataHolder =
+        StateGenerator.generateGetStateContainerWithLazyStateUpdatesApplied(mSpecModelWithoutState);
+
+    assertThat(dataHolder.getMethodSpecs()).isEmpty();
+  }
+
+  @Test
+  public void testGenerateStateContainerWithLazyStateUpdatesApplied_withLazyState() {
+    TypeSpecDataHolder dataHolder =
+        StateGenerator.generateGetStateContainerWithLazyStateUpdatesApplied(mSpecModelWithState);
+
+    assertThat(dataHolder.getMethodSpecs()).hasSize(1);
+
+    assertThat(dataHolder.getMethodSpecs().get(0).toString())
+        .isEqualTo(
+            "private TestWithStateStateContainer getStateContainerWithLazyStateUpdatesApplied(com.facebook.litho.ComponentContext c,\n"
+                + "    com.facebook.litho.specmodels.generator.StateGeneratorTest.TestWithState component) {\n"
+                + "  TestWithStateStateContainer stateContainer = new TestWithStateStateContainer();\n"
+                + "  transferState(component.mStateContainer, stateContainer);\n"
+                + "  c.applyLazyStateUpdatesForContainer(stateContainer);\n"
+                + "  return stateContainer;\n"
+                + "}\n");
+  }
+
+  @Test
   public void testGenerateOnStateUpdateMethods() {
     TypeSpecDataHolder dataHolder =
         StateGenerator.generateOnStateUpdateMethods(mSpecModelWithState);

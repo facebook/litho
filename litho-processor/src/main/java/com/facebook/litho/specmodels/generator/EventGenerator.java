@@ -31,8 +31,10 @@ import com.facebook.litho.specmodels.model.FieldModel;
 import com.facebook.litho.specmodels.model.MethodParamModel;
 import com.facebook.litho.specmodels.model.MethodParamModelUtils;
 import com.facebook.litho.specmodels.model.SpecMethodModel;
+import com.facebook.litho.specmodels.model.SpecMethodModelUtils;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.SpecModelUtils;
+import com.facebook.litho.specmodels.model.StateParamModel;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterSpec;
@@ -170,6 +172,14 @@ public class EventGenerator {
             componentName,
             ABSTRACT_PARAM_NAME);
 
+    final boolean hasLazyStateParams = SpecMethodModelUtils.hasLazyStateParams(eventMethodModel);
+    if (hasLazyStateParams) {
+      methodSpec.addStatement(
+          "$L stateContainer = getStateContainerWithLazyStateUpdatesApplied(c, $L)",
+          ComponentBodyGenerator.getStateContainerClassName(specModel),
+          REF_VARIABLE_NAME);
+    }
+
     final CodeBlock.Builder delegation = CodeBlock.builder();
 
     final String sourceDelegateAccessor = SpecModelUtils.getSpecAccessor(specModel);
@@ -198,6 +208,9 @@ public class EventGenerator {
           methodParamModel.getTypeName().equals(specModel.getContextClass())) {
         methodSpec.addParameter(methodParamModel.getTypeName(), methodParamModel.getName());
         delegation.add(methodParamModel.getName());
+      } else if (hasLazyStateParams && methodParamModel instanceof StateParamModel) {
+        delegation.add(
+            "($T) stateContainer.$L", methodParamModel.getTypeName(), methodParamModel.getName());
       } else {
         delegation.add(
             "($T) $L.$L",

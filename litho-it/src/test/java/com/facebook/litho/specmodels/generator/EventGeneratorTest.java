@@ -66,7 +66,8 @@ public class EventGeneratorTest {
         @FromEvent long arg4) {}
 
     @OnEvent(Object.class)
-    public void testEventMethod2(@Prop boolean arg0, @State int arg1) {}
+    public void testEventMethod2(
+        @Prop boolean arg0, @State int arg1, @State(canUpdateLazily = true) long arg5) {}
   }
 
   private SpecModel mSpecModel;
@@ -122,9 +123,11 @@ public class EventGeneratorTest {
         .isEqualTo(
             "private void testEventMethod2(com.facebook.litho.HasEventDispatcher _abstract) {\n"
                 + "  Test _ref = (Test) _abstract;\n"
+                + "  TestStateContainer stateContainer = getStateContainerWithLazyStateUpdatesApplied(c, _ref);\n"
                 + "  TestSpec.testEventMethod2(\n"
                 + "    (boolean) _ref.arg0,\n"
-                + "    (int) _ref.mStateContainer.arg1);\n"
+                + "    (int) stateContainer.arg1,\n"
+                + "    (long) stateContainer.arg5);\n"
                 + "}\n");
   }
 

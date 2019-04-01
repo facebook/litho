@@ -419,13 +419,14 @@ public final class TestMount<S extends View> extends Component implements TestTa
   private void testLayoutEvent(
       HasEventDispatcher _abstract, ComponentContext c, View view, int param1) {
     TestMount _ref = (TestMount) _abstract;
+    TestMountStateContainer stateContainer = getStateContainerWithLazyStateUpdatesApplied(c, _ref);
     TestMountSpec.testLayoutEvent(
         c,
         (Object) _ref.prop3,
         (char) _ref.prop5,
         view,
         param1,
-        (long) _ref.mStateContainer.state1,
+        (long) stateContainer.state1,
         (Integer) _ref.getCached());
   }
 
@@ -535,6 +536,14 @@ public final class TestMount<S extends View> extends Component implements TestTa
         (TestMountStateContainer<S>) _nextStateContainer;
     nextStateContainer.state1 = prevStateContainer.state1;
     nextStateContainer.state2 = prevStateContainer.state2;
+  }
+
+  private TestMountStateContainer getStateContainerWithLazyStateUpdatesApplied(ComponentContext c,
+      TestMount component) {
+    TestMountStateContainer stateContainer = new TestMountStateContainer();
+    transferState(component.mStateContainer, stateContainer);
+    c.applyLazyStateUpdatesForContainer(stateContainer);
+    return stateContainer;
   }
 
   protected static void updateCurrentState(ComponentContext c, int someParam) {

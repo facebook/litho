@@ -161,6 +161,16 @@ public class SpecModelUtils {
     return false;
   }
 
+  public static boolean hasLazyState(SpecModel specModel) {
+    for (StateParamModel stateParamModel : specModel.getStateValues()) {
+      if (stateParamModel.canUpdateLazily()) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   /**
    * This method will "expand" the typeArguments of the given type, only if the type is a {@link
    * ClassNames#DIFF} or a {@link java.util.Collection}. Otherwise the typeArguments won't be
