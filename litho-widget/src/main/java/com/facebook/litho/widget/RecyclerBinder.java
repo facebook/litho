@@ -674,6 +674,7 @@ public class RecyclerBinder
   private RecyclerBinder(Builder builder) {
     mComponentContext = builder.componentContext;
     mComponentTreeHolderFactory = builder.componentTreeHolderFactory;
+    mEnableStableIds = builder.enableStableIds;
     mInternalAdapter =
         builder.overrideInternalAdapter != null
             ? builder.overrideInternalAdapter
@@ -751,7 +752,6 @@ public class RecyclerBinder
         new ViewportManager(
             mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition, builder.layoutInfo);
 
-    mEnableStableIds = builder.enableStableIds;
     mInvalidStateLogParamsList = builder.invalidStateLogParamsList;
 
     mAsyncInitRange = builder.asyncInitRange;
@@ -3192,7 +3192,6 @@ public class RecyclerBinder
       implements RecyclerBinderAdapter {
 
     InternalAdapter() {
-      super();
       setHasStableIds(mEnableStableIds);
     }
 
