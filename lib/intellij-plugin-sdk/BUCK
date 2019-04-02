@@ -1,0 +1,47 @@
+# Copyright (c) 2017-present, Facebook, Inc.
+#
+# This source code is licensed under the Apache 2.0 license found in the
+# LICENSE file in the root directory of this source tree.
+load(
+    "//tools/build_defs/oss:fb_native_wrapper.bzl",
+    "fb_native",
+)
+load(
+    "//tools/build_defs/oss:litho_defs.bzl",
+    "LITHO_VISIBILITY",
+    "fb_java_library",
+)
+load(":intellij_plugin_def.bzl", "fb_unzip")
+
+fb_java_library(
+    name = "intellij-plugin-sdk",
+    visibility = LITHO_VISIBILITY,
+    exported_deps = [
+        ":plugin_sdk",
+    ],
+)
+
+fb_unzip(
+    jars = {
+        "annotations": "lib/annotations.jar",
+        "java-api": "lib/java-api.jar",
+        "java-impl": "lib/java-impl.jar",
+        "platform-api": "lib/platform-api.jar",
+        "platform-impl": "lib/platform-impl.jar",
+        "util": "lib/util.jar",
+    },
+    target_name = "plugin_sdk",
+    zipfile = ":ideaIC-zip",
+)
+
+fb_native.prebuilt_jar(
+    name = "ideaIC-zip",
+    binary_jar = ":ideaIC-remote",
+    visibility = LITHO_VISIBILITY,
+)
+
+fb_native.remote_file(
+    name = "ideaIC-remote",
+    sha1 = "bca8eca38b75ec812c68f895ad3a312d857c6748",
+    url = "mvn:com.jetbrains.intellij.idea:ideaIC:zip:181.5540.23",
+)
