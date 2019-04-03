@@ -896,8 +896,7 @@ public class ComponentTree {
       // that means we're computing an async layout with a new root which can just be applied when
       // it finishes, assuming it has compatible width/height specs
       final boolean shouldCalculateNewLayout =
-          mMainThreadLayoutState == null
-              || !isCompatibleSpec(mMainThreadLayoutState, mWidthSpec, mHeightSpec)
+          !isCompatibleSpec(mMainThreadLayoutState, mWidthSpec, mHeightSpec)
               || (!mMainThreadLayoutState.isForComponentId(mRoot.getId())
                   && !isPendingLayoutCompatible());
 
@@ -1718,24 +1717,20 @@ public class ComponentTree {
           !hasCompatibleComponentAndSpec()
               && isCompatibleSpec(localLayoutState, mWidthSpec, mHeightSpec);
       if (noCompatibleComponent) {
-
-        if (localLayoutState != null) {
-          final StateHandler layoutStateStateHandler =
-              localLayoutState.consumeStateHandler();
-          if (layoutStateStateHandler != null) {
-            if (mStateHandler != null) { // we could have been released
-              mStateHandler.commit(layoutStateStateHandler, mNestedTreeResolutionExperimentEnabled);
-            }
+        final StateHandler layoutStateStateHandler = localLayoutState.consumeStateHandler();
+        if (layoutStateStateHandler != null) {
+          if (mStateHandler != null) { // we could have been released
+            mStateHandler.commit(layoutStateStateHandler, mNestedTreeResolutionExperimentEnabled);
           }
-
-          if (mMeasureListener != null) {
-            rootWidth = localLayoutState.getWidth();
-            rootHeight = localLayoutState.getHeight();
-          }
-
-          components = new ArrayList<>(localLayoutState.getComponents());
-          localLayoutState.clearComponents();
         }
+
+        if (mMeasureListener != null) {
+          rootWidth = localLayoutState.getWidth();
+          rootHeight = localLayoutState.getHeight();
+        }
+
+        components = new ArrayList<>(localLayoutState.getComponents());
+        localLayoutState.clearComponents();
 
         // Set the new layout state.
         mBackgroundLayoutState = localLayoutState;
