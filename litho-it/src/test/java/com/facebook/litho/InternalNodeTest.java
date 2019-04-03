@@ -40,9 +40,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.robolectric.RuntimeEnvironment.application;
 
+import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.widget.SolidColor;
 import com.facebook.litho.widget.Text;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaNode;
@@ -427,6 +429,45 @@ public class InternalNodeTest {
         .emitMessage(
             ComponentsLogger.LogLevel.WARNING,
             "You should not set alignSelf, flex to a root layout in Column");
+  }
+
+  @Test
+  public void testDeepClone() {
+    final ComponentContext context = new ComponentContext(RuntimeEnvironment.application);
+    InternalNode layout =
+        createAndMeasureTreeForComponent(
+            context,
+            Column.create(context)
+                .child(Row.create(context).child(Column.create(context)))
+                .child(Column.create(context).child(Row.create(context)))
+                .child(SolidColor.create(context).color(Color.RED))
+                .build(),
+            makeSizeSpec(0, UNSPECIFIED),
+            makeSizeSpec(0, UNSPECIFIED));
+
+    InternalNode cloned = layout.deepClone();
+
+    assertThat(cloned).isNotNull();
+
+    assertThat(cloned).isNotSameAs(layout);
+
+    assertThat(cloned.getYogaNode()).isNotSameAs(layout.getYogaNode());
+
+    assertThat(cloned.getChildCount()).isEqualTo(layout.getChildCount());
+
+    assertThat(cloned.getChildAt(0).getRootComponent())
+        .isSameAs(layout.getChildAt(0).getRootComponent());
+    assertThat(cloned.getChildAt(1).getRootComponent())
+        .isSameAs(layout.getChildAt(1).getRootComponent());
+    assertThat(cloned.getChildAt(2).getRootComponent())
+        .isSameAs(layout.getChildAt(2).getRootComponent());
+
+    assertThat(cloned.getChildAt(0).getYogaNode()).isNotSameAs(layout.getChildAt(0).getYogaNode());
+    assertThat(cloned.getChildAt(1).getYogaNode()).isNotSameAs(layout.getChildAt(1).getYogaNode());
+    assertThat(cloned.getChildAt(2).getYogaNode()).isNotSameAs(layout.getChildAt(2).getYogaNode());
+
+    assertThat(cloned.getChildAt(0).getChildAt(0)).isNotSameAs(layout.getChildAt(0).getChildAt(0));
+    assertThat(cloned.getChildAt(1).getChildAt(0)).isNotSameAs(layout.getChildAt(1).getChildAt(0));
   }
 
   private static boolean isFlagSet(InternalNode internalNode, String flagName) {

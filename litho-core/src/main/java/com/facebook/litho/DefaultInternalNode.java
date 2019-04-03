@@ -72,7 +72,7 @@ import javax.annotation.Nullable;
 /** Default implementation of {@link InternalNode}. */
 @OkToExtend
 @ThreadConfined(ThreadConfined.ANY)
-public class DefaultInternalNode implements InternalNode {
+public class DefaultInternalNode implements InternalNode, Cloneable {
 
   // Used to check whether or not the framework can use style IDs for
   // paddingStart/paddingEnd due to a bug in some Android devices.
@@ -113,7 +113,7 @@ public class DefaultInternalNode implements InternalNode {
   private static final long PFLAG_VISIBLE_RECT_CHANGED_HANDLER_IS_SET = 1L << 31;
   private static final long PFLAG_TRANSITION_KEY_TYPE_IS_SET = 1L << 32;
 
-  private final YogaNode mYogaNode;
+  private YogaNode mYogaNode;
   private final ComponentContext mComponentContext;
 
   @ThreadConfined(ThreadConfined.ANY)
@@ -1611,6 +1611,40 @@ public class DefaultInternalNode implements InternalNode {
         final int layoutDirection = a.getInteger(attr, -1);
         layoutDirection(YogaDirection.fromInt(layoutDirection));
       }
+    }
+  }
+
+  @Override
+  public DefaultInternalNode deepClone() {
+
+    // 1. Return the null layout.
+    if (this == NULL_LAYOUT) {
+      return this;
+    }
+
+    // 2. Clone this layout.
+    final DefaultInternalNode copy = clone();
+
+    // 3.  Clone the YogaNode of this layout and set it on the cloned layout.
+    YogaNode node = mYogaNode.cloneWithoutChildren();
+    copy.mYogaNode = node;
+    node.setData(copy);
+
+    // 4. Deep clone all children and add it to the cloned YogaNode
+    final int count = getChildCount();
+    for (int i = 0; i < count; i++) {
+      copy.addChildAt(getChildAt(i).deepClone(), i);
+    }
+
+    return copy;
+  }
+
+  protected DefaultInternalNode clone() {
+    try {
+      return (DefaultInternalNode) super.clone();
+    } catch (CloneNotSupportedException e) {
+      e.printStackTrace();
+      throw new RuntimeException(e);
     }
   }
 
