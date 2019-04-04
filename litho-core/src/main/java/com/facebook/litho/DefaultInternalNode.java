@@ -181,7 +181,7 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
     this(componentContext, createYogaNode(componentContext), createDebugComponentsInCtor);
   }
 
-  private DefaultInternalNode(
+  protected DefaultInternalNode(
       ComponentContext componentContext, YogaNode yogaNode, boolean createDebugComponentsInCtor) {
     if (createDebugComponentsInCtor) {
       mDebugComponents = new HashSet<>();
