@@ -108,6 +108,9 @@ public final class Row extends Component {
 
     if (children != null) {
         for (Component child : children) {
+        if (c.wasLayoutCanceled()) {
+          return ComponentContext.NULL_LAYOUT;
+        }
           node.child(child);
         }
     }

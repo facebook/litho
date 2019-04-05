@@ -495,4 +495,8 @@ public class ComponentContext {
       return false;
     }
   }
+
+  boolean wasLayoutCanceled() {
+    return mLayoutStateFuture == null ? false : mLayoutStateFuture.isReleased();
+  }
 }
