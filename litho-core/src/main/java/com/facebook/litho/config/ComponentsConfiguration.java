@@ -208,6 +208,8 @@ public class ComponentsConfiguration {
   /** If true, information about RenderInfos will be passed to Flipper's layout inspector. */
   public static boolean enableRenderInfoDebugging = false;
 
+  public static boolean useCancelableLayoutFutures;
+
   public static boolean isRenderInfoDebuggingEnabled() {
     return isDebugModeEnabled && enableRenderInfoDebugging;
   }

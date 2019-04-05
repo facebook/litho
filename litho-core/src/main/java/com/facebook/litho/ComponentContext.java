@@ -77,6 +77,8 @@ public class ComponentContext {
   @ThreadConfined(ThreadConfined.ANY)
   private int mDefStyleAttr = 0;
 
+  private ComponentTree.LayoutStateFuture mLayoutStateFuture;
+
   public ComponentContext(
       Context context,
       @Nullable String logTag,
@@ -104,7 +106,8 @@ public class ComponentContext {
       ComponentContext context,
       @Nullable StateHandler stateHandler,
       @Nullable KeyHandler keyHandler,
-      @Nullable TreeProps treeProps) {
+      @Nullable TreeProps treeProps,
+      @Nullable ComponentTree.LayoutStateFuture layoutStateFuture) {
 
     mContext = context.getAndroidContext();
     mResourceCache = context.mResourceCache;
@@ -122,6 +125,7 @@ public class ComponentContext {
     mStateHandler = stateHandler != null ? stateHandler : context.mStateHandler;
     mKeyHandler = keyHandler != null ? keyHandler : context.mKeyHandler;
     mTreeProps = treeProps != null ? treeProps : context.mTreeProps;
+    mLayoutStateFuture = layoutStateFuture == null ? context.mLayoutStateFuture : layoutStateFuture;
   }
 
   public ComponentContext(
@@ -163,7 +167,12 @@ public class ComponentContext {
   }
 
   public ComponentContext(ComponentContext context) {
-    this(context, context.mStateHandler, context.mKeyHandler, context.mTreeProps);
+    this(
+        context,
+        context.mStateHandler,
+        context.mKeyHandler,
+        context.mTreeProps,
+        context.mLayoutStateFuture);
   }
 
   public ComponentContext(Context context) {
@@ -446,7 +455,7 @@ public class ComponentContext {
 
   static ComponentContext withComponentTree(ComponentContext context, ComponentTree componentTree) {
     ComponentContext componentContext =
-        new ComponentContext(context, new StateHandler(), null, null);
+        new ComponentContext(context, new StateHandler(), null, null, null);
     componentContext.mComponentTree = componentTree;
 
     return componentContext;

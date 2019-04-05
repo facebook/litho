@@ -171,6 +171,7 @@ public class ComponentTree {
 
   private final boolean mUseSharedLayoutStateFuture;
   private final Object mLayoutStateFutureLock = new Object();
+  private final boolean mUseCancelableLayoutFutures;
 
   @GuardedBy("mLayoutStateFutureLock")
   private final List<LayoutStateFuture> mLayoutStateFutures = new ArrayList<>();
@@ -278,6 +279,7 @@ public class ComponentTree {
     mNestedTreeResolutionExperimentEnabled = builder.nestedTreeResolutionExperimentEnabled;
     mUseSharedLayoutStateFuture = builder.useSharedLayoutStateFuture;
     mIsPersistenceEnabled = builder.isPersistenceEnabled;
+    mUseCancelableLayoutFutures = ComponentsConfiguration.useCancelableLayoutFutures;
 
     ensureLayoutThreadHandler();
 
@@ -2038,7 +2040,8 @@ public class ComponentTree {
           previousLayoutState,
           treeProps,
           source,
-          extraAttribution);
+          extraAttribution,
+          null);
     }
   }
 
@@ -2051,7 +2054,8 @@ public class ComponentTree {
       @Nullable LayoutState previousLayoutState,
       @Nullable TreeProps treeProps,
       @CalculateLayoutSource int source,
-      @Nullable String extraAttribution) {
+      @Nullable String extraAttribution,
+      @Nullable LayoutStateFuture layoutStateFuture) {
     final ComponentContext contextWithStateHandler;
 
     synchronized (this) {
@@ -2062,7 +2066,11 @@ public class ComponentTree {
 
       contextWithStateHandler =
           new ComponentContext(
-              context, StateHandler.createNewInstance(mStateHandler), keyHandler, treeProps);
+              context,
+              StateHandler.createNewInstance(mStateHandler),
+              keyHandler,
+              treeProps,
+              layoutStateFuture);
     }
 
     return LayoutState.calculate(
@@ -2142,7 +2150,10 @@ public class ComponentTree {
                           previousLayoutState,
                           treeProps,
                           source,
-                          extraAttribution);
+                          extraAttribution,
+                          ComponentTree.this.mUseSharedLayoutStateFuture
+                              ? LayoutStateFuture.this
+                              : null);
                   synchronized (LayoutStateFuture.this) {
                     if (released) {
                       return null;
@@ -2161,6 +2172,10 @@ public class ComponentTree {
       }
       layoutState = null;
       released = true;
+    }
+
+    boolean isReleased() {
+      return released;
     }
 
     void unregisterForResponse() {
