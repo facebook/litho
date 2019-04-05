@@ -93,19 +93,25 @@ class LayoutState {
   @IntDef({
     CalculateLayoutSource.TEST,
     CalculateLayoutSource.NONE,
-    CalculateLayoutSource.SET_ROOT,
-    CalculateLayoutSource.SET_SIZE_SPEC,
-    CalculateLayoutSource.UPDATE_STATE,
+    CalculateLayoutSource.SET_ROOT_SYNC,
+    CalculateLayoutSource.SET_ROOT_ASYNC,
+    CalculateLayoutSource.SET_SIZE_SPEC_SYNC,
+    CalculateLayoutSource.SET_SIZE_SPEC_ASYNC,
+    CalculateLayoutSource.UPDATE_STATE_SYNC,
+    CalculateLayoutSource.UPDATE_STATE_ASYNC,
     CalculateLayoutSource.MEASURE
   })
   @Retention(RetentionPolicy.SOURCE)
   public @interface CalculateLayoutSource {
     int TEST = -2;
     int NONE = -1;
-    int SET_ROOT = 0;
-    int SET_SIZE_SPEC = 1;
-    int UPDATE_STATE = 2;
-    int MEASURE = 3;
+    int SET_ROOT_SYNC = 0;
+    int SET_ROOT_ASYNC = 1;
+    int SET_SIZE_SPEC_SYNC = 2;
+    int SET_SIZE_SPEC_ASYNC = 3;
+    int UPDATE_STATE_SYNC = 4;
+    int UPDATE_STATE_ASYNC = 5;
+    int MEASURE = 6;
   }
 
   static final Comparator<LayoutOutput> sTopsComparator =
@@ -1438,12 +1444,18 @@ class LayoutState {
 
   private static String sourceToString(@CalculateLayoutSource int source) {
     switch (source) {
-      case CalculateLayoutSource.SET_ROOT:
+      case CalculateLayoutSource.SET_ROOT_SYNC:
         return "setRoot";
-      case CalculateLayoutSource.SET_SIZE_SPEC:
+      case CalculateLayoutSource.SET_SIZE_SPEC_SYNC:
         return "setSizeSpec";
-      case CalculateLayoutSource.UPDATE_STATE:
-        return "updateState";
+      case CalculateLayoutSource.UPDATE_STATE_SYNC:
+        return "updateStateSync";
+      case CalculateLayoutSource.SET_ROOT_ASYNC:
+        return "setRootAsync";
+      case CalculateLayoutSource.SET_SIZE_SPEC_ASYNC:
+        return "setSizeSpecAsync";
+      case CalculateLayoutSource.UPDATE_STATE_ASYNC:
+        return "updateStateAsync";
       case CalculateLayoutSource.MEASURE:
         return "measure";
       case CalculateLayoutSource.TEST:

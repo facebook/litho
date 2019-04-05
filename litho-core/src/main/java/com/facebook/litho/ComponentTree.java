@@ -1027,7 +1027,7 @@ public class ComponentTree {
         SIZE_UNINITIALIZED,
         false /* isAsync */,
         null /* output */,
-        CalculateLayoutSource.SET_ROOT,
+        CalculateLayoutSource.SET_ROOT_SYNC,
         null,
         null);
   }
@@ -1074,7 +1074,7 @@ public class ComponentTree {
         SIZE_UNINITIALIZED,
         true /* isAsync */,
         null /* output */,
-        CalculateLayoutSource.SET_ROOT,
+        CalculateLayoutSource.SET_ROOT_ASYNC,
         null,
         null);
   }
@@ -1194,7 +1194,9 @@ public class ComponentTree {
         SIZE_UNINITIALIZED,
         isAsync,
         null /*output */,
-        CalculateLayoutSource.UPDATE_STATE,
+        isAsync
+            ? CalculateLayoutSource.UPDATE_STATE_ASYNC
+            : CalculateLayoutSource.UPDATE_STATE_SYNC,
         attribution,
         rootTreeProps);
   }
@@ -1279,7 +1281,7 @@ public class ComponentTree {
         heightSpec,
         false /* isAsync */,
         output /* output */,
-        CalculateLayoutSource.SET_SIZE_SPEC,
+        CalculateLayoutSource.SET_SIZE_SPEC_SYNC,
         null,
         null);
   }
@@ -1291,7 +1293,7 @@ public class ComponentTree {
         heightSpec,
         true /* isAsync */,
         null /* output */,
-        CalculateLayoutSource.SET_SIZE_SPEC,
+        CalculateLayoutSource.SET_SIZE_SPEC_ASYNC,
         null,
         null);
   }
@@ -1310,7 +1312,7 @@ public class ComponentTree {
         heightSpec,
         true /* isAsync */,
         null /* output */,
-        CalculateLayoutSource.SET_ROOT,
+        CalculateLayoutSource.SET_ROOT_ASYNC,
         null,
         null);
   }
@@ -1330,7 +1332,7 @@ public class ComponentTree {
         heightSpec,
         true /* isAsync */,
         null /* output */,
-        CalculateLayoutSource.SET_ROOT,
+        CalculateLayoutSource.SET_ROOT_ASYNC,
         null,
         treeProps);
   }
@@ -1349,7 +1351,7 @@ public class ComponentTree {
         heightSpec,
         false /* isAsync */,
         null /* output */,
-        CalculateLayoutSource.SET_ROOT,
+        CalculateLayoutSource.SET_ROOT_SYNC,
         null,
         null);
   }
@@ -1365,7 +1367,7 @@ public class ComponentTree {
         heightSpec,
         false /* isAsync */,
         output,
-        CalculateLayoutSource.SET_ROOT,
+        CalculateLayoutSource.SET_ROOT_SYNC,
         null,
         null);
   }
@@ -1382,7 +1384,7 @@ public class ComponentTree {
         heightSpec,
         false /* isAsync */,
         output,
-        CalculateLayoutSource.SET_ROOT,
+        CalculateLayoutSource.SET_ROOT_SYNC,
         null,
         treeProps);
   }
