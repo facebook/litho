@@ -219,6 +219,11 @@ public class ComponentContext {
     return mComponentScope;
   }
 
+  @VisibleForTesting
+  public ComponentTree.LayoutStateFuture getLayoutStateFuture() {
+    return mLayoutStateFuture;
+  }
+
   /**
    * Notify the Component Tree that it needs to synchronously perform a state update.
    *

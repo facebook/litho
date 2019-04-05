@@ -1528,7 +1528,6 @@ public class ComponentTree {
       @CalculateLayoutSource int source,
       String extraAttribution,
       @Nullable TreeProps treeProps) {
-
     synchronized (this) {
       if (mReleased) {
         // If this is coming from a background thread, we may have been released from the main
@@ -1608,17 +1607,25 @@ public class ComponentTree {
     if (isAsync && output != null) {
       throw new IllegalArgumentException("The layout can't be calculated asynchronously if" +
           " we need the Size back");
-    } else if (isAsync) {
+    }
+
+    final LayoutStateFuture layoutStateFuture =
+        mUseSharedLayoutStateFuture && mUseCancelableLayoutFutures
+            ? createLayoutStateFutureAndCancelRunning(
+                mContext, mIsLayoutDiffingEnabled, treeProps, source, extraAttribution)
+            : null;
+
+    if (isAsync) {
       synchronized (mCurrentCalculateLayoutRunnableLock) {
         if (mCurrentCalculateLayoutRunnable != null) {
           mLayoutThreadHandler.removeCallbacks(mCurrentCalculateLayoutRunnable);
         }
         mCurrentCalculateLayoutRunnable =
-            new CalculateLayoutRunnable(source, treeProps, extraAttribution);
+            new CalculateLayoutRunnable(source, treeProps, extraAttribution, layoutStateFuture);
         mLayoutThreadHandler.post(mCurrentCalculateLayoutRunnable);
       }
     } else {
-      calculateLayout(output, source, extraAttribution, treeProps);
+      calculateLayout(output, source, extraAttribution, treeProps, layoutStateFuture);
     }
   }
 
@@ -1632,7 +1639,8 @@ public class ComponentTree {
       @Nullable Size output,
       @CalculateLayoutSource int source,
       @Nullable String extraAttribution,
-      @Nullable TreeProps treeProps) {
+      @Nullable TreeProps treeProps,
+      @Nullable LayoutStateFuture layoutStateFuture) {
     final int widthSpec;
     final int heightSpec;
     final Component root;
@@ -1690,16 +1698,18 @@ public class ComponentTree {
     }
 
     LayoutState localLayoutState =
-        calculateLayoutState(
-            mContext,
-            root,
-            widthSpec,
-            heightSpec,
-            mIsLayoutDiffingEnabled,
-            previousLayoutState,
-            treeProps,
-            source,
-            extraAttribution);
+        layoutStateFuture == null
+            ? calculateLayoutState(
+                mContext,
+                root,
+                widthSpec,
+                heightSpec,
+                mIsLayoutDiffingEnabled,
+                previousLayoutState,
+                treeProps,
+                source,
+                extraAttribution)
+            : calculateLayoutState(layoutStateFuture);
 
     if (output != null) {
       output.width = localLayoutState.getWidth();
@@ -1975,6 +1985,102 @@ public class ComponentTree {
     }
   }
 
+  /**
+   * If there is another compatible layout running, wait on it. Otherwise, release all
+   * LayoutStateFutures that are currently running, because the layout that is about to be scheduled
+   * will make their result redundant.
+   *
+   * @return the LayoutStateFuture which will return the result for the current layout.
+   */
+  private LayoutStateFuture createLayoutStateFutureAndCancelRunning(
+      ComponentContext context,
+      boolean diffingEnabled,
+      @Nullable TreeProps treeProps,
+      @CalculateLayoutSource int source,
+      @Nullable String extraAttribution) {
+
+    final int widthSpec;
+    final int heightSpec;
+    final Component root;
+    LayoutState previousLayoutState = null;
+
+    synchronized (this) {
+      // Can't compute a layout if specs or root are missing
+      if (!hasSizeSpec() || mRoot == null) {
+        return null;
+      }
+
+      widthSpec = mWidthSpec;
+      heightSpec = mHeightSpec;
+      mPendingLayoutWidthSpec = widthSpec;
+      mPendingLayoutHeightSpec = heightSpec;
+      root = mRoot.makeShallowCopy();
+
+      if (mMainThreadLayoutState != null) {
+        previousLayoutState = mMainThreadLayoutState;
+      }
+    }
+
+    LayoutStateFuture localLayoutStateFuture =
+        new LayoutStateFuture(
+            context,
+            root,
+            widthSpec,
+            heightSpec,
+            diffingEnabled,
+            previousLayoutState,
+            treeProps,
+            source,
+            extraAttribution);
+
+    synchronized (mLayoutStateFutureLock) {
+      boolean canReuse = false;
+      for (int i = 0; i < mLayoutStateFutures.size(); i++) {
+        final LayoutStateFuture runningFuture = mLayoutStateFutures.get(i);
+        if (!canReuse && mLayoutStateFutures.get(i).equals(localLayoutStateFuture)) {
+          // Use the latest LayoutState calculation if it's the same.
+          localLayoutStateFuture = runningFuture;
+          canReuse = true;
+        } else {
+          // This means the local layout state future will be run to get the result.
+          // We can cancel all other LayoutStateFutures which are currently running if they are not
+          // needed to get a sync result.
+          if (runningFuture.canBeCancelled()) {
+            runningFuture.release();
+          }
+        }
+      }
+
+      if (!canReuse) {
+        mLayoutStateFutures.add(localLayoutStateFuture);
+      }
+    }
+
+    return localLayoutStateFuture;
+  }
+
+  /** Calculates a LayoutState for the given LayoutStateFuture on the thread that calls this. */
+  private @Nullable LayoutState calculateLayoutState(LayoutStateFuture layoutStateFuture) {
+    layoutStateFuture.registerForResponse(ThreadUtils.isMainThread());
+
+    final LayoutState layoutState = layoutStateFuture.runAndGet();
+
+    synchronized (mLayoutStateFutureLock) {
+      layoutStateFuture.unregisterForResponse(ThreadUtils.isMainThread());
+
+      // This future has finished executing, if no other threads were waiting for the response we
+      // can remove it.
+      if (layoutStateFuture.getWaitingCount() == 0) {
+        layoutStateFuture.release();
+        if (mLayoutStateFutures.contains(layoutStateFuture)) {
+          mLayoutStateFutures.remove(layoutStateFuture);
+        }
+      }
+    }
+
+    return layoutState;
+  }
+
   protected @Nullable LayoutState calculateLayoutState(
       ComponentContext context,
       Component root,
@@ -2013,13 +2119,13 @@ public class ComponentTree {
           mLayoutStateFutures.add(localLayoutStateFuture);
         }
 
-        localLayoutStateFuture.registerForResponse();
+        localLayoutStateFuture.registerForResponse(ThreadUtils.isMainThread());
       }
 
       final LayoutState layoutState = localLayoutStateFuture.runAndGet();
 
       synchronized (mLayoutStateFutureLock) {
-        localLayoutStateFuture.unregisterForResponse();
+        localLayoutStateFuture.unregisterForResponse(ThreadUtils.isMainThread());
 
         // This future has finished executing, if no other threads were waiting for the response we
         // can remove it.
@@ -2107,6 +2213,7 @@ public class ComponentTree {
     @Nullable private final TreeProps treeProps;
     private final FutureTask<LayoutState> futureTask;
     private volatile int refCount;
+    private final boolean isCancelable;
 
     @GuardedBy("LayoutStateFuture.this")
     private volatile boolean released = false;
@@ -2114,6 +2221,8 @@ public class ComponentTree {
     @GuardedBy("LayoutStateFuture.this")
     @Nullable
     private volatile LayoutState layoutState = null;
+
+    private boolean isBlockingMainThread;
 
     private LayoutStateFuture(
         final ComponentContext context,
@@ -2132,6 +2241,7 @@ public class ComponentTree {
       this.diffingEnabled = diffingEnabled;
       this.previousLayoutState = previousLayoutState;
       this.treeProps = treeProps;
+      this.isCancelable = isCancelable(source);
       this.futureTask =
           new FutureTask<>(
               new Callable<LayoutState>() {
@@ -2168,6 +2278,18 @@ public class ComponentTree {
               });
     }
 
+    private boolean isCancelable(@CalculateLayoutSource int source) {
+      switch (source) {
+        case CalculateLayoutSource.MEASURE:
+        case CalculateLayoutSource.SET_ROOT_SYNC:
+        case CalculateLayoutSource.UPDATE_STATE_SYNC:
+        case CalculateLayoutSource.SET_SIZE_SPEC_SYNC:
+          return false;
+        default:
+          return true;
+      }
+    }
+
     private synchronized void release() {
       if (released) {
         return;
@@ -2180,20 +2302,31 @@ public class ComponentTree {
       return released;
     }
 
-    void unregisterForResponse() {
+    void unregisterForResponse(boolean waitingOnMainThread) {
       refCount--;
 
       if (refCount < 0) {
         throw new IllegalStateException("LayoutStateFuture ref count is below 0");
       }
+
+      if (waitingOnMainThread) {
+        this.isBlockingMainThread = false;
+      }
     }
 
-    void registerForResponse() {
+    void registerForResponse(boolean waitingOnMainThread) {
       refCount++;
+      if (waitingOnMainThread) {
+        this.isBlockingMainThread = true;
+      }
     }
 
     public int getWaitingCount() {
       return refCount;
+    }
+
+    boolean canBeCancelled() {
+      return !isBlockingMainThread && isCancelable;
     }
 
     @VisibleForTesting
@@ -2319,22 +2452,27 @@ public class ComponentTree {
     return mEventHandlersController;
   }
 
-  private final class CalculateLayoutRunnable extends ThreadTracingRunnable {
+  private class CalculateLayoutRunnable extends ThreadTracingRunnable {
 
     private final @CalculateLayoutSource int mSource;
     @Nullable private final TreeProps mTreeProps;
     private final String mAttribution;
+    private final @Nullable LayoutStateFuture mLayoutStateFuture;
 
     public CalculateLayoutRunnable(
-        @CalculateLayoutSource int source, @Nullable TreeProps treeProps, String attribution) {
+        @CalculateLayoutSource int source,
+        @Nullable TreeProps treeProps,
+        String attribution,
+        @Nullable LayoutStateFuture layoutStateFuture) {
       mSource = source;
       mTreeProps = treeProps;
       mAttribution = attribution;
+      mLayoutStateFuture = layoutStateFuture;
     }
 
     @Override
     public void tracedRun(Throwable tracedThrowable) {
-      calculateLayout(null, mSource, mAttribution, mTreeProps);
+      calculateLayout(null, mSource, mAttribution, mTreeProps, mLayoutStateFuture);
     }
   }
 
