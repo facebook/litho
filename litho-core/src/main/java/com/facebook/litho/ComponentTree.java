@@ -2265,7 +2265,7 @@ public class ComponentTree {
                           treeProps,
                           source,
                           extraAttribution,
-                          ComponentTree.this.mUseSharedLayoutStateFuture
+                          ComponentTree.this.mUseCancelableLayoutFutures
                               ? LayoutStateFuture.this
                               : null);
                   synchronized (LayoutStateFuture.this) {
