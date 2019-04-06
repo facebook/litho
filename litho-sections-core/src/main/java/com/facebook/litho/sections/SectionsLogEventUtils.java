@@ -60,7 +60,7 @@ public class SectionsLogEventUtils {
 
     final PerfEvent logEvent =
         LogTreePopulator.populatePerfEventFromLogger(
-            c, logger, logger.newPerformanceEvent(eventId));
+            c, logger, logger.newPerformanceEvent(c, eventId));
     if (logEvent != null) {
       logEvent.markerAnnotate(
           PARAM_SECTION_CURRENT, currentSection == null ? "null" : currentSection.getSimpleName());

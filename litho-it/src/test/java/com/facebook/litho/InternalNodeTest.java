@@ -34,6 +34,7 @@ import static com.facebook.yoga.YogaEdge.RIGHT;
 import static com.facebook.yoga.YogaEdge.TOP;
 import static com.facebook.yoga.YogaPositionType.ABSOLUTE;
 import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -418,7 +419,8 @@ public class InternalNodeTest {
   public void testContextSpecificComponentAssertionFailFormatting() {
     final ComponentsLogger componentsLogger = mock(ComponentsLogger.class);
     final PerfEvent perfEvent = mock(PerfEvent.class);
-    when(componentsLogger.newPerformanceEvent(anyInt())).thenReturn(perfEvent);
+    when(componentsLogger.newPerformanceEvent(any(ComponentContext.class), anyInt()))
+        .thenReturn(perfEvent);
 
     InternalNode node = acquireInternalNodeWithLogger(componentsLogger);
     node.alignSelf(YogaAlign.AUTO);

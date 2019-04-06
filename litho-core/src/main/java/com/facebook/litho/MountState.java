@@ -249,7 +249,9 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
         logger == null
             ? null
             : LogTreePopulator.populatePerfEventFromLogger(
-                componentTree.getContext(), logger, logger.newPerformanceEvent(EVENT_MOUNT));
+                componentTree.getContext(),
+                logger,
+                logger.newPerformanceEvent(componentTree.getContext(), EVENT_MOUNT));
 
     if (mIsDirty) {
       updateTransitions(layoutState, componentTree);

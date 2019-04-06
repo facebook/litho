@@ -1323,7 +1323,7 @@ class LayoutState {
       final PerfEvent logLayoutState =
           logger != null
               ? LogTreePopulator.populatePerfEventFromLogger(
-                  c, logger, logger.newPerformanceEvent(EVENT_CALCULATE_LAYOUT_STATE))
+                  c, logger, logger.newPerformanceEvent(c, EVENT_CALCULATE_LAYOUT_STATE))
               : null;
       if (logLayoutState != null) {
         logLayoutState.markerAnnotate(PARAM_COMPONENT, component.getSimpleName());
@@ -1399,7 +1399,7 @@ class LayoutState {
       final PerfEvent collectResultsEvent =
           logger != null
               ? LogTreePopulator.populatePerfEventFromLogger(
-                  c, logger, logger.newPerformanceEvent(EVENT_COLLECT_RESULTS))
+                  c, logger, logger.newPerformanceEvent(c, EVENT_COLLECT_RESULTS))
               : null;
 
       collectResults(c, root, layoutState, null);
@@ -1542,7 +1542,7 @@ class LayoutState {
     final PerfEvent createLayoutPerfEvent =
         logger != null
             ? LogTreePopulator.populatePerfEventFromLogger(
-                context, logger, logger.newPerformanceEvent(EVENT_CREATE_LAYOUT))
+                context, logger, logger.newPerformanceEvent(context, EVENT_CREATE_LAYOUT))
             : null;
 
     if (createLayoutPerfEvent != null) {
@@ -1589,7 +1589,7 @@ class LayoutState {
     final PerfEvent layoutEvent =
         logger != null
             ? LogTreePopulator.populatePerfEventFromLogger(
-                context, logger, logger.newPerformanceEvent(EVENT_CSS_LAYOUT))
+                context, logger, logger.newPerformanceEvent(context, EVENT_CSS_LAYOUT))
             : null;
 
     if (layoutEvent != null) {

@@ -1053,7 +1053,9 @@ public class ComponentTree {
     final PerfEvent event =
         logger != null
             ? LogTreePopulator.populatePerfEventFromLogger(
-                mContext, logger, logger.newPerformanceEvent(EVENT_PRE_ALLOCATE_MOUNT_CONTENT))
+                mContext,
+                logger,
+                logger.newPerformanceEvent(mContext, EVENT_PRE_ALLOCATE_MOUNT_CONTENT))
             : null;
 
     toPrePopulate.preAllocateMountContent(shouldPreallocatePerMountSpec);
@@ -1687,7 +1689,7 @@ public class ComponentTree {
     final PerfEvent layoutEvent =
         logger != null
             ? LogTreePopulator.populatePerfEventFromLogger(
-                mContext, logger, logger.newPerformanceEvent(EVENT_LAYOUT_CALCULATE))
+                mContext, logger, logger.newPerformanceEvent(mContext, EVENT_LAYOUT_CALCULATE))
             : null;
 
     if (layoutEvent != null) {
