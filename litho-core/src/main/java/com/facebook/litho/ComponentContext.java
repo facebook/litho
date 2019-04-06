@@ -328,6 +328,11 @@ public class ComponentContext {
     return mTreeProps;
   }
 
+  @Nullable
+  public <T> T getTreeProp(Class<T> key) {
+    return mTreeProps == null ? null : mTreeProps.get(key);
+  }
+
   /** Obtain a copy of the tree props currently held by this context. */
   @Nullable
   public TreeProps getTreePropsCopy() {
