@@ -828,7 +828,8 @@ public class ComponentTreeTest {
             assertEquals(0, layoutStateFuture.getWaitingCount());
             assertEquals(0, componentTree.getLayoutStateFutures().size());
           }
-        });
+        },
+        "tag");
   }
 
   @Test

@@ -35,22 +35,16 @@ public class ThreadPoolLayoutHandler implements LithoHandler {
   }
 
   @Override
-  public boolean post(Runnable runnable) {
+  public void post(Runnable runnable, String tag) {
     try {
       sLayoutThreadPoolExecutor.execute(runnable);
-      return true;
     } catch (RejectedExecutionException e) {
       throw new RuntimeException("Cannot execute layout calculation task; " + e);
     }
   }
 
   @Override
-  public void removeCallbacks(Runnable runnable) {
+  public void remove(Runnable runnable) {
     sLayoutThreadPoolExecutor.remove(runnable);
-  }
-
-  @Override
-  public void removeCallbacksAndMessages(Object token) {
-    throw new RuntimeException("Operation not supported");
   }
 }

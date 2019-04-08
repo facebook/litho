@@ -46,6 +46,7 @@ import androidx.annotation.VisibleForTesting;
 import com.facebook.infer.annotation.ReturnsOwnership;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
+import com.facebook.litho.LithoHandler.DefaultLithoHandler;
 import com.facebook.litho.animation.AnimatedProperties;
 import com.facebook.litho.animation.AnimatedProperty;
 import com.facebook.litho.annotations.MountSpec;
@@ -121,7 +122,7 @@ public class ComponentTree {
   @GuardedBy("ComponentTree.class")
   private static volatile Looper sDefaultPreallocateMountContentThreadLooper;
 
-  private static final ThreadLocal<WeakReference<Handler>> sSyncStateUpdatesHandler =
+  private static final ThreadLocal<WeakReference<LithoHandler>> sSyncStateUpdatesHandler =
       new ThreadLocal<>();
 
   @Nullable private final IncrementalMountHelper mIncrementalMountHelper;
@@ -286,8 +287,7 @@ public class ComponentTree {
 
     if (mPreAllocateMountContentHandler == null && builder.canPreallocateOnDefaultHandler) {
       mPreAllocateMountContentHandler =
-          new DefaultPreallocateMountContentHandler(
-              getDefaultPreallocateMountContentThreadLooper());
+          new DefaultLithoHandler(getDefaultPreallocateMountContentThreadLooper());
     }
 
     final StateHandler builderStateHandler = builder.stateHandler;
@@ -413,12 +413,12 @@ public class ComponentTree {
   public void updateLayoutThreadHandler(@Nullable LithoHandler layoutThreadHandler) {
     synchronized (mUpdateStateSyncRunnableLock) {
       if (mUpdateStateSyncRunnable != null) {
-        mLayoutThreadHandler.removeCallbacks(mUpdateStateSyncRunnable);
+        mLayoutThreadHandler.remove(mUpdateStateSyncRunnable);
       }
     }
     synchronized (mCurrentCalculateLayoutRunnableLock) {
       if (mCurrentCalculateLayoutRunnable != null) {
-        mLayoutThreadHandler.removeCallbacks(mCurrentCalculateLayoutRunnable);
+        mLayoutThreadHandler.remove(mCurrentCalculateLayoutRunnable);
       }
     }
     mLayoutThreadHandler = layoutThreadHandler;
@@ -1123,28 +1123,28 @@ public class ComponentTree {
               "using the default background layout thread instead");
       synchronized (mUpdateStateSyncRunnableLock) {
         if (mUpdateStateSyncRunnable != null) {
-          mLayoutThreadHandler.removeCallbacks(mUpdateStateSyncRunnable);
+          mLayoutThreadHandler.remove(mUpdateStateSyncRunnable);
         }
         mUpdateStateSyncRunnable = new UpdateStateSyncRunnable(attribution);
-        mLayoutThreadHandler.post(mUpdateStateSyncRunnable);
+        mLayoutThreadHandler.post(mUpdateStateSyncRunnable, "updateStateSync " + attribution);
       }
       return;
     }
 
-    final WeakReference<Handler> handlerWr = sSyncStateUpdatesHandler.get();
-    Handler handler = handlerWr != null ? handlerWr.get() : null;
+    final WeakReference<LithoHandler> handlerWr = sSyncStateUpdatesHandler.get();
+    LithoHandler handler = handlerWr != null ? handlerWr.get() : null;
 
     if (handler == null) {
-      handler = new Handler(looper);
+      handler = new DefaultLithoHandler(looper);
       sSyncStateUpdatesHandler.set(new WeakReference<>(handler));
     }
 
     synchronized (mUpdateStateSyncRunnableLock) {
       if (mUpdateStateSyncRunnable != null) {
-        handler.removeCallbacks(mUpdateStateSyncRunnable);
+        handler.remove(mUpdateStateSyncRunnable);
       }
       mUpdateStateSyncRunnable = new UpdateStateSyncRunnable(attribution);
-      handler.post(mUpdateStateSyncRunnable);
+      handler.post(mUpdateStateSyncRunnable, attribution);
     }
   }
 
@@ -1621,11 +1621,12 @@ public class ComponentTree {
     if (isAsync) {
       synchronized (mCurrentCalculateLayoutRunnableLock) {
         if (mCurrentCalculateLayoutRunnable != null) {
-          mLayoutThreadHandler.removeCallbacks(mCurrentCalculateLayoutRunnable);
+          mLayoutThreadHandler.remove(mCurrentCalculateLayoutRunnable);
         }
         mCurrentCalculateLayoutRunnable =
             new CalculateLayoutRunnable(source, treeProps, extraAttribution, layoutStateFuture);
-        mLayoutThreadHandler.post(mCurrentCalculateLayoutRunnable);
+        mLayoutThreadHandler.post(
+            mCurrentCalculateLayoutRunnable, source + " - " + extraAttribution);
       }
     } else {
       calculateLayout(output, source, extraAttribution, treeProps, layoutStateFuture);
@@ -1653,7 +1654,7 @@ public class ComponentTree {
     // since we are starting a new layout computation.
     synchronized (mCurrentCalculateLayoutRunnableLock) {
       if (mCurrentCalculateLayoutRunnable != null) {
-        mLayoutThreadHandler.removeCallbacks(mCurrentCalculateLayoutRunnable);
+        mLayoutThreadHandler.remove(mCurrentCalculateLayoutRunnable);
         mCurrentCalculateLayoutRunnable = null;
       }
     }
@@ -1768,8 +1769,9 @@ public class ComponentTree {
     }
 
     if (mPreAllocateMountContentHandler != null) {
-      mPreAllocateMountContentHandler.removeCallbacks(mPreAllocateMountContentRunnable);
-      mPreAllocateMountContentHandler.post(mPreAllocateMountContentRunnable);
+      mPreAllocateMountContentHandler.remove(mPreAllocateMountContentRunnable);
+      mPreAllocateMountContentHandler.post(
+          mPreAllocateMountContentRunnable, source + " - " + extraAttribution);
     }
 
     if (layoutEvent != null) {
@@ -1823,13 +1825,13 @@ public class ComponentTree {
 
       synchronized (mCurrentCalculateLayoutRunnableLock) {
         if (mCurrentCalculateLayoutRunnable != null) {
-          mLayoutThreadHandler.removeCallbacks(mCurrentCalculateLayoutRunnable);
+          mLayoutThreadHandler.remove(mCurrentCalculateLayoutRunnable);
           mCurrentCalculateLayoutRunnable = null;
         }
       }
       synchronized (mUpdateStateSyncRunnableLock) {
         if (mUpdateStateSyncRunnable != null) {
-          mLayoutThreadHandler.removeCallbacks(mUpdateStateSyncRunnable);
+          mLayoutThreadHandler.remove(mUpdateStateSyncRunnable);
           mUpdateStateSyncRunnable = null;
         }
       }
@@ -1843,7 +1845,7 @@ public class ComponentTree {
       }
 
       if (mPreAllocateMountContentHandler != null) {
-        mPreAllocateMountContentHandler.removeCallbacks(mPreAllocateMountContentRunnable);
+        mPreAllocateMountContentHandler.remove(mPreAllocateMountContentRunnable);
       }
 
       mReleased = true;
@@ -2426,23 +2428,6 @@ public class ComponentTree {
       result = 31 * result + widthSpec;
       result = 31 * result + heightSpec;
       return result;
-    }
-  }
-
-  /**
-   * A default {@link LithoHandler} that will use a {@link Handler} with a {@link Thread}'s {@link
-   * Looper}.
-   */
-  private static class DefaultLithoHandler extends Handler implements LithoHandler {
-    private DefaultLithoHandler(Looper threadLooper) {
-      super(threadLooper);
-    }
-  }
-
-  private static class DefaultPreallocateMountContentHandler extends Handler
-      implements LithoHandler {
-    private DefaultPreallocateMountContentHandler(Looper threadLooper) {
-      super(threadLooper);
     }
   }
 
