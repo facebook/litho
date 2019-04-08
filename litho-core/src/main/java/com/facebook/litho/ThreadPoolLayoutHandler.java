@@ -19,8 +19,8 @@ import com.facebook.litho.config.LayoutThreadPoolConfiguration;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
 
-/** LayoutHandler implementation that uses a thread pool to calculate the layout. */
-public class ThreadPoolLayoutHandler implements LayoutHandler {
+/** LithoHandler implementation that uses a thread pool to calculate the layout. */
+public class ThreadPoolLayoutHandler implements LithoHandler {
 
   private static ThreadPoolExecutor sLayoutThreadPoolExecutor;
 

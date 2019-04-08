@@ -51,7 +51,7 @@ import com.facebook.litho.ComponentTree.MeasureListener;
 import com.facebook.litho.ComponentsLogger;
 import com.facebook.litho.ComponentsSystrace;
 import com.facebook.litho.EventHandler;
-import com.facebook.litho.LayoutHandler;
+import com.facebook.litho.LithoHandler;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.LithoView.LayoutManagerOverrideParams;
 import com.facebook.litho.MeasureComparisonUtils;
@@ -241,7 +241,7 @@ public class RecyclerBinder
   @VisibleForTesting @Nullable volatile Size mSizeForMeasure;
   private StickyHeaderController mStickyHeaderController;
   private @Nullable StickyHeaderControllerFactory mStickyHeaderControllerFactory;
-  private final @Nullable LayoutHandler mThreadPoolHandler;
+  private final @Nullable LithoHandler mThreadPoolHandler;
   private final @Nullable LayoutThreadPoolConfiguration mThreadPoolConfig;
   private EventHandler<ReMeasureEvent> mReMeasureEventEventHandler;
   private volatile boolean mHasAsyncOperations = false;
@@ -332,7 +332,7 @@ public class RecyclerBinder
   interface ComponentTreeHolderFactory {
     ComponentTreeHolder create(
         RenderInfo renderInfo,
-        LayoutHandler layoutHandler,
+        LithoHandler layoutHandler,
         ComponentTreeMeasureListenerFactory measureListenerFactory,
         boolean incrementalMountEnabled);
   }
@@ -342,7 +342,7 @@ public class RecyclerBinder
         @Override
         public ComponentTreeHolder create(
             RenderInfo renderInfo,
-            LayoutHandler layoutHandler,
+            LithoHandler layoutHandler,
             ComponentTreeMeasureListenerFactory measureListenerFactory,
             boolean incrementalMountEnabled) {
           return ComponentTreeHolder.create()
@@ -3417,7 +3417,7 @@ public class RecyclerBinder
   }
 
   private ComponentTreeHolder createComponentTreeHolder(RenderInfo renderInfo) {
-    final LayoutHandler layoutHandler;
+    final LithoHandler layoutHandler;
     if (mLayoutHandlerFactory != null) {
       layoutHandler = mLayoutHandlerFactory.createLayoutCalculationHandler(renderInfo);
     } else if (mThreadPoolHandler != null) {

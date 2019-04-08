@@ -142,7 +142,7 @@ public class ComponentTree {
   private final ComponentContext mContext;
   private final boolean mNestedTreeResolutionExperimentEnabled;
 
-  @Nullable private LayoutHandler mPreAllocateMountContentHandler;
+  @Nullable private LithoHandler mPreAllocateMountContentHandler;
 
   // These variables are only accessed from the main thread.
   @ThreadConfined(ThreadConfined.UI)
@@ -159,8 +159,9 @@ public class ComponentTree {
   private final boolean mIsAsyncUpdateStateEnabled;
   @ThreadConfined(ThreadConfined.UI)
   private LithoView mLithoView;
+
   @ThreadConfined(ThreadConfined.UI)
-  private LayoutHandler mLayoutThreadHandler;
+  private LithoHandler mLayoutThreadHandler;
 
   private volatile NewLayoutStateReadyListener mNewLayoutStateReadyListener;
 
@@ -318,7 +319,7 @@ public class ComponentTree {
     if (mLayoutThreadHandler == null) {
       mLayoutThreadHandler =
           ComponentsConfiguration.threadPoolForBackgroundThreadsConfig == null
-              ? new DefaultLayoutHandler(getDefaultLayoutThreadLooper())
+              ? new DefaultLithoHandler(getDefaultLayoutThreadLooper())
               : new ThreadPoolLayoutHandler(
                   ComponentsConfiguration.threadPoolForBackgroundThreadsConfig);
     }
@@ -406,10 +407,10 @@ public class ComponentTree {
   }
 
   /**
-   * Provide custom {@link LayoutHandler}. If null is provided default one will be used for layouts.
+   * Provide custom {@link LithoHandler}. If null is provided default one will be used for layouts.
    */
   @ThreadConfined(ThreadConfined.UI)
-  public void updateLayoutThreadHandler(@Nullable LayoutHandler layoutThreadHandler) {
+  public void updateLayoutThreadHandler(@Nullable LithoHandler layoutThreadHandler) {
     synchronized (mUpdateStateSyncRunnableLock) {
       if (mUpdateStateSyncRunnable != null) {
         mLayoutThreadHandler.removeCallbacks(mUpdateStateSyncRunnable);
@@ -2429,17 +2430,17 @@ public class ComponentTree {
   }
 
   /**
-   * A default {@link LayoutHandler} that will use a {@link Handler} with a {@link Thread}'s
-   * {@link Looper}.
+   * A default {@link LithoHandler} that will use a {@link Handler} with a {@link Thread}'s {@link
+   * Looper}.
    */
-  private static class DefaultLayoutHandler extends Handler implements LayoutHandler {
-    private DefaultLayoutHandler(Looper threadLooper) {
+  private static class DefaultLithoHandler extends Handler implements LithoHandler {
+    private DefaultLithoHandler(Looper threadLooper) {
       super(threadLooper);
     }
   }
 
   private static class DefaultPreallocateMountContentHandler extends Handler
-      implements LayoutHandler {
+      implements LithoHandler {
     private DefaultPreallocateMountContentHandler(Looper threadLooper) {
       super(threadLooper);
     }
@@ -2508,8 +2509,8 @@ public class ComponentTree {
     // optional
     private boolean incrementalMountEnabled = true;
     private boolean isLayoutDiffingEnabled = true;
-    private LayoutHandler layoutThreadHandler;
-    private LayoutHandler preAllocateMountContentHandler;
+    private LithoHandler layoutThreadHandler;
+    private LithoHandler preAllocateMountContentHandler;
     private StateHandler stateHandler;
     private RenderState previousRenderState;
     private boolean asyncStateUpdates = true;
@@ -2562,14 +2563,14 @@ public class ComponentTree {
      */
     public Builder layoutThreadLooper(Looper looper) {
       if (looper != null) {
-        layoutThreadHandler = new DefaultLayoutHandler(looper);
+        layoutThreadHandler = new DefaultLithoHandler(looper);
       }
 
       return this;
     }
 
     /** Specify the handler for to preAllocateMountContent */
-    public Builder preAllocateMountContentHandler(LayoutHandler handler) {
+    public Builder preAllocateMountContentHandler(LithoHandler handler) {
       preAllocateMountContentHandler = handler;
       return this;
     }
@@ -2587,7 +2588,7 @@ public class ComponentTree {
     /**
      * If true, mount content preallocation will use a default layout handler to preallocate mount
      * content on a background thread if no other layout handler is provided through {@link
-     * ComponentTree.Builder#preAllocateMountContentHandler(LayoutHandler)}.
+     * ComponentTree.Builder#preAllocateMountContentHandler(LithoHandler)}.
      */
     public Builder preallocateOnDefaultHandler(boolean preallocateOnDefaultHandler) {
       canPreallocateOnDefaultHandler = preallocateOnDefaultHandler;
@@ -2599,7 +2600,7 @@ public class ComponentTree {
      * the UI thread. For example, if you rotate the screen, we must measure on the UI thread. If
      * you don't specify a Looper here, the Components default Looper will be used.
      */
-    public Builder layoutThreadHandler(LayoutHandler handler) {
+    public Builder layoutThreadHandler(LithoHandler handler) {
       layoutThreadHandler = handler;
       return this;
     }
