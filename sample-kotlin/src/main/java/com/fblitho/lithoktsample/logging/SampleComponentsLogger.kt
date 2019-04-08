@@ -13,6 +13,7 @@ package com.fblitho.lithoktsample.logging
 
 import android.util.Log
 import com.facebook.litho.BaseComponentsLogger
+import com.facebook.litho.ComponentContext
 import com.facebook.litho.ComponentsLogger
 import com.facebook.litho.FrameworkLogEvents
 import com.facebook.litho.PerfEvent
@@ -23,7 +24,7 @@ class SampleComponentsLogger : BaseComponentsLogger() {
     private val tag = "LITHOSAMPLE"
     private val instanceCounter: AtomicInteger = AtomicInteger(0)
 
-    override fun newPerformanceEvent(eventId: Int): PerfEvent? {
+    override fun newPerformanceEvent(c: ComponentContext, eventId: Int): PerfEvent {
         return PerfEventStore.obtain(eventId, instanceCounter.incrementAndGet())
     }
 
