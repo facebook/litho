@@ -4342,7 +4342,7 @@ public class RecyclerBinderTest {
 
   @Test
   public void testSyncLayoutForUnknownSizeSpec() {
-    final boolean splitInitRange = ComponentsConfiguration.checkNeedsRemeasure;
+    final boolean splitInitRange = ComponentsConfiguration.splitLayoutForMeasureAndRangeEstimation;
     ComponentsConfiguration.splitLayoutForMeasureAndRangeEstimation = true;
     final int NUM_TO_INSERT = 20;
 
@@ -4389,7 +4389,7 @@ public class RecyclerBinderTest {
 
   @Test
   public void testNoSyncLayoutForKnownSizeSpec() {
-    final boolean splitInitRange = ComponentsConfiguration.checkNeedsRemeasure;
+    final boolean splitInitRange = ComponentsConfiguration.splitLayoutForMeasureAndRangeEstimation;
     ComponentsConfiguration.splitLayoutForMeasureAndRangeEstimation = true;
     final int NUM_TO_INSERT = 20;
 
@@ -4902,8 +4902,6 @@ public class RecyclerBinderTest {
 
   @Test
   public void tesLayoutAsyncInRegisterAsyncInsertWhenRemesureIsNotNeeded() {
-    final boolean checkNeedsRemeasure = ComponentsConfiguration.checkNeedsRemeasure;
-    ComponentsConfiguration.checkNeedsRemeasure = true;
     final int NUM_TO_INSERT = 5;
 
     final ArrayList<Component> components = new ArrayList<>();
@@ -4942,14 +4940,10 @@ public class RecyclerBinderTest {
           mHoldersForComponents.get(renderInfos.get(i).getComponent());
       assertThat(holder.mLayoutAsyncCalled).isTrue();
     }
-
-    ComponentsConfiguration.checkNeedsRemeasure = checkNeedsRemeasure;
   }
 
   @Test
   public void testNoLayoutAsyncInRegisterAsyncInsertWhenRemesureIsNeeded() {
-    final boolean checkNeedsRemeasure = ComponentsConfiguration.checkNeedsRemeasure;
-    ComponentsConfiguration.checkNeedsRemeasure = true;
     final int NUM_TO_INSERT = 5;
 
     final ArrayList<Component> components = new ArrayList<>();
@@ -4988,8 +4982,6 @@ public class RecyclerBinderTest {
           mHoldersForComponents.get(renderInfos.get(i).getComponent());
       assertThat(holder.mLayoutAsyncCalled).isFalse();
     }
-
-    ComponentsConfiguration.checkNeedsRemeasure = checkNeedsRemeasure;
   }
 
   private RecyclerBinder createRecyclerBinderWithMockAdapter(RecyclerView.Adapter adapterMock) {

@@ -1980,9 +1980,7 @@ public class RecyclerBinder
 
   /** @return true if the view is measured and doesn't need remeasuring. */
   private synchronized boolean isMeasured() {
-    return ComponentsConfiguration.checkNeedsRemeasure
-        ? mIsMeasured.get() && !mRequiresRemeasure.get()
-        : mIsMeasured.get();
+    return mIsMeasured.get() && !mRequiresRemeasure.get();
   }
 
   @VisibleForTesting
@@ -3015,7 +3013,7 @@ public class RecyclerBinder
 
   @GuardedBy("this")
   private int getActualChildrenWidthSpec(final ComponentTreeHolder treeHolder) {
-    if (mIsMeasured.get() && !mRequiresRemeasure.get()) {
+    if (isMeasured()) {
       return mLayoutInfo.getChildWidthSpec(
           SizeSpec.makeSizeSpec(mMeasuredSize.width, SizeSpec.EXACTLY),
           treeHolder.getRenderInfo());
@@ -3030,7 +3028,7 @@ public class RecyclerBinder
       return SizeSpec.UNSPECIFIED;
     }
 
-    if (mIsMeasured.get() && !mRequiresRemeasure.get()) {
+    if (isMeasured()) {
       return mLayoutInfo.getChildHeightSpec(
           SizeSpec.makeSizeSpec(mMeasuredSize.height, SizeSpec.EXACTLY),
           treeHolder.getRenderInfo());
