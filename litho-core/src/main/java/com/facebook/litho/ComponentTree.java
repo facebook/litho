@@ -18,6 +18,7 @@ package com.facebook.litho;
 
 import static android.os.Process.THREAD_PRIORITY_DEFAULT;
 import static com.facebook.litho.ComponentLifecycle.StateUpdate;
+import static com.facebook.litho.HandlerInstrumenter.instrumentLithoHandler;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_LAYOUT_CALCULATE;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_PRE_ALLOCATE_MOUNT_CONTENT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_ATTRIBUTION;
@@ -159,7 +160,7 @@ public class ComponentTree {
   @ThreadConfined(ThreadConfined.UI)
   private LithoHandler mLayoutThreadHandler;
 
-  private final LithoHandler mMainThreadHandler = new DefaultLithoHandler(Looper.getMainLooper());
+  private LithoHandler mMainThreadHandler = new DefaultLithoHandler(Looper.getMainLooper());
   private final Runnable mBackgroundLayoutStateUpdateRunnable =
       new Runnable() {
         @Override
@@ -316,6 +317,11 @@ public class ComponentTree {
     if (ComponentsConfiguration.IS_INTERNAL_BUILD) {
       HotswapManager.addComponentTree(this);
     }
+
+    // Instrument LithoHandlers.
+    mMainThreadHandler = instrumentLithoHandler(mMainThreadHandler);
+    mLayoutThreadHandler = instrumentLithoHandler(mLayoutThreadHandler);
+    mPreAllocateMountContentHandler = instrumentLithoHandler(mPreAllocateMountContentHandler);
   }
 
   private void ensureLayoutThreadHandler() {
@@ -325,6 +331,7 @@ public class ComponentTree {
               ? new DefaultLithoHandler(getDefaultLayoutThreadLooper())
               : new ThreadPoolLayoutHandler(
                   ComponentsConfiguration.threadPoolForBackgroundThreadsConfig);
+      mLayoutThreadHandler = instrumentLithoHandler(mLayoutThreadHandler);
     }
   }
 
@@ -424,7 +431,7 @@ public class ComponentTree {
         mLayoutThreadHandler.remove(mCurrentCalculateLayoutRunnable);
       }
     }
-    mLayoutThreadHandler = layoutThreadHandler;
+    mLayoutThreadHandler = instrumentLithoHandler(layoutThreadHandler);
     ensureLayoutThreadHandler();
   }
 
