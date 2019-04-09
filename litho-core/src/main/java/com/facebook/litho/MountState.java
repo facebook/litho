@@ -2697,7 +2697,9 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
         mAnimationLockedIndices[i]++;
       } else {
         if (--mAnimationLockedIndices[i] < 0) {
-          throw new RuntimeException("Decremented animation lock count below 0!");
+          ComponentsReporter.emitMessage(
+              ComponentsReporter.LogLevel.FATAL, "Decremented animation lock count below 0!");
+          mAnimationLockedIndices[i] = 0;
         }
       }
     }
@@ -2710,7 +2712,9 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
         mAnimationLockedIndices[hostIndex]++;
       } else {
         if (--mAnimationLockedIndices[hostIndex] < 0) {
-          throw new RuntimeException("Decremented animation lock count below 0!");
+          ComponentsReporter.emitMessage(
+              ComponentsReporter.LogLevel.FATAL, "Decremented animation lock count below 0!");
+          mAnimationLockedIndices[hostIndex] = 0;
         }
       }
       hostId = layoutState.getMountableOutputAt(hostIndex).getHostMarker();
