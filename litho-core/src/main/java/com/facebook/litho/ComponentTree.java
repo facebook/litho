@@ -32,10 +32,8 @@ import static com.facebook.litho.config.ComponentsConfiguration.DEFAULT_BACKGROU
 
 import android.content.Context;
 import android.graphics.Rect;
-import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
-import android.os.Message;
 import android.os.Process;
 import android.util.Log;
 import androidx.annotation.IntDef;
@@ -83,8 +81,6 @@ public class ComponentTree {
   public static final int INVALID_ID = -1;
   private static final String TAG = ComponentTree.class.getSimpleName();
   private static final int SIZE_UNINITIALIZED = -1;
-  // MainThread Looper messages:
-  private static final int MESSAGE_WHAT_BACKGROUND_LAYOUT_STATE_UPDATED = 1;
   private static final String DEFAULT_LAYOUT_THREAD_NAME = "ComponentLayoutThread";
   private static final String DEFAULT_PMC_THREAD_NAME = "PreallocateMountContentThread";
 
@@ -114,7 +110,6 @@ public class ComponentTree {
   }
 
   private static final AtomicInteger sIdGenerator = new AtomicInteger(0);
-  private static final Handler sMainThreadHandler = new ComponentMainThreadHandler();
   // Do not access sDefaultLayoutThreadLooper directly, use getDefaultLayoutThreadLooper().
   @GuardedBy("ComponentTree.class")
   private static volatile Looper sDefaultLayoutThreadLooper;
@@ -164,6 +159,14 @@ public class ComponentTree {
   @ThreadConfined(ThreadConfined.UI)
   private LithoHandler mLayoutThreadHandler;
 
+  private final LithoHandler mMainThreadHandler = new DefaultLithoHandler(Looper.getMainLooper());
+  private final Runnable mBackgroundLayoutStateUpdateRunnable =
+      new Runnable() {
+        @Override
+        public void run() {
+          backgroundLayoutStateUpdated();
+        }
+      };
   private volatile NewLayoutStateReadyListener mNewLayoutStateReadyListener;
 
   private final Object mCurrentCalculateLayoutRunnableLock = new Object();
@@ -1804,8 +1807,8 @@ public class ComponentTree {
     } else {
       // If we aren't on the main thread, we send a message to the main thread
       // to invoke backgroundLayoutStateUpdated.
-      sMainThreadHandler.obtainMessage(MESSAGE_WHAT_BACKGROUND_LAYOUT_STATE_UPDATED, this)
-          .sendToTarget();
+      mMainThreadHandler.post(
+          mBackgroundLayoutStateUpdateRunnable, "postBackgroundLayoutStateUpdated");
     }
   }
 
@@ -1821,7 +1824,7 @@ public class ComponentTree {
     }
 
     synchronized (this) {
-      sMainThreadHandler.removeMessages(MESSAGE_WHAT_BACKGROUND_LAYOUT_STATE_UPDATED, this);
+      mMainThreadHandler.remove(mBackgroundLayoutStateUpdateRunnable);
 
       synchronized (mCurrentCalculateLayoutRunnableLock) {
         if (mCurrentCalculateLayoutRunnable != null) {
@@ -1969,25 +1972,6 @@ public class ComponentTree {
 
   public ComponentContext getContext() {
     return mContext;
-  }
-
-  private static class ComponentMainThreadHandler extends Handler {
-    private ComponentMainThreadHandler() {
-      super(Looper.getMainLooper());
-    }
-
-    @Override
-    public void handleMessage(Message msg) {
-      switch (msg.what) {
-        case MESSAGE_WHAT_BACKGROUND_LAYOUT_STATE_UPDATED:
-          final ComponentTree that = (ComponentTree) msg.obj;
-
-          that.backgroundLayoutStateUpdated();
-          break;
-        default:
-          throw new IllegalArgumentException();
-      }
-    }
   }
 
   /**
