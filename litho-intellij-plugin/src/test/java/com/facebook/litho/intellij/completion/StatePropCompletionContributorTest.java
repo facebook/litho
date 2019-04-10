@@ -31,6 +31,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Properties;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -42,6 +43,10 @@ public class StatePropCompletionContributorTest {
 
   @Before
   public void setUp() throws Exception {
+    // Reset this property to prevent test failure on CI. More context in D14854416
+    final Properties props = System.getProperties();
+    props.setProperty("javax.accessibility.assistive_technologies", "");
+
     final TestFixtureBuilder<IdeaProjectTestFixture> projectBuilder =
         IdeaTestFixtureFactory.getFixtureFactory().createFixtureBuilder("test");
     fixture =
