@@ -33,12 +33,12 @@ afterEvaluate { project ->
         }
 
         task androidJavadocJar(type: Jar, dependsOn: androidJavadoc) {
-            getArchiveClassifier().set('javadoc')
+            archiveClassifier.set('javadoc')
             from androidJavadoc.destinationDir
         }
 
         task androidSourcesJar(type: Jar) {
-            getArchiveClassifier().set('sources')
+            archiveClassifier.set('sources')
             from android.sourceSets.main.java.srcDirs
         }
 
@@ -76,12 +76,12 @@ afterEvaluate { project ->
 
     if (POM_PACKAGING == 'jar') {
         task javadocJar(type: Jar, dependsOn: javadoc) {
-            getArchiveClassifier().set('javadoc')
+            archiveClassifier.set('javadoc')
             from javadoc.destinationDir
         }
 
         task sourcesJar(type: Jar, dependsOn: classes) {
-            getArchiveClassifier().set('sources')
+            archiveClassifier.set('sources')
             from sourceSets.main.allSource
         }
 
