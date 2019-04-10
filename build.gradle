@@ -44,7 +44,9 @@ ext {
     targetCompatibilityVersion = JavaVersion.VERSION_1_7
 }
 
-ext.isRelease = { ['uploadArchives', 'bintrayUpload'].any { gradle.startParameter.taskNames.contains(it) } }
+ext.forceReleaseBuild = project.hasProperty('forceReleaseBuild')
+ext.isRelease = { forceReleaseBuild ||
+        ['uploadArchives', 'bintrayUpload'].any { gradle.startParameter.taskNames.contains(it) } }
 ext.isSnapshot = { VERSION_NAME.endsWith('-SNAPSHOT') }
 
 ext.deps = [
