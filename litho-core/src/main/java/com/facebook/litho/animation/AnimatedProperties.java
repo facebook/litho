@@ -108,7 +108,18 @@ public final class AnimatedProperties {
 
     @Override
     public float get(Object mountContent) {
-      return getPositionRelativeToLithoView(assertIsView(mountContent, this), true);
+      if (mountContent instanceof LithoView) {
+        return ((LithoView) mountContent).getX();
+      } else if (mountContent instanceof View) {
+        return getPositionRelativeToLithoView((View) mountContent, true);
+      } else if (mountContent instanceof Drawable) {
+        final Drawable drawable = (Drawable) mountContent;
+        float parentX = getPositionRelativeToLithoView(getHostView(drawable), true);
+        return parentX + drawable.getBounds().left;
+      } else {
+        throw new UnsupportedOperationException(
+            "Getting X from unsupported mount content: " + mountContent);
+      }
     }
 
     @Override
@@ -154,7 +165,18 @@ public final class AnimatedProperties {
 
     @Override
     public float get(Object mountContent) {
-      return getPositionRelativeToLithoView(assertIsView(mountContent, this), false);
+      if (mountContent instanceof LithoView) {
+        return ((LithoView) mountContent).getY();
+      } else if (mountContent instanceof View) {
+        return getPositionRelativeToLithoView((View) mountContent, false);
+      } else if (mountContent instanceof Drawable) {
+        final Drawable drawable = (Drawable) mountContent;
+        float parentY = getPositionRelativeToLithoView(getHostView(drawable), false);
+        return parentY + drawable.getBounds().top;
+      } else {
+        throw new UnsupportedOperationException(
+            "Getting Y from unsupported mount content: " + mountContent);
+      }
     }
 
     @Override
@@ -200,7 +222,14 @@ public final class AnimatedProperties {
 
     @Override
     public float get(Object mountContent) {
-      return assertIsView(mountContent, this).getWidth();
+      if (mountContent instanceof View) {
+        return ((View) mountContent).getWidth();
+      } else if (mountContent instanceof Drawable) {
+        return ((Drawable) mountContent).getBounds().width();
+      } else {
+        throw new UnsupportedOperationException(
+            "Getting width from unsupported mount content: " + mountContent);
+      }
     }
 
     @Override
@@ -259,7 +288,14 @@ public final class AnimatedProperties {
 
     @Override
     public float get(Object mountContent) {
-      return assertIsView(mountContent, this).getHeight();
+      if (mountContent instanceof View) {
+        return ((View) mountContent).getHeight();
+      } else if (mountContent instanceof Drawable) {
+        return ((Drawable) mountContent).getBounds().height();
+      } else {
+        throw new UnsupportedOperationException(
+            "Getting height from unsupported mount content: " + mountContent);
+      }
     }
 
     @Override
