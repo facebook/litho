@@ -93,20 +93,24 @@ dependencies {
 }
 
 gradle.projectsEvaluated {
-    // Base path which is recognized by android studio.
-    def testClassesPath = "${buildDir}/intermediates/classes/test/"
     // Copy must be done for each variant.
     def variants = android.libraryVariants.collect()
 
     variants.each { variant ->
         def variationName = variant.name.capitalize()
-        def variationPath = variant.buildType.name
 
-        task "copyTest${variationName}Resources"(type: Copy) {
-            from "${projectDir}/src/test/resources"
-            into "${testClassesPath}/${variationPath}"
+        def processUnitTestJavaResTask = tasks.findByName("process${variationName}UnitTestJavaRes")
+
+        def copyUnitTestResourcesTask = "copy${variationName}UnitTestResources"
+        tasks.create(name: copyUnitTestResourcesTask, type: Copy) {
+            def fromPath = "${projectDir}/src/test/resources"
+            def toPath = "${processUnitTestJavaResTask.destinationDir}"
+
+            include '**/*.java'
+            from fromPath
+            into toPath
         }
 
-        test.dependsOn "copyTest${variationName}Resources"
+        processUnitTestJavaResTask.dependsOn copyUnitTestResourcesTask
     }
 }

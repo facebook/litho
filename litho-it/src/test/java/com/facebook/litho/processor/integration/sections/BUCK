@@ -7,7 +7,6 @@ load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_ASSERTJ_TARGET", "LITHO_COM
 
 fb_java_test(
     name = "sections",
-    # T41117446 Enable them after switching target to AndroidX
     srcs = glob(["*Test.java"]),
     source = "1.8",
     target = "1.8",
