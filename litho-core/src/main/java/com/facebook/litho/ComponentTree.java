@@ -18,13 +18,13 @@ package com.facebook.litho;
 
 import static android.os.Process.THREAD_PRIORITY_DEFAULT;
 import static com.facebook.litho.ComponentLifecycle.StateUpdate;
-import static com.facebook.litho.HandlerInstrumenter.instrumentLithoHandler;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_LAYOUT_CALCULATE;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_PRE_ALLOCATE_MOUNT_CONTENT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_ATTRIBUTION;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_IS_BACKGROUND_LAYOUT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_ROOT_COMPONENT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_TREE_DIFF_ENABLED;
+import static com.facebook.litho.HandlerInstrumenter.instrumentLithoHandler;
 import static com.facebook.litho.LayoutState.CalculateLayoutSource;
 import static com.facebook.litho.ThreadUtils.assertHoldsLock;
 import static com.facebook.litho.ThreadUtils.assertMainThread;
@@ -2208,7 +2208,7 @@ public class ComponentTree {
     @Nullable private final LayoutState previousLayoutState;
     @Nullable private final TreeProps treeProps;
     private final FutureTask<LayoutState> futureTask;
-    private volatile int refCount;
+    private final AtomicInteger refCount = new AtomicInteger(0);
     private final boolean isCancelable;
 
     @GuardedBy("LayoutStateFuture.this")
@@ -2299,9 +2299,9 @@ public class ComponentTree {
     }
 
     void unregisterForResponse(boolean waitingOnMainThread) {
-      refCount--;
+      final int newRefCount = refCount.decrementAndGet();
 
-      if (refCount < 0) {
+      if (newRefCount < 0) {
         throw new IllegalStateException("LayoutStateFuture ref count is below 0");
       }
 
@@ -2311,14 +2311,14 @@ public class ComponentTree {
     }
 
     void registerForResponse(boolean waitingOnMainThread) {
-      refCount++;
+      refCount.incrementAndGet();
       if (waitingOnMainThread) {
         this.isBlockingMainThread = true;
       }
     }
 
     public int getWaitingCount() {
-      return refCount;
+      return refCount.get();
     }
 
     boolean canBeCancelled() {
