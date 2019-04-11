@@ -2068,9 +2068,7 @@ public class ComponentTree {
       // can remove it.
       if (layoutStateFuture.getWaitingCount() == 0) {
         layoutStateFuture.release();
-        if (mLayoutStateFutures.contains(layoutStateFuture)) {
-          mLayoutStateFutures.remove(layoutStateFuture);
-        }
+        mLayoutStateFutures.remove(layoutStateFuture);
       }
     }
 
@@ -2127,9 +2125,7 @@ public class ComponentTree {
         // can remove it.
         if (localLayoutStateFuture.getWaitingCount() == 0) {
           localLayoutStateFuture.release();
-          if (mLayoutStateFutures.contains(localLayoutStateFuture)) {
-            mLayoutStateFutures.remove(localLayoutStateFuture);
-          }
+          mLayoutStateFutures.remove(localLayoutStateFuture);
         }
       }
 
