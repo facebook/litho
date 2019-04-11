@@ -344,11 +344,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
           }
 
           if (isIncrementalMountEnabled && component.hasChildLithoViews()) {
-            mountItemIncrementally(
-                currentMountItem,
-                layoutOutput.getBounds(),
-                localVisibleRect,
-                processVisibilityOutputs);
+            mountItemIncrementally(currentMountItem, processVisibilityOutputs);
           }
         }
 
@@ -2273,8 +2269,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     view.setStateListAnimator(null);
   }
 
-  private static void mountItemIncrementally(
-      MountItem item, Rect itemBounds, Rect localVisibleRect, boolean processVisibilityOutputs) {
+  private static void mountItemIncrementally(MountItem item, boolean processVisibilityOutputs) {
     final Component component = item.getComponent();
 
     if (!isMountViewSpec(component)) {
@@ -3048,11 +3043,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       if (!mComponentIdsMountedInThisFrame.contains(layoutOutputId)) {
         final int layoutOutputPosition = layoutState.getLayoutOutputPositionForId(layoutOutputId);
         if (layoutOutputPosition != -1) {
-          mountItemIncrementally(
-              mountItem,
-              layoutState.getMountableOutputAt(layoutOutputPosition).getBounds(),
-              localVisibleRect,
-              processVisibilityOutputs);
+          mountItemIncrementally(mountItem, processVisibilityOutputs);
         }
       }
     }
