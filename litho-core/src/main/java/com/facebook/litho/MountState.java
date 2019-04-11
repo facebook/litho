@@ -297,9 +297,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
         if (isMountable && !isMounted) {
           mountLayoutOutput(i, layoutOutput, layoutState);
 
-          if (isAnimationLocked(i)
-              && isIncrementalMountEnabled
-              && canMountIncrementally(component)) {
+          if (isAnimationLocked(i) && isIncrementalMountEnabled && component.hasChildLithoViews()) {
             // If the component is locked for animation then we need to make sure that all the
             // children are also mounted.
             final View view = (View) getItemAt(i).getContent();
@@ -345,7 +343,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
             }
           }
 
-          if (isIncrementalMountEnabled && canMountIncrementally(component)) {
+          if (isIncrementalMountEnabled && component.hasChildLithoViews()) {
             mountItemIncrementally(
                 currentMountItem,
                 layoutOutput.getBounds(),
@@ -1488,10 +1486,6 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     } else {
       throw new IllegalStateException("Unsupported mounted content " + content);
     }
-  }
-
-  private static boolean canMountIncrementally(Component component) {
-    return component.hasChildLithoViews();
   }
 
   /**
