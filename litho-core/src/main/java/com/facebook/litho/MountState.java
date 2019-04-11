@@ -955,9 +955,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       boolean useUpdateValueFromLayoutOutput) {
     @LayoutOutput.UpdateState final int updateState = layoutOutput.getUpdateState();
     final Component currentComponent = currentMountItem.getComponent();
-    final ComponentLifecycle currentLifecycle = currentComponent;
     final Component nextComponent = layoutOutput.getComponent();
-    final ComponentLifecycle nextLifecycle = nextComponent;
 
     // If the orientation has changed, we should definitely update.
     if (layoutOutput.getOrientation() != currentMountItem.getOrientation()) {
@@ -966,7 +964,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
     // If the two components have different sizes and the mounted content depends on the size we
     // just return true immediately.
-    if (!sameSize(layoutOutput, currentMountItem) && nextLifecycle.isMountSizeDependent()) {
+    if (!sameSize(layoutOutput, currentMountItem) && nextComponent.isMountSizeDependent()) {
       return true;
     }
 
@@ -974,21 +972,19 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       if (updateState == LayoutOutput.STATE_UPDATED) {
 
         // Check for incompatible ReferenceLifecycle.
-        return currentLifecycle instanceof DrawableComponent
-            && nextLifecycle instanceof DrawableComponent
-            && currentLifecycle.shouldComponentUpdate(currentComponent, nextComponent);
+        return currentComponent instanceof DrawableComponent
+            && nextComponent instanceof DrawableComponent
+            && currentComponent.shouldComponentUpdate(currentComponent, nextComponent);
       } else if (updateState == LayoutOutput.STATE_DIRTY) {
         return true;
       }
     }
 
-    if (!currentLifecycle.callsShouldUpdateOnMount()) {
+    if (!currentComponent.callsShouldUpdateOnMount()) {
       return true;
     }
 
-    return currentLifecycle.shouldComponentUpdate(
-        currentComponent,
-        nextComponent);
+    return currentComponent.shouldComponentUpdate(currentComponent, nextComponent);
   }
 
   private static boolean sameSize(LayoutOutput layoutOutput, MountItem item) {
