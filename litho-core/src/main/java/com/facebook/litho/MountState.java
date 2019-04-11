@@ -3040,11 +3040,6 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     return true;
   }
 
-  LithoView getLithoView() {
-    assertMainThread();
-    return mLithoView;
-  }
-
   private void prepareTransitionManager() {
     if (mTransitionManager == null) {
       mTransitionManager = new TransitionManager(this, this);
