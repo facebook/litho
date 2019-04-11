@@ -321,7 +321,6 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
                     layoutState,
                     currentMountItem,
                     useUpdateValueFromLayoutOutput,
-                    logger,
                     componentTreeId,
                     i);
 
@@ -844,7 +843,6 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       LayoutState layoutState,
       MountItem currentMountItem,
       boolean useUpdateValueFromLayoutOutput,
-      ComponentsLogger logger,
       int componentTreeId,
       int index) {
     final Component layoutOutputComponent = layoutOutput.getComponent();
@@ -1645,7 +1643,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
         unsetViewPadding(view, viewNodeInfo);
         unsetViewBackground(view, viewNodeInfo);
         unsetViewForeground(view, viewNodeInfo);
-        unsetViewLayoutDirection(view, viewNodeInfo);
+        unsetViewLayoutDirection(view);
       }
     }
   }
@@ -2161,7 +2159,6 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
   private static void unsetViewBackground(View view, ViewNodeInfo viewNodeInfo) {
     final ComparableDrawable background = viewNodeInfo.getBackground();
-    final Drawable drawable = view.getBackground();
     if (background != null) {
       setBackgroundCompat(view, null);
     }
@@ -2220,7 +2217,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     view.setLayoutDirection(viewLayoutDirection);
   }
 
-  private static void unsetViewLayoutDirection(View view, ViewNodeInfo viewNodeInfo) {
+  private static void unsetViewLayoutDirection(View view) {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
       return;
     }
@@ -2599,7 +2596,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   }
 
   private void createNewTransitions(LayoutState newLayoutState, Transition rootTransition) {
-    prepareTransitionManager(newLayoutState);
+    prepareTransitionManager();
 
     mTransitionManager.setupTransitions(mLastMountedLayoutState, newLayoutState, rootTransition);
 
@@ -3048,7 +3045,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     return mLithoView;
   }
 
-  private void prepareTransitionManager(LayoutState layoutState) {
+  private void prepareTransitionManager() {
     if (mTransitionManager == null) {
       mTransitionManager = new TransitionManager(this, this);
     }
