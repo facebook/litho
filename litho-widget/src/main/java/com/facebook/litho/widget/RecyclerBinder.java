@@ -607,7 +607,8 @@ public class RecyclerBinder
               null,
               null,
               c.getTreePropsCopy(),
-              c.getYogaNodeFactory());
+              c.getYogaNodeFactory(),
+              ComponentContext.isIncrementalMountDisabled(c));
 
       if (layoutInfo == null) {
         layoutInfo = new LinearLayoutInfo(c.getAndroidContext(), VERTICAL, false);
