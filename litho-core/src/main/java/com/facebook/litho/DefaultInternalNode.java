@@ -1636,6 +1636,13 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
       copy.addChildAt(getChildAt(i).deepClone(), i);
     }
 
+    copy.mResolvedTouchExpansionLeft = YogaConstants.UNDEFINED;
+    copy.mResolvedTouchExpansionRight = YogaConstants.UNDEFINED;
+    copy.mResolvedX = YogaConstants.UNDEFINED;
+    copy.mResolvedY = YogaConstants.UNDEFINED;
+    copy.mResolvedWidth = YogaConstants.UNDEFINED;
+    copy.mResolvedHeight = YogaConstants.UNDEFINED;
+
     return copy;
   }
 
