@@ -948,6 +948,14 @@ public class ComponentTree {
               treeProps,
               CalculateLayoutSource.MEASURE,
               null);
+      if (localLayoutState == null) {
+        if (!mUseSharedLayoutStateFuture) {
+          throw new IllegalStateException(
+              "LayoutState is null LayoutStateFutures are disabled. Only released LayoutStateFutures can return a null LayoutState.");
+        }
+        throw new IllegalStateException(
+            "LayoutState cannot be null for measure, this means a LayoutStateFuture was released incorrectly.");
+      }
 
       final List<Component> components;
       synchronized (this) {
@@ -1727,6 +1735,19 @@ public class ComponentTree {
                 source,
                 extraAttribution)
             : calculateLayoutState(layoutStateFuture);
+
+    if (localLayoutState == null) {
+      if (!mUseSharedLayoutStateFuture) {
+        throw new IllegalStateException(
+            "LayoutState is null and LayoutStateFutures are disabled. Only released LayoutStateFutures can return a null LayoutState ");
+      }
+      if (output != null) {
+        throw new IllegalStateException(
+            "LayoutState is null, but only async operations can return a null LayoutState");
+      }
+
+      return;
+    }
 
     if (output != null) {
       output.width = localLayoutState.getWidth();
