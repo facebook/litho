@@ -248,7 +248,7 @@ class LayoutState {
     final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
       ComponentsSystrace.beginSection(
-          "createHostLayoutOutput:" + node.getRootComponent().getSimpleName());
+          "createHostLayoutOutput:" + node.getSimpleName());
     }
     final LayoutOutput hostOutput =
         createLayoutOutput(
@@ -280,7 +280,7 @@ class LayoutState {
     final boolean isTracing = ComponentsSystrace.isTracing();
     try {
       if (isTracing) {
-        ComponentsSystrace.beginSection("createDrawableLayoutOutput:" + component.getSimpleName());
+        ComponentsSystrace.beginSection("createDrawableLayoutOutput:" + node.getSimpleName());
       }
       return createLayoutOutput(
           component,
@@ -309,7 +309,7 @@ class LayoutState {
       boolean isPhantom) {
     final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
-      ComponentsSystrace.beginSection("createLayoutOutput:" + component.getSimpleName());
+      ComponentsSystrace.beginSection("createLayoutOutput:" + node.getSimpleName());
     }
     final boolean isMountViewSpec = isMountViewSpec(component);
 
@@ -589,7 +589,7 @@ class LayoutState {
     final Component component = node.getRootComponent();
     final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
-      ComponentsSystrace.beginSection("collectResults:" + component.getSimpleName());
+      ComponentsSystrace.beginSection("collectResults:" + node.getSimpleName());
     }
 
     // Early return if collecting results of a node holding a nested tree.
@@ -597,7 +597,7 @@ class LayoutState {
       // If the nested tree is defined, it has been resolved during a measure call during
       // layout calculation.
       if (isTracing) {
-        ComponentsSystrace.beginSectionWithArgs("resolveNestedTree:" + component.getSimpleName())
+        ComponentsSystrace.beginSectionWithArgs("resolveNestedTree:" + node.getSimpleName())
             .arg("widthSpec", "EXACTLY " + node.getWidth())
             .arg("heightSpec", "EXACTLY " + node.getHeight())
             .arg("rootComponentId", node.getRootComponent().getId())
@@ -655,7 +655,7 @@ class LayoutState {
     final DiffNode diffNode;
     if (shouldGenerateDiffTree) {
       if (isTracing) {
-        ComponentsSystrace.beginSection("createDiffNode:" + component.getSimpleName());
+        ComponentsSystrace.beginSection("createDiffNode:" + node.getSimpleName());
       }
       diffNode = createDiffNode(node, parentDiffNode);
       if (isTracing) {
@@ -737,7 +737,7 @@ class LayoutState {
             : null;
 
         if (isTracing) {
-          ComponentsSystrace.beginSection("addBgDrawableComponent:" + component.getSimpleName());
+          ComponentsSystrace.beginSection("addBgDrawableComponent:" + node.getSimpleName());
         }
         final LayoutOutput backgroundOutput =
             addDrawableComponent(
@@ -761,7 +761,7 @@ class LayoutState {
     if (isMountSpec(component)) {
       // Notify component about its final size.
       if (isTracing) {
-        ComponentsSystrace.beginSection("onBoundsDefined:" + component.getSimpleName());
+        ComponentsSystrace.beginSection("onBoundsDefined:" + node.getSimpleName());
       }
       component.onBoundsDefined(layoutState.mContext, node);
       if (isTracing) {
@@ -791,7 +791,7 @@ class LayoutState {
 
     if (TransitionUtils.areTransitionsEnabled(scopedAndroidContext)) {
       if (isTracing) {
-        ComponentsSystrace.beginSection("extractTransitions:" + component.getSimpleName());
+        ComponentsSystrace.beginSection("extractTransitions:" + node.getSimpleName());
       }
       final ArrayList<Transition> transitions = node.getTransitions();
       if (transitions != null) {
@@ -841,7 +841,7 @@ class LayoutState {
       final LayoutOutput convertBorder =
           (currentDiffNode != null) ? currentDiffNode.getBorder() : null;
       if (isTracing) {
-        ComponentsSystrace.beginSection("addBorderDrawableComponent:" + component.getSimpleName());
+        ComponentsSystrace.beginSection("addBorderDrawableComponent:" + node.getSimpleName());
       }
       final LayoutOutput borderOutput =
           addDrawableComponent(
@@ -870,7 +870,7 @@ class LayoutState {
             : null;
 
         if (isTracing) {
-          ComponentsSystrace.beginSection("addFgDrawableComponent:" + component.getSimpleName());
+          ComponentsSystrace.beginSection("addFgDrawableComponent:" + node.getSimpleName());
         }
         final LayoutOutput foregroundOutput =
             addDrawableComponent(
@@ -893,7 +893,7 @@ class LayoutState {
     // 7. Add VisibilityOutputs if any visibility-related event handlers are present.
     if (node.hasVisibilityHandlers()) {
       if (isTracing) {
-        ComponentsSystrace.beginSection("addVisibilityHandlers:" + component.getSimpleName());
+        ComponentsSystrace.beginSection("addVisibilityHandlers:" + node.getSimpleName());
       }
       final VisibilityOutput visibilityOutput = createVisibilityOutput(node, layoutState);
       final long previousId =
@@ -924,7 +924,7 @@ class LayoutState {
     List<WorkingRangeContainer.Registration> registrations = node.getWorkingRangeRegistrations();
     if (registrations != null && !registrations.isEmpty()) {
       if (isTracing) {
-        ComponentsSystrace.beginSection("extractWorkingRanges:" + component.getSimpleName());
+        ComponentsSystrace.beginSection("extractWorkingRanges:" + node.getSimpleName());
       }
       if (layoutState.mWorkingRangeContainer == null) {
         layoutState.mWorkingRangeContainer = new WorkingRangeContainer();
@@ -951,7 +951,7 @@ class LayoutState {
       }
 
       if (isTracing) {
-        ComponentsSystrace.beginSection("keepComponentDelegates:" + component.getSimpleName());
+        ComponentsSystrace.beginSection("keepComponentDelegates:" + node.getSimpleName());
       }
       for (Component delegate : node.getComponents()) {
         final Rect copyRect = new Rect();
@@ -1187,7 +1187,7 @@ class LayoutState {
 
     final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
-      ComponentsSystrace.beginSection("onBoundsDefined:" + node.getRootComponent().getSimpleName());
+      ComponentsSystrace.beginSection("onBoundsDefined:" + node.getSimpleName());
     }
     drawableComponent.onBoundsDefined(layoutState.mContext, node);
     if (isTracing) {
@@ -1225,7 +1225,7 @@ class LayoutState {
     final Component component = node.getRootComponent();
     final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
-      ComponentsSystrace.beginSection("addHostLayoutOutput:" + component.getSimpleName());
+      ComponentsSystrace.beginSection("addHostLayoutOutput:" + node.getSimpleName());
     }
 
     // Only the root host is allowed to wrap view mount specs as a layout output
@@ -1569,7 +1569,7 @@ class LayoutState {
     final boolean isTracing = ComponentsSystrace.isTracing();
 
     if (isTracing) {
-      ComponentsSystrace.beginSection("measureTree:" + component.getSimpleName());
+      ComponentsSystrace.beginSection("measureTree:" + root.getSimpleName());
     }
 
     if (YogaConstants.isUndefined(root.getStyleWidth())) {

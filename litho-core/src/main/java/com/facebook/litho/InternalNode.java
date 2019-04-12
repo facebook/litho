@@ -390,6 +390,8 @@ public interface InternalNode extends ComponentLayout, LayoutProps, Copyable<Int
 
   InternalNode deepClone();
 
+  String getSimpleName();
+
   class NestedTreeProps {
     boolean mIsNestedTreeHolder;
     @Nullable InternalNode mNestedTree;

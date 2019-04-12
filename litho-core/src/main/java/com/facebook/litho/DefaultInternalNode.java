@@ -1646,6 +1646,11 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
     return copy;
   }
 
+  @Override
+  public String getSimpleName() {
+    return mComponents.isEmpty() ? "<null>" : mComponents.get(0).getSimpleName();
+  }
+
   protected DefaultInternalNode clone() {
     try {
       return (DefaultInternalNode) super.clone();

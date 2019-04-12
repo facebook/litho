@@ -841,4 +841,9 @@ class NoOpInternalNode implements InternalNode {
   public InternalNode deepClone() {
     throw new UnsupportedOperationException("NoOpInternalNode.deepClone not implemented.");
   }
+
+  @Override
+  public String getSimpleName() {
+    return "NoOpInternalNode";
+  }
 }
