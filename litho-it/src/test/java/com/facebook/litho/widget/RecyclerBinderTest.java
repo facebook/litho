@@ -82,6 +82,7 @@ import java.util.concurrent.TimeUnit;
 import junit.framework.Assert;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.invocation.InvocationOnMock;
@@ -2107,8 +2108,8 @@ public class RecyclerBinderTest {
     }
   }
 
-  // T41117446 Stopped working after AndroidX conversion
-  // @Test
+  @Ignore("T41117446 Stopped working after AndroidX conversion")
+  @Test
   public void testUpdateItemAtDoesNotNotifyItemChangedExceptWhenUpdatingViews() {
     final RecyclerView.Adapter adapter = mock(RecyclerView.Adapter.class);
     final RecyclerBinder recyclerBinder = createRecyclerBinderWithMockAdapter(adapter);
@@ -2148,8 +2149,8 @@ public class RecyclerBinderTest {
     verify(adapter, times(1)).notifyItemChanged(0);
   }
 
-  // T41117446 Stopped working after AndroidX conversion
-  // @Test
+  @Ignore("T41117446 Stopped working after AndroidX conversion")
+  @Test
   public void testUpdateRangeAtDoesNotNotifyItemChangedExceptWhenUpdatingViews() {
     final RecyclerView.Adapter adapter = mock(RecyclerView.Adapter.class);
     final RecyclerBinder recyclerBinder = createRecyclerBinderWithMockAdapter(adapter);
@@ -2968,8 +2969,8 @@ public class RecyclerBinderTest {
     assertComponentAtEquals(recyclerBinder, 3, components.get(1));
   }
 
-  // T41117446 Stopped working after AndroidX conversion
-  // @Test
+  @Ignore("T41117446 Stopped working after AndroidX conversion")
+  @Test
   public void testUpdateAsyncOnInsertedItem() {
     final RecyclerView.Adapter adapter = mock(RecyclerView.Adapter.class);
     final RecyclerBinder recyclerBinder = createRecyclerBinderWithMockAdapter(adapter);
@@ -3000,8 +3001,8 @@ public class RecyclerBinderTest {
     mLayoutThreadShadowLooper.runToEndOfTasks();
   }
 
-  // T41117446 Stopped working after AndroidX conversion
-  // @Test
+  @Ignore("T41117446 Stopped working after AndroidX conversion")
+  @Test
   public void testUpdateAsyncOnNonInsertedItem() {
     final RecyclerView.Adapter adapter = mock(RecyclerView.Adapter.class);
     final RecyclerBinder recyclerBinder = createRecyclerBinderWithMockAdapter(adapter);
@@ -3140,8 +3141,8 @@ public class RecyclerBinderTest {
     assertComponentAtEquals(recyclerBinder, 5, components.get(3));
   }
 
-  // T41117446 Stopped working after AndroidX conversion
-  // @Test
+  @Ignore("T41117446 Stopped working after AndroidX conversion")
+  @Test
   public void testUpdateAsyncOnInsertedViewFromComponent() {
     final RecyclerView.Adapter adapter = mock(RecyclerView.Adapter.class);
     final RecyclerBinder recyclerBinder = createRecyclerBinderWithMockAdapter(adapter);
@@ -3170,8 +3171,8 @@ public class RecyclerBinderTest {
     mLayoutThreadShadowLooper.runToEndOfTasks();
   }
 
-  // T41117446 Stopped working after AndroidX conversion
-  // @Test
+  @Ignore("T41117446 Stopped working after AndroidX conversion")
+  @Test
   public void testUpdateAsyncOnInsertedViewToComponent() {
     final RecyclerView.Adapter adapter = mock(RecyclerView.Adapter.class);
     final RecyclerBinder recyclerBinder = createRecyclerBinderWithMockAdapter(adapter);
