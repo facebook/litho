@@ -232,7 +232,7 @@ class TextInputSpec {
       @State int measureSeqNumber) {
 
     // The height should be the measured height of EditText with relevant params
-    final EditText forMeasure = new EditText(c.getAndroidContext());
+    final EditText forMeasure = new ForMeasureEditText(c.getAndroidContext());
     setParams(
         forMeasure,
         hint,
@@ -866,5 +866,16 @@ class TextInputSpec {
         }
       }
     }
+  }
+
+  static class ForMeasureEditText extends EditText {
+
+    public ForMeasureEditText(Context context) {
+      super(context);
+    }
+
+    // This view is not intended to be drawn and invalidated
+    @Override
+    public void invalidate() {}
   }
 }
