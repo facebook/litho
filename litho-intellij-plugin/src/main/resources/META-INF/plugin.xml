@@ -20,6 +20,7 @@
       <li>Command-click on a LithoComponent takes you to the ComponentSpec</li>
       <li>@DefaultProp value is shown near the @Prop parameter as a folding.</li>
       <li>@Prop and @State method parameters have completion suggestions.</li>
+      <li>New File menu contains LithoSpec option.</li>
     </ul>
   ]]></change-notes>
 
