@@ -958,15 +958,24 @@ public class ComponentTree {
       }
 
       final List<Component> components;
+      @Nullable final Map<String, Component> attachables;
       synchronized (this) {
         final StateHandler layoutStateStateHandler = localLayoutState.consumeStateHandler();
         components = new ArrayList<>(localLayoutState.getComponents());
+        attachables = localLayoutState.consumeAttachables();
         if (layoutStateStateHandler != null) {
           mStateHandler.commit(layoutStateStateHandler, mNestedTreeResolutionExperimentEnabled);
         }
 
         localLayoutState.clearComponents();
         mMainThreadLayoutState = localLayoutState;
+      }
+
+      final AttachDetachHandler attachDetachHandler = mContext.getAttachDetachHandler();
+      if (attachDetachHandler != null) {
+        attachDetachHandler.onAttached(attachables);
+      } else if (attachables != null) {
+        mContext.getOrCreateAttachDetachHandler().onAttached(attachables);
       }
 
       bindEventAndTriggerHandlers(components);
@@ -1755,6 +1764,7 @@ public class ComponentTree {
     }
 
     List<Component> components = null;
+    @Nullable Map<String, Component> attachables = null;
 
     final boolean noCompatibleComponent;
     int rootWidth = 0;
@@ -1784,14 +1794,24 @@ public class ComponentTree {
         components = new ArrayList<>(localLayoutState.getComponents());
         localLayoutState.clearComponents();
 
+        attachables = localLayoutState.consumeAttachables();
+
         // Set the new layout state.
         mBackgroundLayoutState = localLayoutState;
         layoutStateUpdated = true;
       }
     }
 
-    if (noCompatibleComponent && mMeasureListener != null) {
-      mMeasureListener.onSetRootAndSizeSpec(rootWidth, rootHeight);
+    if (noCompatibleComponent) {
+      if (mMeasureListener != null) {
+        mMeasureListener.onSetRootAndSizeSpec(rootWidth, rootHeight);
+      }
+      final AttachDetachHandler attachDetachHandler = mContext.getAttachDetachHandler();
+      if (attachDetachHandler != null) {
+        attachDetachHandler.onAttached(attachables);
+      } else if (attachables != null) {
+        mContext.getOrCreateAttachDetachHandler().onAttached(attachables);
+      }
     }
 
     if (components != null) {
@@ -1902,6 +1922,12 @@ public class ComponentTree {
 
     synchronized (mEventTriggersContainer) {
       clearUnusedTriggerHandlers();
+    }
+
+    final AttachDetachHandler attachDetachHandler = mContext.getAttachDetachHandler();
+    if (attachDetachHandler != null) {
+      // Execute detached callbacks if necessary.
+      attachDetachHandler.onDetached();
     }
   }
 

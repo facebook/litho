@@ -48,6 +48,7 @@ import androidx.recyclerview.widget.OrientationHelper;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
+import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
@@ -61,6 +62,8 @@ import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
 import com.facebook.litho.ThreadUtils;
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.litho.testing.TestAttachDetachComponent;
+import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
@@ -4982,6 +4985,64 @@ public class RecyclerBinderTest {
       final TestComponentTreeHolder holder =
           mHoldersForComponents.get(renderInfos.get(i).getComponent());
       assertThat(holder.mLayoutAsyncCalled).isFalse();
+    }
+  }
+
+  @Test
+  public void testOnAttachedOnDetachedWithViewportChanged() {
+    final int childHeightPx = 20;
+    final int widthPx = 200;
+    final int heightPx = 200;
+
+    mRecyclerBinder = new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+    final RecyclerView rv = mock(RecyclerView.class);
+    mRecyclerBinder.mount(rv);
+
+    final List<RenderInfo> renderInfos = new ArrayList<>();
+    final List<TestComponent> components = new ArrayList<>();
+    for (int i = 0; i < 200; i++) {
+      final TestComponent component =
+          TestAttachDetachComponent.create(mComponentContext).heightPx(childHeightPx).build();
+      components.add(component);
+      final Component child = Column.create(mComponentContext).child(component).build();
+      renderInfos.add(ComponentRenderInfo.create().component(child).build());
+    }
+    mRecyclerBinder.insertRangeAt(0, renderInfos);
+    mRecyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+
+    Size size = new Size();
+    int widthSpec = SizeSpec.makeSizeSpec(widthPx, SizeSpec.EXACTLY);
+    int heightSpec = SizeSpec.makeSizeSpec(heightPx, SizeSpec.EXACTLY);
+    mRecyclerBinder.measure(size, widthSpec, heightSpec, null);
+
+    final int rangeSize = heightPx / childHeightPx;
+    final int rangeStart = 0;
+    final int rangeTotal = (int) (rangeSize + (RANGE_RATIO * rangeSize));
+
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+    ShadowLooper.runUiThreadTasks();
+
+    for (int i = rangeStart; i <= rangeStart + rangeTotal; i++) {
+      final TestComponent component = components.get(i);
+      assertThat(component.wasOnAttachedCalled()).isTrue();
+    }
+
+    // Change viewport and check @OnDetached methods are called for components out of layout range.
+    final int newRangeStart = 100;
+    final int newRangeEnd = newRangeStart + rangeSize - 1;
+    mRecyclerBinder.onNewVisibleRange(newRangeStart, newRangeEnd);
+
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+    ShadowLooper.runUiThreadTasks();
+
+    for (int i = newRangeStart; i <= newRangeStart + rangeTotal; i++) {
+      final TestComponent component = components.get(i);
+      assertThat(component.wasOnAttachedCalled()).isTrue();
+    }
+
+    for (int i = rangeStart; i <= rangeStart + rangeTotal; i++) {
+      final TestComponent component = components.get(i);
+      assertThat(component.wasOnDetachedCalled()).isTrue();
     }
   }
 

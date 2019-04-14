@@ -205,6 +205,9 @@ class LayoutState {
 
   @Nullable WorkingRangeContainer mWorkingRangeContainer;
 
+  /** A container stores components whose OnAttached delegate methods are about to be executed. */
+  @Nullable private Map<String, Component> mAttachableContainer;
+
   LayoutState(ComponentContext context) {
     mContext = context;
     mId = sIdGenerator.getAndIncrement();
@@ -966,6 +969,12 @@ class LayoutState {
         if (delegate.getScopedContext() != null
             && delegate.getScopedContext().getComponentTree() != null) {
           layoutState.mComponents.add(delegate);
+          if (delegate.hasAttachDetachCallback()) {
+            if (layoutState.mAttachableContainer == null) {
+              layoutState.mAttachableContainer = new HashMap<>();
+            }
+            layoutState.mAttachableContainer.put(delegate.getGlobalKey(), delegate);
+          }
         }
         if (delegate.getGlobalKey() != null) {
           layoutState.mComponentKeyToBounds.put(delegate.getGlobalKey(), copyRect);
@@ -1038,6 +1047,13 @@ class LayoutState {
 
   void clearComponents() {
     mComponents.clear();
+  }
+
+  @Nullable
+  Map<String, Component> consumeAttachables() {
+    @Nullable Map<String, Component> tmp = mAttachableContainer;
+    mAttachableContainer = null;
+    return tmp;
   }
 
   private static void calculateAndSetHostOutputIdAndUpdateState(
