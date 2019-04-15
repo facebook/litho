@@ -42,6 +42,7 @@ import com.facebook.litho.annotations.FromTrigger;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateInitialState;
 import com.facebook.litho.annotations.OnCreateLayout;
+import com.facebook.litho.annotations.OnDetached;
 import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.annotations.OnTrigger;
 import com.facebook.litho.annotations.OnUpdateState;
@@ -397,6 +398,11 @@ public class RecyclerCollectionComponentSpec {
       @FromTrigger boolean animate,
       @State SectionTree sectionTree) {
     sectionTree.requestFocusOnRoot(position);
+  }
+
+  @OnDetached
+  static void onDetached(ComponentContext c, @State Binder<RecyclerView> binder) {
+    binder.detach();
   }
 
   private static class RecyclerCollectionOnScrollListener extends OnScrollListener {

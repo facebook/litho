@@ -202,6 +202,11 @@ public class SectionBinderTarget implements Target, Binder<RecyclerView> {
     return mUseBackgroundChangeSets;
   }
 
+  @Override
+  public void detach() {
+    mRecyclerBinder.detach();
+  }
+
   public void clear() {
     if (mUseBackgroundChangeSets) {
       mRecyclerBinder.clearAsync();

@@ -101,4 +101,7 @@ public interface Binder<V extends ViewGroup> {
    * view and the first item will need to be measured to determine the height of the view.
    */
   void setCanMeasure(boolean canMeasure);
+
+  /** Detach items under the hood. */
+  void detach();
 }

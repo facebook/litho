@@ -633,6 +633,20 @@ public class RecyclerBinder
     mCanMeasure = canMeasure;
   }
 
+  @Override
+  public void detach() {
+    final List<ComponentTreeHolder> toDetach = new ArrayList<>();
+    synchronized (this) {
+      for (int i = 0, size = mComponentTreeHolders.size(); i < size; i++) {
+        toDetach.add(mComponentTreeHolders.get(i));
+      }
+    }
+
+    for (int i = 0, size = toDetach.size(); i < size; i++) {
+      toDetach.get(i).acquireStateAndReleaseTree();
+    }
+  }
+
   @UiThread
   public void notifyItemRenderCompleteAt(int position, final long timestampMillis) {
     final ComponentTreeHolder holder = mComponentTreeHolders.get(position);

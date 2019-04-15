@@ -5046,6 +5046,49 @@ public class RecyclerBinderTest {
     }
   }
 
+  @Test
+  public void testItemsOnDetached() {
+    final int childHeightPx = 20;
+    final int widthPx = 200;
+    final int heightPx = 200;
+
+    mRecyclerBinder = new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+    final RecyclerView rv = mock(RecyclerView.class);
+    mRecyclerBinder.mount(rv);
+
+    final List<RenderInfo> renderInfos = new ArrayList<>();
+    final List<TestComponent> components = new ArrayList<>();
+    for (int i = 0; i < 200; i++) {
+      final TestComponent component =
+          TestAttachDetachComponent.create(mComponentContext).heightPx(childHeightPx).build();
+      components.add(component);
+      final Component child = Column.create(mComponentContext).child(component).build();
+      renderInfos.add(ComponentRenderInfo.create().component(child).build());
+    }
+    mRecyclerBinder.insertRangeAt(0, renderInfos);
+    mRecyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+
+    Size size = new Size();
+    int widthSpec = SizeSpec.makeSizeSpec(widthPx, SizeSpec.EXACTLY);
+    int heightSpec = SizeSpec.makeSizeSpec(heightPx, SizeSpec.EXACTLY);
+    mRecyclerBinder.measure(size, widthSpec, heightSpec, null);
+
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+    ShadowLooper.runUiThreadTasks();
+
+    mRecyclerBinder.detach();
+
+    final int rangeSize = heightPx / childHeightPx;
+    final int rangeStart = 0;
+    final int rangeTotal = (int) (rangeSize + (RANGE_RATIO * rangeSize));
+    for (int i = rangeStart; i <= rangeStart + rangeTotal; i++) {
+      assertThat(components.get(i).wasOnDetachedCalled()).isTrue();
+    }
+    for (int i = rangeStart + rangeTotal + 1; i < 200; i++) {
+      assertThat(components.get(i).wasOnDetachedCalled()).isFalse();
+    }
+  }
+
   private RecyclerBinder createRecyclerBinderWithMockAdapter(RecyclerView.Adapter adapterMock) {
     return new RecyclerBinder.Builder()
         .rangeRatio(RANGE_RATIO)
