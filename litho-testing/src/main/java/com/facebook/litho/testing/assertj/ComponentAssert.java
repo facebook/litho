@@ -195,6 +195,15 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
     return this;
   }
 
+  /**
+   * Inverse of {@link #hasVisibleText(String)}
+   */
+  public ComponentAssert doesNotHaveVisibleText(String text) {
+    assertThatLithoView().doesNotHaveVisibleText(text);
+
+    return this;
+  }
+
   /** Assert that the given component contains the provided pattern. */
   public ComponentAssert hasVisibleTextMatching(String pattern) {
     assertThatLithoView().hasVisibleTextMatching(pattern);
