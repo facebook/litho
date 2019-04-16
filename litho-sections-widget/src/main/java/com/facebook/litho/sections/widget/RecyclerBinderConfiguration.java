@@ -44,6 +44,7 @@ public class RecyclerBinderConfiguration {
   @Nullable private List<ComponentLogParams> mInvalidStateLogParamsList;
   private final boolean mSplitLayoutForMeasureAndRangeEstimation;
   @Nullable private Handler mChangeSetThreadHandler;
+  private final boolean mEnableDetach;
 
   public static Builder create() {
     return new Builder();
@@ -62,6 +63,7 @@ public class RecyclerBinderConfiguration {
       boolean enableStableIds,
       boolean asyncInitRange,
       boolean splitLayoutForMeasureAndRangeEstimation,
+      boolean enableDetach,
       @Nullable Handler changeSetThreadHandler) {
     mRangeRatio = rangeRatio;
     mLayoutHandlerFactory = layoutHandlerFactory;
@@ -75,6 +77,7 @@ public class RecyclerBinderConfiguration {
     mEnableStableIds = enableStableIds;
     mAsyncInitRange = asyncInitRange;
     mSplitLayoutForMeasureAndRangeEstimation = splitLayoutForMeasureAndRangeEstimation;
+    mEnableDetach = enableDetach;
     mChangeSetThreadHandler = changeSetThreadHandler;
   }
 
@@ -130,6 +133,10 @@ public class RecyclerBinderConfiguration {
     return mSplitLayoutForMeasureAndRangeEstimation;
   }
 
+  public boolean getEnableDetach() {
+    return mEnableDetach;
+  }
+
   public static class Builder {
     public static final LayoutThreadPoolConfiguration DEFAULT_THREAD_POOL_CONFIG =
         ComponentsConfiguration.threadPoolConfiguration;
@@ -148,6 +155,7 @@ public class RecyclerBinderConfiguration {
     private boolean mAsyncInitRange = ComponentsConfiguration.asyncInitRange;
     private boolean mSplitLayoutForMeasureAndRangeEstimation =
         ComponentsConfiguration.splitLayoutForMeasureAndRangeEstimation;
+    private boolean mEnableDetach = false;
     @Nullable private Handler mChangeSetThreadHandler;
 
     Builder() {}
@@ -259,6 +267,12 @@ public class RecyclerBinderConfiguration {
       return this;
     }
 
+    /** If true, detach components under the hood when RecyclerBinder#detach() is called. */
+    public Builder enableDetach(boolean enableDetach) {
+      mEnableDetach = enableDetach;
+      return this;
+    }
+
     public RecyclerBinderConfiguration build() {
       return new RecyclerBinderConfiguration(
           mRangeRatio,
@@ -273,6 +287,7 @@ public class RecyclerBinderConfiguration {
           mEnableStableIds,
           mAsyncInitRange,
           mSplitLayoutForMeasureAndRangeEstimation,
+          mEnableDetach,
           mChangeSetThreadHandler);
     }
   }

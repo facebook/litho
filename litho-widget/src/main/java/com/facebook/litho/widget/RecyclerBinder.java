@@ -124,6 +124,7 @@ public class RecyclerBinder
   private final RecyclerRangeTraverser mRangeTraverser;
   private final boolean mHScrollAsyncMode;
   private final boolean mIncrementalMountEnabled;
+  private final boolean mEnableDetach;
   private boolean mAsyncInitRange;
 
   private AtomicLong mCurrentChangeSetThreadId = new AtomicLong(-1);
@@ -383,6 +384,7 @@ public class RecyclerBinder
     private boolean splitLayoutForMeasureAndRangeEstimation =
         ComponentsConfiguration.splitLayoutForMeasureAndRangeEstimation;
     private @Nullable StickyHeaderControllerFactory stickyHeaderControllerFactory;
+    private boolean enableDetach = false;
 
     /**
      * @param rangeRatio specifies how big a range this binder should try to compute. The range is
@@ -597,6 +599,12 @@ public class RecyclerBinder
       return this;
     }
 
+    /** If true, detach components under the hood when RecyclerBinder#detach() is called. */
+    public Builder enableDetach(boolean enableDetach) {
+      this.enableDetach = enableDetach;
+      return this;
+    }
+
     /** @param c The {@link ComponentContext} the RecyclerBinder will use. */
     public RecyclerBinder build(ComponentContext c) {
       componentContext =
@@ -635,6 +643,10 @@ public class RecyclerBinder
 
   @Override
   public void detach() {
+    if (!mEnableDetach) {
+      return;
+    }
+
     final List<ComponentTreeHolder> toDetach = new ArrayList<>();
     synchronized (this) {
       for (int i = 0, size = mComponentTreeHolders.size(); i < size; i++) {
@@ -774,6 +786,7 @@ public class RecyclerBinder
     mHScrollAsyncMode = builder.hscrollAsyncMode;
     mIncrementalMountEnabled = builder.incrementalMount;
     mStickyHeaderControllerFactory = builder.stickyHeaderControllerFactory;
+    mEnableDetach = builder.enableDetach;
   }
 
   /**

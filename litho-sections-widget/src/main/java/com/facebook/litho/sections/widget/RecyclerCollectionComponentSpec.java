@@ -301,6 +301,7 @@ public class RecyclerCollectionComponentSpec {
             .incrementalMount(incrementalMount)
             .splitLayoutForMeasureAndRangeEstimation(
                 binderConfiguration.splitLayoutForMeasureAndRangeEstimation())
+            .enableDetach(binderConfiguration.getEnableDetach())
             .stickyHeaderControllerFactory(stickyHeaderControllerFactory)
             .build(c);
 
