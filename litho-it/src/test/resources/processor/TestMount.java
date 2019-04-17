@@ -644,7 +644,7 @@ public final class TestMount<S extends View> extends Component implements TestTa
     }
   }
 
-  public static class Builder<S extends View> extends Component.Builder<Builder<S>> {
+  public static final class Builder<S extends View> extends Component.Builder<Builder<S>> {
     TestMount mTestMount;
 
     ComponentContext mContext;
