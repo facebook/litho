@@ -214,10 +214,6 @@ class LayoutState {
     mStateHandler = mContext.getStateHandler();
     mTestOutputs = ComponentsConfiguration.isEndToEndTestRun ? new ArrayList<TestOutput>(8) : null;
     mOrientation = context.getResources().getConfiguration().orientation;
-
-    if (!ComponentsConfiguration.lazilyInitializeLayoutStateOutputIdCalculator) {
-      mLayoutStateOutputIdCalculator = new LayoutStateOutputIdCalculator();
-    }
   }
 
   /**

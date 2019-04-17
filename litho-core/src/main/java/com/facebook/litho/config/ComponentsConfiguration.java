@@ -112,9 +112,6 @@ public class ComponentsConfiguration {
    */
   public static boolean useGlobalKeys = true;
 
-  /** If true then we'll lazily initialize the LayoutStateOutputIdCalculator */
-  public static boolean lazilyInitializeLayoutStateOutputIdCalculator = false;
-
   /** Whether to unmount all contents of LithoView when its ComponentTree is set to null. */
   public static boolean unmountAllWhenComponentTreeSetToNull = false;
 
