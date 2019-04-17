@@ -76,12 +76,12 @@ public class StateHandler {
     this(null);
   }
 
-  public StateHandler(@Nullable StateHandler stateHandler) {
+  public StateHandler(final @Nullable StateHandler stateHandler) {
     if (stateHandler == null) {
       return;
     }
 
-    synchronized (this) {
+    synchronized (stateHandler) {
       copyStateUpdatesMap(
           stateHandler.getPendingStateUpdates(),
           stateHandler.getPendingLazyStateUpdates(),
@@ -93,6 +93,14 @@ public class StateHandler {
 
   public static @Nullable StateHandler createNewInstance(@Nullable StateHandler stateHandler) {
     return ComponentsConfiguration.useStateHandlers ? new StateHandler(stateHandler) : null;
+  }
+
+  public static StateHandler createShallowCopyForLazyStateUpdates(final StateHandler stateHandler) {
+    final StateHandler copy = new StateHandler();
+    synchronized (stateHandler) {
+      copy.copyPendingLazyStateUpdates(stateHandler.mPendingLazyStateUpdates);
+    }
+    return copy;
   }
 
   public synchronized boolean isEmpty() {
@@ -200,7 +208,6 @@ public class StateHandler {
     }
   }
 
-  @ThreadSafe(enableChecks = false)
   void applyLazyStateUpdatesForContainer(String componentKey, StateContainer container) {
     final List<StateUpdate> stateUpdatesForKey;
 
@@ -362,17 +369,27 @@ public class StateHandler {
           mPendingStateUpdates.put(key, createStateUpdatesList(pendingStateUpdates.get(key)));
         }
       }
-      if (pendingLazyStateUpdates != null) {
-        maybeInitLazyStateUpdatesMap();
-        for (String key : pendingLazyStateUpdates.keySet()) {
-          mPendingLazyStateUpdates.put(key, createStateUpdatesList(pendingLazyStateUpdates.get(key)));
-        }
-      }
+
+      copyPendingLazyStateUpdates(pendingLazyStateUpdates);
+
       if (appliedStateUpdates != null) {
         for (String key : appliedStateUpdates.keySet()) {
           mAppliedStateUpdates.put(key, createStateUpdatesList(appliedStateUpdates.get(key)));
         }
       }
+    }
+  }
+
+  private void copyPendingLazyStateUpdates(
+      @Nullable Map<String, List<StateUpdate>> pendingLazyStateUpdates) {
+
+    if (pendingLazyStateUpdates == null || pendingLazyStateUpdates.isEmpty()) {
+      return;
+    }
+
+    maybeInitLazyStateUpdatesMap();
+    for (String key : pendingLazyStateUpdates.keySet()) {
+      mPendingLazyStateUpdates.put(key, createStateUpdatesList(pendingLazyStateUpdates.get(key)));
     }
   }
 

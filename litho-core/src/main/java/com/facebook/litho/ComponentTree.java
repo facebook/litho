@@ -1127,7 +1127,7 @@ public class ComponentTree {
         return;
       }
 
-      stateHandler = mStateHandler;
+      stateHandler = StateHandler.createShallowCopyForLazyStateUpdates(mStateHandler);
     }
 
     stateHandler.applyLazyStateUpdatesForContainer(componentKey, container);
