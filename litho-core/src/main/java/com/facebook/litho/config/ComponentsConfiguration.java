@@ -128,12 +128,6 @@ public class ComponentsConfiguration {
   public static boolean useSingleThreadPool = false;
 
   /**
-   * If false, we won't create state handlers. It's highly discouraged to to change this to false,
-   * unless you handle all your updates outside of the litho framework
-   */
-  public static boolean useStateHandlers = true;
-
-  /**
    * If true, the async range calculation isn't blocked on the first item finishing layout and it
    * will schedule one layout per bg thread during init range.
    */

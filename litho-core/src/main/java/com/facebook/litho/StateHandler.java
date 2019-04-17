@@ -21,7 +21,6 @@ import static com.facebook.litho.ComponentLifecycle.StateUpdate;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.infer.annotation.ThreadSafe;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.stats.LithoStats;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -91,8 +90,8 @@ public class StateHandler {
     }
   }
 
-  public static @Nullable StateHandler createNewInstance(@Nullable StateHandler stateHandler) {
-    return ComponentsConfiguration.useStateHandlers ? new StateHandler(stateHandler) : null;
+  public static StateHandler createNewInstance(@Nullable StateHandler stateHandler) {
+    return new StateHandler(stateHandler);
   }
 
   public static StateHandler createShallowCopyForLazyStateUpdates(final StateHandler stateHandler) {
