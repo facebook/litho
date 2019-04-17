@@ -37,10 +37,13 @@ import java.util.List;
 import javax.lang.model.element.Modifier;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
 /**
  * Tests {@link StateValidation}
  */
+@RunWith(JUnit4.class)
 public class StateValidationTest {
   private final SpecModel mSpecModel = mock(SpecModel.class);
   private final PropModel mPropModel = mock(PropModel.class);

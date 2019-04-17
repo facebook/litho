@@ -34,8 +34,11 @@ import com.squareup.javapoet.TypeSpec;
 import org.assertj.core.api.Condition;
 import org.assertj.core.data.Index;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
 /** Tests {@link MatcherGenerator} */
+@RunWith(JUnit4.class)
 public class MatcherGeneratorTest {
   public static class DummyContext {}
 

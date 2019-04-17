@@ -23,10 +23,13 @@ import static org.mockito.Mockito.when;
 import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
 /**
  * Tests {@link SpecModelValidation}
  */
+@RunWith(JUnit4.class)
 public class SpecModelValidationTest {
   private final SpecModel mSpecModel = mock(SpecModel.class);
   private final MountSpecModel mMountSpecModel = mock(MountSpecModel.class);

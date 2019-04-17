@@ -48,10 +48,13 @@ import javax.lang.model.util.Types;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 /** Tests {@link TestSpecModelFactory} for an enclosed {@link LayoutSpec}. */
+@RunWith(JUnit4.class)
 public class TestLayoutSpecModelFactoryTest {
   @Rule public CompilationRule mCompilationRule = new CompilationRule();
 

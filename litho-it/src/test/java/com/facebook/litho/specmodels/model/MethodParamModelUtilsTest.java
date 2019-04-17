@@ -25,10 +25,13 @@ import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeVariableName;
 import java.lang.annotation.Annotation;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
 /**
  * Tests {@link MethodParamModelUtils}
  */
+@RunWith(JUnit4.class)
 public class MethodParamModelUtilsTest {
 
   @Test

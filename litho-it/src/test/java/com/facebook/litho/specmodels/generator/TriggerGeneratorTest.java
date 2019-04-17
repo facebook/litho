@@ -38,8 +38,11 @@ import javax.lang.model.util.Types;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
 /** Tests {@link TriggerGenerator} */
+@RunWith(JUnit4.class)
 public class TriggerGeneratorTest {
   @Rule public CompilationRule mCompilationRule = new CompilationRule();
 

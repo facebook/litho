@@ -29,10 +29,13 @@ import com.facebook.litho.testing.specmodels.MockSpecModel;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeName;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
 /**
  * Tests {@link JavadocGenerator}
  */
+@RunWith(JUnit4.class)
 public class JavadocGeneratorTest {
   @Test
   public void testGenerateJavadocProps() {

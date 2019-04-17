@@ -31,10 +31,13 @@ import java.util.List;
 import javax.lang.model.element.Modifier;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
 /**
  * Tests {@link PropValidation}
  */
+@RunWith(JUnit4.class)
 public class PropValidationTest {
   private final SpecModel mSpecModel = mock(SpecModel.class);
   private final PropModel mPropModel1 = mock(PropModel.class);

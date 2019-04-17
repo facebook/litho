@@ -29,7 +29,10 @@ import javax.tools.JavaFileObject;
 import javax.tools.StandardLocation;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
+@RunWith(JUnit4.class)
 public class ProcessorIntegrationTest {
   public static String RES_PREFIX = "/processor/";
   public static String RES_PACKAGE = "com.facebook.litho.processor.integration.resources";

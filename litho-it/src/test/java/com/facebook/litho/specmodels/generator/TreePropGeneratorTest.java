@@ -41,10 +41,13 @@ import java.util.ArrayList;
 import javax.lang.model.element.Modifier;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
 /**
  * Tests {@link TreePropGenerator}
  */
+@RunWith(JUnit4.class)
 public class TreePropGeneratorTest {
   private final SpecModel mSpecModel = mock(SpecModel.class);
   private final SpecModel mGenericSpecModel = mock(SpecModel.class);

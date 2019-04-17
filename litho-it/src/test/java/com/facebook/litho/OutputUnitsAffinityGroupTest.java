@@ -20,7 +20,10 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
+@RunWith(JUnit4.class)
 public class OutputUnitsAffinityGroupTest {
 
   @Rule public ExpectedException mExpectedException = ExpectedException.none();
