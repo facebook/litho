@@ -969,61 +969,88 @@ public abstract class Component extends ComponentLifecycle
       return getThis();
     }
 
+    /**
+     * Effects the spacing around the outside of a node. A node with margin will offset itself from
+     * the bounds of its parent but also offset the location of any siblings. See <a
+     * href="https://yogalayout.com/docs/margins-paddings-borders">https://yogalayout.com/docs/margins-paddings-borders</a>
+     * for more information
+     */
     public T marginPx(@Nullable YogaEdge edge, @Px int margin) {
       mComponent.getOrCreateCommonProps().marginPx(edge, margin);
       return getThis();
     }
 
-    /** @param percent a value between 0 and 100. */
+    /**
+     * @see #marginPx
+     * @param percent a value between 0 and 100.
+     */
     public T marginPercent(@Nullable YogaEdge edge, float percent) {
       mComponent.getOrCreateCommonProps().marginPercent(edge, percent);
       return getThis();
     }
 
+    /** @see #marginPx */
     public T marginAuto(@Nullable YogaEdge edge) {
       mComponent.getOrCreateCommonProps().marginAuto(edge);
       return getThis();
     }
 
+    /** @see #marginPx */
     public T marginAttr(@Nullable YogaEdge edge, @AttrRes int resId, @DimenRes int defaultResId) {
       return marginPx(edge, mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
     }
 
+    /** @see #marginPx */
     public T marginAttr(@Nullable YogaEdge edge, @AttrRes int resId) {
       return marginAttr(edge, resId, 0);
     }
 
+    /** @see #marginPx */
     public T marginRes(@Nullable YogaEdge edge, @DimenRes int resId) {
       return marginPx(edge, mResourceResolver.resolveDimenSizeRes(resId));
     }
 
+    /** @see #marginPx */
     public T marginDip(@Nullable YogaEdge edge, @Dimension(unit = DP) float margin) {
       return marginPx(edge, mResourceResolver.dipsToPixels(margin));
     }
 
+    /**
+     * Affects the size of the node it is applied to. Padding will not add to the total size of an
+     * element if it has an explicit size set. See <a
+     * href="https://yogalayout.com/docs/margins-paddings-borders">https://yogalayout.com/docs/margins-paddings-borders</a>
+     * for more information
+     */
     public T paddingPx(@Nullable YogaEdge edge, @Px int padding) {
       mComponent.getOrCreateCommonProps().paddingPx(edge, padding);
       return getThis();
     }
 
-    /** @param percent a value between 0 and 100. */
+    /**
+     * @see #paddingPx
+     * @param percent a value between 0 and 100.
+     */
     public T paddingPercent(@Nullable YogaEdge edge, float percent) {
       mComponent.getOrCreateCommonProps().paddingPercent(edge, percent);
       return getThis();
     }
 
+    /** @see #paddingPx */
     public T paddingAttr(@Nullable YogaEdge edge, @AttrRes int resId, @DimenRes int defaultResId) {
       return paddingPx(edge, mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
     }
 
+    /** @see #paddingPx */
     public T paddingAttr(@Nullable YogaEdge edge, @AttrRes int resId) {
       return paddingAttr(edge, resId, 0);
     }
 
+    /** @see #paddingPx */
     public T paddingRes(@Nullable YogaEdge edge, @DimenRes int resId) {
       return paddingPx(edge, mResourceResolver.resolveDimenSizeRes(resId));
     }
 
+    /** @see #paddingPx */
     public T paddingDip(@Nullable YogaEdge edge, @Dimension(unit = DP) float padding) {
       return paddingPx(edge, mResourceResolver.dipsToPixels(padding));
     }
@@ -1073,6 +1100,11 @@ public abstract class Component extends ComponentLifecycle
       return positionPx(edge, mResourceResolver.dipsToPixels(position));
     }
 
+    /**
+     * Specifies the width of the element's content area. See <a
+     * href="https://yogalayout.com/docs/width-height">https://yogalayout.com/docs/width-height</a>
+     * for more information
+     */
     public T widthPx(@Px int width) {
       mComponent.getOrCreateCommonProps().widthPx(width);
       return getThis();
@@ -1082,6 +1114,7 @@ public abstract class Component extends ComponentLifecycle
      * Sets the width of the Component to be a percentage of its parent's width. Note that if the
      * parent has unspecified width (e.g. it is an HScroll), then setting this will have no effect.
      *
+     * @see #widthPx
      * @param percent a value between 0 and 100.
      */
     public T widthPercent(float percent) {
@@ -1089,76 +1122,105 @@ public abstract class Component extends ComponentLifecycle
       return getThis();
     }
 
+    /** @see #widthPx */
     public T widthRes(@DimenRes int resId) {
       return widthPx(mResourceResolver.resolveDimenSizeRes(resId));
     }
 
+    /** @see #widthPx */
     public T widthAttr(@AttrRes int resId, @DimenRes int defaultResId) {
       return widthPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
     }
 
+    /** @see #widthPx */
     public T widthAttr(@AttrRes int resId) {
       return widthAttr(resId, 0);
     }
 
+    /** @see #widthPx */
     public T widthDip(@Dimension(unit = DP) float width) {
       return widthPx(mResourceResolver.dipsToPixels(width));
     }
 
+    /**
+     * This property has higher priority than all other properties and will always be respected. See
+     * <a href="https://yogalayout.com/docs/min-max/">https://yogalayout.com/docs/min-max/</a> for
+     * more information
+     */
     public T minWidthPx(@Px int minWidth) {
       mComponent.getOrCreateCommonProps().minWidthPx(minWidth);
       return getThis();
     }
 
-    /** @param percent a value between 0 and 100. */
+    /**
+     * @see #minWidthPx
+     * @param percent a value between 0 and 100.
+     */
     public T minWidthPercent(float percent) {
       mComponent.getOrCreateCommonProps().minWidthPercent(percent);
       return getThis();
     }
 
+    /** @see #minWidthPx */
     public T minWidthAttr(@AttrRes int resId, @DimenRes int defaultResId) {
       return minWidthPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
     }
 
+    /** @see #minWidthPx */
     public T minWidthAttr(@AttrRes int resId) {
       return minWidthAttr(resId, 0);
     }
 
+    /** @see #minWidthPx */
     public T minWidthRes(@DimenRes int resId) {
       return minWidthPx(mResourceResolver.resolveDimenSizeRes(resId));
     }
 
+    /** @see #minWidthPx */
     public T minWidthDip(@Dimension(unit = DP) float minWidth) {
       return minWidthPx(mResourceResolver.dipsToPixels(minWidth));
     }
 
+    /** @see #minWidthPx */
     public T maxWidthPx(@Px int maxWidth) {
       mComponent.getOrCreateCommonProps().maxWidthPx(maxWidth);
       return getThis();
     }
 
-    /** @param percent a value between 0 and 100. */
+    /**
+     * @see #minWidthPx
+     * @param percent a value between 0 and 100.
+     */
     public T maxWidthPercent(float percent) {
       mComponent.getOrCreateCommonProps().maxWidthPercent(percent);
       return getThis();
     }
 
+    /** @see #minWidthPx */
     public T maxWidthAttr(@AttrRes int resId, @DimenRes int defaultResId) {
       return maxWidthPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
     }
 
+    /** @see #minWidthPx */
     public T maxWidthAttr(@AttrRes int resId) {
       return maxWidthAttr(resId, 0);
     }
 
+    /** @see #minWidthPx */
     public T maxWidthRes(@DimenRes int resId) {
       return maxWidthPx(mResourceResolver.resolveDimenSizeRes(resId));
     }
 
+    /** @see #minWidthPx */
     public T maxWidthDip(@Dimension(unit = DP) float maxWidth) {
       return maxWidthPx(mResourceResolver.dipsToPixels(maxWidth));
     }
 
+    /**
+     * Specifies the height of the element's content area. See <a
+     * href="https://yogalayout.com/docs/width-height">https://yogalayout.com/docs/width-height</a>
+     * for more information
+     */
     public T heightPx(@Px int height) {
       mComponent.getOrCreateCommonProps().heightPx(height);
       return getThis();
@@ -1169,6 +1231,7 @@ public abstract class Component extends ComponentLifecycle
      * parent has unspecified height (e.g. it is a RecyclerView), then setting this will have no
      * effect.
      *
+     * @see #heightPx
      * @param percent a value between 0 and 100.
      */
     public T heightPercent(float percent) {
@@ -1176,76 +1239,101 @@ public abstract class Component extends ComponentLifecycle
       return getThis();
     }
 
+    /** @see #heightPx */
     public T heightRes(@DimenRes int resId) {
       return heightPx(mResourceResolver.resolveDimenSizeRes(resId));
     }
 
+    /** @see #heightPx */
     public T heightAttr(@AttrRes int resId, @DimenRes int defaultResId) {
       return heightPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
     }
 
+    /** @see #heightPx */
     public T heightAttr(@AttrRes int resId) {
       return heightAttr(resId, 0);
     }
 
+    /** @see #heightPx */
     public T heightDip(@Dimension(unit = DP) float height) {
       return heightPx(mResourceResolver.dipsToPixels(height));
     }
 
+    /** @see #minWidthPx */
     public T minHeightPx(@Px int minHeight) {
       mComponent.getOrCreateCommonProps().minHeightPx(minHeight);
       return getThis();
     }
 
-    /** @param percent a value between 0 and 100. */
+    /**
+     * @see #minWidthPx
+     * @param percent a value between 0 and 100.
+     */
     public T minHeightPercent(float percent) {
       mComponent.getOrCreateCommonProps().minHeightPercent(percent);
       return getThis();
     }
 
+    /** @see #minWidthPx */
     public T minHeightAttr(@AttrRes int resId, @DimenRes int defaultResId) {
       return minHeightPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
     }
 
+    /** @see #minWidthPx */
     public T minHeightAttr(@AttrRes int resId) {
       return minHeightAttr(resId, 0);
     }
 
+    /** @see #minWidthPx */
     public T minHeightRes(@DimenRes int resId) {
       return minHeightPx(mResourceResolver.resolveDimenSizeRes(resId));
     }
 
+    /** @see #minWidthPx */
     public T minHeightDip(@Dimension(unit = DP) float minHeight) {
       return minHeightPx(mResourceResolver.dipsToPixels(minHeight));
     }
 
+    /** @see #minWidthPx */
     public T maxHeightPx(@Px int maxHeight) {
       mComponent.getOrCreateCommonProps().maxHeightPx(maxHeight);
       return getThis();
     }
 
-    /** @param percent a value between 0 and 100. */
+    /**
+     * @see #minWidthPx
+     * @param percent a value between 0 and 100.
+     */
     public T maxHeightPercent(float percent) {
       mComponent.getOrCreateCommonProps().maxHeightPercent(percent);
       return getThis();
     }
 
+    /** @see #minWidthPx */
     public T maxHeightAttr(@AttrRes int resId, @DimenRes int defaultResId) {
       return maxHeightPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
     }
 
+    /** @see #minWidthPx */
     public T maxHeightAttr(@AttrRes int resId) {
       return maxHeightAttr(resId, 0);
     }
 
+    /** @see #minWidthPx */
     public T maxHeightRes(@DimenRes int resId) {
       return maxHeightPx(mResourceResolver.resolveDimenSizeRes(resId));
     }
 
+    /** @see #minWidthPx */
     public T maxHeightDip(@Dimension(unit = DP) float maxHeight) {
       return maxHeightPx(mResourceResolver.dipsToPixels(maxHeight));
     }
 
+    /**
+     * Defined as the ratio between the width and the height of a node. See <a
+     * href="https://yogalayout.com/docs/aspect-ratio">https://yogalayout.com/docs/aspect-ratio</a>
+     * for more information
+     */
     public T aspectRatio(float aspectRatio) {
       mComponent.getOrCreateCommonProps().aspectRatio(aspectRatio);
       return getThis();
