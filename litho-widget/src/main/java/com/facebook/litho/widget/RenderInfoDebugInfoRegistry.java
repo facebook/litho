@@ -17,6 +17,7 @@ package com.facebook.litho.widget;
 
 import android.view.View;
 import androidx.annotation.Nullable;
+import java.lang.ref.WeakReference;
 import java.util.Map;
 import java.util.WeakHashMap;
 
@@ -31,14 +32,22 @@ public class RenderInfoDebugInfoRegistry {
 
   public static final String SONAR_SECTIONS_DEBUG_INFO_TAG = "SONAR_SECTIONS_DEBUG_INFO";
 
-  private static @Nullable Map<View, Object> sViewToRenderInfo;
+  private static @Nullable Map<View, WeakReference<Object>> sViewToRenderInfo;
 
   public @Nullable static Object getRenderInfoSectionDebugInfo(View view) {
-    if (sViewToRenderInfo == null) {
+    if (sViewToRenderInfo == null || !sViewToRenderInfo.containsKey(view)) {
       return null;
     }
 
-    return sViewToRenderInfo.get(view);
+    WeakReference weakRenderInfo = sViewToRenderInfo.get(view);
+    Object renderInfo = weakRenderInfo == null ? null : weakRenderInfo.get();
+
+    if (renderInfo == null) {
+      sViewToRenderInfo.remove(view);
+      return null;
+    }
+
+    return renderInfo;
   }
 
   public static void setRenderInfoToViewMapping(View view, Object renderInfoSectionDebugInfo) {
@@ -46,6 +55,6 @@ public class RenderInfoDebugInfoRegistry {
       sViewToRenderInfo = new WeakHashMap<>();
     }
 
-    sViewToRenderInfo.put(view, renderInfoSectionDebugInfo);
+    sViewToRenderInfo.put(view, new WeakReference<Object>(renderInfoSectionDebugInfo));
   }
 }
