@@ -80,7 +80,7 @@ public class StateHandler {
       return;
     }
 
-    synchronized (stateHandler) {
+    synchronized (this) {
       copyStateUpdatesMap(
           stateHandler.getPendingStateUpdates(),
           stateHandler.getPendingLazyStateUpdates(),
