@@ -68,7 +68,8 @@ import com.facebook.litho.widget.ViewportInfo;
 import java.util.List;
 
 /**
- * A {@link Component} that renders a {@link Recycler} backed by a {@link Section} tree.
+ * A {@link Component} that renders a {@link Recycler} backed by a {@link Section} tree. See <a
+ * href="https://fblitho.com/docs/recycler-collection-component">https://fblitho.com/docs/recycler-collection-component</a>
  *
  * <p>This {@link Component} handles the loading events from the {@link Section} hierarchy and shows
  * the appropriate error,loading or empty {@link Component} passed in as props. If either the empty
@@ -87,13 +88,14 @@ import java.util.List;
  * {@link RecyclerCollectionComponentSpec}, such as scrollTo(position) and refresh().
  *
  * <p>To trigger scrolling from the Section use {@link
- * com.facebook.litho.sections.SectionLifecycle#requestFocus(SectionContext, int)}. For more
- * information please refer to the following:
- * https://fblitho.com/docs/communicating-with-the-ui#scrolling-requestfocus.
+ * com.facebook.litho.sections.SectionLifecycle#requestFocus(SectionContext, int)}. See <a
+ * href="https://fblitho.com/docs/communicating-with-the-ui#scrolling-requestfocus">https://fblitho.com/docs/communicating-with-the-ui#scrolling-requestfocus</a>.
  *
  * @prop itemAnimator This prop defines the animations that take place on items as changes are made.
  *     To remove change animation use {@link NoUpdateItemAnimator}. To completely disable all
  *     animations use {@link NotAnimatedItemAnimator}.
+ * @prop recyclerConfiguration: This prop adds customization. For example {@link
+ *     RecyclerBinderConfiguration} allows to make {@link Recycler} circular.
  */
 @LayoutSpec(events = PTRRefreshEvent.class)
 public class RecyclerCollectionComponentSpec {
