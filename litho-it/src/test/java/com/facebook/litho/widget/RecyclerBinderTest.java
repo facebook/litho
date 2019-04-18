@@ -28,6 +28,7 @@ import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
@@ -46,6 +47,7 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.OrientationHelper;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView.AdapterDataObserver;
 import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 import com.facebook.litho.Column;
@@ -85,7 +87,6 @@ import java.util.concurrent.TimeUnit;
 import junit.framework.Assert;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.invocation.InvocationOnMock;
@@ -2111,10 +2112,11 @@ public class RecyclerBinderTest {
     }
   }
 
-  @Ignore("T41117446 Stopped working after AndroidX conversion")
   @Test
   public void testUpdateItemAtDoesNotNotifyItemChangedExceptWhenUpdatingViews() {
-    final RecyclerView.Adapter adapter = mock(RecyclerView.Adapter.class);
+    final RecyclerView.Adapter adapter = new FakeRecyclerAdapter();
+    final AdapterDataObserver observer = mock(AdapterDataObserver.class);
+    adapter.registerAdapterDataObserver(observer);
     final RecyclerBinder recyclerBinder = createRecyclerBinderWithMockAdapter(adapter);
 
     final List<RenderInfo> components = new ArrayList<>();
@@ -2139,8 +2141,7 @@ public class RecyclerBinderTest {
         0, TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build());
     mRecyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
-    verify(adapter, never()).notifyItemChanged(anyInt());
-    verify(adapter, never()).notifyItemRangeChanged(anyInt(), anyInt());
+    verify(observer, never()).onItemRangeChanged(anyInt(), anyInt());
 
     recyclerBinder.updateItemAt(
         0,
@@ -2149,13 +2150,14 @@ public class RecyclerBinderTest {
             .viewBinder(new SimpleViewBinder())
             .build());
     mRecyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
-    verify(adapter, times(1)).notifyItemChanged(0);
+    verify(observer, times(1)).onItemRangeChanged(0, 1, null);
   }
 
-  @Ignore("T41117446 Stopped working after AndroidX conversion")
   @Test
   public void testUpdateRangeAtDoesNotNotifyItemChangedExceptWhenUpdatingViews() {
-    final RecyclerView.Adapter adapter = mock(RecyclerView.Adapter.class);
+    final RecyclerView.Adapter adapter = new FakeRecyclerAdapter();
+    final AdapterDataObserver observer = mock(AdapterDataObserver.class);
+    adapter.registerAdapterDataObserver(observer);
     final RecyclerBinder recyclerBinder = createRecyclerBinderWithMockAdapter(adapter);
 
     final int NUM_ITEMS = 10;
@@ -2192,8 +2194,7 @@ public class RecyclerBinderTest {
     recyclerBinder.updateRangeAt(0, newComponents);
     mRecyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
-    verify(adapter, never()).notifyItemChanged(anyInt());
-    verify(adapter, never()).notifyItemRangeChanged(anyInt(), anyInt());
+    verify(observer, never()).onItemRangeChanged(anyInt(), anyInt());
 
     final List<RenderInfo> newViews = new ArrayList<>();
     for (int i = 0; i < NUM_ITEMS; i++) {
@@ -2208,7 +2209,7 @@ public class RecyclerBinderTest {
     mRecyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     for (int i = 0; i < NUM_ITEMS; i++) {
-      verify(adapter, times(1)).notifyItemChanged(i);
+      verify(observer, times(1)).onItemRangeChanged(i, 1, null);
     }
   }
 
@@ -2972,10 +2973,11 @@ public class RecyclerBinderTest {
     assertComponentAtEquals(recyclerBinder, 3, components.get(1));
   }
 
-  @Ignore("T41117446 Stopped working after AndroidX conversion")
   @Test
   public void testUpdateAsyncOnInsertedItem() {
-    final RecyclerView.Adapter adapter = mock(RecyclerView.Adapter.class);
+    final RecyclerView.Adapter adapter = new FakeRecyclerAdapter();
+    final AdapterDataObserver observer = mock(AdapterDataObserver.class);
+    adapter.registerAdapterDataObserver(observer);
     final RecyclerBinder recyclerBinder = createRecyclerBinderWithMockAdapter(adapter);
     final Component component =
         TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
@@ -2995,7 +2997,7 @@ public class RecyclerBinderTest {
     recyclerBinder.updateItemAtAsync(0, newRenderInfo);
     recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
-    verify(adapter, never()).notifyItemChanged(anyInt());
+    verify(observer, never()).onItemRangeChanged(anyInt(), eq(1), isNull());
 
     final ComponentTreeHolder holder = recyclerBinder.getComponentTreeHolderAt(0);
     assertThat(holder.getRenderInfo()).isEqualTo(newRenderInfo);
@@ -3004,10 +3006,11 @@ public class RecyclerBinderTest {
     mLayoutThreadShadowLooper.runToEndOfTasks();
   }
 
-  @Ignore("T41117446 Stopped working after AndroidX conversion")
   @Test
   public void testUpdateAsyncOnNonInsertedItem() {
-    final RecyclerView.Adapter adapter = mock(RecyclerView.Adapter.class);
+    final RecyclerView.Adapter adapter = new FakeRecyclerAdapter();
+    final AdapterDataObserver observer = mock(AdapterDataObserver.class);
+    adapter.registerAdapterDataObserver(observer);
     final RecyclerBinder recyclerBinder = createRecyclerBinderWithMockAdapter(adapter);
     final Component component =
         TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
@@ -3029,7 +3032,7 @@ public class RecyclerBinderTest {
     recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(0);
-    verify(adapter, never()).notifyItemChanged(anyInt());
+    verify(observer, never()).onItemRangeChanged(anyInt(), eq(1), isNull());
 
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
@@ -3144,10 +3147,11 @@ public class RecyclerBinderTest {
     assertComponentAtEquals(recyclerBinder, 5, components.get(3));
   }
 
-  @Ignore("T41117446 Stopped working after AndroidX conversion")
   @Test
   public void testUpdateAsyncOnInsertedViewFromComponent() {
-    final RecyclerView.Adapter adapter = mock(RecyclerView.Adapter.class);
+    final RecyclerView.Adapter adapter = new FakeRecyclerAdapter();
+    final AdapterDataObserver observer = mock(AdapterDataObserver.class);
+    adapter.registerAdapterDataObserver(observer);
     final RecyclerBinder recyclerBinder = createRecyclerBinderWithMockAdapter(adapter);
     final Component component =
         TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
@@ -3167,17 +3171,18 @@ public class RecyclerBinderTest {
     recyclerBinder.updateItemAtAsync(0, newRenderInfo);
     recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
-    verify(adapter).notifyItemChanged(0);
+    verify(observer).onItemRangeChanged(0, 1, null);
 
     final ComponentTreeHolder holder = recyclerBinder.getComponentTreeHolderAt(0);
     assertThat(holder.getRenderInfo()).isEqualTo(newRenderInfo);
     mLayoutThreadShadowLooper.runToEndOfTasks();
   }
 
-  @Ignore("T41117446 Stopped working after AndroidX conversion")
   @Test
   public void testUpdateAsyncOnInsertedViewToComponent() {
-    final RecyclerView.Adapter adapter = mock(RecyclerView.Adapter.class);
+    final RecyclerView.Adapter adapter = new FakeRecyclerAdapter();
+    final AdapterDataObserver observer = mock(AdapterDataObserver.class);
+    adapter.registerAdapterDataObserver(observer);
     final RecyclerBinder recyclerBinder = createRecyclerBinderWithMockAdapter(adapter);
     final ViewRenderInfo renderInfo =
         ViewRenderInfo.create()
@@ -3199,7 +3204,7 @@ public class RecyclerBinderTest {
     recyclerBinder.updateItemAtAsync(0, newRenderInfo);
     recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
-    verify(adapter).notifyItemChanged(0);
+    verify(observer).onItemRangeChanged(0, 1, null);
 
     final ComponentTreeHolder holder = recyclerBinder.getComponentTreeHolderAt(0);
     assertThat(holder.getRenderInfo()).isEqualTo(newRenderInfo);
@@ -5184,5 +5189,21 @@ public class RecyclerBinderTest {
 
     @Override
     public void onDataRendered(boolean isMounted, long uptimeMillis) {}
+  }
+
+  private static class FakeRecyclerAdapter extends RecyclerView.Adapter {
+
+    @Override
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+      return null;
+    }
+
+    @Override
+    public void onBindViewHolder(ViewHolder holder, int position) {}
+
+    @Override
+    public int getItemCount() {
+      return 0;
+    }
   }
 }
