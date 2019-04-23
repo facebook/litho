@@ -170,7 +170,7 @@ public class BuilderGenerator {
 
     final TypeSpec.Builder propsBuilderClassBuilder =
         TypeSpec.classBuilder(BUILDER)
-            .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
+            .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
             .superclass(
                 ParameterizedTypeName.get(
                     ClassName.get(

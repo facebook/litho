@@ -459,7 +459,7 @@ final class FullGroupSection<T> extends Section implements TestTag {
     Object state2;
   }
 
-  public static class Builder<T> extends Section.Builder<Builder<T>> {
+  public static final class Builder<T> extends Section.Builder<Builder<T>> {
     FullGroupSection mFullGroupSection;
 
     SectionContext mContext;
