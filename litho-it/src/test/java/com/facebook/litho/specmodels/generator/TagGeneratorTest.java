@@ -27,8 +27,11 @@ import com.facebook.litho.specmodels.model.TagModel;
 import com.squareup.javapoet.ClassName;
 import java.util.LinkedHashSet;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
 /** Tests {@link TagGenerator} */
+@RunWith(JUnit4.class)
 public class TagGeneratorTest {
 
   interface Tag1 {}

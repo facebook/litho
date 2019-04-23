@@ -19,10 +19,11 @@ package com.facebook.litho.testing.viewtree;
 import static com.facebook.litho.testing.assertj.LithoAssertions.assertThat;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
-/**
- * Tests for {@link LevenshteinDistance}.
- */
+/** Tests for {@link LevenshteinDistance}. */
+@RunWith(JUnit4.class)
 public class LevenshteinDistanceTest {
 
   @Test

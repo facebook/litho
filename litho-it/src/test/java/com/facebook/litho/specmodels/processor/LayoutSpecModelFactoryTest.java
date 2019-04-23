@@ -41,8 +41,11 @@ import javax.lang.model.util.Types;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
 /** Tests {@link LayoutSpecModelFactory} */
+@RunWith(JUnit4.class)
 public class LayoutSpecModelFactoryTest {
   private static final String TEST_QUALIFIED_SPEC_NAME =
       "com.facebook.litho.specmodels.processor.LayoutSpecModelFactoryTest.TestLayoutSpec";
