@@ -54,6 +54,12 @@ public class OnEventGenerateAction extends BaseGenerateAction {
     }
   }
 
+  /**
+   * Generates Litho event method. Prompts the user for additional data: choose Event class and
+   * method signature customisation.
+   *
+   * @see com.facebook.litho.intellij.completion.MethodGenerateHandler
+   */
   static class OnEventGenerateHandler extends GenerateMembersHandlerBase {
 
     OnEventGenerateHandler() {

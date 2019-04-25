@@ -23,6 +23,7 @@ public class LithoClassNames {
   public static final String PROP_CLASS_NAME = "com.facebook.litho.annotations.Prop";
   public static final String STATE_CLASS_NAME = "com.facebook.litho.annotations.State";
 
+  public static final String CLICK_EVENT_CLASS_NAME = "com.facebook.litho.ClickEvent";
   public static final String COMPONENT_CONTEXT_CLASS_NAME = "com.facebook.litho.ComponentContext";
 
   static final String EVENT_ANNOTATION_NAME = "com.facebook.litho.annotations.Event";

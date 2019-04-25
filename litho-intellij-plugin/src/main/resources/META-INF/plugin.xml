@@ -40,6 +40,7 @@
       implementationClass="com.facebook.litho.intellij.inspections.UppercaseStatePropInspection"/>
 
     <completion.contributor language="JAVA" implementationClass="com.facebook.litho.intellij.completion.StatePropCompletionContributor"/>
+    <completion.contributor language="JAVA" implementationClass="com.facebook.litho.intellij.completion.OnEventCompletionContributor"/>
   </extensions>
 
   <!-- 181 is IntelliJ 2018.1 and/or Android Studio 3.2 -->
