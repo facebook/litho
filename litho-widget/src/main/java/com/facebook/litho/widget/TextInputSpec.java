@@ -244,7 +244,8 @@ class TextInputSpec {
     setParams(
         forMeasure,
         hint,
-        getBackgroundOrDefault(c, inputBackground),
+        getBackgroundOrDefault(
+            c, inputBackground == UNSET_DRAWABLE ? forMeasure.getBackground() : inputBackground),
         shadowRadius,
         shadowDx,
         shadowDy,
