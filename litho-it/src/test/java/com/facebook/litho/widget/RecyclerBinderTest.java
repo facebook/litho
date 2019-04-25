@@ -87,6 +87,7 @@ import java.util.concurrent.TimeUnit;
 import junit.framework.Assert;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.invocation.InvocationOnMock;
@@ -4242,8 +4243,9 @@ public class RecyclerBinderTest {
     assertThat(syncLayouts.get(3)).isEqualTo(NOT_SET);
   }
 
-  // TODO(T37835958): Fix me
-  //@Test
+  // TODO: Test is flaky, refer to the task for context
+  @Ignore("T37835958")
+  @Test
   public void testInitRangeAsyncFirstLayoutIsLongSchedMany() {
     final CountDownLatch lockInitRangeLayout = new CountDownLatch(1);
     final CountDownLatch lockTest = new CountDownLatch(2);
