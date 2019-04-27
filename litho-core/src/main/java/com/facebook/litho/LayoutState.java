@@ -216,6 +216,11 @@ class LayoutState {
     mOrientation = context.getResources().getConfiguration().orientation;
   }
 
+  @VisibleForTesting
+  Component getRootComponent() {
+    return mComponent;
+  }
+
   /**
    * Acquires a new layout output for the internal node and its associated component. It returns
    * null if there's no component associated with the node as the mount pass only cares about nodes

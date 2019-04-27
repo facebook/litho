@@ -51,7 +51,9 @@ public class LayoutStateFutureReleaseTest {
 
   @Before
   public void setup() {
-    mContext = new ComponentContext(RuntimeEnvironment.application);
+    mContext =
+        new ComponentContext(
+            RuntimeEnvironment.application, null, null, null, new KeyHandler(null), null, null);
     ComponentsConfiguration.useCancelableLayoutFutures = true;
 
     mWidthSpec = makeSizeSpec(40, EXACTLY);
@@ -158,6 +160,8 @@ public class LayoutStateFutureReleaseTest {
         new ComponentTree.LayoutStateFuture[2];
     final boolean[] isReleasedAfterStateUpdate = {false};
 
+    final String key = componentTree.getMainThreadLayoutState().getRootComponent().getGlobalKey();
+
     // Testing scenario: the first state update layout will be cancelled when another state update
     // is
     // triggered during the first layout.
@@ -168,7 +172,7 @@ public class LayoutStateFutureReleaseTest {
           public void unblock(ComponentTree.LayoutStateFuture lsf) {
             if (layoutStateFutures[0] == null) {
               layoutStateFutures[0] = lsf;
-              componentTree.updateStateAsync(column.getGlobalKey(), new TestStateUpdate(), null);
+              componentTree.updateStateAsync(key, new TestStateUpdate(), null);
               isReleasedAfterStateUpdate[0] = lsf.isReleased();
             } else {
               layoutStateFutures[1] = lsf;
@@ -177,7 +181,7 @@ public class LayoutStateFutureReleaseTest {
         };
     child2.unlockFinishedLayout = waitBeforeAsserts;
 
-    componentTree.updateStateAsync(column.getGlobalKey(), new TestStateUpdate(), null);
+    componentTree.updateStateAsync(key, new TestStateUpdate(), null);
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     try {
@@ -226,6 +230,8 @@ public class LayoutStateFutureReleaseTest {
         new ComponentTree.LayoutStateFuture[2];
     final boolean[] isReleasedAfterStateUpdate = {false};
 
+    final String key = componentTree.getMainThreadLayoutState().getRootComponent().getGlobalKey();
+
     child1.unlockFinishedLayout = waitBeforeAsserts;
     child1.waitActions =
         new WaitActions() {
@@ -234,7 +240,7 @@ public class LayoutStateFutureReleaseTest {
             if (layoutStateFutures[0] == null) {
               lsf.registerForResponse(true);
               layoutStateFutures[0] = lsf;
-              componentTree.updateStateAsync(column.getGlobalKey(), new TestStateUpdate(), null);
+              componentTree.updateStateAsync(key, new TestStateUpdate(), null);
               isReleasedAfterStateUpdate[0] = lsf.isReleased();
             } else {
               layoutStateFutures[1] = lsf;
@@ -243,7 +249,7 @@ public class LayoutStateFutureReleaseTest {
         };
     child2.unlockFinishedLayout = waitBeforeAsserts;
 
-    componentTree.updateStateAsync(column.getGlobalKey(), new TestStateUpdate(), null);
+    componentTree.updateStateAsync(key, new TestStateUpdate(), null);
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     try {
@@ -291,6 +297,8 @@ public class LayoutStateFutureReleaseTest {
         new ComponentTree.LayoutStateFuture[2];
     final boolean[] isReleasedAfterStateUpdate = {false};
 
+    final String key = componentTree.getMainThreadLayoutState().getRootComponent().getGlobalKey();
+
     // Testing scenario: during the sync state update, an async state update is triggered (from the
     // same thread).
     // The sync state update will not be cancelled.
@@ -301,7 +309,7 @@ public class LayoutStateFutureReleaseTest {
           public void unblock(ComponentTree.LayoutStateFuture lsf) {
             if (layoutStateFutures[0] == null) {
               layoutStateFutures[0] = lsf;
-              componentTree.updateStateAsync(column.getGlobalKey(), new TestStateUpdate(), null);
+              componentTree.updateStateAsync(key, new TestStateUpdate(), null);
               isReleasedAfterStateUpdate[0] = lsf.isReleased();
             } else {
               layoutStateFutures[1] = lsf;
@@ -310,7 +318,7 @@ public class LayoutStateFutureReleaseTest {
         };
     child2.unlockFinishedLayout = waitBeforeAsserts;
 
-    componentTree.updateStateSync(column.getGlobalKey(), new TestStateUpdate(), null);
+    componentTree.updateStateSync(key, new TestStateUpdate(), null);
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     try {
@@ -359,6 +367,8 @@ public class LayoutStateFutureReleaseTest {
         new ComponentTree.LayoutStateFuture[2];
     final boolean[] isReleasedAfterStateUpdate = {false};
 
+    final String key = componentTree.getMainThreadLayoutState().getRootComponent().getGlobalKey();
+
     // Testing scenario: during the sync state update, a sync state update is triggered (from the
     // same thread).
     // The sync state update will not be cancelled.
@@ -369,7 +379,7 @@ public class LayoutStateFutureReleaseTest {
           public void unblock(ComponentTree.LayoutStateFuture lsf) {
             if (layoutStateFutures[0] == null) {
               layoutStateFutures[0] = lsf;
-              componentTree.updateStateSync(column.getGlobalKey(), new TestStateUpdate(), null);
+              componentTree.updateStateSync(key, new TestStateUpdate(), null);
               isReleasedAfterStateUpdate[0] = lsf.isReleased();
             } else {
               layoutStateFutures[1] = lsf;
@@ -378,7 +388,7 @@ public class LayoutStateFutureReleaseTest {
         };
     child2.unlockFinishedLayout = waitBeforeAsserts;
 
-    componentTree.updateStateSync(column.getGlobalKey(), new TestStateUpdate(), null);
+    componentTree.updateStateSync(key, new TestStateUpdate(), null);
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     try {
@@ -457,7 +467,9 @@ public class LayoutStateFutureReleaseTest {
         };
     child2.unlockFinishedLayout = waitBeforeAsserts;
 
-    componentTree.updateStateAsync(column.getGlobalKey(), new TestStateUpdate(), null);
+    final String key = componentTree.getMainThreadLayoutState().getRootComponent().getGlobalKey();
+
+    componentTree.updateStateAsync(key, new TestStateUpdate(), null);
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     try {
@@ -465,7 +477,7 @@ public class LayoutStateFutureReleaseTest {
     } catch (InterruptedException e) {
       e.printStackTrace();
     }
-    componentTree.updateStateSync(column.getGlobalKey(), new TestStateUpdate(), null);
+    componentTree.updateStateSync(key, new TestStateUpdate(), null);
 
     waitForSyncStateUpdate.countDown();
 
