@@ -2690,7 +2690,7 @@ public class ComponentTree {
      *   <li>applies state updates only once
      * </ul>
      */
-    public Builder enableNestedTreeResolutionExeperiment(boolean isEnabled) {
+    public Builder enableNestedTreeResolutionExperiment(boolean isEnabled) {
       this.nestedTreeResolutionExperimentEnabled = isEnabled;
       return this;
     }

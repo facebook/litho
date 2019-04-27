@@ -189,7 +189,7 @@ public class StateUpdatesTest {
 
     mComponentTree =
         ComponentTree.create(mContext, mTestComponent)
-            .enableNestedTreeResolutionExeperiment(enableNestedTreeResolutionExperiment)
+            .enableNestedTreeResolutionExperiment(enableNestedTreeResolutionExperiment)
             .build();
 
     if (enableComponentTreeSpy) {
