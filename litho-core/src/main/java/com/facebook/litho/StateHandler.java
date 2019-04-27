@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import javax.annotation.concurrent.GuardedBy;
 
 /** Holds information about the current State of the components in a Component Tree. */
@@ -104,6 +105,18 @@ public class StateHandler {
 
   public synchronized boolean isEmpty() {
     return mStateContainers == null || mStateContainers.isEmpty();
+  }
+
+  synchronized boolean hasPendingUpdates() {
+    if (mPendingStateUpdates != null && !mPendingStateUpdates.isEmpty()) {
+      for (List<StateUpdate> entry : mPendingStateUpdates.values()) {
+        if (!entry.isEmpty()) {
+          return true;
+        }
+      }
+    }
+
+    return false;
   }
 
   /**
@@ -237,6 +250,18 @@ public class StateHandler {
     clearUnusedStateContainers(stateHandler);
     copyCurrentStateContainers(stateHandler.getStateContainers());
     copyPendingStateTransitions(stateHandler.getPendingStateUpdateTransitions());
+  }
+
+  synchronized Set<String> getKeysForPendingUpdates() {
+    final Set<String> keys = new HashSet<>();
+    if (mAppliedStateUpdates != null) {
+      keys.addAll(mAppliedStateUpdates.keySet());
+    }
+    if (mPendingStateUpdates != null) {
+      keys.addAll(mPendingStateUpdates.keySet());
+    }
+
+    return keys;
   }
 
   private void clearStateUpdates(@Nullable Map<String, List<StateUpdate>> appliedStateUpdates) {

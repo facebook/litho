@@ -1358,6 +1358,8 @@ class LayoutState {
       layoutState.mRootComponentName = component.getSimpleName();
 
       final InternalNode layoutCreatedInWillRender = component.consumeLayoutCreatedInWillRender();
+      final boolean isReconcilable = isReconcilable(c, component, currentLayoutState);
+
       final InternalNode root =
           layoutCreatedInWillRender == null
               ? createAndMeasureTreeForComponent(
@@ -1366,9 +1368,7 @@ class LayoutState {
                   widthSpec,
                   heightSpec,
                   null, // nestedTreeHolder is null as this is measuring the root component tree.
-                  c.isReconciliationEnabled() && currentLayoutState != null
-                      ? currentLayoutState.mLayoutRoot
-                      : null,
+                  isReconcilable ? currentLayoutState.mLayoutRoot : null,
                   currentLayoutState != null ? currentLayoutState.mDiffTreeRoot : null)
               : layoutCreatedInWillRender;
 
@@ -1452,6 +1452,34 @@ class LayoutState {
 
 
     return layoutState;
+  }
+
+  private static boolean isReconcilable(
+      final ComponentContext c,
+      final Component nextRootComponent,
+      final @Nullable LayoutState currentLayoutState) {
+
+    if (currentLayoutState == null
+        || currentLayoutState.mLayoutRoot == null
+        || !c.isReconciliationEnabled()) {
+      return false;
+    }
+
+    StateHandler stateHandler = c.getStateHandler();
+    if (stateHandler == null || !stateHandler.hasPendingUpdates()) {
+      return false;
+    }
+
+    final Component previous = currentLayoutState.mComponent;
+    if (!isSameComponentType(previous, nextRootComponent)) {
+      return false;
+    }
+
+    if (!nextRootComponent.isEquivalentTo(previous)) {
+      return false;
+    }
+
+    return true;
   }
 
   private static String sourceToString(@CalculateLayoutSource int source) {
@@ -1547,10 +1575,9 @@ class LayoutState {
 
   @VisibleForTesting
   static InternalNode createTree(
-      Component component,
-      ComponentContext context) {
-    final ComponentsLogger logger = context.getLogger();
+      Component component, ComponentContext context, @Nullable InternalNode current) {
 
+    final ComponentsLogger logger = context.getLogger();
     final PerfEvent createLayoutPerfEvent =
         logger != null
             ? LogTreePopulator.populatePerfEventFromLogger(
@@ -1561,7 +1588,13 @@ class LayoutState {
       createLayoutPerfEvent.markerAnnotate(PARAM_COMPONENT, component.getSimpleName());
     }
 
-    final InternalNode root = component.createLayout(context, true /* resolveNestedTree */);
+    final InternalNode root;
+
+    if (current != null) {
+      root = current.reconcile(context, component);
+    } else {
+      root = component.createLayout(context, true /* resolveNestedTree */);
+    }
 
     if (createLayoutPerfEvent != null) {
       logger.logPerfEvent(createLayoutPerfEvent);
@@ -1771,9 +1804,7 @@ class LayoutState {
     c.setWidthSpec(widthSpec);
     c.setHeightSpec(heightSpec);
 
-    final InternalNode root = createTree(
-        component,
-        c);
+    final InternalNode root = createTree(component, c, current);
 
     c.setTreeProps(null);
     c.setWidthSpec(previousWidthSpec);

@@ -42,7 +42,9 @@ import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
+import androidx.annotation.IntDef;
 import androidx.annotation.Px;
+import androidx.annotation.VisibleForTesting;
 import androidx.core.view.ViewCompat;
 import com.facebook.infer.annotation.OkToExtend;
 import com.facebook.infer.annotation.ReturnsOwnership;
@@ -64,6 +66,7 @@ import com.facebook.yoga.YogaNode;
 import com.facebook.yoga.YogaPositionType;
 import com.facebook.yoga.YogaWrap;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -114,10 +117,10 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   private static final long PFLAG_TRANSITION_KEY_TYPE_IS_SET = 1L << 32;
 
   private YogaNode mYogaNode;
-  private final ComponentContext mComponentContext;
+  private ComponentContext mComponentContext;
 
   @ThreadConfined(ThreadConfined.ANY)
-  private final List<Component> mComponents = new ArrayList<>(1);
+  private List<Component> mComponents = new ArrayList<>(1);
 
   private final int[] mBorderColors = new int[Border.EDGE_COUNT];
   private final float[] mBorderRadius = new float[Border.RADIUS_COUNT];
@@ -1662,6 +1665,19 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
     return mComponents.isEmpty() ? "<null>" : mComponents.get(0).getSimpleName();
   }
 
+  @Override
+  public InternalNode reconcile(ComponentContext c, Component next) {
+    final StateHandler stateHandler = c.getStateHandler();
+    final Set<String> keys;
+    if (stateHandler == null) {
+      keys = Collections.emptySet();
+    } else {
+      keys = stateHandler.getKeysForPendingUpdates();
+    }
+
+    return reconcile(c, this, next, keys);
+  }
+
   protected DefaultInternalNode clone() {
     try {
       return (DefaultInternalNode) super.clone();
@@ -1749,6 +1765,81 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
     return mTouchExpansion != null && mNodeInfo != null && mNodeInfo.hasTouchEventHandlers();
   }
 
+  /**
+   * Release properties which are not longer required for the current layout pass or release
+   * properties which should be reset during reconciliation.
+   */
+  private void clean() {
+    // 1. Release or clone props.
+    mComponents = new ArrayList<>();
+    mDiffNode = null;
+    mDebugComponents = null;
+
+    // 2. reset resolved layout properties.
+    resetResolvedLayoutProperties();
+  }
+
+  private void updateWith(ComponentContext c, YogaNode node, List<Component> components) {
+    // 1. Set new ComponentContext, YogaNode, and components.
+    mComponentContext = c;
+    mYogaNode = node;
+    mYogaNode.setData(this);
+    mComponents = components;
+
+    // 2. Update props.
+
+    mComponentsNeedingPreviousRenderData = null;
+    for (Component component : components) {
+      if (component.needsPreviousRenderData()) {
+        if (mComponentsNeedingPreviousRenderData == null) {
+          mComponentsNeedingPreviousRenderData = new ArrayList<>(1);
+        }
+        mComponentsNeedingPreviousRenderData.add(component);
+      }
+    }
+
+    ArrayList<WorkingRangeContainer.Registration> ranges = mWorkingRangeRegistrations;
+    mWorkingRangeRegistrations = null;
+    if (ranges != null && !ranges.isEmpty()) {
+      mWorkingRangeRegistrations = new ArrayList<>(ranges.size());
+      for (WorkingRangeContainer.Registration old : ranges) {
+        final Component component = old.mComponent.makeUpdatedShallowCopy(c);
+        mWorkingRangeRegistrations.add(
+            new WorkingRangeContainer.Registration(old.mName, old.mWorkingRange, component));
+      }
+    }
+  }
+
+  /**
+   * Convenience method to get an updated shallow copy of all the components of this InternalNode.
+   * Optionally replace the outer most component with a new component. The outer most component is
+   * the root component in the Component hierarchy representing this InternalNode.
+   *
+   * @param c The ComponentContext to update with.
+   * @param outer The root component of this InternalNode's Component hierarchy.
+   * @return List of updated shallow copied components of this InternalNode.
+   */
+  private List<Component> getUpdatedComponents(ComponentContext c, @Nullable Component outer) {
+    int size = mComponents.size();
+    List<Component> updated = new ArrayList<>(size);
+
+    // 1. Shallow copy and update all components, except the outer most one.
+    for (int i = 0; i < size - 1; i++) {
+      Component component = mComponents.get(i).makeUpdatedShallowCopy(c);
+      updated.add(component);
+    }
+
+    // 2. If outer component is null manually update it.
+    if (outer == null) {
+      outer = mComponents.get(size - 1).makeUpdatedShallowCopy(c);
+    }
+
+    // 3. Add the updated outer most component to the list.
+    updated.add(outer);
+
+    return updated;
+  }
+
   static YogaNode createYogaNode(ComponentContext componentContext) {
     return componentContext.mYogaNodeFactory != null
         ? componentContext.mYogaNodeFactory.create()
@@ -1775,5 +1866,158 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   private static boolean getDrawablePadding(Drawable drawable, Rect outRect) {
     drawable.getPadding(outRect);
     return outRect.bottom != 0 || outRect.top != 0 || outRect.left != 0 || outRect.right != 0;
+  }
+
+  /**
+   * Internal method to reconcile the {@param current} InternalNode with a newComponentContext,
+   * updated outer most component and a {@link ReconciliationMode}.
+   *
+   * @param c The ComponentContext.
+   * @param current The current InternalNode which should be updated.
+   * @param next The updated component to be used to reconcile this InternalNode.
+   * @param keys The keys of mutated components.
+   * @return A new updated InternalNode.
+   */
+  private static InternalNode reconcile(
+      ComponentContext c, DefaultInternalNode current, Component next, Set<String> keys) {
+    int mode = getReconciliationMode(next.getScopedContext(), current, keys);
+    final InternalNode layout;
+
+    switch (mode) {
+      case ReconciliationMode.COPY:
+        layout = reconcile(c, current, next, keys, ReconciliationMode.COPY);
+        break;
+      case ReconciliationMode.RECONCILE:
+        layout = reconcile(c, current, next, keys, ReconciliationMode.RECONCILE);
+        break;
+      case ReconciliationMode.RECREATE:
+        layout = next.createLayout(next.getScopedContext(), false);
+        break;
+      default:
+        throw new IllegalArgumentException(mode + " is not a valid ReconciliationMode");
+    }
+
+    return layout;
+  }
+
+  /**
+   * Internal method to reconcile the {@param current} InternalNode with a newComponentContext,
+   * updated outer most component and a {@link ReconciliationMode}.
+   *
+   * @param c The ComponentContext.
+   * @param current The current InternalNode which should be updated.
+   * @param next The updated component to be used to reconcile this InternalNode.
+   * @param keys The keys of mutated components.
+   * @param mode {@link ReconciliationMode#RECONCILE} or {@link ReconciliationMode#COPY}.
+   * @return A new updated InternalNode.
+   */
+  private static InternalNode reconcile(
+      ComponentContext c,
+      DefaultInternalNode current,
+      Component next,
+      Set<String> keys,
+      @ReconciliationMode int mode) {
+
+    // 1. Shallow copy this layouts's YogaNode.
+    final YogaNode currentNode = current.getYogaNode();
+    final YogaNode copiedNode = currentNode.cloneWithoutChildren();
+
+    // 2. Shallow copy this layout.
+    final DefaultInternalNode layout = getCleanUpdatedShallowCopy(c, current, next, copiedNode);
+
+    // 3. Clear the nested tree
+    if (layout.getNestedTree() != null) {
+      layout.getOrCreateNestedTreeProps().mNestedTree = null;
+    }
+
+    // 4. Iterate over children.
+    int count = currentNode.getChildCount();
+    for (int i = 0; i < count; i++) {
+      final DefaultInternalNode child = (DefaultInternalNode) currentNode.getChildAt(i).getData();
+
+      // 4.1 Get outer most component of the child layout.
+      List<Component> components = child.getComponents();
+      final Component component = components.get(Math.max(0, components.size() - 1));
+
+      // 4.2 Update the outer most component of the child layout.
+      final Component updated = component.makeUpdatedShallowCopy(c);
+
+      // 4.3 Reconcile child layout.
+      final InternalNode copy;
+      if (mode == ReconciliationMode.COPY) {
+        copy = reconcile(updated.getScopedContext(), child, updated, keys, ReconciliationMode.COPY);
+      } else {
+        copy = reconcile(updated.getScopedContext(), child, updated, keys);
+      }
+
+      // 4.3 Add the child to the cloned yoga node
+      copiedNode.addChildAt(copy.getYogaNode(), i);
+    }
+
+    return layout;
+  }
+
+  /**
+   * Convenience method to create a shallow copy of the InternalNode, set a new YogaNode, update all
+   * components and ComponentContext, release all the unnecessary properties from the new
+   * InternalNode.
+   */
+  private static DefaultInternalNode getCleanUpdatedShallowCopy(
+      ComponentContext c, DefaultInternalNode current, Component outer, YogaNode node) {
+
+    // 1. Shallow copy this layout.
+    final DefaultInternalNode layout = current.clone();
+
+    // 2. Reset and release properties
+    layout.clean();
+
+    // 3. Get updated components
+    List<Component> updated = current.getUpdatedComponents(c, outer);
+
+    // 4. Update the layout with the new context and copied YogaNode.
+    layout.updateWith(c, node, updated);
+
+    return layout;
+  }
+
+  /**
+   * Returns the a {@link ReconciliationMode} mode which directs the reconciling process to branch
+   * to either recreate the entire subtree, copy the entire subtree or continue to recursively
+   * reconcile the subtree.
+   */
+  @VisibleForTesting
+  static @ReconciliationMode int getReconciliationMode(
+      ComponentContext c, InternalNode current, Set<String> keys) {
+    final List<Component> components = current.getComponents();
+    final Component root = components.isEmpty() ? null : components.get(0);
+
+    // 1.0 check early exit conditions
+    if (c == null || root == null) {
+      return ReconciliationMode.RECREATE;
+    }
+
+    // 1.1 Check if any component has mutations
+    for (Component component : components) {
+      final String key = component.getGlobalKey();
+      if (keys.contains(key)) {
+        return ReconciliationMode.RECREATE;
+      }
+    }
+
+    // 2.0 Check if any descendants have mutations
+    for (String key : keys) {
+      if (key.startsWith(root.getGlobalKey())) {
+        return ReconciliationMode.RECONCILE;
+      }
+    }
+
+    return ReconciliationMode.COPY;
+  }
+
+  @IntDef({ReconciliationMode.COPY, ReconciliationMode.RECONCILE, ReconciliationMode.RECREATE})
+  @interface ReconciliationMode {
+    int COPY = 0;
+    int RECONCILE = 1;
+    int RECREATE = 2;
   }
 }

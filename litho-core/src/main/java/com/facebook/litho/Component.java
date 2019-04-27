@@ -400,6 +400,21 @@ public abstract class Component extends ComponentLifecycle
     return component;
   }
 
+  Component makeUpdatedShallowCopy(ComponentContext c) {
+    Component clone = makeShallowCopy();
+
+    // set the global key so that it is not generated again and overridden.
+    clone.setGlobalKey(getGlobalKey());
+
+    // copy the inter-stage props so that they are set again.
+    clone.copyInterStageImpl(this);
+
+    // update the cloned component with the new context.
+    clone.updateInternalChildState(c);
+
+    return clone;
+  }
+
   @Nullable
   InternalNode getCachedLayout() {
     return mThreadIdToLastMeasuredLayout == null

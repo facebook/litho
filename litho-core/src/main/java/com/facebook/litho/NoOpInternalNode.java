@@ -846,4 +846,9 @@ class NoOpInternalNode implements InternalNode {
   public String getSimpleName() {
     return "NoOpInternalNode";
   }
+
+  @Override
+  public InternalNode reconcile(ComponentContext c, Component next) {
+    return this;
+  }
 }
