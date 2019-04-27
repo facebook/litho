@@ -1366,6 +1366,9 @@ class LayoutState {
                   widthSpec,
                   heightSpec,
                   null, // nestedTreeHolder is null as this is measuring the root component tree.
+                  c.isReconciliationEnabled() && currentLayoutState != null
+                      ? currentLayoutState.mLayoutRoot
+                      : null,
                   currentLayoutState != null ? currentLayoutState.mDiffTreeRoot : null)
               : layoutCreatedInWillRender;
 
@@ -1687,6 +1690,7 @@ class LayoutState {
                   widthSpec,
                   heightSpec,
                   holder,
+                  null,
                   holder.getDiffNode()); // Was set while traversing the holder's tree.
         }
 
@@ -1727,7 +1731,7 @@ class LayoutState {
       Component component,
       int widthSpec,
       int heightSpec) {
-    return createAndMeasureTreeForComponent(c, component, widthSpec, heightSpec, null, null);
+    return createAndMeasureTreeForComponent(c, component, widthSpec, heightSpec, null, null, null);
   }
 
   @VisibleForTesting
@@ -1736,7 +1740,8 @@ class LayoutState {
       Component component,
       int widthSpec,
       int heightSpec,
-      @Nullable InternalNode nestedTreeHolder, // will be set iff we are resolving a nested tree.
+      @Nullable InternalNode nestedTreeHolder, // Will be set iff resolving a nested tree.
+      @Nullable InternalNode current,
       @Nullable DiffNode diffTreeRoot) {
 
     component.updateInternalChildState(c);
