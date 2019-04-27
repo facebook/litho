@@ -567,4 +567,12 @@ public class ComponentContext {
   boolean wasLayoutCanceled() {
     return mLayoutStateFuture == null ? false : mLayoutStateFuture.isReleased();
   }
+
+  public boolean isReconciliationEnabled() {
+    if (getComponentTree() != null) {
+      return getComponentTree().isReconciliationEnabled();
+    } else {
+      return ComponentsConfiguration.isReconciliationEnabled;
+    }
+  }
 }

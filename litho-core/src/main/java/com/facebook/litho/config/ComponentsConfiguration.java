@@ -189,6 +189,9 @@ public class ComponentsConfiguration {
   /** Sets if SparseNodeInfo should be used */
   public static boolean isSparseNodeInfoIsEnabled;
 
+  /** Sets if is reconciliation is enabled */
+  public static boolean isReconciliationEnabled = false;
+
   /** specifies if the ComparableAnimatedColorDrawable should be initialized in a lazy way */
   public static boolean lazyComparableAnimatedColorDrawable = false;
 

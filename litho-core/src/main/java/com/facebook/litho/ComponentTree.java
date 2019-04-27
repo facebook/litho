@@ -256,6 +256,8 @@ public class ComponentTree {
 
   private boolean mForceLayout;
 
+  private final boolean isReconciliationEnabled;
+
   public static Builder create(ComponentContext context, Component.Builder<?> root) {
     return create(context, root.build());
   }
@@ -286,6 +288,7 @@ public class ComponentTree {
     mNestedTreeResolutionExperimentEnabled = builder.nestedTreeResolutionExperimentEnabled;
     mUseSharedLayoutStateFuture = builder.useSharedLayoutStateFuture;
     mUseCancelableLayoutFutures = ComponentsConfiguration.useCancelableLayoutFutures;
+    isReconciliationEnabled = builder.isReconciliationEnabled;
 
     ensureLayoutThreadHandler();
 
@@ -1033,6 +1036,10 @@ public class ComponentTree {
   /** Whether the refactored implementation of nested tree resolution should be used. */
   public boolean isNestedTreeResolutionExperimentEnabled() {
     return mNestedTreeResolutionExperimentEnabled;
+  }
+
+  public boolean isReconciliationEnabled() {
+    return isReconciliationEnabled;
   }
 
   synchronized Component getRoot() {
@@ -2540,6 +2547,7 @@ public class ComponentTree {
     private boolean nestedTreeResolutionExperimentEnabled =
         ComponentsConfiguration.isNestedTreeResolutionExperimentEnabled;
     private boolean useSharedLayoutStateFuture = ComponentsConfiguration.useSharedLayoutStateFuture;
+    private boolean isReconciliationEnabled = ComponentsConfiguration.isReconciliationEnabled;
 
     protected Builder(ComponentContext context, Component root) {
       this.context = context;
@@ -2695,6 +2703,12 @@ public class ComponentTree {
      */
     public Builder useSharedLayoutStateFuture(boolean useSharedLayoutStateFuture) {
       this.useSharedLayoutStateFuture = useSharedLayoutStateFuture;
+      return this;
+    }
+
+    /** Sets if is reconciliation is enabled */
+    public Builder isReconciliationEnabled(boolean isEnabled) {
+      this.isReconciliationEnabled = isEnabled;
       return this;
     }
 

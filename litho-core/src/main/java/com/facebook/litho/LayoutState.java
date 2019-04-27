@@ -1429,7 +1429,8 @@ class LayoutState {
         logger.logPerfEvent(collectResultsEvent);
       }
 
-      if (!ComponentsConfiguration.isDebugModeEnabled
+      if (!c.isReconciliationEnabled()
+          && !ComponentsConfiguration.isDebugModeEnabled
           && !ComponentsConfiguration.isEndToEndTestRun
           && layoutState.mLayoutRoot != null) {
         layoutState.mLayoutRoot = null;
