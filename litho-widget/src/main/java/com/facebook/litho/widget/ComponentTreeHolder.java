@@ -368,15 +368,17 @@ public class ComponentTreeHolder {
   @GuardedBy("this")
   private void ensureComponentTree(ComponentContext context) {
     if (mComponentTree == null) {
-      final Object isPersistenceEnabled =
-          mRenderInfo.getCustomAttribute(ComponentRenderInfo.PERSISTENCE_ENABLED);
+      final Object isReconciliationEnabled =
+          mRenderInfo.getCustomAttribute(ComponentRenderInfo.RECONCILIATION_ENABLED);
       final Object layoutDiffingEnabledAttr =
           mRenderInfo.getCustomAttribute(ComponentRenderInfo.LAYOUT_DIFFING_ENABLED);
       final ComponentTree.Builder builder =
           ComponentTree.create(context, mRenderInfo.getComponent());
-      // If no custom attribute is set, defer default value to the builder.
-      if (isPersistenceEnabled != null) {
-        builder.layoutDiffing((boolean) isPersistenceEnabled);
+      // If no custom attribute is set, defer to the default value of the builder.
+      if (isReconciliationEnabled != null) {
+        builder.layoutDiffing(!(boolean) isReconciliationEnabled);
+        builder.isReconciliationEnabled((boolean) isReconciliationEnabled);
+        builder.enableNestedTreeResolutionExperiment((boolean) isReconciliationEnabled);
       } else if (layoutDiffingEnabledAttr != null) {
         builder.layoutDiffing((boolean) layoutDiffingEnabledAttr);
       }
