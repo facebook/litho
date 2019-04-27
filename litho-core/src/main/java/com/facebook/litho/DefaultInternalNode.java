@@ -958,10 +958,6 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
     return mNestedTreeProps != null && mNestedTreeProps.mIsNestedTreeHolder;
   }
 
-  private boolean isPaddingPercent(YogaEdge edge) {
-    return mIsPaddingPercent != null && mIsPaddingPercent[edge.intValue()];
-  }
-
   @Override
   public void isReferenceBaseline(boolean isReferenceBaseline) {
     mYogaNode.setIsReferenceBaseline(isReferenceBaseline);
@@ -1500,20 +1496,6 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
     }
   }
 
-  private void applyOverridesRecursive(@Nullable InternalNode node) {
-    if (ComponentsConfiguration.isDebugModeEnabled && node != null) {
-      DebugComponent.applyOverrides(mComponentContext, node);
-
-      for (int i = 0, count = node.getChildCount(); i < count; i++) {
-        applyOverridesRecursive(node.getChildAt(i));
-      }
-
-      if (node.hasNestedTree()) {
-        applyOverridesRecursive(node.getNestedTree());
-      }
-    }
-  }
-
   @Override
   public void applyAttributes(TypedArray a) {
     for (int i = 0, size = a.getIndexCount(); i < size; i++) {
@@ -1614,6 +1596,40 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
     }
   }
 
+  /** Crash if the given node has context specific style set. */
+  @Override
+  public void assertContextSpecificStyleNotSet() {
+    List<CharSequence> errorTypes = null;
+    if ((mPrivateFlags & PFLAG_ALIGN_SELF_IS_SET) != 0L) {
+      errorTypes = addOrCreateList(errorTypes, "alignSelf");
+    }
+    if ((mPrivateFlags & PFLAG_POSITION_TYPE_IS_SET) != 0L) {
+      errorTypes = addOrCreateList(errorTypes, "positionType");
+    }
+    if ((mPrivateFlags & PFLAG_FLEX_IS_SET) != 0L) {
+      errorTypes = addOrCreateList(errorTypes, "flex");
+    }
+    if ((mPrivateFlags & PFLAG_FLEX_GROW_IS_SET) != 0L) {
+      errorTypes = addOrCreateList(errorTypes, "flexGrow");
+    }
+    if ((mPrivateFlags & PFLAG_MARGIN_IS_SET) != 0L) {
+      errorTypes = addOrCreateList(errorTypes, "margin");
+    }
+
+    if (errorTypes != null) {
+      final CharSequence errorStr = TextUtils.join(", ", errorTypes);
+      final ComponentsLogger logger = getContext().getLogger();
+      if (logger != null) {
+        logger.emitMessage(
+            WARNING,
+            "You should not set "
+                + errorStr
+                + " to a root layout in "
+                + getRootComponent().getClass().getSimpleName());
+      }
+    }
+  }
+
   @Override
   public DefaultInternalNode deepClone() {
 
@@ -1636,12 +1652,7 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
       copy.addChildAt(getChildAt(i).deepClone(), i);
     }
 
-    copy.mResolvedTouchExpansionLeft = YogaConstants.UNDEFINED;
-    copy.mResolvedTouchExpansionRight = YogaConstants.UNDEFINED;
-    copy.mResolvedX = YogaConstants.UNDEFINED;
-    copy.mResolvedY = YogaConstants.UNDEFINED;
-    copy.mResolvedWidth = YogaConstants.UNDEFINED;
-    copy.mResolvedHeight = YogaConstants.UNDEFINED;
+    copy.resetResolvedLayoutProperties();
 
     return copy;
   }
@@ -1657,6 +1668,24 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
     } catch (CloneNotSupportedException e) {
       e.printStackTrace();
       throw new RuntimeException(e);
+    }
+  }
+
+  private boolean isPaddingPercent(YogaEdge edge) {
+    return mIsPaddingPercent != null && mIsPaddingPercent[edge.intValue()];
+  }
+
+  private void applyOverridesRecursive(@Nullable InternalNode node) {
+    if (ComponentsConfiguration.isDebugModeEnabled && node != null) {
+      DebugComponent.applyOverrides(mComponentContext, node);
+
+      for (int i = 0, count = node.getChildCount(); i < count; i++) {
+        applyOverridesRecursive(node.getChildAt(i));
+      }
+
+      if (node.hasNestedTree()) {
+        applyOverridesRecursive(node.getNestedTree());
+      }
     }
   }
 
@@ -1703,7 +1732,7 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
     }
   }
 
-  private <T extends Drawable> void setPaddingFromBackground(Drawable drawable) {
+  private void setPaddingFromBackground(Drawable drawable) {
 
     if (drawable != null) {
       final Rect backgroundPadding = new Rect();
@@ -1718,40 +1747,6 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
 
   private boolean shouldApplyTouchExpansion() {
     return mTouchExpansion != null && mNodeInfo != null && mNodeInfo.hasTouchEventHandlers();
-  }
-
-  /** Crash if the given node has context specific style set. */
-  @Override
-  public void assertContextSpecificStyleNotSet() {
-    List<CharSequence> errorTypes = null;
-    if ((mPrivateFlags & PFLAG_ALIGN_SELF_IS_SET) != 0L) {
-      errorTypes = addOrCreateList(errorTypes, "alignSelf");
-    }
-    if ((mPrivateFlags & PFLAG_POSITION_TYPE_IS_SET) != 0L) {
-      errorTypes = addOrCreateList(errorTypes, "positionType");
-    }
-    if ((mPrivateFlags & PFLAG_FLEX_IS_SET) != 0L) {
-      errorTypes = addOrCreateList(errorTypes, "flex");
-    }
-    if ((mPrivateFlags & PFLAG_FLEX_GROW_IS_SET) != 0L) {
-      errorTypes = addOrCreateList(errorTypes, "flexGrow");
-    }
-    if ((mPrivateFlags & PFLAG_MARGIN_IS_SET) != 0L) {
-      errorTypes = addOrCreateList(errorTypes, "margin");
-    }
-
-    if (errorTypes != null) {
-      final CharSequence errorStr = TextUtils.join(", ", errorTypes);
-      final ComponentsLogger logger = getContext().getLogger();
-      if (logger != null) {
-        logger.emitMessage(
-            WARNING,
-            "You should not set "
-                + errorStr
-                + " to a root layout in "
-                + getRootComponent().getClass().getSimpleName());
-      }
-    }
   }
 
   static YogaNode createYogaNode(ComponentContext componentContext) {
