@@ -1304,7 +1304,7 @@ class LayoutState {
       int widthSpec,
       int heightSpec,
       boolean shouldGenerateDiffTree,
-      @Nullable LayoutState previousLayoutState,
+      @Nullable LayoutState currentLayoutState,
       @CalculateLayoutSource int source,
       @Nullable String extraAttribution) {
 
@@ -1347,7 +1347,7 @@ class LayoutState {
       layoutState.mShouldGenerateDiffTree = shouldGenerateDiffTree;
       layoutState.mComponentTreeId = componentTreeId;
       layoutState.mPreviousLayoutStateId =
-          previousLayoutState != null ? previousLayoutState.mId : NO_PREVIOUS_LAYOUT_STATE_ID;
+          currentLayoutState != null ? currentLayoutState.mId : NO_PREVIOUS_LAYOUT_STATE_ID;
       layoutState.mAccessibilityManager =
           (AccessibilityManager) c.getAndroidContext().getSystemService(ACCESSIBILITY_SERVICE);
       layoutState.mAccessibilityEnabled =
@@ -1363,11 +1363,10 @@ class LayoutState {
               ? createAndMeasureTreeForComponent(
                   c,
                   component,
-                  null, // nestedTreeHolder is null because this is measuring the root component
-                  // tree.
                   widthSpec,
                   heightSpec,
-                  previousLayoutState != null ? previousLayoutState.mDiffTreeRoot : null)
+                  null, // nestedTreeHolder is null as this is measuring the root component tree.
+                  currentLayoutState != null ? currentLayoutState.mDiffTreeRoot : null)
               : layoutCreatedInWillRender;
 
       switch (SizeSpec.getMode(widthSpec)) {
@@ -1685,9 +1684,9 @@ class LayoutState {
               createAndMeasureTreeForComponent(
                   context,
                   component,
-                  holder,
                   widthSpec,
                   heightSpec,
+                  holder,
                   holder.getDiffNode()); // Was set while traversing the holder's tree.
         }
 
@@ -1728,17 +1727,17 @@ class LayoutState {
       Component component,
       int widthSpec,
       int heightSpec) {
-    return createAndMeasureTreeForComponent(c, component, null, widthSpec, heightSpec, null);
+    return createAndMeasureTreeForComponent(c, component, widthSpec, heightSpec, null, null);
   }
 
   @VisibleForTesting
   static InternalNode createAndMeasureTreeForComponent(
       ComponentContext c,
       Component component,
-      InternalNode nestedTreeHolder, // This will be set only if we are resolving a nested tree.
       int widthSpec,
       int heightSpec,
-      DiffNode diffTreeRoot) {
+      @Nullable InternalNode nestedTreeHolder, // will be set iff we are resolving a nested tree.
+      @Nullable DiffNode diffTreeRoot) {
 
     component.updateInternalChildState(c);
 
