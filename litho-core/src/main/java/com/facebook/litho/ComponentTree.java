@@ -256,8 +256,6 @@ public class ComponentTree {
 
   private boolean mForceLayout;
 
-  private final boolean mIsPersistenceEnabled;
-
   public static Builder create(ComponentContext context, Component.Builder<?> root) {
     return create(context, root.build());
   }
@@ -287,7 +285,6 @@ public class ComponentTree {
     mMeasureListener = builder.mMeasureListener;
     mNestedTreeResolutionExperimentEnabled = builder.nestedTreeResolutionExperimentEnabled;
     mUseSharedLayoutStateFuture = builder.useSharedLayoutStateFuture;
-    mIsPersistenceEnabled = builder.isPersistenceEnabled;
     mUseCancelableLayoutFutures = ComponentsConfiguration.useCancelableLayoutFutures;
 
     ensureLayoutThreadHandler();
@@ -2229,11 +2226,10 @@ public class ComponentTree {
         mId,
         widthSpec,
         heightSpec,
-        !mIsPersistenceEnabled && diffingEnabled,
+        diffingEnabled,
         previousLayoutState,
         source,
-        extraAttribution,
-        mIsPersistenceEnabled && diffingEnabled);
+        extraAttribution);
   }
 
   @VisibleForTesting
@@ -2544,7 +2540,6 @@ public class ComponentTree {
     private boolean nestedTreeResolutionExperimentEnabled =
         ComponentsConfiguration.isNestedTreeResolutionExperimentEnabled;
     private boolean useSharedLayoutStateFuture = ComponentsConfiguration.useSharedLayoutStateFuture;
-    private boolean isPersistenceEnabled = ComponentsConfiguration.isPersistenceEnabled;
 
     protected Builder(ComponentContext context, Component root) {
       this.context = context;
@@ -2700,12 +2695,6 @@ public class ComponentTree {
      */
     public Builder useSharedLayoutStateFuture(boolean useSharedLayoutStateFuture) {
       this.useSharedLayoutStateFuture = useSharedLayoutStateFuture;
-      return this;
-    }
-
-    /** Sets the if the internal node should be persisted */
-    public Builder isPersistenceEnabled(boolean isPersistenceEnabled) {
-      this.isPersistenceEnabled = isPersistenceEnabled;
       return this;
     }
 

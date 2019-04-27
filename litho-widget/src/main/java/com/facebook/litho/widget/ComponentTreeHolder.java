@@ -377,7 +377,6 @@ public class ComponentTreeHolder {
       // If no custom attribute is set, defer default value to the builder.
       if (isPersistenceEnabled != null) {
         builder.layoutDiffing((boolean) isPersistenceEnabled);
-        builder.isPersistenceEnabled((boolean) isPersistenceEnabled);
       } else if (layoutDiffingEnabledAttr != null) {
         builder.layoutDiffing((boolean) layoutDiffingEnabledAttr);
       }

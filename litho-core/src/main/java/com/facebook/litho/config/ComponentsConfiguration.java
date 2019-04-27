@@ -183,9 +183,6 @@ public class ComponentsConfiguration {
   /** Whether the refactored implementation of nested tree resolution should be used. */
   public static boolean isNestedTreeResolutionExperimentEnabled = false;
 
-  /** Sets if the internal node should be persisted */
-  public static boolean isPersistenceEnabled;
-
   /** Sets if SparseCommonPropsHolder should be used */
   public static boolean isSparseCommonPropsHolderIsEnabled;
 

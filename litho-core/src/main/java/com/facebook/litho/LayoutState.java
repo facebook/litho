@@ -1294,8 +1294,7 @@ class LayoutState {
         false /* shouldGenerateDiffTree */,
         null /* previousDiffTreeRoot */,
         source,
-        null,
-        false /* isPersistenceEnabled */);
+        null);
   }
 
   static LayoutState calculate(
@@ -1307,8 +1306,7 @@ class LayoutState {
       boolean shouldGenerateDiffTree,
       @Nullable LayoutState previousLayoutState,
       @CalculateLayoutSource int source,
-      @Nullable String extraAttribution,
-      boolean isPersistenceEnabled) {
+      @Nullable String extraAttribution) {
 
     final ComponentsLogger logger = c.getLogger();
 
@@ -1431,8 +1429,7 @@ class LayoutState {
         logger.logPerfEvent(collectResultsEvent);
       }
 
-      if (!isPersistenceEnabled
-          && !ComponentsConfiguration.isDebugModeEnabled
+      if (!ComponentsConfiguration.isDebugModeEnabled
           && !ComponentsConfiguration.isEndToEndTestRun
           && layoutState.mLayoutRoot != null) {
         layoutState.mLayoutRoot = null;

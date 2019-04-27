@@ -879,8 +879,7 @@ public class TreeDiffingTest {
         false,
         null,
         LayoutState.CalculateLayoutSource.TEST,
-        null,
-        false);
+        null);
   }
 
   private static LayoutState calculateLayoutStateWithDiffing(
@@ -898,8 +897,7 @@ public class TreeDiffingTest {
         true,
         previousLayoutState,
         LayoutState.CalculateLayoutSource.TEST,
-        null,
-        false);
+        null);
   }
 
   private static void assertOutputsState(
