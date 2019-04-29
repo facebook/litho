@@ -2088,7 +2088,7 @@ public class ComponentTree {
       boolean canReuse = false;
       for (int i = 0; i < mLayoutStateFutures.size(); i++) {
         final LayoutStateFuture runningFuture = mLayoutStateFutures.get(i);
-        if (!canReuse && mLayoutStateFutures.get(i).equals(localLayoutStateFuture)) {
+        if (!runningFuture.isReleased() && runningFuture.equals(localLayoutStateFuture)) {
           // Use the latest LayoutState calculation if it's the same.
           localLayoutStateFuture = runningFuture;
           canReuse = true;
@@ -2158,9 +2158,10 @@ public class ComponentTree {
       synchronized (mLayoutStateFutureLock) {
         boolean canReuse = false;
         for (int i = 0; i < mLayoutStateFutures.size(); i++) {
-          if (mLayoutStateFutures.get(i).equals(localLayoutStateFuture)) {
+          final LayoutStateFuture runningLsf = mLayoutStateFutures.get(i);
+          if (!runningLsf.isReleased() && runningLsf.equals(localLayoutStateFuture)) {
             // Use the latest LayoutState calculation if it's the same.
-            localLayoutStateFuture = mLayoutStateFutures.get(i);
+            localLayoutStateFuture = runningLsf;
             canReuse = true;
             break;
           }
@@ -2337,7 +2338,8 @@ public class ComponentTree {
       }
     }
 
-    private synchronized void release() {
+    @VisibleForTesting
+    synchronized void release() {
       if (released) {
         return;
       }

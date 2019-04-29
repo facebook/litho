@@ -20,6 +20,8 @@ import static com.facebook.litho.SizeSpec.makeSizeSpec;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -553,6 +555,150 @@ public class LayoutStateFutureReleaseTest {
     }
 
     assertFalse(isRedundantReleased[0]);
+  }
+
+  @Test
+  public void testMainWaitingOnBgBeforeRelease() {
+    final CountDownLatch waitBeforeAsserts = new CountDownLatch(1);
+    final CountDownLatch scheduleSyncLayout = new CountDownLatch(1);
+
+    final ComponentTree componentTree;
+
+    final TestChildComponent child1 = new TestChildComponent();
+
+    final Column column_0 = Column.create(mContext).child(new TestChildComponent()).build();
+    final Column column = Column.create(mContext).child(child1).build();
+
+    ThreadPoolLayoutHandler handler =
+        new ThreadPoolLayoutHandler(new LayoutThreadPoolConfigurationImpl(1, 1, 5));
+
+    componentTree =
+        ComponentTree.create(mContext, column_0)
+            .layoutThreadHandler(handler)
+            .useSharedLayoutStateFuture(true)
+            .build();
+
+    componentTree.setLithoView(new LithoView(mContext));
+
+    final ComponentTree.LayoutStateFuture[] layoutStateFutures =
+        new ComponentTree.LayoutStateFuture[2];
+
+    child1.waitActions =
+        new WaitActions() {
+          @Override
+          public void unblock(ComponentTree.LayoutStateFuture lsf) {
+            if (layoutStateFutures[0] == null) {
+              layoutStateFutures[0] = lsf;
+
+              scheduleSyncLayout.countDown();
+
+              while (lsf.getWaitingCount() != 2) {}
+
+              waitBeforeAsserts.countDown();
+            } else {
+              layoutStateFutures[1] = lsf;
+            }
+          }
+        };
+
+    componentTree.setRootAndSizeSpecAsync(column, mWidthSpec, mHeightSpec);
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+
+    try {
+      scheduleSyncLayout.await(5000, TimeUnit.MILLISECONDS);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
+
+    componentTree.setRootAndSizeSpec(column, mWidthSpec, mHeightSpec, new Size());
+
+    try {
+      waitBeforeAsserts.await(5000, TimeUnit.MILLISECONDS);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
+    assertNotNull(layoutStateFutures[0]);
+    assertNull(layoutStateFutures[1]);
+  }
+
+  // This test is similar to testMainWaitingOnBgBeforeRelease, except that the bg thread
+  // LayoutStateFuture gets released after the sync layout is triggered. In this case the UI thread
+  // should not be blocked on the bg thread anymore, because the released Lsf will return a null
+  // LayoutState.
+  @Test
+  public void testDontWaitOnReleasedLSF() {
+    final CountDownLatch waitBeforeAsserts = new CountDownLatch(1);
+    final CountDownLatch scheduleSyncLayout = new CountDownLatch(1);
+    final CountDownLatch finishBgLayout = new CountDownLatch(1);
+
+    final ComponentTree componentTree;
+
+    final TestChildComponent child1 = new TestChildComponent();
+
+    final Column column_0 = Column.create(mContext).child(new TestChildComponent()).build();
+    final Column column = Column.create(mContext).child(child1).build();
+
+    ThreadPoolLayoutHandler handler =
+        new ThreadPoolLayoutHandler(new LayoutThreadPoolConfigurationImpl(1, 1, 5));
+
+    componentTree =
+        ComponentTree.create(mContext, column_0)
+            .layoutThreadHandler(handler)
+            .useSharedLayoutStateFuture(true)
+            .build();
+
+    componentTree.setLithoView(new LithoView(mContext));
+
+    final ComponentTree.LayoutStateFuture[] layoutStateFutures =
+        new ComponentTree.LayoutStateFuture[2];
+
+    // Testing scenario: we schedule a LSF on bg thread which gets released before compat UI thread
+    // layout
+    // is scheduled.
+    child1.waitActions =
+        new WaitActions() {
+          @Override
+          public void unblock(ComponentTree.LayoutStateFuture lsf) {
+            // Something happens here which releases the ongoing lsf, such as a state update
+            // triggered from onCreateLayout.
+            if (layoutStateFutures[0] == null) {
+              layoutStateFutures[0] = lsf;
+
+              lsf.release();
+              scheduleSyncLayout.countDown();
+
+              try {
+                finishBgLayout.await(5000, TimeUnit.MILLISECONDS);
+              } catch (InterruptedException e) {
+                e.printStackTrace();
+              }
+
+              waitBeforeAsserts.countDown();
+            } else {
+              layoutStateFutures[1] = lsf;
+              finishBgLayout.countDown();
+            }
+          }
+        };
+
+    componentTree.setRootAndSizeSpecAsync(column, mWidthSpec, mHeightSpec);
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+
+    try {
+      scheduleSyncLayout.await(5000, TimeUnit.MILLISECONDS);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
+
+    componentTree.setRootAndSizeSpec(column, mWidthSpec, mHeightSpec, new Size());
+
+    try {
+      waitBeforeAsserts.await(5000, TimeUnit.MILLISECONDS);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
+    assertNotNull(layoutStateFutures[0]);
+    assertNotNull(layoutStateFutures[1]);
   }
 
   final class TestStateUpdate implements ComponentLifecycle.StateUpdate {
