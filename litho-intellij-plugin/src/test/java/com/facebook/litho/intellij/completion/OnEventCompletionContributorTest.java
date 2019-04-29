@@ -19,11 +19,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import com.facebook.litho.intellij.LithoPluginTestHelper;
-import com.intellij.testFramework.fixtures.IdeaProjectTestFixture;
-import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory;
-import com.intellij.testFramework.fixtures.JavaCodeInsightTestFixture;
-import com.intellij.testFramework.fixtures.JavaTestFixtureFactory;
-import com.intellij.testFramework.fixtures.TestFixtureBuilder;
+import com.intellij.testFramework.fixtures.CodeInsightTestFixture;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -34,29 +30,23 @@ import org.junit.Test;
 public class OnEventCompletionContributorTest {
 
   private final LithoPluginTestHelper testHelper = new LithoPluginTestHelper("testdata/completion");
-  private JavaCodeInsightTestFixture fixture;
 
   @Before
   public void setUp() throws Exception {
-
-    final TestFixtureBuilder<IdeaProjectTestFixture> projectBuilder =
-        IdeaTestFixtureFactory.getFixtureFactory().createFixtureBuilder("test");
-    fixture =
-        JavaTestFixtureFactory.getFixtureFactory()
-            .createCodeInsightFixture(projectBuilder.getFixture());
-    fixture.setUp();
+    testHelper.setUp();
   }
 
   @After
   public void tearDown() throws Exception {
-    fixture.tearDown();
+    testHelper.tearDown();
   }
 
   @Test
   public void testEventInLithoClassCompletion() throws IOException {
     String clsName = "OnClickEventCompletionTest.java";
 
-    fixture.configureByText(clsName, testHelper.getContent(clsName));
+    testHelper.configure(clsName);
+    CodeInsightTestFixture fixture = testHelper.getFixture();
     fixture.completeBasic();
     fixture.completeBasic();
     List<String> completion = fixture.getLookupElementStrings();
@@ -68,7 +58,8 @@ public class OnEventCompletionContributorTest {
   public void testEventNotInLithoClassCompletion() throws IOException {
     String clsName = "OnClickEventNotLithoCompletionTest.java";
 
-    fixture.configureByText(clsName, testHelper.getContent(clsName));
+    testHelper.configure(clsName);
+    CodeInsightTestFixture fixture = testHelper.getFixture();
     fixture.completeBasic();
     fixture.completeBasic();
     List<String> completion = fixture.getLookupElementStrings();
