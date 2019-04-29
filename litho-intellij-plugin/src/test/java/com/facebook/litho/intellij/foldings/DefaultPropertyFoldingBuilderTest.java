@@ -18,11 +18,6 @@ package com.facebook.litho.intellij.foldings;
 import com.facebook.litho.intellij.LithoPluginTestHelper;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.rt.execution.junit.FileComparisonFailure;
-import com.intellij.testFramework.fixtures.IdeaProjectTestFixture;
-import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory;
-import com.intellij.testFramework.fixtures.JavaCodeInsightTestFixture;
-import com.intellij.testFramework.fixtures.JavaTestFixtureFactory;
-import com.intellij.testFramework.fixtures.TestFixtureBuilder;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -31,21 +26,15 @@ import org.junit.Test;
 public class DefaultPropertyFoldingBuilderTest {
 
   private final LithoPluginTestHelper testHelper = new LithoPluginTestHelper("testdata/foldings");
-  private JavaCodeInsightTestFixture fixture;
 
   @Before
   public void setUp() throws Exception {
-    final TestFixtureBuilder<IdeaProjectTestFixture> projectBuilder =
-        IdeaTestFixtureFactory.getFixtureFactory().createFixtureBuilder("test");
-    fixture =
-        JavaTestFixtureFactory.getFixtureFactory()
-            .createCodeInsightFixture(projectBuilder.getFixture());
-    fixture.setUp();
+    testHelper.setUp();
   }
 
   @After
   public void tearDown() throws Exception {
-    fixture.tearDown();
+    testHelper.tearDown();
   }
 
   @Test
@@ -56,7 +45,7 @@ public class DefaultPropertyFoldingBuilderTest {
         .invokeLater(
             () -> {
               try {
-                fixture.testFolding(testHelper.getTestDataPath(clsName));
+                testHelper.getFixture().testFolding(testHelper.getTestDataPath(clsName));
               } catch (FileComparisonFailure e) {
                 Assert.fail("Actual: " + e.getActual());
               }
