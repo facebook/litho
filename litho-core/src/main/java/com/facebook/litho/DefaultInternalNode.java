@@ -1918,6 +1918,12 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
       Set<String> keys,
       @ReconciliationMode int mode) {
 
+    final boolean isTracing = ComponentsSystrace.isTracing();
+    if (isTracing) {
+      ComponentsSystrace.beginSection(
+          (mode == ReconciliationMode.COPY ? "copy:" : "reconcile:") + next.getSimpleName());
+    }
+
     // 1. Shallow copy this layouts's YogaNode.
     final YogaNode currentNode = current.getYogaNode();
     final YogaNode copiedNode = currentNode.cloneWithoutChildren();
@@ -1952,6 +1958,10 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
 
       // 4.3 Add the child to the cloned yoga node
       copiedNode.addChildAt(copy.getYogaNode(), i);
+    }
+
+    if (isTracing) {
+      ComponentsSystrace.endSection();
     }
 
     return layout;
