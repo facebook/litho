@@ -2082,6 +2082,7 @@ public class ComponentTree {
             treeProps,
             source,
             extraAttribution);
+    final boolean waitingFromSyncLayout = localLayoutStateFuture.isFromSyncLayout;
 
     synchronized (mLayoutStateFutureLock) {
       boolean canReuse = false;
@@ -2101,6 +2102,8 @@ public class ComponentTree {
         }
       }
 
+      localLayoutStateFuture.registerForResponse(waitingFromSyncLayout);
+
       if (!canReuse) {
         mLayoutStateFutures.add(localLayoutStateFuture);
       }
@@ -2111,12 +2114,10 @@ public class ComponentTree {
 
   /** Calculates a LayoutState for the given LayoutStateFuture on the thread that calls this. */
   private @Nullable LayoutState calculateLayoutState(LayoutStateFuture layoutStateFuture) {
-    layoutStateFuture.registerForResponse(ThreadUtils.isMainThread());
-
     final LayoutState layoutState = layoutStateFuture.runAndGet();
 
     synchronized (mLayoutStateFutureLock) {
-      layoutStateFuture.unregisterForResponse(ThreadUtils.isMainThread());
+      layoutStateFuture.unregisterForResponse();
 
       // This future has finished executing, if no other threads were waiting for the response we
       // can remove it.
@@ -2152,6 +2153,7 @@ public class ComponentTree {
               treeProps,
               source,
               extraAttribution);
+      final boolean waitingFromSyncLayout = localLayoutStateFuture.isFromSyncLayout;
 
       synchronized (mLayoutStateFutureLock) {
         boolean canReuse = false;
@@ -2167,13 +2169,13 @@ public class ComponentTree {
           mLayoutStateFutures.add(localLayoutStateFuture);
         }
 
-        localLayoutStateFuture.registerForResponse(ThreadUtils.isMainThread());
+        localLayoutStateFuture.registerForResponse(waitingFromSyncLayout);
       }
 
       final LayoutState layoutState = localLayoutStateFuture.runAndGet();
 
       synchronized (mLayoutStateFutureLock) {
-        localLayoutStateFuture.unregisterForResponse(ThreadUtils.isMainThread());
+        localLayoutStateFuture.unregisterForResponse();
 
         // This future has finished executing, if no other threads were waiting for the response we
         // can remove it.
@@ -2258,7 +2260,7 @@ public class ComponentTree {
     @Nullable private final TreeProps treeProps;
     private final FutureTask<LayoutState> futureTask;
     private final AtomicInteger refCount = new AtomicInteger(0);
-    private final boolean isCancelable;
+    private final boolean isFromSyncLayout;
 
     @GuardedBy("LayoutStateFuture.this")
     private volatile boolean released = false;
@@ -2267,7 +2269,7 @@ public class ComponentTree {
     @Nullable
     private volatile LayoutState layoutState = null;
 
-    private boolean isBlockingMainThread;
+    private boolean isBlockingSyncLayout;
 
     private LayoutStateFuture(
         final ComponentContext context,
@@ -2286,7 +2288,7 @@ public class ComponentTree {
       this.diffingEnabled = diffingEnabled;
       this.previousLayoutState = previousLayoutState;
       this.treeProps = treeProps;
-      this.isCancelable = isCancelable(source);
+      this.isFromSyncLayout = isFromSyncLayout(source);
       this.futureTask =
           new FutureTask<>(
               new Callable<LayoutState>() {
@@ -2323,15 +2325,15 @@ public class ComponentTree {
               });
     }
 
-    private boolean isCancelable(@CalculateLayoutSource int source) {
+    private boolean isFromSyncLayout(@CalculateLayoutSource int source) {
       switch (source) {
         case CalculateLayoutSource.MEASURE:
         case CalculateLayoutSource.SET_ROOT_SYNC:
         case CalculateLayoutSource.UPDATE_STATE_SYNC:
         case CalculateLayoutSource.SET_SIZE_SPEC_SYNC:
-          return false;
-        default:
           return true;
+        default:
+          return false;
       }
     }
 
@@ -2347,22 +2349,18 @@ public class ComponentTree {
       return released;
     }
 
-    void unregisterForResponse(boolean waitingOnMainThread) {
+    void unregisterForResponse() {
       final int newRefCount = refCount.decrementAndGet();
 
       if (newRefCount < 0) {
         throw new IllegalStateException("LayoutStateFuture ref count is below 0");
       }
-
-      if (waitingOnMainThread) {
-        this.isBlockingMainThread = false;
-      }
     }
 
-    void registerForResponse(boolean waitingOnMainThread) {
+    void registerForResponse(boolean waitingFromSyncLayout) {
       refCount.incrementAndGet();
-      if (waitingOnMainThread) {
-        this.isBlockingMainThread = true;
+      if (waitingFromSyncLayout) {
+        this.isBlockingSyncLayout = true;
       }
     }
 
@@ -2371,7 +2369,7 @@ public class ComponentTree {
     }
 
     boolean canBeCancelled() {
-      return !isBlockingMainThread && isCancelable;
+      return !isBlockingSyncLayout && !isFromSyncLayout;
     }
 
     @VisibleForTesting

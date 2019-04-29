@@ -497,6 +497,64 @@ public class LayoutStateFutureReleaseTest {
     assertTrue(child2.mLayoutStateFutureList.contains(layoutStateFutures[1]));
   }
 
+  // Test that a LSF ccannot be cancelled if a sync layout is waiting on its result.
+  @Test
+  public void testDonReleaseBgMainWaitingOn() {
+    final CountDownLatch waitBeforeAsserts = new CountDownLatch(1);
+
+    final ComponentTree componentTree;
+
+    final TestChildComponent child1 = new TestChildComponent();
+
+    final Column column_0 = Column.create(mContext).child(new TestChildComponent()).build();
+    final Column column = Column.create(mContext).child(child1).build();
+
+    ThreadPoolLayoutHandler handler =
+        new ThreadPoolLayoutHandler(new LayoutThreadPoolConfigurationImpl(1, 1, 5));
+
+    componentTree =
+        ComponentTree.create(mContext, column_0)
+            .layoutThreadHandler(handler)
+            .useSharedLayoutStateFuture(true)
+            .build();
+
+    componentTree.setLithoView(new LithoView(mContext));
+
+    final ComponentTree.LayoutStateFuture[] layoutStateFutures =
+        new ComponentTree.LayoutStateFuture[2];
+    final boolean[] isRedundantReleased = new boolean[1];
+
+    child1.waitActions =
+        new WaitActions() {
+          @Override
+          public void unblock(ComponentTree.LayoutStateFuture lsf) {
+            if (layoutStateFutures[0] == null) {
+              layoutStateFutures[0] = lsf;
+
+              while (lsf.getWaitingCount() != 2) {}
+
+              componentTree.updateStateAsync(column.getGlobalKey(), new TestStateUpdate(), null);
+              isRedundantReleased[0] = lsf.isReleased();
+
+              waitBeforeAsserts.countDown();
+            }
+          }
+        };
+
+    componentTree.setRootAndSizeSpecAsync(column, mWidthSpec, mHeightSpec);
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+
+    componentTree.setRootAndSizeSpec(column, mWidthSpec, mHeightSpec, new Size());
+
+    try {
+      waitBeforeAsserts.await(5000, TimeUnit.MILLISECONDS);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
+
+    assertFalse(isRedundantReleased[0]);
+  }
+
   final class TestStateUpdate implements ComponentLifecycle.StateUpdate {
 
     @Override
