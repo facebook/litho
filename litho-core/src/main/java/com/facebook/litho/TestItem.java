@@ -17,6 +17,7 @@
 package com.facebook.litho;
 
 import android.graphics.Rect;
+import android.widget.Checkable;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.proguard.annotations.DoNotStrip;
 import java.util.Collections;
@@ -81,6 +82,15 @@ public class TestItem {
         ComponentHostUtils
             .extractTextContent(Collections.singletonList(mContent))
             .getTextItems();
+  }
+
+  public boolean isChecked() {
+    if (mContent instanceof Checkable) {
+      return ((Checkable) mContent).isChecked();
+    }
+
+    throw new UnsupportedOperationException(
+        "This Litho component can't be checked, we can't determine its check state.");
   }
 
   void setHost(ComponentHost host) {
