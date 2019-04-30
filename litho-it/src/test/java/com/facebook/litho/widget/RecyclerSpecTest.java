@@ -93,7 +93,7 @@ public class RecyclerSpecTest {
 
     verify(oldAnimator).set(mAnimator);
     assertThat(mRecyclerView.getItemAnimator()).isSameAs(mAnimator);
-    assertThat(mRecyclerView.getAddOnScrollListenersCount()).isEqualTo(size);
+    verifyAddOnScrollListenerWasCalledNTimes(mRecyclerView, size);
     assertThat(mRecyclerView.getTouchInterceptor()).isSameAs(touchInterceptor);
 
     verify(binder).bind(mRecyclerView);
@@ -116,7 +116,7 @@ public class RecyclerSpecTest {
 
     assertThat(mRecyclerView.getItemAnimator()).isSameAs(mAnimator);
     verify(binder).unbind(mRecyclerView);
-    assertThat(mRecyclerView.getRemoveOnScrollListenersCount()).isEqualTo(size);
+    verifyRemoveOnScrollListenerWasCalledNTimes(mRecyclerView, size);
     assertThat(mSectionsRecyclerView.getOnRefreshListener()).isNull();
   }
 
@@ -182,5 +182,15 @@ public class RecyclerSpecTest {
     public boolean isUpdateStateAsync() {
       return mIsUpdateStateAsync;
     }
+  }
+
+  private void verifyRemoveOnScrollListenerWasCalledNTimes(
+      TestLithoRecyclerView recyclerView, int times) {
+    assertThat(recyclerView.getRemoveOnScrollListenersCount()).isEqualTo(times);
+  }
+
+  private void verifyAddOnScrollListenerWasCalledNTimes(
+      TestLithoRecyclerView recyclerView, int times) {
+    assertThat(recyclerView.getAddOnScrollListenersCount()).isEqualTo(times);
   }
 }

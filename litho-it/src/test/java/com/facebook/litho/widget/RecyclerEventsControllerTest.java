@@ -90,8 +90,8 @@ public class RecyclerEventsControllerTest {
     mRecyclerEventsController.clearRefreshing();
 
     assertThat(mSectionsRecyclerView.getSetRefreshingValues()).isEmpty();
-    assertThat(mSectionsRecyclerView.getRemoveCallbackRunnableList()).isEmpty();
-    assertThat(mSectionsRecyclerView.getPostRunnableList()).isEmpty();
+    verifyRemoveCallbacksWasCalledNTimes(mSectionsRecyclerView, 0);
+    verifyPostWasCalledNTimes(mSectionsRecyclerView, 0);
   }
 
   @Test
@@ -102,8 +102,8 @@ public class RecyclerEventsControllerTest {
 
     assertThat(mSectionsRecyclerView.getSetRefreshingValues().size()).isEqualTo(1);
     assertThat(mSectionsRecyclerView.getSetRefreshingValues().get(0)).isFalse();
-    assertThat(mSectionsRecyclerView.getRemoveCallbackRunnableList()).isEmpty();
-    assertThat(mSectionsRecyclerView.getPostRunnableList()).isEmpty();
+    verifyRemoveCallbacksWasCalledNTimes(mSectionsRecyclerView, 0);
+    verifyPostWasCalledNTimes(mSectionsRecyclerView, 0);
   }
 
   @Test
@@ -113,8 +113,8 @@ public class RecyclerEventsControllerTest {
     ThreadUtils.setMainThreadOverride(ThreadUtils.OVERRIDE_MAIN_THREAD_FALSE);
 
     mRecyclerEventsController.clearRefreshing();
-    assertThat(mSectionsRecyclerView.getRemoveCallbackRunnableList().size()).isEqualTo(1);
-    assertThat(mSectionsRecyclerView.getPostRunnableList().size()).isEqualTo(1);
+    verifyRemoveCallbacksWasCalledNTimes(mSectionsRecyclerView, 1);
+    verifyPostWasCalledNTimes(mSectionsRecyclerView, 1);
   }
 
   @Test
@@ -135,4 +135,12 @@ public class RecyclerEventsControllerTest {
     assertThat(mSectionsRecyclerView.getSetRefreshingValues().size()).isEqualTo(0);
   }
 
+  private void verifyRemoveCallbacksWasCalledNTimes(
+      TestSectionsRecyclerView recyclerView, int times) {
+    assertThat(recyclerView.getRemoveCallbackRunnableList().size()).isEqualTo(times);
+  }
+
+  private void verifyPostWasCalledNTimes(TestSectionsRecyclerView recyclerView, int times) {
+    assertThat(recyclerView.getPostRunnableList().size()).isEqualTo(times);
+  }
 }
