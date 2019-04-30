@@ -1926,7 +1926,16 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
 
     // 1. Shallow copy this layouts's YogaNode.
     final YogaNode currentNode = current.getYogaNode();
+
+    if (isTracing) {
+      ComponentsSystrace.beginSection("cloneYogaNode:" + next.getSimpleName());
+    }
+
     final YogaNode copiedNode = currentNode.cloneWithoutChildren();
+
+    if (isTracing) {
+      ComponentsSystrace.endSection();
+    }
 
     // 2. Shallow copy this layout.
     final DefaultInternalNode layout = getCleanUpdatedShallowCopy(c, current, next, copiedNode);
@@ -1975,17 +1984,37 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   private static DefaultInternalNode getCleanUpdatedShallowCopy(
       ComponentContext c, DefaultInternalNode current, Component outer, YogaNode node) {
 
+    final boolean isTracing = ComponentsSystrace.isTracing();
+
+    if (isTracing) {
+      ComponentsSystrace.beginSection("clone:" + outer.getSimpleName());
+    }
+
     // 1. Shallow copy this layout.
     final DefaultInternalNode layout = current.clone();
 
+    if (isTracing) {
+      ComponentsSystrace.endSection();
+      ComponentsSystrace.beginSection("clean:" + outer.getSimpleName());
+    }
+
     // 2. Reset and release properties
     layout.clean();
+
+    if (isTracing) {
+      ComponentsSystrace.endSection();
+      ComponentsSystrace.beginSection("update:" + outer.getSimpleName());
+    }
 
     // 3. Get updated components
     List<Component> updated = current.getUpdatedComponents(c, outer);
 
     // 4. Update the layout with the new context and copied YogaNode.
     layout.updateWith(c, node, updated);
+
+    if (isTracing) {
+      ComponentsSystrace.endSection();
+    }
 
     return layout;
   }
