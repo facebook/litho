@@ -17,7 +17,6 @@ package com.facebook.litho.specmodels.processor;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.facebook.litho.annotations.ImportantForAccessibility;
 import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.PropDefaultModel;
@@ -26,8 +25,11 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
 /** Tests {@link PropDefaultsExtractor}. */
+@RunWith(JUnit4.class)
 public class PropDefaultsExtractorTest {
   @Rule public CompilationRule mCompilationRule = new CompilationRule();
 

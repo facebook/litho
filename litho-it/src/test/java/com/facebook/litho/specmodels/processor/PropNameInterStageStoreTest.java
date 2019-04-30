@@ -38,11 +38,14 @@ import javax.tools.JavaFileManager;
 import javax.tools.StandardLocation;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 /** Tests {@link PropNameInterStageStore} */
+@RunWith(JUnit4.class)
 public class PropNameInterStageStoreTest {
   @Mock(answer = Answers.RETURNS_DEEP_STUBS)
   Filer mFiler;

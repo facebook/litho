@@ -246,6 +246,7 @@ public final class TestLayout<S extends View> extends Component implements TestT
   private void testLayoutEvent(
       HasEventDispatcher _abstract, ComponentContext c, View view, int param1) {
     TestLayout _ref = (TestLayout) _abstract;
+    TestLayoutStateContainer stateContainer = getStateContainerWithLazyStateUpdatesApplied(c, _ref);
     TestLayoutSpec.testLayoutEvent(
         c,
         view,
@@ -254,7 +255,7 @@ public final class TestLayout<S extends View> extends Component implements TestT
         (char) _ref.prop5,
         (float) _ref.aspectRatio,
         (boolean) _ref.focusable,
-        (long) _ref.mStateContainer.state1);
+        (long) stateContainer.state1);
   }
 
   private void __internalOnErrorHandler(
@@ -380,6 +381,14 @@ public final class TestLayout<S extends View> extends Component implements TestT
     nextStateContainer.state1 = prevStateContainer.state1;
     nextStateContainer.state2 = prevStateContainer.state2;
     nextStateContainer.state3 = prevStateContainer.state3;
+  }
+
+  private TestLayoutStateContainer getStateContainerWithLazyStateUpdatesApplied(ComponentContext c,
+      TestLayout component) {
+    TestLayoutStateContainer stateContainer = new TestLayoutStateContainer();
+    transferState(component.mStateContainer, stateContainer);
+    c.applyLazyStateUpdatesForContainer(stateContainer);
+    return stateContainer;
   }
 
   protected static void updateCurrentState(ComponentContext c, int someParam) {
@@ -528,7 +537,7 @@ public final class TestLayout<S extends View> extends Component implements TestT
     }
   }
 
-  public static class Builder<S extends View> extends Component.Builder<Builder<S>> {
+  public static final class Builder<S extends View> extends Component.Builder<Builder<S>> {
     TestLayout mTestLayout;
 
     ComponentContext mContext;

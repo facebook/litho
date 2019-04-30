@@ -28,6 +28,7 @@ import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
@@ -46,21 +47,25 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.OrientationHelper;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView.AdapterDataObserver;
 import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
+import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.ComponentsLogger;
 import com.facebook.litho.EventHandler;
-import com.facebook.litho.LayoutHandler;
 import com.facebook.litho.LayoutThreadPoolConfigurationImpl;
+import com.facebook.litho.LithoHandler;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.RenderCompleteEvent;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
 import com.facebook.litho.ThreadUtils;
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.litho.testing.TestAttachDetachComponent;
+import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
@@ -82,6 +87,7 @@ import java.util.concurrent.TimeUnit;
 import junit.framework.Assert;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.invocation.InvocationOnMock;
@@ -158,7 +164,7 @@ public class RecyclerBinderTest {
           @Override
           public ComponentTreeHolder create(
               RenderInfo renderInfo,
-              LayoutHandler layoutHandler,
+              LithoHandler layoutHandler,
               ComponentTreeMeasureListenerFactory componentTreeMeasureListenerFactory,
               boolean incrementalMountEnabled) {
             final TestComponentTreeHolder holder = new TestComponentTreeHolder(renderInfo);
@@ -1550,17 +1556,17 @@ public class RecyclerBinderTest {
 
   @Test
   public void testShouldAlwaysUpdateLayoutHandler() {
-    final LayoutHandler layoutHandlerBase = mock(LayoutHandler.class);
-    final LayoutHandler layoutHandler1 = mock(LayoutHandler.class);
-    final LayoutHandler layoutHandler2 = mock(LayoutHandler.class);
-    final LayoutHandler layoutHandlerN = mock(LayoutHandler.class);
+    final LithoHandler layoutHandlerBase = mock(LithoHandler.class);
+    final LithoHandler layoutHandler1 = mock(LithoHandler.class);
+    final LithoHandler layoutHandler2 = mock(LithoHandler.class);
+    final LithoHandler layoutHandlerN = mock(LithoHandler.class);
     final RecyclerBinder recyclerBinder =
         mRecyclerBinderBuilder
             .layoutHandlerFactory(
                 new LayoutHandlerFactory() {
                   @Nullable
                   @Override
-                  public LayoutHandler createLayoutCalculationHandler(RenderInfo renderInfo) {
+                  public LithoHandler createLayoutCalculationHandler(RenderInfo renderInfo) {
                     final Object handlerType = renderInfo.getCustomAttribute("handlerType");
                     if (handlerType == null) {
                       return layoutHandlerBase;
@@ -1617,16 +1623,16 @@ public class RecyclerBinderTest {
 
   @Test
   public void testShouldNeverUpdateLayoutHandler() {
-    final LayoutHandler layoutHandler1 = mock(LayoutHandler.class);
-    final LayoutHandler layoutHandler2 = mock(LayoutHandler.class);
-    final LayoutHandler layoutHandlerN = mock(LayoutHandler.class);
+    final LithoHandler layoutHandler1 = mock(LithoHandler.class);
+    final LithoHandler layoutHandler2 = mock(LithoHandler.class);
+    final LithoHandler layoutHandlerN = mock(LithoHandler.class);
     final RecyclerBinder recyclerBinder =
         mRecyclerBinderBuilder
             .layoutHandlerFactory(
                 new LayoutHandlerFactory() {
                   @Nullable
                   @Override
-                  public LayoutHandler createLayoutCalculationHandler(RenderInfo renderInfo) {
+                  public LithoHandler createLayoutCalculationHandler(RenderInfo renderInfo) {
                     final Object handlerType = renderInfo.getCustomAttribute("handlerType");
                     if (handlerType == null) {
                       return null;
@@ -1679,16 +1685,16 @@ public class RecyclerBinderTest {
 
   @Test
   public void testShouldUpdateOnlyFromFirstToSecondLayoutHandler() {
-    final LayoutHandler layoutHandler1 = mock(LayoutHandler.class);
-    final LayoutHandler layoutHandler2 = mock(LayoutHandler.class);
-    final LayoutHandler layoutHandlerN = mock(LayoutHandler.class);
+    final LithoHandler layoutHandler1 = mock(LithoHandler.class);
+    final LithoHandler layoutHandler2 = mock(LithoHandler.class);
+    final LithoHandler layoutHandlerN = mock(LithoHandler.class);
     final RecyclerBinder recyclerBinder =
         mRecyclerBinderBuilder
             .layoutHandlerFactory(
                 new LayoutHandlerFactory() {
                   @Nullable
                   @Override
-                  public LayoutHandler createLayoutCalculationHandler(RenderInfo renderInfo) {
+                  public LithoHandler createLayoutCalculationHandler(RenderInfo renderInfo) {
                     final Object handlerType = renderInfo.getCustomAttribute("handlerType");
                     if (handlerType == null) {
                       return null;
@@ -2107,10 +2113,11 @@ public class RecyclerBinderTest {
     }
   }
 
-  // T41117446 Stopped working after AndroidX conversion
-  // @Test
+  @Test
   public void testUpdateItemAtDoesNotNotifyItemChangedExceptWhenUpdatingViews() {
-    final RecyclerView.Adapter adapter = mock(RecyclerView.Adapter.class);
+    final RecyclerView.Adapter adapter = new FakeRecyclerAdapter();
+    final AdapterDataObserver observer = mock(AdapterDataObserver.class);
+    adapter.registerAdapterDataObserver(observer);
     final RecyclerBinder recyclerBinder = createRecyclerBinderWithMockAdapter(adapter);
 
     final List<RenderInfo> components = new ArrayList<>();
@@ -2135,8 +2142,7 @@ public class RecyclerBinderTest {
         0, TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build());
     mRecyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
-    verify(adapter, never()).notifyItemChanged(anyInt());
-    verify(adapter, never()).notifyItemRangeChanged(anyInt(), anyInt());
+    verify(observer, never()).onItemRangeChanged(anyInt(), anyInt());
 
     recyclerBinder.updateItemAt(
         0,
@@ -2145,13 +2151,14 @@ public class RecyclerBinderTest {
             .viewBinder(new SimpleViewBinder())
             .build());
     mRecyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
-    verify(adapter, times(1)).notifyItemChanged(0);
+    verify(observer, times(1)).onItemRangeChanged(0, 1, null);
   }
 
-  // T41117446 Stopped working after AndroidX conversion
-  // @Test
+  @Test
   public void testUpdateRangeAtDoesNotNotifyItemChangedExceptWhenUpdatingViews() {
-    final RecyclerView.Adapter adapter = mock(RecyclerView.Adapter.class);
+    final RecyclerView.Adapter adapter = new FakeRecyclerAdapter();
+    final AdapterDataObserver observer = mock(AdapterDataObserver.class);
+    adapter.registerAdapterDataObserver(observer);
     final RecyclerBinder recyclerBinder = createRecyclerBinderWithMockAdapter(adapter);
 
     final int NUM_ITEMS = 10;
@@ -2188,8 +2195,7 @@ public class RecyclerBinderTest {
     recyclerBinder.updateRangeAt(0, newComponents);
     mRecyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
-    verify(adapter, never()).notifyItemChanged(anyInt());
-    verify(adapter, never()).notifyItemRangeChanged(anyInt(), anyInt());
+    verify(observer, never()).onItemRangeChanged(anyInt(), anyInt());
 
     final List<RenderInfo> newViews = new ArrayList<>();
     for (int i = 0; i < NUM_ITEMS; i++) {
@@ -2204,7 +2210,7 @@ public class RecyclerBinderTest {
     mRecyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     for (int i = 0; i < NUM_ITEMS; i++) {
-      verify(adapter, times(1)).notifyItemChanged(i);
+      verify(observer, times(1)).onItemRangeChanged(i, 1, null);
     }
   }
 
@@ -2968,10 +2974,11 @@ public class RecyclerBinderTest {
     assertComponentAtEquals(recyclerBinder, 3, components.get(1));
   }
 
-  // T41117446 Stopped working after AndroidX conversion
-  // @Test
+  @Test
   public void testUpdateAsyncOnInsertedItem() {
-    final RecyclerView.Adapter adapter = mock(RecyclerView.Adapter.class);
+    final RecyclerView.Adapter adapter = new FakeRecyclerAdapter();
+    final AdapterDataObserver observer = mock(AdapterDataObserver.class);
+    adapter.registerAdapterDataObserver(observer);
     final RecyclerBinder recyclerBinder = createRecyclerBinderWithMockAdapter(adapter);
     final Component component =
         TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
@@ -2991,7 +2998,7 @@ public class RecyclerBinderTest {
     recyclerBinder.updateItemAtAsync(0, newRenderInfo);
     recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
-    verify(adapter, never()).notifyItemChanged(anyInt());
+    verify(observer, never()).onItemRangeChanged(anyInt(), eq(1), isNull());
 
     final ComponentTreeHolder holder = recyclerBinder.getComponentTreeHolderAt(0);
     assertThat(holder.getRenderInfo()).isEqualTo(newRenderInfo);
@@ -3000,10 +3007,11 @@ public class RecyclerBinderTest {
     mLayoutThreadShadowLooper.runToEndOfTasks();
   }
 
-  // T41117446 Stopped working after AndroidX conversion
-  // @Test
+  @Test
   public void testUpdateAsyncOnNonInsertedItem() {
-    final RecyclerView.Adapter adapter = mock(RecyclerView.Adapter.class);
+    final RecyclerView.Adapter adapter = new FakeRecyclerAdapter();
+    final AdapterDataObserver observer = mock(AdapterDataObserver.class);
+    adapter.registerAdapterDataObserver(observer);
     final RecyclerBinder recyclerBinder = createRecyclerBinderWithMockAdapter(adapter);
     final Component component =
         TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
@@ -3025,7 +3033,7 @@ public class RecyclerBinderTest {
     recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(0);
-    verify(adapter, never()).notifyItemChanged(anyInt());
+    verify(observer, never()).onItemRangeChanged(anyInt(), eq(1), isNull());
 
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
@@ -3140,10 +3148,11 @@ public class RecyclerBinderTest {
     assertComponentAtEquals(recyclerBinder, 5, components.get(3));
   }
 
-  // T41117446 Stopped working after AndroidX conversion
-  // @Test
+  @Test
   public void testUpdateAsyncOnInsertedViewFromComponent() {
-    final RecyclerView.Adapter adapter = mock(RecyclerView.Adapter.class);
+    final RecyclerView.Adapter adapter = new FakeRecyclerAdapter();
+    final AdapterDataObserver observer = mock(AdapterDataObserver.class);
+    adapter.registerAdapterDataObserver(observer);
     final RecyclerBinder recyclerBinder = createRecyclerBinderWithMockAdapter(adapter);
     final Component component =
         TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
@@ -3163,17 +3172,18 @@ public class RecyclerBinderTest {
     recyclerBinder.updateItemAtAsync(0, newRenderInfo);
     recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
-    verify(adapter).notifyItemChanged(0);
+    verify(observer).onItemRangeChanged(0, 1, null);
 
     final ComponentTreeHolder holder = recyclerBinder.getComponentTreeHolderAt(0);
     assertThat(holder.getRenderInfo()).isEqualTo(newRenderInfo);
     mLayoutThreadShadowLooper.runToEndOfTasks();
   }
 
-  // T41117446 Stopped working after AndroidX conversion
-  // @Test
+  @Test
   public void testUpdateAsyncOnInsertedViewToComponent() {
-    final RecyclerView.Adapter adapter = mock(RecyclerView.Adapter.class);
+    final RecyclerView.Adapter adapter = new FakeRecyclerAdapter();
+    final AdapterDataObserver observer = mock(AdapterDataObserver.class);
+    adapter.registerAdapterDataObserver(observer);
     final RecyclerBinder recyclerBinder = createRecyclerBinderWithMockAdapter(adapter);
     final ViewRenderInfo renderInfo =
         ViewRenderInfo.create()
@@ -3195,7 +3205,7 @@ public class RecyclerBinderTest {
     recyclerBinder.updateItemAtAsync(0, newRenderInfo);
     recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
-    verify(adapter).notifyItemChanged(0);
+    verify(observer).onItemRangeChanged(0, 1, null);
 
     final ComponentTreeHolder holder = recyclerBinder.getComponentTreeHolderAt(0);
     assertThat(holder.getRenderInfo()).isEqualTo(newRenderInfo);
@@ -4233,8 +4243,9 @@ public class RecyclerBinderTest {
     assertThat(syncLayouts.get(3)).isEqualTo(NOT_SET);
   }
 
-  // TODO(T37835958): Fix me
-  //@Test
+  // TODO: Test is flaky, refer to the task for context
+  @Ignore("T37835958")
+  @Test
   public void testInitRangeAsyncFirstLayoutIsLongSchedMany() {
     final CountDownLatch lockInitRangeLayout = new CountDownLatch(1);
     final CountDownLatch lockTest = new CountDownLatch(2);
@@ -4342,7 +4353,7 @@ public class RecyclerBinderTest {
 
   @Test
   public void testSyncLayoutForUnknownSizeSpec() {
-    final boolean splitInitRange = ComponentsConfiguration.checkNeedsRemeasure;
+    final boolean splitInitRange = ComponentsConfiguration.splitLayoutForMeasureAndRangeEstimation;
     ComponentsConfiguration.splitLayoutForMeasureAndRangeEstimation = true;
     final int NUM_TO_INSERT = 20;
 
@@ -4389,7 +4400,7 @@ public class RecyclerBinderTest {
 
   @Test
   public void testNoSyncLayoutForKnownSizeSpec() {
-    final boolean splitInitRange = ComponentsConfiguration.checkNeedsRemeasure;
+    final boolean splitInitRange = ComponentsConfiguration.splitLayoutForMeasureAndRangeEstimation;
     ComponentsConfiguration.splitLayoutForMeasureAndRangeEstimation = true;
     final int NUM_TO_INSERT = 20;
 
@@ -4801,7 +4812,7 @@ public class RecyclerBinderTest {
 
   @Test
   public void testBothLayoutHandlerFactoryAndThreadPoolConfigProvided() {
-    final LayoutHandler layoutHandler = mock(LayoutHandler.class);
+    final LithoHandler layoutHandler = mock(LithoHandler.class);
     final Component component = mock(Component.class);
     final RecyclerBinder binder =
         mRecyclerBinderBuilder
@@ -4809,7 +4820,7 @@ public class RecyclerBinderTest {
             .layoutHandlerFactory(
                 new LayoutHandlerFactory() {
                   @Override
-                  public LayoutHandler createLayoutCalculationHandler(RenderInfo renderInfo) {
+                  public LithoHandler createLayoutCalculationHandler(RenderInfo renderInfo) {
                     return layoutHandler;
                   }
 
@@ -4902,8 +4913,6 @@ public class RecyclerBinderTest {
 
   @Test
   public void tesLayoutAsyncInRegisterAsyncInsertWhenRemesureIsNotNeeded() {
-    final boolean checkNeedsRemeasure = ComponentsConfiguration.checkNeedsRemeasure;
-    ComponentsConfiguration.checkNeedsRemeasure = true;
     final int NUM_TO_INSERT = 5;
 
     final ArrayList<Component> components = new ArrayList<>();
@@ -4942,14 +4951,10 @@ public class RecyclerBinderTest {
           mHoldersForComponents.get(renderInfos.get(i).getComponent());
       assertThat(holder.mLayoutAsyncCalled).isTrue();
     }
-
-    ComponentsConfiguration.checkNeedsRemeasure = checkNeedsRemeasure;
   }
 
   @Test
   public void testNoLayoutAsyncInRegisterAsyncInsertWhenRemesureIsNeeded() {
-    final boolean checkNeedsRemeasure = ComponentsConfiguration.checkNeedsRemeasure;
-    ComponentsConfiguration.checkNeedsRemeasure = true;
     final int NUM_TO_INSERT = 5;
 
     final ArrayList<Component> components = new ArrayList<>();
@@ -4988,8 +4993,111 @@ public class RecyclerBinderTest {
           mHoldersForComponents.get(renderInfos.get(i).getComponent());
       assertThat(holder.mLayoutAsyncCalled).isFalse();
     }
+  }
 
-    ComponentsConfiguration.checkNeedsRemeasure = checkNeedsRemeasure;
+  @Test
+  public void testOnAttachedOnDetachedWithViewportChanged() {
+    final int childHeightPx = 20;
+    final int widthPx = 200;
+    final int heightPx = 200;
+
+    mRecyclerBinder = new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+    final RecyclerView rv = mock(RecyclerView.class);
+    mRecyclerBinder.mount(rv);
+
+    final List<RenderInfo> renderInfos = new ArrayList<>();
+    final List<TestComponent> components = new ArrayList<>();
+    for (int i = 0; i < 200; i++) {
+      final TestComponent component =
+          TestAttachDetachComponent.create(mComponentContext).heightPx(childHeightPx).build();
+      components.add(component);
+      final Component child = Column.create(mComponentContext).child(component).build();
+      renderInfos.add(ComponentRenderInfo.create().component(child).build());
+    }
+    mRecyclerBinder.insertRangeAt(0, renderInfos);
+    mRecyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+
+    Size size = new Size();
+    int widthSpec = SizeSpec.makeSizeSpec(widthPx, SizeSpec.EXACTLY);
+    int heightSpec = SizeSpec.makeSizeSpec(heightPx, SizeSpec.EXACTLY);
+    mRecyclerBinder.measure(size, widthSpec, heightSpec, null);
+
+    final int rangeSize = heightPx / childHeightPx;
+    final int rangeStart = 0;
+    final int rangeTotal = (int) (rangeSize + (RANGE_RATIO * rangeSize));
+
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+    ShadowLooper.runUiThreadTasks();
+
+    for (int i = rangeStart; i <= rangeStart + rangeTotal; i++) {
+      final TestComponent component = components.get(i);
+      assertThat(component.wasOnAttachedCalled()).isTrue();
+    }
+
+    // Change viewport and check @OnDetached methods are called for components out of layout range.
+    final int newRangeStart = 100;
+    final int newRangeEnd = newRangeStart + rangeSize - 1;
+    mRecyclerBinder.onNewVisibleRange(newRangeStart, newRangeEnd);
+
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+    ShadowLooper.runUiThreadTasks();
+
+    for (int i = newRangeStart; i <= newRangeStart + rangeTotal; i++) {
+      final TestComponent component = components.get(i);
+      assertThat(component.wasOnAttachedCalled()).isTrue();
+    }
+
+    for (int i = rangeStart; i <= rangeStart + rangeTotal; i++) {
+      final TestComponent component = components.get(i);
+      assertThat(component.wasOnDetachedCalled()).isTrue();
+    }
+  }
+
+  @Test
+  public void testItemsOnDetached() {
+    final int childHeightPx = 20;
+    final int widthPx = 200;
+    final int heightPx = 200;
+
+    mRecyclerBinder =
+        new RecyclerBinder.Builder()
+            .enableDetach(true)
+            .rangeRatio(RANGE_RATIO)
+            .build(mComponentContext);
+    final RecyclerView rv = mock(RecyclerView.class);
+    mRecyclerBinder.mount(rv);
+
+    final List<RenderInfo> renderInfos = new ArrayList<>();
+    final List<TestComponent> components = new ArrayList<>();
+    for (int i = 0; i < 200; i++) {
+      final TestComponent component =
+          TestAttachDetachComponent.create(mComponentContext).heightPx(childHeightPx).build();
+      components.add(component);
+      final Component child = Column.create(mComponentContext).child(component).build();
+      renderInfos.add(ComponentRenderInfo.create().component(child).build());
+    }
+    mRecyclerBinder.insertRangeAt(0, renderInfos);
+    mRecyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+
+    Size size = new Size();
+    int widthSpec = SizeSpec.makeSizeSpec(widthPx, SizeSpec.EXACTLY);
+    int heightSpec = SizeSpec.makeSizeSpec(heightPx, SizeSpec.EXACTLY);
+    mRecyclerBinder.measure(size, widthSpec, heightSpec, null);
+
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+    ShadowLooper.runUiThreadTasks();
+
+    mRecyclerBinder.detach();
+
+    final int rangeSize = heightPx / childHeightPx;
+    final int rangeStart = 0;
+    final int rangeTotal = (int) (rangeSize + (RANGE_RATIO * rangeSize));
+    for (int i = rangeStart; i <= rangeStart + rangeTotal; i++) {
+      assertThat(components.get(i).wasOnDetachedCalled()).isTrue();
+    }
+    for (int i = rangeStart + rangeTotal + 1; i < 200; i++) {
+      assertThat(components.get(i).wasOnDetachedCalled()).isFalse();
+    }
   }
 
   private RecyclerBinder createRecyclerBinderWithMockAdapter(RecyclerView.Adapter adapterMock) {
@@ -5083,5 +5191,21 @@ public class RecyclerBinderTest {
 
     @Override
     public void onDataRendered(boolean isMounted, long uptimeMillis) {}
+  }
+
+  private static class FakeRecyclerAdapter extends RecyclerView.Adapter {
+
+    @Override
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+      return null;
+    }
+
+    @Override
+    public void onBindViewHolder(ViewHolder holder, int position) {}
+
+    @Override
+    public int getItemCount() {
+      return 0;
+    }
   }
 }

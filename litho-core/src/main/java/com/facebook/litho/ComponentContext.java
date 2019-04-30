@@ -51,6 +51,8 @@ public class ComponentContext {
   /** TODO: (T38237241) remove the usage of the key handler post the nested tree experiment */
   private final @Nullable KeyHandler mKeyHandler;
 
+  private @Nullable volatile AttachDetachHandler mAttachDetachHandler;
+
   private String mNoStateUpdatesMethod;
 
   // Hold a reference to the component which scope we are currently within.
@@ -77,6 +79,14 @@ public class ComponentContext {
   @ThreadConfined(ThreadConfined.ANY)
   private int mDefStyleAttr = 0;
 
+  // The parent in this case is the ComponentTree that this ComponentContext/ComponentTree is nested
+  // within. For example, in an HScroll, the ComponentTree for each item in the list has a parent
+  // of the ComponentTree for the HScroll itself. If it has incremental mount disabled, it won't
+  // work for the children either so we need to disable it there as well.
+  private final boolean mIsParentIncrementalMountDisabled;
+
+  private ComponentTree.LayoutStateFuture mLayoutStateFuture;
+
   public ComponentContext(
       Context context,
       @Nullable String logTag,
@@ -84,7 +94,8 @@ public class ComponentContext {
       @Nullable StateHandler stateHandler,
       @Nullable KeyHandler keyHandler,
       @Nullable TreeProps treeProps,
-      YogaNodeFactory yogaNodeFactory) {
+      YogaNodeFactory yogaNodeFactory,
+      boolean isParentIncrementalMountDisabled) {
 
     if (logger != null && logTag == null) {
       throw new IllegalStateException("When a ComponentsLogger is set, a LogTag must be set");
@@ -98,13 +109,36 @@ public class ComponentContext {
     mStateHandler = stateHandler;
     mKeyHandler = keyHandler;
     mYogaNodeFactory = yogaNodeFactory;
+    mIsParentIncrementalMountDisabled = isParentIncrementalMountDisabled;
+  }
+
+  public ComponentContext(
+      Context context,
+      @Nullable String logTag,
+      ComponentsLogger logger,
+      @Nullable StateHandler stateHandler,
+      @Nullable KeyHandler keyHandler,
+      @Nullable TreeProps treeProps,
+      YogaNodeFactory yogaNodeFactory) {
+    this(context, logTag, logger, stateHandler, keyHandler, treeProps, yogaNodeFactory, false);
   }
 
   public ComponentContext(
       ComponentContext context,
       @Nullable StateHandler stateHandler,
       @Nullable KeyHandler keyHandler,
-      @Nullable TreeProps treeProps) {
+      @Nullable TreeProps treeProps,
+      @Nullable ComponentTree.LayoutStateFuture layoutStateFuture) {
+    this(context, stateHandler, null, keyHandler, treeProps, layoutStateFuture);
+  }
+
+  public ComponentContext(
+      ComponentContext context,
+      @Nullable StateHandler stateHandler,
+      @Nullable AttachDetachHandler attachDetachHandler,
+      @Nullable KeyHandler keyHandler,
+      @Nullable TreeProps treeProps,
+      @Nullable ComponentTree.LayoutStateFuture layoutStateFuture) {
 
     mContext = context.getAndroidContext();
     mResourceCache = context.mResourceCache;
@@ -120,8 +154,12 @@ public class ComponentContext {
     mYogaNodeFactory = context.mYogaNodeFactory;
 
     mStateHandler = stateHandler != null ? stateHandler : context.mStateHandler;
+    mAttachDetachHandler =
+        attachDetachHandler != null ? attachDetachHandler : context.mAttachDetachHandler;
     mKeyHandler = keyHandler != null ? keyHandler : context.mKeyHandler;
     mTreeProps = treeProps != null ? treeProps : context.mTreeProps;
+    mLayoutStateFuture = layoutStateFuture == null ? context.mLayoutStateFuture : layoutStateFuture;
+    mIsParentIncrementalMountDisabled = context.mIsParentIncrementalMountDisabled;
   }
 
   public ComponentContext(
@@ -163,7 +201,13 @@ public class ComponentContext {
   }
 
   public ComponentContext(ComponentContext context) {
-    this(context, context.mStateHandler, context.mKeyHandler, context.mTreeProps);
+    this(
+        context,
+        context.mStateHandler,
+        context.mAttachDetachHandler,
+        context.mKeyHandler,
+        context.mTreeProps,
+        context.mLayoutStateFuture);
   }
 
   public ComponentContext(Context context) {
@@ -210,6 +254,11 @@ public class ComponentContext {
     return mComponentScope;
   }
 
+  @VisibleForTesting
+  public ComponentTree.LayoutStateFuture getLayoutStateFuture() {
+    return mLayoutStateFuture;
+  }
+
   /**
    * Notify the Component Tree that it needs to synchronously perform a state update.
    *
@@ -251,6 +300,14 @@ public class ComponentContext {
     }
 
     mComponentTree.updateStateLazy(mComponentScope.getGlobalKey(), stateUpdate);
+  }
+
+  public void applyLazyStateUpdatesForContainer(StateContainer container) {
+    if (mComponentTree == null) {
+      return;
+    }
+
+    mComponentTree.applyLazyStateUpdatesForContainer(mComponentScope.getGlobalKey(), container);
   }
 
   void enterNoStateUpdatesMethod(String noStateUpdatesMethod) {
@@ -304,6 +361,11 @@ public class ComponentContext {
   @Nullable
   protected TreeProps getTreeProps() {
     return mTreeProps;
+  }
+
+  @Nullable
+  public <T> T getTreeProp(Class<T> key) {
+    return mTreeProps == null ? null : mTreeProps.get(key);
   }
 
   /** Obtain a copy of the tree props currently held by this context. */
@@ -417,6 +479,24 @@ public class ComponentContext {
     return mStateHandler;
   }
 
+  AttachDetachHandler getOrCreateAttachDetachHandler() {
+    AttachDetachHandler localAttachDetachHandler = mAttachDetachHandler;
+    if (localAttachDetachHandler == null) {
+      synchronized (this) {
+        localAttachDetachHandler = mAttachDetachHandler;
+        if (localAttachDetachHandler == null) {
+          mAttachDetachHandler = localAttachDetachHandler = new AttachDetachHandler();
+        }
+      }
+    }
+    return localAttachDetachHandler;
+  }
+
+  @Nullable
+  AttachDetachHandler getAttachDetachHandler() {
+    return mAttachDetachHandler;
+  }
+
   @Nullable
   KeyHandler getKeyHandler() {
     return mKeyHandler;
@@ -436,10 +516,15 @@ public class ComponentContext {
     }
   }
 
+  boolean isParentIncrementalMountDisabled() {
+    return mIsParentIncrementalMountDisabled;
+  }
+
   static ComponentContext withComponentTree(ComponentContext context, ComponentTree componentTree) {
     ComponentContext componentContext =
-        new ComponentContext(context, new StateHandler(), null, null);
+        new ComponentContext(context, new StateHandler(), null, null, null);
     componentContext.mComponentTree = componentTree;
+    componentContext.mLayoutStateFuture = null;
 
     return componentContext;
   }
@@ -466,8 +551,8 @@ public class ComponentContext {
    * you require that incremental mount is enabled (e.g. you use visibility callbacks). This is
    * static to avoid polluting the ComponentContext API.
    */
-  public static boolean isIncrementalMountEnabled(ComponentContext c) {
-    return c.getComponentTree().isIncrementalMountEnabled();
+  public static boolean isIncrementalMountDisabled(ComponentContext c) {
+    return c.mComponentTree != null && !c.mComponentTree.isIncrementalMountEnabled();
   }
 
   /** Whether the refactored implementation of nested tree resolution should be used. */
@@ -476,6 +561,18 @@ public class ComponentContext {
       return getComponentTree().isNestedTreeResolutionExperimentEnabled();
     } else {
       return false;
+    }
+  }
+
+  boolean wasLayoutCanceled() {
+    return mLayoutStateFuture == null ? false : mLayoutStateFuture.isReleased();
+  }
+
+  public boolean isReconciliationEnabled() {
+    if (getComponentTree() != null) {
+      return getComponentTree().isReconciliationEnabled();
+    } else {
+      return ComponentsConfiguration.isReconciliationEnabled;
     }
   }
 }

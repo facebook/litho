@@ -16,10 +16,6 @@
           xmlns:tools="http://schemas.android.com/tools"
           package="com.facebook.samples.lithocodelab" >
 
-    <uses-sdk
-        android:minSdkVersion="15"
-        android:targetSdkVersion="26"
-        tools:ignore="GradleOverrides"/>
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application

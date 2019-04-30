@@ -19,8 +19,8 @@ import com.facebook.litho.config.LayoutThreadPoolConfiguration;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
 
-/** LayoutHandler implementation that uses a thread pool to calculate the layout. */
-public class ThreadPoolLayoutHandler implements LayoutHandler {
+/** LithoHandler implementation that uses a thread pool to calculate the layout. */
+public class ThreadPoolLayoutHandler implements LithoHandler {
 
   private static ThreadPoolExecutor sLayoutThreadPoolExecutor;
 
@@ -35,22 +35,16 @@ public class ThreadPoolLayoutHandler implements LayoutHandler {
   }
 
   @Override
-  public boolean post(Runnable runnable) {
+  public void post(Runnable runnable, String tag) {
     try {
       sLayoutThreadPoolExecutor.execute(runnable);
-      return true;
     } catch (RejectedExecutionException e) {
       throw new RuntimeException("Cannot execute layout calculation task; " + e);
     }
   }
 
   @Override
-  public void removeCallbacks(Runnable runnable) {
+  public void remove(Runnable runnable) {
     sLayoutThreadPoolExecutor.remove(runnable);
-  }
-
-  @Override
-  public void removeCallbacksAndMessages(Object token) {
-    throw new RuntimeException("Operation not supported");
   }
 }

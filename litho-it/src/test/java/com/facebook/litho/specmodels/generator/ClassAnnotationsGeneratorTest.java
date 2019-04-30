@@ -26,8 +26,11 @@ import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.SpecModelImpl;
 import com.squareup.javapoet.AnnotationSpec;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
 /** Tests {@link ClassAnnotationsGenerator} */
+@RunWith(JUnit4.class)
 public class ClassAnnotationsGeneratorTest {
   @Test
   public void testGenerateAnnotations() {

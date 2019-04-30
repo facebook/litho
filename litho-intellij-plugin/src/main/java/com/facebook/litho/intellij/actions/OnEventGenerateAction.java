@@ -15,8 +15,8 @@
  */
 package com.facebook.litho.intellij.actions;
 
-import com.facebook.litho.intellij.LithoClassNames;
 import com.facebook.litho.intellij.LithoPluginUtils;
+import com.facebook.litho.intellij.completion.OnEventGenerateUtils;
 import com.intellij.codeInsight.generation.ClassMember;
 import com.intellij.codeInsight.generation.GenerateMembersHandlerBase;
 import com.intellij.codeInsight.generation.GenerationInfo;
@@ -27,22 +27,13 @@ import com.intellij.ide.util.TreeJavaClassChooserDialog;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.project.Project;
-import com.intellij.psi.JavaPsiFacade;
 import com.intellij.psi.PsiClass;
-import com.intellij.psi.PsiComment;
-import com.intellij.psi.PsiElementFactory;
-import com.intellij.psi.PsiField;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiMethod;
-import com.intellij.psi.PsiModifier;
-import com.intellij.psi.PsiModifierList;
 import com.intellij.psi.PsiParameter;
-import com.intellij.psi.PsiParameterList;
-import com.intellij.psi.PsiType;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.util.IncorrectOperationException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
@@ -63,8 +54,13 @@ public class OnEventGenerateAction extends BaseGenerateAction {
     }
   }
 
+  /**
+   * Generates Litho event method. Prompts the user for additional data: choose Event class and
+   * method signature customisation.
+   *
+   * @see com.facebook.litho.intellij.completion.MethodGenerateHandler
+   */
   static class OnEventGenerateHandler extends GenerateMembersHandlerBase {
-    private static final String CONTEXT_PARAMETER_NAME = "c";
 
     OnEventGenerateHandler() {
       super("");
@@ -92,7 +88,8 @@ public class OnEventGenerateAction extends BaseGenerateAction {
               .filter(LithoPluginUtils::isPropOrState)
               .collect(Collectors.toList());
 
-      final PsiMethod onEventMethod = createOnEventMethod(aClass, eventClass, propsAndStates);
+      final PsiMethod onEventMethod =
+          OnEventGenerateUtils.createOnEventMethod(aClass, eventClass, propsAndStates);
 
       final OnEventChangeSignatureDialog onEventMethodSignatureChooser =
           new OnEventChangeSignatureDialog(project, onEventMethod, aClass);
@@ -103,84 +100,9 @@ public class OnEventGenerateAction extends BaseGenerateAction {
         return ClassMember.EMPTY_ARRAY;
       }
 
-      addComment(aClass, customMethod);
+      OnEventGenerateUtils.addComment(aClass, customMethod);
 
       return new ClassMember[] {new PsiMethodMember(customMethod)};
-    }
-
-    /** Adds comment to the given method "// An event handler MySpec.onClickEvent(c, param) */
-    private static void addComment(PsiClass contextClass, PsiMethod method) {
-      final Project project = contextClass.getProject();
-      final PsiElementFactory factory = JavaPsiFacade.getElementFactory(project);
-
-      final StringBuilder builder =
-          new StringBuilder("// An event handler ")
-              .append(LithoPluginUtils.getLithoComponentNameFromSpec(contextClass.getName()))
-              .append(".")
-              .append(method.getName())
-              .append("(")
-              .append(CONTEXT_PARAMETER_NAME);
-      for (PsiParameter parameter : method.getParameterList().getParameters()) {
-        if (LithoPluginUtils.isParam(parameter)) {
-          builder.append(", ").append(parameter.getName());
-        }
-      }
-
-      builder.append(")");
-      final PsiComment comment = factory.createCommentFromText(builder.toString(), method);
-      method.addBefore(comment, method.getModifierList());
-    }
-
-    private static PsiMethod createOnEventMethod(
-        PsiClass contextClass, PsiClass eventClass, Collection<PsiParameter> additionalParameters) {
-
-      final Project project = contextClass.getProject();
-      final PsiElementFactory factory = JavaPsiFacade.getElementFactory(project);
-
-      final PsiType methodReturnType = PsiType.VOID;
-      final String methodName = "on" + eventClass.getName();
-      final PsiMethod method = factory.createMethod(methodName, methodReturnType, contextClass);
-
-      final PsiParameterList parameterList = method.getParameterList();
-      final PsiParameter contextParameter =
-          factory.createParameter(
-              CONTEXT_PARAMETER_NAME,
-              PsiType.getTypeByName(
-                  LithoClassNames.COMPONENT_CONTEXT_CLASS_NAME,
-                  project,
-                  GlobalSearchScope.allScope(project)),
-              contextClass);
-      parameterList.add(contextParameter);
-
-      final PsiField[] eventFields = eventClass.getFields();
-      for (PsiField field : eventFields) {
-        final String fieldName = field.getName();
-        if (fieldName == null) {
-          continue;
-        }
-        final PsiParameter parameter = factory.createParameter(fieldName, field.getType());
-        final PsiModifierList parameterModifierList = parameter.getModifierList();
-        if (parameterModifierList == null) {
-          continue;
-        }
-        parameterModifierList.addAnnotation(LithoClassNames.FROM_EVENT_ANNOTATION_NAME);
-        parameterList.add(parameter);
-      }
-      for (PsiParameter parameter : additionalParameters) {
-        parameterList.add(parameter);
-      }
-
-      final PsiModifierList methodModifierList = method.getModifierList();
-      methodModifierList.addAnnotation(
-          LithoClassNames.ON_EVENT_ANNOTATION_NAME
-              + "("
-              + eventClass.getQualifiedName()
-              + ".class)");
-
-      methodModifierList.setModifierProperty(PsiModifier.PACKAGE_LOCAL, true);
-      methodModifierList.setModifierProperty(PsiModifier.STATIC, true);
-
-      return method;
     }
 
     @Override

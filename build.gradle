@@ -44,7 +44,9 @@ ext {
     targetCompatibilityVersion = JavaVersion.VERSION_1_7
 }
 
-ext.isRelease = { ['uploadArchives', 'bintrayUpload'].any { gradle.startParameter.taskNames.contains(it) } }
+ext.forceReleaseBuild = project.hasProperty('forceReleaseBuild')
+ext.isRelease = { forceReleaseBuild ||
+        ['uploadArchives', 'bintrayUpload'].any { gradle.startParameter.taskNames.contains(it) } }
 ext.isSnapshot = { VERSION_NAME.endsWith('-SNAPSHOT') }
 
 ext.deps = [
@@ -93,8 +95,8 @@ ext.deps = [
 // For releases, we want to depend on a stable version of Yoga.
 ext.deps.yoga =
     isSnapshot()
-        ? 'com.facebook.yoga:yoga:1.12.0' // can be a '-SNAPSHOT' release
-        : 'com.facebook.yoga:yoga:1.12.0'
+        ? 'com.facebook.yoga:yoga:1.14.0' // can be a '-SNAPSHOT' release
+        : 'com.facebook.yoga:yoga:1.14.0'
 
 // This should hopefully only serve as a temporary measure until
 // we have a proper Gradle setup for Yoga and JNI.

@@ -28,7 +28,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.OrientationHelper;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.LayoutHandler;
+import com.facebook.litho.LithoHandler;
 import com.facebook.litho.Size;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.viewcompat.SimpleViewBinder;
@@ -74,7 +74,7 @@ public class RecyclerBinderAsyncInitRangeIteratorTest {
           @Override
           public ComponentTreeHolder create(
               RenderInfo renderInfo,
-              LayoutHandler layoutHandler,
+              LithoHandler layoutHandler,
               ComponentTreeHolder.ComponentTreeMeasureListenerFactory
                   componentTreeMeasureListenerFactory,
               boolean incrementalMountEnabled) {

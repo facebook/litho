@@ -16,9 +16,9 @@
 
 package com.facebook.litho.sections.widget;
 
-import android.os.Handler;
 import androidx.annotation.Nullable;
 import com.facebook.litho.ComponentLogParams;
+import com.facebook.litho.LithoHandler;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.config.LayoutThreadPoolConfiguration;
 import com.facebook.litho.sections.SectionTree;
@@ -43,7 +43,8 @@ public class RecyclerBinderConfiguration {
   private boolean mAsyncInitRange = ComponentsConfiguration.asyncInitRange;
   @Nullable private List<ComponentLogParams> mInvalidStateLogParamsList;
   private final boolean mSplitLayoutForMeasureAndRangeEstimation;
-  @Nullable private Handler mChangeSetThreadHandler;
+  @Nullable private LithoHandler mChangeSetThreadHandler;
+  private final boolean mEnableDetach;
 
   public static Builder create() {
     return new Builder();
@@ -62,7 +63,8 @@ public class RecyclerBinderConfiguration {
       boolean enableStableIds,
       boolean asyncInitRange,
       boolean splitLayoutForMeasureAndRangeEstimation,
-      @Nullable Handler changeSetThreadHandler) {
+      boolean enableDetach,
+      @Nullable LithoHandler changeSetThreadHandler) {
     mRangeRatio = rangeRatio;
     mLayoutHandlerFactory = layoutHandlerFactory;
     mIsCircular = circular;
@@ -75,6 +77,7 @@ public class RecyclerBinderConfiguration {
     mEnableStableIds = enableStableIds;
     mAsyncInitRange = asyncInitRange;
     mSplitLayoutForMeasureAndRangeEstimation = splitLayoutForMeasureAndRangeEstimation;
+    mEnableDetach = enableDetach;
     mChangeSetThreadHandler = changeSetThreadHandler;
   }
 
@@ -122,12 +125,16 @@ public class RecyclerBinderConfiguration {
     return mInvalidStateLogParamsList;
   }
 
-  public @Nullable Handler getChangeSetThreadHandler() {
+  public @Nullable LithoHandler getChangeSetThreadHandler() {
     return mChangeSetThreadHandler;
   }
 
   public boolean splitLayoutForMeasureAndRangeEstimation() {
     return mSplitLayoutForMeasureAndRangeEstimation;
+  }
+
+  public boolean getEnableDetach() {
+    return mEnableDetach;
   }
 
   public static class Builder {
@@ -148,7 +155,8 @@ public class RecyclerBinderConfiguration {
     private boolean mAsyncInitRange = ComponentsConfiguration.asyncInitRange;
     private boolean mSplitLayoutForMeasureAndRangeEstimation =
         ComponentsConfiguration.splitLayoutForMeasureAndRangeEstimation;
-    @Nullable private Handler mChangeSetThreadHandler;
+    private boolean mEnableDetach = false;
+    @Nullable private LithoHandler mChangeSetThreadHandler;
 
     Builder() {}
 
@@ -254,8 +262,14 @@ public class RecyclerBinderConfiguration {
       return this;
     }
 
-    public Builder changeSetThreadHandler(Handler changeSetThreadHandler) {
+    public Builder changeSetThreadHandler(LithoHandler changeSetThreadHandler) {
       mChangeSetThreadHandler = changeSetThreadHandler;
+      return this;
+    }
+
+    /** If true, detach components under the hood when RecyclerBinder#detach() is called. */
+    public Builder enableDetach(boolean enableDetach) {
+      mEnableDetach = enableDetach;
       return this;
     }
 
@@ -273,6 +287,7 @@ public class RecyclerBinderConfiguration {
           mEnableStableIds,
           mAsyncInitRange,
           mSplitLayoutForMeasureAndRangeEstimation,
+          mEnableDetach,
           mChangeSetThreadHandler);
     }
   }

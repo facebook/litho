@@ -26,10 +26,11 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
-/**
- * Tests {@link JavadocExtractor}
- */
+/** Tests {@link JavadocExtractor} */
+@RunWith(JUnit4.class)
 public class JavadocExtractorTest {
   private final Elements mElements = mock(Elements.class);
   private final TypeElement mTypeElement = mock(TypeElement.class);

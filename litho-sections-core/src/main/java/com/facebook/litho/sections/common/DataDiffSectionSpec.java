@@ -131,7 +131,7 @@ public class DataDiffSectionSpec<T> {
         logger == null
             ? null
             : LogTreePopulator.populatePerfEventFromLogger(
-                c, logger, logger.newPerformanceEvent(EVENT_SECTIONS_DATA_DIFF_CALCULATE_DIFF));
+                c, logger, logger.newPerformanceEvent(c, EVENT_SECTIONS_DATA_DIFF_CALCULATE_DIFF));
 
     if (isTracing) {
       ComponentsSystrace.beginSection("DiffUtil.calculateDiff");

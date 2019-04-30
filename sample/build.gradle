@@ -22,10 +22,11 @@ android {
     sourceCompatibility = sourceCompatibilityVersion
 
     defaultConfig {
-        minSdkVersion 21
+        minSdkVersion rootProject.minSdkVersion
+        targetSdkVersion rootProject.targetSdkVersion
+
         multiDexEnabled true
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
-        targetSdkVersion rootProject.targetSdkVersion
     }
 
     // TODO(#62): Re-enable abort on error.

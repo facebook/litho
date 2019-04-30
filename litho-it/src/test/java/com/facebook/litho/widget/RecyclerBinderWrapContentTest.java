@@ -43,6 +43,7 @@ import com.facebook.litho.testing.util.InlineLayoutSpec;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
@@ -252,8 +253,8 @@ public class RecyclerBinderWrapContentTest {
     assertThat(size.height).isEqualTo(550);
   }
 
-  // TODO(t33888191): Support wrapContent with insertAsync
-  // @Test
+  @Ignore("t33888191") // TODO(t33888191): Support wrapContent with insertAsync
+  @Test
   public void testWrapContentWithInsertAsyncOnVertical() {
     final RecyclerBinder recyclerBinder =
         new RecyclerBinder.Builder()
@@ -298,8 +299,8 @@ public class RecyclerBinderWrapContentTest {
     assertThat(size.height).isEqualTo(1000);
   }
 
-  // TODO(t33888191): Support wrapContent with insertAsync
-  // @Test
+  @Ignore("t33888191") // TODO(t33888191): Support wrapContent with insertAsync
+  @Test
   public void testWrapContentWithInsertRangeAsyncOnVertical() {
     final int NUM_TO_INSERT = 6;
     final RecyclerBinder recyclerBinder =
@@ -349,8 +350,8 @@ public class RecyclerBinderWrapContentTest {
     assertThat(size.height).isEqualTo(1000);
   }
 
-  // TODO(t33888191): Support wrapContent with insertAsync
-  // @Test
+  @Ignore("t33888191") // TODO(t33888191): Support wrapContent with insertAsync
+  @Test
   public void testWrapContentWithRemoveAsyncOnVertical() {
     final int widthSpec = makeSizeSpec(1000, EXACTLY);
     final int heightSpec = makeSizeSpec(1000, AT_MOST);
@@ -375,8 +376,8 @@ public class RecyclerBinderWrapContentTest {
     assertThat(size.height).isEqualTo(700);
   }
 
-  // TODO(t33888191): Support wrapContent with insertAsync
-  // @Test
+  @Ignore("t33888191") // TODO(t33888191): Support wrapContent with insertAsync
+  @Test
   public void testWrapContentWithRemoveRangeAsyncOnVertical() {
     final int widthSpec = makeSizeSpec(1000, EXACTLY);
     final int heightSpec = makeSizeSpec(1000, AT_MOST);
@@ -401,8 +402,8 @@ public class RecyclerBinderWrapContentTest {
     assertThat(size.height).isEqualTo(500);
   }
 
-  // TODO(t33888191): Support wrapContent with insertAsync
-  // @Test
+  @Ignore("t33888191") // TODO(t33888191): Support wrapContent with insertAsync
+  @Test
   public void testWrapContentWithUpdateAsyncOnVertical() {
     final int widthSpec = makeSizeSpec(1000, EXACTLY);
     final int heightSpec = makeSizeSpec(1000, AT_MOST);
@@ -436,8 +437,8 @@ public class RecyclerBinderWrapContentTest {
     assertThat(size.height).isEqualTo(900);
   }
 
-  // TODO(t33888191): Support wrapContent with insertAsync
-  // @Test
+  @Ignore("t33888191") // TODO(t33888191): Support wrapContent with insertAsync
+  @Test
   public void testWrapContentWithUpdateRangeAsyncOnVertical() {
     final int NUM_TO_UPDATE = 5;
     final int widthSpec = makeSizeSpec(1000, EXACTLY);
@@ -660,8 +661,8 @@ public class RecyclerBinderWrapContentTest {
     assertThat(size.width).isEqualTo(550);
   }
 
-  // TODO(t33888191): Support wrapContent with insertAsync
-  // @Test
+  @Ignore("t33888191") // TODO(t33888191): Support wrapContent with insertAsync
+  @Test
   public void testWrapContentWithInsertAsyncOnHorizontal() {
     final RecyclerBinder recyclerBinder =
         new RecyclerBinder.Builder()
@@ -707,8 +708,8 @@ public class RecyclerBinderWrapContentTest {
     assertThat(size.width).isEqualTo(1000);
   }
 
-  // TODO(t33888191): Support wrapContent with insertAsync
-  // @Test
+  @Ignore("t33888191") // TODO(t33888191): Support wrapContent with insertAsync
+  @Test
   public void testWrapContentWithInsertRangeAsyncOnHorizontal() {
     final int NUM_TO_INSERT = 6;
     final RecyclerBinder recyclerBinder =
@@ -759,8 +760,8 @@ public class RecyclerBinderWrapContentTest {
     assertThat(size.width).isEqualTo(1000);
   }
 
-  // TODO(t33888191): Support wrapContent with insertAsync
-  // @Test
+  @Ignore("t33888191") // TODO(t33888191): Support wrapContent with insertAsync
+  @Test
   public void testWrapContentWithRemoveAsyncOnHorizontal() {
     final int widthSpec = makeSizeSpec(1000, AT_MOST);
     final int heightSpec = makeSizeSpec(1000, EXACTLY);
@@ -785,8 +786,8 @@ public class RecyclerBinderWrapContentTest {
     assertThat(size.width).isEqualTo(700);
   }
 
-  // TODO(t33888191): Support wrapContent with insertAsync
-  // @Test
+  @Ignore("t33888191") // TODO(t33888191): Support wrapContent with insertAsync
+  @Test
   public void testWrapContentWithRemoveRangeAsyncOnHorizontal() {
     final int widthSpec = makeSizeSpec(1000, AT_MOST);
     final int heightSpec = makeSizeSpec(1000, EXACTLY);
@@ -811,8 +812,8 @@ public class RecyclerBinderWrapContentTest {
     assertThat(size.width).isEqualTo(500);
   }
 
-  // TODO(t33888191): Support wrapContent with insertAsync
-  // @Test
+  @Ignore("t33888191") // TODO(t33888191): Support wrapContent with insertAsync
+  @Test
   public void testWrapContentWithUpdateAsyncOnHorizontal() {
     final int widthSpec = makeSizeSpec(1000, AT_MOST);
     final int heightSpec = makeSizeSpec(1000, EXACTLY);
@@ -844,8 +845,8 @@ public class RecyclerBinderWrapContentTest {
     assertThat(size.width).isEqualTo(900);
   }
 
-  // TODO(t33888191): Support wrapContent with insertAsync
-  // @Test
+  @Ignore("t33888191") // TODO(t33888191): Support wrapContent with insertAsync
+  @Test
   public void testWrapContentWithUpdateRangeAsyncOnHorizontal() {
     final int NUM_TO_UPDATE = 5;
     final int widthSpec = makeSizeSpec(1000, AT_MOST);
@@ -906,7 +907,8 @@ public class RecyclerBinderWrapContentTest {
     recyclerBinder.notifyChangeSetComplete(false, changeSetCompleteCallback);
 
     verify(changeSetCompleteCallback).onDataRendered(eq(true), anyLong());
-    assertThat(mRecyclerView.getPostAnimationRunnableList()).isEmpty();
+    verifyPostOnAnimationWasCalledAtleastNTimesWith(
+        mRecyclerView, 0, recyclerBinder.mRemeasureRunnable);
   }
 
   private RecyclerBinder prepareBinderWithMeasuredChildSize(

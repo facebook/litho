@@ -34,7 +34,7 @@ public interface ComponentsLogger {
   }
 
   /** Create a new performance event with the given event id and start counting the time. */
-  PerfEvent newPerformanceEvent(@FrameworkLogEvents.LogEventId int eventId);
+  PerfEvent newPerformanceEvent(ComponentContext c, @FrameworkLogEvents.LogEventId int eventId);
 
   /** Write a {@link PerfEvent} to storage. This also marks the end of the event. */
   void logPerfEvent(PerfEvent event);

@@ -112,9 +112,6 @@ public class ComponentsConfiguration {
    */
   public static boolean useGlobalKeys = true;
 
-  /** If true then we'll lazily initialize the LayoutStateOutputIdCalculator */
-  public static boolean lazilyInitializeLayoutStateOutputIdCalculator = false;
-
   /** Whether to unmount all contents of LithoView when its ComponentTree is set to null. */
   public static boolean unmountAllWhenComponentTreeSetToNull = false;
 
@@ -126,12 +123,6 @@ public class ComponentsConfiguration {
 
   /** If true, a single thread pool will be used instead of creating one per RecyclerBinder. */
   public static boolean useSingleThreadPool = false;
-
-  /**
-   * If false, we won't create state handlers. It's highly discouraged to to change this to false,
-   * unless you handle all your updates outside of the litho framework
-   */
-  public static boolean useStateHandlers = true;
 
   /**
    * If true, the async range calculation isn't blocked on the first item finishing layout and it
@@ -192,14 +183,14 @@ public class ComponentsConfiguration {
   /** Whether the refactored implementation of nested tree resolution should be used. */
   public static boolean isNestedTreeResolutionExperimentEnabled = false;
 
-  /** Sets if the internal node should be persisted */
-  public static boolean isPersistenceEnabled;
-
   /** Sets if SparseCommonPropsHolder should be used */
   public static boolean isSparseCommonPropsHolderIsEnabled;
 
   /** Sets if SparseNodeInfo should be used */
   public static boolean isSparseNodeInfoIsEnabled;
+
+  /** Sets if is reconciliation is enabled */
+  public static boolean isReconciliationEnabled = false;
 
   /** specifies if the ComparableAnimatedColorDrawable should be initialized in a lazy way */
   public static boolean lazyComparableAnimatedColorDrawable = false;
@@ -207,6 +198,8 @@ public class ComponentsConfiguration {
   // TODO T39526148 Remove once Flipper plugin is usable.
   /** If true, information about RenderInfos will be passed to Flipper's layout inspector. */
   public static boolean enableRenderInfoDebugging = false;
+
+  public static boolean useCancelableLayoutFutures;
 
   public static boolean isRenderInfoDebuggingEnabled() {
     return isDebugModeEnabled && enableRenderInfoDebugging;

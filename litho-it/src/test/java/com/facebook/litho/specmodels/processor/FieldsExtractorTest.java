@@ -25,8 +25,11 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
 /** Tests {@link FieldsExtractor}. */
+@RunWith(JUnit4.class)
 public class FieldsExtractorTest {
   @Rule public CompilationRule compilationRule = new CompilationRule();
 

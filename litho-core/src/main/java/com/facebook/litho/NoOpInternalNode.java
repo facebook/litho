@@ -836,4 +836,19 @@ class NoOpInternalNode implements InternalNode {
 
   @Override
   public void assertContextSpecificStyleNotSet() {}
+
+  @Override
+  public InternalNode deepClone() {
+    throw new UnsupportedOperationException("NoOpInternalNode.deepClone not implemented.");
+  }
+
+  @Override
+  public String getSimpleName() {
+    return "NoOpInternalNode";
+  }
+
+  @Override
+  public InternalNode reconcile(ComponentContext c, Component next) {
+    return this;
+  }
 }

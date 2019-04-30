@@ -179,6 +179,14 @@ final class FullGroupSection<T> extends Section implements TestTag {
     nextStateContainer.state2 = prevStateContainer.state2;
   }
 
+  private FullGroupSectionStateContainer getStateContainerWithLazyStateUpdatesApplied(
+      SectionContext c, FullGroupSection component) {
+    FullGroupSectionStateContainer stateContainer = new FullGroupSectionStateContainer();
+    transferState(component.mStateContainer, stateContainer);
+    c.applyLazyStateUpdatesForContainer(stateContainer);
+    return stateContainer;
+  }
+
   protected static void updateState(SectionContext c, Object param) {
     Section _component = c.getSectionScope();
     if (_component == null) {
@@ -243,8 +251,14 @@ final class FullGroupSection<T> extends Section implements TestTag {
   private void testEvent(
       HasEventDispatcher _abstract, SectionContext c, TextView view, int someParam) {
     FullGroupSection _ref = (FullGroupSection) _abstract;
+    FullGroupSectionStateContainer stateContainer = getStateContainerWithLazyStateUpdatesApplied(c,
+        _ref);
     FullGroupSectionSpec.testEvent(
-        c, view, someParam, (Object) _ref.mStateContainer.state2, (String) _ref.prop2);
+        c,
+        view,
+        someParam,
+        (Object) stateContainer.state2,
+        (String) _ref.prop2);
   }
 
   public static EventHandler<ClickEvent> testEvent(SectionContext c, int someParam) {
@@ -445,7 +459,7 @@ final class FullGroupSection<T> extends Section implements TestTag {
     Object state2;
   }
 
-  public static class Builder<T> extends Section.Builder<Builder<T>> {
+  public static final class Builder<T> extends Section.Builder<Builder<T>> {
     FullGroupSection mFullGroupSection;
 
     SectionContext mContext;

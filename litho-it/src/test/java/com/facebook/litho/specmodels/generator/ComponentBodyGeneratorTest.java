@@ -61,10 +61,13 @@ import javax.lang.model.util.Types;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 /** Tests {@link ComponentBodyGenerator} */
+@RunWith(JUnit4.class)
 public class ComponentBodyGeneratorTest {
   @Rule public CompilationRule mCompilationRule = new CompilationRule();
   @Mock private Messager mMessager;

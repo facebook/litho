@@ -65,8 +65,7 @@ public class TestComponentTree extends ComponentTree {
         diffingEnabled,
         previousLayoutState,
         source,
-        extraAttribution,
-        false);
+        extraAttribution);
   }
 
   @VisibleForTesting

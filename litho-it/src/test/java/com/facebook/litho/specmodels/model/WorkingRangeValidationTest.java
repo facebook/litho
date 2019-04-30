@@ -24,8 +24,11 @@ import com.facebook.litho.specmodels.internal.ImmutableList;
 import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
 /** Tests {@link WorkingRangeValidation} */
+@RunWith(JUnit4.class)
 public class WorkingRangeValidationTest {
 
   private final SpecModel mSpecModel = mock(SpecModel.class);

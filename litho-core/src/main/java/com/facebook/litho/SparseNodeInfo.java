@@ -791,6 +791,12 @@ class SparseNodeInfo implements NodeInfo {
     if ((mPrivateFlags & PFLAG_ROTATION_IS_SET) != 0) {
       target.setRotation(mRotation);
     }
+    if ((mPrivateFlags & PFLAG_ROTATION_X_IS_SET) != 0) {
+      target.setRotationX(mRotationX);
+    }
+    if ((mPrivateFlags & PFLAG_ROTATION_Y_IS_SET) != 0) {
+      target.setRotationY(mRotationY);
+    }
   }
 
   @Override

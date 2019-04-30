@@ -40,10 +40,11 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
-/**
- * Tests {@link UpdateStateMethodExtractor}
- */
+/** Tests {@link UpdateStateMethodExtractor} */
+@RunWith(JUnit4.class)
 public class UpdateStateMethodExtractorTest {
   @Rule public CompilationRule mCompilationRule = new CompilationRule();
 

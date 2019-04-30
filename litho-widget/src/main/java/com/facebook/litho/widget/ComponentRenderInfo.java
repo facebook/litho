@@ -27,7 +27,7 @@ import com.facebook.litho.RenderCompleteEvent;
 public class ComponentRenderInfo extends BaseRenderInfo {
 
   public static final String LAYOUT_DIFFING_ENABLED = "layout_diffing_enabled";
-  public static final String PERSISTENCE_ENABLED = "is_persistence_enabled";
+  public static final String RECONCILIATION_ENABLED = "is_reconciliation_enabled";
 
   private final Component mComponent;
   @Nullable private final EventHandler<RenderCompleteEvent> mRenderCompleteEventHandler;

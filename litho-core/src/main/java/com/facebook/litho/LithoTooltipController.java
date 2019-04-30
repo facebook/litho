@@ -18,8 +18,41 @@ package com.facebook.litho;
 import android.graphics.Rect;
 import android.view.View;
 import android.widget.PopupWindow;
+import javax.annotation.Nullable;
 
 public class LithoTooltipController {
+
+  /**
+   * Show the given tooltip with the specified offsets from the bottom-left corner of the root
+   * component.
+   */
+  public static void showTooltipOnRootComponent(
+      ComponentContext c, final PopupWindow popupWindow, int xOffset, int yOffset) {
+    showTooltip(c, popupWindow, null, xOffset, yOffset);
+  }
+
+  /**
+   * Show the given tooltip on the root component.
+   *
+   * @param c
+   * @param lithoTooltip A {@link LithoTooltip} implementation to be shown on the root component.
+   */
+  public static void showTooltipOnRootComponent(ComponentContext c, LithoTooltip lithoTooltip) {
+    showTooltip(c, lithoTooltip, null);
+  }
+
+  /**
+   * Show the given tooltip on the root component.
+   *
+   * @param c
+   * @param lithoTooltip A {@link LithoTooltip} implementation to be shown on the root component.
+   * @param xOffset horizontal offset from default position where the tooltip shows.
+   * @param yOffset vertical offset from default position where the tooltip shows.
+   */
+  public static void showTooltipOnRootComponent(
+      ComponentContext c, LithoTooltip lithoTooltip, int xOffset, int yOffset) {
+    showTooltip(c, lithoTooltip, null, xOffset, yOffset);
+  }
 
   /**
    * Show the given tooltip with the specified offsets from the bottom-left corner of the component
@@ -28,7 +61,7 @@ public class LithoTooltipController {
   public static void showTooltip(
       ComponentContext c,
       final PopupWindow popupWindow,
-      String anchorKey,
+      @Nullable String anchorKey,
       int xOffset,
       int yOffset) {
     showTooltip(
@@ -51,9 +84,11 @@ public class LithoTooltipController {
    *
    * @param c
    * @param lithoTooltip A {@link LithoTooltip} implementation to be shown on the anchor.
-   * @param anchorKey key of the Litho Component that will be used as anchor
+   * @param anchorKey key of the Litho Component that will be used as anchor. If unset, the root
+   *     component will be used as the anchor.
    */
-  public static void showTooltip(ComponentContext c, LithoTooltip lithoTooltip, String anchorKey) {
+  public static void showTooltip(
+      ComponentContext c, LithoTooltip lithoTooltip, @Nullable String anchorKey) {
     showTooltip(c, lithoTooltip, anchorKey, 0, 0);
   }
 
@@ -62,12 +97,17 @@ public class LithoTooltipController {
    *
    * @param c
    * @param lithoTooltip A {@link LithoTooltip} implementation to be shown on the anchor.
-   * @param anchorKey key of the Litho Component that will be used as anchor
+   * @param anchorKey key of the Litho Component that will be used as anchor. If unset, the root
+   *     component will be used as the anchor.
    * @param xOffset horizontal offset from default position where the tooltip shows.
    * @param yOffset vertical offset from default position where the tooltip shows.
    */
   public static void showTooltip(
-      ComponentContext c, LithoTooltip lithoTooltip, String anchorKey, int xOffset, int yOffset) {
+      ComponentContext c,
+      LithoTooltip lithoTooltip,
+      @Nullable String anchorKey,
+      int xOffset,
+      int yOffset) {
     final ComponentTree componentTree = c.getComponentTree();
     final Component rootComponent = c.getComponentScope();
 
@@ -75,10 +115,17 @@ public class LithoTooltipController {
       return;
     }
 
-    final String anchorGlobalKey =
-        rootComponent == null
-            ? anchorKey
-            : ComponentKeyUtils.getKeyWithSeparator(rootComponent.getGlobalKey(), anchorKey);
+    final String anchorGlobalKey;
+    if (rootComponent == null && anchorKey == null) {
+      return;
+    } else if (rootComponent == null) {
+      anchorGlobalKey = anchorKey;
+    } else if (anchorKey == null) {
+      anchorGlobalKey = rootComponent.getGlobalKey();
+    } else {
+      anchorGlobalKey =
+          ComponentKeyUtils.getKeyWithSeparator(rootComponent.getGlobalKey(), anchorKey);
+    }
 
     componentTree.showTooltip(lithoTooltip, anchorGlobalKey, xOffset, yOffset);
   }

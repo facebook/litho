@@ -1,0 +1,24 @@
+import com.facebook.litho.Component;
+import com.facebook.litho.ComponentContext;
+import com.facebook.litho.Row;
+import com.facebook.litho.annotations.LayoutSpec;
+import com.facebook.litho.annotations.OnCreateInitialState;
+import com.facebook.litho.annotations.OnCreateLayout;
+
+@LayoutSpec
+class ${NAME}Spec {
+
+  @OnCreateInitialState
+  static void createInitialState(ComponentContext c
+    ) {
+    // TODO: set an initial value for a state (optional method) https://fblitho.com/docs/state
+  }
+
+  @OnCreateLayout
+  static Component onCreateLayout(ComponentContext c
+      ) {
+      // TODO: describe your UI with existing components https://fblitho.com/docs/layout-specs
+      return Row.create(c)
+          .build();
+  }
+}

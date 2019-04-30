@@ -373,7 +373,7 @@ public final class FullDiffSection<T> extends Section implements TestTag {
     Object state1;
   }
 
-  public static class Builder<T> extends Section.Builder<Builder<T>> {
+  public static final class Builder<T> extends Section.Builder<Builder<T>> {
     FullDiffSection mFullDiffSection;
 
     SectionContext mContext;
