@@ -828,7 +828,8 @@ public class ComponentTreeTest {
             assertEquals(0, layoutStateFuture.getWaitingCount());
             assertEquals(0, componentTree.getLayoutStateFutures().size());
           }
-        });
+        },
+        "tag");
   }
 
   @Test
@@ -1011,6 +1012,47 @@ public class ComponentTreeTest {
         });
 
     componentTree.setRootAndSizeSpec(mComponent, mWidthSpec, mHeightSpec);
+  }
+
+  @Test
+  public void testIncrementalMountDisabledForChildTreeWhenDisabledInParentTree() {
+    final ComponentTree parentTree =
+        ComponentTree.create(mContext, TestLayoutComponent.create(mContext).build())
+            .incrementalMount(false)
+            .build();
+    final ComponentContext childContext =
+        new ComponentContext(
+            mContext.getAndroidContext(),
+            null,
+            mContext.getLogger(),
+            null,
+            null,
+            null,
+            mContext.getYogaNodeFactory(),
+            ComponentContext.isIncrementalMountDisabled(parentTree.getContext()));
+    final ComponentTree childTree =
+        ComponentTree.create(childContext, TestLayoutComponent.create(childContext).build())
+            .build();
+
+    assertThat(childTree.isIncrementalMountEnabled()).isFalse();
+
+    final ComponentTree parentTree2 =
+        ComponentTree.create(mContext, TestLayoutComponent.create(mContext).build()).build();
+    final ComponentContext childContext2 =
+        new ComponentContext(
+            mContext.getAndroidContext(),
+            null,
+            mContext.getLogger(),
+            null,
+            null,
+            null,
+            mContext.getYogaNodeFactory(),
+            ComponentContext.isIncrementalMountDisabled(parentTree2.getContext()));
+    final ComponentTree childTree2 =
+        ComponentTree.create(childContext2, TestLayoutComponent.create(childContext).build())
+            .build();
+
+    assertThat(childTree2.isIncrementalMountEnabled()).isTrue();
   }
 
   class MyTestComponent extends Component {

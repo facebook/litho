@@ -29,6 +29,8 @@ void YGNodeCalculateLayoutWithContext(
     YGDirection ownerDirection,
     void* layoutContext);
 
+void YGSetUsedCachedEntries(size_t);
+
 YG_EXTERN_C_END
 
 namespace facebook {
@@ -110,12 +112,8 @@ public:
     values_.fill(defaultValue);
   }
 
-  const CompactValue& operator[](size_t i) const noexcept {
-    return values_[i];
-  }
-  CompactValue& operator[](size_t i) noexcept {
-    return values_[i];
-  }
+  const CompactValue& operator[](size_t i) const noexcept { return values_[i]; }
+  CompactValue& operator[](size_t i) noexcept { return values_[i]; }
 
   template <size_t I>
   YGValue get() const noexcept {

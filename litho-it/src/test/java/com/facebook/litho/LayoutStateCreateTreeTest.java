@@ -69,7 +69,7 @@ public class LayoutStateCreateTreeTest {
           }
         };
 
-    InternalNode node = LayoutState.createTree(component, mComponentContext);
+    InternalNode node = LayoutState.createTree(component, mComponentContext, null);
     assertThat(node.getChildCount()).isEqualTo(1);
     assertThat(node.getRootComponent()).isEqualTo(component);
     node = node.getChildAt(0);
@@ -126,7 +126,7 @@ public class LayoutStateCreateTreeTest {
           }
         };
 
-    InternalNode node = LayoutState.createTree(component, mComponentContext);
+    InternalNode node = LayoutState.createTree(component, mComponentContext, null);
     assertThat(node.getNodeInfo().getClickHandler()).isEqualTo(clickHandler3);
     assertThat(node.getNodeInfo().getLongClickHandler()).isEqualTo(longClickHandler3);
     assertThat(node.getNodeInfo().getTouchHandler()).isEqualTo(touchHandler3);
@@ -194,7 +194,7 @@ public class LayoutStateCreateTreeTest {
           }
         };
 
-    InternalNode node = LayoutState.createTree(component, mComponentContext);
+    InternalNode node = LayoutState.createTree(component, mComponentContext, null);
     assertThat(node.getNodeInfo().getClickHandler()).isEqualTo(clickHandler3);
     assertThat(node.getNodeInfo().getLongClickHandler()).isEqualTo(longClickHandler3);
     assertThat(node.getNodeInfo().getTouchHandler()).isEqualTo(touchHandler3);
@@ -257,7 +257,7 @@ public class LayoutStateCreateTreeTest {
           }
         };
 
-    InternalNode node = LayoutState.createTree(component, mComponentContext);
+    InternalNode node = LayoutState.createTree(component, mComponentContext, null);
     assertThat(node.getChildCount()).isEqualTo(0);
     assertThat(node.getRootComponent()).isInstanceOf(TestDrawableComponent.class);
     assertThat(node.getNodeInfo().getClickHandler()).isEqualTo(clickHandler2);
@@ -307,7 +307,7 @@ public class LayoutStateCreateTreeTest {
           }
         };
 
-    InternalNode node = LayoutState.createTree(component, mComponentContext);
+    InternalNode node = LayoutState.createTree(component, mComponentContext, null);
     assertThat(node.getChildCount()).isEqualTo(0);
     assertThat(node.getRootComponent()).isInstanceOf(TestSizeDependentComponent.class);
     assertThat(node.getNodeInfo().getClickHandler()).isEqualTo(clickHandler2);
@@ -451,7 +451,7 @@ public class LayoutStateCreateTreeTest {
           }
         };
 
-    InternalNode node = LayoutState.createTree(component, mComponentContext);
+    InternalNode node = LayoutState.createTree(component, mComponentContext, null);
     NodeInfo nodeInfo = node.getOrCreateNodeInfo();
 
     verify(node).layoutDirection(YogaDirection.INHERIT);
@@ -578,7 +578,7 @@ public class LayoutStateCreateTreeTest {
         };
 
     final InternalNode root =
-        LayoutState.createTree(component, new MockInternalNodeComponentContext(application));
+        LayoutState.createTree(component, new MockInternalNodeComponentContext(application), null);
 
     assertThat(root.getChildAt(0) instanceof TestInternalNode).isTrue();
     assertThat(((TestInternalNode) root.getChildAt(0)).mFlexGrowCounter).isEqualTo(1);

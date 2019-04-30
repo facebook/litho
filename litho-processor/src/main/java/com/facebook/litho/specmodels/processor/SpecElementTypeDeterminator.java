@@ -18,7 +18,6 @@ package com.facebook.litho.specmodels.processor;
 
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.SpecElementType;
-import com.sun.tools.javac.code.Symbol;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
@@ -26,14 +25,12 @@ import javax.lang.model.element.TypeElement;
 public class SpecElementTypeDeterminator {
   static boolean isKotlinSingleton(TypeElement element) {
     return element.getKind() == ElementKind.CLASS
-        && element
-            .getEnclosedElements()
-            .stream()
+        && element.getEnclosedElements().stream()
             .anyMatch(
                 e -> {
                   final CharSequence instanceFieldName = "INSTANCE";
                   return e.getSimpleName().contentEquals(instanceFieldName)
-                      && e.asType().toString().equals(((Symbol.ClassSymbol) element).className())
+                      && e.asType().toString().equals(element.getQualifiedName().toString())
                       && e.getModifiers()
                           .containsAll(
                               ImmutableList.of(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL));

@@ -51,7 +51,7 @@ import com.facebook.litho.ComponentTree.MeasureListener;
 import com.facebook.litho.ComponentsLogger;
 import com.facebook.litho.ComponentsSystrace;
 import com.facebook.litho.EventHandler;
-import com.facebook.litho.LayoutHandler;
+import com.facebook.litho.LithoHandler;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.LithoView.LayoutManagerOverrideParams;
 import com.facebook.litho.MeasureComparisonUtils;
@@ -124,6 +124,7 @@ public class RecyclerBinder
   private final RecyclerRangeTraverser mRangeTraverser;
   private final boolean mHScrollAsyncMode;
   private final boolean mIncrementalMountEnabled;
+  private final boolean mEnableDetach;
   private boolean mAsyncInitRange;
 
   private AtomicLong mCurrentChangeSetThreadId = new AtomicLong(-1);
@@ -241,7 +242,7 @@ public class RecyclerBinder
   @VisibleForTesting @Nullable volatile Size mSizeForMeasure;
   private StickyHeaderController mStickyHeaderController;
   private @Nullable StickyHeaderControllerFactory mStickyHeaderControllerFactory;
-  private final @Nullable LayoutHandler mThreadPoolHandler;
+  private final @Nullable LithoHandler mThreadPoolHandler;
   private final @Nullable LayoutThreadPoolConfiguration mThreadPoolConfig;
   private EventHandler<ReMeasureEvent> mReMeasureEventEventHandler;
   private volatile boolean mHasAsyncOperations = false;
@@ -332,7 +333,7 @@ public class RecyclerBinder
   interface ComponentTreeHolderFactory {
     ComponentTreeHolder create(
         RenderInfo renderInfo,
-        LayoutHandler layoutHandler,
+        LithoHandler layoutHandler,
         ComponentTreeMeasureListenerFactory measureListenerFactory,
         boolean incrementalMountEnabled);
   }
@@ -342,7 +343,7 @@ public class RecyclerBinder
         @Override
         public ComponentTreeHolder create(
             RenderInfo renderInfo,
-            LayoutHandler layoutHandler,
+            LithoHandler layoutHandler,
             ComponentTreeMeasureListenerFactory measureListenerFactory,
             boolean incrementalMountEnabled) {
           return ComponentTreeHolder.create()
@@ -383,6 +384,7 @@ public class RecyclerBinder
     private boolean splitLayoutForMeasureAndRangeEstimation =
         ComponentsConfiguration.splitLayoutForMeasureAndRangeEstimation;
     private @Nullable StickyHeaderControllerFactory stickyHeaderControllerFactory;
+    private boolean enableDetach = false;
 
     /**
      * @param rangeRatio specifies how big a range this binder should try to compute. The range is
@@ -597,6 +599,12 @@ public class RecyclerBinder
       return this;
     }
 
+    /** If true, detach components under the hood when RecyclerBinder#detach() is called. */
+    public Builder enableDetach(boolean enableDetach) {
+      this.enableDetach = enableDetach;
+      return this;
+    }
+
     /** @param c The {@link ComponentContext} the RecyclerBinder will use. */
     public RecyclerBinder build(ComponentContext c) {
       componentContext =
@@ -607,7 +615,8 @@ public class RecyclerBinder
               null,
               null,
               c.getTreePropsCopy(),
-              c.getYogaNodeFactory());
+              c.getYogaNodeFactory(),
+              ComponentContext.isIncrementalMountDisabled(c));
 
       if (layoutInfo == null) {
         layoutInfo = new LinearLayoutInfo(c.getAndroidContext(), VERTICAL, false);
@@ -630,6 +639,24 @@ public class RecyclerBinder
   @Override
   public void setCanMeasure(boolean canMeasure) {
     mCanMeasure = canMeasure;
+  }
+
+  @Override
+  public void detach() {
+    if (!mEnableDetach) {
+      return;
+    }
+
+    final List<ComponentTreeHolder> toDetach = new ArrayList<>();
+    synchronized (this) {
+      for (int i = 0, size = mComponentTreeHolders.size(); i < size; i++) {
+        toDetach.add(mComponentTreeHolders.get(i));
+      }
+    }
+
+    for (int i = 0, size = toDetach.size(); i < size; i++) {
+      toDetach.get(i).acquireStateAndReleaseTree();
+    }
   }
 
   @UiThread
@@ -674,6 +701,7 @@ public class RecyclerBinder
   private RecyclerBinder(Builder builder) {
     mComponentContext = builder.componentContext;
     mComponentTreeHolderFactory = builder.componentTreeHolderFactory;
+    mEnableStableIds = builder.enableStableIds;
     mInternalAdapter =
         builder.overrideInternalAdapter != null
             ? builder.overrideInternalAdapter
@@ -751,7 +779,6 @@ public class RecyclerBinder
         new ViewportManager(
             mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition, builder.layoutInfo);
 
-    mEnableStableIds = builder.enableStableIds;
     mInvalidStateLogParamsList = builder.invalidStateLogParamsList;
 
     mAsyncInitRange = builder.asyncInitRange;
@@ -759,6 +786,7 @@ public class RecyclerBinder
     mHScrollAsyncMode = builder.hscrollAsyncMode;
     mIncrementalMountEnabled = builder.incrementalMount;
     mStickyHeaderControllerFactory = builder.stickyHeaderControllerFactory;
+    mEnableDetach = builder.enableDetach;
   }
 
   /**
@@ -1980,9 +2008,7 @@ public class RecyclerBinder
 
   /** @return true if the view is measured and doesn't need remeasuring. */
   private synchronized boolean isMeasured() {
-    return ComponentsConfiguration.checkNeedsRemeasure
-        ? mIsMeasured.get() && !mRequiresRemeasure.get()
-        : mIsMeasured.get();
+    return mIsMeasured.get() && !mRequiresRemeasure.get();
   }
 
   @VisibleForTesting
@@ -3015,7 +3041,7 @@ public class RecyclerBinder
 
   @GuardedBy("this")
   private int getActualChildrenWidthSpec(final ComponentTreeHolder treeHolder) {
-    if (mIsMeasured.get() && !mRequiresRemeasure.get()) {
+    if (isMeasured()) {
       return mLayoutInfo.getChildWidthSpec(
           SizeSpec.makeSizeSpec(mMeasuredSize.width, SizeSpec.EXACTLY),
           treeHolder.getRenderInfo());
@@ -3030,7 +3056,7 @@ public class RecyclerBinder
       return SizeSpec.UNSPECIFIED;
     }
 
-    if (mIsMeasured.get() && !mRequiresRemeasure.get()) {
+    if (isMeasured()) {
       return mLayoutInfo.getChildHeightSpec(
           SizeSpec.makeSizeSpec(mMeasuredSize.height, SizeSpec.EXACTLY),
           treeHolder.getRenderInfo());
@@ -3192,7 +3218,6 @@ public class RecyclerBinder
       implements RecyclerBinderAdapter {
 
     InternalAdapter() {
-      super();
       setHasStableIds(mEnableStableIds);
     }
 
@@ -3418,7 +3443,7 @@ public class RecyclerBinder
   }
 
   private ComponentTreeHolder createComponentTreeHolder(RenderInfo renderInfo) {
-    final LayoutHandler layoutHandler;
+    final LithoHandler layoutHandler;
     if (mLayoutHandlerFactory != null) {
       layoutHandler = mLayoutHandlerFactory.createLayoutCalculationHandler(renderInfo);
     } else if (mThreadPoolHandler != null) {

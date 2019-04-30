@@ -63,7 +63,7 @@ public class ContextUtils {
   }
 
   @Nullable
-  private static Activity findActivityInContext(Context context) {
+  public static Activity findActivityInContext(Context context) {
     if (context instanceof Activity) {
       return (Activity) context;
     } else if (context instanceof ContextWrapper) {

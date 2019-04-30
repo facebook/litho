@@ -23,6 +23,8 @@ import static com.facebook.litho.specmodels.model.ClassNames.STATE_VALUE;
 import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.DIFF_PROP;
 import static com.facebook.litho.specmodels.model.DelegateMethodDescription.OptionalParameterType.DIFF_STATE;
 
+import com.facebook.litho.annotations.OnAttached;
+import com.facebook.litho.annotations.OnDetached;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.DelegateMethod;
@@ -46,6 +48,7 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
+import javax.lang.model.element.Modifier;
 
 /**
  * Class that generates delegate methods for a component.
@@ -60,8 +63,13 @@ public class DelegateMethodGenerator {
       Map<Class<? extends Annotation>, DelegateMethodDescription> delegateMethodsMap,
       EnumSet<RunMode> runMode) {
     TypeSpecDataHolder.Builder typeSpecDataHolder = TypeSpecDataHolder.newBuilder();
+    boolean hasAttachDetachCallback = false;
     for (SpecMethodModel<DelegateMethod, Void> delegateMethodModel : specModel.getDelegateMethods()) {
       for (Annotation annotation : delegateMethodModel.annotations) {
+        final Class<? extends Annotation> annotationType = annotation.annotationType();
+        if (annotationType.equals(OnAttached.class) || annotationType.equals(OnDetached.class)) {
+          hasAttachDetachCallback = true;
+        }
         if (delegateMethodsMap.containsKey(annotation.annotationType())) {
           final DelegateMethodDescription delegateMethodDescription =
               delegateMethodsMap.get(annotation.annotationType());
@@ -73,6 +81,10 @@ public class DelegateMethodGenerator {
           break;
         }
       }
+    }
+
+    if (hasAttachDetachCallback) {
+      typeSpecDataHolder.addMethod(generateHasAttachDetachCallback());
     }
 
     return typeSpecDataHolder.build();
@@ -315,6 +327,17 @@ public class DelegateMethodGenerator {
     delegation.unindent();
 
     return delegation.build();
+  }
+
+  /** Override hasAttachDetachCallback() method and return true. */
+  private static MethodSpec generateHasAttachDetachCallback() {
+    final MethodSpec.Builder methodSpec =
+        MethodSpec.methodBuilder("hasAttachDetachCallback")
+            .addModifiers(Modifier.PROTECTED)
+            .addAnnotation(Override.class)
+            .returns(TypeName.BOOLEAN);
+    methodSpec.addStatement("return true");
+    return methodSpec.build();
   }
 
   /**

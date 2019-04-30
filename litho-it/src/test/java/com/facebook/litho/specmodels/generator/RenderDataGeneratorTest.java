@@ -28,8 +28,11 @@ import com.google.testing.compile.CompilationRule;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
 /** Tests {@link RenderDataGenerator} */
+@RunWith(JUnit4.class)
 public class RenderDataGeneratorTest {
 
   @Rule public CompilationRule mCompilationRule = new CompilationRule();

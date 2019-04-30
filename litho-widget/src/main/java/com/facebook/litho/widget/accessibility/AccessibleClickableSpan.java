@@ -28,10 +28,10 @@ import javax.annotation.Nullable;
  * want to set the accessibility label to the corresponding plurals resource.
  */
 public abstract class AccessibleClickableSpan extends ClickableSpan {
-  private String mAccessibilityDescription;
+  private @Nullable String mAccessibilityDescription;
   @AccessibilityRole.AccessibilityRoleType @Nullable private String mAccessibilityRole;
 
-  public String getAccessibilityDescription() {
+  public @Nullable String getAccessibilityDescription() {
     return mAccessibilityDescription;
   }
 
@@ -49,12 +49,12 @@ public abstract class AccessibleClickableSpan extends ClickableSpan {
     mAccessibilityRole = accessibilityRole;
   }
 
-  public AccessibleClickableSpan(String accessibilityDescription) {
+  public AccessibleClickableSpan(@Nullable String accessibilityDescription) {
     this(accessibilityDescription, null);
   }
 
   public AccessibleClickableSpan(
-      String accessibilityDescription,
+      @Nullable String accessibilityDescription,
       @Nullable @AccessibilityRole.AccessibilityRoleType String accessibilityRole) {
     super();
     mAccessibilityDescription = accessibilityDescription;

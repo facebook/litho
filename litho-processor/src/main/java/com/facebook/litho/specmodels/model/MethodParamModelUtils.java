@@ -65,6 +65,11 @@ public class MethodParamModelUtils {
     return null;
   }
 
+  public static boolean isLazyStateParam(MethodParamModel methodParamModel) {
+    return methodParamModel instanceof StateParamModel
+        && ((StateParamModel) methodParamModel).canUpdateLazily();
+  }
+
   public static List<TypeVariableName> getTypeVariables(MethodParamModel methodParam) {
     return getTypeVariables(methodParam.getTypeName());
   }

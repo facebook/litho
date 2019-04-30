@@ -660,7 +660,7 @@ public class LithoView extends ComponentHost {
             ? LogTreePopulator.populatePerfEventFromLogger(
                 getComponentContext(),
                 logger,
-                logger.newPerformanceEvent(FrameworkLogEvents.EVENT_DRAW))
+                logger.newPerformanceEvent(getComponentContext(), FrameworkLogEvents.EVENT_DRAW))
             : null;
     if (perfEvent != null) {
       setPerfEvent(perfEvent);

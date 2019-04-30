@@ -41,10 +41,6 @@ class LayoutStateOutputIdCalculator {
   private static final int TYPE_SHIFT = 16;
 
   public LayoutStateOutputIdCalculator() {
-    if (!ComponentsConfiguration.lazilyInitializeLayoutStateOutputIdCalculator) {
-      mLayoutCurrentSequenceForBaseId = new LongSparseArray<>(8);
-      mVisibilityCurrentSequenceForBaseId = new LongSparseArray<>(8);
-    }
   }
 
   void calculateAndSetLayoutOutputIdAndUpdateState(

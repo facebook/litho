@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-present Facebook, Inc.
+ * Copyright 2019-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,15 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import android.view.View;
+import com.facebook.litho.ClickEvent;
+import com.facebook.litho.ComponentContext;
+import com.facebook.litho.annotations.FromEvent;
+import com.facebook.litho.annotations.OnEvent;
 
-package com.facebook.litho;
+@com.facebook.litho.annotations.AnyAnnotation
+public class OnClickEventCompletionTest {
 
-/**
- * the Layout handler is responsible for scheduling layout computations on a {@link ComponentTree}.
- * The default implementation uses a {@link android.os.Handler} with a {@link android.os.Looper}.
- */
-public interface LayoutHandler {
-  boolean post(Runnable runnable);
-  void removeCallbacks(Runnable runnable);
-  void removeCallbacksAndMessages(Object token);
+  public @interface OnEventI {
+  }
+
+  @OnEven<caret>
 }

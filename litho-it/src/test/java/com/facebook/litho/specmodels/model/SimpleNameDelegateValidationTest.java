@@ -25,8 +25,11 @@ import com.squareup.javapoet.TypeName;
 import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
 /** Tests {@link SimpleNameDelegateValidation} */
+@RunWith(JUnit4.class)
 public class SimpleNameDelegateValidationTest {
 
   private LayoutSpecModel mSpecModel;

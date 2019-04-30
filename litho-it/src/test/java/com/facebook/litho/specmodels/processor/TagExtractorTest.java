@@ -28,8 +28,11 @@ import javax.lang.model.util.Types;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
 /** Tests {@link TagExtractor} */
+@RunWith(JUnit4.class)
 public class TagExtractorTest {
 
   @Rule public CompilationRule mCompilationRule = new CompilationRule();

@@ -84,7 +84,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * Component that renders an {@link EditText}.
+ * This class is Deprecated and will not be supported. Use {@link TextInput} instead.
+ *
+ * <p>Component that renders an {@link EditText}.
  *
  * @prop text Text to display; changing this overrides and replaces the current text. Leave this as
  *     null to signal that the EditText's text property should be left untouched.
@@ -146,6 +148,7 @@ import java.util.concurrent.atomic.AtomicReference;
     SetTextEvent.class
   }
 )
+@Deprecated
 class EditTextSpec {
 
   private static final Layout.Alignment[] ALIGNMENT = Layout.Alignment.values();

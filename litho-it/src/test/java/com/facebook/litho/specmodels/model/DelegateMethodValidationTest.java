@@ -42,10 +42,11 @@ import java.util.Map;
 import javax.lang.model.element.Modifier;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
-/**
- * Tests {@link DelegateMethodValidation}
- */
+/** Tests {@link DelegateMethodValidation} */
+@RunWith(JUnit4.class)
 public class DelegateMethodValidationTest {
   private final LayoutSpecModel mLayoutSpecModel = mock(LayoutSpecModel.class);
   private final MountSpecModel mMountSpecModel = mock(MountSpecModel.class);

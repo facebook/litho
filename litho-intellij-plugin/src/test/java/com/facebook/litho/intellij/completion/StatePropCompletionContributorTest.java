@@ -19,16 +19,10 @@ import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import com.facebook.litho.intellij.LithoPluginTestHelper;
 import com.intellij.codeInsight.completion.CompletionType;
-import com.intellij.testFramework.fixtures.IdeaProjectTestFixture;
-import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory;
-import com.intellij.testFramework.fixtures.JavaCodeInsightTestFixture;
-import com.intellij.testFramework.fixtures.JavaTestFixtureFactory;
-import com.intellij.testFramework.fixtures.TestFixtureBuilder;
-import java.io.File;
+import com.intellij.testFramework.fixtures.CodeInsightTestFixture;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.After;
@@ -37,30 +31,23 @@ import org.junit.Test;
 
 public class StatePropCompletionContributorTest {
 
-  private JavaCodeInsightTestFixture fixture;
-  private String testPath;
+  private final LithoPluginTestHelper testHelper = new LithoPluginTestHelper("testdata/completion");
 
   @Before
   public void setUp() throws Exception {
-    final TestFixtureBuilder<IdeaProjectTestFixture> projectBuilder =
-        IdeaTestFixtureFactory.getFixtureFactory().createFixtureBuilder("test");
-    fixture =
-        JavaTestFixtureFactory.getFixtureFactory()
-            .createCodeInsightFixture(projectBuilder.getFixture());
-    fixture.setUp();
-    testPath = new File("testdata/completion").getAbsolutePath();
+    testHelper.setUp();
   }
 
   @After
   public void tearDown() throws Exception {
-    fixture.tearDown();
+    testHelper.tearDown();
   }
 
   @Test
   public void testPropCompletion() throws IOException {
     String clsName = "PropCompletionTest.java";
-
-    fixture.configureByText(clsName, getContent(clsName));
+    testHelper.configure(clsName);
+    CodeInsightTestFixture fixture = testHelper.getFixture();
     fixture.complete(CompletionType.BASIC);
     List<String> completion = fixture.getLookupElementStrings();
     assertNotNull(completion);
@@ -72,15 +59,12 @@ public class StatePropCompletionContributorTest {
   public void testStateCompletion() throws IOException {
     String clsName = "StateCompletionTest.java";
 
-    fixture.configureByText(clsName, getContent(clsName));
+    testHelper.configure(clsName);
+    CodeInsightTestFixture fixture = testHelper.getFixture();
     fixture.complete(CompletionType.BASIC);
     List<String> completion = fixture.getLookupElementStrings();
     assertNotNull(completion);
     assertEquals(2, completion.size());
     assertTrue(completion.containsAll(Arrays.asList("int", "irandom state")));
-  }
-
-  private String getContent(String clsName) throws IOException {
-    return String.join(" ", Files.readAllLines(Paths.get(testPath + "/" + clsName)));
   }
 }

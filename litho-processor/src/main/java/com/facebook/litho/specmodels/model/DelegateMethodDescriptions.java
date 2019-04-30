@@ -36,6 +36,7 @@ import com.facebook.litho.annotations.FromMeasureBaseline;
 import com.facebook.litho.annotations.FromPrepare;
 import com.facebook.litho.annotations.GetExtraAccessibilityNodeAt;
 import com.facebook.litho.annotations.GetExtraAccessibilityNodesCount;
+import com.facebook.litho.annotations.OnAttached;
 import com.facebook.litho.annotations.OnBind;
 import com.facebook.litho.annotations.OnBoundsDefined;
 import com.facebook.litho.annotations.OnCreateInitialState;
@@ -44,6 +45,7 @@ import com.facebook.litho.annotations.OnCreateLayoutWithSizeSpec;
 import com.facebook.litho.annotations.OnCreateMountContent;
 import com.facebook.litho.annotations.OnCreateMountContentPool;
 import com.facebook.litho.annotations.OnCreateTransition;
+import com.facebook.litho.annotations.OnDetached;
 import com.facebook.litho.annotations.OnError;
 import com.facebook.litho.annotations.OnLoadStyle;
 import com.facebook.litho.annotations.OnMeasure;
@@ -451,6 +453,28 @@ public final class DelegateMethodDescriptions {
               ImmutableList.of(PROP, TREE_PROP, STATE, INJECT_PROP, CACHED_VALUE))
           .build();
 
+  public static final DelegateMethodDescription ON_ATTACHED =
+      DelegateMethodDescription.newBuilder()
+          .annotations(ImmutableList.of(AnnotationSpec.builder(Override.class).build()))
+          .accessType(Modifier.PROTECTED)
+          .returnType(TypeName.VOID)
+          .name("onAttached")
+          .definedParameterTypes(ImmutableList.<TypeName>of(ClassNames.COMPONENT_CONTEXT))
+          .optionalParameterTypes(
+              ImmutableList.of(PROP, TREE_PROP, STATE, INJECT_PROP, CACHED_VALUE))
+          .build();
+
+  public static final DelegateMethodDescription ON_DETACHED =
+      DelegateMethodDescription.newBuilder()
+          .annotations(ImmutableList.of(AnnotationSpec.builder(Override.class).build()))
+          .accessType(Modifier.PROTECTED)
+          .returnType(TypeName.VOID)
+          .name("onDetached")
+          .definedParameterTypes(ImmutableList.<TypeName>of(ClassNames.COMPONENT_CONTEXT))
+          .optionalParameterTypes(
+              ImmutableList.of(PROP, TREE_PROP, STATE, INJECT_PROP, CACHED_VALUE))
+          .build();
+
   public static final Map<Class<? extends Annotation>, DelegateMethodDescription>
       LAYOUT_SPEC_DELEGATE_METHODS_MAP;
 
@@ -480,7 +504,8 @@ public final class DelegateMethodDescriptions {
     layoutSpecDelegateMethodsMap.put(
         OnCreateTransition.class, ON_CREATE_TRANSITION);
     layoutSpecDelegateMethodsMap.put(ShouldUpdate.class, SHOULD_UPDATE);
-
+    layoutSpecDelegateMethodsMap.put(OnAttached.class, ON_ATTACHED);
+    layoutSpecDelegateMethodsMap.put(OnDetached.class, ON_DETACHED);
     LAYOUT_SPEC_DELEGATE_METHODS_MAP = Collections.unmodifiableMap(layoutSpecDelegateMethodsMap);
 
     Map<Class<? extends Annotation>, DelegateMethodDescription> mountSpecDelegateMethodsMap =
@@ -514,6 +539,8 @@ public final class DelegateMethodDescriptions {
     mountSpecDelegateMethodsMap.put(
         GetExtraAccessibilityNodesCount.class, GET_EXTRA_ACCESSIBILITY_NODES_COUNT);
     mountSpecDelegateMethodsMap.put(ShouldAlwaysRemeasure.class, SHOULD_ALWAYS_REMEASURE);
+    mountSpecDelegateMethodsMap.put(OnAttached.class, ON_ATTACHED);
+    mountSpecDelegateMethodsMap.put(OnDetached.class, ON_DETACHED);
     MOUNT_SPEC_DELEGATE_METHODS_MAP = Collections.unmodifiableMap(mountSpecDelegateMethodsMap);
 
     Map<Class<? extends Annotation>, Class<? extends Annotation>> interStageInputsMap =

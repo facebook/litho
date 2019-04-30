@@ -249,7 +249,9 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
         logger == null
             ? null
             : LogTreePopulator.populatePerfEventFromLogger(
-                componentTree.getContext(), logger, logger.newPerformanceEvent(EVENT_MOUNT));
+                componentTree.getContext(),
+                logger,
+                logger.newPerformanceEvent(componentTree.getContext(), EVENT_MOUNT));
 
     if (mIsDirty) {
       updateTransitions(layoutState, componentTree);
@@ -295,9 +297,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
         if (isMountable && !isMounted) {
           mountLayoutOutput(i, layoutOutput, layoutState);
 
-          if (isAnimationLocked(i)
-              && isIncrementalMountEnabled
-              && canMountIncrementally(component)) {
+          if (isAnimationLocked(i) && isIncrementalMountEnabled && component.hasChildLithoViews()) {
             // If the component is locked for animation then we need to make sure that all the
             // children are also mounted.
             final View view = (View) getItemAt(i).getContent();
@@ -321,7 +321,6 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
                     layoutState,
                     currentMountItem,
                     useUpdateValueFromLayoutOutput,
-                    logger,
                     componentTreeId,
                     i);
 
@@ -343,12 +342,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
             }
           }
 
-          if (isIncrementalMountEnabled && canMountIncrementally(component)) {
-            mountItemIncrementally(
-                currentMountItem,
-                layoutOutput.getBounds(),
-                localVisibleRect,
-                processVisibilityOutputs);
+          if (isIncrementalMountEnabled && component.hasChildLithoViews()) {
+            mountItemIncrementally(currentMountItem, processVisibilityOutputs);
           }
         }
 
@@ -848,7 +843,6 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       LayoutState layoutState,
       MountItem currentMountItem,
       boolean useUpdateValueFromLayoutOutput,
-      ComponentsLogger logger,
       int componentTreeId,
       int index) {
     final Component layoutOutputComponent = layoutOutput.getComponent();
@@ -858,12 +852,11 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     }
 
     // 1. Check if the mount item generated from the old component should be updated.
-    final boolean shouldUpdateMountItem =
+    final boolean shouldUpdate =
         shouldUpdateMountItem(layoutOutput, currentMountItem, useUpdateValueFromLayoutOutput);
 
-    final boolean shouldUpdate = shouldUpdateMountItem;
     final boolean shouldUpdateViewInfo =
-        shouldUpdateMountItem || shouldUpdateViewInfo(layoutOutput, currentMountItem);
+        shouldUpdate || shouldUpdateViewInfo(layoutOutput, currentMountItem);
 
     // 2. Reset all the properties like click handler, content description and tags related to
     // this item if it needs to be updated. the update mount item will re-set the new ones.
@@ -950,13 +943,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
     final NodeInfo nextNodeInfo = layoutOutput.getNodeInfo();
     final NodeInfo currentNodeInfo = currentMountItem.getNodeInfo();
-    if ((currentNodeInfo == null && nextNodeInfo != null)
-        || (currentNodeInfo != null && !currentNodeInfo.isEquivalentTo(nextNodeInfo))) {
-
-      return true;
-    }
-
-    return false;
+    return (currentNodeInfo == null && nextNodeInfo != null)
+        || (currentNodeInfo != null && !currentNodeInfo.isEquivalentTo(nextNodeInfo));
   }
 
   private static boolean shouldUpdateMountItem(
@@ -965,9 +953,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       boolean useUpdateValueFromLayoutOutput) {
     @LayoutOutput.UpdateState final int updateState = layoutOutput.getUpdateState();
     final Component currentComponent = currentMountItem.getComponent();
-    final ComponentLifecycle currentLifecycle = currentComponent;
     final Component nextComponent = layoutOutput.getComponent();
-    final ComponentLifecycle nextLifecycle = nextComponent;
 
     // If the orientation has changed, we should definitely update.
     if (layoutOutput.getOrientation() != currentMountItem.getOrientation()) {
@@ -976,7 +962,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
     // If the two components have different sizes and the mounted content depends on the size we
     // just return true immediately.
-    if (!sameSize(layoutOutput, currentMountItem) && nextLifecycle.isMountSizeDependent()) {
+    if (!sameSize(layoutOutput, currentMountItem) && nextComponent.isMountSizeDependent()) {
       return true;
     }
 
@@ -984,21 +970,19 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       if (updateState == LayoutOutput.STATE_UPDATED) {
 
         // Check for incompatible ReferenceLifecycle.
-        return currentLifecycle instanceof DrawableComponent
-            && nextLifecycle instanceof DrawableComponent
-            && currentLifecycle.shouldComponentUpdate(currentComponent, nextComponent);
+        return currentComponent instanceof DrawableComponent
+            && nextComponent instanceof DrawableComponent
+            && currentComponent.shouldComponentUpdate(currentComponent, nextComponent);
       } else if (updateState == LayoutOutput.STATE_DIRTY) {
         return true;
       }
     }
 
-    if (!currentLifecycle.callsShouldUpdateOnMount()) {
+    if (!currentComponent.callsShouldUpdateOnMount()) {
       return true;
     }
 
-    return currentLifecycle.shouldComponentUpdate(
-        currentComponent,
-        nextComponent);
+    return currentComponent.shouldComponentUpdate(currentComponent, nextComponent);
   }
 
   private static boolean sameSize(LayoutOutput layoutOutput, MountItem item) {
@@ -1488,10 +1472,6 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     }
   }
 
-  private static boolean canMountIncrementally(Component component) {
-    return component.hasChildLithoViews();
-  }
-
   /**
    * @return an id if a host that should be used for a given LayoutOutput, taking into account that
    *     some of nodes on LayoutOutput tree may not be mounted (e.g. "phantom" LayoutOutputs)
@@ -1663,7 +1643,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
         unsetViewPadding(view, viewNodeInfo);
         unsetViewBackground(view, viewNodeInfo);
         unsetViewForeground(view, viewNodeInfo);
-        unsetViewLayoutDirection(view, viewNodeInfo);
+        unsetViewLayoutDirection(view);
       }
     }
   }
@@ -2179,7 +2159,6 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
   private static void unsetViewBackground(View view, ViewNodeInfo viewNodeInfo) {
     final ComparableDrawable background = viewNodeInfo.getBackground();
-    final Drawable drawable = view.getBackground();
     if (background != null) {
       setBackgroundCompat(view, null);
     }
@@ -2238,7 +2217,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     view.setLayoutDirection(viewLayoutDirection);
   }
 
-  private static void unsetViewLayoutDirection(View view, ViewNodeInfo viewNodeInfo) {
+  private static void unsetViewLayoutDirection(View view) {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
       return;
     }
@@ -2277,8 +2256,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     view.setStateListAnimator(null);
   }
 
-  private static void mountItemIncrementally(
-      MountItem item, Rect itemBounds, Rect localVisibleRect, boolean processVisibilityOutputs) {
+  private static void mountItemIncrementally(MountItem item, boolean processVisibilityOutputs) {
     final Component component = item.getComponent();
 
     if (!isMountViewSpec(component)) {
@@ -2618,7 +2596,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   }
 
   private void createNewTransitions(LayoutState newLayoutState, Transition rootTransition) {
-    prepareTransitionManager(newLayoutState);
+    prepareTransitionManager();
 
     mTransitionManager.setupTransitions(mLastMountedLayoutState, newLayoutState, rootTransition);
 
@@ -2695,7 +2673,9 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
         mAnimationLockedIndices[i]++;
       } else {
         if (--mAnimationLockedIndices[i] < 0) {
-          throw new RuntimeException("Decremented animation lock count below 0!");
+          ComponentsReporter.emitMessage(
+              ComponentsReporter.LogLevel.FATAL, "Decremented animation lock count below 0!");
+          mAnimationLockedIndices[i] = 0;
         }
       }
     }
@@ -2708,7 +2688,9 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
         mAnimationLockedIndices[hostIndex]++;
       } else {
         if (--mAnimationLockedIndices[hostIndex] < 0) {
-          throw new RuntimeException("Decremented animation lock count below 0!");
+          ComponentsReporter.emitMessage(
+              ComponentsReporter.LogLevel.FATAL, "Decremented animation lock count below 0!");
+          mAnimationLockedIndices[hostIndex] = 0;
         }
       }
       hostId = layoutState.getMountableOutputAt(hostIndex).getHostMarker();
@@ -3048,11 +3030,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       if (!mComponentIdsMountedInThisFrame.contains(layoutOutputId)) {
         final int layoutOutputPosition = layoutState.getLayoutOutputPositionForId(layoutOutputId);
         if (layoutOutputPosition != -1) {
-          mountItemIncrementally(
-              mountItem,
-              layoutState.getMountableOutputAt(layoutOutputPosition).getBounds(),
-              localVisibleRect,
-              processVisibilityOutputs);
+          mountItemIncrementally(mountItem, processVisibilityOutputs);
         }
       }
     }
@@ -3062,12 +3040,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     return true;
   }
 
-  LithoView getLithoView() {
-    assertMainThread();
-    return mLithoView;
-  }
-
-  private void prepareTransitionManager(LayoutState layoutState) {
+  private void prepareTransitionManager() {
     if (mTransitionManager == null) {
       mTransitionManager = new TransitionManager(this, this);
     }

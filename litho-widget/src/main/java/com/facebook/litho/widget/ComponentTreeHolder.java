@@ -22,7 +22,7 @@ import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.ComponentTree.MeasureListener;
-import com.facebook.litho.LayoutHandler;
+import com.facebook.litho.LithoHandler;
 import com.facebook.litho.Size;
 import com.facebook.litho.StateHandler;
 import com.facebook.litho.TreeProps;
@@ -57,7 +57,7 @@ public class ComponentTreeHolder {
   private @Nullable final ComponentTreeMeasureListenerFactory mComponentTreeMeasureListenerFactory;
   private final AtomicInteger mRenderState = new AtomicInteger(RENDER_UNINITIALIZED);
   private final int mId;
-  private final LayoutHandler mPreallocateMountContentHandler;
+  private final LithoHandler mPreallocateMountContentHandler;
   private final boolean mCanPreallocateOnDefaultHandler;
   private final boolean mShouldPreallocatePerMountSpec;
   private final boolean mIncrementalMount;
@@ -66,7 +66,7 @@ public class ComponentTreeHolder {
   private boolean mIsTreeValid;
 
   @GuardedBy("this")
-  private @Nullable LayoutHandler mLayoutHandler;
+  private @Nullable LithoHandler mLayoutHandler;
 
   @GuardedBy("this")
   private boolean mIsInserted = true;
@@ -101,9 +101,9 @@ public class ComponentTreeHolder {
 
   public static class Builder {
     private RenderInfo renderInfo;
-    private LayoutHandler layoutHandler;
+    private LithoHandler layoutHandler;
     private ComponentTreeMeasureListenerFactory componentTreeMeasureListenerFactory;
-    private @Nullable LayoutHandler preallocateMountContentHandler;
+    private @Nullable LithoHandler preallocateMountContentHandler;
     private boolean canPreallocateOnDefaultHandler;
     private boolean shouldPreallocatePerMountSpec;
     private boolean incrementalMount = true;
@@ -115,7 +115,7 @@ public class ComponentTreeHolder {
       return this;
     }
 
-    public Builder layoutHandler(LayoutHandler layoutHandler) {
+    public Builder layoutHandler(LithoHandler layoutHandler) {
       this.layoutHandler = layoutHandler;
       return this;
     }
@@ -127,7 +127,7 @@ public class ComponentTreeHolder {
     }
 
     public Builder preallocateMountContentHandler(
-        @Nullable LayoutHandler preallocateMountContentHandler) {
+        @Nullable LithoHandler preallocateMountContentHandler) {
       this.preallocateMountContentHandler = preallocateMountContentHandler;
       return this;
     }
@@ -309,7 +309,7 @@ public class ComponentTreeHolder {
     mRenderInfo = renderInfo;
   }
 
-  public synchronized void updateLayoutHandler(@Nullable LayoutHandler layoutHandler) {
+  public synchronized void updateLayoutHandler(@Nullable LithoHandler layoutHandler) {
     mLayoutHandler = layoutHandler;
     if (mComponentTree != null) {
       mComponentTree.updateLayoutThreadHandler(layoutHandler);
@@ -368,16 +368,17 @@ public class ComponentTreeHolder {
   @GuardedBy("this")
   private void ensureComponentTree(ComponentContext context) {
     if (mComponentTree == null) {
-      final Object isPersistenceEnabled =
-          mRenderInfo.getCustomAttribute(ComponentRenderInfo.PERSISTENCE_ENABLED);
+      final Object isReconciliationEnabled =
+          mRenderInfo.getCustomAttribute(ComponentRenderInfo.RECONCILIATION_ENABLED);
       final Object layoutDiffingEnabledAttr =
           mRenderInfo.getCustomAttribute(ComponentRenderInfo.LAYOUT_DIFFING_ENABLED);
       final ComponentTree.Builder builder =
           ComponentTree.create(context, mRenderInfo.getComponent());
-      // If no custom attribute is set, defer default value to the builder.
-      if (isPersistenceEnabled != null) {
-        builder.layoutDiffing((boolean) isPersistenceEnabled);
-        builder.isPersistenceEnabled((boolean) isPersistenceEnabled);
+      // If no custom attribute is set, defer to the default value of the builder.
+      if (isReconciliationEnabled != null) {
+        builder.layoutDiffing(!(boolean) isReconciliationEnabled);
+        builder.isReconciliationEnabled((boolean) isReconciliationEnabled);
+        builder.enableNestedTreeResolutionExperiment((boolean) isReconciliationEnabled);
       } else if (layoutDiffingEnabledAttr != null) {
         builder.layoutDiffing((boolean) layoutDiffingEnabledAttr);
       }

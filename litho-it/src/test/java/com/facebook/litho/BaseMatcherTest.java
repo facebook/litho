@@ -24,9 +24,12 @@ import org.assertj.core.api.Condition;
 import org.hamcrest.core.IsNull;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+@RunWith(JUnit4.class)
 public class BaseMatcherTest {
   @Mock InspectableComponent mInspectableComponent;
   @Mock Component mComponent;

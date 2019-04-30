@@ -23,7 +23,10 @@ import com.facebook.litho.testing.specmodels.MockSpecModel;
 import com.squareup.javapoet.ClassName;
 import java.util.List;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
+@RunWith(JUnit4.class)
 public class TagValidationTest {
 
   private final Object mRepresentedObject = new Object();

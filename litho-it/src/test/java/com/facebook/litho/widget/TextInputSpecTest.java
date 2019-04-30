@@ -108,7 +108,7 @@ public class TextInputSpecTest {
   }
 
   @Test
-  public void testNullInputBackground() throws IllegalAccessException, NoSuchFieldException {
+  public void testNullInputBackground() {
     Component.Builder component = TextInput.create(mContext).inputBackground(null);
     final android.widget.EditText editText = getEditText(component);
     Drawable editTextBackground = editText.getBackground();
@@ -116,7 +116,7 @@ public class TextInputSpecTest {
   }
 
   @Test
-  public void testDefaultInputBackground() throws IllegalAccessException, NoSuchFieldException {
+  public void testDefaultInputBackground() {
     Component.Builder component = TextInput.create(mContext);
     final android.widget.EditText editText = getEditText(component);
     Drawable editTextBackground = editText.getBackground();

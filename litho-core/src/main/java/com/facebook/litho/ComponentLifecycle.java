@@ -27,7 +27,9 @@ import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import androidx.customview.widget.ExploreByTouchHelper;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.annotations.LayoutSpec;
+import com.facebook.litho.annotations.OnAttached;
 import com.facebook.litho.annotations.OnCreateTreeProp;
+import com.facebook.litho.annotations.OnDetached;
 import com.facebook.litho.annotations.OnShouldCreateLayoutWithNewSizeSpec;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.yoga.YogaBaselineFunction;
@@ -881,5 +883,38 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
    */
   protected boolean shouldAlwaysRemeasure() {
     return false;
+  }
+
+  /**
+   * Called when the component is attached to the {@link ComponentTree}.
+   *
+   * @param c The {@link ComponentContext} the Component was constructed with.
+   */
+  protected void onAttached(ComponentContext c) {}
+
+  /**
+   * Called when the component is detached from the {@link ComponentTree}.
+   *
+   * @param c The {@link ComponentContext} the Component was constructed with.
+   */
+  protected void onDetached(ComponentContext c) {}
+
+  /**
+   * @return true if the component implements {@link OnAttached} or {@link OnDetached} delegate
+   *     methods.
+   */
+  protected boolean hasAttachDetachCallback() {
+    return false;
+  }
+
+  /**
+   * Exception class used to print the Components' hierarchy involved in a layout creation crash.
+   */
+  private static class CreateLayoutException extends RuntimeException {
+    CreateLayoutException(Component c, Throwable cause) {
+      super(c.getSimpleName());
+      initCause(cause);
+      setStackTrace(new StackTraceElement[0]);
+    }
   }
 }

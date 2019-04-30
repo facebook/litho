@@ -96,8 +96,16 @@ import javax.annotation.Nullable;
  *       constants.
  * </ul>
  *
+ * <p>It is also treated by the system as an android {@link EditText}:
+ *
+ * <ul>
+ *   <li>When {@link EditText} receives focus, a system keyboard is shown.
+ *   <li>When the user opens the screen and android {@link EditText} is the first element in the
+ *       View hierarchy, it gains focus.
+ * </ul>
+ *
  * <p>Example of multiline editable text with custom text color, text length limit, removed
- * underline drawable, and capital first letter of each sentence:
+ * underline drawable, and sentence capitalisation:
  *
  * <pre>{@code
  * private static final InputFilter lenFilter = new InputFilter.LengthFilter(maxLength);
@@ -143,17 +151,17 @@ import javax.annotation.Nullable;
  * @prop minLines Minimum number of lines to show.
  * @prop maxLines Maximum number of lines to show.
  * @prop textWatchers Used to register text watchers e.g. mentions detection.
+ * @see {@link EditText}
  */
 @MountSpec(
-  isPureRender = true,
-  events = {
-    TextChangedEvent.class,
-    SelectionChangedEvent.class,
-    KeyUpEvent.class,
-    EditorActionEvent.class,
-    SetTextEvent.class
-  }
-)
+    isPureRender = true,
+    events = {
+      TextChangedEvent.class,
+      SelectionChangedEvent.class,
+      KeyUpEvent.class,
+      EditorActionEvent.class,
+      SetTextEvent.class
+    })
 class TextInputSpec {
   /**
    * Dummy drawable used for differentiating user-provided null background drawable from default
@@ -232,11 +240,12 @@ class TextInputSpec {
       @State int measureSeqNumber) {
 
     // The height should be the measured height of EditText with relevant params
-    final EditText forMeasure = new EditText(c.getAndroidContext());
+    final EditText forMeasure = new ForMeasureEditText(c.getAndroidContext());
     setParams(
         forMeasure,
         hint,
-        getBackgroundOrDefault(c, inputBackground),
+        getBackgroundOrDefault(
+            c, inputBackground == UNSET_DRAWABLE ? forMeasure.getBackground() : inputBackground),
         shadowRadius,
         shadowDx,
         shadowDy,
@@ -866,5 +875,16 @@ class TextInputSpec {
         }
       }
     }
+  }
+
+  static class ForMeasureEditText extends EditText {
+
+    public ForMeasureEditText(Context context) {
+      super(context);
+    }
+
+    // This view is not intended to be drawn and invalidated
+    @Override
+    public void invalidate() {}
   }
 }

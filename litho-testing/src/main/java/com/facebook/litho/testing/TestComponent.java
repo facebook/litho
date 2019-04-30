@@ -40,6 +40,8 @@ public abstract class TestComponent extends Component {
   private boolean mOnUnbindCalled;
   protected boolean mIsUnique;
   private boolean mOnMeasureCalled;
+  private boolean mOnAttachedCalled;
+  private boolean mOnDetachedCalled;
 
   protected TestComponent(String simpleName) {
     super(simpleName);
@@ -75,6 +77,14 @@ public abstract class TestComponent extends Component {
   void onUnbindCalled() {
     mOnUnbindCalled = true;
     mBound = false;
+  }
+
+  synchronized void onAttachedCalled() {
+    mOnAttachedCalled = true;
+  }
+
+  synchronized void onDetachedCalled() {
+    mOnDetachedCalled = true;
   }
 
   /**
@@ -130,6 +140,16 @@ public abstract class TestComponent extends Component {
     return mOnMeasureCalled;
   }
 
+  /** @return Whether onAttached has been called. */
+  public synchronized boolean wasOnAttachedCalled() {
+    return mOnAttachedCalled;
+  }
+
+  /** @return Whether onDetached has been called. */
+  public synchronized boolean wasOnDetachedCalled() {
+    return mOnDetachedCalled;
+  }
+
   @Override
   public int hashCode() {
     return mIsUnique ? 1 : 0;
@@ -152,16 +172,16 @@ public abstract class TestComponent extends Component {
     return this == other;
   }
 
-  /**
-   * Reset the tracking of which methods have been called on this component.
-   */
-  public void resetInteractions() {
+  /** Reset the tracking of which methods have been called on this component. */
+  public synchronized void resetInteractions() {
     mOnMeasureCalled = false;
     mOnBoundsDefinedCalled = false;
     mOnBindCalled = false;
     mOnMountCalled = false;
     mOnUnbindCalled = false;
     mOnUnmountCalled = false;
+    mOnAttachedCalled = false;
+    mOnDetachedCalled = false;
   }
 
   @Override
