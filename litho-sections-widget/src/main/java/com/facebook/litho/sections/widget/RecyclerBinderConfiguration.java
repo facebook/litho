@@ -16,9 +16,9 @@
 
 package com.facebook.litho.sections.widget;
 
-import android.os.Handler;
 import androidx.annotation.Nullable;
 import com.facebook.litho.ComponentLogParams;
+import com.facebook.litho.LithoHandler;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.config.LayoutThreadPoolConfiguration;
 import com.facebook.litho.sections.SectionTree;
@@ -43,7 +43,7 @@ public class RecyclerBinderConfiguration {
   private boolean mAsyncInitRange = ComponentsConfiguration.asyncInitRange;
   @Nullable private List<ComponentLogParams> mInvalidStateLogParamsList;
   private final boolean mSplitLayoutForMeasureAndRangeEstimation;
-  @Nullable private Handler mChangeSetThreadHandler;
+  @Nullable private LithoHandler mChangeSetThreadHandler;
   private final boolean mEnableDetach;
 
   public static Builder create() {
@@ -64,7 +64,7 @@ public class RecyclerBinderConfiguration {
       boolean asyncInitRange,
       boolean splitLayoutForMeasureAndRangeEstimation,
       boolean enableDetach,
-      @Nullable Handler changeSetThreadHandler) {
+      @Nullable LithoHandler changeSetThreadHandler) {
     mRangeRatio = rangeRatio;
     mLayoutHandlerFactory = layoutHandlerFactory;
     mIsCircular = circular;
@@ -125,7 +125,7 @@ public class RecyclerBinderConfiguration {
     return mInvalidStateLogParamsList;
   }
 
-  public @Nullable Handler getChangeSetThreadHandler() {
+  public @Nullable LithoHandler getChangeSetThreadHandler() {
     return mChangeSetThreadHandler;
   }
 
@@ -156,7 +156,7 @@ public class RecyclerBinderConfiguration {
     private boolean mSplitLayoutForMeasureAndRangeEstimation =
         ComponentsConfiguration.splitLayoutForMeasureAndRangeEstimation;
     private boolean mEnableDetach = false;
-    @Nullable private Handler mChangeSetThreadHandler;
+    @Nullable private LithoHandler mChangeSetThreadHandler;
 
     Builder() {}
 
@@ -262,7 +262,7 @@ public class RecyclerBinderConfiguration {
       return this;
     }
 
-    public Builder changeSetThreadHandler(Handler changeSetThreadHandler) {
+    public Builder changeSetThreadHandler(LithoHandler changeSetThreadHandler) {
       mChangeSetThreadHandler = changeSetThreadHandler;
       return this;
     }

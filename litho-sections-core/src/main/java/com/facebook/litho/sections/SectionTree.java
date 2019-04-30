@@ -23,11 +23,11 @@ import static com.facebook.litho.FrameworkLogEvents.EVENT_SECTIONS_SET_ROOT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_ATTRIBUTION;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_SECTION_SET_ROOT_SOURCE;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_SET_ROOT_ON_BG_THREAD;
+import static com.facebook.litho.HandlerInstrumenter.instrumentLithoHandler;
 import static com.facebook.litho.ThreadUtils.assertMainThread;
 import static com.facebook.litho.ThreadUtils.isMainThread;
 import static com.facebook.litho.sections.SectionLifecycle.StateUpdate;
 
-import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 import android.text.TextUtils;
@@ -43,6 +43,8 @@ import com.facebook.litho.EventHandler;
 import com.facebook.litho.EventHandlersController;
 import com.facebook.litho.EventTrigger;
 import com.facebook.litho.EventTriggersContainer;
+import com.facebook.litho.LithoHandler;
+import com.facebook.litho.LithoHandler.DefaultLithoHandler;
 import com.facebook.litho.PerfEvent;
 import com.facebook.litho.ThreadTracingRunnable;
 import com.facebook.litho.ThreadUtils;
@@ -142,11 +144,10 @@ public class SectionTree {
     boolean supportsBackgroundChangeSets();
   }
 
-  private static final Handler sMainThreadHandler = new Handler(Looper.getMainLooper());
-
   @GuardedBy("SectionTree.class")
   private static volatile Looper sDefaultChangeSetThreadLooper;
 
+  private final LithoHandler mMainThreadHandler;
   private final SectionContext mContext;
   private final BatchedTarget mTarget;
   private final FocusDispatcher mFocusDispatcher;
@@ -164,7 +165,7 @@ public class SectionTree {
 
   private class CalculateChangeSetRunnable extends ThreadTracingRunnable {
 
-    private final Handler mHandler;
+    private final LithoHandler mHandler;
 
     @GuardedBy("this")
     private boolean mIsPosted;
@@ -175,7 +176,7 @@ public class SectionTree {
     @GuardedBy("this")
     private @Nullable String mAttribution;
 
-    public CalculateChangeSetRunnable(Handler handler) {
+    public CalculateChangeSetRunnable(LithoHandler handler) {
       mHandler = handler;
     }
 
@@ -183,7 +184,14 @@ public class SectionTree {
       if (!mIsPosted) {
         mIsPosted = true;
         resetTrace();
-        mHandler.post(this);
+        mHandler.post(
+            this,
+            "SectionTree.CalculateChangeSetRunnable.ensurePosted - "
+                + SectionTree.this.mTag
+                + " - "
+                + source
+                + " - "
+                + attribution);
         mSource = source;
         mAttribution = attribution;
       }
@@ -194,7 +202,7 @@ public class SectionTree {
         mIsPosted = false;
         mSource = ApplyNewChangeSet.NONE;
         mAttribution = null;
-        mHandler.removeCallbacks(this);
+        mHandler.remove(this);
       }
     }
 
@@ -275,6 +283,7 @@ public class SectionTree {
   }
 
   private SectionTree(Builder builder) {
+    mMainThreadHandler = instrumentLithoHandler(new DefaultLithoHandler(Looper.getMainLooper()));
     mSectionsDebugLogger = new Logger(SectionsConfiguration.LOGGERS);
     mReleased = false;
     mAsyncStateUpdates = builder.mAsyncStateUpdates;
@@ -291,11 +300,13 @@ public class SectionTree {
     mContext = SectionContext.withSectionTree(builder.mContext, this);
     mPendingChangeSets = new ArrayList<>();
     mPendingStateUpdates = SectionsPools.acquireStateUpdatesHolder();
-    Handler changeSetThreadHandler = builder.mChangeSetThreadHandler != null ?
-        builder.mChangeSetThreadHandler :
-        new Handler(getDefaultChangeSetThreadLooper());
+    LithoHandler changeSetThreadHandler =
+        builder.mChangeSetThreadHandler != null
+            ? builder.mChangeSetThreadHandler
+            : new DefaultLithoHandler(getDefaultChangeSetThreadLooper());
+    changeSetThreadHandler = instrumentLithoHandler(changeSetThreadHandler);
     mCalculateChangeSetRunnable = new CalculateChangeSetRunnable(changeSetThreadHandler);
-    mCalculateChangeSetOnMainThreadRunnable = new CalculateChangeSetRunnable(sMainThreadHandler);
+    mCalculateChangeSetOnMainThreadRunnable = new CalculateChangeSetRunnable(mMainThreadHandler);
   }
 
   /**
@@ -675,6 +686,7 @@ public class SectionTree {
 
   void requestFocusEnd(final String sectionKey) {
     focusRequestOnUiThread(
+        mMainThreadHandler,
         new Runnable() {
           @Override
           public void run() {
@@ -687,6 +699,7 @@ public class SectionTree {
 
   private void requestFocus(final String sectionKey, final int index) {
     focusRequestOnUiThread(
+        mMainThreadHandler,
         new Runnable() {
           @Override
           public void run() {
@@ -708,6 +721,7 @@ public class SectionTree {
 
   void requestFocusWithOffset(final String sectionKey, final int index, final int offset) {
     focusRequestOnUiThread(
+        mMainThreadHandler,
         new Runnable() {
           @Override
           public void run() {
@@ -726,6 +740,7 @@ public class SectionTree {
       final int offset,
       final SmoothScrollAlignmentType type) {
     focusRequestOnUiThread(
+        mMainThreadHandler,
         new Runnable() {
           @Override
           public void run() {
@@ -769,11 +784,11 @@ public class SectionTree {
     return true;
   }
 
-  private static void focusRequestOnUiThread(Runnable runnable) {
+  private static void focusRequestOnUiThread(LithoHandler mainThreadHandler, Runnable runnable) {
     if (isMainThread()) {
       runnable.run();
     } else {
-      sMainThreadHandler.post(runnable);
+      mainThreadHandler.post(runnable, "SectionTree.focusRequestOnUiThread");
     }
   }
 
@@ -1105,13 +1120,14 @@ public class SectionTree {
     if (isMainThread()) {
       setLoadingStateToFocusDispatch(loadingState);
     } else {
-      sMainThreadHandler.post(
+      mMainThreadHandler.post(
           new Runnable() {
             @Override
             public void run() {
               setLoadingStateToFocusDispatch(loadingState);
             }
-          });
+          },
+          "SectionTree.postLoadingStateToFocusDispatch - " + loadingState.name() + " - " + mTag);
     }
   }
 
@@ -1166,7 +1182,7 @@ public class SectionTree {
         throw new RuntimeException(getDebugInfo(this) + e.getMessage(), e);
       }
     } else {
-      sMainThreadHandler.post(
+      mMainThreadHandler.post(
           new ThreadTracingRunnable(tracedThrowable) {
             @Override
             public void tracedRun(Throwable tracedThrowable) {
@@ -1177,7 +1193,8 @@ public class SectionTree {
                 throw new RuntimeException(getDebugInfo(tree) + e.getMessage(), e);
               }
             }
-          });
+          },
+          "SectionTree.postNewChangeSets - " + mTag);
     }
   }
 
@@ -1209,13 +1226,14 @@ public class SectionTree {
       if (isMainThread()) {
         maybeDispatchFocusRequests();
       } else {
-        sMainThreadHandler.post(
+        mMainThreadHandler.post(
             new Runnable() {
               @Override
               public void run() {
                 maybeDispatchFocusRequests();
               }
-            });
+            },
+            "SectionTree.applyChangeSetsToTargetBackgroundAllowed - " + mTag);
       }
     } finally {
       if (isTracing) {
@@ -1602,7 +1620,7 @@ public class SectionTree {
     private boolean mAsyncStateUpdates;
     private boolean mAsyncPropUpdates;
     private String mTag;
-    private Handler mChangeSetThreadHandler;
+    private LithoHandler mChangeSetThreadHandler;
     private boolean mForceSyncStateUpdates;
 
     private Builder(SectionContext componentContext, Target target) {
@@ -1616,7 +1634,7 @@ public class SectionTree {
      * An optional Handler where {@link ChangeSet} calculation should happen. If not provided the
      * framework will use its default background thread.
      */
-    public Builder changeSetThreadHandler(Handler changeSetThreadHandler) {
+    public Builder changeSetThreadHandler(LithoHandler changeSetThreadHandler) {
       mChangeSetThreadHandler = changeSetThreadHandler;
       return this;
     }
