@@ -30,7 +30,6 @@ import static com.facebook.litho.sections.SectionLifecycle.StateUpdate;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
-import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
 import androidx.annotation.UiThread;
@@ -143,10 +142,7 @@ public class SectionTree {
     boolean supportsBackgroundChangeSets();
   }
 
-  private static final int MESSAGE_WHAT_BACKGROUND_CHANGESET_STATE_UPDATED = 1;
-  private static final int MESSAGE_FOCUS_REQUEST = 2;
-  private static final int MESSAGE_FOCUS_DISPATCHER_LOADING_STATE_UPDATE = 3;
-  private static final Handler sMainThreadHandler = new SectionsMainThreadHandler();
+  private static final Handler sMainThreadHandler = new Handler(Looper.getMainLooper());
 
   @GuardedBy("SectionTree.class")
   private static volatile Looper sDefaultChangeSetThreadLooper;
@@ -777,7 +773,7 @@ public class SectionTree {
     if (isMainThread()) {
       runnable.run();
     } else {
-      sMainThreadHandler.obtainMessage(MESSAGE_FOCUS_REQUEST, runnable).sendToTarget();
+      sMainThreadHandler.post(runnable);
     }
   }
 
@@ -1109,16 +1105,13 @@ public class SectionTree {
     if (isMainThread()) {
       setLoadingStateToFocusDispatch(loadingState);
     } else {
-      sMainThreadHandler
-          .obtainMessage(
-              MESSAGE_FOCUS_DISPATCHER_LOADING_STATE_UPDATE,
-              new Runnable() {
-                @Override
-                public void run() {
-                  setLoadingStateToFocusDispatch(loadingState);
-                }
-              })
-          .sendToTarget();
+      sMainThreadHandler.post(
+          new Runnable() {
+            @Override
+            public void run() {
+              setLoadingStateToFocusDispatch(loadingState);
+            }
+          });
     }
   }
 
@@ -1173,21 +1166,18 @@ public class SectionTree {
         throw new RuntimeException(getDebugInfo(this) + e.getMessage(), e);
       }
     } else {
-      sMainThreadHandler
-          .obtainMessage(
-              MESSAGE_WHAT_BACKGROUND_CHANGESET_STATE_UPDATED,
-              new ThreadTracingRunnable(tracedThrowable) {
-                @Override
-                public void tracedRun(Throwable tracedThrowable) {
-                  final SectionTree tree = SectionTree.this;
-                  try {
-                    tree.applyChangeSetsToTargetUIThreadOnly();
-                  } catch (IndexOutOfBoundsException e) {
-                    throw new RuntimeException(getDebugInfo(tree) + e.getMessage(), e);
-                  }
-                }
-              })
-          .sendToTarget();
+      sMainThreadHandler.post(
+          new ThreadTracingRunnable(tracedThrowable) {
+            @Override
+            public void tracedRun(Throwable tracedThrowable) {
+              final SectionTree tree = SectionTree.this;
+              try {
+                tree.applyChangeSetsToTargetUIThreadOnly();
+              } catch (IndexOutOfBoundsException e) {
+                throw new RuntimeException(getDebugInfo(tree) + e.getMessage(), e);
+              }
+            }
+          });
     }
   }
 
@@ -1565,30 +1555,6 @@ public class SectionTree {
 
   private static void releaseUpdatesList(List<StateUpdate> stateUpdates) {
     //TODO use pools t11953296
-  }
-
-  private static class SectionsMainThreadHandler extends Handler {
-
-    private SectionsMainThreadHandler() {
-      super(Looper.getMainLooper());
-    }
-
-    @Override
-    public void handleMessage(Message msg) {
-      switch (msg.what) {
-        case MESSAGE_WHAT_BACKGROUND_CHANGESET_STATE_UPDATED:
-          final Runnable runnable = (Runnable) msg.obj;
-          runnable.run();
-          break;
-        case MESSAGE_FOCUS_REQUEST:
-        case MESSAGE_FOCUS_DISPATCHER_LOADING_STATE_UPDATE:
-          Runnable focusRequest = (Runnable) msg.obj;
-          focusRequest.run();
-          break;
-        default:
-          throw new IllegalArgumentException();
-      }
-    }
   }
 
   private static String getDebugInfo(SectionTree tree) {
