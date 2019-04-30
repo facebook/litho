@@ -1160,7 +1160,8 @@ public class ComponentTree {
           mLayoutThreadHandler.remove(mUpdateStateSyncRunnable);
         }
         mUpdateStateSyncRunnable = new UpdateStateSyncRunnable(attribution);
-        mLayoutThreadHandler.post(mUpdateStateSyncRunnable, "updateStateSync " + attribution);
+        mLayoutThreadHandler.post(
+            mUpdateStateSyncRunnable, "updateStateSyncNoLooper " + attribution);
       }
       return;
     }
@@ -1178,7 +1179,7 @@ public class ComponentTree {
         handler.remove(mUpdateStateSyncRunnable);
       }
       mUpdateStateSyncRunnable = new UpdateStateSyncRunnable(attribution);
-      handler.post(mUpdateStateSyncRunnable, attribution);
+      handler.post(mUpdateStateSyncRunnable, "updateStateSync " + attribution);
     }
   }
 
@@ -1660,7 +1661,8 @@ public class ComponentTree {
         mCurrentCalculateLayoutRunnable =
             new CalculateLayoutRunnable(source, treeProps, extraAttribution, layoutStateFuture);
         mLayoutThreadHandler.post(
-            mCurrentCalculateLayoutRunnable, source + " - " + extraAttribution);
+            mCurrentCalculateLayoutRunnable,
+            "calculateLayout " + source + " - " + extraAttribution);
       }
     } else {
       calculateLayout(output, source, extraAttribution, treeProps, layoutStateFuture);
@@ -1829,7 +1831,8 @@ public class ComponentTree {
     if (mPreAllocateMountContentHandler != null) {
       mPreAllocateMountContentHandler.remove(mPreAllocateMountContentRunnable);
       mPreAllocateMountContentHandler.post(
-          mPreAllocateMountContentRunnable, source + " - " + extraAttribution);
+          mPreAllocateMountContentRunnable,
+          "preallocateLayout " + source + " - " + extraAttribution);
     }
 
     if (layoutEvent != null) {
