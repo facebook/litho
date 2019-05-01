@@ -583,10 +583,21 @@ public class LithoView extends ComponentHost {
     if (isVisible) {
       if (getLocalVisibleRect(new Rect())) {
         mComponentTree.processVisibilityOutputs();
+        recursivelySetVisibleHint(true);
       }
       // if false: no-op, doesn't have visible area, is not ready or not attached
     } else {
+      recursivelySetVisibleHint(false);
       mMountState.clearVisibilityItems();
+    }
+  }
+
+  private void recursivelySetVisibleHint(boolean isVisible) {
+    final List<LithoView> childLithoViews =
+        mMountState.getChildLithoViewsFromCurrentlyMountedItems();
+    for (int i = childLithoViews.size() - 1; i >= 0; i--) {
+      final LithoView lithoView = childLithoViews.get(i);
+      lithoView.setVisibilityHint(isVisible);
     }
   }
 
