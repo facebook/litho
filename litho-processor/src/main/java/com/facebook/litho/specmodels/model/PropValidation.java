@@ -120,6 +120,7 @@ public class PropValidation {
           "aspectRatio",
           "wrapInView",
           "clickHandler",
+          "clickable",
           "longClickHandler",
           "focusChangeHandler",
           "touchHandler",
@@ -194,6 +195,7 @@ public class PropValidation {
               ParameterizedTypeName.get(
                   ClassName.bestGuess("com.facebook.litho.EventHandler"),
                   ClassName.bestGuess("com.facebook.litho.LongClickEvent"))),
+          new CommonPropModel("clickable", TypeName.BOOLEAN),
           new CommonPropModel(
               "focusChangeHandler",
               ParameterizedTypeName.get(
