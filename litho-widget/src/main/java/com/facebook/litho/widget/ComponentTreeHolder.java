@@ -389,7 +389,6 @@ public class ComponentTreeHolder {
               .preAllocateMountContentHandler(mPreallocateMountContentHandler)
               .preallocateOnDefaultHandler(mCanPreallocateOnDefaultHandler)
               .shouldPreallocateMountContentPerMountSpec(mShouldPreallocatePerMountSpec)
-              .useSharedLayoutStateFuture(true)
               .measureListener(
                   mComponentTreeMeasureListenerFactory == null
                       ? null

@@ -175,7 +175,6 @@ public class ComponentTree {
   @GuardedBy("mCurrentCalculateLayoutRunnableLock")
   private @Nullable CalculateLayoutRunnable mCurrentCalculateLayoutRunnable;
 
-  private final boolean mUseSharedLayoutStateFuture;
   private final Object mLayoutStateFutureLock = new Object();
   private final boolean mUseCancelableLayoutFutures;
 
@@ -286,7 +285,6 @@ public class ComponentTree {
     mHasMounted = builder.hasMounted;
     mMeasureListener = builder.mMeasureListener;
     mNestedTreeResolutionExperimentEnabled = builder.nestedTreeResolutionExperimentEnabled;
-    mUseSharedLayoutStateFuture = builder.useSharedLayoutStateFuture;
     mUseCancelableLayoutFutures = ComponentsConfiguration.useCancelableLayoutFutures;
     isReconciliationEnabled = builder.isReconciliationEnabled;
 
@@ -949,10 +947,6 @@ public class ComponentTree {
               CalculateLayoutSource.MEASURE,
               null);
       if (localLayoutState == null) {
-        if (!mUseSharedLayoutStateFuture) {
-          throw new IllegalStateException(
-              "LayoutState is null LayoutStateFutures are disabled. Only released LayoutStateFutures can return a null LayoutState.");
-        }
         throw new IllegalStateException(
             "LayoutState cannot be null for measure, this means a LayoutStateFuture was released incorrectly.");
       }
@@ -1648,7 +1642,7 @@ public class ComponentTree {
     }
 
     final LayoutStateFuture layoutStateFuture =
-        mUseSharedLayoutStateFuture && mUseCancelableLayoutFutures
+        mUseCancelableLayoutFutures
             ? createLayoutStateFutureAndCancelRunning(
                 mContext, mIsLayoutDiffingEnabled, treeProps, source, extraAttribution)
             : null;
@@ -1752,10 +1746,6 @@ public class ComponentTree {
             : calculateLayoutState(layoutStateFuture);
 
     if (localLayoutState == null) {
-      if (!mUseSharedLayoutStateFuture) {
-        throw new IllegalStateException(
-            "LayoutState is null and LayoutStateFutures are disabled. Only released LayoutStateFutures can return a null LayoutState ");
-      }
       if (output != null) {
         throw new IllegalStateException(
             "LayoutState is null, but only async operations can return a null LayoutState");
@@ -2144,7 +2134,6 @@ public class ComponentTree {
       @CalculateLayoutSource int source,
       @Nullable String extraAttribution) {
 
-    if (mUseSharedLayoutStateFuture) {
       LayoutStateFuture localLayoutStateFuture =
           new LayoutStateFuture(
               context,
@@ -2190,19 +2179,6 @@ public class ComponentTree {
       }
 
       return layoutState;
-    } else {
-      return calculateLayoutStateInternal(
-          context,
-          root,
-          widthSpec,
-          heightSpec,
-          diffingEnabled,
-          previousLayoutState,
-          treeProps,
-          source,
-          extraAttribution,
-          null);
-    }
   }
 
   private LayoutState calculateLayoutStateInternal(
@@ -2549,7 +2525,6 @@ public class ComponentTree {
     private boolean canPreallocateOnDefaultHandler;
     private boolean nestedTreeResolutionExperimentEnabled =
         ComponentsConfiguration.isNestedTreeResolutionExperimentEnabled;
-    private boolean useSharedLayoutStateFuture = ComponentsConfiguration.useSharedLayoutStateFuture;
     private boolean isReconciliationEnabled = ComponentsConfiguration.isReconciliationEnabled;
 
     protected Builder(ComponentContext context, Component root) {
@@ -2698,16 +2673,6 @@ public class ComponentTree {
       return this;
     }
 
-    /**
-     * Whether to share a shared LayoutStateFuture between threads when calculating LayoutState to
-     * prevent duplicate calculations of the same LayoutState on different threads. The main thread
-     * will block on the completion of the Future even if the calculation was started on a
-     * background thread.
-     */
-    public Builder useSharedLayoutStateFuture(boolean useSharedLayoutStateFuture) {
-      this.useSharedLayoutStateFuture = useSharedLayoutStateFuture;
-      return this;
-    }
 
     /** Sets if is reconciliation is enabled */
     public Builder isReconciliationEnabled(boolean isEnabled) {

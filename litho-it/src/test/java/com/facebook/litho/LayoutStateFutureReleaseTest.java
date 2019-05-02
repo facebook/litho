@@ -150,7 +150,6 @@ public class LayoutStateFutureReleaseTest {
     componentTree =
         ComponentTree.create(mContext, column)
             .layoutThreadHandler(handler)
-            .useSharedLayoutStateFuture(true)
             .build();
 
     componentTree.setLithoView(new LithoView(mContext));
@@ -220,7 +219,6 @@ public class LayoutStateFutureReleaseTest {
     componentTree =
         ComponentTree.create(mContext, column)
             .layoutThreadHandler(handler)
-            .useSharedLayoutStateFuture(true)
             .build();
 
     componentTree.setLithoView(new LithoView(mContext));
@@ -287,7 +285,6 @@ public class LayoutStateFutureReleaseTest {
     componentTree =
         ComponentTree.create(mContext, column)
             .layoutThreadHandler(handler)
-            .useSharedLayoutStateFuture(true)
             .build();
 
     componentTree.setLithoView(new LithoView(mContext));
@@ -357,7 +354,6 @@ public class LayoutStateFutureReleaseTest {
     componentTree =
         ComponentTree.create(mContext, column)
             .layoutThreadHandler(handler)
-            .useSharedLayoutStateFuture(true)
             .build();
 
     componentTree.setLithoView(new LithoView(mContext));
@@ -429,7 +425,6 @@ public class LayoutStateFutureReleaseTest {
     componentTree =
         ComponentTree.create(mContext, column)
             .layoutThreadHandler(handler)
-            .useSharedLayoutStateFuture(true)
             .build();
 
     componentTree.setLithoView(new LithoView(mContext));
@@ -517,7 +512,6 @@ public class LayoutStateFutureReleaseTest {
     componentTree =
         ComponentTree.create(mContext, column_0)
             .layoutThreadHandler(handler)
-            .useSharedLayoutStateFuture(true)
             .build();
 
     componentTree.setLithoView(new LithoView(mContext));
@@ -575,7 +569,6 @@ public class LayoutStateFutureReleaseTest {
     componentTree =
         ComponentTree.create(mContext, column_0)
             .layoutThreadHandler(handler)
-            .useSharedLayoutStateFuture(true)
             .build();
 
     componentTree.setLithoView(new LithoView(mContext));
@@ -644,7 +637,6 @@ public class LayoutStateFutureReleaseTest {
     componentTree =
         ComponentTree.create(mContext, column_0)
             .layoutThreadHandler(handler)
-            .useSharedLayoutStateFuture(true)
             .build();
 
     componentTree.setLithoView(new LithoView(mContext));

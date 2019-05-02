@@ -794,7 +794,6 @@ public class ComponentTreeTest {
     ComponentTree componentTree =
         ComponentTree.create(mContext, root1)
             .layoutThreadHandler(handler)
-            .useSharedLayoutStateFuture(true)
             .build();
 
     componentTree.setLithoView(new LithoView(mContext));
@@ -843,7 +842,6 @@ public class ComponentTreeTest {
     ComponentTree componentTree =
         ComponentTree.create(mContext, root1)
             .layoutThreadHandler(handler)
-            .useSharedLayoutStateFuture(true)
             .build();
 
     componentTree.setLithoView(new LithoView(mContext));
@@ -914,7 +912,6 @@ public class ComponentTreeTest {
     ComponentTree componentTree =
         ComponentTree.create(mContext, root1)
             .layoutThreadHandler(handler)
-            .useSharedLayoutStateFuture(true)
             .build();
 
     componentTree.setLithoView(new LithoView(mContext));
