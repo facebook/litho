@@ -911,7 +911,7 @@ public class RecyclerBinderWrapContentTest {
     recyclerBinder.notifyChangeSetComplete(false, changeSetCompleteCallback);
 
     verify(changeSetCompleteCallback).onDataRendered(eq(true), anyLong());
-    verifyPostOnAnimationWasCalledAtLeastNTimesWith(
+    verifyPostOnAnimationWasCalledNTimesWith(
         mRecyclerView, 0, recyclerBinder.mRemeasureRunnable);
   }
 
