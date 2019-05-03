@@ -137,12 +137,6 @@ public class ComponentsConfiguration {
   public static boolean bgScheduleAllInitRange;
 
   /**
-   * If true, a layout for the same ComponentTree will be calculated on a single thread at the same
-   * time.
-   */
-  public static boolean useSharedLayoutStateFuture = false;
-
-  /**
    * If non-null, a thread pool will be used for async layouts instead of a single layout thread.
    */
   public static @Nullable LayoutThreadPoolConfiguration threadPoolConfiguration = null;

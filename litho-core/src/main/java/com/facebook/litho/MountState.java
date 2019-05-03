@@ -738,6 +738,18 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     }
   }
 
+  List<LithoView> getChildLithoViewsFromCurrentlyMountedItems() {
+    final ArrayList<LithoView> childLithoViews = new ArrayList<>();
+    for (int i = 0; i < mIndexToItemMap.size(); i++) {
+      final long layoutOutputId = mIndexToItemMap.keyAt(i);
+      final MountItem mountItem = mIndexToItemMap.get(layoutOutputId);
+      if (mountItem != null && mountItem.getContent() instanceof HasLithoViewChildren) {
+        ((HasLithoViewChildren) mountItem.getContent()).obtainLithoViewChildren(childLithoViews);
+      }
+    }
+    return childLithoViews;
+  }
+
   void clearVisibilityItems() {
     assertMainThread();
     boolean isTracing = ComponentsSystrace.isTracing();
