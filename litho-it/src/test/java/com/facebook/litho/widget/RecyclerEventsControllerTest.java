@@ -23,8 +23,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import com.facebook.litho.ComponentContext;
 import androidx.recyclerview.widget.RecyclerView;
+import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ThreadUtils;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import org.junit.After;
@@ -66,8 +66,8 @@ public class RecyclerEventsControllerTest {
    *
    * <p>Example : when(mSectionsRecyclerView.isRefreshing()).thenReturn(true);
    */
-  private void setUpInitialValues(boolean value) {
-    mSectionsRecyclerView.setRefreshing(value);
+  private void resetValuesAndSetInitialRefreshing(boolean isRefreshing) {
+    mSectionsRecyclerView.setRefreshing(isRefreshing);
     mSectionsRecyclerView.reset();
   }
 
@@ -86,22 +86,21 @@ public class RecyclerEventsControllerTest {
 
   @Test
   public void testClearRefreshingOnNotRefreshingView() {
-    setUpInitialValues(false);
+    resetValuesAndSetInitialRefreshing(false);
     mRecyclerEventsController.clearRefreshing();
 
-    assertThat(mSectionsRecyclerView.getSetRefreshingValues()).isEmpty();
+    verifySetRefreshingWasCalledNTimesWith(mSectionsRecyclerView, 0, false);
     verifyRemoveCallbacksWasCalledNTimes(mSectionsRecyclerView, 0);
     verifyPostWasCalledNTimes(mSectionsRecyclerView, 0);
   }
 
   @Test
   public void testClearRefreshingFromUIThread() {
-    setUpInitialValues(true);
+    resetValuesAndSetInitialRefreshing(true);
     ThreadUtils.setMainThreadOverride(ThreadUtils.OVERRIDE_MAIN_THREAD_TRUE);
     mRecyclerEventsController.clearRefreshing();
 
-    assertThat(mSectionsRecyclerView.getSetRefreshingValues().size()).isEqualTo(1);
-    assertThat(mSectionsRecyclerView.getSetRefreshingValues().get(0)).isFalse();
+    verifySetRefreshingWasCalledNTimesWith(mSectionsRecyclerView, 1, false);
     verifyRemoveCallbacksWasCalledNTimes(mSectionsRecyclerView, 0);
     verifyPostWasCalledNTimes(mSectionsRecyclerView, 0);
   }
@@ -109,7 +108,7 @@ public class RecyclerEventsControllerTest {
   @Test
   public void testClearRefreshingFromNonUIThread() {
 
-    setUpInitialValues(true);
+    resetValuesAndSetInitialRefreshing(true);
     ThreadUtils.setMainThreadOverride(ThreadUtils.OVERRIDE_MAIN_THREAD_FALSE);
 
     mRecyclerEventsController.clearRefreshing();
@@ -119,20 +118,19 @@ public class RecyclerEventsControllerTest {
 
   @Test
   public void testShowRefreshingFromUIThread() {
-    setUpInitialValues(false);
+    resetValuesAndSetInitialRefreshing(false);
     ThreadUtils.setMainThreadOverride(ThreadUtils.OVERRIDE_MAIN_THREAD_TRUE);
 
     mRecyclerEventsController.showRefreshing();
-    assertThat(mSectionsRecyclerView.getSetRefreshingValues().get(0)).isTrue();
-    assertThat(mSectionsRecyclerView.getSetRefreshingValues().size()).isEqualTo(1);
+    verifySetRefreshingWasCalledNTimesWith(mSectionsRecyclerView, 1, true);
   }
 
   @Test
   public void testShowRefreshingAlreadyRefreshing() {
-    setUpInitialValues(true);
+    resetValuesAndSetInitialRefreshing(true);
     mRecyclerEventsController.showRefreshing();
 
-    assertThat(mSectionsRecyclerView.getSetRefreshingValues().size()).isEqualTo(0);
+    verifySetRefreshingWasCalledNTimesWith(mSectionsRecyclerView, 0, false);
   }
 
   private void verifyRemoveCallbacksWasCalledNTimes(
@@ -142,5 +140,11 @@ public class RecyclerEventsControllerTest {
 
   private void verifyPostWasCalledNTimes(TestSectionsRecyclerView recyclerView, int times) {
     assertThat(recyclerView.getPostRunnableList().size()).isEqualTo(times);
+  }
+
+  private void verifySetRefreshingWasCalledNTimesWith(
+    TestSectionsRecyclerView recyclerView, int times, boolean refreshValue) {
+    assertThat(recyclerView.getSetRefreshingValuesCount()).isEqualTo(times);
+    assertThat(recyclerView.getLastRefreshValue()).isEqualTo(refreshValue);
   }
 }
