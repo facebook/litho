@@ -138,7 +138,7 @@ public abstract class Component extends ComponentLifecycle
   }
 
   /** Should only be used by logging to provide more readable messages. */
-  public final String getSimpleName() {
+  public String getSimpleName() {
     final Component delegate = getSimpleNameDelegate();
     if (delegate == null) {
       return mSimpleName;
