@@ -23,8 +23,6 @@ import static com.facebook.litho.widget.RecyclerBinderTest.NO_OP_CHANGE_SET_COMP
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.atLeast;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 
@@ -66,7 +64,9 @@ public class RecyclerBinderWrapContentTest {
     mComponentContext = new ComponentContext(RuntimeEnvironment.application);
     mRecyclerView = new TestRecyclerView(mComponentContext.getAndroidContext());
 
-    mLayoutThreadShadowLooper = Shadows.shadowOf((Looper) Whitebox.invokeMethod(ComponentTree.class, "getDefaultLayoutThreadLooper"));
+    mLayoutThreadShadowLooper =
+        Shadows.shadowOf(
+            (Looper) Whitebox.invokeMethod(ComponentTree.class, "getDefaultLayoutThreadLooper"));
   }
 
   @Test
@@ -102,8 +102,10 @@ public class RecyclerBinderWrapContentTest {
           i + 1, ComponentRenderInfo.create().component(newComponent).build());
       recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
     }
+
     // Verify remeasure is triggered through View#postOnAnimation(Runnable)
     verifyPostOnAnimationWasCalledNTimesWith(mRecyclerView, 10, recyclerBinder.mRemeasureRunnable);
+
     recyclerBinder.measure(size, widthSpec, heightSpec, mock(EventHandler.class));
     assertThat(size.height).isEqualTo(1000);
   }
@@ -147,6 +149,7 @@ public class RecyclerBinderWrapContentTest {
 
     // Verify remeasure is triggered through View#postOnAnimation(Runnable)
     verifyPostOnAnimationWasCalledNTimesWith(mRecyclerView, 1, recyclerBinder.mRemeasureRunnable);
+
     recyclerBinder.measure(size, widthSpec, heightSpec, mock(EventHandler.class));
     assertThat(size.height).isEqualTo(1000);
   }
@@ -292,7 +295,7 @@ public class RecyclerBinderWrapContentTest {
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     // Verify remeasure is triggered through View#postOnAnimation(Runnable)
-    verifyPostOnAnimationWasCalledAtleastNTimesWith(
+    verifyPostOnAnimationWasCalledAtLeastNTimesWith(
         mRecyclerView, 10, recyclerBinder.mRemeasureRunnable);
 
     recyclerBinder.measure(size, widthSpec, heightSpec, mock(EventHandler.class));
@@ -343,7 +346,7 @@ public class RecyclerBinderWrapContentTest {
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     // Verify remeasure is triggered through View#postOnAnimation(Runnable)
-    verifyPostOnAnimationWasCalledAtleastNTimesWith(
+    verifyPostOnAnimationWasCalledAtLeastNTimesWith(
         mRecyclerView, 1, recyclerBinder.mRemeasureRunnable);
 
     recyclerBinder.measure(size, widthSpec, heightSpec, mock(EventHandler.class));
@@ -368,7 +371,7 @@ public class RecyclerBinderWrapContentTest {
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     // Verify remeasure is triggered through View#postOnAnimation(Runnable)
-    verifyPostOnAnimationWasCalledAtleastNTimesWith(
+    verifyPostOnAnimationWasCalledAtLeastNTimesWith(
         mRecyclerView, 1, recyclerBinder.mRemeasureRunnable);
 
     Size size = new Size();
@@ -394,7 +397,7 @@ public class RecyclerBinderWrapContentTest {
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     // Verify remeasure is triggered through View#postOnAnimation(Runnable)
-    verifyPostOnAnimationWasCalledAtleastNTimesWith(
+    verifyPostOnAnimationWasCalledAtLeastNTimesWith(
         mRecyclerView, 1, recyclerBinder.mRemeasureRunnable);
 
     Size size = new Size();
@@ -429,7 +432,7 @@ public class RecyclerBinderWrapContentTest {
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     // Verify remeasure is triggered through View#postOnAnimation(Runnable)
-    verifyPostOnAnimationWasCalledAtleastNTimesWith(
+    verifyPostOnAnimationWasCalledAtLeastNTimesWith(
         mRecyclerView, 1, recyclerBinder.mRemeasureRunnable);
 
     Size size = new Size();
@@ -462,7 +465,7 @@ public class RecyclerBinderWrapContentTest {
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     // Verify remeasure is triggered through View#postOnAnimation(Runnable)
-    verifyPostOnAnimationWasCalledAtleastNTimesWith(
+    verifyPostOnAnimationWasCalledAtLeastNTimesWith(
         mRecyclerView, 1, recyclerBinder.mRemeasureRunnable);
 
     Size size = new Size();
@@ -778,7 +781,7 @@ public class RecyclerBinderWrapContentTest {
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     // Verify remeasure is triggered through View#postOnAnimation(Runnable)
-    verifyPostOnAnimationWasCalledAtleastNTimesWith(
+    verifyPostOnAnimationWasCalledAtLeastNTimesWith(
         mRecyclerView, 1, recyclerBinder.mRemeasureRunnable);
 
     Size size = new Size();
@@ -804,7 +807,7 @@ public class RecyclerBinderWrapContentTest {
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     // Verify remeasure is triggered through View#postOnAnimation(Runnable)
-    verifyPostOnAnimationWasCalledAtleastNTimesWith(
+    verifyPostOnAnimationWasCalledAtLeastNTimesWith(
         mRecyclerView, 1, recyclerBinder.mRemeasureRunnable);
 
     Size size = new Size();
@@ -837,7 +840,7 @@ public class RecyclerBinderWrapContentTest {
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     // Verify remeasure is triggered through View#postOnAnimation(Runnable)
-    verifyPostOnAnimationWasCalledAtleastNTimesWith(
+    verifyPostOnAnimationWasCalledAtLeastNTimesWith(
         mRecyclerView, 1, recyclerBinder.mRemeasureRunnable);
 
     Size size = new Size();
@@ -870,7 +873,7 @@ public class RecyclerBinderWrapContentTest {
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     // Verify remeasure is triggered through View#postOnAnimation(Runnable)
-    verifyPostOnAnimationWasCalledAtleastNTimesWith(
+    verifyPostOnAnimationWasCalledAtLeastNTimesWith(
         mRecyclerView, 1, recyclerBinder.mRemeasureRunnable);
 
     Size size = new Size();
@@ -907,7 +910,7 @@ public class RecyclerBinderWrapContentTest {
     recyclerBinder.notifyChangeSetComplete(false, changeSetCompleteCallback);
 
     verify(changeSetCompleteCallback).onDataRendered(eq(true), anyLong());
-    verifyPostOnAnimationWasCalledAtleastNTimesWith(
+    verifyPostOnAnimationWasCalledAtLeastNTimesWith(
         mRecyclerView, 0, recyclerBinder.mRemeasureRunnable);
   }
 
@@ -970,7 +973,7 @@ public class RecyclerBinderWrapContentTest {
     }
   }
 
-  private void verifyPostOnAnimationWasCalledAtleastNTimesWith(
+  private void verifyPostOnAnimationWasCalledAtLeastNTimesWith(
       TestRecyclerView recyclerView, int times, Runnable runnable) {
     assertThat(recyclerView.getPostAnimationRunnableList().size()).isGreaterThanOrEqualTo(times);
     for (Runnable r : recyclerView.getPostAnimationRunnableList()) {

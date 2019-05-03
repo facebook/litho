@@ -10,17 +10,18 @@ import java.util.List;
 /** A test {@link SectionsRecyclerView} class used for unit testing. */
 public class TestSectionsRecyclerView extends SectionsRecyclerView {
 
-  private final List<Boolean> setRefreshingValues = new ArrayList<>();
   private final List<Runnable> removeCallbackRunnableList = new ArrayList<>();
   private final List<Runnable> postRunnableList = new ArrayList<>();
   private OnRefreshListener listener;
+  private boolean lastRefreshValue;
+  private int setRefreshingValuesCount;
 
   public TestSectionsRecyclerView(@NonNull Context context, RecyclerView view) {
     super(context, view);
   }
 
-  public List<Boolean> getSetRefreshingValues() {
-    return setRefreshingValues;
+  public int getSetRefreshingValuesCount() {
+    return setRefreshingValuesCount;
   }
 
   public List<Runnable> getRemoveCallbackRunnableList() {
@@ -34,7 +35,12 @@ public class TestSectionsRecyclerView extends SectionsRecyclerView {
   @Override
   public void setRefreshing(boolean refreshing) {
     super.setRefreshing(refreshing);
-    setRefreshingValues.add(refreshing);
+    setRefreshingValuesCount++;
+    lastRefreshValue = refreshing;
+  }
+
+  public boolean getLastRefreshValue() {
+    return lastRefreshValue;
   }
 
   @Override
@@ -61,7 +67,8 @@ public class TestSectionsRecyclerView extends SectionsRecyclerView {
 
   /** Used for resetting the fields of {@link TestSectionsRecyclerView} */
   public void reset() {
-    setRefreshingValues.clear();
+    lastRefreshValue = false;
+    setRefreshingValuesCount = 0;
     removeCallbackRunnableList.clear();
     postRunnableList.clear();
   }
