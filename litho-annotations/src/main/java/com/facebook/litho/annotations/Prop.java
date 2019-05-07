@@ -20,58 +20,145 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * Annotates a parameter to a component's spec method indicating that it will be supplied as a prop
- * for this component.
+ * Inputs to a {@code Component} are its props. The props for a given Component are the union of all
+ * arguments annotated with {@code Prop} in your spec methods. The same prop can be defined and
+ * accessed in multiple lifecycle methods. The annotation processor will validate that the props are
+ * being used with the correct type and name.
+ *
+ * <p>For each unique prop defined on the spec, the annotation processor add a setter method on the
+ * Component's Builder that has the same name as the prop. By default props are required but can be
+ * marked as optional. A prop can also be constrained further using by setting it's {@code resType}.
+ *
+ * <p>The parent component sets the the props when it creates the component in it's {@link
+ * OnCreateLayout} method. The props cannot be updated throughout the lifecycle of the component. If
+ * the props need to be updated, the parent has to create a new component and set new props. The
+ * props <em>should</em> be immutable since the layout can be calculated on multiple threads.
+ * Immutability of the props ensures that no thread safety issues can occur in the component
+ * hierarchy.
+ *
+ * <p><b>Creating Props:</b> <br>
+ *
+ * <pre><code>{@literal @LayoutSpec}
+ * public class HeaderSpec {
+ *
+ *  {@literal @OnCreateLayout}
+ *   static Component onCreateLayout(
+ *     ComponentContext c,
+ *    {@literal @Prop} MyTitles title,
+ *    {@literal @Prop} String imageUrl,
+ *    {@literal @Prop(optional = true)} boolean isSelected) {
+ *
+ *     return Column.create(c)
+ *       .paddingDip(YogaEdge.ALL, 8)
+ *       .backgroundColor(isSelected ? Color.WHITE : Color.GREEN)
+ *       .child(
+ *         Image.create(c)
+ *           .url(imageUrl)
+ *           .marginDip(YogaEdge.BOTTOM, 4)
+ *       )
+ *       .child(
+ *         Text.create(c)
+ *           .text(title.getTitle())
+ *           .textSizeSp(16)
+ *           .marginDip(YogaEdge.BOTTOM, 4)
+ *       )
+ *       .child(
+ *         Text.create(c)
+ *           .text(title.getSubtitle())
+ *           .textSizeSp(12)
+ *       )
+ *       .build();
+ *   }
+ * }</code></pre>
+ *
+ * <p>Notice how {@code imageUrl}, {@code title} and {@code isSelected} are used to set properties
+ * on different components within the layout.
+ *
+ * <p><b>Setting Props:</b> <br>
+ *
+ * <pre><code>{@literal @LayoutSpec}
+ * public class MyComponent {
+ *
+ *  {@literal @OnCreateLayout}
+ *   static Component onCreateLayout(ComponentContext c) {
+ *
+ *     return Header.create(c)
+ *       .title(new MyTitles("title", "subtitle"))
+ *       .imageUrl("https://example.com/image.jpg")
+ *       .build();
+ *   }
+ * }</code></pre>
+ *
+ * @see ResType
+ * @see PropDefault
+ * @see OnCreateLayout
+ * @see State
+ * @see Param
  */
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Prop {
 
   /**
-   * Whether this prop can be omitted by the caller to the component, making it take its default
-   * value.
+   * Declares that this prop can be omitted by the caller of the component. When a prop is omitted
+   * it will take its default value. Its default value will be the standard default initialization
+   * value according to the Java standard (e.g. 0, false, null) or the value of a constant declared
+   * in spec which is annotated with {@link PropDefault} and has the same name and type as the prop.
    *
-   * If a prop is declared optional, its default value will be the standard default initialization
-   * value according to the Java standard (e.g. 0, false, null). If a constant annotated  with
-   * {@link PropDefault} and named the same as the prop is in the class it will override the
-   * default value.
+   * @return {@code true} iff the prop is optional otherwise {@code false}.
    */
   boolean optional() default false;
 
   /**
-   * Marks this prop as one that corresponding to a specific Android resource type, and therefore
+   * Marks this prop as one that corresponds to a specific Android resource type, and therefore
    * generates various helper methods to initialize it.
    *
-   * For example, a {@link CharSequence} prop named "title" may be marked as {@link ResType#STRING}.
-   * This will make the component have not only method "title(CharSequence)" but also various
-   * methods that enable initializing the prop from a resource or attribute:
-   * {@code
-   * titleRes(@StringRes int resId)
-   * titleRes(@StringRes int resId, Object... formatArgs)
-   * titleAttr(@AttrRes int attrResId, @StringRes int defResId)
-   * titleAttr(@AttrRes int attrResId)
-   * }
+   * <p>For example, a {@link CharSequence} prop named "title" may be marked as {@link
+   * ResType#STRING}. This will make the component have not only method "title(CharSequence)" but
+   * also various methods that enable initializing the prop from a resource or attribute:
+   *
+   * <pre><code>
+   *   titleRes(@StringRes int resId)
+   *   titleRes(@StringRes int resId, Object... formatArgs)
+   *   titleAttr(@AttrRes int attrResId, @StringRes int defResId)
+   *   titleAttr(@AttrRes int attrResId)
+   * </code></pre>
+   *
+   * @return The resource type.
    */
   ResType resType() default ResType.NONE;
 
+  /** @return The documentation for the annotated parameter. */
   String docString() default "";
 
   /**
-   * Marks this prop as one supporting a variable number of arguments, and therefore adds methods
-   * to make it easier to build lists of this argument.
+   * Declares this prop supports a variable arguments, and provide utility methods to add values to
+   * the prop.
    *
-   * For example, having {@code @Prop(@varArg="name") List<CharSequence> names} would generate
-   * an {@code name} method which can be called multiple times to add a set of names. These props
-   * should be a parameterized list with a resource type of {@code resType = ResType.NONE}.
+   * <p>For example, having {@code @Prop(@varArg="name") List<CharSequence> names} would generate a
+   * setter {@code name} method which can be called multiple times to add a set of names. The prop
+   * must be a parameterized list with a resource type of {@code resType = ResType.NONE}.
+   *
+   * <pre><code>
+   *   MyComponent.create(c)
+   *     .name("A")
+   *     .name("B")
+   *     .name("C")
+   * </code></pre>
+   *
+   * @return The declared name of the setter method.
    */
   String varArg() default "";
 
-  /** Whether this prop has the same name as a CommonProp. */
+  /** @return {@code true} iff the name of the prop conflicts with a common prop. */
   boolean isCommonProp() default false;
 
   /**
-   * This may only be set to true if isCommonProp is also set to true. If true, then the common prop
-   * behavior of this prop will be overridden. If false, then the common prop will apply at the
-   * framework level as normal as well as any behavior that the user defines within the spec.
+   * This may only be set to true if {@link #isCommonProp} is also set to {@code true}. If {@code
+   * true}, then the behavior of it's common props will be overridden. If {@code false}, then the
+   * common prop will applied by the framework level as normal as well as any behavior that the
+   * component declares within the spec.
+   *
+   * @return {@code true} iff the framework should not apply the common prop.
    */
   boolean overrideCommonPropBehavior() default false;
 }
