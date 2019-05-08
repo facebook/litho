@@ -163,14 +163,19 @@ public @interface Prop {
   boolean overrideCommonPropBehavior() default false;
 
   /**
-   * Marks the Prop as dynamic, so the Component that the Prop belongs to would accept {@link
-   * com.facebook.litho.DynamicValue} as a value for the Prop, so the values could be changed
-   * skipping Layout/MountState.
+   * <strong>EXPERIMENTAL</strong>. This is a part of new experimental API. There is no guarantee
+   * that this API will work or that it will remain the same.
    *
-   * <p>Only Props that DO NOT AFFECT LAYOUT could be marked as dynamic.
+   * <p>Marks a {@link Prop} as dynamic, so that a DynamicValue object could be passed to a
+   * Component that the {@link Prop} belongs to, which makes it possible to update the actual value
+   * of the {@link Prop} bypassing LayoutState and MountState.
    *
-   * <p>Additionally, if a Component's Prop is marked as dynamic, ComponentSpec should provide
-   * OnBindDynamicValue method for the prop, that applies the value to the mounted content
+   * <p>Only Props that <strong>DO NOT AFFECT LAYOUT</strong> could be marked as dynamic.
+   *
+   * <p>Additionally, for every dynamic {@link Prop}, a ComponentSpec must contain {@link
+   * OnBindDynamicValue} method, that applies the actual value to the mounted content.
+   *
+   * @see OnBindDynamicValue
    */
   boolean dynamic() default false;
 }
