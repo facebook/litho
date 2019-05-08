@@ -319,9 +319,15 @@ public class ComponentBodyGenerator {
     final ImmutableList<PropModel> props = specModel.getProps();
 
     for (PropModel prop : props) {
+      final TypeName propTypeName = prop.getTypeName();
+      final TypeName fieldTypeName =
+          !prop.isDynamic()
+              ? propTypeName
+              : ParameterizedTypeName.get(ClassNames.DYNAMIC_VALUE, propTypeName.box());
+
       final FieldSpec.Builder fieldBuilder =
           FieldSpec.builder(
-                  KotlinSpecUtils.getFieldTypeName(specModel, prop.getTypeName()), prop.getName())
+                  KotlinSpecUtils.getFieldTypeName(specModel, fieldTypeName), prop.getName())
               .addAnnotations(prop.getExternalAnnotations())
               .addAnnotation(
                   AnnotationSpec.builder(Prop.class)
@@ -330,7 +336,7 @@ public class ComponentBodyGenerator {
                       .build())
               .addAnnotation(
                   AnnotationSpec.builder(Comparable.class)
-                      .addMember("type", "$L", getComparableType(specModel, prop))
+                      .addMember("type", "$L", getComparableType(fieldTypeName, prop.getTypeSpec()))
                       .build());
       if (prop.hasDefault(specModel.getPropDefaults())) {
         assignInitializer(fieldBuilder, specModel, prop);
@@ -678,7 +684,7 @@ public class ComponentBodyGenerator {
 
   static CodeBlock getCompareStatement(
       SpecModel specModel, String implInstanceName, MethodParamModel field) {
-    final String implAccessor = getImplAccessor(specModel, field);
+    final String implAccessor = getImplAccessor(specModel, field, true);
 
     return getCompareStatement(
         specModel, field, implAccessor, implInstanceName + "." + implAccessor);
@@ -800,24 +806,25 @@ public class ComponentBodyGenerator {
 
   private static @Comparable.Type int getComparableType(
       SpecModel specModel, MethodParamModel field) {
-    if (field.getTypeName().equals(TypeName.FLOAT)) {
-      return Comparable.FLOAT;
+    return getComparableType(field.getTypeName(), field.getTypeSpec());
+  }
 
-    } else if (field.getTypeName().equals(TypeName.DOUBLE)) {
+  private static @Comparable.Type int getComparableType(
+      TypeName typeName, com.facebook.litho.specmodels.model.TypeSpec typeSpec) {
+    if (typeName.equals(TypeName.FLOAT)) {
+      return Comparable.FLOAT;
+    } else if (typeName.equals(TypeName.DOUBLE)) {
       return Comparable.DOUBLE;
 
-    } else if (field.getTypeName() instanceof ArrayTypeName) {
+    } else if (typeName instanceof ArrayTypeName) {
       return Comparable.ARRAY;
 
-    } else if (field.getTypeName().isPrimitive()) {
+    } else if (typeName.isPrimitive()) {
       return Comparable.PRIMITIVE;
-
-    } else if (field.getTypeName().equals(ClassNames.COMPARABLE_DRAWABLE)) {
+    } else if (typeName.equals(ClassNames.COMPARABLE_DRAWABLE)) {
       return Comparable.COMPARABLE_DRAWABLE;
-
-    } else if (field.getTypeSpec().isSubInterface(ClassNames.COLLECTION)) {
-      final int level =
-          calculateLevelOfComponentInCollections((DeclaredTypeSpec) field.getTypeSpec());
+    } else if (typeSpec.isSubInterface(ClassNames.COLLECTION)) {
+      final int level = calculateLevelOfComponentInCollections((DeclaredTypeSpec) typeSpec);
       switch (level) {
         case 0:
           return Comparable.COLLECTION_COMPLEVEL_0;
@@ -833,17 +840,17 @@ public class ComponentBodyGenerator {
           throw new IllegalStateException("Collection Component level not supported.");
       }
 
-    } else if (field.getTypeName().equals(ClassNames.COMPONENT)) {
+    } else if (typeName.equals(ClassNames.COMPONENT)) {
       return Comparable.COMPONENT;
 
-    } else if (field.getTypeName().equals(ClassNames.SECTION)) {
+    } else if (typeName.equals(ClassNames.SECTION)) {
       return Comparable.SECTION;
 
-    } else if (field.getTypeName().equals(ClassNames.EVENT_HANDLER)) {
+    } else if (typeName.equals(ClassNames.EVENT_HANDLER)) {
       return Comparable.EVENT_HANDLER;
 
-    } else if (field.getTypeName() instanceof ParameterizedTypeName
-        && ((ParameterizedTypeName) field.getTypeName()).rawType.equals(ClassNames.EVENT_HANDLER)) {
+    } else if (typeName instanceof ParameterizedTypeName
+        && ((ParameterizedTypeName) typeName).rawType.equals(ClassNames.EVENT_HANDLER)) {
       return Comparable.EVENT_HANDLER_IN_PARAMETERIZED_TYPE;
     }
 
@@ -851,6 +858,11 @@ public class ComponentBodyGenerator {
   }
 
   static String getImplAccessor(SpecModel specModel, MethodParamModel methodParamModel) {
+    return getImplAccessor(specModel, methodParamModel, false);
+  }
+
+  static String getImplAccessor(
+      SpecModel specModel, MethodParamModel methodParamModel, boolean shallow) {
     if (methodParamModel instanceof StateParamModel ||
         SpecModelUtils.getStateValueWithName(specModel, methodParamModel.getName()) != null) {
       return STATE_CONTAINER_FIELD_NAME + "." + methodParamModel.getName();
@@ -859,6 +871,10 @@ public class ComponentBodyGenerator {
           + methodParamModel.getName().substring(0, 1).toUpperCase()
           + methodParamModel.getName().substring(1)
           + "()";
+    } else if (methodParamModel instanceof PropModel
+        && ((PropModel) methodParamModel).isDynamic()
+        && !shallow) {
+      return "retrieveValue(" + methodParamModel.getName() + ")";
     }
 
     return methodParamModel.getName();

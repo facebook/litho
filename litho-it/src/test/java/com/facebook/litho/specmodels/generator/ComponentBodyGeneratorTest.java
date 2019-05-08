@@ -117,7 +117,8 @@ public class ComponentBodyGeneratorTest {
         @Param Object arg2,
         @TreeProp long arg3,
         @TreeProp Set<List<Row>> arg7,
-        @TreeProp Set<Integer> arg8) {}
+        @TreeProp Set<Integer> arg8,
+        @Prop(dynamic = true) Object arg9) {}
 
     @OnEvent(Object.class)
     public void testEventMethod(
@@ -302,6 +303,19 @@ public class ComponentBodyGeneratorTest {
                 + "    type = 10\n"
                 + ")\n"
                 + "com.facebook.litho.Component arg4;\n");
+
+    dataHolder = ComponentBodyGenerator.generateProps(mMountSpecModelDI);
+    assertThat(dataHolder.getFieldSpecs()).hasSize(5);
+    assertThat(dataHolder.getFieldSpecs().get(4).toString())
+        .isEqualTo(
+            "@com.facebook.litho.annotations.Prop(\n"
+                + "    resType = com.facebook.litho.annotations.ResType.NONE,\n"
+                + "    optional = false\n"
+                + ")\n"
+                + "@com.facebook.litho.annotations.Comparable(\n"
+                + "    type = 13\n"
+                + ")\n"
+                + "com.facebook.litho.DynamicValue<java.lang.Object> arg9;\n");
   }
 
   @Test
@@ -391,6 +405,9 @@ public class ComponentBodyGeneratorTest {
                 + "    return false;\n"
                 + "  }\n"
                 + "  if (arg6 != null ? !arg6.equals(mountTestRef.arg6) : mountTestRef.arg6 != null) {\n"
+                + "    return false;\n"
+                + "  }\n"
+                + "  if (arg9 != null ? !arg9.equals(mountTestRef.arg9) : mountTestRef.arg9 != null) {\n"
                 + "    return false;\n"
                 + "  }\n"
                 + "  if (mStateContainer.arg1 != mountTestRef.mStateContainer.arg1) {\n"

@@ -761,6 +761,10 @@ public abstract class Component extends ComponentLifecycle
     throw new RuntimeException("Components that have dynamic Props must override this method");
   }
 
+  protected static <T> T retrieveValue(DynamicValue<T> dynamicValue) {
+    return dynamicValue.get();
+  }
+
   /**
    * @param <T> the type of this builder. Required to ensure methods defined here in the abstract
    *     class correctly return the type of the concrete subclass.

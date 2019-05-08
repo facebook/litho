@@ -136,4 +136,6 @@ public interface ClassNames {
   ClassName HOTSWAP_MANAGER = ClassName.bestGuess("com.facebook.litho.HotswapManager");
   ClassName CLASS_LOADER = ClassName.bestGuess("java.lang.ClassLoader");
   ClassName JAVA_METHOD = ClassName.bestGuess("java.lang.reflect.Method");
+
+  ClassName DYNAMIC_VALUE = ClassName.bestGuess("com.facebook.litho.DynamicValue");
 }

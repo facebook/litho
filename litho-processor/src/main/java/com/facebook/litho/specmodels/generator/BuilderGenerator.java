@@ -436,6 +436,13 @@ public class BuilderGenerator {
 
         if (componentClass.equals(ClassNames.COMPONENT)) {
           dataHolder.addMethod(componentBuilder(specModel, prop, requiredIndex));
+        } else if (prop.isDynamic()) {
+          final TypeName dynamicValueType =
+              ParameterizedTypeName.get(ClassNames.DYNAMIC_VALUE, prop.getTypeName().box());
+          dataHolder.addMethod(
+              dynamicValueBuilder(specModel, prop, requiredIndex, dynamicValueType));
+          dataHolder.addMethod(
+              dynamicValueSimpleBuilder(specModel, prop, requiredIndex, dynamicValueType));
         } else {
           dataHolder.addMethod(regularBuilder(specModel, prop, requiredIndex));
         }
@@ -506,6 +513,40 @@ public class BuilderGenerator {
             Arrays.asList(parameter(prop, prop.getTypeName(), prop.getName())),
             "$L == null ? null : $L.makeShallowCopy()",
             prop.getName(),
+            prop.getName())
+        .build();
+  }
+
+  private static MethodSpec dynamicValueBuilder(
+      SpecModel specModel, PropModel prop, int requiredIndex, TypeName dynamicValueType) {
+    return getMethodSpecBuilder(
+            specModel,
+            prop,
+            requiredIndex,
+            prop.getName(),
+            Arrays.asList(
+                parameter(
+                    prop,
+                    KotlinSpecUtils.getFieldTypeName(specModel, dynamicValueType),
+                    prop.getName())),
+            prop.getName())
+        .build();
+  }
+
+  private static MethodSpec dynamicValueSimpleBuilder(
+      SpecModel specModel, PropModel prop, int requiredIndex, TypeName dynamicValueType) {
+    return getMethodSpecBuilder(
+            specModel,
+            prop,
+            requiredIndex,
+            prop.getName(),
+            Arrays.asList(
+                parameter(
+                    prop,
+                    KotlinSpecUtils.getFieldTypeName(specModel, prop.getTypeName()),
+                    prop.getName())),
+            "new $T($L)",
+            dynamicValueType,
             prop.getName())
         .build();
   }
