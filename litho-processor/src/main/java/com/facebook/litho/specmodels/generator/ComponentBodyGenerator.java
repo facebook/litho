@@ -28,6 +28,7 @@ import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.annotations.TreeProp;
 import com.facebook.litho.specmodels.internal.ImmutableList;
+import com.facebook.litho.specmodels.model.BindDynamicValueMethod;
 import com.facebook.litho.specmodels.model.CachedValueParamModel;
 import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.EventDeclarationModel;
@@ -114,6 +115,7 @@ public class ComponentBodyGenerator {
     builder.addTypeSpecDataHolder(generateOnUpdateStateMethods(specModel));
     builder.addTypeSpecDataHolder(generateMakeShallowCopy(specModel, hasState));
     builder.addTypeSpecDataHolder(generateGetDynamicProps(specModel));
+    builder.addTypeSpecDataHolder(generateBindDynamicProp(specModel));
 
     if (hasState) {
       builder.addType(generateStateContainer(specModel));
@@ -674,6 +676,51 @@ public class ComponentBodyGenerator {
             .build();
 
     return typeSpecDataHolder.addMethod(methodSpec).build();
+  }
+
+  static TypeSpecDataHolder generateBindDynamicProp(SpecModel specModel) {
+    TypeSpecDataHolder.Builder typeSpecDataHolder = TypeSpecDataHolder.newBuilder();
+
+    final List<PropModel> dynamicProps = SpecModelUtils.getDynamicProps(specModel);
+    if (dynamicProps.isEmpty()) {
+      return typeSpecDataHolder.build();
+    }
+
+    final MethodSpec.Builder methodBuilder =
+        MethodSpec.methodBuilder("bindDynamicProp")
+            .addModifiers(Modifier.PROTECTED)
+            .addAnnotation(Override.class)
+            .returns(ClassName.VOID)
+            .addParameter(ClassName.INT, "dynamicPropIndex")
+            .addParameter(ClassName.OBJECT, "value")
+            .addParameter(ClassName.OBJECT, "mountedContent");
+
+    final String sourceDelegateAccessor = SpecModelUtils.getSpecAccessor(specModel);
+
+    methodBuilder.beginControlFlow("switch (dynamicPropIndex)");
+
+    for (int index = 0, size = dynamicProps.size(); index < size; index++) {
+      final PropModel prop = dynamicProps.get(index);
+      final SpecMethodModel<BindDynamicValueMethod, Void> delegate =
+          SpecModelUtils.getBindDelegateMethodForDynamicProp(specModel, prop);
+
+      methodBuilder.addCode("case $L:\n", index);
+      methodBuilder.addStatement(
+          "$>$L.$L(($T) mountedContent, retrieveValue($L))",
+          sourceDelegateAccessor,
+          delegate.name,
+          delegate.methodParams.get(0).getTypeName(),
+          prop.getName());
+      methodBuilder.addStatement("break$<");
+    }
+
+    methodBuilder.addCode("default:\n");
+    methodBuilder.addStatement("$>break$<");
+    methodBuilder.endControlFlow();
+
+    typeSpecDataHolder.addMethod(methodBuilder.build());
+
+    return typeSpecDataHolder.build();
   }
 
   private static List<MethodParamModel> findComponentsInImpl(SpecModel specModel) {

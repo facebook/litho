@@ -243,6 +243,17 @@ public class SpecModelUtils {
     return dynamicProps;
   }
 
+  public static SpecMethodModel<BindDynamicValueMethod, Void> getBindDelegateMethodForDynamicProp(
+      SpecModel specModel, PropModel prop) {
+    for (SpecMethodModel<BindDynamicValueMethod, Void> method :
+        ((MountSpecModel) specModel).getBindDynamicValueMethods()) {
+      if (prop.equals(method.methodParams.get(1))) {
+        return method;
+      }
+    }
+    return null;
+  }
+
   /**
    * There are a few cases of classes with typeArgs (e.g. {@literal MyClass<SomeClass, ..>}) where
    *
