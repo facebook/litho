@@ -145,6 +145,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   private boolean mTransitionsHasBeenCollected = false;
   private final Set<Long> mComponentIdsMountedInThisFrame = new HashSet<>();
 
+  private final DynamicPropsManager mDynamicPropsManager = new DynamicPropsManager();
+
   public MountState(LithoView view) {
     mIndexToItemMap = new LongSparseArray<>();
     mVisibilityIdToItemMap = new LongSparseArray<>();
@@ -922,7 +924,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     final Object currentContent = currentMountItem.getContent();
 
     // 6. Set the mounted content on the Component and call the bind callback.
-    layoutOutputComponent.bind(getContextForComponent(layoutOutputComponent), currentContent);
+    bindComponentToContent(layoutOutputComponent, currentContent);
     currentMountItem.setIsBound(true);
 
     // 7. Update the bounds of the mounted content. This needs to be done regardless of whether
@@ -1414,7 +1416,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     final MountItem item = mountContent(index, component, content, host, layoutOutput);
 
     // 5. Notify the component that mounting has completed
-    component.bind(context, content);
+    bindComponentToContent(component, content);
     item.setIsBound(true);
 
     // 6. Apply the bounds to the Mount content now. It's important to do so after bind as calling
@@ -2885,8 +2887,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
         continue;
       }
 
-      final Component component = mountItem.getComponent();
-      component.unbind(getContextForComponent(component), mountItem.getContent());
+      unbindComponentFromContent(mountItem.getComponent(), mountItem.getContent());
       mountItem.setIsBound(false);
     }
 
@@ -2923,7 +2924,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       final Component component = mountItem.getComponent();
       final Object content = mountItem.getContent();
 
-      component.bind(getContextForComponent(component), content);
+      bindComponentToContent(component, content);
       mountItem.setIsBound(true);
 
       if (content instanceof View &&
@@ -3160,5 +3161,15 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   private ComponentContext getContextForComponent(Component component) {
     final ComponentContext c = component.getScopedContext();
     return c == null ? mContext : c;
+  }
+
+  private void bindComponentToContent(Component component, Object content) {
+    component.bind(getContextForComponent(component), content);
+    mDynamicPropsManager.onBindComponentToContent(component, content);
+  }
+
+  private void unbindComponentFromContent(Component component, Object content) {
+    mDynamicPropsManager.onUnbindComponent(component);
+    component.unbind(getContextForComponent(component), content);
   }
 }
