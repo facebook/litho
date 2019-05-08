@@ -317,6 +317,11 @@ public class StateValidationTest {
           public boolean overrideCommonPropBehavior() {
             return false;
           }
+
+          @Override
+          public boolean dynamic() {
+            return false;
+          }
         };
     when(prop.getAnnotations()).thenReturn(ImmutableList.<Annotation>of(propAnnotation));
 

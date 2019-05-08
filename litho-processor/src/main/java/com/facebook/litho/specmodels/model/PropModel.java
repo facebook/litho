@@ -34,6 +34,7 @@ public class PropModel implements MethodParamModel {
   private final boolean mIsOptional;
   private final boolean mIsCommonProp;
   private final boolean mOverrideCommonPropBehavior;
+  private final boolean mIsDynamic;
   private final ResType mResType;
   private final String mVarArgSingleArgName;
 
@@ -42,12 +43,14 @@ public class PropModel implements MethodParamModel {
       boolean isOptional,
       boolean isCommonProp,
       boolean overrideCommonPropBehavior,
+      boolean dynamic,
       ResType resType,
       String varArg) {
     mParamModel = paramModel;
     mIsOptional = isOptional;
     mIsCommonProp = isCommonProp;
     mOverrideCommonPropBehavior = overrideCommonPropBehavior;
+    mIsDynamic = dynamic;
     mResType = resType;
     mVarArgSingleArgName = varArg;
   }
@@ -94,6 +97,10 @@ public class PropModel implements MethodParamModel {
     return mOverrideCommonPropBehavior;
   }
 
+  public boolean isDynamic() {
+    return mIsDynamic;
+  }
+
   public ResType getResType() {
     return mResType;
   }
@@ -124,7 +131,13 @@ public class PropModel implements MethodParamModel {
   /** @return a new {@link PropModel} instance with the given name overridden. */
   public PropModel withName(String name) {
     return new PropModel(
-        mParamModel, mIsOptional, mIsCommonProp, false, mResType, mVarArgSingleArgName) {
+        mParamModel,
+        mIsOptional,
+        mIsCommonProp,
+        false,
+        mIsDynamic,
+        mResType,
+        mVarArgSingleArgName) {
       @Override
       public String getName() {
         return name;
@@ -139,6 +152,7 @@ public class PropModel implements MethodParamModel {
       return mParamModel.equals(p.mParamModel)
           && mIsOptional == p.mIsOptional
           && mIsCommonProp == p.mIsCommonProp
+          && mIsDynamic == p.mIsDynamic
           && mResType == p.mResType
           && mVarArgSingleArgName.equals(p.getVarArgsSingleName());
     }
@@ -148,6 +162,7 @@ public class PropModel implements MethodParamModel {
 
   @Override
   public int hashCode() {
-    return Objects.hash(mParamModel, mIsOptional, mIsCommonProp, mResType, mVarArgSingleArgName);
+    return Objects.hash(
+        mParamModel, mIsOptional, mIsCommonProp, mIsDynamic, mResType, mVarArgSingleArgName);
   }
 }

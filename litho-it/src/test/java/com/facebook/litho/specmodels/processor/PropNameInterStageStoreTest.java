@@ -109,6 +109,7 @@ public class PropNameInterStageStoreTest {
         false,
         false,
         false,
+        false,
         ResType.BOOL,
         "");
   }

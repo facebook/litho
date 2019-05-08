@@ -161,4 +161,16 @@ public @interface Prop {
    * @return {@code true} iff the framework should not apply the common prop.
    */
   boolean overrideCommonPropBehavior() default false;
+
+  /**
+   * Marks the Prop as dynamic, so the Component that the Prop belongs to would accept {@link
+   * com.facebook.litho.DynamicValue} as a value for the Prop, so the values could be changed
+   * skipping Layout/MountState.
+   *
+   * <p>Only Props that DO NOT AFFECT LAYOUT could be marked as dynamic.
+   *
+   * <p>Additionally, if a Component's Prop is marked as dynamic, ComponentSpec should provide
+   * OnBindDynamicValue method for the prop, that applies the value to the mounted content
+   */
+  boolean dynamic() default false;
 }

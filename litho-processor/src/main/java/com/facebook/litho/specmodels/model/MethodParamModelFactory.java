@@ -64,6 +64,7 @@ public final class MethodParamModelFactory {
                 ((Prop) annotation).optional(),
                 ((Prop) annotation).isCommonProp(),
                 ((Prop) annotation).overrideCommonPropBehavior(),
+                ((Prop) annotation).dynamic(),
                 ((Prop) annotation).resType(),
                 ((Prop) annotation).varArg());
 
