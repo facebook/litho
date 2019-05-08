@@ -16,6 +16,8 @@
 
 package com.facebook.litho.specmodels.generator;
 
+import static com.facebook.litho.specmodels.generator.GeneratorConstants.DYNAMIC_PROPS;
+
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.BuilderMethodModel;
 import com.facebook.litho.specmodels.model.ClassNames;
@@ -26,6 +28,7 @@ import com.facebook.litho.specmodels.model.PropModel;
 import com.facebook.litho.specmodels.model.SpecElementType;
 import com.facebook.litho.specmodels.model.SpecMethodModel;
 import com.facebook.litho.specmodels.model.SpecModel;
+import com.facebook.litho.specmodels.model.SpecModelUtils;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ArrayTypeName;
 import com.squareup.javapoet.ClassName;
@@ -1427,6 +1430,25 @@ public class BuilderGenerator {
               REQUIRED_PROPS_COUNT,
               "mRequired",
               REQUIRED_PROPS_NAMES);
+    }
+
+    final List<PropModel> dynamicProps = SpecModelUtils.getDynamicProps(specModel);
+    if (!dynamicProps.isEmpty()) {
+      final int count = dynamicProps.size();
+
+      final String componentRef = getComponentMemberInstanceName(specModel);
+      buildMethodBuilder.addStatement(
+          "$L.$L = new $T[$L]", componentRef, DYNAMIC_PROPS, ClassNames.DYNAMIC_VALUE, count);
+
+      for (int i = 0; i < count; i++) {
+        buildMethodBuilder.addStatement(
+            "$L.$L[$L] = $L.$L",
+            componentRef,
+            DYNAMIC_PROPS,
+            i,
+            componentRef,
+            dynamicProps.get(i).getName());
+      }
     }
 
     return buildMethodBuilder

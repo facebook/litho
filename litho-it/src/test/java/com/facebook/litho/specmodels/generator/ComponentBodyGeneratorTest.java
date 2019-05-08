@@ -305,7 +305,7 @@ public class ComponentBodyGeneratorTest {
                 + "com.facebook.litho.Component arg4;\n");
 
     dataHolder = ComponentBodyGenerator.generateProps(mMountSpecModelDI);
-    assertThat(dataHolder.getFieldSpecs()).hasSize(5);
+    assertThat(dataHolder.getFieldSpecs()).hasSize(6);
     assertThat(dataHolder.getFieldSpecs().get(4).toString())
         .isEqualTo(
             "@com.facebook.litho.annotations.Prop(\n"
@@ -316,6 +316,9 @@ public class ComponentBodyGeneratorTest {
                 + "    type = 13\n"
                 + ")\n"
                 + "com.facebook.litho.DynamicValue<java.lang.Object> arg9;\n");
+
+    assertThat(dataHolder.getFieldSpecs().get(5).toString())
+        .isEqualTo("private com.facebook.litho.DynamicValue[] mDynamicProps;\n");
   }
 
   @Test
@@ -470,6 +473,21 @@ public class ComponentBodyGeneratorTest {
         .isEqualTo(
             "private TestUpdateStateWithTransitionMethodStateUpdate createTestUpdateStateWithTransitionMethodStateUpdate() {\n"
                 + "  return new TestUpdateStateWithTransitionMethodStateUpdate();\n"
+                + "}\n");
+  }
+
+  @Test
+  public void testGetDynamicProps() {
+    TypeSpecDataHolder dataHolder = ComponentBodyGenerator.generateGetDynamicProps(mSpecModelDI);
+    assertThat(dataHolder.getMethodSpecs()).isEmpty();
+
+    dataHolder = ComponentBodyGenerator.generateGetDynamicProps(mMountSpecModelDI);
+    assertThat(dataHolder.getMethodSpecs()).hasSize(1);
+    assertThat(dataHolder.getMethodSpecs().get(0).toString())
+        .isEqualTo(
+            "@java.lang.Override\n"
+                + "protected com.facebook.litho.DynamicValue[] getDynamicProps() {\n"
+                + "  return mDynamicProps;\n"
                 + "}\n");
   }
 

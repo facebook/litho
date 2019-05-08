@@ -16,6 +16,7 @@
 
 package com.facebook.litho.specmodels.generator;
 
+import static com.facebook.litho.specmodels.generator.GeneratorConstants.DYNAMIC_PROPS;
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.PREVIOUS_RENDER_DATA_FIELD_NAME;
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.STATE_CONTAINER_FIELD_NAME;
 
@@ -112,6 +113,7 @@ public class ComponentBodyGenerator {
     builder.addTypeSpecDataHolder(generateCopyInterStageImpl(specModel));
     builder.addTypeSpecDataHolder(generateOnUpdateStateMethods(specModel));
     builder.addTypeSpecDataHolder(generateMakeShallowCopy(specModel, hasState));
+    builder.addTypeSpecDataHolder(generateGetDynamicProps(specModel));
 
     if (hasState) {
       builder.addType(generateStateContainer(specModel));
@@ -318,6 +320,7 @@ public class ComponentBodyGenerator {
     final TypeSpecDataHolder.Builder typeSpecDataHolder = TypeSpecDataHolder.newBuilder();
     final ImmutableList<PropModel> props = specModel.getProps();
 
+    boolean hasDynamicProps = false;
     for (PropModel prop : props) {
       final TypeName propTypeName = prop.getTypeName();
       final TypeName fieldTypeName =
@@ -343,6 +346,19 @@ public class ComponentBodyGenerator {
       }
 
       typeSpecDataHolder.addField(fieldBuilder.build());
+
+      if (prop.isDynamic()) {
+        hasDynamicProps = true;
+      }
+    }
+
+    // If there are dynamic props we also need to generate mDynamicProps fields, which assembles all
+    // of them
+    if (hasDynamicProps) {
+      typeSpecDataHolder.addField(
+          FieldSpec.builder(ArrayTypeName.of(ClassNames.DYNAMIC_VALUE), DYNAMIC_PROPS)
+              .addModifiers(Modifier.PRIVATE)
+              .build());
     }
 
     return typeSpecDataHolder.build();
@@ -640,6 +656,24 @@ public class ComponentBodyGenerator {
     builder.addStatement("return component");
 
     return typeSpecDataHolder.addMethod(builder.build()).build();
+  }
+
+  static TypeSpecDataHolder generateGetDynamicProps(SpecModel specModel) {
+    final TypeSpecDataHolder.Builder typeSpecDataHolder = TypeSpecDataHolder.newBuilder();
+
+    if (SpecModelUtils.getDynamicProps(specModel).isEmpty()) {
+      return typeSpecDataHolder.build();
+    }
+
+    final MethodSpec methodSpec =
+        MethodSpec.methodBuilder("getDynamicProps")
+            .addModifiers(Modifier.PROTECTED)
+            .addAnnotation(Override.class)
+            .returns(ArrayTypeName.of(ClassNames.DYNAMIC_VALUE))
+            .addStatement("return $L", DYNAMIC_PROPS)
+            .build();
+
+    return typeSpecDataHolder.addMethod(methodSpec).build();
   }
 
   private static List<MethodParamModel> findComponentsInImpl(SpecModel specModel) {
