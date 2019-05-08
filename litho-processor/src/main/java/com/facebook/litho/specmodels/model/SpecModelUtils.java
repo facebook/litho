@@ -233,6 +233,16 @@ public class SpecModelUtils {
     return representedObject instanceof TypeElement;
   }
 
+  public static List<PropModel> getDynamicProps(SpecModel specModel) {
+    final List<PropModel> dynamicProps = new ArrayList<>();
+    for (PropModel prop : specModel.getProps()) {
+      if (prop.isDynamic()) {
+        dynamicProps.add(prop);
+      }
+    }
+    return dynamicProps;
+  }
+
   /**
    * There are a few cases of classes with typeArgs (e.g. {@literal MyClass<SomeClass, ..>}) where
    *
