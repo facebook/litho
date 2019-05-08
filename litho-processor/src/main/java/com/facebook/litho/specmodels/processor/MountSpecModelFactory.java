@@ -151,7 +151,7 @@ public class MountSpecModelFactory implements SpecModelFactory<MountSpecModel> {
         element,
         mMountSpecGenerator,
         FieldsExtractor.extractFields(element),
-        ImmutableList.of());
+        BindDynamicValuesMethodExtractor.getOnBindDynamicValuesMethods(element, messager));
   }
 
   private static TypeName getMountType(Elements elements, TypeElement element) {

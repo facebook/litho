@@ -39,8 +39,6 @@ public class MountSpecModel implements SpecModel, HasPureRender {
   private final boolean mCanPreallocate;
   private final TypeName mMountType;
   private final SpecGenerator<MountSpecModel> mMountSpecGenerator;
-  private final ImmutableList<SpecMethodModel<BindDynamicValueMethod, Void>>
-      mBindDynamicValueMethods;
 
   public MountSpecModel(
       String qualifiedSpecClassName,
@@ -96,6 +94,7 @@ public class MountSpecModel implements SpecModel, HasPureRender {
             .specElementType(specElementType)
             .representedObject(representedObject)
             .fields(fields)
+            .bindDynamicValueMethods(bindDynamicValueMethods)
             .build();
     mIsPureRender = isPureRender;
     mHasChildLithosViews = hasChildLithosViews;
@@ -104,7 +103,6 @@ public class MountSpecModel implements SpecModel, HasPureRender {
     mCanPreallocate = canPreallocate;
     mMountType = mountType;
     mMountSpecGenerator = mountSpecGenerator;
-    mBindDynamicValueMethods = bindDynamicValueMethods;
   }
 
   @Override
@@ -383,7 +381,7 @@ public class MountSpecModel implements SpecModel, HasPureRender {
   }
 
   public ImmutableList<SpecMethodModel<BindDynamicValueMethod, Void>> getBindDynamicValueMethods() {
-    return mBindDynamicValueMethods;
+    return mSpecModel.getBindDynamicValueMethods();
   }
 
   @Override

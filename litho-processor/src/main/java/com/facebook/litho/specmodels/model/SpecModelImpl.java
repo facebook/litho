@@ -70,6 +70,8 @@ public final class SpecModelImpl implements SpecModel {
   private final ImmutableList<AnnotationSpec> mClassAnnotations;
   private final ImmutableList<TagModel> mTags;
   private final ImmutableList<FieldModel> mFields;
+  private final ImmutableList<SpecMethodModel<BindDynamicValueMethod, Void>>
+      mBindDynamicValueMethods;
   private final String mClassJavadoc;
   private final ImmutableList<PropJavadocModel> mPropJavadocs;
   private final boolean mIsPublic;
@@ -98,6 +100,7 @@ public final class SpecModelImpl implements SpecModel {
       ImmutableList<AnnotationSpec> classAnnotations,
       ImmutableList<TagModel> tags,
       ImmutableList<FieldModel> fields,
+      ImmutableList<SpecMethodModel<BindDynamicValueMethod, Void>> bindDynamicValueMethods,
       String classJavadoc,
       ImmutableList<PropJavadocModel> propJavadocs,
       boolean isPublic,
@@ -123,7 +126,8 @@ public final class SpecModelImpl implements SpecModel {
             triggerMethods,
             workingRangeRegisterMethod,
             workingRangeMethods,
-            updateStateMethods);
+            updateStateMethods,
+            bindDynamicValueMethods);
     mProps = props.isEmpty() ? getProps(mRawProps, cachedPropNames, delegateMethods) : props;
     mRawInjectProps =
         getRawInjectProps(
@@ -177,6 +181,7 @@ public final class SpecModelImpl implements SpecModel {
     mClassAnnotations = classAnnotations;
     mTags = tags;
     mFields = fields;
+    mBindDynamicValueMethods = bindDynamicValueMethods;
     mClassJavadoc = classJavadoc;
     mPropJavadocs = propJavadocs;
     mIsPublic = isPublic;
@@ -435,6 +440,20 @@ public final class SpecModelImpl implements SpecModel {
     throw new RuntimeException("Don't delegate to this method!");
   }
 
+  /**
+   * Retrieve list of {@link com.facebook.litho.annotations.OnBindDynamicValue} methods. This method
+   * is a not included into {@link com.facebook.litho.annotations.MountSpec} interface, since only
+   * {@link com.facebook.litho.annotations.MountSpec}s may declare such methods for now. This method
+   * is present here, because {@link SpecModelImpl} needs to be aware of these methods to extract
+   * {@link com.facebook.litho.annotations.Prop}s from them.
+   *
+   * @return the list of methods defined in the spec for a value of a dynamic Prop to the mounteed
+   *     content.
+   */
+  public ImmutableList<SpecMethodModel<BindDynamicValueMethod, Void>> getBindDynamicValueMethods() {
+    return mBindDynamicValueMethods;
+  }
+
   private static String getSpecName(String qualifiedSpecClassName) {
     return qualifiedSpecClassName.substring(qualifiedSpecClassName.lastIndexOf('.') + 1);
   }
@@ -498,7 +517,8 @@ public final class SpecModelImpl implements SpecModel {
       ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> triggerMethods,
       @Nullable SpecMethodModel<EventMethod, Void> workingRangeRegisterMethod,
       ImmutableList<WorkingRangeMethodModel> workingRangeMethods,
-      ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> updateStateMethods) {
+      ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> updateStateMethods,
+      ImmutableList<SpecMethodModel<BindDynamicValueMethod, Void>> bindDynamicValueMethods) {
     final List<PropModel> props = new ArrayList<>();
 
     for (SpecMethodModel<DelegateMethod, Void> delegateMethod : delegateMethods) {
@@ -562,6 +582,15 @@ public final class SpecModelImpl implements SpecModel {
       for (MethodParamModel param : delegateMethod.methodParams) {
         if (param instanceof DiffPropModel) {
           props.add(((DiffPropModel) param).getUnderlyingPropModel());
+        }
+      }
+    }
+
+    for (SpecMethodModel<BindDynamicValueMethod, Void> bindDynamicValueMethod :
+        bindDynamicValueMethods) {
+      for (MethodParamModel param : bindDynamicValueMethod.methodParams) {
+        if (param instanceof PropModel) {
+          props.add((PropModel) param);
         }
       }
     }
@@ -1066,6 +1095,7 @@ public final class SpecModelImpl implements SpecModel {
     private ImmutableList<AnnotationSpec> mClassAnnotations;
     @Nullable private ImmutableList<TagModel> mTags;
     private ImmutableList<FieldModel> mFields;
+    private ImmutableList<SpecMethodModel<BindDynamicValueMethod, Void>> mBindDynamicValueMethods;
     private String mClassJavadoc;
     private ImmutableList<PropJavadocModel> mPropJavadocs;
     private boolean mIsPublic;
@@ -1179,6 +1209,12 @@ public final class SpecModelImpl implements SpecModel {
       return this;
     }
 
+    public Builder bindDynamicValueMethods(
+        ImmutableList<SpecMethodModel<BindDynamicValueMethod, Void>> bindDynamicValueMethods) {
+      mBindDynamicValueMethods = bindDynamicValueMethods;
+      return this;
+    }
+
     public Builder classJavadoc(String classJavadoc) {
       mClassJavadoc = classJavadoc;
       return this;
@@ -1245,6 +1281,7 @@ public final class SpecModelImpl implements SpecModel {
           mClassAnnotations,
           mTags,
           mFields,
+          mBindDynamicValueMethods,
           mClassJavadoc,
           mPropJavadocs,
           mIsPublic,
@@ -1330,6 +1367,10 @@ public final class SpecModelImpl implements SpecModel {
 
       if (mWorkingRangeMethodModels == null) {
         mWorkingRangeMethodModels = ImmutableList.of();
+      }
+
+      if (mBindDynamicValueMethods == null) {
+        mBindDynamicValueMethods = ImmutableList.of();
       }
     }
   }
