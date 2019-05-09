@@ -34,8 +34,8 @@ import com.intellij.psi.search.GlobalSearchScope;
 import java.util.Collection;
 
 /**
- * Helper class for Litho @OnEvent method related code generation. Details about this method in the
- * <a href="https://fblitho.com/docs/events-overview">docs</a>
+ * Helper class for Litho {@literal @OnEvent} method related code generation. Details about this
+ * method in the <a href="https://fblitho.com/docs/events-overview">docs</a>
  */
 public class OnEventGenerateUtils {
   private static final String CONTEXT_PARAMETER_NAME = "c";
@@ -47,17 +47,18 @@ public class OnEventGenerateUtils {
    *
    * <p>Example:
    *
-   * <pre>{@code
-   * @OnEvent(ColorChangedEvent.class)
+   * <pre><code>{@literal @OnEvent(ColorChangedEvent.class)}
    * static void onColorChangedEvent(
    *       ComponentContext c,
-   *       @FromEvent int color,
-   *       @Prop String someProp) {}
-   * }</pre>
+   *      {@literal int color},
+   *      {@literal @Prop} String someProp) {
+   *
+   *      }
+   * }</code></pre>
    *
    * @param context Context for creating PsiElements.
    * @param eventClass Class defines method name and method parameters. Parameters derived from this
-   *     class are created with the @FromEvent annotation.
+   *     class are created with the {@literal @FromEvent} annotation.
    * @param additionalParameters Additional parameters added to the method 'as is'.
    * @return New PsiMethod describing Litho event handler.
    */
