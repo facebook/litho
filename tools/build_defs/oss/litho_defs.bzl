@@ -263,7 +263,7 @@ def fb_prebuilt_cxx_library(**kwargs):
     """Delegates to native prebuilt_cxx_library."""
     native.prebuilt_cxx_library(**kwargs)
 
-def fb_instrumentation_test(**kwargs):
+def instrumentation_test(**kwargs):
     """
     We don't support this in the OSS build for now.
     Please use Gradle instead.
