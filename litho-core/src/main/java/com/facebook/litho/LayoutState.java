@@ -2145,11 +2145,36 @@ class LayoutState {
    * the node has explicitly been forced to be wrapped in a view.
    */
   private static boolean needsHostView(InternalNode node, LayoutState layoutState) {
-    return layoutState.isLayoutRoot(node)
-        || (!isMountViewSpec(node.getRootComponent())
-            && (hasViewContent(node, layoutState) || node.isForceViewWrapping()))
-        || (!ComponentsConfiguration.createPhantomLayoutOutputsForTransitions
-            && needsHostViewForTransition(node));
+    if (layoutState.isLayoutRoot(node)) {
+      // Need a View for the Root component.
+      return true;
+    }
+
+    final Component component = node.getRootComponent();
+    if (isMountViewSpec(component)) {
+      // Component already represents a View.
+      return false;
+    }
+
+    if (node.isForceViewWrapping()) {
+      // Wrapping into a View requested.
+      return true;
+    }
+
+    if (hasViewContent(node, layoutState)) {
+      // Has View content (e.g. Accessibility content, Focus change listener, shadow, view tag etc)
+      // thus needs a host View.
+      return true;
+    }
+
+    if (needsHostViewForTransition(node)) {
+      // We need a View for Transition. Normally. Unless phantom LayoutOutputs are enabled.
+      if (!ComponentsConfiguration.createPhantomLayoutOutputsForTransitions) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   private static boolean needsHostViewForTransition(InternalNode node) {
