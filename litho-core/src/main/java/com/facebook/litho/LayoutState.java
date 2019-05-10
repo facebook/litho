@@ -32,6 +32,7 @@ import static com.facebook.litho.FrameworkLogEvents.EVENT_CALCULATE_LAYOUT_STATE
 import static com.facebook.litho.FrameworkLogEvents.EVENT_COLLECT_RESULTS;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_CREATE_LAYOUT;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_CSS_LAYOUT;
+import static com.facebook.litho.FrameworkLogEvents.EVENT_RESUME_CALCULATE_LAYOUT_STATE;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_COMPONENT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_LAYOUT_STATE_SOURCE;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_ROOT_COMPONENT;
@@ -199,6 +200,9 @@ class LayoutState {
   private final Set<TransitionId> mDuplicatedTransitionIds = new HashSet<>();
   private List<Transition> mTransitions;
   private final int mOrientation;
+  // If true, the LayoutState calculate call was interrupted and will need to be resumed to finish
+  // creating and measuring the InternalNode of the LayoutState.
+  private volatile boolean mIsPartialLayoutState;
 
   private static final Object debugLock = new Object();
   @Nullable private static Map<Integer, List<Boolean>> layoutCalculationsOnMainThread;
@@ -219,6 +223,10 @@ class LayoutState {
   @VisibleForTesting
   Component getRootComponent() {
     return mComponent;
+  }
+
+  boolean isPartialLayoutState() {
+    return mIsPartialLayoutState;
   }
 
   /**
@@ -516,17 +524,18 @@ class LayoutState {
     // so that such flag is applied in the resulting view hierarchy after the component
     // tree is mounted. Click handling is also considered accessibility content but
     // this is already covered separately i.e. click handler is not null.
-    final boolean hasAccessibilityContent = layoutState.mAccessibilityEnabled
-        && importantForAccessibility != IMPORTANT_FOR_ACCESSIBILITY_NO
-        && (implementsAccessibility
-            || (nodeInfo != null && !TextUtils.isEmpty(nodeInfo.getContentDescription()))
-            || importantForAccessibility != IMPORTANT_FOR_ACCESSIBILITY_AUTO);
+    final boolean hasAccessibilityContent =
+        layoutState.mAccessibilityEnabled
+            && importantForAccessibility != IMPORTANT_FOR_ACCESSIBILITY_NO
+            && (implementsAccessibility
+                || (nodeInfo != null && !TextUtils.isEmpty(nodeInfo.getContentDescription()))
+                || importantForAccessibility != IMPORTANT_FOR_ACCESSIBILITY_AUTO);
 
     final boolean hasFocusChangeHandler = (nodeInfo != null && nodeInfo.hasFocusChangeHandler());
     final boolean hasEnabledTouchEventHandlers =
         nodeInfo != null
-        && nodeInfo.hasTouchEventHandlers()
-        && nodeInfo.getEnabledState() != ENABLED_SET_FALSE;
+            && nodeInfo.hasTouchEventHandlers()
+            && nodeInfo.getEnabledState() != ENABLED_SET_FALSE;
     final boolean hasViewTag = (nodeInfo != null && nodeInfo.getViewTag() != null);
     final boolean hasViewTags = (nodeInfo != null && nodeInfo.getViewTags() != null);
     final boolean hasShadowElevation = (nodeInfo != null && nodeInfo.getShadowElevation() != 0);
@@ -1377,71 +1386,93 @@ class LayoutState {
                   currentLayoutState != null ? currentLayoutState.mDiffTreeRoot : null)
               : layoutCreatedInWillRender;
 
-      switch (SizeSpec.getMode(widthSpec)) {
-        case SizeSpec.EXACTLY:
-          layoutState.mWidth = SizeSpec.getSize(widthSpec);
-          break;
-        case SizeSpec.AT_MOST:
-          layoutState.mWidth = Math.min(root.getWidth(), SizeSpec.getSize(widthSpec));
-          break;
-        case SizeSpec.UNSPECIFIED:
-          layoutState.mWidth = root.getWidth();
-          break;
-      }
-
-      switch (SizeSpec.getMode(heightSpec)) {
-        case SizeSpec.EXACTLY:
-          layoutState.mHeight = SizeSpec.getSize(heightSpec);
-          break;
-        case SizeSpec.AT_MOST:
-          layoutState.mHeight = Math.min(root.getHeight(), SizeSpec.getSize(heightSpec));
-          break;
-        case SizeSpec.UNSPECIFIED:
-          layoutState.mHeight = root.getHeight();
-          break;
-      }
-
-      layoutState.clearLayoutStateOutputIdCalculator();
-
-      // Reset markers before collecting layout outputs.
-      layoutState.mCurrentHostMarker = -1;
-
-      if (root == NULL_LAYOUT) {
-        return layoutState;
-      }
-
       layoutState.mLayoutRoot = root;
       layoutState.mRootTransitionId = getTransitionIdForNode(root);
 
-      final PerfEvent collectResultsEvent =
-          logger != null
-              ? LogTreePopulator.populatePerfEventFromLogger(
-                  c, logger, logger.newPerformanceEvent(c, EVENT_COLLECT_RESULTS))
-              : null;
+      if (c.wasLayoutInterrupted()) {
+        layoutState.mIsPartialLayoutState = true;
 
-      collectResults(c, root, layoutState, null);
-
-      if (isTracing) {
-        ComponentsSystrace.beginSection("sortMountableOutputs");
+        return layoutState;
       }
-      Collections.sort(layoutState.mMountableOutputTops, sTopsComparator);
-      Collections.sort(layoutState.mMountableOutputBottoms, sBottomsComparator);
+
+      setSizeAfterMeasureAndCollectResults(c, layoutState);
+
+      if (logLayoutState != null) {
+        logger.logPerfEvent(logLayoutState);
+      }
+
+    } finally {
       if (isTracing) {
         ComponentsSystrace.endSection();
+        if (extraAttribution != null) {
+          ComponentsSystrace.endSection();
+        }
+      }
+    }
+
+    return layoutState;
+  }
+
+  static LayoutState resumeCalculate(
+      ComponentContext c,
+      @CalculateLayoutSource int source,
+      @Nullable String extraAttribution,
+      LayoutState layoutState) {
+
+    if (!layoutState.mIsPartialLayoutState) {
+      throw new IllegalStateException("Can not resume a finished LayoutState calculation");
+    }
+
+    final Component component = layoutState.mComponent;
+    final int componentTreeId = layoutState.mComponentTreeId;
+    final int widthSpec = layoutState.mWidthSpec;
+    final int heightSpec = layoutState.mHeightSpec;
+
+    final ComponentsLogger logger = c.getLogger();
+
+    final boolean isTracing = ComponentsSystrace.isTracing();
+    if (isTracing) {
+      if (extraAttribution != null) {
+        ComponentsSystrace.beginSection("extra:" + extraAttribution);
+      }
+      ComponentsSystrace.beginSectionWithArgs(
+              new StringBuilder("LayoutState.resumeCalculate_")
+                  .append(component.getSimpleName())
+                  .append("_")
+                  .append(sourceToString(source))
+                  .toString())
+          .arg("treeId", componentTreeId)
+          .arg("rootId", component.getId())
+          .arg("widthSpec", SizeSpec.toString(widthSpec))
+          .arg("heightSpec", SizeSpec.toString(heightSpec))
+          .flush();
+    }
+
+    try {
+      final PerfEvent logLayoutState =
+          logger != null
+              ? LogTreePopulator.populatePerfEventFromLogger(
+                  c, logger, logger.newPerformanceEvent(c, EVENT_RESUME_CALCULATE_LAYOUT_STATE))
+              : null;
+      if (logLayoutState != null) {
+        logLayoutState.markerAnnotate(PARAM_COMPONENT, component.getSimpleName());
+        logLayoutState.markerAnnotate(PARAM_LAYOUT_STATE_SOURCE, sourceToString(source));
       }
 
-      if (collectResultsEvent != null) {
-        collectResultsEvent.markerAnnotate(
-            FrameworkLogEvents.PARAM_ROOT_COMPONENT, root.getRootComponent().getSimpleName());
-        logger.logPerfEvent(collectResultsEvent);
-      }
+      // If we already have a LayoutState but the InternalNode is only partially resolved,
+      // resume resolving the InternalNode and measure it.
+      resumeCreateAndMeasureTreeForComponent(
+          c,
+          component,
+          widthSpec,
+          heightSpec,
+          null, // nestedTreeHolder is null as this is measuring the root component tree.)
+          layoutState.mLayoutRoot,
+          layoutState.mDiffTreeRoot);
 
-      if (!c.isReconciliationEnabled()
-          && !ComponentsConfiguration.isDebugModeEnabled
-          && !ComponentsConfiguration.isEndToEndTestRun
-          && layoutState.mLayoutRoot != null) {
-        layoutState.mLayoutRoot = null;
-      }
+      layoutState.mIsPartialLayoutState = false;
+
+      setSizeAfterMeasureAndCollectResults(c, layoutState);
 
       if (logLayoutState != null) {
         logger.logPerfEvent(logLayoutState);
@@ -1455,8 +1486,79 @@ class LayoutState {
       }
     }
 
-
     return layoutState;
+  }
+
+  private static void setSizeAfterMeasureAndCollectResults(
+      ComponentContext c, LayoutState layoutState) {
+    ComponentsLogger logger = c.getLogger();
+    final boolean isTracing = ComponentsSystrace.isTracing();
+    final int widthSpec = layoutState.mWidthSpec;
+    final int heightSpec = layoutState.mHeightSpec;
+    final InternalNode root = layoutState.mLayoutRoot;
+
+    switch (SizeSpec.getMode(widthSpec)) {
+      case SizeSpec.EXACTLY:
+        layoutState.mWidth = SizeSpec.getSize(widthSpec);
+        break;
+      case SizeSpec.AT_MOST:
+        layoutState.mWidth = Math.min(root.getWidth(), SizeSpec.getSize(widthSpec));
+        break;
+      case SizeSpec.UNSPECIFIED:
+        layoutState.mWidth = root.getWidth();
+        break;
+    }
+
+    switch (SizeSpec.getMode(heightSpec)) {
+      case SizeSpec.EXACTLY:
+        layoutState.mHeight = SizeSpec.getSize(heightSpec);
+        break;
+      case SizeSpec.AT_MOST:
+        layoutState.mHeight = Math.min(root.getHeight(), SizeSpec.getSize(heightSpec));
+        break;
+      case SizeSpec.UNSPECIFIED:
+        layoutState.mHeight = root.getHeight();
+        break;
+    }
+
+    layoutState.clearLayoutStateOutputIdCalculator();
+
+    // Reset markers before collecting layout outputs.
+    layoutState.mCurrentHostMarker = -1;
+
+    if (root == NULL_LAYOUT) {
+      return;
+    }
+
+    final PerfEvent collectResultsEvent =
+        logger != null
+            ? LogTreePopulator.populatePerfEventFromLogger(
+                c, logger, logger.newPerformanceEvent(c, EVENT_COLLECT_RESULTS))
+            : null;
+
+    collectResults(c, root, layoutState, null);
+
+    if (isTracing) {
+      ComponentsSystrace.beginSection("sortMountableOutputs");
+    }
+    Collections.sort(layoutState.mMountableOutputTops, sTopsComparator);
+    Collections.sort(layoutState.mMountableOutputBottoms, sBottomsComparator);
+    if (isTracing) {
+      ComponentsSystrace.endSection();
+    }
+
+    if (collectResultsEvent != null) {
+      collectResultsEvent.markerAnnotate(
+          FrameworkLogEvents.PARAM_ROOT_COMPONENT, root.getRootComponent().getSimpleName());
+      logger.logPerfEvent(collectResultsEvent);
+    }
+
+    if (!c.isReconciliationEnabled()
+        && !ComponentsConfiguration.isDebugModeEnabled
+        && !ComponentsConfiguration.isEndToEndTestRun
+        && layoutState.mLayoutRoot != null) {
+      layoutState.mLayoutRoot = null;
+    }
   }
 
   private static boolean isReconcilable(
@@ -1815,7 +1917,7 @@ class LayoutState {
     c.setWidthSpec(previousWidthSpec);
     c.setHeightSpec(previousHeightSpec);
 
-    if (root == NULL_LAYOUT) {
+    if (root == NULL_LAYOUT || c.wasLayoutInterrupted()) {
       return root;
     }
 
@@ -1837,6 +1939,51 @@ class LayoutState {
         diffTreeRoot);
 
     return root;
+  }
+
+  private static InternalNode resumeCreateAndMeasureTreeForComponent(
+      ComponentContext c,
+      Component component,
+      int widthSpec,
+      int heightSpec,
+      @Nullable InternalNode nestedTreeHolder, // Will be set iff resolving a nested tree.
+      InternalNode root,
+      @Nullable DiffNode diffTreeRoot) {
+    resumeCreateTree(c, root);
+
+    if (root == NULL_LAYOUT) {
+      return root;
+    }
+
+    // If measuring a ComponentTree with a LayoutSpecWithSizeSpec at the root, the nested tree
+    // holder argument will be null.
+    if (nestedTreeHolder != null && isLayoutSpecWithSizeSpec(component)) {
+      // Transfer information from the holder node to the nested tree root before measurement.
+      nestedTreeHolder.copyInto(root);
+      diffTreeRoot = nestedTreeHolder.getDiffNode();
+    } else if (root.getStyleDirection() == com.facebook.yoga.YogaDirection.INHERIT
+        && LayoutState.isLayoutDirectionRTL(c.getAndroidContext())) {
+      root.layoutDirection(YogaDirection.RTL);
+    }
+
+    measureTree(root, widthSpec, heightSpec, diffTreeRoot);
+
+    return root;
+  }
+
+  private static void resumeCreateTree(ComponentContext c, InternalNode root) {
+    final List<Component> unresolved = root.getUnresolvedComponents();
+
+    if (unresolved != null) {
+      for (int i = 0, size = unresolved.size(); i < size; i++) {
+        root.child(unresolved.get(i));
+      }
+      root.getUnresolvedComponents().clear();
+    }
+
+    for (int i = 0, size = root.getChildCount(); i < size; i++) {
+      resumeCreateTree(c, root.getChildAt(i));
+    }
   }
 
   @Nullable
