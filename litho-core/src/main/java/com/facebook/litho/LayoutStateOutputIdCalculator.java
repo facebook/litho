@@ -18,7 +18,6 @@ package com.facebook.litho;
 
 import androidx.annotation.Nullable;
 import androidx.collection.LongSparseArray;
-import com.facebook.litho.config.ComponentsConfiguration;
 
 /**
  * Utility class used to calculate the id of a {@link LayoutOutput} in the context of a

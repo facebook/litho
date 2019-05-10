@@ -244,8 +244,13 @@ class LayoutState {
       return null;
     }
 
+    // The mount operation will need both the marker for the target host and its matching
+    // parent host to ensure the correct hierarchy when nesting the host views.
+    long hostMarker = layoutState.mCurrentHostMarker;
+
     return createLayoutOutput(
         component,
+        hostMarker,
         layoutState,
         node,
         true /* useNodePadding */,
@@ -262,9 +267,12 @@ class LayoutState {
       ComponentsSystrace.beginSection(
           "createHostLayoutOutput:" + node.getSimpleName());
     }
+    long hostMarker =
+        layoutState.isLayoutRoot(node) ? ROOT_HOST_ID : layoutState.mCurrentHostMarker;
     final LayoutOutput hostOutput =
         createLayoutOutput(
             HostComponent.create(),
+            hostMarker,
             layoutState,
             node,
             false /* useNodePadding */,
@@ -274,10 +282,12 @@ class LayoutState {
             isPhantom);
 
     ViewNodeInfo viewNodeInfo = hostOutput.getViewNodeInfo();
-    if (node.hasStateListAnimatorResSet()) {
-      viewNodeInfo.setStateListAnimatorRes(node.getStateListAnimatorRes());
-    } else {
-      viewNodeInfo.setStateListAnimator(node.getStateListAnimator());
+    if (viewNodeInfo != null) {
+      if (node.hasStateListAnimatorResSet()) {
+        viewNodeInfo.setStateListAnimatorRes(node.getStateListAnimatorRes());
+      } else {
+        viewNodeInfo.setStateListAnimator(node.getStateListAnimator());
+      }
     }
 
     if (isTracing) {
@@ -294,8 +304,13 @@ class LayoutState {
       if (isTracing) {
         ComponentsSystrace.beginSection("createDrawableLayoutOutput:" + node.getSimpleName());
       }
+      // The mount operation will need both the marker for the target host and its matching
+      // parent host to ensure the correct hierarchy when nesting the host views.
+      long hostMarker = layoutState.mCurrentHostMarker;
+
       return createLayoutOutput(
           component,
+          hostMarker,
           layoutState,
           node,
           false /* useNodePadding */,
@@ -312,6 +327,7 @@ class LayoutState {
 
   private static LayoutOutput createLayoutOutput(
       Component component,
+      long hostMarker,
       LayoutState layoutState,
       InternalNode node,
       boolean useNodePadding,
@@ -325,15 +341,6 @@ class LayoutState {
     }
     final boolean isMountViewSpec = isMountViewSpec(component);
 
-    final LayoutOutput layoutOutput = new LayoutOutput();
-    layoutOutput.setComponent(component);
-    layoutOutput.setImportantForAccessibility(importantForAccessibility);
-    layoutOutput.setOrientation(layoutState.mOrientation);
-
-    // The mount operation will need both the marker for the target host and its matching
-    // parent host to ensure the correct hierarchy when nesting the host views.
-    layoutOutput.setHostMarker(layoutState.mCurrentHostMarker);
-
     final int hostTranslationX;
     final int hostTranslationY;
     if (layoutState.mCurrentHostOutputPosition >= 0) {
@@ -343,8 +350,6 @@ class LayoutState {
       final Rect hostBounds = hostOutput.getBounds();
       hostTranslationX = hostBounds.left;
       hostTranslationY = hostBounds.top;
-      layoutOutput.setHostTranslationX(hostTranslationX);
-      layoutOutput.setHostTranslationY(hostTranslationY);
     } else {
       hostTranslationX = 0;
       hostTranslationY = 0;
@@ -367,9 +372,14 @@ class LayoutState {
     // to their respective hosts.
     // Moreover, if the component mounts a view, then we apply padding to the view itself later on.
     // Otherwise, apply the padding to the bounds of the layout output.
-    NodeInfo nodeInfo = node.getNodeInfo();
+
+    final NodeInfo layoutOutputNodeInfo;
+    final ViewNodeInfo layoutOutputViewNodeInfo;
+
+    final NodeInfo nodeInfo = node.getNodeInfo();
+
     if (isMountViewSpec) {
-      layoutOutput.setNodeInfo(nodeInfo);
+      layoutOutputNodeInfo = nodeInfo;
       // Acquire a ViewNodeInfo, set it up and release it after passing it to the LayoutOutput.
       final ViewNodeInfo viewNodeInfo = new ViewNodeInfo();
       if (useNodePadding && node.isPaddingSet()) {
@@ -382,7 +392,7 @@ class LayoutState {
           t - hostTranslationY,
           r - hostTranslationX,
           b - hostTranslationY);
-      layoutOutput.setViewNodeInfo(viewNodeInfo);
+      layoutOutputViewNodeInfo = viewNodeInfo;
     } else {
       l += paddingLeft;
       t += paddingTop;
@@ -392,32 +402,45 @@ class LayoutState {
       if (nodeInfo != null && nodeInfo.getEnabledState() == ENABLED_SET_FALSE) {
         flags |= LAYOUT_FLAG_DISABLE_TOUCHABLE;
       }
+      layoutOutputNodeInfo = null;
+      layoutOutputViewNodeInfo = null;
     }
 
-    layoutOutput.setBounds(l, t, r, b);
+    final Rect bounds = new Rect(l, t, r, b);
 
     if (duplicateParentState) {
       flags |= LAYOUT_FLAG_DUPLICATE_PARENT_STATE;
     }
 
+    final TransitionId transitionId;
     if (hasHostView) {
       flags |= LAYOUT_FLAG_MATCH_HOST_BOUNDS;
+      transitionId = null;
     } else {
       // If there is a host view, the transition key will be set on the view's layout output
-      layoutOutput.setTransitionId(layoutState.mCurrentTransitionId);
+      transitionId = layoutState.mCurrentTransitionId;
     }
 
     if (isPhantom) {
       flags |= LAYOUT_FLAG_PHANTOM;
     }
 
-    layoutOutput.setFlags(flags);
-
     if (isTracing) {
       ComponentsSystrace.endSection();
     }
 
-    return layoutOutput;
+    return new LayoutOutput(
+        layoutOutputNodeInfo,
+        layoutOutputViewNodeInfo,
+        component,
+        bounds,
+        hostTranslationX,
+        hostTranslationY,
+        flags,
+        hostMarker,
+        importantForAccessibility,
+        layoutState.mOrientation,
+        transitionId);
   }
 
   /**
@@ -729,6 +752,7 @@ class LayoutState {
     // Generate the layoutOutput for the given node.
     final LayoutOutput layoutOutput =
         createGenericLayoutOutput(node, layoutState, shouldAddHostLayoutOutput);
+
     if (layoutOutput != null) {
       final long previousId = shouldUseCachedOutputs ? currentDiffNode.getContent().getId() : -1;
       layoutState.calculateAndSetLayoutOutputIdAndUpdateState(
@@ -742,7 +766,7 @@ class LayoutState {
     // 2. Add background if defined.
     final ComparableDrawable background = node.getBackground();
     if (background != null) {
-      if (layoutOutput != null && layoutOutput.hasViewNodeInfo()) {
+      if (layoutOutput != null && layoutOutput.getViewNodeInfo() != null) {
         layoutOutput.getViewNodeInfo().setBackground(background);
       } else {
         final LayoutOutput convertBackground = (currentDiffNode != null)
@@ -875,7 +899,7 @@ class LayoutState {
     // 6. Add foreground if defined.
     final ComparableDrawable foreground = node.getForeground();
     if (foreground != null) {
-      if (layoutOutput != null && layoutOutput.hasViewNodeInfo() && SDK_INT >= M) {
+      if (layoutOutput != null && layoutOutput.getViewNodeInfo() != null && SDK_INT >= M) {
         layoutOutput.getViewNodeInfo().setForeground(foreground);
       } else {
         final LayoutOutput convertForeground = (currentDiffNode != null)
@@ -1067,21 +1091,16 @@ class LayoutState {
   }
 
   private static void calculateAndSetHostOutputIdAndUpdateState(
-      InternalNode node,
-      LayoutOutput hostOutput,
-      LayoutState layoutState,
-      boolean isCachedOutputUpdated) {
+      InternalNode node, LayoutOutput hostOutput, LayoutState layoutState) {
     if (layoutState.isLayoutRoot(node)) {
       // The root host (LithoView) always has ID 0 and is unconditionally
       // set as dirty i.e. no need to use shouldComponentUpdate().
       hostOutput.setId(ROOT_HOST_ID);
 
-      // Special case where the host marker of the root host is pointing to itself.
-      hostOutput.setHostMarker(ROOT_HOST_ID);
       hostOutput.setUpdateState(LayoutOutput.STATE_DIRTY);
     } else {
       layoutState.calculateAndSetLayoutOutputIdAndUpdateState(
-          hostOutput, layoutState.mCurrentLevel, OutputUnitType.HOST, -1, isCachedOutputUpdated);
+          hostOutput, layoutState.mCurrentLevel, OutputUnitType.HOST, -1, false);
     }
   }
 
@@ -1223,6 +1242,7 @@ class LayoutState {
     final LayoutOutput drawableLayoutOutput =
         createDrawableLayoutOutput(
             drawableComponent, layoutState, node, matchHostBoundsTransitions);
+
     layoutState.calculateAndSetLayoutOutputIdAndUpdateState(
         drawableLayoutOutput,
         layoutState.mCurrentLevel,
@@ -1272,11 +1292,7 @@ class LayoutState {
       diffNode.setHost(hostLayoutOutput);
     }
 
-    calculateAndSetHostOutputIdAndUpdateState(
-        node,
-        hostLayoutOutput,
-        layoutState,
-        false);
+    calculateAndSetHostOutputIdAndUpdateState(node, hostLayoutOutput, layoutState);
 
     addLayoutOutputIdToPositionsMap(
         layoutState.mOutputsIdToPositionMap,

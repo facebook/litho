@@ -16,8 +16,6 @@
 
 package com.facebook.litho;
 
-import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
-
 import android.graphics.Rect;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
@@ -25,8 +23,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * The output of a layout pass for a given {@link Component}. It's used by
- * {@link MountState} to mount a component.
+ * The output of a layout pass for a given {@link Component}. It's used by {@link MountState} to
+ * mount a component.
  */
 class LayoutOutput implements Cloneable, AnimatableItem {
   public static final int STATE_UNKNOWN = 0;
@@ -37,33 +35,55 @@ class LayoutOutput implements Cloneable, AnimatableItem {
   @Retention(RetentionPolicy.SOURCE)
   public @interface UpdateState {}
 
-  private @Nullable NodeInfo mNodeInfo;
-  private ViewNodeInfo mViewNodeInfo;
-  private long mId;
-  private Component mComponent;
-  private final Rect mBounds = new Rect();
-  private int mHostTranslationX;
-  private int mHostTranslationY;
-  private int mFlags;
-  private long mHostMarker = -1L;
+  private final @Nullable NodeInfo mNodeInfo;
+  private final @Nullable ViewNodeInfo mViewNodeInfo;
+  private final Component mComponent;
+  private final Rect mBounds;
+  private final int mHostTranslationX;
+  private final int mHostTranslationY;
+  private final int mFlags;
+
+  private final int mImportantForAccessibility;
+  private final int mOrientation;
+  private final @Nullable TransitionId mTransitionId;
+  private final long mHostMarker;
+
   private int mIndex;
-
+  private long mId;
   private int mUpdateState = STATE_UNKNOWN;
-  private int mImportantForAccessibility = IMPORTANT_FOR_ACCESSIBILITY_AUTO;
-  private int mOrientation;
 
-  private @Nullable TransitionId mTransitionId;
+  public LayoutOutput(
+      @Nullable NodeInfo nodeInfo,
+      @Nullable ViewNodeInfo viewNodeInfo,
+      Component component,
+      Rect bounds,
+      int hostTranslationX,
+      int hostTranslationY,
+      int flags,
+      long hostMarker,
+      int importantForAccessibility,
+      int orientation,
+      @Nullable TransitionId transitionId) {
 
-  Component getComponent() {
-    return mComponent;
-  }
-
-  void setComponent(Component component) {
     if (component == null) {
       throw new RuntimeException("Trying to set a null Component on a LayoutOutput!");
     }
 
+    mNodeInfo = nodeInfo;
+    mViewNodeInfo = viewNodeInfo;
     mComponent = component;
+    mBounds = bounds;
+    mHostTranslationX = hostTranslationX;
+    mHostTranslationY = hostTranslationY;
+    mFlags = flags;
+    mHostMarker = hostMarker;
+    mImportantForAccessibility = importantForAccessibility;
+    mOrientation = orientation;
+    mTransitionId = transitionId;
+  }
+
+  Component getComponent() {
+    return mComponent;
   }
 
   void getMountBounds(Rect outRect) {
@@ -128,24 +148,8 @@ class LayoutOutput implements Cloneable, AnimatableItem {
     return mNodeInfo != null && mNodeInfo.isRotationYSet();
   }
 
-  void setBounds(int l, int t, int r, int b) {
-    mBounds.set(l, t, r, b);
-  }
-
-  void setHostTranslationX(int hostTranslationX) {
-    mHostTranslationX = hostTranslationX;
-  }
-
-  void setHostTranslationY(int hostTranslationY) {
-    mHostTranslationY = hostTranslationY;
-  }
-
   int getFlags() {
     return mFlags;
-  }
-
-  void setFlags(int flags) {
-    mFlags = flags;
   }
 
   /**
@@ -155,15 +159,6 @@ class LayoutOutput implements Cloneable, AnimatableItem {
    */
   long getHostMarker() {
     return mHostMarker;
-  }
-
-  /**
-   * hostMarker is the id of the LayoutOutput that represents the host of this LayoutOutput. This
-   * host may be phantom, meaning that the mount content that represents this LayoutOutput may be
-   * hosted inside one of higher level hosts {@see MountState#getActualComponentHost()}
-   */
-  void setHostMarker(long hostMarker) {
-    mHostMarker = hostMarker;
   }
 
   long getId() {
@@ -180,14 +175,6 @@ class LayoutOutput implements Cloneable, AnimatableItem {
 
   void setIndex(int index) {
     mIndex = index;
-  }
-
-  void setNodeInfo(NodeInfo nodeInfo) {
-    if (mNodeInfo != null) {
-      throw new IllegalStateException("NodeInfo set more than once on the same LayoutOutput.");
-    } else if (nodeInfo != null) {
-      mNodeInfo = nodeInfo;
-    }
   }
 
   NodeInfo getNodeInfo() {
@@ -207,36 +194,13 @@ class LayoutOutput implements Cloneable, AnimatableItem {
     return mImportantForAccessibility;
   }
 
-  public void setImportantForAccessibility(int importantForAccessibility) {
-    mImportantForAccessibility = importantForAccessibility;
-  }
-
   int getOrientation() {
     return mOrientation;
   }
 
-  void setOrientation(int orientation) {
-    mOrientation = orientation;
-  }
-
-  void setViewNodeInfo(ViewNodeInfo viewNodeInfo) {
-    if (mViewNodeInfo != null) {
-      throw new IllegalStateException("Try to set a new ViewNodeInfo in a LayoutOutput that" +
-          " is already initialized with one.");
-    }
-    mViewNodeInfo = viewNodeInfo;
-  }
-
-  boolean hasViewNodeInfo() {
-    return (mViewNodeInfo != null);
-  }
-
+  @Nullable
   ViewNodeInfo getViewNodeInfo() {
     return mViewNodeInfo;
-  }
-
-  public void setTransitionId(@Nullable TransitionId transitionId) {
-    this.mTransitionId = transitionId;
   }
 
   @Nullable
