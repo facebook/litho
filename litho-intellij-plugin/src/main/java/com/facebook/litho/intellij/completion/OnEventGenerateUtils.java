@@ -50,7 +50,7 @@ public class OnEventGenerateUtils {
    * <pre><code>{@literal @OnEvent(ColorChangedEvent.class)}
    * static void onColorChangedEvent(
    *       ComponentContext c,
-   *      {@literal int color},
+   *      {@literal @FromEvent} int color,
    *      {@literal @Prop} String someProp) {
    *
    *      }
