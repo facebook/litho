@@ -147,6 +147,7 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   private @Nullable ArrayList<WorkingRangeContainer.Registration> mWorkingRangeRegistrations;
   private @Nullable String mTestKey;
   private @Nullable Set<DebugComponent> mDebugComponents = null;
+  private @Nullable List<Component> mUnresolvedComponents = null;
 
   private boolean mDuplicateParentState;
   private boolean mForceViewWrapping;
@@ -247,6 +248,15 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   @Override
   public void appendComponent(Component component) {
     mComponents.add(component);
+  }
+
+  @Override
+  public void appendUnresolvedComponent(Component component) {
+    if (mUnresolvedComponents == null) {
+      mUnresolvedComponents = new ArrayList<>();
+    }
+
+    mUnresolvedComponents.add(component);
   }
 
   @Override
@@ -502,6 +512,11 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   @Override
   public List<Component> getComponents() {
     return mComponents;
+  }
+
+  @Override
+  public @Nullable List<Component> getUnresolvedComponents() {
+    return mUnresolvedComponents;
   }
 
   @Override

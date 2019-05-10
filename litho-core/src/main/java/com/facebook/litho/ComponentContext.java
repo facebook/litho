@@ -575,4 +575,8 @@ public class ComponentContext {
       return ComponentsConfiguration.isReconciliationEnabled;
     }
   }
+
+  boolean wasLayoutInterrupted() {
+    return mLayoutStateFuture == null ? false : mLayoutStateFuture.isInterrupted();
+  }
 }

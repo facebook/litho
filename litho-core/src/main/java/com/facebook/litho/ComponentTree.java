@@ -61,6 +61,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.concurrent.GuardedBy;
@@ -2245,6 +2246,7 @@ public class ComponentTree {
     private final FutureTask<LayoutState> futureTask;
     private final AtomicInteger refCount = new AtomicInteger(0);
     private final boolean isFromSyncLayout;
+    private final AtomicBoolean interrupted = new AtomicBoolean(false);
 
     @GuardedBy("LayoutStateFuture.this")
     private volatile boolean released = false;
@@ -2332,6 +2334,14 @@ public class ComponentTree {
 
     boolean isReleased() {
       return released;
+    }
+
+    boolean isInterrupted() {
+      return interrupted.get();
+    }
+
+    void interrupt() {
+      interrupted.set(true);
     }
 
     void unregisterForResponse() {

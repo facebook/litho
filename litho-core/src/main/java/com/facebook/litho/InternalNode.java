@@ -55,6 +55,8 @@ public interface InternalNode extends ComponentLayout, LayoutProps, Copyable<Int
 
   void appendComponent(Component component);
 
+  void appendUnresolvedComponent(Component component);
+
   boolean areCachedMeasuresValid();
 
   InternalNode background(@Nullable ComparableDrawable background);
@@ -127,6 +129,9 @@ public interface InternalNode extends ComponentLayout, LayoutProps, Copyable<Int
    * contain the root component if running in production mode.
    */
   List<Component> getComponents();
+
+  @Nullable
+  List<Component> getUnresolvedComponents();
 
   @Nullable
   ArrayList<Component> getComponentsNeedingPreviousRenderData();

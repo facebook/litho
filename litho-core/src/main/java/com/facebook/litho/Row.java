@@ -107,12 +107,17 @@ public final class Row extends Component {
     }
 
     if (children != null) {
-        for (Component child : children) {
+      for (Component child : children) {
         if (c.wasLayoutCanceled()) {
           return ComponentContext.NULL_LAYOUT;
         }
+
+        if (c.wasLayoutInterrupted()) {
+          node.appendUnresolvedComponent(child);
+        } else {
           node.child(child);
         }
+      }
     }
 
     return node;

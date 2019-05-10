@@ -68,6 +68,9 @@ class NoOpInternalNode implements InternalNode {
   public void appendComponent(Component component) {}
 
   @Override
+  public void appendUnresolvedComponent(Component component) {}
+
+  @Override
   public boolean areCachedMeasuresValid() {
     return false;
   }
@@ -205,6 +208,12 @@ class NoOpInternalNode implements InternalNode {
 
   @Override
   public @Nullable List<Component> getComponents() {
+    return null;
+  }
+
+  @Nullable
+  @Override
+  public List<Component> getUnresolvedComponents() {
     return null;
   }
 
