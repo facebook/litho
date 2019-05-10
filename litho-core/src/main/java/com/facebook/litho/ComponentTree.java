@@ -1110,12 +1110,16 @@ public class ComponentTree {
         null);
   }
 
-  synchronized void updateStateLazy(String componentKey, StateUpdate stateUpdate) {
-    if (mRoot == null) {
-      return;
+  void updateStateLazy(String componentKey, StateUpdate stateUpdate) {
+    synchronized (this) {
+      if (mRoot == null) {
+        return;
+      }
+
+      mStateHandler.queueStateUpdate(componentKey, stateUpdate, true);
     }
 
-    mStateHandler.queueStateUpdate(componentKey, stateUpdate, true);
+    LithoStats.incStateUpdateLazy(1);
   }
 
   void applyLazyStateUpdatesForContainer(String componentKey, StateContainer container) {
