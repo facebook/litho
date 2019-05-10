@@ -258,6 +258,8 @@ public class ComponentTree {
 
   private final boolean isReconciliationEnabled;
 
+  private boolean moveLayoutBetweenThreads = false;
+
   public static Builder create(ComponentContext context, Component.Builder<?> root) {
     return create(context, root.build());
   }
@@ -2197,6 +2199,25 @@ public class ComponentTree {
       @CalculateLayoutSource int source,
       @Nullable String extraAttribution,
       @Nullable LayoutStateFuture layoutStateFuture) {
+    final ComponentContext contextWithStateHandler =
+        getNewContextForLayout(context, treeProps, layoutStateFuture);
+
+    return LayoutState.calculate(
+        contextWithStateHandler,
+        root,
+        mId,
+        widthSpec,
+        heightSpec,
+        diffingEnabled,
+        previousLayoutState,
+        source,
+        extraAttribution);
+  }
+
+  private ComponentContext getNewContextForLayout(
+      ComponentContext context,
+      @Nullable TreeProps treeProps,
+      @Nullable LayoutStateFuture layoutStateFuture) {
     final ComponentContext contextWithStateHandler;
 
     synchronized (this) {
@@ -2214,16 +2235,7 @@ public class ComponentTree {
               layoutStateFuture);
     }
 
-    return LayoutState.calculate(
-        contextWithStateHandler,
-        root,
-        mId,
-        widthSpec,
-        heightSpec,
-        diffingEnabled,
-        previousLayoutState,
-        source,
-        extraAttribution);
+    return contextWithStateHandler;
   }
 
   @VisibleForTesting
@@ -2247,6 +2259,8 @@ public class ComponentTree {
     private final AtomicInteger refCount = new AtomicInteger(0);
     private final boolean isFromSyncLayout;
     private final AtomicBoolean interrupted = new AtomicBoolean(false);
+    private final int source;
+    private final String extraAttribution;
 
     @GuardedBy("LayoutStateFuture.this")
     private volatile boolean released = false;
@@ -2275,6 +2289,9 @@ public class ComponentTree {
       this.previousLayoutState = previousLayoutState;
       this.treeProps = treeProps;
       this.isFromSyncLayout = isFromSyncLayout(source);
+      this.source = source;
+      this.extraAttribution = extraAttribution;
+
       this.futureTask =
           new FutureTask<>(
               new Callable<LayoutState>() {
@@ -2296,7 +2313,8 @@ public class ComponentTree {
                           treeProps,
                           source,
                           extraAttribution,
-                          ComponentTree.this.mUseCancelableLayoutFutures
+                          ComponentTree.this.moveLayoutBetweenThreads
+                                  || ComponentTree.this.mUseCancelableLayoutFutures
                               ? LayoutStateFuture.this
                               : null);
                   synchronized (LayoutStateFuture.this) {
@@ -2337,7 +2355,7 @@ public class ComponentTree {
     }
 
     boolean isInterrupted() {
-      return interrupted.get();
+      return !ThreadUtils.isMainThread() && interrupted.get();
     }
 
     void interrupt() {
@@ -2370,6 +2388,16 @@ public class ComponentTree {
     @VisibleForTesting
     @Nullable
     LayoutState runAndGet() {
+      if (moveLayoutBetweenThreads) {
+        return runAndGetSwitchThreadsWhenUIBlocked();
+      }
+
+      return runAndGetIncreasePriority();
+    }
+
+    @VisibleForTesting
+    @Nullable
+    LayoutState runAndGetIncreasePriority() {
       if (runningThreadId.compareAndSet(-1, Process.myTid())) {
         futureTask.run();
       }
@@ -2424,7 +2452,78 @@ public class ComponentTree {
         return result;
       }
     }
-    
+
+    @VisibleForTesting
+    @Nullable
+    LayoutState runAndGetSwitchThreadsWhenUIBlocked() {
+      if (runningThreadId.compareAndSet(-1, Process.myTid())) {
+        futureTask.run();
+      }
+
+      final int runningThreadId = this.runningThreadId.get();
+
+      if (isMainThread() && !futureTask.isDone() && runningThreadId != Process.myTid()) {
+        // This means the UI thread is about to be blocked by the bg thread. Instead of waiting,
+        // the bg task is interrupted.
+        if (!isFromSyncLayout) {
+          interrupt();
+        }
+      }
+
+      LayoutState result;
+      try {
+        result = futureTask.get();
+        if (interrupted.get() && result.isPartialLayoutState()) {
+          if (ThreadUtils.isMainThread()) {
+            // This means that the bg task was interrupted and it returned a partially resolved
+            // InternalNode. We need to finish computing this LayoutState.
+
+            result = resolvePartialInternalNodeAndCalculateLayout(result);
+          } else {
+            // This means that the bg task was interrupted and the UI thread will pick up the rest
+            // of
+            // the work. No need to return a LayoutState.
+            result = null;
+          }
+        }
+
+      } catch (ExecutionException | InterruptedException | CancellationException e) {
+        final Throwable cause = e.getCause();
+        if (cause instanceof RuntimeException) {
+          throw (RuntimeException) cause;
+        } else {
+          throw new RuntimeException(e.getMessage(), e);
+        }
+      }
+
+      if (result == null) {
+        return null;
+      }
+      synchronized (LayoutStateFuture.this) {
+        if (released) {
+          return null;
+        }
+        return result;
+      }
+    }
+
+    private LayoutState resolvePartialInternalNodeAndCalculateLayout(
+        final LayoutState partialLayoutState) {
+      if (released) {
+        return null;
+      }
+      final LayoutState result =
+          LayoutState.resumeCalculate(
+              getNewContextForLayout(context, treeProps, null),
+              source,
+              extraAttribution,
+              partialLayoutState);
+
+      synchronized (LayoutStateFuture.this) {
+        return released ? null : result;
+      }
+    }
+
     @Override
     public boolean equals(Object o) {
       if (this == o) {
