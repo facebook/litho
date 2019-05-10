@@ -258,7 +258,7 @@ public class ComponentTree {
 
   private final boolean isReconciliationEnabled;
 
-  private boolean moveLayoutBetweenThreads = false;
+  private final boolean mMoveLayoutsBetweenThreads;
 
   public static Builder create(ComponentContext context, Component.Builder<?> root) {
     return create(context, root.build());
@@ -289,6 +289,7 @@ public class ComponentTree {
     mMeasureListener = builder.mMeasureListener;
     mNestedTreeResolutionExperimentEnabled = builder.nestedTreeResolutionExperimentEnabled;
     mUseCancelableLayoutFutures = ComponentsConfiguration.useCancelableLayoutFutures;
+    mMoveLayoutsBetweenThreads = ComponentsConfiguration.canInterruptAndMoveLayoutsBetweenThreads;
     isReconciliationEnabled = builder.isReconciliationEnabled;
 
     ensureLayoutThreadHandler();
@@ -2313,7 +2314,7 @@ public class ComponentTree {
                           treeProps,
                           source,
                           extraAttribution,
-                          ComponentTree.this.moveLayoutBetweenThreads
+                          ComponentTree.this.mMoveLayoutsBetweenThreads
                                   || ComponentTree.this.mUseCancelableLayoutFutures
                               ? LayoutStateFuture.this
                               : null);
@@ -2388,7 +2389,7 @@ public class ComponentTree {
     @VisibleForTesting
     @Nullable
     LayoutState runAndGet() {
-      if (moveLayoutBetweenThreads) {
+      if (mMoveLayoutsBetweenThreads) {
         return runAndGetSwitchThreadsWhenUIBlocked();
       }
 
