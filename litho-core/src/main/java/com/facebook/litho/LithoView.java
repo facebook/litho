@@ -62,7 +62,7 @@ public class LithoView extends ComponentHost {
 
   @Nullable private ComponentTree mComponentTree;
   private final MountState mMountState;
-  protected final ComponentContext mComponentContext;
+  private final ComponentContext mComponentContext;
   private boolean mIsAttached;
   // The bounds of the visible rect that was used for the previous incremental mount.
   private final Rect mPreviousMountVisibleRectBounds = new Rect();
