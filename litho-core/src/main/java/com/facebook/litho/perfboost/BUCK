@@ -5,22 +5,15 @@
 
 load(
     "//tools/build_defs/oss:litho_defs.bzl",
-    "LITHO_ANDROIDSUPPORT_TARGET",
     "LITHO_BUILD_CONFIG_TARGET",
-    "LITHO_PERFBOOST_TARGET",
-    "LITHO_YOGA_TARGET",
     "litho_android_library",
 )
 
 litho_android_library(
-    name = "config",
+    name = "perfboost",
     srcs = glob(["*.java"]),
-    is_androidx = True,
     provided_deps = [
-        LITHO_ANDROIDSUPPORT_TARGET,
-        LITHO_PERFBOOST_TARGET,
         LITHO_BUILD_CONFIG_TARGET,
-        LITHO_YOGA_TARGET,
     ],
     visibility = ["PUBLIC"],
 )

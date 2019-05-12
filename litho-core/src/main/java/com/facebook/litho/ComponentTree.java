@@ -33,6 +33,7 @@ import static com.facebook.litho.config.ComponentsConfiguration.DEFAULT_BACKGROU
 
 import android.content.Context;
 import android.graphics.Rect;
+import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Process;
@@ -50,6 +51,7 @@ import com.facebook.litho.animation.AnimatedProperties;
 import com.facebook.litho.animation.AnimatedProperty;
 import com.facebook.litho.annotations.MountSpec;
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.litho.perfboost.LithoPerfBooster;
 import com.facebook.litho.stats.LithoStats;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -89,6 +91,7 @@ public class ComponentTree {
   private static final int SCHEDULE_NONE = 0;
   private static final int SCHEDULE_LAYOUT_ASYNC = 1;
   private static final int SCHEDULE_LAYOUT_SYNC = 2;
+  private static boolean sBoostPerfLayoutStateFuture = false;
   private boolean mReleased;
   private String mReleasedComponent;
 
@@ -337,6 +340,18 @@ public class ComponentTree {
               : new ThreadPoolLayoutHandler(
                   ComponentsConfiguration.threadPoolForBackgroundThreadsConfig);
       mLayoutThreadHandler = instrumentLithoHandler(mLayoutThreadHandler);
+    } else {
+      if (sDefaultLayoutThreadLooper != null
+          && sBoostPerfLayoutStateFuture == false
+          && ComponentsConfiguration.boostPerfLayoutStateFuture == true
+          && ComponentsConfiguration.perfBoosterFactory != null) {
+        /**
+         * Right now we don't care about testing this per surface, so we'll use the config value.
+         */
+        LithoPerfBooster booster = ComponentsConfiguration.perfBoosterFactory.acquireInstance();
+        booster.markImportantThread(new Handler(sDefaultLayoutThreadLooper));
+        sBoostPerfLayoutStateFuture = true;
+      }
     }
   }
 

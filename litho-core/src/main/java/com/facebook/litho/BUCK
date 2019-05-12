@@ -3,7 +3,7 @@
 # This source code is licensed under the Apache 2.0 license found in the
 # LICENSE file in the root directory of this source tree.
 
-load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_ANDROIDSUPPORT_TARGET", "LITHO_ANNOTATIONS_TARGET", "LITHO_CONFIG_TARGET", "LITHO_INFERANNOTATIONS_TARGET", "LITHO_JSR_TARGET", "LITHO_PROGUARDANNOTATIONS_TARGET", "LITHO_RES_TARGET", "LITHO_STATS_TARGET", "LITHO_TEST_TARGET", "LITHO_VIEWCOMPAT_TARGET", "LITHO_VISIBILITY", "LITHO_YOGA_TARGET", "litho_android_library", "make_dep_path")
+load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_ANDROIDSUPPORT_TARGET", "LITHO_ANNOTATIONS_TARGET", "LITHO_CONFIG_TARGET", "LITHO_INFERANNOTATIONS_TARGET", "LITHO_JSR_TARGET", "LITHO_PERFBOOST_TARGET", "LITHO_PROGUARDANNOTATIONS_TARGET", "LITHO_RES_TARGET", "LITHO_STATS_TARGET", "LITHO_TEST_TARGET", "LITHO_VIEWCOMPAT_TARGET", "LITHO_VISIBILITY", "LITHO_YOGA_TARGET", "litho_android_library", "make_dep_path")
 
 litho_android_library(
     name = "litho",
@@ -29,6 +29,7 @@ litho_android_library(
     ],
     visibility = LITHO_VISIBILITY,
     deps = [
+        LITHO_PERFBOOST_TARGET,
         LITHO_INFERANNOTATIONS_TARGET,
         LITHO_RES_TARGET,
         LITHO_VIEWCOMPAT_TARGET,
@@ -37,6 +38,7 @@ litho_android_library(
     exported_deps = [
         LITHO_ANNOTATIONS_TARGET,
         LITHO_CONFIG_TARGET,
+        LITHO_PERFBOOST_TARGET,
         LITHO_PROGUARDANNOTATIONS_TARGET,
         make_dep_path("litho-core/src/main/java/com/facebook/litho/internal:internal"),
     ],
