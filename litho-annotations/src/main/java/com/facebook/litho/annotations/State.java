@@ -23,7 +23,7 @@ import java.lang.annotation.RetentionPolicy;
  * States for a given Component are the union of all arguments annotated with {@code State} in the
  * spec. While both {@link Prop} and {@link State} hold information that influences the output of
  * the component, they are different in one important way: props get passed to the component from
- * it's parent whereas states are managed within the component.
+ * its parent whereas states are managed within the component.
  *
  * <p>The initial values of states can be set using the {@link OnCreateInitialState} method and
  * states can be updated in {@link OnUpdateState} methods. Updating states in the {@link
@@ -82,12 +82,46 @@ import java.lang.annotation.RetentionPolicy;
 public @interface State {
 
   /**
-   * Declares that this state will not trigger a new layout calculations on update. After a lazy
-   * state update the component will continue to host the older value until the next layout
-   * calculation is triggered. This is useful for updating internal Component information and
-   * persisting it between re-layouts when an immediate layout calculation is not needed.
+   * Declares that this state can be updated lazily and that will not trigger a new layout
+   * calculations. After a lazy state update the component will continue to host the older value
+   * until the next layout calculation is preformed. This is useful for updating internal Component
+   * information and persisting it between re-layouts when an immediate layout calculation is not
+   * needed or when this state is not involved into layout calculation at all.
    *
-   * @return {@code true} iff this state should update lazily.
+   * <p><b>Note:</b> Such state can still participate in normal state update via {@link
+   * OnUpdateState} methods, but for lazy state updates an additional {@code lazyUpdate*StateName*}
+   * method will be generated.
+   *
+   * <p><b>Warning:</b> For now, lazily updated values will be available only in {@link OnEvent}
+   * methods (or after a normal state update). If you need support of other lifecycle methods, feel
+   * free to file an issue.
+   *
+   * <p><b>Using State:</b> <br>
+   *
+   * <pre><code>{@literal @LayoutSpec}
+   * public class MyComponentSpec {
+   *  {@literal @OnCreateLayout}
+   *   static Component onCreateLayout(ComponentContext c) {
+   *     return Column.create(c)
+   *       .child(
+   *         Text.create(c)
+   *           .backgroundRes(R.drawable.button_background)
+   *           .textSizeSp(20)
+   *           .text("Submit")
+   *           .clickHandler(MyComponent.onClick(c)))
+   *       .build();
+   *   }
+   *
+   *  {@literal @OnEvent(ClickEvent.class)}
+   *   static void onClick(ComponentContext c, @State(canUpdateLazily = true) boolean wasAlreadyClicked) {
+   *     if (!wasAlreadyClicked) {
+   *       logFirstButtonClick();
+   *     }
+   *     MyComponent.lazyUpdateWasAlreadyClicked(c, true);
+   *   }
+   * }</code></pre>
+   *
+   * @return {@code true} if this state can be updated lazily.
    */
   boolean canUpdateLazily() default false;
 }
