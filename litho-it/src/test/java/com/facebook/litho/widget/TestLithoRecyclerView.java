@@ -1,7 +1,6 @@
 package com.facebook.litho.widget;
 
 import android.content.Context;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
@@ -16,7 +15,7 @@ public class TestLithoRecyclerView extends LithoRecylerView {
   private TouchInterceptor touchInterceptor;
   private boolean layoutRequested;
 
-  public TestLithoRecyclerView(@NonNull Context context) {
+  public TestLithoRecyclerView(Context context) {
     super(context);
   }
 
@@ -32,7 +31,7 @@ public class TestLithoRecyclerView extends LithoRecylerView {
   }
 
   @Override
-  public void removeOnScrollListener(@NonNull RecyclerView.OnScrollListener onScrollListener) {
+  public void removeOnScrollListener(RecyclerView.OnScrollListener onScrollListener) {
     removeOnScrollListeners.add(onScrollListener);
     super.removeOnScrollListener(onScrollListener);
   }
@@ -42,7 +41,7 @@ public class TestLithoRecyclerView extends LithoRecylerView {
   }
 
   @Override
-  public void addOnScrollListener(@NonNull RecyclerView.OnScrollListener onScrollListener) {
+  public void addOnScrollListener(RecyclerView.OnScrollListener onScrollListener) {
     addOnScrollListeners.add(onScrollListener);
     super.addOnScrollListener(onScrollListener);
   }

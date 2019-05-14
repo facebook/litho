@@ -184,12 +184,12 @@ public class RecyclerSpecTest {
     }
   }
 
-  private void verifyRemoveOnScrollListenerWasCalledNTimes(
+  private static void verifyRemoveOnScrollListenerWasCalledNTimes(
       TestLithoRecyclerView recyclerView, int times) {
     assertThat(recyclerView.getRemoveOnScrollListenersCount()).isEqualTo(times);
   }
 
-  private void verifyAddOnScrollListenerWasCalledNTimes(
+  private static void verifyAddOnScrollListenerWasCalledNTimes(
       TestLithoRecyclerView recyclerView, int times) {
     assertThat(recyclerView.getAddOnScrollListenersCount()).isEqualTo(times);
   }

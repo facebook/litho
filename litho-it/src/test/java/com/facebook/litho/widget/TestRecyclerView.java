@@ -1,7 +1,6 @@
 package com.facebook.litho.widget;
 
 import android.content.Context;
-import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +10,7 @@ public class TestRecyclerView extends RecyclerView {
 
   private final List<Runnable> postAnimationRunnableList = new ArrayList<>();
 
-  public TestRecyclerView(@NonNull Context context) {
+  public TestRecyclerView(Context context) {
     super(context);
   }
 

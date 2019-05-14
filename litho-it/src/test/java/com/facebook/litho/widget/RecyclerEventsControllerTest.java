@@ -133,17 +133,17 @@ public class RecyclerEventsControllerTest {
     verifySetRefreshingWasCalledNTimesWith(mSectionsRecyclerView, 0, false);
   }
 
-  private void verifyRemoveCallbacksWasCalledNTimes(
+  private static void verifyRemoveCallbacksWasCalledNTimes(
       TestSectionsRecyclerView recyclerView, int times) {
-    assertThat(recyclerView.getRemoveCallbackRunnableList().size()).isEqualTo(times);
+    assertThat(recyclerView.getRemoveCallbackCount()).isEqualTo(times);
   }
 
-  private void verifyPostWasCalledNTimes(TestSectionsRecyclerView recyclerView, int times) {
-    assertThat(recyclerView.getPostRunnableList().size()).isEqualTo(times);
+  private static void verifyPostWasCalledNTimes(TestSectionsRecyclerView recyclerView, int times) {
+    assertThat(recyclerView.getPostCount()).isEqualTo(times);
   }
 
-  private void verifySetRefreshingWasCalledNTimesWith(
-    TestSectionsRecyclerView recyclerView, int times, boolean refreshValue) {
+  private static void verifySetRefreshingWasCalledNTimesWith(
+      TestSectionsRecyclerView recyclerView, int times, boolean refreshValue) {
     assertThat(recyclerView.getSetRefreshingValuesCount()).isEqualTo(times);
     assertThat(recyclerView.getLastRefreshValue()).isEqualTo(refreshValue);
   }
