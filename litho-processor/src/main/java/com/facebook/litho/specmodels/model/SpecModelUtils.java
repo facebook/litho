@@ -233,6 +233,27 @@ public class SpecModelUtils {
     return representedObject instanceof TypeElement;
   }
 
+  public static List<PropModel> getDynamicProps(SpecModel specModel) {
+    final List<PropModel> dynamicProps = new ArrayList<>();
+    for (PropModel prop : specModel.getProps()) {
+      if (prop.isDynamic()) {
+        dynamicProps.add(prop);
+      }
+    }
+    return dynamicProps;
+  }
+
+  public static SpecMethodModel<BindDynamicValueMethod, Void> getBindDelegateMethodForDynamicProp(
+      SpecModel specModel, PropModel prop) {
+    for (SpecMethodModel<BindDynamicValueMethod, Void> method :
+        ((MountSpecModel) specModel).getBindDynamicValueMethods()) {
+      if (prop.equals(method.methodParams.get(1))) {
+        return method;
+      }
+    }
+    return null;
+  }
+
   /**
    * There are a few cases of classes with typeArgs (e.g. {@literal MyClass<SomeClass, ..>}) where
    *

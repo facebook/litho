@@ -20,9 +20,12 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import android.graphics.Rect;
 import com.facebook.litho.animation.AnimatedProperties;
 import com.facebook.litho.animation.DimensionValue;
+import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.testing.util.InlineLayoutSpec;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -100,8 +103,18 @@ public class TransitionTest {
     assertThat(rootHeightTransition.appearTransition).isNotNull();
 
     LayoutState layoutState = mock(LayoutState.class);
-    LayoutOutput rootLayout = new LayoutOutput();
-    rootLayout.setBounds(0, 0, 300, 100);
+
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(ComponentContext c) {
+            return TestDrawableComponent.create(c).build();
+          }
+        };
+
+    LayoutOutput rootLayout =
+        new LayoutOutput(null, null, component, new Rect(0, 0, 300, 100), 0, 0, 0, 0, 0, 0, null);
+
     when(layoutState.getMountableOutputAt(0)).thenReturn(rootLayout);
 
     int animateFrom =
@@ -129,8 +142,18 @@ public class TransitionTest {
     assertThat(rootHeightTransition.appearTransition).isNotNull();
 
     LayoutState layoutState = mock(LayoutState.class);
-    LayoutOutput rootLayout = new LayoutOutput();
-    rootLayout.setBounds(0, 0, 300, 100);
+
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(ComponentContext c) {
+            return TestDrawableComponent.create(c).build();
+          }
+        };
+
+    LayoutOutput rootLayout =
+        new LayoutOutput(null, null, component, new Rect(0, 0, 300, 100), 0, 0, 0, 0, 0, 0, null);
+
     when(layoutState.getMountableOutputAt(0)).thenReturn(rootLayout);
 
     int animateFrom =

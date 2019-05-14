@@ -71,6 +71,7 @@ public abstract class Component extends ComponentLifecycle
     implements Cloneable, HasEventDispatcher, HasEventTrigger, Equivalence<Component> {
 
   private static final AtomicInteger sIdGenerator = new AtomicInteger(1);
+  private static final DynamicValue[] sEmptyArray = new DynamicValue[0];
 
   boolean mIsNestedTreeResolutionExperimentEnabled =
       ComponentsConfiguration.isNestedTreeResolutionExperimentEnabled;
@@ -138,7 +139,7 @@ public abstract class Component extends ComponentLifecycle
   }
 
   /** Should only be used by logging to provide more readable messages. */
-  public final String getSimpleName() {
+  public String getSimpleName() {
     final Component delegate = getSimpleNameDelegate();
     if (delegate == null) {
       return mSimpleName;
@@ -750,6 +751,18 @@ public abstract class Component extends ComponentLifecycle
     return mCommonProps != null
         && mCommonProps.getNullableNodeInfo() != null
         && mCommonProps.getNullableNodeInfo().getClickHandler() != null;
+  }
+
+  protected DynamicValue[] getDynamicProps() {
+    return sEmptyArray;
+  }
+
+  protected void bindDynamicProp(int dynamicPropIndex, Object value, Object content) {
+    throw new RuntimeException("Components that have dynamic Props must override this method");
+  }
+
+  protected static <T> T retrieveValue(DynamicValue<T> dynamicValue) {
+    return dynamicValue.get();
   }
 
   /**

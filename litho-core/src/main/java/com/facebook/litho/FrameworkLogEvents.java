@@ -44,6 +44,7 @@ public interface FrameworkLogEvents {
   int EVENT_CALCULATE_LAYOUT_STATE = 16;
   int EVENT_DRAW = 17;
   int EVENT_BENCHMARK_RUN = 18;
+  int EVENT_RESUME_CALCULATE_LAYOUT_STATE = 19;
 
   @IntDef({
     FrameworkLogEvents.EVENT_CREATE_LAYOUT,
@@ -61,6 +62,7 @@ public interface FrameworkLogEvents {
     FrameworkLogEvents.EVENT_CALCULATE_LAYOUT_STATE,
     FrameworkLogEvents.EVENT_DRAW,
     FrameworkLogEvents.EVENT_BENCHMARK_RUN,
+    FrameworkLogEvents.EVENT_RESUME_CALCULATE_LAYOUT_STATE,
   })
   @Retention(RetentionPolicy.SOURCE)
   @interface LogEventId {}

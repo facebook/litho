@@ -16,6 +16,7 @@
 
 package com.facebook.litho.specmodels.generator;
 
+import static com.facebook.litho.specmodels.generator.GeneratorConstants.DYNAMIC_PROPS;
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.PREVIOUS_RENDER_DATA_FIELD_NAME;
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.STATE_CONTAINER_FIELD_NAME;
 
@@ -27,6 +28,7 @@ import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.annotations.TreeProp;
 import com.facebook.litho.specmodels.internal.ImmutableList;
+import com.facebook.litho.specmodels.model.BindDynamicValueMethod;
 import com.facebook.litho.specmodels.model.CachedValueParamModel;
 import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.EventDeclarationModel;
@@ -112,6 +114,8 @@ public class ComponentBodyGenerator {
     builder.addTypeSpecDataHolder(generateCopyInterStageImpl(specModel));
     builder.addTypeSpecDataHolder(generateOnUpdateStateMethods(specModel));
     builder.addTypeSpecDataHolder(generateMakeShallowCopy(specModel, hasState));
+    builder.addTypeSpecDataHolder(generateGetDynamicProps(specModel));
+    builder.addTypeSpecDataHolder(generateBindDynamicProp(specModel));
 
     if (hasState) {
       builder.addType(generateStateContainer(specModel));
@@ -318,10 +322,17 @@ public class ComponentBodyGenerator {
     final TypeSpecDataHolder.Builder typeSpecDataHolder = TypeSpecDataHolder.newBuilder();
     final ImmutableList<PropModel> props = specModel.getProps();
 
+    boolean hasDynamicProps = false;
     for (PropModel prop : props) {
+      final TypeName propTypeName = prop.getTypeName();
+      final TypeName fieldTypeName =
+          !prop.isDynamic()
+              ? propTypeName
+              : ParameterizedTypeName.get(ClassNames.DYNAMIC_VALUE, propTypeName.box());
+
       final FieldSpec.Builder fieldBuilder =
           FieldSpec.builder(
-                  KotlinSpecUtils.getFieldTypeName(specModel, prop.getTypeName()), prop.getName())
+                  KotlinSpecUtils.getFieldTypeName(specModel, fieldTypeName), prop.getName())
               .addAnnotations(prop.getExternalAnnotations())
               .addAnnotation(
                   AnnotationSpec.builder(Prop.class)
@@ -330,13 +341,26 @@ public class ComponentBodyGenerator {
                       .build())
               .addAnnotation(
                   AnnotationSpec.builder(Comparable.class)
-                      .addMember("type", "$L", getComparableType(specModel, prop))
+                      .addMember("type", "$L", getComparableType(fieldTypeName, prop.getTypeSpec()))
                       .build());
       if (prop.hasDefault(specModel.getPropDefaults())) {
         assignInitializer(fieldBuilder, specModel, prop);
       }
 
       typeSpecDataHolder.addField(fieldBuilder.build());
+
+      if (prop.isDynamic()) {
+        hasDynamicProps = true;
+      }
+    }
+
+    // If there are dynamic props we also need to generate mDynamicProps fields, which assembles all
+    // of them
+    if (hasDynamicProps) {
+      typeSpecDataHolder.addField(
+          FieldSpec.builder(ArrayTypeName.of(ClassNames.DYNAMIC_VALUE), DYNAMIC_PROPS)
+              .addModifiers(Modifier.PRIVATE)
+              .build());
     }
 
     return typeSpecDataHolder.build();
@@ -636,6 +660,69 @@ public class ComponentBodyGenerator {
     return typeSpecDataHolder.addMethod(builder.build()).build();
   }
 
+  static TypeSpecDataHolder generateGetDynamicProps(SpecModel specModel) {
+    final TypeSpecDataHolder.Builder typeSpecDataHolder = TypeSpecDataHolder.newBuilder();
+
+    if (SpecModelUtils.getDynamicProps(specModel).isEmpty()) {
+      return typeSpecDataHolder.build();
+    }
+
+    final MethodSpec methodSpec =
+        MethodSpec.methodBuilder("getDynamicProps")
+            .addModifiers(Modifier.PROTECTED)
+            .addAnnotation(Override.class)
+            .returns(ArrayTypeName.of(ClassNames.DYNAMIC_VALUE))
+            .addStatement("return $L", DYNAMIC_PROPS)
+            .build();
+
+    return typeSpecDataHolder.addMethod(methodSpec).build();
+  }
+
+  static TypeSpecDataHolder generateBindDynamicProp(SpecModel specModel) {
+    TypeSpecDataHolder.Builder typeSpecDataHolder = TypeSpecDataHolder.newBuilder();
+
+    final List<PropModel> dynamicProps = SpecModelUtils.getDynamicProps(specModel);
+    if (dynamicProps.isEmpty()) {
+      return typeSpecDataHolder.build();
+    }
+
+    final MethodSpec.Builder methodBuilder =
+        MethodSpec.methodBuilder("bindDynamicProp")
+            .addModifiers(Modifier.PROTECTED)
+            .addAnnotation(Override.class)
+            .returns(ClassName.VOID)
+            .addParameter(ClassName.INT, "dynamicPropIndex")
+            .addParameter(ClassName.OBJECT, "value")
+            .addParameter(ClassName.OBJECT, "mountedContent");
+
+    final String sourceDelegateAccessor = SpecModelUtils.getSpecAccessor(specModel);
+
+    methodBuilder.beginControlFlow("switch (dynamicPropIndex)");
+
+    for (int index = 0, size = dynamicProps.size(); index < size; index++) {
+      final PropModel prop = dynamicProps.get(index);
+      final SpecMethodModel<BindDynamicValueMethod, Void> delegate =
+          SpecModelUtils.getBindDelegateMethodForDynamicProp(specModel, prop);
+
+      methodBuilder.addCode("case $L:\n", index);
+      methodBuilder.addStatement(
+          "$>$L.$L(($T) mountedContent, retrieveValue($L))",
+          sourceDelegateAccessor,
+          delegate.name,
+          delegate.methodParams.get(0).getTypeName(),
+          prop.getName());
+      methodBuilder.addStatement("break$<");
+    }
+
+    methodBuilder.addCode("default:\n");
+    methodBuilder.addStatement("$>break$<");
+    methodBuilder.endControlFlow();
+
+    typeSpecDataHolder.addMethod(methodBuilder.build());
+
+    return typeSpecDataHolder.build();
+  }
+
   private static List<MethodParamModel> findComponentsInImpl(SpecModel specModel) {
     final List<MethodParamModel> componentsInImpl = new ArrayList<>();
 
@@ -678,7 +765,7 @@ public class ComponentBodyGenerator {
 
   static CodeBlock getCompareStatement(
       SpecModel specModel, String implInstanceName, MethodParamModel field) {
-    final String implAccessor = getImplAccessor(specModel, field);
+    final String implAccessor = getImplAccessor(specModel, field, true);
 
     return getCompareStatement(
         specModel, field, implAccessor, implInstanceName + "." + implAccessor);
@@ -800,24 +887,25 @@ public class ComponentBodyGenerator {
 
   private static @Comparable.Type int getComparableType(
       SpecModel specModel, MethodParamModel field) {
-    if (field.getTypeName().equals(TypeName.FLOAT)) {
-      return Comparable.FLOAT;
+    return getComparableType(field.getTypeName(), field.getTypeSpec());
+  }
 
-    } else if (field.getTypeName().equals(TypeName.DOUBLE)) {
+  private static @Comparable.Type int getComparableType(
+      TypeName typeName, com.facebook.litho.specmodels.model.TypeSpec typeSpec) {
+    if (typeName.equals(TypeName.FLOAT)) {
+      return Comparable.FLOAT;
+    } else if (typeName.equals(TypeName.DOUBLE)) {
       return Comparable.DOUBLE;
 
-    } else if (field.getTypeName() instanceof ArrayTypeName) {
+    } else if (typeName instanceof ArrayTypeName) {
       return Comparable.ARRAY;
 
-    } else if (field.getTypeName().isPrimitive()) {
+    } else if (typeName.isPrimitive()) {
       return Comparable.PRIMITIVE;
-
-    } else if (field.getTypeName().equals(ClassNames.COMPARABLE_DRAWABLE)) {
+    } else if (typeName.equals(ClassNames.COMPARABLE_DRAWABLE)) {
       return Comparable.COMPARABLE_DRAWABLE;
-
-    } else if (field.getTypeSpec().isSubInterface(ClassNames.COLLECTION)) {
-      final int level =
-          calculateLevelOfComponentInCollections((DeclaredTypeSpec) field.getTypeSpec());
+    } else if (typeSpec.isSubInterface(ClassNames.COLLECTION)) {
+      final int level = calculateLevelOfComponentInCollections((DeclaredTypeSpec) typeSpec);
       switch (level) {
         case 0:
           return Comparable.COLLECTION_COMPLEVEL_0;
@@ -833,17 +921,17 @@ public class ComponentBodyGenerator {
           throw new IllegalStateException("Collection Component level not supported.");
       }
 
-    } else if (field.getTypeName().equals(ClassNames.COMPONENT)) {
+    } else if (typeName.equals(ClassNames.COMPONENT)) {
       return Comparable.COMPONENT;
 
-    } else if (field.getTypeName().equals(ClassNames.SECTION)) {
+    } else if (typeName.equals(ClassNames.SECTION)) {
       return Comparable.SECTION;
 
-    } else if (field.getTypeName().equals(ClassNames.EVENT_HANDLER)) {
+    } else if (typeName.equals(ClassNames.EVENT_HANDLER)) {
       return Comparable.EVENT_HANDLER;
 
-    } else if (field.getTypeName() instanceof ParameterizedTypeName
-        && ((ParameterizedTypeName) field.getTypeName()).rawType.equals(ClassNames.EVENT_HANDLER)) {
+    } else if (typeName instanceof ParameterizedTypeName
+        && ((ParameterizedTypeName) typeName).rawType.equals(ClassNames.EVENT_HANDLER)) {
       return Comparable.EVENT_HANDLER_IN_PARAMETERIZED_TYPE;
     }
 
@@ -851,6 +939,11 @@ public class ComponentBodyGenerator {
   }
 
   static String getImplAccessor(SpecModel specModel, MethodParamModel methodParamModel) {
+    return getImplAccessor(specModel, methodParamModel, false);
+  }
+
+  static String getImplAccessor(
+      SpecModel specModel, MethodParamModel methodParamModel, boolean shallow) {
     if (methodParamModel instanceof StateParamModel ||
         SpecModelUtils.getStateValueWithName(specModel, methodParamModel.getName()) != null) {
       return STATE_CONTAINER_FIELD_NAME + "." + methodParamModel.getName();
@@ -859,6 +952,10 @@ public class ComponentBodyGenerator {
           + methodParamModel.getName().substring(0, 1).toUpperCase()
           + methodParamModel.getName().substring(1)
           + "()";
+    } else if (methodParamModel instanceof PropModel
+        && ((PropModel) methodParamModel).isDynamic()
+        && !shallow) {
+      return "retrieveValue(" + methodParamModel.getName() + ")";
     }
 
     return methodParamModel.getName();

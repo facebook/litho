@@ -3,16 +3,14 @@
 # This source code is licensed under the Apache 2.0 license found in the
 # LICENSE file in the root directory of this source tree.
 
-load("//tools/build_defs/oss:fb_native_wrapper.bzl", "fb_native")
-load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_ANDROIDSUPPORT_TARGET", "LITHO_ANDROIDSUPPORT_TESTING_TARGET", "LITHO_ANNOTATIONS_TARGET", "LITHO_ESPRESSO_TARGET", "LITHO_JAVA_TARGET", "LITHO_JUNIT_TARGET", "LITHO_PROCESSOR_TARGET", "LITHO_SCREENSHOT_TARGET", "LITHO_WIDGET_TARGET", "LITHO_YOGA_TARGET", "fb_core_android_library", "fb_instrumentation_test", "make_dep_path")
+load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_ANDROIDSUPPORT_TARGET", "LITHO_ANDROIDSUPPORT_TESTING_TARGET", "LITHO_ANNOTATIONS_TARGET", "LITHO_ESPRESSO_TARGET", "LITHO_JAVA_TARGET", "LITHO_JUNIT_TARGET", "LITHO_PROCESSOR_TARGET", "LITHO_SCREENSHOT_TARGET", "LITHO_WIDGET_TARGET", "LITHO_YOGA_TARGET", "fb_core_android_library", "instrumentation_test", "make_dep_path")
 
-fb_instrumentation_test(
+instrumentation_test(
     name = "espresso",
     srcs = glob(["*Test.java"]),
+    apk_under_test = "litho",
     is_androidx = True,
-    manifest = "AndroidManifest.xml",
     deps = [
-        ":build_config",
         ":testutil",
         make_dep_path("litho-espresso/src/main/java/com/facebook/litho/testing/espresso:espresso"),
         LITHO_JAVA_TARGET,
@@ -40,14 +38,5 @@ fb_core_android_library(
         LITHO_JAVA_TARGET,
         LITHO_WIDGET_TARGET,
         LITHO_YOGA_TARGET,
-    ],
-)
-
-fb_native.android_build_config(
-    name = "build_config",
-    package = "com.facebook.litho",
-    values = [
-        "boolean IS_INTERNAL_BUILD = false",
-        "boolean USE_INCREMENTAL_MOUNT_HELPER = true",
     ],
 )

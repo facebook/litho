@@ -8,6 +8,7 @@ com.facebook.litho.dataflow.springs
 com.facebook.litho.drawable
 com.facebook.litho.fresco
 com.facebook.litho.internal
+com.facebook.litho.perfboost
 com.facebook.litho.sections
 com.facebook.litho.sections.common
 com.facebook.litho.sections.config

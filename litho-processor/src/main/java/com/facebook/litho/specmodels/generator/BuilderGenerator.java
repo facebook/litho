@@ -16,6 +16,8 @@
 
 package com.facebook.litho.specmodels.generator;
 
+import static com.facebook.litho.specmodels.generator.GeneratorConstants.DYNAMIC_PROPS;
+
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.BuilderMethodModel;
 import com.facebook.litho.specmodels.model.ClassNames;
@@ -26,6 +28,7 @@ import com.facebook.litho.specmodels.model.PropModel;
 import com.facebook.litho.specmodels.model.SpecElementType;
 import com.facebook.litho.specmodels.model.SpecMethodModel;
 import com.facebook.litho.specmodels.model.SpecModel;
+import com.facebook.litho.specmodels.model.SpecModelUtils;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ArrayTypeName;
 import com.squareup.javapoet.ClassName;
@@ -436,6 +439,13 @@ public class BuilderGenerator {
 
         if (componentClass.equals(ClassNames.COMPONENT)) {
           dataHolder.addMethod(componentBuilder(specModel, prop, requiredIndex));
+        } else if (prop.isDynamic()) {
+          final TypeName dynamicValueType =
+              ParameterizedTypeName.get(ClassNames.DYNAMIC_VALUE, prop.getTypeName().box());
+          dataHolder.addMethod(
+              dynamicValueBuilder(specModel, prop, requiredIndex, dynamicValueType));
+          dataHolder.addMethod(
+              dynamicValueSimpleBuilder(specModel, prop, requiredIndex, dynamicValueType));
         } else {
           dataHolder.addMethod(regularBuilder(specModel, prop, requiredIndex));
         }
@@ -506,6 +516,40 @@ public class BuilderGenerator {
             Arrays.asList(parameter(prop, prop.getTypeName(), prop.getName())),
             "$L == null ? null : $L.makeShallowCopy()",
             prop.getName(),
+            prop.getName())
+        .build();
+  }
+
+  private static MethodSpec dynamicValueBuilder(
+      SpecModel specModel, PropModel prop, int requiredIndex, TypeName dynamicValueType) {
+    return getMethodSpecBuilder(
+            specModel,
+            prop,
+            requiredIndex,
+            prop.getName(),
+            Arrays.asList(
+                parameter(
+                    prop,
+                    KotlinSpecUtils.getFieldTypeName(specModel, dynamicValueType),
+                    prop.getName())),
+            prop.getName())
+        .build();
+  }
+
+  private static MethodSpec dynamicValueSimpleBuilder(
+      SpecModel specModel, PropModel prop, int requiredIndex, TypeName dynamicValueType) {
+    return getMethodSpecBuilder(
+            specModel,
+            prop,
+            requiredIndex,
+            prop.getName(),
+            Arrays.asList(
+                parameter(
+                    prop,
+                    KotlinSpecUtils.getFieldTypeName(specModel, prop.getTypeName()),
+                    prop.getName())),
+            "new $T($L)",
+            dynamicValueType,
             prop.getName())
         .build();
   }
@@ -1386,6 +1430,25 @@ public class BuilderGenerator {
               REQUIRED_PROPS_COUNT,
               "mRequired",
               REQUIRED_PROPS_NAMES);
+    }
+
+    final List<PropModel> dynamicProps = SpecModelUtils.getDynamicProps(specModel);
+    if (!dynamicProps.isEmpty()) {
+      final int count = dynamicProps.size();
+
+      final String componentRef = getComponentMemberInstanceName(specModel);
+      buildMethodBuilder.addStatement(
+          "$L.$L = new $T[$L]", componentRef, DYNAMIC_PROPS, ClassNames.DYNAMIC_VALUE, count);
+
+      for (int i = 0; i < count; i++) {
+        buildMethodBuilder.addStatement(
+            "$L.$L[$L] = $L.$L",
+            componentRef,
+            DYNAMIC_PROPS,
+            i,
+            componentRef,
+            dynamicProps.get(i).getName());
+      }
     }
 
     return buildMethodBuilder

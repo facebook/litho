@@ -46,6 +46,7 @@ public class SpecModelValidation {
     validationErrors.addAll(WorkingRangeValidation.validate(specModel));
     validationErrors.addAll(CachedValueValidation.validate(specModel));
     validationErrors.addAll(FieldsValidation.validate(specModel));
+    validationErrors.addAll(DynamicPropsValidation.validate(specModel));
     return validationErrors;
   }
 

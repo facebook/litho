@@ -23,6 +23,7 @@ import static android.os.Build.VERSION_CODES.LOLLIPOP_MR1;
 
 import androidx.annotation.Nullable;
 import com.facebook.litho.BuildConfig;
+import com.facebook.litho.perfboost.LithoPerfBoosterFactory;
 import com.facebook.yoga.YogaLogger;
 
 /**
@@ -194,6 +195,7 @@ public class ComponentsConfiguration {
   public static boolean enableRenderInfoDebugging = false;
 
   public static boolean useCancelableLayoutFutures;
+  public static boolean canInterruptAndMoveLayoutsBetweenThreads;
 
   public static boolean isRenderInfoDebuggingEnabled() {
     return isDebugModeEnabled && enableRenderInfoDebugging;
@@ -231,4 +233,12 @@ public class ComponentsConfiguration {
   public static boolean isRootComponentBisectEnabled = false;
   public static String rootComponentBisectStart = "aaaaa";
   public static String rootComponentBisectEnd = "zzzzz";
+
+  public static @Nullable LithoPerfBoosterFactory perfBoosterFactory = null;
+
+  /**
+   * If true, the {@link #perfBoosterFactory} will be used to indicate that LayoutStateFuture thread
+   * can use the perf boost
+   */
+  public static boolean boostPerfLayoutStateFuture;
 }

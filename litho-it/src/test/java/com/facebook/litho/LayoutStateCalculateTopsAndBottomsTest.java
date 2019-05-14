@@ -29,6 +29,7 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.robolectric.RuntimeEnvironment.application;
 
 import android.content.Context;
+import android.graphics.Rect;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
@@ -151,11 +152,19 @@ public class LayoutStateCalculateTopsAndBottomsTest {
 
   @Test
   public void testTopsComparatorIsEquivalenceRelation() {
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(ComponentContext c) {
+            return TestDrawableComponent.create(c).build();
+          }
+        };
+
     LayoutOutput[] layoutOutputs = new LayoutOutput[4];
-    layoutOutputs[0] = createLayoutOutput(0, 10, 0);
-    layoutOutputs[1] = createLayoutOutput(0, 10, 1);
-    layoutOutputs[2] = createLayoutOutput(0, 20, 2);
-    layoutOutputs[3] = createLayoutOutput(0, 20, 3);
+    layoutOutputs[0] = createLayoutOutput(component, 0, 10, 0);
+    layoutOutputs[1] = createLayoutOutput(component, 0, 10, 1);
+    layoutOutputs[2] = createLayoutOutput(component, 0, 20, 2);
+    layoutOutputs[3] = createLayoutOutput(component, 0, 20, 3);
 
     // reflexive
     for (LayoutOutput layoutOutput : layoutOutputs) {
@@ -188,11 +197,20 @@ public class LayoutStateCalculateTopsAndBottomsTest {
 
   @Test
   public void testBottomsComparatorIsEquivalenceRelation() {
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(ComponentContext c) {
+            return TestDrawableComponent.create(c).build();
+          }
+        };
+    ;
+
     LayoutOutput[] layoutOutputs = new LayoutOutput[4];
-    layoutOutputs[0] = createLayoutOutput(0, 10, 0);
-    layoutOutputs[1] = createLayoutOutput(0, 10, 1);
-    layoutOutputs[2] = createLayoutOutput(0, 20, 2);
-    layoutOutputs[3] = createLayoutOutput(0, 20, 3);
+    layoutOutputs[0] = createLayoutOutput(component, 0, 10, 0);
+    layoutOutputs[1] = createLayoutOutput(component, 0, 10, 1);
+    layoutOutputs[2] = createLayoutOutput(component, 0, 20, 2);
+    layoutOutputs[3] = createLayoutOutput(component, 0, 20, 3);
 
     // reflexive
     for (LayoutOutput layoutOutput : layoutOutputs) {
@@ -239,11 +257,12 @@ public class LayoutStateCalculateTopsAndBottomsTest {
         LayoutState.CalculateLayoutSource.TEST);
   }
 
-  private static LayoutOutput createLayoutOutput(int top, int bottom, int index) {
-    LayoutOutput layoutOutput = new LayoutOutput();
-    layoutOutput.setBounds(0, top, 10, bottom);
+  private static LayoutOutput createLayoutOutput(
+      Component component, int top, int bottom, int index) {
+    LayoutOutput layoutOutput =
+        new LayoutOutput(
+            null, null, component, new Rect(0, top, 10, bottom), 0, 0, 0, 0, 0, 0, null);
     layoutOutput.setIndex(index);
-
     return layoutOutput;
   }
 }

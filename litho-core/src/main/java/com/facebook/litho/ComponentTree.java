@@ -33,6 +33,7 @@ import static com.facebook.litho.config.ComponentsConfiguration.DEFAULT_BACKGROU
 
 import android.content.Context;
 import android.graphics.Rect;
+import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Process;
@@ -50,6 +51,7 @@ import com.facebook.litho.animation.AnimatedProperties;
 import com.facebook.litho.animation.AnimatedProperty;
 import com.facebook.litho.annotations.MountSpec;
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.litho.perfboost.LithoPerfBooster;
 import com.facebook.litho.stats.LithoStats;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -61,6 +63,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.concurrent.GuardedBy;
@@ -88,6 +91,7 @@ public class ComponentTree {
   private static final int SCHEDULE_NONE = 0;
   private static final int SCHEDULE_LAYOUT_ASYNC = 1;
   private static final int SCHEDULE_LAYOUT_SYNC = 2;
+  private static boolean sBoostPerfLayoutStateFuture = false;
   private boolean mReleased;
   private String mReleasedComponent;
 
@@ -257,6 +261,8 @@ public class ComponentTree {
 
   private final boolean isReconciliationEnabled;
 
+  private final boolean mMoveLayoutsBetweenThreads;
+
   public static Builder create(ComponentContext context, Component.Builder<?> root) {
     return create(context, root.build());
   }
@@ -286,6 +292,7 @@ public class ComponentTree {
     mMeasureListener = builder.mMeasureListener;
     mNestedTreeResolutionExperimentEnabled = builder.nestedTreeResolutionExperimentEnabled;
     mUseCancelableLayoutFutures = ComponentsConfiguration.useCancelableLayoutFutures;
+    mMoveLayoutsBetweenThreads = ComponentsConfiguration.canInterruptAndMoveLayoutsBetweenThreads;
     isReconciliationEnabled = builder.isReconciliationEnabled;
 
     ensureLayoutThreadHandler();
@@ -333,6 +340,18 @@ public class ComponentTree {
               : new ThreadPoolLayoutHandler(
                   ComponentsConfiguration.threadPoolForBackgroundThreadsConfig);
       mLayoutThreadHandler = instrumentLithoHandler(mLayoutThreadHandler);
+    } else {
+      if (sDefaultLayoutThreadLooper != null
+          && sBoostPerfLayoutStateFuture == false
+          && ComponentsConfiguration.boostPerfLayoutStateFuture == true
+          && ComponentsConfiguration.perfBoosterFactory != null) {
+        /**
+         * Right now we don't care about testing this per surface, so we'll use the config value.
+         */
+        LithoPerfBooster booster = ComponentsConfiguration.perfBoosterFactory.acquireInstance();
+        booster.markImportantThread(new Handler(sDefaultLayoutThreadLooper));
+        sBoostPerfLayoutStateFuture = true;
+      }
     }
   }
 
@@ -1110,12 +1129,16 @@ public class ComponentTree {
         null);
   }
 
-  synchronized void updateStateLazy(String componentKey, StateUpdate stateUpdate) {
-    if (mRoot == null) {
-      return;
+  void updateStateLazy(String componentKey, StateUpdate stateUpdate) {
+    synchronized (this) {
+      if (mRoot == null) {
+        return;
+      }
+
+      mStateHandler.queueStateUpdate(componentKey, stateUpdate, true);
     }
 
-    mStateHandler.queueStateUpdate(componentKey, stateUpdate, true);
+    LithoStats.incStateUpdateLazy(1);
   }
 
   void applyLazyStateUpdatesForContainer(String componentKey, StateContainer container) {
@@ -2192,6 +2215,25 @@ public class ComponentTree {
       @CalculateLayoutSource int source,
       @Nullable String extraAttribution,
       @Nullable LayoutStateFuture layoutStateFuture) {
+    final ComponentContext contextWithStateHandler =
+        getNewContextForLayout(context, treeProps, layoutStateFuture);
+
+    return LayoutState.calculate(
+        contextWithStateHandler,
+        root,
+        mId,
+        widthSpec,
+        heightSpec,
+        diffingEnabled,
+        previousLayoutState,
+        source,
+        extraAttribution);
+  }
+
+  private ComponentContext getNewContextForLayout(
+      ComponentContext context,
+      @Nullable TreeProps treeProps,
+      @Nullable LayoutStateFuture layoutStateFuture) {
     final ComponentContext contextWithStateHandler;
 
     synchronized (this) {
@@ -2209,16 +2251,7 @@ public class ComponentTree {
               layoutStateFuture);
     }
 
-    return LayoutState.calculate(
-        contextWithStateHandler,
-        root,
-        mId,
-        widthSpec,
-        heightSpec,
-        diffingEnabled,
-        previousLayoutState,
-        source,
-        extraAttribution);
+    return contextWithStateHandler;
   }
 
   @VisibleForTesting
@@ -2241,6 +2274,9 @@ public class ComponentTree {
     private final FutureTask<LayoutState> futureTask;
     private final AtomicInteger refCount = new AtomicInteger(0);
     private final boolean isFromSyncLayout;
+    private final AtomicBoolean interrupted = new AtomicBoolean(false);
+    private final int source;
+    private final String extraAttribution;
 
     @GuardedBy("LayoutStateFuture.this")
     private volatile boolean released = false;
@@ -2269,6 +2305,9 @@ public class ComponentTree {
       this.previousLayoutState = previousLayoutState;
       this.treeProps = treeProps;
       this.isFromSyncLayout = isFromSyncLayout(source);
+      this.source = source;
+      this.extraAttribution = extraAttribution;
+
       this.futureTask =
           new FutureTask<>(
               new Callable<LayoutState>() {
@@ -2290,7 +2329,8 @@ public class ComponentTree {
                           treeProps,
                           source,
                           extraAttribution,
-                          ComponentTree.this.mUseCancelableLayoutFutures
+                          ComponentTree.this.mMoveLayoutsBetweenThreads
+                                  || ComponentTree.this.mUseCancelableLayoutFutures
                               ? LayoutStateFuture.this
                               : null);
                   synchronized (LayoutStateFuture.this) {
@@ -2330,6 +2370,14 @@ public class ComponentTree {
       return released;
     }
 
+    boolean isInterrupted() {
+      return !ThreadUtils.isMainThread() && interrupted.get();
+    }
+
+    void interrupt() {
+      interrupted.set(true);
+    }
+
     void unregisterForResponse() {
       final int newRefCount = refCount.decrementAndGet();
 
@@ -2356,6 +2404,16 @@ public class ComponentTree {
     @VisibleForTesting
     @Nullable
     LayoutState runAndGet() {
+      if (mMoveLayoutsBetweenThreads) {
+        return runAndGetSwitchThreadsWhenUIBlocked();
+      }
+
+      return runAndGetIncreasePriority();
+    }
+
+    @VisibleForTesting
+    @Nullable
+    LayoutState runAndGetIncreasePriority() {
       if (runningThreadId.compareAndSet(-1, Process.myTid())) {
         futureTask.run();
       }
@@ -2408,6 +2466,77 @@ public class ComponentTree {
           return null;
         }
         return result;
+      }
+    }
+
+    @VisibleForTesting
+    @Nullable
+    LayoutState runAndGetSwitchThreadsWhenUIBlocked() {
+      if (runningThreadId.compareAndSet(-1, Process.myTid())) {
+        futureTask.run();
+      }
+
+      final int runningThreadId = this.runningThreadId.get();
+
+      if (isMainThread() && !futureTask.isDone() && runningThreadId != Process.myTid()) {
+        // This means the UI thread is about to be blocked by the bg thread. Instead of waiting,
+        // the bg task is interrupted.
+        if (!isFromSyncLayout) {
+          interrupt();
+        }
+      }
+
+      LayoutState result;
+      try {
+        result = futureTask.get();
+        if (interrupted.get() && result.isPartialLayoutState()) {
+          if (ThreadUtils.isMainThread()) {
+            // This means that the bg task was interrupted and it returned a partially resolved
+            // InternalNode. We need to finish computing this LayoutState.
+
+            result = resolvePartialInternalNodeAndCalculateLayout(result);
+          } else {
+            // This means that the bg task was interrupted and the UI thread will pick up the rest
+            // of
+            // the work. No need to return a LayoutState.
+            result = null;
+          }
+        }
+
+      } catch (ExecutionException | InterruptedException | CancellationException e) {
+        final Throwable cause = e.getCause();
+        if (cause instanceof RuntimeException) {
+          throw (RuntimeException) cause;
+        } else {
+          throw new RuntimeException(e.getMessage(), e);
+        }
+      }
+
+      if (result == null) {
+        return null;
+      }
+      synchronized (LayoutStateFuture.this) {
+        if (released) {
+          return null;
+        }
+        return result;
+      }
+    }
+
+    private LayoutState resolvePartialInternalNodeAndCalculateLayout(
+        final LayoutState partialLayoutState) {
+      if (released) {
+        return null;
+      }
+      final LayoutState result =
+          LayoutState.resumeCalculate(
+              getNewContextForLayout(context, treeProps, null),
+              source,
+              extraAttribution,
+              partialLayoutState);
+
+      synchronized (LayoutStateFuture.this) {
+        return released ? null : result;
       }
     }
 

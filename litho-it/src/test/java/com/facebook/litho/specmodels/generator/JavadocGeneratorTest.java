@@ -50,8 +50,9 @@ public class JavadocGeneratorTest {
                     new PropJavadocModel("propName2", "test prop2 javadoc")))
             .props(
                 ImmutableList.of(
-                    new PropModel(requiredMethodParam, false, false, false, ResType.INT, ""),
-                    new PropModel(optionalMethodParam, true, false, false, ResType.BOOL, "")))
+                    new PropModel(requiredMethodParam, false, false, false, false, ResType.INT, ""),
+                    new PropModel(
+                        optionalMethodParam, true, false, false, false, ResType.BOOL, "")))
             .build();
 
     final TypeSpecDataHolder dataHolder = JavadocGenerator.generate(specModel);

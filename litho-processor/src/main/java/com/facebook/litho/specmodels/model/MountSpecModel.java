@@ -68,7 +68,8 @@ public class MountSpecModel implements SpecModel, HasPureRender {
       SpecElementType specElementType,
       Object representedObject,
       SpecGenerator<MountSpecModel> mountSpecGenerator,
-      ImmutableList<FieldModel> fields) {
+      ImmutableList<FieldModel> fields,
+      ImmutableList<SpecMethodModel<BindDynamicValueMethod, Void>> bindDynamicValueMethods) {
     mSpecModel =
         SpecModelImpl.newBuilder()
             .qualifiedSpecClassName(qualifiedSpecClassName)
@@ -93,6 +94,7 @@ public class MountSpecModel implements SpecModel, HasPureRender {
             .specElementType(specElementType)
             .representedObject(representedObject)
             .fields(fields)
+            .bindDynamicValueMethods(bindDynamicValueMethods)
             .build();
     mIsPureRender = isPureRender;
     mHasChildLithosViews = hasChildLithosViews;
@@ -376,6 +378,10 @@ public class MountSpecModel implements SpecModel, HasPureRender {
   @Override
   public boolean shouldGenerateIsEquivalentTo() {
     return true;
+  }
+
+  public ImmutableList<SpecMethodModel<BindDynamicValueMethod, Void>> getBindDynamicValueMethods() {
+    return mSpecModel.getBindDynamicValueMethods();
   }
 
   @Override

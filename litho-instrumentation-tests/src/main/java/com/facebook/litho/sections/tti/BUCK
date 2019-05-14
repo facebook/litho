@@ -15,18 +15,18 @@ load(
     "LITHO_SECTIONS_WIDGET_TARGET",
     "LITHO_WIDGET_TARGET",
     "fb_core_android_library",
-    "make_dep_path",
 )
 
 fb_core_android_library(
     name = "tti",
     srcs = glob(["*.java"]),
+    manifest = "AndroidManifest.xml",
     plugins = [
         LITHO_PROCESSOR_TARGET,
         LITHO_SECTIONS_PROCESSOR_TARGET,
     ],
     visibility = [
-        make_dep_path("litho-instrumentation-tests/src/androidTest/..."),
+        "PUBLIC",
     ],
     deps = [
         LITHO_JSR_TARGET,

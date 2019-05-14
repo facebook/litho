@@ -24,6 +24,8 @@ LITHO_ANNOTATIONS_TARGET = make_dep_path("litho-annotations/src/main/java/com/fa
 
 LITHO_CONFIG_TARGET = make_dep_path("litho-core/src/main/java/com/facebook/litho/config:config")
 
+LITHO_PERFBOOST_TARGET = make_dep_path("litho-core/src/main/java/com/facebook/litho/perfboost:perfboost")
+
 LITHO_VIEWCOMPAT_TARGET = make_dep_path("litho-core/src/main/java/com/facebook/litho/viewcompat:viewcompat")
 
 LITHO_UTILS_TARGET = make_dep_path("litho-core/src/main/java/com/facebook/litho/utils:utils")
@@ -263,7 +265,7 @@ def fb_prebuilt_cxx_library(**kwargs):
     """Delegates to native prebuilt_cxx_library."""
     native.prebuilt_cxx_library(**kwargs)
 
-def fb_instrumentation_test(**kwargs):
+def instrumentation_test(**kwargs):
     """
     We don't support this in the OSS build for now.
     Please use Gradle instead.

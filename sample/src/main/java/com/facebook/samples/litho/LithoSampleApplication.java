@@ -17,7 +17,6 @@ import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.flipper.android.AndroidFlipperClient;
 import com.facebook.flipper.android.utils.FlipperUtils;
 import com.facebook.flipper.core.FlipperClient;
-import com.facebook.flipper.plugins.console.JavascriptEnvironment;
 import com.facebook.flipper.plugins.inspector.DescriptorMapping;
 import com.facebook.flipper.plugins.inspector.InspectorFlipperPlugin;
 import com.facebook.flipper.plugins.litho.LithoFlipperDescriptors;
@@ -36,8 +35,7 @@ public class LithoSampleApplication extends Application {
       final FlipperClient client = AndroidFlipperClient.getInstance(this);
       final DescriptorMapping descriptorMapping = DescriptorMapping.withDefaults();
       LithoFlipperDescriptors.add(descriptorMapping);
-      client.addPlugin(
-          new InspectorFlipperPlugin(this, descriptorMapping, new JavascriptEnvironment()));
+      client.addPlugin(new InspectorFlipperPlugin(this, descriptorMapping));
       client.start();
     }
   }

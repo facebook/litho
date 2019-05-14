@@ -150,7 +150,8 @@ public class MountSpecModelFactory implements SpecModelFactory<MountSpecModel> {
         SpecElementTypeDeterminator.determine(element),
         element,
         mMountSpecGenerator,
-        FieldsExtractor.extractFields(element));
+        FieldsExtractor.extractFields(element),
+        BindDynamicValuesMethodExtractor.getOnBindDynamicValuesMethods(element, messager));
   }
 
   private static TypeName getMountType(Elements elements, TypeElement element) {

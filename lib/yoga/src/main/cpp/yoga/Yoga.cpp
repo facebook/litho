@@ -9,10 +9,12 @@
 #include <float.h>
 #include <string.h>
 #include <algorithm>
+#include <memory>
 #include "Utils.h"
 #include "YGNode.h"
 #include "YGNodePrint.h"
 #include "Yoga-internal.h"
+#include "event/event.h"
 #include "instrumentation.h"
 #ifdef _MSC_VER
 #include <float.h>
@@ -27,15 +29,6 @@ __forceinline const float fmaxf(const float a, const float b) {
 
 using namespace facebook::yoga;
 using detail::Log;
-
-namespace {
-size_t usedMeasureCacheEntries = YG_MAX_CACHED_RESULT_COUNT;
-}
-
-void YGSetUsedCachedEntries(size_t n) {
-  usedMeasureCacheEntries =
-      n == 0 || n > YG_MAX_CACHED_RESULT_COUNT ? YG_MAX_CACHED_RESULT_COUNT : n;
-}
 
 #ifdef ANDROID
 static int YGAndroidLog(
@@ -214,14 +207,15 @@ void YGNodeMarkDirtyAndPropogateToDescendants(const YGNodeRef node) {
   return node->markDirtyAndPropogateDownwards();
 }
 
-int32_t gNodeInstanceCount = 0;
 int32_t gConfigInstanceCount = 0;
 
 WIN_EXPORT YGNodeRef YGNodeNewWithConfig(const YGConfigRef config) {
   const YGNodeRef node = new YGNode();
   YGAssertWithConfig(
       config, node != nullptr, "Could not allocate memory for node");
-  gNodeInstanceCount++;
+#ifdef YG_ENABLE_EVENTS
+  Event::publish<Event::NodeAllocation>(node, {config});
+#endif
 
   if (config->useWebDefaults) {
     node->getStyle().flexDirection() = YGFlexDirectionRow;
@@ -246,7 +240,9 @@ YGNodeRef YGNodeClone(YGNodeRef oldNode) {
       oldNode->getConfig(),
       node != nullptr,
       "Could not allocate memory for node");
-  gNodeInstanceCount++;
+#ifdef YG_ENABLE_EVENTS
+  Event::publish<Event::NodeAllocation>(node, {node->getConfig()});
+#endif
   node->setOwner(nullptr);
   return node;
 }
@@ -293,8 +289,10 @@ void YGNodeFree(const YGNodeRef node) {
   }
 
   node->clearChildren();
+#ifdef YG_ENABLE_EVENTS
+  Event::publish<Event::NodeDeallocation>(node, {node->getConfig()});
+#endif
   delete node;
-  gNodeInstanceCount--;
 }
 
 static void YGConfigFreeRecursive(const YGNodeRef root) {
@@ -334,10 +332,6 @@ void YGNodeFreeRecursive(const YGNodeRef root) {
 
 void YGNodeReset(YGNodeRef node) {
   node->reset();
-}
-
-int32_t YGNodeGetInstanceCount(void) {
-  return gNodeInstanceCount;
 }
 
 int32_t YGConfigGetInstanceCount(void) {
@@ -3674,6 +3668,9 @@ bool YGLayoutNodeInternal(
     const YGConfigRef config,
     YGMarkerLayoutData& layoutMarkerData,
     void* const layoutContext) {
+#ifdef YG_ENABLE_EVENTS
+  Event::publish<Event::NodeLayout>(node);
+#endif
   YGLayout* layout = &node->getLayout();
 
   gDepth++;
@@ -3864,7 +3861,7 @@ bool YGLayoutNodeInternal(
         layoutMarkerData.maxMeasureCache =
             layout->nextCachedMeasurementsIndex + 1;
       }
-      if (layout->nextCachedMeasurementsIndex == usedMeasureCacheEntries) {
+      if (layout->nextCachedMeasurementsIndex == YG_MAX_CACHED_RESULT_COUNT) {
         if (gPrintChanges) {
           Log::log(node, YGLogLevelVerbose, nullptr, "Out of cache entries!\n");
         }
@@ -4006,7 +4003,13 @@ void YGNodeCalculateLayoutWithContext(
     const float ownerHeight,
     const YGDirection ownerDirection,
     void* layoutContext) {
-  marker::MarkerSection<YGMarkerLayout> marker{node};
+
+#ifdef YG_ENABLE_EVENTS
+  Event::publish<Event::LayoutPassStart>(node);
+#endif
+  // unique pointer to allow ending the marker early
+  std::unique_ptr<marker::MarkerSection<YGMarkerLayout>> marker{
+      new marker::MarkerSection<YGMarkerLayout>{node}};
 
   // Increment the generation count. This will force the recursive routine to
   // visit all dirty nodes at least once. Subsequent visits will be skipped if
@@ -4065,7 +4068,7 @@ void YGNodeCalculateLayoutWithContext(
           true,
           "initial",
           node->getConfig(),
-          marker.data,
+          marker->data,
           layoutContext)) {
     node->setPosition(
         node->getLayout().direction, ownerWidth, ownerHeight, ownerWidth);
@@ -4081,6 +4084,13 @@ void YGNodeCalculateLayoutWithContext(
     }
 #endif
   }
+
+  // end marker here
+  marker = nullptr;
+
+#ifdef YG_ENABLE_EVENTS
+  Event::publish<Event::LayoutPassEnd>(node);
+#endif
 
   // We want to get rid off `useLegacyStretchBehaviour` from YGConfig. But we
   // aren't sure whether client's of yoga have gotten rid off this flag or not.

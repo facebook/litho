@@ -27,4 +27,5 @@ public interface GeneratorConstants {
   String STATE_CONTAINER_NAME_SUFFIX = "StateContainer";
   String STATE_UPDATE_NAME_SUFFIX = "StateUpdate";
   String STATE_TRANSITIONS_FIELD_NAME = "_transitions";
+  String DYNAMIC_PROPS = "mDynamicProps";
 }

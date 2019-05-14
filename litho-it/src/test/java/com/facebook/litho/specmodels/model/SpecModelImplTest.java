@@ -70,11 +70,13 @@ public class SpecModelImplTest {
             false,
             false,
             false,
+            false,
             null,
             "");
     mPropModel2 =
         new PropModel(
             MockMethodParamModel.newBuilder().name("propModel2").type(TypeName.INT).build(),
+            false,
             false,
             false,
             false,
@@ -86,11 +88,13 @@ public class SpecModelImplTest {
             false,
             false,
             false,
+            false,
             null,
             "");
     mPropModel4 =
         new PropModel(
             MockMethodParamModel.newBuilder().name("propModel4").type(TypeName.INT).build(),
+            false,
             false,
             false,
             false,
@@ -106,11 +110,13 @@ public class SpecModelImplTest {
             false,
             false,
             false,
+            false,
             null,
             "");
     mUnderlyingPropModel2 =
         new PropModel(
             MockMethodParamModel.newBuilder().name("differentName").build(),
+            false,
             false,
             false,
             false,

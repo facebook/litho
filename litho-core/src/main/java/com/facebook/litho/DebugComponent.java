@@ -85,7 +85,7 @@ public final class DebugComponent {
         null :
         componentTree.getMainThreadLayoutState();
     final InternalNode root = layoutState == null ? null : layoutState.getLayoutRoot();
-    if (root != null) {
+    if (root != null && root != ComponentContext.NULL_LAYOUT) {
       final int outerWrapperComponentIndex = Math.max(0, root.getComponents().size() - 1);
       return DebugComponent.getInstance(root, outerWrapperComponentIndex);
     }

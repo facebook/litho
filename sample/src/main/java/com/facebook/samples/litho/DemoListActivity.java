@@ -23,6 +23,7 @@ import com.facebook.samples.litho.animations.expandableelement.ExpandableElement
 import com.facebook.samples.litho.animations.pageindicators.PageIndicatorsActivity;
 import com.facebook.samples.litho.animations.renderthread.RenderThreadAnimationActivity;
 import com.facebook.samples.litho.bordereffects.BorderEffectsActivity;
+import com.facebook.samples.litho.dynamicprops.DynamicPropsActivity;
 import com.facebook.samples.litho.errors.ErrorHandlingActivity;
 import com.facebook.samples.litho.hscroll.HorizontalScrollWithSnapActivity;
 import com.facebook.samples.litho.lithography.LithographyActivity;
@@ -53,7 +54,8 @@ public class DemoListActivity extends NavigatableDemoActivity {
                   new DemoListDataModel("Animated Badge", AnimatedBadgeActivity.class),
                   new DemoListDataModel("Bounds Animation", BoundsAnimationActivity.class),
                   new DemoListDataModel("Page Indicators", PageIndicatorsActivity.class),
-                  new DemoListDataModel("Render Thread", RenderThreadAnimationActivity.class))));
+                  new DemoListDataModel("Render Thread", RenderThreadAnimationActivity.class))),
+          new DemoListDataModel("Dynamic Props", DynamicPropsActivity.class));
 
   @Override
   public void onCreate(Bundle savedInstanceState) {

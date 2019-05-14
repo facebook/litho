@@ -22,6 +22,7 @@ import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO;
 import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_YES;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
+import android.graphics.Rect;
 import android.util.SparseArray;
 import android.view.View;
 import com.facebook.litho.testing.TestDrawableComponent;
@@ -291,9 +292,9 @@ public class MountItemTest {
 
   @Test
   public void testUpdateDoesntChangeFlags() {
-    LayoutOutput layoutOutput = new LayoutOutput();
-    layoutOutput.setNodeInfo(mNodeInfo);
-    layoutOutput.setComponent(mComponent);
+    LayoutOutput layoutOutput =
+        new LayoutOutput(mNodeInfo, null, mComponent, new Rect(0, 0, 0, 0), 0, 0, 0, 0, 0, 0, null);
+
     View view = new View(RuntimeEnvironment.application);
 
     final MountItem mountItem = new MountItem(mComponent, mComponentHost, view, layoutOutput);

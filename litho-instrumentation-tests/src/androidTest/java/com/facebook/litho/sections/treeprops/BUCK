@@ -6,15 +6,15 @@ load(
     "LITHO_JAVA_TARGET",
     "LITHO_JUNIT_TARGET",
     "LITHO_TESTING_ESPRESSO_TARGET",
-    "fb_instrumentation_test",
+    "instrumentation_test",
     "make_dep_path",
 )
 
-fb_instrumentation_test(
+instrumentation_test(
     name = "treeprops",
     srcs = glob(["*Test.java"]),
+    apk_under_test = "litho",
     is_androidx = True,
-    manifest = "AndroidManifest.xml",
     deps = [
         make_dep_path("litho-instrumentation-tests/src/main/java/com/facebook/litho/sections/treeprops:treeprops"),
         LITHO_JAVA_TARGET,
