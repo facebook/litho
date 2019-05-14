@@ -183,7 +183,8 @@ public class CachedValueGenerator {
             .returns(TypeName.INT)
             .addModifiers(Modifier.PUBLIC);
 
-    CodeBlock.Builder codeBlock = CodeBlock.builder().add("return $T.hash(", ClassNames.OBJECTS);
+    CodeBlock.Builder codeBlock =
+        CodeBlock.builder().add("return $T.hash(", ClassNames.COMMON_UTILS);
     for (int i = 0, size = onCalculateCachedValueMethod.methodParams.size(); i < size; i++) {
       if (i < size - 1) {
         codeBlock.add("$L, ", onCalculateCachedValueMethod.methodParams.get(i).getName());

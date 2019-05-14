@@ -22,6 +22,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.litho.ClickEvent;
+import com.facebook.litho.CommonUtils;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLifecycle;
@@ -48,7 +49,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * @prop-required aspectRatio float
@@ -945,7 +945,7 @@ public final class TestLayout<S extends View> extends Component implements TestT
 
     @Override
     public int hashCode() {
-      return Objects.hash(prop3, prop5, state1);
+      return CommonUtils.hash(prop3, prop5, state1);
     }
 
     @Override
