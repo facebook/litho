@@ -12,7 +12,7 @@ public class TestSectionsRecyclerView extends SectionsRecyclerView {
   private int removeCallbackCount;
   private int postCount;
   private OnRefreshListener listener;
-  private boolean lastRefreshValue;
+  private boolean lastRefreshingValue;
   private int setRefreshingValuesCount;
 
   public TestSectionsRecyclerView(Context context, RecyclerView view) {
@@ -34,11 +34,11 @@ public class TestSectionsRecyclerView extends SectionsRecyclerView {
   public void setRefreshing(boolean refreshing) {
     super.setRefreshing(refreshing);
     setRefreshingValuesCount++;
-    lastRefreshValue = refreshing;
+    lastRefreshingValue = refreshing;
   }
 
-  public boolean getLastRefreshValue() {
-    return lastRefreshValue;
+  public boolean getLastRefreshingValue() {
+    return lastRefreshingValue;
   }
 
   @Override
@@ -65,7 +65,7 @@ public class TestSectionsRecyclerView extends SectionsRecyclerView {
 
   /** Used for resetting the fields of {@link TestSectionsRecyclerView} */
   public void reset() {
-    lastRefreshValue = false;
+    lastRefreshingValue = false;
     setRefreshingValuesCount = 0;
     removeCallbackCount=0;
     postCount=0;

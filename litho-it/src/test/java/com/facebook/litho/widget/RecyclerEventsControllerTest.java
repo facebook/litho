@@ -145,6 +145,6 @@ public class RecyclerEventsControllerTest {
   private static void verifySetRefreshingWasCalledNTimesWith(
       TestSectionsRecyclerView recyclerView, int times, boolean refreshValue) {
     assertThat(recyclerView.getSetRefreshingValuesCount()).isEqualTo(times);
-    assertThat(recyclerView.getLastRefreshValue()).isEqualTo(refreshValue);
+    assertThat(recyclerView.getLastRefreshingValue()).isEqualTo(refreshValue);
   }
 }
