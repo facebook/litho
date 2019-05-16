@@ -189,13 +189,15 @@ public class SectionTree {
 
         String tag = EMPTY_STRING;
         if (mHandler.isTracing()) {
-          tag =
-              "SectionTree.CalculateChangeSetRunnable.ensurePosted - "
-                  + SectionTree.this.mTag
-                  + " - "
-                  + source
-                  + " - "
-                  + attribution;
+          StringBuilder sb =
+              new StringBuilder("SectionTree.CalculateChangeSetRunnable.ensurePosted - ")
+                  .append(SectionTree.this.mTag)
+                  .append(" - ")
+                  .append(source);
+          if (attribution != null) {
+            sb.append(" - ").append(attribution);
+          }
+          tag = sb.toString();
         }
 
         mHandler.post(this, tag);

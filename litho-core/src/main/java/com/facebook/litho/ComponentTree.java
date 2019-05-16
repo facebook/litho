@@ -1690,7 +1690,7 @@ public class ComponentTree {
 
         String tag = EMPTY_STRING;
         if (mLayoutThreadHandler.isTracing()) {
-          tag = "calculateLayout " + source + " - " + extraAttribution;
+          tag = "calculateLayout " + root.getSimpleName();
         }
         mLayoutThreadHandler.post(mCurrentCalculateLayoutRunnable, tag);
       }
@@ -1859,7 +1859,7 @@ public class ComponentTree {
 
       String tag = EMPTY_STRING;
       if (mPreAllocateMountContentHandler.isTracing()) {
-        tag = "preallocateLayout " + source + " - " + extraAttribution;
+        tag = "preallocateLayout " + root.getSimpleName();
       }
       mPreAllocateMountContentHandler.post(mPreAllocateMountContentRunnable, tag);
     }
