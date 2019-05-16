@@ -144,6 +144,8 @@ public class SectionTree {
     boolean supportsBackgroundChangeSets();
   }
 
+  private static final String EMPTY_STRING = "";
+
   @GuardedBy("SectionTree.class")
   private static volatile Looper sDefaultChangeSetThreadLooper;
 
@@ -184,14 +186,19 @@ public class SectionTree {
       if (!mIsPosted) {
         mIsPosted = true;
         resetTrace();
-        mHandler.post(
-            this,
-            "SectionTree.CalculateChangeSetRunnable.ensurePosted - "
-                + SectionTree.this.mTag
-                + " - "
-                + source
-                + " - "
-                + attribution);
+
+        String tag = EMPTY_STRING;
+        if (mHandler.isTracing()) {
+          tag =
+              "SectionTree.CalculateChangeSetRunnable.ensurePosted - "
+                  + SectionTree.this.mTag
+                  + " - "
+                  + source
+                  + " - "
+                  + attribution;
+        }
+
+        mHandler.post(this, tag);
         mSource = source;
         mAttribution = attribution;
       }
@@ -788,7 +795,11 @@ public class SectionTree {
     if (isMainThread()) {
       runnable.run();
     } else {
-      mainThreadHandler.post(runnable, "SectionTree.focusRequestOnUiThread");
+      String tag = EMPTY_STRING;
+      if (mainThreadHandler.isTracing()) {
+        tag = "SectionTree.focusRequestOnUiThread";
+      }
+      mainThreadHandler.post(runnable, tag);
     }
   }
 
@@ -1120,6 +1131,10 @@ public class SectionTree {
     if (isMainThread()) {
       setLoadingStateToFocusDispatch(loadingState);
     } else {
+      String tag = EMPTY_STRING;
+      if (mMainThreadHandler.isTracing()) {
+        tag = "SectionTree.postLoadingStateToFocusDispatch - " + loadingState.name() + " - " + mTag;
+      }
       mMainThreadHandler.post(
           new Runnable() {
             @Override
@@ -1127,7 +1142,7 @@ public class SectionTree {
               setLoadingStateToFocusDispatch(loadingState);
             }
           },
-          "SectionTree.postLoadingStateToFocusDispatch - " + loadingState.name() + " - " + mTag);
+          tag);
     }
   }
 
@@ -1182,6 +1197,10 @@ public class SectionTree {
         throw new RuntimeException(getDebugInfo(this) + e.getMessage(), e);
       }
     } else {
+      String tag = EMPTY_STRING;
+      if (mMainThreadHandler.isTracing()) {
+        tag = "SectionTree.postNewChangeSets - " + mTag;
+      }
       mMainThreadHandler.post(
           new ThreadTracingRunnable(tracedThrowable) {
             @Override
@@ -1194,7 +1213,7 @@ public class SectionTree {
               }
             }
           },
-          "SectionTree.postNewChangeSets - " + mTag);
+          tag);
     }
   }
 
@@ -1226,6 +1245,10 @@ public class SectionTree {
       if (isMainThread()) {
         maybeDispatchFocusRequests();
       } else {
+        String tag = EMPTY_STRING;
+        if (mMainThreadHandler.isTracing()) {
+          tag = "SectionTree.applyChangeSetsToTargetBackgroundAllowed - " + mTag;
+        }
         mMainThreadHandler.post(
             new Runnable() {
               @Override
@@ -1233,7 +1256,7 @@ public class SectionTree {
                 maybeDispatchFocusRequests();
               }
             },
-            "SectionTree.applyChangeSetsToTargetBackgroundAllowed - " + mTag);
+            tag);
       }
     } finally {
       if (isTracing) {
