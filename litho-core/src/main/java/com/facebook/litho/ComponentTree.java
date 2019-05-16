@@ -87,6 +87,7 @@ public class ComponentTree {
   private static final int SIZE_UNINITIALIZED = -1;
   private static final String DEFAULT_LAYOUT_THREAD_NAME = "ComponentLayoutThread";
   private static final String DEFAULT_PMC_THREAD_NAME = "PreallocateMountContentThread";
+  private static final String EMPTY_STRING = "";
 
   private static final int SCHEDULE_NONE = 0;
   private static final int SCHEDULE_LAYOUT_ASYNC = 1;
@@ -1177,8 +1178,12 @@ public class ComponentTree {
           mLayoutThreadHandler.remove(mUpdateStateSyncRunnable);
         }
         mUpdateStateSyncRunnable = new UpdateStateSyncRunnable(attribution);
-        mLayoutThreadHandler.post(
-            mUpdateStateSyncRunnable, "updateStateSyncNoLooper " + attribution);
+
+        String tag = EMPTY_STRING;
+        if (mLayoutThreadHandler.isTracing()) {
+          tag = "updateStateSyncNoLooper " + attribution;
+        }
+        mLayoutThreadHandler.post(mUpdateStateSyncRunnable, tag);
       }
       return;
     }
@@ -1196,7 +1201,12 @@ public class ComponentTree {
         handler.remove(mUpdateStateSyncRunnable);
       }
       mUpdateStateSyncRunnable = new UpdateStateSyncRunnable(attribution);
-      handler.post(mUpdateStateSyncRunnable, "updateStateSync " + attribution);
+
+      String tag = EMPTY_STRING;
+      if (handler.isTracing()) {
+        tag = "updateStateSync " + attribution;
+      }
+      handler.post(mUpdateStateSyncRunnable, tag);
     }
   }
 
@@ -1677,9 +1687,12 @@ public class ComponentTree {
         }
         mCurrentCalculateLayoutRunnable =
             new CalculateLayoutRunnable(source, treeProps, extraAttribution, layoutStateFuture);
-        mLayoutThreadHandler.post(
-            mCurrentCalculateLayoutRunnable,
-            "calculateLayout " + source + " - " + extraAttribution);
+
+        String tag = EMPTY_STRING;
+        if (mLayoutThreadHandler.isTracing()) {
+          tag = "calculateLayout " + source + " - " + extraAttribution;
+        }
+        mLayoutThreadHandler.post(mCurrentCalculateLayoutRunnable, tag);
       }
     } else {
       calculateLayout(output, source, extraAttribution, treeProps, layoutStateFuture);
@@ -1843,9 +1856,12 @@ public class ComponentTree {
 
     if (mPreAllocateMountContentHandler != null) {
       mPreAllocateMountContentHandler.remove(mPreAllocateMountContentRunnable);
-      mPreAllocateMountContentHandler.post(
-          mPreAllocateMountContentRunnable,
-          "preallocateLayout " + source + " - " + extraAttribution);
+
+      String tag = EMPTY_STRING;
+      if (mPreAllocateMountContentHandler.isTracing()) {
+        tag = "preallocateLayout " + source + " - " + extraAttribution;
+      }
+      mPreAllocateMountContentHandler.post(mPreAllocateMountContentRunnable, tag);
     }
 
     if (layoutEvent != null) {
@@ -1878,8 +1894,11 @@ public class ComponentTree {
     } else {
       // If we aren't on the main thread, we send a message to the main thread
       // to invoke backgroundLayoutStateUpdated.
-      mMainThreadHandler.post(
-          mBackgroundLayoutStateUpdateRunnable, "postBackgroundLayoutStateUpdated");
+      String tag = EMPTY_STRING;
+      if (mMainThreadHandler.isTracing()) {
+        tag = "postBackgroundLayoutStateUpdated";
+      }
+      mMainThreadHandler.post(mBackgroundLayoutStateUpdateRunnable, tag);
     }
   }
 
