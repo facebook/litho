@@ -24,6 +24,8 @@ import android.os.Looper;
  */
 public interface LithoHandler {
 
+  boolean isTracing();
+
   void post(Runnable runnable, String tag);
 
   void remove(Runnable runnable);
@@ -33,6 +35,11 @@ public interface LithoHandler {
 
     public DefaultLithoHandler(Looper looper) {
       super(looper);
+    }
+
+    @Override
+    public boolean isTracing() {
+      return false;
     }
 
     @Override
