@@ -372,6 +372,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
     mRootTransition = null;
     mTransitionsHasBeenCollected = false;
+    final boolean wasDirty = mIsDirty;
     mIsDirty = false;
     mNeedsRemount = false;
     mIsFirstMountOfComponentTree = false;
@@ -388,7 +389,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     suppressInvalidationsOnHosts(false);
 
     if (logger != null) {
-      logMountPerfEvent(logger, mountPerfEvent);
+      logMountPerfEvent(logger, mountPerfEvent, wasDirty);
     }
 
     if (isTracing) {
@@ -396,7 +397,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     }
   }
 
-  private void logMountPerfEvent(ComponentsLogger logger, @Nullable PerfEvent mountPerfEvent) {
+  private void logMountPerfEvent(
+      ComponentsLogger logger, @Nullable PerfEvent mountPerfEvent, boolean isDirty) {
     if (!mMountStats.isLoggingEnabled || mountPerfEvent == null) {
       logger.cancelPerfEvent(mountPerfEvent);
       return;
@@ -436,7 +438,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
         PARAM_VISIBILITY_HANDLER_TIME, mMountStats.visibilityHandlerTimes.toArray(new Double[0]));
 
     mountPerfEvent.markerAnnotate(PARAM_NO_OP_COUNT, mMountStats.noOpCount);
-    mountPerfEvent.markerAnnotate(PARAM_IS_DIRTY, mIsDirty);
+    mountPerfEvent.markerAnnotate(PARAM_IS_DIRTY, isDirty);
 
     logger.logPerfEvent(mountPerfEvent);
   }
