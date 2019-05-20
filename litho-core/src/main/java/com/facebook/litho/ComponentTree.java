@@ -292,8 +292,8 @@ public class ComponentTree {
     mHasMounted = builder.hasMounted;
     mMeasureListener = builder.mMeasureListener;
     mNestedTreeResolutionExperimentEnabled = builder.nestedTreeResolutionExperimentEnabled;
-    mUseCancelableLayoutFutures = ComponentsConfiguration.useCancelableLayoutFutures;
-    mMoveLayoutsBetweenThreads = ComponentsConfiguration.canInterruptAndMoveLayoutsBetweenThreads;
+    mUseCancelableLayoutFutures = builder.useCancelableLayoutFutures;
+    mMoveLayoutsBetweenThreads = builder.canInterruptAndMoveLayoutsBetweenThreads;
     isReconciliationEnabled = builder.isReconciliationEnabled;
 
     ensureLayoutThreadHandler();
@@ -2680,6 +2680,11 @@ public class ComponentTree {
     private boolean nestedTreeResolutionExperimentEnabled =
         ComponentsConfiguration.isNestedTreeResolutionExperimentEnabled;
     private boolean isReconciliationEnabled = ComponentsConfiguration.isReconciliationEnabled;
+    private boolean canInterruptAndMoveLayoutsBetweenThreads =
+        ComponentsConfiguration.canInterruptAndMoveLayoutsBetweenThreads;
+    private boolean splitLayoutForMeasureAndRangeEstimation =
+        ComponentsConfiguration.splitLayoutForMeasureAndRangeEstimation;
+    private boolean useCancelableLayoutFutures = ComponentsConfiguration.useCancelableLayoutFutures;
 
     protected Builder(ComponentContext context, Component root) {
       this.context = context;
@@ -2831,6 +2836,24 @@ public class ComponentTree {
     /** Sets if is reconciliation is enabled */
     public Builder isReconciliationEnabled(boolean isEnabled) {
       this.isReconciliationEnabled = isEnabled;
+      return this;
+    }
+
+    /**
+     * Experimental, do not use! If enabled, cancel a layout calculation before it finishes if
+     * there's another layout pending with a newer state of the ComponentTree.
+     */
+    public Builder useCancelableLayoutFutures(boolean isEnabled) {
+      this.useCancelableLayoutFutures = isEnabled;
+      return this;
+    }
+
+    /**
+     * Experimental, do not use! If enabled, a layout computation can be interrupted on a bg thread
+     * and resumed on the UI thread if it's needed immediately.
+     */
+    public Builder canInterruptAndMoveLayoutsBetweenThreads(boolean isEnabled) {
+      this.canInterruptAndMoveLayoutsBetweenThreads = isEnabled;
       return this;
     }
 

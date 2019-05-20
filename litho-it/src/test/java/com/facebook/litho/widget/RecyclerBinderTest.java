@@ -166,7 +166,9 @@ public class RecyclerBinderTest {
               RenderInfo renderInfo,
               LithoHandler layoutHandler,
               ComponentTreeMeasureListenerFactory componentTreeMeasureListenerFactory,
-              boolean incrementalMountEnabled) {
+              boolean incrementalMountEnabled,
+              boolean canInterruptAndMoveLayoutsBetweenThreads,
+              boolean useCancelableLayoutFutures) {
             final TestComponentTreeHolder holder = new TestComponentTreeHolder(renderInfo);
             if (renderInfo.rendersComponent()) {
               mHoldersForComponents.put(renderInfo.getComponent(), holder);

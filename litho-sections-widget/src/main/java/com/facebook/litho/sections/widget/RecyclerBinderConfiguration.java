@@ -33,6 +33,8 @@ public class RecyclerBinderConfiguration {
   @Nullable private final LayoutHandlerFactory mLayoutHandlerFactory;
   private final boolean mIsCircular;
   private final boolean mIsWrapContent;
+  private final boolean mMoveLayoutsBetweenThreads;
+  private final boolean mUseCancelableLayoutFutures;
   // TODO T34627443 make all fields final after removing setters
   private boolean mHasDynamicItemHeight;
   private boolean mUseBackgroundChangeSets = SectionsConfiguration.useBackgroundChangeSets;
@@ -64,7 +66,9 @@ public class RecyclerBinderConfiguration {
       boolean asyncInitRange,
       boolean splitLayoutForMeasureAndRangeEstimation,
       boolean enableDetach,
-      @Nullable LithoHandler changeSetThreadHandler) {
+      @Nullable LithoHandler changeSetThreadHandler,
+      boolean moveLayoutsBetweenThreads,
+      boolean useCancelableLayoutFutures) {
     mRangeRatio = rangeRatio;
     mLayoutHandlerFactory = layoutHandlerFactory;
     mIsCircular = circular;
@@ -79,6 +83,8 @@ public class RecyclerBinderConfiguration {
     mSplitLayoutForMeasureAndRangeEstimation = splitLayoutForMeasureAndRangeEstimation;
     mEnableDetach = enableDetach;
     mChangeSetThreadHandler = changeSetThreadHandler;
+    mMoveLayoutsBetweenThreads = moveLayoutsBetweenThreads;
+    mUseCancelableLayoutFutures = useCancelableLayoutFutures;
   }
 
   public float getRangeRatio() {
@@ -133,6 +139,14 @@ public class RecyclerBinderConfiguration {
     return mSplitLayoutForMeasureAndRangeEstimation;
   }
 
+  public boolean useCancelableLayoutFutures() {
+    return mUseCancelableLayoutFutures;
+  }
+
+  public boolean moveLayoutsBetweenThreads() {
+    return mMoveLayoutsBetweenThreads;
+  }
+
   public boolean getEnableDetach() {
     return mEnableDetach;
   }
@@ -155,6 +169,10 @@ public class RecyclerBinderConfiguration {
     private boolean mAsyncInitRange = ComponentsConfiguration.asyncInitRange;
     private boolean mSplitLayoutForMeasureAndRangeEstimation =
         ComponentsConfiguration.splitLayoutForMeasureAndRangeEstimation;
+    private boolean mUseCancelableLayoutFutures =
+        ComponentsConfiguration.useCancelableLayoutFutures;
+    private boolean mMoveLayoutsBetweenThreads =
+        ComponentsConfiguration.canInterruptAndMoveLayoutsBetweenThreads;
     private boolean mEnableDetach = false;
     @Nullable private LithoHandler mChangeSetThreadHandler;
 
@@ -262,6 +280,16 @@ public class RecyclerBinderConfiguration {
       return this;
     }
 
+    public Builder canInterruptAndMoveLayoutsBetweenThreads(boolean isEnabled) {
+      this.mMoveLayoutsBetweenThreads = isEnabled;
+      return this;
+    }
+
+    public Builder useCancelableLayoutFutures(boolean isEnabled) {
+      this.mUseCancelableLayoutFutures = isEnabled;
+      return this;
+    }
+
     public Builder changeSetThreadHandler(LithoHandler changeSetThreadHandler) {
       mChangeSetThreadHandler = changeSetThreadHandler;
       return this;
@@ -288,7 +316,9 @@ public class RecyclerBinderConfiguration {
           mAsyncInitRange,
           mSplitLayoutForMeasureAndRangeEstimation,
           mEnableDetach,
-          mChangeSetThreadHandler);
+          mChangeSetThreadHandler,
+          mMoveLayoutsBetweenThreads,
+          mUseCancelableLayoutFutures);
     }
   }
 }
