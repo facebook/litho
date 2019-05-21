@@ -267,11 +267,21 @@ class LayoutState {
       ComponentsSystrace.beginSection(
           "createHostLayoutOutput:" + node.getSimpleName());
     }
+
+    final HostComponent hostComponent = HostComponent.create();
+
+    // We need to pass common dynamic props to the host component, as they only could be applied to
+    // views, so we'll need to set them up, when binding HostComponent to ComponentHost. At the same
+    // time, we don't remove them from the current component, as we may calculate multiple
+    // LayoutStates using same Components
+    hostComponent.setCommonDynamicProps(node.getRootComponent().getCommonDynamicProps());
+
     long hostMarker =
         layoutState.isLayoutRoot(node) ? ROOT_HOST_ID : layoutState.mCurrentHostMarker;
+
     final LayoutOutput hostOutput =
         createLayoutOutput(
-            HostComponent.create(),
+            hostComponent,
             hostMarker,
             layoutState,
             node,
@@ -2327,6 +2337,11 @@ class LayoutState {
     if (hasViewContent(node, layoutState)) {
       // Has View content (e.g. Accessibility content, Focus change listener, shadow, view tag etc)
       // thus needs a host View.
+      return true;
+    }
+
+    if (component.hasCommonDynamicProps()) {
+      // Need a host View to apply the dynamic props to
       return true;
     }
 

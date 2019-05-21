@@ -18,6 +18,12 @@ package com.facebook.litho;
 
 import static androidx.annotation.Dimension.DP;
 import static com.facebook.litho.ComponentKeyUtils.getKeyForChildPosition;
+import static com.facebook.litho.DynamicPropsManager.KEY_ALPHA;
+import static com.facebook.litho.DynamicPropsManager.KEY_BACKGROUND_COLOR;
+import static com.facebook.litho.DynamicPropsManager.KEY_SCALE_X;
+import static com.facebook.litho.DynamicPropsManager.KEY_SCALE_Y;
+import static com.facebook.litho.DynamicPropsManager.KEY_TRANSLATION_X;
+import static com.facebook.litho.DynamicPropsManager.KEY_TRANSLATION_Y;
 
 import android.animation.AnimatorInflater;
 import android.animation.StateListAnimator;
@@ -96,6 +102,7 @@ public abstract class Component extends ComponentLifecycle
   public @Nullable ConcurrentHashMap<Long, InternalNode> mThreadIdToLastMeasuredLayout;
 
   @Nullable private CommonProps mCommonProps;
+  @Nullable private SparseArray<DynamicValue<?>> mCommonDynamicProps;
 
   /**
    * Holds onto how many direct component children of each type this Component has. Used for
@@ -716,6 +723,36 @@ public abstract class Component extends ComponentLifecycle
     }
 
     return mCommonProps;
+  }
+
+  /**
+   * @return {@link SparseArray} that holds common dynamic Props, initializing it beforehand if
+   *     needed
+   * @see DynamicPropsManager
+   */
+  private SparseArray<DynamicValue<?>> getOrCreateCommonDynamicProps() {
+    if (mCommonDynamicProps == null) {
+      mCommonDynamicProps = new SparseArray<>();
+    }
+    return mCommonDynamicProps;
+  }
+
+  /**
+   * @return {@link SparseArray} that holds common dynamic Props
+   * @see DynamicPropsManager
+   */
+  @Nullable
+  SparseArray<DynamicValue<?>> getCommonDynamicProps() {
+    return mCommonDynamicProps;
+  }
+
+  /**
+   * @return true if component has common dynamic props, false - otherwise. If so {@link
+   *     #getCommonDynamicProps()} will return not null value
+   * @see DynamicPropsManager
+   */
+  boolean hasCommonDynamicProps() {
+    return mCommonDynamicProps != null;
   }
 
   @Deprecated
@@ -1443,6 +1480,16 @@ public abstract class Component extends ComponentLifecycle
     }
 
     /**
+     * Links a {@link DynamicValue} object to the background color value for this Component
+     *
+     * @param value controller for the background color value
+     */
+    public T backgroundColor(DynamicValue<Integer> value) {
+      mComponent.getOrCreateCommonDynamicProps().put(KEY_BACKGROUND_COLOR, value);
+      return getThis();
+    }
+
+    /**
      * Set the foreground of this component. The foreground drawable must extend {@link
      * ComparableDrawable} for more efficient diffing while when drawables are remounted or updated.
      * If the drawable does not extend {@link ComparableDrawable} then create a new class which
@@ -1775,12 +1822,62 @@ public abstract class Component extends ComponentLifecycle
     }
 
     /**
+     * Links a {@link DynamicValue} object ot the alpha value for this Component
+     *
+     * @param value controller for the alpha value
+     */
+    public T alpha(DynamicValue<Float> value) {
+      mComponent.getOrCreateCommonDynamicProps().put(KEY_ALPHA, value);
+      return getThis();
+    }
+
+    /**
      * Sets the scale (scaleX and scaleY) on this component. This is mostly relevant for animations
      * and being able to animate size changes. Otherwise for non-animation usecases, you should use
      * the standard layout properties to control the size of your component.
      */
     public T scale(float scale) {
       mComponent.getOrCreateCommonProps().scale(scale);
+      return getThis();
+    }
+
+    /**
+     * Links a {@link DynamicValue} object ot the scaleX value for this Component
+     *
+     * @param value controller for the scaleX value
+     */
+    public T scaleX(DynamicValue<Float> value) {
+      mComponent.getOrCreateCommonDynamicProps().put(KEY_SCALE_X, value);
+      return getThis();
+    }
+
+    /**
+     * Links a {@link DynamicValue} object ot the scaleY value for this Component
+     *
+     * @param value controller for the scaleY value
+     */
+    public T scaleY(DynamicValue<Float> value) {
+      mComponent.getOrCreateCommonDynamicProps().put(KEY_SCALE_Y, value);
+      return getThis();
+    }
+
+    /**
+     * Links a {@link DynamicValue} object ot the translationX value for this Component
+     *
+     * @param value controller for the translationY value
+     */
+    public T translationX(DynamicValue<Float> value) {
+      mComponent.getOrCreateCommonDynamicProps().put(KEY_TRANSLATION_X, value);
+      return getThis();
+    }
+
+    /**
+     * Links a {@link DynamicValue} object ot the translationY value for this Component
+     *
+     * @param value controller for the translationY value
+     */
+    public T translationY(DynamicValue<Float> value) {
+      mComponent.getOrCreateCommonDynamicProps().put(KEY_TRANSLATION_Y, value);
       return getThis();
     }
 
