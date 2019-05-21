@@ -46,4 +46,29 @@
         android:text="Reset"
         />
 
+    <TextView
+        android:id="@+id/alpha"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignLeft="@+id/button"
+        android:layout_alignRight="@+id/button"
+        android:paddingVertical="6dp"
+        android:gravity="center"
+        android:layout_margin="16sp"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:text="0.00"
+        />
+
+    <SeekBar
+        android:id="@+id/alphaSeekBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/alpha"
+        android:layout_alignBottom="@id/alpha"
+        android:layout_alignLeft="@+id/seekBar"
+        android:layout_alignRight="@+id/seekBar"
+        />
+
 </RelativeLayout>

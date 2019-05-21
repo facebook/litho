@@ -29,9 +29,11 @@ public class DynamicPropsActivity extends NavigatableDemoActivity
   private static final long DAY = 24 * 60 * 60 * 1000;
 
   private DynamicValue<Long> mTimeValue;
+  private DynamicValue<Float> mAlphaValue;
 
-  private TextView mTimeLabel;
   private SeekBar mSeekBar;
+  private TextView mTimeLabel;
+  private TextView mAlphaLabel;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -39,28 +41,42 @@ public class DynamicPropsActivity extends NavigatableDemoActivity
 
     if (savedInstanceState == null) {
       mTimeValue = new DynamicValue<>(0L);
+      mAlphaValue = new DynamicValue<>(0F);
     }
 
     setContentView(R.layout.activity_dynamic_props);
 
     mTimeLabel = findViewById(R.id.time);
+    mAlphaLabel = findViewById(R.id.alpha);
 
     final LithoView lithoView = findViewById(R.id.lithoView);
     final ComponentContext c = new ComponentContext(this);
-    final Component component = ClockComponent.create(c).time(mTimeValue).build();
+    final Component component =
+        ClockComponent.create(c).time(mTimeValue).alpha(mAlphaValue).build();
     lithoView.setComponentTree(ComponentTree.create(c, component).build());
 
     mSeekBar = findViewById(R.id.seekBar);
     mSeekBar.setMax((int) DAY);
     mSeekBar.setOnSeekBarChangeListener(this);
 
+    final SeekBar alphaSeekBar = findViewById(R.id.alphaSeekBar);
+    alphaSeekBar.setMax(100);
+    alphaSeekBar.setProgress(100);
+    alphaSeekBar.setOnSeekBarChangeListener(this);
+
     reset(null);
+    setAlpha(1F);
   }
 
   private void setTime(long time) {
     mTimeValue.set(time % ClockView.TWELVE_HOURS);
     mTimeLabel.setText(ClockView.getTimeString(time % DAY, false));
     mSeekBar.setProgress((int) time);
+  }
+
+  private void setAlpha(float alpha) {
+    mAlphaLabel.setText(Float.toString(alpha));
+    mAlphaValue.set(alpha);
   }
 
   public void reset(View v) {
@@ -78,8 +94,15 @@ public class DynamicPropsActivity extends NavigatableDemoActivity
 
   @Override
   public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-    if (fromUser) {
+    if (!fromUser) {
+      return;
+    }
+
+    final int id = seekBar.getId();
+    if (id == R.id.seekBar) {
       setTime(progress);
+    } else if (id == R.id.alphaSeekBar) {
+      setAlpha(progress / 100f);
     }
   }
 
