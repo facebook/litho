@@ -111,11 +111,8 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
         actual);
     Java6Assertions.assertThat(subComponents)
         .overridingErrorMessage(
-            "Expected to find <%s> as sub component of <%s>, " +
-                "but couldn't find it among the %d sub components.",
-            subComponent,
-            actual,
-            subComponents.size())
+            "Expected to find <%s> as sub component of <%s>, " + "but couldn't find it in %s.",
+            subComponent, actual, subComponents)
         .contains(subComponent);
 
     return this;
