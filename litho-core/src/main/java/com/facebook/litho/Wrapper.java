@@ -58,7 +58,12 @@ public final class Wrapper extends Component {
       return ComponentContext.NULL_LAYOUT;
     }
 
-    return c.newLayoutBuilder(delegate, 0, 0);
+    InternalNode node = c.newLayoutBuilder(delegate, 0, 0);
+
+    // Add this to the components list for stable global key regeneration.
+    node.appendComponent(this);
+
+    return node;
   }
 
   @Override
