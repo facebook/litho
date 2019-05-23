@@ -133,9 +133,7 @@ public class StateUpdatesTest {
     Component makeShallowCopyWithNewId() {
       shallowCopy = (TestComponent) super.makeShallowCopy();
       shallowCopy.mId = sIdGenerator.getAndIncrement();
-      if (getScopedContext().isNestedTreeResolutionExperimentEnabled()) {
-        shallowCopy.setGlobalKey(getGlobalKey());
-      }
+      shallowCopy.setGlobalKey(getGlobalKey());
       return shallowCopy;
     }
 

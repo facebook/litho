@@ -79,9 +79,6 @@ public abstract class Component extends ComponentLifecycle
   private static final AtomicInteger sIdGenerator = new AtomicInteger(1);
   private static final DynamicValue[] sEmptyArray = new DynamicValue[0];
 
-  boolean mIsNestedTreeResolutionExperimentEnabled =
-      ComponentsConfiguration.isNestedTreeResolutionExperimentEnabled;
-
   private int mId = sIdGenerator.getAndIncrement();
   @Nullable private String mOwnerGlobalKey;
   private String mGlobalKey;
@@ -302,7 +299,7 @@ public abstract class Component extends ComponentLifecycle
       return childKey;
     }
 
-    if (mIsNestedTreeResolutionExperimentEnabled) {
+    if (mScopedContext.isNestedTreeResolutionExperimentEnabled()) {
       /*
        Instead of relying on the KeyHandler to hold all registered keys and check for duplicates
        against it; this implementation checks if the key (read child type) is unique within it's
@@ -384,10 +381,7 @@ public abstract class Component extends ComponentLifecycle
     try {
       final Component component = (Component) super.clone();
 
-      if (mIsNestedTreeResolutionExperimentEnabled) {
-        component.mGlobalKey = null;
-      }
-
+      component.mGlobalKey = null;
       component.mIsLayoutStarted = false;
       component.mHasManualKey = false;
       component.mLayoutVersionGenerator = new AtomicBoolean();
@@ -587,14 +581,17 @@ public abstract class Component extends ComponentLifecycle
   protected void updateInternalChildState(ComponentContext parentContext) {
     if (ComponentsConfiguration.isDebugModeEnabled || ComponentsConfiguration.useGlobalKeys) {
 
+      final boolean isRefactoredKeyGenerationEnabled =
+          parentContext.isNestedTreeResolutionExperimentEnabled();
+
       // allow overriding global key if the NestedTreeResolution Experiment is disabled
-      if (!mIsNestedTreeResolutionExperimentEnabled || getGlobalKey() == null) {
+      if (!isRefactoredKeyGenerationEnabled || getGlobalKey() == null) {
         String globalKey = generateKey(parentContext);
         setGlobalKey(globalKey);
 
         final KeyHandler keyHandler = parentContext.getKeyHandler();
         // This is for testing, the keyHandler should never be null here otherwise.
-        if (!mIsNestedTreeResolutionExperimentEnabled && keyHandler != null) {
+        if (!isRefactoredKeyGenerationEnabled && keyHandler != null) {
           keyHandler.registerKey(this);
         }
       }
@@ -820,9 +817,6 @@ public abstract class Component extends ComponentLifecycle
       mResourceResolver = new ResourceResolver(c);
       mComponent = component;
       mContext = c;
-
-      mComponent.mIsNestedTreeResolutionExperimentEnabled =
-          mContext.isNestedTreeResolutionExperimentEnabled();
 
       final Component owner = getOwner();
       if (owner != null) {
