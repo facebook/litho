@@ -40,6 +40,10 @@ public class ComparableColorDrawable extends ComparableDrawableWrapper {
     return mColor == ((ComparableColorDrawable) other).mColor;
   }
 
+  public @ColorInt int getColor() {
+    return mColor;
+  }
+
   public static ComparableColorDrawable create(@ColorInt int color) {
     return new ComparableColorDrawable(color);
   }
