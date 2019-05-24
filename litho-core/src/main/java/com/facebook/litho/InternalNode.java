@@ -229,7 +229,7 @@ public interface InternalNode extends ComponentLayout, LayoutProps, Copyable<Int
   TreeProps getPendingTreeProps();
 
   @Nullable
-  Component getRootComponent();
+  Component getTailComponent();
 
   void setRootComponent(Component component);
 

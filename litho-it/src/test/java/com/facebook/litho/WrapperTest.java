@@ -60,7 +60,7 @@ public class WrapperTest {
             .build();
 
     InternalNode node = (InternalNode) wrapper.resolve(c);
-    Component component = node.getRootComponent();
+    Component component = node.getTailComponent();
     assertThat(component.getClass()).isEqualTo(Row.class);
   }
 

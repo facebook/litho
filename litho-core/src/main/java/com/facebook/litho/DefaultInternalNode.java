@@ -715,7 +715,7 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   }
 
   @Override
-  public @Nullable Component getRootComponent() {
+  public @Nullable Component getTailComponent() {
     return mComponents.isEmpty() ? null : mComponents.get(0);
   }
 
@@ -1643,7 +1643,7 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
             "You should not set "
                 + errorStr
                 + " to a root layout in "
-                + getRootComponent().getClass().getSimpleName());
+                + getTailComponent().getClass().getSimpleName());
       }
     }
   }

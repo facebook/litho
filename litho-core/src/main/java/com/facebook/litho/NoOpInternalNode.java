@@ -427,7 +427,7 @@ class NoOpInternalNode implements InternalNode {
 
   @Nullable
   @Override
-  public Component getRootComponent() {
+  public Component getTailComponent() {
     return null;
   }
 
