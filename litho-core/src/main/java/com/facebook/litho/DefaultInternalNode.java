@@ -555,6 +555,11 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   }
 
   @Override
+  public @Nullable Component getHeadComponent() {
+    return mComponents.isEmpty() ? null : mComponents.get(mComponents.size() - 1);
+  }
+
+  @Override
   public int getImportantForAccessibility() {
     return mImportantForAccessibility;
   }

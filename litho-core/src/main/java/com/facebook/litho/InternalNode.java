@@ -152,6 +152,9 @@ public interface InternalNode extends ComponentLayout, LayoutProps, Copyable<Int
   @Nullable
   EventHandler<FullImpressionVisibleEvent> getFullImpressionHandler();
 
+  @Nullable
+  Component getHeadComponent();
+
   int getImportantForAccessibility();
 
   @Nullable
