@@ -1832,30 +1832,30 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
 
   /**
    * Convenience method to get an updated shallow copy of all the components of this InternalNode.
-   * Optionally replace the outer most component with a new component. The outer most component is
-   * the root component in the Component hierarchy representing this InternalNode.
+   * Optionally replace the head component with a new component. The head component is the root
+   * component in the Component hierarchy representing this InternalNode.
    *
    * @param c The ComponentContext to update with.
-   * @param outer The root component of this InternalNode's Component hierarchy.
+   * @param head The root component of this InternalNode's Component hierarchy.
    * @return List of updated shallow copied components of this InternalNode.
    */
-  private List<Component> getUpdatedComponents(ComponentContext c, @Nullable Component outer) {
+  private List<Component> getUpdatedComponents(ComponentContext c, @Nullable Component head) {
     int size = mComponents.size();
     List<Component> updated = new ArrayList<>(size);
 
-    // 1. Shallow copy and update all components, except the outer most one.
+    // 1. Shallow copy and update all components, except the head component.
     for (int i = 0; i < size - 1; i++) {
       Component component = mComponents.get(i).makeUpdatedShallowCopy(c);
       updated.add(component);
     }
 
-    // 2. If outer component is null manually update it.
-    if (outer == null) {
-      outer = mComponents.get(size - 1).makeUpdatedShallowCopy(c);
+    // 2. If head component is null manually update it.
+    if (head == null) {
+      head = mComponents.get(size - 1).makeUpdatedShallowCopy(c);
     }
 
-    // 3. Add the updated outer most component to the list.
-    updated.add(outer);
+    // 3. Add the updated head component to the list.
+    updated.add(head);
 
     return updated;
   }
@@ -1890,7 +1890,7 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
 
   /**
    * Internal method to reconcile the {@param current} InternalNode with a newComponentContext,
-   * updated outer most component and a {@link ReconciliationMode}.
+   * updated head component and a {@link ReconciliationMode}.
    *
    * @param c The ComponentContext.
    * @param current The current InternalNode which should be updated.
@@ -1922,7 +1922,7 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
 
   /**
    * Internal method to reconcile the {@param current} InternalNode with a newComponentContext,
-   * updated outer most component and a {@link ReconciliationMode}.
+   * updated head component and a {@link ReconciliationMode}.
    *
    * @param c The ComponentContext.
    * @param current The current InternalNode which should be updated.
@@ -1970,11 +1970,11 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
     for (int i = 0; i < count; i++) {
       final DefaultInternalNode child = (DefaultInternalNode) currentNode.getChildAt(i).getData();
 
-      // 4.1 Get outer most component of the child layout.
+      // 4.1 Get the head component of the child layout.
       List<Component> components = child.getComponents();
       final Component component = components.get(Math.max(0, components.size() - 1));
 
-      // 4.2 Update the outer most component of the child layout.
+      // 4.2 Update the head component of the child layout.
       final Component updated = component.makeUpdatedShallowCopy(c);
 
       // 4.3 Reconcile child layout.
@@ -2002,12 +2002,12 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
    * InternalNode.
    */
   private static DefaultInternalNode getCleanUpdatedShallowCopy(
-      ComponentContext c, DefaultInternalNode current, Component outer, YogaNode node) {
+      ComponentContext c, DefaultInternalNode current, Component head, YogaNode node) {
 
     final boolean isTracing = ComponentsSystrace.isTracing();
 
     if (isTracing) {
-      ComponentsSystrace.beginSection("clone:" + outer.getSimpleName());
+      ComponentsSystrace.beginSection("clone:" + head.getSimpleName());
     }
 
     // 1. Shallow copy this layout.
@@ -2015,7 +2015,7 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
 
     if (isTracing) {
       ComponentsSystrace.endSection();
-      ComponentsSystrace.beginSection("clean:" + outer.getSimpleName());
+      ComponentsSystrace.beginSection("clean:" + head.getSimpleName());
     }
 
     // 2. Reset and release properties
@@ -2023,11 +2023,11 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
 
     if (isTracing) {
       ComponentsSystrace.endSection();
-      ComponentsSystrace.beginSection("update:" + outer.getSimpleName());
+      ComponentsSystrace.beginSection("update:" + head.getSimpleName());
     }
 
     // 3. Get updated components
-    List<Component> updated = current.getUpdatedComponents(c, outer);
+    List<Component> updated = current.getUpdatedComponents(c, head);
 
     // 4. Update the layout with the new context and copied YogaNode.
     layout.updateWith(c, node, updated);
