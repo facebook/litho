@@ -92,6 +92,12 @@ public final class DebugComponent {
     return null;
   }
 
+  @Nullable
+  public static DebugComponent getRootInstance(InternalNode rootInternalNode) {
+    final int outerWrapperComponentIndex = Math.max(0, rootInternalNode.getComponents().size() - 1);
+    return DebugComponent.getInstance(rootInternalNode, outerWrapperComponentIndex);
+  }
+
   private static String generateGlobalKey(ComponentContext context, Component component) {
     final ComponentTree tree = context.getComponentTree();
     final String componentKey = component.getGlobalKey();
