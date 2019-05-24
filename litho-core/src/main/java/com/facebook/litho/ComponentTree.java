@@ -264,8 +264,7 @@ public class ComponentTree {
 
   private final boolean mMoveLayoutsBetweenThreads;
 
-  private final boolean mCreateInitialStateOncePerThread =
-      ComponentsConfiguration.createInitialStateOncePerThread;
+  private final boolean mCreateInitialStateOncePerThread;
 
   public static Builder create(ComponentContext context, Component.Builder<?> root) {
     return create(context, root.build());
@@ -298,6 +297,8 @@ public class ComponentTree {
     mUseCancelableLayoutFutures = builder.useCancelableLayoutFutures;
     mMoveLayoutsBetweenThreads = builder.canInterruptAndMoveLayoutsBetweenThreads;
     isReconciliationEnabled = builder.isReconciliationEnabled;
+    mCreateInitialStateOncePerThread =
+        ComponentsConfiguration.createInitialStateOncePerThread || mUseCancelableLayoutFutures;
 
     ensureLayoutThreadHandler();
 
