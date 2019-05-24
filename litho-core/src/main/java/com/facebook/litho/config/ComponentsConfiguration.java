@@ -196,6 +196,7 @@ public class ComponentsConfiguration {
 
   public static boolean useCancelableLayoutFutures;
   public static boolean canInterruptAndMoveLayoutsBetweenThreads;
+  public static boolean createInitialStateOncePerThread;
 
   public static boolean isRenderInfoDebuggingEnabled() {
     return isDebugModeEnabled && enableRenderInfoDebugging;

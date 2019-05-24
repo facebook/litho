@@ -264,6 +264,9 @@ public class ComponentTree {
 
   private final boolean mMoveLayoutsBetweenThreads;
 
+  private final boolean mCreateInitialStateOncePerThread =
+      ComponentsConfiguration.createInitialStateOncePerThread;
+
   public static Builder create(ComponentContext context, Component.Builder<?> root) {
     return create(context, root.build());
   }
@@ -1264,6 +1267,14 @@ public class ComponentTree {
             : CalculateLayoutSource.UPDATE_STATE_SYNC,
         attribution,
         rootTreeProps);
+  }
+
+  StateHandler getStateHandler() {
+    return mStateHandler;
+  }
+
+  boolean shouldCreateInitialStateOncePerThread() {
+    return mCreateInitialStateOncePerThread;
   }
 
   void recordEventHandler(Component component, EventHandler eventHandler) {

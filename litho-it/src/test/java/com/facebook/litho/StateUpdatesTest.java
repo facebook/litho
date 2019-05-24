@@ -20,6 +20,7 @@ import static com.facebook.litho.ComponentLifecycle.StateUpdate;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
 import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyInt;
@@ -27,8 +28,10 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.os.Looper;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.stats.LithoStats;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.helper.ComponentTestHelper;
@@ -37,6 +40,8 @@ import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Before;
 import org.junit.Test;
@@ -80,6 +85,7 @@ public class StateUpdatesTest {
     private TestComponent shallowCopy;
     private int mId;
     private static final AtomicInteger sIdGenerator = new AtomicInteger(0);
+    private final AtomicInteger createInitialStateCount = new AtomicInteger(0);
 
     public TestComponent() {
       super("TestComponent");
@@ -105,6 +111,7 @@ public class StateUpdatesTest {
     @Override
     protected void createInitialState(ComponentContext c) {
       mStateContainer.mCount = INITIAL_COUNT_STATE_VALUE;
+      createInitialStateCount.incrementAndGet();
     }
 
     @Override
@@ -198,6 +205,58 @@ public class StateUpdatesTest {
     mLithoView.setComponentTree(mComponentTree);
     mLithoView.onAttachedToWindow();
     ComponentTestHelper.measureAndLayout(mLithoView);
+  }
+
+  @Test
+  public void testCreateInitialStateOnceOnly() {
+    boolean enabled = ComponentsConfiguration.createInitialStateOncePerThread;
+    ComponentsConfiguration.createInitialStateOncePerThread = true;
+    final TestComponent testComponent = new TestComponent();
+    testComponent.setKey("initstate");
+    final TestComponent layoutTestComponent = spy(testComponent);
+
+    ComponentTree componentTree = ComponentTree.create(mContext, testComponent).build();
+
+    final ComponentContext context = spy(new ComponentContext(mContext));
+    when(context.getComponentTree()).thenReturn(componentTree);
+    when(layoutTestComponent.getScopedContext()).thenReturn(context);
+    when(layoutTestComponent.getGlobalKey()).thenReturn("initstate");
+
+    final CountDownLatch check = new CountDownLatch(2);
+
+    Thread thread1 =
+        new Thread(
+            new Runnable() {
+              @Override
+              public void run() {
+                final StateHandler stateHandler1 = componentTree.acquireStateHandler();
+                stateHandler1.applyStateUpdatesForComponent(layoutTestComponent);
+                check.countDown();
+              }
+            });
+
+    Thread thread2 =
+        new Thread(
+            new Runnable() {
+              @Override
+              public void run() {
+                final StateHandler stateHandler2 = componentTree.acquireStateHandler();
+                stateHandler2.applyStateUpdatesForComponent(layoutTestComponent);
+                check.countDown();
+              }
+            });
+
+    thread1.start();
+    thread2.start();
+
+    try {
+      check.await(5, TimeUnit.SECONDS);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
+
+    assertEquals(1, testComponent.createInitialStateCount.get());
+    ComponentsConfiguration.createInitialStateOncePerThread = enabled;
   }
 
   @Test
