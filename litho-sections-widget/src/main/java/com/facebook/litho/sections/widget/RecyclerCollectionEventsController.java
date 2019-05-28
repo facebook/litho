@@ -113,6 +113,19 @@ public class RecyclerCollectionEventsController extends RecyclerEventsController
   }
 
   /**
+   * Send the {@link RecyclerCollectionComponent} a request to scroll the content by the given
+   * margins.
+   */
+  public void requestScrollBy(int dx, int dy) {
+    final RecyclerView recyclerView = getRecyclerView();
+    if (recyclerView == null) {
+      return;
+    }
+
+    recyclerView.scrollBy(dx, dy);
+  }
+
+  /**
    * @param animated whether the scroll will happen with animation.
    * @param defaultTarget target to use as fallback.
    * @param snapTarget target that takes into account snapping behavior.

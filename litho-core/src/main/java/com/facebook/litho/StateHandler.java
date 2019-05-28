@@ -72,6 +72,8 @@ public class StateHandler {
   @Nullable
   private Map<Object, Object> mCachedValues;
 
+  private Map<String, Object> mCreateInitialStateLock;
+
   public StateHandler() {
     this(null);
   }
@@ -178,7 +180,16 @@ public class StateHandler {
     if (currentStateContainer != null) {
       component.transferState(currentStateContainer, component.getStateContainer());
     } else {
-      component.createInitialState(component.getScopedContext());
+      final ComponentTree componentTree = component.getScopedContext().getComponentTree();
+
+      // It's possible that Component.measure is called from outside a ComponentTree LayoutState
+      // calculation. In that case, we can't reuse or store the StateContainer in the ComponentTree,
+      // so we call createInitialState immediately and exit.
+      if (componentTree == null || !componentTree.shouldCreateInitialStateOncePerThread()) {
+        component.createInitialState(component.getScopedContext());
+      } else {
+        maybeCreateInitialStateAndCommitResult(component, componentTree);
+      }
     }
 
     final List<StateUpdate> stateUpdatesForKey;
@@ -220,6 +231,61 @@ public class StateHandler {
     }
   }
 
+  static void maybeCreateInitialStateAndCommitResult(
+      Component component, ComponentTree componentTree) {
+    final StateHandler stateHandler = componentTree.getStateHandler();
+
+    // Tree has been released, we can exit immediately.
+    if (stateHandler == null) {
+      return;
+    }
+
+    final String key = component.getGlobalKey();
+
+    // Each createInitialState call creates a lock. The ComponentTree will store the first lock
+    // that is passed to it to use for sync with other createInitialState calls, so that it only
+    // gets executed once.
+    final Object initLock = new Object();
+    synchronized (initLock) {
+      final Object lock = stateHandler.getCreateInitialStateLock(key, initLock);
+
+      synchronized (lock) {
+        if (initLock == lock) {
+          // createInitialState has not been called for this component. Call it and immediately
+          // commit the result to this state handler.
+          component.createInitialState(component.getScopedContext());
+          stateHandler.maybeInitStateContainers();
+          stateHandler.mStateContainers.put(key, component.getStateContainer());
+        } else {
+          // This means that createInitialState was already called for this component. Transfer the
+          // result without calling it again.
+          component.transferState(
+              stateHandler.mStateContainers.get(key), component.getStateContainer());
+        }
+      }
+    }
+  }
+
+  private Object getCreateInitialStateLock(String globalKey, Object lock) {
+    synchronized (this) {
+      if (mCreateInitialStateLock == null) {
+        mCreateInitialStateLock = new HashMap<>();
+      }
+    }
+
+    synchronized (mCreateInitialStateLock) {
+      Object existingLock = mCreateInitialStateLock.get(globalKey);
+
+      if (existingLock != null) {
+        return existingLock;
+      }
+
+      mCreateInitialStateLock.put(globalKey, lock);
+    }
+
+    return lock;
+  }
+
   void applyLazyStateUpdatesForContainer(String componentKey, StateContainer container) {
     final List<StateUpdate> stateUpdatesForKey;
 
@@ -247,7 +313,7 @@ public class StateHandler {
         isNestedTreeResolutionExperimentEnabled
             ? stateHandler.getAppliedStateUpdates()
             : stateHandler.getPendingStateUpdates());
-    clearUnusedStateContainers(stateHandler);
+    clearUnusedStateContainers(this, stateHandler);
     copyCurrentStateContainers(stateHandler.getStateContainers());
     copyPendingStateTransitions(stateHandler.getPendingStateUpdateTransitions());
   }
@@ -433,18 +499,26 @@ public class StateHandler {
     }
   }
 
-  private static void clearUnusedStateContainers(StateHandler currentStateHandler) {
+  private static void clearUnusedStateContainers(
+      StateHandler createInitialStateLockingStateHandler, StateHandler currentStateHandler) {
     final HashSet<String> neededStateContainers = currentStateHandler.mNeededStateContainers;
     final List<String> stateContainerKeys = new ArrayList<>();
     if (neededStateContainers == null || currentStateHandler.mStateContainers == null) {
       return;
     }
 
+    final boolean shouldCleanLocks =
+        createInitialStateLockingStateHandler.mCreateInitialStateLock != null
+            && !createInitialStateLockingStateHandler.mCreateInitialStateLock.isEmpty();
+
     stateContainerKeys.addAll(currentStateHandler.mStateContainers.keySet());
 
     for (String key : stateContainerKeys) {
       if (!neededStateContainers.contains(key)) {
         currentStateHandler.mStateContainers.remove(key);
+        if (shouldCleanLocks) {
+          createInitialStateLockingStateHandler.mCreateInitialStateLock.remove(key);
+        }
       }
     }
   }

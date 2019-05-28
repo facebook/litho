@@ -71,13 +71,13 @@ public class LayoutStateCreateTreeTest {
 
     InternalNode node = LayoutState.createTree(component, mComponentContext, null);
     assertThat(node.getChildCount()).isEqualTo(1);
-    assertThat(node.getRootComponent()).isEqualTo(component);
+    assertThat(node.getTailComponent()).isEqualTo(component);
     node = node.getChildAt(0);
     assertThat(node.getChildCount()).isEqualTo(1);
-    assertThat(node.getRootComponent()).isInstanceOf(Column.class);
+    assertThat(node.getTailComponent()).isInstanceOf(Column.class);
     node = node.getChildAt(0);
     assertThat(node.getChildCount()).isEqualTo(0);
-    assertThat(node.getRootComponent()).isInstanceOf(TestDrawableComponent.class);
+    assertThat(node.getTailComponent()).isInstanceOf(TestDrawableComponent.class);
   }
 
   @Test
@@ -259,7 +259,7 @@ public class LayoutStateCreateTreeTest {
 
     InternalNode node = LayoutState.createTree(component, mComponentContext, null);
     assertThat(node.getChildCount()).isEqualTo(0);
-    assertThat(node.getRootComponent()).isInstanceOf(TestDrawableComponent.class);
+    assertThat(node.getTailComponent()).isInstanceOf(TestDrawableComponent.class);
     assertThat(node.getNodeInfo().getClickHandler()).isEqualTo(clickHandler2);
     assertThat(node.getNodeInfo().getLongClickHandler()).isEqualTo(longClickHandler2);
     assertThat(node.getNodeInfo().getTouchHandler()).isEqualTo(touchHandler2);
@@ -309,7 +309,7 @@ public class LayoutStateCreateTreeTest {
 
     InternalNode node = LayoutState.createTree(component, mComponentContext, null);
     assertThat(node.getChildCount()).isEqualTo(0);
-    assertThat(node.getRootComponent()).isInstanceOf(TestSizeDependentComponent.class);
+    assertThat(node.getTailComponent()).isInstanceOf(TestSizeDependentComponent.class);
     assertThat(node.getNodeInfo().getClickHandler()).isEqualTo(clickHandler2);
     assertThat(node.getNodeInfo().getLongClickHandler()).isEqualTo(longClickHandler2);
     assertThat(node.getNodeInfo().getTouchHandler()).isEqualTo(touchHandler2);

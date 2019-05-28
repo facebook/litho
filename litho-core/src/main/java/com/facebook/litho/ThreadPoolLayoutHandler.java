@@ -35,6 +35,11 @@ public class ThreadPoolLayoutHandler implements LithoHandler {
   }
 
   @Override
+  public boolean isTracing() {
+    return false;
+  }
+
+  @Override
   public void post(Runnable runnable, String tag) {
     try {
       sLayoutThreadPoolExecutor.execute(runnable);

@@ -149,8 +149,8 @@ public class InspectableComponent {
   }
 
   /**
-   * @return A concatenated string of all text content within the underlying LithoView. Null if the
-   *     node doesn't have an associated LithoView.
+   * @return The text content of the component wrapped by the debug component, or null if no
+   *     TextContent/TextView are found.
    */
   @Nullable
   public String getTextContent() {

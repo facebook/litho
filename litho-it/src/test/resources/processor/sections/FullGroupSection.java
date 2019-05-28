@@ -20,6 +20,7 @@ import androidx.annotation.AttrRes;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.litho.ClickEvent;
+import com.facebook.litho.CommonUtils;
 import com.facebook.litho.Component;
 import com.facebook.litho.Diff;
 import com.facebook.litho.EventDispatcher;
@@ -40,7 +41,6 @@ import com.facebook.litho.sections.Section;
 import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.SectionLifecycle;
 import java.util.BitSet;
-import java.util.Objects;
 
 /**
  * Comment to be copied in generated section
@@ -596,7 +596,7 @@ final class FullGroupSection<T> extends Section implements TestTag {
 
     @Override
     public int hashCode() {
-      return Objects.hash(prop1);
+      return CommonUtils.hash(prop1);
     }
 
     @Override

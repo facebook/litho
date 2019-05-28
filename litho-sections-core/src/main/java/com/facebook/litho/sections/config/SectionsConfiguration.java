@@ -45,4 +45,6 @@ public class SectionsConfiguration {
 
   /** Whether changesets can be applied from a background thread. */
   public static boolean useBackgroundChangeSets = false;
+
+  public static boolean deepCopySectionChildren = false;
 }

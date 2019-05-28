@@ -16,6 +16,7 @@
 package com.facebook.litho;
 
 import androidx.annotation.Nullable;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -50,5 +51,10 @@ public class CommonUtils {
     list.add(item);
 
     return list;
+  }
+
+  /** Polyfill of Objects.hash that can be used on API<19. */
+  public static int hash(Object... values) {
+    return Arrays.hashCode(values);
   }
 }

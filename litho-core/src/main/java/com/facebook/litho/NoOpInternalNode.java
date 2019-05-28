@@ -311,6 +311,12 @@ class NoOpInternalNode implements InternalNode {
     return null;
   }
 
+  @Nullable
+  @Override
+  public Component getHeadComponent() {
+    return null;
+  }
+
   @Override
   public int getImportantForAccessibility() {
     return 0;
@@ -427,7 +433,7 @@ class NoOpInternalNode implements InternalNode {
 
   @Nullable
   @Override
-  public Component getRootComponent() {
+  public Component getTailComponent() {
     return null;
   }
 

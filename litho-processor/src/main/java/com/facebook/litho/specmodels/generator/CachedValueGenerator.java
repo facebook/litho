@@ -100,17 +100,22 @@ public class CachedValueGenerator {
             getInputsClassName(cachedValueName))
         .indent();
 
-    for (int i = 0, size = onCalculateCachedValueMethod.methodParams.size(); i < size; i++) {
-      if (i < size - 1) {
-        codeBlock.add(
-            "$L,",
-            ComponentBodyGenerator.getImplAccessor(
-                specModel, onCalculateCachedValueMethod.methodParams.get(i)));
-      } else {
-        codeBlock.add(
-            "$L);\n",
-            ComponentBodyGenerator.getImplAccessor(
-                specModel, onCalculateCachedValueMethod.methodParams.get(i)));
+    final int paramSize = onCalculateCachedValueMethod.methodParams.size();
+    if (paramSize == 0) {
+      codeBlock.add(");\n");
+    } else {
+      for (int i = 0; i < paramSize; i++) {
+        if (i < paramSize - 1) {
+          codeBlock.add(
+              "$L,",
+              ComponentBodyGenerator.getImplAccessor(
+                  specModel, onCalculateCachedValueMethod.methodParams.get(i)));
+        } else {
+          codeBlock.add(
+              "$L);\n",
+              ComponentBodyGenerator.getImplAccessor(
+                  specModel, onCalculateCachedValueMethod.methodParams.get(i)));
+        }
       }
     }
 
@@ -133,17 +138,21 @@ public class CachedValueGenerator {
             specModel.getSpecName(),
             onCalculateCachedValueMethod.name)
         .indent();
-    for (int i = 0, size = onCalculateCachedValueMethod.methodParams.size(); i < size; i++) {
-      if (i < size - 1) {
-        delegation.add(
-            "$L,",
-            ComponentBodyGenerator.getImplAccessor(
-                specModel, onCalculateCachedValueMethod.methodParams.get(i)));
-      } else {
-        delegation.add(
-            "$L);\n",
-            ComponentBodyGenerator.getImplAccessor(
-                specModel, onCalculateCachedValueMethod.methodParams.get(i)));
+    if (paramSize == 0) {
+      delegation.add(");\n");
+    } else {
+      for (int i = 0; i < paramSize; i++) {
+        if (i < paramSize - 1) {
+          delegation.add(
+              "$L,",
+              ComponentBodyGenerator.getImplAccessor(
+                  specModel, onCalculateCachedValueMethod.methodParams.get(i)));
+        } else {
+          delegation.add(
+              "$L);\n",
+              ComponentBodyGenerator.getImplAccessor(
+                  specModel, onCalculateCachedValueMethod.methodParams.get(i)));
+        }
       }
     }
 
@@ -177,23 +186,27 @@ public class CachedValueGenerator {
 
     typeSpec.addMethod(constructor.build());
 
-    MethodSpec.Builder hashCodeMethod =
-        MethodSpec.methodBuilder("hashCode")
-            .addAnnotation(Override.class)
-            .returns(TypeName.INT)
-            .addModifiers(Modifier.PUBLIC);
+    final int paramSize = onCalculateCachedValueMethod.methodParams.size();
+    if (paramSize > 0) {
+      MethodSpec.Builder hashCodeMethod =
+          MethodSpec.methodBuilder("hashCode")
+              .addAnnotation(Override.class)
+              .returns(TypeName.INT)
+              .addModifiers(Modifier.PUBLIC);
 
-    CodeBlock.Builder codeBlock = CodeBlock.builder().add("return $T.hash(", ClassNames.OBJECTS);
-    for (int i = 0, size = onCalculateCachedValueMethod.methodParams.size(); i < size; i++) {
-      if (i < size - 1) {
-        codeBlock.add("$L, ", onCalculateCachedValueMethod.methodParams.get(i).getName());
-      } else {
-        codeBlock.add("$L);\n", onCalculateCachedValueMethod.methodParams.get(i).getName());
+      CodeBlock.Builder codeBlock =
+          CodeBlock.builder().add("return $T.hash(", ClassNames.COMMON_UTILS);
+      for (int i = 0; i < paramSize; i++) {
+        if (i < paramSize - 1) {
+          codeBlock.add("$L, ", onCalculateCachedValueMethod.methodParams.get(i).getName());
+        } else {
+          codeBlock.add("$L);\n", onCalculateCachedValueMethod.methodParams.get(i).getName());
+        }
       }
-    }
 
-    hashCodeMethod.addCode(codeBlock.build());
-    typeSpec.addMethod(hashCodeMethod.build());
+      hashCodeMethod.addCode(codeBlock.build());
+      typeSpec.addMethod(hashCodeMethod.build());
+    }
 
     MethodSpec.Builder equalsMethod =
         MethodSpec.methodBuilder("equals")

@@ -2101,7 +2101,7 @@ public class LayoutStateCalculateTest {
     assertThat(componentSpy.getCachedLayout()).isNotNull();
     final InternalNode cachedLayout = componentSpy.getCachedLayout();
     assertThat(cachedLayout.getChildCount()).isEqualTo(1);
-    assertThat(((InternalNode) cachedLayout.getChildAt(0)).getRootComponent())
+    assertThat(((InternalNode) cachedLayout.getChildAt(0)).getTailComponent())
         .isInstanceOf(TestDrawableComponent.class);
 
     // Now embed the measured component in another container and calculate a layout.
@@ -2169,9 +2169,9 @@ public class LayoutStateCalculateTest {
     assertThat(sizeDependentComponentSpy.getCachedLayout()).isNotNull();
     final InternalNode cachedLayout = sizeDependentComponentSpy.getCachedLayout();
     assertThat(cachedLayout.getChildCount()).isEqualTo(2);
-    assertThat(((InternalNode) cachedLayout.getChildAt(0)).getRootComponent())
+    assertThat(((InternalNode) cachedLayout.getChildAt(0)).getTailComponent())
         .isInstanceOf(TestDrawableComponent.class);
-    assertThat(((InternalNode) cachedLayout.getChildAt(1)).getRootComponent())
+    assertThat(((InternalNode) cachedLayout.getChildAt(1)).getTailComponent())
         .isInstanceOf(TestViewComponent.class);
 
     // Now embed the measured component in another container and calculate a layout.
@@ -2248,7 +2248,7 @@ public class LayoutStateCalculateTest {
     assertThat(componentSpy.getCachedLayout()).isNotNull();
     final InternalNode cachedLayout = componentSpy.getCachedLayout();
     assertThat(cachedLayout.getChildCount()).isEqualTo(0);
-    assertThat(cachedLayout.getRootComponent()).isInstanceOf(TestDrawableComponent.class);
+    assertThat(cachedLayout.getTailComponent()).isInstanceOf(TestDrawableComponent.class);
 
     // Now embed the measured component in another container and calculate a layout.
     final Component rootContainer =
@@ -2315,7 +2315,7 @@ public class LayoutStateCalculateTest {
     assertThat(sizeDependentComponentSpy.getCachedLayout()).isNotNull();
     final InternalNode cachedLayout = sizeDependentComponentSpy.getCachedLayout();
     assertThat(cachedLayout.getChildCount()).isEqualTo(0);
-    assertThat(cachedLayout.getRootComponent()).isInstanceOf(TestDrawableComponent.class);
+    assertThat(cachedLayout.getTailComponent()).isInstanceOf(TestDrawableComponent.class);
 
     // Now embed the measured component in another container and calculate a layout.
     final Component rootContainer =

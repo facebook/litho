@@ -29,6 +29,7 @@ import com.facebook.litho.StateContainer;
 import com.facebook.litho.sections.annotations.DiffSectionSpec;
 import com.facebook.litho.sections.annotations.GroupSectionSpec;
 import com.facebook.litho.sections.annotations.OnDiff;
+import com.facebook.litho.sections.config.SectionsConfiguration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
@@ -250,6 +251,10 @@ public abstract class Section extends SectionLifecycle
     try {
       final Section clone = (Section) super.clone();
 
+      if (SectionsConfiguration.deepCopySectionChildren) {
+        return deepCopySectionChildren(clone, deepCopy);
+      }
+
       if (!deepCopy) {
         if (clone.mChildren != null) {
           clone.mChildren = new ArrayList<>();
@@ -263,6 +268,25 @@ public abstract class Section extends SectionLifecycle
       // This class implements Cloneable, so this is impossible
       throw new RuntimeException(e);
     }
+  }
+
+  private Section deepCopySectionChildren(final Section clone, final boolean deepCopy) {
+    if (mChildren != null) {
+      clone.mChildren = new ArrayList<>();
+    }
+
+    if (!deepCopy) {
+      clone.mCount = 0;
+      clone.setInvalidated(false);
+    } else {
+      if (mChildren != null) {
+        for (Section child : mChildren) {
+          clone.mChildren.add(child.makeShallowCopy(true));
+        }
+      }
+    }
+
+    return clone;
   }
 
   public Section makeShallowCopy() {

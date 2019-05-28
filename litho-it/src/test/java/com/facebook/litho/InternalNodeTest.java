@@ -457,12 +457,12 @@ public class InternalNodeTest {
 
     assertThat(cloned.getChildCount()).isEqualTo(layout.getChildCount());
 
-    assertThat(cloned.getChildAt(0).getRootComponent())
-        .isSameAs(layout.getChildAt(0).getRootComponent());
-    assertThat(cloned.getChildAt(1).getRootComponent())
-        .isSameAs(layout.getChildAt(1).getRootComponent());
-    assertThat(cloned.getChildAt(2).getRootComponent())
-        .isSameAs(layout.getChildAt(2).getRootComponent());
+    assertThat(cloned.getChildAt(0).getTailComponent())
+        .isSameAs(layout.getChildAt(0).getTailComponent());
+    assertThat(cloned.getChildAt(1).getTailComponent())
+        .isSameAs(layout.getChildAt(1).getTailComponent());
+    assertThat(cloned.getChildAt(2).getTailComponent())
+        .isSameAs(layout.getChildAt(2).getTailComponent());
 
     assertThat(cloned.getChildAt(0).getYogaNode()).isNotSameAs(layout.getChildAt(0).getYogaNode());
     assertThat(cloned.getChildAt(1).getYogaNode()).isNotSameAs(layout.getChildAt(1).getYogaNode());

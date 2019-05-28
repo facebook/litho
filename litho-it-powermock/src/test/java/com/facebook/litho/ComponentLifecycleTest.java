@@ -298,7 +298,7 @@ public class ComponentLifecycleTest {
             .hasState(true)
             .build(mContext);
 
-    when(holder.getRootComponent()).thenReturn(component);
+    when(holder.getTailComponent()).thenReturn(component);
 
     when(LayoutState.resolveNestedTree(mContext, holder, 100, 100)).thenCallRealMethod();
     when(LayoutState.createAndMeasureTreeForComponent(
@@ -352,7 +352,7 @@ public class ComponentLifecycleTest {
             .hasState(true)
             .build(mContext);
 
-    when(holder.getRootComponent()).thenReturn(component);
+    when(holder.getTailComponent()).thenReturn(component);
 
     when(LayoutState.resolveNestedTree(mContext, holder, 100, 100)).thenCallRealMethod();
     when(LayoutState.createAndMeasureTreeForComponent(
@@ -495,7 +495,7 @@ public class ComponentLifecycleTest {
   }
 
   private YogaMeasureFunction getMeasureFunction(Component component) {
-    when(mNode.getRootComponent()).thenReturn(component);
+    when(mNode.getTailComponent()).thenReturn(component);
 
     return Whitebox.getInternalState(ComponentLifecycle.class, "sMeasureFunction");
   }

@@ -24,6 +24,7 @@ import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import com.facebook.litho.ClickEvent;
+import com.facebook.litho.CommonUtils;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
@@ -48,7 +49,6 @@ import com.facebook.litho.annotations.State;
 import com.facebook.litho.annotations.TreeProp;
 import java.util.Arrays;
 import java.util.BitSet;
-import java.util.Objects;
 import javax.annotation.Nullable;
 
 /**
@@ -787,7 +787,7 @@ public final class TestMount<S extends View> extends Component implements TestTa
 
     @Override
     public int hashCode() {
-      return Objects.hash(prop3, prop5, state1);
+      return CommonUtils.hash(prop3, prop5, state1);
     }
 
     @Override

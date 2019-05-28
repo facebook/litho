@@ -25,6 +25,7 @@ import com.facebook.samples.litho.animations.renderthread.RenderThreadAnimationA
 import com.facebook.samples.litho.bordereffects.BorderEffectsActivity;
 import com.facebook.samples.litho.dynamicprops.DynamicPropsActivity;
 import com.facebook.samples.litho.errors.ErrorHandlingActivity;
+import com.facebook.samples.litho.fastscroll.FastScrollHandleActivity;
 import com.facebook.samples.litho.hscroll.HorizontalScrollWithSnapActivity;
 import com.facebook.samples.litho.lithography.LithographyActivity;
 import com.facebook.samples.litho.playground.PlaygroundActivity;
@@ -55,7 +56,8 @@ public class DemoListActivity extends NavigatableDemoActivity {
                   new DemoListDataModel("Bounds Animation", BoundsAnimationActivity.class),
                   new DemoListDataModel("Page Indicators", PageIndicatorsActivity.class),
                   new DemoListDataModel("Render Thread", RenderThreadAnimationActivity.class))),
-          new DemoListDataModel("Dynamic Props", DynamicPropsActivity.class));
+          new DemoListDataModel("Dynamic Props", DynamicPropsActivity.class),
+          new DemoListDataModel("Fast Scroll Handle", FastScrollHandleActivity.class));
 
   @Override
   public void onCreate(Bundle savedInstanceState) {

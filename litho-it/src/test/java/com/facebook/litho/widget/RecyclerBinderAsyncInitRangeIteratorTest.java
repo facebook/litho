@@ -77,7 +77,9 @@ public class RecyclerBinderAsyncInitRangeIteratorTest {
               LithoHandler layoutHandler,
               ComponentTreeHolder.ComponentTreeMeasureListenerFactory
                   componentTreeMeasureListenerFactory,
-              boolean incrementalMountEnabled) {
+              boolean incrementalMountEnabled,
+              boolean canInterruptAndMoveLayoutsBetweenThreads,
+              boolean useCancelableLayoutFutures) {
             final TestComponentTreeHolder holder = new TestComponentTreeHolder(renderInfo);
             mAllHoldersList.add(holder);
 

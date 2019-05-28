@@ -41,6 +41,8 @@ import javax.annotation.concurrent.ThreadSafe;
 public class ComponentTreeHolder {
   private static final int UNINITIALIZED = -1;
   private static final AtomicInteger sIdGenerator = new AtomicInteger(1);
+  private final boolean mCanInterruptAndMoveLayoutsBetweenThreads;
+  private final boolean mUseCancelableLayoutFutures;
 
   @IntDef({RENDER_UNINITIALIZED, RENDER_ADDED, RENDER_DRAWN})
   public @interface RenderState {}
@@ -107,6 +109,8 @@ public class ComponentTreeHolder {
     private boolean canPreallocateOnDefaultHandler;
     private boolean shouldPreallocatePerMountSpec;
     private boolean incrementalMount = true;
+    private boolean useCancelableLayoutFutures;
+    private boolean canInterruptAndMoveLayoutsBetweenThreads;
 
     private Builder() {}
 
@@ -147,6 +151,16 @@ public class ComponentTreeHolder {
       return this;
     }
 
+    public Builder useCancelableLayoutFutures(boolean isEnabled) {
+      this.useCancelableLayoutFutures = isEnabled;
+      return this;
+    }
+
+    public Builder canInterruptAndMoveLayoutsBetweenThreads(boolean isEnabled) {
+      this.canInterruptAndMoveLayoutsBetweenThreads = isEnabled;
+      return this;
+    }
+
     public ComponentTreeHolder build() {
       ensureMandatoryParams();
       return new ComponentTreeHolder(this);
@@ -168,6 +182,8 @@ public class ComponentTreeHolder {
     mCanPreallocateOnDefaultHandler = builder.canPreallocateOnDefaultHandler;
     mShouldPreallocatePerMountSpec = builder.shouldPreallocatePerMountSpec;
     mComponentTreeMeasureListenerFactory = builder.componentTreeMeasureListenerFactory;
+    mUseCancelableLayoutFutures = builder.useCancelableLayoutFutures;
+    mCanInterruptAndMoveLayoutsBetweenThreads = builder.canInterruptAndMoveLayoutsBetweenThreads;
     mId = sIdGenerator.getAndIncrement();
     mIncrementalMount = builder.incrementalMount;
   }
@@ -395,6 +411,8 @@ public class ComponentTreeHolder {
                       : mComponentTreeMeasureListenerFactory.create(this))
               .hasMounted(mHasMounted)
               .incrementalMount(mIncrementalMount)
+              .canInterruptAndMoveLayoutsBetweenThreads(mCanInterruptAndMoveLayoutsBetweenThreads)
+              .useCancelableLayoutFutures(mUseCancelableLayoutFutures)
               .build();
       if (mPendingNewLayoutListener != null) {
         mComponentTree.setNewLayoutStateReadyListener(mPendingNewLayoutListener);
