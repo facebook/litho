@@ -32,6 +32,7 @@ public class TestSectionsRecyclerView extends SectionsRecyclerView {
   }
   @Override
   public void setRefreshing(boolean refreshing) {
+    super.setRefreshing(refreshing);
     setRefreshingValuesCount++;
     lastRefreshingValue = refreshing;
   }
