@@ -70,4 +70,4 @@ public class TestSectionsRecyclerView extends SectionsRecyclerView {
     removeCallbackCount = 0;
     postCount = 0;
   }
-
+}
