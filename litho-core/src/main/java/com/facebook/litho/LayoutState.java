@@ -274,7 +274,10 @@ class LayoutState {
     // views, so we'll need to set them up, when binding HostComponent to ComponentHost. At the same
     // time, we don't remove them from the current component, as we may calculate multiple
     // LayoutStates using same Components
-    hostComponent.setCommonDynamicProps(node.getTailComponent().getCommonDynamicProps());
+    Component tailComponent = node.getTailComponent();
+    if (tailComponent != null) {
+      hostComponent.setCommonDynamicProps(tailComponent.getCommonDynamicProps());
+    }
 
     long hostMarker =
         layoutState.isLayoutRoot(node) ? ROOT_HOST_ID : layoutState.mCurrentHostMarker;
@@ -2340,7 +2343,7 @@ class LayoutState {
       return true;
     }
 
-    if (component.hasCommonDynamicProps()) {
+    if (component != null && component.hasCommonDynamicProps()) {
       // Need a host View to apply the dynamic props to
       return true;
     }
