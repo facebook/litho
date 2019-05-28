@@ -17,8 +17,14 @@ apply plugin: 'org.jetbrains.intellij'
 apply plugin: 'java'
 
 dependencies {
-    testCompile group: 'junit', name: 'junit', version: '4.12'
-    testCompile "org.mockito:mockito-core:1.9.5"
+    testCompile 'junit:junit:4.12'
+    testCompile 'org.mockito:mockito-core:1.9.5'
+    // Processor
+    implementation project(':litho-sections-annotations')
+    implementation project(':litho-sections-processor')
+    implementation project(':litho-annotations')
+    implementation project(':litho-processor')
+    implementation deps.javapoet
 }
 
 intellij {
