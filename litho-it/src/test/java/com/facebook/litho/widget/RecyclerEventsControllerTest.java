@@ -89,7 +89,7 @@ public class RecyclerEventsControllerTest {
     resetValuesAndSetInitialRefreshing(false);
     mRecyclerEventsController.clearRefreshing();
 
-    verifySetRefreshingWasCalledNTimesWith(mSectionsRecyclerView, 0, false);
+    verifySetRefreshingWasCalledNTimesWith(mSectionsRecyclerView, 0);
     verifyRemoveCallbacksWasCalledNTimes(mSectionsRecyclerView, 0);
     verifyPostWasCalledNTimes(mSectionsRecyclerView, 0);
   }
@@ -100,7 +100,8 @@ public class RecyclerEventsControllerTest {
     ThreadUtils.setMainThreadOverride(ThreadUtils.OVERRIDE_MAIN_THREAD_TRUE);
     mRecyclerEventsController.clearRefreshing();
 
-    verifySetRefreshingWasCalledNTimesWith(mSectionsRecyclerView, 1, false);
+    verifySetRefreshingWasCalledNTimesWith(mSectionsRecyclerView, 1);
+    assertThat(mSectionsRecyclerView.isRefreshing()).isEqualTo(false);
     verifyRemoveCallbacksWasCalledNTimes(mSectionsRecyclerView, 0);
     verifyPostWasCalledNTimes(mSectionsRecyclerView, 0);
   }
@@ -122,7 +123,8 @@ public class RecyclerEventsControllerTest {
     ThreadUtils.setMainThreadOverride(ThreadUtils.OVERRIDE_MAIN_THREAD_TRUE);
 
     mRecyclerEventsController.showRefreshing();
-    verifySetRefreshingWasCalledNTimesWith(mSectionsRecyclerView, 1, true);
+    verifySetRefreshingWasCalledNTimesWith(mSectionsRecyclerView, 1);
+    assertThat(mSectionsRecyclerView.isRefreshing()).isEqualTo(true);
   }
 
   @Test
@@ -130,7 +132,7 @@ public class RecyclerEventsControllerTest {
     resetValuesAndSetInitialRefreshing(true);
     mRecyclerEventsController.showRefreshing();
 
-    verifySetRefreshingWasCalledNTimesWith(mSectionsRecyclerView, 0, false);
+    verifySetRefreshingWasCalledNTimesWith(mSectionsRecyclerView, 0);
   }
 
   private static void verifyRemoveCallbacksWasCalledNTimes(
@@ -143,8 +145,7 @@ public class RecyclerEventsControllerTest {
   }
 
   private static void verifySetRefreshingWasCalledNTimesWith(
-      TestSectionsRecyclerView recyclerView, int times, boolean refreshValue) {
+      TestSectionsRecyclerView recyclerView, int times) {
     assertThat(recyclerView.getSetRefreshingValuesCount()).isEqualTo(times);
-    assertThat(recyclerView.getLastRefreshingValue()).isEqualTo(refreshValue);
   }
 }
