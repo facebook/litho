@@ -237,7 +237,7 @@ class LayoutState {
   @Nullable
   private static LayoutOutput createGenericLayoutOutput(
       InternalNode node, LayoutState layoutState, boolean hasHostView) {
-    final Component component = node.getRootComponent();
+    final Component component = node.getTailComponent();
 
     // Skip empty nodes and layout specs because they don't mount anything.
     if (component == null || component.getMountType() == NONE) {
@@ -267,11 +267,21 @@ class LayoutState {
       ComponentsSystrace.beginSection(
           "createHostLayoutOutput:" + node.getSimpleName());
     }
+
+    final HostComponent hostComponent = HostComponent.create();
+
+    // We need to pass common dynamic props to the host component, as they only could be applied to
+    // views, so we'll need to set them up, when binding HostComponent to ComponentHost. At the same
+    // time, we don't remove them from the current component, as we may calculate multiple
+    // LayoutStates using same Components
+    hostComponent.setCommonDynamicProps(node.getTailComponent().getCommonDynamicProps());
+
     long hostMarker =
         layoutState.isLayoutRoot(node) ? ROOT_HOST_ID : layoutState.mCurrentHostMarker;
+
     final LayoutOutput hostOutput =
         createLayoutOutput(
-            HostComponent.create(),
+            hostComponent,
             hostMarker,
             layoutState,
             node,
@@ -466,7 +476,7 @@ class LayoutState {
         node.getVisibilityChangedHandler();
     final VisibilityOutput visibilityOutput = new VisibilityOutput();
 
-    visibilityOutput.setComponent(node.getRootComponent());
+    visibilityOutput.setComponent(node.getTailComponent());
     visibilityOutput.setBounds(l, t, r, b);
     visibilityOutput.setVisibleHeightRatio(node.getVisibleHeightRatio());
     visibilityOutput.setVisibleWidthRatio(node.getVisibleWidthRatio());
@@ -525,7 +535,7 @@ class LayoutState {
    * @see #needsHostView(InternalNode, LayoutState)
    */
   private static boolean hasViewContent(InternalNode node, LayoutState layoutState) {
-    final Component component = node.getRootComponent();
+    final Component component = node.getTailComponent();
     final NodeInfo nodeInfo = node.getNodeInfo();
 
     final boolean implementsAccessibility =
@@ -622,7 +632,7 @@ class LayoutState {
     if (node.hasNewLayout()) {
       node.markLayoutSeen();
     }
-    final Component component = node.getRootComponent();
+    final Component component = node.getTailComponent();
     final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
       ComponentsSystrace.beginSection("collectResults:" + node.getSimpleName());
@@ -636,7 +646,7 @@ class LayoutState {
         ComponentsSystrace.beginSectionWithArgs("resolveNestedTree:" + node.getSimpleName())
             .arg("widthSpec", "EXACTLY " + node.getWidth())
             .arg("heightSpec", "EXACTLY " + node.getHeight())
-            .arg("rootComponentId", node.getRootComponent().getId())
+            .arg("rootComponentId", node.getTailComponent().getId())
             .flush();
       }
       InternalNode nestedTree =
@@ -1268,7 +1278,7 @@ class LayoutState {
    */
   private static int addHostLayoutOutput(
       InternalNode node, LayoutState layoutState, DiffNode diffNode, boolean isPhantom) {
-    final Component component = node.getRootComponent();
+    final Component component = node.getTailComponent();
     final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
       ComponentsSystrace.beginSection("addHostLayoutOutput:" + node.getSimpleName());
@@ -1565,7 +1575,7 @@ class LayoutState {
 
     if (collectResultsEvent != null) {
       collectResultsEvent.markerAnnotate(
-          FrameworkLogEvents.PARAM_ROOT_COMPONENT, root.getRootComponent().getSimpleName());
+          FrameworkLogEvents.PARAM_ROOT_COMPONENT, root.getTailComponent().getSimpleName());
       logger.logPerfEvent(collectResultsEvent);
     }
 
@@ -1733,7 +1743,7 @@ class LayoutState {
       int heightSpec,
       DiffNode previousDiffTreeRoot) {
     final ComponentContext context = root.getContext();
-    final Component component = root.getRootComponent();
+    final Component component = root.getTailComponent();
     final boolean isTracing = ComponentsSystrace.isTracing();
 
     if (isTracing) {
@@ -1762,7 +1772,7 @@ class LayoutState {
 
     if (layoutEvent != null) {
       layoutEvent.markerAnnotate(PARAM_TREE_DIFF_ENABLED, previousDiffTreeRoot != null);
-      layoutEvent.markerAnnotate(PARAM_ROOT_COMPONENT, root.getRootComponent().getSimpleName());
+      layoutEvent.markerAnnotate(PARAM_ROOT_COMPONENT, root.getTailComponent().getSimpleName());
     }
 
     root.calculateLayout(
@@ -1786,7 +1796,7 @@ class LayoutState {
   static InternalNode resolveNestedTree(
       ComponentContext context, InternalNode holder, int widthSpec, int heightSpec) {
 
-    final Component component = holder.getRootComponent();
+    final Component component = holder.getTailComponent();
     final InternalNode layoutFromWillRender = component.consumeLayoutCreatedInWillRender();
     final InternalNode nestedTree =
         layoutFromWillRender == null ? holder.getNestedTree() : layoutFromWillRender;
@@ -1813,7 +1823,7 @@ class LayoutState {
         resolvedLayout = cachedLayout;
       } else {
 
-        final Component root = holder.getRootComponent();
+        final Component root = holder.getTailComponent();
         if (context.isNestedTreeResolutionExperimentEnabled() && root != null) {
           /*
            * We create a shallow copy of the component to ensure that component is resolved
@@ -2036,7 +2046,7 @@ class LayoutState {
     diffNode.setLastHeightSpec(node.getLastHeightSpec());
     diffNode.setLastMeasuredWidth(node.getLastMeasuredWidth());
     diffNode.setLastMeasuredHeight(node.getLastMeasuredHeight());
-    diffNode.setComponent(node.getRootComponent());
+    diffNode.setComponent(node.getTailComponent());
     if (parent != null) {
       parent.addChild(diffNode);
     }
@@ -2083,7 +2093,7 @@ class LayoutState {
     try {
       // Root of the main tree or of a nested tree.
       final boolean isTreeRoot = layoutNode.getParent() == null;
-      if (isLayoutSpecWithSizeSpec(layoutNode.getRootComponent()) && !isTreeRoot) {
+      if (isLayoutSpecWithSizeSpec(layoutNode.getTailComponent()) && !isTreeRoot) {
         layoutNode.setDiffNode(diffNode);
         return;
       }
@@ -2107,7 +2117,7 @@ class LayoutState {
         applyDiffNodeToLayoutNode(layoutNode, diffNode);
       }
     } catch (Throwable t) {
-      final Component c = layoutNode.getRootComponent();
+      final Component c = layoutNode.getTailComponent();
       if (c != null) {
         throw new ComponentsChainException(c, t);
       }
@@ -2122,7 +2132,7 @@ class LayoutState {
    * node.
    */
   private static void applyDiffNodeToLayoutNode(InternalNode layoutNode, DiffNode diffNode) {
-    final Component component = layoutNode.getRootComponent();
+    final Component component = layoutNode.getTailComponent();
     if (component != null) {
       component.copyInterStageImpl(diffNode.getComponent());
     }
@@ -2139,7 +2149,7 @@ class LayoutState {
       return false;
     }
 
-    return isSameComponentType(node.getRootComponent(), diffNode.getComponent());
+    return isSameComponentType(node.getTailComponent(), diffNode.getComponent());
   }
 
   private static boolean isSameComponentType(Component a, Component b) {
@@ -2156,7 +2166,7 @@ class LayoutState {
       return true;
     }
 
-    final Component component = layoutNode.getRootComponent();
+    final Component component = layoutNode.getTailComponent();
     if (component != null) {
       return component.shouldComponentUpdate(component, diffNode.getComponent());
     }
@@ -2313,7 +2323,7 @@ class LayoutState {
       return true;
     }
 
-    final Component component = node.getRootComponent();
+    final Component component = node.getTailComponent();
     if (isMountViewSpec(component)) {
       // Component already represents a View.
       return false;
@@ -2330,6 +2340,11 @@ class LayoutState {
       return true;
     }
 
+    if (component.hasCommonDynamicProps()) {
+      // Need a host View to apply the dynamic props to
+      return true;
+    }
+
     if (needsHostViewForTransition(node)) {
       // We need a View for Transition. Normally. Unless phantom LayoutOutputs are enabled.
       if (!ComponentsConfiguration.createPhantomLayoutOutputsForTransitions) {
@@ -2341,7 +2356,7 @@ class LayoutState {
   }
 
   private static boolean needsHostViewForTransition(InternalNode node) {
-    return !TextUtils.isEmpty(node.getTransitionKey()) && !isMountViewSpec(node.getRootComponent());
+    return !TextUtils.isEmpty(node.getTransitionKey()) && !isMountViewSpec(node.getTailComponent());
   }
 
   /**
@@ -2437,15 +2452,15 @@ class LayoutState {
         type = TransitionId.Type.GLOBAL;
       } else if (transitionKeyType == Transition.TransitionKeyType.LOCAL) {
         type = TransitionId.Type.SCOPED;
-        extraData = node.getRootComponent().getOwnerGlobalKey();
+        extraData = node.getTailComponent().getOwnerGlobalKey();
       } else {
         throw new RuntimeException("Unhandled transition key type " + transitionKeyType);
       }
       reference = node.getTransitionKey();
     } else if (ComponentsConfiguration.assignTransitionKeysToAllOutputs) {
       type = TransitionId.Type.AUTOGENERATED;
-      if (node.getRootComponent() != null) {
-        reference = node.getRootComponent().getGlobalKey();
+      if (node.getTailComponent() != null) {
+        reference = node.getTailComponent().getGlobalKey();
       } else {
         reference = null;
       }

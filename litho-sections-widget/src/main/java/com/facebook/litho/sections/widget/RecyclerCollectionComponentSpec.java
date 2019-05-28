@@ -305,6 +305,9 @@ public class RecyclerCollectionComponentSpec {
                 binderConfiguration.splitLayoutForMeasureAndRangeEstimation())
             .enableDetach(binderConfiguration.getEnableDetach())
             .stickyHeaderControllerFactory(stickyHeaderControllerFactory)
+            .useCancelableLayoutFutures(binderConfiguration.useCancelableLayoutFutures())
+            .canInterruptAndMoveLayoutsBetweenThreads(
+                binderConfiguration.moveLayoutsBetweenThreads())
             .build(c);
 
     SectionBinderTarget targetBinder =

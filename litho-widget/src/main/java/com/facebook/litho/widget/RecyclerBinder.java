@@ -126,6 +126,8 @@ public class RecyclerBinder
   private final boolean mIncrementalMountEnabled;
   private final boolean mEnableDetach;
   private boolean mAsyncInitRange;
+  private final boolean mUseCancelableLayoutFutures;
+  private final boolean mMoveLayoutsBetweenThreads;
 
   private AtomicLong mCurrentChangeSetThreadId = new AtomicLong(-1);
   @VisibleForTesting final boolean mTraverseLayoutBackwards;
@@ -335,7 +337,9 @@ public class RecyclerBinder
         RenderInfo renderInfo,
         LithoHandler layoutHandler,
         ComponentTreeMeasureListenerFactory measureListenerFactory,
-        boolean incrementalMountEnabled);
+        boolean incrementalMountEnabled,
+        boolean canInterruptAndMoveLayoutsBetweenThreads,
+        boolean useCancelableLayoutFutures);
   }
 
   static final ComponentTreeHolderFactory DEFAULT_COMPONENT_TREE_HOLDER_FACTORY =
@@ -345,12 +349,16 @@ public class RecyclerBinder
             RenderInfo renderInfo,
             LithoHandler layoutHandler,
             ComponentTreeMeasureListenerFactory measureListenerFactory,
-            boolean incrementalMountEnabled) {
+            boolean incrementalMountEnabled,
+            boolean canInterruptAndMoveLayoutsBetweenThreads,
+            boolean useCancelableLayoutFutures) {
           return ComponentTreeHolder.create()
               .renderInfo(renderInfo)
               .layoutHandler(layoutHandler)
               .componentTreeMeasureListenerFactory(measureListenerFactory)
               .incrementalMount(incrementalMountEnabled)
+              .canInterruptAndMoveLayoutsBetweenThreads(canInterruptAndMoveLayoutsBetweenThreads)
+              .useCancelableLayoutFutures(useCancelableLayoutFutures)
               .build();
         }
       };
@@ -385,6 +393,9 @@ public class RecyclerBinder
         ComponentsConfiguration.splitLayoutForMeasureAndRangeEstimation;
     private @Nullable StickyHeaderControllerFactory stickyHeaderControllerFactory;
     private boolean enableDetach = false;
+    private boolean useCancelableLayoutFutures = ComponentsConfiguration.useCancelableLayoutFutures;
+    private boolean canInterruptAndMoveLayoutsBetweenThreads =
+        ComponentsConfiguration.canInterruptAndMoveLayoutsBetweenThreads;
 
     /**
      * @param rangeRatio specifies how big a range this binder should try to compute. The range is
@@ -605,6 +616,24 @@ public class RecyclerBinder
       return this;
     }
 
+    /**
+     * Experimental, do not use! If enabled, cancel a layout calculation before it finishes if
+     * there's another layout pending with a newer state of the ComponentTree.
+     */
+    public Builder useCancelableLayoutFutures(boolean isEnabled) {
+      this.useCancelableLayoutFutures = isEnabled;
+      return this;
+    }
+
+    /**
+     * Experimental, do not use! If enabled, a layout computation can be interrupted on a bg thread
+     * and resumed on the UI thread if it's needed immediately.
+     */
+    public Builder canInterruptAndMoveLayoutsBetweenThreads(boolean isEnabled) {
+      this.canInterruptAndMoveLayoutsBetweenThreads = isEnabled;
+      return this;
+    }
+
     /** @param c The {@link ComponentContext} the RecyclerBinder will use. */
     public RecyclerBinder build(ComponentContext c) {
       componentContext =
@@ -787,6 +816,8 @@ public class RecyclerBinder
     mIncrementalMountEnabled = builder.incrementalMount;
     mStickyHeaderControllerFactory = builder.stickyHeaderControllerFactory;
     mEnableDetach = builder.enableDetach;
+    mUseCancelableLayoutFutures = builder.useCancelableLayoutFutures;
+    mMoveLayoutsBetweenThreads = builder.canInterruptAndMoveLayoutsBetweenThreads;
   }
 
   /**
@@ -3455,7 +3486,9 @@ public class RecyclerBinder
         renderInfo,
         layoutHandler,
         mComponentTreeMeasureListenerFactory,
-        mIncrementalMountEnabled);
+        mIncrementalMountEnabled,
+        mMoveLayoutsBetweenThreads,
+        mUseCancelableLayoutFutures);
   }
 
   private void updateHolder(ComponentTreeHolder holder, RenderInfo renderInfo) {

@@ -385,7 +385,7 @@ public class TreeDiffingTest {
   }
 
   private void checkAllComponentsHaveMeasureCache(InternalNode node) {
-    if (node.getRootComponent() != null && node.getRootComponent().canMeasure()) {
+    if (node.getTailComponent() != null && node.getTailComponent().canMeasure()) {
       assertCachedMeasurementsDefined(node);
     }
     int numChildren = node.getChildCount();

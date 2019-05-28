@@ -19,7 +19,42 @@ package com.facebook.litho.annotations;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+/**
+ * Params can be used together with {@link Event} callbacks i.e. {@code EventHandler}. An argument
+ * in the event handler annotated with {@code Param} will add it in the generated {@code Component}.
+ * This will allow to pass relevant arguments to the event handler while dispatching events. This is
+ * especially useful when event handlers can be reused.
+ *
+ * <p><b>For Example:</b> <br>
+ *
+ * <pre><code>{@literal @LayoutSpec}
+ * class FacePileComponentSpec {
+ *
+ *  {@literal @OnCreateLayout}
+ *   static Component onCreateLayout(
+ *       LayoutContext c,
+ *      {@literal @Prop} Uri[] faces) {
+ *
+ *     Component.Builder builder = Column.create(c);
+ *     for (Uri face : faces) {
+ *       builder.child(
+ *           FrescoImage.create(c)
+ *               .uri(face)
+ *               .clickHandler(FacePileComponent.onFaceClicked(c, face));
+ *     }
+ *
+ *     return builder.build();
+ *   }
+ *
+ *  {@literal @OnEvent(ClickEvent.class)}
+ *   static void onFaceClicked(
+ *       ComponentContext c,
+ *      {@literal @Param} Uri face) {
+ *
+ *     // Use the param face here
+ *     Log.d("FacePileComponent", "Face clicked: " + face);
+ *   }
+ * }</code></pre>
+ */
 @Retention(RetentionPolicy.CLASS)
-public @interface Param {
-
-}
+public @interface Param {}

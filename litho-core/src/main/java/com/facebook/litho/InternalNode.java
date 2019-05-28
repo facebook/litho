@@ -152,6 +152,9 @@ public interface InternalNode extends ComponentLayout, LayoutProps, Copyable<Int
   @Nullable
   EventHandler<FullImpressionVisibleEvent> getFullImpressionHandler();
 
+  @Nullable
+  Component getHeadComponent();
+
   int getImportantForAccessibility();
 
   @Nullable
@@ -229,7 +232,7 @@ public interface InternalNode extends ComponentLayout, LayoutProps, Copyable<Int
   TreeProps getPendingTreeProps();
 
   @Nullable
-  Component getRootComponent();
+  Component getTailComponent();
 
   void setRootComponent(Component component);
 

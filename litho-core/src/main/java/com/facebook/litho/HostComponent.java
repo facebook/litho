@@ -18,9 +18,18 @@ package com.facebook.litho;
 
 import android.content.Context;
 import android.os.Build;
+import android.util.SparseArray;
 import com.facebook.litho.config.ComponentsConfiguration;
+import javax.annotation.Nullable;
 
 class HostComponent extends Component {
+
+  /**
+   * We duplicate mComponentDynamicProps here, in order to provide {@link
+   * #setCommonDynamicProps(SparseArray)} to HostComponent only, which is used in LayoutState to
+   * pass Common Dynamic Props from other Components that do not mount a view
+   */
+  @Nullable private SparseArray<DynamicValue<?>> mCommonDynamicProps;
 
   protected HostComponent() {
     super("HostComponent");
@@ -69,7 +78,7 @@ class HostComponent extends Component {
     return MountType.VIEW;
   }
 
-  static Component create() {
+  static HostComponent create() {
     return new HostComponent();
   }
 
@@ -86,5 +95,27 @@ class HostComponent extends Component {
   @Override
   protected boolean shouldUpdate(Component previous, Component next) {
     return true;
+  }
+
+  @Nullable
+  @Override
+  SparseArray<DynamicValue<?>> getCommonDynamicProps() {
+    return mCommonDynamicProps;
+  }
+
+  @Override
+  boolean hasCommonDynamicProps() {
+    return mCommonDynamicProps != null;
+  }
+
+  /**
+   * Sets common dynamic Props. Used in {@link LayoutState} to pass dynamic props from a component,
+   * to the host, that's wrapping it
+   *
+   * @param commonDynamicProps common dynamic props to set.
+   * @see LayoutState#createHostLayoutOutput(LayoutState, InternalNode, boolean)
+   */
+  void setCommonDynamicProps(SparseArray<DynamicValue<?>> commonDynamicProps) {
+    mCommonDynamicProps = commonDynamicProps;
   }
 }

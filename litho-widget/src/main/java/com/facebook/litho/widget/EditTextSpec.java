@@ -229,10 +229,11 @@ class EditTextSpec {
         if (index > 0) {
           ellipsize.set(TRUNCATE_AT[index - 1]);
         }
-      } else if (SDK_INT >= JELLY_BEAN_MR1 &&
-          attr == R.styleable.Text_android_textAlignment) {
-        int viewTextAlignment = a.getInt(attr, -1);
-        textAlignment.set(getAlignment(viewTextAlignment, Gravity.NO_GRAVITY));
+      } else if (attr == R.styleable.Text_android_textAlignment) {
+        if (SDK_INT >= JELLY_BEAN_MR1) {
+          int viewTextAlignment = a.getInt(attr, -1);
+          textAlignment.set(getAlignment(viewTextAlignment, Gravity.NO_GRAVITY));
+        }
       } else if (attr == R.styleable.Text_android_minLines) {
         minLines.set(a.getInteger(attr, -1));
       } else if (attr == R.styleable.Text_android_maxLines) {

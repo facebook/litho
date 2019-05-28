@@ -27,9 +27,9 @@ import java.util.List;
 public interface ClassNames {
   ClassName CLASS = ClassName.bestGuess("java.lang.Class");
   ClassName OBJECT = ClassName.bestGuess("java.lang.Object");
-  ClassName OBJECTS = ClassName.bestGuess("java.util.Objects");
   ClassName STRING = ClassName.bestGuess("java.lang.String");
   ClassName EXCEPTION = ClassName.bestGuess("java.lang.Exception");
+  ClassName COMMON_UTILS = ClassName.bestGuess("com.facebook.litho.CommonUtils");
 
   String VIEW_NAME = "android.view.View";
   ClassName VIEW = ClassName.bestGuess(VIEW_NAME);

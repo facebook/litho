@@ -241,7 +241,7 @@ public class ComponentUtils {
         continue;
       }
 
-      final Component component = node.getRootComponent();
+      final Component component = node.getTailComponent();
       if (component == null) {
         continue;
       }

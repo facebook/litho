@@ -15,6 +15,9 @@
  */
 package com.facebook.litho;
 
+import android.os.Build;
+import android.util.SparseArray;
+import android.view.View;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -34,19 +37,44 @@ import java.util.Set;
  * unsubscribes from the DynamicValues.
  */
 class DynamicPropsManager implements DynamicValue.OnValueChangeListener {
+  static final int KEY_ALPHA = 1;
+  static final int KEY_TRANSLATION_X = 2;
+  static final int KEY_TRANSLATION_Y = 3;
+  static final int KEY_SCALE_X = 4;
+  static final int KEY_SCALE_Y = 5;
+  static final int KEY_ELEVATION = 6;
+  static final int KEY_BACKGROUND_COLOR = 7;
+
   private final Map<DynamicValue<?>, Set<Component>> mDependentComponents = new HashMap<>();
   private final Map<Component, Set<DynamicValue<?>>> mAffectingDynamicValues = new HashMap<>();
   private final Map<Component, Object> mContents = new HashMap<>();
 
   void onBindComponentToContent(Component component, Object content) {
-    final DynamicValue[] dynamicProps = component.getDynamicProps();
+    final boolean hasCommonDynamicPropsToBind = hasCommonDynamicPropsToBind(component);
+    final boolean hasCustomDynamicProps = component.getDynamicProps().length > 0;
 
-    if (dynamicProps.length == 0) {
+    if (!hasCommonDynamicPropsToBind && !hasCustomDynamicProps) {
       return;
     }
 
     final Set<DynamicValue<?>> dynamicValues = new HashSet<>();
 
+    if (hasCommonDynamicPropsToBind) {
+      final SparseArray<DynamicValue<?>> commonDynamicProps = component.getCommonDynamicProps();
+
+      // Go through all common dynamic props
+      for (int i = 0; i < commonDynamicProps.size(); i++) {
+        final int key = commonDynamicProps.keyAt(i);
+        final DynamicValue<?> value = commonDynamicProps.valueAt(i);
+
+        bindCommonDynamicProp(key, value, (View) content);
+
+        addDependentComponentAndSubscribeIfNeeded(value, component);
+        dynamicValues.add(value);
+      }
+    }
+
+    final DynamicValue[] dynamicProps = component.getDynamicProps();
     // Go through all the other dynamic props
     for (int i = 0; i < dynamicProps.length; i++) {
       final DynamicValue<?> value = dynamicProps[i];
@@ -101,12 +129,61 @@ class DynamicPropsManager implements DynamicValue.OnValueChangeListener {
     }
   }
 
+  private void bindCommonDynamicProp(int key, DynamicValue<?> value, View target) {
+    switch (key) {
+      case KEY_ALPHA:
+        target.setAlpha(DynamicPropsManager.<Float>resolve(value));
+        break;
+
+      case KEY_TRANSLATION_X:
+        target.setTranslationX(DynamicPropsManager.<Float>resolve(value));
+        break;
+
+      case KEY_TRANSLATION_Y:
+        target.setTranslationY(DynamicPropsManager.<Float>resolve(value));
+        break;
+
+      case KEY_SCALE_X:
+        target.setScaleX(DynamicPropsManager.<Float>resolve(value));
+        break;
+
+      case KEY_SCALE_Y:
+        target.setScaleY(DynamicPropsManager.<Float>resolve(value));
+        break;
+
+      case KEY_ELEVATION:
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+          target.setElevation(DynamicPropsManager.<Float>resolve(value));
+        }
+        break;
+
+      case KEY_BACKGROUND_COLOR:
+        target.setBackgroundColor(DynamicPropsManager.<Integer>resolve(value));
+        break;
+    }
+  }
+
+  @SuppressWarnings("unchecked")
+  private static <T> T resolve(DynamicValue<?> dynamicValue) {
+    return (T) dynamicValue.get();
+  }
+
   @Override
   public void onValueChange(DynamicValue value) {
     final Set<Component> dependentComponents = mDependentComponents.get(value);
 
     for (Component component : dependentComponents) {
       final Object content = mContents.get(component);
+
+      if (hasCommonDynamicPropsToBind(component)) {
+        final SparseArray<DynamicValue<?>> commonDynamicProps = component.getCommonDynamicProps();
+
+        for (int i = 0; i < commonDynamicProps.size(); i++) {
+          if (commonDynamicProps.valueAt(i) == value) {
+            bindCommonDynamicProp(commonDynamicProps.keyAt(i), value, (View) content);
+          }
+        }
+      }
 
       final DynamicValue[] dynamicProps = component.getDynamicProps();
       for (int i = 0; i < dynamicProps.length; i++) {
@@ -115,5 +192,18 @@ class DynamicPropsManager implements DynamicValue.OnValueChangeListener {
         }
       }
     }
+  }
+
+  /**
+   * Common dynamic props could only be bound to Views. To make it work for the LayoutSpec and
+   * MountDrawableSpec components we create a wrapping HostComponent and copy the dynamic props
+   * there. Thus DynamicPropsManager should ignore non-MountViewSpecs
+   *
+   * @param component Component to consider
+   * @return true if Component has common dynamic props, that DynamicPropsManager should take an
+   *     action on
+   */
+  private static boolean hasCommonDynamicPropsToBind(Component component) {
+    return component.hasCommonDynamicProps() && Component.isMountViewSpec(component);
   }
 }
