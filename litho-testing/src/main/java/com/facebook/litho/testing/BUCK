@@ -82,6 +82,6 @@ litho_android_library(
     exported_deps = [
         LITHO_TESTING_SUBCOMPONENTS_TARGET,
         LITHO_TESTING_HELPER_V4_TARGET,
-        make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/state:state"),
+        make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/state:state-v4"),
     ],
 )

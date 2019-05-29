@@ -3,7 +3,16 @@
 # This source code is licensed under the Apache 2.0 license found in the
 # LICENSE file in the root directory of this source tree.
 
-load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_ANDROIDSUPPORT_RECYCLERVIEW_TARGET", "LITHO_ANDROIDSUPPORT_TARGET", "LITHO_ANDROIDSUPPORT_TESTING_TARGET", "LITHO_JAVA_TARGET", "LITHO_JSR_TARGET", "LITHO_ROBOLECTRIC_V3_TARGET", "LITHO_TESTING_HELPER_V3_TARGET", "LITHO_TESTING_SUBCOMPONENTS_TARGET", "LITHO_TESTING_WHITEBOX_TARGET", "litho_android_library")
+load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_ANDROIDSUPPORT_RECYCLERVIEW_TARGET", "LITHO_ANDROIDSUPPORT_TARGET", "LITHO_ANDROIDSUPPORT_TESTING_TARGET", "LITHO_JAVA_TARGET", "LITHO_JSR_TARGET", "LITHO_ROBOLECTRIC_V3_TARGET", "LITHO_ROBOLECTRIC_V4_TARGET", "LITHO_TESTING_HELPER_V3_TARGET", "LITHO_TESTING_HELPER_V4_TARGET", "LITHO_TESTING_SUBCOMPONENTS_TARGET", "LITHO_TESTING_WHITEBOX_TARGET", "litho_android_library")
+
+COMMON_DEPS = [
+    LITHO_ANDROIDSUPPORT_TARGET,
+    LITHO_JAVA_TARGET,
+    LITHO_JSR_TARGET,
+    LITHO_TESTING_WHITEBOX_TARGET,
+    LITHO_ANDROIDSUPPORT_RECYCLERVIEW_TARGET,
+    LITHO_ANDROIDSUPPORT_TESTING_TARGET,
+]
 
 litho_android_library(
     name = "state",
@@ -14,16 +23,25 @@ litho_android_library(
     visibility = [
         "PUBLIC",
     ],
-    deps = [
-        LITHO_ANDROIDSUPPORT_TARGET,
-        LITHO_JAVA_TARGET,
-        LITHO_JSR_TARGET,
-        LITHO_TESTING_WHITEBOX_TARGET,
-        LITHO_ANDROIDSUPPORT_RECYCLERVIEW_TARGET,
-        LITHO_ANDROIDSUPPORT_TESTING_TARGET,
-    ],
+    deps = COMMON_DEPS,
     exported_deps = [
         LITHO_TESTING_SUBCOMPONENTS_TARGET,
         LITHO_TESTING_HELPER_V3_TARGET,
+    ],
+)
+
+litho_android_library(
+    name = "state-v4",
+    srcs = glob(["*.java"]),
+    provided_deps = [
+        LITHO_ROBOLECTRIC_V4_TARGET,
+    ],
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = COMMON_DEPS,
+    exported_deps = [
+        LITHO_TESTING_SUBCOMPONENTS_TARGET,
+        LITHO_TESTING_HELPER_V4_TARGET,
     ],
 )
