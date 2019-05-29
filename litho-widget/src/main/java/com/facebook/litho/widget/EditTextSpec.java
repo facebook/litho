@@ -639,7 +639,16 @@ class EditTextSpec {
     } else if (initialText != null) {
       editText.setText(initialText);
     }
-    editText.setHint(hint);
+
+    // Setting the hint causes API 28 to lose the focus of the currently selected
+    // text input. This happens during LithoState updates. Only set the hint when necessary
+    // to try to avoid this issue.
+    CharSequence oldHint = editText.getHint();
+    boolean hintsAreEqual = (oldHint == hint) || (oldHint != null && oldHint.equals(hint));
+    if (!hintsAreEqual) {
+      editText.setHint(hint);
+    }
+
     editText.setEllipsize(ellipsize);
     editText.setMinLines(minLines);
     editText.setMaxLines(maxLines);
