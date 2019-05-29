@@ -146,8 +146,8 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   private @Nullable ArrayList<Component> mComponentsNeedingPreviousRenderData;
   private @Nullable ArrayList<WorkingRangeContainer.Registration> mWorkingRangeRegistrations;
   private @Nullable String mTestKey;
-  private @Nullable Set<DebugComponent> mDebugComponents = null;
-  private @Nullable List<Component> mUnresolvedComponents = null;
+  private @Nullable Set<DebugComponent> mDebugComponents;
+  private @Nullable List<Component> mUnresolvedComponents;
 
   private boolean mDuplicateParentState;
   private boolean mForceViewWrapping;
@@ -483,9 +483,6 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
 
   @Override
   public @Nullable InternalNode getChildAt(int index) {
-    if (mYogaNode.getChildAt(index) == null) {
-      return null;
-    }
     return (InternalNode) mYogaNode.getChildAt(index).getData();
   }
 
@@ -1664,7 +1661,7 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
     // 2. Clone this layout.
     final DefaultInternalNode copy = clone();
 
-    // 3.  Clone the YogaNode of this layout and set it on the cloned layout.
+    // 3. Clone the YogaNode of this layout and set it on the cloned layout.
     YogaNode node = mYogaNode.cloneWithoutChildren();
     copy.mYogaNode = node;
     node.setData(copy);
