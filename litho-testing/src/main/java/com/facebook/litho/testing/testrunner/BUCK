@@ -3,7 +3,7 @@
 # This source code is licensed under the Apache 2.0 license found in the
 # LICENSE file in the root directory of this source tree.
 
-load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_ROBOLECTRIC_TARGET", "litho_android_library")
+load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_ROBOLECTRIC_V3_TARGET", "litho_android_library")
 
 litho_android_library(
     name = "testrunner",
@@ -12,6 +12,6 @@ litho_android_library(
         "PUBLIC",
     ],
     deps = [
-        LITHO_ROBOLECTRIC_TARGET,
+        LITHO_ROBOLECTRIC_V3_TARGET,
     ],
 )

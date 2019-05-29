@@ -1,0 +1,68 @@
+# Copyright (c) 2017-present, Facebook, Inc.
+#
+# This source code is licensed under the Apache 2.0 license found in the
+# LICENSE file in the root directory of this source tree.
+load("//tools/build_defs/oss:fb_native_wrapper.bzl", "fb_native")
+load("//tools/build_defs/oss:litho_defs.bzl", "fb_java_library", "make_dep_path")
+
+fb_java_library(
+    name = "robolectric4",
+    visibility = ["PUBLIC"],
+    exported_deps = [
+        ":robolectric4-annotations-prebuilt",
+        ":robolectric4-prebuilt",
+        ":robolectric4-resources-prebuilt",
+        ":robolectric4-utils-prebuilt",
+        make_dep_path("lib/android-all:shadows-prebuilt-core-v4"),
+        make_dep_path("lib/android-all:android-all-5.0.0"),
+        make_dep_path("lib/asm:asm"),
+        make_dep_path("lib/bcprov-jdk16:bcprov-jdk16"),
+        make_dep_path("lib/junit:junit"),
+        make_dep_path("lib/sqlite:sqlite"),
+        make_dep_path("lib/vtd-xml:vtd-xml"),
+    ],
+)
+
+fb_native.prebuilt_jar(
+    name = "robolectric4-prebuilt",
+    binary_jar = ":robolectric4.jar",
+)
+
+fb_native.remote_file(
+    name = "robolectric4.jar",
+    sha1 = "c323469e137aa9353b822ab2704936a6865def89",
+    url = "mvn:org.robolectric:robolectric:jar:4.1",
+)
+
+fb_native.prebuilt_jar(
+    name = "robolectric4-annotations-prebuilt",
+    binary_jar = ":robolectric4-annotations.jar",
+)
+
+fb_native.remote_file(
+    name = "robolectric4-annotations.jar",
+    sha1 = "ecb95adf35528c498467da094d0290355516c7ec",
+    url = "mvn:org.robolectric:annotations:jar:4.1",
+)
+
+fb_native.prebuilt_jar(
+    name = "robolectric4-resources-prebuilt",
+    binary_jar = ":robolectric4-resources.jar",
+)
+
+fb_native.remote_file(
+    name = "robolectric4-resources.jar",
+    sha1 = "384de33f64db44dde6a6cce31feada722c4aee8f",
+    url = "mvn:org.robolectric:resources:jar:4.1",
+)
+
+fb_native.prebuilt_jar(
+    name = "robolectric4-utils-prebuilt",
+    binary_jar = ":robolectric4-utils.jar",
+)
+
+fb_native.remote_file(
+    name = "robolectric4-utils.jar",
+    sha1 = "b11122490f7b976c45b0253f0830e71708dfbca8",
+    url = "mvn:org.robolectric:utils:jar:4.1",
+)

@@ -3,7 +3,7 @@
 # This source code is licensed under the Apache 2.0 license found in the
 # LICENSE file in the root directory of this source tree.
 
-load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_BUILD_CONFIG_TARGET", "LITHO_JAVA_TARGET", "LITHO_JSR_TARGET", "LITHO_JUNIT_TARGET", "LITHO_ROBOLECTRIC_TARGET", "LITHO_TESTING_TARGET", "components_robolectric_test", "make_dep_path")
+load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_BUILD_CONFIG_TARGET", "LITHO_JAVA_TARGET", "LITHO_JSR_TARGET", "LITHO_JUNIT_TARGET", "LITHO_ROBOLECTRIC_V3_TARGET", "LITHO_TESTING_TARGET", "components_robolectric_test", "make_dep_path")
 
 components_robolectric_test(
     name = "assertj",
@@ -16,7 +16,7 @@ components_robolectric_test(
         LITHO_JAVA_TARGET,
         LITHO_JSR_TARGET,
         LITHO_JUNIT_TARGET,
-        LITHO_ROBOLECTRIC_TARGET,
+        LITHO_ROBOLECTRIC_V3_TARGET,
         make_dep_path("litho-widget/src/main/java/com/facebook/litho/widget:widget"),
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/util:util"),
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/testrunner:testrunner"),

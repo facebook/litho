@@ -3,7 +3,7 @@
 # This source code is licensed under the Apache 2.0 license found in the
 # LICENSE file in the root directory of this source tree.
 
-load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_ANDROIDSUPPORT_TARGET", "LITHO_ROBOLECTRIC_TARGET", "LITHO_YOGA_TARGET", "litho_android_library", "make_dep_path")
+load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_ANDROIDSUPPORT_TARGET", "LITHO_ROBOLECTRIC_V3_TARGET", "LITHO_YOGA_TARGET", "litho_android_library", "make_dep_path")
 
 litho_android_library(
     name = "shadows",
@@ -14,7 +14,7 @@ litho_android_library(
     ],
     deps = [
         LITHO_ANDROIDSUPPORT_TARGET,
-        LITHO_ROBOLECTRIC_TARGET,
+        LITHO_ROBOLECTRIC_V3_TARGET,
         LITHO_YOGA_TARGET,
     ],
 )
