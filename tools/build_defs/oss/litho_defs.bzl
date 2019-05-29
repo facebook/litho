@@ -48,7 +48,9 @@ LITHO_TESTING_V4_TARGET = make_dep_path("litho-testing/src/main/java/com/faceboo
 
 LITHO_TESTING_WHITEBOX_TARGET = make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing:whitebox")
 
-LITHO_TESTING_ASSERTJ_TARGET = make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/assertj:assertj")
+LITHO_TESTING_ASSERTJ_V3_TARGET = make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/assertj:assertj")
+
+LITHO_TESTING_ASSERTJ_V4_TARGET = make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/assertj:assertj-v4")
 
 LITHO_TESTING_HELPER_V3_TARGET = make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/helper:helper")
 
