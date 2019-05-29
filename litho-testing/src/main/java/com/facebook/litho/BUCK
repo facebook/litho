@@ -12,9 +12,19 @@ load(
     "LITHO_JSR_TARGET",
     "LITHO_TESTING_ASSERTJ_TARGET",
     "LITHO_TESTING_V3_TARGET",
+    "LITHO_TESTING_V4_TARGET",
     "litho_android_library",
     "make_dep_path",
 )
+
+COMMON_DEPS = [
+    LITHO_TESTING_ASSERTJ_TARGET,
+    LITHO_ANDROIDSUPPORT_TARGET,
+    LITHO_ASSERTJ_TARGET,
+    LITHO_HAMCREST_CORE_TARGET,
+    LITHO_JAVA_TARGET,
+    LITHO_JSR_TARGET,
+]
 
 litho_android_library(
     name = "litho",
@@ -30,14 +40,26 @@ litho_android_library(
         "PUBLIC",
     ],
     deps = [
-        LITHO_TESTING_ASSERTJ_TARGET,
         LITHO_TESTING_V3_TARGET,
-        LITHO_ANDROIDSUPPORT_TARGET,
-        LITHO_ASSERTJ_TARGET,
-        LITHO_HAMCREST_CORE_TARGET,
-        LITHO_JAVA_TARGET,
-        LITHO_JSR_TARGET,
+    ] + COMMON_DEPS,
+)
+
+litho_android_library(
+    name = "litho-v4",
+    srcs = glob(
+        ["*.java"],
+        # It has its own module
+        exclude = ["BenchmarkTestHelper.java"],
+    ),
+    tests = [
+        make_dep_path("litho-it/src/test/java/com/facebook/litho/testing:testing"),
     ],
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = [
+        LITHO_TESTING_V4_TARGET,
+    ] + COMMON_DEPS,
 )
 
 litho_android_library(

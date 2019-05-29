@@ -38,7 +38,9 @@ LITHO_LITHO_FRESCO_TARGET = make_dep_path("litho-fresco/src/main/java/com/facebo
 
 LITHO_STATS_TARGET = make_dep_path("litho-core/src/main/java/com/facebook/litho/stats:stats")
 
-LITHO_TESTING_CORE_TARGET = make_dep_path("litho-testing/src/main/java/com/facebook/litho:litho")
+LITHO_TESTING_CORE_V3_TARGET = make_dep_path("litho-testing/src/main/java/com/facebook/litho:litho")
+
+LITHO_TESTING_CORE_V4_TARGET = make_dep_path("litho-testing/src/main/java/com/facebook/litho:litho-v4")
 
 LITHO_TESTING_V3_TARGET = make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing:testing")
 
