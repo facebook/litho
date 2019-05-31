@@ -15,27 +15,31 @@
  */
 package com.facebook.litho.intellij.actions;
 
+import com.intellij.icons.AllIcons;
 import com.intellij.ide.actions.CreateFileFromTemplateAction;
 import com.intellij.ide.actions.CreateFileFromTemplateDialog;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiDirectory;
 
-public class NewLayoutSpecTemplateAction extends CreateFileFromTemplateAction {
+public class NewComponentTemplateAction extends CreateFileFromTemplateAction {
 
-  private static final String TITLE = "New Litho LayoutSpec";
+  private static final String TITLE = "New Litho Component";
 
-  public NewLayoutSpecTemplateAction() {
+  public NewComponentTemplateAction() {
     super(null, TITLE, null);
   }
 
   @Override
   protected String getActionName(PsiDirectory directory, String newName, String templateName) {
-    return "NewLayoutSpecTemplateAction";
+    return "NewComponentTemplateAction";
   }
 
   @Override
   protected void buildDialog(
       Project project, PsiDirectory directory, CreateFileFromTemplateDialog.Builder builder) {
-    builder.setTitle(TITLE).addKind("Class", null, "LayoutSpec");
+    builder
+        .setTitle(TITLE)
+        .addKind("Layout Component", AllIcons.Nodes.AbstractClass, "LayoutSpec")
+        .addKind("Mount Component", AllIcons.Nodes.AbstractClass, "MountSpec");
   }
 }
