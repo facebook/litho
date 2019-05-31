@@ -42,7 +42,7 @@ public class DefaultPropertyFoldingBuilderTest {
     String clsName = "DefaultPropertyFoldingTest.java";
 
     ApplicationManager.getApplication()
-        .invokeLater(
+        .invokeAndWait(
             () -> {
               try {
                 testHelper.getFixture().testFolding(testHelper.getTestDataPath(clsName));

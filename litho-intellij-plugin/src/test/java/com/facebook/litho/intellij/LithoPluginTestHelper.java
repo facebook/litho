@@ -15,6 +15,12 @@
  */
 package com.facebook.litho.intellij;
 
+import com.intellij.ide.highlighter.JavaFileType;
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.psi.PsiClass;
+import com.intellij.psi.PsiClassOwner;
+import com.intellij.psi.PsiFileFactory;
+import com.intellij.psi.PsiJavaFile;
 import com.intellij.testFramework.fixtures.CodeInsightTestFixture;
 import com.intellij.testFramework.fixtures.IdeaProjectTestFixture;
 import com.intellij.testFramework.fixtures.IdeaTestFixtureFactory;
@@ -24,7 +30,9 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Optional;
 import java.util.Properties;
+import java.util.function.Function;
 
 public class LithoPluginTestHelper {
   private final String testPath;
@@ -47,6 +55,7 @@ public class LithoPluginTestHelper {
         JavaTestFixtureFactory.getFixtureFactory()
             .createCodeInsightFixture(projectBuilder.getFixture());
     fixture.setUp();
+    fixture.setTestDataPath(testPath);
   }
 
   public void tearDown() throws Exception {
@@ -68,4 +77,37 @@ public class LithoPluginTestHelper {
   private String getContent(String clsName) throws IOException {
     return String.join(" ", Files.readAllLines(Paths.get(getTestDataPath(clsName))));
   }
+
+  // Package-private to be used in lambda
+  String getContentOrNull(String clsName) {
+    try {
+      return getContent(clsName);
+    } catch (IOException e) {
+      return null;
+    }
+  }
+
+  public void getPsiClass(String clsName, Function<PsiClass, Boolean> handler) {
+    ApplicationManager.getApplication()
+        .invokeAndWait(
+            () -> {
+              Optional<Boolean> sucess =
+                  Optional.of(clsName)
+                      .map(LithoPluginTestHelper.this::getContentOrNull)
+                      .map(
+                          content ->
+                              PsiFileFactory.getInstance(fixture.getProject())
+                                  .createFileFromText(clsName, JavaFileType.INSTANCE, content))
+                      .filter(PsiJavaFile.class::isInstance)
+                      .map(PsiJavaFile.class::cast)
+                      .map(PsiClassOwner::getClasses)
+                      .filter(psiClasses -> psiClasses.length > 0)
+                      .map(psiClasses -> psiClasses[0])
+                      .map(handler);
+              if (!sucess.isPresent()) {
+                handler.apply(null);
+              }
+            });
+  }
 }
+

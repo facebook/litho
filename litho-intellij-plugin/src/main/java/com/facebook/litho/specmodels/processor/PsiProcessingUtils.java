@@ -17,6 +17,7 @@ package com.facebook.litho.specmodels.processor;
 
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiKeyword;
 import com.intellij.psi.PsiModifier;
 import com.intellij.psi.PsiModifierList;
 import java.util.ArrayList;
@@ -44,7 +45,7 @@ public class PsiProcessingUtils {
     for (int i = 0; i < children.length; i++) {
       PsiElement child = children[i];
 
-      if (child instanceof PsiModifier) {
+      if (child instanceof PsiModifier || child instanceof PsiKeyword) {
         modifiers.add(psiModifierToModifier(child));
       }
     }
