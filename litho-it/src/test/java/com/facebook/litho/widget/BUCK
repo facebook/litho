@@ -30,6 +30,7 @@ components_robolectric_test(
         LITHO_SOLOADER_TARGET,
         LITHO_TESTING_V3_TARGET,
         LITHO_VIEWCOMPAT_TARGET,
+        make_dep_path("litho-it/src/main/java/com/facebook/litho/widget:widget"),
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/internal:internal"),
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/assertj:assertj"),
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/eventhandler:eventhandler"),
