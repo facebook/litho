@@ -17,16 +17,13 @@
 package com.facebook.litho.widget;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ItemAnimator;
-import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 import androidx.recyclerview.widget.SnapHelper;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener;
 import com.facebook.litho.Component;
@@ -46,20 +43,19 @@ import org.robolectric.RuntimeEnvironment;
 public class RecyclerSpecTest {
 
   private ComponentContext mComponentContext;
-  private SectionsRecyclerView mSectionsRecyclerView;
-  private LithoRecylerView mRecyclerView;
+  private TestSectionsRecyclerView mSectionsRecyclerView;
+  private TestLithoRecyclerView mRecyclerView;
   private ItemAnimator mAnimator;
 
   @Before
   public void setup() {
     mComponentContext = new ComponentContext(RuntimeEnvironment.application);
-    mSectionsRecyclerView = mock(SectionsRecyclerView.class);
-    mRecyclerView = mock(LithoRecylerView.class);
-    when(mSectionsRecyclerView.getRecyclerView()).thenReturn(mRecyclerView);
-    when(mSectionsRecyclerView.hasBeenDetachedFromWindow()).thenReturn(true);
-
+    mRecyclerView = new TestLithoRecyclerView(mComponentContext.getAndroidContext());
+    mSectionsRecyclerView =
+        new TestSectionsRecyclerView(mComponentContext.getAndroidContext(), mRecyclerView);
+    mSectionsRecyclerView.setHasBeenDetachedFromWindow(true);
     mAnimator = mock(RecyclerView.ItemAnimator.class);
-    when(mRecyclerView.getItemAnimator()).thenReturn(mAnimator);
+    mRecyclerView.setItemAnimator(mAnimator);
   }
 
   @Test
@@ -90,22 +86,25 @@ public class RecyclerSpecTest {
         onRefreshListener,
         oldAnimator);
 
-    verify(mSectionsRecyclerView).setEnabled(true);
-    verify(mSectionsRecyclerView).setOnRefreshListener(onRefreshListener);
-    verify(mSectionsRecyclerView, times(1)).getRecyclerView();
+    assertThat(mSectionsRecyclerView.isEnabled()).isTrue();
+    assertThat(mSectionsRecyclerView.getOnRefreshListener()).isEqualTo(onRefreshListener);
+
+    assertThat(mSectionsRecyclerView.getRecyclerView()).isSameAs(mRecyclerView);
+
     verify(oldAnimator).set(mAnimator);
-    verify(mRecyclerView).setItemAnimator(any(ItemAnimator.class));
-    verify(mRecyclerView, times(size)).addOnScrollListener(any(OnScrollListener.class));
-    verify(mRecyclerView).setTouchInterceptor(touchInterceptor);
+    assertThat(mRecyclerView.getItemAnimator()).isSameAs(mAnimator);
+    verifyAddOnScrollListenerWasCalledNTimes(mRecyclerView, size);
+    assertThat(mRecyclerView.getTouchInterceptor()).isSameAs(touchInterceptor);
+
     verify(binder).bind(mRecyclerView);
-    verify(mRecyclerView, times(1)).requestLayout();
-    verify(mSectionsRecyclerView).setHasBeenDetachedFromWindow(false);
+    assertThat(mRecyclerView.isLayoutRequested()).isTrue();
+    assertThat(mSectionsRecyclerView.hasBeenDetachedFromWindow()).isFalse();
     verify(snapHelper).attachToRecyclerView(mRecyclerView);
   }
 
   @Test
   public void testRecyclerSpecOnUnbind() {
-    when(mSectionsRecyclerView.hasBeenDetachedFromWindow()).thenReturn(true);
+    mSectionsRecyclerView.setHasBeenDetachedFromWindow(true);
 
     Binder<RecyclerView> binder = mock(Binder.class);
 
@@ -115,10 +114,10 @@ public class RecyclerSpecTest {
     RecyclerSpec.onUnbind(
         mComponentContext, mSectionsRecyclerView, binder, null, scrollListeners, mAnimator);
 
-    verify(mRecyclerView).setItemAnimator(mAnimator);
+    assertThat(mRecyclerView.getItemAnimator()).isSameAs(mAnimator);
     verify(binder).unbind(mRecyclerView);
-    verify(mRecyclerView, times(size)).removeOnScrollListener(any(OnScrollListener.class));
-    verify(mSectionsRecyclerView).setOnRefreshListener(null);
+    verifyRemoveOnScrollListenerWasCalledNTimes(mRecyclerView, size);
+    assertThat(mSectionsRecyclerView.getOnRefreshListener()).isNull();
   }
 
   @Test
@@ -183,5 +182,15 @@ public class RecyclerSpecTest {
     public boolean isUpdateStateAsync() {
       return mIsUpdateStateAsync;
     }
+  }
+
+  private static void verifyRemoveOnScrollListenerWasCalledNTimes(
+      TestLithoRecyclerView recyclerView, int times) {
+    assertThat(recyclerView.getRemoveOnScrollListenersCount()).isEqualTo(times);
+  }
+
+  private static void verifyAddOnScrollListenerWasCalledNTimes(
+      TestLithoRecyclerView recyclerView, int times) {
+    assertThat(recyclerView.getAddOnScrollListenersCount()).isEqualTo(times);
   }
 }
