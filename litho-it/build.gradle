@@ -62,6 +62,7 @@ dependencies {
     implementation project(':litho-widget')
     implementation project(':litho-sections-core')
     implementation deps.supportAppCompat
+    implementation deps.supportRecyclerView
 
     compileOnly project(':litho-sections-annotations')
     annotationProcessor project(':litho-sections-processor')
