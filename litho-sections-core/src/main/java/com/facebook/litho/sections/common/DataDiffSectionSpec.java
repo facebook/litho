@@ -73,13 +73,13 @@ import java.util.List;
  * <p>Example usage:
  *
  * <pre>{@code
- * @GroupSectionSpec
+ * '@'GroupSectionSpec
  * public class MyGroupSectionSpec {
  *
- *   @OnCreateChildren
+ *   '@'OnCreateChildren
  *   protected Children onCreateChildren(
  *     SectionContext c,
- *     @Prop List<Model> modelList) {
+ *     '@'Prop List<Model> modelList) {
  *
  *     return Children.create().child(DataDiffSection.create(c)
  *       .data(modelList)
@@ -89,12 +89,12 @@ import java.util.List;
  *       .build());
  *   }
  *
- *   @OnEvent(OnCheckIsSameItemEvent.class)
+ *   '@'OnEvent(OnCheckIsSameItemEvent.class)
  *   protected boolean onCheckIsSameItem(@FromEvent Model previousItem, @FromEvent Model nextItem) {
  *     return previousItem.getId() == nextItem.getId();
  *   }
  *
- *   @OnEvent(RenderEvent.class)
+ *   '@'OnEvent(RenderEvent.class)
  *   protected RenderInfo onRender(ComponentContext c, @FromEvent Object model) {
  *     return ComponentRenderInfo.create()
  *       .component(MyComponent.create(c).model(model).build())
@@ -104,8 +104,7 @@ import java.util.List;
  * }</pre>
  */
 @DiffSectionSpec(
-  events = {OnCheckIsSameContentEvent.class, OnCheckIsSameItemEvent.class, RenderEvent.class}
-)
+    events = {OnCheckIsSameContentEvent.class, OnCheckIsSameItemEvent.class, RenderEvent.class})
 public class DataDiffSectionSpec<T> {
 
   @OnDiff
