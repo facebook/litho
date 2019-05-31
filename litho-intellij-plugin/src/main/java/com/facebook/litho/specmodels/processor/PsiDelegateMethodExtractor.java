@@ -57,7 +57,7 @@ public class PsiDelegateMethodExtractor {
                 ImmutableList.copyOf(methodAnnotations),
                 PsiProcessingUtils.extractModifiers(psiMethod.getModifierList()),
                 psiMethod.getName(),
-                null, // TypeName.get(psiMethod.getReturnType()),
+                PsiTypeUtils.generateTypeSpec(psiMethod.getReturnType()),
                 ImmutableList.<TypeVariableName>of(),
                 ImmutableList.copyOf(methodParams),
                 psiMethod,

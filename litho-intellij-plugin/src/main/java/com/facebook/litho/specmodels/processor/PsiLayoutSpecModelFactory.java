@@ -53,12 +53,16 @@ public class PsiLayoutSpecModelFactory {
     mLayoutSpecGenerator = layoutSpecGenerator;
   }
 
+  @Nullable
   public LayoutSpecModel createWithPsi(
       Project project,
       PsiClass psiClass,
       @Nullable DependencyInjectionHelper dependencyInjectionHelper) {
     LayoutSpec layoutSpecAnnotation =
         PsiAnnotationProxyUtils.findAnnotationInHierarchy(psiClass, LayoutSpec.class);
+    if (layoutSpecAnnotation == null) {
+      return null;
+    }
 
     // #5 trigger methods
     ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> triggerMethods =
@@ -100,7 +104,7 @@ public class PsiLayoutSpecModelFactory {
         psiClass,
         mLayoutSpecGenerator,
         PsiTypeVariablesExtractor.getTypeVariables(psiClass),
-        ImmutableList.of(),
+        PsiFieldsExtractor.extractFields(psiClass),
         null);
   }
 }

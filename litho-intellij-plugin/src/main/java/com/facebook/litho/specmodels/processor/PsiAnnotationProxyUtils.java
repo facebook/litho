@@ -86,11 +86,15 @@ public class PsiAnnotationProxyUtils {
         return getEquals((T) args[0], (T) proxy, mAnnotationClass);
       }
 
-      if (args == null) {
-        return method.invoke(mStubbed);
-      }
+      try {
+        if (args == null) {
+          return method.invoke(mStubbed);
+        }
 
-      return method.invoke(mStubbed, args);
+        return method.invoke(mStubbed, args);
+      } catch (InvocationTargetException e) {
+        return method.getDefaultValue();
+      }
     }
   }
 

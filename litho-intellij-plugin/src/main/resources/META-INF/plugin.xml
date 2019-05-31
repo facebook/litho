@@ -13,6 +13,11 @@
   </description>
   <version>0.0.2-SNAPSHOT</version>
   <change-notes><![CDATA[
+    <h2>0.0.2</h2>
+    <ul>
+      <li>Error Annotations are enabled for LayoutSpec.</li>
+      <li>ClickEvent handler is autocompleted on typing.</li>
+    </ul>
     <h2>0.0.1</h2>
     <ul>
       <li>Generate menu contains OnEvent method creation option.</li>
@@ -32,12 +37,14 @@
 
     <lang.foldingBuilder language="JAVA" implementationClass="com.facebook.litho.intellij.foldings.DefaultPropertyFoldingBuilder"/>
 
-     <localInspection groupName="Litho" language="JAVA"
+    <localInspection groupName="Litho" language="JAVA"
       shortName="UppercaseStatePropInspection"
       displayName="Param name begin with uppercase letter"
       hasStaticDescription="true"
       enabledByDefault="true"
       implementationClass="com.facebook.litho.intellij.inspections.UppercaseStatePropInspection"/>
+
+    <annotator language="JAVA" implementationClass="com.facebook.litho.intellij.inspections.LayoutSpecAnnotator"/>
 
     <completion.contributor language="JAVA" implementationClass="com.facebook.litho.intellij.completion.StatePropCompletionContributor"/>
     <completion.contributor language="JAVA" implementationClass="com.facebook.litho.intellij.completion.OnEventCompletionContributor"/>

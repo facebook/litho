@@ -15,7 +15,6 @@
  */
 package com.facebook.litho.specmodels.processor;
 
-import static com.facebook.litho.specmodels.processor.DelegateMethodExtractor.getPermittedMethodParamAnnotations;
 import static com.facebook.litho.specmodels.processor.PsiMethodExtractorUtils.getMethodParams;
 import static com.facebook.litho.specmodels.processor.PsiMethodExtractorUtils.getTypeVariables;
 
@@ -53,7 +52,8 @@ public class PsiEventMethodExtractor {
         final List<MethodParamModel> methodParams =
             getMethodParams(
                 psiMethod,
-                getPermittedMethodParamAnnotations(permittedInterStageInputAnnotations),
+                EventMethodExtractor.getPermittedMethodParamAnnotations(
+                    permittedInterStageInputAnnotations),
                 permittedInterStageInputAnnotations,
                 ImmutableList.<Class<? extends Annotation>>of());
 
