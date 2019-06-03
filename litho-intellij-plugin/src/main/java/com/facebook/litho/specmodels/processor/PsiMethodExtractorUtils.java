@@ -19,7 +19,6 @@ import static com.facebook.litho.specmodels.processor.MethodExtractorUtils.COMPO
 
 import com.facebook.litho.specmodels.model.MethodParamModel;
 import com.facebook.litho.specmodels.model.MethodParamModelFactory;
-import com.facebook.litho.specmodels.model.TypeSpec;
 import com.intellij.codeInsight.AnnotationUtil;
 import com.intellij.psi.PsiAnnotation;
 import com.intellij.psi.PsiMethod;
@@ -58,30 +57,16 @@ public class PsiMethodExtractorUtils {
     final List<MethodParamModel> methodParamModels = new ArrayList<>();
     PsiParameter[] params = method.getParameterList().getParameters();
 
-    for (int i = 0, size = params.length; i < size; i++) {
-      final PsiParameter param = params[i];
-      final String paramName = param.getName();
-      final TypeSpec typeSpec = PsiTypeUtils.generateTypeSpec(param.getType());
-      try {
-        methodParamModels.add(
-            MethodParamModelFactory.create(
-                typeSpec,
-                paramName,
-                getLibraryAnnotations(param, permittedAnnotations),
-                getExternalAnnotations(param),
-                permittedInterStageInputAnnotations,
-                canCreateDiffModels(method, delegateMethodAnnotationsThatSkipDiffModels),
-                param));
-      } catch (Exception e) {
-        // TODO error message with line. See ComponentsProcessingException
-        throw new RuntimeException(
-            "Error processing this param. Are your imports set up correctly?"
-                + " Type qualified name is: "
-                + param.getType().getCanonicalText()
-                + ", typeClassName is: "
-                + typeSpec.getTypeName(),
-            e);
-      }
+    for (final PsiParameter param : params) {
+      methodParamModels.add(
+          MethodParamModelFactory.create(
+              PsiTypeUtils.generateTypeSpec(param.getType()),
+              param.getName(),
+              getLibraryAnnotations(param, permittedAnnotations),
+              getExternalAnnotations(param),
+              permittedInterStageInputAnnotations,
+              canCreateDiffModels(method, delegateMethodAnnotationsThatSkipDiffModels),
+              param));
     }
 
     return methodParamModels;
