@@ -60,12 +60,8 @@ public class PsiTriggerMethodExtractor {
                 permittedInterStageInputAnnotations,
                 ImmutableList.<Class<? extends Annotation>>of());
 
-        //        final DeclaredType eventClassDeclaredType =
-        //            ProcessorUtils.getAnnotationParameter(
-        //                elements, executableElement, OnTrigger.class, "value");
-        //        final Element eventClass = eventClassDeclaredType.asElement();
         PsiAnnotation psiOnTriggerAnnotation =
-            AnnotationUtil.findAnnotation(psiMethod, "OnTrigger");
+            AnnotationUtil.findAnnotation(psiMethod, OnTrigger.class.getName());
         PsiNameValuePair valuePair =
             AnnotationUtil.findDeclaredAttribute(psiOnTriggerAnnotation, "value");
         PsiClassObjectAccessExpression valueClassExpression =
