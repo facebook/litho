@@ -2706,12 +2706,9 @@ public class ComponentTree {
     /**
      * Whether or not to enable the incremental mount optimization. True by default.
      *
-     * <p>IMPORTANT: if you set this to false, visibility events will not fire.
-     *
-     * @deprecated Please don't use this unless you really need to. It is intended that this option
-     *     be removed in the future.
+     * <p>IMPORTANT: if you set this to false, visibility events will NOT FIRE. Please don't use
+     * this unless you really need to.
      */
-    @Deprecated
     public Builder incrementalMount(boolean isEnabled) {
       incrementalMountEnabled = isEnabled;
       return this;
