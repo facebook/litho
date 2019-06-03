@@ -16,7 +16,6 @@
 package com.facebook.litho.intellij;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.intellij.notification.NotificationGroup;
 import com.intellij.psi.PsiAnnotation;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
@@ -38,8 +37,6 @@ import org.jetbrains.annotations.Nullable;
 
 public class LithoPluginUtils {
   private static final String SPEC_SUFFIX = "Spec";
-  private static final NotificationGroup NOTIFICATION_GROUP =
-      NotificationGroup.balloonGroup("fbcomponents");
 
   public static boolean isComponentClass(PsiClass psiClass) {
     return psiClass != null
