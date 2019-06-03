@@ -15,8 +15,10 @@
   <change-notes><![CDATA[
     <h2>0.0.2</h2>
     <ul>
-      <li>Error Annotations are enabled for LayoutSpec.</li>
+      <li>On-the-go error check is enabled for LayoutSpec.</li>
       <li>ClickEvent handler is autocompleted on typing.</li>
+      <li>File New menu contains Litho Mount Component option.</li>
+      <li>File New menu contains Litho GroupSection Component option.</li>
     </ul>
     <h2>0.0.1</h2>
     <ul>
@@ -25,11 +27,13 @@
       <li>Command-click on a LithoComponent takes you to the ComponentSpec</li>
       <li>@DefaultProp value is shown near the @Prop parameter as a folding.</li>
       <li>@Prop and @State method parameters have completion suggestions.</li>
-      <li>File New menu contains LithoSpec option.</li>
+      <li>File New menu contains Litho Layout Component option.</li>
     </ul>
   ]]></change-notes>
 
-  <vendor email="kata@fb.com" url="www.facebook.com">Facebook, Inc.</vendor>
+    <vendor url="https://github.com/facebook/litho/tree/master/litho-intellij-plugin">
+        Facebook,Inc.
+    </vendor>
 
   <extensions defaultExtensionNs="com.intellij">
     <gotoDeclarationHandler implementation="com.facebook.litho.intellij.navigation.SectionDeclarationHandler"/>
