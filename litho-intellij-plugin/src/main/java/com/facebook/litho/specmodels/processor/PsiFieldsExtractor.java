@@ -18,13 +18,21 @@ package com.facebook.litho.specmodels.processor;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.FieldModel;
 import com.intellij.psi.PsiClass;
-import com.intellij.psi.PsiModifierList;
+import com.intellij.psi.PsiField;
 import com.squareup.javapoet.FieldSpec;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.Optional;
-import javax.lang.model.element.Modifier;
+import java.util.stream.Collectors;
 
+/** Extractor provides {@link FieldModel}s. */
 class PsiFieldsExtractor {
+
+  /**
+   * @param psiClass to extract fields from. It will not be modified.
+   * @return the list of {@link FieldModel}s of the given {@link PsiClass} or empty list if there
+   *     are no fields.
+   */
   static ImmutableList<FieldModel> extractFields(PsiClass psiClass) {
     return Optional.of(psiClass)
         .map(PsiClass::getFields)
@@ -32,25 +40,20 @@ class PsiFieldsExtractor {
         .map(
             fields ->
                 fields
-                    .map(
-                        psiField -> {
-                          Modifier[] empty = new Modifier[0];
-                          PsiModifierList modifierList = psiField.getModifierList();
-                          Modifier[] modifiers =
-                              modifierList == null
-                                  ? empty
-                                  : PsiProcessingUtils.extractModifiers(modifierList)
-                                      .toArray(empty);
-                          return new FieldModel(
-                              FieldSpec.builder(
-                                      PsiTypeUtils.getTypeName(psiField.getType()),
-                                      psiField.getName(),
-                                      modifiers)
-                                  .build(),
-                              psiField);
-                        })
-                    .toArray(FieldModel[]::new))
-        .map(ImmutableList::of)
+                    .filter(Objects::nonNull)
+                    .map(PsiFieldsExtractor::createFieldModel)
+                    .collect(Collectors.toCollection(ImmutableList::of)))
         .orElse(ImmutableList.of());
+  }
+
+  // package access to be used in lambda
+  static FieldModel createFieldModel(PsiField psiField) {
+    return new FieldModel(
+        FieldSpec.builder(
+                PsiTypeUtils.getTypeName(psiField.getType()),
+                psiField.getName(),
+                PsiProcessingUtils.extractModifiers(psiField))
+            .build(),
+        psiField);
   }
 }

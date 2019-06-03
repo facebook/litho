@@ -17,6 +17,7 @@ package com.facebook.litho.specmodels.processor;
 
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiField;
 import com.intellij.psi.PsiKeyword;
 import com.intellij.psi.PsiModifier;
 import com.intellij.psi.PsiModifierList;
@@ -24,36 +25,32 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.lang.model.element.Modifier;
 
-/** A bunch of utilities to make it easier to work with the {@link com.intellij.psi} libraries. */
-public class PsiProcessingUtils {
+/** Extractor provides {@link Modifier}s. */
+class PsiProcessingUtils {
+  private static final Modifier[] EMPTY = new Modifier[0];
 
-  public static Modifier[] extractModifiersToArray(PsiModifierList psiModifierList) {
-    final ImmutableList<Modifier> modifierList = extractModifiers(psiModifierList);
-
-    Modifier[] modifierArray = new Modifier[modifierList.size()];
-    for (int i = 0, size = modifierList.size(); i < size; i++) {
-      modifierArray[i] = modifierList.get(i);
-    }
-
-    return modifierArray;
+  static Modifier[] extractModifiers(PsiField psiField) {
+    PsiModifierList modifierList = psiField.getModifierList();
+    return modifierList == null ? EMPTY : extractModifiersInternal(modifierList).toArray(EMPTY);
   }
 
-  public static ImmutableList<Modifier> extractModifiers(PsiModifierList modifierList) {
+  static ImmutableList<Modifier> extractModifiers(PsiModifierList modifierList) {
+    return ImmutableList.copyOf(extractModifiersInternal(modifierList));
+  }
+
+  private static List<Modifier> extractModifiersInternal(PsiModifierList modifierList) {
     List<Modifier> modifiers = new ArrayList<>();
 
     PsiElement[] children = modifierList.getChildren();
-    for (int i = 0; i < children.length; i++) {
-      PsiElement child = children[i];
-
+    for (PsiElement child : children) {
       if (child instanceof PsiModifier || child instanceof PsiKeyword) {
         modifiers.add(psiModifierToModifier(child));
       }
     }
-
-    return ImmutableList.copyOf(modifiers);
+    return modifiers;
   }
 
-  public static Modifier psiModifierToModifier(PsiElement psiModifier) {
+  private static Modifier psiModifierToModifier(PsiElement psiModifier) {
     switch (psiModifier.getText()) {
       case PsiModifier.ABSTRACT:
         return Modifier.ABSTRACT;
