@@ -300,8 +300,6 @@ public class ComponentTree {
     mCreateInitialStateOncePerThread =
         ComponentsConfiguration.createInitialStateOncePerThread || mUseCancelableLayoutFutures;
 
-    ensureLayoutThreadHandler();
-
     if (mPreAllocateMountContentHandler == null && builder.canPreallocateOnDefaultHandler) {
       mPreAllocateMountContentHandler =
           new DefaultLithoHandler(getDefaultPreallocateMountContentThreadLooper());
@@ -333,18 +331,18 @@ public class ComponentTree {
 
     // Instrument LithoHandlers.
     mMainThreadHandler = instrumentLithoHandler(mMainThreadHandler);
-    mLayoutThreadHandler = instrumentLithoHandler(mLayoutThreadHandler);
+    mLayoutThreadHandler = ensureAndInstrumentLayoutThreadHandler(mLayoutThreadHandler);
     mPreAllocateMountContentHandler = instrumentLithoHandler(mPreAllocateMountContentHandler);
   }
 
-  private void ensureLayoutThreadHandler() {
-    if (mLayoutThreadHandler == null) {
-      mLayoutThreadHandler =
+  private static LithoHandler ensureAndInstrumentLayoutThreadHandler(
+      @Nullable LithoHandler handler) {
+    if (handler == null) {
+      handler =
           ComponentsConfiguration.threadPoolForBackgroundThreadsConfig == null
               ? new DefaultLithoHandler(getDefaultLayoutThreadLooper())
               : new ThreadPoolLayoutHandler(
                   ComponentsConfiguration.threadPoolForBackgroundThreadsConfig);
-      mLayoutThreadHandler = instrumentLithoHandler(mLayoutThreadHandler);
     } else {
       if (sDefaultLayoutThreadLooper != null
           && sBoostPerfLayoutStateFuture == false
@@ -358,6 +356,7 @@ public class ComponentTree {
         sBoostPerfLayoutStateFuture = true;
       }
     }
+    return instrumentLithoHandler(handler);
   }
 
   @Nullable
@@ -456,8 +455,7 @@ public class ComponentTree {
         mLayoutThreadHandler.remove(mCurrentCalculateLayoutRunnable);
       }
     }
-    mLayoutThreadHandler = instrumentLithoHandler(layoutThreadHandler);
-    ensureLayoutThreadHandler();
+    mLayoutThreadHandler = ensureAndInstrumentLayoutThreadHandler(layoutThreadHandler);
   }
 
   @VisibleForTesting
