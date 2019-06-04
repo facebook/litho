@@ -332,7 +332,9 @@ public class ComponentTree {
     // Instrument LithoHandlers.
     mMainThreadHandler = instrumentLithoHandler(mMainThreadHandler);
     mLayoutThreadHandler = ensureAndInstrumentLayoutThreadHandler(mLayoutThreadHandler);
-    mPreAllocateMountContentHandler = instrumentLithoHandler(mPreAllocateMountContentHandler);
+    if (mPreAllocateMountContentHandler != null) {
+      mPreAllocateMountContentHandler = instrumentLithoHandler(mPreAllocateMountContentHandler);
+    }
   }
 
   private static LithoHandler ensureAndInstrumentLayoutThreadHandler(

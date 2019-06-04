@@ -16,7 +16,6 @@
 
 package com.facebook.litho;
 
-import androidx.annotation.Nullable;
 
 public class HandlerInstrumenter {
 
@@ -35,10 +34,9 @@ public class HandlerInstrumenter {
   }
 
   /** {@link Instrumenter#instrumentLithoHandler(com.facebook.litho.LithoHandler)} */
-  @Nullable
-  public static LithoHandler instrumentLithoHandler(@Nullable LithoHandler lithoHandler) {
+  public static LithoHandler instrumentLithoHandler(LithoHandler lithoHandler) {
     final Instrumenter instrumenter = sInstance;
-    if (instrumenter == null || lithoHandler == null) {
+    if (instrumenter == null) {
       return lithoHandler;
     }
 
