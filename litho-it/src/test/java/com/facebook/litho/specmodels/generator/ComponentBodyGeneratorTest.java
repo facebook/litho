@@ -400,8 +400,8 @@ public class ComponentBodyGeneratorTest {
     assertThat(dataHolder.getMethodSpecs()).hasSize(1);
     assertThat(dataHolder.getMethodSpecs().get(0).toString())
         .isEqualTo(
-            "private TestUpdateStateMethodStateUpdate createTestUpdateStateMethodStateUpdate() {\n"
-                + "  return new TestUpdateStateMethodStateUpdate();\n"
+            "private com.facebook.litho.StateContainer.StateUpdate createTestUpdateStateMethodStateUpdate() {\n"
+                + "  return new com.facebook.litho.StateContainer.StateUpdate(0);\n"
                 + "}\n");
   }
 
@@ -412,13 +412,13 @@ public class ComponentBodyGeneratorTest {
     assertThat(dataHolder.getMethodSpecs()).hasSize(2);
     assertThat(dataHolder.getMethodSpecs().get(0).toString())
         .isEqualTo(
-            "private TestUpdateStateMethodStateUpdate createTestUpdateStateMethodStateUpdate() {\n"
-                + "  return new TestUpdateStateMethodStateUpdate();\n"
+            "private com.facebook.litho.StateContainer.StateUpdate createTestUpdateStateMethodStateUpdate() {\n"
+                + "  return new com.facebook.litho.StateContainer.StateUpdate(0);\n"
                 + "}\n");
     assertThat(dataHolder.getMethodSpecs().get(1).toString())
         .isEqualTo(
-            "private TestUpdateStateWithTransitionMethodStateUpdate createTestUpdateStateWithTransitionMethodStateUpdate() {\n"
-                + "  return new TestUpdateStateWithTransitionMethodStateUpdate();\n"
+            "private com.facebook.litho.StateContainer.StateUpdate createTestUpdateStateWithTransitionMethodStateUpdate() {\n"
+                + "  return new com.facebook.litho.StateContainer.StateUpdate(1);\n"
                 + "}\n");
   }
 

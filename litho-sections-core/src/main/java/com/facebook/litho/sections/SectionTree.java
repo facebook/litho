@@ -1505,8 +1505,9 @@ public class SectionTree {
       final List<StateContainer.StateUpdate> stateUpdates =
           pendingStateUpdates.get(nextRoot.getGlobalKey());
       if (stateUpdates != null) {
+        final StateContainer stateContainer = nextRoot.getStateContainer();
         for (int i = 0, size = stateUpdates.size(); i < size; i++) {
-          stateUpdates.get(i).updateState(nextRoot.getStateContainer());
+          stateContainer.applyStateUpdate(stateUpdates.get(i));
         }
 
         if (nextRoot.shouldComponentUpdate(currentRoot, nextRoot)) {

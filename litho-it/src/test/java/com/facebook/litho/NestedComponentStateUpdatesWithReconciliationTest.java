@@ -107,7 +107,7 @@ public class NestedComponentStateUpdatesWithReconciliationTest {
     LayoutState current = mComponentTree.getMainThreadLayoutState();
     DefaultInternalNode layout = (DefaultInternalNode) current.getLayoutRoot();
 
-    mComponentTree.updateStateSync("root,B,C", new DummyStateUpdate(), "test");
+    mComponentTree.updateStateSync("root,B,C", createStateUpdate(), "test");
 
     Set<String> set = new HashSet<>();
     set.add("root");
@@ -133,7 +133,7 @@ public class NestedComponentStateUpdatesWithReconciliationTest {
     LayoutState current = mComponentTree.getMainThreadLayoutState();
     DefaultInternalNode layout = (DefaultInternalNode) current.getLayoutRoot();
 
-    mComponentTree.updateStateAsync("root,B,C", new DummyStateUpdate(), "test");
+    mComponentTree.updateStateAsync("root,B,C", createStateUpdate(), "test");
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     Set<String> set = new HashSet<>();
@@ -160,7 +160,7 @@ public class NestedComponentStateUpdatesWithReconciliationTest {
     LayoutState current = mComponentTree.getMainThreadLayoutState();
     DefaultInternalNode layout = (DefaultInternalNode) current.getLayoutRoot();
 
-    mComponentTree.updateStateSync("root,B,D", new DummyStateUpdate(), "test");
+    mComponentTree.updateStateSync("root,B,D", createStateUpdate(), "test");
 
     Set<String> set = new HashSet<>();
     set.add("root");
@@ -186,7 +186,7 @@ public class NestedComponentStateUpdatesWithReconciliationTest {
     LayoutState current = mComponentTree.getMainThreadLayoutState();
     DefaultInternalNode layout = (DefaultInternalNode) current.getLayoutRoot();
 
-    mComponentTree.updateStateAsync("root,B,D", new DummyStateUpdate(), "test");
+    mComponentTree.updateStateAsync("root,B,D", createStateUpdate(), "test");
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     Set<String> set = new HashSet<>();
@@ -213,8 +213,8 @@ public class NestedComponentStateUpdatesWithReconciliationTest {
     LayoutState current = mComponentTree.getMainThreadLayoutState();
     DefaultInternalNode layout = (DefaultInternalNode) current.getLayoutRoot();
 
-    mComponentTree.updateStateAsync("root,B,C", new DummyStateUpdate(), "test-0");
-    mComponentTree.updateStateAsync("root,B,D", new DummyStateUpdate(), "test-1");
+    mComponentTree.updateStateAsync("root,B,C", createStateUpdate(), "test-0");
+    mComponentTree.updateStateAsync("root,B,D", createStateUpdate(), "test-1");
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     Set<String> set = new HashSet<>();
@@ -345,13 +345,18 @@ public class NestedComponentStateUpdatesWithReconciliationTest {
 
   static class DummyStateContainer extends StateContainer {
     int mCount;
+
+    @Override
+    public void applyStateUpdate(StateUpdate stateUpdate) {
+      switch (stateUpdate.type) {
+        case 0:
+          mCount += 1;
+          break;
+      }
+    }
   }
 
-  private static class DummyStateUpdate implements StateContainer.StateUpdate {
-    @Override
-    public void updateState(StateContainer stateContainer) {
-      DummyStateContainer stateContainerImpl = (DummyStateContainer) stateContainer;
-      stateContainerImpl.mCount = stateContainerImpl.mCount + 1;
-    }
+  private StateContainer.StateUpdate createStateUpdate() {
+    return new StateContainer.StateUpdate(0);
   }
 }

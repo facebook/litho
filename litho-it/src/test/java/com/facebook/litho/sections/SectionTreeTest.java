@@ -34,6 +34,8 @@ import com.facebook.litho.widget.ComponentRenderInfo;
 import com.facebook.litho.widget.RenderInfo;
 import com.facebook.litho.widget.SmoothScrollAlignmentType;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -385,12 +387,13 @@ public class SectionTreeTest {
     tree.setRoot(section);
     assertChangeSetHandled(changeSetHandler);
 
-    final StateUpdate stateUpdate = new StateUpdate();
+    assertAppliedStateUpdates(section, Collections.emptySet());
+
+    final StateContainer.StateUpdate stateUpdate = new StateContainer.StateUpdate(0);
     changeSetHandler.clear();
     tree.updateState("key", stateUpdate, "test");
 
-    assertThat(stateUpdate.mUpdateStateCalled).isTrue();
-    assertChangeSetNotSeen(changeSetHandler);
+    assertAppliedStateUpdates(section, Arrays.asList(stateUpdate));
   }
 
   @Test
@@ -407,17 +410,18 @@ public class SectionTreeTest {
     tree.setRoot(section);
     assertChangeSetHandled(changeSetHandler);
 
-    final StateUpdate lazyStateUpdate = new StateUpdate();
+    assertAppliedStateUpdates(section, Collections.emptySet());
+
+    final StateContainer.StateUpdate lazyStateUpdate = new StateContainer.StateUpdate(0);
     changeSetHandler.clear();
     tree.updateStateLazy("key", lazyStateUpdate);
 
-    assertThat(lazyStateUpdate.mUpdateStateCalled).isFalse();
+    assertAppliedStateUpdates(section, Collections.emptySet());
 
-    final StateUpdate stateUpdate = new StateUpdate();
+    final StateContainer.StateUpdate stateUpdate = new StateContainer.StateUpdate(0);
     tree.updateState("key", stateUpdate, "test");
 
-    assertThat(lazyStateUpdate.mUpdateStateCalled).isTrue();
-    assertThat(stateUpdate.mUpdateStateCalled).isTrue();
+    assertAppliedStateUpdates(section, Arrays.asList(lazyStateUpdate, stateUpdate));
   }
 
   @Test
@@ -434,12 +438,12 @@ public class SectionTreeTest {
     tree.setRoot(section);
     assertChangeSetHandled(changeSetHandler);
 
-    final StateUpdate stateUpdate = new StateUpdate();
+    final StateContainer.StateUpdate stateUpdate = new StateContainer.StateUpdate(0);
     changeSetHandler.clear();
     tree.release();
     tree.updateState("key", stateUpdate, "test");
 
-    assertThat(stateUpdate.mUpdateStateCalled).isFalse();
+    assertAppliedStateUpdates(section, Collections.emptySet());
   }
 
   @Test
@@ -470,14 +474,17 @@ public class SectionTreeTest {
     tree.setRoot(section);
     assertChangeSetHandled(changeSetHandler);
 
-    final StateUpdate stateUpdate = new StateUpdate();
+    assertAppliedStateUpdates(section, Collections.emptySet());
+
+    final StateContainer.StateUpdate stateUpdate = new StateContainer.StateUpdate(0);
     changeSetHandler.clear();
     tree.updateStateAsync("key", stateUpdate, "test");
-    assertThat(stateUpdate.mUpdateStateCalled).isFalse();
+
+    assertAppliedStateUpdates(section, Collections.emptySet());
 
     mChangeSetThreadShadowLooper.runOneTask();
 
-    assertThat(stateUpdate.mUpdateStateCalled).isTrue();
+    assertAppliedStateUpdates(section, Collections.singleton(stateUpdate));
     assertChangeSetNotSeen(changeSetHandler);
   }
 
@@ -494,11 +501,13 @@ public class SectionTreeTest {
     tree.setRoot(section);
     assertChangeSetHandled(changeSetHandler);
 
-    final StateUpdate stateUpdate = new StateUpdate();
+    assertAppliedStateUpdates(section, Collections.emptySet());
+
+    final StateContainer.StateUpdate stateUpdate = new StateContainer.StateUpdate(0);
     changeSetHandler.clear();
     tree.updateStateAsync("key", stateUpdate, "test");
 
-    assertThat(stateUpdate.mUpdateStateCalled).isTrue();
+    assertAppliedStateUpdates(section, Collections.singleton(stateUpdate));
     assertChangeSetNotSeen(changeSetHandler);
   }
 
@@ -898,6 +907,16 @@ public class SectionTreeTest {
     assertThat(sectionTree.getCachedValue("key2")).isNull();
   }
 
+  private static void assertAppliedStateUpdates(
+      Section section, Iterable<StateContainer.StateUpdate> expected) {
+    if (!(section instanceof TestSection)) {
+      throw new RuntimeException("section should be an instance of TestSection");
+    }
+    final TestSectionCreator.TestStateContainer stateContainer =
+        (TestSectionCreator.TestStateContainer) section.getStateContainer();
+    assertThat(stateContainer.appliedStateUpdate).containsExactlyInAnyOrderElementsOf(expected);
+  }
+
   private static void assertChangeSetHandled(TestTarget testTarget) {
     assertThat(testTarget.wereChangesHandled()).isTrue();
     assertThat(testTarget.wasNotifyChangeSetCompleteCalledWithChangedData()).isTrue();
@@ -906,16 +925,6 @@ public class SectionTreeTest {
   private static void assertChangeSetNotSeen(TestTarget testTarget) {
     assertThat(testTarget.wereChangesHandled()).isFalse();
     assertThat(testTarget.wasNotifyChangeSetCompleteCalledWithChangedData()).isFalse();
-  }
-
-  private static class StateUpdate implements StateContainer.StateUpdate {
-
-    private boolean mUpdateStateCalled;
-
-    @Override
-    public void updateState(StateContainer stateContainer) {
-      mUpdateStateCalled = true;
-    }
   }
 
   private static RenderInfo makeComponentInfo() {

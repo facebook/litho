@@ -101,7 +101,7 @@ public class SectionsTestHelper extends Section {
                 final Section scope = ((SectionContext) invocation.getMock()).getSectionScope();
                 final StateContainer.StateUpdate stateUpdate =
                     (StateContainer.StateUpdate) invocation.getArguments()[0];
-                stateUpdate.updateState(SectionLifecycleTestUtil.getStateContainer(scope));
+                SectionLifecycleTestUtil.getStateContainer(scope).applyStateUpdate(stateUpdate);
                 return null;
               }
             })
@@ -116,7 +116,7 @@ public class SectionsTestHelper extends Section {
                 final Section scope = ((SectionContext) invocation.getMock()).getSectionScope();
                 final StateContainer.StateUpdate stateUpdate =
                     (StateContainer.StateUpdate) invocation.getArguments()[0];
-                stateUpdate.updateState(SectionLifecycleTestUtil.getStateContainer(scope));
+                SectionLifecycleTestUtil.getStateContainer(scope).applyStateUpdate(stateUpdate);
                 return null;
               }
             })

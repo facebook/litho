@@ -17,10 +17,23 @@ package com.facebook.litho.specmodels.generator;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
+import com.facebook.litho.StateValue;
+import com.facebook.litho.Transition;
+import com.facebook.litho.animation.AnimatedProperties;
+import com.facebook.litho.annotations.LayoutSpec;
+import com.facebook.litho.annotations.OnCreateLayout;
+import com.facebook.litho.annotations.OnUpdateState;
+import com.facebook.litho.annotations.OnUpdateStateWithTransition;
+import com.facebook.litho.annotations.Param;
+import com.facebook.litho.annotations.Prop;
+import com.facebook.litho.annotations.State;
+import com.facebook.litho.annotations.TreeProp;
 import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.processor.LayoutSpecModelFactory;
 import com.google.testing.compile.CompilationRule;
+import java.util.List;
+import java.util.function.Function;
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
@@ -41,59 +54,125 @@ public class StateContainerGeneratorTest {
 
   private final LayoutSpecModelFactory mLayoutSpecModelFactory = new LayoutSpecModelFactory();
 
-  private SpecModel mSpecModelDI;
-  private SpecModel mSpecModelWithTransitionDI;
+  private SpecModel mSpecModelWithState;
+  private SpecModel mSpecModelWithStateWithTransition;
+  private SpecModel mSpecModelWithBothMethods;
+  private SpecModel mSpecModelWithSameGenericMultipleTimes;
+  private SpecModel mSpecModelWithMultipleGenerics;
 
   @Before
   public void setUp() {
     MockitoAnnotations.initMocks(this);
-    Elements elements = mCompilationRule.getElements();
-    Types types = mCompilationRule.getTypes();
-    TypeElement typeElement =
-        elements.getTypeElement(ComponentBodyGeneratorTest.TestSpec.class.getCanonicalName());
+    final Elements elements = mCompilationRule.getElements();
+    final Types types = mCompilationRule.getTypes();
 
-    mSpecModelDI =
+    final TypeElement typeElementWithState =
+        elements.getTypeElement(TestWithStateSpec.class.getCanonicalName());
+    mSpecModelWithState =
         mLayoutSpecModelFactory.create(
-            elements, types, typeElement, mMessager, RunMode.normal(), null, null);
+            elements, types, typeElementWithState, mMessager, RunMode.normal(), null, null);
 
-    TypeElement typeElementWithTransition =
-        elements.getTypeElement(
-            ComponentBodyGeneratorTest.TestWithTransitionSpec.class.getCanonicalName());
-    mSpecModelWithTransitionDI =
+    final TypeElement typeElementWithTransition =
+        elements.getTypeElement(TestWithStateWithTransitionSpec.class.getCanonicalName());
+    mSpecModelWithStateWithTransition =
         mLayoutSpecModelFactory.create(
             elements, types, typeElementWithTransition, mMessager, RunMode.normal(), null, null);
+
+    final TypeElement typeElementWithBothMethods =
+        elements.getTypeElement(TestWithBothMethodsSpec.class.getCanonicalName());
+    mSpecModelWithBothMethods =
+        mLayoutSpecModelFactory.create(
+            elements, types, typeElementWithBothMethods, mMessager, RunMode.normal(), null, null);
+
+    final TypeElement typeElementWithSameGenericMultipleTimes =
+        elements.getTypeElement(TestWithSameGenericMultipleTimesSpec.class.getCanonicalName());
+    mSpecModelWithSameGenericMultipleTimes =
+        mLayoutSpecModelFactory.create(
+            elements,
+            types,
+            typeElementWithSameGenericMultipleTimes,
+            mMessager,
+            RunMode.normal(),
+            null,
+            null);
+
+    final TypeElement typeElementWithMultipleGenerics =
+        elements.getTypeElement(TestWithMultipleGenericsSpec.class.getCanonicalName());
+    mSpecModelWithMultipleGenerics =
+        mLayoutSpecModelFactory.create(
+            elements,
+            types,
+            typeElementWithMultipleGenerics,
+            mMessager,
+            RunMode.normal(),
+            null,
+            null);
+  }
+
+  @Test
+  public void testGetStateContainerClassName() {
+    assertThat(StateContainerGenerator.getStateContainerClassName(mSpecModelWithState))
+        .isEqualTo("TestWithStateStateContainer");
   }
 
   @Test
   public void testGenerateStateContainerImpl() {
-    assertThat(StateContainerGenerator.generate(mSpecModelDI).toString())
+    assertThat(StateContainerGenerator.generate(mSpecModelWithState).toString())
         .isEqualTo(
             "@androidx.annotation.VisibleForTesting(\n"
                 + "    otherwise = 2\n"
                 + ")\n"
-                + "static class TestStateContainer extends com.facebook.litho.StateContainer {\n"
+                + "static class TestWithStateStateContainer<T extends java.lang.CharSequence> extends com.facebook.litho.StateContainer {\n"
                 + "  @com.facebook.litho.annotations.State\n"
                 + "  @com.facebook.litho.annotations.Comparable(\n"
                 + "      type = 3\n"
                 + "  )\n"
                 + "  int arg1;\n"
+                + "\n"
+                + "  @com.facebook.litho.annotations.State\n"
+                + "  @com.facebook.litho.annotations.Comparable(\n"
+                + "      type = 3\n"
+                + "  )\n"
+                + "  boolean arg4;\n"
+                + "\n"
+                + "  @java.lang.Override\n"
+                + "  public void applyStateUpdate(com.facebook.litho.StateContainer.StateUpdate stateUpdate) {\n"
+                + "    com.facebook.litho.StateValue<java.lang.Integer> arg1;\n"
+                + "    com.facebook.litho.StateValue<java.lang.Boolean> arg4;\n"
+                + "\n"
+                + "    final java.lang.Object[] params = stateUpdate.params;\n"
+                + "    switch (stateUpdate.type) {\n"
+                + "      case 0:\n"
+                + "        TestWithStateSpec.testUpdateState();\n"
+                + "        break;\n"
+                + "\n"
+                + "      case -2147483648:\n"
+                + "        this.arg4 = (boolean) params[0];\n"
+                + "        break;\n"
+                + "    }\n"
+                + "  }\n"
                 + "}\n");
   }
 
   @Test
   public void testGenerateStateContainerWithTransitionImpl() {
-    assertThat(StateContainerGenerator.generate(mSpecModelWithTransitionDI).toString())
+    assertThat(StateContainerGenerator.generate(mSpecModelWithStateWithTransition).toString())
         .isEqualTo(
             "@androidx.annotation.VisibleForTesting(\n"
                 + "    otherwise = 2\n"
                 + ")\n"
-                + "static class TestWithTransitionStateContainer extends com.facebook.litho.StateContainer implements "
-                + "com.facebook.litho.ComponentLifecycle.TransitionContainer {\n"
+                + "static class TestWithStateWithTransitionStateContainer<T extends java.lang.CharSequence> extends com.facebook.litho.StateContainer implements com.facebook.litho.ComponentLifecycle.TransitionContainer {\n"
                 + "  @com.facebook.litho.annotations.State\n"
                 + "  @com.facebook.litho.annotations.Comparable(\n"
                 + "      type = 3\n"
                 + "  )\n"
                 + "  int arg1;\n"
+                + "\n"
+                + "  @com.facebook.litho.annotations.State\n"
+                + "  @com.facebook.litho.annotations.Comparable(\n"
+                + "      type = 3\n"
+                + "  )\n"
+                + "  boolean arg4;\n"
                 + "\n"
                 + "  java.util.List<com.facebook.litho.Transition> _transitions = new java.util.ArrayList<>();\n"
                 + "\n"
@@ -109,12 +188,226 @@ public class StateContainerGeneratorTest {
                 + "    }\n"
                 + "    return transitionsCopy;\n"
                 + "  }\n"
+                + "\n"
+                + "  @java.lang.Override\n"
+                + "  public void applyStateUpdate(com.facebook.litho.StateContainer.StateUpdate stateUpdate) {\n"
+                + "    com.facebook.litho.StateValue<java.lang.Integer> arg1;\n"
+                + "    com.facebook.litho.StateValue<java.lang.Boolean> arg4;\n"
+                + "\n"
+                + "    com.facebook.litho.Transition transition = null;\n"
+                + "\n"
+                + "    final java.lang.Object[] params = stateUpdate.params;\n"
+                + "    switch (stateUpdate.type) {\n"
+                + "      case 0:\n"
+                + "        transition = TestWithStateWithTransitionSpec.testUpdateStateWithTransition();\n"
+                + "        break;\n"
+                + "\n"
+                + "      case -2147483648:\n"
+                + "        this.arg4 = (boolean) params[0];\n"
+                + "        break;\n"
+                + "    }\n"
+                + "\n"
+                + "    if (transition != null) {\n"
+                + "      _transitions.add(transition);\n"
+                + "    }\n"
+                + "  }\n"
                 + "}\n");
   }
 
   @Test
-  public void testGetStateContainerClassName() {
-    assertThat(StateContainerGenerator.getStateContainerClassName(mSpecModelDI))
-        .isEqualTo("TestStateContainer");
+  public void testGenerateStateContainerWithBothMethodsImpl() {
+    assertThat(StateContainerGenerator.generate(mSpecModelWithBothMethods).toString())
+        .isEqualTo(
+            "@androidx.annotation.VisibleForTesting(\n"
+                + "    otherwise = 2\n"
+                + ")\n"
+                + "static class TestWithBothMethodsStateContainer<T extends java.lang.CharSequence> extends com.facebook.litho.StateContainer implements com.facebook.litho.ComponentLifecycle.TransitionContainer {\n"
+                + "  @com.facebook.litho.annotations.State\n"
+                + "  @com.facebook.litho.annotations.Comparable(\n"
+                + "      type = 3\n"
+                + "  )\n"
+                + "  int arg1;\n"
+                + "\n"
+                + "  @com.facebook.litho.annotations.State\n"
+                + "  @com.facebook.litho.annotations.Comparable(\n"
+                + "      type = 3\n"
+                + "  )\n"
+                + "  boolean arg4;\n"
+                + "\n"
+                + "  java.util.List<com.facebook.litho.Transition> _transitions = new java.util.ArrayList<>();\n"
+                + "\n"
+                + "  @java.lang.Override\n"
+                + "  public java.util.List<com.facebook.litho.Transition> consumeTransitions() {\n"
+                + "    if (_transitions.isEmpty()) {\n"
+                + "      return java.util.Collections.EMPTY_LIST;\n"
+                + "    }\n"
+                + "    java.util.List<com.facebook.litho.Transition> transitionsCopy;\n"
+                + "    synchronized (_transitions) {\n"
+                + "      transitionsCopy = new java.util.ArrayList<>(_transitions);\n"
+                + "      _transitions.clear();\n"
+                + "    }\n"
+                + "    return transitionsCopy;\n"
+                + "  }\n"
+                + "\n"
+                + "  @java.lang.Override\n"
+                + "  public void applyStateUpdate(com.facebook.litho.StateContainer.StateUpdate stateUpdate) {\n"
+                + "    com.facebook.litho.StateValue<java.lang.Integer> arg1;\n"
+                + "    com.facebook.litho.StateValue<java.lang.Boolean> arg4;\n"
+                + "\n"
+                + "    com.facebook.litho.Transition transition = null;\n"
+                + "\n"
+                + "    final java.lang.Object[] params = stateUpdate.params;\n"
+                + "    switch (stateUpdate.type) {\n"
+                + "      case 0:\n"
+                + "        TestWithBothMethodsSpec.testUpdateState();\n"
+                + "        break;\n"
+                + "\n"
+                + "      case 1:\n"
+                + "        transition = TestWithBothMethodsSpec.testUpdateStateWithTransition();\n"
+                + "        break;\n"
+                + "\n"
+                + "      case -2147483648:\n"
+                + "        this.arg4 = (boolean) params[0];\n"
+                + "        break;\n"
+                + "    }\n"
+                + "\n"
+                + "    if (transition != null) {\n"
+                + "      _transitions.add(transition);\n"
+                + "    }\n"
+                + "  }\n"
+                + "}\n");
+  }
+
+  @Test
+  public void testGenerateStateContainerWithSameGenericMultipleTimesImpl() {
+    assertThat(StateContainerGenerator.generate(mSpecModelWithSameGenericMultipleTimes).toString())
+        .isEqualTo(
+            "@androidx.annotation.VisibleForTesting(\n"
+                + "    otherwise = 2\n"
+                + ")\n"
+                + "static class TestWithSameGenericMultipleTimesStateContainer<T> extends com.facebook.litho.StateContainer {\n"
+                + "  @com.facebook.litho.annotations.State\n"
+                + "  @com.facebook.litho.annotations.Comparable(\n"
+                + "      type = 5\n"
+                + "  )\n"
+                + "  java.util.List<T> values;\n"
+                + "\n"
+                + "  @java.lang.Override\n"
+                + "  public void applyStateUpdate(com.facebook.litho.StateContainer.StateUpdate stateUpdate) {\n"
+                + "    com.facebook.litho.StateValue<java.util.List<T>> values;\n"
+                + "\n"
+                + "    final java.lang.Object[] params = stateUpdate.params;\n"
+                + "    switch (stateUpdate.type) {\n"
+                + "      case 0:\n"
+                + "        values = new com.facebook.litho.StateValue<java.util.List<T>>();\n"
+                + "        values.set(this.values);\n"
+                + "        TestWithSameGenericMultipleTimesSpec.updateValues(values, (java.util.List<T>) params[0]);\n"
+                + "        this.values = values.get();\n"
+                + "        break;\n"
+                + "    }\n"
+                + "  }\n"
+                + "}\n");
+  }
+
+  @Test
+  public void testGenerateStateContainerWithMultipleGenericsImpl() {
+    assertThat(StateContainerGenerator.generate(mSpecModelWithMultipleGenerics).toString())
+        .isEqualTo(
+            "@androidx.annotation.VisibleForTesting(\n"
+                + "    otherwise = 2\n"
+                + ")\n"
+                + "static class TestWithMultipleGenericsStateContainer<T, E, D> extends com.facebook.litho.StateContainer {\n"
+                + "  @com.facebook.litho.annotations.State\n"
+                + "  @com.facebook.litho.annotations.Comparable(\n"
+                + "      type = 13\n"
+                + "  )\n"
+                + "  java.util.function.Function<E, D> functions;\n"
+                + "\n"
+                + "  @java.lang.Override\n"
+                + "  public void applyStateUpdate(com.facebook.litho.StateContainer.StateUpdate stateUpdate) {\n"
+                + "    com.facebook.litho.StateValue<java.util.function.Function<E, D>> functions;\n"
+                + "\n"
+                + "    final java.lang.Object[] params = stateUpdate.params;\n"
+                + "    switch (stateUpdate.type) {\n"
+                + "      case 0:\n"
+                + "        functions = new com.facebook.litho.StateValue<java.util.function.Function<E, D>>();\n"
+                + "        functions.set(this.functions);\n"
+                + "        TestWithMultipleGenericsSpec.updateValues(functions, (java.util.function.Function<T, D>) params[0]);\n"
+                + "        this.functions = functions.get();\n"
+                + "        break;\n"
+                + "    }\n"
+                + "  }\n"
+                + "}\n");
+  }
+
+  @LayoutSpec
+  private static class TestWithStateSpec<T extends CharSequence> {
+    @OnCreateLayout
+    public void onCreateLayout(
+        @Prop boolean arg0,
+        @State int arg1,
+        @Param Object arg2,
+        @TreeProp long arg3,
+        @State(canUpdateLazily = true) boolean arg4) {}
+
+    @OnUpdateState
+    void testUpdateState() {}
+  }
+
+  @LayoutSpec
+  private static class TestWithStateWithTransitionSpec<T extends CharSequence> {
+    @OnCreateLayout
+    public void onCreateLayout(
+        @Prop boolean arg0,
+        @State int arg1,
+        @Param Object arg2,
+        @TreeProp long arg3,
+        @State(canUpdateLazily = true) boolean arg4) {}
+
+    @OnUpdateStateWithTransition
+    Transition testUpdateStateWithTransition() {
+      return null;
+    }
+  }
+
+  @LayoutSpec
+  private static class TestWithBothMethodsSpec<T extends CharSequence> {
+    @OnCreateLayout
+    public void onCreateLayout(
+        @Prop boolean arg0,
+        @State int arg1,
+        @Param Object arg2,
+        @TreeProp long arg3,
+        @State(canUpdateLazily = true) boolean arg4) {}
+
+    @OnUpdateState
+    void testUpdateState() {}
+
+    @OnUpdateStateWithTransition
+    Transition testUpdateStateWithTransition() {
+      return Transition.create(Transition.TransitionKeyType.GLOBAL, "key")
+          .animate(AnimatedProperties.X);
+    }
+  }
+
+  @LayoutSpec
+  private static class TestWithSameGenericMultipleTimesSpec<T> {
+
+    @OnCreateLayout
+    static <T> void onCreateLayout(@State List<T> values) {}
+
+    @OnUpdateState
+    static <T> void updateValues(StateValue<List<T>> values, @Param List<T> foos) {}
+  }
+
+  @LayoutSpec
+  private static class TestWithMultipleGenericsSpec<T, E, D> {
+
+    @OnCreateLayout
+    static <E, D> void onCreateLayout(@State Function<E, D> functions) {}
+
+    @OnUpdateState
+    static <T, E, D> void updateValues(
+        StateValue<Function<E, D>> functions, @Param Function<T, D> foos) {}
   }
 }

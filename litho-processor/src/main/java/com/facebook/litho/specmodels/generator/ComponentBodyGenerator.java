@@ -452,36 +452,42 @@ public class ComponentBodyGenerator {
       updateStateMethods.addAll(specModel.getUpdateStateWithTransitionMethods());
     }
 
-    for (SpecMethodModel<UpdateStateMethod, Void> updateStateMethodModel : updateStateMethods) {
-      final String stateUpdateClassName = getStateUpdateClassName(updateStateMethodModel);
+    for (int i = 0; i < updateStateMethods.size(); i++) {
+      final SpecMethodModel<UpdateStateMethod, Void> updateStateMethodModel =
+          updateStateMethods.get(i);
+
+      final MethodSpec.Builder methodSpecBuilder =
+          MethodSpec.methodBuilder(getStateUpdateMethodName(updateStateMethodModel))
+              .addModifiers(Modifier.PRIVATE)
+              .returns(ClassNames.COMPONENT_STATE_UPDATE);
+
       final List<MethodParamModel> params = getParams(updateStateMethodModel);
-
-      final MethodSpec.Builder methodSpecBuilder = MethodSpec
-          .methodBuilder("create" + stateUpdateClassName)
-          .addModifiers(Modifier.PRIVATE)
-          .returns(ClassName.bestGuess(stateUpdateClassName));
-
       for (MethodParamModel param : params) {
-        methodSpecBuilder
-            .addParameter(ParameterSpec.builder(param.getTypeName(), param.getName()).build());
+        methodSpecBuilder.addParameter(
+            ParameterSpec.builder(param.getTypeName(), param.getName()).build());
       }
 
-      final CodeBlock.Builder constructor = CodeBlock.builder();
-      constructor.add("return new $N(", stateUpdateClassName);
-
-      for (int i = 0, size = params.size(); i < size; i++) {
-        constructor.add(params.get(i).getName());
-        if (i < params.size() - 1) {
-          constructor.add(", ");
-        }
+      final CodeBlock.Builder implementation = CodeBlock.builder();
+      implementation.add("return new $T($L", ClassNames.COMPONENT_STATE_UPDATE, i);
+      for (int j = 0; j < params.size(); j++) {
+        implementation.add(", ").add(params.get(j).getName());
       }
-      constructor.add(");\n");
+      implementation.add(");\n");
+      methodSpecBuilder.addCode(implementation.build());
 
-      methodSpecBuilder.addCode(constructor.build());
       typeSpecDataHolder.addMethod(methodSpecBuilder.build());
     }
 
     return typeSpecDataHolder.build();
+  }
+
+  private static String getStateUpdateMethodName(
+      SpecMethodModel<UpdateStateMethod, Void> updateStateMethodModel) {
+    String methodName = updateStateMethodModel.name.toString();
+    return "create"
+        + methodName.substring(0, 1).toUpperCase(Locale.ROOT)
+        + methodName.substring(1)
+        + GeneratorConstants.STATE_UPDATE_NAME_SUFFIX;
   }
 
   static TypeSpecDataHolder generateMakeShallowCopy(SpecModel specModel, boolean hasState) {
@@ -646,14 +652,6 @@ public class ComponentBodyGenerator {
     }
 
     return params;
-  }
-
-  private static String getStateUpdateClassName(
-      SpecMethodModel<UpdateStateMethod, Void> updateStateMethodModel) {
-    String methodName = updateStateMethodModel.name.toString();
-    return methodName.substring(0, 1).toUpperCase(Locale.ROOT)
-        + methodName.substring(1)
-        + GeneratorConstants.STATE_UPDATE_NAME_SUFFIX;
   }
 
   static CodeBlock getCompareStatement(

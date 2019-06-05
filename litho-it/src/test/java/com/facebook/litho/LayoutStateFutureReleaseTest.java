@@ -173,7 +173,7 @@ public class LayoutStateFutureReleaseTest {
           public void unblock(ComponentTree.LayoutStateFuture lsf) {
             if (layoutStateFutures[0] == null) {
               layoutStateFutures[0] = lsf;
-              componentTree.updateStateAsync(key, new TestStateUpdate(), null);
+              componentTree.updateStateAsync(key, createTestStateUpdate(), null);
               isReleasedAfterStateUpdate[0] = lsf.isReleased();
             } else {
               layoutStateFutures[1] = lsf;
@@ -182,7 +182,7 @@ public class LayoutStateFutureReleaseTest {
         };
     child2.unlockFinishedLayout = waitBeforeAsserts;
 
-    componentTree.updateStateAsync(key, new TestStateUpdate(), null);
+    componentTree.updateStateAsync(key, createTestStateUpdate(), null);
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     try {
@@ -240,7 +240,7 @@ public class LayoutStateFutureReleaseTest {
             if (layoutStateFutures[0] == null) {
               lsf.registerForResponse(true);
               layoutStateFutures[0] = lsf;
-              componentTree.updateStateAsync(key, new TestStateUpdate(), null);
+              componentTree.updateStateAsync(key, createTestStateUpdate(), null);
               isReleasedAfterStateUpdate[0] = lsf.isReleased();
             } else {
               layoutStateFutures[1] = lsf;
@@ -249,7 +249,7 @@ public class LayoutStateFutureReleaseTest {
         };
     child2.unlockFinishedLayout = waitBeforeAsserts;
 
-    componentTree.updateStateAsync(key, new TestStateUpdate(), null);
+    componentTree.updateStateAsync(key, createTestStateUpdate(), null);
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     try {
@@ -308,7 +308,7 @@ public class LayoutStateFutureReleaseTest {
           public void unblock(ComponentTree.LayoutStateFuture lsf) {
             if (layoutStateFutures[0] == null) {
               layoutStateFutures[0] = lsf;
-              componentTree.updateStateAsync(key, new TestStateUpdate(), null);
+              componentTree.updateStateAsync(key, createTestStateUpdate(), null);
               isReleasedAfterStateUpdate[0] = lsf.isReleased();
             } else {
               layoutStateFutures[1] = lsf;
@@ -317,7 +317,7 @@ public class LayoutStateFutureReleaseTest {
         };
     child2.unlockFinishedLayout = waitBeforeAsserts;
 
-    componentTree.updateStateSync(key, new TestStateUpdate(), null);
+    componentTree.updateStateSync(key, createTestStateUpdate(), null);
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     try {
@@ -377,7 +377,7 @@ public class LayoutStateFutureReleaseTest {
           public void unblock(ComponentTree.LayoutStateFuture lsf) {
             if (layoutStateFutures[0] == null) {
               layoutStateFutures[0] = lsf;
-              componentTree.updateStateSync(key, new TestStateUpdate(), null);
+              componentTree.updateStateSync(key, createTestStateUpdate(), null);
               isReleasedAfterStateUpdate[0] = lsf.isReleased();
             } else {
               layoutStateFutures[1] = lsf;
@@ -386,7 +386,7 @@ public class LayoutStateFutureReleaseTest {
         };
     child2.unlockFinishedLayout = waitBeforeAsserts;
 
-    componentTree.updateStateSync(key, new TestStateUpdate(), null);
+    componentTree.updateStateSync(key, createTestStateUpdate(), null);
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     try {
@@ -466,7 +466,7 @@ public class LayoutStateFutureReleaseTest {
 
     final String key = componentTree.getMainThreadLayoutState().getRootComponent().getGlobalKey();
 
-    componentTree.updateStateAsync(key, new TestStateUpdate(), null);
+    componentTree.updateStateAsync(key, createTestStateUpdate(), null);
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     try {
@@ -474,7 +474,7 @@ public class LayoutStateFutureReleaseTest {
     } catch (InterruptedException e) {
       e.printStackTrace();
     }
-    componentTree.updateStateSync(key, new TestStateUpdate(), null);
+    componentTree.updateStateSync(key, createTestStateUpdate(), null);
 
     waitForSyncStateUpdate.countDown();
 
@@ -529,7 +529,7 @@ public class LayoutStateFutureReleaseTest {
 
               while (lsf.getWaitingCount() != 2) {}
 
-              componentTree.updateStateAsync(column.getGlobalKey(), new TestStateUpdate(), null);
+              componentTree.updateStateAsync(column.getGlobalKey(), createTestStateUpdate(), null);
               isRedundantReleased[0] = lsf.isReleased();
 
               waitBeforeAsserts.countDown();
@@ -693,10 +693,8 @@ public class LayoutStateFutureReleaseTest {
     assertNotNull(layoutStateFutures[1]);
   }
 
-  final class TestStateUpdate implements StateContainer.StateUpdate {
-
-    @Override
-    public void updateState(StateContainer stateContainer) {}
+  private StateContainer.StateUpdate createTestStateUpdate() {
+    return new StateContainer.StateUpdate(0);
   }
 
   private interface WaitActions {

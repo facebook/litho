@@ -17,7 +17,6 @@
 package com.facebook.litho.specmodels.generator;
 
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.STATE_CONTAINER_FIELD_NAME;
-import static com.facebook.litho.specmodels.generator.GeneratorConstants.STATE_TRANSITIONS_FIELD_NAME;
 import static com.facebook.litho.specmodels.generator.StateContainerGenerator.getStateContainerClassName;
 
 import com.facebook.litho.annotations.Param;
@@ -35,21 +34,18 @@ import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.TypeName;
-import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeVariableName;
-import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
 import javax.lang.model.element.Modifier;
 
 /** Class that generates the state methods for a Component. */
 public class StateGenerator {
+  static final int FLAG_LAZY = 1 << 31;
 
   private static final String STATE_UPDATE_IMPL_NAME_SUFFIX = "StateUpdate";
-  private static final String STATE_CONTAINER_PARAM_NAME = "_stateContainer";
-  private static final String STATE_CONTAINER_NAME = "stateContainer";
-  private static final String STATE_UPDATE_METHOD_NAME = "updateState";
+  private static final String STATE_CONTAINER_NAME = "_stateContainer";
   private static final String LAZY_STATE_UPDATE_VALUE_PARAM = "lazyUpdateValue";
+
 
   private enum StateUpdateType {
     DEFAULT,
@@ -66,7 +62,6 @@ public class StateGenerator {
         .addTypeSpecDataHolder(generateTransferState(specModel))
         .addTypeSpecDataHolder(generateGetStateContainerWithLazyStateUpdatesApplied(specModel))
         .addTypeSpecDataHolder(generateOnStateUpdateMethods(specModel))
-        .addTypeSpecDataHolder(generateStateUpdateClasses(specModel))
         .addTypeSpecDataHolder(generateLazyStateUpdateMethods(specModel))
         .build();
   }
@@ -164,25 +159,6 @@ public class StateGenerator {
     return TypeSpecDataHolder.newBuilder().addMethod(methodSpec).build();
   }
 
-  static TypeSpecDataHolder generateStateUpdateClasses(SpecModel specModel) {
-    TypeSpecDataHolder.Builder dataHolder = TypeSpecDataHolder.newBuilder();
-    for (SpecMethodModel<UpdateStateMethod, Void> updateStateMethod :
-        specModel.getUpdateStateMethods()) {
-      dataHolder.addTypeSpecDataHolder(
-          generateStateUpdateClass(specModel, updateStateMethod, false));
-    }
-
-    if (hasUpdateStateWithTransition(specModel)) {
-      for (SpecMethodModel<UpdateStateMethod, Void> updateStateWithTransitionMethod :
-          specModel.getUpdateStateWithTransitionMethods()) {
-        dataHolder.addTypeSpecDataHolder(
-            generateStateUpdateClass(specModel, updateStateWithTransitionMethod, true));
-      }
-    }
-
-    return dataHolder.build();
-  }
-
   static boolean hasUpdateStateWithTransition(SpecModel specModel) {
     return specModel.getUpdateStateWithTransitionMethods() != null
         && !specModel.getUpdateStateWithTransitionMethods().isEmpty();
@@ -252,9 +228,8 @@ public class StateGenerator {
     final CodeBlock.Builder codeBlockBuilder = CodeBlock.builder();
     final String componentName = specModel.getComponentName();
     codeBlockBuilder.add(
-        "$N.$N _stateUpdate = (($N) _component).$N(",
-        componentName,
-        getStateUpdateClassName(updateStateMethod),
+        "$T _stateUpdate = (($N) _component).$N(",
+        ClassNames.COMPONENT_STATE_UPDATE,
         componentName,
         "create" + getStateUpdateClassName(updateStateMethod));
 
@@ -299,126 +274,13 @@ public class StateGenerator {
     return TypeSpecDataHolder.newBuilder().addMethod(builder.build()).build();
   }
 
-  static TypeSpecDataHolder generateStateUpdateClass(
-      SpecModel specModel,
-      SpecMethodModel<UpdateStateMethod, Void> updateStateMethod,
-      boolean withTransition) {
-
-    final Map<String, TypeVariableName> types = new HashMap<>();
-
-    final TypeSpec.Builder stateUpdateClassBuilder =
-        TypeSpec.classBuilder(getStateUpdateClassName(updateStateMethod))
-            .addModifiers(Modifier.PRIVATE, Modifier.STATIC)
-            .addSuperinterface(ClassNames.COMPONENT_STATE_UPDATE);
-
-    for (TypeVariableName t : specModel.getTypeVariables()) {
-      types.put(t.name, t);
-    }
-
-    final String stateContainerClassNameWithTypeVars =
-        getStateContainerClassNameWithTypeVars(specModel);
-    MethodSpec.Builder updateStateMethodBuilder =
-        MethodSpec.methodBuilder(STATE_UPDATE_METHOD_NAME)
-            .addAnnotation(Override.class)
-            .addModifiers(Modifier.PUBLIC)
-            .addParameter(specModel.getStateContainerClass(), STATE_CONTAINER_PARAM_NAME)
-            .addStatement(
-                "$L $L = ($L) $L",
-                stateContainerClassNameWithTypeVars,
-                STATE_CONTAINER_NAME,
-                stateContainerClassNameWithTypeVars,
-                STATE_CONTAINER_PARAM_NAME);
-
-    // Add constructor and member fields.
-    MethodSpec.Builder constructor = MethodSpec.constructorBuilder();
-    for (MethodParamModel methodParam : updateStateMethod.methodParams) {
-      if (MethodParamModelUtils.isAnnotatedWith(methodParam, Param.class)) {
-        stateUpdateClassBuilder.addField(
-            methodParam.getTypeName(),
-            getMemberName(methodParam),
-            Modifier.PRIVATE);
-        constructor
-            .addParameter(methodParam.getTypeName(), methodParam.getName())
-            .addStatement("$L = $L", getMemberName(methodParam), methodParam.getName());
-
-        if (!specModel.hasInjectedDependencies()) {
-          for (TypeVariableName t : MethodParamModelUtils.getTypeVariables(methodParam)) {
-            types.put(t.name, t);
-          }
-        }
-      } else {
-        // Must be a StateValue<>.
-        updateStateMethodBuilder
-            .addStatement(
-                "$T $L = new $T()",
-                methodParam.getTypeName(),
-                methodParam.getName(),
-                methodParam.getTypeName())
-            .addStatement(
-                "$L.set($L.$L)",
-                methodParam.getName(),
-                STATE_CONTAINER_NAME,
-                methodParam.getName());
-      }
-    }
-
-    final String transitionLocalVarName = "transition";
-
-    if (withTransition) {
-      // Call the spec's update method and add transition to statecontainer's transition list.
-      updateStateMethodBuilder.addStatement(
-          "$T $N = $N.$N($L)",
-          ClassNames.TRANSITION,
-          transitionLocalVarName,
-          SpecModelUtils.getSpecAccessor(specModel),
-          updateStateMethod.name,
-          getParamsForSpecUpdateMethodCall(updateStateMethod));
-
-      updateStateMethodBuilder.addCode(
-          CodeBlock.builder()
-              .beginControlFlow("if ($L != null)", transitionLocalVarName)
-              .addStatement(
-                  "$N.$N.add($L)",
-                  STATE_CONTAINER_NAME,
-                  STATE_TRANSITIONS_FIELD_NAME,
-                  transitionLocalVarName)
-              .endControlFlow()
-              .build());
-    } else {
-      // Call the spec's update method.
-      updateStateMethodBuilder.addStatement(
-          "$N.$N($L)",
-          SpecModelUtils.getSpecAccessor(specModel),
-          updateStateMethod.name,
-          getParamsForSpecUpdateMethodCall(updateStateMethod));
-    }
-
-    // Set the new value of the state.
-    for (MethodParamModel methodParamModel : updateStateMethod.methodParams) {
-      if (!MethodParamModelUtils.isAnnotatedWith(methodParamModel, Param.class)) {
-        updateStateMethodBuilder.addStatement(
-            "$L.$L = $L.get()",
-            STATE_CONTAINER_NAME,
-            methodParamModel.getName(),
-            methodParamModel.getName());
-      }
-    }
-
-    stateUpdateClassBuilder.addTypeVariables(types.values());
-
-    return TypeSpecDataHolder.newBuilder()
-        .addType(stateUpdateClassBuilder
-            .addMethod(constructor.build())
-            .addMethod(updateStateMethodBuilder.build())
-            .build())
-        .build();
-  }
-
   static TypeSpecDataHolder generateLazyStateUpdateMethods(SpecModel specModel) {
     TypeSpecDataHolder.Builder dataHolder = TypeSpecDataHolder.newBuilder();
+    int index = 0;
     for (StateParamModel stateValue : specModel.getStateValues()) {
       if (stateValue.canUpdateLazily()) {
-        dataHolder.addTypeSpecDataHolder(generateLazyStateUpdateMethod(specModel, stateValue));
+        dataHolder.addTypeSpecDataHolder(
+            generateLazyStateUpdateMethod(specModel, stateValue, index++));
       }
     }
 
@@ -426,8 +288,7 @@ public class StateGenerator {
   }
 
   static TypeSpecDataHolder generateLazyStateUpdateMethod(
-      SpecModel specModel,
-      StateParamModel stateValue) {
+      SpecModel specModel, StateParamModel stateValue, int index) {
     final MethodSpec.Builder builder =
         MethodSpec.methodBuilder(
                 "lazyUpdate"
@@ -449,31 +310,13 @@ public class StateGenerator {
                 .endControlFlow()
                 .build());
 
-    final String stateContainerClassName = getStateContainerClassName(specModel);
-    final MethodSpec.Builder stateUpdate =
-        MethodSpec.methodBuilder(STATE_UPDATE_METHOD_NAME)
-            .addAnnotation(Override.class)
-            .addParameter(specModel.getStateContainerClass(), STATE_CONTAINER_PARAM_NAME)
-            .addModifiers(Modifier.PUBLIC)
-            .addStatement(
-                "$L $L = ($L) $L",
-                stateContainerClassName,
-                STATE_CONTAINER_NAME,
-                stateContainerClassName,
-                STATE_CONTAINER_PARAM_NAME)
-            .addStatement(
-                "$L.$L = $L",
-                STATE_CONTAINER_NAME,
-                stateValue.getName(),
-                LAZY_STATE_UPDATE_VALUE_PARAM);
-
-    final TypeSpec.Builder stateBuilderImpl =
-        TypeSpec.anonymousClassBuilder("")
-            .addSuperinterface(ClassNames.COMPONENT_STATE_UPDATE)
-            .addMethod(stateUpdate.build());
-
+    final int type = FLAG_LAZY | index;
     builder.addStatement(
-        "$T _stateUpdate = $L", ClassNames.COMPONENT_STATE_UPDATE, stateBuilderImpl.build());
+        "$T _stateUpdate = new $T($L, $L)",
+        ClassNames.COMPONENT_STATE_UPDATE,
+        ClassNames.COMPONENT_STATE_UPDATE,
+        type,
+        LAZY_STATE_UPDATE_VALUE_PARAM);
 
     builder.addStatement("c.updateStateLazy(_stateUpdate)");
 
@@ -486,30 +329,6 @@ public class StateGenerator {
     return methodName.substring(0, 1).toUpperCase(Locale.ROOT) +
         methodName.substring(1) +
         STATE_UPDATE_IMPL_NAME_SUFFIX;
-  }
-
-  private static String getMemberName(MethodParamModel methodParamModel) {
-    return "m" + methodParamModel.getName().substring(0, 1).toUpperCase() +
-        methodParamModel.getName().substring(1);
-  }
-
-  private static String getParamsForSpecUpdateMethodCall(
-      SpecMethodModel<UpdateStateMethod, Void> updateStateMethod) {
-    StringBuilder sb = new StringBuilder();
-    for (int i = 0, size = updateStateMethod.methodParams.size(); i < size; i++) {
-      MethodParamModel methodParam = updateStateMethod.methodParams.get(i);
-      if (MethodParamModelUtils.isAnnotatedWith(methodParam, Param.class)) {
-        sb.append(getMemberName(methodParam));
-      } else {
-        sb.append(methodParam.getName());
-      }
-
-      if (i < size - 1) {
-        sb.append(',');
-      }
-    }
-
-    return sb.toString();
   }
 
   private static String getStateContainerClassNameWithTypeVars(SpecModel specModel) {

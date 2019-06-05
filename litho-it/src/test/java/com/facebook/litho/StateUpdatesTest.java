@@ -55,29 +55,12 @@ public class StateUpdatesTest {
   private static final int LIFECYCLE_TEST_ID = 1;
   private static final int INITIAL_COUNT_STATE_VALUE = 4;
 
+  private static final int STATE_UPDATE_TYPE_NOOP = 0;
+  private static final int STATE_UPDATE_TYPE_INCREMENT = 1;
+  private static final int STATE_UPDATE_TYPE_MULTIPLY = 2;
+
   private int mWidthSpec;
   private int mHeightSpec;
-
-  private static class NoopStateUpdate implements StateUpdate {
-    @Override
-    public void updateState(StateContainer stateContainer) {}
-  }
-
-  private static class TestStateUpdate implements StateUpdate {
-    @Override
-    public void updateState(StateContainer stateContainer) {
-      TestStateContainer stateContainerImpl = (TestStateContainer) stateContainer;
-      stateContainerImpl.mCount = stateContainerImpl.mCount + 1;
-    }
-  }
-
-  private static class MultiplyStateUpdate implements StateUpdate {
-    @Override
-    public void updateState(StateContainer stateContainer) {
-      TestStateContainer stateContainerImpl = (TestStateContainer) stateContainer;
-      stateContainerImpl.mCount = stateContainerImpl.mCount * 2;
-    }
-  }
 
   static class TestComponent extends Component {
 
@@ -164,6 +147,34 @@ public class StateUpdatesTest {
 
   static class TestStateContainer extends StateContainer {
     protected int mCount;
+
+    @Override
+    public void applyStateUpdate(StateUpdate stateUpdate) {
+      switch (stateUpdate.type) {
+        case STATE_UPDATE_TYPE_NOOP:
+          break;
+
+        case STATE_UPDATE_TYPE_INCREMENT:
+          mCount += 1;
+          break;
+
+        case STATE_UPDATE_TYPE_MULTIPLY:
+          mCount *= 2;
+          break;
+      }
+    }
+  }
+
+  private static StateUpdate createNoopStateUpdate() {
+    return new StateUpdate(STATE_UPDATE_TYPE_NOOP);
+  }
+
+  private static StateUpdate createIncrementStateUpdate() {
+    return new StateUpdate(STATE_UPDATE_TYPE_INCREMENT);
+  }
+
+  private static StateUpdate createMultiplyStateUpdate() {
+    return new StateUpdate(STATE_UPDATE_TYPE_MULTIPLY);
   }
 
   private static final String mLogTag = "logTag";
@@ -310,7 +321,8 @@ public class StateUpdatesTest {
 
   @Test
   public void testKeepUpdatedStateValue() {
-    mComponentTree.updateStateAsync(mTestComponent.getGlobalKey(), new TestStateUpdate(), "test");
+    mComponentTree.updateStateAsync(
+        mTestComponent.getGlobalKey(), createIncrementStateUpdate(), "test");
     mLayoutThreadShadowLooper.runToEndOfTasks();
     TestStateContainer previousStateContainer =
         (TestStateContainer) getStateContainersMap().get(mTestComponent.getGlobalKey());
@@ -320,7 +332,8 @@ public class StateUpdatesTest {
 
   @Test
   public void testClearUnusedStateContainers() {
-    mComponentTree.updateStateSync(mTestComponent.getGlobalKey(), new TestStateUpdate(), "test");
+    mComponentTree.updateStateSync(
+        mTestComponent.getGlobalKey(), createIncrementStateUpdate(), "test");
 
     assertThat(getStateContainersMap().keySet().size()).isEqualTo(1);
     assertThat(getStateContainersMap().keySet().contains(mTestComponent.getGlobalKey())).isTrue();
@@ -331,7 +344,7 @@ public class StateUpdatesTest {
     mLithoView.setComponent(child1);
     mLithoView.onAttachedToWindow();
     ComponentTestHelper.measureAndLayout(mLithoView);
-    mComponentTree.updateStateSync(child1.getGlobalKey(), new TestStateUpdate(), "test");
+    mComponentTree.updateStateSync(child1.getGlobalKey(), createIncrementStateUpdate(), "test");
 
     assertThat(getStateContainersMap().keySet().size()).isEqualTo(1);
     assertThat(getStateContainersMap().keySet().contains("key")).isTrue();
@@ -339,7 +352,8 @@ public class StateUpdatesTest {
 
   @Test
   public void testClearAppliedStateUpdates() {
-    mComponentTree.updateStateAsync(mTestComponent.getGlobalKey(), new TestStateUpdate(), "test");
+    mComponentTree.updateStateAsync(
+        mTestComponent.getGlobalKey(), createIncrementStateUpdate(), "test");
     assertThat(getPendingStateUpdatesForComponent(mTestComponent)).hasSize(1);
     mLayoutThreadShadowLooper.runToEndOfTasks();
     assertThat(getPendingStateUpdatesForComponent(mTestComponent.getComponentForStateUpdate())).isNull();
@@ -347,10 +361,12 @@ public class StateUpdatesTest {
 
   @Test
   public void testEnqueueStateUpdate() {
-    mComponentTree.updateStateAsync(mTestComponent.getGlobalKey(), new TestStateUpdate(), "test");
+    mComponentTree.updateStateAsync(
+        mTestComponent.getGlobalKey(), createIncrementStateUpdate(), "test");
     assertThat(getPendingStateUpdatesForComponent(mTestComponent)).hasSize(1);
     mLayoutThreadShadowLooper.runToEndOfTasks();
-    mComponentTree.updateStateAsync(mTestComponent.getGlobalKey(), new TestStateUpdate(), "test");
+    mComponentTree.updateStateAsync(
+        mTestComponent.getGlobalKey(), createIncrementStateUpdate(), "test");
     assertThat(((TestStateContainer) getStateContainersMap().get(mTestComponent.getGlobalKey())).mCount).isEqualTo(INITIAL_COUNT_STATE_VALUE + 1);
     assertThat(getPendingStateUpdatesForComponent(mTestComponent.getComponentForStateUpdate())).hasSize(1);
   }
@@ -358,10 +374,12 @@ public class StateUpdatesTest {
   @Test
   public void testEnqueueStateUpdate_withExperiment() {
     setup(true, false);
-    mComponentTree.updateStateAsync(mTestComponent.getGlobalKey(), new TestStateUpdate(), "test");
+    mComponentTree.updateStateAsync(
+        mTestComponent.getGlobalKey(), createIncrementStateUpdate(), "test");
     assertThat(getPendingStateUpdatesForComponent(mTestComponent)).hasSize(1);
     mLayoutThreadShadowLooper.runToEndOfTasks();
-    mComponentTree.updateStateAsync(mTestComponent.getGlobalKey(), new TestStateUpdate(), "test");
+    mComponentTree.updateStateAsync(
+        mTestComponent.getGlobalKey(), createIncrementStateUpdate(), "test");
     assertThat(
             ((TestStateContainer) getStateContainersMap().get(mTestComponent.getGlobalKey()))
                 .mCount)
@@ -373,7 +391,8 @@ public class StateUpdatesTest {
   @Test
   public void testEnqueueStateUpdate_withExperiment_checkAppliedStateUpdate() {
     setup(true, false);
-    mComponentTree.updateStateAsync(mTestComponent.getGlobalKey(), new TestStateUpdate(), "test");
+    mComponentTree.updateStateAsync(
+        mTestComponent.getGlobalKey(), createIncrementStateUpdate(), "test");
     assertThat(getPendingStateUpdatesForComponent(mTestComponent)).hasSize(1);
     mLayoutThreadShadowLooper.runToEndOfTasks();
     assertThat(
@@ -392,7 +411,8 @@ public class StateUpdatesTest {
 
   @Test
   public void testUpdateState() {
-    mComponentTree.updateStateAsync(mTestComponent.getGlobalKey(), new TestStateUpdate(), "test");
+    mComponentTree.updateStateAsync(
+        mTestComponent.getGlobalKey(), createIncrementStateUpdate(), "test");
     mLayoutThreadShadowLooper.runToEndOfTasks();
     assertThat(mTestComponent.getComponentForStateUpdate().getCount()).isEqualTo(INITIAL_COUNT_STATE_VALUE + 1);
   }
@@ -402,7 +422,7 @@ public class StateUpdatesTest {
     setup(false, true);
     reset(mComponentTree);
 
-    mComponentTree.updateStateLazy(mTestComponent.getGlobalKey(), new TestStateUpdate());
+    mComponentTree.updateStateLazy(mTestComponent.getGlobalKey(), createIncrementStateUpdate());
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     verify(mComponentTree, never())
@@ -412,20 +432,21 @@ public class StateUpdatesTest {
 
   @Test
   public void testLazyUpdateState_isCommittedOnlyOnRelayout() {
-    mComponentTree.updateStateLazy(mTestComponent.getGlobalKey(), new TestStateUpdate());
+    mComponentTree.updateStateLazy(mTestComponent.getGlobalKey(), createIncrementStateUpdate());
     mLayoutThreadShadowLooper.runToEndOfTasks();
     assertThat(mTestComponent.getComponentForStateUpdate().getCount()).isEqualTo(INITIAL_COUNT_STATE_VALUE);
 
-    mComponentTree.updateStateAsync(mTestComponent.getGlobalKey(), new NoopStateUpdate(), "test");
+    mComponentTree.updateStateAsync(mTestComponent.getGlobalKey(), createNoopStateUpdate(), "test");
     mLayoutThreadShadowLooper.runToEndOfTasks();
     assertThat(mTestComponent.getComponentForStateUpdate().getCount()).isEqualTo(INITIAL_COUNT_STATE_VALUE + 1);
   }
 
   @Test
   public void testLazyUpdateState_isCommittedInCorrectOrder() {
-    mComponentTree.updateStateLazy(mTestComponent.getGlobalKey(), new TestStateUpdate());
-    mComponentTree.updateStateLazy(mTestComponent.getGlobalKey(), new MultiplyStateUpdate());
-    mComponentTree.updateStateAsync(mTestComponent.getGlobalKey(), new TestStateUpdate(), "test");
+    mComponentTree.updateStateLazy(mTestComponent.getGlobalKey(), createIncrementStateUpdate());
+    mComponentTree.updateStateLazy(mTestComponent.getGlobalKey(), createMultiplyStateUpdate());
+    mComponentTree.updateStateAsync(
+        mTestComponent.getGlobalKey(), createIncrementStateUpdate(), "test");
     mLayoutThreadShadowLooper.runToEndOfTasks();
     assertThat(mTestComponent.getComponentForStateUpdate().getCount())
         .isEqualTo((INITIAL_COUNT_STATE_VALUE + 1) * 2 + 1);
@@ -433,10 +454,11 @@ public class StateUpdatesTest {
 
   @Test
   public void testLazyUpdateState_everyLazyUpdateThatManagesToBeEnqueuedBeforeActualRelayoutGetsCommitted() {
-    mComponentTree.updateStateLazy(mTestComponent.getGlobalKey(), new TestStateUpdate());
-    mComponentTree.updateStateAsync(mTestComponent.getGlobalKey(), new MultiplyStateUpdate(), "test");
+    mComponentTree.updateStateLazy(mTestComponent.getGlobalKey(), createIncrementStateUpdate());
+    mComponentTree.updateStateAsync(
+        mTestComponent.getGlobalKey(), createMultiplyStateUpdate(), "test");
 
-    mComponentTree.updateStateLazy(mTestComponent.getGlobalKey(), new TestStateUpdate());
+    mComponentTree.updateStateLazy(mTestComponent.getGlobalKey(), createIncrementStateUpdate());
     mLayoutThreadShadowLooper.runToEndOfTasks();
     assertThat(mTestComponent.getComponentForStateUpdate().getCount())
         .isEqualTo((INITIAL_COUNT_STATE_VALUE + 1) * 2 + 1);
@@ -444,7 +466,8 @@ public class StateUpdatesTest {
 
   @Test
   public void testTransferState() {
-    mComponentTree.updateStateAsync(mTestComponent.getGlobalKey(), new TestStateUpdate(), "test");
+    mComponentTree.updateStateAsync(
+        mTestComponent.getGlobalKey(), createIncrementStateUpdate(), "test");
     mLayoutThreadShadowLooper.runToEndOfTasks();
     mComponentTree.setSizeSpec(mWidthSpec, mHeightSpec);
     assertThat(mTestComponent.getComponentForStateUpdate().getCount()).isEqualTo(INITIAL_COUNT_STATE_VALUE + 1);
@@ -452,10 +475,12 @@ public class StateUpdatesTest {
 
   @Test
   public void testTransferAndUpdateState() {
-    mComponentTree.updateStateAsync(mTestComponent.getGlobalKey(), new TestStateUpdate(), "test");
+    mComponentTree.updateStateAsync(
+        mTestComponent.getGlobalKey(), createIncrementStateUpdate(), "test");
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
-    mComponentTree.updateStateAsync(mTestComponent.getGlobalKey(), new TestStateUpdate(), "test");
+    mComponentTree.updateStateAsync(
+        mTestComponent.getGlobalKey(), createIncrementStateUpdate(), "test");
     mLayoutThreadShadowLooper.runToEndOfTasks();
     assertThat(mTestComponent.getComponentForStateUpdate().getCount()).isEqualTo(INITIAL_COUNT_STATE_VALUE + 2);
   }
@@ -464,7 +489,8 @@ public class StateUpdatesTest {
   public void testStateUpdateStats_updateAsyncIncrementsTotalCount() {
     final long before = LithoStats.getStateUpdates();
 
-    mComponentTree.updateStateAsync(mTestComponent.getGlobalKey(), new TestStateUpdate(), "test");
+    mComponentTree.updateStateAsync(
+        mTestComponent.getGlobalKey(), createIncrementStateUpdate(), "test");
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     final long after = LithoStats.getStateUpdates();
@@ -477,7 +503,8 @@ public class StateUpdatesTest {
     final long beforeSync = LithoStats.getStateUpdatesSync();
     final long beforeTotal = LithoStats.getStateUpdates();
 
-    mComponentTree.updateStateAsync(mTestComponent.getGlobalKey(), new TestStateUpdate(), "test");
+    mComponentTree.updateStateAsync(
+        mTestComponent.getGlobalKey(), createIncrementStateUpdate(), "test");
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     final long afterSync = LithoStats.getStateUpdatesSync();
@@ -492,7 +519,8 @@ public class StateUpdatesTest {
     final long beforeSync = LithoStats.getStateUpdatesSync();
     final long beforeTotal = LithoStats.getStateUpdates();
 
-    mComponentTree.updateStateSync(mTestComponent.getGlobalKey(), new TestStateUpdate(), "test");
+    mComponentTree.updateStateSync(
+        mTestComponent.getGlobalKey(), createIncrementStateUpdate(), "test");
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     final long afterSync = LithoStats.getStateUpdatesSync();
@@ -508,7 +536,7 @@ public class StateUpdatesTest {
     final long beforeLazy = LithoStats.getStateUpdatesLazy();
     final long beforeTotal = LithoStats.getStateUpdates();
 
-    mComponentTree.updateStateLazy(mTestComponent.getGlobalKey(), new TestStateUpdate());
+    mComponentTree.updateStateLazy(mTestComponent.getGlobalKey(), createIncrementStateUpdate());
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     final long afterLazy = LithoStats.getStateUpdatesLazy();
@@ -524,8 +552,9 @@ public class StateUpdatesTest {
     final long beforeLazy = LithoStats.getStateUpdatesLazy();
     final long beforeTotal = LithoStats.getStateUpdates();
 
-    mComponentTree.updateStateLazy(mTestComponent.getGlobalKey(), new TestStateUpdate());
-    mComponentTree.updateStateAsync(mTestComponent.getGlobalKey(), new TestStateUpdate(), "test");
+    mComponentTree.updateStateLazy(mTestComponent.getGlobalKey(), createIncrementStateUpdate());
+    mComponentTree.updateStateAsync(
+        mTestComponent.getGlobalKey(), createIncrementStateUpdate(), "test");
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     final long afterLazy = LithoStats.getStateUpdatesLazy();

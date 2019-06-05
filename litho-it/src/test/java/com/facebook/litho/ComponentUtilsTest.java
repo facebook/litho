@@ -313,5 +313,8 @@ public class ComponentUtilsTest {
     }
 
     StateTest() {}
+
+    @Override
+    public void applyStateUpdate(StateUpdate stateUpdate) {}
   }
 }

@@ -140,7 +140,7 @@ public class StateUpdatesWithReconciliationTest {
     InternalNode layout = current.getLayoutRoot();
 
     mComponentTree.updateStateSync(
-        current.getRootComponent().getGlobalKey(), new DummyStateUpdate(), "test");
+        current.getRootComponent().getGlobalKey(), createStateUpdate(), "test");
 
     verify(layout, times(1)).reconcile(any(), any());
   }
@@ -151,7 +151,7 @@ public class StateUpdatesWithReconciliationTest {
     InternalNode layout = current.getLayoutRoot();
 
     mComponentTree.updateStateAsync(
-        current.getRootComponent().getGlobalKey(), new DummyStateUpdate(), "test");
+        current.getRootComponent().getGlobalKey(), createStateUpdate(), "test");
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     verify(layout, times(1)).reconcile(any(), any());
@@ -163,7 +163,7 @@ public class StateUpdatesWithReconciliationTest {
     InternalNode layout = current.getLayoutRoot();
 
     mComponentTree.updateStateSync(
-        current.getRootComponent().getGlobalKey(), new DummyStateUpdate(), "test");
+        current.getRootComponent().getGlobalKey(), createStateUpdate(), "test");
 
     verify(layout, times(1)).reconcile(any(), any());
   }
@@ -203,13 +203,18 @@ public class StateUpdatesWithReconciliationTest {
 
   static class DummyStateContainer extends StateContainer {
     int mCount;
+
+    @Override
+    public void applyStateUpdate(StateUpdate stateUpdate) {
+      switch (stateUpdate.type) {
+        case 0:
+          mCount += 1;
+          break;
+      }
+    }
   }
 
-  private static class DummyStateUpdate implements StateContainer.StateUpdate {
-    @Override
-    public void updateState(StateContainer stateContainer) {
-      DummyStateContainer stateContainerImpl = (DummyStateContainer) stateContainer;
-      stateContainerImpl.mCount = stateContainerImpl.mCount + 1;
-    }
+  private StateContainer.StateUpdate createStateUpdate() {
+    return new StateContainer.StateUpdate(0);
   }
 }

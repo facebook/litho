@@ -19,11 +19,15 @@ package com.facebook.litho;
  * Implemented by the class used to store state within both Components and Sections to store state.
  */
 public abstract class StateContainer {
-  final void applyStateUpdate(StateUpdate stateUpdate) {
-    stateUpdate.updateState(this);
-  }
+  public abstract void applyStateUpdate(StateUpdate stateUpdate);
 
-  public interface StateUpdate {
-    void updateState(StateContainer stateContainer);
+  public static final class StateUpdate {
+    public final int type;
+    public final Object[] params;
+
+    public StateUpdate(int type, Object... params) {
+      this.type = type;
+      this.params = params;
+    }
   }
 }

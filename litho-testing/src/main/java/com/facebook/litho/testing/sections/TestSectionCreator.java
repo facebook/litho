@@ -16,12 +16,15 @@
 
 package com.facebook.litho.testing.sections;
 
+import com.facebook.litho.StateContainer;
 import com.facebook.litho.sections.Change;
 import com.facebook.litho.sections.ChangeSet;
 import com.facebook.litho.sections.Children;
 import com.facebook.litho.sections.Section;
 import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.SectionLifecycleTestUtil;
+import java.util.HashSet;
+import java.util.Set;
 import javax.annotation.Nullable;
 
 /**
@@ -184,6 +187,8 @@ public class TestSectionCreator {
     public int firstFullyVisibleIndex;
     public int lastFullyVisibleIndex;
 
+    private final StateContainer stateContainer = new TestStateContainer();
+
     protected TestSection(
         String simpleName, int initialCount, String key, boolean forceShouldUpdate) {
       super(simpleName);
@@ -211,6 +216,21 @@ public class TestSectionCreator {
     @Override
     public Section makeShallowCopy() {
       return this;
+    }
+
+    @Nullable
+    @Override
+    protected StateContainer getStateContainer() {
+      return stateContainer;
+    }
+  }
+
+  public static class TestStateContainer extends StateContainer {
+    public final Set<StateUpdate> appliedStateUpdate = new HashSet<>();
+
+    @Override
+    public void applyStateUpdate(StateUpdate stateUpdate) {
+      appliedStateUpdate.add(stateUpdate);
     }
   }
 }
