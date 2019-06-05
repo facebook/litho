@@ -48,6 +48,7 @@ import com.facebook.litho.annotations.TreeProp;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
+import javax.annotation.Generated;
 
 /**
  * @prop-required aspectRatio float
@@ -63,6 +64,7 @@ import java.util.List;
  * @prop-required prop6 long
  * @see com.facebook.litho.processor.integration.resources.TestLayoutSpec
  */
+@Generated("com.facebook.litho.specmodels.model.DefaultLayoutSpecGenerator")
 @TargetApi(17)
 public final class TestLayout<S extends View> extends Component implements TestTag {
   @Comparable(type = 14)

@@ -42,6 +42,7 @@ import com.facebook.litho.sections.Section;
 import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.SectionLifecycle;
 import java.util.BitSet;
+import javax.annotation.Generated;
 
 /**
  * Comment to be copied in generated section
@@ -55,6 +56,7 @@ import java.util.BitSet;
  * @prop-required prop5 com.facebook.litho.sections.Section
  * @see com.facebook.litho.sections.processor.integration.resources.FullGroupSectionSpec
  */
+@Generated("com.facebook.litho.sections.specmodels.model.DefaultGroupSectionSpecGenerator")
 final class FullGroupSection<T> extends Section implements TestTag {
   @Comparable(type = 14)
   private FullGroupSectionStateContainer mStateContainer;

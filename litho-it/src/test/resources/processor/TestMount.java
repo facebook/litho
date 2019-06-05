@@ -50,6 +50,7 @@ import com.facebook.litho.annotations.State;
 import com.facebook.litho.annotations.TreeProp;
 import java.util.Arrays;
 import java.util.BitSet;
+import javax.annotation.Generated;
 import javax.annotation.Nullable;
 
 /**
@@ -63,6 +64,7 @@ import javax.annotation.Nullable;
  * @prop-required prop8 long
  * @see com.facebook.litho.processor.integration.resources.TestMountSpec
  */
+@Generated("com.facebook.litho.specmodels.model.DefaultMountSpecGenerator")
 @TargetApi(17)
 public final class TestMount<S extends View> extends Component implements TestTag {
   @Comparable(type = 14)

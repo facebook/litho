@@ -28,6 +28,7 @@ import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ResourceResolver;
 import com.facebook.litho.testing.subcomponents.InspectableComponent;
+import javax.annotation.Generated;
 import javax.annotation.Nullable;
 import org.assertj.core.api.Condition;
 import org.assertj.core.api.Java6Assertions;
@@ -40,6 +41,7 @@ import org.assertj.core.description.TextDescription;
  * @prop-required myStringProp java.lang.String
  * @see com.facebook.litho.processor.integration.resources.BasicTestSampleSpec
  */
+@Generated("com.facebook.litho.specmodels.model.testing.DefaultTestSpecGenerator")
 public final class BasicTestSample implements BasicTestSampleSpec {
   public static Matcher matcher(ComponentContext c) {
     return new Matcher(c);
