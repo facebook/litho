@@ -16,8 +16,6 @@
 
 package com.facebook.litho.sections;
 
-import static com.facebook.litho.sections.SectionLifecycle.StateUpdate;
-
 import android.content.Context;
 import android.util.Log;
 import androidx.annotation.Nullable;
@@ -26,6 +24,7 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentsLogger;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.EventTrigger;
+import com.facebook.litho.StateContainer;
 import com.facebook.litho.TreeProps;
 import com.facebook.litho.widget.SectionsDebug;
 import java.lang.ref.WeakReference;
@@ -87,7 +86,7 @@ public class SectionContext extends ComponentContext {
    *
    * @param stateUpdate state update to perform
    */
-  public void updateStateSync(StateUpdate stateUpdate, String attribution) {
+  public void updateStateSync(StateContainer.StateUpdate stateUpdate, String attribution) {
     final Section section = mScope.get();
     final SectionTree sectionTree = mSectionTree;
     if (sectionTree == null || section == null) {
@@ -103,7 +102,7 @@ public class SectionContext extends ComponentContext {
     sectionTree.updateState(section.getGlobalKey(), stateUpdate, attribution);
   }
 
-  public void updateStateLazy(StateUpdate stateUpdate) {
+  public void updateStateLazy(StateContainer.StateUpdate stateUpdate) {
     final SectionTree sectionTree = mSectionTree;
     final Section section = mScope.get();
 
@@ -115,7 +114,7 @@ public class SectionContext extends ComponentContext {
    *
    * @param stateUpdate state update to perform
    */
-  public void updateStateAsync(StateUpdate stateUpdate, String attribution) {
+  public void updateStateAsync(StateContainer.StateUpdate stateUpdate, String attribution) {
     final Section section = mScope.get();
     final SectionTree sectionTree = mSectionTree;
     if (sectionTree == null || section == null) {

@@ -28,8 +28,8 @@ import androidx.recyclerview.widget.SnapHelper;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.ComponentLifecycle;
 import com.facebook.litho.Output;
+import com.facebook.litho.StateContainer;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import java.util.ArrayList;
 import java.util.List;
@@ -168,13 +168,13 @@ public class RecyclerSpecTest {
     }
 
     @Override
-    public void updateStateSync(ComponentLifecycle.StateUpdate stateUpdate, String attribution) {
+    public void updateStateSync(StateContainer.StateUpdate stateUpdate, String attribution) {
       super.updateStateSync(stateUpdate, attribution);
       mIsUpdateStateAsync = false;
     }
 
     @Override
-    public void updateStateAsync(ComponentLifecycle.StateUpdate stateUpdate, String attribution) {
+    public void updateStateAsync(StateContainer.StateUpdate stateUpdate, String attribution) {
       super.updateStateAsync(stateUpdate, attribution);
       mIsUpdateStateAsync = true;
     }

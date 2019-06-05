@@ -693,7 +693,7 @@ public class LayoutStateFutureReleaseTest {
     assertNotNull(layoutStateFutures[1]);
   }
 
-  final class TestStateUpdate implements ComponentLifecycle.StateUpdate {
+  final class TestStateUpdate implements StateContainer.StateUpdate {
 
     @Override
     public void updateState(StateContainer stateContainer) {}

@@ -428,7 +428,7 @@ public class StateGeneratorTest {
 
     assertThat(dataHolder.getTypeSpecs().get(0).toString())
         .isEqualTo(
-            "private static class UpdateCurrentStateStateUpdate<T extends java.lang.CharSequence> implements com.facebook.litho.ComponentLifecycle.StateUpdate {\n"
+            "private static class UpdateCurrentStateStateUpdate<T extends java.lang.CharSequence> implements com.facebook.litho.StateContainer.StateUpdate {\n"
                 + "  UpdateCurrentStateStateUpdate() {\n"
                 + "  }\n"
                 + "\n"
@@ -449,7 +449,7 @@ public class StateGeneratorTest {
 
     assertThat(dataHolder.getTypeSpecs().get(0).toString())
         .isEqualTo(
-            "private static class UpdateCurrentStateStateUpdate<T extends java.lang.CharSequence> implements com.facebook.litho.ComponentLifecycle.StateUpdate {\n"
+            "private static class UpdateCurrentStateStateUpdate<T extends java.lang.CharSequence> implements com.facebook.litho.StateContainer.StateUpdate {\n"
                 + "  UpdateCurrentStateStateUpdate() {\n"
                 + "  }\n"
                 + "\n"
@@ -473,7 +473,7 @@ public class StateGeneratorTest {
 
     assertThat(dataHolder.getTypeSpecs().get(0).toString())
         .isEqualTo(
-            "private static class UpdateCurrentStateStateUpdate<T extends java.lang.CharSequence> implements com.facebook.litho.ComponentLifecycle.StateUpdate {\n"
+            "private static class UpdateCurrentStateStateUpdate<T extends java.lang.CharSequence> implements com.facebook.litho.StateContainer.StateUpdate {\n"
                 + "  UpdateCurrentStateStateUpdate() {\n"
                 + "  }\n"
                 + "\n"
@@ -486,7 +486,7 @@ public class StateGeneratorTest {
 
     assertThat(dataHolder.getTypeSpecs().get(1).toString())
         .isEqualTo(
-            "private static class UpdateCurrentStateWithTransitionStateUpdate<T extends java.lang.CharSequence> implements com.facebook.litho.ComponentLifecycle.StateUpdate {\n"
+            "private static class UpdateCurrentStateWithTransitionStateUpdate<T extends java.lang.CharSequence> implements com.facebook.litho.StateContainer.StateUpdate {\n"
                 + "  UpdateCurrentStateWithTransitionStateUpdate() {\n"
                 + "  }\n"
                 + "\n"
@@ -516,7 +516,7 @@ public class StateGeneratorTest {
                 + "  if (_component == null) {\n"
                 + "    return;\n"
                 + "  }\n"
-                + "  com.facebook.litho.ComponentLifecycle.StateUpdate _stateUpdate = new com.facebook.litho.ComponentLifecycle.StateUpdate() {\n"
+                + "  com.facebook.litho.StateContainer.StateUpdate _stateUpdate = new com.facebook.litho.StateContainer.StateUpdate() {\n"
                 + "    @java.lang.Override\n"
                 + "    public void updateState(com.facebook.litho.StateContainer _stateContainer) {\n"
                 + "      TestWithStateStateContainer stateContainer = (TestWithStateStateContainer) _stateContainer;\n"
@@ -542,7 +542,7 @@ public class StateGeneratorTest {
                 + "  if (_component == null) {\n"
                 + "    return;\n"
                 + "  }\n"
-                + "  com.facebook.litho.ComponentLifecycle.StateUpdate _stateUpdate = new com.facebook.litho.ComponentLifecycle.StateUpdate() {\n"
+                + "  com.facebook.litho.StateContainer.StateUpdate _stateUpdate = new com.facebook.litho.StateContainer.StateUpdate() {\n"
                 + "    @java.lang.Override\n"
                 + "    public void updateState(com.facebook.litho.StateContainer _stateContainer) {\n"
                 + "      TestWithLazyGenStateContainer stateContainer = (TestWithLazyGenStateContainer) _stateContainer;\n"
@@ -568,7 +568,7 @@ public class StateGeneratorTest {
                 + "  if (_component == null) {\n"
                 + "    return;\n"
                 + "  }\n"
-                + "  com.facebook.litho.ComponentLifecycle.StateUpdate _stateUpdate = new com.facebook.litho.ComponentLifecycle.StateUpdate() {\n"
+                + "  com.facebook.litho.StateContainer.StateUpdate _stateUpdate = new com.facebook.litho.StateContainer.StateUpdate() {\n"
                 + "    @java.lang.Override\n"
                 + "    public void updateState(com.facebook.litho.StateContainer _stateContainer) {\n"
                 + "      TestWithLazyMethodGenStateContainer stateContainer = (TestWithLazyMethodGenStateContainer) _stateContainer;\n"

@@ -277,11 +277,6 @@ public class TestSpecModel implements SpecModel, HasEnclosedSpecModel {
   }
 
   @Override
-  public TypeName getUpdateStateInterface() {
-    return ClassNames.COMPONENT_STATE_UPDATE;
-  }
-
-  @Override
   public String getScopeMethodName() {
     return "getComponentScope";
   }

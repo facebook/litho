@@ -309,7 +309,7 @@ public class StateGenerator {
     final TypeSpec.Builder stateUpdateClassBuilder =
         TypeSpec.classBuilder(getStateUpdateClassName(updateStateMethod))
             .addModifiers(Modifier.PRIVATE, Modifier.STATIC)
-            .addSuperinterface(specModel.getUpdateStateInterface());
+            .addSuperinterface(ClassNames.COMPONENT_STATE_UPDATE);
 
     for (TypeVariableName t : specModel.getTypeVariables()) {
       types.put(t.name, t);
@@ -469,13 +469,11 @@ public class StateGenerator {
 
     final TypeSpec.Builder stateBuilderImpl =
         TypeSpec.anonymousClassBuilder("")
-            .addSuperinterface(specModel.getUpdateStateInterface())
+            .addSuperinterface(ClassNames.COMPONENT_STATE_UPDATE)
             .addMethod(stateUpdate.build());
 
     builder.addStatement(
-        "$T _stateUpdate = $L",
-        specModel.getUpdateStateInterface(),
-        stateBuilderImpl.build());
+        "$T _stateUpdate = $L", ClassNames.COMPONENT_STATE_UPDATE, stateBuilderImpl.build());
 
     builder.addStatement("c.updateStateLazy(_stateUpdate)");
 

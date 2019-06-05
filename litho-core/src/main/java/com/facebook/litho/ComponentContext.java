@@ -16,6 +16,8 @@
 
 package com.facebook.litho;
 
+import static com.facebook.litho.StateContainer.StateUpdate;
+
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
@@ -264,7 +266,7 @@ public class ComponentContext {
    *
    * @param stateUpdate state update to perform
    */
-  public void updateStateSync(ComponentLifecycle.StateUpdate stateUpdate, String attribution) {
+  public void updateStateSync(StateUpdate stateUpdate, String attribution) {
     checkIfNoStateUpdatesMethod();
 
     if (mComponentTree == null) {
@@ -279,7 +281,7 @@ public class ComponentContext {
    *
    * @param stateUpdate state update to perform
    */
-  public void updateStateAsync(ComponentLifecycle.StateUpdate stateUpdate, String attribution) {
+  public void updateStateAsync(StateUpdate stateUpdate, String attribution) {
     checkIfNoStateUpdatesMethod();
 
     if (mComponentTree == null) {
@@ -289,12 +291,11 @@ public class ComponentContext {
     mComponentTree.updateStateAsync(mComponentScope.getGlobalKey(), stateUpdate, attribution);
   }
 
-  public void updateStateWithTransition(
-      ComponentLifecycle.StateUpdate stateUpdate, String attribution) {
+  public void updateStateWithTransition(StateUpdate stateUpdate, String attribution) {
     updateStateAsync(stateUpdate, attribution);
   }
 
-  public void updateStateLazy(ComponentLifecycle.StateUpdate stateUpdate) {
+  public void updateStateLazy(StateUpdate stateUpdate) {
     if (mComponentTree == null) {
       return;
     }

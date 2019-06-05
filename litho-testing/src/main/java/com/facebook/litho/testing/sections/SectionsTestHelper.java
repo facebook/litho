@@ -99,13 +99,14 @@ public class SectionsTestHelper extends Section {
               @Nullable
               public Object answer(InvocationOnMock invocation) throws Throwable {
                 final Section scope = ((SectionContext) invocation.getMock()).getSectionScope();
-                final StateUpdate stateUpdate = (StateUpdate) invocation.getArguments()[0];
+                final StateContainer.StateUpdate stateUpdate =
+                    (StateContainer.StateUpdate) invocation.getArguments()[0];
                 stateUpdate.updateState(SectionLifecycleTestUtil.getStateContainer(scope));
                 return null;
               }
             })
         .when(spyContext)
-        .updateStateSync(any(StateUpdate.class), any(String.class));
+        .updateStateSync(any(StateContainer.StateUpdate.class), any(String.class));
 
     doAnswer(
             new Answer() {
@@ -113,13 +114,14 @@ public class SectionsTestHelper extends Section {
               @Nullable
               public Object answer(InvocationOnMock invocation) throws Throwable {
                 final Section scope = ((SectionContext) invocation.getMock()).getSectionScope();
-                final StateUpdate stateUpdate = (StateUpdate) invocation.getArguments()[0];
+                final StateContainer.StateUpdate stateUpdate =
+                    (StateContainer.StateUpdate) invocation.getArguments()[0];
                 stateUpdate.updateState(SectionLifecycleTestUtil.getStateContainer(scope));
                 return null;
               }
             })
         .when(spyContext)
-        .updateStateLazy(any(StateUpdate.class));
+        .updateStateLazy(any(StateContainer.StateUpdate.class));
 
     doReturn(mSectionContext.getResourceCache()).when(spyContext).getResourceCache();
 

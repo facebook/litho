@@ -908,7 +908,7 @@ public class SectionTreeTest {
     assertThat(testTarget.wasNotifyChangeSetCompleteCalledWithChangedData()).isFalse();
   }
 
-  private static class StateUpdate implements SectionLifecycle.StateUpdate {
+  private static class StateUpdate implements StateContainer.StateUpdate {
 
     private boolean mUpdateStateCalled;
 

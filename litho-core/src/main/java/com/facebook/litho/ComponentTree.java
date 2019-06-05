@@ -17,7 +17,6 @@
 package com.facebook.litho;
 
 import static android.os.Process.THREAD_PRIORITY_DEFAULT;
-import static com.facebook.litho.ComponentLifecycle.StateUpdate;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_LAYOUT_CALCULATE;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_PRE_ALLOCATE_MOUNT_CONTENT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_ATTRIBUTION;
@@ -26,6 +25,7 @@ import static com.facebook.litho.FrameworkLogEvents.PARAM_ROOT_COMPONENT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_TREE_DIFF_ENABLED;
 import static com.facebook.litho.HandlerInstrumenter.instrumentLithoHandler;
 import static com.facebook.litho.LayoutState.CalculateLayoutSource;
+import static com.facebook.litho.StateContainer.StateUpdate;
 import static com.facebook.litho.ThreadUtils.assertHoldsLock;
 import static com.facebook.litho.ThreadUtils.assertMainThread;
 import static com.facebook.litho.ThreadUtils.isMainThread;

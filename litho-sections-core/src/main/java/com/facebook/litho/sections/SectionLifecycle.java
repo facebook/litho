@@ -212,10 +212,6 @@ public abstract class SectionLifecycle implements EventDispatcher, EventTriggerT
     section.getScopedContext().getSectionTree().recordEventHandler(section, eventHandler);
   }
 
-  protected interface StateUpdate {
-    void updateState(StateContainer stateContainer);
-  }
-
   /**
    * Retrieves all of the tree props used by this Section from the TreeProps map
    * and sets the tree props as fields on the ComponentImpl.

@@ -95,7 +95,6 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
   private final ClassName mTransitionContainerClass;
   private final boolean mHasDeepCopy;
   private final boolean mShouldCheckIdInIsEquivalentToMethod;
-  private final TypeName mUpdateStateInterface;
   private final String mScopeMethodName;
   private final boolean mIsStylingSupported;
   private final List<SpecModelValidationError> mSpecModelValidationErrors;
@@ -144,7 +143,6 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
       ClassName transitionContainerClass,
       boolean hasDeepCopy,
       boolean shouldCheckIdInIsEquivalentToMethod,
-      TypeName updateStateInterface,
       String scopeMethodName,
       boolean isStylingSupported,
       List<SpecModelValidationError> specModelValidationErrors,
@@ -191,7 +189,6 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
     mTransitionContainerClass = transitionContainerClass;
     mHasDeepCopy = hasDeepCopy;
     mShouldCheckIdInIsEquivalentToMethod = shouldCheckIdInIsEquivalentToMethod;
-    mUpdateStateInterface = updateStateInterface;
     mScopeMethodName = scopeMethodName;
     mIsStylingSupported = isStylingSupported;
     mSpecModelValidationErrors = specModelValidationErrors;
@@ -370,11 +367,6 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
   }
 
   @Override
-  public TypeName getUpdateStateInterface() {
-    return mUpdateStateInterface;
-  }
-
-  @Override
   public ClassName getTransitionClass() {
     return mTransitionClass;
   }
@@ -508,7 +500,6 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
     private ClassName mTransitionContainerClass;
     private boolean mHasDeepCopy;
     private boolean mShouldCheckIdInIsEquivalentToMethod;
-    private TypeName mUpdateStateInterface;
     private String mScopeMethodName;
     private boolean mIsStylingSupported;
     private List<SpecModelValidationError> mSpecModelValidationErrors = ImmutableList.of();
@@ -717,7 +708,6 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
     }
 
     public Builder updateStateInterface(TypeName updateStateInterface) {
-      mUpdateStateInterface = updateStateInterface;
       return this;
     }
 
@@ -802,7 +792,6 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
           mTransitionContainerClass,
           mHasDeepCopy,
           mShouldCheckIdInIsEquivalentToMethod,
-          mUpdateStateInterface,
           mScopeMethodName,
           mIsStylingSupported,
           mSpecModelValidationErrors,
@@ -856,7 +845,6 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
           && Objects.equals(mStateContainerClass, builder.mStateContainerClass)
           && Objects.equals(mTransitionClass, builder.mTransitionClass)
           && Objects.equals(mTransitionContainerClass, builder.mTransitionContainerClass)
-          && Objects.equals(mUpdateStateInterface, builder.mUpdateStateInterface)
           && Objects.equals(mScopeMethodName, builder.mScopeMethodName)
           && Objects.equals(mSpecModelValidationErrors, builder.mSpecModelValidationErrors)
           && Objects.equals(mClassAnnotations, builder.mClassAnnotations)
@@ -904,7 +892,6 @@ public class MockSpecModel implements SpecModel, HasPureRender, HasEnclosedSpecM
           mTransitionContainerClass,
           mHasDeepCopy,
           mShouldCheckIdInIsEquivalentToMethod,
-          mUpdateStateInterface,
           mScopeMethodName,
           mIsStylingSupported,
           mSpecModelValidationErrors,

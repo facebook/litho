@@ -16,7 +16,7 @@
 
 package com.facebook.litho;
 
-import static com.facebook.litho.ComponentLifecycle.StateUpdate;
+import static com.facebook.litho.StateContainer.StateUpdate;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -201,7 +201,7 @@ public class StateHandler {
     // If there are no state updates pending for this component, simply store its current state.
     if (stateUpdatesForKey != null) {
       for (StateUpdate update : stateUpdatesForKey) {
-        update.updateState(component.getStateContainer());
+        component.getStateContainer().applyStateUpdate(update);
       }
 
       LithoStats.incStateUpdate(stateUpdatesForKey.size());
@@ -296,7 +296,7 @@ public class StateHandler {
 
     if (stateUpdatesForKey != null) {
       for (StateUpdate update : stateUpdatesForKey) {
-        update.updateState(container);
+        container.applyStateUpdate(update);
       }
     }
   }

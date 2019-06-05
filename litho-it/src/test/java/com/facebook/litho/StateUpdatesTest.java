@@ -16,9 +16,9 @@
 
 package com.facebook.litho;
 
-import static com.facebook.litho.ComponentLifecycle.StateUpdate;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
+import static com.facebook.litho.StateContainer.StateUpdate;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
@@ -162,7 +162,7 @@ public class StateUpdatesTest {
     }
   }
 
-  static class TestStateContainer implements StateContainer {
+  static class TestStateContainer extends StateContainer {
     protected int mCount;
   }
 

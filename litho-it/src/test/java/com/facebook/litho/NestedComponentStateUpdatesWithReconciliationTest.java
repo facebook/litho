@@ -343,11 +343,11 @@ public class NestedComponentStateUpdatesWithReconciliationTest {
     }
   }
 
-  static class DummyStateContainer implements StateContainer {
+  static class DummyStateContainer extends StateContainer {
     int mCount;
   }
 
-  private static class DummyStateUpdate implements ComponentLifecycle.StateUpdate {
+  private static class DummyStateUpdate implements StateContainer.StateUpdate {
     @Override
     public void updateState(StateContainer stateContainer) {
       DummyStateContainer stateContainerImpl = (DummyStateContainer) stateContainer;

@@ -39,7 +39,7 @@ public class StateContainerGenerator {
   static TypeSpec generate(SpecModel specModel) {
     final TypeSpec.Builder stateContainerClassBuilder =
         TypeSpec.classBuilder(getStateContainerClassName(specModel))
-            .addSuperinterface(specModel.getStateContainerClass())
+            .superclass(specModel.getStateContainerClass())
             .addAnnotation(
                 AnnotationSpec.builder(VisibleForTesting.class)
                     .addMember("otherwise", "$L", VisibleForTesting.PRIVATE)
