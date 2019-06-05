@@ -394,35 +394,6 @@ public class ComponentBodyGeneratorTest {
   }
 
   @Test
-  public void testOnUpdateStateMethods() {
-    TypeSpecDataHolder dataHolder =
-        ComponentBodyGenerator.generateOnUpdateStateMethods(mSpecModelDI);
-    assertThat(dataHolder.getMethodSpecs()).hasSize(1);
-    assertThat(dataHolder.getMethodSpecs().get(0).toString())
-        .isEqualTo(
-            "private com.facebook.litho.StateContainer.StateUpdate createTestUpdateStateMethodStateUpdate() {\n"
-                + "  return new com.facebook.litho.StateContainer.StateUpdate(0);\n"
-                + "}\n");
-  }
-
-  @Test
-  public void testOnUpdateStateWithTransitionMethods() {
-    TypeSpecDataHolder dataHolder =
-        ComponentBodyGenerator.generateOnUpdateStateMethods(mSpecModelWithTransitionDI);
-    assertThat(dataHolder.getMethodSpecs()).hasSize(2);
-    assertThat(dataHolder.getMethodSpecs().get(0).toString())
-        .isEqualTo(
-            "private com.facebook.litho.StateContainer.StateUpdate createTestUpdateStateMethodStateUpdate() {\n"
-                + "  return new com.facebook.litho.StateContainer.StateUpdate(0);\n"
-                + "}\n");
-    assertThat(dataHolder.getMethodSpecs().get(1).toString())
-        .isEqualTo(
-            "private com.facebook.litho.StateContainer.StateUpdate createTestUpdateStateWithTransitionMethodStateUpdate() {\n"
-                + "  return new com.facebook.litho.StateContainer.StateUpdate(1);\n"
-                + "}\n");
-  }
-
-  @Test
   public void testGetDynamicProps() {
     TypeSpecDataHolder dataHolder = ComponentBodyGenerator.generateGetDynamicProps(mSpecModelDI);
     assertThat(dataHolder.getMethodSpecs()).isEmpty();

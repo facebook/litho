@@ -166,14 +166,18 @@ public class StateGenerator {
 
   static TypeSpecDataHolder generateOnStateUpdateMethods(SpecModel specModel) {
     TypeSpecDataHolder.Builder dataHolder = TypeSpecDataHolder.newBuilder();
+    int index = 0;
     for (SpecMethodModel<UpdateStateMethod, Void> updateStateMethod :
         specModel.getUpdateStateMethods()) {
       dataHolder.addTypeSpecDataHolder(
-          generateOnStateUpdateMethod(specModel, updateStateMethod, StateUpdateType.DEFAULT));
+          generateOnStateUpdateMethod(
+              specModel, updateStateMethod, StateUpdateType.DEFAULT, index));
       dataHolder.addTypeSpecDataHolder(
-          generateOnStateUpdateMethod(specModel, updateStateMethod, StateUpdateType.ASYNC));
+          generateOnStateUpdateMethod(specModel, updateStateMethod, StateUpdateType.ASYNC, index));
       dataHolder.addTypeSpecDataHolder(
-          generateOnStateUpdateMethod(specModel, updateStateMethod, StateUpdateType.SYNC));
+          generateOnStateUpdateMethod(specModel, updateStateMethod, StateUpdateType.SYNC, index));
+
+      index++;
     }
 
     if (hasUpdateStateWithTransition(specModel)) {
@@ -181,7 +185,12 @@ public class StateGenerator {
           specModel.getUpdateStateWithTransitionMethods()) {
         dataHolder.addTypeSpecDataHolder(
             generateOnStateUpdateMethod(
-                specModel, updateStateWithTransitionMethod, StateUpdateType.WITH_TRANSITION));
+                specModel,
+                updateStateWithTransitionMethod,
+                StateUpdateType.WITH_TRANSITION,
+                index));
+
+        index++;
       }
     }
 
@@ -191,7 +200,8 @@ public class StateGenerator {
   static TypeSpecDataHolder generateOnStateUpdateMethod(
       SpecModel specModel,
       SpecMethodModel<UpdateStateMethod, Void> updateStateMethod,
-      StateUpdateType stateUpdateType) {
+      StateUpdateType stateUpdateType,
+      int index) {
 
     final String name;
     switch (stateUpdateType) {
@@ -225,31 +235,27 @@ public class StateGenerator {
                 .addStatement("return")
                 .endControlFlow()
                 .build());
-    final CodeBlock.Builder codeBlockBuilder = CodeBlock.builder();
-    final String componentName = specModel.getComponentName();
-    codeBlockBuilder.add(
-        "$T _stateUpdate = (($N) _component).$N(",
-        ClassNames.COMPONENT_STATE_UPDATE,
-        componentName,
-        "create" + getStateUpdateClassName(updateStateMethod));
 
-    boolean isFirstParam = true;
+    final CodeBlock.Builder codeBlockBuilder = CodeBlock.builder();
+    codeBlockBuilder.add(
+        "$T _stateUpdate = new $T($L",
+        ClassNames.COMPONENT_STATE_UPDATE,
+        ClassNames.COMPONENT_STATE_UPDATE,
+        index);
     for (MethodParamModel methodParam : updateStateMethod.methodParams) {
       if (MethodParamModelUtils.isAnnotatedWith(methodParam, Param.class)) {
-        if (!isFirstParam) {
-          codeBlockBuilder.add(", ");
-        } else {
-          isFirstParam = false;
-        }
-        builder.addParameter(methodParam.getTypeName(), methodParam.getName());
-        builder.addTypeVariables(MethodParamModelUtils.getTypeVariables(methodParam));
-        codeBlockBuilder.add(methodParam.getName());
+        final String paramName = methodParam.getName();
+
+        builder
+            .addParameter(methodParam.getTypeName(), paramName)
+            .addTypeVariables(MethodParamModelUtils.getTypeVariables(methodParam));
+
+        codeBlockBuilder.add(", ").add(paramName);
       }
     }
-
     codeBlockBuilder.add(");\n");
-
     builder.addCode(codeBlockBuilder.build());
+
 
     final String stateUpdateAttribution =
         '"' + specModel.getComponentName() + "." + updateStateMethod.name.toString() + '"';
@@ -321,14 +327,6 @@ public class StateGenerator {
     builder.addStatement("c.updateStateLazy(_stateUpdate)");
 
     return TypeSpecDataHolder.newBuilder().addMethod(builder.build()).build();
-  }
-
-  private static String getStateUpdateClassName(
-      SpecMethodModel<UpdateStateMethod, Void> updateMethod) {
-    String methodName = updateMethod.name.toString();
-    return methodName.substring(0, 1).toUpperCase(Locale.ROOT) +
-        methodName.substring(1) +
-        STATE_UPDATE_IMPL_NAME_SUFFIX;
   }
 
   private static String getStateContainerClassNameWithTypeVars(SpecModel specModel) {

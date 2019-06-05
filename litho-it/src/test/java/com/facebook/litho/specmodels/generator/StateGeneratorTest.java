@@ -374,7 +374,7 @@ public class StateGeneratorTest {
                 + "  if (_component == null) {\n"
                 + "    return;\n"
                 + "  }\n"
-                + "  com.facebook.litho.StateContainer.StateUpdate _stateUpdate = ((TestWithState) _component).createUpdateCurrentStateStateUpdate();\n"
+                + "  com.facebook.litho.StateContainer.StateUpdate _stateUpdate = new com.facebook.litho.StateContainer.StateUpdate(0);\n"
                 + "  c.updateStateAsync(_stateUpdate, \"TestWithState.updateCurrentState\");\n"
                 + "}\n");
 
@@ -385,7 +385,7 @@ public class StateGeneratorTest {
                 + "  if (_component == null) {\n"
                 + "    return;\n"
                 + "  }\n"
-                + "  com.facebook.litho.StateContainer.StateUpdate _stateUpdate = ((TestWithState) _component).createUpdateCurrentStateStateUpdate();\n"
+                + "  com.facebook.litho.StateContainer.StateUpdate _stateUpdate = new com.facebook.litho.StateContainer.StateUpdate(0);\n"
                 + "  c.updateStateAsync(_stateUpdate, \"TestWithState.updateCurrentState\");\n"
                 + "}\n");
 
@@ -396,7 +396,7 @@ public class StateGeneratorTest {
                 + "  if (_component == null) {\n"
                 + "    return;\n"
                 + "  }\n"
-                + "  com.facebook.litho.StateContainer.StateUpdate _stateUpdate = ((TestWithState) _component).createUpdateCurrentStateStateUpdate();\n"
+                + "  com.facebook.litho.StateContainer.StateUpdate _stateUpdate = new com.facebook.litho.StateContainer.StateUpdate(0);\n"
                 + "  c.updateStateSync(_stateUpdate, \"TestWithState.updateCurrentState\");\n"
                 + "}\n");
   }
@@ -415,7 +415,7 @@ public class StateGeneratorTest {
                 + "  if (_component == null) {\n"
                 + "    return;\n"
                 + "  }\n"
-                + "  com.facebook.litho.StateContainer.StateUpdate _stateUpdate = ((TestWithStateWithTransition) _component).createUpdateCurrentStateStateUpdate();\n"
+                + "  com.facebook.litho.StateContainer.StateUpdate _stateUpdate = new com.facebook.litho.StateContainer.StateUpdate(0);\n"
                 + "  c.updateStateWithTransition(_stateUpdate, \"TestWithStateWithTransition.updateCurrentState\");\n"
                 + "}\n");
   }

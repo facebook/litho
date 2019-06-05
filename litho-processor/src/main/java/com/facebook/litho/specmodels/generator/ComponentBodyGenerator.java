@@ -111,7 +111,6 @@ public class ComponentBodyGenerator {
     }
 
     builder.addTypeSpecDataHolder(generateCopyInterStageImpl(specModel));
-    builder.addTypeSpecDataHolder(generateOnUpdateStateMethods(specModel));
     builder.addTypeSpecDataHolder(generateMakeShallowCopy(specModel, hasState));
     builder.addTypeSpecDataHolder(generateGetDynamicProps(specModel));
     builder.addTypeSpecDataHolder(generateBindDynamicProp(specModel));
@@ -440,54 +439,6 @@ public class ComponentBodyGenerator {
     }
 
     return typeSpecDataHolder.build();
-  }
-
-  static TypeSpecDataHolder generateOnUpdateStateMethods(SpecModel specModel) {
-    TypeSpecDataHolder.Builder typeSpecDataHolder = TypeSpecDataHolder.newBuilder();
-
-    final ArrayList<SpecMethodModel<UpdateStateMethod, Void>> updateStateMethods =
-        new ArrayList<>(specModel.getUpdateStateMethods());
-
-    if (StateGenerator.hasUpdateStateWithTransition(specModel)) {
-      updateStateMethods.addAll(specModel.getUpdateStateWithTransitionMethods());
-    }
-
-    for (int i = 0; i < updateStateMethods.size(); i++) {
-      final SpecMethodModel<UpdateStateMethod, Void> updateStateMethodModel =
-          updateStateMethods.get(i);
-
-      final MethodSpec.Builder methodSpecBuilder =
-          MethodSpec.methodBuilder(getStateUpdateMethodName(updateStateMethodModel))
-              .addModifiers(Modifier.PRIVATE)
-              .returns(ClassNames.COMPONENT_STATE_UPDATE);
-
-      final List<MethodParamModel> params = getParams(updateStateMethodModel);
-      for (MethodParamModel param : params) {
-        methodSpecBuilder.addParameter(
-            ParameterSpec.builder(param.getTypeName(), param.getName()).build());
-      }
-
-      final CodeBlock.Builder implementation = CodeBlock.builder();
-      implementation.add("return new $T($L", ClassNames.COMPONENT_STATE_UPDATE, i);
-      for (int j = 0; j < params.size(); j++) {
-        implementation.add(", ").add(params.get(j).getName());
-      }
-      implementation.add(");\n");
-      methodSpecBuilder.addCode(implementation.build());
-
-      typeSpecDataHolder.addMethod(methodSpecBuilder.build());
-    }
-
-    return typeSpecDataHolder.build();
-  }
-
-  private static String getStateUpdateMethodName(
-      SpecMethodModel<UpdateStateMethod, Void> updateStateMethodModel) {
-    String methodName = updateStateMethodModel.name.toString();
-    return "create"
-        + methodName.substring(0, 1).toUpperCase(Locale.ROOT)
-        + methodName.substring(1)
-        + GeneratorConstants.STATE_UPDATE_NAME_SUFFIX;
   }
 
   static TypeSpecDataHolder generateMakeShallowCopy(SpecModel specModel, boolean hasState) {
