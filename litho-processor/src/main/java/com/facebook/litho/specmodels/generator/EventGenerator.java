@@ -176,7 +176,7 @@ public class EventGenerator {
     if (hasLazyStateParams) {
       methodSpec.addStatement(
           "$L stateContainer = getStateContainerWithLazyStateUpdatesApplied(c, $L)",
-          ComponentBodyGenerator.getStateContainerClassName(specModel),
+          StateContainerGenerator.getStateContainerClassName(specModel),
           REF_VARIABLE_NAME);
     }
 

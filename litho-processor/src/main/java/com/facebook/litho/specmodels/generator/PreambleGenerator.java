@@ -16,8 +16,8 @@
 
 package com.facebook.litho.specmodels.generator;
 
-import static com.facebook.litho.specmodels.generator.ComponentBodyGenerator.getStateContainerClassName;
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.STATE_CONTAINER_FIELD_NAME;
+import static com.facebook.litho.specmodels.generator.StateContainerGenerator.getStateContainerClassName;
 
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.squareup.javapoet.ClassName;

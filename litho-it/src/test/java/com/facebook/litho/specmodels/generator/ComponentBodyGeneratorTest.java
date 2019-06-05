@@ -213,60 +213,6 @@ public class ComponentBodyGeneratorTest {
   }
 
   @Test
-  public void testGenerateStateContainerImpl() {
-    assertThat(ComponentBodyGenerator.generateStateContainer(mSpecModelDI).toString())
-        .isEqualTo(
-            "@androidx.annotation.VisibleForTesting(\n"
-                + "    otherwise = 2\n"
-                + ")\n"
-                + "static class TestStateContainer implements com.facebook.litho.StateContainer {\n"
-                + "  @com.facebook.litho.annotations.State\n"
-                + "  @com.facebook.litho.annotations.Comparable(\n"
-                + "      type = 3\n"
-                + "  )\n"
-                + "  int arg1;\n"
-                + "}\n");
-  }
-
-  @Test
-  public void testGenerateStateContainerWithTransitionImpl() {
-    assertThat(ComponentBodyGenerator.generateStateContainer(mSpecModelWithTransitionDI).toString())
-        .isEqualTo(
-            "@androidx.annotation.VisibleForTesting(\n"
-                + "    otherwise = 2\n"
-                + ")\n"
-                + "static class TestWithTransitionStateContainer implements com.facebook.litho.StateContainer, "
-                + "com.facebook.litho.ComponentLifecycle.TransitionContainer {\n"
-                + "  @com.facebook.litho.annotations.State\n"
-                + "  @com.facebook.litho.annotations.Comparable(\n"
-                + "      type = 3\n"
-                + "  )\n"
-                + "  int arg1;\n"
-                + "\n"
-                + "  java.util.List<com.facebook.litho.Transition> _transitions = new java.util.ArrayList<>();\n"
-                + "\n"
-                + "  @java.lang.Override\n"
-                + "  public java.util.List<com.facebook.litho.Transition> consumeTransitions() {\n"
-                + "    if (_transitions.isEmpty()) {\n"
-                + "      return java.util.Collections.EMPTY_LIST;\n"
-                + "    }\n"
-                + "    java.util.List<com.facebook.litho.Transition> transitionsCopy;\n"
-                + "    synchronized (_transitions) {\n"
-                + "      transitionsCopy = new java.util.ArrayList<>(_transitions);\n"
-                + "      _transitions.clear();\n"
-                + "    }\n"
-                + "    return transitionsCopy;\n"
-                + "  }\n"
-                + "}\n");
-  }
-
-  @Test
-  public void testGetStateContainerClassName() {
-    assertThat(ComponentBodyGenerator.getStateContainerClassName(mSpecModelDI))
-        .isEqualTo("TestStateContainer");
-  }
-
-  @Test
   public void testGenerateStateContainerGetter() {
     assertThat(
             ComponentBodyGenerator.generateStateContainerGetter(ClassNames.STATE_CONTAINER)

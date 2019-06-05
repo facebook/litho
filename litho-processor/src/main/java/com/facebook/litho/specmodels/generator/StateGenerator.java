@@ -18,8 +18,10 @@ package com.facebook.litho.specmodels.generator;
 
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.STATE_CONTAINER_FIELD_NAME;
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.STATE_TRANSITIONS_FIELD_NAME;
+import static com.facebook.litho.specmodels.generator.StateContainerGenerator.getStateContainerClassName;
 
 import com.facebook.litho.annotations.Param;
+import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.MethodParamModel;
 import com.facebook.litho.specmodels.model.MethodParamModelUtils;
@@ -90,6 +92,8 @@ public class StateGenerator {
       return TypeSpecDataHolder.newBuilder().build();
     }
 
+    final String stateContainerClassNameWithTypeVars =
+        getStateContainerClassNameWithTypeVars(specModel);
     MethodSpec.Builder methodSpec =
         MethodSpec.methodBuilder("transferState")
             .addAnnotation(Override.class)
@@ -102,12 +106,12 @@ public class StateGenerator {
                     .build())
             .addStatement(
                 "$L prevStateContainer = ($L) _prevStateContainer",
-                ComponentBodyGenerator.getStateContainerClassNameWithTypeVars(specModel),
-                ComponentBodyGenerator.getStateContainerClassNameWithTypeVars(specModel))
+                stateContainerClassNameWithTypeVars,
+                stateContainerClassNameWithTypeVars)
             .addStatement(
                 "$L nextStateContainer = ($L) _nextStateContainer",
-                ComponentBodyGenerator.getStateContainerClassNameWithTypeVars(specModel),
-                ComponentBodyGenerator.getStateContainerClassNameWithTypeVars(specModel));
+                stateContainerClassNameWithTypeVars,
+                stateContainerClassNameWithTypeVars);
 
     for (StateParamModel stateValue : specModel.getStateValues()) {
       methodSpec.addStatement(
@@ -138,7 +142,7 @@ public class StateGenerator {
       return TypeSpecDataHolder.newBuilder().build();
     }
 
-    String stateContainerClassName = ComponentBodyGenerator.getStateContainerClassName(specModel);
+    final String stateContainerClassName = getStateContainerClassName(specModel);
     MethodSpec methodSpec =
         MethodSpec.methodBuilder("getStateContainerWithLazyStateUpdatesApplied")
             .addModifiers(Modifier.PRIVATE)
@@ -311,6 +315,8 @@ public class StateGenerator {
       types.put(t.name, t);
     }
 
+    final String stateContainerClassNameWithTypeVars =
+        getStateContainerClassNameWithTypeVars(specModel);
     MethodSpec.Builder updateStateMethodBuilder =
         MethodSpec.methodBuilder(STATE_UPDATE_METHOD_NAME)
             .addAnnotation(Override.class)
@@ -318,9 +324,9 @@ public class StateGenerator {
             .addParameter(specModel.getStateContainerClass(), STATE_CONTAINER_PARAM_NAME)
             .addStatement(
                 "$L $L = ($L) $L",
-                ComponentBodyGenerator.getStateContainerClassNameWithTypeVars(specModel),
+                stateContainerClassNameWithTypeVars,
                 STATE_CONTAINER_NAME,
-                ComponentBodyGenerator.getStateContainerClassNameWithTypeVars(specModel),
+                stateContainerClassNameWithTypeVars,
                 STATE_CONTAINER_PARAM_NAME);
 
     // Add constructor and member fields.
@@ -443,6 +449,7 @@ public class StateGenerator {
                 .endControlFlow()
                 .build());
 
+    final String stateContainerClassName = getStateContainerClassName(specModel);
     final MethodSpec.Builder stateUpdate =
         MethodSpec.methodBuilder(STATE_UPDATE_METHOD_NAME)
             .addAnnotation(Override.class)
@@ -450,9 +457,9 @@ public class StateGenerator {
             .addModifiers(Modifier.PUBLIC)
             .addStatement(
                 "$L $L = ($L) $L",
-                ComponentBodyGenerator.getStateContainerClassName(specModel),
+                stateContainerClassName,
                 STATE_CONTAINER_NAME,
-                ComponentBodyGenerator.getStateContainerClassName(specModel),
+                stateContainerClassName,
                 STATE_CONTAINER_PARAM_NAME)
             .addStatement(
                 "$L.$L = $L",
@@ -505,5 +512,25 @@ public class StateGenerator {
     }
 
     return sb.toString();
+  }
+
+  private static String getStateContainerClassNameWithTypeVars(SpecModel specModel) {
+    if (specModel.getStateValues().isEmpty()) {
+      return specModel.getStateContainerClass().toString();
+    }
+
+    final StringBuilder stringBuilder = new StringBuilder();
+
+    final ImmutableList<TypeVariableName> typeVariables = specModel.getTypeVariables();
+    if (!typeVariables.isEmpty()) {
+      stringBuilder.append("<");
+      for (int i = 0, size = typeVariables.size(); i < size - 1; i++) {
+        stringBuilder.append(typeVariables.get(i).name).append(", ");
+      }
+
+      stringBuilder.append(typeVariables.get(typeVariables.size() - 1)).append(">");
+    }
+
+    return getStateContainerClassName(specModel) + stringBuilder;
   }
 }
