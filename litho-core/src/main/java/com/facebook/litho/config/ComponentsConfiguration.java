@@ -163,7 +163,7 @@ public class ComponentsConfiguration {
   public static boolean enableShouldCreateLayoutWithNewSizeSpec = false;
 
   /** Assign transition keys to all LayoutOutputs, this enables Transition.allLayout() */
-  public static boolean assignTransitionKeysToAllOutputs = false;
+  public static boolean assignTransitionKeysToAllOutputs = true;
 
   public static boolean createPhantomLayoutOutputsForTransitions = false;
 
