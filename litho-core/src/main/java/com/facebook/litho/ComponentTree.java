@@ -1772,7 +1772,10 @@ public class ComponentTree {
     final PerfEvent layoutEvent =
         logger != null
             ? LogTreePopulator.populatePerfEventFromLogger(
-                mContext, logger, logger.newPerformanceEvent(mContext, EVENT_LAYOUT_CALCULATE))
+                mContext,
+                mContext.getTreeProps() == null ? treeProps : mContext.getTreeProps(),
+                logger,
+                logger.newPerformanceEvent(mContext, EVENT_LAYOUT_CALCULATE))
             : null;
 
     if (layoutEvent != null) {
