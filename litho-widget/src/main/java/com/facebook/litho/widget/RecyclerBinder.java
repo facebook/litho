@@ -672,20 +672,36 @@ public class RecyclerBinder
 
   @Override
   public void detach() {
-    if (!mEnableDetach) {
-      return;
-    }
-
-    final List<ComponentTreeHolder> toDetach = new ArrayList<>();
-    synchronized (this) {
-      for (int i = 0, size = mComponentTreeHolders.size(); i < size; i++) {
-        toDetach.add(mComponentTreeHolders.get(i));
+    if (ComponentsConfiguration.isReleaseComponentTreeInRecyclerBinder) {
+      // Since ComponentTree#release() can only be called on main thread, release the trees
+      // immediately if we're on main thread, or post a runnable on main thread.
+      if (ThreadUtils.isMainThread()) {
+        releaseComponentTreeHolders(mComponentTreeHolders);
+      } else {
+        final List<ComponentTreeHolder> toRelease;
+        synchronized (this) {
+          toRelease = new ArrayList<>(mComponentTreeHolders);
+        }
+        postReleaseComponentTreeHolders(toRelease);
       }
     }
+  }
 
-    for (int i = 0, size = toDetach.size(); i < size; i++) {
-      toDetach.get(i).acquireStateAndReleaseTree();
+  @UiThread
+  private static void releaseComponentTreeHolders(List<ComponentTreeHolder> holders) {
+    for (int i = 0, size = holders.size(); i < size; i++) {
+      holders.get(i).releaseTree();
     }
+  }
+
+  private void postReleaseComponentTreeHolders(final List<ComponentTreeHolder> holders) {
+    mMainThreadHandler.post(
+        new Runnable() {
+          @Override
+          public void run() {
+            releaseComponentTreeHolders(holders);
+          }
+        });
   }
 
   @UiThread
@@ -1186,11 +1202,13 @@ public class RecyclerBinder
   /** Replaces all items in the {@link RecyclerBinder} with the provided {@link RenderInfo}s. */
   @UiThread
   public final void replaceAll(List<RenderInfo> renderInfos) {
+    final List<ComponentTreeHolder> toRelease;
     synchronized (this) {
       if (mHasAsyncOperations) {
         throw new RuntimeException(
             "Trying to do a sync replaceAll when using asynchronous mutations!");
       }
+      toRelease = new ArrayList<>(mComponentTreeHolders);
       mComponentTreeHolders.clear();
       for (RenderInfo renderInfo : renderInfos) {
         mComponentTreeHolders.add(createComponentTreeHolder(renderInfo));
@@ -1198,6 +1216,12 @@ public class RecyclerBinder
     }
     mInternalAdapter.notifyDataSetChanged();
     mViewportManager.setShouldUpdate(true);
+
+    if (ComponentsConfiguration.isReleaseComponentTreeInRecyclerBinder) {
+      // When items are removed, the corresponding views might want to disappear with animations,
+      // therefore we post a runnable to release the ComponentTrees later.
+      postReleaseComponentTreeHolders(toRelease);
+    }
   }
 
   /**
@@ -1473,11 +1497,23 @@ public class RecyclerBinder
 
     final ComponentTreeHolder holder;
     synchronized (this) {
-      mComponentTreeHolders.remove(position);
+      holder = mComponentTreeHolders.remove(position);
     }
     mInternalAdapter.notifyItemRemoved(position);
 
     mViewportManager.setShouldUpdate(mViewportManager.removeAffectsVisibleRange(position, 1));
+
+    if (ComponentsConfiguration.isReleaseComponentTreeInRecyclerBinder) {
+      // When item is removed, the corresponding view might want to disappear with an animation,
+      // therefore we post a runnable to release the ComponentTree later.
+      mMainThreadHandler.post(
+          new Runnable() {
+            @Override
+            public void run() {
+              holder.releaseTree();
+            }
+          });
+    }
   }
 
   /**
@@ -1494,14 +1530,22 @@ public class RecyclerBinder
           SectionsDebug.TAG, "(" + hashCode() + ") removeRangeAt " + position + ", size: " + count);
     }
 
+    final List<ComponentTreeHolder> toRelease = new ArrayList<>();
     synchronized (this) {
       for (int i = 0; i < count; i++) {
-        mComponentTreeHolders.remove(position);
+        final ComponentTreeHolder holder = mComponentTreeHolders.remove(position);
+        toRelease.add(holder);
       }
     }
     mInternalAdapter.notifyItemRangeRemoved(position, count);
 
     mViewportManager.setShouldUpdate(mViewportManager.removeAffectsVisibleRange(position, count));
+
+    if (ComponentsConfiguration.isReleaseComponentTreeInRecyclerBinder) {
+      // When items are removed, the corresponding views might want to disappear with animations,
+      // therefore we post a runnable to release the ComponentTrees later.
+      postReleaseComponentTreeHolders(toRelease);
+    }
   }
 
   /**

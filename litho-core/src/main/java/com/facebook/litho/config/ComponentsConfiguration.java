@@ -239,4 +239,7 @@ public class ComponentsConfiguration {
    * can use the perf boost
    */
   public static boolean boostPerfLayoutStateFuture;
+
+  /** If true, release ComponentTrees held in RecyclerBinder when item are removed or detached. */
+  public static boolean isReleaseComponentTreeInRecyclerBinder;
 }

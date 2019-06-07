@@ -5057,6 +5057,7 @@ public class RecyclerBinderTest {
 
   @Test
   public void testItemsOnDetached() {
+    ComponentsConfiguration.isReleaseComponentTreeInRecyclerBinder = true;
     final int childHeightPx = 20;
     final int widthPx = 200;
     final int heightPx = 200;
@@ -5100,6 +5101,148 @@ public class RecyclerBinderTest {
     for (int i = rangeStart + rangeTotal + 1; i < 200; i++) {
       assertThat(components.get(i).wasOnDetachedCalled()).isFalse();
     }
+    ComponentsConfiguration.isReleaseComponentTreeInRecyclerBinder = false;
+  }
+
+  @Test
+  public void testOnDetachedWithRemoveItemAt() {
+    ComponentsConfiguration.isReleaseComponentTreeInRecyclerBinder = true;
+    final int childHeightPx = 20;
+    final int widthPx = 200;
+    final int heightPx = 200;
+
+    mRecyclerBinder = new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+    final RecyclerView rv = mock(RecyclerView.class);
+    mRecyclerBinder.mount(rv);
+
+    final List<RenderInfo> renderInfos = new ArrayList<>();
+    final List<TestComponent> components = new ArrayList<>();
+    for (int i = 0; i < 200; i++) {
+      final TestComponent component =
+          TestAttachDetachComponent.create(mComponentContext).heightPx(childHeightPx).build();
+      components.add(component);
+      final Component child = Column.create(mComponentContext).child(component).build();
+      renderInfos.add(ComponentRenderInfo.create().component(child).build());
+    }
+    mRecyclerBinder.insertRangeAt(0, renderInfos);
+    mRecyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+
+    Size size = new Size();
+    int widthSpec = SizeSpec.makeSizeSpec(widthPx, SizeSpec.EXACTLY);
+    int heightSpec = SizeSpec.makeSizeSpec(heightPx, SizeSpec.EXACTLY);
+    mRecyclerBinder.measure(size, widthSpec, heightSpec, null);
+
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+    ShadowLooper.runUiThreadTasks();
+
+    // Remove item at index 0.
+    mRecyclerBinder.removeItemAt(0);
+
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+    ShadowLooper.runUiThreadTasks();
+
+    assertThat(components.get(0).wasOnDetachedCalled()).isTrue();
+    ComponentsConfiguration.isReleaseComponentTreeInRecyclerBinder = false;
+  }
+
+  @Test
+  public void testOnDetachedWithRemoveRangeAt() {
+    ComponentsConfiguration.isReleaseComponentTreeInRecyclerBinder = true;
+    final int childHeightPx = 20;
+    final int widthPx = 200;
+    final int heightPx = 200;
+
+    mRecyclerBinder = new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+    final RecyclerView rv = mock(RecyclerView.class);
+    mRecyclerBinder.mount(rv);
+
+    final List<RenderInfo> renderInfos = new ArrayList<>();
+    final List<TestComponent> components = new ArrayList<>();
+    for (int i = 0; i < 200; i++) {
+      final TestComponent component =
+          TestAttachDetachComponent.create(mComponentContext).heightPx(childHeightPx).build();
+      components.add(component);
+      final Component child = Column.create(mComponentContext).child(component).build();
+      renderInfos.add(ComponentRenderInfo.create().component(child).build());
+    }
+    mRecyclerBinder.insertRangeAt(0, renderInfos);
+    mRecyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+
+    Size size = new Size();
+    int widthSpec = SizeSpec.makeSizeSpec(widthPx, SizeSpec.EXACTLY);
+    int heightSpec = SizeSpec.makeSizeSpec(heightPx, SizeSpec.EXACTLY);
+    mRecyclerBinder.measure(size, widthSpec, heightSpec, null);
+
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+    ShadowLooper.runUiThreadTasks();
+
+    // Remove first 5 items.
+    final int removeItemCount = 5;
+    mRecyclerBinder.removeRangeAt(0, removeItemCount);
+
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+    ShadowLooper.runUiThreadTasks();
+
+    for (int i = 0; i < removeItemCount; i++) {
+      assertThat(components.get(i).wasOnDetachedCalled()).isTrue();
+    }
+    ComponentsConfiguration.isReleaseComponentTreeInRecyclerBinder = false;
+  }
+
+  @Test
+  public void testOnDetachedWithReplaceAll() {
+    ComponentsConfiguration.isReleaseComponentTreeInRecyclerBinder = true;
+    final int childHeightPx = 20;
+    final int widthPx = 200;
+    final int heightPx = 200;
+
+    mRecyclerBinder = new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+    final RecyclerView rv = mock(RecyclerView.class);
+    mRecyclerBinder.mount(rv);
+
+    final List<RenderInfo> renderInfos = new ArrayList<>();
+    final List<TestComponent> components = new ArrayList<>();
+    for (int i = 0; i < 200; i++) {
+      final TestComponent component =
+          TestAttachDetachComponent.create(mComponentContext).heightPx(childHeightPx).build();
+      components.add(component);
+      final Component child = Column.create(mComponentContext).child(component).build();
+      renderInfos.add(ComponentRenderInfo.create().component(child).build());
+    }
+    mRecyclerBinder.insertRangeAt(0, renderInfos);
+    mRecyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+
+    final Size outSize = new Size();
+    int widthSpec = SizeSpec.makeSizeSpec(widthPx, SizeSpec.EXACTLY);
+    int heightSpec = SizeSpec.makeSizeSpec(heightPx, SizeSpec.EXACTLY);
+    mRecyclerBinder.measure(outSize, widthSpec, heightSpec, null);
+
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+    ShadowLooper.runUiThreadTasks();
+
+    // Replace all items.
+    final List<RenderInfo> newRenderInfos = new ArrayList<>();
+    for (int i = 0; i < 200; i++) {
+      final TestComponent component =
+          TestAttachDetachComponent.create(mComponentContext).heightPx(childHeightPx).build();
+      final Component child = Column.create(mComponentContext).child(component).build();
+      newRenderInfos.add(ComponentRenderInfo.create().component(child).build());
+    }
+    mRecyclerBinder.replaceAll(newRenderInfos);
+
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+    ShadowLooper.runUiThreadTasks();
+
+    final int rangeSize = heightPx / childHeightPx;
+    final int rangeStart = 0;
+    final int rangeTotal = (int) (rangeSize + (RANGE_RATIO * rangeSize));
+    for (int i = rangeStart; i <= rangeStart + rangeTotal; i++) {
+      assertThat(components.get(i).wasOnDetachedCalled()).isTrue();
+    }
+    for (int i = rangeStart + rangeTotal + 1; i < 200; i++) {
+      assertThat(components.get(i).wasOnDetachedCalled()).isFalse();
+    }
+    ComponentsConfiguration.isReleaseComponentTreeInRecyclerBinder = false;
   }
 
   private RecyclerBinder createRecyclerBinderWithMockAdapter(RecyclerView.Adapter adapterMock) {
