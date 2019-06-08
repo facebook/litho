@@ -15,9 +15,12 @@
  */
 package com.facebook.litho;
 
+import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.util.DisplayMetrics;
+import android.view.Display;
+import android.view.WindowManager;
 
 public class DoubleMeasureFixUtil {
 
@@ -31,19 +34,24 @@ public class DoubleMeasureFixUtil {
    * think the correct one is. Even though the double measure will still happen, the incorrect width
    * will not propagate to any vertical RecyclerViews contained within.
    */
-  public static int correctWidthSpecForAndroidDoubleMeasureBug(Resources resources, int widthSpec) {
+  public static int correctWidthSpecForAndroidDoubleMeasureBug(Context context, int widthSpec) {
     final @SizeSpec.MeasureSpecMode int mode = SizeSpec.getMode(widthSpec);
     if (mode == SizeSpec.UNSPECIFIED) {
       return widthSpec;
     }
+    Resources resources = context.getResources();
+    final Display display =
+        ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+    DisplayMetrics displayMetrics = new DisplayMetrics();
+    display.getMetrics(displayMetrics);
+    final int screenWidthPx = displayMetrics.widthPixels;
 
     final Configuration configuration = resources.getConfiguration();
-    final DisplayMetrics displayMetrics = resources.getDisplayMetrics();
-    final int screenWidthPx = displayMetrics.widthPixels;
     final float screenDensity = displayMetrics.density;
+    final float screenWidthDp = configuration.screenWidthDp;
 
     // NB: Logic taken from ViewRootImpl#dipToPx
-    final int calculatedScreenWidthPx = (int) (screenDensity * configuration.screenWidthDp + 0.5f);
+    final int calculatedScreenWidthPx = (int) (screenDensity * screenWidthDp + 0.5f);
 
     if (screenWidthPx != calculatedScreenWidthPx
         && calculatedScreenWidthPx == SizeSpec.getSize(widthSpec)) {

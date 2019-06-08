@@ -225,7 +225,7 @@ public class LithoViewTest {
   @Test
   public void testCorrectsDoubleMeasureBug() {
     mLithoView = setupLithoViewForDoubleMeasureTest(411, 2.625f, 1080);
-    mLithoView.measure(makeMeasureSpec(1079, EXACTLY), makeMeasureSpec(100, EXACTLY));
+    mLithoView.measure(makeMeasureSpec(1080, EXACTLY), makeMeasureSpec(100, EXACTLY));
 
     assertThat(mLithoView.getMeasuredWidth()).isEqualTo(1080);
     assertThat(mLithoView.getMeasuredHeight()).isEqualTo(100);
@@ -234,7 +234,7 @@ public class LithoViewTest {
   @Test
   public void testCorrectsDoubleMeasureBugWithAtMost() {
     mLithoView = setupLithoViewForDoubleMeasureTest(411, 2.625f, 1080);
-    mLithoView.measure(makeMeasureSpec(1079, AT_MOST), makeMeasureSpec(100, EXACTLY));
+    mLithoView.measure(makeMeasureSpec(1080, AT_MOST), makeMeasureSpec(100, EXACTLY));
 
     assertThat(mLithoView.getMeasuredWidth()).isEqualTo(1080);
     assertThat(mLithoView.getMeasuredHeight()).isEqualTo(100);
