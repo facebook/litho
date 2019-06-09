@@ -20,21 +20,10 @@ import com.fblitho.lithoktsample.NavigatableDemoActivity
 
 class AnimatedBadgeActivity : NavigatableDemoActivity() {
 
-  private var mPrevAssignTransitionKeysToAllOutputs: Boolean = false
-
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
-    mPrevAssignTransitionKeysToAllOutputs = ComponentsConfiguration.assignTransitionKeysToAllOutputs
-    ComponentsConfiguration.assignTransitionKeysToAllOutputs = true
-
     setContentView(
         LithoView.create(this, AnimatedBadge.create(ComponentContext(this)).build()))
-  }
-
-  override fun onDestroy() {
-    super.onDestroy()
-
-    ComponentsConfiguration.assignTransitionKeysToAllOutputs = mPrevAssignTransitionKeysToAllOutputs
   }
 }
