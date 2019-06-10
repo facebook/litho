@@ -1982,8 +1982,17 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
         copy = reconcile(updated.getScopedContext(), child, updated, keys);
       }
 
+      final YogaNode node = copy.getYogaNode();
+
+      // TODO: (T44691360) Investigate how the parent is non-null at this point.
+      String parent = getCurrentParent(node);
+      if (parent != null) {
+        throw new IllegalStateException(
+            "Copied node [" + copy.getSimpleName() + "] still has a parent [" + parent + "].");
+      }
+
       // 4.3 Add the child to the cloned yoga node
-      copiedNode.addChildAt(copy.getYogaNode(), i);
+      copiedNode.addChildAt(node, i);
     }
 
     if (isTracing) {
@@ -1991,6 +2000,18 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
     }
 
     return layout;
+  }
+
+  private static @Nullable String getCurrentParent(YogaNode node) {
+    YogaNode owner = node.getOwner();
+    if (owner != null) {
+      DefaultInternalNode layout = (DefaultInternalNode) owner.getData();
+      if (layout != null) {
+        return layout.getSimpleName();
+      }
+    }
+
+    return null;
   }
 
   /**
