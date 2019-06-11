@@ -22,3 +22,5 @@ file(GLOB yogacore_SRC yoga/*.cpp)
 add_library(yogacore STATIC ${yogacore_SRC})
 
 target_link_libraries(yogacore android log)
+target_include_directories(yogacore PRIVATE
+  ${CMAKE_CURRENT_SOURCE_DIR})
