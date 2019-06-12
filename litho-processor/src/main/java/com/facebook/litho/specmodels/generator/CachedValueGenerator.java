@@ -165,7 +165,7 @@ public class CachedValueGenerator {
     return methodSpec.build();
   }
 
-  private static TypeSpec createInputsClass(
+  public static TypeSpec createInputsClass(
       SpecModel specModel,
       SpecMethodModel<DelegateMethod, Void> onCalculateCachedValueMethod,
       String cachedValueName) {
@@ -187,15 +187,15 @@ public class CachedValueGenerator {
     typeSpec.addMethod(constructor.build());
 
     final int paramSize = onCalculateCachedValueMethod.methodParams.size();
-    if (paramSize > 0) {
-      MethodSpec.Builder hashCodeMethod =
-          MethodSpec.methodBuilder("hashCode")
-              .addAnnotation(Override.class)
-              .returns(TypeName.INT)
-              .addModifiers(Modifier.PUBLIC);
+    MethodSpec.Builder hashCodeMethod =
+        MethodSpec.methodBuilder("hashCode")
+            .addAnnotation(Override.class)
+            .returns(TypeName.INT)
+            .addModifiers(Modifier.PUBLIC);
 
-      CodeBlock.Builder codeBlock =
-          CodeBlock.builder().add("return $T.hash(", ClassNames.COMMON_UTILS);
+    CodeBlock.Builder codeBlock =
+        CodeBlock.builder().add("return $T.hash(", ClassNames.COMMON_UTILS);
+    if (paramSize > 0) {
       for (int i = 0; i < paramSize; i++) {
         if (i < paramSize - 1) {
           codeBlock.add("$L, ", onCalculateCachedValueMethod.methodParams.get(i).getName());
@@ -203,10 +203,11 @@ public class CachedValueGenerator {
           codeBlock.add("$L);\n", onCalculateCachedValueMethod.methodParams.get(i).getName());
         }
       }
-
-      hashCodeMethod.addCode(codeBlock.build());
-      typeSpec.addMethod(hashCodeMethod.build());
+    } else {
+      codeBlock.add("getClass());\n");
     }
+    hashCodeMethod.addCode(codeBlock.build());
+    typeSpec.addMethod(hashCodeMethod.build());
 
     MethodSpec.Builder equalsMethod =
         MethodSpec.methodBuilder("equals")
