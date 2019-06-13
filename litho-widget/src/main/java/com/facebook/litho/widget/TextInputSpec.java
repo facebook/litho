@@ -35,6 +35,8 @@ import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.text.method.ArrowKeyMovementMethod;
+import android.text.method.MovementMethod;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -151,6 +153,8 @@ import javax.annotation.Nullable;
  * @prop minLines Minimum number of lines to show.
  * @prop maxLines Maximum number of lines to show.
  * @prop textWatchers Used to register text watchers e.g. mentions detection.
+ * @prop movementMethod Used to set cursor positioning, scrolling and text selection functionality
+ *     in EditText
  * @see {@link EditText}
  */
 @MountSpec(
@@ -190,6 +194,9 @@ class TextInputSpec {
   @PropDefault static final boolean multiline = false;
   @PropDefault protected static final int minLines = 1;
   @PropDefault protected static final int maxLines = Integer.MAX_VALUE;
+
+  @PropDefault
+  protected static final MovementMethod movementMethod = ArrowKeyMovementMethod.getInstance();
 
   /** UI thread only; used in OnMount. */
   private static final Rect sBackgroundPaddingRect = new Rect();
@@ -265,6 +272,7 @@ class TextInputSpec {
         minLines,
         maxLines,
         cursorDrawableRes,
+        forMeasure.getMovementMethod(),
         // onMeasure happens:
         // 1. After initState before onMount: savedText = initText.
         // 2. After onMount before onUnmount: savedText preserved from underlying editText.
@@ -305,6 +313,7 @@ class TextInputSpec {
       int minLines,
       int maxLines,
       int cursorDrawableRes,
+      MovementMethod movementMethod,
       @Nullable CharSequence text) {
     if (multiline) {
       inputType |= EditorInfo.TYPE_CLASS_TEXT | EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE;
@@ -348,6 +357,7 @@ class TextInputSpec {
     editText.setCursorVisible(editable);
     editText.setTextColor(textColorStateList);
     editText.setHintTextColor(hintColorStateList);
+    editText.setMovementMethod(movementMethod);
 
     if (cursorDrawableRes != -1) {
       try {
@@ -401,6 +411,7 @@ class TextInputSpec {
       @Prop(optional = true) Diff<Integer> minLines,
       @Prop(optional = true) Diff<Integer> maxLines,
       @Prop(optional = true) Diff<Integer> cursorDrawableRes,
+      @Prop(optional = true) Diff<MovementMethod> movementMethod,
       @State Diff<Integer> measureSeqNumber) {
     if (!equals(measureSeqNumber.getPrevious(), measureSeqNumber.getNext())) {
       return true;
@@ -469,6 +480,9 @@ class TextInputSpec {
       }
     }
     if (!equals(cursorDrawableRes.getPrevious(), cursorDrawableRes.getNext())) {
+      return true;
+    }
+    if (!equals(movementMethod.getPrevious(), movementMethod.getNext())) {
       return true;
     }
     // Save the nastiest for last: trying to diff drawables.
@@ -567,6 +581,7 @@ class TextInputSpec {
       @Prop(optional = true) int maxLines,
       @Prop(optional = true) TextUtils.TruncateAt ellipsize,
       @Prop(optional = true) int cursorDrawableRes,
+      @Prop(optional = true) MovementMethod movementMethod,
       @State AtomicReference<CharSequence> savedText,
       @State AtomicReference<EditTextWithEventHandlers> mountedView) {
     mountedView.set(editText);
@@ -594,6 +609,7 @@ class TextInputSpec {
         minLines,
         maxLines,
         cursorDrawableRes,
+        movementMethod,
         // onMount happens:
         // 1. After initState: savedText = initText.
         // 2. After onUnmount: savedText preserved from underlying editText.
