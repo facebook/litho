@@ -389,10 +389,16 @@ public class ComponentContext {
 
   @Nullable
   public Object getCachedValue(Object cachedValueInputs) {
+    if (mComponentTree == null) {
+      return null;
+    }
     return mComponentTree.getCachedValue(cachedValueInputs);
   }
 
   public void putCachedValue(Object cachedValueInputs, Object cachedValue) {
+    if (mComponentTree == null) {
+      return;
+    }
     mComponentTree.putCachedValue(cachedValueInputs, cachedValue);
   }
 
