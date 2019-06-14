@@ -14,6 +14,7 @@
   - id: layout-specs
   - id: mount-specs
   - id: props
+  - id: common-props
   - id: state
   - id: layout
   - id: error-boundaries
