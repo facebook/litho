@@ -364,7 +364,7 @@ public class RecyclerBinder
       };
 
   public static class Builder {
-    public static final float DEFAULT_RANGE_RATIO = 4f;
+    public static final float DEFAULT_RANGE_RATIO = 2f;
 
     private float rangeRatio = DEFAULT_RANGE_RATIO;
     private LayoutInfo layoutInfo;
@@ -752,10 +752,7 @@ public class RecyclerBinder
             ? builder.overrideInternalAdapter
             : new InternalAdapter();
 
-    mRangeRatio =
-        ComponentsConfiguration.defaultRangeRatio >= 0
-            ? Math.min(builder.rangeRatio, ComponentsConfiguration.defaultRangeRatio)
-            : builder.rangeRatio;
+    mRangeRatio = builder.rangeRatio;
     mLayoutInfo = builder.layoutInfo;
     mLayoutHandlerFactory = builder.layoutHandlerFactory;
     mLithoViewFactory = builder.lithoViewFactory;
@@ -2488,10 +2485,7 @@ public class RecyclerBinder
           Math.max(mLayoutInfo.approximateRangeSize(size.width, size.height, width, height), 1);
 
       mSizeForMeasure = size;
-      mEstimatedViewportCount =
-          ComponentsConfiguration.fixedRangeSize >= 0
-              ? ComponentsConfiguration.fixedRangeSize
-              : rangeSize;
+      mEstimatedViewportCount = rangeSize;
     } finally {
       ComponentsSystrace.endSection();
     }

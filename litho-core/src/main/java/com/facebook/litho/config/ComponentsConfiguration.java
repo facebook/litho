@@ -216,9 +216,6 @@ public class ComponentsConfiguration {
   /** (Hopefully) temporary measure as we're investigating a major crash in libhwui. */
   public static boolean disableComponentHostPool = true;
 
-  public static float defaultRangeRatio = -1;
-  public static int fixedRangeSize = -1;
-
   public static boolean clearComponentHostPressState = false;
 
   // todo T40814333 clean up after running experiment.
