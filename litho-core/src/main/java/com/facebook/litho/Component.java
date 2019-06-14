@@ -2028,7 +2028,12 @@ public abstract class Component extends ComponentLifecycle
         @Override
         public @Nullable Object dispatchOnEvent(EventHandler eventHandler, Object eventState) {
           if (eventHandler.id == ERROR_EVENT_HANDLER_ID) {
-            throw new RuntimeException(((ErrorEvent) eventState).exception);
+            final Exception e = ((ErrorEvent) eventState).exception;
+            if (e instanceof RuntimeException) {
+              throw (RuntimeException) e;
+            } else {
+              throw new RuntimeException(e);
+            }
           }
           return null;
         }
