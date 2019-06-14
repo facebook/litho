@@ -290,7 +290,7 @@ public class RecyclerBinderConfiguration {
       return this;
     }
 
-    public Builder changeSetThreadHandler(LithoHandler changeSetThreadHandler) {
+    public Builder changeSetThreadHandler(@Nullable LithoHandler changeSetThreadHandler) {
       mChangeSetThreadHandler = changeSetThreadHandler;
       return this;
     }

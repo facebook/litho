@@ -1649,7 +1649,7 @@ public class SectionTree {
     private boolean mAsyncStateUpdates;
     private boolean mAsyncPropUpdates;
     private String mTag;
-    private LithoHandler mChangeSetThreadHandler;
+    private @Nullable LithoHandler mChangeSetThreadHandler;
     private boolean mForceSyncStateUpdates;
 
     private Builder(SectionContext componentContext, Target target) {
@@ -1663,7 +1663,7 @@ public class SectionTree {
      * An optional Handler where {@link ChangeSet} calculation should happen. If not provided the
      * framework will use its default background thread.
      */
-    public Builder changeSetThreadHandler(LithoHandler changeSetThreadHandler) {
+    public Builder changeSetThreadHandler(@Nullable LithoHandler changeSetThreadHandler) {
       mChangeSetThreadHandler = changeSetThreadHandler;
       return this;
     }

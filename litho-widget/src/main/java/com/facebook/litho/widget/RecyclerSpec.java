@@ -129,7 +129,7 @@ class RecyclerSpec {
   @OnPrepare
   static void onPrepare(
       ComponentContext c,
-      @Prop(optional = true) final EventHandler refreshHandler,
+      @Nullable @Prop(optional = true) final EventHandler refreshHandler,
       Output<OnRefreshListener> onRefreshListener) {
     if (refreshHandler != null) {
       onRefreshListener.set(
