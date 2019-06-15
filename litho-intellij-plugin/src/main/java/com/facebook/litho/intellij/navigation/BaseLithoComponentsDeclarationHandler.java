@@ -16,6 +16,8 @@
 package com.facebook.litho.intellij.navigation;
 
 import com.facebook.litho.intellij.LithoPluginUtils;
+import com.facebook.litho.intellij.logging.EventLogger;
+import com.facebook.litho.intellij.logging.LithoLoggerProvider;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.JavaPsiFacade;
 import com.intellij.psi.PsiClass;
@@ -49,24 +51,31 @@ class BaseLithoComponentsDeclarationHandler {
     }
     final Project project = sourceElement.getProject();
 
-    return resolve(sourceElement)
-        // Filter Component classes
-        .filter(PsiClass.class::isInstance)
-        .map(PsiClass.class::cast)
-        .filter(isComponentClass)
-        // Find Spec classes by name
-        .map(PsiClass::getQualifiedName)
-        .filter(Objects::nonNull)
-        .map(LithoPluginUtils::getLithoComponentSpecNameFromComponent)
-        .flatMap(
-            specName -> {
-              GlobalSearchScope scope = GlobalSearchScope.everythingScope(project);
-              return Stream.of(JavaPsiFacade.getInstance(project).findClasses(specName, scope));
-            })
-        // Filter Spec classes by implementation
-        .filter(hasComponentSpecAnnotation)
-        .findFirst()
-        .orElse(null);
+    PsiClass target =
+        resolve(sourceElement)
+            // Filter Component classes
+            .filter(PsiClass.class::isInstance)
+            .map(PsiClass.class::cast)
+            .filter(isComponentClass)
+            // Find Spec classes by name
+            .map(PsiClass::getQualifiedName)
+            .filter(Objects::nonNull)
+            .map(LithoPluginUtils::getLithoComponentSpecNameFromComponent)
+            .flatMap(
+                specName -> {
+                  GlobalSearchScope scope = GlobalSearchScope.everythingScope(project);
+                  return Stream.of(JavaPsiFacade.getInstance(project).findClasses(specName, scope));
+                })
+            // Filter Spec classes by implementation
+            .filter(hasComponentSpecAnnotation)
+            .findFirst()
+            .orElse(null);
+
+    if (target != null) {
+      LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_GOTO_NAVIGATION);
+    }
+
+    return target;
   }
 
   /**

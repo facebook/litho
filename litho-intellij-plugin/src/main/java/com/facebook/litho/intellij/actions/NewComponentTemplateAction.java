@@ -15,6 +15,8 @@
  */
 package com.facebook.litho.intellij.actions;
 
+import com.facebook.litho.intellij.logging.EventLogger;
+import com.facebook.litho.intellij.logging.LithoLoggerProvider;
 import com.intellij.icons.AllIcons;
 import com.intellij.ide.actions.CreateFileFromTemplateAction;
 import com.intellij.ide.actions.CreateFileFromTemplateDialog;
@@ -37,6 +39,8 @@ public class NewComponentTemplateAction extends CreateFileFromTemplateAction {
   @Override
   protected void buildDialog(
       Project project, PsiDirectory directory, CreateFileFromTemplateDialog.Builder builder) {
+    LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_NEW_TEMPLATE);
+
     builder
         .setTitle(TITLE)
         .addKind("Layout Component", AllIcons.Nodes.AbstractClass, "LayoutSpec")

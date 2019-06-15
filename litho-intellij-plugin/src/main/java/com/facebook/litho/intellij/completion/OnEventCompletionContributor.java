@@ -17,6 +17,8 @@ package com.facebook.litho.intellij.completion;
 
 import com.facebook.litho.intellij.LithoClassNames;
 import com.facebook.litho.intellij.LithoPluginUtils;
+import com.facebook.litho.intellij.logging.EventLogger;
+import com.facebook.litho.intellij.logging.LithoLoggerProvider;
 import com.intellij.codeInsight.completion.CompletionContributor;
 import com.intellij.codeInsight.completion.CompletionParameters;
 import com.intellij.codeInsight.completion.CompletionProvider;
@@ -112,6 +114,8 @@ public class OnEventCompletionContributor extends CompletionContributor {
                           insertionContext.getProject(),
                           insertionContext.getEditor(),
                           insertionContext.getFile());
+
+                  LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_ON_EVENT_COMPLETION);
                 })
             .appendTailText(" {...}", true)
             .withTypeText("LayoutSpec")

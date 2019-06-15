@@ -15,6 +15,8 @@
  */
 package com.facebook.litho.intellij.inspections;
 
+import com.facebook.litho.intellij.logging.EventLogger;
+import com.facebook.litho.intellij.logging.LithoLoggerProvider;
 import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.LayoutSpecModel;
 import com.facebook.litho.specmodels.model.SpecModelValidationError;
@@ -48,6 +50,9 @@ public class LayoutSpecAnnotator implements Annotator {
             .map(LayoutSpecAnnotator::createLayoutModel)
             .map(model -> model.validate(RunMode.normal()))
             .orElse(Collections.emptyList());
+    if (errors.size() > 0) {
+      LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_ANNOTATOR);
+    }
     errors.forEach(error -> addError(holder, error));
   }
 

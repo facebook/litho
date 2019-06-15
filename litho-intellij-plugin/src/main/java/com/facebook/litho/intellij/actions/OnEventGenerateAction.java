@@ -17,6 +17,8 @@ package com.facebook.litho.intellij.actions;
 
 import com.facebook.litho.intellij.LithoPluginUtils;
 import com.facebook.litho.intellij.completion.OnEventGenerateUtils;
+import com.facebook.litho.intellij.logging.EventLogger;
+import com.facebook.litho.intellij.logging.LithoLoggerProvider;
 import com.intellij.codeInsight.generation.ClassMember;
 import com.intellij.codeInsight.generation.GenerateMembersHandlerBase;
 import com.intellij.codeInsight.generation.GenerationInfo;
@@ -101,6 +103,8 @@ public class OnEventGenerateAction extends BaseGenerateAction {
       }
 
       OnEventGenerateUtils.addComment(aClass, customMethod);
+
+      LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_ON_EVENT_GENERATION);
 
       return new ClassMember[] {new PsiMethodMember(customMethod)};
     }

@@ -13,6 +13,10 @@
   </description>
   <version>0.0.3-SNAPSHOT</version>
   <change-notes><![CDATA[
+    <h2>0.0.3</h2>
+    <ul>
+      <li>Added logging as an extension point.</li>
+    </ul>
     <h2>0.0.2</h2>
     <ul>
       <li>On-the-go error check is enabled for LayoutSpec.</li>
@@ -34,6 +38,10 @@
     <vendor url="https://github.com/facebook/litho/tree/master/litho-intellij-plugin">
         Facebook,Inc.
     </vendor>
+
+  <extensionPoints>
+    <extensionPoint name="eventLogger" interface="com.facebook.litho.intellij.logging.EventLogger"/>
+  </extensionPoints>
 
   <extensions defaultExtensionNs="com.intellij">
     <gotoDeclarationHandler implementation="com.facebook.litho.intellij.navigation.SectionDeclarationHandler"/>
