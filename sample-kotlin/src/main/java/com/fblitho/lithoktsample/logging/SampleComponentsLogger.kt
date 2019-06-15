@@ -101,7 +101,6 @@ class SampleComponentsLogger : BaseComponentsLogger() {
                 FrameworkLogEvents.EVENT_SECTIONS_ON_CREATE_CHILDREN       -> "SECTIONS_ON_CREATE_CHILDREN"
                 FrameworkLogEvents.EVENT_SECTIONS_SET_ROOT                 -> "SECTIONS_SET_ROOT"
                 FrameworkLogEvents.EVENT_CALCULATE_LAYOUT_STATE            -> "CALCULATE_LAYOUT_STATE"
-                FrameworkLogEvents.EVENT_DRAW                              -> "DRAW"
                 else                                                       -> "UNKNOWN"
             }
 

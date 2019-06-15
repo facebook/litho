@@ -42,7 +42,7 @@ public interface FrameworkLogEvents {
   int EVENT_SECTIONS_ON_CREATE_CHILDREN = 14;
   int EVENT_SECTIONS_SET_ROOT = 15;
   int EVENT_CALCULATE_LAYOUT_STATE = 16;
-  int EVENT_DRAW = 17;
+  // Previously int EVENT_DRAW = 17; Now unused.
   int EVENT_BENCHMARK_RUN = 18;
   int EVENT_RESUME_CALCULATE_LAYOUT_STATE = 19;
 
@@ -56,7 +56,6 @@ public interface FrameworkLogEvents {
     FrameworkLogEvents.EVENT_SECTIONS_ON_CREATE_CHILDREN,
     FrameworkLogEvents.EVENT_SECTIONS_SET_ROOT,
     FrameworkLogEvents.EVENT_CALCULATE_LAYOUT_STATE,
-    FrameworkLogEvents.EVENT_DRAW,
     FrameworkLogEvents.EVENT_BENCHMARK_RUN,
     FrameworkLogEvents.EVENT_RESUME_CALCULATE_LAYOUT_STATE,
   })
