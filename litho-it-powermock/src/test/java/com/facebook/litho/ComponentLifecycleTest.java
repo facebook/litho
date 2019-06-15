@@ -302,7 +302,7 @@ public class ComponentLifecycleTest {
 
     when(LayoutState.resolveNestedTree(mContext, holder, 100, 100)).thenCallRealMethod();
     when(LayoutState.createAndMeasureTreeForComponent(
-            mContext, component, 100, 100, holder, null, null))
+            mContext, component, 100, 100, holder, null, null, null))
         .thenReturn(resolved);
 
     // call resolve nested tree 1st time
@@ -311,7 +311,7 @@ public class ComponentLifecycleTest {
     PowerMockito.verifyStatic();
 
     // it should call create and measure
-    LayoutState.createAndMeasureTreeForComponent(mContext, component, 100, 100, holder, null, null);
+    LayoutState.createAndMeasureTreeForComponent(mContext, component, 100, 100, holder, null, null, null);
 
     // should return nested tree next time
     when(holder.getNestedTree()).thenReturn(result);
@@ -324,7 +324,7 @@ public class ComponentLifecycleTest {
 
     // no new invocation of create
     PowerMockito.verifyStatic(times(1));
-    LayoutState.createAndMeasureTreeForComponent(mContext, component, 100, 100, holder, null, null);
+    LayoutState.createAndMeasureTreeForComponent(mContext, component, 100, 100, holder, null, null, null);
 
     // should only measure
     PowerMockito.verifyStatic(times(1));
@@ -356,7 +356,7 @@ public class ComponentLifecycleTest {
 
     when(LayoutState.resolveNestedTree(mContext, holder, 100, 100)).thenCallRealMethod();
     when(LayoutState.createAndMeasureTreeForComponent(
-            mContext, component, 100, 100, holder, null, null))
+            mContext, component, 100, 100, holder, null, null, null))
         .thenReturn(resolved);
 
     // call resolve nested tree 1st time
@@ -365,7 +365,7 @@ public class ComponentLifecycleTest {
     PowerMockito.verifyStatic();
 
     // it should call create and measure
-    LayoutState.createAndMeasureTreeForComponent(mContext, component, 100, 100, holder, null, null);
+    LayoutState.createAndMeasureTreeForComponent(mContext, component, 100, 100, holder, null, null, null);
 
     // should return nested tree next time
     when(holder.getNestedTree()).thenReturn(result);
@@ -378,7 +378,7 @@ public class ComponentLifecycleTest {
 
     // a new invocation of create
     PowerMockito.verifyStatic(times(2));
-    LayoutState.createAndMeasureTreeForComponent(mContext, component, 100, 100, holder, null, null);
+    LayoutState.createAndMeasureTreeForComponent(mContext, component, 100, 100, holder, null, null, null);
 
     ComponentsConfiguration.enableShouldCreateLayoutWithNewSizeSpec = false;
     ComponentsConfiguration.isNestedTreeResolutionExperimentEnabled = false;

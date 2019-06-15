@@ -25,9 +25,9 @@ import java.lang.annotation.RetentionPolicy;
  * supplied to the {@link ComponentContext} used to create the tree.
  */
 public interface FrameworkLogEvents {
-  int EVENT_CREATE_LAYOUT = 0;
-  int EVENT_CSS_LAYOUT = 1;
-  int EVENT_COLLECT_RESULTS = 2;
+  // Previously int EVENT_CREATE_LAYOUT = 0; Now unused.
+  // Previously int EVENT_CSS_LAYOUT = 1; Now unused.
+  // Previously int EVENT_COLLECT_RESULTS = 2; Now unused.
   int EVENT_LAYOUT_CALCULATE = 3;
   // Previously int EVENT_PREPARE_PART_DEFINITION = 4; Now unused.
   int EVENT_PREPARE_MOUNT = 5;
@@ -47,9 +47,6 @@ public interface FrameworkLogEvents {
   int EVENT_RESUME_CALCULATE_LAYOUT_STATE = 19;
 
   @IntDef({
-    FrameworkLogEvents.EVENT_CREATE_LAYOUT,
-    FrameworkLogEvents.EVENT_CSS_LAYOUT,
-    FrameworkLogEvents.EVENT_COLLECT_RESULTS,
     FrameworkLogEvents.EVENT_LAYOUT_CALCULATE,
     FrameworkLogEvents.EVENT_PREPARE_MOUNT,
     FrameworkLogEvents.EVENT_MOUNT,

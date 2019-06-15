@@ -29,13 +29,9 @@ import static com.facebook.litho.ComponentContext.NULL_LAYOUT;
 import static com.facebook.litho.ComponentLifecycle.MountType.NONE;
 import static com.facebook.litho.ContextUtils.getValidActivityForContext;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_CALCULATE_LAYOUT_STATE;
-import static com.facebook.litho.FrameworkLogEvents.EVENT_COLLECT_RESULTS;
-import static com.facebook.litho.FrameworkLogEvents.EVENT_CREATE_LAYOUT;
-import static com.facebook.litho.FrameworkLogEvents.EVENT_CSS_LAYOUT;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_RESUME_CALCULATE_LAYOUT_STATE;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_COMPONENT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_LAYOUT_STATE_SOURCE;
-import static com.facebook.litho.FrameworkLogEvents.PARAM_ROOT_COMPONENT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_TREE_DIFF_ENABLED;
 import static com.facebook.litho.MountItem.LAYOUT_FLAG_DISABLE_TOUCHABLE;
 import static com.facebook.litho.MountItem.LAYOUT_FLAG_DUPLICATE_PARENT_STATE;
@@ -1371,6 +1367,8 @@ class LayoutState {
           .flush();
     }
 
+    final DiffNode diffTreeRoot =
+        currentLayoutState != null ? currentLayoutState.mDiffTreeRoot : null;
     final LayoutState layoutState;
     try {
       final PerfEvent logLayoutState =
@@ -1381,6 +1379,7 @@ class LayoutState {
       if (logLayoutState != null) {
         logLayoutState.markerAnnotate(PARAM_COMPONENT, component.getSimpleName());
         logLayoutState.markerAnnotate(PARAM_LAYOUT_STATE_SOURCE, sourceToString(source));
+        logLayoutState.markerAnnotate(PARAM_TREE_DIFF_ENABLED, diffTreeRoot != null);
       }
 
       // Detect errors internal to components
@@ -1412,7 +1411,8 @@ class LayoutState {
                   heightSpec,
                   null, // nestedTreeHolder is null as this is measuring the root component tree.
                   isReconcilable ? currentLayoutState.mLayoutRoot : null,
-                  currentLayoutState != null ? currentLayoutState.mDiffTreeRoot : null)
+                  diffTreeRoot,
+                  logLayoutState)
               : layoutCreatedInWillRender;
 
       layoutState.mLayoutRoot = root;
@@ -1424,12 +1424,16 @@ class LayoutState {
         return layoutState;
       }
 
+      if (logLayoutState != null) {
+        logLayoutState.markerPoint("start_collect_results");
+      }
+
       setSizeAfterMeasureAndCollectResults(c, layoutState);
 
       if (logLayoutState != null) {
+        logLayoutState.markerPoint("end_collect_results");
         logger.logPerfEvent(logLayoutState);
       }
-
     } finally {
       if (isTracing) {
         ComponentsSystrace.endSection();
@@ -1497,7 +1501,8 @@ class LayoutState {
           heightSpec,
           null, // nestedTreeHolder is null as this is measuring the root component tree.)
           layoutState.mLayoutRoot,
-          layoutState.mDiffTreeRoot);
+          layoutState.mDiffTreeRoot,
+          logLayoutState);
 
       layoutState.mIsPartialLayoutState = false;
 
@@ -1520,7 +1525,6 @@ class LayoutState {
 
   private static void setSizeAfterMeasureAndCollectResults(
       ComponentContext c, LayoutState layoutState) {
-    ComponentsLogger logger = c.getLogger();
     final boolean isTracing = ComponentsSystrace.isTracing();
     final int widthSpec = layoutState.mWidthSpec;
     final int heightSpec = layoutState.mHeightSpec;
@@ -1559,12 +1563,6 @@ class LayoutState {
       return;
     }
 
-    final PerfEvent collectResultsEvent =
-        logger != null
-            ? LogTreePopulator.populatePerfEventFromLogger(
-                c, logger, logger.newPerformanceEvent(c, EVENT_COLLECT_RESULTS))
-            : null;
-
     collectResults(c, root, layoutState, null);
 
     if (isTracing) {
@@ -1574,12 +1572,6 @@ class LayoutState {
     Collections.sort(layoutState.mMountableOutputBottoms, sBottomsComparator);
     if (isTracing) {
       ComponentsSystrace.endSection();
-    }
-
-    if (collectResultsEvent != null) {
-      collectResultsEvent.markerAnnotate(
-          FrameworkLogEvents.PARAM_ROOT_COMPONENT, root.getTailComponent().getSimpleName());
-      logger.logPerfEvent(collectResultsEvent);
     }
 
     if (!c.isReconciliationEnabled()
@@ -1712,31 +1704,11 @@ class LayoutState {
   @VisibleForTesting
   static InternalNode createTree(
       Component component, ComponentContext context, @Nullable InternalNode current) {
-
-    final ComponentsLogger logger = context.getLogger();
-    final PerfEvent createLayoutPerfEvent =
-        logger != null
-            ? LogTreePopulator.populatePerfEventFromLogger(
-                context, logger, logger.newPerformanceEvent(context, EVENT_CREATE_LAYOUT))
-            : null;
-
-    if (createLayoutPerfEvent != null) {
-      createLayoutPerfEvent.markerAnnotate(PARAM_COMPONENT, component.getSimpleName());
-    }
-
-    final InternalNode root;
-
     if (current != null) {
-      root = current.reconcile(context, component);
-    } else {
-      root = component.createLayout(context, true /* resolveNestedTree */);
+      return current.reconcile(context, component);
     }
 
-    if (createLayoutPerfEvent != null) {
-      logger.logPerfEvent(createLayoutPerfEvent);
-    }
-
-    return root;
+    return component.createLayout(context, true /* resolveNestedTree */);
   }
 
   @VisibleForTesting
@@ -1745,8 +1717,6 @@ class LayoutState {
       int widthSpec,
       int heightSpec,
       DiffNode previousDiffTreeRoot) {
-    final ComponentContext context = root.getContext();
-    final Component component = root.getTailComponent();
     final boolean isTracing = ComponentsSystrace.isTracing();
 
     if (isTracing) {
@@ -1766,18 +1736,6 @@ class LayoutState {
       ComponentsSystrace.endSection(/* applyDiffNode */);
     }
 
-    final ComponentsLogger logger = context.getLogger();
-    final PerfEvent layoutEvent =
-        logger != null
-            ? LogTreePopulator.populatePerfEventFromLogger(
-                context, logger, logger.newPerformanceEvent(context, EVENT_CSS_LAYOUT))
-            : null;
-
-    if (layoutEvent != null) {
-      layoutEvent.markerAnnotate(PARAM_TREE_DIFF_ENABLED, previousDiffTreeRoot != null);
-      layoutEvent.markerAnnotate(PARAM_ROOT_COMPONENT, root.getTailComponent().getSimpleName());
-    }
-
     root.calculateLayout(
         SizeSpec.getMode(widthSpec) == SizeSpec.UNSPECIFIED
             ? YogaConstants.UNDEFINED
@@ -1785,10 +1743,6 @@ class LayoutState {
         SizeSpec.getMode(heightSpec) == SizeSpec.UNSPECIFIED
             ? YogaConstants.UNDEFINED
             : SizeSpec.getSize(heightSpec));
-
-    if (layoutEvent != null) {
-      logger.logPerfEvent(layoutEvent);
-    }
 
     if (isTracing) {
       ComponentsSystrace.endSection(/* measureTree */ );
@@ -1860,7 +1814,8 @@ class LayoutState {
                   heightSpec,
                   holder,
                   null,
-                  holder.getDiffNode()); // Was set while traversing the holder's tree.
+                  holder.getDiffNode(), // Was set while traversing the holder's tree.
+                  null);
         }
 
         resolvedLayout.setLastWidthSpec(widthSpec);
@@ -1900,7 +1855,8 @@ class LayoutState {
       Component component,
       int widthSpec,
       int heightSpec) {
-    return createAndMeasureTreeForComponent(c, component, widthSpec, heightSpec, null, null, null);
+    return createAndMeasureTreeForComponent(
+        c, component, widthSpec, heightSpec, null, null, null, null);
   }
 
   @VisibleForTesting
@@ -1911,7 +1867,12 @@ class LayoutState {
       int heightSpec,
       @Nullable InternalNode nestedTreeHolder, // Will be set iff resolving a nested tree.
       @Nullable InternalNode current,
-      @Nullable DiffNode diffTreeRoot) {
+      @Nullable DiffNode diffTreeRoot,
+      @Nullable PerfEvent layoutStatePerfEvent) {
+
+    if (layoutStatePerfEvent != null) {
+      layoutStatePerfEvent.markerPoint("start_create_layout");
+    }
 
     component.updateInternalChildState(c);
 
@@ -1946,6 +1907,10 @@ class LayoutState {
     c.setWidthSpec(previousWidthSpec);
     c.setHeightSpec(previousHeightSpec);
 
+    if (layoutStatePerfEvent != null) {
+      layoutStatePerfEvent.markerPoint("end_create_layout");
+    }
+
     if (root == NULL_LAYOUT || c.wasLayoutInterrupted()) {
       return root;
     }
@@ -1961,11 +1926,19 @@ class LayoutState {
       root.layoutDirection(YogaDirection.RTL);
     }
 
+    if (layoutStatePerfEvent != null) {
+      layoutStatePerfEvent.markerPoint("start_measure");
+    }
+
     measureTree(
         root,
         widthSpec,
         heightSpec,
         diffTreeRoot);
+
+    if (layoutStatePerfEvent != null) {
+      layoutStatePerfEvent.markerPoint("end_measure");
+    }
 
     return root;
   }
@@ -1977,7 +1950,8 @@ class LayoutState {
       int heightSpec,
       @Nullable InternalNode nestedTreeHolder, // Will be set iff resolving a nested tree.
       InternalNode root,
-      @Nullable DiffNode diffTreeRoot) {
+      @Nullable DiffNode diffTreeRoot,
+      @Nullable PerfEvent logLayoutState) {
     resumeCreateTree(c, root);
 
     if (root == NULL_LAYOUT) {
@@ -1995,7 +1969,15 @@ class LayoutState {
       root.layoutDirection(YogaDirection.RTL);
     }
 
+    if (logLayoutState != null) {
+      logLayoutState.markerPoint("start_measure");
+    }
+
     measureTree(root, widthSpec, heightSpec, diffTreeRoot);
+
+    if (logLayoutState != null) {
+      logLayoutState.markerPoint("end_measure");
+    }
 
     return root;
   }

@@ -92,9 +92,6 @@ class SampleComponentsLogger : BaseComponentsLogger() {
 
     private fun getEventNameById(@FrameworkLogEvents.LogEventId markerId: Int): String =
             when (markerId) {
-                FrameworkLogEvents.EVENT_CREATE_LAYOUT                     -> "CREATE_LAYOUT"
-                FrameworkLogEvents.EVENT_CSS_LAYOUT                        -> "CSS_LAYOUT"
-                FrameworkLogEvents.EVENT_COLLECT_RESULTS                   -> "COLLECT_RESULTS"
                 FrameworkLogEvents.EVENT_LAYOUT_CALCULATE                  -> "LAYOUT_CALCULATE"
                 FrameworkLogEvents.EVENT_PREPARE_MOUNT                     -> "PREPARE_MOUNT"
                 FrameworkLogEvents.EVENT_MOUNT                             -> "MOUNT"
