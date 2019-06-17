@@ -16,6 +16,7 @@
     <h2>0.0.3</h2>
     <ul>
       <li>Added logging as an extension point.</li>
+      <li>Fixed event completion return value.</li>
     </ul>
     <h2>0.0.2</h2>
     <ul>

@@ -15,11 +15,14 @@
  */
 package com.facebook.litho.intellij.completion;
 
+import com.facebook.litho.annotations.Event;
 import com.facebook.litho.intellij.LithoClassNames;
 import com.facebook.litho.intellij.LithoPluginUtils;
+import com.intellij.codeInsight.AnnotationUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.JavaPsiFacade;
 import com.intellij.psi.PsiClass;
+import com.intellij.psi.PsiClassObjectAccessExpression;
 import com.intellij.psi.PsiComment;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementFactory;
@@ -30,8 +33,10 @@ import com.intellij.psi.PsiModifierList;
 import com.intellij.psi.PsiParameter;
 import com.intellij.psi.PsiParameterList;
 import com.intellij.psi.PsiType;
+import com.intellij.psi.PsiTypeElement;
 import com.intellij.psi.search.GlobalSearchScope;
 import java.util.Collection;
+import java.util.Optional;
 
 /**
  * Helper class for Litho {@literal @OnEvent} method related code generation. Details about this
@@ -68,7 +73,7 @@ public class OnEventGenerateUtils {
     final Project project = context.getProject();
     final PsiElementFactory factory = JavaPsiFacade.getElementFactory(project);
 
-    final PsiType methodReturnType = PsiType.VOID;
+    final PsiType methodReturnType = getEventReturnType(eventClass);
     final String methodName = "on" + eventClass.getName();
     final PsiMethod method = factory.createMethod(methodName, methodReturnType, context);
 
@@ -109,6 +114,17 @@ public class OnEventGenerateUtils {
     methodModifierList.setModifierProperty(PsiModifier.STATIC, true);
 
     return method;
+  }
+
+  private static PsiType getEventReturnType(PsiClass eventClass) {
+    return Optional.of(eventClass)
+        .map(cls -> AnnotationUtil.findAnnotation(eventClass, Event.class.getTypeName()))
+        .map(psiAnnotation -> psiAnnotation.findAttributeValue("returnType"))
+        .filter(PsiClassObjectAccessExpression.class::isInstance)
+        .map(PsiClassObjectAccessExpression.class::cast)
+        .map(PsiClassObjectAccessExpression::getOperand)
+        .map(PsiTypeElement::getType)
+        .orElse(PsiType.VOID);
   }
 
   /**

@@ -22,6 +22,7 @@ import static org.junit.Assert.assertTrue;
 import com.facebook.litho.intellij.LithoPluginTestHelper;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.FieldModel;
+import com.intellij.psi.PsiClass;
 import com.squareup.javapoet.FieldSpec;
 import javax.lang.model.element.Modifier;
 import org.junit.After;
@@ -45,9 +46,9 @@ public class PsiFieldsExtractorTest {
   @Test
   public void extractFields() {
     testHelper.getPsiClass(
-        "TwoFieldsClass.java",
-        psiClass -> {
-          assertNotNull(psiClass);
+        psiClasses -> {
+          assertNotNull(psiClasses);
+          PsiClass psiClass = psiClasses.get(0);
 
           ImmutableList<FieldModel> fieldModels = PsiFieldsExtractor.extractFields(psiClass);
 
@@ -66,21 +67,23 @@ public class PsiFieldsExtractorTest {
           assertTrue(extractedFloatField.hasModifier(Modifier.STATIC));
 
           return true;
-        });
+        },
+        "TwoFieldsClass.java");
   }
 
   @Test
   public void extractNoFields() {
     testHelper.getPsiClass(
-        "NoFieldsClass.java",
-        psiClass -> {
-          assertNotNull(psiClass);
+        psiClasses -> {
+          assertNotNull(psiClasses);
+          PsiClass psiClass = psiClasses.get(0);
 
           ImmutableList<FieldModel> fieldModels = PsiFieldsExtractor.extractFields(psiClass);
 
           assertEquals(fieldModels.size(), 0);
 
           return true;
-        });
+        },
+        "NoFieldsClass.java");
   }
 }

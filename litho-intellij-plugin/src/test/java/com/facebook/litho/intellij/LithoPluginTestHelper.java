@@ -30,9 +30,12 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Optional;
+import java.util.List;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class LithoPluginTestHelper {
   private final String testPath;
@@ -87,27 +90,40 @@ public class LithoPluginTestHelper {
     }
   }
 
-  public void getPsiClass(String clsName, Function<PsiClass, Boolean> handler) {
+  /**
+   * Converts list of class names to the list of psi classes.
+   *
+   * @param handler calling class should pass handler for the psi classes. Passes null if conversion
+   *     was unsuccessful at any step.
+   * @param clsNames names of the classes to found in the test root directory (MyClass.java)
+   */
+  public void getPsiClass(Function<List<PsiClass>, Boolean> handler, String... clsNames) {
     ApplicationManager.getApplication()
         .invokeAndWait(
             () -> {
-              Optional<Boolean> sucess =
-                  Optional.of(clsName)
-                      .map(LithoPluginTestHelper.this::getContentOrNull)
+              List<PsiClass> psiClasses =
+                  Stream.of(clsNames)
+                      .filter(Objects::nonNull)
                       .map(
-                          content ->
-                              PsiFileFactory.getInstance(fixture.getProject())
-                                  .createFileFromText(clsName, JavaFileType.INSTANCE, content))
+                          clsName -> {
+                            String content = getContentOrNull(clsName);
+                            if (content != null) {
+                              return PsiFileFactory.getInstance(fixture.getProject())
+                                  .createFileFromText(clsName, JavaFileType.INSTANCE, content);
+                            }
+                            return null;
+                          })
                       .filter(PsiJavaFile.class::isInstance)
                       .map(PsiJavaFile.class::cast)
                       .map(PsiClassOwner::getClasses)
-                      .filter(psiClasses -> psiClasses.length > 0)
-                      .map(psiClasses -> psiClasses[0])
-                      .map(handler);
-              if (!sucess.isPresent()) {
+                      .filter(fileClasses -> fileClasses.length > 0)
+                      .map(fileClasses -> fileClasses[0])
+                      .collect(Collectors.toList());
+              if (psiClasses.isEmpty()) {
                 handler.apply(null);
+              } else {
+                handler.apply(psiClasses);
               }
             });
   }
 }
-
