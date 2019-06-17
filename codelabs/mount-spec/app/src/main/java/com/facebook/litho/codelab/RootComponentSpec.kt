@@ -13,18 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.facebook.litho.codelab;
+package com.facebook.litho.codelab
 
-import com.facebook.litho.Component;
-import com.facebook.litho.ComponentContext;
-import com.facebook.litho.annotations.LayoutSpec;
-import com.facebook.litho.annotations.OnCreateLayout;
-import com.facebook.litho.widget.Text;
+import com.facebook.litho.Component
+import com.facebook.litho.ComponentContext
+import com.facebook.litho.Row
+import com.facebook.litho.annotations.LayoutSpec
+import com.facebook.litho.annotations.OnCreateLayout
+import com.facebook.yoga.YogaEdge
 
 @LayoutSpec
-class RootComponentSpec {
+object RootComponentSpec {
   @OnCreateLayout
-  static Component onCreateLayout(ComponentContext c) {
-    return Text.create(c).textSizeSp(20).text("Hello World").build();
+  fun onCreateLayout(c: ComponentContext): Component {
+    return Row.create(c)
+        .child(
+            Clock.create(c)
+                .timeMillis(System.currentTimeMillis())
+                .radius(240)
+                .marginDip(YogaEdge.ALL, 24f))
+        .build()
   }
 }
