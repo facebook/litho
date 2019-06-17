@@ -13,18 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.facebook.litho.codelab;
+package com.facebook.litho.codelab
 
-import com.facebook.litho.Component;
-import com.facebook.litho.ComponentContext;
-import com.facebook.litho.annotations.LayoutSpec;
-import com.facebook.litho.annotations.OnCreateLayout;
-import com.facebook.litho.widget.Text;
+import com.facebook.litho.Component
+import com.facebook.litho.ComponentContext
+import com.facebook.litho.annotations.LayoutSpec
+import com.facebook.litho.annotations.OnCreateLayout
+import com.facebook.litho.widget.Text
 
 @LayoutSpec
-class RootComponentSpec {
-  @OnCreateLayout
-  static Component onCreateLayout(ComponentContext c) {
-    return Text.create(c).textSizeSp(20).text("Hello World").build();
-  }
+object RootComponentSpec {
+
+    @OnCreateLayout
+    fun onCreateLayout(c: ComponentContext): Component {
+        return Text.create(c).textSizeSp(20f).text("Hello World").build()
+    }
 }
