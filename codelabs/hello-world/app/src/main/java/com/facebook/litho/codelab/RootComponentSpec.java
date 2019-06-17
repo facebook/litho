@@ -19,11 +19,12 @@ import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
+import com.facebook.litho.widget.Text;
 
 @LayoutSpec
 class RootComponentSpec {
   @OnCreateLayout
   static Component onCreateLayout(ComponentContext c) {
-    return null;
+    return Text.create(c).textSizeSp(20).text("Hello World").build();
   }
 }
