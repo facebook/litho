@@ -22,10 +22,12 @@ import android.graphics.Paint
 import android.graphics.PixelFormat
 import android.graphics.drawable.Drawable
 
-object ClockDrawable : Drawable() {
-  private const val ONE_MINUTE = 60L * 1000
-  private const val ONE_HOUR = 60 * ONE_MINUTE
-  private const val TWELVE_HOURS = 12 * ONE_HOUR
+class ClockDrawable : Drawable() {
+  companion object {
+    const val ONE_MINUTE = 60L * 1000
+    const val ONE_HOUR = 60 * ONE_MINUTE
+    const val TWELVE_HOURS = 12 * ONE_HOUR
+  }
 
   private val paintThin = buildPaint(6)
   private val paintMedium = buildPaint(9)

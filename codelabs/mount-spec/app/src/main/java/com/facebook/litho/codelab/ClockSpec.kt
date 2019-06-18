@@ -45,7 +45,7 @@ object ClockSpec {
   @UiThread
   @OnCreateMountContent
   fun onCreateMountContent(c: Context): ClockDrawable {
-    return ClockDrawable
+    return ClockDrawable()
   }
 
   @UiThread
