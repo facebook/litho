@@ -43,20 +43,17 @@ class MountItem {
   private static final int FLAG_VIEW_ENABLED = 1 << 3;
   private static final int FLAG_VIEW_SELECTED = 1 << 4;
 
+  private final Object mContent;
+
   private NodeInfo mNodeInfo;
   private ViewNodeInfo mViewNodeInfo;
   private Component mComponent;
-  /**
-   * Mount content created by the {@link MountItem#mComponent}. It will be properly recycled by a
-   * MountItem in {@link MountItem#release(ComponentContext)} ()}
-   */
-  private Object mContent;
-
   private ComponentHost mHost;
   private boolean mIsBound;
   private int mImportantForAccessibility = IMPORTANT_FOR_ACCESSIBILITY_AUTO;
   private @Nullable TransitionId mTransitionId;
   private int mOrientation;
+  private boolean mIsReleased;
 
   // ComponentHost flags defined in the LayoutOutput specifying
   // the behaviour of this item when mounted.
@@ -106,9 +103,6 @@ class MountItem {
       int importantForAccessibility,
       int orientation,
       TransitionId transitionId) {
-    if (mHost != null) {
-      throw new RuntimeException("Calling init() on a MountItem that has not been released!");
-    }
     if (component == null) {
       throw new RuntimeException("Calling init() on a MountItem with a null Component!");
     }
@@ -197,6 +191,9 @@ class MountItem {
 
   /** @return Mount content created by the component. */
   Object getContent() {
+    if (mIsReleased) {
+      throw new RuntimeException("Trying to access released mount content!");
+    }
     return mContent;
   }
 
@@ -243,7 +240,11 @@ class MountItem {
   }
 
   void releaseMountContent(Context context) {
+    if (mIsReleased) {
+      throw new RuntimeException("Releasing released mount content!");
+    }
     ComponentsPools.release(context, mComponent, mContent);
+    mIsReleased = true;
   }
 
   static boolean isDuplicateParentState(int flags) {
