@@ -138,7 +138,7 @@
     <linearGradient id="Obj_Gradient_36" xl:href="#Gradient" gradientTransform="translate(-700.9216 1186.0145) rotate(90) scale(63)"/>
   </defs>
   <metadata> Produced by OmniGraffle 7.10.2 
-    <dc:date>2019-06-17 10:20:35 +0000</dc:date>
+    <dc:date>2019-06-17 16:03:33 +0000</dc:date>
   </metadata>
   <g id="Layout_Spec" stroke-opacity="1" fill="none" fill-opacity="1" stroke="none" stroke-dasharray="none">
     <title>Layout Spec</title>
@@ -228,8 +228,9 @@
         <path d="M -566.8304 289.2598 L -29.830376 289.2598 C -26.516668 289.2598 -23.830376 291.9461 -23.830376 295.2598 L -23.830376 375.39484 C -23.830376 378.70855 -26.516668 381.39484 -29.830376 381.39484 L -566.8304 381.39484 C -570.1441 381.39484 -572.8304 378.70855 -572.8304 375.39484 L -572.8304 295.2598 C -572.8304 291.9461 -570.1441 289.2598 -566.8304 289.2598 Z" stroke="#005493" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
         <text transform="translate(-567.8304 296.82732)" fill="black">
           <tspan font-family="Lucida Grande" font-size="20" font-weight="400" fill="black" x="164.54395" y="19">@OnCreateInitialState</tspan>
-          <tspan font-family="Courier New" font-size="16" font-weight="400" fill="black" x="183.08594" y="36">(ComponentContext, </tspan>
-          <tspan font-family="Courier New" font-size="16" font-weight="400" fill="black" x="39.0625" y="54">[...Prop, ...TreeProp, ...State, ...InjectProp])</tspan>
+          <tspan font-family="Courier New" font-size="16" font-weight="400" fill="black" x="183.08594" y="36">(ComponentContext,</tspan>
+          <tspan font-family="Courier New" font-size="16" font-weight="400" fill="black" x="15.058594" y="54">[</tspan>
+          <tspan font-family="Courier New" font-size="16" font-weight="400" fill="black" y="54">...StateValue, ...Prop, ...TreeProp, ...InjectProp])</tspan>
           <tspan font-family="Courier New" font-size="16" font-weight="700" fill="black" x="250.29688" y="72">Void</tspan>
         </text>
       </g>
@@ -250,7 +251,8 @@
           <tspan font-family="Lucida Grande" font-size="20" font-weight="400" fill="black" x="66.143555" y="19">@OnEvent(VisibleEvent.class)</tspan>
           <tspan font-family="Courier New" font-size="14" font-weight="400" fill="black" x="120.68604" y="36">(</tspan>
           <tspan font-family="Courier New" font-size="16" font-weight="400" fill="black" y="36">ComponentContext,</tspan>
-          <tspan font-family="Courier New" font-size="16" font-weight="400" fill="black" x="158.49219" y="54">[...Prop])</tspan>
+          <tspan font-family="Courier New" font-size="16" font-weight="400" fill="black" x="158.49219" y="54">[</tspan>
+          <tspan font-family="Courier New" font-size="16" font-weight="400" fill="black" y="54">...Prop])</tspan>
           <tspan font-family="Courier New" font-size="16" font-weight="700" fill="black" x="187.29688" y="72">Void</tspan>
         </text>
       </g>
@@ -324,7 +326,7 @@
           <tspan font-family="Lucida Grande" font-size="20" font-weight="400" fill="black" x="173.14499" y="19">@OnCreateTreeProp</tspan>
           <tspan font-family="Courier New" font-size="16" font-weight="400" fill="black" x="184.31881" y="36">(ComponentContext, </tspan>
           <tspan font-family="Courier New" font-size="16" font-weight="400" fill="black" x="40.295377" y="54">[...Prop, ...TreeProp, ...State, ...InjectProp])</tspan>
-          <tspan font-family="Courier New" font-size="16" font-weight="700" fill="black" x="251.52975" y="72">Void</tspan>
+          <tspan font-family="Courier New" font-size="16" font-weight="700" fill="black" x="193.92038" y="72">? extends Object</tspan>
         </text>
       </g>
       <g id="Line_1812">
@@ -377,8 +379,8 @@
         <path d="M -228.58038 175.41335 L 34.669624 175.41335 C 54.919624 175.41335 54.919624 175.41335 54.919624 181.03835 L 54.919624 254.16335 C 54.919624 259.78835 54.919624 259.78835 34.669624 259.78835 L -228.58038 259.78835 C -248.83038 259.78835 -248.83038 259.78835 -248.83038 254.16335 L -248.83038 181.03835 C -248.83038 175.41335 -248.83038 175.41335 -228.58038 175.41335 M 54.919624 178.22585 C 65.04462 178.22585 65.04462 178.22585 65.04462 183.85085 L 65.04462 259.78835 C 65.04462 262.60085 65.04462 262.60085 44.794624 262.60085 L -218.45538 262.60085 C -238.70538 262.60085 -238.70538 262.60085 -238.70538 259.78835 M 65.04462 181.03835 C 75.16962 181.03835 75.16962 181.03835 75.16962 186.66335 L 75.16962 259.78835 C 75.16962 265.41335 75.16962 265.41335 54.919624 265.41335 L -208.33038 265.41335 C -228.58038 265.41335 -228.58038 265.41335 -228.58038 262.60085" stroke="#005493" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
         <text transform="translate(-237.35038 177.18835)" fill="black">
           <tspan font-family="Lucida Grande" font-size="20" font-weight="400" fill="black" x="52.64086" y="19">@OnUpdateState</tspan>
-          <tspan font-family="Courier New" font-size="16" font-weight="400" fill="black" x="47.09594" y="36">(ComponentContext,</tspan>
-          <tspan font-family="Courier New" font-size="16" font-weight="400" fill="black" x="37.494375" y="54">[…State, ...Params])</tspan>
+          <tspan font-family="Courier New" font-size="16" font-weight="400" fill="black" x="71.09984" y="36">(…StateValue, </tspan>
+          <tspan font-family="Courier New" font-size="16" font-weight="400" fill="black" x="23.09203" y="54">[...Prop, ...TreeProp])</tspan>
           <tspan font-family="Courier New" font-size="16" font-weight="700" fill="black" x="114.30688" y="72">Void</tspan>
         </text>
       </g>

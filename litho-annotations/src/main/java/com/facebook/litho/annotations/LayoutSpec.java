@@ -88,7 +88,7 @@ import java.lang.annotation.RetentionPolicy;
  * }</code></pre>
  *
  * <img alt="layout spec flow chart"
- * src="https://fblitho.com/static/images/flow-chart-v0.23.0-layout-spec.svg">
+ * src="https://fblitho.com/static/images/flow-chart-v0.23.1-layout-spec.svg">
  *
  * <p>If you want to create a component that mounts its own content, then use {@link MountSpec}
  * instead. See more docs at <a href="https://fblitho.com/docs/layout-specs">https://fblitho.com</a>
