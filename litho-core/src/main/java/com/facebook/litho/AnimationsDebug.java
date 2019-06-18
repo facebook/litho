@@ -17,13 +17,14 @@
 package com.facebook.litho;
 
 import android.util.Log;
+import com.facebook.litho.config.ComponentsConfiguration;
 
 /**
  * Utilities for animations debug.
  */
 public class AnimationsDebug {
 
-  public static final boolean ENABLED = false;
+  public static final boolean ENABLED = ComponentsConfiguration.isEndToEndTestRun;
   static final String TAG = "LithoAnimationDebug";
 
   static void debugPrintLayoutState(LayoutState layoutState) {
