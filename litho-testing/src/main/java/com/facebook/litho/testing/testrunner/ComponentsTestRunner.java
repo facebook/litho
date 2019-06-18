@@ -51,22 +51,24 @@ public class ComponentsTestRunner extends RobolectricTestRunner {
   }
 
   private static String getResPrefix() {
+    // If we're running with gradle, the test runner will start running from within
+    // the given sub-project.
+    if (System.getProperty("org.gradle.test.worker") != null) {
+      return "../litho-it/src/main/";
+    }
+
     String prefix = "";
     switch (ProjectEnvironment.detectFromSystemProperties()) {
       case OSS:
         break;
       case INTERNAL:
-        prefix = "libraries/components/";
-        break;
+        final String internalRoot = System.getProperty("com.facebook.litho.internal_root");
+        if (internalRoot != null) {
+          prefix = internalRoot + "/";
+        }
     }
 
-    // If we're running with gradle, the test runner will start running from within
-    // the given sub-project.
-    if (System.getProperty("org.gradle.test.worker") != null) {
-      return "../litho-it/src/main/";
-    } else {
-      return prefix + "litho-it/src/main/";
-    }
+    return prefix + "litho-it/src/main/";
   }
 
   @Override
