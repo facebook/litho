@@ -30,7 +30,7 @@ class MainActivity : AppCompatActivity() {
     setContentView(
       LithoView.create(
         this,
-        RootComponent.create(componentContext).build()
+        RootComponent.create(componentContext).startCount(5).build()
       )
     )
   }
