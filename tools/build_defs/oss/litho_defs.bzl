@@ -257,6 +257,10 @@ def fb_android_resource(**kwargs):
     kwargs.pop("is_androidx", False)
     android_resource(**kwargs)
 
+def fb_java_binary(**kwargs):
+    """Delegates to native java_binary rule."""
+    native.java_binary(**kwargs)
+
 def fb_java_library(**kwargs):
     """Delegates to native java_library rule."""
 
