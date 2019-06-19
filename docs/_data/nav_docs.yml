@@ -21,7 +21,6 @@
   - id: border
   - id: recycler-collection-component
   - id: cached-values
-  - id: transition-animations
   - id: tooltips
   - id: glossary
 - title: Handling Events
