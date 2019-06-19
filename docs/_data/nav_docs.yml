@@ -49,8 +49,9 @@
   - id: services
   - id: sections-architecture
   - id: sections-working-ranges
-- title: Available APIs for common usages
+- title: Common use cases
   items:
+  - id: updating-ui
   - id: border
   - id: tooltips
 - title: Compatibility
