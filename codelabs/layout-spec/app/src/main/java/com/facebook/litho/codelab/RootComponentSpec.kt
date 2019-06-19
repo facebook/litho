@@ -17,21 +17,13 @@ package com.facebook.litho.codelab
 
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
-import com.facebook.litho.Row
 import com.facebook.litho.annotations.LayoutSpec
 import com.facebook.litho.annotations.OnCreateLayout
-import com.facebook.yoga.YogaEdge
 
 @LayoutSpec
 object RootComponentSpec {
   @OnCreateLayout
   fun onCreateLayout(c: ComponentContext): Component {
-    return Row.create(c)
-        .child(
-            Clock.create(c)
-                .timeMillis(System.currentTimeMillis())
-                .radius(240)
-                .marginDip(YogaEdge.ALL, 24f))
-        .build()
+    return TimeConverter.create(c).build()
   }
 }
