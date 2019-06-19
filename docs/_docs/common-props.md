@@ -131,7 +131,22 @@ Use the utility methods to set a background color or use an android resource id.
 
 ### Border
 
- {...}
+ Sets a border on the component.
+
+ ```
+MyComponent.create(c)
+  .border(
+    Border.create(c)
+      .color(YogaEdge.LEFT, Color.RED)
+      .color(YogaEdge.TOP, 0xFFFFFF00)
+      .color(YogaEdge.RIGHT, 0xFFFFFFFF)
+      .color(YogaEdge.BOTTOM, 0xFFFF00FF)
+      .widthDip(YogaEdge.ALL, 4)
+      .build()
+  )
+ ```
+
+ See: [YogaEdge](/javadoc/com/facebook/yoga/YogaEdge.html){:target="_blank"}, [Border](/javadoc/com/facebook/litho/Border.Builder.html){:target="_blank"}
 
 ### ClickHandler
 
