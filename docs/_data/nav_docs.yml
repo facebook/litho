@@ -30,6 +30,15 @@
   - id: events-touch-handling
   - id: visibility-handling
   - id: trigger-events
+- title: Transition Animations
+  items:
+  - id: transition-basics
+  - id: transition-types
+  - id: transition-choreography
+  - id: transition-all-layout
+  - id: transition-definitions
+  - id: transition-key-types
+  - id: transition-faq
 - title: Sections
   items:
   - id: sections-intro
