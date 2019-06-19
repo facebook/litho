@@ -113,7 +113,21 @@ This page contains a detailed API reference for the Litho's component common pro
 
 ### Background
 
- {...}
+Sets the background of the component; pass a
+[ComparableDrawable](/javadoc/com/facebook/litho/drawable/ComparableDrawable.html){:target="_blank"} to make
+subsequent mounting more efficient.
+
+```
+MyComponent.create(c)
+  .background(new ComparableGradientDrawable())
+```
+
+Use the utility methods to set a background color or use an android resource id.
+
+* `Component#backgroundAttr(@AttrRes int)`
+* `Component#backgroundColor(@ColorInt int)`
+* `Component#backgroundRes(@DrawableRes int)`
+* `Component#background(Drawable)` _(deprecated)_
 
 ### Border
 
