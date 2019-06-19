@@ -17,7 +17,7 @@ This page contains a detailed API reference for the Litho's component common pro
 * [`Background`](#null__background)
 * [`Border`](#null__border)
 * [`ClickHandler`](#null__clickhandler)
-* [`ClickableState`](#null__clickablestate)
+* [`Clickable`](#null__clickable)
 * [`ClipChildren`](#null__clipchildren)
 * [`ClipToOutline`](#null__cliptooutline)
 * [`ContentDescription`](#null__contentdescription)
@@ -159,9 +159,15 @@ MyComponent.create(c)
 
 See: [Event Handling](/docs/events-touch-handling) docs for more info.
 
-### ClickableState
+### Clickable
 
- {...}
+Defines whether this component reacts to click events. The default value is inherited from its
+Android View.
+
+```
+MyComponent.create(c)
+  .clickable(true)
+```
 
 ### ClipChildren
 
