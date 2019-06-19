@@ -171,7 +171,13 @@ MyComponent.create(c)
 
 ### ClipChildren
 
- {...}
+Defines whether a children of given component are limited to draw inside of its bounds or not. The
+default value of this property is `true`.
+
+```
+MyComponent.create(c)
+  .clipChildren(true)
+```
 
 ### ClipToOutline
 
