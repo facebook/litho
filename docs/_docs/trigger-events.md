@@ -1,6 +1,6 @@
 ---
 docid: trigger-events
-title: Trigger Events - Sending events down the Components hierarchy
+title: Sending events from parent to child
 layout: docs
 permalink: /docs/trigger-events
 ---

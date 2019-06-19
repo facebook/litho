@@ -1,6 +1,6 @@
 ---
 docid: layout
-title: Layout
+title: Layout with Row and Column
 layout: docs
 permalink: /docs/layout
 ---
