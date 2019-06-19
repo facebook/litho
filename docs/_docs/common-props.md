@@ -150,7 +150,14 @@ MyComponent.create(c)
 
 ### ClickHandler
 
- {...}
+Sets a click handler on the component.
+
+```
+MyComponent.create(c)
+  .clickHandler(RootComponent.onSomeEvent(c))
+```
+
+See: [Event Handling](/docs/events-touch-handling) docs for more info.
 
 ### ClickableState
 
