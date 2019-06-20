@@ -735,11 +735,9 @@ class LayoutState {
             ? new OutputUnitsAffinityGroup<LayoutOutput>()
             : null;
 
-    int hostLayoutPosition = -1;
-
     // 1. Insert a host LayoutOutput if we have some interactive content to be attached to.
     if (shouldAddHostLayoutOutput) {
-      hostLayoutPosition =
+      final int hostLayoutPosition =
           addHostLayoutOutput(node, layoutState, diffNode, needsPhantomLayoutOutput);
       addCurrentAffinityGroupToTransitionMapping(layoutState);
 
