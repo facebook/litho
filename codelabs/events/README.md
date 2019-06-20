@@ -83,6 +83,92 @@ The next step will be to trigger state update and perform some action in respons
 
 # 4. Trigger state update on click event
 
+In previous part we added simple click event declaration and handler. In this part we will add state to the root component and use click event to trigger state update.
+
+## Add `ColorBoxCollection` component
+To demonstrate some visual change as response to click event, we will create a new component called `ColorBoxCollection`. It renders a set of square color boxes laid out in rows. It will accept a list of colors that it will turn into corresponding square color boxes.
+
+#### ColorBoxCollectionSpec.kt
+```kotlin
+@LayoutSpec
+object ColorBoxCollectionSpec {
+
+  @OnCreateLayout
+  fun onCreateLayout(c: ComponentContext, @Prop items: IntArray): Component {
+    val rowBuilder = Row.create(c).wrap(YogaWrap.WRAP)
+    items.forEach {
+      rowBuilder.child(
+          Row.create(c)
+              .marginDip(YogaEdge.ALL, 4f)
+              .widthDip(48f)
+              .heightDip(48f)
+              .backgroundColor(it))
+    }
+    return rowBuilder.build()
+  }
+}
+```
+## Introduce state for list of colors
+
+To keep track of added colors we will introduce new state `items` of type `IntArray`. Let's add initialization and update method:
+
+#### RootComponentSpec.kt
+```kotlin
+@OnCreateInitialState
+fun onCreateInitialState(c: ComponentContext, items: StateValue<IntArray>) {
+  items.set(IntArray(0))
+}
+
+@OnUpdateState
+fun updateItems(items: StateValue<IntArray>, @Param newItems: IntArray) {
+  items.set(newItems)
+}
+```
+
+
+## Add new component into layout of `RootComponent`
+
+In `RootComponent` we will place `ColorBoxCollection` just below our "ADD" button. We will use the `items` state value to pass to `ColorBoxCollection`:
+
+#### RootComponentSpec.kt
+```kotlin
+@OnCreateLayout
+fun onCreateLayout(c: ComponentContext, @State items: IntArray): Component {
+  return Column.create(c)
+    ...
+    .child(
+        Button.create(c)
+            ...
+    .child(
+        ColorBoxCollection.create(c)
+            .items(items))
+    .build()
+}
+
+```
+
+## Generate new color and update state with new list on click
+
+Now we can update the body of `onClickEvent` to generate new color and trigger state update method we introduced earlier. To generate new color we generate three random values and assign to each of RGB channels. As we want props and state to be immutable we get a new copy of array with new item added:
+
+#### RootComponentSpec.kt
+```kotlin
+@OnEvent(ClickEvent::class)
+fun onClickEvent(c: ComponentContext, @State items: IntArray) {
+  val newColor = Color.rgb(Random.nextInt(256), Random.nextInt(256), Random.nextInt(256))
+  RootComponent.updateItems(c, items.plus(newColor))
+}
+```
+
+## Click event in action
+
+With all pieces together here is how it looks:
+
+<img src="static/part2_endresult.gif" alt="Part2 end result" height="500">
+
+The next step will be to add param to the event method.
+
+
 # 5. Add `@Param` to `OnEvent`
 
 # 6. Add custom event
