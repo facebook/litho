@@ -11,8 +11,12 @@
     </p>
   ]]>
   </description>
-  <version>0.0.4-SNAPSHOT</version>
+  <version>0.0.4</version>
   <change-notes><![CDATA[
+    <h2>0.0.4</h2>
+    <ul>
+      <li>Minor bug fixes.</li>
+    </ul>
     <h2>0.0.3</h2>
     <ul>
       <li>Added logging as an extension point.</li>
