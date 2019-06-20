@@ -17,21 +17,29 @@ package com.facebook.litho.codelab
 
 import android.graphics.Color
 import android.text.Layout
+import android.util.Log
+import android.widget.Toast
 import com.facebook.litho.ClickEvent
+import com.facebook.litho.Column
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.Row
 import com.facebook.litho.StateValue
+import com.facebook.litho.annotations.FromEvent
 import com.facebook.litho.annotations.LayoutSpec
 import com.facebook.litho.annotations.OnCreateInitialState
 import com.facebook.litho.annotations.OnCreateLayout
 import com.facebook.litho.annotations.OnEvent
 import com.facebook.litho.annotations.OnUpdateState
+import com.facebook.litho.annotations.Param
 import com.facebook.litho.annotations.Prop
 import com.facebook.litho.annotations.State
 import com.facebook.litho.widget.Text
+import com.facebook.litho.widget.TextChangedEvent
+import com.facebook.litho.widget.TextInput
 import com.facebook.yoga.YogaAlign
 import com.facebook.yoga.YogaEdge
+import java.lang.NumberFormatException
 
 @Suppress("MagicNumber")
 @LayoutSpec
@@ -48,60 +56,86 @@ object RootComponentSpec {
   fun onCreateInitialState(
       c: ComponentContext,
       @Prop(optional = true) startCount: Int,
-      count: StateValue<Int>
+      count: StateValue<Int>,
+      step: StateValue<Int>
   ) {
     count.set(startCount) // set the initial value of count.
+    step.set(1)
   }
 
   @OnCreateLayout
   fun onCreateLayout(
       c: ComponentContext,
-      @Prop(optional = true) startCount: Int,
-      @State count: Int
+      @State count: Int,
+      @State(canUpdateLazily = true) step: Int
   ): Component {
-    return Row.create(c)
-      .alignItems(YogaAlign.FLEX_START)
+
+    Log.d("RootComponent", "OnCreateLayout() called")
+
+    return Column.create(c)
       .child(
-        Text.create(c)
-          .backgroundColor(COLOR_BG_DECREMENT)
-          .paddingDip(YogaEdge.LEFT, 16F)
-          .paddingDip(YogaEdge.RIGHT, 16F)
-          .paddingDip(YogaEdge.TOP, 4F)
-          .paddingDip(YogaEdge.BOTTOM, 4F)
-          .marginDip(YogaEdge.ALL, 8F)
-          .text("-")
-          .textSizeSp(24F)
-          .textColor(COLOR_TXT_DECREMENT)
-          /* Setting the click handler for the decrement button */
-          .clickHandler(RootComponent.onDecrement(c))
+        Row.create(c)
+          .alignItems(YogaAlign.FLEX_START)
+          .child(
+            Text.create(c)
+              .backgroundColor(COLOR_BG_DECREMENT)
+              .paddingDip(YogaEdge.LEFT, 16F)
+              .paddingDip(YogaEdge.RIGHT, 16F)
+              .paddingDip(YogaEdge.TOP, 4F)
+              .paddingDip(YogaEdge.BOTTOM, 4F)
+              .marginDip(YogaEdge.ALL, 8F)
+              .text("-")
+              .textSizeSp(24F)
+              .textColor(COLOR_TXT_DECREMENT)
+              /* Setting the click handler for the decrement button */
+              .clickHandler(RootComponent.onDecrement(c))
+          )
+          .child(
+            Text.create(c)
+              .backgroundColor(COLOR_BG_COUNT)
+              .paddingDip(YogaEdge.LEFT, 16F)
+              .paddingDip(YogaEdge.RIGHT, 16F)
+              .paddingDip(YogaEdge.TOP, 4F)
+              .paddingDip(YogaEdge.BOTTOM, 4F)
+              .marginDip(YogaEdge.ALL, 8F)
+              .minWidthDip(64f)
+              .text(count.toString())
+              .textSizeSp(24F)
+              .textColor(COLOR_TXT_COUNT)
+              .textAlignment(Layout.Alignment.ALIGN_CENTER)
+          )
+          .child(
+            Text.create(c)
+              .backgroundColor(COLOR_BG_INCREMENT)
+              .paddingDip(YogaEdge.LEFT, 16F)
+              .paddingDip(YogaEdge.RIGHT, 16F)
+              .paddingDip(YogaEdge.TOP, 4F)
+              .paddingDip(YogaEdge.BOTTOM, 4F)
+              .marginDip(YogaEdge.ALL, 8F)
+              .text("+")
+              .textSizeSp(24F)
+              .textColor(COLOR_TXT_INCREMENT)
+              /* Setting the click handler for the increment button */
+              .clickHandler(RootComponent.onIncrement(c))
+          )
       )
+      /* UI to change the value of `step` */
       .child(
-        Text.create(c)
-          .backgroundColor(COLOR_BG_COUNT)
-          .paddingDip(YogaEdge.LEFT, 16F)
-          .paddingDip(YogaEdge.RIGHT, 16F)
-          .paddingDip(YogaEdge.TOP, 4F)
-          .paddingDip(YogaEdge.BOTTOM, 4F)
-          .marginDip(YogaEdge.ALL, 8F)
-          .minWidthDip(64f)
-          .text(count.toString())
-          .textSizeSp(24F)
-          .textColor(COLOR_TXT_COUNT)
-          .textAlignment(Layout.Alignment.ALIGN_CENTER)
-      )
-      .child(
-        Text.create(c)
-          .backgroundColor(COLOR_BG_INCREMENT)
-          .paddingDip(YogaEdge.LEFT, 16F)
-          .paddingDip(YogaEdge.RIGHT, 16F)
-          .paddingDip(YogaEdge.TOP, 4F)
-          .paddingDip(YogaEdge.BOTTOM, 4F)
-          .marginDip(YogaEdge.ALL, 8F)
-          .text("+")
-          .textSizeSp(24F)
-          .textColor(COLOR_TXT_INCREMENT)
-          /* Setting the click handler for the increment button */
-          .clickHandler(RootComponent.onIncrement(c))
+        Row.create(c)
+          .child(
+            Text.create(c)
+              .marginDip(YogaEdge.ALL, 8F)
+              .text("Change Step: ")
+              .textSizeSp(24F)
+          )
+          .child(
+            TextInput.create(c)
+              .initialText(step.toString())
+              .minWidthDip(64F)
+              .textSizeSp(24F)
+              /* Setting the text change handler */
+              .textChangedEventHandler(RootComponent.onChangeStep(c))
+          )
       )
       .build()
   }
@@ -118,8 +152,9 @@ object RootComponentSpec {
    * Update method for decrement which receives the state value container for `count`.
    */
   @OnUpdateState
-  fun decrement(count: StateValue<Int>) {
-    count.set(count.get()?.minus(1)) // Actually decrement the value of count.
+  fun decrement(count: StateValue<Int>, step: StateValue<Int>) {
+    // Actually decrement the value of count.
+    count.set(step.get()?.let { count.get()?.minus(it) } ?: count.get()?.minus(1))
   }
 
   /**
@@ -134,7 +169,34 @@ object RootComponentSpec {
    * Update method for increment which receives the state value container of for `count`.
    */
   @OnUpdateState
-  fun increment(count: StateValue<Int>) {
-    count.set(count.get()?.plus(1)) // Actually increment the value of count.
+  fun increment(count: StateValue<Int>, step: StateValue<Int>) {
+    // Actually increment the value of count.
+    count.set(step.get()?.let { count.get()?.plus(it) } ?: count.get()?.plus(1))
+  }
+
+  @OnEvent(TextChangedEvent::class)
+  fun onChangeStep(c: ComponentContext, @FromEvent text: String) {
+    var value = 1
+
+    if (text.isEmpty()) {
+      value = 0
+    } else {
+      try {
+        value = text.toInt()
+      } catch (nfe: NumberFormatException) {
+        Toast.makeText(c.androidContext, "'$text' is not a valid number.", Toast.LENGTH_SHORT).show()
+      }
+    }
+
+    /*
+      Lazy state update will dispatch the state update, but will only apply it in the next layout
+      pass. See the log statement printed in the `OnCreateLayout`.
+    */
+    RootComponent.lazyUpdateStep(c, value)
+  }
+
+  @OnUpdateState
+  fun changeStep(step: StateValue<Int>, @Param value: Int) {
+    step.set(value)
   }
 }
