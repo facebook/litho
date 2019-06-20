@@ -44,6 +44,7 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
+import androidx.annotation.ColorInt;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.Diff;
@@ -230,6 +231,7 @@ class TextInputSpec {
       @Prop(optional = true, resType = ResType.COLOR) int shadowColor,
       @Prop(optional = true) ColorStateList textColorStateList,
       @Prop(optional = true) ColorStateList hintColorStateList,
+      @Prop(optional = true) @ColorInt int highlightColor,
       @Prop(optional = true, resType = ResType.DIMEN_TEXT) int textSize,
       @Prop(optional = true) Typeface typeface,
       @Prop(optional = true) int textAlignment,
@@ -259,6 +261,7 @@ class TextInputSpec {
         shadowColor,
         textColorStateList,
         hintColorStateList,
+        highlightColor,
         textSize,
         typeface,
         textAlignment,
@@ -300,6 +303,7 @@ class TextInputSpec {
       int shadowColor,
       ColorStateList textColorStateList,
       ColorStateList hintColorStateList,
+      @ColorInt int highlightColor,
       int textSize,
       Typeface typeface,
       int textAlignment,
@@ -357,6 +361,7 @@ class TextInputSpec {
     editText.setCursorVisible(editable);
     editText.setTextColor(textColorStateList);
     editText.setHintTextColor(hintColorStateList);
+    editText.setHighlightColor(highlightColor);
     editText.setMovementMethod(movementMethod);
 
     if (cursorDrawableRes != -1) {
@@ -568,6 +573,7 @@ class TextInputSpec {
       @Prop(optional = true, resType = ResType.COLOR) int shadowColor,
       @Prop(optional = true) ColorStateList textColorStateList,
       @Prop(optional = true) ColorStateList hintColorStateList,
+      @Prop(optional = true) @ColorInt int highlightColor,
       @Prop(optional = true, resType = ResType.DIMEN_TEXT) int textSize,
       @Prop(optional = true) Typeface typeface,
       @Prop(optional = true) int textAlignment,
@@ -596,6 +602,7 @@ class TextInputSpec {
         shadowColor,
         textColorStateList,
         hintColorStateList,
+        highlightColor,
         textSize,
         typeface,
         textAlignment,
