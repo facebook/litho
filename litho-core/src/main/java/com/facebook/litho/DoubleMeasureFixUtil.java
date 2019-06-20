@@ -15,13 +15,12 @@
  */
 package com.facebook.litho;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.ContextWrapper;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.util.DisplayMetrics;
-import androidx.annotation.Nullable;
+import android.view.Display;
+import android.view.WindowManager;
 
 public class DoubleMeasureFixUtil {
 
@@ -41,13 +40,10 @@ public class DoubleMeasureFixUtil {
       return widthSpec;
     }
     Resources resources = context.getResources();
+    final Display display =
+        ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
     DisplayMetrics displayMetrics = new DisplayMetrics();
-    Activity a = findActivityInContext(context);
-    if (a == null || a.isFinishing()) {
-      displayMetrics = resources.getDisplayMetrics();
-    } else {
-      a.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-    }
+    display.getMetrics(displayMetrics);
     final int screenWidthPx = displayMetrics.widthPixels;
 
     final Configuration configuration = resources.getConfiguration();
@@ -63,15 +59,5 @@ public class DoubleMeasureFixUtil {
     }
 
     return widthSpec;
-  }
-
-  @Nullable
-  public static Activity findActivityInContext(Context context) {
-    if (context instanceof Activity) {
-      return (Activity) context;
-    } else if (context instanceof ContextWrapper) {
-      return findActivityInContext(((ContextWrapper) context).getBaseContext());
-    }
-    return null;
   }
 }
