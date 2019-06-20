@@ -22,7 +22,7 @@ android {
   compileSdkVersion 28
 
   defaultConfig {
-    applicationId "com.facebook.litho.codelab"
+    applicationId "com.facebook.litho.codelab.events"
 
     minSdkVersion 22
     targetSdkVersion 28

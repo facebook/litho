@@ -13,19 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.facebook.litho.codelab
 
-import com.facebook.litho.Component
+package com.facebook.litho.codelab.events
+
+import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import com.facebook.litho.ComponentContext
-import com.facebook.litho.annotations.LayoutSpec
-import com.facebook.litho.annotations.OnCreateLayout
-import com.facebook.litho.widget.Text
+import com.facebook.litho.LithoView
 
-@LayoutSpec
-object RootComponentSpec {
+class MainActivity : AppCompatActivity() {
 
-    @OnCreateLayout
-    fun onCreateLayout(c: ComponentContext): Component {
-        return Text.create(c).textSizeSp(20f).text("Events").build()
-    }
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+
+    val componentContext = ComponentContext(this)
+    setContentView(
+        LithoView.create(this, RootComponent.create(componentContext).build()))
+  }
 }

@@ -17,7 +17,7 @@
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           xmlns:tools="http://schemas.android.com/tools"
-          package="com.facebook.litho.codelab">
+          package="com.facebook.litho.codelab.events">
 
   <application
       android:allowBackup="false"
