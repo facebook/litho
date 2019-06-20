@@ -15,7 +15,7 @@
  */
 package com.facebook.litho.intellij.actions;
 
-import com.facebook.litho.intellij.logging.EventLogger;
+import com.facebook.litho.intellij.extensions.EventLogger;
 import com.facebook.litho.intellij.logging.LithoLoggerProvider;
 import com.intellij.icons.AllIcons;
 import com.intellij.ide.actions.CreateFileFromTemplateAction;

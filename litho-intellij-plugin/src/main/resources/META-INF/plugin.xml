@@ -41,7 +41,10 @@
     </vendor>
 
   <extensionPoints>
-    <extensionPoint name="eventLogger" interface="com.facebook.litho.intellij.logging.EventLogger"/>
+    <extensionPoint
+        name="eventLogger"
+        interface="com.facebook.litho.intellij.extensions.EventLogger"
+    />
   </extensionPoints>
 
   <extensions defaultExtensionNs="com.intellij">
@@ -76,11 +79,11 @@
     <group id="litho.NewGroup">
       <add-to-group group-id="NewGroup" anchor="after" relative-to-action="NewGroup1"/>
       <action
-        id="litho.NewGroup.LayoutSpecTemplate"
-        class="com.facebook.litho.intellij.actions.NewComponentTemplateAction"
-        text="Litho Class"
-        description="Create new Litho class"
-        icon="LithoPluginIcons.BASE_ACTION"
+          id="litho.NewGroup.LayoutSpecTemplate"
+          class="com.facebook.litho.intellij.actions.NewComponentTemplateAction"
+          text="Litho Class"
+          description="Create new Litho class"
+          icon="LithoPluginIcons.BASE_ACTION"
       />
     </group>
   </actions>

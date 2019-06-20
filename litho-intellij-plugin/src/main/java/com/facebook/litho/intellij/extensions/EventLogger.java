@@ -13,9 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.facebook.litho.intellij.logging;
+package com.facebook.litho.intellij.extensions;
 
-import com.intellij.openapi.extensions.ExtensionPointName;
 import java.util.Collections;
 import java.util.Map;
 
@@ -25,9 +24,6 @@ import java.util.Map;
  * @see "plugin.xml"
  */
 public interface EventLogger {
-  // Plugin ID + extension name
-  ExtensionPointName<EventLogger> EP_NAME =
-      ExtensionPointName.create("com.facebook.litho.intellij.eventLogger");
 
   String EVENT_ON_EVENT_GENERATION = "event.generation";
   String EVENT_ON_EVENT_COMPLETION = "event.completion";

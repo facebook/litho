@@ -17,7 +17,7 @@ package com.facebook.litho.intellij.completion;
 
 import com.facebook.litho.intellij.LithoClassNames;
 import com.facebook.litho.intellij.LithoPluginUtils;
-import com.facebook.litho.intellij.logging.EventLogger;
+import com.facebook.litho.intellij.extensions.EventLogger;
 import com.facebook.litho.intellij.logging.LithoLoggerProvider;
 import com.intellij.codeInsight.completion.CompletionContributor;
 import com.intellij.codeInsight.completion.CompletionParameters;

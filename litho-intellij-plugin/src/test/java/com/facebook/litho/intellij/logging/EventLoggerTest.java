@@ -16,6 +16,7 @@
 package com.facebook.litho.intellij.logging;
 
 import com.facebook.litho.intellij.LithoPluginTestHelper;
+import com.facebook.litho.intellij.extensions.EventLogger;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import org.junit.After;
@@ -38,7 +39,9 @@ public class EventLoggerTest {
 
   @Test
   public void nameTest() {
-    Assert.assertEquals("com.facebook.litho.intellij.eventLogger", EventLogger.EP_NAME.getName());
+    Assert.assertEquals(
+        "com.facebook.litho.intellij.eventLogger",
+        LithoLoggerProvider.LithoEventLogger.EP_NAME.getName());
   }
 
   @Test

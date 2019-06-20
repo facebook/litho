@@ -17,7 +17,7 @@ package com.facebook.litho.intellij.actions;
 
 import com.facebook.litho.intellij.LithoPluginUtils;
 import com.facebook.litho.intellij.completion.OnEventGenerateUtils;
-import com.facebook.litho.intellij.logging.EventLogger;
+import com.facebook.litho.intellij.extensions.EventLogger;
 import com.facebook.litho.intellij.logging.LithoLoggerProvider;
 import com.intellij.codeInsight.generation.ClassMember;
 import com.intellij.codeInsight.generation.GenerateMembersHandlerBase;

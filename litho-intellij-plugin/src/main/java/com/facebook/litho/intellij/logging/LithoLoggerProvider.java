@@ -15,8 +15,10 @@
  */
 package com.facebook.litho.intellij.logging;
 
+import com.facebook.litho.intellij.extensions.EventLogger;
 import com.google.common.annotations.VisibleForTesting;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.extensions.ExtensionPointName;
 import com.intellij.openapi.extensions.Extensions;
 import java.util.Arrays;
 import java.util.Map;
@@ -35,11 +37,13 @@ public final class LithoLoggerProvider {
   }
 
   static class LithoEventLogger implements EventLogger {
+    static final ExtensionPointName<EventLogger> EP_NAME =
+        ExtensionPointName.create("com.facebook.litho.intellij.eventLogger");
     private final EventLogger[] loggers;
     private final Executor executor;
 
     LithoEventLogger() {
-      this(Extensions.getExtensions(EventLogger.EP_NAME));
+      this(Extensions.getExtensions(EP_NAME));
     }
 
     @VisibleForTesting

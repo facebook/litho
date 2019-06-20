@@ -16,7 +16,7 @@
 package com.facebook.litho.intellij.navigation;
 
 import com.facebook.litho.intellij.LithoPluginUtils;
-import com.facebook.litho.intellij.logging.EventLogger;
+import com.facebook.litho.intellij.extensions.EventLogger;
 import com.facebook.litho.intellij.logging.LithoLoggerProvider;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.JavaPsiFacade;

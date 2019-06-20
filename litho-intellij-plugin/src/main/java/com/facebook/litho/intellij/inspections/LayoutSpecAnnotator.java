@@ -15,7 +15,7 @@
  */
 package com.facebook.litho.intellij.inspections;
 
-import com.facebook.litho.intellij.logging.EventLogger;
+import com.facebook.litho.intellij.extensions.EventLogger;
 import com.facebook.litho.intellij.logging.LithoLoggerProvider;
 import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.LayoutSpecModel;
