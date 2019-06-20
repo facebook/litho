@@ -150,5 +150,19 @@ public class LogTreePopulatorTest {
     assertThat(res).isEqualTo("my_key:1337:other_key:value:");
   }
 
+  @Test
+  public void testSkipNullPerfEvent() {
+    final ComponentsLogger logger =
+        new TestComponentsLogger() {
+          @Nullable
+          @Override
+          public Map<String, String> getExtraAnnotations(TreeProps treeProps) {
+            return null;
+          }
+        };
+
+    assertThat(LogTreePopulator.populatePerfEventFromLogger(mContext, logger, null)).isNull();
+  }
+
   private static class MyKey {}
 }
