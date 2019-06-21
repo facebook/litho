@@ -13,25 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.facebook.litho.codelab.props
 
-package com.facebook.litho.codelab
-
-import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
+import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
-import com.facebook.litho.LithoView
+import com.facebook.litho.annotations.LayoutSpec
+import com.facebook.litho.annotations.OnCreateLayout
+import com.facebook.litho.widget.Text
 
-class MainActivity : AppCompatActivity() {
+@LayoutSpec
+object RootComponentSpec {
 
-  override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
-
-    val componentContext = ComponentContext(this)
-    setContentView(
-      LithoView.create(
-        this,
-        RootComponent.create(componentContext).build()
-      )
-    )
-  }
+    @OnCreateLayout
+    fun onCreateLayout(c: ComponentContext): Component {
+        return Text.create(c).textSizeSp(20f).text("Hello World").build()
+    }
 }

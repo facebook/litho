@@ -15,5 +15,5 @@
   -->
 
 <resources>
-    <string name="app_name" description="Name of the app">LithoCodelab: Hello World</string>
+    <string name="app_name" description="Name of the app">LithoCodelab: Props</string>
 </resources>

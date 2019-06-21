@@ -14,16 +14,24 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.codelab
+package com.facebook.litho.codelab.props
 
-import android.app.Application
-import com.facebook.soloader.SoLoader
+import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
+import com.facebook.litho.ComponentContext
+import com.facebook.litho.LithoView
 
-class LithoApp : Application() {
+class MainActivity : AppCompatActivity() {
 
-  override fun onCreate() {
-    super.onCreate()
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
 
-    SoLoader.init(this, false)
+    val componentContext = ComponentContext(this)
+    setContentView(
+      LithoView.create(
+        this,
+        RootComponent.create(componentContext).build()
+      )
+    )
   }
 }

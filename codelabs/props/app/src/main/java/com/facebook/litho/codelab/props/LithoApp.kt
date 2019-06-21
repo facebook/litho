@@ -13,19 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.facebook.litho.codelab
 
-import com.facebook.litho.Component
-import com.facebook.litho.ComponentContext
-import com.facebook.litho.annotations.LayoutSpec
-import com.facebook.litho.annotations.OnCreateLayout
-import com.facebook.litho.widget.Text
+package com.facebook.litho.codelab.props
 
-@LayoutSpec
-object RootComponentSpec {
+import android.app.Application
+import com.facebook.soloader.SoLoader
 
-    @OnCreateLayout
-    fun onCreateLayout(c: ComponentContext): Component {
-        return Text.create(c).textSizeSp(20f).text("Hello World").build()
-    }
+class LithoApp : Application() {
+
+  override fun onCreate() {
+    super.onCreate()
+
+    SoLoader.init(this, false)
+  }
 }
