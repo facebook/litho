@@ -91,6 +91,10 @@ class DynamicPropsManager implements DynamicValue.OnValueChangeListener {
   }
 
   void onUnbindComponent(Component component) {
+    if (!hasCommonDynamicPropsToBind(component) && component.getDynamicProps().length == 0) {
+      return;
+    }
+
     mContents.remove(component);
 
     final Set<DynamicValue<?>> dynamicValues = mAffectingDynamicValues.get(component);
