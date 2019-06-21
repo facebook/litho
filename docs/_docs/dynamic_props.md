@@ -125,5 +125,84 @@ Notice that:
 
 ### Custom Dynamic Props for MountSpecs
 
-*Under construction*
+You may have your own `MountSpec` which has `@Props` that also do not affect layout.
+It is possible to control the values of those properties in similar way using `DynamicValue` interface.
+However, in this case you will need to tell framework *how* to apply the value of the `@Prop` to the mounted element.
 
+To show you how to do this, let us consider a `MountSpec` that mounts a [`ClockView`](https://github.com/facebook/litho/blob/master/sample/src/main/java/com/facebook/samples/litho/dynamicprops/ClockView.java) and defines `time` property, which it passes to the View in `@OnMount`.
+
+```java
+/**
+ * ClockComponentSpec.java
+ */
+@MountSpec
+class ClockComponentSpec {
+
+  @OnCreateMountContent
+  static ClockView onCreateMountContent(Context c) {
+    return new ClockView(c);
+  }
+
+  @OnMount
+  static void onMount(ComponentContext c, ClockView clockView, @Prop long time) {
+    clockView.setTime(time);
+  }
+}
+```
+
+<img src="/static/images/clock_view.png" style="height: 500px;">
+
+Notice that the value of the `time` property does not affect layout, it only controls how the `ClockView` draws clock hands.
+However, every time you want to update it the framework will have to go through `LayoutState` and `MountState`.
+
+Here is how we can fix this by converting to Dynamic Props and, at the same time, get a more convenient interface to adjust the value.
+
+```java
+/**
+ * ClockComponentSpec.java
+ */
+@MountSpec
+class ClockComponentSpec {
+
+  @OnCreateMountContent
+  static ClockView onCreateMountContent(Context c) {
+    return new ClockView(c);
+  }
+
+  @OnBindDynamicValue
+  static void onBindTime(
+	  ClockView clockView,
+	  @Prop(dynamic = true) long time) {
+    clockView.setTime(time);
+  }
+}
+```
+
+**First thing** you need to do is to mark the `@Prop` as dynamic - *line 15*.
+Once you have done this, the framework will generate an additional method to the builder of your `Component` that takes a `DynamicValue`.
+At the same time it will keep the version of this method that takes "static" value, if you choose to use this in some situations.
+
+```java
+/**
+ * ClockComponent.java (generated)
+ */
+ public final class ClockComponent extends Component {
+   ...
+   public static final class Builder extends Component.Builder<Builder> {
+      ...
+      public Builder time(DynamicValue<Long> time) {...}
+      public Builder time(long time) {...}
+      ...
+   }
+}
+```
+**Second thing** is to create a [`@OnBindDynamicValue`](/javadoc/com/facebook/litho/annotations/OnBindDynamicValue) method - *lines 12-17* in `ClockComponentSpec.java` - that should set the value to the mounted content.
+This method should always takes 2 arguments - mounted content, and the `@Prop` itself. You need to create one such method for every dynamic `@Prop` you define.
+Then, it is the responsibility of the framework to invoke these methods to keep changes to the `DynamicValue`.
+
+<video loop autoplay class="video" style="width: 100%; height: 500px;">
+  <source type="video/webm" src="/static/videos/custom_dynamic_props.webm"></source>
+  <p>Your browser does not support the video element.</p>
+</video>
+
+[Here](https://github.com/facebook/litho/tree/master/sample/src/main/java/com/facebook/samples/litho/dynamicprops) you find the full implementation of the sample above.
