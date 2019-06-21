@@ -30,7 +30,9 @@ class MainActivity : AppCompatActivity() {
     setContentView(
       LithoView.create(
         this,
-        RootComponent.create(componentContext).build()
+        RootComponent.create(componentContext)
+            .name("Jane") // Using the prop to set the name.
+            .build()
       )
     )
   }

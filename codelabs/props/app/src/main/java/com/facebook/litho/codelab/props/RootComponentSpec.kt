@@ -19,13 +19,21 @@ import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.annotations.LayoutSpec
 import com.facebook.litho.annotations.OnCreateLayout
+import com.facebook.litho.annotations.Prop
 import com.facebook.litho.widget.Text
 
+@Suppress("MagicNumber")
 @LayoutSpec
 object RootComponentSpec {
 
-    @OnCreateLayout
-    fun onCreateLayout(c: ComponentContext): Component {
-        return Text.create(c).textSizeSp(20f).text("Hello World").build()
-    }
+  @OnCreateLayout
+  fun onCreateLayout(
+      c: ComponentContext,
+      @Prop name: String // Creating a prop called 'name' using the '@Prop' annotation
+  ): Component {
+    return Text.create(c)
+        .textSizeSp(20f)
+        .text("Hello $name!") // Using name to set the 'text' prop of the Text component.
+        .build()
+  }
 }
