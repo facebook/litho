@@ -15,6 +15,7 @@
   - id: mount-specs
   - id: props
   - id: common-props
+  - id: dynamic-props
   - id: state
   - id: cached-values
   - id: layout
