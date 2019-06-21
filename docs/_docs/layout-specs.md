@@ -5,6 +5,9 @@ layout: layout-specs
 permalink: /docs/layout-specs
 ---
 
+<!-- Workaround for https://github.com/jekyll/jekyll/issues/7629 -->
+<p>&nbsp;</p>
+
 {% capture layout-spec-java %}{% include_relative layout-specs/layout-spec-java.md %}{% endcapture %}
 {% capture layout-spec-kt %}{% include_relative layout-specs/layout-spec-kt.md %}{% endcapture %}
 
