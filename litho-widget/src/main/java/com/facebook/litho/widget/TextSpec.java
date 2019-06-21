@@ -622,7 +622,8 @@ class TextSpec {
       final int ellipsizedLineNumber = getEllipsizedLineNumber(textLayout.get());
       if (ellipsizedLineNumber != -1) {
         final CharSequence truncated =
-            truncateText(text, customEllipsisText, textLayout.get(), ellipsizedLineNumber);
+            truncateText(
+                text, customEllipsisText, textLayout.get(), ellipsizedLineNumber, layoutWidth);
 
         Layout newLayout =
             createTextLayout(
@@ -688,13 +689,14 @@ class TextSpec {
       CharSequence text,
       CharSequence customEllipsisText,
       Layout newLayout,
-      int ellipsizedLineNumber) {
+      int ellipsizedLineNumber,
+      float layoutWidth) {
     Rect bounds = new Rect();
     newLayout
         .getPaint()
         .getTextBounds(customEllipsisText.toString(), 0, customEllipsisText.length(), bounds);
     // Identify the X position at which to truncate the final line:
-    final float ellipsisTarget = newLayout.getLineMax(ellipsizedLineNumber) - bounds.width();
+    final float ellipsisTarget = layoutWidth - bounds.width();
     // Get character offset number corresponding to that X position:
     final int ellipsisOffset =
         newLayout.getOffsetForHorizontal(ellipsizedLineNumber, ellipsisTarget);
