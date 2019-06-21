@@ -20,6 +20,7 @@
   - id: cached-values
   - id: layout
   - id: tree-props
+  - id: widgets
 - title: Handling Events
   items:
   - id: events-overview
