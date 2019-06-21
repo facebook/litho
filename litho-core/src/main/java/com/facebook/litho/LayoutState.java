@@ -258,11 +258,6 @@ class LayoutState {
 
   private static LayoutOutput createHostLayoutOutput(
       LayoutState layoutState, InternalNode node, boolean isPhantom) {
-    final boolean isTracing = ComponentsSystrace.isTracing();
-    if (isTracing) {
-      ComponentsSystrace.beginSection(
-          "createHostLayoutOutput:" + node.getSimpleName());
-    }
 
     final HostComponent hostComponent = HostComponent.create();
 
@@ -299,39 +294,25 @@ class LayoutState {
       }
     }
 
-    if (isTracing) {
-      ComponentsSystrace.endSection();
-    }
-
     return hostOutput;
   }
 
   private static LayoutOutput createDrawableLayoutOutput(
       Component component, LayoutState layoutState, InternalNode node, boolean hasHostView) {
-    final boolean isTracing = ComponentsSystrace.isTracing();
-    try {
-      if (isTracing) {
-        ComponentsSystrace.beginSection("createDrawableLayoutOutput:" + node.getSimpleName());
-      }
-      // The mount operation will need both the marker for the target host and its matching
-      // parent host to ensure the correct hierarchy when nesting the host views.
-      long hostMarker = layoutState.mCurrentHostMarker;
+    // The mount operation will need both the marker for the target host and its matching
+    // parent host to ensure the correct hierarchy when nesting the host views.
+    long hostMarker = layoutState.mCurrentHostMarker;
 
-      return createLayoutOutput(
-          component,
-          hostMarker,
-          layoutState,
-          node,
-          false /* useNodePadding */,
-          IMPORTANT_FOR_ACCESSIBILITY_NO,
-          layoutState.mShouldDuplicateParentState,
-          hasHostView,
-          false);
-    } finally {
-      if (isTracing) {
-        ComponentsSystrace.endSection();
-      }
-    }
+    return createLayoutOutput(
+        component,
+        hostMarker,
+        layoutState,
+        node,
+        false /* useNodePadding */,
+        IMPORTANT_FOR_ACCESSIBILITY_NO,
+        layoutState.mShouldDuplicateParentState,
+        hasHostView,
+        false);
   }
 
   private static LayoutOutput createLayoutOutput(
@@ -344,10 +325,6 @@ class LayoutState {
       boolean duplicateParentState,
       boolean hasHostView,
       boolean isPhantom) {
-    final boolean isTracing = ComponentsSystrace.isTracing();
-    if (isTracing) {
-      ComponentsSystrace.beginSection("createLayoutOutput:" + node.getSimpleName());
-    }
     final boolean isMountViewSpec = isMountViewSpec(component);
 
     final int hostTranslationX;
@@ -432,10 +409,6 @@ class LayoutState {
 
     if (isPhantom) {
       flags |= LAYOUT_FLAG_PHANTOM;
-    }
-
-    if (isTracing) {
-      ComponentsSystrace.endSection();
     }
 
     return new LayoutOutput(
@@ -633,9 +606,6 @@ class LayoutState {
     }
     final Component component = node.getTailComponent();
     final boolean isTracing = ComponentsSystrace.isTracing();
-    if (isTracing) {
-      ComponentsSystrace.beginSection("collectResults:" + node.getSimpleName());
-    }
 
     // Early return if collecting results of a node holding a nested tree.
     if (node.isNestedTreeHolder()) {
@@ -699,13 +669,7 @@ class LayoutState {
 
     final DiffNode diffNode;
     if (shouldGenerateDiffTree) {
-      if (isTracing) {
-        ComponentsSystrace.beginSection("createDiffNode:" + node.getSimpleName());
-      }
       diffNode = createDiffNode(node, parentDiffNode);
-      if (isTracing) {
-        ComponentsSystrace.endSection();
-      }
       if (parentDiffNode == null) {
         layoutState.mDiffTreeRoot = diffNode;
       }
@@ -780,9 +744,6 @@ class LayoutState {
             ? currentDiffNode.getBackground()
             : null;
 
-        if (isTracing) {
-          ComponentsSystrace.beginSection("addBgDrawableComponent:" + node.getSimpleName());
-        }
         final LayoutOutput backgroundOutput =
             addDrawableComponent(
                 node,
@@ -794,9 +755,6 @@ class LayoutState {
 
         if (diffNode != null) {
           diffNode.setBackground(backgroundOutput);
-        }
-        if (isTracing) {
-          ComponentsSystrace.endSection();
         }
       }
     }
@@ -834,9 +792,6 @@ class LayoutState {
     }
 
     if (TransitionUtils.areTransitionsEnabled(scopedAndroidContext)) {
-      if (isTracing) {
-        ComponentsSystrace.beginSection("extractTransitions:" + node.getSimpleName());
-      }
       final ArrayList<Transition> transitions = node.getTransitions();
       if (transitions != null) {
         for (int i = 0, size = transitions.size(); i < size; i++) {
@@ -858,9 +813,6 @@ class LayoutState {
         // We'll check for animations in mount
         layoutState.mComponentsNeedingPreviousRenderData.addAll(
             componentsNeedingPreviousRenderData);
-      }
-      if (isTracing) {
-        ComponentsSystrace.endSection();
       }
     }
 
@@ -884,9 +836,6 @@ class LayoutState {
     if (node.shouldDrawBorders()) {
       final LayoutOutput convertBorder =
           (currentDiffNode != null) ? currentDiffNode.getBorder() : null;
-      if (isTracing) {
-        ComponentsSystrace.beginSection("addBorderDrawableComponent:" + node.getSimpleName());
-      }
       final LayoutOutput borderOutput =
           addDrawableComponent(
               node,
@@ -897,9 +846,6 @@ class LayoutState {
               shouldAddHostLayoutOutput);
       if (diffNode != null) {
         diffNode.setBorder(borderOutput);
-      }
-      if (isTracing) {
-        ComponentsSystrace.endSection();
       }
     }
 
@@ -913,9 +859,6 @@ class LayoutState {
             ? currentDiffNode.getForeground()
             : null;
 
-        if (isTracing) {
-          ComponentsSystrace.beginSection("addFgDrawableComponent:" + node.getSimpleName());
-        }
         final LayoutOutput foregroundOutput =
             addDrawableComponent(
                 node,
@@ -928,17 +871,11 @@ class LayoutState {
         if (diffNode != null) {
           diffNode.setForeground(foregroundOutput);
         }
-        if (isTracing) {
-          ComponentsSystrace.endSection();
-        }
       }
     }
 
     // 7. Add VisibilityOutputs if any visibility-related event handlers are present.
     if (node.hasVisibilityHandlers()) {
-      if (isTracing) {
-        ComponentsSystrace.beginSection("addVisibilityHandlers:" + node.getSimpleName());
-      }
       final VisibilityOutput visibilityOutput = createVisibilityOutput(node, layoutState);
       final long previousId =
           shouldUseCachedOutputs && currentDiffNode.getVisibilityOutput() != null
@@ -952,9 +889,6 @@ class LayoutState {
       if (diffNode != null) {
         diffNode.setVisibilityOutput(visibilityOutput);
       }
-      if (isTracing) {
-        ComponentsSystrace.endSection();
-      }
     }
 
     // 8. If we're in a testing environment, maintain an additional data structure with
@@ -967,9 +901,6 @@ class LayoutState {
     // 9. Extract the Working Range registrations.
     List<WorkingRangeContainer.Registration> registrations = node.getWorkingRangeRegistrations();
     if (registrations != null && !registrations.isEmpty()) {
-      if (isTracing) {
-        ComponentsSystrace.beginSection("extractWorkingRanges:" + node.getSimpleName());
-      }
       if (layoutState.mWorkingRangeContainer == null) {
         layoutState.mWorkingRangeContainer = new WorkingRangeContainer();
       }
@@ -977,9 +908,6 @@ class LayoutState {
       for (WorkingRangeContainer.Registration registration : registrations) {
         layoutState.mWorkingRangeContainer.registerWorkingRange(
             registration.mName, registration.mWorkingRange, registration.mComponent);
-      }
-      if (isTracing) {
-        ComponentsSystrace.endSection();
       }
     }
 
@@ -994,9 +922,6 @@ class LayoutState {
         rect.bottom = rect.top + node.getHeight();
       }
 
-      if (isTracing) {
-        ComponentsSystrace.beginSection("keepComponentDelegates:" + node.getSimpleName());
-      }
       for (Component delegate : node.getComponents()) {
         final Rect copyRect = new Rect();
         copyRect.set(rect);
@@ -1020,9 +945,6 @@ class LayoutState {
         if (delegate.getGlobalKey() != null) {
           layoutState.mComponentKeyToBounds.put(delegate.getGlobalKey(), copyRect);
         }
-      }
-      if (isTracing) {
-        ComponentsSystrace.endSection();
       }
     }
 
@@ -1072,10 +994,6 @@ class LayoutState {
     addCurrentAffinityGroupToTransitionMapping(layoutState);
     layoutState.mCurrentTransitionId = currentTransitionId;
     layoutState.mCurrentLayoutOutputAffinityGroup = currentLayoutOutputAffinityGroup;
-
-    if (isTracing) {
-      ComponentsSystrace.endSection();
-    }
   }
 
   Map<String, Rect> getComponentKeyToBounds() {
@@ -1276,10 +1194,6 @@ class LayoutState {
   private static int addHostLayoutOutput(
       InternalNode node, LayoutState layoutState, DiffNode diffNode, boolean isPhantom) {
     final Component component = node.getTailComponent();
-    final boolean isTracing = ComponentsSystrace.isTracing();
-    if (isTracing) {
-      ComponentsSystrace.beginSection("addHostLayoutOutput:" + node.getSimpleName());
-    }
 
     // Only the root host is allowed to wrap view mount specs as a layout output
     // is unconditionally added for it.
@@ -1309,9 +1223,6 @@ class LayoutState {
     maybeAddLayoutOutputToAffinityGroup(
         layoutState.mCurrentLayoutOutputAffinityGroup, OutputUnitType.HOST, hostLayoutOutput);
 
-    if (isTracing) {
-      ComponentsSystrace.endSection();
-    }
     return hostOutputPosition;
   }
 
@@ -1561,7 +1472,13 @@ class LayoutState {
       return;
     }
 
+    if (isTracing) {
+      ComponentsSystrace.beginSection("collectResults");
+    }
     collectResults(c, root, layoutState, null);
+    if (isTracing) {
+      ComponentsSystrace.endSection();
+    }
 
     if (isTracing) {
       ComponentsSystrace.beginSection("sortMountableOutputs");
