@@ -113,7 +113,7 @@ public class ResourceResolver {
   }
 
   @Nullable
-  private final int[] resolveIntArrayRes(@ArrayRes int resId) {
+  public final int[] resolveIntArrayRes(@ArrayRes int resId) {
     if (resId != 0) {
       int[] cached = mResourceCache.get(resId);
       if (cached != null) {
