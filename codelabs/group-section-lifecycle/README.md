@@ -152,3 +152,46 @@ object LifecycleGroupSectionSpec {
   }
 }
 ```
+
+### @OnCreateService
+A method annotated with this annotation will be called when the section is created for the first time and is responsible to create a Service object it wishes to use. Service object is persistent across state updates as long as the section remains in the hierarchy.
+
+```kotlin
+@GroupSectionSpec
+object LifecycleGroupSectionSpec {
+
+  @OnCreateService
+  fun onCreateService(c: SectionContext, ...): YourService {
+    return YourService()
+  }
+}
+```
+
+### @OnBindService
+A method with this annotation will be called whenever the Service has been created or transferred from the old tree to the new tree and are therefore ready to be used.
+```kotlin
+@GroupSectionSpec
+object LifecycleGroupSectionSpec {
+
+  @OnBindService
+  fun onBindService(c: SectionContext, service: YourService, ...) {
+  }
+}
+```
+
+### @OnUnbindService
+A method annotated with this annotation will be called when the Service has been transferred from the old tree to the new tree. It allows you to clean up and undo anything you have done in @OnBindService method.
+```kotlin
+@GroupSectionSpec
+object LifecycleGroupSectionSpec {
+
+  @OnUnbindService
+  fun onUnbindService(c: SectionContext, service: YourService, ...) {
+    // Clean up or reset the service.
+  }
+}
+```
+
+# 5. The flow chart of the lifecycle methods
+
+<img src="static/flow-chart-v0.24.0-group-section-spec.svg" alt="Lifecycle flow chart of GroupSection">

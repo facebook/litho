@@ -25,6 +25,9 @@ class LifecycleEvent(val eventType: LifecycleEventType, val endTime: Long)
 enum class LifecycleEventType {
   ON_CREATE_INITIAL_STATE,
   ON_CREATE_TREE_PROP,
+  ON_CREATE_SERVICE,
+  ON_BIND_SERVICE,
+  ON_UNBIND_SERVICE,
   ON_CREATE_CHILDREN,
   ON_DATA_BOUND,
   ON_DATA_RENDERED,

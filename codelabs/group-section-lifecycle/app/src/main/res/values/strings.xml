@@ -21,6 +21,12 @@
         description="Lifecycle annotation: OnCreateInitialState">\@OnCreateInitialState</string>
     <string name="onCreateTreeProp"
         description="Lifecycle annotation: OnCreateTreeProp">\@OnCreateTreeProp</string>
+    <string name="onCreateService"
+        description="Lifecycle annotation: OnCreateService">\@OnCreateService</string>
+    <string name="onBindService"
+        description="Lifecycle annotation: OnBindService">\@OnBindService</string>
+    <string name="onUnbindService"
+        description="Lifecycle annotation: OnUnbindService">\@OnUnbindService</string>
     <string name="onCreateChildren"
         description="Lifecycle annotation: OnCreateChildren">\@OnCreateChildren</string>
     <string name="onDataBound"

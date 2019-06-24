@@ -31,11 +31,14 @@ import com.facebook.litho.sections.LoadingEvent
 import com.facebook.litho.sections.SectionContext
 import com.facebook.litho.sections.SectionLifecycle
 import com.facebook.litho.sections.annotations.GroupSectionSpec
+import com.facebook.litho.sections.annotations.OnBindService
 import com.facebook.litho.sections.annotations.OnCreateChildren
+import com.facebook.litho.sections.annotations.OnCreateService
 import com.facebook.litho.sections.annotations.OnDataBound
 import com.facebook.litho.sections.annotations.OnDataRendered
 import com.facebook.litho.sections.annotations.OnViewportChanged
 import com.facebook.litho.sections.annotations.OnRefresh
+import com.facebook.litho.sections.annotations.OnUnbindService
 import com.facebook.litho.sections.common.DataDiffSection
 import com.facebook.litho.sections.common.RenderEvent
 import com.facebook.litho.widget.Card
@@ -153,6 +156,36 @@ object LifecycleGroupSectionSpec {
   @OnUpdateState
   fun updateScramble(scramble: StateValue<Boolean>) {
     scramble.set(scramble.get()?.not())
+  }
+
+  @OnCreateService
+  fun onCreateService(
+      c: SectionContext,
+      @Prop lifecycleListener: LifecycleListener,
+      @State startTime: Long
+  ): Any {
+    dispatchLifecycleEvent(LifecycleEventType.ON_CREATE_SERVICE, lifecycleListener, startTime)
+    return Any()
+  }
+
+  @OnBindService
+  fun onBindService(
+      c: SectionContext,
+      service: Any,
+      @Prop lifecycleListener: LifecycleListener,
+      @State startTime: Long
+  ) {
+    dispatchLifecycleEvent(LifecycleEventType.ON_BIND_SERVICE, lifecycleListener, startTime)
+  }
+
+  @OnUnbindService
+  fun onUnbindService(
+      c: SectionContext,
+      service: Any,
+      @Prop lifecycleListener: LifecycleListener,
+      @State startTime: Long
+  ) {
+    dispatchLifecycleEvent(LifecycleEventType.ON_UNBIND_SERVICE, lifecycleListener, startTime)
   }
 
   private fun dispatchLifecycleEvent(

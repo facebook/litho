@@ -79,6 +79,15 @@ object TimelineSectionSpec {
         LifecycleEventType.ON_CREATE_TREE_PROP ->
           R.string.onCreateTreeProp to R.color.colorOnCreateTreeProp
 
+        LifecycleEventType.ON_CREATE_SERVICE ->
+          R.string.onCreateService to R.color.colorOnCreateService
+
+        LifecycleEventType.ON_BIND_SERVICE ->
+          R.string.onBindService to R.color.colorOnBindService
+
+        LifecycleEventType.ON_UNBIND_SERVICE ->
+          R.string.onUnbindService to R.color.colorOnUnbindService
+
         LifecycleEventType.ON_CREATE_CHILDREN ->
           R.string.onCreateChildren to R.color.colorOnCreateChildren
 

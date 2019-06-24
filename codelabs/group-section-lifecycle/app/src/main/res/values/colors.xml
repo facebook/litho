@@ -22,6 +22,9 @@
 
     <color name="colorOnCreateInitialState">#E57373</color>
     <color name="colorOnCreateTreeProp">#F06292</color>
+    <color name="colorOnCreateService">#BA68C8</color>
+    <color name="colorOnBindService">#7986CB</color>
+    <color name="colorOnUnbindService">#4DB6AC</color>
     <color name="colorOnCreateChildren">#FFF176</color>
     <color name="colorOnDataBound">#FF8A65</color>
     <color name="colorOnDataRendered">#A1887F</color>
