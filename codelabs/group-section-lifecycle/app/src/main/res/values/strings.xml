@@ -15,5 +15,10 @@
   -->
 
 <resources>
-    <string name="app_name" description="Name of the app">LithoCodelab: GroupSection Lifecycle</string>
+    <string name="app_name"
+        description="Name of the app">LithoCodelab: GroupSection Lifecycle</string>
+    <string name="onCreateInitialState"
+        description="Lifecycle annotation: OnCreateInitialState">\@OnCreateInitialState</string>
+    <string name="onCreateChildren"
+        description="Lifecycle annotation: OnCreateChildren">\@OnCreateChildren</string>
 </resources>

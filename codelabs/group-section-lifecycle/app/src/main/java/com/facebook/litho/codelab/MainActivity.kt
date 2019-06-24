@@ -20,18 +20,33 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.LithoView
+import com.facebook.litho.codelab.auxiliary.TimelineRootComponent
 
 class MainActivity : AppCompatActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+    setContentView(R.layout.main_activity)
 
     val componentContext = ComponentContext(this)
-    setContentView(
-      LithoView.create(
-        this,
-        RootComponent.create(componentContext).build()
-      )
-    )
+    val lifecycleEvents = mutableListOf<LifecycleEvent>()
+
+    val timelineView = findViewById<LithoView>(R.id.timeline)
+    val lifecycleListener = object : LifecycleListener {
+      override fun onLifecycleMethodCalled(type: LifecycleEventType, endTime: Long) {
+        lifecycleEvents.add(LifecycleEvent(type, endTime))
+
+        timelineView.setComponentAsync(
+            TimelineRootComponent.create(componentContext)
+                .lifecycleEvents(lifecycleEvents.toList())
+                .build())
+      }
+    }
+
+    val sectionView = findViewById<LithoView>(R.id.section)
+    sectionView.setComponent(
+        LifecycleRootComponent.create(componentContext)
+            .lifecycleListener(lifecycleListener)
+            .build())
   }
 }
