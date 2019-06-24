@@ -32,6 +32,7 @@ object ButtonSpec {
   @OnCreateLayout
   fun onCreateLayout(c: ComponentContext, @Prop text: String): Component {
     return Row.create(c, 0, R.style.Widget_AppCompat_Button_Small)
+        .clickable(true)
         .child(
             Text.create(c)
                 .alignSelf(YogaAlign.CENTER)
