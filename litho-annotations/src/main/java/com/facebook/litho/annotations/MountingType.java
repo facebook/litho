@@ -27,5 +27,4 @@ public enum MountingType {
 
   /** Mounting type extends Drawable. */
   DRAWABLE,
-  ;
 }

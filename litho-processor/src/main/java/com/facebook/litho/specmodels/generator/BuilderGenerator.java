@@ -382,29 +382,29 @@ public class BuilderGenerator {
         break;
       case DIMEN_SIZE:
         dataHolder.addTypeSpecDataHolder(pxBuilders(specModel, prop, requiredIndex));
+        dataHolder.addTypeSpecDataHolder(dipBuilders(specModel, prop, requiredIndex));
         dataHolder.addTypeSpecDataHolder(
             resBuilders(specModel, prop, requiredIndex, ClassNames.DIMEN_RES, "resolveDimenSize"));
         dataHolder.addTypeSpecDataHolder(
             attrBuilders(specModel, prop, requiredIndex, ClassNames.DIMEN_RES, "resolveDimenSize"));
-        dataHolder.addTypeSpecDataHolder(dipBuilders(specModel, prop, requiredIndex));
         break;
       case DIMEN_TEXT:
         dataHolder.addTypeSpecDataHolder(pxBuilders(specModel, prop, requiredIndex));
+        dataHolder.addTypeSpecDataHolder(dipBuilders(specModel, prop, requiredIndex));
+        dataHolder.addTypeSpecDataHolder(sipBuilders(specModel, prop, requiredIndex));
         dataHolder.addTypeSpecDataHolder(
             resBuilders(specModel, prop, requiredIndex, ClassNames.DIMEN_RES, "resolveDimenSize"));
         dataHolder.addTypeSpecDataHolder(
             attrBuilders(specModel, prop, requiredIndex, ClassNames.DIMEN_RES, "resolveDimenSize"));
-        dataHolder.addTypeSpecDataHolder(dipBuilders(specModel, prop, requiredIndex));
-        dataHolder.addTypeSpecDataHolder(sipBuilders(specModel, prop, requiredIndex));
         break;
       case DIMEN_OFFSET:
         dataHolder.addTypeSpecDataHolder(pxBuilders(specModel, prop, requiredIndex));
+        dataHolder.addTypeSpecDataHolder(dipBuilders(specModel, prop, requiredIndex));
         dataHolder.addTypeSpecDataHolder(sipBuilders(specModel, prop, requiredIndex));
         dataHolder.addTypeSpecDataHolder(
             resBuilders(specModel, prop, requiredIndex, ClassNames.DIMEN_RES, "resolveDimenSize"));
         dataHolder.addTypeSpecDataHolder(
             attrBuilders(specModel, prop, requiredIndex, ClassNames.DIMEN_RES, "resolveDimenSize"));
-        dataHolder.addTypeSpecDataHolder(dipBuilders(specModel, prop, requiredIndex));
         break;
       case FLOAT:
         dataHolder.addTypeSpecDataHolder(regularBuilders(specModel, prop, requiredIndex));
