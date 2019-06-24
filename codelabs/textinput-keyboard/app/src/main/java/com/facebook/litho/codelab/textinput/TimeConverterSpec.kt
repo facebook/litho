@@ -25,6 +25,7 @@ import com.facebook.litho.widget.Text
 import com.facebook.yoga.YogaEdge
 import com.facebook.yoga.YogaJustify
 import java.util.Calendar
+import java.util.TimeZone
 
 @Suppress("MagicNumber")
 @LayoutSpec
@@ -32,13 +33,17 @@ object TimeConverterSpec {
 
   @OnCreateLayout
   fun onCreateLayout(c: ComponentContext): Component {
-    val calendar = Calendar.getInstance()
+    val calendar = Calendar.getInstance(TimeZone.getTimeZone("Europe/London"))
 
-    val londonTime = calendar.timeInMillis
+    val londonTime = timeMillis(calendar)
 
-    val newYourTime = londonTime - 5 * ClockDrawable.ONE_HOUR
+    calendar.setTimeZone(TimeZone.getTimeZone("America/New_York"))
 
-    val sanFranciscoTime = londonTime - 8 * ClockDrawable.ONE_HOUR
+    val newYorkTime = timeMillis(calendar)
+
+    calendar.setTimeZone(TimeZone.getTimeZone("America/Los_Angeles"))
+
+    val sanFranciscoTime = timeMillis(calendar)
 
     return Row.create(c)
         .child(
@@ -51,7 +56,7 @@ object TimeConverterSpec {
                 )
                 .child(
                     Clock.create(c)
-                        .timeMillis(newYourTime)
+                        .timeMillis(newYorkTime)
                         .radius(210)
                         .marginDip(YogaEdge.ALL, 24f)
                 )
@@ -83,5 +88,19 @@ object TimeConverterSpec {
                 .justifyContent(YogaJustify.SPACE_AROUND)
         )
         .build()
+  }
+
+  private fun timeMillis(calendar: Calendar): Long {
+    var timeOfDay: Long = 0
+    calendar.apply {
+      timeOfDay += get(Calendar.HOUR)
+      timeOfDay *= 60
+      timeOfDay += get(Calendar.MINUTE)
+      timeOfDay *= 60
+      timeOfDay += get(Calendar.SECOND)
+      timeOfDay *= 1000
+      timeOfDay += get(Calendar.MILLISECOND)
+    }
+    return timeOfDay
   }
 }
