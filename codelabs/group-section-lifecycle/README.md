@@ -72,3 +72,50 @@ object LifecycleGroupSectionSpec {
   }
 }
 ```
+
+###@​OnDataBound
+A method with this annotation will be called when the data changes corresponding to this section's hierarchy has been made available to the `SectionTree.Target.` Data changes could occur due to any number of the following:
+  - Insert
+  - Update
+  - Delete
+  - Move
+
+```kotlin
+@GroupSectionSpec
+object LifecycleGroupSectionSpec {
+
+  @OnDataBound
+  fun onDataBound(c: SectionContext, ...) {
+    ...
+  }
+}
+```
+
+###@​OnDataRendered
+A method with this annotation will be called when the dataset corresponding to this section is now rendered completely on viewport.
+
+Parameters in the method:
+- *isDataChanged* - True if the dataset is changed, false otherwise.
+- *isMounted* - True if the section is shown on the viewport, false otherwise.
+- *uptimeMillis* - The timestamp when the method is called.
+- *firstVisibleIndex* - First visible item index in the section.
+- *lastVisibleIndex* - Last visible item index in the section.
+- *changesInfo*  - A collection of Changes between previous/current sections, each change represents a operation(insert, update, delete, or move).
+```
+@GroupSectionSpec
+object LifecycleGroupSectionSpec {
+
+  @OnDataRendered
+  fun onDataRendered(
+      c: SectionContext,
+      isDataChanged: Boolean,
+      isMounted: Boolean,
+      uptimeMillis: Long,
+      firstVisibleIndex: Int,
+      lastVisibleIndex: Int,
+      changesInfo: ChangesInfo
+  ) {
+    ...
+  }
+}
+```

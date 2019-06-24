@@ -81,5 +81,11 @@ object TimelineSectionSpec {
 
         LifecycleEventType.ON_CREATE_CHILDREN ->
           R.string.onCreateChildren to R.color.colorOnCreateChildren
+
+        LifecycleEventType.ON_DATA_BOUND ->
+          R.string.onDataBound to R.color.colorOnDataBound
+
+        LifecycleEventType.ON_DATA_RENDERED ->
+          R.string.onDataRendered to R.color.colorOnDataRendered
       }
 }

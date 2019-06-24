@@ -23,4 +23,8 @@
         description="Lifecycle annotation: OnCreateTreeProp">\@OnCreateTreeProp</string>
     <string name="onCreateChildren"
         description="Lifecycle annotation: OnCreateChildren">\@OnCreateChildren</string>
+    <string name="onDataBound"
+        description="Lifecycle annotation: OnDataBound">\@OnDataBound</string>
+    <string name="onDataRendered"
+        description="Lifecycle annotation: OnDataRendered">\@OnDataRendered</string>
 </resources>

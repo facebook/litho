@@ -24,10 +24,13 @@ import com.facebook.litho.annotations.OnCreateTreeProp
 import com.facebook.litho.annotations.OnEvent
 import com.facebook.litho.annotations.Prop
 import com.facebook.litho.annotations.State
+import com.facebook.litho.sections.ChangesInfo
 import com.facebook.litho.sections.Children
 import com.facebook.litho.sections.SectionContext
 import com.facebook.litho.sections.annotations.GroupSectionSpec
 import com.facebook.litho.sections.annotations.OnCreateChildren
+import com.facebook.litho.sections.annotations.OnDataBound
+import com.facebook.litho.sections.annotations.OnDataRendered
 import com.facebook.litho.sections.common.DataDiffSection
 import com.facebook.litho.sections.common.RenderEvent
 import com.facebook.litho.widget.Card
@@ -90,6 +93,30 @@ object LifecycleGroupSectionSpec {
                         .textSizeSp(20f)
                         .paddingDip(YogaEdge.ALL, 8f)))
         .build()
+  }
+
+  @OnDataBound
+  fun onDataBound(
+      c: SectionContext,
+      @Prop lifecycleListener: LifecycleListener,
+      @State startTime: Long
+  ) {
+    dispatchLifecycleEvent(LifecycleEventType.ON_DATA_BOUND, lifecycleListener, startTime)
+  }
+
+  @OnDataRendered
+  fun onDataRendered(
+      c: SectionContext,
+      isDataChanged: Boolean,
+      isMounted: Boolean,
+      uptimeMillis: Long,
+      firstVisibleIndex: Int,
+      lastVisibleIndex: Int,
+      changesInfo: ChangesInfo,
+      @Prop lifecycleListener: LifecycleListener,
+      @State startTime: Long
+  ) {
+    dispatchLifecycleEvent(LifecycleEventType.ON_DATA_RENDERED, lifecycleListener, startTime)
   }
 
   private fun dispatchLifecycleEvent(
