@@ -56,7 +56,7 @@ public @interface PropDefault {
    * <pre><code>{@literal @LayoutSpec}
    * class SomeSpec {
    *
-   *  {@literal @PropDefault(resType = ResType.String, resId = R.string.default_name)}
+   *  {@literal @PropDefault(resType = ResType.STRING, resId = R.string.default_name)}
    *   static final String name = null;
    *
    * }</code></pre>
