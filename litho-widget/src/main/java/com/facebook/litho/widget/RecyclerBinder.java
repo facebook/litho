@@ -2665,6 +2665,12 @@ public class RecyclerBinder
     // LithoView while it is still on screen making it render blank or zero height.
     layoutManager.setItemPrefetchEnabled(false);
 
+    // This will force padding to be resolved on the main thread before the LayoutManager finds out
+    // about this view. This will keep padding from trying to be resolved later on from a bg thread.
+    // See T41844038. Longer term, it isn't safe to ever get the padding from a bg thread and it
+    // will need to be passed manually to the RecyclerBinder
+    view.getPaddingLeft();
+
     view.setLayoutManager(layoutManager);
     view.setAdapter(mInternalAdapter);
     view.addOnScrollListener(mViewportManager.getScrollListener());
