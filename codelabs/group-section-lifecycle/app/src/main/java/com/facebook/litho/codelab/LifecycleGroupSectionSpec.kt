@@ -20,6 +20,7 @@ import android.os.SystemClock
 import com.facebook.litho.StateValue
 import com.facebook.litho.annotations.FromEvent
 import com.facebook.litho.annotations.OnCreateInitialState
+import com.facebook.litho.annotations.OnCreateTreeProp
 import com.facebook.litho.annotations.OnEvent
 import com.facebook.litho.annotations.Prop
 import com.facebook.litho.annotations.State
@@ -48,6 +49,16 @@ object LifecycleGroupSectionSpec {
     val timestamp = SystemClock.uptimeMillis()
     startTime.set(timestamp)
     dispatchLifecycleEvent(LifecycleEventType.ON_CREATE_INITIAL_STATE, lifecycleListener, timestamp)
+  }
+
+  @OnCreateTreeProp
+  fun onCreateTreeProp(
+      c: SectionContext,
+      @Prop lifecycleListener: LifecycleListener,
+      @State startTime: Long
+  ): DummyTreeProp {
+    dispatchLifecycleEvent(LifecycleEventType.ON_CREATE_TREE_PROP, lifecycleListener, startTime)
+    return DummyTreeProp
   }
 
   @OnCreateChildren

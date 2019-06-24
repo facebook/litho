@@ -26,6 +26,19 @@ object LifecycleGroupSectionSpec {
 }
 ```
 
+###@​OnCreateTreeProp
+A method with this annotation is responsible to generate [TreeProp](https://fblitho.com/docs/tree-props#declaring-a-treeprop). TreeProp is stored in the SectionTree and can be accessed by all child sections.
+```kotlin
+@GroupSectionSpec
+object LifecycleGroupSectionSpec {
+
+  @OnCreateTreeProp
+  fun onCreateTreeProp(c: SectionContext, ...): YourTreeProp {
+    return YourTreeProp(...)
+  }
+}
+```
+
 ###@​OnCreateChildren
 A method with this annotation is responsible to return a [Children](https://fblitho.com/javadoc/com/facebook/litho/sections/Children.html) object, which is a container to contain the child sections. A child section can be a [GroupSectionSpec](/docs/group-sections) or a [DiffSectionSpec](/docs/diff-sections).
 For @​DiffSectionSpec, usually we send a `RenderEvent` event for each item, and the handler is responsible for rendering the component with given data. You can check [here](/docs/events-overview) for details about how to handle events.

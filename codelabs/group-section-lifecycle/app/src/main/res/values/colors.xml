@@ -21,5 +21,6 @@
     <color name="colorAccent">#D81B60</color>
 
     <color name="colorOnCreateInitialState">#E57373</color>
+    <color name="colorOnCreateTreeProp">#F06292</color>
     <color name="colorOnCreateChildren">#FFF176</color>
 </resources>

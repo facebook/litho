@@ -19,6 +19,8 @@
         description="Name of the app">LithoCodelab: GroupSection Lifecycle</string>
     <string name="onCreateInitialState"
         description="Lifecycle annotation: OnCreateInitialState">\@OnCreateInitialState</string>
+    <string name="onCreateTreeProp"
+        description="Lifecycle annotation: OnCreateTreeProp">\@OnCreateTreeProp</string>
     <string name="onCreateChildren"
         description="Lifecycle annotation: OnCreateChildren">\@OnCreateChildren</string>
 </resources>

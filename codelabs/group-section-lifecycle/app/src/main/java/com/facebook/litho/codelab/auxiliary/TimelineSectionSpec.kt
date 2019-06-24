@@ -76,6 +76,9 @@ object TimelineSectionSpec {
         LifecycleEventType.ON_CREATE_INITIAL_STATE ->
           R.string.onCreateInitialState to R.color.colorOnCreateInitialState
 
+        LifecycleEventType.ON_CREATE_TREE_PROP ->
+          R.string.onCreateTreeProp to R.color.colorOnCreateTreeProp
+
         LifecycleEventType.ON_CREATE_CHILDREN ->
           R.string.onCreateChildren to R.color.colorOnCreateChildren
       }

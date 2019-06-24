@@ -24,7 +24,10 @@ class LifecycleEvent(val eventType: LifecycleEventType, val endTime: Long)
 
 enum class LifecycleEventType {
   ON_CREATE_INITIAL_STATE,
+  ON_CREATE_TREE_PROP,
   ON_CREATE_CHILDREN,
 }
+
+object DummyTreeProp
 
 data class Zodiac(val animal: String, val month: Int)
