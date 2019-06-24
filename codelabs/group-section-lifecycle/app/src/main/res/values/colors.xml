@@ -25,4 +25,6 @@
     <color name="colorOnCreateChildren">#FFF176</color>
     <color name="colorOnDataBound">#FF8A65</color>
     <color name="colorOnDataRendered">#A1887F</color>
+    <color name="colorOnViewportChanged">#90A4AE</color>
+    <color name="colorOnRefresh">#E0E0E0</color>
 </resources>

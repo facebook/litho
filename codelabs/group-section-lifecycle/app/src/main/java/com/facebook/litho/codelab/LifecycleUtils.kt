@@ -28,6 +28,8 @@ enum class LifecycleEventType {
   ON_CREATE_CHILDREN,
   ON_DATA_BOUND,
   ON_DATA_RENDERED,
+  ON_VIEWPORT_CHANGED,
+  ON_REFRESH
 }
 
 object DummyTreeProp

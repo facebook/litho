@@ -45,7 +45,6 @@ object LifecycleRootComponentSpec {
         Zodiac("Pig", 12)
     )
     return RecyclerCollectionComponent.create(c)
-        .disablePTR(true)
         .section(
             LifecycleGroupSection.create(SectionContext(c))
                 .zodiacs(zodiacs)

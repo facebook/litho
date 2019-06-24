@@ -9,7 +9,7 @@ Clone the following repo: [https://github.com/facebook/litho/tree/master/codelab
 Build the app with command `./gradlew app:installDebug` and launch it. From the bottom grid layout view, you can observe lifecycle methods are called.
 
 # 4. Lifecycle method annotations
-###@​OnCreateInitialState
+### @OnCreateInitialState
 A method with this annotation is responsible to initialize State values. This method isn't mandatory if you don't have @​State parmaters or don't need to initialize their values. Unlike other lifecycle methods, this method is called only once for the GroupSection.
 ```kotlin
 @GroupSectionSpec
@@ -26,7 +26,7 @@ object LifecycleGroupSectionSpec {
 }
 ```
 
-###@​OnCreateTreeProp
+### @OnCreateTreeProp
 A method with this annotation is responsible to generate [TreeProp](https://fblitho.com/docs/tree-props#declaring-a-treeprop). TreeProp is stored in the SectionTree and can be accessed by all child sections.
 ```kotlin
 @GroupSectionSpec
@@ -39,9 +39,9 @@ object LifecycleGroupSectionSpec {
 }
 ```
 
-###@​OnCreateChildren
-A method with this annotation is responsible to return a [Children](https://fblitho.com/javadoc/com/facebook/litho/sections/Children.html) object, which is a container to contain the child sections. A child section can be a [GroupSectionSpec](/docs/group-sections) or a [DiffSectionSpec](/docs/diff-sections).
-For @​DiffSectionSpec, usually we send a `RenderEvent` event for each item, and the handler is responsible for rendering the component with given data. You can check [here](/docs/events-overview) for details about how to handle events.
+### @OnCreateChildren
+A method with this annotation is responsible to return a [Children](https://fblitho.com/javadoc/com/facebook/litho/sections/Children.html) object, which is a container to contain the child sections. A child section can be a [GroupSectionSpec](https://fblitho.com/docs/group-sections) or a [DiffSectionSpec](https://fblitho.com/docs/diff-sections).
+For @DiffSectionSpec, usually we send a `RenderEvent` event for each item, and the handler is responsible for rendering the component with given data. You can check [here](https://fblitho.com/docs/events-overview) for details about how to handle events.
 ```kotlin
 @GroupSectionSpec
 object LifecycleGroupSectionSpec {
@@ -73,7 +73,7 @@ object LifecycleGroupSectionSpec {
 }
 ```
 
-###@​OnDataBound
+### @OnDataBound
 A method with this annotation will be called when the data changes corresponding to this section's hierarchy has been made available to the `SectionTree.Target.` Data changes could occur due to any number of the following:
   - Insert
   - Update
@@ -91,7 +91,7 @@ object LifecycleGroupSectionSpec {
 }
 ```
 
-###@​OnDataRendered
+### @OnDataRendered
 A method with this annotation will be called when the dataset corresponding to this section is now rendered completely on viewport.
 
 Parameters in the method:
@@ -115,6 +115,39 @@ object LifecycleGroupSectionSpec {
       lastVisibleIndex: Int,
       changesInfo: ChangesInfo
   ) {
+    ...
+  }
+}
+```
+
+### @OnViewportChanged
+A method annotated with this annotation will be called when first/last visible index of the section in the viewport changes.
+```kotlin
+@GroupSectionSpec
+object LifecycleGroupSectionSpec {
+
+  @OnViewportChanged
+  fun onViewportChanged(
+      c: SectionContext,
+      firstVisibleIndex: Int,
+      lastVisibleIndex: Int,
+      totalCount: Int,
+      firstFullyVisibleIndex: Int,
+      lastFullyVisibleIndex: Int
+  ) {
+    ...
+  }
+}
+```
+
+### @OnRefresh
+A method annotated with this annotation will be called when the section requests a refresh of its content.
+```
+@GroupSectionSpec
+object LifecycleGroupSectionSpec {
+
+  @OnRefresh
+  fun onDataRendered(c: SectionContext, ...) {
     ...
   }
 }

@@ -22,15 +22,20 @@ import com.facebook.litho.annotations.FromEvent
 import com.facebook.litho.annotations.OnCreateInitialState
 import com.facebook.litho.annotations.OnCreateTreeProp
 import com.facebook.litho.annotations.OnEvent
+import com.facebook.litho.annotations.OnUpdateState
 import com.facebook.litho.annotations.Prop
 import com.facebook.litho.annotations.State
 import com.facebook.litho.sections.ChangesInfo
 import com.facebook.litho.sections.Children
+import com.facebook.litho.sections.LoadingEvent
 import com.facebook.litho.sections.SectionContext
+import com.facebook.litho.sections.SectionLifecycle
 import com.facebook.litho.sections.annotations.GroupSectionSpec
 import com.facebook.litho.sections.annotations.OnCreateChildren
 import com.facebook.litho.sections.annotations.OnDataBound
 import com.facebook.litho.sections.annotations.OnDataRendered
+import com.facebook.litho.sections.annotations.OnViewportChanged
+import com.facebook.litho.sections.annotations.OnRefresh
 import com.facebook.litho.sections.common.DataDiffSection
 import com.facebook.litho.sections.common.RenderEvent
 import com.facebook.litho.widget.Card
@@ -69,12 +74,13 @@ object LifecycleGroupSectionSpec {
       c: SectionContext,
       @Prop zodiacs: List<Zodiac>,
       @Prop lifecycleListener: LifecycleListener,
-      @State startTime: Long
+      @State startTime: Long,
+      @State scramble: Boolean
   ): Children {
     val children = Children.create()
         .child(
             DataDiffSection.create<Zodiac>(c)
-                .data(zodiacs)
+                .data(if (scramble) zodiacs.toMutableList().shuffled() else zodiacs)
                 .renderEventHandler(LifecycleGroupSection.onRender(c))
         )
         .build()
@@ -117,6 +123,36 @@ object LifecycleGroupSectionSpec {
       @State startTime: Long
   ) {
     dispatchLifecycleEvent(LifecycleEventType.ON_DATA_RENDERED, lifecycleListener, startTime)
+  }
+
+  @OnViewportChanged
+  fun onViewportChanged(
+      c: SectionContext,
+      firstVisibleIndex: Int,
+      lastVisibleIndex: Int,
+      totalCount: Int,
+      firstFullyVisibleIndex: Int,
+      lastFullyVisibleIndex: Int,
+      @Prop lifecycleListener: LifecycleListener,
+      @State startTime: Long
+  ) {
+    dispatchLifecycleEvent(LifecycleEventType.ON_VIEWPORT_CHANGED, lifecycleListener, startTime)
+  }
+
+  @OnRefresh
+  fun onRefresh(
+      c: SectionContext,
+      @Prop lifecycleListener: LifecycleListener,
+      @State startTime: Long
+  ) {
+    dispatchLifecycleEvent(LifecycleEventType.ON_REFRESH, lifecycleListener, startTime)
+    LifecycleGroupSection.updateScramble(c)
+    SectionLifecycle.dispatchLoadingEvent(c, false, LoadingEvent.LoadingState.SUCCEEDED, null)
+  }
+
+  @OnUpdateState
+  fun updateScramble(scramble: StateValue<Boolean>) {
+    scramble.set(scramble.get()?.not())
   }
 
   private fun dispatchLifecycleEvent(

@@ -87,5 +87,11 @@ object TimelineSectionSpec {
 
         LifecycleEventType.ON_DATA_RENDERED ->
           R.string.onDataRendered to R.color.colorOnDataRendered
+
+        LifecycleEventType.ON_VIEWPORT_CHANGED ->
+          R.string.onViewportChanged to R.color.colorOnViewportChanged
+
+        LifecycleEventType.ON_REFRESH ->
+          R.string.onRefresh to R.color.colorOnRefresh
       }
 }

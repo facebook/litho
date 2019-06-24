@@ -27,4 +27,8 @@
         description="Lifecycle annotation: OnDataBound">\@OnDataBound</string>
     <string name="onDataRendered"
         description="Lifecycle annotation: OnDataRendered">\@OnDataRendered</string>
+    <string name="onViewportChanged"
+        description="Lifecycle annotation: OnViewportChanged">\@OnViewportChanged</string>
+    <string name="onRefresh"
+        description="Lifecycle annotation: OnRefresh">\@OnRefresh</string>
 </resources>
