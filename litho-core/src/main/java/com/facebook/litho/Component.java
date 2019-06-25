@@ -1023,7 +1023,7 @@ public abstract class Component extends ComponentLifecycle
      * parent.
      *
      * <p>In the following example, when {@code Row} gets pressed state, its child {@code
-     * OtherStatefulDrawable} will get that pressed state within itself also:
+     * OtherStatefulDrawable} will get that pressed state within itself, too:
      *
      * <pre>{@code
      * Row.create(c)
@@ -1031,8 +1031,7 @@ public abstract class Component extends ComponentLifecycle
      *     .clickable(true)
      *     .child(
      *         OtherStatefulDrawable.create(c)
-     *             .duplicateParentState(true)
-     *         )
+     *             .duplicateParentState(true))
      * }</pre>
      */
     public T duplicateParentState(boolean duplicateParentState) {
