@@ -44,7 +44,6 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
-import androidx.annotation.ColorInt;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.Diff;
@@ -137,6 +136,7 @@ import javax.annotation.Nullable;
  * @prop cursorDrawableRes Drawable to set as an edit text cursor.
  * @prop textColorStateList ColorStateList of the text.
  * @prop hintTextColorStateList ColorStateList of the hint text.
+ * @prop highlightColor Color for selected text.
  * @prop textSize Size of the text.
  * @prop typeface Typeface for the text.
  * @prop textAlignment Alignment of the text within its container. This only has effect on API level
@@ -231,7 +231,7 @@ class TextInputSpec {
       @Prop(optional = true, resType = ResType.COLOR) int shadowColor,
       @Prop(optional = true) ColorStateList textColorStateList,
       @Prop(optional = true) ColorStateList hintColorStateList,
-      @Prop(optional = true) @ColorInt int highlightColor,
+      @Prop(optional = true, resType = ResType.COLOR) int highlightColor,
       @Prop(optional = true, resType = ResType.DIMEN_TEXT) int textSize,
       @Prop(optional = true) Typeface typeface,
       @Prop(optional = true) int textAlignment,
@@ -303,7 +303,7 @@ class TextInputSpec {
       int shadowColor,
       ColorStateList textColorStateList,
       ColorStateList hintColorStateList,
-      @ColorInt int highlightColor,
+      int highlightColor,
       int textSize,
       Typeface typeface,
       int textAlignment,
@@ -403,6 +403,7 @@ class TextInputSpec {
       @Prop(optional = true, resType = ResType.COLOR) Diff<Integer> shadowColor,
       @Prop(optional = true) Diff<ColorStateList> textColorStateList,
       @Prop(optional = true) Diff<ColorStateList> hintColorStateList,
+      @Prop(optional = true, resType = ResType.COLOR) Diff<Integer> highlightColor,
       @Prop(optional = true, resType = ResType.DIMEN_TEXT) Diff<Integer> textSize,
       @Prop(optional = true) Diff<Typeface> typeface,
       @Prop(optional = true) Diff<Integer> textAlignment,
@@ -443,6 +444,9 @@ class TextInputSpec {
       return true;
     }
     if (!equals(hintColorStateList.getPrevious(), hintColorStateList.getNext())) {
+      return true;
+    }
+    if (!equals(highlightColor.getPrevious(), highlightColor.getNext())) {
       return true;
     }
     if (!equals(textSize.getPrevious(), textSize.getNext())) {
@@ -573,7 +577,7 @@ class TextInputSpec {
       @Prop(optional = true, resType = ResType.COLOR) int shadowColor,
       @Prop(optional = true) ColorStateList textColorStateList,
       @Prop(optional = true) ColorStateList hintColorStateList,
-      @Prop(optional = true) @ColorInt int highlightColor,
+      @Prop(optional = true, resType = ResType.COLOR) int highlightColor,
       @Prop(optional = true, resType = ResType.DIMEN_TEXT) int textSize,
       @Prop(optional = true) Typeface typeface,
       @Prop(optional = true) int textAlignment,
