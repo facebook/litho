@@ -15,13 +15,18 @@
  */
 package com.facebook.litho.codelab.textinput
 
+import android.text.InputType
 import com.facebook.litho.Column
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.Row
+import com.facebook.litho.VisibleEvent
 import com.facebook.litho.annotations.LayoutSpec
 import com.facebook.litho.annotations.OnCreateLayout
+import com.facebook.litho.annotations.OnEvent
+import com.facebook.litho.annotations.Prop
 import com.facebook.litho.widget.Text
+import com.facebook.litho.widget.TextInput
 import com.facebook.yoga.YogaEdge
 import com.facebook.yoga.YogaJustify
 import java.util.Calendar
@@ -32,8 +37,13 @@ import java.util.TimeZone
 object TimeConverterSpec {
 
   @OnCreateLayout
-  fun onCreateLayout(c: ComponentContext): Component {
+  fun onCreateLayout(
+      c: ComponentContext,
+      @Prop textInputKey: String
+  ): Component {
     val calendar = Calendar.getInstance(TimeZone.getTimeZone("Europe/London"))
+
+    val londonTimeStr = timeStr(calendar)
 
     val londonTime = timeMillis(calendar)
 
@@ -71,9 +81,21 @@ object TimeConverterSpec {
         .child(
             Column.create(c)
                 .child(
-                    Text.create(c)
-                        .text("London")
-                        .textSizeDip(24f)
+                    Column.create(c)
+                        .child(
+                            Text.create(c)
+                                .text("London")
+                                .textSizeDip(24f)
+                        )
+                        .child(
+                            TextInput.create(c)
+                                .key(textInputKey)
+                                .inputType(InputType.TYPE_CLASS_DATETIME)
+                                .textSizeDip(24f)
+                                .initialText(londonTimeStr)
+                                .visibleHandler(TimeConverter.onVisibleEvent(c))
+                        )
+
                 )
                 .child(
                     Text.create(c)
@@ -103,4 +125,15 @@ object TimeConverterSpec {
     }
     return timeOfDay
   }
+
+  @OnEvent(VisibleEvent::class)
+  fun onVisibleEvent(
+      c: ComponentContext,
+      @Prop textInputKey: String
+  ) {
+    TextInput.requestFocus(c, textInputKey)
+  }
+
+  private fun timeStr(calendar: Calendar) =
+      "${calendar.get(Calendar.HOUR_OF_DAY)} : ${calendar.get(Calendar.MINUTE)}"
 }

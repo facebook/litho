@@ -24,6 +24,6 @@ import com.facebook.litho.annotations.OnCreateLayout
 object RootComponentSpec {
   @OnCreateLayout
   fun onCreateLayout(c: ComponentContext): Component {
-    return TimeConverter.create(c).build()
+    return TimeConverter.create(c).textInputKey("text_input").build()
   }
 }
