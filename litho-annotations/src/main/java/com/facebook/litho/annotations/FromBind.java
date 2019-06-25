@@ -52,7 +52,7 @@ import java.lang.annotation.RetentionPolicy;
  *   void onBind(
  *       ComponentContext context,
  *       MyDrawable myDrawable,
- *       Output<MyFromBindObject> fromBindObject) {
+ *       Output&lt;MyFromBindObject&gt; fromBindObject) {
  *     MyFromBindObject myFromBindObject = new MyFromBindObject();
  *     fromBindObject.set(myFromBindObject);
  *   }
