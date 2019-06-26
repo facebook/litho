@@ -615,4 +615,12 @@ Here is the demonstration of visible/invisible events:
 
 # 9. Summary
 
+In this codelab we covered how to use events in Litho. Specifically, the following topics were covered:
+
+* How to declare event and how to add handler to it using predefined `ClickEvent`
+* How to update state when certain event was triggered
+* How to declare and pass event params
+* How to define a custom event
+* How to dispatch custom event with extra params
+* How to declare and dispatch predefined `VisibleEvent` and `InvisibleEvent`
 
