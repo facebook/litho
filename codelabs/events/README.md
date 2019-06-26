@@ -172,6 +172,132 @@ The next step will be to add param to the event method.
 
 # 5. Add `@Param` to `OnEvent`
 
+In previous part we triggered a state update on a click event. In this part of the codelab we will demonstrate how we can add params to events.
+
+## Add status text 
+
+Before adding `@Param` to `OnEvent` let's first add status text to demonstrate recent actions. We will add two more states, one for the text of status change and the other for the status text color:
+
+#### RootComponentSpec.kt
+```kotlin
+@OnCreateInitialState
+fun onCreateInitialState(
+    c: ComponentContext,
+    items: StateValue<IntArray>,
+    statusText: StateValue<String>,
+    statusColor: StateValue<Int>
+) {
+  items.set(IntArray(0))
+  statusText.set("")
+  statusColor.set(Color.TRANSPARENT)
+}
+
+...
+
+@OnUpdateState
+fun updateTextStatus(
+    statusText: StateValue<String>,
+    statusColor: StateValue<Int>,
+    @Param newColor: Int,
+    @Param newStatus: String
+) {
+  statusText.set(newStatus)
+  statusColor.set(newColor)
+}
+```
+
+And we will place the status text between the button and the color box collection:
+
+#### RootComponentSpec.kt
+```kotlin
+@OnCreateLayout
+fun onCreateLayout(
+    c: ComponentContext,
+    @State items: IntArray,
+    @State statusText: String,
+    @State statusColor: Int
+): Component {
+  return Column.create(c)
+      ... // button
+      .child(
+          Text.create(c)
+              .alignSelf(YogaAlign.CENTER)
+              .textSizeSp(18f)
+              .text(statusText)
+              .textColor(statusColor))
+      ... // color box collection
+      .build()
+}
+```
+
+## Add param to click event and add "Remove" button
+
+We will add "Remove" button next to "Add" button and will reuse same event handler as the one added for the first button. However, we need to differentiate which button sent the click event if we use the same event declaration. To do so we can add another param to our `onClickEvent` function annotated with, well, `@Param`. We can use `Boolean` to differentiate whether it was 'add' or 'remove':
+
+#### RootComponentSpec.kt
+```kotlin
+@OnEvent(ClickEvent::class)
+fun onClickEvent(c: ComponentContext, @State items: IntArray, @Param add: Boolean) {
+  ...
+}
+```
+
+When we compile `RootComponentSpec` class `onClickEvent(ComponentContext, Boolean)` function will be generated that we can use as click handlers. Let's add two buttons in layout declaration and use modified click handler and pass corresponding params to them:
+
+#### RootComponentSpec.kt
+```kotlin
+@OnCreateLayout
+fun onCreateLayout(
+    ...
+): Component {
+  return Column.create(c)
+      ...
+      .child(
+          Row.create(c)
+              .justifyContent(YogaJustify.CENTER)
+              .child(
+                  Button.create(c)
+                      .text("ADD")
+                      .clickHandler(RootComponent.onClickEvent(c, true)))
+              .child(
+                  Button.create(c)
+                      .marginDip(YogaEdge.LEFT, 20f)
+                      .text("REMOVE")
+                      .clickHandler(RootComponent.onClickEvent(c, false))))
+      ... // status text and color box component
+      .build()
+}
+```
+
+## Update items and status text on add/remove action
+
+We can now write the implementation of the modified click event. Based on `add` param we can either append a new color or remove the last item. Also we will update status text with the recent action:
+
+#### RootComponentSpec.kt
+```kotlin
+@OnEvent(ClickEvent::class)
+fun onClickEvent(c: ComponentContext, @State items: IntArray, @Param add: Boolean) {
+  if (add) {
+    val newColor = Color.rgb(Random.nextInt(256), Random.nextInt(256), Random.nextInt(256))
+    RootComponent.updateItems(c, items.plus(newColor))
+    RootComponent.updateTextStatus(c, newColor, "New item added")
+  } else {
+    if (items.isNotEmpty()) {
+      RootComponent.updateItems(c, items.sliceArray(0..items.size - 2))
+      RootComponent.updateTextStatus(c, items.last(), "Item removed")
+    }
+  }
+}
+```
+
+## Add/Remove in action
+
+With modified click event and new button for removing item it will look like this:
+
+<img src="static/part3_endresult.gif" alt="Part3 end result" height="500">
+
+The next step will be to add a custom event.
+
 # 6. Add custom event
 
 # 7. Add params to custom event
