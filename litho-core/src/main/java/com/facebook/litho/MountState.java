@@ -133,6 +133,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   private int mLastMountedComponentTreeId = ComponentTree.INVALID_ID;
   private LayoutState mLastMountedLayoutState;
   private boolean mIsFirstMountOfComponentTree = false;
+  private int mLastDisappearRangeStart = -1;
+  private int mLastDisappearRangeEnd = -1;
 
   private final MountItem mRootHostMountItem;
 
@@ -1225,6 +1227,9 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   }
 
   private void removeDisappearingItemMappings(int fromIndex, int toIndex) {
+    mLastDisappearRangeStart = fromIndex;
+    mLastDisappearRangeEnd = toIndex;
+
     for (int i = fromIndex; i <= toIndex; i++) {
       final MountItem item = getItemAt(i);
 
@@ -2342,7 +2347,46 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
         mCanMountIncrementallyMountItems.removeAt(index);
       }
     }
+    assertNoDanglingMountContent(item);
     item.releaseMountContent(context.getAndroidContext());
+  }
+
+  private void assertNoDanglingMountContent(MountItem item) {
+    final int index = mIndexToItemMap.indexOfValue(item);
+    if (index > -1) {
+      final long id = mIndexToItemMap.keyAt(index);
+      int layoutOutputIndex = -1;
+      for (int i = 0; i < mLayoutOutputsIds.length; i++) {
+        if (id == mLayoutOutputsIds[i]) {
+          layoutOutputIndex = i;
+          break;
+        }
+      }
+      throw new RuntimeException(
+          "Got dangling mount content during animation: index="
+                      + layoutOutputIndex
+                      + ", mapIndex="
+                      + index
+                      + ", id="
+                      + id
+                      + ", disappearRange=["
+                      + mLastDisappearRangeStart
+                      + ","
+                      + mLastDisappearRangeEnd
+                      + "], contentType="
+                      + item.getContent().getClass()
+                      + ", component="
+                      + item.getComponent()
+                  != null
+              ? item.getComponent().getSimpleName()
+              : null
+                  + ", transitionId="
+                  + item.getTransitionId()
+                  + ", host="
+                  + item.getHost()
+                  + ", isRootHost="
+                  + (mHostsByMarker.get(ROOT_HOST_ID) == item.getHost()));
+    }
   }
 
   void unmountAllItems() {
@@ -2511,6 +2555,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
           mCanMountIncrementallyMountItems.removeAt(index);
         }
       }
+      assertNoDanglingMountContent(item);
       item.releaseMountContent(mContext.getAndroidContext());
     }
   }
