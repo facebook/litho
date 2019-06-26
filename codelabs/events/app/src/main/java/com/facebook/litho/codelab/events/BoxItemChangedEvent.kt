@@ -19,4 +19,11 @@ package com.facebook.litho.codelab.events
 import com.facebook.litho.annotations.Event
 
 @Event
-class BoxItemChangedEvent
+class BoxItemChangedEvent {
+  @JvmField
+  var newColor = 0
+  @JvmField
+  var newStatus = ""
+  @JvmField
+  var highlightedItemIndex = -1
+}

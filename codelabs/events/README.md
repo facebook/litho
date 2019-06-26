@@ -405,6 +405,137 @@ In the next part we will see how can we pass params when we dispatch a custom ev
 
 # 7. Add params to custom event
 
+In the previous part we learned how to declare and dispatch custom event. In this part we will demonstrate how to add params to dispatching event by highlighting longpressed event visually. When long-pressed we will dispatch event with highlighted item index, color and some status text. `RootComponent` receives the event and will update the status text accordingly.
+
+## Add extra info to `BoxItemChangedEvent`
+
+In order to dispatch extra information first we need to add extra fields to the event class. Note that as of now due to annotation processor specifics we need to tag fields as `@JvmField` when writing Kotlin so that generated class can access these as fields instead of kotlin properties.
+
+#### BoxItemChangedEvent.kt
+```kotlin
+@Event
+class BoxItemChangedEvent {
+  @JvmField
+  var newColor = 0
+  @JvmField
+  var newStatus = ""
+  @JvmField
+  var highlightedItemIndex = -1
+}
+```
+
+## Dispatch event with extra info
+
+We can modify `ColorBoxCollectionSpec` so that we can access the item's index and color when declaring `longClickHandler`. We will add `highlightedIndex` prop that can be passed from parent and make item slightly bigger when it is highlighted (longpressed): 
+
+#### ColorBoxCollectionSpec.kt
+```kotlin
+@OnCreateLayout
+fun onCreateLayout(c: ComponentContext, @Prop items: IntArray, @Prop highlightedIndex: Int): Component {
+  ...
+  items.forEachIndexed { index, color ->
+    val isHighlighted = index == highlightedIndex
+    rowBuilder.child(
+        Row.create(c)
+            ...
+            .widthDip(50f * if (isHighlighted) 1.2f else 1f)
+            .heightDip(50f * if (isHighlighted) 1.2f else 1f)
+            .backgroundColor(color)
+            .longClickHandler(ColorBoxCollection.onLongClick(c, color, index)))
+  }
+  return rowBuilder.build()
+}
+...
+```
+
+After adding fields to `BoxItemChangedEvent`, the `dispatchBoxItemChangedEvent` function in generated `ColorBoxCollection` class changes its signature to `dispatchBoxItemChangedEvent(EventHandler, int, String, int)`. We can pass params from `onLongClick` to our custom event and update status text:
+
+#### ColorBoxCollectionSpec.kt
+```kotlin
+...
+@OnEvent(LongClickEvent::class)
+fun onLongClick(c: ComponentContext, @Param color: Int, @Param index: Int): Boolean {
+  ColorBoxCollection.dispatchBoxItemChangedEvent(
+      ColorBoxCollection.getBoxItemChangedEventHandler(c),
+      color,
+      "Item at index $index was highlighted",
+      index)
+  return true
+}
+```
+
+## Add state for `highlightedIndex` in `RootComponent`
+
+We are dispatching more information from `ColorBoxComponent` to `RootComponent` and we will add `highlightedItemIndex` state to keep track of recently highlighted item and pass that down to `ColorBoxComponent`:
+
+#### RootComponentSpec.kt
+```kotlin
+@LayoutSpec
+object RootComponentSpec {
+
+  @OnCreateInitialState
+  fun onCreateInitialState(
+      ...
+      highlightedIndex: StateValue<Int>
+  ) {
+    ...
+    highlightedIndex.set(-1)
+  }
+
+  @OnCreateLayout
+  fun onCreateLayout(
+      ...
+      @State highlightedIndex: Int
+  ): Component {
+    return Column.create(c)
+        ...
+        .child(
+            ColorBoxCollection.create(c)
+                ...
+                .highlightedIndex(highlightedIndex)
+                ...
+        .build()
+  }
+  
+  @OnUpdateState
+  fun updateTextStatus(
+      ...
+      highlightedIndex: StateValue<Int>,
+      ...
+      @Param newHighlightedIndex: Int
+  ) {
+    ...
+    highlightedIndex.set(newHighlightedIndex)
+  }
+}
+```
+
+## Get extra params from dispatched event
+
+We can access extra information from the event by annotating those params with `@FromEvent` annotation. We can use that information and pass that to state update. Note that the name of the param *must* be same as the one in the event, otherwise it will produce compile-time error:
+
+#### RootComponentSpec.kt
+```kotlin
+@OnEvent(BoxItemChangedEvent::class)
+fun onBoxItemChangedEvent(
+    c: ComponentContext,
+    @FromEvent newColor: Int,
+    @FromEvent newStatus: String,
+    @FromEvent highlightedItemIndex: Int
+) {
+  RootComponent.updateTextStatus(c, newColor, newStatus, highlightedItemIndex)
+}
+```
+
+## Extra event params in action
+
+Here is the demonstration of highlighting item and displaying status message with extra info:
+
+<img src="static/part5_endresult.gif" alt="Part5 end result" height="500">
+
+In the next part we will add visible and invisible events to component.
+
+
 # 8. Add visible and invisible events
 
 # 9. Summary

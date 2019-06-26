@@ -23,6 +23,7 @@ import com.facebook.litho.Row
 import com.facebook.litho.annotations.LayoutSpec
 import com.facebook.litho.annotations.OnCreateLayout
 import com.facebook.litho.annotations.OnEvent
+import com.facebook.litho.annotations.Param
 import com.facebook.litho.annotations.Prop
 import com.facebook.yoga.YogaEdge
 import com.facebook.yoga.YogaWrap
@@ -32,24 +33,28 @@ import com.facebook.yoga.YogaWrap
 object ColorBoxCollectionSpec {
 
   @OnCreateLayout
-  fun onCreateLayout(c: ComponentContext, @Prop items: IntArray): Component {
+  fun onCreateLayout(c: ComponentContext, @Prop items: IntArray, @Prop highlightedIndex: Int): Component {
     val rowBuilder = Row.create(c).wrap(YogaWrap.WRAP)
-    items.forEach {
+    items.forEachIndexed { index, color ->
+      val isHighlighted = index == highlightedIndex
       rowBuilder.child(
           Row.create(c)
               .marginDip(YogaEdge.ALL, 5f)
-              .widthDip(50f)
-              .heightDip(50f)
-              .backgroundColor(it)
-              .longClickHandler(ColorBoxCollection.onLongClick(c)))
+              .widthDip(50f * if (isHighlighted) 1.2f else 1f)
+              .heightDip(50f * if (isHighlighted) 1.2f else 1f)
+              .backgroundColor(color)
+              .longClickHandler(ColorBoxCollection.onLongClick(c, color, index)))
     }
     return rowBuilder.build()
   }
 
   @OnEvent(LongClickEvent::class)
-  fun onLongClick(c: ComponentContext): Boolean {
+  fun onLongClick(c: ComponentContext, @Param color: Int, @Param index: Int): Boolean {
     ColorBoxCollection.dispatchBoxItemChangedEvent(
-        ColorBoxCollection.getBoxItemChangedEventHandler(c))
+        ColorBoxCollection.getBoxItemChangedEventHandler(c),
+        color,
+        "Item at index $index was highlighted",
+        index)
     return true
   }
 }

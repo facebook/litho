@@ -22,6 +22,7 @@ import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.Row
 import com.facebook.litho.StateValue
+import com.facebook.litho.annotations.FromEvent
 import com.facebook.litho.annotations.LayoutSpec
 import com.facebook.litho.annotations.OnCreateInitialState
 import com.facebook.litho.annotations.OnCreateLayout
@@ -44,11 +45,13 @@ object RootComponentSpec {
       c: ComponentContext,
       items: StateValue<IntArray>,
       statusText: StateValue<String>,
-      statusColor: StateValue<Int>
+      statusColor: StateValue<Int>,
+      highlightedIndex: StateValue<Int>
   ) {
     items.set(IntArray(0))
     statusText.set("")
     statusColor.set(Color.TRANSPARENT)
+    highlightedIndex.set(-1)
   }
 
   @OnCreateLayout
@@ -56,7 +59,8 @@ object RootComponentSpec {
       c: ComponentContext,
       @State items: IntArray,
       @State statusText: String,
-      @State statusColor: Int
+      @State statusColor: Int,
+      @State highlightedIndex: Int
   ): Component {
     return Column.create(c)
         .paddingDip(YogaEdge.ALL, 20f)
@@ -81,6 +85,7 @@ object RootComponentSpec {
         .child(
             ColorBoxCollection.create(c)
                 .items(items)
+                .highlightedIndex(highlightedIndex)
                 .boxItemChangedEventHandler(RootComponent.onBoxItemChangedEvent(c)))
         .build()
   }
@@ -90,18 +95,23 @@ object RootComponentSpec {
     if (add) {
       val newColor = Color.rgb(Random.nextInt(256), Random.nextInt(256), Random.nextInt(256))
       RootComponent.updateItems(c, items.plus(newColor))
-      RootComponent.updateTextStatus(c, newColor, "New item added")
+      RootComponent.updateTextStatus(c, newColor, "New item added", -1)
     } else {
       if (items.isNotEmpty()) {
         RootComponent.updateItems(c, items.sliceArray(0..items.size - 2))
-        RootComponent.updateTextStatus(c, items.last(), "Item removed")
+        RootComponent.updateTextStatus(c, items.last(), "Item removed", -1)
       }
     }
   }
 
   @OnEvent(BoxItemChangedEvent::class)
-  fun onBoxItemChangedEvent(c: ComponentContext) {
-    RootComponent.updateTextStatus(c, Color.BLACK, "Item longpressed")
+  fun onBoxItemChangedEvent(
+      c: ComponentContext,
+      @FromEvent newColor: Int,
+      @FromEvent newStatus: String,
+      @FromEvent highlightedItemIndex: Int
+  ) {
+    RootComponent.updateTextStatus(c, newColor, newStatus, highlightedItemIndex)
   }
 
   @OnUpdateState
@@ -113,10 +123,13 @@ object RootComponentSpec {
   fun updateTextStatus(
       statusText: StateValue<String>,
       statusColor: StateValue<Int>,
+      highlightedIndex: StateValue<Int>,
       @Param newColor: Int,
-      @Param newStatus: String
+      @Param newStatus: String,
+      @Param newHighlightedIndex: Int
   ) {
     statusText.set(newStatus)
     statusColor.set(newColor)
+    highlightedIndex.set(newHighlightedIndex)
   }
 }
