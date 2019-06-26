@@ -18,15 +18,17 @@ package com.facebook.litho.codelab.events
 
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
+import com.facebook.litho.LongClickEvent
 import com.facebook.litho.Row
 import com.facebook.litho.annotations.LayoutSpec
 import com.facebook.litho.annotations.OnCreateLayout
+import com.facebook.litho.annotations.OnEvent
 import com.facebook.litho.annotations.Prop
 import com.facebook.yoga.YogaEdge
 import com.facebook.yoga.YogaWrap
 
 @Suppress("MagicNumber")
-@LayoutSpec
+@LayoutSpec(events = [BoxItemChangedEvent::class])
 object ColorBoxCollectionSpec {
 
   @OnCreateLayout
@@ -35,11 +37,19 @@ object ColorBoxCollectionSpec {
     items.forEach {
       rowBuilder.child(
           Row.create(c)
-              .marginDip(YogaEdge.ALL, 4f)
-              .widthDip(48f)
-              .heightDip(48f)
-              .backgroundColor(it))
+              .marginDip(YogaEdge.ALL, 5f)
+              .widthDip(50f)
+              .heightDip(50f)
+              .backgroundColor(it)
+              .longClickHandler(ColorBoxCollection.onLongClick(c)))
     }
     return rowBuilder.build()
+  }
+
+  @OnEvent(LongClickEvent::class)
+  fun onLongClick(c: ComponentContext): Boolean {
+    ColorBoxCollection.dispatchBoxItemChangedEvent(
+        ColorBoxCollection.getBoxItemChangedEventHandler(c))
+    return true
   }
 }

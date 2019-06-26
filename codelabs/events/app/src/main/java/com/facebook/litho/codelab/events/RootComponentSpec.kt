@@ -80,7 +80,8 @@ object RootComponentSpec {
                 .textColor(statusColor))
         .child(
             ColorBoxCollection.create(c)
-                .items(items))
+                .items(items)
+                .boxItemChangedEventHandler(RootComponent.onBoxItemChangedEvent(c)))
         .build()
   }
 
@@ -96,6 +97,11 @@ object RootComponentSpec {
         RootComponent.updateTextStatus(c, items.last(), "Item removed")
       }
     }
+  }
+
+  @OnEvent(BoxItemChangedEvent::class)
+  fun onBoxItemChangedEvent(c: ComponentContext) {
+    RootComponent.updateTextStatus(c, Color.BLACK, "Item longpressed")
   }
 
   @OnUpdateState

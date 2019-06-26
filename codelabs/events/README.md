@@ -300,6 +300,109 @@ The next step will be to add a custom event.
 
 # 6. Add custom event
 
+So far we learned how to declare an event, register event handler to component and pass params to it. The event type we used until now is a pre-defined event type which the framework provides for all components, such as `ClickEvent`. What if we want to dispatch a custom event from `ColorBoxCollection` component when something changes inside that component?
+
+## New event declaration
+
+Let's say we want to name our custom event `BoxItemChangedEvent`. We will create a new class with the same name and annotate it with `@Event`:
+
+#### BoxItemChangedEvent.kt
+```kotlin
+@Event
+class BoxItemChangedEvent
+```
+
+## Define source of the event
+
+We want to dispatch an event of this newly created type from `ColorBoxCollection` component. To do so we specify `events` param in `@LayoutSpec` annotation as following:
+
+#### ColorBoxCollectionSpec.kt
+```kotlin
+@LayoutSpec(events = [BoxItemChangedEvent::class])
+object ColorBoxCollectionSpec {
+  ...
+}
+```
+
+When we compile our code the generated `ColorBoxCollection` class will get two extra functions:
+
+* `dispatchBoxItemChangedEvent(EventHandler)`
+* `getBoxItemChangedEventHandler(ComponentContext)`
+
+Also its builder class (`ColorBoxCollection.Builder`) will get additional function to declare that event's handler from parent:
+
+* `boxItemChangedEventHandler(EventHandler)`
+
+In general, a set of these functions will be generated for each different type of event that the component can dispatch.
+
+## Trigger custom event on longpress
+
+Now, let's say we want to trigger `BoxItemChangedEvent` when user long-presses any item in `ColorBoxCollection`. We will add longclick event handler for each item in `ColorBoxCollection`'s child components and dispatch our custom event when longclick happens:
+
+#### ColorBoxCollectionSpec.kt
+```kotlin
+@LayoutSpec(events = [BoxItemChangedEvent::class])
+object ColorBoxCollectionSpec {
+
+  @OnCreateLayout
+  fun onCreateLayout(c: ComponentContext, @Prop items: IntArray): Component {
+    ...
+    items.forEach {
+      rowBuilder.child(
+          Row.create(c)
+              ...
+              .longClickHandler(ColorBoxCollection.onLongClick(c)))
+    }
+    ...
+  }
+
+  @OnEvent(LongClickEvent::class)
+  fun onLongClick(c: ComponentContext): Boolean {
+    ColorBoxCollection.dispatchBoxItemChangedEvent(
+        ColorBoxCollection.getBoxItemChangedEventHandler(c))
+    return true
+  }
+}
+```
+
+## Register for the new event
+
+At this point when user long-presses item we dispatch `BoxItemChangedEvent` from `ColorBoxCollection`. However, no one is listening to that event, so it is not making any visible change. Let's introduce this new event in `RootComponent`:
+
+#### RootComponentSpec.kt
+```kotlin
+@LayoutSpec
+object RootComponentSpec {
+  @OnCreateLayout
+  fun onCreateLayout(
+      ...
+  ): Component {
+    return Column.create(c)
+        ...
+        .child(
+            ColorBoxCollection.create(c)
+                .items(items)
+                .boxItemChangedEventHandler(RootComponent.onBoxItemColorChangedEvent(c)))
+        .build()
+  }
+  
+  @OnEvent(BoxItemChangedEvent::class)
+  fun onBoxItemColorChangedEvent(c: ComponentContext) {
+    RootComponent.updateTextStatus(c, Color.BLACK, "Item longpressed")
+  }
+}
+```
+
+We added new `BoxItemChangedEvent` declaration and there we are updating text status with corresponding message. We wire that event with `ColorBoxCollection` by adding event handler.
+
+## Custom event dispatch in action
+
+Here is the demonstration of dispatching custom event from `ColorBoxCollection` to `RootComponent`:
+
+<img src="static/part4_endresult.gif" alt="Part4 end result" height="500">
+
+In the next part we will see how can we pass params when we dispatch a custom event.
+
 # 7. Add params to custom event
 
 # 8. Add visible and invisible events
