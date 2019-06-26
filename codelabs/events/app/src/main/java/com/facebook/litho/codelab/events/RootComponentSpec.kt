@@ -95,11 +95,9 @@ object RootComponentSpec {
     if (add) {
       val newColor = Color.rgb(Random.nextInt(256), Random.nextInt(256), Random.nextInt(256))
       RootComponent.updateItems(c, items.plus(newColor))
-      RootComponent.updateTextStatus(c, newColor, "New item added", -1)
     } else {
       if (items.isNotEmpty()) {
         RootComponent.updateItems(c, items.sliceArray(0..items.size - 2))
-        RootComponent.updateTextStatus(c, items.last(), "Item removed", -1)
       }
     }
   }

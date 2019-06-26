@@ -538,6 +538,81 @@ In the next part we will add visible and invisible events to component.
 
 # 8. Add visible and invisible events
 
+The last part is an example of how to use predefined visibility events. We will be adding visible and invisible events and that will change the flow of information in such a way that `ColorBoxComponent` will be solely responsible for dispatching all changes happening within itself (as opposed to previous parts where `RootComponent` was dispatching add/remove events even though add/remove was happening within `ColorBoxComponent`).
+
+## Declare `VisibleEvent` and `InvisibleEvent`
+
+Litho provides predefined `VisibleEvent` and `InvisibleEvent` types that are dispatched when component first enters the screen and leaves the screen accordingly. Note that visibility events work only when [incremental mount](https://fblitho.com/docs/inc-mount-architecture) is turned on (it is on by default).
+
+Let's use that to update status text instead of triggering state update from `RootComponent`. Now we can also tell the index of item which is getting visible/invisible:
+
+#### ColorBoxCollectionSpec.kt
+```kotlin
+@LayoutSpec(events = [BoxItemChangedEvent::class])
+object ColorBoxCollectionSpec {
+
+  @OnCreateLayout
+  fun onCreateLayout(c: ComponentContext, @Prop items: IntArray, @Prop highlightedIndex: Int): Component {
+    val rowBuilder = Row.create(c).wrap(YogaWrap.WRAP)
+    items.forEachIndexed { index, color ->
+      ...
+      rowBuilder.child(
+          Row.create(c)
+              ...
+              ...
+              .visibleHandler(ColorBoxCollection.onItemVisible(c, color, index))
+              .invisibleHandler(ColorBoxCollection.onItemInvisible(c, color, index)))
+    }
+    return rowBuilder.build()
+  }
+
+  @OnEvent(VisibleEvent::class)
+  fun onItemVisible(c: ComponentContext, @Param color: Int, @Param index: Int) {
+    ColorBoxCollection.dispatchBoxItemChangedEvent(
+        ColorBoxCollection.getBoxItemChangedEventHandler(c),
+        color,
+        "Item at index $index is now visible",
+        -1
+    )
+  }
+
+  @OnEvent(InvisibleEvent::class)
+  fun onItemInvisible(c: ComponentContext, @Param color: Int, @Param index: Int) {
+    ColorBoxCollection.dispatchBoxItemChangedEvent(
+        ColorBoxCollection.getBoxItemChangedEventHandler(c),
+        color,
+        "Item at index $index is no longer visible",
+        -1
+    )
+  }
+  ...
+}
+```
+
+And we can remove state update when adding new item to dataset in `RootComponent`:
+
+#### RootComponentSpec.kt
+```kotlin
+@OnEvent(ClickEvent::class)
+fun onClickEvent(c: ComponentContext, @State items: IntArray, @Param add: Boolean) {
+  if (add) {
+    val newColor = Color.rgb(Random.nextInt(256), Random.nextInt(256), Random.nextInt(256))
+    RootComponent.updateItems(c, items.plus(newColor))
+  } else {
+    if (items.isNotEmpty()) {
+      RootComponent.updateItems(c, items.sliceArray(0..items.size - 2))
+    }
+  }
+}
+```
+
+## Visible/Invisible events in action
+
+Here is the demonstration of visible/invisible events:
+
+<img src="static/part6_endresult.gif" alt="Part6 end result" height="500">
+
+
 # 9. Summary
 
 

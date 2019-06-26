@@ -18,8 +18,10 @@ package com.facebook.litho.codelab.events
 
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
+import com.facebook.litho.InvisibleEvent
 import com.facebook.litho.LongClickEvent
 import com.facebook.litho.Row
+import com.facebook.litho.VisibleEvent
 import com.facebook.litho.annotations.LayoutSpec
 import com.facebook.litho.annotations.OnCreateLayout
 import com.facebook.litho.annotations.OnEvent
@@ -43,9 +45,31 @@ object ColorBoxCollectionSpec {
               .widthDip(50f * if (isHighlighted) 1.2f else 1f)
               .heightDip(50f * if (isHighlighted) 1.2f else 1f)
               .backgroundColor(color)
-              .longClickHandler(ColorBoxCollection.onLongClick(c, color, index)))
+              .longClickHandler(ColorBoxCollection.onLongClick(c, color, index))
+              .visibleHandler(ColorBoxCollection.onItemVisible(c, color, index))
+              .invisibleHandler(ColorBoxCollection.onItemInvisible(c, color, index)))
     }
     return rowBuilder.build()
+  }
+
+  @OnEvent(VisibleEvent::class)
+  fun onItemVisible(c: ComponentContext, @Param color: Int, @Param index: Int) {
+    ColorBoxCollection.dispatchBoxItemChangedEvent(
+        ColorBoxCollection.getBoxItemChangedEventHandler(c),
+        color,
+        "Item at index $index is now visible",
+        -1
+    )
+  }
+
+  @OnEvent(InvisibleEvent::class)
+  fun onItemInvisible(c: ComponentContext, @Param color: Int, @Param index: Int) {
+    ColorBoxCollection.dispatchBoxItemChangedEvent(
+        ColorBoxCollection.getBoxItemChangedEventHandler(c),
+        color,
+        "Item at index $index is no longer visible",
+        -1
+    )
   }
 
   @OnEvent(LongClickEvent::class)
