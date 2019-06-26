@@ -36,7 +36,6 @@ import static com.facebook.litho.FrameworkLogEvents.PARAM_TREE_DIFF_ENABLED;
 import static com.facebook.litho.MountItem.LAYOUT_FLAG_DISABLE_TOUCHABLE;
 import static com.facebook.litho.MountItem.LAYOUT_FLAG_DUPLICATE_PARENT_STATE;
 import static com.facebook.litho.MountItem.LAYOUT_FLAG_MATCH_HOST_BOUNDS;
-import static com.facebook.litho.MountItem.LAYOUT_FLAG_PHANTOM;
 import static com.facebook.litho.MountState.ROOT_HOST_ID;
 import static com.facebook.litho.NodeInfo.CLICKABLE_SET_TRUE;
 import static com.facebook.litho.NodeInfo.ENABLED_SET_FALSE;
@@ -252,12 +251,10 @@ class LayoutState {
         true /* useNodePadding */,
         node.getImportantForAccessibility(),
         layoutState.mShouldDuplicateParentState,
-        hasHostView,
-        false);
+        hasHostView);
   }
 
-  private static LayoutOutput createHostLayoutOutput(
-      LayoutState layoutState, InternalNode node, boolean isPhantom) {
+  private static LayoutOutput createHostLayoutOutput(LayoutState layoutState, InternalNode node) {
 
     final HostComponent hostComponent = HostComponent.create();
 
@@ -282,8 +279,7 @@ class LayoutState {
             false /* useNodePadding */,
             node.getImportantForAccessibility(),
             node.isDuplicateParentStateEnabled(),
-            false,
-            isPhantom);
+            false);
 
     ViewNodeInfo viewNodeInfo = hostOutput.getViewNodeInfo();
     if (viewNodeInfo != null) {
@@ -311,8 +307,7 @@ class LayoutState {
         false /* useNodePadding */,
         IMPORTANT_FOR_ACCESSIBILITY_NO,
         layoutState.mShouldDuplicateParentState,
-        hasHostView,
-        false);
+        hasHostView);
   }
 
   private static LayoutOutput createLayoutOutput(
@@ -323,8 +318,7 @@ class LayoutState {
       boolean useNodePadding,
       int importantForAccessibility,
       boolean duplicateParentState,
-      boolean hasHostView,
-      boolean isPhantom) {
+      boolean hasHostView) {
     final boolean isMountViewSpec = isMountViewSpec(component);
 
     final int hostTranslationX;
@@ -405,10 +399,6 @@ class LayoutState {
     } else {
       // If there is a host view, the transition key will be set on the view's layout output
       transitionId = layoutState.mCurrentTransitionId;
-    }
-
-    if (isPhantom) {
-      flags |= LAYOUT_FLAG_PHANTOM;
     }
 
     return new LayoutOutput(
@@ -683,8 +673,6 @@ class LayoutState {
     }
 
     final boolean needsHostView = needsHostView(node, layoutState);
-    final boolean needsPhantomLayoutOutput = !needsHostView && needsHostViewForTransition(node);
-    final boolean shouldAddHostLayoutOutput = needsHostView || needsPhantomLayoutOutput;
 
     final long currentHostMarker = layoutState.mCurrentHostMarker;
     final int currentHostOutputPosition = layoutState.mCurrentHostOutputPosition;
@@ -700,9 +688,8 @@ class LayoutState {
             : null;
 
     // 1. Insert a host LayoutOutput if we have some interactive content to be attached to.
-    if (shouldAddHostLayoutOutput) {
-      final int hostLayoutPosition =
-          addHostLayoutOutput(node, layoutState, diffNode, needsPhantomLayoutOutput);
+    if (needsHostView) {
+      final int hostLayoutPosition = addHostLayoutOutput(node, layoutState, diffNode);
       addCurrentAffinityGroupToTransitionMapping(layoutState);
 
       layoutState.mCurrentLevel++;
@@ -717,12 +704,10 @@ class LayoutState {
     // duplicate parent state.
     final boolean shouldDuplicateParentState = layoutState.mShouldDuplicateParentState;
     layoutState.mShouldDuplicateParentState =
-        shouldAddHostLayoutOutput
-            || (shouldDuplicateParentState && node.isDuplicateParentStateEnabled());
+        needsHostView || (shouldDuplicateParentState && node.isDuplicateParentStateEnabled());
 
     // Generate the layoutOutput for the given node.
-    final LayoutOutput layoutOutput =
-        createGenericLayoutOutput(node, layoutState, shouldAddHostLayoutOutput);
+    final LayoutOutput layoutOutput = createGenericLayoutOutput(node, layoutState, needsHostView);
 
     if (layoutOutput != null) {
       final long previousId = shouldUseCachedOutputs ? currentDiffNode.getContent().getId() : -1;
@@ -751,7 +736,7 @@ class LayoutState {
                 convertBackground,
                 background,
                 OutputUnitType.BACKGROUND,
-                shouldAddHostLayoutOutput);
+                needsHostView);
 
         if (diffNode != null) {
           diffNode.setBackground(backgroundOutput);
@@ -843,7 +828,7 @@ class LayoutState {
               convertBorder,
               getBorderColorDrawable(node),
               OutputUnitType.BORDER,
-              shouldAddHostLayoutOutput);
+              needsHostView);
       if (diffNode != null) {
         diffNode.setBorder(borderOutput);
       }
@@ -866,7 +851,7 @@ class LayoutState {
                 convertForeground,
                 foreground,
                 OutputUnitType.FOREGROUND,
-                shouldAddHostLayoutOutput);
+                needsHostView);
 
         if (diffNode != null) {
           diffNode.setForeground(foregroundOutput);
@@ -1192,7 +1177,7 @@ class LayoutState {
    * @return The position the HostLayoutOutput was inserted.
    */
   private static int addHostLayoutOutput(
-      InternalNode node, LayoutState layoutState, DiffNode diffNode, boolean isPhantom) {
+      InternalNode node, LayoutState layoutState, DiffNode diffNode) {
     final Component component = node.getTailComponent();
 
     // Only the root host is allowed to wrap view mount specs as a layout output
@@ -1201,7 +1186,7 @@ class LayoutState {
       throw new IllegalArgumentException("We shouldn't insert a host as a parent of a View");
     }
 
-    final LayoutOutput hostLayoutOutput = createHostLayoutOutput(layoutState, node, isPhantom);
+    final LayoutOutput hostLayoutOutput = createHostLayoutOutput(layoutState, node);
 
     // The component of the hostLayoutOutput will be set later after all the
     // children got processed.
@@ -2246,10 +2231,7 @@ class LayoutState {
     }
 
     if (needsHostViewForTransition(node)) {
-      // We need a View for Transition. Normally. Unless phantom LayoutOutputs are enabled.
-      if (!ComponentsConfiguration.createPhantomLayoutOutputsForTransitions) {
-        return true;
-      }
+      return true;
     }
 
     return false;

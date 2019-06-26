@@ -2730,44 +2730,6 @@ public class LayoutStateCalculateTest {
   }
 
   @Test
-  public void testPhantomLayoutOutputForTransitionKey() {
-    ComponentsConfiguration.createPhantomLayoutOutputsForTransitions = true;
-
-    final String transitionKey = "column";
-    final Component component =
-        new InlineLayoutSpec() {
-          @Override
-          protected Component onCreateLayout(final ComponentContext c) {
-            return Column.create(c)
-                .child(
-                    Column.create(c)
-                        .transitionKey(transitionKey)
-                        .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
-                        .child(TestDrawableComponent.create(c)))
-                .build();
-          }
-        };
-
-    final TransitionId transitionId =
-        new TransitionId(TransitionId.Type.GLOBAL, transitionKey, null);
-    final LayoutState layoutState =
-        calculateLayoutState(
-            RuntimeEnvironment.application,
-            component,
-            -1,
-            SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY),
-            SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY));
-
-    assertThat(layoutState.getMountableOutputCount()).isEqualTo(3);
-
-    final LayoutOutput outputWithTransitionKey =
-        layoutState.getLayoutOutputsForTransitionId(transitionId).get(OutputUnitType.HOST);
-    assertThat((outputWithTransitionKey.getFlags() & MountItem.LAYOUT_FLAG_PHANTOM) != 0).isTrue();
-
-    ComponentsConfiguration.createPhantomLayoutOutputsForTransitions = false;
-  }
-
-  @Test
   public void testComponentsLoggerCanReturnNullPerfEventsDuringLayout() {
     final Component component =
         new InlineLayoutSpec() {
