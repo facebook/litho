@@ -26,6 +26,7 @@ import com.facebook.litho.sections.SectionTree;
 import com.facebook.litho.widget.Binder;
 import com.facebook.litho.widget.GridLayoutInfo;
 import com.facebook.litho.widget.LayoutInfo;
+import com.facebook.litho.widget.SnapUtil;
 import javax.annotation.Nullable;
 
 /**
@@ -99,6 +100,11 @@ public class GridRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
   }
 
   @Override
+  public Builder acquireBuilder() {
+    return new Builder(this);
+  }
+
+  @Override
   public @Nullable SnapHelper getSnapHelper() {
     return null;
   }
@@ -124,7 +130,7 @@ public class GridRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
     return mRecyclerBinderConfiguration;
   }
 
-  public static class Builder {
+  public static class Builder implements RecyclerConfiguration.Builder {
     static final RecyclerBinderConfiguration RECYCLER_BINDER_CONFIGURATION =
         RecyclerBinderConfiguration.create().build();
 
@@ -137,6 +143,21 @@ public class GridRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
 
     Builder() {}
 
+    Builder(GridRecyclerConfiguration gridRecyclerConfiguration) {
+      this.mOrientation = gridRecyclerConfiguration.mOrientation;
+      this.mNumColumns = gridRecyclerConfiguration.mNumColumns;
+      this.mReverseLayout = gridRecyclerConfiguration.mReverseLayout;
+      this.mAllowMeasureOverride = gridRecyclerConfiguration.mAllowMeasureOverride;
+      this.mRecyclerBinderConfiguration = gridRecyclerConfiguration.mRecyclerBinderConfiguration;
+    }
+
+    @Override
+    public Builder snapMode(@SnapUtil.SnapMode int snapMode) {
+      throw new UnsupportedOperationException(
+          "SnapMode is not supported for GridRecyclerConfiguration");
+    }
+
+    @Override
     public Builder orientation(int orientation) {
       mOrientation = orientation;
       return this;
@@ -152,6 +173,7 @@ public class GridRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
       return this;
     }
 
+    @Override
     public Builder recyclerBinderConfiguration(
         RecyclerBinderConfiguration recyclerBinderConfiguration) {
       mRecyclerBinderConfiguration = recyclerBinderConfiguration;
@@ -166,6 +188,7 @@ public class GridRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
     /**
      * Builds a {@link GridRecyclerConfiguration} using the parameters specified in this builder.
      */
+    @Override
     public GridRecyclerConfiguration build() {
       return new GridRecyclerConfiguration(
           mOrientation,

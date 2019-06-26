@@ -29,6 +29,18 @@ import javax.annotation.Nullable;
  */
 public interface RecyclerConfiguration {
 
+  interface Builder {
+    Builder snapMode(@SnapUtil.SnapMode int snapMode);
+
+    Builder orientation(int orientation);
+
+    Builder recyclerBinderConfiguration(RecyclerBinderConfiguration recyclerBinderConfiguration);
+
+    RecyclerConfiguration build();
+  }
+
+  Builder acquireBuilder();
+
   @Nullable
   SnapHelper getSnapHelper();
 

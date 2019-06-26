@@ -102,6 +102,11 @@ public class StaggeredGridRecyclerConfiguration<T extends SectionTree.Target & B
   }
 
   @Override
+  public Builder acquireBuilder() {
+    return new Builder(this);
+  }
+
+  @Override
   public @Nullable SnapHelper getSnapHelper() {
     return null;
   }
@@ -126,7 +131,7 @@ public class StaggeredGridRecyclerConfiguration<T extends SectionTree.Target & B
     return mRecyclerBinderConfiguration;
   }
 
-  public static class Builder {
+  public static class Builder implements RecyclerConfiguration.Builder {
     static final RecyclerBinderConfiguration RECYCLER_BINDER_CONFIGURATION =
         RecyclerBinderConfiguration.create().build();
 
@@ -139,11 +144,26 @@ public class StaggeredGridRecyclerConfiguration<T extends SectionTree.Target & B
 
     Builder() {}
 
+    Builder(StaggeredGridRecyclerConfiguration configuration) {
+      this.mNumSpans = configuration.mNumSpans;
+      this.mOrientation = configuration.mOrientation;
+      this.mReverseLayout = configuration.mReverseLayout;
+      this.mGapStrategy = configuration.mGapStrategy;
+      this.mRecyclerBinderConfiguration = configuration.mRecyclerBinderConfiguration;
+    }
+
+    @Override
+    public Builder snapMode(int snapMode) {
+      throw new UnsupportedOperationException(
+          "SnapMode is not supported for StaggeredGridRecyclerConfiguration");
+    }
+
     public Builder numSpans(int numSpans) {
       mNumSpans = numSpans;
       return this;
     }
 
+    @Override
     public Builder orientation(int orientation) {
       mOrientation = orientation;
       return this;
@@ -159,6 +179,7 @@ public class StaggeredGridRecyclerConfiguration<T extends SectionTree.Target & B
       return this;
     }
 
+    @Override
     public Builder recyclerBinderConfiguration(
         RecyclerBinderConfiguration recyclerBinderConfiguration) {
       mRecyclerBinderConfiguration = recyclerBinderConfiguration;
@@ -169,6 +190,7 @@ public class StaggeredGridRecyclerConfiguration<T extends SectionTree.Target & B
      * Builds a {@link StaggeredGridRecyclerConfiguration} using the parameters specified in this
      * builder.
      */
+    @Override
     public StaggeredGridRecyclerConfiguration build() {
       return new StaggeredGridRecyclerConfiguration(
           mNumSpans, mOrientation, mReverseLayout, mGapStrategy, mRecyclerBinderConfiguration);

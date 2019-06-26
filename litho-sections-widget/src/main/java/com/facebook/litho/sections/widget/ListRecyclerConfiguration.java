@@ -126,6 +126,11 @@ public class ListRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
             : linearLayoutInfoFactory;
   }
 
+  @Override
+  public Builder acquireBuilder() {
+    return new Builder(this);
+  }
+
   @Nullable
   @Override
   public SnapHelper getSnapHelper() {
@@ -161,7 +166,7 @@ public class ListRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
     }
   }
 
-  public static class Builder {
+  public static class Builder implements RecyclerConfiguration.Builder {
     static final RecyclerBinderConfiguration RECYCLER_BINDER_CONFIGURATION =
         RecyclerBinderConfiguration.create().build();
     static final LinearLayoutInfoFactory LINEAR_LAYOUT_INFO_FACTORY =
@@ -177,6 +182,16 @@ public class ListRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
 
     Builder() {}
 
+    Builder(ListRecyclerConfiguration listRecyclerConfiguration) {
+      this.mOrientation = listRecyclerConfiguration.mOrientation;
+      this.mReverseLayout = listRecyclerConfiguration.mReverseLayout;
+      this.mSnapMode = listRecyclerConfiguration.mSnapMode;
+      this.mRecyclerBinderConfiguration = listRecyclerConfiguration.mRecyclerBinderConfiguration;
+      this.mLinearLayoutInfoFactory = listRecyclerConfiguration.mLinearLayoutInfoFactory;
+      this.mDeltaJumpThreshold = listRecyclerConfiguration.mDeltaJumpThreshold;
+    }
+
+    @Override
     public Builder orientation(int orientation) {
       mOrientation = orientation;
       return this;
@@ -187,11 +202,13 @@ public class ListRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
       return this;
     }
 
+    @Override
     public Builder snapMode(@SnapMode int snapMode) {
       mSnapMode = snapMode;
       return this;
     }
 
+    @Override
     public Builder recyclerBinderConfiguration(
         RecyclerBinderConfiguration recyclerBinderConfiguration) {
       mRecyclerBinderConfiguration = recyclerBinderConfiguration;
@@ -220,6 +237,7 @@ public class ListRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
     /**
      * Builds a {@link ListRecyclerConfiguration} using the parameters specified in this builder.
      */
+    @Override
     public ListRecyclerConfiguration build() {
       ListRecyclerConfiguration configuration =
           new ListRecyclerConfiguration(

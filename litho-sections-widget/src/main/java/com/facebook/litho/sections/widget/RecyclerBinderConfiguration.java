@@ -52,6 +52,10 @@ public class RecyclerBinderConfiguration {
     return new Builder();
   }
 
+  public static Builder create(RecyclerBinderConfiguration configuration) {
+    return new Builder(configuration);
+  }
+
   private RecyclerBinderConfiguration(
       float rangeRatio,
       @Nullable LayoutHandlerFactory layoutHandlerFactory,
@@ -177,6 +181,26 @@ public class RecyclerBinderConfiguration {
     @Nullable private LithoHandler mChangeSetThreadHandler;
 
     Builder() {}
+
+    private Builder(RecyclerBinderConfiguration configuration) {
+      this.mLayoutHandlerFactory = configuration.mLayoutHandlerFactory;
+      this.mInvalidStateLogParamsList = configuration.mInvalidStateLogParamsList;
+      this.mThreadPoolConfiguration = configuration.mThreadPoolConfiguration;
+      this.mRangeRatio = configuration.mRangeRatio;
+      this.mCircular = configuration.mIsCircular;
+      this.mWrapContent = configuration.mIsWrapContent;
+      this.mDynamicItemHeight = configuration.mHasDynamicItemHeight;
+      this.mHScrollAsyncMode = configuration.mHScrollAsyncMode;
+      this.mEnableStableIds = configuration.mEnableStableIds;
+      this.mUseBackgroundChangeSets = configuration.mUseBackgroundChangeSets;
+      this.mAsyncInitRange = configuration.mAsyncInitRange;
+      this.mSplitLayoutForMeasureAndRangeEstimation =
+          configuration.mSplitLayoutForMeasureAndRangeEstimation;
+      this.mUseCancelableLayoutFutures = configuration.mUseCancelableLayoutFutures;
+      this.mMoveLayoutsBetweenThreads = configuration.mMoveLayoutsBetweenThreads;
+      this.mEnableDetach = configuration.mEnableDetach;
+      this.mChangeSetThreadHandler = configuration.mChangeSetThreadHandler;
+    }
 
     /**
      * @param idleExecutor This determines the thread on which the Component layout calculation will
