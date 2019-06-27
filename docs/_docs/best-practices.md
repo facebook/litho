@@ -73,7 +73,7 @@ Let's take the example of a list of radio buttons, where you cannot have multipl
 
 ## Immutability
 
-Components are esentially functions that receive data as parameters and are immutable. When the props or state of a component change, the framework will create a new component instance with the updated information, because the previous component cannot be mutated.
+Components are essentially functions that receive data as parameters and are immutable. When the props or state of a component change, the framework will create a new component instance with the updated information, because the previous component cannot be mutated.
 
 While the component itself is immutable, it is easy to make it not thread safe by using mutable objects for props and state. Litho computes [layout on a background thread](/docs/asynchronous-layout), and if the objects that make up a component's props or state are mutated from another thread, then this may result in rendering different outputs for the same component.
 
