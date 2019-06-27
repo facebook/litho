@@ -3418,8 +3418,8 @@ public class RecyclerBinder
         final LithoView lithoView = (LithoView) holder.itemView;
         if (!ComponentsConfiguration.disableUnmountOnRecycle) {
           lithoView.unmountAllItems();
+          lithoView.setComponentTree(null);
         }
-        lithoView.setComponentTree(null);
         lithoView.setInvalidStateLogParamsList(null);
       } else {
         final ViewBinder viewBinder = holder.viewBinder;
