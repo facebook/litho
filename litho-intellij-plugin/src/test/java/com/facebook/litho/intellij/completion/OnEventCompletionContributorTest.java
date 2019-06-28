@@ -66,4 +66,15 @@ public class OnEventCompletionContributorTest {
     assertNotNull(completion);
     assertTrue(completion.isEmpty());
   }
+
+  @Test
+  public void aboveMethodCompletion() throws IOException {
+    testHelper.configure("OnClickEventAboveMethodCompletion.java");
+    CodeInsightTestFixture fixture = testHelper.getFixture();
+    fixture.completeBasic();
+    fixture.completeBasic();
+    List<String> completion = fixture.getLookupElementStrings();
+    assertNotNull(completion);
+    assertTrue(completion.contains("onClickEvent"));
+  }
 }

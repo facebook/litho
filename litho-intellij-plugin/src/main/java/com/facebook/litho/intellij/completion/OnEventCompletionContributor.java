@@ -15,6 +15,8 @@
  */
 package com.facebook.litho.intellij.completion;
 
+import static com.intellij.patterns.StandardPatterns.or;
+
 import com.facebook.litho.intellij.LithoClassNames;
 import com.facebook.litho.intellij.LithoPluginUtils;
 import com.facebook.litho.intellij.extensions.EventLogger;
@@ -46,10 +48,21 @@ import org.jetbrains.annotations.NotNull;
 public class OnEventCompletionContributor extends CompletionContributor {
 
   public OnEventCompletionContributor() {
-    extend(CompletionType.BASIC, codeReferencePattern(), typeCompletionProvider());
+    extend(
+        CompletionType.BASIC,
+        or(annotationInClass(), annotationAboveMethod()),
+        typeCompletionProvider());
   }
 
-  private ElementPattern<? extends PsiElement> codeReferencePattern() {
+  private ElementPattern<? extends PsiElement> annotationAboveMethod() {
+    // PsiIdentifier -> PsiJavaCodeReference -> PsiAnnotation -> PsiModifierList -> PsiMethod
+    return PlatformPatterns.psiElement(PsiIdentifier.class)
+        .withSuperParent(2, PsiAnnotation.class)
+        .withSuperParent(4, PsiMethod.class)
+        .withLanguage(JavaLanguage.INSTANCE);
+  }
+
+  private ElementPattern<? extends PsiElement> annotationInClass() {
     // PsiIdentifier -> PsiJavaCodeReference -> PsiAnnotation -> PsiModifierList -> PsiClass
     return PlatformPatterns.psiElement(PsiIdentifier.class)
         .withSuperParent(2, PsiAnnotation.class)
