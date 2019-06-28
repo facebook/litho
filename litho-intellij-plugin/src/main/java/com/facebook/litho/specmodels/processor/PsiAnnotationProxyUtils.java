@@ -17,8 +17,10 @@ package com.facebook.litho.specmodels.processor;
 
 import com.intellij.codeInsight.AnnotationUtil;
 import com.intellij.psi.PsiAnnotation;
+import com.intellij.psi.PsiIdentifier;
 import com.intellij.psi.PsiModifierListOwner;
 import com.intellij.psi.PsiReferenceExpression;
+import com.intellij.psi.util.PsiTreeUtil;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
@@ -57,7 +59,7 @@ public class PsiAnnotationProxyUtils {
     private final PsiModifierListOwner mListOwner;
     private final Class<T> mAnnotationClass;
 
-    public AnnotationProxyInvocationHandler(
+    AnnotationProxyInvocationHandler(
         T stubbed, PsiModifierListOwner listOwner, Class<T> annotationClass) {
       mStubbed = stubbed;
       mListOwner = listOwner;
@@ -67,21 +69,24 @@ public class PsiAnnotationProxyUtils {
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
       Class<?> returnType = method.getReturnType();
+      String methodName = method.getName();
+
       if (returnType.isEnum()) {
         PsiAnnotation currentAnnotation = getPsiAnnotation(mListOwner, mAnnotationClass);
         PsiReferenceExpression declaredValue =
-            (PsiReferenceExpression) currentAnnotation.findAttributeValue(method.getName());
+            (PsiReferenceExpression) currentAnnotation.findAttributeValue(methodName);
         if (declaredValue == null) {
           return method.getDefaultValue();
         }
-        return Enum.valueOf((Class<Enum>) returnType, declaredValue.resolve().getText());
+        PsiIdentifier identifier = PsiTreeUtil.getChildOfType(declaredValue, PsiIdentifier.class);
+        return Enum.valueOf((Class<Enum>) returnType, identifier.getText());
       }
 
-      if (method.getName().equals("hashCode")) {
+      if (methodName.equals("hashCode")) {
         return getHashCode((T) proxy, mAnnotationClass);
       }
 
-      if (method.getName().equals("equals")) {
+      if (methodName.equals("equals")) {
         return getEquals((T) args[0], (T) proxy, mAnnotationClass);
       }
 
