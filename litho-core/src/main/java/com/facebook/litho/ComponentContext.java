@@ -40,9 +40,9 @@ public class ComponentContext {
 
   public interface YogaNodeFactory {
     YogaNode create();
-  };
+  }
 
-  static final InternalNode NULL_LAYOUT = new NoOpInternalNode();
+  public static final InternalNode NULL_LAYOUT = new NoOpInternalNode();
 
   private final Context mContext;
   private final @Nullable String mLogTag;
