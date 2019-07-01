@@ -16,12 +16,14 @@
 package com.facebook.litho.intellij.navigation;
 
 import com.facebook.litho.intellij.LithoPluginUtils;
+import com.facebook.litho.intellij.extensions.EventLogger;
 import com.intellij.codeInsight.navigation.actions.GotoDeclarationHandlerBase;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.Nullable;
 
 public class SectionDeclarationHandler extends GotoDeclarationHandlerBase {
+  private static final String EVENT = EventLogger.EVENT_GOTO_NAVIGATION + ".section";
 
   @Nullable
   @Override
@@ -29,6 +31,7 @@ public class SectionDeclarationHandler extends GotoDeclarationHandlerBase {
     return BaseLithoComponentsDeclarationHandler.getGotoDeclarationTarget(
         sourceElement,
         LithoPluginUtils::isSectionClass,
-        LithoPluginUtils::hasLithoSectionAnnotation);
-    }
+        LithoPluginUtils::hasLithoSectionAnnotation,
+        EVENT);
+  }
 }
