@@ -40,7 +40,7 @@ class HostComponent extends Component {
     if (ComponentsConfiguration.disableComponentHostPool) {
       return new DisabledMountContentPool();
     }
-    return new HostComponentMountContentPool(poolSize(), true);
+    return super.onCreateMountContentPool();
   }
 
   @Override
