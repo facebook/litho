@@ -2285,28 +2285,25 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       }
       throw new RuntimeException(
           "Got dangling mount content during animation: index="
-                      + layoutOutputIndex
-                      + ", mapIndex="
-                      + index
-                      + ", id="
-                      + id
-                      + ", disappearRange=["
-                      + mLastDisappearRangeStart
-                      + ","
-                      + mLastDisappearRangeEnd
-                      + "], contentType="
-                      + item.getContent().getClass()
-                      + ", component="
-                      + item.getComponent()
-                  != null
-              ? item.getComponent().getSimpleName()
-              : null
-                  + ", transitionId="
-                  + item.getTransitionId()
-                  + ", host="
-                  + item.getHost()
-                  + ", isRootHost="
-                  + (mHostsByMarker.get(ROOT_HOST_ID) == item.getHost()));
+              + layoutOutputIndex
+              + ", mapIndex="
+              + index
+              + ", id="
+              + id
+              + ", disappearRange=["
+              + mLastDisappearRangeStart
+              + ","
+              + mLastDisappearRangeEnd
+              + "], contentType="
+              + item.getContent().getClass()
+              + ", component="
+              + (item.getComponent() != null ? item.getComponent().getSimpleName() : null)
+              + ", transitionId="
+              + item.getTransitionId()
+              + ", host="
+              + item.getHost()
+              + ", isRootHost="
+              + (mHostsByMarker.get(ROOT_HOST_ID) == item.getHost()));
     }
   }
 
