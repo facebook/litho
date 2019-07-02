@@ -11,8 +11,13 @@
     </p>
   ]]>
   </description>
-  <version>0.0.5-SNAPSHOT</version>
+  <version>0.0.5</version>
   <change-notes><![CDATA[
+    <h2>0.0.5</h2>
+    <ul>
+      <li>Editor menu contains Regenerate Component option.</li>
+      <li>Component is updated after Event Handler completion.</li>
+    </ul>
     <h2>0.0.4</h2>
     <ul>
       <li>Minor bug fixes.</li>
