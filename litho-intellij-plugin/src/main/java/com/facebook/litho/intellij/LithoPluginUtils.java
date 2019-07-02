@@ -18,13 +18,13 @@ package com.facebook.litho.intellij;
 import com.google.common.annotations.VisibleForTesting;
 import com.intellij.psi.PsiAnnotation;
 import com.intellij.psi.PsiClass;
-import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiField;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiMethod;
 import com.intellij.psi.PsiModifierListOwner;
 import com.intellij.psi.PsiParameter;
 import com.intellij.psi.PsiParameterList;
+import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.containers.ContainerUtil;
 import java.util.Objects;
 import java.util.Optional;
@@ -57,20 +57,8 @@ public class LithoPluginUtils {
     if (psiFile == null) {
       return false;
     }
-    PsiClass psiClass = findFirstPsiClass(psiFile.getChildren());
+    PsiClass psiClass = PsiTreeUtil.findChildOfType(psiFile, PsiClass.class);
     return isLithoSpec(psiClass);
-  }
-
-  @Nullable
-  private static PsiClass findFirstPsiClass(PsiElement[] children) {
-    if (children != null) {
-      for (PsiElement child : children) {
-        if (child instanceof PsiClass) {
-          return (PsiClass) child;
-        }
-      }
-    }
-    return null;
   }
 
   public static boolean isLithoSpec(@Nullable PsiClass psiClass) {

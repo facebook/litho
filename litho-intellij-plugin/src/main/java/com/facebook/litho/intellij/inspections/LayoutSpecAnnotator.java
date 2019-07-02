@@ -15,12 +15,11 @@
  */
 package com.facebook.litho.intellij.inspections;
 
+import com.facebook.litho.intellij.completion.ComponentGenerateUtils;
 import com.facebook.litho.intellij.extensions.EventLogger;
 import com.facebook.litho.intellij.logging.LithoLoggerProvider;
 import com.facebook.litho.specmodels.internal.RunMode;
-import com.facebook.litho.specmodels.model.LayoutSpecModel;
 import com.facebook.litho.specmodels.model.SpecModelValidationError;
-import com.facebook.litho.specmodels.processor.PsiLayoutSpecModelFactory;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
 import com.intellij.psi.PsiClass;
@@ -30,7 +29,6 @@ import com.intellij.psi.PsiNameIdentifierOwner;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import javax.annotation.Nullable;
 
 /**
  * Annotator that uses {@link com.facebook.litho.specmodels.model.LayoutSpecModel} validation to
@@ -39,26 +37,19 @@ import javax.annotation.Nullable;
  */
 public class LayoutSpecAnnotator implements Annotator {
 
-  private static final PsiLayoutSpecModelFactory MODEL_FACTORY = new PsiLayoutSpecModelFactory();
-
   @Override
   public void annotate(PsiElement element, AnnotationHolder holder) {
     List<SpecModelValidationError> errors =
         Optional.of(element)
             .filter(PsiClass.class::isInstance)
             .map(PsiClass.class::cast)
-            .map(LayoutSpecAnnotator::createLayoutModel)
+            .map(ComponentGenerateUtils::createLayoutModel)
             .map(model -> model.validate(RunMode.normal()))
             .orElse(Collections.emptyList());
     if (errors.size() > 0) {
       LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_ANNOTATOR);
     }
     errors.forEach(error -> addError(holder, error));
-  }
-
-  @Nullable
-  static LayoutSpecModel createLayoutModel(PsiClass cls) {
-    return MODEL_FACTORY.createWithPsi(cls.getProject(), cls, null);
   }
 
   private void addError(AnnotationHolder holder, SpecModelValidationError error) {

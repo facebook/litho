@@ -53,6 +53,10 @@ public class PsiLayoutSpecModelFactory {
     mLayoutSpecGenerator = layoutSpecGenerator;
   }
 
+  /**
+   * @return a new {@link LayoutSpecModel} or null if provided class isn't a {@link LayoutSpec}
+   *     class.
+   */
   @Nullable
   public LayoutSpecModel createWithPsi(
       Project project,
