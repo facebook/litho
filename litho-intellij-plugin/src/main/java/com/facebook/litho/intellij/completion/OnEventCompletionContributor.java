@@ -129,6 +129,7 @@ public class OnEventCompletionContributor extends CompletionContributor {
                           insertionContext.getFile());
 
                   LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_ON_EVENT_COMPLETION);
+                  ComponentGenerateUtils.updateLayoutComponent(insertionContext.getFile());
                 })
             .appendTailText(" {...}", true)
             .withTypeText("LayoutSpec")

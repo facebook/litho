@@ -16,6 +16,7 @@
 package com.facebook.litho.intellij.actions;
 
 import com.facebook.litho.intellij.LithoPluginUtils;
+import com.facebook.litho.intellij.completion.ComponentGenerateUtils;
 import com.facebook.litho.intellij.completion.OnEventGenerateUtils;
 import com.facebook.litho.intellij.extensions.EventLogger;
 import com.facebook.litho.intellij.logging.LithoLoggerProvider;
@@ -54,6 +55,14 @@ public class OnEventGenerateAction extends BaseGenerateAction {
     if (!LithoPluginUtils.isLithoSpec(file)) {
       e.getPresentation().setEnabledAndVisible(false);
     }
+  }
+
+  @Override
+  public void actionPerformed(AnActionEvent e) {
+    super.actionPerformed(e);
+    LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_ON_EVENT_GENERATION);
+    final PsiFile file = e.getData(CommonDataKeys.PSI_FILE);
+    ComponentGenerateUtils.updateLayoutComponent(file);
   }
 
   /**
@@ -103,8 +112,6 @@ public class OnEventGenerateAction extends BaseGenerateAction {
       }
 
       OnEventGenerateUtils.addComment(aClass, customMethod);
-
-      LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_ON_EVENT_GENERATION);
 
       return new ClassMember[] {new PsiMethodMember(customMethod)};
     }

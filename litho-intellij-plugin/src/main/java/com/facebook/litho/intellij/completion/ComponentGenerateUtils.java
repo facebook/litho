@@ -16,6 +16,8 @@
 package com.facebook.litho.intellij.completion;
 
 import com.facebook.litho.intellij.LithoPluginUtils;
+import com.facebook.litho.intellij.extensions.EventLogger;
+import com.facebook.litho.intellij.logging.LithoLoggerProvider;
 import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.LayoutSpecModel;
 import com.facebook.litho.specmodels.model.SpecModel;
@@ -52,6 +54,7 @@ public class ComponentGenerateUtils {
    * @param layoutSpecFile file containing {@link com.facebook.litho.annotations.LayoutSpec} class.
    */
   public static void updateLayoutComponent(PsiFile layoutSpecFile) {
+    LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_UPDATE_COMPONENT);
     PsiClass layoutSpecCls = PsiTreeUtil.findChildOfType(layoutSpecFile, PsiClass.class);
 
     SpecModel model = createLayoutModel(layoutSpecCls);
