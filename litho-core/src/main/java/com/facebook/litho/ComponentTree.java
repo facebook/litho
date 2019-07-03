@@ -2458,8 +2458,9 @@ public class ComponentTree {
       final int runningThreadId = this.runningThreadId.get();
       final int originalThreadPriority;
       final boolean didRaiseThreadPriority;
+      final boolean notRunningOnMyThread = runningThreadId != Process.myTid();
 
-      if (isMainThread() && !futureTask.isDone() && runningThreadId != Process.myTid()) {
+      if (isMainThread() && !futureTask.isDone() && notRunningOnMyThread) {
         // Main thread is about to be blocked, raise the running thread priority.
         originalThreadPriority =
             ComponentsConfiguration.inheritPriorityFromUiThread
@@ -2475,7 +2476,17 @@ public class ComponentTree {
 
       final LayoutState result;
       try {
+        final boolean shouldTrace = notRunningOnMyThread && ComponentsSystrace.isTracing();
+        if (shouldTrace) {
+          ComponentsSystrace.beginSectionWithArgs("LayoutStateFuture.get")
+              .arg("root", root.getSimpleName())
+              .arg("runningThreadId", runningThreadId)
+              .flush();
+        }
         result = futureTask.get();
+        if (shouldTrace) {
+          ComponentsSystrace.endSection();
+        }
       } catch (ExecutionException e) {
         final Throwable cause = e.getCause();
         if (cause instanceof RuntimeException) {
