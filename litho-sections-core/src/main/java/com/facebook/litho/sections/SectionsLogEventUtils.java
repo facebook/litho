@@ -71,7 +71,7 @@ public class SectionsLogEventUtils {
     return logEvent;
   }
 
-  static String applyNewChangeSetSourceToString(@ApplyNewChangeSet int source) {
+  public static String applyNewChangeSetSourceToString(@ApplyNewChangeSet int source) {
     switch (source) {
       case ApplyNewChangeSet.NONE:
         return "none";

@@ -50,6 +50,7 @@ import com.facebook.litho.ThreadTracingRunnable;
 import com.facebook.litho.ThreadUtils;
 import com.facebook.litho.TreeProps;
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.litho.sections.ChangesetDebugConfiguration.ChangesetDebugListener;
 import com.facebook.litho.sections.SectionsLogEventUtils.ApplyNewChangeSet;
 import com.facebook.litho.sections.config.SectionsConfiguration;
 import com.facebook.litho.sections.logger.SectionsDebugLogger;
@@ -159,6 +160,7 @@ public class SectionTree {
   private final Map<String, Range> mLastRanges = new HashMap<>();
   private final boolean mForceSyncStateUpdates;
   private final boolean mUseBackgroundChangeSets;
+  private final @Nullable ChangesetDebugListener mChangesetDebug;
 
   private LoadEventsHandler mLoadEventsHandler;
 
@@ -316,6 +318,7 @@ public class SectionTree {
     changeSetThreadHandler = instrumentLithoHandler(changeSetThreadHandler);
     mCalculateChangeSetRunnable = new CalculateChangeSetRunnable(changeSetThreadHandler);
     mCalculateChangeSetOnMainThreadRunnable = new CalculateChangeSetRunnable(mMainThreadHandler);
+    mChangesetDebug = ChangesetDebugConfiguration.getListener();
   }
 
   /**
@@ -1066,7 +1069,7 @@ public class SectionTree {
           }
 
           mEventHandlersController.clearUnusedEventHandlers();
-          postNewChangeSets(tracedThrowable);
+          postNewChangeSets(tracedThrowable, source, attribution, oldRoot);
         }
 
         synchronized (this) {
@@ -1188,15 +1191,19 @@ public class SectionTree {
     }
   }
 
-  private void postNewChangeSets(Throwable tracedThrowable) {
+  private void postNewChangeSets(
+      Throwable tracedThrowable,
+      final int source,
+      @Nullable final String attribution,
+      @Nullable final Section oldSection) {
     if (mUseBackgroundChangeSets) {
-      applyChangeSetsToTargetBackgroundAllowed();
+      applyChangeSetsToTargetBackgroundAllowed(source, attribution, oldSection);
       return;
     }
 
     if (isMainThread()) {
       try {
-        applyChangeSetsToTargetUIThreadOnly();
+        applyChangeSetsToTargetUIThreadOnly(source, attribution, oldSection);
       } catch (IndexOutOfBoundsException e) {
         throw new RuntimeException(getDebugInfo(this) + e.getMessage(), e);
       }
@@ -1211,7 +1218,7 @@ public class SectionTree {
             public void tracedRun(Throwable tracedThrowable) {
               final SectionTree tree = SectionTree.this;
               try {
-                tree.applyChangeSetsToTargetUIThreadOnly();
+                tree.applyChangeSetsToTargetUIThreadOnly(source, attribution, oldSection);
               } catch (IndexOutOfBoundsException e) {
                 throw new RuntimeException(getDebugInfo(tree) + e.getMessage(), e);
               }
@@ -1222,7 +1229,8 @@ public class SectionTree {
   }
 
   @ThreadConfined(ThreadConfined.ANY)
-  private void applyChangeSetsToTargetBackgroundAllowed() {
+  private void applyChangeSetsToTargetBackgroundAllowed(
+      int source, @Nullable String attribution, @Nullable Section oldSection) {
     if (!mUseBackgroundChangeSets) {
       throw new IllegalStateException(
           "Must use UIThread-only variant when background change sets are not enabled.");
@@ -1242,7 +1250,8 @@ public class SectionTree {
           return;
         }
 
-        applyChangeSetsToTargetUnchecked(mCurrentSection, mPendingChangeSets);
+        applyChangeSetsToTargetUnchecked(
+            mCurrentSection, oldSection, mPendingChangeSets, source, attribution);
         mPendingChangeSets.clear();
       }
 
@@ -1270,7 +1279,8 @@ public class SectionTree {
   }
 
   @UiThread
-  private void applyChangeSetsToTargetUIThreadOnly() {
+  private void applyChangeSetsToTargetUIThreadOnly(
+      int source, @Nullable String attribution, @Nullable Section oldSection) {
     assertMainThread();
     if (mUseBackgroundChangeSets) {
       throw new IllegalStateException(
@@ -1295,7 +1305,7 @@ public class SectionTree {
         currentSection = mCurrentSection;
       }
 
-      applyChangeSetsToTargetUnchecked(currentSection, changeSets);
+      applyChangeSetsToTargetUnchecked(currentSection, oldSection, changeSets, source, attribution);
       maybeDispatchFocusRequests();
     } finally {
       if (isTracing) {
@@ -1312,7 +1322,11 @@ public class SectionTree {
   }
 
   private void applyChangeSetsToTargetUnchecked(
-      final Section currentSection, List<ChangeSet> changeSets) {
+      final Section currentSection,
+      @Nullable final Section oldSection,
+      List<ChangeSet> changeSets,
+      final int source,
+      @Nullable final String attribution) {
     final boolean isTracing = ComponentsSystrace.isTracing();
 
     if (isTracing) {
@@ -1373,6 +1387,18 @@ public class SectionTree {
           new ChangeSetCompleteCallback() {
             @Override
             public void onDataBound() {
+              if (mChangesetDebug != null) {
+                mChangesetDebug.onChangesetApplied(
+                    mCurrentSection,
+                    oldSection,
+                    changesInfo,
+                    mContext.getLogTag() == null
+                        ? "SectionTree" + SectionTree.this.mTag
+                        : mContext.getLogTag(),
+                    source,
+                    attribution);
+              }
+
               if (!isDataChanged) {
                 return;
               }
