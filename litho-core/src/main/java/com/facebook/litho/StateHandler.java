@@ -339,25 +339,28 @@ public class StateHandler {
       }
     }
 
-    for (String key : appliedStateUpdates.keySet()) {
+    for (Map.Entry<String, List<StateUpdate>> appliedStateUpdate : appliedStateUpdates.entrySet()) {
+      String appliedStateUpdateKey = appliedStateUpdate.getKey();
       final List<StateUpdate> pendingStateUpdatesForKey;
       final List<StateUpdate> pendingLazyStateUpdatesForKey;
       synchronized (this) {
-        pendingStateUpdatesForKey = mPendingStateUpdates.get(key);
+        pendingStateUpdatesForKey = mPendingStateUpdates.get(appliedStateUpdateKey);
         pendingLazyStateUpdatesForKey =
-            mPendingLazyStateUpdates == null ? null : mPendingLazyStateUpdates.get(key);
+            mPendingLazyStateUpdates == null
+                ? null
+                : mPendingLazyStateUpdates.get(appliedStateUpdateKey);
       }
 
       if (pendingStateUpdatesForKey == null) {
         continue;
       }
 
-      final List<StateUpdate> appliedStateUpdatesForKey = appliedStateUpdates.get(key);
+      final List<StateUpdate> appliedStateUpdatesForKey = appliedStateUpdate.getValue();
       if (pendingStateUpdatesForKey.size() == appliedStateUpdatesForKey.size()) {
         synchronized (this) {
-          mPendingStateUpdates.remove(key);
+          mPendingStateUpdates.remove(appliedStateUpdateKey);
           if (mPendingLazyStateUpdates != null) {
-            mPendingLazyStateUpdates.remove(key);
+            mPendingLazyStateUpdates.remove(appliedStateUpdateKey);
           }
         }
       } else {
@@ -463,8 +466,10 @@ public class StateHandler {
       copyPendingLazyStateUpdates(pendingLazyStateUpdates);
 
       if (appliedStateUpdates != null) {
-        for (String key : appliedStateUpdates.keySet()) {
-          mAppliedStateUpdates.put(key, createStateUpdatesList(appliedStateUpdates.get(key)));
+        for (Map.Entry<String, List<StateUpdate>> appliedStateUpdate :
+            appliedStateUpdates.entrySet()) {
+          mAppliedStateUpdates.put(
+              appliedStateUpdate.getKey(), createStateUpdatesList(appliedStateUpdate.getValue()));
         }
       }
     }
@@ -478,8 +483,11 @@ public class StateHandler {
     }
 
     maybeInitLazyStateUpdatesMap();
-    for (String key : pendingLazyStateUpdates.keySet()) {
-      mPendingLazyStateUpdates.put(key, createStateUpdatesList(pendingLazyStateUpdates.get(key)));
+    for (Map.Entry<String, List<StateUpdate>> pendingLazyStateUpdate :
+        pendingLazyStateUpdates.entrySet()) {
+      mPendingLazyStateUpdates.put(
+          pendingLazyStateUpdate.getKey(),
+          createStateUpdatesList(pendingLazyStateUpdate.getValue()));
     }
   }
 

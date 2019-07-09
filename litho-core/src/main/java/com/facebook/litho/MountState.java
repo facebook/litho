@@ -482,8 +482,9 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       }
       group.replace(type, mountItem.getContent());
     }
-    for (TransitionId transitionId : animatingContent.keySet()) {
-      mTransitionManager.setMountContent(transitionId, animatingContent.get(transitionId));
+    for (Map.Entry<TransitionId, OutputUnitsAffinityGroup<Object>> content :
+        animatingContent.entrySet()) {
+      mTransitionManager.setMountContent(content.getKey(), content.getValue());
     }
 
     // Retrieve mount content from disappearing mount items and pass it to the TransitionManager
@@ -2560,8 +2561,9 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     final Map<TransitionId, OutputUnitsAffinityGroup<LayoutOutput>> transitionMapping =
         newLayoutState.getTransitionIdMapping();
     if (transitionMapping != null) {
-      for (TransitionId transitionId : transitionMapping.keySet()) {
-        if (!mAnimatingTransitionIds.contains(transitionId)) {
+      for (Map.Entry<TransitionId, OutputUnitsAffinityGroup<LayoutOutput>> transition :
+          transitionMapping.entrySet()) {
+        if (!mAnimatingTransitionIds.contains(transition.getKey())) {
           continue;
         }
 
@@ -2569,7 +2571,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
           mAnimationLockedIndices = new int[newLayoutState.getMountableOutputCount()];
         }
 
-        final OutputUnitsAffinityGroup<LayoutOutput> group = transitionMapping.get(transitionId);
+        final OutputUnitsAffinityGroup<LayoutOutput> group = transition.getValue();
         for (int j = 0, sz = group.size(); j < sz; j++) {
           final LayoutOutput layoutOutput = group.getAt(j);
           final int position = newLayoutState.getLayoutOutputPositionForId(layoutOutput.getId());
