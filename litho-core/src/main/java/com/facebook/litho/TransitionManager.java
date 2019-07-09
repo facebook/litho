@@ -109,16 +109,12 @@ public class TransitionManager {
     int DISAPPEARED = 2;
   }
 
-  /**
-   * A listener that will be invoked when a mount content has stopped animating.
-   */
+  /** A listener that will be invoked when a mount content has stopped animating. */
   public interface OnAnimationCompleteListener {
     void onAnimationComplete(TransitionId transitionId);
   }
 
-  /**
-   * The animation state of a single property (e.g. X, Y, ALPHA) on a piece of mount content.
-   */
+  /** The animation state of a single property (e.g. X, Y, ALPHA) on a piece of mount content. */
   private static class PropertyState {
 
     /**
@@ -127,24 +123,16 @@ public class TransitionManager {
      */
     public AnimatedPropertyNode animatedPropertyNode;
 
-    /**
-     * The animation, if any, that is currently running on this property.
-     */
+    /** The animation, if any, that is currently running on this property. */
     public AnimationBinding animation;
 
-    /**
-     * If there's an {@link #animation}, the target value it's animating to.
-     */
+    /** If there's an {@link #animation}, the target value it's animating to. */
     public Float targetValue;
 
-    /**
-     * The last mounted value of this property.
-     */
+    /** The last mounted value of this property. */
     public Float lastMountedValue;
 
-    /**
-     * How many animations are waiting to finish for this property.
-     */
+    /** How many animations are waiting to finish for this property. */
     public int numPendingAnimations;
   }
 
@@ -368,9 +356,7 @@ public class TransitionManager {
     return animationState.changeType == ChangeType.DISAPPEARED;
   }
 
-  /**
-   * To be called when a MountState is recycled for a new component tree. Clears all animations.
-   */
+  /** To be called when a MountState is recycled for a new component tree. Clears all animations. */
   void reset() {
     for (TransitionId transitionId : mAnimationStates.ids()) {
       final AnimationState animationState = mAnimationStates.get(transitionId);
@@ -557,8 +543,7 @@ public class TransitionManager {
   }
 
   private void createAnimationsForTransitionUnitAllKeys(
-      TransitionUnit transition,
-      ArrayList<AnimationBinding> outList) {
+      TransitionUnit transition, ArrayList<AnimationBinding> outList) {
     for (TransitionId transitionId : mAnimationStates.ids()) {
       final AnimationState animationState = mAnimationStates.get(transitionId);
       if (!animationState.seenInLastTransition) {
@@ -629,8 +614,8 @@ public class TransitionManager {
 
     final int changeType = animationState.changeType;
     final String changeTypeString = changeTypeToString(animationState.changeType);
-    if ((changeType == ChangeType.APPEARED && !transition.hasAppearAnimation()) ||
-        (changeType == ChangeType.DISAPPEARED && !transition.hasDisappearAnimation())) {
+    if ((changeType == ChangeType.APPEARED && !transition.hasAppearAnimation())
+        || (changeType == ChangeType.DISAPPEARED && !transition.hasDisappearAnimation())) {
       if (AnimationsDebug.ENABLED) {
         Log.d(
             AnimationsDebug.TAG,
@@ -772,8 +757,8 @@ public class TransitionManager {
    * Set the clipChildren properties to all Views in the same tree branch from the given one, up to
    * the top LithoView.
    *
-   * TODO(17934271): Handle the case where two+ animations with different lifespans share the same
-   * parent, in which case we shouldn't unset clipping until the last item is done animating.
+   * <p>TODO(17934271): Handle the case where two+ animations with different lifespans share the
+   * same parent, in which case we shouldn't unset clipping until the last item is done animating.
    */
   private void recursivelySetChildClipping(Object mountContent, boolean clipChildren) {
     if (!(mountContent instanceof View)) {
@@ -928,14 +913,15 @@ public class TransitionManager {
                   + ":");
         }
 
-        if (propertyState.lastMountedValue != null &&
-            propertyState.lastMountedValue != propertyAnimation.getTargetValue()) {
+        if (propertyState.lastMountedValue != null
+            && propertyState.lastMountedValue != propertyAnimation.getTargetValue()) {
           if (AnimationsDebug.ENABLED) {
             Log.d(
                 AnimationsDebug.TAG,
-                " - Canceling animation, last mounted value does not equal animation target: " +
-                    propertyState.lastMountedValue + " != " + propertyAnimation.getTargetValue());
-
+                " - Canceling animation, last mounted value does not equal animation target: "
+                    + propertyState.lastMountedValue
+                    + " != "
+                    + propertyAnimation.getTargetValue());
           }
 
           shouldStart = false;
@@ -991,8 +977,8 @@ public class TransitionManager {
           final PropertyState propertyState = animationState.propertyStates.get(property);
           if (propertyState == null) {
             throw new RuntimeException(
-                "Some animation bookkeeping is wrong: tried to remove an animation from the list " +
-                    "of active animations, but it wasn't there.");
+                "Some animation bookkeeping is wrong: tried to remove an animation from the list "
+                    + "of active animations, but it wasn't there.");
           }
 
           propertyState.numPendingAnimations--;
@@ -1006,8 +992,8 @@ public class TransitionManager {
           final PropertyState propertyState = animationState.propertyStates.get(property);
           if (propertyState == null) {
             throw new RuntimeException(
-                "Some animation bookkeeping is wrong: tried to remove an animation from the list " +
-                    "of active animations, but it wasn't there.");
+                "Some animation bookkeeping is wrong: tried to remove an animation from the list "
+                    + "of active animations, but it wasn't there.");
           }
 
           propertyState.numPendingAnimations--;
