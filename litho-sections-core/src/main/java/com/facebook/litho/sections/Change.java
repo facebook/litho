@@ -262,7 +262,7 @@ public final class Change {
     return mRenderInfo;
   }
 
-  List<RenderInfo> getRenderInfos() {
+  public List<RenderInfo> getRenderInfos() {
     return mRenderInfos;
   }
 
