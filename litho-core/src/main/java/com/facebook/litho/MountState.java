@@ -2254,7 +2254,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
           break;
         }
       }
-      throw new RuntimeException(
+      ComponentsReporter.emitMessage(
+          ComponentsReporter.LogLevel.ERROR,
           "Got dangling mount content during animation: index="
               + layoutOutputIndex
               + ", mapIndex="
