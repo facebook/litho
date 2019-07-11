@@ -66,7 +66,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.concurrent.GuardedBy;
@@ -2314,7 +2313,7 @@ public class ComponentTree {
     private final FutureTask<LayoutState> futureTask;
     private final AtomicInteger refCount = new AtomicInteger(0);
     private final boolean isFromSyncLayout;
-    private final AtomicBoolean interrupted = new AtomicBoolean(false);
+    private volatile boolean interrupted;
     private final int source;
     private final String extraAttribution;
 
@@ -2415,11 +2414,11 @@ public class ComponentTree {
     }
 
     boolean isInterrupted() {
-      return !ThreadUtils.isMainThread() && interrupted.get();
+      return !ThreadUtils.isMainThread() && interrupted;
     }
 
     void interrupt() {
-      interrupted.set(true);
+      interrupted = true;
     }
 
     void unregisterForResponse() {
@@ -2546,7 +2545,7 @@ public class ComponentTree {
       LayoutState result;
       try {
         result = futureTask.get();
-        if (interrupted.get() && result.isPartialLayoutState()) {
+        if (interrupted && result.isPartialLayoutState()) {
           if (ThreadUtils.isMainThread()) {
             // This means that the bg task was interrupted and it returned a partially resolved
             // InternalNode. We need to finish computing this LayoutState.
