@@ -1314,7 +1314,6 @@ class LayoutState {
 
       if (c.wasLayoutInterrupted()) {
         layoutState.mIsPartialLayoutState = true;
-
         return layoutState;
       }
 

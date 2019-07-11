@@ -29,6 +29,9 @@ import static com.facebook.litho.StateContainer.StateUpdate;
 import static com.facebook.litho.ThreadUtils.assertHoldsLock;
 import static com.facebook.litho.ThreadUtils.assertMainThread;
 import static com.facebook.litho.ThreadUtils.isMainThread;
+import static com.facebook.litho.WorkContinuationInstrumenter.onBeginWorkContinuation;
+import static com.facebook.litho.WorkContinuationInstrumenter.onEndWorkContinuation;
+import static com.facebook.litho.WorkContinuationInstrumenter.onOfferWorkForContinuation;
 import static com.facebook.litho.config.ComponentsConfiguration.DEFAULT_BACKGROUND_THREAD_PRIORITY;
 
 import android.content.Context;
@@ -2315,6 +2318,9 @@ public class ComponentTree {
     private final int source;
     private final String extraAttribution;
 
+    @Nullable private volatile Object interruptToken;
+    @Nullable private volatile Object continuationToken;
+
     @GuardedBy("LayoutStateFuture.this")
     private volatile boolean released = false;
 
@@ -2400,6 +2406,7 @@ public class ComponentTree {
         return;
       }
       layoutState = null;
+      interruptToken = continuationToken = null;
       released = true;
     }
 
@@ -2531,6 +2538,8 @@ public class ComponentTree {
         // the bg task is interrupted.
         if (!isFromSyncLayout) {
           interrupt();
+          interruptToken =
+              WorkContinuationInstrumenter.onAskForWorkToContinue("interruptCalculateLayout");
         }
       }
 
@@ -2541,13 +2550,22 @@ public class ComponentTree {
           if (ThreadUtils.isMainThread()) {
             // This means that the bg task was interrupted and it returned a partially resolved
             // InternalNode. We need to finish computing this LayoutState.
-
-            result = resolvePartialInternalNodeAndCalculateLayout(result);
+            final Object token =
+                onBeginWorkContinuation("continuePartialLayoutState", continuationToken);
+            continuationToken = null;
+            try {
+              result = resolvePartialInternalNodeAndCalculateLayout(result);
+            } finally {
+              onEndWorkContinuation(token);
+            }
           } else {
             // This means that the bg task was interrupted and the UI thread will pick up the rest
             // of
             // the work. No need to return a LayoutState.
             result = null;
+            continuationToken =
+                onOfferWorkForContinuation("offerPartialLayoutState", interruptToken);
+            interruptToken = null;
           }
         }
 
