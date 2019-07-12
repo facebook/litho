@@ -21,6 +21,8 @@ import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 import android.os.Looper;
 import com.facebook.litho.Component;
@@ -161,6 +163,52 @@ public class SectionTreeTest {
 
     assertThat(leaf1.getGlobalKey()).isEqualTo("node1leaf1");
     assertThat(leaf2.getGlobalKey()).isEqualTo("node1leaf10");
+  }
+
+  @Test
+  public void stableKeyGenerationForSectionCopies() {
+    final Section leaf1 =
+        TestSectionCreator.createChangeSetComponent(
+            "leaf1",
+            Change.insert(0, ComponentRenderInfo.createEmpty()),
+            Change.insert(1, ComponentRenderInfo.createEmpty()),
+            Change.insert(2, ComponentRenderInfo.createEmpty()));
+
+    final Section leaf2 =
+        TestSectionCreator.createChangeSetComponent(
+            "leaf1",
+            Change.insert(0, ComponentRenderInfo.createEmpty()),
+            Change.insert(1, ComponentRenderInfo.createEmpty()));
+
+    final Section root = TestSectionCreator.createSectionComponent("node1", leaf1, leaf2);
+
+    final SectionContext context = spy(new SectionContext(mSectionContext));
+    final KeyHandler keyHandler = new KeyHandler();
+    when(context.getKeyHandler()).thenReturn(keyHandler);
+
+    root.setScopedContext(context);
+
+    final String key1 = root.generateUniqueGlobalKeyForChild(leaf1, leaf1.getKey());
+    keyHandler.registerKey(key1);
+    final String key2 = root.generateUniqueGlobalKeyForChild(leaf2, leaf1.getKey());
+    keyHandler.registerKey(key2);
+
+    assertThat(key1).isEqualTo("leaf1");
+    assertThat(key2).isEqualTo("leaf10");
+
+    final Section copy = root.makeShallowCopy(false);
+    final SectionContext contextCopy = spy(new SectionContext(mSectionContext));
+    final KeyHandler keyHandlerCopy = new KeyHandler();
+    when(contextCopy.getKeyHandler()).thenReturn(keyHandlerCopy);
+
+    copy.setScopedContext(contextCopy);
+
+    final String key1Copy = copy.generateUniqueGlobalKeyForChild(leaf1, leaf1.getKey());
+    keyHandlerCopy.registerKey(key1Copy);
+    final String key2Copy = copy.generateUniqueGlobalKeyForChild(leaf2, leaf1.getKey());
+    keyHandlerCopy.registerKey(key2Copy);
+    assertThat(key1Copy).isEqualTo("leaf1");
+    assertThat(key2Copy).isEqualTo("leaf10");
   }
 
   @Test

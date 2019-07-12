@@ -261,6 +261,7 @@ public abstract class Section extends SectionLifecycle
         }
         clone.mCount = 0;
         clone.setInvalidated(false);
+        clone.mChildCounters = null;
       }
 
       return clone;
@@ -278,6 +279,7 @@ public abstract class Section extends SectionLifecycle
     if (!deepCopy) {
       clone.mCount = 0;
       clone.setInvalidated(false);
+      clone.mChildCounters = null;
     } else {
       if (mChildren != null) {
         for (Section child : mChildren) {
@@ -354,7 +356,8 @@ public abstract class Section extends SectionLifecycle
     c.getKeyHandler().registerKey(uniqueGlobalKey);
   }
 
-  private String generateUniqueGlobalKeyForChild(Section section, String childKey) {
+  @VisibleForTesting
+  public String generateUniqueGlobalKeyForChild(Section section, String childKey) {
     final KeyHandler keyHandler = mScopedContext.getKeyHandler();
 
     /** If the key is already unique, return it. */
