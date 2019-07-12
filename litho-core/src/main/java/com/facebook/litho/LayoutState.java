@@ -2295,6 +2295,37 @@ class LayoutState {
     return mRootTransitionId;
   }
 
+  /** Debug-only: return a string representation of this LayoutState and its LayoutOutputs. */
+  String dumpAsString() {
+    if (!ComponentsConfiguration.isDebugModeEnabled && !ComponentsConfiguration.isEndToEndTestRun) {
+      throw new RuntimeException(
+          "LayoutState#dumpAsString() should only be called in debug mode or from e2e tests!");
+    }
+
+    String res =
+        "LayoutState w/ "
+            + getMountableOutputCount()
+            + " mountable outputs, root: "
+            + mRootComponentName
+            + "\n";
+
+    for (int i = 0; i < getMountableOutputCount(); i++) {
+      final LayoutOutput layoutOutput = getMountableOutputAt(i);
+      res +=
+          "  ["
+              + i
+              + "] id: "
+              + layoutOutput.getId()
+              + ", host: "
+              + layoutOutput.getHostMarker()
+              + ", component: "
+              + layoutOutput.getComponent().getSimpleName()
+              + "\n";
+    }
+
+    return res;
+  }
+
   void checkWorkingRangeAndDispatch(
       int position,
       int firstVisibleIndex,
