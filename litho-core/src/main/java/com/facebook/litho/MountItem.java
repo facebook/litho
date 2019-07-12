@@ -241,7 +241,19 @@ class MountItem {
 
   void releaseMountContent(Context context) {
     if (mIsReleased) {
-      throw new RuntimeException("Releasing released mount content!");
+      final String componentName = mComponent != null ? mComponent.getSimpleName() : "<null>";
+      final String globalKey = mComponent != null ? mComponent.getGlobalKey() : "<null>";
+      throw new RuntimeException(
+          "Releasing released mount content! component: "
+              + componentName
+              + ", globalKey: "
+              + globalKey
+              + ", host: "
+              + getHost()
+              + ", content: "
+              + getContent()
+              + ", transitionId: "
+              + getTransitionId());
     }
     ComponentsPools.release(context, mComponent, mContent);
     mIsReleased = true;
