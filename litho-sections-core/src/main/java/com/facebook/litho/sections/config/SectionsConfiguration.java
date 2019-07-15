@@ -25,18 +25,6 @@ public class SectionsConfiguration {
   /** Loggers for the core framework */
   public static List<SectionsDebugLogger> LOGGERS;
 
-  /**
-   * If true, this will trim the items that pass the comparison check in the head and tail of the
-   * DataDiffSection data before diffing.
-   */
-  public static boolean trimDataDiffSectionHeadAndTail = false;
-
-  /**
-   * If true, this will trim only the items that are the same instance in the head and tail of the
-   * DataDiffSection data before diffing.
-   */
-  public static boolean trimSameInstancesOnly = false;
-
   /** Whether changesets can be applied from a background thread. */
   public static boolean useBackgroundChangeSets = false;
 
