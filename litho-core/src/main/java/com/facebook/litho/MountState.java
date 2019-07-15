@@ -488,16 +488,16 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     }
 
     // Retrieve mount content from disappearing mount items and pass it to the TransitionManager
-    for (TransitionId transitionId : mDisappearingMountItems.keySet()) {
-      final OutputUnitsAffinityGroup<MountItem> mountItemsGroup =
-          mDisappearingMountItems.get(transitionId);
+    for (Map.Entry<TransitionId, OutputUnitsAffinityGroup<MountItem>> entry :
+        mDisappearingMountItems.entrySet()) {
+      final OutputUnitsAffinityGroup<MountItem> mountItemsGroup = entry.getValue();
       final OutputUnitsAffinityGroup<Object> mountContentGroup = new OutputUnitsAffinityGroup<>();
       for (int j = 0, sz = mountItemsGroup.size(); j < sz; j++) {
         final @OutputUnitType int type = mountItemsGroup.typeAt(j);
         final MountItem mountItem = mountItemsGroup.getAt(j);
         mountContentGroup.add(type, mountItem.getContent());
       }
-      mTransitionManager.setMountContent(transitionId, mountContentGroup);
+      mTransitionManager.setMountContent(entry.getKey(), mountContentGroup);
     }
   }
 
