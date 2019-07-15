@@ -197,10 +197,6 @@ public class ComponentsConfiguration {
     return isDebugModeEnabled && enableRenderInfoDebugging;
   }
 
-  public static boolean isPoolBisectEnabled = false;
-  public static String disablePoolsStart = "aaaaa";
-  public static String disablePoolsEnd = "zzzzz";
-
   public static boolean prioritizeRenderingOnParallel = true;
 
   public static boolean useSharedFutureOnParallel = true;

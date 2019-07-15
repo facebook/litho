@@ -112,7 +112,7 @@ public class ComponentsPools {
 
       MountContentPool pool = poolsArray.get(lifecycle.getTypeId());
       if (pool == null) {
-        pool = PoolBisectUtil.getPoolForComponent((Component) lifecycle);
+        pool = lifecycle.onCreateMountContentPool();
         poolsArray.put(lifecycle.getTypeId(), pool);
       }
 
