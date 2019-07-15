@@ -2675,6 +2675,16 @@ public class RecyclerBinder
     view.setAdapter(mInternalAdapter);
     view.addOnScrollListener(mViewportManager.getScrollListener());
 
+    if (layoutManager instanceof NeedsBgPaddingInfo) {
+      ((NeedsBgPaddingInfo) layoutManager)
+          .setBgPaddingInfo(
+              new Rect(
+                  view.getPaddingLeft(),
+                  view.getPaddingTop(),
+                  view.getPaddingRight(),
+                  view.getPaddingBottom()));
+    }
+
     if (view instanceof HasPostDispatchDrawListener) {
       ((HasPostDispatchDrawListener) view).setPostDispatchDrawListener(mPostDispatchDrawListener);
     } else if (view.getViewTreeObserver() != null) {

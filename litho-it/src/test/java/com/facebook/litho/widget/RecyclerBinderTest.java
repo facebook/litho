@@ -5245,6 +5245,24 @@ public class RecyclerBinderTest {
     ComponentsConfiguration.isReleaseComponentTreeInRecyclerBinder = false;
   }
 
+  @Test
+  public void testSetBgPaddingInfo() {
+    final LinearLayoutManagerWithPadding layoutManager =
+        new LinearLayoutManagerWithPadding(mComponentContext.getAndroidContext());
+    final LayoutInfo layoutInfo = new LinearLayoutInfo(layoutManager);
+
+    mRecyclerBinder = new RecyclerBinder.Builder().layoutInfo(layoutInfo).build(mComponentContext);
+    final RecyclerView rv = mock(RecyclerView.class);
+    when(rv.getPaddingLeft()).thenReturn(10);
+    when(rv.getPaddingRight()).thenReturn(10);
+    when(rv.getPaddingTop()).thenReturn(10);
+    when(rv.getPaddingBottom()).thenReturn(10);
+
+    mRecyclerBinder.mount(rv);
+
+    assertThat(layoutManager.getBgPaddingInfo()).isEqualTo(new Rect(10, 10, 10, 10));
+  }
+
   private RecyclerBinder createRecyclerBinderWithMockAdapter(RecyclerView.Adapter adapterMock) {
     return new RecyclerBinder.Builder()
         .rangeRatio(RANGE_RATIO)
@@ -5351,6 +5369,25 @@ public class RecyclerBinderTest {
     @Override
     public int getItemCount() {
       return 0;
+    }
+  }
+
+  private static class LinearLayoutManagerWithPadding extends LinearLayoutManager
+      implements NeedsBgPaddingInfo {
+
+    private final Rect mBgPaddingInfo = new Rect();
+
+    public LinearLayoutManagerWithPadding(Context context) {
+      super(context);
+    }
+
+    @Override
+    public void setBgPaddingInfo(Rect paddingInfo) {
+      mBgPaddingInfo.set(paddingInfo);
+    }
+
+    public Rect getBgPaddingInfo() {
+      return mBgPaddingInfo;
     }
   }
 }
