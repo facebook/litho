@@ -25,12 +25,6 @@ public class SectionsConfiguration {
   /** Loggers for the core framework */
   public static List<SectionsDebugLogger> LOGGERS;
 
-  /** Force all section component prop updates to be async */
-  public static boolean sectionComponentsAsyncPropUpdates = false;
-
-  /** Force all section component state updates to be async */
-  public static boolean sectionComponentsAsyncStateUpdates = false;
-
   /**
    * If true, this will trim the items that pass the comparison check in the head and tail of the
    * DataDiffSection data before diffing.

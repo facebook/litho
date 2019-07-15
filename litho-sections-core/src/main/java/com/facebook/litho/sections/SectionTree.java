@@ -1681,8 +1681,6 @@ public class SectionTree {
     private Builder(SectionContext componentContext, Target target) {
       mContext = componentContext;
       mTarget = target;
-      mAsyncStateUpdates = SectionsConfiguration.sectionComponentsAsyncStateUpdates;
-      mAsyncPropUpdates = SectionsConfiguration.sectionComponentsAsyncPropUpdates;
     }
 
     /**

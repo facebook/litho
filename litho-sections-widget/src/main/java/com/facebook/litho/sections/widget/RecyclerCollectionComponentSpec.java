@@ -56,7 +56,6 @@ import com.facebook.litho.sections.LoadEventsHandler;
 import com.facebook.litho.sections.Section;
 import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.SectionTree;
-import com.facebook.litho.sections.config.SectionsConfiguration;
 import com.facebook.litho.widget.Binder;
 import com.facebook.litho.widget.LithoRecylerView;
 import com.facebook.litho.widget.PTRRefreshEvent;
@@ -108,15 +107,11 @@ public class RecyclerCollectionComponentSpec {
   @PropDefault public static final int recyclerViewId = View.NO_ID;
   @PropDefault public static final int overScrollMode = View.OVER_SCROLL_ALWAYS;
 
-  @PropDefault
-  protected static final boolean asyncStateUpdates =
-      SectionsConfiguration.sectionComponentsAsyncStateUpdates;
+  @PropDefault protected static final boolean asyncStateUpdates = false;
 
   @PropDefault public static final ItemAnimator itemAnimator = new NoUpdateItemAnimator();
 
-  @PropDefault
-  protected static final boolean asyncPropUpdates =
-      SectionsConfiguration.sectionComponentsAsyncPropUpdates;
+  @PropDefault protected static final boolean asyncPropUpdates = false;
 
   @PropDefault protected static final boolean setRootAsync = false;
 
