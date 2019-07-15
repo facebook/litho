@@ -235,10 +235,4 @@ public class ComponentsConfiguration {
 
   /** If true, release ComponentTrees held in RecyclerBinder when item are removed or detached. */
   public static boolean isReleaseComponentTreeInRecyclerBinder;
-
-  /**
-   * If true, disables unmounting all remaining items when a LithoView is recycled in
-   * RecyclerBinder.
-   */
-  public static boolean disableUnmountOnRecycle = false;
 }
