@@ -30,7 +30,7 @@ public interface EventLogger {
   String EVENT_ANNOTATOR = "error.annotation";
   String EVENT_NEW_TEMPLATE = "file.template";
   String EVENT_GOTO_NAVIGATION = "goto.navigation";
-  String EVENT_UPDATE_COMPONENT = "update.component";
+  String EVENT_GENERATE_COMPONENT = "generate.component";
 
   /**
    * Logs given event.

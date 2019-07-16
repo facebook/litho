@@ -15,6 +15,8 @@
  */
 package com.facebook.litho.intellij;
 
+import com.facebook.litho.annotations.LayoutSpec;
+import com.facebook.litho.specmodels.processor.PsiAnnotationProxyUtils;
 import com.google.common.annotations.VisibleForTesting;
 import com.intellij.psi.PsiAnnotation;
 import com.intellij.psi.PsiClass;
@@ -26,6 +28,7 @@ import com.intellij.psi.PsiParameter;
 import com.intellij.psi.PsiParameterList;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.containers.ContainerUtil;
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -57,8 +60,7 @@ public class LithoPluginUtils {
     if (psiFile == null) {
       return false;
     }
-    PsiClass psiClass = PsiTreeUtil.findChildOfType(psiFile, PsiClass.class);
-    return isLithoSpec(psiClass);
+    return getFirstClass(psiFile, LithoPluginUtils::isLithoSpec).isPresent();
   }
 
   public static boolean isLithoSpec(@Nullable PsiClass psiClass) {
@@ -155,5 +157,28 @@ public class LithoPluginUtils {
   private static <T> Predicate<T> distinctByKey(Function<? super T, ?> key) {
     Set<Object> seen = ContainerUtil.newConcurrentSet();
     return t -> seen.add(key.apply(t));
+  }
+
+  public static Optional<PsiClass> getFirstLayoutSpec(PsiFile psiFile) {
+    return getFirstClass(
+        psiFile,
+        psiClass ->
+            PsiAnnotationProxyUtils.findAnnotationInHierarchy(psiClass, LayoutSpec.class) != null);
+  }
+
+  public static Optional<PsiClass> getFirstComponent(PsiFile psiFile) {
+    return getFirstClass(psiFile, LithoPluginUtils::isComponentClass);
+  }
+
+  private static Optional<PsiClass> getFirstClass(
+      PsiFile psiFile, Predicate<PsiClass> classFilter) {
+    return Optional.of(psiFile)
+        .map(currentFile -> PsiTreeUtil.getChildrenOfType(currentFile, PsiClass.class))
+        .flatMap(
+            currentClasses ->
+                Arrays.stream(currentClasses)
+                    .filter(Objects::nonNull)
+                    .filter(classFilter)
+                    .findFirst());
   }
 }

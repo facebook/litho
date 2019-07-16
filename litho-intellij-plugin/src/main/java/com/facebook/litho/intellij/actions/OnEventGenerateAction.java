@@ -41,7 +41,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 
-/** Generates a method handling Litho event. https://fblitho.com/docs/events-overview */
+/**
+ * Generates a method handling Litho event in the Litho Spec.
+ * https://fblitho.com/docs/events-overview
+ */
 public class OnEventGenerateAction extends BaseGenerateAction {
   public OnEventGenerateAction() {
     super(new OnEventGenerateHandler());
@@ -62,7 +65,8 @@ public class OnEventGenerateAction extends BaseGenerateAction {
     super.actionPerformed(e);
     LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_ON_EVENT_GENERATION);
     final PsiFile file = e.getData(CommonDataKeys.PSI_FILE);
-    ComponentGenerateUtils.updateLayoutComponent(file);
+    LithoPluginUtils.getFirstLayoutSpec(file)
+        .ifPresent(ComponentGenerateUtils::updateLayoutComponent);
   }
 
   /**

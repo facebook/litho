@@ -24,6 +24,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiIdentifier;
 import com.intellij.psi.PsiImportStatement;
 import com.intellij.psi.PsiJavaCodeReferenceElement;
+import com.intellij.psi.PsiJavaFile;
 import com.intellij.psi.PsiReference;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.util.PsiTreeUtil;
@@ -73,6 +74,7 @@ class BaseLithoComponentsDeclarationHandler {
               GlobalSearchScope scope = GlobalSearchScope.everythingScope(project);
               return Stream.of(JavaPsiFacade.getInstance(project).findClasses(specName, scope));
             })
+        .filter(psiClass -> psiClass.getContainingFile() instanceof PsiJavaFile)
         // Filter Spec classes by implementation
         .filter(hasComponentSpecAnnotation)
         .limit(1)

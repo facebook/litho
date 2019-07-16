@@ -45,6 +45,7 @@ import java.util.Collections;
 import javax.swing.Icon;
 import org.jetbrains.annotations.NotNull;
 
+/** Contributor suggests completion for the Click event in the Litho Spec. */
 public class OnEventCompletionContributor extends CompletionContributor {
 
   public OnEventCompletionContributor() {
@@ -82,12 +83,12 @@ public class OnEventCompletionContributor extends CompletionContributor {
         if (parentElement == null) {
           return;
         }
-        PsiClass parentClass = (PsiClass) parentElement;
-        if (!LithoPluginUtils.isLithoSpec(parentClass)) {
+        PsiClass lithoSpecCls = (PsiClass) parentElement;
+        if (!LithoPluginUtils.isLithoSpec(lithoSpecCls)) {
           return;
         }
         PsiMethod onEventMethod = createOnClickEventMethod(element);
-        result.addElement(createMethodAnnotationLookup(onEventMethod));
+        result.addElement(createMethodAnnotationLookup(onEventMethod, lithoSpecCls));
       }
 
       private PsiMethod createOnClickEventMethod(PsiElement element) {
@@ -108,7 +109,8 @@ public class OnEventCompletionContributor extends CompletionContributor {
   }
 
   @NotNull
-  private LookupElementBuilder createMethodAnnotationLookup(PsiMethod method) {
+  private LookupElementBuilder createMethodAnnotationLookup(
+      PsiMethod method, PsiClass parentClass) {
     Icon icon = method.getIcon(Iconable.ICON_FLAG_VISIBILITY);
     LookupElementBuilder elementBuilder =
         LookupElementBuilder.create(method)
@@ -129,7 +131,7 @@ public class OnEventCompletionContributor extends CompletionContributor {
                           insertionContext.getFile());
 
                   LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_ON_EVENT_COMPLETION);
-                  ComponentGenerateUtils.updateLayoutComponent(insertionContext.getFile());
+                  ComponentGenerateUtils.updateLayoutComponent(parentClass);
                 })
             .appendTailText(" {...}", true)
             .withTypeText("LayoutSpec")

@@ -16,16 +16,15 @@
 package com.facebook.litho.intellij.actions;
 
 import com.facebook.litho.annotations.LayoutSpec;
+import com.facebook.litho.intellij.LithoPluginUtils;
 import com.facebook.litho.intellij.completion.ComponentGenerateUtils;
-import com.facebook.litho.specmodels.processor.PsiAnnotationProxyUtils;
+import com.facebook.litho.intellij.extensions.EventLogger;
+import com.facebook.litho.intellij.logging.LithoLoggerProvider;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiFile;
-import com.intellij.psi.util.PsiTreeUtil;
-import java.util.Arrays;
-import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -33,6 +32,7 @@ import java.util.Optional;
  * ComponentGenerateUtils}. Currently works with the {@link LayoutSpec} only.
  */
 public class GenerateComponentAction extends AnAction {
+  private static final String TAG = EventLogger.EVENT_GENERATE_COMPONENT + ".action";
 
   @Override
   public void update(AnActionEvent e) {
@@ -40,31 +40,23 @@ public class GenerateComponentAction extends AnAction {
     Optional<PsiClass> component =
         Optional.of(e)
             .map(event -> event.getData(CommonDataKeys.PSI_FILE))
-            .map(currentFile -> PsiTreeUtil.getChildrenOfType(currentFile, PsiClass.class))
-            .flatMap(this::getFirstLayoutSpec)
+            .flatMap(LithoPluginUtils::getFirstLayoutSpec)
             .flatMap(
                 specCls ->
                     ComponentGenerateUtils.findComponentFile(
                         specCls.getQualifiedName(), specCls.getProject()))
-            .map(componentFile -> PsiTreeUtil.getChildOfType(componentFile, PsiClass.class));
+            .flatMap(LithoPluginUtils::getFirstComponent);
     e.getPresentation().setEnabledAndVisible(component.isPresent());
     component.ifPresent(
         cls -> e.getPresentation().setText("Regenerate " + cls.getName() + " Component"));
   }
 
-  Optional<PsiClass> getFirstLayoutSpec(PsiClass[] currentClasses) {
-    return Arrays.stream(currentClasses)
-        .filter(Objects::nonNull)
-        .filter(
-            psiClass ->
-                PsiAnnotationProxyUtils.findAnnotationInHierarchy(psiClass, LayoutSpec.class)
-                    != null)
-        .findFirst();
-  }
-
   @Override
   public void actionPerformed(AnActionEvent e) {
     final PsiFile file = e.getData(CommonDataKeys.PSI_FILE);
-    ComponentGenerateUtils.updateLayoutComponent(file);
+    LithoLoggerProvider.getEventLogger().log(TAG);
+
+    LithoPluginUtils.getFirstLayoutSpec(file)
+        .ifPresent(ComponentGenerateUtils::updateLayoutComponent);
   }
 }

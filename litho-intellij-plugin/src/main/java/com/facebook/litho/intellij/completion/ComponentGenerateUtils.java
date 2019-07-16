@@ -15,9 +15,8 @@
  */
 package com.facebook.litho.intellij.completion;
 
+import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.intellij.LithoPluginUtils;
-import com.facebook.litho.intellij.extensions.EventLogger;
-import com.facebook.litho.intellij.logging.LithoLoggerProvider;
 import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.LayoutSpecModel;
 import com.facebook.litho.specmodels.model.SpecModel;
@@ -29,10 +28,8 @@ import com.intellij.psi.JavaPsiFacade;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiJavaFile;
 import com.intellij.psi.search.GlobalSearchScope;
-import com.intellij.psi.util.PsiTreeUtil;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeSpec;
 import java.util.Optional;
@@ -49,14 +46,12 @@ public class ComponentGenerateUtils {
   private ComponentGenerateUtils() {}
 
   /**
-   * Updates existing generated Component file from the given Spec file.
+   * Updates existing generated Component file from the given Spec class or do nothing if provided
+   * class doesn't contain {@link LayoutSpec}.
    *
-   * @param layoutSpecFile file containing {@link com.facebook.litho.annotations.LayoutSpec} class.
+   * @param layoutSpecCls class containing {@link LayoutSpec} class.
    */
-  public static void updateLayoutComponent(PsiFile layoutSpecFile) {
-    LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_UPDATE_COMPONENT);
-    PsiClass layoutSpecCls = PsiTreeUtil.findChildOfType(layoutSpecFile, PsiClass.class);
-
+  public static void updateLayoutComponent(PsiClass layoutSpecCls) {
     SpecModel model = createLayoutModel(layoutSpecCls);
     if (model == null) {
       return;
