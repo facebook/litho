@@ -173,6 +173,7 @@ public class TestTarget implements SectionTree.Target {
       boolean isDataChanged, ChangeSetCompleteCallback changeSetCompleteCallback) {
     mWasNotifyChangeSetCompleteCalledWithChangedData = isDataChanged;
     changeSetCompleteCallback.onDataBound();
+    changeSetCompleteCallback.onDataRendered(false, 0);
   }
 
   @Override

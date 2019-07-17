@@ -20,6 +20,7 @@ import static com.facebook.litho.testing.sections.TestSectionCreator.TestSection
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
@@ -27,6 +28,7 @@ import static org.mockito.Mockito.when;
 import android.os.Looper;
 import com.facebook.litho.Component;
 import com.facebook.litho.StateContainer;
+import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.sections.TestSectionCreator;
 import com.facebook.litho.testing.sections.TestTarget;
@@ -87,6 +89,72 @@ public class SectionTreeTest {
 
     tree.setRoot(section);
     assertChangeSetHandled(changeSetHandler);
+  }
+
+  @Test
+  public void dataRenderedWithPendingChangeSets() {
+    final Section leaf1 =
+        TestSectionCreator.createChangeSetComponent(
+            "leaf1",
+            Change.insert(0, ComponentRenderInfo.createEmpty(), "leaf1Data0"),
+            Change.insert(1, ComponentRenderInfo.createEmpty(), "leaf1Data1"),
+            Change.insert(2, ComponentRenderInfo.createEmpty(), "leaf1Data2"));
+
+    final Section leaf2 =
+        TestSectionCreator.createChangeSetComponent(
+            "leaf2",
+            Change.insert(0, ComponentRenderInfo.createEmpty(), "leaf2Data0"),
+            Change.insert(1, ComponentRenderInfo.createEmpty(), "leaf2Data1"));
+
+    final TestSectionCreator.ChildrenSectionTest section =
+        spy(TestSectionCreator.createSectionComponent("root", leaf1, leaf2));
+    when(section.makeShallowCopy()).thenReturn(section);
+    when(section.makeShallowCopy(any(Boolean.class))).thenReturn(section);
+
+    final TestTarget changeSetHandler = new TestTarget();
+    SectionTree tree = SectionTree.create(mSectionContext, changeSetHandler).build();
+
+    final List<ChangeSet> changeSets = new ArrayList<>();
+    final ChangeSet changeSet = ChangeSet.acquireChangeSet(null, false);
+    changeSet.insert(0, ComponentRenderInfo.createEmpty(), null, "pendingData0");
+    changeSet.insert(1, ComponentRenderInfo.createEmpty(), null, "pendingData1");
+    changeSet.insert(2, ComponentRenderInfo.createEmpty(), null, "pendingData2");
+    changeSets.add(changeSet);
+    Whitebox.setInternalState(tree, "mPendingChangeSets", changeSets);
+
+    tree.setRoot(section);
+
+    assertTrue(section.onDataRendered);
+
+    final ChangesInfo changesInfo = section.mChangesInfo;
+    final List<Change> changes = changesInfo.getAllChanges();
+    assertThat(changes.size()).isEqualTo(8);
+
+    assertThat(changes.get(0).getType()).isEqualTo(Change.INSERT);
+    assertThat(changes.get(0).getIndex()).isEqualTo(0);
+    assertThat(changes.get(0).getNextData()).isEqualTo(ImmutableList.of("pendingData0"));
+    assertThat(changes.get(1).getType()).isEqualTo(Change.INSERT);
+    assertThat(changes.get(1).getIndex()).isEqualTo(1);
+    assertThat(changes.get(1).getNextData()).isEqualTo(ImmutableList.of("pendingData1"));
+    assertThat(changes.get(2).getType()).isEqualTo(Change.INSERT);
+    assertThat(changes.get(2).getIndex()).isEqualTo(2);
+    assertThat(changes.get(2).getNextData()).isEqualTo(ImmutableList.of("pendingData2"));
+
+    assertThat(changes.get(3).getType()).isEqualTo(Change.INSERT);
+    assertThat(changes.get(3).getIndex()).isEqualTo(0);
+    assertThat(changes.get(3).getNextData()).isEqualTo(ImmutableList.of("leaf1Data0"));
+    assertThat(changes.get(4).getType()).isEqualTo(Change.INSERT);
+    assertThat(changes.get(4).getIndex()).isEqualTo(1);
+    assertThat(changes.get(4).getNextData()).isEqualTo(ImmutableList.of("leaf1Data1"));
+    assertThat(changes.get(5).getType()).isEqualTo(Change.INSERT);
+    assertThat(changes.get(5).getIndex()).isEqualTo(2);
+    assertThat(changes.get(5).getNextData()).isEqualTo(ImmutableList.of("leaf1Data2"));
+    assertThat(changes.get(6).getType()).isEqualTo(Change.INSERT);
+    assertThat(changes.get(6).getIndex()).isEqualTo(3);
+    assertThat(changes.get(6).getNextData()).isEqualTo(ImmutableList.of("leaf2Data0"));
+    assertThat(changes.get(7).getType()).isEqualTo(Change.INSERT);
+    assertThat(changes.get(7).getIndex()).isEqualTo(4);
+    assertThat(changes.get(7).getNextData()).isEqualTo(ImmutableList.of("leaf2Data1"));
   }
 
   @Test

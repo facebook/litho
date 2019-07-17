@@ -19,6 +19,7 @@ package com.facebook.litho.testing.sections;
 import com.facebook.litho.StateContainer;
 import com.facebook.litho.sections.Change;
 import com.facebook.litho.sections.ChangeSet;
+import com.facebook.litho.sections.ChangesInfo;
 import com.facebook.litho.sections.Children;
 import com.facebook.litho.sections.Section;
 import com.facebook.litho.sections.SectionContext;
@@ -44,16 +45,13 @@ public class TestSectionCreator {
         changes);
   }
 
-  public static Section createSectionComponent(
-      String key,
-      @Nullable Section... children) {
+  public static ChildrenSectionTest createSectionComponent(
+      String key, @Nullable Section... children) {
     return createSectionComponent(key, false, children);
   }
 
-  public static Section createSectionComponent(
-      String key,
-      boolean forceShouldUpdate,
-      @Nullable Section... children) {
+  public static ChildrenSectionTest createSectionComponent(
+      String key, boolean forceShouldUpdate, @Nullable Section... children) {
     return new ChildrenSectionTest(0, key, forceShouldUpdate, children);
   }
 
@@ -71,11 +69,13 @@ public class TestSectionCreator {
   }
 
   /**
-   * @return a Lifecycle for a non ChangeSetSpec Section that statically returns a list of
-   * {@link Section}s as children.
+   * @return a Lifecycle for a non ChangeSetSpec Section that statically returns a list of {@link
+   *     Section}s as children.
    */
-  private static class ChildrenSectionTest extends TestSection {
+  public static class ChildrenSectionTest extends TestSection {
     private final Section[] mChildren;
+    public boolean onDataRendered = false;
+    public ChangesInfo mChangesInfo;
 
     ChildrenSectionTest(
         int initialCount,
@@ -115,6 +115,19 @@ public class TestSectionCreator {
       lastVisibleIndex = lastVisibleItem;
       firstFullyVisibleIndex = firstFullyVisibleItem;
       lastFullyVisibleIndex = lastFullyVisibleItem;
+    }
+
+    @Override
+    protected void dataRendered(
+        SectionContext c,
+        boolean isDataChanged,
+        boolean isMounted,
+        long uptimeMillis,
+        int firstVisibleIndex,
+        int lastVisibleIndex,
+        ChangesInfo changesInfo) {
+      onDataRendered = true;
+      mChangesInfo = changesInfo;
     }
   }
 
