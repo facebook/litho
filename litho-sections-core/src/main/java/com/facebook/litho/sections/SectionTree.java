@@ -60,7 +60,6 @@ import com.facebook.litho.widget.SectionsDebug;
 import com.facebook.litho.widget.SmoothScrollAlignmentType;
 import com.facebook.litho.widget.ViewportInfo;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -1333,7 +1332,7 @@ public class SectionTree {
       ComponentsSystrace.beginSection("applyChangeSetToTarget");
     }
     boolean appliedChanges = false;
-    ChangeSet mergedChangeSet = null;
+    final List<Change> changes = new ArrayList<>();
     try {
       for (int i = 0, size = changeSets.size(); i < size; i++) {
         final ChangeSet changeSet = changeSets.get(i);
@@ -1373,15 +1372,11 @@ public class SectionTree {
           }
           mTarget.dispatchLastEvent();
         }
-        mergedChangeSet = ChangeSet.merge(mergedChangeSet, changeSet);
+        changes.addAll(changeSet.getChanges());
       }
 
       final boolean isDataChanged = appliedChanges;
-      final ChangesInfo changesInfo =
-          new ChangesInfo(
-              mergedChangeSet != null
-                  ? mergedChangeSet.getChanges()
-                  : Collections.<Change>emptyList());
+      final ChangesInfo changesInfo = new ChangesInfo(changes);
       mTarget.notifyChangeSetComplete(
           isDataChanged,
           new ChangeSetCompleteCallback() {
