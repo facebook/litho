@@ -55,7 +55,9 @@ import com.facebook.litho.sections.BaseLoadEventsHandler;
 import com.facebook.litho.sections.LoadEventsHandler;
 import com.facebook.litho.sections.Section;
 import com.facebook.litho.sections.SectionContext;
+import com.facebook.litho.sections.SectionLifecycle;
 import com.facebook.litho.sections.SectionTree;
+import com.facebook.litho.sections.annotations.GroupSectionSpec;
 import com.facebook.litho.widget.Binder;
 import com.facebook.litho.widget.LithoRecylerView;
 import com.facebook.litho.widget.PTRRefreshEvent;
@@ -68,7 +70,8 @@ import java.util.List;
 
 /**
  * A {@link Component} that renders a {@link Recycler} backed by a {@link Section} tree. See <a
- * href="https://fblitho.com/docs/recycler-collection-component">https://fblitho.com/docs/recycler-collection-component</a>
+ * href="https://fblitho.com/docs/recycler-collection-component">recycler-collection-component</a>
+ * for details.
  *
  * <p>This {@link Component} handles the loading events from the {@link Section} hierarchy and shows
  * the appropriate error,loading or empty {@link Component} passed in as props. If either the empty
@@ -86,15 +89,18 @@ import java.util.List;
  * <p>The {@link RecyclerCollectionEventsController} {@link Prop} is a way to send commands to the
  * {@link RecyclerCollectionComponentSpec}, such as scrollTo(position) and refresh().
  *
- * <p>To trigger scrolling from the Section use {@link
- * com.facebook.litho.sections.SectionLifecycle#requestFocus(SectionContext, int)}. See <a
- * href="https://fblitho.com/docs/communicating-with-the-ui#scrolling-requestfocus">https://fblitho.com/docs/communicating-with-the-ui#scrolling-requestfocus</a>.
+ * <p>To trigger scrolling from the Section use {@link SectionLifecycle#requestFocus(SectionContext,
+ * int)}. See <a
+ * href="https://fblitho.com/docs/communicating-with-the-ui#scrolling-requestfocus">communicating-with-the-ui</a>
+ * for details.
  *
  * @prop itemAnimator This prop defines the animations that take place on items as changes are made.
  *     To remove change animation use {@link NoUpdateItemAnimator}. To completely disable all
  *     animations use {@link NotAnimatedItemAnimator}.
  * @prop recyclerConfiguration: This prop adds customization. For example {@link
  *     RecyclerBinderConfiguration} allows to make {@link Recycler} circular.
+ * @see Section
+ * @see GroupSectionSpec
  */
 @LayoutSpec(events = PTRRefreshEvent.class)
 public class RecyclerCollectionComponentSpec {
