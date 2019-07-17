@@ -320,6 +320,7 @@ def define_fbjni_targets():
         exported_headers = subdir_glob(
             [
                 ("src/main/cpp", "fb/**/*.h"),
+                ("src/main/cpp", "fbjni/**/*.h"),
             ],
         ),
         compiler_flags = [
