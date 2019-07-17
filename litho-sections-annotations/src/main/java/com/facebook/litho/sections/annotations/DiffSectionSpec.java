@@ -20,10 +20,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * Classes with this annotation will generate the <code>ChangeSet</code>
- * a list should display.
+ * Classes with this annotation will generate the <code>ChangeSet</code> a list should display.
  *
  * <p>For example:
+ *
  * <pre>
  *
  * {@literal @}DiffSectionSpec
@@ -43,19 +43,20 @@ import java.lang.annotation.RetentionPolicy;
  *   }
  * }
  * </pre>
+ *
+ * @see GroupSectionSpec
+ * @see OnViewportChanged
  */
 @Retention(RetentionPolicy.RUNTIME)
 public @interface DiffSectionSpec {
   String value() default "";
 
-  /**
-   * List of event POJOs this component can dispatch. Used to generate event dispatch methods.
-   */
+  /** List of event POJOs this component can dispatch. Used to generate event dispatch methods. */
   Class<?>[] events() default {};
 
   /**
    * @return Boolean indicating whether the generated class should be public. If not, it will be
-   * package-private.
+   *     package-private.
    */
   boolean isPublic() default true;
 }
