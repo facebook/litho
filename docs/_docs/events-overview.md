@@ -4,6 +4,7 @@ title: Overview
 layout: docs
 permalink: /docs/events-overview
 ---
+> Note: Using the Events/Trigger API across Litho Tree boundaries is not possible.
 
 The framework provides a general-purpose API to connect components through events. Events are declared as a POJO with an `@Event` annotation. By convention we suffix Event class names with *Event*. Event declarations may not be inner classes of your `LayoutSpec` or `MountSpec`. This is by design as specs are supposed to be a private concept and events can be used across multiple components.
 

@@ -20,7 +20,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * Annotated function in the component will allow its parents to call it with an EventTrigger.
+ * Annotated function in the component will allow its parents to call it with an EventTrigger. See
+ * <a href="https://fblitho.com/docs/trigger-events">trigger-events</a> for details.
  *
  * <p>For example
  *
@@ -36,6 +37,8 @@ import java.lang.annotation.RetentionPolicy;
  *   }
  * </code>
  * </pre>
+ *
+ * @see OnEvent
  */
 @Retention(RetentionPolicy.CLASS)
 public @interface OnTrigger {
