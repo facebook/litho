@@ -2048,7 +2048,7 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
     final Component root = components.isEmpty() ? null : components.get(0);
 
     // 1.0 check early exit conditions
-    if (c == null || root == null) {
+    if (c == null || root == null || current.isNestedTreeHolder()) {
       return ReconciliationMode.RECREATE;
     }
 
