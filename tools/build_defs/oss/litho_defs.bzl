@@ -407,9 +407,9 @@ def define_cpp_yoga_targets():
     )
     fb_xplat_cxx_library(
         name = "yoga",
-        srcs = native.glob(["yoga/*.cpp"]),
+        srcs = native.glob(["yoga/**/*.cpp"]),
         header_namespace = "",
-        exported_headers = native.glob(["yoga/*.h"]),
+        exported_headers = native.glob(["yoga/**/*.h"]),
         compiler_flags = [
             "-fno-omit-frame-pointer",
             "-fexceptions",
