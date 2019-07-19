@@ -38,7 +38,7 @@ public class CachedValueParamModel implements MethodParamModel {
 
   @Override
   public TypeName getTypeName() {
-    return mParamModel.getTypeName().box();
+    return mParamModel.getTypeName();
   }
 
   @Override
