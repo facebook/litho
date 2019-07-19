@@ -24,15 +24,12 @@ import com.facebook.litho.specmodels.processor.PsiLayoutSpecModelFactory;
 import com.intellij.ide.actions.ElementCreator;
 import com.intellij.ide.fileTemplates.JavaCreateFromTemplateHandler;
 import com.intellij.openapi.project.Project;
-import com.intellij.psi.JavaPsiFacade;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiJavaFile;
-import com.intellij.psi.search.GlobalSearchScope;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeSpec;
-import java.util.Optional;
 import javax.annotation.Nullable;
 
 /**
@@ -84,18 +81,6 @@ public class ComponentGenerateUtils {
     new ComponentUpdater(project, specModel).tryCreate(qualifiedSpecName);
   }
 
-  public static Optional<PsiJavaFile> findComponentFile(String qualifiedSpecName, Project project) {
-    return Optional.of(qualifiedSpecName)
-        .map(LithoPluginUtils::getLithoComponentNameFromSpec)
-        .map(
-            qualifiedComponentName ->
-                JavaPsiFacade.getInstance(project)
-                    .findClass(qualifiedComponentName, GlobalSearchScope.allScope(project)))
-        .map(PsiElement::getContainingFile)
-        .filter(PsiJavaFile.class::isInstance)
-        .map(PsiJavaFile.class::cast);
-  }
-
   private static class ComponentUpdater extends ElementCreator {
     private final Project project;
     private final SpecModel model;
@@ -108,7 +93,7 @@ public class ComponentGenerateUtils {
 
     @Override
     protected PsiElement[] create(String qualifiedSpecName) {
-      return findComponentFile(qualifiedSpecName, project)
+      return LithoPluginUtils.findComponentFile(qualifiedSpecName, project)
           .map(componentFile -> updateFileWithModel(componentFile, model))
           .map(psiClass -> new PsiElement[] {psiClass})
           .orElse(PsiElement.EMPTY_ARRAY);

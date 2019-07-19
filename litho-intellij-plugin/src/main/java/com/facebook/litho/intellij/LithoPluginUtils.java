@@ -18,14 +18,19 @@ package com.facebook.litho.intellij;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.specmodels.processor.PsiAnnotationProxyUtils;
 import com.google.common.annotations.VisibleForTesting;
+import com.intellij.openapi.project.Project;
+import com.intellij.psi.JavaPsiFacade;
 import com.intellij.psi.PsiAnnotation;
 import com.intellij.psi.PsiClass;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiField;
 import com.intellij.psi.PsiFile;
+import com.intellij.psi.PsiJavaFile;
 import com.intellij.psi.PsiMethod;
 import com.intellij.psi.PsiModifierListOwner;
 import com.intellij.psi.PsiParameter;
 import com.intellij.psi.PsiParameterList;
+import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.containers.ContainerUtil;
 import java.util.Arrays;
@@ -159,6 +164,38 @@ public class LithoPluginUtils {
     return t -> seen.add(key.apply(t));
   }
 
+  /**
+   * Finds file containing Component from the given Spec name.
+   *
+   * @param qualifiedSpecName Name of the Spec to search component for. For example
+   *     com.package.MySpec.java.
+   * @param project Project to find Component in.
+   */
+  public static Optional<PsiJavaFile> findComponentFile(String qualifiedSpecName, Project project) {
+    return Optional.of(qualifiedSpecName)
+        .map(LithoPluginUtils::getLithoComponentNameFromSpec)
+        .map(
+            qualifiedComponentName ->
+                JavaPsiFacade.getInstance(project)
+                    .findClass(qualifiedComponentName, GlobalSearchScope.allScope(project)))
+        .map(PsiElement::getContainingFile)
+        .filter(PsiJavaFile.class::isInstance)
+        .map(PsiJavaFile.class::cast);
+  }
+
+  /**
+   * Finds Component Class from the given Spec name.
+   *
+   * @param qualifiedSpecName Name of the Spec to search component for. For example
+   *     com.package.MySpec.java.
+   * @param project Project to find Component in.
+   */
+  public static Optional<PsiClass> findComponent(String qualifiedSpecName, Project project) {
+    return findComponentFile(qualifiedSpecName, project)
+        .flatMap(LithoPluginUtils::getFirstComponent);
+  }
+
+  /** Finds LayoutSpec class in the given file. */
   public static Optional<PsiClass> getFirstLayoutSpec(PsiFile psiFile) {
     return getFirstClass(
         psiFile,
@@ -166,8 +203,9 @@ public class LithoPluginUtils {
             PsiAnnotationProxyUtils.findAnnotationInHierarchy(psiClass, LayoutSpec.class) != null);
   }
 
-  public static Optional<PsiClass> getFirstComponent(PsiFile psiFile) {
-    return getFirstClass(psiFile, LithoPluginUtils::isComponentClass);
+  /** Finds Component class in the given file. */
+  public static Optional<PsiClass> getFirstComponent(PsiFile componentFile) {
+    return getFirstClass(componentFile, LithoPluginUtils::isComponentClass);
   }
 
   private static Optional<PsiClass> getFirstClass(
