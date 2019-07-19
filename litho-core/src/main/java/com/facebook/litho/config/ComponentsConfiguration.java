@@ -173,12 +173,6 @@ public class ComponentsConfiguration {
   /** Whether the refactored implementation of nested tree resolution should be used. */
   public static boolean isNestedTreeResolutionExperimentEnabled = false;
 
-  /** Sets if SparseCommonPropsHolder should be used */
-  public static boolean isSparseCommonPropsHolderIsEnabled;
-
-  /** Sets if SparseNodeInfo should be used */
-  public static boolean isSparseNodeInfoIsEnabled;
-
   /** Sets if is reconciliation is enabled */
   public static boolean isReconciliationEnabled = false;
 

@@ -707,11 +707,7 @@ public abstract class Component extends ComponentLifecycle
 
   private CommonProps getOrCreateCommonProps() {
     if (mCommonProps == null) {
-      if (ComponentsConfiguration.isSparseCommonPropsHolderIsEnabled) {
-        mCommonProps = new SparseCommonPropsHolder();
-      } else {
-        mCommonProps = new CommonPropsHolder();
-      }
+      mCommonProps = new CommonPropsHolder();
     }
 
     return mCommonProps;

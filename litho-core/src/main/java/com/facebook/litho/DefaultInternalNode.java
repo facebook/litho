@@ -693,11 +693,7 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   @Override
   public NodeInfo getOrCreateNodeInfo() {
     if (mNodeInfo == null) {
-      if (ComponentsConfiguration.isSparseNodeInfoIsEnabled) {
-        mNodeInfo = new SparseNodeInfo();
-      } else {
-        mNodeInfo = new DefaultNodeInfo();
-      }
+      mNodeInfo = new DefaultNodeInfo();
     }
 
     return mNodeInfo;

@@ -27,7 +27,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.annotation.StyleRes;
 import com.facebook.infer.annotation.ThreadConfined;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.drawable.ComparableDrawable;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaConstants;
@@ -577,11 +576,7 @@ class CommonPropsHolder implements CommonProps {
   @Override
   public NodeInfo getOrCreateNodeInfo() {
     if (mNodeInfo == null) {
-      if (ComponentsConfiguration.isSparseNodeInfoIsEnabled) {
-        mNodeInfo = new SparseNodeInfo();
-      } else {
-        mNodeInfo = new DefaultNodeInfo();
-      }
+      mNodeInfo = new DefaultNodeInfo();
     }
 
     return mNodeInfo;
