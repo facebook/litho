@@ -17,6 +17,7 @@ package com.facebook.litho.intellij.logging;
 
 import com.facebook.litho.intellij.LithoPluginTestHelper;
 import com.facebook.litho.intellij.extensions.EventLogger;
+import com.intellij.openapi.extensions.Extensions;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import org.junit.After;
@@ -35,6 +36,13 @@ public class EventLoggerTest {
   @After
   public void tearDown() throws Exception {
     testHelper.tearDown();
+  }
+
+  @Test
+  public void noTestLogging() {
+    EventLogger[] extensions =
+        Extensions.getExtensions(LithoLoggerProvider.LithoEventLogger.EP_NAME);
+    Assert.assertEquals(0, extensions.length);
   }
 
   @Test

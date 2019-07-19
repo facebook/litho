@@ -31,6 +31,7 @@ public interface EventLogger {
   String EVENT_NEW_TEMPLATE = "file.template";
   String EVENT_GOTO_NAVIGATION = "goto.navigation";
   String EVENT_GENERATE_COMPONENT = "generate.component";
+  String EVENT_FIND_USAGES = "find.usages";
 
   /**
    * Logs given event.
