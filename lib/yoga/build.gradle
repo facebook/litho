@@ -15,6 +15,7 @@ dependencies {
     implementation deps.jsr305
     implementation deps.inferAnnotations
     implementation project(':litho-annotations')
+    implementation project(':fbjni')
 }
 
 // Our current NDK setup only gets us half-way there to a way to run Yoga
