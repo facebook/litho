@@ -206,12 +206,25 @@ public class LithoView extends ComponentHost {
       AccessibilityManagerCompat.addAccessibilityStateChangeListener(
           mAccessibilityManager,
           mAccessibilityStateChangeListener);
+
+      // When incremental mount is disabled, manually dispatch visible events for re-attach.
+      // This covers the case when the view is scrolled off the screen and immediately back
+      // during which the view is re-attached with its mount state and previous layout still valid.
+      // See the same conditions used in ComponentTree.mountComponentIfNeeded().
+      if (!isIncrementalMountEnabled() && !isMountStateDirty() && !mountStateNeedsRemount()) {
+        dispatchVisibleEvent();
+      }
     }
   }
 
   private void onDetach() {
     if (mIsAttached) {
       mIsAttached = false;
+
+      // When incremental mount is disabled, manually dispatch hidden events as the view detaches.
+      if (!isIncrementalMountEnabled()) {
+        dispatchHiddenEvent();
+      }
       mMountState.detach();
 
       if (mComponentTree != null) {
@@ -376,6 +389,11 @@ public class LithoView extends ComponentHost {
       }
 
       boolean wasMountTriggered = mComponentTree.layout();
+
+      // When incremental mount is disabled, manually dispatch visible events after layout.
+      if (wasMountTriggered && !isIncrementalMountEnabled()) {
+        dispatchVisibleEvent();
+      }
 
       // If this happens the LithoView might have moved on Screen without a scroll event
       // triggering incremental mount. We trigger one here to be sure all the content is visible.
@@ -854,6 +872,45 @@ public class LithoView extends ComponentHost {
 
   void processVisibilityOutputs(LayoutState layoutState, Rect currentVisibleArea) {
     mMountState.processVisibilityOutputs(layoutState, currentVisibleArea, null);
+  }
+
+  /**
+   * Dispatches visible events in incremental mount disabled cases.
+   *
+   * <p>This method uses a visible area equaling to the size of the whole view to manually trigger 
+   * visible events for the view.
+   */
+  private void dispatchVisibleEvent() {
+    if (mComponentTree == null || mComponentTree.isIncrementalMountEnabled()) {
+      return;
+    }
+    final LayoutState layoutState = mComponentTree.getMainThreadLayoutState();
+    if (layoutState == null) {
+      return;
+    }
+    final Rect rect = ComponentsPools.acquireRect();
+    rect.set(0, 0, getWidth(), getHeight());
+    processVisibilityOutputs(layoutState, rect);
+    ComponentsPools.release(rect);
+  }
+
+  /**
+   * Dispatches hidden events in incremental mount disabled cases.
+   *
+   * <p>This method uses an empty visible area to manually trigger hidden events for the view.
+   */
+  private void dispatchHiddenEvent() {
+    if (mComponentTree == null || mComponentTree.isIncrementalMountEnabled()) {
+      return;
+    }
+    final LayoutState layoutState = mComponentTree.getMainThreadLayoutState();
+    if (layoutState == null) {
+      return;
+    }
+    final Rect rect = ComponentsPools.acquireRect();
+    rect.setEmpty();
+    processVisibilityOutputs(layoutState, rect);
+    ComponentsPools.release(rect);
   }
 
   public void unmountAllItems() {
