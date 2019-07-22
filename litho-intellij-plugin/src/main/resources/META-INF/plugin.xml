@@ -11,8 +11,13 @@
     </p>
   ]]>
   </description>
-  <version>0.0.6-SNAPSHOT</version>
+  <version>0.0.6</version>
   <change-notes><![CDATA[
+    <h2>0.0.6</h2>
+    <ul>
+      <li>FindUsages shows Component occurrences in the search results.</li>
+      <li>Component is regenerated on file saving.</li>
+    </ul>
     <h2>0.0.5</h2>
     <ul>
       <li>Editor menu contains Regenerate Component option.</li>
