@@ -87,7 +87,7 @@ import com.facebook.yoga.YogaDirection;
  *
  * <pre>{@code
  * final SpannableStringBuilder spannable = new SpannableStringBuilder();
- * builder.setSpan(new StyleSpan(Typeface.BOLD), start, end, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+ * spannable.setSpan(new StyleSpan(Typeface.BOLD), start, end, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
  *
  * Text.create(c)
  *    .text(spannable) // String can be used
