@@ -1014,6 +1014,11 @@ public abstract class Component extends ComponentLifecycle
       return getThis();
     }
 
+    public T accessibilityHeading(boolean isHeading) {
+      mComponent.getOrCreateCommonProps().accessibilityHeading(isHeading);
+      return getThis();
+    }
+
     /**
      * If true, component duplicates its drawable state (focused, pressed, etc.) from the direct
      * parent.

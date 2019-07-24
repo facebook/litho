@@ -16,6 +16,9 @@
 
 package com.facebook.litho;
 
+import static com.facebook.litho.NodeInfo.ACCESSIBILITY_HEADING_SET_FALSE;
+import static com.facebook.litho.NodeInfo.ACCESSIBILITY_HEADING_SET_TRUE;
+import static com.facebook.litho.NodeInfo.ACCESSIBILITY_HEADING_UNSET;
 import static com.facebook.litho.NodeInfo.ENABLED_SET_FALSE;
 import static com.facebook.litho.NodeInfo.ENABLED_SET_TRUE;
 import static com.facebook.litho.NodeInfo.ENABLED_UNSET;
@@ -89,6 +92,30 @@ public class NodeInfoTest {
 
     mNodeInfo.copyInto(mUpdatedNodeInfo);
     assertThat(interceptTouchHandler).isSameAs(mUpdatedNodeInfo.getInterceptTouchHandler());
+  }
+
+  @Test
+  public void testAccessibilityHeadingTrue() {
+    assertThat(mNodeInfo.getAccessibilityHeadingState()).isEqualTo(ACCESSIBILITY_HEADING_UNSET);
+    mNodeInfo.setAccessibilityHeading(true);
+
+    assertThat(mNodeInfo.getAccessibilityHeadingState()).isEqualTo(ACCESSIBILITY_HEADING_SET_TRUE);
+
+    mNodeInfo.copyInto(mUpdatedNodeInfo);
+    assertThat(mUpdatedNodeInfo.getAccessibilityHeadingState())
+        .isEqualTo(ACCESSIBILITY_HEADING_SET_TRUE);
+  }
+
+  @Test
+  public void testAccessibilityHeadingFalse() {
+    assertThat(mNodeInfo.getAccessibilityHeadingState()).isEqualTo(ACCESSIBILITY_HEADING_UNSET);
+    mNodeInfo.setAccessibilityHeading(false);
+
+    assertThat(mNodeInfo.getAccessibilityHeadingState()).isEqualTo(ACCESSIBILITY_HEADING_SET_FALSE);
+
+    mNodeInfo.copyInto(mUpdatedNodeInfo);
+    assertThat(mUpdatedNodeInfo.getAccessibilityHeadingState())
+        .isEqualTo(ACCESSIBILITY_HEADING_SET_FALSE);
   }
 
   @Test

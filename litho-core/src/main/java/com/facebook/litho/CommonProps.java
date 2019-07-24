@@ -95,6 +95,8 @@ public interface CommonProps extends CommonPropsCopyable, LayoutProps {
 
   void selected(boolean isSelected);
 
+  void accessibilityHeading(boolean isHeading);
+
   void visibleHeightRatio(float visibleHeightRatio);
 
   void visibleWidthRatio(float visibleWidthRatio);

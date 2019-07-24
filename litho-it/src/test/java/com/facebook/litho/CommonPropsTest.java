@@ -148,6 +148,7 @@ public class CommonPropsTest {
     mCommonProps.enabled(false);
     mCommonProps.visibleHeightRatio(55);
     mCommonProps.visibleWidthRatio(56);
+    mCommonProps.accessibilityHeading(false);
 
     final EventHandler<VisibleEvent> visibleHandler = mock(EventHandler.class);
     final EventHandler<FocusedVisibleEvent> focusedHandler = mock(EventHandler.class);
@@ -285,6 +286,7 @@ public class CommonPropsTest {
     verify(mNodeInfo).setEnabled(false);
     verify(mNode).visibleHeightRatio(55);
     verify(mNode).visibleWidthRatio(56);
+    verify(mNodeInfo).setAccessibilityHeading(false);
 
     verify(mNode).visibleHandler(visibleHandler);
     verify(mNode).focusedHandler(focusedHandler);

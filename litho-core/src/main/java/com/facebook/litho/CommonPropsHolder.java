@@ -365,6 +365,11 @@ class CommonPropsHolder implements CommonProps {
   }
 
   @Override
+  public void accessibilityHeading(boolean isHeading) {
+    getOrCreateNodeInfo().setAccessibilityHeading(isHeading);
+  }
+
+  @Override
   public void visibleHeightRatio(float visibleHeightRatio) {
     getOrCreateOtherProps().visibleHeightRatio(visibleHeightRatio);
   }

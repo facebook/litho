@@ -64,6 +64,18 @@ public interface NodeInfo {
   @Retention(RetentionPolicy.SOURCE)
   @interface SelectedState {}
 
+  static final int ACCESSIBILITY_HEADING_UNSET = 0;
+  static final int ACCESSIBILITY_HEADING_SET_TRUE = 1;
+  static final int ACCESSIBILITY_HEADING_SET_FALSE = 2;
+
+  @IntDef({
+    ACCESSIBILITY_HEADING_UNSET,
+    ACCESSIBILITY_HEADING_SET_TRUE,
+    ACCESSIBILITY_HEADING_SET_FALSE
+  })
+  @Retention(RetentionPolicy.SOURCE)
+  @interface AccessibilityHeadingState {}
+
   void setContentDescription(@Nullable CharSequence contentDescription);
 
   @Nullable
@@ -219,6 +231,11 @@ public interface NodeInfo {
 
   @SelectedState
   int getSelectedState();
+
+  void setAccessibilityHeading(boolean isHeading);
+
+  @AccessibilityHeadingState
+  int getAccessibilityHeadingState();
 
   float getScale();
 
