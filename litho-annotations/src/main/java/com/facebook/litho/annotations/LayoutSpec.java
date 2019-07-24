@@ -98,7 +98,7 @@ import java.lang.annotation.RetentionPolicy;
  * @see InjectProp
  * @see State
  * @see Param
- * @see FromCreateLayout
+ * @see FromPreviousCreateLayout
  */
 @Retention(RetentionPolicy.RUNTIME)
 public @interface LayoutSpec {

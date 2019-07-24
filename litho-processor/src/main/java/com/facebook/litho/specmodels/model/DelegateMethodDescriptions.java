@@ -30,10 +30,10 @@ import static com.facebook.litho.specmodels.model.DelegateMethodDescription.Opti
 
 import com.facebook.litho.annotations.FromBind;
 import com.facebook.litho.annotations.FromBoundsDefined;
-import com.facebook.litho.annotations.FromCreateLayout;
 import com.facebook.litho.annotations.FromMeasure;
 import com.facebook.litho.annotations.FromMeasureBaseline;
 import com.facebook.litho.annotations.FromPrepare;
+import com.facebook.litho.annotations.FromPreviousCreateLayout;
 import com.facebook.litho.annotations.GetExtraAccessibilityNodeAt;
 import com.facebook.litho.annotations.GetExtraAccessibilityNodesCount;
 import com.facebook.litho.annotations.OnAttached;
@@ -144,7 +144,7 @@ public final class DelegateMethodDescriptions {
               ImmutableList.of(
                   PROP, TREE_PROP, STATE, INTER_STAGE_OUTPUT, INJECT_PROP, CACHED_VALUE))
           .interStageInputAnnotations(
-              ImmutableList.<Class<? extends Annotation>>of(FromCreateLayout.class))
+              ImmutableList.<Class<? extends Annotation>>of(FromPreviousCreateLayout.class))
           .extraMethods(
               ImmutableList.of(
                   MethodSpec.methodBuilder("isLayoutSpecWithSizeSpecCheck")
@@ -551,7 +551,7 @@ public final class DelegateMethodDescriptions {
             return lhs.toString().compareTo(rhs.toString());
           }
         });
-    interStageInputsMap.put(FromCreateLayout.class, OnCreateLayoutWithSizeSpec.class);
+    interStageInputsMap.put(FromPreviousCreateLayout.class, OnCreateLayoutWithSizeSpec.class);
     interStageInputsMap.put(FromPrepare.class, OnPrepare.class);
     interStageInputsMap.put(FromMeasure.class, OnMeasure.class);
     interStageInputsMap.put(FromMeasureBaseline.class, OnMeasureBaseline.class);

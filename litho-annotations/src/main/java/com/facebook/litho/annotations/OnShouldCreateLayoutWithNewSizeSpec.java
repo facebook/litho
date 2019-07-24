@@ -74,8 +74,8 @@ import java.lang.annotation.RetentionPolicy;
  *       ComponentContext context,
  *       int newWidthSpec,
  *       int newHeightSpec,
- *      {@literal @FromCreateLayout} int textWidth,
- *      {@literal @FromCreateLayout} boolean didItFit) {
+ *      {@literal @FromPreviousCreateLayout} int textWidth,
+ *      {@literal @FromPreviousCreateLayout} boolean didItFit) {
  *
  *     final int newLayoutWidth = SizeSpec.getSize(newWidthSpec);
  *     final boolean doesItStillFit = (textWidth &lt;= newLayoutWidth);
@@ -88,7 +88,7 @@ import java.lang.annotation.RetentionPolicy;
  * <img alt="On Should Create Layout With New Size Spec flow chart"
  * src="https://fblitho.com/static/images/flow-chart-v0.22.1-layout-with-size-spec.svg">
  *
- * @see FromCreateLayout
+ * @see FromPreviousCreateLayout
  * @see OnCreateLayoutWithSizeSpec
  */
 @Retention(RetentionPolicy.SOURCE)

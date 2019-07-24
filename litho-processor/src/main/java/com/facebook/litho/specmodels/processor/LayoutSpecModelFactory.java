@@ -16,7 +16,7 @@
 
 package com.facebook.litho.specmodels.processor;
 
-import com.facebook.litho.annotations.FromCreateLayout;
+import com.facebook.litho.annotations.FromPreviousCreateLayout;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCalculateCachedValue;
 import com.facebook.litho.annotations.OnCreateTreeProp;
@@ -51,7 +51,7 @@ public class LayoutSpecModelFactory implements SpecModelFactory<LayoutSpecModel>
   static final List<Class<? extends Annotation>> INTER_STAGE_INPUT_ANNOTATIONS = new ArrayList<>();
 
   static {
-    INTER_STAGE_INPUT_ANNOTATIONS.add(FromCreateLayout.class);
+    INTER_STAGE_INPUT_ANNOTATIONS.add(FromPreviousCreateLayout.class);
 
     List<Class<? extends Annotation>> delegateMethodAnnotations = new ArrayList<>();
     delegateMethodAnnotations.addAll(

@@ -24,4 +24,4 @@ import java.lang.annotation.RetentionPolicy;
  * {@link OnCreateLayoutWithSizeSpec}.
  */
 @Retention(RetentionPolicy.RUNTIME)
-public @interface FromCreateLayout {}
+public @interface FromPreviousCreateLayout {}
