@@ -328,12 +328,28 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
         context.setTreeProps(component.getScopedContext().getTreePropsCopy());
         node = (InternalNode) component.resolve(context);
       } else {
-        final Component layoutComponent = createComponentLayout(context);
-
-        if (layoutComponent == null || layoutComponent.getId() <= 0) {
-          node = null;
+        if (ComponentsConfiguration.isConsistentComponentHierarchyExperimentEnabled
+            && Component.isMountSpec(component)) {
+          // create a blank InternalNode for MountSpecs
+          node = context.newLayoutBuilder(0, 0);
         } else {
-          node = context.resolveLayout(layoutComponent);
+
+          // create the component's layout
+          final Component root = createComponentLayout(context);
+
+          // resolve the layout into an InternalNode
+          if (root == null || root.getId() <= 0) {
+            node = null;
+          } else {
+            node = context.resolveLayout(root);
+
+            // if the root is a layout spec which can resolve itself add it to the InternalNode
+            if (ComponentsConfiguration.isConsistentComponentHierarchyExperimentEnabled
+                && Component.isLayoutSpec(root)
+                && root.canResolve()) {
+              node.appendComponent(root);
+            }
+          }
         }
       }
     } catch (Throwable t) {

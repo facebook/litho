@@ -2041,7 +2041,7 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   static @ReconciliationMode int getReconciliationMode(
       ComponentContext c, InternalNode current, Set<String> keys) {
     final List<Component> components = current.getComponents();
-    final Component root = components.isEmpty() ? null : components.get(0);
+    final Component root = current.getHeadComponent();
 
     // 1.0 check early exit conditions
     if (c == null || root == null || current.isNestedTreeHolder()) {

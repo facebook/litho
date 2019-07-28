@@ -217,4 +217,7 @@ public class ComponentsConfiguration {
 
   /** If true, release ComponentTrees held in RecyclerBinder when item are removed or detached. */
   public static boolean isReleaseComponentTreeInRecyclerBinder;
+
+  /** If true, add the root component of LayoutSpecs to InternalNodes */
+  public static boolean isConsistentComponentHierarchyExperimentEnabled = false;
 }
