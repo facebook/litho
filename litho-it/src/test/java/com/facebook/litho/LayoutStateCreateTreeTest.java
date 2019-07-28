@@ -31,6 +31,7 @@ import android.util.SparseArray;
 import androidx.annotation.AttrRes;
 import androidx.annotation.StyleRes;
 import com.facebook.litho.annotations.ImportantForAccessibility;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.drawable.ComparableColorDrawable;
 import com.facebook.litho.drawable.ComparableDrawable;
 import com.facebook.litho.testing.TestComponent;
@@ -42,6 +43,7 @@ import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
 import com.facebook.yoga.YogaPositionType;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -55,6 +57,11 @@ public class LayoutStateCreateTreeTest {
   @Before
   public void setup() throws Exception {
     mComponentContext = new ComponentContext(RuntimeEnvironment.application);
+  }
+
+  @After
+  public void after() {
+    ComponentsConfiguration.isConsistentComponentHierarchyExperimentEnabled = false;
   }
 
   @Test
@@ -72,6 +79,32 @@ public class LayoutStateCreateTreeTest {
     InternalNode node = LayoutState.createTree(component, mComponentContext, null);
     assertThat(node.getChildCount()).isEqualTo(1);
     assertThat(node.getTailComponent()).isEqualTo(component);
+    node = node.getChildAt(0);
+    assertThat(node.getChildCount()).isEqualTo(1);
+    assertThat(node.getTailComponent()).isInstanceOf(Column.class);
+    node = node.getChildAt(0);
+    assertThat(node.getChildCount()).isEqualTo(0);
+    assertThat(node.getTailComponent()).isInstanceOf(TestDrawableComponent.class);
+  }
+
+  @Test
+  public void simpleLayoutCreatesExpectedInternalNodeTreeWithConsistentHierarchyExperiment() {
+    ComponentsConfiguration.isConsistentComponentHierarchyExperimentEnabled = true;
+
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(final ComponentContext c) {
+            return Column.create(c)
+                .child(Column.create(c).child(TestDrawableComponent.create(c)))
+                .build();
+          }
+        };
+
+    InternalNode node = LayoutState.createTree(component, mComponentContext, null);
+    assertThat(node.getChildCount()).isEqualTo(1);
+    assertThat(node.getHeadComponent()).isEqualTo(component);
+    assertThat(node.getTailComponent()).isInstanceOf(Column.class);
     node = node.getChildAt(0);
     assertThat(node.getChildCount()).isEqualTo(1);
     assertThat(node.getTailComponent()).isInstanceOf(Column.class);

@@ -27,6 +27,7 @@ import com.facebook.litho.testing.ComponentsRule;
 import com.facebook.litho.testing.helper.ComponentTestHelper;
 import com.facebook.litho.testing.subcomponents.SubComponent;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -51,11 +52,24 @@ public class FeedItemComponentSpecTest {
             .build();
   }
 
+  @After
+  public void after() {
+    ComponentsConfiguration.isConsistentComponentHierarchyExperimentEnabled = false;
+  }
+
   @Test
   public void testRecursiveSubComponentExists() {
     final ComponentContext c = mComponentsRule.getContext();
 
     assertThat(c, mComponent).extractingSubComponents(c).hasSize(2);
+  }
+
+  @Test
+  public void recursiveSubComponentExistsWithConsistentHierarchyExperiment() {
+    ComponentsConfiguration.isConsistentComponentHierarchyExperimentEnabled = true;
+    final ComponentContext c = mComponentsRule.getContext();
+
+    assertThat(c, mComponent).extractingSubComponentAt(0).extractingSubComponents(c).hasSize(2);
   }
 
   @Test
@@ -71,6 +85,21 @@ public class FeedItemComponentSpecTest {
     final ComponentContext c = mComponentsRule.getContext();
 
     assertThat(c, mComponent)
+        .has(
+            subComponentWith(
+                c,
+                legacySubComponent(
+                    SubComponent.of(
+                        FooterComponent.create(c).text("Rockstar Developer").build()))));
+  }
+
+  @Test
+  public void subComponentLegacyBridgeWithConsistentHierarchyExperiment() {
+    ComponentsConfiguration.isConsistentComponentHierarchyExperimentEnabled = true;
+    final ComponentContext c = mComponentsRule.getContext();
+
+    assertThat(c, mComponent)
+        .extractingSubComponentAt(0)
         .has(
             subComponentWith(
                 c,

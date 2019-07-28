@@ -22,6 +22,7 @@ import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.ComponentsRule;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.widget.TestText;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -39,6 +40,11 @@ public class FooterComponentSpecTest {
         is(true));
   }
 
+  @After
+  public void after() {
+    ComponentsConfiguration.isConsistentComponentHierarchyExperimentEnabled = false;
+  }
+
   @Test
   public void testSubComponentWithMatcher() {
     final ComponentContext c = mComponentsRule.getContext();
@@ -46,6 +52,18 @@ public class FooterComponentSpecTest {
         FooterComponent.create(c).text("I hate Mumunmununsdays").build();
 
     assertThat(c, component)
+        .has(subComponentWith(c, TestText.matcher(c).text("I hate Mumunmununsdays").build()));
+  }
+
+  @Test
+  public void subComponentWithMatcherWithConsistentHierarchyExperiment() {
+    ComponentsConfiguration.isConsistentComponentHierarchyExperimentEnabled = true;
+
+    final ComponentContext c = mComponentsRule.getContext();
+    final Component component = FooterComponent.create(c).text("I hate Mumunmununsdays").build();
+
+    assertThat(c, component)
+        .extractingSubComponentAt(0)
         .has(subComponentWith(c, TestText.matcher(c).text("I hate Mumunmununsdays").build()));
   }
 }

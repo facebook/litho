@@ -278,6 +278,12 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
     return extracting(SubComponentDeepExtractor.subComponentsDeeply(c));
   }
 
+  public ComponentAssert extractingSubComponentAt(int index) {
+    InspectableComponent component =
+        SubComponentExtractor.subComponents(mComponentContext).extract(actual).get(index);
+    return new ComponentAssert(mComponentContext, component.getComponent());
+  }
+
   /**
    * Assert that a given {@link Component} renders to null, i.e. its <code>onCreateLayout
    * </code> method resolves to a {@link ComponentContext#NULL_LAYOUT}.
