@@ -8,9 +8,26 @@ permalink: /docs/state
 A Litho component can contain two types of data:
 
 *  **props**: passed down from parent and cannot change during a component's lifecycle.
-*  **state**: encapsulates implementation details that are managed by the component and is transparent to the parent.
+*  **state**: encapsulated and managed within the component, and is transparent to the parent.
 
-A common example of when State is needed is rendering a checkbox. The component renders different drawables for the checked and unchecked states, but this is an internal detail of the checkbox component that the parent doesn't need to be aware of.
+States for a given Component are the union of all arguments annotated with
+[`State`](/javadoc/com/facebook/litho/annotations/State.html) in the spec. While both Prop and
+State hold information that influences the output of the component, they are different in one
+important way: props get passed to the component from its parent whereas states are managed
+within the component.
+
+The initial values of states can be set using the
+[OnCreateInitialState](/javadoc/com/facebook/litho/annotations/OnCreateInitialState.html) method
+and states can be updated in [OnUpdateState](/javadoc/com/facebook/litho/annotations/OnUpdateState.html)
+methods. Updating states in the [OnUpdateState](/javadoc/com/facebook/litho/annotations/OnUpdateState.html)
+methods will cause the component to invoke its
+[OnCreateLayout](/javadoc/com/facebook/litho/annotations/OnCreateLayout.html) method.
+States should be immutable since the layout can be calculated on multiple threads. Immutability of
+the states ensures that no thread safety issues can occur in the component hierarchy.
+
+A common example of State usage is rendering a checkbox. The component renders different
+drawables for the checked and unchecked states, but this is an internal detail of the checkbox
+component that the parent doesn't need to be aware of.
 
 ## Declaring a Component State
 You can define a State on a Component by using the @State annotation in the spec lifecycle methods, similarly to how you would define a Prop.
