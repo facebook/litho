@@ -399,11 +399,11 @@ public class RecyclerBinder
 
     /**
      * @param rangeRatio specifies how big a range this binder should try to compute. The range is
-     * computed as number of items in the viewport (when the binder is measured) multiplied by the
-     * range ratio. The ratio is to be intended in both directions. For example a ratio of 1 means
-     * that if there are currently N components on screen, the binder should try to compute the
-     * layout for the N components before the first component on screen and for the N components
-     * after the last component on screen. If not set, defaults to 4f.
+     *     computed as number of items in the viewport (when the binder is measured) multiplied by
+     *     the range ratio. The ratio is to be intended in both directions. For example a ratio of 1
+     *     means that if there are currently N components on screen, the binder should try to
+     *     compute the layout for the N components before the first component on screen and for the
+     *     N components after the last component on screen. If not set, defaults to 4f.
      */
     public Builder rangeRatio(float rangeRatio) {
       this.rangeRatio = rangeRatio;
@@ -412,8 +412,8 @@ public class RecyclerBinder
 
     /**
      * @param layoutInfo an implementation of {@link LayoutInfo} that will expose information about
-     * the {@link LayoutManager} this RecyclerBinder will use. If not set, it will default to a
-     * vertical list.
+     *     the {@link LayoutManager} this RecyclerBinder will use. If not set, it will default to a
+     *     vertical list.
      */
     public Builder layoutInfo(LayoutInfo layoutInfo) {
       this.layoutInfo = layoutInfo;
@@ -1221,29 +1221,24 @@ public class RecyclerBinder
     }
   }
 
-  /**
-   * See {@link RecyclerBinder#appendItem(RenderInfo)}.
-   */
+  /** See {@link RecyclerBinder#appendItem(RenderInfo)}. */
   @UiThread
   public final void appendItem(Component component) {
     insertItemAt(getItemCount(), component);
   }
 
   /**
-   * Inserts a new item at tail. The {@link RecyclerView} gets notified immediately about the
-   * new item being inserted. If the item's position falls within the currently visible range, the
-   * layout is immediately computed on the] UiThread.
-   * The RenderInfo contains the component that will be inserted in the Binder and extra info
-   * like isSticky or spanCount.
+   * Inserts a new item at tail. The {@link RecyclerView} gets notified immediately about the new
+   * item being inserted. If the item's position falls within the currently visible range, the
+   * layout is immediately computed on the] UiThread. The RenderInfo contains the component that
+   * will be inserted in the Binder and extra info like isSticky or spanCount.
    */
   @UiThread
   public final void appendItem(RenderInfo renderInfo) {
     insertItemAt(getItemCount(), renderInfo);
   }
 
-  /**
-   * See {@link RecyclerBinder#insertItemAt(int, RenderInfo)}.
-   */
+  /** See {@link RecyclerBinder#insertItemAt(int, RenderInfo)}. */
   @UiThread
   public final void insertItemAt(int position, Component component) {
     insertItemAt(position, ComponentRenderInfo.create().component(component).build());
@@ -1349,9 +1344,7 @@ public class RecyclerBinder
             position, renderInfos.size(), mEstimatedViewportCount));
   }
 
-  /**
-   * See {@link RecyclerBinder#updateItemAt(int, Component)}.
-   */
+  /** See {@link RecyclerBinder#updateItemAt(int, Component)}. */
   @UiThread
   public final void updateItemAt(int position, Component component) {
     updateItemAt(position, ComponentRenderInfo.create().component(component).build());
@@ -1479,9 +1472,7 @@ public class RecyclerBinder
             fromPosition, toPosition, mEstimatedViewportCount));
   }
 
-  /**
-   * Removes an item from index position.
-   */
+  /** Removes an item from index position. */
   @UiThread
   public final void removeItemAt(int position) {
     ThreadUtils.assertMainThread();
@@ -1513,9 +1504,7 @@ public class RecyclerBinder
     }
   }
 
-  /**
-   * Removes count items starting from position.
-   */
+  /** Removes count items starting from position. */
   @UiThread
   public final void removeRangeAt(int position, int count) {
     ThreadUtils.assertMainThread();
@@ -1778,21 +1767,21 @@ public class RecyclerBinder
           "This should only be invoked if ComponentsConfiguration.splitLayoutForMeasureAndRangeEstimation is true");
     }
 
-      if (!mIsMeasured.get()) {
-        return;
-      }
+    if (!mIsMeasured.get()) {
+      return;
+    }
 
-      if (mRequiresRemeasure.get()) {
-        requestRemeasure();
-        return;
-      }
+    if (mRequiresRemeasure.get()) {
+      requestRemeasure();
+      return;
+    }
 
-      if (!hasComputedRange()) {
-        final int initialComponentPosition =
-            findInitialComponentPosition(mComponentTreeHolders, mTraverseLayoutBackwards);
-        if (initialComponentPosition >= 0) {
-          final ComponentTreeHolderRangeInfo holderRangeInfo =
-              new ComponentTreeHolderRangeInfo(initialComponentPosition, mComponentTreeHolders);
+    if (!hasComputedRange()) {
+      final int initialComponentPosition =
+          findInitialComponentPosition(mComponentTreeHolders, mTraverseLayoutBackwards);
+      if (initialComponentPosition >= 0) {
+        final ComponentTreeHolderRangeInfo holderRangeInfo =
+            new ComponentTreeHolderRangeInfo(initialComponentPosition, mComponentTreeHolders);
         estimateRangeSize(
             mMeasuredSize.width,
             mMeasuredSize.height,
@@ -1803,8 +1792,8 @@ public class RecyclerBinder
                 maybePostUpdateViewportAndComputeRange();
               }
             });
-        }
       }
+    }
   }
 
   private void assertSingleThreadForChangeSet() {
@@ -2853,9 +2842,8 @@ public class RecyclerBinder
       return;
     }
 
-    ((LinearLayoutManager) mMountedView.getLayoutManager()).scrollToPositionWithOffset(
-        position,
-        offset);
+    ((LinearLayoutManager) mMountedView.getLayoutManager())
+        .scrollToPositionWithOffset(position, offset);
   }
 
   @GuardedBy("this")
@@ -2866,15 +2854,9 @@ public class RecyclerBinder
 
       switch (scrollDirection) {
         case HORIZONTAL:
-          return isMeasureSpecCompatible(
-              mLastHeightSpec,
-              heightSpec,
-              mMeasuredSize.height);
+          return isMeasureSpecCompatible(mLastHeightSpec, heightSpec, mMeasuredSize.height);
         case VERTICAL:
-          return isMeasureSpecCompatible(
-              mLastWidthSpec,
-              widthSpec,
-              mMeasuredSize.width);
+          return isMeasureSpecCompatible(mLastWidthSpec, widthSpec, mMeasuredSize.width);
       }
     }
 
@@ -3128,8 +3110,7 @@ public class RecyclerBinder
   private int getActualChildrenWidthSpec(final ComponentTreeHolder treeHolder) {
     if (isMeasured()) {
       return mLayoutInfo.getChildWidthSpec(
-          SizeSpec.makeSizeSpec(mMeasuredSize.width, SizeSpec.EXACTLY),
-          treeHolder.getRenderInfo());
+          SizeSpec.makeSizeSpec(mMeasuredSize.width, SizeSpec.EXACTLY), treeHolder.getRenderInfo());
     }
 
     return mLayoutInfo.getChildWidthSpec(mLastWidthSpec, treeHolder.getRenderInfo());
