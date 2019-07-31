@@ -40,9 +40,14 @@ public class GridLayoutInfo implements LayoutInfo {
 
   private final GridLayoutManager mGridLayoutManager;
   private final GridSpanSizeLookup mGridSpanSizeLookup;
-  private final boolean mAllowGridMeasureOverride;
 
   private RenderInfoCollection mRenderInfoCollection;
+
+  public GridLayoutInfo(GridLayoutManager gridLayoutManager) {
+    mGridLayoutManager = gridLayoutManager;
+    mGridSpanSizeLookup = new GridSpanSizeLookup();
+    mGridLayoutManager.setSpanSizeLookup(mGridSpanSizeLookup);
+  }
 
   public GridLayoutInfo(
       Context context,
@@ -50,13 +55,10 @@ public class GridLayoutInfo implements LayoutInfo {
       int orientation,
       boolean reverseLayout,
       boolean allowGridMeasuresOverride) {
-    mAllowGridMeasureOverride = allowGridMeasuresOverride;
-    mGridLayoutManager =
-        mAllowGridMeasureOverride
+    this(
+        allowGridMeasuresOverride
             ? new GridLayoutManager(context, spanCount, orientation, reverseLayout)
-            : new LithoGridLayoutManager(context, spanCount, orientation, reverseLayout);
-    mGridSpanSizeLookup = new GridSpanSizeLookup();
-    mGridLayoutManager.setSpanSizeLookup(mGridSpanSizeLookup);
+            : new LithoGridLayoutManager(context, spanCount, orientation, reverseLayout));
   }
 
   public GridLayoutInfo(Context context, int spanCount, int orientation, boolean reverseLayout) {
