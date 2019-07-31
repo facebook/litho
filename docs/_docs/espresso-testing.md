@@ -34,7 +34,7 @@ dependencies {
 ## Matching
 
 In order to instruct Litho to record where elements are mounted and give you access to
-`testKeys` you can set in your `ComponentLayouts`, replace your usual `ActivityTestRule`
+`testKey`s you can set in your `Component`s, replace your usual `ActivityTestRule`
 with the specialized `LithoActivityTestRule`:
 
 ```java

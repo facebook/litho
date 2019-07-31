@@ -42,7 +42,7 @@ Your parent component will then assign a key to the child component.
 @LayoutSpec
 class ParentComponentSpec {
  @OnCreateLayout
- ComponentLayout onCreateLayout(ComponentContext c) {
+ Component onCreateLayout(ComponentContext c) {
 
    return Column.create(c)
        .child(

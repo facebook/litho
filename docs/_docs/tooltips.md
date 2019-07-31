@@ -17,7 +17,7 @@ Here's how you'd use the Tooltip API to show a tooltip on a component when that 
 public class ComponentWithAnchorSpec {
 
   @OnCreateLayout
-  static ComponentLayout onCreateLayout(
+  static Component onCreateLayout(
       ComponentContext c) {
     return Column.create(c)
         .key("column_key")
