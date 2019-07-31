@@ -21,7 +21,7 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.TextView;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -52,9 +52,14 @@ public final class DebugComponent {
 
   private DebugComponent() {}
 
-  static synchronized DebugComponent getInstance(InternalNode node, int componentIndex) {
+  static synchronized @Nullable DebugComponent getInstance(InternalNode node, int componentIndex) {
     final DebugComponent debugComponent = new DebugComponent();
     final ComponentContext context = node.getContext();
+
+    if (componentIndex >= node.getComponents().size()) {
+      return null;
+    }
+
     final Component component = node.getComponents().get(componentIndex);
 
     debugComponent.mGlobalKey = generateGlobalKey(context, component);
@@ -139,22 +144,34 @@ public final class DebugComponent {
   public List<DebugComponent> getChildComponents() {
     if (!isLayoutNode()) {
       final int nextComponentIndex = mComponentIndex - 1;
-      return Arrays.asList(getInstance(mNode, nextComponentIndex));
+      DebugComponent component = getInstance(mNode, nextComponentIndex);
+      if (component != null) {
+        return Collections.singletonList(component);
+      } else {
+        return Collections.emptyList();
+      }
     }
 
     final List<DebugComponent> children = new ArrayList<>();
 
     for (int i = 0, count = mNode.getChildCount(); i < count; i++) {
       final InternalNode childNode = mNode.getChildAt(i);
-      final int outerWrapperComponentIndex = Math.max(0, childNode.getComponents().size() - 1);
-      children.add(getInstance(childNode, outerWrapperComponentIndex));
+      final int index = Math.max(0, childNode.getComponents().size() - 1);
+      DebugComponent component = getInstance(childNode, index);
+      if (component != null) {
+        children.add(component);
+      }
     }
 
     final InternalNode nestedTree = mNode.getNestedTree();
     if (nestedTree != null && nestedTree.isInitialized()) {
       for (int i = 0, count = nestedTree.getChildCount(); i < count; i++) {
         final InternalNode childNode = nestedTree.getChildAt(i);
-        children.add(getInstance(childNode, Math.max(0, childNode.getComponents().size() - 1)));
+        int index = Math.max(0, childNode.getComponents().size() - 1);
+        DebugComponent component = getInstance(childNode, index);
+        if (component != null) {
+          children.add(component);
+        }
       }
     }
 
