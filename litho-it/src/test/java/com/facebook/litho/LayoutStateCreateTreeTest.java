@@ -452,6 +452,7 @@ public class LayoutStateCreateTreeTest {
                 .focusable(true)
                 .selected(false)
                 .enabled(false)
+                .accessibilityHeading(false)
                 .visibleHeightRatio(55)
                 .visibleWidthRatio(56)
                 .visibleHandler(visibleHandler)
@@ -561,6 +562,7 @@ public class LayoutStateCreateTreeTest {
     verify(nodeInfo).setEnabled(false);
     verify(node).visibleHeightRatio(55);
     verify(node).visibleWidthRatio(56);
+    verify(nodeInfo).setAccessibilityHeading(false);
 
     verify(node).visibleHandler(visibleHandler);
     verify(node).focusedHandler(focusedHandler);

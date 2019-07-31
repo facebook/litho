@@ -1015,6 +1015,25 @@ public abstract class Component extends ComponentLifecycle
     }
 
     /**
+     * Ports {@link android.view.ViewCompat#setAccessibilityHeading} into components world. However,
+     * since the aforementioned ViewCompat's method is available only on API 19 and above, calling
+     * this method on lower APIs will have no effect. On the legit versions, on the other hand,
+     * calling this method will lead to the component being treated as a heading. The
+     * AccessibilityHeading property allows accessibility services to help users navigate directly
+     * from one heading to the next. See <a
+     * href="https://developer.android.com/reference/android/support/v4/view/accessibility/
+     * AccessibilityNodeInfoCompat#setheading">https://developer.android.com/reference/android/
+     * support/v4/view/accessibility/AccessibilityNodeInfoCompat#setheading</a> for more
+     * information.
+     *
+     * <p>Default: false
+     */
+    public T accessibilityHeading(boolean isHeading) {
+      mComponent.getOrCreateCommonProps().accessibilityHeading(isHeading);
+      return getThis();
+    }
+
+    /**
      * If true, component duplicates its drawable state (focused, pressed, etc.) from the direct
      * parent.
      *

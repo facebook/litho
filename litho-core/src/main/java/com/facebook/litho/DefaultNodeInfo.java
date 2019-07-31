@@ -117,6 +117,7 @@ class DefaultNodeInfo implements NodeInfo {
   private @ClickableState int mClickableState = CLICKABLE_UNSET;
   private @EnabledState int mEnabledState = ENABLED_UNSET;
   private @SelectedState int mSelectedState = SELECTED_UNSET;
+  private @AccessibilityHeadingState int mAccessibilityHeadingState = ACCESSIBILITY_HEADING_UNSET;
 
   private int mPrivateFlags;
 
@@ -477,6 +478,20 @@ class DefaultNodeInfo implements NodeInfo {
   }
 
   @Override
+  public void setAccessibilityHeading(boolean isHeading) {
+    if (isHeading) {
+      mAccessibilityHeadingState = ACCESSIBILITY_HEADING_SET_TRUE;
+    } else {
+      mAccessibilityHeadingState = ACCESSIBILITY_HEADING_SET_FALSE;
+    }
+  }
+
+  @Override
+  public int getAccessibilityHeadingState() {
+    return mAccessibilityHeadingState;
+  }
+
+  @Override
   public float getScale() {
     return mScale;
   }
@@ -647,6 +662,10 @@ class DefaultNodeInfo implements NodeInfo {
     }
     if (getSelectedState() != SELECTED_UNSET) {
       target.setSelected(getSelectedState() == SELECTED_SET_TRUE);
+    }
+    if (getAccessibilityHeadingState() != ACCESSIBILITY_HEADING_UNSET) {
+      target.setAccessibilityHeading(
+          getAccessibilityHeadingState() == ACCESSIBILITY_HEADING_SET_TRUE);
     }
     if ((mPrivateFlags & PFLAG_SCALE_IS_SET) != 0) {
       target.setScale(mScale);
