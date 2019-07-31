@@ -632,14 +632,14 @@ public class LithoView extends ComponentHost {
   public void offsetTopAndBottom(int offset) {
     super.offsetTopAndBottom(offset);
 
-    maybePerformIncrementalMountOnView();
+    maybePerformIncrementalMountOnOffsetOrTranslationChange();
   }
 
   @Override
   public void offsetLeftAndRight(int offset) {
     super.offsetLeftAndRight(offset);
 
-    maybePerformIncrementalMountOnView();
+    maybePerformIncrementalMountOnOffsetOrTranslationChange();
   }
 
   @Override
@@ -649,7 +649,7 @@ public class LithoView extends ComponentHost {
     }
     super.setTranslationX(translationX);
 
-    maybePerformIncrementalMountOnView();
+    maybePerformIncrementalMountOnOffsetOrTranslationChange();
   }
 
   @Override
@@ -659,7 +659,7 @@ public class LithoView extends ComponentHost {
     }
     super.setTranslationY(translationY);
 
-    maybePerformIncrementalMountOnView();
+    maybePerformIncrementalMountOnOffsetOrTranslationChange();
   }
 
   @Override
@@ -671,10 +671,14 @@ public class LithoView extends ComponentHost {
     }
   }
 
-  private void maybePerformIncrementalMountOnView() {
+  private void maybePerformIncrementalMountOnOffsetOrTranslationChange() {
+    // `MountState.#mount` will throw when called while already mounting. Such inner call may happen
+    // with incremental mount while animating `LithoView`, so we should explicitly skip that second
+    // inner mount.
     if (mComponentTree == null
         || !mComponentTree.isIncrementalMountEnabled()
-        || !(getParent() instanceof View)) {
+        || !(getParent() instanceof View)
+        || getMountState().isMounting()) {
       return;
     }
 

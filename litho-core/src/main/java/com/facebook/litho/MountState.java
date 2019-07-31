@@ -113,6 +113,9 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   // refresh the content of the HostComponent. Always set from the main thread.
   private boolean mIsDirty;
 
+  // True if MountState is currently performing mount
+  private boolean mIsMounting;
+
   // See #needsRemount()
   private boolean mNeedsRemount;
 
@@ -181,6 +184,12 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     return mIsDirty;
   }
 
+  boolean isMounting() {
+    assertMainThread();
+
+    return mIsMounting;
+  }
+
   /**
    * True if we have manually unmounted content (e.g. via unmountAllItems) which means that while we
    * may not have a new LayoutState, the mounted content does not match what the viewport for the
@@ -220,6 +229,11 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     if (layoutState == null) {
       throw new IllegalStateException("Trying to mount a null layoutState");
     }
+
+    if (mIsMounting) {
+      throw new IllegalStateException("Trying to mount while already mounting");
+    }
+    mIsMounting = true;
 
     final ComponentTree componentTree = mLithoView.getComponentTree();
     final boolean isIncrementalMountEnabled = localVisibleRect != null;
@@ -394,6 +408,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     if (isTracing) {
       ComponentsSystrace.endSection();
     }
+    mIsMounting = false;
   }
 
   private void logMountPerfEvent(
