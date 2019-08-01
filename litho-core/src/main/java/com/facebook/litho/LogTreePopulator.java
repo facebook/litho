@@ -43,8 +43,9 @@ public final class LogTreePopulator {
 
   /**
    * Annotate a log event with the log tag set in the context, and extract the treeprops from a
-   * given {@link ComponentContext} and convert them into perf event annotations using a {@link
-   * ComponentsLogger} implementation.
+   * given {@link ComponentContext} or saved treeprops and convert them into perf event annotations
+   * using a {@link ComponentsLogger} implementation. If the treeprops of the given
+   * {@link ComponentContext} is null, the saved treeprops will be used.
    *
    * @return Annotated perf event, or <code>null</code> if the resulting event isn't deemed worthy
    *     of reporting.
@@ -52,7 +53,7 @@ public final class LogTreePopulator {
   @Nullable
   @CheckReturnValue
   public static PerfEvent populatePerfEventFromLogger(
-          ComponentContext c, @Nullable TreeProps treeProps, ComponentsLogger logger, @Nullable PerfEvent perfEvent) {
+          ComponentContext c, @Nullable TreeProps savedTreeProps, ComponentsLogger logger, @Nullable PerfEvent perfEvent) {
     if (perfEvent == null) {
       return null;
     }
@@ -64,6 +65,7 @@ public final class LogTreePopulator {
 
     perfEvent.markerAnnotate(FrameworkLogEvents.PARAM_LOG_TAG, logTag);
 
+    TreeProps treeProps = c.getTreeProps() == null ? savedTreeProps : c.getTreeProps();
     if (treeProps == null) {
       return perfEvent;
     }
