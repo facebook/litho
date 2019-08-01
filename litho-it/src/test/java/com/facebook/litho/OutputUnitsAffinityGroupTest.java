@@ -33,11 +33,11 @@ public class OutputUnitsAffinityGroupTest {
     final OutputUnitsAffinityGroup<Object> group = new OutputUnitsAffinityGroup<>();
 
     assertThat(group.size()).isZero();
-    assertThat(group.get(OutputUnitType.CONTENT)).isNull();
-    assertThat(group.get(OutputUnitType.BACKGROUND)).isNull();
-    assertThat(group.get(OutputUnitType.FOREGROUND)).isNull();
-    assertThat(group.get(OutputUnitType.BORDER)).isNull();
-    assertThat(group.get(OutputUnitType.HOST)).isNull();
+    assertThat(group.getContentType(OutputUnitType.CONTENT)).isNull();
+    assertThat(group.getContentType(OutputUnitType.BACKGROUND)).isNull();
+    assertThat(group.getContentType(OutputUnitType.FOREGROUND)).isNull();
+    assertThat(group.getContentType(OutputUnitType.BORDER)).isNull();
+    assertThat(group.getContentType(OutputUnitType.HOST)).isNull();
   }
 
   @Test
@@ -48,7 +48,7 @@ public class OutputUnitsAffinityGroupTest {
     group.add(OutputUnitType.CONTENT, content);
 
     assertThat(group.size()).isEqualTo(1);
-    assertThat(group.get(OutputUnitType.CONTENT)).isSameAs(content);
+    assertThat(group.getContentType(OutputUnitType.CONTENT)).isSameAs(content);
     assertThat(group.typeAt(0)).isEqualTo(OutputUnitType.CONTENT);
     assertThat(group.getAt(0)).isSameAs(content);
 
@@ -56,8 +56,8 @@ public class OutputUnitsAffinityGroupTest {
     group.add(OutputUnitType.BACKGROUND, background);
 
     assertThat(group.size()).isEqualTo(2);
-    assertThat(group.get(OutputUnitType.CONTENT)).isSameAs(content);
-    assertThat(group.get(OutputUnitType.BACKGROUND)).isSameAs(background);
+    assertThat(group.getContentType(OutputUnitType.CONTENT)).isSameAs(content);
+    assertThat(group.getContentType(OutputUnitType.BACKGROUND)).isSameAs(background);
     final int type0 = group.typeAt(0);
     final int type1 = group.typeAt(1);
     assertThat(type0).isIn(OutputUnitType.CONTENT, OutputUnitType.BACKGROUND);
@@ -76,9 +76,9 @@ public class OutputUnitsAffinityGroupTest {
     final Object border = new Object();
     group.add(OutputUnitType.BORDER, border);
     assertThat(group.size()).isEqualTo(3);
-    assertThat(group.get(OutputUnitType.CONTENT)).isSameAs(content);
-    assertThat(group.get(OutputUnitType.BACKGROUND)).isSameAs(background);
-    assertThat(group.get(OutputUnitType.BORDER)).isSameAs(border);
+    assertThat(group.getContentType(OutputUnitType.CONTENT)).isSameAs(content);
+    assertThat(group.getContentType(OutputUnitType.BACKGROUND)).isSameAs(background);
+    assertThat(group.getContentType(OutputUnitType.BORDER)).isSameAs(border);
   }
 
   @Test
