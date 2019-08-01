@@ -264,7 +264,7 @@ public class BoundsAnimationComponentSpec {
   }
 
   @OnCreateTransition
-  static Transition animate(ComponentContext c, @State boolean autoBoundsTransitionEnabled) {
+  static Transition createTransition(ComponentContext c, @State boolean autoBoundsTransitionEnabled) {
     String[] transitionKeys =
         autoBoundsTransitionEnabled
             ? new String[] {
