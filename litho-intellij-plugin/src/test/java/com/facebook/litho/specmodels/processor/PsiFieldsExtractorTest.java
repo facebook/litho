@@ -15,17 +15,12 @@
  */
 package com.facebook.litho.specmodels.processor;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import com.facebook.litho.intellij.LithoPluginTestHelper;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.FieldModel;
 import com.intellij.psi.PsiClass;
-import com.squareup.javapoet.FieldSpec;
-import javax.lang.model.element.Modifier;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -47,25 +42,11 @@ public class PsiFieldsExtractorTest {
   public void extractFields() {
     testHelper.getPsiClass(
         psiClasses -> {
-          assertNotNull(psiClasses);
+          Assert.assertNotNull(psiClasses);
           PsiClass psiClass = psiClasses.get(0);
 
           ImmutableList<FieldModel> fieldModels = PsiFieldsExtractor.extractFields(psiClass);
-
-          assertEquals(fieldModels.size(), 2);
-
-          FieldSpec extractedIntField = fieldModels.get(0).field;
-          assertEquals(extractedIntField.name, "intField");
-          assertEquals(extractedIntField.modifiers.size(), 3);
-          assertTrue(extractedIntField.hasModifier(Modifier.PUBLIC));
-          assertTrue(extractedIntField.hasModifier(Modifier.STATIC));
-          assertTrue(extractedIntField.hasModifier(Modifier.FINAL));
-
-          FieldSpec extractedFloatField = fieldModels.get(1).field;
-          assertEquals(extractedFloatField.name, "floatField");
-          assertEquals(extractedFloatField.modifiers.size(), 1);
-          assertTrue(extractedFloatField.hasModifier(Modifier.STATIC));
-
+          FieldsExtractorTestHelper.fieldExtraction(fieldModels);
           return true;
         },
         "TwoFieldsClass.java");
@@ -75,13 +56,11 @@ public class PsiFieldsExtractorTest {
   public void extractNoFields() {
     testHelper.getPsiClass(
         psiClasses -> {
-          assertNotNull(psiClasses);
+          Assert.assertNotNull(psiClasses);
           PsiClass psiClass = psiClasses.get(0);
 
           ImmutableList<FieldModel> fieldModels = PsiFieldsExtractor.extractFields(psiClass);
-
-          assertEquals(fieldModels.size(), 0);
-
+          FieldsExtractorTestHelper.noFieldExtraction(fieldModels);
           return true;
         },
         "NoFieldsClass.java");

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 class TwoFieldsClass {
-    public static final int intField = 0;
+    private static final int intField = 0;
     static float floatField = 0f;
 
     private boolean isTest() {

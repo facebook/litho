@@ -33,6 +33,8 @@ dependencies {
     // Processor
     implementation deps.javapoet
     implementation deps.supportAnnotations
+
+    testImplementation deps.junit
 }
 
 apply from: rootProject.file('gradle/release.gradle')

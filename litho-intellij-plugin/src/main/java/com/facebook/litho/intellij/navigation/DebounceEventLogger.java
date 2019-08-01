@@ -17,6 +17,8 @@ package com.facebook.litho.intellij.navigation;
 
 import com.facebook.litho.intellij.extensions.EventLogger;
 import com.facebook.litho.intellij.logging.LithoLoggerProvider;
+import com.google.common.annotations.VisibleForTesting;
+
 import java.util.Map;
 
 /** Only logs an event if a particular timespanMillis has passed without it logging another event */
@@ -29,6 +31,7 @@ class DebounceEventLogger implements EventLogger {
     this(timespanMillis, LithoLoggerProvider.getEventLogger());
   }
 
+  @VisibleForTesting
   DebounceEventLogger(long timespanMillis, EventLogger logger) {
     this.timespanMillis = timespanMillis;
     this.eventLogger = logger;

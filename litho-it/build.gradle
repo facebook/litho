@@ -54,6 +54,8 @@ android {
     lintOptions {
         abortOnError false
     }
+
+    sourceSets.test.java.srcDir project(':litho-processor').file("src/test/java")
 }
 
 dependencies {
