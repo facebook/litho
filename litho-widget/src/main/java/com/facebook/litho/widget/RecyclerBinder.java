@@ -128,6 +128,7 @@ public class RecyclerBinder
   private boolean mAsyncInitRange;
   private final boolean mUseCancelableLayoutFutures;
   private final boolean mMoveLayoutsBetweenThreads;
+  private final boolean mIsSubAdapter;
 
   private AtomicLong mCurrentChangeSetThreadId = new AtomicLong(-1);
   @VisibleForTesting final boolean mTraverseLayoutBackwards;
@@ -396,6 +397,7 @@ public class RecyclerBinder
     private boolean useCancelableLayoutFutures = ComponentsConfiguration.useCancelableLayoutFutures;
     private boolean canInterruptAndMoveLayoutsBetweenThreads =
         ComponentsConfiguration.canInterruptAndMoveLayoutsBetweenThreads;
+    private boolean isSubAdapter;
 
     /**
      * @param rangeRatio specifies how big a range this binder should try to compute. The range is
@@ -634,6 +636,27 @@ public class RecyclerBinder
       return this;
     }
 
+    /**
+     * Note: this is an advanced usage of RecyclerBinder that requires much more manual hand-holding
+     * of the RecyclerBinder than normal usage.
+     *
+     * <p>In sub adapter mode, the RecyclerBinder doesn't control the entire RecyclerView, but
+     * instead just a part of it. This means that the RecyclerBinder can't mount to a RecyclerView
+     * and set its adapter, and it won't set a scroll listener on the RecyclerView.
+     *
+     * <p>Instead, the internal adapter will need to be used/observed and plugged into some sort of
+     * multi-adapter that can multiplex the RecyclerView's requests between the different sub
+     * adapters.
+     *
+     * <p>Additionally, since the RecyclerBinder will never mount to a RecyclerView, the owner of
+     * this RecyclerBinder must manually dispatch {@link #updateSubAdapterVisibleRange} events if
+     * this RecyclerBinder can contains more than a screens worth of content.
+     */
+    public Builder isSubAdapter(boolean isSubAdapter) {
+      this.isSubAdapter = isSubAdapter;
+      return this;
+    }
+
     /** @param c The {@link ComponentContext} the RecyclerBinder will use. */
     public RecyclerBinder build(ComponentContext c) {
       componentContext =
@@ -831,6 +854,7 @@ public class RecyclerBinder
     mEnableDetach = builder.enableDetach;
     mUseCancelableLayoutFutures = builder.useCancelableLayoutFutures;
     mMoveLayoutsBetweenThreads = builder.canInterruptAndMoveLayoutsBetweenThreads;
+    mIsSubAdapter = builder.isSubAdapter;
   }
 
   /**
@@ -1866,8 +1890,7 @@ public class RecyclerBinder
    *     thread, this function may only be called from the main thread.
    */
   @UiThread
-  @VisibleForTesting
-  final synchronized ComponentTreeHolder getComponentTreeHolderAt(int position) {
+  public final synchronized ComponentTreeHolder getComponentTreeHolderAt(int position) {
     ThreadUtils.assertMainThread();
     return mComponentTreeHolders.get(position);
   }
@@ -2647,6 +2670,9 @@ public class RecyclerBinder
   @Override
   public void mount(RecyclerView view) {
     ThreadUtils.assertMainThread();
+    if (mIsSubAdapter) {
+      throw new RuntimeException("Can't mount a RecyclerView in sub adapter mode");
+    }
 
     if (mMountedView == view) {
       return;
@@ -2765,6 +2791,9 @@ public class RecyclerBinder
   @Override
   public void unmount(RecyclerView view) {
     ThreadUtils.assertMainThread();
+    if (mIsSubAdapter) {
+      throw new RuntimeException("Can't unmount a RecyclerView in sub adapter mode");
+    }
 
     final LayoutManager layoutManager = mLayoutInfo.getLayoutManager();
     final View firstView = layoutManager.findViewByPosition(mCurrentFirstVisiblePosition);
@@ -2909,6 +2938,14 @@ public class RecyclerBinder
     return position >= 0 && position < mComponentTreeHolders.size();
   }
 
+  /**
+   * @return the internal RecyclerView.Adapter that is used to communicate to the RecyclerView. This
+   *     should generally only be useful when operating in sub-adapter mode.
+   */
+  public RecyclerView.Adapter getInternalAdapter() {
+    return mInternalAdapter;
+  }
+
   private static class RangeCalculationResult {
 
     // The estimated number of items needed to fill the viewport.
@@ -2929,6 +2966,20 @@ public class RecyclerBinder
     mCurrentLastVisiblePosition = lastVisiblePosition;
     mViewportManager.resetShouldUpdate();
     maybePostUpdateViewportAndComputeRange();
+  }
+
+  /**
+   * Updates the visible range when in sub adapter mode. Do not call this otherwise. This method
+   * exists because in sub adapter mode, the RecyclerBinder is never mounted to a RecyclerView and
+   * needs outside signals from the multiplexing adapter to determine which of its indices are
+   * visible.
+   */
+  public void updateSubAdapterVisibleRange(int firstVisiblePosition, int lastVisiblePosition) {
+    if (!mIsSubAdapter) {
+      throw new RuntimeException(
+          "updateSubAdapterVisibleRange can only be called in sub adapter mode");
+    }
+    onNewVisibleRange(firstVisiblePosition, lastVisiblePosition);
   }
 
   @VisibleForTesting
