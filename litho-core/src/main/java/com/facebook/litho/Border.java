@@ -48,9 +48,8 @@ public class Border {
 
   @Retention(RetentionPolicy.SOURCE)
   @IntDef(
-    flag = true,
-    value = {Corner.TOP_LEFT, Corner.TOP_RIGHT, Corner.BOTTOM_RIGHT, Corner.BOTTOM_LEFT}
-  )
+      flag = true,
+      value = {Corner.TOP_LEFT, Corner.TOP_RIGHT, Corner.BOTTOM_RIGHT, Corner.BOTTOM_LEFT})
   public @interface Corner {
     int TOP_LEFT = 0;
     int TOP_RIGHT = 1;
@@ -446,7 +445,6 @@ public class Border {
 
     public Border build() {
       checkNotBuilt();
-      mResourceResolver.release();
       mResourceResolver = null;
 
       if (mNumPathEffects == MAX_PATH_EFFECTS) {

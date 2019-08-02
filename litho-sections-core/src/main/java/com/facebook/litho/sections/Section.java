@@ -108,14 +108,11 @@ public abstract class Section extends SectionLifecycle
 
     public abstract T getThis();
 
-    /**
-     * @return The immutable {@link Section}.
-     */
+    /** @return The immutable {@link Section}. */
     public abstract Section build();
 
     protected void release() {
       mSection = null;
-      mResourceResolver.release();
       mResourceResolver = null;
     }
 
@@ -210,17 +207,15 @@ public abstract class Section extends SectionLifecycle
     return mParent;
   }
 
-  /**
-   * Sets the parent of this {@link Section} in the tree.
-   */
+  /** Sets the parent of this {@link Section} in the tree. */
   void setParent(Section parent) {
     mParent = parent;
   }
 
   /**
    * Invalidates The subtree having its root in this {@link Section}. When a subtree is invalidated,
-   * the {@link OnDiff} will be invoked
-   * regardless of whether the {@link com.facebook.litho.annotations.Prop}s changed or not.
+   * the {@link OnDiff} will be invoked regardless of whether the {@link
+   * com.facebook.litho.annotations.Prop}s changed or not.
    */
   void invalidate() {
     invalidateInternal(this);
@@ -243,9 +238,8 @@ public abstract class Section extends SectionLifecycle
   }
 
   /**
-   * @return a clone of this {@link Section}.
-   * if deepCopy is false the clone won't contain any children or count as it will
-   * be returned in a pre - ChangeSet generation state.
+   * @return a clone of this {@link Section}. if deepCopy is false the clone won't contain any
+   *     children or count as it will be returned in a pre - ChangeSet generation state.
    */
   public Section makeShallowCopy(boolean deepCopy) {
     try {
@@ -338,11 +332,9 @@ public abstract class Section extends SectionLifecycle
     return null;
   }
 
-  /**
-   * Called when this {@link Section} is not in use anymore to release its resources.
-   */
+  /** Called when this {@link Section} is not in use anymore to release its resources. */
   void release() {
-    //TODO release list into a pool t11953296
+    // TODO release list into a pool t11953296
   }
 
   void generateKeyAndSet(SectionContext c, String globalKey) {
@@ -384,7 +376,7 @@ public abstract class Section extends SectionLifecycle
 
   static Map<String, Pair<Section, Integer>> acquireChildrenMap(
       @Nullable Section currentComponent) {
-    //TODO use pools instead t11953296
+    // TODO use pools instead t11953296
     final HashMap<String, Pair<Section, Integer>> childrenMap = new HashMap<>();
     if (currentComponent == null) {
       return childrenMap;
@@ -405,7 +397,7 @@ public abstract class Section extends SectionLifecycle
   }
 
   static void releaseChildrenMap(Map<String, Pair<Section, Integer>> newChildren) {
-    //TODO use pools t11953296
+    // TODO use pools t11953296
   }
 
   @VisibleForTesting
