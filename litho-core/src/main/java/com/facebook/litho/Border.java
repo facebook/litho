@@ -178,7 +178,7 @@ public class Border {
     private int mNumPathEffects;
 
     Builder(ComponentContext context) {
-      mResourceResolver = new ResourceResolver(context);
+      mResourceResolver = context.getResourceResolver();
       mBorder = new Border();
     }
 

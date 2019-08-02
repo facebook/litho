@@ -92,7 +92,7 @@ public abstract class Section extends SectionLifecycle
 
     protected void init(SectionContext context, Section section) {
       mSection = section;
-      mResourceResolver = new ResourceResolver(context);
+      mResourceResolver = context.getResourceResolver();
     }
 
     /** Sets the key of this {@link Section} local to its parent. */

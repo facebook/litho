@@ -54,13 +54,12 @@ public final class BasicTestSample implements BasicTestSampleSpec {
 
     @Nullable org.hamcrest.Matcher<Float> mMyDimenSizePropMatcher;
 
-    @Nullable
-    org.hamcrest.Matcher<Integer> mMyRequiredColorPropMatcher;
+    @Nullable org.hamcrest.Matcher<Integer> mMyRequiredColorPropMatcher;
 
     @Nullable org.hamcrest.Matcher<String> mMyStringPropMatcher;
 
     Matcher(ComponentContext c) {
-      mResourceResolver = new ResourceResolver(c);
+      mResourceResolver = c.getResourceResolver();
     }
 
     public Matcher child(Condition<InspectableComponent> matcher) {
