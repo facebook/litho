@@ -1850,13 +1850,25 @@ public class RecyclerBinder
     return holder.getComponentTree();
   }
 
+  /**
+   * @return the RenderInfo at this position. Since this list is modified on the main thread, this
+   *     function may only be called from the main thread.
+   */
+  @UiThread
   @Override
   public final synchronized RenderInfo getRenderInfoAt(int position) {
+    ThreadUtils.assertMainThread();
     return mComponentTreeHolders.get(position).getRenderInfo();
   }
 
+  /**
+   * @return the ComponentTreeHolder at this position. Since this list is modified on the main
+   *     thread, this function may only be called from the main thread.
+   */
+  @UiThread
   @VisibleForTesting
   final synchronized ComponentTreeHolder getComponentTreeHolderAt(int position) {
+    ThreadUtils.assertMainThread();
     return mComponentTreeHolders.get(position);
   }
 
