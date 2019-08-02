@@ -16,10 +16,11 @@ apply plugin: 'idea'
 apply plugin: 'org.jetbrains.intellij'
 apply plugin: 'java'
 
+sourceSets.test.java.srcDir project(':litho-processor').file("src/test/java")
+
 dependencies {
     testImplementation deps.junit
     testImplementation deps.mockitoCore
-
     // Processor
     implementation project(':litho-sections-annotations')
     implementation project(':litho-sections-processor')
