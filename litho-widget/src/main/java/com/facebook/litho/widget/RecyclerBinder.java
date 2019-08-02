@@ -129,6 +129,7 @@ public class RecyclerBinder
   private final boolean mUseCancelableLayoutFutures;
   private final boolean mMoveLayoutsBetweenThreads;
   private final boolean mIsSubAdapter;
+  private final boolean mHasManualEstimatedViewportCount;
 
   private AtomicLong mCurrentChangeSetThreadId = new AtomicLong(-1);
   @VisibleForTesting final boolean mTraverseLayoutBackwards;
@@ -398,6 +399,7 @@ public class RecyclerBinder
     private boolean canInterruptAndMoveLayoutsBetweenThreads =
         ComponentsConfiguration.canInterruptAndMoveLayoutsBetweenThreads;
     private boolean isSubAdapter;
+    private int estimatedViewportCount = UNSET;
 
     /**
      * @param rangeRatio specifies how big a range this binder should try to compute. The range is
@@ -568,6 +570,20 @@ public class RecyclerBinder
      */
     public Builder bgScheduleAllInitRange(boolean bgScheduleAllInitRange) {
       this.bgScheduleAllInitRange = bgScheduleAllInitRange;
+      return this;
+    }
+
+    /**
+     * This is a temporary hack that allows a surface to manually provide an estimated range. It
+     * will go away so don't depend on it.
+     */
+    @Deprecated
+    public Builder estimatedViewportCount(int estimatedViewportCount) {
+      if (estimatedViewportCount <= 0) {
+        throw new IllegalArgumentException(
+            "Estimated viewport count must be > 0: " + estimatedViewportCount);
+      }
+      this.estimatedViewportCount = estimatedViewportCount;
       return this;
     }
 
@@ -845,6 +861,13 @@ public class RecyclerBinder
             mCurrentFirstVisiblePosition, mCurrentLastVisiblePosition, builder.layoutInfo);
 
     mInvalidStateLogParamsList = builder.invalidStateLogParamsList;
+
+    if (builder.estimatedViewportCount != UNSET) {
+      mEstimatedViewportCount = builder.estimatedViewportCount;
+      mHasManualEstimatedViewportCount = true;
+    } else {
+      mHasManualEstimatedViewportCount = false;
+    }
 
     mAsyncInitRange = builder.asyncInitRange;
     mBgScheduleAllInitRange = builder.bgScheduleAllInitRange;
@@ -1991,6 +2014,11 @@ public class RecyclerBinder
 
     final boolean shouldMeasureItemForSize =
         shouldMeasureItemForSize(widthSpec, heightSpec, scrollDirection, canRemeasure);
+    if (mHasManualEstimatedViewportCount && shouldMeasureItemForSize) {
+      throw new RuntimeException(
+          "Cannot use manual estimated viewport count when the RecyclerBinder needs an item to determine its size!");
+    }
+
     ComponentTreeHolderRangeInfo holderForRangeInfo;
 
     mIsInMeasure.set(true);
@@ -2400,7 +2428,10 @@ public class RecyclerBinder
 
   @GuardedBy("this")
   private void invalidateLayoutData() {
-    mEstimatedViewportCount = UNSET;
+    if (!mHasManualEstimatedViewportCount) {
+      mEstimatedViewportCount = UNSET;
+    }
+
     mSizeForMeasure = null;
     for (int i = 0, size = mComponentTreeHolders.size(); i < size; i++) {
       mComponentTreeHolders.get(i).invalidateTree();
@@ -2482,6 +2513,9 @@ public class RecyclerBinder
   @GuardedBy("this")
   void initRange(
       int width, int height, ComponentTreeHolderRangeInfo holderRangeInfo, int scrollDirection) {
+    if (mHasManualEstimatedViewportCount) {
+      return;
+    }
 
     if (asyncInitRangeEnabled()) {
       // We can schedule a maximum of number of items minus one (which is being calculated
@@ -2581,6 +2615,10 @@ public class RecyclerBinder
   }
 
   private void setRangeSize(int itemWidth, int itemHeight, int width, int height) {
+    if (mHasManualEstimatedViewportCount) {
+      throw new RuntimeException(
+          "Cannot override range size when manual estimated viewport count is set");
+    }
     mEstimatedViewportCount =
         Math.max(mLayoutInfo.approximateRangeSize(itemWidth, itemHeight, width, height), 1);
   }
@@ -2610,7 +2648,7 @@ public class RecyclerBinder
   @GuardedBy("this")
   private void resetMeasuredSize(int width) {
     // we will set a range anyway if it's null, no need to do this now.
-    if (mSizeForMeasure == null) {
+    if (mSizeForMeasure == null || mHasManualEstimatedViewportCount) {
       return;
     }
     int maxHeight = 0;
@@ -3148,7 +3186,8 @@ public class RecyclerBinder
   }
 
   private boolean hasComputedRange() {
-    return mSizeForMeasure != null && mEstimatedViewportCount != UNSET;
+    return (mSizeForMeasure != null && mEstimatedViewportCount != UNSET)
+        || mHasManualEstimatedViewportCount;
   }
 
   /**

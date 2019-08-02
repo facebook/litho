@@ -5312,7 +5312,7 @@ public class RecyclerBinderTest {
         .build();
   }
 
-  private void assertHasCompatibleLayout(
+  static void assertHasCompatibleLayout(
       RecyclerBinder recyclerBinder, int position, int widthSpec, int heightSpec) {
     final ComponentTree tree = recyclerBinder.getComponentAt(position);
     assertThat(tree).isNotNull();
