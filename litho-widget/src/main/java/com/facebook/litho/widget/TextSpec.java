@@ -457,9 +457,19 @@ class TextSpec {
         throw new IllegalStateException("Unexpected size mode: " + SizeSpec.getMode(widthSpec));
     }
 
+    final TruncateAt actualEllipsize;
+    if (ellipsize == null && maxLines != Integer.MAX_VALUE) {
+      // On recent apis (> 24) max lines is no longer considered for calculating layout height if an
+      // ellipsize method isn't specified. To keep consistent behavior across platforms we default
+      // to end if you specify maxLines but not ellipsize.
+      actualEllipsize = TruncateAt.END;
+    } else {
+      actualEllipsize = ellipsize;
+    }
+
     layoutBuilder
         .setDensity(density)
-        .setEllipsize(ellipsize)
+        .setEllipsize(actualEllipsize)
         .setMaxLines(maxLines)
         .setShadowLayer(shadowRadius, shadowDx, shadowDy, shadowColor)
         .setSingleLine(isSingleLine)
