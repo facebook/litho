@@ -60,10 +60,16 @@ public class ComponentContext {
   // Hold a reference to the component which scope we are currently within.
   @ThreadConfined(ThreadConfined.ANY)
   private Component mComponentScope;
+
   @ThreadConfined(ThreadConfined.ANY)
   private final ResourceCache mResourceCache;
+
+  @ThreadConfined(ThreadConfined.ANY)
+  private final ResourceResolver mResourceResolver;
+
   @ThreadConfined(ThreadConfined.ANY)
   private int mWidthSpec;
+
   @ThreadConfined(ThreadConfined.ANY)
   private int mHeightSpec;
 
@@ -77,6 +83,7 @@ public class ComponentContext {
   @StyleRes
   @ThreadConfined(ThreadConfined.ANY)
   private int mDefStyleRes = 0;
+
   @AttrRes
   @ThreadConfined(ThreadConfined.ANY)
   private int mDefStyleAttr = 0;
@@ -105,6 +112,7 @@ public class ComponentContext {
 
     mContext = context;
     mResourceCache = ResourceCache.getLatest(context.getResources().getConfiguration());
+    mResourceResolver = new ResourceResolver(this);
     mTreeProps = treeProps;
     mLogger = logger;
     mLogTag = logTag;
@@ -144,6 +152,7 @@ public class ComponentContext {
 
     mContext = context.getAndroidContext();
     mResourceCache = context.mResourceCache;
+    mResourceResolver = context.mResourceResolver;
     mWidthSpec = context.mWidthSpec;
     mHeightSpec = context.mHeightSpec;
     mComponentScope = context.mComponentScope;
@@ -230,6 +239,10 @@ public class ComponentContext {
 
   public Resources getResources() {
     return mContext.getResources();
+  }
+
+  public ResourceResolver getResourceResolver() {
+    return mResourceResolver;
   }
 
   public final Looper getMainLooper() {
