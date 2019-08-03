@@ -419,30 +419,30 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
    */
   static InternalNode createLayout(
       final ComponentContext c, final Component component, final boolean shouldResolveNestedTree) {
-
-    // 1. Consume the layout created in will render.
-    final InternalNode layoutCreatedInWillRender = component.consumeLayoutCreatedInWillRender();
-
-    // 2. Return immediately if will render returned a layout.
-    if (layoutCreatedInWillRender != null) {
-      return layoutCreatedInWillRender;
-    }
-
-    // 3. Add this component's tree props to the current context.
-    final TreeProps treeProps = c.getTreeProps();
-    c.setTreeProps(component.getTreePropsForChildren(c, treeProps));
-
-    final boolean shouldDeferNestedTreeResolution =
-        Component.isNestedTree(component) && !shouldResolveNestedTree;
-
     final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
       ComponentsSystrace.beginSection("createLayout:" + component.getSimpleName());
     }
 
-    // 4. Resolve the Component into an InternalNode.
+    final boolean shouldDeferNestedTreeResolution =
+        Component.isNestedTree(component) && !shouldResolveNestedTree;
     final InternalNode node;
+
     try {
+
+      // 1. Consume the layout created in will render.
+      final InternalNode layoutCreatedInWillRender = component.consumeLayoutCreatedInWillRender();
+
+      // 2. Return immediately if will render returned a layout.
+      if (layoutCreatedInWillRender != null) {
+        return layoutCreatedInWillRender;
+      }
+
+      // 3. Add this component's tree props to the current context.
+      final TreeProps treeProps = c.getTreeProps();
+      c.setTreeProps(component.getTreePropsForChildren(c, treeProps));
+
+      // 4. Resolve the Component into an InternalNode.
 
       // 4.1 If nested tree resolution should be deferred.
       if (shouldDeferNestedTreeResolution) {
@@ -489,16 +489,21 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
           }
         }
       }
+
+      if (node == null || node == ComponentContext.NULL_LAYOUT) {
+        return ComponentContext.NULL_LAYOUT;
+      }
+
     } catch (Throwable t) {
       throw new ComponentsChainException(component, t);
+    } finally {
+      if (isTracing) {
+        ComponentsSystrace.endSection();
+      }
     }
 
     if (isTracing) {
-      ComponentsSystrace.endSection();
-    }
-
-    if (node == null || node == ComponentContext.NULL_LAYOUT) {
-      return ComponentContext.NULL_LAYOUT;
+      ComponentsSystrace.beginSection("afterCreateLayout:" + component.getSimpleName());
     }
 
     // 5. Copy common props of this Component into its InternalNode.
@@ -548,6 +553,10 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     if (component.mWorkingRangeRegistrations != null
         && !component.mWorkingRangeRegistrations.isEmpty()) {
       node.addWorkingRanges(component.mWorkingRangeRegistrations);
+    }
+
+    if (isTracing) {
+      ComponentsSystrace.endSection();
     }
 
     return node;
