@@ -479,7 +479,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
         } else {
 
           // Resolve the root component's layout.
-          node = c.resolveLayout(root);
+          node = resolve(c, root);
 
           // If the root is a layout spec which can resolve itself, add it to the InternalNode.
           if (ComponentsConfiguration.isConsistentComponentHierarchyExperimentEnabled
@@ -548,6 +548,46 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     if (component.mWorkingRangeRegistrations != null
         && !component.mWorkingRangeRegistrations.isEmpty()) {
       node.addWorkingRanges(component.mWorkingRangeRegistrations);
+    }
+
+    return node;
+  }
+
+  static InternalNode resolve(final ComponentContext parentContext, Component component) {
+
+    // 1. Consume the layout created in will render.
+    final InternalNode layoutCreatedInWillRender = component.consumeLayoutCreatedInWillRender();
+
+    // 2. Return immediately if will render returned a layout.
+    if (layoutCreatedInWillRender != null) {
+      return layoutCreatedInWillRender;
+    }
+
+    // 3. Create a shallow copy of this component for thread safety.
+    component = component.getThreadSafeInstance();
+
+    // 4. Update this component with its current parent context.
+    component.updateInternalChildState(parentContext);
+
+    if (ComponentsConfiguration.isDebugModeEnabled) {
+      DebugComponent.applyOverrides(parentContext, component);
+    }
+
+    // 5. Resolve the Component into an InternalNode.
+    final InternalNode node;
+    final ComponentContext c = component.getScopedContext();
+    if (component.canResolve()) { // 5.1 If the Component can resolve its own InternalNode.
+
+      // Resolve the component into an InternalNode.
+      node = (InternalNode) component.resolve(c);
+
+      // Explicitly copy the common props of the component into its InternalNode.
+      final CommonPropsCopyable props = component.getCommonPropsCopyable();
+      if (props != null) {
+        props.copyInto(c, node);
+      }
+    } else { // 5.2 Create this component's layout.
+      node = createLayout(c, component, false);
     }
 
     return node;
