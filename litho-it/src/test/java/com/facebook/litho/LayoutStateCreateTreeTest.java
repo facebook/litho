@@ -62,12 +62,13 @@ public class LayoutStateCreateTreeTest {
   @After
   public void after() {
     ComponentsConfiguration.isConsistentComponentHierarchyExperimentEnabled = false;
+    mComponentContext = null;
   }
 
   @Test
   public void testSimpleLayoutCreatesExpectedInternalNodeTree() {
     final Component component =
-        new InlineLayoutSpec() {
+        new InlineLayoutSpec(mComponentContext) {
           @Override
           protected Component onCreateLayout(final ComponentContext c) {
             return Column.create(c)
@@ -92,7 +93,7 @@ public class LayoutStateCreateTreeTest {
     ComponentsConfiguration.isConsistentComponentHierarchyExperimentEnabled = true;
 
     final Component component =
-        new InlineLayoutSpec() {
+        new InlineLayoutSpec(mComponentContext) {
           @Override
           protected Component onCreateLayout(final ComponentContext c) {
             return Column.create(c)
@@ -132,7 +133,7 @@ public class LayoutStateCreateTreeTest {
     final EventHandler<FocusChangedEvent> focusChangedHandler3 = mock(EventHandler.class);
 
     final Component component =
-        new InlineLayoutSpec() {
+        new InlineLayoutSpec(mComponentContext) {
           @Override
           protected Component onCreateLayout(final ComponentContext c) {
             return Column.create(c)
@@ -200,7 +201,7 @@ public class LayoutStateCreateTreeTest {
     final EventHandler<FocusChangedEvent> focusChangedHandler3 = mock(EventHandler.class);
 
     final Component component =
-        new InlineLayoutSpec() {
+        new InlineLayoutSpec(mComponentContext) {
           @Override
           protected Component onCreateLayout(final ComponentContext c) {
             return Column.create(c)
@@ -264,7 +265,7 @@ public class LayoutStateCreateTreeTest {
     final EventHandler<FocusChangedEvent> focusChangedHandler2 = mock(EventHandler.class);
 
     final Component component =
-        new InlineLayoutSpec() {
+        new InlineLayoutSpec(mComponentContext) {
           @Override
           protected Component onCreateLayout(final ComponentContext c) {
             return Wrapper.create(c)
@@ -314,7 +315,7 @@ public class LayoutStateCreateTreeTest {
     final EventHandler<FocusChangedEvent> focusChangedHandler2 = mock(EventHandler.class);
 
     final Component component =
-        new InlineLayoutSpec() {
+        new InlineLayoutSpec(mComponentContext) {
           @Override
           protected Component onCreateLayout(final ComponentContext c) {
             return Wrapper.create(c)
@@ -485,6 +486,8 @@ public class LayoutStateCreateTreeTest {
           }
         };
 
+    component.setScopedContext(mComponentContext);
+
     InternalNode node = LayoutState.createTree(component, mComponentContext, null);
     NodeInfo nodeInfo = node.getOrCreateNodeInfo();
 
@@ -613,7 +616,8 @@ public class LayoutStateCreateTreeTest {
         };
 
     final InternalNode root =
-        LayoutState.createTree(component, new MockInternalNodeComponentContext(application), null);
+        LayoutState.createAndMeasureTreeForComponent(
+            new MockInternalNodeComponentContext(application), component, 800, 600);
 
     assertThat(root.getChildAt(0) instanceof TestInternalNode).isTrue();
     assertThat(((TestInternalNode) root.getChildAt(0)).mFlexGrowCounter).isEqualTo(1);
@@ -622,12 +626,15 @@ public class LayoutStateCreateTreeTest {
   private static class TestDrawableComponentWithMockInternalNode
       extends TestComponent {
 
+    @Override
+    protected boolean canResolve() {
+      return true;
+    }
+
     protected ComponentLayout resolve(ComponentContext c) {
       InternalNode node = mock(InternalNode.class);
       NodeInfo nodeInfo = mock(NodeInfo.class);
       when(node.getOrCreateNodeInfo()).thenReturn(nodeInfo);
-      ((Component) this).getCommonPropsCopyable().copyInto(c, node);
-
       return node;
     }
 
