@@ -611,21 +611,17 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
   }
 
   @ThreadSafe(enableChecks = false)
-  Component createComponentLayout(ComponentContext context) {
+  Component createComponentLayout(ComponentContext c) {
     Component layoutComponent = null;
-    if (Component.isLayoutSpecWithSizeSpec(((Component) this))) {
-      try {
-        layoutComponent =
-            onCreateLayoutWithSizeSpec(context, context.getWidthSpec(), context.getHeightSpec());
-      } catch (Exception e) {
-        dispatchErrorEvent(context, e);
+
+    try {
+      if (Component.isLayoutSpecWithSizeSpec(((Component) this))) {
+        layoutComponent = onCreateLayoutWithSizeSpec(c, c.getWidthSpec(), c.getHeightSpec());
+      } else {
+        layoutComponent = onCreateLayout(c);
       }
-    } else {
-      try {
-        layoutComponent = onCreateLayout(context);
-      } catch (Exception e) {
-        dispatchErrorEvent(context, e);
-      }
+    } catch (Exception e) {
+      dispatchErrorEvent(c, e);
     }
 
     return layoutComponent;
