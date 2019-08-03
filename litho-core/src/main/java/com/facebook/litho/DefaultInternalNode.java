@@ -1904,7 +1904,11 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
         layout = reconcile(c, current, next, keys, ReconciliationMode.RECONCILE);
         break;
       case ReconciliationMode.RECREATE:
-        layout = next.createLayout(next.getScopedContext(), false);
+        if (ComponentsConfiguration.isRefactoredLayoutCreationEnabled) {
+          layout = ComponentLifecycle.createLayout(next.getScopedContext(), next, false);
+        } else {
+          layout = next.createLayout(next.getScopedContext(), false);
+        }
         break;
       default:
         throw new IllegalArgumentException(mode + " is not a valid ReconciliationMode");

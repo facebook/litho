@@ -444,7 +444,12 @@ public class ComponentContext {
       DebugComponent.applyOverrides(this, component);
     }
 
-    final InternalNode node = component.createLayout(component.getScopedContext(), false);
+    final InternalNode node;
+    if (ComponentsConfiguration.isRefactoredLayoutCreationEnabled) {
+      node = ComponentLifecycle.createLayout(component.getScopedContext(), component, false);
+    } else {
+      node = component.createLayout(component.getScopedContext(), false);
+    }
 
     if (node != NULL_LAYOUT) {
       applyStyle(node, defStyleAttr, defStyleRes);

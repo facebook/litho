@@ -713,7 +713,11 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
 
   /** Resolves the {@link ComponentLayout} for the given {@link Component}. */
   protected ComponentLayout resolve(ComponentContext c) {
-    return createLayout(c, false);
+    if (ComponentsConfiguration.isRefactoredLayoutCreationEnabled) {
+      return ComponentLifecycle.createLayout(c, (Component) this, false);
+    } else {
+      return createLayout(c, false);
+    }
   }
 
   protected void onPrepare(ComponentContext c) {
