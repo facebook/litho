@@ -42,6 +42,7 @@ import static com.facebook.litho.NodeInfo.ENABLED_SET_FALSE;
 import static com.facebook.litho.NodeInfo.ENABLED_UNSET;
 import static com.facebook.litho.NodeInfo.FOCUS_SET_TRUE;
 import static com.facebook.litho.SizeSpec.EXACTLY;
+import static com.facebook.litho.config.ComponentsConfiguration.isRefactoredLayoutCreationEnabled;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -1607,7 +1608,11 @@ class LayoutState {
       return current.reconcile(context, component);
     }
 
-    return component.createLayout(context, true /* resolveNestedTree */);
+    if (isRefactoredLayoutCreationEnabled) {
+      return ComponentLifecycle.createLayout(context, component, true /* resolveNestedTree */);
+    } else {
+      return component.createLayout(context, true /* resolveNestedTree */);
+    }
   }
 
   @VisibleForTesting

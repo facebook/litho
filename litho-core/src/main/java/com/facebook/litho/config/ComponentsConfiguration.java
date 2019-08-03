@@ -220,4 +220,10 @@ public class ComponentsConfiguration {
 
   /** If true, add the root component of LayoutSpecs to InternalNodes */
   public static boolean isConsistentComponentHierarchyExperimentEnabled = false;
+
+  /**
+   * If true the framework will use the refactored implementation of
+   * ComponentLifecycle#createLayout()
+   */
+  public static boolean isRefactoredLayoutCreationEnabled = false;
 }
