@@ -1905,7 +1905,7 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
         break;
       case ReconciliationMode.RECREATE:
         if (ComponentsConfiguration.isRefactoredLayoutCreationEnabled) {
-          layout = ComponentLifecycle.createLayout(next.getScopedContext(), next, false);
+          layout = LayoutState.createLayout(next.getScopedContext(), next, false);
         } else {
           layout = next.createLayout(next.getScopedContext(), false);
         }

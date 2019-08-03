@@ -446,7 +446,7 @@ public class ComponentContext {
 
     final InternalNode node;
     if (ComponentsConfiguration.isRefactoredLayoutCreationEnabled) {
-      node = ComponentLifecycle.createLayout(component.getScopedContext(), component, false);
+      node = LayoutState.createLayout(component.getScopedContext(), component, false);
     } else {
       node = component.createLayout(component.getScopedContext(), false);
     }
