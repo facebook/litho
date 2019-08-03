@@ -410,6 +410,149 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     return node;
   }
 
+  /**
+   * Create a layout from the given component.
+   *
+   * @param component the root component.
+   * @param shouldResolveNestedTree if the layout of the component should be immediately resolved.
+   * @return New InternalNode associated with the given component.
+   */
+  static InternalNode createLayout(
+      final ComponentContext c, final Component component, final boolean shouldResolveNestedTree) {
+
+    // 1. Consume the layout created in will render.
+    final InternalNode layoutCreatedInWillRender = component.consumeLayoutCreatedInWillRender();
+
+    // 2. Return immediately if will render returned a layout.
+    if (layoutCreatedInWillRender != null) {
+      return layoutCreatedInWillRender;
+    }
+
+    // 3. Add this component's tree props to the current context.
+    final TreeProps treeProps = c.getTreeProps();
+    c.setTreeProps(component.getTreePropsForChildren(c, treeProps));
+
+    final boolean shouldDeferNestedTreeResolution =
+        Component.isNestedTree(component) && !shouldResolveNestedTree;
+
+    final boolean isTracing = ComponentsSystrace.isTracing();
+    if (isTracing) {
+      ComponentsSystrace.beginSection("createLayout:" + component.getSimpleName());
+    }
+
+    // 4. Resolve the Component into an InternalNode.
+    final InternalNode node;
+    try {
+
+      // 4.1 If nested tree resolution should be deferred.
+      if (shouldDeferNestedTreeResolution) {
+
+        // Create a blank InternalNode for the nested tree holder.
+        node = InternalNodeUtils.create(c);
+        node.markIsNestedTreeHolder(component.getScopedContext().getTreeProps());
+
+        // 4.2 If the Component can resolve its own InternalNode.
+      } else if (component.canResolve()) {
+
+        // Copy the tree props and set it again.
+        c.setTreeProps(c.getTreePropsCopy());
+
+        // Resolve the component into an InternalNode.
+        node = (InternalNode) component.resolve(c);
+
+        // 4.3 If the Component is a MountSpec
+      } else if (ComponentsConfiguration.isConsistentComponentHierarchyExperimentEnabled
+          && Component.isMountSpec(component)) {
+
+        // Create a blank InternalNode for MountSpecs.
+        node = c.newLayoutBuilder(0, 0);
+
+        // 4.4 Create and resolve the LayoutSpec.
+      } else {
+
+        // Create the component's layout.
+        final Component root = component.createComponentLayout(c);
+
+        // Resolve the layout into an InternalNode.
+        if (root == null || root.getId() <= 0) {
+          node = null;
+        } else {
+
+          // Resolve the root component's layout.
+          node = c.resolveLayout(root);
+
+          // If the root is a layout spec which can resolve itself, add it to the InternalNode.
+          if (ComponentsConfiguration.isConsistentComponentHierarchyExperimentEnabled
+              && Component.isLayoutSpec(root)
+              && root.canResolve()) {
+            node.appendComponent(root);
+          }
+        }
+      }
+    } catch (Throwable t) {
+      throw new ComponentsChainException(component, t);
+    }
+
+    if (isTracing) {
+      ComponentsSystrace.endSection();
+    }
+
+    if (node == null || node == ComponentContext.NULL_LAYOUT) {
+      return ComponentContext.NULL_LAYOUT;
+    }
+
+    // 5. Copy common props of this Component into its InternalNode.
+    // If this is a layout spec with size spec, and we're not deferring the nested tree resolution,
+    // then we already added the props earlier on (when we did defer resolution), and
+    // therefore we shouldn't add them again here.
+    final CommonPropsCopyable commonProps = component.getCommonPropsCopyable();
+    if (commonProps != null
+        && (shouldDeferNestedTreeResolution || !Component.isLayoutSpecWithSizeSpec(component))) {
+      commonProps.copyInto(c, node);
+    }
+
+    // 6. Set the measure function.
+    // Set measure func on the root node of the generated tree so that the mount calls use
+    // those (see Controller.mountNodeTree()). Handle the case where the component simply
+    // delegates its layout creation to another component, i.e. the root node belongs to
+    // another component.
+    if (node.getTailComponent() == null) {
+      final boolean isMountSpecWithMeasure =
+          component.canMeasure() && Component.isMountSpec(component);
+      if (isMountSpecWithMeasure || shouldDeferNestedTreeResolution) {
+        node.setMeasureFunction(sMeasureFunction);
+      }
+    }
+
+    // 7. Add the component to its InternalNode.
+    node.appendComponent(component);
+
+    // 8. Create and add transition to this component's InternalNode.
+    if (TransitionUtils.areTransitionsEnabled(c.getAndroidContext())) {
+      if (component.needsPreviousRenderData()) {
+        node.addComponentNeedingPreviousRenderData(component);
+      } else {
+        final Transition transition = component.createTransition(c);
+        if (transition != null) {
+          node.addTransition(transition);
+        }
+      }
+    }
+
+    // 9. Call onPrepare for MountSpecs.
+    if (!shouldDeferNestedTreeResolution) {
+      component.onPrepare(c);
+    }
+
+    // 10. Add working ranges to the InternalNode.
+    if (component.mWorkingRangeRegistrations != null
+        && !component.mWorkingRangeRegistrations.isEmpty()) {
+      node.addWorkingRanges(component.mWorkingRangeRegistrations);
+    }
+
+    return node;
+  }
+
   final @Nullable Transition createTransition(ComponentContext c) {
     final Transition transition = onCreateTransition(c);
     if (transition != null) {
@@ -419,7 +562,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
   }
 
   @ThreadSafe(enableChecks = false)
-  private Component createComponentLayout(ComponentContext context) {
+  Component createComponentLayout(ComponentContext context) {
     Component layoutComponent = null;
     if (Component.isLayoutSpecWithSizeSpec(((Component) this))) {
       try {
