@@ -16,23 +16,13 @@
 package com.facebook.litho.intellij;
 
 import com.intellij.psi.PsiClass;
-import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
-public class LithoPluginUtilsFileTest {
+public class LithoPluginUtilsFileTest extends LithoPluginIntellijTest {
 
-  private final LithoPluginTestHelper testHelper = new LithoPluginTestHelper("testdata/file");
-
-  @Before
-  public void setUp() throws Exception {
-    testHelper.setUp();
-  }
-
-  @After
-  public void tearDown() throws Exception {
-    testHelper.tearDown();
+  public LithoPluginUtilsFileTest() {
+    super("testdata/file");
   }
 
   @Test

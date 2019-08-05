@@ -19,28 +19,18 @@ import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import com.facebook.litho.intellij.LithoPluginTestHelper;
+import com.facebook.litho.intellij.LithoPluginIntellijTest;
 import com.intellij.codeInsight.completion.CompletionType;
 import com.intellij.testFramework.fixtures.CodeInsightTestFixture;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
-public class StatePropCompletionContributorTest {
+public class StatePropCompletionContributorTest extends LithoPluginIntellijTest {
 
-  private final LithoPluginTestHelper testHelper = new LithoPluginTestHelper("testdata/completion");
-
-  @Before
-  public void setUp() throws Exception {
-    testHelper.setUp();
-  }
-
-  @After
-  public void tearDown() throws Exception {
-    testHelper.tearDown();
+  public StatePropCompletionContributorTest() {
+    super("testdata/completion");
   }
 
   @Test

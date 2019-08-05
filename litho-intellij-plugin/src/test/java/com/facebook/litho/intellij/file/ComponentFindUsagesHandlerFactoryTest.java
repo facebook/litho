@@ -17,27 +17,18 @@ package com.facebook.litho.intellij.file;
 
 import static org.junit.Assert.*;
 
-import com.facebook.litho.intellij.LithoPluginTestHelper;
+import com.facebook.litho.intellij.LithoPluginIntellijTest;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
 import java.util.Optional;
-import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-public class ComponentFindUsagesHandlerFactoryTest {
-  private final LithoPluginTestHelper testHelper = new LithoPluginTestHelper("testdata/file");
+public class ComponentFindUsagesHandlerFactoryTest extends LithoPluginIntellijTest {
 
-  @Before
-  public void setUp() throws Exception {
-    testHelper.setUp();
-  }
-
-  @After
-  public void tearDown() throws Exception {
-    testHelper.tearDown();
+  public ComponentFindUsagesHandlerFactoryTest() {
+    super("testdata/file");
   }
 
   @Test

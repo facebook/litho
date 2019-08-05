@@ -15,27 +15,17 @@
  */
 package com.facebook.litho.intellij.completion;
 
-import com.facebook.litho.intellij.LithoPluginTestHelper;
+import com.facebook.litho.intellij.LithoPluginIntellijTest;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiMethod;
 import java.util.Collections;
-import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
-public class OnEventGenerateUtilsTest {
+public class OnEventGenerateUtilsTest extends LithoPluginIntellijTest {
 
-  private final LithoPluginTestHelper testHelper = new LithoPluginTestHelper("testdata/completion");
-
-  @Before
-  public void setUp() throws Exception {
-    testHelper.setUp();
-  }
-
-  @After
-  public void tearDown() throws Exception {
-    testHelper.tearDown();
+  public OnEventGenerateUtilsTest() {
+    super("testdata/completion");
   }
 
   @Test

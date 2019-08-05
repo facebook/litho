@@ -15,26 +15,16 @@
  */
 package com.facebook.litho.intellij.foldings;
 
-import com.facebook.litho.intellij.LithoPluginTestHelper;
+import com.facebook.litho.intellij.LithoPluginIntellijTest;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.rt.execution.junit.FileComparisonFailure;
-import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
-public class DefaultPropertyFoldingBuilderTest {
+public class DefaultPropertyFoldingBuilderTest extends LithoPluginIntellijTest {
 
-  private final LithoPluginTestHelper testHelper = new LithoPluginTestHelper("testdata/foldings");
-
-  @Before
-  public void setUp() throws Exception {
-    testHelper.setUp();
-  }
-
-  @After
-  public void tearDown() throws Exception {
-    testHelper.tearDown();
+  public DefaultPropertyFoldingBuilderTest() {
+    super("testdata/foldings");
   }
 
   @Test

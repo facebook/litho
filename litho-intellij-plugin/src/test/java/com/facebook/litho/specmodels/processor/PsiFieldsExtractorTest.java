@@ -15,27 +15,17 @@
  */
 package com.facebook.litho.specmodels.processor;
 
-import com.facebook.litho.intellij.LithoPluginTestHelper;
+import com.facebook.litho.intellij.LithoPluginIntellijTest;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.FieldModel;
 import com.intellij.psi.PsiClass;
-import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
-public class PsiFieldsExtractorTest {
+public class PsiFieldsExtractorTest extends LithoPluginIntellijTest {
 
-  private final LithoPluginTestHelper testHelper = new LithoPluginTestHelper("testdata/processor");
-
-  @Before
-  public void setUp() throws Exception {
-    testHelper.setUp();
-  }
-
-  @After
-  public void tearDown() throws Exception {
-    testHelper.tearDown();
+  public PsiFieldsExtractorTest() {
+    super("testdata/processor");
   }
 
   @Test
