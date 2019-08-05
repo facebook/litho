@@ -22,28 +22,18 @@ import static org.junit.Assert.assertNotNull;
 
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.ResType;
-import com.facebook.litho.intellij.LithoPluginTestHelper;
+import com.facebook.litho.intellij.LithoPluginIntellijTest;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiParameter;
 import com.intellij.psi.PsiParameterList;
 import com.intellij.psi.util.PsiTreeUtil;
 import java.io.IOException;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
-public class PsiAnnotationProxyUtilsTest {
+public class PsiAnnotationProxyUtilsTest extends LithoPluginIntellijTest {
 
-  private final LithoPluginTestHelper testHelper = new LithoPluginTestHelper("testdata/processor");
-
-  @Before
-  public void setUp() throws Exception {
-    testHelper.setUp();
-  }
-
-  @After
-  public void tearDown() throws Exception {
-    testHelper.tearDown();
+  public PsiAnnotationProxyUtilsTest() {
+    super("testdata/processor");
   }
 
   @Test
