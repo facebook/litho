@@ -59,13 +59,17 @@ public class ComponentFindUsagesHandlerFactory extends FindUsagesHandlerFactory 
     @Override
     public PsiElement[] getPrimaryElements() {
 
-      LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_FIND_USAGES);
+      LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_FIND_USAGES + ".invoke");
 
       return Optional.of(getPsiElement())
           .filter(PsiClass.class::isInstance)
           .map(PsiClass.class::cast)
           .flatMap(findComponent)
-          .map(psiClass -> ArrayUtil.insert(super.getPrimaryElements(), 0, psiClass))
+          .map(
+              psiClass -> {
+                LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_FIND_USAGES + ".done");
+                return ArrayUtil.insert(super.getPrimaryElements(), 0, psiClass);
+              })
           .orElseGet(super::getPrimaryElements);
     }
   }

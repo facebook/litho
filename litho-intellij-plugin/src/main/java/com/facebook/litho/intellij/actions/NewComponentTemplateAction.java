@@ -22,6 +22,7 @@ import com.intellij.ide.actions.CreateFileFromTemplateAction;
 import com.intellij.ide.actions.CreateFileFromTemplateDialog;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiDirectory;
+import com.intellij.psi.PsiFile;
 
 public class NewComponentTemplateAction extends CreateFileFromTemplateAction {
 
@@ -39,12 +40,16 @@ public class NewComponentTemplateAction extends CreateFileFromTemplateAction {
   @Override
   protected void buildDialog(
       Project project, PsiDirectory directory, CreateFileFromTemplateDialog.Builder builder) {
-    LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_NEW_TEMPLATE);
-
     builder
         .setTitle(TITLE)
         .addKind("Layout Component", AllIcons.Nodes.AbstractClass, "LayoutSpec")
         .addKind("GroupSection Component", AllIcons.Nodes.AbstractClass, "GroupSectionSpec")
         .addKind("Mount Component", AllIcons.Nodes.AbstractClass, "MountSpec");
+  }
+
+  @Override
+  protected PsiFile createFile(String name, String templateName, PsiDirectory dir) {
+    LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_NEW_TEMPLATE + "." + templateName);
+    return super.createFile(name, templateName, dir);
   }
 }
