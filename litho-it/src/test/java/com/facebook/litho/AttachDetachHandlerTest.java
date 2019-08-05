@@ -64,7 +64,7 @@ public class AttachDetachHandlerTest {
               }
             });
     final AttachDetachHandler attachDetachHandler =
-        lithoView.getComponentTree().getContext().getAttachDetachHandler();
+        lithoView.getComponentTree().getAttachDetachHandler();
 
     verify(component).onAttached(any(ComponentContext.class));
     verify(component, never()).onDetached(any(ComponentContext.class));
@@ -85,7 +85,7 @@ public class AttachDetachHandlerTest {
               }
             });
     final AttachDetachHandler attachDetachHandler =
-        lithoView.getComponentTree().getContext().getAttachDetachHandler();
+        lithoView.getComponentTree().getAttachDetachHandler();
 
     lithoView.release();
 
@@ -104,7 +104,7 @@ public class AttachDetachHandlerTest {
     final Component r1 = spy(TestAttachDetachComponent.create(mContext, c1, c2).build());
     final LithoView lithoView = mountComponent(mContext, Column.create(mContext).child(r1).build());
     final AttachDetachHandler attachDetachHandler =
-        lithoView.getComponentTree().getContext().getAttachDetachHandler();
+        lithoView.getComponentTree().getAttachDetachHandler();
 
     verify(r1).onAttached(any(ComponentContext.class));
     verify(c1).onAttached(any(ComponentContext.class));
@@ -162,7 +162,7 @@ public class AttachDetachHandlerTest {
     final Component r1 = spy(TestAttachDetachComponent.create(mContext, c1, c2).build());
     final LithoView lithoView = mountComponent(mContext, Column.create(mContext).child(r1).build());
     final AttachDetachHandler attachDetachHandler =
-        lithoView.getComponentTree().getContext().getAttachDetachHandler();
+        lithoView.getComponentTree().getAttachDetachHandler();
 
     verify(r1).onAttached(any(ComponentContext.class));
     verify(c1).onAttached(any(ComponentContext.class));
@@ -387,8 +387,7 @@ public class AttachDetachHandlerTest {
 
   private static void verifyOnAttached(ComponentTree componentTree, Component component) {
     final int attachedCount = verifyOnAttached(component, 1);
-    final AttachDetachHandler attachDetachHandler =
-        componentTree.getContext().getAttachDetachHandler();
+    final AttachDetachHandler attachDetachHandler = componentTree.getAttachDetachHandler();
     assertThat(attachDetachHandler.getAttached().size()).isEqualTo(attachedCount);
   }
 

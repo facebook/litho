@@ -97,6 +97,7 @@ public class ComponentTree {
   private static boolean sBoostPerfLayoutStateFuture = false;
   private boolean mReleased;
   private String mReleasedComponent;
+  private @Nullable AttachDetachHandler mAttachDetachHandler;
 
   @IntDef({SCHEDULE_NONE, SCHEDULE_LAYOUT_ASYNC, SCHEDULE_LAYOUT_SYNC})
   @Retention(RetentionPolicy.SOURCE)
@@ -990,11 +991,10 @@ public class ComponentTree {
         mMainThreadLayoutState = localLayoutState;
       }
 
-      final AttachDetachHandler attachDetachHandler = mContext.getAttachDetachHandler();
-      if (attachDetachHandler != null) {
-        attachDetachHandler.onAttached(attachables);
+      if (mAttachDetachHandler != null) {
+        mAttachDetachHandler.onAttached(attachables);
       } else if (attachables != null) {
-        mContext.getOrCreateAttachDetachHandler().onAttached(attachables);
+        getOrCreateAttachDetachHandler().onAttached(attachables);
       }
 
       bindEventAndTriggerHandlers(components);
@@ -1838,11 +1838,11 @@ public class ComponentTree {
       if (mMeasureListener != null) {
         mMeasureListener.onSetRootAndSizeSpec(rootWidth, rootHeight);
       }
-      final AttachDetachHandler attachDetachHandler = mContext.getAttachDetachHandler();
-      if (attachDetachHandler != null) {
-        attachDetachHandler.onAttached(attachables);
+
+      if (mAttachDetachHandler != null) {
+        mAttachDetachHandler.onAttached(attachables);
       } else if (attachables != null) {
-        mContext.getOrCreateAttachDetachHandler().onAttached(attachables);
+        getOrCreateAttachDetachHandler().onAttached(attachables);
       }
     }
 
@@ -1966,10 +1966,9 @@ public class ComponentTree {
       clearUnusedTriggerHandlers();
     }
 
-    final AttachDetachHandler attachDetachHandler = mContext.getAttachDetachHandler();
-    if (attachDetachHandler != null) {
+    if (mAttachDetachHandler != null) {
       // Execute detached callbacks if necessary.
-      attachDetachHandler.onDetached();
+      mAttachDetachHandler.onDetached();
     }
   }
 
@@ -2008,6 +2007,12 @@ public class ComponentTree {
       return null;
     }
     return mStateHandler.getCachedValue(cachedValueInputs);
+  }
+
+  @VisibleForTesting
+  @Nullable
+  AttachDetachHandler getAttachDetachHandler() {
+    return mAttachDetachHandler;
   }
 
   void putCachedValue(Object cachedValueInputs, Object cachedValue) {
@@ -2277,6 +2282,19 @@ public class ComponentTree {
   @VisibleForTesting
   List<LayoutStateFuture> getLayoutStateFutures() {
     return mLayoutStateFutures;
+  }
+
+  private AttachDetachHandler getOrCreateAttachDetachHandler() {
+    AttachDetachHandler localAttachDetachHandler = mAttachDetachHandler;
+    if (localAttachDetachHandler == null) {
+      synchronized (this) {
+        localAttachDetachHandler = mAttachDetachHandler;
+        if (localAttachDetachHandler == null) {
+          mAttachDetachHandler = localAttachDetachHandler = new AttachDetachHandler();
+        }
+      }
+    }
+    return localAttachDetachHandler;
   }
 
   /** Wraps a {@link FutureTask} to deduplicate calculating the same LayoutState across threads. */

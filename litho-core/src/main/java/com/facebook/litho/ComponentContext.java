@@ -53,8 +53,6 @@ public class ComponentContext {
   /** TODO: (T38237241) remove the usage of the key handler post the nested tree experiment */
   private final @Nullable KeyHandler mKeyHandler;
 
-  private @Nullable volatile AttachDetachHandler mAttachDetachHandler;
-
   private String mNoStateUpdatesMethod;
 
   // Hold a reference to the component which scope we are currently within.
@@ -139,16 +137,6 @@ public class ComponentContext {
       @Nullable KeyHandler keyHandler,
       @Nullable TreeProps treeProps,
       @Nullable ComponentTree.LayoutStateFuture layoutStateFuture) {
-    this(context, stateHandler, null, keyHandler, treeProps, layoutStateFuture);
-  }
-
-  public ComponentContext(
-      ComponentContext context,
-      @Nullable StateHandler stateHandler,
-      @Nullable AttachDetachHandler attachDetachHandler,
-      @Nullable KeyHandler keyHandler,
-      @Nullable TreeProps treeProps,
-      @Nullable ComponentTree.LayoutStateFuture layoutStateFuture) {
 
     mContext = context.getAndroidContext();
     mResourceCache = context.mResourceCache;
@@ -165,8 +153,6 @@ public class ComponentContext {
     mYogaNodeFactory = context.mYogaNodeFactory;
 
     mStateHandler = stateHandler != null ? stateHandler : context.mStateHandler;
-    mAttachDetachHandler =
-        attachDetachHandler != null ? attachDetachHandler : context.mAttachDetachHandler;
     mKeyHandler = keyHandler != null ? keyHandler : context.mKeyHandler;
     mTreeProps = treeProps != null ? treeProps : context.mTreeProps;
     mLayoutStateFuture = layoutStateFuture == null ? context.mLayoutStateFuture : layoutStateFuture;
@@ -215,7 +201,6 @@ public class ComponentContext {
     this(
         context,
         context.mStateHandler,
-        context.mAttachDetachHandler,
         context.mKeyHandler,
         context.mTreeProps,
         context.mLayoutStateFuture);
@@ -502,24 +487,6 @@ public class ComponentContext {
   @Nullable
   StateHandler getStateHandler() {
     return mStateHandler;
-  }
-
-  AttachDetachHandler getOrCreateAttachDetachHandler() {
-    AttachDetachHandler localAttachDetachHandler = mAttachDetachHandler;
-    if (localAttachDetachHandler == null) {
-      synchronized (this) {
-        localAttachDetachHandler = mAttachDetachHandler;
-        if (localAttachDetachHandler == null) {
-          mAttachDetachHandler = localAttachDetachHandler = new AttachDetachHandler();
-        }
-      }
-    }
-    return localAttachDetachHandler;
-  }
-
-  @Nullable
-  AttachDetachHandler getAttachDetachHandler() {
-    return mAttachDetachHandler;
   }
 
   @Nullable
