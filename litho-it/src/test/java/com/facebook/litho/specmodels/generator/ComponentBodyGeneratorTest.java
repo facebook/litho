@@ -142,14 +142,9 @@ public class ComponentBodyGeneratorTest {
         @State int arg1,
         @Param Object arg2,
         @TreeProp long arg3,
-        @Prop Component arg4,
-        @Prop List<Component> arg5,
         @Prop List<String> arg6,
         @TreeProp Set<List<Row>> arg7,
         @TreeProp Set<Integer> arg8) {}
-
-    @OnUpdateState
-    public void testUpdateStateMethod() {}
 
     @OnUpdateStateWithTransition
     public void testUpdateStateWithTransitionMethod() {}
@@ -445,6 +440,39 @@ public class ComponentBodyGeneratorTest {
     assertThat(
             ComponentBodyGenerator.calculateLevelOfComponentInCollections((DeclaredTypeSpec) arg2))
         .isEqualTo(0);
+  }
+
+  @Test
+  public void testGenerateMakeShallowCopyWithStateUpdate() {
+    TypeSpecDataHolder typeSpecDataHolder =
+        ComponentBodyGenerator.generateMakeShallowCopy(mSpecModelDI, true);
+    assertThat(typeSpecDataHolder.getMethodSpecs().size()).isEqualTo(1);
+
+    assertThat(typeSpecDataHolder.getMethodSpecs().get(0).toString())
+        .isEqualTo(
+            "@java.lang.Override\n"
+                + "public Test makeShallowCopy() {\n"
+                + "  Test component = (Test) super.makeShallowCopy();\n"
+                + "  component.arg4 = component.arg4 != null ? component.arg4.makeShallowCopy() : null;\n"
+                + "  component.mStateContainer = new TestStateContainer();\n"
+                + "  return component;\n"
+                + "}\n");
+  }
+
+  @Test
+  public void testGenerateMakeShallowCopyWithOnlyStateUpdateWithTransition() {
+    TypeSpecDataHolder typeSpecDataHolder =
+        ComponentBodyGenerator.generateMakeShallowCopy(mSpecModelWithTransitionDI, true);
+    assertThat(typeSpecDataHolder.getMethodSpecs().size()).isEqualTo(1);
+
+    assertThat(typeSpecDataHolder.getMethodSpecs().get(0).toString())
+        .isEqualTo(
+            "@java.lang.Override\n"
+                + "public TestWithTransition makeShallowCopy() {\n"
+                + "  TestWithTransition component = (TestWithTransition) super.makeShallowCopy();\n"
+                + "  component.mStateContainer = new TestWithTransitionStateContainer();\n"
+                + "  return component;\n"
+                + "}\n");
   }
 
   private static class CollectionObject {

@@ -72,8 +72,7 @@ public class ComponentBodyGenerator {
   private ComponentBodyGenerator() {}
 
   public static TypeSpecDataHolder generate(
-      SpecModel specModel,
-      @Nullable MethodParamModel optionalField) {
+      SpecModel specModel, @Nullable MethodParamModel optionalField) {
     final TypeSpecDataHolder.Builder builder = TypeSpecDataHolder.newBuilder();
 
     final boolean hasState = !specModel.getStateValues().isEmpty();
@@ -148,8 +147,9 @@ public class ComponentBodyGenerator {
 
     final String copyParamName = "info";
     final String recordParamName = "component";
-    final MethodSpec.Builder copyBuilder = MethodSpec.methodBuilder("copy")
-        .addParameter(ClassName.bestGuess(className), copyParamName);
+    final MethodSpec.Builder copyBuilder =
+        MethodSpec.methodBuilder("copy")
+            .addParameter(ClassName.bestGuess(className), copyParamName);
     final MethodSpec.Builder recordBuilder =
         MethodSpec.methodBuilder("record")
             .addParameter(specModel.getComponentTypeName(), recordParamName);
@@ -160,34 +160,36 @@ public class ComponentBodyGenerator {
 
       if (modelToDiff == null) {
         throw new RuntimeException(
-            "Got Diff of a param that doesn't seem to exist: " + diff.getName() + ". This should " +
-                "have been caught in the validation pass.");
+            "Got Diff of a param that doesn't seem to exist: "
+                + diff.getName()
+                + ". This should "
+                + "have been caught in the validation pass.");
       }
 
       if (!(modelToDiff instanceof PropModel || modelToDiff instanceof StateParamModel)) {
         throw new RuntimeException(
-            "Got Diff of a param that is not a @Prop or @State! (" + diff.getName() + ", a " +
-                modelToDiff.getClass().getSimpleName() + "). This should have been caught in the " +
-                "validation pass.");
+            "Got Diff of a param that is not a @Prop or @State! ("
+                + diff.getName()
+                + ", a "
+                + modelToDiff.getClass().getSimpleName()
+                + "). This should have been caught in the "
+                + "validation pass.");
       }
 
       final String name = modelToDiff.getName();
       if (modelToDiff instanceof PropModel) {
-        renderInfoClassBuilder.addField(FieldSpec.builder(
-            modelToDiff.getTypeName(),
-            name).addAnnotation(Prop.class).build());
+        renderInfoClassBuilder.addField(
+            FieldSpec.builder(modelToDiff.getTypeName(), name).addAnnotation(Prop.class).build());
       } else {
-        renderInfoClassBuilder.addField(FieldSpec.builder(
-            modelToDiff.getTypeName(),
-            modelToDiff.getName()).addAnnotation(State.class).build());
+        renderInfoClassBuilder.addField(
+            FieldSpec.builder(modelToDiff.getTypeName(), modelToDiff.getName())
+                .addAnnotation(State.class)
+                .build());
       }
 
       copyBuilder.addStatement("$L = $L.$L", name, copyParamName, name);
       recordBuilder.addStatement(
-          "$L = $L.$L",
-          name,
-          recordParamName,
-          getImplAccessor(specModel, modelToDiff));
+          "$L = $L.$L", name, recordParamName, getImplAccessor(specModel, modelToDiff));
     }
 
     return renderInfoClassBuilder
@@ -282,9 +284,7 @@ public class ComponentBodyGenerator {
               .generateInjectedFields(specModel.getInjectProps()));
 
       final List<MethodSpec> testAccessors =
-          specModel
-              .getInjectProps()
-              .stream()
+          specModel.getInjectProps().stream()
               .map(p -> specModel.getDependencyInjectionHelper().generateTestingFieldAccessor(p))
               .collect(Collectors.toList());
       typeSpecDataHolder.addMethods(testAccessors);
@@ -331,8 +331,7 @@ public class ComponentBodyGenerator {
     for (EventDeclarationModel eventDeclaration : specModel.getEventDeclarations()) {
       typeSpecDataHolder.addField(
           FieldSpec.builder(
-              ClassNames.EVENT_HANDLER,
-              getEventHandlerInstanceName(eventDeclaration.name))
+                  ClassNames.EVENT_HANDLER, getEventHandlerInstanceName(eventDeclaration.name))
               .build());
     }
 
@@ -341,9 +340,9 @@ public class ComponentBodyGenerator {
 
   static String getEventHandlerInstanceName(ClassName eventHandlerClassName) {
     final String eventHandlerName = eventHandlerClassName.simpleName();
-    return eventHandlerName.substring(0, 1).toLowerCase(Locale.ROOT) +
-        eventHandlerName.substring(1) +
-        "Handler";
+    return eventHandlerName.substring(0, 1).toLowerCase(Locale.ROOT)
+        + eventHandlerName.substring(1)
+        + "Handler";
   }
 
   static TypeSpecDataHolder generateEventTriggers(SpecModel specModel) {
@@ -427,12 +426,8 @@ public class ComponentBodyGenerator {
               .addStatement("$N $N = ($N) component", className, instanceName, className);
 
       for (InterStageInputParamModel interStageInput : interStageInputs) {
-        copyInterStageComponentBuilder
-            .addStatement(
-                "$N = $N.$N",
-                interStageInput.getName(),
-                instanceName,
-                interStageInput.getName());
+        copyInterStageComponentBuilder.addStatement(
+            "$N = $N.$N", interStageInput.getName(), instanceName, interStageInput.getName());
       }
 
       typeSpecDataHolder.addMethod(copyInterStageComponentBuilder.build());
@@ -453,11 +448,15 @@ public class ComponentBodyGenerator {
         specModel.getInterStageInputs();
     final ImmutableList<SpecMethodModel<UpdateStateMethod, Void>> updateStateMethodModels =
         specModel.getUpdateStateMethods();
+    final @Nullable ImmutableList<SpecMethodModel<UpdateStateMethod, Void>>
+        updateStateWithTransitionMethodModels = specModel.getUpdateStateWithTransitionMethods();
     final boolean hasDeepCopy = specModel.hasDeepCopy();
 
-    if (componentsInImpl.isEmpty() &&
-        interStageComponentVariables.isEmpty() &&
-        updateStateMethodModels.isEmpty()) {
+    if (componentsInImpl.isEmpty()
+        && interStageComponentVariables.isEmpty()
+        && updateStateMethodModels.isEmpty()
+        && (updateStateWithTransitionMethodModels == null
+            || updateStateWithTransitionMethodModels.isEmpty())) {
       return typeSpecDataHolder.build();
     }
 
@@ -785,8 +784,8 @@ public class ComponentBodyGenerator {
 
   static String getImplAccessor(
       SpecModel specModel, MethodParamModel methodParamModel, boolean shallow) {
-    if (methodParamModel instanceof StateParamModel ||
-        SpecModelUtils.getStateValueWithName(specModel, methodParamModel.getName()) != null) {
+    if (methodParamModel instanceof StateParamModel
+        || SpecModelUtils.getStateValueWithName(specModel, methodParamModel.getName()) != null) {
       return STATE_CONTAINER_FIELD_NAME + "." + methodParamModel.getName();
     } else if (methodParamModel instanceof CachedValueParamModel) {
       return "get"
@@ -814,9 +813,7 @@ public class ComponentBodyGenerator {
     DeclaredTypeSpec declaredTypeSpec = typeSpec;
     while (declaredTypeSpec.isSubInterface(ClassNames.COLLECTION)) {
       Optional<DeclaredTypeSpec> result =
-          declaredTypeSpec
-              .getTypeArguments()
-              .stream()
+          declaredTypeSpec.getTypeArguments().stream()
               .filter(it -> it != null && it instanceof DeclaredTypeSpec)
               .findFirst()
               .map(it -> (DeclaredTypeSpec) it);
