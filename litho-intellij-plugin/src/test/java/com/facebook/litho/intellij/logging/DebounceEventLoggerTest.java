@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.facebook.litho.intellij.navigation;
+package com.facebook.litho.intellij.logging;
 
 import com.facebook.litho.intellij.extensions.EventLogger;
 import java.util.Map;
