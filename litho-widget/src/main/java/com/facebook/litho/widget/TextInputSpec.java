@@ -33,6 +33,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.Editable;
 import android.text.InputFilter;
+import android.text.Spannable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.method.ArrowKeyMovementMethod;
@@ -75,7 +76,8 @@ import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nullable;
 
 /**
- * Component that renders an editable text input using an android {@link EditText}.
+ * Component that renders an editable text input using an android {@link EditText}. It is measured
+ * based on the input text {@link String} representation.
  *
  * <p>Performance is critical for good user experience. Follow these tips for good performance:
  *
@@ -250,6 +252,11 @@ class TextInputSpec {
 
     // The height should be the measured height of EditText with relevant params
     final EditText forMeasure = new ForMeasureEditText(c.getAndroidContext());
+    // If text contains Spans, we don't want it to be mutable for the measurement case
+    CharSequence text = savedText.get();
+    if (text instanceof Spannable) {
+      text = text.toString();
+    }
     setParams(
         forMeasure,
         hint,
@@ -279,7 +286,7 @@ class TextInputSpec {
         // onMeasure happens:
         // 1. After initState before onMount: savedText = initText.
         // 2. After onMount before onUnmount: savedText preserved from underlying editText.
-        savedText.get());
+        text);
     forMeasure.measure(
         MeasureUtils.getViewMeasureSpec(widthSpec), MeasureUtils.getViewMeasureSpec(heightSpec));
 
