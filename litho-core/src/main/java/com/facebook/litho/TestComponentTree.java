@@ -76,7 +76,7 @@ public class TestComponentTree extends ComponentTree {
 
   @VisibleForTesting
   @Override
-  public void mountComponent(Rect currentVisibleArea, boolean processVisibilityOutputs) {
+  public void mountComponent(@Nullable Rect currentVisibleArea, boolean processVisibilityOutputs) {
     super.mountComponent(currentVisibleArea, processVisibilityOutputs);
   }
 

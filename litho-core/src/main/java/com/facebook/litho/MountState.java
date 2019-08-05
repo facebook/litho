@@ -209,12 +209,13 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   /**
    * Mount the layoutState on the pre-set HostView.
    *
-   * @param layoutState
+   * @param layoutState a new {@link LayoutState} to mount
    * @param localVisibleRect If this variable is null, then mount everything, since incremental
    *     mount is not enabled. Otherwise mount only what the rect (in local coordinates) contains
    * @param processVisibilityOutputs whether to process visibility outputs as part of the mount
    */
-  void mount(LayoutState layoutState, Rect localVisibleRect, boolean processVisibilityOutputs) {
+  void mount(
+      LayoutState layoutState, @Nullable Rect localVisibleRect, boolean processVisibilityOutputs) {
     assertMainThread();
 
     if (layoutState == null) {
@@ -502,7 +503,9 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   }
 
   void processVisibilityOutputs(
-      LayoutState layoutState, Rect localVisibleRect, @Nullable PerfEvent mountPerfEvent) {
+      LayoutState layoutState,
+      @Nullable Rect localVisibleRect,
+      @Nullable PerfEvent mountPerfEvent) {
     assertMainThread();
 
     if (localVisibleRect == null) {

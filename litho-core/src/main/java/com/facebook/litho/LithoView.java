@@ -766,7 +766,11 @@ public class LithoView extends ComponentHost {
     }
   }
 
-  void mount(LayoutState layoutState, Rect currentVisibleArea, boolean processVisibilityOutputs) {
+  void mount(
+      LayoutState layoutState,
+      @Nullable Rect currentVisibleArea,
+      boolean processVisibilityOutputs) {
+
     if (mTransientStateCount > 0
         && mComponentTree != null
         && mComponentTree.isIncrementalMountEnabled()) {

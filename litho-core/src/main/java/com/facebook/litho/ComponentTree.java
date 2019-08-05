@@ -760,10 +760,11 @@ public class ComponentTree {
         || isCompatibleSpec(mBackgroundLayoutState, widthSpec, heightSpec);
   }
 
-  void mountComponent(Rect currentVisibleArea, boolean processVisibilityOutputs) {
+  void mountComponent(@Nullable Rect currentVisibleArea, boolean processVisibilityOutputs) {
     assertMainThread();
 
-    if (mMainThreadLayoutState == null) {
+    final LayoutState layoutState = mMainThreadLayoutState;
+    if (layoutState == null) {
       Log.w(TAG, "Main Thread Layout state is not found");
       return;
     }
@@ -786,10 +787,10 @@ public class ComponentTree {
     }
 
     // currentVisibleArea null or empty => mount all
-    mLithoView.mount(mMainThreadLayoutState, currentVisibleArea, processVisibilityOutputs);
+    mLithoView.mount(layoutState, currentVisibleArea, processVisibilityOutputs);
 
     if (isDirtyMount) {
-      recordRenderData(mMainThreadLayoutState);
+      recordRenderData(layoutState);
     }
 
     mIsMounting = false;
