@@ -13,21 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.facebook.litho.intellij.navigation;
+package com.facebook.litho.intellij.logging;
 
 import com.facebook.litho.intellij.extensions.EventLogger;
-import com.facebook.litho.intellij.logging.LithoLoggerProvider;
 import com.google.common.annotations.VisibleForTesting;
-
 import java.util.Map;
 
 /** Only logs an event if a particular timespanMillis has passed without it logging another event */
-class DebounceEventLogger implements EventLogger {
+public class DebounceEventLogger implements EventLogger {
   private final EventLogger eventLogger;
   private final long timespanMillis;
   private long lastTimeMillis = 0;
 
-  DebounceEventLogger(long timespanMillis) {
+  public DebounceEventLogger(long timespanMillis) {
     this(timespanMillis, LithoLoggerProvider.getEventLogger());
   }
 

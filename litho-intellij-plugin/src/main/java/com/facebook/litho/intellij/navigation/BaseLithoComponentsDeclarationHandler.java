@@ -17,6 +17,7 @@ package com.facebook.litho.intellij.navigation;
 
 import com.facebook.litho.intellij.LithoPluginUtils;
 import com.facebook.litho.intellij.extensions.EventLogger;
+import com.facebook.litho.intellij.logging.DebounceEventLogger;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.JavaPsiFacade;
 import com.intellij.psi.PsiClass;
@@ -36,7 +37,7 @@ import javax.annotation.Nullable;
 
 /** Utility class helping resolve component class to componentSpec class. */
 class BaseLithoComponentsDeclarationHandler {
-  static final EventLogger logger = new DebounceEventLogger(500);
+  static final EventLogger logger = new DebounceEventLogger(4_000);
 
   private BaseLithoComponentsDeclarationHandler() {}
 

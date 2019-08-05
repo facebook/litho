@@ -19,7 +19,7 @@ import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.intellij.LithoPluginUtils;
 import com.facebook.litho.intellij.completion.ComponentGenerateUtils;
 import com.facebook.litho.intellij.extensions.EventLogger;
-import com.facebook.litho.intellij.logging.LithoLoggerProvider;
+import com.facebook.litho.intellij.logging.DebounceEventLogger;
 import com.google.common.annotations.VisibleForTesting;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.Document;
@@ -40,12 +40,14 @@ import java.util.function.Consumer;
  */
 public class ComponentFileListener implements FileDocumentManagerListener {
   private static final String TAG = EventLogger.EVENT_GENERATE_COMPONENT + ".saving";
+  private static final EventLogger logger =
+      new DebounceEventLogger(60 /*minutes*/ * 60 /*seconds*/ * 1000);
   private final Consumer<PsiClass> savingFileConsumer;
 
   public ComponentFileListener() {
     this(
         layoutSpecCls -> {
-          LithoLoggerProvider.getEventLogger().log(TAG);
+          logger.log(TAG);
           ComponentGenerateUtils.updateLayoutComponent(layoutSpecCls);
         });
   }
