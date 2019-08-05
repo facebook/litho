@@ -151,6 +151,7 @@ public class ComponentTree {
   // These variables are only accessed from the main thread.
   @ThreadConfined(ThreadConfined.UI)
   private boolean mIsMounting;
+
   @ThreadConfined(ThreadConfined.UI)
   private final boolean mIncrementalMountEnabled;
 
@@ -159,8 +160,10 @@ public class ComponentTree {
 
   @ThreadConfined(ThreadConfined.UI)
   private boolean mIsAttached;
+
   @ThreadConfined(ThreadConfined.UI)
   private final boolean mIsAsyncUpdateStateEnabled;
+
   @ThreadConfined(ThreadConfined.UI)
   private LithoView mLithoView;
 
@@ -225,8 +228,7 @@ public class ComponentTree {
 
   // This is written to only by the main thread with the lock held, read from the main thread with
   // no lock held, or read from any other thread with the lock held.
-  @Nullable
-  private LayoutState mMainThreadLayoutState;
+  @Nullable private LayoutState mMainThreadLayoutState;
 
   // The semantics here are tricky. Whenever you transfer mBackgroundLayoutState to a local that
   // will be accessed outside of the lock, you must set mBackgroundLayoutState to null to ensure
@@ -248,6 +250,7 @@ public class ComponentTree {
 
   @GuardedBy("this")
   private boolean mIsMeasuring;
+
   @PendingLayoutCalculation
   @GuardedBy("this")
   private int mScheduleLayoutAfterMeasure;
@@ -520,10 +523,7 @@ public class ComponentTree {
 
     final boolean needsAndroidLayout =
         !isCompatibleComponentAndSize(
-            mMainThreadLayoutState,
-            componentRootId,
-            viewWidth,
-            viewHeight);
+            mMainThreadLayoutState, componentRootId, viewWidth, viewHeight);
 
     if (needsAndroidLayout) {
       mLithoView.requestLayout();
@@ -591,10 +591,7 @@ public class ComponentTree {
 
     final boolean needsAndroidLayout =
         !isCompatibleComponentAndSize(
-            mMainThreadLayoutState,
-            componentRootId,
-            viewWidth,
-            viewHeight);
+            mMainThreadLayoutState, componentRootId, viewWidth, viewHeight);
 
     if (needsAndroidLayout || mLithoView.isMountStateDirty()) {
       mLithoView.requestLayout();
@@ -630,8 +627,8 @@ public class ComponentTree {
     assertMainThread();
 
     if (!mIncrementalMountEnabled) {
-      throw new IllegalStateException("Calling incrementalMountComponent() but incremental mount" +
-          " is not enabled");
+      throw new IllegalStateException(
+          "Calling incrementalMountComponent() but incremental mount" + " is not enabled");
     }
 
     if (mLithoView == null) {
@@ -841,9 +838,9 @@ public class ComponentTree {
   }
 
   /**
-   * Set a new LithoView to this ComponentTree checking that they have the same context and
-   * clear the ComponentTree reference from the previous LithoView if any.
-   * Be sure this ComponentTree is detach first.
+   * Set a new LithoView to this ComponentTree checking that they have the same context and clear
+   * the ComponentTree reference from the previous LithoView if any. Be sure this ComponentTree is
+   * detach first.
    */
   void setLithoView(@NonNull LithoView view) {
     assertMainThread();
@@ -865,8 +862,10 @@ public class ComponentTree {
     if (!hasSameRootContext(view.getContext(), mContext.getAndroidContext())) {
       // This would indicate bad things happening, like leaking a context.
       throw new IllegalArgumentException(
-          "Base view context differs, view context is: " + view.getContext() +
-              ", ComponentTree context is: " + mContext);
+          "Base view context differs, view context is: "
+              + view.getContext()
+              + ", ComponentTree context is: "
+              + mContext);
     }
 
     mLithoView = view;
@@ -877,8 +876,7 @@ public class ComponentTree {
 
     // Crash if the ComponentTree is mounted to a view.
     if (mIsAttached) {
-      throw new IllegalStateException(
-          "Clearing the LithoView while the ComponentTree is attached");
+      throw new IllegalStateException("Clearing the LithoView while the ComponentTree is attached");
     }
 
     mLithoView = null;
@@ -1038,18 +1036,14 @@ public class ComponentTree {
     }
   }
 
-  /**
-   * Returns {@code true} if the layout call mounted the component.
-   */
+  /** Returns {@code true} if the layout call mounted the component. */
   boolean layout() {
     assertMainThread();
 
     return mountComponentIfNeeded();
   }
 
-  /**
-   * Returns whether incremental mount is enabled or not in this component.
-   */
+  /** Returns whether incremental mount is enabled or not in this component. */
   public boolean isIncrementalMountEnabled() {
     return mIncrementalMountEnabled;
   }
@@ -1178,8 +1172,8 @@ public class ComponentTree {
     if (looper == null) {
       Log.w(
           TAG,
-          "You cannot update state synchronously from a thread without a looper, " +
-              "using the default background layout thread instead");
+          "You cannot update state synchronously from a thread without a looper, "
+              + "using the default background layout thread instead");
       synchronized (mUpdateStateSyncRunnableLock) {
         if (mUpdateStateSyncRunnable != null) {
           mLayoutThreadHandler.remove(mUpdateStateSyncRunnable);
@@ -1219,8 +1213,9 @@ public class ComponentTree {
 
   void updateStateAsync(String componentKey, StateUpdate stateUpdate, String attribution) {
     if (!mIsAsyncUpdateStateEnabled) {
-      throw new RuntimeException("Triggering async state updates on this component tree is " +
-          "disabled, use sync state updates.");
+      throw new RuntimeException(
+          "Triggering async state updates on this component tree is "
+              + "disabled, use sync state updates.");
     }
 
     synchronized (this) {
@@ -1240,7 +1235,6 @@ public class ComponentTree {
     final @Nullable TreeProps rootTreeProps;
 
     synchronized (this) {
-
       if (mRoot == null) {
         return;
       }
@@ -1351,8 +1345,8 @@ public class ComponentTree {
   }
 
   /**
-   * Same as {@link #setSizeSpec(int, int)} but fetches the resulting width/height
-   * in the given {@link Size}.
+   * Same as {@link #setSizeSpec(int, int)} but fetches the resulting width/height in the given
+   * {@link Size}.
    */
   public void setSizeSpec(int widthSpec, int heightSpec, Size output) {
     setRootAndSizeSpecInternal(
@@ -1378,9 +1372,7 @@ public class ComponentTree {
         null);
   }
 
-  /**
-   * Compute asynchronously a new layout with the given component root and sizes
-   */
+  /** Compute asynchronously a new layout with the given component root and sizes */
   public void setRootAndSizeSpecAsync(Component root, int widthSpec, int heightSpec) {
     if (root == null) {
       throw new IllegalArgumentException("Root component can't be null");
@@ -1417,9 +1409,7 @@ public class ComponentTree {
         treeProps);
   }
 
-  /**
-   * Compute a new layout with the given component root and sizes
-   */
+  /** Compute a new layout with the given component root and sizes */
   public void setRootAndSizeSpec(Component root, int widthSpec, int heightSpec) {
     if (root == null) {
       throw new IllegalArgumentException("Root component can't be null");
@@ -1469,9 +1459,7 @@ public class ComponentTree {
         treeProps);
   }
 
-  /**
-   * @return the {@link LithoView} associated with this ComponentTree if any.
-   */
+  /** @return the {@link LithoView} associated with this ComponentTree if any. */
   @Keep
   @Nullable
   public LithoView getLithoView() {
@@ -1526,8 +1514,7 @@ public class ComponentTree {
 
     final Map<String, Rect> componentKeysToBounds;
     synchronized (this) {
-      componentKeysToBounds =
-          mMainThreadLayoutState.getComponentKeyToBounds();
+      componentKeysToBounds = mMainThreadLayoutState.getComponentKeyToBounds();
     }
 
     if (!componentKeysToBounds.containsKey(anchorGlobalKey)) {
@@ -1537,12 +1524,7 @@ public class ComponentTree {
 
     final Rect anchorBounds = componentKeysToBounds.get(anchorGlobalKey);
     LithoTooltipController.showOnAnchor(
-        tooltip,
-        anchorBounds,
-        mLithoView,
-        tooltipPosition,
-        xOffset,
-        yOffset);
+        tooltip, anchorBounds, mLithoView, tooltipPosition, xOffset, yOffset);
   }
 
   void showTooltip(LithoTooltip lithoTooltip, String anchorGlobalKey, int xOffset, int yOffset) {
@@ -1634,15 +1616,15 @@ public class ComponentTree {
       final LayoutState mostRecentLayoutState =
           mBackgroundLayoutState != null ? mBackgroundLayoutState : mMainThreadLayoutState;
       final boolean allSpecsWereInitialized =
-          widthSpecInitialized &&
-              heightSpecInitialized &&
-              mWidthSpec != SIZE_UNINITIALIZED &&
-              mHeightSpec != SIZE_UNINITIALIZED;
+          widthSpecInitialized
+              && heightSpecInitialized
+              && mWidthSpec != SIZE_UNINITIALIZED
+              && mHeightSpec != SIZE_UNINITIALIZED;
       final boolean sizeSpecsAreCompatible =
-          sizeSpecDidntChange ||
-              (allSpecsWereInitialized &&
-                  mostRecentLayoutState != null &&
-                  LayoutState.hasCompatibleSizeSpec(
+          sizeSpecDidntChange
+              || (allSpecsWereInitialized
+                  && mostRecentLayoutState != null
+                  && LayoutState.hasCompatibleSizeSpec(
                       mWidthSpec,
                       mHeightSpec,
                       widthSpec,
@@ -1685,8 +1667,8 @@ public class ComponentTree {
     }
 
     if (isAsync && output != null) {
-      throw new IllegalArgumentException("The layout can't be calculated asynchronously if" +
-          " we need the Size back");
+      throw new IllegalArgumentException(
+          "The layout can't be calculated asynchronously if" + " we need the Size back");
     }
 
     final LayoutStateFuture layoutStateFuture =
@@ -1903,9 +1885,9 @@ public class ComponentTree {
   }
 
   /**
-   * Transfer mBackgroundLayoutState to mMainThreadLayoutState. This will proxy
-   * to the main thread if necessary. If the component/size-spec changes in the
-   * meantime, then the transfer will be aborted.
+   * Transfer mBackgroundLayoutState to mMainThreadLayoutState. This will proxy to the main thread
+   * if necessary. If the component/size-spec changes in the meantime, then the transfer will be
+   * aborted.
    */
   private void postBackgroundLayoutStateUpdated() {
     if (isMainThread()) {
@@ -1924,10 +1906,10 @@ public class ComponentTree {
   }
 
   /**
-   * The contract is that in order to release a ComponentTree, you must do so from the main
-   * thread, or guarantee that it will never be accessed from the main thread again. Usually
-   * HostView will handle releasing, but if you never attach to a host view, then you should call
-   * release yourself.
+   * The contract is that in order to release a ComponentTree, you must do so from the main thread,
+   * or guarantee that it will never be accessed from the main thread again. Usually HostView will
+   * handle releasing, but if you never attach to a host view, then you should call release
+   * yourself.
    */
   public void release() {
     if (mIsMounting) {
@@ -1995,8 +1977,8 @@ public class ComponentTree {
   private boolean isCompatibleComponentAndSpec(LayoutState layoutState) {
     assertHoldsLock(this);
 
-    return mRoot != null && isCompatibleComponentAndSpec(
-        layoutState, mRoot.getId(), mWidthSpec, mHeightSpec);
+    return mRoot != null
+        && isCompatibleComponentAndSpec(layoutState, mRoot.getId(), mWidthSpec, mHeightSpec);
   }
 
   // Either the MainThreadLayout or the BackgroundThreadLayout is compatible with the current state.
@@ -2012,8 +1994,7 @@ public class ComponentTree {
   private boolean hasSizeSpec() {
     assertHoldsLock(this);
 
-    return mWidthSpec != SIZE_UNINITIALIZED
-        && mHeightSpec != SIZE_UNINITIALIZED;
+    return mWidthSpec != SIZE_UNINITIALIZED && mHeightSpec != SIZE_UNINITIALIZED;
   }
 
   @Nullable
@@ -2057,8 +2038,7 @@ public class ComponentTree {
     return sDefaultPreallocateMountContentThreadLooper;
   }
 
-  private static boolean isCompatibleSpec(
-      LayoutState layoutState, int widthSpec, int heightSpec) {
+  private static boolean isCompatibleSpec(LayoutState layoutState, int widthSpec, int heightSpec) {
     return layoutState != null
         && layoutState.isCompatibleSpec(widthSpec, heightSpec)
         && layoutState.isCompatibleAccessibility();
@@ -2197,51 +2177,51 @@ public class ComponentTree {
       @CalculateLayoutSource int source,
       @Nullable String extraAttribution) {
 
-      LayoutStateFuture localLayoutStateFuture =
-          new LayoutStateFuture(
-              context,
-              root,
-              widthSpec,
-              heightSpec,
-              diffingEnabled,
-              previousLayoutState,
-              treeProps,
-              source,
-              extraAttribution);
-      final boolean waitingFromSyncLayout = localLayoutStateFuture.isFromSyncLayout;
+    LayoutStateFuture localLayoutStateFuture =
+        new LayoutStateFuture(
+            context,
+            root,
+            widthSpec,
+            heightSpec,
+            diffingEnabled,
+            previousLayoutState,
+            treeProps,
+            source,
+            extraAttribution);
+    final boolean waitingFromSyncLayout = localLayoutStateFuture.isFromSyncLayout;
 
-      synchronized (mLayoutStateFutureLock) {
-        boolean canReuse = false;
-        for (int i = 0; i < mLayoutStateFutures.size(); i++) {
-          final LayoutStateFuture runningLsf = mLayoutStateFutures.get(i);
-          if (!runningLsf.isReleased() && runningLsf.equals(localLayoutStateFuture)) {
-            // Use the latest LayoutState calculation if it's the same.
-            localLayoutStateFuture = runningLsf;
-            canReuse = true;
-            break;
-          }
-        }
-        if (!canReuse) {
-          mLayoutStateFutures.add(localLayoutStateFuture);
-        }
-
-        localLayoutStateFuture.registerForResponse(waitingFromSyncLayout);
-      }
-
-      final LayoutState layoutState = localLayoutStateFuture.runAndGet();
-
-      synchronized (mLayoutStateFutureLock) {
-        localLayoutStateFuture.unregisterForResponse();
-
-        // This future has finished executing, if no other threads were waiting for the response we
-        // can remove it.
-        if (localLayoutStateFuture.getWaitingCount() == 0) {
-          localLayoutStateFuture.release();
-          mLayoutStateFutures.remove(localLayoutStateFuture);
+    synchronized (mLayoutStateFutureLock) {
+      boolean canReuse = false;
+      for (int i = 0; i < mLayoutStateFutures.size(); i++) {
+        final LayoutStateFuture runningLsf = mLayoutStateFutures.get(i);
+        if (!runningLsf.isReleased() && runningLsf.equals(localLayoutStateFuture)) {
+          // Use the latest LayoutState calculation if it's the same.
+          localLayoutStateFuture = runningLsf;
+          canReuse = true;
+          break;
         }
       }
+      if (!canReuse) {
+        mLayoutStateFutures.add(localLayoutStateFuture);
+      }
 
-      return layoutState;
+      localLayoutStateFuture.registerForResponse(waitingFromSyncLayout);
+    }
+
+    final LayoutState layoutState = localLayoutStateFuture.runAndGet();
+
+    synchronized (mLayoutStateFutureLock) {
+      localLayoutStateFuture.unregisterForResponse();
+
+      // This future has finished executing, if no other threads were waiting for the response we
+      // can remove it.
+      if (localLayoutStateFuture.getWaitingCount() == 0) {
+        localLayoutStateFuture.release();
+        mLayoutStateFutures.remove(localLayoutStateFuture);
+      }
+    }
+
+    return layoutState;
   }
 
   private LayoutState calculateLayoutStateInternal(
@@ -2696,9 +2676,7 @@ public class ComponentTree {
     mMeasureListener = measureListener;
   }
 
-  /**
-   * A builder class that can be used to create a {@link ComponentTree}.
-   */
+  /** A builder class that can be used to create a {@link ComponentTree}. */
   public static class Builder {
 
     // required
@@ -2744,22 +2722,21 @@ public class ComponentTree {
     }
 
     /**
-     * Whether or not to enable layout tree diffing. This will reduce the cost of
-     * updates at the expense of using extra memory. True by default.
+     * Whether or not to enable layout tree diffing. This will reduce the cost of updates at the
+     * expense of using extra memory. True by default.
      *
-     * @Deprecated We will remove this option soon, please consider turning it on (which is on by
-     * default)
+     * <p>We will remove this option soon, please consider turning it on (which is on by default)
      */
+    @Deprecated
     public Builder layoutDiffing(boolean enabled) {
       isLayoutDiffingEnabled = enabled;
       return this;
     }
 
     /**
-     * Specify the looper to use for running layouts on. Note that in rare cases
-     * layout must run on the UI thread. For example, if you rotate the screen,
-     * we must measure on the UI thread. If you don't specify a Looper here, the
-     * Components default Looper will be used.
+     * Specify the looper to use for running layouts on. Note that in rare cases layout must run on
+     * the UI thread. For example, if you rotate the screen, we must measure on the UI thread. If
+     * you don't specify a Looper here, the Components default Looper will be used.
      */
     public Builder layoutThreadLooper(Looper looper) {
       if (looper != null) {
@@ -2823,9 +2800,7 @@ public class ComponentTree {
       return this;
     }
 
-    /**
-     * Specify whether the ComponentTree allows async state updates. This is enabled by default.
-     */
+    /** Specify whether the ComponentTree allows async state updates. This is enabled by default. */
     public Builder asyncStateUpdates(boolean enabled) {
       this.asyncStateUpdates = enabled;
       return this;
@@ -2869,7 +2844,6 @@ public class ComponentTree {
       this.nestedTreeResolutionExperimentEnabled = isEnabled;
       return this;
     }
-
 
     /** Sets if is reconciliation is enabled */
     public Builder isReconciliationEnabled(boolean isEnabled) {
