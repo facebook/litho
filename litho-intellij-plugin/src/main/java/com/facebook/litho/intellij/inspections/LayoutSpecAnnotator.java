@@ -17,8 +17,9 @@ package com.facebook.litho.intellij.inspections;
 
 import com.facebook.litho.intellij.completion.ComponentGenerateUtils;
 import com.facebook.litho.intellij.extensions.EventLogger;
-import com.facebook.litho.intellij.logging.LithoLoggerProvider;
+import com.facebook.litho.intellij.logging.DebounceEventLogger;
 import com.facebook.litho.specmodels.internal.RunMode;
+import com.facebook.litho.specmodels.model.LayoutSpecModel;
 import com.facebook.litho.specmodels.model.SpecModelValidationError;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
@@ -31,11 +32,11 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Annotator that uses {@link com.facebook.litho.specmodels.model.LayoutSpecModel} validation to
- * annotate class with error messages. This re-uses Litho implementation done during compile-time
- * check.
+ * Annotator that uses {@link LayoutSpecModel} validation to annotate class with error messages.
+ * This re-uses Litho compile-time check.
  */
 public class LayoutSpecAnnotator implements Annotator {
+  private static final EventLogger logger = new DebounceEventLogger(4_000);
 
   @Override
   public void annotate(PsiElement element, AnnotationHolder holder) {
@@ -47,7 +48,7 @@ public class LayoutSpecAnnotator implements Annotator {
             .map(model -> model.validate(RunMode.normal()))
             .orElse(Collections.emptyList());
     if (errors.size() > 0) {
-      LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_ANNOTATOR);
+      logger.log(EventLogger.EVENT_ANNOTATOR);
     }
     errors.forEach(error -> addError(holder, error));
   }
