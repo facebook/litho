@@ -5263,6 +5263,62 @@ public class RecyclerBinderTest {
     assertThat(layoutManager.getBgPaddingInfo()).isEqualTo(new Rect(10, 10, 10, 10));
   }
 
+  @Test
+  public void testIncrementalMountDisabledWhenParentIncrementalMountIsDisabled() {
+    final ComponentContext parentContext =
+        new ComponentContext(mComponentContext.getAndroidContext());
+    final ComponentTree parent =
+        ComponentTree.create(mComponentContext, TestDrawableComponent.create(parentContext).build())
+            .incrementalMount(false)
+            .build();
+
+    assertThat(ComponentContext.isIncrementalMountDisabled(parent.getContext())).isTrue();
+
+    final RecyclerBinder recyclerBinder =
+        new RecyclerBinder.Builder()
+            .rangeRatio(RANGE_RATIO)
+            .layoutInfo(
+                new LinearLayoutInfo(mComponentContext, OrientationHelper.HORIZONTAL, false))
+            .build(parent.getContext());
+
+    recyclerBinder.measure(
+        new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
+    recyclerBinder.insertItemAt(0, TestDrawableComponent.create(parent.getContext()).build());
+    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+
+    final ComponentTree childTree = recyclerBinder.getComponentAt(0);
+    assertThat(childTree).isNotNull();
+    assertThat(childTree.isIncrementalMountEnabled()).isFalse();
+  }
+
+  @Test
+  public void testIncrementalMountEnabledWhenParentIncrementalMountIsEnabled() {
+    final ComponentContext parentContext =
+        new ComponentContext(mComponentContext.getAndroidContext());
+    final ComponentTree parent =
+        ComponentTree.create(mComponentContext, TestDrawableComponent.create(parentContext).build())
+            .incrementalMount(true)
+            .build();
+
+    assertThat(ComponentContext.isIncrementalMountDisabled(parent.getContext())).isFalse();
+
+    final RecyclerBinder recyclerBinder =
+        new RecyclerBinder.Builder()
+            .rangeRatio(RANGE_RATIO)
+            .layoutInfo(
+                new LinearLayoutInfo(mComponentContext, OrientationHelper.HORIZONTAL, false))
+            .build(parent.getContext());
+
+    recyclerBinder.measure(
+        new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
+    recyclerBinder.insertItemAt(0, TestDrawableComponent.create(parent.getContext()).build());
+    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+
+    final ComponentTree childTree = recyclerBinder.getComponentAt(0);
+    assertThat(childTree).isNotNull();
+    assertThat(childTree.isIncrementalMountEnabled()).isTrue();
+  }
+
   private RecyclerBinder createRecyclerBinderWithMockAdapter(RecyclerView.Adapter adapterMock) {
     return new RecyclerBinder.Builder()
         .rangeRatio(RANGE_RATIO)

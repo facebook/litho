@@ -28,10 +28,15 @@ import static org.assertj.core.condition.AnyOf.anyOf;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assume.assumeThat;
 
+import android.text.TextUtils;
+import android.view.View;
+import android.view.ViewGroup;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
+import com.facebook.litho.Row;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.common.SingleComponentSection;
@@ -240,5 +245,72 @@ public class RecyclerCollectionComponentSpecTest {
         .hasVisibleText("content")
         .doesNotHaveVisibleText("empty")
         .doesNotHaveVisibleText("error");
+  }
+
+  @Test
+  public void testNestedIncrementalMountDisabled() {
+    LithoView view =
+        ComponentTestHelper.mountComponent(
+            mComponentContext,
+            RecyclerCollectionComponent.create(mComponentContext)
+                .section(
+                    SingleComponentSection.create(new SectionContext(mComponentContext))
+                        .component(
+                            Row.create(mComponentContext)
+                                .viewTag("rv_row")
+                                .heightDip(100)
+                                .widthDip(100))
+                        .build())
+                .build(),
+            false);
+
+    final LithoView childView = (LithoView) findViewWithTag(view, "rv_row");
+    assertThat(childView).isNotNull();
+    assertThat(childView.getComponentTree().isIncrementalMountEnabled()).isFalse();
+  }
+
+  @Test
+  public void testNestedIncrementalMountNormal() {
+    LithoView view =
+        ComponentTestHelper.mountComponent(
+            mComponentContext,
+            RecyclerCollectionComponent.create(mComponentContext)
+                .section(
+                    SingleComponentSection.create(new SectionContext(mComponentContext))
+                        .component(
+                            Row.create(mComponentContext)
+                                .viewTag("rv_row")
+                                .heightDip(100)
+                                .widthDip(100))
+                        .build())
+                .build(),
+            true);
+
+    final LithoView childView = (LithoView) findViewWithTag(view, "rv_row");
+    assertThat(childView).isNotNull();
+    assertThat(childView.getComponentTree().isIncrementalMountEnabled()).isTrue();
+  }
+
+  @Nullable
+  private static View findViewWithTag(@Nullable View root, @Nullable String tag) {
+    if (root == null || TextUtils.isEmpty(tag)) {
+      return null;
+    }
+
+    if (tag.equals(root.getTag())) {
+      return root;
+    }
+
+    if (root instanceof ViewGroup) {
+      ViewGroup vg = (ViewGroup) root;
+      for (int i = 0; i < vg.getChildCount(); i++) {
+        View v = findViewWithTag(vg.getChildAt(i), tag);
+        if (v != null) {
+          return v;
+        }
+      }
+    }
+
+    return null;
   }
 }
