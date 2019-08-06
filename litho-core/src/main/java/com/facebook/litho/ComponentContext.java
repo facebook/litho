@@ -508,7 +508,7 @@ public class ComponentContext {
     }
   }
 
-  boolean isParentIncrementalMountDisabled() {
+  public boolean isParentIncrementalMountDisabled() {
     return mIsParentIncrementalMountDisabled;
   }
 

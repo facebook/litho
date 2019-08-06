@@ -45,7 +45,8 @@ public class SectionContext extends ComponentContext {
         context.getAndroidContext(),
         context.getLogTag(),
         context.getLogger(),
-        context.getTreePropsCopy());
+        context.getTreePropsCopy(),
+        context.isParentIncrementalMountDisabled());
   }
 
   public SectionContext(Context context, @Nullable String logTag, ComponentsLogger logger) {
@@ -57,8 +58,16 @@ public class SectionContext extends ComponentContext {
       @Nullable String logTag,
       ComponentsLogger logger,
       @Nullable TreeProps treeProps) {
-    super(context, logTag, logger);
-    super.setTreeProps(treeProps);
+    this(context, logTag, logger, treeProps, false);
+  }
+
+  public SectionContext(
+      Context context,
+      @Nullable String logTag,
+      ComponentsLogger logger,
+      @Nullable TreeProps treeProps,
+      boolean isParentIncrementalMountDisabled) {
+    super(context, logTag, logger, null, null, treeProps, null, isParentIncrementalMountDisabled);
     mKeyHandler = new KeyHandler();
   }
 
