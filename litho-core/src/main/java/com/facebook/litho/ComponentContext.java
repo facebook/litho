@@ -86,12 +86,6 @@ public class ComponentContext {
   @ThreadConfined(ThreadConfined.ANY)
   private int mDefStyleAttr = 0;
 
-  // The parent in this case is the ComponentTree that this ComponentContext/ComponentTree is nested
-  // within. For example, in an HScroll, the ComponentTree for each item in the list has a parent
-  // of the ComponentTree for the HScroll itself. If it has incremental mount disabled, it won't
-  // work for the children either so we need to disable it there as well.
-  private final boolean mIsParentIncrementalMountDisabled;
-
   private ComponentTree.LayoutStateFuture mLayoutStateFuture;
 
   public ComponentContext(
@@ -101,8 +95,7 @@ public class ComponentContext {
       @Nullable StateHandler stateHandler,
       @Nullable KeyHandler keyHandler,
       @Nullable TreeProps treeProps,
-      YogaNodeFactory yogaNodeFactory,
-      boolean isParentIncrementalMountDisabled) {
+      YogaNodeFactory yogaNodeFactory) {
 
     if (logger != null && logTag == null) {
       throw new IllegalStateException("When a ComponentsLogger is set, a LogTag must be set");
@@ -117,18 +110,6 @@ public class ComponentContext {
     mStateHandler = stateHandler;
     mKeyHandler = keyHandler;
     mYogaNodeFactory = yogaNodeFactory;
-    mIsParentIncrementalMountDisabled = isParentIncrementalMountDisabled;
-  }
-
-  public ComponentContext(
-      Context context,
-      @Nullable String logTag,
-      ComponentsLogger logger,
-      @Nullable StateHandler stateHandler,
-      @Nullable KeyHandler keyHandler,
-      @Nullable TreeProps treeProps,
-      YogaNodeFactory yogaNodeFactory) {
-    this(context, logTag, logger, stateHandler, keyHandler, treeProps, yogaNodeFactory, false);
   }
 
   public ComponentContext(
@@ -156,7 +137,6 @@ public class ComponentContext {
     mKeyHandler = keyHandler != null ? keyHandler : context.mKeyHandler;
     mTreeProps = treeProps != null ? treeProps : context.mTreeProps;
     mLayoutStateFuture = layoutStateFuture == null ? context.mLayoutStateFuture : layoutStateFuture;
-    mIsParentIncrementalMountDisabled = context.mIsParentIncrementalMountDisabled;
   }
 
   public ComponentContext(
@@ -506,10 +486,6 @@ public class ComponentContext {
 
       setDefStyle(0, 0);
     }
-  }
-
-  boolean isParentIncrementalMountDisabled() {
-    return mIsParentIncrementalMountDisabled;
   }
 
   static ComponentContext withComponentTree(ComponentContext context, ComponentTree componentTree) {

@@ -285,16 +285,11 @@ public class ComponentTree {
   protected ComponentTree(Builder builder) {
     mContext = ComponentContext.withComponentTree(builder.context, this);
     mRoot = wrapRootInErrorBoundary(builder.root);
-
-    // Incremental mount will not work if this ComponentTree is nested in a parent with it turned
-    // off, so always disable it in that case
-    mIncrementalMountEnabled =
-        builder.incrementalMountEnabled && !mContext.isParentIncrementalMountDisabled();
+    mIncrementalMountEnabled = builder.incrementalMountEnabled;
     mIsLayoutDiffingEnabled = builder.isLayoutDiffingEnabled;
     mLayoutThreadHandler = builder.layoutThreadHandler;
     mShouldPreallocatePerMountSpec = builder.shouldPreallocatePerMountSpec;
     mPreAllocateMountContentHandler = builder.preAllocateMountContentHandler;
-
     mIsAsyncUpdateStateEnabled = builder.asyncStateUpdates;
     mHasMounted = builder.hasMounted;
     mMeasureListener = builder.mMeasureListener;

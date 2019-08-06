@@ -683,8 +683,11 @@ public class RecyclerBinder
               null,
               null,
               c.getTreePropsCopy(),
-              c.getYogaNodeFactory(),
-              ComponentContext.isIncrementalMountDisabled(c));
+              c.getYogaNodeFactory());
+
+      // Incremental mount will not work if this ComponentTree is nested in a parent with it turned
+      // off, so always disable it in that case
+      incrementalMount = incrementalMount && !ComponentContext.isIncrementalMountDisabled(c);
 
       if (layoutInfo == null) {
         layoutInfo = new LinearLayoutInfo(c.getAndroidContext(), VERTICAL, false);
