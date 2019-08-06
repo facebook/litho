@@ -2222,30 +2222,6 @@ public class ComponentTree {
     return layoutState;
   }
 
-  private ComponentContext getNewContextForLayout(
-      ComponentContext context,
-      @Nullable TreeProps treeProps,
-      @Nullable LayoutStateFuture layoutStateFuture) {
-    final ComponentContext contextWithStateHandler;
-
-    synchronized (this) {
-      final KeyHandler keyHandler =
-          (ComponentsConfiguration.useGlobalKeys || ComponentsConfiguration.isDebugModeEnabled)
-              ? new KeyHandler(mContext.getLogger())
-              : null;
-
-      contextWithStateHandler =
-          new ComponentContext(
-              context,
-              StateHandler.createNewInstance(mStateHandler),
-              keyHandler,
-              treeProps,
-              layoutStateFuture);
-    }
-
-    return contextWithStateHandler;
-  }
-
   @VisibleForTesting
   List<LayoutStateFuture> getLayoutStateFutures() {
     return mLayoutStateFutures;
@@ -2346,8 +2322,7 @@ public class ComponentTree {
                   || ComponentTree.this.mUseCancelableLayoutFutures
               ? LayoutStateFuture.this
               : null;
-      final ComponentContext contextWithStateHandler =
-          ComponentTree.this.getNewContextForLayout(context, treeProps, layoutStateFuture);
+      final ComponentContext contextWithStateHandler = getNewContextForLayout(layoutStateFuture);
 
       return LayoutState.calculate(
           contextWithStateHandler,
@@ -2359,6 +2334,27 @@ public class ComponentTree {
           previousLayoutState,
           source,
           extraAttribution);
+    }
+
+    private ComponentContext getNewContextForLayout(@Nullable LayoutStateFuture layoutStateFuture) {
+      final ComponentContext contextWithStateHandler;
+
+      synchronized (ComponentTree.this) {
+        final KeyHandler keyHandler =
+            (ComponentsConfiguration.useGlobalKeys || ComponentsConfiguration.isDebugModeEnabled)
+                ? new KeyHandler(ComponentTree.this.mContext.getLogger())
+                : null;
+
+        contextWithStateHandler =
+            new ComponentContext(
+                context,
+                StateHandler.createNewInstance(ComponentTree.this.mStateHandler),
+                keyHandler,
+                treeProps,
+                layoutStateFuture);
+      }
+
+      return contextWithStateHandler;
     }
 
     private boolean isFromSyncLayout(@CalculateLayoutSource int source) {
@@ -2569,10 +2565,7 @@ public class ComponentTree {
       }
       final LayoutState result =
           LayoutState.resumeCalculate(
-              getNewContextForLayout(context, treeProps, null),
-              source,
-              extraAttribution,
-              partialLayoutState);
+              getNewContextForLayout(null), source, extraAttribution, partialLayoutState);
 
       synchronized (LayoutStateFuture.this) {
         return released ? null : result;
