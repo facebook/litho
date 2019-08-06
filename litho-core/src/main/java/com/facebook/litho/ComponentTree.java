@@ -2229,32 +2229,6 @@ public class ComponentTree {
     return layoutState;
   }
 
-  private LayoutState calculateLayoutStateInternal(
-      ComponentContext context,
-      Component root,
-      int widthSpec,
-      int heightSpec,
-      boolean diffingEnabled,
-      @Nullable LayoutState previousLayoutState,
-      @Nullable TreeProps treeProps,
-      @CalculateLayoutSource int source,
-      @Nullable String extraAttribution,
-      @Nullable LayoutStateFuture layoutStateFuture) {
-    final ComponentContext contextWithStateHandler =
-        getNewContextForLayout(context, treeProps, layoutStateFuture);
-
-    return LayoutState.calculate(
-        contextWithStateHandler,
-        root,
-        mId,
-        widthSpec,
-        heightSpec,
-        diffingEnabled,
-        previousLayoutState,
-        source,
-        extraAttribution);
-  }
-
   private ComponentContext getNewContextForLayout(
       ComponentContext context,
       @Nullable TreeProps treeProps,
@@ -2359,21 +2333,7 @@ public class ComponentTree {
                       return null;
                     }
                   }
-                  final LayoutState result =
-                      calculateLayoutStateInternal(
-                          context,
-                          root,
-                          widthSpec,
-                          heightSpec,
-                          diffingEnabled,
-                          previousLayoutState,
-                          treeProps,
-                          source,
-                          extraAttribution,
-                          ComponentTree.this.mMoveLayoutsBetweenThreads
-                                  || ComponentTree.this.mUseCancelableLayoutFutures
-                              ? LayoutStateFuture.this
-                              : null);
+                  final LayoutState result = calculateLayoutStateInternal();
                   synchronized (LayoutStateFuture.this) {
                     if (released) {
                       return null;
@@ -2384,6 +2344,28 @@ public class ComponentTree {
                   }
                 }
               });
+    }
+
+    private LayoutState calculateLayoutStateInternal() {
+      @Nullable
+      LayoutStateFuture layoutStateFuture =
+          ComponentTree.this.mMoveLayoutsBetweenThreads
+                  || ComponentTree.this.mUseCancelableLayoutFutures
+              ? LayoutStateFuture.this
+              : null;
+      final ComponentContext contextWithStateHandler =
+          ComponentTree.this.getNewContextForLayout(context, treeProps, layoutStateFuture);
+
+      return LayoutState.calculate(
+          contextWithStateHandler,
+          root,
+          ComponentTree.this.mId,
+          widthSpec,
+          heightSpec,
+          diffingEnabled,
+          previousLayoutState,
+          source,
+          extraAttribution);
     }
 
     private boolean isFromSyncLayout(@CalculateLayoutSource int source) {
