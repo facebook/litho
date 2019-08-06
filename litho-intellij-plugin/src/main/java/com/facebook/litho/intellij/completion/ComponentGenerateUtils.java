@@ -47,13 +47,14 @@ public class ComponentGenerateUtils {
    * class doesn't contain {@link LayoutSpec}.
    *
    * @param layoutSpecCls class containing {@link LayoutSpec} class.
+   * @return true, if Component file was updated. False otherwise.
    */
-  public static void updateLayoutComponent(PsiClass layoutSpecCls) {
+  public static boolean updateLayoutComponent(PsiClass layoutSpecCls) {
     SpecModel model = createLayoutModel(layoutSpecCls);
     if (model == null) {
-      return;
+      return false;
     }
-    updateComponent(layoutSpecCls.getProject(), layoutSpecCls.getQualifiedName(), model);
+    return updateComponent(layoutSpecCls.getProject(), layoutSpecCls.getQualifiedName(), model);
   }
 
   /**
@@ -75,10 +76,13 @@ public class ComponentGenerateUtils {
    *
    * @param qualifiedSpecName fully qualified name of the Spec class to update Component for.
    * @param specModel {@link SpecModel} of the Spec class
+   * @return true, if the Component file was updated. False otherwise.
    */
-  private static void updateComponent(
+  private static boolean updateComponent(
       Project project, String qualifiedSpecName, SpecModel specModel) {
-    new ComponentUpdater(project, specModel).tryCreate(qualifiedSpecName);
+    PsiElement[] psiElements =
+        new ComponentUpdater(project, specModel).tryCreate(qualifiedSpecName);
+    return psiElements.length > 0;
   }
 
   private static class ComponentUpdater extends ElementCreator {

@@ -47,8 +47,9 @@ public class ComponentFileListener implements FileDocumentManagerListener {
   public ComponentFileListener() {
     this(
         layoutSpecCls -> {
-          logger.log(TAG);
-          ComponentGenerateUtils.updateLayoutComponent(layoutSpecCls);
+          if (ComponentGenerateUtils.updateLayoutComponent(layoutSpecCls)) {
+            logger.log(TAG);
+          }
         });
   }
 
