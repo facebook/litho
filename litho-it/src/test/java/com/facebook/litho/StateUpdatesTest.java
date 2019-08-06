@@ -191,7 +191,7 @@ public class StateUpdatesTest {
     setup(false, false);
   }
 
-  public void setup(boolean enableNestedTreeResolutionExperiment, boolean enableComponentTreeSpy) {
+  public void setup(boolean isReconciliationEnabled, boolean enableComponentTreeSpy) {
     mComponentsLogger = new TestComponentsLogger();
     mContext = new ComponentContext(RuntimeEnvironment.application, mLogTag, mComponentsLogger);
     mWidthSpec = makeSizeSpec(39, EXACTLY);
@@ -205,7 +205,7 @@ public class StateUpdatesTest {
 
     mComponentTree =
         ComponentTree.create(mContext, mTestComponent)
-            .enableNestedTreeResolutionExperiment(enableNestedTreeResolutionExperiment)
+            .isReconciliationEnabled(isReconciliationEnabled)
             .build();
 
     if (enableComponentTreeSpy) {

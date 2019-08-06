@@ -53,7 +53,6 @@ public class StateUpdatesWithReconciliationTest {
   public void before() {
     ComponentsConfiguration.isEndToEndTestRun = true;
     ComponentsConfiguration.isReconciliationEnabled = true;
-    ComponentsConfiguration.isNestedTreeResolutionExperimentEnabled = true;
 
     NodeConfig.sInternalNodeFactory =
         new NodeConfig.InternalNodeFactory() {
@@ -81,7 +80,6 @@ public class StateUpdatesWithReconciliationTest {
   public void after() {
     ComponentsConfiguration.isEndToEndTestRun = false;
     ComponentsConfiguration.isReconciliationEnabled = false;
-    ComponentsConfiguration.isNestedTreeResolutionExperimentEnabled = false;
     NodeConfig.sInternalNodeFactory = null;
   }
 

@@ -298,7 +298,7 @@ public abstract class Component extends ComponentLifecycle
       return childKey;
     }
 
-    if (mScopedContext.isNestedTreeResolutionExperimentEnabled()) {
+    if (mScopedContext.isReconciliationEnabled()) {
       /*
        Instead of relying on the KeyHandler to hold all registered keys and check for duplicates
        against it; this implementation checks if the key (read child type) is unique within it's
@@ -578,8 +578,7 @@ public abstract class Component extends ComponentLifecycle
   protected void updateInternalChildState(ComponentContext parentContext) {
     if (ComponentsConfiguration.isDebugModeEnabled || ComponentsConfiguration.useGlobalKeys) {
 
-      final boolean isRefactoredKeyGenerationEnabled =
-          parentContext.isNestedTreeResolutionExperimentEnabled();
+      final boolean isRefactoredKeyGenerationEnabled = parentContext.isReconciliationEnabled();
 
       // allow overriding global key if the NestedTreeResolution Experiment is disabled
       if (!isRefactoredKeyGenerationEnabled || getGlobalKey() == null) {

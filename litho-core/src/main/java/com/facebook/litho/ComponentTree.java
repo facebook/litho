@@ -145,7 +145,6 @@ public class ComponentTree {
   private @Nullable UpdateStateSyncRunnable mUpdateStateSyncRunnable;
 
   private final ComponentContext mContext;
-  private final boolean mNestedTreeResolutionExperimentEnabled;
 
   @Nullable private LithoHandler mPreAllocateMountContentHandler;
 
@@ -299,7 +298,6 @@ public class ComponentTree {
     mIsAsyncUpdateStateEnabled = builder.asyncStateUpdates;
     mHasMounted = builder.hasMounted;
     mMeasureListener = builder.mMeasureListener;
-    mNestedTreeResolutionExperimentEnabled = builder.nestedTreeResolutionExperimentEnabled;
     mUseCancelableLayoutFutures = builder.useCancelableLayoutFutures;
     mMoveLayoutsBetweenThreads = builder.canInterruptAndMoveLayoutsBetweenThreads;
     isReconciliationEnabled = builder.isReconciliationEnabled;
@@ -984,7 +982,7 @@ public class ComponentTree {
         components = new ArrayList<>(localLayoutState.getComponents());
         attachables = localLayoutState.consumeAttachables();
         if (layoutStateStateHandler != null) {
-          mStateHandler.commit(layoutStateStateHandler, mNestedTreeResolutionExperimentEnabled);
+          mStateHandler.commit(layoutStateStateHandler, isReconciliationEnabled);
         }
 
         localLayoutState.clearComponents();
@@ -1046,11 +1044,6 @@ public class ComponentTree {
   /** Returns whether incremental mount is enabled or not in this component. */
   public boolean isIncrementalMountEnabled() {
     return mIncrementalMountEnabled;
-  }
-
-  /** Whether the refactored implementation of nested tree resolution should be used. */
-  public boolean isNestedTreeResolutionExperimentEnabled() {
-    return mNestedTreeResolutionExperimentEnabled;
   }
 
   public boolean isReconciliationEnabled() {
@@ -1814,7 +1807,7 @@ public class ComponentTree {
         final StateHandler layoutStateStateHandler = localLayoutState.consumeStateHandler();
         if (layoutStateStateHandler != null) {
           if (mStateHandler != null) { // we could have been released
-            mStateHandler.commit(layoutStateStateHandler, mNestedTreeResolutionExperimentEnabled);
+            mStateHandler.commit(layoutStateStateHandler, isReconciliationEnabled);
           }
         }
 
@@ -2696,8 +2689,6 @@ public class ComponentTree {
     private @Nullable MeasureListener mMeasureListener;
     private boolean shouldPreallocatePerMountSpec;
     private boolean canPreallocateOnDefaultHandler;
-    private boolean nestedTreeResolutionExperimentEnabled =
-        ComponentsConfiguration.isNestedTreeResolutionExperimentEnabled;
     private boolean isReconciliationEnabled = ComponentsConfiguration.isReconciliationEnabled;
     private boolean canInterruptAndMoveLayoutsBetweenThreads =
         ComponentsConfiguration.canInterruptAndMoveLayoutsBetweenThreads;
@@ -2827,21 +2818,6 @@ public class ComponentTree {
 
     public Builder measureListener(MeasureListener measureListener) {
       this.mMeasureListener = measureListener;
-      return this;
-    }
-
-    /**
-     * Whether the refactored implementation of nested tree resolution should be used. This
-     * implementation fixes the following issue during nested tree resolution:
-     *
-     * <ul>
-     *   <li>disallows overriding global keys
-     *   <li>fixes incorrect global key generation
-     *   <li>applies state updates only once
-     * </ul>
-     */
-    public Builder enableNestedTreeResolutionExperiment(boolean isEnabled) {
-      this.nestedTreeResolutionExperimentEnabled = isEnabled;
       return this;
     }
 

@@ -254,7 +254,7 @@ public class ComponentLifecycleTest {
 
   @Test
   public void testOnShouldCreateLayoutWithNewSizeSpec_FirstCall() {
-    ComponentsConfiguration.isNestedTreeResolutionExperimentEnabled = true;
+    ComponentsConfiguration.isReconciliationEnabled = true;
     ComponentsConfiguration.enableShouldCreateLayoutWithNewSizeSpec = true;
 
     Component component;
@@ -277,12 +277,12 @@ public class ComponentLifecycleTest {
         .onCreateLayoutWithSizeSpec(mContext, mContext.getWidthSpec(), mContext.getHeightSpec());
 
     ComponentsConfiguration.enableShouldCreateLayoutWithNewSizeSpec = false;
-    ComponentsConfiguration.isNestedTreeResolutionExperimentEnabled = false;
+    ComponentsConfiguration.isReconciliationEnabled = false;
   }
 
   @Test
   public void testOnShouldCreateLayoutWithNewSizeSpec_shouldUseCache() {
-    ComponentsConfiguration.isNestedTreeResolutionExperimentEnabled = true;
+    ComponentsConfiguration.isReconciliationEnabled = true;
     ComponentsConfiguration.enableShouldCreateLayoutWithNewSizeSpec = true;
 
     Component component;
@@ -331,12 +331,12 @@ public class ComponentLifecycleTest {
     LayoutState.remeasureTree(resolved, 100, 100);
 
     ComponentsConfiguration.enableShouldCreateLayoutWithNewSizeSpec = false;
-    ComponentsConfiguration.isNestedTreeResolutionExperimentEnabled = false;
+    ComponentsConfiguration.isReconciliationEnabled = false;
   }
 
   @Test
   public void testOnShouldCreateLayoutWithNewSizeSpec_shouldNotUseCache() {
-    ComponentsConfiguration.isNestedTreeResolutionExperimentEnabled = true;
+    ComponentsConfiguration.isReconciliationEnabled = true;
     ComponentsConfiguration.enableShouldCreateLayoutWithNewSizeSpec = true;
 
     Component component;
@@ -381,7 +381,7 @@ public class ComponentLifecycleTest {
     LayoutState.createAndMeasureTreeForComponent(mContext, component, 100, 100, holder, null, null, null);
 
     ComponentsConfiguration.enableShouldCreateLayoutWithNewSizeSpec = false;
-    ComponentsConfiguration.isNestedTreeResolutionExperimentEnabled = false;
+    ComponentsConfiguration.isReconciliationEnabled = false;
   }
 
   @Test
@@ -461,7 +461,7 @@ public class ComponentLifecycleTest {
     when(LayoutState.resolveNestedTree(eq(mContext), eq(mNode), anyInt(), anyInt()))
         .thenReturn(nestedTree);
     when(mNode.getContext()).thenReturn(mContext);
-    when(mContext.isNestedTreeResolutionExperimentEnabled()).thenReturn(true);
+    when(mContext.isReconciliationEnabled()).thenReturn(true);
     when(mNode.getParent()).thenReturn(mNode);
 
     when(mNode.getContext()).thenReturn(mContext);

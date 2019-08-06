@@ -548,15 +548,6 @@ public class ComponentContext {
     return c.mComponentTree != null && !c.mComponentTree.isIncrementalMountEnabled();
   }
 
-  /** Whether the refactored implementation of nested tree resolution should be used. */
-  public boolean isNestedTreeResolutionExperimentEnabled() {
-    if (getComponentTree() != null) {
-      return getComponentTree().isNestedTreeResolutionExperimentEnabled();
-    } else {
-      return false;
-    }
-  }
-
   boolean wasLayoutCanceled() {
     return mLayoutStateFuture == null ? false : mLayoutStateFuture.isReleased();
   }

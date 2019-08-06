@@ -47,14 +47,14 @@ public class ComponentGlobalKeyWithExperimentTest {
 
   @Before
   public void setup() {
-    ComponentsConfiguration.isNestedTreeResolutionExperimentEnabled = true;
+    ComponentsConfiguration.isReconciliationEnabled = true;
     mComponentsLogger = new TestComponentsLogger();
     mContext = new ComponentContext(RuntimeEnvironment.application, mLogTag, mComponentsLogger);
   }
 
   @After
   public void after() {
-    ComponentsConfiguration.isNestedTreeResolutionExperimentEnabled = false;
+    ComponentsConfiguration.isReconciliationEnabled = false;
   }
 
   @Test

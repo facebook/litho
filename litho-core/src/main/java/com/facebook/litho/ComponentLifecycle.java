@@ -139,7 +139,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
             ComponentContext context = node.getContext();
 
             // TODO: (T39009736) evaluate why the parent is null sometimes
-            if (context.isNestedTreeResolutionExperimentEnabled()) {
+            if (context.isReconciliationEnabled()) {
               if (node.getParent() != null) {
                 context = node.getParent().getContext();
               } else if (context.getLogger() != null) {

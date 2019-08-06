@@ -610,9 +610,7 @@ class LayoutState {
       }
       InternalNode nestedTree =
           resolveNestedTree(
-              parentContext.isNestedTreeResolutionExperimentEnabled()
-                  ? parentContext
-                  : node.getContext(),
+              parentContext.isReconciliationEnabled() ? parentContext : node.getContext(),
               node,
               SizeSpec.makeSizeSpec(node.getWidth(), EXACTLY),
               SizeSpec.makeSizeSpec(node.getHeight(), EXACTLY));
@@ -1684,7 +1682,7 @@ class LayoutState {
       } else {
 
         final Component root = holder.getTailComponent();
-        if (context.isNestedTreeResolutionExperimentEnabled() && root != null) {
+        if (context.isReconciliationEnabled() && root != null) {
           /*
            * We create a shallow copy of the component to ensure that component is resolved
            * without any side effects caused by it's current internal state. In this case the

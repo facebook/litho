@@ -394,7 +394,6 @@ public class ComponentTreeHolder {
       if (isReconciliationEnabled != null) {
         builder.layoutDiffing(!(boolean) isReconciliationEnabled);
         builder.isReconciliationEnabled((boolean) isReconciliationEnabled);
-        builder.enableNestedTreeResolutionExperiment((boolean) isReconciliationEnabled);
       } else if (layoutDiffingEnabledAttr != null) {
         builder.layoutDiffing((boolean) layoutDiffingEnabledAttr);
       }

@@ -224,7 +224,7 @@ public class AttachDetachHandlerTest {
 
   @Test
   public void testMultipleSetSizeSpecWithNestedTree() {
-    ComponentsConfiguration.isNestedTreeResolutionExperimentEnabled = true;
+    ComponentsConfiguration.isReconciliationEnabled = true;
     ComponentsConfiguration.enableShouldCreateLayoutWithNewSizeSpec = true;
 
     final Component c1 = spy(TestAttachDetachComponent.create(mContext).build());
@@ -236,12 +236,12 @@ public class AttachDetachHandlerTest {
     testSetSizeSpec(mContext, component, 20);
 
     ComponentsConfiguration.enableShouldCreateLayoutWithNewSizeSpec = false;
-    ComponentsConfiguration.isNestedTreeResolutionExperimentEnabled = false;
+    ComponentsConfiguration.isReconciliationEnabled = false;
   }
 
   @Test
   public void testMultipleSetRootAndSizeSpecWithNestedTree() {
-    ComponentsConfiguration.isNestedTreeResolutionExperimentEnabled = true;
+    ComponentsConfiguration.isReconciliationEnabled = true;
     ComponentsConfiguration.enableShouldCreateLayoutWithNewSizeSpec = true;
 
     final Component c1 = spy(TestAttachDetachComponent.create(mContext).build());
@@ -253,7 +253,7 @@ public class AttachDetachHandlerTest {
     testSetRootAndSizeSpec(mContext, component, 20);
 
     ComponentsConfiguration.enableShouldCreateLayoutWithNewSizeSpec = false;
-    ComponentsConfiguration.isNestedTreeResolutionExperimentEnabled = false;
+    ComponentsConfiguration.isReconciliationEnabled = false;
   }
 
   @Test
