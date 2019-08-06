@@ -44,10 +44,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.concurrent.GuardedBy;
 
 /**
- * {@link ComponentLifecycle} is extended by the {@link Component} class and declare
- * methods used by a {@link Component} instances to calculate their layout bounds
- * and mount elements, among other things. This is the base class from which all new component
- * types inherit.
+ * {@link ComponentLifecycle} is extended by the {@link Component} class and declare methods used by
+ * a {@link Component} instances to calculate their layout bounds and mount elements, among other
+ * things. This is the base class from which all new component types inherit.
  */
 public abstract class ComponentLifecycle implements EventDispatcher, EventTriggerTarget {
   private static final AtomicInteger sComponentTypeId = new AtomicInteger();
@@ -378,8 +377,8 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     // delegates its layout creation to another component i.e. the root node belongs to
     // another component.
     if (node.getTailComponent() == null) {
-      final boolean isMountSpecWithMeasure = canMeasure()
-          && Component.isMountSpec((Component) this);
+      final boolean isMountSpecWithMeasure =
+          canMeasure() && Component.isMountSpec((Component) this);
 
       if (isMountSpecWithMeasure || deferNestedTreeResolution) {
         node.setMeasureFunction(sMeasureFunction);
@@ -470,10 +469,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     }
   }
 
-  void loadStyle(
-      ComponentContext c,
-      @AttrRes int defStyleAttr,
-      @StyleRes int defStyleRes) {
+  void loadStyle(ComponentContext c, @AttrRes int defStyleAttr, @StyleRes int defStyleRes) {
     c.setDefStyle(defStyleAttr, defStyleRes);
     onLoadStyle(c);
     c.setDefStyle(0, 0);
@@ -484,18 +480,13 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
   }
 
   /**
-   * Retrieves all of the tree props used by this Component from the TreeProps map
-   * and sets the tree props as fields on the ComponentImpl.
+   * Retrieves all of the tree props used by this Component from the TreeProps map and sets the tree
+   * props as fields on the ComponentImpl.
    */
-  protected void populateTreeProps(TreeProps parentTreeProps) {
-  }
+  protected void populateTreeProps(TreeProps parentTreeProps) {}
 
-  /**
-   * Updates the TreeProps map with outputs from all {@link OnCreateTreeProp} methods.
-   */
-  protected TreeProps getTreePropsForChildren(
-      ComponentContext c,
-      TreeProps previousTreeProps) {
+  /** Updates the TreeProps map with outputs from all {@link OnCreateTreeProp} methods. */
+  protected TreeProps getTreePropsForChildren(ComponentContext c, TreeProps previousTreeProps) {
     return previousTreeProps;
   }
 
@@ -528,8 +519,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     // do nothing, by default
   }
 
-  protected void onLoadStyle(ComponentContext c) {
-  }
+  protected void onLoadStyle(ComponentContext c) {}
 
   /**
    * Called after the layout calculation is finished and the given {@link ComponentLayout} has its
@@ -554,8 +544,8 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
   }
 
   /**
-   * Whether this {@link ComponentLifecycle} is able to measure itself according
-   * to specific size constraints.
+   * Whether this {@link ComponentLifecycle} is able to measure itself according to specific size
+   * constraints.
    */
   protected boolean canMeasure() {
     return false;
@@ -586,9 +576,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     return false;
   }
 
-  /**
-   * Whether this drawable mount spec should cache its drawing in a display list.
-   */
+  /** Whether this drawable mount spec should cache its drawing in a display list. */
   protected boolean shouldUseDisplayList() {
     return false;
   }
@@ -660,6 +648,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
 
   /**
    * Populate an extra accessibility node.
+   *
    * @param accessibilityNode node to populate
    * @param extraNodeIndex index of extra node
    * @param componentBoundsX left bound of the mounted component
@@ -669,15 +658,15 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
       AccessibilityNodeInfoCompat accessibilityNode,
       int extraNodeIndex,
       int componentBoundsX,
-      int componentBoundsY) {
-  }
+      int componentBoundsY) {}
 
   /**
    * Get extra accessibility node id at a given point within the component.
+   *
    * @param x x co-ordinate within the mounted component
    * @param y y co-ordinate within the mounted component
-   * @return the extra virtual view id if one is found, otherwise
-   *         {@code ExploreByTouchHelper#INVALID_ID}
+   * @return the extra virtual view id if one is found, otherwise {@code
+   *     ExploreByTouchHelper#INVALID_ID}
    */
   protected int getExtraAccessibilityNodeAt(int x, int y) {
     return ExploreByTouchHelper.INVALID_ID;
@@ -686,6 +675,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
   /**
    * The number of extra accessibility nodes that this component wishes to provides to the
    * accessibility system.
+   *
    * @return the number of extra nodes
    */
   protected int getExtraAccessibilityNodesCount() {
@@ -694,6 +684,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
 
   /**
    * Whether this component will expose any virtual views to the accessibility framework
+   *
    * @return true if the component exposes extra accessibility nodes
    */
   protected boolean implementsExtraAccessibilityNodes() {
@@ -702,6 +693,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
 
   /**
    * Whether this component will populate any accessibility nodes or events that are passed to it.
+   *
    * @return true if the component implements accessibility info
    */
   protected boolean implementsAccessibility() {
@@ -715,9 +707,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
   protected void transferState(
       StateContainer previousStateContainer, StateContainer nextStateContainer) {}
 
-  protected void createInitialState(ComponentContext c) {
-
-  }
+  protected void createInitialState(ComponentContext c) {}
 
   /**
    * Called to provide a fallback if a supported lifecycle method throws an exception. It is
@@ -734,7 +724,8 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
 
   @Override
   public @Nullable Object dispatchOnEvent(EventHandler eventHandler, Object eventState) {
-    if (ComponentsConfiguration.enableOnErrorHandling && eventHandler.id == ERROR_EVENT_HANDLER_ID) {
+    if (ComponentsConfiguration.enableOnErrorHandling
+        && eventHandler.id == ERROR_EVENT_HANDLER_ID) {
       ((Component) this).getErrorHandler().dispatchEvent(((ErrorEvent) eventState));
     }
 
@@ -765,9 +756,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     return false;
   }
 
-  /**
-   * @return true if Mount uses @FromMeasure or @FromOnBoundsDefined parameters.
-   */
+  /** @return true if Mount uses @FromMeasure or @FromOnBoundsDefined parameters. */
   protected boolean isMountSizeDependent() {
     return false;
   }
@@ -792,14 +781,15 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
 
   /**
    * Whether the component needs updating.
-   * <p>
-   * For layout components, the framework will verify that none of the children of the component
-   * need updating, and that both components have the same number of children. Therefore this
-   * method just needs to determine any changes to the top-level component that would cause it to
-   * need to be updated (for example, a click handler was added).
-   * <p>
-   * For mount specs, the framework does nothing extra and this method alone determines whether the
-   * component is updated or not.
+   *
+   * <p>For layout components, the framework will verify that none of the children of the component
+   * need updating, and that both components have the same number of children. Therefore this method
+   * just needs to determine any changes to the top-level component that would cause it to need to
+   * be updated (for example, a click handler was added).
+   *
+   * <p>For mount specs, the framework does nothing extra and this method alone determines whether
+   * the component is updated or not.
+   *
    * @param previous the previous component to compare against.
    * @param next the component that is now in use.
    * @return true if the component needs an update, false otherwise.
@@ -828,9 +818,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
   }
 
   protected static <E> EventHandler<E> newEventHandler(
-      ComponentContext c,
-      int id,
-      Object[] params) {
+      ComponentContext c, int id, Object[] params) {
     final EventHandler<E> eventHandler = c.newEventHandler(id, params);
     if (c.getComponentTree() != null) {
       c.getComponentTree().recordEventHandler(c.getComponentScope(), eventHandler);
@@ -839,10 +827,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     return eventHandler;
   }
 
-  protected static <E> EventHandler<E> newEventHandler(
-      Component c,
-      int id,
-      Object[] params) {
+  protected static <E> EventHandler<E> newEventHandler(Component c, int id, Object[] params) {
     final EventHandler<E> eventHandler = new EventHandler<>(c, id, params);
     if (c.getScopedContext() != null && c.getScopedContext().getComponentTree() != null) {
       c.getScopedContext().getComponentTree().recordEventHandler(c, eventHandler);
@@ -882,9 +867,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
 
   protected void applyPreviousRenderData(RenderData previousRenderData) {}
 
-  /**
-   * @return true if the Component is using state, false otherwise.
-   */
+  /** @return true if the Component is using state, false otherwise. */
   protected boolean hasState() {
     return false;
   }
