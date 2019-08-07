@@ -725,7 +725,7 @@ class TextSpec {
     // Identify the X position at which to truncate the final line:
     // Note: The left position of the line is needed for the case of RTL text.
     final float ellipsisTarget =
-        newLayout.getWidth() - bounds.width() + newLayout.getLineLeft(ellipsizedLineNumber);
+        layoutWidth - bounds.width() + newLayout.getLineLeft(ellipsizedLineNumber);
     // Get character offset number corresponding to that X position:
     int ellipsisOffset =
         newLayout.getOffsetForHorizontal(ellipsizedLineNumber, ellipsisTarget);
