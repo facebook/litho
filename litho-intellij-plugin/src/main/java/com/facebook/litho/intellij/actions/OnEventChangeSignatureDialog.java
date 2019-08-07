@@ -15,7 +15,7 @@
  */
 package com.facebook.litho.intellij.actions;
 
-import com.facebook.litho.intellij.LithoClassNames;
+import com.facebook.litho.annotations.Param;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.fileTypes.LanguageFileType;
 import com.intellij.openapi.fileTypes.StdFileTypes;
@@ -85,8 +85,12 @@ import org.jetbrains.annotations.Nullable;
  */
 final class OnEventChangeSignatureDialog
     extends ChangeSignatureDialogBase<
-        ParameterInfoImpl, PsiMethod, String, JavaMethodDescriptor,
-        ParameterTableModelItemBase<ParameterInfoImpl>, JavaParameterTableModel> {
+        ParameterInfoImpl,
+        PsiMethod,
+        String,
+        JavaMethodDescriptor,
+        ParameterTableModelItemBase<ParameterInfoImpl>,
+        JavaParameterTableModel> {
 
   private final Map<String, PsiParameter> nameToParameter = new HashMap<>();
   private PsiMethod newMethod;
@@ -231,7 +235,7 @@ final class OnEventChangeSignatureDialog
         if (parameterModifierList == null) {
           continue;
         }
-        parameterModifierList.addAnnotation(LithoClassNames.PARAM_ANNOTATION_NAME);
+        parameterModifierList.addAnnotation(Param.class.getName());
       }
       parameterList.add(parameter);
     }
@@ -302,10 +306,7 @@ final class OnEventChangeSignatureDialog
           buffer.append(annotation.getText()).append(" ");
         }
       } else {
-        buffer
-            .append("@")
-            .append(LithoClassNames.shortName(LithoClassNames.PARAM_ANNOTATION_NAME))
-            .append(" ");
+        buffer.append("@").append(Param.class.getSimpleName()).append(" ");
       }
       buffer.append(itemType).append(" ").append(itemName);
     }

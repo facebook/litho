@@ -19,24 +19,17 @@ package com.facebook.litho.intellij;
 public class LithoClassNames {
   private LithoClassNames() {}
 
-  public static final String PROP_DEFAULT_CLASS_NAME = "com.facebook.litho.annotations.PropDefault";
-  public static final String PROP_CLASS_NAME = "com.facebook.litho.annotations.Prop";
-  public static final String STATE_CLASS_NAME = "com.facebook.litho.annotations.State";
-
+  // litho-core module
   public static final String CLICK_EVENT_CLASS_NAME = "com.facebook.litho.ClickEvent";
   public static final String COMPONENT_CONTEXT_CLASS_NAME = "com.facebook.litho.ComponentContext";
-
-  static final String EVENT_ANNOTATION_NAME = "com.facebook.litho.annotations.Event";
-  public static final String FROM_EVENT_ANNOTATION_NAME =
-      "com.facebook.litho.annotations.FromEvent";
-  public static final String ON_EVENT_ANNOTATION_NAME = "com.facebook.litho.annotations.OnEvent";
-  public static final String PARAM_ANNOTATION_NAME = "com.facebook.litho.annotations.Param";
-  // TODO T39429594: investigate if we could use litho ClassNames instead of this class without
-  // adding another dependency to the bundle
+  // litho-sections-core module
+  public static final String SECTION_CONTEXT_CLASS_NAME =
+      "com.facebook.litho.sections.SectionContext";
+  public static final String SECTION_CLASS_NAME = "com.facebook.litho.sections.Section";
 
   /**
    * @param qualifiedName is one of the constants from the {@link LithoClassNames}
-   * @return short name. For {@link LithoClassNames#EVENT_ANNOTATION_NAME} it would be Event.
+   * @return short name. For {@link LithoClassNames#CLICK_EVENT_CLASS_NAME} it would be ClickEvent.
    */
   public static String shortName(String qualifiedName) {
     int indexAfterlastDot = qualifiedName.lastIndexOf('.') + 1;

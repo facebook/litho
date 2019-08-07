@@ -15,7 +15,8 @@
  */
 package com.facebook.litho.intellij.completion;
 
-import com.facebook.litho.intellij.LithoClassNames;
+import com.facebook.litho.annotations.Prop;
+import com.facebook.litho.annotations.State;
 import com.facebook.litho.intellij.LithoPluginUtils;
 import com.intellij.codeInsight.completion.CompletionContributor;
 import com.intellij.codeInsight.completion.CompletionParameters;
@@ -90,10 +91,10 @@ public class StatePropCompletionContributor extends CompletionContributor {
         if (parameterModifiers == null) {
           return;
         }
-        if (parameterModifiers.findAnnotation(LithoClassNames.PROP_CLASS_NAME) != null) {
+        if (parameterModifiers.findAnnotation(Prop.class.getName()) != null) {
           addCompletionResult(
               completionResultSet, containingMethod, cls.getMethods(), LithoPluginUtils::isProp);
-        } else if (parameterModifiers.findAnnotation(LithoClassNames.STATE_CLASS_NAME) != null) {
+        } else if (parameterModifiers.findAnnotation(State.class.getName()) != null) {
           addCompletionResult(
               completionResultSet, containingMethod, cls.getMethods(), LithoPluginUtils::isState);
         }

@@ -16,6 +16,8 @@
 package com.facebook.litho.intellij.completion;
 
 import com.facebook.litho.annotations.Event;
+import com.facebook.litho.annotations.FromEvent;
+import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.intellij.LithoClassNames;
 import com.facebook.litho.intellij.LithoPluginUtils;
 import com.intellij.codeInsight.AnnotationUtil;
@@ -99,7 +101,7 @@ public class OnEventGenerateUtils {
       if (parameterModifierList == null) {
         continue;
       }
-      parameterModifierList.addAnnotation(LithoClassNames.FROM_EVENT_ANNOTATION_NAME);
+      parameterModifierList.addAnnotation(FromEvent.class.getName());
       parameterList.add(parameter);
     }
     for (PsiParameter parameter : additionalParameters) {
@@ -108,7 +110,7 @@ public class OnEventGenerateUtils {
 
     final PsiModifierList methodModifierList = method.getModifierList();
     methodModifierList.addAnnotation(
-        LithoClassNames.ON_EVENT_ANNOTATION_NAME + "(" + eventClass.getQualifiedName() + ".class)");
+        OnEvent.class.getName() + "(" + eventClass.getQualifiedName() + ".class)");
 
     methodModifierList.setModifierProperty(PsiModifier.PACKAGE_LOCAL, true);
     methodModifierList.setModifierProperty(PsiModifier.STATIC, true);

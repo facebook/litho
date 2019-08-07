@@ -15,7 +15,12 @@
  */
 package com.facebook.litho.intellij;
 
+import com.facebook.litho.annotations.Event;
 import com.facebook.litho.annotations.LayoutSpec;
+import com.facebook.litho.annotations.Param;
+import com.facebook.litho.annotations.Prop;
+import com.facebook.litho.annotations.PropDefault;
+import com.facebook.litho.annotations.State;
 import com.facebook.litho.specmodels.processor.PsiAnnotationProxyUtils;
 import com.google.common.annotations.VisibleForTesting;
 import com.intellij.openapi.project.Project;
@@ -57,7 +62,7 @@ public class LithoPluginUtils {
     return Optional.ofNullable(psiClass)
         .map(PsiClass::getSuperClass)
         .map(PsiClass::getQualifiedName)
-        .filter("com.facebook.litho.sections.Section"::equals)
+        .filter(LithoClassNames.SECTION_CLASS_NAME::equals)
         .isPresent();
   }
 
@@ -112,23 +117,23 @@ public class LithoPluginUtils {
   }
 
   public static boolean isProp(PsiParameter parameter) {
-    return hasAnnotation(parameter, equals(LithoClassNames.PROP_CLASS_NAME));
+    return hasAnnotation(parameter, equals(Prop.class.getName()));
   }
 
   public static boolean isState(PsiParameter parameter) {
-    return hasAnnotation(parameter, equals(LithoClassNames.STATE_CLASS_NAME));
+    return hasAnnotation(parameter, equals(State.class.getName()));
   }
 
   public static boolean isParam(PsiParameter parameter) {
-    return hasAnnotation(parameter, equals(LithoClassNames.PARAM_ANNOTATION_NAME));
+    return hasAnnotation(parameter, equals(Param.class.getName()));
   }
 
   public static boolean isPropDefault(PsiField field) {
-    return hasAnnotation(field, equals(LithoClassNames.PROP_DEFAULT_CLASS_NAME));
+    return hasAnnotation(field, equals(PropDefault.class.getName()));
   }
 
   public static boolean isEvent(PsiClass psiClass) {
-    return hasAnnotation(psiClass, equals(LithoClassNames.EVENT_ANNOTATION_NAME));
+    return hasAnnotation(psiClass, equals(Event.class.getName()));
   }
 
   @Nullable
