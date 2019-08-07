@@ -16,7 +16,7 @@
 
 package com.facebook.litho.testing.sections;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import com.facebook.litho.sections.SectionTree;
 import com.facebook.litho.widget.ChangeSetCompleteCallback;
 import com.facebook.litho.widget.RenderInfo;
@@ -173,6 +173,7 @@ public class TestTarget implements SectionTree.Target {
       boolean isDataChanged, ChangeSetCompleteCallback changeSetCompleteCallback) {
     mWasNotifyChangeSetCompleteCalledWithChangedData = isDataChanged;
     changeSetCompleteCallback.onDataBound();
+    changeSetCompleteCallback.onDataRendered(false, 0);
   }
 
   @Override

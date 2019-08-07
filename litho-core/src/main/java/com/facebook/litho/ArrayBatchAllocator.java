@@ -15,8 +15,7 @@
  */
 package com.facebook.litho;
 
-import android.support.annotation.Nullable;
-import com.facebook.litho.config.ComponentsConfiguration;
+import androidx.annotation.Nullable;
 
 public class ArrayBatchAllocator {
 

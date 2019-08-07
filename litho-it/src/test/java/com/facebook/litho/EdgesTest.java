@@ -129,6 +129,23 @@ public class EdgesTest {
     assertThat(getValuesArray()[3]).isNaN();
   }
 
+  @Test
+  public void testAliasesAndResolveGetter() {
+    mEdges.set(YogaEdge.ALL, 10);
+
+    assertThat(mEdges.getRaw(YogaEdge.LEFT)).isNaN();
+    assertThat(mEdges.getRaw(YogaEdge.TOP)).isNaN();
+    assertThat(mEdges.getRaw(YogaEdge.RIGHT)).isNaN();
+    assertThat(mEdges.getRaw(YogaEdge.BOTTOM)).isNaN();
+    assertThat(mEdges.getRaw(YogaEdge.ALL)).isEqualTo(10);
+
+    assertThat(mEdges.get(YogaEdge.LEFT)).isEqualTo(10);
+    assertThat(mEdges.get(YogaEdge.TOP)).isEqualTo(10);
+    assertThat(mEdges.get(YogaEdge.RIGHT)).isEqualTo(10);
+    assertThat(mEdges.get(YogaEdge.BOTTOM)).isEqualTo(10);
+    assertThat(mEdges.get(YogaEdge.ALL)).isEqualTo(10);
+  }
+
   private long getEdgesToValuesIndex() {
     return (long) Whitebox.getInternalState(mEdges, "mEdgesToValuesIndex");
   }

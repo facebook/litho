@@ -19,12 +19,12 @@ package com.facebook.litho;
 import static com.facebook.litho.ThreadUtils.assertMainThread;
 
 import android.os.Bundle;
-import android.support.v4.view.AccessibilityDelegateCompat;
-import android.support.v4.view.accessibility.AccessibilityNodeInfoCompat;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
+import androidx.core.view.AccessibilityDelegateCompat;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 
 /**
  * This class contains utility methods to send pre-defined events
@@ -178,12 +178,11 @@ class EventDispatcherUtils {
 
     final EventDispatcher eventDispatcher =
         longClickHandler.mHasEventDispatcher.getEventDispatcher();
-    final boolean returnValue =
-        (boolean) eventDispatcher.dispatchOnEvent(longClickHandler, sLongClickEvent);
+    final Object returnValue = eventDispatcher.dispatchOnEvent(longClickHandler, sLongClickEvent);
 
     sLongClickEvent.view = null;
 
-    return returnValue;
+    return returnValue != null && (boolean) returnValue;
   }
 
   static boolean dispatchOnTouch(
@@ -200,13 +199,12 @@ class EventDispatcherUtils {
     sTouchEvent.motionEvent = event;
 
     final EventDispatcher eventDispatcher = touchHandler.mHasEventDispatcher.getEventDispatcher();
-    final boolean returnValue =
-        (boolean) eventDispatcher.dispatchOnEvent(touchHandler, sTouchEvent);
+    final Object returnValue = eventDispatcher.dispatchOnEvent(touchHandler, sTouchEvent);
 
     sTouchEvent.view = null;
     sTouchEvent.motionEvent = null;
 
-    return returnValue;
+    return returnValue != null && (boolean) returnValue;
   }
 
   static boolean dispatchOnInterceptTouch(
@@ -222,13 +220,12 @@ class EventDispatcherUtils {
 
     final EventDispatcher eventDispatcher =
         interceptTouchHandler.mHasEventDispatcher.getEventDispatcher();
-    final boolean returnValue =
-        (boolean) eventDispatcher.dispatchOnEvent(interceptTouchHandler, sInterceptTouchEvent);
-
+    final Object returnValue =
+        eventDispatcher.dispatchOnEvent(interceptTouchHandler, sInterceptTouchEvent);
     sInterceptTouchEvent.motionEvent = null;
     sInterceptTouchEvent.view = null;
 
-    return returnValue;
+    return returnValue != null && (boolean) returnValue;
   }
 
   static boolean dispatchDispatchPopulateAccessibilityEvent(
@@ -247,15 +244,14 @@ class EventDispatcherUtils {
     sDispatchPopulateAccessibilityEventEvent.superDelegate = superDelegate;
 
     final EventDispatcher eventDispatcher = eventHandler.mHasEventDispatcher.getEventDispatcher();
-    final boolean returnValue =  (boolean) eventDispatcher.dispatchOnEvent(
-        eventHandler,
-        sDispatchPopulateAccessibilityEventEvent);
+    final Object returnValue =
+        eventDispatcher.dispatchOnEvent(eventHandler, sDispatchPopulateAccessibilityEventEvent);
 
     sDispatchPopulateAccessibilityEventEvent.host = null;
     sDispatchPopulateAccessibilityEventEvent.event = null;
     sDispatchPopulateAccessibilityEventEvent.superDelegate = null;
 
-    return returnValue;
+    return returnValue != null && (boolean) returnValue;
   }
 
   static void dispatchOnInitializeAccessibilityEvent(
@@ -346,16 +342,15 @@ class EventDispatcherUtils {
 
     final EventDispatcher eventDispatcher = eventHandler.mHasEventDispatcher.getEventDispatcher();
 
-    final boolean returnValue = (boolean) eventDispatcher.dispatchOnEvent(
-        eventHandler,
-        sOnRequestSendAccessibilityEventEvent);
+    final Object returnValue =
+        eventDispatcher.dispatchOnEvent(eventHandler, sOnRequestSendAccessibilityEventEvent);
 
     sOnRequestSendAccessibilityEventEvent.host = null;
     sOnRequestSendAccessibilityEventEvent.child = null;
     sOnRequestSendAccessibilityEventEvent.event = null;
     sOnRequestSendAccessibilityEventEvent.superDelegate = null;
 
-    return returnValue;
+    return returnValue != null && (boolean) returnValue;
   }
 
   static boolean dispatchPerformAccessibilityActionEvent(
@@ -376,16 +371,15 @@ class EventDispatcherUtils {
     sPerformAccessibilityActionEvent.superDelegate = superDelegate;
 
     final EventDispatcher eventDispatcher = eventHandler.mHasEventDispatcher.getEventDispatcher();
-    final boolean returnValue = (boolean) eventDispatcher.dispatchOnEvent(
-        eventHandler,
-        sPerformAccessibilityActionEvent);
+    final Object returnValue =
+        eventDispatcher.dispatchOnEvent(eventHandler, sPerformAccessibilityActionEvent);
 
     sPerformAccessibilityActionEvent.host = null;
     sPerformAccessibilityActionEvent.action = 0;
     sPerformAccessibilityActionEvent.args = null;
     sPerformAccessibilityActionEvent.superDelegate = null;
 
-    return returnValue;
+    return returnValue != null && (boolean) returnValue;
   }
 
   static void dispatchSendAccessibilityEvent(

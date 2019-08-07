@@ -272,6 +272,12 @@ jobs:
       - buck_build:
           module_name: "sample-codelab"
 
+  gradle_sample_build:
+    executor: litho-executor
+    steps:
+      - gradle_build:
+          module_name: "sample"
+  
   gradle_sample_kotlin_build:
     executor: litho-executor
     steps:
@@ -329,6 +335,9 @@ workflows:
           requires:
             - build
       - buck_sample_codelab_build:
+          requires:
+            - build
+      - gradle_sample_build:
           requires:
             - build
       - gradle_sample_kotlin_build:

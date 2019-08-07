@@ -20,12 +20,12 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.text.Layout;
 import android.text.Spannable;
 import android.text.style.ClickableSpan;
@@ -57,6 +57,38 @@ public class TextSpecTest {
   @Before
   public void setup() {
     mContext = new ComponentContext(RuntimeEnvironment.application);
+  }
+
+  private static class TestMountableCharSequence implements MountableCharSequence {
+
+    Drawable mountDrawable;
+
+    @Override
+    public void onMount(Drawable parent) {
+      mountDrawable = parent;
+    }
+
+    @Override
+    public void onUnmount(Drawable parent) {}
+
+    @Override
+    public int length() {
+      return 0;
+    }
+
+    @Override
+    public char charAt(int index) {
+      return 0;
+    }
+
+    @Override
+    public CharSequence subSequence(int start, int end) {
+      return null;
+    }
+
+    public Drawable getMountDrawable() {
+      return mountDrawable;
+    }
   }
 
   @Test
@@ -93,10 +125,10 @@ public class TextSpecTest {
 
   @Test
   public void testMountableCharSequenceText() {
-    MountableCharSequence mountableCharSequence = mock(MountableCharSequence.class);
-
-    TextDrawable drawable = getMountedDrawableForText(mountableCharSequence);
-    verify(mountableCharSequence).onMount(drawable);
+    TestMountableCharSequence testMountableCharSequence = new TestMountableCharSequence();
+    assertThat(testMountableCharSequence.getMountDrawable()).isNull();
+    TextDrawable drawable = getMountedDrawableForText(testMountableCharSequence);
+    assertThat(testMountableCharSequence.getMountDrawable()).isSameAs(drawable);
   }
 
   @Test

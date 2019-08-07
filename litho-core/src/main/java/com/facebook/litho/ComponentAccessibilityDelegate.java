@@ -19,15 +19,15 @@ package com.facebook.litho;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.v4.view.AccessibilityDelegateCompat;
-import android.support.v4.view.ViewCompat;
-import android.support.v4.view.accessibility.AccessibilityNodeInfoCompat;
-import android.support.v4.view.accessibility.AccessibilityNodeProviderCompat;
-import android.support.v4.widget.ExploreByTouchHelper;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
+import androidx.core.view.AccessibilityDelegateCompat;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
+import androidx.core.view.accessibility.AccessibilityNodeProviderCompat;
+import androidx.customview.widget.ExploreByTouchHelper;
 import java.util.List;
 import javax.annotation.Nullable;
 
@@ -115,6 +115,12 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
         node.setClassName(AccessibilityRole.NONE);
       }
     }
+
+    if (mNodeInfo != null
+        && mNodeInfo.getAccessibilityHeadingState() != NodeInfo.ACCESSIBILITY_HEADING_UNSET) {
+      node.setHeading(
+          mNodeInfo.getAccessibilityHeadingState() == NodeInfo.ACCESSIBILITY_HEADING_SET_TRUE);
+    }
   }
 
   @Override
@@ -150,7 +156,7 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
       return;
     }
 
-    final Drawable drawable = (Drawable) mountItem.getMountableContent();
+    final Drawable drawable = (Drawable) mountItem.getContent();
     final Rect bounds = drawable.getBounds();
 
     final Component component = mountItem.getComponent();
@@ -192,7 +198,7 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
       return INVALID_ID;
     }
 
-    final Drawable drawable = (Drawable) mountItem.getMountableContent();
+    final Drawable drawable = (Drawable) mountItem.getContent();
     final Rect bounds = drawable.getBounds();
 
     // Try to find an extra accessibility node that intersects with

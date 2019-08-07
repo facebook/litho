@@ -90,14 +90,14 @@ static Children onCreateChildren(final SectionContext c) {
                       .disablePTR(true)
                       .recyclerConfiguration(new ListRecyclerConfiguration(LinearLayoutManager.HORIZONTAL, /*reverse layout*/ false, SNAP_TO_CENTER))
                       .section(
-                          DataDiffSection.create(c)
+                          DataDiffSection.<Integer>create(c)
                               .data(generateData(32))
                               .renderEventHandler(ListSection.onRender(c))
                               .build())
                       .canMeasureRecycler(true))
               .build())
         .child(
-            DataDiffSection.create(c)
+            DataDiffSection.<Integer>create(c)
                 .data(generateData(32))
                 .renderEventHandler(ListSection.onRender(c)))
         .build();

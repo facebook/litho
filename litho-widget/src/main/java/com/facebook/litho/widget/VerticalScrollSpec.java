@@ -22,9 +22,10 @@ import static com.facebook.litho.SizeSpec.UNSPECIFIED;
 
 import android.content.Context;
 import android.os.Build;
-import android.support.v4.widget.NestedScrollView;
-import android.support.v7.widget.RecyclerView;
+import android.view.MotionEvent;
 import android.view.ViewTreeObserver;
+import androidx.core.widget.NestedScrollView;
+import androidx.recyclerview.widget.RecyclerView;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
@@ -64,6 +65,9 @@ import javax.annotation.Nullable;
  * @props initialScrollOffsetPixels initial vertical scroll offset, in pixels
  * @props verticalFadingEdgeEnabled whether the vertical edges should be faded when scrolled
  * @prop fadingEdgeLength size of the faded edge used to indicate that more content is available
+ * @prop onInterceptTouchListener NOT THE SAME AS LITHO'S interceptTouchHandler COMMON PROP. this is
+ *     a listener that handles the underlying ScrollView's onInterceptTouchEvent first, whereas the
+ *     Litho prop wraps the component into another view and intercepts there.
  */
 @MountSpec(hasChildLithoViews = true, isPureRender = true)
 public class VerticalScrollSpec {
@@ -197,6 +201,8 @@ public class VerticalScrollSpec {
       @Prop(optional = true) boolean verticalFadingEdgeEnabled,
       @Prop(optional = true, resType = ResType.DIMEN_SIZE) int fadingEdgeLength,
       @Prop(optional = true) NestedScrollView.OnScrollChangeListener onScrollChangeListener,
+      // NOT THE SAME AS LITHO'S interceptTouchHandler COMMON PROP, see class javadocs
+      @Prop(optional = true) OnInterceptTouchListener onInterceptTouchListener,
       @State ComponentTree childComponentTree,
       @State final ScrollPosition scrollPosition) {
     lithoScrollView.mount(childComponentTree, scrollPosition, incrementalMountEnabled);
@@ -214,11 +220,13 @@ public class VerticalScrollSpec {
       lithoScrollView.setVerticalScrollBarEnabled(scrollbarEnabled);
     }
     lithoScrollView.setOnScrollChangeListener(onScrollChangeListener);
+    lithoScrollView.setOnInterceptTouchListener(onInterceptTouchListener);
   }
 
   @OnUnmount
   static void onUnmount(ComponentContext context, LithoScrollView lithoScrollView) {
     lithoScrollView.setOnScrollChangeListener((NestedScrollView.OnScrollChangeListener) null);
+    lithoScrollView.setOnInterceptTouchListener(null);
     lithoScrollView.unmount();
   }
 
@@ -244,12 +252,25 @@ public class VerticalScrollSpec {
     @Nullable private ScrollPosition mScrollPosition;
     @Nullable private ViewTreeObserver.OnPreDrawListener mOnPreDrawListener;
     private boolean mIsIncrementalMountEnabled;
+    private OnInterceptTouchListener mOnInterceptTouchListener;
 
     LithoScrollView(Context context) {
       super(context);
       mLithoView = new LithoView(context);
 
       addView(mLithoView);
+    }
+
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent ev) {
+      boolean result = false;
+      if (mOnInterceptTouchListener != null) {
+        result = mOnInterceptTouchListener.onInterceptTouch(this, ev);
+      }
+      if (!result && super.onInterceptTouchEvent(ev)) {
+        result = true;
+      }
+      return result;
     }
 
     @Override
@@ -274,6 +295,10 @@ public class VerticalScrollSpec {
     @Override
     public boolean dispatchNestedFling(float velocityX, float velocityY, boolean consumed) {
       return super.dispatchNestedFling(velocityX, velocityY, true);
+    }
+
+    public void setOnInterceptTouchListener(OnInterceptTouchListener onInterceptTouchListener) {
+      mOnInterceptTouchListener = onInterceptTouchListener;
     }
 
     private void mount(
@@ -312,5 +337,9 @@ public class VerticalScrollSpec {
 
   static class ScrollPosition {
     int y = 0;
+  }
+
+  public interface OnInterceptTouchListener {
+    boolean onInterceptTouch(NestedScrollView nestedScrollView, MotionEvent event);
   }
 }

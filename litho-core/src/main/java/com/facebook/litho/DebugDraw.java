@@ -83,7 +83,7 @@ class DebugDraw {
         continue;
       }
 
-      final View view = (View) item.getMountableContent();
+      final View view = (View) item.getContent();
       if (!isInteractive(view)) {
         continue;
       }
@@ -126,7 +126,7 @@ class DebugDraw {
       final MountItem item = host.getMountItemAt(i);
 
       final Component component = item.getComponent();
-      final Object content = item.getMountableContent();
+      final Object content = item.getContent();
 
       if (!shouldHighlight(component)) {
         continue;

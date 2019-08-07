@@ -22,13 +22,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.OrientationHelper;
 import android.view.View;
 import android.view.ViewGroup;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.OrientationHelper;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.LayoutHandler;
+import com.facebook.litho.LithoHandler;
 import com.facebook.litho.Size;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.viewcompat.SimpleViewBinder;
@@ -74,12 +74,12 @@ public class RecyclerBinderAsyncInitRangeIteratorTest {
           @Override
           public ComponentTreeHolder create(
               RenderInfo renderInfo,
-              LayoutHandler layoutHandler,
-              boolean useSharedLayoutStateFuture,
+              LithoHandler layoutHandler,
               ComponentTreeHolder.ComponentTreeMeasureListenerFactory
                   componentTreeMeasureListenerFactory,
-              String splitLayoutTag,
-              boolean incrementalMountEnabled) {
+              boolean incrementalMountEnabled,
+              boolean canInterruptAndMoveLayoutsBetweenThreads,
+              boolean useCancelableLayoutFutures) {
             final TestComponentTreeHolder holder = new TestComponentTreeHolder(renderInfo);
             mAllHoldersList.add(holder);
 

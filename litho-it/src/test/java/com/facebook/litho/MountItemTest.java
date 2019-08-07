@@ -17,11 +17,12 @@
 package com.facebook.litho;
 
 import static android.content.res.Configuration.ORIENTATION_PORTRAIT;
-import static android.support.v4.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
-import static android.support.v4.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO;
-import static android.support.v4.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_YES;
+import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
+import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO;
+import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_YES;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
+import android.graphics.Rect;
 import android.util.SparseArray;
 import android.view.View;
 import com.facebook.litho.testing.TestDrawableComponent;
@@ -77,7 +78,7 @@ public class MountItemTest {
     mDispatchPopulateAccessibilityEventHandler = new EventHandler(mComponent, 7);
     mFlags = 114;
 
-    mNodeInfo = new NodeInfo();
+    mNodeInfo = new DefaultNodeInfo();
     mNodeInfo.setContentDescription(mContentDescription);
     mNodeInfo.setClickHandler(mClickHandler);
     mNodeInfo.setLongClickHandler(mLongClickHandler);
@@ -112,8 +113,7 @@ public class MountItemTest {
   public void testGetters() {
     assertThat(mMountItem.getComponent()).isSameAs((Component) mComponent);
     assertThat(mMountItem.getHost()).isSameAs(mComponentHost);
-    assertThat(mMountItem.getBaseContent()).isSameAs(mContent);
-    assertThat(mMountItem.getMountableContent()).isSameAs(mContent);
+    assertThat(mMountItem.getContent()).isSameAs(mContent);
     assertThat(mMountItem.getNodeInfo().getContentDescription()).isSameAs(mContentDescription);
     assertThat(mMountItem.getNodeInfo().getClickHandler()).isSameAs(mClickHandler);
     assertThat(mMountItem.getNodeInfo().getFocusChangeHandler()).isSameAs(mFocusChangeHandler);
@@ -292,9 +292,9 @@ public class MountItemTest {
 
   @Test
   public void testUpdateDoesntChangeFlags() {
-    LayoutOutput layoutOutput = new LayoutOutput();
-    layoutOutput.setNodeInfo(mNodeInfo);
-    layoutOutput.setComponent(mComponent);
+    LayoutOutput layoutOutput =
+        new LayoutOutput(mNodeInfo, null, mComponent, new Rect(0, 0, 0, 0), 0, 0, 0, 0, 0, 0, null);
+
     View view = new View(RuntimeEnvironment.application);
 
     final MountItem mountItem = new MountItem(mComponent, mComponentHost, view, layoutOutput);
@@ -305,25 +305,5 @@ public class MountItemTest {
 
     mountItem.update(layoutOutput);
     assertThat(mountItem.isViewClickable()).isFalse();
-  }
-
-  @Test
-  public void testWrappedContent() {
-    // Wrapped content isn't set
-    assertThat(mMountItem.getBaseContent()).isSameAs(mContent);
-    assertThat(mMountItem.getMountableContent()).isSameAs(mContent);
-
-    final Object wrappedContent = new View(RuntimeEnvironment.application);
-    mMountItem.setWrappedContent(wrappedContent);
-
-    // Wrapped content is set, which should not affect just content
-    assertThat(mMountItem.getBaseContent()).isSameAs(mContent);
-    assertThat(mMountItem.getMountableContent()).isSameAs(wrappedContent);
-
-    mMountItem.setWrappedContent(null);
-
-    // No wrapped content again
-    assertThat(mMountItem.getBaseContent()).isSameAs(mContent);
-    assertThat(mMountItem.getMountableContent()).isSameAs(mContent);
   }
 }

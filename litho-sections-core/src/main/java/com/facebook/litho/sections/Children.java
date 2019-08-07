@@ -16,11 +16,8 @@
 
 package com.facebook.litho.sections;
 
-import static android.support.v4.util.Pools.SynchronizedPool;
-
-import android.support.annotation.Nullable;
-import android.support.annotation.VisibleForTesting;
-import android.support.v4.util.Pools.Pool;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import com.facebook.litho.sections.annotations.GroupSectionSpec;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,8 +28,6 @@ import java.util.List;
  */
 public class Children {
 
-  private static final Pool<Builder> sBuildersPool = new SynchronizedPool<>(2);
-
   private List<Section> mSections;
 
   private Children() {
@@ -40,13 +35,7 @@ public class Children {
   }
 
   public static Builder create() {
-    Builder builder = sBuildersPool.acquire();
-    if (builder == null) {
-      builder = new Builder();
-    }
-    builder.init(new Children());
-
-    return builder;
+    return new Builder();
   }
 
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
@@ -56,17 +45,9 @@ public class Children {
 
   public static class Builder {
 
-    private Children mChildren;
-
-    private Builder() {}
-
-    private void init(Children children) {
-      mChildren = children;
-    }
+    private final Children mChildren = new Children();
 
     public Builder child(@Nullable Section section) {
-      verifyValidState();
-
       if (section != null) {
         mChildren.mSections.add(section.makeShallowCopy());
       }
@@ -75,8 +56,6 @@ public class Children {
     }
 
     public Builder child(@Nullable List<Section> sectionList) {
-      verifyValidState();
-
       if (sectionList == null || sectionList.isEmpty()) {
         return this;
       }
@@ -92,8 +71,6 @@ public class Children {
     }
 
     public Builder child(@Nullable Section.Builder<?> sectionBuilder) {
-      verifyValidState();
-
       if (sectionBuilder != null) {
         mChildren.mSections.add(sectionBuilder.build());
       }
@@ -102,8 +79,6 @@ public class Children {
     }
 
     public Builder children(@Nullable List<Section.Builder<?>> sectionBuilderList) {
-      verifyValidState();
-
       if (sectionBuilderList == null || sectionBuilderList.isEmpty()) {
         return this;
       }
@@ -119,19 +94,7 @@ public class Children {
     }
 
     public Children build() {
-      verifyValidState();
-
-      Children children = mChildren;
-      mChildren = null;
-      sBuildersPool.release(this);
-
-      return children;
-    }
-
-    private void verifyValidState() {
-      if (mChildren == null) {
-        throw new IllegalStateException(".build() call has been already made on this Builder.");
-      }
+      return mChildren;
     }
   }
 }

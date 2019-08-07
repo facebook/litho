@@ -19,6 +19,12 @@ package com.facebook.litho.annotations;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+/**
+ * Annotation for event handling. See <a
+ * href="https://fblitho.com/docs/events-overview">events-overview</a> for details.
+ *
+ * @see OnTrigger
+ */
 @Retention(RetentionPolicy.CLASS)
 public @interface OnEvent {
   Class<?> value();

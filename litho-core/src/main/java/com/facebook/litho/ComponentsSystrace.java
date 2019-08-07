@@ -36,7 +36,7 @@ public class ComponentsSystrace {
   /** Convenience implementation of ArgsBuilder to use when we aren't tracing. */
   public static final ArgsBuilder NO_OP_ARGS_BUILDER = new NoOpArgsBuilder();
 
-  private static volatile Systrace sInstance = null;
+  private static Systrace sInstance = new DefaultComponentsSystrace();
 
   public interface Systrace {
     void beginSection(String name);
@@ -93,6 +93,7 @@ public class ComponentsSystrace {
 
   private ComponentsSystrace() {}
 
+  /** This should be called exactly once at app startup, before any Litho work happens. */
   public static void provide(Systrace instance) {
     sInstance = instance;
   }
@@ -102,7 +103,7 @@ public class ComponentsSystrace {
    * followed by a corresponding call to {@link #endSection()} on the same thread.
    */
   public static void beginSection(String name) {
-    getInstance().beginSection(name);
+    sInstance.beginSection(name);
   }
 
   /**
@@ -115,7 +116,7 @@ public class ComponentsSystrace {
    * behavior and in {@link DefaultComponentsSystrace} it is a no-op.
    */
   public static void beginSectionAsync(String name) {
-    getInstance().beginSectionAsync(name);
+    sInstance.beginSectionAsync(name);
   }
 
   /**
@@ -128,11 +129,11 @@ public class ComponentsSystrace {
    * behavior and in {@link DefaultComponentsSystrace} it is a no-op.
    */
   public static void beginSectionAsync(String name, int cookie) {
-    getInstance().beginSectionAsync(name, cookie);
+    sInstance.beginSectionAsync(name, cookie);
   }
 
   public static ArgsBuilder beginSectionWithArgs(String name) {
-    return getInstance().beginSectionWithArgs(name);
+    return sInstance.beginSectionWithArgs(name);
   }
 
   /**
@@ -142,7 +143,7 @@ public class ComponentsSystrace {
    * beginSection / endSection pairs are properly nested and called from the same thread.
    */
   public static void endSection() {
-    getInstance().endSection();
+    sInstance.endSection();
   }
 
   /**
@@ -153,7 +154,7 @@ public class ComponentsSystrace {
    * behavior and in {@link DefaultComponentsSystrace} it is a no-op.
    */
   public static void endSectionAsync(String name) {
-    getInstance().endSectionAsync(name);
+    sInstance.endSectionAsync(name);
   }
 
   /**
@@ -165,22 +166,11 @@ public class ComponentsSystrace {
    * behavior and in {@link DefaultComponentsSystrace} it is a no-op.
    */
   public static void endSectionAsync(String name, int cookie) {
-    getInstance().endSectionAsync(name, cookie);
+    sInstance.endSectionAsync(name, cookie);
   }
 
   public static boolean isTracing() {
-    return getInstance().isTracing();
-  }
-
-  private static Systrace getInstance() {
-    if (sInstance == null) {
-      synchronized (ComponentsSystrace.class) {
-        if (sInstance == null) {
-          sInstance = new DefaultComponentsSystrace();
-        }
-      }
-    }
-    return sInstance;
+    return sInstance.isTracing();
   }
 
   private static final class NoOpArgsBuilder implements ArgsBuilder {

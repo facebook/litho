@@ -18,11 +18,9 @@ package com.facebook.litho;
 
 import android.animation.StateListAnimator;
 import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
-import android.support.annotation.DrawableRes;
 import android.view.View;
+import androidx.annotation.DrawableRes;
 import com.facebook.litho.drawable.ComparableDrawable;
-import com.facebook.litho.reference.Reference;
 import com.facebook.yoga.YogaDirection;
 import javax.annotation.Nullable;
 
@@ -32,7 +30,7 @@ import javax.annotation.Nullable;
  */
 class ViewNodeInfo {
 
-  private Reference<? extends Drawable> mBackground;
+  private ComparableDrawable mBackground;
   private ComparableDrawable mForeground;
   private Rect mPadding;
   private Rect mExpandedTouchBounds;
@@ -40,11 +38,11 @@ class ViewNodeInfo {
   private @Nullable StateListAnimator mStateListAnimator;
   private @DrawableRes int mStateListAnimatorRes;
 
-  void setBackground(Reference<? extends Drawable> background) {
+  void setBackground(ComparableDrawable background) {
     mBackground = background;
   }
 
-  Reference<? extends Drawable> getBackground() {
+  ComparableDrawable getBackground() {
     return mBackground;
   }
 
@@ -165,7 +163,7 @@ class ViewNodeInfo {
       return false;
     }
 
-    if (Reference.shouldUpdate(mBackground, other.mBackground)) {
+    if (!ComparableDrawable.isEquivalentTo(mBackground, other.mBackground)) {
       return false;
     }
 

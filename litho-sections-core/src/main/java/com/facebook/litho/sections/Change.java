@@ -16,9 +16,9 @@
 
 package com.facebook.litho.sections;
 
-import android.support.annotation.IntDef;
-import android.support.annotation.Nullable;
-import android.support.annotation.VisibleForTesting;
+import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import com.facebook.litho.Component;
 import com.facebook.litho.sections.annotations.DiffSectionSpec;
 import com.facebook.litho.widget.ComponentRenderInfo;
@@ -262,7 +262,7 @@ public final class Change {
     return mRenderInfo;
   }
 
-  List<RenderInfo> getRenderInfos() {
+  public List<RenderInfo> getRenderInfos() {
     return mRenderInfos;
   }
 
@@ -328,5 +328,26 @@ public final class Change {
     mRenderInfos = null;
     mPrevData = null;
     mNextData = null;
+  }
+
+  public static String changeTypeToString(@Type int type) {
+    switch (type) {
+      case INSERT:
+        return "INSERT";
+      case UPDATE:
+        return "UPDATE";
+      case DELETE:
+        return "DELETE";
+      case MOVE:
+        return "MOVE";
+      case INSERT_RANGE:
+        return "INSERT_RANGE";
+      case UPDATE_RANGE:
+        return "UPDATE_RANGE";
+      case DELETE_RANGE:
+        return "DELETE_RANGE";
+      default:
+        return "UNKNOW TYPE";
+    }
   }
 }

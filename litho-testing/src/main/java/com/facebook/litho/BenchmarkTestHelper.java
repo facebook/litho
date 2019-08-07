@@ -19,12 +19,6 @@ package com.facebook.litho;
 public class BenchmarkTestHelper {
   private static final int[] LAYOUT_SIZE_OUT = new int[2];
 
-  public static void calculateLayoutState(
-      ComponentContext c, Component component, int widthSizeSpec, int heightSizeSpec) {
-    LayoutState.calculate(
-        c, component, -1, widthSizeSpec, heightSizeSpec, LayoutState.CalculateLayoutSource.TEST);
-  }
-
   public static LithoView createAndMeasureLithoView(
       ComponentContext c, Component component, int widthSpec, int heightSpec) {
     final ComponentTree componentTree = ComponentTree.create(c, component).build();
@@ -65,5 +59,9 @@ public class BenchmarkTestHelper {
 
   public static Object getMountContent(ComponentContext c, Component component) {
     return ComponentsPools.acquireMountContent(c.getAndroidContext(), component);
+  }
+
+  public static void initComponentStateValues(ComponentContext c, Component component) {
+    component.updateInternalChildState(c);
   }
 }

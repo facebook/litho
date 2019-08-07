@@ -115,7 +115,7 @@ public class ViewCompatComponentTest {
             .viewBinder(binder));
 
     assertThat(lithoView.getMountItemCount()).isEqualTo(1);
-    TextView view = (TextView) lithoView.getMountItemAt(0).getMountableContent();
+    TextView view = (TextView) lithoView.getMountItemAt(0).getContent();
     assertThat(view.getText()).isEqualTo("Hello World!");
   }
 
@@ -147,7 +147,7 @@ public class ViewCompatComponentTest {
             .viewBinder(binder));
 
     assertThat(lithoView.getMountItemCount()).isEqualTo(1);
-    TextView view = (TextView) lithoView.getMountItemAt(0).getMountableContent();
+    TextView view = (TextView) lithoView.getMountItemAt(0).getContent();
     assertThat(view.getText()).isEqualTo("Hello World!");
   }
 
@@ -181,7 +181,7 @@ public class ViewCompatComponentTest {
     unbindComponent(lithoView);
 
     assertThat(lithoView.getMountItemCount()).isEqualTo(1);
-    TextView view = (TextView) lithoView.getMountItemAt(0).getMountableContent();
+    TextView view = (TextView) lithoView.getMountItemAt(0).getContent();
     assertThat(view.getText()).isEqualTo("");
   }
 

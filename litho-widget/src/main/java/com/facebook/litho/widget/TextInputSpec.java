@@ -16,6 +16,7 @@
 
 package com.facebook.litho.widget;
 
+import static android.graphics.Color.TRANSPARENT;
 import static android.os.Build.VERSION.SDK_INT;
 import static android.os.Build.VERSION_CODES.JELLY_BEAN;
 import static android.os.Build.VERSION_CODES.JELLY_BEAN_MR1;
@@ -32,8 +33,11 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.Editable;
 import android.text.InputFilter;
+import android.text.Spannable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.text.method.ArrowKeyMovementMethod;
+import android.text.method.MovementMethod;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -72,21 +76,40 @@ import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nullable;
 
 /**
- * Component that renders an editable text input using an android EditText.
+ * Component that renders an editable text input using an android {@link EditText}. It is measured
+ * based on the input text {@link String} representation.
  *
  * <p>Performance is critical for good user experience. Follow these tips for good performance:
  *
  * <ul>
  *   <li>Avoid changing props at all costs as it forces expensive EditText reconfiguration.
- *   <li>Avoid updating state, use Event trigger to update text, request view focus or set
- *       selection. {@code TextInput.setText(c, key, text)}.
+ *   <li>Avoid updating state, use Event trigger {@link OnTrigger} to update text, request view
+ *       focus or set selection. {@code TextInput.setText(c, key, text)}.
  *   <li>Using custom inputFilters take special care to implement equals correctly or the text field
  *       must be reconfigured on every mount. (Better yet, store your InputFilter in a static or
  *       LruCache so that you're not constantly creating new instances.)
  * </ul>
  *
- * <p>Because this component is backed by the android EditText all {@link InputFilter} abilities
- * should apply here. Example multiline editable text with custom color and a text length limit:
+ * <p>Because this component is backed by android {@link EditText} many native capabilities are
+ * applicable:
+ *
+ * <ul>
+ *   <li>Use {@link InputFilter} to set a text length limit or modify text input.
+ *   <li>Remove android EditText underline by removing background.
+ *   <li>Change the input representation by passing one of the {@link android.text.InputType}
+ *       constants.
+ * </ul>
+ *
+ * <p>It is also treated by the system as an android {@link EditText}:
+ *
+ * <ul>
+ *   <li>When {@link EditText} receives focus, a system keyboard is shown.
+ *   <li>When the user opens the screen and android {@link EditText} is the first element in the
+ *       View hierarchy, it gains focus.
+ * </ul>
+ *
+ * <p>Example of multiline editable text with custom text color, text length limit, removed
+ * underline drawable, and sentence capitalisation:
  *
  * <pre>{@code
  * private static final InputFilter lenFilter = new InputFilter.LengthFilter(maxLength);
@@ -96,8 +119,9 @@ import javax.annotation.Nullable;
  *   .textColorStateList(ColorStateList.valueOf(color))
  *   .multiline(true)
  *   .inputFilter(lenFilter)
+ *   .backgroundColor(Color.TRANSPARENT)
+ *   .inputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES)
  *   .build();
- *
  * }</pre>
  *
  * @prop initialText Initial text to display. If set, the value is set on the EditText exactly once:
@@ -114,6 +138,7 @@ import javax.annotation.Nullable;
  * @prop cursorDrawableRes Drawable to set as an edit text cursor.
  * @prop textColorStateList ColorStateList of the text.
  * @prop hintTextColorStateList ColorStateList of the hint text.
+ * @prop highlightColor Color for selected text.
  * @prop textSize Size of the text.
  * @prop typeface Typeface for the text.
  * @prop textAlignment Alignment of the text within its container. This only has effect on API level
@@ -131,18 +156,26 @@ import javax.annotation.Nullable;
  * @prop minLines Minimum number of lines to show.
  * @prop maxLines Maximum number of lines to show.
  * @prop textWatchers Used to register text watchers e.g. mentions detection.
+ * @prop movementMethod Used to set cursor positioning, scrolling and text selection functionality
+ *     in EditText
+ * @see {@link EditText}
  */
 @MountSpec(
-  isPureRender = true,
-  events = {
-    TextChangedEvent.class,
-    SelectionChangedEvent.class,
-    KeyUpEvent.class,
-    EditorActionEvent.class,
-    SetTextEvent.class
-  }
-)
+    isPureRender = true,
+    events = {
+      TextChangedEvent.class,
+      SelectionChangedEvent.class,
+      KeyUpEvent.class,
+      EditorActionEvent.class,
+      SetTextEvent.class
+    })
 class TextInputSpec {
+  /**
+   * Dummy drawable used for differentiating user-provided null background drawable from default
+   * drawable of the spec
+   */
+  private static final Drawable UNSET_DRAWABLE = new ColorDrawable(TRANSPARENT);
+
   @PropDefault
   protected static final ColorStateList textColorStateList = ColorStateList.valueOf(Color.BLACK);
 
@@ -153,6 +186,7 @@ class TextInputSpec {
   @PropDefault static final CharSequence initialText = "";
   @PropDefault protected static final int shadowColor = Color.GRAY;
   @PropDefault protected static final int textSize = 13;
+  @PropDefault protected static final Drawable inputBackground = UNSET_DRAWABLE;
   @PropDefault protected static final Typeface typeface = Typeface.DEFAULT;
   @PropDefault protected static final int textAlignment = TEXT_ALIGNMENT_GRAVITY;
   @PropDefault protected static final int gravity = Gravity.CENTER_VERTICAL | Gravity.START;
@@ -163,6 +197,9 @@ class TextInputSpec {
   @PropDefault static final boolean multiline = false;
   @PropDefault protected static final int minLines = 1;
   @PropDefault protected static final int maxLines = Integer.MAX_VALUE;
+
+  @PropDefault
+  protected static final MovementMethod movementMethod = ArrowKeyMovementMethod.getInstance();
 
   /** UI thread only; used in OnMount. */
   private static final Rect sBackgroundPaddingRect = new Rect();
@@ -196,6 +233,7 @@ class TextInputSpec {
       @Prop(optional = true, resType = ResType.COLOR) int shadowColor,
       @Prop(optional = true) ColorStateList textColorStateList,
       @Prop(optional = true) ColorStateList hintColorStateList,
+      @Prop(optional = true, resType = ResType.COLOR) int highlightColor,
       @Prop(optional = true, resType = ResType.DIMEN_TEXT) int textSize,
       @Prop(optional = true) Typeface typeface,
       @Prop(optional = true) int textAlignment,
@@ -213,17 +251,24 @@ class TextInputSpec {
       @State int measureSeqNumber) {
 
     // The height should be the measured height of EditText with relevant params
-    final EditText forMeasure = new EditText(c.getAndroidContext());
+    final EditText forMeasure = new ForMeasureEditText(c.getAndroidContext());
+    // If text contains Spans, we don't want it to be mutable for the measurement case
+    CharSequence text = savedText.get();
+    if (text instanceof Spannable) {
+      text = text.toString();
+    }
     setParams(
         forMeasure,
         hint,
-        getBackgroundOrDefault(c, inputBackground),
+        getBackgroundOrDefault(
+            c, inputBackground == UNSET_DRAWABLE ? forMeasure.getBackground() : inputBackground),
         shadowRadius,
         shadowDx,
         shadowDy,
         shadowColor,
         textColorStateList,
         hintColorStateList,
+        highlightColor,
         textSize,
         typeface,
         textAlignment,
@@ -237,10 +282,11 @@ class TextInputSpec {
         minLines,
         maxLines,
         cursorDrawableRes,
+        forMeasure.getMovementMethod(),
         // onMeasure happens:
         // 1. After initState before onMount: savedText = initText.
         // 2. After onMount before onUnmount: savedText preserved from underlying editText.
-        savedText.get());
+        text);
     forMeasure.measure(
         MeasureUtils.getViewMeasureSpec(widthSpec), MeasureUtils.getViewMeasureSpec(heightSpec));
 
@@ -264,6 +310,7 @@ class TextInputSpec {
       int shadowColor,
       ColorStateList textColorStateList,
       ColorStateList hintColorStateList,
+      int highlightColor,
       int textSize,
       Typeface typeface,
       int textAlignment,
@@ -277,6 +324,7 @@ class TextInputSpec {
       int minLines,
       int maxLines,
       int cursorDrawableRes,
+      MovementMethod movementMethod,
       @Nullable CharSequence text) {
     if (multiline) {
       inputType |= EditorInfo.TYPE_CLASS_TEXT | EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE;
@@ -320,6 +368,8 @@ class TextInputSpec {
     editText.setCursorVisible(editable);
     editText.setTextColor(textColorStateList);
     editText.setHintTextColor(hintColorStateList);
+    editText.setHighlightColor(highlightColor);
+    editText.setMovementMethod(movementMethod);
 
     if (cursorDrawableRes != -1) {
       try {
@@ -360,6 +410,7 @@ class TextInputSpec {
       @Prop(optional = true, resType = ResType.COLOR) Diff<Integer> shadowColor,
       @Prop(optional = true) Diff<ColorStateList> textColorStateList,
       @Prop(optional = true) Diff<ColorStateList> hintColorStateList,
+      @Prop(optional = true, resType = ResType.COLOR) Diff<Integer> highlightColor,
       @Prop(optional = true, resType = ResType.DIMEN_TEXT) Diff<Integer> textSize,
       @Prop(optional = true) Diff<Typeface> typeface,
       @Prop(optional = true) Diff<Integer> textAlignment,
@@ -373,6 +424,7 @@ class TextInputSpec {
       @Prop(optional = true) Diff<Integer> minLines,
       @Prop(optional = true) Diff<Integer> maxLines,
       @Prop(optional = true) Diff<Integer> cursorDrawableRes,
+      @Prop(optional = true) Diff<MovementMethod> movementMethod,
       @State Diff<Integer> measureSeqNumber) {
     if (!equals(measureSeqNumber.getPrevious(), measureSeqNumber.getNext())) {
       return true;
@@ -399,6 +451,9 @@ class TextInputSpec {
       return true;
     }
     if (!equals(hintColorStateList.getPrevious(), hintColorStateList.getNext())) {
+      return true;
+    }
+    if (!equals(highlightColor.getPrevious(), highlightColor.getNext())) {
       return true;
     }
     if (!equals(textSize.getPrevious(), textSize.getNext())) {
@@ -441,6 +496,9 @@ class TextInputSpec {
       }
     }
     if (!equals(cursorDrawableRes.getPrevious(), cursorDrawableRes.getNext())) {
+      return true;
+    }
+    if (!equals(movementMethod.getPrevious(), movementMethod.getNext())) {
       return true;
     }
     // Save the nastiest for last: trying to diff drawables.
@@ -526,6 +584,7 @@ class TextInputSpec {
       @Prop(optional = true, resType = ResType.COLOR) int shadowColor,
       @Prop(optional = true) ColorStateList textColorStateList,
       @Prop(optional = true) ColorStateList hintColorStateList,
+      @Prop(optional = true, resType = ResType.COLOR) int highlightColor,
       @Prop(optional = true, resType = ResType.DIMEN_TEXT) int textSize,
       @Prop(optional = true) Typeface typeface,
       @Prop(optional = true) int textAlignment,
@@ -539,6 +598,7 @@ class TextInputSpec {
       @Prop(optional = true) int maxLines,
       @Prop(optional = true) TextUtils.TruncateAt ellipsize,
       @Prop(optional = true) int cursorDrawableRes,
+      @Prop(optional = true) MovementMethod movementMethod,
       @State AtomicReference<CharSequence> savedText,
       @State AtomicReference<EditTextWithEventHandlers> mountedView) {
     mountedView.set(editText);
@@ -553,6 +613,7 @@ class TextInputSpec {
         shadowColor,
         textColorStateList,
         hintColorStateList,
+        highlightColor,
         textSize,
         typeface,
         textAlignment,
@@ -566,6 +627,7 @@ class TextInputSpec {
         minLines,
         maxLines,
         cursorDrawableRes,
+        movementMethod,
         // onMount happens:
         // 1. After initState: savedText = initText.
         // 2. After onUnmount: savedText preserved from underlying editText.
@@ -609,15 +671,17 @@ class TextInputSpec {
 
   @Nullable
   static Drawable getBackgroundOrDefault(ComponentContext c, Drawable specifiedBackground) {
-    if (specifiedBackground != null) {
-      return specifiedBackground;
+    if (specifiedBackground == UNSET_DRAWABLE) {
+      final int[] attrs = {android.R.attr.background};
+      TypedArray a =
+          c.getAndroidContext()
+              .obtainStyledAttributes(null, attrs, android.R.attr.editTextStyle, 0);
+      Drawable defaultBackground = a.getDrawable(0);
+      a.recycle();
+      return defaultBackground;
     }
-    final int[] attrs = {android.R.attr.background};
-    TypedArray a =
-        c.getAndroidContext().obtainStyledAttributes(null, attrs, android.R.attr.editTextStyle, 0);
-    Drawable defaultBackground = a.getDrawable(0);
-    a.recycle();
-    return defaultBackground;
+
+    return specifiedBackground;
   }
 
   @OnTrigger(RequestFocusEvent.class)
@@ -644,6 +708,16 @@ class TextInputSpec {
           (InputMethodManager) c.getAndroidContext().getSystemService(Context.INPUT_METHOD_SERVICE);
       imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
+  }
+
+  @OnTrigger(GetTextEvent.class)
+  @Nullable
+  static CharSequence getText(
+      ComponentContext c,
+      @State AtomicReference<EditTextWithEventHandlers> mountedView,
+      @State AtomicReference<CharSequence> savedText) {
+    final EditTextWithEventHandlers view = mountedView.get();
+    return view == null ? savedText.get() : view.getText();
   }
 
   @OnTrigger(SetTextEvent.class)
@@ -835,5 +909,16 @@ class TextInputSpec {
         }
       }
     }
+  }
+
+  static class ForMeasureEditText extends EditText {
+
+    public ForMeasureEditText(Context context) {
+      super(context);
+    }
+
+    // This view is not intended to be drawn and invalidated
+    @Override
+    public void invalidate() {}
   }
 }

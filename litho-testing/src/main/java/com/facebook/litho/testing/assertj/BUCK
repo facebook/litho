@@ -1,21 +1,42 @@
-load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_ANDROIDSUPPORT_TARGET", "LITHO_ASSERTJ_TARGET", "LITHO_HAMCREST_CORE_TARGET", "LITHO_JAVA_TARGET", "LITHO_JSR_TARGET", "LITHO_TESTING_HELPER_TARGET", "LITHO_TESTING_SUBCOMPONENTS_TARGET", "LITHO_TESTING_WHITEBOX_TARGET", "litho_android_library", "make_dep_path")
+load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_ANDROIDSUPPORT_TARGET", "LITHO_ASSERTJ_TARGET", "LITHO_HAMCREST_CORE_TARGET", "LITHO_JAVA_TARGET", "LITHO_JSR_TARGET", "LITHO_TESTING_HELPER_V3_TARGET", "LITHO_TESTING_HELPER_V4_TARGET", "LITHO_TESTING_SUBCOMPONENTS_TARGET", "LITHO_TESTING_WHITEBOX_TARGET", "litho_android_library", "make_dep_path")
+
+COMMON_DEPS = [
+    LITHO_ANDROIDSUPPORT_TARGET,
+    LITHO_JAVA_TARGET,
+    LITHO_JSR_TARGET,
+    LITHO_TESTING_WHITEBOX_TARGET,
+    LITHO_TESTING_SUBCOMPONENTS_TARGET,
+    LITHO_HAMCREST_CORE_TARGET,
+]
 
 litho_android_library(
     name = "assertj",
     srcs = glob(["*.java"]),
+    is_androidx = True,
     visibility = [
         "PUBLIC",
     ],
-    deps = [
-        LITHO_ANDROIDSUPPORT_TARGET,
-        LITHO_JAVA_TARGET,
-        LITHO_JSR_TARGET,
-        LITHO_TESTING_WHITEBOX_TARGET,
-        LITHO_TESTING_HELPER_TARGET,
-        LITHO_TESTING_SUBCOMPONENTS_TARGET,
+    deps = COMMON_DEPS + [
+        LITHO_TESTING_HELPER_V3_TARGET,
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/viewtree:viewtree"),
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/state:state"),
-        LITHO_HAMCREST_CORE_TARGET,
+    ],
+    exported_deps = [
+        LITHO_ASSERTJ_TARGET,
+    ],
+)
+
+litho_android_library(
+    name = "assertj-v4",
+    srcs = glob(["*.java"]),
+    is_androidx = True,
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = COMMON_DEPS + [
+        LITHO_TESTING_HELPER_V4_TARGET,
+        make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/viewtree:viewtree-v4"),
+        make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/state:state-v4"),
     ],
     exported_deps = [
         LITHO_ASSERTJ_TARGET,

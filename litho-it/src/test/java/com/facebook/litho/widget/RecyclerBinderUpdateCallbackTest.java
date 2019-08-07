@@ -102,8 +102,7 @@ public class RecyclerBinderUpdateCallbackTest {
   @Test
   public void testApplyChangeset() {
     RecyclerBinderUpdateCallback callback =
-        RecyclerBinderUpdateCallback.acquire(
-            null, mOldData, mComponentRenderer, mOperationExecutor, 0);
+        new RecyclerBinderUpdateCallback(null, mOldData, mComponentRenderer, mOperationExecutor);
     callback.onInserted(0, OLD_DATA_SIZE);
     callback.applyChangeset(mComponentContext);
     verify(mReporter, never()).emitMessage(any(ComponentsReporter.LogLevel.class), anyString());
@@ -134,15 +133,13 @@ public class RecyclerBinderUpdateCallbackTest {
       newData.add("n" + i);
     }
     RecyclerBinderUpdateCallback callback =
-        RecyclerBinderUpdateCallback.acquire(
-            null, oldData, mComponentRenderer, mOperationExecutor, 0);
+        new RecyclerBinderUpdateCallback(null, oldData, mComponentRenderer, mOperationExecutor);
     callback.onInserted(0, 12);
     callback.applyChangeset(mComponentContext);
     verify(mReporter, never()).emitMessage(any(ComponentsReporter.LogLevel.class), anyString());
 
     final RecyclerBinderUpdateCallback callback2 =
-        RecyclerBinderUpdateCallback.acquire(
-            oldData, newData, mComponentRenderer, mOperationExecutor, 0);
+        new RecyclerBinderUpdateCallback(oldData, newData, mComponentRenderer, mOperationExecutor);
 
     callback2.onInserted(0, 5);
     callback2.onChanged(6, 6, null);
@@ -175,8 +172,7 @@ public class RecyclerBinderUpdateCallbackTest {
   @Test
   public void testApplyChangesetWithInValidOperations() {
     final RecyclerBinderUpdateCallback callback1 =
-        RecyclerBinderUpdateCallback.acquire(
-            null, mOldData, mComponentRenderer, mOperationExecutor, 0);
+        new RecyclerBinderUpdateCallback(null, mOldData, mComponentRenderer, mOperationExecutor);
     callback1.onInserted(0, OLD_DATA_SIZE);
     callback1.applyChangeset(mComponentContext);
     verify(mReporter, never()).emitMessage(any(ComponentsReporter.LogLevel.class), anyString());
@@ -191,8 +187,8 @@ public class RecyclerBinderUpdateCallbackTest {
     }
 
     final RecyclerBinderUpdateCallback callback2 =
-        RecyclerBinderUpdateCallback.acquire(
-            mOldData, mNewData, mComponentRenderer, mOperationExecutor, 0);
+        new RecyclerBinderUpdateCallback(
+            mOldData, mNewData, mComponentRenderer, mOperationExecutor);
 
     // Apply invalid operations
     callback2.onChanged(7, 5, null);

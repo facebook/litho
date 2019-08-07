@@ -31,10 +31,11 @@ import java.util.List;
 import javax.lang.model.element.Modifier;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
-/**
- * Tests {@link PropValidation}
- */
+/** Tests {@link PropValidation} */
+@RunWith(JUnit4.class)
 public class PropValidationTest {
   private final SpecModel mSpecModel = mock(SpecModel.class);
   private final PropModel mPropModel1 = mock(PropModel.class);
@@ -188,8 +189,7 @@ public class PropValidationTest {
     assertThat(validationErrors.get(0).message).isEqualTo(
         "Props may not be declared with the following argument types: " +
             "[com.facebook.litho.ComponentLayout, " +
-            "com.facebook.litho.Component.Builder, " +
-            "com.facebook.litho.reference.Reference.Builder].");
+            "com.facebook.litho.Component.Builder].");
   }
 
   @Test
@@ -317,14 +317,14 @@ public class PropValidationTest {
     assertThat(validationErrors.get(0).message)
         .isEqualTo(
             "Props with resType DIMEN_OFFSET should not be annotated with "
-                + "android.support.annotation.Px or android.support.annotation.Dimension, since "
+                + "androidx.annotation.Px or androidx.annotation.Dimension, since "
                 + "these annotations will automatically be added to the relevant builder methods "
                 + "in the generated code.");
     assertThat(validationErrors.get(1).element).isEqualTo(mRepresentedObject2);
     assertThat(validationErrors.get(1).message)
         .isEqualTo(
             "Props with resType DIMEN_SIZE should not be annotated with "
-                + "android.support.annotation.Px or android.support.annotation.Dimension, since "
+                + "androidx.annotation.Px or androidx.annotation.Dimension, since "
                 + "these annotations will automatically be added to the relevant builder methods "
                 + "in the generated code.");
   }

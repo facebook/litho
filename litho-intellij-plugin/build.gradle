@@ -1,0 +1,34 @@
+plugins {
+    id 'java'
+    id 'org.jetbrains.intellij' version '0.4.4'
+}
+
+group 'com.facebook.litho.intellij'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+    jcenter() // mockito
+}
+
+apply plugin: 'idea'
+apply plugin: 'org.jetbrains.intellij'
+apply plugin: 'java'
+
+sourceSets.test.java.srcDir project(':litho-processor').file("src/test/java")
+
+dependencies {
+    testImplementation deps.junit
+    testImplementation deps.mockitoCore
+    // Processor
+    implementation project(':litho-sections-annotations')
+    implementation project(':litho-sections-processor')
+    implementation project(':litho-annotations')
+    implementation project(':litho-processor')
+    implementation deps.javapoet
+}
+
+intellij {
+    version '2018.1'
+}

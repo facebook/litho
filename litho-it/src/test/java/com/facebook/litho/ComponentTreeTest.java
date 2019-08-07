@@ -166,6 +166,16 @@ public class ComponentTreeTest {
   }
 
   @Test
+  public void testCreate_ContextIsNotScoped() {
+    ComponentContext scopedContext =
+        ComponentContext.withComponentScope(mContext, Row.create(mContext).build());
+    ComponentTree componentTree = ComponentTree.create(scopedContext, mComponent).build();
+
+    ComponentContext c = Whitebox.getInternalState(componentTree, "mContext");
+    Assert.assertNull(c.getComponentScope());
+  }
+
+  @Test
   public void testSetSizeSpec() {
     ComponentTree componentTree =
         ComponentTree.create(mContext, mComponent)
@@ -200,6 +210,25 @@ public class ComponentTreeTest {
     // Since this happens post creation, it's not in general safe to update the main thread layout
     // state synchronously, so the result should be in the background layout state
     postSizeSpecChecks(componentTree, "mBackgroundLayoutState");
+  }
+
+  @Test
+  public void testLayoutState_ContextIsNotScoped() {
+    ComponentContext scopedContext =
+        ComponentContext.withComponentScope(mContext, Row.create(mContext).build());
+    Component root = Column.create(scopedContext).build();
+
+    ComponentTree componentTree = ComponentTree.create(scopedContext, root).build();
+
+    componentTree.setSizeSpecAsync(mWidthSpec, mHeightSpec);
+
+    mLayoutThreadShadowLooper.runOneTask();
+
+    LayoutState layoutState = getInternalState(componentTree, "mBackgroundLayoutState");
+    ComponentContext c = getInternalState(componentTree, "mContext");
+    assertThat(c).isNotEqualTo(scopedContext);
+    Assert.assertNull(c.getComponentScope());
+    assertThat(layoutState.getRootComponent().getScopedContext()).isNotEqualTo(scopedContext);
   }
 
   @Test
@@ -794,7 +823,6 @@ public class ComponentTreeTest {
     ComponentTree componentTree =
         ComponentTree.create(mContext, root1)
             .layoutThreadHandler(handler)
-            .useSharedLayoutStateFuture(true)
             .build();
 
     componentTree.setLithoView(new LithoView(mContext));
@@ -828,7 +856,8 @@ public class ComponentTreeTest {
             assertEquals(0, layoutStateFuture.getWaitingCount());
             assertEquals(0, componentTree.getLayoutStateFutures().size());
           }
-        });
+        },
+        "tag");
   }
 
   @Test
@@ -842,7 +871,6 @@ public class ComponentTreeTest {
     ComponentTree componentTree =
         ComponentTree.create(mContext, root1)
             .layoutThreadHandler(handler)
-            .useSharedLayoutStateFuture(true)
             .build();
 
     componentTree.setLithoView(new LithoView(mContext));
@@ -913,7 +941,6 @@ public class ComponentTreeTest {
     ComponentTree componentTree =
         ComponentTree.create(mContext, root1)
             .layoutThreadHandler(handler)
-            .useSharedLayoutStateFuture(true)
             .build();
 
     componentTree.setLithoView(new LithoView(mContext));

@@ -60,21 +60,32 @@ MyComponent.create(c)
 
 ## Prop defaults
 
-You can omit setting a value for an optional prop and it will be initialized to the Java default for its defined type. You'll often want to define explicit default values for your component props instead of simply relying on Java's defaults.
+[`PropDefault`](/javadoc/com/facebook/litho/annotations/PropDefault.html) can be used for setting
+the default value of an optional `Prop` in a `LayoutSpec` or `MountSpec`. The annotated field must
+be a constant (i.e. static final) with the same name and type as the `Prop`. We'll often want to
+define explicit default values for ours optional props instead of simply using Java's defaults.
 
-You can define default prop values as static members on the Spec class via the `@PropDefault` annotation. Let's define default values for the props described above:
+Let's see an how we can declare and use `PropDefault`.
 
 ```java
-@MountSpec
-public class MyComponentSpec {
-  @PropDefault static final String prop1 = "mydefaultvalue";
-  @PropDefault static final int prop2 = -1;
+@LayoutSpec}
+class SomeSpec {
 
-  ...
+  @PropDefault static final String name = "John Doe";  // default value for name
+
+  @OnCreateLayout
+  static Component onCreateLayout(ComponentContext c, @Prop(optional = true) String name) {
+    return Text.create(c)
+             .text(title.getTitle())
+             .textSizeSp(16)
+             .marginDip(YogaEdge.BOTTOM, 4)
+             .build();
+  }
 }
 ```
 
-Prop defaults also support default values from Resources via setting a `resType` and `resId`. Let's define a default resource value for a `@PropDefault` annotated variable:
+`PropDefault` also support values from Resources via setting a `resType` and `resId`. Let's define
+a `PropDefault` with a resource value:
 
 ```java
 @PropDefault(resType = ResType.DIMEN_SIZE, resId = R.dimen.default_spacing) static float prop3;
@@ -203,6 +214,6 @@ The props objects should be made immutable. Due to [background layout](/docs/asy
 
 ## Common Props
 
-Common props are props that are available on all Components, e.g. `margin`, `padding`, `flex` etc. A full list of CommonProps can be found in the code [here](https://github.com/facebook/litho/blob/master/litho-core/src/main/java/com/facebook/litho/Component.java). 
+Common props are props that are available on all Components, e.g. `margin`, `padding`, `flex` etc. A full list of CommonProps can be found in the code [here](https://github.com/facebook/litho/blob/master/litho-core/src/main/java/com/facebook/litho/Component.java).
 
-You may want to access a Common Prop inside your Component (e.g. to see if a click handler was set on it), in which case you should use set `@Prop` param `isCommonProp()`, and name your prop using the same name as the Common Prop. If you wish to override the behavior of the Common Prop, then you should also set the `@Prop` param `overrideCommonPropBehavior` to true. 
+You may want to access a Common Prop inside your Component (e.g. to see if a click handler was set on it), in which case you should use set `@Prop` param `isCommonProp()`, and name your prop using the same name as the Common Prop. If you wish to override the behavior of the Common Prop, then you should also set the `@Prop` param `overrideCommonPropBehavior` to true.

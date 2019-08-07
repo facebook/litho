@@ -15,10 +15,10 @@
  */
 package com.facebook.litho.sections.processor.integration.resources;
 
-import android.support.annotation.VisibleForTesting;
-import android.support.v4.util.Pools;
 import android.view.View;
+import androidx.annotation.VisibleForTesting;
 import com.facebook.litho.ClickEvent;
+import com.facebook.litho.CommonUtils;
 import com.facebook.litho.Component;
 import com.facebook.litho.Diff;
 import com.facebook.litho.EventDispatcher;
@@ -38,7 +38,6 @@ import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.SectionLifecycle;
 import java.util.BitSet;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * @prop-required data java.util.List<T>
@@ -48,9 +47,6 @@ import java.util.Objects;
  * @see com.facebook.litho.sections.processor.integration.resources.FullDiffSectionSpec
  */
 public final class FullDiffSection<T> extends Section implements TestTag {
-  static final Pools.SynchronizedPool<TestEvent> sTestEventPool =
-      new Pools.SynchronizedPool<TestEvent>(2);
-
   @Comparable(type = 14)
   private FullDiffSectionStateContainer mStateContainer;
 
@@ -188,16 +184,10 @@ public final class FullDiffSection<T> extends Section implements TestTag {
   }
 
   static boolean dispatchTestEvent(EventHandler _eventHandler, Object object) {
-    TestEvent _eventState = sTestEventPool.acquire();
-    if (_eventState == null) {
-      _eventState = new TestEvent();
-    }
+    final TestEvent _eventState = new TestEvent();
     _eventState.object = object;
     EventDispatcher _lifecycle = _eventHandler.mHasEventDispatcher.getEventDispatcher();
-    boolean result = (boolean) _lifecycle.dispatchOnEvent(_eventHandler, _eventState);
-    _eventState.object = null;
-    sTestEventPool.release(_eventState);
-    return result;
+    return (boolean) _lifecycle.dispatchOnEvent(_eventHandler, _eventState);
   }
 
   private void testEvent(HasEventDispatcher _abstract, SectionContext c, View view, int someParam) {
@@ -383,7 +373,7 @@ public final class FullDiffSection<T> extends Section implements TestTag {
     Object state1;
   }
 
-  public static class Builder<T> extends Section.Builder<Builder<T>> {
+  public static final class Builder<T> extends Section.Builder<Builder<T>> {
     FullDiffSection mFullDiffSection;
 
     SectionContext mContext;
@@ -453,16 +443,7 @@ public final class FullDiffSection<T> extends Section implements TestTag {
     @Override
     public FullDiffSection build() {
       checkArgs(REQUIRED_PROPS_COUNT, mRequired, REQUIRED_PROPS_NAMES);
-      FullDiffSection fullDiffSectionRef = mFullDiffSection;
-      release();
-      return fullDiffSectionRef;
-    }
-
-    @Override
-    protected void release() {
-      super.release();
-      mFullDiffSection = null;
-      mContext = null;
+      return mFullDiffSection;
     }
   }
 
@@ -493,7 +474,7 @@ public final class FullDiffSection<T> extends Section implements TestTag {
 
     @Override
     public int hashCode() {
-      return Objects.hash(prop1);
+      return CommonUtils.hash(prop1);
     }
 
     @Override

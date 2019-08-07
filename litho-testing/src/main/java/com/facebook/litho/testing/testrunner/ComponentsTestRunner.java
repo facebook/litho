@@ -16,11 +16,12 @@
 
 package com.facebook.litho.testing.testrunner;
 
-import android.app.Application;
 import java.lang.reflect.Method;
 import org.junit.runners.model.InitializationError;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
+import org.robolectric.internal.SdkConfig;
+import org.robolectric.manifest.AndroidManifest;
 
 public class ComponentsTestRunner extends RobolectricTestRunner {
   /**
@@ -50,26 +51,43 @@ public class ComponentsTestRunner extends RobolectricTestRunner {
   }
 
   private static String getResPrefix() {
+    // If we're running with gradle, the test runner will start running from within
+    // the given sub-project.
+    if (System.getProperty("org.gradle.test.worker") != null) {
+      return "../litho-it/src/main/";
+    }
+
     String prefix = "";
     switch (ProjectEnvironment.detectFromSystemProperties()) {
       case OSS:
         break;
       case INTERNAL:
-        prefix = "libraries/components/";
-        break;
+        final String internalRoot = System.getProperty("com.facebook.litho.internal_root");
+        if (internalRoot != null) {
+          prefix = internalRoot + "/";
+        }
     }
 
-    // If we're running with gradle, the test runner will start running from within
-    // the given sub-project.
-    if (System.getProperty("org.gradle.test.worker") != null) {
-      return "../litho-it/src/main/";
-    } else {
-      return prefix + "litho-it/src/main/";
-    }
+    return prefix + "litho-it/src/main/";
   }
 
-  private static String getAndroidManifestPath() {
-    return getResPrefix() + "AndroidManifest.xml";
+  @Override
+  protected AndroidManifest getAppManifest(Config config) {
+    final AndroidManifest appManifest = super.getAppManifest(config);
+    if (appManifest == null) return null;
+
+    // Overriding default manifest to set default TargetSdk version, because normal Robolectric
+    // fallback in org.robolectric.RobolectricTestRunner.pickSdkVersion doesn't work.
+    return new AndroidManifest(
+        appManifest.getAndroidManifestFile(),
+        appManifest.getResDirectory(),
+        appManifest.getAssetsDirectory(),
+        appManifest.getPackageName()) {
+      @Override
+      public int getTargetSdkVersion() {
+        return SdkConfig.FALLBACK_SDK_VERSION;
+      }
+    };
   }
 
   @Override
@@ -77,16 +95,11 @@ public class ComponentsTestRunner extends RobolectricTestRunner {
     final Config config = super.getConfig(method);
     // We are hard-coding the path here instead of relying on BUCK internals
     // to allow for building with gradle in the Open Source version.
-    return new Config.Implementation(config, new Config.Implementation(
-        new int[]{},
-        getResPrefix() + "AndroidManifest.xml",
-        "",
-        "",
-        "res",
-        "assets",
-        new Class[]{},
-        Application.class,
-        new String[0],
-        null));
+    return new Config.Implementation(config) {
+      @Override
+      public String manifest() {
+        return getResPrefix() + "AndroidManifest.xml";
+      }
+    };
   }
 }

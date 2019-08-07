@@ -18,6 +18,7 @@ package com.facebook.litho.testing.logging;
 
 import android.util.Pair;
 import com.facebook.litho.BaseComponentsLogger;
+import com.facebook.litho.ComponentContext;
 import com.facebook.litho.FrameworkLogEvents;
 import com.facebook.litho.PerfEvent;
 import com.facebook.litho.TestPerfEvent;
@@ -40,7 +41,8 @@ public class TestComponentsLogger extends BaseComponentsLogger {
   }
 
   @Override
-  public PerfEvent newPerformanceEvent(@FrameworkLogEvents.LogEventId int eventId) {
+  public PerfEvent newPerformanceEvent(
+      ComponentContext c, @FrameworkLogEvents.LogEventId int eventId) {
     return new TestPerfEvent(eventId);
   }
 

@@ -25,9 +25,8 @@ import android.graphics.PathEffect;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.graphics.Region;
-import android.support.annotation.ColorInt;
-import android.support.annotation.Px;
+import androidx.annotation.ColorInt;
+import androidx.annotation.Px;
 import com.facebook.litho.CommonUtils;
 import java.util.Arrays;
 import javax.annotation.Nullable;
@@ -39,11 +38,13 @@ public class BorderColorDrawable extends ComparableDrawable {
   private static final float CLIP_ANGLE = 45f;
   private static final RectF sClipBounds = new RectF();
   private static final RectF sDrawBounds = new RectF();
+  private static final RectF sInnerDrawBounds = new RectF();
 
   private final State mState;
 
   private Paint mPaint;
   private Path mPath;
+  private Path mClipPath;
   private boolean mDrawBorderWithPath;
 
   private BorderColorDrawable(State state) {
@@ -68,6 +69,7 @@ public class BorderColorDrawable extends ComparableDrawable {
   public void init() {
     mPaint = new Paint();
     mPath = new Path();
+    mClipPath = new Path();
     boolean hasRadius = false;
     float lastRadius = 0f;
     for (int i = 0; i < mState.mBorderRadius.length; ++i) {
@@ -137,81 +139,80 @@ public class BorderColorDrawable extends ComparableDrawable {
     drawBorder(canvas, sDrawBounds, path(), mState.mBorderRadius, mPaint);
   }
 
-  /** Special case, support for multi color with same widths */
+  /** Special, special case, support for multi color with same widths for API 28 */
   private void drawMultiColoredBorders(Canvas canvas) {
+    mPaint.setStrokeWidth(mState.mBorderLeftWidth);
     float inset = mState.mBorderLeftWidth / 2f;
     sDrawBounds.set(getBounds());
     final int translateSaveCount = canvas.save();
     canvas.translate(sDrawBounds.left, sDrawBounds.top);
     sDrawBounds.offsetTo(0.0f, 0.0f);
-    mPaint.setStrokeWidth(mState.mBorderLeftWidth);
-
-    int height = Math.round(sDrawBounds.height());
-    int width = Math.round(sDrawBounds.width());
-    int hypotenuse = (int) Math.round(Math.sqrt(2f * (height / 2f) * (height / 2f)));
-    int saveCount;
     sDrawBounds.inset(inset, inset);
+    sInnerDrawBounds.set(sDrawBounds);
+    float third = Math.min(sDrawBounds.width(), sDrawBounds.height()) / 3f;
+    sInnerDrawBounds.inset(third, third);
+    int saveCount;
 
     // Left
-    if (mState.mBorderLeftColor != QUICK_REJECT_COLOR) {
+    int color = mState.mBorderLeftColor;
+    if (color != QUICK_REJECT_COLOR) {
       saveCount = canvas.save();
-
-      canvas.rotate(CLIP_ANGLE, 0f, 0f);
-      canvas.clipRect(0f, 0f, hypotenuse, hypotenuse);
-      canvas.rotate(-CLIP_ANGLE, 0f, 0f);
-
-      mPaint.setColor(mState.mBorderLeftColor);
-      drawBorder(canvas, sDrawBounds, path(), mState.mBorderRadius, mPaint);
-      canvas.restoreToCount(saveCount);
-    }
-
-    // Right
-    if (mState.mBorderRightColor != QUICK_REJECT_COLOR) {
-      saveCount = canvas.save();
-
-      canvas.rotate(-CLIP_ANGLE, width, 0f);
-      canvas.clipRect(width - hypotenuse, 0f, width, hypotenuse);
-      canvas.rotate(CLIP_ANGLE, width, 0f);
-
-      mPaint.setColor(mState.mBorderRightColor);
+      mPaint.setColor(color);
+      mClipPath.reset();
+      mClipPath.moveTo(sDrawBounds.left - inset, sDrawBounds.top - inset);
+      mClipPath.lineTo(sInnerDrawBounds.left, sInnerDrawBounds.top);
+      mClipPath.lineTo(sInnerDrawBounds.left, sInnerDrawBounds.bottom);
+      mClipPath.lineTo(sDrawBounds.left - inset, sDrawBounds.bottom + inset);
+      mClipPath.close();
+      canvas.clipPath(mClipPath);
       drawBorder(canvas, sDrawBounds, path(), mState.mBorderRadius, mPaint);
       canvas.restoreToCount(saveCount);
     }
 
     // Top
-    if (mState.mBorderTopColor != QUICK_REJECT_COLOR) {
+    color = mState.mBorderTopColor;
+    if (color != QUICK_REJECT_COLOR) {
       saveCount = canvas.save();
+      mPaint.setColor(color);
+      mClipPath.reset();
+      mClipPath.moveTo(sDrawBounds.left - inset, sDrawBounds.top - inset);
+      mClipPath.lineTo(sInnerDrawBounds.left, sInnerDrawBounds.top);
+      mClipPath.lineTo(sInnerDrawBounds.right, sInnerDrawBounds.top);
+      mClipPath.lineTo(sDrawBounds.right + inset, sDrawBounds.top - inset);
+      mClipPath.close();
+      canvas.clipPath(mClipPath);
+      drawBorder(canvas, sDrawBounds, path(), mState.mBorderRadius, mPaint);
+      canvas.restoreToCount(saveCount);
+    }
 
-      canvas.rotate(-CLIP_ANGLE, 0f, 0f);
-      canvas.clipRect(0f, 0f, hypotenuse, hypotenuse);
-      canvas.rotate(CLIP_ANGLE, 0f, 0f);
-
-      canvas.rotate(CLIP_ANGLE, width, 0f);
-      canvas.clipRect(width - hypotenuse, 0, width, hypotenuse, Region.Op.UNION);
-      canvas.rotate(-CLIP_ANGLE, width, 0f);
-
-      canvas.clipRect(hypotenuse, 0f, width - hypotenuse, hypotenuse, Region.Op.UNION);
-
-      mPaint.setColor(mState.mBorderTopColor);
+    // Right
+    color = mState.mBorderRightColor;
+    if (color != QUICK_REJECT_COLOR) {
+      saveCount = canvas.save();
+      mPaint.setColor(color);
+      mClipPath.reset();
+      mClipPath.moveTo(sDrawBounds.right + inset, sDrawBounds.top - inset);
+      mClipPath.lineTo(sInnerDrawBounds.right, sInnerDrawBounds.top);
+      mClipPath.lineTo(sInnerDrawBounds.right, sInnerDrawBounds.bottom);
+      mClipPath.lineTo(sDrawBounds.right + inset, sDrawBounds.bottom + inset);
+      mClipPath.close();
+      canvas.clipPath(mClipPath);
       drawBorder(canvas, sDrawBounds, path(), mState.mBorderRadius, mPaint);
       canvas.restoreToCount(saveCount);
     }
 
     // Bottom
-    if (mState.mBorderBottomColor != QUICK_REJECT_COLOR) {
+    color = mState.mBorderBottomColor;
+    if (color != QUICK_REJECT_COLOR) {
       saveCount = canvas.save();
-
-      canvas.rotate(CLIP_ANGLE, 0f, height);
-      canvas.clipRect(0f, height - hypotenuse, hypotenuse, height);
-      canvas.rotate(-CLIP_ANGLE, 0f, height);
-
-      canvas.rotate(-CLIP_ANGLE, width, height);
-      canvas.clipRect(width - hypotenuse, height - hypotenuse, width, height, Region.Op.UNION);
-      canvas.rotate(CLIP_ANGLE, width, height);
-
-      canvas.clipRect(hypotenuse, height - hypotenuse, width - hypotenuse, height, Region.Op.UNION);
-
-      mPaint.setColor(mState.mBorderBottomColor);
+      mPaint.setColor(color);
+      mClipPath.reset();
+      mClipPath.moveTo(sDrawBounds.left - inset, sDrawBounds.bottom + inset);
+      mClipPath.lineTo(sInnerDrawBounds.left, sInnerDrawBounds.bottom);
+      mClipPath.lineTo(sInnerDrawBounds.right, sInnerDrawBounds.bottom);
+      mClipPath.lineTo(sDrawBounds.right + inset, sDrawBounds.bottom + inset);
+      mClipPath.close();
+      canvas.clipPath(mClipPath);
       drawBorder(canvas, sDrawBounds, path(), mState.mBorderRadius, mPaint);
       canvas.restoreToCount(saveCount);
     }

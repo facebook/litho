@@ -21,8 +21,9 @@ import static android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH;
 import static android.os.Build.VERSION_CODES.JELLY_BEAN_MR1;
 import static android.os.Build.VERSION_CODES.LOLLIPOP_MR1;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import com.facebook.litho.BuildConfig;
+import com.facebook.litho.perfboost.LithoPerfBoosterFactory;
 import com.facebook.yoga.YogaLogger;
 
 /**
@@ -58,6 +59,12 @@ public class ComponentsConfiguration {
   /** Whether we need to account for lack of synchronization while accessing Themes. */
   public static final boolean NEEDS_THEME_SYNCHRONIZATION = (SDK_INT <= LOLLIPOP_MR1);
 
+  /** The default priority for threads that perform background layout calculations. */
+  public static final int DEFAULT_BACKGROUND_THREAD_PRIORITY = 5;
+
+  /** The default priority for threads that perform background sections change set calculations. */
+  public static final int DEFAULT_CHANGE_SET_THREAD_PRIORITY = 0;
+
   /**
    * Option to enabled debug mode. This will save extra data asscociated with each node and allow
    * more info about the hierarchy to be retrieved. Used to enable stetho integration. It is highly
@@ -90,18 +97,14 @@ public class ComponentsConfiguration {
    */
   public static boolean isEndToEndTestRun = System.getProperty("IS_TESTING") != null;
 
+  /**
+   * By default end-to-end tests will disable transitions and this flag lets to explicitly enable
+   * transitions to test animation related behavior.
+   */
+  public static boolean forceEnableTransitionsForInstrumentationTests = false;
+
   /** Enable exception delegation to {@link com.facebook.litho.annotations.OnError}. */
   public static boolean enableOnErrorHandling = false;
-
-  /** Whether the RecyclerCollectionComponent can asynchronously set the root of a SectionTree. */
-  public static boolean setRootAsyncRecyclerCollectionComponent = false;
-
-  /**
-   * If true, insert operations with the {@link com.facebook.litho.widget.RecyclerBinder} will not
-   * start async layout calculations for the items in range, instead these layout calculations will
-   * be posted to the next frame.
-   */
-  public static boolean insertPostAsyncLayout = false;
 
   /**
    * If false, global keys will not be generated (litho level state updates won't work). It's highly
@@ -110,22 +113,8 @@ public class ComponentsConfiguration {
    */
   public static boolean useGlobalKeys = true;
 
-  /** The default priority for threads that perform background layout calculations. */
-  public static final int DEFAULT_BACKGROUND_THREAD_PRIORITY = 5;
-
-  public static int defaultChangeSetThreadPriority = 0;
-
-  /** If true then we'll lazily initialize the LayoutStateOutputIdCalculator */
-  public static boolean lazilyInitializeLayoutStateOutputIdCalculator = false;
-
   /** Whether to unmount all contents of LithoView when its ComponentTree is set to null. */
   public static boolean unmountAllWhenComponentTreeSetToNull = false;
-
-  /**
-   * By default end-to-end tests will disable transitions and this flag lets to explicitly enable
-   * transitions to test animation related behavior.
-   */
-  public static boolean forceEnableTransitionsForInstrumentationTests = false;
 
   /**
    * Configuration for creating a thread pool of threads used for background layout. If null, a
@@ -135,23 +124,6 @@ public class ComponentsConfiguration {
 
   /** If true, a single thread pool will be used instead of creating one per RecyclerBinder. */
   public static boolean useSingleThreadPool = false;
-
-  /** Configuration for asynchronous state update */
-  public static boolean updateStateAsync = false;
-
-  /**
-   * If false, we won't create state handlers. It's highly discouraged to to change this to false,
-   * unless you handle all your updates outside of the litho framework
-   */
-  public static boolean useStateHandlers = true;
-
-  /** Default for ComponentHost#hasOverlappingRendering. */
-  public static boolean hostHasOverlappingRendering = true;
-
-  public static boolean prewarmImageTexture = false;
-
-  /** Whether we should use the PlaceholderComponent instead of Column as MountSpec holder. */
-  public static boolean usePlaceholderComponent = false;
 
   /**
    * If true, the async range calculation isn't blocked on the first item finishing layout and it
@@ -166,12 +138,6 @@ public class ComponentsConfiguration {
   public static boolean bgScheduleAllInitRange;
 
   /**
-   * If true, a layout for the same ComponentTree will be calculated on a single thread at the same
-   * time.
-   */
-  public static boolean useSharedLayoutStateFuture = false;
-
-  /**
    * If non-null, a thread pool will be used for async layouts instead of a single layout thread.
    */
   public static @Nullable LayoutThreadPoolConfiguration threadPoolConfiguration = null;
@@ -184,32 +150,17 @@ public class ComponentsConfiguration {
    */
   public static boolean incrementalMountWhenNotVisible = false;
 
-  /** Whether all drawables are eligible for wrapping into DisplayListDrawables */
-  public static boolean useDisplayListForAllDrawables = false;
-
   /**
    * Whether the background thread that's currently running the layout should have its priority
    * raised to the thread priority of the UI thread.
    */
   public static boolean inheritPriorityFromUiThread = false;
 
-  public static boolean disablePools = false;
-
   /**
    * Whether the OnShouldCreateLayoutWithNewSizeSpec is used with Layout Spec with size spec. This
    * will also disable the associated layout caching.
    */
   public static boolean enableShouldCreateLayoutWithNewSizeSpec = false;
-
-  /**
-   * Whether we allow animating drawables' properties (other than bounds)
-   */
-  public static boolean allowAnimatingDrawables = false;
-
-  /** Assign transition keys to all LayoutOutputs, this enables Transition.allLayout() */
-  public static boolean assignTransitionKeysToAllOutputs = false;
-
-  public static boolean createPhantomLayoutOutputsForTransitions = false;
 
   /**
    * Enables more smart approach to processing autogenerated transition ids in
@@ -219,47 +170,23 @@ public class ComponentsConfiguration {
    */
   public static boolean onlyProcessAutogeneratedTransitionIdsWhenNecessary = false;
 
-  /** Whether the refactored implementation of nested tree resolution should be used. */
-  public static boolean isNestedTreeResolutionExperimentEnabled = false;
-
-  public static boolean shouldIncreaseThreadPriorityToUrgentDisplay = false;
-
-  /** Sets the if the internal node should be persisted */
-  public static boolean isPersistenceEnabled;
-
-  /** set the size of the extra memory internal node tree should take */
-  public static int extraMemorySize = 0;
-
-  /**
-   * Controls if DisplayList wrapping should be disabled by default. Would have no effect if
-   * ComponentTree explicitly set up to enable wrapping
-   */
-  public static boolean disableDisplayListWrapping = false;
+  /** Sets if is reconciliation is enabled */
+  public static boolean isReconciliationEnabled = false;
 
   /** specifies if the ComparableAnimatedColorDrawable should be initialized in a lazy way */
   public static boolean lazyComparableAnimatedColorDrawable = false;
-
-  /**
-   * We want to completely remove Reference from Litho's API. This param will help us understand the
-   * impact of this change in terms of memory footprint and mount performance
-   */
-  public static boolean dontUseReferences = false;
 
   // TODO T39526148 Remove once Flipper plugin is usable.
   /** If true, information about RenderInfos will be passed to Flipper's layout inspector. */
   public static boolean enableRenderInfoDebugging = false;
 
+  public static boolean useCancelableLayoutFutures;
+  public static boolean canInterruptAndMoveLayoutsBetweenThreads;
+  public static boolean createInitialStateOncePerThread;
+
   public static boolean isRenderInfoDebuggingEnabled() {
     return isDebugModeEnabled && enableRenderInfoDebugging;
   }
-
-  public static boolean disableAllClipProps = false;
-
-  public static boolean disableClipOnRecyclers = false;
-
-  public static boolean isPoolBisectEnabled = false;
-  public static String disablePoolsStart = "aaaaa";
-  public static String disablePoolsEnd = "zzzzz";
 
   public static boolean prioritizeRenderingOnParallel = true;
 
@@ -270,4 +197,30 @@ public class ComponentsConfiguration {
    * measured.
    */
   public static boolean checkNeedsRemeasure = false;
+
+  /** (Hopefully) temporary measure as we're investigating a major crash in libhwui. */
+  public static boolean disableComponentHostPool = true;
+
+  // todo T40814333 clean up after running experiment.
+  public static boolean splitLayoutForMeasureAndRangeEstimation = false;
+
+  public static @Nullable LithoPerfBoosterFactory perfBoosterFactory = null;
+
+  /**
+   * If true, the {@link #perfBoosterFactory} will be used to indicate that LayoutStateFuture thread
+   * can use the perf boost
+   */
+  public static boolean boostPerfLayoutStateFuture;
+
+  /** If true, release ComponentTrees held in RecyclerBinder when item are removed or detached. */
+  public static boolean isReleaseComponentTreeInRecyclerBinder;
+
+  /** If true, add the root component of LayoutSpecs to InternalNodes */
+  public static boolean isConsistentComponentHierarchyExperimentEnabled = false;
+
+  /**
+   * If true the framework will use the refactored implementation of
+   * ComponentLifecycle#createLayout()
+   */
+  public static boolean isRefactoredLayoutCreationEnabled = false;
 }

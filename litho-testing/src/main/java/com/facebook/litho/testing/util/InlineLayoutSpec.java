@@ -27,6 +27,11 @@ public abstract class InlineLayoutSpec extends Component {
     super("InlineLayout");
   }
 
+  protected InlineLayoutSpec(ComponentContext c) {
+    super("InlineLayout");
+    setScopedContext(c);
+  }
+
   @Override
   public boolean isEquivalentTo(Component other) {
     return this == other;

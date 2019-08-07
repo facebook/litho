@@ -20,11 +20,15 @@ import static com.facebook.litho.testing.sections.TestSectionCreator.TestSection
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 import android.os.Looper;
 import com.facebook.litho.Component;
 import com.facebook.litho.StateContainer;
+import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.sections.TestSectionCreator;
 import com.facebook.litho.testing.sections.TestTarget;
@@ -34,6 +38,8 @@ import com.facebook.litho.widget.ComponentRenderInfo;
 import com.facebook.litho.widget.RenderInfo;
 import com.facebook.litho.widget.SmoothScrollAlignmentType;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -83,6 +89,72 @@ public class SectionTreeTest {
 
     tree.setRoot(section);
     assertChangeSetHandled(changeSetHandler);
+  }
+
+  @Test
+  public void dataRenderedWithPendingChangeSets() {
+    final Section leaf1 =
+        TestSectionCreator.createChangeSetComponent(
+            "leaf1",
+            Change.insert(0, ComponentRenderInfo.createEmpty(), "leaf1Data0"),
+            Change.insert(1, ComponentRenderInfo.createEmpty(), "leaf1Data1"),
+            Change.insert(2, ComponentRenderInfo.createEmpty(), "leaf1Data2"));
+
+    final Section leaf2 =
+        TestSectionCreator.createChangeSetComponent(
+            "leaf2",
+            Change.insert(0, ComponentRenderInfo.createEmpty(), "leaf2Data0"),
+            Change.insert(1, ComponentRenderInfo.createEmpty(), "leaf2Data1"));
+
+    final TestSectionCreator.ChildrenSectionTest section =
+        spy(TestSectionCreator.createSectionComponent("root", leaf1, leaf2));
+    when(section.makeShallowCopy()).thenReturn(section);
+    when(section.makeShallowCopy(any(Boolean.class))).thenReturn(section);
+
+    final TestTarget changeSetHandler = new TestTarget();
+    SectionTree tree = SectionTree.create(mSectionContext, changeSetHandler).build();
+
+    final List<ChangeSet> changeSets = new ArrayList<>();
+    final ChangeSet changeSet = ChangeSet.acquireChangeSet(null, false);
+    changeSet.insert(0, ComponentRenderInfo.createEmpty(), null, "pendingData0");
+    changeSet.insert(1, ComponentRenderInfo.createEmpty(), null, "pendingData1");
+    changeSet.insert(2, ComponentRenderInfo.createEmpty(), null, "pendingData2");
+    changeSets.add(changeSet);
+    Whitebox.setInternalState(tree, "mPendingChangeSets", changeSets);
+
+    tree.setRoot(section);
+
+    assertTrue(section.onDataRendered);
+
+    final ChangesInfo changesInfo = section.mChangesInfo;
+    final List<Change> changes = changesInfo.getAllChanges();
+    assertThat(changes.size()).isEqualTo(8);
+
+    assertThat(changes.get(0).getType()).isEqualTo(Change.INSERT);
+    assertThat(changes.get(0).getIndex()).isEqualTo(0);
+    assertThat(changes.get(0).getNextData()).isEqualTo(ImmutableList.of("pendingData0"));
+    assertThat(changes.get(1).getType()).isEqualTo(Change.INSERT);
+    assertThat(changes.get(1).getIndex()).isEqualTo(1);
+    assertThat(changes.get(1).getNextData()).isEqualTo(ImmutableList.of("pendingData1"));
+    assertThat(changes.get(2).getType()).isEqualTo(Change.INSERT);
+    assertThat(changes.get(2).getIndex()).isEqualTo(2);
+    assertThat(changes.get(2).getNextData()).isEqualTo(ImmutableList.of("pendingData2"));
+
+    assertThat(changes.get(3).getType()).isEqualTo(Change.INSERT);
+    assertThat(changes.get(3).getIndex()).isEqualTo(0);
+    assertThat(changes.get(3).getNextData()).isEqualTo(ImmutableList.of("leaf1Data0"));
+    assertThat(changes.get(4).getType()).isEqualTo(Change.INSERT);
+    assertThat(changes.get(4).getIndex()).isEqualTo(1);
+    assertThat(changes.get(4).getNextData()).isEqualTo(ImmutableList.of("leaf1Data1"));
+    assertThat(changes.get(5).getType()).isEqualTo(Change.INSERT);
+    assertThat(changes.get(5).getIndex()).isEqualTo(2);
+    assertThat(changes.get(5).getNextData()).isEqualTo(ImmutableList.of("leaf1Data2"));
+    assertThat(changes.get(6).getType()).isEqualTo(Change.INSERT);
+    assertThat(changes.get(6).getIndex()).isEqualTo(3);
+    assertThat(changes.get(6).getNextData()).isEqualTo(ImmutableList.of("leaf2Data0"));
+    assertThat(changes.get(7).getType()).isEqualTo(Change.INSERT);
+    assertThat(changes.get(7).getIndex()).isEqualTo(4);
+    assertThat(changes.get(7).getNextData()).isEqualTo(ImmutableList.of("leaf2Data1"));
   }
 
   @Test
@@ -159,6 +231,52 @@ public class SectionTreeTest {
 
     assertThat(leaf1.getGlobalKey()).isEqualTo("node1leaf1");
     assertThat(leaf2.getGlobalKey()).isEqualTo("node1leaf10");
+  }
+
+  @Test
+  public void stableKeyGenerationForSectionCopies() {
+    final Section leaf1 =
+        TestSectionCreator.createChangeSetComponent(
+            "leaf1",
+            Change.insert(0, ComponentRenderInfo.createEmpty()),
+            Change.insert(1, ComponentRenderInfo.createEmpty()),
+            Change.insert(2, ComponentRenderInfo.createEmpty()));
+
+    final Section leaf2 =
+        TestSectionCreator.createChangeSetComponent(
+            "leaf1",
+            Change.insert(0, ComponentRenderInfo.createEmpty()),
+            Change.insert(1, ComponentRenderInfo.createEmpty()));
+
+    final Section root = TestSectionCreator.createSectionComponent("node1", leaf1, leaf2);
+
+    final SectionContext context = spy(new SectionContext(mSectionContext));
+    final KeyHandler keyHandler = new KeyHandler();
+    when(context.getKeyHandler()).thenReturn(keyHandler);
+
+    root.setScopedContext(context);
+
+    final String key1 = root.generateUniqueGlobalKeyForChild(leaf1, leaf1.getKey());
+    keyHandler.registerKey(key1);
+    final String key2 = root.generateUniqueGlobalKeyForChild(leaf2, leaf1.getKey());
+    keyHandler.registerKey(key2);
+
+    assertThat(key1).isEqualTo("leaf1");
+    assertThat(key2).isEqualTo("leaf10");
+
+    final Section copy = root.makeShallowCopy(false);
+    final SectionContext contextCopy = spy(new SectionContext(mSectionContext));
+    final KeyHandler keyHandlerCopy = new KeyHandler();
+    when(contextCopy.getKeyHandler()).thenReturn(keyHandlerCopy);
+
+    copy.setScopedContext(contextCopy);
+
+    final String key1Copy = copy.generateUniqueGlobalKeyForChild(leaf1, leaf1.getKey());
+    keyHandlerCopy.registerKey(key1Copy);
+    final String key2Copy = copy.generateUniqueGlobalKeyForChild(leaf2, leaf1.getKey());
+    keyHandlerCopy.registerKey(key2Copy);
+    assertThat(key1Copy).isEqualTo("leaf1");
+    assertThat(key2Copy).isEqualTo("leaf10");
   }
 
   @Test
@@ -385,12 +503,13 @@ public class SectionTreeTest {
     tree.setRoot(section);
     assertChangeSetHandled(changeSetHandler);
 
-    final StateUpdate stateUpdate = new StateUpdate();
+    assertAppliedStateUpdates(section, Collections.emptySet());
+
+    final StateContainer.StateUpdate stateUpdate = new StateContainer.StateUpdate(0);
     changeSetHandler.clear();
     tree.updateState("key", stateUpdate, "test");
 
-    assertThat(stateUpdate.mUpdateStateCalled).isTrue();
-    assertChangeSetNotSeen(changeSetHandler);
+    assertAppliedStateUpdates(section, Arrays.asList(stateUpdate));
   }
 
   @Test
@@ -407,17 +526,18 @@ public class SectionTreeTest {
     tree.setRoot(section);
     assertChangeSetHandled(changeSetHandler);
 
-    final StateUpdate lazyStateUpdate = new StateUpdate();
+    assertAppliedStateUpdates(section, Collections.emptySet());
+
+    final StateContainer.StateUpdate lazyStateUpdate = new StateContainer.StateUpdate(0);
     changeSetHandler.clear();
     tree.updateStateLazy("key", lazyStateUpdate);
 
-    assertThat(lazyStateUpdate.mUpdateStateCalled).isFalse();
+    assertAppliedStateUpdates(section, Collections.emptySet());
 
-    final StateUpdate stateUpdate = new StateUpdate();
+    final StateContainer.StateUpdate stateUpdate = new StateContainer.StateUpdate(0);
     tree.updateState("key", stateUpdate, "test");
 
-    assertThat(lazyStateUpdate.mUpdateStateCalled).isTrue();
-    assertThat(stateUpdate.mUpdateStateCalled).isTrue();
+    assertAppliedStateUpdates(section, Arrays.asList(lazyStateUpdate, stateUpdate));
   }
 
   @Test
@@ -434,12 +554,12 @@ public class SectionTreeTest {
     tree.setRoot(section);
     assertChangeSetHandled(changeSetHandler);
 
-    final StateUpdate stateUpdate = new StateUpdate();
+    final StateContainer.StateUpdate stateUpdate = new StateContainer.StateUpdate(0);
     changeSetHandler.clear();
     tree.release();
     tree.updateState("key", stateUpdate, "test");
 
-    assertThat(stateUpdate.mUpdateStateCalled).isFalse();
+    assertAppliedStateUpdates(section, Collections.emptySet());
   }
 
   @Test
@@ -470,14 +590,17 @@ public class SectionTreeTest {
     tree.setRoot(section);
     assertChangeSetHandled(changeSetHandler);
 
-    final StateUpdate stateUpdate = new StateUpdate();
+    assertAppliedStateUpdates(section, Collections.emptySet());
+
+    final StateContainer.StateUpdate stateUpdate = new StateContainer.StateUpdate(0);
     changeSetHandler.clear();
     tree.updateStateAsync("key", stateUpdate, "test");
-    assertThat(stateUpdate.mUpdateStateCalled).isFalse();
+
+    assertAppliedStateUpdates(section, Collections.emptySet());
 
     mChangeSetThreadShadowLooper.runOneTask();
 
-    assertThat(stateUpdate.mUpdateStateCalled).isTrue();
+    assertAppliedStateUpdates(section, Collections.singleton(stateUpdate));
     assertChangeSetNotSeen(changeSetHandler);
   }
 
@@ -494,11 +617,13 @@ public class SectionTreeTest {
     tree.setRoot(section);
     assertChangeSetHandled(changeSetHandler);
 
-    final StateUpdate stateUpdate = new StateUpdate();
+    assertAppliedStateUpdates(section, Collections.emptySet());
+
+    final StateContainer.StateUpdate stateUpdate = new StateContainer.StateUpdate(0);
     changeSetHandler.clear();
     tree.updateStateAsync("key", stateUpdate, "test");
 
-    assertThat(stateUpdate.mUpdateStateCalled).isTrue();
+    assertAppliedStateUpdates(section, Collections.singleton(stateUpdate));
     assertChangeSetNotSeen(changeSetHandler);
   }
 
@@ -898,6 +1023,16 @@ public class SectionTreeTest {
     assertThat(sectionTree.getCachedValue("key2")).isNull();
   }
 
+  private static void assertAppliedStateUpdates(
+      Section section, Iterable<StateContainer.StateUpdate> expected) {
+    if (!(section instanceof TestSection)) {
+      throw new RuntimeException("section should be an instance of TestSection");
+    }
+    final TestSectionCreator.TestStateContainer stateContainer =
+        (TestSectionCreator.TestStateContainer) section.getStateContainer();
+    assertThat(stateContainer.appliedStateUpdate).containsExactlyInAnyOrderElementsOf(expected);
+  }
+
   private static void assertChangeSetHandled(TestTarget testTarget) {
     assertThat(testTarget.wereChangesHandled()).isTrue();
     assertThat(testTarget.wasNotifyChangeSetCompleteCalledWithChangedData()).isTrue();
@@ -906,16 +1041,6 @@ public class SectionTreeTest {
   private static void assertChangeSetNotSeen(TestTarget testTarget) {
     assertThat(testTarget.wereChangesHandled()).isFalse();
     assertThat(testTarget.wasNotifyChangeSetCompleteCalledWithChangedData()).isFalse();
-  }
-
-  private static class StateUpdate implements SectionLifecycle.StateUpdate {
-
-    private boolean mUpdateStateCalled;
-
-    @Override
-    public void updateState(StateContainer stateContainer) {
-      mUpdateStateCalled = true;
-    }
   }
 
   private static RenderInfo makeComponentInfo() {

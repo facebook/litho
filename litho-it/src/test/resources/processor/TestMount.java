@@ -18,13 +18,13 @@ package com.facebook.litho.processor.integration.resources;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.AttrRes;
-import android.support.annotation.StringRes;
-import android.support.annotation.VisibleForTesting;
-import android.support.v4.util.Pools;
-import android.support.v4.view.accessibility.AccessibilityNodeInfoCompat;
 import android.view.View;
+import androidx.annotation.AttrRes;
+import androidx.annotation.StringRes;
+import androidx.annotation.VisibleForTesting;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import com.facebook.litho.ClickEvent;
+import com.facebook.litho.CommonUtils;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
@@ -49,7 +49,6 @@ import com.facebook.litho.annotations.State;
 import com.facebook.litho.annotations.TreeProp;
 import java.util.Arrays;
 import java.util.BitSet;
-import java.util.Objects;
 import javax.annotation.Nullable;
 
 /**
@@ -65,8 +64,6 @@ import javax.annotation.Nullable;
  */
 @TargetApi(17)
 public final class TestMount<S extends View> extends Component implements TestTag {
-  static final Pools.SynchronizedPool<TestEvent> sTestEventPool = new Pools.SynchronizedPool<TestEvent>(2);
-
   @Comparable(type = 14)
   private TestMountStateContainer mStateContainer;
 
@@ -412,29 +409,24 @@ public final class TestMount<S extends View> extends Component implements TestTa
   }
 
   static void dispatchTestEvent(EventHandler _eventHandler, View view, Object object) {
-    TestEvent _eventState = sTestEventPool.acquire();
-    if (_eventState == null) {
-      _eventState = new TestEvent();
-    }
+    final TestEvent _eventState = new TestEvent();
     _eventState.view = view;
     _eventState.object = object;
     EventDispatcher _lifecycle = _eventHandler.mHasEventDispatcher.getEventDispatcher();
     _lifecycle.dispatchOnEvent(_eventHandler, _eventState);
-    _eventState.view = null;
-    _eventState.object = null;
-    sTestEventPool.release(_eventState);
   }
 
   private void testLayoutEvent(
       HasEventDispatcher _abstract, ComponentContext c, View view, int param1) {
     TestMount _ref = (TestMount) _abstract;
+    TestMountStateContainer stateContainer = getStateContainerWithLazyStateUpdatesApplied(c, _ref);
     TestMountSpec.testLayoutEvent(
         c,
         (Object) _ref.prop3,
         (char) _ref.prop5,
         view,
         param1,
-        (long) _ref.mStateContainer.state1,
+        (long) stateContainer.state1,
         (Integer) _ref.getCached());
   }
 
@@ -546,6 +538,14 @@ public final class TestMount<S extends View> extends Component implements TestTa
     nextStateContainer.state2 = prevStateContainer.state2;
   }
 
+  private TestMountStateContainer getStateContainerWithLazyStateUpdatesApplied(ComponentContext c,
+      TestMount component) {
+    TestMountStateContainer stateContainer = new TestMountStateContainer();
+    transferState(component.mStateContainer, stateContainer);
+    c.applyLazyStateUpdatesForContainer(stateContainer);
+    return stateContainer;
+  }
+
   protected static void updateCurrentState(ComponentContext c, int someParam) {
     Component _component = c.getComponentScope();
     if (_component == null) {
@@ -644,7 +644,7 @@ public final class TestMount<S extends View> extends Component implements TestTa
     }
   }
 
-  public static class Builder<S extends View> extends Component.Builder<Builder<S>> {
+  public static final class Builder<S extends View> extends Component.Builder<Builder<S>> {
     TestMount mTestMount;
 
     ComponentContext mContext;
@@ -768,16 +768,7 @@ public final class TestMount<S extends View> extends Component implements TestTa
     @Override
     public TestMount build() {
       checkArgs(REQUIRED_PROPS_COUNT, mRequired, REQUIRED_PROPS_NAMES);
-      TestMount testMountRef = mTestMount;
-      release();
-      return testMountRef;
-    }
-
-    @Override
-    protected void release() {
-      super.release();
-      mTestMount = null;
-      mContext = null;
+      return mTestMount;
     }
   }
 
@@ -796,7 +787,7 @@ public final class TestMount<S extends View> extends Component implements TestTa
 
     @Override
     public int hashCode() {
-      return Objects.hash(prop3, prop5, state1);
+      return CommonUtils.hash(prop3, prop5, state1);
     }
 
     @Override

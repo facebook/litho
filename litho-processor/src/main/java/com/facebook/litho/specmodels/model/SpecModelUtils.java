@@ -161,6 +161,16 @@ public class SpecModelUtils {
     return false;
   }
 
+  public static boolean hasLazyState(SpecModel specModel) {
+    for (StateParamModel stateParamModel : specModel.getStateValues()) {
+      if (stateParamModel.canUpdateLazily()) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   /**
    * This method will "expand" the typeArguments of the given type, only if the type is a {@link
    * ClassNames#DIFF} or a {@link java.util.Collection}. Otherwise the typeArguments won't be
@@ -216,6 +226,32 @@ public class SpecModelUtils {
           }
         },
         null);
+  }
+
+  public static boolean isTypeElement(final SpecModel specModel) {
+    final Object representedObject = specModel.getRepresentedObject();
+    return representedObject instanceof TypeElement;
+  }
+
+  public static List<PropModel> getDynamicProps(SpecModel specModel) {
+    final List<PropModel> dynamicProps = new ArrayList<>();
+    for (PropModel prop : specModel.getProps()) {
+      if (prop.isDynamic()) {
+        dynamicProps.add(prop);
+      }
+    }
+    return dynamicProps;
+  }
+
+  public static SpecMethodModel<BindDynamicValueMethod, Void> getBindDelegateMethodForDynamicProp(
+      SpecModel specModel, PropModel prop) {
+    for (SpecMethodModel<BindDynamicValueMethod, Void> method :
+        ((MountSpecModel) specModel).getBindDynamicValueMethods()) {
+      if (prop.equals(method.methodParams.get(1))) {
+        return method;
+      }
+    }
+    return null;
   }
 
   /**

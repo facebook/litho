@@ -18,8 +18,8 @@ package com.facebook.litho.processor.integration.resources;
 
 import android.annotation.TargetApi;
 import android.os.Build;
-import android.support.annotation.Nullable;
 import android.view.View;
+import androidx.annotation.Nullable;
 import com.facebook.litho.ClickEvent;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;

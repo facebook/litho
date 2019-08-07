@@ -16,8 +16,9 @@
 
 package com.facebook.litho.sections.widget;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import com.facebook.litho.ComponentLogParams;
+import com.facebook.litho.LithoHandler;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.config.LayoutThreadPoolConfiguration;
 import com.facebook.litho.sections.SectionTree;
@@ -32,20 +33,27 @@ public class RecyclerBinderConfiguration {
   @Nullable private final LayoutHandlerFactory mLayoutHandlerFactory;
   private final boolean mIsCircular;
   private final boolean mIsWrapContent;
+  private final boolean mMoveLayoutsBetweenThreads;
+  private final boolean mUseCancelableLayoutFutures;
   // TODO T34627443 make all fields final after removing setters
   private boolean mHasDynamicItemHeight;
   private boolean mUseBackgroundChangeSets = SectionsConfiguration.useBackgroundChangeSets;
   private boolean mHScrollAsyncMode;
   private boolean mEnableStableIds;
-  private boolean mUseSharedLayoutStateFuture = ComponentsConfiguration.useSharedLayoutStateFuture;
   private LayoutThreadPoolConfiguration mThreadPoolConfiguration =
       ComponentsConfiguration.threadPoolConfiguration;
   private boolean mAsyncInitRange = ComponentsConfiguration.asyncInitRange;
-  @Nullable private String mSplitLayoutTag;
   @Nullable private List<ComponentLogParams> mInvalidStateLogParamsList;
+  private final boolean mSplitLayoutForMeasureAndRangeEstimation;
+  @Nullable private LithoHandler mChangeSetThreadHandler;
+  private final boolean mEnableDetach;
 
   public static Builder create() {
     return new Builder();
+  }
+
+  public static Builder create(RecyclerBinderConfiguration configuration) {
+    return new Builder(configuration);
   }
 
   private RecyclerBinderConfiguration(
@@ -54,27 +62,33 @@ public class RecyclerBinderConfiguration {
       boolean circular,
       boolean wrapContent,
       @Nullable List<ComponentLogParams> invalidStateLogParamsList,
-      @Nullable String splitLayoutTag,
       LayoutThreadPoolConfiguration threadPoolConfiguration,
       boolean dynamicItemHeight,
       boolean useBackgroundChangeSets,
       boolean hScrollAsyncMode,
       boolean enableStableIds,
-      boolean useSharedLayoutStateFuture,
-      boolean asyncInitRange) {
+      boolean asyncInitRange,
+      boolean splitLayoutForMeasureAndRangeEstimation,
+      boolean enableDetach,
+      @Nullable LithoHandler changeSetThreadHandler,
+      boolean moveLayoutsBetweenThreads,
+      boolean useCancelableLayoutFutures) {
     mRangeRatio = rangeRatio;
     mLayoutHandlerFactory = layoutHandlerFactory;
     mIsCircular = circular;
     mIsWrapContent = wrapContent;
     mInvalidStateLogParamsList = invalidStateLogParamsList;
-    mSplitLayoutTag = splitLayoutTag;
     mThreadPoolConfiguration = threadPoolConfiguration;
     mHasDynamicItemHeight = dynamicItemHeight;
     mUseBackgroundChangeSets = useBackgroundChangeSets;
     mHScrollAsyncMode = hScrollAsyncMode;
     mEnableStableIds = enableStableIds;
-    mUseSharedLayoutStateFuture = useSharedLayoutStateFuture;
     mAsyncInitRange = asyncInitRange;
+    mSplitLayoutForMeasureAndRangeEstimation = splitLayoutForMeasureAndRangeEstimation;
+    mEnableDetach = enableDetach;
+    mChangeSetThreadHandler = changeSetThreadHandler;
+    mMoveLayoutsBetweenThreads = moveLayoutsBetweenThreads;
+    mUseCancelableLayoutFutures = useCancelableLayoutFutures;
   }
 
   public float getRangeRatio() {
@@ -97,20 +111,12 @@ public class RecyclerBinderConfiguration {
     return mHasDynamicItemHeight;
   }
 
-  public String getSplitLayoutTag() {
-    return mSplitLayoutTag;
-  }
-
   public boolean getUseBackgroundChangeSets() {
     return mUseBackgroundChangeSets;
   }
 
   public boolean getHScrollAsyncMode() {
     return mHScrollAsyncMode;
-  }
-
-  public boolean getUseSharedLayoutStateFuture() {
-    return mUseSharedLayoutStateFuture;
   }
 
   public LayoutThreadPoolConfiguration getThreadPoolConfiguration() {
@@ -129,6 +135,26 @@ public class RecyclerBinderConfiguration {
     return mInvalidStateLogParamsList;
   }
 
+  public @Nullable LithoHandler getChangeSetThreadHandler() {
+    return mChangeSetThreadHandler;
+  }
+
+  public boolean splitLayoutForMeasureAndRangeEstimation() {
+    return mSplitLayoutForMeasureAndRangeEstimation;
+  }
+
+  public boolean useCancelableLayoutFutures() {
+    return mUseCancelableLayoutFutures;
+  }
+
+  public boolean moveLayoutsBetweenThreads() {
+    return mMoveLayoutsBetweenThreads;
+  }
+
+  public boolean getEnableDetach() {
+    return mEnableDetach;
+  }
+
   public static class Builder {
     public static final LayoutThreadPoolConfiguration DEFAULT_THREAD_POOL_CONFIG =
         ComponentsConfiguration.threadPoolConfiguration;
@@ -136,7 +162,6 @@ public class RecyclerBinderConfiguration {
 
     @Nullable private LayoutHandlerFactory mLayoutHandlerFactory;
     @Nullable private List<ComponentLogParams> mInvalidStateLogParamsList;
-    @Nullable private String mSplitLayoutTag;
     private LayoutThreadPoolConfiguration mThreadPoolConfiguration = DEFAULT_THREAD_POOL_CONFIG;
     private float mRangeRatio = DEFAULT_RANGE;
     private boolean mCircular = false;
@@ -145,11 +170,37 @@ public class RecyclerBinderConfiguration {
     private boolean mHScrollAsyncMode = false;
     private boolean mEnableStableIds = false;
     private boolean mUseBackgroundChangeSets = SectionsConfiguration.useBackgroundChangeSets;
-    private boolean mUseSharedLayoutStateFuture =
-        ComponentsConfiguration.useSharedLayoutStateFuture;
     private boolean mAsyncInitRange = ComponentsConfiguration.asyncInitRange;
+    private boolean mSplitLayoutForMeasureAndRangeEstimation =
+        ComponentsConfiguration.splitLayoutForMeasureAndRangeEstimation;
+    private boolean mUseCancelableLayoutFutures =
+        ComponentsConfiguration.useCancelableLayoutFutures;
+    private boolean mMoveLayoutsBetweenThreads =
+        ComponentsConfiguration.canInterruptAndMoveLayoutsBetweenThreads;
+    private boolean mEnableDetach = false;
+    @Nullable private LithoHandler mChangeSetThreadHandler;
 
     Builder() {}
+
+    private Builder(RecyclerBinderConfiguration configuration) {
+      this.mLayoutHandlerFactory = configuration.mLayoutHandlerFactory;
+      this.mInvalidStateLogParamsList = configuration.mInvalidStateLogParamsList;
+      this.mThreadPoolConfiguration = configuration.mThreadPoolConfiguration;
+      this.mRangeRatio = configuration.mRangeRatio;
+      this.mCircular = configuration.mIsCircular;
+      this.mWrapContent = configuration.mIsWrapContent;
+      this.mDynamicItemHeight = configuration.mHasDynamicItemHeight;
+      this.mHScrollAsyncMode = configuration.mHScrollAsyncMode;
+      this.mEnableStableIds = configuration.mEnableStableIds;
+      this.mUseBackgroundChangeSets = configuration.mUseBackgroundChangeSets;
+      this.mAsyncInitRange = configuration.mAsyncInitRange;
+      this.mSplitLayoutForMeasureAndRangeEstimation =
+          configuration.mSplitLayoutForMeasureAndRangeEstimation;
+      this.mUseCancelableLayoutFutures = configuration.mUseCancelableLayoutFutures;
+      this.mMoveLayoutsBetweenThreads = configuration.mMoveLayoutsBetweenThreads;
+      this.mEnableDetach = configuration.mEnableDetach;
+      this.mChangeSetThreadHandler = configuration.mChangeSetThreadHandler;
+    }
 
     /**
      * @param idleExecutor This determines the thread on which the Component layout calculation will
@@ -166,12 +217,6 @@ public class RecyclerBinderConfiguration {
       return this;
     }
 
-    /** Experimental feature, do not enable! */
-    public Builder splitLayoutTag(@Nullable String splitLayoutTag) {
-      mSplitLayoutTag = splitLayoutTag;
-      return this;
-    }
-
     /** Null value will fall back to the non-null default one. */
     public Builder threadPoolConfiguration(
         @Nullable LayoutThreadPoolConfiguration threadPoolConfiguration) {
@@ -185,8 +230,8 @@ public class RecyclerBinderConfiguration {
 
     /**
      * @param rangeRatio Ratio to determine the number of components before and after the {@link
-     *     android.support.v7.widget.RecyclerView}'s total number of currently visible items to have
-     *     their Component layout computed ahead of time.
+     *     androidx.recyclerview.widget.RecyclerView}'s total number of currently visible items to
+     *     have their Component layout computed ahead of time.
      *     <p>e.g total number of visible items = 5 rangeRatio = 10 total number of items before the
      *     1st visible item to be computed = 5 * 10 = 50 total number of items after the last
      *     visible item to be computed = 5 * 10 = 50
@@ -248,13 +293,35 @@ public class RecyclerBinderConfiguration {
       return this;
     }
 
-    public Builder useSharedLayoutStateFuture(boolean useSharedLayoutStateFuture) {
-      mUseSharedLayoutStateFuture = useSharedLayoutStateFuture;
+    public Builder asyncInitRange(boolean asyncInitRange) {
+      mAsyncInitRange = asyncInitRange;
       return this;
     }
 
-    public Builder asyncInitRange(boolean asyncInitRange) {
-      mAsyncInitRange = asyncInitRange;
+    public Builder splitLayoutForMeasureAndRangeEstimation(
+        boolean splitLayoutForMeasureAndRangeEstimation) {
+      mSplitLayoutForMeasureAndRangeEstimation = splitLayoutForMeasureAndRangeEstimation;
+      return this;
+    }
+
+    public Builder canInterruptAndMoveLayoutsBetweenThreads(boolean isEnabled) {
+      this.mMoveLayoutsBetweenThreads = isEnabled;
+      return this;
+    }
+
+    public Builder useCancelableLayoutFutures(boolean isEnabled) {
+      this.mUseCancelableLayoutFutures = isEnabled;
+      return this;
+    }
+
+    public Builder changeSetThreadHandler(@Nullable LithoHandler changeSetThreadHandler) {
+      mChangeSetThreadHandler = changeSetThreadHandler;
+      return this;
+    }
+
+    /** If true, detach components under the hood when RecyclerBinder#detach() is called. */
+    public Builder enableDetach(boolean enableDetach) {
+      mEnableDetach = enableDetach;
       return this;
     }
 
@@ -265,14 +332,17 @@ public class RecyclerBinderConfiguration {
           mCircular,
           mWrapContent,
           mInvalidStateLogParamsList,
-          mSplitLayoutTag,
           mThreadPoolConfiguration,
           mDynamicItemHeight,
           mUseBackgroundChangeSets,
           mHScrollAsyncMode,
           mEnableStableIds,
-          mUseSharedLayoutStateFuture,
-          mAsyncInitRange);
+          mAsyncInitRange,
+          mSplitLayoutForMeasureAndRangeEstimation,
+          mEnableDetach,
+          mChangeSetThreadHandler,
+          mMoveLayoutsBetweenThreads,
+          mUseCancelableLayoutFutures);
     }
   }
 }

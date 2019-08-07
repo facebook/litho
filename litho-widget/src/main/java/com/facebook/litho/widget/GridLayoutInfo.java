@@ -16,15 +16,15 @@
 
 package com.facebook.litho.widget;
 
-import static android.support.v7.widget.OrientationHelper.VERTICAL;
+import static androidx.recyclerview.widget.OrientationHelper.VERTICAL;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.UNSPECIFIED;
 
 import android.content.Context;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.OrientationHelper;
-import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.OrientationHelper;
+import androidx.recyclerview.widget.RecyclerView;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.SizeSpec;
 import com.facebook.litho.widget.RecyclerBinder.RecyclerViewLayoutManagerOverrideParams;
@@ -40,9 +40,14 @@ public class GridLayoutInfo implements LayoutInfo {
 
   private final GridLayoutManager mGridLayoutManager;
   private final GridSpanSizeLookup mGridSpanSizeLookup;
-  private final boolean mAllowGridMeasureOverride;
 
   private RenderInfoCollection mRenderInfoCollection;
+
+  public GridLayoutInfo(GridLayoutManager gridLayoutManager) {
+    mGridLayoutManager = gridLayoutManager;
+    mGridSpanSizeLookup = new GridSpanSizeLookup();
+    mGridLayoutManager.setSpanSizeLookup(mGridSpanSizeLookup);
+  }
 
   public GridLayoutInfo(
       Context context,
@@ -50,13 +55,10 @@ public class GridLayoutInfo implements LayoutInfo {
       int orientation,
       boolean reverseLayout,
       boolean allowGridMeasuresOverride) {
-    mAllowGridMeasureOverride = allowGridMeasuresOverride;
-    mGridLayoutManager =
-        mAllowGridMeasureOverride
+    this(
+        allowGridMeasuresOverride
             ? new GridLayoutManager(context, spanCount, orientation, reverseLayout)
-            : new LithoGridLayoutManager(context, spanCount, orientation, reverseLayout);
-    mGridSpanSizeLookup = new GridSpanSizeLookup();
-    mGridLayoutManager.setSpanSizeLookup(mGridSpanSizeLookup);
+            : new LithoGridLayoutManager(context, spanCount, orientation, reverseLayout));
   }
 
   public GridLayoutInfo(Context context, int spanCount, int orientation, boolean reverseLayout) {

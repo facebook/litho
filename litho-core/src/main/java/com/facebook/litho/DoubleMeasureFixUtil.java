@@ -15,11 +15,17 @@
  */
 package com.facebook.litho;
 
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.util.DisplayMetrics;
 
 public class DoubleMeasureFixUtil {
+
+  // Required to determine whether device used is a Chromebook.
+  // See https://stackoverflow.com/questions/39784415/ for details.
+  // TODO: T46211188 Figure out long-term fix encompassing regular Android devices and Chromebooks
+  private static final String SYSTEM_FEATURE = "org.chromium.arc.device_management";
 
   /**
    * Correction for an Android bug on some devices with "special" densities where the system will
@@ -31,19 +37,25 @@ public class DoubleMeasureFixUtil {
    * think the correct one is. Even though the double measure will still happen, the incorrect width
    * will not propagate to any vertical RecyclerViews contained within.
    */
-  public static int correctWidthSpecForAndroidDoubleMeasureBug(Resources resources, int widthSpec) {
+  public static int correctWidthSpecForAndroidDoubleMeasureBug(
+      Resources resources, PackageManager packageManager, int widthSpec) {
     final @SizeSpec.MeasureSpecMode int mode = SizeSpec.getMode(widthSpec);
     if (mode == SizeSpec.UNSPECIFIED) {
       return widthSpec;
     }
+    final boolean isChromebook = packageManager.hasSystemFeature(SYSTEM_FEATURE);
 
     final Configuration configuration = resources.getConfiguration();
     final DisplayMetrics displayMetrics = resources.getDisplayMetrics();
-    final int screenWidthPx = displayMetrics.widthPixels;
     final float screenDensity = displayMetrics.density;
+    final float screenWidthDp = configuration.screenWidthDp;
+    // If device used is a Chromebook we need to use the window size instead of the screen size to
+    // avoid layout issues.
+    final int screenWidthPx =
+        isChromebook ? (int) (screenWidthDp * screenDensity + 0.5f) : displayMetrics.widthPixels;
 
     // NB: Logic taken from ViewRootImpl#dipToPx
-    final int calculatedScreenWidthPx = (int) (screenDensity * configuration.screenWidthDp + 0.5f);
+    final int calculatedScreenWidthPx = (int) (screenDensity * screenWidthDp + 0.5f);
 
     if (screenWidthPx != calculatedScreenWidthPx
         && calculatedScreenWidthPx == SizeSpec.getSize(widthSpec)) {

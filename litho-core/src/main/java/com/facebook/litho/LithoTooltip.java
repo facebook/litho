@@ -17,6 +17,7 @@ package com.facebook.litho;
 
 import android.graphics.Rect;
 import android.view.View;
+import androidx.annotation.Nullable;
 
 public interface LithoTooltip {
 
@@ -33,5 +34,5 @@ public interface LithoTooltip {
    * @param xOffset move tooltip with this horizontal offset from default position
    * @param yOffset move tooltip with this vertical offset from default position
    */
-  void showLithoTooltip(View container, Rect anchorBounds, int xOffset, int yOffset);
+  void showLithoTooltip(@Nullable View container, Rect anchorBounds, int xOffset, int yOffset);
 }

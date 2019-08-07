@@ -30,8 +30,11 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
 /** Tests {@link AnnotationExtractor}. */
+@RunWith(JUnit4.class)
 public class AnnotationExtractorTest {
   @Rule public CompilationRule mCompilationRule = new CompilationRule();
 

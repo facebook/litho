@@ -35,8 +35,8 @@ ghrepo: "facebook/litho"
 repository: "facebook/litho"
 
 # These can be used in documentation with e.g. {{site.litho-version}}
-litho-version: 0.24.0
-litho-snapshot-version: 0.24.1-SNAPSHOT
+litho-version: 0.29.0
+litho-snapshot-version: 0.29.1-SNAPSHOT
 soloader-version: 0.5.1
 
 # Use these color settings to determine your colour scheme for the site.

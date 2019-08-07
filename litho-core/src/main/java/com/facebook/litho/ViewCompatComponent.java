@@ -17,7 +17,6 @@
 package com.facebook.litho;
 
 import android.content.Context;
-import android.support.v4.util.Pools;
 import android.view.View;
 import android.view.ViewGroup;
 import com.facebook.litho.viewcompat.ViewBinder;
@@ -36,8 +35,6 @@ import com.facebook.litho.viewcompat.ViewCreator;
 @Deprecated
 public class ViewCompatComponent<V extends View> extends Component {
 
-  private static final Pools.SynchronizedPool<Builder> sBuilderPool =
-      new Pools.SynchronizedPool<>(2);
   private static final int UNSPECIFIED_POOL_SIZE = -1;
 
   private final ViewCreator mViewCreator;
@@ -52,12 +49,8 @@ public class ViewCompatComponent<V extends View> extends Component {
   }
 
   public Builder<V> create(ComponentContext componentContext) {
-    Builder<V> builder = sBuilderPool.acquire();
-    if (builder == null) {
-      builder = new Builder<>();
-    }
+    Builder<V> builder = new Builder<>();
     builder.init(componentContext, this);
-
     return builder;
   }
 
@@ -156,16 +149,7 @@ public class ViewCompatComponent<V extends View> extends Component {
         throw new IllegalStateException(
             "To create a ViewCompatComponent you must provide a ViewBinder.");
       }
-      ViewCompatComponent viewCompatComponent = mViewCompatComponent;
-      release();
-      return viewCompatComponent;
-    }
-
-    @Override
-    protected void release() {
-      super.release();
-      mViewCompatComponent = null;
-      sBuilderPool.release(this);
+      return mViewCompatComponent;
     }
   }
 

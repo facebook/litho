@@ -21,17 +21,21 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.io.Resources;
 import com.google.common.truth.Truth;
 import com.google.testing.compile.JavaFileObjects;
-import com.google.testing.compile.JavaSourceSubjectFactory;
 import com.google.testing.compile.JavaSourcesSubjectFactory;
 import javax.tools.JavaFileObject;
 import javax.tools.StandardLocation;
+import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
+@RunWith(JUnit4.class)
 public class SectionsProcessorIntegrationTest {
   private static final String RES_PREFIX = "/processor/sections/";
   private static final String RES_PACKAGE =
       "com.facebook.litho.sections.processor.integration.resources";
 
+  @Ignore("T41117446") //  Enable them after switching target to AndroidX
   @Test
   public void compilesFullGroupSectionSpecWithoutError() {
     final JavaFileObject javaFileObject =
@@ -70,6 +74,7 @@ public class SectionsProcessorIntegrationTest {
         .generatesSources(expectedOutput);
   }
 
+  @Ignore("T41117446") //  Enable them after switching target to AndroidX
   @Test
   public void compilesFullDiffSectionSpecWithoutError() {
     final JavaFileObject javaFileObject =

@@ -34,8 +34,11 @@ import com.squareup.javapoet.TypeSpec;
 import org.assertj.core.api.Condition;
 import org.assertj.core.data.Index;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
 /** Tests {@link MatcherGenerator} */
+@RunWith(JUnit4.class)
 public class MatcherGeneratorTest {
   public static class DummyContext {}
 
@@ -86,6 +89,7 @@ public class MatcherGeneratorTest {
                         false,
                         false,
                         false,
+                        false,
                         ResType.STRING,
                         ""),
                     new PropModel(
@@ -94,6 +98,7 @@ public class MatcherGeneratorTest {
                             .type(TypeName.FLOAT)
                             .build(),
                         true,
+                        false,
                         false,
                         false,
                         ResType.DIMEN_SIZE,
@@ -144,6 +149,7 @@ public class MatcherGeneratorTest {
                             .name("prop1")
                             .type(TypeName.get(String.class))
                             .build(),
+                        false,
                         false,
                         false,
                         false,
@@ -202,7 +208,7 @@ public class MatcherGeneratorTest {
 
   public static PropModel makePropModel(String name) {
     final MockMethodParamModel paramModel = MockMethodParamModel.newBuilder().name(name).build();
-    return new PropModel(paramModel, false, false, false, ResType.INT, "");
+    return new PropModel(paramModel, false, false, false, false, ResType.INT, "");
   }
 
 }

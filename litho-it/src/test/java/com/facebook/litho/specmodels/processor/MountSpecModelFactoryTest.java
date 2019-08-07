@@ -19,13 +19,16 @@ package com.facebook.litho.specmodels.processor;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
+import com.facebook.litho.ComponentContext;
 import com.facebook.litho.annotations.Event;
 import com.facebook.litho.annotations.FromMeasure;
 import com.facebook.litho.annotations.FromTrigger;
 import com.facebook.litho.annotations.MountSpec;
+import com.facebook.litho.annotations.OnAttached;
 import com.facebook.litho.annotations.OnBoundsDefined;
 import com.facebook.litho.annotations.OnCreateInitialState;
 import com.facebook.litho.annotations.OnCreateTreeProp;
+import com.facebook.litho.annotations.OnDetached;
 import com.facebook.litho.annotations.OnMount;
 import com.facebook.litho.annotations.OnTrigger;
 import com.facebook.litho.annotations.OnUnmount;
@@ -45,10 +48,14 @@ import javax.annotation.processing.Messager;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
 /** Tests {@link MountSpecModelFactory} */
+@RunWith(JUnit4.class)
 public class MountSpecModelFactoryTest {
   @Rule public CompilationRule mCompilationRule = new CompilationRule();
 
@@ -56,6 +63,8 @@ public class MountSpecModelFactoryTest {
       mock(DependencyInjectionHelper.class);
 
   private final MountSpecModelFactory mFactory = new MountSpecModelFactory();
+
+  private MountSpecModel mMountSpecModel;
 
   static class TestTreeProp {
 
@@ -118,24 +127,30 @@ public class MountSpecModelFactoryTest {
     static void onUnmount() {}
 
     @OnTrigger(TestTriggerEvent.class)
-    static String testTrigger(@FromTrigger int integer, @Prop Object prop3) {
+    static String testTrigger(@Prop Object prop6, @FromTrigger int integer) {
       return "";
     }
 
     @ShouldAlwaysRemeasure
-    static boolean shouldAlwaysRemeasure(@Prop boolean prop4) {
-      return prop4;
+    static boolean shouldAlwaysRemeasure(@Prop boolean prop7) {
+      return prop7;
     }
+
+    @OnAttached
+    static void onAttached(ComponentContext c, @Prop Object prop8, @State Object state3) {}
+
+    @OnDetached
+    static void onDetached(ComponentContext c, @Prop Object prop9, @State Object state4) {}
   }
 
-  @Test
-  public void testCreate() {
+  @Before
+  public void setUp() {
     Elements elements = mCompilationRule.getElements();
     Types types = mCompilationRule.getTypes();
     TypeElement typeElement =
         elements.getTypeElement(MountSpecModelFactoryTest.TestMountSpec.class.getCanonicalName());
 
-    MountSpecModel mountSpecModel =
+    mMountSpecModel =
         mFactory.create(
             elements,
             types,
@@ -144,39 +159,58 @@ public class MountSpecModelFactoryTest {
             RunMode.normal(),
             mDependencyInjectionHelper,
             null);
+  }
 
-    assertThat(mountSpecModel.getSpecName()).isEqualTo("TestMountSpec");
-    assertThat(mountSpecModel.getComponentName()).isEqualTo("TestMountComponentName");
-    assertThat(mountSpecModel.getSpecTypeName().toString())
+  @Test
+  public void testCreate() {
+    assertThat(mMountSpecModel.getSpecName()).isEqualTo("TestMountSpec");
+    assertThat(mMountSpecModel.getComponentName()).isEqualTo("TestMountComponentName");
+    assertThat(mMountSpecModel.getSpecTypeName().toString())
         .isEqualTo(
             "com.facebook.litho.specmodels.processor.MountSpecModelFactoryTest.TestMountSpec");
-    assertThat(mountSpecModel.getComponentTypeName().toString())
+    assertThat(mMountSpecModel.getComponentTypeName().toString())
         .isEqualTo(
             "com.facebook.litho.specmodels.processor.MountSpecModelFactoryTest."
                 + "TestMountComponentName");
 
-    assertThat(mountSpecModel.getDelegateMethods()).hasSize(6);
+    assertThat(mMountSpecModel.getDelegateMethods()).hasSize(8);
 
     final SpecMethodModel<DelegateMethod, Void> shouldRemeasureMethod =
-        mountSpecModel.getDelegateMethods().get(5);
+        mMountSpecModel.getDelegateMethods().get(5);
     assertThat(shouldRemeasureMethod.name).isEqualToIgnoringCase("shouldAlwaysRemeasure");
     assertThat(shouldRemeasureMethod.methodParams).hasSize(1);
 
-    assertThat(mountSpecModel.getProps()).hasSize(6);
-    assertThat(mountSpecModel.getStateValues()).hasSize(2);
-    assertThat(mountSpecModel.getInterStageInputs()).hasSize(1);
-    assertThat(mountSpecModel.getTreeProps()).hasSize(1);
+    assertThat(mMountSpecModel.getProps()).hasSize(9);
+    assertThat(mMountSpecModel.getStateValues()).hasSize(4);
+    assertThat(mMountSpecModel.getInterStageInputs()).hasSize(1);
+    assertThat(mMountSpecModel.getTreeProps()).hasSize(1);
 
-    assertThat(mountSpecModel.isPublic()).isFalse();
-    assertThat(mountSpecModel.isPureRender()).isTrue();
+    assertThat(mMountSpecModel.isPublic()).isFalse();
+    assertThat(mMountSpecModel.isPureRender()).isTrue();
 
-    assertThat(mountSpecModel.hasInjectedDependencies()).isTrue();
-    assertThat(mountSpecModel.getDependencyInjectionHelper()).isSameAs(mDependencyInjectionHelper);
+    assertThat(mMountSpecModel.hasInjectedDependencies()).isTrue();
+    assertThat(mMountSpecModel.getDependencyInjectionHelper()).isSameAs(mDependencyInjectionHelper);
 
-    assertThat(mountSpecModel.getTriggerMethods()).hasSize(1);
+    assertThat(mMountSpecModel.getTriggerMethods()).hasSize(1);
     SpecMethodModel<EventMethod, EventDeclarationModel> triggerMethodModel =
-        mountSpecModel.getTriggerMethods().get(0);
+        mMountSpecModel.getTriggerMethods().get(0);
     assertThat(triggerMethodModel.name).isEqualToIgnoringCase("testTrigger");
     assertThat(triggerMethodModel.methodParams).hasSize(2);
+  }
+
+  @Test
+  public void testOnAttached() {
+    final SpecMethodModel<DelegateMethod, Void> onAttached =
+        mMountSpecModel.getDelegateMethods().get(6);
+    assertThat(onAttached.name).isEqualToIgnoringCase("onAttached");
+    assertThat(onAttached.methodParams).hasSize(3);
+  }
+
+  @Test
+  public void testOnDetached() {
+    final SpecMethodModel<DelegateMethod, Void> onDetached =
+        mMountSpecModel.getDelegateMethods().get(7);
+    assertThat(onDetached.name).isEqualToIgnoringCase("onDetached");
+    assertThat(onDetached.methodParams).hasSize(3);
   }
 }

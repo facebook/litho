@@ -30,10 +30,11 @@ import java.lang.annotation.Annotation;
 import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
-/**
- * Tests {@link DiffValidation}
- */
+/** Tests {@link DiffValidation} */
+@RunWith(JUnit4.class)
 public class DiffValidationTest {
 
   private SpecModel mSpecModel;

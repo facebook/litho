@@ -44,8 +44,11 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
 /** Tests {@link TriggerMethodExtractor} */
+@RunWith(JUnit4.class)
 public class TriggerMethodExtractorTest {
   @Rule public CompilationRule mCompilationRule = new CompilationRule();
 

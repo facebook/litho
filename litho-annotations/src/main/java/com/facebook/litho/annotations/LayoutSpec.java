@@ -16,37 +16,90 @@
 
 package com.facebook.litho.annotations;
 
-import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * A class that is annotated with this annotation will be used to create a component lifecycle that
- * is made up of other components.
- * <p>A class that is annotated with {@link LayoutSpec} must implement a method with the
- * {@link OnCreateLayout} annotation. It may also implement methods with the following annotations:
- * - {@link OnLoadStyle}
- * - {@link OnEvent}
- * <p>If you wish to create a component that mounts its own content, then use {@link MountSpec}
- * instead.
- * <p>For example:
- * <pre>
- * <code>{@literal @}LayoutSpec
- * public class MyComponentSpec {
+ * A class that is annotated with this annotation will be used to create a composite component that
+ * is made up of other components. A layout spec is the logical equivalent of a composite view in
+ * Android.
  *
- *  {@literal @}OnCreateLayout
- *   ComponentLayout onCreateLayout(LayoutContext c, @Prop MyProp prop) {
- *       return Row.create(c)
- *           .alignItems(FLEX_START)
- *           .child(someChild1)
- *           .child(someChild2)
- *           .build();
+ * <p>The class annotated with {@link LayoutSpec} must implement a method with the {@link
+ * OnCreateLayout} or {@link OnCreateLayoutWithSizeSpec} annotation. It may also implement methods
+ * with the following annotations:
+ *
+ * <ul>
+ *   <li>{@link OnCreateInitialState}
+ *   <li>{@link OnCreateTreeProp}
+ *   <li>{@link OnCreateTransition}
+ *   <li>{@link OnUpdateState}
+ *   <li>{@link OnEvent}
+ *   <li>{@link OnLoadStyle}
+ *   <li>{@link OnEnteredRange}
+ *   <li>{@link OnExitedRange}
+ *   <li>{@link OnRegisterRanges}
+ *   <li>{@link OnCalculateCachedValue}
+ *   <li>{@link ShouldUpdate}
+ * </ul>
+ *
+ * <p>Example: <br>
+ *
+ * <pre><code>{@literal @LayoutSpec}
+ * public class CounterSpec {
+ *
+ *  {@literal @OnCreateLayout}
+ *   static Component onCreateLayout(
+ *     ComponentContext c,
+ *    {@literal @Prop} int id,
+ *    {@literal @State} int count) {
+ *
+ *     return Row.create(c)
+ *       .backgroundColor(Color.WHITE)
+ *       .heightDip(64)
+ *       .paddingDip(YogaEdge.ALL, 8)
+ *       .child(
+ *         Text.create(c)
+ *           .text(" + ")
+ *           .clickHandler(Counter.onClick(c))
+ *       )
+ *       .child(
+ *         Text.create(c)
+ *           .text(String.valueOf(count))
+ *       )
+ *       .build();
  *   }
- * }
- * </code>
- * </pre>
+ *
+ *  {@literal @OnCreateInitialState}
+ *   static void onCreateInitialState(
+ *       ComponentContext c,
+ *       StateValue&lt;Integer&gt; count) {
+ *     count.set(0);
+ *   }
+ *
+ *  {@literal @OnEvent(ClickEvent.class)}
+ *   static void onClick(ComponentContext c, @Prop int id) {
+ *     Counter.increment(c, id);
+ *   }
+ *
+ *  {@literal @OnUpdateState}
+ *   static void increment(StateValue&lt;Integer&gt; count, @Param int counterId) {
+ *     count.set(count.get() + 1);
+ *   }
+ * }</code></pre>
+ *
+ * <img alt="layout spec flow chart"
+ * src="https://fblitho.com/static/images/flow-chart-v0.23.1-layout-spec.svg">
+ *
+ * <p>If you want to create a component that mounts its own content, then use {@link MountSpec}
+ * instead. See more docs at <a href="https://fblitho.com/docs/layout-specs">https://fblitho.com</a>
+ *
+ * @see Prop
+ * @see TreeProp
+ * @see InjectProp
+ * @see State
+ * @see Param
+ * @see FromPreviousCreateLayout
  */
-@Documented
 @Retention(RetentionPolicy.RUNTIME)
 public @interface LayoutSpec {
 

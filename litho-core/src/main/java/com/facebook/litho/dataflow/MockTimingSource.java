@@ -16,7 +16,7 @@
 
 package com.facebook.litho.dataflow;
 
-import android.support.v4.util.Pair;
+import androidx.core.util.Pair;
 import com.facebook.litho.choreographercompat.ChoreographerCompat;
 import java.util.ArrayList;
 

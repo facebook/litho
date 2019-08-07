@@ -22,7 +22,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import com.facebook.litho.testing.logging.TestComponentsLogger;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import java.util.HashMap;
@@ -148,6 +148,20 @@ public class LogTreePopulatorTest {
 
     final String res = LogTreePopulator.getAnnotationBundleFromLogger(component, logger);
     assertThat(res).isEqualTo("my_key:1337:other_key:value:");
+  }
+
+  @Test
+  public void testSkipNullPerfEvent() {
+    final ComponentsLogger logger =
+        new TestComponentsLogger() {
+          @Nullable
+          @Override
+          public Map<String, String> getExtraAnnotations(TreeProps treeProps) {
+            return null;
+          }
+        };
+
+    assertThat(LogTreePopulator.populatePerfEventFromLogger(mContext, logger, null)).isNull();
   }
 
   private static class MyKey {}

@@ -27,7 +27,7 @@ import static org.mockito.Mockito.when;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Rect;
-import android.support.v4.view.ViewPager;
+import androidx.viewpager.widget.ViewPager;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;

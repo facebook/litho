@@ -43,12 +43,11 @@ import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import android.support.v4.util.SparseArrayCompat;
 import android.util.SparseArray;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import com.facebook.litho.config.ComponentsConfiguration;
+import androidx.collection.SparseArrayCompat;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestViewComponent;
 import com.facebook.litho.testing.Whitebox;
@@ -259,7 +258,7 @@ public class ComponentHostTest {
 
     mHost.onTouchEvent(mock(MotionEvent.class));
 
-    TouchableDrawable touchableDrawable = (TouchableDrawable) mountItem4.getBaseContent();
+    TouchableDrawable touchableDrawable = (TouchableDrawable) mountItem4.getContent();
     verify(touchableDrawable, times(1)).shouldHandleTouchEvent(any(MotionEvent.class));
     verify(touchableDrawable, times(1)).onTouchEvent(any(MotionEvent.class), any(View.class));
   }
@@ -948,7 +947,7 @@ public class ComponentHostTest {
   }
 
   private MountItem mount(int index, Object content, int flags, CharSequence contentDescription) {
-    NodeInfo nodeInfo = new NodeInfo();
+    NodeInfo nodeInfo = new DefaultNodeInfo();
     nodeInfo.setContentDescription(contentDescription);
 
     MountItem mountItem =

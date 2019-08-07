@@ -19,16 +19,17 @@ package com.facebook.litho;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.AttrRes;
-import android.support.annotation.Nullable;
-import android.support.annotation.StyleRes;
-import android.support.v4.util.Pools;
-import android.support.v4.view.accessibility.AccessibilityNodeInfoCompat;
-import android.support.v4.widget.ExploreByTouchHelper;
 import android.view.View;
+import androidx.annotation.AttrRes;
+import androidx.annotation.Nullable;
+import androidx.annotation.StyleRes;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
+import androidx.customview.widget.ExploreByTouchHelper;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.annotations.LayoutSpec;
+import com.facebook.litho.annotations.OnAttached;
 import com.facebook.litho.annotations.OnCreateTreeProp;
+import com.facebook.litho.annotations.OnDetached;
 import com.facebook.litho.annotations.OnShouldCreateLayoutWithNewSizeSpec;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.yoga.YogaBaselineFunction;
@@ -43,10 +44,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.concurrent.GuardedBy;
 
 /**
- * {@link ComponentLifecycle} is extended by the {@link Component} class and declare
- * methods used by a {@link Component} instances to calculate their layout bounds
- * and mount elements, among other things. This is the base class from which all new component
- * types inherit.
+ * {@link ComponentLifecycle} is extended by the {@link Component} class and declare methods used by
+ * a {@link Component} instances to calculate their layout bounds and mount elements, among other
+ * things. This is the base class from which all new component types inherit.
  */
 public abstract class ComponentLifecycle implements EventDispatcher, EventTriggerTarget {
   private static final AtomicInteger sComponentTypeId = new AtomicInteger();
@@ -88,29 +88,16 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
         @Override
         public float baseline(YogaNode cssNode, float width, float height) {
           final InternalNode node = (InternalNode) cssNode.getData();
-          return node.getRootComponent()
+          return node.getTailComponent()
               .onMeasureBaseline(node.getContext(), (int) width, (int) height);
         }
       };
 
-  private static final YogaMeasureFunction sMeasureFunction =
+  static final YogaMeasureFunction sMeasureFunction =
       new YogaMeasureFunction() {
 
-        private final Pools.SynchronizedPool<Size> mSizePool = new Pools.SynchronizedPool<>(2);
-
         private Size acquireSize(int initialValue) {
-          Size size = mSizePool.acquire();
-          if (size == null) {
-            size = new Size();
-          }
-
-          size.width = initialValue;
-          size.height = initialValue;
-          return size;
-        }
-
-        private void releaseSize(Size size) {
-          mSizePool.release(size);
+          return new Size(initialValue, initialValue);
         }
 
         @Override
@@ -124,7 +111,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
             YogaMeasureMode heightMode) {
           final InternalNode node = (InternalNode) cssNode.getData();
           final DiffNode diffNode = node.areCachedMeasuresValid() ? node.getDiffNode() : null;
-          final Component component = node.getRootComponent();
+          final Component component = node.getTailComponent();
           final int widthSpec;
           final int heightSpec;
           final boolean isTracing = ComponentsSystrace.isTracing();
@@ -151,7 +138,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
             ComponentContext context = node.getContext();
 
             // TODO: (T39009736) evaluate why the parent is null sometimes
-            if (context.isNestedTreeResolutionExperimentEnabled()) {
+            if (context.isReconciliationEnabled()) {
               if (node.getParent() != null) {
                 context = node.getParent().getContext();
               } else if (context.getLogger() != null) {
@@ -182,25 +169,21 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
           } else {
             final Size size = acquireSize(Integer.MIN_VALUE /* initialValue */);
 
-            try {
-              component.onMeasure(component.getScopedContext(), node, widthSpec, heightSpec, size);
+            component.onMeasure(component.getScopedContext(), node, widthSpec, heightSpec, size);
 
-              if (size.width < 0 || size.height < 0) {
-                throw new IllegalStateException(
-                    "MeasureOutput not set, ComponentLifecycle is: " + component);
-              }
+            if (size.width < 0 || size.height < 0) {
+              throw new IllegalStateException(
+                  "MeasureOutput not set, ComponentLifecycle is: " + component);
+            }
 
-              outputWidth = size.width;
-              outputHeight = size.height;
+            outputWidth = size.width;
+            outputHeight = size.height;
 
-              if (node.getDiffNode() != null) {
-                node.getDiffNode().setLastWidthSpec(widthSpec);
-                node.getDiffNode().setLastHeightSpec(heightSpec);
-                node.getDiffNode().setLastMeasuredWidth(outputWidth);
-                node.getDiffNode().setLastMeasuredHeight(outputHeight);
-              }
-            } finally {
-              releaseSize(size);
+            if (node.getDiffNode() != null) {
+              node.getDiffNode().setLastWidthSpec(widthSpec);
+              node.getDiffNode().setLastHeightSpec(heightSpec);
+              node.getDiffNode().setLastMeasuredWidth(outputWidth);
+              node.getDiffNode().setLastMeasuredHeight(outputHeight);
             }
           }
 
@@ -338,22 +321,38 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     InternalNode node;
     try {
       if (deferNestedTreeResolution) {
-        node = InternalNode.createInternalNode(context);
+        node = InternalNodeUtils.create(context);
         node.markIsNestedTreeHolder(context.getTreeProps());
       } else if (component.canResolve()) {
         context.setTreeProps(component.getScopedContext().getTreePropsCopy());
         node = (InternalNode) component.resolve(context);
       } else {
-        final Component layoutComponent = createComponentLayout(context);
-
-        if (layoutComponent == null || layoutComponent.getId() <= 0) {
-          node = null;
+        if (ComponentsConfiguration.isConsistentComponentHierarchyExperimentEnabled
+            && Component.isMountSpec(component)) {
+          // create a blank InternalNode for MountSpecs
+          node = context.newLayoutBuilder(0, 0);
         } else {
-          node = context.resolveLayout(layoutComponent);
+
+          // create the component's layout
+          final Component root = createComponentLayout(context);
+
+          // resolve the layout into an InternalNode
+          if (root == null || root.getId() <= 0) {
+            node = null;
+          } else {
+            node = context.resolveLayout(root);
+
+            // if the root is a layout spec which can resolve itself add it to the InternalNode
+            if (ComponentsConfiguration.isConsistentComponentHierarchyExperimentEnabled
+                && Component.isLayoutSpec(root)
+                && root.canResolve()) {
+              node.appendComponent(root);
+            }
+          }
         }
       }
     } catch (Throwable t) {
-      throw new CreateLayoutException((Component) this, t);
+      throw new ComponentsChainException((Component) this, t);
     }
 
     if (isTracing) {
@@ -377,9 +376,9 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     // those (see Controller.mountNodeTree()). Handle the case where the component simply
     // delegates its layout creation to another component i.e. the root node belongs to
     // another component.
-    if (node.getRootComponent() == null) {
-      final boolean isMountSpecWithMeasure = canMeasure()
-          && Component.isMountSpec((Component) this);
+    if (node.getTailComponent() == null) {
+      final boolean isMountSpecWithMeasure =
+          canMeasure() && Component.isMountSpec((Component) this);
 
       if (isMountSpecWithMeasure || deferNestedTreeResolution) {
         node.setMeasureFunction(sMeasureFunction);
@@ -419,21 +418,17 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
   }
 
   @ThreadSafe(enableChecks = false)
-  private Component createComponentLayout(ComponentContext context) {
+  Component createComponentLayout(ComponentContext c) {
     Component layoutComponent = null;
-    if (Component.isLayoutSpecWithSizeSpec(((Component) this))) {
-      try {
-        layoutComponent =
-            onCreateLayoutWithSizeSpec(context, context.getWidthSpec(), context.getHeightSpec());
-      } catch (Exception e) {
-        dispatchErrorEvent(context, e);
+
+    try {
+      if (Component.isLayoutSpecWithSizeSpec(((Component) this))) {
+        layoutComponent = onCreateLayoutWithSizeSpec(c, c.getWidthSpec(), c.getHeightSpec());
+      } else {
+        layoutComponent = onCreateLayout(c);
       }
-    } else {
-      try {
-        layoutComponent = onCreateLayout(context);
-      } catch (Exception e) {
-        dispatchErrorEvent(context, e);
-      }
+    } catch (Exception e) {
+      dispatchErrorEvent(c, e);
     }
 
     return layoutComponent;
@@ -474,10 +469,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     }
   }
 
-  void loadStyle(
-      ComponentContext c,
-      @AttrRes int defStyleAttr,
-      @StyleRes int defStyleRes) {
+  void loadStyle(ComponentContext c, @AttrRes int defStyleAttr, @StyleRes int defStyleRes) {
     c.setDefStyle(defStyleAttr, defStyleRes);
     onLoadStyle(c);
     c.setDefStyle(0, 0);
@@ -488,18 +480,13 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
   }
 
   /**
-   * Retrieves all of the tree props used by this Component from the TreeProps map
-   * and sets the tree props as fields on the ComponentImpl.
+   * Retrieves all of the tree props used by this Component from the TreeProps map and sets the tree
+   * props as fields on the ComponentImpl.
    */
-  protected void populateTreeProps(TreeProps parentTreeProps) {
-  }
+  protected void populateTreeProps(TreeProps parentTreeProps) {}
 
-  /**
-   * Updates the TreeProps map with outputs from all {@link OnCreateTreeProp} methods.
-   */
-  protected TreeProps getTreePropsForChildren(
-      ComponentContext c,
-      TreeProps previousTreeProps) {
+  /** Updates the TreeProps map with outputs from all {@link OnCreateTreeProp} methods. */
+  protected TreeProps getTreePropsForChildren(ComponentContext c, TreeProps previousTreeProps) {
     return previousTreeProps;
   }
 
@@ -511,33 +498,28 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
    * @param c The {@link ComponentContext} to build a {@link ComponentLayout} tree.
    */
   protected Component onCreateLayout(ComponentContext c) {
-    if (ComponentsConfiguration.usePlaceholderComponent) {
-      return PlaceholderComponent.createAndBuild();
-    }
-
     return Column.create(c).build();
   }
 
   protected Component onCreateLayoutWithSizeSpec(
       ComponentContext c, int widthSpec, int heightSpec) {
-    if (ComponentsConfiguration.usePlaceholderComponent) {
-      return PlaceholderComponent.createAndBuild();
-    }
-
     return Column.create(c).build();
   }
 
   /** Resolves the {@link ComponentLayout} for the given {@link Component}. */
   protected ComponentLayout resolve(ComponentContext c) {
-    return createLayout(c, false);
+    if (ComponentsConfiguration.isRefactoredLayoutCreationEnabled) {
+      return LayoutState.createLayout(c, (Component) this, false);
+    } else {
+      return createLayout(c, false);
+    }
   }
 
   protected void onPrepare(ComponentContext c) {
     // do nothing, by default
   }
 
-  protected void onLoadStyle(ComponentContext c) {
-  }
+  protected void onLoadStyle(ComponentContext c) {}
 
   /**
    * Called after the layout calculation is finished and the given {@link ComponentLayout} has its
@@ -562,8 +544,8 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
   }
 
   /**
-   * Whether this {@link ComponentLifecycle} is able to measure itself according
-   * to specific size constraints.
+   * Whether this {@link ComponentLifecycle} is able to measure itself according to specific size
+   * constraints.
    */
   protected boolean canMeasure() {
     return false;
@@ -594,9 +576,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     return false;
   }
 
-  /**
-   * Whether this drawable mount spec should cache its drawing in a display list.
-   */
+  /** Whether this drawable mount spec should cache its drawing in a display list. */
   protected boolean shouldUseDisplayList() {
     return false;
   }
@@ -668,6 +648,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
 
   /**
    * Populate an extra accessibility node.
+   *
    * @param accessibilityNode node to populate
    * @param extraNodeIndex index of extra node
    * @param componentBoundsX left bound of the mounted component
@@ -677,15 +658,15 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
       AccessibilityNodeInfoCompat accessibilityNode,
       int extraNodeIndex,
       int componentBoundsX,
-      int componentBoundsY) {
-  }
+      int componentBoundsY) {}
 
   /**
    * Get extra accessibility node id at a given point within the component.
+   *
    * @param x x co-ordinate within the mounted component
    * @param y y co-ordinate within the mounted component
-   * @return the extra virtual view id if one is found, otherwise
-   *         {@code ExploreByTouchHelper#INVALID_ID}
+   * @return the extra virtual view id if one is found, otherwise {@code
+   *     ExploreByTouchHelper#INVALID_ID}
    */
   protected int getExtraAccessibilityNodeAt(int x, int y) {
     return ExploreByTouchHelper.INVALID_ID;
@@ -694,6 +675,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
   /**
    * The number of extra accessibility nodes that this component wishes to provides to the
    * accessibility system.
+   *
    * @return the number of extra nodes
    */
   protected int getExtraAccessibilityNodesCount() {
@@ -702,6 +684,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
 
   /**
    * Whether this component will expose any virtual views to the accessibility framework
+   *
    * @return true if the component exposes extra accessibility nodes
    */
   protected boolean implementsExtraAccessibilityNodes() {
@@ -710,6 +693,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
 
   /**
    * Whether this component will populate any accessibility nodes or events that are passed to it.
+   *
    * @return true if the component implements accessibility info
    */
   protected boolean implementsAccessibility() {
@@ -723,9 +707,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
   protected void transferState(
       StateContainer previousStateContainer, StateContainer nextStateContainer) {}
 
-  protected void createInitialState(ComponentContext c) {
-
-  }
+  protected void createInitialState(ComponentContext c) {}
 
   /**
    * Called to provide a fallback if a supported lifecycle method throws an exception. It is
@@ -742,7 +724,8 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
 
   @Override
   public @Nullable Object dispatchOnEvent(EventHandler eventHandler, Object eventState) {
-    if (ComponentsConfiguration.enableOnErrorHandling && eventHandler.id == ERROR_EVENT_HANDLER_ID) {
+    if (ComponentsConfiguration.enableOnErrorHandling
+        && eventHandler.id == ERROR_EVENT_HANDLER_ID) {
       ((Component) this).getErrorHandler().dispatchEvent(((ErrorEvent) eventState));
     }
 
@@ -773,9 +756,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     return false;
   }
 
-  /**
-   * @return true if Mount uses @FromMeasure or @FromOnBoundsDefined parameters.
-   */
+  /** @return true if Mount uses @FromMeasure or @FromOnBoundsDefined parameters. */
   protected boolean isMountSizeDependent() {
     return false;
   }
@@ -800,14 +781,15 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
 
   /**
    * Whether the component needs updating.
-   * <p>
-   * For layout components, the framework will verify that none of the children of the component
-   * need updating, and that both components have the same number of children. Therefore this
-   * method just needs to determine any changes to the top-level component that would cause it to
-   * need to be updated (for example, a click handler was added).
-   * <p>
-   * For mount specs, the framework does nothing extra and this method alone determines whether the
-   * component is updated or not.
+   *
+   * <p>For layout components, the framework will verify that none of the children of the component
+   * need updating, and that both components have the same number of children. Therefore this method
+   * just needs to determine any changes to the top-level component that would cause it to need to
+   * be updated (for example, a click handler was added).
+   *
+   * <p>For mount specs, the framework does nothing extra and this method alone determines whether
+   * the component is updated or not.
+   *
    * @param previous the previous component to compare against.
    * @param next the component that is now in use.
    * @return true if the component needs an update, false otherwise.
@@ -836,9 +818,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
   }
 
   protected static <E> EventHandler<E> newEventHandler(
-      ComponentContext c,
-      int id,
-      Object[] params) {
+      ComponentContext c, int id, Object[] params) {
     final EventHandler<E> eventHandler = c.newEventHandler(id, params);
     if (c.getComponentTree() != null) {
       c.getComponentTree().recordEventHandler(c.getComponentScope(), eventHandler);
@@ -847,10 +827,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     return eventHandler;
   }
 
-  protected static <E> EventHandler<E> newEventHandler(
-      Component c,
-      int id,
-      Object[] params) {
+  protected static <E> EventHandler<E> newEventHandler(Component c, int id, Object[] params) {
     final EventHandler<E> eventHandler = new EventHandler<>(c, id, params);
     if (c.getScopedContext() != null && c.getScopedContext().getComponentTree() != null) {
       c.getScopedContext().getComponentTree().recordEventHandler(c, eventHandler);
@@ -890,13 +867,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
 
   protected void applyPreviousRenderData(RenderData previousRenderData) {}
 
-  public interface StateUpdate {
-    void updateState(StateContainer stateContainer);
-  }
-
-  /**
-   * @return true if the Component is using state, false otherwise.
-   */
+  /** @return true if the Component is using state, false otherwise. */
   protected boolean hasState() {
     return false;
   }
@@ -906,6 +877,28 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
    *     otherwise.
    */
   protected boolean shouldAlwaysRemeasure() {
+    return false;
+  }
+
+  /**
+   * Called when the component is attached to the {@link ComponentTree}.
+   *
+   * @param c The {@link ComponentContext} the Component was constructed with.
+   */
+  protected void onAttached(ComponentContext c) {}
+
+  /**
+   * Called when the component is detached from the {@link ComponentTree}.
+   *
+   * @param c The {@link ComponentContext} the Component was constructed with.
+   */
+  protected void onDetached(ComponentContext c) {}
+
+  /**
+   * @return true if the component implements {@link OnAttached} or {@link OnDetached} delegate
+   *     methods.
+   */
+  protected boolean hasAttachDetachCallback() {
     return false;
   }
 

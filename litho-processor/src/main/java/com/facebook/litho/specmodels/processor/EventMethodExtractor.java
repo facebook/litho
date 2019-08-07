@@ -49,9 +49,7 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.util.Elements;
 
-/**
- * Extracts event methods from the given input.
- */
+/** Extracts event methods from the given input. */
 public class EventMethodExtractor {
 
   private static final List<Class<? extends Annotation>> METHOD_PARAM_ANNOTATIONS =
@@ -128,7 +126,7 @@ public class EventMethodExtractor {
     return ImmutableList.copyOf(delegateMethods);
   }
 
-  private static List<Class<? extends Annotation>> getPermittedMethodParamAnnotations(
+  static List<Class<? extends Annotation>> getPermittedMethodParamAnnotations(
       List<Class<? extends Annotation>> permittedInterStageInputAnnotations) {
     final List<Class<? extends Annotation>> permittedMethodParamAnnotations =
         new ArrayList<>(METHOD_PARAM_ANNOTATIONS);

@@ -16,7 +16,6 @@
 
 package com.facebook.litho;
 
-import android.support.v4.util.Pools;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaFlexDirection;
@@ -52,11 +51,8 @@ public final class Row extends Component {
   @Prop(optional = true)
   private boolean reverse;
 
-  private static final Pools.SynchronizedPool<Builder> sBuilderPool =
-      new Pools.SynchronizedPool<>(2);
-
-  private Row() {
-    super("Row");
+  private Row(String simpleName) {
+    super(simpleName);
   }
 
   @Override
@@ -65,15 +61,21 @@ public final class Row extends Component {
   }
 
   public static Builder create(ComponentContext context) {
-    return create(context, 0, 0);
+    return create(context, 0, 0, "Row");
+  }
+
+  public static Builder create(ComponentContext context, String simpleName) {
+    return create(context, 0, 0, simpleName);
   }
 
   public static Builder create(ComponentContext context, int defStyleAttr, int defStyleRes) {
-    Builder builder = sBuilderPool.acquire();
-    if (builder == null) {
-      builder = new Builder();
-    }
-    builder.init(context, defStyleAttr, defStyleRes, new Row());
+    return create(context, defStyleAttr, defStyleRes, "Row");
+  }
+
+  public static Builder create(
+      ComponentContext context, int defStyleAttr, int defStyleRes, String simpleName) {
+    final Builder builder = new Builder();
+    builder.init(context, defStyleAttr, defStyleRes, new Row(simpleName));
     return builder;
   }
 
@@ -105,12 +107,14 @@ public final class Row extends Component {
     }
 
     if (children != null) {
-      boolean splitLayout = false;
-      if (SplitBackgroundLayoutConfiguration.isSplitLayoutEnabled(this)) {
-        splitLayout = SplitLayoutResolver.resolveLayouts(c, children, node);
-      }
-      if (!splitLayout) {
-        for (Component child : children) {
+      for (Component child : children) {
+        if (c.wasLayoutCanceled()) {
+          return ComponentContext.NULL_LAYOUT;
+        }
+
+        if (c.wasLayoutInterrupted()) {
+          node.appendUnresolvedComponent(child);
+        } else {
           node.child(child);
         }
       }
@@ -229,17 +233,7 @@ public final class Row extends Component {
 
     @Override
     public Row build() {
-      Row row = mRow;
-      release();
-      return row;
-    }
-
-    @Override
-    protected void release() {
-      super.release();
-      mRow = null;
-      mContext = null;
-      sBuilderPool.release(this);
+      return mRow;
     }
   }
 }

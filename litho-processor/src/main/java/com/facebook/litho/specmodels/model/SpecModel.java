@@ -150,11 +150,6 @@ public interface SpecModel {
    */
   ClassName getTransitionContainerClass();
 
-  /**
-   * @return the {@link TypeName} of the update state interface that is used in the generated class.
-   */
-  TypeName getUpdateStateInterface();
-
   /** @return the scope method name on the Context class. */
   String getScopeMethodName();
 

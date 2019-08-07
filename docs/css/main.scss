@@ -143,7 +143,9 @@ $green: #2db04b;
   "home"
 ;
 
-
+html {
+  scroll-behavior: smooth;
+}
 // Anchor links
 
 // This allows us to not have the anchored link to fall under the header

@@ -16,12 +16,12 @@
 
 package com.facebook.litho.processor.integration.resources;
 
-import android.support.annotation.AttrRes;
-import android.support.annotation.ColorInt;
-import android.support.annotation.ColorRes;
-import android.support.annotation.DimenRes;
-import android.support.annotation.Dimension;
-import android.support.annotation.Px;
+import androidx.annotation.AttrRes;
+import androidx.annotation.ColorInt;
+import androidx.annotation.ColorRes;
+import androidx.annotation.DimenRes;
+import androidx.annotation.Dimension;
+import androidx.annotation.Px;
 import com.facebook.litho.BaseMatcher;
 import com.facebook.litho.BaseMatcherBuilder;
 import com.facebook.litho.Component;
@@ -54,13 +54,12 @@ public final class BasicTestSample implements BasicTestSampleSpec {
 
     @Nullable org.hamcrest.Matcher<Float> mMyDimenSizePropMatcher;
 
-    @Nullable
-    org.hamcrest.Matcher<Integer> mMyRequiredColorPropMatcher;
+    @Nullable org.hamcrest.Matcher<Integer> mMyRequiredColorPropMatcher;
 
     @Nullable org.hamcrest.Matcher<String> mMyStringPropMatcher;
 
     Matcher(ComponentContext c) {
-      mResourceResolver = new ResourceResolver(c);
+      mResourceResolver = c.getResourceResolver();
     }
 
     public Matcher child(Condition<InspectableComponent> matcher) {

@@ -16,7 +16,7 @@
 
 package com.facebook.litho.annotations;
 
-import android.support.annotation.IntDef;
+import androidx.annotation.IntDef;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -31,7 +31,7 @@ public @interface Comparable {
   int DOUBLE = 1;
   int ARRAY = 2;
   int PRIMITIVE = 3;
-  int REFERENCE = 4;
+  int COMPARABLE_DRAWABLE = 4;
   int COLLECTION_COMPLEVEL_0 = 5;
   int COLLECTION_COMPLEVEL_1 = 6;
   int COLLECTION_COMPLEVEL_2 = 7;
@@ -50,7 +50,7 @@ public @interface Comparable {
     DOUBLE,
     ARRAY,
     PRIMITIVE,
-    REFERENCE,
+    COMPARABLE_DRAWABLE,
     COLLECTION_COMPLEVEL_0,
     COLLECTION_COMPLEVEL_1,
     COLLECTION_COMPLEVEL_2,

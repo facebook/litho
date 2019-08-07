@@ -19,6 +19,7 @@ package com.facebook.litho;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.robolectric.RuntimeEnvironment.application;
 
 import android.animation.StateListAnimator;
@@ -26,14 +27,13 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Build;
-import android.support.annotation.AttrRes;
-import android.support.annotation.StyleRes;
 import android.util.SparseArray;
+import androidx.annotation.AttrRes;
+import androidx.annotation.StyleRes;
 import com.facebook.litho.annotations.ImportantForAccessibility;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.drawable.ComparableColorDrawable;
 import com.facebook.litho.drawable.ComparableDrawable;
-import com.facebook.litho.reference.DrawableReference;
-import com.facebook.litho.reference.Reference;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestSizeDependentComponent;
@@ -43,6 +43,7 @@ import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
 import com.facebook.yoga.YogaPositionType;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -58,10 +59,16 @@ public class LayoutStateCreateTreeTest {
     mComponentContext = new ComponentContext(RuntimeEnvironment.application);
   }
 
+  @After
+  public void after() {
+    ComponentsConfiguration.isConsistentComponentHierarchyExperimentEnabled = false;
+    mComponentContext = null;
+  }
+
   @Test
   public void testSimpleLayoutCreatesExpectedInternalNodeTree() {
     final Component component =
-        new InlineLayoutSpec() {
+        new InlineLayoutSpec(mComponentContext) {
           @Override
           protected Component onCreateLayout(final ComponentContext c) {
             return Column.create(c)
@@ -70,15 +77,41 @@ public class LayoutStateCreateTreeTest {
           }
         };
 
-    InternalNode node = LayoutState.createTree(component, mComponentContext);
+    InternalNode node = LayoutState.createTree(component, mComponentContext, null);
     assertThat(node.getChildCount()).isEqualTo(1);
-    assertThat(node.getRootComponent()).isEqualTo(component);
+    assertThat(node.getTailComponent()).isEqualTo(component);
     node = node.getChildAt(0);
     assertThat(node.getChildCount()).isEqualTo(1);
-    assertThat(node.getRootComponent()).isInstanceOf(Column.class);
+    assertThat(node.getTailComponent()).isInstanceOf(Column.class);
     node = node.getChildAt(0);
     assertThat(node.getChildCount()).isEqualTo(0);
-    assertThat(node.getRootComponent()).isInstanceOf(TestDrawableComponent.class);
+    assertThat(node.getTailComponent()).isInstanceOf(TestDrawableComponent.class);
+  }
+
+  @Test
+  public void simpleLayoutCreatesExpectedInternalNodeTreeWithConsistentHierarchyExperiment() {
+    ComponentsConfiguration.isConsistentComponentHierarchyExperimentEnabled = true;
+
+    final Component component =
+        new InlineLayoutSpec(mComponentContext) {
+          @Override
+          protected Component onCreateLayout(final ComponentContext c) {
+            return Column.create(c)
+                .child(Column.create(c).child(TestDrawableComponent.create(c)))
+                .build();
+          }
+        };
+
+    InternalNode node = LayoutState.createTree(component, mComponentContext, null);
+    assertThat(node.getChildCount()).isEqualTo(1);
+    assertThat(node.getHeadComponent()).isEqualTo(component);
+    assertThat(node.getTailComponent()).isInstanceOf(Column.class);
+    node = node.getChildAt(0);
+    assertThat(node.getChildCount()).isEqualTo(1);
+    assertThat(node.getTailComponent()).isInstanceOf(Column.class);
+    node = node.getChildAt(0);
+    assertThat(node.getChildCount()).isEqualTo(0);
+    assertThat(node.getTailComponent()).isInstanceOf(TestDrawableComponent.class);
   }
 
   @Test
@@ -100,7 +133,7 @@ public class LayoutStateCreateTreeTest {
     final EventHandler<FocusChangedEvent> focusChangedHandler3 = mock(EventHandler.class);
 
     final Component component =
-        new InlineLayoutSpec() {
+        new InlineLayoutSpec(mComponentContext) {
           @Override
           protected Component onCreateLayout(final ComponentContext c) {
             return Column.create(c)
@@ -127,7 +160,7 @@ public class LayoutStateCreateTreeTest {
           }
         };
 
-    InternalNode node = LayoutState.createTree(component, mComponentContext);
+    InternalNode node = LayoutState.createTree(component, mComponentContext, null);
     assertThat(node.getNodeInfo().getClickHandler()).isEqualTo(clickHandler3);
     assertThat(node.getNodeInfo().getLongClickHandler()).isEqualTo(longClickHandler3);
     assertThat(node.getNodeInfo().getTouchHandler()).isEqualTo(touchHandler3);
@@ -168,7 +201,7 @@ public class LayoutStateCreateTreeTest {
     final EventHandler<FocusChangedEvent> focusChangedHandler3 = mock(EventHandler.class);
 
     final Component component =
-        new InlineLayoutSpec() {
+        new InlineLayoutSpec(mComponentContext) {
           @Override
           protected Component onCreateLayout(final ComponentContext c) {
             return Column.create(c)
@@ -195,7 +228,7 @@ public class LayoutStateCreateTreeTest {
           }
         };
 
-    InternalNode node = LayoutState.createTree(component, mComponentContext);
+    InternalNode node = LayoutState.createTree(component, mComponentContext, null);
     assertThat(node.getNodeInfo().getClickHandler()).isEqualTo(clickHandler3);
     assertThat(node.getNodeInfo().getLongClickHandler()).isEqualTo(longClickHandler3);
     assertThat(node.getNodeInfo().getTouchHandler()).isEqualTo(touchHandler3);
@@ -232,7 +265,7 @@ public class LayoutStateCreateTreeTest {
     final EventHandler<FocusChangedEvent> focusChangedHandler2 = mock(EventHandler.class);
 
     final Component component =
-        new InlineLayoutSpec() {
+        new InlineLayoutSpec(mComponentContext) {
           @Override
           protected Component onCreateLayout(final ComponentContext c) {
             return Wrapper.create(c)
@@ -258,9 +291,9 @@ public class LayoutStateCreateTreeTest {
           }
         };
 
-    InternalNode node = LayoutState.createTree(component, mComponentContext);
+    InternalNode node = LayoutState.createTree(component, mComponentContext, null);
     assertThat(node.getChildCount()).isEqualTo(0);
-    assertThat(node.getRootComponent()).isInstanceOf(TestDrawableComponent.class);
+    assertThat(node.getTailComponent()).isInstanceOf(TestDrawableComponent.class);
     assertThat(node.getNodeInfo().getClickHandler()).isEqualTo(clickHandler2);
     assertThat(node.getNodeInfo().getLongClickHandler()).isEqualTo(longClickHandler2);
     assertThat(node.getNodeInfo().getTouchHandler()).isEqualTo(touchHandler2);
@@ -282,7 +315,7 @@ public class LayoutStateCreateTreeTest {
     final EventHandler<FocusChangedEvent> focusChangedHandler2 = mock(EventHandler.class);
 
     final Component component =
-        new InlineLayoutSpec() {
+        new InlineLayoutSpec(mComponentContext) {
           @Override
           protected Component onCreateLayout(final ComponentContext c) {
             return Wrapper.create(c)
@@ -308,9 +341,9 @@ public class LayoutStateCreateTreeTest {
           }
         };
 
-    InternalNode node = LayoutState.createTree(component, mComponentContext);
+    InternalNode node = LayoutState.createTree(component, mComponentContext, null);
     assertThat(node.getChildCount()).isEqualTo(0);
-    assertThat(node.getRootComponent()).isInstanceOf(TestSizeDependentComponent.class);
+    assertThat(node.getTailComponent()).isInstanceOf(TestSizeDependentComponent.class);
     assertThat(node.getNodeInfo().getClickHandler()).isEqualTo(clickHandler2);
     assertThat(node.getNodeInfo().getLongClickHandler()).isEqualTo(longClickHandler2);
     assertThat(node.getNodeInfo().getTouchHandler()).isEqualTo(touchHandler2);
@@ -323,7 +356,6 @@ public class LayoutStateCreateTreeTest {
   @TargetApi(Build.VERSION_CODES.LOLLIPOP)
   public void testAddingAllAttributes() {
     final ComparableDrawable background = ComparableColorDrawable.create(Color.RED);
-    final Reference<ComparableDrawable> bgRef = DrawableReference.create(background);
     final ComparableDrawable foreground = ComparableColorDrawable.create(Color.BLACK);
     final EventHandler<ClickEvent> clickHandler = mock(EventHandler.class);
     final EventHandler<LongClickEvent> longClickHandler = mock(EventHandler.class);
@@ -410,7 +442,7 @@ public class LayoutStateCreateTreeTest {
                 .touchExpansionPx(YogaEdge.RIGHT, 22)
                 .touchExpansionPx(YogaEdge.LEFT, 23)
                 .touchExpansionPx(YogaEdge.ALL, 21)
-                .background(bgRef)
+                .background(background)
                 .foreground(foreground)
                 .wrapInView()
                 .clickHandler(clickHandler)
@@ -421,6 +453,7 @@ public class LayoutStateCreateTreeTest {
                 .focusable(true)
                 .selected(false)
                 .enabled(false)
+                .accessibilityHeading(false)
                 .visibleHeightRatio(55)
                 .visibleWidthRatio(56)
                 .visibleHandler(visibleHandler)
@@ -453,7 +486,10 @@ public class LayoutStateCreateTreeTest {
           }
         };
 
-    InternalNode node = LayoutState.createTree(component, mComponentContext);
+    component.setScopedContext(mComponentContext);
+
+    InternalNode node = LayoutState.createTree(component, mComponentContext, null);
+    NodeInfo nodeInfo = node.getOrCreateNodeInfo();
 
     verify(node).layoutDirection(YogaDirection.INHERIT);
     verify(node).alignSelf(YogaAlign.AUTO);
@@ -513,22 +549,23 @@ public class LayoutStateCreateTreeTest {
     verify(node).touchExpansionPx(YogaEdge.LEFT, 23);
     verify(node).touchExpansionPx(YogaEdge.ALL, 21);
 
-    verify(node).background(bgRef);
+    verify(node).background(background);
     verify(node).foreground(foreground);
 
     verify(node).wrapInView();
 
-    verify(node).clickHandler(clickHandler);
-    verify(node).focusChangeHandler(focusChangedHandler);
-    verify(node).longClickHandler(longClickHandler);
-    verify(node).touchHandler(touchHandler);
-    verify(node).interceptTouchHandler(interceptTouchHandler);
+    verify(nodeInfo).setClickHandler(clickHandler);
+    verify(nodeInfo).setFocusChangeHandler(focusChangedHandler);
+    verify(nodeInfo).setLongClickHandler(longClickHandler);
+    verify(nodeInfo).setTouchHandler(touchHandler);
+    verify(nodeInfo).setInterceptTouchHandler(interceptTouchHandler);
 
-    verify(node).focusable(true);
-    verify(node).selected(false);
-    verify(node).enabled(false);
+    verify(nodeInfo).setFocusable(true);
+    verify(nodeInfo).setSelected(false);
+    verify(nodeInfo).setEnabled(false);
     verify(node).visibleHeightRatio(55);
     verify(node).visibleWidthRatio(56);
+    verify(nodeInfo).setAccessibilityHeading(false);
 
     verify(node).visibleHandler(visibleHandler);
     verify(node).focusedHandler(focusedHandler);
@@ -537,29 +574,33 @@ public class LayoutStateCreateTreeTest {
     verify(node).invisibleHandler(invisibleHandler);
     verify(node).visibilityChangedHandler(visibleRectChangedHandler);
 
-    verify(node).contentDescription("test");
+    verify(nodeInfo).setContentDescription("test");
 
-    verify(node).viewTag(viewTag);
-    verify(node).viewTags(viewTags);
+    verify(nodeInfo).setViewTag(viewTag);
+    verify(nodeInfo).setViewTags(viewTags);
 
-    verify(node).shadowElevationPx(60);
+    verify(nodeInfo).setShadowElevation(60);
 
-    verify(node).clipToOutline(false);
+    verify(nodeInfo).setClipToOutline(false);
     verify(node).transitionKey("transitionKey");
     verify(node).transitionKeyType(Transition.TransitionKeyType.GLOBAL);
     verify(node).testKey("testKey");
 
-    verify(node).accessibilityRole(AccessibilityRole.BUTTON);
-    verify(node).accessibilityRoleDescription("Test Role Description");
-    verify(node)
-        .dispatchPopulateAccessibilityEventHandler(dispatchPopulateAccessibilityEventHandler);
-    verify(node).onInitializeAccessibilityEventHandler(onInitializeAccessibilityEventHandler);
-    verify(node).onInitializeAccessibilityNodeInfoHandler(onInitializeAccessibilityNodeInfoHandler);
-    verify(node).onPopulateAccessibilityEventHandler(onPopulateAccessibilityEventHandler);
-    verify(node).onRequestSendAccessibilityEventHandler(onRequestSendAccessibilityEventHandler);
-    verify(node).performAccessibilityActionHandler(performAccessibilityActionHandler);
-    verify(node).sendAccessibilityEventHandler(sendAccessibilityEventHandler);
-    verify(node).sendAccessibilityEventUncheckedHandler(sendAccessibilityEventUncheckedHandler);
+    verify(nodeInfo).setAccessibilityRole(AccessibilityRole.BUTTON);
+    verify(nodeInfo).setAccessibilityRoleDescription("Test Role Description");
+    verify(nodeInfo)
+        .setDispatchPopulateAccessibilityEventHandler(dispatchPopulateAccessibilityEventHandler);
+    verify(nodeInfo)
+        .setOnInitializeAccessibilityEventHandler(onInitializeAccessibilityEventHandler);
+    verify(nodeInfo)
+        .setOnInitializeAccessibilityNodeInfoHandler(onInitializeAccessibilityNodeInfoHandler);
+    verify(nodeInfo).setOnPopulateAccessibilityEventHandler(onPopulateAccessibilityEventHandler);
+    verify(nodeInfo)
+        .setOnRequestSendAccessibilityEventHandler(onRequestSendAccessibilityEventHandler);
+    verify(nodeInfo).setPerformAccessibilityActionHandler(performAccessibilityActionHandler);
+    verify(nodeInfo).setSendAccessibilityEventHandler(sendAccessibilityEventHandler);
+    verify(nodeInfo)
+        .setSendAccessibilityEventUncheckedHandler(sendAccessibilityEventUncheckedHandler);
 
     verify(node).stateListAnimator(stateListAnimator);
   }
@@ -575,7 +616,8 @@ public class LayoutStateCreateTreeTest {
         };
 
     final InternalNode root =
-        LayoutState.createTree(component, new MockInternalNodeComponentContext(application));
+        LayoutState.createAndMeasureTreeForComponent(
+            new MockInternalNodeComponentContext(application), component, 800, 600);
 
     assertThat(root.getChildAt(0) instanceof TestInternalNode).isTrue();
     assertThat(((TestInternalNode) root.getChildAt(0)).mFlexGrowCounter).isEqualTo(1);
@@ -584,10 +626,15 @@ public class LayoutStateCreateTreeTest {
   private static class TestDrawableComponentWithMockInternalNode
       extends TestComponent {
 
+    @Override
+    protected boolean canResolve() {
+      return true;
+    }
+
     protected ComponentLayout resolve(ComponentContext c) {
       InternalNode node = mock(InternalNode.class);
-      ((Component) this).getCommonPropsCopyable().copyInto(c, node);
-
+      NodeInfo nodeInfo = mock(NodeInfo.class);
+      when(node.getOrCreateNodeInfo()).thenReturn(nodeInfo);
       return node;
     }
 
@@ -633,7 +680,7 @@ public class LayoutStateCreateTreeTest {
     }
   }
 
-  private class TestInternalNode extends InternalNode {
+  private class TestInternalNode extends DefaultInternalNode {
     private int mFlexGrowCounter;
 
     protected TestInternalNode(ComponentContext componentContext) {
@@ -641,9 +688,8 @@ public class LayoutStateCreateTreeTest {
     }
 
     @Override
-    TestInternalNode flexGrow(float flex) {
+    public void flexGrow(float flex) {
       mFlexGrowCounter++;
-      return (TestInternalNode) super.flexGrow(flex);
     }
   }
 }

@@ -17,10 +17,15 @@
 package com.facebook.litho.sections.annotations;
 
 /**
- * The method annotated with this annotation will be called when the Ui rendering the
- * <code>Section</code> scrolled to a new position.
+ * The method annotated with this annotation will be called when the UI rendering the <code>Section
+ * </code> scrolls to a new position.
  *
- * <p>For example:
+ * <p>See <a
+ * href="https://fblitho.com/docs/communicating-with-the-ui#onviewportchanged">communicating-with-the-ui</a>
+ * for details.
+ *
+ * <p>Example:
+ *
  * <pre><code>
  * {@literal @}DiffSectionSpec
  *  public class MyChangeSetSpec {
@@ -43,7 +48,8 @@ package com.facebook.litho.sections.annotations;
  *
  * <p>This lifecycle method will only be called if either firstVisiblePosition or
  * lastVisiblePosition have changed in response to a scroll event.
+ *
+ * @see GroupSectionSpec
+ * @see DiffSectionSpec
  */
-public @interface OnViewportChanged {
-
-}
+public @interface OnViewportChanged {}

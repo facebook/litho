@@ -25,8 +25,11 @@ import com.squareup.javapoet.TypeName;
 import java.util.Collection;
 import javax.lang.model.element.Modifier;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
 /** Tests {@link FieldsValidation}. */
+@RunWith(JUnit4.class)
 public class FieldsValidationTest {
 
   private static final String FIELD_TEST_NAME = "fieldTestName";

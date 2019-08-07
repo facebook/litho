@@ -20,7 +20,7 @@ static Component onCreateLayout(
   return getComponent(prop, expensiveValue);
 }
 
-@OnCalculateCachedValue(name = expensiveValue)
+@OnCalculateCachedValue(name = "expensiveValue")
 static int onCalculateExpensiveValue(
     @Prop Object prop,
     @State Object state) {

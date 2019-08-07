@@ -38,6 +38,7 @@ import com.squareup.javapoet.TypeSpec;
 import java.util.EnumSet;
 import java.util.LinkedHashSet;
 import javax.lang.model.element.Modifier;
+import javax.lang.model.element.TypeElement;
 
 public class DefaultLayoutSpecGenerator implements SpecGenerator<LayoutSpecModel> {
 
@@ -47,6 +48,10 @@ public class DefaultLayoutSpecGenerator implements SpecGenerator<LayoutSpecModel
         TypeSpec.classBuilder(layoutSpecModel.getComponentName())
             .superclass(ClassNames.COMPONENT)
             .addTypeVariables(layoutSpecModel.getTypeVariables());
+
+    if (SpecModelUtils.isTypeElement(layoutSpecModel)) {
+      typeSpec.addOriginatingElement((TypeElement) layoutSpecModel.getRepresentedObject());
+    }
 
     if (layoutSpecModel.isPublic()) {
       typeSpec.addModifiers(Modifier.PUBLIC);

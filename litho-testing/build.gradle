@@ -1,3 +1,5 @@
+import org.gradle.internal.jvm.Jvm
+
 /*
  * Copyright 2014-present Facebook, Inc.
  *
@@ -13,6 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import org.gradle.internal.jvm.Jvm
 
 apply plugin: 'com.android.library'
 apply plugin: 'maven'
@@ -45,6 +49,9 @@ dependencies {
     annotationProcessor project(':litho-processor')
     annotationProcessor project(':litho-sections-processor')
 
+    implementation files(Jvm.current().getToolsJar())
+    implementation files(Jvm.current().getJre().homeDir.getAbsolutePath() + '/lib/rt.jar')
+
     implementation deps.javapoet
     implementation deps.assertjCore
     implementation deps.guava
@@ -63,6 +70,6 @@ apply from: rootProject.file('gradle/release.gradle')
 
 task sourcesJar(type: Jar) {
     from android.sourceSets.main.java.srcDirs
-    classifier = 'sources'
+    archiveClassifier.set('sources')
 }
 artifacts.add('archives', sourcesJar)

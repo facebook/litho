@@ -40,6 +40,7 @@ import java.util.EnumSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import javax.lang.model.element.Modifier;
+import javax.lang.model.element.TypeElement;
 
 public class DefaultMountSpecGenerator implements SpecGenerator<MountSpecModel> {
 
@@ -59,6 +60,10 @@ public class DefaultMountSpecGenerator implements SpecGenerator<MountSpecModel> 
         TypeSpec.classBuilder(mountSpecModel.getComponentName())
             .superclass(ClassNames.COMPONENT)
             .addTypeVariables(mountSpecModel.getTypeVariables());
+
+    if (SpecModelUtils.isTypeElement(mountSpecModel)) {
+      typeSpec.addOriginatingElement((TypeElement) mountSpecModel.getRepresentedObject());
+    }
 
     if (mountSpecModel.isPublic()) {
       typeSpec.addModifiers(Modifier.PUBLIC);

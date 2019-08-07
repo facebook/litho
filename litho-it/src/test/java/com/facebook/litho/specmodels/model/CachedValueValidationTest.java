@@ -29,8 +29,11 @@ import java.util.List;
 import javax.lang.model.element.Modifier;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
 /** Tests {@link CachedValueValidation} */
+@RunWith(JUnit4.class)
 public class CachedValueValidationTest {
   private final SpecModel mSpecModel = mock(SpecModel.class);
   private final CachedValueParamModel mCachedValue1 = mock(CachedValueParamModel.class);
@@ -165,5 +168,34 @@ public class CachedValueValidationTest {
     assertThat(validationErrors.get(0).message)
         .isEqualTo(
             "@OnCalculateCachedValue methods may only take Props, @InjectProps and State as params.");
+  }
+
+  @Test
+  public void testOnCalculateCachedValueWithNoParams() {
+    SpecMethodModel<DelegateMethod, Void> delegateMethod =
+        SpecMethodModel.<DelegateMethod, Void>builder()
+            .annotations(
+                ImmutableList.of(
+                    new OnCalculateCachedValue() {
+                      @Override
+                      public String name() {
+                        return "name1";
+                      }
+
+                      @Override
+                      public Class<? extends Annotation> annotationType() {
+                        return OnCalculateCachedValue.class;
+                      }
+                    }))
+            .modifiers(ImmutableList.of())
+            .name("onCalculateName1")
+            .returnTypeSpec(new TypeSpec(TypeName.BOOLEAN))
+            .typeVariables(ImmutableList.of())
+            .representedObject(mDelegateMethodRepresentedObject1)
+            .build();
+    when(mSpecModel.getDelegateMethods()).thenReturn(ImmutableList.of(delegateMethod));
+
+    List<SpecModelValidationError> validationErrors = CachedValueValidation.validate(mSpecModel);
+    assertThat(validationErrors).hasSize(0);
   }
 }

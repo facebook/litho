@@ -17,7 +17,7 @@
 package com.facebook.litho.testing.assertj;
 
 import android.graphics.drawable.Drawable;
-import android.support.annotation.DrawableRes;
+import androidx.annotation.DrawableRes;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
@@ -111,11 +111,8 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
         actual);
     Java6Assertions.assertThat(subComponents)
         .overridingErrorMessage(
-            "Expected to find <%s> as sub component of <%s>, " +
-                "but couldn't find it among the %d sub components.",
-            subComponent,
-            actual,
-            subComponents.size())
+            "Expected to find <%s> as sub component of <%s>, " + "but couldn't find it in %s.",
+            subComponent, actual, subComponents)
         .contains(subComponent);
 
     return this;
@@ -195,6 +192,15 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
     return this;
   }
 
+  /**
+   * Inverse of {@link #hasVisibleText(String)}
+   */
+  public ComponentAssert doesNotHaveVisibleText(String text) {
+    assertThatLithoView().doesNotHaveVisibleText(text);
+
+    return this;
+  }
+
   /** Assert that the given component contains the provided pattern. */
   public ComponentAssert hasVisibleTextMatching(String pattern) {
     assertThatLithoView().hasVisibleTextMatching(pattern);
@@ -270,6 +276,12 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
   @CheckReturnValue
   public ListAssert<InspectableComponent> extractingSubComponentsDeeply(ComponentContext c) {
     return extracting(SubComponentDeepExtractor.subComponentsDeeply(c));
+  }
+
+  public ComponentAssert extractingSubComponentAt(int index) {
+    InspectableComponent component =
+        SubComponentExtractor.subComponents(mComponentContext).extract(actual).get(index);
+    return new ComponentAssert(mComponentContext, component.getComponent());
   }
 
   /**

@@ -19,10 +19,7 @@ package com.facebook.litho;
 import static com.facebook.litho.ComponentUtils.hasEquivalentFields;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
-import android.content.Context;
 import com.facebook.litho.annotations.Comparable;
-import com.facebook.litho.reference.Reference;
-import com.facebook.litho.reference.ReferenceLifecycle;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import java.util.Arrays;
 import java.util.Collection;
@@ -179,16 +176,6 @@ public class ComponentUtilsTest {
   }
 
   @Test
-  public void hasEquivalentFieldsReferencePropTest() {
-    mC1.propReference = new TestReference("aa");
-    mC2.propReference = new TestReference("aa");
-    assertThat(hasEquivalentFields(mC1, mC2)).isTrue();
-
-    mC2.propReference = new TestReference("ab");
-    assertThat(hasEquivalentFields(mC1, mC2)).isFalse();
-  }
-
-  @Test
   public void hasEquivalentFieldsCollectionPropTest() {
     mC1.propCollection = Arrays.asList("1", "2", "3");
     mC2.propCollection = Arrays.asList("1", "2", "3");
@@ -290,9 +277,6 @@ public class ComponentUtilsTest {
     @Comparable(type = Comparable.OTHER)
     String propString;
 
-    @Comparable(type = Comparable.REFERENCE)
-    Reference propReference;
-
     @Comparable(type = Comparable.COLLECTION_COMPLEVEL_0)
     Collection<String> propCollection;
 
@@ -316,7 +300,7 @@ public class ComponentUtilsTest {
     }
   }
 
-  private static class StateTest implements StateContainer {
+  private static class StateTest extends StateContainer {
     @Comparable(type = Comparable.PRIMITIVE)
     boolean state1;
 
@@ -329,31 +313,8 @@ public class ComponentUtilsTest {
     }
 
     StateTest() {}
-  }
-
-  private static class TestReference extends Reference {
-    private String mVal;
-
-    TestReference(String val) {
-      super(
-          new ReferenceLifecycle<String>() {
-            @Override
-            protected String onAcquire(Context context, Reference<String> reference) {
-              return "";
-            }
-          });
-      mVal = val;
-    }
 
     @Override
-    public boolean equals(Object o) {
-      TestReference other = (TestReference) o;
-      return this == o || mVal.equals(other.mVal);
-    }
-
-    @Override
-    public String getSimpleName() {
-      return "TestReference";
-    }
+    public void applyStateUpdate(StateUpdate stateUpdate) {}
   }
 }

@@ -16,6 +16,8 @@
 
 package com.facebook.litho.specmodels.generator;
 
+import static com.facebook.litho.specmodels.generator.GeneratorConstants.DYNAMIC_PROPS;
+
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.BuilderMethodModel;
 import com.facebook.litho.specmodels.model.ClassNames;
@@ -26,6 +28,7 @@ import com.facebook.litho.specmodels.model.PropModel;
 import com.facebook.litho.specmodels.model.SpecElementType;
 import com.facebook.litho.specmodels.model.SpecMethodModel;
 import com.facebook.litho.specmodels.model.SpecModel;
+import com.facebook.litho.specmodels.model.SpecModelUtils;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ArrayTypeName;
 import com.squareup.javapoet.ClassName;
@@ -170,7 +173,7 @@ public class BuilderGenerator {
 
     final TypeSpec.Builder propsBuilderClassBuilder =
         TypeSpec.classBuilder(BUILDER)
-            .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
+            .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
             .superclass(
                 ParameterizedTypeName.get(
                     ClassName.get(
@@ -273,8 +276,7 @@ public class BuilderGenerator {
 
     propsBuilderClassBuilder
         .addMethod(generateGetThisMethod(specModel))
-        .addMethod(generateBuildMethod(specModel, numRequiredProps))
-        .addMethod(generateReleaseMethod(specModel));
+        .addMethod(generateBuildMethod(specModel, numRequiredProps));
 
     return TypeSpecDataHolder.newBuilder().addType(propsBuilderClassBuilder.build()).build();
   }
@@ -380,29 +382,29 @@ public class BuilderGenerator {
         break;
       case DIMEN_SIZE:
         dataHolder.addTypeSpecDataHolder(pxBuilders(specModel, prop, requiredIndex));
+        dataHolder.addTypeSpecDataHolder(dipBuilders(specModel, prop, requiredIndex));
         dataHolder.addTypeSpecDataHolder(
             resBuilders(specModel, prop, requiredIndex, ClassNames.DIMEN_RES, "resolveDimenSize"));
         dataHolder.addTypeSpecDataHolder(
             attrBuilders(specModel, prop, requiredIndex, ClassNames.DIMEN_RES, "resolveDimenSize"));
-        dataHolder.addTypeSpecDataHolder(dipBuilders(specModel, prop, requiredIndex));
         break;
       case DIMEN_TEXT:
         dataHolder.addTypeSpecDataHolder(pxBuilders(specModel, prop, requiredIndex));
+        dataHolder.addTypeSpecDataHolder(dipBuilders(specModel, prop, requiredIndex));
+        dataHolder.addTypeSpecDataHolder(sipBuilders(specModel, prop, requiredIndex));
         dataHolder.addTypeSpecDataHolder(
             resBuilders(specModel, prop, requiredIndex, ClassNames.DIMEN_RES, "resolveDimenSize"));
         dataHolder.addTypeSpecDataHolder(
             attrBuilders(specModel, prop, requiredIndex, ClassNames.DIMEN_RES, "resolveDimenSize"));
-        dataHolder.addTypeSpecDataHolder(dipBuilders(specModel, prop, requiredIndex));
-        dataHolder.addTypeSpecDataHolder(sipBuilders(specModel, prop, requiredIndex));
         break;
       case DIMEN_OFFSET:
         dataHolder.addTypeSpecDataHolder(pxBuilders(specModel, prop, requiredIndex));
+        dataHolder.addTypeSpecDataHolder(dipBuilders(specModel, prop, requiredIndex));
         dataHolder.addTypeSpecDataHolder(sipBuilders(specModel, prop, requiredIndex));
         dataHolder.addTypeSpecDataHolder(
             resBuilders(specModel, prop, requiredIndex, ClassNames.DIMEN_RES, "resolveDimenSize"));
         dataHolder.addTypeSpecDataHolder(
             attrBuilders(specModel, prop, requiredIndex, ClassNames.DIMEN_RES, "resolveDimenSize"));
-        dataHolder.addTypeSpecDataHolder(dipBuilders(specModel, prop, requiredIndex));
         break;
       case FLOAT:
         dataHolder.addTypeSpecDataHolder(regularBuilders(specModel, prop, requiredIndex));
@@ -437,6 +439,13 @@ public class BuilderGenerator {
 
         if (componentClass.equals(ClassNames.COMPONENT)) {
           dataHolder.addMethod(componentBuilder(specModel, prop, requiredIndex));
+        } else if (prop.isDynamic()) {
+          final TypeName dynamicValueType =
+              ParameterizedTypeName.get(ClassNames.DYNAMIC_VALUE, prop.getTypeName().box());
+          dataHolder.addMethod(
+              dynamicValueBuilder(specModel, prop, requiredIndex, dynamicValueType));
+          dataHolder.addMethod(
+              dynamicValueSimpleBuilder(specModel, prop, requiredIndex, dynamicValueType));
         } else {
           dataHolder.addMethod(regularBuilder(specModel, prop, requiredIndex));
         }
@@ -447,12 +456,6 @@ public class BuilderGenerator {
       dataHolder.addMethod(
           builderBuilder(
               specModel, prop, requiredIndex, ClassNames.COMPONENT_BUILDER, true));
-    }
-
-    if (getRawType(prop.getTypeName()).equals(ClassNames.REFERENCE)) {
-      dataHolder.addMethod(
-          builderBuilder(
-              specModel, prop, requiredIndex, ClassNames.REFERENCE_BUILDER, true));
     }
 
     if (getRawType(prop.getTypeName()).equals(ClassNames.SECTION)) {
@@ -513,6 +516,40 @@ public class BuilderGenerator {
             Arrays.asList(parameter(prop, prop.getTypeName(), prop.getName())),
             "$L == null ? null : $L.makeShallowCopy()",
             prop.getName(),
+            prop.getName())
+        .build();
+  }
+
+  private static MethodSpec dynamicValueBuilder(
+      SpecModel specModel, PropModel prop, int requiredIndex, TypeName dynamicValueType) {
+    return getMethodSpecBuilder(
+            specModel,
+            prop,
+            requiredIndex,
+            prop.getName(),
+            Arrays.asList(
+                parameter(
+                    prop,
+                    KotlinSpecUtils.getFieldTypeName(specModel, dynamicValueType),
+                    prop.getName())),
+            prop.getName())
+        .build();
+  }
+
+  private static MethodSpec dynamicValueSimpleBuilder(
+      SpecModel specModel, PropModel prop, int requiredIndex, TypeName dynamicValueType) {
+    return getMethodSpecBuilder(
+            specModel,
+            prop,
+            requiredIndex,
+            prop.getName(),
+            Arrays.asList(
+                parameter(
+                    prop,
+                    KotlinSpecUtils.getFieldTypeName(specModel, prop.getTypeName()),
+                    prop.getName())),
+            "new $T($L)",
+            dynamicValueType,
             prop.getName())
         .build();
   }
@@ -1395,24 +1432,27 @@ public class BuilderGenerator {
               REQUIRED_PROPS_NAMES);
     }
 
-    return buildMethodBuilder
-        .addStatement(
-            "$L $L = $L",
-            specModel.getComponentName(),
-            ComponentBodyGenerator.getInstanceRefName(specModel),
-            getComponentMemberInstanceName(specModel))
-        .addStatement("release()")
-        .addStatement("return $L", ComponentBodyGenerator.getInstanceRefName(specModel))
-        .build();
-  }
+    final List<PropModel> dynamicProps = SpecModelUtils.getDynamicProps(specModel);
+    if (!dynamicProps.isEmpty()) {
+      final int count = dynamicProps.size();
 
-  private static MethodSpec generateReleaseMethod(SpecModel specModel) {
-    return MethodSpec.methodBuilder("release")
-        .addAnnotation(Override.class)
-        .addModifiers(Modifier.PROTECTED)
-        .addStatement("super.release()")
-        .addStatement(getComponentMemberInstanceName(specModel) + " = null")
-        .addStatement(CONTEXT_MEMBER_NAME + " = null")
+      final String componentRef = getComponentMemberInstanceName(specModel);
+      buildMethodBuilder.addStatement(
+          "$L.$L = new $T[$L]", componentRef, DYNAMIC_PROPS, ClassNames.DYNAMIC_VALUE, count);
+
+      for (int i = 0; i < count; i++) {
+        buildMethodBuilder.addStatement(
+            "$L.$L[$L] = $L.$L",
+            componentRef,
+            DYNAMIC_PROPS,
+            i,
+            componentRef,
+            dynamicProps.get(i).getName());
+      }
+    }
+
+    return buildMethodBuilder
+        .addStatement("return $L", getComponentMemberInstanceName(specModel))
         .build();
   }
 

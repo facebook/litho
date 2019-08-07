@@ -16,9 +16,8 @@
 
 package com.facebook.litho.dataflow;
 
-import android.support.annotation.VisibleForTesting;
-import android.support.v4.util.Pools;
-import android.support.v4.util.SimpleArrayMap;
+import androidx.annotation.VisibleForTesting;
+import androidx.collection.SimpleArrayMap;
 import com.facebook.litho.internal.ArraySet;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -48,18 +47,10 @@ public class DataFlowGraph {
     return sInstance;
   }
 
-  private static final Pools.SynchronizedPool<NodeState> sNodeStatePool =
-      new Pools.SynchronizedPool<>(20);
-
   private static class NodeState {
 
     private boolean isFinished = false;
     private int refCount = 0;
-
-    void reset() {
-      isFinished = false;
-      refCount = 0;
-    }
   }
 
   /**
@@ -270,7 +261,7 @@ public class DataFlowGraph {
       if (nodeState != null) {
         nodeState.refCount++;
       } else {
-        final NodeState newState = acquireNodeState();
+        final NodeState newState = new NodeState();
         newState.refCount = 1;
         mNodeStates.put(node, newState);
       }
@@ -285,22 +276,9 @@ public class DataFlowGraph {
       final NodeState nodeState = mNodeStates.get(node);
       nodeState.refCount--;
       if (nodeState.refCount == 0) {
-        release(mNodeStates.remove(node));
+        mNodeStates.remove(node);
       }
     }
-  }
-
-  private static NodeState acquireNodeState() {
-    final NodeState fromPool = sNodeStatePool.acquire();
-    if (fromPool != null) {
-      return fromPool;
-    }
-    return new NodeState();
-  }
-
-  private static void release(NodeState nodeState) {
-    nodeState.reset();
-    sNodeStatePool.release(nodeState);
   }
 
   @VisibleForTesting

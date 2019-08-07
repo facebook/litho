@@ -35,10 +35,10 @@ public class NodeConfig {
    * Custom factory for Yoga nodes. Used to enable direct byte buffers to set Yoga style properties
    * (rather than JNI)
    */
-  @Nullable public static volatile YogaNodeFactory sYogaNodeFactory = null;
+  public static volatile @Nullable YogaNodeFactory sYogaNodeFactory = null;
 
   /** Factory to create custom InternalNodes for Components. */
-  @Nullable public static volatile InternalNodeFactory sInternalNodeFactory = null;
+  public static volatile @Nullable InternalNodeFactory sInternalNodeFactory = null;
 
   private static final YogaConfig sYogaConfig = new YogaConfig();
   private static final Object sYogaConfigLock = new Object();
@@ -49,8 +49,8 @@ public class NodeConfig {
 
   @Nullable
   static YogaNode createYogaNode() {
-    return NodeConfig.sYogaNodeFactory != null
-        ? NodeConfig.sYogaNodeFactory.create(sYogaConfig)
+    return sYogaNodeFactory != null
+        ? sYogaNodeFactory.create(sYogaConfig)
         : YogaNode.create(sYogaConfig);
   }
 

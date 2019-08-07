@@ -15,12 +15,12 @@
  */
 package com.facebook.litho.sections.processor.integration.resources;
 
-import android.support.annotation.AttrRes;
-import android.support.annotation.StringRes;
-import android.support.annotation.VisibleForTesting;
-import android.support.v4.util.Pools;
 import android.widget.TextView;
+import androidx.annotation.AttrRes;
+import androidx.annotation.StringRes;
+import androidx.annotation.VisibleForTesting;
 import com.facebook.litho.ClickEvent;
+import com.facebook.litho.CommonUtils;
 import com.facebook.litho.Component;
 import com.facebook.litho.Diff;
 import com.facebook.litho.EventDispatcher;
@@ -41,7 +41,6 @@ import com.facebook.litho.sections.Section;
 import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.SectionLifecycle;
 import java.util.BitSet;
-import java.util.Objects;
 
 /**
  * Comment to be copied in generated section
@@ -56,9 +55,6 @@ import java.util.Objects;
  * @see com.facebook.litho.sections.processor.integration.resources.FullGroupSectionSpec
  */
 final class FullGroupSection<T> extends Section implements TestTag {
-  static final Pools.SynchronizedPool<TestEvent> sTestEventPool =
-      new Pools.SynchronizedPool<TestEvent>(2);
-
   @Comparable(type = 14)
   private FullGroupSectionStateContainer mStateContainer;
 
@@ -183,6 +179,14 @@ final class FullGroupSection<T> extends Section implements TestTag {
     nextStateContainer.state2 = prevStateContainer.state2;
   }
 
+  private FullGroupSectionStateContainer getStateContainerWithLazyStateUpdatesApplied(
+      SectionContext c, FullGroupSection component) {
+    FullGroupSectionStateContainer stateContainer = new FullGroupSectionStateContainer();
+    transferState(component.mStateContainer, stateContainer);
+    c.applyLazyStateUpdatesForContainer(stateContainer);
+    return stateContainer;
+  }
+
   protected static void updateState(SectionContext c, Object param) {
     Section _component = c.getSectionScope();
     if (_component == null) {
@@ -238,23 +242,23 @@ final class FullGroupSection<T> extends Section implements TestTag {
   }
 
   static boolean dispatchTestEvent(EventHandler _eventHandler, Object object) {
-    TestEvent _eventState = sTestEventPool.acquire();
-    if (_eventState == null) {
-      _eventState = new TestEvent();
-    }
+    final TestEvent _eventState = new TestEvent();
     _eventState.object = object;
     EventDispatcher _lifecycle = _eventHandler.mHasEventDispatcher.getEventDispatcher();
-    boolean result = (boolean) _lifecycle.dispatchOnEvent(_eventHandler, _eventState);
-    _eventState.object = null;
-    sTestEventPool.release(_eventState);
-    return result;
+    return (boolean) _lifecycle.dispatchOnEvent(_eventHandler, _eventState);
   }
 
   private void testEvent(
       HasEventDispatcher _abstract, SectionContext c, TextView view, int someParam) {
     FullGroupSection _ref = (FullGroupSection) _abstract;
+    FullGroupSectionStateContainer stateContainer = getStateContainerWithLazyStateUpdatesApplied(c,
+        _ref);
     FullGroupSectionSpec.testEvent(
-        c, view, someParam, (Object) _ref.mStateContainer.state2, (String) _ref.prop2);
+        c,
+        view,
+        someParam,
+        (Object) stateContainer.state2,
+        (String) _ref.prop2);
   }
 
   public static EventHandler<ClickEvent> testEvent(SectionContext c, int someParam) {
@@ -455,7 +459,7 @@ final class FullGroupSection<T> extends Section implements TestTag {
     Object state2;
   }
 
-  public static class Builder<T> extends Section.Builder<Builder<T>> {
+  public static final class Builder<T> extends Section.Builder<Builder<T>> {
     FullGroupSection mFullGroupSection;
 
     SectionContext mContext;
@@ -561,16 +565,7 @@ final class FullGroupSection<T> extends Section implements TestTag {
     @Override
     public FullGroupSection build() {
       checkArgs(REQUIRED_PROPS_COUNT, mRequired, REQUIRED_PROPS_NAMES);
-      FullGroupSection fullGroupSectionRef = mFullGroupSection;
-      release();
-      return fullGroupSectionRef;
-    }
-
-    @Override
-    protected void release() {
-      super.release();
-      mFullGroupSection = null;
-      mContext = null;
+      return mFullGroupSection;
     }
   }
 
@@ -601,7 +596,7 @@ final class FullGroupSection<T> extends Section implements TestTag {
 
     @Override
     public int hashCode() {
-      return Objects.hash(prop1);
+      return CommonUtils.hash(prop1);
     }
 
     @Override

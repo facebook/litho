@@ -17,6 +17,7 @@ load(
 fb_core_android_library(
     name = "espresso",
     srcs = glob(["*.java"]),
+    is_androidx = True,
     visibility = [
         "PUBLIC",
     ],

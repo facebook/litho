@@ -16,9 +16,13 @@
 
 package com.facebook.litho;
 
+import static com.facebook.litho.it.R.drawable.background_with_padding;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.animation.StateListAnimator;
 import android.annotation.TargetApi;
@@ -28,8 +32,7 @@ import android.util.SparseArray;
 import com.facebook.litho.annotations.ImportantForAccessibility;
 import com.facebook.litho.drawable.ComparableColorDrawable;
 import com.facebook.litho.drawable.ComparableDrawable;
-import com.facebook.litho.reference.DrawableReference;
-import com.facebook.litho.reference.Reference;
+import com.facebook.litho.drawable.ComparableResDrawable;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaDirection;
@@ -38,18 +41,23 @@ import com.facebook.yoga.YogaPositionType;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InOrder;
+import org.mockito.Mockito;
 import org.robolectric.RuntimeEnvironment;
 
 @RunWith(ComponentsTestRunner.class)
 public class CommonPropsTest {
 
   private InternalNode mNode;
-  private CommonPropsHolder mCommonProps;
+  private NodeInfo mNodeInfo;
+  private CommonProps mCommonProps;
   private ComponentContext mComponentContext;
 
   @Before
   public void setup() {
     mNode = mock(InternalNode.class);
+    mNodeInfo = mock(NodeInfo.class);
+    when(mNode.getOrCreateNodeInfo()).thenReturn(mNodeInfo);
     mCommonProps = new CommonPropsHolder();
     mComponentContext = new ComponentContext(RuntimeEnvironment.application);
   }
@@ -117,8 +125,7 @@ public class CommonPropsTest {
     mCommonProps.touchExpansionPx(YogaEdge.LEFT, 23);
     mCommonProps.touchExpansionPx(YogaEdge.ALL, 21);
     ComparableDrawable background = ComparableColorDrawable.create(Color.RED);
-    Reference<ComparableDrawable> bgRef = DrawableReference.create(background);
-    mCommonProps.background(bgRef);
+    mCommonProps.background(background);
     ComparableDrawable foreground = ComparableColorDrawable.create(Color.BLACK);
     mCommonProps.foreground(foreground);
 
@@ -136,10 +143,12 @@ public class CommonPropsTest {
     mCommonProps.interceptTouchHandler(interceptTouchHandler);
 
     mCommonProps.focusable(true);
+    mCommonProps.clickable(true);
     mCommonProps.selected(false);
     mCommonProps.enabled(false);
     mCommonProps.visibleHeightRatio(55);
     mCommonProps.visibleWidthRatio(56);
+    mCommonProps.accessibilityHeading(false);
 
     final EventHandler<VisibleEvent> visibleHandler = mock(EventHandler.class);
     final EventHandler<FocusedVisibleEvent> focusedHandler = mock(EventHandler.class);
@@ -260,22 +269,24 @@ public class CommonPropsTest {
     verify(mNode).touchExpansionPx(YogaEdge.LEFT, 23);
     verify(mNode).touchExpansionPx(YogaEdge.ALL, 21);
 
-    verify(mNode).background(bgRef);
+    verify(mNode).background(background);
     verify(mNode).foreground(foreground);
 
     verify(mNode).wrapInView();
 
-    verify(mNode).clickHandler(clickHandler);
-    verify(mNode).focusChangeHandler(focusChangedHandler);
-    verify(mNode).longClickHandler(longClickHandler);
-    verify(mNode).touchHandler(touchHandler);
-    verify(mNode).interceptTouchHandler(interceptTouchHandler);
+    verify(mNodeInfo).setClickHandler(clickHandler);
+    verify(mNodeInfo).setFocusChangeHandler(focusChangedHandler);
+    verify(mNodeInfo).setLongClickHandler(longClickHandler);
+    verify(mNodeInfo).setTouchHandler(touchHandler);
+    verify(mNodeInfo).setInterceptTouchHandler(interceptTouchHandler);
 
-    verify(mNode).focusable(true);
-    verify(mNode).selected(false);
-    verify(mNode).enabled(false);
+    verify(mNodeInfo).setFocusable(true);
+    verify(mNodeInfo).setClickable(true);
+    verify(mNodeInfo).setSelected(false);
+    verify(mNodeInfo).setEnabled(false);
     verify(mNode).visibleHeightRatio(55);
     verify(mNode).visibleWidthRatio(56);
+    verify(mNodeInfo).setAccessibilityHeading(false);
 
     verify(mNode).visibleHandler(visibleHandler);
     verify(mNode).focusedHandler(focusedHandler);
@@ -284,30 +295,99 @@ public class CommonPropsTest {
     verify(mNode).invisibleHandler(invisibleHandler);
     verify(mNode).visibilityChangedHandler(visibleRectChangedHandler);
 
-    verify(mNode).contentDescription("test");
+    verify(mNodeInfo).setContentDescription("test");
 
-    verify(mNode).viewTag(viewTag);
-    verify(mNode).viewTags(viewTags);
+    verify(mNodeInfo).setViewTag(viewTag);
+    verify(mNodeInfo).setViewTags(viewTags);
 
-    verify(mNode).shadowElevationPx(60);
+    verify(mNodeInfo).setShadowElevation(60);
 
-    verify(mNode).clipToOutline(false);
+    verify(mNodeInfo).setClipToOutline(false);
     verify(mNode).transitionKey("transitionKey");
     verify(mNode).testKey("testKey");
 
-    verify(mNode).accessibilityRole(AccessibilityRole.BUTTON);
-    verify(mNode).accessibilityRoleDescription("Test Role Description");
-    verify(mNode)
-        .dispatchPopulateAccessibilityEventHandler(dispatchPopulateAccessibilityEventHandler);
-    verify(mNode).onInitializeAccessibilityEventHandler(onInitializeAccessibilityEventHandler);
-    verify(mNode)
-        .onInitializeAccessibilityNodeInfoHandler(onInitializeAccessibilityNodeInfoHandler);
-    verify(mNode).onPopulateAccessibilityEventHandler(onPopulateAccessibilityEventHandler);
-    verify(mNode).onRequestSendAccessibilityEventHandler(onRequestSendAccessibilityEventHandler);
-    verify(mNode).performAccessibilityActionHandler(performAccessibilityActionHandler);
-    verify(mNode).sendAccessibilityEventHandler(sendAccessibilityEventHandler);
-    verify(mNode).sendAccessibilityEventUncheckedHandler(sendAccessibilityEventUncheckedHandler);
+    verify(mNodeInfo).setAccessibilityRole(AccessibilityRole.BUTTON);
+    verify(mNodeInfo).setAccessibilityRoleDescription("Test Role Description");
+    verify(mNodeInfo)
+        .setDispatchPopulateAccessibilityEventHandler(dispatchPopulateAccessibilityEventHandler);
+    verify(mNodeInfo)
+        .setOnInitializeAccessibilityEventHandler(onInitializeAccessibilityEventHandler);
+    verify(mNodeInfo)
+        .setOnInitializeAccessibilityNodeInfoHandler(onInitializeAccessibilityNodeInfoHandler);
+    verify(mNodeInfo).setOnPopulateAccessibilityEventHandler(onPopulateAccessibilityEventHandler);
+    verify(mNodeInfo)
+        .setOnRequestSendAccessibilityEventHandler(onRequestSendAccessibilityEventHandler);
+    verify(mNodeInfo).setPerformAccessibilityActionHandler(performAccessibilityActionHandler);
+    verify(mNodeInfo).setSendAccessibilityEventHandler(sendAccessibilityEventHandler);
+    verify(mNodeInfo)
+        .setSendAccessibilityEventUncheckedHandler(sendAccessibilityEventUncheckedHandler);
 
     verify(mNode).stateListAnimator(stateListAnimator);
+  }
+
+  @Test
+  public void testSetScalePropsWrapsInView() {
+    mCommonProps.scale(5);
+    mCommonProps.copyInto(mComponentContext, mNode);
+
+    verify(mNodeInfo).setScale(5);
+    verify(mNode).wrapInView();
+  }
+
+  @Test
+  public void testSetAlphaPropsWrapsInView() {
+    mCommonProps.alpha(5);
+    mCommonProps.copyInto(mComponentContext, mNode);
+
+    verify(mNodeInfo).setAlpha(5);
+    verify(mNode).wrapInView();
+  }
+
+  @Test
+  public void testSetRotationPropsWrapsInView() {
+    mCommonProps.rotation(5);
+    mCommonProps.copyInto(mComponentContext, mNode);
+
+    verify(mNodeInfo).setRotation(5);
+    verify(mNode).wrapInView();
+  }
+
+  @Test
+  public void testPaddingFromDrawable() {
+    final InternalNode node = spy(new DefaultInternalNode(mComponentContext));
+
+    mCommonProps.background(
+            ComparableResDrawable.create(
+                mComponentContext.getAndroidContext(), background_with_padding));
+
+    mCommonProps.copyInto(mComponentContext, node);
+
+    verify(node).paddingPx(YogaEdge.LEFT, 48);
+    verify(node).paddingPx(YogaEdge.TOP, 0);
+    verify(node).paddingPx(YogaEdge.RIGHT, 0);
+    verify(node).paddingPx(YogaEdge.BOTTOM, 0);
+  }
+
+  @Test
+  public void testPaddingFromDrawableIsOverwritten() {
+    final InternalNode node = spy(new DefaultInternalNode(mComponentContext));
+
+    mCommonProps.background(
+            ComparableResDrawable.create(
+                mComponentContext.getAndroidContext(), background_with_padding));
+    mCommonProps.paddingPx(YogaEdge.LEFT, 0);
+    mCommonProps.paddingPx(YogaEdge.TOP, 0);
+    mCommonProps.paddingPx(YogaEdge.RIGHT, 0);
+    mCommonProps.paddingPx(YogaEdge.BOTTOM, 0);
+
+    mCommonProps.copyInto(mComponentContext, node);
+
+    InOrder inOrder = Mockito.inOrder(node);
+    inOrder.verify(node).paddingPx(YogaEdge.LEFT, 48);
+    inOrder.verify(node).paddingPx(YogaEdge.LEFT, 0);
+
+    verify(node, times(2)).paddingPx(YogaEdge.TOP, 0);
+    verify(node, times(2)).paddingPx(YogaEdge.RIGHT, 0);
+    verify(node, times(2)).paddingPx(YogaEdge.BOTTOM, 0);
   }
 }

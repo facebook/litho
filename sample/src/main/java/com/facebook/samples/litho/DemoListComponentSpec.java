@@ -12,7 +12,7 @@
 
 package com.facebook.samples.litho;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.annotations.FromEvent;
@@ -78,7 +78,8 @@ class DemoListComponentSpec {
 
   /**
    * Called during DataDiffSection's diffing to determine if two objects represent the same item.
-   * See {@link android.support.v7.util.DiffUtil.Callback#areItemsTheSame(int, int)} for more info.
+   * See {@link androidx.recyclerview.widget.DiffUtil.Callback#areItemsTheSame(int, int)} for more
+   * info.
    *
    * @return true if the two objects in the event represent the same item.
    */
@@ -93,7 +94,7 @@ class DemoListComponentSpec {
   /**
    * Called during DataDiffSection's diffing to determine if two objects contain the same data. This
    * is used to detect of contents of an item have changed. See {@link
-   * android.support.v7.util.DiffUtil.Callback#areContentsTheSame(int, int)} for more info.
+   * androidx.recyclerview.widget.DiffUtil.Callback#areContentsTheSame(int, int)} for more info.
    *
    * @return true if the two objects contain the same data.
    */

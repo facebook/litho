@@ -141,8 +141,8 @@ class MyComponentSpec {
       ComponentContext context,
       int newWidthSpec,
       int newHeightSpec,
-      @FromCreateLayout int textWidth,
-      @FromCreateLayout boolean didItFit) {
+      @FromPreviousCreateLayout int textWidth,
+      @FromPreviousCreateLayout boolean didItFit) {
 
     final int newLayoutWidth = SizeSpec.getSize(newWidthSpec);
     final boolean doesItStillFit = (textWidth <= newLayoutWidth);

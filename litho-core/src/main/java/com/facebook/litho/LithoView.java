@@ -23,13 +23,13 @@ import static com.facebook.litho.ThreadUtils.assertMainThread;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Rect;
-import android.support.annotation.VisibleForTesting;
-import android.support.v4.view.accessibility.AccessibilityManagerCompat;
-import android.support.v4.view.accessibility.AccessibilityManagerCompat.AccessibilityStateChangeListenerCompat;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityManager;
+import androidx.annotation.VisibleForTesting;
+import androidx.core.view.accessibility.AccessibilityManagerCompat;
+import androidx.core.view.accessibility.AccessibilityManagerCompat.AccessibilityStateChangeListenerCompat;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.proguard.annotations.DoNotStrip;
 import java.lang.ref.WeakReference;
@@ -39,9 +39,7 @@ import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
 
-/**
- * A {@link ViewGroup} that can host the mounted state of a {@link Component}.
- */
+/** A {@link ViewGroup} that can host the mounted state of a {@link Component}. */
 public class LithoView extends ComponentHost {
 
   public static final String ZERO_HEIGHT_LOG = "LithoView:0-height";
@@ -94,8 +92,8 @@ public class LithoView extends ComponentHost {
   @Nullable private String mNullComponentCause;
 
   /**
-   * Create a new {@link LithoView} instance and initialize it
-   * with the given {@link Component} root.
+   * Create a new {@link LithoView} instance and initialize it with the given {@link Component}
+   * root.
    *
    * @param context Android {@link Context}.
    * @param component The root component to draw.
@@ -106,8 +104,8 @@ public class LithoView extends ComponentHost {
   }
 
   /**
-   * Create a new {@link LithoView} instance and initialize it
-   * with the given {@link Component} root.
+   * Create a new {@link LithoView} instance and initialize it with the given {@link Component}
+   * root.
    *
    * @param context {@link ComponentContext}.
    * @param component The root component to draw.
@@ -204,8 +202,7 @@ public class LithoView extends ComponentHost {
       refreshAccessibilityDelegatesIfNeeded(isAccessibilityEnabled(getContext()));
 
       AccessibilityManagerCompat.addAccessibilityStateChangeListener(
-          mAccessibilityManager,
-          mAccessibilityStateChangeListener);
+          mAccessibilityManager, mAccessibilityStateChangeListener);
     }
   }
 
@@ -219,16 +216,15 @@ public class LithoView extends ComponentHost {
       }
 
       AccessibilityManagerCompat.removeAccessibilityStateChangeListener(
-          mAccessibilityManager,
-          mAccessibilityStateChangeListener);
+          mAccessibilityManager, mAccessibilityStateChangeListener);
 
       mSuppressMeasureComponentTree = false;
     }
   }
 
   /**
-   * If set to true, the onMeasure(..) call won't measure the ComponentTree with the given
-   * measure specs, but it will just use them as measured dimensions.
+   * If set to true, the onMeasure(..) call won't measure the ComponentTree with the given measure
+   * specs, but it will just use them as measured dimensions.
    */
   public void suppressMeasureComponentTree(boolean suppress) {
     mSuppressMeasureComponentTree = suppress;
@@ -258,7 +254,7 @@ public class LithoView extends ComponentHost {
   protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
     widthMeasureSpec =
         DoubleMeasureFixUtil.correctWidthSpecForAndroidDoubleMeasureBug(
-            getResources(), widthMeasureSpec);
+            getResources(), getContext().getPackageManager(), widthMeasureSpec);
 
     // mAnimatedWidth/mAnimatedHeight >= 0 if something is driving a width/height animation.
     final boolean animating = mAnimatedWidth != -1 || mAnimatedHeight != -1;
@@ -379,8 +375,7 @@ public class LithoView extends ComponentHost {
 
       // If this happens the LithoView might have moved on Screen without a scroll event
       // triggering incremental mount. We trigger one here to be sure all the content is visible.
-      if (!wasMountTriggered
-          && isIncrementalMountEnabled()) {
+      if (!wasMountTriggered && isIncrementalMountEnabled()) {
         performIncrementalMount();
       }
 
@@ -396,22 +391,22 @@ public class LithoView extends ComponentHost {
 
   /**
    * Indicates if the children of this view should be laid regardless to a mount step being
-   * triggered on layout. This step can be important when some of the children in the hierarchy
-   * are changed (e.g. resized) but the parent wasn't.
+   * triggered on layout. This step can be important when some of the children in the hierarchy are
+   * changed (e.g. resized) but the parent wasn't.
    *
-   * Since the framework doesn't expect its children to resize after being mounted, this should be
-   * used only for extreme cases where the underline views are complex and need this behavior.
+   * <p>Since the framework doesn't expect its children to resize after being mounted, this should
+   * be used only for extreme cases where the underline views are complex and need this behavior.
    *
    * @return boolean Returns true if the children of this view should be laid out even when a mount
-   *    step was not needed.
+   *     step was not needed.
    */
   protected boolean shouldAlwaysLayoutChildren() {
     return false;
   }
 
   /**
-   * @return {@link ComponentContext} associated with this LithoView. It's a wrapper on the
-   * {@link Context} originally used to create this LithoView itself.
+   * @return {@link ComponentContext} associated with this LithoView. It's a wrapper on the {@link
+   *     Context} originally used to create this LithoView itself.
    */
   public ComponentContext getComponentContext() {
     return mComponentContext;
@@ -514,9 +509,7 @@ public class LithoView extends ComponentHost {
     mNullComponentCause = mComponentTree == null ? "set_CT" : null;
   }
 
-  /**
-   * Change the root component synchronously.
-   */
+  /** Change the root component synchronously. */
   public void setComponent(Component component) {
     if (mComponentTree == null) {
       setComponentTree(ComponentTree.create(getComponentContext(), component).build());
@@ -526,9 +519,9 @@ public class LithoView extends ComponentHost {
   }
 
   /**
-   * Change the root component measuring it on a background thread before updating the UI.
-   * If this {@link LithoView} doesn't have a ComponentTree initialized, the root will be
-   * computed synchronously.
+   * Change the root component measuring it on a background thread before updating the UI. If this
+   * {@link LithoView} doesn't have a ComponentTree initialized, the root will be computed
+   * synchronously.
    */
   public void setComponentAsync(Component component) {
     if (mComponentTree == null) {
@@ -543,16 +536,14 @@ public class LithoView extends ComponentHost {
   }
 
   /**
-   * To be called this when the LithoView is about to become inactive. This means that either
-   * the view is about to be recycled or moved off-screen.
+   * To be called this when the LithoView is about to become inactive. This means that either the
+   * view is about to be recycled or moved off-screen.
    */
   public void unbind() {
     mMountState.unbind();
   }
 
-  /**
-   * Called from the ComponentTree when a new view want to use the same ComponentTree.
-   */
+  /** Called from the ComponentTree when a new view want to use the same ComponentTree. */
   void clearComponentTree() {
     assertMainThread();
 
@@ -583,10 +574,21 @@ public class LithoView extends ComponentHost {
     if (isVisible) {
       if (getLocalVisibleRect(new Rect())) {
         mComponentTree.processVisibilityOutputs();
+        recursivelySetVisibleHint(true);
       }
       // if false: no-op, doesn't have visible area, is not ready or not attached
     } else {
+      recursivelySetVisibleHint(false);
       mMountState.clearVisibilityItems();
+    }
+  }
+
+  private void recursivelySetVisibleHint(boolean isVisible) {
+    final List<LithoView> childLithoViews =
+        mMountState.getChildLithoViewsFromCurrentlyMountedItems();
+    for (int i = childLithoViews.size() - 1; i >= 0; i--) {
+      final LithoView lithoView = childLithoViews.get(i);
+      lithoView.setVisibilityHint(isVisible);
     }
   }
 
@@ -621,14 +623,14 @@ public class LithoView extends ComponentHost {
   public void offsetTopAndBottom(int offset) {
     super.offsetTopAndBottom(offset);
 
-    maybePerformIncrementalMountOnView();
+    maybePerformIncrementalMountOnOffsetOrTranslationChange();
   }
 
   @Override
   public void offsetLeftAndRight(int offset) {
     super.offsetLeftAndRight(offset);
 
-    maybePerformIncrementalMountOnView();
+    maybePerformIncrementalMountOnOffsetOrTranslationChange();
   }
 
   @Override
@@ -638,7 +640,7 @@ public class LithoView extends ComponentHost {
     }
     super.setTranslationX(translationX);
 
-    maybePerformIncrementalMountOnView();
+    maybePerformIncrementalMountOnOffsetOrTranslationChange();
   }
 
   @Override
@@ -648,44 +650,19 @@ public class LithoView extends ComponentHost {
     }
     super.setTranslationY(translationY);
 
-    maybePerformIncrementalMountOnView();
+    maybePerformIncrementalMountOnOffsetOrTranslationChange();
   }
 
   @Override
   public void draw(Canvas canvas) {
-    final ComponentsLogger logger =
-        getComponentTree() == null ? null : getComponentTree().getContext().getLogger();
-    final PerfEvent perfEvent =
-        logger != null
-            ? LogTreePopulator.populatePerfEventFromLogger(
-                getComponentContext(),
-                logger,
-                logger.newPerformanceEvent(FrameworkLogEvents.EVENT_DRAW))
-            : null;
-    if (perfEvent != null) {
-      setPerfEvent(perfEvent);
-    }
-
     super.draw(canvas);
 
     if (mOnPostDrawListener != null) {
-      if (perfEvent != null) {
-        perfEvent.markerPoint("POST_DRAW_START");
-      }
       mOnPostDrawListener.onPostDraw();
-      if (perfEvent != null) {
-        perfEvent.markerPoint("POST_DRAW_END");
-      }
-    }
-
-    if (perfEvent != null) {
-      perfEvent.markerAnnotate(
-          FrameworkLogEvents.PARAM_ROOT_COMPONENT, getComponentTree().getRoot().getSimpleName());
-      logger.logPerfEvent(perfEvent);
     }
   }
 
-  private void maybePerformIncrementalMountOnView() {
+  private void maybePerformIncrementalMountOnOffsetOrTranslationChange() {
     if (mComponentTree == null
         || !mComponentTree.isIncrementalMountEnabled()
         || !(getParent() instanceof View)) {
@@ -724,6 +701,7 @@ public class LithoView extends ComponentHost {
   /**
    * Checks to make sure the main thread layout state is valid (and throws if it's both invalid and
    * there's no layout requested to make it valid).
+   *
    * @return whether the main thread layout state is ok to use
    */
   private boolean checkMainThreadLayoutStateForIncrementalMount() {
@@ -733,8 +711,8 @@ public class LithoView extends ComponentHost {
 
     if (!isLayoutRequested()) {
       throw new RuntimeException(
-          "Trying to incrementally mount a component with a null main thread LayoutState on a " +
-              "LithoView that hasn't requested layout!");
+          "Trying to incrementally mount a component with a null main thread LayoutState on a "
+              + "LithoView that hasn't requested layout!");
     }
 
     return false;
@@ -748,8 +726,9 @@ public class LithoView extends ComponentHost {
     if (mComponentTree.isIncrementalMountEnabled()) {
       mComponentTree.mountComponent(visibleRect, processVisibilityOutputs);
     } else {
-      throw new IllegalStateException("To perform incremental mounting, you need first to enable" +
-          " it when creating the ComponentTree.");
+      throw new IllegalStateException(
+          "To perform incremental mounting, you need first to enable"
+              + " it when creating the ComponentTree.");
     }
   }
 
@@ -761,8 +740,9 @@ public class LithoView extends ComponentHost {
     if (mComponentTree.isIncrementalMountEnabled()) {
       mComponentTree.incrementalMountComponent();
     } else {
-      throw new IllegalStateException("To perform incremental mounting, you need first to enable" +
-          " it when creating the ComponentTree.");
+      throw new IllegalStateException(
+          "To perform incremental mounting, you need first to enable"
+              + " it when creating the ComponentTree.");
     }
   }
 
@@ -780,7 +760,11 @@ public class LithoView extends ComponentHost {
     }
   }
 
-  void mount(LayoutState layoutState, Rect currentVisibleArea, boolean processVisibilityOutputs) {
+  void mount(
+      LayoutState layoutState,
+      @Nullable Rect currentVisibleArea,
+      boolean processVisibilityOutputs) {
+
     if (mTransientStateCount > 0
         && mComponentTree != null
         && mComponentTree.isIncrementalMountEnabled()) {
@@ -802,6 +786,68 @@ public class LithoView extends ComponentHost {
     }
 
     mMountState.mount(layoutState, currentVisibleArea, processVisibilityOutputs);
+  }
+
+  /**
+   * Dispatch a visibility events to all the components hosted in this LithoView.
+   *
+   * <p>Marked as @Deprecated to indicate this method is experimental and should not be widely used.
+   *
+   * <p>NOTE: Can only be used when Incremental Mount is disabled! Call this method when the
+   * LithoView is considered eligible for the visibility event (i.e. only dispatch VisibleEvent when
+   * the LithoView is visible in its container).
+   *
+   * @param visibilityEventType The class type of the visibility event to dispatch. Supported:
+   *     VisibleEvent.class, InvisibleEvent.class, FocusedVisibleEvent.class,
+   *     UnfocusedVisibleEvent.class, FullImpressionVisibleEvent.class.
+   */
+  @Deprecated
+  public void dispatchVisibilityEvent(Class<?> visibilityEventType) {
+    if (isIncrementalMountEnabled()) {
+      throw new IllegalStateException(
+          "dispatchVisibilityEvent - "
+              + "Can't manually trigger visibility events when incremental mount is enabled");
+    }
+
+    LayoutState layoutState =
+        mComponentTree == null ? null : mComponentTree.getMainThreadLayoutState();
+
+    if (layoutState != null && visibilityEventType != null) {
+      for (int i = 0; i < layoutState.getVisibilityOutputCount(); i++) {
+        dispatchVisibilityEvent(layoutState.getVisibilityOutputAt(i), visibilityEventType);
+      }
+
+      List<LithoView> childViews = mMountState.getChildLithoViewsFromCurrentlyMountedItems();
+      for (LithoView lithoView : childViews) {
+        lithoView.dispatchVisibilityEvent(visibilityEventType);
+      }
+    }
+  }
+
+  private void dispatchVisibilityEvent(
+      VisibilityOutput visibilityOutput, Class<?> visibilityEventType) {
+    if (visibilityEventType == VisibleEvent.class) {
+      if (visibilityOutput.getVisibleEventHandler() != null) {
+        EventDispatcherUtils.dispatchOnVisible(visibilityOutput.getVisibleEventHandler());
+      }
+    } else if (visibilityEventType == InvisibleEvent.class) {
+      if (visibilityOutput.getInvisibleEventHandler() != null) {
+        EventDispatcherUtils.dispatchOnInvisible(visibilityOutput.getInvisibleEventHandler());
+      }
+    } else if (visibilityEventType == FocusedVisibleEvent.class) {
+      if (visibilityOutput.getFocusedEventHandler() != null) {
+        EventDispatcherUtils.dispatchOnFocused(visibilityOutput.getFocusedEventHandler());
+      }
+    } else if (visibilityEventType == UnfocusedVisibleEvent.class) {
+      if (visibilityOutput.getUnfocusedEventHandler() != null) {
+        EventDispatcherUtils.dispatchOnUnfocused(visibilityOutput.getUnfocusedEventHandler());
+      }
+    } else if (visibilityEventType == FullImpressionVisibleEvent.class) {
+      if (visibilityOutput.getFullImpressionEventHandler() != null) {
+        EventDispatcherUtils.dispatchOnFullImpression(
+            visibilityOutput.getFullImpressionEventHandler());
+      }
+    }
   }
 
   void processVisibilityOutputs(LayoutState layoutState, Rect currentVisibleArea) {
@@ -927,8 +973,8 @@ public class LithoView extends ComponentHost {
     return mMountState.findTestItems(testKey);
   }
 
-  private static class AccessibilityStateChangeListener extends
-      AccessibilityStateChangeListenerCompat {
+  private static class AccessibilityStateChangeListener
+      extends AccessibilityStateChangeListenerCompat {
     private final WeakReference<LithoView> mLithoView;
 
     private AccessibilityStateChangeListener(LithoView lithoView) {

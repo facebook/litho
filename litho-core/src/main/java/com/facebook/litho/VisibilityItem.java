@@ -17,7 +17,7 @@
 package com.facebook.litho;
 
 import android.graphics.Rect;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * Holds information about a VisibilityOutput (that is, about a component for which a visibility

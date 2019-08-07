@@ -23,9 +23,14 @@ import static com.facebook.litho.testing.helper.ComponentTestHelper.unbindCompon
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import android.graphics.Rect;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import com.facebook.litho.testing.TestComponent;
+import com.facebook.litho.testing.TestDrawableComponent;
+import com.facebook.litho.testing.TestViewComponent;
+import com.facebook.litho.testing.ViewGroupWithLithoViewChildren;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.testing.util.InlineLayoutSpec;
 import com.facebook.yoga.YogaEdge;
 import org.junit.Before;
 import org.junit.Test;
@@ -461,6 +466,60 @@ public class VisibilityEventsTest {
   }
 
   @Test
+  public void testVisibleRectChangedEventLargeView() {
+    final TestComponent content = create(mContext).build();
+    final EventHandler<VisibilityChangedEvent> visibilityChangedHandler =
+        new EventHandler<>(content, 3);
+
+    final LithoView lithoView =
+        mountComponent(
+            mContext,
+            mLithoView,
+            Column.create(mContext)
+                .child(
+                    Wrapper.create(mContext)
+                        .delegate(content)
+                        .visibilityChangedHandler(visibilityChangedHandler)
+                        .widthPx(10)
+                        .heightPx(10))
+                .build(),
+            true,
+            10,
+            1000);
+
+    VisibilityChangedEvent visibilityChangedEvent =
+        (VisibilityChangedEvent) content.getEventState(visibilityChangedHandler);
+    assertThat(visibilityChangedEvent.visibleHeight).isEqualTo(10);
+    assertThat(visibilityChangedEvent.visibleWidth).isEqualTo(10);
+    assertThat(visibilityChangedEvent.percentVisibleHeight).isEqualTo(100f);
+    assertThat(visibilityChangedEvent.percentVisibleWidth).isEqualTo(100f);
+
+    content.getDispatchedEventHandlers().clear();
+
+    lithoView.performIncrementalMount(new Rect(LEFT, 0, RIGHT, 4), true);
+    assertThat(content.getDispatchedEventHandlers()).contains(visibilityChangedHandler);
+
+    visibilityChangedEvent =
+        (VisibilityChangedEvent) content.getEventState(visibilityChangedHandler);
+
+    assertThat(visibilityChangedEvent.visibleHeight).isEqualTo(4);
+    assertThat(visibilityChangedEvent.visibleWidth).isEqualTo(10);
+    assertThat(visibilityChangedEvent.percentVisibleHeight).isEqualTo(40f);
+    assertThat(visibilityChangedEvent.percentVisibleWidth).isEqualTo(100f);
+
+    lithoView.performIncrementalMount(new Rect(LEFT, 0, RIGHT, 5), true);
+    assertThat(content.getDispatchedEventHandlers()).contains(visibilityChangedHandler);
+
+    visibilityChangedEvent =
+        (VisibilityChangedEvent) content.getEventState(visibilityChangedHandler);
+
+    assertThat(visibilityChangedEvent.visibleHeight).isEqualTo(5);
+    assertThat(visibilityChangedEvent.visibleWidth).isEqualTo(10);
+    assertThat(visibilityChangedEvent.percentVisibleHeight).isEqualTo(50f);
+    assertThat(visibilityChangedEvent.percentVisibleWidth).isEqualTo(100f);
+  }
+
+  @Test
   public void testVisibleAndInvisibleEvents() {
     final TestComponent content = create(mContext).build();
     final EventHandler<VisibleEvent> visibleEventHandler = new EventHandler<>(content, 1);
@@ -865,5 +924,58 @@ public class VisibilityEventsTest {
     assertThat(component.getDispatchedEventHandlers()).contains(visibleEventHandler);
     assertThat(component.getDispatchedEventHandlers()).contains(focusedEventHandler);
     assertThat(component.getDispatchedEventHandlers()).contains(fullImpressionHandler);
+  }
+
+  @Test
+  public void testSetVisibilityHintRecursive() {
+    final TestComponent testComponentInner = TestDrawableComponent.create(mContext).build();
+    final EventHandler<VisibleEvent> visibleEventHandlerInner =
+        new EventHandler<>(testComponentInner, 1);
+    final EventHandler<InvisibleEvent> invisibleEventHandlerInner =
+        new EventHandler<>(testComponentInner, 2);
+
+    final Component mountedTestComponentInner =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(ComponentContext c) {
+            return Column.create(c)
+                .child(
+                    Wrapper.create(c)
+                        .delegate(testComponentInner)
+                        .visibleHandler(visibleEventHandlerInner)
+                        .invisibleHandler(invisibleEventHandlerInner)
+                        .widthPx(10)
+                        .heightPx(10))
+                .build();
+          }
+        };
+    final LithoView child = mountComponent(mContext, mountedTestComponentInner, true);
+
+    assertThat(testComponentInner.getDispatchedEventHandlers().size()).isEqualTo(1);
+    assertThat(testComponentInner.getDispatchedEventHandlers().contains(visibleEventHandlerInner));
+    testComponentInner.getDispatchedEventHandlers().clear();
+
+    final ViewGroupWithLithoViewChildren viewGroup =
+        new ViewGroupWithLithoViewChildren(mContext.getAndroidContext());
+
+    final ViewGroup parent = (ViewGroup) child.getParent();
+    parent.removeView(child);
+    viewGroup.addView(child);
+
+    final LithoView parentView =
+        mountComponent(
+            mContext, TestViewComponent.create(mContext).testView(viewGroup).build(), true);
+
+    parentView.setVisibilityHint(false);
+
+    assertThat(testComponentInner.getDispatchedEventHandlers().size()).isEqualTo(1);
+    assertThat(
+        testComponentInner.getDispatchedEventHandlers().contains(invisibleEventHandlerInner));
+    testComponentInner.getDispatchedEventHandlers().clear();
+
+    parentView.setVisibilityHint(true);
+
+    assertThat(testComponentInner.getDispatchedEventHandlers().size()).isEqualTo(1);
+    assertThat(testComponentInner.getDispatchedEventHandlers().contains(visibleEventHandlerInner));
   }
 }

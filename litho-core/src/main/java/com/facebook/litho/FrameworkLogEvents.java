@@ -16,7 +16,7 @@
 
 package com.facebook.litho;
 
-import android.support.annotation.IntDef;
+import androidx.annotation.IntDef;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -25,12 +25,12 @@ import java.lang.annotation.RetentionPolicy;
  * supplied to the {@link ComponentContext} used to create the tree.
  */
 public interface FrameworkLogEvents {
-  int EVENT_CREATE_LAYOUT = 0;
-  int EVENT_CSS_LAYOUT = 1;
-  int EVENT_COLLECT_RESULTS = 2;
+  // Previously int EVENT_CREATE_LAYOUT = 0; Now unused.
+  // Previously int EVENT_CSS_LAYOUT = 1; Now unused.
+  // Previously int EVENT_COLLECT_RESULTS = 2; Now unused.
   int EVENT_LAYOUT_CALCULATE = 3;
   // Previously int EVENT_PREPARE_PART_DEFINITION = 4; Now unused.
-  int EVENT_PREPARE_MOUNT = 5;
+  // Previously int EVENT_PREPARE_MOUNT = 5; Now unused.
   int EVENT_MOUNT = 6;
   // Previously EVENT_SHOULD_UPDATE_REFERENCE_LAYOUT_MISMATCH = 7; Now unused.
   int EVENT_PRE_ALLOCATE_MOUNT_CONTENT = 8;
@@ -42,14 +42,12 @@ public interface FrameworkLogEvents {
   int EVENT_SECTIONS_ON_CREATE_CHILDREN = 14;
   int EVENT_SECTIONS_SET_ROOT = 15;
   int EVENT_CALCULATE_LAYOUT_STATE = 16;
-  int EVENT_DRAW = 17;
+  // Previously int EVENT_DRAW = 17; Now unused.
+  int EVENT_BENCHMARK_RUN = 18;
+  int EVENT_RESUME_CALCULATE_LAYOUT_STATE = 19;
 
   @IntDef({
-    FrameworkLogEvents.EVENT_CREATE_LAYOUT,
-    FrameworkLogEvents.EVENT_CSS_LAYOUT,
-    FrameworkLogEvents.EVENT_COLLECT_RESULTS,
     FrameworkLogEvents.EVENT_LAYOUT_CALCULATE,
-    FrameworkLogEvents.EVENT_PREPARE_MOUNT,
     FrameworkLogEvents.EVENT_MOUNT,
     FrameworkLogEvents.EVENT_PRE_ALLOCATE_MOUNT_CONTENT,
     FrameworkLogEvents.EVENT_SECTIONS_CREATE_NEW_TREE,
@@ -58,7 +56,8 @@ public interface FrameworkLogEvents {
     FrameworkLogEvents.EVENT_SECTIONS_ON_CREATE_CHILDREN,
     FrameworkLogEvents.EVENT_SECTIONS_SET_ROOT,
     FrameworkLogEvents.EVENT_CALCULATE_LAYOUT_STATE,
-    FrameworkLogEvents.EVENT_DRAW,
+    FrameworkLogEvents.EVENT_BENCHMARK_RUN,
+    FrameworkLogEvents.EVENT_RESUME_CALCULATE_LAYOUT_STATE,
   })
   @Retention(RetentionPolicy.SOURCE)
   @interface LogEventId {}

@@ -5,7 +5,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.1.4'
+        classpath 'com.android.tools.build:gradle:3.3.1'
         classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:${GRADLE_BINTRAY_PLUGIN_VERSION}"
         classpath "com.github.dcendents:android-maven-gradle-plugin:${ANDROID_MAVEN_GRADLE_PLUGIN_VERSION}"
         classpath "com.github.ben-manes:gradle-versions-plugin:${GRADLE_VERSIONS_PLUGIN_VERSION}"
@@ -44,31 +44,35 @@ ext {
     targetCompatibilityVersion = JavaVersion.VERSION_1_7
 }
 
-ext.isRelease = { ['uploadArchives', 'bintrayUpload'].any { gradle.startParameter.taskNames.contains(it) } }
+ext.forceReleaseBuild = project.hasProperty('forceReleaseBuild')
+ext.isRelease = { forceReleaseBuild ||
+        ['uploadArchives', 'bintrayUpload'].any { gradle.startParameter.taskNames.contains(it) } }
 ext.isSnapshot = { VERSION_NAME.endsWith('-SNAPSHOT') }
 
 ext.deps = [
         // Android support
-        supportAnnotations : 'com.android.support:support-annotations:28.0.0',
-        supportAppCompat   : 'com.android.support:appcompat-v7:28.0.0',
-        supportCoreUi      : 'com.android.support:support-core-ui:28.0.0',
-        supportRecyclerView: 'com.android.support:recyclerview-v7:28.0.0',
-        supportEspresso    : 'com.android.support.test.espresso:espresso-core:3.0.2',
-        supportEspressoIntents : 'com.android.support.test.espresso:espresso-intents:3.0.2',
-        supportTestRunner  : 'com.android.support.test:runner:1.0.2',
-        supportTestRules   : 'com.android.support.test:rules:1.0.2',
-        supportMultidex    : 'com.android.support:multidex:1.0.1',
+        supportAnnotations : 'androidx.annotation:annotation:1.0.0',
+        supportAppCompat   : 'androidx.appcompat:appcompat:1.0.0',
+        supportCore        : 'androidx.core:core:1.0.0',
+        supportCustomView  : 'androidx.customview:customview:1.0.0',
+        supportRecyclerView: 'androidx.recyclerview:recyclerview:1.0.0',
+        supportEspresso    : 'androidx.test.espresso:espresso-core:3.1.0',
+        supportEspressoIntents : 'androidx.test.espresso:espresso-intents:3.1.0',
+        supportTestRunner  : 'androidx.test:runner:1.1.0',
+        supportTestRules   : 'androidx.test:rules:1.1.0',
+        supportMultidex    : 'androidx.multidex:multidex:2.0.0',
+        supportViewPager   : 'androidx.viewpager:viewpager:1.0.0',
         // Arch
-        archLifecycle      : 'android.arch.lifecycle:extensions:1.1.1',
+        archLifecycle      : 'androidx.lifecycle:lifecycle-extensions:2.0.0-rc01',
         // First-party
-        fresco             : 'com.facebook.fresco:fresco:1.10.0',
+        fresco             : 'com.facebook.fresco:fresco:1.13.0',
         soloader           : 'com.facebook.soloader:soloader:0.6.0',
-        textlayoutbuilder  : 'com.facebook.fbui.textlayoutbuilder:textlayoutbuilder:1.4.0',
+        textlayoutbuilder  : 'com.facebook.fbui.textlayoutbuilder:textlayoutbuilder:1.5.0',
         screenshot         : 'com.facebook.testing.screenshot:core:0.5.0',
-        flipper            : 'com.facebook.flipper:flipper:0.12.0',
+        flipper            : 'com.facebook.flipper:flipper:0.17.0',
         // Annotations
         jsr305             : 'com.google.code.findbugs:jsr305:3.0.1',
-        inferAnnotations   : 'com.facebook.infer.annotation:infer-annotation:0.11.2',
+        inferAnnotations   : 'com.facebook.infer.annotation:infer-annotation:0.17.0',
         // Debugging and testing
         guava              : 'com.google.guava:guava:20.0',
         robolectric        : 'org.robolectric:robolectric:3.0',
@@ -91,8 +95,8 @@ ext.deps = [
 // For releases, we want to depend on a stable version of Yoga.
 ext.deps.yoga =
     isSnapshot()
-        ? 'com.facebook.yoga:yoga:1.12.0' // can be a '-SNAPSHOT' release
-        : 'com.facebook.yoga:yoga:1.12.0'
+        ? 'com.facebook.yoga:yoga:1.14.0' // can be a '-SNAPSHOT' release
+        : 'com.facebook.yoga:yoga:1.14.0'
 
 // This should hopefully only serve as a temporary measure until
 // we have a proper Gradle setup for Yoga and JNI.

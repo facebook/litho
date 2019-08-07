@@ -16,8 +16,8 @@
 
 package com.facebook.litho.sections;
 
-import android.support.annotation.VisibleForTesting;
-import android.support.v4.util.Pair;
+import androidx.annotation.VisibleForTesting;
+import androidx.core.util.Pair;
 import com.facebook.litho.Equivalence;
 import com.facebook.litho.EventDispatcher;
 import com.facebook.litho.EventHandler;
@@ -29,6 +29,7 @@ import com.facebook.litho.StateContainer;
 import com.facebook.litho.sections.annotations.DiffSectionSpec;
 import com.facebook.litho.sections.annotations.GroupSectionSpec;
 import com.facebook.litho.sections.annotations.OnDiff;
+import com.facebook.litho.sections.config.SectionsConfiguration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
@@ -91,7 +92,7 @@ public abstract class Section extends SectionLifecycle
 
     protected void init(SectionContext context, Section section) {
       mSection = section;
-      mResourceResolver = new ResourceResolver(context);
+      mResourceResolver = context.getResourceResolver();
     }
 
     /** Sets the key of this {@link Section} local to its parent. */
@@ -107,14 +108,11 @@ public abstract class Section extends SectionLifecycle
 
     public abstract T getThis();
 
-    /**
-     * @return The immutable {@link Section}.
-     */
+    /** @return The immutable {@link Section}. */
     public abstract Section build();
 
     protected void release() {
       mSection = null;
-      mResourceResolver.release();
       mResourceResolver = null;
     }
 
@@ -209,17 +207,15 @@ public abstract class Section extends SectionLifecycle
     return mParent;
   }
 
-  /**
-   * Sets the parent of this {@link Section} in the tree.
-   */
+  /** Sets the parent of this {@link Section} in the tree. */
   void setParent(Section parent) {
     mParent = parent;
   }
 
   /**
    * Invalidates The subtree having its root in this {@link Section}. When a subtree is invalidated,
-   * the {@link OnDiff} will be invoked
-   * regardless of whether the {@link com.facebook.litho.annotations.Prop}s changed or not.
+   * the {@link OnDiff} will be invoked regardless of whether the {@link
+   * com.facebook.litho.annotations.Prop}s changed or not.
    */
   void invalidate() {
     invalidateInternal(this);
@@ -242,13 +238,16 @@ public abstract class Section extends SectionLifecycle
   }
 
   /**
-   * @return a clone of this {@link Section}.
-   * if deepCopy is false the clone won't contain any children or count as it will
-   * be returned in a pre - ChangeSet generation state.
+   * @return a clone of this {@link Section}. if deepCopy is false the clone won't contain any
+   *     children or count as it will be returned in a pre - ChangeSet generation state.
    */
   public Section makeShallowCopy(boolean deepCopy) {
     try {
       final Section clone = (Section) super.clone();
+
+      if (SectionsConfiguration.deepCopySectionChildren) {
+        return deepCopySectionChildren(clone, deepCopy);
+      }
 
       if (!deepCopy) {
         if (clone.mChildren != null) {
@@ -256,6 +255,7 @@ public abstract class Section extends SectionLifecycle
         }
         clone.mCount = 0;
         clone.setInvalidated(false);
+        clone.mChildCounters = null;
       }
 
       return clone;
@@ -263,6 +263,26 @@ public abstract class Section extends SectionLifecycle
       // This class implements Cloneable, so this is impossible
       throw new RuntimeException(e);
     }
+  }
+
+  private Section deepCopySectionChildren(final Section clone, final boolean deepCopy) {
+    if (mChildren != null) {
+      clone.mChildren = new ArrayList<>();
+    }
+
+    if (!deepCopy) {
+      clone.mCount = 0;
+      clone.setInvalidated(false);
+      clone.mChildCounters = null;
+    } else {
+      if (mChildren != null) {
+        for (Section child : mChildren) {
+          clone.mChildren.add(child.makeShallowCopy(true));
+        }
+      }
+    }
+
+    return clone;
   }
 
   public Section makeShallowCopy() {
@@ -312,11 +332,9 @@ public abstract class Section extends SectionLifecycle
     return null;
   }
 
-  /**
-   * Called when this {@link Section} is not in use anymore to release its resources.
-   */
+  /** Called when this {@link Section} is not in use anymore to release its resources. */
   void release() {
-    //TODO release list into a pool t11953296
+    // TODO release list into a pool t11953296
   }
 
   void generateKeyAndSet(SectionContext c, String globalKey) {
@@ -330,7 +348,8 @@ public abstract class Section extends SectionLifecycle
     c.getKeyHandler().registerKey(uniqueGlobalKey);
   }
 
-  private String generateUniqueGlobalKeyForChild(Section section, String childKey) {
+  @VisibleForTesting
+  public String generateUniqueGlobalKeyForChild(Section section, String childKey) {
     final KeyHandler keyHandler = mScopedContext.getKeyHandler();
 
     /** If the key is already unique, return it. */
@@ -357,7 +376,7 @@ public abstract class Section extends SectionLifecycle
 
   static Map<String, Pair<Section, Integer>> acquireChildrenMap(
       @Nullable Section currentComponent) {
-    //TODO use pools instead t11953296
+    // TODO use pools instead t11953296
     final HashMap<String, Pair<Section, Integer>> childrenMap = new HashMap<>();
     if (currentComponent == null) {
       return childrenMap;
@@ -378,7 +397,7 @@ public abstract class Section extends SectionLifecycle
   }
 
   static void releaseChildrenMap(Map<String, Pair<Section, Integer>> newChildren) {
-    //TODO use pools t11953296
+    // TODO use pools t11953296
   }
 
   @VisibleForTesting

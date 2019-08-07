@@ -15,7 +15,7 @@
  */
 package com.facebook.litho.widget;
 
-import android.support.v7.widget.LinearSmoothScroller;
+import androidx.recyclerview.widget.LinearSmoothScroller;
 
 public enum SmoothScrollAlignmentType {
   /**

@@ -50,8 +50,13 @@ import org.powermock.reflect.Whitebox;
 import org.robolectric.RuntimeEnvironment;
 
 /** Tests {@link ComponentLifecycle} */
-@PrepareForTest({InternalNode.class, DiffNode.class, LayoutState.class})
-@PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*"})
+@PrepareForTest({
+  DefaultInternalNode.class,
+  DiffNode.class,
+  LayoutState.class,
+  InternalNodeUtils.class
+})
+@PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "androidx.*", "android.*"})
 @RunWith(ComponentsTestRunner.class)
 public class ComponentLifecycleTest {
 
@@ -63,7 +68,7 @@ public class ComponentLifecycleTest {
   private int mNestedTreeWidthSpec;
   private int mNestedTreeHeightSpec;
 
-  private InternalNode mNode;
+  private DefaultInternalNode mNode;
   private YogaNode mYogaNode;
   private DiffNode mDiffNode;
   private ComponentContext mContext;
@@ -72,10 +77,11 @@ public class ComponentLifecycleTest {
   @Before
   public void setUp() {
     mockStatic(LayoutState.class);
-    mockStatic(InternalNode.class);
+    mockStatic(DefaultInternalNode.class);
+    mockStatic(InternalNodeUtils.class);
 
     mDiffNode = mock(DiffNode.class);
-    mNode = mock(InternalNode.class);
+    mNode = mock(DefaultInternalNode.class);
     mYogaNode = YogaNode.create();
     mYogaNode.setData(mNode);
 
@@ -83,7 +89,7 @@ public class ComponentLifecycleTest {
     when(mNode.getDiffNode()).thenReturn(mDiffNode);
     when(mDiffNode.getLastMeasuredWidth()).thenReturn(-1f);
     when(mDiffNode.getLastMeasuredHeight()).thenReturn(-1f);
-    when(InternalNode.createInternalNode(any(ComponentContext.class))).thenReturn(mNode);
+    when(InternalNodeUtils.create(any(ComponentContext.class))).thenReturn(mNode);
 
     StateHandler stateHandler = mock(StateHandler.class);
     mContext = spy(new ComponentContext(RuntimeEnvironment.application, stateHandler));
@@ -233,7 +239,7 @@ public class ComponentLifecycleTest {
 
     PowerMockito.verifyStatic();
     // Calling here to verify static call.
-    InternalNode.createInternalNode(mContext);
+    InternalNodeUtils.create(mContext);
     verify(component, never()).onCreateLayout(
         any(ComponentContext.class));
     verify(component, never()).onCreateLayoutWithSizeSpec(
@@ -248,7 +254,7 @@ public class ComponentLifecycleTest {
 
   @Test
   public void testOnShouldCreateLayoutWithNewSizeSpec_FirstCall() {
-    ComponentsConfiguration.isNestedTreeResolutionExperimentEnabled = true;
+    ComponentsConfiguration.isReconciliationEnabled = true;
     ComponentsConfiguration.enableShouldCreateLayoutWithNewSizeSpec = true;
 
     Component component;
@@ -271,12 +277,12 @@ public class ComponentLifecycleTest {
         .onCreateLayoutWithSizeSpec(mContext, mContext.getWidthSpec(), mContext.getHeightSpec());
 
     ComponentsConfiguration.enableShouldCreateLayoutWithNewSizeSpec = false;
-    ComponentsConfiguration.isNestedTreeResolutionExperimentEnabled = false;
+    ComponentsConfiguration.isReconciliationEnabled = false;
   }
 
   @Test
   public void testOnShouldCreateLayoutWithNewSizeSpec_shouldUseCache() {
-    ComponentsConfiguration.isNestedTreeResolutionExperimentEnabled = true;
+    ComponentsConfiguration.isReconciliationEnabled = true;
     ComponentsConfiguration.enableShouldCreateLayoutWithNewSizeSpec = true;
 
     Component component;
@@ -292,10 +298,11 @@ public class ComponentLifecycleTest {
             .hasState(true)
             .build(mContext);
 
-    when(holder.getRootComponent()).thenReturn(component);
+    when(holder.getTailComponent()).thenReturn(component);
 
     when(LayoutState.resolveNestedTree(mContext, holder, 100, 100)).thenCallRealMethod();
-    when(LayoutState.createAndMeasureTreeForComponent(mContext, component, holder, 100, 100, null))
+    when(LayoutState.createAndMeasureTreeForComponent(
+            mContext, component, 100, 100, holder, null, null, null))
         .thenReturn(resolved);
 
     // call resolve nested tree 1st time
@@ -304,7 +311,7 @@ public class ComponentLifecycleTest {
     PowerMockito.verifyStatic();
 
     // it should call create and measure
-    LayoutState.createAndMeasureTreeForComponent(mContext, component, holder, 100, 100, null);
+    LayoutState.createAndMeasureTreeForComponent(mContext, component, 100, 100, holder, null, null, null);
 
     // should return nested tree next time
     when(holder.getNestedTree()).thenReturn(result);
@@ -317,19 +324,19 @@ public class ComponentLifecycleTest {
 
     // no new invocation of create
     PowerMockito.verifyStatic(times(1));
-    LayoutState.createAndMeasureTreeForComponent(mContext, component, holder, 100, 100, null);
+    LayoutState.createAndMeasureTreeForComponent(mContext, component, 100, 100, holder, null, null, null);
 
     // should only measure
     PowerMockito.verifyStatic(times(1));
     LayoutState.remeasureTree(resolved, 100, 100);
 
     ComponentsConfiguration.enableShouldCreateLayoutWithNewSizeSpec = false;
-    ComponentsConfiguration.isNestedTreeResolutionExperimentEnabled = false;
+    ComponentsConfiguration.isReconciliationEnabled = false;
   }
 
   @Test
   public void testOnShouldCreateLayoutWithNewSizeSpec_shouldNotUseCache() {
-    ComponentsConfiguration.isNestedTreeResolutionExperimentEnabled = true;
+    ComponentsConfiguration.isReconciliationEnabled = true;
     ComponentsConfiguration.enableShouldCreateLayoutWithNewSizeSpec = true;
 
     Component component;
@@ -345,10 +352,11 @@ public class ComponentLifecycleTest {
             .hasState(true)
             .build(mContext);
 
-    when(holder.getRootComponent()).thenReturn(component);
+    when(holder.getTailComponent()).thenReturn(component);
 
     when(LayoutState.resolveNestedTree(mContext, holder, 100, 100)).thenCallRealMethod();
-    when(LayoutState.createAndMeasureTreeForComponent(mContext, component, holder, 100, 100, null))
+    when(LayoutState.createAndMeasureTreeForComponent(
+            mContext, component, 100, 100, holder, null, null, null))
         .thenReturn(resolved);
 
     // call resolve nested tree 1st time
@@ -357,7 +365,7 @@ public class ComponentLifecycleTest {
     PowerMockito.verifyStatic();
 
     // it should call create and measure
-    LayoutState.createAndMeasureTreeForComponent(mContext, component, holder, 100, 100, null);
+    LayoutState.createAndMeasureTreeForComponent(mContext, component, 100, 100, holder, null, null, null);
 
     // should return nested tree next time
     when(holder.getNestedTree()).thenReturn(result);
@@ -370,10 +378,10 @@ public class ComponentLifecycleTest {
 
     // a new invocation of create
     PowerMockito.verifyStatic(times(2));
-    LayoutState.createAndMeasureTreeForComponent(mContext, component, holder, 100, 100, null);
+    LayoutState.createAndMeasureTreeForComponent(mContext, component, 100, 100, holder, null, null, null);
 
     ComponentsConfiguration.enableShouldCreateLayoutWithNewSizeSpec = false;
-    ComponentsConfiguration.isNestedTreeResolutionExperimentEnabled = false;
+    ComponentsConfiguration.isReconciliationEnabled = false;
   }
 
   @Test
@@ -453,7 +461,7 @@ public class ComponentLifecycleTest {
     when(LayoutState.resolveNestedTree(eq(mContext), eq(mNode), anyInt(), anyInt()))
         .thenReturn(nestedTree);
     when(mNode.getContext()).thenReturn(mContext);
-    when(mContext.isNestedTreeResolutionExperimentEnabled()).thenReturn(true);
+    when(mContext.isReconciliationEnabled()).thenReturn(true);
     when(mNode.getParent()).thenReturn(mNode);
 
     when(mNode.getContext()).thenReturn(mContext);
@@ -487,7 +495,7 @@ public class ComponentLifecycleTest {
   }
 
   private YogaMeasureFunction getMeasureFunction(Component component) {
-    when(mNode.getRootComponent()).thenReturn(component);
+    when(mNode.getTailComponent()).thenReturn(component);
 
     return Whitebox.getInternalState(ComponentLifecycle.class, "sMeasureFunction");
   }

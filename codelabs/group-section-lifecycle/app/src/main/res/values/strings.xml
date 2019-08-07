@@ -1,0 +1,40 @@
+<!--
+  ~ Copyright 2019-present Facebook, Inc.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~   http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<resources>
+    <string name="app_name"
+        description="Name of the app">LithoCodelab: GroupSection Lifecycle</string>
+    <string name="onCreateInitialState"
+        description="Lifecycle annotation: OnCreateInitialState">\@OnCreateInitialState</string>
+    <string name="onCreateTreeProp"
+        description="Lifecycle annotation: OnCreateTreeProp">\@OnCreateTreeProp</string>
+    <string name="onCreateService"
+        description="Lifecycle annotation: OnCreateService">\@OnCreateService</string>
+    <string name="onBindService"
+        description="Lifecycle annotation: OnBindService">\@OnBindService</string>
+    <string name="onUnbindService"
+        description="Lifecycle annotation: OnUnbindService">\@OnUnbindService</string>
+    <string name="onCreateChildren"
+        description="Lifecycle annotation: OnCreateChildren">\@OnCreateChildren</string>
+    <string name="onDataBound"
+        description="Lifecycle annotation: OnDataBound">\@OnDataBound</string>
+    <string name="onDataRendered"
+        description="Lifecycle annotation: OnDataRendered">\@OnDataRendered</string>
+    <string name="onViewportChanged"
+        description="Lifecycle annotation: OnViewportChanged">\@OnViewportChanged</string>
+    <string name="onRefresh"
+        description="Lifecycle annotation: OnRefresh">\@OnRefresh</string>
+</resources>

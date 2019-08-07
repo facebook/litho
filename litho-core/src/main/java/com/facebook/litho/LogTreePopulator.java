@@ -15,7 +15,7 @@
  */
 package com.facebook.litho;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import java.util.Map;
 import javax.annotation.CheckReturnValue;
 
@@ -37,7 +37,11 @@ public final class LogTreePopulator {
   @Nullable
   @CheckReturnValue
   public static PerfEvent populatePerfEventFromLogger(
-      ComponentContext c, ComponentsLogger logger, PerfEvent perfEvent) {
+      ComponentContext c, ComponentsLogger logger, @Nullable PerfEvent perfEvent) {
+    if (perfEvent == null) {
+      return null;
+    }
+
     final String logTag = c.getLogTag();
     if (logTag == null) {
       logger.cancelPerfEvent(perfEvent);

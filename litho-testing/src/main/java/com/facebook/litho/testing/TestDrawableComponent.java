@@ -19,9 +19,9 @@ package com.facebook.litho.testing;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.support.annotation.AttrRes;
-import android.support.annotation.StyleRes;
-import android.support.v4.util.Pools;
+import androidx.annotation.AttrRes;
+import androidx.annotation.StyleRes;
+import androidx.core.util.Pools;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
@@ -256,10 +256,7 @@ public class TestDrawableComponent extends TestComponent {
       @AttrRes int defStyleAttr,
       @StyleRes int defStyleRes,
       TestDrawableComponent state) {
-    Builder builder = sBuilderPool.acquire();
-    if (builder == null) {
-      builder = new Builder();
-    }
+    final Builder builder = new Builder();
     builder.init(context, defStyleAttr, defStyleRes, state);
     return builder;
   }
@@ -323,16 +320,7 @@ public class TestDrawableComponent extends TestComponent {
 
     @Override
     public TestDrawableComponent build() {
-      TestDrawableComponent component = mComponent;
-      release();
-      return component;
-    }
-
-    @Override
-    protected void release() {
-      super.release();
-      mComponent = null;
-      sBuilderPool.release(this);
+      return mComponent;
     }
 
     @Override

@@ -16,8 +16,8 @@
 
 package com.facebook.litho.sections.widget;
 
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SnapHelper;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.SnapHelper;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.widget.LayoutInfo;
 import com.facebook.litho.widget.SnapUtil;
@@ -28,6 +28,18 @@ import javax.annotation.Nullable;
  * manager should be used for the {@link RecyclerView}
  */
 public interface RecyclerConfiguration {
+
+  interface Builder {
+    Builder snapMode(@SnapUtil.SnapMode int snapMode);
+
+    Builder orientation(int orientation);
+
+    Builder recyclerBinderConfiguration(RecyclerBinderConfiguration recyclerBinderConfiguration);
+
+    RecyclerConfiguration build();
+  }
+
+  Builder acquireBuilder();
 
   @Nullable
   SnapHelper getSnapHelper();

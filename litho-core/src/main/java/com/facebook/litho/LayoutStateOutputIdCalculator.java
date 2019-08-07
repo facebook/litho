@@ -16,9 +16,8 @@
 
 package com.facebook.litho;
 
-import android.support.annotation.Nullable;
-import android.support.v4.util.LongSparseArray;
-import com.facebook.litho.config.ComponentsConfiguration;
+import androidx.annotation.Nullable;
+import androidx.collection.LongSparseArray;
 
 /**
  * Utility class used to calculate the id of a {@link LayoutOutput} in the context of a
@@ -41,10 +40,6 @@ class LayoutStateOutputIdCalculator {
   private static final int TYPE_SHIFT = 16;
 
   public LayoutStateOutputIdCalculator() {
-    if (!ComponentsConfiguration.lazilyInitializeLayoutStateOutputIdCalculator) {
-      mLayoutCurrentSequenceForBaseId = new LongSparseArray<>(8);
-      mVisibilityCurrentSequenceForBaseId = new LongSparseArray<>(8);
-    }
   }
 
   void calculateAndSetLayoutOutputIdAndUpdateState(

@@ -16,8 +16,8 @@
 
 package com.facebook.litho;
 
-import android.support.annotation.AttrRes;
-import android.support.annotation.StyleRes;
+import androidx.annotation.AttrRes;
+import androidx.annotation.StyleRes;
 
 /**
  * {@link ComponentContext} for use within a test environment that is compatible with mock
@@ -30,7 +30,7 @@ class TestComponentContext extends ComponentContext {
   }
 
   TestComponentContext(ComponentContext c, StateHandler stateHandler) {
-    super(c, stateHandler, null, null);
+    super(c, stateHandler, null, null, null);
   }
 
   @Override
@@ -40,7 +40,7 @@ class TestComponentContext extends ComponentContext {
       return super.newLayoutBuilder(component, defStyleAttr, defStyleRes);
     }
 
-    final InternalNode node = InternalNode.createInternalNode(this);
+    final InternalNode node = InternalNodeUtils.create(this);
     component.updateInternalChildState(this);
 
     node.appendComponent(new TestComponent(component));
@@ -54,7 +54,7 @@ class TestComponentContext extends ComponentContext {
       return super.resolveLayout(component);
     }
 
-    InternalNode node = InternalNode.createInternalNode(this);
+    InternalNode node = InternalNodeUtils.create(this);
     node.appendComponent(new TestComponent(component));
     return node;
   }

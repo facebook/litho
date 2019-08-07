@@ -13,7 +13,7 @@ fb_java_library(
         ":robolectric3-prebuilt",
         ":robolectric3-resources-prebuilt",
         ":robolectric3-utils-prebuilt",
-        make_dep_path("lib/android-all:shadows-prebuilt-core"),
+        make_dep_path("lib/android-all:shadows-prebuilt-core-v3"),
         make_dep_path("lib/android-all:android-all-5.0.0"),
         make_dep_path("lib/asm:asm"),
         make_dep_path("lib/bcprov-jdk16:bcprov-jdk16"),

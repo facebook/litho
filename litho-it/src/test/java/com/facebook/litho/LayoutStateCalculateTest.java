@@ -21,10 +21,10 @@ import static android.graphics.Color.GREEN;
 import static android.graphics.Color.RED;
 import static android.os.Build.VERSION.SDK_INT;
 import static android.os.Build.VERSION_CODES.M;
-import static android.support.v4.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
-import static android.support.v4.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO;
-import static android.support.v4.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS;
-import static android.support.v4.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_YES;
+import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
+import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO;
+import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS;
+import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_YES;
 import static com.facebook.litho.Column.create;
 import static com.facebook.litho.LayoutState.createAndMeasureTreeForComponent;
 import static com.facebook.litho.NodeInfo.ENABLED_SET_FALSE;
@@ -59,6 +59,7 @@ import android.content.Context;
 import android.graphics.Rect;
 import android.util.SparseArray;
 import android.view.accessibility.AccessibilityManager;
+import androidx.annotation.Nullable;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.TestDrawableComponent;
@@ -67,6 +68,7 @@ import com.facebook.litho.testing.TestNullLayoutComponent;
 import com.facebook.litho.testing.TestSizeDependentComponent;
 import com.facebook.litho.testing.TestViewComponent;
 import com.facebook.litho.testing.Whitebox;
+import com.facebook.litho.testing.logging.TestComponentsLogger;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
 import com.facebook.litho.widget.Text;
@@ -85,6 +87,10 @@ public class LayoutStateCalculateTest {
 
   @Before
   public void setup() throws Exception {
+    // invdalidate the cached accessibility value before each test runs so that we don't
+    // have a value already cached.  If we don't do this, accessibility tests will fail when run
+    // after non-accessibility tests, and vice-versa.
+    AccessibilityUtils.invalidateCachedIsAccessibilityEnabled();
   }
 
   @After
@@ -2097,7 +2103,7 @@ public class LayoutStateCalculateTest {
     assertThat(componentSpy.getCachedLayout()).isNotNull();
     final InternalNode cachedLayout = componentSpy.getCachedLayout();
     assertThat(cachedLayout.getChildCount()).isEqualTo(1);
-    assertThat(((InternalNode) cachedLayout.getChildAt(0)).getRootComponent())
+    assertThat(((InternalNode) cachedLayout.getChildAt(0)).getTailComponent())
         .isInstanceOf(TestDrawableComponent.class);
 
     // Now embed the measured component in another container and calculate a layout.
@@ -2165,9 +2171,9 @@ public class LayoutStateCalculateTest {
     assertThat(sizeDependentComponentSpy.getCachedLayout()).isNotNull();
     final InternalNode cachedLayout = sizeDependentComponentSpy.getCachedLayout();
     assertThat(cachedLayout.getChildCount()).isEqualTo(2);
-    assertThat(((InternalNode) cachedLayout.getChildAt(0)).getRootComponent())
+    assertThat(((InternalNode) cachedLayout.getChildAt(0)).getTailComponent())
         .isInstanceOf(TestDrawableComponent.class);
-    assertThat(((InternalNode) cachedLayout.getChildAt(1)).getRootComponent())
+    assertThat(((InternalNode) cachedLayout.getChildAt(1)).getTailComponent())
         .isInstanceOf(TestViewComponent.class);
 
     // Now embed the measured component in another container and calculate a layout.
@@ -2244,7 +2250,7 @@ public class LayoutStateCalculateTest {
     assertThat(componentSpy.getCachedLayout()).isNotNull();
     final InternalNode cachedLayout = componentSpy.getCachedLayout();
     assertThat(cachedLayout.getChildCount()).isEqualTo(0);
-    assertThat(cachedLayout.getRootComponent()).isInstanceOf(TestDrawableComponent.class);
+    assertThat(cachedLayout.getTailComponent()).isInstanceOf(TestDrawableComponent.class);
 
     // Now embed the measured component in another container and calculate a layout.
     final Component rootContainer =
@@ -2311,7 +2317,7 @@ public class LayoutStateCalculateTest {
     assertThat(sizeDependentComponentSpy.getCachedLayout()).isNotNull();
     final InternalNode cachedLayout = sizeDependentComponentSpy.getCachedLayout();
     assertThat(cachedLayout.getChildCount()).isEqualTo(0);
-    assertThat(cachedLayout.getRootComponent()).isInstanceOf(TestDrawableComponent.class);
+    assertThat(cachedLayout.getTailComponent()).isInstanceOf(TestDrawableComponent.class);
 
     // Now embed the measured component in another container and calculate a layout.
     final Component rootContainer =
@@ -2724,41 +2730,33 @@ public class LayoutStateCalculateTest {
   }
 
   @Test
-  public void testPhantomLayoutOutputForTransitionKey() {
-    ComponentsConfiguration.createPhantomLayoutOutputsForTransitions = true;
-
-    final String transitionKey = "column";
+  public void testComponentsLoggerCanReturnNullPerfEventsDuringLayout() {
     final Component component =
         new InlineLayoutSpec() {
           @Override
           protected Component onCreateLayout(final ComponentContext c) {
-            return Column.create(c)
-                .child(
-                    Column.create(c)
-                        .transitionKey(transitionKey)
-                        .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
-                        .child(TestDrawableComponent.create(c)))
-                .build();
+            return create(c).child(TestDrawableComponent.create(c)).wrapInView().build();
           }
         };
 
-    final TransitionId transitionId =
-        new TransitionId(TransitionId.Type.GLOBAL, transitionKey, null);
+    final ComponentsLogger logger =
+        new TestComponentsLogger() {
+          @Override
+          public @Nullable PerfEvent newPerformanceEvent(ComponentContext c, int eventId) {
+            return null;
+          }
+        };
+
     final LayoutState layoutState =
-        calculateLayoutState(
-            RuntimeEnvironment.application,
+        LayoutState.calculate(
+            new ComponentContext(application, "test", logger),
             component,
             -1,
-            SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY),
-            SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY));
+            makeSizeSpec(100, EXACTLY),
+            makeSizeSpec(100, EXACTLY),
+            LayoutState.CalculateLayoutSource.TEST);
 
-    assertThat(layoutState.getMountableOutputCount()).isEqualTo(3);
-
-    final LayoutOutput outputWithTransitionKey =
-        layoutState.getLayoutOutputsForTransitionId(transitionId).get(OutputUnitType.HOST);
-    assertThat((outputWithTransitionKey.getFlags() & MountItem.LAYOUT_FLAG_PHANTOM) != 0).isTrue();
-
-    ComponentsConfiguration.createPhantomLayoutOutputsForTransitions = false;
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(2);
   }
 
   private void enableAccessibility() {

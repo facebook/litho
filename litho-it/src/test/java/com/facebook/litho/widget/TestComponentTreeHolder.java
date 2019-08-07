@@ -17,10 +17,10 @@ package com.facebook.litho.widget;
 
 import static org.mockito.Mockito.mock;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
-import com.facebook.litho.LayoutHandler;
+import com.facebook.litho.LithoHandler;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
 
@@ -32,21 +32,16 @@ public class TestComponentTreeHolder extends ComponentTreeHolder {
   boolean mLayoutAsyncCalled;
   boolean mLayoutSyncCalled;
   boolean mDidAcquireStateHandler;
-  boolean mReleased;
   int mChildWidth;
   int mChildHeight;
   boolean mCheckWorkingRangeCalled;
-  LayoutHandler mLayoutHandler;
+  LithoHandler mLayoutHandler;
   private int mLastRequestedWidthSpec;
   private int mLastRequestedHeightSpec;
 
   TestComponentTreeHolder(RenderInfo renderInfo) {
+    super(ComponentTreeHolder.create().renderInfo(renderInfo));
     mRenderInfo = renderInfo;
-  }
-
-  @Override
-  public void release() {
-    mReleased = true;
   }
 
   @Override
@@ -68,7 +63,15 @@ public class TestComponentTreeHolder extends ComponentTreeHolder {
   @Override
   public synchronized void computeLayoutAsync(
       ComponentContext context, int widthSpec, int heightSpec) {
+    computeLayoutAsync(context, widthSpec, heightSpec, null);
+  }
 
+  @Override
+  public synchronized void computeLayoutAsync(
+      ComponentContext context,
+      int widthSpec,
+      int heightSpec,
+      @Nullable ComponentTree.MeasureListener measureListener) {
     mComponentTree = mock(ComponentTree.class);
     mTreeValid = true;
     mLastRequestedWidthSpec = widthSpec;
@@ -76,6 +79,9 @@ public class TestComponentTreeHolder extends ComponentTreeHolder {
     mLayoutAsyncCalled = true;
     mChildWidth = SizeSpec.getSize(widthSpec);
     mChildHeight = SizeSpec.getSize(heightSpec);
+    if (measureListener != null) {
+      measureListener.onSetRootAndSizeSpec(mChildWidth, mChildHeight);
+    }
   }
 
   @Override
@@ -94,7 +100,7 @@ public class TestComponentTreeHolder extends ComponentTreeHolder {
   }
 
   @Override
-  public synchronized void updateLayoutHandler(@Nullable LayoutHandler layoutHandler) {
+  public synchronized void updateLayoutHandler(@Nullable LithoHandler layoutHandler) {
     super.updateLayoutHandler(layoutHandler);
     mLayoutHandler = layoutHandler;
   }

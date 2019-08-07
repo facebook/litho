@@ -50,7 +50,7 @@ import static org.robolectric.RuntimeEnvironment.application;
 
 import android.graphics.Color;
 import android.graphics.Rect;
-import android.support.v4.util.SparseArrayCompat;
+import androidx.collection.SparseArrayCompat;
 import com.facebook.litho.drawable.ComparableColorDrawable;
 import com.facebook.litho.drawable.ComparableDrawable;
 import com.facebook.litho.testing.TestComponent;
@@ -146,11 +146,8 @@ public class TreeDiffingTest {
   }
 
   private InternalNode createInternalNodeForMeasurableComponent(Component component) {
-    InternalNode node = LayoutState.createTree(
-            component,
-            mContext);
-
-    return node;
+    component.setScopedContext(mContext);
+    return LayoutState.createTree(component, mContext, null);
   }
 
   private long measureInternalNode(
@@ -159,16 +156,10 @@ public class TreeDiffingTest {
           float heightConstraint) {
 
     final YogaMeasureFunction measureFunc =
-            Whitebox.getInternalState(
-                    node.mYogaNode,
-                    "mMeasureFunction");
+        Whitebox.getInternalState(node.getYogaNode(), "mMeasureFunction");
 
     return measureFunc.measure(
-            node.mYogaNode,
-            widthConstranint,
-            EXACTLY,
-            heightConstraint,
-            EXACTLY);
+        node.getYogaNode(), widthConstranint, EXACTLY, heightConstraint, EXACTLY);
   }
 
   @Test
@@ -259,9 +250,7 @@ public class TreeDiffingTest {
     // Check diff tree is consistent.
     DiffNode node = prevLayoutState.getDiffTree();
 
-    InternalNode layoutTreeRoot = LayoutState.createTree(
-            component2,
-            mContext);
+    InternalNode layoutTreeRoot = createInternalNodeForMeasurableComponent(component2);
     LayoutState.applyDiffNodeToUnchangedNodes(layoutTreeRoot, node);
     checkAllComponentsHaveMeasureCache(layoutTreeRoot);
   }
@@ -282,9 +271,7 @@ public class TreeDiffingTest {
     // Check diff tree is consistent.
     DiffNode node = prevLayoutState.getDiffTree();
 
-    InternalNode layoutTreeRoot = LayoutState.createTree(
-            component2,
-            mContext);
+    InternalNode layoutTreeRoot = createInternalNodeForMeasurableComponent(component2);
     LayoutState.applyDiffNodeToUnchangedNodes(layoutTreeRoot, node);
     InternalNode child_1 = (InternalNode) layoutTreeRoot.getChildAt(0);
     assertCachedMeasurementsDefined(child_1);
@@ -397,7 +384,7 @@ public class TreeDiffingTest {
   }
 
   private void checkAllComponentsHaveMeasureCache(InternalNode node) {
-    if (node.getRootComponent() != null && node.getRootComponent().canMeasure()) {
+    if (node.getTailComponent() != null && node.getTailComponent().canMeasure()) {
       assertCachedMeasurementsDefined(node);
     }
     int numChildren = node.getChildCount();
@@ -885,8 +872,7 @@ public class TreeDiffingTest {
         false,
         null,
         LayoutState.CalculateLayoutSource.TEST,
-        null,
-        false);
+        null);
   }
 
   private static LayoutState calculateLayoutStateWithDiffing(
@@ -904,8 +890,7 @@ public class TreeDiffingTest {
         true,
         previousLayoutState,
         LayoutState.CalculateLayoutSource.TEST,
-        null,
-        false);
+        null);
   }
 
   private static void assertOutputsState(

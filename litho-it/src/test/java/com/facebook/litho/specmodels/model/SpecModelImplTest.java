@@ -30,10 +30,11 @@ import java.util.stream.Collectors;
 import javax.lang.model.element.Modifier;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
-/**
- * Tests {@link SpecModelImpl}
- */
+/** Tests {@link SpecModelImpl} */
+@RunWith(JUnit4.class)
 public class SpecModelImplTest {
   private static final String TEST_QUALIFIED_SPEC_NAME = "com.facebook.litho.TestSpec";
   private static final String TEST_QUALIFIED_COMPONENT_NAME = "com.facebook.litho.Test";
@@ -69,11 +70,13 @@ public class SpecModelImplTest {
             false,
             false,
             false,
+            false,
             null,
             "");
     mPropModel2 =
         new PropModel(
             MockMethodParamModel.newBuilder().name("propModel2").type(TypeName.INT).build(),
+            false,
             false,
             false,
             false,
@@ -85,11 +88,13 @@ public class SpecModelImplTest {
             false,
             false,
             false,
+            false,
             null,
             "");
     mPropModel4 =
         new PropModel(
             MockMethodParamModel.newBuilder().name("propModel4").type(TypeName.INT).build(),
+            false,
             false,
             false,
             false,
@@ -105,11 +110,13 @@ public class SpecModelImplTest {
             false,
             false,
             false,
+            false,
             null,
             "");
     mUnderlyingPropModel2 =
         new PropModel(
             MockMethodParamModel.newBuilder().name("differentName").build(),
+            false,
             false,
             false,
             false,

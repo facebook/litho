@@ -21,7 +21,10 @@ import com.google.testing.compile.CompilationRule;
 import javax.lang.model.element.TypeElement;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
+@RunWith(JUnit4.class)
 public class SpecModelUtilsTest {
   @Rule public CompilationRule mCompilationRule = new CompilationRule();
 

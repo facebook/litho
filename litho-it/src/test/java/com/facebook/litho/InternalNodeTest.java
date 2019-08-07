@@ -16,7 +16,7 @@
 
 package com.facebook.litho;
 
-import static android.support.v4.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
+import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
 import static com.facebook.litho.LayoutState.createAndMeasureTreeForComponent;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.UNSPECIFIED;
@@ -28,18 +28,27 @@ import static com.facebook.yoga.YogaAlign.STRETCH;
 import static com.facebook.yoga.YogaDirection.INHERIT;
 import static com.facebook.yoga.YogaDirection.RTL;
 import static com.facebook.yoga.YogaEdge.ALL;
+import static com.facebook.yoga.YogaEdge.BOTTOM;
+import static com.facebook.yoga.YogaEdge.LEFT;
+import static com.facebook.yoga.YogaEdge.RIGHT;
+import static com.facebook.yoga.YogaEdge.TOP;
 import static com.facebook.yoga.YogaPositionType.ABSOLUTE;
 import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.robolectric.RuntimeEnvironment.application;
 
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.widget.SolidColor;
 import com.facebook.litho.widget.Text;
 import com.facebook.yoga.YogaAlign;
+import com.facebook.yoga.YogaNode;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
@@ -321,12 +330,49 @@ public class InternalNodeTest {
   }
 
   @Test
+  public void testCopyIntoNodeSetFlags() {
+    InternalNode orig = acquireInternalNode();
+    InternalNode dest = acquireInternalNode();
+
+    orig.importantForAccessibility(0);
+    orig.duplicateParentState(true);
+    orig.background(new ColorDrawable());
+    orig.foreground(null);
+    orig.visibleHandler(null);
+    orig.focusedHandler(null);
+    orig.fullImpressionHandler(null);
+    orig.invisibleHandler(null);
+    orig.unfocusedHandler(null);
+    orig.visibilityChangedHandler(null);
+
+    orig.copyInto(dest);
+
+    assertThat(isFlagSet(dest, "PFLAG_IMPORTANT_FOR_ACCESSIBILITY_IS_SET")).isTrue();
+    assertThat(isFlagSet(dest, "PFLAG_DUPLICATE_PARENT_STATE_IS_SET")).isTrue();
+    assertThat(isFlagSet(dest, "PFLAG_BACKGROUND_IS_SET")).isTrue();
+    assertThat(isFlagSet(dest, "PFLAG_FOREGROUND_IS_SET")).isTrue();
+    assertThat(isFlagSet(dest, "PFLAG_VISIBLE_HANDLER_IS_SET")).isTrue();
+    assertThat(isFlagSet(dest, "PFLAG_FOCUSED_HANDLER_IS_SET")).isTrue();
+    assertThat(isFlagSet(dest, "PFLAG_FULL_IMPRESSION_HANDLER_IS_SET")).isTrue();
+    assertThat(isFlagSet(dest, "PFLAG_INVISIBLE_HANDLER_IS_SET")).isTrue();
+    assertThat(isFlagSet(dest, "PFLAG_UNFOCUSED_HANDLER_IS_SET")).isTrue();
+    assertThat(isFlagSet(dest, "PFLAG_VISIBLE_RECT_CHANGED_HANDLER_IS_SET")).isTrue();
+  }
+
+  @Test
   public void testPaddingIsSetFromDrawable() {
-    InternalNode node = acquireInternalNode();
+    YogaNode yogaNode = mock(YogaNode.class);
+    InternalNode node =
+        new DefaultInternalNode(new ComponentContext(RuntimeEnvironment.application), yogaNode);
 
     node.backgroundRes(background_with_padding);
 
     assertThat(isFlagSet(node, "PFLAG_PADDING_IS_SET")).isTrue();
+
+    verify(yogaNode).setPadding(LEFT, 48);
+    verify(yogaNode).setPadding(TOP, 0);
+    verify(yogaNode).setPadding(RIGHT, 0);
+    verify(yogaNode).setPadding(BOTTOM, 0);
   }
 
   @Test
@@ -366,35 +412,75 @@ public class InternalNodeTest {
 
   @Test
   public void testContextSpecificComponentAssertionPasses() {
-    InternalNode.assertContextSpecificStyleNotSet(acquireInternalNode());
+    acquireInternalNode().assertContextSpecificStyleNotSet();
   }
 
   @Test
   public void testContextSpecificComponentAssertionFailFormatting() {
     final ComponentsLogger componentsLogger = mock(ComponentsLogger.class);
     final PerfEvent perfEvent = mock(PerfEvent.class);
-    when(componentsLogger.newPerformanceEvent(anyInt())).thenReturn(perfEvent);
+    when(componentsLogger.newPerformanceEvent(any(ComponentContext.class), anyInt()))
+        .thenReturn(perfEvent);
 
     InternalNode node = acquireInternalNodeWithLogger(componentsLogger);
     node.alignSelf(YogaAlign.AUTO);
     node.flex(1f);
 
-    InternalNode.assertContextSpecificStyleNotSet(node);
+    node.assertContextSpecificStyleNotSet();
     verify(componentsLogger)
         .emitMessage(
             ComponentsLogger.LogLevel.WARNING,
             "You should not set alignSelf, flex to a root layout in Column");
   }
 
+  @Test
+  public void testDeepClone() {
+    final ComponentContext context = new ComponentContext(RuntimeEnvironment.application);
+    InternalNode layout =
+        createAndMeasureTreeForComponent(
+            context,
+            Column.create(context)
+                .child(Row.create(context).child(Column.create(context)))
+                .child(Column.create(context).child(Row.create(context)))
+                .child(SolidColor.create(context).color(Color.RED))
+                .build(),
+            makeSizeSpec(0, UNSPECIFIED),
+            makeSizeSpec(0, UNSPECIFIED));
+
+    InternalNode cloned = layout.deepClone();
+
+    assertThat(cloned).isNotNull();
+
+    assertThat(cloned).isNotSameAs(layout);
+
+    assertThat(cloned.getYogaNode()).isNotSameAs(layout.getYogaNode());
+
+    assertThat(cloned.getChildCount()).isEqualTo(layout.getChildCount());
+
+    assertThat(cloned.getChildAt(0).getTailComponent())
+        .isSameAs(layout.getChildAt(0).getTailComponent());
+    assertThat(cloned.getChildAt(1).getTailComponent())
+        .isSameAs(layout.getChildAt(1).getTailComponent());
+    assertThat(cloned.getChildAt(2).getTailComponent())
+        .isSameAs(layout.getChildAt(2).getTailComponent());
+
+    assertThat(cloned.getChildAt(0).getYogaNode()).isNotSameAs(layout.getChildAt(0).getYogaNode());
+    assertThat(cloned.getChildAt(1).getYogaNode()).isNotSameAs(layout.getChildAt(1).getYogaNode());
+    assertThat(cloned.getChildAt(2).getYogaNode()).isNotSameAs(layout.getChildAt(2).getYogaNode());
+
+    assertThat(cloned.getChildAt(0).getChildAt(0)).isNotSameAs(layout.getChildAt(0).getChildAt(0));
+    assertThat(cloned.getChildAt(1).getChildAt(0)).isNotSameAs(layout.getChildAt(1).getChildAt(0));
+  }
+
   private static boolean isFlagSet(InternalNode internalNode, String flagName) {
-    long flagPosition = Whitebox.getInternalState(InternalNode.class, flagName);
+    long flagPosition = Whitebox.getInternalState(DefaultInternalNode.class, flagName);
     long flags = Whitebox.getInternalState(internalNode, "mPrivateFlags");
 
     return ((flags & flagPosition) != 0);
   }
 
   private static void clearFlag(InternalNode internalNode, String flagName) {
-    long flagPosition = Whitebox.getInternalState(InternalNode.class, flagName);
+    long flagPosition = Whitebox.getInternalState(DefaultInternalNode.class, flagName);
     long flags = Whitebox.getInternalState(internalNode, "mPrivateFlags");
     flags &= ~flagPosition;
     Whitebox.setInternalState(internalNode, "mPrivateFlags", flags);

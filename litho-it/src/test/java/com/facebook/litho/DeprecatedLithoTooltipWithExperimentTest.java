@@ -57,7 +57,7 @@ public class DeprecatedLithoTooltipWithExperimentTest {
   public void setup() {
     MockitoAnnotations.initMocks(this);
 
-    ComponentsConfiguration.isNestedTreeResolutionExperimentEnabled = true;
+    ComponentsConfiguration.isReconciliationEnabled = true;
 
     mContext = new ComponentContext(RuntimeEnvironment.application);
     mComponent =
@@ -91,7 +91,7 @@ public class DeprecatedLithoTooltipWithExperimentTest {
 
   @After
   public void after() {
-    ComponentsConfiguration.isNestedTreeResolutionExperimentEnabled = false;
+    ComponentsConfiguration.isReconciliationEnabled = false;
   }
 
   @Test

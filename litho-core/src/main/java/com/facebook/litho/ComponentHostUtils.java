@@ -18,8 +18,8 @@ package com.facebook.litho;
 
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
-import android.support.v4.util.SparseArrayCompat;
 import android.view.View;
+import androidx.collection.SparseArrayCompat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -131,13 +131,13 @@ class ComponentHostUtils {
   static List<?> extractContent(SparseArrayCompat<MountItem> items) {
     final int size = items.size();
     if (size == 1) {
-      return Collections.singletonList(items.valueAt(0).getBaseContent());
+      return Collections.singletonList(items.valueAt(0).getContent());
     }
 
     final List<Object> content = new ArrayList<>(size);
 
     for (int i = 0; i < size; i++) {
-      content.add(items.valueAt(i).getBaseContent());
+      content.add(items.valueAt(i).getContent());
     }
 
     return content;

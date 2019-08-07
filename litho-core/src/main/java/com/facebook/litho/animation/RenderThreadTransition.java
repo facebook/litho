@@ -19,10 +19,8 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.animation.TimeInterpolator;
-import android.os.Build;
 import android.util.Log;
 import android.util.Property;
-import android.view.RenderNodeAnimator;
 import android.view.View;
 import com.facebook.litho.AnimationsDebug;
 import com.facebook.litho.Transition;
@@ -67,11 +65,6 @@ public class RenderThreadTransition extends TransitionAnimationBinding {
     }
 
     if (delayMs > 0) {
-      // We won't be setting delay to the animator directly as it may be handled on the UI thread,
-      // which we want to avoid:
-      // http://androidxref.com/7.1.1_r6/xref/frameworks/base/core/java/android/view/RenderNodeAnimator.java#mUiThreadHandlesDelay
-      // It may be addressed using reflection, but we decided to go with adjusted interpolator, so
-
       // Here we sum up delay and actual duration, and substitute the interpolator with the one that
       // handles delay internally
 
@@ -157,48 +150,12 @@ public class RenderThreadTransition extends TransitionAnimationBinding {
     mAnimatedPropertyNode.setUsingRenderThread(false);
   }
 
-  /**
-   * @return true if display lists are supported on this device and animations can be done using the
-   *     RenderThread api.
-   */
-  private static boolean canUseRenderThread() {
-    return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
-  }
-
   private static Animator createAnimator(
       View target, AnimatedProperty animatedProperty, float finalValue) {
-    if (canUseRenderThread()) {
-      try {
-        final int renderNodeAnimatorProperty = getRenderNodeAnimatorProperty(animatedProperty);
-        final RenderNodeAnimator animator =
-            new RenderNodeAnimator(renderNodeAnimatorProperty, finalValue);
-        animator.setTarget(target);
-        return animator;
-      } catch (IllegalStateException e) {
-        Log.e(TAG, "Couldn't create RT animator, falling back to ObjectAnimator", e);
-      }
-    }
-
     final Property viewAnimatorProperty = getViewAnimatorProperty(animatedProperty);
     return ObjectAnimator.ofFloat(target, viewAnimatorProperty, finalValue);
   }
 
-  private static int getRenderNodeAnimatorProperty(AnimatedProperty animatedProperty) {
-    if (animatedProperty == AnimatedProperties.ALPHA) {
-      return RenderNodeAnimator.ALPHA;
-    }
-    if (animatedProperty == AnimatedProperties.X) {
-      return RenderNodeAnimator.X;
-    }
-    if (animatedProperty == AnimatedProperties.Y) {
-      return RenderNodeAnimator.Y;
-    }
-    if (animatedProperty == AnimatedProperties.ROTATION) {
-      return RenderNodeAnimator.ROTATION;
-    }
-    throw new IllegalArgumentException(
-        "Cannot animate " + animatedProperty.getName() + " on RenderThread");
-  }
 
   private static Property getViewAnimatorProperty(AnimatedProperty animatedProperty) {
     if (animatedProperty == AnimatedProperties.ALPHA) {

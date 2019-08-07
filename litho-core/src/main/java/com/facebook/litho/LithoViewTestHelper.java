@@ -16,10 +16,11 @@
 
 package com.facebook.litho;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.view.ViewParent;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.widget.NestedScrollView;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.proguard.annotations.DoNotStrip;
@@ -116,10 +117,20 @@ public class LithoViewTestHelper {
     if (root == null) {
       return "";
     }
+
     final StringBuilder sb = new StringBuilder();
+
+    int left = view.getLeft();
+    int top = view.getTop();
+    if (view.getParent() instanceof NestedScrollView) {
+      // TODO(T37986749): understand why we need it and not for RecyclerView
+      NestedScrollView scrollingParentView = (NestedScrollView) view.getParent();
+      left -= scrollingParentView.computeHorizontalScrollOffset();
+      top -= scrollingParentView.computeVerticalScrollOffset();
+    }
+    DebugComponentDescriptionHelper.addViewDescription(left, top, root, sb, embedded);
+
     int depth = embedded ? getLithoViewDepthInAndroid(view) : 0;
-    DebugComponentDescriptionHelper.addViewDescription(
-        view.getLeft(), view.getTop(), root, sb, embedded);
     viewToString(root, sb, embedded, depth);
     return sb.toString();
   }

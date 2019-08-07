@@ -18,19 +18,21 @@ package com.facebook.litho.sections.widget;
 
 import static com.facebook.litho.widget.SnapUtil.SNAP_NONE;
 
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SnapHelper;
+import android.content.Context;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.SnapHelper;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.sections.SectionTree;
 import com.facebook.litho.widget.Binder;
 import com.facebook.litho.widget.GridLayoutInfo;
 import com.facebook.litho.widget.LayoutInfo;
+import com.facebook.litho.widget.SnapUtil;
 import javax.annotation.Nullable;
 
 /**
  * A configuration object for {@link RecyclerCollectionComponent} that will create a {@link
- * android.support.v7.widget.GridLayoutManager} for the {@link RecyclerView}.
+ * androidx.recyclerview.widget.GridLayoutManager} for the {@link RecyclerView}.
  */
 public class GridRecyclerConfiguration<T extends SectionTree.Target & Binder<RecyclerView>>
     implements RecyclerConfiguration {
@@ -38,6 +40,7 @@ public class GridRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
   private final int mNumColumns;
   private final boolean mReverseLayout;
   private final RecyclerBinderConfiguration mRecyclerBinderConfiguration;
+  private final GridLayoutInfoFactory mGridLayoutInfoFactory;
   private final boolean mAllowMeasureOverride;
 
   public static GridRecyclerConfiguration.Builder create() {
@@ -80,7 +83,6 @@ public class GridRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
     this(orientation, numColumns, reverseLayout, recyclerBinderConfiguration, false);
   }
 
-  /** Use {@link #create()} instead. */
   @Deprecated
   public GridRecyclerConfiguration(
       int orientation,
@@ -88,6 +90,24 @@ public class GridRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
       boolean reverseLayout,
       RecyclerBinderConfiguration recyclerBinderConfiguration,
       boolean allowMeasureOverride) {
+    this(
+        orientation,
+        numColumns,
+        reverseLayout,
+        recyclerBinderConfiguration,
+        allowMeasureOverride,
+        Builder.GRID_LAYOUT_INFO_FACTORY);
+  }
+
+  /** Use {@link #create()} instead. */
+  @Deprecated
+  public GridRecyclerConfiguration(
+      int orientation,
+      int numColumns,
+      boolean reverseLayout,
+      RecyclerBinderConfiguration recyclerBinderConfiguration,
+      boolean allowMeasureOverride,
+      @Nullable GridLayoutInfoFactory gridLayoutInfoFactory) {
     mOrientation = orientation;
     mNumColumns = numColumns;
     mReverseLayout = reverseLayout;
@@ -96,6 +116,15 @@ public class GridRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
             ? Builder.RECYCLER_BINDER_CONFIGURATION
             : recyclerBinderConfiguration;
     mAllowMeasureOverride = allowMeasureOverride;
+    mGridLayoutInfoFactory =
+        gridLayoutInfoFactory == null
+            ? GridRecyclerConfiguration.Builder.GRID_LAYOUT_INFO_FACTORY
+            : gridLayoutInfoFactory;
+  }
+
+  @Override
+  public Builder acquireBuilder() {
+    return new Builder(this);
   }
 
   @Override
@@ -115,7 +144,7 @@ public class GridRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
 
   @Override
   public LayoutInfo getLayoutInfo(ComponentContext c) {
-    return new GridLayoutInfo(
+    return mGridLayoutInfoFactory.createGridLayoutInfo(
         c.getAndroidContext(), mNumColumns, mOrientation, mReverseLayout, mAllowMeasureOverride);
   }
 
@@ -124,9 +153,24 @@ public class GridRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
     return mRecyclerBinderConfiguration;
   }
 
-  public static class Builder {
+  private static class DefaultGridLayoutInfoFactory implements GridLayoutInfoFactory {
+    @Override
+    public GridLayoutInfo createGridLayoutInfo(
+        Context c,
+        int spanCount,
+        int orientation,
+        boolean reverseLayout,
+        boolean allowGridMeasuresOverride) {
+      return new GridLayoutInfo(
+          c, spanCount, orientation, reverseLayout, allowGridMeasuresOverride);
+    }
+  }
+
+  public static class Builder implements RecyclerConfiguration.Builder {
     static final RecyclerBinderConfiguration RECYCLER_BINDER_CONFIGURATION =
         RecyclerBinderConfiguration.create().build();
+    static final GridLayoutInfoFactory GRID_LAYOUT_INFO_FACTORY =
+        new DefaultGridLayoutInfoFactory();
 
     private int mOrientation = LinearLayoutManager.VERTICAL;
     private int mNumColumns = 2;
@@ -134,9 +178,26 @@ public class GridRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
     private boolean mAllowMeasureOverride = false;
     private RecyclerBinderConfiguration mRecyclerBinderConfiguration =
         RECYCLER_BINDER_CONFIGURATION;
+    private GridLayoutInfoFactory mGridLayoutInfoFactory = GRID_LAYOUT_INFO_FACTORY;
 
     Builder() {}
 
+    Builder(GridRecyclerConfiguration gridRecyclerConfiguration) {
+      this.mOrientation = gridRecyclerConfiguration.mOrientation;
+      this.mNumColumns = gridRecyclerConfiguration.mNumColumns;
+      this.mReverseLayout = gridRecyclerConfiguration.mReverseLayout;
+      this.mAllowMeasureOverride = gridRecyclerConfiguration.mAllowMeasureOverride;
+      this.mRecyclerBinderConfiguration = gridRecyclerConfiguration.mRecyclerBinderConfiguration;
+      this.mGridLayoutInfoFactory = gridRecyclerConfiguration.mGridLayoutInfoFactory;
+    }
+
+    @Override
+    public Builder snapMode(@SnapUtil.SnapMode int snapMode) {
+      throw new UnsupportedOperationException(
+          "SnapMode is not supported for GridRecyclerConfiguration");
+    }
+
+    @Override
     public Builder orientation(int orientation) {
       mOrientation = orientation;
       return this;
@@ -152,6 +213,7 @@ public class GridRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
       return this;
     }
 
+    @Override
     public Builder recyclerBinderConfiguration(
         RecyclerBinderConfiguration recyclerBinderConfiguration) {
       mRecyclerBinderConfiguration = recyclerBinderConfiguration;
@@ -164,15 +226,25 @@ public class GridRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
     }
 
     /**
+     * Provide a customized {@link GridLayoutInfo} through {@link GridLayoutInfoFactory} interface.
+     */
+    public Builder gridLayoutInfoFactory(GridLayoutInfoFactory gridLayoutInfoFactory) {
+      mGridLayoutInfoFactory = gridLayoutInfoFactory;
+      return this;
+    }
+
+    /**
      * Builds a {@link GridRecyclerConfiguration} using the parameters specified in this builder.
      */
+    @Override
     public GridRecyclerConfiguration build() {
       return new GridRecyclerConfiguration(
           mOrientation,
           mNumColumns,
           mReverseLayout,
           mRecyclerBinderConfiguration,
-          mAllowMeasureOverride);
+          mAllowMeasureOverride,
+          mGridLayoutInfoFactory);
     }
   }
 }

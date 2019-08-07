@@ -14,20 +14,28 @@
   - id: layout-specs
   - id: mount-specs
   - id: props
+  - id: common-props
+  - id: dynamic-props
   - id: state
-  - id: layout
-  - id: error-boundaries
-  - id: border
-  - id: recycler-collection-component
   - id: cached-values
-  - id: transition-animations
-  - id: tooltips
-  - id: glossary
+  - id: layout
+  - id: tree-props
+  - id: widgets
 - title: Handling Events
   items:
   - id: events-overview
   - id: events-touch-handling
   - id: visibility-handling
+  - id: trigger-events
+- title: Transition Animations
+  items:
+  - id: transition-basics
+  - id: transition-types
+  - id: transition-choreography
+  - id: transition-all-layout
+  - id: transition-definitions
+  - id: transition-key-types
+  - id: transition-faq
 - title: Sections
   items:
   - id: sections-intro
@@ -35,12 +43,20 @@
   - id: group-sections
   - id: diff-sections
   - id: sections-building-blocks
+  - id: recycler-collection-component
+  - id: hscrolls
   - id: communicating-with-the-ui
   - id: sections-testing
   - id: sections-view-support
   - id: services
   - id: sections-architecture
   - id: sections-working-ranges
+- title: Common use cases
+  items:
+  - id: updating-ui
+  - id: border
+  - id: tooltips
+  - id: saving-state
 - title: Compatibility
   items:
   - id: styles
@@ -61,9 +77,9 @@
   - id: architecture-overview
   - id: recycler-component
   - id: custom-layout
-  - id: tree-props
   - id: inc-mount
   - id: component-tree
+  - id: error-boundaries
 - title: Architecture
   items:
   - id: codegen
@@ -75,6 +91,7 @@
   items:
   - id: best-practices
   - id: faq
+  - id: glossary
 - title: Tools
   items:
   - id: debugging

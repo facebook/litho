@@ -107,7 +107,7 @@ public final class MatcherGenerator {
     final MethodSpec constructor =
         MethodSpec.constructorBuilder()
             .addParameter(specModel.getContextClass(), "c")
-            .addStatement("$L = new $T(c)", RESOURCE_RESOLVER, ClassNames.RESOURCE_RESOLVER)
+            .addStatement("$L = c.getResourceResolver()", RESOURCE_RESOLVER)
             .build();
 
     propsBuilderClassBuilder.addMethod(constructor);
@@ -238,10 +238,6 @@ public final class MatcherGenerator {
 
     if (isComponentType(prop)) {
       dataHolder.addMethod(builderBuilder(specModel, prop, ClassNames.COMPONENT_BUILDER));
-    }
-
-    if (getRawType(prop.getTypeName()).equals(ClassNames.REFERENCE)) {
-      dataHolder.addMethod(builderBuilder(specModel, prop, ClassNames.REFERENCE_BUILDER));
     }
 
     return dataHolder.build();
@@ -773,9 +769,7 @@ public final class MatcherGenerator {
     }
 
     final TypeName[] typeNames =
-        enclosedSpecModel
-            .getTypeVariables()
-            .stream()
+        enclosedSpecModel.getTypeVariables().stream()
             .map(TypeVariableName::withoutAnnotations)
             .collect(Collectors.toList())
             .toArray(new TypeName[] {});

@@ -274,7 +274,6 @@ public class LayoutStateCalculateVisibilityOutputsTest {
         false /* shouldGenerateDiffTree */,
         null /* previousDiffTreeRoot */,
         LayoutState.CalculateLayoutSource.TEST,
-        null,
-        false);
+        null);
   }
 }

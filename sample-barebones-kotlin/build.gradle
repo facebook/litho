@@ -23,6 +23,7 @@ android {
 
     defaultConfig {
         minSdkVersion rootProject.minSdkVersion
+        targetSdkVersion rootProject.targetSdkVersion
     }
 
     // TODO(#62): Re-enable abort on error.

@@ -36,8 +36,6 @@ import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import android.support.annotation.Nullable;
-import android.support.v4.view.ViewCompat;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.Layout;
@@ -51,6 +49,8 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
+import androidx.annotation.Nullable;
+import androidx.core.view.ViewCompat;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.EventHandler;
@@ -76,7 +76,6 @@ import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.State;
-import com.facebook.litho.reference.Reference;
 import com.facebook.litho.utils.MeasureUtils;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -85,7 +84,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * Component that renders an {@link EditText}.
+ * This class is Deprecated and will not be supported. Use {@link TextInput} instead.
+ *
+ * <p>Component that renders an {@link EditText}.
  *
  * @prop text Text to display; changing this overrides and replaces the current text. Leave this as
  *     null to signal that the EditText's text property should be left untouched.
@@ -147,6 +148,7 @@ import java.util.concurrent.atomic.AtomicReference;
     SetTextEvent.class
   }
 )
+@Deprecated
 class EditTextSpec {
 
   private static final Layout.Alignment[] ALIGNMENT = Layout.Alignment.values();
@@ -227,10 +229,11 @@ class EditTextSpec {
         if (index > 0) {
           ellipsize.set(TRUNCATE_AT[index - 1]);
         }
-      } else if (SDK_INT >= JELLY_BEAN_MR1 &&
-          attr == R.styleable.Text_android_textAlignment) {
-        int viewTextAlignment = a.getInt(attr, -1);
-        textAlignment.set(getAlignment(viewTextAlignment, Gravity.NO_GRAVITY));
+      } else if (attr == R.styleable.Text_android_textAlignment) {
+        if (SDK_INT >= JELLY_BEAN_MR1) {
+          int viewTextAlignment = a.getInt(attr, -1);
+          textAlignment.set(getAlignment(viewTextAlignment, Gravity.NO_GRAVITY));
+        }
       } else if (attr == R.styleable.Text_android_minLines) {
         minLines.set(a.getInteger(attr, -1));
       } else if (attr == R.styleable.Text_android_maxLines) {
@@ -353,13 +356,11 @@ class EditTextSpec {
         requestFocus,
         cursorDrawableRes);
 
-    Reference<Drawable> backgroundRef = (Reference<Drawable>) layout.getBackground();
-    Drawable background =
-        backgroundRef != null ? Reference.acquire(c.getAndroidContext(), backgroundRef) : null;
+    Drawable background = layout.getBackground();
+
     if (background != null) {
       Rect rect = new Rect();
       background.getPadding(rect);
-      Reference.release(c.getAndroidContext(), background, backgroundRef);
 
       if (rect.left != 0 || rect.top != 0 || rect.right != 0 || rect.bottom != 0) {
         // Padding from the background will be added to the layout separately, so does not need to
@@ -638,7 +639,16 @@ class EditTextSpec {
     } else if (initialText != null) {
       editText.setText(initialText);
     }
-    editText.setHint(hint);
+
+    // Setting the hint causes API 28 to lose the focus of the currently selected
+    // text input. This happens during LithoState updates. Only set the hint when necessary
+    // to try to avoid this issue.
+    CharSequence oldHint = editText.getHint();
+    boolean hintsAreEqual = (oldHint == hint) || (oldHint != null && oldHint.equals(hint));
+    if (!hintsAreEqual) {
+      editText.setHint(hint);
+    }
+
     editText.setEllipsize(ellipsize);
     editText.setMinLines(minLines);
     editText.setMaxLines(maxLines);

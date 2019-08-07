@@ -1,0 +1,115 @@
+<idea-plugin>
+  <id>com.facebook.litho.intellij</id>
+  <name>Litho</name>
+  <description>
+  <![CDATA[
+    <p>Litho is a declarative UI framework for Android. This plugin provides better
+      Litho integration in IntelliJ IDEA.
+    <p>
+      For more information checkout documentation:
+      <A HREF='https://fblitho.com/'>Litho: A declarative UI framework for Android</A>
+    </p>
+  ]]>
+  </description>
+  <version>0.0.7-SNAPSHOT</version>
+  <change-notes><![CDATA[
+    <h2>0.0.6</h2>
+    <ul>
+      <li>FindUsages shows Component occurrences in the search results.</li>
+      <li>Component is regenerated on file saving.</li>
+    </ul>
+    <h2>0.0.5</h2>
+    <ul>
+      <li>Editor menu contains Regenerate Component option.</li>
+      <li>Component is updated after Event Handler completion.</li>
+    </ul>
+    <h2>0.0.4</h2>
+    <ul>
+      <li>Minor bug fixes.</li>
+    </ul>
+    <h2>0.0.3</h2>
+    <ul>
+      <li>Added logging as an extension point.</li>
+      <li>Fixed event completion return value.</li>
+    </ul>
+    <h2>0.0.2</h2>
+    <ul>
+      <li>On-the-go error check is enabled for LayoutSpec.</li>
+      <li>ClickEvent handler is autocompleted on typing.</li>
+      <li>File New menu contains Litho Mount Component option.</li>
+      <li>File New menu contains Litho GroupSection Component option.</li>
+    </ul>
+    <h2>0.0.1</h2>
+    <ul>
+      <li>Generate menu contains OnEvent method creation option.</li>
+      <li>Command-click on a LithoSection takes you to the SectionSpec.</li>
+      <li>Command-click on a LithoComponent takes you to the ComponentSpec</li>
+      <li>@DefaultProp value is shown near the @Prop parameter as a folding.</li>
+      <li>@Prop and @State method parameters have completion suggestions.</li>
+      <li>File New menu contains Litho Layout Component option.</li>
+    </ul>
+  ]]></change-notes>
+
+    <vendor url="https://github.com/facebook/litho/tree/master/litho-intellij-plugin">
+        Facebook,Inc.
+    </vendor>
+
+  <extensionPoints>
+    <extensionPoint
+        name="eventLogger"
+        interface="com.facebook.litho.intellij.extensions.EventLogger"
+    />
+  </extensionPoints>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <gotoDeclarationHandler implementation="com.facebook.litho.intellij.navigation.SectionDeclarationHandler"/>
+    <gotoDeclarationHandler implementation="com.facebook.litho.intellij.navigation.ComponentDeclarationHandler"/>
+
+    <lang.foldingBuilder language="JAVA" implementationClass="com.facebook.litho.intellij.foldings.DefaultPropertyFoldingBuilder"/>
+
+    <localInspection groupName="Litho" language="JAVA"
+      shortName="UppercaseStatePropInspection"
+      displayName="Param name begin with uppercase letter"
+      hasStaticDescription="true"
+      enabledByDefault="true"
+      implementationClass="com.facebook.litho.intellij.inspections.UppercaseStatePropInspection"/>
+
+    <annotator language="JAVA" implementationClass="com.facebook.litho.intellij.inspections.LayoutSpecAnnotator"/>
+
+    <completion.contributor language="JAVA" implementationClass="com.facebook.litho.intellij.completion.StatePropCompletionContributor"/>
+    <completion.contributor language="JAVA" implementationClass="com.facebook.litho.intellij.completion.OnEventCompletionContributor"/>
+
+    <fileDocumentManagerListener implementation="com.facebook.litho.intellij.file.ComponentFileListener"/>
+
+    <findUsagesHandlerFactory language="JAVA" implementation="com.facebook.litho.intellij.file.ComponentFindUsagesHandlerFactory" />
+  </extensions>
+
+  <!-- 181 is IntelliJ 2018.1 and/or Android Studio 3.2 -->
+  <idea-version since-build="181"/>
+
+  <actions>
+    <group id="litho.EditorPopupMenu">
+      <add-to-group group-id="EditorPopupMenu" anchor="last" />
+      <action id="GenerateComponentAction"
+          class="com.facebook.litho.intellij.actions.GenerateComponentAction"
+          icon="LithoPluginIcons.BASE_ACTION"
+      />
+    </group>
+    <group id="litho.GenerateGroup" text="[Litho] Insert..." popup="true">
+      <add-to-group group-id="GenerateGroup" anchor="first"/>
+      <action id="litho.OnEventGenerateAction"
+          class="com.facebook.litho.intellij.actions.OnEventGenerateAction"
+          text="Litho @OnEvent..."/>
+    </group>
+    <group id="litho.NewGroup">
+      <add-to-group group-id="NewGroup" anchor="after" relative-to-action="NewGroup1"/>
+      <action
+          id="litho.NewGroup.LayoutSpecTemplate"
+          class="com.facebook.litho.intellij.actions.NewComponentTemplateAction"
+          text="Litho Class"
+          description="Create new Litho class"
+          icon="LithoPluginIcons.BASE_ACTION"
+      />
+    </group>
+  </actions>
+</idea-plugin>

@@ -16,16 +16,18 @@
 
 package com.facebook.litho;
 
+import static com.facebook.litho.StateContainer.StateUpdate;
+
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.os.Looper;
-import android.support.annotation.AttrRes;
-import android.support.annotation.ColorRes;
-import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
-import android.support.annotation.StyleRes;
-import android.support.annotation.VisibleForTesting;
+import androidx.annotation.AttrRes;
+import androidx.annotation.ColorRes;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import androidx.annotation.StyleRes;
+import androidx.annotation.VisibleForTesting;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.yoga.YogaNode;
@@ -36,17 +38,17 @@ import com.facebook.yoga.YogaNode;
  */
 public class ComponentContext {
 
-  interface YogaNodeFactory {
+  public interface YogaNodeFactory {
     YogaNode create();
-  };
+  }
 
-  static final InternalNode NULL_LAYOUT = new NoOpInternalNode();
+  public static final InternalNode NULL_LAYOUT = new NoOpInternalNode();
 
   private final Context mContext;
-  private final String mLogTag;
+  private final @Nullable String mLogTag;
   private final ComponentsLogger mLogger;
   private final @Nullable StateHandler mStateHandler;
-  final YogaNodeFactory mYogaNodeFactory = null;
+  final YogaNodeFactory mYogaNodeFactory;
 
   /** TODO: (T38237241) remove the usage of the key handler post the nested tree experiment */
   private final @Nullable KeyHandler mKeyHandler;
@@ -56,10 +58,16 @@ public class ComponentContext {
   // Hold a reference to the component which scope we are currently within.
   @ThreadConfined(ThreadConfined.ANY)
   private Component mComponentScope;
+
   @ThreadConfined(ThreadConfined.ANY)
   private final ResourceCache mResourceCache;
+
+  @ThreadConfined(ThreadConfined.ANY)
+  private final ResourceResolver mResourceResolver;
+
   @ThreadConfined(ThreadConfined.ANY)
   private int mWidthSpec;
+
   @ThreadConfined(ThreadConfined.ANY)
   private int mHeightSpec;
 
@@ -73,17 +81,21 @@ public class ComponentContext {
   @StyleRes
   @ThreadConfined(ThreadConfined.ANY)
   private int mDefStyleRes = 0;
+
   @AttrRes
   @ThreadConfined(ThreadConfined.ANY)
   private int mDefStyleAttr = 0;
 
+  private ComponentTree.LayoutStateFuture mLayoutStateFuture;
+
   public ComponentContext(
       Context context,
-      String logTag,
+      @Nullable String logTag,
       ComponentsLogger logger,
       @Nullable StateHandler stateHandler,
       @Nullable KeyHandler keyHandler,
-      @Nullable TreeProps treeProps) {
+      @Nullable TreeProps treeProps,
+      YogaNodeFactory yogaNodeFactory) {
 
     if (logger != null && logTag == null) {
       throw new IllegalStateException("When a ComponentsLogger is set, a LogTag must be set");
@@ -91,35 +103,57 @@ public class ComponentContext {
 
     mContext = context;
     mResourceCache = ResourceCache.getLatest(context.getResources().getConfiguration());
+    mResourceResolver = new ResourceResolver(this);
     mTreeProps = treeProps;
     mLogger = logger;
     mLogTag = logTag;
     mStateHandler = stateHandler;
     mKeyHandler = keyHandler;
+    mYogaNodeFactory = yogaNodeFactory;
   }
 
   public ComponentContext(
       ComponentContext context,
       @Nullable StateHandler stateHandler,
       @Nullable KeyHandler keyHandler,
-      @Nullable TreeProps treeProps) {
+      @Nullable TreeProps treeProps,
+      @Nullable ComponentTree.LayoutStateFuture layoutStateFuture) {
 
     mContext = context.getAndroidContext();
     mResourceCache = context.mResourceCache;
+    mResourceResolver = context.mResourceResolver;
     mWidthSpec = context.mWidthSpec;
     mHeightSpec = context.mHeightSpec;
     mComponentScope = context.mComponentScope;
     mComponentTree = context.mComponentTree;
     mLogger = context.mLogger;
-    mLogTag = context.mLogTag;
+    mLogTag =
+        context.mLogTag != null || mComponentTree == null
+            ? context.mLogTag
+            : mComponentTree.getSimpleName();
+    mYogaNodeFactory = context.mYogaNodeFactory;
 
     mStateHandler = stateHandler != null ? stateHandler : context.mStateHandler;
     mKeyHandler = keyHandler != null ? keyHandler : context.mKeyHandler;
     mTreeProps = treeProps != null ? treeProps : context.mTreeProps;
+    mLayoutStateFuture = layoutStateFuture == null ? context.mLayoutStateFuture : layoutStateFuture;
   }
 
   public ComponentContext(
-      Context context, String logTag, ComponentsLogger logger, @Nullable TreeProps treeProps) {
+      Context context,
+      @Nullable String logTag,
+      ComponentsLogger logger,
+      @Nullable StateHandler stateHandler,
+      @Nullable KeyHandler keyHandler,
+      @Nullable TreeProps treeProps) {
+    this(context, logTag, logger, stateHandler, keyHandler, treeProps, null);
+  }
+
+  public ComponentContext(
+      Context context,
+      @Nullable String logTag,
+      ComponentsLogger logger,
+      @Nullable TreeProps treeProps) {
     this(context, logTag, logger, null, null, treeProps);
   }
 
@@ -131,7 +165,7 @@ public class ComponentContext {
    * @param logTag Specify a log tag, to be used with the logger.
    * @param logger Specify the lifecycle logger to be used.
    */
-  public ComponentContext(Context context, String logTag, ComponentsLogger logger) {
+  public ComponentContext(Context context, @Nullable String logTag, ComponentsLogger logger) {
     this(context, logTag, logger, null, null, null);
   }
 
@@ -139,8 +173,17 @@ public class ComponentContext {
     this(context, null, null, stateHandler, null, null);
   }
 
+  public ComponentContext(Context context, YogaNodeFactory yogaNodeFactory) {
+    this(context, null, null, null, null, null, yogaNodeFactory);
+  }
+
   public ComponentContext(ComponentContext context) {
-    this(context, context.mStateHandler, context.mKeyHandler, context.mTreeProps);
+    this(
+        context,
+        context.mStateHandler,
+        context.mKeyHandler,
+        context.mTreeProps,
+        context.mLayoutStateFuture);
   }
 
   public ComponentContext(Context context) {
@@ -161,6 +204,10 @@ public class ComponentContext {
 
   public Resources getResources() {
     return mContext.getResources();
+  }
+
+  public ResourceResolver getResourceResolver() {
+    return mResourceResolver;
   }
 
   public final Looper getMainLooper() {
@@ -187,23 +234,24 @@ public class ComponentContext {
     return mComponentScope;
   }
 
+  @VisibleForTesting
+  public ComponentTree.LayoutStateFuture getLayoutStateFuture() {
+    return mLayoutStateFuture;
+  }
+
   /**
    * Notify the Component Tree that it needs to synchronously perform a state update.
    *
    * @param stateUpdate state update to perform
    */
-  public void updateStateSync(ComponentLifecycle.StateUpdate stateUpdate, String attribution) {
+  public void updateStateSync(StateUpdate stateUpdate, String attribution) {
     checkIfNoStateUpdatesMethod();
 
     if (mComponentTree == null) {
       return;
     }
 
-    if (ComponentsConfiguration.updateStateAsync) {
-      mComponentTree.updateStateAsync(mComponentScope.getGlobalKey(), stateUpdate, attribution);
-    } else {
-      mComponentTree.updateStateSync(mComponentScope.getGlobalKey(), stateUpdate, attribution);
-    }
+    mComponentTree.updateStateSync(mComponentScope.getGlobalKey(), stateUpdate, attribution);
   }
 
   /**
@@ -211,7 +259,7 @@ public class ComponentContext {
    *
    * @param stateUpdate state update to perform
    */
-  public void updateStateAsync(ComponentLifecycle.StateUpdate stateUpdate, String attribution) {
+  public void updateStateAsync(StateUpdate stateUpdate, String attribution) {
     checkIfNoStateUpdatesMethod();
 
     if (mComponentTree == null) {
@@ -221,17 +269,24 @@ public class ComponentContext {
     mComponentTree.updateStateAsync(mComponentScope.getGlobalKey(), stateUpdate, attribution);
   }
 
-  public void updateStateWithTransition(
-      ComponentLifecycle.StateUpdate stateUpdate, String attribution) {
+  public void updateStateWithTransition(StateUpdate stateUpdate, String attribution) {
     updateStateAsync(stateUpdate, attribution);
   }
 
-  public void updateStateLazy(ComponentLifecycle.StateUpdate stateUpdate) {
+  public void updateStateLazy(StateUpdate stateUpdate) {
     if (mComponentTree == null) {
       return;
     }
 
     mComponentTree.updateStateLazy(mComponentScope.getGlobalKey(), stateUpdate);
+  }
+
+  public void applyLazyStateUpdatesForContainer(StateContainer container) {
+    if (mComponentTree == null) {
+      return;
+    }
+
+    mComponentTree.applyLazyStateUpdatesForContainer(mComponentScope.getGlobalKey(), container);
   }
 
   void enterNoStateUpdatesMethod(String noStateUpdatesMethod) {
@@ -265,12 +320,8 @@ public class ComponentContext {
     return mLogTag;
   }
 
-  public @Nullable String getSplitLayoutTag() {
-    if (mComponentTree == null) {
-      return null;
-    }
-
-    return mComponentTree.getSplitLayoutTag();
+  public YogaNodeFactory getYogaNodeFactory() {
+    return mYogaNodeFactory;
   }
 
   @Nullable
@@ -289,6 +340,11 @@ public class ComponentContext {
   @Nullable
   protected TreeProps getTreeProps() {
     return mTreeProps;
+  }
+
+  @Nullable
+  public <T> T getTreeProp(Class<T> key) {
+    return mTreeProps == null ? null : mTreeProps.get(key);
   }
 
   /** Obtain a copy of the tree props currently held by this context. */
@@ -311,10 +367,16 @@ public class ComponentContext {
 
   @Nullable
   public Object getCachedValue(Object cachedValueInputs) {
+    if (mComponentTree == null) {
+      return null;
+    }
     return mComponentTree.getCachedValue(cachedValueInputs);
   }
 
   public void putCachedValue(Object cachedValueInputs, Object cachedValue) {
+    if (mComponentTree == null) {
+      return;
+    }
     mComponentTree.putCachedValue(cachedValueInputs, cachedValue);
   }
 
@@ -327,7 +389,7 @@ public class ComponentContext {
   }
 
   InternalNode newLayoutBuilder(@AttrRes int defStyleAttr, @StyleRes int defStyleRes) {
-    final InternalNode node = InternalNode.createInternalNode(this);
+    final InternalNode node = InternalNodeUtils.create(this);
     applyStyle(node, defStyleAttr, defStyleRes);
     return node;
   }
@@ -347,7 +409,12 @@ public class ComponentContext {
       DebugComponent.applyOverrides(this, component);
     }
 
-    final InternalNode node = component.createLayout(component.getScopedContext(), false);
+    final InternalNode node;
+    if (ComponentsConfiguration.isRefactoredLayoutCreationEnabled) {
+      node = LayoutState.createLayout(component.getScopedContext(), component, false);
+    } else {
+      node = component.createLayout(component.getScopedContext(), false);
+    }
 
     if (node != NULL_LAYOUT) {
       applyStyle(node, defStyleAttr, defStyleRes);
@@ -364,7 +431,7 @@ public class ComponentContext {
 
     component = component.getThreadSafeInstance();
 
-    component.updateInternalChildState(this, true);
+    component.updateInternalChildState(this);
 
     if (ComponentsConfiguration.isDebugModeEnabled) {
       DebugComponent.applyOverrides(this, component);
@@ -423,8 +490,10 @@ public class ComponentContext {
 
   static ComponentContext withComponentTree(ComponentContext context, ComponentTree componentTree) {
     ComponentContext componentContext =
-        new ComponentContext(context, new StateHandler(), null, null);
+        new ComponentContext(context, new StateHandler(), null, null, null);
     componentContext.mComponentTree = componentTree;
+    componentContext.mComponentScope = null;
+    componentContext.mLayoutStateFuture = null;
 
     return componentContext;
   }
@@ -451,24 +520,23 @@ public class ComponentContext {
    * you require that incremental mount is enabled (e.g. you use visibility callbacks). This is
    * static to avoid polluting the ComponentContext API.
    */
-  public static boolean isIncrementalMountEnabled(ComponentContext c) {
-    return c.getComponentTree().isIncrementalMountEnabled();
+  public static boolean isIncrementalMountDisabled(ComponentContext c) {
+    return c.mComponentTree != null && !c.mComponentTree.isIncrementalMountEnabled();
   }
 
-  /** Whether the refactored implementation of nested tree resolution should be used. */
-  public boolean isNestedTreeResolutionExperimentEnabled() {
+  boolean wasLayoutCanceled() {
+    return mLayoutStateFuture == null ? false : mLayoutStateFuture.isReleased();
+  }
+
+  public boolean isReconciliationEnabled() {
     if (getComponentTree() != null) {
-      return getComponentTree().isNestedTreeResolutionExperimentEnabled();
+      return getComponentTree().isReconciliationEnabled();
     } else {
-      return false;
+      return ComponentsConfiguration.isReconciliationEnabled;
     }
   }
 
-  public int getExtraMemorySize() {
-    if (getComponentTree() != null) {
-      return getComponentTree().getExtraMemorySize();
-    } else {
-      return ComponentsConfiguration.extraMemorySize;
-    }
+  boolean wasLayoutInterrupted() {
+    return mLayoutStateFuture == null ? false : mLayoutStateFuture.isInterrupted();
   }
 }

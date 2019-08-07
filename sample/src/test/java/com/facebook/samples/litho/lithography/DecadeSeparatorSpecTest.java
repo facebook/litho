@@ -29,6 +29,7 @@ import com.facebook.litho.testing.subcomponents.SubComponent;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.widget.Text;
 import org.assertj.core.api.Condition;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -42,15 +43,30 @@ public class DecadeSeparatorSpecTest {
 
   @Before
   public void setUp() {
-    assumeThat("These tests can only be run in debug mode.",
-        ComponentsConfiguration.IS_INTERNAL_BUILD, is(true));
+    assumeThat(
+        "These tests can only be run in debug mode.",
+        ComponentsConfiguration.IS_INTERNAL_BUILD,
+        is(true));
     mComponent = DecadeSeparator.create(mComponentsRule.getContext()).decade(new Decade(2010)).build();
+  }
+
+  @After
+  public void after() {
+    ComponentsConfiguration.isConsistentComponentHierarchyExperimentEnabled = false;
   }
 
   @Test
   public void testSubComponentsWithManualExtraction() {
     final ComponentContext c = mComponentsRule.getContext();
     assertThat(c, mComponent).extractingSubComponents(c).hasSize(3);
+  }
+
+  @Test
+  public void subComponentsWithManualExtractionWithConsistentHierarchyExperiment() {
+    ComponentsConfiguration.isConsistentComponentHierarchyExperimentEnabled = true;
+    final ComponentContext c = mComponentsRule.getContext();
+
+    assertThat(c, mComponent).extractingSubComponentAt(0).extractingSubComponents(c).hasSize(3);
   }
 
   @Test
@@ -72,9 +88,40 @@ public class DecadeSeparatorSpecTest {
   }
 
   @Test
-  public void testSubComponentWithText() {
+  public void subComponentByClassWithExtractionWithConsistentHierarchyExperiment() {
+    ComponentsConfiguration.isConsistentComponentHierarchyExperimentEnabled = true;
+
     final ComponentContext c = mComponentsRule.getContext();
     assertThat(c, mComponent)
+        .extractingSubComponentAt(0)
+        .extractingSubComponents(c)
+        .areExactly(
+            1,
+            new Condition<InspectableComponent>() {
+              @Override
+              public boolean matches(InspectableComponent value) {
+                return value.getComponentClass() == Text.class;
+              }
+            });
+  }
+
+  @Test
+  public void subComponentWithText() {
+    final ComponentContext c = mComponentsRule.getContext();
+    assertThat(c, mComponent)
+        .has(subComponentWith(c, textEquals("2010")))
+        // Silly things to test for, but left here to demonstrate the API.
+        .has(subComponentWith(c, text(containsString("10"))))
+        .doesNotHave(subComponentWith(c, textEquals("2011")));
+  }
+
+  @Test
+  public void subComponentWithTextWithConsistentHierarchyExperiment() {
+    ComponentsConfiguration.isConsistentComponentHierarchyExperimentEnabled = true;
+
+    final ComponentContext c = mComponentsRule.getContext();
+    assertThat(c, mComponent)
+        .extractingSubComponentAt(0)
         .has(subComponentWith(c, textEquals("2010")))
         // Silly things to test for, but left here to demonstrate the API.
         .has(subComponentWith(c, text(containsString("10"))))

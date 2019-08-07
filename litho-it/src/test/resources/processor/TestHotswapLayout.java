@@ -16,13 +16,13 @@
 package com.facebook.litho.processor.integration.resources;
 
 import android.annotation.TargetApi;
-import android.support.annotation.AttrRes;
-import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
-import android.support.annotation.VisibleForTesting;
-import android.support.v4.util.Pools;
 import android.view.View;
+import androidx.annotation.AttrRes;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import androidx.annotation.VisibleForTesting;
 import com.facebook.litho.ClickEvent;
+import com.facebook.litho.CommonUtils;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLifecycle;
@@ -49,7 +49,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * @prop-required aspectRatio float
@@ -67,8 +66,6 @@ import java.util.Objects;
  */
 @TargetApi(17)
 public final class TestLayout<S extends View> extends Component implements TestTag {
-  static final Pools.SynchronizedPool<TestEvent> sTestEventPool = new Pools.SynchronizedPool<TestEvent>(2);
-
   @Comparable(type = 14)
   private TestLayoutStateContainer mStateContainer;
 
@@ -380,22 +377,17 @@ public final class TestLayout<S extends View> extends Component implements TestT
   }
 
   static void dispatchTestEvent(EventHandler _eventHandler, View view, Object object) {
-    TestEvent _eventState = sTestEventPool.acquire();
-    if (_eventState == null) {
-      _eventState = new TestEvent();
-    }
+    final TestEvent _eventState = new TestEvent();
     _eventState.view = view;
     _eventState.object = object;
     EventDispatcher _lifecycle = _eventHandler.mHasEventDispatcher.getEventDispatcher();
     _lifecycle.dispatchOnEvent(_eventHandler, _eventState);
-    _eventState.view = null;
-    _eventState.object = null;
-    sTestEventPool.release(_eventState);
   }
 
   private void testLayoutEvent(
       HasEventDispatcher _abstract, ComponentContext c, View view, int param1) {
     TestLayout _ref = (TestLayout) _abstract;
+    TestLayoutStateContainer stateContainer = getStateContainerWithLazyStateUpdatesApplied(c, _ref);
     TestLayoutSpec.testLayoutEvent(
         c,
         view,
@@ -404,7 +396,7 @@ public final class TestLayout<S extends View> extends Component implements TestT
         (char) _ref.prop5,
         (float) _ref.aspectRatio,
         (boolean) _ref.focusable,
-        (long) _ref.mStateContainer.state1);
+        (long) stateContainer.state1);
   }
 
   private void __internalOnErrorHandler(
@@ -530,6 +522,14 @@ public final class TestLayout<S extends View> extends Component implements TestT
     nextStateContainer.state1 = prevStateContainer.state1;
     nextStateContainer.state2 = prevStateContainer.state2;
     nextStateContainer.state3 = prevStateContainer.state3;
+  }
+
+  private TestLayoutStateContainer getStateContainerWithLazyStateUpdatesApplied(ComponentContext c,
+      TestLayout component) {
+    TestLayoutStateContainer stateContainer = new TestLayoutStateContainer();
+    transferState(component.mStateContainer, stateContainer);
+    c.applyLazyStateUpdatesForContainer(stateContainer);
+    return stateContainer;
   }
 
   protected static void updateCurrentState(ComponentContext c, int someParam) {
@@ -678,7 +678,7 @@ public final class TestLayout<S extends View> extends Component implements TestT
     }
   }
 
-  public static class Builder<S extends View> extends Component.Builder<Builder<S>> {
+  public static final class Builder<S extends View> extends Component.Builder<Builder<S>> {
     TestLayout mTestLayout;
 
     ComponentContext mContext;
@@ -926,16 +926,7 @@ public final class TestLayout<S extends View> extends Component implements TestT
     @Override
     public TestLayout build() {
       checkArgs(REQUIRED_PROPS_COUNT, mRequired, REQUIRED_PROPS_NAMES);
-      TestLayout testLayoutRef = mTestLayout;
-      release();
-      return testLayoutRef;
-    }
-
-    @Override
-    protected void release() {
-      super.release();
-      mTestLayout = null;
-      mContext = null;
+      return mTestLayout;
     }
   }
 
@@ -954,7 +945,7 @@ public final class TestLayout<S extends View> extends Component implements TestT
 
     @Override
     public int hashCode() {
-      return Objects.hash(prop3, prop5, state1);
+      return CommonUtils.hash(prop3, prop5, state1);
     }
 
     @Override

@@ -3,7 +3,7 @@
 # This source code is licensed under the Apache 2.0 license found in the
 # LICENSE file in the root directory of this source tree.
 
-load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_ANDROIDSUPPORT_RECYCLERVIEW_TARGET", "LITHO_ANDROIDSUPPORT_TARGET", "LITHO_ANNOTATIONS_TARGET", "LITHO_ASSERTJ_TARGET", "LITHO_HAMCREST_CORE_TARGET", "LITHO_HAMCREST_LIBRARY_TARGET", "LITHO_JAVA_TARGET", "LITHO_JSR_TARGET", "LITHO_JUNIT_TARGET", "LITHO_PROCESSOR_LIB_TARGET", "LITHO_ROBOLECTRIC_TARGET", "LITHO_TESTING_ASSERTJ_TARGET", "LITHO_TESTING_CORE_TARGET", "LITHO_TESTING_SUBCOMPONENTS_TARGET", "LITHO_TESTING_TARGET", "LITHO_WIDGET_TARGET", "litho_android_library")
+load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_ANDROIDSUPPORT_RECYCLERVIEW_TARGET", "LITHO_ANDROIDSUPPORT_TARGET", "LITHO_ANNOTATIONS_TARGET", "LITHO_ASSERTJ_TARGET", "LITHO_HAMCREST_CORE_TARGET", "LITHO_HAMCREST_LIBRARY_TARGET", "LITHO_JAVA_TARGET", "LITHO_JSR_TARGET", "LITHO_JUNIT_TARGET", "LITHO_PROCESSOR_LIB_TARGET", "LITHO_ROBOLECTRIC_V3_TARGET", "LITHO_TESTING_ASSERTJ_V3_TARGET", "LITHO_TESTING_CORE_V3_TARGET", "LITHO_TESTING_SUBCOMPONENTS_TARGET", "LITHO_TESTING_V3_TARGET", "LITHO_WIDGET_TARGET", "litho_android_library")
 
 litho_android_library(
     name = "widget",
@@ -14,6 +14,7 @@ litho_android_library(
     annotation_processors = [
         "com.facebook.litho.specmodels.processor.testing.ComponentsTestingProcessor",
     ],
+    is_androidx = True,
     visibility = ["PUBLIC"],
     deps = [
         LITHO_JAVA_TARGET,
@@ -21,21 +22,22 @@ litho_android_library(
         LITHO_ANNOTATIONS_TARGET,
         LITHO_ANDROIDSUPPORT_TARGET,
         LITHO_ANDROIDSUPPORT_RECYCLERVIEW_TARGET,
-        LITHO_TESTING_TARGET,
-        LITHO_TESTING_CORE_TARGET,
-        LITHO_TESTING_ASSERTJ_TARGET,
+        LITHO_TESTING_V3_TARGET,
+        LITHO_TESTING_CORE_V3_TARGET,
+        LITHO_TESTING_ASSERTJ_V3_TARGET,
         LITHO_JSR_TARGET,
         LITHO_HAMCREST_CORE_TARGET,
         LITHO_HAMCREST_LIBRARY_TARGET,
     ],
     exported_deps = [
-        LITHO_TESTING_CORE_TARGET,
+        LITHO_TESTING_CORE_V3_TARGET,
     ],
 )
 
 litho_android_library(
     name = "widget_conditions",
     srcs = glob(["**/*.java"]),
+    is_androidx = True,
     visibility = [
         "PUBLIC",
     ],
@@ -45,7 +47,7 @@ litho_android_library(
         LITHO_ASSERTJ_TARGET,
         LITHO_JAVA_TARGET,
         LITHO_JUNIT_TARGET,
-        LITHO_ROBOLECTRIC_TARGET,
+        LITHO_ROBOLECTRIC_V3_TARGET,
         LITHO_TESTING_SUBCOMPONENTS_TARGET,
         LITHO_WIDGET_TARGET,
     ],

@@ -1,4 +1,4 @@
-# Litho [![CircleCI](https://circleci.com/gh/facebook/litho/tree/master.svg?style=svg)](https://circleci.com/gh/facebook/litho/tree/master) [![Join the chat at https://gitter.im/facebook/litho](https://badges.gitter.im/facebook/litho.svg)](https://gitter.im/facebook/litho?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+# Litho [![CircleCI](https://circleci.com/gh/facebook/litho/tree/master.svg?style=shield)](https://circleci.com/gh/facebook/litho/tree/master) [![Bintray](https://img.shields.io/maven-metadata/v/https/jcenter.bintray.com/com/facebook/litho/litho-core/maven-metadata.xml.svg?color=orange&label=bintray)](https://bintray.com/facebook/maven/com.facebook.litho%3Alitho-core/_latestVersion) [![Join the chat at https://gitter.im/facebook/litho](https://badges.gitter.im/facebook/litho.svg)](https://gitter.im/facebook/litho?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 <img src="docs/static/logo.png" width=150 align=right>
 
@@ -59,7 +59,7 @@ or, if you prefer Gradle,
 
 ## Contributing
 
-Before contributing to Litho, please first read the the [Code of
+Before contributing to Litho, please first read the [Code of
 Conduct](https://code.facebook.com/codeofconduct) that we expect
 project participants to adhere to.
 

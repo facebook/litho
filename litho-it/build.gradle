@@ -26,6 +26,7 @@ android {
 
     defaultConfig {
         minSdkVersion rootProject.minSdkVersion
+        targetSdkVersion rootProject.targetSdkVersion
 
         javaCompileOptions {
             annotationProcessorOptions {
@@ -50,6 +51,11 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+    lintOptions {
+        abortOnError false
+    }
+
+    sourceSets.test.java.srcDir project(':litho-processor').file("src/test/java")
 }
 
 dependencies {
@@ -58,6 +64,7 @@ dependencies {
     implementation project(':litho-widget')
     implementation project(':litho-sections-core')
     implementation deps.supportAppCompat
+    implementation deps.supportRecyclerView
 
     compileOnly project(':litho-sections-annotations')
     annotationProcessor project(':litho-sections-processor')
@@ -70,6 +77,7 @@ dependencies {
     testImplementation project(':litho-sections-core')
     testImplementation project(':litho-sections-processor')
     testImplementation project(':litho-sections-widget')
+    testImplementation project(':litho-intellij-plugin')
     testImplementation project(':test-specs')
 
     // Testing deps
@@ -82,7 +90,6 @@ dependencies {
     testImplementation deps.robolectric
     testImplementation deps.soloader
     testImplementation deps.supportAppCompat
-    testImplementation deps.supportCoreUi
     testImplementation deps.supportRecyclerView
     testImplementation deps.khronos
     testImplementation files(Jvm.current().getToolsJar())

@@ -47,7 +47,7 @@ public abstract class BaseRenderInfo implements RenderInfo {
   private final @Nullable Map<String, Object> mCustomAttributes;
   private @Nullable Map<String, Object> mDebugInfo;
 
-  BaseRenderInfo(Builder builder) {
+  protected BaseRenderInfo(Builder builder) {
     mCustomAttributes = builder.mCustomAttributes;
     mDebugInfo = builder.mDebugInfo;
   }
@@ -231,11 +231,6 @@ public abstract class BaseRenderInfo implements RenderInfo {
       mDebugInfo.put(key, value);
 
       return (T) this;
-    }
-
-    void release() {
-      mCustomAttributes = null;
-      mDebugInfo = null;
     }
   }
 }

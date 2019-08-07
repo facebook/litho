@@ -22,10 +22,10 @@ import static com.facebook.litho.widget.SnapUtil.SNAP_TO_CENTER_CHILD;
 import static com.facebook.litho.widget.SnapUtil.SNAP_TO_END;
 import static com.facebook.litho.widget.SnapUtil.SNAP_TO_START;
 
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.View;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import com.facebook.litho.sections.SectionTree;
 import com.facebook.litho.widget.RecyclerEventsController;
 import com.facebook.litho.widget.SmoothScrollAlignmentType;
@@ -110,6 +110,19 @@ public class RecyclerCollectionEventsController extends RecyclerEventsController
   public void requestScrollToPositionWithSnap(
       final int target, final RecyclerView.SmoothScroller smoothScroller) {
     requestScrollToPositionInner(true, target, target, smoothScroller);
+  }
+
+  /**
+   * Send the {@link RecyclerCollectionComponent} a request to scroll the content by the given
+   * margins.
+   */
+  public void requestScrollBy(int dx, int dy) {
+    final RecyclerView recyclerView = getRecyclerView();
+    if (recyclerView == null) {
+      return;
+    }
+
+    recyclerView.scrollBy(dx, dy);
   }
 
   /**

@@ -232,10 +232,11 @@ public final class TextStylesHelper {
         if (index > 0) {
           ellipsize.set(TRUNCATE_AT[index - 1]);
         }
-      } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1
-          && attr == R.styleable.Text_android_textAlignment) {
-        viewTextAlignment = a.getInt(attr, -1);
-        textAlignment.set(getAlignment(viewTextAlignment, gravity));
+      } else if (attr == R.styleable.Text_android_textAlignment) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+          viewTextAlignment = a.getInt(attr, -1);
+          textAlignment.set(getAlignment(viewTextAlignment, gravity));
+        }
       } else if (attr == R.styleable.Text_android_gravity) {
         gravity = a.getInt(attr, -1);
         textAlignment.set(getAlignment(viewTextAlignment, gravity));
@@ -276,15 +277,18 @@ public final class TextStylesHelper {
         maxTextWidth.set(a.getDimensionPixelSize(attr, DEFAULT_MAX_WIDTH));
       } else if (attr == R.styleable.Text_android_fontFamily) {
         fontFamily = a.getString(attr);
-      } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
-          && attr == R.styleable.Text_android_breakStrategy) {
-        breakStrategy.set(a.getInt(attr, DEFAULT_BREAK_STRATEGY));
-      } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
-          && attr == R.styleable.Text_android_hyphenationFrequency) {
-        hyphenationFrequency.set(a.getInt(attr, DEFAULT_HYPHENATION_FREQUENCY));
-      } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
-          && attr == R.styleable.Text_android_justificationMode) {
-        justificationMode.set(a.getInt(attr, DEFAULT_JUSTIFICATION_MODE));
+      } else if (attr == R.styleable.Text_android_breakStrategy) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+          breakStrategy.set(a.getInt(attr, DEFAULT_BREAK_STRATEGY));
+        }
+      } else if (attr == R.styleable.Text_android_hyphenationFrequency) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+          hyphenationFrequency.set(a.getInt(attr, DEFAULT_HYPHENATION_FREQUENCY));
+        }
+      } else if (attr == R.styleable.Text_android_justificationMode) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+          justificationMode.set(a.getInt(attr, DEFAULT_JUSTIFICATION_MODE));
+        }
       }
     }
 

@@ -20,27 +20,56 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * A method annotated with this annotation is responsible for creating the initial value for
- * params annotated with the {@link State} annotation in this spec. This method will take as
- * parameters a context and an com.facebook.litho.Output for every State variable that it will
- * initialize.
+ * This annotation is used in a {@link LayoutSpec}; the framework calls the method annotated with
+ * {@code OnCreateInitialState} before resolving its layout, i.e. before calling {@link
+ * OnCreateLayout}. This lifecycle method should be used to set the initial values of the state of
+ * the component. The annotate method can receive {@code StateValue} containers for arguments
+ * annotated with {@link State}.
  *
- * <p>For example:
- * <code>
+ * <p>The framework can call {@code OnCreateInitialState} from any thread. The method is invoked
+ * only once during the lifecycle of the Component inside a ComponentTree - when it is first added
+ * to the layout hierarchy. Any updates, such as state updates or prop changes, will not invoke this
+ * method again if its global key did not change. Removing a component and adding it back to the
+ * hierarchy will invoke this method again.
  *
- * {@literal @}LayoutSpec
- * public class MyChangeSetSpec {
+ * <p><em>Required:</em><br>
  *
- *   {@literal @}OnCreateInitialState
- *   void onCreateInitialState(
- *     ComponentContext c,
- *     Output{@literal <}SomeState{@literal >} someState) {
-       someState.set(new SomeState());
+ * <ol>
+ *   <li>{@code ComponentContext}
+ * </ol>
+ *
+ * <p><em>Optional annotated arguments:</em><br>
+ *
+ * <ul>
+ *   <li>{@link Prop}
+ *   <li>{@link TreeProp}
+ *   <li>{@link InjectProp}
+ *   <li>{@code StateValue}
+ * </ul>
+ *
+ * <pre><code>{@literal @LayoutSpec}
+ * public class CounterSpec {
+ *
+ *  {@literal @OnCreateInitialState}
+ *   static void onCreateInitialState(
+ *       ComponentContext c,
+ *       StateValue&lt;Integer&gt; count) {
+ *     count.set(0);
  *   }
- * }
- * </code>
+ *
+ *  {@literal @OnCreateLayout}
+ *   static Component onCreateLayout(
+ *     ComponentContext c,
+ *    {@literal @State} int count) {
+ *
+ *     return Row.create(c)
+ *       .child(
+ *         Text.create(c)
+ *           .text(String.valueOf(count))
+ *       )
+ *       .build();
+ *   }
+ * }</code></pre>
  */
 @Retention(RetentionPolicy.RUNTIME)
-public @interface OnCreateInitialState {
-
-}
+public @interface OnCreateInitialState {}

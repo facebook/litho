@@ -16,7 +16,7 @@
 
 package com.facebook.litho;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import java.util.Map;
 import java.util.Set;
 
@@ -33,8 +33,12 @@ public interface ComponentsLogger {
     FATAL
   }
 
-  /** Create a new performance event with the given event id and start counting the time. */
-  PerfEvent newPerformanceEvent(@FrameworkLogEvents.LogEventId int eventId);
+  /**
+   * Create a new performance event with the given event id and start counting the time. If the
+   * logger doesn't care about this event id, it may return null.
+   */
+  @Nullable
+  PerfEvent newPerformanceEvent(ComponentContext c, @FrameworkLogEvents.LogEventId int eventId);
 
   /** Write a {@link PerfEvent} to storage. This also marks the end of the event. */
   void logPerfEvent(PerfEvent event);

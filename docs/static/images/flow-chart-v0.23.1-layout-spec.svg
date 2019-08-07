@@ -1,0 +1,455 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xl="http://www.w3.org/1999/xlink" xmlns:dc="http://purl.org/dc/elements/1.1/" viewBox="-806 0 1012 1366" width="1012" height="1366">
+  <defs>
+    <filter id="Shadow" filterUnits="userSpaceOnUse" x="-806" y="0">
+      <feGaussianBlur in="SourceAlpha" result="blur" stdDeviation="2.819779"/>
+      <feOffset in="blur" result="offset" dx="3" dy="3"/>
+      <feFlood flood-color="black" flood-opacity=".25" result="flood"/>
+      <feComposite in="flood" in2="offset" operator="in"/>
+    </filter>
+    <linearGradient x1="0" x2="1" id="Gradient" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="white"/>
+      <stop offset=".9444444" stop-color="#ffae2d"/>
+      <stop offset="1" stop-color="white"/>
+    </linearGradient>
+    <linearGradient id="Obj_Gradient" xl:href="#Gradient" gradientTransform="translate(-458.3901 82.2598) rotate(90) scale(63)"/>
+    <filter id="Shadow_2" filterUnits="userSpaceOnUse" x="-806" y="0">
+      <feGaussianBlur in="SourceAlpha" result="blur" stdDeviation=".9360599"/>
+      <feOffset in="blur" result="offset" dx="0" dy="2"/>
+      <feFlood flood-color="black" flood-opacity=".4" result="flood"/>
+      <feComposite in="flood" in2="offset" operator="in"/>
+    </filter>
+    <linearGradient x1="0" x2="1" id="Gradient_2" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="white"/>
+      <stop offset=".8968254" stop-color="#9dd2ff"/>
+      <stop offset="1" stop-color="white"/>
+    </linearGradient>
+    <linearGradient id="Obj_Gradient_2" xl:href="#Gradient_2" gradientTransform="translate(-298.33038 289.2598) rotate(90) scale(92.13504)"/>
+    <linearGradient id="Obj_Gradient_3" xl:href="#Gradient_2" gradientTransform="translate(-298.33038 667.05236) rotate(90) scale(92.13504)"/>
+    <filter id="Shadow_3" filterUnits="userSpaceOnUse" x="-806" y="0">
+      <feGaussianBlur in="SourceAlpha" result="blur" stdDeviation=".9360597"/>
+      <feOffset in="blur" result="offset" dx="0" dy="2"/>
+      <feFlood flood-color="black" flood-opacity=".4" result="flood"/>
+      <feComposite in="flood" in2="offset" operator="in"/>
+    </filter>
+    <linearGradient x1="0" x2="1" id="Gradient_3" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="white"/>
+      <stop offset=".9444444" stop-color="#979596"/>
+      <stop offset="1" stop-color="white"/>
+    </linearGradient>
+    <linearGradient id="Obj_Gradient_4" xl:href="#Gradient_3" gradientTransform="translate(-298.56325 918.4167) rotate(90) scale(92.13504)"/>
+    <linearGradient id="Obj_Gradient_5" xl:href="#Gradient_3" gradientTransform="translate(-297.33038 1044.9318) rotate(90) scale(92.13504)"/>
+    <linearGradient id="Obj_Gradient_6" xl:href="#Gradient_2" gradientTransform="translate(-297.9507 541.7592) rotate(90) scale(92.13504)"/>
+    <linearGradient id="Obj_Gradient_7" xl:href="#Gradient" gradientTransform="translate(-588.6696 1314.2402) rotate(90) scale(36)"/>
+    <linearGradient id="Obj_Gradient_8" xl:href="#Gradient_2" gradientTransform="translate(-503.1696 1314.2402) rotate(90) scale(36)"/>
+    <linearGradient id="Obj_Gradient_9" xl:href="#Gradient_3" gradientTransform="translate(-390.66962 1314.2402) rotate(90) scale(36)"/>
+    <linearGradient id="Obj_Gradient_10" xl:href="#Gradient_2" gradientTransform="translate(-298.33038 417.39484) rotate(90) scale(92.13504)"/>
+    <linearGradient x1="0" x2="1" id="Gradient_4" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="white"/>
+      <stop offset=".8174603" stop-color="#9bfdd1"/>
+      <stop offset="1" stop-color="white"/>
+    </linearGradient>
+    <linearGradient id="Obj_Gradient_11" xl:href="#Gradient_4" gradientTransform="translate(-458.3901 187.5669) rotate(90) scale(65.6929)"/>
+    <linearGradient id="Obj_Gradient_12" xl:href="#Gradient" gradientTransform="translate(-86.83038 82.2598) rotate(90) scale(63)"/>
+    <linearGradient x1="0" x2="1" id="Gradient_5" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="white"/>
+      <stop offset=".7857143" stop-color="#a2d4ff"/>
+      <stop offset="1" stop-color="white"/>
+    </linearGradient>
+    <linearGradient id="Obj_Gradient_13" xl:href="#Gradient_5" gradientTransform="translate(-86.83038 175.41335) rotate(90) scale(90)"/>
+    <linearGradient id="Obj_Gradient_14" xl:href="#Gradient_5" gradientTransform="translate(-242.16962 1314.2402) rotate(90) scale(36)"/>
+    <linearGradient id="Obj_Gradient_15" xl:href="#Gradient_4" gradientTransform="translate(-21.669624 1314.2402) rotate(90) scale(36)"/>
+    <linearGradient id="Obj_Gradient_16" xl:href="#Gradient_2" gradientTransform="translate(-298.33038 792.3455) rotate(90) scale(92.13504)"/>
+    <linearGradient id="Obj_Gradient_17" xl:href="#Gradient_2" gradientTransform="translate(-298.56325 1171.447) rotate(90) scale(92.13504)"/>
+    <linearGradient id="Obj_Gradient_18" xl:href="#Gradient" gradientTransform="translate(-700.9216 1186.0145) rotate(90) scale(63)"/>
+    <linearGradient id="Obj_Gradient_19" xl:href="#Gradient" gradientTransform="translate(-458.3901 82.2598) rotate(90) scale(63)"/>
+    <font-face font-family="Lucida Grande" font-size="16" panose-1="2 11 7 0 4 5 2 2 2 4" units-per-em="1000" underline-position="-97.65625" underline-thickness="48.828125" slope="0" x-height="536.1328" cap-height="722.65625" ascent="966.7969" descent="-210.9375" font-weight="700">
+      <font-face-src>
+        <font-face-name name="LucidaGrande-Bold"/>
+      </font-face-src>
+    </font-face>
+    <linearGradient id="Obj_Gradient_20" xl:href="#Gradient_2" gradientTransform="translate(-298.33038 289.2598) rotate(90) scale(92.13504)"/>
+    <font-face font-family="Lucida Grande" font-size="20" panose-1="2 11 6 0 4 5 2 2 2 4" units-per-em="1000" underline-position="-97.65625" underline-thickness="48.828125" slope="0" x-height="530.27344" cap-height="722.65625" ascent="966.7969" descent="-210.9375" font-weight="400">
+      <font-face-src>
+        <font-face-name name="LucidaGrande"/>
+      </font-face-src>
+    </font-face>
+    <font-face font-family="Courier New" font-size="16" panose-1="2 7 3 9 2 2 5 2 4 4" units-per-em="1000" underline-position="-232.91016" underline-thickness="41.015625" slope="0" x-height="422.85156" cap-height="571.28906" ascent="832.5195" descent="-300.29297" font-weight="400">
+      <font-face-src>
+        <font-face-name name="CourierNewPSMT"/>
+      </font-face-src>
+    </font-face>
+    <font-face font-family="Courier New" font-size="16" panose-1="2 7 6 9 2 2 5 2 4 4" units-per-em="1000" underline-position="-232.91016" underline-thickness="100.09766" slope="0" x-height="443.3594" cap-height="591.7969" ascent="832.5195" descent="-300.29297" font-weight="700">
+      <font-face-src>
+        <font-face-name name="CourierNewPS-BoldMT"/>
+      </font-face-src>
+    </font-face>
+    <linearGradient id="Obj_Gradient_21" xl:href="#Gradient_2" gradientTransform="translate(-298.33038 667.05236) rotate(90) scale(92.13504)"/>
+    <linearGradient id="Obj_Gradient_22" xl:href="#Gradient_3" gradientTransform="translate(-298.56325 918.4167) rotate(90) scale(92.13504)"/>
+    <font-face font-family="Courier New" font-size="14" panose-1="2 7 3 9 2 2 5 2 4 4" units-per-em="1000" underline-position="-232.91016" underline-thickness="41.015625" slope="0" x-height="422.85156" cap-height="571.28906" ascent="832.5195" descent="-300.29297" font-weight="400">
+      <font-face-src>
+        <font-face-name name="CourierNewPSMT"/>
+      </font-face-src>
+    </font-face>
+    <linearGradient id="Obj_Gradient_23" xl:href="#Gradient_3" gradientTransform="translate(-297.33038 1044.9318) rotate(90) scale(92.13504)"/>
+    <linearGradient id="Obj_Gradient_24" xl:href="#Gradient_2" gradientTransform="translate(-297.9507 541.7592) rotate(90) scale(92.13504)"/>
+    <marker orient="auto" overflow="visible" markerUnits="strokeWidth" id="FilledArrow_Marker" stroke-linejoin="miter" stroke-miterlimit="10" viewBox="-1 -3 7 6" markerWidth="7" markerHeight="6" color="black">
+      <g>
+        <path d="M 4.8 0 L 0 -1.8 L 0 1.8 Z" fill="currentColor" stroke="currentColor" stroke-width="1"/>
+      </g>
+    </marker>
+    <linearGradient id="Obj_Gradient_25" xl:href="#Gradient" gradientTransform="translate(-588.6696 1314.2402) rotate(90) scale(36)"/>
+    <font-face font-family="Lucida Grande" font-size="14" panose-1="2 11 6 0 4 5 2 2 2 4" units-per-em="1000" underline-position="-97.65625" underline-thickness="48.828125" slope="0" x-height="530.27344" cap-height="722.65625" ascent="966.7969" descent="-210.9375" font-weight="400">
+      <font-face-src>
+        <font-face-name name="LucidaGrande"/>
+      </font-face-src>
+    </font-face>
+    <linearGradient id="Obj_Gradient_26" xl:href="#Gradient_2" gradientTransform="translate(-503.1696 1314.2402) rotate(90) scale(36)"/>
+    <linearGradient id="Obj_Gradient_27" xl:href="#Gradient_3" gradientTransform="translate(-390.66962 1314.2402) rotate(90) scale(36)"/>
+    <font-face font-family="Helvetica Neue" font-size="16" panose-1="2 0 5 3 0 0 0 2 0 4" units-per-em="1000" underline-position="-100" underline-thickness="50" slope="0" x-height="517" cap-height="714" ascent="951.9958" descent="-212.99744" font-weight="400">
+      <font-face-src>
+        <font-face-name name="HelveticaNeue"/>
+      </font-face-src>
+    </font-face>
+    <font-face font-family="Lucida Grande" font-size="24" panose-1="2 11 6 0 4 5 2 2 2 4" units-per-em="1000" underline-position="-97.65625" underline-thickness="48.828125" slope="0" x-height="530.27344" cap-height="722.65625" ascent="966.7969" descent="-210.9375" font-weight="400">
+      <font-face-src>
+        <font-face-name name="LucidaGrande"/>
+      </font-face-src>
+    </font-face>
+    <linearGradient id="Obj_Gradient_28" xl:href="#Gradient_2" gradientTransform="translate(-298.33038 417.39484) rotate(90) scale(92.13504)"/>
+    <linearGradient id="Obj_Gradient_29" xl:href="#Gradient_4" gradientTransform="translate(-458.3901 187.5669) rotate(90) scale(65.6929)"/>
+    <font-face font-family="Lucida Grande" font-size="11" panose-1="2 11 6 0 4 5 2 2 2 4" units-per-em="1000" underline-position="-97.65625" underline-thickness="48.828125" slope="0" x-height="530.27344" cap-height="722.65625" ascent="966.7969" descent="-210.9375" font-weight="400">
+      <font-face-src>
+        <font-face-name name="LucidaGrande"/>
+      </font-face-src>
+    </font-face>
+    <linearGradient id="Obj_Gradient_30" xl:href="#Gradient" gradientTransform="translate(-86.83038 82.2598) rotate(90) scale(63)"/>
+    <linearGradient id="Obj_Gradient_31" xl:href="#Gradient_5" gradientTransform="translate(-86.83038 175.41335) rotate(90) scale(90)"/>
+    <font-face font-family="Helvetica Neue" font-size="14" panose-1="2 0 5 3 0 0 0 2 0 4" units-per-em="1000" underline-position="-100" underline-thickness="50" slope="0" x-height="517" cap-height="714" ascent="951.9958" descent="-212.99744" font-weight="400">
+      <font-face-src>
+        <font-face-name name="HelveticaNeue"/>
+      </font-face-src>
+    </font-face>
+    <linearGradient id="Obj_Gradient_32" xl:href="#Gradient_5" gradientTransform="translate(-242.16962 1314.2402) rotate(90) scale(36)"/>
+    <linearGradient id="Obj_Gradient_33" xl:href="#Gradient_4" gradientTransform="translate(-21.669624 1314.2402) rotate(90) scale(36)"/>
+    <linearGradient id="Obj_Gradient_34" xl:href="#Gradient_2" gradientTransform="translate(-298.33038 792.3455) rotate(90) scale(92.13504)"/>
+    <linearGradient id="Obj_Gradient_35" xl:href="#Gradient_2" gradientTransform="translate(-298.56325 1171.447) rotate(90) scale(92.13504)"/>
+    <linearGradient id="Obj_Gradient_36" xl:href="#Gradient" gradientTransform="translate(-700.9216 1186.0145) rotate(90) scale(63)"/>
+  </defs>
+  <metadata> Produced by OmniGraffle 7.10.2 
+    <dc:date>2019-06-17 16:03:33 +0000</dc:date>
+  </metadata>
+  <g id="Layout_Spec" stroke-opacity="1" fill="none" fill-opacity="1" stroke="none" stroke-dasharray="none">
+    <title>Layout Spec</title>
+    <g id="Layout_Spec: Layer 1">
+      <title>Layer 1</title>
+      <g id="Graphic_1773_shadow" filter="url(#Shadow)">
+        <ellipse cx="-458.3901" cy="113.7598" rx="54.0000862867023" ry="31.5000503339097" fill="url(#Obj_Gradient)"/>
+        <ellipse cx="-458.3901" cy="113.7598" rx="54.0000862867023" ry="31.5000503339097" stroke="#a07128" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+      </g>
+      <g id="Graphic_1774_shadow" filter="url(#Shadow_2)">
+        <path d="M -566.8304 289.2598 L -29.830376 289.2598 C -26.516668 289.2598 -23.830376 291.9461 -23.830376 295.2598 L -23.830376 375.39484 C -23.830376 378.70855 -26.516668 381.39484 -29.830376 381.39484 L -566.8304 381.39484 C -570.1441 381.39484 -572.8304 378.70855 -572.8304 375.39484 L -572.8304 295.2598 C -572.8304 291.9461 -570.1441 289.2598 -566.8304 289.2598 Z" fill="url(#Obj_Gradient_2)"/>
+        <path d="M -566.8304 289.2598 L -29.830376 289.2598 C -26.516668 289.2598 -23.830376 291.9461 -23.830376 295.2598 L -23.830376 375.39484 C -23.830376 378.70855 -26.516668 381.39484 -29.830376 381.39484 L -566.8304 381.39484 C -570.1441 381.39484 -572.8304 378.70855 -572.8304 375.39484 L -572.8304 295.2598 C -572.8304 291.9461 -570.1441 289.2598 -566.8304 289.2598 Z" stroke="#005493" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+      </g>
+      <g id="Graphic_1784_shadow" filter="url(#Shadow_2)">
+        <path d="M -568.06325 667.05236 L -28.5975 667.05236 C -25.28379 667.05236 -22.5975 669.73865 -22.5975 673.05236 L -22.5975 753.1874 C -22.5975 756.5011 -25.28379 759.1874 -28.5975 759.1874 L -568.06325 759.1874 C -571.37696 759.1874 -574.06325 756.5011 -574.06325 753.1874 L -574.06325 673.05236 C -574.06325 669.73865 -571.37696 667.05236 -568.06325 667.05236 Z" fill="url(#Obj_Gradient_3)"/>
+        <path d="M -568.06325 667.05236 L -28.5975 667.05236 C -25.28379 667.05236 -22.5975 669.73865 -22.5975 673.05236 L -22.5975 753.1874 C -22.5975 756.5011 -25.28379 759.1874 -28.5975 759.1874 L -568.06325 759.1874 C -571.37696 759.1874 -574.06325 756.5011 -574.06325 753.1874 L -574.06325 673.05236 C -574.06325 669.73865 -571.37696 667.05236 -568.06325 667.05236 Z" stroke="#005493" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+      </g>
+      <g id="Graphic_1786_shadow" filter="url(#Shadow_3)">
+        <path d="M -504.06325 918.4167 L -93.06325 918.4167 C -89.74954 918.4167 -87.06325 921.103 -87.06325 924.4167 L -87.06325 1004.5517 C -87.06325 1007.8654 -89.74954 1010.5517 -93.06325 1010.5517 L -504.06325 1010.5517 C -507.37696 1010.5517 -510.06325 1007.8654 -510.06325 1004.5517 L -510.06325 924.4167 C -510.06325 921.103 -507.37696 918.4167 -504.06325 918.4167 Z" fill="url(#Obj_Gradient_4)"/>
+        <path d="M -504.06325 918.4167 L -93.06325 918.4167 C -89.74954 918.4167 -87.06325 921.103 -87.06325 924.4167 L -87.06325 1004.5517 C -87.06325 1007.8654 -89.74954 1010.5517 -93.06325 1010.5517 L -504.06325 1010.5517 C -507.37696 1010.5517 -510.06325 1007.8654 -510.06325 1004.5517 L -510.06325 924.4167 C -510.06325 921.103 -507.37696 918.4167 -504.06325 918.4167 Z" stroke="#727272" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+      </g>
+      <g id="Graphic_1787_shadow" filter="url(#Shadow_3)">
+        <path d="M -502.8304 1044.9318 L -91.83038 1044.9318 C -88.51667 1044.9318 -85.83038 1047.6181 -85.83038 1050.9318 L -85.83038 1131.0669 C -85.83038 1134.3806 -88.51667 1137.0669 -91.83038 1137.0669 L -502.8304 1137.0669 C -506.1441 1137.0669 -508.8304 1134.3806 -508.8304 1131.0669 L -508.8304 1050.9318 C -508.8304 1047.6181 -506.1441 1044.9318 -502.8304 1044.9318 Z" fill="url(#Obj_Gradient_5)"/>
+        <path d="M -502.8304 1044.9318 L -91.83038 1044.9318 C -88.51667 1044.9318 -85.83038 1047.6181 -85.83038 1050.9318 L -85.83038 1131.0669 C -85.83038 1134.3806 -88.51667 1137.0669 -91.83038 1137.0669 L -502.8304 1137.0669 C -506.1441 1137.0669 -508.8304 1134.3806 -508.8304 1131.0669 L -508.8304 1050.9318 C -508.8304 1047.6181 -506.1441 1044.9318 -502.8304 1044.9318 Z" stroke="#727272" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+      </g>
+      <g id="Graphic_1780_shadow" filter="url(#Shadow_2)">
+        <path d="M -568.06325 541.7592 L -27.83813 541.7592 C -24.524422 541.7592 -21.83813 544.4455 -21.83813 547.7592 L -21.83813 627.89426 C -21.83813 631.208 -24.524422 633.89426 -27.83813 633.89426 L -568.06325 633.89426 C -571.37696 633.89426 -574.06325 631.208 -574.06325 627.89426 L -574.06325 547.7592 C -574.06325 544.4455 -571.37696 541.7592 -568.06325 541.7592 Z" fill="url(#Obj_Gradient_6)"/>
+        <path d="M -568.06325 541.7592 L -27.83813 541.7592 C -24.524422 541.7592 -21.83813 544.4455 -21.83813 547.7592 L -21.83813 627.89426 C -21.83813 631.208 -24.524422 633.89426 -27.83813 633.89426 L -568.06325 633.89426 C -571.37696 633.89426 -574.06325 631.208 -574.06325 627.89426 L -574.06325 547.7592 C -574.06325 544.4455 -571.37696 541.7592 -568.06325 541.7592 Z" stroke="#005493" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+      </g>
+      <g id="Graphic_1798_shadow" filter="url(#Shadow)">
+        <ellipse cx="-588.6696" cy="1332.2402" rx="45.0000719055853" ry="18.0000287622342" fill="url(#Obj_Gradient_7)"/>
+        <ellipse cx="-588.6696" cy="1332.2402" rx="45.0000719055853" ry="18.0000287622342" stroke="#a07128" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+      </g>
+      <g id="Graphic_1799_shadow" filter="url(#Shadow_2)">
+        <path d="M -519.6696 1314.2402 L -486.6696 1314.2402 C -483.3559 1314.2402 -480.6696 1316.9265 -480.6696 1320.2402 L -480.6696 1344.2402 C -480.6696 1347.5539 -483.3559 1350.2402 -486.6696 1350.2402 L -519.6696 1350.2402 C -522.98333 1350.2402 -525.6696 1347.5539 -525.6696 1344.2402 L -525.6696 1320.2402 C -525.6696 1316.9265 -522.98333 1314.2402 -519.6696 1314.2402 Z" fill="url(#Obj_Gradient_8)"/>
+        <path d="M -519.6696 1314.2402 L -486.6696 1314.2402 C -483.3559 1314.2402 -480.6696 1316.9265 -480.6696 1320.2402 L -480.6696 1344.2402 C -480.6696 1347.5539 -483.3559 1350.2402 -486.6696 1350.2402 L -519.6696 1350.2402 C -522.98333 1350.2402 -525.6696 1347.5539 -525.6696 1344.2402 L -525.6696 1320.2402 C -525.6696 1316.9265 -522.98333 1314.2402 -519.6696 1314.2402 Z" stroke="#005493" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+      </g>
+      <g id="Graphic_1805_shadow" filter="url(#Shadow_3)">
+        <path d="M -456.6696 1314.2402 L -324.66962 1314.2402 C -321.3559 1314.2402 -318.66962 1316.9265 -318.66962 1320.2402 L -318.66962 1344.2402 C -318.66962 1347.5539 -321.3559 1350.2402 -324.66962 1350.2402 L -456.6696 1350.2402 C -459.98333 1350.2402 -462.6696 1347.5539 -462.6696 1344.2402 L -462.6696 1320.2402 C -462.6696 1316.9265 -459.98333 1314.2402 -456.6696 1314.2402 Z" fill="url(#Obj_Gradient_9)"/>
+        <path d="M -456.6696 1314.2402 L -324.66962 1314.2402 C -321.3559 1314.2402 -318.66962 1316.9265 -318.66962 1320.2402 L -318.66962 1344.2402 C -318.66962 1347.5539 -321.3559 1350.2402 -324.66962 1350.2402 L -456.6696 1350.2402 C -459.98333 1350.2402 -462.6696 1347.5539 -462.6696 1344.2402 L -462.6696 1320.2402 C -462.6696 1316.9265 -459.98333 1314.2402 -456.6696 1314.2402 Z" stroke="#727272" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+      </g>
+      <g id="Graphic_1810_shadow" filter="url(#Shadow_2)">
+        <path d="M -568.06325 417.39484 L -28.5975 417.39484 C -25.28379 417.39484 -22.5975 420.08113 -22.5975 423.39484 L -22.5975 503.5299 C -22.5975 506.8436 -25.28379 509.5299 -28.5975 509.5299 L -568.06325 509.5299 C -571.37696 509.5299 -574.06325 506.8436 -574.06325 503.5299 L -574.06325 423.39484 C -574.06325 420.08113 -571.37696 417.39484 -568.06325 417.39484 Z" fill="url(#Obj_Gradient_10)"/>
+        <path d="M -568.06325 417.39484 L -28.5975 417.39484 C -25.28379 417.39484 -22.5975 420.08113 -22.5975 423.39484 L -22.5975 503.5299 C -22.5975 506.8436 -25.28379 509.5299 -28.5975 509.5299 L -568.06325 509.5299 C -571.37696 509.5299 -574.06325 506.8436 -574.06325 503.5299 L -574.06325 423.39484 C -574.06325 420.08113 -571.37696 417.39484 -568.06325 417.39484 Z" stroke="#005493" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+      </g>
+      <g id="Graphic_1822_shadow" filter="url(#Shadow_3)">
+        <path d="M -455.7891 188.81816 L -401.3502 215.00645 C -398.36406 216.44296 -397.10784 220.02824 -398.54435 223.0144 C -399.13434 224.24084 -400.12377 225.23026 -401.3502 225.82026 L -455.7891 252.00855 C -457.43295 252.79935 -459.3473 252.79935 -460.99116 252.00855 L -515.43003 225.82026 C -518.4162 224.38374 -519.6724 220.79847 -518.2359 217.81232 C -517.6459 216.58587 -516.6565 215.59644 -515.43003 215.00645 L -460.99116 188.81816 C -459.3473 188.02736 -457.43295 188.02736 -455.7891 188.81816 Z" fill="url(#Obj_Gradient_11)"/>
+        <path d="M -455.7891 188.81816 L -401.3502 215.00645 C -398.36406 216.44296 -397.10784 220.02824 -398.54435 223.0144 C -399.13434 224.24084 -400.12377 225.23026 -401.3502 225.82026 L -455.7891 252.00855 C -457.43295 252.79935 -459.3473 252.79935 -460.99116 252.00855 L -515.43003 225.82026 C -518.4162 224.38374 -519.6724 220.79847 -518.2359 217.81232 C -517.6459 216.58587 -516.6565 215.59644 -515.43003 215.00645 L -460.99116 188.81816 C -459.3473 188.02736 -457.43295 188.02736 -455.7891 188.81816 Z" stroke="#009051" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+      </g>
+      <g id="Graphic_1827_shadow" filter="url(#Shadow)">
+        <ellipse cx="-86.83038" cy="113.7598" rx="54.0000862867024" ry="31.5000503339097" fill="url(#Obj_Gradient_12)"/>
+        <ellipse cx="-86.83038" cy="113.7598" rx="54.0000862867024" ry="31.5000503339097" stroke="#a07128" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+      </g>
+      <g id="Graphic_1828_shadow" filter="url(#Shadow_3)">
+        <path d="M -228.58038 175.41335 L 34.669624 175.41335 C 54.919624 175.41335 54.919624 175.41335 54.919624 181.03835 L 54.919624 178.22585 C 65.04462 178.22585 65.04462 178.22585 65.04462 183.85085 L 65.04462 181.03835 C 75.16962 181.03835 75.16962 181.03835 75.16962 186.66335 L 75.16962 259.78835 C 75.16962 265.41335 75.16962 265.41335 54.919624 265.41335 L -208.33038 265.41335 C -228.58038 265.41335 -228.58038 265.41335 -228.58038 262.60085 C -238.70538 262.60085 -238.70538 262.60085 -238.70538 259.78835 C -248.83038 259.78835 -248.83038 259.78835 -248.83038 254.16335 L -248.83038 181.03835 C -248.83038 175.41335 -248.83038 175.41335 -228.58038 175.41335 Z" fill="url(#Obj_Gradient_13)"/>
+        <path d="M -228.58038 175.41335 L 34.669624 175.41335 C 54.919624 175.41335 54.919624 175.41335 54.919624 181.03835 L 54.919624 254.16335 C 54.919624 259.78835 54.919624 259.78835 34.669624 259.78835 L -228.58038 259.78835 C -248.83038 259.78835 -248.83038 259.78835 -248.83038 254.16335 L -248.83038 181.03835 C -248.83038 175.41335 -248.83038 175.41335 -228.58038 175.41335 M 54.919624 178.22585 C 65.04462 178.22585 65.04462 178.22585 65.04462 183.85085 L 65.04462 259.78835 C 65.04462 262.60085 65.04462 262.60085 44.794624 262.60085 L -218.45538 262.60085 C -238.70538 262.60085 -238.70538 262.60085 -238.70538 259.78835 M 65.04462 181.03835 C 75.16962 181.03835 75.16962 181.03835 75.16962 186.66335 L 75.16962 259.78835 C 75.16962 265.41335 75.16962 265.41335 54.919624 265.41335 L -208.33038 265.41335 C -228.58038 265.41335 -228.58038 265.41335 -228.58038 262.60085" stroke="#005493" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+      </g>
+      <g id="Graphic_1832_shadow" filter="url(#Shadow_3)">
+        <path d="M -293.35712 1314.2402 L -198.29462 1314.2402 C -190.98212 1314.2402 -190.98212 1314.2402 -190.98212 1316.4902 L -190.98212 1315.3652 C -187.32587 1315.3652 -187.32587 1315.3652 -187.32587 1317.6152 L -187.32587 1316.4902 C -183.66962 1316.4902 -183.66962 1316.4902 -183.66962 1318.7402 L -183.66962 1347.9902 C -183.66962 1350.2402 -183.66962 1350.2402 -190.98212 1350.2402 L -286.04462 1350.2402 C -293.35712 1350.2402 -293.35712 1350.2402 -293.35712 1349.1152 C -297.01337 1349.1152 -297.01337 1349.1152 -297.01337 1347.9902 C -300.66962 1347.9902 -300.66962 1347.9902 -300.66962 1345.7402 L -300.66962 1316.4902 C -300.66962 1314.2402 -300.66962 1314.2402 -293.35712 1314.2402 Z" fill="url(#Obj_Gradient_14)"/>
+        <path d="M -293.35712 1314.2402 L -198.29462 1314.2402 C -190.98212 1314.2402 -190.98212 1314.2402 -190.98212 1316.4902 L -190.98212 1345.7402 C -190.98212 1347.9902 -190.98212 1347.9902 -198.29462 1347.9902 L -293.35712 1347.9902 C -300.66962 1347.9902 -300.66962 1347.9902 -300.66962 1345.7402 L -300.66962 1316.4902 C -300.66962 1314.2402 -300.66962 1314.2402 -293.35712 1314.2402 M -190.98212 1315.3652 C -187.32587 1315.3652 -187.32587 1315.3652 -187.32587 1317.6152 L -187.32587 1347.9902 C -187.32587 1349.1152 -187.32587 1349.1152 -194.63837 1349.1152 L -289.70087 1349.1152 C -297.01337 1349.1152 -297.01337 1349.1152 -297.01337 1347.9902 M -187.32587 1316.4902 C -183.66962 1316.4902 -183.66962 1316.4902 -183.66962 1318.7402 L -183.66962 1347.9902 C -183.66962 1350.2402 -183.66962 1350.2402 -190.98212 1350.2402 L -286.04462 1350.2402 C -293.35712 1350.2402 -293.35712 1350.2402 -293.35712 1349.1152" stroke="#005493" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+      </g>
+      <g id="Graphic_1831_shadow" filter="url(#Shadow_3)">
+        <path d="M -19.44128 1315.1315 L 9.403226 1326.6693 C 12.479927 1327.9 13.976423 1331.3918 12.745742 1334.4685 C 12.135896 1335.9932 10.927842 1337.2012 9.403226 1337.811 L -19.44128 1349.3489 C -20.871746 1349.921 -22.467502 1349.921 -23.897968 1349.3489 L -52.742473 1337.811 C -55.819174 1336.5804 -57.31567 1333.0886 -56.08499 1330.0119 C -55.47514 1328.4872 -54.26709 1327.2792 -52.742473 1326.6693 L -23.897968 1315.1315 C -22.467502 1314.5593 -20.871746 1314.5593 -19.44128 1315.1315 Z" fill="url(#Obj_Gradient_15)"/>
+        <path d="M -19.44128 1315.1315 L 9.403226 1326.6693 C 12.479927 1327.9 13.976423 1331.3918 12.745742 1334.4685 C 12.135896 1335.9932 10.927842 1337.2012 9.403226 1337.811 L -19.44128 1349.3489 C -20.871746 1349.921 -22.467502 1349.921 -23.897968 1349.3489 L -52.742473 1337.811 C -55.819174 1336.5804 -57.31567 1333.0886 -56.08499 1330.0119 C -55.47514 1328.4872 -54.26709 1327.2792 -52.742473 1326.6693 L -23.897968 1315.1315 C -22.467502 1314.5593 -20.871746 1314.5593 -19.44128 1315.1315 Z" stroke="#009051" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+      </g>
+      <g id="Graphic_1843_shadow" filter="url(#Shadow_2)">
+        <path d="M -568.06325 792.3455 L -28.5975 792.3455 C -25.28379 792.3455 -22.5975 795.0318 -22.5975 798.3455 L -22.5975 878.4805 C -22.5975 881.7942 -25.28379 884.4805 -28.5975 884.4805 L -568.06325 884.4805 C -571.37696 884.4805 -574.06325 881.7942 -574.06325 878.4805 L -574.06325 798.3455 C -574.06325 795.0318 -571.37696 792.3455 -568.06325 792.3455 Z" fill="url(#Obj_Gradient_16)"/>
+        <path d="M -568.06325 792.3455 L -28.5975 792.3455 C -25.28379 792.3455 -22.5975 795.0318 -22.5975 798.3455 L -22.5975 878.4805 C -22.5975 881.7942 -25.28379 884.4805 -28.5975 884.4805 L -568.06325 884.4805 C -571.37696 884.4805 -574.06325 881.7942 -574.06325 878.4805 L -574.06325 798.3455 C -574.06325 795.0318 -571.37696 792.3455 -568.06325 792.3455 Z" stroke="#005493" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+      </g>
+      <g id="Graphic_1845_shadow" filter="url(#Shadow_2)">
+        <path d="M -568.2961 1171.447 L -28.830376 1171.447 C -25.516668 1171.447 -22.830376 1174.1333 -22.830376 1177.447 L -22.830376 1257.582 C -22.830376 1260.8958 -25.516668 1263.582 -28.830376 1263.582 L -568.2961 1263.582 C -571.60984 1263.582 -574.2961 1260.8958 -574.2961 1257.582 L -574.2961 1177.447 C -574.2961 1174.1333 -571.60984 1171.447 -568.2961 1171.447 Z" fill="url(#Obj_Gradient_17)"/>
+        <path d="M -568.2961 1171.447 L -28.830376 1171.447 C -25.516668 1171.447 -22.830376 1174.1333 -22.830376 1177.447 L -22.830376 1257.582 C -22.830376 1260.8958 -25.516668 1263.582 -28.830376 1263.582 L -568.2961 1263.582 C -571.60984 1263.582 -574.2961 1260.8958 -574.2961 1257.582 L -574.2961 1177.447 C -574.2961 1174.1333 -571.60984 1171.447 -568.2961 1171.447 Z" stroke="#005493" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+      </g>
+      <g id="Graphic_1846_shadow" filter="url(#Shadow)">
+        <ellipse cx="-700.9216" cy="1217.5145" rx="54.0000862867023" ry="31.5000503339097" fill="url(#Obj_Gradient_18)"/>
+        <ellipse cx="-700.9216" cy="1217.5145" rx="54.0000862867023" ry="31.5000503339097" stroke="#a07128" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+      </g>
+      <g id="Graphic_1773">
+        <ellipse cx="-458.3901" cy="113.7598" rx="54.0000862867023" ry="31.5000503339097" fill="url(#Obj_Gradient_19)"/>
+        <ellipse cx="-458.3901" cy="113.7598" rx="54.0000862867023" ry="31.5000503339097" stroke="#a07128" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+        <text transform="translate(-507.3901 103.7598)" fill="black">
+          <tspan font-family="Lucida Grande" font-size="16" font-weight="700" fill="black" x="17.566406" y="15">setRoot</tspan>
+        </text>
+      </g>
+      <g id="Graphic_1774">
+        <path d="M -566.8304 289.2598 L -29.830376 289.2598 C -26.516668 289.2598 -23.830376 291.9461 -23.830376 295.2598 L -23.830376 375.39484 C -23.830376 378.70855 -26.516668 381.39484 -29.830376 381.39484 L -566.8304 381.39484 C -570.1441 381.39484 -572.8304 378.70855 -572.8304 375.39484 L -572.8304 295.2598 C -572.8304 291.9461 -570.1441 289.2598 -566.8304 289.2598 Z" fill="url(#Obj_Gradient_20)"/>
+        <path d="M -566.8304 289.2598 L -29.830376 289.2598 C -26.516668 289.2598 -23.830376 291.9461 -23.830376 295.2598 L -23.830376 375.39484 C -23.830376 378.70855 -26.516668 381.39484 -29.830376 381.39484 L -566.8304 381.39484 C -570.1441 381.39484 -572.8304 378.70855 -572.8304 375.39484 L -572.8304 295.2598 C -572.8304 291.9461 -570.1441 289.2598 -566.8304 289.2598 Z" stroke="#005493" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+        <text transform="translate(-567.8304 296.82732)" fill="black">
+          <tspan font-family="Lucida Grande" font-size="20" font-weight="400" fill="black" x="164.54395" y="19">@OnCreateInitialState</tspan>
+          <tspan font-family="Courier New" font-size="16" font-weight="400" fill="black" x="183.08594" y="36">(ComponentContext,</tspan>
+          <tspan font-family="Courier New" font-size="16" font-weight="400" fill="black" x="15.058594" y="54">[</tspan>
+          <tspan font-family="Courier New" font-size="16" font-weight="400" fill="black" y="54">...StateValue, ...Prop, ...TreeProp, ...InjectProp])</tspan>
+          <tspan font-family="Courier New" font-size="16" font-weight="700" fill="black" x="250.29688" y="72">Void</tspan>
+        </text>
+      </g>
+      <g id="Graphic_1784">
+        <path d="M -568.06325 667.05236 L -28.5975 667.05236 C -25.28379 667.05236 -22.5975 669.73865 -22.5975 673.05236 L -22.5975 753.1874 C -22.5975 756.5011 -25.28379 759.1874 -28.5975 759.1874 L -568.06325 759.1874 C -571.37696 759.1874 -574.06325 756.5011 -574.06325 753.1874 L -574.06325 673.05236 C -574.06325 669.73865 -571.37696 667.05236 -568.06325 667.05236 Z" fill="url(#Obj_Gradient_21)"/>
+        <path d="M -568.06325 667.05236 L -28.5975 667.05236 C -25.28379 667.05236 -22.5975 669.73865 -22.5975 673.05236 L -22.5975 753.1874 C -22.5975 756.5011 -25.28379 759.1874 -28.5975 759.1874 L -568.06325 759.1874 C -571.37696 759.1874 -574.06325 756.5011 -574.06325 753.1874 L -574.06325 673.05236 C -574.06325 669.73865 -571.37696 667.05236 -568.06325 667.05236 Z" stroke="#005493" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+        <text transform="translate(-569.06325 674.6199)" fill="black">
+          <tspan font-family="Lucida Grande" font-size="20" font-weight="400" fill="black" x="167.64694" y="19">@OnCreateTransition</tspan>
+          <tspan font-family="Courier New" font-size="16" font-weight="400" fill="black" x="184.31881" y="36">(ComponentContext, </tspan>
+          <tspan font-family="Courier New" font-size="16" font-weight="400" fill="black" x="1.8891267" y="54">[...Prop, ..TreeProp, ...Diff, ...State, ...InjectProp])</tspan>
+          <tspan font-family="Courier New" font-size="16" font-weight="700" fill="black" x="222.72506" y="72">Transition</tspan>
+        </text>
+      </g>
+      <g id="Graphic_1786">
+        <path d="M -504.06325 918.4167 L -93.06325 918.4167 C -89.74954 918.4167 -87.06325 921.103 -87.06325 924.4167 L -87.06325 1004.5517 C -87.06325 1007.8654 -89.74954 1010.5517 -93.06325 1010.5517 L -504.06325 1010.5517 C -507.37696 1010.5517 -510.06325 1007.8654 -510.06325 1004.5517 L -510.06325 924.4167 C -510.06325 921.103 -507.37696 918.4167 -504.06325 918.4167 Z" fill="url(#Obj_Gradient_22)"/>
+        <path d="M -504.06325 918.4167 L -93.06325 918.4167 C -89.74954 918.4167 -87.06325 921.103 -87.06325 924.4167 L -87.06325 1004.5517 C -87.06325 1007.8654 -89.74954 1010.5517 -93.06325 1010.5517 L -504.06325 1010.5517 C -507.37696 1010.5517 -510.06325 1007.8654 -510.06325 1004.5517 L -510.06325 924.4167 C -510.06325 921.103 -507.37696 918.4167 -504.06325 918.4167 Z" stroke="#727272" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+        <text transform="translate(-505.06325 925.9842)" fill="black">
+          <tspan font-family="Lucida Grande" font-size="20" font-weight="400" fill="black" x="66.143555" y="19">@OnEvent(VisibleEvent.class)</tspan>
+          <tspan font-family="Courier New" font-size="14" font-weight="400" fill="black" x="120.68604" y="36">(</tspan>
+          <tspan font-family="Courier New" font-size="16" font-weight="400" fill="black" y="36">ComponentContext,</tspan>
+          <tspan font-family="Courier New" font-size="16" font-weight="400" fill="black" x="158.49219" y="54">[</tspan>
+          <tspan font-family="Courier New" font-size="16" font-weight="400" fill="black" y="54">...Prop])</tspan>
+          <tspan font-family="Courier New" font-size="16" font-weight="700" fill="black" x="187.29688" y="72">Void</tspan>
+        </text>
+      </g>
+      <g id="Graphic_1787">
+        <path d="M -502.8304 1044.9318 L -91.83038 1044.9318 C -88.51667 1044.9318 -85.83038 1047.6181 -85.83038 1050.9318 L -85.83038 1131.0669 C -85.83038 1134.3806 -88.51667 1137.0669 -91.83038 1137.0669 L -502.8304 1137.0669 C -506.1441 1137.0669 -508.8304 1134.3806 -508.8304 1131.0669 L -508.8304 1050.9318 C -508.8304 1047.6181 -506.1441 1044.9318 -502.8304 1044.9318 Z" fill="url(#Obj_Gradient_23)"/>
+        <path d="M -502.8304 1044.9318 L -91.83038 1044.9318 C -88.51667 1044.9318 -85.83038 1047.6181 -85.83038 1050.9318 L -85.83038 1131.0669 C -85.83038 1134.3806 -88.51667 1137.0669 -91.83038 1137.0669 L -502.8304 1137.0669 C -506.1441 1137.0669 -508.8304 1134.3806 -508.8304 1131.0669 L -508.8304 1050.9318 C -508.8304 1047.6181 -506.1441 1044.9318 -502.8304 1044.9318 Z" stroke="#727272" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+        <text transform="translate(-503.8304 1052.4994)" fill="black">
+          <tspan font-family="Lucida Grande" font-size="20" font-weight="400" fill="black" x="58.418945" y="19">@OnEvent(InvisibleEvent.class)</tspan>
+          <tspan font-family="Courier New" font-size="16" font-weight="400" fill="black" x="120.08594" y="36">(ComponentContext,</tspan>
+          <tspan font-family="Courier New" font-size="16" font-weight="400" fill="black" x="158.49219" y="54">[...Prop])</tspan>
+          <tspan font-family="Courier New" font-size="16" font-weight="700" fill="black" x="187.29688" y="72">Void</tspan>
+        </text>
+      </g>
+      <g id="Group_1790">
+        <g id="Graphic_1780">
+          <path d="M -568.06325 541.7592 L -27.83813 541.7592 C -24.524422 541.7592 -21.83813 544.4455 -21.83813 547.7592 L -21.83813 627.89426 C -21.83813 631.208 -24.524422 633.89426 -27.83813 633.89426 L -568.06325 633.89426 C -571.37696 633.89426 -574.06325 631.208 -574.06325 627.89426 L -574.06325 547.7592 C -574.06325 544.4455 -571.37696 541.7592 -568.06325 541.7592 Z" fill="url(#Obj_Gradient_24)"/>
+          <path d="M -568.06325 541.7592 L -27.83813 541.7592 C -24.524422 541.7592 -21.83813 544.4455 -21.83813 547.7592 L -21.83813 627.89426 C -21.83813 631.208 -24.524422 633.89426 -27.83813 633.89426 L -568.06325 633.89426 C -571.37696 633.89426 -574.06325 631.208 -574.06325 627.89426 L -574.06325 547.7592 C -574.06325 544.4455 -571.37696 541.7592 -568.06325 541.7592 Z" stroke="#005493" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+          <text transform="translate(-569.06325 549.32674)" fill="black">
+            <tspan font-family="Lucida Grande" font-size="20" font-weight="400" fill="black" x="184.96998" y="19">@OnCreateLayout</tspan>
+            <tspan font-family="Courier New" font-size="16" font-weight="400" fill="black" x="184.6985" y="36">(ComponentContext, </tspan>
+            <tspan font-family="Courier New" font-size="16" font-weight="400" fill="black" x="45.47584" y="54">[...Prop, ..TreeProp, ...State, ...InjectProp])</tspan>
+            <tspan font-family="Courier New" font-size="16" font-weight="700" fill="black" x="227.90553" y="72">Component</tspan>
+          </text>
+        </g>
+        <g id="Graphic_1788">
+          <ellipse cx="-22.31969" cy="542.1975" rx="8.72220522552948" ry="7.93767874200585" fill="#982d1c"/>
+          <ellipse cx="-22.31969" cy="542.1975" rx="8.72220522552948" ry="7.93767874200585" stroke="#982d1c" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+        </g>
+      </g>
+      <g id="Line_1791">
+        <line x1="-458.3901" y1="145.25982" x2="-458.3901" y2="175.32506" marker-end="url(#FilledArrow_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+      </g>
+      <g id="Line_1795">
+        <path d="M -510.06325 977.6463 L -571.8304 977.6463 L -571.8304 1077.8372 L -522.7304 1077.8372" marker-end="url(#FilledArrow_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+      </g>
+      <g id="Graphic_1798">
+        <ellipse cx="-588.6696" cy="1332.2402" rx="45.0000719055853" ry="18.0000287622342" fill="url(#Obj_Gradient_25)"/>
+        <ellipse cx="-588.6696" cy="1332.2402" rx="45.0000719055853" ry="18.0000287622342" stroke="#a07128" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+        <text transform="translate(-628.6696 1323.7402)" fill="black">
+          <tspan font-family="Lucida Grande" font-size="14" font-weight="400" fill="black" x="22.981934" y="14">Litho</tspan>
+        </text>
+      </g>
+      <g id="Graphic_1799">
+        <path d="M -519.6696 1314.2402 L -486.6696 1314.2402 C -483.3559 1314.2402 -480.6696 1316.9265 -480.6696 1320.2402 L -480.6696 1344.2402 C -480.6696 1347.5539 -483.3559 1350.2402 -486.6696 1350.2402 L -519.6696 1350.2402 C -522.98333 1350.2402 -525.6696 1347.5539 -525.6696 1344.2402 L -525.6696 1320.2402 C -525.6696 1316.9265 -522.98333 1314.2402 -519.6696 1314.2402 Z" fill="url(#Obj_Gradient_26)"/>
+        <path d="M -519.6696 1314.2402 L -486.6696 1314.2402 C -483.3559 1314.2402 -480.6696 1316.9265 -480.6696 1320.2402 L -480.6696 1344.2402 C -480.6696 1347.5539 -483.3559 1350.2402 -486.6696 1350.2402 L -519.6696 1350.2402 C -522.98333 1350.2402 -525.6696 1347.5539 -525.6696 1344.2402 L -525.6696 1320.2402 C -525.6696 1316.9265 -522.98333 1314.2402 -519.6696 1314.2402 Z" stroke="#005493" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+        <text transform="translate(-520.6696 1323.7402)" fill="black">
+          <tspan font-family="Lucida Grande" font-size="14" font-weight="400" fill="black" x="1.8388672" y="14">Spec</tspan>
+        </text>
+      </g>
+      <g id="Graphic_1805">
+        <path d="M -456.6696 1314.2402 L -324.66962 1314.2402 C -321.3559 1314.2402 -318.66962 1316.9265 -318.66962 1320.2402 L -318.66962 1344.2402 C -318.66962 1347.5539 -321.3559 1350.2402 -324.66962 1350.2402 L -456.6696 1350.2402 C -459.98333 1350.2402 -462.6696 1347.5539 -462.6696 1344.2402 L -462.6696 1320.2402 C -462.6696 1316.9265 -459.98333 1314.2402 -456.6696 1314.2402 Z" fill="url(#Obj_Gradient_27)"/>
+        <path d="M -456.6696 1314.2402 L -324.66962 1314.2402 C -321.3559 1314.2402 -318.66962 1316.9265 -318.66962 1320.2402 L -318.66962 1344.2402 C -318.66962 1347.5539 -321.3559 1350.2402 -324.66962 1350.2402 L -456.6696 1350.2402 C -459.98333 1350.2402 -462.6696 1347.5539 -462.6696 1344.2402 L -462.6696 1320.2402 C -462.6696 1316.9265 -459.98333 1314.2402 -456.6696 1314.2402 Z" stroke="#727272" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+        <text transform="translate(-457.6696 1323.7402)" fill="black">
+          <tspan font-family="Lucida Grande" font-size="14" font-weight="400" fill="black" x=".18896484" y="14">Spec (maybe called)</tspan>
+        </text>
+      </g>
+      <g id="Graphic_1806">
+        <text transform="translate(-628.4936 1283.2402)" fill="black">
+          <tspan font-family="Helvetica Neue" font-size="16" font-weight="400" fill="black" x="5222489e-19" y="15">Legends</tspan>
+        </text>
+      </g>
+      <g id="Graphic_1807">
+        <text transform="translate(-421.055 16.838235)" fill="black">
+          <tspan font-family="Lucida Grande" font-size="24" font-weight="400" fill="black" x="0" y="23">Layout Spec Lifecycle</tspan>
+        </text>
+      </g>
+      <g id="Graphic_1810">
+        <path d="M -568.06325 417.39484 L -28.5975 417.39484 C -25.28379 417.39484 -22.5975 420.08113 -22.5975 423.39484 L -22.5975 503.5299 C -22.5975 506.8436 -25.28379 509.5299 -28.5975 509.5299 L -568.06325 509.5299 C -571.37696 509.5299 -574.06325 506.8436 -574.06325 503.5299 L -574.06325 423.39484 C -574.06325 420.08113 -571.37696 417.39484 -568.06325 417.39484 Z" fill="url(#Obj_Gradient_28)"/>
+        <path d="M -568.06325 417.39484 L -28.5975 417.39484 C -25.28379 417.39484 -22.5975 420.08113 -22.5975 423.39484 L -22.5975 503.5299 C -22.5975 506.8436 -25.28379 509.5299 -28.5975 509.5299 L -568.06325 509.5299 C -571.37696 509.5299 -574.06325 506.8436 -574.06325 503.5299 L -574.06325 423.39484 C -574.06325 420.08113 -571.37696 417.39484 -568.06325 417.39484 Z" stroke="#005493" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+        <text transform="translate(-569.06325 424.96236)" fill="black">
+          <tspan font-family="Lucida Grande" font-size="20" font-weight="400" fill="black" x="173.14499" y="19">@OnCreateTreeProp</tspan>
+          <tspan font-family="Courier New" font-size="16" font-weight="400" fill="black" x="184.31881" y="36">(ComponentContext, </tspan>
+          <tspan font-family="Courier New" font-size="16" font-weight="400" fill="black" x="40.295377" y="54">[...Prop, ...TreeProp, ...State, ...InjectProp])</tspan>
+          <tspan font-family="Courier New" font-size="16" font-weight="700" fill="black" x="193.92038" y="72">? extends Object</tspan>
+        </text>
+      </g>
+      <g id="Line_1812">
+        <path d="M -297.95082 633.89426 L -297.95082 649.79426 L -298.3305 651.15236 L -298.3305 654.15236" marker-end="url(#FilledArrow_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+      </g>
+      <g id="Line_1813">
+        <line x1="-298.3305" y1="381.39484" x2="-298.3305" y2="404.49484" marker-end="url(#FilledArrow_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+      </g>
+      <g id="Line_1814">
+        <path d="M -298.3305 509.5299 L -298.3305 525.4299 L -297.95082 525.8592 L -297.95082 528.8592" marker-end="url(#FilledArrow_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+      </g>
+      <g id="Line_1819">
+        <path d="M -85.83038 1077.8372 L -22.830376 1077.8372 L -22.830376 977.6464 L -74.16325 977.6464" marker-end="url(#FilledArrow_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+      </g>
+      <g id="Graphic_1822">
+        <path d="M -455.7891 188.81816 L -401.3502 215.00645 C -398.36406 216.44296 -397.10784 220.02824 -398.54435 223.0144 C -399.13434 224.24084 -400.12377 225.23026 -401.3502 225.82026 L -455.7891 252.00855 C -457.43295 252.79935 -459.3473 252.79935 -460.99116 252.00855 L -515.43003 225.82026 C -518.4162 224.38374 -519.6724 220.79847 -518.2359 217.81232 C -517.6459 216.58587 -516.6565 215.59644 -515.43003 215.00645 L -460.99116 188.81816 C -459.3473 188.02736 -457.43295 188.02736 -455.7891 188.81816 Z" fill="url(#Obj_Gradient_29)"/>
+        <path d="M -455.7891 188.81816 L -401.3502 215.00645 C -398.36406 216.44296 -397.10784 220.02824 -398.54435 223.0144 C -399.13434 224.24084 -400.12377 225.23026 -401.3502 225.82026 L -455.7891 252.00855 C -457.43295 252.79935 -459.3473 252.79935 -460.99116 252.00855 L -515.43003 225.82026 C -518.4162 224.38374 -519.6724 220.79847 -518.2359 217.81232 C -517.6459 216.58587 -516.6565 215.59644 -515.43003 215.00645 L -460.99116 188.81816 C -459.3473 188.02736 -457.43295 188.02736 -455.7891 188.81816 Z" stroke="#009051" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+        <text transform="translate(-503.23416 212.75642)" fill="black">
+          <tspan font-family="Lucida Grande" font-size="11" font-weight="400" fill="black" x="9.014801" y="11">Is first layout?</tspan>
+        </text>
+      </g>
+      <g id="Line_1824">
+        <path d="M -397.94987 220.41335 L -298.3305 220.41335 L -298.3305 276.3598" marker-end="url(#FilledArrow_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+      </g>
+      <g id="Graphic_1823">
+        <rect x="-370.67825" y="205.41335" width="36" height="30" fill="white"/>
+        <text transform="translate(-365.27025 210.41335)" fill="black">
+          <tspan font-family="Helvetica Neue" font-size="16" font-weight="400" fill="black" x="552447e-18" y="15">Yes</tspan>
+        </text>
+      </g>
+      <g id="Line_1826">
+        <path d="M -518.8304 220.41335 L -607.6696 220.41335 L -607.6696 463.46236 L -586.96325 463.46236" marker-end="url(#FilledArrow_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+      </g>
+      <g id="Graphic_1825">
+        <rect x="-579.10796" y="205.41335" width="31" height="30" fill="white"/>
+        <text transform="translate(-573.97596 210.41335)" fill="black">
+          <tspan font-family="Helvetica Neue" font-size="16" font-weight="400" fill="black" x="39257486e-20" y="15">No</tspan>
+        </text>
+      </g>
+      <g id="Graphic_1827">
+        <ellipse cx="-86.83038" cy="113.7598" rx="54.0000862867024" ry="31.5000503339097" fill="url(#Obj_Gradient_30)"/>
+        <ellipse cx="-86.83038" cy="113.7598" rx="54.0000862867024" ry="31.5000503339097" stroke="#a07128" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+        <text transform="translate(-135.83038 95.7598)" fill="black">
+          <tspan font-family="Lucida Grande" font-size="16" font-weight="700" fill="black" x="19.875" y="15">Update </tspan>
+          <tspan font-family="Lucida Grande" font-size="16" font-weight="700" fill="black" x="28.554688" y="33">State </tspan>
+        </text>
+      </g>
+      <g id="Graphic_1828">
+        <path d="M -228.58038 175.41335 L 34.669624 175.41335 C 54.919624 175.41335 54.919624 175.41335 54.919624 181.03835 L 54.919624 178.22585 C 65.04462 178.22585 65.04462 178.22585 65.04462 183.85085 L 65.04462 181.03835 C 75.16962 181.03835 75.16962 181.03835 75.16962 186.66335 L 75.16962 259.78835 C 75.16962 265.41335 75.16962 265.41335 54.919624 265.41335 L -208.33038 265.41335 C -228.58038 265.41335 -228.58038 265.41335 -228.58038 262.60085 C -238.70538 262.60085 -238.70538 262.60085 -238.70538 259.78835 C -248.83038 259.78835 -248.83038 259.78835 -248.83038 254.16335 L -248.83038 181.03835 C -248.83038 175.41335 -248.83038 175.41335 -228.58038 175.41335 Z" fill="url(#Obj_Gradient_31)"/>
+        <path d="M -228.58038 175.41335 L 34.669624 175.41335 C 54.919624 175.41335 54.919624 175.41335 54.919624 181.03835 L 54.919624 254.16335 C 54.919624 259.78835 54.919624 259.78835 34.669624 259.78835 L -228.58038 259.78835 C -248.83038 259.78835 -248.83038 259.78835 -248.83038 254.16335 L -248.83038 181.03835 C -248.83038 175.41335 -248.83038 175.41335 -228.58038 175.41335 M 54.919624 178.22585 C 65.04462 178.22585 65.04462 178.22585 65.04462 183.85085 L 65.04462 259.78835 C 65.04462 262.60085 65.04462 262.60085 44.794624 262.60085 L -218.45538 262.60085 C -238.70538 262.60085 -238.70538 262.60085 -238.70538 259.78835 M 65.04462 181.03835 C 75.16962 181.03835 75.16962 181.03835 75.16962 186.66335 L 75.16962 259.78835 C 75.16962 265.41335 75.16962 265.41335 54.919624 265.41335 L -208.33038 265.41335 C -228.58038 265.41335 -228.58038 265.41335 -228.58038 262.60085" stroke="#005493" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+        <text transform="translate(-237.35038 177.18835)" fill="black">
+          <tspan font-family="Lucida Grande" font-size="20" font-weight="400" fill="black" x="52.64086" y="19">@OnUpdateState</tspan>
+          <tspan font-family="Courier New" font-size="16" font-weight="400" fill="black" x="71.09984" y="36">(…StateValue, </tspan>
+          <tspan font-family="Courier New" font-size="16" font-weight="400" fill="black" x="23.09203" y="54">[...Prop, ...TreeProp])</tspan>
+          <tspan font-family="Courier New" font-size="16" font-weight="700" fill="black" x="114.30688" y="72">Void</tspan>
+        </text>
+      </g>
+      <g id="Line_1829">
+        <line x1="-86.83038" y1="145.25982" x2="-86.83038" y2="162.51335" marker-end="url(#FilledArrow_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+      </g>
+      <g id="Line_1830">
+        <path d="M 76.16962 220.41335 L 120.16962 220.41335 L 120.16962 463.46236 L -9.6975 463.46236" marker-end="url(#FilledArrow_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+      </g>
+      <g id="Graphic_1834">
+        <circle cx="-148.14052" cy="1332.7111" r="8.52911362866508" fill="#982d1c"/>
+        <circle cx="-148.14052" cy="1332.7111" r="8.52911362866508" stroke="#982d1c" stroke-linecap="round" stroke-linejoin="round" stroke-width="1"/>
+      </g>
+      <g id="Graphic_1833">
+        <text transform="translate(-133.34562 1319.2402)" fill="black">
+          <tspan font-family="Helvetica Neue" font-size="14" font-weight="400" fill="black" x="0" y="13">required</tspan>
+        </text>
+      </g>
+      <g id="Graphic_1832">
+        <path d="M -293.35712 1314.2402 L -198.29462 1314.2402 C -190.98212 1314.2402 -190.98212 1314.2402 -190.98212 1316.4902 L -190.98212 1315.3652 C -187.32587 1315.3652 -187.32587 1315.3652 -187.32587 1317.6152 L -187.32587 1316.4902 C -183.66962 1316.4902 -183.66962 1316.4902 -183.66962 1318.7402 L -183.66962 1347.9902 C -183.66962 1350.2402 -183.66962 1350.2402 -190.98212 1350.2402 L -286.04462 1350.2402 C -293.35712 1350.2402 -293.35712 1350.2402 -293.35712 1349.1152 C -297.01337 1349.1152 -297.01337 1349.1152 -297.01337 1347.9902 C -300.66962 1347.9902 -300.66962 1347.9902 -300.66962 1345.7402 L -300.66962 1316.4902 C -300.66962 1314.2402 -300.66962 1314.2402 -293.35712 1314.2402 Z" fill="url(#Obj_Gradient_32)"/>
+        <path d="M -293.35712 1314.2402 L -198.29462 1314.2402 C -190.98212 1314.2402 -190.98212 1314.2402 -190.98212 1316.4902 L -190.98212 1345.7402 C -190.98212 1347.9902 -190.98212 1347.9902 -198.29462 1347.9902 L -293.35712 1347.9902 C -300.66962 1347.9902 -300.66962 1347.9902 -300.66962 1345.7402 L -300.66962 1316.4902 C -300.66962 1314.2402 -300.66962 1314.2402 -293.35712 1314.2402 M -190.98212 1315.3652 C -187.32587 1315.3652 -187.32587 1315.3652 -187.32587 1317.6152 L -187.32587 1347.9902 C -187.32587 1349.1152 -187.32587 1349.1152 -194.63837 1349.1152 L -289.70087 1349.1152 C -297.01337 1349.1152 -297.01337 1349.1152 -297.01337 1347.9902 M -187.32587 1316.4902 C -183.66962 1316.4902 -183.66962 1316.4902 -183.66962 1318.7402 L -183.66962 1347.9902 C -183.66962 1350.2402 -183.66962 1350.2402 -190.98212 1350.2402 L -286.04462 1350.2402 C -293.35712 1350.2402 -293.35712 1350.2402 -293.35712 1349.1152" stroke="#005493" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+        <text transform="translate(-293.32962 1321.8502)" fill="black">
+          <tspan font-family="Lucida Grande" font-size="14" font-weight="400" fill="black" x=".7992383" y="14">Spec (iterate)</tspan>
+        </text>
+      </g>
+      <g id="Graphic_1831">
+        <path d="M -19.44128 1315.1315 L 9.403226 1326.6693 C 12.479927 1327.9 13.976423 1331.3918 12.745742 1334.4685 C 12.135896 1335.9932 10.927842 1337.2012 9.403226 1337.811 L -19.44128 1349.3489 C -20.871746 1349.921 -22.467502 1349.921 -23.897968 1349.3489 L -52.742473 1337.811 C -55.819174 1336.5804 -57.31567 1333.0886 -56.08499 1330.0119 C -55.47514 1328.4872 -54.26709 1327.2792 -52.742473 1326.6693 L -23.897968 1315.1315 C -22.467502 1314.5593 -20.871746 1314.5593 -19.44128 1315.1315 Z" fill="url(#Obj_Gradient_33)"/>
+        <path d="M -19.44128 1315.1315 L 9.403226 1326.6693 C 12.479927 1327.9 13.976423 1331.3918 12.745742 1334.4685 C 12.135896 1335.9932 10.927842 1337.2012 9.403226 1337.811 L -19.44128 1349.3489 C -20.871746 1349.921 -22.467502 1349.921 -23.897968 1349.3489 L -52.742473 1337.811 C -55.819174 1336.5804 -57.31567 1333.0886 -56.08499 1330.0119 C -55.47514 1328.4872 -54.26709 1327.2792 -52.742473 1326.6693 L -23.897968 1315.1315 C -22.467502 1314.5593 -20.871746 1314.5593 -19.44128 1315.1315 Z" stroke="#009051" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+        <text transform="translate(-49.519624 1324.8802)" fill="black">
+          <tspan font-family="Lucida Grande" font-size="11" font-weight="400" fill="black" x="6.631836" y="11">decision</tspan>
+        </text>
+      </g>
+      <g id="Line_1841">
+        <path d="M -298.3305 884.4805 L -298.3305 900.3805 L -298.56325 902.5167 L -298.56325 905.5167" marker-end="url(#FilledArrow_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+      </g>
+      <g id="Graphic_1843">
+        <path d="M -568.06325 792.3455 L -28.5975 792.3455 C -25.28379 792.3455 -22.5975 795.0318 -22.5975 798.3455 L -22.5975 878.4805 C -22.5975 881.7942 -25.28379 884.4805 -28.5975 884.4805 L -568.06325 884.4805 C -571.37696 884.4805 -574.06325 881.7942 -574.06325 878.4805 L -574.06325 798.3455 C -574.06325 795.0318 -571.37696 792.3455 -568.06325 792.3455 Z" fill="url(#Obj_Gradient_34)"/>
+        <path d="M -568.06325 792.3455 L -28.5975 792.3455 C -25.28379 792.3455 -22.5975 795.0318 -22.5975 798.3455 L -22.5975 878.4805 C -22.5975 881.7942 -25.28379 884.4805 -28.5975 884.4805 L -568.06325 884.4805 C -571.37696 884.4805 -574.06325 881.7942 -574.06325 878.4805 L -574.06325 798.3455 C -574.06325 795.0318 -571.37696 792.3455 -568.06325 792.3455 Z" stroke="#005493" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+        <text transform="translate(-569.06325 799.913)" fill="black">
+          <tspan font-family="Lucida Grande" font-size="20" font-weight="400" fill="black" x="205.07858" y="19">@OnAttached</tspan>
+          <tspan font-family="Courier New" font-size="16" font-weight="400" fill="black" x="184.31881" y="36">(ComponentContext, </tspan>
+          <tspan font-family="Courier New" font-size="16" font-weight="400" fill="black" x="45.09616" y="54">[...Prop, ..TreeProp, ...State, ...InjectProp])</tspan>
+          <tspan font-family="Courier New" font-size="16" font-weight="700" fill="black" x="251.52975" y="72">Void</tspan>
+        </text>
+      </g>
+      <g id="Line_1844">
+        <line x1="-298.3305" y1="759.1874" x2="-298.3305" y2="779.4455" marker-end="url(#FilledArrow_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+      </g>
+      <g id="Graphic_1845">
+        <path d="M -568.2961 1171.447 L -28.830376 1171.447 C -25.516668 1171.447 -22.830376 1174.1333 -22.830376 1177.447 L -22.830376 1257.582 C -22.830376 1260.8958 -25.516668 1263.582 -28.830376 1263.582 L -568.2961 1263.582 C -571.60984 1263.582 -574.2961 1260.8958 -574.2961 1257.582 L -574.2961 1177.447 C -574.2961 1174.1333 -571.60984 1171.447 -568.2961 1171.447 Z" fill="url(#Obj_Gradient_35)"/>
+        <path d="M -568.2961 1171.447 L -28.830376 1171.447 C -25.516668 1171.447 -22.830376 1174.1333 -22.830376 1177.447 L -22.830376 1257.582 C -22.830376 1260.8958 -25.516668 1263.582 -28.830376 1263.582 L -568.2961 1263.582 C -571.60984 1263.582 -574.2961 1260.8958 -574.2961 1257.582 L -574.2961 1177.447 C -574.2961 1174.1333 -571.60984 1171.447 -568.2961 1171.447 Z" stroke="#005493" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+        <text transform="translate(-569.2961 1179.0145)" fill="black">
+          <tspan font-family="Lucida Grande" font-size="20" font-weight="400" fill="black" x="202.6567" y="19">@OnDetached</tspan>
+          <tspan font-family="Courier New" font-size="16" font-weight="400" fill="black" x="184.31881" y="36">(ComponentContext, </tspan>
+          <tspan font-family="Courier New" font-size="16" font-weight="400" fill="black" x="45.09616" y="54">[...Prop, ..TreeProp, ...State, ...InjectProp])</tspan>
+          <tspan font-family="Courier New" font-size="16" font-weight="700" fill="black" x="251.52975" y="72">Void</tspan>
+        </text>
+      </g>
+      <g id="Graphic_1846">
+        <ellipse cx="-700.9216" cy="1217.5145" rx="54.0000862867023" ry="31.5000503339097" fill="url(#Obj_Gradient_36)"/>
+        <ellipse cx="-700.9216" cy="1217.5145" rx="54.0000862867023" ry="31.5000503339097" stroke="#a07128" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+        <text transform="translate(-749.9216 1199.5145)" fill="black">
+          <tspan font-family="Lucida Grande" font-size="16" font-weight="700" fill="black" x="8.359375" y="15">LithoView</tspan>
+          <tspan font-family="Lucida Grande" font-size="16" font-weight="700" fill="black" x="13.542969" y="33">release()</tspan>
+        </text>
+      </g>
+      <g id="Line_1847">
+        <line x1="-646.92154" y1="1217.5145" x2="-587.1961" y2="1217.5145" marker-end="url(#FilledArrow_Marker)" stroke="black" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+      </g>
+    </g>
+  </g>
+</svg>

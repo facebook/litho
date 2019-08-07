@@ -18,15 +18,15 @@ package com.facebook.litho.widget;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.support.annotation.IdRes;
-import android.support.annotation.Nullable;
-import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.RecyclerView.ItemAnimator;
-import android.support.v7.widget.RecyclerView.OnScrollListener;
-import android.support.v7.widget.SnapHelper;
 import android.view.View;
+import androidx.annotation.IdRes;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView.ItemAnimator;
+import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
+import androidx.recyclerview.widget.SnapHelper;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.Diff;
@@ -55,7 +55,6 @@ import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.ShouldAlwaysRemeasure;
 import com.facebook.litho.annotations.ShouldUpdate;
 import com.facebook.litho.annotations.State;
-import com.facebook.litho.config.ComponentsConfiguration;
 import java.util.List;
 
 /**
@@ -130,7 +129,7 @@ class RecyclerSpec {
   @OnPrepare
   static void onPrepare(
       ComponentContext c,
-      @Prop(optional = true) final EventHandler refreshHandler,
+      @Nullable @Prop(optional = true) final EventHandler refreshHandler,
       Output<OnRefreshListener> onRefreshListener) {
     if (refreshHandler != null) {
       onRefreshListener.set(
@@ -173,14 +172,13 @@ class RecyclerSpec {
       throw new IllegalStateException(
           "RecyclerView not found, it should not be removed from SwipeRefreshLayout");
     }
-    final boolean disableClipping = ComponentsConfiguration.disableClipOnRecyclers;
     recyclerView.setContentDescription(contentDescription);
     recyclerView.setHasFixedSize(hasFixedSize);
-    recyclerView.setClipToPadding(clipToPadding || disableClipping);
-    sectionsRecycler.setClipToPadding(clipToPadding || disableClipping);
+    recyclerView.setClipToPadding(clipToPadding);
+    sectionsRecycler.setClipToPadding(clipToPadding);
     recyclerView.setPadding(leftPadding, topPadding, rightPadding, bottomPadding);
-    recyclerView.setClipChildren(clipChildren || disableClipping);
-    sectionsRecycler.setClipChildren(clipChildren || disableClipping);
+    recyclerView.setClipChildren(clipChildren);
+    sectionsRecycler.setClipChildren(clipChildren);
     recyclerView.setNestedScrollingEnabled(nestedScrollingEnabled);
     sectionsRecycler.setNestedScrollingEnabled(nestedScrollingEnabled);
     recyclerView.setScrollBarStyle(scrollBarStyle);

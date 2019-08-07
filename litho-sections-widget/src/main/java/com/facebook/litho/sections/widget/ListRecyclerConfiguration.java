@@ -21,10 +21,10 @@ import static com.facebook.litho.widget.SnapUtil.SNAP_TO_START;
 import static com.facebook.litho.widget.SnapUtil.SnapMode;
 
 import android.content.Context;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.OrientationHelper;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SnapHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.OrientationHelper;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.SnapHelper;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.sections.SectionTree;
 import com.facebook.litho.widget.Binder;
@@ -35,7 +35,7 @@ import javax.annotation.Nullable;
 
 /**
  * A configuration object for {@link RecyclerCollectionComponent} that will create a {@link
- * android.support.v7.widget.LinearLayoutManager} for the {@link RecyclerView}.
+ * androidx.recyclerview.widget.LinearLayoutManager} for the {@link RecyclerView}.
  */
 public class ListRecyclerConfiguration<T extends SectionTree.Target & Binder<RecyclerView>>
     implements RecyclerConfiguration {
@@ -44,6 +44,7 @@ public class ListRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
   private final @SnapMode int mSnapMode;
   private final RecyclerBinderConfiguration mRecyclerBinderConfiguration;
   private final LinearLayoutInfoFactory mLinearLayoutInfoFactory;
+  private int mDeltaJumpThreshold = Integer.MAX_VALUE;
 
   public static Builder create() {
     return new Builder();
@@ -125,10 +126,15 @@ public class ListRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
             : linearLayoutInfoFactory;
   }
 
+  @Override
+  public Builder acquireBuilder() {
+    return new Builder(this);
+  }
+
   @Nullable
   @Override
   public SnapHelper getSnapHelper() {
-    return SnapUtil.getSnapHelper(mSnapMode);
+    return SnapUtil.getSnapHelper(mSnapMode, mDeltaJumpThreshold);
   }
 
   @Override
@@ -160,7 +166,7 @@ public class ListRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
     }
   }
 
-  public static class Builder {
+  public static class Builder implements RecyclerConfiguration.Builder {
     static final RecyclerBinderConfiguration RECYCLER_BINDER_CONFIGURATION =
         RecyclerBinderConfiguration.create().build();
     static final LinearLayoutInfoFactory LINEAR_LAYOUT_INFO_FACTORY =
@@ -172,9 +178,20 @@ public class ListRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
     private RecyclerBinderConfiguration mRecyclerBinderConfiguration =
         RECYCLER_BINDER_CONFIGURATION;
     private LinearLayoutInfoFactory mLinearLayoutInfoFactory = LINEAR_LAYOUT_INFO_FACTORY;
+    private int mDeltaJumpThreshold = Integer.MAX_VALUE;
 
     Builder() {}
 
+    Builder(ListRecyclerConfiguration listRecyclerConfiguration) {
+      this.mOrientation = listRecyclerConfiguration.mOrientation;
+      this.mReverseLayout = listRecyclerConfiguration.mReverseLayout;
+      this.mSnapMode = listRecyclerConfiguration.mSnapMode;
+      this.mRecyclerBinderConfiguration = listRecyclerConfiguration.mRecyclerBinderConfiguration;
+      this.mLinearLayoutInfoFactory = listRecyclerConfiguration.mLinearLayoutInfoFactory;
+      this.mDeltaJumpThreshold = listRecyclerConfiguration.mDeltaJumpThreshold;
+    }
+
+    @Override
     public Builder orientation(int orientation) {
       mOrientation = orientation;
       return this;
@@ -185,11 +202,13 @@ public class ListRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
       return this;
     }
 
+    @Override
     public Builder snapMode(@SnapMode int snapMode) {
       mSnapMode = snapMode;
       return this;
     }
 
+    @Override
     public Builder recyclerBinderConfiguration(
         RecyclerBinderConfiguration recyclerBinderConfiguration) {
       mRecyclerBinderConfiguration = recyclerBinderConfiguration;
@@ -198,6 +217,11 @@ public class ListRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
 
     public Builder linearLayoutInfoFactory(LinearLayoutInfoFactory linearLayoutInfoFactory) {
       mLinearLayoutInfoFactory = linearLayoutInfoFactory;
+      return this;
+    }
+
+    public Builder deltaJumpThreshold(int deltaJumpThreshold) {
+      mDeltaJumpThreshold = deltaJumpThreshold;
       return this;
     }
 
@@ -213,6 +237,7 @@ public class ListRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
     /**
      * Builds a {@link ListRecyclerConfiguration} using the parameters specified in this builder.
      */
+    @Override
     public ListRecyclerConfiguration build() {
       ListRecyclerConfiguration configuration =
           new ListRecyclerConfiguration(
@@ -221,6 +246,7 @@ public class ListRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
               mSnapMode,
               mRecyclerBinderConfiguration,
               mLinearLayoutInfoFactory);
+      configuration.mDeltaJumpThreshold = mDeltaJumpThreshold;
       validate(configuration);
       return configuration;
     }

@@ -16,8 +16,8 @@
 
 package com.facebook.litho.sections.widget;
 
-import android.support.annotation.Nullable;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.Size;
@@ -200,6 +200,11 @@ public class SectionBinderTarget implements Target, Binder<RecyclerView> {
   @Override
   public boolean supportsBackgroundChangeSets() {
     return mUseBackgroundChangeSets;
+  }
+
+  @Override
+  public void detach() {
+    mRecyclerBinder.detach();
   }
 
   public void clear() {

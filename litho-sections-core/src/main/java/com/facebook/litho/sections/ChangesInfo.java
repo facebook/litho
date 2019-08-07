@@ -46,4 +46,8 @@ public class ChangesInfo {
     }
     return result;
   }
+
+  public List<Change> getAllChanges() {
+    return mChanges;
+  }
 }

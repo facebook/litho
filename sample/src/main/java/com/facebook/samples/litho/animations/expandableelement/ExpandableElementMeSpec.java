@@ -14,7 +14,7 @@ package com.facebook.samples.litho.animations.expandableelement;
 import static com.facebook.samples.litho.animations.expandableelement.ExpandableElementUtil.TRANSITION_MSG_PARENT;
 
 import android.graphics.Color;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import com.facebook.litho.ClickEvent;
 import com.facebook.litho.Column;
 import com.facebook.litho.Component;

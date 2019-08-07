@@ -25,8 +25,8 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
-import android.support.v4.util.LongSparseArray;
 import android.view.View;
+import androidx.collection.LongSparseArray;
 import com.facebook.litho.drawable.ComparableDrawable;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.TestDrawableComponent;

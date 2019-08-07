@@ -30,12 +30,14 @@ import com.facebook.litho.specmodels.generator.TriggerGenerator;
 import com.facebook.litho.specmodels.generator.TypeSpecDataHolder;
 import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.SpecGenerator;
+import com.facebook.litho.specmodels.model.SpecModelUtils;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeSpec;
 import java.util.EnumSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import javax.lang.model.element.Modifier;
+import javax.lang.model.element.TypeElement;
 
 public class DefaultGroupSectionSpecGenerator implements SpecGenerator<GroupSectionSpecModel> {
 
@@ -56,6 +58,10 @@ public class DefaultGroupSectionSpecGenerator implements SpecGenerator<GroupSect
         TypeSpec.classBuilder(specModel.getComponentName())
             .superclass(SectionClassNames.SECTION)
             .addTypeVariables(specModel.getTypeVariables());
+
+    if (SpecModelUtils.isTypeElement(specModel)) {
+      typeSpec.addOriginatingElement((TypeElement) specModel.getRepresentedObject());
+    }
 
     if (specModel.isPublic()) {
       typeSpec.addModifiers(Modifier.PUBLIC);

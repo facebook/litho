@@ -17,7 +17,7 @@
 package com.facebook.litho;
 
 import android.graphics.Rect;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * Stores information about a {@link Component} which has registered handlers for

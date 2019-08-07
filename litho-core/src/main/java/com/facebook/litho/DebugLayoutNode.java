@@ -17,7 +17,7 @@
 package com.facebook.litho;
 
 import android.graphics.drawable.Drawable;
-import com.facebook.litho.reference.Reference;
+import com.facebook.litho.drawable.ComparableDrawable;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaDirection;
@@ -50,7 +50,7 @@ public final class DebugLayoutNode {
   }
 
   @Nullable
-  public Reference<? extends Drawable> getBackground() {
+  public ComparableDrawable getBackground() {
     return mNode.getBackground();
   }
 
@@ -76,7 +76,7 @@ public final class DebugLayoutNode {
   }
 
   public void setFocusable(boolean focusable) {
-    mNode.focusable(focusable);
+    mNode.getOrCreateNodeInfo().setFocusable(focusable);
   }
 
   @Nullable
@@ -89,7 +89,7 @@ public final class DebugLayoutNode {
   }
 
   public void setContentDescription(CharSequence contentDescription) {
-    mNode.contentDescription(contentDescription);
+    mNode.getOrCreateNodeInfo().setContentDescription(contentDescription);
   }
 
   public void setLayoutDirection(YogaDirection yogaDirection) {
@@ -97,7 +97,7 @@ public final class DebugLayoutNode {
   }
 
   public YogaDirection getLayoutDirection() {
-    return mNode.mYogaNode.getLayoutDirection();
+    return mNode.getYogaNode().getLayoutDirection();
   }
 
   public void setFlexDirection(YogaFlexDirection direction) {
@@ -105,7 +105,7 @@ public final class DebugLayoutNode {
   }
 
   public YogaFlexDirection getFlexDirection() {
-    return mNode.mYogaNode.getFlexDirection();
+    return mNode.getYogaNode().getFlexDirection();
   }
 
   public void setJustifyContent(YogaJustify yogaJustify) {
@@ -113,7 +113,7 @@ public final class DebugLayoutNode {
   }
 
   public YogaJustify getJustifyContent() {
-    return mNode.mYogaNode.getJustifyContent();
+    return mNode.getYogaNode().getJustifyContent();
   }
 
   public void setAlignItems(YogaAlign yogaAlign) {
@@ -121,7 +121,7 @@ public final class DebugLayoutNode {
   }
 
   public YogaAlign getAlignItems() {
-    return mNode.mYogaNode.getAlignItems();
+    return mNode.getYogaNode().getAlignItems();
   }
 
   public void setAlignSelf(YogaAlign yogaAlign) {
@@ -129,7 +129,7 @@ public final class DebugLayoutNode {
   }
 
   public YogaAlign getAlignSelf() {
-    return mNode.mYogaNode.getAlignSelf();
+    return mNode.getYogaNode().getAlignSelf();
   }
 
   public void setAlignContent(YogaAlign yogaAlign) {
@@ -137,7 +137,7 @@ public final class DebugLayoutNode {
   }
 
   public YogaAlign getAlignContent() {
-    return mNode.mYogaNode.getAlignContent();
+    return mNode.getYogaNode().getAlignContent();
   }
 
   public void setPositionType(YogaPositionType yogaPositionType) {
@@ -145,7 +145,7 @@ public final class DebugLayoutNode {
   }
 
   public YogaPositionType getPositionType() {
-    return mNode.mYogaNode.getPositionType();
+    return mNode.getYogaNode().getPositionType();
   }
 
   public void setFlexGrow(float value) {
@@ -153,7 +153,7 @@ public final class DebugLayoutNode {
   }
 
   public float getFlexGrow() {
-    return mNode.mYogaNode.getFlexGrow();
+    return mNode.getYogaNode().getFlexGrow();
   }
 
   public void setFlexShrink(float value) {
@@ -161,7 +161,7 @@ public final class DebugLayoutNode {
   }
 
   public float getFlexShrink() {
-    return mNode.mYogaNode.getFlexShrink();
+    return mNode.getYogaNode().getFlexShrink();
   }
 
   public void setFlexBasis(YogaValue value) {
@@ -180,7 +180,7 @@ public final class DebugLayoutNode {
   }
 
   public YogaValue getFlexBasis() {
-    return mNode.mYogaNode.getFlexBasis();
+    return mNode.getYogaNode().getFlexBasis();
   }
 
   public void setWidth(YogaValue value) {
@@ -199,7 +199,7 @@ public final class DebugLayoutNode {
   }
 
   public YogaValue getWidth() {
-    return mNode.mYogaNode.getWidth();
+    return mNode.getYogaNode().getWidth();
   }
 
   public void setMinWidth(YogaValue value) {
@@ -218,7 +218,7 @@ public final class DebugLayoutNode {
   }
 
   public YogaValue getMinWidth() {
-    return mNode.mYogaNode.getMinWidth();
+    return mNode.getYogaNode().getMinWidth();
   }
 
   public void setMaxWidth(YogaValue value) {
@@ -237,7 +237,7 @@ public final class DebugLayoutNode {
   }
 
   public YogaValue getMaxWidth() {
-    return mNode.mYogaNode.getMaxWidth();
+    return mNode.getYogaNode().getMaxWidth();
   }
 
   public void setHeight(YogaValue value) {
@@ -256,7 +256,7 @@ public final class DebugLayoutNode {
   }
 
   public YogaValue getHeight() {
-    return mNode.mYogaNode.getHeight();
+    return mNode.getYogaNode().getHeight();
   }
 
   public void setMinHeight(YogaValue value) {
@@ -275,7 +275,7 @@ public final class DebugLayoutNode {
   }
 
   public YogaValue getMinHeight() {
-    return mNode.mYogaNode.getMinHeight();
+    return mNode.getYogaNode().getMinHeight();
   }
 
   public void setMaxHeight(YogaValue value) {
@@ -294,7 +294,7 @@ public final class DebugLayoutNode {
   }
 
   public YogaValue getMaxHeight() {
-    return mNode.mYogaNode.getMaxHeight();
+    return mNode.getYogaNode().getMaxHeight();
   }
 
   public void setAspectRatio(float aspectRatio) {
@@ -302,7 +302,7 @@ public final class DebugLayoutNode {
   }
 
   public float getAspectRatio() {
-    return mNode.mYogaNode.getAspectRatio();
+    return mNode.getYogaNode().getAspectRatio();
   }
 
   public void setMargin(YogaEdge edge, YogaValue value) {
@@ -323,11 +323,11 @@ public final class DebugLayoutNode {
   }
 
   public YogaValue getMargin(YogaEdge edge) {
-    return mNode.mYogaNode.getMargin(edge);
+    return mNode.getYogaNode().getMargin(edge);
   }
 
   public float getResultMargin(YogaEdge edge) {
-    return mNode.mYogaNode.getLayoutMargin(edge);
+    return mNode.getYogaNode().getLayoutMargin(edge);
   }
 
   public void setPadding(YogaEdge edge, YogaValue value) {
@@ -346,11 +346,11 @@ public final class DebugLayoutNode {
   }
 
   public YogaValue getPadding(YogaEdge edge) {
-    return mNode.mYogaNode.getPadding(edge);
+    return mNode.getYogaNode().getPadding(edge);
   }
 
   public float getResultPadding(YogaEdge edge) {
-    return mNode.mYogaNode.getLayoutPadding(edge);
+    return mNode.getYogaNode().getLayoutPadding(edge);
   }
 
   public void setPosition(YogaEdge edge, YogaValue value) {
@@ -369,7 +369,7 @@ public final class DebugLayoutNode {
   }
 
   public YogaValue getPosition(YogaEdge edge) {
-    return mNode.mYogaNode.getPosition(edge);
+    return mNode.getYogaNode().getPosition(edge);
   }
 
   public void setBorderWidth(YogaEdge edge, float value) {
@@ -377,7 +377,7 @@ public final class DebugLayoutNode {
   }
 
   public float getBorderWidth(YogaEdge edge) {
-    return mNode.mYogaNode.getBorder(edge);
+    return mNode.getYogaNode().getBorder(edge);
   }
 
   public void isReferenceBaseline(boolean isReferenceBaseline) {
@@ -386,6 +386,6 @@ public final class DebugLayoutNode {
 
   @Nullable
   public EventHandler getClickHandler() {
-    return mNode.getClickHandler();
+    return mNode.getNodeInfo() != null ? mNode.getNodeInfo().getClickHandler() : null;
   }
 }

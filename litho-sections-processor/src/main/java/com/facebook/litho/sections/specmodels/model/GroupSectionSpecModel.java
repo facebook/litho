@@ -289,11 +289,6 @@ public class GroupSectionSpecModel implements SpecModel, HasService {
   }
 
   @Override
-  public TypeName getUpdateStateInterface() {
-    return SectionClassNames.SECTION_STATE_UPDATE;
-  }
-
-  @Override
   public String getScopeMethodName() {
     return "getSectionScope";
   }

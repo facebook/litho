@@ -271,11 +271,6 @@ public class LayoutSpecModel implements SpecModel, HasPureRender {
   }
 
   @Override
-  public TypeName getUpdateStateInterface() {
-    return ClassNames.COMPONENT_STATE_UPDATE;
-  }
-
-  @Override
   public String getScopeMethodName() {
     return "getComponentScope";
   }

@@ -20,17 +20,16 @@ import static com.facebook.yoga.YogaAlign.FLEX_START;
 import static com.facebook.yoga.YogaEdge.ALL;
 import static com.facebook.yoga.YogaPositionType.ABSOLUTE;
 
-import android.support.annotation.IdRes;
-import android.support.annotation.Nullable;
-import android.support.annotation.VisibleForTesting;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.OrientationHelper;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.RecyclerView.ItemAnimator;
-import android.support.v7.widget.RecyclerView.ItemDecoration;
-import android.support.v7.widget.RecyclerView.OnScrollListener;
-import android.support.v7.widget.SnapHelper;
 import android.view.View;
+import androidx.annotation.IdRes;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
+import androidx.recyclerview.widget.OrientationHelper;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView.ItemAnimator;
+import androidx.recyclerview.widget.RecyclerView.ItemDecoration;
+import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
+import androidx.recyclerview.widget.SnapHelper;
 import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.Component.ContainerBuilder;
@@ -43,6 +42,7 @@ import com.facebook.litho.annotations.FromTrigger;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateInitialState;
 import com.facebook.litho.annotations.OnCreateLayout;
+import com.facebook.litho.annotations.OnDetached;
 import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.annotations.OnTrigger;
 import com.facebook.litho.annotations.OnUpdateState;
@@ -51,24 +51,27 @@ import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.State;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.sections.BaseLoadEventsHandler;
 import com.facebook.litho.sections.LoadEventsHandler;
 import com.facebook.litho.sections.Section;
 import com.facebook.litho.sections.SectionContext;
+import com.facebook.litho.sections.SectionLifecycle;
 import com.facebook.litho.sections.SectionTree;
-import com.facebook.litho.sections.config.SectionsConfiguration;
+import com.facebook.litho.sections.annotations.GroupSectionSpec;
 import com.facebook.litho.widget.Binder;
 import com.facebook.litho.widget.LithoRecylerView;
 import com.facebook.litho.widget.PTRRefreshEvent;
 import com.facebook.litho.widget.Recycler;
 import com.facebook.litho.widget.RecyclerBinder;
 import com.facebook.litho.widget.RecyclerEventsController;
+import com.facebook.litho.widget.StickyHeaderControllerFactory;
 import com.facebook.litho.widget.ViewportInfo;
 import java.util.List;
 
 /**
- * A {@link Component} that renders a {@link Recycler} backed by a {@link Section} tree.
+ * A {@link Component} that renders a {@link Recycler} backed by a {@link Section} tree. See <a
+ * href="https://fblitho.com/docs/recycler-collection-component">recycler-collection-component</a>
+ * for details.
  *
  * <p>This {@link Component} handles the loading events from the {@link Section} hierarchy and shows
  * the appropriate error,loading or empty {@link Component} passed in as props. If either the empty
@@ -83,8 +86,21 @@ import java.util.List;
  * verticalPadding and recyclerViewId {@link Prop}s will be directly applied to the {@link Recycler}
  * component.
  *
- * <p>The {@link RecyclerCollectionEventsController} {@link Prop} is a way to sent commands to the
+ * <p>The {@link RecyclerCollectionEventsController} {@link Prop} is a way to send commands to the
  * {@link RecyclerCollectionComponentSpec}, such as scrollTo(position) and refresh().
+ *
+ * <p>To trigger scrolling from the Section use {@link SectionLifecycle#requestFocus(SectionContext,
+ * int)}. See <a
+ * href="https://fblitho.com/docs/communicating-with-the-ui#scrolling-requestfocus">communicating-with-the-ui</a>
+ * for details.
+ *
+ * @prop itemAnimator This prop defines the animations that take place on items as changes are made.
+ *     To remove change animation use {@link NoUpdateItemAnimator}. To completely disable all
+ *     animations use {@link NotAnimatedItemAnimator}.
+ * @prop recyclerConfiguration: This prop adds customization. For example {@link
+ *     RecyclerBinderConfiguration} allows to make {@link Recycler} circular.
+ * @see Section
+ * @see GroupSectionSpec
  */
 @LayoutSpec(events = PTRRefreshEvent.class)
 public class RecyclerCollectionComponentSpec {
@@ -97,25 +113,18 @@ public class RecyclerCollectionComponentSpec {
   @PropDefault public static final int recyclerViewId = View.NO_ID;
   @PropDefault public static final int overScrollMode = View.OVER_SCROLL_ALWAYS;
 
-  @PropDefault
-  protected static final boolean asyncStateUpdates =
-      SectionsConfiguration.sectionComponentsAsyncStateUpdates;
+  @PropDefault protected static final boolean asyncStateUpdates = false;
 
   @PropDefault public static final ItemAnimator itemAnimator = new NoUpdateItemAnimator();
 
-  @PropDefault
-  protected static final boolean asyncPropUpdates =
-      SectionsConfiguration.sectionComponentsAsyncPropUpdates;
+  @PropDefault protected static final boolean asyncPropUpdates = false;
 
-  @PropDefault
-  protected static final boolean setRootAsync =
-      ComponentsConfiguration.setRootAsyncRecyclerCollectionComponent;
+  @PropDefault protected static final boolean setRootAsync = false;
 
   @PropDefault public static final boolean clipToPadding = true;
   @PropDefault public static final boolean clipChildren = true;
   @PropDefault public static final boolean incrementalMount = true;
   @PropDefault public static final int refreshProgressBarColor = 0XFF4267B2; // blue
-  private static final int MIN_SCROLL_FOR_PAGE = 20;
 
   @OnCreateLayout
   static @Nullable Component onCreateLayout(
@@ -251,6 +260,12 @@ public class RecyclerCollectionComponentSpec {
   @OnCreateInitialState
   static void createInitialState(
       final ComponentContext c,
+      StateValue<SnapHelper> snapHelper,
+      StateValue<SectionTree> sectionTree,
+      StateValue<RecyclerCollectionLoadEventsHandler> recyclerCollectionLoadEventsHandler,
+      StateValue<Binder<RecyclerView>> binder,
+      StateValue<LoadingState> loadingState,
+      StateValue<RecyclerCollectionEventsController> internalEventsController,
       @Prop Section section,
       @Prop(optional = true) RecyclerConfiguration recyclerConfiguration,
       @Prop(optional = true) RecyclerCollectionEventsController eventsController,
@@ -268,12 +283,7 @@ public class RecyclerCollectionComponentSpec {
       @Prop(optional = true) boolean canMeasureRecycler,
       // Don't use this. If false, off incremental mount for all subviews of this Recycler.
       @Prop(optional = true) boolean incrementalMount,
-      StateValue<SnapHelper> snapHelper,
-      StateValue<SectionTree> sectionTree,
-      StateValue<RecyclerCollectionLoadEventsHandler> recyclerCollectionLoadEventsHandler,
-      StateValue<Binder<RecyclerView>> binder,
-      StateValue<LoadingState> loadingState,
-      StateValue<RecyclerCollectionEventsController> internalEventsController) {
+      @Prop(optional = true) StickyHeaderControllerFactory stickyHeaderControllerFactory) {
 
     RecyclerBinderConfiguration binderConfiguration =
         recyclerConfiguration.getRecyclerBinderConfiguration();
@@ -286,14 +296,19 @@ public class RecyclerCollectionComponentSpec {
             .wrapContent(binderConfiguration.isWrapContent())
             .enableStableIds(binderConfiguration.getEnableStableIds())
             .invalidStateLogParamsList(binderConfiguration.getInvalidStateLogParamsList())
-            .useSharedLayoutStateFuture(binderConfiguration.getUseSharedLayoutStateFuture())
             .threadPoolConfig(binderConfiguration.getThreadPoolConfiguration())
             .asyncInitRange(binderConfiguration.getAsyncInitRange())
             .hscrollAsyncMode(binderConfiguration.getHScrollAsyncMode())
             .isCircular(binderConfiguration.isCircular())
             .hasDynamicItemHeight(binderConfiguration.hasDynamicItemHeight())
-            .splitLayoutTag(binderConfiguration.getSplitLayoutTag())
             .incrementalMount(incrementalMount)
+            .splitLayoutForMeasureAndRangeEstimation(
+                binderConfiguration.splitLayoutForMeasureAndRangeEstimation())
+            .enableDetach(binderConfiguration.getEnableDetach())
+            .stickyHeaderControllerFactory(stickyHeaderControllerFactory)
+            .useCancelableLayoutFutures(binderConfiguration.useCancelableLayoutFutures())
+            .canInterruptAndMoveLayoutsBetweenThreads(
+                binderConfiguration.moveLayoutsBetweenThreads())
             .build(c);
 
     SectionBinderTarget targetBinder =
@@ -312,6 +327,7 @@ public class RecyclerCollectionComponentSpec {
             .asyncPropUpdates(asyncPropUpdates)
             .asyncStateUpdates(asyncStateUpdates)
             .forceSyncStateUpdates(forceSyncStateUpdates)
+            .changeSetThreadHandler(binderConfiguration.getChangeSetThreadHandler())
             .build();
     sectionTree.set(sectionTreeInstance);
 
@@ -389,6 +405,11 @@ public class RecyclerCollectionComponentSpec {
       @FromTrigger boolean animate,
       @State SectionTree sectionTree) {
     sectionTree.requestFocusOnRoot(position);
+  }
+
+  @OnDetached
+  static void onDetached(ComponentContext c, @State Binder<RecyclerView> binder) {
+    binder.detach();
   }
 
   private static class RecyclerCollectionOnScrollListener extends OnScrollListener {
@@ -501,14 +522,6 @@ public class RecyclerCollectionComponentSpec {
       if (delegate != null) {
         delegate.onInitialLoad();
       }
-    }
-  }
-
-  public static class NoUpdateItemAnimator extends DefaultItemAnimator {
-
-    public NoUpdateItemAnimator() {
-      super();
-      setSupportsChangeAnimations(false);
     }
   }
 }

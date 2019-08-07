@@ -20,14 +20,17 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * Classes with this annotation will define the different sections of a list.
+ * Classes with this annotation will define the different sections of a list. A List can be composed
+ * of other {@link GroupSectionSpec}s and/or of {@link DiffSectionSpec}.
  *
- * A List can be composed of other {@link GroupSectionSpec}s and/or of {@link DiffSectionSpec}.
- *
- * <p> A class that is annotated with {@link GroupSectionSpec} must implement a method with the
+ * <p>A class that is annotated with {@link GroupSectionSpec} must implement a method with the
  * {@link OnCreateChildren} annotation.
  *
- * <p>For example:
+ * <p>You can use {@link OnViewportChanged} to get notified about the current state of the
+ * scrollable viewport (e.g. first and last visible element position).
+ *
+ * <p>Example:
+ *
  * <pre>
  * {@literal @}GroupSectionSpec
  *  public class MySectionSpec {
@@ -42,19 +45,19 @@ import java.lang.annotation.RetentionPolicy;
  *    }
  * }
  * </pre>
+ *
+ * @see DiffSectionSpec
  */
 @Retention(RetentionPolicy.RUNTIME)
 public @interface GroupSectionSpec {
   String value() default "";
 
-  /**
-   * List of event POJOs this component can dispatch. Used to generate event dispatch methods.
-   */
+  /** List of event POJOs this component can dispatch. Used to generate event dispatch methods. */
   Class<?>[] events() default {};
 
   /**
    * @return Boolean indicating whether the generated class should be public. If not, it will be
-   * package-private.
+   *     package-private.
    */
   boolean isPublic() default true;
 }

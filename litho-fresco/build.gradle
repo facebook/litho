@@ -43,13 +43,13 @@ dependencies {
     implementation deps.fresco
 
     // Android Support Library
-    implementation deps.supportCoreUi
+    compileOnly deps.supportAnnotations
 }
 
 apply from: rootProject.file('gradle/release.gradle')
 
 task sourcesJar(type: Jar) {
     from android.sourceSets.main.java.srcDirs
-    classifier = 'sources'
+    archiveClassifier.set('sources')
 }
 artifacts.add('archives', sourcesJar)

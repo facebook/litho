@@ -154,39 +154,4 @@ public class MountStateBoundsTest {
         nestedHost.getRight(),
         nestedHost.getBottom())).isEqualTo(new Rect(20, 20, 80, 80));
   }
-
-  @Test
-  public void testSkippingPhantomHosts() {
-    ComponentsConfiguration.createPhantomLayoutOutputsForTransitions = true;
-
-    final LithoView lithoView =
-        mountComponent(
-            mContext,
-            new InlineLayoutSpec() {
-              @Override
-              protected Component onCreateLayout(ComponentContext c) {
-                return Column.create(c)
-                    .justifyContent(YogaJustify.CENTER)
-                    .alignItems(YogaAlign.CENTER)
-                    .child(
-                        Row.create(c)
-                            .widthPx(20)
-                            .heightPx(20)
-                            .transitionKey("row")
-                            .transitionKeyType(Transition.TransitionKeyType.GLOBAL)
-                            .justifyContent(YogaJustify.CENTER)
-                            .alignItems(YogaAlign.CENTER)
-                            .child(create(c).widthPx(10).heightPx(10)))
-                    .build();
-              }
-            });
-
-    // Check that a ComponentHost for the LayoutOutput with the transition key was not mounted
-    assertThat(lithoView.getChildCount()).isZero();
-    // Checking that the drawable is bounded directly into the LithoView, and correctly placed right
-    // at the center
-    assertThat(lithoView.getDrawables().get(0).getBounds()).isEqualTo(new Rect(45, 45, 55, 55));
-
-    ComponentsConfiguration.createPhantomLayoutOutputsForTransitions = false;
-  }
 }

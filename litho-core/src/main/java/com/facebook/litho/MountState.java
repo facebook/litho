@@ -16,7 +16,7 @@
 
 package com.facebook.litho;
 
-import static android.support.v4.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
+import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
 import static com.facebook.litho.Component.isHostSpec;
 import static com.facebook.litho.Component.isMountViewSpec;
 import static com.facebook.litho.ComponentHostUtils.maybeInvalidateAccessibilityState;
@@ -43,25 +43,23 @@ import static com.facebook.litho.ThreadUtils.assertMainThread;
 
 import android.animation.AnimatorInflater;
 import android.animation.StateListAnimator;
-import android.content.Context;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.RippleDrawable;
 import android.os.Build;
-import android.support.annotation.Nullable;
-import android.support.annotation.VisibleForTesting;
-import android.support.v4.util.LongSparseArray;
-import android.support.v4.view.ViewCompat;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewOutlineProvider;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
+import androidx.collection.LongSparseArray;
+import androidx.core.view.ViewCompat;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.animation.AnimatedProperties;
 import com.facebook.litho.config.ComponentsConfiguration;
-import com.facebook.litho.reference.Reference;
+import com.facebook.litho.drawable.ComparableDrawable;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collections;
@@ -110,7 +108,6 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   // Both these arrays are updated in prepareMount(), thus during mounting they hold the information
   // about the LayoutState that is being mounted, not mLastMountedLayoutState
   @Nullable private long[] mLayoutOutputsIds;
-  @Nullable private BitSet mSkipMounting;
 
   // True if we are receiving a new LayoutState and we need to completely
   // refresh the content of the HostComponent. Always set from the main thread.
@@ -135,6 +132,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   private int mLastMountedComponentTreeId = ComponentTree.INVALID_ID;
   private LayoutState mLastMountedLayoutState;
   private boolean mIsFirstMountOfComponentTree = false;
+  private int mLastDisappearRangeStart = -1;
+  private int mLastDisappearRangeEnd = -1;
 
   private final MountItem mRootHostMountItem;
 
@@ -147,6 +146,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   private boolean mTransitionsHasBeenCollected = false;
   private final Set<Long> mComponentIdsMountedInThisFrame = new HashSet<>();
 
+  private final DynamicPropsManager mDynamicPropsManager = new DynamicPropsManager();
+
   public MountState(LithoView view) {
     mIndexToItemMap = new LongSparseArray<>();
     mVisibilityIdToItemMap = new LongSparseArray<>();
@@ -155,9 +156,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     mLithoView = view;
     mIsDirty = true;
 
-    mTestItemMap = ComponentsConfiguration.isEndToEndTestRun
-        ? new HashMap<String, Deque<TestItem>>()
-        : null;
+    mTestItemMap =
+        ComponentsConfiguration.isEndToEndTestRun ? new HashMap<String, Deque<TestItem>>() : null;
 
     // The mount item representing the top-level root host (LithoView) which
     // is always automatically mounted.
@@ -165,9 +165,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   }
 
   /**
-   * To be called whenever the components needs to start the mount process from scratch
-   * e.g. when the component's props or layout change or when the components
-   * gets attached to a host.
+   * To be called whenever the components needs to start the mount process from scratch e.g. when
+   * the component's props or layout change or when the components gets attached to a host.
    */
   void setDirty() {
     assertMainThread();
@@ -210,12 +209,13 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   /**
    * Mount the layoutState on the pre-set HostView.
    *
-   * @param layoutState
+   * @param layoutState a new {@link LayoutState} to mount
    * @param localVisibleRect If this variable is null, then mount everything, since incremental
    *     mount is not enabled. Otherwise mount only what the rect (in local coordinates) contains
    * @param processVisibilityOutputs whether to process visibility outputs as part of the mount
    */
-  void mount(LayoutState layoutState, Rect localVisibleRect, boolean processVisibilityOutputs) {
+  void mount(
+      LayoutState layoutState, @Nullable Rect localVisibleRect, boolean processVisibilityOutputs) {
     assertMainThread();
 
     if (layoutState == null) {
@@ -251,7 +251,9 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
         logger == null
             ? null
             : LogTreePopulator.populatePerfEventFromLogger(
-                componentTree.getContext(), logger, logger.newPerformanceEvent(EVENT_MOUNT));
+                componentTree.getContext(),
+                logger,
+                logger.newPerformanceEvent(componentTree.getContext(), EVENT_MOUNT));
 
     if (mIsDirty) {
       updateTransitions(layoutState, componentTree);
@@ -288,21 +290,19 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
         final MountItem currentMountItem = getItemAt(i);
         final boolean isMounted = currentMountItem != null;
         final boolean isMountable =
-            !isIncrementalMountEnabled ||
-                isMountedHostWithChildContent(currentMountItem) ||
-                Rect.intersects(localVisibleRect, layoutOutput.getBounds()) ||
-                isAnimationLocked(i) ||
-                (currentMountItem != null && currentMountItem == rootMountItem);
+            !isIncrementalMountEnabled
+                || isMountedHostWithChildContent(currentMountItem)
+                || Rect.intersects(localVisibleRect, layoutOutput.getBounds())
+                || isAnimationLocked(i)
+                || (currentMountItem != null && currentMountItem == rootMountItem);
 
         if (isMountable && !isMounted) {
           mountLayoutOutput(i, layoutOutput, layoutState);
 
-          if (isAnimationLocked(i)
-              && isIncrementalMountEnabled
-              && canMountIncrementally(component)) {
+          if (isAnimationLocked(i) && isIncrementalMountEnabled && component.hasChildLithoViews()) {
             // If the component is locked for animation then we need to make sure that all the
             // children are also mounted.
-            final View view = (View) getItemAt(i).getBaseContent();
+            final View view = (View) getItemAt(i).getContent();
             // We're mounting everything, don't process visibility outputs as they will not be
             // accurate.
             mountViewIncrementally(view, false);
@@ -323,7 +323,6 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
                     layoutState,
                     currentMountItem,
                     useUpdateValueFromLayoutOutput,
-                    logger,
                     componentTreeId,
                     i);
 
@@ -345,12 +344,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
             }
           }
 
-          if (isIncrementalMountEnabled && canMountIncrementally(component)) {
-            mountItemIncrementally(
-                currentMountItem,
-                layoutOutput.getBounds(),
-                localVisibleRect,
-                processVisibilityOutputs);
+          if (isIncrementalMountEnabled && component.hasChildLithoViews()) {
+            mountItemIncrementally(currentMountItem, processVisibilityOutputs);
           }
         }
 
@@ -377,6 +372,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
     mRootTransition = null;
     mTransitionsHasBeenCollected = false;
+    final boolean wasDirty = mIsDirty;
     mIsDirty = false;
     mNeedsRemount = false;
     mIsFirstMountOfComponentTree = false;
@@ -393,7 +389,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     suppressInvalidationsOnHosts(false);
 
     if (logger != null) {
-      logMountPerfEvent(logger, mountPerfEvent);
+      logMountPerfEvent(logger, mountPerfEvent, wasDirty);
     }
 
     if (isTracing) {
@@ -401,7 +397,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     }
   }
 
-  private void logMountPerfEvent(ComponentsLogger logger, @Nullable PerfEvent mountPerfEvent) {
+  private void logMountPerfEvent(
+      ComponentsLogger logger, @Nullable PerfEvent mountPerfEvent, boolean isDirty) {
     if (!mMountStats.isLoggingEnabled || mountPerfEvent == null) {
       logger.cancelPerfEvent(mountPerfEvent);
       return;
@@ -441,7 +438,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
         PARAM_VISIBILITY_HANDLER_TIME, mMountStats.visibilityHandlerTimes.toArray(new Double[0]));
 
     mountPerfEvent.markerAnnotate(PARAM_NO_OP_COUNT, mMountStats.noOpCount);
-    mountPerfEvent.markerAnnotate(PARAM_IS_DIRTY, mIsDirty);
+    mountPerfEvent.markerAnnotate(PARAM_IS_DIRTY, isDirty);
 
     logger.logPerfEvent(mountPerfEvent);
   }
@@ -484,28 +481,31 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
         group = new OutputUnitsAffinityGroup<>();
         animatingContent.put(mountItem.getTransitionId(), group);
       }
-      group.replace(type, mountItem.getMountableContent());
+      group.replace(type, mountItem.getContent());
     }
-    for (TransitionId transitionId : animatingContent.keySet()) {
-      mTransitionManager.setMountContent(transitionId, animatingContent.get(transitionId));
+    for (Map.Entry<TransitionId, OutputUnitsAffinityGroup<Object>> content :
+        animatingContent.entrySet()) {
+      mTransitionManager.setMountContent(content.getKey(), content.getValue());
     }
 
     // Retrieve mount content from disappearing mount items and pass it to the TransitionManager
-    for (TransitionId transitionId : mDisappearingMountItems.keySet()) {
-      final OutputUnitsAffinityGroup<MountItem> mountItemsGroup =
-          mDisappearingMountItems.get(transitionId);
+    for (Map.Entry<TransitionId, OutputUnitsAffinityGroup<MountItem>> entry :
+        mDisappearingMountItems.entrySet()) {
+      final OutputUnitsAffinityGroup<MountItem> mountItemsGroup = entry.getValue();
       final OutputUnitsAffinityGroup<Object> mountContentGroup = new OutputUnitsAffinityGroup<>();
       for (int j = 0, sz = mountItemsGroup.size(); j < sz; j++) {
         final @OutputUnitType int type = mountItemsGroup.typeAt(j);
         final MountItem mountItem = mountItemsGroup.getAt(j);
-        mountContentGroup.add(type, mountItem.getMountableContent());
+        mountContentGroup.add(type, mountItem.getContent());
       }
-      mTransitionManager.setMountContent(transitionId, mountContentGroup);
+      mTransitionManager.setMountContent(entry.getKey(), mountContentGroup);
     }
   }
 
   void processVisibilityOutputs(
-      LayoutState layoutState, Rect localVisibleRect, @Nullable PerfEvent mountPerfEvent) {
+      LayoutState layoutState,
+      @Nullable Rect localVisibleRect,
+      @Nullable PerfEvent mountPerfEvent) {
     assertMainThread();
 
     if (localVisibleRect == null) {
@@ -639,14 +639,14 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
         }
 
         if (visibilityChangedHandler != null) {
-          final int visibleWidth = localVisibleRect.right - localVisibleRect.left;
-          final int visibleHeight = localVisibleRect.bottom - localVisibleRect.top;
+          final int visibleWidth = sTempRect.right - sTempRect.left;
+          final int visibleHeight = sTempRect.bottom - sTempRect.top;
           EventDispatcherUtils.dispatchOnVisibilityChanged(
               visibilityChangedHandler,
               visibleWidth,
               visibleHeight,
-              100f * visibleWidth / layoutState.getWidth(),
-              100f * visibleHeight / layoutState.getHeight());
+              100f * visibleWidth / visibilityOutputBounds.width(),
+              100f * visibleHeight / visibilityOutputBounds.height());
         }
       }
       if (isDoingPerfLog) {
@@ -675,9 +675,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     }
   }
 
-  /**
-   * Clears and re-populates the test item map if we are in e2e test mode.
-   */
+  /** Clears and re-populates the test item map if we are in e2e test mode. */
   private void processTestOutputs(LayoutState layoutState) {
     if (mTestItemMap == null) {
       return;
@@ -689,17 +687,15 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       final TestOutput testOutput = layoutState.getTestOutputAt(i);
       final long hostMarker = testOutput.getHostMarker();
       final long layoutOutputId = testOutput.getLayoutOutputId();
-      final MountItem mountItem =
-          layoutOutputId == -1 ? null : mIndexToItemMap.get(layoutOutputId);
+      final MountItem mountItem = layoutOutputId == -1 ? null : mIndexToItemMap.get(layoutOutputId);
       final TestItem testItem = new TestItem();
       testItem.setHost(hostMarker == -1 ? null : mHostsByMarker.get(hostMarker));
       testItem.setBounds(testOutput.getBounds());
       testItem.setTestKey(testOutput.getTestKey());
-      testItem.setContent(mountItem == null ? null : mountItem.getBaseContent());
+      testItem.setContent(mountItem == null ? null : mountItem.getContent());
 
       final Deque<TestItem> items = mTestItemMap.get(testOutput.getTestKey());
-      final Deque<TestItem> updatedItems =
-          items == null ? new LinkedList<TestItem>() : items;
+      final Deque<TestItem> updatedItems = items == null ? new LinkedList<TestItem>() : items;
       updatedItems.add(testItem);
       mTestItemMap.put(testOutput.getTestKey(), updatedItems);
     }
@@ -710,7 +706,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       return false;
     }
 
-    final Object content = mountItem.getBaseContent();
+    final Object content = mountItem.getContent();
     if (!(content instanceof ComponentHost)) {
       return false;
     }
@@ -743,6 +739,18 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
         break;
       }
     }
+  }
+
+  List<LithoView> getChildLithoViewsFromCurrentlyMountedItems() {
+    final ArrayList<LithoView> childLithoViews = new ArrayList<>();
+    for (int i = 0; i < mIndexToItemMap.size(); i++) {
+      final long layoutOutputId = mIndexToItemMap.keyAt(i);
+      final MountItem mountItem = mIndexToItemMap.get(layoutOutputId);
+      if (mountItem != null && mountItem.getContent() instanceof HasLithoViewChildren) {
+        ((HasLithoViewChildren) mountItem.getContent()).obtainLithoViewChildren(childLithoViews);
+      }
+    }
+    return childLithoViews;
   }
 
   void clearVisibilityItems() {
@@ -794,9 +802,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   }
 
   private boolean isInVisibleRange(
-      VisibilityOutput visibilityOutput,
-      Rect bounds,
-      Rect visibleBounds) {
+      VisibilityOutput visibilityOutput, Rect bounds, Rect visibleBounds) {
     float heightRatio = visibilityOutput.getVisibleHeightRatio();
     float widthRatio = visibilityOutput.getVisibleWidthRatio();
 
@@ -812,12 +818,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     return visiblelength >= ratio * length;
   }
 
-  /**
-   * Returns true if the component is in the focused visible range.
-   */
-  private boolean isInFocusedRange(
-      Rect componentBounds,
-      Rect componentVisibleBounds) {
+  /** Returns true if the component is in the focused visible range. */
+  private boolean isInFocusedRange(Rect componentBounds, Rect componentVisibleBounds) {
     final View parent = (View) mLithoView.getParent();
     if (parent == null) {
       return false;
@@ -850,7 +852,6 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       LayoutState layoutState,
       MountItem currentMountItem,
       boolean useUpdateValueFromLayoutOutput,
-      ComponentsLogger logger,
       int componentTreeId,
       int index) {
     final Component layoutOutputComponent = layoutOutput.getComponent();
@@ -860,12 +861,11 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     }
 
     // 1. Check if the mount item generated from the old component should be updated.
-    final boolean shouldUpdateMountItem =
+    final boolean shouldUpdate =
         shouldUpdateMountItem(layoutOutput, currentMountItem, useUpdateValueFromLayoutOutput);
 
-    final boolean shouldUpdate = shouldUpdateMountItem;
     final boolean shouldUpdateViewInfo =
-        shouldUpdateMountItem || shouldUpdateViewInfo(layoutOutput, currentMountItem);
+        shouldUpdate || shouldUpdateViewInfo(layoutOutput, currentMountItem);
 
     // 2. Reset all the properties like click handler, content description and tags related to
     // this item if it needs to be updated. the update mount item will re-set the new ones.
@@ -877,7 +877,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
         final Component component = currentMountItem.getComponent();
 
         if (isHostSpec(component)) {
-          final ComponentHost componentHost = (ComponentHost) currentMountItem.getBaseContent();
+          final ComponentHost componentHost = (ComponentHost) currentMountItem.getContent();
           removeDisappearingMountContentFromComponentHost(componentHost);
         }
       }
@@ -895,8 +895,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
     // 3. We will re-bind this later in 7 regardless so let's make sure it's currently unbound.
     if (currentMountItem.isBound()) {
-      itemComponent.onUnbind(
-          getContextForComponent(itemComponent), currentMountItem.getBaseContent());
+      itemComponent.onUnbind(getContextForComponent(itemComponent), currentMountItem.getContent());
       currentMountItem.setIsBound(false);
     }
 
@@ -917,22 +916,22 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       setViewAttributes(currentMountItem);
     }
 
-    final Object currentContent = currentMountItem.getBaseContent();
+    final Object currentContent = currentMountItem.getContent();
 
     // 6. Set the mounted content on the Component and call the bind callback.
-    layoutOutputComponent.bind(getContextForComponent(layoutOutputComponent), currentContent);
+    bindComponentToContent(layoutOutputComponent, currentContent);
     currentMountItem.setIsBound(true);
 
     // 7. Update the bounds of the mounted content. This needs to be done regardless of whether
     // the component has been updated or not since the mounted item might might have the same
     // size and content but a different position.
-    updateBoundsForMountedLayoutOutput(layoutOutput, layoutState, mSkipMounting, currentMountItem);
+    updateBoundsForMountedLayoutOutput(layoutOutput, layoutState, currentMountItem);
 
     maybeInvalidateAccessibilityState(currentMountItem);
-    if (currentMountItem.getBaseContent() instanceof Drawable) {
+    if (currentMountItem.getContent() instanceof Drawable) {
       maybeSetDrawableState(
           currentMountItem.getHost(),
-          (Drawable) currentMountItem.getBaseContent(),
+          (Drawable) currentMountItem.getContent(),
           currentMountItem.getLayoutFlags(),
           currentMountItem.getNodeInfo());
     }
@@ -953,13 +952,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
     final NodeInfo nextNodeInfo = layoutOutput.getNodeInfo();
     final NodeInfo currentNodeInfo = currentMountItem.getNodeInfo();
-    if ((currentNodeInfo == null && nextNodeInfo != null)
-        || (currentNodeInfo != null && !currentNodeInfo.isEquivalentTo(nextNodeInfo))) {
-
-      return true;
-    }
-
-    return false;
+    return (currentNodeInfo == null && nextNodeInfo != null)
+        || (currentNodeInfo != null && !currentNodeInfo.isEquivalentTo(nextNodeInfo));
   }
 
   private static boolean shouldUpdateMountItem(
@@ -968,9 +962,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       boolean useUpdateValueFromLayoutOutput) {
     @LayoutOutput.UpdateState final int updateState = layoutOutput.getUpdateState();
     final Component currentComponent = currentMountItem.getComponent();
-    final ComponentLifecycle currentLifecycle = currentComponent;
     final Component nextComponent = layoutOutput.getComponent();
-    final ComponentLifecycle nextLifecycle = nextComponent;
 
     // If the orientation has changed, we should definitely update.
     if (layoutOutput.getOrientation() != currentMountItem.getOrientation()) {
@@ -979,7 +971,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
     // If the two components have different sizes and the mounted content depends on the size we
     // just return true immediately.
-    if (!sameSize(layoutOutput, currentMountItem) && nextLifecycle.isMountSizeDependent()) {
+    if (!sameSize(layoutOutput, currentMountItem) && nextComponent.isMountSizeDependent()) {
       return true;
     }
 
@@ -987,59 +979,57 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       if (updateState == LayoutOutput.STATE_UPDATED) {
 
         // Check for incompatible ReferenceLifecycle.
-        return currentLifecycle instanceof DrawableComponent
-            && nextLifecycle instanceof DrawableComponent
-            && currentLifecycle.shouldComponentUpdate(currentComponent, nextComponent);
+        return currentComponent instanceof DrawableComponent
+            && nextComponent instanceof DrawableComponent
+            && currentComponent.shouldComponentUpdate(currentComponent, nextComponent);
       } else if (updateState == LayoutOutput.STATE_DIRTY) {
         return true;
       }
     }
 
-    if (!currentLifecycle.callsShouldUpdateOnMount()) {
+    if (!currentComponent.callsShouldUpdateOnMount()) {
       return true;
     }
 
-    return currentLifecycle.shouldComponentUpdate(
-        currentComponent,
-        nextComponent);
+    return currentComponent.shouldComponentUpdate(currentComponent, nextComponent);
   }
 
   private static boolean sameSize(LayoutOutput layoutOutput, MountItem item) {
     final Rect layoutOutputBounds = layoutOutput.getBounds();
-    final Object mountedContent = item.getBaseContent();
+    final Object mountedContent = item.getContent();
 
-    return layoutOutputBounds.width() == getWidthForMountedContent(mountedContent) &&
-        layoutOutputBounds.height() == getHeightForMountedContent(mountedContent);
+    return layoutOutputBounds.width() == getWidthForMountedContent(mountedContent)
+        && layoutOutputBounds.height() == getHeightForMountedContent(mountedContent);
   }
 
   private static int getWidthForMountedContent(Object content) {
-    return content instanceof Drawable ?
-        ((Drawable) content).getBounds().width() :
-        ((View) content).getWidth();
+    return content instanceof Drawable
+        ? ((Drawable) content).getBounds().width()
+        : ((View) content).getWidth();
   }
 
   private static int getHeightForMountedContent(Object content) {
-    return content instanceof Drawable ?
-        ((Drawable) content).getBounds().height() :
-        ((View) content).getHeight();
+    return content instanceof Drawable
+        ? ((Drawable) content).getBounds().height()
+        : ((View) content).getHeight();
   }
 
   private static void updateBoundsForMountedLayoutOutput(
-      LayoutOutput layoutOutput, LayoutState layoutState, BitSet skipMounting, MountItem item) {
+      LayoutOutput layoutOutput, LayoutState layoutState, MountItem item) {
     // MountState should never update the bounds of the top-level host as this
     // should be done by the ViewGroup containing the LithoView.
     if (layoutOutput.getId() == ROOT_HOST_ID) {
       return;
     }
 
-    getActualBounds(layoutOutput, layoutState, skipMounting, sTempRect);
+    getActualBounds(layoutOutput, layoutState, sTempRect);
 
     final boolean forceTraversal =
         Component.isMountViewSpec(layoutOutput.getComponent())
-            && ((View) item.getBaseContent()).isLayoutRequested();
+            && ((View) item.getContent()).isLayoutRequested();
 
     applyBoundsToMountContent(
-        item.getMountableContent(),
+        item.getContent(),
         sTempRect.left,
         sTempRect.top,
         sTempRect.right,
@@ -1051,9 +1041,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   @SuppressWarnings("unchecked")
   private void prepareMount(LayoutState layoutState, @Nullable PerfEvent perfEvent) {
     final List<Integer> disappearingItems = extractDisappearingItems(layoutState);
-    final BitSet skipMounting = calculateSkipMounting(layoutState);
-    final PrepareMountStats stats =
-        unmountOrMoveOldItems(layoutState, skipMounting, disappearingItems);
+    final PrepareMountStats stats = unmountOrMoveOldItems(layoutState, disappearingItems);
 
     if (perfEvent != null) {
       perfEvent.markerAnnotate(PARAM_UNMOUNTED_COUNT, stats.unmountedCount);
@@ -1077,13 +1065,9 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     for (int i = 0; i < outputCount; i++) {
       mLayoutOutputsIds[i] = layoutState.getMountableOutputAt(i).getId();
     }
-
-    mSkipMounting = skipMounting;
   }
 
-  /**
-   * Determine whether to apply disappear animation to the given {@link MountItem}
-   */
+  /** Determine whether to apply disappear animation to the given {@link MountItem} */
   private boolean isItemDisappearing(LayoutState layoutState, int index) {
     if (!shouldAnimateTransitions(layoutState) || !hasTransitionsToAnimate()) {
       return false;
@@ -1118,21 +1102,6 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     while (index < mLayoutOutputsIds.length) {
       if (isItemDisappearing(newLayoutState, index)) {
         final int lastDescendantIndex = findLastDescendantIndex(mLastMountedLayoutState, index);
-
-        final LayoutOutput root = mLastMountedLayoutState.getMountableOutputAt(index);
-        if (mSkipMounting.get(index)) {
-          // The direct descendants of the root have been mounted to another host, thus here we'll
-          // unmount them from where they are mounted, and will remount to the root at the next step
-          final long rootId = root.getId();
-          for (int j = index + 1; j <= lastDescendantIndex; j++) {
-            if (mLastMountedLayoutState.getMountableOutputAt(j).getHostMarker() == rootId) {
-              unmountItem(j, mHostsByMarker);
-            }
-          }
-
-          // Need to override skip mounting value, otherwise it won't be mounted
-          mSkipMounting.clear(index);
-        }
 
         // Go though disappearing subtree, mount everything that is not mounted yet
         // That's okay to mount here *before* we call unmountOrMoveOldItems() and only passing
@@ -1185,7 +1154,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       return;
     }
 
-    final Object content = item.getBaseContent();
+    final Object content = item.getContent();
 
     // Before unmounting item get its position inside the root
     int left = 0;
@@ -1228,6 +1197,9 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   }
 
   private void removeDisappearingItemMappings(int fromIndex, int toIndex) {
+    mLastDisappearRangeStart = fromIndex;
+    mLastDisappearRangeEnd = toIndex;
+
     for (int i = fromIndex; i <= toIndex; i++) {
       final MountItem item = getItemAt(i);
 
@@ -1240,7 +1212,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
       // Likewise we no longer need host mapping for disappearing items.
       if (isHostSpec(item.getComponent())) {
-        mHostsByMarker.removeAt(mHostsByMarker.indexOfValue((ComponentHost) item.getBaseContent()));
+        mHostsByMarker.removeAt(mHostsByMarker.indexOfValue((ComponentHost) item.getContent()));
       }
     }
   }
@@ -1261,33 +1233,6 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     host.startUnmountDisappearingItem(index, item);
   }
 
-  private BitSet calculateSkipMounting(LayoutState layoutState) {
-    if (!ComponentsConfiguration.createPhantomLayoutOutputsForTransitions) {
-      return sEmptyBitSet;
-    }
-
-    final BitSet skipMounting = new BitSet();
-    for (int index = layoutState.getMountableOutputCount() - 1; index >= 0; index--) {
-      if (shouldSkipMounting(layoutState, index)) {
-        skipMounting.set(index);
-      }
-    }
-    return skipMounting;
-  }
-
-  private boolean shouldSkipMounting(LayoutState layoutState, int index) {
-    if (!ComponentsConfiguration.createPhantomLayoutOutputsForTransitions) {
-      return false;
-    }
-
-    final LayoutOutput layoutOutput = layoutState.getMountableOutputAt(index);
-
-    final boolean isPhantom = (layoutOutput.getFlags() & MountItem.LAYOUT_FLAG_PHANTOM) != 0;
-    final boolean isAnimating = mAnimatingTransitionIds.contains(layoutOutput.getTransitionId());
-
-    return isPhantom && !isAnimating;
-  }
-
   /**
    * Go over all the mounted items from the leaves to the root and unmount only the items that are
    * not present in the new LayoutOutputs. If an item is still present but in a new position move
@@ -1296,7 +1241,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
    * LayoutOutputs
    */
   private PrepareMountStats unmountOrMoveOldItems(
-      LayoutState newLayoutState, BitSet newSkipMounting, List<Integer> disappearingItems) {
+      LayoutState newLayoutState, List<Integer> disappearingItems) {
     mPrepareMountStats.reset();
 
     if (mLayoutOutputsIds == null) {
@@ -1310,10 +1255,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     // all its mounted children.
     for (int i = 0; i < mLayoutOutputsIds.length; i++) {
       final LayoutOutput newLayoutOutput = newLayoutState.getLayoutOutput(mLayoutOutputsIds[i]);
-      final int newPosition =
-          newLayoutOutput == null || newSkipMounting.get(newLayoutOutput.getIndex())
-              ? -1
-              : newLayoutOutput.getIndex();
+      final int newPosition = newLayoutOutput == null ? -1 : newLayoutOutput.getIndex();
 
       final MountItem oldItem = getItemAt(i);
 
@@ -1331,8 +1273,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
         unmountItem(i, mHostsByMarker);
         mPrepareMountStats.unmountedCount++;
       } else {
-        final long newHostMarker =
-            getActualHostMarker(newLayoutOutput, newLayoutState, newSkipMounting);
+        final long newHostMarker = newLayoutOutput.getHostMarker();
 
         if (oldItem == null) {
           // This was previously unmounted.
@@ -1359,33 +1300,25 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   }
 
   private void updateMountedContent(
-      MountItem item,
-      LayoutOutput layoutOutput,
-      Component previousComponent) {
+      MountItem item, LayoutOutput layoutOutput, Component previousComponent) {
     final Component newComponent = layoutOutput.getComponent();
     if (isHostSpec(newComponent)) {
       return;
     }
 
-    final Object previousContent = item.getBaseContent();
+    final Object previousContent = item.getContent();
 
     // Call unmount and mount in sequence to make sure all the the resources are correctly
     // de-allocated. It's possible for previousContent to equal null - when the root is
     // interactive we create a LayoutOutput without content in order to set up click handling.
-    previousComponent.unmount(
-        getContextForComponent(previousComponent), previousContent);
+    previousComponent.unmount(getContextForComponent(previousComponent), previousContent);
     newComponent.mount(getContextForComponent(newComponent), previousContent);
   }
 
   private void mountLayoutOutput(int index, LayoutOutput layoutOutput, LayoutState layoutState) {
-    // 0. Make sure we really need to mount this LayoutOutput
-    if (mSkipMounting.get(index)) {
-      return;
-    }
-
     // 1. Resolve the correct host to mount our content to.
     final long startTime = System.nanoTime();
-    final long hostMarker = getActualHostMarker(layoutOutput, layoutState, mSkipMounting);
+    final long hostMarker = layoutOutput.getHostMarker();
     ComponentHost host = mHostsByMarker.get(hostMarker);
 
     if (host == null) {
@@ -1406,9 +1339,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
         ComponentsPools.acquireMountContent(mContext.getAndroidContext(), component);
 
     final ComponentContext context = getContextForComponent(component);
-    component.mount(
-        context,
-        content);
+    component.mount(context, content);
 
     // 3. If it's a ComponentHost, add the mounted View to the list of Hosts.
     if (isHostSpec(component)) {
@@ -1421,18 +1352,14 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     final MountItem item = mountContent(index, component, content, host, layoutOutput);
 
     // 5. Notify the component that mounting has completed
-    component.bind(context, content);
+    bindComponentToContent(component, content);
     item.setIsBound(true);
-
-    final boolean doNotWrapIntoDL = mLithoView.getComponentTree().doNotWrapIntoDisplayLists();
-    item.setWrappedContent(
-        wrapContentIfNeeded(mContext.getApplicationContext(), component, content, doNotWrapIntoDL));
 
     // 6. Apply the bounds to the Mount content now. It's important to do so after bind as calling
     // bind might have triggered a layout request within a View.
-    getActualBounds(layoutOutput, layoutState, mSkipMounting, sTempRect);
+    getActualBounds(layoutOutput, layoutState, sTempRect);
     applyBoundsToMountContent(
-        item.getMountableContent(),
+        item.getContent(),
         sTempRect.left,
         sTempRect.top,
         sTempRect.right,
@@ -1447,31 +1374,6 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       mMountStats.extras.add(
           LogTreePopulator.getAnnotationBundleFromLogger(component, context.getLogger()));
     }
-  }
-
-  @VisibleForTesting
-  @Nullable
-  static Object wrapContentIfNeeded(
-      Context context, Component component, Object content, boolean doNotWrapIntoDisplayLists) {
-    // For the time being the only wrapping we may do is of a Drawable into a DisplayListDrawable,
-    // but this may be expanded
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && !doNotWrapIntoDisplayLists) {
-      // We do not want to wrap RippleDrawables, as it doesn't play along with RenderNodeAnimator
-      // well
-      if (content instanceof RippleDrawable
-          || (content instanceof MatrixDrawable
-              && ((MatrixDrawable) content).getCurrent() instanceof RippleDrawable)) {
-        return null;
-      }
-
-      // DL can be used in general, let's check if the content is eligible
-      if (component.shouldUseDisplayList()
-          || ((content instanceof Drawable)
-              && ComponentsConfiguration.useDisplayListForAllDrawables)) {
-        return new DisplayListDrawable(context, (Drawable) content);
-      }
-    }
-    return null;
   }
 
   // The content might be null because it's the LayoutSpec for the root host
@@ -1503,12 +1405,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   }
 
   private static void applyBoundsToMountContent(
-      Object content,
-      int left,
-      int top,
-      int right,
-      int bottom,
-      boolean force) {
+      Object content, int left, int top, int right, int bottom, boolean force) {
     assertMainThread();
 
     if (content instanceof View) {
@@ -1520,37 +1417,10 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     }
   }
 
-  private static boolean canMountIncrementally(Component component) {
-    return component.hasChildLithoViews();
-  }
-
-  /**
-   * @return an id if a host that should be used for a given LayoutOutput, taking into account that
-   *     some of nodes on LayoutOutput tree may not be mounted (e.g. "phantom" LayoutOutputs)
-   */
-  private static long getActualHostMarker(
-      LayoutOutput layoutOutput, LayoutState layoutState, BitSet skipMounting) {
-    if (skipMounting.get(layoutOutput.getIndex())) {
-      return -1;
-    }
-
-    long hostMarker;
-    do {
-      hostMarker = layoutOutput.getHostMarker();
-      layoutOutput = layoutState.getLayoutOutput(hostMarker);
-      if (layoutOutput == null) {
-        // We got to the root LayoutOutput without finding a host that should be used
-        return -1;
-      }
-    } while (skipMounting.get(layoutOutput.getIndex()));
-
-    return hostMarker;
-  }
-
   /** @return bounds for a given LayoutOutput within its actual host, {@see getActualHostMarker} */
   private static void getActualBounds(
-      LayoutOutput layoutOutput, LayoutState layoutState, BitSet skipMounting, Rect outRect) {
-    final long actualHostMarker = getActualHostMarker(layoutOutput, layoutState, skipMounting);
+      LayoutOutput layoutOutput, LayoutState layoutState, Rect outRect) {
+    final long actualHostMarker = layoutOutput.getHostMarker();
     layoutOutput.getMountBounds(outRect);
 
     long hostMarker = layoutOutput.getHostMarker();
@@ -1568,7 +1438,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       return;
     }
 
-    final View view = (View) item.getBaseContent();
+    final View view = (View) item.getContent();
     final NodeInfo nodeInfo = item.getNodeInfo();
 
     if (nodeInfo != null) {
@@ -1591,11 +1461,14 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       setContentDescription(view, nodeInfo.getContentDescription());
 
       setFocusable(view, nodeInfo.getFocusState());
+      setClickable(view, nodeInfo.getClickableState());
       setEnabled(view, nodeInfo.getEnabledState());
       setSelected(view, nodeInfo.getSelectedState());
       setScale(view, nodeInfo);
       setAlpha(view, nodeInfo);
       setRotation(view, nodeInfo);
+      setRotationX(view, nodeInfo);
+      setRotationY(view, nodeInfo);
     }
 
     setImportantForAccessibility(view, item.getImportantForAccessibility());
@@ -1627,7 +1500,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   }
 
   private static void unsetViewAttributes(MountItem item, boolean isHostView) {
-    final View view = (View) item.getBaseContent();
+    final View view = (View) item.getContent();
     final NodeInfo nodeInfo = item.getNodeInfo();
 
     if (nodeInfo != null) {
@@ -1666,6 +1539,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       unsetScale(view, nodeInfo);
       unsetAlpha(view, nodeInfo);
       unsetRotation(view, nodeInfo);
+      unsetRotationX(view, nodeInfo);
+      unsetRotationY(view, nodeInfo);
     }
 
     view.setClickable(item.isViewClickable());
@@ -1690,7 +1565,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
         unsetViewPadding(view, viewNodeInfo);
         unsetViewBackground(view, viewNodeInfo);
         unsetViewForeground(view, viewNodeInfo);
-        unsetViewLayoutDirection(view, viewNodeInfo);
+        unsetViewLayoutDirection(view);
       }
     }
   }
@@ -1708,14 +1583,11 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       return;
     }
 
-    view.setTag(
-        R.id.component_node_info,
-        nodeInfo);
+    view.setTag(R.id.component_node_info, nodeInfo);
   }
 
   private static void unsetAccessibilityDelegate(View view) {
-    if (!(view instanceof ComponentHost)
-        && view.getTag(R.id.component_node_info) == null) {
+    if (!(view instanceof ComponentHost) && view.getTag(R.id.component_node_info) == null) {
       return;
     }
     view.setTag(R.id.component_node_info, null);
@@ -1725,9 +1597,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   }
 
   /**
-   * Installs the click listeners that will dispatch the click handler
-   * defined in the component's props. Unconditionally set the clickable
-   * flag on the view.
+   * Installs the click listeners that will dispatch the click handler defined in the component's
+   * props. Unconditionally set the clickable flag on the view.
    */
   private static void setClickHandler(EventHandler<ClickEvent> clickHandler, View view) {
     if (clickHandler == null) {
@@ -1771,9 +1642,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   }
 
   /**
-   * Installs the long click listeners that will dispatch the click handler
-   * defined in the component's props. Unconditionally set the clickable
-   * flag on the view.
+   * Installs the long click listeners that will dispatch the click handler defined in the
+   * component's props. Unconditionally set the clickable flag on the view.
    */
   private static void setLongClickHandler(
       EventHandler<LongClickEvent> longClickHandler, View view) {
@@ -1817,9 +1687,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   }
 
   /**
-   * Installs the on focus change listeners that will dispatch the click handler
-   * defined in the component's props. Unconditionally set the clickable
-   * flag on the view.
+   * Installs the on focus change listeners that will dispatch the click handler defined in the
+   * component's props. Unconditionally set the clickable flag on the view.
    */
   private static void setFocusChangeHandler(
       EventHandler<FocusChangedEvent> focusChangeHandler, View view) {
@@ -1863,8 +1732,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   }
 
   /**
-   * Installs the touch listeners that will dispatch the touch handler
-   * defined in the component's props.
+   * Installs the touch listeners that will dispatch the touch handler defined in the component's
+   * props.
    */
   private static void setTouchHandler(EventHandler<TouchEvent> touchHandler, View view) {
     if (touchHandler != null) {
@@ -1887,12 +1756,9 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     }
   }
 
-  /**
-   * Sets the intercept touch handler defined in the component's props.
-   */
+  /** Sets the intercept touch handler defined in the component's props. */
   private static void setInterceptTouchHandler(
-      EventHandler<InterceptTouchEvent> interceptTouchHandler,
-      View view) {
+      EventHandler<InterceptTouchEvent> interceptTouchHandler, View view) {
     if (interceptTouchHandler == null) {
       return;
     }
@@ -2058,6 +1924,14 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     view.setFocusable(mountItem.isViewFocusable());
   }
 
+  private static void setClickable(View view, @NodeInfo.FocusState int clickableState) {
+    if (clickableState == NodeInfo.CLICKABLE_SET_TRUE) {
+      view.setClickable(true);
+    } else if (clickableState == NodeInfo.CLICKABLE_SET_FALSE) {
+      view.setClickable(false);
+    }
+  }
+
   private static void setEnabled(View view, @NodeInfo.EnabledState int enabledState) {
     if (enabledState == NodeInfo.ENABLED_SET_TRUE) {
       view.setEnabled(true);
@@ -2137,6 +2011,38 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     }
   }
 
+  private static void setRotationX(View view, NodeInfo nodeInfo) {
+    if (Build.VERSION.SDK_INT >= 11) {
+      if (nodeInfo.isRotationXSet()) {
+        view.setRotationX(nodeInfo.getRotationX());
+      }
+    }
+  }
+
+  private static void unsetRotationX(View view, NodeInfo nodeInfo) {
+    if (Build.VERSION.SDK_INT >= 11) {
+      if (nodeInfo.isRotationXSet() && view.getRotationX() != 0) {
+        view.setRotationX(0);
+      }
+    }
+  }
+
+  private static void setRotationY(View view, NodeInfo nodeInfo) {
+    if (Build.VERSION.SDK_INT >= 11) {
+      if (nodeInfo.isRotationYSet()) {
+        view.setRotationY(nodeInfo.getRotationY());
+      }
+    }
+  }
+
+  private static void unsetRotationY(View view, NodeInfo nodeInfo) {
+    if (Build.VERSION.SDK_INT >= 11) {
+      if (nodeInfo.isRotationYSet() && view.getRotationY() != 0) {
+        view.setRotationY(0);
+      }
+    }
+  }
+
   private static void setViewPadding(View view, ViewNodeInfo viewNodeInfo) {
     if (!viewNodeInfo.hasPadding()) {
       return;
@@ -2158,18 +2064,16 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   }
 
   private static void setViewBackground(View view, ViewNodeInfo viewNodeInfo) {
-    final Reference<? extends Drawable> backgroundReference = viewNodeInfo.getBackground();
-    if (backgroundReference != null) {
-      setBackgroundCompat(view, Reference.acquire(view.getContext(), backgroundReference));
+    final ComparableDrawable background = viewNodeInfo.getBackground();
+    if (background != null) {
+      setBackgroundCompat(view, background);
     }
   }
 
   private static void unsetViewBackground(View view, ViewNodeInfo viewNodeInfo) {
-    final Reference<? extends Drawable> backgroundReference = viewNodeInfo.getBackground();
-    final Drawable drawable = view.getBackground();
-    if (backgroundReference != null) {
+    final ComparableDrawable background = viewNodeInfo.getBackground();
+    if (background != null) {
       setBackgroundCompat(view, null);
-      Reference.release(view.getContext(), drawable, (Reference<Drawable>) backgroundReference);
     }
   }
 
@@ -2186,8 +2090,9 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     final Drawable foreground = viewNodeInfo.getForeground();
     if (foreground != null) {
       if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-        throw new IllegalStateException("MountState has a ViewNodeInfo with foreground however " +
-            "the current Android version doesn't support foreground on Views");
+        throw new IllegalStateException(
+            "MountState has a ViewNodeInfo with foreground however "
+                + "the current Android version doesn't support foreground on Views");
       }
 
       view.setForeground(foreground);
@@ -2198,8 +2103,9 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     final Drawable foreground = viewNodeInfo.getForeground();
     if (foreground != null) {
       if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-        throw new IllegalStateException("MountState has a ViewNodeInfo with foreground however " +
-            "the current Android version doesn't support foreground on Views");
+        throw new IllegalStateException(
+            "MountState has a ViewNodeInfo with foreground however "
+                + "the current Android version doesn't support foreground on Views");
       }
 
       view.setForeground(null);
@@ -2226,7 +2132,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     view.setLayoutDirection(viewLayoutDirection);
   }
 
-  private static void unsetViewLayoutDirection(View view, ViewNodeInfo viewNodeInfo) {
+  private static void unsetViewLayoutDirection(View view) {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
       return;
     }
@@ -2265,8 +2171,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     view.setStateListAnimator(null);
   }
 
-  private static void mountItemIncrementally(
-      MountItem item, Rect itemBounds, Rect localVisibleRect, boolean processVisibilityOutputs) {
+  private static void mountItemIncrementally(MountItem item, boolean processVisibilityOutputs) {
     final Component component = item.getComponent();
 
     if (!isMountViewSpec(component)) {
@@ -2275,7 +2180,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
     // We can't just use the bounds of the View since we need the bounds relative to the
     // hosting LithoView (which is what the localVisibleRect is measured relative to).
-    final View view = (View) item.getBaseContent();
+    final View view = (View) item.getContent();
 
     mountViewIncrementally(view, processVisibilityOutputs);
   }
@@ -2306,7 +2211,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   private void unmountDisappearingItemChild(ComponentContext context, MountItem item) {
     maybeRemoveAnimatingMountContent(item.getTransitionId());
 
-    final Object content = item.getBaseContent();
+    final Object content = item.getContent();
 
     // Recursively unmount mounted children items.
     if (content instanceof ComponentHost) {
@@ -2318,8 +2223,9 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       }
 
       if (host.getMountItemCount() > 0) {
-        throw new IllegalStateException("Recursively unmounting items from a ComponentHost, left" +
-            " some items behind maybe because not tracked by its MountState");
+        throw new IllegalStateException(
+            "Recursively unmounting items from a ComponentHost, left"
+                + " some items behind maybe because not tracked by its MountState");
       }
     }
 
@@ -2336,7 +2242,44 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
         mCanMountIncrementallyMountItems.removeAt(index);
       }
     }
+    assertNoDanglingMountContent(item);
     item.releaseMountContent(context.getAndroidContext());
+  }
+
+  private void assertNoDanglingMountContent(MountItem item) {
+    final int index = mIndexToItemMap.indexOfValue(item);
+    if (index > -1) {
+      final long id = mIndexToItemMap.keyAt(index);
+      int layoutOutputIndex = -1;
+      for (int i = 0; i < mLayoutOutputsIds.length; i++) {
+        if (id == mLayoutOutputsIds[i]) {
+          layoutOutputIndex = i;
+          break;
+        }
+      }
+      ComponentsReporter.emitMessage(
+          ComponentsReporter.LogLevel.ERROR,
+          "Got dangling mount content during animation: index="
+              + layoutOutputIndex
+              + ", mapIndex="
+              + index
+              + ", id="
+              + id
+              + ", disappearRange=["
+              + mLastDisappearRangeStart
+              + ","
+              + mLastDisappearRangeEnd
+              + "], contentType="
+              + item.getContent().getClass()
+              + ", component="
+              + (item.getComponent() != null ? item.getComponent().getSimpleName() : null)
+              + ", transitionId="
+              + item.getTransitionId()
+              + ", host="
+              + item.getHost()
+              + ", isRootHost="
+              + (mHostsByMarker.get(ROOT_HOST_ID) == item.getHost()));
+    }
   }
 
   void unmountAllItems() {
@@ -2351,9 +2294,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     mNeedsRemount = true;
   }
 
-  private void unmountItem(
-      int index,
-      LongSparseArray<ComponentHost> hostsByMarker) {
+  private void unmountItem(int index, LongSparseArray<ComponentHost> hostsByMarker) {
     final MountItem item = getItemAt(index);
     final long startTime = System.nanoTime();
 
@@ -2369,7 +2310,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       return;
     }
 
-    final Object content = item.getBaseContent();
+    final Object content = item.getContent();
 
     // Recursively unmount mounted children items.
     // This is the case when mountDiffing is enabled and unmountOrMoveOldItems() has a matching
@@ -2392,8 +2333,9 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       }
 
       if (host.getMountItemCount() > 0) {
-        throw new IllegalStateException("Recursively unmounting items from a ComponentHost, left" +
-            " some items behind maybe because not tracked by its MountState");
+        throw new IllegalStateException(
+            "Recursively unmounting items from a ComponentHost, left"
+                + " some items behind maybe because not tracked by its MountState");
       }
     }
 
@@ -2447,10 +2389,9 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     }
   }
 
-  private void unbindAndUnmountLifecycle(
-      MountItem item) {
+  private void unbindAndUnmountLifecycle(MountItem item) {
     final Component component = item.getComponent();
-    final Object content = item.getBaseContent();
+    final Object content = item.getContent();
     final ComponentContext context = getContextForComponent(component);
 
     // Call the component's unmount() method.
@@ -2466,12 +2407,12 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
     for (int i = 0, size = group.size(); i < size; i++) {
       final MountItem item = group.getAt(i);
-      // We used to do (item.getBaseContent() instanceof ComponentHost) check here, which didn't
+      // We used to do (item.getContent() instanceof ComponentHost) check here, which didn't
       // take
       // into consideration MountSpecs that mount a LithoView which would pass the check while
       // shouldn't
       if (group.typeAt(i) == OutputUnitType.HOST) {
-        final ComponentHost content = (ComponentHost) item.getBaseContent();
+        final ComponentHost content = (ComponentHost) item.getContent();
 
         // Unmount descendant items in reverse order.
         for (int j = content.getMountItemCount() - 1; j >= 0; j--) {
@@ -2498,6 +2439,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
           mCanMountIncrementallyMountItems.removeAt(index);
         }
       }
+      assertNoDanglingMountContent(item);
       item.releaseMountContent(mContext.getAndroidContext());
     }
   }
@@ -2541,7 +2483,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     }
 
     try {
-      // If this is a new component tree but isn't the first time it's been mounted, then we shouldn't
+      // If this is a new component tree but isn't the first time it's been mounted, then we
+      // shouldn't
       // do any transition animations for changed mount content as it's just being remounted on a
       // new LithoView.
       final int componentTreeId = layoutState.getComponentTreeId();
@@ -2599,7 +2542,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   }
 
   private void createNewTransitions(LayoutState newLayoutState, Transition rootTransition) {
-    prepareTransitionManager(newLayoutState);
+    prepareTransitionManager();
 
     mTransitionManager.setupTransitions(mLastMountedLayoutState, newLayoutState, rootTransition);
 
@@ -2615,8 +2558,9 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     final Map<TransitionId, OutputUnitsAffinityGroup<LayoutOutput>> transitionMapping =
         newLayoutState.getTransitionIdMapping();
     if (transitionMapping != null) {
-      for (TransitionId transitionId : transitionMapping.keySet()) {
-        if (!mAnimatingTransitionIds.contains(transitionId)) {
+      for (Map.Entry<TransitionId, OutputUnitsAffinityGroup<LayoutOutput>> transition :
+          transitionMapping.entrySet()) {
+        if (!mAnimatingTransitionIds.contains(transition.getKey())) {
           continue;
         }
 
@@ -2624,7 +2568,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
           mAnimationLockedIndices = new int[newLayoutState.getMountableOutputCount()];
         }
 
-        final OutputUnitsAffinityGroup<LayoutOutput> group = transitionMapping.get(transitionId);
+        final OutputUnitsAffinityGroup<LayoutOutput> group = transition.getValue();
         for (int j = 0, sz = group.size(); j < sz; j++) {
           final LayoutOutput layoutOutput = group.getAt(j);
           final int position = newLayoutState.getLayoutOutputPositionForId(layoutOutput.getId());
@@ -2665,8 +2609,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   }
 
   /**
-   * Update the animation locked count for all children and each parent of the animating item.
-   * Mount items that have a lock count > 0 will not be unmounted during incremental mount.
+   * Update the animation locked count for all children and each parent of the animating item. Mount
+   * items that have a lock count > 0 will not be unmounted during incremental mount.
    */
   private void updateAnimationLockCount(LayoutState layoutState, int index, boolean increment) {
     // Update children
@@ -2676,7 +2620,9 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
         mAnimationLockedIndices[i]++;
       } else {
         if (--mAnimationLockedIndices[i] < 0) {
-          throw new RuntimeException("Decremented animation lock count below 0!");
+          ComponentsReporter.emitMessage(
+              ComponentsReporter.LogLevel.FATAL, "Decremented animation lock count below 0!");
+          mAnimationLockedIndices[i] = 0;
         }
       }
     }
@@ -2689,7 +2635,9 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
         mAnimationLockedIndices[hostIndex]++;
       } else {
         if (--mAnimationLockedIndices[hostIndex] < 0) {
-          throw new RuntimeException("Decremented animation lock count below 0!");
+          ComponentsReporter.emitMessage(
+              ComponentsReporter.LogLevel.FATAL, "Decremented animation lock count below 0!");
+          mAnimationLockedIndices[hostIndex] = 0;
         }
       }
       hostId = layoutState.getMountableOutputAt(hostIndex).getHostMarker();
@@ -2740,23 +2688,6 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
         final LayoutOutput layoutOutput = layoutOutputGroup.getAt(i);
         final int position = layoutOutput.getIndex();
         updateAnimationLockCount(mLastMountedLayoutState, position, false);
-
-        if (shouldSkipMounting(mLastMountedLayoutState, position)) {
-          // So this item should not be mounted anymore
-          // 1. Update the records
-          mSkipMounting.set(position);
-
-          // 2. Unmount the item
-          unmountItem(position, mHostsByMarker);
-
-          // 3. Re-mount all the children of the item
-          final int lastDescendantIndex =
-              findLastDescendantIndex(mLastMountedLayoutState, position);
-          for (int j = position + 1; j <= lastDescendantIndex; j++) {
-            final LayoutOutput childLayoutOutput = mLastMountedLayoutState.getMountableOutputAt(j);
-            mountLayoutOutput(j, childLayoutOutput, mLastMountedLayoutState);
-          }
-        }
       }
 
       if (ComponentsConfiguration.isDebugModeEnabled && mAnimatingTransitionIds.isEmpty()) {
@@ -2851,8 +2782,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   /**
    * Unbinds all the MountItems currently mounted on this MountState. Unbinding a MountItem means
    * calling unbind on its {@link Component}. The MountItem is not yet unmounted after unbind is
-   * called and can be re-used in place to re-mount another {@link Component} with the same
-   * {@link ComponentLifecycle}.
+   * called and can be re-used in place to re-mount another {@link Component} with the same {@link
+   * ComponentLifecycle}.
    */
   void unbind() {
     assertMainThread();
@@ -2872,8 +2803,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
         continue;
       }
 
-      final Component component = mountItem.getComponent();
-      component.unbind(getContextForComponent(component), mountItem.getBaseContent());
+      unbindComponentFromContent(mountItem.getComponent(), mountItem.getContent());
       mountItem.setIsBound(false);
     }
 
@@ -2891,8 +2821,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
   /**
    * This is called when the {@link MountItem}s mounted on this {@link MountState} need to be
-   * re-bound with the same component. The common case here is a detach/attach happens on the
-   * {@link LithoView} that owns the MountState.
+   * re-bound with the same component. The common case here is a detach/attach happens on the {@link
+   * LithoView} that owns the MountState.
    */
   void rebind() {
     assertMainThread();
@@ -2908,22 +2838,17 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       }
 
       final Component component = mountItem.getComponent();
-      final Object content = mountItem.getBaseContent();
+      final Object content = mountItem.getContent();
 
-      component.bind(getContextForComponent(component), content);
+      bindComponentToContent(component, content);
       mountItem.setIsBound(true);
 
-      if (content instanceof View &&
-          !(content instanceof ComponentHost) &&
-          ((View) content).isLayoutRequested()) {
+      if (content instanceof View
+          && !(content instanceof ComponentHost)
+          && ((View) content).isLayoutRequested()) {
         final View view = (View) content;
         applyBoundsToMountContent(
-            view,
-            view.getLeft(),
-            view.getTop(),
-            view.getRight(),
-            view.getBottom(),
-            true);
+            view, view.getLeft(), view.getTop(), view.getRight(), view.getBottom(), true);
       }
     }
   }
@@ -2952,8 +2877,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       return false;
     }
 
-    if (localVisibleRect.left != mPreviousLocalVisibleRect.left ||
-        localVisibleRect.right != mPreviousLocalVisibleRect.right) {
+    if (localVisibleRect.left != mPreviousLocalVisibleRect.left
+        || localVisibleRect.right != mPreviousLocalVisibleRect.right) {
       return false;
     }
 
@@ -2964,9 +2889,9 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     if (localVisibleRect.top > 0 || mPreviousLocalVisibleRect.top > 0) {
       // View is going on/off the top of the screen. Check the bottoms to see if there is anything
       // that has moved on/off the top of the screen.
-      while (mPreviousBottomsIndex < count &&
-          localVisibleRect.top >=
-              layoutOutputBottoms.get(mPreviousBottomsIndex).getBounds().bottom) {
+      while (mPreviousBottomsIndex < count
+          && localVisibleRect.top
+              >= layoutOutputBottoms.get(mPreviousBottomsIndex).getBounds().bottom) {
         final long id = layoutOutputBottoms.get(mPreviousBottomsIndex).getId();
         final int layoutOutputIndex = layoutState.getLayoutOutputPositionForId(id);
         if (!isAnimationLocked(layoutOutputIndex)) {
@@ -2975,9 +2900,9 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
         mPreviousBottomsIndex++;
       }
 
-      while (mPreviousBottomsIndex > 0 &&
-          localVisibleRect.top <
-              layoutOutputBottoms.get(mPreviousBottomsIndex - 1).getBounds().bottom) {
+      while (mPreviousBottomsIndex > 0
+          && localVisibleRect.top
+              < layoutOutputBottoms.get(mPreviousBottomsIndex - 1).getBounds().bottom) {
         mPreviousBottomsIndex--;
         final LayoutOutput layoutOutput = layoutOutputBottoms.get(mPreviousBottomsIndex);
         final int layoutOutputIndex =
@@ -2996,8 +2921,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     if (localVisibleRect.bottom < height || mPreviousLocalVisibleRect.bottom < height) {
       // View is going on/off the bottom of the screen. Check the tops to see if there is anything
       // that has changed.
-      while (mPreviousTopsIndex < count &&
-          localVisibleRect.bottom > layoutOutputTops.get(mPreviousTopsIndex).getBounds().top) {
+      while (mPreviousTopsIndex < count
+          && localVisibleRect.bottom > layoutOutputTops.get(mPreviousTopsIndex).getBounds().top) {
         final LayoutOutput layoutOutput = layoutOutputTops.get(mPreviousTopsIndex);
         final int layoutOutputIndex =
             layoutState.getLayoutOutputPositionForId(layoutOutput.getId());
@@ -3011,9 +2936,9 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
         mPreviousTopsIndex++;
       }
 
-      while (mPreviousTopsIndex > 0 &&
-          localVisibleRect.bottom <=
-              layoutOutputTops.get(mPreviousTopsIndex - 1).getBounds().top) {
+      while (mPreviousTopsIndex > 0
+          && localVisibleRect.bottom
+              <= layoutOutputTops.get(mPreviousTopsIndex - 1).getBounds().top) {
         mPreviousTopsIndex--;
         final long id = layoutOutputTops.get(mPreviousTopsIndex).getId();
         final int layoutOutputIndex = layoutState.getLayoutOutputPositionForId(id);
@@ -3029,11 +2954,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       if (!mComponentIdsMountedInThisFrame.contains(layoutOutputId)) {
         final int layoutOutputPosition = layoutState.getLayoutOutputPositionForId(layoutOutputId);
         if (layoutOutputPosition != -1) {
-          mountItemIncrementally(
-              mountItem,
-              layoutState.getMountableOutputAt(layoutOutputPosition).getBounds(),
-              localVisibleRect,
-              processVisibilityOutputs);
+          mountItemIncrementally(mountItem, processVisibilityOutputs);
         }
       }
     }
@@ -3043,12 +2964,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     return true;
   }
 
-  LithoView getLithoView() {
-    assertMainThread();
-    return mLithoView;
-  }
-
-  private void prepareTransitionManager(LayoutState layoutState) {
+  private void prepareTransitionManager() {
     if (mTransitionManager == null) {
       mTransitionManager = new TransitionManager(this, this);
     }
@@ -3134,14 +3050,13 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     }
   }
 
-  /**
-   * @see LithoViewTestHelper#findTestItems(LithoView, String)
-   */
+  /** @see LithoViewTestHelper#findTestItems(LithoView, String) */
   @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
   Deque<TestItem> findTestItems(String testKey) {
     if (mTestItemMap == null) {
-      throw new UnsupportedOperationException("Trying to access TestItems while " +
-          "ComponentsConfiguration.isEndToEndTestRun is false.");
+      throw new UnsupportedOperationException(
+          "Trying to access TestItems while "
+              + "ComponentsConfiguration.isEndToEndTestRun is false.");
     }
 
     final Deque<TestItem> items = mTestItemMap.get(testKey);
@@ -3156,5 +3071,15 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   private ComponentContext getContextForComponent(Component component) {
     final ComponentContext c = component.getScopedContext();
     return c == null ? mContext : c;
+  }
+
+  private void bindComponentToContent(Component component, Object content) {
+    component.bind(getContextForComponent(component), content);
+    mDynamicPropsManager.onBindComponentToContent(component, content);
+  }
+
+  private void unbindComponentFromContent(Component component, Object content) {
+    mDynamicPropsManager.onUnbindComponent(component);
+    component.unbind(getContextForComponent(component), content);
   }
 }

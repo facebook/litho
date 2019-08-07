@@ -27,10 +27,11 @@ import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeName;
 import javax.lang.model.element.Modifier;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
-/**
- * Tests {@link DelegateMethodDescription}
- */
+/** Tests {@link DelegateMethodDescription} */
+@RunWith(JUnit4.class)
 public class DelegateMethodDescriptionTest {
 
   @Test

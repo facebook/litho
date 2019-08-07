@@ -22,33 +22,55 @@ import java.util.Arrays;
 
 public class Edges {
 
+  public static final int EDGES_LENGTH = YogaEdge.values().length;
+
   // The index of a value is represented by 4 bits. 0xF ('1111') represents an undefined index.
   private static final byte UNDEFINED_INDEX = 0xF;
   private static final byte INDEX_MASK = 0xF;
   private static final float DEFAULT_VALUE = 0;
+
+  // The aliases (VERTICAL, HORIZONTAL and ALL) are three continuous 4 bits spaces
+  // at position 7*4, 8*4 and 9*4.
+  private static final int ALIASES_MASK = 0xFFF;
+  private static final int ALIASES_RIGHT_SHIFT = 6 * 4;
+
+  private static final int ALL_INTVALUT = YogaEdge.ALL.intValue();
+  private static final int HORIZONTAL_INTVALUE = YogaEdge.HORIZONTAL.intValue();
+  private static final int VERTICAL_INTVALUT = YogaEdge.VERTICAL.intValue();
 
   // This long maps the indexes of the YogaEdges within the mValue array.
   // Each group of 4 bits represent an index and the position of these 4 bits is related to the
   // YogaEdge.intValue(). For example, YogaEdge.TOP is position 1. Therefore bits representing TOP
   // are 4..7.
   // We initialize the long to be all "1"s representing all indexes to be undefined.
-  private long mEdgesToValuesIndex = ~0;
+  private long mEdgesToValuesIndex = ~0L;
   private float[] mValues;
   private boolean mHasAliasesSet;
 
   public boolean set(YogaEdge yogaEdge, float value) {
-    if (!floatsEqual(getRaw(yogaEdge), value)) {
-      final byte edgeIndex = getIndex(yogaEdge);
+    final int edgeIntValue = yogaEdge.intValue();
+    if (!floatsEqual(getRaw(edgeIntValue), value)) {
+      final byte edgeIndex = getIndex(edgeIntValue);
 
       // If we need to "unset" a previously set edge.
       if (YogaConstants.isUndefined(value)) {
-        unsetIndex(yogaEdge);
+        // UNSET index:
+        // Set the 4 bits representing the edge as undefined ('1111').
+        mEdgesToValuesIndex |= ((long) UNDEFINED_INDEX << (edgeIntValue * 4));
         mValues[edgeIndex] = YogaConstants.UNDEFINED;
 
         // If we need to insert a new edge value.
       } else if (edgeIndex == UNDEFINED_INDEX) {
         final byte newIndex = getFirstAvailableIndex();
-        setIndex(yogaEdge, newIndex);
+        if (newIndex >= EDGES_LENGTH) {
+          throw new IllegalStateException(
+              "The newIndex for the array cannot be bigger than the amount of Yoga Edges.");
+        }
+        // SETS index:
+        // Clear the bits at the index position.
+        mEdgesToValuesIndex &= ~((long) (0xF) << (edgeIntValue * 4));
+        // Then set the actual 4 bits value of the index. Leaving this as two steps for clarity.
+        mEdgesToValuesIndex |= ((long) newIndex << (edgeIntValue * 4));
         mValues[newIndex] = value;
 
         // Otherwise we need to overwrite an existing value.
@@ -56,10 +78,17 @@ public class Edges {
         mValues[edgeIndex] = value;
       }
 
-      mHasAliasesSet =
-          getIndex(YogaEdge.ALL) != UNDEFINED_INDEX
-              || getIndex(YogaEdge.VERTICAL) != UNDEFINED_INDEX
-              || getIndex(YogaEdge.HORIZONTAL) != UNDEFINED_INDEX;
+      // 1. It moves the right most 3 "4bits set" represeting ALL, VERTICAL and HORIZONTAL
+      //    to the first 3 "4bits set" position of our long array (0xFFF).
+      // 2. It converts the array from long to int.
+      // 3. It inverts the bits of the current array. UNDEFINED_INDEX is 0xF or "1111".
+      //    When an UNDEFINED_INDEX is inverted, we expect all zeros "0000".
+      // 4. Now the inverted array is masked with 0xFFF to get only the values we
+      //    are interested into.
+      // 5. If the result is equal to 0, we know that ALL, VERTICAL and HORIZONTAL were
+      //    all containing UNDEFINED_INDEXes. If that's not the case, we have an alias
+      //    set and will set the mHasAliasesSet flag to true.
+      mHasAliasesSet = (~((int) (mEdgesToValuesIndex >> ALIASES_RIGHT_SHIFT)) & ALIASES_MASK) != 0;
 
       return true;
     }
@@ -76,21 +105,21 @@ public class Edges {
       return defaultValue;
     }
 
-    final byte edgeIndex = getIndex(edge);
+    final byte edgeIndex = getIndex(edge.intValue());
     if (edgeIndex != UNDEFINED_INDEX) {
       return mValues[edgeIndex];
     }
 
     if (mHasAliasesSet) {
-      final YogaEdge secondType =
-          edge == YogaEdge.TOP || edge == YogaEdge.BOTTOM ? YogaEdge.VERTICAL : YogaEdge.HORIZONTAL;
-      final byte secondTypeEdgeIndex = getIndex(secondType);
+      final int secondTypeEdgeValue =
+          edge == YogaEdge.TOP || edge == YogaEdge.BOTTOM ? VERTICAL_INTVALUT : HORIZONTAL_INTVALUE;
+      final byte secondTypeEdgeIndex = getIndex(secondTypeEdgeValue);
 
       if (secondTypeEdgeIndex != UNDEFINED_INDEX) {
         return mValues[secondTypeEdgeIndex];
 
-      } else if (getIndex(YogaEdge.ALL) != UNDEFINED_INDEX) {
-        return mValues[getIndex(YogaEdge.ALL)];
+      } else if (getIndex(ALL_INTVALUT) != UNDEFINED_INDEX) {
+        return mValues[getIndex(ALL_INTVALUT)];
       }
     }
 
@@ -98,7 +127,7 @@ public class Edges {
   }
 
   public float getRaw(YogaEdge edge) {
-    final byte edgeIndex = getIndex(edge);
+    final byte edgeIndex = getIndex(edge.intValue());
     if (edgeIndex == UNDEFINED_INDEX) {
       return YogaConstants.UNDEFINED;
     }
@@ -106,31 +135,24 @@ public class Edges {
     return mValues[edgeIndex];
   }
 
-  private byte getIndex(YogaEdge edge) {
-    return (byte) ((mEdgesToValuesIndex >> (edge.intValue() * 4)) & INDEX_MASK);
-  }
-
-  // Set the 4 bits representing the edge as undefined ('1111').
-  private void unsetIndex(YogaEdge edge) {
-    mEdgesToValuesIndex |= ((long) UNDEFINED_INDEX << (edge.intValue() * 4));
-  }
-
-  private void setIndex(YogaEdge edge, byte index) {
-    if (index >= YogaEdge.values().length || index > INDEX_MASK) {
-      throw new IllegalStateException(
-          "The index of the array cannot be bigger than the amount of " + "Yoga Edges.");
+  /** @param edgeEnumValue This method can directly accept the YogaEdge.XXX.intValue(). */
+  // This duplicates the other getRaw instead of calling each other to save on method calls.
+  public float getRaw(int edgeEnumValue) {
+    final byte edgeIndex = getIndex(edgeEnumValue);
+    if (edgeIndex == UNDEFINED_INDEX) {
+      return YogaConstants.UNDEFINED;
     }
 
-    // Clear the bits at the index position.
-    mEdgesToValuesIndex &= ~((long) (0xF) << (edge.intValue() * 4));
-    // Then set the actual 4 bits value of the index. Leaving this as two steps for clarity.
-    mEdgesToValuesIndex |= ((long) index << (edge.intValue() * 4));
+    return mValues[edgeIndex];
+  }
+
+  private byte getIndex(int edgeEnumValue) {
+    return (byte) ((mEdgesToValuesIndex >> (edgeEnumValue * 4)) & INDEX_MASK);
   }
 
   private byte getFirstAvailableIndex() {
     if (mValues == null) {
-      mValues = new float[2];
-      Arrays.fill(mValues, YogaConstants.UNDEFINED);
+      mValues = new float[] {YogaConstants.UNDEFINED, YogaConstants.UNDEFINED};
       return 0;
     }
 
@@ -142,7 +164,7 @@ public class Edges {
 
     // We traversed the array without finding an empty spot. We need to increase the array.
     float[] oldValues = mValues;
-    mValues = new float[Math.min(oldValues.length * 2, YogaEdge.values().length)];
+    mValues = new float[Math.min(oldValues.length * 2, EDGES_LENGTH)];
     System.arraycopy(oldValues, 0, mValues, 0, oldValues.length);
     Arrays.fill(mValues, oldValues.length, mValues.length, YogaConstants.UNDEFINED);
 

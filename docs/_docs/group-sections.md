@@ -79,3 +79,5 @@ Each one of the sections in the tree acts as a data source. Its responsibilities
 
 
 <img src="/static/images/group-section-spec.png" style="width: 800px;">
+
+![GroupSection Spec lifecycle flowchart](/static/images/flow-chart-v0.24.0-group-section-spec.svg)

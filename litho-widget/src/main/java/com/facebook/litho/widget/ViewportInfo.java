@@ -16,12 +16,12 @@
 
 package com.facebook.litho.widget;
 
-import android.support.annotation.IntDef;
+import androidx.annotation.IntDef;
 
 /**
- * An implementation of this interface will provide both the
- * {@link android.support.v7.widget.RecyclerView}'s current visible views position and
- * the total number of items in its {@link android.support.v7.widget.RecyclerView.Adapter}.
+ * An implementation of this interface will provide both the {@link
+ * androidx.recyclerview.widget.RecyclerView}'s current visible views position and the total number
+ * of items in its {@link androidx.recyclerview.widget.RecyclerView.Adapter}.
  */
 public interface ViewportInfo {
 

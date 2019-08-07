@@ -33,10 +33,13 @@ import javax.lang.model.util.Types;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 /** Tests {@link ErrorEventHandlerGenerator}. */
+@RunWith(JUnit4.class)
 public class ErrorEventHandlerGeneratorTest {
   @Rule public CompilationRule mCompilationRule = new CompilationRule();
 

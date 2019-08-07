@@ -8,6 +8,7 @@ load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_ANDROIDSUPPORT_TARGET", "LI
 litho_android_library(
     name = "drawable",
     srcs = glob(["*.java"]),
+    is_androidx = True,
     plugins = [
         LITHO_PROCESSOR_TARGET,
         LITHO_SECTIONS_PROCESSOR_TARGET,

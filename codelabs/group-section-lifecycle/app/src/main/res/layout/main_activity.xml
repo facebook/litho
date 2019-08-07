@@ -1,0 +1,20 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    >
+
+  <com.facebook.litho.LithoView
+      android:id="@+id/section"
+      android:layout_width="match_parent"
+      android:layout_height="0dp"
+      android:layout_weight="1"
+      />
+
+  <com.facebook.litho.LithoView
+      android:id="@+id/timeline"
+      android:layout_width="match_parent"
+      android:layout_height="150dp"
+      />
+</LinearLayout>

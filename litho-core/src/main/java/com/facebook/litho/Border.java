@@ -16,7 +16,7 @@
 
 package com.facebook.litho;
 
-import static android.support.annotation.Dimension.DP;
+import static androidx.annotation.Dimension.DP;
 
 import android.graphics.ComposePathEffect;
 import android.graphics.DashPathEffect;
@@ -24,14 +24,14 @@ import android.graphics.DiscretePathEffect;
 import android.graphics.Path;
 import android.graphics.PathDashPathEffect;
 import android.graphics.PathEffect;
-import android.support.annotation.AttrRes;
-import android.support.annotation.ColorInt;
-import android.support.annotation.ColorRes;
-import android.support.annotation.DimenRes;
-import android.support.annotation.Dimension;
-import android.support.annotation.IntDef;
-import android.support.annotation.Nullable;
-import android.support.annotation.Px;
+import androidx.annotation.AttrRes;
+import androidx.annotation.ColorInt;
+import androidx.annotation.ColorRes;
+import androidx.annotation.DimenRes;
+import androidx.annotation.Dimension;
+import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
+import androidx.annotation.Px;
 import com.facebook.yoga.YogaEdge;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -48,9 +48,8 @@ public class Border {
 
   @Retention(RetentionPolicy.SOURCE)
   @IntDef(
-    flag = true,
-    value = {Corner.TOP_LEFT, Corner.TOP_RIGHT, Corner.BOTTOM_RIGHT, Corner.BOTTOM_LEFT}
-  )
+      flag = true,
+      value = {Corner.TOP_LEFT, Corner.TOP_RIGHT, Corner.BOTTOM_RIGHT, Corner.BOTTOM_LEFT})
   public @interface Corner {
     int TOP_LEFT = 0;
     int TOP_RIGHT = 1;
@@ -179,7 +178,7 @@ public class Border {
     private int mNumPathEffects;
 
     Builder(ComponentContext context) {
-      mResourceResolver = new ResourceResolver(context);
+      mResourceResolver = context.getResourceResolver();
       mBorder = new Border();
     }
 
@@ -446,7 +445,6 @@ public class Border {
 
     public Border build() {
       checkNotBuilt();
-      mResourceResolver.release();
       mResourceResolver = null;
 
       if (mNumPathEffects == MAX_PATH_EFFECTS) {

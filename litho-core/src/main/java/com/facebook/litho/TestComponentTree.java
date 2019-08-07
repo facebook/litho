@@ -18,9 +18,9 @@ package com.facebook.litho;
 
 import android.graphics.Rect;
 import android.os.Looper;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.VisibleForTesting;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -65,8 +65,7 @@ public class TestComponentTree extends ComponentTree {
         diffingEnabled,
         previousLayoutState,
         source,
-        extraAttribution,
-        false);
+        extraAttribution);
   }
 
   @VisibleForTesting
@@ -77,7 +76,7 @@ public class TestComponentTree extends ComponentTree {
 
   @VisibleForTesting
   @Override
-  public void mountComponent(Rect currentVisibleArea, boolean processVisibilityOutputs) {
+  public void mountComponent(@Nullable Rect currentVisibleArea, boolean processVisibilityOutputs) {
     super.mountComponent(currentVisibleArea, processVisibilityOutputs);
   }
 

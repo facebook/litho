@@ -20,7 +20,7 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.Row;
@@ -61,10 +61,13 @@ import javax.lang.model.util.Types;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 /** Tests {@link ComponentBodyGenerator} */
+@RunWith(JUnit4.class)
 public class ComponentBodyGeneratorTest {
   @Rule public CompilationRule mCompilationRule = new CompilationRule();
   @Mock private Messager mMessager;
@@ -114,7 +117,8 @@ public class ComponentBodyGeneratorTest {
         @Param Object arg2,
         @TreeProp long arg3,
         @TreeProp Set<List<Row>> arg7,
-        @TreeProp Set<Integer> arg8) {}
+        @TreeProp Set<Integer> arg8,
+        @Prop(dynamic = true) Object arg9) {}
 
     @OnEvent(Object.class)
     public void testEventMethod(
@@ -138,14 +142,9 @@ public class ComponentBodyGeneratorTest {
         @State int arg1,
         @Param Object arg2,
         @TreeProp long arg3,
-        @Prop Component arg4,
-        @Prop List<Component> arg5,
         @Prop List<String> arg6,
         @TreeProp Set<List<Row>> arg7,
         @TreeProp Set<Integer> arg8) {}
-
-    @OnUpdateState
-    public void testUpdateStateMethod() {}
 
     @OnUpdateStateWithTransition
     public void testUpdateStateWithTransitionMethod() {}
@@ -209,60 +208,6 @@ public class ComponentBodyGeneratorTest {
   }
 
   @Test
-  public void testGenerateStateContainerImpl() {
-    assertThat(ComponentBodyGenerator.generateStateContainer(mSpecModelDI).toString())
-        .isEqualTo(
-            "@android.support.annotation.VisibleForTesting(\n"
-                + "    otherwise = 2\n"
-                + ")\n"
-                + "static class TestStateContainer implements com.facebook.litho.StateContainer {\n"
-                + "  @com.facebook.litho.annotations.State\n"
-                + "  @com.facebook.litho.annotations.Comparable(\n"
-                + "      type = 3\n"
-                + "  )\n"
-                + "  int arg1;\n"
-                + "}\n");
-  }
-
-  @Test
-  public void testGenerateStateContainerWithTransitionImpl() {
-    assertThat(ComponentBodyGenerator.generateStateContainer(mSpecModelWithTransitionDI).toString())
-        .isEqualTo(
-            "@android.support.annotation.VisibleForTesting(\n"
-                + "    otherwise = 2\n"
-                + ")\n"
-                + "static class TestWithTransitionStateContainer implements com.facebook.litho.StateContainer, "
-                + "com.facebook.litho.ComponentLifecycle.TransitionContainer {\n"
-                + "  @com.facebook.litho.annotations.State\n"
-                + "  @com.facebook.litho.annotations.Comparable(\n"
-                + "      type = 3\n"
-                + "  )\n"
-                + "  int arg1;\n"
-                + "\n"
-                + "  java.util.List<com.facebook.litho.Transition> _transitions = new java.util.ArrayList<>();\n"
-                + "\n"
-                + "  @java.lang.Override\n"
-                + "  public java.util.List<com.facebook.litho.Transition> consumeTransitions() {\n"
-                + "    if (_transitions.isEmpty()) {\n"
-                + "      return java.util.Collections.EMPTY_LIST;\n"
-                + "    }\n"
-                + "    java.util.List<com.facebook.litho.Transition> transitionsCopy;\n"
-                + "    synchronized (_transitions) {\n"
-                + "      transitionsCopy = new java.util.ArrayList<>(_transitions);\n"
-                + "      _transitions.clear();\n"
-                + "    }\n"
-                + "    return transitionsCopy;\n"
-                + "  }\n"
-                + "}\n");
-  }
-
-  @Test
-  public void testGetStateContainerClassName() {
-    assertThat(ComponentBodyGenerator.getStateContainerClassName(mSpecModelDI))
-        .isEqualTo("TestStateContainer");
-  }
-
-  @Test
   public void testGenerateStateContainerGetter() {
     assertThat(
             ComponentBodyGenerator.generateStateContainerGetter(ClassNames.STATE_CONTAINER)
@@ -290,7 +235,7 @@ public class ComponentBodyGeneratorTest {
                 + "boolean arg0 = TestSpec.arg0;\n");
     assertThat(dataHolder.getFieldSpecs().get(1).toString())
         .isEqualTo(
-            "@android.support.annotation.Nullable\n"
+            "@androidx.annotation.Nullable\n"
                 + "@com.facebook.litho.annotations.Prop(\n"
                 + "    resType = com.facebook.litho.annotations.ResType.NONE,\n"
                 + "    optional = false\n"
@@ -299,6 +244,22 @@ public class ComponentBodyGeneratorTest {
                 + "    type = 10\n"
                 + ")\n"
                 + "com.facebook.litho.Component arg4;\n");
+
+    dataHolder = ComponentBodyGenerator.generateProps(mMountSpecModelDI);
+    assertThat(dataHolder.getFieldSpecs()).hasSize(6);
+    assertThat(dataHolder.getFieldSpecs().get(4).toString())
+        .isEqualTo(
+            "@com.facebook.litho.annotations.Prop(\n"
+                + "    resType = com.facebook.litho.annotations.ResType.NONE,\n"
+                + "    optional = false\n"
+                + ")\n"
+                + "@com.facebook.litho.annotations.Comparable(\n"
+                + "    type = 13\n"
+                + ")\n"
+                + "com.facebook.litho.DynamicValue<java.lang.Object> arg9;\n");
+
+    assertThat(dataHolder.getFieldSpecs().get(5).toString())
+        .isEqualTo("private com.facebook.litho.DynamicValue[] mDynamicProps;\n");
   }
 
   @Test
@@ -390,6 +351,9 @@ public class ComponentBodyGeneratorTest {
                 + "  if (arg6 != null ? !arg6.equals(mountTestRef.arg6) : mountTestRef.arg6 != null) {\n"
                 + "    return false;\n"
                 + "  }\n"
+                + "  if (arg9 != null ? !arg9.equals(mountTestRef.arg9) : mountTestRef.arg9 != null) {\n"
+                + "    return false;\n"
+                + "  }\n"
                 + "  if (mStateContainer.arg1 != mountTestRef.mStateContainer.arg1) {\n"
                 + "    return false;\n"
                 + "  }\n"
@@ -425,31 +389,17 @@ public class ComponentBodyGeneratorTest {
   }
 
   @Test
-  public void testOnUpdateStateMethods() {
-    TypeSpecDataHolder dataHolder =
-        ComponentBodyGenerator.generateOnUpdateStateMethods(mSpecModelDI);
+  public void testGetDynamicProps() {
+    TypeSpecDataHolder dataHolder = ComponentBodyGenerator.generateGetDynamicProps(mSpecModelDI);
+    assertThat(dataHolder.getMethodSpecs()).isEmpty();
+
+    dataHolder = ComponentBodyGenerator.generateGetDynamicProps(mMountSpecModelDI);
     assertThat(dataHolder.getMethodSpecs()).hasSize(1);
     assertThat(dataHolder.getMethodSpecs().get(0).toString())
         .isEqualTo(
-            "private TestUpdateStateMethodStateUpdate createTestUpdateStateMethodStateUpdate() {\n"
-                + "  return new TestUpdateStateMethodStateUpdate();\n"
-                + "}\n");
-  }
-
-  @Test
-  public void testOnUpdateStateWithTransitionMethods() {
-    TypeSpecDataHolder dataHolder =
-        ComponentBodyGenerator.generateOnUpdateStateMethods(mSpecModelWithTransitionDI);
-    assertThat(dataHolder.getMethodSpecs()).hasSize(2);
-    assertThat(dataHolder.getMethodSpecs().get(0).toString())
-        .isEqualTo(
-            "private TestUpdateStateMethodStateUpdate createTestUpdateStateMethodStateUpdate() {\n"
-                + "  return new TestUpdateStateMethodStateUpdate();\n"
-                + "}\n");
-    assertThat(dataHolder.getMethodSpecs().get(1).toString())
-        .isEqualTo(
-            "private TestUpdateStateWithTransitionMethodStateUpdate createTestUpdateStateWithTransitionMethodStateUpdate() {\n"
-                + "  return new TestUpdateStateWithTransitionMethodStateUpdate();\n"
+            "@java.lang.Override\n"
+                + "protected com.facebook.litho.DynamicValue[] getDynamicProps() {\n"
+                + "  return mDynamicProps;\n"
                 + "}\n");
   }
 
@@ -490,6 +440,39 @@ public class ComponentBodyGeneratorTest {
     assertThat(
             ComponentBodyGenerator.calculateLevelOfComponentInCollections((DeclaredTypeSpec) arg2))
         .isEqualTo(0);
+  }
+
+  @Test
+  public void testGenerateMakeShallowCopyWithStateUpdate() {
+    TypeSpecDataHolder typeSpecDataHolder =
+        ComponentBodyGenerator.generateMakeShallowCopy(mSpecModelDI, true);
+    assertThat(typeSpecDataHolder.getMethodSpecs().size()).isEqualTo(1);
+
+    assertThat(typeSpecDataHolder.getMethodSpecs().get(0).toString())
+        .isEqualTo(
+            "@java.lang.Override\n"
+                + "public Test makeShallowCopy() {\n"
+                + "  Test component = (Test) super.makeShallowCopy();\n"
+                + "  component.arg4 = component.arg4 != null ? component.arg4.makeShallowCopy() : null;\n"
+                + "  component.mStateContainer = new TestStateContainer();\n"
+                + "  return component;\n"
+                + "}\n");
+  }
+
+  @Test
+  public void testGenerateMakeShallowCopyWithOnlyStateUpdateWithTransition() {
+    TypeSpecDataHolder typeSpecDataHolder =
+        ComponentBodyGenerator.generateMakeShallowCopy(mSpecModelWithTransitionDI, true);
+    assertThat(typeSpecDataHolder.getMethodSpecs().size()).isEqualTo(1);
+
+    assertThat(typeSpecDataHolder.getMethodSpecs().get(0).toString())
+        .isEqualTo(
+            "@java.lang.Override\n"
+                + "public TestWithTransition makeShallowCopy() {\n"
+                + "  TestWithTransition component = (TestWithTransition) super.makeShallowCopy();\n"
+                + "  component.mStateContainer = new TestWithTransitionStateContainer();\n"
+                + "  return component;\n"
+                + "}\n");
   }
 
   private static class CollectionObject {
