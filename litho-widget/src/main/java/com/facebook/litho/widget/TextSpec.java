@@ -723,7 +723,9 @@ class TextSpec {
         .getPaint()
         .getTextBounds(customEllipsisText.toString(), 0, customEllipsisText.length(), bounds);
     // Identify the X position at which to truncate the final line:
-    final float ellipsisTarget = layoutWidth - bounds.width();
+    // Note: The left position of the line is needed for the case of RTL text.
+    final float ellipsisTarget =
+        newLayout.getWidth() - bounds.width() + newLayout.getLineLeft(ellipsizedLineNumber);
     // Get character offset number corresponding to that X position:
     int ellipsisOffset =
         newLayout.getOffsetForHorizontal(ellipsizedLineNumber, ellipsisTarget);
@@ -733,9 +735,10 @@ class TextSpec {
       ellipsisOffset -= 1;
 
       // Ensure that we haven't chosen an ellipsisOffset that's past the end of the ellipsis start.
-      // This can occur when the width of customEllipsisText is less than the width of the default
-      // ellipsis character. In that case, getOffsetForHorizontal will return the end of the string
-      // because our ellipsisTarget was in the middle of the ellipsis character.
+      // This can occur in several cases, including when the width of the customEllipsisText is less
+      // than the width of the default ellipsis character, and when in RTL mode and there is
+      // whitespace to the left of the text. In these cases, getOffsetForHorizontal will return the
+      // end of the string because our ellipsisTarget was in the middle of the ellipsis character.
       if (newLayout.getEllipsisCount(ellipsizedLineNumber) > 0) {
         final int ellipsisStart =
             newLayout.getLineStart(ellipsizedLineNumber)
