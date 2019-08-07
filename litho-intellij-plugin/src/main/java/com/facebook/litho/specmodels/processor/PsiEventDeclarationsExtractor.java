@@ -31,7 +31,6 @@ import com.intellij.psi.PsiNameValuePair;
 import com.intellij.psi.PsiType;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.search.PsiShortNamesCache;
-import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.TypeName;
 import java.util.ArrayList;
@@ -102,7 +101,10 @@ public class PsiEventDeclarationsExtractor {
     }
 
     return new EventDeclarationModel(
-        ClassName.bestGuess(text), getReturnType(eventClass), getFields(eventClass), psiType);
+        PsiTypeUtils.guessClassName(text),
+        getReturnType(eventClass),
+        getFields(eventClass),
+        psiType);
   }
 
   @Nullable

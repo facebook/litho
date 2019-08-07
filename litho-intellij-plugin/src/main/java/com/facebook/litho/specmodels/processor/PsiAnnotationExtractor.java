@@ -22,7 +22,6 @@ import com.intellij.psi.PsiClass;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.search.PsiShortNamesCache;
 import com.squareup.javapoet.AnnotationSpec;
-import com.squareup.javapoet.ClassName;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
@@ -39,7 +38,8 @@ public class PsiAnnotationExtractor {
     for (PsiAnnotation annotation : psiClass.getModifierList().getAnnotations()) {
       if (isValidAnnotation(project, annotation)) {
         annotations.add(
-            AnnotationSpec.builder(ClassName.bestGuess(annotation.getQualifiedName())).build());
+            AnnotationSpec.builder(PsiTypeUtils.guessClassName(annotation.getQualifiedName()))
+                .build());
       }
     }
 

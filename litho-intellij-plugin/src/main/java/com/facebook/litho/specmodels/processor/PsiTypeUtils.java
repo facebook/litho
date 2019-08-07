@@ -34,8 +34,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/** Extracts methods from the given input. */
-public class PsiTypeUtils {
+/** Converts {@link PsiType} to {@link TypeName}. */
+class PsiTypeUtils {
 
   static TypeName getTypeName(PsiType type) {
     if (type instanceof PsiPrimitiveType) {
@@ -43,11 +43,21 @@ public class PsiTypeUtils {
     } else if (type instanceof PsiClassType && ((PsiClassType) type).getParameterCount() > 0) {
       PsiClassType classType = (PsiClassType) type;
       return ParameterizedTypeName.get(
-          ClassName.bestGuess(classType.rawType().getCanonicalText()),
+          guessClassName(classType.rawType().getCanonicalText()),
           getTypeNameArray(classType.getParameters()));
     } else {
-      return ClassName.bestGuess(type.getCanonicalText());
+      String typeName = type.getCanonicalText();
+      return guessClassName(typeName);
     }
+  }
+
+  static ClassName guessClassName(String typeName) {
+    // ClassName#bestGuess throws an error for a wildcard symbol. We assume the
+    // wildcard type is an Object type, because any java Class extends Object class.
+    if ("?".equals(typeName)) {
+      typeName = Object.class.getTypeName();
+    }
+    return ClassName.bestGuess(typeName);
   }
 
   static TypeSpec generateTypeSpec(PsiType type) {
@@ -79,7 +89,7 @@ public class PsiTypeUtils {
                     : Collections.emptyList();
 
             final List<TypeSpec> typeArguments =
-                ClassName.bestGuess(qualifiedName).equals(ClassNames.DIFF)
+                guessClassName(qualifiedName).equals(ClassNames.DIFF)
                         || superInterfaceSpecs.stream()
                             .anyMatch(typeSpec -> typeSpec.isSubInterface(ClassNames.COLLECTION))
                     ? Arrays.stream(classType.getParameters())

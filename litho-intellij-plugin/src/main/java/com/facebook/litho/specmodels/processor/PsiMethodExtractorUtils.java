@@ -26,7 +26,6 @@ import com.intellij.psi.PsiNameValuePair;
 import com.intellij.psi.PsiParameter;
 import com.intellij.psi.PsiTypeParameter;
 import com.squareup.javapoet.AnnotationSpec;
-import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeVariableName;
 import java.lang.annotation.Annotation;
@@ -109,7 +108,7 @@ public class PsiMethodExtractorUtils {
       }
 
       final AnnotationSpec.Builder annotationSpec =
-          AnnotationSpec.builder(ClassName.bestGuess(annotationOnParam.getQualifiedName()));
+          AnnotationSpec.builder(PsiTypeUtils.guessClassName(annotationOnParam.getQualifiedName()));
 
       PsiNameValuePair[] paramAttributes = annotationOnParam.getParameterList().getAttributes();
       for (PsiNameValuePair attribute : paramAttributes) {

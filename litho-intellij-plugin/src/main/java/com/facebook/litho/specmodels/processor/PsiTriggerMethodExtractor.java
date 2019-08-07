@@ -35,7 +35,6 @@ import com.intellij.psi.PsiMethod;
 import com.intellij.psi.PsiNameValuePair;
 import com.intellij.psi.PsiType;
 import com.intellij.psi.util.PsiTypesUtil;
-import com.squareup.javapoet.ClassName;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
@@ -80,7 +79,7 @@ public class PsiTriggerMethodExtractor {
                 ImmutableList.copyOf(methodParams),
                 psiMethod,
                 new EventDeclarationModel(
-                    ClassName.bestGuess(valueClass.getName()),
+                    PsiTypeUtils.guessClassName(valueClass.getName()),
                     getReturnType(valueClass),
                     getFields(valueClass), // TODO fields in the Event class
                     valueClass));
