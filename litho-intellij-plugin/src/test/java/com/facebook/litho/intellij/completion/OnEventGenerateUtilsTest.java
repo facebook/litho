@@ -15,9 +15,11 @@
  */
 package com.facebook.litho.intellij.completion;
 
+import com.facebook.litho.intellij.LithoClassNames;
 import com.facebook.litho.intellij.LithoPluginIntellijTest;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiMethod;
+import com.intellij.psi.PsiType;
 import java.util.Collections;
 import org.junit.Assert;
 import org.junit.Test;
@@ -39,10 +41,35 @@ public class OnEventGenerateUtilsTest extends LithoPluginIntellijTest {
               OnEventGenerateUtils.createOnEventMethod(psiEvent, psiEvent, Collections.emptyList());
 
           Assert.assertEquals(2, onEventMethod.getParameters().length);
+          PsiType contextType = (PsiType) onEventMethod.getParameters()[0].getType();
+          Assert.assertEquals(
+              LithoClassNames.COMPONENT_CONTEXT_CLASS_NAME, contextType.getCanonicalText());
           Assert.assertEquals("boolean", onEventMethod.getReturnType().getCanonicalText());
+          Assert.assertEquals("onReturnEvent", onEventMethod.getName());
 
           return true;
         },
         "ReturnEvent.java");
+  }
+
+  @Test
+  public void createOnEventMethodInSection() {
+    testHelper.getPsiClass(
+        psiClasses -> {
+          Assert.assertNotNull(psiClasses);
+          PsiClass hasSectionAnnotation = psiClasses.get(0);
+
+          PsiMethod onEventMethod =
+              OnEventGenerateUtils.createOnEventMethod(
+                  hasSectionAnnotation, hasSectionAnnotation, Collections.emptyList());
+
+          Assert.assertEquals(1, onEventMethod.getParameters().length);
+          PsiType contextType = (PsiType) onEventMethod.getParameters()[0].getType();
+          Assert.assertEquals(
+              LithoClassNames.SECTION_CONTEXT_CLASS_NAME, contextType.getCanonicalText());
+
+          return true;
+        },
+        "OnEventSection.java");
   }
 }

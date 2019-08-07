@@ -26,7 +26,6 @@ import com.intellij.psi.JavaPsiFacade;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiClassObjectAccessExpression;
 import com.intellij.psi.PsiComment;
-import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementFactory;
 import com.intellij.psi.PsiField;
 import com.intellij.psi.PsiMethod;
@@ -63,14 +62,16 @@ public class OnEventGenerateUtils {
    *      }
    * }</code></pre>
    *
-   * @param context Context for creating PsiElements.
+   * @param context Context to create event for. Created event contains either SectionContext or
+   *     ComponentContext depending on this context.
    * @param eventClass Class defines method name and method parameters. Parameters derived from this
-   *     class are created with the {@literal @FromEvent} annotation.
+   *     class are created with the {@literal @FromEvent} annotation. This method doesn't verify if
+   *     the provided class is {@link Event} class.
    * @param additionalParameters Additional parameters added to the method 'as is'.
    * @return New PsiMethod describing Litho event handler.
    */
   public static PsiMethod createOnEventMethod(
-      PsiElement context, PsiClass eventClass, Collection<PsiParameter> additionalParameters) {
+      PsiClass context, PsiClass eventClass, Collection<PsiParameter> additionalParameters) {
 
     final Project project = context.getProject();
     final PsiElementFactory factory = JavaPsiFacade.getElementFactory(project);
@@ -84,9 +85,7 @@ public class OnEventGenerateUtils {
         factory.createParameter(
             CONTEXT_PARAMETER_NAME,
             PsiType.getTypeByName(
-                LithoClassNames.COMPONENT_CONTEXT_CLASS_NAME,
-                project,
-                GlobalSearchScope.allScope(project)),
+                getContextClassName(context), project, GlobalSearchScope.allScope(project)),
             context);
     parameterList.add(contextParameter);
 
@@ -116,6 +115,12 @@ public class OnEventGenerateUtils {
     methodModifierList.setModifierProperty(PsiModifier.STATIC, true);
 
     return method;
+  }
+
+  private static String getContextClassName(PsiClass context) {
+    return LithoPluginUtils.hasLithoSectionAnnotation(context)
+        ? LithoClassNames.SECTION_CONTEXT_CLASS_NAME
+        : LithoClassNames.COMPONENT_CONTEXT_CLASS_NAME;
   }
 
   private static PsiType getEventReturnType(PsiClass eventClass) {
