@@ -631,9 +631,6 @@ class LayoutState {
       layoutState.mCurrentX -= node.getX();
       layoutState.mCurrentY -= node.getY();
 
-      if (isTracing) {
-        ComponentsSystrace.endSection();
-      }
       return;
     }
 
