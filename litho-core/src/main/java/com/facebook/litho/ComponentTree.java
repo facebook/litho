@@ -271,15 +271,16 @@ public class ComponentTree {
 
   private final boolean mCreateInitialStateOncePerThread;
 
+  public static Builder create(ComponentContext context) {
+    return new ComponentTree.Builder(context);
+  }
+
   public static Builder create(ComponentContext context, Component.Builder<?> root) {
     return create(context, root.build());
   }
 
-  public static Builder create(ComponentContext context, @NonNull Component root) {
-    if (root == null) {
-      throw new NullPointerException("Creating a ComponentTree with a null root is not allowed!");
-    }
-    return new ComponentTree.Builder(context, root);
+  public static Builder create(ComponentContext context, Component root) {
+    return new ComponentTree.Builder(context).withRoot(root);
   }
 
   protected ComponentTree(Builder builder) {
@@ -2662,7 +2663,7 @@ public class ComponentTree {
 
     // required
     private final ComponentContext context;
-    private final Component root;
+    private Component root;
 
     // optional
     private boolean incrementalMountEnabled = true;
@@ -2684,9 +2685,23 @@ public class ComponentTree {
         ComponentsConfiguration.splitLayoutForMeasureAndRangeEstimation;
     private boolean useCancelableLayoutFutures = ComponentsConfiguration.useCancelableLayoutFutures;
 
-    protected Builder(ComponentContext context, Component root) {
+    protected Builder(ComponentContext context) {
       this.context = context;
+    }
+
+    /**
+     * Specify root for the component tree
+     *
+     * <p>IMPORTANT: If you do not set this, a default root will be set and you can reset root after
+     * build and attach of the component tree
+     */
+    public Builder withRoot(Component root) {
+      if (root == null) {
+        throw new NullPointerException("Creating a ComponentTree with a null root is not allowed!");
+      }
+
       this.root = root;
+      return this;
     }
 
     /**
@@ -2835,6 +2850,12 @@ public class ComponentTree {
 
     /** Builds a {@link ComponentTree} using the parameters specified in this builder. */
     public ComponentTree build() {
+
+      // Setting root to default to allow users to initialise without a root.
+      if (root == null) {
+        root = Row.create(context).build();
+      }
+
       return new ComponentTree(this);
     }
   }

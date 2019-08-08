@@ -32,7 +32,7 @@ import java.util.List;
 public class TestComponentTree extends ComponentTree {
 
   public static Builder create(ComponentContext context, Component root) {
-    return new Builder(context, root);
+    return new Builder(context).withRoot(root);
   }
 
   private TestComponentTree(ComponentTree.Builder builder) {
@@ -117,8 +117,13 @@ public class TestComponentTree extends ComponentTree {
 
   public static class Builder extends ComponentTree.Builder {
 
-    private Builder(ComponentContext context, Component root) {
-      super(context, root);
+    private Builder(ComponentContext context) {
+      super(context);
+    }
+
+    @Override
+    public Builder withRoot(Component root) {
+      return (Builder) super.withRoot(root);
     }
 
     @Override

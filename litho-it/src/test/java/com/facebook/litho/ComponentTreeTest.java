@@ -404,6 +404,19 @@ public class ComponentTreeTest {
   }
 
   @Test
+  public void testDefaultInitialisationAndSetRoot() {
+    ComponentTree componentTree = create(mContext).build();
+    componentTree.setLithoView(new LithoView(mContext));
+    componentTree.attach();
+
+    assertThat(componentTree.getRoot()).isNotNull();
+
+    componentTree.setRootAndSizeSpec(mComponent, mWidthSpec, mHeightSpec);
+
+    assertThat(componentTree.getRoot()).isEqualTo(mComponent);
+  }
+
+  @Test
   public void testSetRootWithTreePropsThenMeasure() {
     ComponentTree componentTree = create(mContext, mComponent).build();
     componentTree.setLithoView(new LithoView(mContext));
