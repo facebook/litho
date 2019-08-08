@@ -26,44 +26,41 @@ import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.EventMethod;
 import com.facebook.litho.specmodels.model.MethodParamModel;
 import com.facebook.litho.specmodels.model.SpecMethodModel;
-import com.facebook.litho.specmodels.model.TypeSpec;
 import com.facebook.litho.specmodels.model.WorkingRangeDeclarationModel;
 import com.facebook.litho.specmodels.model.WorkingRangeMethodModel;
 import com.intellij.codeInsight.AnnotationUtil;
 import com.intellij.psi.PsiAnnotation;
 import com.intellij.psi.PsiClass;
-import com.intellij.psi.PsiClassObjectAccessExpression;
 import com.intellij.psi.PsiMethod;
 import com.intellij.psi.PsiNameValuePair;
-import com.intellij.psi.PsiType;
-import com.intellij.psi.util.PsiTypesUtil;
-import com.squareup.javapoet.TypeName;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.annotation.Nullable;
 
-public class PsiWorkingRangesMethodExtractor {
+class PsiWorkingRangesMethodExtractor {
 
   @Nullable
-  public static SpecMethodModel<EventMethod, Void> getRegisterMethod(
+  static SpecMethodModel<EventMethod, Void> getRegisterMethod(
       PsiClass psiClass, List<Class<? extends Annotation>> permittedInterStageInputAnnotations) {
     for (PsiMethod psiMethod : psiClass.getMethods()) {
       final OnRegisterRanges onRegisterRangesAnnotation =
-          AnnotationUtil.findAnnotationInHierarchy(psiMethod, OnRegisterRanges.class);
+          PsiAnnotationProxyUtils.findAnnotationInHierarchy(psiMethod, OnRegisterRanges.class);
       if (onRegisterRangesAnnotation != null) {
         final List<MethodParamModel> methodParams =
             getMethodParams(
                 psiMethod,
                 getPermittedMethodParamAnnotations(permittedInterStageInputAnnotations),
                 permittedInterStageInputAnnotations,
-                ImmutableList.<Class<? extends Annotation>>of());
+                ImmutableList.of());
 
         return SpecMethodModel.<EventMethod, Void>builder()
             .annotations(ImmutableList.of())
             .modifiers(PsiProcessingUtils.extractModifiers(psiMethod.getModifierList()))
             .name(psiMethod.getName())
-            .returnTypeSpec(new TypeSpec(TypeName.VOID))
+            .returnTypeSpec(PsiTypeUtils.generateTypeSpec(psiMethod.getReturnType()))
             .typeVariables(ImmutableList.copyOf(getTypeVariables(psiMethod)))
             .methodParams(ImmutableList.copyOf(methodParams))
             .representedObject(psiMethod)
@@ -73,88 +70,64 @@ public class PsiWorkingRangesMethodExtractor {
     return null;
   }
 
-  public static ImmutableList<WorkingRangeMethodModel> getRangesMethods(
+  static ImmutableList<WorkingRangeMethodModel> getRangesMethods(
       PsiClass psiClass, List<Class<? extends Annotation>> permittedInterStageInputAnnotations) {
-    final List<WorkingRangeMethodModel> workingRangeMethods = new ArrayList<>();
+    Map<String, WorkingRangeMethodModel> models = new HashMap<>();
 
     for (PsiMethod psiMethod : psiClass.getMethods()) {
+      // OnEnteredRange
       final OnEnteredRange enteredRangeAnnotation =
-          AnnotationUtil.findAnnotationInHierarchy(psiMethod, OnEnteredRange.class);
-      final OnExitedRange exitedRangeAnnotation =
-          AnnotationUtil.findAnnotationInHierarchy(psiMethod, OnExitedRange.class);
-
+          PsiAnnotationProxyUtils.findAnnotationInHierarchy(psiMethod, OnEnteredRange.class);
       if (enteredRangeAnnotation != null) {
         SpecMethodModel<EventMethod, WorkingRangeDeclarationModel> enteredRangeMethod =
             generateWorkingRangeMethod(
-                psiMethod, permittedInterStageInputAnnotations, "OnEnteredRange");
-
+                psiMethod, permittedInterStageInputAnnotations, OnEnteredRange.class.getName());
         final String name = enteredRangeAnnotation.name();
-        final WorkingRangeMethodModel workingRangeModel =
-            workingRangeMethods.stream()
-                .filter(it -> it.name.equals(name) && it.enteredRangeModel == null)
-                .findFirst()
-                .orElseGet(
-                    () -> {
-                      WorkingRangeMethodModel model = new WorkingRangeMethodModel(name);
-                      workingRangeMethods.add(model);
-                      return model;
-                    });
-        workingRangeModel.enteredRangeModel = enteredRangeMethod;
+        models.putIfAbsent(name, new WorkingRangeMethodModel(name));
+        models.get(name).enteredRangeModel = enteredRangeMethod;
       }
 
+      // OnExitedRange
+      final OnExitedRange exitedRangeAnnotation =
+          PsiAnnotationProxyUtils.findAnnotationInHierarchy(psiMethod, OnExitedRange.class);
       if (exitedRangeAnnotation != null) {
         SpecMethodModel<EventMethod, WorkingRangeDeclarationModel> exitedRangeMethod =
             generateWorkingRangeMethod(
-                psiMethod, permittedInterStageInputAnnotations, "OnExitedRange");
-
+                psiMethod, permittedInterStageInputAnnotations, OnExitedRange.class.getName());
         final String name = exitedRangeAnnotation.name();
-        final WorkingRangeMethodModel workingRangeModel =
-            workingRangeMethods.stream()
-                .filter(it -> it.name.equals(name) && it.exitedRangeModel == null)
-                .findFirst()
-                .orElseGet(
-                    () -> {
-                      WorkingRangeMethodModel model = new WorkingRangeMethodModel(name);
-                      workingRangeMethods.add(model);
-                      return model;
-                    });
-        workingRangeModel.exitedRangeModel = exitedRangeMethod;
+        models.putIfAbsent(name, new WorkingRangeMethodModel(name));
+        models.get(name).exitedRangeModel = exitedRangeMethod;
       }
     }
-    return ImmutableList.copyOf(workingRangeMethods);
+    return ImmutableList.copyOf(new ArrayList<>(models.values()));
   }
 
-  @Nullable
   private static SpecMethodModel<EventMethod, WorkingRangeDeclarationModel>
       generateWorkingRangeMethod(
           PsiMethod psiMethod,
           List<Class<? extends Annotation>> permittedInterStageInputAnnotations,
-          String annotation) {
+          String annotationQualifiedName) {
     final List<MethodParamModel> methodParams =
         getMethodParams(
             psiMethod,
             getPermittedMethodParamAnnotations(permittedInterStageInputAnnotations),
             permittedInterStageInputAnnotations,
-            ImmutableList.<Class<? extends Annotation>>of());
+            ImmutableList.of());
 
-    PsiAnnotation psiOnEnteredRangeAnnotation =
-        AnnotationUtil.findAnnotation(psiMethod, annotation);
-    PsiNameValuePair valuePair =
-        AnnotationUtil.findDeclaredAttribute(psiOnEnteredRangeAnnotation, "name");
-    PsiClassObjectAccessExpression valueClassExpression =
-        (PsiClassObjectAccessExpression) valuePair.getValue();
-    PsiType valueType = valueClassExpression.getOperand().getType();
-    PsiClass valueClass = PsiTypesUtil.getPsiClass(valueType);
+    PsiAnnotation psiAnnotation = AnnotationUtil.findAnnotation(psiMethod, annotationQualifiedName);
+    PsiNameValuePair valuePair = AnnotationUtil.findDeclaredAttribute(psiAnnotation, "name");
 
     return SpecMethodModel.<EventMethod, WorkingRangeDeclarationModel>builder()
         .annotations(ImmutableList.of())
         .modifiers(PsiProcessingUtils.extractModifiers(psiMethod.getModifierList()))
         .name(psiMethod.getName())
-        .returnTypeSpec(new TypeSpec(TypeName.VOID))
+        .returnTypeSpec(PsiTypeUtils.generateTypeSpec(psiMethod.getReturnType()))
         .typeVariables(ImmutableList.copyOf(getTypeVariables(psiMethod)))
         .methodParams(ImmutableList.copyOf(methodParams))
         .representedObject(psiMethod)
-        .typeModel(new WorkingRangeDeclarationModel(valuePair.getLiteralValue(), valueClass))
+        .typeModel(
+            new WorkingRangeDeclarationModel(
+                valuePair.getLiteralValue(), valuePair.getNameIdentifier()))
         .build();
   }
 }
