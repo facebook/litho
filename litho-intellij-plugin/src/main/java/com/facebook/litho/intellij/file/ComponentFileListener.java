@@ -21,9 +21,9 @@ import com.facebook.litho.intellij.completion.ComponentGenerateUtils;
 import com.facebook.litho.intellij.extensions.EventLogger;
 import com.facebook.litho.intellij.logging.DebounceEventLogger;
 import com.google.common.annotations.VisibleForTesting;
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.fileEditor.FileDocumentManagerListener;
+import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiClass;
@@ -63,11 +63,13 @@ public class ComponentFileListener implements FileDocumentManagerListener {
 
   @Override
   public void beforeDocumentSaving(Document document) {
-    ApplicationManager.getApplication().invokeLater(() -> beforeDocumentSavingInternal(document));
+    beforeDocumentSavingInternal(document);
   }
 
+  /** Uses Psi access and must be called on EventDispatch Thread or within Read Action */
   private void beforeDocumentSavingInternal(Document document) {
     Arrays.stream(ProjectManager.getInstance().getOpenProjects())
+        .filter(project -> !DumbService.isDumb(project))
         .map(PsiDocumentManager::getInstance)
         .map(psiDocumentManager -> psiDocumentManager.getPsiFile(document))
         .filter(Objects::nonNull)

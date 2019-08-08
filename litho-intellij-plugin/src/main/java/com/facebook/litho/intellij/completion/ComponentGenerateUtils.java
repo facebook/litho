@@ -23,9 +23,11 @@ import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.processor.PsiLayoutSpecModelFactory;
 import com.intellij.ide.actions.ElementCreator;
 import com.intellij.ide.fileTemplates.JavaCreateFromTemplateHandler;
+import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiDirectory;
+import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiJavaFile;
 import com.squareup.javapoet.JavaFile;
@@ -72,7 +74,7 @@ public class ComponentGenerateUtils {
   }
 
   /**
-   * Updates existing generated Component file.
+   * Updates existing generated Component.
    *
    * @param qualifiedSpecName fully qualified name of the Spec class to update Component for.
    * @param specModel {@link SpecModel} of the Spec class
@@ -80,11 +82,32 @@ public class ComponentGenerateUtils {
    */
   private static boolean updateComponent(
       Project project, String qualifiedSpecName, SpecModel specModel) {
-    PsiElement[] psiElements =
-        new ComponentUpdater(project, specModel).tryCreate(qualifiedSpecName);
-    return psiElements.length > 0;
+    return LithoPluginUtils.findComponentFile(qualifiedSpecName, project)
+        .map(
+            componentFile -> {
+              Document componentDocument =
+                  PsiDocumentManager.getInstance(project).getDocument(componentFile);
+              if (componentDocument == null) {
+                return false;
+              }
+              TypeSpec typeSpec = specModel.generate(RunMode.normal());
+              String content =
+                  JavaFile.builder(componentFile.getPackageName(), typeSpec)
+                      .skipJavaLangImports(true)
+                      .build()
+                      .toString();
+              if (content.equals(componentDocument.getText())) {
+                return false;
+              }
+              componentDocument.setText(content);
+              PsiDocumentManager.getInstance(project)
+                  .doPostponedOperationsAndUnblockDocument(componentDocument);
+              return true;
+            })
+        .orElse(false);
   }
 
+  /** Example usage: new ComponentUpdater(project, specModel).tryCreate(qualifiedSpecName); */
   private static class ComponentUpdater extends ElementCreator {
     private final Project project;
     private final SpecModel model;
@@ -112,6 +135,8 @@ public class ComponentGenerateUtils {
       TypeSpec typeSpec = model.generate(RunMode.normal());
       String content =
           JavaFile.builder(packageName, typeSpec).skipJavaLangImports(true).build().toString();
+
+      // Invokes PsiDirectory#add method, shouldn't be called on EventDispatch Thread
       return JavaCreateFromTemplateHandler.createClassOrInterface(
           project, targetDirectory, content, true, "java");
     }
