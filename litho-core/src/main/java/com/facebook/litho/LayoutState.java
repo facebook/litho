@@ -186,7 +186,6 @@ class LayoutState {
   private boolean mAccessibilityEnabled = false;
 
   private StateHandler mStateHandler;
-  private boolean mClipChildren = true;
   private List<Component> mComponentsNeedingPreviousRenderData;
   @Nullable private TransitionId mCurrentTransitionId;
   @Nullable private OutputUnitsAffinityGroup<LayoutOutput> mCurrentLayoutOutputAffinityGroup;
