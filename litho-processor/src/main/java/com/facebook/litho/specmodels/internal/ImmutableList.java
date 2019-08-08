@@ -17,8 +17,8 @@
 package com.facebook.litho.specmodels.internal;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 /**
  * A dummy representation of an immutable set. This can be used temporarily as a type until we have
@@ -30,11 +30,11 @@ public class ImmutableList<E> extends ArrayList<E> {
     super(capacity);
   }
 
-  private ImmutableList(List<E> list) {
+  private ImmutableList(Collection<E> list) {
     super(list);
   }
 
-  public static <E> ImmutableList<E> copyOf(List<E> list) {
+  public static <E> ImmutableList<E> copyOf(Collection<E> list) {
     return new ImmutableList<>(list);
   }
 
