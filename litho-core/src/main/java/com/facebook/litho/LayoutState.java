@@ -134,6 +134,7 @@ class LayoutState {
 
   private static final AtomicInteger sIdGenerator = new AtomicInteger(1);
   private static final int NO_PREVIOUS_LAYOUT_STATE_ID = -1;
+  private static final boolean IS_TEST = "robolectric".equals(Build.FINGERPRINT);
 
   private final Map<String, Rect> mComponentKeyToBounds = new HashMap<>();
   private final List<Component> mComponents = new ArrayList<>();
@@ -1778,11 +1779,9 @@ class LayoutState {
     }
 
     c = component.getScopedContext();
-
-    final boolean isTest = "robolectric".equals(Build.FINGERPRINT);
     // Copy the context so that it can have its own set of tree props.
     // Robolectric tests keep the context so that tree props can be set externally.
-    if (!isTest) {
+    if (!IS_TEST) {
       c = c.makeNewCopy();
     }
 
