@@ -228,6 +228,150 @@ public class RecyclerBinderWrapContentTest {
   }
 
   @Test
+  public void testWrapContentVerticalWithUpdateWithEquivalentTotalSizeNoRemeasure() {
+    final int widthSpec = makeSizeSpec(1000, EXACTLY);
+    final int heightSpec = makeSizeSpec(1000, AT_MOST);
+
+    final RecyclerBinder recyclerBinder =
+        prepareBinderWithMeasuredChildSize(
+            widthSpec, heightSpec, 8, OrientationHelper.VERTICAL, 100);
+
+    recyclerBinder.mount(mRecyclerView);
+    Size size = new Size();
+    recyclerBinder.measure(size, widthSpec, heightSpec, mock(EventHandler.class));
+    assertThat(size.height).isEqualTo(800);
+
+    final Component newComponent1 =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(ComponentContext c) {
+            return TestDrawableComponent.create(c).measuredHeight(80).build();
+          }
+        };
+    final Component newComponent2 =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(ComponentContext c) {
+            return TestDrawableComponent.create(c).measuredHeight(120).build();
+          }
+        };
+    recyclerBinder.updateItemAt(0, newComponent1);
+    recyclerBinder.updateItemAt(1, newComponent2);
+    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+
+    // Verify remeasure is triggered through View#postOnAnimation(Runnable)
+    verifyPostOnAnimationWasCalledNTimesWith(mRecyclerView, 0, recyclerBinder.mRemeasureRunnable);
+
+    recyclerBinder.measure(size, widthSpec, heightSpec, mock(EventHandler.class));
+    assertThat(size.height).isEqualTo(800);
+  }
+
+  @Test
+  public void testWrapContentVerticalWithUpdateWithNonEquivalentTotalSizePerformRemeasure() {
+    final int widthSpec = makeSizeSpec(1000, EXACTLY);
+    final int heightSpec = makeSizeSpec(1000, AT_MOST);
+
+    final RecyclerBinder recyclerBinder =
+        prepareBinderWithMeasuredChildSize(
+            widthSpec, heightSpec, 8, OrientationHelper.VERTICAL, 100);
+
+    recyclerBinder.mount(mRecyclerView);
+    Size size = new Size();
+    recyclerBinder.measure(size, widthSpec, heightSpec, mock(EventHandler.class));
+    assertThat(size.height).isEqualTo(800);
+
+    final Component newComponent1 =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(ComponentContext c) {
+            return TestDrawableComponent.create(c).measuredHeight(81).build();
+          }
+        };
+    final Component newComponent2 =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(ComponentContext c) {
+            return TestDrawableComponent.create(c).measuredHeight(120).build();
+          }
+        };
+    recyclerBinder.updateItemAt(0, newComponent1);
+    recyclerBinder.updateItemAt(1, newComponent2);
+    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+
+    // Verify remeasure is triggered through View#postOnAnimation(Runnable)
+    verifyPostOnAnimationWasCalledNTimesWith(mRecyclerView, 1, recyclerBinder.mRemeasureRunnable);
+
+    recyclerBinder.measure(size, widthSpec, heightSpec, mock(EventHandler.class));
+    assertThat(size.height).isEqualTo(801);
+  }
+
+  @Test
+  public void testWrapContentVerticalWithInsertDeleteWithEquivalentTotalSizeNoRemeasure() {
+    final int widthSpec = makeSizeSpec(1000, EXACTLY);
+    final int heightSpec = makeSizeSpec(1000, AT_MOST);
+
+    final RecyclerBinder recyclerBinder =
+        prepareBinderWithMeasuredChildSize(
+            widthSpec, heightSpec, 8, OrientationHelper.VERTICAL, 100);
+
+    recyclerBinder.mount(mRecyclerView);
+    Size size = new Size();
+    recyclerBinder.measure(size, widthSpec, heightSpec, mock(EventHandler.class));
+    assertThat(size.height).isEqualTo(800);
+
+    final Component newComponent =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(ComponentContext c) {
+            return TestDrawableComponent.create(c).measuredHeight(300).build();
+          }
+        };
+
+    recyclerBinder.removeRangeAt(0, 3);
+    recyclerBinder.insertItemAt(0, newComponent);
+    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+
+    // Verify remeasure is triggered through View#postOnAnimation(Runnable)
+    verifyPostOnAnimationWasCalledNTimesWith(mRecyclerView, 0, recyclerBinder.mRemeasureRunnable);
+
+    recyclerBinder.measure(size, widthSpec, heightSpec, mock(EventHandler.class));
+    assertThat(size.height).isEqualTo(800);
+  }
+
+  @Test
+  public void testWrapContentVerticalWithInsertDeleteWithNonEquivalentTotalSizePerformRemeasure() {
+    final int widthSpec = makeSizeSpec(1000, EXACTLY);
+    final int heightSpec = makeSizeSpec(1000, AT_MOST);
+
+    final RecyclerBinder recyclerBinder =
+        prepareBinderWithMeasuredChildSize(
+            widthSpec, heightSpec, 8, OrientationHelper.VERTICAL, 100);
+
+    recyclerBinder.mount(mRecyclerView);
+    Size size = new Size();
+    recyclerBinder.measure(size, widthSpec, heightSpec, mock(EventHandler.class));
+    assertThat(size.height).isEqualTo(800);
+
+    final Component newComponent =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(ComponentContext c) {
+            return TestDrawableComponent.create(c).measuredHeight(301).build();
+          }
+        };
+
+    recyclerBinder.removeRangeAt(0, 3);
+    recyclerBinder.insertItemAt(0, newComponent);
+    recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+
+    // Verify remeasure is triggered through View#postOnAnimation(Runnable)
+    verifyPostOnAnimationWasCalledNTimesWith(mRecyclerView, 1, recyclerBinder.mRemeasureRunnable);
+
+    recyclerBinder.measure(size, widthSpec, heightSpec, mock(EventHandler.class));
+    assertThat(size.height).isEqualTo(801);
+  }
+
+  @Test
   public void testWrapContentWithUpdateRangeOnVertical() {
     final int NUM_TO_UPDATE = 5;
     final int widthSpec = makeSizeSpec(1000, EXACTLY);

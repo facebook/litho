@@ -1328,6 +1328,63 @@ public class RecyclerBinder
         mViewportManager.insertAffectsVisibleRange(position, 1, mEstimatedViewportCount));
   }
 
+  private Size getInitialMeasuredSize(
+      int parentWidthSpec, int parentHeightSpec, boolean canRemeasure) {
+    final Size out = new Size();
+    final int scrollDirection = mLayoutInfo.getScrollDirection();
+
+    final int measuredWidth;
+    final int measuredHeight;
+
+    final boolean shouldMeasureItemForSize =
+        shouldMeasureItemForSize(parentWidthSpec, parentHeightSpec, scrollDirection, canRemeasure);
+
+    switch (scrollDirection) {
+      case OrientationHelper.VERTICAL:
+        measuredHeight = SizeSpec.getSize(parentHeightSpec);
+
+        if (!shouldMeasureItemForSize) {
+          measuredWidth = SizeSpec.getSize(parentWidthSpec);
+        } else if (mSizeForMeasure != null) {
+          measuredWidth = mSizeForMeasure.width;
+        } else {
+          measuredWidth = 0;
+        }
+        break;
+
+      case OrientationHelper.HORIZONTAL:
+      default:
+        measuredWidth = SizeSpec.getSize(parentWidthSpec);
+
+        if (!shouldMeasureItemForSize) {
+          measuredHeight = SizeSpec.getSize(parentHeightSpec);
+        } else if (mSizeForMeasure != null) {
+          measuredHeight = mSizeForMeasure.height;
+        } else {
+          measuredHeight = 0;
+        }
+        break;
+    }
+
+    out.width = measuredWidth;
+    out.height = measuredHeight;
+
+    return out;
+  }
+
+  private void maybeRequestRemeasureIfBoundsChanged() {
+    // Even after data change we may not require triggering remeasure event if bounds of
+    // RecyclerView did not change.
+    final Size initialSize = getInitialMeasuredSize(mLastWidthSpec, mLastHeightSpec, true);
+
+    final Size wrapSize = new Size();
+    fillListViewport(initialSize.width, initialSize.height, wrapSize);
+
+    if (wrapSize.width != mMeasuredSize.width || wrapSize.height != mMeasuredSize.height) {
+      requestRemeasure();
+    }
+  }
+
   private void requestRemeasure() {
     if (SectionsDebug.ENABLED) {
       Log.d(SectionsDebug.TAG, "(" + hashCode() + ") requestRemeasure");
@@ -1790,7 +1847,7 @@ public class RecyclerBinder
     }
 
     if (mRequiresRemeasure.get()) {
-      requestRemeasure();
+      maybeRequestRemeasureIfBoundsChanged();
       return;
     }
 
@@ -1822,7 +1879,7 @@ public class RecyclerBinder
     }
 
     if (mRequiresRemeasure.get()) {
-      requestRemeasure();
+      maybeRequestRemeasureIfBoundsChanged();
       return;
     }
 
@@ -2012,9 +2069,6 @@ public class RecyclerBinder
 
     validateMeasureSpecs(widthSpec, heightSpec, canRemeasure, scrollDirection);
 
-    final int measuredWidth;
-    final int measuredHeight;
-
     final boolean shouldMeasureItemForSize =
         shouldMeasureItemForSize(widthSpec, heightSpec, scrollDirection, canRemeasure);
     if (mHasManualEstimatedViewportCount && shouldMeasureItemForSize) {
@@ -2062,59 +2116,43 @@ public class RecyclerBinder
         maybeCalculateSyncLayoutForSize(
             widthSpec, heightSpec, scrollDirection, shouldMeasureItemForSize, holderForRangeInfo);
 
-        // At this point we might still not have a range. In this situation we should return the
-        // best
-        // size we can detect from the size spec and update it when the first item comes in.
+        final Size initialMeasuredSize =
+            getInitialMeasuredSize(widthSpec, heightSpec, canRemeasure);
 
+        // At this point we might still not have a range. In this situation we should return the
+        // best size we can detect from the size spec and update it when the first item comes in.
         switch (scrollDirection) {
           case OrientationHelper.VERTICAL:
-            measuredHeight = SizeSpec.getSize(heightSpec);
-
-            if (!shouldMeasureItemForSize) {
-              measuredWidth = SizeSpec.getSize(widthSpec);
-              mReMeasureEventEventHandler = mWrapContent ? reMeasureEventHandler : null;
-              mRequiresRemeasure.set(mWrapContent);
-            } else if (mSizeForMeasure != null) {
-              measuredWidth = mSizeForMeasure.width;
+            if (!shouldMeasureItemForSize || mSizeForMeasure != null) {
               mReMeasureEventEventHandler = mWrapContent ? reMeasureEventHandler : null;
               mRequiresRemeasure.set(mWrapContent);
             } else {
-              measuredWidth = 0;
-              mRequiresRemeasure.set(true);
               mReMeasureEventEventHandler = reMeasureEventHandler;
+              mRequiresRemeasure.set(true);
             }
             break;
 
           case OrientationHelper.HORIZONTAL:
           default:
-            measuredWidth = SizeSpec.getSize(widthSpec);
-
-            if (!shouldMeasureItemForSize) {
-              measuredHeight = SizeSpec.getSize(heightSpec);
-              mReMeasureEventEventHandler =
-                  (mHasDynamicItemHeight || mWrapContent) ? reMeasureEventHandler : null;
-              mRequiresRemeasure.set(mHasDynamicItemHeight || mWrapContent);
-            } else if (mSizeForMeasure != null) {
-              measuredHeight = mSizeForMeasure.height;
+            if (!shouldMeasureItemForSize || mSizeForMeasure != null) {
               mReMeasureEventEventHandler =
                   (mHasDynamicItemHeight || mWrapContent) ? reMeasureEventHandler : null;
               mRequiresRemeasure.set(mHasDynamicItemHeight || mWrapContent);
             } else {
-              measuredHeight = 0;
-              mRequiresRemeasure.set(true);
               mReMeasureEventEventHandler = reMeasureEventHandler;
+              mRequiresRemeasure.set(true);
             }
             break;
         }
 
         if (mWrapContent) {
           final Size wrapSize = new Size();
-          fillListViewport(measuredWidth, measuredHeight, wrapSize);
+          fillListViewport(initialMeasuredSize.width, initialMeasuredSize.height, wrapSize);
           outSize.width = wrapSize.width;
           outSize.height = wrapSize.height;
         } else {
-          outSize.width = measuredWidth;
-          outSize.height = measuredHeight;
+          outSize.width = initialMeasuredSize.width;
+          outSize.height = initialMeasuredSize.height;
         }
 
         mMeasuredSize = new Size(outSize.width, outSize.height);
