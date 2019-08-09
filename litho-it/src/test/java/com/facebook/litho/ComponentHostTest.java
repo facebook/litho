@@ -86,14 +86,6 @@ public class ComponentHostTest {
   }
 
   @Test
-  public void testParentHostMarker() {
-    assertThat(mHost.getParentHostMarker()).isEqualTo(0);
-
-    mHost.setParentHostMarker(1);
-    assertThat(mHost.getParentHostMarker()).isEqualTo(1);
-  }
-
-  @Test
   public void testInvalidations() {
     assertThat(mHost.getInvalidationCount()).isEqualTo(0);
     assertThat(mHost.getInvalidationRect()).isNull();

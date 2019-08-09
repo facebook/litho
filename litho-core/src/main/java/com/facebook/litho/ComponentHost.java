@@ -81,7 +81,6 @@ public class ComponentHost extends ViewGroup {
   private int[] mChildDrawingOrder = new int[0];
   private boolean mIsChildDrawingOrderDirty;
 
-  private long mParentHostMarker;
   private boolean mInLayout;
 
   @Nullable private ComponentAccessibilityDelegate mComponentAccessibilityDelegate;
@@ -126,21 +125,6 @@ public class ComponentHost extends ViewGroup {
     mViewMountItems = new SparseArrayCompat<>();
     mDrawableMountItems = new SparseArrayCompat<>();
     mDisappearingItems = new ArrayList<>();
-  }
-
-  /**
-   * Sets the parent host marker for this host.
-   * @param parentHostMarker marker that indicates which {@link ComponentHost} hosts this host.
-   */
-  void setParentHostMarker(long parentHostMarker) {
-    mParentHostMarker = parentHostMarker;
-  }
-
-  /**
-   * @return an id indicating which {@link ComponentHost} hosts this host.
-   */
-  long getParentHostMarker() {
-    return mParentHostMarker;
   }
 
   /**

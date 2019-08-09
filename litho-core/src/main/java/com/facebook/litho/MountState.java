@@ -1344,7 +1344,6 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     // 3. If it's a ComponentHost, add the mounted View to the list of Hosts.
     if (isHostSpec(component)) {
       ComponentHost componentHost = (ComponentHost) content;
-      componentHost.setParentHostMarker(hostMarker);
       registerHost(layoutOutput.getId(), componentHost);
     }
 
