@@ -2256,7 +2256,6 @@ public class ComponentTree {
   }
 
   /** Wraps a {@link FutureTask} to deduplicate calculating the same LayoutState across threads. */
-  @VisibleForTesting
   class LayoutStateFuture {
 
     private final AtomicInteger runningThreadId = new AtomicInteger(-1);

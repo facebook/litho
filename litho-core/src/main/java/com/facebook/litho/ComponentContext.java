@@ -42,13 +42,13 @@ public class ComponentContext {
   private final Context mContext;
   // TODO: T48229786 move to CT
   private final @Nullable String mLogTag;
-  private final ComponentsLogger mLogger;
+  private final @Nullable ComponentsLogger mLogger;
   private final @Nullable StateHandler mStateHandler;
 
   /** TODO: (T38237241) remove the usage of the key handler post the nested tree experiment */
   private final @Nullable KeyHandler mKeyHandler;
 
-  private String mNoStateUpdatesMethod;
+  private @Nullable String mNoStateUpdatesMethod;
 
   // Hold a reference to the component which scope we are currently within.
   @ThreadConfined(ThreadConfined.ANY)
@@ -81,12 +81,40 @@ public class ComponentContext {
   @ThreadConfined(ThreadConfined.ANY)
   private int mDefStyleAttr = 0;
 
-  private ComponentTree.LayoutStateFuture mLayoutStateFuture;
+  private @Nullable ComponentTree.LayoutStateFuture mLayoutStateFuture;
+
+  public ComponentContext(Context context) {
+    this(context, null, null, null);
+  }
+
+  public ComponentContext(Context context, StateHandler stateHandler) {
+    this(context, null, null, stateHandler, null, null);
+  }
+
+  /**
+   * Constructor that can be used to receive log data from components. Check {@link
+   * ComponentsLogger} for the type of events you can listen for.
+   *
+   * @param context Android context.
+   * @param logTag a log tag to be used with the logger.
+   * @param logger a lifecycle logger to be used.
+   */
+  public ComponentContext(Context context, String logTag, @Nullable ComponentsLogger logger) {
+    this(context, logTag, logger, null);
+  }
 
   public ComponentContext(
       Context context,
       @Nullable String logTag,
-      ComponentsLogger logger,
+      @Nullable ComponentsLogger logger,
+      @Nullable TreeProps treeProps) {
+    this(context, logTag, logger, null, null, treeProps);
+  }
+
+  public ComponentContext(
+      Context context,
+      @Nullable String logTag,
+      @Nullable ComponentsLogger logger,
       @Nullable StateHandler stateHandler,
       @Nullable KeyHandler keyHandler,
       @Nullable TreeProps treeProps) {
@@ -105,6 +133,15 @@ public class ComponentContext {
     mKeyHandler = keyHandler;
   }
 
+  public ComponentContext(ComponentContext context) {
+    this(
+        context,
+        context.mStateHandler,
+        context.mKeyHandler,
+        context.mTreeProps,
+        context.mLayoutStateFuture);
+  }
+
   public ComponentContext(
       ComponentContext context,
       @Nullable StateHandler stateHandler,
@@ -112,7 +149,7 @@ public class ComponentContext {
       @Nullable TreeProps treeProps,
       @Nullable ComponentTree.LayoutStateFuture layoutStateFuture) {
 
-    mContext = context.getAndroidContext();
+    mContext = context.mContext;
     mResourceCache = context.mResourceCache;
     mResourceResolver = context.mResourceResolver;
     mWidthSpec = context.mWidthSpec;
@@ -128,44 +165,7 @@ public class ComponentContext {
     mStateHandler = stateHandler != null ? stateHandler : context.mStateHandler;
     mKeyHandler = keyHandler != null ? keyHandler : context.mKeyHandler;
     mTreeProps = treeProps != null ? treeProps : context.mTreeProps;
-    mLayoutStateFuture = layoutStateFuture == null ? context.mLayoutStateFuture : layoutStateFuture;
-  }
-
-  public ComponentContext(
-      Context context,
-      @Nullable String logTag,
-      ComponentsLogger logger,
-      @Nullable TreeProps treeProps) {
-    this(context, logTag, logger, null, null, treeProps);
-  }
-
-  /**
-   * Constructor that can be used to receive log data from components. Check {@link
-   * ComponentsLogger} for the type of events you can listen for.
-   *
-   * @param context Android context.
-   * @param logTag Specify a log tag, to be used with the logger.
-   * @param logger Specify the lifecycle logger to be used.
-   */
-  public ComponentContext(Context context, @Nullable String logTag, ComponentsLogger logger) {
-    this(context, logTag, logger, null, null, null);
-  }
-
-  public ComponentContext(Context context, StateHandler stateHandler) {
-    this(context, null, null, stateHandler, null, null);
-  }
-
-  public ComponentContext(ComponentContext context) {
-    this(
-        context,
-        context.mStateHandler,
-        context.mKeyHandler,
-        context.mTreeProps,
-        context.mLayoutStateFuture);
-  }
-
-  public ComponentContext(Context context) {
-    this(context, null, null, null, null, null);
+    mLayoutStateFuture = layoutStateFuture != null ? layoutStateFuture : context.mLayoutStateFuture;
   }
 
   ComponentContext makeNewCopy() {
@@ -212,6 +212,7 @@ public class ComponentContext {
     return mComponentScope;
   }
 
+  @Nullable
   @VisibleForTesting
   public ComponentTree.LayoutStateFuture getLayoutStateFuture() {
     return mLayoutStateFuture;
@@ -294,6 +295,7 @@ public class ComponentContext {
         null, attrs, defStyleAttr != 0 ? defStyleAttr : mDefStyleAttr, mDefStyleRes);
   }
 
+  @Nullable
   public String getLogTag() {
     // TODO: T48229786 use CT field only
     return mComponentTree == null || mComponentTree.getLogTag() == null
@@ -505,7 +507,11 @@ public class ComponentContext {
   }
 
   boolean wasLayoutCanceled() {
-    return mLayoutStateFuture == null ? false : mLayoutStateFuture.isReleased();
+    return mLayoutStateFuture != null && mLayoutStateFuture.isReleased();
+  }
+
+  boolean wasLayoutInterrupted() {
+    return mLayoutStateFuture != null && mLayoutStateFuture.isInterrupted();
   }
 
   public boolean isReconciliationEnabled() {
@@ -514,9 +520,5 @@ public class ComponentContext {
     } else {
       return ComponentsConfiguration.isReconciliationEnabled;
     }
-  }
-
-  boolean wasLayoutInterrupted() {
-    return mLayoutStateFuture == null ? false : mLayoutStateFuture.isInterrupted();
   }
 }
