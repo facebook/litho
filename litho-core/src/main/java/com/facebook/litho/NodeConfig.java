@@ -15,9 +15,9 @@
  */
 package com.facebook.litho;
 
+import androidx.annotation.Nullable;
 import com.facebook.yoga.YogaConfig;
 import com.facebook.yoga.YogaNode;
-import javax.annotation.Nullable;
 
 /** A helper class that defines a configurable sizes for ComponentsPools. */
 public class NodeConfig {
@@ -35,13 +35,12 @@ public class NodeConfig {
    * Custom factory for Yoga nodes. Used to enable direct byte buffers to set Yoga style properties
    * (rather than JNI)
    */
-  public static volatile @Nullable YogaNodeFactory sYogaNodeFactory = null;
+  public static volatile @Nullable YogaNodeFactory sYogaNodeFactory;
 
   /** Factory to create custom InternalNodes for Components. */
-  public static volatile @Nullable InternalNodeFactory sInternalNodeFactory = null;
+  public static volatile @Nullable InternalNodeFactory sInternalNodeFactory;
 
   private static final YogaConfig sYogaConfig = new YogaConfig();
-  private static final Object sYogaConfigLock = new Object();
 
   static {
     sYogaConfig.setUseWebDefaults(true);
@@ -49,9 +48,8 @@ public class NodeConfig {
 
   @Nullable
   static YogaNode createYogaNode() {
-    return sYogaNodeFactory != null
-        ? sYogaNodeFactory.create(sYogaConfig)
-        : YogaNode.create(sYogaConfig);
+    final YogaNodeFactory factory = sYogaNodeFactory;
+    return factory != null ? factory.create(sYogaConfig) : YogaNode.create(sYogaConfig);
   }
 
   /**
@@ -59,15 +57,12 @@ public class NodeConfig {
    *
    * @param enable whether to print logs or not
    */
-  public static void setPrintYogaDebugLogs(boolean enable) {
-    synchronized (sYogaConfigLock) {
-      sYogaConfig.setPrintTreeFlag(enable);
-    }
+  public static synchronized void setPrintYogaDebugLogs(boolean enable) {
+    sYogaConfig.setPrintTreeFlag(enable);
   }
 
   /** Allows access to the internal YogaConfig instance */
   public static YogaConfig getYogaConfig() {
     return sYogaConfig;
   }
-
 }
