@@ -38,7 +38,6 @@ import com.facebook.yoga.YogaMeasureMode;
 import com.facebook.yoga.YogaMeasureOutput;
 import com.facebook.yoga.YogaNode;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.concurrent.GuardedBy;
@@ -71,8 +70,8 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
    */
   public interface TransitionContainer {
 
-    /** Remove and return all transitions collected from state updates with transitions. */
-    List<Transition> consumeTransitions();
+    /** Remove and return transition provided from OnUpdateStateWithTransition. */
+    Transition consumeTransition();
   }
 
   /**

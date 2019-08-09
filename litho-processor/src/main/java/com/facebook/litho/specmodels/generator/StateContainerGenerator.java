@@ -16,10 +16,10 @@
 package com.facebook.litho.specmodels.generator;
 
 import static com.facebook.litho.specmodels.generator.ComponentBodyGenerator.getComparableType;
-import static com.facebook.litho.specmodels.generator.GeneratorConstants.STATE_TRANSITIONS_FIELD_NAME;
 import static com.facebook.litho.specmodels.generator.StateGenerator.FLAG_LAZY;
 import static com.facebook.litho.specmodels.generator.StateGenerator.hasUpdateStateWithTransition;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.litho.annotations.Comparable;
 import com.facebook.litho.annotations.Param;
@@ -45,10 +45,9 @@ import java.util.List;
 import javax.lang.model.element.Modifier;
 
 public class StateContainerGenerator {
-  private static final String METHOD_NAME_CONSUME_TRANSITIONS = "consumeTransitions";
+  private static final String METHOD_NAME_CONSUME_TRANSITION = "consumeTransition";
   private static final String METHOD_NAME_APPLY_STATE_UPDATE = "applyStateUpdate";
   private static final String PARAM_NAME_STATE_UPDATE = "stateUpdate";
-  private static final String VAR_NAME_TRANSITION = "transition";
   private static final String VAR_NAME_PARAMS = "params";
 
   static TypeSpec generate(SpecModel specModel) {
@@ -79,7 +78,7 @@ public class StateContainerGenerator {
     }
 
     if (hasUpdateStateWithTransition) {
-      generateTransitionStaff(specModel).addToTypeSpec(stateContainerClassBuilder);
+      generateTransitionStuff(specModel).addToTypeSpec(stateContainerClassBuilder);
     }
 
     generateApplyStateUpdateMethod(specModel).addToTypeSpec(stateContainerClassBuilder);
@@ -87,51 +86,35 @@ public class StateContainerGenerator {
     return stateContainerClassBuilder.build();
   }
 
-  private static TypeSpecDataHolder generateTransitionStaff(SpecModel specModel) {
+  private static TypeSpecDataHolder generateTransitionStuff(SpecModel specModel) {
     final TypeSpecDataHolder.Builder typeSpecDataHolder = TypeSpecDataHolder.newBuilder();
 
     final TypeName transitionClass = specModel.getTransitionClass().box();
 
     typeSpecDataHolder.addField(
-        FieldSpec.builder(
-                ParameterizedTypeName.get(ClassNames.LIST, transitionClass),
-                GeneratorConstants.STATE_TRANSITIONS_FIELD_NAME)
-            .initializer("new $T<>()", ClassNames.ARRAY_LIST)
-            .build());
+        FieldSpec.builder(transitionClass, GeneratorConstants.STATE_TRANSITION_FIELD_NAME).build());
 
-    final String transitionsCopyVarName = "transitionsCopy";
+    final String transitionCopyVarName = "transitionCopy";
     typeSpecDataHolder.addMethod(
-        MethodSpec.methodBuilder(METHOD_NAME_CONSUME_TRANSITIONS)
+        MethodSpec.methodBuilder(METHOD_NAME_CONSUME_TRANSITION)
             .addModifiers(Modifier.PUBLIC)
             .addAnnotation(Override.class)
-            .returns(ParameterizedTypeName.get(ClassNames.LIST, transitionClass))
-            .addCode(
-                CodeBlock.builder()
-                    .beginControlFlow(
-                        "if ($L.isEmpty())", GeneratorConstants.STATE_TRANSITIONS_FIELD_NAME)
-                    .addStatement("return $T.EMPTY_LIST", ClassNames.COLLECTIONS)
-                    .endControlFlow()
-                    .build())
+            .addAnnotation(Nullable.class)
+            .returns(transitionClass)
             .addStatement(
-                "$T<$T> $N",
-                ClassNames.LIST,
+                "$T $N = $N",
                 specModel.getTransitionClass(),
-                transitionsCopyVarName)
-            .beginControlFlow("synchronized ($L)", GeneratorConstants.STATE_TRANSITIONS_FIELD_NAME)
-            .addStatement(
-                "$N = new $T<>($N)",
-                transitionsCopyVarName,
-                ClassNames.ARRAY_LIST,
-                GeneratorConstants.STATE_TRANSITIONS_FIELD_NAME)
-            .addStatement("$N.clear()", GeneratorConstants.STATE_TRANSITIONS_FIELD_NAME)
-            .endControlFlow()
-            .addStatement("return $N", transitionsCopyVarName)
+                transitionCopyVarName,
+                GeneratorConstants.STATE_TRANSITION_FIELD_NAME)
+            .addStatement("$N = null", GeneratorConstants.STATE_TRANSITION_FIELD_NAME)
+            .addStatement("return $N", transitionCopyVarName)
             .build());
 
     return typeSpecDataHolder.build();
   }
 
   private static TypeSpecDataHolder generateApplyStateUpdateMethod(SpecModel specModel) {
+    final boolean hasUpdateStateWithTransition = hasUpdateStateWithTransition(specModel);
     final MethodSpec.Builder methodBuilder =
         MethodSpec.methodBuilder(METHOD_NAME_APPLY_STATE_UPDATE)
             .addModifiers(Modifier.PUBLIC)
@@ -145,13 +128,6 @@ public class StateContainerGenerator {
       methodBuilder.addStatement("$T $L", stateValueTypeName, stateValue.getName());
     }
     methodBuilder.addCode("\n");
-
-    final boolean hasUpdateStateWithTransition = hasUpdateStateWithTransition(specModel);
-    if (hasUpdateStateWithTransition) {
-      methodBuilder
-          .addStatement("$T $L = null", ClassNames.TRANSITION, VAR_NAME_TRANSITION)
-          .addCode("\n");
-    }
 
     methodBuilder.addStatement(
         "final $T $L = $L.$L",
@@ -196,16 +172,6 @@ public class StateContainerGenerator {
     }
     methodBuilder.endControlFlow();
 
-    if (hasUpdateStateWithTransition) {
-      methodBuilder.addCode(
-          CodeBlock.builder()
-              .add("\n")
-              .beginControlFlow("if ($L != null)", VAR_NAME_TRANSITION)
-              .addStatement("$N.add($L)", STATE_TRANSITIONS_FIELD_NAME, VAR_NAME_TRANSITION)
-              .endControlFlow()
-              .build());
-    }
-
     return TypeSpecDataHolder.newBuilder().addMethod(methodBuilder.build()).build();
   }
 
@@ -222,7 +188,7 @@ public class StateContainerGenerator {
     final List<Object> args = new LinkedList<>();
     if (withTransition) {
       format.append("$L = ");
-      args.add(VAR_NAME_TRANSITION);
+      args.add(GeneratorConstants.STATE_TRANSITION_FIELD_NAME);
     }
     format.append("$N.$N(");
     args.add(SpecModelUtils.getSpecAccessor(specModel));

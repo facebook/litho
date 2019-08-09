@@ -198,10 +198,20 @@ public class StateHandler {
       stateUpdatesForKey = mPendingStateUpdates == null ? null : mPendingStateUpdates.get(key);
     }
 
+    List<Transition> transitionsFromStateUpdate = null;
+
     // If there are no state updates pending for this component, simply store its current state.
     if (stateUpdatesForKey != null) {
       for (StateUpdate update : stateUpdatesForKey) {
-        component.getStateContainer().applyStateUpdate(update);
+        final StateContainer stateContainer = component.getStateContainer();
+        stateContainer.applyStateUpdate(update);
+        final Transition transition = obtainTransitionFromStateContainer(stateContainer);
+        if (transition != null) {
+          if (transitionsFromStateUpdate == null) {
+            transitionsFromStateUpdate = new ArrayList<>();
+          }
+          transitionsFromStateUpdate.add(transition);
+        }
       }
 
       LithoStats.incStateUpdate(stateUpdatesForKey.size());
@@ -220,15 +230,19 @@ public class StateHandler {
     synchronized (this) {
       final StateContainer stateContainer = component.getStateContainer();
       mStateContainers.put(key, stateContainer);
-      if (stateContainer instanceof ComponentLifecycle.TransitionContainer) {
-        final List<Transition> transitions =
-            ((ComponentLifecycle.TransitionContainer) stateContainer).consumeTransitions();
-        if (!transitions.isEmpty()) {
-          maybeInitPendingStateUpdateTransitions();
-          mPendingStateUpdateTransitions.put(key, transitions);
-        }
+      if (transitionsFromStateUpdate != null && !transitionsFromStateUpdate.isEmpty()) {
+        maybeInitPendingStateUpdateTransitions();
+        mPendingStateUpdateTransitions.put(key, transitionsFromStateUpdate);
       }
     }
+  }
+
+  private static @Nullable Transition obtainTransitionFromStateContainer(
+      StateContainer stateContainer) {
+    if (stateContainer instanceof ComponentLifecycle.TransitionContainer) {
+      return ((ComponentLifecycle.TransitionContainer) stateContainer).consumeTransition();
+    }
+    return null;
   }
 
   static void maybeCreateInitialStateAndCommitResult(
