@@ -64,9 +64,9 @@ public interface NodeInfo {
   @Retention(RetentionPolicy.SOURCE)
   @interface SelectedState {}
 
-  static final int ACCESSIBILITY_HEADING_UNSET = 0;
-  static final int ACCESSIBILITY_HEADING_SET_TRUE = 1;
-  static final int ACCESSIBILITY_HEADING_SET_FALSE = 2;
+  int ACCESSIBILITY_HEADING_UNSET = 0;
+  int ACCESSIBILITY_HEADING_SET_TRUE = 1;
+  int ACCESSIBILITY_HEADING_SET_FALSE = 2;
 
   @IntDef({
     ACCESSIBILITY_HEADING_UNSET,

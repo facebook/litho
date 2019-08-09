@@ -82,7 +82,7 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   private static final boolean SUPPORTS_RTL = (SDK_INT >= JELLY_BEAN_MR1);
 
   // Flags used to indicate that a certain attribute was explicitly set on the node.
-  private static final long PFLAG_LAYOUT_DIRECTION_IS_SET = 1L << 0;
+  private static final long PFLAG_LAYOUT_DIRECTION_IS_SET = 1L;
   private static final long PFLAG_ALIGN_SELF_IS_SET = 1L << 1;
   private static final long PFLAG_POSITION_TYPE_IS_SET = 1L << 2;
   private static final long PFLAG_FLEX_IS_SET = 1L << 3;
@@ -1760,7 +1760,6 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   }
 
   private void setPaddingFromBackground(Drawable drawable) {
-
     if (drawable != null) {
       final Rect backgroundPadding = new Rect();
       if (getDrawablePadding(drawable, backgroundPadding)) {
@@ -1802,10 +1801,7 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
     mComponentsNeedingPreviousRenderData = null;
     for (Component component : components) {
       if (component.needsPreviousRenderData()) {
-        if (mComponentsNeedingPreviousRenderData == null) {
-          mComponentsNeedingPreviousRenderData = new ArrayList<>(1);
-        }
-        mComponentsNeedingPreviousRenderData.add(component);
+        addComponentNeedingPreviousRenderData(component);
       }
     }
 
