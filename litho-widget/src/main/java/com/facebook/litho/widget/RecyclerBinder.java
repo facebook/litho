@@ -682,8 +682,7 @@ public class RecyclerBinder
               c.getLogger(),
               null,
               null,
-              c.getTreePropsCopy(),
-              c.getYogaNodeFactory());
+              c.getTreePropsCopy());
 
       // Incremental mount will not work if this ComponentTree is nested in a parent with it turned
       // off, so always disable it in that case

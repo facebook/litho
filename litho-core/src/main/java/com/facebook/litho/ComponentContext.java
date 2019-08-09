@@ -30,17 +30,12 @@ import androidx.annotation.StyleRes;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.config.ComponentsConfiguration;
-import com.facebook.yoga.YogaNode;
 
 /**
  * A Context subclass for use within the Components framework. Contains extra bookkeeping
  * information used internally in the library.
  */
 public class ComponentContext {
-
-  public interface YogaNodeFactory {
-    YogaNode create();
-  }
 
   public static final InternalNode NULL_LAYOUT = new NoOpInternalNode();
 
@@ -49,7 +44,6 @@ public class ComponentContext {
   private final @Nullable String mLogTag;
   private final ComponentsLogger mLogger;
   private final @Nullable StateHandler mStateHandler;
-  final YogaNodeFactory mYogaNodeFactory;
 
   /** TODO: (T38237241) remove the usage of the key handler post the nested tree experiment */
   private final @Nullable KeyHandler mKeyHandler;
@@ -95,8 +89,7 @@ public class ComponentContext {
       ComponentsLogger logger,
       @Nullable StateHandler stateHandler,
       @Nullable KeyHandler keyHandler,
-      @Nullable TreeProps treeProps,
-      YogaNodeFactory yogaNodeFactory) {
+      @Nullable TreeProps treeProps) {
 
     if (logger != null && logTag == null) {
       throw new IllegalStateException("When a ComponentsLogger is set, a LogTag must be set");
@@ -110,7 +103,6 @@ public class ComponentContext {
     mLogTag = logTag;
     mStateHandler = stateHandler;
     mKeyHandler = keyHandler;
-    mYogaNodeFactory = yogaNodeFactory;
   }
 
   public ComponentContext(
@@ -132,22 +124,11 @@ public class ComponentContext {
         context.mLogTag != null || mComponentTree == null
             ? context.mLogTag
             : mComponentTree.getSimpleName();
-    mYogaNodeFactory = context.mYogaNodeFactory;
 
     mStateHandler = stateHandler != null ? stateHandler : context.mStateHandler;
     mKeyHandler = keyHandler != null ? keyHandler : context.mKeyHandler;
     mTreeProps = treeProps != null ? treeProps : context.mTreeProps;
     mLayoutStateFuture = layoutStateFuture == null ? context.mLayoutStateFuture : layoutStateFuture;
-  }
-
-  public ComponentContext(
-      Context context,
-      @Nullable String logTag,
-      ComponentsLogger logger,
-      @Nullable StateHandler stateHandler,
-      @Nullable KeyHandler keyHandler,
-      @Nullable TreeProps treeProps) {
-    this(context, logTag, logger, stateHandler, keyHandler, treeProps, null);
   }
 
   public ComponentContext(
@@ -172,10 +153,6 @@ public class ComponentContext {
 
   public ComponentContext(Context context, StateHandler stateHandler) {
     this(context, null, null, stateHandler, null, null);
-  }
-
-  public ComponentContext(Context context, YogaNodeFactory yogaNodeFactory) {
-    this(context, null, null, null, null, null, yogaNodeFactory);
   }
 
   public ComponentContext(ComponentContext context) {
@@ -322,10 +299,6 @@ public class ComponentContext {
     return mComponentTree == null || mComponentTree.getLogTag() == null
         ? mLogTag
         : mComponentTree.getLogTag();
-  }
-
-  public YogaNodeFactory getYogaNodeFactory() {
-    return mYogaNodeFactory;
   }
 
   @Nullable

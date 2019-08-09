@@ -173,7 +173,7 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   private long mPrivateFlags;
 
   protected DefaultInternalNode(ComponentContext componentContext) {
-    this(componentContext, createYogaNode(componentContext), true);
+    this(componentContext, true);
   }
 
   protected DefaultInternalNode(ComponentContext componentContext, YogaNode yogaNode) {
@@ -182,20 +182,18 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
 
   protected DefaultInternalNode(
       ComponentContext componentContext, boolean createDebugComponentsInCtor) {
-    this(componentContext, createYogaNode(componentContext), createDebugComponentsInCtor);
+    this(componentContext, NodeConfig.createYogaNode(), createDebugComponentsInCtor);
   }
 
   protected DefaultInternalNode(
       ComponentContext componentContext, YogaNode yogaNode, boolean createDebugComponentsInCtor) {
+    mComponentContext = componentContext;
+    yogaNode.setData(this);
+    mYogaNode = yogaNode;
+
     if (createDebugComponentsInCtor) {
       mDebugComponents = new HashSet<>();
     }
-
-    if (yogaNode != null) {
-      yogaNode.setData(this);
-    }
-    mYogaNode = yogaNode;
-    mComponentContext = componentContext;
   }
 
   @Override
@@ -1851,12 +1849,6 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
     updated.add(head);
 
     return updated;
-  }
-
-  static YogaNode createYogaNode(ComponentContext componentContext) {
-    return componentContext.mYogaNodeFactory != null
-        ? componentContext.mYogaNodeFactory.create()
-        : NodeConfig.createYogaNode();
   }
 
   private @Nullable static <T> EventHandler<T> addVisibilityHandler(

@@ -55,7 +55,7 @@ public class LayoutStateFutureReleaseTest {
   public void setup() {
     mContext =
         new ComponentContext(
-            RuntimeEnvironment.application, null, null, null, new KeyHandler(null), null, null);
+            RuntimeEnvironment.application, null, null, null, new KeyHandler(null), null);
     ComponentsConfiguration.useCancelableLayoutFutures = true;
 
     mWidthSpec = makeSizeSpec(40, EXACTLY);
