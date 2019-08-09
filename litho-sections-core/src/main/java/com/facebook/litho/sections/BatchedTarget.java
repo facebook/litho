@@ -171,6 +171,11 @@ class BatchedTarget implements SectionTree.Target {
     return mTarget.supportsBackgroundChangeSets();
   }
 
+  @Override
+  public void changeConfig(DynamicConfig dynamicConfig) {
+    mTarget.changeConfig(dynamicConfig);
+  }
+
   private void maybeLogRequestFocusWithOffset(int index, int offset) {
     if (ENABLE_LOGGER && mComponentInfoSparseArray.size() != 0) {
       mSectionsDebugLogger.logRequestFocusWithOffset(

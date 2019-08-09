@@ -55,6 +55,7 @@ import com.facebook.litho.sections.SectionsLogEventUtils.ApplyNewChangeSet;
 import com.facebook.litho.sections.config.SectionsConfiguration;
 import com.facebook.litho.sections.logger.SectionsDebugLogger;
 import com.facebook.litho.widget.ChangeSetCompleteCallback;
+import com.facebook.litho.widget.RecyclerBinder.CommitPolicy;
 import com.facebook.litho.widget.RenderInfo;
 import com.facebook.litho.widget.SectionsDebug;
 import com.facebook.litho.widget.SmoothScrollAlignmentType;
@@ -142,6 +143,18 @@ public class SectionTree {
      * @return whether this target supports applying change sets from a background thread.
      */
     boolean supportsBackgroundChangeSets();
+
+    /** Notify this target that a new set of configurations is applied. */
+    void changeConfig(DynamicConfig dynamicConfig);
+
+    class DynamicConfig {
+
+      public final @CommitPolicy int mChangeSetsCommitPolicy;
+
+      public DynamicConfig(@CommitPolicy int changeSetsCommitPolicy) {
+        mChangeSetsCommitPolicy = changeSetsCommitPolicy;
+      }
+    }
   }
 
   private static final String EMPTY_STRING = "";
@@ -424,6 +437,20 @@ public class SectionTree {
    */
   public void setLoadEventsHandler(LoadEventsHandler loadEventsHandler) {
     mLoadEventsHandler = loadEventsHandler;
+  }
+
+  /**
+   * Set a new set of configurations to the {@link Target}. Only those allowed to be modified will
+   * be included in {@link Target.DynamicConfig}.
+   */
+  public void setTargetConfig(Target.DynamicConfig dynamicConfig) {
+    if (mUseBackgroundChangeSets) {
+      synchronized (this) {
+        // applyChangeSetsToTargetUnchecked() in background will be computed in a synchronized
+        // block, and the config is only updated after the ongoing computation is completed.
+        mTarget.changeConfig(dynamicConfig);
+      }
+    }
   }
 
   private void refreshRecursive(Section section) {

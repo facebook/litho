@@ -63,6 +63,7 @@ import com.facebook.litho.widget.LithoRecylerView;
 import com.facebook.litho.widget.PTRRefreshEvent;
 import com.facebook.litho.widget.Recycler;
 import com.facebook.litho.widget.RecyclerBinder;
+import com.facebook.litho.widget.RecyclerBinder.CommitPolicy;
 import com.facebook.litho.widget.RecyclerEventsController;
 import com.facebook.litho.widget.StickyHeaderControllerFactory;
 import com.facebook.litho.widget.ViewportInfo;
@@ -405,6 +406,14 @@ public class RecyclerCollectionComponentSpec {
       @FromTrigger boolean animate,
       @State SectionTree sectionTree) {
     sectionTree.requestFocusOnRoot(position);
+  }
+
+  @OnTrigger(RecyclerDynamicConfigEvent.class)
+  static void onRecyclerConfigChanged(
+      ComponentContext c,
+      @FromTrigger @CommitPolicy int commitPolicy,
+      @State SectionTree sectionTree) {
+    sectionTree.setTargetConfig(new SectionTree.Target.DynamicConfig(commitPolicy));
   }
 
   @OnDetached

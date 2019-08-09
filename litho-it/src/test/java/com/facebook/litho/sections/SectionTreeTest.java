@@ -1125,5 +1125,8 @@ public class SectionTreeTest {
     public boolean supportsBackgroundChangeSets() {
       return mSupportsBackgroundChangeSets;
     }
+
+    @Override
+    public void changeConfig(DynamicConfig dynamicConfig) {}
   }
 }

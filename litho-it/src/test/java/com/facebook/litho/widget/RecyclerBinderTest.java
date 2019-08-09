@@ -2527,6 +2527,52 @@ public class RecyclerBinderTest {
   }
 
   @Test
+  public void testInsertAsync_PolicyChangeMode() {
+    final RecyclerBinder recyclerBinder =
+        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
+    recyclerBinder.setCommitPolicy(RecyclerBinder.CommitPolicy.LAYOUT_BEFORE_INSERT);
+
+    final Component component =
+        TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+    final ComponentRenderInfo renderInfo =
+        ComponentRenderInfo.create().component(component).build();
+
+    recyclerBinder.measure(
+        new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
+    recyclerBinder.insertItemAtAsync(0, renderInfo);
+
+    final Component secondComponent =
+        TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+    final ComponentRenderInfo secondRenderInfo =
+        ComponentRenderInfo.create().component(secondComponent).build();
+    recyclerBinder.setCommitPolicy(RecyclerBinder.CommitPolicy.IMMEDIATE);
+    recyclerBinder.insertItemAtAsync(1, secondRenderInfo);
+
+    recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+
+    assertThat(recyclerBinder.getItemCount()).isEqualTo(0);
+    assertThat(recyclerBinder.getRangeCalculationResult()).isNull();
+
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+
+    assertThat(recyclerBinder.getItemCount()).isEqualTo(2);
+    assertThat(recyclerBinder.getRangeCalculationResult()).isNotNull();
+
+    final ComponentTreeHolder holder = recyclerBinder.getComponentTreeHolderAt(0);
+    assertThat(holder.getRenderInfo().getComponent()).isEqualTo(component);
+    assertThat(holder.hasCompletedLatestLayout()).isTrue();
+    assertThat(holder.isTreeValid()).isTrue();
+
+    final Component thirdComponent =
+        TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+    final ComponentRenderInfo thirdRenderInfo =
+        ComponentRenderInfo.create().component(thirdComponent).build();
+    recyclerBinder.insertItemAtAsync(2, thirdRenderInfo);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    assertThat(recyclerBinder.getItemCount()).isEqualTo(3);
+  }
+
+  @Test
   public void testMultipleInsertAsyncs_AsyncMode() {
     final RecyclerBinder recyclerBinder =
         new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);

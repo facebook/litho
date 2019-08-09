@@ -203,6 +203,11 @@ public class SectionBinderTarget implements Target, Binder<RecyclerView> {
   }
 
   @Override
+  public void changeConfig(DynamicConfig dynamicConfig) {
+    mRecyclerBinder.setCommitPolicy(dynamicConfig.mChangeSetsCommitPolicy);
+  }
+
+  @Override
   public void detach() {
     mRecyclerBinder.detach();
   }

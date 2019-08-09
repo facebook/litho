@@ -34,6 +34,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import androidx.annotation.AnyThread;
 import androidx.annotation.IntDef;
 import androidx.annotation.UiThread;
 import androidx.annotation.VisibleForTesting;
@@ -3273,8 +3274,8 @@ public class RecyclerBinder
     return mLayoutInfo.getChildHeightSpec(mLastHeightSpec, treeHolder.getRenderInfo());
   }
 
-  @VisibleForTesting
-  void setCommitPolicy(@CommitPolicy int commitPolicy) {
+  @AnyThread
+  public void setCommitPolicy(@CommitPolicy int commitPolicy) {
     mCommitPolicy = commitPolicy;
   }
 
@@ -3310,7 +3311,7 @@ public class RecyclerBinder
    */
   @IntDef({CommitPolicy.IMMEDIATE, CommitPolicy.LAYOUT_BEFORE_INSERT})
   @Retention(RetentionPolicy.SOURCE)
-  @interface CommitPolicy {
+  public @interface CommitPolicy {
     int IMMEDIATE = 0;
     int LAYOUT_BEFORE_INSERT = 1;
   }
