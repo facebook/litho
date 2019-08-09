@@ -61,7 +61,6 @@ import com.facebook.litho.animation.AnimatedProperties;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.drawable.ComparableDrawable;
 import java.util.ArrayList;
-import java.util.BitSet;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
@@ -86,7 +85,6 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   static final long ROOT_HOST_ID = 0L;
   private static final double NS_IN_MS = 1000000.0;
 
-  private static final BitSet sEmptyBitSet = new BitSet(0);
 
   // Holds the current list of mounted items.
   // Should always be used within a draw lock.
