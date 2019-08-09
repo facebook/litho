@@ -15,6 +15,7 @@
  */
 package com.facebook.litho.specmodels.processor;
 
+import com.facebook.litho.annotations.Event;
 import com.facebook.litho.intellij.PsiSearchUtils;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.EventDeclarationModel;
@@ -90,10 +91,21 @@ public class PsiEventDeclarationsExtractor {
         psiType);
   }
 
+  /**
+   * Finds return type for the provided Event class.
+   *
+   * @param eventClass the class representing Litho Event. It should contain {@link Event}
+   *     annotation on it.
+   * @return the return type of the Event; {@link TypeName#VOID} if it is not defined; null if the
+   *     provided class is not Event class.
+   */
   @Nullable
-  static TypeName getReturnType(PsiClass psiClass) {
+  static TypeName getReturnType(PsiClass eventClass) {
     PsiAnnotation eventAnnotation =
-        AnnotationUtil.findAnnotation(psiClass, "com.facebook.litho.annotations.Event");
+        AnnotationUtil.findAnnotation(eventClass, "com.facebook.litho.annotations.Event");
+    if (eventAnnotation == null) {
+      return null;
+    }
     PsiNameValuePair returnTypePair =
         AnnotationUtil.findDeclaredAttribute(eventAnnotation, "returnType");
 
