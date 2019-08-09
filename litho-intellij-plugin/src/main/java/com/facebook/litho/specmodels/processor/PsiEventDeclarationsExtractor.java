@@ -133,7 +133,7 @@ public class PsiEventDeclarationsExtractor {
               FieldSpec.builder(
                       PsiTypeUtils.getTypeName(psiField.getType()),
                       psiField.getName(),
-                      PsiProcessingUtils.extractModifiers(psiField))
+                      PsiModifierExtractor.extractModifiers(psiField))
                   .build(),
               psiField));
     }

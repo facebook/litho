@@ -58,7 +58,7 @@ class PsiWorkingRangesMethodExtractor {
 
         return SpecMethodModel.<EventMethod, Void>builder()
             .annotations(ImmutableList.of())
-            .modifiers(PsiProcessingUtils.extractModifiers(psiMethod.getModifierList()))
+            .modifiers(PsiModifierExtractor.extractModifiers(psiMethod.getModifierList()))
             .name(psiMethod.getName())
             .returnTypeSpec(PsiTypeUtils.generateTypeSpec(psiMethod.getReturnType()))
             .typeVariables(ImmutableList.copyOf(getTypeVariables(psiMethod)))
@@ -119,7 +119,7 @@ class PsiWorkingRangesMethodExtractor {
 
     return SpecMethodModel.<EventMethod, WorkingRangeDeclarationModel>builder()
         .annotations(ImmutableList.of())
-        .modifiers(PsiProcessingUtils.extractModifiers(psiMethod.getModifierList()))
+        .modifiers(PsiModifierExtractor.extractModifiers(psiMethod.getModifierList()))
         .name(psiMethod.getName())
         .returnTypeSpec(PsiTypeUtils.generateTypeSpec(psiMethod.getReturnType()))
         .typeVariables(ImmutableList.copyOf(getTypeVariables(psiMethod)))

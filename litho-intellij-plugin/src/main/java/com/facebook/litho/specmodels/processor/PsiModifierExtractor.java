@@ -26,7 +26,7 @@ import java.util.List;
 import javax.lang.model.element.Modifier;
 
 /** Extractor provides {@link Modifier}s. */
-class PsiProcessingUtils {
+class PsiModifierExtractor {
   private static final Modifier[] EMPTY = new Modifier[0];
 
   static Modifier[] extractModifiers(PsiField psiField) {

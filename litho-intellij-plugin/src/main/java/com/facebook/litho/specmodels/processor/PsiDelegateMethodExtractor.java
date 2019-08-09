@@ -55,7 +55,7 @@ public class PsiDelegateMethodExtractor {
         final SpecMethodModel<DelegateMethod, Void> delegateMethod =
             new SpecMethodModel<>(
                 ImmutableList.copyOf(methodAnnotations),
-                PsiProcessingUtils.extractModifiers(psiMethod.getModifierList()),
+                PsiModifierExtractor.extractModifiers(psiMethod.getModifierList()),
                 psiMethod.getName(),
                 PsiTypeUtils.generateTypeSpec(psiMethod.getReturnType()),
                 ImmutableList.<TypeVariableName>of(),

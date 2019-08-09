@@ -72,7 +72,7 @@ public class PsiTriggerMethodExtractor {
         final SpecMethodModel<EventMethod, EventDeclarationModel> eventMethod =
             new SpecMethodModel<EventMethod, EventDeclarationModel>(
                 ImmutableList.<Annotation>of(),
-                PsiProcessingUtils.extractModifiers(psiMethod.getModifierList()),
+                PsiModifierExtractor.extractModifiers(psiMethod.getModifierList()),
                 psiMethod.getName(),
                 null, // TypeName.get(psiMethod.getReturnType()),
                 ImmutableList.copyOf(getTypeVariables(psiMethod)),

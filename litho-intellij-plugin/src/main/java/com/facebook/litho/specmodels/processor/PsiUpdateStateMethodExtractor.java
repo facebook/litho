@@ -58,7 +58,7 @@ public class PsiUpdateStateMethodExtractor {
         final SpecMethodModel<UpdateStateMethod, Void> delegateMethod =
             SpecMethodModel.<UpdateStateMethod, Void>builder()
                 .annotations(ImmutableList.<Annotation>of(onUpdateStateAnnotation))
-                .modifiers(PsiProcessingUtils.extractModifiers(psiMethod.getModifierList()))
+                .modifiers(PsiModifierExtractor.extractModifiers(psiMethod.getModifierList()))
                 .name(psiMethod.getName())
                 .returnTypeSpec(PsiTypeUtils.generateTypeSpec(psiMethod.getReturnType()))
                 .typeVariables(ImmutableList.<TypeVariableName>of())
