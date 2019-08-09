@@ -84,7 +84,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
   static final long ROOT_HOST_ID = 0L;
   private static final double NS_IN_MS = 1000000.0;
-
+  private static final Rect sTempRect = new Rect();
 
   // Holds the current list of mounted items.
   // Should always be used within a draw lock.
@@ -116,9 +116,6 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
   // Holds the list of known component hosts during a mount pass.
   private final LongSparseArray<ComponentHost> mHostsByMarker = new LongSparseArray<>();
-
-  private static final Rect sTempRect = new Rect();
-  private static final Rect sTempRect2 = new Rect();
 
   private final ComponentContext mContext;
   private final LithoView mLithoView;
@@ -1020,7 +1017,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       return;
     }
 
-    getActualBounds(layoutOutput, layoutState, sTempRect);
+    layoutOutput.getMountBounds(sTempRect);
 
     final boolean forceTraversal =
         Component.isMountViewSpec(layoutOutput.getComponent())
@@ -1354,7 +1351,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
     // 6. Apply the bounds to the Mount content now. It's important to do so after bind as calling
     // bind might have triggered a layout request within a View.
-    getActualBounds(layoutOutput, layoutState, sTempRect);
+    layoutOutput.getMountBounds(sTempRect);
     applyBoundsToMountContent(
         item.getContent(),
         sTempRect.left,
@@ -1411,21 +1408,6 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       ((Drawable) content).setBounds(left, top, right, bottom);
     } else {
       throw new IllegalStateException("Unsupported mounted content " + content);
-    }
-  }
-
-  /** @return bounds for a given LayoutOutput within its actual host, {@see getActualHostMarker} */
-  private static void getActualBounds(
-      LayoutOutput layoutOutput, LayoutState layoutState, Rect outRect) {
-    final long actualHostMarker = layoutOutput.getHostMarker();
-    layoutOutput.getMountBounds(outRect);
-
-    long hostMarker = layoutOutput.getHostMarker();
-    while (hostMarker != actualHostMarker) {
-      final LayoutOutput ancestor = layoutState.getLayoutOutput(hostMarker);
-      ancestor.getMountBounds(sTempRect2);
-      outRect.offset(sTempRect2.left, sTempRect2.top);
-      hostMarker = ancestor.getHostMarker();
     }
   }
 
