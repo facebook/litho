@@ -24,7 +24,6 @@ import com.facebook.litho.annotations.State;
 import com.facebook.litho.specmodels.processor.PsiAnnotationProxyUtils;
 import com.google.common.annotations.VisibleForTesting;
 import com.intellij.openapi.project.Project;
-import com.intellij.psi.JavaPsiFacade;
 import com.intellij.psi.PsiAnnotation;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
@@ -35,7 +34,6 @@ import com.intellij.psi.PsiMethod;
 import com.intellij.psi.PsiModifierListOwner;
 import com.intellij.psi.PsiParameter;
 import com.intellij.psi.PsiParameterList;
-import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.containers.ContainerUtil;
 import java.util.Arrays;
@@ -179,10 +177,7 @@ public class LithoPluginUtils {
   public static Optional<PsiJavaFile> findComponentFile(String qualifiedSpecName, Project project) {
     return Optional.of(qualifiedSpecName)
         .map(LithoPluginUtils::getLithoComponentNameFromSpec)
-        .map(
-            qualifiedComponentName ->
-                JavaPsiFacade.getInstance(project)
-                    .findClass(qualifiedComponentName, GlobalSearchScope.allScope(project)))
+        .map(qualifiedComponentName -> PsiSearchUtils.findClass(project, qualifiedComponentName))
         .map(PsiElement::getContainingFile)
         .filter(PsiJavaFile.class::isInstance)
         .map(PsiJavaFile.class::cast);

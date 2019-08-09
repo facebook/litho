@@ -19,6 +19,7 @@ import static com.intellij.patterns.StandardPatterns.or;
 
 import com.facebook.litho.intellij.LithoClassNames;
 import com.facebook.litho.intellij.LithoPluginUtils;
+import com.facebook.litho.intellij.PsiSearchUtils;
 import com.facebook.litho.intellij.extensions.EventLogger;
 import com.facebook.litho.intellij.logging.LithoLoggerProvider;
 import com.intellij.codeInsight.completion.CompletionContributor;
@@ -38,7 +39,6 @@ import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiIdentifier;
 import com.intellij.psi.PsiMethod;
-import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.ProcessingContext;
 import java.util.Collections;
@@ -94,9 +94,7 @@ public class OnEventCompletionContributor extends CompletionContributor {
       private PsiMethod createOnClickEventMethod(PsiClass context) {
         Project project = context.getProject();
         PsiClass clickEventClass =
-            JavaPsiFacade.getInstance(project)
-                .findClass(
-                    LithoClassNames.CLICK_EVENT_CLASS_NAME, GlobalSearchScope.allScope(project));
+            PsiSearchUtils.findClass(project, LithoClassNames.CLICK_EVENT_CLASS_NAME);
         if (clickEventClass == null) {
           clickEventClass =
               JavaPsiFacade.getElementFactory(project)

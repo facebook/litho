@@ -16,10 +16,10 @@
 package com.facebook.litho.intellij.navigation;
 
 import com.facebook.litho.intellij.LithoPluginUtils;
+import com.facebook.litho.intellij.PsiSearchUtils;
 import com.facebook.litho.intellij.extensions.EventLogger;
 import com.facebook.litho.intellij.logging.DebounceEventLogger;
 import com.intellij.openapi.project.Project;
-import com.intellij.psi.JavaPsiFacade;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiIdentifier;
@@ -27,7 +27,6 @@ import com.intellij.psi.PsiImportStatement;
 import com.intellij.psi.PsiJavaCodeReferenceElement;
 import com.intellij.psi.PsiJavaFile;
 import com.intellij.psi.PsiReference;
-import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.util.PsiTreeUtil;
 import java.util.Objects;
 import java.util.Optional;
@@ -70,11 +69,7 @@ class BaseLithoComponentsDeclarationHandler {
         .map(PsiClass::getQualifiedName)
         .filter(Objects::nonNull)
         .map(LithoPluginUtils::getLithoComponentSpecNameFromComponent)
-        .flatMap(
-            specName -> {
-              GlobalSearchScope scope = GlobalSearchScope.everythingScope(project);
-              return Stream.of(JavaPsiFacade.getInstance(project).findClasses(specName, scope));
-            })
+        .map(specName -> PsiSearchUtils.findClass(project, specName))
         .filter(psiClass -> psiClass.getContainingFile() instanceof PsiJavaFile)
         // Filter Spec classes by implementation
         .filter(hasComponentSpecAnnotation)

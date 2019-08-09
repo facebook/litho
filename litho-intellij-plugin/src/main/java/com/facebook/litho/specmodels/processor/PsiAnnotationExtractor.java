@@ -15,12 +15,11 @@
  */
 package com.facebook.litho.specmodels.processor;
 
+import com.facebook.litho.intellij.PsiSearchUtils;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiAnnotation;
 import com.intellij.psi.PsiClass;
-import com.intellij.psi.search.GlobalSearchScope;
-import com.intellij.psi.search.PsiShortNamesCache;
 import com.squareup.javapoet.AnnotationSpec;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -54,21 +53,9 @@ public class PsiAnnotationExtractor {
    */
   private static boolean isValidAnnotation(Project project, PsiAnnotation psiAnnotation) {
     final String text = psiAnnotation.getQualifiedName();
-    final PsiClass[] foundClasses =
-        PsiShortNamesCache.getInstance(project)
-            .getClassesByName(
-                text.substring(text.lastIndexOf('.') + 1), GlobalSearchScope.allScope(project));
-
-    if (foundClasses.length <= 0) {
+    PsiClass annotationClass = PsiSearchUtils.findClass(project, psiAnnotation.getQualifiedName());
+    if (annotationClass == null) {
       throw new RuntimeException("Annotation class not found, text is: " + text);
-    }
-
-    PsiClass annotationClass = null;
-    for (PsiClass psiClass : foundClasses) {
-      if (psiClass.getQualifiedName().contains(text)) {
-        annotationClass = psiClass;
-        break;
-      }
     }
 
     final Retention retention =

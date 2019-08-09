@@ -15,6 +15,7 @@
  */
 package com.facebook.litho.specmodels.processor;
 
+import com.facebook.litho.intellij.PsiSearchUtils;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.EventDeclarationModel;
 import com.facebook.litho.specmodels.model.FieldModel;
@@ -29,8 +30,6 @@ import com.intellij.psi.PsiClassType;
 import com.intellij.psi.PsiField;
 import com.intellij.psi.PsiNameValuePair;
 import com.intellij.psi.PsiType;
-import com.intellij.psi.search.GlobalSearchScope;
-import com.intellij.psi.search.PsiShortNamesCache;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.TypeName;
 import java.util.ArrayList;
@@ -79,23 +78,7 @@ public class PsiEventDeclarationsExtractor {
       text = psiType.getCanonicalText();
     }
 
-    final PsiClass[] foundClasses =
-        PsiShortNamesCache.getInstance(project)
-            .getClassesByName(
-                text.substring(text.lastIndexOf('.') + 1), GlobalSearchScope.allScope(project));
-
-    if (foundClasses.length <= 0) {
-      throw new RuntimeException("Annotation class not found, text is: " + text);
-    }
-
-    PsiClass eventClass = null;
-    for (PsiClass psiClass : foundClasses) {
-      if (psiClass.getQualifiedName().contains(text)) {
-        eventClass = psiClass;
-        break;
-      }
-    }
-
+    PsiClass eventClass = PsiSearchUtils.findClass(project, text);
     if (eventClass == null) {
       throw new RuntimeException("Annotation class not found, text is: " + text);
     }
