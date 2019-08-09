@@ -45,6 +45,7 @@ public class ComponentContext {
   public static final InternalNode NULL_LAYOUT = new NoOpInternalNode();
 
   private final Context mContext;
+  // TODO: T48229786 move to CT
   private final @Nullable String mLogTag;
   private final ComponentsLogger mLogger;
   private final @Nullable StateHandler mStateHandler;
@@ -317,7 +318,10 @@ public class ComponentContext {
   }
 
   public String getLogTag() {
-    return mLogTag;
+    // TODO: T48229786 use CT field only
+    return mComponentTree == null || mComponentTree.getLogTag() == null
+        ? mLogTag
+        : mComponentTree.getLogTag();
   }
 
   public YogaNodeFactory getYogaNodeFactory() {
@@ -326,7 +330,10 @@ public class ComponentContext {
 
   @Nullable
   public ComponentsLogger getLogger() {
-    return mLogger;
+    // TODO: T48229786 use CT field only
+    return mComponentTree == null || mComponentTree.getLogger() == null
+        ? mLogger
+        : mComponentTree.getLogger();
   }
 
   ComponentTree getComponentTree() {

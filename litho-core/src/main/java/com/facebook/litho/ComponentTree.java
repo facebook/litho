@@ -271,6 +271,10 @@ public class ComponentTree {
 
   private final boolean mCreateInitialStateOncePerThread;
 
+  private final @Nullable String mLogTag;
+
+  private final @Nullable ComponentsLogger mLogger;
+
   public static Builder create(ComponentContext context) {
     return new ComponentTree.Builder(context);
   }
@@ -335,6 +339,8 @@ public class ComponentTree {
     if (mPreAllocateMountContentHandler != null) {
       mPreAllocateMountContentHandler = instrumentLithoHandler(mPreAllocateMountContentHandler);
     }
+    mLogger = builder.logger;
+    mLogTag = builder.logTag;
   }
 
   private static LithoHandler ensureAndInstrumentLayoutThreadHandler(
@@ -1088,7 +1094,7 @@ public class ComponentTree {
         return;
       }
     }
-    final ComponentsLogger logger = mContext.getLogger();
+    final ComponentsLogger logger = getContextLogger();
     final PerfEvent event =
         logger != null
             ? LogTreePopulator.populatePerfEventFromLogger(
@@ -1742,7 +1748,7 @@ public class ComponentTree {
       }
     }
 
-    final ComponentsLogger logger = mContext.getLogger();
+    final ComponentsLogger logger = getContextLogger();
     final PerfEvent layoutEvent =
         logger != null
             ? LogTreePopulator.populatePerfEventFromLogger(
@@ -2065,6 +2071,19 @@ public class ComponentTree {
     return mContext;
   }
 
+  // TODO: T48569046 remove this method and use mLogger
+  private ComponentsLogger getContextLogger() {
+    return mLogger == null ? mContext.getLogger() : mLogger;
+  }
+
+  public @Nullable ComponentsLogger getLogger() {
+    return mLogger;
+  }
+
+  public @Nullable String getLogTag() {
+    return mLogTag;
+  }
+
   /**
    * If there is another compatible layout running, wait on it. Otherwise, release all
    * LayoutStateFutures that are currently running, because the layout that is about to be scheduled
@@ -2338,7 +2357,7 @@ public class ComponentTree {
       synchronized (ComponentTree.this) {
         final KeyHandler keyHandler =
             (ComponentsConfiguration.useGlobalKeys || ComponentsConfiguration.isDebugModeEnabled)
-                ? new KeyHandler(ComponentTree.this.mContext.getLogger())
+                ? new KeyHandler(ComponentTree.this.getContextLogger())
                 : null;
 
         contextWithStateHandler =
@@ -2684,6 +2703,8 @@ public class ComponentTree {
     private boolean splitLayoutForMeasureAndRangeEstimation =
         ComponentsConfiguration.splitLayoutForMeasureAndRangeEstimation;
     private boolean useCancelableLayoutFutures = ComponentsConfiguration.useCancelableLayoutFutures;
+    private @Nullable String logTag;
+    private @Nullable ComponentsLogger logger;
 
     protected Builder(ComponentContext context) {
       this.context = context;
@@ -2848,12 +2869,23 @@ public class ComponentTree {
       return this;
     }
 
+    // TODO: T48569046 verify the usage, if this should be split up
+    public Builder logger(@Nullable ComponentsLogger logger, @Nullable String logTag) {
+      this.logger = logger;
+      this.logTag = logTag;
+      return this;
+    }
+
     /** Builds a {@link ComponentTree} using the parameters specified in this builder. */
     public ComponentTree build() {
 
       // Setting root to default to allow users to initialise without a root.
       if (root == null) {
         root = Row.create(context).build();
+      }
+      // TODO: T48569046 verify logTag when it will be set on CT directly
+      if (logger != null && logTag == null) {
+        logTag = root.getSimpleName();
       }
 
       return new ComponentTree(this);
