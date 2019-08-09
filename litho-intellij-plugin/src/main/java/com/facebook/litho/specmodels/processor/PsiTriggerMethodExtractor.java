@@ -50,7 +50,7 @@ public class PsiTriggerMethodExtractor {
 
     for (PsiMethod psiMethod : psiClass.getMethods()) {
       final OnTrigger onTriggerAnnotation =
-          AnnotationUtil.findAnnotationInHierarchy(psiMethod, OnTrigger.class);
+          PsiAnnotationProxyUtils.findAnnotationInHierarchy(psiMethod, OnTrigger.class);
       if (onTriggerAnnotation != null) {
         final List<MethodParamModel> methodParams =
             getMethodParams(

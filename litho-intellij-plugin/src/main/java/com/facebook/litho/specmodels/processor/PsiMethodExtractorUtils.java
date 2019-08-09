@@ -76,7 +76,7 @@ public class PsiMethodExtractorUtils {
       List<Class<? extends Annotation>> delegateMethodAnnotationsThatSkipDiffModels) {
 
     for (Class<? extends Annotation> delegate : delegateMethodAnnotationsThatSkipDiffModels) {
-      if (AnnotationUtil.findAnnotationInHierarchy(method, delegate) != null) {
+      if (PsiAnnotationProxyUtils.findAnnotationInHierarchy(method, delegate) != null) {
         return false;
       }
     }

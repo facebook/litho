@@ -21,7 +21,6 @@ import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.DelegateMethod;
 import com.facebook.litho.specmodels.model.MethodParamModel;
 import com.facebook.litho.specmodels.model.SpecMethodModel;
-import com.intellij.codeInsight.AnnotationUtil;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiMethod;
 import com.squareup.javapoet.TypeVariableName;
@@ -75,7 +74,8 @@ public class PsiDelegateMethodExtractor {
     for (Class<? extends Annotation> possibleDelegateMethodAnnotation :
         permittedMethodAnnotations) {
       final Annotation methodAnnotation =
-          AnnotationUtil.findAnnotationInHierarchy(psiMethod, possibleDelegateMethodAnnotation);
+          PsiAnnotationProxyUtils.findAnnotationInHierarchy(
+              psiMethod, possibleDelegateMethodAnnotation);
       if (methodAnnotation != null) {
         methodAnnotations.add(methodAnnotation);
       }
