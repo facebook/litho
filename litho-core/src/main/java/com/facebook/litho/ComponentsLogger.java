@@ -51,7 +51,9 @@ public interface ComponentsLogger {
    *
    * @param level
    * @param message Message to log
+   * @deprecated Use {@link ComponentsReporter.Reporter} instead
    */
+  @Deprecated
   void emitMessage(LogLevel level, String message);
 
   /**
@@ -60,7 +62,9 @@ public interface ComponentsLogger {
    * @param level
    * @param message Message to log
    * @param samplingFrequency sampling frequency to override default one
+   * @deprecated Use {@link ComponentsReporter.Reporter} instead
    */
+  @Deprecated
   void emitMessage(LogLevel level, String message, int samplingFrequency);
 
   /**
