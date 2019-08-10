@@ -366,7 +366,6 @@ public class PropValidation {
         }
       }
 
-      TypeName argumentType = null;
       if (prop.hasVarArgs()) {
         TypeName typeName = prop.getTypeName();
         if (typeName instanceof ParameterizedTypeName) {
@@ -377,7 +376,6 @@ public class PropValidation {
                     prop.getRepresentedObject(),
                     prop.getName() + " is a variable argument, and thus should be a List<> type."));
           }
-          argumentType = parameterizedTypeName.typeArguments.get(0);
         } else {
           validationErrors.add(
               new SpecModelValidationError(
@@ -385,17 +383,29 @@ public class PropValidation {
                   prop.getName()
                       + " is a variable argument, and thus requires a parameterized List type."));
         }
-      } else {
-        argumentType = prop.getTypeName();
       }
 
-      if (ILLEGAL_PROP_TYPES.contains(argumentType)) {
-        validationErrors.add(
-            new SpecModelValidationError(
-                prop.getRepresentedObject(),
-                "Props may not be declared with the following argument types: "
-                    + ILLEGAL_PROP_TYPES
-                    + "."));
+      TypeSpec typeSpec = prop.getTypeSpec();
+      for (TypeName illegalPropType : ILLEGAL_PROP_TYPES) {
+
+        if (typeSpec.isSameDeclaredType(illegalPropType)) {
+          validationErrors.add(
+              new SpecModelValidationError(
+                  prop.getRepresentedObject(),
+                  "Props may not be declared with argument type: "
+                      + illegalPropType
+                      + " or its inherited types."));
+        } else if (typeSpec.isSubType(illegalPropType)) {
+          validationErrors.add(
+              new SpecModelValidationError(
+                  prop.getRepresentedObject(),
+                  "Props may not be declared with argument type: "
+                      + illegalPropType
+                      + " or its inherited types. "
+                      + typeSpec.getTypeName()
+                      + " is an inherited type of "
+                      + illegalPropType));
+        }
       }
 
       if (!prop.isOptional() && prop.hasDefault(specModel.getPropDefaults())) {

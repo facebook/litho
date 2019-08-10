@@ -24,6 +24,7 @@ import static org.mockito.Mockito.when;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.squareup.javapoet.AnnotationSpec;
+import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import java.util.ArrayList;
@@ -49,6 +50,8 @@ public class PropValidationTest {
     when(mPropModel2.getName()).thenReturn("name2");
     when(mPropModel1.getTypeName()).thenReturn(TypeName.BOOLEAN);
     when(mPropModel2.getTypeName()).thenReturn(TypeName.INT);
+    when(mPropModel1.getTypeSpec()).thenReturn(new TypeSpec(TypeName.BOOLEAN));
+    when(mPropModel2.getTypeSpec()).thenReturn(new TypeSpec(TypeName.INT));
     when(mPropModel1.isOptional()).thenReturn(false);
     when(mPropModel2.isOptional()).thenReturn(false);
     when(mPropModel1.getResType()).thenReturn(ResType.NONE);
@@ -179,17 +182,51 @@ public class PropValidationTest {
 
   @Test
   public void testPropWithReservedType() {
-    when(mPropModel1.getTypeName()).thenReturn(ClassNames.COMPONENT_LAYOUT);
+    when(mPropModel1.getTypeSpec())
+        .thenReturn(
+            new TypeSpec.DeclaredTypeSpec(
+                ClassNames.COMPONENT_BUILDER,
+                ClassNames.COMPONENT_BUILDER.toString(),
+                () -> new TypeSpec(TypeName.OBJECT),
+                ImmutableList.of(),
+                ImmutableList.of()));
 
     List<SpecModelValidationError> validationErrors =
         PropValidation.validate(
             mSpecModel, PropValidation.COMMON_PROP_NAMES, PropValidation.VALID_COMMON_PROPS);
     assertThat(validationErrors).hasSize(1);
     assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject1);
-    assertThat(validationErrors.get(0).message).isEqualTo(
-        "Props may not be declared with the following argument types: " +
-            "[com.facebook.litho.ComponentLayout, " +
-            "com.facebook.litho.Component.Builder].");
+    assertThat(validationErrors.get(0).message)
+        .isEqualTo(
+            "Props may not be declared with argument type: com.facebook.litho.Component.Builder or its inherited types.");
+  }
+
+  @Test
+  public void testPropInheritedFromReservedType() {
+    when(mPropModel1.getTypeSpec())
+        .thenReturn(
+            new TypeSpec.DeclaredTypeSpec(
+                ClassName.bestGuess("com.facebook.litho.Text.Builder"),
+                ClassName.bestGuess("com.facebook.litho.Text.Builder").toString(),
+                () ->
+                    new TypeSpec.DeclaredTypeSpec(
+                        ClassNames.COMPONENT_BUILDER,
+                        ClassNames.COMPONENT_BUILDER.toString(),
+                        () -> new TypeSpec(TypeName.OBJECT),
+                        ImmutableList.of(),
+                        ImmutableList.of()),
+                ImmutableList.of(),
+                ImmutableList.of()));
+
+    List<SpecModelValidationError> validationErrors =
+        PropValidation.validate(
+            mSpecModel, PropValidation.COMMON_PROP_NAMES, PropValidation.VALID_COMMON_PROPS);
+    assertThat(validationErrors).hasSize(1);
+    assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject1);
+    assertThat(validationErrors.get(0).message)
+        .isEqualTo(
+            "Props may not be declared with argument type: com.facebook.litho.Component.Builder or its inherited types. "
+                + "com.facebook.litho.Text.Builder is an inherited type of com.facebook.litho.Component.Builder");
   }
 
   @Test
