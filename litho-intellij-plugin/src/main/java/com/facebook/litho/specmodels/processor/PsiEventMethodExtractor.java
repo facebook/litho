@@ -18,6 +18,7 @@ package com.facebook.litho.specmodels.processor;
 import static com.facebook.litho.specmodels.processor.PsiMethodExtractorUtils.getMethodParams;
 import static com.facebook.litho.specmodels.processor.PsiMethodExtractorUtils.getTypeVariables;
 
+import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.EventDeclarationModel;
 import com.facebook.litho.specmodels.model.EventMethod;
@@ -47,7 +48,7 @@ public class PsiEventMethodExtractor {
 
     for (PsiMethod psiMethod : psiClass.getMethods()) {
       final PsiAnnotation onEventAnnotation =
-          AnnotationUtil.findAnnotation(psiMethod, "com.facebook.litho.annotations.OnEvent");
+          AnnotationUtil.findAnnotation(psiMethod, OnEvent.class.getName());
       if (onEventAnnotation != null) {
         final List<MethodParamModel> methodParams =
             getMethodParams(

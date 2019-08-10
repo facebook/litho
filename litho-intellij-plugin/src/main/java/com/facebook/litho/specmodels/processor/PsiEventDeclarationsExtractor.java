@@ -16,6 +16,7 @@
 package com.facebook.litho.specmodels.processor;
 
 import com.facebook.litho.annotations.Event;
+import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.intellij.PsiSearchUtils;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.EventDeclarationModel;
@@ -42,7 +43,7 @@ public class PsiEventDeclarationsExtractor {
   public static ImmutableList<EventDeclarationModel> getEventDeclarations(
       Project project, PsiClass psiClass) {
     final PsiAnnotation layoutSpecAnnotation =
-        AnnotationUtil.findAnnotation(psiClass, "com.facebook.litho.annotations.LayoutSpec");
+        AnnotationUtil.findAnnotation(psiClass, LayoutSpec.class.getName());
     if (layoutSpecAnnotation == null) {
       throw new RuntimeException("LayoutSpec annotation not found on class");
     }
@@ -102,7 +103,7 @@ public class PsiEventDeclarationsExtractor {
   @Nullable
   static TypeName getReturnType(PsiClass eventClass) {
     PsiAnnotation eventAnnotation =
-        AnnotationUtil.findAnnotation(eventClass, "com.facebook.litho.annotations.Event");
+        AnnotationUtil.findAnnotation(eventClass, Event.class.getName());
     if (eventAnnotation == null) {
       return null;
     }
