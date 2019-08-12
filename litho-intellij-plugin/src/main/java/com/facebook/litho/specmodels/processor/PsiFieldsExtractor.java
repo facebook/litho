@@ -20,6 +20,7 @@ import com.facebook.litho.specmodels.model.FieldModel;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiField;
 import com.squareup.javapoet.FieldSpec;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
@@ -42,7 +43,8 @@ class PsiFieldsExtractor {
                 fields
                     .filter(Objects::nonNull)
                     .map(PsiFieldsExtractor::createFieldModel)
-                    .collect(Collectors.toCollection(ImmutableList::of)))
+                    .collect(Collectors.toCollection(ArrayList::new)))
+        .map(ImmutableList::copyOf)
         .orElse(ImmutableList.of());
   }
 
