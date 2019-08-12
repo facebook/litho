@@ -63,7 +63,7 @@ public class OnEventGenerateAction extends BaseGenerateAction {
   @Override
   public void actionPerformed(AnActionEvent e) {
     super.actionPerformed(e);
-    LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_ON_EVENT_GENERATION);
+    LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_ON_EVENT_GENERATION + ".invoke");
     final PsiFile file = e.getData(CommonDataKeys.PSI_FILE);
     LithoPluginUtils.getFirstLayoutSpec(file)
         .ifPresent(ComponentGenerateUtils::updateLayoutComponent);
@@ -116,6 +116,8 @@ public class OnEventGenerateAction extends BaseGenerateAction {
       }
 
       OnEventGenerateUtils.addComment(aClass, customMethod);
+
+      LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_ON_EVENT_GENERATION + ".success");
 
       return new ClassMember[] {new PsiMethodMember(customMethod)};
     }
