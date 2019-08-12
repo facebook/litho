@@ -11,8 +11,14 @@
     </p>
   ]]>
   </description>
-  <version>0.0.7-SNAPSHOT</version>
+  <version>0.0.7</version>
   <change-notes><![CDATA[
+    <h2>0.0.7</h2>
+    <ul>
+      <li>Fix: Range method parsing.</li>
+      <li>Fix: Wildcard parsing.</li>
+      <li>Fix: Section context for the generated events.</li>
+    </ul>
     <h2>0.0.6</h2>
     <ul>
       <li>FindUsages shows Component occurrences in the search results.</li>
