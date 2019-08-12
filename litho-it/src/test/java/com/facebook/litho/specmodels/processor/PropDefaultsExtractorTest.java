@@ -49,6 +49,24 @@ public class PropDefaultsExtractorTest {
     }
   }
 
+  static class TestClassWithField {
+    @PropDefault static final String title = "PROP_DEFAULT";
+  }
+
+  @Test
+  public void testPropDefaultExtractionWithField() {
+    final Elements elements = mCompilationRule.getElements();
+    final TypeElement element =
+        elements.getTypeElement(TestClassWithField.class.getCanonicalName());
+
+    final ImmutableList<PropDefaultModel> propDefaults =
+        PropDefaultsExtractor.getPropDefaults(element);
+
+    assertThat(propDefaults).hasSize(1);
+
+    assertThat(propDefaults.get(0).getName()).isEqualTo("title");
+  }
+
   @Test
   public void testKotlinPropDefaultsExtractionWithoutGetAnnotation() {
     final Elements elements = mCompilationRule.getElements();
