@@ -15,8 +15,6 @@
  */
 package com.facebook.litho.specmodels.processor;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.PropDefaultModel;
@@ -62,9 +60,7 @@ public class PropDefaultsExtractorTest {
     final ImmutableList<PropDefaultModel> propDefaults =
         PropDefaultsExtractor.getPropDefaults(element);
 
-    assertThat(propDefaults).hasSize(1);
-
-    assertThat(propDefaults.get(0).getName()).isEqualTo("title");
+    PropDefaultsExtractorTestHelper.assertPropDefaultsExtraction(propDefaults);
   }
 
   @Test
@@ -76,9 +72,7 @@ public class PropDefaultsExtractorTest {
     final ImmutableList<PropDefaultModel> propDefaults =
         PropDefaultsExtractor.getPropDefaults(element);
 
-    assertThat(propDefaults).hasSize(1);
-
-    assertThat(propDefaults.get(0).getName()).isEqualTo("title");
+    PropDefaultsExtractorTestHelper.assertPropDefaultsExtraction(propDefaults);
   }
 
   @Test
@@ -89,8 +83,6 @@ public class PropDefaultsExtractorTest {
     final ImmutableList<PropDefaultModel> propDefaults =
         PropDefaultsExtractor.getPropDefaults(element);
 
-    assertThat(propDefaults).hasSize(1);
-
-    assertThat(propDefaults.get(0).getName()).isEqualTo("title");
+    PropDefaultsExtractorTestHelper.assertPropDefaultsExtraction(propDefaults);
   }
 }
