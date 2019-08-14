@@ -71,6 +71,9 @@ class PsiTypeUtils {
           @Override
           public TypeSpec visitClassType(PsiClassType classType) {
             final PsiClass psiClass = classType.resolve();
+            if (psiClass == null) {
+              return visitType(classType);
+            }
             // In case of Generic like E extends ..., getQualifiedName() returns null;
             final String qualifiedName =
                 psiClass.getQualifiedName() != null
