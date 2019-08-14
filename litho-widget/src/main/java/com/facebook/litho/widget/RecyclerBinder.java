@@ -1374,6 +1374,13 @@ public class RecyclerBinder
   }
 
   private void maybeRequestRemeasureIfBoundsChanged() {
+    if (mMeasuredSize.width == 0 || mMeasuredSize.height == 0) {
+      // It was measured before, but no data was bound in previous measurement,
+      // therefore we need to remeasure.
+      requestRemeasure();
+      return;
+    }
+
     // Even after data change we may not require triggering remeasure event if bounds of
     // RecyclerView did not change.
     final Size initialSize = getInitialMeasuredSize(mLastWidthSpec, mLastHeightSpec, true);
