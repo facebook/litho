@@ -114,7 +114,7 @@ public final class LogTreePopulator {
       sb.append(entry.getKey());
       sb.append(':');
       sb.append(entry.getValue());
-      sb.append(':');
+      sb.append(';');
     }
 
     return sb.toString();

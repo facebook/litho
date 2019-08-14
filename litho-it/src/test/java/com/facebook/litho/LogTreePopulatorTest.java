@@ -147,7 +147,7 @@ public class LogTreePopulatorTest {
     mContext.setTreeProps(treeProps);
 
     final String res = LogTreePopulator.getAnnotationBundleFromLogger(component, logger);
-    assertThat(res).isEqualTo("my_key:1337:other_key:value:");
+    assertThat(res).isEqualTo("my_key:1337;other_key:value;");
   }
 
   @Test
