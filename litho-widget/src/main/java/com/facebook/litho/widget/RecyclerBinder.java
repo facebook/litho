@@ -1126,6 +1126,7 @@ public class RecyclerBinder
       return;
     }
 
+    mRenderInfoViewCreatorController.maybeTrackViewCreator(operation.mHolder.getRenderInfo());
     mComponentTreeHolders.add(operation.mPosition, operation.mHolder);
     operation.mHolder.setInserted(true);
     mInternalAdapter.notifyItemInserted(operation.mPosition);
@@ -3669,6 +3670,7 @@ public class RecyclerBinder
         mUseCancelableLayoutFutures);
   }
 
+  @UiThread
   private void updateHolder(ComponentTreeHolder holder, RenderInfo renderInfo) {
     final RenderInfo previousRenderInfo = holder.getRenderInfo();
     holder.setRenderInfo(renderInfo);

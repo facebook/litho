@@ -43,6 +43,7 @@ import android.os.Looper;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ProgressBar;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.OrientationHelper;
@@ -2406,6 +2407,52 @@ public class RecyclerBinderTest {
     assertThat(holder.getRenderInfo().getComponent()).isEqualTo(component);
     assertThat(holder.hasCompletedLatestLayout()).isTrue();
     assertThat(holder.isTreeValid()).isTrue();
+  }
+
+  @Test
+  public void testInsertAsyncWithViewRenderInfo() {
+    final ViewRenderInfo renderInfo =
+        ViewRenderInfo.create()
+            .viewBinder(
+                new ViewBinder() {
+                  @Override
+                  public void prepare() {}
+
+                  @Override
+                  public void bind(View view) {
+                    ((ProgressBar) view).setProgress(50);
+                  }
+
+                  @Override
+                  public void unbind(View view) {
+                    ((ProgressBar) view).setProgress(0);
+                  }
+                })
+            .viewCreator(
+                new ViewCreator() {
+                  @Override
+                  public View createView(Context c, ViewGroup parent) {
+                    return new ProgressBar(c);
+                  }
+                })
+            .build();
+
+    final RecyclerBinder recyclerBinder = new RecyclerBinder.Builder().build(mComponentContext);
+
+    recyclerBinder.measure(
+        new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
+    recyclerBinder.insertItemAtAsync(0, renderInfo);
+    recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+
+    final RecyclerView recyclerView = new RecyclerView(mComponentContext.getAndroidContext());
+    recyclerBinder.mount(recyclerView);
+
+    recyclerView.measure(makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY));
+    recyclerView.layout(0, 0, 1000, 1000);
+
+    assertThat(recyclerView.getChildCount()).isEqualTo(1);
+    assertThat(recyclerView.getChildAt(0)).isInstanceOf(ProgressBar.class);
   }
 
   @Test
