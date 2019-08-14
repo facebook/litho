@@ -27,9 +27,9 @@ public final class LogTreePopulator {
   private LogTreePopulator() {}
 
   /**
-   * Annotate a log event with the log tag set in the context, and extract the treeprops from a
-   * given {@link ComponentContext} and convert them into perf event annotations using a {@link
-   * ComponentsLogger} implementation.
+   * Annotate a log event with the log tag set in the context, and extract the {@link TreeProps}
+   * from a given {@link ComponentContext} and convert them into perf event annotations using a
+   * {@link ComponentsLogger} implementation.
    *
    * @return Annotated perf event, or <code>null</code> if the resulting event isn't deemed worthy
    *     of reporting.
@@ -42,8 +42,8 @@ public final class LogTreePopulator {
   }
 
   /**
-   * Annotate a log event with the log tag set in the context, and convert the treeprops into perf
-   * event annotations using a {@link ComponentsLogger} implementation.
+   * Annotate a log event with the log tag set in the context, and convert the {@link TreeProps}
+   * into perf event annotations using a {@link ComponentsLogger} implementation.
    *
    * @return Annotated perf event, or <code>null</code> if the resulting event isn't deemed worthy
    *     of reporting.
@@ -84,13 +84,13 @@ public final class LogTreePopulator {
   }
 
   /**
-   * Turn the extracted tree props from a {@link ComponentsLogger} and turn them into a single
-   * colon-separated string that
+   * Extract treeprops from a scoped {@link ComponentContext} of a given {@link Component} and turn
+   * them into a single colon-separated string.
    *
-   * @see #populatePerfEventFromLogger(ComponentContext, ComponentsLogger, PerfEvent)
    * @param component Component to extract tree props from.
-   * @param logger
+   * @param logger ComponentsLogger to convert treeprops into perf event annotations.
    * @return String of extracted props with key-value pairs separated by ':'.
+   * @see #populatePerfEventFromLogger(ComponentContext, ComponentsLogger, PerfEvent)
    */
   @Nullable
   public static String getAnnotationBundleFromLogger(Component component, ComponentsLogger logger) {
