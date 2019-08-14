@@ -11,9 +11,9 @@
     </p>
   ]]>
   </description>
-  <version>0.0.7</version>
+  <version>0.0.8-SNAPSHOT</version>
   <change-notes><![CDATA[
-    <h2>0.0.7</h2>
+    <h2>0.0.7-0.0.8</h2>
     <ul>
       <li>Fix: Range method parsing.</li>
       <li>Fix: Wildcard parsing.</li>
