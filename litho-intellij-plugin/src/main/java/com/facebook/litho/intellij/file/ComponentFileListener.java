@@ -63,7 +63,8 @@ public class ComponentFileListener implements FileDocumentManagerListener {
 
   @Override
   public void beforeDocumentSaving(Document document) {
-    beforeDocumentSavingInternal(document);
+    // TODO: T48863460 revisit update flow
+    //    beforeDocumentSavingInternal(document);
   }
 
   /** Uses Psi access and must be called on EventDispatch Thread or within Read Action */
