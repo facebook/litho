@@ -648,9 +648,43 @@ class TextSpec {
     if (customEllipsisText != null && !customEllipsisText.equals("")) {
       final int ellipsizedLineNumber = getEllipsizedLineNumber(textLayout.get());
       if (ellipsizedLineNumber != -1) {
+        Layout customEllipsisLayout =
+            createTextLayout(
+                SizeSpec.makeSizeSpec((int) layoutWidth, EXACTLY),
+                ellipsize,
+                shouldIncludeFontPadding,
+                maxLines,
+                shadowRadius,
+                shadowDx,
+                shadowDy,
+                shadowColor,
+                isSingleLine,
+                customEllipsisText,
+                textColor,
+                textColorStateList,
+                linkColor,
+                textSize,
+                extraSpacing,
+                spacingMultiplier,
+                letterSpacing,
+                textStyle,
+                typeface,
+                textAlignment,
+                glyphWarming,
+                layout.getResolvedLayoutDirection(),
+                minEms,
+                maxEms,
+                minTextWidth,
+                maxTextWidth,
+                c.getAndroidContext().getResources().getDisplayMetrics().density,
+                breakStrategy,
+                hyphenationFrequency,
+                justificationMode,
+                textDirection,
+                lineHeight);
         final CharSequence truncated =
             truncateText(
-                text, customEllipsisText, textLayout.get(), ellipsizedLineNumber, layoutWidth);
+                text, customEllipsisText, textLayout.get(), customEllipsisLayout, ellipsizedLineNumber, layoutWidth);
 
         Layout newLayout =
             createTextLayout(
@@ -716,16 +750,14 @@ class TextSpec {
       CharSequence text,
       CharSequence customEllipsisText,
       Layout newLayout,
+      Layout ellipsisTextLayout,
       int ellipsizedLineNumber,
       float layoutWidth) {
-    Rect bounds = new Rect();
-    newLayout
-        .getPaint()
-        .getTextBounds(customEllipsisText.toString(), 0, customEllipsisText.length(), bounds);
+    float customEllipsisTextWidth = ellipsisTextLayout.getLineWidth(0);
     // Identify the X position at which to truncate the final line:
     // Note: The left position of the line is needed for the case of RTL text.
     final float ellipsisTarget =
-        layoutWidth - bounds.width() + newLayout.getLineLeft(ellipsizedLineNumber);
+        layoutWidth - customEllipsisTextWidth + newLayout.getLineLeft(ellipsizedLineNumber);
     // Get character offset number corresponding to that X position:
     int ellipsisOffset = newLayout.getOffsetForHorizontal(ellipsizedLineNumber, ellipsisTarget);
     if (ellipsisOffset > 0) {
