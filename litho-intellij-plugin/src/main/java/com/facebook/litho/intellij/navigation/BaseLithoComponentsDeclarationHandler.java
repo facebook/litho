@@ -70,6 +70,7 @@ class BaseLithoComponentsDeclarationHandler {
         .filter(Objects::nonNull)
         .map(LithoPluginUtils::getLithoComponentSpecNameFromComponent)
         .map(specName -> PsiSearchUtils.findClass(project, specName))
+        .filter(Objects::nonNull)
         .filter(psiClass -> psiClass.getContainingFile() instanceof PsiJavaFile)
         // Filter Spec classes by implementation
         .filter(hasComponentSpecAnnotation)

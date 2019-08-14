@@ -16,6 +16,7 @@
     <h2>0.0.7-0.0.8</h2>
     <ul>
       <li>Regenerate component on file saving is on hold.</li>
+      <li>Fix: Error on navigating to unrecognized ComponentSpec.</li>
       <li>Fix: Range method parsing.</li>
       <li>Fix: Wildcard parsing.</li>
       <li>Fix: Section context for the generated events.</li>
