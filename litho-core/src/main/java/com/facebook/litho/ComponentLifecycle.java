@@ -299,113 +299,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
    * @return New InternalNode associated with the given component.
    */
   InternalNode createLayout(ComponentContext context, boolean resolveNestedTree) {
-    final Component component = (Component) this;
-    final InternalNode layoutCreatedInWillRender = component.consumeLayoutCreatedInWillRender();
-
-    if (layoutCreatedInWillRender != null) {
-      return layoutCreatedInWillRender;
-    }
-
-    final boolean deferNestedTreeResolution =
-        Component.isNestedTree((Component) this) && !resolveNestedTree;
-
-    final TreeProps parentTreeProps = context.getTreeProps();
-    context.setTreeProps(getTreePropsForChildren(context, parentTreeProps));
-
-    final boolean isTracing = ComponentsSystrace.isTracing();
-    if (isTracing) {
-      ComponentsSystrace.beginSection("createLayout:" + ((Component) this).getSimpleName());
-    }
-
-    InternalNode node;
-    try {
-      if (deferNestedTreeResolution) {
-        node = InternalNodeUtils.create(context);
-        node.markIsNestedTreeHolder(context.getTreeProps());
-      } else if (component.canResolve()) {
-        context.setTreeProps(component.getScopedContext().getTreePropsCopy());
-        node = (InternalNode) component.resolve(context);
-      } else {
-        if (ComponentsConfiguration.isConsistentComponentHierarchyExperimentEnabled
-            && Component.isMountSpec(component)) {
-          // create a blank InternalNode for MountSpecs
-          node = context.newLayoutBuilder(0, 0);
-        } else {
-
-          // create the component's layout
-          final Component root = createComponentLayout(context);
-
-          // resolve the layout into an InternalNode
-          if (root == null || root.getId() <= 0) {
-            node = null;
-          } else {
-            node = context.resolveLayout(root);
-
-            // if the root is a layout spec which can resolve itself add it to the InternalNode
-            if (ComponentsConfiguration.isConsistentComponentHierarchyExperimentEnabled
-                && Component.isLayoutSpec(root)
-                && root.canResolve()) {
-              node.appendComponent(root);
-            }
-          }
-        }
-      }
-    } catch (Throwable t) {
-      throw new ComponentsChainException((Component) this, t);
-    }
-
-    if (isTracing) {
-      ComponentsSystrace.endSection();
-    }
-
-    if (node == null || node == ComponentContext.NULL_LAYOUT) {
-      return ComponentContext.NULL_LAYOUT;
-    }
-
-    // If this is a layout spec with size spec, and we're not deferring the nested tree resolution,
-    // then we already added the props earlier on (when we did defer resolution), and
-    // therefore we shouldn't add them again here.
-    final CommonPropsCopyable commonProps = ((Component) this).getCommonPropsCopyable();
-    if (commonProps != null
-        && (deferNestedTreeResolution || !Component.isLayoutSpecWithSizeSpec((Component) this))) {
-      commonProps.copyInto(context, node);
-    }
-
-    // Set component on the root node of the generated tree so that the mount calls use
-    // those (see Controller.mountNodeTree()). Handle the case where the component simply
-    // delegates its layout creation to another component i.e. the root node belongs to
-    // another component.
-    if (node.getTailComponent() == null) {
-      final boolean isMountSpecWithMeasure =
-          canMeasure() && Component.isMountSpec((Component) this);
-
-      if (isMountSpecWithMeasure || deferNestedTreeResolution) {
-        node.setMeasureFunction(sMeasureFunction);
-      }
-    }
-
-    node.appendComponent((Component) this);
-    if (TransitionUtils.areTransitionsEnabled(context.getAndroidContext())) {
-      if (needsPreviousRenderData()) {
-        node.addComponentNeedingPreviousRenderData((Component) this);
-      } else {
-        final Transition transition = createTransition(context);
-        if (transition != null) {
-          node.addTransition(transition);
-        }
-      }
-    }
-
-    if (!deferNestedTreeResolution) {
-      onPrepare(context);
-    }
-
-    if (component.mWorkingRangeRegistrations != null
-        && !component.mWorkingRangeRegistrations.isEmpty()) {
-      node.addWorkingRanges(component.mWorkingRangeRegistrations);
-    }
-
-    return node;
+    return LayoutState.createLayout(context, (Component) this, resolveNestedTree);
   }
 
   final @Nullable Transition createTransition(ComponentContext c) {
@@ -507,11 +401,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
 
   /** Resolves the {@link ComponentLayout} for the given {@link Component}. */
   protected ComponentLayout resolve(ComponentContext c) {
-    if (ComponentsConfiguration.isRefactoredLayoutCreationEnabled) {
-      return LayoutState.createLayout(c, (Component) this, false);
-    } else {
-      return createLayout(c, false);
-    }
+    return createLayout(c, false);
   }
 
   protected void onPrepare(ComponentContext c) {
