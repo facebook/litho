@@ -290,18 +290,6 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     onUnmount(c, mountedContent);
   }
 
-  /**
-   * Create a layout from the given component.
-   *
-   * @param context ComponentContext associated with the current ComponentTree.
-   * @param resolveNestedTree if the component's layout tree should be resolved as part of this
-   *     call.
-   * @return New InternalNode associated with the given component.
-   */
-  InternalNode createLayout(ComponentContext context, boolean resolveNestedTree) {
-    return LayoutState.createLayout(context, (Component) this, resolveNestedTree);
-  }
-
   final @Nullable Transition createTransition(ComponentContext c) {
     final Transition transition = onCreateTransition(c);
     if (transition != null) {
@@ -401,7 +389,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
 
   /** Resolves the {@link ComponentLayout} for the given {@link Component}. */
   protected ComponentLayout resolve(ComponentContext c) {
-    return createLayout(c, false);
+    return LayoutState.createLayout(c, (Component) this, false);
   }
 
   protected void onPrepare(ComponentContext c) {

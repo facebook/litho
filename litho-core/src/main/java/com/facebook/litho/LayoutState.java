@@ -1602,11 +1602,7 @@ class LayoutState {
       return current.reconcile(context, component);
     }
 
-    if (ComponentsConfiguration.isRefactoredLayoutCreationEnabled) {
-      return createLayout(context, component, true /* resolveNestedTree */);
-    } else {
-      return component.createLayout(context, true /* resolveNestedTree */);
-    }
+    return createLayout(context, component, true /* resolveNestedTree */);
   }
 
   @VisibleForTesting

@@ -329,7 +329,7 @@ public interface InternalNode extends ComponentLayout, LayoutProps, Copyable<Int
 
   /**
    * @return Whether this node is holding a nested tree or not. The decision was made during tree
-   *     creation {@link ComponentLifecycle#createLayout(ComponentContext, boolean)}.
+   *     creation {@link LayoutState#createLayout(ComponentContext, Component, boolean)}.
    */
   boolean isNestedTreeHolder();
 

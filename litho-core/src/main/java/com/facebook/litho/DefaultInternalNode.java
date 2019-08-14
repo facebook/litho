@@ -968,7 +968,7 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
 
   /**
    * @return Whether this node is holding a nested tree or not. The decision was made during tree
-   *     creation {@link ComponentLifecycle#createLayout(ComponentContext, boolean)}.
+   *     creation {@link LayoutState#createLayout(ComponentContext, Component, boolean)}.
    */
   @Override
   public boolean isNestedTreeHolder() {
@@ -1895,11 +1895,7 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
         layout = reconcile(c, current, next, keys, ReconciliationMode.RECONCILE);
         break;
       case ReconciliationMode.RECREATE:
-        if (ComponentsConfiguration.isRefactoredLayoutCreationEnabled) {
-          layout = LayoutState.createLayout(next.getScopedContext(), next, false);
-        } else {
-          layout = next.createLayout(next.getScopedContext(), false);
-        }
+        layout = LayoutState.createLayout(next.getScopedContext(), next, false);
         break;
       default:
         throw new IllegalArgumentException(mode + " is not a valid ReconciliationMode");

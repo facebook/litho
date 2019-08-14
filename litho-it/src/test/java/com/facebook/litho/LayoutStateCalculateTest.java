@@ -60,7 +60,6 @@ import android.graphics.Rect;
 import android.util.SparseArray;
 import android.view.accessibility.AccessibilityManager;
 import androidx.annotation.Nullable;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestLayoutComponent;
@@ -2686,7 +2685,7 @@ public class LayoutStateCalculateTest {
     final InternalNode cachedLayout = component.getLayoutCreatedInWillRenderForTesting();
     assertThat(cachedLayout).isNotNull();
 
-    InternalNode result = component.createLayout(c, false);
+    InternalNode result = LayoutState.createLayout(c, component, false);
     assertThat(result).isEqualTo(cachedLayout);
     assertThat(component.getLayoutCreatedInWillRenderForTesting()).isNull();
   }
