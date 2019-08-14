@@ -27,6 +27,8 @@ import com.intellij.codeInsight.completion.CompletionParameters;
 import com.intellij.codeInsight.completion.CompletionProvider;
 import com.intellij.codeInsight.completion.CompletionResultSet;
 import com.intellij.codeInsight.completion.CompletionType;
+import com.intellij.codeInsight.completion.InsertHandler;
+import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.lang.java.JavaLanguage;
 import com.intellij.openapi.project.Project;
@@ -111,25 +113,7 @@ public class OnEventCompletionContributor extends CompletionContributor {
     Icon icon = method.getIcon(Iconable.ICON_FLAG_VISIBILITY);
     LookupElementBuilder elementBuilder =
         LookupElementBuilder.create(method)
-            .withInsertHandler(
-                (insertionContext, item) -> {
-                  // Remove lookup string. As in the JavaGenerateMemberCompletionContributor
-                  insertionContext
-                      .getDocument()
-                      .deleteString(
-                          insertionContext.getStartOffset() - 1, insertionContext.getTailOffset());
-                  insertionContext.commitDocument();
-
-                  // Insert generation infos
-                  new MethodGenerateHandler(method)
-                      .invoke(
-                          insertionContext.getProject(),
-                          insertionContext.getEditor(),
-                          insertionContext.getFile());
-
-                  LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_ON_EVENT_COMPLETION);
-                  ComponentGenerateUtils.updateLayoutComponent(parentClass);
-                })
+            .withInsertHandler(getOnEventInsertHandler(method))
             .appendTailText(" {...}", true)
             .withTypeText(getTypeText(parentClass))
             .withIcon(icon);
@@ -143,6 +127,29 @@ public class OnEventCompletionContributor extends CompletionContributor {
       }
     }
     return elementBuilder;
+  }
+
+  /** Creates handler to insert given method in the lookup element insertion context. */
+  private static InsertHandler<LookupElement> getOnEventInsertHandler(PsiMethod method) {
+    return (insertionContext, item) -> {
+      // Remove lookup string. As in the JavaGenerateMemberCompletionContributor
+      insertionContext
+          .getDocument()
+          .deleteString(insertionContext.getStartOffset() - 1, insertionContext.getTailOffset());
+      insertionContext.commitDocument();
+
+      // Insert generation infos
+      new MethodGenerateHandler(method)
+          .invoke(
+              insertionContext.getProject(),
+              insertionContext.getEditor(),
+              insertionContext.getFile());
+
+      LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_ON_EVENT_COMPLETION);
+
+      LithoPluginUtils.getFirstLayoutSpec(insertionContext.getFile())
+          .ifPresent(ComponentGenerateUtils::updateLayoutComponent);
+    };
   }
 
   private static String getTypeText(PsiClass parentClass) {
