@@ -38,7 +38,7 @@ public final class LogTreePopulator {
   @CheckReturnValue
   public static PerfEvent populatePerfEventFromLogger(
       ComponentContext c, ComponentsLogger logger, @Nullable PerfEvent perfEvent) {
-    return populatePerfEventFromLogger(c, c.getTreeProps(), logger, perfEvent);
+    return populatePerfEventFromLogger(c, logger, perfEvent, c.getTreeProps());
   }
 
   /**
@@ -52,9 +52,9 @@ public final class LogTreePopulator {
   @CheckReturnValue
   public static PerfEvent populatePerfEventFromLogger(
       ComponentContext c,
-      @Nullable TreeProps treeProps,
       ComponentsLogger logger,
-      @Nullable PerfEvent perfEvent) {
+      @Nullable PerfEvent perfEvent,
+      @Nullable TreeProps treeProps) {
     if (perfEvent == null) {
       return null;
     }
