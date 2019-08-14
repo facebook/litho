@@ -502,8 +502,8 @@ public class ComponentContext {
    * you require that incremental mount is enabled (e.g. you use visibility callbacks). This is
    * static to avoid polluting the ComponentContext API.
    */
-  public static boolean isIncrementalMountDisabled(ComponentContext c) {
-    return c.mComponentTree != null && !c.mComponentTree.isIncrementalMountEnabled();
+  public static boolean isIncrementalMountEnabled(ComponentContext c) {
+    return c.mComponentTree == null || c.mComponentTree.isIncrementalMountEnabled();
   }
 
   boolean wasLayoutCanceled() {

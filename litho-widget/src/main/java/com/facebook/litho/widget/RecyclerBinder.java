@@ -687,7 +687,7 @@ public class RecyclerBinder
 
       // Incremental mount will not work if this ComponentTree is nested in a parent with it turned
       // off, so always disable it in that case
-      incrementalMount = incrementalMount && !ComponentContext.isIncrementalMountDisabled(c);
+      incrementalMount = incrementalMount && ComponentContext.isIncrementalMountEnabled(c);
 
       if (layoutInfo == null) {
         layoutInfo = new LinearLayoutInfo(c.getAndroidContext(), VERTICAL, false);

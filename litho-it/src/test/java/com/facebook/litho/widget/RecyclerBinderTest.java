@@ -5366,7 +5366,7 @@ public class RecyclerBinderTest {
             .incrementalMount(false)
             .build();
 
-    assertThat(ComponentContext.isIncrementalMountDisabled(parent.getContext())).isTrue();
+    assertThat(ComponentContext.isIncrementalMountEnabled(parent.getContext())).isFalse();
 
     final RecyclerBinder recyclerBinder =
         new RecyclerBinder.Builder()
@@ -5394,7 +5394,7 @@ public class RecyclerBinderTest {
             .incrementalMount(true)
             .build();
 
-    assertThat(ComponentContext.isIncrementalMountDisabled(parent.getContext())).isFalse();
+    assertThat(ComponentContext.isIncrementalMountEnabled(parent.getContext())).isTrue();
 
     final RecyclerBinder recyclerBinder =
         new RecyclerBinder.Builder()
