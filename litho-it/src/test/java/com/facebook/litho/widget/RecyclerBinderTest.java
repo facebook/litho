@@ -44,6 +44,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.OrientationHelper;
@@ -113,7 +114,7 @@ public class RecyclerBinderTest {
       new ViewCreator() {
         @Override
         public View createView(Context c, ViewGroup parent) {
-          return mock(View.class);
+          return new View(c);
         }
       };
 
@@ -121,7 +122,7 @@ public class RecyclerBinderTest {
       new ViewCreator() {
         @Override
         public View createView(Context c, ViewGroup parent) {
-          return mock(View.class);
+          return new ProgressBar(c);
         }
       };
 
@@ -129,7 +130,7 @@ public class RecyclerBinderTest {
       new ViewCreator() {
         @Override
         public View createView(Context c, ViewGroup parent) {
-          return mock(View.class);
+          return new TextView(c);
         }
       };
 
@@ -433,7 +434,7 @@ public class RecyclerBinderTest {
   }
 
   private void testScrollRestoration(boolean verticalScroll, boolean reverseLayout) {
-    View firstView = mock(View.class);
+    View firstView = new View(mComponentContext.getAndroidContext());
 
     LinearLayoutManager layoutManager = mock(LinearLayoutManager.class);
     when(layoutManager.findViewByPosition(SCROLL_RESTORATION_VIEW_POSITION)).thenReturn(firstView);
@@ -1377,7 +1378,7 @@ public class RecyclerBinderTest {
             return new ViewCreator() {
               @Override
               public View createView(Context c, ViewGroup parent) {
-                return mock(View.class);
+                return new View(c);
               }
             };
           }
@@ -1753,7 +1754,7 @@ public class RecyclerBinderTest {
 
   @Test
   public void testViewBinderBindAndUnbind() {
-    final View view = mock(View.class);
+    final View view = new View(mComponentContext.getAndroidContext());
     final RecyclerView recyclerView = new RecyclerView(mComponentContext.getAndroidContext());
     ViewBinder viewBinder = mock(ViewBinder.class);
     final ViewCreator<View> viewCreator =
