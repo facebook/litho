@@ -35,7 +35,7 @@ class MyComponentSpec {
 class AnotherComponentSpec {
 
     @OnCreateLayout
-    static Component onCreateLayout(ComponentContext c, @State boolean toLeft) {
+    static Component onCreateLayout(ComponentContext c, @State boolean toRight) {
         return Column.create(c)
             .child(
                 Rect.create(c)
@@ -75,7 +75,7 @@ class MyComponentSpec {
         return AnotherComponent.create(c).build();
     }
 
-    @OnCreateLayout
+    @OnCreateTransition
     static Transition onCreateTransition(ComponentContext c) {
         return Transition.create(Transition.TransitionKeyType.GLOBAL, "square")
             .animate(AnimatedProperties.X);
@@ -89,7 +89,7 @@ class MyComponentSpec {
 class AnotherComponentSpec {
 
     @OnCreateLayout
-    static Component onCreateLayout(ComponentContext c, @State boolean toLeft) {
+    static Component onCreateLayout(ComponentContext c, @State boolean toRight) {
         return Column.create(c)
             .child(
                 Rect.create(c)

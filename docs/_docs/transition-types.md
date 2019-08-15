@@ -55,7 +55,7 @@ class MyComponentSpec {
             .build();
     }
 
-    @OnCreateLayout
+    @OnCreateTransition
     static Transition onCreateTransition(ComponentContext c) {
         return Transition.create("square")
             .animate(AnimatedProperties.X)
