@@ -108,6 +108,8 @@ LITHO_YOGA_TARGET = make_dep_path("lib/yoga:yoga")
 
 LITHO_YOGAJNI_TARGET = make_dep_path("lib/yogajni:jni")
 
+LITHO_PROGUARD_ANNOTATIONS_TARGET = make_dep_path("lib/yoga:proguard-annotations")
+
 LITHO_BUILD_CONFIG_TARGET = make_dep_path(":build_config")
 
 LITHO_COMMONS_CLI_TARGET = make_dep_path("lib/commons-cli:commons-cli")

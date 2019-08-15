@@ -84,6 +84,8 @@ ext.deps = [
         mockitoCore        : 'org.mockito:mockito-core:1.9.5',
         assertjCore        : 'org.assertj:assertj-core:2.9.0',
         compileTesting     : 'com.google.testing.compile:compile-testing:0.14',
+        // Proguard annotations (published through Yoga)
+        proguardAnnotations: 'com.facebook.yoga:proguard-annotations:1.14.1',
         // Processor
         javapoet           : 'com.squareup:javapoet:1.9.0',
         // Misc
