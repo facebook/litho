@@ -53,6 +53,7 @@ class MountItem {
   private @Nullable TransitionId mTransitionId;
   private int mOrientation;
   private boolean mIsReleased;
+  private String mReleaseCause;
 
   // ComponentHost flags defined in the LayoutOutput specifying
   // the behaviour of this item when mounted.
@@ -239,24 +240,23 @@ class MountItem {
         || mComponent.implementsAccessibility();
   }
 
-  void releaseMountContent(Context context) {
+  void releaseMountContent(Context context, String releaseCause) {
     if (mIsReleased) {
       final String componentName = mComponent != null ? mComponent.getSimpleName() : "<null>";
       final String globalKey = mComponent != null ? mComponent.getGlobalKey() : "<null>";
-      throw new RuntimeException(
+      throw new ReleasingReleasedMountContentException(
           "Releasing released mount content! component: "
               + componentName
               + ", globalKey: "
               + globalKey
-              + ", host: "
-              + getHost()
-              + ", content: "
-              + getContent()
               + ", transitionId: "
-              + getTransitionId());
+              + getTransitionId()
+              + ", previousReleaseCause: "
+              + mReleaseCause);
     }
     ComponentsPools.release(context, mComponent, mContent);
     mIsReleased = true;
+    mReleaseCause = releaseCause;
   }
 
   static boolean isDuplicateParentState(int flags) {
@@ -305,5 +305,12 @@ class MountItem {
    */
   void setIsBound(boolean bound) {
     mIsBound = bound;
+  }
+
+  public static class ReleasingReleasedMountContentException extends RuntimeException {
+
+    public ReleasingReleasedMountContentException(String message) {
+      super(message);
+    }
   }
 }

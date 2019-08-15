@@ -2222,43 +2222,64 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       }
     }
     assertNoDanglingMountContent(item);
-    item.releaseMountContent(context.getAndroidContext());
+
+    try {
+      item.releaseMountContent(context.getAndroidContext(), "unmountDisappearingItemChild");
+    } catch (MountItem.ReleasingReleasedMountContentException e) {
+      throw new RuntimeException(e.getMessage() + " " + getMountItemDebugMessage(item));
+    }
   }
 
   private void assertNoDanglingMountContent(MountItem item) {
     final int index = mIndexToItemMap.indexOfValue(item);
     if (index > -1) {
-      final long id = mIndexToItemMap.keyAt(index);
-      int layoutOutputIndex = -1;
+      ComponentsReporter.emitMessage(
+          ComponentsReporter.LogLevel.ERROR,
+          "Got dangling mount content during animation: " + getMountItemDebugMessage(item));
+    }
+  }
+
+  private String getMountItemDebugMessage(MountItem item) {
+    final int index = mIndexToItemMap.indexOfValue(item);
+
+    long id = -1;
+    int layoutOutputIndex = -1;
+    if (index > -1) {
+      id = mIndexToItemMap.keyAt(index);
       for (int i = 0; i < mLayoutOutputsIds.length; i++) {
         if (id == mLayoutOutputsIds[i]) {
           layoutOutputIndex = i;
           break;
         }
       }
-      ComponentsReporter.emitMessage(
-          ComponentsReporter.LogLevel.ERROR,
-          "Got dangling mount content during animation: index="
-              + layoutOutputIndex
-              + ", mapIndex="
-              + index
-              + ", id="
-              + id
-              + ", disappearRange=["
-              + mLastDisappearRangeStart
-              + ","
-              + mLastDisappearRangeEnd
-              + "], contentType="
-              + item.getContent().getClass()
-              + ", component="
-              + (item.getComponent() != null ? item.getComponent().getSimpleName() : null)
-              + ", transitionId="
-              + item.getTransitionId()
-              + ", host="
-              + item.getHost()
-              + ", isRootHost="
-              + (mHostsByMarker.get(ROOT_HOST_ID) == item.getHost()));
     }
+
+    final ComponentTree componentTree = mLithoView.getComponentTree();
+    final String rootComponent =
+        componentTree == null ? "<null_component_tree>" : componentTree.getRoot().getSimpleName();
+
+    return "rootComponent="
+        + rootComponent
+        + ", index="
+        + layoutOutputIndex
+        + ", mapIndex="
+        + index
+        + ", id="
+        + id
+        + ", disappearRange=["
+        + mLastDisappearRangeStart
+        + ","
+        + mLastDisappearRangeEnd
+        + "], contentType="
+        + (item.getContent() != null ? item.getContent().getClass() : "<null_content>")
+        + ", component="
+        + (item.getComponent() != null ? item.getComponent().getSimpleName() : "<null_component>")
+        + ", transitionId="
+        + item.getTransitionId()
+        + ", host="
+        + (item.getHost() != null ? item.getHost().getClass() : "<null_host>")
+        + ", isRootHost="
+        + (mHostsByMarker.get(ROOT_HOST_ID) == item.getHost());
   }
 
   void unmountAllItems() {
@@ -2359,7 +2380,11 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       mCanMountIncrementallyMountItems.delete(mLayoutOutputsIds[index]);
     }
 
-    item.releaseMountContent(mContext.getAndroidContext());
+    try {
+      item.releaseMountContent(mContext.getAndroidContext(), "unmountItem");
+    } catch (MountItem.ReleasingReleasedMountContentException e) {
+      throw new RuntimeException(e.getMessage() + " " + getMountItemDebugMessage(item));
+    }
 
     if (mMountStats.isLoggingEnabled) {
       mMountStats.unmountedTimes.add((System.nanoTime() - startTime) / NS_IN_MS);
@@ -2419,7 +2444,11 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
         }
       }
       assertNoDanglingMountContent(item);
-      item.releaseMountContent(mContext.getAndroidContext());
+      try {
+        item.releaseMountContent(mContext.getAndroidContext(), "endUnmountDisappearingItem");
+      } catch (MountItem.ReleasingReleasedMountContentException e) {
+        throw new RuntimeException(e.getMessage() + " " + getMountItemDebugMessage(item));
+      }
     }
   }
 
