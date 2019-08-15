@@ -67,7 +67,8 @@ public class ComponentFindUsagesHandlerFactory extends FindUsagesHandlerFactory 
           .flatMap(findComponent)
           .map(
               psiClass -> {
-                LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_FIND_USAGES + ".done");
+                LithoLoggerProvider.getEventLogger()
+                    .log(EventLogger.EVENT_FIND_USAGES + ".success");
                 return ArrayUtil.insert(super.getPrimaryElements(), 0, psiClass);
               })
           .orElseGet(super::getPrimaryElements);
