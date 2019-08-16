@@ -76,6 +76,6 @@ public class DelegateMethodExtractorTest {
             ImmutableList.<Class<? extends Annotation>>of(),
             mock(Messager.class));
 
-    PsiDelegateMethodExtractorTestHelper.assertDelegateMethodExtraction(delegateMethods);
+    DelegateMethodExtractorTestHelper.assertDelegateMethodExtraction(delegateMethods);
   }
 }

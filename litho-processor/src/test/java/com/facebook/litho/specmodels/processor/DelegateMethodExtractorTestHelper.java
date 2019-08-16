@@ -23,7 +23,7 @@ import com.squareup.javapoet.TypeName;
 import javax.lang.model.element.Modifier;
 import org.junit.Assert;
 
-class PsiDelegateMethodExtractorTestHelper {
+class DelegateMethodExtractorTestHelper {
 
   static void assertDelegateMethodExtraction(
       ImmutableList<SpecMethodModel<DelegateMethod, Void>> delegateMethods) {
