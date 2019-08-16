@@ -1092,8 +1092,15 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       return Collections.emptyList();
     }
 
+    if (mLayoutOutputsIds.length > 0 && isItemDisappearing(newLayoutState, 0)) {
+      ComponentsReporter.emitMessage(
+          ComponentsReporter.LogLevel.ERROR,
+          "Disppear animations cannot target the root LithoView! "
+              + getMountItemDebugMessage(mRootHostMountItem));
+    }
+
     List<Integer> indices = null;
-    int index = 0;
+    int index = 1;
     while (index < mLayoutOutputsIds.length) {
       if (isItemDisappearing(newLayoutState, index)) {
         final int lastDescendantIndex = findLastDescendantIndex(mLastMountedLayoutState, index);
@@ -1192,6 +1199,10 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   }
 
   private void removeDisappearingItemMappings(int fromIndex, int toIndex) {
+    if (fromIndex == 0) {
+      throw new RuntimeException("Cannot remove disappearing item mappings for root LithoView!");
+    }
+
     mLastDisappearRangeStart = fromIndex;
     mLastDisappearRangeEnd = toIndex;
 
