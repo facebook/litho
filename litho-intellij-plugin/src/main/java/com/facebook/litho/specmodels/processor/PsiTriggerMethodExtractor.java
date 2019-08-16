@@ -16,8 +16,6 @@
 package com.facebook.litho.specmodels.processor;
 
 import static com.facebook.litho.specmodels.processor.DelegateMethodExtractor.getPermittedMethodParamAnnotations;
-import static com.facebook.litho.specmodels.processor.PsiEventDeclarationsExtractor.getFields;
-import static com.facebook.litho.specmodels.processor.PsiEventDeclarationsExtractor.getReturnType;
 import static com.facebook.litho.specmodels.processor.PsiMethodExtractorUtils.getMethodParams;
 import static com.facebook.litho.specmodels.processor.PsiMethodExtractorUtils.getTypeVariables;
 
@@ -33,8 +31,6 @@ import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiClassObjectAccessExpression;
 import com.intellij.psi.PsiMethod;
 import com.intellij.psi.PsiNameValuePair;
-import com.intellij.psi.PsiType;
-import com.intellij.psi.util.PsiTypesUtil;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
@@ -65,8 +61,6 @@ public class PsiTriggerMethodExtractor {
             AnnotationUtil.findDeclaredAttribute(psiOnTriggerAnnotation, "value");
         PsiClassObjectAccessExpression valueClassExpression =
             (PsiClassObjectAccessExpression) valuePair.getValue();
-        PsiType valueType = valueClassExpression.getOperand().getType();
-        PsiClass valueClass = PsiTypesUtil.getPsiClass(valueType);
 
         // Reuse EventMethodModel and EventDeclarationModel because we are capturing the same info
         final SpecMethodModel<EventMethod, EventDeclarationModel> eventMethod =
@@ -78,11 +72,7 @@ public class PsiTriggerMethodExtractor {
                 ImmutableList.copyOf(getTypeVariables(psiMethod)),
                 ImmutableList.copyOf(methodParams),
                 psiMethod,
-                new EventDeclarationModel(
-                    PsiTypeUtils.guessClassName(valueClass.getName()),
-                    getReturnType(valueClass),
-                    getFields(valueClass), // TODO fields in the Event class
-                    valueClass));
+                PsiEventDeclarationsExtractor.getEventDeclarationModel(valueClassExpression));
         delegateMethods.add(eventMethod);
       }
     }
