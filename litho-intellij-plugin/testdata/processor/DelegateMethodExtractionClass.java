@@ -15,6 +15,12 @@
  */
 class DelegateMethodExtractionClass {
 
+    @com.facebook.litho.annotations.OnEvent(java.lang.Object.class)
+    public void ignored() {}
+
+    @com.facebook.litho.annotations.OnUpdateState
+    public void alsoIgnored() {}
+
     @com.facebook.litho.annotations.OnCreateLayout
     public void testMethod(
             @com.facebook.litho.annotations.Prop boolean testProp,
@@ -22,10 +28,4 @@ class DelegateMethodExtractionClass {
             @com.facebook.litho.annotations.Event java.lang.Object testPermittedAnnotation) {
         // Don't do anything.
     }
-
-    @com.facebook.litho.annotations.OnEvent(java.lang.Object.class)
-    public void ignored() {}
-
-    @com.facebook.litho.annotations.OnUpdateState
-    public void alsoIgnored() {}
 }
