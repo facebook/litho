@@ -23,24 +23,28 @@ import java.lang.annotation.RetentionPolicy;
 /**
  * A class that is annotated with this annotation will be used to create a component that renders
  * something, in the form of either a Drawable or a View.
- * <p>A class that is annotated with {@link MountSpec} must implement a method with the
- * {@link OnCreateMountContent} annotation. It may also implement methods with the following
- * annotations:
- * - {@link OnLoadStyle}
- * - {@link OnEvent}
- * - {@link OnPrepare}
- * - {@link OnMeasure}
- * - {@link OnBoundsDefined}
- * - {@link OnMount}
- * - {@link OnBind}
- * - {@link OnUnbind}
- * - {@link OnUnmount}
- * <p>If you wish to create a component that is a composition of other components, then use
- * {@link LayoutSpec} instead.
+ *
+ * <p>A class that is annotated with {@link MountSpec} must implement a method with the {@link
+ * OnCreateMountContent} annotation. It may also implement methods with the following annotations:
+ *
+ * <ul>
+ *   <li>{@link OnLoadStyle}
+ *   <li>{@link OnEvent}
+ *   <li>{@link OnPrepare}
+ *   <li>{@link OnMeasure}
+ *   <li>{@link OnBoundsDefined}
+ *   <li>{@link OnMount}
+ *   <li>{@link OnBind}
+ *   <li>{@link OnUnbind}
+ *   <li>{@link OnUnmount}
+ * </ul>
+ *
+ * <p>If you wish to create a component that is a composition of other components, then use {@link
+ * LayoutSpec} instead.
+ *
  * <p>For example:
- * <pre>
- * <code>
- * {@literal @}MountSpec
+ *
+ * <pre><code>{@literal @}MountSpec
  * public class MyComponentSpec {
  *
  *  {@literal @}OnCreateMountContent
@@ -55,9 +59,7 @@ import java.lang.annotation.RetentionPolicy;
  *      {@literal @}Prop MyProp prop) {
  *     myDrawable.setMyProp(prop);
  *   }
- * }
- * </code>
- * </pre>
+ * }</code></pre>
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
@@ -66,21 +68,21 @@ public @interface MountSpec {
    * Class name of the generated component. When not provided defaults to name of the annotated
    * class sans the "Spec" suffix. E.g. "MyComponentSpec" to "MyComponent".
    *
-   * In order to avoid confusion, this should only be used if you have a very good reason for it.
+   * <p>In order to avoid confusion, this should only be used if you have a very good reason for it.
    * For instance to avoid naming collisions.
    */
   String value() default "";
 
   /**
    * @return Boolean indicating whether the generated class should be public. If not, it will be
-   * package-private.
+   *     package-private.
    */
   boolean isPublic() default true;
 
   /**
    * @return Boolean indicating whether the component implements a pure render function. If this is
-   * true and the Component didn't change during an update of the ComponentTree measurements and
-   * LayoutOutputs will be reused instead of being calculated again.
+   *     true and the Component didn't change during an update of the ComponentTree measurements and
+   *     LayoutOutputs will be reused instead of being calculated again.
    */
   boolean isPureRender() default false;
 
@@ -92,13 +94,13 @@ public @interface MountSpec {
 
   /**
    * @return List of event POJOs this component can dispatch. Used to generate event dispatch
-   * methods.
+   *     methods.
    */
   Class<?>[] events() default {};
 
   /**
    * @return The max number of preallocated Mount objects we want to keep in the pools for this type
-   * of MountSpec
+   *     of MountSpec
    */
   int poolSize() default 3;
 

@@ -79,7 +79,7 @@ import javax.annotation.concurrent.GuardedBy;
  * <code>
  * ComponentTree component = ComponentTree.create(context, MyComponent.create());
  * myHostView.setRoot(component);
- * <code/>
+ * </code>
  */
 @ThreadSafe
 public class ComponentTree {
@@ -2847,7 +2847,7 @@ public class ComponentTree {
       return this;
     }
 
-    /** Sets if is reconciliation is enabled */
+    /** Sets if reconciliation is enabled */
     public Builder isReconciliationEnabled(boolean isEnabled) {
       this.isReconciliationEnabled = isEnabled;
       return this;

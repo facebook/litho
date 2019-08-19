@@ -33,13 +33,10 @@ import java.lang.annotation.Annotation;
 import javax.annotation.Nullable;
 import javax.lang.model.element.Modifier;
 
-/**
- * Class that generates methods for Mount Specs.
- */
+/** Class that generates methods for Mount Specs. */
 public class MountSpecGenerator {
 
-  private MountSpecGenerator() {
-  }
+  private MountSpecGenerator() {}
 
   public static TypeSpecDataHolder generateHasChildLithoViews(MountSpecModel specModel) {
     TypeSpecDataHolder.Builder dataHolder = TypeSpecDataHolder.newBuilder();
@@ -104,16 +101,17 @@ public class MountSpecGenerator {
     }
 
     for (MethodParamModel methodParamModel : onMount.methodParams) {
-      if (methodParamModel instanceof InterStageInputParamModel &&
-          (SpecModelUtils.hasAnnotation(methodParamModel, FromMeasure.class) ||
-           SpecModelUtils.hasAnnotation(methodParamModel, FromBoundsDefined.class))) {
+      if (methodParamModel instanceof InterStageInputParamModel
+          && (SpecModelUtils.hasAnnotation(methodParamModel, FromMeasure.class)
+              || SpecModelUtils.hasAnnotation(methodParamModel, FromBoundsDefined.class))) {
         return dataHolder
-            .addMethod(MethodSpec.methodBuilder("isMountSizeDependent")
-                .addAnnotation(Override.class)
-                .addModifiers(Modifier.PROTECTED)
-                .returns(TypeName.BOOLEAN)
-                .addStatement("return true")
-                .build())
+            .addMethod(
+                MethodSpec.methodBuilder("isMountSizeDependent")
+                    .addAnnotation(Override.class)
+                    .addModifiers(Modifier.PROTECTED)
+                    .returns(TypeName.BOOLEAN)
+                    .addStatement("return true")
+                    .build())
             .build();
       }
     }
@@ -141,7 +139,8 @@ public class MountSpecGenerator {
 
   @Nullable
   private static ShouldUpdate getShouldUpdateAnnotation(MountSpecModel specModel) {
-    for (SpecMethodModel<DelegateMethod, Void> delegateMethodModel : specModel.getDelegateMethods()) {
+    for (SpecMethodModel<DelegateMethod, Void> delegateMethodModel :
+        specModel.getDelegateMethods()) {
       for (Annotation annotation : delegateMethodModel.annotations) {
         if (annotation.annotationType().equals(ShouldUpdate.class)) {
           return (ShouldUpdate) annotation;

@@ -16,6 +16,7 @@
 
 package com.facebook.litho.specmodels.model;
 
+import com.facebook.litho.annotations.MountSpec;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.internal.RunMode;
 import com.squareup.javapoet.AnnotationSpec;
@@ -27,9 +28,7 @@ import java.util.EnumSet;
 import java.util.List;
 import javax.annotation.Nullable;
 
-/**
- * Model that is an abstract representation of a {@link com.facebook.litho.annotations.MountSpec}.
- */
+/** Model that is an abstract representation of a {@link MountSpec}. */
 public class MountSpecModel implements SpecModel, HasPureRender {
   private final SpecModelImpl mSpecModel;
   private final boolean mIsPureRender;

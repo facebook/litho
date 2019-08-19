@@ -2245,7 +2245,7 @@ public class RecyclerBinder
    * @return true if the measure specs we are trying to measure this with cannot be used and we need
    *     to measure an item to get a size.
    */
-  static final boolean shouldMeasureItemForSize(
+  static boolean shouldMeasureItemForSize(
       int widthSpec, int heightSpec, int scrollDirection, boolean canRemeasure) {
     final boolean canUseSizeSpec =
         scrollDirection == VERTICAL
