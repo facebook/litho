@@ -74,24 +74,3 @@ compilation unit, but sits in a different package.
 The easiest workaround for this is to help the compiler by moving
 either the referencing or the referenced component into a separate build module.
 Splitting build modules by package is considered a good practice with Buck.
-
-### Proguard
-
-Litho includes stubs to access `DisplayList` APIs on Android. This will cause
-warnings when running Proguard, which are safe to ignore.
-
-To disable these warnings, add the following lines to your `proguard-rules.pro`:
-
-```
--dontwarn android.text.StaticLayout
--dontwarn android.view.DisplayList
--dontwarn android.view.RenderNode
--dontwarn android.view.DisplayListCanvas
--dontwarn android.view.HardwareCanvas
-```
-
-For text-layout-builder, you may also include this rule:
-
-```
--dontwarn com.facebook.fbui.**
-```
