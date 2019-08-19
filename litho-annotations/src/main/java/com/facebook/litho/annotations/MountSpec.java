@@ -37,6 +37,7 @@ import java.lang.annotation.RetentionPolicy;
  *   <li>{@link OnBind}
  *   <li>{@link OnUnbind}
  *   <li>{@link OnUnmount}
+ *   <li>{@link ShouldUpdate}
  * </ul>
  *
  * <p>If you wish to create a component that is a composition of other components, then use {@link
