@@ -97,12 +97,6 @@ public @interface MountSpec {
   Class<?>[] events() default {};
 
   /**
-   * @return Boolean indicating whether this drawable mount spec should cache its drawing in a
-   * display list.
-   */
-  boolean shouldUseDisplayList() default false;
-
-  /**
    * @return The max number of preallocated Mount objects we want to keep in the pools for this type
    * of MountSpec
    */

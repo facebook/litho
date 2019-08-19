@@ -34,7 +34,6 @@ public class MountSpecModel implements SpecModel, HasPureRender {
   private final SpecModelImpl mSpecModel;
   private final boolean mIsPureRender;
   private final boolean mHasChildLithosViews;
-  private final boolean mShouldUseDisplayList;
   private final int mPoolSize;
   private final boolean mCanPreallocate;
   private final TypeName mMountType;
@@ -61,7 +60,6 @@ public class MountSpecModel implements SpecModel, HasPureRender {
       DependencyInjectionHelper dependencyInjectionHelper,
       boolean isPureRender,
       boolean hasChildLithosViews,
-      boolean shouldUseDisplayList,
       int poolSize,
       boolean canPreallocate,
       TypeName mountType,
@@ -98,7 +96,6 @@ public class MountSpecModel implements SpecModel, HasPureRender {
             .build();
     mIsPureRender = isPureRender;
     mHasChildLithosViews = hasChildLithosViews;
-    mShouldUseDisplayList = shouldUseDisplayList;
     mPoolSize = poolSize;
     mCanPreallocate = canPreallocate;
     mMountType = mountType;
@@ -354,10 +351,6 @@ public class MountSpecModel implements SpecModel, HasPureRender {
     return mHasChildLithosViews;
   }
 
-  public boolean shouldUseDisplayList() {
-    return mShouldUseDisplayList;
-  }
-
   public int getPoolSize() {
     return mPoolSize;
   }
@@ -388,8 +381,6 @@ public class MountSpecModel implements SpecModel, HasPureRender {
         + mIsPureRender
         + ", mHasChildLithosViews="
         + mHasChildLithosViews
-        + ", mShouldUseDisplayList="
-        + mShouldUseDisplayList
         + ", mPoolSize="
         + mPoolSize
         + ", mCanPreallocate="

@@ -71,7 +71,6 @@ import javax.annotation.Nullable;
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
 @MountSpec(
   events = TestEvent.class,
-  shouldUseDisplayList = true,
   isPureRender = true,
   hasChildLithoViews = true,
   canPreallocate = true

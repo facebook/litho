@@ -57,22 +57,6 @@ public class MountSpecGenerator {
     return dataHolder.build();
   }
 
-  public static TypeSpecDataHolder generateShouldUseDisplayList(MountSpecModel specModel) {
-    TypeSpecDataHolder.Builder dataHolder = TypeSpecDataHolder.newBuilder();
-
-    if (specModel.shouldUseDisplayList()) {
-      dataHolder.addMethod(
-          MethodSpec.methodBuilder("shouldUseDisplayList")
-              .addAnnotation(Override.class)
-              .addModifiers(Modifier.PUBLIC)
-              .returns(TypeName.BOOLEAN)
-              .addStatement("return true")
-              .build());
-    }
-
-    return dataHolder.build();
-  }
-
   public static TypeSpecDataHolder generatePoolSize(MountSpecModel specModel) {
     return TypeSpecDataHolder.newBuilder()
         .addMethod(

@@ -382,11 +382,6 @@ public final class TestMount<S extends View> extends Component implements TestTa
   }
 
   @Override
-  public boolean shouldUseDisplayList() {
-    return true;
-  }
-
-  @Override
   protected boolean isMountSizeDependent() {
     return true;
   }

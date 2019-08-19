@@ -158,7 +158,6 @@ import com.facebook.yoga.YogaDirection;
  */
 @MountSpec(
     isPureRender = true,
-    shouldUseDisplayList = true,
     poolSize = 30,
     events = {TextOffsetOnTouchEvent.class})
 class TextSpec {

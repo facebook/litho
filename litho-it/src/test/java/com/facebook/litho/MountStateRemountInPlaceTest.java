@@ -143,7 +143,6 @@ public class MountStateRemountInPlaceTest {
             true,
             true,
             false,
-            false,
             true /*isMountSizeDependent*/)
             .measuredHeight(10)
             .build();
@@ -163,7 +162,6 @@ public class MountStateRemountInPlaceTest {
             true,
             true,
             true,
-            false,
             false,
             true /*isMountSizeDependent*/)
             .measuredHeight(11)
@@ -187,7 +185,6 @@ public class MountStateRemountInPlaceTest {
             true,
             true,
             false,
-            false,
             true /*isMountSizeDependent*/)
             .measuredHeight(10)
             .build();
@@ -207,7 +204,6 @@ public class MountStateRemountInPlaceTest {
             true,
             true,
             true,
-            false,
             false,
             true /*isMountSizeDependent*/)
             .measuredHeight(10)
@@ -255,7 +251,7 @@ public class MountStateRemountInPlaceTest {
   @Test
   public void testMountUnmountWithNoShouldUpdateAndSameMeasures() {
     final TestComponent firstComponent =
-        create(mContext, 0, 0, true, true, true, false, false, true)
+        create(mContext, 0, 0, true, true, true, false, true)
             .color(Color.GRAY)
             .build();
 
@@ -417,7 +413,6 @@ public class MountStateRemountInPlaceTest {
             false,
             true,
             true,
-            false,
             false)
             .build();
 
@@ -429,7 +424,7 @@ public class MountStateRemountInPlaceTest {
     assertThat(firstComponent.wasOnUnmountCalled()).isFalse();
 
     final TestComponent secondComponent =
-        spy(create(mContext, false, true, true, false, false).build());
+        spy(create(mContext, false, true, true, false).build());
     doReturn(secondComponent).when(secondComponent).makeShallowCopy();
 
     final ComponentTree secondTree =
@@ -449,7 +444,7 @@ public class MountStateRemountInPlaceTest {
   @Test
   public void testRemountSameSubTreeWithDifferentParentHost() {
     final TestComponent firstComponent =
-        TestDrawableComponent.create(mContext, false, true, true, false, false)
+        TestDrawableComponent.create(mContext, false, true, true, false)
             .widthPx(100)
             .heightPx(100)
             .build();

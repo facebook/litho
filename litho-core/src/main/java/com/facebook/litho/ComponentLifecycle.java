@@ -453,11 +453,6 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     return false;
   }
 
-  /** Whether this drawable mount spec should cache its drawing in a display list. */
-  protected boolean shouldUseDisplayList() {
-    return false;
-  }
-
   /**
    * Create the object that will be mounted in the {@link LithoView}.
    *

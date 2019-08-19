@@ -63,17 +63,4 @@ public class SpecModelValidationTest {
     assertThat(validationErrors.get(0).message).isEqualTo(
         "onCreateMountContent's return type should be either a View or a Drawable subclass.");
   }
-
-  @Test
-  public void testDisplayListValidation() {
-    when(mMountSpecModel.shouldUseDisplayList()).thenReturn(true);
-    when(mMountSpecModel.getMountType()).thenReturn(ClassNames.COMPONENT_LIFECYCLE_MOUNT_TYPE_VIEW);
-    List<SpecModelValidationError> validationErrors =
-        SpecModelValidation.validateShouldUseDisplayLists(mMountSpecModel);
-
-    assertThat(validationErrors).hasSize(1);
-    assertThat(validationErrors.get(0).element).isSameAs(mMountSpecModelRepresentedObject);
-    assertThat(validationErrors.get(0).message).isEqualTo(
-        "shouldUseDisplayList = true can only be used on MountSpecs that mount a drawable.");
-  }
 }

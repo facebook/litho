@@ -143,7 +143,6 @@ public class MountSpecModelFactory implements SpecModelFactory<MountSpecModel> {
         dependencyInjectionHelper,
         element.getAnnotation(MountSpec.class).isPureRender(),
         element.getAnnotation(MountSpec.class).hasChildLithoViews(),
-        element.getAnnotation(MountSpec.class).shouldUseDisplayList(),
         element.getAnnotation(MountSpec.class).poolSize(),
         element.getAnnotation(MountSpec.class).canPreallocate(),
         getMountType(elements, element),

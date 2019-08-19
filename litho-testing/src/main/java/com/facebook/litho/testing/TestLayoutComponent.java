@@ -62,7 +62,7 @@ public class TestLayoutComponent extends TestComponent {
   protected Component onCreateLayout(ComponentContext c) {
     super.onCreateLayout(c);
     final Component mountSpecComponent =
-        TestDrawableComponent.create(c, false, true, true, false, false).build();
+        TestDrawableComponent.create(c, false, true, true, false).build();
 
     if (mIsDelegate) {
       return Wrapper.create(c).delegate(mountSpecComponent).build();

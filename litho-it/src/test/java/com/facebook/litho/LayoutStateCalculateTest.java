@@ -1585,7 +1585,7 @@ public class LayoutStateCalculateTest {
                 .contentDescription("This is root view")
                 .child(TestDrawableComponent.create(c).widthDip(30).heightDip(30))
                 .child(
-                    TestDrawableComponent.create(c, true, true, true, true, false)
+                    TestDrawableComponent.create(c, true, true, true, true)
                         .flex(1)
                         .flexBasisDip(0)
                         .backgroundColor(RED)
@@ -1601,7 +1601,7 @@ public class LayoutStateCalculateTest {
                                 .heightDip(30)
                                 .contentDescription("This is an image"))
                         .child(
-                            TestDrawableComponent.create(c, true, true, true, true, false)
+                            TestDrawableComponent.create(c, true, true, true, true)
                                 .flex(1)
                                 .flexBasisDip(0)
                                 .marginDip(HORIZONTAL, 10)))
@@ -1655,7 +1655,7 @@ public class LayoutStateCalculateTest {
                 .contentDescription("This is root view")
                 .child(TestDrawableComponent.create(c).widthDip(30).heightDip(30))
                 .child(
-                    TestDrawableComponent.create(c, true, true, true, true, false)
+                    TestDrawableComponent.create(c, true, true, true, true)
                         .flex(1)
                         .flexBasisDip(0)
                         .backgroundColor(RED)

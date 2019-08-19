@@ -233,7 +233,7 @@ public class MountItemTest {
     final MountItem mountItem =
         new MountItem(
             TestDrawableComponent.create(
-                    mContext, true, true, true, true, /* implementsAccessibility */ false)
+                    mContext, true, true, true, true /* implementsAccessibility */)
                 .build(),
             mComponentHost,
             mContent,
@@ -252,7 +252,7 @@ public class MountItemTest {
     final MountItem mountItem =
         new MountItem(
             TestDrawableComponent.create(
-                    mContext, true, true, true, true, /* implementsAccessibility */ false)
+                    mContext, true, true, true, true /* implementsAccessibility */)
                 .build(),
             mComponentHost,
             mContent,
@@ -271,7 +271,7 @@ public class MountItemTest {
     final MountItem mountItem =
         new MountItem(
             TestDrawableComponent.create(
-                    mContext, true, true, true, true, /* implementsAccessibility */ false)
+                    mContext, true, true, true, true /* implementsAccessibility */)
                 .build(),
             mComponentHost,
             mContent,
