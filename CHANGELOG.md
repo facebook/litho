@@ -1,5 +1,29 @@
 # Changelog
 
+
+## Version 0.30-SNAPSHOT
+
+_release date_
+
+ * **Breaking:** Rename `@FromCreateLayout` to `@FromPreviousCreateLayout`.
+ * **Breaking:** Add compile-time error when `Component.Builder` is passed as a `@Prop`. ([5da7121](https://github.com/facebook/litho/commit/5da712120243ec3419ecc70b9806bde9536d2251))
+ * New: Expose `RecyclerBinder`'s Commit Policy through `DynamicConfig`. ([ac513f3](https://github.com/facebook/litho/commit/ac513f32c0cb9da4b0ce26426669f78c02727446))
+ * New: Allow to provide custom `GridLayoutInfo` (i.e. custom `GridLayoutManager`) through `GridLayoutInfoFactory`. ([4568d58](https://github.com/facebook/litho/commit/4568d581249a05c32397565300cc000a1a2f1011))
+ * New: Allow creating `ComponentTree` without specifying root.
+ * New: Deprecate `ComponentsLogger.emitMessage()` in favor of `ComponentsReporter.Reporter.emitMessage()`. ([9cb4caf](https://github.com/facebook/litho/commit/9cb4cafb1ffb03dedfe6698bc24ccdef48f0a9a1))
+ * New: Auto set `Text.ellipsize()` if `maxLines()` is specified without an accompanying ellipsize, to make behavior consistent across different Android versions. ([3bef059](https://github.com/facebook/litho/commit/3bef059cef217e1820c9bd8a3a9f7cb8364abfa1)) 
+ * New: Share the same `ResourceResolver` across all `Component`s in the same tree. ([c93517c](https://github.com/facebook/litho/commit/c93517c6fed1d05e186e4d9b71de19c9fb26830c), [7656822](https://github.com/facebook/litho/commit/7656822c8dc1d565520bb26111ebbd20ba74ca19), [dde30dc](https://github.com/facebook/litho/commit/dde30dc0fa1a7d1617f90129651d0801c0079299))
+ * New: Add support for A11y headers. ([#573](https://github.com/facebook/litho/pull/573))
+ * New: Update documentation and javadocs.
+ * Fix: Better error messages for releasing mount content.
+ * Fix: Don't use internal `javac` API in codegen. ([#577](https://github.com/facebook/litho/pull/577))
+ * Fix: Propagate injected `treeProps` for Layout PerfEvent. ([#574](https://github.com/facebook/litho/pull/574))
+ * Fix: Don't crash when using primitive `@CachedValue`s together with HotSwap mode. ([501f1a1](https://github.com/facebook/litho/commit/501f1a171e3df30bf40330b9eaffbb13f61cc007))
+ * Fix: Improve `@OnUpdateStateWithTransition`'s behavior.
+ 
+ For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.29.0...master).
+
+
 ## Version 0.29.0
 
 _2019-07-11_
