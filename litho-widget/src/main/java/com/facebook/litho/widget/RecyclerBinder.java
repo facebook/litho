@@ -2511,6 +2511,11 @@ public class RecyclerBinder
 
   @GuardedBy("this")
   private void invalidateLayoutData() {
+    final boolean isTracing = ComponentsSystrace.isTracing();
+    if (isTracing) {
+      ComponentsSystrace.beginSection("invalidateLayoutData");
+    }
+
     if (!mHasManualEstimatedViewportCount) {
       mEstimatedViewportCount = UNSET;
     }
@@ -2527,6 +2532,10 @@ public class RecyclerBinder
     } else {
       mMainThreadHandler.removeCallbacks(mNotifyDatasetChangedRunnable);
       mMainThreadHandler.post(mNotifyDatasetChangedRunnable);
+    }
+
+    if (isTracing) {
+      ComponentsSystrace.endSection();
     }
   }
 
@@ -2599,6 +2608,7 @@ public class RecyclerBinder
     if (mHasManualEstimatedViewportCount) {
       return;
     }
+    final boolean isTracing = ComponentsSystrace.isTracing();
 
     if (asyncInitRangeEnabled()) {
       // We can schedule a maximum of number of items minus one (which is being calculated
@@ -2610,14 +2620,19 @@ public class RecyclerBinder
               mComponentTreeHolders.size() - 1,
               mTraverseLayoutBackwards);
 
+      if (isTracing) {
+        ComponentsSystrace.beginSection("maybeScheduleAsyncLayoutsDuringInitRange");
+      }
       maybeScheduleAsyncLayoutsDuringInitRange(asyncInitRangeIterator);
+      if (isTracing) {
+        ComponentsSystrace.endSection();
+      }
     }
 
     final ComponentTreeHolder holder = holderRangeInfo.mHolders.get(holderRangeInfo.mPosition);
     final int childWidthSpec = getActualChildrenWidthSpec(holder);
     final int childHeightSpec = getActualChildrenHeightSpec(holder);
 
-    final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
       ComponentsSystrace.beginSection("initRange");
     }
