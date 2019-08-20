@@ -866,7 +866,7 @@ public class ComponentTree {
           "Base view context differs, view context is: "
               + view.getContext()
               + ", ComponentTree context is: "
-              + mContext);
+              + mContext.getAndroidContext());
     }
 
     mLithoView = view;
