@@ -23,6 +23,15 @@ public class PsiTypeUtilsTest {
   @Test
   public void guessClassName() {
     Assert.assertEquals("Object", PsiTypeUtils.guessClassName("?").simpleName());
+    Assert.assertEquals("Object", PsiTypeUtils.guessClassName("T").simpleName());
     Assert.assertEquals("Hello", PsiTypeUtils.guessClassName("Hello").simpleName());
+    Assert.assertEquals(
+        "com.some.Node", PsiTypeUtils.guessClassName("? extends com.some.Node").reflectionName());
+    Assert.assertEquals(
+        "Collection", PsiTypeUtils.guessClassName("Collection<? extends T>").simpleName());
+    Assert.assertEquals(
+        "ClassA", PsiTypeUtils.guessClassName("T extends ClassA & InterfaceB").simpleName());
+    Assert.assertEquals(
+        "ClassA", PsiTypeUtils.guessClassName("? extends ClassA<InterfaceB>").simpleName());
   }
 }
