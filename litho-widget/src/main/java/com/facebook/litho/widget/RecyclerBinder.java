@@ -1661,7 +1661,10 @@ public class RecyclerBinder
    */
   public void notifyChangeSetCompleteAsync(
       boolean isDataChanged, ChangeSetCompleteCallback changeSetCompleteCallback) {
-    ComponentsSystrace.beginSection("notifyChangeSetCompleteAsync");
+    final boolean isTracing = ComponentsSystrace.isTracing();
+    if (isTracing) {
+      ComponentsSystrace.beginSection("notifyChangeSetCompleteAsync");
+    }
     try {
       if (SectionsDebug.ENABLED) {
         Log.d(SectionsDebug.TAG, "(" + hashCode() + ") notifyChangeSetCompleteAsync");
@@ -1684,7 +1687,9 @@ public class RecyclerBinder
       }
       clearThreadForChangeSet();
     } finally {
-      ComponentsSystrace.endSection();
+      if (isTracing) {
+        ComponentsSystrace.endSection();
+      }
     }
   }
 
@@ -1694,7 +1699,10 @@ public class RecyclerBinder
   @UiThread
   public void notifyChangeSetComplete(
       boolean isDataChanged, ChangeSetCompleteCallback changeSetCompleteCallback) {
-    ComponentsSystrace.beginSection("notifyChangeSetComplete");
+    final boolean isTracing = ComponentsSystrace.isTracing();
+    if (isTracing) {
+      ComponentsSystrace.beginSection("notifyChangeSetComplete");
+    }
     try {
       if (SectionsDebug.ENABLED) {
         Log.d(SectionsDebug.TAG, "(" + hashCode() + ") notifyChangeSetComplete");
@@ -1715,7 +1723,9 @@ public class RecyclerBinder
         maybeUpdateRangeOrRemeasureForMutation();
       }
     } finally {
-      ComponentsSystrace.endSection();
+      if (isTracing) {
+        ComponentsSystrace.endSection();
+      }
     }
   }
 
@@ -2270,7 +2280,11 @@ public class RecyclerBinder
       throw new RuntimeException(
           "This should only be invoked if ComponentsConfiguration.splitLayoutForMeasureAndRangeEstimation is false");
     }
-    ComponentsSystrace.beginSection("fillListViewport");
+    final boolean isTracing = ComponentsSystrace.isTracing();
+    if (isTracing) {
+      ComponentsSystrace.beginSection("fillListViewport");
+    }
+
     final int firstVisiblePosition = mWrapContent ? 0 : mLayoutInfo.findFirstVisibleItemPosition();
 
     // NB: This does not handle 1) partially visible items 2) item decorations
@@ -2287,7 +2301,9 @@ public class RecyclerBinder
       }
     }
 
-    ComponentsSystrace.endSection();
+    if (isTracing) {
+      ComponentsSystrace.endSection();
+    }
   }
 
   @GuardedBy("this")
@@ -2296,7 +2312,11 @@ public class RecyclerBinder
       throw new RuntimeException(
           "This should only be invoked if ComponentsConfiguration.splitLayoutForMeasureAndRangeEstimation is true");
     }
-    ComponentsSystrace.beginSection("fillListViewport");
+    final boolean isTracing = ComponentsSystrace.isTracing();
+    if (isTracing) {
+      ComponentsSystrace.beginSection("fillListViewport");
+    }
+
     final int firstVisiblePosition = mWrapContent ? 0 : mLayoutInfo.findFirstVisibleItemPosition();
 
     // NB: This does not handle 1) partially visible items 2) item decorations
@@ -2315,7 +2335,9 @@ public class RecyclerBinder
       }
     }
 
-    ComponentsSystrace.endSection();
+    if (isTracing) {
+      ComponentsSystrace.endSection();
+    }
   }
 
   @VisibleForTesting
@@ -2331,7 +2353,10 @@ public class RecyclerBinder
       return 0;
     }
 
-    ComponentsSystrace.beginSection("computeLayoutsToFillListViewport");
+    final boolean isTracing = ComponentsSystrace.isTracing();
+    if (isTracing) {
+      ComponentsSystrace.beginSection("computeLayoutsToFillListViewport");
+    }
 
     final int widthSpec = SizeSpec.makeSizeSpec(maxWidth, SizeSpec.EXACTLY);
     final int heightSpec = SizeSpec.makeSizeSpec(maxHeight, SizeSpec.EXACTLY);
@@ -2372,7 +2397,10 @@ public class RecyclerBinder
       }
     }
 
-    ComponentsSystrace.endSection();
+    if (isTracing) {
+      ComponentsSystrace.endSection();
+    }
+
     logFillViewportInserted(numInserted, holders.size());
 
     return numInserted;
@@ -2589,7 +2617,10 @@ public class RecyclerBinder
     final int childWidthSpec = getActualChildrenWidthSpec(holder);
     final int childHeightSpec = getActualChildrenHeightSpec(holder);
 
-    ComponentsSystrace.beginSection("initRange");
+    final boolean isTracing = ComponentsSystrace.isTracing();
+    if (isTracing) {
+      ComponentsSystrace.beginSection("initRange");
+    }
     try {
       final Size size = new Size();
       holder.computeLayoutSync(mComponentContext, childWidthSpec, childHeightSpec, size);
@@ -2600,7 +2631,9 @@ public class RecyclerBinder
       mSizeForMeasure = size;
       mEstimatedViewportCount = rangeSize;
     } finally {
-      ComponentsSystrace.endSection();
+      if (isTracing) {
+        ComponentsSystrace.endSection();
+      }
     }
   }
 
