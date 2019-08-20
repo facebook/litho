@@ -877,6 +877,10 @@ class TextSpec {
       @Prop(resType = ResType.STRING) CharSequence text,
       @FromBoundsDefined Layout textLayout,
       @FromBoundsDefined ClickableSpan[] clickableSpans) {
+    if (!(text instanceof Spanned)) {
+      return;
+    }
+
     final Spanned spanned = (Spanned) text;
 
     final ClickableSpan span = clickableSpans[extraNodeIndex];
@@ -938,6 +942,10 @@ class TextSpec {
       @Prop(resType = ResType.STRING) CharSequence text,
       @FromBoundsDefined Layout textLayout,
       @FromBoundsDefined ClickableSpan[] clickableSpans) {
+    if (!(text instanceof Spanned)) {
+      return INVALID_ID;
+    }
+
     final Spanned spanned = (Spanned) text;
 
     for (int i = 0; i < clickableSpans.length; i++) {
