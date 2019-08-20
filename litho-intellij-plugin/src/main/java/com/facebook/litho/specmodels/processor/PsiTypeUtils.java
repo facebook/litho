@@ -51,15 +51,21 @@ class PsiTypeUtils {
     }
   }
 
+  /**
+   * @return Returns a new {@link ClassName} instance for the given fully-qualified class name
+   *     string. This method assumes that the input is ASCII and follows typical Java style
+   *     (lowercase package names, UpperCamelCase class names) and may produce incorrect results or
+   *     throw IllegalArgumentException otherwise.
+   */
   static ClassName guessClassName(String typeName) {
-    // ClassName#bestGuess throws an error for a not fully-qualified class name string.
     // For the sake of Litho model verification, we do type simplification for non-standard cases.
     typeName = typeName.trim();
+    // Litho doesn't have 2 letters class names.
     if (typeName.length() < 2) {
       return ClassName.bestGuess(Object.class.getTypeName());
     }
     if (typeName.contains("<")) {
-      return guessClassName(typeName.substring(0, typeName.indexOf("<")));
+      return guessClassName(typeName.substring(0, typeName.indexOf('<')));
     }
     String extendsWord = "extends ";
     if (typeName.contains(extendsWord)) {
