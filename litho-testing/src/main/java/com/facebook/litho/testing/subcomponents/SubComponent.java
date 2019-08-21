@@ -66,7 +66,7 @@ public class SubComponent {
 
   @Override
   public String toString() {
-    return mComponentType.toString() + " [" + super.toString() +"]";
+    return mComponentType.toString();
   }
 
   /**
