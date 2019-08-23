@@ -7,6 +7,8 @@ _release date_
 
  * **Breaking:** Rename `@FromCreateLayout` to `@FromPreviousCreateLayout`.
  * **Breaking:** Add compile-time error when `Component.Builder` is passed as a `@Prop`. ([5da7121](https://github.com/facebook/litho/commit/5da712120243ec3419ecc70b9806bde9536d2251))
+ * **Breaking:** Remove `MountSpec.shouldUseDisplayList()` - remnant of removed DisplayLists' usage. Was not doing anything.
+ * New: Make `DynamicValue.get()` public.
  * New: Expose `RecyclerBinder`'s Commit Policy through `DynamicConfig`. ([ac513f3](https://github.com/facebook/litho/commit/ac513f32c0cb9da4b0ce26426669f78c02727446))
  * New: Allow to provide custom `GridLayoutInfo` (i.e. custom `GridLayoutManager`) through `GridLayoutInfoFactory`. ([4568d58](https://github.com/facebook/litho/commit/4568d581249a05c32397565300cc000a1a2f1011))
  * New: Allow creating `ComponentTree` without specifying root.
