@@ -97,6 +97,7 @@ public class FrescoImageSpec {
       ComponentContext c,
       DraweeDrawable<GenericDraweeHierarchy> draweeDrawable,
       @Prop(optional = true) ScalingUtils.ScaleType actualImageScaleType,
+      @Prop(optional = true) PointF actualImageFocusPoint,
       @Prop(optional = true) int fadeDuration,
       @Prop(optional = true, resType = DRAWABLE) Drawable failureImage,
       @Prop(optional = true) ScalingUtils.ScaleType failureImageScaleType,
@@ -114,6 +115,7 @@ public class FrescoImageSpec {
 
     FrescoImageHierarchyTools.setupHierarchy(
         actualImageScaleType,
+        actualImageFocusPoint,
         fadeDuration,
         failureImage,
         failureImageScaleType,

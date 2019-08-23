@@ -29,6 +29,7 @@ public class FrescoImageHierarchyTools {
 
   public static void setupHierarchy(
       @Prop(optional = true) ScalingUtils.ScaleType actualImageScaleType,
+      @Prop(optional = true) PointF actualImageFocusPoint,
       @Prop(optional = true) int fadeDuration,
       @Prop(optional = true, resType = DRAWABLE) Drawable failureImage,
       @Prop(optional = true) ScalingUtils.ScaleType failureImageScaleType,
@@ -54,6 +55,10 @@ public class FrescoImageHierarchyTools {
     }
 
     draweeHierarchy.setActualImageScaleType(actualImageScaleType);
+    if (actualImageFocusPoint != null
+        && actualImageScaleType == ScalingUtils.ScaleType.FOCUS_CROP) {
+      draweeHierarchy.setActualImageFocusPoint(actualImageFocusPoint);
+    }
     draweeHierarchy.setFadeDuration(fadeDuration);
 
     if (failureImage == null) {
