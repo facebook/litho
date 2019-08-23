@@ -31,10 +31,11 @@ import java.lang.annotation.RetentionPolicy;
  * <pre>
  * <code>
  * {@literal @}OnError
- *  static Component onError(ComponentContext c,
- *    Exception e,
- *   {@literal @}Prop final SomeProp prop) {
- *       MyComponent.updateErrorAsync(c, String.format("Error for %s: %s", prop, e.getMessage()));
+ *  static Component onError(
+ *      ComponentContext c,
+ *      Exception e,
+ *     {@literal @}Prop SomeProp prop) {
+ *    MyComponent.updateErrorAsync(c, String.format("Error for %s: %s", prop, e.getMessage()));
  *  }
  * </code>
  * </pre>
