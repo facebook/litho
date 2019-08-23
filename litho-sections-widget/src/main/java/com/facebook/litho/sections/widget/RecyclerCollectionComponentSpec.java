@@ -300,6 +300,7 @@ public class RecyclerCollectionComponentSpec {
             .threadPoolConfig(binderConfiguration.getThreadPoolConfiguration())
             .asyncInitRange(binderConfiguration.getAsyncInitRange())
             .hscrollAsyncMode(binderConfiguration.getHScrollAsyncMode())
+            .applyReadyBatchesInMount(binderConfiguration.getApplyReadyBatchesInMount())
             .isCircular(binderConfiguration.isCircular())
             .hasDynamicItemHeight(binderConfiguration.hasDynamicItemHeight())
             .incrementalMount(incrementalMount)

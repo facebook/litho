@@ -131,6 +131,7 @@ public class RecyclerBinder
   private final boolean mMoveLayoutsBetweenThreads;
   private final boolean mIsSubAdapter;
   private final boolean mHasManualEstimatedViewportCount;
+  private final boolean mApplyReadyBatchesInMount;
 
   private AtomicLong mCurrentChangeSetThreadId = new AtomicLong(-1);
   @VisibleForTesting final boolean mTraverseLayoutBackwards;
@@ -401,6 +402,7 @@ public class RecyclerBinder
         ComponentsConfiguration.canInterruptAndMoveLayoutsBetweenThreads;
     private boolean isSubAdapter;
     private int estimatedViewportCount = UNSET;
+    private boolean applyReadyBatchesInMount = ComponentsConfiguration.applyReadyBatchesInMount;
 
     /**
      * @param rangeRatio specifies how big a range this binder should try to compute. The range is
@@ -674,6 +676,11 @@ public class RecyclerBinder
       return this;
     }
 
+    public Builder applyReadyBatchesInMount(boolean applyReadyBatchesInMount) {
+      this.applyReadyBatchesInMount = applyReadyBatchesInMount;
+      return this;
+    }
+
     /** @param c The {@link ComponentContext} the RecyclerBinder will use. */
     public RecyclerBinder build(ComponentContext c) {
       componentContext =
@@ -881,6 +888,7 @@ public class RecyclerBinder
     mUseCancelableLayoutFutures = builder.useCancelableLayoutFutures;
     mMoveLayoutsBetweenThreads = builder.canInterruptAndMoveLayoutsBetweenThreads;
     mIsSubAdapter = builder.isSubAdapter;
+    mApplyReadyBatchesInMount = builder.applyReadyBatchesInMount;
   }
 
   /**
@@ -2821,6 +2829,14 @@ public class RecyclerBinder
 
     if (mMountedView != null) {
       unmount(mMountedView);
+    }
+
+    // In cases where we are mounting H-Scrolls, it's possible that the parent RecyclerView blocked
+    // on their layout/section computation via a LayoutState future, but the runnable to update
+    // the adapter on the main thread hasn't run -- this gives a chance to update the adapter before
+    // we attach to this RecyclerView.
+    if (mApplyReadyBatchesInMount && mHasAsyncOperations) {
+      applyReadyBatches();
     }
 
     mMountedView = view;

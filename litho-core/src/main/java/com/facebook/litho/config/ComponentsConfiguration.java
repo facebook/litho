@@ -223,4 +223,10 @@ public class ComponentsConfiguration {
    * ComponentLifecycle#createLayout()
    */
   public static boolean isRefactoredLayoutCreationEnabled = false;
+
+  /**
+   * Allows RecyclerBinder to apply ready async batches immediately before mounting. See
+   * RecyclerBinder.mount for more info.
+   */
+  public static boolean applyReadyBatchesInMount = false;
 }

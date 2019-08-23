@@ -35,6 +35,7 @@ public class RecyclerBinderConfiguration {
   private final boolean mIsWrapContent;
   private final boolean mMoveLayoutsBetweenThreads;
   private final boolean mUseCancelableLayoutFutures;
+  private final boolean mApplyReadyBatchesInMount;
   // TODO T34627443 make all fields final after removing setters
   private boolean mHasDynamicItemHeight;
   private boolean mUseBackgroundChangeSets = SectionsConfiguration.useBackgroundChangeSets;
@@ -72,7 +73,8 @@ public class RecyclerBinderConfiguration {
       boolean enableDetach,
       @Nullable LithoHandler changeSetThreadHandler,
       boolean moveLayoutsBetweenThreads,
-      boolean useCancelableLayoutFutures) {
+      boolean useCancelableLayoutFutures,
+      boolean applyReadyBatchesInMount) {
     mRangeRatio = rangeRatio;
     mLayoutHandlerFactory = layoutHandlerFactory;
     mIsCircular = circular;
@@ -89,6 +91,7 @@ public class RecyclerBinderConfiguration {
     mChangeSetThreadHandler = changeSetThreadHandler;
     mMoveLayoutsBetweenThreads = moveLayoutsBetweenThreads;
     mUseCancelableLayoutFutures = useCancelableLayoutFutures;
+    mApplyReadyBatchesInMount = applyReadyBatchesInMount;
   }
 
   public float getRangeRatio() {
@@ -117,6 +120,10 @@ public class RecyclerBinderConfiguration {
 
   public boolean getHScrollAsyncMode() {
     return mHScrollAsyncMode;
+  }
+
+  public boolean getApplyReadyBatchesInMount() {
+    return mApplyReadyBatchesInMount;
   }
 
   public LayoutThreadPoolConfiguration getThreadPoolConfiguration() {
@@ -179,6 +186,7 @@ public class RecyclerBinderConfiguration {
         ComponentsConfiguration.canInterruptAndMoveLayoutsBetweenThreads;
     private boolean mEnableDetach = false;
     @Nullable private LithoHandler mChangeSetThreadHandler;
+    private boolean mApplyReadyBatchesInMount = ComponentsConfiguration.applyReadyBatchesInMount;
 
     Builder() {}
 
@@ -200,6 +208,7 @@ public class RecyclerBinderConfiguration {
       this.mMoveLayoutsBetweenThreads = configuration.mMoveLayoutsBetweenThreads;
       this.mEnableDetach = configuration.mEnableDetach;
       this.mChangeSetThreadHandler = configuration.mChangeSetThreadHandler;
+      this.mApplyReadyBatchesInMount = configuration.mApplyReadyBatchesInMount;
     }
 
     /**
@@ -288,6 +297,11 @@ public class RecyclerBinderConfiguration {
       return this;
     }
 
+    public Builder applyReadyBatchesInMount(boolean applyReadyBatchesInMount) {
+      mApplyReadyBatchesInMount = applyReadyBatchesInMount;
+      return this;
+    }
+
     public Builder enableStableIds(boolean enableStableIds) {
       mEnableStableIds = enableStableIds;
       return this;
@@ -342,7 +356,8 @@ public class RecyclerBinderConfiguration {
           mEnableDetach,
           mChangeSetThreadHandler,
           mMoveLayoutsBetweenThreads,
-          mUseCancelableLayoutFutures);
+          mUseCancelableLayoutFutures,
+          mApplyReadyBatchesInMount);
     }
   }
 }
