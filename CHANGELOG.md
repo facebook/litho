@@ -1,9 +1,9 @@
 # Changelog
 
 
-## Version 0.30-SNAPSHOT
+## Version 0.30
 
-_release date_
+_2019-08-23_
 
  * **Breaking:** Rename `@FromCreateLayout` to `@FromPreviousCreateLayout`.
  * **Breaking:** Add compile-time error when `Component.Builder` is passed as a `@Prop`. ([5da7121](https://github.com/facebook/litho/commit/5da712120243ec3419ecc70b9806bde9536d2251))
@@ -23,7 +23,7 @@ _release date_
  * Fix: Don't crash when using primitive `@CachedValue`s together with HotSwap mode. ([501f1a1](https://github.com/facebook/litho/commit/501f1a171e3df30bf40330b9eaffbb13f61cc007))
  * Fix: Improve `@OnUpdateStateWithTransition`'s behavior.
  
- For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.29.0...master).
+ For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.29.0...v0.30.0).
 
 
 ## Version 0.29.0
