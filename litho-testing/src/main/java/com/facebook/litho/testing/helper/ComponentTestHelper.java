@@ -263,7 +263,9 @@ public final class ComponentTestHelper {
    *
    * @param component The component builder which to get the subcomponents of
    * @return The subcomponents of the given component
+   * @deprecated Use ComponentAssert#extractingSubComponents() instead.
    */
+  @Deprecated
   public static List<SubComponent> getSubComponents(Component.Builder component) {
     return getSubComponents(getContext(component), component.build());
   }
@@ -274,7 +276,9 @@ public final class ComponentTestHelper {
    * @param context A components context
    * @param component The component which to get the subcomponents of
    * @return The subcomponents of the given component
+   * @deprecated Use ComponentAssert#extractingSubComponents() instead.
    */
+  @Deprecated
   public static List<SubComponent> getSubComponents(ComponentContext context, Component component) {
     return getSubComponents(
         context, component, makeMeasureSpec(1000, EXACTLY), makeMeasureSpec(0, UNSPECIFIED));
@@ -287,7 +291,9 @@ public final class ComponentTestHelper {
    * @param widthSpec The width to measure the component with
    * @param heightSpec The height to measure the component with
    * @return The subcomponents of the given component
+   * @deprecated Use ComponentAssert#extractingSubComponents() instead.
    */
+  @Deprecated
   public static List<SubComponent> getSubComponents(
       Component.Builder component, int widthSpec, int heightSpec) {
     return getSubComponents(getContext(component), component.build(), widthSpec, heightSpec);
@@ -301,7 +307,9 @@ public final class ComponentTestHelper {
    * @param widthSpec The width to measure the component with
    * @param heightSpec The height to measure the component with
    * @return The subcomponents of the given component
+   * @deprecated Use ComponentAssert#extractingSubComponents() instead.
    */
+  @Deprecated
   public static List<SubComponent> getSubComponents(
       ComponentContext context, Component component, int widthSpec, int heightSpec) {
     return getImmediateSubComponents(context, component, widthSpec, heightSpec);
@@ -315,7 +323,9 @@ public final class ComponentTestHelper {
    * @param widthSpec The width to measure the component with
    * @param heightSpec The height to measure the component with
    * @return The subcomponents of the given component
+   * @deprecated Use {@link #extractingSubComponents()} instead.
    */
+  @Deprecated
   private static List<SubComponent> getImmediateSubComponents(
       ComponentContext context, Component component, int widthSpec, int heightSpec) {
     final List<Component> components =
@@ -334,7 +344,9 @@ public final class ComponentTestHelper {
    * @param component The component builder which to get the subcomponent from
    * @param componentClass the class type of the requested sub component
    * @return The first instance of subComponent of type Class or null if none is present.
+   * @deprecated Use ComponentAssert#extractingSubComponents() instead.
    */
+  @Deprecated
   public static <T extends Component> Component getSubComponent(
       Component.Builder component, Class<T> componentClass) {
     List<SubComponent> subComponents = getSubComponents(component);

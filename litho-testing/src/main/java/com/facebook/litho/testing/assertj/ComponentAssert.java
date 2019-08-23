@@ -87,7 +87,10 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
 
   /**
    * Assert that the given component has no sub-components.
+   *
+   * @deprecated Use {@link #extractingSubComponents()} instead.
    */
+  @Deprecated
   public ComponentAssert hasNoSubComponents() {
     final List<SubComponent> subComponents = ComponentTestHelper.getSubComponents(
         mComponentContext,
@@ -104,7 +107,10 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
 
   /**
    * Assert that the given component contains the provided sub-component.
+   *
+   * @deprecated Use {@link #extractingSubComponents()} instead.
    */
+  @Deprecated
   public ComponentAssert containsSubComponent(SubComponent subComponent) {
     final List<SubComponent> subComponents = ComponentTestHelper.getSubComponents(
         mComponentContext,
@@ -120,7 +126,10 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
 
   /**
    * Assert that the given component does <strong>not</strong> contain the provided sub-component.
+   *
+   * @deprecated Use {@link #extractingSubComponents()} instead.
    */
+  @Deprecated
   public ComponentAssert doesNotContainSubComponent(SubComponent subComponent) {
     final List<SubComponent> subComponents = ComponentTestHelper.getSubComponents(
         mComponentContext,
@@ -222,7 +231,10 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
 
   /**
    * Verifies that the component contains the exact list of provided sub-components.
+   *
+   * @deprecated Use {@link #extractingSubComponents()} instead.
    */
+  @Deprecated
   public ComponentAssert hasSubComponents(SubComponent... subComponents) {
     final List<SubComponent> mountedSubComponents = ComponentTestHelper.getSubComponents(
         mComponentContext,
@@ -235,9 +247,11 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
   }
 
   /**
-   * Verifies that the component contains only the given sub-components and nothing else,
-   * in order.
+   * Verifies that the component contains only the given sub-components and nothing else, in order.
+   *
+   * @deprecated Use {@link #extractingSubComponents()} instead.
    */
+  @Deprecated
   public ComponentAssert containsOnlySubComponents(SubComponent... subComponents) {
     final List<SubComponent> mountedSubComponents = ComponentTestHelper.getSubComponents(
         mComponentContext,
