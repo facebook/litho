@@ -472,7 +472,8 @@ class LayoutState {
     return output;
   }
 
-  private static boolean isLayoutDirectionRTL(Context context) {
+  @VisibleForTesting
+  static boolean isLayoutDirectionRTL(Context context) {
     ApplicationInfo applicationInfo = context.getApplicationInfo();
 
     if ((SDK_INT >= JELLY_BEAN_MR1)

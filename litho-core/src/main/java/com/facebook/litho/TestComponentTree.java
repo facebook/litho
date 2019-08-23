@@ -115,6 +115,53 @@ public class TestComponentTree extends ComponentTree {
     return output;
   }
 
+  public static InternalNode resolveImmediateSubtree(
+      ComponentContext c, Component component, int widthSpec, int heightSpec) {
+
+    InternalNode node =
+        TestLayoutState.createAndMeasureTreeForComponent(c, component, widthSpec, heightSpec);
+
+    return node;
+  }
+
+  public static List<Component> extractImmediateSubComponents(InternalNode root) {
+    if (root == null || root == ComponentContext.NULL_LAYOUT) {
+      return Collections.emptyList();
+    }
+
+    final List<Component> output = new ArrayList<>();
+
+    if (root.getChildCount() == 0) {
+      if (root.getTailComponent() != null && root.getTailComponent() instanceof TestComponent) {
+        TestComponent testSubcomponent = (TestComponent) root.getTailComponent();
+        output.add(testSubcomponent.getWrappedComponent());
+      }
+
+      return output;
+    }
+
+    for (int i = 0; i < root.getChildCount(); i++) {
+      InternalNode child = root.getChildAt(i);
+      output.addAll(extractImmediateSubComponents(child));
+    }
+
+    return output;
+  }
+
+  public static List<Component> extractImmediateSubComponents(
+      ComponentContext context, Component component, int widthSpec, int heightSpec) {
+
+    ComponentTree tree = ComponentTree.create(context).build();
+    ComponentContext c =
+        new TestComponentContext(
+            ComponentContext.withComponentTree(new TestComponentContext(context), tree),
+            new StateHandler());
+
+    InternalNode root = resolveImmediateSubtree(c, component, widthSpec, heightSpec);
+
+    return extractImmediateSubComponents(root);
+  }
+
   public static class Builder extends ComponentTree.Builder {
 
     private Builder(ComponentContext context) {

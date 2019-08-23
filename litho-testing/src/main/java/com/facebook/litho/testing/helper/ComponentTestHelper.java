@@ -304,16 +304,22 @@ public final class ComponentTestHelper {
    */
   public static List<SubComponent> getSubComponents(
       ComponentContext context, Component component, int widthSpec, int heightSpec) {
-    final TestComponentTree componentTree =
-        TestComponentTree.create(context, component).incrementalMount(false).build();
+    return getImmediateSubComponents(context, component, widthSpec, heightSpec);
+  }
 
-    final LithoView lithoView = new LithoView(context);
-    lithoView.setComponentTree(componentTree);
-
-    lithoView.measure(widthSpec, heightSpec);
-    lithoView.layout(0, 0, lithoView.getMeasuredWidth(), lithoView.getMeasuredHeight());
-
-    final List<Component> components = componentTree.getSubComponents();
+  /**
+   * Get the subcomponents of a component
+   *
+   * @param context A components context
+   * @param component The component which to get the subcomponents of
+   * @param widthSpec The width to measure the component with
+   * @param heightSpec The height to measure the component with
+   * @return The subcomponents of the given component
+   */
+  private static List<SubComponent> getImmediateSubComponents(
+      ComponentContext context, Component component, int widthSpec, int heightSpec) {
+    final List<Component> components =
+        TestComponentTree.extractImmediateSubComponents(context, component, widthSpec, heightSpec);
     final List<SubComponent> subComponents = new ArrayList<>(components.size());
     for (Component lifecycle : components) {
       subComponents.add(SubComponent.of(lifecycle));
