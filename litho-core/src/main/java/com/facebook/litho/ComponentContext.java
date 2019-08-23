@@ -400,10 +400,6 @@ public class ComponentContext {
     return node;
   }
 
-  InternalNode resolveLayout(Component component) {
-    return LayoutState.resolve(this, component);
-  }
-
   int getWidthSpec() {
     return mWidthSpec;
   }

@@ -2651,7 +2651,7 @@ public class LayoutStateCalculateTest {
     final InternalNode cachedLayout = component.getLayoutCreatedInWillRenderForTesting();
     assertThat(cachedLayout).isNotNull();
 
-    InternalNode result = c.resolveLayout(component);
+    InternalNode result = LayoutState.resolve(c, component);
     assertThat(result).isEqualTo(cachedLayout);
     assertThat(component.getLayoutCreatedInWillRenderForTesting()).isNull();
   }

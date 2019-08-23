@@ -2442,7 +2442,7 @@ class LayoutState {
         } else {
 
           // Resolve the root component's layout.
-          node = c.resolveLayout(root);
+          node = resolve(c, root);
 
           // If the root is a layout spec which can resolve itself, add it to the InternalNode.
           if (ComponentsConfiguration.isConsistentComponentHierarchyExperimentEnabled
