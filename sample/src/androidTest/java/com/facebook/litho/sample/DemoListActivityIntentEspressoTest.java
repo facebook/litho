@@ -48,9 +48,10 @@ public class DemoListActivityIntentEspressoTest {
         .check(matches(isDisplayed()))
         .perform(click());
 
-    intended(allOf(
-      toPackage("com.facebook.samples.litho"),
-      hasComponent(hasClassName(DemoListActivity.class.getName())),
-      hasExtras(hasEntry(equalTo("demoName"), equalTo("Playground")))));
+    intended(
+        allOf(
+            toPackage("com.facebook.samples.litho"),
+            hasComponent(hasClassName(DemoListActivity.class.getName())),
+            hasExtras(hasEntry(equalTo("demoName"), equalTo("Playground")))));
   }
 }

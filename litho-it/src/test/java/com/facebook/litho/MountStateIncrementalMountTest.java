@@ -70,15 +70,11 @@ public class MountStateIncrementalMountTest {
     mContext = new ComponentContext(RuntimeEnvironment.application, "tag", mComponentsLogger);
   }
 
-  /**
-   * Tests incremental mount behaviour of a vertical stack of components with a View mount type.
-   */
+  /** Tests incremental mount behaviour of a vertical stack of components with a View mount type. */
   @Test
   public void testIncrementalMountVerticalViewStackScrollUp() {
-    final TestComponent child1 = create(mContext)
-        .build();
-    final TestComponent child2 = create(mContext)
-        .build();
+    final TestComponent child1 = create(mContext).build();
+    final TestComponent child2 = create(mContext).build();
     final LithoView lithoView =
         mountComponent(
             mContext,
@@ -122,10 +118,8 @@ public class MountStateIncrementalMountTest {
 
   @Test
   public void testIncrementalMountVerticalViewStackScrollDown() {
-    final TestComponent child1 = create(mContext)
-        .build();
-    final TestComponent child2 = create(mContext)
-        .build();
+    final TestComponent child1 = create(mContext).build();
+    final TestComponent child2 = create(mContext).build();
     final LithoView lithoView =
         mountComponent(
             mContext,
@@ -172,10 +166,8 @@ public class MountStateIncrementalMountTest {
    */
   @Test
   public void testIncrementalMountHorizontalViewStack() {
-    final TestComponent child1 = create(mContext)
-        .build();
-    final TestComponent child2 = create(mContext)
-        .build();
+    final TestComponent child1 = create(mContext).build();
+    final TestComponent child2 = create(mContext).build();
     final LithoView lithoView =
         mountComponent(
             mContext,
@@ -222,10 +214,8 @@ public class MountStateIncrementalMountTest {
    */
   @Test
   public void testIncrementalMountVerticalDrawableStack() {
-    final TestComponent child1 = TestDrawableComponent.create(mContext)
-        .build();
-    final TestComponent child2 = TestDrawableComponent.create(mContext)
-        .build();
+    final TestComponent child1 = TestDrawableComponent.create(mContext).build();
+    final TestComponent child2 = TestDrawableComponent.create(mContext).build();
     final LithoView lithoView =
         mountComponent(
             mContext,
@@ -267,13 +257,10 @@ public class MountStateIncrementalMountTest {
     verifyLoggingAndResetLogger(0, 1);
   }
 
-  /**
-   * Tests incremental mount behaviour of a view mount item in a nested hierarchy.
-   */
+  /** Tests incremental mount behaviour of a view mount item in a nested hierarchy. */
   @Test
   public void testIncrementalMountNestedView() {
-    final TestComponent child = create(mContext)
-        .build();
+    final TestComponent child = create(mContext).build();
     final LithoView lithoView =
         mountComponent(
             mContext,
@@ -305,13 +292,12 @@ public class MountStateIncrementalMountTest {
   }
 
   /**
-   * Verify that we can cope with a negative padding on a component that is wrapped in a view
-   * (since the bounds of the component will be larger than the bounds of the view).
+   * Verify that we can cope with a negative padding on a component that is wrapped in a view (since
+   * the bounds of the component will be larger than the bounds of the view).
    */
   @Test
   public void testIncrementalMountVerticalDrawableStackNegativeMargin() {
-    final TestComponent child1 = TestDrawableComponent.create(mContext)
-        .build();
+    final TestComponent child1 = TestDrawableComponent.create(mContext).build();
     final LithoView lithoView =
         ComponentTestHelper.mountComponent(
             mContext,
@@ -336,15 +322,11 @@ public class MountStateIncrementalMountTest {
     verifyLoggingAndResetLogger(0, 0);
   }
 
-  /**
-   * Tests incremental mount behaviour of overlapping view mount items.
-   */
+  /** Tests incremental mount behaviour of overlapping view mount items. */
   @Test
   public void testIncrementalMountOverlappingView() {
-    final TestComponent child1 = create(mContext)
-        .build();
-    final TestComponent child2 = create(mContext)
-        .build();
+    final TestComponent child1 = create(mContext).build();
+    final TestComponent child2 = create(mContext).build();
     final LithoView lithoView =
         mountComponent(
             mContext,
@@ -496,13 +478,10 @@ public class MountStateIncrementalMountTest {
     verify(childView3).performIncrementalMount(any(Rect.class), eq(false));
   }
 
-  /**
-   * Tests incremental mount behaviour of a vertical stack of components with a View mount type.
-   */
+  /** Tests incremental mount behaviour of a vertical stack of components with a View mount type. */
   @Test
   public void testIncrementalMountDoesNotCauseMultipleUpdates() {
-    final TestComponent child1 = create(mContext)
-        .build();
+    final TestComponent child1 = create(mContext).build();
     final LithoView lithoView =
         mountComponent(
             mContext,
@@ -617,8 +596,7 @@ public class MountStateIncrementalMountTest {
   private void verifyLoggingAndResetLogger(int mountedCount, int unmountedCount) {
     final List<PerfEvent> loggedPerfEvents = mComponentsLogger.getLoggedPerfEvents();
     final Optional<TestPerfEvent> perfEvent =
-        loggedPerfEvents
-            .stream()
+        loggedPerfEvents.stream()
             .filter(
                 new Predicate<PerfEvent>() {
                   @Override

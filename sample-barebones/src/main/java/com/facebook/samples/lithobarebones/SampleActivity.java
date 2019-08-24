@@ -27,7 +27,6 @@ public class SampleActivity extends Activity {
 
     final ComponentContext context = new ComponentContext(this);
 
-
     final Component component =
         RecyclerCollectionComponent.create(context)
             .disablePTR(true)

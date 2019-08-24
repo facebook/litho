@@ -142,8 +142,7 @@ public class NodeInfoTest {
 
   @Test
   public void testDispatchPopulateAccessibilityEventHandler() {
-    EventHandler<DispatchPopulateAccessibilityEventEvent> handler =
-        new EventHandler<>(null, 1);
+    EventHandler<DispatchPopulateAccessibilityEventEvent> handler = new EventHandler<>(null, 1);
 
     mNodeInfo.setDispatchPopulateAccessibilityEventHandler(handler);
     assertThat(handler).isSameAs(mNodeInfo.getDispatchPopulateAccessibilityEventHandler());
@@ -154,8 +153,7 @@ public class NodeInfoTest {
 
   @Test
   public void testOnInitializeAccessibilityEventHandler() {
-    EventHandler<OnInitializeAccessibilityEventEvent> handler =
-        new EventHandler<>(null, 1);
+    EventHandler<OnInitializeAccessibilityEventEvent> handler = new EventHandler<>(null, 1);
 
     mNodeInfo.setOnInitializeAccessibilityEventHandler(handler);
     assertThat(handler).isSameAs(mNodeInfo.getOnInitializeAccessibilityEventHandler());
@@ -188,8 +186,7 @@ public class NodeInfoTest {
 
   @Test
   public void testOnRequestSendAccessibilityEventHandler() {
-    EventHandler<OnRequestSendAccessibilityEventEvent> handler =
-        new EventHandler<>(null, 1);
+    EventHandler<OnRequestSendAccessibilityEventEvent> handler = new EventHandler<>(null, 1);
 
     mNodeInfo.setOnRequestSendAccessibilityEventHandler(handler);
     assertThat(handler).isSameAs(mNodeInfo.getOnRequestSendAccessibilityEventHandler());
@@ -200,8 +197,7 @@ public class NodeInfoTest {
 
   @Test
   public void testPerformAccessibilityActionHandler() {
-    EventHandler<PerformAccessibilityActionEvent> handler =
-        new EventHandler<>(null, 1);
+    EventHandler<PerformAccessibilityActionEvent> handler = new EventHandler<>(null, 1);
 
     mNodeInfo.setPerformAccessibilityActionHandler(handler);
     assertThat(handler).isSameAs(mNodeInfo.getPerformAccessibilityActionHandler());

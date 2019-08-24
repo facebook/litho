@@ -43,8 +43,7 @@ public class ViewCompatComponent<V extends View> extends Component {
   private int mPoolSize = UNSPECIFIED_POOL_SIZE;
 
   public static <V extends View> ViewCompatComponent<V> get(
-      ViewCreator<V> viewCreator,
-      String componentName) {
+      ViewCreator<V> viewCreator, String componentName) {
     return new ViewCompatComponent<>(viewCreator, componentName);
   }
 
@@ -104,8 +103,7 @@ public class ViewCompatComponent<V extends View> extends Component {
   }
 
   @Override
-  void unbind(
-      ComponentContext c, Object mountedContent) {
+  void unbind(ComponentContext c, Object mountedContent) {
     mViewBinder.unbind((V) mountedContent);
   }
 

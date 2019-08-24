@@ -21,13 +21,10 @@ import static com.facebook.litho.specmodels.generator.GeneratorConstants.STATE_C
 import com.facebook.litho.specmodels.model.MethodParamModel;
 import com.facebook.litho.specmodels.model.StateParamModel;
 
-/**
- * Helper class for generating code relating to method params.
- */
+/** Helper class for generating code relating to method params. */
 public class MethodParamGeneratorUtils {
 
-  private MethodParamGeneratorUtils() {
-  }
+  private MethodParamGeneratorUtils() {}
 
   static String getImplAccessor(MethodParamModel methodParamModel) {
     if (methodParamModel instanceof StateParamModel) {

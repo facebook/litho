@@ -52,8 +52,8 @@ public class DefaultComponentsSystrace implements ComponentsSystrace.Systrace {
 
   @Override
   public void endSection() {
-    if (ComponentsConfiguration.IS_INTERNAL_BUILD &&
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+    if (ComponentsConfiguration.IS_INTERNAL_BUILD
+        && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
       Trace.endSection();
     }
   }

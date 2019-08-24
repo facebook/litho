@@ -94,11 +94,12 @@ public class BatchedTargetTest {
 
   @Test
   public void testDoNotConsolidateInsertsIfNotIncreasingSequentialIndexes() throws Exception {
-    Change[] ops = new Change[] {
-        Change.insert(10, ComponentRenderInfo.createEmpty()),
-        Change.insert(9, ComponentRenderInfo.createEmpty()),
-        Change.insert(20, ComponentRenderInfo.createEmpty()),
-    };
+    Change[] ops =
+        new Change[] {
+          Change.insert(10, ComponentRenderInfo.createEmpty()),
+          Change.insert(9, ComponentRenderInfo.createEmpty()),
+          Change.insert(20, ComponentRenderInfo.createEmpty()),
+        };
 
     executeOperations(ops);
 
@@ -109,12 +110,13 @@ public class BatchedTargetTest {
 
   @Test
   public void testDuplicateIndexInserts() throws Exception {
-    Change[] ops = new Change[] {
-        Change.insert(0, ComponentRenderInfo.createEmpty()),
-        Change.insert(1, ComponentRenderInfo.createEmpty()),
-        Change.insert(1, ComponentRenderInfo.createEmpty()),
-        Change.insert(20, ComponentRenderInfo.createEmpty()),
-    };
+    Change[] ops =
+        new Change[] {
+          Change.insert(0, ComponentRenderInfo.createEmpty()),
+          Change.insert(1, ComponentRenderInfo.createEmpty()),
+          Change.insert(1, ComponentRenderInfo.createEmpty()),
+          Change.insert(20, ComponentRenderInfo.createEmpty()),
+        };
 
     executeOperations(ops);
 
@@ -127,25 +129,22 @@ public class BatchedTargetTest {
 
   @Test
   public void testConsolidateSequentialDeletes() throws Exception {
-    Change[] ops = new Change[] {
-        Change.remove(1),
-        Change.remove(1),
-        Change.remove(1),
-    };
+    Change[] ops =
+        new Change[] {
+          Change.remove(1), Change.remove(1), Change.remove(1),
+        };
 
     executeOperations(ops);
 
-    verify(mMockTarget).deleteRange(1,3);
+    verify(mMockTarget).deleteRange(1, 3);
   }
 
   @Test
   public void testDoNotConsolidateDeletesIfSequentialIncreasingIndexes() throws Exception {
-    Change[] ops = new Change[] {
-        Change.remove(2),
-        Change.remove(1),
-        Change.remove(20),
-        Change.remove(21),
-    };
+    Change[] ops =
+        new Change[] {
+          Change.remove(2), Change.remove(1), Change.remove(20), Change.remove(21),
+        };
 
     executeOperations(ops);
 
@@ -156,12 +155,13 @@ public class BatchedTargetTest {
 
   @Test
   public void testConsolidateSequentialUpdates() throws Exception {
-    Change[] ops = new Change[] {
-        Change.update(2, ComponentRenderInfo.createEmpty()),
-        Change.update(1, ComponentRenderInfo.createEmpty()),
-        Change.update(20, ComponentRenderInfo.createEmpty()),
-        Change.update(21, ComponentRenderInfo.createEmpty()),
-    };
+    Change[] ops =
+        new Change[] {
+          Change.update(2, ComponentRenderInfo.createEmpty()),
+          Change.update(1, ComponentRenderInfo.createEmpty()),
+          Change.update(20, ComponentRenderInfo.createEmpty()),
+          Change.update(21, ComponentRenderInfo.createEmpty()),
+        };
 
     executeOperations(ops);
 
@@ -176,10 +176,11 @@ public class BatchedTargetTest {
 
   @Test
   public void testOnlyConsolidateUpdatesIfSequentialIndexes() throws Exception {
-    Change[] ops = new Change[] {
-        Change.update(2, ComponentRenderInfo.createEmpty()),
-        Change.update(12, ComponentRenderInfo.createEmpty()),
-    };
+    Change[] ops =
+        new Change[] {
+          Change.update(2, ComponentRenderInfo.createEmpty()),
+          Change.update(12, ComponentRenderInfo.createEmpty()),
+        };
 
     executeOperations(ops);
 
@@ -189,12 +190,13 @@ public class BatchedTargetTest {
 
   @Test
   public void testDuplicateSequentialUpdatesUseLastComponentInfo() throws Exception {
-    Change[] ops = new Change[] {
-        Change.update(99, ComponentRenderInfo.createEmpty()),
-        Change.update(100, ComponentRenderInfo.createEmpty()),
-        Change.update(101, ComponentRenderInfo.createEmpty()),
-        Change.update(99, ComponentRenderInfo.createEmpty()),
-    };
+    Change[] ops =
+        new Change[] {
+          Change.update(99, ComponentRenderInfo.createEmpty()),
+          Change.update(100, ComponentRenderInfo.createEmpty()),
+          Change.update(101, ComponentRenderInfo.createEmpty()),
+          Change.update(99, ComponentRenderInfo.createEmpty()),
+        };
 
     executeOperations(ops);
 
@@ -206,12 +208,13 @@ public class BatchedTargetTest {
 
   @Test
   public void testInsertRangeConsolidatesFirst() throws Exception {
-    Change[] ops = new Change[] {
-        Change.insert(99, ComponentRenderInfo.createEmpty()),
-        Change.insert(100, ComponentRenderInfo.createEmpty()),
-        Change.insert(101, ComponentRenderInfo.createEmpty()),
-        Change.insertRange(102, 20, dummyComponentInfos(20)),
-    };
+    Change[] ops =
+        new Change[] {
+          Change.insert(99, ComponentRenderInfo.createEmpty()),
+          Change.insert(100, ComponentRenderInfo.createEmpty()),
+          Change.insert(101, ComponentRenderInfo.createEmpty()),
+          Change.insertRange(102, 20, dummyComponentInfos(20)),
+        };
 
     executeOperations(ops);
 
@@ -221,12 +224,13 @@ public class BatchedTargetTest {
 
   @Test
   public void testUpdateRangeConsolidatesFirst() throws Exception {
-    Change[] ops = new Change[] {
-        Change.update(99, ComponentRenderInfo.createEmpty()),
-        Change.update(100, ComponentRenderInfo.createEmpty()),
-        Change.update(101, ComponentRenderInfo.createEmpty()),
-        Change.updateRange(102, 20, dummyComponentInfos(20)),
-    };
+    Change[] ops =
+        new Change[] {
+          Change.update(99, ComponentRenderInfo.createEmpty()),
+          Change.update(100, ComponentRenderInfo.createEmpty()),
+          Change.update(101, ComponentRenderInfo.createEmpty()),
+          Change.updateRange(102, 20, dummyComponentInfos(20)),
+        };
 
     executeOperations(ops);
 
@@ -236,12 +240,10 @@ public class BatchedTargetTest {
 
   @Test
   public void testDeleteRangeConsolidatesFirst() throws Exception {
-    Change[] ops = new Change[] {
-        Change.remove(99),
-        Change.remove(99),
-        Change.remove(99),
-        Change.removeRange(102, 20),
-    };
+    Change[] ops =
+        new Change[] {
+          Change.remove(99), Change.remove(99), Change.remove(99), Change.removeRange(102, 20),
+        };
 
     executeOperations(ops);
 
@@ -251,17 +253,18 @@ public class BatchedTargetTest {
 
   @Test
   public void testConsolidateDifferentTypes() throws Exception {
-    Change[] ops = new Change[] {
-        Change.remove(2),
-        Change.remove(1),
-        Change.update(99, ComponentRenderInfo.createEmpty()),
-        Change.update(100, ComponentRenderInfo.createEmpty()),
-        Change.insert(0, ComponentRenderInfo.createEmpty()),
-        Change.insert(1, ComponentRenderInfo.createEmpty()),
-        Change.update(101, ComponentRenderInfo.createEmpty()),
-        Change.update(99, ComponentRenderInfo.createEmpty()),
-        Change.move(14, 55),
-    };
+    Change[] ops =
+        new Change[] {
+          Change.remove(2),
+          Change.remove(1),
+          Change.update(99, ComponentRenderInfo.createEmpty()),
+          Change.update(100, ComponentRenderInfo.createEmpty()),
+          Change.insert(0, ComponentRenderInfo.createEmpty()),
+          Change.insert(1, ComponentRenderInfo.createEmpty()),
+          Change.update(101, ComponentRenderInfo.createEmpty()),
+          Change.update(99, ComponentRenderInfo.createEmpty()),
+          Change.move(14, 55),
+        };
 
     executeOperations(ops);
 
@@ -270,18 +273,20 @@ public class BatchedTargetTest {
     verify(mMockTarget).insertRange(eq(0), eq(2), anyListOf(RenderInfo.class));
     verify(mMockTarget).update(101, ops[6].getRenderInfo());
     verify(mMockTarget).update(99, ops[7].getRenderInfo());
-    verify(mMockTarget).move(14,55);
+    verify(mMockTarget).move(14, 55);
   }
 
   @Test
   public void testLoggerDelete() throws Exception {
-    assumeThat("Logging is only available in debug mode.",
-        ComponentsConfiguration.IS_INTERNAL_BUILD, is(true));
+    assumeThat(
+        "Logging is only available in debug mode.",
+        ComponentsConfiguration.IS_INTERNAL_BUILD,
+        is(true));
 
-    Change[] ops = new Change[] {
-        Change.insert(0, ComponentRenderInfo.createEmpty()),
-        Change.remove(0),
-    };
+    Change[] ops =
+        new Change[] {
+          Change.insert(0, ComponentRenderInfo.createEmpty()), Change.remove(0),
+        };
 
     executeOperations(ops);
     verify(mMockSectionsDebugLogger)
@@ -291,19 +296,22 @@ public class BatchedTargetTest {
 
   @Test
   public void testLoggerDifferentTypes() throws Exception {
-    assumeThat("Logging is only available in debug mode.",
-        ComponentsConfiguration.IS_INTERNAL_BUILD, is(true));
+    assumeThat(
+        "Logging is only available in debug mode.",
+        ComponentsConfiguration.IS_INTERNAL_BUILD,
+        is(true));
 
-    Change[] ops = new Change[] {
-        Change.insert(0, ComponentRenderInfo.createEmpty()),
-        Change.insertRange(1, 3, dummyComponentInfos(3)),
-        Change.update(3, ComponentRenderInfo.createEmpty()),
-        Change.updateRange(2, 2, dummyComponentInfos(2)),
-        Change.insertRange(4, 2, dummyComponentInfos(2)),
-        Change.insert(6, ComponentRenderInfo.createEmpty()),
-        Change.remove(5),
-        Change.move(2, 3),
-    };
+    Change[] ops =
+        new Change[] {
+          Change.insert(0, ComponentRenderInfo.createEmpty()),
+          Change.insertRange(1, 3, dummyComponentInfos(3)),
+          Change.update(3, ComponentRenderInfo.createEmpty()),
+          Change.updateRange(2, 2, dummyComponentInfos(2)),
+          Change.insertRange(4, 2, dummyComponentInfos(2)),
+          Change.insert(6, ComponentRenderInfo.createEmpty()),
+          Change.remove(5),
+          Change.move(2, 3),
+        };
 
     executeOperations(ops);
 

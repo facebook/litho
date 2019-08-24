@@ -31,14 +31,8 @@ public class ListItemSpec {
     return Column.create(c)
         .paddingDip(ALL, 16)
         .backgroundColor(color)
-        .child(
-            Text.create(c)
-                .text(title)
-                .textSizeSp(40))
-        .child(
-            Text.create(c)
-                .text(subtitle)
-                .textSizeSp(20))
+        .child(Text.create(c).text(title).textSizeSp(40))
+        .child(Text.create(c).text(subtitle).textSizeSp(20))
         .build();
   }
 }

@@ -102,7 +102,7 @@ public class ComponentGlobalKeyTest {
         ComponentKeyUtils.getKeyWithSeparator(
             layoutSpecId, columnSpecId, nestedLayoutSpecId, columnSpecId, "[TestViewComponent1]"),
         getComponentAt(lithoView, 1).getGlobalKey());
-    //background in child
+    // background in child
     Assert.assertNull(getComponentAt(lithoView, 2).getGlobalKey());
     // CardClip in child
     Assert.assertEquals(
@@ -344,11 +344,7 @@ public class ComponentGlobalKeyTest {
     lithoView.measure(
         View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
         View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
-    lithoView.layout(
-        0,
-        0,
-        lithoView.getMeasuredWidth(),
-        lithoView.getMeasuredHeight());
+    lithoView.layout(0, 0, lithoView.getMeasuredWidth(), lithoView.getMeasuredHeight());
     return lithoView;
   }
 

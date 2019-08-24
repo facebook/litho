@@ -30,8 +30,8 @@ import com.facebook.litho.SizeSpec;
 import java.util.List;
 
 /**
- * An implementation for {@link LayoutInfo} to implement linear lists with a
- * {@link LinearLayoutManager}.
+ * An implementation for {@link LayoutInfo} to implement linear lists with a {@link
+ * LinearLayoutManager}.
  */
 public class LinearLayoutInfo implements LayoutInfo {
 
@@ -104,12 +104,12 @@ public class LinearLayoutInfo implements LayoutInfo {
 
     switch (mLinearLayoutManager.getOrientation()) {
       case LinearLayoutManager.HORIZONTAL:
-        approximateRange = (int)
-            Math.ceil((float) recyclerMeasuredWidth / (float) firstMeasuredItemWidth);
+        approximateRange =
+            (int) Math.ceil((float) recyclerMeasuredWidth / (float) firstMeasuredItemWidth);
         break;
       default:
-        approximateRange = (int)
-            Math.ceil((float) recyclerMeasuredHeight / (float) firstMeasuredItemHeight);
+        approximateRange =
+            (int) Math.ceil((float) recyclerMeasuredHeight / (float) firstMeasuredItemHeight);
         break;
     }
 

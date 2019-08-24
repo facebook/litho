@@ -31,9 +31,7 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.util.Elements;
 
-/**
- * Utility class for processing specs.
- */
+/** Utility class for processing specs. */
 public class ProcessorUtils {
 
   /**

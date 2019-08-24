@@ -74,7 +74,7 @@ public class ChangeSetTest {
     changeSet.addChange(Change.updateRange(7, 3, dummyComponentInfos(3)));
     assertThat(changeSet.getCount()).isEqualTo(11);
 
-    changeSet.move(9,1);
+    changeSet.move(9, 1);
     assertThat(changeSet.getCount()).isEqualTo(11);
   }
 

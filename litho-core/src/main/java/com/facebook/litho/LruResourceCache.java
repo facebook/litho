@@ -21,15 +21,16 @@ import androidx.collection.LruCache;
 import javax.annotation.Nullable;
 
 class LruResourceCache extends ResourceCache {
-  private final LruCache<Integer, Object> mCache = new LruCache<Integer, Object>(500) {
-    @Override
-    protected int sizeOf(Integer key, Object value) {
-      if (value instanceof String) {
-        return ((String) value).length();
-      }
-      return 1;
-    }
-  };
+  private final LruCache<Integer, Object> mCache =
+      new LruCache<Integer, Object>(500) {
+        @Override
+        protected int sizeOf(Integer key, Object value) {
+          if (value instanceof String) {
+            return ((String) value).length();
+          }
+          return 1;
+        }
+      };
 
   LruResourceCache(Configuration configuration) {
     super(configuration);

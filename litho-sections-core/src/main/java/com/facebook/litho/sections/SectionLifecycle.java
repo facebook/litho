@@ -43,22 +43,15 @@ public abstract class SectionLifecycle implements EventDispatcher, EventTriggerT
   }
 
   /**
-   * This method will delegate to the {@link DiffSectionSpec}
-   * method annotated with {@link OnDiff}
+   * This method will delegate to the {@link DiffSectionSpec} method annotated with {@link OnDiff}
    */
   protected void generateChangeSet(
-      SectionContext c,
-      ChangeSet changeSet,
-      Section previous,
-      Section next) {
-  }
+      SectionContext c, ChangeSet changeSet, Section previous, Section next) {}
 
   /**
    * This method will delegate to the {@link Section}Spec method annotated with {@link OnDataBound}
    */
-  protected void dataBound(SectionContext c) {
-
-  }
+  protected void dataBound(SectionContext c) {}
 
   /**
    * This method will delegate to the {@link Section}Spec method annotated with {@link
@@ -73,21 +66,13 @@ public abstract class SectionLifecycle implements EventDispatcher, EventTriggerT
       int lastVisibleIndex,
       ChangesInfo changesInfo) {}
 
-  protected void bindService(SectionContext c) {
+  protected void bindService(SectionContext c) {}
 
-  }
+  protected void unbindService(SectionContext c) {}
 
-  protected void unbindService(SectionContext c) {
+  protected void createInitialState(SectionContext c) {}
 
-  }
-
-  protected void createInitialState(SectionContext c) {
-
-  }
-
-  protected void createService(SectionContext c) {
-
-  }
+  protected void createService(SectionContext c) {}
 
   @Nullable
   @Override
@@ -109,13 +94,9 @@ public abstract class SectionLifecycle implements EventDispatcher, EventTriggerT
       int lastVisibleItem,
       int totalItemsCount,
       int firstFullyVisibleItem,
-      int lastFullyVisibleItem) {
+      int lastFullyVisibleItem) {}
 
-  }
-
-  protected void refresh(SectionContext sectionContext) {
-
-  }
+  protected void refresh(SectionContext sectionContext) {}
 
   /**
    * Call this to transfer the {@link com.facebook.litho.annotations.State} annotated values between
@@ -124,15 +105,8 @@ public abstract class SectionLifecycle implements EventDispatcher, EventTriggerT
   protected void transferState(
       StateContainer previousStateContainer, StateContainer nextStateContainer) {}
 
-  /**
-   * Call this to transfer the Services between two
-   * {@link Section} with the same global scope.
-   */
-  protected void transferService(
-      SectionContext c,
-      Section oldSection,
-      Section newSection) {
-  }
+  /** Call this to transfer the Services between two {@link Section} with the same global scope. */
+  protected void transferService(SectionContext c, Section oldSection, Section newSection) {}
 
   @Nullable
   protected Object getService(Section section) {
@@ -168,20 +142,14 @@ public abstract class SectionLifecycle implements EventDispatcher, EventTriggerT
     return false;
   }
 
-  protected static <E> EventHandler<E> newEventHandler(
-      SectionContext c,
-      int id,
-      Object[] params) {
+  protected static <E> EventHandler<E> newEventHandler(SectionContext c, int id, Object[] params) {
     final EventHandler eventHandler = c.newEventHandler(id, params);
     recordEventHandler(c.getSectionScope(), eventHandler);
 
     return eventHandler;
   }
 
-  protected static <E> EventHandler<E> newEventHandler(
-      Section c,
-      int id,
-      Object[] params) {
+  protected static <E> EventHandler<E> newEventHandler(Section c, int id, Object[] params) {
     final EventHandler eventHandler = new EventHandler<E>(c, id, params);
     recordEventHandler(c, eventHandler);
 
@@ -213,18 +181,13 @@ public abstract class SectionLifecycle implements EventDispatcher, EventTriggerT
   }
 
   /**
-   * Retrieves all of the tree props used by this Section from the TreeProps map
-   * and sets the tree props as fields on the ComponentImpl.
+   * Retrieves all of the tree props used by this Section from the TreeProps map and sets the tree
+   * props as fields on the ComponentImpl.
    */
-  protected void populateTreeProps(TreeProps parentTreeProps) {
-  }
+  protected void populateTreeProps(TreeProps parentTreeProps) {}
 
-  /**
-   * Updates the TreeProps map with outputs from all {@link OnCreateTreeProp} methods.
-   */
-  protected TreeProps getTreePropsForChildren(
-      SectionContext c,
-      TreeProps previousTreeProps) {
+  /** Updates the TreeProps map with outputs from all {@link OnCreateTreeProp} methods. */
+  protected TreeProps getTreePropsForChildren(SectionContext c, TreeProps previousTreeProps) {
     return previousTreeProps;
   }
 

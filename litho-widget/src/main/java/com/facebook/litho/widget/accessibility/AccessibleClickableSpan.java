@@ -21,10 +21,9 @@ import com.facebook.litho.AccessibilityRole;
 import javax.annotation.Nullable;
 
 /**
- * Extends the ClickableSpan class to include a dedicated field for the
- * accessibility label. This is useful in cases where we know what the span
- * object will represent and its description is not easily obtainable from
- * its actual contents. For example, the number of likers for a story might
+ * Extends the ClickableSpan class to include a dedicated field for the accessibility label. This is
+ * useful in cases where we know what the span object will represent and its description is not
+ * easily obtainable from its actual contents. For example, the number of likers for a story might
  * want to set the accessibility label to the corresponding plurals resource.
  */
 public abstract class AccessibleClickableSpan extends ClickableSpan {

@@ -26,14 +26,11 @@ import java.util.Comparator;
 import java.util.List;
 import javax.annotation.Nullable;
 
-/**
- * Useful methods for {@link MethodParamModel}s.
- */
+/** Useful methods for {@link MethodParamModel}s. */
 public class MethodParamModelUtils {
 
   public static boolean isAnnotatedWith(
-      MethodParamModel methodParamModel,
-      Class<? extends Annotation> annotationClass) {
+      MethodParamModel methodParamModel, Class<? extends Annotation> annotationClass) {
     for (Annotation annotation : methodParamModel.getAnnotations()) {
       if (annotation.annotationType().equals(annotationClass)) {
         return true;

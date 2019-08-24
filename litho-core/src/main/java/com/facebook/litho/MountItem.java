@@ -26,9 +26,8 @@ import androidx.annotation.Nullable;
 import com.facebook.yoga.YogaDirection;
 
 /**
- * Represents a mounted UI element in a {@link MountState}. It holds a
- * key and a content instance which might be any type of UI element
- * supported by the framework e.g. {@link Drawable}.
+ * Represents a mounted UI element in a {@link MountState}. It holds a key and a content instance
+ * which might be any type of UI element supported by the framework e.g. {@link Drawable}.
  */
 class MountItem {
 
@@ -300,9 +299,7 @@ class MountItem {
     return mIsBound;
   }
 
-  /**
-   * Sets whether this MountItem is currently bound.
-   */
+  /** Sets whether this MountItem is currently bound. */
   void setIsBound(boolean bound) {
     mIsBound = bound;
   }

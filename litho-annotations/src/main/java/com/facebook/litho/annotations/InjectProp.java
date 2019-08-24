@@ -25,8 +25,6 @@ import java.lang.annotation.RetentionPolicy;
  */
 @Retention(RetentionPolicy.CLASS)
 public @interface InjectProp {
-  /**
-   * @return Boolean indicating whether the injection should be lazy.
-   */
+  /** @return Boolean indicating whether the injection should be lazy. */
   boolean isLazy() default true;
 }

@@ -37,7 +37,8 @@ public final class StateUpdatesTestHelper {
 
   /**
    * Call a state update as specified in {@link StateUpdater#performStateUpdate(ComponentContext)}
-   *   on the component and return the updated view.
+   * on the component and return the updated view.
+   *
    * @param context context
    * @param component the component to update
    * @param stateUpdater implementation of {@link StateUpdater} that triggers the state update
@@ -48,13 +49,10 @@ public final class StateUpdatesTestHelper {
       ComponentContext context,
       Component component,
       StateUpdater stateUpdater,
-      ShadowLooper layoutThreadShadowLooper) throws Exception {
+      ShadowLooper layoutThreadShadowLooper)
+      throws Exception {
     return getViewAfterStateUpdate(
-        context,
-        component,
-        stateUpdater,
-        layoutThreadShadowLooper,
-        false);
+        context, component, stateUpdater, layoutThreadShadowLooper, false);
   }
 
   /**
@@ -142,18 +140,19 @@ public final class StateUpdatesTestHelper {
         context,
         component,
         stateUpdater,
-        new ShadowLooper[]{layoutThreadShadowLooper},
+        new ShadowLooper[] {layoutThreadShadowLooper},
         incrementalMountEnabled);
   }
 
   /**
-   *  Call a state update as specified in {@link StateUpdater#performStateUpdate(ComponentContext)}
-   *   on the component and return the updated view with the option to incrementally mount.
+   * Call a state update as specified in {@link StateUpdater#performStateUpdate(ComponentContext)}
+   * on the component and return the updated view with the option to incrementally mount.
+   *
    * @param context context
    * @param component the component to update
    * @param stateUpdater implementation of {@link StateUpdater} that triggers the state update
    * @param loopers shadow loopers to post messages to the main thread, run in the same order they
-   * are specified
+   *     are specified
    * @param incrementalMountEnabled whether or not to enable incremental mount for the component
    * @return the updated LithoView after the state update was applied
    */
@@ -162,14 +161,16 @@ public final class StateUpdatesTestHelper {
       Component component,
       StateUpdater stateUpdater,
       ShadowLooper[] loopers,
-      boolean incrementalMountEnabled) throws Exception {
+      boolean incrementalMountEnabled)
+      throws Exception {
     // This is for working around component immutability, to be able to retrieve the updated
     // instance of the component.
     Whitebox.invokeMethod(component, "setKey", "bogusKeyForTest");
-    final ComponentTree componentTree = ComponentTree.create(context, component)
-        .incrementalMount(incrementalMountEnabled)
-        .layoutDiffing(false)
-        .build();
+    final ComponentTree componentTree =
+        ComponentTree.create(context, component)
+            .incrementalMount(incrementalMountEnabled)
+            .layoutDiffing(false)
+            .build();
 
     final LithoView lithoView = new LithoView(context);
     ComponentTestHelper.mountComponent(lithoView, componentTree);

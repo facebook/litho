@@ -23,9 +23,7 @@ import com.facebook.proguard.annotations.DoNotStrip;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * Holds information about a {@link TestOutput}.
- */
+/** Holds information about a {@link TestOutput}. */
 @DoNotStrip
 public class TestItem {
   private String mTestKey;
@@ -78,10 +76,8 @@ public class TestItem {
   }
 
   public List<CharSequence> getTextItems() {
-    return
-        ComponentHostUtils
-            .extractTextContent(Collections.singletonList(mContent))
-            .getTextItems();
+    return ComponentHostUtils.extractTextContent(Collections.singletonList(mContent))
+        .getTextItems();
   }
 
   public boolean isChecked() {

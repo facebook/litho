@@ -74,15 +74,16 @@ public class ParallelBinding extends BaseAnimationBinding {
     if (mStaggerMs == 0) {
       mStaggerCallback = null;
     } else {
-      mStaggerCallback = new ChoreographerCompat.FrameCallback() {
-        @Override
-        public void doFrame(long frameTimeNanos) {
-          if (!mIsActive) {
-            return;
-          }
-          startNextBindingForStagger();
-        }
-      };
+      mStaggerCallback =
+          new ChoreographerCompat.FrameCallback() {
+            @Override
+            public void doFrame(long frameTimeNanos) {
+              if (!mIsActive) {
+                return;
+              }
+              startNextBindingForStagger();
+            }
+          };
     }
   }
 

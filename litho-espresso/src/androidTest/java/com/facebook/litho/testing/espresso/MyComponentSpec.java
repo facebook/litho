@@ -29,10 +29,10 @@ public class MyComponentSpec {
   public static Component onCreateLayout(
       ComponentContext c, @Prop String text, @Prop(optional = true) Object customViewTag) {
     return Text.create(c)
-          .text(text)
-          .contentDescription("foobar2")
-          .viewTag(customViewTag)
-          .testKey("my_test_key")
-          .build();
+        .text(text)
+        .contentDescription("foobar2")
+        .viewTag(customViewTag)
+        .testKey("my_test_key")
+        .build();
   }
 }

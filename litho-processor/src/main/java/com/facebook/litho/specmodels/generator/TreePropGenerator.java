@@ -32,13 +32,10 @@ import com.squareup.javapoet.TypeName;
 import java.util.List;
 import javax.lang.model.element.Modifier;
 
-/**
- * Class that generates the tree prop methods for a Component.
- */
+/** Class that generates the tree prop methods for a Component. */
 public class TreePropGenerator {
 
-  private TreePropGenerator() {
-  }
+  private TreePropGenerator() {}
 
   public static TypeSpecDataHolder generate(SpecModel specModel) {
     return TypeSpecDataHolder.newBuilder()
@@ -72,7 +69,8 @@ public class TreePropGenerator {
   }
 
   static TypeSpecDataHolder generateGetTreePropsForChildren(SpecModel specModel) {
-    List<SpecMethodModel<DelegateMethod, Void>> onCreateTreePropsMethods = SpecModelUtils.getMethodModelsWithAnnotation(specModel, OnCreateTreeProp.class);
+    List<SpecMethodModel<DelegateMethod, Void>> onCreateTreePropsMethods =
+        SpecModelUtils.getMethodModelsWithAnnotation(specModel, OnCreateTreeProp.class);
 
     if (onCreateTreePropsMethods.isEmpty()) {
       return TypeSpecDataHolder.newBuilder().build();
@@ -112,9 +110,7 @@ public class TreePropGenerator {
               GeneratorConstants.STATE_CONTAINER_FIELD_NAME,
               onCreateTreePropsMethod.methodParams.get(i).getName());
         } else {
-          block.add(
-              "$L",
-              onCreateTreePropsMethod.methodParams.get(i).getName());
+          block.add("$L", onCreateTreePropsMethod.methodParams.get(i).getName());
         }
 
         if (i < size - 1) {
@@ -122,10 +118,7 @@ public class TreePropGenerator {
         }
       }
 
-      builder.addCode(block.add("));\n")
-          .unindent()
-          .unindent()
-          .build());
+      builder.addCode(block.add("));\n").unindent().unindent().build());
     }
 
     builder.addStatement("return childTreeProps");

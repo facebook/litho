@@ -29,9 +29,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-/**
- * Tests for {@link ViewportManager}
- */
+/** Tests for {@link ViewportManager} */
 @RunWith(ComponentsTestRunner.class)
 public class ViewportManagerTest {
 
@@ -219,19 +217,15 @@ public class ViewportManagerTest {
   }
 
   private void setVisibleItemPositionInMockedLayoutManager(
-      int firstVisibleItemPosition,
-      int lastVisibleItemPosition) {
+      int firstVisibleItemPosition, int lastVisibleItemPosition) {
     when(mLayoutInfo.findFirstVisibleItemPosition()).thenReturn(firstVisibleItemPosition);
     when(mLayoutInfo.findLastVisibleItemPosition()).thenReturn(lastVisibleItemPosition);
   }
 
   private void setFullyVisibleItemPositionInMockedLayoutManager(
-      int firstFullyVisiblePosition,
-      int lastFullyVisiblePosition) {
-    when(mLayoutInfo.findFirstFullyVisibleItemPosition())
-        .thenReturn(firstFullyVisiblePosition);
-    when(mLayoutInfo.findLastFullyVisibleItemPosition())
-        .thenReturn(lastFullyVisiblePosition);
+      int firstFullyVisiblePosition, int lastFullyVisiblePosition) {
+    when(mLayoutInfo.findFirstFullyVisibleItemPosition()).thenReturn(firstFullyVisiblePosition);
+    when(mLayoutInfo.findLastFullyVisibleItemPosition()).thenReturn(lastFullyVisiblePosition);
   }
 
   private void setTotalItemInMockedLayoutManager(int totalItem) {

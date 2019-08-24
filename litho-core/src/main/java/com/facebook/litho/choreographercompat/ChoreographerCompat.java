@@ -54,12 +54,13 @@ public interface ChoreographerCompat {
 
     Runnable getRunnable() {
       if (mRunnable == null) {
-        mRunnable = new Runnable() {
-          @Override
-          public void run() {
-            doFrame(System.nanoTime());
-          }
-        };
+        mRunnable =
+            new Runnable() {
+              @Override
+              public void run() {
+                doFrame(System.nanoTime());
+              }
+            };
       }
       return mRunnable;
     }

@@ -138,8 +138,7 @@ public final class MethodExtractorUtils {
   }
 
   private static List<Annotation> getLibraryAnnotations(
-      VariableElement param,
-      List<Class<? extends Annotation>> permittedAnnotations) {
+      VariableElement param, List<Class<? extends Annotation>> permittedAnnotations) {
     List<Annotation> paramAnnotations = new ArrayList<>();
     for (Class<? extends Annotation> possibleMethodParamAnnotation : permittedAnnotations) {
       final Annotation paramAnnotation = param.getAnnotation(possibleMethodParamAnnotation);
@@ -169,8 +168,7 @@ public final class MethodExtractorUtils {
       for (Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> elementValue :
           elementValues.entrySet()) {
         annotationSpec.addMember(
-            elementValue.getKey().getSimpleName().toString(),
-            elementValue.getValue().toString());
+            elementValue.getKey().getSimpleName().toString(), elementValue.getValue().toString());
       }
 
       annotations.add(annotationSpec.build());
@@ -184,8 +182,7 @@ public final class MethodExtractorUtils {
     for (TypeParameterElement typeParameterElement : method.getTypeParameters()) {
       typeVariables.add(
           TypeVariableName.get(
-              typeParameterElement.getSimpleName().toString(),
-              getBounds(typeParameterElement)));
+              typeParameterElement.getSimpleName().toString(), getBounds(typeParameterElement)));
     }
 
     return typeVariables;

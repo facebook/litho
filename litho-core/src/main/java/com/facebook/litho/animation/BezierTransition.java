@@ -21,9 +21,7 @@ import com.facebook.litho.dataflow.SpringNode;
 import com.facebook.litho.dataflow.ValueNode;
 import java.util.ArrayList;
 
-/**
- * Animation for the transition of the position of a mount content on a quadratic Bezier curve.
- */
+/** Animation for the transition of the position of a mount content on a quadratic Bezier curve. */
 public class BezierTransition extends TransitionAnimationBinding {
 
   private final PropertyAnimation mXPropertyAnimation;
@@ -34,26 +32,23 @@ public class BezierTransition extends TransitionAnimationBinding {
   /**
    * Creates a quadratic Bezier transition. The control x/y are used to configure the shape of the
    * curve. Because we don't know the start/end positions beforehand, the control point is defined
-   * in terms of the distance between the start and end points of this animation. It is NOT in
-   * terms of pixels or dp.
+   * in terms of the distance between the start and end points of this animation. It is NOT in terms
+   * of pixels or dp.
    *
-   * Specifically, controlPointX=0 will give the control point the x position of initial position
+   * <p>Specifically, controlPointX=0 will give the control point the x position of initial position
    * of the curve. controlPointX=1 will give the control point the x position of the end of the
    * curve. controlPointX=.5 will give it the x position midway between the start and end x
-   * positions. Increasing the value beyond 1 or below 0 will move the control point beyond the
-   * end x position or before the start x position, respectively, while values between 0 and 1
-   * will place the point in between the start and end x positions.
+   * positions. Increasing the value beyond 1 or below 0 will move the control point beyond the end
+   * x position or before the start x position, respectively, while values between 0 and 1 will
+   * place the point in between the start and end x positions.
    *
-   * All of the above also applies to the controlPointY value as well.
+   * <p>All of the above also applies to the controlPointY value as well.
    *
-   * For good looking curves, you want to make sure controlPointX != controlPointY (or else the
+   * <p>For good looking curves, you want to make sure controlPointX != controlPointY (or else the
    * curve won't curve since it lies on the straight line between the start and end points).
    */
   public BezierTransition(
-      PropertyAnimation xProperty,
-      PropertyAnimation yProperty,
-      float controlX,
-      float controlY) {
+      PropertyAnimation xProperty, PropertyAnimation yProperty, float controlX, float controlY) {
     mXPropertyAnimation = xProperty;
     mYPropertyAnimation = yProperty;
     mControlX = controlX;
@@ -83,8 +78,10 @@ public class BezierTransition extends TransitionAnimationBinding {
     addBinding(new ConstantNode(1f), springNode, SpringNode.END_INPUT);
     addBinding(springNode, xBezierNode);
     addBinding(springNode, yBezierNode);
-    addBinding(xBezierNode, resolver.getAnimatedPropertyNode(mXPropertyAnimation.getPropertyHandle()));
-    addBinding(yBezierNode, resolver.getAnimatedPropertyNode(mYPropertyAnimation.getPropertyHandle()));
+    addBinding(
+        xBezierNode, resolver.getAnimatedPropertyNode(mXPropertyAnimation.getPropertyHandle()));
+    addBinding(
+        yBezierNode, resolver.getAnimatedPropertyNode(mYPropertyAnimation.getPropertyHandle()));
   }
 
   private static class BezierNode extends ValueNode {

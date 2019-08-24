@@ -52,7 +52,8 @@ public class TimingTransition extends TransitionAnimationBinding {
   @Override
   protected void setupBinding(Resolver resolver) {
     final TimingNode timingNode = new TimingNode(mDurationMs);
-    final ConstantNode initial = new ConstantNode(resolver.getCurrentState(mPropertyAnimation.getPropertyHandle()));
+    final ConstantNode initial =
+        new ConstantNode(resolver.getCurrentState(mPropertyAnimation.getPropertyHandle()));
     final ConstantNode end = new ConstantNode(mPropertyAnimation.getTargetValue());
     final MappingNode mappingNode = new MappingNode();
 
@@ -68,5 +69,4 @@ public class TimingTransition extends TransitionAnimationBinding {
     addBinding(
         mappingNode, resolver.getAnimatedPropertyNode(mPropertyAnimation.getPropertyHandle()));
   }
-
 }

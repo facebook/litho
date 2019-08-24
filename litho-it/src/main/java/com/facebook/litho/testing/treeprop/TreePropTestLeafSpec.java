@@ -23,9 +23,7 @@ import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.TreeProp;
 
-/**
- * Used in {@link TreePropTest}.
- */
+/** Used in {@link TreePropTest}. */
 @LayoutSpec
 public class TreePropTestLeafSpec {
 

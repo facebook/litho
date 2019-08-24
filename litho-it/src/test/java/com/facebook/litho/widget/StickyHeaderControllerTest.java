@@ -34,17 +34,14 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
-/**
- * Tests for {@link StickyHeaderController}
- */
+/** Tests for {@link StickyHeaderController} */
 @RunWith(ComponentsTestRunner.class)
 public class StickyHeaderControllerTest {
 
   private HasStickyHeader mHasStickyHeader;
   private StickyHeaderController mStickyHeaderController;
 
-  @Rule
-  public ExpectedException thrown = ExpectedException.none();
+  @Rule public ExpectedException thrown = ExpectedException.none();
 
   @Before
   public void setup() {

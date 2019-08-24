@@ -30,9 +30,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
 
-/**
- * Tests {@link ComponentQueries}
- */
+/** Tests {@link ComponentQueries} */
 @RunWith(ComponentsTestRunner.class)
 public class ComponentQueriesTest {
   private ComponentContext mContext;
@@ -44,11 +42,8 @@ public class ComponentQueriesTest {
 
   @Test
   public void testNoTextOnComponent() {
-    final LithoView view = ComponentTestHelper.mountComponent(
-        mContext,
-        Text.create(mContext)
-            .text("goodbye")
-        .build());
+    final LithoView view =
+        ComponentTestHelper.mountComponent(mContext, Text.create(mContext).text("goodbye").build());
 
     assertThat(ComponentQueries.hasTextMatchingPredicate(view, Predicates.equalTo("hello")))
         .isFalse();
@@ -56,11 +51,8 @@ public class ComponentQueriesTest {
 
   @Test
   public void testTextOnComponent() {
-    final LithoView view = ComponentTestHelper.mountComponent(
-        mContext,
-        Text.create(mContext)
-            .text("hello")
-            .build());
+    final LithoView view =
+        ComponentTestHelper.mountComponent(mContext, Text.create(mContext).text("hello").build());
 
     assertThat(ComponentQueries.hasTextMatchingPredicate(view, Predicates.equalTo("hello")))
         .isTrue();
@@ -68,11 +60,8 @@ public class ComponentQueriesTest {
 
   @Test
   public void testExtractTextFromTextComponent() {
-    final LithoView view = ComponentTestHelper.mountComponent(
-        mContext,
-        Text.create(mContext)
-            .text("hello")
-            .build());
+    final LithoView view =
+        ComponentTestHelper.mountComponent(mContext, Text.create(mContext).text("hello").build());
 
     assertThat(view.getTextContent().getTextItems())
         .isEqualTo(ImmutableList.<CharSequence>of("hello"));

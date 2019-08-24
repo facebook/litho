@@ -68,13 +68,7 @@ public class TouchExpansionDelegateTest {
 
     mTouchDelegate.registerTouchExpansion(0, view, new Rect(0, 0, 10, 10));
 
-    MotionEvent event = obtain(
-        uptimeMillis(),
-        uptimeMillis(),
-        ACTION_DOWN,
-        5,
-        5,
-        0);
+    MotionEvent event = obtain(uptimeMillis(), uptimeMillis(), ACTION_DOWN, 5, 5, 0);
 
     mTouchDelegate.onTouchEvent(event);
 
@@ -90,13 +84,14 @@ public class TouchExpansionDelegateTest {
 
     mTouchDelegate.registerTouchExpansion(0, view, new Rect(0, 0, 10, 10));
 
-    MotionEvent event = MotionEvent.obtain(
-        SystemClock.uptimeMillis(),
-        SystemClock.uptimeMillis(),
-        MotionEvent.ACTION_DOWN,
-        100,
-        100,
-        0);
+    MotionEvent event =
+        MotionEvent.obtain(
+            SystemClock.uptimeMillis(),
+            SystemClock.uptimeMillis(),
+            MotionEvent.ACTION_DOWN,
+            100,
+            100,
+            0);
 
     mTouchDelegate.onTouchEvent(event);
 
@@ -111,13 +106,14 @@ public class TouchExpansionDelegateTest {
     mTouchDelegate.registerTouchExpansion(0, view, new Rect(0, 0, 10, 10));
     mTouchDelegate.unregisterTouchExpansion(0);
 
-    MotionEvent event = MotionEvent.obtain(
-        SystemClock.uptimeMillis(),
-        SystemClock.uptimeMillis(),
-        MotionEvent.ACTION_DOWN,
-        5,
-        5,
-        0);
+    MotionEvent event =
+        MotionEvent.obtain(
+            SystemClock.uptimeMillis(),
+            SystemClock.uptimeMillis(),
+            MotionEvent.ACTION_DOWN,
+            5,
+            5,
+            0);
 
     mTouchDelegate.onTouchEvent(event);
 
@@ -158,23 +154,22 @@ public class TouchExpansionDelegateTest {
   public void testDrawingOrder() {
     final View view1 = mock(View.class);
     when(view1.getContext()).thenReturn(RuntimeEnvironment.application);
-    when(view1.dispatchTouchEvent(any(MotionEvent.class)))
-        .thenReturn(true);
+    when(view1.dispatchTouchEvent(any(MotionEvent.class))).thenReturn(true);
     mTouchDelegate.registerTouchExpansion(0, view1, new Rect(0, 0, 10, 10));
 
     final View view2 = mock(View.class);
     when(view2.getContext()).thenReturn(RuntimeEnvironment.application);
-    when(view2.dispatchTouchEvent(any(MotionEvent.class)))
-        .thenReturn(true);
+    when(view2.dispatchTouchEvent(any(MotionEvent.class))).thenReturn(true);
     mTouchDelegate.registerTouchExpansion(1, view2, new Rect(0, 0, 10, 10));
 
-    MotionEvent event = MotionEvent.obtain(
-        SystemClock.uptimeMillis(),
-        SystemClock.uptimeMillis(),
-        MotionEvent.ACTION_DOWN,
-        5,
-        5,
-        0);
+    MotionEvent event =
+        MotionEvent.obtain(
+            SystemClock.uptimeMillis(),
+            SystemClock.uptimeMillis(),
+            MotionEvent.ACTION_DOWN,
+            5,
+            5,
+            0);
 
     mTouchDelegate.onTouchEvent(event);
 

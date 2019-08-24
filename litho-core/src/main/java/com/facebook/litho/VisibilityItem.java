@@ -56,9 +56,7 @@ class VisibilityItem {
     return mGlobalKey;
   }
 
-  /**
-   * Sets the invisible event handler.
-   */
+  /** Sets the invisible event handler. */
   void setInvisibleHandler(EventHandler<InvisibleEvent> invisibleHandler) {
     mInvisibleHandler = invisibleHandler;
   }
@@ -69,9 +67,7 @@ class VisibilityItem {
     return mInvisibleHandler;
   }
 
-  /**
-   * Sets the unfocused event handler.
-   */
+  /** Sets the unfocused event handler. */
   void setUnfocusedHandler(EventHandler<UnfocusedVisibleEvent> unfocusedHandler) {
     mUnfocusedHandler = unfocusedHandler;
   }
@@ -104,10 +100,11 @@ class VisibilityItem {
    * range.
    */
   boolean isInFullImpressionRange() {
-    final int allEdgesVisible = FLAG_LEFT_EDGE_VISIBLE
-        | FLAG_TOP_EDGE_VISIBLE
-        | FLAG_RIGHT_EDGE_VISIBLE
-        | FLAG_BOTTOM_EDGE_VISIBLE;
+    final int allEdgesVisible =
+        FLAG_LEFT_EDGE_VISIBLE
+            | FLAG_TOP_EDGE_VISIBLE
+            | FLAG_RIGHT_EDGE_VISIBLE
+            | FLAG_BOTTOM_EDGE_VISIBLE;
 
     return (mFlags & allEdgesVisible) == allEdgesVisible;
   }

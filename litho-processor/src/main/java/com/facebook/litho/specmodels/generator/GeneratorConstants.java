@@ -16,9 +16,7 @@
 
 package com.facebook.litho.specmodels.generator;
 
-/**
- * Constants to be used when generating a Component.
- */
+/** Constants to be used when generating a Component. */
 public interface GeneratorConstants {
   String ABSTRACT_PARAM_NAME = "_abstract";
   String REF_VARIABLE_NAME = "_ref";

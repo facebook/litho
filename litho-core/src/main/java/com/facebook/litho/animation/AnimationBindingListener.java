@@ -18,9 +18,7 @@ package com.facebook.litho.animation;
 
 import com.facebook.litho.dataflow.GraphBinding;
 
-/**
- * Listener that receives events when a {@link GraphBinding} is activated or is finished.
- */
+/** Listener that receives events when a {@link GraphBinding} is activated or is finished. */
 public interface AnimationBindingListener {
   /**
    * Called when going to be started later. For example: when a set of {@link AnimationBinding}
@@ -29,26 +27,20 @@ public interface AnimationBindingListener {
    */
   void onScheduledToStartLater(AnimationBinding binding);
 
-  /**
-   * Called when {@link GraphBinding#activate} is called on the relevant binding.
-   */
+  /** Called when {@link GraphBinding#activate} is called on the relevant binding. */
   void onWillStart(AnimationBinding binding);
 
-  /**
-   * Called when a {@link GraphBinding} is finished, meaning all of its nodes are finished.
-   */
+  /** Called when a {@link GraphBinding} is finished, meaning all of its nodes are finished. */
   void onFinish(AnimationBinding binding);
 
-  /**
-   * Called when a listener (including this one) returns false from {@link #shouldStart}
-   */
+  /** Called when a listener (including this one) returns false from {@link #shouldStart} */
   void onCanceledBeforeStart(AnimationBinding binding);
 
   /**
    * Return 'false' to cancel this animation and keep it from starting.
    *
    * @return shouldStart whether to start this animation (i.e. return false to cancel it and prevent
-   * it from running)
+   *     it from running)
    */
   boolean shouldStart(AnimationBinding binding);
 }

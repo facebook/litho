@@ -57,8 +57,7 @@ import org.robolectric.shadows.ShadowView;
 public class LithoViewTest {
   private LithoView mLithoView;
 
-  @Rule
-  public ExpectedException mExpectedException = ExpectedException.none();
+  @Rule public ExpectedException mExpectedException = ExpectedException.none();
 
   @Before
   public void setup() {
@@ -81,14 +80,8 @@ public class LithoViewTest {
 
   @Test
   public void measureBeforeBeingAttached() {
-    mLithoView.measure(
-        makeMeasureSpec(0, UNSPECIFIED),
-        makeMeasureSpec(0, UNSPECIFIED));
-    mLithoView.layout(
-        0,
-        0,
-        mLithoView.getMeasuredWidth(),
-        mLithoView.getMeasuredHeight());
+    mLithoView.measure(makeMeasureSpec(0, UNSPECIFIED), makeMeasureSpec(0, UNSPECIFIED));
+    mLithoView.layout(0, 0, mLithoView.getMeasuredWidth(), mLithoView.getMeasuredHeight());
 
     // View got measured.
     assertThat(mLithoView.getMeasuredWidth()).isGreaterThan(0);
@@ -119,18 +112,10 @@ public class LithoViewTest {
     LithoView nullLithoView = new LithoView(application);
     nullLithoView.setComponent(component);
 
-    nullLithoView.measure(
-        makeMeasureSpec(0, UNSPECIFIED),
-        makeMeasureSpec(0, UNSPECIFIED));
-    nullLithoView.layout(
-        0,
-        0,
-        nullLithoView.getMeasuredWidth(),
-        nullLithoView.getMeasuredHeight());
+    nullLithoView.measure(makeMeasureSpec(0, UNSPECIFIED), makeMeasureSpec(0, UNSPECIFIED));
+    nullLithoView.layout(0, 0, nullLithoView.getMeasuredWidth(), nullLithoView.getMeasuredHeight());
 
-    LithoViewAssert.assertThat(nullLithoView)
-        .hasMeasuredWidthOf(0)
-        .hasMeasuredHeightOf(0);
+    LithoViewAssert.assertThat(nullLithoView).hasMeasuredWidthOf(0).hasMeasuredHeightOf(0);
   }
 
   @Test
@@ -141,15 +126,10 @@ public class LithoViewTest {
 
     mLithoView.setComponentTree(mockComponentTree);
     mLithoView.suppressMeasureComponentTree(true);
-    mLithoView.measure(
-        makeMeasureSpec(width, EXACTLY),
-        makeMeasureSpec(height, EXACTLY));
+    mLithoView.measure(makeMeasureSpec(width, EXACTLY), makeMeasureSpec(height, EXACTLY));
 
-    verify(mockComponentTree, never())
-        .measure(anyInt(), anyInt(), any(int[].class), anyBoolean());
-    LithoViewAssert.assertThat(mLithoView)
-        .hasMeasuredWidthOf(width)
-        .hasMeasuredHeightOf(height);
+    verify(mockComponentTree, never()).measure(anyInt(), anyInt(), any(int[].class), anyBoolean());
+    LithoViewAssert.assertThat(mLithoView).hasMeasuredWidthOf(width).hasMeasuredHeightOf(height);
   }
 
   @Test

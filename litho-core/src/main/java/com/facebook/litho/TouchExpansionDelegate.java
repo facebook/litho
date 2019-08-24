@@ -26,10 +26,7 @@ import android.view.ViewConfiguration;
 import androidx.collection.SparseArrayCompat;
 import androidx.core.util.Pools;
 
-/**
- * Compound touch delegate that forward touch events to recyclable
- * inner touch delegates.
- */
+/** Compound touch delegate that forward touch events to recyclable inner touch delegates. */
 class TouchExpansionDelegate extends TouchDelegate {
 
   private static final Rect IGNORED_RECT = new Rect();
@@ -44,8 +41,8 @@ class TouchExpansionDelegate extends TouchDelegate {
   }
 
   /**
-   * Registers an inner touch delegate for the given view with the specified
-   * expansion. It assumes the given view has its final bounds set.
+   * Registers an inner touch delegate for the given view with the specified expansion. It assumes
+   * the given view has its final bounds set.
    *
    * @param index The drawing order index of the given view.
    * @param view The view to which touch expansion should be applied.
@@ -149,8 +146,7 @@ class TouchExpansionDelegate extends TouchDelegate {
 
   private static class InnerTouchDelegate {
 
-    private static final Pools.SimplePool<InnerTouchDelegate> sPool =
-        new Pools.SimplePool<>(4);
+    private static final Pools.SimplePool<InnerTouchDelegate> sPool = new Pools.SimplePool<>(4);
 
     private View mDelegateView;
     private boolean mIsHandlingTouch;

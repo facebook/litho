@@ -21,12 +21,9 @@ import com.facebook.litho.specmodels.model.PropJavadocModel;
 import com.facebook.litho.specmodels.model.PropModel;
 import com.facebook.litho.specmodels.model.SpecModel;
 
-/**
- * Class that generates the state methods for a Component.
- */
+/** Class that generates the state methods for a Component. */
 public class JavadocGenerator {
-  private JavadocGenerator() {
-  }
+  private JavadocGenerator() {}
 
   public static TypeSpecDataHolder generate(SpecModel specModel) {
     final TypeSpecDataHolder.Builder typeSpecDataHolder = TypeSpecDataHolder.newBuilder();

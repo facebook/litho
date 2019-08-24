@@ -54,6 +54,7 @@ public class EventMethodExtractor {
 
   private static final List<Class<? extends Annotation>> METHOD_PARAM_ANNOTATIONS =
       new ArrayList<>();
+
   static {
     METHOD_PARAM_ANNOTATIONS.add(FromEvent.class);
     METHOD_PARAM_ANNOTATIONS.add(Param.class);

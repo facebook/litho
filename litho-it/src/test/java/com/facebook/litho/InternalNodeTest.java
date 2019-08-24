@@ -389,16 +389,9 @@ public class InternalNodeTest {
     final ComponentContext c = new ComponentContext(application);
     final int unspecifiedSizeSpec = makeSizeSpec(0, UNSPECIFIED);
     final int exactSizeSpec = makeSizeSpec(50, EXACTLY);
-    final Component textComponent = Text.create(c)
-        .textSizePx(16)
-        .text("test")
-        .build();
+    final Component textComponent = Text.create(c).textSizePx(16).text("test").build();
     final Size textSize = new Size();
-    textComponent.measure(
-        c,
-        exactSizeSpec,
-        unspecifiedSizeSpec,
-        textSize);
+    textComponent.measure(c, exactSizeSpec, unspecifiedSizeSpec, textSize);
 
     assertThat(textComponent.getCachedLayout()).isNotNull();
     InternalNode cachedLayout = textComponent.getCachedLayout();

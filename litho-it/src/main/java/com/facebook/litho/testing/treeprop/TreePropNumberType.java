@@ -18,7 +18,7 @@ package com.facebook.litho.testing.treeprop;
 
 public class TreePropNumberType {
 
-  final private int mValue;
+  private final int mValue;
 
   public TreePropNumberType(int value) {
     mValue = value;

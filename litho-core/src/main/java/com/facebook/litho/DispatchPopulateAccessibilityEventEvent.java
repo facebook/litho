@@ -22,8 +22,8 @@ import androidx.core.view.AccessibilityDelegateCompat;
 import com.facebook.litho.annotations.Event;
 
 /**
- * Components should implement an event of this type in order to receive callbacks to
- * {@link View#dispatchPopulateAccessibilityEvent(AccessibilityEvent)}
+ * Components should implement an event of this type in order to receive callbacks to {@link
+ * View#dispatchPopulateAccessibilityEvent(AccessibilityEvent)}
  */
 @Event(returnType = boolean.class)
 public class DispatchPopulateAccessibilityEventEvent {

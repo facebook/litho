@@ -61,9 +61,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
-/**
- * Tests {@link ComponentHost}
- */
+/** Tests {@link ComponentHost} */
 @RunWith(ComponentsTestRunner.class)
 public class ComponentHostTest {
 
@@ -107,8 +105,7 @@ public class ComponentHostTest {
     View v1 = new View(mContext.getAndroidContext());
     Rect v1Bounds = new Rect(0, 0, 10, 10);
     v1.measure(
-        makeMeasureSpec(v1Bounds.width(), EXACTLY),
-        makeMeasureSpec(v1Bounds.height(), EXACTLY));
+        makeMeasureSpec(v1Bounds.width(), EXACTLY), makeMeasureSpec(v1Bounds.height(), EXACTLY));
     v1.layout(v1Bounds.left, v1Bounds.top, v1Bounds.right, v1Bounds.bottom);
 
     MountItem mountItem3 = mount(2, v1);
@@ -284,8 +281,7 @@ public class ComponentHostTest {
   }
 
   @Test
-  public void testMoveItemWithoutTouchables()
-      throws Exception {
+  public void testMoveItemWithoutTouchables() throws Exception {
     Drawable d1 = new ColorDrawable(BLACK);
     MountItem mountItem1 = mount(1, d1);
 
@@ -847,8 +843,7 @@ public class ComponentHostTest {
   }
 
   @Test
-  public void testDrawableItemsSize()
-      throws Exception {
+  public void testDrawableItemsSize() throws Exception {
 
     assertThat(getDrawableItemsSize()).isEqualTo(0);
 
@@ -874,8 +869,7 @@ public class ComponentHostTest {
   }
 
   @Test
-  public void testGetDrawableMountItem()
-      throws Exception {
+  public void testGetDrawableMountItem() throws Exception {
     Drawable d1 = new ColorDrawable(BLACK);
     MountItem mountItem1 = mount(0, d1);
 
@@ -918,14 +912,12 @@ public class ComponentHostTest {
     assertThat(drawables).contains(d3);
   }
 
-  private int getDrawableItemsSize()
-      throws Exception {
+  private int getDrawableItemsSize() throws Exception {
     SparseArrayCompat drawableItems = Whitebox.getInternalState(mHost, "mDrawableMountItems");
     return Whitebox.invokeMethod(drawableItems, "size");
   }
 
-  private MountItem getDrawableMountItemAt(int index)
-      throws Exception {
+  private MountItem getDrawableMountItemAt(int index) throws Exception {
     SparseArrayCompat drawableItems = Whitebox.getInternalState(mHost, "mDrawableMountItems");
     return Whitebox.invokeMethod(drawableItems, "valueAt", index);
   }
@@ -1012,11 +1004,7 @@ public class ComponentHostTest {
     public void invalidate(Rect dirty) {
       super.invalidate(dirty);
 
-      trackInvalidation(
-          dirty.left,
-          dirty.top,
-          dirty.right,
-          dirty.bottom);
+      trackInvalidation(dirty.left, dirty.top, dirty.right, dirty.bottom);
     }
 
     @Override
@@ -1037,22 +1025,14 @@ public class ComponentHostTest {
     public void onViewAdded(View child) {
       super.onViewAdded(child);
 
-      trackInvalidation(
-          child.getLeft(),
-          child.getTop(),
-          child.getRight(),
-          child.getBottom());
+      trackInvalidation(child.getLeft(), child.getTop(), child.getRight(), child.getBottom());
     }
 
     @Override
     public void onViewRemoved(View child) {
       super.onViewRemoved(child);
 
-      trackInvalidation(
-          child.getLeft(),
-          child.getTop(),
-          child.getRight(),
-          child.getBottom());
+      trackInvalidation(child.getLeft(), child.getTop(), child.getRight(), child.getBottom());
     }
 
     @Override

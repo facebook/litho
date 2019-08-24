@@ -25,34 +25,22 @@ import androidx.annotation.IntDef;
  */
 public interface ViewportInfo {
 
-  /**
-   * @return the adapter position of the first visible view.
-   */
+  /** @return the adapter position of the first visible view. */
   int findFirstVisibleItemPosition();
 
-  /**
-   * @return the adapter position of the last visible view.
-   */
+  /** @return the adapter position of the last visible view. */
   int findLastVisibleItemPosition();
 
-  /**
-   * @return the adapter position of the first fully visible view.
-   */
+  /** @return the adapter position of the first fully visible view. */
   int findFirstFullyVisibleItemPosition();
 
-  /**
-   * @return the adapter position of the last fully visible view.
-   */
+  /** @return the adapter position of the last fully visible view. */
   int findLastFullyVisibleItemPosition();
 
-  /**
-   * @return total number of items in the adapter
-   */
+  /** @return total number of items in the adapter */
   int getItemCount();
 
-  /**
-   * Implement this interface to be notified of Viewport changes from the {@link Binder}
-   */
+  /** Implement this interface to be notified of Viewport changes from the {@link Binder} */
   interface ViewportChanged {
     void viewportChanged(
         int firstVisibleIndex,

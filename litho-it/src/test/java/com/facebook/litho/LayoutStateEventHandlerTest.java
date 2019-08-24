@@ -28,15 +28,13 @@ import org.robolectric.RuntimeEnvironment;
 
 @RunWith(ComponentsTestRunner.class)
 public class LayoutStateEventHandlerTest {
-  private int mUnspecifiedSizeSpec = 0; //SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED);
+  private int mUnspecifiedSizeSpec = 0; // SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED);
 
   private Component mRootComponent;
   private Component mNestedComponent;
 
   private static void assertCorrectEventHandler(
-      EventHandler eventHandler,
-      int expectedId,
-      Component expectedInput) {
+      EventHandler eventHandler, int expectedId, Component expectedInput) {
     assertThat(eventHandler.mHasEventDispatcher).isEqualTo(expectedInput);
     assertThat(eventHandler.id).isEqualTo(expectedId);
   }

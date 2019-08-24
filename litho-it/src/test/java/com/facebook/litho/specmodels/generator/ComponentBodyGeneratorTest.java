@@ -285,10 +285,10 @@ public class ComponentBodyGeneratorTest {
     assertThat(dataHolder.getFieldSpecs().get(0).toString())
         .isEqualTo(
             "@com.facebook.litho.annotations.TreeProp\n"
-            + "@com.facebook.litho.annotations.Comparable(\n"
-            + "    type = 3\n"
-            + ")\n"
-            + "long arg3;\n");
+                + "@com.facebook.litho.annotations.Comparable(\n"
+                + "    type = 3\n"
+                + ")\n"
+                + "long arg3;\n");
   }
 
   @Test

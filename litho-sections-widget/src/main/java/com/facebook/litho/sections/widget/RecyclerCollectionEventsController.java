@@ -44,16 +44,15 @@ public class RecyclerCollectionEventsController extends RecyclerEventsController
   private int mFirstCompletelyVisibleItemPosition = 0;
   private int mLastCompletelyVisibleItemPosition = 0;
 
-  /**
-   * Sent the RecyclerCollection a request to refresh it's backing data.
-   */
+  /** Sent the RecyclerCollection a request to refresh it's backing data. */
   public void requestRefresh() {
     requestRefresh(false);
   }
 
   /**
-   * Sent the RecyclerCollection a request to refresh it's backing data. If showSpinner is
-   * true, then refresh spinner is shown.
+   * Sent the RecyclerCollection a request to refresh it's backing data. If showSpinner is true,
+   * then refresh spinner is shown.
+   *
    * @param showSpinner
    */
   public void requestRefresh(boolean showSpinner) {
@@ -267,5 +266,4 @@ public class RecyclerCollectionEventsController extends RecyclerEventsController
       mLastCompletelyVisibleItemPosition = lastCompletelyVisibleItemPosition;
     }
   }
-
 }

@@ -24,13 +24,10 @@ import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
 import javax.lang.model.element.Modifier;
 
-/**
- * Class that generates the preamble for a Component.
- */
+/** Class that generates the preamble for a Component. */
 public class PreambleGenerator {
 
-  private PreambleGenerator() {
-  }
+  private PreambleGenerator() {}
 
   public static TypeSpecDataHolder generate(SpecModel specModel) {
     return TypeSpecDataHolder.newBuilder()
@@ -39,8 +36,8 @@ public class PreambleGenerator {
   }
 
   /**
-   * If the spec has injected dependencies, generate a DI constructor. Otherwise, generate a
-   * private constructor to enforce singleton-ity.
+   * If the spec has injected dependencies, generate a DI constructor. Otherwise, generate a private
+   * constructor to enforce singleton-ity.
    */
   static TypeSpecDataHolder generateConstructor(SpecModel specModel) {
     final MethodSpec.Builder constructorBuilder =

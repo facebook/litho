@@ -156,7 +156,6 @@ public class RenderThreadTransition extends TransitionAnimationBinding {
     return ObjectAnimator.ofFloat(target, viewAnimatorProperty, finalValue);
   }
 
-
   private static Property getViewAnimatorProperty(AnimatedProperty animatedProperty) {
     if (animatedProperty == AnimatedProperties.ALPHA) {
       return View.ALPHA;

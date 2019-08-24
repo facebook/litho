@@ -16,9 +16,7 @@
 
 package com.facebook.litho.dataflow;
 
-/**
- * Multi-input node for unit tests
- */
+/** Multi-input node for unit tests */
 public class AdditionNode extends ValueNode {
 
   @Override

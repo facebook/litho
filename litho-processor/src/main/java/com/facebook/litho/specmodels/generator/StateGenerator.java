@@ -46,7 +46,6 @@ public class StateGenerator {
   private static final String STATE_CONTAINER_NAME = "_stateContainer";
   private static final String LAZY_STATE_UPDATE_VALUE_PARAM = "lazyUpdateValue";
 
-
   private enum StateUpdateType {
     DEFAULT,
     SYNC,
@@ -216,14 +215,16 @@ public class StateGenerator {
         throw new RuntimeException("Unhandled state update type: " + stateUpdateType);
     }
 
-    final MethodSpec.Builder builder = MethodSpec.methodBuilder(name)
-        .addModifiers(Modifier.PROTECTED, Modifier.STATIC)
-        .addParameter(specModel.getContextClass(), "c");
+    final MethodSpec.Builder builder =
+        MethodSpec.methodBuilder(name)
+            .addModifiers(Modifier.PROTECTED, Modifier.STATIC)
+            .addParameter(specModel.getContextClass(), "c");
 
-    builder.addStatement(
-        "$T _component = c.get$LScope()",
-        specModel.getComponentClass(),
-        specModel.getComponentClass().simpleName())
+    builder
+        .addStatement(
+            "$T _component = c.get$LScope()",
+            specModel.getComponentClass(),
+            specModel.getComponentClass().simpleName())
         .addCode(
             CodeBlock.builder()
                 .beginControlFlow("if (_component == null)")
@@ -250,7 +251,6 @@ public class StateGenerator {
     }
     codeBlockBuilder.add(");\n");
     builder.addCode(codeBlockBuilder.build());
-
 
     final String stateUpdateAttribution =
         '"' + specModel.getComponentName() + "." + updateStateMethod.name.toString() + '"';
@@ -300,10 +300,11 @@ public class StateGenerator {
             .addTypeVariables(MethodParamModelUtils.getTypeVariables(stateValue))
             .addParameter(stateValue.getTypeName(), LAZY_STATE_UPDATE_VALUE_PARAM, Modifier.FINAL);
 
-    builder.addStatement(
-        "$T _component = c.get$LScope()",
-        specModel.getComponentClass(),
-        specModel.getComponentClass().simpleName())
+    builder
+        .addStatement(
+            "$T _component = c.get$LScope()",
+            specModel.getComponentClass(),
+            specModel.getComponentClass().simpleName())
         .addCode(
             CodeBlock.builder()
                 .beginControlFlow("if (_component == null)")

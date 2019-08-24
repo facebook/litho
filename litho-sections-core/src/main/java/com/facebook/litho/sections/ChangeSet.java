@@ -56,16 +56,12 @@ public final class ChangeSet {
     mChanges = new ArrayList<>();
   }
 
-  /**
-   * @return the {@link Change} at index.
-   */
+  /** @return the {@link Change} at index. */
   public Change getChangeAt(int index) {
     return mChanges.get(index);
   }
 
-  /**
-   * @return the number of {@link Change}s in this ChangeSet.
-   */
+  /** @return the number of {@link Change}s in this ChangeSet. */
   public int getChangeCount() {
     return mChanges.size();
   }
@@ -208,8 +204,7 @@ public final class ChangeSet {
   }
 
   /**
-   * @return the total number of items in the {@link Target}
-   * after this ChangeSet will be applied.
+   * @return the total number of items in the {@link Target} after this ChangeSet will be applied.
    */
   int getCount() {
     return mFinalCount;
@@ -282,12 +277,12 @@ public final class ChangeSet {
     return mergedChangeSet;
   }
 
-  //TODO implement pools t11953296
+  // TODO implement pools t11953296
   private static ChangeSet acquire() {
     return new ChangeSet();
   }
 
-  //TODO implement pools t11953296
+  // TODO implement pools t11953296
   void release() {
     for (Change change : mChanges) {
       change.release();

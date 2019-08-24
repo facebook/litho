@@ -21,7 +21,7 @@ import com.facebook.litho.TransitionId;
  * A pair of transition key and {@link AnimatedProperty} which can be used to identify a single
  * animating component property at runtime.
  */
-final public class PropertyHandle {
+public final class PropertyHandle {
 
   private final TransitionId mTransitionId;
   private final AnimatedProperty mProperty;

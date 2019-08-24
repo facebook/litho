@@ -44,28 +44,30 @@ public class VerySimpleGroupSectionSpecTest {
   @Test
   public void testInitialChildren() throws Exception {
 
-    Section s = mTester.prepare(
-        VerySimpleGroupSection.create(mTester.getContext()).numberOfDummy(4).build());
+    Section s =
+        mTester.prepare(
+            VerySimpleGroupSection.create(mTester.getContext()).numberOfDummy(4).build());
 
     List<SubSection> subSections = mTester.getChildren(s);
 
     assertThat(subSections)
         .containsExactly(
-                SubSection.of(
-                    SingleComponentSection.create(mTester.getContext())
-                        .key("key0")
-                        .component(Text.create(mTester.getContext()).text("Lol hi 0"))
-                        .build()),
-                SubSection.of(SingleComponentSection.class),
-                SubSection.of(SingleComponentSection.class),
-                SubSection.of(SingleComponentSection.class));
+            SubSection.of(
+                SingleComponentSection.create(mTester.getContext())
+                    .key("key0")
+                    .component(Text.create(mTester.getContext()).text("Lol hi 0"))
+                    .build()),
+            SubSection.of(SingleComponentSection.class),
+            SubSection.of(SingleComponentSection.class),
+            SubSection.of(SingleComponentSection.class));
   }
 
   @Test
   public void testStateUpdate() throws Exception {
 
-    Section s = mTester.prepare(
-        VerySimpleGroupSection.create(mTester.getContext()).numberOfDummy(4).build());
+    Section s =
+        mTester.prepare(
+            VerySimpleGroupSection.create(mTester.getContext()).numberOfDummy(4).build());
 
     assertThat(mTester.getChildren(s).size()).isEqualTo(4);
 
@@ -77,8 +79,9 @@ public class VerySimpleGroupSectionSpecTest {
   @Test
   public void testDataBound() throws Exception {
     VerySimpleGroupSection s =
-        (VerySimpleGroupSection) mTester.prepare(
-            VerySimpleGroupSection.create(mTester.getContext()).numberOfDummy(4).build());
+        (VerySimpleGroupSection)
+            mTester.prepare(
+                VerySimpleGroupSection.create(mTester.getContext()).numberOfDummy(4).build());
 
     s.dataBound(mTester.getScopedContext(s));
 

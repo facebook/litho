@@ -34,45 +34,33 @@ import java.util.List;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-/**
- * Tests for {@link LinearLayoutInfo}
- */
+/** Tests for {@link LinearLayoutInfo} */
 @RunWith(ComponentsTestRunner.class)
 public class LinearLayoutInfoTest {
 
   @Test
   public void testOrientations() {
-    final LinearLayoutInfo verticalLinearLayoutInfo = new LinearLayoutInfo(
-        application,
-        VERTICAL,
-        false);
+    final LinearLayoutInfo verticalLinearLayoutInfo =
+        new LinearLayoutInfo(application, VERTICAL, false);
 
     assertThat(VERTICAL).isEqualTo(verticalLinearLayoutInfo.getScrollDirection());
 
-    final LinearLayoutInfo horizontalLinearLayoutInfo = new LinearLayoutInfo(
-        application,
-        HORIZONTAL,
-        false);
+    final LinearLayoutInfo horizontalLinearLayoutInfo =
+        new LinearLayoutInfo(application, HORIZONTAL, false);
 
     assertThat(HORIZONTAL).isEqualTo(horizontalLinearLayoutInfo.getScrollDirection());
   }
 
   @Test
   public void testGetLayoutManager() {
-    final LinearLayoutInfo linearLayoutInfo = new LinearLayoutInfo(
-        application,
-        VERTICAL,
-        false);
+    final LinearLayoutInfo linearLayoutInfo = new LinearLayoutInfo(application, VERTICAL, false);
 
     assertThat(linearLayoutInfo.getLayoutManager()).isInstanceOf(LinearLayoutManager.class);
   }
 
   @Test
   public void testApproximateRangeVertical() {
-    final LinearLayoutInfo linearLayoutInfo = new LinearLayoutInfo(
-        application,
-        VERTICAL,
-        false);
+    final LinearLayoutInfo linearLayoutInfo = new LinearLayoutInfo(application, VERTICAL, false);
 
     int rangeSize = linearLayoutInfo.approximateRangeSize(10, 10, 10, 100);
 
@@ -81,10 +69,7 @@ public class LinearLayoutInfoTest {
 
   @Test
   public void testApproximateRangeHorizontal() {
-    final LinearLayoutInfo linearLayoutInfo = new LinearLayoutInfo(
-        application,
-        HORIZONTAL,
-        false);
+    final LinearLayoutInfo linearLayoutInfo = new LinearLayoutInfo(application, HORIZONTAL, false);
 
     int rangeSize = linearLayoutInfo.approximateRangeSize(10, 10, 100, 10);
 
@@ -93,10 +78,7 @@ public class LinearLayoutInfoTest {
 
   @Test
   public void testGetChildMeasureSpecVertical() {
-    final LinearLayoutInfo linearLayoutInfo = new LinearLayoutInfo(
-        application,
-        VERTICAL,
-        false);
+    final LinearLayoutInfo linearLayoutInfo = new LinearLayoutInfo(application, VERTICAL, false);
     final int sizeSpec = makeSizeSpec(200, EXACTLY);
 
     final int heightSpec = linearLayoutInfo.getChildHeightSpec(sizeSpec, null);
@@ -108,10 +90,7 @@ public class LinearLayoutInfoTest {
 
   @Test
   public void testGetChildMeasureSpecHorizontal() {
-    final LinearLayoutInfo linearLayoutInfo = new LinearLayoutInfo(
-        application,
-        HORIZONTAL,
-        false);
+    final LinearLayoutInfo linearLayoutInfo = new LinearLayoutInfo(application, HORIZONTAL, false);
     final int sizeSpec = makeSizeSpec(200, EXACTLY);
 
     final int heightSpec = linearLayoutInfo.getChildHeightSpec(sizeSpec, null);

@@ -201,6 +201,7 @@ public class DelegateMethodDescriptions {
       GROUP_SECTION_SPEC_DELEGATE_METHODS_MAP;
   static final Map<Class<? extends Annotation>, DelegateMethodDescription>
       DIFF_SECTION_SPEC_DELEGATE_METHODS_MAP;
+
   static {
     Map<Class<? extends Annotation>, DelegateMethodDescription> serviceAwareDelegateMethodsMap =
         getTreeMap();
@@ -237,7 +238,7 @@ public class DelegateMethodDescriptions {
   }
 
   public static Map<Class<? extends Annotation>, DelegateMethodDescription>
-  getGroupSectionSpecDelegatesMap(GroupSectionSpecModel specModel) {
+      getGroupSectionSpecDelegatesMap(GroupSectionSpecModel specModel) {
     Map<Class<? extends Annotation>, DelegateMethodDescription> groupSectionSpecDelegateMethodsMap =
         getTreeMap();
 
@@ -248,7 +249,7 @@ public class DelegateMethodDescriptions {
   }
 
   public static Map<Class<? extends Annotation>, DelegateMethodDescription>
-  getDiffSectionSpecDelegatesMap(DiffSectionSpecModel specModel) {
+      getDiffSectionSpecDelegatesMap(DiffSectionSpecModel specModel) {
     Map<Class<? extends Annotation>, DelegateMethodDescription> diffSectionSpecDelegateMethodsMap =
         getTreeMap();
 
@@ -310,8 +311,7 @@ public class DelegateMethodDescriptions {
         .addAnnotation(Override.class)
         .addModifiers(Modifier.PUBLIC)
         .addParameter(ParameterSpec.builder(SectionClassNames.SECTION_CONTEXT, "context").build())
-        .addStatement(
-            "$L = onCreateService(context)", serviceInstanceName)
+        .addStatement("$L = onCreateService(context)", serviceInstanceName)
         .build();
   }
 

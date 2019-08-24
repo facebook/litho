@@ -37,7 +37,7 @@ class StickyHeaderControllerImpl extends RecyclerView.OnScrollListener
 
   static final String RECYCLER_ARGUMENT_NULL = "Cannot initialize with null SectionsRecyclerView.";
   static final String RECYCLER_ALREADY_INITIALIZED =
-          "SectionsRecyclerView has already been initialized but never reset.";
+      "SectionsRecyclerView has already been initialized but never reset.";
   static final String RECYCLER_NOT_INITIALIZED = "SectionsRecyclerView has not been set yet.";
   static final String LAYOUTMANAGER_NOT_INITIALIZED =
       "LayoutManager of RecyclerView is not initialized yet.";
@@ -162,9 +162,10 @@ class StickyHeaderControllerImpl extends RecyclerView.OnScrollListener
       for (int i = firstVisiblePosition; i <= lastVisiblePosition; i++) {
         if (mHasStickyHeader.isSticky(i)) {
           final View nextStickyHeader = mLayoutManager.findViewByPosition(i);
-          final int offsetBetweenStickyHeaders = nextStickyHeader.getTop()
-              - mSectionsRecyclerView.getStickyHeader().getBottom()
-              + mSectionsRecyclerView.getPaddingTop();
+          final int offsetBetweenStickyHeaders =
+              nextStickyHeader.getTop()
+                  - mSectionsRecyclerView.getStickyHeader().getBottom()
+                  + mSectionsRecyclerView.getPaddingTop();
           translationY = Math.min(offsetBetweenStickyHeaders, 0);
           break;
         }
@@ -191,7 +192,7 @@ class StickyHeaderControllerImpl extends RecyclerView.OnScrollListener
     // however, that method is available only from API19
     final boolean isAttachedToWindow = view.getWindowToken() != null;
     if (isAttachedToWindow) {
-        view.onStartTemporaryDetach();
+      view.onStartTemporaryDetach();
     }
   }
 

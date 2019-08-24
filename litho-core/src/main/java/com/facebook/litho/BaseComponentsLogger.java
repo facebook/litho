@@ -22,9 +22,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * Base implementation of {@link ComponentsLogger} which handles pooling event objects.
- */
+/** Base implementation of {@link ComponentsLogger} which handles pooling event objects. */
 public abstract class BaseComponentsLogger implements ComponentsLogger {
 
   /** Filenames that match these keywords will be added to the stack trace. */

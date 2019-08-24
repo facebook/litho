@@ -41,9 +41,7 @@ import org.robolectric.Robolectric;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
-/**
- * Tests {@link ViewPredicates}
- */
+/** Tests {@link ViewPredicates} */
 @RunWith(ComponentsTestRunner.class)
 @Config(shadows = ColorDrawableShadow.class)
 public class ViewPredicatesTest {
@@ -81,9 +79,7 @@ public class ViewPredicatesTest {
     mImageViewWithCustomDrawable.setImageResource(R.drawable.custom_drawable);
 
     final ComponentContext context = new ComponentContext(activity);
-    mLithoViewWithText = ComponentTestHelper.mountComponent(
-        Text.create(context)
-            .text("Hello"));
+    mLithoViewWithText = ComponentTestHelper.mountComponent(Text.create(context).text("Hello"));
   }
 
   @Test

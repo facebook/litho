@@ -32,7 +32,7 @@ import javax.annotation.concurrent.GuardedBy;
  * nodes and connections when they are 'activated' and can remove nodes and connections when they're
  * deactivated.
  *
- * Data flows through the graph on each frame, from input nodes to output nodes.
+ * <p>Data flows through the graph on each frame, from input nodes to output nodes.
  */
 public class DataFlowGraph {
 
@@ -104,8 +104,8 @@ public class DataFlowGraph {
   }
 
   /**
-   * Removes a {@link GraphBinding}. This means any nodes that only belonged to that binding will
-   * be removed from the graph.
+   * Removes a {@link GraphBinding}. This means any nodes that only belonged to that binding will be
+   * removed from the graph.
    */
   public synchronized void unregister(GraphBinding binding) {
     if (!mBindings.remove(binding)) {
@@ -212,8 +212,7 @@ public class DataFlowGraph {
       }
 
       final boolean nodeIsNowFinished =
-          !(node instanceof NodeCanFinish) ||
-              ((NodeCanFinish) node).isFinished();
+          !(node instanceof NodeCanFinish) || ((NodeCanFinish) node).isFinished();
       if (nodeIsNowFinished) {
         nodeState.isFinished = true;
       }

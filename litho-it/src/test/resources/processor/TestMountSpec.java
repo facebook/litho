@@ -70,11 +70,10 @@ import javax.annotation.Nullable;
 
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
 @MountSpec(
-  events = TestEvent.class,
-  isPureRender = true,
-  hasChildLithoViews = true,
-  canPreallocate = true
-)
+    events = TestEvent.class,
+    isPureRender = true,
+    hasChildLithoViews = true,
+    canPreallocate = true)
 public class TestMountSpec<S extends View> implements TestTag {
   @PropDefault protected static final boolean prop2 = true;
 

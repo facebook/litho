@@ -58,9 +58,7 @@ class ProgressSpec {
   @PropDefault static final int color = Color.TRANSPARENT;
 
   @OnLoadStyle
-  static void onLoadStyle(
-      ComponentContext c,
-      Output<Drawable> indeterminateDrawable) {
+  static void onLoadStyle(ComponentContext c, Output<Drawable> indeterminateDrawable) {
     indeterminateDrawable.set(getStyledIndeterminateDrawable(c, 0));
   }
 
@@ -72,17 +70,16 @@ class ProgressSpec {
     if (indeterminateDrawable != null) {
       resolvedIndeterminateDrawable.set(indeterminateDrawable);
     } else {
-      resolvedIndeterminateDrawable.set(getStyledIndeterminateDrawable(
-          c,
-          android.R.attr.progressBarStyle));
+      resolvedIndeterminateDrawable.set(
+          getStyledIndeterminateDrawable(c, android.R.attr.progressBarStyle));
     }
   }
 
   @OnMeasure
   static void onMeasure(
       ComponentContext c, ComponentLayout layout, int widthSpec, int heightSpec, Size size) {
-    if (SizeSpec.getMode(widthSpec) == SizeSpec.UNSPECIFIED &&
-        SizeSpec.getMode(heightSpec) == SizeSpec.UNSPECIFIED) {
+    if (SizeSpec.getMode(widthSpec) == SizeSpec.UNSPECIFIED
+        && SizeSpec.getMode(heightSpec) == SizeSpec.UNSPECIFIED) {
       size.width = DEFAULT_SIZE;
       size.height = DEFAULT_SIZE;
     } else {
@@ -102,9 +99,10 @@ class ProgressSpec {
     }
 
     if (color != Color.TRANSPARENT && progressBar.getIndeterminateDrawable() != null) {
-      progressBar.getIndeterminateDrawable().mutate().setColorFilter(
-          color,
-          PorterDuff.Mode.MULTIPLY);
+      progressBar
+          .getIndeterminateDrawable()
+          .mutate()
+          .setColorFilter(color, PorterDuff.Mode.MULTIPLY);
     }
   }
 
@@ -155,9 +153,9 @@ class ProgressSpec {
     }
 
     /**
-     * ProgressBar is not setting the right bounds on the drawable passed to
-     * {@link ProgressBar#setIndeterminateDrawable(Drawable)}. Overriding the method and setting
-     * the bounds before passing the drawable in solves the issue.
+     * ProgressBar is not setting the right bounds on the drawable passed to {@link
+     * ProgressBar#setIndeterminateDrawable(Drawable)}. Overriding the method and setting the bounds
+     * before passing the drawable in solves the issue.
      */
     @Override
     public void setIndeterminateDrawable(Drawable d) {

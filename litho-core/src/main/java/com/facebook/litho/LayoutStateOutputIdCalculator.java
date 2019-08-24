@@ -20,9 +20,9 @@ import androidx.annotation.Nullable;
 import androidx.collection.LongSparseArray;
 
 /**
- * Utility class used to calculate the id of a {@link LayoutOutput} in the context of a
- * {@link LayoutState}. It keeps track of all the {@link LayoutOutput}s with the same baseId
- * in order to generate unique ids even if the baseId is shared by multiple LayoutOutputs.
+ * Utility class used to calculate the id of a {@link LayoutOutput} in the context of a {@link
+ * LayoutState}. It keeps track of all the {@link LayoutOutput}s with the same baseId in order to
+ * generate unique ids even if the baseId is shared by multiple LayoutOutputs.
  */
 class LayoutStateOutputIdCalculator {
 
@@ -39,8 +39,7 @@ class LayoutStateOutputIdCalculator {
   // Last 16 bits are for sequence.
   private static final int TYPE_SHIFT = 16;
 
-  public LayoutStateOutputIdCalculator() {
-  }
+  public LayoutStateOutputIdCalculator() {}
 
   void calculateAndSetLayoutOutputIdAndUpdateState(
       LayoutOutput layoutOutput,
@@ -58,10 +57,8 @@ class LayoutStateOutputIdCalculator {
     // on the component of the LayoutOutput, the output type {@link LayoutOutput#LayoutOutputType}
     // the depth of this output in the view hierarchy and an incremental sequence number for
     // LayoutOutputs that have all the other parameters in common.
-    long baseLayoutId = LayoutStateOutputIdCalculator.calculateLayoutOutputBaseId(
-        layoutOutput,
-        level,
-        type);
+    long baseLayoutId =
+        LayoutStateOutputIdCalculator.calculateLayoutOutputBaseId(layoutOutput, level, type);
     int sequence;
     if (previousId > 0 && getLevelFromId(previousId) == level) {
       sequence = getSequenceFromId(previousId);
@@ -81,9 +78,8 @@ class LayoutStateOutputIdCalculator {
     } else {
       // If we successfully re-used the id from a previous LayoutOutput we can also set the
       // UpdateState so that MountItem won't need to call shouldComponentUpdate.
-      layoutOutputUpdateState = isCachedOutputUpdated ?
-          LayoutOutput.STATE_UPDATED :
-          LayoutOutput.STATE_DIRTY;
+      layoutOutputUpdateState =
+          isCachedOutputUpdated ? LayoutOutput.STATE_UPDATED : LayoutOutput.STATE_DIRTY;
     }
     layoutOutput.setUpdateState(layoutOutputUpdateState);
 
@@ -94,9 +90,7 @@ class LayoutStateOutputIdCalculator {
   }
 
   void calculateAndSetVisibilityOutputId(
-      VisibilityOutput visibilityOutput,
-      int level,
-      long previousId) {
+      VisibilityOutput visibilityOutput, int level, long previousId) {
 
     if (mVisibilityCurrentSequenceForBaseId == null) {
       mVisibilityCurrentSequenceForBaseId = new LongSparseArray<>(2);
@@ -107,9 +101,7 @@ class LayoutStateOutputIdCalculator {
     // function based on the component of the VisibilityOutput, the depth of this output in the view
     // hierarchy and an incremental sequence number for VisibilityOutputs that have all the other
     // parameters in common.
-    final long baseVisibilityId = calculateVisibilityOutputBaseId(
-        visibilityOutput,
-        level);
+    final long baseVisibilityId = calculateVisibilityOutputBaseId(visibilityOutput, level);
     int sequence;
     if (previousId > 0 && getLevelFromId(previousId) == level) {
       sequence = getSequenceFromId(previousId);
@@ -140,15 +132,18 @@ class LayoutStateOutputIdCalculator {
   }
 
   /**
-   * Calculates the final id for a LayoutOutput based on the baseId see
-   * {@link LayoutStateOutputIdCalculator#calculateLayoutOutputBaseId(LayoutOutput, int, int)} and
-   * on a sequence number. The sequence number must be guaranteed to be unique for LayoutOutputs
-   * with the same baseId.
+   * Calculates the final id for a LayoutOutput based on the baseId see {@link
+   * LayoutStateOutputIdCalculator#calculateLayoutOutputBaseId(LayoutOutput, int, int)} and on a
+   * sequence number. The sequence number must be guaranteed to be unique for LayoutOutputs with the
+   * same baseId.
    */
   static long calculateId(long baseId, int sequence) {
     if (sequence < 0 || sequence > MAX_SEQUENCE) {
-      throw new IllegalArgumentException("Sequence must be non-negative and no greater than " +
-          MAX_SEQUENCE + " actual sequence "+sequence);
+      throw new IllegalArgumentException(
+          "Sequence must be non-negative and no greater than "
+              + MAX_SEQUENCE
+              + " actual sequence "
+              + sequence);
     }
 
     return baseId | sequence;
@@ -166,28 +161,22 @@ class LayoutStateOutputIdCalculator {
   }
 
   /**
-   * Calculates an id for a {@link VisibilityOutput}. See
-   * {@link LayoutStateOutputIdCalculator#calculateVisibilityOutputBaseId(VisibilityOutput, int)}
-   * and {@link LayoutStateOutputIdCalculator#calculateId(long, int)}.
+   * Calculates an id for a {@link VisibilityOutput}. See {@link
+   * LayoutStateOutputIdCalculator#calculateVisibilityOutputBaseId(VisibilityOutput, int)} and
+   * {@link LayoutStateOutputIdCalculator#calculateId(long, int)}.
    */
   static long calculateVisibilityOutputId(
-      VisibilityOutput visibilityOutput,
-      int level,
-      int sequence) {
+      VisibilityOutput visibilityOutput, int level, int sequence) {
     final long baseId = calculateVisibilityOutputBaseId(visibilityOutput, level);
     return calculateId(baseId, sequence);
   }
 
-  /**
-   * @return the sequence part of an id.
-   */
+  /** @return the sequence part of an id. */
   static int getSequenceFromId(long id) {
     return (int) id & 0x00FFFF;
   }
 
-  /**
-   * @return the level part of an id.
-   */
+  /** @return the level part of an id. */
   static int getLevelFromId(long id) {
     return (int) ((id >> LEVEL_SHIFT) & 0xFF);
   }
@@ -227,8 +216,7 @@ class LayoutStateOutputIdCalculator {
    * depth in the View hierarchy.
    */
   private static long calculateVisibilityOutputBaseId(
-      VisibilityOutput visibilityOutput,
-      int level) {
+      VisibilityOutput visibilityOutput, int level) {
     if (level < 0 || level > MAX_LEVEL) {
       throw new IllegalArgumentException(
           "Level must be non-negative and no greater than " + MAX_LEVEL + " actual level " + level);

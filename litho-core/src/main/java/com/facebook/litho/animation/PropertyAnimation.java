@@ -18,10 +18,9 @@ package com.facebook.litho.animation;
 import com.facebook.litho.TransitionId;
 
 /**
- * Represents the animation specification for a single property:
- *  - What transition key it's for
- *  - What property for that transition key that should animate
- *  - The value that property should animate to
+ * Represents the animation specification for a single property: - What transition key it's for -
+ * What property for that transition key that should animate - The value that property should
+ * animate to
  */
 public class PropertyAnimation {
 
@@ -61,8 +60,8 @@ public class PropertyAnimation {
 
     PropertyAnimation that = (PropertyAnimation) o;
 
-    return Float.compare(that.mTargetValue, mTargetValue) == 0 &&
-        mPropertyHandle.equals(that.mPropertyHandle);
+    return Float.compare(that.mTargetValue, mTargetValue) == 0
+        && mPropertyHandle.equals(that.mPropertyHandle);
   }
 
   @Override
@@ -74,7 +73,10 @@ public class PropertyAnimation {
 
   @Override
   public String toString() {
-    return "PropertyAnimation{ PropertyHandle=" + mPropertyHandle + ", TargetValue=" +
-        mTargetValue + "}";
+    return "PropertyAnimation{ PropertyHandle="
+        + mPropertyHandle
+        + ", TargetValue="
+        + mTargetValue
+        + "}";
   }
 }

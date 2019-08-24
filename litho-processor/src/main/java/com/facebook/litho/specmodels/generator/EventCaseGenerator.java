@@ -52,8 +52,7 @@ public class EventCaseGenerator {
 
     if (mWithErrorPropagation) {
       boolean hasErrorHandler =
-          mEventMethodModels
-              .stream()
+          mEventMethodModels.stream()
               .anyMatch(e -> e.name.toString().equals(INTERNAL_ON_ERROR_HANDLER_NAME));
 
       if (!hasErrorHandler) {

@@ -22,9 +22,7 @@ import java.lang.annotation.Annotation;
 import java.util.List;
 import javax.annotation.concurrent.Immutable;
 
-/**
- * Model that is an abstract representation of a method param that is an inter-stage input.
- */
+/** Model that is an abstract representation of a method param that is an inter-stage input. */
 @Immutable
 public class InterStageInputParamModel implements MethodParamModel {
   private final MethodParamModel mParamModel;

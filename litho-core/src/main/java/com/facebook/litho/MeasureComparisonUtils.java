@@ -28,21 +28,15 @@ public class MeasureComparisonUtils {
   private static final float DELTA = 0.5f;
 
   private static boolean newSizeIsExactAndMatchesOldMeasuredSize(
-      int newSizeSpecMode,
-      int newSizeSpecSize,
-      float oldMeasuredSize) {
-    return (newSizeSpecMode == EXACTLY) &&
-        (Math.abs(newSizeSpecSize - oldMeasuredSize) < DELTA);
+      int newSizeSpecMode, int newSizeSpecSize, float oldMeasuredSize) {
+    return (newSizeSpecMode == EXACTLY) && (Math.abs(newSizeSpecSize - oldMeasuredSize) < DELTA);
   }
 
   private static boolean oldSizeIsUnspecifiedAndStillFits(
-      int oldSizeSpecMode,
-      int newSizeSpecMode,
-      int newSizeSpecSize,
-      float oldMeasuredSize) {
-    return newSizeSpecMode == AT_MOST &&
-        oldSizeSpecMode == UNSPECIFIED &&
-        newSizeSpecSize >= oldMeasuredSize;
+      int oldSizeSpecMode, int newSizeSpecMode, int newSizeSpecSize, float oldMeasuredSize) {
+    return newSizeSpecMode == AT_MOST
+        && oldSizeSpecMode == UNSPECIFIED
+        && newSizeSpecSize >= oldMeasuredSize;
   }
 
   private static boolean newMeasureSizeIsStricterAndStillValid(
@@ -51,10 +45,10 @@ public class MeasureComparisonUtils {
       int oldSizeSpecSize,
       int newSizeSpecSize,
       float oldMeasuredSize) {
-    return oldSizeSpecMode == AT_MOST &&
-        newSizeSpecMode == AT_MOST &&
-        oldSizeSpecSize > newSizeSpecSize &&
-        oldMeasuredSize <= newSizeSpecSize;
+    return oldSizeSpecMode == AT_MOST
+        && newSizeSpecMode == AT_MOST
+        && oldSizeSpecSize > newSizeSpecSize
+        && oldMeasuredSize <= newSizeSpecSize;
   }
 
   public static boolean areMeasureSpecsEquivalent(int specA, int specB) {
@@ -63,9 +57,7 @@ public class MeasureComparisonUtils {
   }
 
   public static boolean isMeasureSpecCompatible(
-      int oldSizeSpec,
-      int sizeSpec,
-      int oldMeasuredSize) {
+      int oldSizeSpec, int sizeSpec, int oldMeasuredSize) {
     final int newSpecMode = SizeSpec.getMode(sizeSpec);
     final int newSpecSize = SizeSpec.getSize(sizeSpec);
     final int oldSpecMode = SizeSpec.getMode(oldSizeSpec);

@@ -19,14 +19,11 @@ package com.facebook.litho.widget;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
 
-/**
- * A factory used to create {@link LithoView}s in {@link RecyclerBinder}.
- */
+/** A factory used to create {@link LithoView}s in {@link RecyclerBinder}. */
 public interface LithoViewFactory {
 
   /**
    * @return a new {@link LithoView} that will be used to host children of the {@link RecyclerSpec}.
    */
   LithoView createLithoView(ComponentContext context);
-
 }

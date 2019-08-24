@@ -19,13 +19,11 @@ package com.facebook.litho.sections.widget;
 import android.content.Context;
 import com.facebook.litho.widget.LinearLayoutInfo;
 
-/**
- * A Factory used to create {@link LinearLayoutInfo}s in {@link ListRecyclerConfiguration}.
- */
+/** A Factory used to create {@link LinearLayoutInfo}s in {@link ListRecyclerConfiguration}. */
 public interface LinearLayoutInfoFactory {
   /**
-   * @return a new {@link LinearLayoutInfo} that will be used to compute the layouts of the children of
-   * the {@link ListRecyclerConfiguration}.
+   * @return a new {@link LinearLayoutInfo} that will be used to compute the layouts of the children
+   *     of the {@link ListRecyclerConfiguration}.
    */
   LinearLayoutInfo createLinearLayoutInfo(Context context, int orientation, boolean reverseLayout);
 }

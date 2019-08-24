@@ -44,8 +44,9 @@ public class ResolveAttributeTest {
 
   @Before
   public void setup() {
-    mContext = new ComponentContext(
-        new ContextThemeWrapper(RuntimeEnvironment.application, R.style.TestTheme));
+    mContext =
+        new ComponentContext(
+            new ContextThemeWrapper(RuntimeEnvironment.application, R.style.TestTheme));
   }
 
   @Test
@@ -55,8 +56,7 @@ public class ResolveAttributeTest {
     InternalNode node = Layout.create(mContext, column);
 
     Drawable d = mContext.getResources().getDrawable(test_bg);
-    ComparableDrawableWrapper comparable =
-        (ComparableDrawableWrapper)  node.getBackground();
+    ComparableDrawableWrapper comparable = (ComparableDrawableWrapper) node.getBackground();
     assertThat(shadowOf(comparable.getWrappedDrawable()).getCreatedFromResId())
         .isEqualTo(shadowOf(d).getCreatedFromResId());
   }
@@ -68,8 +68,7 @@ public class ResolveAttributeTest {
     InternalNode node = Layout.create(mContext, column);
     node.calculateLayout();
 
-    int dimen =
-        mContext.getResources().getDimensionPixelSize(R.dimen.test_dimen);
+    int dimen = mContext.getResources().getDimensionPixelSize(R.dimen.test_dimen);
     assertThat((int) node.getWidth()).isEqualTo(dimen);
   }
 
@@ -80,8 +79,7 @@ public class ResolveAttributeTest {
     InternalNode node = Layout.create(mContext, column);
 
     Drawable d = mContext.getResources().getDrawable(test_bg);
-    ComparableDrawableWrapper comparable =
-        (ComparableDrawableWrapper) node.getBackground();
+    ComparableDrawableWrapper comparable = (ComparableDrawableWrapper) node.getBackground();
     assertThat(shadowOf(comparable.getWrappedDrawable()).getCreatedFromResId())
         .isEqualTo(shadowOf(d).getCreatedFromResId());
   }
@@ -93,8 +91,7 @@ public class ResolveAttributeTest {
     InternalNode node = Layout.create(mContext, column);
     node.calculateLayout();
 
-    int dimen =
-        mContext.getResources().getDimensionPixelSize(R.dimen.test_dimen);
+    int dimen = mContext.getResources().getDimensionPixelSize(R.dimen.test_dimen);
     assertThat((int) node.getWidth()).isEqualTo(dimen);
   }
 
@@ -105,8 +102,7 @@ public class ResolveAttributeTest {
     InternalNode node = Layout.create(mContext, column);
     node.calculateLayout();
 
-    int dimen =
-        mContext.getResources().getDimensionPixelSize(test_dimen_float);
+    int dimen = mContext.getResources().getDimensionPixelSize(test_dimen_float);
     assertThat(node.getWidth()).isEqualTo(dimen);
   }
 
@@ -118,8 +114,7 @@ public class ResolveAttributeTest {
     InternalNode node = Layout.create(mContext, column);
     node.calculateLayout();
 
-    int dimen =
-        mContext.getResources().getDimensionPixelSize(test_dimen_float);
+    int dimen = mContext.getResources().getDimensionPixelSize(test_dimen_float);
     assertThat(node.getPaddingLeft()).isEqualTo(dimen);
   }
 }

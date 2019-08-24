@@ -29,10 +29,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
 
-/**
- * Tests for {@link ComponentTree.Builder}
- */
-
+/** Tests for {@link ComponentTree.Builder} */
 @RunWith(ComponentsTestRunner.class)
 public class ComponentTreeBuilderTest {
   private static final String mLogTag = "logTag";
@@ -49,8 +46,7 @@ public class ComponentTreeBuilderTest {
     mLooper = mock(Looper.class);
     mComponentsLogger = mock(ComponentsLogger.class);
     mContext = new ComponentContext(RuntimeEnvironment.application, mLogTag, mComponentsLogger);
-    mRoot = TestLayoutComponent.create(mContext)
-        .build();
+    mRoot = TestLayoutComponent.create(mContext).build();
 
     mComponentTreeBuilder = ComponentTree.create(mContext, mRoot);
   }
@@ -65,10 +61,7 @@ public class ComponentTreeBuilderTest {
 
   @Test
   public void testCreationWithInputs() {
-    ComponentTree componentTree =
-        mComponentTreeBuilder
-            .layoutThreadLooper(mLooper)
-            .build();
+    ComponentTree componentTree = mComponentTreeBuilder.layoutThreadLooper(mLooper).build();
 
     assertSameAsInternalState(componentTree, mRoot, "mRoot");
     assertEqualToInternalState(componentTree, true, "mIsLayoutDiffingEnabled");
@@ -82,16 +75,12 @@ public class ComponentTreeBuilderTest {
   }
 
   private static void assertSameAsInternalState(
-      ComponentTree componentTree,
-      Object object,
-      String internalName) {
+      ComponentTree componentTree, Object object, String internalName) {
     assertThat(object).isSameAs(getInternalState(componentTree, internalName));
   }
 
   private static void assertEqualToInternalState(
-      ComponentTree componentTree,
-      Object object,
-      String internalName) {
+      ComponentTree componentTree, Object object, String internalName) {
     assertThat((Object) getInternalState(componentTree, internalName)).isEqualTo(object);
   }
 

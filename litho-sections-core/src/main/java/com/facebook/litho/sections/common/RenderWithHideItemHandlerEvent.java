@@ -23,15 +23,14 @@ import com.facebook.litho.annotations.Event;
 import com.facebook.litho.widget.RenderInfo;
 
 /**
- * An {@link Event} that gets triggered by a
- * {@link HideableDataDiffSectionSpec} to render the edges of the
- * connection.
+ * An {@link Event} that gets triggered by a {@link HideableDataDiffSectionSpec} to render the edges
+ * of the connection.
  *
- * {@link RenderWithHideItemHandlerEvent} is triggered when the
- * {@link com.facebook.litho.sections.annotations.DiffSectionSpec}
- * is generating the {@link com.facebook.litho.sections.ChangeSet}.
+ * <p>{@link RenderWithHideItemHandlerEvent} is triggered when the {@link
+ * com.facebook.litho.sections.annotations.DiffSectionSpec} is generating the {@link
+ * com.facebook.litho.sections.ChangeSet}.
  *
- * This means that when {@link RenderWithHideItemHandlerEvent} is handled, the components are not
+ * <p>This means that when {@link RenderWithHideItemHandlerEvent} is handled, the components are not
  * inserted into the adapter yet.
  *
  * @param index the index of the item in the collection.

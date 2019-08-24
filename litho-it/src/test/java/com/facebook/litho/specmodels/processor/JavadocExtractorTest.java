@@ -37,9 +37,8 @@ public class JavadocExtractorTest {
 
   @Before
   public void setup() {
-    when(mElements.getDocComment(mTypeElement)).thenReturn(
-        "Test javadoc\n" +
-        "@prop testProp prop for testing");
+    when(mElements.getDocComment(mTypeElement))
+        .thenReturn("Test javadoc\n" + "@prop testProp prop for testing");
   }
 
   @Test

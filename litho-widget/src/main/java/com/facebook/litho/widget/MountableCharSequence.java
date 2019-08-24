@@ -19,8 +19,8 @@ package com.facebook.litho.widget;
 import android.graphics.drawable.Drawable;
 
 /**
- * Mountable {@link CharSequence} that is aware when the Text component using this CharSequence
- * is mounted and unmounted.
+ * Mountable {@link CharSequence} that is aware when the Text component using this CharSequence is
+ * mounted and unmounted.
  *
  * @see TextSpec
  */

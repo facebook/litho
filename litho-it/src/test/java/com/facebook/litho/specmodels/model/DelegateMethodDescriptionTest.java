@@ -47,15 +47,16 @@ public class DelegateMethodDescriptionTest {
         ImmutableList.<TypeName>of(ClassName.bestGuess("ExceptionType"));
     ImmutableList<OptionalParameterType> optionalParameterTypes = ImmutableList.of(PROP, STATE);
 
-    DelegateMethodDescription delegateMethodDescription = DelegateMethodDescription.newBuilder()
-        .annotations(annotations)
-        .accessType(accessType)
-        .returnType(returnType)
-        .name(name)
-        .definedParameterTypes(parameterTypes)
-        .optionalParameterTypes(optionalParameterTypes)
-        .exceptions(exceptions)
-        .build();
+    DelegateMethodDescription delegateMethodDescription =
+        DelegateMethodDescription.newBuilder()
+            .annotations(annotations)
+            .accessType(accessType)
+            .returnType(returnType)
+            .name(name)
+            .definedParameterTypes(parameterTypes)
+            .optionalParameterTypes(optionalParameterTypes)
+            .exceptions(exceptions)
+            .build();
 
     assertThat(delegateMethodDescription.accessType).isEqualTo(accessType);
     assertThat(delegateMethodDescription.returnType).isEqualTo(returnType);

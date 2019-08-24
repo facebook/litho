@@ -47,9 +47,7 @@ public class InspectableComponent {
     mComponent = component;
   }
 
-  /**
-   * @return The root {@link InspectableComponent} of a LithoView.
-   */
+  /** @return The root {@link InspectableComponent} of a LithoView. */
   @Nullable
   public static InspectableComponent getRootInstance(LithoView view) {
     final DebugComponent rootInstance = DebugComponent.getRootInstance(view);
@@ -89,9 +87,7 @@ public class InspectableComponent {
     return mComponent.getComponent().getSimpleName();
   }
 
-  /**
-   * @return The class of the underlying Component.
-   */
+  /** @return The class of the underlying Component. */
   public Class getComponentClass() {
     return mComponent.getComponent().getClass();
   }

@@ -21,9 +21,7 @@ import com.squareup.javapoet.TypeName;
 import java.lang.annotation.Annotation;
 import java.util.List;
 
-/**
- * Model that is an abstract representation of a method param.
- */
+/** Model that is an abstract representation of a method param. */
 public interface MethodParamModel {
 
   /** @return the {@link TypeSpec} of the param. */
@@ -32,23 +30,15 @@ public interface MethodParamModel {
   /** @return the typeName of the param. */
   TypeName getTypeName();
 
-  /**
-   * @return the name of the param.
-   */
+  /** @return the name of the param. */
   String getName();
 
-  /**
-   * @return all components library annotations that are on the param.
-   */
+  /** @return all components library annotations that are on the param. */
   List<Annotation> getAnnotations();
 
-  /**
-   * @return all non-library annotations that are on the param.
-   */
+  /** @return all non-library annotations that are on the param. */
   List<AnnotationSpec> getExternalAnnotations();
 
-  /**
-   * @return the object that this model represents.
-   */
+  /** @return the object that this model represents. */
   Object getRepresentedObject();
 }

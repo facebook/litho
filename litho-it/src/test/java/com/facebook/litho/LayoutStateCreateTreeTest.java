@@ -250,7 +250,6 @@ public class LayoutStateCreateTreeTest {
     assertThat(node.getNodeInfo().getFocusChangeHandler()).isEqualTo(focusChangedHandler1);
   }
 
-
   @Test
   public void testOverridingHandlers() {
     final EventHandler<ClickEvent> clickHandler1 = mock(EventHandler.class);
@@ -623,8 +622,7 @@ public class LayoutStateCreateTreeTest {
     assertThat(((TestInternalNode) root.getChildAt(0)).mFlexGrowCounter).isEqualTo(1);
   }
 
-  private static class TestDrawableComponentWithMockInternalNode
-      extends TestComponent {
+  private static class TestDrawableComponentWithMockInternalNode extends TestComponent {
 
     @Override
     protected boolean canResolve() {

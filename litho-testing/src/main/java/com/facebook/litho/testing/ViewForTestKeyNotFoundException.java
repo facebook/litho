@@ -16,9 +16,7 @@
 
 package com.facebook.litho.testing;
 
-/**
- * Exception thrown when a view isn't found in a test.
- */
+/** Exception thrown when a view isn't found in a test. */
 public class ViewForTestKeyNotFoundException extends RuntimeException {
 
   public ViewForTestKeyNotFoundException(String testKey) {

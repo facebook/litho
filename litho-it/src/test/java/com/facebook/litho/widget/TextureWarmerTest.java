@@ -34,9 +34,7 @@ import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
 import org.robolectric.shadows.ShadowLooper;
 
-/**
- * Tests {@link TextureWarmer}.
- */
+/** Tests {@link TextureWarmer}. */
 @RunWith(ComponentsTestRunner.class)
 @Config(shadows = TextureWarmerTest.ShadowPicture.class)
 public class TextureWarmerTest {
@@ -70,19 +68,13 @@ public class TextureWarmerTest {
   public static class ShadowPicture {
 
     @Implementation
-    public void __constructor__(int nativePicture, boolean fromStream) {
-
-    }
+    public void __constructor__(int nativePicture, boolean fromStream) {}
 
     @Implementation
-    public void __constructor__(int nativePicture) {
-
-    }
+    public void __constructor__(int nativePicture) {}
 
     @Implementation
-    public void __constructor__() {
-
-    }
+    public void __constructor__() {}
 
     @Implementation
     public Canvas beginRecording(int width, int height) {

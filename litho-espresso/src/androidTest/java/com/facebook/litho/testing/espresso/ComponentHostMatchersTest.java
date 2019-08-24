@@ -42,29 +42,21 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-/**
- * Tests {@link ComponentHostMatchers}
- */
+/** Tests {@link ComponentHostMatchers} */
 @RunWith(AndroidJUnit4.class)
 public class ComponentHostMatchersTest {
 
-  @Rule
-  public UiThreadTestRule mUiThreadRule = new UiThreadTestRule();
+  @Rule public UiThreadTestRule mUiThreadRule = new UiThreadTestRule();
 
   private LithoView mView;
 
   @Before
   public void before() throws Throwable {
-    final ComponentContext mComponentContext = new ComponentContext(
-        InstrumentationRegistry.getTargetContext());
-    final Component mTextComponent = MyComponent.create(mComponentContext)
-        .text("foobar")
-        .customViewTag("zoidberg")
-        .build();
-    final ComponentTree tree = ComponentTree.create(
-        mComponentContext,
-        mTextComponent)
-        .build();
+    final ComponentContext mComponentContext =
+        new ComponentContext(InstrumentationRegistry.getTargetContext());
+    final Component mTextComponent =
+        MyComponent.create(mComponentContext).text("foobar").customViewTag("zoidberg").build();
+    final ComponentTree tree = ComponentTree.create(mComponentContext, mTextComponent).build();
     mView = new LithoView(mComponentContext);
     mUiThreadRule.runOnUiThread(
         new Runnable() {
@@ -78,48 +70,30 @@ public class ComponentHostMatchersTest {
 
   @Test
   public void testContentDescriptionMatching() throws Throwable {
-    assertThat(
-        mView,
-        componentHostWithText("foobar"));
-    assertThat(
-        mView,
-        not(componentHostWithText("bar")));
-    assertThat(
-        mView,
-        componentHostWithText(containsString("oob")));
+    assertThat(mView, componentHostWithText("foobar"));
+    assertThat(mView, not(componentHostWithText("bar")));
+    assertThat(mView, componentHostWithText(containsString("oob")));
   }
 
   @Test
   public void testIsComponentHost() throws Throwable {
-    assertThat(
-        new TextView(InstrumentationRegistry.getTargetContext()),
-        is(not(componentHost())));
-    assertThat(
-        mView,
-        is(componentHost()));
+    assertThat(new TextView(InstrumentationRegistry.getTargetContext()), is(not(componentHost())));
+    assertThat(mView, is(componentHost()));
   }
 
   @Test
   public void testIsComponentHostWithMatcher() throws Throwable {
-    assertThat(
-        mView,
-        is(componentHost(withText("foobar"))));
-    assertThat(
-        mView,
-        is(not(componentHost(withText("blah")))));
+    assertThat(mView, is(componentHost(withText("foobar"))));
+    assertThat(mView, is(not(componentHost(withText("blah")))));
   }
 
   @Test
   public void testContentDescription() throws Throwable {
-    assertThat(
-        mView,
-        is(componentHost(withContentDescription("foobar2"))));
+    assertThat(mView, is(componentHost(withContentDescription("foobar2"))));
   }
 
   @Test
   public void testMountedComponent() throws Throwable {
-    assertThat(
-        mView,
-        is(componentHost(withLifecycle(isA(Text.class)))));
+    assertThat(mView, is(componentHost(withLifecycle(isA(Text.class)))));
   }
 }

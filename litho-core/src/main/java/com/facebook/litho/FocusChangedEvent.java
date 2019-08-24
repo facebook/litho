@@ -19,9 +19,7 @@ package com.facebook.litho;
 import android.view.View;
 import com.facebook.litho.annotations.Event;
 
-/**
- * Event triggered when focus changes on a Component.
- */
+/** Event triggered when focus changes on a Component. */
 @Event
 public class FocusChangedEvent {
   public View view;

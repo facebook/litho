@@ -29,10 +29,10 @@ import java.util.List;
 import javax.annotation.concurrent.ThreadSafe;
 
 /**
- * This class will handle all viewport changes due to both scrolling and
- * {@link ViewHolder} removal that is not related to scrolling.
+ * This class will handle all viewport changes due to both scrolling and {@link ViewHolder} removal
+ * that is not related to scrolling.
  *
- * Classes that are interested to have its viewport changes handled by {@link ViewportManager}
+ * <p>Classes that are interested to have its viewport changes handled by {@link ViewportManager}
  * should set the {@link OnScrollListener} returned from {@link ViewportManager#getScrollListener()}
  * in the {@link RecyclerView}
  */

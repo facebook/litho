@@ -23,8 +23,7 @@ import java.util.List;
 import javax.annotation.concurrent.Immutable;
 
 /**
- * Model that is an abstract representation of a
- * {@link com.facebook.litho.annotations.TreeProp}.
+ * Model that is an abstract representation of a {@link com.facebook.litho.annotations.TreeProp}.
  */
 @Immutable
 public class TreePropModel implements MethodParamModel {

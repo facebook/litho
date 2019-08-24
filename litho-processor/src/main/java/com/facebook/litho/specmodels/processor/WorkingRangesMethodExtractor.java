@@ -127,8 +127,7 @@ public class WorkingRangesMethodExtractor {
 
         final String name = enteredRangeAnnotation.name();
         final WorkingRangeMethodModel workingRangeModel =
-            workingRangeMethods
-                .stream()
+            workingRangeMethods.stream()
                 .filter(it -> it.name.equals(name) && it.enteredRangeModel == null)
                 .findFirst()
                 .orElseGet(
@@ -151,8 +150,7 @@ public class WorkingRangesMethodExtractor {
 
         final String name = exitedRangeAnnotation.name();
         final WorkingRangeMethodModel workingRangeModel =
-            workingRangeMethods
-                .stream()
+            workingRangeMethods.stream()
                 .filter(it -> it.name.equals(name) && it.exitedRangeModel == null)
                 .findFirst()
                 .orElseGet(

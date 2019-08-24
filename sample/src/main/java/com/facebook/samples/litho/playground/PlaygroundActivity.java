@@ -24,9 +24,6 @@ public class PlaygroundActivity extends NavigatableDemoActivity {
     super.onCreate(savedInstanceState);
 
     final ComponentContext componentContext = new ComponentContext(this);
-    setContentView(
-        LithoView.create(
-            this,
-            PlaygroundComponent.create(componentContext).build()));
+    setContentView(LithoView.create(this, PlaygroundComponent.create(componentContext).build()));
   }
 }

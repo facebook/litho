@@ -22,9 +22,8 @@ import androidx.test.runner.AndroidJUnitRunner;
 
 /**
  * An example test runner you can use to test your Litho apps in Espresso and standard integration
- * tests.
- * Since JUnit Test Runners aren't composable, it may be best to copy the initialization logic to
- * your own test runner.
+ * tests. Since JUnit Test Runners aren't composable, it may be best to copy the initialization
+ * logic to your own test runner.
  */
 public class LithoEspressoTestRunner extends AndroidJUnitRunner {
   @Override

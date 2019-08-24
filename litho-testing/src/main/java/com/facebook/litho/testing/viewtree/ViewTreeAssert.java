@@ -36,9 +36,9 @@ import org.robolectric.RuntimeEnvironment;
 /**
  * Assertions which require checking an entire view tree
  *
- * NOTE: Assertions looking for visible attributes are limited to checking the visibility of the
- * nodes, but do not check actual layout. So a visible view might have 0 pixels available for it
- * in actual app code and still pass the checks done here
+ * <p>NOTE: Assertions looking for visible attributes are limited to checking the visibility of the
+ * nodes, but do not check actual layout. So a visible view might have 0 pixels available for it in
+ * actual app code and still pass the checks done here
  */
 public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTree> {
 
@@ -68,16 +68,17 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
   }
 
   private String getHasVisibleTextErrorMessage(final String text) {
-    String errorMsg = String.format(
-        "Cannot find text \"%s\" in view hierarchy:%n%s. ",
-        text,
-        actual.makeString(GET_TEXT_FUNCTION));
+    String errorMsg =
+        String.format(
+            "Cannot find text \"%s\" in view hierarchy:%n%s. ",
+            text, actual.makeString(GET_TEXT_FUNCTION));
 
     final ImmutableList<View> similarPath = getPathToVisibleSimilarText(text);
     if (similarPath != null) {
-      errorMsg += String.format(
-          "\nHowever, a near-match was found: \"%s\"",
-          GET_TEXT_FUNCTION.apply(similarPath.get(similarPath.size() - 1)));
+      errorMsg +=
+          String.format(
+              "\nHowever, a near-match was found: \"%s\"",
+              GET_TEXT_FUNCTION.apply(similarPath.get(similarPath.size() - 1)));
     } else {
       errorMsg += "\nNo near-match was found.";
     }
@@ -94,16 +95,14 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
    * @param tagValue the expected value of the tag associated with tagId
    * @return the assertions object
    */
-  public ViewTreeAssert hasVisibleTextWithTag(final String text, final int tagId, final Object tagValue) {
+  public ViewTreeAssert hasVisibleTextWithTag(
+      final String text, final int tagId, final Object tagValue) {
     final ImmutableList<View> path = getPathToVisibleTextWithTag(text, tagId, tagValue);
 
     Java6Assertions.assertThat(path)
         .overridingErrorMessage(
             "Cannot find text \"%s\" with tagId \"%d\" and value:%s in view hierarchy:%n%s",
-            text,
-            tagId,
-            tagValue.toString(),
-            actual.makeString(GET_TEXT_FUNCTION))
+            text, tagId, tagValue.toString(), actual.makeString(GET_TEXT_FUNCTION))
         .isNotNull();
 
     return this;
@@ -116,11 +115,7 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
    * @return the assertions object
    */
   public ViewTreeAssert hasVisibleText(final int resourceId) {
-    return hasVisibleText(
-        RuntimeEnvironment
-            .application
-            .getResources()
-            .getString(resourceId));
+    return hasVisibleText(RuntimeEnvironment.application.getResources().getString(resourceId));
   }
 
   /**
@@ -135,9 +130,7 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
 
     Java6Assertions.assertThat(path)
         .overridingErrorMessage(
-            "Found text \"%s\" in view hierarchy for path: %s",
-            text,
-            makeString(path))
+            "Found text \"%s\" in view hierarchy for path: %s", text, makeString(path))
         .isNull();
 
     return this;
@@ -145,6 +138,7 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
 
   /**
    * Tests if any view hierarchy under the root has the given view tag and value.
+   *
    * @param tagId the id to look for
    * @param tagValue the value that the id should have
    * @return the assertions object
@@ -155,9 +149,7 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
     Java6Assertions.assertThat(path)
         .overridingErrorMessage(
             "Cannot find tag id \"%d\" with tag value \"%s\" in view hierarchy:%n%s",
-            tagId,
-            tagValue,
-            actual.makeString(ViewExtractors.generateGetViewTagFunction(tagId)))
+            tagId, tagValue, actual.makeString(ViewExtractors.generateGetViewTagFunction(tagId)))
         .isNotNull();
 
     return this;
@@ -165,6 +157,7 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
 
   /**
    * Tests if any view hierarchy under the root has the given contentDescription.
+   *
    * @param contentDescription the contentDescription to search for
    * @return the assertions object
    */
@@ -174,8 +167,7 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
     Java6Assertions.assertThat(path)
         .overridingErrorMessage(
             "Cannot find content description \"%s\" in view hierarchy:%n%s",
-            contentDescription,
-            actual.makeString(ViewExtractors.GET_CONTENT_DESCRIPTION_FUNCTION))
+            contentDescription, actual.makeString(ViewExtractors.GET_CONTENT_DESCRIPTION_FUNCTION))
         .isNotNull();
 
     return this;
@@ -190,50 +182,44 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
    */
   public ViewTreeAssert doesNotHaveVisibleText(final int resourceId) {
     return doesNotHaveVisibleText(
-        RuntimeEnvironment
-            .application
-            .getResources()
-            .getString(resourceId));
+        RuntimeEnvironment.application.getResources().getString(resourceId));
   }
 
   /**
    * Tests if any view hierarchy under the root has the given contentDescription.
+   *
    * @param resourceId the resId of the contentDescription to search for
    * @return the assertions object
    */
   public ViewTreeAssert hasContentDescription(final int resourceId) {
     return hasContentDescription(
-        RuntimeEnvironment
-            .application
-            .getResources()
-            .getString(resourceId));
+        RuntimeEnvironment.application.getResources().getString(resourceId));
   }
 
   private ImmutableList<View> getPathToVisibleSimilarText(final String text) {
     return actual.findChild(
         Predicates.and(
             isVisible(),
-            hasTextMatchingPredicate(new Predicate<String>() {
-          @Override
-          public boolean apply(@Nullable final String input) {
-            final int maxEditDistance = Math.max(3, text.length() / 4);
-            return LevenshteinDistance.getLevenshteinDistance(text, input, maxEditDistance)
-                <= maxEditDistance;
-          }
-        })),
+            hasTextMatchingPredicate(
+                new Predicate<String>() {
+                  @Override
+                  public boolean apply(@Nullable final String input) {
+                    final int maxEditDistance = Math.max(3, text.length() / 4);
+                    return LevenshteinDistance.getLevenshteinDistance(text, input, maxEditDistance)
+                        <= maxEditDistance;
+                  }
+                })),
         ViewPredicates.isVisible());
   }
 
   private ImmutableList<View> getPathToVisibleText(final String text) {
-    return actual.findChild(
-        ViewPredicates.hasVisibleText(text),
-        ViewPredicates.isVisible());
+    return actual.findChild(ViewPredicates.hasVisibleText(text), ViewPredicates.isVisible());
   }
 
-  private ImmutableList<View> getPathToVisibleTextWithTag(final String text, final int tagId, final Object tagValue) {
+  private ImmutableList<View> getPathToVisibleTextWithTag(
+      final String text, final int tagId, final Object tagValue) {
     return actual.findChild(
-        ViewPredicates.hasVisibleTextWithTag(text, tagId, tagValue),
-        ViewPredicates.isVisible());
+        ViewPredicates.hasVisibleTextWithTag(text, tagId, tagValue), ViewPredicates.isVisible());
   }
 
   private ImmutableList<View> getPathToViewTag(final int tagId, final Object tagValue) {
@@ -257,8 +243,7 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
     Java6Assertions.assertThat(path)
         .overridingErrorMessage(
             "Cannot find text matching \"%s\" in view hierarchy:%n%s",
-            pattern,
-            actual.makeString(GET_TEXT_FUNCTION))
+            pattern, actual.makeString(GET_TEXT_FUNCTION))
         .isNotNull();
 
     return this;
@@ -276,9 +261,7 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
 
     Java6Assertions.assertThat(path)
         .overridingErrorMessage(
-            "Found pattern \"%s\" in view hierarchy for path: %s",
-            pattern,
-            makeString(path))
+            "Found pattern \"%s\" in view hierarchy for path: %s", pattern, makeString(path))
         .isNull();
 
     return this;
@@ -296,8 +279,7 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
     Java6Assertions.assertThat(path)
         .overridingErrorMessage(
             "Found text \"%s\" in view hierarchy for path: %s",
-            getTextProof(path),
-            makeString(path))
+            getTextProof(path), makeString(path))
         .isNull();
 
     return this;
@@ -314,8 +296,7 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
 
   private ImmutableList<View> getPathToVisibleMatchingText(final String pattern) {
     return actual.findChild(
-        ViewPredicates.hasVisibleMatchingText(pattern),
-        ViewPredicates.isVisible());
+        ViewPredicates.hasVisibleMatchingText(pattern), ViewPredicates.isVisible());
   }
 
   private String makeString(final Iterable<View> path) {
@@ -326,19 +307,14 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
    * Tests if any view in the hierarchy under the root, for which the path is visible, is displaying
    * the requested drawable by the given resource id.
    *
-   * For this assertion to work, Robolectric must be immediately available and be able to load the
-   * drawable corresponding to this resource id.
+   * <p>For this assertion to work, Robolectric must be immediately available and be able to load
+   * the drawable corresponding to this resource id.
    *
    * @param resourceId the resource id of the drawable to look for
    * @return the assertions object
    */
   public ViewTreeAssert hasVisibleDrawable(final int resourceId) {
-    hasVisibleDrawable(
-        RuntimeEnvironment
-            .application
-            .getResources()
-            .getDrawable(resourceId)
-    );
+    hasVisibleDrawable(RuntimeEnvironment.application.getResources().getDrawable(resourceId));
     return this;
   }
 
@@ -355,29 +331,23 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
     Java6Assertions.assertThat(path)
         .overridingErrorMessage(
             "Did not find drawable %s in view hierarchy:%n%s",
-            drawable,
-            actual.makeString(ViewExtractors.GET_DRAWABLE_FUNCTION))
+            drawable, actual.makeString(ViewExtractors.GET_DRAWABLE_FUNCTION))
         .isNotNull();
 
     return this;
   }
 
   /**
-   * Tests all views in the hierarchy under the root, for which the path is visible, do not have
-   * the requested drawable by the given resource id.
-   * For this assertion to work, Robolectric must be immediately available and be able to load the
-   * drawable corresponding to this resource id.
+   * Tests all views in the hierarchy under the root, for which the path is visible, do not have the
+   * requested drawable by the given resource id. For this assertion to work, Robolectric must be
+   * immediately available and be able to load the drawable corresponding to this resource id.
    *
    * @param resourceId the resource id of the drawable to look for
    * @return the assertions object
    */
   public ViewTreeAssert doesNotHaveVisibleDrawable(final int resourceId) {
     doesNotHaveVisibleDrawable(
-        RuntimeEnvironment
-            .application
-            .getResources()
-            .getDrawable(resourceId)
-    );
+        RuntimeEnvironment.application.getResources().getDrawable(resourceId));
     return this;
   }
 
@@ -394,8 +364,7 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
     Java6Assertions.assertThat(path)
         .overridingErrorMessage(
             "Found drawable %s in view hierarchy:%n%s",
-            drawable,
-            actual.makeString(ViewExtractors.GET_DRAWABLE_FUNCTION))
+            drawable, actual.makeString(ViewExtractors.GET_DRAWABLE_FUNCTION))
         .isNull();
 
     return this;
@@ -431,15 +400,13 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
     return this;
   }
 
-  public <V extends View> ViewTreeAssert hasVisible(final Class<V> clazz, final Predicate<V> predicate) {
-    final Predicate<View> conjunction = Predicates.and(
-        Predicates.instanceOf(clazz),
-        ViewPredicates.isVisible(),
-        (Predicate<View>) predicate);
+  public <V extends View> ViewTreeAssert hasVisible(
+      final Class<V> clazz, final Predicate<V> predicate) {
+    final Predicate<View> conjunction =
+        Predicates.and(
+            Predicates.instanceOf(clazz), ViewPredicates.isVisible(), (Predicate<View>) predicate);
 
-    final ImmutableList<View> path = actual.findChild(
-        conjunction,
-        ViewPredicates.isVisible());
+    final ImmutableList<View> path = actual.findChild(conjunction, ViewPredicates.isVisible());
 
     Java6Assertions.assertThat(path)
         .overridingErrorMessage(
@@ -455,9 +422,7 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
     final Predicate<View> conjunction =
         Predicates.and(Predicates.instanceOf(clazz), ViewPredicates.isVisible(), predicate);
 
-    final ImmutableList<View> path = actual.findChild(
-        conjunction,
-        ViewPredicates.isVisible());
+    final ImmutableList<View> path = actual.findChild(conjunction, ViewPredicates.isVisible());
 
     Java6Assertions.assertThat(path)
         .overridingErrorMessage(
@@ -470,8 +435,7 @@ public final class ViewTreeAssert extends AbstractAssert<ViewTreeAssert, ViewTre
 
   private ImmutableList<View> getPathToVisibleWithDrawable(final Drawable drawable) {
     return actual.findChild(
-        ViewPredicates.hasVisibleDrawable(drawable),
-        ViewPredicates.isVisible());
+        ViewPredicates.hasVisibleDrawable(drawable), ViewPredicates.isVisible());
   }
 
   private ImmutableList<View> getPathToVisibleWithId(final int viewId) {

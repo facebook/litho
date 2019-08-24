@@ -17,9 +17,9 @@
 package com.facebook.litho;
 
 /**
- * Implements some math functions in a faster way than the java Math package.
- * This will always have the downside of not supporting all the edge cases which the java Math
- * package does support so please read up on those edge cases before using these methods.
+ * Implements some math functions in a faster way than the java Math package. This will always have
+ * the downside of not supporting all the edge cases which the java Math package does support so
+ * please read up on those edge cases before using these methods.
  */
 public class FastMath {
 

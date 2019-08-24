@@ -39,13 +39,12 @@ import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 
-/**
- * Extracts methods annotated with {@link OnUpdateState} from the given input.
- */
+/** Extracts methods annotated with {@link OnUpdateState} from the given input. */
 public class UpdateStateMethodExtractor {
 
   private static final List<Class<? extends Annotation>> METHOD_PARAM_ANNOTATIONS =
       new ArrayList<>();
+
   static {
     METHOD_PARAM_ANNOTATIONS.add(Param.class);
     METHOD_PARAM_ANNOTATIONS.add(Prop.class);

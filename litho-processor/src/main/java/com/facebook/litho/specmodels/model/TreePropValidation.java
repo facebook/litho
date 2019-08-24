@@ -36,25 +36,29 @@ class TreePropValidation {
                 "@OnCreateTreeProp methods cannot return void."));
       }
 
-      if (onCreateTreePropMethod.returnType.isPrimitive() ||
-          onCreateTreePropMethod.returnType.toString().startsWith("java.lang.") ||
-          onCreateTreePropMethod.returnType.toString().startsWith("java.util.")) {
+      if (onCreateTreePropMethod.returnType.isPrimitive()
+          || onCreateTreePropMethod.returnType.toString().startsWith("java.lang.")
+          || onCreateTreePropMethod.returnType.toString().startsWith("java.util.")) {
         validationErrors.add(
             new SpecModelValidationError(
                 onCreateTreePropMethod.representedObject,
-                "Returning a common JAVA class or a primitive is against the design" +
-                    "of tree props, as they will be keyed on their specific types. Consider " +
-                    "creating your own wrapper classes instead."));
+                "Returning a common JAVA class or a primitive is against the design"
+                    + "of tree props, as they will be keyed on their specific types. Consider "
+                    + "creating your own wrapper classes instead."));
       }
 
-      if (onCreateTreePropMethod.methodParams.isEmpty() ||
-          !onCreateTreePropMethod.methodParams.get(0).getTypeName()
+      if (onCreateTreePropMethod.methodParams.isEmpty()
+          || !onCreateTreePropMethod
+              .methodParams
+              .get(0)
+              .getTypeName()
               .equals(specModel.getContextClass())) {
         validationErrors.add(
             new SpecModelValidationError(
                 onCreateTreePropMethod.representedObject,
-                "The first argument of an @OnCreateTreeProp method should be " +
-                    specModel.getComponentClass() + "."));
+                "The first argument of an @OnCreateTreeProp method should be "
+                    + specModel.getComponentClass()
+                    + "."));
       }
     }
 

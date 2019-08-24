@@ -72,8 +72,7 @@ public class InjectPropModel implements MethodParamModel {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     InjectPropModel that = (InjectPropModel) o;
-    return mIsLazy == that.mIsLazy &&
-        Objects.equals(mParamModel, that.mParamModel);
+    return mIsLazy == that.mIsLazy && Objects.equals(mParamModel, that.mParamModel);
   }
 
   @Override

@@ -37,24 +37,21 @@ public abstract class TransitionAnimationBinding extends BaseAnimationBinding {
   @VisibleForTesting
   TransitionAnimationBinding(GraphBinding graphBinding) {
     mGraphBinding = graphBinding;
-    mGraphBinding.setListener(new BindingListener() {
-      @Override
-      public void onAllNodesFinished(GraphBinding binding) {
-        TransitionAnimationBinding.this.onAllNodesFinished();
-      }
-    });
+    mGraphBinding.setListener(
+        new BindingListener() {
+          @Override
+          public void onAllNodesFinished(GraphBinding binding) {
+            TransitionAnimationBinding.this.onAllNodesFinished();
+          }
+        });
   }
 
-  /**
-   * @see GraphBinding#addBinding(ValueNode, ValueNode, String)
-   */
+  /** @see GraphBinding#addBinding(ValueNode, ValueNode, String) */
   public void addBinding(ValueNode fromNode, ValueNode toNode, String inputName) {
     mGraphBinding.addBinding(fromNode, toNode, inputName);
   }
 
-  /**
-   * @see GraphBinding#addBinding(ValueNode, ValueNode)
-   */
+  /** @see GraphBinding#addBinding(ValueNode, ValueNode) */
   public void addBinding(ValueNode fromNode, ValueNode toNode) {
     mGraphBinding.addBinding(fromNode, toNode);
   }
@@ -72,8 +69,8 @@ public abstract class TransitionAnimationBinding extends BaseAnimationBinding {
   }
 
   /**
-   * Subclasses should set up their animation by creating a graph that defines how data will flow
-   * to relevant {@link AnimatedPropertyNode}s.
+   * Subclasses should set up their animation by creating a graph that defines how data will flow to
+   * relevant {@link AnimatedPropertyNode}s.
    */
   protected abstract void setupBinding(Resolver resolver);
 

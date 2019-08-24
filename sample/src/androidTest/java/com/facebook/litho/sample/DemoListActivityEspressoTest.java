@@ -44,8 +44,7 @@ public class DemoListActivityEspressoTest {
 
   @Test
   public void testTestKeyLookup() {
-    onView(withTestKey("main_screen"))
-        .check(matches(isDisplayed()));
+    onView(withTestKey("main_screen")).check(matches(isDisplayed()));
   }
 
   @Test

@@ -30,8 +30,6 @@ public interface TimingSource {
    */
   void start();
 
-  /**
-   * Stops the {@link DataFlowGraph} from receiving frame callbacks.
-   */
+  /** Stops the {@link DataFlowGraph} from receiving frame callbacks. */
   void stop();
 }

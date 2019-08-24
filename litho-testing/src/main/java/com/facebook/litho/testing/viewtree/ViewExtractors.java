@@ -29,37 +29,34 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
 
-/**
- * Function objects used for extracting specific information out of Android classes
- */
+/** Function objects used for extracting specific information out of Android classes */
 final class ViewExtractors {
 
   private ViewExtractors() {}
 
-  public static final Function<View, String> GET_TEXT_FUNCTION = new Function<View, String>() {
-    @Override
-    public String apply(@Nullable View input) {
-      CharSequence text = null;
-      if (input instanceof ComponentHost) {
-        List<CharSequence> strings = ((ComponentHost) input).getTextContent().getTextItems();
-        if (!strings.isEmpty()) {
-          text = Joiner.on("\", and \"").join(strings);
-        }
-      } else if (input instanceof TextView) {
-        text = ((TextView) input).getText();
-      }
-      if (text == null) {
-        return String.format(
-            "No text found, view is %s",
-            getVisibilityString(input.getVisibility()));
-      }
+  public static final Function<View, String> GET_TEXT_FUNCTION =
+      new Function<View, String>() {
+        @Override
+        public String apply(@Nullable View input) {
+          CharSequence text = null;
+          if (input instanceof ComponentHost) {
+            List<CharSequence> strings = ((ComponentHost) input).getTextContent().getTextItems();
+            if (!strings.isEmpty()) {
+              text = Joiner.on("\", and \"").join(strings);
+            }
+          } else if (input instanceof TextView) {
+            text = ((TextView) input).getText();
+          }
+          if (text == null) {
+            return String.format(
+                "No text found, view is %s", getVisibilityString(input.getVisibility()));
+          }
 
-      return String.format(
-          "Found text: \"%s\", view is %s",
-          Strings.nullToEmpty(text.toString()),
-          getVisibilityString(input.getVisibility()));
-    }
-  };
+          return String.format(
+              "Found text: \"%s\", view is %s",
+              Strings.nullToEmpty(text.toString()), getVisibilityString(input.getVisibility()));
+        }
+      };
 
   public static final Function<View, String> GET_DRAWABLE_FUNCTION =
       new Function<View, String>() {
@@ -108,6 +105,7 @@ final class ViewExtractors {
 
   /**
    * Generates a function that extracts information about view tags from the given view.
+   *
    * @param key key that identifies the tag
    * @return function that extracts information about view tags
    */
@@ -117,14 +115,12 @@ final class ViewExtractors {
       public String apply(View input) {
         if (input.getTag(key) == null) {
           return String.format(
-              "No view tag found, view is %s",
-              getVisibilityString(input.getVisibility()));
+              "No view tag found, view is %s", getVisibilityString(input.getVisibility()));
         }
 
         return String.format(
             "Found view tag: \"%s\", view is %s",
-            input.getTag(key),
-            getVisibilityString(input.getVisibility()));
+            input.getTag(key), getVisibilityString(input.getVisibility()));
       }
     };
   }

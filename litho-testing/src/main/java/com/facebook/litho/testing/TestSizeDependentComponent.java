@@ -35,27 +35,21 @@ public class TestSizeDependentComponent extends Component {
         TestDrawableComponent.create(c, false, true, true, false)
             .flexShrink(0)
             .backgroundColor(0xFFFF0000);
-    final Component.Builder builder2 = TestViewComponent.create(c, false, true, true, false)
-        .flexShrink(0)
-        .marginPx(YogaEdge.ALL, 3);
+    final Component.Builder builder2 =
+        TestViewComponent.create(c, false, true, true, false)
+            .flexShrink(0)
+            .marginPx(YogaEdge.ALL, 3);
 
     if (hasFixedSizes) {
-      builder1
-          .widthPx(50)
-          .heightPx(50);
-      builder2
-          .heightPx(20);
+      builder1.widthPx(50).heightPx(50);
+      builder2.heightPx(20);
     }
 
     if (isDelegate) {
       return builder1.build();
     }
 
-    return Column.create(c)
-        .paddingPx(YogaEdge.ALL, 5)
-        .child(builder1)
-        .child(builder2)
-        .build();
+    return Column.create(c).paddingPx(YogaEdge.ALL, 5).child(builder1).child(builder2).build();
   }
 
   @Override

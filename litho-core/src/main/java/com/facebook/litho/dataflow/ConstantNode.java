@@ -16,9 +16,7 @@
 
 package com.facebook.litho.dataflow;
 
-/**
- * A dataflow node that returns a constant value.
- */
+/** A dataflow node that returns a constant value. */
 public class ConstantNode extends ValueNode {
 
   private final float mValue;

@@ -64,5 +64,4 @@ public class TimingNodeTest {
 
     assertThat(destination.getValue()).isEqualTo(1f);
   }
-
 }

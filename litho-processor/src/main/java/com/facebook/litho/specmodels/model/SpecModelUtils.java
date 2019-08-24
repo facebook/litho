@@ -38,9 +38,7 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.SimpleTypeVisitor6;
 
-/**
- * Utility methods for {@link SpecModel}s.
- */
+/** Utility methods for {@link SpecModel}s. */
 public class SpecModelUtils {
 
   public static String getSpecAccessor(SpecModel specModel) {
@@ -75,9 +73,9 @@ public class SpecModelUtils {
 
   @Nullable
   public static SpecMethodModel<DelegateMethod, Void> getMethodModelWithAnnotation(
-      SpecModel specModel,
-      Class<? extends Annotation> annotationClass) {
-    for (SpecMethodModel<DelegateMethod, Void> delegateMethodModel : specModel.getDelegateMethods()) {
+      SpecModel specModel, Class<? extends Annotation> annotationClass) {
+    for (SpecMethodModel<DelegateMethod, Void> delegateMethodModel :
+        specModel.getDelegateMethods()) {
       for (Annotation annotation : delegateMethodModel.annotations) {
         if (annotation.annotationType().equals(annotationClass)) {
           return delegateMethodModel;
@@ -89,10 +87,10 @@ public class SpecModelUtils {
   }
 
   public static List<SpecMethodModel<DelegateMethod, Void>> getMethodModelsWithAnnotation(
-      SpecModel specModel,
-      Class<? extends Annotation> annotationClass) {
+      SpecModel specModel, Class<? extends Annotation> annotationClass) {
     final List<SpecMethodModel<DelegateMethod, Void>> methodModels = new ArrayList<>();
-    for (SpecMethodModel<DelegateMethod, Void> delegateMethodModel : specModel.getDelegateMethods()) {
+    for (SpecMethodModel<DelegateMethod, Void> delegateMethodModel :
+        specModel.getDelegateMethods()) {
       for (Annotation annotation : delegateMethodModel.annotations) {
         if (annotation.annotationType().equals(annotationClass)) {
           methodModels.add(delegateMethodModel);
@@ -105,34 +103,40 @@ public class SpecModelUtils {
 
   public static boolean isPropOutput(SpecModel specModel, MethodParamModel methodParamModel) {
     final PropModel prop = getPropWithName(specModel, methodParamModel.getName());
-    return prop != null &&
-        methodParamModel.getTypeName() instanceof ParameterizedTypeName &&
-        ((ParameterizedTypeName) methodParamModel.getTypeName()).rawType.equals(OUTPUT) &&
-        ((ParameterizedTypeName) methodParamModel.getTypeName()).typeArguments.size() == 1 &&
-        ((ParameterizedTypeName) methodParamModel.getTypeName()).typeArguments.get(0)
+    return prop != null
+        && methodParamModel.getTypeName() instanceof ParameterizedTypeName
+        && ((ParameterizedTypeName) methodParamModel.getTypeName()).rawType.equals(OUTPUT)
+        && ((ParameterizedTypeName) methodParamModel.getTypeName()).typeArguments.size() == 1
+        && ((ParameterizedTypeName) methodParamModel.getTypeName())
+            .typeArguments
+            .get(0)
             .equals(prop.getTypeName().box());
   }
 
   public static boolean isStateOutput(SpecModel specModel, MethodParamModel methodParamModel) {
     final StateParamModel stateValue =
         SpecModelUtils.getStateValueWithName(specModel, methodParamModel.getName());
-    return stateValue != null &&
-        methodParamModel.getTypeName() instanceof ParameterizedTypeName &&
-        ((ParameterizedTypeName) methodParamModel.getTypeName()).rawType.equals(OUTPUT) &&
-        ((ParameterizedTypeName) methodParamModel.getTypeName()).typeArguments.size() == 1 &&
-        ((ParameterizedTypeName) methodParamModel.getTypeName()).typeArguments.get(0)
+    return stateValue != null
+        && methodParamModel.getTypeName() instanceof ParameterizedTypeName
+        && ((ParameterizedTypeName) methodParamModel.getTypeName()).rawType.equals(OUTPUT)
+        && ((ParameterizedTypeName) methodParamModel.getTypeName()).typeArguments.size() == 1
+        && ((ParameterizedTypeName) methodParamModel.getTypeName())
+            .typeArguments
+            .get(0)
             .equals(stateValue.getTypeName().box());
   }
 
   public static boolean isStateValue(SpecModel specModel, MethodParamModel methodParamModel) {
     final StateParamModel stateValue =
         SpecModelUtils.getStateValueWithName(specModel, methodParamModel.getName());
-    return stateValue != null &&
-        methodParamModel.getTypeName() instanceof ParameterizedTypeName &&
-        ((ParameterizedTypeName) methodParamModel.getTypeName()).rawType
-            .equals(ClassNames.STATE_VALUE) &&
-        ((ParameterizedTypeName) methodParamModel.getTypeName()).typeArguments.size() == 1 &&
-        ((ParameterizedTypeName) methodParamModel.getTypeName()).typeArguments.get(0)
+    return stateValue != null
+        && methodParamModel.getTypeName() instanceof ParameterizedTypeName
+        && ((ParameterizedTypeName) methodParamModel.getTypeName())
+            .rawType.equals(ClassNames.STATE_VALUE)
+        && ((ParameterizedTypeName) methodParamModel.getTypeName()).typeArguments.size() == 1
+        && ((ParameterizedTypeName) methodParamModel.getTypeName())
+            .typeArguments
+            .get(0)
             .equals(stateValue.getTypeName().box());
   }
 
@@ -149,9 +153,7 @@ public class SpecModelUtils {
         "Diff model wasn't annotated with @State or @Prop, some validation failed");
   }
 
-  public static boolean hasAnnotation(
-      MethodParamModel methodParam,
-      Class<?> annotationClass) {
+  public static boolean hasAnnotation(MethodParamModel methodParam, Class<?> annotationClass) {
     for (Annotation annotation : methodParam.getAnnotations()) {
       if (annotation.annotationType().equals(annotationClass)) {
         return true;
@@ -198,8 +200,7 @@ public class SpecModelUtils {
             final List<? extends TypeMirror> mirrors = typeElement.getInterfaces();
             final List<TypeSpec> superinterfaces =
                 mirrors != null && !mirrors.isEmpty()
-                    ? mirrors
-                        .stream()
+                    ? mirrors.stream()
                         .filter(mirror -> mirror.getKind() == TypeKind.DECLARED)
                         .map(SpecModelUtils::generateTypeSpec)
                         .collect(Collectors.toList())
@@ -207,14 +208,12 @@ public class SpecModelUtils {
 
             final List<TypeSpec> typeArguments =
                 ClassName.bestGuess(qualifiedName).equals(ClassNames.DIFF)
-                        || superinterfaces
-                            .stream()
+                        || superinterfaces.stream()
                             .anyMatch(typeSpec -> typeSpec.isSubInterface(ClassNames.COLLECTION))
                     ? ((DeclaredType) type)
-                        .getTypeArguments()
-                        .stream()
-                        .map(SpecModelUtils::generateTypeSpec)
-                        .collect(Collectors.toList())
+                        .getTypeArguments().stream()
+                            .map(SpecModelUtils::generateTypeSpec)
+                            .collect(Collectors.toList())
                     : Collections.emptyList();
 
             return new TypeSpec.DeclaredTypeSpec(

@@ -45,9 +45,7 @@ public class ArraySetTest {
     assertThat(set.add(testElt1)).isFalse();
     assertThat(set).hasSize(1);
     set.remove(testElt1);
-    assertThat(set)
-        .doesNotContain(testElt1)
-        .isEmpty();
+    assertThat(set).doesNotContain(testElt1).isEmpty();
     assertThat(checkIterator(set)).isTrue();
 
     assertThat(set.add(testElt1)).isTrue();
@@ -82,9 +80,7 @@ public class ArraySetTest {
     assertThat(checkIterator(set)).isTrue();
 
     assertThat(set.add(testElt5)).isTrue();
-    assertThat(set)
-        .contains(testElt5)
-        .hasSize(4);
+    assertThat(set).contains(testElt5).hasSize(4);
     assertThat(checkIterator(set)).isTrue();
     assertThat(set.remove(testElt5)).isTrue();
 
@@ -107,7 +103,8 @@ public class ArraySetTest {
     assertThat(checkIterator(set)).isTrue();
 
     assertThat(set.remove(testElt2)).isTrue();
-    assertThat(set).doesNotContain(testElt1)
+    assertThat(set)
+        .doesNotContain(testElt1)
         .doesNotContain(testElt2)
         .contains(testElt3)
         .doesNotContain(testElt4)
@@ -147,9 +144,7 @@ public class ArraySetTest {
         it.remove();
       }
     }
-    assertThat(set).contains(testElt1)
-        .doesNotContain(testElt2)
-        .contains(testElt3);
+    assertThat(set).contains(testElt1).doesNotContain(testElt2).contains(testElt3);
   }
 
   private <T> boolean checkIterator(ArraySet<T> set) {

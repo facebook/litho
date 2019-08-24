@@ -32,9 +32,7 @@ import com.facebook.litho.widget.SmoothScrollAlignmentType;
 import com.facebook.litho.widget.ViewportInfo.ViewportChanged;
 import java.util.List;
 
-/**
- * Implementation of {@link Target} that uses a {@link RecyclerBinder}.
- */
+/** Implementation of {@link Target} that uses a {@link RecyclerBinder}. */
 public class SectionBinderTarget implements Target, Binder<RecyclerView> {
 
   private final RecyclerBinder mRecyclerBinder;
@@ -121,8 +119,7 @@ public class SectionBinderTarget implements Target, Binder<RecyclerView> {
   }
 
   @Override
-  public void updateRange(
-      int index, int count, List<RenderInfo> renderInfos) {
+  public void updateRange(int index, int count, List<RenderInfo> renderInfos) {
     if (mUseBackgroundChangeSets) {
       mRecyclerBinder.updateRangeAtAsync(index, renderInfos);
     } else {

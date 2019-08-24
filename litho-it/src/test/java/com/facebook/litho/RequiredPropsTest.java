@@ -39,20 +39,15 @@ public class RequiredPropsTest {
   public void testWithoutRequiredProps() {
     String error = "";
     try {
-      Text.create(mContext)
-          .build();
+      Text.create(mContext).build();
     } catch (IllegalStateException e) {
       error = e.getMessage();
     }
-    assertTrue(
-        "Error message did not mention the missing required prop",
-        error.contains("text"));
+    assertTrue("Error message did not mention the missing required prop", error.contains("text"));
   }
 
   @Test
   public void testWithRequiredProps() {
-    Text.create(mContext)
-        .text("text")
-        .build();
+    Text.create(mContext).text("text").build();
   }
 }

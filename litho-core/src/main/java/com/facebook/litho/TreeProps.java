@@ -26,6 +26,7 @@ import java.util.Map;
 
 /**
  * A data structure to store tree props.
+ *
  * @see TreeProp
  */
 @ThreadConfined(ThreadConfined.ANY)

@@ -155,14 +155,14 @@ public class DataDiffSectionSpec<T> {
 
   /**
    * @return true if detect moves should be enabled when performing the Diff. Detect moves is
-   * enabled by default
+   *     enabled by default
    */
   private static boolean isDetectMovesEnabled(@Nullable Diff<Boolean> detectMoves) {
     return detectMoves == null || detectMoves.getNext() == null || detectMoves.getNext();
   }
 
-  private static class DiffSectionOperationExecutor implements
-      RecyclerBinderUpdateCallback.OperationExecutor {
+  private static class DiffSectionOperationExecutor
+      implements RecyclerBinderUpdateCallback.OperationExecutor {
 
     private final ChangeSet mChangeSet;
 
@@ -178,7 +178,6 @@ public class DataDiffSectionSpec<T> {
         final List<Diff> dataHolders = operation.getDataContainers();
         final int opSize = components == null ? 1 : components.size();
         switch (operation.getType()) {
-
           case Operation.INSERT:
             if (opSize == 1) {
               mChangeSet.insert(
@@ -236,8 +235,7 @@ public class DataDiffSectionSpec<T> {
     }
 
     private static List<RenderInfo> extractComponentInfos(
-        int opSize,
-        List<ComponentContainer> components) {
+        int opSize, List<ComponentContainer> components) {
       final List<RenderInfo> renderInfos = new ArrayList<>(opSize);
       for (int i = 0; i < opSize; i++) {
         renderInfos.add(components.get(i).getRenderInfo());
@@ -299,8 +297,7 @@ public class DataDiffSectionSpec<T> {
 
     Callback(SectionContext sectionContext, List<T> previousData, List<T> nextData) {
       mSectionContext = sectionContext;
-      mIsSameItemEventHandler =
-          DataDiffSection.getOnCheckIsSameItemEventHandler(mSectionContext);
+      mIsSameItemEventHandler = DataDiffSection.getOnCheckIsSameItemEventHandler(mSectionContext);
       mIsSameContentEventHandler =
           DataDiffSection.getOnCheckIsSameContentEventHandler(mSectionContext);
 
@@ -333,9 +330,7 @@ public class DataDiffSectionSpec<T> {
 
       if (mIsSameItemEventHandler != null) {
         return DataDiffSection.dispatchOnCheckIsSameItemEvent(
-            mIsSameItemEventHandler,
-            previous,
-            next);
+            mIsSameItemEventHandler, previous, next);
       }
 
       return previous.equals(next);
@@ -356,9 +351,7 @@ public class DataDiffSectionSpec<T> {
 
       if (mIsSameContentEventHandler != null) {
         return DataDiffSection.dispatchOnCheckIsSameContentEvent(
-            mIsSameContentEventHandler,
-            previous,
-            next);
+            mIsSameContentEventHandler, previous, next);
       }
 
       return previous.equals(next);

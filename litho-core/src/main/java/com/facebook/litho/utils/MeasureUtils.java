@@ -46,15 +46,11 @@ public final class MeasureUtils {
   }
 
   /**
-   * Set the {@param outputSize} to respect both Specs and the desired width and height.
-   * The desired size is usually the necessary pixels to render the inner content.
+   * Set the {@param outputSize} to respect both Specs and the desired width and height. The desired
+   * size is usually the necessary pixels to render the inner content.
    */
   public static void measureWithDesiredPx(
-      int widthSpec,
-      int heightSpec,
-      int desiredWidthPx,
-      int desiredHeightPx,
-      Size outputSize) {
+      int widthSpec, int heightSpec, int desiredWidthPx, int desiredHeightPx, Size outputSize) {
     outputSize.width = getResultSizePxWithSpecAndDesiredPx(widthSpec, desiredWidthPx);
     outputSize.height = getResultSizePxWithSpecAndDesiredPx(heightSpec, desiredHeightPx);
   }
@@ -133,8 +129,8 @@ public final class MeasureUtils {
   }
 
   /**
-   * Measure according to an aspect ratio an width and height constraints. This version
-   * of measureWithAspectRatio will respect the intrinsic size of the component being measured.
+   * Measure according to an aspect ratio an width and height constraints. This version of
+   * measureWithAspectRatio will respect the intrinsic size of the component being measured.
    *
    * @param widthSpec A SizeSpec for the width
    * @param heightSpec A SizeSpec for the height
@@ -151,13 +147,11 @@ public final class MeasureUtils {
       float aspectRatio,
       Size outputSize) {
 
-    if (SizeSpec.getMode(widthSpec) == AT_MOST &&
-        SizeSpec.getSize(widthSpec) > intrinsicWidth) {
+    if (SizeSpec.getMode(widthSpec) == AT_MOST && SizeSpec.getSize(widthSpec) > intrinsicWidth) {
       widthSpec = SizeSpec.makeSizeSpec(intrinsicWidth, AT_MOST);
     }
 
-    if (SizeSpec.getMode(heightSpec) == AT_MOST &&
-        SizeSpec.getSize(heightSpec) > intrinsicHeight) {
+    if (SizeSpec.getMode(heightSpec) == AT_MOST && SizeSpec.getSize(heightSpec) > intrinsicHeight) {
       heightSpec = SizeSpec.makeSizeSpec(intrinsicHeight, AT_MOST);
     }
 
@@ -173,10 +167,7 @@ public final class MeasureUtils {
    * @param outputSize The output size of this measurement
    */
   public static void measureWithAspectRatio(
-      int widthSpec,
-      int heightSpec,
-      float aspectRatio,
-      Size outputSize) {
+      int widthSpec, int heightSpec, float aspectRatio, Size outputSize) {
 
     final int widthMode = SizeSpec.getMode(widthSpec);
     final int widthSize = SizeSpec.getSize(widthSpec);
@@ -219,9 +210,7 @@ public final class MeasureUtils {
               TAG,
               String.format(
                   "Ratio makes height larger than allowed. w:%s h:%s aspectRatio:%f",
-                  SizeSpec.toString(widthSpec),
-                  SizeSpec.toString(heightSpec),
-                  aspectRatio));
+                  SizeSpec.toString(widthSpec), SizeSpec.toString(heightSpec), aspectRatio));
         }
       }
     }
@@ -239,9 +228,7 @@ public final class MeasureUtils {
               TAG,
               String.format(
                   "Ratio makes width larger than allowed. w:%s h:%s aspectRatio:%f",
-                  SizeSpec.toString(widthSpec),
-                  SizeSpec.toString(heightSpec),
-                  aspectRatio));
+                  SizeSpec.toString(widthSpec), SizeSpec.toString(heightSpec), aspectRatio));
         }
       }
     }

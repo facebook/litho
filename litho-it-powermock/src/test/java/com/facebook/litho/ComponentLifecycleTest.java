@@ -60,8 +60,7 @@ import org.robolectric.RuntimeEnvironment;
 @RunWith(ComponentsTestRunner.class)
 public class ComponentLifecycleTest {
 
-  @Rule
-  public PowerMockRule mPowerMockRule = new PowerMockRule();
+  @Rule public PowerMockRule mPowerMockRule = new PowerMockRule();
 
   private static final int A_HEIGHT = 11;
   private static final int A_WIDTH = 12;
@@ -154,9 +153,8 @@ public class ComponentLifecycleTest {
 
   @Test
   public void testCreateLayoutAndResolveNestedTreeWithMountSpecCannotMeasure() {
-    Component component = setUpSpyComponentForCreateLayout(
-        true /* isMountSpec */,
-        false /* canMeasure */);
+    Component component =
+        setUpSpyComponentForCreateLayout(true /* isMountSpec */, false /* canMeasure */);
     InternalNode node = LayoutState.createLayout(mContext, component, true);
 
     verify(component).onCreateLayout(mContext);
@@ -167,9 +165,8 @@ public class ComponentLifecycleTest {
 
   @Test
   public void testCreateLayoutAndDontResolveNestedTreeWithMountSpecCannotMeasure() {
-    Component component = setUpSpyComponentForCreateLayout(
-        true /* isMountSpec */,
-        false /* canMeasure */);
+    Component component =
+        setUpSpyComponentForCreateLayout(true /* isMountSpec */, false /* canMeasure */);
     InternalNode node = LayoutState.createLayout(mContext, component, false);
 
     verify(component).onCreateLayout(mContext);
@@ -180,9 +177,8 @@ public class ComponentLifecycleTest {
 
   @Test
   public void testCreateLayoutAndResolveNestedTreeWithMountSpecCanMeasure() {
-    Component component = setUpSpyComponentForCreateLayout(
-        true /* isMountSpec */,
-        true /* canMeasure */);
+    Component component =
+        setUpSpyComponentForCreateLayout(true /* isMountSpec */, true /* canMeasure */);
     InternalNode node = LayoutState.createLayout(mContext, component, true);
 
     verify(component).onCreateLayout(mContext);
@@ -193,9 +189,8 @@ public class ComponentLifecycleTest {
 
   @Test
   public void testCreateLayoutAndDontResolveNestedTreeWithMountSpecCanMeasure() {
-    Component component = setUpSpyComponentForCreateLayout(
-        true /* isMountSpec */,
-        true /* canMeasure */);
+    Component component =
+        setUpSpyComponentForCreateLayout(true /* isMountSpec */, true /* canMeasure */);
     InternalNode node = LayoutState.createLayout(mContext, component, false);
 
     verify(component).onCreateLayout(mContext);
@@ -206,9 +201,8 @@ public class ComponentLifecycleTest {
 
   @Test
   public void testCreateLayoutAndResolveNestedTreeWithLayoutSpecCannotMeasure() {
-    Component component = setUpSpyComponentForCreateLayout(
-        false /* isMountSpec */,
-        false /* canMeasure */);
+    Component component =
+        setUpSpyComponentForCreateLayout(false /* isMountSpec */, false /* canMeasure */);
     InternalNode node = LayoutState.createLayout(mContext, component, true);
 
     verify(component).onCreateLayout(mContext);
@@ -219,9 +213,8 @@ public class ComponentLifecycleTest {
 
   @Test
   public void testCreateLayoutAndDontResolveNestedTreeWithLayoutSpecCannotMeasure() {
-    Component component = setUpSpyComponentForCreateLayout(
-        false /* isMountSpec */,
-        false /* canMeasure */);
+    Component component =
+        setUpSpyComponentForCreateLayout(false /* isMountSpec */, false /* canMeasure */);
     InternalNode node = LayoutState.createLayout(mContext, component, false);
 
     verify(component).onCreateLayout(mContext);
@@ -232,17 +225,14 @@ public class ComponentLifecycleTest {
 
   @Test
   public void testCreateLayoutAndResolveNestedTreeWithLayoutSpecCanMeasure() {
-    Component component = setUpSpyComponentForCreateLayout(
-        false /* isMountSpec */,
-        true /* canMeasure */);
+    Component component =
+        setUpSpyComponentForCreateLayout(false /* isMountSpec */, true /* canMeasure */);
     mContext.setWidthSpec(mNestedTreeWidthSpec);
     mContext.setHeightSpec(mNestedTreeHeightSpec);
     InternalNode node = LayoutState.createLayout(mContext, component, true);
 
-    verify(component).onCreateLayoutWithSizeSpec(
-        mContext,
-        mNestedTreeWidthSpec,
-        mNestedTreeHeightSpec);
+    verify(component)
+        .onCreateLayoutWithSizeSpec(mContext, mNestedTreeWidthSpec, mNestedTreeHeightSpec);
     verify(node).appendComponent(component);
     verify(node, never()).setMeasureFunction(any(YogaMeasureFunction.class));
     verify(component).onPrepare(mContext);
@@ -250,17 +240,13 @@ public class ComponentLifecycleTest {
 
   @Test
   public void testCreateLayoutAndDontResolveNestedTreeWithLayoutSpecCanMeasure() {
-    Component component = setUpSpyComponentForCreateLayout(
-        false /* isMountSpec */,
-        true /* canMeasure */);
+    Component component =
+        setUpSpyComponentForCreateLayout(false /* isMountSpec */, true /* canMeasure */);
     InternalNode node = LayoutState.createLayout(mContext, component, false);
 
-    verify(component, never()).onCreateLayout(
-        any(ComponentContext.class));
-    verify(component, never()).onCreateLayoutWithSizeSpec(
-        any(ComponentContext.class),
-        anyInt(),
-        anyInt());
+    verify(component, never()).onCreateLayout(any(ComponentContext.class));
+    verify(component, never())
+        .onCreateLayoutWithSizeSpec(any(ComponentContext.class), anyInt(), anyInt());
     verify(node).appendComponent(component);
     verify(node).setMeasureFunction(any(YogaMeasureFunction.class));
     verify(component, never()).onPrepare(any(ComponentContext.class));
@@ -325,7 +311,8 @@ public class ComponentLifecycleTest {
     PowerMockito.verifyStatic();
 
     // it should call create and measure
-    LayoutState.createAndMeasureTreeForComponent(mContext, component, 100, 100, holder, null, null, null);
+    LayoutState.createAndMeasureTreeForComponent(
+        mContext, component, 100, 100, holder, null, null, null);
 
     // should return nested tree next time
     when(holder.getNestedTree()).thenReturn(result);
@@ -338,7 +325,8 @@ public class ComponentLifecycleTest {
 
     // no new invocation of create
     PowerMockito.verifyStatic(times(1));
-    LayoutState.createAndMeasureTreeForComponent(mContext, component, 100, 100, holder, null, null, null);
+    LayoutState.createAndMeasureTreeForComponent(
+        mContext, component, 100, 100, holder, null, null, null);
 
     // should only measure
     PowerMockito.verifyStatic(times(1));
@@ -379,7 +367,8 @@ public class ComponentLifecycleTest {
     PowerMockito.verifyStatic();
 
     // it should call create and measure
-    LayoutState.createAndMeasureTreeForComponent(mContext, component, 100, 100, holder, null, null, null);
+    LayoutState.createAndMeasureTreeForComponent(
+        mContext, component, 100, 100, holder, null, null, null);
 
     // should return nested tree next time
     when(holder.getNestedTree()).thenReturn(result);
@@ -392,7 +381,8 @@ public class ComponentLifecycleTest {
 
     // a new invocation of create
     PowerMockito.verifyStatic(times(2));
-    LayoutState.createAndMeasureTreeForComponent(mContext, component, 100, 100, holder, null, null, null);
+    LayoutState.createAndMeasureTreeForComponent(
+        mContext, component, 100, 100, holder, null, null, null);
 
     ComponentsConfiguration.enableShouldCreateLayoutWithNewSizeSpec = false;
     ComponentsConfiguration.isReconciliationEnabled = false;
@@ -439,8 +429,8 @@ public class ComponentLifecycleTest {
 
   @Test
   public void testLayoutSpecMeasureResolveNestedTree() {
-    Component component = setUpSpyComponentForCreateLayout(
-        false /* isMountSpec */, true /* canMeasure */);
+    Component component =
+        setUpSpyComponentForCreateLayout(false /* isMountSpec */, true /* canMeasure */);
     YogaMeasureFunction measureFunction = getMeasureFunction(component);
 
     final int nestedTreeWidth = 20;
@@ -488,9 +478,7 @@ public class ComponentLifecycleTest {
     assertThat(YogaMeasureOutput.getHeight(output)).isEqualTo(nestedTreeHeight);
   }
 
-  private Component setUpSpyComponentForCreateLayout(
-      boolean isMountSpec,
-      boolean canMeasure) {
+  private Component setUpSpyComponentForCreateLayout(boolean isMountSpec, boolean canMeasure) {
 
     return new SpyComponentBuilder()
         .isMountSpec(isMountSpec)

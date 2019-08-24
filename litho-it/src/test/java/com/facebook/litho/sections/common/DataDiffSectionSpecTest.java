@@ -28,7 +28,6 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.HasEventDispatcher;
-import com.facebook.litho.sections.Section;
 import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.SectionTree;
 import com.facebook.litho.specmodels.internal.ImmutableList;
@@ -383,7 +382,7 @@ public class DataDiffSectionSpecTest {
             .build());
 
     executedOperations = mTestTarget.getOperations();
-    assertBulkOperations(executedOperations,0, 20,20);
+    assertBulkOperations(executedOperations, 0, 20, 20);
   }
 
   @Test
@@ -435,20 +434,14 @@ public class DataDiffSectionSpecTest {
   }
 
   private void assertRangeOperation(
-      Operation operation,
-      int opType,
-      int startIndex,
-      int rangeCount) {
+      Operation operation, int opType, int startIndex, int rangeCount) {
     assertEquals("opreation type", operation.mOp, opType);
     assertEquals("operation starting index", operation.mIndex, startIndex);
     assertEquals("operation range count", operation.mRangeCount, rangeCount);
   }
 
   private void assertBulkOperations(
-      List<Operation> operations,
-      int expectedInserted,
-      int expectedUpdated,
-      int expectedRemoved) {
+      List<Operation> operations, int expectedInserted, int expectedUpdated, int expectedRemoved) {
 
     int totalRemoved = 0;
     int totalUpdated = 0;

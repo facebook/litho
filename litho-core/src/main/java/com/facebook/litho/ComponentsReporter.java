@@ -20,12 +20,9 @@ package com.facebook.litho;
  * This is intended as a hook into {@code android.util.Log}, but allows you to provide your own
  * functionality. Use it as
  *
- * <p>
- *   {@code ComponentsReporter.emitMessage(level, message);}
- * </p>
- *
- * As a default, it simply calls {@code android.util.Log} (see {@link DefaultComponentsReporter}).
- * You may supply your own with {@link ComponentsReporter#provide(ComponentsReporter.Reporter)}.
+ * <p>{@code ComponentsReporter.emitMessage(level, message);} As a default, it simply calls {@code
+ * android.util.Log} (see {@link DefaultComponentsReporter}). You may supply your own with {@link
+ * ComponentsReporter#provide(ComponentsReporter.Reporter)}.
  */
 public class ComponentsReporter {
 

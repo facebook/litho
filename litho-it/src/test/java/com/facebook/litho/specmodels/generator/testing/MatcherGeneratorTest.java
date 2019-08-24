@@ -210,5 +210,4 @@ public class MatcherGeneratorTest {
     final MockMethodParamModel paramModel = MockMethodParamModel.newBuilder().name(name).build();
     return new PropModel(paramModel, false, false, false, false, ResType.INT, "");
   }
-
 }

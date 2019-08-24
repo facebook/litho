@@ -39,11 +39,7 @@ public class MeasureUtilsTest {
   @Test
   public void testWidthExactlyHeightAtMost() {
     final Size size = new Size();
-    measureWithAspectRatio(
-        makeSizeSpec(10, EXACTLY),
-        makeSizeSpec(30, AT_MOST),
-        0.5f,
-        size);
+    measureWithAspectRatio(makeSizeSpec(10, EXACTLY), makeSizeSpec(30, AT_MOST), 0.5f, size);
 
     assertThat(size.width).isEqualTo(10);
     assertThat(size.height).isEqualTo(20);
@@ -52,11 +48,7 @@ public class MeasureUtilsTest {
   @Test
   public void testWidthExactlyHeightUnspecified() {
     final Size size = new Size();
-    measureWithAspectRatio(
-        makeSizeSpec(10, EXACTLY),
-        makeSizeSpec(0, UNSPECIFIED),
-        0.5f,
-        size);
+    measureWithAspectRatio(makeSizeSpec(10, EXACTLY), makeSizeSpec(0, UNSPECIFIED), 0.5f, size);
 
     assertThat(size.width).isEqualTo(10);
     assertThat(size.height).isEqualTo(20);
@@ -65,11 +57,7 @@ public class MeasureUtilsTest {
   @Test
   public void testWidthAtMostHeightExactly() {
     final Size size = new Size();
-    measureWithAspectRatio(
-        makeSizeSpec(30, AT_MOST),
-        makeSizeSpec(10, EXACTLY),
-        2f,
-        size);
+    measureWithAspectRatio(makeSizeSpec(30, AT_MOST), makeSizeSpec(10, EXACTLY), 2f, size);
 
     assertThat(size.width).isEqualTo(20);
     assertThat(size.height).isEqualTo(10);
@@ -78,11 +66,7 @@ public class MeasureUtilsTest {
   @Test
   public void testWidthUnspecifiedHeightExactly() {
     final Size size = new Size();
-    measureWithAspectRatio(
-        makeSizeSpec(0, UNSPECIFIED),
-        makeSizeSpec(10, EXACTLY),
-        2f,
-        size);
+    measureWithAspectRatio(makeSizeSpec(0, UNSPECIFIED), makeSizeSpec(10, EXACTLY), 2f, size);
 
     assertThat(size.width).isEqualTo(20);
     assertThat(size.height).isEqualTo(10);
@@ -91,11 +75,7 @@ public class MeasureUtilsTest {
   @Test
   public void testWidthAtMostHeightAtMostWidthSmaller() {
     final Size size = new Size();
-    measureWithAspectRatio(
-        makeSizeSpec(10, AT_MOST),
-        makeSizeSpec(20, AT_MOST),
-        0.5f,
-        size);
+    measureWithAspectRatio(makeSizeSpec(10, AT_MOST), makeSizeSpec(20, AT_MOST), 0.5f, size);
 
     assertThat(size.width).isEqualTo(10);
     assertThat(size.height).isEqualTo(20);
@@ -104,11 +84,7 @@ public class MeasureUtilsTest {
   @Test
   public void testWidthAtMostHeightAtMostHeightSmaller() {
     final Size size = new Size();
-    measureWithAspectRatio(
-        makeSizeSpec(20, AT_MOST),
-        makeSizeSpec(10, AT_MOST),
-        2f,
-        size);
+    measureWithAspectRatio(makeSizeSpec(20, AT_MOST), makeSizeSpec(10, AT_MOST), 2f, size);
 
     assertThat(size.width).isEqualTo(20);
     assertThat(size.height).isEqualTo(10);
@@ -117,11 +93,7 @@ public class MeasureUtilsTest {
   @Test
   public void testWidthAtMostHeightUnspecified() {
     final Size size = new Size();
-    measureWithAspectRatio(
-        makeSizeSpec(20, AT_MOST),
-        makeSizeSpec(0, UNSPECIFIED),
-        1f,
-        size);
+    measureWithAspectRatio(makeSizeSpec(20, AT_MOST), makeSizeSpec(0, UNSPECIFIED), 1f, size);
 
     assertThat(size.width).isEqualTo(20);
     assertThat(size.height).isEqualTo(20);
@@ -130,11 +102,7 @@ public class MeasureUtilsTest {
   @Test
   public void testWidthUnspecifiedHeightAtMost() {
     final Size size = new Size();
-    measureWithAspectRatio(
-        makeSizeSpec(0, UNSPECIFIED),
-        makeSizeSpec(20, AT_MOST),
-        1f,
-        size);
+    measureWithAspectRatio(makeSizeSpec(0, UNSPECIFIED), makeSizeSpec(20, AT_MOST), 1f, size);
 
     assertThat(size.width).isEqualTo(20);
     assertThat(size.height).isEqualTo(20);
@@ -144,12 +112,7 @@ public class MeasureUtilsTest {
   public void testWithInstrinsicSize() {
     final Size size = new Size();
     measureWithAspectRatio(
-        makeSizeSpec(0, UNSPECIFIED),
-        makeSizeSpec(20, AT_MOST),
-        10,
-        10,
-        1f,
-        size);
+        makeSizeSpec(0, UNSPECIFIED), makeSizeSpec(20, AT_MOST), 10, 10, 1f, size);
 
     assertThat(size.width).isEqualTo(10);
     assertThat(size.height).isEqualTo(10);
@@ -158,11 +121,7 @@ public class MeasureUtilsTest {
   @Test
   public void testWidthExactlyHeightAtMostEqual() {
     final Size size = new Size();
-    measureWithAspectRatio(
-        makeSizeSpec(20, EXACTLY),
-        makeSizeSpec(20, AT_MOST),
-        1,
-        size);
+    measureWithAspectRatio(makeSizeSpec(20, EXACTLY), makeSizeSpec(20, AT_MOST), 1, size);
 
     assertThat(size.width).isEqualTo(20);
     assertThat(size.height).isEqualTo(20);
@@ -171,11 +130,7 @@ public class MeasureUtilsTest {
   @Test
   public void testWidthAtMostHeightExactlyEqual() {
     final Size size = new Size();
-    measureWithAspectRatio(
-        makeSizeSpec(20, AT_MOST),
-        makeSizeSpec(20, EXACTLY),
-        1,
-        size);
+    measureWithAspectRatio(makeSizeSpec(20, AT_MOST), makeSizeSpec(20, EXACTLY), 1, size);
 
     assertThat(size.width).isEqualTo(20);
     assertThat(size.height).isEqualTo(20);
@@ -184,11 +139,7 @@ public class MeasureUtilsTest {
   @Test
   public void testWidthUnspecifiedHeightUnspecified() {
     final Size size = new Size();
-    measureWithAspectRatio(
-        makeSizeSpec(0, UNSPECIFIED),
-        makeSizeSpec(0, UNSPECIFIED),
-        10,
-        size);
+    measureWithAspectRatio(makeSizeSpec(0, UNSPECIFIED), makeSizeSpec(0, UNSPECIFIED), 10, size);
 
     assertThat(size.width).isEqualTo(0);
     assertThat(size.height).isEqualTo(0);
@@ -197,11 +148,7 @@ public class MeasureUtilsTest {
   @Test
   public void testWidthExactlyHeightTooSmall() {
     final Size size = new Size();
-    measureWithAspectRatio(
-        makeSizeSpec(10, EXACTLY),
-        makeSizeSpec(20, AT_MOST),
-        0.1f,
-        size);
+    measureWithAspectRatio(makeSizeSpec(10, EXACTLY), makeSizeSpec(20, AT_MOST), 0.1f, size);
 
     assertThat(size.width).isEqualTo(10);
     assertThat(size.height).isEqualTo(20);
@@ -210,10 +157,7 @@ public class MeasureUtilsTest {
   @Test
   public void testWidthUnspecifiedHeightUnspecifiedEqual() {
     final Size size = new Size();
-    measureWithEqualDimens(
-        makeSizeSpec(0, UNSPECIFIED),
-        makeSizeSpec(0, UNSPECIFIED),
-        size);
+    measureWithEqualDimens(makeSizeSpec(0, UNSPECIFIED), makeSizeSpec(0, UNSPECIFIED), size);
 
     assertThat(size.width).isEqualTo(0);
     assertThat(size.height).isEqualTo(0);
@@ -222,17 +166,11 @@ public class MeasureUtilsTest {
   @Test
   public void testWidthAtMostHeightAtMostEqual() {
     final Size size = new Size();
-    measureWithEqualDimens(
-        makeSizeSpec(20, AT_MOST),
-        makeSizeSpec(10, AT_MOST),
-        size);
+    measureWithEqualDimens(makeSizeSpec(20, AT_MOST), makeSizeSpec(10, AT_MOST), size);
     assertThat(size.width).isEqualTo(10);
     assertThat(size.height).isEqualTo(10);
 
-    measureWithEqualDimens(
-        makeSizeSpec(20, AT_MOST),
-        makeSizeSpec(30, AT_MOST),
-        size);
+    measureWithEqualDimens(makeSizeSpec(20, AT_MOST), makeSizeSpec(30, AT_MOST), size);
     assertThat(size.width).isEqualTo(20);
     assertThat(size.height).isEqualTo(20);
   }
@@ -240,17 +178,11 @@ public class MeasureUtilsTest {
   @Test
   public void textAtMostUnspecifiedEqual() {
     final Size size = new Size();
-    measureWithEqualDimens(
-        makeSizeSpec(20, AT_MOST),
-        makeSizeSpec(10, UNSPECIFIED),
-        size);
+    measureWithEqualDimens(makeSizeSpec(20, AT_MOST), makeSizeSpec(10, UNSPECIFIED), size);
     assertThat(size.width).isEqualTo(20);
     assertThat(size.height).isEqualTo(20);
 
-    measureWithEqualDimens(
-        makeSizeSpec(10, UNSPECIFIED),
-        makeSizeSpec(30, AT_MOST),
-        size);
+    measureWithEqualDimens(makeSizeSpec(10, UNSPECIFIED), makeSizeSpec(30, AT_MOST), size);
     assertThat(size.width).isEqualTo(30);
     assertThat(size.height).isEqualTo(30);
   }
@@ -258,17 +190,11 @@ public class MeasureUtilsTest {
   @Test
   public void testExactlyUnspecifiedEqual() {
     final Size size = new Size();
-    measureWithEqualDimens(
-        makeSizeSpec(20, EXACTLY),
-        makeSizeSpec(10, UNSPECIFIED),
-        size);
+    measureWithEqualDimens(makeSizeSpec(20, EXACTLY), makeSizeSpec(10, UNSPECIFIED), size);
     assertThat(size.width).isEqualTo(20);
     assertThat(size.height).isEqualTo(20);
 
-    measureWithEqualDimens(
-        makeSizeSpec(20, UNSPECIFIED),
-        makeSizeSpec(10, EXACTLY),
-        size);
+    measureWithEqualDimens(makeSizeSpec(20, UNSPECIFIED), makeSizeSpec(10, EXACTLY), size);
     assertThat(size.width).isEqualTo(10);
     assertThat(size.height).isEqualTo(10);
   }
@@ -276,17 +202,11 @@ public class MeasureUtilsTest {
   @Test
   public void testExactlyAtMostSmallerEqual() {
     final Size size = new Size();
-    measureWithEqualDimens(
-        makeSizeSpec(20, EXACTLY),
-        makeSizeSpec(10, AT_MOST),
-        size);
+    measureWithEqualDimens(makeSizeSpec(20, EXACTLY), makeSizeSpec(10, AT_MOST), size);
     assertThat(size.width).isEqualTo(20);
     assertThat(size.height).isEqualTo(10);
 
-    measureWithEqualDimens(
-        makeSizeSpec(10, AT_MOST),
-        makeSizeSpec(20, EXACTLY),
-        size);
+    measureWithEqualDimens(makeSizeSpec(10, AT_MOST), makeSizeSpec(20, EXACTLY), size);
     assertThat(size.width).isEqualTo(10);
     assertThat(size.height).isEqualTo(20);
   }
@@ -294,17 +214,11 @@ public class MeasureUtilsTest {
   @Test
   public void testExactlyAtMostLargerEqual() {
     final Size size = new Size();
-    measureWithEqualDimens(
-        makeSizeSpec(20, EXACTLY),
-        makeSizeSpec(30, AT_MOST),
-        size);
+    measureWithEqualDimens(makeSizeSpec(20, EXACTLY), makeSizeSpec(30, AT_MOST), size);
     assertThat(size.width).isEqualTo(20);
     assertThat(size.height).isEqualTo(20);
 
-    measureWithEqualDimens(
-        makeSizeSpec(30, AT_MOST),
-        makeSizeSpec(20, EXACTLY),
-        size);
+    measureWithEqualDimens(makeSizeSpec(30, AT_MOST), makeSizeSpec(20, EXACTLY), size);
     assertThat(size.width).isEqualTo(20);
     assertThat(size.height).isEqualTo(20);
   }
@@ -312,45 +226,37 @@ public class MeasureUtilsTest {
   @Test
   public void textExactWidthExactHeightEqual() {
     final Size size = new Size();
-    measureWithEqualDimens(
-        makeSizeSpec(20, EXACTLY),
-        makeSizeSpec(10, EXACTLY),
-        size);
+    measureWithEqualDimens(makeSizeSpec(20, EXACTLY), makeSizeSpec(10, EXACTLY), size);
     assertThat(size.width).isEqualTo(20);
     assertThat(size.height).isEqualTo(10);
 
-    measureWithEqualDimens(
-        makeSizeSpec(30, EXACTLY),
-        makeSizeSpec(30, EXACTLY),
-        size);
+    measureWithEqualDimens(makeSizeSpec(30, EXACTLY), makeSizeSpec(30, EXACTLY), size);
     assertThat(size.width).isEqualTo(30);
     assertThat(size.height).isEqualTo(30);
   }
 
   @Test
   public void testGetViewMeasureSpecExactly() {
-    assertThat(getViewMeasureSpec(makeSizeSpec(10, EXACTLY))).isEqualTo(getViewMeasureSpec(makeMeasureSpec(10, MeasureSpec.EXACTLY)));
+    assertThat(getViewMeasureSpec(makeSizeSpec(10, EXACTLY)))
+        .isEqualTo(getViewMeasureSpec(makeMeasureSpec(10, MeasureSpec.EXACTLY)));
   }
 
   @Test
   public void testGetViewMeasureSpecAtMost() {
-    assertThat(getViewMeasureSpec(makeSizeSpec(10, AT_MOST))).isEqualTo(getViewMeasureSpec(makeMeasureSpec(10, MeasureSpec.AT_MOST)));
+    assertThat(getViewMeasureSpec(makeSizeSpec(10, AT_MOST)))
+        .isEqualTo(getViewMeasureSpec(makeMeasureSpec(10, MeasureSpec.AT_MOST)));
   }
 
   @Test
   public void testGetViewMeasureSpecUnspecified() {
-    assertThat(getViewMeasureSpec(makeSizeSpec(10, UNSPECIFIED))).isEqualTo(getViewMeasureSpec(makeMeasureSpec(10, MeasureSpec.UNSPECIFIED)));
+    assertThat(getViewMeasureSpec(makeSizeSpec(10, UNSPECIFIED)))
+        .isEqualTo(getViewMeasureSpec(makeMeasureSpec(10, MeasureSpec.UNSPECIFIED)));
   }
 
   @Test
   public void testMeasureWithDesiredSizeAndExactlySpec() {
     final Size size = new Size();
-    measureWithDesiredPx(
-        makeSizeSpec(50, EXACTLY),
-        makeSizeSpec(30, EXACTLY),
-        80,
-        20,
-        size);
+    measureWithDesiredPx(makeSizeSpec(50, EXACTLY), makeSizeSpec(30, EXACTLY), 80, 20, size);
     assertThat(size.width).isEqualTo(50);
     assertThat(size.height).isEqualTo(30);
   }
@@ -358,12 +264,7 @@ public class MeasureUtilsTest {
   @Test
   public void testMeasureWithDesiredSizeAndLargerAtMostSpec() {
     final Size size = new Size();
-    measureWithDesiredPx(
-        makeSizeSpec(81, AT_MOST),
-        makeSizeSpec(21, AT_MOST),
-        80,
-        20,
-        size);
+    measureWithDesiredPx(makeSizeSpec(81, AT_MOST), makeSizeSpec(21, AT_MOST), 80, 20, size);
     assertThat(size.width).isEqualTo(80);
     assertThat(size.height).isEqualTo(20);
   }
@@ -371,12 +272,7 @@ public class MeasureUtilsTest {
   @Test
   public void testMeasureWithDesiredSizeAndSmallerAtMostSpec() {
     final Size size = new Size();
-    measureWithDesiredPx(
-        makeSizeSpec(79, AT_MOST),
-        makeSizeSpec(19, EXACTLY),
-        80,
-        20,
-        size);
+    measureWithDesiredPx(makeSizeSpec(79, AT_MOST), makeSizeSpec(19, EXACTLY), 80, 20, size);
     assertThat(size.width).isEqualTo(79);
     assertThat(size.height).isEqualTo(19);
   }
@@ -384,12 +280,7 @@ public class MeasureUtilsTest {
   @Test
   public void testMeasureWithDesiredSizeAndUnspecifiedSpec() {
     final Size size = new Size();
-    measureWithDesiredPx(
-        makeSizeSpec(0, UNSPECIFIED),
-        makeSizeSpec(0, UNSPECIFIED),
-        80,
-        20,
-        size);
+    measureWithDesiredPx(makeSizeSpec(0, UNSPECIFIED), makeSizeSpec(0, UNSPECIFIED), 80, 20, size);
     assertThat(size.width).isEqualTo(80);
     assertThat(size.height).isEqualTo(20);
   }

@@ -32,14 +32,10 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeKind;
 
-/**
- * Extracts prop defaults from the given input.
- */
+/** Extracts prop defaults from the given input. */
 public class PropDefaultsExtractor {
 
-  /**
-   * Get the prop defaults from the given {@link TypeElement}.
-   */
+  /** Get the prop defaults from the given {@link TypeElement}. */
   public static ImmutableList<PropDefaultModel> getPropDefaults(TypeElement typeElement) {
     final List<PropDefaultModel> propDefaults = new ArrayList<>();
 
@@ -124,10 +120,7 @@ public class PropDefaultsExtractor {
     }
 
     final Optional<? extends Element> element =
-        enclosedElement
-            .getEnclosingElement()
-            .getEnclosedElements()
-            .stream()
+        enclosedElement.getEnclosingElement().getEnclosedElements().stream()
             .filter(e -> e.getSimpleName().toString().equals(baseName))
             .findFirst();
 

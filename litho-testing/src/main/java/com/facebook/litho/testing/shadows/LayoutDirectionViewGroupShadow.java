@@ -24,6 +24,4 @@ import org.robolectric.annotation.Implements;
  * We must have ViewGroup and View shadows as Robolectric forces us to have the whole hierarchy.
  */
 @Implements(ViewGroup.class)
-public class LayoutDirectionViewGroupShadow extends LayoutDirectionViewShadow {
-
-}
+public class LayoutDirectionViewGroupShadow extends LayoutDirectionViewShadow {}

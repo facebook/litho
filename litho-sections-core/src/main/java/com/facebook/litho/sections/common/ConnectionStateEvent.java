@@ -19,11 +19,10 @@ package com.facebook.litho.sections.common;
 import com.facebook.litho.annotations.Event;
 
 /**
- * An {@link Event} that gets triggered by the
- * {@link com.facebook.litho.sections.fb.datasources.BaseGraphQLConnectionSectionServiceListener} in
- * {@link com.facebook.litho.sections.fb.datasources.BaseGraphQLConnectionSection}
- * as the connection state of
- * {@link com.facebook.litho.sections.fb.datasources.GraphQLConnectionService} changes.
+ * An {@link Event} that gets triggered by the {@link
+ * com.facebook.litho.sections.fb.datasources.BaseGraphQLConnectionSectionServiceListener} in {@link
+ * com.facebook.litho.sections.fb.datasources.BaseGraphQLConnectionSection} as the connection state
+ * of {@link com.facebook.litho.sections.fb.datasources.GraphQLConnectionService} changes.
  */
 @Event
 public class ConnectionStateEvent {

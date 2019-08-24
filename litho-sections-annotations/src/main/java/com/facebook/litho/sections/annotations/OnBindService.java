@@ -23,10 +23,11 @@ import java.lang.annotation.RetentionPolicy;
  * The method with this annotation will be called whenever the Service has been created or
  * transferred from the old tree to the new tree and are therefore ready to be used.
  *
- * This method is the proper place to start something like a network request or register a
+ * <p>This method is the proper place to start something like a network request or register a
  * listener on the Service.
  *
  * <p>For example:
+ *
  * <pre>
  *
  * {@literal @}DiffSectionSpec
@@ -44,6 +45,4 @@ import java.lang.annotation.RetentionPolicy;
  * </pre>
  */
 @Retention(RetentionPolicy.RUNTIME)
-public @interface OnBindService {
-
-}
+public @interface OnBindService {}

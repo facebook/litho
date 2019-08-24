@@ -24,8 +24,8 @@ import javax.annotation.concurrent.Immutable;
 import javax.lang.model.element.Modifier;
 
 /**
- * Model that is a simple base representation of a
- * {@link com.facebook.litho.annotations.PropDefault}.
+ * Model that is a simple base representation of a {@link
+ * com.facebook.litho.annotations.PropDefault}.
  */
 @Immutable
 public class PropDefaultModel {
@@ -37,10 +37,7 @@ public class PropDefaultModel {
   private int mResId;
 
   public PropDefaultModel(
-      TypeName type,
-      String name,
-      ImmutableList<Modifier> modifiers,
-      Object representedObject) {
+      TypeName type, String name, ImmutableList<Modifier> modifiers, Object representedObject) {
     mType = type;
     mName = name;
     mModifiers = modifiers;

@@ -24,5 +24,4 @@ import com.facebook.litho.annotations.Event;
  * when a component leaves any of these ranges should be written in the handler for this event.
  */
 @Event
-public class InvisibleEvent {
-}
+public class InvisibleEvent {}

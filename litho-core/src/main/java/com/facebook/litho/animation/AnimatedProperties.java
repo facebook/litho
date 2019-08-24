@@ -25,31 +25,25 @@ import com.facebook.litho.LithoView;
 import java.util.List;
 import javax.annotation.Nullable;
 
-/**
- * A convenience class for common View properties applicable to all subclasses of View.
- */
+/** A convenience class for common View properties applicable to all subclasses of View. */
 public final class AnimatedProperties {
 
   /**
-   * The absolute X-position of a mount content, relative to the
-   * {@link com.facebook.litho.LithoView} that is rendering this component tree.
+   * The absolute X-position of a mount content, relative to the {@link
+   * com.facebook.litho.LithoView} that is rendering this component tree.
    */
   public static final AnimatedProperty X = new XAnimatedProperty();
 
   /**
-   * The absolute Y-position of a mount content, relative to the
-   * {@link com.facebook.litho.LithoView} that is rendering this component tree.
+   * The absolute Y-position of a mount content, relative to the {@link
+   * com.facebook.litho.LithoView} that is rendering this component tree.
    */
   public static final AnimatedProperty Y = new YAnimatedProperty();
 
-  /**
-   * The width of a mount content.
-   */
+  /** The width of a mount content. */
   public static final AnimatedProperty WIDTH = new WidthAnimatedProperty();
 
-  /**
-   * The height of a mount content.
-   */
+  /** The height of a mount content. */
   public static final AnimatedProperty HEIGHT = new HeightAnimatedProperty();
 
   /** The transparency of a mount content, where 0 is fully invisible and 1 is fully opaque. */
@@ -88,14 +82,16 @@ public final class AnimatedProperties {
   public static final AnimatedProperty[] AUTO_LAYOUT_PROPERTIES =
       new AnimatedProperty[] {X, Y, WIDTH, HEIGHT};
 
-  private AnimatedProperties() {
-  }
+  private AnimatedProperties() {}
 
   private static View assertIsView(Object mountContent, AnimatedProperty property) {
     if (!(mountContent instanceof View)) {
       throw new RuntimeException(
-          "Animating '" + property.getName() + "' is only supported on Views (got " + mountContent +
-              ")");
+          "Animating '"
+              + property.getName()
+              + "' is only supported on Views (got "
+              + mountContent
+              + ")");
     }
     return (View) mountContent;
   }
@@ -503,7 +499,7 @@ public final class AnimatedProperties {
 
   /**
    * @return the x or y position of the given view relative to the LithoView that this ComponentTree
-   * is being rendered in to.
+   *     is being rendered in to.
    */
   private static float getPositionRelativeToLithoView(View mountContent, boolean getX) {
     float pos = 0;

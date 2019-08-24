@@ -65,8 +65,7 @@ public class MountStateBetterLoggingTest {
 
     final List<PerfEvent> loggedPerfEvents = mLogger.getLoggedPerfEvents();
     final List<PerfEvent> perfEvents =
-        loggedPerfEvents
-            .stream()
+        loggedPerfEvents.stream()
             .filter(
                 new Predicate<PerfEvent>() {
                   @Override

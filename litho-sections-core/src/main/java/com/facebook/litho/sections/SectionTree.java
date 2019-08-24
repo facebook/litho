@@ -69,9 +69,8 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.GuardedBy;
 
 /**
- * Represents a tree of {@link Section} and manages their lifecycle. {@link SectionTree} takes
- * a root {@link Section} and generates the complete tree by recursively invoking
- * OnCreateChildren.
+ * Represents a tree of {@link Section} and manages their lifecycle. {@link SectionTree} takes a
+ * root {@link Section} and generates the complete tree by recursively invoking OnCreateChildren.
  * {@link SectionTree} is also responsible for regenerating the tree in response to state update
  * events.
  */
@@ -91,57 +90,43 @@ public class SectionTree {
   private volatile boolean mReleased;
 
   /**
-   * The class implementing this interface will be responsible to translate the ChangeSet into
-   * UI updates.
+   * The class implementing this interface will be responsible to translate the ChangeSet into UI
+   * updates.
    */
   public interface Target {
 
-    /**
-     * Notify that a {@link Component} was added at index.
-     */
+    /** Notify that a {@link Component} was added at index. */
     void insert(int index, RenderInfo renderInfo);
 
     void insertRange(int index, int count, List<RenderInfo> renderInfos);
 
-    /**
-     * Notify that a {@link Component} was updated at index.
-     */
+    /** Notify that a {@link Component} was updated at index. */
     void update(int index, RenderInfo renderInfo);
 
     void updateRange(int index, int count, List<RenderInfo> renderInfos);
 
-    /**
-     * Notify that the {@link Component} at index was deleted.
-     */
+    /** Notify that the {@link Component} at index was deleted. */
     void delete(int index);
 
     void deleteRange(int index, int count);
 
-    /**
-     * Notify that a {@link Component} was moved fromPosition toPosition.
-     */
+    /** Notify that a {@link Component} was moved fromPosition toPosition. */
     void move(int fromPosition, int toPosition);
 
     /** Called when a changeset has finished being applied. */
     void notifyChangeSetComplete(
         boolean isDataChanged, ChangeSetCompleteCallback changeSetCompleteCallback);
 
-    /**
-     * Request focus on the item with the given index.
-     */
+    /** Request focus on the item with the given index. */
     void requestFocus(int index);
 
     /** Request smooth focus on the item with the given index. */
     void requestSmoothFocus(int index, int offset, SmoothScrollAlignmentType type);
 
-    /**
-     * Request focus on the item with the given index, plus some additional offset.
-     */
+    /** Request focus on the item with the given index, plus some additional offset. */
     void requestFocusWithOffset(int index, int offset);
 
-    /**
-     * @return whether this target supports applying change sets from a background thread.
-     */
+    /** @return whether this target supports applying change sets from a background thread. */
     boolean supportsBackgroundChangeSets();
 
     /** Notify this target that a new set of configurations is applied. */
@@ -336,13 +321,13 @@ public class SectionTree {
   /**
    * Create a {@link Builder} that can be used to configure a {@link SectionTree}.
    *
-   * @param context The {@link SectionContext} taht will be used to create the child
-   * {@link com.facebook.litho.Component}s
-   * @param target The {@link Target} that will be responsible to apply the
-   * {@link ChangeSet} to the UI.
+   * @param context The {@link SectionContext} taht will be used to create the child {@link
+   *     com.facebook.litho.Component}s
+   * @param target The {@link Target} that will be responsible to apply the {@link ChangeSet} to the
+   *     UI.
    */
   public static Builder create(SectionContext context, Target target) {
-    //TODO use pools t11953296
+    // TODO use pools t11953296
     return new Builder(context, target);
   }
 
@@ -409,9 +394,9 @@ public class SectionTree {
   }
 
   /**
-   * Asks all the {@link Section} in the tree to refresh themselves.
-   * The refresh is by default a no-op. {@link Section}s that need a refresh behaviour should
-   * implement a method annotated with {@link com.facebook.litho.sections.annotations.OnRefresh}.
+   * Asks all the {@link Section} in the tree to refresh themselves. The refresh is by default a
+   * no-op. {@link Section}s that need a refresh behaviour should implement a method annotated with
+   * {@link com.facebook.litho.sections.annotations.OnRefresh}.
    */
   public void refresh() {
     final Section section;
@@ -634,11 +619,11 @@ public class SectionTree {
     if (currentRange == null) {
       currentRange = acquireRange();
       mLastRanges.put(section.getGlobalKey(), currentRange);
-    } else if (currentRange.firstVisibleIndex == firstVisibleIndex &&
-        currentRange.lastVisibleIndex == lastVisibleIndex &&
-        currentRange.firstFullyVisibleIndex == firstFullyVisibleIndex &&
-        currentRange.lastFullyVisibleIndex == lastFullyVisibleIndex &&
-        currentRange.totalItemsCount == totalItemsCount) {
+    } else if (currentRange.firstVisibleIndex == firstVisibleIndex
+        && currentRange.lastVisibleIndex == lastVisibleIndex
+        && currentRange.firstFullyVisibleIndex == firstFullyVisibleIndex
+        && currentRange.lastFullyVisibleIndex == lastFullyVisibleIndex
+        && currentRange.totalItemsCount == totalItemsCount) {
 
       if (state != ViewportInfo.State.DATA_CHANGES) {
         return;
@@ -835,12 +820,12 @@ public class SectionTree {
   }
 
   private static Range acquireRange() {
-    //TODO use pools t11953296
+    // TODO use pools t11953296
     return new Range();
   }
 
   private static void releaseRange(Range range) {
-    //TODO use pools t11953296
+    // TODO use pools t11953296
   }
 
   /**
@@ -860,7 +845,7 @@ public class SectionTree {
     mLastRanges.clear();
     mBoundSection = null;
     clearUnusedTriggerHandlers();
-    //TODO use pools t11953296
+    // TODO use pools t11953296
   }
 
   public boolean isReleased() {
@@ -1644,7 +1629,7 @@ public class SectionTree {
   }
 
   private static List<StateContainer.StateUpdate> acquireUpdatesList() {
-    //TODO use pools t11953296
+    // TODO use pools t11953296
     return new ArrayList<>();
   }
 
@@ -1687,9 +1672,7 @@ public class SectionTree {
     }
   }
 
-  /**
-   * A builder class that can be used to create a {@link SectionTree}.
-   */
+  /** A builder class that can be used to create a {@link SectionTree}. */
   public static class Builder {
 
     private final SectionContext mContext;
@@ -1714,9 +1697,7 @@ public class SectionTree {
       return this;
     }
 
-    /**
-     * If enabled, all state updates will be performed on a background thread.
-     */
+    /** If enabled, all state updates will be performed on a background thread. */
     public Builder asyncStateUpdates(boolean asyncStateUpdates) {
       mAsyncStateUpdates = asyncStateUpdates;
       return this;
@@ -1755,9 +1736,7 @@ public class SectionTree {
       return this;
     }
 
-    /**
-     * @return the {@link SectionTree}.
-     */
+    /** @return the {@link SectionTree}. */
     public SectionTree build() {
       return new SectionTree(this);
     }

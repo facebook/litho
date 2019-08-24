@@ -138,4 +138,3 @@ public class HotswapGenerator {
     return enclosingClass.toString() + "$" + className.simpleName();
   }
 }
-

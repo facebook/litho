@@ -48,9 +48,6 @@ class SolidColorSpec {
       alpha = Math.min(1f, alpha);
       color = ColorUtils.setAlphaComponent(color, (int) (alpha * 255f));
     }
-    return Image.create(c)
-        .scaleType(FIT_XY)
-        .drawable(new ColorDrawable(color))
-        .build();
+    return Image.create(c).scaleType(FIT_XY).drawable(new ColorDrawable(color)).build();
   }
 }

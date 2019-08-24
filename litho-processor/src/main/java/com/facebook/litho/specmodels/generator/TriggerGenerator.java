@@ -104,7 +104,8 @@ public class TriggerGenerator {
         }
 
         if (MethodParamModelUtils.isAnnotatedWith(methodParamModel, Param.class)) {
-          eventTriggerParams.add(",\n($T) params[$L]", methodParamModel.getTypeName(), paramIndex++);
+          eventTriggerParams.add(
+              ",\n($T) params[$L]", methodParamModel.getTypeName(), paramIndex++);
         }
       }
 

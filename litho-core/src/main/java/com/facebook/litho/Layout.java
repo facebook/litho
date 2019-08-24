@@ -24,8 +24,7 @@ import androidx.annotation.StyleRes;
  * useful for components with child components as props.
  */
 final class Layout {
-  private Layout() {
-  }
+  private Layout() {}
 
   /**
    * Create a {@link InternalNode} from an existing {@link Component}.

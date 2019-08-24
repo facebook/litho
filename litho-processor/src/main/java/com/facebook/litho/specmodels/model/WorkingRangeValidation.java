@@ -89,9 +89,7 @@ class WorkingRangeValidation {
       if (methodModel.enteredRangeModel != null
           && methodModel.enteredRangeModel.typeModel != null) {
         boolean isDuplicated =
-            specModel
-                    .getWorkingRangeMethods()
-                    .stream()
+            specModel.getWorkingRangeMethods().stream()
                     .filter(
                         it ->
                             it.enteredRangeModel != null && it.enteredRangeModel.typeModel != null)
@@ -115,9 +113,7 @@ class WorkingRangeValidation {
 
       if (methodModel.exitedRangeModel != null && methodModel.exitedRangeModel.typeModel != null) {
         boolean isDuplicated =
-            specModel
-                    .getWorkingRangeMethods()
-                    .stream()
+            specModel.getWorkingRangeMethods().stream()
                     .filter(
                         it -> it.exitedRangeModel != null && it.exitedRangeModel.typeModel != null)
                     .filter(

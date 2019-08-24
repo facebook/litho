@@ -27,25 +27,19 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-/**
- * Tests {@link EditText} component.
- */
-
+/** Tests {@link EditText} component. */
 @RunWith(ComponentsTestRunner.class)
 public class EditTextSpecTest {
-  @Rule
-  public ComponentsRule mComponentsRule = new ComponentsRule();
+  @Rule public ComponentsRule mComponentsRule = new ComponentsRule();
 
   private static final String TEXT = "Hello Components";
 
   @Test
   public void testEditTextWithText() {
     final ComponentContext c = mComponentsRule.getContext();
-    final LithoView lithoView = ComponentTestHelper.mountComponent(
-        EditText.create(c)
-            .textChangedEventHandler(null)
-            .textSizePx(10)
-            .text(TEXT));
+    final LithoView lithoView =
+        ComponentTestHelper.mountComponent(
+            EditText.create(c).textChangedEventHandler(null).textSizePx(10).text(TEXT));
 
     final android.widget.EditText editText = (android.widget.EditText) lithoView.getChildAt(0);
     assertThat(editText.getText().toString()).isEqualTo(TEXT);

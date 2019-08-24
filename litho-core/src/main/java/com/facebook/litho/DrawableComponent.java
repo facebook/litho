@@ -43,27 +43,21 @@ class DrawableComponent<T extends Drawable> extends Component {
   }
 
   @Override
-  protected void onMount(
-      ComponentContext context,
-      Object content) {
+  protected void onMount(ComponentContext context, Object content) {
     MatrixDrawable drawable = (MatrixDrawable) content;
 
     drawable.mount(getDrawable());
   }
 
   @Override
-  protected void onBind(
-      ComponentContext c,
-      Object mountedContent) {
+  protected void onBind(ComponentContext c, Object mountedContent) {
     final MatrixDrawable mountedDrawable = (MatrixDrawable) mountedContent;
 
     mountedDrawable.bind(getDrawableWidth(), getDrawableHeight());
   }
 
   @Override
-  protected void onUnmount(
-      ComponentContext context,
-      Object mountedContent) {
+  protected void onUnmount(ComponentContext context, Object mountedContent) {
     final MatrixDrawable<T> matrixDrawable = (MatrixDrawable<T>) mountedContent;
     matrixDrawable.unmount();
   }

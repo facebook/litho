@@ -22,10 +22,8 @@ import static com.facebook.yoga.YogaEdge.LEFT;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import android.view.ContextThemeWrapper;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.it.R;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,8 +35,9 @@ public class ResolveResTest {
 
   @Before
   public void setup() {
-    mContext = new ComponentContext(
-        new ContextThemeWrapper(RuntimeEnvironment.application, R.style.TestTheme));
+    mContext =
+        new ComponentContext(
+            new ContextThemeWrapper(RuntimeEnvironment.application, R.style.TestTheme));
   }
 
   @Test

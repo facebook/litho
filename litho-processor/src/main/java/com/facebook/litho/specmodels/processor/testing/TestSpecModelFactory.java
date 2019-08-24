@@ -140,9 +140,7 @@ public class TestSpecModelFactory implements SpecModelFactory<TestSpecModel> {
   private void validateElementIsEmpty(TypeElement element) {
     if (!element.getEnclosedElements().isEmpty()) {
       final String elements =
-          element
-              .getEnclosedElements()
-              .stream()
+          element.getEnclosedElements().stream()
               .map(el -> el.asType() + " " + el.getSimpleName())
               .collect(Collectors.joining(", "));
 

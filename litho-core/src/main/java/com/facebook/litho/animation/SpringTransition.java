@@ -22,9 +22,7 @@ import com.facebook.litho.dataflow.springs.SpringConfig;
 import java.util.ArrayList;
 import javax.annotation.Nullable;
 
-/**
- * Animation for the transition of a single {@link PropertyAnimation} on a spring.
- */
+/** Animation for the transition of a single {@link PropertyAnimation} on a spring. */
 public class SpringTransition extends TransitionAnimationBinding {
 
   private final PropertyAnimation mPropertyAnimation;
@@ -47,11 +45,13 @@ public class SpringTransition extends TransitionAnimationBinding {
   @Override
   protected void setupBinding(Resolver resolver) {
     final SpringNode springNode = new SpringNode(mSpringConfig);
-    final ConstantNode initial = new ConstantNode(resolver.getCurrentState(mPropertyAnimation.getPropertyHandle()));
+    final ConstantNode initial =
+        new ConstantNode(resolver.getCurrentState(mPropertyAnimation.getPropertyHandle()));
     final ConstantNode end = new ConstantNode(mPropertyAnimation.getTargetValue());
 
     addBinding(initial, springNode, SpringNode.INITIAL_INPUT);
     addBinding(end, springNode, SpringNode.END_INPUT);
-    addBinding(springNode, resolver.getAnimatedPropertyNode(mPropertyAnimation.getPropertyHandle()));
+    addBinding(
+        springNode, resolver.getAnimatedPropertyNode(mPropertyAnimation.getPropertyHandle()));
   }
 }

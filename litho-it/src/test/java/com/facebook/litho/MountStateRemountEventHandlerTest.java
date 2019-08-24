@@ -58,8 +58,7 @@ public class MountStateRemountEventHandlerTest {
               }
             });
 
-    final ComponentClickListener clickListener =
-        getComponentClickListener(lithoView);
+    final ComponentClickListener clickListener = getComponentClickListener(lithoView);
     assertThat(clickListener).isNotNull();
 
     lithoView
@@ -95,8 +94,7 @@ public class MountStateRemountEventHandlerTest {
               }
             });
 
-    final ComponentLongClickListener longClickListener =
-        getComponentLongClickListener(lithoView);
+    final ComponentLongClickListener longClickListener = getComponentLongClickListener(lithoView);
     assertThat(longClickListener).isNotNull();
 
     lithoView
@@ -132,8 +130,7 @@ public class MountStateRemountEventHandlerTest {
               }
             });
 
-    ComponentFocusChangeListener focusChangeListener =
-        getComponentFocusChangeListener(lithoView);
+    ComponentFocusChangeListener focusChangeListener = getComponentFocusChangeListener(lithoView);
     assertThat(focusChangeListener).isNotNull();
 
     lithoView
@@ -169,8 +166,7 @@ public class MountStateRemountEventHandlerTest {
               }
             });
 
-    final ComponentTouchListener touchListener =
-        getComponentTouchListener(lithoView);
+    final ComponentTouchListener touchListener = getComponentTouchListener(lithoView);
     assertThat(touchListener).isNotNull();
 
     lithoView
@@ -257,8 +253,7 @@ public class MountStateRemountEventHandlerTest {
               }
             });
 
-    final ComponentLongClickListener listener =
-        getComponentLongClickListener(lithoView);
+    final ComponentLongClickListener listener = getComponentLongClickListener(lithoView);
     assertThat(listener).isNotNull();
     assertThat(listener.getEventHandler()).isNull();
   }
@@ -399,8 +394,7 @@ public class MountStateRemountEventHandlerTest {
               }
             });
 
-    final ComponentLongClickListener listener =
-        getComponentLongClickListener(lithoView);
+    final ComponentLongClickListener listener = getComponentLongClickListener(lithoView);
     assertThat(listener).isNotNull();
     assertThat(listener.getEventHandler()).isNotNull();
   }

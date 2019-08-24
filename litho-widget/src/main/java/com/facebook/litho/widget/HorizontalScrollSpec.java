@@ -70,13 +70,9 @@ class HorizontalScrollSpec {
   }
 
   @OnLoadStyle
-  static void onLoadStyle(
-      ComponentContext c,
-      Output<Boolean> scrollbarEnabled) {
+  static void onLoadStyle(ComponentContext c, Output<Boolean> scrollbarEnabled) {
 
-    final TypedArray a = c.obtainStyledAttributes(
-        R.styleable.HorizontalScroll,
-        0);
+    final TypedArray a = c.obtainStyledAttributes(R.styleable.HorizontalScroll, 0);
 
     for (int i = 0, size = a.getIndexCount(); i < size; i++) {
       final int attr = a.getIndex(i);
@@ -120,9 +116,8 @@ class HorizontalScrollSpec {
 
     // If size constraints were not explicitly defined, just fallback to the
     // component dimensions instead.
-    size.width = SizeSpec.getMode(widthSpec) == UNSPECIFIED
-        ? measuredWidth
-        : SizeSpec.getSize(widthSpec);
+    size.width =
+        SizeSpec.getMode(widthSpec) == UNSPECIFIED ? measuredWidth : SizeSpec.getSize(widthSpec);
     size.height = measuredHeight;
   }
 
@@ -289,8 +284,7 @@ class HorizontalScrollSpec {
 
       // The mounted view always gets exact dimensions from the framework.
       setMeasuredDimension(
-          MeasureSpec.getSize(widthMeasureSpec),
-          MeasureSpec.getSize(heightMeasureSpec));
+          MeasureSpec.getSize(widthMeasureSpec), MeasureSpec.getSize(heightMeasureSpec));
     }
 
     void mount(

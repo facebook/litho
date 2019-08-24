@@ -26,45 +26,34 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * A SizeSpec encapsulates the layout requirements passed from parent to child.
- * Each SizeSpec represents a requirement for either the width or the height.
- * A SizeSpec is comprised of a size and a mode. There are two possible
- * modes:
+ * A SizeSpec encapsulates the layout requirements passed from parent to child. Each SizeSpec
+ * represents a requirement for either the width or the height. A SizeSpec is comprised of a size
+ * and a mode. There are two possible modes:
+ *
  * <dl>
- * <dt>UNSPECIFIED</dt>
- * <dd>
- * The parent has not imposed any constraint on the child. It can be whatever size
- * it wants.
- * </dd>
- *
- * <dt>EXACTLY</dt>
- * <dd>
- * The parent has determined an exact size for the child. The child is going to be
- * given those bounds regardless of how big it wants to be.
- * </dd>
- *
- * SizeSpecs are implemented as ints to reduce object allocation. This class
- * is provided to pack and unpack the &lt;size, mode&gt; tuple into the int.
+ *   <dt>UNSPECIFIED
+ *   <dd>The parent has not imposed any constraint on the child. It can be whatever size it wants.
+ *   <dt>EXACTLY
+ *   <dd>The parent has determined an exact size for the child. The child is going to be given those
+ *       bounds regardless of how big it wants to be. SizeSpecs are implemented as ints to reduce
+ *       object allocation. This class is provided to pack and unpack the &lt;size, mode&gt; tuple
+ *       into the int.
  */
 public class SizeSpec {
 
   /**
-   * Size specification mode: The parent has not imposed any constraint
-   * on the child. It can be whatever size it wants.
+   * Size specification mode: The parent has not imposed any constraint on the child. It can be
+   * whatever size it wants.
    */
   public static final int UNSPECIFIED = View.MeasureSpec.UNSPECIFIED;
 
   /**
-   * Size specification mode: The parent has determined an exact size
-   * for the child. The child is going to be given those bounds regardless
-   * of how big it wants to be.
+   * Size specification mode: The parent has determined an exact size for the child. The child is
+   * going to be given those bounds regardless of how big it wants to be.
    */
   public static final int EXACTLY = View.MeasureSpec.EXACTLY;
 
-  /**
-   * Size specification mode: The child can be as large as it wants up
-   * to the specified size.
-   */
+  /** Size specification mode: The child can be as large as it wants up to the specified size. */
   public static final int AT_MOST = View.MeasureSpec.AT_MOST;
 
   @IntDef({UNSPECIFIED, EXACTLY, AT_MOST})
@@ -74,18 +63,17 @@ public class SizeSpec {
   /**
    * Creates a size specification based on the supplied size and mode.
    *
-   * The mode must always be one of the following:
+   * <p>The mode must always be one of the following:
+   *
    * <ul>
-   *  <li>{@link com.facebook.litho.SizeSpec#UNSPECIFIED}</li>
-   *  <li>{@link com.facebook.litho.SizeSpec#EXACTLY}</li>
+   *   <li>{@link com.facebook.litho.SizeSpec#UNSPECIFIED}
+   *   <li>{@link com.facebook.litho.SizeSpec#EXACTLY}
    * </ul>
    *
-   * <p><strong>Note:</strong> On API level 17 and lower, makeMeasureSpec's
-   * implementation was such that the order of arguments did not matter
-   * and overflow in either value could impact the resulting MeasureSpec.
-   * {@link android.widget.RelativeLayout} was affected by this bug.
-   * Apps targeting API levels greater than 17 will get the fixed, more strict
-   * behavior.</p>
+   * <p><strong>Note:</strong> On API level 17 and lower, makeMeasureSpec's implementation was such
+   * that the order of arguments did not matter and overflow in either value could impact the
+   * resulting MeasureSpec. {@link android.widget.RelativeLayout} was affected by this bug. Apps
+   * targeting API levels greater than 17 will get the fixed, more strict behavior.
    *
    * @param size the size of the size specification
    * @param mode the mode of the size specification
@@ -99,8 +87,8 @@ public class SizeSpec {
    * Extracts the mode from the supplied size specification.
    *
    * @param sizeSpec the size specification to extract the mode from
-   * @return {@link com.facebook.litho.SizeSpec#UNSPECIFIED} or
-   *         {@link com.facebook.litho.SizeSpec#EXACTLY}
+   * @return {@link com.facebook.litho.SizeSpec#UNSPECIFIED} or {@link
+   *     com.facebook.litho.SizeSpec#EXACTLY}
    */
   public static int getMode(int sizeSpec) {
     return View.MeasureSpec.getMode(sizeSpec);
@@ -117,8 +105,7 @@ public class SizeSpec {
   }
 
   /**
-   * Returns a String representation of the specified measure
-   * specification.
+   * Returns a String representation of the specified measure specification.
    *
    * @param sizeSpec the size specification to convert to a String
    * @return a String with the following format: "MeasureSpec: MODE SIZE"

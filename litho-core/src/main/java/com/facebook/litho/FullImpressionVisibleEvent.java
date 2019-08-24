@@ -24,5 +24,4 @@ import com.facebook.litho.annotations.Event;
  * visible.
  */
 @Event
-public class FullImpressionVisibleEvent {
-}
+public class FullImpressionVisibleEvent {}

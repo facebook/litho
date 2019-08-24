@@ -50,12 +50,9 @@ import java.util.List;
 import java.util.Map;
 import javax.lang.model.element.Modifier;
 
-/**
- * Class that generates delegate methods for a component.
- */
+/** Class that generates delegate methods for a component. */
 public class DelegateMethodGenerator {
-  private DelegateMethodGenerator() {
-  }
+  private DelegateMethodGenerator() {}
 
   /** Generate all delegates defined on this {@link SpecModel}. */
   public static TypeSpecDataHolder generateDelegates(
@@ -64,7 +61,8 @@ public class DelegateMethodGenerator {
       EnumSet<RunMode> runMode) {
     TypeSpecDataHolder.Builder typeSpecDataHolder = TypeSpecDataHolder.newBuilder();
     boolean hasAttachDetachCallback = false;
-    for (SpecMethodModel<DelegateMethod, Void> delegateMethodModel : specModel.getDelegateMethods()) {
+    for (SpecMethodModel<DelegateMethod, Void> delegateMethodModel :
+        specModel.getDelegateMethods()) {
       for (Annotation annotation : delegateMethodModel.annotations) {
         final Class<? extends Annotation> annotationType = annotation.annotationType();
         if (annotationType.equals(OnAttached.class) || annotationType.equals(OnDetached.class)) {
@@ -124,13 +122,9 @@ public class DelegateMethodGenerator {
       methodSpec.addParameter(specModel.getComponentClass(), "_prevAbstractImpl");
       methodSpec.addParameter(specModel.getComponentClass(), "_nextAbstractImpl");
       methodSpec.addStatement(
-          "$L _prevImpl = ($L) _prevAbstractImpl",
-          componentName,
-          componentName);
+          "$L _prevImpl = ($L) _prevAbstractImpl", componentName, componentName);
       methodSpec.addStatement(
-          "$L _nextImpl = ($L) _nextAbstractImpl",
-          componentName,
-          componentName);
+          "$L _nextImpl = ($L) _nextAbstractImpl", componentName, componentName);
     }
 
     if (!methodDescription.returnType.equals(TypeName.VOID)) {
@@ -223,9 +217,7 @@ public class DelegateMethodGenerator {
           releaseStatements.beginControlFlow("if ($L.get() != null)", localOutputName);
         }
         releaseStatements.addStatement(
-            "$L = $L.get()",
-            getImplAccessor(specModel, methodParamModel),
-            localOutputName);
+            "$L = $L.get()", getImplAccessor(specModel, methodParamModel), localOutputName);
         if (isPropOutput) {
           releaseStatements.endControlFlow();
         }
@@ -353,15 +345,15 @@ public class DelegateMethodGenerator {
   }
 
   private static boolean isOutputType(TypeName type) {
-    return type.equals(OUTPUT) ||
-        (type instanceof ParameterizedTypeName &&
-         ((ParameterizedTypeName) type).rawType.equals(OUTPUT));
+    return type.equals(OUTPUT)
+        || (type instanceof ParameterizedTypeName
+            && ((ParameterizedTypeName) type).rawType.equals(OUTPUT));
   }
 
   private static boolean isStateValueType(TypeName type) {
-    return type.equals(STATE_VALUE) ||
-        (type instanceof ParameterizedTypeName &&
-            ((ParameterizedTypeName) type).rawType.equals(STATE_VALUE));
+    return type.equals(STATE_VALUE)
+        || (type instanceof ParameterizedTypeName
+            && ((ParameterizedTypeName) type).rawType.equals(STATE_VALUE));
   }
 
   static final class ParamTypeAndName {

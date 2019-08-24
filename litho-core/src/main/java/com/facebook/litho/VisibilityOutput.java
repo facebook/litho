@@ -20,9 +20,9 @@ import android.graphics.Rect;
 import androidx.annotation.Nullable;
 
 /**
- * Stores information about a {@link Component} which has registered handlers for
- * {@link VisibleEvent} or {@link InvisibleEvent}. The information is passed to {@link MountState}
- * which then dispatches the appropriate events.
+ * Stores information about a {@link Component} which has registered handlers for {@link
+ * VisibleEvent} or {@link InvisibleEvent}. The information is passed to {@link MountState} which
+ * then dispatches the appropriate events.
  */
 class VisibilityOutput {
 

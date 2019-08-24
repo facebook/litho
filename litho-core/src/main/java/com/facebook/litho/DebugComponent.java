@@ -72,7 +72,7 @@ public final class DebugComponent {
 
   /**
    * @return The root {@link DebugComponent} of a LithoView. This should be the start of your
-   * traversal.
+   *     traversal.
    */
   @Nullable
   public static DebugComponent getRootInstance(Component component) {
@@ -86,9 +86,8 @@ public final class DebugComponent {
 
   @Nullable
   public static DebugComponent getRootInstance(@Nullable ComponentTree componentTree) {
-    final LayoutState layoutState = componentTree == null ?
-        null :
-        componentTree.getMainThreadLayoutState();
+    final LayoutState layoutState =
+        componentTree == null ? null : componentTree.getMainThreadLayoutState();
     final InternalNode root = layoutState == null ? null : layoutState.getLayoutRoot();
     if (root != null && root != ComponentContext.NULL_LAYOUT) {
       final int outerWrapperComponentIndex = Math.max(0, root.getComponents().size() - 1);
@@ -136,8 +135,8 @@ public final class DebugComponent {
 
   /**
    * Get the list of components composed by this component. This will not include any {@link View}s
-   * that are mounted by this component as those are not components.
-   * Use {@link this#getMountedView} for that.
+   * that are mounted by this component as those are not components. Use {@link this#getMountedView}
+   * for that.
    *
    * @return A list of child components.
    */
@@ -178,9 +177,7 @@ public final class DebugComponent {
     return children;
   }
 
-  /**
-   * @return A mounted view or null if this component does not mount a view.
-   */
+  /** @return A mounted view or null if this component does not mount a view. */
   @Nullable
   public View getMountedView() {
     final Component component = mNode.getTailComponent();
@@ -191,9 +188,7 @@ public final class DebugComponent {
     return null;
   }
 
-  /**
-   * @return A mounted drawable or null if this component does not mount a drawable.
-   */
+  /** @return A mounted drawable or null if this component does not mount a drawable. */
   @Nullable
   public Drawable getMountedDrawable() {
     final Component component = mNode.getTailComponent();
@@ -204,9 +199,7 @@ public final class DebugComponent {
     return null;
   }
 
-  /**
-   * @return The litho view hosting this component.
-   */
+  /** @return The litho view hosting this component. */
   @Nullable
   public LithoView getLithoView() {
     final ComponentContext c = mNode.getContext();
@@ -214,9 +207,7 @@ public final class DebugComponent {
     return tree == null ? null : tree.getLithoView();
   }
 
-  /**
-   * @return The bounds of this component relative to its hosting {@link LithoView}.
-   */
+  /** @return The bounds of this component relative to its hosting {@link LithoView}. */
   public Rect getBoundsInLithoView() {
     if (isRoot()) {
       return new Rect(0, 0, mNode.getWidth(), mNode.getHeight());
@@ -227,32 +218,24 @@ public final class DebugComponent {
     return new Rect(x, y, x + mNode.getWidth(), y + mNode.getHeight());
   }
 
-  /**
-   * @return The bounds of this component relative to its parent.
-   */
+  /** @return The bounds of this component relative to its parent. */
   public Rect getBounds() {
     final int x = mNode.getX();
     final int y = mNode.getY();
     return new Rect(x, y, x + mNode.getWidth(), y + mNode.getHeight());
   }
 
-  /**
-   * @return the {@link ComponentContext} for this component.
-   */
+  /** @return the {@link ComponentContext} for this component. */
   public ComponentContext getContext() {
     return mNode.getContext();
   }
 
-  /**
-   * @return True if this not has layout information attached to it (backed by a Yoga node)
-   */
+  /** @return True if this not has layout information attached to it (backed by a Yoga node) */
   public boolean isLayoutNode() {
     return mComponentIndex == 0;
   }
 
-  /**
-   * @return This component's testKey or null if none is set.
-   */
+  /** @return This component's testKey or null if none is set. */
   @Nullable
   public String getTestKey() {
     return isLayoutNode() ? mNode.getTestKey() : null;
@@ -326,9 +309,7 @@ public final class DebugComponent {
     return null;
   }
 
-  /**
-   * @return The {@link ComponentHost} that wraps this component or null if one cannot be found.
-   */
+  /** @return The {@link ComponentHost} that wraps this component or null if one cannot be found. */
   @Nullable
   public ComponentHost getComponentHost() {
     final LithoView lithoView = getLithoView();
@@ -349,17 +330,13 @@ public final class DebugComponent {
     return null;
   }
 
-  /**
-   * @return This component's key or null if none is set.
-   */
+  /** @return This component's key or null if none is set. */
   @Nullable
   public String getKey() {
     return mNode.getComponents().get(mComponentIndex).getKey();
   }
 
-  /**
-   * @return The Component instance this debug component wraps.
-   */
+  /** @return The Component instance this debug component wraps. */
   public Component getComponent() {
     return mNode.getComponents().get(mComponentIndex);
   }

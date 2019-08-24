@@ -21,9 +21,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * Constants used in {@link SpecModel}s.
- */
+/** Constants used in {@link SpecModel}s. */
 public interface ClassNames {
   ClassName CLASS = ClassName.bestGuess("java.lang.Class");
   ClassName OBJECT = ClassName.bestGuess("java.lang.Object");
@@ -101,8 +99,7 @@ public interface ClassNames {
   ClassName STATE_CONTAINER = ClassName.bestGuess("com.facebook.litho.StateContainer");
   ClassName RENDER_DATA = ClassName.bestGuess("com.facebook.litho.ComponentLifecycle.RenderData");
 
-  ClassName EVENT_DISPATCHER =
-      ClassName.bestGuess("com.facebook.litho.EventDispatcher");
+  ClassName EVENT_DISPATCHER = ClassName.bestGuess("com.facebook.litho.EventDispatcher");
   ClassName HAS_EVENT_DISPATCHER_CLASSNAME =
       ClassName.bestGuess("com.facebook.litho.HasEventDispatcher");
   ClassName EVENT_HANDLER = ClassName.bestGuess("com.facebook.litho.EventHandler");

@@ -23,5 +23,4 @@ import com.facebook.litho.annotations.Event;
  * the Component is visible.
  */
 @Event
-public class VisibleEvent {
-}
+public class VisibleEvent {}

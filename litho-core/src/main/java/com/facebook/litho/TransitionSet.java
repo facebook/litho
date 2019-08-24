@@ -19,9 +19,7 @@ import com.facebook.litho.animation.AnimationBinding;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * A set of {@link Transition}s.
- */
+/** A set of {@link Transition}s. */
 public abstract class TransitionSet extends Transition {
 
   private final ArrayList<Transition> mChildren = new ArrayList<>();

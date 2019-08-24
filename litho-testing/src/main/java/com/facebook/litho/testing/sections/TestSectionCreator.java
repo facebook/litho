@@ -28,9 +28,7 @@ import java.util.HashSet;
 import java.util.Set;
 import javax.annotation.Nullable;
 
-/**
- * Test support class to easily create static Section hierarchies.
- */
+/** Test support class to easily create static Section hierarchies. */
 public class TestSectionCreator {
 
   public static Section createChangeSetSection(
@@ -38,11 +36,7 @@ public class TestSectionCreator {
       String key,
       final boolean forceShouldUpdate,
       @Nullable final Change... changes) {
-    return new ChangeSetSection(
-        initialCount,
-        key,
-        forceShouldUpdate,
-        changes);
+    return new ChangeSetSection(initialCount, key, forceShouldUpdate, changes);
   }
 
   public static ChildrenSectionTest createSectionComponent(
@@ -55,16 +49,12 @@ public class TestSectionCreator {
     return new ChildrenSectionTest(0, key, forceShouldUpdate, children);
   }
 
-  public static Section createChangeSetComponent(
-      String key,
-      @Nullable final Change... changes) {
+  public static Section createChangeSetComponent(String key, @Nullable final Change... changes) {
     return createChangeSetSection(0, key, false, changes);
   }
 
   public static Section createChangeSetComponent(
-      String key,
-      boolean forceShouldUpdate,
-      @Nullable final Change... changes) {
+      String key, boolean forceShouldUpdate, @Nullable final Change... changes) {
     return createChangeSetSection(0, key, forceShouldUpdate, changes);
   }
 
@@ -132,8 +122,8 @@ public class TestSectionCreator {
   }
 
   /**
-   * @return a Lifecycle for a ChangeSetSpec Section that statically populates the
-   * {@link ChangeSet} with a list of {@link Change}s.
+   * @return a Lifecycle for a ChangeSetSpec Section that statically populates the {@link ChangeSet}
+   *     with a list of {@link Change}s.
    */
   private static class ChangeSetSection extends TestSection {
     private final Change[] mChanges;
@@ -217,8 +207,7 @@ public class TestSectionCreator {
         return false;
       }
 
-      return o.getClass().equals(getClass())
-          && ((Section) o).getGlobalKey().equals(getGlobalKey());
+      return o.getClass().equals(getClass()) && ((Section) o).getGlobalKey().equals(getGlobalKey());
     }
 
     @Override

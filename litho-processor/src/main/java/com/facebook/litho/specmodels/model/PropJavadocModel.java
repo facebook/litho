@@ -18,9 +18,7 @@ package com.facebook.litho.specmodels.model;
 
 import javax.annotation.concurrent.Immutable;
 
-/**
- * Model that is an abstract representation of the javadoc for a prop.
- */
+/** Model that is an abstract representation of the javadoc for a prop. */
 @Immutable
 public final class PropJavadocModel {
   public final String propName;

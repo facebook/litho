@@ -18,9 +18,7 @@ package com.facebook.litho;
 
 import com.facebook.infer.annotation.ThreadConfined;
 
-/**
- * Public API for MeasureOutput.
- */
+/** Public API for MeasureOutput. */
 @ThreadConfined(ThreadConfined.ANY)
 public class Size {
 
@@ -36,5 +34,4 @@ public class Size {
     this.width = width;
     this.height = height;
   }
-
 }

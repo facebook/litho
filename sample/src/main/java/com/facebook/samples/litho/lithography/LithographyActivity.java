@@ -81,7 +81,7 @@ public class LithographyActivity extends NavigatableDemoActivity {
             "https://upload.wikimedia.org/wikipedia/commons/thumb/6/61/Van_Gogh_-_In_the_Orchard_-_1883.jpg/512px-Van_Gogh_-_In_the_Orchard_-_1883.jpg",
             "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Vincent_Van_Gogh_27.JPG/512px-Vincent_Van_Gogh_27.JPG"),
         new Artist(
-            "Juan Comba Garc\u00EDa", //Garcia
+            "Juan Comba Garc\u00EDa", // Garcia
             "A Spanish cartoonist, photographer and painter, Juan Comba Garc\u00EDa "
                 + "was bestowed the title of \"Graphic Chronicler of the Restoration\" due to his "
                 + "683 graphic works during the time of King Alfonso XII.",

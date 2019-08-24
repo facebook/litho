@@ -20,11 +20,12 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * The method annotated with this annotation will be called when the Service has been
- * transferred from the old tree to the new tree. This means that this <code>SectionComponent</code>
- * should unset any listener previously set on the Service.
+ * The method annotated with this annotation will be called when the Service has been transferred
+ * from the old tree to the new tree. This means that this <code>SectionComponent</code> should
+ * unset any listener previously set on the Service.
  *
  * <p>For example:
+ *
  * <pre><code>
  *
  * {@literal @}DiffSectionSpec
@@ -41,6 +42,4 @@ import java.lang.annotation.RetentionPolicy;
  * </code></pre>
  */
 @Retention(RetentionPolicy.RUNTIME)
-public @interface OnUnbindService {
-
-}
+public @interface OnUnbindService {}

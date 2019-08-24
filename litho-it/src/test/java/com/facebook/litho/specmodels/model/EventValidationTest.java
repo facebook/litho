@@ -74,13 +74,14 @@ public class EventValidationTest {
             FieldSpec.builder(TypeName.INT, "field4", Modifier.PUBLIC).build(),
             mRepresentedObject4);
 
-    when(mSpecModel.getEventDeclarations()).thenReturn(
-        ImmutableList.of(
-            new EventDeclarationModel(
-                ClassName.OBJECT,
-                ClassName.OBJECT,
-                ImmutableList.of(fieldModel1, fieldModel2, fieldModel3, fieldModel4),
-                mRepresentedObject5)));
+    when(mSpecModel.getEventDeclarations())
+        .thenReturn(
+            ImmutableList.of(
+                new EventDeclarationModel(
+                    ClassName.OBJECT,
+                    ClassName.OBJECT,
+                    ImmutableList.of(fieldModel1, fieldModel2, fieldModel3, fieldModel4),
+                    mRepresentedObject5)));
 
     List<SpecModelValidationError> validationErrors =
         EventValidation.validate(mSpecModel, RunMode.normal());
@@ -90,8 +91,8 @@ public class EventValidationTest {
     assertThat(validationErrors.get(2).element).isEqualTo(mRepresentedObject3);
 
     for (int i = 0; i < 3; i++) {
-      assertThat(validationErrors.get(i).message).isEqualTo(
-          "Event fields must be declared as public non-final.");
+      assertThat(validationErrors.get(i).message)
+          .isEqualTo("Event fields must be declared as public non-final.");
     }
   }
 
@@ -102,20 +103,21 @@ public class EventValidationTest {
             FieldSpec.builder(TypeName.INT, "field1", Modifier.PUBLIC, Modifier.FINAL).build(),
             mRepresentedObject1);
 
-    when(mSpecModel.getEventDeclarations()).thenReturn(
-        ImmutableList.of(
-            new EventDeclarationModel(
-                ClassName.OBJECT,
-                ClassName.OBJECT,
-                ImmutableList.of(fieldModel1),
-                mRepresentedObject5)));
+    when(mSpecModel.getEventDeclarations())
+        .thenReturn(
+            ImmutableList.of(
+                new EventDeclarationModel(
+                    ClassName.OBJECT,
+                    ClassName.OBJECT,
+                    ImmutableList.of(fieldModel1),
+                    mRepresentedObject5)));
 
     List<SpecModelValidationError> validationErrors =
         EventValidation.validate(mSpecModel, RunMode.normal());
     assertThat(validationErrors).hasSize(1);
     assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject1);
-    assertThat(validationErrors.get(0).message).isEqualTo(
-        "Event fields must be declared as public non-final.");
+    assertThat(validationErrors.get(0).message)
+        .isEqualTo("Event fields must be declared as public non-final.");
   }
 
   @Test
@@ -130,8 +132,8 @@ public class EventValidationTest {
         EventValidation.validate(mSpecModel, RunMode.normal());
     assertThat(validationErrors).hasSize(1);
     assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject5);
-    assertThat(validationErrors.get(0).message).isEqualTo(
-        "Event declarations must be annotated with @Event.");
+    assertThat(validationErrors.get(0).message)
+        .isEqualTo("Event declarations must be annotated with @Event.");
   }
 
   @Test
@@ -169,8 +171,8 @@ public class EventValidationTest {
         EventValidation.validate(mSpecModel, RunMode.normal());
     assertThat(validationErrors).hasSize(1);
     assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject2);
-    assertThat(validationErrors.get(0).message).isEqualTo(
-        "Two methods annotated with @OnEvent should not have the same name (sameName).");
+    assertThat(validationErrors.get(0).message)
+        .isEqualTo("Two methods annotated with @OnEvent should not have the same name (sameName).");
   }
 
   @Test
@@ -196,8 +198,8 @@ public class EventValidationTest {
         EventValidation.validate(mSpecModel, RunMode.normal());
     assertThat(validationErrors).hasSize(1);
     assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject2);
-    assertThat(validationErrors.get(0).message).isEqualTo(
-        "Method must return boolean since that is what java.lang.Object expects.");
+    assertThat(validationErrors.get(0).message)
+        .isEqualTo("Method must return boolean since that is what java.lang.Object expects.");
   }
 
   @Test
@@ -253,9 +255,10 @@ public class EventValidationTest {
         EventValidation.validate(mSpecModel, RunMode.normal());
     assertThat(validationErrors).hasSize(2);
     assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject2);
-    assertThat(validationErrors.get(0).message).isEqualTo(
-        "The first parameter for a method annotated with @OnEvent should be of type " +
-            "com.facebook.litho.ComponentContext.");
+    assertThat(validationErrors.get(0).message)
+        .isEqualTo(
+            "The first parameter for a method annotated with @OnEvent should be of type "
+                + "com.facebook.litho.ComponentContext.");
 
     assertThat(validationErrors.get(1).element).isEqualTo(mRepresentedObject3);
     assertThat(validationErrors.get(1).message)
@@ -307,8 +310,9 @@ public class EventValidationTest {
         EventValidation.validate(mSpecModel, RunMode.normal());
     assertThat(validationErrors).hasSize(1);
     assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject4);
-    assertThat(validationErrors.get(0).message).isEqualTo(
-        "Param with name booleanParam2 and type boolean is not a member of java.lang.Object.");
+    assertThat(validationErrors.get(0).message)
+        .isEqualTo(
+            "Param with name booleanParam2 and type boolean is not a member of java.lang.Object.");
   }
 
   @Test

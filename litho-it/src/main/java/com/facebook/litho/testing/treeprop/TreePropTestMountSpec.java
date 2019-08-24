@@ -25,9 +25,7 @@ import com.facebook.litho.annotations.OnPrepare;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.TreeProp;
 
-/**
- * Used in TreePropTest.
- */
+/** Used in TreePropTest. */
 @MountSpec
 public class TreePropTestMountSpec {
 

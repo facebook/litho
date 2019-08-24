@@ -160,7 +160,8 @@ public class SectionContext extends ComponentContext {
     return mKeyHandler;
   }
 
-  @Nullable SectionTree getSectionTree() {
+  @Nullable
+  SectionTree getSectionTree() {
     return mSectionTree;
   }
 

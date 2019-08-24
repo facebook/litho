@@ -23,6 +23,4 @@ import com.facebook.litho.annotations.Event;
  * re-measure.
  */
 @Event
-public class ReMeasureEvent {
-
-}
+public class ReMeasureEvent {}

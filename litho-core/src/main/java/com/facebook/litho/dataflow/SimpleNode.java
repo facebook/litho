@@ -16,9 +16,7 @@
 
 package com.facebook.litho.dataflow;
 
-/**
- * A node that passes through its input value to its outputs.
- */
+/** A node that passes through its input value to its outputs. */
 public class SimpleNode extends ValueNode {
 
   @Override

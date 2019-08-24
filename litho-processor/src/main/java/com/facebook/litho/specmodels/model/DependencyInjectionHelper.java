@@ -24,19 +24,15 @@ import com.squareup.javapoet.MethodSpec;
 import java.util.List;
 
 /**
- * An interface for generating certain methods that are required in order for Dependency
- * Injection to work.
+ * An interface for generating certain methods that are required in order for Dependency Injection
+ * to work.
  */
 public interface DependencyInjectionHelper {
 
-  /**
-   * Validate that the dependency injection for this spec is correctly defined.
-   */
+  /** Validate that the dependency injection for this spec is correctly defined. */
   List<SpecModelValidationError> validate(SpecModel specModel);
 
-  /**
-   * Whether a Spec annotation should be moved to the generated Component.
-   */
+  /** Whether a Spec annotation should be moved to the generated Component. */
   boolean isValidGeneratedComponentAnnotation(AnnotationSpec annotation);
 
   /** Generate the constructor required for Dependency Injection. */

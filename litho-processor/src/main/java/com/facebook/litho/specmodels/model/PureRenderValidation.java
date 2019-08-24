@@ -33,8 +33,8 @@ public class PureRenderValidation {
         validationErrors.add(
             new SpecModelValidationError(
                 shouldUpdateMethod.representedObject,
-                "Specs defining a method annotated with @ShouldUpdate should also set " +
-                    "isPureRender = true in the top-level spec annotation."));
+                "Specs defining a method annotated with @ShouldUpdate should also set "
+                    + "isPureRender = true in the top-level spec annotation."));
       }
     }
 

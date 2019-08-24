@@ -33,10 +33,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
 
-/**
- * Tests {@link MountItem}
- */
-
+/** Tests {@link MountItem} */
 @RunWith(ComponentsTestRunner.class)
 public class MountItemTest {
   private MountItem mMountItem;
