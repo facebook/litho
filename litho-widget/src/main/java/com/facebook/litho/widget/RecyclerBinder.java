@@ -1135,11 +1135,9 @@ public class RecyclerBinder
     }
 
     if (SectionsDebug.ENABLED) {
-      Log.d(
-          SectionsDebug.TAG,
-          "(" + hashCode() + ") applyAsyncInsert " + operation.mPosition);
+      Log.d(SectionsDebug.TAG, "(" + hashCode() + ") applyAsyncInsert " + operation.mPosition);
     }
-                                                                            
+
     mRenderInfoViewCreatorController.maybeTrackViewCreator(operation.mHolder.getRenderInfo());
     mComponentTreeHolders.add(operation.mPosition, operation.mHolder);
     operation.mHolder.setInserted(true);

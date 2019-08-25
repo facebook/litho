@@ -36,14 +36,12 @@ import org.assertj.core.util.CheckReturnValue;
 /**
  * Assertion methods for {@link Component}s.
  *
- * <p>
-*  To create an instance of this class, invoke
- * <code>{@link ComponentAssert#assertThat(ComponentContext, Component)}</code>
- * or
- * <code>{@link ComponentAssert#assertThat(Component.Builder)}</code>.
+ * <p>To create an instance of this class, invoke <code>
+ * {@link ComponentAssert#assertThat(ComponentContext, Component)}</code> or <code>
+ * {@link ComponentAssert#assertThat(Component.Builder)}</code>.
  *
- * Alternatively, use {@link LithoAssertions} which provides entry points to
- * all Litho AssertJ helpers.
+ * <p>Alternatively, use {@link LithoAssertions} which provides entry points to all Litho AssertJ
+ * helpers.
  */
 public final class ComponentAssert extends AbstractAssert<ComponentAssert, Component> {
 
@@ -55,8 +53,7 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
 
   public static ComponentAssert assertThat(Component.Builder<?> builder) {
     // mContext is freed up during build() so we need to get a reference to it before.
-    final ComponentContext context =
-        Whitebox.getInternalState(builder, "mContext");
+    final ComponentContext context = Whitebox.getInternalState(builder, "mContext");
     return new ComponentAssert(context, builder.build());
   }
 
@@ -92,13 +89,11 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
    */
   @Deprecated
   public ComponentAssert hasNoSubComponents() {
-    final List<SubComponent> subComponents = ComponentTestHelper.getSubComponents(
-        mComponentContext,
-        actual);
+    final List<SubComponent> subComponents =
+        ComponentTestHelper.getSubComponents(mComponentContext, actual);
     Java6Assertions.assertThat(subComponents)
         .overridingErrorMessage(
-            "Expected Component not to have any sub " +
-                "components, but found %d.",
+            "Expected Component not to have any sub " + "components, but found %d.",
             subComponents.size())
         .isEmpty();
 
@@ -112,9 +107,8 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
    */
   @Deprecated
   public ComponentAssert containsSubComponent(SubComponent subComponent) {
-    final List<SubComponent> subComponents = ComponentTestHelper.getSubComponents(
-        mComponentContext,
-        actual);
+    final List<SubComponent> subComponents =
+        ComponentTestHelper.getSubComponents(mComponentContext, actual);
     Java6Assertions.assertThat(subComponents)
         .overridingErrorMessage(
             "Expected to find <%s> as sub component of <%s>, " + "but couldn't find it in %s.",
@@ -131,24 +125,18 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
    */
   @Deprecated
   public ComponentAssert doesNotContainSubComponent(SubComponent subComponent) {
-    final List<SubComponent> subComponents = ComponentTestHelper.getSubComponents(
-        mComponentContext,
-        actual);
+    final List<SubComponent> subComponents =
+        ComponentTestHelper.getSubComponents(mComponentContext, actual);
     Java6Assertions.assertThat(subComponents)
         .overridingErrorMessage(
-            "Did not expect to find <%s> as sub component of <%s>, " +
-                "but it was present.",
-            subComponent,
-            actual)
+            "Did not expect to find <%s> as sub component of <%s>, " + "but it was present.",
+            subComponent, actual)
         .doesNotContain(subComponent);
 
     return this;
   }
 
-  /**
-   * Assert that any view in the given Component has the provided content
-   * description.
-   */
+  /** Assert that any view in the given Component has the provided content description. */
   public ComponentAssert hasContentDescription(String contentDescription) {
     assertThatLithoView().hasContentDescription(contentDescription);
 
@@ -165,45 +153,35 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
     return this;
   }
 
-  /**
-   * Assert that the given component contains the drawable provided.
-   */
+  /** Assert that the given component contains the drawable provided. */
   public ComponentAssert hasVisibleDrawable(Drawable drawable) {
     assertThatLithoView().hasVisibleDrawable(drawable);
 
     return this;
   }
 
-  /**
-   * Inverse of {@link #hasVisibleDrawable(Drawable)}
-   */
+  /** Inverse of {@link #hasVisibleDrawable(Drawable)} */
   public ComponentAssert doesNotHaveVisibleDrawable(Drawable drawable) {
     assertThatLithoView().doesNotHaveVisibleDrawable(drawable);
 
     return this;
   }
 
-  /**
-   * Inverse of {@link #hasVisibleDrawable(int)}
-   */
+  /** Inverse of {@link #hasVisibleDrawable(int)} */
   public ComponentAssert doesNotHaveVisibleDrawable(@DrawableRes int drawableRes) {
     assertThatLithoView().doesNotHaveVisibleDrawable(drawableRes);
 
     return this;
   }
 
-  /**
-   * Assert that the given component has the exact text provided.
-   */
+  /** Assert that the given component has the exact text provided. */
   public ComponentAssert hasVisibleText(String text) {
     assertThatLithoView().hasVisibleText(text);
 
     return this;
   }
 
-  /**
-   * Inverse of {@link #hasVisibleText(String)}
-   */
+  /** Inverse of {@link #hasVisibleText(String)} */
   public ComponentAssert doesNotHaveVisibleText(String text) {
     assertThatLithoView().doesNotHaveVisibleText(text);
 
@@ -236,12 +214,10 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
    */
   @Deprecated
   public ComponentAssert hasSubComponents(SubComponent... subComponents) {
-    final List<SubComponent> mountedSubComponents = ComponentTestHelper.getSubComponents(
-        mComponentContext,
-        actual);
+    final List<SubComponent> mountedSubComponents =
+        ComponentTestHelper.getSubComponents(mComponentContext, actual);
 
-    Java6Assertions.assertThat(mountedSubComponents)
-        .containsExactly(subComponents);
+    Java6Assertions.assertThat(mountedSubComponents).containsExactly(subComponents);
 
     return this;
   }
@@ -253,18 +229,17 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
    */
   @Deprecated
   public ComponentAssert containsOnlySubComponents(SubComponent... subComponents) {
-    final List<SubComponent> mountedSubComponents = ComponentTestHelper.getSubComponents(
-        mComponentContext,
-        actual);
+    final List<SubComponent> mountedSubComponents =
+        ComponentTestHelper.getSubComponents(mComponentContext, actual);
 
-    Java6Assertions.assertThat(mountedSubComponents)
-        .containsOnly(subComponents);
+    Java6Assertions.assertThat(mountedSubComponents).containsOnly(subComponents);
 
     return this;
   }
 
   /**
    * Extract values from the underlying component based on the {@link Extractor} provided.
+   *
    * @param extractor The extractor applied to the Component.
    * @param <A> Type of the value extracted.
    * @return ListAssert for the extracted values.
@@ -275,17 +250,15 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
     return new ListAssert<>(value);
   }
 
-  /**
-   * Extract the sub components from the underlying Component, returning a ListAssert over it.
-   */
+  /** Extract the sub components from the underlying Component, returning a ListAssert over it. */
   @CheckReturnValue
   public ListAssert<InspectableComponent> extractingSubComponents(ComponentContext c) {
     return extracting(SubComponentExtractor.subComponents(c));
   }
 
   /**
-   * Extract the sub components recursively from the underlying Component,
-   * returning a ListAssert over it.
+   * Extract the sub components recursively from the underlying Component, returning a ListAssert
+   * over it.
    */
   @CheckReturnValue
   public ListAssert<InspectableComponent> extractingSubComponentsDeeply(ComponentContext c) {

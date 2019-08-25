@@ -420,8 +420,7 @@ class LayoutState {
    * stored in the {@link InternalNode}.
    */
   private static VisibilityOutput createVisibilityOutput(
-      InternalNode node,
-      LayoutState layoutState) {
+      InternalNode node, LayoutState layoutState) {
 
     final int l = layoutState.mCurrentX + node.getX();
     final int t = layoutState.mCurrentY + node.getY();
@@ -453,9 +452,7 @@ class LayoutState {
   }
 
   private static TestOutput createTestOutput(
-      InternalNode node,
-      LayoutState layoutState,
-      LayoutOutput layoutOutput) {
+      InternalNode node, LayoutState layoutState, LayoutOutput layoutOutput) {
     final int l = layoutState.mCurrentX + node.getX();
     final int t = layoutState.mCurrentY + node.getY();
     final int r = l + node.getWidth();
@@ -649,8 +646,7 @@ class LayoutState {
 
     final boolean shouldGenerateDiffTree = layoutState.mShouldGenerateDiffTree;
     final DiffNode currentDiffNode = node.getDiffNode();
-    final boolean shouldUseCachedOutputs =
-        isMountSpec(component) && currentDiffNode != null;
+    final boolean shouldUseCachedOutputs = isMountSpec(component) && currentDiffNode != null;
     final boolean isCachedOutputUpdated = shouldUseCachedOutputs && node.areCachedMeasuresValid();
 
     final DiffNode diffNode;
@@ -721,9 +717,8 @@ class LayoutState {
       if (layoutOutput != null && layoutOutput.getViewNodeInfo() != null) {
         layoutOutput.getViewNodeInfo().setBackground(background);
       } else {
-        final LayoutOutput convertBackground = (currentDiffNode != null)
-            ? currentDiffNode.getBackground()
-            : null;
+        final LayoutOutput convertBackground =
+            (currentDiffNode != null) ? currentDiffNode.getBackground() : null;
 
         final LayoutOutput backgroundOutput =
             addDrawableComponent(
@@ -800,9 +795,8 @@ class LayoutState {
     layoutState.mCurrentX += node.getX();
     layoutState.mCurrentY += node.getY();
     @NodeInfo.EnabledState final int parentEnabledState = layoutState.mParentEnabledState;
-    layoutState.mParentEnabledState = (node.getNodeInfo() != null)
-        ? node.getNodeInfo().getEnabledState()
-        : ENABLED_UNSET;
+    layoutState.mParentEnabledState =
+        (node.getNodeInfo() != null) ? node.getNodeInfo().getEnabledState() : ENABLED_UNSET;
 
     // We must process the nodes in order so that the layout state output order is correct.
     for (int i = 0, size = node.getChildCount(); i < size; i++) {
@@ -836,9 +830,8 @@ class LayoutState {
       if (layoutOutput != null && layoutOutput.getViewNodeInfo() != null && SDK_INT >= M) {
         layoutOutput.getViewNodeInfo().setForeground(foreground);
       } else {
-        final LayoutOutput convertForeground = (currentDiffNode != null)
-            ? currentDiffNode.getForeground()
-            : null;
+        final LayoutOutput convertForeground =
+            (currentDiffNode != null) ? currentDiffNode.getForeground() : null;
 
         final LayoutOutput foregroundOutput =
             addDrawableComponent(
@@ -1071,9 +1064,7 @@ class LayoutState {
   }
 
   private static void addLayoutOutputIdToPositionsMap(
-      LongSparseArray outputsIdToPositionMap,
-      LayoutOutput layoutOutput,
-      int position) {
+      LongSparseArray outputsIdToPositionMap, LayoutOutput layoutOutput, int position) {
     if (outputsIdToPositionMap != null) {
       outputsIdToPositionMap.put(layoutOutput.getId(), position);
     }
@@ -1197,9 +1188,7 @@ class LayoutState {
     calculateAndSetHostOutputIdAndUpdateState(node, hostLayoutOutput, layoutState);
 
     addLayoutOutputIdToPositionsMap(
-        layoutState.mOutputsIdToPositionMap,
-        hostLayoutOutput,
-        hostOutputPosition);
+        layoutState.mOutputsIdToPositionMap, hostLayoutOutput, hostOutputPosition);
 
     maybeAddLayoutOutputToAffinityGroup(
         layoutState.mCurrentLayoutOutputAffinityGroup, OutputUnitType.HOST, hostLayoutOutput);
@@ -1608,10 +1597,7 @@ class LayoutState {
 
   @VisibleForTesting
   static void measureTree(
-      InternalNode root,
-      int widthSpec,
-      int heightSpec,
-      DiffNode previousDiffTreeRoot) {
+      InternalNode root, int widthSpec, int heightSpec, DiffNode previousDiffTreeRoot) {
     final boolean isTracing = ComponentsSystrace.isTracing();
 
     if (isTracing) {
@@ -1628,7 +1614,7 @@ class LayoutState {
     if (previousDiffTreeRoot != null) {
       ComponentsSystrace.beginSection("applyDiffNode");
       applyDiffNodeToUnchangedNodes(root, previousDiffTreeRoot);
-      ComponentsSystrace.endSection(/* applyDiffNode */);
+      ComponentsSystrace.endSection(/* applyDiffNode */ );
     }
 
     root.calculateLayout(
@@ -1742,14 +1728,9 @@ class LayoutState {
     measureTree(layout, widthSpec, heightSpec, layout.getDiffNode());
   }
 
-  /**
-   * Create and measure a component with the given size specs.
-   */
+  /** Create and measure a component with the given size specs. */
   static InternalNode createAndMeasureTreeForComponent(
-      ComponentContext c,
-      Component component,
-      int widthSpec,
-      int heightSpec) {
+      ComponentContext c, Component component, int widthSpec, int heightSpec) {
     return createAndMeasureTreeForComponent(
         c, component, widthSpec, heightSpec, null, null, null, null);
   }
@@ -1823,11 +1804,7 @@ class LayoutState {
       layoutStatePerfEvent.markerPoint("start_measure");
     }
 
-    measureTree(
-        root,
-        widthSpec,
-        heightSpec,
-        diffTreeRoot);
+    measureTree(root, widthSpec, heightSpec, diffTreeRoot);
 
     if (layoutStatePerfEvent != null) {
       layoutStatePerfEvent.markerPoint("end_measure");
@@ -1934,16 +1911,10 @@ class LayoutState {
 
   boolean isCompatibleSpec(int widthSpec, int heightSpec) {
     final boolean widthIsCompatible =
-        MeasureComparisonUtils.isMeasureSpecCompatible(
-            mWidthSpec,
-            widthSpec,
-            mWidth);
+        MeasureComparisonUtils.isMeasureSpecCompatible(mWidthSpec, widthSpec, mWidth);
 
     final boolean heightIsCompatible =
-        MeasureComparisonUtils.isMeasureSpecCompatible(
-            mHeightSpec,
-            heightSpec,
-            mHeight);
+        MeasureComparisonUtils.isMeasureSpecCompatible(mHeightSpec, heightSpec, mHeight);
 
     return widthIsCompatible && heightIsCompatible;
   }
@@ -2052,10 +2023,7 @@ class LayoutState {
     return true;
   }
 
-  boolean isCompatibleComponentAndSpec(
-      int componentId,
-      int widthSpec,
-      int heightSpec) {
+  boolean isCompatibleComponentAndSpec(int componentId, int widthSpec, int heightSpec) {
     return mComponent.getId() == componentId && isCompatibleSpec(widthSpec, heightSpec);
   }
 
@@ -2112,9 +2080,7 @@ class LayoutState {
     return mHeight;
   }
 
-  /**
-   * @return The id of the {@link ComponentTree} that generated this {@link LayoutState}
-   */
+  /** @return The id of the {@link ComponentTree} that generated this {@link LayoutState} */
   int getComponentTreeId() {
     return mComponentTreeId;
   }
@@ -2157,16 +2123,15 @@ class LayoutState {
   }
 
   /**
-   * Check if a cached nested tree has compatible SizeSpec to be reused as is or
-   * if it needs to be recomputed.
+   * Check if a cached nested tree has compatible SizeSpec to be reused as is or if it needs to be
+   * recomputed.
    *
-   * The conditions to be able to re-use previous measurements are:
-   * 1) The measureSpec is the same
-   * 2) The new measureSpec is EXACTLY and the last measured size matches the measureSpec size.
+   * <p>The conditions to be able to re-use previous measurements are: 1) The measureSpec is the
+   * same 2) The new measureSpec is EXACTLY and the last measured size matches the measureSpec size.
    * 3) The old measureSpec is UNSPECIFIED, the new one is AT_MOST and the old measured size is
-   *    smaller that the maximum size the new measureSpec will allow.
-   * 4) Both measure specs are AT_MOST. The old measure spec allows a bigger size than the new and
-   *    the old measured size is smaller than the allowed max size for the new sizeSpec.
+   * smaller that the maximum size the new measureSpec will allow. 4) Both measure specs are
+   * AT_MOST. The old measure spec allows a bigger size than the new and the old measured size is
+   * smaller than the allowed max size for the new sizeSpec.
    */
   public static boolean hasCompatibleSizeSpec(
       int oldWidthSpec,
@@ -2177,23 +2142,18 @@ class LayoutState {
       float oldMeasuredHeight) {
     final boolean widthIsCompatible =
         MeasureComparisonUtils.isMeasureSpecCompatible(
-            oldWidthSpec,
-            newWidthSpec,
-            (int) oldMeasuredWidth);
+            oldWidthSpec, newWidthSpec, (int) oldMeasuredWidth);
 
     final boolean heightIsCompatible =
         MeasureComparisonUtils.isMeasureSpecCompatible(
-            oldHeightSpec,
-            newHeightSpec,
-            (int) oldMeasuredHeight);
-    return  widthIsCompatible && heightIsCompatible;
+            oldHeightSpec, newHeightSpec, (int) oldMeasuredHeight);
+    return widthIsCompatible && heightIsCompatible;
   }
 
-
   /**
-   * Returns true if this is the root node (which always generates a matching layout
-   * output), if the node has view attributes e.g. tags, content description, etc, or if
-   * the node has explicitly been forced to be wrapped in a view.
+   * Returns true if this is the root node (which always generates a matching layout output), if the
+   * node has view attributes e.g. tags, content description, etc, or if the node has explicitly
+   * been forced to be wrapped in a view.
    */
   private static boolean needsHostView(InternalNode node, LayoutState layoutState) {
     if (layoutState.isLayoutRoot(node)) {
@@ -2235,9 +2195,9 @@ class LayoutState {
   }
 
   /**
-   * @return the position of the {@link LayoutOutput} with id layoutOutputId in the
-   * {@link LayoutState} list of outputs or -1 if no {@link LayoutOutput} with that id exists in
-   * the {@link LayoutState}
+   * @return the position of the {@link LayoutOutput} with id layoutOutputId in the {@link
+   *     LayoutState} list of outputs or -1 if no {@link LayoutOutput} with that id exists in the
+   *     {@link LayoutState}
    */
   int getLayoutOutputPositionForId(long layoutOutputId) {
     return mOutputsIdToPositionMap.get(layoutOutputId, -1);

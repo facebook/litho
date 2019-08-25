@@ -109,12 +109,13 @@ public class LayoutStateCalculateTest {
           }
         };
 
-    final LayoutState layoutState = calculateLayoutState(
-        RuntimeEnvironment.application,
-        component,
-        -1,
-        SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY),
-        SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY));
+    final LayoutState layoutState =
+        calculateLayoutState(
+            RuntimeEnvironment.application,
+            component,
+            -1,
+            SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY),
+            SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY));
 
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(2);
   }
@@ -129,12 +130,9 @@ public class LayoutStateCalculateTest {
           }
         };
 
-    final LayoutState layoutState = calculateLayoutState(
-        application,
-        component,
-        -1,
-        makeSizeSpec(100, EXACTLY),
-        makeSizeSpec(100, EXACTLY));
+    final LayoutState layoutState =
+        calculateLayoutState(
+            application, component, -1, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));
 
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(2);
   }
@@ -194,12 +192,9 @@ public class LayoutStateCalculateTest {
           }
         };
 
-    final LayoutState layoutState = calculateLayoutState(
-        application,
-        component,
-        -1,
-        makeSizeSpec(100, EXACTLY),
-        makeSizeSpec(100, EXACTLY));
+    final LayoutState layoutState =
+        calculateLayoutState(
+            application, component, -1, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));
 
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(3);
 
@@ -226,12 +221,9 @@ public class LayoutStateCalculateTest {
           }
         };
 
-    final LayoutState layoutState = calculateLayoutState(
-        application,
-        component,
-        -1,
-        makeSizeSpec(100, EXACTLY),
-        makeSizeSpec(100, EXACTLY));
+    final LayoutState layoutState =
+        calculateLayoutState(
+            application, component, -1, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));
 
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(3);
 
@@ -258,12 +250,9 @@ public class LayoutStateCalculateTest {
           }
         };
 
-    final LayoutState layoutState = calculateLayoutState(
-        application,
-        component,
-        -1,
-        makeSizeSpec(100, EXACTLY),
-        makeSizeSpec(100, EXACTLY));
+    final LayoutState layoutState =
+        calculateLayoutState(
+            application, component, -1, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));
 
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(3);
 
@@ -290,12 +279,9 @@ public class LayoutStateCalculateTest {
           }
         };
 
-    final LayoutState layoutState = calculateLayoutState(
-        application,
-        component,
-        -1,
-        makeSizeSpec(100, EXACTLY),
-        makeSizeSpec(100, EXACTLY));
+    final LayoutState layoutState =
+        calculateLayoutState(
+            application, component, -1, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));
 
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(3);
 
@@ -322,12 +308,9 @@ public class LayoutStateCalculateTest {
           }
         };
 
-    final LayoutState layoutState = calculateLayoutState(
-        application,
-        component,
-        -1,
-        makeSizeSpec(100, EXACTLY),
-        makeSizeSpec(100, EXACTLY));
+    final LayoutState layoutState =
+        calculateLayoutState(
+            application, component, -1, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));
 
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(3);
 
@@ -380,12 +363,9 @@ public class LayoutStateCalculateTest {
           }
         };
 
-    final LayoutState layoutState = calculateLayoutState(
-        application,
-        component,
-        -1,
-        makeSizeSpec(350, EXACTLY),
-        makeSizeSpec(200, EXACTLY));
+    final LayoutState layoutState =
+        calculateLayoutState(
+            application, component, -1, makeSizeSpec(350, EXACTLY), makeSizeSpec(200, EXACTLY));
     // Check total layout outputs.
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(8);
 
@@ -399,7 +379,7 @@ public class LayoutStateCalculateTest {
     }
     assertThat(totalHosts).isEqualTo(3);
 
-    //Check all the Layouts are in the correct position.
+    // Check all the Layouts are in the correct position.
     assertThat(isHostComponent(getComponentAt(layoutState, 0))).isTrue();
     assertThat(getComponentAt(layoutState, 1)).isInstanceOf(DrawableComponent.class);
     assertThat(isHostComponent(getComponentAt(layoutState, 2))).isTrue();
@@ -444,12 +424,9 @@ public class LayoutStateCalculateTest {
           }
         };
 
-    final LayoutState layoutState = calculateLayoutState(
-        application,
-        component,
-        -1,
-        makeSizeSpec(350, EXACTLY),
-        makeSizeSpec(200, EXACTLY));
+    final LayoutState layoutState =
+        calculateLayoutState(
+            application, component, -1, makeSizeSpec(350, EXACTLY), makeSizeSpec(200, EXACTLY));
 
     final Rect mountBounds = new Rect();
 
@@ -511,12 +488,9 @@ public class LayoutStateCalculateTest {
           }
         };
 
-    final LayoutState layoutState = calculateLayoutState(
-        application,
-        component,
-        -1,
-        makeSizeSpec(350, EXACTLY),
-        makeSizeSpec(200, EXACTLY));
+    final LayoutState layoutState =
+        calculateLayoutState(
+            application, component, -1, makeSizeSpec(350, EXACTLY), makeSizeSpec(200, EXACTLY));
 
     // Account for Android version in the foreground. If >= M the foreground is part of the
     // ViewLayoutOutput otherwise it has its own LayoutOutput.
@@ -535,7 +509,7 @@ public class LayoutStateCalculateTest {
     }
     assertThat(totalHosts).isEqualTo(3);
 
-    //Check all the Layouts are in the correct position.
+    // Check all the Layouts are in the correct position.
     assertThat(isHostComponent(getComponentAt(layoutState, 0))).isTrue();
     assertThat(getComponentAt(layoutState, 1)).isInstanceOf(DrawableComponent.class);
     assertThat(isHostComponent(getComponentAt(layoutState, 2))).isTrue();
@@ -556,9 +530,11 @@ public class LayoutStateCalculateTest {
     assertThat(getTextFromTextComponent(layoutState, 5)).isEqualTo("textRight1");
     assertThat(getTextFromTextComponent(layoutState, 9)).isEqualTo("textLeft2");
 
-    //Check that the backgrounds have the same size of the components to which they are associated
-    assertThat(layoutState.getMountableOutputAt(3).getBounds()).isEqualTo(layoutState.getMountableOutputAt(2).getBounds());
-    assertThat(layoutState.getMountableOutputAt(6).getBounds()).isEqualTo(layoutState.getMountableOutputAt(2).getBounds());
+    // Check that the backgrounds have the same size of the components to which they are associated
+    assertThat(layoutState.getMountableOutputAt(3).getBounds())
+        .isEqualTo(layoutState.getMountableOutputAt(2).getBounds());
+    assertThat(layoutState.getMountableOutputAt(6).getBounds())
+        .isEqualTo(layoutState.getMountableOutputAt(2).getBounds());
 
     final Rect textLayoutBounds = layoutState.getMountableOutputAt(9).getBounds();
     final Rect textBackgroundBounds = layoutState.getMountableOutputAt(8).getBounds();
@@ -568,7 +544,8 @@ public class LayoutStateCalculateTest {
     assertThat(textLayoutBounds.right + paddingSize).isEqualTo(textBackgroundBounds.right);
     assertThat(textLayoutBounds.bottom + paddingSize).isEqualTo(textBackgroundBounds.bottom);
 
-    assertThat(layoutState.getMountableOutputAt(8).getBounds()).isEqualTo(layoutState.getMountableOutputAt(7).getBounds());
+    assertThat(layoutState.getMountableOutputAt(8).getBounds())
+        .isEqualTo(layoutState.getMountableOutputAt(7).getBounds());
 
     final ViewNodeInfo viewNodeInfo = layoutState.getMountableOutputAt(10).getViewNodeInfo();
     assertThat(viewNodeInfo).isNotNull();
@@ -625,12 +602,9 @@ public class LayoutStateCalculateTest {
           }
         };
 
-    final LayoutState layoutState = calculateLayoutState(
-        application,
-        component,
-        -1,
-        makeSizeSpec(350, EXACTLY),
-        makeSizeSpec(200, EXACTLY));
+    final LayoutState layoutState =
+        calculateLayoutState(
+            application, component, -1, makeSizeSpec(350, EXACTLY), makeSizeSpec(200, EXACTLY));
 
     // Check total layout outputs.
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(18);
@@ -714,24 +688,20 @@ public class LayoutStateCalculateTest {
           }
         };
 
-    final LayoutState layoutState = calculateLayoutState(
-        application,
-        component1,
-        -1,
-        makeSizeSpec(350, EXACTLY),
-        makeSizeSpec(20, EXACTLY));
+    final LayoutState layoutState =
+        calculateLayoutState(
+            application, component1, -1, makeSizeSpec(350, EXACTLY), makeSizeSpec(20, EXACTLY));
 
-    final LayoutState sameComponentLayoutState = calculateLayoutState(
-        application,
-        component2,
-        -1,
-        makeSizeSpec(350, EXACTLY),
-        makeSizeSpec(20, EXACTLY));
+    final LayoutState sameComponentLayoutState =
+        calculateLayoutState(
+            application, component2, -1, makeSizeSpec(350, EXACTLY), makeSizeSpec(20, EXACTLY));
 
-    assertThat(sameComponentLayoutState.getMountableOutputCount()).isEqualTo(layoutState.getMountableOutputCount());
+    assertThat(sameComponentLayoutState.getMountableOutputCount())
+        .isEqualTo(layoutState.getMountableOutputCount());
 
     for (int i = 0; i < layoutState.getMountableOutputCount(); i++) {
-      assertThat(sameComponentLayoutState.getMountableOutputAt(i).getId()).isEqualTo(layoutState.getMountableOutputAt(i).getId());
+      assertThat(sameComponentLayoutState.getMountableOutputAt(i).getId())
+          .isEqualTo(layoutState.getMountableOutputAt(i).getId());
     }
   }
 
@@ -815,23 +785,19 @@ public class LayoutStateCalculateTest {
           }
         };
 
-    final LayoutState layoutState = calculateLayoutState(
-        application,
-        component1,
-        -1,
-        makeSizeSpec(350, EXACTLY),
-        makeSizeSpec(20, EXACTLY));
+    final LayoutState layoutState =
+        calculateLayoutState(
+            application, component1, -1, makeSizeSpec(350, EXACTLY), makeSizeSpec(20, EXACTLY));
 
-    final LayoutState sameComponentLayoutState = calculateLayoutState(
-        application,
-        component2,
-        -1,
-        makeSizeSpec(350, EXACTLY),
-        makeSizeSpec(20, EXACTLY));
-    assertThat(sameComponentLayoutState.getMountableOutputCount()).isEqualTo(layoutState.getMountableOutputCount());
+    final LayoutState sameComponentLayoutState =
+        calculateLayoutState(
+            application, component2, -1, makeSizeSpec(350, EXACTLY), makeSizeSpec(20, EXACTLY));
+    assertThat(sameComponentLayoutState.getMountableOutputCount())
+        .isEqualTo(layoutState.getMountableOutputCount());
 
     for (int i = 0; i < layoutState.getMountableOutputCount(); i++) {
-      assertThat(sameComponentLayoutState.getMountableOutputAt(i).getId()).isEqualTo(layoutState.getMountableOutputAt(i).getId());
+      assertThat(sameComponentLayoutState.getMountableOutputAt(i).getId())
+          .isEqualTo(layoutState.getMountableOutputAt(i).getId());
     }
   }
 
@@ -861,22 +827,18 @@ public class LayoutStateCalculateTest {
           }
         };
 
-    final LayoutState layoutState1 = calculateLayoutState(
-        application,
-        component1,
-        -1,
-        makeSizeSpec(350, EXACTLY),
-        makeSizeSpec(20, EXACTLY));
+    final LayoutState layoutState1 =
+        calculateLayoutState(
+            application, component1, -1, makeSizeSpec(350, EXACTLY), makeSizeSpec(20, EXACTLY));
 
-    final LayoutState layoutState2 = calculateLayoutState(
-        application,
-        component2,
-        -1,
-        makeSizeSpec(350, EXACTLY),
-        makeSizeSpec(20, EXACTLY));
+    final LayoutState layoutState2 =
+        calculateLayoutState(
+            application, component2, -1, makeSizeSpec(350, EXACTLY), makeSizeSpec(20, EXACTLY));
 
-    assertThat(layoutState2.getMountableOutputAt(0).getId()).isEqualTo(layoutState1.getMountableOutputAt(0).getId());
-    assertThat(layoutState2.getMountableOutputAt(1).getId()).isEqualTo(layoutState1.getMountableOutputAt(1).getId());
+    assertThat(layoutState2.getMountableOutputAt(0).getId())
+        .isEqualTo(layoutState1.getMountableOutputAt(0).getId());
+    assertThat(layoutState2.getMountableOutputAt(1).getId())
+        .isEqualTo(layoutState1.getMountableOutputAt(1).getId());
     assertThat(layoutState1.getMountableOutputCount()).isEqualTo(3);
     assertThat(layoutState2.getMountableOutputCount()).isEqualTo(4);
   }
@@ -908,19 +870,21 @@ public class LayoutStateCalculateTest {
           }
         };
 
-    final LayoutState layoutState1 = calculateLayoutState(
-        RuntimeEnvironment.application,
-        component1,
-        -1,
-        SizeSpec.makeSizeSpec(350, SizeSpec.EXACTLY),
-        SizeSpec.makeSizeSpec(20, SizeSpec.EXACTLY));
+    final LayoutState layoutState1 =
+        calculateLayoutState(
+            RuntimeEnvironment.application,
+            component1,
+            -1,
+            SizeSpec.makeSizeSpec(350, SizeSpec.EXACTLY),
+            SizeSpec.makeSizeSpec(20, SizeSpec.EXACTLY));
 
-    final LayoutState layoutState2 = calculateLayoutState(
-        RuntimeEnvironment.application,
-        component2,
-        -1,
-        SizeSpec.makeSizeSpec(350, SizeSpec.EXACTLY),
-        SizeSpec.makeSizeSpec(20, SizeSpec.EXACTLY));
+    final LayoutState layoutState2 =
+        calculateLayoutState(
+            RuntimeEnvironment.application,
+            component2,
+            -1,
+            SizeSpec.makeSizeSpec(350, SizeSpec.EXACTLY),
+            SizeSpec.makeSizeSpec(20, SizeSpec.EXACTLY));
 
     assertThat(layoutState1.getMountableOutputAt(1).getId())
         .isNotEqualTo(layoutState2.getMountableOutputAt(1).getId());
@@ -939,12 +903,9 @@ public class LayoutStateCalculateTest {
           }
         };
 
-    final LayoutState layoutState = calculateLayoutState(
-        application,
-        component,
-        -1,
-        makeSizeSpec(350, EXACTLY),
-        makeSizeSpec(200, EXACTLY));
+    final LayoutState layoutState =
+        calculateLayoutState(
+            application, component, -1, makeSizeSpec(350, EXACTLY), makeSizeSpec(200, EXACTLY));
 
     // Check total layout outputs.
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(3);
@@ -958,8 +919,10 @@ public class LayoutStateCalculateTest {
     return layoutState.getMountableOutputAt(index).getComponent();
   }
 
-  private static CharSequence getTextFromTextComponent(final LayoutState layoutState, final int index) {
-    return Whitebox.getInternalState(layoutState.getMountableOutputAt(index).getComponent(), "text");
+  private static CharSequence getTextFromTextComponent(
+      final LayoutState layoutState, final int index) {
+    return Whitebox.getInternalState(
+        layoutState.getMountableOutputAt(index).getComponent(), "text");
   }
 
   private static boolean isHostComponent(final ComponentLifecycle component) {
@@ -975,11 +938,7 @@ public class LayoutStateCalculateTest {
         TestDrawableComponent.create(c, 0, 0, false, true, true, false, false).build();
     final int widthSpec = makeSizeSpec(100, EXACTLY);
     final int heightSpec = makeSizeSpec(100, EXACTLY);
-    innerComponent.measure(
-        c,
-        widthSpec,
-        heightSpec,
-        size);
+    innerComponent.measure(c, widthSpec, heightSpec, size);
 
     final InternalNode internalNode = ((Component) innerComponent).getCachedLayout();
     internalNode.setLastWidthSpec(widthSpec);
@@ -1000,11 +959,7 @@ public class LayoutStateCalculateTest {
         };
 
     calculateLayoutState(
-        application,
-        component,
-        -1,
-        makeSizeSpec(100, EXACTLY),
-        makeSizeSpec(100, EXACTLY));
+        application, component, -1, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));
 
     assertThat(innerComponent.wasMeasureCalled()).isFalse();
   }
@@ -1018,11 +973,7 @@ public class LayoutStateCalculateTest {
         TestDrawableComponent.create(c, 0, 0, false, true, true, false, false).build();
     final int widthSpec = makeSizeSpec(100, AT_MOST);
     final int heightSpec = makeSizeSpec(100, AT_MOST);
-    innerComponent.measure(
-        c,
-        widthSpec,
-        heightSpec,
-        size);
+    innerComponent.measure(c, widthSpec, heightSpec, size);
 
     final InternalNode internalNode = ((Component) innerComponent).getCachedLayout();
     internalNode.setLastWidthSpec(widthSpec);
@@ -1043,11 +994,7 @@ public class LayoutStateCalculateTest {
         };
 
     calculateLayoutState(
-        application,
-        component,
-        -1,
-        makeSizeSpec(100, EXACTLY),
-        makeSizeSpec(100, EXACTLY));
+        application, component, -1, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));
 
     assertThat(innerComponent.wasMeasureCalled()).isFalse();
   }
@@ -1061,11 +1008,7 @@ public class LayoutStateCalculateTest {
         TestDrawableComponent.create(c, 0, 0, false, true, true, false, false).build();
     final int widthSpec = makeSizeSpec(0, UNSPECIFIED);
     final int heightSpec = makeSizeSpec(0, UNSPECIFIED);
-    innerComponent.measure(
-        c,
-        widthSpec,
-        heightSpec,
-        size);
+    innerComponent.measure(c, widthSpec, heightSpec, size);
 
     final InternalNode internalNode = ((Component) innerComponent).getCachedLayout();
     internalNode.setLastWidthSpec(widthSpec);
@@ -1084,11 +1027,7 @@ public class LayoutStateCalculateTest {
         };
 
     calculateLayoutState(
-        application,
-        component,
-        -1,
-        makeSizeSpec(100, AT_MOST),
-        makeSizeSpec(100, AT_MOST));
+        application, component, -1, makeSizeSpec(100, AT_MOST), makeSizeSpec(100, AT_MOST));
 
     assertThat(innerComponent.wasMeasureCalled()).isFalse();
   }
@@ -1102,11 +1041,7 @@ public class LayoutStateCalculateTest {
         TestDrawableComponent.create(c, 0, 0, false, true, true, false, false).build();
     final int widthSpec = makeSizeSpec(100, AT_MOST);
     final int heightSpec = makeSizeSpec(100, AT_MOST);
-    innerComponent.measure(
-        c,
-        widthSpec,
-        heightSpec,
-        size);
+    innerComponent.measure(c, widthSpec, heightSpec, size);
 
     final InternalNode internalNode = ((Component) innerComponent).getCachedLayout();
     internalNode.setLastWidthSpec(widthSpec);
@@ -1125,11 +1060,7 @@ public class LayoutStateCalculateTest {
         };
 
     calculateLayoutState(
-        application,
-        component,
-        -1,
-        makeSizeSpec(50, AT_MOST),
-        makeSizeSpec(50, AT_MOST));
+        application, component, -1, makeSizeSpec(50, AT_MOST), makeSizeSpec(50, AT_MOST));
 
     assertThat(innerComponent.wasMeasureCalled()).isFalse();
   }
@@ -1151,12 +1082,9 @@ public class LayoutStateCalculateTest {
           }
         };
 
-    final LayoutState layoutState = calculateLayoutState(
-        application,
-        component,
-        -1,
-        makeSizeSpec(100, EXACTLY),
-        makeSizeSpec(100, EXACTLY));
+    final LayoutState layoutState =
+        calculateLayoutState(
+            application, component, -1, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));
 
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(5);
 
@@ -1188,12 +1116,9 @@ public class LayoutStateCalculateTest {
           }
         };
 
-    final LayoutState layoutState = calculateLayoutState(
-        application,
-        component,
-        -1,
-        makeSizeSpec(100, EXACTLY),
-        makeSizeSpec(100, EXACTLY));
+    final LayoutState layoutState =
+        calculateLayoutState(
+            application, component, -1, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));
 
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(4);
 
@@ -1224,12 +1149,9 @@ public class LayoutStateCalculateTest {
           }
         };
 
-    final LayoutState layoutState = calculateLayoutState(
-        application,
-        component,
-        -1,
-        makeSizeSpec(100, EXACTLY),
-        makeSizeSpec(100, EXACTLY));
+    final LayoutState layoutState =
+        calculateLayoutState(
+            application, component, -1, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));
 
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(9);
 
@@ -1279,12 +1201,9 @@ public class LayoutStateCalculateTest {
           }
         };
 
-    final LayoutState layoutState = calculateLayoutState(
-        application,
-        component,
-        -1,
-        makeSizeSpec(100, EXACTLY),
-        makeSizeSpec(100, EXACTLY));
+    final LayoutState layoutState =
+        calculateLayoutState(
+            application, component, -1, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));
 
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(9);
 
@@ -1320,12 +1239,9 @@ public class LayoutStateCalculateTest {
           }
         };
 
-    final LayoutState layoutState = calculateLayoutState(
-        application,
-        component,
-        -1,
-        makeSizeSpec(100, EXACTLY),
-        makeSizeSpec(100, EXACTLY));
+    final LayoutState layoutState =
+        calculateLayoutState(
+            application, component, -1, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));
 
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(2);
     final long hostMarkerZero = layoutState.getMountableOutputAt(0).getHostMarker();
@@ -1335,7 +1251,8 @@ public class LayoutStateCalculateTest {
     assertThat(isHostComponent(getComponentAt(layoutState, 0))).isTrue();
     assertThat(getComponentAt(layoutState, 1)).isInstanceOf(TestDrawableComponent.class);
 
-    assertThat(layoutState.getMountableOutputAt(0).getNodeInfo().getFocusState()).isEqualTo(FOCUS_SET_TRUE);
+    assertThat(layoutState.getMountableOutputAt(0).getNodeInfo().getFocusState())
+        .isEqualTo(FOCUS_SET_TRUE);
   }
 
   @Test
@@ -1350,16 +1267,14 @@ public class LayoutStateCalculateTest {
           }
         };
 
-    final LayoutState layoutState = calculateLayoutState(
-        application,
-        component,
-        -1,
-        makeSizeSpec(100, EXACTLY),
-        makeSizeSpec(100, EXACTLY));
+    final LayoutState layoutState =
+        calculateLayoutState(
+            application, component, -1, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));
 
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(3);
     assertThat(layoutState.getMountableOutputAt(0).getNodeInfo()).isNull();
-    assertThat(layoutState.getMountableOutputAt(1).getNodeInfo().getFocusState()).isEqualTo(FOCUS_SET_TRUE);
+    assertThat(layoutState.getMountableOutputAt(1).getNodeInfo().getFocusState())
+        .isEqualTo(FOCUS_SET_TRUE);
   }
 
   @Test
@@ -1423,12 +1338,9 @@ public class LayoutStateCalculateTest {
           }
         };
 
-    final LayoutState layoutState = calculateLayoutState(
-        application,
-        component,
-        -1,
-        makeSizeSpec(100, EXACTLY),
-        makeSizeSpec(100, EXACTLY));
+    final LayoutState layoutState =
+        calculateLayoutState(
+            application, component, -1, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));
 
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(2);
 
@@ -1459,12 +1371,9 @@ public class LayoutStateCalculateTest {
           }
         };
 
-    final LayoutState layoutState = calculateLayoutState(
-        application,
-        component,
-        -1,
-        makeSizeSpec(100, EXACTLY),
-        makeSizeSpec(100, EXACTLY));
+    final LayoutState layoutState =
+        calculateLayoutState(
+            application, component, -1, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));
 
     // Because the TestDrawableComponent is disabled, we don't wrap it in a host.
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(2);
@@ -1491,12 +1400,9 @@ public class LayoutStateCalculateTest {
           }
         };
 
-    final LayoutState layoutState = calculateLayoutState(
-        application,
-        component,
-        -1,
-        makeSizeSpec(100, EXACTLY),
-        makeSizeSpec(100, EXACTLY));
+    final LayoutState layoutState =
+        calculateLayoutState(
+            application, component, -1, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));
 
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(2);
 
@@ -1531,12 +1437,9 @@ public class LayoutStateCalculateTest {
           }
         };
 
-    final LayoutState layoutState = calculateLayoutState(
-        application,
-        component,
-        -1,
-        makeSizeSpec(100, EXACTLY),
-        makeSizeSpec(100, EXACTLY));
+    final LayoutState layoutState =
+        calculateLayoutState(
+            application, component, -1, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));
 
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(6);
 
@@ -1609,12 +1512,9 @@ public class LayoutStateCalculateTest {
           }
         };
 
-    final LayoutState layoutState = calculateLayoutState(
-        application,
-        component,
-        -1,
-        makeSizeSpec(100, EXACTLY),
-        makeSizeSpec(100, EXACTLY));
+    final LayoutState layoutState =
+        calculateLayoutState(
+            application, component, -1, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));
 
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(10);
 
@@ -1676,12 +1576,9 @@ public class LayoutStateCalculateTest {
           }
         };
 
-    final LayoutState layoutState = calculateLayoutState(
-        application,
-        component,
-        -1,
-        makeSizeSpec(100, EXACTLY),
-        makeSizeSpec(100, EXACTLY));
+    final LayoutState layoutState =
+        calculateLayoutState(
+            application, component, -1, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));
 
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(7);
 
@@ -1704,13 +1601,20 @@ public class LayoutStateCalculateTest {
     assertThat(isHostComponent(getComponentAt(layoutState, 5))).isTrue();
     assertThat(getComponentAt(layoutState, 6)).isInstanceOf(TestDrawableComponent.class);
 
-    assertThat(IMPORTANT_FOR_ACCESSIBILITY_AUTO).isEqualTo(layoutState.getMountableOutputAt(0).getImportantForAccessibility());
-    assertThat(IMPORTANT_FOR_ACCESSIBILITY_AUTO).isEqualTo(layoutState.getMountableOutputAt(1).getImportantForAccessibility());
-    assertThat(IMPORTANT_FOR_ACCESSIBILITY_NO).isEqualTo(layoutState.getMountableOutputAt(2).getImportantForAccessibility());
-    assertThat(IMPORTANT_FOR_ACCESSIBILITY_NO).isEqualTo(layoutState.getMountableOutputAt(3).getImportantForAccessibility());
-    assertThat(IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS).isEqualTo(layoutState.getMountableOutputAt(4).getImportantForAccessibility());
-    assertThat(IMPORTANT_FOR_ACCESSIBILITY_YES).isEqualTo(layoutState.getMountableOutputAt(5).getImportantForAccessibility());
-    assertThat(IMPORTANT_FOR_ACCESSIBILITY_YES).isEqualTo(layoutState.getMountableOutputAt(6).getImportantForAccessibility());
+    assertThat(IMPORTANT_FOR_ACCESSIBILITY_AUTO)
+        .isEqualTo(layoutState.getMountableOutputAt(0).getImportantForAccessibility());
+    assertThat(IMPORTANT_FOR_ACCESSIBILITY_AUTO)
+        .isEqualTo(layoutState.getMountableOutputAt(1).getImportantForAccessibility());
+    assertThat(IMPORTANT_FOR_ACCESSIBILITY_NO)
+        .isEqualTo(layoutState.getMountableOutputAt(2).getImportantForAccessibility());
+    assertThat(IMPORTANT_FOR_ACCESSIBILITY_NO)
+        .isEqualTo(layoutState.getMountableOutputAt(3).getImportantForAccessibility());
+    assertThat(IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS)
+        .isEqualTo(layoutState.getMountableOutputAt(4).getImportantForAccessibility());
+    assertThat(IMPORTANT_FOR_ACCESSIBILITY_YES)
+        .isEqualTo(layoutState.getMountableOutputAt(5).getImportantForAccessibility());
+    assertThat(IMPORTANT_FOR_ACCESSIBILITY_YES)
+        .isEqualTo(layoutState.getMountableOutputAt(6).getImportantForAccessibility());
   }
 
   @Test
@@ -1727,12 +1631,9 @@ public class LayoutStateCalculateTest {
           }
         };
 
-    final LayoutState layoutState = calculateLayoutState(
-        application,
-        component,
-        -1,
-        makeSizeSpec(100, EXACTLY),
-        makeSizeSpec(100, EXACTLY));
+    final LayoutState layoutState =
+        calculateLayoutState(
+            application, component, -1, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));
 
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(2);
     final long hostMarkerZero = layoutState.getMountableOutputAt(0).getHostMarker();
@@ -1763,12 +1664,9 @@ public class LayoutStateCalculateTest {
           }
         };
 
-    final LayoutState layoutState = calculateLayoutState(
-        application,
-        component,
-        -1,
-        makeSizeSpec(100, EXACTLY),
-        makeSizeSpec(100, EXACTLY));
+    final LayoutState layoutState =
+        calculateLayoutState(
+            application, component, -1, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));
 
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(2);
     final long hostMarkerZero = layoutState.getMountableOutputAt(0).getHostMarker();
@@ -1794,12 +1692,9 @@ public class LayoutStateCalculateTest {
           }
         };
 
-    final LayoutState layoutState = calculateLayoutState(
-        application,
-        component,
-        -1,
-        makeSizeSpec(100, EXACTLY),
-        makeSizeSpec(100, EXACTLY));
+    final LayoutState layoutState =
+        calculateLayoutState(
+            application, component, -1, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));
 
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(3);
     assertThat(getComponentAt(layoutState, 0)).isInstanceOf(HostComponent.class);
@@ -1809,15 +1704,16 @@ public class LayoutStateCalculateTest {
 
   @Test
   public void testLayoutOutputForRootNestedTreeComponent() {
-    final LayoutState layoutState = calculateLayoutState(
-        application,
-        TestSizeDependentComponent.create(new ComponentContext(application))
-            .setFixSizes(true)
-            .setDelegate(false)
-            .build(),
-        -1,
-        makeSizeSpec(350, EXACTLY),
-        makeSizeSpec(200, EXACTLY));
+    final LayoutState layoutState =
+        calculateLayoutState(
+            application,
+            TestSizeDependentComponent.create(new ComponentContext(application))
+                .setFixSizes(true)
+                .setDelegate(false)
+                .build(),
+            -1,
+            makeSizeSpec(350, EXACTLY),
+            makeSizeSpec(200, EXACTLY));
 
     // Check total layout outputs.
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(4);
@@ -1856,12 +1752,9 @@ public class LayoutStateCalculateTest {
           }
         };
 
-    final LayoutState layoutState = calculateLayoutState(
-        application,
-        component,
-        -1,
-        makeSizeSpec(350, EXACTLY),
-        makeSizeSpec(200, EXACTLY));
+    final LayoutState layoutState =
+        calculateLayoutState(
+            application, component, -1, makeSizeSpec(350, EXACTLY), makeSizeSpec(200, EXACTLY));
 
     // Check total layout outputs.
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(3);
@@ -1896,12 +1789,9 @@ public class LayoutStateCalculateTest {
           }
         };
 
-    final LayoutState layoutState = calculateLayoutState(
-        application,
-        component,
-        -1,
-        makeSizeSpec(350, EXACTLY),
-        makeSizeSpec(200, EXACTLY));
+    final LayoutState layoutState =
+        calculateLayoutState(
+            application, component, -1, makeSizeSpec(350, EXACTLY), makeSizeSpec(200, EXACTLY));
 
     // Check total layout outputs.
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(4);
@@ -1936,12 +1826,9 @@ public class LayoutStateCalculateTest {
           }
         };
 
-    final LayoutState layoutState = calculateLayoutState(
-        application,
-        component,
-        -1,
-        makeSizeSpec(350, EXACTLY),
-        makeSizeSpec(200, EXACTLY));
+    final LayoutState layoutState =
+        calculateLayoutState(
+            application, component, -1, makeSizeSpec(350, EXACTLY), makeSizeSpec(200, EXACTLY));
 
     // Check total layout outputs.
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(4);
@@ -1976,12 +1863,9 @@ public class LayoutStateCalculateTest {
           }
         };
 
-    final LayoutState layoutState = calculateLayoutState(
-        application,
-        component,
-        -1,
-        makeSizeSpec(350, EXACTLY),
-        makeSizeSpec(200, EXACTLY));
+    final LayoutState layoutState =
+        calculateLayoutState(
+            application, component, -1, makeSizeSpec(350, EXACTLY), makeSizeSpec(200, EXACTLY));
 
     // Check total layout outputs.
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(4);
@@ -2013,12 +1897,13 @@ public class LayoutStateCalculateTest {
           }
         };
 
-    final LayoutState layoutState = calculateLayoutState(
-        application,
-        componentWithNullLayout,
-        -1,
-        makeSizeSpec(350, EXACTLY),
-        makeSizeSpec(200, EXACTLY));
+    final LayoutState layoutState =
+        calculateLayoutState(
+            application,
+            componentWithNullLayout,
+            -1,
+            makeSizeSpec(350, EXACTLY),
+            makeSizeSpec(200, EXACTLY));
 
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(0);
   }
@@ -2033,12 +1918,9 @@ public class LayoutStateCalculateTest {
           }
         };
 
-    final LayoutState layoutState = calculateLayoutState(
-        application,
-        component,
-        -1,
-        makeSizeSpec(350, EXACTLY),
-        makeSizeSpec(200, EXACTLY));
+    final LayoutState layoutState =
+        calculateLayoutState(
+            application, component, -1, makeSizeSpec(350, EXACTLY), makeSizeSpec(200, EXACTLY));
 
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(1);
     final Rect mountBounds = new Rect();
@@ -2062,11 +1944,9 @@ public class LayoutStateCalculateTest {
           }
         };
 
-    final InternalNode node = createAndMeasureTreeForComponent(
-        c,
-        component,
-        makeSizeSpec(width, AT_MOST),
-        makeSizeSpec(height, AT_MOST));
+    final InternalNode node =
+        createAndMeasureTreeForComponent(
+            c, component, makeSizeSpec(width, AT_MOST), makeSizeSpec(height, AT_MOST));
 
     assertThat(node.getWidth()).isEqualTo(width);
     assertThat(node.getHeight()).isEqualTo(height);
@@ -2081,18 +1961,13 @@ public class LayoutStateCalculateTest {
     final int widthSpecContainer = makeSizeSpec(300, EXACTLY);
     final int heightSpec = makeSizeSpec(0, UNSPECIFIED);
     final int horizontalPadding = 20;
-    final int widthMeasuredComponent = makeSizeSpec(
-        getSize(widthSpecContainer) - horizontalPadding - horizontalPadding,
-        EXACTLY);
+    final int widthMeasuredComponent =
+        makeSizeSpec(getSize(widthSpecContainer) - horizontalPadding - horizontalPadding, EXACTLY);
 
-    final Component componentSpy = spy(
-        TestLayoutComponent.create(c, 0, 0, true, true, true, false).build());
+    final Component componentSpy =
+        spy(TestLayoutComponent.create(c, 0, 0, true, true, true, false).build());
     final Size sizeOutput = new Size();
-    componentSpy.measure(
-        c,
-        widthMeasuredComponent,
-        heightSpec,
-        sizeOutput);
+    componentSpy.measure(c, widthMeasuredComponent, heightSpec, sizeOutput);
 
     // Reset the checks for layout release and clearing that happen during measurement
     reset(componentSpy);
@@ -2114,12 +1989,8 @@ public class LayoutStateCalculateTest {
           }
         };
 
-    final LayoutState layoutState = calculateLayoutState(
-        application,
-        rootContainer,
-        -1,
-        widthSpecContainer,
-        heightSpec);
+    final LayoutState layoutState =
+        calculateLayoutState(application, rootContainer, -1, widthSpecContainer, heightSpec);
 
     verify(componentSpy, times(1)).makeShallowCopy();
 
@@ -2146,21 +2017,13 @@ public class LayoutStateCalculateTest {
     final int widthSpecContainer = makeSizeSpec(300, EXACTLY);
     final int heightSpec = makeSizeSpec(0, UNSPECIFIED);
     final int horizontalPadding = 20;
-    final int widthMeasuredComponent = makeSizeSpec(
-        getSize(widthSpecContainer) - horizontalPadding - horizontalPadding,
-        EXACTLY);
+    final int widthMeasuredComponent =
+        makeSizeSpec(getSize(widthSpecContainer) - horizontalPadding - horizontalPadding, EXACTLY);
 
-    final Component sizeDependentComponentSpy = spy(
-        TestSizeDependentComponent.create(c)
-            .setFixSizes(false)
-            .setDelegate(false)
-            .build());
+    final Component sizeDependentComponentSpy =
+        spy(TestSizeDependentComponent.create(c).setFixSizes(false).setDelegate(false).build());
     final Size sizeOutput = new Size();
-    sizeDependentComponentSpy.measure(
-        c,
-        widthMeasuredComponent,
-        heightSpec,
-        sizeOutput);
+    sizeDependentComponentSpy.measure(c, widthMeasuredComponent, heightSpec, sizeOutput);
 
     // Reset the checks for layout release and clearing that happen during measurement
     reset(sizeDependentComponentSpy);
@@ -2188,12 +2051,8 @@ public class LayoutStateCalculateTest {
           }
         };
 
-    final LayoutState layoutState = calculateLayoutState(
-        application,
-        rootContainer,
-        -1,
-        widthSpecContainer,
-        heightSpec);
+    final LayoutState layoutState =
+        calculateLayoutState(application, rootContainer, -1, widthSpecContainer, heightSpec);
 
     verify(sizeDependentComponentSpy, times(1)).makeShallowCopy();
 
@@ -2227,19 +2086,14 @@ public class LayoutStateCalculateTest {
     final int widthSpecContainer = makeSizeSpec(300, EXACTLY);
     final int heightSpec = makeSizeSpec(0, UNSPECIFIED);
     final int horizontalPadding = 20;
-    final int widthMeasuredComponent = makeSizeSpec(
-        getSize(widthSpecContainer) - horizontalPadding - horizontalPadding,
-        EXACTLY);
+    final int widthMeasuredComponent =
+        makeSizeSpec(getSize(widthSpecContainer) - horizontalPadding - horizontalPadding, EXACTLY);
 
     final Component componentSpy =
         spy(TestLayoutComponent.create(c, 0, 0, true, true, true, true).build());
 
     final Size sizeOutput = new Size();
-    componentSpy.measure(
-        c,
-        widthMeasuredComponent,
-        heightSpec,
-        sizeOutput);
+    componentSpy.measure(c, widthMeasuredComponent, heightSpec, sizeOutput);
 
     // Reset the checks for layout release and clearing that happen during measurement
     reset(componentSpy);
@@ -2260,12 +2114,8 @@ public class LayoutStateCalculateTest {
           }
         };
 
-    final LayoutState layoutState = calculateLayoutState(
-        application,
-        rootContainer,
-        -1,
-        widthSpecContainer,
-        heightSpec);
+    final LayoutState layoutState =
+        calculateLayoutState(application, rootContainer, -1, widthSpecContainer, heightSpec);
 
     verify(componentSpy, times(1)).makeShallowCopy();
 
@@ -2292,21 +2142,13 @@ public class LayoutStateCalculateTest {
     final int widthSpecContainer = makeSizeSpec(300, EXACTLY);
     final int heightSpec = makeSizeSpec(0, UNSPECIFIED);
     final int horizontalPadding = 20;
-    final int widthMeasuredComponent = makeSizeSpec(
-        getSize(widthSpecContainer) - horizontalPadding - horizontalPadding,
-        EXACTLY);
+    final int widthMeasuredComponent =
+        makeSizeSpec(getSize(widthSpecContainer) - horizontalPadding - horizontalPadding, EXACTLY);
 
-    final Component sizeDependentComponentSpy = spy(
-        TestSizeDependentComponent.create(c)
-            .setFixSizes(false)
-            .setDelegate(true)
-            .build());
+    final Component sizeDependentComponentSpy =
+        spy(TestSizeDependentComponent.create(c).setFixSizes(false).setDelegate(true).build());
     final Size sizeOutput = new Size();
-    sizeDependentComponentSpy.measure(
-        c,
-        widthMeasuredComponent,
-        heightSpec,
-        sizeOutput);
+    sizeDependentComponentSpy.measure(c, widthMeasuredComponent, heightSpec, sizeOutput);
 
     // Reset the checks for layout release and clearing that happen during measurement
     reset(sizeDependentComponentSpy);
@@ -2330,12 +2172,8 @@ public class LayoutStateCalculateTest {
           }
         };
 
-    final LayoutState layoutState = calculateLayoutState(
-        application,
-        rootContainer,
-        -1,
-        widthSpecContainer,
-        heightSpec);
+    final LayoutState layoutState =
+        calculateLayoutState(application, rootContainer, -1, widthSpecContainer, heightSpec);
 
     verify(sizeDependentComponentSpy, times(1)).makeShallowCopy();
 
@@ -2401,12 +2239,9 @@ public class LayoutStateCalculateTest {
           }
         };
 
-    final LayoutState layoutState = calculateLayoutState(
-        application,
-        component,
-        -1,
-        makeSizeSpec(0, UNSPECIFIED),
-        makeSizeSpec(0, UNSPECIFIED));
+    final LayoutState layoutState =
+        calculateLayoutState(
+            application, component, -1, makeSizeSpec(0, UNSPECIFIED), makeSizeSpec(0, UNSPECIFIED));
 
     final Rect mountBounds = new Rect();
     layoutState.getMountableOutputAt(0).getMountBounds(mountBounds);
@@ -2432,12 +2267,9 @@ public class LayoutStateCalculateTest {
           }
         };
 
-    final LayoutState layoutState = calculateLayoutState(
-        application,
-        component,
-        -1,
-        makeSizeSpec(0, UNSPECIFIED),
-        makeSizeSpec(0, UNSPECIFIED));
+    final LayoutState layoutState =
+        calculateLayoutState(
+            application, component, -1, makeSizeSpec(0, UNSPECIFIED), makeSizeSpec(0, UNSPECIFIED));
 
     final Rect mountBounds = new Rect();
     layoutState.getMountableOutputAt(0).getMountBounds(mountBounds);
@@ -2466,12 +2298,9 @@ public class LayoutStateCalculateTest {
           }
         };
 
-    final LayoutState layoutState = calculateLayoutState(
-        application,
-        component,
-        -1,
-        makeSizeSpec(0, UNSPECIFIED),
-        makeSizeSpec(0, UNSPECIFIED));
+    final LayoutState layoutState =
+        calculateLayoutState(
+            application, component, -1, makeSizeSpec(0, UNSPECIFIED), makeSizeSpec(0, UNSPECIFIED));
 
     final Rect mountBounds = new Rect();
     layoutState.getMountableOutputAt(0).getMountBounds(mountBounds);
@@ -2501,11 +2330,12 @@ public class LayoutStateCalculateTest {
           }
         };
 
-    final InternalNode root = createAndMeasureTreeForComponent(
-        new ComponentContext(application),
-        component,
-        makeSizeSpec(0, UNSPECIFIED),
-        makeSizeSpec(0, UNSPECIFIED));
+    final InternalNode root =
+        createAndMeasureTreeForComponent(
+            new ComponentContext(application),
+            component,
+            makeSizeSpec(0, UNSPECIFIED),
+            makeSizeSpec(0, UNSPECIFIED));
 
     assertThat(root.getChildAt(0).getNestedTree().getPaddingLeft()).isEqualTo(5);
     assertThat(root.getChildAt(0).getNestedTree().getPaddingTop()).isEqualTo(5);
@@ -2526,12 +2356,9 @@ public class LayoutStateCalculateTest {
           }
         };
 
-    final LayoutState layoutState = calculateLayoutState(
-        application,
-        component,
-        -1,
-        makeSizeSpec(100, EXACTLY),
-        makeSizeSpec(100, EXACTLY));
+    final LayoutState layoutState =
+        calculateLayoutState(
+            application, component, -1, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));
 
     // No layout output generated related with borders
     // if borderColor is supplied but not borderWidth.
@@ -2551,12 +2378,9 @@ public class LayoutStateCalculateTest {
           }
         };
 
-    final LayoutState layoutState = calculateLayoutState(
-        application,
-        component,
-        -1,
-        makeSizeSpec(100, EXACTLY),
-        makeSizeSpec(100, EXACTLY));
+    final LayoutState layoutState =
+        calculateLayoutState(
+            application, component, -1, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));
 
     // No layout output generated related with borders
     // if borderWidth supplied but not borderColor.
@@ -2576,12 +2400,9 @@ public class LayoutStateCalculateTest {
           }
         };
 
-    final LayoutState layoutState = calculateLayoutState(
-        application,
-        component,
-        -1,
-        makeSizeSpec(100, EXACTLY),
-        makeSizeSpec(100, EXACTLY));
+    final LayoutState layoutState =
+        calculateLayoutState(
+            application, component, -1, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));
 
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(3);
 
@@ -2602,12 +2423,9 @@ public class LayoutStateCalculateTest {
           }
         };
 
-    final LayoutState layoutState = calculateLayoutState(
-        application,
-        component,
-        -1,
-        makeSizeSpec(100, EXACTLY),
-        makeSizeSpec(100, EXACTLY));
+    final LayoutState layoutState =
+        calculateLayoutState(
+            application, component, -1, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));
 
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(3);
 
@@ -2759,9 +2577,10 @@ public class LayoutStateCalculateTest {
   }
 
   private void enableAccessibility() {
-    final ShadowAccessibilityManager manager = Shadows.shadowOf(
-        (AccessibilityManager)
-            RuntimeEnvironment.application.getSystemService(ACCESSIBILITY_SERVICE));
+    final ShadowAccessibilityManager manager =
+        Shadows.shadowOf(
+            (AccessibilityManager)
+                RuntimeEnvironment.application.getSystemService(ACCESSIBILITY_SERVICE));
     manager.setEnabled(true);
     manager.setTouchExplorationEnabled(true);
   }

@@ -31,17 +31,16 @@ import com.facebook.yoga.YogaLogger;
  * contains mainly flags for features that are either under active development and not ready for
  * public consumption, or for use in experiments.
  *
- * These values are safe defaults and should not require manual changes.
+ * <p>These values are safe defaults and should not require manual changes.
  */
 public class ComponentsConfiguration {
 
   public static YogaLogger YOGA_LOGGER;
 
   /**
-   * Indicates whether this is an internal build. Note that the implementation
-   * of <code>BuildConfig</code> that this class is compiled against may not be
-   * the one that is included in the
-   * APK. See: <a
+   * Indicates whether this is an internal build. Note that the implementation of <code>BuildConfig
+   * </code> that this class is compiled against may not be the one that is included in the APK.
+   * See: <a
    * href="http://facebook.github.io/buck/rule/android_build_config.html">android_build_config</a>.
    */
   public static final boolean IS_INTERNAL_BUILD = BuildConfig.IS_INTERNAL_BUILD;
@@ -75,9 +74,7 @@ public class ComponentsConfiguration {
    */
   public static boolean isDebugModeEnabled = IS_INTERNAL_BUILD;
 
-  /**
-   * Debug option to highlight interactive areas in mounted components.
-   */
+  /** Debug option to highlight interactive areas in mounted components. */
   public static boolean debugHighlightInteractiveBounds = false;
 
   /**
@@ -86,14 +83,16 @@ public class ComponentsConfiguration {
    */
   public static boolean enableLithoViewDebugOverlay = false;
 
-  /**
-   * Debug option to highlight mount bounds of mounted components.
-   */
+  /** Debug option to highlight mount bounds of mounted components. */
   public static boolean debugHighlightMountBounds = false;
 
   /**
    * Populates additional metadata to find mounted components at runtime. Defaults to the presence
-   * of an <pre>IS_TESTING</pre> system property at startup but can be overridden at runtime.
+   * of an
+   *
+   * <pre>IS_TESTING</pre>
+   *
+   * system property at startup but can be overridden at runtime.
    */
   public static boolean isEndToEndTestRun = System.getProperty("IS_TESTING") != null;
 
