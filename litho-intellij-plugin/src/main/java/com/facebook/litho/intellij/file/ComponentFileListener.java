@@ -80,7 +80,9 @@ public class ComponentFileListener implements FileDocumentManagerListener {
 
   @VisibleForTesting
   boolean notComponent(PsiFile psiFile) {
-    return !LithoPluginUtils.getFirstComponent(psiFile).isPresent();
+    // TODO: T48863460 revisit update flow
+    //    return !LithoPluginUtils.getFirstComponent(psiFile).isPresent();
+    return false;
   }
 
   @VisibleForTesting

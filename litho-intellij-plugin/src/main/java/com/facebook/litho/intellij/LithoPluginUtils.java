@@ -173,8 +173,9 @@ public class LithoPluginUtils {
    * @param qualifiedSpecName Name of the Spec to search component for. For example
    *     com.package.MySpec.java.
    * @param project Project to find Component in.
+   * @return {@link PsiJavaFile} for the generated Component, for example com.package.My.java
    */
-  public static Optional<PsiJavaFile> findComponentFile(String qualifiedSpecName, Project project) {
+  public static Optional<PsiJavaFile> findGeneratedFile(String qualifiedSpecName, Project project) {
     return Optional.of(qualifiedSpecName)
         .map(LithoPluginUtils::getLithoComponentNameFromSpec)
         .map(qualifiedComponentName -> PsiSearchUtils.findClass(project, qualifiedComponentName))
@@ -191,8 +192,8 @@ public class LithoPluginUtils {
    * @param project Project to find Component in.
    */
   public static Optional<PsiClass> findComponent(String qualifiedSpecName, Project project) {
-    return findComponentFile(qualifiedSpecName, project)
-        .flatMap(LithoPluginUtils::getFirstComponent);
+    return findGeneratedFile(qualifiedSpecName, project)
+        .flatMap(generatedFile -> getFirstClass(generatedFile, LithoPluginUtils::isComponentClass));
   }
 
   /** Finds LayoutSpec class in the given file. */
@@ -201,11 +202,6 @@ public class LithoPluginUtils {
         psiFile,
         psiClass ->
             PsiAnnotationProxyUtils.findAnnotationInHierarchy(psiClass, LayoutSpec.class) != null);
-  }
-
-  /** Finds Component class in the given file. */
-  public static Optional<PsiClass> getFirstComponent(PsiFile componentFile) {
-    return getFirstClass(componentFile, LithoPluginUtils::isComponentClass);
   }
 
   private static Optional<PsiClass> getFirstClass(

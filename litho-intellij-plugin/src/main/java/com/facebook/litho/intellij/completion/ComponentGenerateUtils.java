@@ -99,7 +99,7 @@ public class ComponentGenerateUtils {
 
     @Override
     protected PsiElement[] create(String qualifiedSpecName) {
-      return LithoPluginUtils.findComponentFile(qualifiedSpecName, project)
+      return LithoPluginUtils.findGeneratedFile(qualifiedSpecName, project)
           .map(componentFile -> updateFileWithModel(componentFile, model))
           .map(createdClass -> doPostponedOperationsAndUnblockDocument(createdClass, project))
           .map(createdClass -> new PsiElement[] {createdClass})
