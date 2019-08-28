@@ -166,6 +166,7 @@ import javax.annotation.Nullable;
       TextChangedEvent.class,
       SelectionChangedEvent.class,
       KeyUpEvent.class,
+      KeyPreImeEvent.class,
       EditorActionEvent.class,
       SetTextEvent.class
     })
@@ -646,6 +647,7 @@ class TextInputSpec {
     editText.setTextChangedEventHandler(TextInput.getTextChangedEventHandler(c));
     editText.setSelectionChangedEventHandler(TextInput.getSelectionChangedEventHandler(c));
     editText.setKeyUpEventHandler(TextInput.getKeyUpEventHandler(c));
+    editText.setKeyPreImeEventEventHandler(TextInput.getKeyPreImeEventHandler(c));
     editText.setEditorActionEventHandler(TextInput.getEditorActionEventHandler(c));
   }
 
@@ -666,6 +668,7 @@ class TextInputSpec {
     editText.setTextChangedEventHandler(null);
     editText.setSelectionChangedEventHandler(null);
     editText.setKeyUpEventHandler(null);
+    editText.setKeyPreImeEventEventHandler(null);
     editText.setEditorActionEventHandler(null);
   }
 
@@ -773,6 +776,7 @@ class TextInputSpec {
     @Nullable private EventHandler<TextChangedEvent> mTextChangedEventHandler;
     @Nullable private EventHandler<SelectionChangedEvent> mSelectionChangedEventHandler;
     @Nullable private EventHandler<KeyUpEvent> mKeyUpEventHandler;
+    @Nullable private EventHandler<KeyPreImeEvent> mKeyPreImeEventEventHandler;
     @Nullable private EventHandler<EditorActionEvent> mEditorActionEventHandler;
     @Nullable private ComponentContext mComponentContext;
     @Nullable private AtomicReference<CharSequence> mTextState;
@@ -829,6 +833,14 @@ class TextInputSpec {
     }
 
     @Override
+    public boolean onKeyPreIme(int keyCode, KeyEvent event) {
+      if (mKeyPreImeEventEventHandler != null) {
+        return TextInput.dispatchKeyPreImeEvent(mKeyPreImeEventEventHandler, keyCode, event);
+      }
+      return super.onKeyPreIme(keyCode, event);
+    }
+
+    @Override
     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
       if (mEditorActionEventHandler != null) {
         return TextInput.dispatchEditorActionEvent(mEditorActionEventHandler, actionId, event);
@@ -848,6 +860,11 @@ class TextInputSpec {
 
     void setKeyUpEventHandler(@Nullable EventHandler<KeyUpEvent> keyUpEventHandler) {
       mKeyUpEventHandler = keyUpEventHandler;
+    }
+
+    void setKeyPreImeEventEventHandler(
+        @Nullable EventHandler<KeyPreImeEvent> keyPreImeEventEventHandler) {
+      mKeyPreImeEventEventHandler = keyPreImeEventEventHandler;
     }
 
     void setEditorActionEventHandler(
