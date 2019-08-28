@@ -39,6 +39,9 @@ import android.text.style.ImageSpan;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
+
+import androidx.annotation.VisibleForTesting;
+
 import com.facebook.fbui.textlayoutbuilder.util.LayoutMeasureUtil;
 import com.facebook.litho.TextContent;
 import com.facebook.litho.Touchable;
@@ -536,6 +539,12 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
       // https://android.googlesource.com/platform/frameworks/base/+/821e9bd5cc2be4b3210cb0226e40ba0f42b51aed
       return -1;
     }
+  }
+
+  @VisibleForTesting
+  @Nullable
+  Layout.Alignment getLayoutAlignment() {
+    return mLayout == null ? null : mLayout.getAlignment();
   }
 
   /**

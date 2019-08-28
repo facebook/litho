@@ -16,17 +16,6 @@
 
 package com.facebook.litho.widget;
 
-import static androidx.customview.widget.ExploreByTouchHelper.INVALID_ID;
-import static com.facebook.litho.SizeSpec.AT_MOST;
-import static com.facebook.litho.SizeSpec.EXACTLY;
-import static com.facebook.litho.SizeSpec.UNSPECIFIED;
-import static com.facebook.litho.widget.TextStylesHelper.DEFAULT_BREAK_STRATEGY;
-import static com.facebook.litho.widget.TextStylesHelper.DEFAULT_EMS;
-import static com.facebook.litho.widget.TextStylesHelper.DEFAULT_HYPHENATION_FREQUENCY;
-import static com.facebook.litho.widget.TextStylesHelper.DEFAULT_JUSTIFICATION_MODE;
-import static com.facebook.litho.widget.TextStylesHelper.DEFAULT_MAX_WIDTH;
-import static com.facebook.litho.widget.TextStylesHelper.DEFAULT_MIN_WIDTH;
-
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
@@ -44,12 +33,7 @@ import android.text.TextUtils.TruncateAt;
 import android.text.style.ClickableSpan;
 import android.text.style.ImageSpan;
 import android.view.View;
-import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
-import androidx.core.text.TextDirectionHeuristicCompat;
-import androidx.core.text.TextDirectionHeuristicsCompat;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
+
 import com.facebook.fbui.textlayoutbuilder.TextLayoutBuilder;
 import com.facebook.fbui.textlayoutbuilder.util.LayoutMeasureUtil;
 import com.facebook.litho.AccessibilityRole;
@@ -78,6 +62,27 @@ import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.widget.accessibility.delegates.AccessibleClickableSpan;
 import com.facebook.yoga.YogaDirection;
+
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
+import androidx.core.text.TextDirectionHeuristicCompat;
+import androidx.core.text.TextDirectionHeuristicsCompat;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
+
+import static androidx.customview.widget.ExploreByTouchHelper.INVALID_ID;
+import static com.facebook.litho.SizeSpec.AT_MOST;
+import static com.facebook.litho.SizeSpec.EXACTLY;
+import static com.facebook.litho.SizeSpec.UNSPECIFIED;
+import static com.facebook.litho.widget.TextAlignment.CENTER;
+import static com.facebook.litho.widget.TextAlignment.TEXT_END;
+import static com.facebook.litho.widget.TextAlignment.TEXT_START;
+import static com.facebook.litho.widget.TextStylesHelper.DEFAULT_BREAK_STRATEGY;
+import static com.facebook.litho.widget.TextStylesHelper.DEFAULT_EMS;
+import static com.facebook.litho.widget.TextStylesHelper.DEFAULT_HYPHENATION_FREQUENCY;
+import static com.facebook.litho.widget.TextStylesHelper.DEFAULT_JUSTIFICATION_MODE;
+import static com.facebook.litho.widget.TextStylesHelper.DEFAULT_MAX_WIDTH;
+import static com.facebook.litho.widget.TextStylesHelper.DEFAULT_MIN_WIDTH;
 
 /**
  * Component to render text. See <a href="https://fblitho.com/docs/widgets#text">text-widget</a> for
@@ -192,9 +197,6 @@ class TextSpec {
   @PropDefault protected static final boolean glyphWarming = false;
   @PropDefault protected static final boolean shouldIncludeFontPadding = true;
 
-  @PropDefault
-  protected static final Alignment textAlignment = TextStylesHelper.textAlignmentDefault;
-
   @PropDefault protected static final int breakStrategy = DEFAULT_BREAK_STRATEGY;
   @PropDefault protected static final int hyphenationFrequency = DEFAULT_HYPHENATION_FREQUENCY;
   @PropDefault protected static final int justificationMode = DEFAULT_JUSTIFICATION_MODE;
@@ -226,7 +228,7 @@ class TextSpec {
       Output<Integer> linkColor,
       Output<Integer> highlightColor,
       Output<Integer> textSize,
-      Output<Alignment> textAlignment,
+      Output<TextAlignment> alignment,
       Output<Integer> breakStrategy,
       Output<Integer> hyphenationFrequency,
       Output<Integer> justificationMode,
@@ -256,7 +258,7 @@ class TextSpec {
         linkColor,
         highlightColor,
         textSize,
-        textAlignment,
+        alignment,
         breakStrategy,
         hyphenationFrequency,
         justificationMode,
@@ -299,7 +301,8 @@ class TextSpec {
       @Prop(optional = true, resType = ResType.FLOAT) float letterSpacing,
       @Prop(optional = true) int textStyle,
       @Prop(optional = true) @Nullable Typeface typeface,
-      @Prop(optional = true) Alignment textAlignment,
+      @Prop(optional = true) @Deprecated Alignment textAlignment,
+      @Prop(optional = true) TextAlignment alignment,
       @Prop(optional = true) int breakStrategy,
       @Prop(optional = true) int hyphenationFrequency,
       @Prop(optional = true) int justificationMode,
@@ -340,7 +343,7 @@ class TextSpec {
             letterSpacing,
             textStyle,
             typeface,
-            textAlignment,
+            getTextAlignment(textAlignment, alignment),
             glyphWarming,
             layout.getResolvedLayoutDirection(),
             minEms,
@@ -420,7 +423,7 @@ class TextSpec {
       float letterSpacing,
       int textStyle,
       Typeface typeface,
-      Alignment textAlignment,
+      TextAlignment textAlignment,
       boolean glyphWarming,
       YogaDirection layoutDirection,
       int minEms,
@@ -475,7 +478,6 @@ class TextSpec {
         .setIncludeFontPadding(shouldIncludeFontPadding)
         .setTextSpacingExtra(extraSpacing)
         .setTextSpacingMultiplier(spacingMultiplier)
-        .setAlignment(textAlignment)
         .setLinkColor(linkColor)
         .setJustificationMode(justificationMode)
         .setBreakStrategy(breakStrategy)
@@ -513,14 +515,48 @@ class TextSpec {
       layoutBuilder.setTextStyle(textStyle);
     }
 
-    if (textDirection != null) {
-      layoutBuilder.setTextDirection(textDirection);
-    } else {
-      layoutBuilder.setTextDirection(
-          layoutDirection == YogaDirection.RTL
-              ? TextDirectionHeuristicsCompat.FIRSTSTRONG_RTL
-              : TextDirectionHeuristicsCompat.FIRSTSTRONG_LTR);
+    if (textDirection == null) {
+      textDirection = layoutDirection == YogaDirection.RTL
+          ? TextDirectionHeuristicsCompat.FIRSTSTRONG_RTL
+          : TextDirectionHeuristicsCompat.FIRSTSTRONG_LTR;
     }
+    layoutBuilder.setTextDirection(textDirection);
+
+    final Alignment alignment;
+    final boolean layoutRtl, textRtl;
+    switch(textAlignment) {
+      default:
+      case TEXT_START:
+        alignment = Alignment.ALIGN_NORMAL;
+        break;
+      case TEXT_END:
+        alignment = Alignment.ALIGN_OPPOSITE;
+        break;
+      case LAYOUT_START:
+        layoutRtl = (layoutDirection == YogaDirection.RTL);
+        textRtl = (textDirection.isRtl(text, 0, text.length()));
+        alignment = (layoutRtl == textRtl) ? Alignment.ALIGN_NORMAL : Alignment.ALIGN_OPPOSITE;
+        break;
+      case LAYOUT_END:
+        layoutRtl = (layoutDirection == YogaDirection.RTL);
+        textRtl = (textDirection.isRtl(text, 0, text.length()));
+        alignment = (layoutRtl == textRtl) ? Alignment.ALIGN_OPPOSITE : Alignment.ALIGN_NORMAL;
+        break;
+      case LEFT:
+        alignment = textDirection.isRtl(text, 0, text.length())
+            ? Alignment.ALIGN_OPPOSITE
+            : Alignment.ALIGN_NORMAL;
+        break;
+      case RIGHT:
+        alignment = textDirection.isRtl(text, 0, text.length())
+            ? Alignment.ALIGN_NORMAL
+            : Alignment.ALIGN_OPPOSITE;
+        break;
+      case CENTER:
+        alignment = Alignment.ALIGN_CENTER;
+        break;
+    }
+    layoutBuilder.setAlignment(alignment);
 
     newLayout = layoutBuilder.build();
 
@@ -559,7 +595,8 @@ class TextSpec {
       @Prop(optional = true) VerticalGravity verticalGravity,
       @Prop(optional = true) int textStyle,
       @Prop(optional = true) Typeface typeface,
-      @Prop(optional = true) Alignment textAlignment,
+      @Prop(optional = true) @Deprecated Alignment textAlignment,
+      @Prop(optional = true) TextAlignment alignment,
       @Prop(optional = true) int breakStrategy,
       @Prop(optional = true) int hyphenationFrequency,
       @Prop(optional = true) boolean glyphWarming,
@@ -609,7 +646,7 @@ class TextSpec {
               letterSpacing,
               textStyle,
               typeface,
-              textAlignment,
+              getTextAlignment(textAlignment, alignment),
               glyphWarming,
               layout.getResolvedLayoutDirection(),
               minEms,
@@ -669,7 +706,7 @@ class TextSpec {
                 letterSpacing,
                 textStyle,
                 typeface,
-                textAlignment,
+                getTextAlignment(textAlignment, alignment),
                 glyphWarming,
                 layout.getResolvedLayoutDirection(),
                 minEms,
@@ -959,5 +996,24 @@ class TextSpec {
     }
 
     return INVALID_ID;
+  }
+
+  private static TextAlignment getTextAlignment(
+      @Nullable Alignment alignment, @Nullable TextAlignment textAlignment) {
+    if (textAlignment != null) {
+      return textAlignment;
+    }
+    if (alignment != null) {
+      switch (alignment) {
+        default:
+        case ALIGN_NORMAL:
+          return TEXT_START;
+        case ALIGN_OPPOSITE:
+          return TEXT_END;
+        case ALIGN_CENTER:
+          return CENTER;
+      }
+    }
+    return TEXT_START;
   }
 }
