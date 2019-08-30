@@ -25,6 +25,7 @@ import com.facebook.litho.specmodels.model.EventDeclarationModel;
 import com.facebook.litho.specmodels.model.EventMethod;
 import com.facebook.litho.specmodels.model.MethodParamModel;
 import com.facebook.litho.specmodels.model.SpecMethodModel;
+import com.facebook.litho.specmodels.model.TypeSpec;
 import com.intellij.codeInsight.AnnotationUtil;
 import com.intellij.psi.PsiAnnotation;
 import com.intellij.psi.PsiClass;
@@ -63,12 +64,13 @@ public class PsiTriggerMethodExtractor {
             (PsiClassObjectAccessExpression) valuePair.getValue();
 
         // Reuse EventMethodModel and EventDeclarationModel because we are capturing the same info
+        TypeSpec returnTypeSpec = PsiTypeUtils.generateTypeSpec(psiMethod.getReturnType());
         final SpecMethodModel<EventMethod, EventDeclarationModel> eventMethod =
             new SpecMethodModel<EventMethod, EventDeclarationModel>(
                 ImmutableList.<Annotation>of(),
                 PsiModifierExtractor.extractModifiers(psiMethod.getModifierList()),
                 psiMethod.getName(),
-                null, // TypeName.get(psiMethod.getReturnType()),
+                returnTypeSpec,
                 ImmutableList.copyOf(getTypeVariables(psiMethod)),
                 ImmutableList.copyOf(methodParams),
                 psiMethod,
