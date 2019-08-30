@@ -31,6 +31,8 @@ import java.util.WeakHashMap;
 public class RenderInfoDebugInfoRegistry {
 
   public static final String SONAR_SECTIONS_DEBUG_INFO_TAG = "SONAR_SECTIONS_DEBUG_INFO";
+  public static final String SONAR_SINGLE_COMPONENT_SECTION_DATA_PREV = "SCS_DATA_INFO_PREV";
+  public static final String SONAR_SINGLE_COMPONENT_SECTION_DATA_NEXT = "SCS_DATA_INFO_NEXT";
 
   private static @Nullable Map<View, WeakReference<Object>> sViewToRenderInfo;
 
