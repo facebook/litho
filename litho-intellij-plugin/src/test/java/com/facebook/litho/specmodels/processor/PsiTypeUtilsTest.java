@@ -22,16 +22,18 @@ public class PsiTypeUtilsTest {
 
   @Test
   public void guessClassName() {
-    Assert.assertEquals("Object", PsiTypeUtils.guessClassName("?").simpleName());
-    Assert.assertEquals("Object", PsiTypeUtils.guessClassName("T").simpleName());
-    Assert.assertEquals("Hello", PsiTypeUtils.guessClassName("Hello").simpleName());
+    Assert.assertEquals("T", PsiTypeUtils.guessClassName("T").reflectionName());
+    Assert.assertEquals("com.Hello", PsiTypeUtils.guessClassName("com.Hello").reflectionName());
+  }
+
+  @Test
+  public void getWildcardTypeName() {
+    Assert.assertEquals("?", PsiTypeUtils.getWildcardTypeName("?").toString());
+    Assert.assertEquals("? super T", PsiTypeUtils.getWildcardTypeName("? super T").toString());
     Assert.assertEquals(
-        "com.some.Node", PsiTypeUtils.guessClassName("? extends com.some.Node").reflectionName());
+        "? extends com.some.Node",
+        PsiTypeUtils.getWildcardTypeName("? extends com.some.Node").toString());
     Assert.assertEquals(
-        "Collection", PsiTypeUtils.guessClassName("Collection<? extends T>").simpleName());
-    Assert.assertEquals(
-        "ClassA", PsiTypeUtils.guessClassName("T extends ClassA & InterfaceB").simpleName());
-    Assert.assertEquals(
-        "ClassA", PsiTypeUtils.guessClassName("? extends ClassA<InterfaceB>").simpleName());
+        "? super com.A", PsiTypeUtils.getWildcardTypeName("? super com.A & com.B").toString());
   }
 }

@@ -19,6 +19,8 @@ import static com.facebook.litho.specmodels.internal.ImmutableList.copyOf;
 
 import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.TypeSpec;
+import com.google.common.annotations.VisibleForTesting;
+import com.intellij.psi.PsiArrayType;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiClassType;
 import com.intellij.psi.PsiPrimitiveType;
@@ -26,56 +28,47 @@ import com.intellij.psi.PsiReferenceList;
 import com.intellij.psi.PsiType;
 import com.intellij.psi.PsiTypeVisitor;
 import com.intellij.psi.util.PsiTypesUtil;
+import com.squareup.javapoet.ArrayTypeName;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
+import com.squareup.javapoet.WildcardTypeName;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /** Converts {@link PsiType} to {@link TypeName}. */
 class PsiTypeUtils {
+  private static final Pattern EXTENDS_PATTERN = Pattern.compile("\\? extends ([^ ]+)");
+  private static final Pattern SUPER_PATTERN = Pattern.compile("\\? super ([^ ]+)");
 
   static TypeName getTypeName(PsiType type) {
     if (type instanceof PsiPrimitiveType) {
+      // float
       return getPrimitiveTypeName((PsiPrimitiveType) type);
     } else if (type instanceof PsiClassType && ((PsiClassType) type).getParameterCount() > 0) {
+      // Set<Integer>
       PsiClassType classType = (PsiClassType) type;
       return ParameterizedTypeName.get(
           guessClassName(classType.rawType().getCanonicalText()),
           getTypeNameArray(classType.getParameters()));
+    } else if (type instanceof PsiArrayType) {
+      // int[]
+      PsiType componentType = ((PsiArrayType) type).getComponentType();
+      return ArrayTypeName.of(getTypeName(componentType));
+    } else if (type.getCanonicalText().contains("?")) {
+      // ? extends Type
+      return getWildcardTypeName(type.getCanonicalText());
     } else {
-      String typeName = type.getCanonicalText();
-      return guessClassName(typeName);
+      return guessClassName(type.getCanonicalText());
     }
   }
 
-  /**
-   * @return Returns a new {@link ClassName} instance for the given fully-qualified class name
-   *     string. This method assumes that the input is ASCII and follows typical Java style
-   *     (lowercase package names, UpperCamelCase class names) and may produce incorrect results or
-   *     throw IllegalArgumentException otherwise.
-   */
+  /** @return Returns a {@link ClassName} for the given class name string. */
   static ClassName guessClassName(String typeName) {
-    // For the sake of Litho model verification, we do type simplification for non-standard cases.
-    typeName = typeName.trim();
-    // Litho doesn't have 2 letters class names.
-    if (typeName.length() < 2) {
-      return ClassName.bestGuess(Object.class.getTypeName());
-    }
-    if (typeName.contains("<")) {
-      return guessClassName(typeName.substring(0, typeName.indexOf('<')));
-    }
-    String extendsWord = "extends ";
-    if (typeName.contains(extendsWord)) {
-      return guessClassName(
-          typeName.substring(typeName.indexOf(extendsWord) + extendsWord.length()));
-    }
-    String andWord = " &";
-    if (typeName.contains(andWord)) {
-      return guessClassName(typeName.substring(0, typeName.indexOf(andWord)));
-    }
     return ClassName.bestGuess(typeName);
   }
 
@@ -141,6 +134,22 @@ class PsiTypeUtils {
     }
 
     return typeNames;
+  }
+
+  @VisibleForTesting
+  static TypeName getWildcardTypeName(String wildcardTypeName) {
+    if (wildcardTypeName.equals("?")) {
+      return WildcardTypeName.subtypeOf(Object.class);
+    }
+    Matcher matcher = SUPER_PATTERN.matcher(wildcardTypeName);
+    if (matcher.find()) {
+      return WildcardTypeName.supertypeOf(guessClassName(matcher.group(1)));
+    }
+    matcher = EXTENDS_PATTERN.matcher(wildcardTypeName);
+    if (matcher.find()) {
+      return WildcardTypeName.subtypeOf(guessClassName(matcher.group(1)));
+    }
+    return guessClassName(wildcardTypeName);
   }
 
   private static TypeName getPrimitiveTypeName(PsiPrimitiveType type) {
