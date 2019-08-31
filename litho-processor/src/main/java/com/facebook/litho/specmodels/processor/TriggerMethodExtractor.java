@@ -127,7 +127,7 @@ public class TriggerMethodExtractor {
     return ImmutableList.copyOf(delegateMethods);
   }
 
-  private static List<Class<? extends Annotation>> getPermittedMethodParamAnnotations(
+  static List<Class<? extends Annotation>> getPermittedMethodParamAnnotations(
       List<Class<? extends Annotation>> permittedInterStageInputAnnotations) {
     final List<Class<? extends Annotation>> permittedMethodParamAnnotations =
         new ArrayList<>(METHOD_PARAM_ANNOTATIONS);
