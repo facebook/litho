@@ -66,7 +66,7 @@ public class ColorComponentSpec {
 
   @OnPrepare
   static void onPrepare(
-      Context context,
+      ComponentContext context,
       @Prop String colorName,
       Output<Integer> color) {
     color.set(Color.parseColor(colorName));
@@ -101,7 +101,7 @@ Now, let's suppose we want our `ColorComponent` to have a default width and enfo
 @OnMeasure
 static void onMeasure(
     ComponentContext context,
-    Component component,
+    ComponentLayout component,
     int widthSpec,
     int heightSpec,
     Size size) {
