@@ -26,6 +26,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import com.facebook.litho.LayoutState.LayoutStateReferenceWrapper;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.testing.TestAttachDetachComponent;
@@ -224,6 +225,9 @@ public class AttachDetachHandlerTest {
 
   @Test
   public void testMultipleSetSizeSpecWithNestedTree() {
+    final ComponentContext measureContext = new ComponentContext(mContext);
+    measureContext.setLayoutStateReferenceWrapperForTesting();
+
     ComponentsConfiguration.isReconciliationEnabled = true;
     ComponentsConfiguration.enableShouldCreateLayoutWithNewSizeSpec = true;
 
@@ -231,7 +235,7 @@ public class AttachDetachHandlerTest {
     final Component c2 = spy(TestAttachDetachComponent.create(mContext).build());
     final Component component =
         spy(TestAttachDetachComponent.create(mContext, true, c1, c2).build());
-    assertThat(Component.isNestedTree(component)).isTrue();
+    assertThat(Component.isNestedTree(measureContext, component)).isTrue();
 
     testSetSizeSpec(mContext, component, 20);
 
@@ -241,6 +245,9 @@ public class AttachDetachHandlerTest {
 
   @Test
   public void testMultipleSetRootAndSizeSpecWithNestedTree() {
+    final ComponentContext measureContext = new ComponentContext(mContext);
+    measureContext.setLayoutStateReferenceWrapperForTesting();
+
     ComponentsConfiguration.isReconciliationEnabled = true;
     ComponentsConfiguration.enableShouldCreateLayoutWithNewSizeSpec = true;
 
@@ -248,7 +255,7 @@ public class AttachDetachHandlerTest {
     final Component c2 = spy(TestAttachDetachComponent.create(mContext).build());
     final Component component =
         spy(TestAttachDetachComponent.create(mContext, true, c1, c2).build());
-    assertThat(Component.isNestedTree(component)).isTrue();
+    assertThat(Component.isNestedTree(measureContext, component)).isTrue();
 
     testSetRootAndSizeSpec(mContext, component, 20);
 
@@ -260,7 +267,7 @@ public class AttachDetachHandlerTest {
   public void testAttachDetachWithComponentCachedLayout() {
     final ComponentContext measureContext = new ComponentContext(mContext);
     measureContext.setLayoutStateReferenceWrapper(
-        new LayoutState.LayoutStateReferenceWrapper(new LayoutState(measureContext)));
+        new LayoutStateReferenceWrapper(new LayoutState(measureContext)));
 
     final Component component = spy(TestAttachDetachComponent.create(mContext, true).build());
 
@@ -268,7 +275,7 @@ public class AttachDetachHandlerTest {
     final int heightSpec = SizeSpec.makeSizeSpec(100, EXACTLY);
     final Size outSize = new Size();
     component.measure(measureContext, widthSpec, heightSpec, outSize);
-    assertThat(component.getCachedLayout()).isNotNull();
+    assertThat(component.getCachedLayout(measureContext)).isNotNull();
 
     final Component container = Column.create(mContext).child(component).build();
     final ComponentTree componentTree = ComponentTree.create(mContext, container).build();

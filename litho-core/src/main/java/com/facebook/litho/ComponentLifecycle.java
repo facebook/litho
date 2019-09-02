@@ -132,9 +132,9 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
           int outputWidth = 0;
           int outputHeight = 0;
 
-          if (Component.isNestedTree(component) || node.hasNestedTree()) {
+          ComponentContext context = node.getContext();
 
-            ComponentContext context = node.getContext();
+          if (Component.isNestedTree(context, component) || node.hasNestedTree()) {
 
             // TODO: (T39009736) evaluate why the parent is null sometimes
             if (context.isReconciliationEnabled()) {

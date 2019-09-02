@@ -39,6 +39,7 @@ import static com.facebook.yoga.YogaMeasureOutput.getHeight;
 import static com.facebook.yoga.YogaMeasureOutput.getWidth;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.junit.Assert.assertNotEquals;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -51,6 +52,7 @@ import static org.robolectric.RuntimeEnvironment.application;
 import android.graphics.Color;
 import android.graphics.Rect;
 import androidx.collection.SparseArrayCompat;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.drawable.ComparableColorDrawable;
 import com.facebook.litho.drawable.ComparableDrawable;
 import com.facebook.litho.testing.TestComponent;
@@ -147,7 +149,9 @@ public class TreeDiffingTest {
 
   private InternalNode createInternalNodeForMeasurableComponent(Component component) {
     component.setScopedContext(mContext);
-    return LayoutState.createTree(component, mContext, null);
+    final ComponentContext c = new ComponentContext(mContext);
+    c.setLayoutStateReferenceWrapperForTesting();
+    return LayoutState.createTree(component, c, null);
   }
 
   private long measureInternalNode(
@@ -766,6 +770,9 @@ public class TreeDiffingTest {
 
   @Test
   public void testCachedMeasuresForCachedLayoutSpecWithMeasure() {
+    final boolean config = ComponentsConfiguration.cacheInternalNodeOnLayoutState;
+    ComponentsConfiguration.cacheInternalNodeOnLayoutState = false;
+
     final ComponentContext c = new ComponentContext(application);
     c.setLayoutStateReferenceWrapper(
         new LayoutState.LayoutStateReferenceWrapper(new LayoutState(c)));
@@ -805,7 +812,7 @@ public class TreeDiffingTest {
             mContext, rootContainer1, widthSpecContainer, heightSpec, null);
 
     // Make sure we reused the cached layout.
-    verify(sizeDependentComponentSpy1, times(1)).clearCachedLayout();
+    verify(sizeDependentComponentSpy1, times(1)).clearCachedLayout(any(ComponentContext.class));
 
     LayoutState layoutState =
         calculateLayoutStateWithDiffing(
@@ -814,7 +821,7 @@ public class TreeDiffingTest {
     verify(sizeDependentComponentSpy1).makeShallowCopy();
 
     // Make sure we reused the cached layout.
-    verify(sizeDependentComponentSpy2, never()).clearCachedLayout();
+    verify(sizeDependentComponentSpy2, never()).clearCachedLayout(any(ComponentContext.class));
 
     // The nested root measure() was called in the first layout calculation.
     TestComponent prevNestedLeaf1 =
@@ -828,6 +835,8 @@ public class TreeDiffingTest {
     assertThat(nestedLeaf1.wasMeasureCalled()).isFalse();
     TestComponent nestedLeaf2 = (TestComponent) layoutState.getMountableOutputAt(3).getComponent();
     assertThat(nestedLeaf2.wasMeasureCalled()).isFalse();
+
+    ComponentsConfiguration.cacheInternalNodeOnLayoutState = config;
   }
 
   private static LayoutState calculateLayoutState(

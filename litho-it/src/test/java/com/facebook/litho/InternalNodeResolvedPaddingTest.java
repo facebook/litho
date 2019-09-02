@@ -41,6 +41,8 @@ public class InternalNodeResolvedPaddingTest {
   @Before
   public void setup() {
     final ComponentContext context = new ComponentContext(RuntimeEnvironment.application);
+    context.setLayoutStateReferenceWrapperForTesting();
+
     mInternalNode =
         createAndMeasureTreeForComponent(
             context,

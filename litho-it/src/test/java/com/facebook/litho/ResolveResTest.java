@@ -44,7 +44,7 @@ public class ResolveResTest {
   public void testDefaultDimenWidthRes() {
     Column column = Column.create(mContext).widthRes(test_dimen).build();
 
-    InternalNode node = Layout.create(mContext, column);
+    InternalNode node = createAndGetInternalNode(column);
     node.calculateLayout();
 
     int dimen = mContext.getResources().getDimensionPixelSize(test_dimen);
@@ -55,7 +55,7 @@ public class ResolveResTest {
   public void testDefaultDimenPaddingRes() {
     Column column = Column.create(mContext).paddingRes(LEFT, test_dimen).build();
 
-    InternalNode node = Layout.create(mContext, column);
+    InternalNode node = createAndGetInternalNode(column);
     node.calculateLayout();
 
     int dimen = mContext.getResources().getDimensionPixelSize(test_dimen);
@@ -66,7 +66,7 @@ public class ResolveResTest {
   public void testFloatDimenWidthRes() {
     Column column = Column.create(mContext).widthRes(test_dimen_float).build();
 
-    InternalNode node = Layout.create(mContext, column);
+    InternalNode node = createAndGetInternalNode(column);
     node.calculateLayout();
 
     int dimen = mContext.getResources().getDimensionPixelSize(test_dimen_float);
@@ -77,10 +77,19 @@ public class ResolveResTest {
   public void testFloatDimenPaddingRes() {
     Column column = Column.create(mContext).paddingRes(LEFT, test_dimen_float).build();
 
-    InternalNode node = Layout.create(mContext, column);
+    InternalNode node = createAndGetInternalNode(column);
     node.calculateLayout();
 
     int dimen = mContext.getResources().getDimensionPixelSize(test_dimen_float);
     assertThat(node.getPaddingLeft()).isEqualTo(dimen);
+  }
+
+  private InternalNode createAndGetInternalNode(Component component) {
+    final ComponentContext c = new ComponentContext(mContext);
+    c.setLayoutStateReferenceWrapperForTesting();
+
+    InternalNode node = Layout.create(c, component);
+
+    return node;
   }
 }

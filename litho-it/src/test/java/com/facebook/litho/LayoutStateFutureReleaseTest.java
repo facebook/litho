@@ -79,6 +79,7 @@ public class LayoutStateFutureReleaseTest {
     when(layoutStateFuture.isReleased()).thenReturn(false);
     final ComponentContext c =
         new ComponentContext(mContext, null, null, null, layoutStateFuture, null);
+    c.setLayoutStateReferenceWrapperForTesting();
 
     final CountDownLatch wait = new CountDownLatch(1);
     final TestChildComponent child1 =
@@ -110,6 +111,7 @@ public class LayoutStateFutureReleaseTest {
     when(layoutStateFuture.isReleased()).thenReturn(false);
     final ComponentContext c =
         new ComponentContext(mContext, null, null, null, layoutStateFuture, null);
+    c.setLayoutStateReferenceWrapperForTesting();
 
     final CountDownLatch wait = new CountDownLatch(1);
     final TestChildComponent child1 =

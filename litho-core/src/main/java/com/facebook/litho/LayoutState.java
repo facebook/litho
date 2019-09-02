@@ -84,6 +84,8 @@ import javax.annotation.CheckReturnValue;
  * before-mentioned outputs based on the provided {@link InternalNode} for later use in {@link
  * MountState}.
  */
+// This needs to be accessible to statically mock the class in tests.
+@VisibleForTesting
 class LayoutState {
 
   @IntDef({
@@ -141,9 +143,13 @@ class LayoutState {
    */
   static final class LayoutStateReferenceWrapper {
     private @Nullable LayoutState mLayoutStateRef;
+    private static @Nullable LayoutState sTestLayoutState;
 
-    public static LayoutStateReferenceWrapper getTestInstance() {
-      return new LayoutStateReferenceWrapper(null);
+    public static LayoutStateReferenceWrapper getTestInstance(ComponentContext c) {
+      if (sTestLayoutState == null) {
+        sTestLayoutState = new LayoutState(c);
+      }
+      return new LayoutStateReferenceWrapper(sTestLayoutState);
     }
 
     @VisibleForTesting
@@ -181,6 +187,7 @@ class LayoutState {
   private final LongSparseArray<Integer> mOutputsIdToPositionMap = new LongSparseArray<>(8);
   private final ArrayList<LayoutOutput> mMountableOutputTops = new ArrayList<>();
   private final ArrayList<LayoutOutput> mMountableOutputBottoms = new ArrayList<>();
+  private final @Nullable Map<Integer, InternalNode> mLastMeasuredLayouts;
 
   @Nullable private LayoutStateOutputIdCalculator mLayoutStateOutputIdCalculator;
 
@@ -228,6 +235,8 @@ class LayoutState {
   // If true, the LayoutState calculate call was interrupted and will need to be resumed to finish
   // creating and measuring the InternalNode of the LayoutState.
   private volatile boolean mIsPartialLayoutState;
+  private final boolean mCacheInternalNodeOnLayoutState =
+      ComponentsConfiguration.cacheInternalNodeOnLayoutState;
 
   private static final Object debugLock = new Object();
   @Nullable private static Map<Integer, List<Boolean>> layoutCalculationsOnMainThread;
@@ -243,6 +252,9 @@ class LayoutState {
     mStateHandler = mContext.getStateHandler();
     mTestOutputs = ComponentsConfiguration.isEndToEndTestRun ? new ArrayList<TestOutput>(8) : null;
     mOrientation = context.getResources().getConfiguration().orientation;
+
+    mLastMeasuredLayouts =
+        mCacheInternalNodeOnLayoutState ? new HashMap<Integer, InternalNode>() : null;
   }
 
   @VisibleForTesting
@@ -1698,7 +1710,7 @@ class LayoutState {
 
       // Check if cached layout can be used.
       final InternalNode cachedLayout =
-          consumeCachedLayout(component, holder, widthSpec, heightSpec);
+          consumeCachedLayout(context, component, holder, widthSpec, heightSpec);
 
       if (cachedLayout != null) {
 
@@ -1912,12 +1924,17 @@ class LayoutState {
     }
   }
 
+  boolean shouldCacheInternalNodeOnLayoutState() {
+    return mCacheInternalNodeOnLayoutState;
+  }
+
   @Nullable
   static InternalNode consumeCachedLayout(
-      Component component, InternalNode holder, int widthSpec, int heightSpec) {
-    final InternalNode cachedLayout = component.getCachedLayout();
+      ComponentContext c, Component component, InternalNode holder, int widthSpec, int heightSpec) {
+    final InternalNode cachedLayout = component.getCachedLayout(c);
+
     if (cachedLayout != null) {
-      component.clearCachedLayout();
+      component.clearCachedLayout(c);
 
       final boolean hasValidDirection =
           InternalNodeUtils.hasValidLayoutDirectionInNestedTree(holder, cachedLayout);
@@ -1937,6 +1954,24 @@ class LayoutState {
     }
 
     return null;
+  }
+
+  @Nullable
+  InternalNode getCachedLayout(Component component) {
+    return mLastMeasuredLayouts.get(component.getId());
+  }
+
+  boolean hasCachedLayout(Component component) {
+    return mLastMeasuredLayouts.containsKey(component.getId());
+  }
+
+  @VisibleForTesting
+  protected void clearCachedLayout(Component component) {
+    mLastMeasuredLayouts.remove(component.getId());
+  }
+
+  void addLastMeasuredLayout(Component component, InternalNode lastMeasuredLayout) {
+    mLastMeasuredLayouts.put(component.getId(), lastMeasuredLayout);
   }
 
   static DiffNode createDiffNode(InternalNode node, DiffNode parent) {
@@ -2394,7 +2429,7 @@ class LayoutState {
     }
 
     final boolean shouldDeferNestedTreeResolution =
-        Component.isNestedTree(component) && !shouldResolveNestedTree;
+        Component.isNestedTree(c, component) && !shouldResolveNestedTree;
     final InternalNode node;
 
     try {

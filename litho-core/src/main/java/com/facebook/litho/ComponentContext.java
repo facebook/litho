@@ -189,7 +189,7 @@ public class ComponentContext {
   }
 
   public void setLayoutStateReferenceWrapperForTesting() {
-    setLayoutStateReferenceWrapper(LayoutStateReferenceWrapper.getTestInstance());
+    setLayoutStateReferenceWrapper(LayoutStateReferenceWrapper.getTestInstance(this));
   }
 
   /**
@@ -199,6 +199,13 @@ public class ComponentContext {
   boolean hasLayoutState() {
     return mLayoutStateReferenceWrapper != null
         && mLayoutStateReferenceWrapper.getLayoutState() != null;
+  }
+
+  @Nullable
+  LayoutState getLayoutState() {
+    return mLayoutStateReferenceWrapper == null
+        ? null
+        : mLayoutStateReferenceWrapper.getLayoutState();
   }
 
   public final Context getAndroidContext() {

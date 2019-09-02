@@ -104,7 +104,11 @@ public class ComponentLifecycleTest {
     when(mDiffNode.getLastMeasuredHeight()).thenReturn(-1f);
 
     StateHandler stateHandler = mock(StateHandler.class);
-    mContext = spy(new ComponentContext(RuntimeEnvironment.application, stateHandler));
+
+    final ComponentContext c = new ComponentContext(RuntimeEnvironment.application, stateHandler);
+    c.setLayoutStateReferenceWrapperForTesting();
+    mContext = spy(c);
+    when(mNode.getContext()).thenReturn(mContext);
 
     mNestedTreeWidthSpec = SizeSpec.makeSizeSpec(400, SizeSpec.EXACTLY);
     mNestedTreeHeightSpec = SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY);

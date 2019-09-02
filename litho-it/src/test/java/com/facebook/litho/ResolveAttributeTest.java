@@ -53,7 +53,7 @@ public class ResolveAttributeTest {
   public void testResolveDrawableAttribute() {
     Column column = Column.create(mContext).backgroundAttr(testAttrDrawable, 0).build();
 
-    InternalNode node = Layout.create(mContext, column);
+    InternalNode node = createAndGetInternalNode(column);
 
     Drawable d = mContext.getResources().getDrawable(test_bg);
     ComparableDrawableWrapper comparable = (ComparableDrawableWrapper) node.getBackground();
@@ -65,7 +65,7 @@ public class ResolveAttributeTest {
   public void testResolveDimenAttribute() {
     Column column = Column.create(mContext).widthAttr(testAttrDimen, default_dimen).build();
 
-    InternalNode node = Layout.create(mContext, column);
+    InternalNode node = createAndGetInternalNode(column);
     node.calculateLayout();
 
     int dimen = mContext.getResources().getDimensionPixelSize(R.dimen.test_dimen);
@@ -76,7 +76,7 @@ public class ResolveAttributeTest {
   public void testDefaultDrawableAttribute() {
     Column column = Column.create(mContext).backgroundAttr(undefinedAttrDrawable, test_bg).build();
 
-    InternalNode node = Layout.create(mContext, column);
+    InternalNode node = createAndGetInternalNode(column);
 
     Drawable d = mContext.getResources().getDrawable(test_bg);
     ComparableDrawableWrapper comparable = (ComparableDrawableWrapper) node.getBackground();
@@ -88,7 +88,7 @@ public class ResolveAttributeTest {
   public void testDefaultDimenAttribute() {
     Column column = Column.create(mContext).widthAttr(undefinedAttrDimen, test_dimen).build();
 
-    InternalNode node = Layout.create(mContext, column);
+    InternalNode node = createAndGetInternalNode(column);
     node.calculateLayout();
 
     int dimen = mContext.getResources().getDimensionPixelSize(R.dimen.test_dimen);
@@ -99,7 +99,7 @@ public class ResolveAttributeTest {
   public void testFloatDimenWidthAttribute() {
     Column column = Column.create(mContext).widthAttr(undefinedAttrDimen, test_dimen_float).build();
 
-    InternalNode node = Layout.create(mContext, column);
+    InternalNode node = createAndGetInternalNode(column);
     node.calculateLayout();
 
     int dimen = mContext.getResources().getDimensionPixelSize(test_dimen_float);
@@ -111,10 +111,19 @@ public class ResolveAttributeTest {
     Column column =
         Column.create(mContext).paddingAttr(LEFT, undefinedAttrDimen, test_dimen_float).build();
 
-    InternalNode node = Layout.create(mContext, column);
+    InternalNode node = createAndGetInternalNode(column);
     node.calculateLayout();
 
     int dimen = mContext.getResources().getDimensionPixelSize(test_dimen_float);
     assertThat(node.getPaddingLeft()).isEqualTo(dimen);
+  }
+
+  private InternalNode createAndGetInternalNode(Component component) {
+    final ComponentContext c = new ComponentContext(mContext);
+    c.setLayoutStateReferenceWrapperForTesting();
+
+    InternalNode node = Layout.create(c, component);
+
+    return node;
   }
 }

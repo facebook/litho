@@ -417,7 +417,17 @@ public abstract class Component extends ComponentLifecycle
   }
 
   @Nullable
-  InternalNode getCachedLayout() {
+  InternalNode getCachedLayout(ComponentContext c) {
+    final LayoutState layoutState = c.getLayoutState();
+    if (layoutState == null) {
+      throw new IllegalStateException(
+          "Trying to access the cached InternalNode for a component outside of a LayoutState calculation. If that is what you must do, see Component#measureMightNotCacheInternalNode.");
+    }
+
+    if (layoutState.shouldCacheInternalNodeOnLayoutState()) {
+      return layoutState.getCachedLayout(this);
+    }
+
     return mThreadIdToLastMeasuredLayout == null
         ? null
         : mThreadIdToLastMeasuredLayout.get(Thread.currentThread().getId());
@@ -427,8 +437,16 @@ public abstract class Component extends ComponentLifecycle
    * Only use if absolutely needed! This removes the cached layout so this component will be
    * remeasured even if it has alread been measured with the same size specs.
    */
-  public void clearCachedLayout() {
-    if (getCachedLayout() != null) {
+  public void clearCachedLayout(ComponentContext c) {
+    final LayoutState layoutState = c.getLayoutState();
+    if (layoutState == null) {
+      throw new IllegalStateException(
+          "Trying to access the cached InternalNode for a component outside of a LayoutState calculation. If that is what you must do, see Component#measureMightNotCacheInternalNode.");
+    }
+
+    if (layoutState.shouldCacheInternalNodeOnLayoutState()) {
+      layoutState.clearCachedLayout(this);
+    } else if (mThreadIdToLastMeasuredLayout != null) {
       mThreadIdToLastMeasuredLayout.remove(Thread.currentThread().getId());
     }
   }
@@ -451,24 +469,18 @@ public abstract class Component extends ComponentLifecycle
           "Trying to measure a component outside of a LayoutState calculation. If that is what you must do, see Component#measureMightNotCacheInternalNode.");
     }
 
-    InternalNode lastMeasuredLayout = getCachedLayout();
+    InternalNode lastMeasuredLayout = getCachedLayout(c);
     if (lastMeasuredLayout == null
         || !MeasureComparisonUtils.isMeasureSpecCompatible(
             lastMeasuredLayout.getLastWidthSpec(), widthSpec, lastMeasuredLayout.getWidth())
         || !MeasureComparisonUtils.isMeasureSpecCompatible(
             lastMeasuredLayout.getLastHeightSpec(), heightSpec, lastMeasuredLayout.getHeight())) {
-      clearCachedLayout();
+      clearCachedLayout(c);
 
       lastMeasuredLayout =
           LayoutState.createAndMeasureTreeForComponent(c, this, widthSpec, heightSpec);
 
-      // We just want to make sure this isn't initialized on multiple threads
-      synchronized (this) {
-        if (mThreadIdToLastMeasuredLayout == null) {
-          mThreadIdToLastMeasuredLayout = new ConcurrentHashMap<>(2);
-        }
-      }
-      mThreadIdToLastMeasuredLayout.put(Thread.currentThread().getId(), lastMeasuredLayout);
+      cacheLastMeasuredLayout(c, lastMeasuredLayout);
 
       // This component resolution won't be deferred nor onMeasure called if it's a layout spec.
       // In that case it needs to manually save the latest saze specs.
@@ -480,9 +492,28 @@ public abstract class Component extends ComponentLifecycle
         lastMeasuredLayout.setLastMeasuredHeight(lastMeasuredLayout.getHeight());
       }
     }
-
     outputSize.width = lastMeasuredLayout.getWidth();
     outputSize.height = lastMeasuredLayout.getHeight();
+  }
+
+  private void cacheLastMeasuredLayout(ComponentContext c, InternalNode lastMeasuredLayout) {
+    final LayoutState layoutState = c.getLayoutState();
+    if (layoutState == null) {
+      throw new IllegalStateException(
+          "Cached layout should not be handled outside a LayoutState calculation");
+    }
+
+    if (layoutState.shouldCacheInternalNodeOnLayoutState()) {
+      layoutState.addLastMeasuredLayout(this, lastMeasuredLayout);
+    } else {
+      // We just want to make sure this isn't initialized on multiple threads
+      synchronized (this) {
+        if (mThreadIdToLastMeasuredLayout == null) {
+          mThreadIdToLastMeasuredLayout = new ConcurrentHashMap<>(2);
+        }
+      }
+      mThreadIdToLastMeasuredLayout.put(Thread.currentThread().getId(), lastMeasuredLayout);
+    }
   }
 
   /**
@@ -542,9 +573,23 @@ public abstract class Component extends ComponentLifecycle
     return (isLayoutSpec(component) && component.canMeasure());
   }
 
-  static boolean isNestedTree(@Nullable Component component) {
+  static boolean isNestedTree(ComponentContext context, @Nullable Component component) {
     return (isLayoutSpecWithSizeSpec(component)
-        || (component != null && component.getCachedLayout() != null));
+        || (component != null && component.hasCachedLayout(context)));
+  }
+
+  private boolean hasCachedLayout(ComponentContext c) {
+    if (c != null) {
+      final LayoutState layoutState = c.getLayoutState();
+
+      if (layoutState != null && layoutState.shouldCacheInternalNodeOnLayoutState()) {
+        return layoutState.hasCachedLayout(this);
+      }
+    }
+
+    return mThreadIdToLastMeasuredLayout == null
+        ? false
+        : mThreadIdToLastMeasuredLayout.get(Thread.currentThread().getId()) != null;
   }
 
   private static Component getFirstNonSimpleNameDelegate(Component component) {

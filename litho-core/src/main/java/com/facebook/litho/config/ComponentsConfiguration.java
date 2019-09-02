@@ -228,4 +228,10 @@ public class ComponentsConfiguration {
    * RecyclerBinder.mount for more info.
    */
   public static boolean applyReadyBatchesInMount = false;
+
+  /**
+   * If true, the measured InternalNode will be cached on the LayoutState instead of keeping it on
+   * the Component instance.
+   */
+  public static boolean cacheInternalNodeOnLayoutState = true;
 }
