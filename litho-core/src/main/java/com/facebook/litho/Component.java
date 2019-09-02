@@ -446,6 +446,11 @@ public abstract class Component extends ComponentLifecycle
    * @param outputSize Size object that will be set with the measured dimensions.
    */
   public void measure(ComponentContext c, int widthSpec, int heightSpec, Size outputSize) {
+    if (!c.hasLayoutState()) {
+      throw new IllegalStateException(
+          "Trying to measure a component outside of a LayoutState calculation. If that is what you must do, see Component#measureMightNotCacheInternalNode.");
+    }
+
     InternalNode lastMeasuredLayout = getCachedLayout();
     if (lastMeasuredLayout == null
         || !MeasureComparisonUtils.isMeasureSpecCompatible(
@@ -478,6 +483,37 @@ public abstract class Component extends ComponentLifecycle
 
     outputSize.width = lastMeasuredLayout.getWidth();
     outputSize.height = lastMeasuredLayout.getHeight();
+  }
+
+  /**
+   * Should not be used! Components should be manually measured only as part of a LayoutState
+   * calculation. This will measure a component and set the size in the outputSize object but the
+   * measurement result will not be cached and reused for future measurements of this component.
+   *
+   * <p>This is very inefficient because it throws away the InternalNode from measuring here and
+   * will have to remeasure when the component needs to be measured as part of a LayoutState. This
+   * will lead to suboptimal performance.
+   *
+   * <p>You probably don't need to use this. If you really need to measure your Component outside of
+   * a LayoutState calculation reach out to the Litho team to discuss an alternative solution.
+   *
+   * <p>If this is called during a LayoutState calculation, it will delegate to {@link
+   * Component#onMeasure(ComponentContext, ComponentLayout, int, int, Size)}, which does cache the
+   * measurement result for the duration of this LayoutState.
+   */
+  @Deprecated
+  public void measureMightNotCacheInternalNode(
+      ComponentContext c, int widthSpec, int heightSpec, Size outputSize) {
+    if (c.hasLayoutState()) {
+      measure(c, widthSpec, heightSpec, outputSize);
+      return;
+    }
+
+    final InternalNode internalNode =
+        LayoutState.createAndMeasureTreeForComponent(c, this, widthSpec, heightSpec);
+
+    outputSize.width = internalNode.getWidth();
+    outputSize.height = internalNode.getHeight();
   }
 
   protected void copyInterStageImpl(Component component) {}

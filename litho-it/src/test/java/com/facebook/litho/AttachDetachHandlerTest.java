@@ -258,11 +258,16 @@ public class AttachDetachHandlerTest {
 
   @Test
   public void testAttachDetachWithComponentCachedLayout() {
+    final ComponentContext measureContext = new ComponentContext(mContext);
+    measureContext.setLayoutStateReferenceWrapper(
+        new LayoutState.LayoutStateReferenceWrapper(new LayoutState(measureContext)));
+
     final Component component = spy(TestAttachDetachComponent.create(mContext, true).build());
+
     final int widthSpec = SizeSpec.makeSizeSpec(100, EXACTLY);
     final int heightSpec = SizeSpec.makeSizeSpec(100, EXACTLY);
     final Size outSize = new Size();
-    component.measure(mContext, widthSpec, heightSpec, outSize);
+    component.measure(measureContext, widthSpec, heightSpec, outSize);
     assertThat(component.getCachedLayout()).isNotNull();
 
     final Component container = Column.create(mContext).child(component).build();

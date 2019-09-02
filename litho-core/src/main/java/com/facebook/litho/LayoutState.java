@@ -142,7 +142,12 @@ class LayoutState {
   static final class LayoutStateReferenceWrapper {
     private @Nullable LayoutState mLayoutStateRef;
 
-    private LayoutStateReferenceWrapper(LayoutState layoutState) {
+    public static LayoutStateReferenceWrapper getTestInstance() {
+      return new LayoutStateReferenceWrapper(null);
+    }
+
+    @VisibleForTesting
+    LayoutStateReferenceWrapper(LayoutState layoutState) {
       mLayoutStateRef = layoutState;
     }
 

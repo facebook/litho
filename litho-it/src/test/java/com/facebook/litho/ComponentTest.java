@@ -38,8 +38,12 @@ public class ComponentTest {
 
   @Test
   public void testShallowCopyCachedLayoutSameThread() {
+    final LayoutState layoutState = new LayoutState(mContext);
+    final ComponentContext c = new ComponentContext(mContext);
+    c.setLayoutStateReferenceWrapper(new LayoutState.LayoutStateReferenceWrapper(layoutState));
+
     Component component = TestDrawableComponent.create(mContext).build();
-    component.measure(mContext, 100, 100, new Size());
+    component.measure(c, 100, 100, new Size());
     assertThat(component.getCachedLayout()).isNotNull();
     assertThat(component.getCachedLayout()).isNotNull();
 
@@ -49,6 +53,10 @@ public class ComponentTest {
 
   @Test
   public void testShallowCopyCachedLayoutDifferentThreadsNoMeasureCopy() {
+    final LayoutState layoutState = new LayoutState(mContext);
+    final ComponentContext c = new ComponentContext(mContext);
+    c.setLayoutStateReferenceWrapper(new LayoutState.LayoutStateReferenceWrapper(layoutState));
+
     Component component = TestDrawableComponent.create(mContext).build();
     Component[] resultCopyComponent = new Component[1];
     InternalNode[] cachedLayouts = new InternalNode[2];
@@ -61,7 +69,7 @@ public class ComponentTest {
             new Runnable() {
               @Override
               public void run() {
-                component.measure(mContext, 100, 100, new Size());
+                component.measure(c, 100, 100, new Size());
 
                 cachedLayouts[0] = component.getCachedLayout();
 
@@ -113,6 +121,10 @@ public class ComponentTest {
 
   @Test
   public void testShallowCopyCachedLayoutDifferentThreadsMeasureCopy() {
+    final LayoutState layoutState = new LayoutState(mContext);
+    final ComponentContext c = new ComponentContext(mContext);
+    c.setLayoutStateReferenceWrapper(new LayoutState.LayoutStateReferenceWrapper(layoutState));
+
     Component component = TestDrawableComponent.create(mContext).build();
     Component[] resultCopyComponent = new Component[1];
     InternalNode[] cachedLayouts = new InternalNode[2];
@@ -125,7 +137,7 @@ public class ComponentTest {
             new Runnable() {
               @Override
               public void run() {
-                component.measure(mContext, 100, 100, new Size());
+                component.measure(c, 100, 100, new Size());
 
                 cachedLayouts[0] = component.getCachedLayout();
 
@@ -146,7 +158,7 @@ public class ComponentTest {
                 }
 
                 resultCopyComponent[0] = component.makeShallowCopy();
-                resultCopyComponent[0].measure(mContext, 100, 100, new Size());
+                resultCopyComponent[0].measure(c, 100, 100, new Size());
                 cachedLayouts[1] = resultCopyComponent[0].getCachedLayout();
 
                 testFinished.countDown();

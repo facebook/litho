@@ -767,6 +767,9 @@ public class TreeDiffingTest {
   @Test
   public void testCachedMeasuresForCachedLayoutSpecWithMeasure() {
     final ComponentContext c = new ComponentContext(application);
+    c.setLayoutStateReferenceWrapper(
+        new LayoutState.LayoutStateReferenceWrapper(new LayoutState(c)));
+
     final int widthSpecContainer = makeSizeSpec(300, SizeSpec.EXACTLY);
     final int heightSpec = makeSizeSpec(40, AT_MOST);
     final int horizontalPadding = 20;

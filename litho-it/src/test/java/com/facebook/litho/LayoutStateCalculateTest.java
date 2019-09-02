@@ -932,6 +932,8 @@ public class LayoutStateCalculateTest {
   @Test
   public void testNoMeasureOnNestedComponentWithSameSpecs() {
     final ComponentContext c = new ComponentContext(application);
+    final LayoutState layoutState = new LayoutState(c);
+    c.setLayoutStateReferenceWrapper(new LayoutState.LayoutStateReferenceWrapper(layoutState));
 
     final Size size = new Size();
     final TestComponent innerComponent =
@@ -967,6 +969,8 @@ public class LayoutStateCalculateTest {
   @Test
   public void testNoMeasureOnNestedComponentWithNewMeasureSpecExact() {
     final ComponentContext c = new ComponentContext(application);
+    final LayoutState layoutState = new LayoutState(c);
+    c.setLayoutStateReferenceWrapper(new LayoutState.LayoutStateReferenceWrapper(layoutState));
 
     final Size size = new Size();
     final TestComponent innerComponent =
@@ -1002,6 +1006,8 @@ public class LayoutStateCalculateTest {
   @Test
   public void testNoMeasureOnNestedComponentWithNewMeasureSpecOldUnspecified() {
     final ComponentContext c = new ComponentContext(application);
+    final LayoutState layoutState = new LayoutState(c);
+    c.setLayoutStateReferenceWrapper(new LayoutState.LayoutStateReferenceWrapper(layoutState));
 
     final Size size = new Size();
     final TestComponent innerComponent =
@@ -1035,6 +1041,8 @@ public class LayoutStateCalculateTest {
   @Test
   public void testNoMeasureOnNestedComponentWithOldAndNewAtMost() {
     final ComponentContext c = new ComponentContext(application);
+    final LayoutState layoutState = new LayoutState(c);
+    c.setLayoutStateReferenceWrapper(new LayoutState.LayoutStateReferenceWrapper(layoutState));
 
     final Size size = new Size();
     final TestComponent innerComponent =
@@ -1958,6 +1966,9 @@ public class LayoutStateCalculateTest {
   @Test
   public void testLayoutOutputWithCachedLayoutSpec() {
     final ComponentContext c = new ComponentContext(application);
+    c.setLayoutStateReferenceWrapper(
+        new LayoutState.LayoutStateReferenceWrapper(new LayoutState(c)));
+
     final int widthSpecContainer = makeSizeSpec(300, EXACTLY);
     final int heightSpec = makeSizeSpec(0, UNSPECIFIED);
     final int horizontalPadding = 20;
@@ -2014,6 +2025,9 @@ public class LayoutStateCalculateTest {
   @Test
   public void testLayoutOutputWithCachedLayoutSpecWithMeasure() {
     final ComponentContext c = new ComponentContext(application);
+    c.setLayoutStateReferenceWrapper(
+        new LayoutState.LayoutStateReferenceWrapper(new LayoutState(c)));
+
     final int widthSpecContainer = makeSizeSpec(300, EXACTLY);
     final int heightSpec = makeSizeSpec(0, UNSPECIFIED);
     final int horizontalPadding = 20;
@@ -2083,6 +2097,9 @@ public class LayoutStateCalculateTest {
   @Test
   public void testLayoutOutputWithCachedLayoutSpecDelegate() {
     final ComponentContext c = new ComponentContext(application);
+    c.setLayoutStateReferenceWrapper(
+        new LayoutState.LayoutStateReferenceWrapper(new LayoutState(c)));
+
     final int widthSpecContainer = makeSizeSpec(300, EXACTLY);
     final int heightSpec = makeSizeSpec(0, UNSPECIFIED);
     final int horizontalPadding = 20;
@@ -2139,6 +2156,8 @@ public class LayoutStateCalculateTest {
   @Test
   public void testLayoutOutputWithCachedLayoutSpecWithMeasureDelegate() {
     final ComponentContext c = new ComponentContext(application);
+    c.setLayoutStateReferenceWrapper(
+        new LayoutState.LayoutStateReferenceWrapper(new LayoutState(c)));
     final int widthSpecContainer = makeSizeSpec(300, EXACTLY);
     final int heightSpec = makeSizeSpec(0, UNSPECIFIED);
     final int horizontalPadding = 20;

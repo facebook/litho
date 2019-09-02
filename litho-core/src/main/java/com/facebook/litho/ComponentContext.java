@@ -91,6 +91,11 @@ public class ComponentContext {
     this(context, null, null, null);
   }
 
+  public ComponentContext(
+      Context context, LayoutStateReferenceWrapper layoutStateReferenceWrapper) {
+    this(context, null, null, null);
+  }
+
   public ComponentContext(Context context, StateHandler stateHandler) {
     this(context, null, null, stateHandler, null, null);
   }
@@ -181,6 +186,19 @@ public class ComponentContext {
 
   void setLayoutStateReferenceWrapper(LayoutStateReferenceWrapper layoutStateReferenceWrapper) {
     mLayoutStateReferenceWrapper = layoutStateReferenceWrapper;
+  }
+
+  public void setLayoutStateReferenceWrapperForTesting() {
+    setLayoutStateReferenceWrapper(LayoutStateReferenceWrapper.getTestInstance());
+  }
+
+  /**
+   * Returns true if this method is called during a layout state calculation and the LayoutState
+   * reference hasn't been nullified.
+   */
+  boolean hasLayoutState() {
+    return mLayoutStateReferenceWrapper != null
+        && mLayoutStateReferenceWrapper.getLayoutState() != null;
   }
 
   public final Context getAndroidContext() {
