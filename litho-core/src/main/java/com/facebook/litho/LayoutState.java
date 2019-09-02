@@ -132,6 +132,31 @@ class LayoutState {
         }
       };
 
+  /**
+   * Wraps an instance of a LayoutState to access it in other classes such as ComponentContext
+   * during layout state calculation. When the layout calculation finishes, the LayoutState
+   * reference is nullified. Using a wrapper instead of accessing the LayoutState instance directly
+   * helps with clearing out the reference from all objects that hold on to it, without needing the
+   * LayoutState to know about them.
+   */
+  static final class LayoutStateReferenceWrapper {
+    private @Nullable LayoutState mLayoutStateRef;
+
+    private LayoutStateReferenceWrapper(LayoutState layoutState) {
+      mLayoutStateRef = layoutState;
+    }
+
+    private void releaseReference() {
+      mLayoutStateRef = null;
+    }
+
+    /** Returns the LayoutState instance or null if the layout state has been released. */
+    @Nullable
+    LayoutState getLayoutState() {
+      return mLayoutStateRef;
+    }
+  }
+
   private static final AtomicInteger sIdGenerator = new AtomicInteger(1);
   private static final int NO_PREVIOUS_LAYOUT_STATE_ID = -1;
   private static final boolean IS_TEST = "robolectric".equals(Build.FINGERPRINT);
@@ -1249,6 +1274,8 @@ class LayoutState {
     final DiffNode diffTreeRoot =
         currentLayoutState != null ? currentLayoutState.mDiffTreeRoot : null;
     final LayoutState layoutState;
+    LayoutStateReferenceWrapper layoutStateWrapper = null;
+
     try {
       final PerfEvent logLayoutState =
           logger != null
@@ -1265,6 +1292,9 @@ class LayoutState {
       component.markLayoutStarted();
 
       layoutState = new LayoutState(c);
+      layoutStateWrapper = new LayoutStateReferenceWrapper(layoutState);
+      c.setLayoutStateReferenceWrapper(layoutStateWrapper);
+
       layoutState.mShouldGenerateDiffTree = shouldGenerateDiffTree;
       layoutState.mComponentTreeId = componentTreeId;
       layoutState.mPreviousLayoutStateId =
@@ -1319,6 +1349,10 @@ class LayoutState {
           ComponentsSystrace.endSection();
         }
       }
+
+      if (layoutStateWrapper != null) {
+        layoutStateWrapper.releaseReference();
+      }
     }
 
     return layoutState;
@@ -1333,6 +1367,10 @@ class LayoutState {
     if (!layoutState.mIsPartialLayoutState) {
       throw new IllegalStateException("Can not resume a finished LayoutState calculation");
     }
+
+    final LayoutStateReferenceWrapper layoutStateWrapper =
+        new LayoutStateReferenceWrapper(layoutState);
+    c.setLayoutStateReferenceWrapper(layoutStateWrapper);
 
     final Component component = layoutState.mComponent;
     final int componentTreeId = layoutState.mComponentTreeId;
@@ -1396,6 +1434,8 @@ class LayoutState {
           ComponentsSystrace.endSection();
         }
       }
+
+      layoutStateWrapper.releaseReference();
     }
 
     return layoutState;

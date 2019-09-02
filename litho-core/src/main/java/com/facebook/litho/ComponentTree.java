@@ -2367,7 +2367,8 @@ public class ComponentTree {
                 StateHandler.createNewInstance(ComponentTree.this.mStateHandler),
                 keyHandler,
                 treeProps,
-                layoutStateFuture);
+                layoutStateFuture,
+                null);
       }
 
       return contextWithStateHandler;

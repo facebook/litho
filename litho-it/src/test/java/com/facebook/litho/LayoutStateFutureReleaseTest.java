@@ -77,7 +77,8 @@ public class LayoutStateFutureReleaseTest {
         mock(ComponentTree.LayoutStateFuture.class);
 
     when(layoutStateFuture.isReleased()).thenReturn(false);
-    final ComponentContext c = new ComponentContext(mContext, null, null, null, layoutStateFuture);
+    final ComponentContext c =
+        new ComponentContext(mContext, null, null, null, layoutStateFuture, null);
 
     final CountDownLatch wait = new CountDownLatch(1);
     final TestChildComponent child1 =
@@ -107,7 +108,8 @@ public class LayoutStateFutureReleaseTest {
         mock(ComponentTree.LayoutStateFuture.class);
 
     when(layoutStateFuture.isReleased()).thenReturn(false);
-    final ComponentContext c = new ComponentContext(mContext, null, null, null, layoutStateFuture);
+    final ComponentContext c =
+        new ComponentContext(mContext, null, null, null, layoutStateFuture, null);
 
     final CountDownLatch wait = new CountDownLatch(1);
     final TestChildComponent child1 =

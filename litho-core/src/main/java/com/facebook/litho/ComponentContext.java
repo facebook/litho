@@ -29,6 +29,7 @@ import androidx.annotation.StringRes;
 import androidx.annotation.StyleRes;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.infer.annotation.ThreadConfined;
+import com.facebook.litho.LayoutState.LayoutStateReferenceWrapper;
 import com.facebook.litho.config.ComponentsConfiguration;
 
 /**
@@ -82,6 +83,9 @@ public class ComponentContext {
   private int mDefStyleAttr = 0;
 
   private @Nullable ComponentTree.LayoutStateFuture mLayoutStateFuture;
+
+  @ThreadConfined(ThreadConfined.ANY)
+  private @Nullable LayoutStateReferenceWrapper mLayoutStateReferenceWrapper;
 
   public ComponentContext(Context context) {
     this(context, null, null, null);
@@ -139,7 +143,8 @@ public class ComponentContext {
         context.mStateHandler,
         context.mKeyHandler,
         context.mTreeProps,
-        context.mLayoutStateFuture);
+        context.mLayoutStateFuture,
+        context.mLayoutStateReferenceWrapper);
   }
 
   public ComponentContext(
@@ -147,7 +152,8 @@ public class ComponentContext {
       @Nullable StateHandler stateHandler,
       @Nullable KeyHandler keyHandler,
       @Nullable TreeProps treeProps,
-      @Nullable ComponentTree.LayoutStateFuture layoutStateFuture) {
+      @Nullable ComponentTree.LayoutStateFuture layoutStateFuture,
+      @Nullable LayoutStateReferenceWrapper layoutStateReferenceWrapper) {
 
     mContext = context.mContext;
     mResourceCache = context.mResourceCache;
@@ -156,6 +162,7 @@ public class ComponentContext {
     mHeightSpec = context.mHeightSpec;
     mComponentScope = context.mComponentScope;
     mComponentTree = context.mComponentTree;
+    mLayoutStateReferenceWrapper = layoutStateReferenceWrapper;
     mLogger = context.mLogger;
     mLogTag =
         context.mLogTag != null || mComponentTree == null
@@ -170,6 +177,10 @@ public class ComponentContext {
 
   ComponentContext makeNewCopy() {
     return new ComponentContext(this);
+  }
+
+  void setLayoutStateReferenceWrapper(LayoutStateReferenceWrapper layoutStateReferenceWrapper) {
+    mLayoutStateReferenceWrapper = layoutStateReferenceWrapper;
   }
 
   public final Context getAndroidContext() {
@@ -442,7 +453,7 @@ public class ComponentContext {
 
   static ComponentContext withComponentTree(ComponentContext context, ComponentTree componentTree) {
     ComponentContext componentContext =
-        new ComponentContext(context, new StateHandler(), null, null, null);
+        new ComponentContext(context, new StateHandler(), null, null, null, null);
     componentContext.mComponentTree = componentTree;
     componentContext.mComponentScope = null;
     componentContext.mLayoutStateFuture = null;
