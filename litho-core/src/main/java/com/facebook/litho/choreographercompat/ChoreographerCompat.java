@@ -18,6 +18,8 @@ package com.facebook.litho.choreographercompat;
 import android.annotation.TargetApi;
 import android.os.Build;
 import android.view.Choreographer;
+import com.facebook.litho.WorkContinuationInstrumenter;
+import java.util.concurrent.atomic.AtomicReference;
 
 /** See {@link ChoreographerCompatImpl}. Interface exists for mocking out in tests. */
 public interface ChoreographerCompat {
@@ -38,6 +40,8 @@ public interface ChoreographerCompat {
     private Runnable mRunnable;
     private Choreographer.FrameCallback mFrameCallback;
 
+    final AtomicReference<Object> mTokenReference = new AtomicReference<>();
+
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     Choreographer.FrameCallback getFrameCallback() {
       if (mFrameCallback == null) {
@@ -45,7 +49,7 @@ public interface ChoreographerCompat {
             new Choreographer.FrameCallback() {
               @Override
               public void doFrame(long frameTimeNanos) {
-                ChoreographerCompat.FrameCallback.this.doFrame(frameTimeNanos);
+                ChoreographerCompat.FrameCallback.this.doFrameInternal(frameTimeNanos);
               }
             };
       }
@@ -58,11 +62,22 @@ public interface ChoreographerCompat {
             new Runnable() {
               @Override
               public void run() {
-                doFrame(System.nanoTime());
+                doFrameInternal(System.nanoTime());
               }
             };
       }
       return mRunnable;
+    }
+
+    private void doFrameInternal(long frameTimeNanos) {
+      final Object continuationToken =
+          WorkContinuationInstrumenter.onBeginWorkContinuation(
+              "ChoreographerCompat_doFrame", mTokenReference.getAndSet(null));
+      try {
+        doFrame(frameTimeNanos);
+      } finally {
+        WorkContinuationInstrumenter.onEndWorkContinuation(continuationToken);
+      }
     }
 
     public abstract void doFrame(long frameTimeNanos);

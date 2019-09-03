@@ -23,6 +23,7 @@ import android.os.Looper;
 import android.view.Choreographer;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.litho.ThreadUtils;
+import com.facebook.litho.WorkContinuationInstrumenter;
 import javax.annotation.Nullable;
 
 /**
@@ -81,6 +82,10 @@ public class ChoreographerCompatImpl implements ChoreographerCompat {
 
   @Override
   public void postFrameCallback(FrameCallback callbackWrapper) {
+    callbackWrapper.mTokenReference.set(
+        WorkContinuationInstrumenter.onOfferWorkForContinuation(
+            "ChoreographerCompat_postFrameCallback"));
+
     if (IS_JELLYBEAN_OR_HIGHER && mChoreographer != null) {
       choreographerPostFrameCallback(callbackWrapper.getFrameCallback());
     } else {
@@ -90,6 +95,10 @@ public class ChoreographerCompatImpl implements ChoreographerCompat {
 
   @Override
   public void postFrameCallbackDelayed(FrameCallback callbackWrapper, long delayMillis) {
+    callbackWrapper.mTokenReference.set(
+        WorkContinuationInstrumenter.onOfferWorkForContinuation(
+            "ChoreographerCompat_postFrameCallbackDelayed"));
+
     if (IS_JELLYBEAN_OR_HIGHER && mChoreographer != null) {
       choreographerPostFrameCallbackDelayed(callbackWrapper.getFrameCallback(), delayMillis);
     } else {
@@ -99,6 +108,8 @@ public class ChoreographerCompatImpl implements ChoreographerCompat {
 
   @Override
   public void removeFrameCallback(FrameCallback callbackWrapper) {
+    callbackWrapper.mTokenReference.set(null);
+
     if (IS_JELLYBEAN_OR_HIGHER && mChoreographer != null) {
       choreographerRemoveFrameCallback(callbackWrapper.getFrameCallback());
     } else {

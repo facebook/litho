@@ -24,7 +24,7 @@ import androidx.annotation.Nullable;
  */
 public final class WorkContinuationInstrumenter {
 
-  /** Allows to record work being stolen across threads. */
+  /** Allows to record work being continued across threads. */
   public interface Instrumenter {
 
     /**
@@ -42,6 +42,14 @@ public final class WorkContinuationInstrumenter {
      */
     @Nullable
     Object onAskForWorkToContinue(String tag);
+    /**
+     * Tracks when some work is ready to offered for continuation.
+     *
+     * @param tag name.
+     * @return a token object that allows to track the continuation.
+     */
+    @Nullable
+    Object onOfferWorkForContinuation(String tag);
 
     /**
      * Tracks when some work is ready to be stolen.
@@ -91,7 +99,7 @@ public final class WorkContinuationInstrumenter {
   }
 
   @Nullable
-  static Object onAskForWorkToContinue(String tag) {
+  public static Object onAskForWorkToContinue(String tag) {
     final Instrumenter instrumenter = sInstance;
     if (instrumenter == null) {
       return null;
@@ -100,7 +108,16 @@ public final class WorkContinuationInstrumenter {
   }
 
   @Nullable
-  static Object onOfferWorkForContinuation(String tag, @Nullable Object token) {
+  public static Object onOfferWorkForContinuation(String tag) {
+    final Instrumenter instrumenter = sInstance;
+    if (instrumenter == null) {
+      return null;
+    }
+    return instrumenter.onOfferWorkForContinuation(tag);
+  }
+
+  @Nullable
+  public static Object onOfferWorkForContinuation(String tag, @Nullable Object token) {
     final Instrumenter instrumenter = sInstance;
     if (instrumenter == null || token == null) {
       return null;
@@ -109,7 +126,7 @@ public final class WorkContinuationInstrumenter {
   }
 
   @Nullable
-  static Object onBeginWorkContinuation(String tag, @Nullable Object token) {
+  public static Object onBeginWorkContinuation(String tag, @Nullable Object token) {
     final Instrumenter instrumenter = sInstance;
     if (instrumenter == null || token == null) {
       return null;
@@ -117,7 +134,7 @@ public final class WorkContinuationInstrumenter {
     return instrumenter.onBeginWorkContinuation(tag, token);
   }
 
-  static void onEndWorkContinuation(@Nullable Object token) {
+  public static void onEndWorkContinuation(@Nullable Object token) {
     final Instrumenter instrumenter = sInstance;
     if (instrumenter == null || token == null) {
       return;
