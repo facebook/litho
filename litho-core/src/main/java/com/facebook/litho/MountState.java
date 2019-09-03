@@ -2321,6 +2321,9 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       return;
     }
 
+    final long layoutOutputId = mLayoutOutputsIds[index];
+    mIndexToItemMap.remove(layoutOutputId);
+
     final Object content = item.getContent();
 
     // Recursively unmount mounted children items.
@@ -2333,10 +2336,11 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       // Concurrently remove items therefore traverse backwards.
       for (int i = host.getMountItemCount() - 1; i >= 0; i--) {
         final MountItem mountItem = host.getMountItemAt(i);
-        final long layoutOutputId = mIndexToItemMap.keyAt(mIndexToItemMap.indexOfValue(mountItem));
+        final long childLayoutOutputId =
+            mIndexToItemMap.keyAt(mIndexToItemMap.indexOfValue(mountItem));
 
         for (int mountIndex = mLayoutOutputsIds.length - 1; mountIndex >= 0; mountIndex--) {
-          if (mLayoutOutputsIds[mountIndex] == layoutOutputId) {
+          if (mLayoutOutputsIds[mountIndex] == childLayoutOutputId) {
             unmountItem(mountIndex, hostsByMarker);
             break;
           }
@@ -2380,8 +2384,6 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
     unbindAndUnmountLifecycle(item);
 
-    final long layoutOutputId = mLayoutOutputsIds[index];
-    mIndexToItemMap.remove(layoutOutputId);
     if (item.hasTransitionId()) {
       final @OutputUnitType int type = LayoutStateOutputIdCalculator.getTypeFromId(layoutOutputId);
       maybeRemoveAnimatingMountContent(item.getTransitionId(), type);
