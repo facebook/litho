@@ -31,7 +31,7 @@ import com.facebook.litho.widget.RecyclerEventsController;
 import com.facebook.litho.widget.SmoothScrollAlignmentType;
 import com.facebook.litho.widget.SnapUtil;
 import com.facebook.litho.widget.StaggeredGridLayoutHelper;
-import java.lang.ref.WeakReference;
+import javax.annotation.Nullable;
 
 /**
  * An controller that can be passed as {@link com.facebook.litho.annotations.Prop} to a
@@ -39,7 +39,7 @@ import java.lang.ref.WeakReference;
  */
 public class RecyclerCollectionEventsController extends RecyclerEventsController {
 
-  private WeakReference<SectionTree> mSectionTree;
+  @Nullable private SectionTree mSectionTree;
   private int mSnapMode = SNAP_NONE;
   private int mFirstCompletelyVisibleItemPosition = 0;
   private int mLastCompletelyVisibleItemPosition = 0;
@@ -56,12 +56,12 @@ public class RecyclerCollectionEventsController extends RecyclerEventsController
    * @param showSpinner
    */
   public void requestRefresh(boolean showSpinner) {
-    if (mSectionTree != null && mSectionTree.get() != null) {
+    if (mSectionTree != null) {
       if (showSpinner) {
         showRefreshing();
       }
 
-      mSectionTree.get().refresh();
+      mSectionTree.refresh();
     }
   }
 
@@ -224,7 +224,7 @@ public class RecyclerCollectionEventsController extends RecyclerEventsController
   }
 
   void setSectionTree(SectionTree sectionTree) {
-    mSectionTree = new WeakReference<>(sectionTree);
+    mSectionTree = sectionTree;
   }
 
   void setSnapMode(int snapMode) {
