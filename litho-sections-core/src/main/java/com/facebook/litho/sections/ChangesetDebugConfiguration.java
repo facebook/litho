@@ -29,6 +29,51 @@ import javax.annotation.Nullable;
 public class ChangesetDebugConfiguration {
   private static @Nullable ChangesetDebugListener sListener;
 
+  public static class ChangesetDebugInfo {
+    final @ApplyNewChangeSet int mSource;
+    final @Nullable String mAttribution;
+    @Nullable Section mOldSection;
+    @Nullable String mUpdateStateAttribution;
+
+    ChangesetDebugInfo(int source, @Nullable String attribution, @Nullable Section oldSection) {
+      this(source, attribution, null, oldSection);
+    }
+
+    ChangesetDebugInfo(
+        int source,
+        @Nullable String attribution,
+        @Nullable String updateStateAttribution,
+        @Nullable Section oldSection) {
+      mSource = source;
+      mAttribution = attribution;
+      mUpdateStateAttribution = updateStateAttribution;
+      mOldSection = oldSection;
+    }
+
+    /** Get the id for the type of event that triggered a new changeset generation. */
+    public int getSource() {
+      return mSource;
+    }
+
+    /** Get the name of the section to which a new changeset generation is attributed to. */
+    @Nullable
+    public String getAttribution() {
+      return mAttribution;
+    }
+
+    /** Get the root section from the old tree. */
+    @Nullable
+    public Section getOldSection() {
+      return mOldSection;
+    }
+
+    /** Get the name of the section which triggered a state update. */
+    @Nullable
+    public String getUpdateStateAttribution() {
+      return mUpdateStateAttribution;
+    }
+  }
+
   public interface ChangesetDebugListener {
     void onChangesetApplied(
         @Nullable Section rootSection,
