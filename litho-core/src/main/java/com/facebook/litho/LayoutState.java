@@ -1355,6 +1355,10 @@ class LayoutState {
 
       setSizeAfterMeasureAndCollectResults(c, layoutState);
 
+      if (layoutStateWrapper != null) {
+        layoutStateWrapper.releaseReference();
+      }
+
       if (logLayoutState != null) {
         logLayoutState.markerPoint("end_collect_results");
         logger.logPerfEvent(logLayoutState);
@@ -1365,10 +1369,6 @@ class LayoutState {
         if (extraAttribution != null) {
           ComponentsSystrace.endSection();
         }
-      }
-
-      if (layoutStateWrapper != null) {
-        layoutStateWrapper.releaseReference();
       }
     }
 
@@ -1441,6 +1441,10 @@ class LayoutState {
 
       setSizeAfterMeasureAndCollectResults(c, layoutState);
 
+      if (layoutStateWrapper != null) {
+        layoutStateWrapper.releaseReference();
+      }
+
       if (logLayoutState != null) {
         logger.logPerfEvent(logLayoutState);
       }
@@ -1451,8 +1455,6 @@ class LayoutState {
           ComponentsSystrace.endSection();
         }
       }
-
-      layoutStateWrapper.releaseReference();
     }
 
     return layoutState;
