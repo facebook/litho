@@ -70,6 +70,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import javax.annotation.Nullable;
 
 /** Default implementation of {@link InternalNode}. */
@@ -338,7 +339,22 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   @Override
   public void calculateLayout(float width, float height) {
     applyOverridesRecursive(this);
-    mYogaNode.calculateLayout(width, height);
+    if (ComponentsConfiguration.percentageSleepLayoutCalculation > 0) {
+      long start = System.nanoTime();
+      mYogaNode.calculateLayout(width, height);
+      long end = System.nanoTime();
+      try {
+        // Sleep for X % of total layout calculation time.
+        Thread.sleep(
+            (long)
+                (TimeUnit.MILLISECONDS.convert(end - start, TimeUnit.NANOSECONDS)
+                    * (ComponentsConfiguration.percentageSleepLayoutCalculation / 100f)));
+      } catch (InterruptedException e) {
+        // Do nothing
+      }
+    } else {
+      mYogaNode.calculateLayout(width, height);
+    }
   }
 
   @Override

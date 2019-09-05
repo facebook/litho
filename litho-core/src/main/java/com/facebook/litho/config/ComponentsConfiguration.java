@@ -234,4 +234,6 @@ public class ComponentsConfiguration {
    * the Component instance.
    */
   public static boolean cacheInternalNodeOnLayoutState = true;
+
+  public static int percentageSleepLayoutCalculation = 0;
 }
