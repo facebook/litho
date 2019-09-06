@@ -1708,6 +1708,10 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
     return reconcile(c, this, next, keys);
   }
 
+  void setComponentContext(ComponentContext c) {
+    mComponentContext = c;
+  }
+
   protected DefaultInternalNode clone() {
     try {
       return (DefaultInternalNode) super.clone();
