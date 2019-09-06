@@ -48,6 +48,8 @@ public class RecyclerBinderConfiguration {
   private final boolean mSplitLayoutForMeasureAndRangeEstimation;
   @Nullable private LithoHandler mChangeSetThreadHandler;
   private final boolean mEnableDetach;
+  private final boolean mIsReconciliationEnabled;
+  private final boolean mIsLayoutDiffingEnabled;
 
   public static Builder create() {
     return new Builder();
@@ -74,7 +76,9 @@ public class RecyclerBinderConfiguration {
       @Nullable LithoHandler changeSetThreadHandler,
       boolean moveLayoutsBetweenThreads,
       boolean useCancelableLayoutFutures,
-      boolean applyReadyBatchesInMount) {
+      boolean applyReadyBatchesInMount,
+      boolean isReconciliationEnabled,
+      boolean isLayoutDiffingEnabled) {
     mRangeRatio = rangeRatio;
     mLayoutHandlerFactory = layoutHandlerFactory;
     mIsCircular = circular;
@@ -92,6 +96,8 @@ public class RecyclerBinderConfiguration {
     mMoveLayoutsBetweenThreads = moveLayoutsBetweenThreads;
     mUseCancelableLayoutFutures = useCancelableLayoutFutures;
     mApplyReadyBatchesInMount = applyReadyBatchesInMount;
+    mIsReconciliationEnabled = isReconciliationEnabled;
+    mIsLayoutDiffingEnabled = isLayoutDiffingEnabled;
   }
 
   public float getRangeRatio() {
@@ -162,6 +168,14 @@ public class RecyclerBinderConfiguration {
     return mEnableDetach;
   }
 
+  public boolean isReconciliationEnabled() {
+    return mIsReconciliationEnabled;
+  }
+
+  public boolean isLayoutDiffingEnabled() {
+    return mIsLayoutDiffingEnabled;
+  }
+
   public static class Builder {
     public static final LayoutThreadPoolConfiguration DEFAULT_THREAD_POOL_CONFIG =
         ComponentsConfiguration.threadPoolConfiguration;
@@ -187,6 +201,8 @@ public class RecyclerBinderConfiguration {
     private boolean mEnableDetach = false;
     @Nullable private LithoHandler mChangeSetThreadHandler;
     private boolean mApplyReadyBatchesInMount = ComponentsConfiguration.applyReadyBatchesInMount;
+    private boolean mIsReconciliationEnabled = ComponentsConfiguration.isReconciliationEnabled;
+    private boolean mIsLayoutDiffingEnabled = ComponentsConfiguration.isLayoutDiffingEnabled;
 
     Builder() {}
 
@@ -209,6 +225,8 @@ public class RecyclerBinderConfiguration {
       this.mEnableDetach = configuration.mEnableDetach;
       this.mChangeSetThreadHandler = configuration.mChangeSetThreadHandler;
       this.mApplyReadyBatchesInMount = configuration.mApplyReadyBatchesInMount;
+      this.mIsReconciliationEnabled = configuration.mIsReconciliationEnabled;
+      this.mIsLayoutDiffingEnabled = configuration.mIsLayoutDiffingEnabled;
     }
 
     /**
@@ -339,6 +357,16 @@ public class RecyclerBinderConfiguration {
       return this;
     }
 
+    public Builder isReconciliationEnabled(boolean isEnabled) {
+      mIsReconciliationEnabled = isEnabled;
+      return this;
+    }
+
+    public Builder isLayoutDiffingEnabled(boolean isEnabled) {
+      mIsLayoutDiffingEnabled = isEnabled;
+      return this;
+    }
+
     public RecyclerBinderConfiguration build() {
       return new RecyclerBinderConfiguration(
           mRangeRatio,
@@ -357,7 +385,9 @@ public class RecyclerBinderConfiguration {
           mChangeSetThreadHandler,
           mMoveLayoutsBetweenThreads,
           mUseCancelableLayoutFutures,
-          mApplyReadyBatchesInMount);
+          mApplyReadyBatchesInMount,
+          mIsReconciliationEnabled,
+          mIsLayoutDiffingEnabled);
     }
   }
 }
