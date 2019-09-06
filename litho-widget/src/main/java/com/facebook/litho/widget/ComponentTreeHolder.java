@@ -401,19 +401,28 @@ public class ComponentTreeHolder {
   @GuardedBy("this")
   private void ensureComponentTree(ComponentContext context) {
     if (mComponentTree == null) {
-      final Object isReconciliationEnabled =
+      final ComponentTree.Builder builder =
+          ComponentTree.create(context, mRenderInfo.getComponent());
+
+      final Object isReconciliationEnabledAttr =
           mRenderInfo.getCustomAttribute(ComponentRenderInfo.RECONCILIATION_ENABLED);
       final Object layoutDiffingEnabledAttr =
           mRenderInfo.getCustomAttribute(ComponentRenderInfo.LAYOUT_DIFFING_ENABLED);
-      final ComponentTree.Builder builder =
-          ComponentTree.create(context, mRenderInfo.getComponent());
-      // If no custom attribute is set, defer to the default value of the builder.
-      if (isReconciliationEnabled != null) {
-        builder.layoutDiffing(!(boolean) isReconciliationEnabled);
-        builder.isReconciliationEnabled((boolean) isReconciliationEnabled);
-      } else if (layoutDiffingEnabledAttr != null) {
-        builder.layoutDiffing((boolean) layoutDiffingEnabledAttr);
+
+      // If the custom attribute is NOT set, defer to the value from the builder.
+
+      if (isReconciliationEnabledAttr != null) {
+        builder.isReconciliationEnabled((boolean) isReconciliationEnabledAttr);
+      } else {
+        builder.isReconciliationEnabled(mIsReconciliationEnabled);
       }
+
+      if (layoutDiffingEnabledAttr != null) {
+        builder.layoutDiffing((boolean) layoutDiffingEnabledAttr);
+      } else {
+        builder.layoutDiffing(mIsLayoutDiffingEnabled);
+      }
+
       mComponentTree =
           builder
               .layoutThreadHandler(mLayoutHandler)
