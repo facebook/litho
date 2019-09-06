@@ -132,6 +132,8 @@ public class RecyclerBinder
   private final boolean mIsSubAdapter;
   private final boolean mHasManualEstimatedViewportCount;
   private final boolean mApplyReadyBatchesInMount;
+  private final boolean mIsReconciliationEnabled;
+  private final boolean mIsLayoutDiffingEnabled;
 
   private AtomicLong mCurrentChangeSetThreadId = new AtomicLong(-1);
   @VisibleForTesting final boolean mTraverseLayoutBackwards;
@@ -343,7 +345,9 @@ public class RecyclerBinder
         ComponentTreeMeasureListenerFactory measureListenerFactory,
         boolean incrementalMountEnabled,
         boolean canInterruptAndMoveLayoutsBetweenThreads,
-        boolean useCancelableLayoutFutures);
+        boolean useCancelableLayoutFutures,
+        boolean isReconciliationEnabled,
+        boolean isLayoutDiffingEnabled);
   }
 
   static final ComponentTreeHolderFactory DEFAULT_COMPONENT_TREE_HOLDER_FACTORY =
@@ -355,7 +359,9 @@ public class RecyclerBinder
             ComponentTreeMeasureListenerFactory measureListenerFactory,
             boolean incrementalMountEnabled,
             boolean canInterruptAndMoveLayoutsBetweenThreads,
-            boolean useCancelableLayoutFutures) {
+            boolean useCancelableLayoutFutures,
+            boolean isReconciliationEnabled,
+            boolean isLayoutDiffingEnabled) {
           return ComponentTreeHolder.create()
               .renderInfo(renderInfo)
               .layoutHandler(layoutHandler)
@@ -363,6 +369,8 @@ public class RecyclerBinder
               .incrementalMount(incrementalMountEnabled)
               .canInterruptAndMoveLayoutsBetweenThreads(canInterruptAndMoveLayoutsBetweenThreads)
               .useCancelableLayoutFutures(useCancelableLayoutFutures)
+              .isReconciliationEnabled(isReconciliationEnabled)
+              .isLayoutDiffingEnabled(isLayoutDiffingEnabled)
               .build();
         }
       };
@@ -403,6 +411,8 @@ public class RecyclerBinder
     private boolean isSubAdapter;
     private int estimatedViewportCount = UNSET;
     private boolean applyReadyBatchesInMount = ComponentsConfiguration.applyReadyBatchesInMount;
+    private boolean isReconciliationEnabled = ComponentsConfiguration.isReconciliationEnabled;
+    private boolean isLayoutDiffingEnabled = ComponentsConfiguration.isLayoutDiffingEnabled;
 
     /**
      * @param rangeRatio specifies how big a range this binder should try to compute. The range is
@@ -681,6 +691,16 @@ public class RecyclerBinder
       return this;
     }
 
+    public Builder isReconciliationEnabled(boolean isEnabled) {
+      isReconciliationEnabled = isEnabled;
+      return this;
+    }
+
+    public Builder isLayoutDiffingEnabled(boolean isEnabled) {
+      isLayoutDiffingEnabled = isEnabled;
+      return this;
+    }
+
     /** @param c The {@link ComponentContext} the RecyclerBinder will use. */
     public RecyclerBinder build(ComponentContext c) {
       componentContext =
@@ -889,6 +909,8 @@ public class RecyclerBinder
     mMoveLayoutsBetweenThreads = builder.canInterruptAndMoveLayoutsBetweenThreads;
     mIsSubAdapter = builder.isSubAdapter;
     mApplyReadyBatchesInMount = builder.applyReadyBatchesInMount;
+    mIsReconciliationEnabled = builder.isReconciliationEnabled;
+    mIsLayoutDiffingEnabled = builder.isLayoutDiffingEnabled;
   }
 
   /**
@@ -3742,7 +3764,9 @@ public class RecyclerBinder
         mComponentTreeMeasureListenerFactory,
         mIncrementalMountEnabled,
         mMoveLayoutsBetweenThreads,
-        mUseCancelableLayoutFutures);
+        mUseCancelableLayoutFutures,
+        mIsReconciliationEnabled,
+        mIsLayoutDiffingEnabled);
   }
 
   @UiThread

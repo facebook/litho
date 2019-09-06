@@ -172,6 +172,12 @@ public class ComponentsConfiguration {
   /** Sets if is reconciliation is enabled */
   public static boolean isReconciliationEnabled = false;
 
+  /**
+   * Sets if layout diffing is enabled. This should be used in conjugation with
+   * {@link#isReconciliationEnabled}.
+   */
+  public static boolean isLayoutDiffingEnabled = true;
+
   /** specifies if the ComparableAnimatedColorDrawable should be initialized in a lazy way */
   public static boolean lazyComparableAnimatedColorDrawable = false;
 

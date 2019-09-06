@@ -26,6 +26,7 @@ import com.facebook.litho.LithoHandler;
 import com.facebook.litho.Size;
 import com.facebook.litho.StateHandler;
 import com.facebook.litho.TreeProps;
+import com.facebook.litho.config.ComponentsConfiguration;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.GuardedBy;
@@ -43,6 +44,8 @@ public class ComponentTreeHolder {
   private static final AtomicInteger sIdGenerator = new AtomicInteger(1);
   private final boolean mCanInterruptAndMoveLayoutsBetweenThreads;
   private final boolean mUseCancelableLayoutFutures;
+  private final boolean mIsReconciliationEnabled;
+  private final boolean mIsLayoutDiffingEnabled;
 
   @IntDef({RENDER_UNINITIALIZED, RENDER_ADDED, RENDER_DRAWN})
   public @interface RenderState {}
@@ -111,6 +114,8 @@ public class ComponentTreeHolder {
     private boolean incrementalMount = true;
     private boolean useCancelableLayoutFutures;
     private boolean canInterruptAndMoveLayoutsBetweenThreads;
+    private boolean isReconciliationEnabled = ComponentsConfiguration.isReconciliationEnabled;
+    private boolean isLayoutDiffingEnabled = ComponentsConfiguration.isLayoutDiffingEnabled;
 
     private Builder() {}
 
@@ -161,6 +166,16 @@ public class ComponentTreeHolder {
       return this;
     }
 
+    public Builder isReconciliationEnabled(boolean isEnabled) {
+      isReconciliationEnabled = isEnabled;
+      return this;
+    }
+
+    public Builder isLayoutDiffingEnabled(boolean isEnabled) {
+      isLayoutDiffingEnabled = isEnabled;
+      return this;
+    }
+
     public ComponentTreeHolder build() {
       ensureMandatoryParams();
       return new ComponentTreeHolder(this);
@@ -186,6 +201,8 @@ public class ComponentTreeHolder {
     mCanInterruptAndMoveLayoutsBetweenThreads = builder.canInterruptAndMoveLayoutsBetweenThreads;
     mId = sIdGenerator.getAndIncrement();
     mIncrementalMount = builder.incrementalMount;
+    mIsReconciliationEnabled = builder.isReconciliationEnabled;
+    mIsLayoutDiffingEnabled = builder.isLayoutDiffingEnabled;
   }
 
   public synchronized void acquireStateAndReleaseTree() {

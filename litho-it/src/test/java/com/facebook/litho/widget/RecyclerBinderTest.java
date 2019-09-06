@@ -168,7 +168,9 @@ public class RecyclerBinderTest {
               ComponentTreeMeasureListenerFactory componentTreeMeasureListenerFactory,
               boolean incrementalMountEnabled,
               boolean canInterruptAndMoveLayoutsBetweenThreads,
-              boolean useCancelableLayoutFutures) {
+              boolean useCancelableLayoutFutures,
+              boolean isReconciliationEnabled,
+              boolean isLayoutDiffingEnabled) {
             final TestComponentTreeHolder holder = new TestComponentTreeHolder(renderInfo);
             if (renderInfo.rendersComponent()) {
               mHoldersForComponents.put(renderInfo.getComponent(), holder);

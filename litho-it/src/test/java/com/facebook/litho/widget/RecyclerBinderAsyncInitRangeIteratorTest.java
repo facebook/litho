@@ -79,7 +79,9 @@ public class RecyclerBinderAsyncInitRangeIteratorTest {
                   componentTreeMeasureListenerFactory,
               boolean incrementalMountEnabled,
               boolean canInterruptAndMoveLayoutsBetweenThreads,
-              boolean useCancelableLayoutFutures) {
+              boolean useCancelableLayoutFutures,
+              boolean isReconciliationEnabled,
+              boolean isLayoutDiffingEnabled) {
             final TestComponentTreeHolder holder = new TestComponentTreeHolder(renderInfo);
             mAllHoldersList.add(holder);
 
