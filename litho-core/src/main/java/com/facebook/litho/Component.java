@@ -291,12 +291,6 @@ public abstract class Component extends ComponentLifecycle
    */
   private String generateUniqueGlobalKeyForChild(Component component, String key) {
     final String childKey = ComponentKeyUtils.getKeyWithSeparator(getGlobalKey(), key);
-    final KeyHandler keyHandler = mScopedContext.getKeyHandler();
-
-    /* Null check is for testing only, the keyHandler should never be null here otherwise. */
-    if (keyHandler == null) {
-      return childKey;
-    }
 
     if (component.mHasManualKey) { // if the component has a manual key
       if (mManualKeys == null) {

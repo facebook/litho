@@ -53,9 +53,7 @@ public class LayoutStateFutureReleaseTest {
 
   @Before
   public void setup() {
-    mContext =
-        new ComponentContext(
-            RuntimeEnvironment.application, null, null, null, new KeyHandler(null), null);
+    mContext = new ComponentContext(RuntimeEnvironment.application, null, null, null, null);
     ComponentsConfiguration.useCancelableLayoutFutures = true;
 
     mWidthSpec = makeSizeSpec(40, EXACTLY);
@@ -77,8 +75,7 @@ public class LayoutStateFutureReleaseTest {
         mock(ComponentTree.LayoutStateFuture.class);
 
     when(layoutStateFuture.isReleased()).thenReturn(false);
-    final ComponentContext c =
-        new ComponentContext(mContext, null, null, null, layoutStateFuture, null);
+    final ComponentContext c = new ComponentContext(mContext, null, null, layoutStateFuture, null);
     c.setLayoutStateReferenceWrapperForTesting();
 
     final CountDownLatch wait = new CountDownLatch(1);
@@ -109,8 +106,7 @@ public class LayoutStateFutureReleaseTest {
         mock(ComponentTree.LayoutStateFuture.class);
 
     when(layoutStateFuture.isReleased()).thenReturn(false);
-    final ComponentContext c =
-        new ComponentContext(mContext, null, null, null, layoutStateFuture, null);
+    final ComponentContext c = new ComponentContext(mContext, null, null, layoutStateFuture, null);
     c.setLayoutStateReferenceWrapperForTesting();
 
     final CountDownLatch wait = new CountDownLatch(1);

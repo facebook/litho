@@ -705,12 +705,7 @@ public class RecyclerBinder
     public RecyclerBinder build(ComponentContext c) {
       componentContext =
           new ComponentContext(
-              c.getAndroidContext(),
-              c.getLogTag(),
-              c.getLogger(),
-              null,
-              null,
-              c.getTreePropsCopy());
+              c.getAndroidContext(), c.getLogTag(), c.getLogger(), null, c.getTreePropsCopy());
 
       // Incremental mount will not work if this ComponentTree is nested in a parent with it turned
       // off, so always disable it in that case

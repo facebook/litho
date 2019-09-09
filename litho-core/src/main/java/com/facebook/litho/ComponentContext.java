@@ -46,9 +46,6 @@ public class ComponentContext {
   private final @Nullable ComponentsLogger mLogger;
   private final @Nullable StateHandler mStateHandler;
 
-  /** TODO: (T38237241) remove the usage of the key handler post the nested tree experiment */
-  private final @Nullable KeyHandler mKeyHandler;
-
   private @Nullable String mNoStateUpdatesMethod;
 
   // Hold a reference to the component which scope we are currently within.
@@ -97,7 +94,7 @@ public class ComponentContext {
   }
 
   public ComponentContext(Context context, StateHandler stateHandler) {
-    this(context, null, null, stateHandler, null, null);
+    this(context, null, null, stateHandler, null);
   }
 
   /**
@@ -117,7 +114,7 @@ public class ComponentContext {
       @Nullable String logTag,
       @Nullable ComponentsLogger logger,
       @Nullable TreeProps treeProps) {
-    this(context, logTag, logger, null, null, treeProps);
+    this(context, logTag, logger, null, treeProps);
   }
 
   public ComponentContext(
@@ -125,7 +122,6 @@ public class ComponentContext {
       @Nullable String logTag,
       @Nullable ComponentsLogger logger,
       @Nullable StateHandler stateHandler,
-      @Nullable KeyHandler keyHandler,
       @Nullable TreeProps treeProps) {
 
     if (logger != null && logTag == null) {
@@ -139,14 +135,12 @@ public class ComponentContext {
     mLogger = logger;
     mLogTag = logTag;
     mStateHandler = stateHandler;
-    mKeyHandler = keyHandler;
   }
 
   public ComponentContext(ComponentContext context) {
     this(
         context,
         context.mStateHandler,
-        context.mKeyHandler,
         context.mTreeProps,
         context.mLayoutStateFuture,
         context.mLayoutStateReferenceWrapper);
@@ -155,7 +149,6 @@ public class ComponentContext {
   public ComponentContext(
       ComponentContext context,
       @Nullable StateHandler stateHandler,
-      @Nullable KeyHandler keyHandler,
       @Nullable TreeProps treeProps,
       @Nullable ComponentTree.LayoutStateFuture layoutStateFuture,
       @Nullable LayoutStateReferenceWrapper layoutStateReferenceWrapper) {
@@ -175,7 +168,6 @@ public class ComponentContext {
             : mComponentTree.getSimpleName();
 
     mStateHandler = stateHandler != null ? stateHandler : context.mStateHandler;
-    mKeyHandler = keyHandler != null ? keyHandler : context.mKeyHandler;
     mTreeProps = treeProps != null ? treeProps : context.mTreeProps;
     mLayoutStateFuture = layoutStateFuture != null ? layoutStateFuture : context.mLayoutStateFuture;
   }
@@ -457,11 +449,6 @@ public class ComponentContext {
     return mStateHandler;
   }
 
-  @Nullable
-  KeyHandler getKeyHandler() {
-    return mKeyHandler;
-  }
-
   void applyStyle(InternalNode node, @AttrRes int defStyleAttr, @StyleRes int defStyleRes) {
     if (defStyleAttr != 0 || defStyleRes != 0) {
       setDefStyle(defStyleAttr, defStyleRes);
@@ -478,7 +465,7 @@ public class ComponentContext {
 
   static ComponentContext withComponentTree(ComponentContext context, ComponentTree componentTree) {
     ComponentContext componentContext =
-        new ComponentContext(context, new StateHandler(), null, null, null, null);
+        new ComponentContext(context, new StateHandler(), null, null, null);
     componentContext.mComponentTree = componentTree;
     componentContext.mComponentScope = null;
     componentContext.mLayoutStateFuture = null;

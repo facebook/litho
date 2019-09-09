@@ -2356,16 +2356,10 @@ public class ComponentTree {
       final ComponentContext contextWithStateHandler;
 
       synchronized (ComponentTree.this) {
-        final KeyHandler keyHandler =
-            (ComponentsConfiguration.useGlobalKeys || ComponentsConfiguration.isDebugModeEnabled)
-                ? new KeyHandler(ComponentTree.this.getContextLogger())
-                : null;
-
         contextWithStateHandler =
             new ComponentContext(
                 context,
                 StateHandler.createNewInstance(ComponentTree.this.mStateHandler),
-                keyHandler,
                 treeProps,
                 layoutStateFuture,
                 null);
