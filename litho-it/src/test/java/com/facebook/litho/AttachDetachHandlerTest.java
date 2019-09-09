@@ -225,11 +225,10 @@ public class AttachDetachHandlerTest {
 
   @Test
   public void testMultipleSetSizeSpecWithNestedTree() {
+    ComponentsConfiguration.enableShouldCreateLayoutWithNewSizeSpec = true;
+
     final ComponentContext measureContext = new ComponentContext(mContext);
     measureContext.setLayoutStateReferenceWrapperForTesting();
-
-    ComponentsConfiguration.isReconciliationEnabled = true;
-    ComponentsConfiguration.enableShouldCreateLayoutWithNewSizeSpec = true;
 
     final Component c1 = spy(TestAttachDetachComponent.create(mContext).build());
     final Component c2 = spy(TestAttachDetachComponent.create(mContext).build());
@@ -240,16 +239,14 @@ public class AttachDetachHandlerTest {
     testSetSizeSpec(mContext, component, 20);
 
     ComponentsConfiguration.enableShouldCreateLayoutWithNewSizeSpec = false;
-    ComponentsConfiguration.isReconciliationEnabled = false;
   }
 
   @Test
   public void testMultipleSetRootAndSizeSpecWithNestedTree() {
+    ComponentsConfiguration.enableShouldCreateLayoutWithNewSizeSpec = true;
+
     final ComponentContext measureContext = new ComponentContext(mContext);
     measureContext.setLayoutStateReferenceWrapperForTesting();
-
-    ComponentsConfiguration.isReconciliationEnabled = true;
-    ComponentsConfiguration.enableShouldCreateLayoutWithNewSizeSpec = true;
 
     final Component c1 = spy(TestAttachDetachComponent.create(mContext).build());
     final Component c2 = spy(TestAttachDetachComponent.create(mContext).build());
@@ -260,7 +257,6 @@ public class AttachDetachHandlerTest {
     testSetRootAndSizeSpec(mContext, component, 20);
 
     ComponentsConfiguration.enableShouldCreateLayoutWithNewSizeSpec = false;
-    ComponentsConfiguration.isReconciliationEnabled = false;
   }
 
   @Test

@@ -216,14 +216,12 @@ public class StateHandler {
 
       LithoStats.incStateUpdate(stateUpdatesForKey.size());
 
-      if (component.getScopedContext().isReconciliationEnabled()) {
-        synchronized (this) {
-          mPendingStateUpdates.remove(key); // remove from pending
-          if (mPendingLazyStateUpdates != null) {
-            mPendingLazyStateUpdates.remove(key); // remove from pending lazy
-          }
-          mAppliedStateUpdates.put(key, stateUpdatesForKey); // add to applied
+      synchronized (this) {
+        mPendingStateUpdates.remove(key); // remove from pending
+        if (mPendingLazyStateUpdates != null) {
+          mPendingLazyStateUpdates.remove(key); // remove from pending lazy
         }
+        mAppliedStateUpdates.put(key, stateUpdatesForKey); // add to applied
       }
     }
 
@@ -320,13 +318,9 @@ public class StateHandler {
    * updates the map of current components with the given components.
    *
    * @param stateHandler state handler that was used to apply state updates in a layout pass
-   * @param isReconciliationEnabled is the NestedTree resolution experiment enabled
    */
-  void commit(StateHandler stateHandler, boolean isReconciliationEnabled) {
-    clearStateUpdates(
-        isReconciliationEnabled
-            ? stateHandler.getAppliedStateUpdates()
-            : stateHandler.getPendingStateUpdates());
+  void commit(StateHandler stateHandler) {
+    clearStateUpdates(stateHandler.getAppliedStateUpdates());
     clearUnusedStateContainers(this, stateHandler);
     copyCurrentStateContainers(stateHandler.getStateContainers());
     copyPendingStateTransitions(stateHandler.getPendingStateUpdateTransitions());

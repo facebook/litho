@@ -983,7 +983,7 @@ public class ComponentTree {
         components = new ArrayList<>(localLayoutState.getComponents());
         attachables = localLayoutState.consumeAttachables();
         if (layoutStateStateHandler != null) {
-          mStateHandler.commit(layoutStateStateHandler, isReconciliationEnabled);
+          mStateHandler.commit(layoutStateStateHandler);
         }
 
         localLayoutState.clearComponents();
@@ -1811,7 +1811,7 @@ public class ComponentTree {
         final StateHandler layoutStateStateHandler = localLayoutState.consumeStateHandler();
         if (layoutStateStateHandler != null) {
           if (mStateHandler != null) { // we could have been released
-            mStateHandler.commit(layoutStateStateHandler, isReconciliationEnabled);
+            mStateHandler.commit(layoutStateStateHandler);
           }
         }
 

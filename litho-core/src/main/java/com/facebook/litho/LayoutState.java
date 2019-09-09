@@ -650,7 +650,7 @@ class LayoutState {
       }
       InternalNode nestedTree =
           resolveNestedTree(
-              parentContext.isReconciliationEnabled() ? parentContext : node.getContext(),
+              parentContext,
               node,
               SizeSpec.makeSizeSpec(node.getWidth(), EXACTLY),
               SizeSpec.makeSizeSpec(node.getHeight(), EXACTLY));
@@ -1719,27 +1719,6 @@ class LayoutState {
         // Use the cached layout.
         resolvedLayout = cachedLayout;
       } else {
-
-        final Component root = holder.getTailComponent();
-        if (context.isReconciliationEnabled() && root != null) {
-          /*
-           * We create a shallow copy of the component to ensure that component is resolved
-           * without any side effects caused by it's current internal state. In this case the
-           * global key is reset so that a new global key is not generated for the the root
-           * component; which would also change the global keys of it's descendants. This would
-           * break state updates.
-           */
-
-          // Create a shallow copy for measure.
-          final Component copy = root.makeShallowCopy();
-
-          // Set the original global key so that state update work.
-          copy.setGlobalKey(root.getGlobalKey());
-
-          // Set this component as the root.
-          holder.setRootComponent(copy);
-        }
-
         // Check if previous layout can be remeasured and used.
         if (nestedTree != null && component.canUsePreviousLayout(context)) {
           remeasureTree(nestedTree, widthSpec, heightSpec);
@@ -1749,7 +1728,7 @@ class LayoutState {
           resolvedLayout =
               createAndMeasureTreeForComponent(
                   context,
-                  component,
+                  component.makeShallowCopy(),
                   widthSpec,
                   heightSpec,
                   holder,

@@ -258,7 +258,6 @@ public class ComponentLifecycleTest {
 
   @Test
   public void testOnShouldCreateLayoutWithNewSizeSpec_FirstCall() {
-    ComponentsConfiguration.isReconciliationEnabled = true;
     ComponentsConfiguration.enableShouldCreateLayoutWithNewSizeSpec = true;
 
     Component component;
@@ -281,12 +280,10 @@ public class ComponentLifecycleTest {
         .onCreateLayoutWithSizeSpec(mContext, mContext.getWidthSpec(), mContext.getHeightSpec());
 
     ComponentsConfiguration.enableShouldCreateLayoutWithNewSizeSpec = false;
-    ComponentsConfiguration.isReconciliationEnabled = false;
   }
 
   @Test
   public void testOnShouldCreateLayoutWithNewSizeSpec_shouldUseCache() {
-    ComponentsConfiguration.isReconciliationEnabled = true;
     ComponentsConfiguration.enableShouldCreateLayoutWithNewSizeSpec = true;
 
     Component component;
@@ -337,12 +334,10 @@ public class ComponentLifecycleTest {
     LayoutState.remeasureTree(resolved, 100, 100);
 
     ComponentsConfiguration.enableShouldCreateLayoutWithNewSizeSpec = false;
-    ComponentsConfiguration.isReconciliationEnabled = false;
   }
 
   @Test
   public void testOnShouldCreateLayoutWithNewSizeSpec_shouldNotUseCache() {
-    ComponentsConfiguration.isReconciliationEnabled = true;
     ComponentsConfiguration.enableShouldCreateLayoutWithNewSizeSpec = true;
 
     Component component;
@@ -389,7 +384,6 @@ public class ComponentLifecycleTest {
         mContext, component, 100, 100, holder, null, null, null);
 
     ComponentsConfiguration.enableShouldCreateLayoutWithNewSizeSpec = false;
-    ComponentsConfiguration.isReconciliationEnabled = false;
   }
 
   @Test
@@ -516,6 +510,7 @@ public class ComponentLifecycleTest {
       ComponentContext context, TestBaseComponent component) {
     Component spy = spy(component);
     when(spy.getScopedContext()).thenReturn(context);
+    when(spy.makeShallowCopy()).thenReturn(spy);
     return spy;
   }
 

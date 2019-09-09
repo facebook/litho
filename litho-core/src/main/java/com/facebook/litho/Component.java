@@ -298,48 +298,25 @@ public abstract class Component extends ComponentLifecycle
       return childKey;
     }
 
-    if (mScopedContext.isReconciliationEnabled()) {
-      /*
-       Instead of relying on the KeyHandler to hold all registered keys and check for duplicates
-       against it; this implementation checks if the key (read child type) is unique within it's
-       parent. Which will recursively ensure that all global keys are unique.
-
-       This will also calculate the global keys for the descendants of a nested tree correctly if
-       it is resolved again, which causes clashes with the KeyHandler because the keys were
-       already registered during measure pass.
-      */
-
-      if (component.mHasManualKey) { // if the component has a manual key
-        if (mManualKeys == null) {
-          mManualKeys = new HashSet<>();
-        }
-        if (mManualKeys.contains(childKey)) { // if it is a duplicate
-          logDuplicateManualKeyWarning(component, key); // log a warning and generate a unique key
-        } else {
-          mManualKeys.add(childKey);
-          getChildCountAndIncrement(component); // to avoid subsequent clash with a generated key
-          return childKey; // return it
-        }
+    if (component.mHasManualKey) { // if the component has a manual key
+      if (mManualKeys == null) {
+        mManualKeys = new HashSet<>();
       }
-
-      int childCount = getChildCountAndIncrement(component);
-
-      if (childCount == 0) { // if first child of type then return the child key
-        return childKey;
-      } else { // if NOT first child of type append the child count to the child key
-        return getKeyForChildPosition(childKey, childCount);
+      if (mManualKeys.contains(childKey)) { // if it is a duplicate
+        logDuplicateManualKeyWarning(component, key); // log a warning and generate a unique key
+      } else {
+        mManualKeys.add(childKey);
+        getChildCountAndIncrement(component); // to avoid subsequent clash with a generated key
+        return childKey; // return it
       }
+    }
 
-    } else if (keyHandler.hasKey(childKey)) { // If the key is duplicate append it with child count
+    int childCount = getChildCountAndIncrement(component);
 
-      // The component has a manual key set on it but that key is a duplicate
-      if (component.mHasManualKey) {
-        logDuplicateManualKeyWarning(component, key); // log a warning and generate a key
-      }
-
-      return getKeyForChildPosition(childKey, getChildCountAndIncrement(component));
-    } else { // If the key is unique return it
+    if (childCount == 0) { // if first child of type then return the child key
       return childKey;
+    } else { // if NOT first child of type append the child count to the child key
+      return getKeyForChildPosition(childKey, childCount);
     }
   }
 
@@ -658,19 +635,9 @@ public abstract class Component extends ComponentLifecycle
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
   protected void updateInternalChildState(ComponentContext parentContext) {
     if (ComponentsConfiguration.isDebugModeEnabled || ComponentsConfiguration.useGlobalKeys) {
-
-      final boolean isRefactoredKeyGenerationEnabled = parentContext.isReconciliationEnabled();
-
-      // allow overriding global key if the NestedTreeResolution Experiment is disabled
-      if (!isRefactoredKeyGenerationEnabled || getGlobalKey() == null) {
+      if (getGlobalKey() == null) {
         String globalKey = generateKey(parentContext);
         setGlobalKey(globalKey);
-
-        final KeyHandler keyHandler = parentContext.getKeyHandler();
-        // This is for testing, the keyHandler should never be null here otherwise.
-        if (!isRefactoredKeyGenerationEnabled && keyHandler != null) {
-          keyHandler.registerKey(this);
-        }
       }
     }
 

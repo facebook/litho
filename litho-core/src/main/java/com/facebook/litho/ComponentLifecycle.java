@@ -137,21 +137,19 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
           if (Component.isNestedTree(context, component) || node.hasNestedTree()) {
 
             // TODO: (T39009736) evaluate why the parent is null sometimes
-            if (context.isReconciliationEnabled()) {
-              if (node.getParent() != null) {
-                context = node.getParent().getContext();
-              } else if (context.getLogger() != null) {
-                context
-                    .getLogger()
-                    .emitMessage(
-                        ComponentsLogger.LogLevel.ERROR,
-                        "component "
-                            + component.getSimpleName()
-                            + " is a nested tree but does not have a parent component."
-                            + "[mGlobalKey:"
-                            + component.getGlobalKey()
-                            + "]");
-              }
+            if (node.getParent() != null) {
+              context = node.getParent().getContext();
+            } else if (context.getLogger() != null) {
+              context
+                  .getLogger()
+                  .emitMessage(
+                      ComponentsLogger.LogLevel.ERROR,
+                      "component "
+                          + component.getSimpleName()
+                          + " is a nested tree but does not have a parent component."
+                          + "[mGlobalKey:"
+                          + component.getGlobalKey()
+                          + "]");
             }
 
             final InternalNode nestedTree =

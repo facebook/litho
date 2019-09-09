@@ -1812,12 +1812,14 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
     resetResolvedLayoutProperties();
   }
 
-  private void updateWith(ComponentContext c, YogaNode node, List<Component> components) {
+  private void updateWith(
+      ComponentContext c, YogaNode node, List<Component> components, @Nullable DiffNode diffNode) {
     // 1. Set new ComponentContext, YogaNode, and components.
     mComponentContext = c;
     mYogaNode = node;
     mYogaNode.setData(this);
     mComponents = components;
+    mDiffNode = diffNode;
 
     // 2. Update props.
 
@@ -1852,20 +1854,28 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   private List<Component> getUpdatedComponents(ComponentContext c, @Nullable Component head) {
     int size = mComponents.size();
     List<Component> updated = new ArrayList<>(size);
+    ComponentContext context;
 
-    // 1. Shallow copy and update all components, except the head component.
-    for (int i = 0; i < size - 1; i++) {
-      Component component = mComponents.get(i).makeUpdatedShallowCopy(c);
-      updated.add(component);
-    }
-
-    // 2. If head component is null manually update it.
+    // 1. If head component is null manually update it.
     if (head == null) {
       head = mComponents.get(size - 1).makeUpdatedShallowCopy(c);
+      context = head.getScopedContext();
+    } else {
+      context = c;
     }
 
-    // 3. Add the updated head component to the list.
+    // 2. Add the updated head component to the list.
     updated.add(head);
+
+    // 3. Shallow copy and update all components, except the head component.
+    for (int i = size - 2; i >= 0; i--) {
+      Component component = mComponents.get(i).makeUpdatedShallowCopy(context);
+      updated.add(component);
+      context = component.getScopedContext(); // set parent context for descendant
+    }
+
+    // 4. Reverse the list so that the root component is at index 0.
+    Collections.reverse(updated);
 
     return updated;
   }
@@ -2034,7 +2044,7 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
     List<Component> updated = current.getUpdatedComponents(c, head);
 
     // 4. Update the layout with the new context and copied YogaNode.
-    layout.updateWith(c, node, updated);
+    layout.updateWith(c, node, updated, null);
 
     if (isTracing) {
       ComponentsSystrace.endSection();
