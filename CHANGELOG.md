@@ -7,6 +7,10 @@ _release-date_
 
  * TBA
 
+ * **Breaking:** `Component.measure()` is only allowed during a LayoutState calculation.
+ * New: Add support to FrescoImage for photo focus points.
+ * New: Allow Child Classes to set `ComponentContext` on `DefaultInternalNode`.
+ * Fix: Immediately remove MountItem mapping on unmount to protect against re-entrancy.
 
 ## Version 0.30
 
