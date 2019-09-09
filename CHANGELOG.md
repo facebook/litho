@@ -1,18 +1,18 @@
 # Changelog
 
 
-## Version 0.30.1-SNAPSHOT
+## Version 0.31.0
 
-_release-date_
-
- * TBA
+_2019-09-09_
 
  * **Breaking:** `Component.measure()` is only allowed during a LayoutState calculation.
  * New: Add support to FrescoImage for photo focus points.
  * New: Allow Child Classes to set `ComponentContext` on `DefaultInternalNode`.
  * Fix: Immediately remove MountItem mapping on unmount to protect against re-entrancy.
 
-## Version 0.30
+ For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.30.0...v0.31.0).
+
+## Version 0.30.0
 
 _2019-08-23_
 
