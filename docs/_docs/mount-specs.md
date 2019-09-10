@@ -66,7 +66,7 @@ public class ColorComponentSpec {
 
   @OnPrepare
   static void onPrepare(
-      Context context,
+      ComponentContext context,
       @Prop String colorName,
       Output<Integer> color) {
     color.set(Color.parseColor(colorName));
