@@ -4,7 +4,7 @@
 
 _release-date_
 
- * TBA
+ * **Breaking:** Remove `ComponentsLogger.emitMessage()` API as it was fully replaced by `ComponentsReporter.emitMessage()`
 
 ## Version 0.31.0
 

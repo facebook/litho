@@ -17,8 +17,8 @@
 package com.facebook.litho;
 
 /**
- * A logging event created through {@link ComponentsLogger#newPerformanceEvent(int)} to track
- * performance metrics in the framework.
+ * A logging event created through {@link ComponentsLogger#newPerformanceEvent(ComponentContext,
+ * int)} to track performance metrics in the framework.
  */
 public interface PerfEvent {
 
