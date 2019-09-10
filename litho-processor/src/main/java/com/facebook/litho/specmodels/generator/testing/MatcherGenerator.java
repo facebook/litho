@@ -699,7 +699,6 @@ public final class MatcherGenerator {
 
     final String getterName =
         diHelper.generateTestingFieldAccessor(
-                fieldExtractorSpec.specModel,
                 new InjectPropModel(fieldExtractorSpec.propModel, fieldExtractorSpec.isLazy))
             .name;
     return CodeBlock.builder()

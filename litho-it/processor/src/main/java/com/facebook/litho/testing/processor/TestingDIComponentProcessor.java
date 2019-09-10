@@ -100,7 +100,7 @@ public class TestingDIComponentProcessor extends AbstractComponentsProcessor {
 
     @Override
     public TypeSpecDataHolder generateInjectedFields(
-        SpecModel specModel, ImmutableList<InjectPropModel> injectPropParams) {
+        ImmutableList<InjectPropModel> injectPropParams) {
       final TypeSpecDataHolder.Builder builder = TypeSpecDataHolder.newBuilder();
 
       for (MethodParamModel injectedParam : injectPropParams) {
@@ -117,8 +117,7 @@ public class TestingDIComponentProcessor extends AbstractComponentsProcessor {
     }
 
     @Override
-    public MethodSpec generateTestingFieldAccessor(
-        SpecModel specModel, InjectPropModel injectedParam) {
+    public MethodSpec generateTestingFieldAccessor(InjectPropModel injectedParam) {
       return MethodSpec.methodBuilder(
               "get"
                   + injectedParam.getName().substring(0, 1).toUpperCase()
@@ -126,11 +125,6 @@ public class TestingDIComponentProcessor extends AbstractComponentsProcessor {
           .returns(injectedParam.getTypeName())
           .addStatement("return $N", injectedParam.getName())
           .build();
-    }
-
-    @Override
-    public String generateImplAccessor(SpecModel specModel, MethodParamModel methodParamModel) {
-      return methodParamModel.getName();
     }
   }
 }
