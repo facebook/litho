@@ -16,6 +16,8 @@
 package com.facebook.litho;
 
 import android.util.Log;
+import java.util.Collections;
+import java.util.Set;
 
 public class DefaultComponentsReporter implements ComponentsReporter.Reporter {
   private static final String CATEGORY = "Components";
@@ -39,5 +41,15 @@ public class DefaultComponentsReporter implements ComponentsReporter.Reporter {
         Log.e(CATEGORY, message);
         throw new RuntimeException(message);
     }
+  }
+
+  @Override
+  public Set<String> getKeyCollisionStackTraceKeywords() {
+    return Collections.emptySet();
+  }
+
+  @Override
+  public Set<String> getKeyCollisionStackTraceBlacklist() {
+    return Collections.emptySet();
   }
 }

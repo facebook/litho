@@ -49,7 +49,7 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLogParams;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.ComponentTree.MeasureListener;
-import com.facebook.litho.ComponentsLogger;
+import com.facebook.litho.ComponentsReporter;
 import com.facebook.litho.ComponentsSystrace;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.LithoHandler;
@@ -1836,38 +1836,35 @@ public class RecyclerBinder
     } else {
       if (mDataRenderedCallbacks.size() > DATA_RENDERED_CALLBACKS_QUEUE_MAX_SIZE) {
         mDataRenderedCallbacks.clear();
-        final ComponentsLogger logger = mComponentContext.getLogger();
-        if (logger != null) {
-          final StringBuilder messageBuilder = new StringBuilder();
-          if (mMountedView == null) {
-            messageBuilder.append("mMountedView == null");
-          } else {
-            messageBuilder
-                .append("mMountedView: ")
-                .append(mMountedView)
-                .append(", hasPendingAdapterUpdates(): ")
-                .append(mMountedView.hasPendingAdapterUpdates())
-                .append(", isAttachedToWindow(): ")
-                .append(mMountedView.isAttachedToWindow())
-                .append(", getWindowVisibility(): ")
-                .append(mMountedView.getWindowVisibility())
-                .append(", vie visible hierarchy: ")
-                .append(getVisibleHierarchy(mMountedView))
-                .append(", getGlobalVisibleRect(): ")
-                .append(mMountedView.getGlobalVisibleRect(sDummyRect))
-                .append(", isComputingLayout(): ")
-                .append(mMountedView.isComputingLayout());
-          }
+        final StringBuilder messageBuilder = new StringBuilder();
+        if (mMountedView == null) {
+          messageBuilder.append("mMountedView == null");
+        } else {
           messageBuilder
-              .append(", visible range: [")
-              .append(mCurrentFirstVisiblePosition)
-              .append(", ")
-              .append(mCurrentLastVisiblePosition)
-              .append("]");
-          logger.emitMessage(
-              ComponentsLogger.LogLevel.ERROR,
-              "@OnDataRendered callbacks aren't triggered as expected: " + messageBuilder);
+              .append("mMountedView: ")
+              .append(mMountedView)
+              .append(", hasPendingAdapterUpdates(): ")
+              .append(mMountedView.hasPendingAdapterUpdates())
+              .append(", isAttachedToWindow(): ")
+              .append(mMountedView.isAttachedToWindow())
+              .append(", getWindowVisibility(): ")
+              .append(mMountedView.getWindowVisibility())
+              .append(", vie visible hierarchy: ")
+              .append(getVisibleHierarchy(mMountedView))
+              .append(", getGlobalVisibleRect(): ")
+              .append(mMountedView.getGlobalVisibleRect(sDummyRect))
+              .append(", isComputingLayout(): ")
+              .append(mMountedView.isComputingLayout());
         }
+        messageBuilder
+            .append(", visible range: [")
+            .append(mCurrentFirstVisiblePosition)
+            .append(", ")
+            .append(mCurrentLastVisiblePosition)
+            .append("]");
+        ComponentsReporter.emitMessage(
+            ComponentsReporter.LogLevel.ERROR,
+            "@OnDataRendered callbacks aren't triggered as expected: " + messageBuilder);
       }
     }
 

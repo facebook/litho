@@ -55,7 +55,7 @@ import com.facebook.fbui.textlayoutbuilder.util.LayoutMeasureUtil;
 import com.facebook.litho.AccessibilityRole;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
-import com.facebook.litho.ComponentsLogger;
+import com.facebook.litho.ComponentsReporter;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.Output;
 import com.facebook.litho.Size;
@@ -376,11 +376,8 @@ class TextSpec {
       size.width = Math.max(size.width, 0);
       size.height = Math.max(size.height, 0);
 
-      final ComponentsLogger logger = context.getLogger();
-      if (logger != null) {
-        logger.emitMessage(
-            ComponentsLogger.LogLevel.ERROR, "Text layout measured to less than 0 pixels");
-      }
+      ComponentsReporter.emitMessage(
+          ComponentsReporter.LogLevel.ERROR, "Text layout measured to less than 0 pixels");
     }
 
     measuredWidth.set(size.width);

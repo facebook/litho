@@ -43,14 +43,17 @@ import static org.robolectric.RuntimeEnvironment.application;
 
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.util.Pair;
 import com.facebook.litho.LayoutState.LayoutStateReferenceWrapper;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.Whitebox;
+import com.facebook.litho.testing.logging.TestComponentsReporter;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.widget.SolidColor;
 import com.facebook.litho.widget.Text;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaNode;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
@@ -97,6 +100,13 @@ public class InternalNodeTest {
         Column.create(context).build(),
         makeSizeSpec(0, UNSPECIFIED),
         makeSizeSpec(0, UNSPECIFIED));
+  }
+
+  private final TestComponentsReporter mComponentsReporter = new TestComponentsReporter();
+
+  @Before
+  public void setup() {
+    ComponentsReporter.provide(mComponentsReporter);
   }
 
   @Test
@@ -456,10 +466,11 @@ public class InternalNodeTest {
     node.flex(1f);
 
     node.assertContextSpecificStyleNotSet();
-    verify(componentsLogger)
-        .emitMessage(
-            ComponentsLogger.LogLevel.WARNING,
-            "You should not set alignSelf, flex to a root layout in Column");
+    assertThat(mComponentsReporter.getLoggedMessages())
+        .contains(
+            new Pair<>(
+                ComponentsReporter.LogLevel.WARNING,
+                "You should not set alignSelf, flex to a root layout in Column"));
   }
 
   @Test

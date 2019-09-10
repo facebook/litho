@@ -205,16 +205,13 @@ public abstract class Component extends ComponentLifecycle
   private static void assertSameBaseContext(
       ComponentContext scopedContext, ComponentContext willRenderContext) {
     if (scopedContext.getAndroidContext() != willRenderContext.getAndroidContext()) {
-      final ComponentsLogger logger = scopedContext.getLogger();
-      if (logger != null) {
-        logger.emitMessage(
-            ComponentsLogger.LogLevel.ERROR,
-            "Found mismatching base contexts between the Component's Context ("
-                + scopedContext.getAndroidContext()
-                + ") and the Context used in willRender ("
-                + willRenderContext.getAndroidContext()
-                + ")!");
-      }
+      ComponentsReporter.emitMessage(
+          ComponentsReporter.LogLevel.ERROR,
+          "Found mismatching base contexts between the Component's Context ("
+              + scopedContext.getAndroidContext()
+              + ") and the Context used in willRender ("
+              + willRenderContext.getAndroidContext()
+              + ")!");
     }
   }
 
@@ -334,17 +331,14 @@ public abstract class Component extends ComponentLifecycle
   }
 
   private void logDuplicateManualKeyWarning(Component component, String key) {
-    final ComponentsLogger logger = mScopedContext.getLogger();
-    if (logger != null) {
-      logger.emitMessage(
-          ComponentsLogger.LogLevel.WARNING,
-          "The manual key "
-              + key
-              + " you are setting on this "
-              + component.getSimpleName()
-              + " is a duplicate and will be changed into a unique one. "
-              + "This will result in unexpected behavior if you don't change it.");
-    }
+    ComponentsReporter.emitMessage(
+        ComponentsReporter.LogLevel.WARNING,
+        "The manual key "
+            + key
+            + " you are setting on this "
+            + component.getSimpleName()
+            + " is a duplicate and will be changed into a unique one. "
+            + "This will result in unexpected behavior if you don't change it.");
   }
 
   public Component makeShallowCopy() {
@@ -653,18 +647,15 @@ public abstract class Component extends ComponentLifecycle
       globalKey = key;
     } else {
       if (parentScope.getGlobalKey() == null) {
-        final ComponentsLogger logger = parentContext.getLogger();
-        if (logger != null) {
-          logger.emitMessage(
-              ComponentsLogger.LogLevel.ERROR,
-              "Trying to generate parent-based key for component "
-                  + getSimpleName()
-                  + " , but parent "
-                  + parentScope.getSimpleName()
-                  + " has a null global key \"."
-                  + " This is most likely a configuration mistake, check the value of ComponentsConfiguration.useGlobalKeys.");
-        }
-
+        ComponentsReporter.emitMessage(
+            ComponentsReporter.LogLevel.ERROR,
+            "Trying to generate parent-based key for component "
+                + getSimpleName()
+                + " , but parent "
+                + parentScope.getSimpleName()
+                + " has a null global key \"."
+                + " This is most likely a configuration mistake,"
+                + " check the value of ComponentsConfiguration.useGlobalKeys.");
         globalKey = "null" + key;
       } else {
         globalKey = parentScope.generateUniqueGlobalKeyForChild(this, key);
@@ -875,18 +866,15 @@ public abstract class Component extends ComponentLifecycle
     /** Set a key on the component that is local to its parent. */
     public T key(@Nullable String key) {
       if (key == null) {
-        final ComponentsLogger logger = mContext.getLogger();
-        if (logger != null) {
-          final String componentName =
-              mContext.getComponentScope() != null
-                  ? mContext.getComponentScope().getSimpleName()
-                  : "unknown component";
-          final String message =
-              "Setting a null key from "
-                  + componentName
-                  + " which is usually a mistake! If it is not, explicitly set the String 'null'";
-          logger.emitMessage(ComponentsLogger.LogLevel.ERROR, message);
-        }
+        final String componentName =
+            mContext.getComponentScope() != null
+                ? mContext.getComponentScope().getSimpleName()
+                : "unknown component";
+        final String message =
+            "Setting a null key from "
+                + componentName
+                + " which is usually a mistake! If it is not, explicitly set the String 'null'";
+        ComponentsReporter.emitMessage(ComponentsReporter.LogLevel.ERROR, message);
         key = "null";
       }
       mComponent.setKey(key);

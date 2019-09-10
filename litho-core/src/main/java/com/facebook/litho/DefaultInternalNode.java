@@ -22,7 +22,6 @@ import static android.os.Build.VERSION_CODES.JELLY_BEAN;
 import static android.os.Build.VERSION_CODES.JELLY_BEAN_MR1;
 import static com.facebook.litho.CommonUtils.addOrCreateList;
 import static com.facebook.litho.ComponentContext.NULL_LAYOUT;
-import static com.facebook.litho.ComponentsLogger.LogLevel.WARNING;
 import static com.facebook.yoga.YogaEdge.ALL;
 import static com.facebook.yoga.YogaEdge.BOTTOM;
 import static com.facebook.yoga.YogaEdge.END;
@@ -1651,15 +1650,12 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
 
     if (errorTypes != null) {
       final CharSequence errorStr = TextUtils.join(", ", errorTypes);
-      final ComponentsLogger logger = getContext().getLogger();
-      if (logger != null) {
-        logger.emitMessage(
-            WARNING,
-            "You should not set "
-                + errorStr
-                + " to a root layout in "
-                + getTailComponent().getClass().getSimpleName());
-      }
+      ComponentsReporter.emitMessage(
+          ComponentsReporter.LogLevel.WARNING,
+          "You should not set "
+              + errorStr
+              + " to a root layout in "
+              + getTailComponent().getClass().getSimpleName());
     }
   }
 

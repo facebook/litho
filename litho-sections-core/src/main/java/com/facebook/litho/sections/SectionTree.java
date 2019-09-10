@@ -16,7 +16,6 @@
 
 package com.facebook.litho.sections;
 
-import static com.facebook.litho.ComponentsLogger.LogLevel.ERROR;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_SECTIONS_CREATE_NEW_TREE;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_SECTIONS_ON_CREATE_CHILDREN;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_SECTIONS_SET_ROOT;
@@ -37,6 +36,7 @@ import androidx.core.util.Pair;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentsLogger;
+import com.facebook.litho.ComponentsReporter;
 import com.facebook.litho.ComponentsSystrace;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.EventHandlersController;
@@ -796,12 +796,7 @@ public class SectionTree {
               + index
               + " , total "
               + sectionLocationInfo.mSection.getCount();
-      if (mContext != null && mContext.getLogger() != null) {
-        mContext.getLogger().emitMessage(ERROR, errorMessage);
-      } else {
-        Log.e(SectionsDebug.TAG, errorMessage);
-      }
-
+      ComponentsReporter.emitMessage(ComponentsReporter.LogLevel.ERROR, errorMessage);
       return false;
     }
     return true;
@@ -1521,12 +1516,7 @@ public class SectionTree {
                     + " to "
                     + nextRoot
                     + " while the later created a non-null service";
-            final ComponentsLogger logger = context.getLogger();
-            if (logger != null) {
-              logger.emitMessage(ERROR, errorMessage);
-            } else {
-              Log.e(SectionsDebug.TAG, errorMessage);
-            }
+            ComponentsReporter.emitMessage(ComponentsReporter.LogLevel.ERROR, errorMessage);
           }
         } else {
           nextRoot.transferService(nextRoot.getScopedContext(), currentRoot, nextRoot);

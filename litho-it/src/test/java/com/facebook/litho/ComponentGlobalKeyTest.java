@@ -23,7 +23,7 @@ import android.view.View;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestViewComponent;
-import com.facebook.litho.testing.logging.TestComponentsLogger;
+import com.facebook.litho.testing.logging.TestComponentsReporter;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
 import com.facebook.litho.widget.CardClip;
@@ -41,12 +41,13 @@ public class ComponentGlobalKeyTest {
   private static final String mLogTag = "logTag";
 
   private ComponentContext mContext;
-  private TestComponentsLogger mComponentsLogger;
+  private TestComponentsReporter mComponentsReporter;
 
   @Before
   public void setup() {
-    mComponentsLogger = new TestComponentsLogger();
-    mContext = new ComponentContext(RuntimeEnvironment.application, mLogTag, mComponentsLogger);
+    mComponentsReporter = new TestComponentsReporter();
+    mContext = new ComponentContext(RuntimeEnvironment.application);
+    ComponentsReporter.provide(mComponentsReporter);
   }
 
   @Test
@@ -155,8 +156,8 @@ public class ComponentGlobalKeyTest {
             + "this Text is a duplicate and will be changed into a unique one. This will "
             + "result in unexpected behavior if you don't change it.";
 
-    assertThat(mComponentsLogger.getLoggedMessages())
-        .contains(Pair.create(ComponentsLogger.LogLevel.WARNING, expectedError));
+    assertThat(mComponentsReporter.getLoggedMessages())
+        .contains(Pair.create(ComponentsReporter.LogLevel.WARNING, expectedError));
   }
 
   @Test
@@ -216,8 +217,8 @@ public class ComponentGlobalKeyTest {
             + "this Column is a duplicate and will be changed into a unique one. This will "
             + "result in unexpected behavior if you don't change it.";
 
-    assertThat(mComponentsLogger.getLoggedMessages())
-        .contains(Pair.create(ComponentsLogger.LogLevel.WARNING, expectedError));
+    assertThat(mComponentsReporter.getLoggedMessages())
+        .contains(Pair.create(ComponentsReporter.LogLevel.WARNING, expectedError));
   }
 
   @Test

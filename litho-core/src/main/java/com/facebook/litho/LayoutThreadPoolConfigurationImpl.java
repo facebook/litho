@@ -57,7 +57,6 @@ public class LayoutThreadPoolConfigurationImpl implements LayoutThreadPoolConfig
     private double maxPoolSizeMultiplier = 1;
     private int maxPoolSizeIncrement = 0;
     private int threadPriority = DEFAULT_BACKGROUND_THREAD_PRIORITY;
-    private ComponentsLogger logger;
 
     public Builder hasFixedSizePool(boolean hasFixedSizePool) {
       this.hasFixedSizePool = hasFixedSizePool;
@@ -87,11 +86,6 @@ public class LayoutThreadPoolConfigurationImpl implements LayoutThreadPoolConfig
       return this;
     }
 
-    public Builder logger(ComponentsLogger logger) {
-      this.logger = logger;
-      return this;
-    }
-
     public LayoutThreadPoolConfigurationImpl build() {
       if (hasFixedSizePool) {
         return new LayoutThreadPoolConfigurationImpl(corePoolSize, maxPoolSize, threadPriority);
@@ -101,10 +95,8 @@ public class LayoutThreadPoolConfigurationImpl implements LayoutThreadPoolConfig
 
       if (numProcessors == DeviceInfoUtils.DEVICEINFO_UNKNOWN || numProcessors == 0) {
         numProcessors = 1;
-        if (logger != null) {
-          logger.emitMessage(
-              ComponentsLogger.LogLevel.WARNING, "Could not read number of cores from device");
-        }
+        ComponentsReporter.emitMessage(
+            ComponentsReporter.LogLevel.WARNING, "Could not read number of cores from device");
       }
 
       int procDepCorePoolSize =

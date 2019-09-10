@@ -70,7 +70,10 @@ public interface ComponentsLogger {
   /**
    * When a component key collision occurs, filenames that contain keywords contained in the
    * returned set will be added to the error stack trace.
+   *
+   * @deprecated Use {@link ComponentsReporter.Reporter} instead
    */
+  @Deprecated
   Set<String> getKeyCollisionStackTraceKeywords();
 
   /**
@@ -78,7 +81,9 @@ public interface ComponentsLogger {
    * set will be added to the error stack trace even if they match keywords in the whitelist.
    *
    * @see #getKeyCollisionStackTraceKeywords()
+   * @deprecated Use {@link ComponentsReporter.Reporter} instead
    */
+  @Deprecated
   Set<String> getKeyCollisionStackTraceBlacklist();
 
   /**
