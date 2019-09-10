@@ -371,7 +371,10 @@ public class SectionTree {
           mChangesetDebug == null
               ? null
               : new ChangesetDebugInfo(
-                  ApplyNewChangeSet.SET_ROOT_ASYNC, section.getSimpleName(), mCurrentSection);
+                  ApplyNewChangeSet.SET_ROOT_ASYNC,
+                  section.getSimpleName(),
+                  mCurrentSection,
+                  Thread.currentThread().getStackTrace());
       mCalculateChangeSetRunnable.ensurePosted(
           ApplyNewChangeSet.SET_ROOT_ASYNC, null, changesetDebugInfo);
     } else {
@@ -379,7 +382,10 @@ public class SectionTree {
           mChangesetDebug == null
               ? null
               : new ChangesetDebugInfo(
-                  ApplyNewChangeSet.SET_ROOT, section.getSimpleName(), mCurrentSection);
+                  ApplyNewChangeSet.SET_ROOT,
+                  section.getSimpleName(),
+                  mCurrentSection,
+                  Thread.currentThread().getStackTrace());
       applyNewChangeSet(ApplyNewChangeSet.SET_ROOT, null, null, changesetDebugInfo);
     }
   }
@@ -413,7 +419,10 @@ public class SectionTree {
         mChangesetDebug == null
             ? null
             : new ChangesetDebugInfo(
-                ApplyNewChangeSet.SET_ROOT_ASYNC, section.getSimpleName(), mCurrentSection);
+                ApplyNewChangeSet.SET_ROOT_ASYNC,
+                section.getSimpleName(),
+                mCurrentSection,
+                Thread.currentThread().getStackTrace());
     mCalculateChangeSetRunnable.ensurePosted(
         ApplyNewChangeSet.SET_ROOT_ASYNC, null, changesetDebugInfo);
   }
@@ -892,7 +901,11 @@ public class SectionTree {
           mChangesetDebug == null
               ? null
               : new ChangesetDebugInfo(
-                  ApplyNewChangeSet.UPDATE_STATE, attribution, key, mCurrentSection);
+                  ApplyNewChangeSet.UPDATE_STATE,
+                  attribution,
+                  key,
+                  mCurrentSection,
+                  Thread.currentThread().getStackTrace());
       mCalculateChangeSetOnMainThreadRunnable.ensurePosted(
           ApplyNewChangeSet.UPDATE_STATE, attribution, changesetDebugInfo);
     }
@@ -918,7 +931,11 @@ public class SectionTree {
           mChangesetDebug == null
               ? null
               : new ChangesetDebugInfo(
-                  ApplyNewChangeSet.UPDATE_STATE_ASYNC, attribution, key, mCurrentSection);
+                  ApplyNewChangeSet.UPDATE_STATE_ASYNC,
+                  attribution,
+                  key,
+                  mCurrentSection,
+                  Thread.currentThread().getStackTrace());
       mCalculateChangeSetRunnable.ensurePosted(
           ApplyNewChangeSet.UPDATE_STATE_ASYNC, attribution, changesetDebugInfo);
     }

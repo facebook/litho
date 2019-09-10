@@ -32,22 +32,29 @@ public class ChangesetDebugConfiguration {
   public static class ChangesetDebugInfo {
     final @ApplyNewChangeSet int mSource;
     final @Nullable String mAttribution;
+    private StackTraceElement[] mStackTrace;
     @Nullable Section mOldSection;
     @Nullable String mUpdateStateAttribution;
 
-    ChangesetDebugInfo(int source, @Nullable String attribution, @Nullable Section oldSection) {
-      this(source, attribution, null, oldSection);
+    ChangesetDebugInfo(
+        int source,
+        @Nullable String attribution,
+        @Nullable Section oldSection,
+        StackTraceElement[] stackTrace) {
+      this(source, attribution, null, oldSection, stackTrace);
     }
 
     ChangesetDebugInfo(
         int source,
         @Nullable String attribution,
         @Nullable String updateStateAttribution,
-        @Nullable Section oldSection) {
+        @Nullable Section oldSection,
+        StackTraceElement[] stackTrace) {
       mSource = source;
       mAttribution = attribution;
       mUpdateStateAttribution = updateStateAttribution;
       mOldSection = oldSection;
+      mStackTrace = stackTrace;
     }
 
     /** Get the id for the type of event that triggered a new changeset generation. */
@@ -71,6 +78,10 @@ public class ChangesetDebugConfiguration {
     @Nullable
     public String getUpdateStateAttribution() {
       return mUpdateStateAttribution;
+    }
+
+    public StackTraceElement[] getStackTrace() {
+      return mStackTrace;
     }
   }
 
