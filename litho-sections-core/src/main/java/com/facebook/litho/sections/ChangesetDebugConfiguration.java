@@ -77,6 +77,13 @@ public class ChangesetDebugConfiguration {
   public interface ChangesetDebugListener {
     void onChangesetApplied(
         @Nullable Section rootSection,
+        ChangesInfo changesInfo,
+        String surfaceId,
+        ChangesetDebugInfo changesetDebugInfo);
+
+    @Deprecated
+    void onChangesetApplied(
+        @Nullable Section rootSection,
         @Nullable Section oldSection,
         ChangesInfo changesInfo,
         String surfaceId,
