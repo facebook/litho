@@ -235,8 +235,7 @@ class LayoutState {
   // If true, the LayoutState calculate call was interrupted and will need to be resumed to finish
   // creating and measuring the InternalNode of the LayoutState.
   private volatile boolean mIsPartialLayoutState;
-  private final boolean mCacheInternalNodeOnLayoutState =
-      ComponentsConfiguration.cacheInternalNodeOnLayoutState;
+  private final boolean mCacheInternalNodeOnLayoutState;
 
   private static final Object debugLock = new Object();
   @Nullable private static Map<Integer, List<Boolean>> layoutCalculationsOnMainThread;
@@ -253,6 +252,7 @@ class LayoutState {
     mTestOutputs = ComponentsConfiguration.isEndToEndTestRun ? new ArrayList<TestOutput>(8) : null;
     mOrientation = context.getResources().getConfiguration().orientation;
 
+    mCacheInternalNodeOnLayoutState = context.isLayoutStateCachingEnabled();
     mLastMeasuredLayouts =
         mCacheInternalNodeOnLayoutState ? new HashMap<Integer, InternalNode>() : null;
   }

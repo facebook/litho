@@ -979,8 +979,9 @@ public class LayoutStateCalculateTest {
     ComponentsConfiguration.cacheInternalNodeOnLayoutState = true;
 
     final ComponentContext baseContext = new ComponentContext(application);
-    final LayoutState layoutState = new LayoutState(baseContext);
-    final ComponentContext c = new ComponentContext(baseContext);
+    final ComponentContext c =
+        ComponentContext.withComponentTree(baseContext, ComponentTree.create(baseContext).build());
+    final LayoutState layoutState = new LayoutState(c);
     c.setLayoutStateReferenceWrapper(new LayoutStateReferenceWrapper(layoutState));
 
     final Size size = new Size();
@@ -1057,7 +1058,9 @@ public class LayoutStateCalculateTest {
   public void testNoMeasureOnNestedComponentWithNewMeasureSpecExactCacheLayoutState() {
     ComponentsConfiguration.cacheInternalNodeOnLayoutState = true;
 
-    final ComponentContext c = new ComponentContext(application);
+    final ComponentContext baseContext = new ComponentContext(application);
+    final ComponentContext c =
+        ComponentContext.withComponentTree(baseContext, ComponentTree.create(baseContext).build());
     final LayoutState layoutState = new LayoutState(c);
     c.setLayoutStateReferenceWrapper(new LayoutStateReferenceWrapper(layoutState));
 
@@ -1131,7 +1134,9 @@ public class LayoutStateCalculateTest {
   @Test
   public void testNoMeasureOnNestedComponentWithNewMeasureSpecOldUnspecifiedCacheLayoutState() {
     ComponentsConfiguration.cacheInternalNodeOnLayoutState = true;
-    final ComponentContext c = new ComponentContext(application);
+    final ComponentContext baseContext = new ComponentContext(application);
+    final ComponentContext c =
+        ComponentContext.withComponentTree(baseContext, ComponentTree.create(baseContext).build());
     final LayoutState layoutState = new LayoutState(c);
     c.setLayoutStateReferenceWrapper(new LayoutStateReferenceWrapper(layoutState));
 
@@ -1205,7 +1210,9 @@ public class LayoutStateCalculateTest {
   public void testNoMeasureOnNestedComponentWithOldAndNewAtMostCacheLayoutState() {
     ComponentsConfiguration.cacheInternalNodeOnLayoutState = true;
 
-    final ComponentContext c = new ComponentContext(application);
+    final ComponentContext baseContext = new ComponentContext(application);
+    final ComponentContext c =
+        ComponentContext.withComponentTree(baseContext, ComponentTree.create(baseContext).build());
     final LayoutState layoutState = new LayoutState(c);
     c.setLayoutStateReferenceWrapper(new LayoutStateReferenceWrapper(layoutState));
 

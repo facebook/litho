@@ -186,6 +186,7 @@ public class ComponentTree {
 
   private final Object mLayoutStateFutureLock = new Object();
   private final boolean mUseCancelableLayoutFutures;
+  private final boolean mCacheInternalNodeOnLayoutState;
 
   @GuardedBy("mLayoutStateFutureLock")
   private final List<LayoutStateFuture> mLayoutStateFutures = new ArrayList<>();
@@ -299,6 +300,7 @@ public class ComponentTree {
     mMeasureListener = builder.mMeasureListener;
     mUseCancelableLayoutFutures = builder.useCancelableLayoutFutures;
     mMoveLayoutsBetweenThreads = builder.canInterruptAndMoveLayoutsBetweenThreads;
+    mCacheInternalNodeOnLayoutState = builder.cacheInternalNodeOnLayoutState;
     isReconciliationEnabled = builder.isReconciliationEnabled;
     mCreateInitialStateOncePerThread =
         ComponentsConfiguration.createInitialStateOncePerThread || mUseCancelableLayoutFutures;
@@ -1049,6 +1051,10 @@ public class ComponentTree {
 
   public boolean isReconciliationEnabled() {
     return isReconciliationEnabled;
+  }
+
+  boolean shouldCacheInternalNodeOnLayoutState() {
+    return mCacheInternalNodeOnLayoutState;
   }
 
   synchronized Component getRoot() {
@@ -2699,6 +2705,8 @@ public class ComponentTree {
     private boolean splitLayoutForMeasureAndRangeEstimation =
         ComponentsConfiguration.splitLayoutForMeasureAndRangeEstimation;
     private boolean useCancelableLayoutFutures = ComponentsConfiguration.useCancelableLayoutFutures;
+    private boolean cacheInternalNodeOnLayoutState =
+        ComponentsConfiguration.cacheInternalNodeOnLayoutState;
     private @Nullable String logTag;
     private @Nullable ComponentsLogger logger;
 
@@ -2862,6 +2870,15 @@ public class ComponentTree {
      */
     public Builder canInterruptAndMoveLayoutsBetweenThreads(boolean isEnabled) {
       this.canInterruptAndMoveLayoutsBetweenThreads = isEnabled;
+      return this;
+    }
+
+    /**
+     * Experimental, do not use! If true, the measured InternalNode will be cached on the
+     * LayoutState instead of keeping it on the Component instance.
+     */
+    public Builder cacheInternalNodeOnLayoutState(boolean isEnabled) {
+      this.cacheInternalNodeOnLayoutState = isEnabled;
       return this;
     }
 

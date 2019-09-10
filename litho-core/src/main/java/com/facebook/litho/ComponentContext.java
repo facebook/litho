@@ -499,6 +499,10 @@ public class ComponentContext {
     return c.mComponentTree == null || c.mComponentTree.isIncrementalMountEnabled();
   }
 
+  boolean isLayoutStateCachingEnabled() {
+    return mComponentTree != null && mComponentTree.shouldCacheInternalNodeOnLayoutState();
+  }
+
   boolean wasLayoutCanceled() {
     return mLayoutStateFuture != null && mLayoutStateFuture.isReleased();
   }

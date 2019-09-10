@@ -98,8 +98,9 @@ public class LayoutStateCalculateTest {
     final boolean config = overrideLayoutStateCacheConfig(true);
 
     final ComponentContext baseContext = new ComponentContext(application);
-    final LayoutState layoutState = new LayoutState(baseContext);
-    final ComponentContext c = new ComponentContext(baseContext);
+    final ComponentContext c =
+        ComponentContext.withComponentTree(baseContext, ComponentTree.create(baseContext).build());
+    final LayoutState layoutState = new LayoutState(c);
     c.setLayoutStateReferenceWrapper(new LayoutStateReferenceWrapper(layoutState));
 
     final int widthSpecContainer = makeSizeSpec(300, EXACTLY);
@@ -159,8 +160,9 @@ public class LayoutStateCalculateTest {
     final boolean config = overrideLayoutStateCacheConfig(true);
 
     final ComponentContext baseContext = new ComponentContext(application);
-    final LayoutState layoutState = new LayoutState(baseContext);
-    final ComponentContext c = new ComponentContext(baseContext);
+    final ComponentContext c =
+        ComponentContext.withComponentTree(baseContext, ComponentTree.create(baseContext).build());
+    final LayoutState layoutState = new LayoutState(c);
     c.setLayoutStateReferenceWrapper(new LayoutStateReferenceWrapper(layoutState));
 
     final int widthSpecContainer = makeSizeSpec(300, EXACTLY);
@@ -231,8 +233,9 @@ public class LayoutStateCalculateTest {
     final boolean config = overrideLayoutStateCacheConfig(true);
 
     final ComponentContext baseContext = new ComponentContext(application);
-    final LayoutState layoutState = new LayoutState(baseContext);
-    final ComponentContext c = new ComponentContext(baseContext);
+    final ComponentContext c =
+        ComponentContext.withComponentTree(baseContext, ComponentTree.create(baseContext).build());
+    final LayoutState layoutState = new LayoutState(c);
     c.setLayoutStateReferenceWrapper(new LayoutStateReferenceWrapper(layoutState));
 
     final int widthSpecContainer = makeSizeSpec(300, EXACTLY);
@@ -310,8 +313,9 @@ public class LayoutStateCalculateTest {
     final boolean config = overrideLayoutStateCacheConfig(true);
 
     final ComponentContext baseContext = new ComponentContext(application);
-    final LayoutState layoutState = new LayoutState(baseContext);
-    final ComponentContext c = new ComponentContext(baseContext);
+    final ComponentContext c =
+        ComponentContext.withComponentTree(baseContext, ComponentTree.create(baseContext).build());
+    final LayoutState layoutState = new LayoutState(c);
     c.setLayoutStateReferenceWrapper(new LayoutStateReferenceWrapper(layoutState));
 
     final int widthSpecContainer = makeSizeSpec(300, EXACTLY);

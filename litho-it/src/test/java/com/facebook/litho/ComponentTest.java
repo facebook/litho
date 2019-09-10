@@ -64,12 +64,17 @@ public class ComponentTest {
   public void testShallowCopyCachedLayoutSameLayoutStateCacheLayoutState() {
     boolean config = ComponentsConfiguration.cacheInternalNodeOnLayoutState;
     ComponentsConfiguration.cacheInternalNodeOnLayoutState = true;
+    mContext = ComponentContext.withComponentTree(mContext, ComponentTree.create(mContext).build());
+
     final LayoutState layoutState = new LayoutState(mContext);
+
     final ComponentContext c = new ComponentContext(mContext);
     c.setLayoutStateReferenceWrapper(new LayoutStateReferenceWrapper(layoutState));
+
     Component component = TestDrawableComponent.create(mContext).unique().build();
     component.measure(c, 100, 100, new Size());
     assertThat(component.getCachedLayout(c)).isNotNull();
+
     Component copyComponent = component.makeShallowCopy();
     assertThat(copyComponent.getCachedLayout(c)).isNotNull();
 
@@ -81,6 +86,7 @@ public class ComponentTest {
   public void testShallowCopyCachedLayoutOtherLayoutStateCacheLayoutState() {
     boolean config = ComponentsConfiguration.cacheInternalNodeOnLayoutState;
     ComponentsConfiguration.cacheInternalNodeOnLayoutState = true;
+    mContext = ComponentContext.withComponentTree(mContext, ComponentTree.create(mContext).build());
 
     final LayoutState layoutState1 = new LayoutState(mContext);
     final LayoutState layoutState2 = new LayoutState(mContext);

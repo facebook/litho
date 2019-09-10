@@ -417,8 +417,9 @@ public class InternalNodeTest {
   public void testComponentCreateAndRetrieveCachedLayoutLS() {
     ComponentsConfiguration.cacheInternalNodeOnLayoutState = true;
     final ComponentContext baseContext = new ComponentContext(application);
-    final LayoutState layoutState = new LayoutState(baseContext);
-    final ComponentContext c = new ComponentContext(baseContext);
+    final ComponentContext c =
+        ComponentContext.withComponentTree(baseContext, ComponentTree.create(baseContext).build());
+    final LayoutState layoutState = new LayoutState(c);
     c.setLayoutStateReferenceWrapper(new LayoutStateReferenceWrapper(layoutState));
 
     final int unspecifiedSizeSpec = makeSizeSpec(0, UNSPECIFIED);
