@@ -89,44 +89,39 @@ public class OnEventCompletionContributor extends CompletionContributor {
         if (!LithoPluginUtils.isLithoSpec(lithoSpecCls)) {
           return;
         }
-        PsiMethod onEventMethod = createOnClickEventMethod(lithoSpecCls);
-        result.addElement(createMethodAnnotationLookup(onEventMethod, lithoSpecCls));
-      }
-
-      private PsiMethod createOnClickEventMethod(PsiClass context) {
-        Project project = context.getProject();
-        PsiClass clickEventClass =
-            PsiSearchUtils.findClass(project, LithoClassNames.CLICK_EVENT_CLASS_NAME);
-        if (clickEventClass == null) {
-          clickEventClass =
-              JavaPsiFacade.getElementFactory(project)
-                  .createClass(LithoClassNames.shortName(LithoClassNames.CLICK_EVENT_CLASS_NAME));
-        }
-        return OnEventGenerateUtils.createOnEventMethod(
-            context, clickEventClass, Collections.emptyList());
+        PsiClass clickEventCls =
+            getOrCreateClass(lithoSpecCls.getProject(), LithoClassNames.CLICK_EVENT_CLASS_NAME);
+        result.addElement(
+            createMethodLookup(
+                OnEventGenerateUtils.createOnEventMethod(
+                    lithoSpecCls, clickEventCls, Collections.emptyList()),
+                lithoSpecCls,
+                OnEventGenerateUtils.createOnEventLookupString(clickEventCls)));
       }
     };
   }
 
-  private static LookupElementBuilder createMethodAnnotationLookup(
-      PsiMethod method, PsiClass parentClass) {
-    Icon icon = method.getIcon(Iconable.ICON_FLAG_VISIBILITY);
-    LookupElementBuilder elementBuilder =
-        LookupElementBuilder.create(method)
-            .withInsertHandler(getOnEventInsertHandler(method))
-            .appendTailText(" {...}", true)
-            .withTypeText(getTypeText(parentClass))
-            .withIcon(icon);
-
-    PsiAnnotation[] annotations = method.getAnnotations();
-    if (annotations.length > 0) {
-      String annotationName = annotations[0].getQualifiedName();
-      if (annotationName != null) {
-        annotationName = LithoClassNames.shortName(annotationName);
-        elementBuilder = elementBuilder.withLookupString(annotationName);
-      }
+  private static PsiClass getOrCreateClass(Project project, String qualifiedClassName) {
+    PsiClass cls = PsiSearchUtils.findClass(project, qualifiedClassName);
+    if (cls == null) {
+      cls =
+          JavaPsiFacade.getElementFactory(project)
+              .createClass(LithoClassNames.shortName(qualifiedClassName));
     }
-    return elementBuilder;
+    return cls;
+  }
+
+  private static LookupElementBuilder createMethodLookup(
+      PsiMethod method, PsiClass parentClass, String lookupString) {
+    Icon icon = method.getIcon(Iconable.ICON_FLAG_VISIBILITY);
+    return LookupElementBuilder.create(method)
+        .withPresentableText(lookupString)
+        .withLookupString(lookupString)
+        .withCaseSensitivity(false)
+        .withInsertHandler(getOnEventInsertHandler(method))
+        .appendTailText(" {...}", true)
+        .withTypeText(getTypeText(parentClass))
+        .withIcon(icon);
   }
 
   /** Creates handler to insert given method in the lookup element insertion context. */

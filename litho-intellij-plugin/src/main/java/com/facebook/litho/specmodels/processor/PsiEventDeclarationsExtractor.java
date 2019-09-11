@@ -27,13 +27,14 @@ import com.intellij.psi.PsiArrayInitializerMemberValue;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiClassObjectAccessExpression;
 import com.intellij.psi.PsiField;
-import com.intellij.psi.PsiNameValuePair;
 import com.intellij.psi.PsiType;
+import com.intellij.psi.PsiTypeElement;
 import com.intellij.psi.util.PsiTypesUtil;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.TypeName;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import javax.annotation.Nullable;
 
 public class PsiEventDeclarationsExtractor {
@@ -88,23 +89,18 @@ public class PsiEventDeclarationsExtractor {
    */
   @Nullable
   static TypeName getReturnType(@Nullable PsiClass eventClass) {
-    PsiAnnotation eventAnnotation =
-        AnnotationUtil.findAnnotation(eventClass, Event.class.getName());
-    if (eventAnnotation == null) {
-      return null;
-    }
-    PsiNameValuePair returnTypePair =
-        AnnotationUtil.findDeclaredAttribute(eventAnnotation, "returnType");
+    return PsiTypeUtils.getTypeName(getReturnPsiType(eventClass));
+  }
 
-    if (returnTypePair == null) {
-      return TypeName.VOID;
-    }
-
-    PsiClassObjectAccessExpression returnTypeClassExpression =
-        (PsiClassObjectAccessExpression) returnTypePair.getValue();
-    PsiType returnTypeType = returnTypeClassExpression.getOperand().getType();
-
-    return PsiTypeUtils.getTypeName(returnTypeType);
+  public static PsiType getReturnPsiType(@Nullable PsiClass eventClass) {
+    return Optional.ofNullable(eventClass)
+        .map(cls -> AnnotationUtil.findAnnotation(eventClass, Event.class.getTypeName()))
+        .map(psiAnnotation -> psiAnnotation.findAttributeValue("returnType"))
+        .filter(PsiClassObjectAccessExpression.class::isInstance)
+        .map(PsiClassObjectAccessExpression.class::cast)
+        .map(PsiClassObjectAccessExpression::getOperand)
+        .map(PsiTypeElement::getType)
+        .orElse(PsiType.VOID);
   }
 
   static ImmutableList<FieldModel> getFields(@Nullable PsiClass psiClass) {
