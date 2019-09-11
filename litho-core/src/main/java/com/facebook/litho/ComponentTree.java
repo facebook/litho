@@ -330,10 +330,6 @@ public class ComponentTree {
             ? new IncrementalMountHelper(this)
             : null;
 
-    if (ComponentsConfiguration.IS_INTERNAL_BUILD) {
-      HotswapManager.addComponentTree(this);
-    }
-
     // Instrument LithoHandlers.
     mMainThreadHandler = instrumentLithoHandler(mMainThreadHandler);
     mLayoutThreadHandler = ensureAndInstrumentLayoutThreadHandler(mLayoutThreadHandler);

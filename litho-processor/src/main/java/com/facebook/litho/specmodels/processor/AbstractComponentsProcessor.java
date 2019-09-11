@@ -70,11 +70,6 @@ public abstract class AbstractComponentsProcessor extends AbstractProcessor {
     mShouldSavePropNames = shouldSavePropNames;
   }
 
-  /** Use this to force hotswap mode to be turned on. */
-  public void forceHotswapMode() {
-    mRunMode.add(RunMode.HOTSWAP);
-  }
-
   @Override
   public void init(ProcessingEnvironment processingEnv) {
     super.init(processingEnv);
@@ -84,12 +79,6 @@ public abstract class AbstractComponentsProcessor extends AbstractProcessor {
         Boolean.valueOf(options.getOrDefault("com.facebook.buck.java.generating_abi", "false"));
     if (isGeneratingAbi) {
       mRunMode.add(RunMode.ABI);
-    }
-
-    boolean generateBuckHotswapCode =
-        Boolean.valueOf(options.getOrDefault("com.facebook.litho.hotswap", "false"));
-    if (generateBuckHotswapCode) {
-      mRunMode.add(RunMode.HOTSWAP);
     }
   }
 

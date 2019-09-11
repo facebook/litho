@@ -19,7 +19,6 @@ import java.util.EnumSet;
 
 public enum RunMode {
   ABI,
-  HOTSWAP,
   ;
 
   public static EnumSet<RunMode> normal() {
