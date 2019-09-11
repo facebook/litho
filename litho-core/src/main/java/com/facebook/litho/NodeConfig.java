@@ -22,7 +22,7 @@ import com.facebook.yoga.YogaNode;
 /** A helper class that defines a configurable sizes for ComponentsPools. */
 public class NodeConfig {
 
-  public interface YogaNodeFactory {
+  public interface InternalYogaNodeFactory {
     @Nullable
     YogaNode create(YogaConfig config);
   }
@@ -35,7 +35,7 @@ public class NodeConfig {
    * Custom factory for Yoga nodes. Used to enable direct byte buffers to set Yoga style properties
    * (rather than JNI)
    */
-  public static volatile @Nullable YogaNodeFactory sYogaNodeFactory;
+  public static volatile @Nullable InternalYogaNodeFactory sYogaNodeFactory;
 
   /** Factory to create custom InternalNodes for Components. */
   public static volatile @Nullable InternalNodeFactory sInternalNodeFactory;
@@ -48,7 +48,7 @@ public class NodeConfig {
 
   @Nullable
   static YogaNode createYogaNode() {
-    final YogaNodeFactory factory = sYogaNodeFactory;
+    final InternalYogaNodeFactory factory = sYogaNodeFactory;
     return factory != null ? factory.create(sYogaConfig) : YogaNode.create(sYogaConfig);
   }
 
