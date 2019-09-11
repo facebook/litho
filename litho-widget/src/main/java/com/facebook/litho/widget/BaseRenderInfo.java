@@ -17,6 +17,7 @@
 package com.facebook.litho.widget;
 
 import com.facebook.litho.Component;
+import com.facebook.litho.ComponentsLogger;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.RenderCompleteEvent;
 import com.facebook.litho.viewcompat.ViewBinder;
@@ -114,6 +115,28 @@ public abstract class BaseRenderInfo implements RenderInfo {
   @Nullable
   public EventHandler<RenderCompleteEvent> getRenderCompleteEventHandler() {
     // TODO(T28620590): Support RenderCompleteEvent handler for ViewRenderInfo
+    throw new UnsupportedOperationException();
+  }
+
+  /**
+   * @return Optional {@link ComponentsLogger} if {@link RenderInfo} was created through {@link
+   *     ComponentRenderInfo#create()}, otherwise it will throw {@link
+   *     UnsupportedOperationException}
+   */
+  @Override
+  @Nullable
+  public ComponentsLogger getComponentsLogger() {
+    throw new UnsupportedOperationException();
+  }
+
+  /**
+   * @return Optional identifier for logging if {@link RenderInfo} was created through {@link
+   *     ComponentRenderInfo#create()}, otherwise it will throw {@link
+   *     UnsupportedOperationException}
+   */
+  @Nullable
+  @Override
+  public String getLogTag() {
     throw new UnsupportedOperationException();
   }
 

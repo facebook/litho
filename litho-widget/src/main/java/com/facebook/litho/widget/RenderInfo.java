@@ -17,6 +17,7 @@
 package com.facebook.litho.widget;
 
 import com.facebook.litho.Component;
+import com.facebook.litho.ComponentsLogger;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.RenderCompleteEvent;
 import com.facebook.litho.viewcompat.ViewBinder;
@@ -37,6 +38,12 @@ public interface RenderInfo {
   boolean rendersComponent();
 
   Component getComponent();
+
+  @Nullable
+  ComponentsLogger getComponentsLogger();
+
+  @Nullable
+  String getLogTag();
 
   @Nullable
   EventHandler<RenderCompleteEvent> getRenderCompleteEventHandler();

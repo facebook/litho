@@ -449,6 +449,7 @@ public class ComponentTreeHolder {
               .canInterruptAndMoveLayoutsBetweenThreads(mCanInterruptAndMoveLayoutsBetweenThreads)
               .cacheInternalNodeOnLayoutState(mCacheInternalNodeOnLayoutState)
               .useCancelableLayoutFutures(mUseCancelableLayoutFutures)
+              .logger(mRenderInfo.getComponentsLogger(), mRenderInfo.getLogTag())
               .build();
       if (mPendingNewLayoutListener != null) {
         mComponentTree.setNewLayoutStateReadyListener(mPendingNewLayoutListener);

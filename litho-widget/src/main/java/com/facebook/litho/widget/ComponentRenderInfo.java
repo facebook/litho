@@ -20,6 +20,7 @@ import androidx.annotation.Nullable;
 import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
+import com.facebook.litho.ComponentsLogger;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.RenderCompleteEvent;
 
@@ -31,6 +32,8 @@ public class ComponentRenderInfo extends BaseRenderInfo {
 
   private final Component mComponent;
   @Nullable private final EventHandler<RenderCompleteEvent> mRenderCompleteEventHandler;
+  @Nullable private final ComponentsLogger mComponentsLogger;
+  @Nullable private final String mLogTag;
 
   public static Builder create() {
     return new Builder();
@@ -45,6 +48,8 @@ public class ComponentRenderInfo extends BaseRenderInfo {
 
     mComponent = builder.mComponent;
     mRenderCompleteEventHandler = builder.mRenderCompleteEventEventHandler;
+    mComponentsLogger = builder.mComponentsLogger;
+    mLogTag = builder.mLogTag;
   }
 
   /** Create empty {@link ComponentRenderInfo}. */
@@ -64,6 +69,18 @@ public class ComponentRenderInfo extends BaseRenderInfo {
   }
 
   @Override
+  @Nullable
+  public ComponentsLogger getComponentsLogger() {
+    return mComponentsLogger;
+  }
+
+  @Nullable
+  @Override
+  public String getLogTag() {
+    return mLogTag;
+  }
+
+  @Override
   public boolean rendersComponent() {
     return true;
   }
@@ -76,6 +93,8 @@ public class ComponentRenderInfo extends BaseRenderInfo {
   public static class Builder extends BaseRenderInfo.Builder<Builder> {
     private Component mComponent;
     private EventHandler<RenderCompleteEvent> mRenderCompleteEventEventHandler;
+    private ComponentsLogger mComponentsLogger;
+    private String mLogTag;
 
     /** Specify {@link Component} that will be rendered as an item of the list. */
     public Builder component(Component component) {
@@ -91,6 +110,16 @@ public class ComponentRenderInfo extends BaseRenderInfo {
 
     public Builder component(Component.Builder builder) {
       return component(builder.build());
+    }
+
+    public Builder componentsLogger(ComponentsLogger componentsLogger) {
+      this.mComponentsLogger = componentsLogger;
+      return this;
+    }
+
+    public Builder logTag(String logTag) {
+      this.mLogTag = logTag;
+      return this;
     }
 
     public ComponentRenderInfo build() {

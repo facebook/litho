@@ -5,6 +5,7 @@
 _release-date_
 
  * **Breaking:** Remove `ComponentsLogger.emitMessage()` API as it was fully replaced by `ComponentsReporter.emitMessage()`
+ * New: Add API for providing custom logger on a per `ComponentRenderInfo` basis
 
 ## Version 0.31.0
 
