@@ -860,6 +860,7 @@ public class ComponentHost extends ViewGroup {
 
   @Override
   public void setVisibility(int visibility) {
+    assertMainThread();
     super.setVisibility(visibility);
 
     for (int i = 0, size = (mDrawableMountItems == null) ? 0 : mDrawableMountItems.size();
