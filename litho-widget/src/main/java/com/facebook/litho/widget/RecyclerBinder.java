@@ -240,6 +240,12 @@ public class RecyclerBinder
   private int mLastHeightSpec = LayoutManagerOverrideParams.UNINITIALIZED;
   private Size mMeasuredSize;
   private RecyclerView mMountedView;
+  /**
+   * Can be set for RecyclerBinder instances which do not have control over the RecyclerView which
+   * the adapter sends operations to, and it does not mount or measure it. Only for subadapter mode.
+   */
+  private @Nullable RecyclerView mSubAdapterRecyclerView;
+
   @VisibleForTesting int mCurrentFirstVisiblePosition = RecyclerView.NO_POSITION;
   @VisibleForTesting int mCurrentLastVisiblePosition = RecyclerView.NO_POSITION;
   private int mCurrentOffset;
@@ -1039,6 +1045,36 @@ public class RecyclerBinder
     }
   }
 
+  private boolean isRecyclerViewTargetComputingLayout() {
+    if (mMountedView != null) {
+      return mMountedView.isComputingLayout();
+    }
+
+    if (mSubAdapterRecyclerView != null) {
+      return mSubAdapterRecyclerView.isComputingLayout();
+    }
+
+    return false;
+  }
+
+  public void setSubAdapterModeRecyclerView(RecyclerView recyclerView) {
+    if (!mIsSubAdapter) {
+      throw new IllegalStateException(
+          "Cannot set a subadapter RecyclerView on a RecyclerBinder which is not in subadapter mode.");
+    }
+
+    mSubAdapterRecyclerView = recyclerView;
+  }
+
+  public void removeSubAdapterModeRecyclerView(RecyclerView recyclerView) {
+    if (!mIsSubAdapter) {
+      throw new IllegalStateException(
+          "Cannot remmove a subadapter RecyclerView on a RecyclerBinder which is not in subadapter mode.");
+    }
+
+    mSubAdapterRecyclerView = null;
+  }
+
   @UiThread
   private void applyReadyBatches() {
     ThreadUtils.assertMainThread();
@@ -1059,7 +1095,7 @@ public class RecyclerBinder
       // event triggers a new sections root synchronously which adds a component and calls
       // applyReadyBatches), we need to postpone changing the adapter since RecyclerView asserts
       // that changes don't happen while it's in scroll/layout.
-      if (mMountedView != null && mMountedView.isComputingLayout()) {
+      if (isRecyclerViewTargetComputingLayout()) {
         // Sanity check that we don't get stuck in an infinite loop
         mApplyReadyBatchesRetries++;
         if (mApplyReadyBatchesRetries > 100) {
