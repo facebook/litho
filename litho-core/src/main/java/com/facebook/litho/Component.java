@@ -386,7 +386,8 @@ public abstract class Component extends ComponentLifecycle
     final LayoutState layoutState = c.getLayoutState();
     if (layoutState == null) {
       throw new IllegalStateException(
-          "Trying to access the cached InternalNode for a component outside of a LayoutState calculation. If that is what you must do, see Component#measureMightNotCacheInternalNode.");
+          getSimpleName()
+              + ": Trying to access the cached InternalNode for a component outside of a LayoutState calculation. If that is what you must do, see Component#measureMightNotCacheInternalNode.");
     }
 
     if (layoutState.shouldCacheInternalNodeOnLayoutState()) {
@@ -406,7 +407,8 @@ public abstract class Component extends ComponentLifecycle
     final LayoutState layoutState = c.getLayoutState();
     if (layoutState == null) {
       throw new IllegalStateException(
-          "Trying to access the cached InternalNode for a component outside of a LayoutState calculation. If that is what you must do, see Component#measureMightNotCacheInternalNode.");
+          getSimpleName()
+              + ": Trying to access the cached InternalNode for a component outside of a LayoutState calculation. If that is what you must do, see Component#measureMightNotCacheInternalNode.");
     }
 
     if (layoutState.shouldCacheInternalNodeOnLayoutState()) {
@@ -431,7 +433,8 @@ public abstract class Component extends ComponentLifecycle
   public void measure(ComponentContext c, int widthSpec, int heightSpec, Size outputSize) {
     if (!c.hasLayoutState()) {
       throw new IllegalStateException(
-          "Trying to measure a component outside of a LayoutState calculation. If that is what you must do, see Component#measureMightNotCacheInternalNode.");
+          getSimpleName()
+              + ": Trying to measure a component outside of a LayoutState calculation. If that is what you must do, see Component#measureMightNotCacheInternalNode.");
     }
 
     InternalNode lastMeasuredLayout = getCachedLayout(c);

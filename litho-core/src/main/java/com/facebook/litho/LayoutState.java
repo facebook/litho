@@ -1326,6 +1326,10 @@ class LayoutState {
       layoutState.mRootComponentName = component.getSimpleName();
 
       final InternalNode layoutCreatedInWillRender = component.consumeLayoutCreatedInWillRender();
+      if (layoutCreatedInWillRender != null && layoutCreatedInWillRender.getContext() != null) {
+        layoutCreatedInWillRender.getContext().setLayoutStateReferenceWrapper(layoutStateWrapper);
+      }
+
       final boolean isReconcilable = isReconcilable(c, component, currentLayoutState);
 
       final InternalNode root =
