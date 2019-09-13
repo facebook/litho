@@ -2527,6 +2527,10 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
         }
       }
 
+      if (mTransitionManager != null) {
+        mTransitionManager.finishUndeclaredTransitions();
+      }
+
       mAnimationLockedIndices = null;
       if (!mAnimatingTransitionIds.isEmpty()) {
         regenerateAnimationLockedIndices(layoutState);
