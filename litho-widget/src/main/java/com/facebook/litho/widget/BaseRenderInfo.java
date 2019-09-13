@@ -120,24 +120,22 @@ public abstract class BaseRenderInfo implements RenderInfo {
 
   /**
    * @return Optional {@link ComponentsLogger} if {@link RenderInfo} was created through {@link
-   *     ComponentRenderInfo#create()}, otherwise it will throw {@link
-   *     UnsupportedOperationException}
+   *     ComponentRenderInfo#create()}, null otherwise
    */
   @Override
   @Nullable
   public ComponentsLogger getComponentsLogger() {
-    throw new UnsupportedOperationException();
+    return null;
   }
 
   /**
    * @return Optional identifier for logging if {@link RenderInfo} was created through {@link
-   *     ComponentRenderInfo#create()}, otherwise it will throw {@link
-   *     UnsupportedOperationException}
+   *     ComponentRenderInfo#create()}, null otherwise
    */
   @Nullable
   @Override
   public String getLogTag() {
-    throw new UnsupportedOperationException();
+    return null;
   }
 
   /**
