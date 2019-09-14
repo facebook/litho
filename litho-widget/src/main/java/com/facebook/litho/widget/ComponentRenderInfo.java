@@ -93,8 +93,8 @@ public class ComponentRenderInfo extends BaseRenderInfo {
   public static class Builder extends BaseRenderInfo.Builder<Builder> {
     private Component mComponent;
     private EventHandler<RenderCompleteEvent> mRenderCompleteEventEventHandler;
-    private ComponentsLogger mComponentsLogger;
-    private String mLogTag;
+    @Nullable private ComponentsLogger mComponentsLogger;
+    @Nullable private String mLogTag;
 
     /** Specify {@link Component} that will be rendered as an item of the list. */
     public Builder component(Component component) {
@@ -112,12 +112,12 @@ public class ComponentRenderInfo extends BaseRenderInfo {
       return component(builder.build());
     }
 
-    public Builder componentsLogger(ComponentsLogger componentsLogger) {
+    public Builder componentsLogger(@Nullable ComponentsLogger componentsLogger) {
       this.mComponentsLogger = componentsLogger;
       return this;
     }
 
-    public Builder logTag(String logTag) {
+    public Builder logTag(@Nullable String logTag) {
       this.mLogTag = logTag;
       return this;
     }
