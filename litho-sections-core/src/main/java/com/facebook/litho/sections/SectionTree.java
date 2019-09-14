@@ -66,6 +66,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.GuardedBy;
 
@@ -265,6 +266,8 @@ public class SectionTree {
   @Nullable
   private Map<Object, Object> mCachedValues;
 
+  private final AtomicBoolean mPostToFrontOfQueueForFirstChangeset;
+
   private final EventHandlersController mEventHandlersController = new EventHandlersController();
 
   private final EventTriggersContainer mEventTriggersContainer = new EventTriggersContainer();
@@ -324,6 +327,8 @@ public class SectionTree {
     mCalculateChangeSetRunnable = new CalculateChangeSetRunnable(changeSetThreadHandler);
     mCalculateChangeSetOnMainThreadRunnable = new CalculateChangeSetRunnable(mMainThreadHandler);
     mChangesetDebug = ChangesetDebugConfiguration.getListener();
+    mPostToFrontOfQueueForFirstChangeset =
+        new AtomicBoolean(builder.mPostToFrontOfQueueForFirstChangeset);
   }
 
   /**
@@ -1271,7 +1276,7 @@ public class SectionTree {
       if (mMainThreadHandler.isTracing()) {
         tag = "SectionTree.postNewChangeSets - " + mTag;
       }
-      mMainThreadHandler.post(
+      final Runnable applyChangeSetsRunnable =
           new ThreadTracingRunnable(tracedThrowable) {
             @Override
             public void tracedRun(Throwable tracedThrowable) {
@@ -1282,8 +1287,13 @@ public class SectionTree {
                 throw new RuntimeException(getDebugInfo(tree) + e.getMessage(), e);
               }
             }
-          },
-          tag);
+          };
+
+      if (mPostToFrontOfQueueForFirstChangeset.compareAndSet(true, false)) {
+        mMainThreadHandler.postAtFront(applyChangeSetsRunnable, tag);
+      } else {
+        mMainThreadHandler.post(applyChangeSetsRunnable, tag);
+      }
     }
   }
 
@@ -1718,6 +1728,7 @@ public class SectionTree {
     private String mTag;
     private @Nullable LithoHandler mChangeSetThreadHandler;
     private boolean mForceSyncStateUpdates;
+    private boolean mPostToFrontOfQueueForFirstChangeset;
 
     private Builder(SectionContext componentContext, Target target) {
       mContext = componentContext;
@@ -1769,6 +1780,12 @@ public class SectionTree {
      */
     public Builder tag(String tag) {
       mTag = (tag == null) ? "" : tag;
+      return this;
+    }
+
+    public Builder postToFrontOfQueueForFirstChangeset(
+        boolean postToFrontOfQueueForFirstChangeset) {
+      mPostToFrontOfQueueForFirstChangeset = postToFrontOfQueueForFirstChangeset;
       return this;
     }
 

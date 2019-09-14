@@ -51,6 +51,7 @@ public class RecyclerBinderConfiguration {
   private final boolean mEnableDetach;
   private final boolean mIsReconciliationEnabled;
   private final boolean mIsLayoutDiffingEnabled;
+  private final boolean mPostToFrontOfQueueForFirstChangeset;
 
   public static Builder create() {
     return new Builder();
@@ -80,7 +81,8 @@ public class RecyclerBinderConfiguration {
       boolean useCancelableLayoutFutures,
       boolean applyReadyBatchesInMount,
       boolean isReconciliationEnabled,
-      boolean isLayoutDiffingEnabled) {
+      boolean isLayoutDiffingEnabled,
+      boolean postToFrontOfQueueForFirstChangeset) {
     mRangeRatio = rangeRatio;
     mLayoutHandlerFactory = layoutHandlerFactory;
     mIsCircular = circular;
@@ -101,6 +103,7 @@ public class RecyclerBinderConfiguration {
     mApplyReadyBatchesInMount = applyReadyBatchesInMount;
     mIsReconciliationEnabled = isReconciliationEnabled;
     mIsLayoutDiffingEnabled = isLayoutDiffingEnabled;
+    mPostToFrontOfQueueForFirstChangeset = postToFrontOfQueueForFirstChangeset;
   }
 
   public float getRangeRatio() {
@@ -183,6 +186,10 @@ public class RecyclerBinderConfiguration {
     return mIsLayoutDiffingEnabled;
   }
 
+  public boolean isPostToFrontOfQueueForFirstChangeset() {
+    return mPostToFrontOfQueueForFirstChangeset;
+  }
+
   public static class Builder {
     public static final LayoutThreadPoolConfiguration DEFAULT_THREAD_POOL_CONFIG =
         ComponentsConfiguration.threadPoolConfiguration;
@@ -212,6 +219,7 @@ public class RecyclerBinderConfiguration {
     private boolean mApplyReadyBatchesInMount = ComponentsConfiguration.applyReadyBatchesInMount;
     private boolean mIsReconciliationEnabled = ComponentsConfiguration.isReconciliationEnabled;
     private boolean mIsLayoutDiffingEnabled = ComponentsConfiguration.isLayoutDiffingEnabled;
+    private boolean mPostToFrontOfQueueForFirstChangeset;
 
     Builder() {}
 
@@ -237,6 +245,8 @@ public class RecyclerBinderConfiguration {
       this.mApplyReadyBatchesInMount = configuration.mApplyReadyBatchesInMount;
       this.mIsReconciliationEnabled = configuration.mIsReconciliationEnabled;
       this.mIsLayoutDiffingEnabled = configuration.mIsLayoutDiffingEnabled;
+      this.mPostToFrontOfQueueForFirstChangeset =
+          configuration.mPostToFrontOfQueueForFirstChangeset;
     }
 
     /**
@@ -382,6 +392,12 @@ public class RecyclerBinderConfiguration {
       return this;
     }
 
+    public Builder postToFrontOfQueueForFirstChangeset(
+        boolean postToFrontOfQueueForFirstChangeset) {
+      mPostToFrontOfQueueForFirstChangeset = postToFrontOfQueueForFirstChangeset;
+      return this;
+    }
+
     public RecyclerBinderConfiguration build() {
       return new RecyclerBinderConfiguration(
           mRangeRatio,
@@ -403,7 +419,8 @@ public class RecyclerBinderConfiguration {
           mUseCancelableLayoutFutures,
           mApplyReadyBatchesInMount,
           mIsReconciliationEnabled,
-          mIsLayoutDiffingEnabled);
+          mIsLayoutDiffingEnabled,
+          mPostToFrontOfQueueForFirstChangeset);
     }
   }
 }

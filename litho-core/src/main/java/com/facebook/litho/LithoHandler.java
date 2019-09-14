@@ -28,6 +28,8 @@ public interface LithoHandler {
 
   void post(Runnable runnable, String tag);
 
+  void postAtFront(Runnable runnable, String tag);
+
   void remove(Runnable runnable);
 
   /** Default implementation of the LithoHandler which simply wraps an {@link Handler}. */
@@ -45,6 +47,11 @@ public interface LithoHandler {
     @Override
     public void post(Runnable runnable, String tag) {
       post(runnable);
+    }
+
+    @Override
+    public void postAtFront(Runnable runnable, String tag) {
+      postAtFrontOfQueue(runnable);
     }
 
     @Override
