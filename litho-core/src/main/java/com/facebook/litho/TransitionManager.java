@@ -174,8 +174,8 @@ public class TransitionManager {
     public boolean seenInLastTransition = false;
 
     /**
-     * If this animation is running but the layout changed and it appeared/diappeared without
-     * an equivalent Transition specified, we need to interrupt this animation.
+     * If this animation is running but the layout changed and it appeared/diappeared without an
+     * equivalent Transition specified, we need to interrupt this animation.
      */
     public boolean shouldFinishUndeclaredAnimation;
   }
