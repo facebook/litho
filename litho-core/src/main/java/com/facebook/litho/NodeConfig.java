@@ -17,6 +17,7 @@ package com.facebook.litho;
 
 import androidx.annotation.Nullable;
 import com.facebook.yoga.YogaConfig;
+import com.facebook.yoga.YogaConfigFactory;
 import com.facebook.yoga.YogaNode;
 import com.facebook.yoga.YogaNodeFactory;
 
@@ -41,7 +42,7 @@ public class NodeConfig {
   /** Factory to create custom InternalNodes for Components. */
   public static volatile @Nullable InternalNodeFactory sInternalNodeFactory;
 
-  private static final YogaConfig sYogaConfig = new YogaConfig();
+  private static final YogaConfig sYogaConfig = YogaConfigFactory.create();
 
   static {
     sYogaConfig.setUseWebDefaults(true);
