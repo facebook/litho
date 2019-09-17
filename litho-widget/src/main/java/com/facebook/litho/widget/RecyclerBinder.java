@@ -1063,7 +1063,9 @@ public class RecyclerBinder
           "Cannot set a subadapter RecyclerView on a RecyclerBinder which is not in subadapter mode.");
     }
 
+    registerDrawListener(recyclerView);
     mSubAdapterRecyclerView = recyclerView;
+    mIsInitMounted = true;
   }
 
   public void removeSubAdapterModeRecyclerView(RecyclerView recyclerView) {
@@ -1072,6 +1074,8 @@ public class RecyclerBinder
           "Cannot remmove a subadapter RecyclerView on a RecyclerBinder which is not in subadapter mode.");
     }
 
+    unregisterDrawListener(recyclerView);
+    maybeDispatchDataRendered();
     mSubAdapterRecyclerView = null;
   }
 
@@ -1849,13 +1853,15 @@ public class RecyclerBinder
       return;
     }
 
+    final RecyclerView recyclerView = mIsSubAdapter ? mSubAdapterRecyclerView : mMountedView;
+
     // Execute onDataRendered callbacks immediately if the view has been unmounted, finishes
     // dispatchDraw (no pending updates), is detached, or is visible.
-    if (mMountedView == null
-        || !mMountedView.hasPendingAdapterUpdates()
-        || !mMountedView.isAttachedToWindow()
-        || !isVisibleToUser(mMountedView)) {
-      final boolean isMounted = (mMountedView != null);
+    if (recyclerView == null
+        || !recyclerView.hasPendingAdapterUpdates()
+        || !recyclerView.isAttachedToWindow()
+        || !isVisibleToUser(recyclerView)) {
+      final boolean isMounted = (recyclerView != null);
       final Deque<ChangeSetCompleteCallback> snapshotCallbacks =
           new ArrayDeque<>(mDataRenderedCallbacks);
       mDataRenderedCallbacks.clear();
@@ -1873,24 +1879,26 @@ public class RecyclerBinder
       if (mDataRenderedCallbacks.size() > DATA_RENDERED_CALLBACKS_QUEUE_MAX_SIZE) {
         mDataRenderedCallbacks.clear();
         final StringBuilder messageBuilder = new StringBuilder();
-        if (mMountedView == null) {
-          messageBuilder.append("mMountedView == null");
+        if (recyclerView == null) {
+          messageBuilder.append("recyclerView == null");
         } else {
           messageBuilder
-              .append("mMountedView: ")
-              .append(mMountedView)
+              .append("recyclerView: ")
+              .append(recyclerView)
               .append(", hasPendingAdapterUpdates(): ")
-              .append(mMountedView.hasPendingAdapterUpdates())
+              .append(recyclerView.hasPendingAdapterUpdates())
               .append(", isAttachedToWindow(): ")
-              .append(mMountedView.isAttachedToWindow())
+              .append(recyclerView.isAttachedToWindow())
               .append(", getWindowVisibility(): ")
-              .append(mMountedView.getWindowVisibility())
+              .append(recyclerView.getWindowVisibility())
               .append(", vie visible hierarchy: ")
-              .append(getVisibleHierarchy(mMountedView))
+              .append(getVisibleHierarchy(recyclerView))
               .append(", getGlobalVisibleRect(): ")
-              .append(mMountedView.getGlobalVisibleRect(sDummyRect))
+              .append(recyclerView.getGlobalVisibleRect(sDummyRect))
               .append(", isComputingLayout(): ")
-              .append(mMountedView.isComputingLayout());
+              .append(recyclerView.isComputingLayout())
+              .append(", isSubAdapter: ")
+              .append(mIsSubAdapter);
         }
         messageBuilder
             .append(", visible range: [")
@@ -2933,11 +2941,7 @@ public class RecyclerBinder
                   view.getPaddingBottom()));
     }
 
-    if (view instanceof HasPostDispatchDrawListener) {
-      ((HasPostDispatchDrawListener) view).setPostDispatchDrawListener(mPostDispatchDrawListener);
-    } else if (view.getViewTreeObserver() != null) {
-      view.getViewTreeObserver().addOnPreDrawListener(mOnPreDrawListener);
-    }
+    registerDrawListener(view);
 
     mLayoutInfo.setRenderInfoCollection(this);
 
@@ -3043,11 +3047,7 @@ public class RecyclerBinder
 
     view.removeOnScrollListener(mViewportManager.getScrollListener());
 
-    if (view instanceof HasPostDispatchDrawListener) {
-      ((HasPostDispatchDrawListener) view).setPostDispatchDrawListener(null);
-    } else if (view.getViewTreeObserver() != null) {
-      view.getViewTreeObserver().removeOnPreDrawListener(mOnPreDrawListener);
-    }
+    unregisterDrawListener(view);
     maybeDispatchDataRendered();
 
     view.setAdapter(null);
@@ -3067,6 +3067,22 @@ public class RecyclerBinder
     }
 
     mLayoutInfo.setRenderInfoCollection(null);
+  }
+
+  private void registerDrawListener(final RecyclerView view) {
+    if (view instanceof HasPostDispatchDrawListener) {
+      ((HasPostDispatchDrawListener) view).setPostDispatchDrawListener(mPostDispatchDrawListener);
+    } else if (view.getViewTreeObserver() != null) {
+      view.getViewTreeObserver().addOnPreDrawListener(mOnPreDrawListener);
+    }
+  }
+
+  private void unregisterDrawListener(final RecyclerView view) {
+    if (view instanceof HasPostDispatchDrawListener) {
+      ((HasPostDispatchDrawListener) view).setPostDispatchDrawListener(null);
+    } else if (view.getViewTreeObserver() != null) {
+      view.getViewTreeObserver().removeOnPreDrawListener(mOnPreDrawListener);
+    }
   }
 
   @UiThread
