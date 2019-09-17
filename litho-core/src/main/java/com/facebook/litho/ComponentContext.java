@@ -368,11 +368,20 @@ public class ComponentContext {
   }
 
   EventHandler newEventHandler(int id) {
+    checkNotNullScope();
     return new EventHandler(mComponentScope, id);
   }
 
   public <E> EventHandler<E> newEventHandler(int id, Object[] params) {
+    checkNotNullScope();
     return new EventHandler<>(mComponentScope, id, params);
+  }
+
+  private void checkNotNullScope() {
+    if (mComponentScope == null) {
+      ComponentsReporter.emitMessage(
+          ComponentsReporter.LogLevel.ERROR, "Creating event handler without scope.");
+    }
   }
 
   @Nullable
