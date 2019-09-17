@@ -18,6 +18,7 @@ package com.facebook.litho;
 import androidx.annotation.Nullable;
 import com.facebook.yoga.YogaConfig;
 import com.facebook.yoga.YogaNode;
+import com.facebook.yoga.YogaNodeFactory;
 
 /** A helper class that defines a configurable sizes for ComponentsPools. */
 public class NodeConfig {
@@ -49,7 +50,7 @@ public class NodeConfig {
   @Nullable
   static YogaNode createYogaNode() {
     final InternalYogaNodeFactory factory = sYogaNodeFactory;
-    return factory != null ? factory.create(sYogaConfig) : YogaNode.create(sYogaConfig);
+    return factory != null ? factory.create(sYogaConfig) : YogaNodeFactory.create(sYogaConfig);
   }
 
   /**

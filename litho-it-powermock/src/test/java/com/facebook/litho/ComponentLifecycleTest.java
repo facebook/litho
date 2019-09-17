@@ -39,6 +39,7 @@ import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.yoga.YogaMeasureFunction;
 import com.facebook.yoga.YogaMeasureOutput;
 import com.facebook.yoga.YogaNode;
+import com.facebook.yoga.YogaNodeFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -82,7 +83,7 @@ public class ComponentLifecycleTest {
           @Override
           public InternalNode create(ComponentContext componentContext) {
             InternalNode layout = spy(new DefaultInternalNode(componentContext));
-            YogaNode node = YogaNode.create();
+            YogaNode node = YogaNodeFactory.create();
             node.setData(layout);
             return layout;
           }
@@ -95,7 +96,7 @@ public class ComponentLifecycleTest {
 
     mDiffNode = mock(DiffNode.class);
     mNode = mock(DefaultInternalNode.class);
-    mYogaNode = YogaNode.create();
+    mYogaNode = YogaNodeFactory.create();
     mYogaNode.setData(mNode);
 
     when(mNode.getLastWidthSpec()).thenReturn(-1);
