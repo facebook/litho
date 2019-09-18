@@ -300,7 +300,7 @@ public class TransitionManager {
   //       which change without a change transition declared. Also the flag should probably belong
   //       to the properties and not to the AnimationState.
   void finishUndeclaredTransitions() {
-    for (AnimationState animationState : mAnimationStates.values()) {
+    for (AnimationState animationState : new ArrayList<>(mAnimationStates.values())) {
       if (animationState.shouldFinishUndeclaredAnimation) {
         animationState.shouldFinishUndeclaredAnimation = false;
 
