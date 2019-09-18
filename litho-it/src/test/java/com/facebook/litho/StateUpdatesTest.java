@@ -43,6 +43,7 @@ import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -212,6 +213,12 @@ public class StateUpdatesTest {
     mLithoView.setComponentTree(mComponentTree);
     mLithoView.onAttachedToWindow();
     ComponentTestHelper.measureAndLayout(mLithoView);
+  }
+
+  @After
+  public void tearDown() {
+    // Empty all pending runnables.
+    mLayoutThreadShadowLooper.runToEndOfTasks();
   }
 
   @Test
@@ -476,21 +483,9 @@ public class StateUpdatesTest {
   }
 
   @Test
-  public void testStateUpdateStats_updateAsyncIncrementsTotalCount() {
-    final long before = LithoStats.getAppliedStateUpdates();
-
-    mComponentTree.updateStateAsync(
-        mTestComponent.getGlobalKey(), createIncrementStateUpdate(), "test");
-    mLayoutThreadShadowLooper.runToEndOfTasks();
-
-    final long after = LithoStats.getAppliedStateUpdates();
-
-    assertThat(after - before).isEqualTo(1);
-  }
-
-  @Test
-  public void testStateUpdateStats_updateAsyncDoesntIncrementSyncCount() {
+  public void testStateUpdateStats_updateAsyncIncrementsAsyncCountAndTotalCount() {
     final long beforeSync = LithoStats.getStateUpdatesSync();
+    final long beforeAsync = LithoStats.getStateUpdatesAsync();
     final long beforeTotal = LithoStats.getAppliedStateUpdates();
 
     mComponentTree.updateStateAsync(
@@ -498,15 +493,18 @@ public class StateUpdatesTest {
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     final long afterSync = LithoStats.getStateUpdatesSync();
+    final long afterAsync = LithoStats.getStateUpdatesAsync();
     final long afterTotal = LithoStats.getAppliedStateUpdates();
 
     assertThat(afterSync - beforeSync).isEqualTo(0);
+    assertThat(afterAsync - beforeAsync).isEqualTo(1);
     assertThat(afterTotal - beforeTotal).isEqualTo(1);
   }
 
   @Test
   public void testStateUpdateStats_updateSyncIncrementsSyncAndTotalCount() {
     final long beforeSync = LithoStats.getStateUpdatesSync();
+    final long beforeAsync = LithoStats.getStateUpdatesAsync();
     final long beforeTotal = LithoStats.getAppliedStateUpdates();
 
     mComponentTree.updateStateSync(
@@ -514,9 +512,11 @@ public class StateUpdatesTest {
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     final long afterSync = LithoStats.getStateUpdatesSync();
+    final long afterAsync = LithoStats.getStateUpdatesAsync();
     final long afterTotal = LithoStats.getAppliedStateUpdates();
 
     assertThat(afterSync - beforeSync).isEqualTo(1);
+    assertThat(afterAsync - beforeAsync).isEqualTo(0);
     assertThat(afterTotal - beforeTotal).isEqualTo(1);
   }
 

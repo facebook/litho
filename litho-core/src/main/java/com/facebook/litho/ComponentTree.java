@@ -1222,6 +1222,7 @@ public class ComponentTree {
       mStateHandler.queueStateUpdate(componentKey, stateUpdate, false);
     }
 
+    LithoStats.incrementStateUpdateAsync();
     updateStateInternal(true, attribution);
   }
 

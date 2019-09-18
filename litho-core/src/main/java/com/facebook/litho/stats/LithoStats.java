@@ -21,6 +21,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public final class LithoStats {
   private static final AtomicLong sStateUpdates = new AtomicLong(0);
   private static final AtomicLong sStateUpdatesSync = new AtomicLong(0);
+  private static final AtomicLong sStateUpdatesAsync = new AtomicLong(0);
   private static final AtomicLong sStateUpdatesLazy = new AtomicLong(0);
 
   /**
@@ -37,6 +38,14 @@ public final class LithoStats {
    */
   public static long getStateUpdatesSync() {
     return sStateUpdatesSync.get();
+  }
+
+  /**
+   * @return the global count of triggered asynchronous state updates that have happened in the
+   *     process.
+   */
+  public static long getStateUpdatesAsync() {
+    return sStateUpdatesAsync.get();
   }
 
   /** @return the global count of triggered lazy state updates that have happened in the process. */
@@ -60,6 +69,15 @@ public final class LithoStats {
    */
   public static long incrementStateUpdateSync() {
     return sStateUpdatesSync.addAndGet(1);
+  }
+
+  /**
+   * Increment the count of triggered asynchronous state updates (by one).
+   *
+   * @return The new total number of asynchronous state updates recorded.
+   */
+  public static long incrementStateUpdateAsync() {
+    return sStateUpdatesAsync.addAndGet(1);
   }
 
   /**
