@@ -39,6 +39,7 @@ public class StaggeredGridRecyclerConfiguration<T extends SectionTree.Target & B
   private final boolean mReverseLayout;
   private final int mGapStrategy;
   private final RecyclerBinderConfiguration mRecyclerBinderConfiguration;
+  private final StaggeredGridLayoutInfoFactory mLayoutInfoFactory;
 
   public static Builder create() {
     return new Builder();
@@ -53,7 +54,8 @@ public class StaggeredGridRecyclerConfiguration<T extends SectionTree.Target & B
         StaggeredGridLayoutManager.VERTICAL,
         false,
         StaggeredGridLayoutManager.GAP_HANDLING_NONE,
-        recyclerBinderConfiguration);
+        recyclerBinderConfiguration,
+        Builder.STAGGERED_GRID_LAYOUT_INFO_FACTORY);
   }
 
   /** Use {@link #create()} instead. */
@@ -80,7 +82,8 @@ public class StaggeredGridRecyclerConfiguration<T extends SectionTree.Target & B
         orientation,
         reverseLayout,
         StaggeredGridLayoutManager.GAP_HANDLING_NONE,
-        recyclerBinderConfiguration);
+        recyclerBinderConfiguration,
+        Builder.STAGGERED_GRID_LAYOUT_INFO_FACTORY);
   }
 
   /** Use {@link #create()} instead. */
@@ -90,7 +93,8 @@ public class StaggeredGridRecyclerConfiguration<T extends SectionTree.Target & B
       int orientation,
       boolean reverseLayout,
       int gapStrategy,
-      RecyclerBinderConfiguration recyclerBinderConfiguration) {
+      RecyclerBinderConfiguration recyclerBinderConfiguration,
+      StaggeredGridLayoutInfoFactory layoutInfoFactory) {
     mNumSpans = numSpans;
     mOrientation = orientation;
     mReverseLayout = reverseLayout;
@@ -99,6 +103,8 @@ public class StaggeredGridRecyclerConfiguration<T extends SectionTree.Target & B
         recyclerBinderConfiguration == null
             ? Builder.RECYCLER_BINDER_CONFIGURATION
             : recyclerBinderConfiguration;
+    mLayoutInfoFactory =
+        layoutInfoFactory == null ? Builder.STAGGERED_GRID_LAYOUT_INFO_FACTORY : layoutInfoFactory;
   }
 
   @Override
@@ -123,7 +129,8 @@ public class StaggeredGridRecyclerConfiguration<T extends SectionTree.Target & B
 
   @Override
   public LayoutInfo getLayoutInfo(ComponentContext c) {
-    return new StaggeredGridLayoutInfo(mNumSpans, mOrientation, mReverseLayout, mGapStrategy);
+    return mLayoutInfoFactory.createStaggeredGridLayoutInfo(
+        mNumSpans, mOrientation, mReverseLayout, mGapStrategy);
   }
 
   @Override
@@ -131,9 +138,20 @@ public class StaggeredGridRecyclerConfiguration<T extends SectionTree.Target & B
     return mRecyclerBinderConfiguration;
   }
 
+  private static class DefaultStaggeredGridLayoutInfoFactory
+      implements StaggeredGridLayoutInfoFactory {
+    @Override
+    public StaggeredGridLayoutInfo createStaggeredGridLayoutInfo(
+        int spanCount, int orientation, boolean reverseLayout, int gapStrategy) {
+      return new StaggeredGridLayoutInfo(spanCount, orientation, reverseLayout, gapStrategy);
+    }
+  }
+
   public static class Builder implements RecyclerConfiguration.Builder {
     static final RecyclerBinderConfiguration RECYCLER_BINDER_CONFIGURATION =
         RecyclerBinderConfiguration.create().build();
+    static final StaggeredGridLayoutInfoFactory STAGGERED_GRID_LAYOUT_INFO_FACTORY =
+        new DefaultStaggeredGridLayoutInfoFactory();
 
     private int mNumSpans = 2;
     private int mOrientation = StaggeredGridLayoutManager.VERTICAL;
@@ -141,6 +159,7 @@ public class StaggeredGridRecyclerConfiguration<T extends SectionTree.Target & B
     private int mGapStrategy = StaggeredGridLayoutManager.GAP_HANDLING_NONE;
     private RecyclerBinderConfiguration mRecyclerBinderConfiguration =
         RECYCLER_BINDER_CONFIGURATION;
+    private StaggeredGridLayoutInfoFactory mLayoutInfoFactory = STAGGERED_GRID_LAYOUT_INFO_FACTORY;
 
     Builder() {}
 
@@ -150,6 +169,7 @@ public class StaggeredGridRecyclerConfiguration<T extends SectionTree.Target & B
       this.mReverseLayout = configuration.mReverseLayout;
       this.mGapStrategy = configuration.mGapStrategy;
       this.mRecyclerBinderConfiguration = configuration.mRecyclerBinderConfiguration;
+      this.mLayoutInfoFactory = configuration.mLayoutInfoFactory;
     }
 
     @Override
@@ -187,13 +207,28 @@ public class StaggeredGridRecyclerConfiguration<T extends SectionTree.Target & B
     }
 
     /**
+     * Provide a customized {@link StaggeredGridLayoutInfo} through {@link
+     * StaggeredGridLayoutInfoFactory} interface.
+     */
+    public Builder staggeredGridLayoutInfoFactory(
+        StaggeredGridLayoutInfoFactory staggeredGridLayoutInfoFactory) {
+      mLayoutInfoFactory = staggeredGridLayoutInfoFactory;
+      return this;
+    }
+
+    /**
      * Builds a {@link StaggeredGridRecyclerConfiguration} using the parameters specified in this
      * builder.
      */
     @Override
     public StaggeredGridRecyclerConfiguration build() {
       return new StaggeredGridRecyclerConfiguration(
-          mNumSpans, mOrientation, mReverseLayout, mGapStrategy, mRecyclerBinderConfiguration);
+          mNumSpans,
+          mOrientation,
+          mReverseLayout,
+          mGapStrategy,
+          mRecyclerBinderConfiguration,
+          mLayoutInfoFactory);
     }
   }
 }
