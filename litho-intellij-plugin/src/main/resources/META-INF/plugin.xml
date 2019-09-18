@@ -102,13 +102,16 @@
 
   <actions>
     <group id="litho.EditorPopupMenu">
-      <add-to-group group-id="EditorPopupMenu" anchor="last" />
+      <add-to-group group-id="EditorPopupMenu" anchor="before" relative-to-action="EditorPopupMenu1"/>
       <action id="GenerateComponentAction"
           class="com.facebook.litho.intellij.actions.GenerateComponentAction"
           icon="LithoPluginIcons.BASE_ACTION"
       />
+      <separator/>
     </group>
-    <group id="litho.GenerateGroup" text="[Litho] Insert..." popup="true">
+    <group id="litho.GenerateGroup"
+      class="com.facebook.litho.intellij.actions.LithoGenerateGroup"
+      text="[Litho] Insert..." popup="true">
       <add-to-group group-id="GenerateGroup" anchor="first"/>
       <action id="litho.OnEventGenerateAction"
           class="com.facebook.litho.intellij.actions.OnEventGenerateAction"
