@@ -1136,7 +1136,7 @@ public class ComponentTree {
       mStateHandler.queueStateUpdate(componentKey, stateUpdate, true);
     }
 
-    LithoStats.incStateUpdateLazy(1);
+    LithoStats.incrementStateUpdateLazy();
   }
 
   void applyLazyStateUpdatesForContainer(String componentKey, StateContainer container) {
@@ -1162,7 +1162,7 @@ public class ComponentTree {
       mStateHandler.queueStateUpdate(componentKey, stateUpdate, false);
     }
 
-    LithoStats.incStateUpdateSync(1);
+    LithoStats.incrementStateUpdateSync();
     final Looper looper = Looper.myLooper();
 
     if (looper == null) {
