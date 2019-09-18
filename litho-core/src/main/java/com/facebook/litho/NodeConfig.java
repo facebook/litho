@@ -16,10 +16,9 @@
 package com.facebook.litho;
 
 import androidx.annotation.Nullable;
+import com.facebook.litho.yoga.LithoYogaFactory;
 import com.facebook.yoga.YogaConfig;
-import com.facebook.yoga.YogaConfigFactory;
 import com.facebook.yoga.YogaNode;
-import com.facebook.yoga.YogaNodeFactory;
 
 /** A helper class that defines a configurable sizes for ComponentsPools. */
 public class NodeConfig {
@@ -42,7 +41,7 @@ public class NodeConfig {
   /** Factory to create custom InternalNodes for Components. */
   public static volatile @Nullable InternalNodeFactory sInternalNodeFactory;
 
-  private static final YogaConfig sYogaConfig = YogaConfigFactory.create();
+  private static final YogaConfig sYogaConfig = LithoYogaFactory.createYogaConfig();
 
   static {
     sYogaConfig.setUseWebDefaults(true);
@@ -51,7 +50,9 @@ public class NodeConfig {
   @Nullable
   static YogaNode createYogaNode() {
     final InternalYogaNodeFactory factory = sYogaNodeFactory;
-    return factory != null ? factory.create(sYogaConfig) : YogaNodeFactory.create(sYogaConfig);
+    return factory != null
+        ? factory.create(sYogaConfig)
+        : LithoYogaFactory.createYogaNode(sYogaConfig);
   }
 
   /**
