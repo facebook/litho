@@ -22,7 +22,9 @@ import com.facebook.yoga.YogaNodeFactory;
 
 public abstract class LithoYogaFactory {
   public static YogaConfig createYogaConfig() {
-    return YogaConfigFactory.create();
+    YogaConfig yogaConfig = YogaConfigFactory.create();
+    yogaConfig.setUseWebDefaults(true);
+    return yogaConfig;
   }
 
   public static YogaNode createYogaNode(YogaConfig config) {

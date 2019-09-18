@@ -43,10 +43,6 @@ public class NodeConfig {
 
   private static final YogaConfig sYogaConfig = LithoYogaFactory.createYogaConfig();
 
-  static {
-    sYogaConfig.setUseWebDefaults(true);
-  }
-
   @Nullable
   static YogaNode createYogaNode() {
     final InternalYogaNodeFactory factory = sYogaNodeFactory;
