@@ -26,6 +26,9 @@ import android.os.Build;
 
 class TransparencyEnabledCardClipDrawable extends Drawable {
 
+  // Scratch RectF to prevent allocations in the draw() method
+  private final RectF mScratchRect = new RectF();
+
   private final Paint mBackgroundPaint;
 
   private float mCornerRadius;
@@ -62,11 +65,8 @@ class TransparencyEnabledCardClipDrawable extends Drawable {
           mCornerRadius,
           mBackgroundPaint);
     } else {
-      canvas.drawRoundRect(
-          new RectF(bounds.left, bounds.top, bounds.right, bounds.bottom),
-          mCornerRadius,
-          mCornerRadius,
-          mBackgroundPaint);
+      mScratchRect.set(bounds);
+      canvas.drawRoundRect(mScratchRect, mCornerRadius, mCornerRadius, mBackgroundPaint);
     }
   }
 
