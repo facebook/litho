@@ -21,7 +21,6 @@ import com.facebook.litho.annotations.Param;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.State;
-import com.facebook.litho.specmodels.processor.PsiAnnotationProxyUtils;
 import com.google.common.annotations.VisibleForTesting;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiAnnotation;
@@ -74,6 +73,10 @@ public class LithoPluginUtils {
   public static boolean isLithoSpec(@Nullable PsiClass psiClass) {
     return psiClass != null
         && (hasLithoSectionAnnotation(psiClass) || hasLithoAnnotation(psiClass));
+  }
+
+  public static boolean isLayoutSpec(@Nullable PsiClass psiClass) {
+    return psiClass != null && hasAnnotation(psiClass, equals(LayoutSpec.class.getName()));
   }
 
   public static boolean hasLithoAnnotation(@Nullable PsiClass psiClass) {
@@ -205,10 +208,7 @@ public class LithoPluginUtils {
 
   /** Finds LayoutSpec class in the given file. */
   public static Optional<PsiClass> getFirstLayoutSpec(PsiFile psiFile) {
-    return getFirstClass(
-        psiFile,
-        psiClass ->
-            PsiAnnotationProxyUtils.findAnnotationInHierarchy(psiClass, LayoutSpec.class) != null);
+    return getFirstClass(psiFile, LithoPluginUtils::isLayoutSpec);
   }
 
   public static Optional<PsiClass> getFirstClass(PsiFile psiFile, Predicate<PsiClass> classFilter) {
