@@ -24,7 +24,6 @@ import static android.os.Build.VERSION_CODES.LOLLIPOP_MR1;
 import androidx.annotation.Nullable;
 import com.facebook.litho.BuildConfig;
 import com.facebook.litho.perfboost.LithoPerfBoosterFactory;
-import com.facebook.yoga.YogaLogger;
 
 /**
  * Hi there, traveller! This configuration class is not meant to be used by end-users of Litho. It
@@ -34,8 +33,6 @@ import com.facebook.yoga.YogaLogger;
  * <p>These values are safe defaults and should not require manual changes.
  */
 public class ComponentsConfiguration {
-
-  public static YogaLogger YOGA_LOGGER;
 
   /**
    * Indicates whether this is an internal build. Note that the implementation of <code>BuildConfig
