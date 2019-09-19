@@ -211,8 +211,7 @@ public class LithoPluginUtils {
             PsiAnnotationProxyUtils.findAnnotationInHierarchy(psiClass, LayoutSpec.class) != null);
   }
 
-  private static Optional<PsiClass> getFirstClass(
-      PsiFile psiFile, Predicate<PsiClass> classFilter) {
+  public static Optional<PsiClass> getFirstClass(PsiFile psiFile, Predicate<PsiClass> classFilter) {
     return Optional.of(psiFile)
         .map(currentFile -> PsiTreeUtil.getChildrenOfType(currentFile, PsiClass.class))
         .flatMap(

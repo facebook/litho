@@ -24,17 +24,17 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiFile;
 
-public class NewComponentTemplateAction extends CreateFileFromTemplateAction {
+public class NewSpecTemplateAction extends CreateFileFromTemplateAction {
 
   private static final String TITLE = "New Litho Component";
 
-  public NewComponentTemplateAction() {
+  public NewSpecTemplateAction() {
     super(null, TITLE, null);
   }
 
   @Override
   protected String getActionName(PsiDirectory directory, String newName, String templateName) {
-    return "NewComponentTemplateAction";
+    return "NewSpecTemplateAction";
   }
 
   @Override
