@@ -786,7 +786,7 @@ public class ComponentTreeTest {
           @Override
           public void run() {
             assertEquals(1, layoutStateFuture.getWaitingCount());
-            layoutStateFuture.runAndGet();
+            layoutStateFuture.runAndGet(LayoutState.CalculateLayoutSource.SET_ROOT_ASYNC);
             assertEquals(0, layoutStateFuture.getWaitingCount());
             assertEquals(0, componentTree.getLayoutStateFutures().size());
           }

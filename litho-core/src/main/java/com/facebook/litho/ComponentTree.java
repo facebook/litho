@@ -1779,7 +1779,7 @@ public class ComponentTree {
                 treeProps,
                 source,
                 extraAttribution)
-            : calculateLayoutState(layoutStateFuture);
+            : calculateLayoutState(source, layoutStateFuture);
 
     if (localLayoutState == null) {
       if (output != null) {
@@ -2167,8 +2167,9 @@ public class ComponentTree {
   }
 
   /** Calculates a LayoutState for the given LayoutStateFuture on the thread that calls this. */
-  private @Nullable LayoutState calculateLayoutState(LayoutStateFuture layoutStateFuture) {
-    final LayoutState layoutState = layoutStateFuture.runAndGet();
+  private @Nullable LayoutState calculateLayoutState(
+      int source, LayoutStateFuture layoutStateFuture) {
+    final LayoutState layoutState = layoutStateFuture.runAndGet(source);
 
     synchronized (mLayoutStateFutureLock) {
       layoutStateFuture.unregisterForResponse();
@@ -2226,7 +2227,7 @@ public class ComponentTree {
       localLayoutStateFuture.registerForResponse(waitingFromSyncLayout);
     }
 
-    final LayoutState layoutState = localLayoutStateFuture.runAndGet();
+    final LayoutState layoutState = localLayoutStateFuture.runAndGet(source);
 
     synchronized (mLayoutStateFutureLock) {
       localLayoutStateFuture.unregisterForResponse();
@@ -2430,17 +2431,17 @@ public class ComponentTree {
 
     @VisibleForTesting
     @Nullable
-    LayoutState runAndGet() {
+    LayoutState runAndGet(int source) {
       if (mMoveLayoutsBetweenThreads) {
-        return runAndGetSwitchThreadsWhenUIBlocked();
+        return runAndGetSwitchThreadsWhenUIBlocked(source);
       }
 
-      return runAndGetIncreasePriority();
+      return runAndGetIncreasePriority(source);
     }
 
     @VisibleForTesting
     @Nullable
-    LayoutState runAndGetIncreasePriority() {
+    LayoutState runAndGetIncreasePriority(int source) {
       if (runningThreadId.compareAndSet(-1, Process.myTid())) {
         futureTask.run();
       }
@@ -2450,7 +2451,15 @@ public class ComponentTree {
       final boolean didRaiseThreadPriority;
       final boolean notRunningOnMyThread = runningThreadId != Process.myTid();
 
-      if (isMainThread() && !futureTask.isDone() && notRunningOnMyThread) {
+      final boolean shouldWaitForResult = !futureTask.isDone() && notRunningOnMyThread;
+
+      // A background thread layout which doesn't need to return a size doesn't need to wait on the
+      // UI thread for the result.
+      if (shouldWaitForResult && !isMainThread() && !isFromSyncLayout(source)) {
+        return null;
+      }
+
+      if (isMainThread() && shouldWaitForResult) {
         // Main thread is about to be blocked, raise the running thread priority.
         originalThreadPriority =
             ComponentsConfiguration.inheritPriorityFromUiThread
@@ -2509,14 +2518,21 @@ public class ComponentTree {
 
     @VisibleForTesting
     @Nullable
-    LayoutState runAndGetSwitchThreadsWhenUIBlocked() {
+    LayoutState runAndGetSwitchThreadsWhenUIBlocked(int source) {
       if (runningThreadId.compareAndSet(-1, Process.myTid())) {
         futureTask.run();
       }
 
       final int runningThreadId = this.runningThreadId.get();
 
-      if (isMainThread() && !futureTask.isDone() && runningThreadId != Process.myTid()) {
+      final boolean shouldWaitForResult =
+          !futureTask.isDone() && runningThreadId != Process.myTid();
+
+      if (shouldWaitForResult && !isMainThread() && !isFromSyncLayout(source)) {
+        return null;
+      }
+
+      if (isMainThread() && shouldWaitForResult) {
         // This means the UI thread is about to be blocked by the bg thread. Instead of waiting,
         // the bg task is interrupted.
         if (!isFromSyncLayout) {
