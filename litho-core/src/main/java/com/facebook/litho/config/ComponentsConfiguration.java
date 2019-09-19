@@ -126,15 +126,9 @@ public class ComponentsConfiguration {
 
   /**
    * If true, the async range calculation isn't blocked on the first item finishing layout and it
-   * will schedule one layout per bg thread during init range.
-   */
-  public static boolean asyncInitRange = false;
-
-  /**
-   * If true, the async range calculation isn't blocked on the first item finishing layout and it
    * will schedule as many bg layouts as it can while init range completes.
    */
-  public static boolean bgScheduleAllInitRange;
+  public static boolean asyncInitRange = false;
 
   /**
    * If non-null, a thread pool will be used for async layouts instead of a single layout thread.

@@ -119,7 +119,6 @@ public class RecyclerBinder
   private final AtomicBoolean mIsMeasured = new AtomicBoolean(false);
   private final AtomicBoolean mRequiresRemeasure = new AtomicBoolean(false);
   private final boolean mEnableStableIds;
-  private final boolean mBgScheduleAllInitRange;
   private final boolean mSplitLayoutForMeasureAndRangeEstimation;
   private @Nullable List<ComponentLogParams> mInvalidStateLogParamsList;
   private final RecyclerRangeTraverser mRangeTraverser;
@@ -406,7 +405,6 @@ public class RecyclerBinder
     private RecyclerRangeTraverser recyclerRangeTraverser;
     private LayoutThreadPoolConfiguration threadPoolConfig;
     private boolean asyncInitRange = ComponentsConfiguration.asyncInitRange;
-    private boolean bgScheduleAllInitRange = ComponentsConfiguration.bgScheduleAllInitRange;
     private boolean canMeasure;
     private boolean hscrollAsyncMode = false;
     private boolean singleThreadPool = ComponentsConfiguration.useSingleThreadPool;
@@ -581,20 +579,11 @@ public class RecyclerBinder
     }
 
     /**
-     * If true, the async range calculation isn't blocked on the first item finishing layout.
-     * Instead it schedules one async layout per bg thread
+     * If true, the async range calculation isn't blocked on the first item finishing layout and it
+     * will schedule as many bg layouts as it can while init range completes.
      */
     public Builder asyncInitRange(boolean asyncInitRange) {
       this.asyncInitRange = asyncInitRange;
-      return this;
-    }
-
-    /**
-     * If true, the async range calculation isn't blocked on the first item finishing layout.
-     * Instead it schedules async layouts until init range completes.
-     */
-    public Builder bgScheduleAllInitRange(boolean bgScheduleAllInitRange) {
-      this.bgScheduleAllInitRange = bgScheduleAllInitRange;
       return this;
     }
 
@@ -916,7 +905,6 @@ public class RecyclerBinder
     }
 
     mAsyncInitRange = builder.asyncInitRange;
-    mBgScheduleAllInitRange = builder.bgScheduleAllInitRange;
     mHScrollAsyncMode = builder.hscrollAsyncMode;
     mIncrementalMountEnabled = builder.incrementalMount;
     mStickyHeaderControllerFactory = builder.stickyHeaderControllerFactory;
@@ -2655,25 +2643,21 @@ public class RecyclerBinder
       return;
     }
 
-    if (mBgScheduleAllInitRange) {
-      final MeasureListener measureListener =
-          new ComponentTree.MeasureListener() {
-            @Override
-            public void onSetRootAndSizeSpec(int w, int h) {
-              maybeScheduleOneAsyncLayoutDuringInitRange(asyncRangeIterator);
-              nextHolder.updateMeasureListener(null);
-            }
-          };
+    final MeasureListener measureListener =
+        new ComponentTree.MeasureListener() {
+          @Override
+          public void onSetRootAndSizeSpec(int w, int h) {
+            maybeScheduleOneAsyncLayoutDuringInitRange(asyncRangeIterator);
+            nextHolder.updateMeasureListener(null);
+          }
+        };
 
-      nextHolder.computeLayoutAsync(
-          mComponentContext, childWidthSpec, childHeightSpec, measureListener);
-    } else {
-      nextHolder.computeLayoutAsync(mComponentContext, childWidthSpec, childHeightSpec);
-    }
+    nextHolder.computeLayoutAsync(
+        mComponentContext, childWidthSpec, childHeightSpec, measureListener);
   }
 
   private boolean asyncInitRangeEnabled() {
-    return mAsyncInitRange || mBgScheduleAllInitRange;
+    return mAsyncInitRange;
   }
 
   @VisibleForTesting

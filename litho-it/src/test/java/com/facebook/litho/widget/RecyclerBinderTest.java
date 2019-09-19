@@ -4334,7 +4334,7 @@ public class RecyclerBinderTest {
 
     final RecyclerBinder recyclerBinder =
         new RecyclerBinder.Builder()
-            .bgScheduleAllInitRange(true)
+            .asyncInitRange(true)
             .rangeRatio(0)
             .layoutInfo(mLayoutInfo)
             .threadPoolConfig(new LayoutThreadPoolConfigurationImpl(1, 1, 5))
