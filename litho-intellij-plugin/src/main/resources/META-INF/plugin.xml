@@ -94,7 +94,7 @@
 
     <fileDocumentManagerListener implementation="com.facebook.litho.intellij.file.ComponentFileListener"/>
 
-    <findUsagesHandlerFactory language="JAVA" implementation="com.facebook.litho.intellij.file.ComponentFindUsagesHandlerFactory" />
+    <findUsagesHandlerFactory language="JAVA" implementation="com.facebook.litho.intellij.file.LithoFindUsagesHandlerFactory" />
   </extensions>
 
   <!-- 181 is IntelliJ 2018.1 and/or Android Studio 3.2 -->

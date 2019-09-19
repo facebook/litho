@@ -27,7 +27,7 @@ import com.intellij.util.ArrayUtil;
 import java.util.Optional;
 import java.util.function.Function;
 
-public class ComponentFindUsagesHandlerFactory extends FindUsagesHandlerFactory {
+public class LithoFindUsagesHandlerFactory extends FindUsagesHandlerFactory {
 
   @Override
   public boolean canFindUsages(PsiElement element) {
@@ -36,21 +36,22 @@ public class ComponentFindUsagesHandlerFactory extends FindUsagesHandlerFactory 
 
   @Override
   public FindUsagesHandler createFindUsagesHandler(PsiElement element, boolean forHighlightUsages) {
-    return new ComponentFindUsagesHandler(element);
+    return new GeneratedClassFindUsagesHandler(element);
   }
 
-  static class ComponentFindUsagesHandler extends FindUsagesHandler {
+  static class GeneratedClassFindUsagesHandler extends FindUsagesHandler {
     private final Function<PsiClass, Optional<PsiClass>> findComponent;
 
-    ComponentFindUsagesHandler(PsiElement psiElement) {
+    GeneratedClassFindUsagesHandler(PsiElement psiElement) {
       this(
           psiElement,
           specCls ->
-              LithoPluginUtils.findComponent(specCls.getQualifiedName(), specCls.getProject()));
+              LithoPluginUtils.findGeneratedClass(
+                  specCls.getQualifiedName(), specCls.getProject()));
     }
 
     @VisibleForTesting
-    ComponentFindUsagesHandler(
+    GeneratedClassFindUsagesHandler(
         PsiElement psiElement, Function<PsiClass, Optional<PsiClass>> findComponent) {
       super(psiElement);
       this.findComponent = findComponent;
@@ -58,7 +59,6 @@ public class ComponentFindUsagesHandlerFactory extends FindUsagesHandlerFactory 
 
     @Override
     public PsiElement[] getPrimaryElements() {
-
       LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_FIND_USAGES + ".invoke");
 
       return Optional.of(getPsiElement())

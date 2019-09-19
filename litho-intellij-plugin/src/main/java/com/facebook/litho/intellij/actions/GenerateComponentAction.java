@@ -43,7 +43,7 @@ public class GenerateComponentAction extends AnAction {
             .flatMap(LithoPluginUtils::getFirstLayoutSpec)
             .flatMap(
                 specCls ->
-                    LithoPluginUtils.findComponent(
+                    LithoPluginUtils.findGeneratedClass(
                         specCls.getQualifiedName(), specCls.getProject()));
     e.getPresentation().setEnabledAndVisible(component.isPresent());
     component.ifPresent(

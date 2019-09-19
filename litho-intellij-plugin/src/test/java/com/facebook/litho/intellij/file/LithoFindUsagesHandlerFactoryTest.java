@@ -15,8 +15,6 @@
  */
 package com.facebook.litho.intellij.file;
 
-import static org.junit.Assert.*;
-
 import com.facebook.litho.intellij.LithoPluginIntellijTest;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
@@ -25,9 +23,9 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-public class ComponentFindUsagesHandlerFactoryTest extends LithoPluginIntellijTest {
+public class LithoFindUsagesHandlerFactoryTest extends LithoPluginIntellijTest {
 
-  public ComponentFindUsagesHandlerFactoryTest() {
+  public LithoFindUsagesHandlerFactoryTest() {
     super("testdata/file");
   }
 
@@ -40,7 +38,7 @@ public class ComponentFindUsagesHandlerFactoryTest extends LithoPluginIntellijTe
           PsiClass otherSpec = psiClasses.get(1);
           PsiClass notSpec = psiClasses.get(2);
 
-          ComponentFindUsagesHandlerFactory factory = new ComponentFindUsagesHandlerFactory();
+          LithoFindUsagesHandlerFactory factory = new LithoFindUsagesHandlerFactory();
           Assert.assertTrue(factory.canFindUsages(layoutSpec));
           Assert.assertTrue(factory.canFindUsages(otherSpec));
           Assert.assertFalse(factory.canFindUsages(notSpec));
@@ -57,8 +55,8 @@ public class ComponentFindUsagesHandlerFactoryTest extends LithoPluginIntellijTe
     PsiClass mockedElement = Mockito.mock(PsiClass.class);
     PsiClass mockedResult = Mockito.mock(PsiClass.class);
 
-    ComponentFindUsagesHandlerFactory.ComponentFindUsagesHandler handler =
-        new ComponentFindUsagesHandlerFactory.ComponentFindUsagesHandler(
+    LithoFindUsagesHandlerFactory.GeneratedClassFindUsagesHandler handler =
+        new LithoFindUsagesHandlerFactory.GeneratedClassFindUsagesHandler(
             mockedElement, psiClass -> Optional.of(mockedResult));
 
     // Includes both original element and "component" element to search for

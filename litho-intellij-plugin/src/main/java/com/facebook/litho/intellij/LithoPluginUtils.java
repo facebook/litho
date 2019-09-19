@@ -185,15 +185,22 @@ public class LithoPluginUtils {
   }
 
   /**
-   * Finds Component Class from the given Spec name.
+   * Finds Generated Class from the given Spec name.
    *
-   * @param qualifiedSpecName Name of the Spec to search component for. For example
-   *     com.package.MySpec.java.
-   * @param project Project to find Component in.
+   * @param qualifiedSpecName Name of the Spec to search generated class for. For example
+   *     com.package.MySpec.java. If you provide simple name MySpec.java returned class could be
+   *     found in wrong package.
+   * @param project Project to find generated class in.
    */
-  public static Optional<PsiClass> findComponent(String qualifiedSpecName, Project project) {
+  public static Optional<PsiClass> findGeneratedClass(String qualifiedSpecName, Project project) {
     return findGeneratedFile(qualifiedSpecName, project)
-        .flatMap(generatedFile -> getFirstClass(generatedFile, LithoPluginUtils::isComponentClass));
+        .flatMap(
+            generatedFile ->
+                getFirstClass(
+                    generatedFile,
+                    psiClass ->
+                        LithoPluginUtils.isComponentClass(psiClass)
+                            || LithoPluginUtils.isSectionClass(psiClass)));
   }
 
   /** Finds LayoutSpec class in the given file. */
