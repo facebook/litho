@@ -147,7 +147,8 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
                       + " is a nested tree but does not have a parent component."
                       + "[mGlobalKey:"
                       + component.getGlobalKey()
-                      + "]");
+                      + "]",
+                  100000);
             }
 
             final InternalNode nestedTree =
