@@ -16,6 +16,8 @@
 
 package com.facebook.litho;
 
+import static com.facebook.litho.ComponentContext.NO_SCOPE_EVENT_HANDLER;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -50,6 +52,7 @@ import javax.annotation.concurrent.GuardedBy;
 public abstract class ComponentLifecycle implements EventDispatcher, EventTriggerTarget {
   private static final AtomicInteger sComponentTypeId = new AtomicInteger();
   private static final int DEFAULT_MAX_PREALLOCATION = 3;
+  private static final String NO_PARENT_NESTED_TREE = "ComponentLifecycle:NoParentNestedTree";
 
   // This name needs to match the generated code in specmodels in
   // com.facebook.litho.specmodels.generator.EventCaseGenerator#INTERNAL_ON_ERROR_HANDLER_NAME.
@@ -142,6 +145,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
             } else {
               ComponentsReporter.emitMessage(
                   ComponentsReporter.LogLevel.ERROR,
+                  NO_PARENT_NESTED_TREE,
                   "component "
                       + component.getSimpleName()
                       + " is a nested tree but does not have a parent component."
@@ -704,7 +708,9 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
   protected static <E> EventHandler<E> newEventHandler(Component c, int id, Object[] params) {
     if (c == null) {
       ComponentsReporter.emitMessage(
-          ComponentsReporter.LogLevel.ERROR, "Creating event handler without scope.");
+          ComponentsReporter.LogLevel.ERROR,
+          NO_SCOPE_EVENT_HANDLER,
+          "Creating event handler without scope.");
     }
     final EventHandler<E> eventHandler = new EventHandler<>(c, id, params);
     if (c.getScopedContext() != null && c.getScopedContext().getComponentTree() != null) {

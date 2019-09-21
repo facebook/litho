@@ -26,14 +26,17 @@ public class TestComponentsReporter extends DefaultComponentsReporter {
       new LinkedList<>();
 
   @Override
-  public void emitMessage(ComponentsReporter.LogLevel level, String message) {
-    emitMessage(level, message, 0);
+  public void emitMessage(ComponentsReporter.LogLevel level, String categoryKey, String message) {
+    emitMessage(level, categoryKey, message, 0);
   }
 
   @Override
   public void emitMessage(
-      ComponentsReporter.LogLevel level, String message, int samplingFrequency) {
-    super.emitMessage(level, message, samplingFrequency);
+      ComponentsReporter.LogLevel level,
+      String categoryKey,
+      String message,
+      int samplingFrequency) {
+    super.emitMessage(level, categoryKey, message, samplingFrequency);
 
     mLoggedMessages.add(new Pair<>(level, message));
   }

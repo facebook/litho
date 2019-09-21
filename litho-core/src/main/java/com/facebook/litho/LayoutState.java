@@ -88,6 +88,8 @@ import javax.annotation.CheckReturnValue;
 @VisibleForTesting
 class LayoutState {
 
+  private static final String DUPLICATE_TRANSITION_IDS = "LayoutState:DuplicateTransitionIds";
+
   @IntDef({
     CalculateLayoutSource.TEST,
     CalculateLayoutSource.NONE,
@@ -1148,6 +1150,7 @@ class LayoutState {
         // Already seen component with the same manually set transition key
         ComponentsReporter.emitMessage(
             ComponentsReporter.LogLevel.FATAL,
+            DUPLICATE_TRANSITION_IDS,
             "The transitionId '"
                 + transitionId
                 + "' is defined multiple times in the same layout. TransitionIDs must be unique.\n"

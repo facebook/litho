@@ -76,6 +76,11 @@ import javax.annotation.Nullable;
 public abstract class Component extends ComponentLifecycle
     implements Cloneable, HasEventDispatcher, HasEventTrigger, Equivalence<Component> {
 
+  private static final String DUPLICATE_MANUAL_KEY = "Component:DuplicateManualKey";
+  private static final String MISMATCHING_BASE_CONTEXT = "Component:MismatchingBaseContext";
+  private static final String NULL_PARENT_KEY = "Component:NullParentKey";
+  private static final String NULL_KEY_SET = "Component:NullKeySet";
+
   private static final AtomicInteger sIdGenerator = new AtomicInteger(1);
   private static final DynamicValue[] sEmptyArray = new DynamicValue[0];
 
@@ -207,6 +212,7 @@ public abstract class Component extends ComponentLifecycle
     if (scopedContext.getAndroidContext() != willRenderContext.getAndroidContext()) {
       ComponentsReporter.emitMessage(
           ComponentsReporter.LogLevel.ERROR,
+          MISMATCHING_BASE_CONTEXT,
           "Found mismatching base contexts between the Component's Context ("
               + scopedContext.getAndroidContext()
               + ") and the Context used in willRender ("
@@ -333,6 +339,7 @@ public abstract class Component extends ComponentLifecycle
   private void logDuplicateManualKeyWarning(Component component, String key) {
     ComponentsReporter.emitMessage(
         ComponentsReporter.LogLevel.WARNING,
+        DUPLICATE_MANUAL_KEY,
         "The manual key "
             + key
             + " you are setting on this "
@@ -652,6 +659,7 @@ public abstract class Component extends ComponentLifecycle
       if (parentScope.getGlobalKey() == null) {
         ComponentsReporter.emitMessage(
             ComponentsReporter.LogLevel.ERROR,
+            NULL_PARENT_KEY,
             "Trying to generate parent-based key for component "
                 + getSimpleName()
                 + " , but parent "
@@ -877,7 +885,7 @@ public abstract class Component extends ComponentLifecycle
             "Setting a null key from "
                 + componentName
                 + " which is usually a mistake! If it is not, explicitly set the String 'null'";
-        ComponentsReporter.emitMessage(ComponentsReporter.LogLevel.ERROR, message);
+        ComponentsReporter.emitMessage(ComponentsReporter.LogLevel.ERROR, NULL_KEY_SET, message);
         key = "null";
       }
       mComponent.setKey(key);

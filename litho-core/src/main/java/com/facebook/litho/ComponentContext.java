@@ -40,6 +40,7 @@ public class ComponentContext {
 
   public static final InternalNode NULL_LAYOUT = new NoOpInternalNode();
 
+  static final String NO_SCOPE_EVENT_HANDLER = "ComponentContext:NoScopeEventHandler";
   private final Context mContext;
   // TODO: T48229786 move to CT
   private final @Nullable String mLogTag;
@@ -380,7 +381,9 @@ public class ComponentContext {
   private void checkNotNullScope() {
     if (mComponentScope == null) {
       ComponentsReporter.emitMessage(
-          ComponentsReporter.LogLevel.ERROR, "Creating event handler without scope.");
+          ComponentsReporter.LogLevel.ERROR,
+          NO_SCOPE_EVENT_HANDLER,
+          "Creating event handler without scope.");
     }
   }
 

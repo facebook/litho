@@ -35,6 +35,8 @@ import com.facebook.litho.LithoView;
 class StickyHeaderControllerImpl extends RecyclerView.OnScrollListener
     implements StickyHeaderController {
 
+  private static final String FIRST_VISIBLE_STICKY_HEADER_NULL =
+      "StickyHeaderControllerImpl:FirstVisibleStickyHeaderNull";
   static final String RECYCLER_ARGUMENT_NULL = "Cannot initialize with null SectionsRecyclerView.";
   static final String RECYCLER_ALREADY_INITIALIZED =
       "SectionsRecyclerView has already been initialized but never reset.";
@@ -120,6 +122,7 @@ class StickyHeaderControllerImpl extends RecyclerView.OnScrollListener
         // and firstVisibleView might be null.
         ComponentsReporter.emitMessage(
             ComponentsReporter.LogLevel.ERROR,
+            FIRST_VISIBLE_STICKY_HEADER_NULL,
             "First visible sticky header item is null"
                 + ", RV.hasPendingAdapterUpdates: "
                 + mSectionsRecyclerView.getRecyclerView().hasPendingAdapterUpdates()

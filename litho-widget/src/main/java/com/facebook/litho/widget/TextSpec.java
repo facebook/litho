@@ -165,6 +165,7 @@ class TextSpec {
   private static final Typeface DEFAULT_TYPEFACE = Typeface.DEFAULT;
   private static final int DEFAULT_COLOR = 0;
   private static final String TAG = "TextSpec";
+  private static final String WRONG_TEXT_SIZE = "TextSpec:WrongTextSize";
 
   private static final int[][] DEFAULT_TEXT_COLOR_STATE_LIST_STATES = {{0}};
   private static final int[] DEFAULT_TEXT_COLOR_STATE_LIST_COLORS = {Color.BLACK};
@@ -377,7 +378,9 @@ class TextSpec {
       size.height = Math.max(size.height, 0);
 
       ComponentsReporter.emitMessage(
-          ComponentsReporter.LogLevel.ERROR, "Text layout measured to less than 0 pixels");
+          ComponentsReporter.LogLevel.ERROR,
+          WRONG_TEXT_SIZE,
+          "Text layout measured to less than 0 pixels");
     }
 
     measuredWidth.set(size.width);

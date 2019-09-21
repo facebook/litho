@@ -36,6 +36,8 @@ import java.util.List;
  */
 public class RecyclerBinderUpdateCallback<T> implements ListUpdateCallback {
 
+  private static final String INCONSISTENT_SIZE = "RecyclerBinderUpdateCallback:InconsistentSize";
+
   public interface ComponentRenderer<T> {
     RenderInfo render(T t, int idx);
   }
@@ -242,7 +244,8 @@ public class RecyclerBinderUpdateCallback<T> implements ListUpdateCallback {
       message.append("[").append(mNextData.get(i)).append("], ");
     }
     message.append("]");
-    ComponentsReporter.emitMessage(ComponentsReporter.LogLevel.ERROR, message.toString());
+    ComponentsReporter.emitMessage(
+        ComponentsReporter.LogLevel.ERROR, INCONSISTENT_SIZE, message.toString());
   }
 
   @VisibleForTesting

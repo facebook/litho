@@ -83,6 +83,10 @@ import java.util.Set;
 class MountState implements TransitionManager.OnAnimationCompleteListener {
 
   static final long ROOT_HOST_ID = 0L;
+  private static final String DISAPPEAR_ANIM_TARGETING_ROOT =
+      "MountState:DisappearAnimTargetingRoot";
+  private static final String DANGLING_CONTENT_DURING_ANIM = "MountState:DanglingContentDuringAnim";
+  private static final String INVALID_ANIM_LOCK_INDICES = "MountState:InvalidAnimLockIndices";
   private static final double NS_IN_MS = 1000000.0;
   private static final Rect sTempRect = new Rect();
 
@@ -1095,6 +1099,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     if (mLayoutOutputsIds.length > 0 && isItemDisappearing(newLayoutState, 0)) {
       ComponentsReporter.emitMessage(
           ComponentsReporter.LogLevel.ERROR,
+          DISAPPEAR_ANIM_TARGETING_ROOT,
           "Disppear animations cannot target the root LithoView! "
               + getMountItemDebugMessage(mRootHostMountItem));
     }
@@ -2246,6 +2251,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     if (index > -1) {
       ComponentsReporter.emitMessage(
           ComponentsReporter.LogLevel.ERROR,
+          DANGLING_CONTENT_DURING_ANIM,
           "Got dangling mount content during animation: " + getMountItemDebugMessage(item));
     }
   }
@@ -2646,7 +2652,9 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       } else {
         if (--mAnimationLockedIndices[i] < 0) {
           ComponentsReporter.emitMessage(
-              ComponentsReporter.LogLevel.FATAL, "Decremented animation lock count below 0!");
+              ComponentsReporter.LogLevel.FATAL,
+              INVALID_ANIM_LOCK_INDICES,
+              "Decremented animation lock count below 0!");
           mAnimationLockedIndices[i] = 0;
         }
       }
@@ -2661,7 +2669,9 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       } else {
         if (--mAnimationLockedIndices[hostIndex] < 0) {
           ComponentsReporter.emitMessage(
-              ComponentsReporter.LogLevel.FATAL, "Decremented animation lock count below 0!");
+              ComponentsReporter.LogLevel.FATAL,
+              INVALID_ANIM_LOCK_INDICES,
+              "Decremented animation lock count below 0!");
           mAnimationLockedIndices[hostIndex] = 0;
         }
       }

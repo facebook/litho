@@ -88,6 +88,9 @@ public class SectionTree {
   }
 
   private static final String DEFAULT_CHANGESET_THREAD_NAME = "SectionChangeSetThread";
+  private static final String OUT_OF_BOUNDS_REQUEST_FOCUS = "SectionTree:OutOfBoundsRequestFocus";
+  private static final String NULL_TO_NON_NULL_SERVICE_TRANSFER =
+      "SectionTree:NullToNonNullServiceTransfer";
   private final SectionsDebugLogger mSectionsDebugLogger;
   private volatile boolean mReleased;
 
@@ -835,7 +838,8 @@ public class SectionTree {
               + index
               + " , total "
               + sectionLocationInfo.mSection.getCount();
-      ComponentsReporter.emitMessage(ComponentsReporter.LogLevel.ERROR, errorMessage);
+      ComponentsReporter.emitMessage(
+          ComponentsReporter.LogLevel.ERROR, OUT_OF_BOUNDS_REQUEST_FOCUS, errorMessage);
       return false;
     }
     return true;
@@ -1572,7 +1576,8 @@ public class SectionTree {
                     + " to "
                     + nextRoot
                     + " while the later created a non-null service";
-            ComponentsReporter.emitMessage(ComponentsReporter.LogLevel.ERROR, errorMessage);
+            ComponentsReporter.emitMessage(
+                ComponentsReporter.LogLevel.ERROR, NULL_TO_NON_NULL_SERVICE_TRANSFER, errorMessage);
           }
         } else {
           nextRoot.transferService(nextRoot.getScopedContext(), currentRoot, nextRoot);

@@ -928,7 +928,7 @@ public class LithoView extends ComponentHost {
     messageBuilder.append(mPreviousComponentSimpleName);
     messageBuilder.append(", view=");
     messageBuilder.append(LithoViewTestHelper.toDebugString(this));
-    logError(messageBuilder.toString(), logParams);
+    logError(messageBuilder.toString(), ZERO_HEIGHT_LOG, logParams);
   }
 
   private void logSetAlreadyAttachedComponentTree(
@@ -947,15 +947,15 @@ public class LithoView extends ComponentHost {
     messageBuilder.append(currentComponentTree.getSimpleName());
     messageBuilder.append(", newComponent=");
     messageBuilder.append(newComponentTree.getSimpleName());
-    logError(messageBuilder.toString(), logParams);
+    logError(messageBuilder.toString(), SET_ALREADY_ATTACHED_COMPONENT_TREE, logParams);
   }
 
-  private static void logError(String message, ComponentLogParams logParams) {
+  private static void logError(String message, String categoryKey, ComponentLogParams logParams) {
     final ComponentsReporter.LogLevel logLevel =
         logParams.failHarder
             ? ComponentsReporter.LogLevel.FATAL
             : ComponentsReporter.LogLevel.ERROR;
-    ComponentsReporter.emitMessage(logLevel, message, logParams.samplingFrequency);
+    ComponentsReporter.emitMessage(logLevel, categoryKey, message, logParams.samplingFrequency);
   }
 
   @DoNotStrip

@@ -34,6 +34,7 @@ public class KeyHandler {
   private static final String STACK_TRACE_SPEC_MESSAGE =
       "Please look at the following spec hierarchy and make sure "
           + "all sibling children components of the same type have unique keys:\n";
+  private static final String DUPLICATE_KEY = "KeyHandler:DuplicateKey";
 
   private final Set<String> mKnownGlobalKeys;
 
@@ -69,7 +70,7 @@ public class KeyHandler {
       }
 
       ComponentsReporter.emitMessage(
-          ComponentsReporter.LogLevel.ERROR, message + "\n" + errorMessage);
+          ComponentsReporter.LogLevel.ERROR, DUPLICATE_KEY, message + "\n" + errorMessage);
     }
   }
 

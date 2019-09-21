@@ -20,25 +20,28 @@ import java.util.Collections;
 import java.util.Set;
 
 public class DefaultComponentsReporter implements ComponentsReporter.Reporter {
-  private static final String CATEGORY = "Components";
+  private static final String CATEGORY_PREFIX = "Litho:";
 
   @Override
-  public void emitMessage(ComponentsReporter.LogLevel level, String message) {
-    emitMessage(level, message, /* take default*/ 0);
+  public void emitMessage(ComponentsReporter.LogLevel level, String categoryKey, String message) {
+    emitMessage(level, categoryKey, message, /* take default*/ 0);
   }
 
   @Override
   public void emitMessage(
-      ComponentsReporter.LogLevel level, String message, int samplingFrequency) {
+      ComponentsReporter.LogLevel level,
+      String categoryKey,
+      String message,
+      int samplingFrequency) {
     switch (level) {
       case WARNING:
-        Log.w(CATEGORY, message);
+        Log.w(CATEGORY_PREFIX + categoryKey, message);
         break;
       case ERROR:
-        Log.e(CATEGORY, message);
+        Log.e(CATEGORY_PREFIX + categoryKey, message);
         break;
       case FATAL:
-        Log.e(CATEGORY, message);
+        Log.e(CATEGORY_PREFIX + categoryKey, message);
         throw new RuntimeException(message);
     }
   }

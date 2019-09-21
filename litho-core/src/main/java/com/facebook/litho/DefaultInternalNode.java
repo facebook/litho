@@ -76,6 +76,8 @@ import javax.annotation.Nullable;
 @ThreadConfined(ThreadConfined.ANY)
 public class DefaultInternalNode implements InternalNode, Cloneable {
 
+  private static final String CONTEXT_SPECIFIC_STYLE_SET =
+      "DefaultInternalNode:ContextSpecificStyleSet";
   // Used to check whether or not the framework can use style IDs for
   // paddingStart/paddingEnd due to a bug in some Android devices.
   private static final boolean SUPPORTS_RTL = (SDK_INT >= JELLY_BEAN_MR1);
@@ -1654,6 +1656,7 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
       final CharSequence errorStr = TextUtils.join(", ", errorTypes);
       ComponentsReporter.emitMessage(
           ComponentsReporter.LogLevel.WARNING,
+          CONTEXT_SPECIFIC_STYLE_SET,
           "You should not set "
               + errorStr
               + " to a root layout in "

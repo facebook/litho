@@ -41,18 +41,22 @@ public class ComponentsReporter {
      * Emit a message that can be logged or escalated by the logger implementation.
      *
      * @param level
+     * @param categoryKey Unique key for aggregating all occurrences of given error in error
+     *     aggregation systems
      * @param message Message to log
      */
-    void emitMessage(LogLevel level, String message);
+    void emitMessage(LogLevel level, String categoryKey, String message);
 
     /**
      * Emit a message that can be logged or escalated by the logger implementation.
      *
      * @param level
+     * @param categoryKey Unique key for aggregating all occurrences of given error in error
+     *     aggregation systems
      * @param message Message to log
      * @param samplingFrequency sampling frequency to override default one
      */
-    void emitMessage(LogLevel level, String message, int samplingFrequency);
+    void emitMessage(LogLevel level, String categoryKey, String message, int samplingFrequency);
 
     /**
      * When a component key collision occurs, filenames that contain keywords contained in the
@@ -80,10 +84,12 @@ public class ComponentsReporter {
    * Emit a message that can be logged or escalated by the logger implementation.
    *
    * @param level
+   * @param categoryKey Unique key for aggregating all occurrences of given error in error
+   *     aggregation systems
    * @param message Message to log
    */
-  public static void emitMessage(LogLevel level, String message) {
-    getInstance().emitMessage(level, message);
+  public static void emitMessage(LogLevel level, String categoryKey, String message) {
+    getInstance().emitMessage(level, categoryKey, message);
   }
 
   public static Set<String> getKeyCollisionStackTraceKeywords() {
@@ -97,12 +103,15 @@ public class ComponentsReporter {
   /**
    * Emit a message that can be logged or escalated by the logger implementation.
    *
-   * @param level
+   * @param level One of {@link LogLevel#WARNING}, {@link LogLevel#ERROR}, {@link LogLevel#FATAL}.
+   * @param categoryKey Unique key for aggregating all occurrences of given error in error
+   *     aggregation systems
    * @param message Message to log
    * @param samplingFrequency sampling frequency to override default one
    */
-  public static void emitMessage(LogLevel level, String message, int samplingFrequency) {
-    getInstance().emitMessage(level, message, samplingFrequency);
+  public static void emitMessage(
+      LogLevel level, String categoryKey, String message, int samplingFrequency) {
+    getInstance().emitMessage(level, categoryKey, message, samplingFrequency);
   }
 
   private static Reporter getInstance() {

@@ -97,6 +97,8 @@ public class RecyclerBinder
   private static final String TAG = RecyclerBinder.class.getSimpleName();
   private static final int POST_UPDATE_VIEWPORT_AND_COMPUTE_RANGE_MAX_ATTEMPTS = 3;
   private static final int DATA_RENDERED_CALLBACKS_QUEUE_MAX_SIZE = 20;
+  private static final String DATA_RENDERED_NOT_TRIGGERED =
+      "RecyclerBinder:DataRenderedNotTriggered";
   static final int UNSET = -1;
   private static ThreadPoolLayoutHandler sThreadPoolHandler;
 
@@ -1896,6 +1898,7 @@ public class RecyclerBinder
             .append("]");
         ComponentsReporter.emitMessage(
             ComponentsReporter.LogLevel.ERROR,
+            DATA_RENDERED_NOT_TRIGGERED,
             "@OnDataRendered callbacks aren't triggered as expected: " + messageBuilder);
       }
     }

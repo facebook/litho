@@ -18,7 +18,7 @@ import com.facebook.litho.ComponentsReporter
 class SampleComponentsReporter : ComponentsReporter.Reporter {
     private val tag = "LITHOSAMPLE"
 
-    override fun emitMessage(level: ComponentsReporter.LogLevel?, message: String?) {
+    override fun emitMessage(level: ComponentsReporter.LogLevel?, categoryKey: String?, message: String?) {
         when (level) {
             ComponentsLogger.LogLevel.WARNING -> {
                 Log.w(tag, message)
@@ -29,8 +29,13 @@ class SampleComponentsReporter : ComponentsReporter.Reporter {
         }
     }
 
-    override fun emitMessage(level: ComponentsReporter.LogLevel?, message: String?, samplingFrequency: Int) {
-        emitMessage(level, message)
+    override fun emitMessage(
+        level: ComponentsReporter.LogLevel?,
+        categoryKey: String?,
+        message: String?,
+        samplingFrequency: Int
+    ) {
+        emitMessage(level, categoryKey, message)
     }
 
     override fun getKeyCollisionStackTraceKeywords() = emptySet<String>()
