@@ -13,5 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-@com.facebook.litho.sections.annotations.Any
-class OnEventSection { }
+@com.facebook.litho.annotations.MountSpec
+public class StateCompletionSpec {
+    public static void one(@com.facebook.litho.annotations.Prop iany prop,
+                           @com.facebook.litho.annotations.State irandom state) {
+    }
+
+    private void two(@com.facebook.litho.annotations.State i<caret>) {
+    }
+}

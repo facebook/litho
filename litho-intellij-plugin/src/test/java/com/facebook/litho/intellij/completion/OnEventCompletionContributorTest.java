@@ -33,7 +33,7 @@ public class OnEventCompletionContributorTest extends LithoPluginIntellijTest {
 
   @Test
   public void testEventInLithoClassCompletion() throws IOException {
-    String clsName = "OnClickEventCompletionTest.java";
+    String clsName = "OnClickEventCompletionSpec.java";
 
     testHelper.configure(clsName);
     CodeInsightTestFixture fixture = testHelper.getFixture();
@@ -59,7 +59,7 @@ public class OnEventCompletionContributorTest extends LithoPluginIntellijTest {
 
   @Test
   public void aboveMethodCompletion() throws IOException {
-    testHelper.configure("OnClickEventAboveMethodCompletion.java");
+    testHelper.configure("OnClickEventAboveMethodCompletionSpec.java");
     CodeInsightTestFixture fixture = testHelper.getFixture();
     fixture.completeBasic();
     fixture.completeBasic();

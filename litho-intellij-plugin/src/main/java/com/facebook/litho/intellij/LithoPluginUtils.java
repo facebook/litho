@@ -17,6 +17,7 @@ package com.facebook.litho.intellij;
 
 import com.facebook.litho.annotations.Event;
 import com.facebook.litho.annotations.LayoutSpec;
+import com.facebook.litho.annotations.MountSpec;
 import com.facebook.litho.annotations.Param;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.PropDefault;
@@ -72,18 +73,33 @@ public class LithoPluginUtils {
 
   public static boolean isLithoSpec(@Nullable PsiClass psiClass) {
     return psiClass != null
-        && (hasLithoSectionAnnotation(psiClass) || hasLithoAnnotation(psiClass));
+        && (hasLithoComponentSpecAnnotation(psiClass) || hasLithoSectionSpecAnnotation(psiClass));
   }
 
   public static boolean isLayoutSpec(@Nullable PsiClass psiClass) {
     return psiClass != null && hasAnnotation(psiClass, equals(LayoutSpec.class.getName()));
   }
 
-  public static boolean hasLithoAnnotation(@Nullable PsiClass psiClass) {
+  static boolean isMountSpec(@Nullable PsiClass psiClass) {
+    return psiClass != null && hasAnnotation(psiClass, equals(MountSpec.class.getName()));
+  }
+
+  public static boolean hasLithoComponentSpecAnnotation(@Nullable PsiClass psiClass) {
     if (psiClass == null) {
       return false;
     }
-    return hasAnnotation(psiClass, startsWith("com.facebook.litho.annotations"));
+    return isSpecName(psiClass.getName()) && (isLayoutSpec(psiClass) || isMountSpec(psiClass));
+  }
+
+  public static boolean hasLithoSectionSpecAnnotation(PsiClass psiClass) {
+    return isSpecName(psiClass.getName())
+        && hasAnnotation(psiClass, startsWith("com.facebook.litho.sections.annotations"));
+  }
+
+  @VisibleForTesting
+  /** @return if given name ends with "Spec". */
+  static boolean isSpecName(@Nullable String clsName) {
+    return clsName != null && clsName.endsWith(SPEC_SUFFIX);
   }
 
   @VisibleForTesting
@@ -107,10 +123,6 @@ public class LithoPluginUtils {
 
   private static Predicate<String> equals(String text) {
     return name -> name.equals(text);
-  }
-
-  public static boolean hasLithoSectionAnnotation(PsiClass psiClass) {
-    return hasAnnotation(psiClass, startsWith("com.facebook.litho.sections.annotations"));
   }
 
   public static boolean isPropOrState(PsiParameter parameter) {
@@ -139,7 +151,7 @@ public class LithoPluginUtils {
 
   @Nullable
   public static String getLithoComponentNameFromSpec(@Nullable String specName) {
-    if (specName != null && specName.endsWith(SPEC_SUFFIX)) {
+    if (isSpecName(specName)) {
       return specName.substring(0, specName.length() - SPEC_SUFFIX.length());
     }
     return null;

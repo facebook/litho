@@ -13,12 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-@com.facebook.litho.annotations.AnyAnnotation
-public class PropCompletionTest {
-    public static void one(@com.facebook.litho.annotations.Prop iany prop,
-                           @com.facebook.litho.annotations.State irandom state) {
-    }
+import android.view.View;
+import com.facebook.litho.ClickEvent;
+import com.facebook.litho.ComponentContext;
+import com.facebook.litho.annotations.FromEvent;
+import com.facebook.litho.annotations.OnEvent;
 
-    private void two(@com.facebook.litho.annotations.Prop i<caret>) {
-    }
+@com.facebook.litho.annotations.LayoutSpec
+public class OnClickEventCompletionSpec {
+
+  public @interface OnEventI {
+  }
+
+  @OnEven<caret>
 }

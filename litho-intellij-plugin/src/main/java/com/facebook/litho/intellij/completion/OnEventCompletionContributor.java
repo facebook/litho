@@ -148,6 +148,8 @@ public class OnEventCompletionContributor extends CompletionContributor {
   }
 
   private static String getTypeText(PsiClass parentClass) {
-    return LithoPluginUtils.hasLithoSectionAnnotation(parentClass) ? "SectionSpec" : "LayoutSpec";
+    return LithoPluginUtils.hasLithoSectionSpecAnnotation(parentClass)
+        ? "SectionSpec"
+        : "LayoutSpec";
   }
 }

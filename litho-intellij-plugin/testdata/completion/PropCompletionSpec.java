@@ -13,5 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-@com.facebook.litho.annotations.OtherSpec
-class Component {}
+@com.facebook.litho.annotations.LayoutSpec
+public class PropCompletionSpec {
+    public static void one(@com.facebook.litho.annotations.Prop iany prop,
+                           @com.facebook.litho.annotations.State irandom state) {
+    }
+
+    private void two(@com.facebook.litho.annotations.Prop i<caret>) {
+    }
+}

@@ -58,10 +58,9 @@ public class PsiEventDeclarationsExtractor {
             (PsiClassObjectAccessExpression) annotationMemberValue;
         eventDeclarationModels.add(getEventDeclarationModel(accessExpression));
       }
-    } else {
-      PsiClassObjectAccessExpression accessExpression =
-          (PsiClassObjectAccessExpression) psiAnnotationMemberValue;
-      eventDeclarationModels.add(getEventDeclarationModel(accessExpression));
+    } else if (psiAnnotationMemberValue instanceof PsiClassObjectAccessExpression) {
+      eventDeclarationModels.add(
+          getEventDeclarationModel((PsiClassObjectAccessExpression) psiAnnotationMemberValue));
     }
 
     return ImmutableList.copyOf(eventDeclarationModels);

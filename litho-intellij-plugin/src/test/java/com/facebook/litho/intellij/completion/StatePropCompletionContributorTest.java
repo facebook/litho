@@ -15,9 +15,10 @@
  */
 package com.facebook.litho.intellij.completion;
 
-import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import com.facebook.litho.intellij.LithoPluginIntellijTest;
 import com.intellij.codeInsight.completion.CompletionType;
@@ -35,7 +36,7 @@ public class StatePropCompletionContributorTest extends LithoPluginIntellijTest 
 
   @Test
   public void testPropCompletion() throws IOException {
-    String clsName = "PropCompletionTest.java";
+    String clsName = "PropCompletionSpec.java";
     testHelper.configure(clsName);
     CodeInsightTestFixture fixture = testHelper.getFixture();
     fixture.complete(CompletionType.BASIC);
@@ -47,7 +48,7 @@ public class StatePropCompletionContributorTest extends LithoPluginIntellijTest 
 
   @Test
   public void testStateCompletion() throws IOException {
-    String clsName = "StateCompletionTest.java";
+    String clsName = "StateCompletionSpec.java";
 
     testHelper.configure(clsName);
     CodeInsightTestFixture fixture = testHelper.getFixture();
@@ -56,5 +57,16 @@ public class StatePropCompletionContributorTest extends LithoPluginIntellijTest 
     assertNotNull(completion);
     assertEquals(2, completion.size());
     assertTrue(completion.containsAll(Arrays.asList("int", "irandom state")));
+  }
+
+  @Test
+  public void testNotSpecCompletion() throws IOException {
+    String clsName = "NotSpecCompletion.java";
+
+    testHelper.configure(clsName);
+    CodeInsightTestFixture fixture = testHelper.getFixture();
+    fixture.complete(CompletionType.BASIC);
+    List<String> completion = fixture.getLookupElementStrings();
+    assertNull(completion);
   }
 }

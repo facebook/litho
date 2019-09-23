@@ -70,7 +70,7 @@ public class ComponentFileListenerTest extends LithoPluginIntellijTest {
           componentFileListener.beforeFileSaving(containingFile);
           return true;
         },
-        "OtherSpec.java");
+        "MountSpec.java");
 
     Assert.assertFalse(invoked.get());
   }

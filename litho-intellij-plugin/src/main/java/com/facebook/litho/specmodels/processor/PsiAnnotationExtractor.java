@@ -53,6 +53,9 @@ public class PsiAnnotationExtractor {
    */
   private static boolean isValidAnnotation(Project project, PsiAnnotation psiAnnotation) {
     final String text = psiAnnotation.getQualifiedName();
+    if (text.startsWith("com.facebook.")) {
+      return false;
+    }
     PsiClass annotationClass = PsiSearchUtils.findClass(project, psiAnnotation.getQualifiedName());
     if (annotationClass == null) {
       throw new RuntimeException("Annotation class not found, text is: " + text);
@@ -61,10 +64,6 @@ public class PsiAnnotationExtractor {
     final Retention retention =
         PsiAnnotationProxyUtils.findAnnotationInHierarchy(annotationClass, Retention.class);
 
-    if (retention != null && retention.value() == RetentionPolicy.SOURCE) {
-      return false;
-    }
-
-    return !text.startsWith("com.facebook.");
+    return retention == null || retention.value() != RetentionPolicy.SOURCE;
   }
 }

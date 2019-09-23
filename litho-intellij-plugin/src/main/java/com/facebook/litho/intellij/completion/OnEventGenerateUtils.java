@@ -124,7 +124,7 @@ public class OnEventGenerateUtils {
   }
 
   private static String getContextClassName(PsiClass context) {
-    return LithoPluginUtils.hasLithoSectionAnnotation(context)
+    return LithoPluginUtils.hasLithoSectionSpecAnnotation(context)
         ? LithoClassNames.SECTION_CONTEXT_CLASS_NAME
         : LithoClassNames.COMPONENT_CONTEXT_CLASS_NAME;
   }

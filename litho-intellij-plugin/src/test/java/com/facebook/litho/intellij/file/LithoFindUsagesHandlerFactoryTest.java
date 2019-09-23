@@ -46,7 +46,7 @@ public class LithoFindUsagesHandlerFactoryTest extends LithoPluginIntellijTest {
           return true;
         },
         "LayoutSpec.java",
-        "OtherSpec.java",
+        "MountSpec.java",
         "NotSpec.java");
   }
 

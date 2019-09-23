@@ -40,7 +40,7 @@ public class LithoPluginUtilsFileTest extends LithoPluginIntellijTest {
           return true;
         },
         "LayoutSpec.java",
-        "OtherSpec.java");
+        "MountSpec.java");
   }
 
   @Test
@@ -56,6 +56,6 @@ public class LithoPluginUtilsFileTest extends LithoPluginIntellijTest {
           return true;
         },
         "LayoutSpec.java",
-        "OtherSpec.java");
+        "MountSpec.java");
   }
 }
