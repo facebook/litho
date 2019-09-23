@@ -13,7 +13,6 @@
 package com.facebook.samples.litho.animations.expandableelement;
 
 import android.graphics.Color;
-import android.text.Layout;
 import com.facebook.litho.ClickEvent;
 import com.facebook.litho.Column;
 import com.facebook.litho.Component;
@@ -36,6 +35,7 @@ import com.facebook.litho.sections.widget.NotAnimatedItemAnimator;
 import com.facebook.litho.sections.widget.RecyclerCollectionComponent;
 import com.facebook.litho.widget.RenderInfo;
 import com.facebook.litho.widget.Text;
+import com.facebook.litho.widget.TextAlignment;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaEdge;
 import java.util.ArrayList;
@@ -69,7 +69,7 @@ public class ExpandableElementRootComponentSpec {
                         .flexGrow(1)
                         .alignSelf(YogaAlign.CENTER)
                         .testKey("INSERT")
-                        .textAlignment(Layout.Alignment.ALIGN_CENTER)
+                        .alignment(TextAlignment.CENTER)
                         .clickHandler(ExpandableElementRootComponent.onClick(c, true)))
                 .child(
                     Text.create(c)
@@ -78,7 +78,7 @@ public class ExpandableElementRootComponentSpec {
                         .textSizeSp(20)
                         .flexGrow(1)
                         .alignSelf(YogaAlign.CENTER)
-                        .textAlignment(Layout.Alignment.ALIGN_CENTER)
+                        .alignment(TextAlignment.CENTER)
                         .clickHandler(ExpandableElementRootComponent.onClick(c, false))))
         .child(
             RecyclerCollectionComponent.create(c)

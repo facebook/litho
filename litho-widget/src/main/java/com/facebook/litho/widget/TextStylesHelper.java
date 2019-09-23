@@ -15,9 +15,6 @@
  */
 package com.facebook.litho.widget;
 
-import static android.text.Layout.Alignment.ALIGN_CENTER;
-import static android.text.Layout.Alignment.ALIGN_NORMAL;
-import static android.text.Layout.Alignment.ALIGN_OPPOSITE;
 import static com.facebook.litho.widget.VerticalGravity.BOTTOM;
 import static com.facebook.litho.widget.VerticalGravity.CENTER;
 import static com.facebook.litho.widget.VerticalGravity.TOP;
@@ -27,8 +24,6 @@ import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Typeface;
 import android.os.Build;
-import android.text.Layout;
-import android.text.Layout.Alignment;
 import android.text.TextUtils.TruncateAt;
 import android.view.Gravity;
 import android.view.View;
@@ -54,7 +49,7 @@ public final class TextStylesHelper {
   // JUSTIFICATION_MODE_NONE (AOSP Default)
   public static final int DEFAULT_JUSTIFICATION_MODE = 0;
 
-  public static final Alignment textAlignmentDefault = ALIGN_NORMAL;
+  public static final TextAlignment textAlignmentDefault = TextAlignment.TEXT_START;
 
   public static void onLoadStyle(
       ComponentContext c,
@@ -74,7 +69,7 @@ public final class TextStylesHelper {
       Output<Integer> linkColor,
       Output<Integer> highlightColor,
       Output<Integer> textSize,
-      Output<Layout.Alignment> textAlignment,
+      Output<TextAlignment> textAlignment,
       Output<Integer> breakStrategy,
       Output<Integer> hyphenationFrequency,
       Output<Integer> justificationMode,
@@ -203,7 +198,7 @@ public final class TextStylesHelper {
       Output<Integer> linkColor,
       Output<Integer> highlightColor,
       Output<Integer> textSize,
-      Output<Layout.Alignment> textAlignment,
+      Output<TextAlignment> textAlignment,
       Output<Integer> breakStrategy,
       Output<Integer> hyphenationFrequency,
       Output<Integer> justificationMode,
@@ -235,11 +230,11 @@ public final class TextStylesHelper {
       } else if (attr == R.styleable.Text_android_textAlignment) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
           viewTextAlignment = a.getInt(attr, -1);
-          textAlignment.set(getAlignment(viewTextAlignment, gravity));
+          textAlignment.set(getTextAlignment(viewTextAlignment, gravity));
         }
       } else if (attr == R.styleable.Text_android_gravity) {
         gravity = a.getInt(attr, -1);
-        textAlignment.set(getAlignment(viewTextAlignment, gravity));
+        textAlignment.set(getTextAlignment(viewTextAlignment, gravity));
         verticalGravity.set(getVerticalGravity(gravity));
       } else if (attr == R.styleable.Text_android_includeFontPadding) {
         shouldIncludeFontPadding.set(a.getBoolean(attr, false));
@@ -298,29 +293,27 @@ public final class TextStylesHelper {
     }
   }
 
-  private static Alignment getAlignment(int viewTextAlignment, int gravity) {
-    final Alignment alignment;
+  private static TextAlignment getTextAlignment(int viewTextAlignment, int gravity) {
+    final TextAlignment alignment;
     switch (viewTextAlignment) {
-      case View.TEXT_ALIGNMENT_GRAVITY:
-        alignment = getAlignment(gravity);
-        break;
       case View.TEXT_ALIGNMENT_TEXT_START:
-        alignment = ALIGN_NORMAL;
+        alignment = TextAlignment.TEXT_START;
         break;
       case View.TEXT_ALIGNMENT_TEXT_END:
-        alignment = ALIGN_OPPOSITE;
+        alignment = TextAlignment.TEXT_END;
         break;
       case View.TEXT_ALIGNMENT_CENTER:
-        alignment = ALIGN_CENTER;
+        alignment = TextAlignment.CENTER;
         break;
-      case View.TEXT_ALIGNMENT_VIEW_START: // unsupported, default to normal
-        alignment = ALIGN_NORMAL;
+      case View.TEXT_ALIGNMENT_VIEW_START:
+        alignment = TextAlignment.LAYOUT_START;
         break;
-      case View.TEXT_ALIGNMENT_VIEW_END: // unsupported, default to opposite
-        alignment = ALIGN_OPPOSITE;
+      case View.TEXT_ALIGNMENT_VIEW_END:
+        alignment = TextAlignment.LAYOUT_END;
         break;
       case View.TEXT_ALIGNMENT_INHERIT: // unsupported, default to gravity
-        alignment = getAlignment(gravity);
+      case View.TEXT_ALIGNMENT_GRAVITY:
+        alignment = getTextAlignment(gravity);
         break;
       default:
         alignment = textAlignmentDefault;
@@ -329,23 +322,23 @@ public final class TextStylesHelper {
     return alignment;
   }
 
-  private static Alignment getAlignment(int gravity) {
-    final Alignment alignment;
+  private static TextAlignment getTextAlignment(int gravity) {
+    final TextAlignment alignment;
     switch (gravity & Gravity.RELATIVE_HORIZONTAL_GRAVITY_MASK) {
       case Gravity.START:
-        alignment = ALIGN_NORMAL;
+        alignment = TextAlignment.LAYOUT_START;
         break;
       case Gravity.END:
-        alignment = ALIGN_OPPOSITE;
+        alignment = TextAlignment.LAYOUT_END;
         break;
-      case Gravity.LEFT: // unsupported, default to normal
-        alignment = ALIGN_NORMAL;
+      case Gravity.LEFT:
+        alignment = TextAlignment.LEFT;
         break;
-      case Gravity.RIGHT: // unsupported, default to opposite
-        alignment = ALIGN_OPPOSITE;
+      case Gravity.RIGHT:
+        alignment = TextAlignment.RIGHT;
         break;
       case Gravity.CENTER_HORIZONTAL:
-        alignment = ALIGN_CENTER;
+        alignment = TextAlignment.CENTER;
         break;
       default:
         alignment = textAlignmentDefault;
