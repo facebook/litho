@@ -304,7 +304,7 @@ public class TransitionManager {
       if (animationState.shouldFinishUndeclaredAnimation) {
         animationState.shouldFinishUndeclaredAnimation = false;
 
-        for (PropertyState propertyState : animationState.propertyStates.values()) {
+        for (PropertyState propertyState : new ArrayList<>(animationState.propertyStates.values())) {
           final AnimationBinding animationBinding = propertyState.animation;
           if (animationBinding != null) {
             animationBinding.stop();
