@@ -343,7 +343,8 @@ public class ComponentHost extends ViewGroup {
   MountItem getAccessibleMountItem() {
     for (int i = 0; i < getMountItemCount(); i++) {
       MountItem item = getMountItemAt(i);
-      if (item.isAccessible()) {
+      // For inexplicable reason, item is null sometimes.
+      if (item != null && item.isAccessible()) {
         return item;
       }
     }
