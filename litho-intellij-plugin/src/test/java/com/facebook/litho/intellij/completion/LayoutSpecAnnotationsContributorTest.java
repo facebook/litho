@@ -15,24 +15,26 @@
  */
 package com.facebook.litho.intellij.completion;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import com.facebook.litho.intellij.LithoClassNames;
 import com.facebook.litho.intellij.LithoPluginIntellijTest;
 import com.intellij.testFramework.fixtures.CodeInsightTestFixture;
 import java.io.IOException;
 import java.util.List;
 import org.junit.Test;
 
-public class OnEventCompletionContributorTest extends LithoPluginIntellijTest {
+public class LayoutSpecAnnotationsContributorTest extends LithoPluginIntellijTest {
 
-  public OnEventCompletionContributorTest() {
+  public LayoutSpecAnnotationsContributorTest() {
     super("testdata/completion");
   }
 
   @Test
-  public void testEventInLithoClassCompletion() throws IOException {
-    String clsName = "OnClickEventCompletionSpec.java";
+  public void annotationInLayoutSpecCompletion() throws IOException {
+    String clsName = "LayoutSpecAnnotationsContributorSpec.java";
 
     testHelper.configure(clsName);
     CodeInsightTestFixture fixture = testHelper.getFixture();
@@ -40,12 +42,17 @@ public class OnEventCompletionContributorTest extends LithoPluginIntellijTest {
     fixture.completeBasic();
     List<String> completion = fixture.getLookupElementStrings();
     assertNotNull(completion);
-    assertTrue(completion.contains("onClickEvent"));
+
+    for (String name :
+        LayoutSpecAnnotationsContributor.LayoutSpecAnnotationsCompletionProvider
+            .ANNOTATION_QUALIFIED_NAMES) {
+      assertTrue(completion.contains(LithoClassNames.shortName(name)));
+    }
   }
 
   @Test
-  public void testEventNotInLithoClassCompletion() throws IOException {
-    String clsName = "OnClickEventNotLithoCompletionTest.java";
+  public void annotationNotInLayoutSpecCompletion() throws IOException {
+    String clsName = "NotLayoutSpecAnnotationsContributor.java";
 
     testHelper.configure(clsName);
     CodeInsightTestFixture fixture = testHelper.getFixture();
@@ -53,17 +60,11 @@ public class OnEventCompletionContributorTest extends LithoPluginIntellijTest {
     fixture.completeBasic();
     List<String> completion = fixture.getLookupElementStrings();
     assertNotNull(completion);
-    assertTrue(completion.isEmpty());
-  }
 
-  @Test
-  public void aboveMethodCompletion() throws IOException {
-    testHelper.configure("OnClickEventAboveMethodCompletionSpec.java");
-    CodeInsightTestFixture fixture = testHelper.getFixture();
-    fixture.completeBasic();
-    fixture.completeBasic();
-    List<String> completion = fixture.getLookupElementStrings();
-    assertNotNull(completion);
-    assertTrue(completion.contains("onClickEvent"));
+    for (String name :
+        LayoutSpecAnnotationsContributor.LayoutSpecAnnotationsCompletionProvider
+            .ANNOTATION_QUALIFIED_NAMES) {
+      assertFalse(completion.contains(LithoClassNames.shortName(name)));
+    }
   }
 }

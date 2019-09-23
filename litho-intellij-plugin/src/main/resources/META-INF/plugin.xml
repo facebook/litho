@@ -91,6 +91,7 @@
 
     <completion.contributor language="JAVA" implementationClass="com.facebook.litho.intellij.completion.StatePropCompletionContributor"/>
     <completion.contributor language="JAVA" implementationClass="com.facebook.litho.intellij.completion.OnEventCompletionContributor"/>
+    <completion.contributor language="JAVA" implementationClass="com.facebook.litho.intellij.completion.LayoutSpecAnnotationsContributor" order="first"/>
 
     <fileDocumentManagerListener implementation="com.facebook.litho.intellij.file.ComponentFileListener"/>
 
