@@ -1557,7 +1557,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       // Host view doesn't set its own padding, but gets absolute positions for inner content from
       // Yoga. Also bg/fg is used as separate drawables instead of using View's bg/fg attribute.
       if (!isHostView) {
-        unsetViewPadding(view, viewNodeInfo);
+        unsetViewPadding(view, item, viewNodeInfo);
         unsetViewBackground(view, viewNodeInfo);
         unsetViewForeground(view, viewNodeInfo);
         unsetViewLayoutDirection(view);
@@ -2050,12 +2050,24 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
         viewNodeInfo.getPaddingBottom());
   }
 
-  private static void unsetViewPadding(View view, ViewNodeInfo viewNodeInfo) {
+  private static void unsetViewPadding(View view, MountItem item, ViewNodeInfo viewNodeInfo) {
     if (!viewNodeInfo.hasPadding()) {
       return;
     }
 
-    view.setPadding(0, 0, 0, 0);
+    try {
+      view.setPadding(0, 0, 0, 0);
+    } catch (NullPointerException e) {
+      // T53931759 Gathering extra info around this NPE
+      final StringBuilder sb = new StringBuilder();
+      sb.append("Component: ");
+      sb.append(item.getComponent().getSimpleName());
+      sb.append(", view: ");
+      sb.append(view.getClass().getSimpleName());
+      sb.append(", message: ");
+      sb.append(e.getMessage());
+      throw new NullPointerException(sb.toString());
+    }
   }
 
   private static void setViewBackground(View view, ViewNodeInfo viewNodeInfo) {
