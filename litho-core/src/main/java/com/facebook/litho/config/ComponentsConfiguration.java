@@ -21,6 +21,7 @@ import static android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH;
 import static android.os.Build.VERSION_CODES.JELLY_BEAN_MR1;
 import static android.os.Build.VERSION_CODES.LOLLIPOP_MR1;
 
+import android.content.Context;
 import androidx.annotation.Nullable;
 import com.facebook.litho.BuildConfig;
 import com.facebook.litho.perfboost.LithoPerfBoosterFactory;
@@ -233,4 +234,11 @@ public class ComponentsConfiguration {
   public static boolean cacheInternalNodeOnLayoutState = false;
 
   public static int percentageSleepLayoutCalculation = 0;
+
+  /**
+   * If true, the return value of {@link
+   * com.facebook.litho.TransitionUtils#areTransitionsEnabled(Context)} will be cached in {@link
+   * com.facebook.litho.ComponentTree}
+   */
+  public static boolean isTransitionCheckCached = false;
 }

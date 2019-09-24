@@ -804,14 +804,7 @@ class LayoutState {
     }
 
     // 4. Extract the Transitions.
-    final Context scopedAndroidContext;
-    if (component == null || component.getScopedContext() == null) {
-      scopedAndroidContext = null;
-    } else {
-      scopedAndroidContext = component.getScopedContext().getAndroidContext();
-    }
-
-    if (TransitionUtils.areTransitionsEnabled(scopedAndroidContext)) {
+    if (areTransitionsEnabled(component != null ? component.getScopedContext() : null)) {
       final ArrayList<Transition> transitions = node.getTransitions();
       if (transitions != null) {
         for (int i = 0, size = transitions.size(); i < size; i++) {
@@ -1024,6 +1017,25 @@ class LayoutState {
 
   void clearComponents() {
     mComponents.clear();
+  }
+
+  /**
+   * This method determine if transitions are enabled for the user. If the experiment is enabled for
+   * the user then they will get cached value else it will be determined using the utility method.
+   *
+   * @param context Component context.
+   * @return true if transitions are enabled.
+   */
+  static boolean areTransitionsEnabled(@Nullable ComponentContext context) {
+    if (context == null) {
+      return TransitionUtils.areTransitionsEnabled(null);
+    }
+    // Experiment of caching the transition check is enabled
+    if (ComponentsConfiguration.isTransitionCheckCached && context.getComponentTree() != null) {
+      return context.getComponentTree().areTransitionsEnabled();
+    }
+    // Fall back to the old flow when the experiment is not enabled.
+    return TransitionUtils.areTransitionsEnabled(context.getAndroidContext());
   }
 
   @Nullable
@@ -2524,7 +2536,7 @@ class LayoutState {
     node.appendComponent(component);
 
     // 8. Create and add transition to this component's InternalNode.
-    if (TransitionUtils.areTransitionsEnabled(c.getAndroidContext())) {
+    if (areTransitionsEnabled(c)) {
       if (component.needsPreviousRenderData()) {
         node.addComponentNeedingPreviousRenderData(component);
       } else {

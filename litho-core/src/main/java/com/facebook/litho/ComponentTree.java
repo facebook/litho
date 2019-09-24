@@ -94,6 +94,7 @@ public class ComponentTree {
   private static final int SCHEDULE_LAYOUT_ASYNC = 1;
   private static final int SCHEDULE_LAYOUT_SYNC = 2;
   private static boolean sBoostPerfLayoutStateFuture = false;
+  private final boolean mAreTransitionsEnabled;
   private boolean mReleased;
   private String mReleasedComponent;
   private @Nullable AttachDetachHandler mAttachDetachHandler;
@@ -338,6 +339,15 @@ public class ComponentTree {
     }
     mLogger = builder.logger;
     mLogTag = builder.logTag;
+    if (ComponentsConfiguration.isTransitionCheckCached) {
+      mAreTransitionsEnabled = TransitionUtils.areTransitionsEnabled(mContext.getAndroidContext());
+    } else {
+      mAreTransitionsEnabled = false;
+    }
+  }
+
+  boolean areTransitionsEnabled() {
+    return mAreTransitionsEnabled;
   }
 
   private static LithoHandler ensureAndInstrumentLayoutThreadHandler(
