@@ -60,7 +60,7 @@ public class OnEventCompletionContributor extends CompletionContributor {
                       createMethodLookup(
                           OnEventGenerateUtils.createOnEventMethod(
                               lithoSpecCls, clickEventCls, Collections.emptyList()),
-                          lithoSpecCls,
+                          clickEventCls,
                           OnEventGenerateUtils.createOnEventLookupString(clickEventCls)));
                 });
       }
@@ -78,14 +78,15 @@ public class OnEventCompletionContributor extends CompletionContributor {
   }
 
   private static LookupElementBuilder createMethodLookup(
-      PsiMethod method, PsiClass parentClass, String lookupString) {
+      PsiMethod method, PsiClass documentationCls, String lookupString) {
     return LookupElementBuilder.createWithIcon(method)
         .withPresentableText(lookupString)
         .withLookupString(lookupString)
         .withCaseSensitivity(false)
         .withInsertHandler(getOnEventInsertHandler(method))
         .appendTailText(" {...}", true)
-        .withTypeText("Litho", true);
+        .withTypeText("Litho", true)
+        .withPsiElement(documentationCls);
   }
 
   /** Creates handler to insert given method in the lookup element insertion context. */
