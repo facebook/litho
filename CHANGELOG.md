@@ -4,6 +4,7 @@
 
 _release-date_
 
+ * Add categoryKey param for `ComponentsLogger.emitMessage()` API to distribute errors into different buckets
  * **Breaking:** Remove `ComponentsLogger.emitMessage()` API as it was fully replaced by `ComponentsReporter.emitMessage()`
  * New: Add API for providing custom logger on a per `ComponentRenderInfo` basis
 
