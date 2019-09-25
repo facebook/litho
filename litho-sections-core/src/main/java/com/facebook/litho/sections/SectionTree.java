@@ -1559,6 +1559,11 @@ public class SectionTree {
         nextRoot.setCount(currentRoot.getCount());
       }
 
+      final boolean isNextRootDiffSection = nextRoot.isDiffSectionSpec();
+      if (!isNextRootDiffSection) {
+        nextRoot.populateTreeProps(context.getTreeProps());
+      }
+
       final boolean shouldTransferState =
           currentRoot != null && currentRoot.getClass().equals(nextRoot.getClass());
 
@@ -1599,14 +1604,13 @@ public class SectionTree {
         }
       }
 
-      if (!nextRoot.isDiffSectionSpec()) {
+      if (!isNextRootDiffSection) {
         final Map<String, Pair<Section, Integer>> currentComponentChildren =
             currentRoot == null || currentRoot.isDiffSectionSpec()
                 ? null
                 : Section.acquireChildrenMap(currentRoot);
 
         final TreeProps parentTreeProps = context.getTreeProps();
-        nextRoot.populateTreeProps(parentTreeProps);
         context.setTreeProps(nextRoot.getTreePropsForChildren(context, parentTreeProps));
 
         final ComponentsLogger logger = context.getLogger();
