@@ -3058,7 +3058,8 @@ public class RecyclerBinder
 
   private void registerDrawListener(final RecyclerView view) {
     if (view instanceof HasPostDispatchDrawListener) {
-      ((HasPostDispatchDrawListener) view).setPostDispatchDrawListener(mPostDispatchDrawListener);
+      ((HasPostDispatchDrawListener) view)
+          .registerPostDispatchDrawListener(mPostDispatchDrawListener);
     } else if (view.getViewTreeObserver() != null) {
       view.getViewTreeObserver().addOnPreDrawListener(mOnPreDrawListener);
     }
@@ -3066,7 +3067,8 @@ public class RecyclerBinder
 
   private void unregisterDrawListener(final RecyclerView view) {
     if (view instanceof HasPostDispatchDrawListener) {
-      ((HasPostDispatchDrawListener) view).setPostDispatchDrawListener(null);
+      ((HasPostDispatchDrawListener) view)
+          .unregisterPostDispatchDrawListener(mPostDispatchDrawListener);
     } else if (view.getViewTreeObserver() != null) {
       view.getViewTreeObserver().removeOnPreDrawListener(mOnPreDrawListener);
     }
