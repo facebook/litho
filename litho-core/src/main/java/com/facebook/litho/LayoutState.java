@@ -1456,8 +1456,6 @@ class LayoutState {
           layoutState.mDiffTreeRoot,
           logLayoutState);
 
-      layoutState.mIsPartialLayoutState = false;
-
       setSizeAfterMeasureAndCollectResults(c, layoutState);
 
       if (layoutStateWrapper != null) {
