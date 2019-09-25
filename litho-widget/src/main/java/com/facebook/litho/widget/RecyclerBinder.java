@@ -69,6 +69,7 @@ import com.facebook.litho.viewcompat.ViewBinder;
 import com.facebook.litho.viewcompat.ViewCreator;
 import com.facebook.litho.widget.ComponentTreeHolder.ComponentTreeMeasureListenerFactory;
 import com.facebook.litho.widget.ComponentTreeHolder.RenderState;
+import com.facebook.litho.widget.ComponentWarmer.ComponentTreeHolderPreparer;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.reflect.Field;
@@ -186,6 +187,7 @@ public class RecyclerBinder
       };
 
   private final @Nullable ComponentTreeMeasureListenerFactory mComponentTreeMeasureListenerFactory;
+  private @Nullable ComponentWarmer mComponentWarmer;
 
   private MeasureListener getMeasureListener(final ComponentTreeHolder holder) {
     return new MeasureListener() {
@@ -3791,6 +3793,16 @@ public class RecyclerBinder
   }
 
   private ComponentTreeHolder createComponentTreeHolder(RenderInfo renderInfo) {
+    if (mComponentWarmer != null) {
+      final Object tag = renderInfo.getCustomAttribute(ComponentWarmer.COMPONENT_WARMER_TAG);
+      if (tag != null) {
+        final ComponentTreeHolder holder = mComponentWarmer.get((String) tag);
+        holder.setRenderInfo(renderInfo);
+
+        return holder;
+      }
+    }
+
     final LithoHandler layoutHandler;
     if (mLayoutHandlerFactory != null) {
       layoutHandler = mLayoutHandlerFactory.createLayoutCalculationHandler(renderInfo);
@@ -3809,6 +3821,54 @@ public class RecyclerBinder
         mUseCancelableLayoutFutures,
         mIsReconciliationEnabled,
         mIsLayoutDiffingEnabled);
+  }
+
+  ComponentTreeHolderPreparer getComponentTreeHolderPreparer() {
+    return new ComponentTreeHolderPreparer() {
+      @Override
+      public ComponentTreeHolder create(Component component) {
+        final RenderInfo renderInfo = ComponentRenderInfo.create().component(component).build();
+
+        return createComponentTreeHolder(renderInfo);
+      }
+
+      @Override
+      public void prepareSync(ComponentTreeHolder holder, Size size) {
+        final int childrenWidthSpec = getActualChildrenWidthSpec(holder);
+        final int childrenHeightSpec = getActualChildrenHeightSpec(holder);
+
+        if (holder.isTreeValidForSizeSpecs(childrenWidthSpec, childrenHeightSpec)) {
+          size.width = SizeSpec.getSize(childrenWidthSpec);
+          size.height = SizeSpec.getSize(childrenHeightSpec);
+
+          return;
+        }
+
+        holder.computeLayoutSync(mComponentContext, childrenWidthSpec, childrenHeightSpec, size);
+      }
+
+      @Override
+      public void prepareAsync(ComponentTreeHolder holder) {
+        final int childrenWidthSpec = getActualChildrenWidthSpec(holder);
+        final int childrenHeightSpec = getActualChildrenHeightSpec(holder);
+
+        if (holder.isTreeValidForSizeSpecs(childrenWidthSpec, childrenHeightSpec)) {
+          return;
+        }
+
+        holder.computeLayoutAsync(mComponentContext, childrenWidthSpec, childrenHeightSpec);
+      }
+    };
+  }
+
+  void setComponentWarmer(ComponentWarmer componentWarmer) {
+    mComponentWarmer = componentWarmer;
+  }
+
+  @VisibleForTesting
+  @Nullable
+  ComponentWarmer getComponentWarmer() {
+    return mComponentWarmer;
   }
 
   @UiThread
