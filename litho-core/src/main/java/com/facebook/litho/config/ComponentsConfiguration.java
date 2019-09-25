@@ -222,12 +222,6 @@ public class ComponentsConfiguration {
   public static boolean isRefactoredLayoutCreationEnabled = false;
 
   /**
-   * Allows RecyclerBinder to apply ready async batches immediately before mounting. See
-   * RecyclerBinder.mount for more info.
-   */
-  public static boolean applyReadyBatchesInMount = false;
-
-  /**
    * If true, the measured InternalNode will be cached on the LayoutState instead of keeping it on
    * the Component instance.
    */

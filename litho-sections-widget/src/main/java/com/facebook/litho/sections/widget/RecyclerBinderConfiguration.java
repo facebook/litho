@@ -36,7 +36,6 @@ public class RecyclerBinderConfiguration {
   private final boolean mMoveLayoutsBetweenThreads;
   private final boolean mCacheInternalNodeOnLayoutState;
   private final boolean mUseCancelableLayoutFutures;
-  private final boolean mApplyReadyBatchesInMount;
   // TODO T34627443 make all fields final after removing setters
   private boolean mHasDynamicItemHeight;
   private boolean mUseBackgroundChangeSets = SectionsConfiguration.useBackgroundChangeSets;
@@ -79,7 +78,6 @@ public class RecyclerBinderConfiguration {
       boolean moveLayoutsBetweenThreads,
       boolean cacheInternalNodeOnLayoutState,
       boolean useCancelableLayoutFutures,
-      boolean applyReadyBatchesInMount,
       boolean isReconciliationEnabled,
       boolean isLayoutDiffingEnabled,
       boolean postToFrontOfQueueForFirstChangeset) {
@@ -100,7 +98,6 @@ public class RecyclerBinderConfiguration {
     mMoveLayoutsBetweenThreads = moveLayoutsBetweenThreads;
     mCacheInternalNodeOnLayoutState = cacheInternalNodeOnLayoutState;
     mUseCancelableLayoutFutures = useCancelableLayoutFutures;
-    mApplyReadyBatchesInMount = applyReadyBatchesInMount;
     mIsReconciliationEnabled = isReconciliationEnabled;
     mIsLayoutDiffingEnabled = isLayoutDiffingEnabled;
     mPostToFrontOfQueueForFirstChangeset = postToFrontOfQueueForFirstChangeset;
@@ -132,10 +129,6 @@ public class RecyclerBinderConfiguration {
 
   public boolean getHScrollAsyncMode() {
     return mHScrollAsyncMode;
-  }
-
-  public boolean getApplyReadyBatchesInMount() {
-    return mApplyReadyBatchesInMount;
   }
 
   public LayoutThreadPoolConfiguration getThreadPoolConfiguration() {
@@ -216,7 +209,6 @@ public class RecyclerBinderConfiguration {
         ComponentsConfiguration.cacheInternalNodeOnLayoutState;
     private boolean mEnableDetach = false;
     @Nullable private LithoHandler mChangeSetThreadHandler;
-    private boolean mApplyReadyBatchesInMount = ComponentsConfiguration.applyReadyBatchesInMount;
     private boolean mIsReconciliationEnabled = ComponentsConfiguration.isReconciliationEnabled;
     private boolean mIsLayoutDiffingEnabled = ComponentsConfiguration.isLayoutDiffingEnabled;
     private boolean mPostToFrontOfQueueForFirstChangeset;
@@ -242,7 +234,6 @@ public class RecyclerBinderConfiguration {
       this.mCacheInternalNodeOnLayoutState = configuration.mCacheInternalNodeOnLayoutState;
       this.mEnableDetach = configuration.mEnableDetach;
       this.mChangeSetThreadHandler = configuration.mChangeSetThreadHandler;
-      this.mApplyReadyBatchesInMount = configuration.mApplyReadyBatchesInMount;
       this.mIsReconciliationEnabled = configuration.mIsReconciliationEnabled;
       this.mIsLayoutDiffingEnabled = configuration.mIsLayoutDiffingEnabled;
       this.mPostToFrontOfQueueForFirstChangeset =
@@ -335,11 +326,6 @@ public class RecyclerBinderConfiguration {
       return this;
     }
 
-    public Builder applyReadyBatchesInMount(boolean applyReadyBatchesInMount) {
-      mApplyReadyBatchesInMount = applyReadyBatchesInMount;
-      return this;
-    }
-
     public Builder enableStableIds(boolean enableStableIds) {
       mEnableStableIds = enableStableIds;
       return this;
@@ -417,7 +403,6 @@ public class RecyclerBinderConfiguration {
           mMoveLayoutsBetweenThreads,
           mCacheInternalNodeOnLayoutState,
           mUseCancelableLayoutFutures,
-          mApplyReadyBatchesInMount,
           mIsReconciliationEnabled,
           mIsLayoutDiffingEnabled,
           mPostToFrontOfQueueForFirstChangeset);

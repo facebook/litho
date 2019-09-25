@@ -133,7 +133,6 @@ public class RecyclerBinder
   private final boolean mCacheInternalNodeOnLayoutState;
   private final boolean mIsSubAdapter;
   private final boolean mHasManualEstimatedViewportCount;
-  private final boolean mApplyReadyBatchesInMount;
   private final boolean mIsReconciliationEnabled;
   private final boolean mIsLayoutDiffingEnabled;
 
@@ -422,7 +421,6 @@ public class RecyclerBinder
         ComponentsConfiguration.cacheInternalNodeOnLayoutState;
     private boolean isSubAdapter;
     private int estimatedViewportCount = UNSET;
-    private boolean applyReadyBatchesInMount = ComponentsConfiguration.applyReadyBatchesInMount;
     private boolean isReconciliationEnabled = ComponentsConfiguration.isReconciliationEnabled;
     private boolean isLayoutDiffingEnabled = ComponentsConfiguration.isLayoutDiffingEnabled;
 
@@ -698,11 +696,6 @@ public class RecyclerBinder
       return this;
     }
 
-    public Builder applyReadyBatchesInMount(boolean applyReadyBatchesInMount) {
-      this.applyReadyBatchesInMount = applyReadyBatchesInMount;
-      return this;
-    }
-
     public Builder isReconciliationEnabled(boolean isEnabled) {
       isReconciliationEnabled = isEnabled;
       return this;
@@ -915,7 +908,6 @@ public class RecyclerBinder
     mMoveLayoutsBetweenThreads = builder.canInterruptAndMoveLayoutsBetweenThreads;
     mCacheInternalNodeOnLayoutState = builder.cacheInternalNodeOnLayoutState;
     mIsSubAdapter = builder.isSubAdapter;
-    mApplyReadyBatchesInMount = builder.applyReadyBatchesInMount;
     mIsReconciliationEnabled = builder.isReconciliationEnabled;
     mIsLayoutDiffingEnabled = builder.isLayoutDiffingEnabled;
   }
@@ -2894,7 +2886,7 @@ public class RecyclerBinder
     // on their layout/section computation via a LayoutState future, but the runnable to update
     // the adapter on the main thread hasn't run -- this gives a chance to update the adapter before
     // we attach to this RecyclerView.
-    if (mApplyReadyBatchesInMount && mHasAsyncOperations) {
+    if (mHasAsyncOperations) {
       applyReadyBatches();
     }
 
