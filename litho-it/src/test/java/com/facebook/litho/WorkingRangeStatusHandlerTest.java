@@ -51,7 +51,8 @@ public class WorkingRangeStatusHandlerTest {
 
   @Test
   public void testIsInRange() {
-    mWorkingRangeStateHandler.setStatus(NAME, mComponent, WorkingRangeStatusHandler.STATUS_IN_RANGE);
+    mWorkingRangeStateHandler.setStatus(
+        NAME, mComponent, WorkingRangeStatusHandler.STATUS_IN_RANGE);
 
     boolean inRange = mWorkingRangeStateHandler.isInRange(NAME, mComponent);
     assertThat(inRange).isEqualTo(true);
@@ -71,7 +72,8 @@ public class WorkingRangeStatusHandlerTest {
 
   @Test
   public void testSetExitedRangeState() {
-    mWorkingRangeStateHandler.setStatus(NAME, mComponent, WorkingRangeStatusHandler.STATUS_IN_RANGE);
+    mWorkingRangeStateHandler.setStatus(
+        NAME, mComponent, WorkingRangeStatusHandler.STATUS_IN_RANGE);
     boolean inRange = mWorkingRangeStateHandler.isInRange(NAME, mComponent);
     assertThat(inRange).isEqualTo(true);
 

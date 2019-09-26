@@ -43,7 +43,6 @@ import com.facebook.litho.annotations.OnUnmount;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.ShouldUpdate;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.utils.MeasureUtils;
 
 /**
@@ -60,9 +59,7 @@ class ImageSpec {
 
   @OnLoadStyle
   static void onLoadStyle(
-      ComponentContext c,
-      Output<Drawable> drawable,
-      Output<ScaleType> scaleType) {
+      ComponentContext c, Output<Drawable> drawable, Output<ScaleType> scaleType) {
 
     final TypedArray a = c.obtainStyledAttributes(R.styleable.Image, 0);
 
@@ -87,9 +84,9 @@ class ImageSpec {
       int heightSpec,
       Size size,
       @Prop(resType = ResType.DRAWABLE) Drawable drawable) {
-    if (drawable == null ||
-        drawable.getIntrinsicWidth() <= 0 ||
-        drawable.getIntrinsicHeight() <= 0) {
+    if (drawable == null
+        || drawable.getIntrinsicWidth() <= 0
+        || drawable.getIntrinsicHeight() <= 0) {
       size.width = 0;
       size.height = 0;
       return;
@@ -98,8 +95,7 @@ class ImageSpec {
     final int intrinsicHeight = drawable.getIntrinsicHeight();
     final int intrinsicWidth = drawable.getIntrinsicWidth();
 
-    if (SizeSpec.getMode(widthSpec) == UNSPECIFIED &&
-        SizeSpec.getMode(heightSpec) == UNSPECIFIED) {
+    if (SizeSpec.getMode(widthSpec) == UNSPECIFIED && SizeSpec.getMode(heightSpec) == UNSPECIFIED) {
       size.width = intrinsicWidth;
       size.height = intrinsicHeight;
       return;
@@ -107,12 +103,7 @@ class ImageSpec {
 
     final float aspectRatio = intrinsicWidth / (float) intrinsicHeight;
     MeasureUtils.measureWithAspectRatio(
-        widthSpec,
-        heightSpec,
-        intrinsicWidth,
-        intrinsicHeight,
-        aspectRatio,
-        size);
+        widthSpec, heightSpec, intrinsicWidth, intrinsicHeight, aspectRatio, size);
   }
 
   @OnBoundsDefined
@@ -136,11 +127,12 @@ class ImageSpec {
       drawableWidth.set(layout.getWidth() - horizontalPadding);
       drawableHeight.set(layout.getHeight() - verticalPadding);
     } else {
-      final DrawableMatrix matrix = DrawableMatrix.create(
-          drawable,
-          scaleType,
-          layout.getWidth() - horizontalPadding,
-          layout.getHeight() - verticalPadding);
+      final DrawableMatrix matrix =
+          DrawableMatrix.create(
+              drawable,
+              scaleType,
+              layout.getWidth() - horizontalPadding,
+              layout.getHeight() - verticalPadding);
 
       drawableMatrix.set(matrix);
       drawableWidth.set(drawable.getIntrinsicWidth());
@@ -183,7 +175,7 @@ class ImageSpec {
   static boolean shouldUpdate(
       @Prop(optional = true) Diff<ScaleType> scaleType,
       @Prop(resType = ResType.DRAWABLE) Diff<Drawable> drawable) {
-    return (scaleType.getNext() != scaleType.getPrevious()) ||
-        drawable.getNext() != drawable.getPrevious();
+    return (scaleType.getNext() != scaleType.getPrevious())
+        || drawable.getNext() != drawable.getPrevious();
   }
 }

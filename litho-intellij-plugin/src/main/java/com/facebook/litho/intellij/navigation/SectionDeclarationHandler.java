@@ -31,7 +31,7 @@ public class SectionDeclarationHandler extends GotoDeclarationHandlerBase {
     return BaseLithoComponentsDeclarationHandler.getGotoDeclarationTarget(
         sourceElement,
         LithoPluginUtils::isSectionClass,
-        LithoPluginUtils::hasLithoSectionAnnotation,
+        LithoPluginUtils::hasLithoSectionSpecAnnotation,
         EVENT);
   }
 }

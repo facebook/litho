@@ -16,7 +16,6 @@
 
 package com.facebook.litho.sections;
 
-import static com.facebook.litho.ComponentsLogger.LogLevel.ERROR;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_SECTIONS_CREATE_NEW_TREE;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_SECTIONS_ON_CREATE_CHILDREN;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_SECTIONS_SET_ROOT;
@@ -37,6 +36,7 @@ import androidx.core.util.Pair;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentsLogger;
+import com.facebook.litho.ComponentsReporter;
 import com.facebook.litho.ComponentsSystrace;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.EventHandlersController;
@@ -50,6 +50,7 @@ import com.facebook.litho.ThreadTracingRunnable;
 import com.facebook.litho.ThreadUtils;
 import com.facebook.litho.TreeProps;
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.litho.sections.ChangesetDebugConfiguration.ChangesetDebugInfo;
 import com.facebook.litho.sections.ChangesetDebugConfiguration.ChangesetDebugListener;
 import com.facebook.litho.sections.SectionsLogEventUtils.ApplyNewChangeSet;
 import com.facebook.litho.sections.config.SectionsConfiguration;
@@ -65,13 +66,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.GuardedBy;
 
 /**
- * Represents a tree of {@link Section} and manages their lifecycle. {@link SectionTree} takes
- * a root {@link Section} and generates the complete tree by recursively invoking
- * OnCreateChildren.
+ * Represents a tree of {@link Section} and manages their lifecycle. {@link SectionTree} takes a
+ * root {@link Section} and generates the complete tree by recursively invoking OnCreateChildren.
  * {@link SectionTree} is also responsible for regenerating the tree in response to state update
  * events.
  */
@@ -87,61 +88,50 @@ public class SectionTree {
   }
 
   private static final String DEFAULT_CHANGESET_THREAD_NAME = "SectionChangeSetThread";
+  private static final String OUT_OF_BOUNDS_REQUEST_FOCUS = "SectionTree:OutOfBoundsRequestFocus";
+  private static final String NULL_TO_NON_NULL_SERVICE_TRANSFER =
+      "SectionTree:NullToNonNullServiceTransfer";
   private final SectionsDebugLogger mSectionsDebugLogger;
   private volatile boolean mReleased;
 
   /**
-   * The class implementing this interface will be responsible to translate the ChangeSet into
-   * UI updates.
+   * The class implementing this interface will be responsible to translate the ChangeSet into UI
+   * updates.
    */
   public interface Target {
 
-    /**
-     * Notify that a {@link Component} was added at index.
-     */
+    /** Notify that a {@link Component} was added at index. */
     void insert(int index, RenderInfo renderInfo);
 
     void insertRange(int index, int count, List<RenderInfo> renderInfos);
 
-    /**
-     * Notify that a {@link Component} was updated at index.
-     */
+    /** Notify that a {@link Component} was updated at index. */
     void update(int index, RenderInfo renderInfo);
 
     void updateRange(int index, int count, List<RenderInfo> renderInfos);
 
-    /**
-     * Notify that the {@link Component} at index was deleted.
-     */
+    /** Notify that the {@link Component} at index was deleted. */
     void delete(int index);
 
     void deleteRange(int index, int count);
 
-    /**
-     * Notify that a {@link Component} was moved fromPosition toPosition.
-     */
+    /** Notify that a {@link Component} was moved fromPosition toPosition. */
     void move(int fromPosition, int toPosition);
 
     /** Called when a changeset has finished being applied. */
     void notifyChangeSetComplete(
         boolean isDataChanged, ChangeSetCompleteCallback changeSetCompleteCallback);
 
-    /**
-     * Request focus on the item with the given index.
-     */
+    /** Request focus on the item with the given index. */
     void requestFocus(int index);
 
     /** Request smooth focus on the item with the given index. */
     void requestSmoothFocus(int index, int offset, SmoothScrollAlignmentType type);
 
-    /**
-     * Request focus on the item with the given index, plus some additional offset.
-     */
+    /** Request focus on the item with the given index, plus some additional offset. */
     void requestFocusWithOffset(int index, int offset);
 
-    /**
-     * @return whether this target supports applying change sets from a background thread.
-     */
+    /** @return whether this target supports applying change sets from a background thread. */
     boolean supportsBackgroundChangeSets();
 
     /** Notify this target that a new set of configurations is applied. */
@@ -192,11 +182,16 @@ public class SectionTree {
     @GuardedBy("this")
     private @Nullable String mAttribution;
 
+    private @Nullable ChangesetDebugInfo mChangesetDebugInfo;
+
     public CalculateChangeSetRunnable(LithoHandler handler) {
       mHandler = handler;
     }
 
-    public synchronized void ensurePosted(@ApplyNewChangeSet int source, String attribution) {
+    public synchronized void ensurePosted(
+        @ApplyNewChangeSet int source,
+        String attribution,
+        @Nullable ChangesetDebugInfo changesetDebugInfo) {
       if (!mIsPosted) {
         mIsPosted = true;
         resetTrace();
@@ -217,6 +212,7 @@ public class SectionTree {
         mHandler.post(this, tag);
         mSource = source;
         mAttribution = attribution;
+        mChangesetDebugInfo = changesetDebugInfo;
       }
     }
 
@@ -233,6 +229,7 @@ public class SectionTree {
     public void tracedRun(Throwable tracedThrowable) {
       @ApplyNewChangeSet int source;
       final String attribution;
+      final ChangesetDebugInfo changesetDebugInfo = mChangesetDebugInfo;
       synchronized (this) {
         if (!mIsPosted) {
           return;
@@ -245,7 +242,7 @@ public class SectionTree {
       }
 
       try {
-        applyNewChangeSet(source, attribution, tracedThrowable);
+        applyNewChangeSet(source, attribution, tracedThrowable, changesetDebugInfo);
       } catch (IndexOutOfBoundsException e) {
         throw new RuntimeException(getDebugInfo(SectionTree.this) + e.getMessage(), e);
       }
@@ -271,6 +268,8 @@ public class SectionTree {
   @GuardedBy("this")
   @Nullable
   private Map<Object, Object> mCachedValues;
+
+  private final AtomicBoolean mPostToFrontOfQueueForFirstChangeset;
 
   private final EventHandlersController mEventHandlersController = new EventHandlersController();
 
@@ -331,18 +330,20 @@ public class SectionTree {
     mCalculateChangeSetRunnable = new CalculateChangeSetRunnable(changeSetThreadHandler);
     mCalculateChangeSetOnMainThreadRunnable = new CalculateChangeSetRunnable(mMainThreadHandler);
     mChangesetDebug = ChangesetDebugConfiguration.getListener();
+    mPostToFrontOfQueueForFirstChangeset =
+        new AtomicBoolean(builder.mPostToFrontOfQueueForFirstChangeset);
   }
 
   /**
    * Create a {@link Builder} that can be used to configure a {@link SectionTree}.
    *
-   * @param context The {@link SectionContext} taht will be used to create the child
-   * {@link com.facebook.litho.Component}s
-   * @param target The {@link Target} that will be responsible to apply the
-   * {@link ChangeSet} to the UI.
+   * @param context The {@link SectionContext} taht will be used to create the child {@link
+   *     com.facebook.litho.Component}s
+   * @param target The {@link Target} that will be responsible to apply the {@link ChangeSet} to the
+   *     UI.
    */
   public static Builder create(SectionContext context, Target target) {
-    //TODO use pools t11953296
+    // TODO use pools t11953296
     return new Builder(context, target);
   }
 
@@ -374,9 +375,26 @@ public class SectionTree {
     }
 
     if (mAsyncPropUpdates && !isFirstSetRoot) {
-      mCalculateChangeSetRunnable.ensurePosted(ApplyNewChangeSet.SET_ROOT_ASYNC, null);
+      final ChangesetDebugInfo changesetDebugInfo =
+          mChangesetDebug == null
+              ? null
+              : new ChangesetDebugInfo(
+                  ApplyNewChangeSet.SET_ROOT_ASYNC,
+                  section.getSimpleName(),
+                  mCurrentSection,
+                  Thread.currentThread().getStackTrace());
+      mCalculateChangeSetRunnable.ensurePosted(
+          ApplyNewChangeSet.SET_ROOT_ASYNC, null, changesetDebugInfo);
     } else {
-      applyNewChangeSet(ApplyNewChangeSet.SET_ROOT, null, null);
+      final ChangesetDebugInfo changesetDebugInfo =
+          mChangesetDebug == null
+              ? null
+              : new ChangesetDebugInfo(
+                  ApplyNewChangeSet.SET_ROOT,
+                  section.getSimpleName(),
+                  mCurrentSection,
+                  Thread.currentThread().getStackTrace());
+      applyNewChangeSet(ApplyNewChangeSet.SET_ROOT, null, null, changesetDebugInfo);
     }
   }
 
@@ -405,13 +423,22 @@ public class SectionTree {
       mNextSection = copy(section, false);
     }
 
-    mCalculateChangeSetRunnable.ensurePosted(ApplyNewChangeSet.SET_ROOT_ASYNC, null);
+    final ChangesetDebugInfo changesetDebugInfo =
+        mChangesetDebug == null
+            ? null
+            : new ChangesetDebugInfo(
+                ApplyNewChangeSet.SET_ROOT_ASYNC,
+                section.getSimpleName(),
+                mCurrentSection,
+                Thread.currentThread().getStackTrace());
+    mCalculateChangeSetRunnable.ensurePosted(
+        ApplyNewChangeSet.SET_ROOT_ASYNC, null, changesetDebugInfo);
   }
 
   /**
-   * Asks all the {@link Section} in the tree to refresh themselves.
-   * The refresh is by default a no-op. {@link Section}s that need a refresh behaviour should
-   * implement a method annotated with {@link com.facebook.litho.sections.annotations.OnRefresh}.
+   * Asks all the {@link Section} in the tree to refresh themselves. The refresh is by default a
+   * no-op. {@link Section}s that need a refresh behaviour should implement a method annotated with
+   * {@link com.facebook.litho.sections.annotations.OnRefresh}.
    */
   public void refresh() {
     final Section section;
@@ -634,11 +661,11 @@ public class SectionTree {
     if (currentRange == null) {
       currentRange = acquireRange();
       mLastRanges.put(section.getGlobalKey(), currentRange);
-    } else if (currentRange.firstVisibleIndex == firstVisibleIndex &&
-        currentRange.lastVisibleIndex == lastVisibleIndex &&
-        currentRange.firstFullyVisibleIndex == firstFullyVisibleIndex &&
-        currentRange.lastFullyVisibleIndex == lastFullyVisibleIndex &&
-        currentRange.totalItemsCount == totalItemsCount) {
+    } else if (currentRange.firstVisibleIndex == firstVisibleIndex
+        && currentRange.lastVisibleIndex == lastVisibleIndex
+        && currentRange.firstFullyVisibleIndex == firstFullyVisibleIndex
+        && currentRange.lastFullyVisibleIndex == lastFullyVisibleIndex
+        && currentRange.totalItemsCount == totalItemsCount) {
 
       if (state != ViewportInfo.State.DATA_CHANGES) {
         return;
@@ -811,12 +838,8 @@ public class SectionTree {
               + index
               + " , total "
               + sectionLocationInfo.mSection.getCount();
-      if (mContext != null && mContext.getLogger() != null) {
-        mContext.getLogger().emitMessage(ERROR, errorMessage);
-      } else {
-        Log.e(SectionsDebug.TAG, errorMessage);
-      }
-
+      ComponentsReporter.emitMessage(
+          ComponentsReporter.LogLevel.ERROR, OUT_OF_BOUNDS_REQUEST_FOCUS, errorMessage);
       return false;
     }
     return true;
@@ -835,12 +858,12 @@ public class SectionTree {
   }
 
   private static Range acquireRange() {
-    //TODO use pools t11953296
+    // TODO use pools t11953296
     return new Range();
   }
 
   private static void releaseRange(Range range) {
-    //TODO use pools t11953296
+    // TODO use pools t11953296
   }
 
   /**
@@ -860,7 +883,7 @@ public class SectionTree {
     mLastRanges.clear();
     mBoundSection = null;
     clearUnusedTriggerHandlers();
-    //TODO use pools t11953296
+    // TODO use pools t11953296
   }
 
   public boolean isReleased() {
@@ -883,8 +906,17 @@ public class SectionTree {
     } else {
       mCalculateChangeSetOnMainThreadRunnable.cancel();
       addStateUpdateInternal(key, stateUpdate, false);
+      final ChangesetDebugInfo changesetDebugInfo =
+          mChangesetDebug == null
+              ? null
+              : new ChangesetDebugInfo(
+                  ApplyNewChangeSet.UPDATE_STATE,
+                  attribution,
+                  key,
+                  mCurrentSection,
+                  Thread.currentThread().getStackTrace());
       mCalculateChangeSetOnMainThreadRunnable.ensurePosted(
-          ApplyNewChangeSet.UPDATE_STATE, attribution);
+          ApplyNewChangeSet.UPDATE_STATE, attribution, changesetDebugInfo);
     }
   }
 
@@ -904,7 +936,17 @@ public class SectionTree {
     } else {
       mCalculateChangeSetRunnable.cancel();
       addStateUpdateInternal(key, stateUpdate, false);
-      mCalculateChangeSetRunnable.ensurePosted(ApplyNewChangeSet.UPDATE_STATE_ASYNC, attribution);
+      final ChangesetDebugInfo changesetDebugInfo =
+          mChangesetDebug == null
+              ? null
+              : new ChangesetDebugInfo(
+                  ApplyNewChangeSet.UPDATE_STATE_ASYNC,
+                  attribution,
+                  key,
+                  mCurrentSection,
+                  Thread.currentThread().getStackTrace());
+      mCalculateChangeSetRunnable.ensurePosted(
+          ApplyNewChangeSet.UPDATE_STATE_ASYNC, attribution, changesetDebugInfo);
     }
   }
 
@@ -961,7 +1003,10 @@ public class SectionTree {
   }
 
   private void applyNewChangeSet(
-      @ApplyNewChangeSet int source, @Nullable String attribution, Throwable tracedThrowable) {
+      @ApplyNewChangeSet int source,
+      @Nullable String attribution,
+      Throwable tracedThrowable,
+      ChangesetDebugInfo changesetDebugInfo) {
     if (attribution == null) {
       attribution = mTag;
     }
@@ -1095,7 +1140,7 @@ public class SectionTree {
           }
 
           mEventHandlersController.clearUnusedEventHandlers();
-          postNewChangeSets(tracedThrowable, source, attribution, oldRoot);
+          postNewChangeSets(tracedThrowable, changesetDebugInfo);
         }
 
         synchronized (this) {
@@ -1218,18 +1263,15 @@ public class SectionTree {
   }
 
   private void postNewChangeSets(
-      Throwable tracedThrowable,
-      final int source,
-      @Nullable final String attribution,
-      @Nullable final Section oldSection) {
+      Throwable tracedThrowable, final ChangesetDebugInfo changesetDebugInfo) {
     if (mUseBackgroundChangeSets) {
-      applyChangeSetsToTargetBackgroundAllowed(source, attribution, oldSection);
+      applyChangeSetsToTargetBackgroundAllowed(changesetDebugInfo);
       return;
     }
 
     if (isMainThread()) {
       try {
-        applyChangeSetsToTargetUIThreadOnly(source, attribution, oldSection);
+        applyChangeSetsToTargetUIThreadOnly(changesetDebugInfo);
       } catch (IndexOutOfBoundsException e) {
         throw new RuntimeException(getDebugInfo(this) + e.getMessage(), e);
       }
@@ -1238,25 +1280,29 @@ public class SectionTree {
       if (mMainThreadHandler.isTracing()) {
         tag = "SectionTree.postNewChangeSets - " + mTag;
       }
-      mMainThreadHandler.post(
+      final Runnable applyChangeSetsRunnable =
           new ThreadTracingRunnable(tracedThrowable) {
             @Override
             public void tracedRun(Throwable tracedThrowable) {
               final SectionTree tree = SectionTree.this;
               try {
-                tree.applyChangeSetsToTargetUIThreadOnly(source, attribution, oldSection);
+                tree.applyChangeSetsToTargetUIThreadOnly(changesetDebugInfo);
               } catch (IndexOutOfBoundsException e) {
                 throw new RuntimeException(getDebugInfo(tree) + e.getMessage(), e);
               }
             }
-          },
-          tag);
+          };
+
+      if (mPostToFrontOfQueueForFirstChangeset.compareAndSet(true, false)) {
+        mMainThreadHandler.postAtFront(applyChangeSetsRunnable, tag);
+      } else {
+        mMainThreadHandler.post(applyChangeSetsRunnable, tag);
+      }
     }
   }
 
   @ThreadConfined(ThreadConfined.ANY)
-  private void applyChangeSetsToTargetBackgroundAllowed(
-      int source, @Nullable String attribution, @Nullable Section oldSection) {
+  private void applyChangeSetsToTargetBackgroundAllowed(ChangesetDebugInfo changesetDebugInfo) {
     if (!mUseBackgroundChangeSets) {
       throw new IllegalStateException(
           "Must use UIThread-only variant when background change sets are not enabled.");
@@ -1276,8 +1322,7 @@ public class SectionTree {
           return;
         }
 
-        applyChangeSetsToTargetUnchecked(
-            mCurrentSection, oldSection, mPendingChangeSets, source, attribution);
+        applyChangeSetsToTargetUnchecked(mCurrentSection, mPendingChangeSets, changesetDebugInfo);
         mPendingChangeSets.clear();
       }
 
@@ -1305,8 +1350,7 @@ public class SectionTree {
   }
 
   @UiThread
-  private void applyChangeSetsToTargetUIThreadOnly(
-      int source, @Nullable String attribution, @Nullable Section oldSection) {
+  private void applyChangeSetsToTargetUIThreadOnly(ChangesetDebugInfo changesetDebugInfo) {
     assertMainThread();
     if (mUseBackgroundChangeSets) {
       throw new IllegalStateException(
@@ -1331,7 +1375,7 @@ public class SectionTree {
         currentSection = mCurrentSection;
       }
 
-      applyChangeSetsToTargetUnchecked(currentSection, oldSection, changeSets, source, attribution);
+      applyChangeSetsToTargetUnchecked(currentSection, changeSets, changesetDebugInfo);
       maybeDispatchFocusRequests();
     } finally {
       if (isTracing) {
@@ -1349,10 +1393,8 @@ public class SectionTree {
 
   private void applyChangeSetsToTargetUnchecked(
       final Section currentSection,
-      @Nullable final Section oldSection,
       List<ChangeSet> changeSets,
-      final int source,
-      @Nullable final String attribution) {
+      final ChangesetDebugInfo changesetDebugInfo) {
     final boolean isTracing = ComponentsSystrace.isTracing();
 
     if (isTracing) {
@@ -1412,13 +1454,11 @@ public class SectionTree {
               if (mChangesetDebug != null) {
                 mChangesetDebug.onChangesetApplied(
                     mCurrentSection,
-                    oldSection,
                     changesInfo,
                     mContext.getLogTag() == null
                         ? "SectionTree" + SectionTree.this.mTag
                         : mContext.getLogTag(),
-                    source,
-                    attribution);
+                    changesetDebugInfo);
               }
 
               if (!isDataChanged) {
@@ -1519,6 +1559,11 @@ public class SectionTree {
         nextRoot.setCount(currentRoot.getCount());
       }
 
+      final boolean isNextRootDiffSection = nextRoot.isDiffSectionSpec();
+      if (!isNextRootDiffSection) {
+        nextRoot.populateTreeProps(context.getTreeProps());
+      }
+
       final boolean shouldTransferState =
           currentRoot != null && currentRoot.getClass().equals(nextRoot.getClass());
 
@@ -1536,12 +1581,8 @@ public class SectionTree {
                     + " to "
                     + nextRoot
                     + " while the later created a non-null service";
-            final ComponentsLogger logger = context.getLogger();
-            if (logger != null) {
-              logger.emitMessage(ERROR, errorMessage);
-            } else {
-              Log.e(SectionsDebug.TAG, errorMessage);
-            }
+            ComponentsReporter.emitMessage(
+                ComponentsReporter.LogLevel.ERROR, NULL_TO_NON_NULL_SERVICE_TRANSFER, errorMessage);
           }
         } else {
           nextRoot.transferService(nextRoot.getScopedContext(), currentRoot, nextRoot);
@@ -1563,14 +1604,13 @@ public class SectionTree {
         }
       }
 
-      if (!nextRoot.isDiffSectionSpec()) {
+      if (!isNextRootDiffSection) {
         final Map<String, Pair<Section, Integer>> currentComponentChildren =
             currentRoot == null || currentRoot.isDiffSectionSpec()
                 ? null
                 : Section.acquireChildrenMap(currentRoot);
 
         final TreeProps parentTreeProps = context.getTreeProps();
-        nextRoot.populateTreeProps(parentTreeProps);
         context.setTreeProps(nextRoot.getTreePropsForChildren(context, parentTreeProps));
 
         final ComponentsLogger logger = context.getLogger();
@@ -1644,7 +1684,7 @@ public class SectionTree {
   }
 
   private static List<StateContainer.StateUpdate> acquireUpdatesList() {
-    //TODO use pools t11953296
+    // TODO use pools t11953296
     return new ArrayList<>();
   }
 
@@ -1687,9 +1727,7 @@ public class SectionTree {
     }
   }
 
-  /**
-   * A builder class that can be used to create a {@link SectionTree}.
-   */
+  /** A builder class that can be used to create a {@link SectionTree}. */
   public static class Builder {
 
     private final SectionContext mContext;
@@ -1699,6 +1737,7 @@ public class SectionTree {
     private String mTag;
     private @Nullable LithoHandler mChangeSetThreadHandler;
     private boolean mForceSyncStateUpdates;
+    private boolean mPostToFrontOfQueueForFirstChangeset;
 
     private Builder(SectionContext componentContext, Target target) {
       mContext = componentContext;
@@ -1714,9 +1753,7 @@ public class SectionTree {
       return this;
     }
 
-    /**
-     * If enabled, all state updates will be performed on a background thread.
-     */
+    /** If enabled, all state updates will be performed on a background thread. */
     public Builder asyncStateUpdates(boolean asyncStateUpdates) {
       mAsyncStateUpdates = asyncStateUpdates;
       return this;
@@ -1755,9 +1792,13 @@ public class SectionTree {
       return this;
     }
 
-    /**
-     * @return the {@link SectionTree}.
-     */
+    public Builder postToFrontOfQueueForFirstChangeset(
+        boolean postToFrontOfQueueForFirstChangeset) {
+      mPostToFrontOfQueueForFirstChangeset = postToFrontOfQueueForFirstChangeset;
+      return this;
+    }
+
+    /** @return the {@link SectionTree}. */
     public SectionTree build() {
       return new SectionTree(this);
     }

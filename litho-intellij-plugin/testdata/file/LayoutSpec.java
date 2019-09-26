@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 @com.facebook.litho.annotations.LayoutSpec
-class Component {}
+class ComponentSpec {}

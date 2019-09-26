@@ -44,8 +44,7 @@ public class DefaultPropertyFoldingBuilder extends FoldingBuilderEx {
     FoldingGroup group = FoldingGroup.newGroup(FOLDING_GROUP_NAME);
 
     final Map<String, PsiExpression> defaultProps =
-        PsiTreeUtil.findChildrenOfType(root, PsiField.class)
-            .stream()
+        PsiTreeUtil.findChildrenOfType(root, PsiField.class).stream()
             .filter(LithoPluginUtils::isPropDefault)
             .filter(field -> field.getInitializer() != null)
             .collect(Collectors.toMap(PsiField::getName, PsiField::getInitializer));
@@ -54,8 +53,7 @@ public class DefaultPropertyFoldingBuilder extends FoldingBuilderEx {
       return FoldingDescriptor.EMPTY;
     }
 
-    return PsiTreeUtil.findChildrenOfType(root, PsiParameter.class)
-        .stream()
+    return PsiTreeUtil.findChildrenOfType(root, PsiParameter.class).stream()
         .filter(LithoPluginUtils::isProp)
         .map(
             parameter -> {
@@ -93,5 +91,4 @@ public class DefaultPropertyFoldingBuilder extends FoldingBuilderEx {
   public boolean isCollapsedByDefault(@NotNull ASTNode astNode) {
     return true;
   }
-
 }

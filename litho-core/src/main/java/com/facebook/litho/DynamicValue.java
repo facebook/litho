@@ -56,7 +56,7 @@ public class DynamicValue<T> {
    *
    * @return the current value
    */
-  T get() {
+  public T get() {
     return mValue;
   }
 

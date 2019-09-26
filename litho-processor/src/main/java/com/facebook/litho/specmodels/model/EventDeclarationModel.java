@@ -22,9 +22,7 @@ import com.squareup.javapoet.TypeName;
 import java.util.Objects;
 import javax.annotation.concurrent.Immutable;
 
-/**
- * Model that is an abstract representation of a {@link com.facebook.litho.annotations.Event}.
- */
+/** Model that is an abstract representation of a {@link com.facebook.litho.annotations.Event}. */
 @Immutable
 public class EventDeclarationModel {
   public final ClassName name;
@@ -58,5 +56,4 @@ public class EventDeclarationModel {
   public int hashCode() {
     return Objects.hash(name, returnType, fields, representedObject);
   }
-
 }

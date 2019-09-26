@@ -17,14 +17,12 @@
 package com.facebook.litho.sections;
 
 /**
- * An interface used by a {@link Section} to notify its users of the status
- * of the connection while loading new items.
+ * An interface used by a {@link Section} to notify its users of the status of the connection while
+ * loading new items.
  */
 public interface LoadEventsHandler {
 
-  /**
-   * Invoked when a {@link Section} performs it's initial fetch.
-   */
+  /** Invoked when a {@link Section} performs it's initial fetch. */
   void onInitialLoad();
 
   /**
@@ -43,7 +41,8 @@ public interface LoadEventsHandler {
 
   /**
    * Invoked every time the {@link Section} fails loading new elements.
-   * @param  empty true if after this failure the dataset is empty.
+   *
+   * @param empty true if after this failure the dataset is empty.
    */
   void onLoadFailed(boolean empty);
 }

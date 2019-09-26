@@ -87,51 +87,37 @@ public abstract class TestComponent extends Component {
     mOnDetachedCalled = true;
   }
 
-  /**
-   * @return Whether onMount has been called.
-   */
+  /** @return Whether onMount has been called. */
   public boolean wasOnMountCalled() {
     return mOnMountCalled;
   }
 
-  /**
-   * @return Whether the component is currently mounted.
-   */
+  /** @return Whether the component is currently mounted. */
   public boolean isMounted() {
     return mMounted;
   }
 
-  /**
-   * @return Whether onUnmount has been called.
-   */
+  /** @return Whether onUnmount has been called. */
   public boolean wasOnUnmountCalled() {
     return mOnUnmountCalled;
   }
 
-  /**
-   * @return Whether onBoundsDefined has been called.
-   */
+  /** @return Whether onBoundsDefined has been called. */
   public boolean wasOnBoundsDefinedCalled() {
     return mOnBoundsDefinedCalled;
   }
 
-  /**
-   * @return Whether onBind has been called.
-   */
+  /** @return Whether onBind has been called. */
   public boolean wasOnBindCalled() {
     return mOnBindCalled;
   }
 
-  /**
-   * @return Whether the component is bound.
-   */
+  /** @return Whether the component is bound. */
   public boolean isBound() {
     return mBound;
   }
 
-  /**
-   * @return Whether onUnbind has been called.
-   */
+  /** @return Whether onUnbind has been called. */
   public boolean wasOnUnbindCalled() {
     return mOnUnbindCalled;
   }

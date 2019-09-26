@@ -33,16 +33,12 @@ import com.facebook.litho.sections.annotations.OnDataBound;
 import com.facebook.litho.widget.Image;
 import com.facebook.litho.widget.Text;
 
-/**
- * Dummy {@link GroupSectionSpec} to illustrate how to test sections.
- */
+/** Dummy {@link GroupSectionSpec} to illustrate how to test sections. */
 @GroupSectionSpec
 public class VerySimpleGroupSectionSpec {
 
   @OnCreateInitialState
-  protected static void onCreateInitialState(
-      SectionContext c,
-      StateValue<Integer> extra) {
+  protected static void onCreateInitialState(SectionContext c, StateValue<Integer> extra) {
     extra.set(0);
   }
 
@@ -52,15 +48,17 @@ public class VerySimpleGroupSectionSpec {
     Children.Builder builder = Children.create();
 
     if (extra > 0) {
-      builder.child(SingleComponentSection.create(c)
-          .component(Image.create(c).drawable(new ColorDrawable()).build()));
+      builder.child(
+          SingleComponentSection.create(c)
+              .component(Image.create(c).drawable(new ColorDrawable()).build()));
     }
 
-    for (int i = 0; i < numberOfDummy+extra; i++) {
-      builder.child(SingleComponentSection.create(c)
-          .component(Text.create(c).text("Lol hi " + i).build())
-          .key("key" + i)
-          .build());
+    for (int i = 0; i < numberOfDummy + extra; i++) {
+      builder.child(
+          SingleComponentSection.create(c)
+              .component(Text.create(c).text("Lol hi " + i).build())
+              .key("key" + i)
+              .build());
     }
     return builder.build();
   }
@@ -72,9 +70,7 @@ public class VerySimpleGroupSectionSpec {
   }
 
   @OnUpdateState
-  static void onUpdateState(
-      StateValue<Integer> extra,
-      @Param int newExtra) {
+  static void onUpdateState(StateValue<Integer> extra, @Param int newExtra) {
     extra.set(newExtra);
   }
 

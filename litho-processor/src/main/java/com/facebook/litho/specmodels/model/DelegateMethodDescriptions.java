@@ -70,17 +70,16 @@ import java.util.Map;
 import java.util.TreeMap;
 import javax.lang.model.element.Modifier;
 
-/**
- * Descriptions of delegate methods.
- */
+/** Descriptions of delegate methods. */
 public final class DelegateMethodDescriptions {
   public static final DelegateMethodDescription ON_LOAD_STYLE =
       DelegateMethodDescription.newBuilder()
-          .annotations(ImmutableList.of(
-              AnnotationSpec.builder(SuppressWarnings.class)
-                  .addMember("value", "$S", "unchecked")
-                  .build(),
-              AnnotationSpec.builder(Override.class).build()))
+          .annotations(
+              ImmutableList.of(
+                  AnnotationSpec.builder(SuppressWarnings.class)
+                      .addMember("value", "$S", "unchecked")
+                      .build(),
+                  AnnotationSpec.builder(Override.class).build()))
           .accessType(Modifier.PROTECTED)
           .returnType(TypeName.VOID)
           .name("onLoadStyle")
@@ -501,21 +500,20 @@ public final class DelegateMethodDescriptions {
     layoutSpecDelegateMethodsMap.put(
         OnShouldCreateLayoutWithNewSizeSpec.class, ON_SHOULD_CREATE_LAYOUT_WITH_NEW_SIZE_SPEC);
     layoutSpecDelegateMethodsMap.put(OnCreateInitialState.class, ON_CREATE_INITIAL_STATE);
-    layoutSpecDelegateMethodsMap.put(
-        OnCreateTransition.class, ON_CREATE_TRANSITION);
+    layoutSpecDelegateMethodsMap.put(OnCreateTransition.class, ON_CREATE_TRANSITION);
     layoutSpecDelegateMethodsMap.put(ShouldUpdate.class, SHOULD_UPDATE);
     layoutSpecDelegateMethodsMap.put(OnAttached.class, ON_ATTACHED);
     layoutSpecDelegateMethodsMap.put(OnDetached.class, ON_DETACHED);
     LAYOUT_SPEC_DELEGATE_METHODS_MAP = Collections.unmodifiableMap(layoutSpecDelegateMethodsMap);
 
     Map<Class<? extends Annotation>, DelegateMethodDescription> mountSpecDelegateMethodsMap =
-        new TreeMap<>(new Comparator<Class<? extends Annotation>>() {
-          @Override
-          public int compare(
-              Class<? extends Annotation> lhs, Class<? extends Annotation> rhs) {
-            return lhs.toString().compareTo(rhs.toString());
-          }
-        });
+        new TreeMap<>(
+            new Comparator<Class<? extends Annotation>>() {
+              @Override
+              public int compare(Class<? extends Annotation> lhs, Class<? extends Annotation> rhs) {
+                return lhs.toString().compareTo(rhs.toString());
+              }
+            });
     mountSpecDelegateMethodsMap.put(OnCreateInitialState.class, ON_CREATE_INITIAL_STATE);
     mountSpecDelegateMethodsMap.put(OnLoadStyle.class, ON_LOAD_STYLE);
     mountSpecDelegateMethodsMap.put(OnError.class, ON_ERROR);
@@ -544,13 +542,13 @@ public final class DelegateMethodDescriptions {
     MOUNT_SPEC_DELEGATE_METHODS_MAP = Collections.unmodifiableMap(mountSpecDelegateMethodsMap);
 
     Map<Class<? extends Annotation>, Class<? extends Annotation>> interStageInputsMap =
-        new TreeMap<>(new Comparator<Class<? extends Annotation>>() {
-          @Override
-          public int compare(
-              Class<? extends Annotation> lhs, Class<? extends Annotation> rhs) {
-            return lhs.toString().compareTo(rhs.toString());
-          }
-        });
+        new TreeMap<>(
+            new Comparator<Class<? extends Annotation>>() {
+              @Override
+              public int compare(Class<? extends Annotation> lhs, Class<? extends Annotation> rhs) {
+                return lhs.toString().compareTo(rhs.toString());
+              }
+            });
     interStageInputsMap.put(FromPreviousCreateLayout.class, OnCreateLayoutWithSizeSpec.class);
     interStageInputsMap.put(FromPrepare.class, OnPrepare.class);
     interStageInputsMap.put(FromMeasure.class, OnMeasure.class);

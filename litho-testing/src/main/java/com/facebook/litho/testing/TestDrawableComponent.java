@@ -21,7 +21,6 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import androidx.annotation.AttrRes;
 import androidx.annotation.StyleRes;
-import androidx.core.util.Pools;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
@@ -34,13 +33,9 @@ public class TestDrawableComponent extends TestComponent {
     void onPrepare();
   }
 
-  private static final Pools.SynchronizedPool<Builder> sBuilderPool =
-      new Pools.SynchronizedPool<>(2);
-
   private static final long CALLS_SHOULD_UPDATE_ON_MOUNT = 1L << 0;
   private static final long IS_PURE_RENDER = 1L << 1;
   private static final long CAN_MEASURE = 1L << 2;
-  private static final long USES_DISPLAY_LIST = 1L << 3;
   private static final long IMPLEMENTS_ACCESSIBILITY = 1L << 4;
   private static final long IS_MOUNT_SIZE_DEPENDENT = 1L << 5;
 
@@ -78,11 +73,6 @@ public class TestDrawableComponent extends TestComponent {
   }
 
   @Override
-  protected boolean shouldUseDisplayList() {
-    return (mProperties & USES_DISPLAY_LIST) != 0;
-  }
-
-  @Override
   public boolean isMountSizeDependent() {
     return (mProperties & IS_MOUNT_SIZE_DEPENDENT) != 0;
   }
@@ -116,12 +106,8 @@ public class TestDrawableComponent extends TestComponent {
     int height = SizeSpec.getSize(heightSpec);
     onMeasureCalled();
 
-    size.width = (measuredWidth != -1)
-        ? SizeSpec.resolveSize(widthSpec, measuredWidth)
-        : width;
-    size.height = (measuredHeight != -1)
-        ? SizeSpec.resolveSize(heightSpec, measuredHeight)
-        : height;
+    size.width = measuredWidth != -1 ? SizeSpec.resolveSize(widthSpec, measuredWidth) : width;
+    size.height = measuredHeight != -1 ? SizeSpec.resolveSize(heightSpec, measuredHeight) : height;
   }
 
   @Override
@@ -167,10 +153,8 @@ public class TestDrawableComponent extends TestComponent {
   }
 
   public static Builder create(
-      ComponentContext context,
-      @AttrRes int defStyleAttr,
-      @StyleRes int defStyleRes) {
-    return create(context, defStyleAttr, defStyleRes, true, true, true, false, false);
+      ComponentContext context, @AttrRes int defStyleAttr, @StyleRes int defStyleRes) {
+    return create(context, defStyleAttr, defStyleRes, true, true, true, false);
   }
 
   public static Builder create(
@@ -180,8 +164,7 @@ public class TestDrawableComponent extends TestComponent {
       boolean callsShouldUpdateOnMount,
       boolean isPureRender,
       boolean canMeasure,
-      boolean implementsAccessibility,
-      boolean usesDisplayList) {
+      boolean implementsAccessibility) {
     return create(
         context,
         defStyleAttr,
@@ -190,7 +173,6 @@ public class TestDrawableComponent extends TestComponent {
         isPureRender,
         canMeasure,
         implementsAccessibility,
-        usesDisplayList,
         false);
   }
 
@@ -202,12 +184,11 @@ public class TestDrawableComponent extends TestComponent {
       boolean isPureRender,
       boolean canMeasure,
       boolean implementsAccessibility,
-      boolean usesDisplayList,
       boolean isMountSizeDependent) {
 
     long properties = 0;
-    
-    if (callsShouldUpdateOnMount) { 
+
+    if (callsShouldUpdateOnMount) {
       properties |= CALLS_SHOULD_UPDATE_ON_MOUNT;
     }
     if (isPureRender) {
@@ -219,9 +200,6 @@ public class TestDrawableComponent extends TestComponent {
     if (implementsAccessibility) {
       properties |= IMPLEMENTS_ACCESSIBILITY;
     }
-    if (usesDisplayList) {
-      properties |= USES_DISPLAY_LIST;
-    }
     if (isMountSizeDependent) {
       properties |= IS_MOUNT_SIZE_DEPENDENT;
     }
@@ -230,7 +208,7 @@ public class TestDrawableComponent extends TestComponent {
   }
 
   public static Builder create(ComponentContext context) {
-    return create(context, 0, 0, true, true, true, false, false, false);
+    return create(context, 0, 0, true, true, true, false, false);
   }
 
   public static Builder create(
@@ -238,17 +216,9 @@ public class TestDrawableComponent extends TestComponent {
       boolean callsShouldUpdateOnMount,
       boolean isPureRender,
       boolean canMeasure,
-      boolean implementsAccessibility,
-      boolean usesDisplayList) {
+      boolean implementsAccessibility) {
     return create(
-        context,
-        0,
-        0,
-        callsShouldUpdateOnMount,
-        isPureRender,
-        canMeasure,
-        implementsAccessibility,
-        usesDisplayList);
+        context, 0, 0, callsShouldUpdateOnMount, isPureRender, canMeasure, implementsAccessibility);
   }
 
   private static Builder newBuilder(

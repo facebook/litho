@@ -20,6 +20,7 @@ import android.view.View;
 
 /**
  * Binds data to a view.
+ *
  * @param <V> the type of View.
  */
 public interface ViewBinder<V extends View> {
@@ -27,13 +28,13 @@ public interface ViewBinder<V extends View> {
   /**
    * Prepares the binder to be bound to a view.
    *
-   * Use this method to perform calculations ahead of time and save them.
+   * <p>Use this method to perform calculations ahead of time and save them.
    */
   void prepare();
 
   /**
-   * Binds data to the given view so it can be rendered on screen. This will always be called
-   * after prepare so that you can use stored output from prepare here if needed.
+   * Binds data to the given view so it can be rendered on screen. This will always be called after
+   * prepare so that you can use stored output from prepare here if needed.
    *
    * @param view the view to bind.
    */

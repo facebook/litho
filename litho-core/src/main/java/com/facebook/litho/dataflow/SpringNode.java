@@ -20,8 +20,8 @@ import com.facebook.litho.dataflow.springs.Spring;
 import com.facebook.litho.dataflow.springs.SpringConfig;
 
 /**
- * A node that implements spring physics: it takes an initial value ("initial" input) and
- * end value ("end" input) and animates that value on each frame, outputting the progress over time.
+ * A node that implements spring physics: it takes an initial value ("initial" input) and end value
+ * ("end" input) and animates that value on each frame, outputting the progress over time.
  */
 public class SpringNode extends ValueNode implements NodeCanFinish {
 

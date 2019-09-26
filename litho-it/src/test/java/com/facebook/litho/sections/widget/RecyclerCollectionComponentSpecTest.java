@@ -54,9 +54,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
 
-/**
- * Tests {@link RecyclerCollectionComponentSpec}
- */
+/** Tests {@link RecyclerCollectionComponentSpec} */
 @RunWith(ComponentsTestRunner.class)
 public class RecyclerCollectionComponentSpecTest {
 
@@ -71,8 +69,10 @@ public class RecyclerCollectionComponentSpecTest {
 
   @Before
   public void assumeDebug() {
-    assumeThat("These tests can only be run in debug mode.",
-        ComponentsConfiguration.IS_INTERNAL_BUILD, is(true));
+    assumeThat(
+        "These tests can only be run in debug mode.",
+        ComponentsConfiguration.IS_INTERNAL_BUILD,
+        is(true));
   }
 
   @Before
@@ -109,33 +109,32 @@ public class RecyclerCollectionComponentSpecTest {
           }
         };
 
-    mRecyclerCollectionComponent = RecyclerCollectionComponent.create(mComponentContext)
-        .emptyComponent(mEmptyComponent)
-        .loadingComponent(mLoadingComponent)
-        .errorComponent(mErrorComponent)
-        .recyclerConfiguration(new ListRecyclerConfiguration(
-            LinearLayoutManager.VERTICAL,
-            false,
-            SNAP_NONE,
-            null))
-        .section(
-            SingleComponentSection.create(new SectionContext(mComponentContext))
-                .component(mContentComponent)
-                .build())
-        .build();
+    mRecyclerCollectionComponent =
+        RecyclerCollectionComponent.create(mComponentContext)
+            .emptyComponent(mEmptyComponent)
+            .loadingComponent(mLoadingComponent)
+            .errorComponent(mErrorComponent)
+            .recyclerConfiguration(
+                new ListRecyclerConfiguration(LinearLayoutManager.VERTICAL, false, SNAP_NONE, null))
+            .section(
+                SingleComponentSection.create(new SectionContext(mComponentContext))
+                    .component(mContentComponent)
+                    .build())
+            .build();
   }
 
   @Test
   public void testNothingShown() throws Exception {
-    mRecyclerCollectionComponent = RecyclerCollectionComponent.create(mComponentContext)
-        .loadingComponent(mLoadingComponent)
-        .errorComponent(mErrorComponent)
-        .recyclerConfiguration(new ListRecyclerConfiguration())
-        .section(
-            SingleComponentSection.create(new SectionContext(mComponentContext))
-                .component(Text.create(mComponentContext).text("content").build())
-                .build())
-        .build();
+    mRecyclerCollectionComponent =
+        RecyclerCollectionComponent.create(mComponentContext)
+            .loadingComponent(mLoadingComponent)
+            .errorComponent(mErrorComponent)
+            .recyclerConfiguration(new ListRecyclerConfiguration())
+            .section(
+                SingleComponentSection.create(new SectionContext(mComponentContext))
+                    .component(Text.create(mComponentContext).text("content").build())
+                    .build())
+            .build();
 
     assertThat(mComponentContext, mRecyclerCollectionComponent)
         .withStateUpdate(
@@ -236,9 +235,8 @@ public class RecyclerCollectionComponentSpecTest {
 
   @Test
   public void testInitialState() throws Exception {
-    LithoView view = ComponentTestHelper.mountComponent(
-        mComponentContext,
-        mRecyclerCollectionComponent);
+    LithoView view =
+        ComponentTestHelper.mountComponent(mComponentContext, mRecyclerCollectionComponent);
 
     ViewTreeAssert.assertThat(ViewTree.of(view))
         .hasVisibleText("loading")

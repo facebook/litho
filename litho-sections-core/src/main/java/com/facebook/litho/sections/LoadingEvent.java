@@ -45,7 +45,7 @@ public class LoadingEvent {
     FAILED
   }
 
-  //Whether after this loading event the dataset is still empty
+  // Whether after this loading event the dataset is still empty
   public boolean isEmpty;
   // Either INITIAL_LOAD, LOADING, SUCCEEDED OR FAILED
   public LoadingState loadingState;

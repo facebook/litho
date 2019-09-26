@@ -19,8 +19,8 @@ package com.facebook.litho.animation;
 import java.util.ArrayList;
 
 /**
- * An animation or set of animations using {@link com.facebook.litho.dataflow.GraphBinding}s.
- * In {@link #start}, subclasses can use the provided Resolver instance to reference concrete mount
+ * An animation or set of animations using {@link com.facebook.litho.dataflow.GraphBinding}s. In
+ * {@link #start}, subclasses can use the provided Resolver instance to reference concrete mount
  * item properties when creating the GraphBinding.
  */
 public interface AnimationBinding {
@@ -38,14 +38,10 @@ public interface AnimationBinding {
    */
   void start(Resolver resolver);
 
-  /**
-   * Stops this animation.
-   */
+  /** Stops this animation. */
   void stop();
 
-  /**
-   * @return whether this animation is running
-   */
+  /** @return whether this animation is running */
   boolean isActive();
 
   /**
@@ -53,18 +49,14 @@ public interface AnimationBinding {
    * to make sure before/after values are recorded and accessible for the animation. Implementations
    * should add their animating properties to this set.
    *
-   * Note: This is a 'collect' call instead of a getter to allocating more sets then necessary for
-   * animations with nested animation (e.g. a sequence of animations). Yay Java.
+   * <p>Note: This is a 'collect' call instead of a getter to allocating more sets then necessary
+   * for animations with nested animation (e.g. a sequence of animations). Yay Java.
    */
-   void collectTransitioningProperties(ArrayList<PropertyAnimation> outList);
+  void collectTransitioningProperties(ArrayList<PropertyAnimation> outList);
 
-  /**
-   * Adds a {@link AnimationBindingListener}.
-   */
+  /** Adds a {@link AnimationBindingListener}. */
   void addListener(AnimationBindingListener animationBindingListener);
 
-  /**
-   * Removes a previously added {@link AnimationBindingListener}.
-   */
+  /** Removes a previously added {@link AnimationBindingListener}. */
   void removeListener(AnimationBindingListener animationBindingListener);
 }

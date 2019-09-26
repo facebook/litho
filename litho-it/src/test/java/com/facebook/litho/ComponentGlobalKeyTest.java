@@ -23,10 +23,11 @@ import android.view.View;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestViewComponent;
-import com.facebook.litho.testing.logging.TestComponentsLogger;
+import com.facebook.litho.testing.logging.TestComponentsReporter;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
 import com.facebook.litho.widget.CardClip;
+import com.facebook.litho.widget.EditText;
 import com.facebook.litho.widget.Text;
 import org.junit.Assert;
 import org.junit.Before;
@@ -40,12 +41,13 @@ public class ComponentGlobalKeyTest {
   private static final String mLogTag = "logTag";
 
   private ComponentContext mContext;
-  private TestComponentsLogger mComponentsLogger;
+  private TestComponentsReporter mComponentsReporter;
 
   @Before
   public void setup() {
-    mComponentsLogger = new TestComponentsLogger();
-    mContext = new ComponentContext(RuntimeEnvironment.application, mLogTag, mComponentsLogger);
+    mComponentsReporter = new TestComponentsReporter();
+    mContext = new ComponentContext(RuntimeEnvironment.application);
+    ComponentsReporter.provide(mComponentsReporter);
   }
 
   @Test
@@ -102,7 +104,7 @@ public class ComponentGlobalKeyTest {
         ComponentKeyUtils.getKeyWithSeparator(
             layoutSpecId, columnSpecId, nestedLayoutSpecId, columnSpecId, "[TestViewComponent1]"),
         getComponentAt(lithoView, 1).getGlobalKey());
-    //background in child
+    // background in child
     Assert.assertNull(getComponentAt(lithoView, 2).getGlobalKey());
     // CardClip in child
     Assert.assertEquals(
@@ -154,8 +156,43 @@ public class ComponentGlobalKeyTest {
             + "this Text is a duplicate and will be changed into a unique one. This will "
             + "result in unexpected behavior if you don't change it.";
 
-    assertThat(mComponentsLogger.getLoggedMessages())
-        .contains(Pair.create(ComponentsLogger.LogLevel.WARNING, expectedError));
+    assertThat(mComponentsReporter.getLoggedMessages())
+        .contains(Pair.create(ComponentsReporter.LogLevel.WARNING, expectedError));
+  }
+
+  @Test
+  public void testSiblingsManualKeyDeduplication() {
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          @OnCreateLayout
+          protected Component onCreateLayout(ComponentContext c) {
+            return Column.create(c)
+                .child(EditText.create(c).text("").key("sameKey").widthDip(10).heightDip(10))
+                .child(EditText.create(c).text("").widthDip(10).heightDip(10))
+                .child(EditText.create(c).text("").key("sameKey").widthDip(10).heightDip(10))
+                .child(EditText.create(c).text("").key("sameKey").widthDip(10).heightDip(10))
+                .build();
+          }
+        };
+
+    LithoView lithoView = getLithoView(component);
+
+    final Component column = Column.create(mContext).build();
+    final int columnSpecId = column.getTypeId();
+    int layoutSpecId = component.getTypeId();
+
+    Assert.assertEquals(
+        ComponentKeyUtils.getKeyWithSeparator(layoutSpecId, columnSpecId, "sameKey"),
+        getComponentAt(lithoView, 0).getGlobalKey());
+
+    Assert.assertEquals(
+        ComponentKeyUtils.getKeyWithSeparator(layoutSpecId, columnSpecId, "sameKey!2"),
+        getComponentAt(lithoView, 2).getGlobalKey());
+
+    Assert.assertEquals(
+        ComponentKeyUtils.getKeyWithSeparator(layoutSpecId, columnSpecId, "sameKey!3"),
+        getComponentAt(lithoView, 3).getGlobalKey());
   }
 
   @Test
@@ -180,8 +217,8 @@ public class ComponentGlobalKeyTest {
             + "this Column is a duplicate and will be changed into a unique one. This will "
             + "result in unexpected behavior if you don't change it.";
 
-    assertThat(mComponentsLogger.getLoggedMessages())
-        .contains(Pair.create(ComponentsLogger.LogLevel.WARNING, expectedError));
+    assertThat(mComponentsReporter.getLoggedMessages())
+        .contains(Pair.create(ComponentsReporter.LogLevel.WARNING, expectedError));
   }
 
   @Test
@@ -210,7 +247,7 @@ public class ComponentGlobalKeyTest {
         ComponentKeyUtils.getKeyWithSeparator(layoutSpecId, columnTypeId, textSpecId),
         getComponentAt(lithoView, 0).getGlobalKey());
     Assert.assertEquals(
-        ComponentKeyUtils.getKeyWithSeparator(layoutSpecId, columnTypeId, textSpecId + "!0"),
+        ComponentKeyUtils.getKeyWithSeparator(layoutSpecId, columnTypeId, textSpecId + "!1"),
         getComponentAt(lithoView, 1).getGlobalKey());
   }
 
@@ -245,7 +282,7 @@ public class ComponentGlobalKeyTest {
         getComponentAt(lithoView, 0).getGlobalKey());
     Assert.assertEquals(
         ComponentKeyUtils.getKeyWithSeparator(
-            layoutSpecId, columnTypeId, columnTypeId + "!0", textSpecId),
+            layoutSpecId, columnTypeId, columnTypeId + "!1", textSpecId),
         getComponentAt(lithoView, 1).getGlobalKey());
   }
 
@@ -291,13 +328,13 @@ public class ComponentGlobalKeyTest {
         getComponentAt(lithoView, 0).getGlobalKey());
     Assert.assertEquals(
         ComponentKeyUtils.getKeyWithSeparator(
-            layoutSpecId, columnTypeId, nestedLayoutSpecId, columnTypeId, textSpecId + "!0"),
+            layoutSpecId, columnTypeId, nestedLayoutSpecId, columnTypeId, textSpecId + "!1"),
         getComponentAt(lithoView, 1).getGlobalKey());
     Assert.assertEquals(
         ComponentKeyUtils.getKeyWithSeparator(layoutSpecId, columnTypeId, textSpecId),
         getComponentAt(lithoView, 2).getGlobalKey());
     Assert.assertEquals(
-        ComponentKeyUtils.getKeyWithSeparator(layoutSpecId, columnTypeId, textSpecId + "!0"),
+        ComponentKeyUtils.getKeyWithSeparator(layoutSpecId, columnTypeId, textSpecId + "!1"),
         getComponentAt(lithoView, 3).getGlobalKey());
   }
 
@@ -344,11 +381,7 @@ public class ComponentGlobalKeyTest {
     lithoView.measure(
         View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
         View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
-    lithoView.layout(
-        0,
-        0,
-        lithoView.getMeasuredWidth(),
-        lithoView.getMeasuredHeight());
+    lithoView.layout(0, 0, lithoView.getMeasuredWidth(), lithoView.getMeasuredHeight());
     return lithoView;
   }
 

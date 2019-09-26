@@ -172,6 +172,12 @@ public class TransitionManager {
      * {@link LayoutState}s.
      */
     public boolean seenInLastTransition = false;
+
+    /**
+     * If this animation is running but the layout changed and it appeared/diappeared without an
+     * equivalent Transition specified, we need to interrupt this animation.
+     */
+    public boolean shouldFinishUndeclaredAnimation;
   }
 
   private final Map<AnimationBinding, List<PropertyHandle>> mAnimationsToPropertyHandles =
@@ -283,6 +289,30 @@ public class TransitionManager {
 
     if (isTracing) {
       ComponentsSystrace.endSection();
+    }
+  }
+
+  /**
+   * This method will check for running transitions which do not exist after a layout change.
+   * Therefore, they need to be interrupted and "finished".
+   */
+  // TODO: This is only catching changes in appeared/disappeared items. We need to investigate items
+  //       which change without a change transition declared. Also the flag should probably belong
+  //       to the properties and not to the AnimationState.
+  void finishUndeclaredTransitions() {
+    for (AnimationState animationState : new ArrayList<>(mAnimationStates.values())) {
+      if (animationState.shouldFinishUndeclaredAnimation) {
+        animationState.shouldFinishUndeclaredAnimation = false;
+
+        for (PropertyState propertyState :
+            new ArrayList<>(animationState.propertyStates.values())) {
+          final AnimationBinding animationBinding = propertyState.animation;
+          if (animationBinding != null) {
+            animationBinding.stop();
+            mAnimationBindingListener.finishAnimation(animationBinding);
+          }
+        }
+      }
     }
   }
 
@@ -618,6 +648,9 @@ public class TransitionManager {
     final String changeTypeString = changeTypeToString(animationState.changeType);
     if ((changeType == ChangeType.APPEARED && !transition.hasAppearAnimation())
         || (changeType == ChangeType.DISAPPEARED && !transition.hasDisappearAnimation())) {
+      // Interrupt running transitions after a layout change, without the new changeType defined.
+      animationState.shouldFinishUndeclaredAnimation = true;
+
       if (AnimationsDebug.ENABLED) {
         Log.d(
             AnimationsDebug.TAG,

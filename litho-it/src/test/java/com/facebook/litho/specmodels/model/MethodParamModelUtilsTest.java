@@ -37,8 +37,8 @@ public class MethodParamModelUtilsTest {
     MethodParamModel methodParam =
         MockMethodParamModel.newBuilder().annotations(Override.class).build();
     assertThat(MethodParamModelUtils.isAnnotatedWith(methodParam, Override.class)).isTrue();
-    assertThat(
-        MethodParamModelUtils.isAnnotatedWith(methodParam, SuppressWarnings.class)).isFalse();
+    assertThat(MethodParamModelUtils.isAnnotatedWith(methodParam, SuppressWarnings.class))
+        .isFalse();
   }
 
   @Test
@@ -80,5 +80,4 @@ public class MethodParamModelUtilsTest {
     assertThat(MethodParamModelUtils.getTypeVariables(type)).contains(type2);
     assertThat(MethodParamModelUtils.getTypeVariables(type)).contains(type3);
   }
-
 }

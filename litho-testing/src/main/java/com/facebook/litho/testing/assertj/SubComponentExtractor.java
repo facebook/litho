@@ -114,9 +114,9 @@ public class SubComponentExtractor implements Extractor<Component, List<Inspecta
     return new Condition<Component>() {
       @Override
       public boolean matches(Component component) {
-        as("number of sub components %s", matcher.toString());
-        final int numOfSubComponents = subComponents(c).extract(component).size();
-        return matcher.matches(numOfSubComponents);
+        final int num = subComponents(c).extract(component).size();
+        as("number of sub components %s but was %d", matcher.toString(), num);
+        return matcher.matches(num);
       }
     };
   }

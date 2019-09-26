@@ -15,7 +15,6 @@
  */
 package com.facebook.litho;
 
-import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -35,13 +34,12 @@ public class KeyHandler {
   private static final String STACK_TRACE_SPEC_MESSAGE =
       "Please look at the following spec hierarchy and make sure "
           + "all sibling children components of the same type have unique keys:\n";
+  private static final String DUPLICATE_KEY = "KeyHandler:DuplicateKey";
 
-  private final @Nullable ComponentsLogger mLogger;
   private final Set<String> mKnownGlobalKeys;
 
-  public KeyHandler(@Nullable ComponentsLogger logger) {
+  public KeyHandler() {
     mKnownGlobalKeys = new HashSet<>();
-    mLogger = logger;
   }
 
   public void registerKey(Component component) {
@@ -65,15 +63,14 @@ public class KeyHandler {
               + component.getSimpleName()
               + " Component with the same key: "
               + component.getKey();
-      final String errorMessage = mLogger == null ? message : getDuplicateKeyMessage();
+      final String errorMessage = getDuplicateKeyMessage();
 
       if (component.hasState()) {
         throw new RuntimeException(message + "\n" + errorMessage);
       }
 
-      if (mLogger != null) {
-        mLogger.emitMessage(ComponentsLogger.LogLevel.ERROR, message + "\n" + errorMessage);
-      }
+      ComponentsReporter.emitMessage(
+          ComponentsReporter.LogLevel.ERROR, DUPLICATE_KEY, message + "\n" + errorMessage);
     }
   }
 
@@ -97,7 +94,7 @@ public class KeyHandler {
           !specHierarchy.isEmpty() && specHierarchy.get(specHierarchy.size() - 1).equals(fileName);
 
       if (hasMatch(fileName)
-          && !mLogger.getKeyCollisionStackTraceBlacklist().contains(fileName)
+          && !ComponentsReporter.getKeyCollisionStackTraceBlacklist().contains(fileName)
           && !hasJustBeenAdded) {
         specHierarchy.add(fileName);
       }
@@ -130,7 +127,7 @@ public class KeyHandler {
   }
 
   private boolean hasMatch(String filename) {
-    for (String query : mLogger.getKeyCollisionStackTraceKeywords()) {
+    for (String query : ComponentsReporter.getKeyCollisionStackTraceKeywords()) {
       if (filename.contains(query)) {
         return true;
       }

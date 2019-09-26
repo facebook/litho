@@ -34,6 +34,7 @@ public class RecyclerBinderConfiguration {
   private final boolean mIsCircular;
   private final boolean mIsWrapContent;
   private final boolean mMoveLayoutsBetweenThreads;
+  private final boolean mCacheInternalNodeOnLayoutState;
   private final boolean mUseCancelableLayoutFutures;
   // TODO T34627443 make all fields final after removing setters
   private boolean mHasDynamicItemHeight;
@@ -47,6 +48,9 @@ public class RecyclerBinderConfiguration {
   private final boolean mSplitLayoutForMeasureAndRangeEstimation;
   @Nullable private LithoHandler mChangeSetThreadHandler;
   private final boolean mEnableDetach;
+  private final boolean mIsReconciliationEnabled;
+  private final boolean mIsLayoutDiffingEnabled;
+  private final boolean mPostToFrontOfQueueForFirstChangeset;
 
   public static Builder create() {
     return new Builder();
@@ -72,7 +76,11 @@ public class RecyclerBinderConfiguration {
       boolean enableDetach,
       @Nullable LithoHandler changeSetThreadHandler,
       boolean moveLayoutsBetweenThreads,
-      boolean useCancelableLayoutFutures) {
+      boolean cacheInternalNodeOnLayoutState,
+      boolean useCancelableLayoutFutures,
+      boolean isReconciliationEnabled,
+      boolean isLayoutDiffingEnabled,
+      boolean postToFrontOfQueueForFirstChangeset) {
     mRangeRatio = rangeRatio;
     mLayoutHandlerFactory = layoutHandlerFactory;
     mIsCircular = circular;
@@ -88,7 +96,11 @@ public class RecyclerBinderConfiguration {
     mEnableDetach = enableDetach;
     mChangeSetThreadHandler = changeSetThreadHandler;
     mMoveLayoutsBetweenThreads = moveLayoutsBetweenThreads;
+    mCacheInternalNodeOnLayoutState = cacheInternalNodeOnLayoutState;
     mUseCancelableLayoutFutures = useCancelableLayoutFutures;
+    mIsReconciliationEnabled = isReconciliationEnabled;
+    mIsLayoutDiffingEnabled = isLayoutDiffingEnabled;
+    mPostToFrontOfQueueForFirstChangeset = postToFrontOfQueueForFirstChangeset;
   }
 
   public float getRangeRatio() {
@@ -151,8 +163,24 @@ public class RecyclerBinderConfiguration {
     return mMoveLayoutsBetweenThreads;
   }
 
+  public boolean cacheInternalNodeOnLayoutState() {
+    return mCacheInternalNodeOnLayoutState;
+  }
+
   public boolean getEnableDetach() {
     return mEnableDetach;
+  }
+
+  public boolean isReconciliationEnabled() {
+    return mIsReconciliationEnabled;
+  }
+
+  public boolean isLayoutDiffingEnabled() {
+    return mIsLayoutDiffingEnabled;
+  }
+
+  public boolean isPostToFrontOfQueueForFirstChangeset() {
+    return mPostToFrontOfQueueForFirstChangeset;
   }
 
   public static class Builder {
@@ -177,8 +205,13 @@ public class RecyclerBinderConfiguration {
         ComponentsConfiguration.useCancelableLayoutFutures;
     private boolean mMoveLayoutsBetweenThreads =
         ComponentsConfiguration.canInterruptAndMoveLayoutsBetweenThreads;
+    private boolean mCacheInternalNodeOnLayoutState =
+        ComponentsConfiguration.cacheInternalNodeOnLayoutState;
     private boolean mEnableDetach = false;
     @Nullable private LithoHandler mChangeSetThreadHandler;
+    private boolean mIsReconciliationEnabled = ComponentsConfiguration.isReconciliationEnabled;
+    private boolean mIsLayoutDiffingEnabled = ComponentsConfiguration.isLayoutDiffingEnabled;
+    private boolean mPostToFrontOfQueueForFirstChangeset;
 
     Builder() {}
 
@@ -198,8 +231,13 @@ public class RecyclerBinderConfiguration {
           configuration.mSplitLayoutForMeasureAndRangeEstimation;
       this.mUseCancelableLayoutFutures = configuration.mUseCancelableLayoutFutures;
       this.mMoveLayoutsBetweenThreads = configuration.mMoveLayoutsBetweenThreads;
+      this.mCacheInternalNodeOnLayoutState = configuration.mCacheInternalNodeOnLayoutState;
       this.mEnableDetach = configuration.mEnableDetach;
       this.mChangeSetThreadHandler = configuration.mChangeSetThreadHandler;
+      this.mIsReconciliationEnabled = configuration.mIsReconciliationEnabled;
+      this.mIsLayoutDiffingEnabled = configuration.mIsLayoutDiffingEnabled;
+      this.mPostToFrontOfQueueForFirstChangeset =
+          configuration.mPostToFrontOfQueueForFirstChangeset;
     }
 
     /**
@@ -309,6 +347,11 @@ public class RecyclerBinderConfiguration {
       return this;
     }
 
+    public Builder cacheInternalNodeOnLayoutState(boolean isEnabled) {
+      this.mCacheInternalNodeOnLayoutState = isEnabled;
+      return this;
+    }
+
     public Builder useCancelableLayoutFutures(boolean isEnabled) {
       this.mUseCancelableLayoutFutures = isEnabled;
       return this;
@@ -322,6 +365,22 @@ public class RecyclerBinderConfiguration {
     /** If true, detach components under the hood when RecyclerBinder#detach() is called. */
     public Builder enableDetach(boolean enableDetach) {
       mEnableDetach = enableDetach;
+      return this;
+    }
+
+    public Builder isReconciliationEnabled(boolean isEnabled) {
+      mIsReconciliationEnabled = isEnabled;
+      return this;
+    }
+
+    public Builder isLayoutDiffingEnabled(boolean isEnabled) {
+      mIsLayoutDiffingEnabled = isEnabled;
+      return this;
+    }
+
+    public Builder postToFrontOfQueueForFirstChangeset(
+        boolean postToFrontOfQueueForFirstChangeset) {
+      mPostToFrontOfQueueForFirstChangeset = postToFrontOfQueueForFirstChangeset;
       return this;
     }
 
@@ -342,7 +401,11 @@ public class RecyclerBinderConfiguration {
           mEnableDetach,
           mChangeSetThreadHandler,
           mMoveLayoutsBetweenThreads,
-          mUseCancelableLayoutFutures);
+          mCacheInternalNodeOnLayoutState,
+          mUseCancelableLayoutFutures,
+          mIsReconciliationEnabled,
+          mIsLayoutDiffingEnabled,
+          mPostToFrontOfQueueForFirstChangeset);
     }
   }
 }

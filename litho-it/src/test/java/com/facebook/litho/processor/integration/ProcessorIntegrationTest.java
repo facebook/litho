@@ -100,50 +100,6 @@ public class ProcessorIntegrationTest {
 
   @Ignore("T41117446") //  Enable them after switching target to AndroidX
   @Test
-  public void compilesHotswapTestLayoutSpecWithoutError() {
-    final ComponentsProcessor processor = new ComponentsProcessor();
-    processor.forceHotswapMode();
-
-    final JavaFileObject javaFileObject =
-        JavaFileObjects.forResource(
-            Resources.getResource(getClass(), RES_PREFIX + "TestLayoutSpec.java"));
-
-    final JavaFileObject testTreePropFileObject =
-        JavaFileObjects.forResource(
-            Resources.getResource(getClass(), RES_PREFIX + "TestTreeProp.java"));
-
-    final JavaFileObject testEventFileObject =
-        JavaFileObjects.forResource(
-            Resources.getResource(getClass(), RES_PREFIX + "TestEvent.java"));
-
-    final JavaFileObject testTagFileObject =
-        JavaFileObjects.forResource(Resources.getResource(getClass(), RES_PREFIX + "TestTag.java"));
-
-    final JavaFileObject expectedOutput =
-        JavaFileObjects.forResource(
-            Resources.getResource(getClass(), RES_PREFIX + "TestHotswapLayout.java"));
-
-    Truth.assertAbout(JavaSourcesSubjectFactory.javaSources())
-        .that(
-            ImmutableList.of(
-                javaFileObject, testTreePropFileObject, testEventFileObject, testTagFileObject))
-        .processedWith(processor)
-        .compilesWithoutError()
-        .and()
-        .generatesFileNamed(StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "TestLayout.class")
-        .and()
-        .generatesFileNamed(
-            StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "TestLayout$TestLayoutStateContainer.class")
-        .and()
-        .generatesFileNamed(StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "TestLayout$Builder.class")
-        .and()
-        .generatesFileNamed(StandardLocation.CLASS_OUTPUT, RES_PACKAGE, "TestLayoutSpec.class")
-        .and()
-        .generatesSources(expectedOutput);
-  }
-
-  @Ignore("T41117446") //  Enable them after switching target to AndroidX
-  @Test
   public void compilesTestMountSpec() {
     final JavaFileObject javaFileObject =
         JavaFileObjects.forResource(

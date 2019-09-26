@@ -357,8 +357,8 @@ public class CommonPropsTest {
     final InternalNode node = spy(new DefaultInternalNode(mComponentContext));
 
     mCommonProps.background(
-            ComparableResDrawable.create(
-                mComponentContext.getAndroidContext(), background_with_padding));
+        ComparableResDrawable.create(
+            mComponentContext.getAndroidContext(), background_with_padding));
 
     mCommonProps.copyInto(mComponentContext, node);
 
@@ -373,8 +373,8 @@ public class CommonPropsTest {
     final InternalNode node = spy(new DefaultInternalNode(mComponentContext));
 
     mCommonProps.background(
-            ComparableResDrawable.create(
-                mComponentContext.getAndroidContext(), background_with_padding));
+        ComparableResDrawable.create(
+            mComponentContext.getAndroidContext(), background_with_padding));
     mCommonProps.paddingPx(YogaEdge.LEFT, 0);
     mCommonProps.paddingPx(YogaEdge.TOP, 0);
     mCommonProps.paddingPx(YogaEdge.RIGHT, 0);

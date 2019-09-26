@@ -42,6 +42,5 @@ com.facebook.litho.testing.viewtree
 com.facebook.litho.utils
 com.facebook.litho.viewcompat
 com.facebook.litho.widget
-com.facebook.proguard.annotations
 com.facebook.widget.accessibility.delegates
 com.facebook.yoga

@@ -38,6 +38,8 @@ LITHO_LITHO_FRESCO_TARGET = make_dep_path("litho-fresco/src/main/java/com/facebo
 
 LITHO_STATS_TARGET = make_dep_path("litho-core/src/main/java/com/facebook/litho/stats:stats")
 
+LITHO_YOGA_FACTORY_TARGET = make_dep_path("litho-core/src/main/java/com/facebook/litho/yoga:yoga")
+
 LITHO_TESTING_CORE_V3_TARGET = make_dep_path("litho-testing/src/main/java/com/facebook/litho:litho")
 
 LITHO_TESTING_CORE_V4_TARGET = make_dep_path("litho-testing/src/main/java/com/facebook/litho:litho-v4")
@@ -107,6 +109,8 @@ LITHO_ANDROIDSUPPORT_TESTING_TARGET = make_dep_path("lib/androidx:androidx-testi
 LITHO_YOGA_TARGET = make_dep_path("lib/yoga:yoga")
 
 LITHO_YOGAJNI_TARGET = make_dep_path("lib/yogajni:jni")
+
+LITHO_PROGUARD_ANNOTATIONS_TARGET = make_dep_path("lib/yoga:proguard-annotations")
 
 LITHO_BUILD_CONFIG_TARGET = make_dep_path(":build_config")
 

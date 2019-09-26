@@ -49,17 +49,6 @@ class TestComponentContext extends ComponentContext {
   }
 
   @Override
-  InternalNode resolveLayout(Component component) {
-    if (component.canResolve()) {
-      return super.resolveLayout(component);
-    }
-
-    InternalNode node = InternalNodeUtils.create(this);
-    node.appendComponent(new TestComponent(component));
-    return node;
-  }
-
-  @Override
   TestComponentContext makeNewCopy() {
     return new TestComponentContext(this);
   }

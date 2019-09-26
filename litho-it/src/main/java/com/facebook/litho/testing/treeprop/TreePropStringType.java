@@ -18,7 +18,7 @@ package com.facebook.litho.testing.treeprop;
 
 public class TreePropStringType {
 
-  final private String mValue;
+  private final String mValue;
 
   public TreePropStringType(String value) {
     mValue = value;

@@ -16,7 +16,6 @@
 
 package com.facebook.litho;
 
-
 public class HandlerInstrumenter {
 
   public interface Instrumenter {

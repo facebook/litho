@@ -24,11 +24,9 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import android.graphics.Rect;
 import android.view.View;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.TestViewComponent;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
-import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaJustify;
 import org.junit.Before;
 import org.junit.Test;
@@ -73,11 +71,13 @@ public class MountStateBoundsTest {
             });
 
     final View mountedView = lithoView.getChildAt(0);
-    assertThat(new Rect(
-        mountedView.getLeft(),
-        mountedView.getTop(),
-        mountedView.getRight(),
-        mountedView.getBottom())).isEqualTo(new Rect(0, 0, 10, 10));
+    assertThat(
+            new Rect(
+                mountedView.getLeft(),
+                mountedView.getTop(),
+                mountedView.getRight(),
+                mountedView.getBottom()))
+        .isEqualTo(new Rect(0, 0, 10, 10));
   }
 
   @Test
@@ -101,11 +101,8 @@ public class MountStateBoundsTest {
 
     final ComponentHost host = (ComponentHost) lithoView.getChildAt(0);
     assertThat(host.getDrawables().get(0).getBounds()).isEqualTo(new Rect(0, 0, 10, 10));
-    assertThat(new Rect(
-        host.getLeft(),
-        host.getTop(),
-        host.getRight(),
-        host.getBottom())).isEqualTo(new Rect(0, 0, 20, 20));
+    assertThat(new Rect(host.getLeft(), host.getTop(), host.getRight(), host.getBottom()))
+        .isEqualTo(new Rect(0, 0, 20, 20));
   }
 
   @Test
@@ -140,18 +137,17 @@ public class MountStateBoundsTest {
     final ComponentHost host = (ComponentHost) lithoView.getChildAt(0);
     final ComponentHost nestedHost = (ComponentHost) host.getChildAt(0);
 
-    assertThat(new Rect(
-        host.getLeft(),
-        host.getTop(),
-        host.getRight(),
-        host.getBottom())).isEqualTo(new Rect(100, 100, 200, 200));
+    assertThat(new Rect(host.getLeft(), host.getTop(), host.getRight(), host.getBottom()))
+        .isEqualTo(new Rect(100, 100, 200, 200));
 
     assertThat(nestedHost.getDrawables().get(0).getBounds()).isEqualTo(new Rect(20, 20, 40, 40));
 
-    assertThat(new Rect(
-        nestedHost.getLeft(),
-        nestedHost.getTop(),
-        nestedHost.getRight(),
-        nestedHost.getBottom())).isEqualTo(new Rect(20, 20, 80, 80));
+    assertThat(
+            new Rect(
+                nestedHost.getLeft(),
+                nestedHost.getTop(),
+                nestedHost.getRight(),
+                nestedHost.getBottom()))
+        .isEqualTo(new Rect(20, 20, 80, 80));
   }
 }

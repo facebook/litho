@@ -39,7 +39,6 @@ import org.robolectric.RuntimeEnvironment;
  * Tests for {@link LithoView} and {@link MountState} to make sure mount only happens once when
  * attaching the view and setting the component.
  */
-
 @RunWith(ComponentsTestRunner.class)
 public class LithoViewMountTest {
   private ComponentContext mContext;
@@ -254,15 +253,15 @@ public class LithoViewMountTest {
     assertThat(child2.isMounted()).isTrue();
   }
 
-  private ComponentTree createComponentTree(boolean useSpy, boolean incMountEnabled, int width, int height) {
+  private ComponentTree createComponentTree(
+      boolean useSpy, boolean incMountEnabled, int width, int height) {
     ComponentTree componentTree =
         ComponentTree.create(mContext, mComponent)
             .incrementalMount(incMountEnabled)
             .layoutDiffing(false)
             .build();
     componentTree.setSizeSpec(
-        SizeSpec.makeSizeSpec(width, EXACTLY),
-        SizeSpec.makeSizeSpec(height, EXACTLY));
+        SizeSpec.makeSizeSpec(width, EXACTLY), SizeSpec.makeSizeSpec(height, EXACTLY));
 
     return useSpy ? spy(componentTree) : componentTree;
   }

@@ -39,6 +39,7 @@ import android.text.style.ImageSpan;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
+import androidx.annotation.VisibleForTesting;
 import com.facebook.fbui.textlayoutbuilder.util.LayoutMeasureUtil;
 import com.facebook.litho.TextContent;
 import com.facebook.litho.Touchable;
@@ -47,8 +48,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 /**
- * A {@link Drawable} for mounting text content from a
- * {@link Component}.
+ * A {@link Drawable} for mounting text content from a {@link Component}.
  *
  * @see Component
  * @see TextSpec
@@ -278,10 +278,7 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
   }
 
   public void mount(
-      CharSequence text,
-      Layout layout,
-      int userColor,
-      ClickableSpan[] clickableSpans) {
+      CharSequence text, Layout layout, int userColor, ClickableSpan[] clickableSpans) {
     mount(
         text,
         layout,
@@ -448,12 +445,10 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
   }
 
   @Override
-  public void setAlpha(int alpha) {
-  }
+  public void setAlpha(int alpha) {}
 
   @Override
-  public void setColorFilter(ColorFilter cf) {
-  }
+  public void setColorFilter(ColorFilter cf) {}
 
   @Override
   public int getOpacity() {
@@ -468,6 +463,10 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
     return mLayout.getPaint().getColor();
   }
 
+  public float getTextSize() {
+    return mLayout.getPaint().getTextSize();
+  }
+
   @Override
   public List<CharSequence> getTextItems() {
     return mText != null ? Collections.singletonList(mText) : Collections.<CharSequence>emptyList();
@@ -475,10 +474,11 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
 
   /**
    * Get the clickable span that is at the exact coordinates
+   *
    * @param x x-position of the click
    * @param y y-position of the click
-   * @return a clickable span that's located where the click occurred,
-   *   or: {@code null} if no clickable span was located there
+   * @return a clickable span that's located where the click occurred, or: {@code null} if no
+   *     clickable span was located there
    */
   @Nullable
   private ClickableSpan getClickableSpanInCoords(int x, int y) {
@@ -486,10 +486,8 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
     if (offset < 0) {
       return null;
     }
-    final ClickableSpan[] clickableSpans = ((Spanned) mText).getSpans(
-        offset,
-        offset,
-        ClickableSpan.class);
+    final ClickableSpan[] clickableSpans =
+        ((Spanned) mText).getSpans(offset, offset, ClickableSpan.class);
 
     if (clickableSpans != null && clickableSpans.length > 0) {
       return clickableSpans[0];
@@ -535,25 +533,29 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
       return mLayout.getOffsetForHorizontal(line, x);
     } catch (ArrayIndexOutOfBoundsException e) {
       // This happens for bidi text on Android 7-8.
-      // See https://android.googlesource.com/platform/frameworks/base/+/821e9bd5cc2be4b3210cb0226e40ba0f42b51aed
+      // See
+      // https://android.googlesource.com/platform/frameworks/base/+/821e9bd5cc2be4b3210cb0226e40ba0f42b51aed
       return -1;
     }
   }
 
+  @VisibleForTesting
+  @Nullable
+  Layout.Alignment getLayoutAlignment() {
+    return mLayout == null ? null : mLayout.getAlignment();
+  }
+
   /**
    * Get the clickable span that's close to where the view was clicked.
+   *
    * @param x x-position of the click
    * @param y y-position of the click
-   * @return a clickable span that's close the click position,
-   *   or: {@code null} if no clickable span was close to the click,
-   *   or if a link was directly clicked or if more than one clickable
-   *   span was in proximity to the click.
+   * @return a clickable span that's close the click position, or: {@code null} if no clickable span
+   *     was close to the click, or if a link was directly clicked or if more than one clickable
+   *     span was in proximity to the click.
    */
   @Nullable
-  private ClickableSpan getClickableSpanInProximityToClick(
-      float x,
-      float y,
-      float tapRadius) {
+  private ClickableSpan getClickableSpanInProximityToClick(float x, float y, float tapRadius) {
     final Region touchAreaRegion = new Region();
     final Region clipBoundsRegion = new Region();
 
@@ -562,10 +564,7 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
     }
 
     clipBoundsRegion.set(
-        0,
-        0,
-        LayoutMeasureUtil.getWidth(mLayout),
-        LayoutMeasureUtil.getHeight(mLayout));
+        0, 0, LayoutMeasureUtil.getWidth(mLayout), LayoutMeasureUtil.getHeight(mLayout));
     mTouchAreaPath.reset();
     mTouchAreaPath.addCircle(x, y, tapRadius, Path.Direction.CW);
     touchAreaRegion.setPath(mTouchAreaPath, clipBoundsRegion);
@@ -615,12 +614,13 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
 
   /**
    * Updates selection to [selectionStart, selectionEnd] range.
+   *
    * @param selectionStart
    * @param selectionEnd
    */
   private void setSelection(int selectionStart, int selectionEnd) {
-    if (Color.alpha(mHighlightColor) == 0 ||
-        (mSelectionStart == selectionStart && mSelectionEnd == selectionEnd)) {
+    if (Color.alpha(mHighlightColor) == 0
+        || (mSelectionStart == selectionStart && mSelectionEnd == selectionEnd)) {
       return;
     }
 
@@ -652,9 +652,7 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
     final Path clickableSpanAreaPath = new Path();
 
     layout.getSelectionPath(
-        buffer.getSpanStart(span),
-        buffer.getSpanEnd(span),
-        clickableSpanAreaPath);
+        buffer.getSpanStart(span), buffer.getSpanEnd(span), clickableSpanAreaPath);
     clickableSpanAreaRegion.setPath(clickableSpanAreaPath, clipBoundsRegion);
 
     return clickableSpanAreaRegion.op(touchAreaRegion, Region.Op.INTERSECT);

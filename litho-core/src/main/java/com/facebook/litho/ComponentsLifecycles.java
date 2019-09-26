@@ -24,8 +24,8 @@ import android.os.Looper;
 import java.util.WeakHashMap;
 
 /**
- * Callbacks that must be invoked to avoid leaking memory if using Components
- * below ICS (API level 14).
+ * Callbacks that must be invoked to avoid leaking memory if using Components below ICS (API level
+ * 14).
  */
 public class ComponentsLifecycles {
   private static class LeakDetector {
@@ -46,12 +46,15 @@ public class ComponentsLifecycles {
 
         // Post the error to the main thread to bring down the process -
         // exceptions on finalizer threads are ignored by default.
-        new Handler(Looper.getMainLooper()).post(new Runnable() {
-          @Override
-          public void run() {
-            throw new RuntimeException("onContextDestroyed method not called for: " + context);
-          }
-        });
+        new Handler(Looper.getMainLooper())
+            .post(
+                new Runnable() {
+                  @Override
+                  public void run() {
+                    throw new RuntimeException(
+                        "onContextDestroyed method not called for: " + context);
+                  }
+                });
       }
     }
   }

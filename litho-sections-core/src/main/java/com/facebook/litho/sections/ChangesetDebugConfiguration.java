@@ -29,7 +29,70 @@ import javax.annotation.Nullable;
 public class ChangesetDebugConfiguration {
   private static @Nullable ChangesetDebugListener sListener;
 
+  public static class ChangesetDebugInfo {
+    final @ApplyNewChangeSet int mSource;
+    final @Nullable String mAttribution;
+    private StackTraceElement[] mStackTrace;
+    @Nullable Section mOldSection;
+    @Nullable String mUpdateStateAttribution;
+
+    ChangesetDebugInfo(
+        int source,
+        @Nullable String attribution,
+        @Nullable Section oldSection,
+        StackTraceElement[] stackTrace) {
+      this(source, attribution, null, oldSection, stackTrace);
+    }
+
+    ChangesetDebugInfo(
+        int source,
+        @Nullable String attribution,
+        @Nullable String updateStateAttribution,
+        @Nullable Section oldSection,
+        StackTraceElement[] stackTrace) {
+      mSource = source;
+      mAttribution = attribution;
+      mUpdateStateAttribution = updateStateAttribution;
+      mOldSection = oldSection;
+      mStackTrace = stackTrace;
+    }
+
+    /** Get the id for the type of event that triggered a new changeset generation. */
+    public int getSource() {
+      return mSource;
+    }
+
+    /** Get the name of the section to which a new changeset generation is attributed to. */
+    @Nullable
+    public String getAttribution() {
+      return mAttribution;
+    }
+
+    /** Get the root section from the old tree. */
+    @Nullable
+    public Section getOldSection() {
+      return mOldSection;
+    }
+
+    /** Get the name of the section which triggered a state update. */
+    @Nullable
+    public String getUpdateStateAttribution() {
+      return mUpdateStateAttribution;
+    }
+
+    public StackTraceElement[] getStackTrace() {
+      return mStackTrace;
+    }
+  }
+
   public interface ChangesetDebugListener {
+    void onChangesetApplied(
+        @Nullable Section rootSection,
+        ChangesInfo changesInfo,
+        String surfaceId,
+        ChangesetDebugInfo changesetDebugInfo);
+
+    @Deprecated
     void onChangesetApplied(
         @Nullable Section rootSection,
         @Nullable Section oldSection,

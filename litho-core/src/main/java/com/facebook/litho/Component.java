@@ -76,6 +76,11 @@ import javax.annotation.Nullable;
 public abstract class Component extends ComponentLifecycle
     implements Cloneable, HasEventDispatcher, HasEventTrigger, Equivalence<Component> {
 
+  private static final String DUPLICATE_MANUAL_KEY = "Component:DuplicateManualKey";
+  private static final String MISMATCHING_BASE_CONTEXT = "Component:MismatchingBaseContext";
+  private static final String NULL_PARENT_KEY = "Component:NullParentKey";
+  private static final String NULL_KEY_SET = "Component:NullKeySet";
+
   private static final AtomicInteger sIdGenerator = new AtomicInteger(1);
   private static final DynamicValue[] sEmptyArray = new DynamicValue[0];
 
@@ -205,16 +210,14 @@ public abstract class Component extends ComponentLifecycle
   private static void assertSameBaseContext(
       ComponentContext scopedContext, ComponentContext willRenderContext) {
     if (scopedContext.getAndroidContext() != willRenderContext.getAndroidContext()) {
-      final ComponentsLogger logger = scopedContext.getLogger();
-      if (logger != null) {
-        logger.emitMessage(
-            ComponentsLogger.LogLevel.ERROR,
-            "Found mismatching base contexts between the Component's Context ("
-                + scopedContext.getAndroidContext()
-                + ") and the Context used in willRender ("
-                + willRenderContext.getAndroidContext()
-                + ")!");
-      }
+      ComponentsReporter.emitMessage(
+          ComponentsReporter.LogLevel.ERROR,
+          MISMATCHING_BASE_CONTEXT,
+          "Found mismatching base contexts between the Component's Context ("
+              + scopedContext.getAndroidContext()
+              + ") and the Context used in willRender ("
+              + willRenderContext.getAndroidContext()
+              + ")!");
     }
   }
 
@@ -291,55 +294,26 @@ public abstract class Component extends ComponentLifecycle
    */
   private String generateUniqueGlobalKeyForChild(Component component, String key) {
     final String childKey = ComponentKeyUtils.getKeyWithSeparator(getGlobalKey(), key);
-    final KeyHandler keyHandler = mScopedContext.getKeyHandler();
 
-    /* Null check is for testing only, the keyHandler should never be null here otherwise. */
-    if (keyHandler == null) {
-      return childKey;
+    if (component.mHasManualKey) { // if the component has a manual key
+      if (mManualKeys == null) {
+        mManualKeys = new HashSet<>();
+      }
+      if (mManualKeys.contains(childKey)) { // if it is a duplicate
+        logDuplicateManualKeyWarning(component, key); // log a warning and generate a unique key
+      } else {
+        mManualKeys.add(childKey);
+        getChildCountAndIncrement(component); // to avoid subsequent clash with a generated key
+        return childKey; // return it
+      }
     }
 
-    if (mScopedContext.isReconciliationEnabled()) {
-      /*
-       Instead of relying on the KeyHandler to hold all registered keys and check for duplicates
-       against it; this implementation checks if the key (read child type) is unique within it's
-       parent. Which will recursively ensure that all global keys are unique.
+    int childCount = getChildCountAndIncrement(component);
 
-       This will also calculate the global keys for the descendants of a nested tree correctly if
-       it is resolved again, which causes clashes with the KeyHandler because the keys were
-       already registered during measure pass.
-      */
-
-      if (component.mHasManualKey) { // if the component has a manual key
-        if (mManualKeys == null) {
-          mManualKeys = new HashSet<>();
-        }
-        if (mManualKeys.contains(childKey)) { // if it is a duplicate
-          logDuplicateManualKeyWarning(component, key); // log a warning and generate a unique key
-        } else {
-          mManualKeys.add(childKey);
-          getChildCountAndIncrement(component); // to avoid subsequent clash with a generated key
-          return childKey; // return it
-        }
-      }
-
-      int childCount = getChildCountAndIncrement(component);
-
-      if (childCount == 0) { // if first child of type then return the child key
-        return childKey;
-      } else { // if NOT first child of type append the child count to the child key
-        return getKeyForChildPosition(childKey, childCount);
-      }
-
-    } else if (keyHandler.hasKey(childKey)) { // If the key is duplicate append it with child count
-
-      // The component has a manual key set on it but that key is a duplicate
-      if (component.mHasManualKey) {
-        logDuplicateManualKeyWarning(component, key); // log a warning and generate a key
-      }
-
-      return getKeyForChildPosition(childKey, getChildCountAndIncrement(component));
-    } else { // If the key is unique return it
+    if (childCount == 0) { // if first child of type then return the child key
       return childKey;
+    } else { // if NOT first child of type append the child count to the child key
+      return getKeyForChildPosition(childKey, childCount);
     }
   }
 
@@ -363,17 +337,15 @@ public abstract class Component extends ComponentLifecycle
   }
 
   private void logDuplicateManualKeyWarning(Component component, String key) {
-    final ComponentsLogger logger = mScopedContext.getLogger();
-    if (logger != null) {
-      logger.emitMessage(
-          ComponentsLogger.LogLevel.WARNING,
-          "The manual key "
-              + key
-              + " you are setting on this "
-              + component.getSimpleName()
-              + " is a duplicate and will be changed into a unique one. "
-              + "This will result in unexpected behavior if you don't change it.");
-    }
+    ComponentsReporter.emitMessage(
+        ComponentsReporter.LogLevel.WARNING,
+        DUPLICATE_MANUAL_KEY,
+        "The manual key "
+            + key
+            + " you are setting on this "
+            + component.getSimpleName()
+            + " is a duplicate and will be changed into a unique one. "
+            + "This will result in unexpected behavior if you don't change it.");
   }
 
   public Component makeShallowCopy() {
@@ -417,7 +389,18 @@ public abstract class Component extends ComponentLifecycle
   }
 
   @Nullable
-  InternalNode getCachedLayout() {
+  InternalNode getCachedLayout(ComponentContext c) {
+    final LayoutState layoutState = c.getLayoutState();
+    if (layoutState == null) {
+      throw new IllegalStateException(
+          getSimpleName()
+              + ": Trying to access the cached InternalNode for a component outside of a LayoutState calculation. If that is what you must do, see Component#measureMightNotCacheInternalNode.");
+    }
+
+    if (layoutState.shouldCacheInternalNodeOnLayoutState()) {
+      return layoutState.getCachedLayout(this);
+    }
+
     return mThreadIdToLastMeasuredLayout == null
         ? null
         : mThreadIdToLastMeasuredLayout.get(Thread.currentThread().getId());
@@ -427,8 +410,17 @@ public abstract class Component extends ComponentLifecycle
    * Only use if absolutely needed! This removes the cached layout so this component will be
    * remeasured even if it has alread been measured with the same size specs.
    */
-  public void clearCachedLayout() {
-    if (getCachedLayout() != null) {
+  public void clearCachedLayout(ComponentContext c) {
+    final LayoutState layoutState = c.getLayoutState();
+    if (layoutState == null) {
+      throw new IllegalStateException(
+          getSimpleName()
+              + ": Trying to access the cached InternalNode for a component outside of a LayoutState calculation. If that is what you must do, see Component#measureMightNotCacheInternalNode.");
+    }
+
+    if (layoutState.shouldCacheInternalNodeOnLayoutState()) {
+      layoutState.clearCachedLayout(this);
+    } else if (mThreadIdToLastMeasuredLayout != null) {
       mThreadIdToLastMeasuredLayout.remove(Thread.currentThread().getId());
     }
   }
@@ -446,24 +438,24 @@ public abstract class Component extends ComponentLifecycle
    * @param outputSize Size object that will be set with the measured dimensions.
    */
   public void measure(ComponentContext c, int widthSpec, int heightSpec, Size outputSize) {
-    InternalNode lastMeasuredLayout = getCachedLayout();
+    if (!c.hasLayoutState()) {
+      throw new IllegalStateException(
+          getSimpleName()
+              + ": Trying to measure a component outside of a LayoutState calculation. If that is what you must do, see Component#measureMightNotCacheInternalNode.");
+    }
+
+    InternalNode lastMeasuredLayout = getCachedLayout(c);
     if (lastMeasuredLayout == null
         || !MeasureComparisonUtils.isMeasureSpecCompatible(
             lastMeasuredLayout.getLastWidthSpec(), widthSpec, lastMeasuredLayout.getWidth())
         || !MeasureComparisonUtils.isMeasureSpecCompatible(
             lastMeasuredLayout.getLastHeightSpec(), heightSpec, lastMeasuredLayout.getHeight())) {
-      clearCachedLayout();
+      clearCachedLayout(c);
 
       lastMeasuredLayout =
           LayoutState.createAndMeasureTreeForComponent(c, this, widthSpec, heightSpec);
 
-      // We just want to make sure this isn't initialized on multiple threads
-      synchronized (this) {
-        if (mThreadIdToLastMeasuredLayout == null) {
-          mThreadIdToLastMeasuredLayout = new ConcurrentHashMap<>(2);
-        }
-      }
-      mThreadIdToLastMeasuredLayout.put(Thread.currentThread().getId(), lastMeasuredLayout);
+      cacheLastMeasuredLayout(c, lastMeasuredLayout);
 
       // This component resolution won't be deferred nor onMeasure called if it's a layout spec.
       // In that case it needs to manually save the latest saze specs.
@@ -475,9 +467,63 @@ public abstract class Component extends ComponentLifecycle
         lastMeasuredLayout.setLastMeasuredHeight(lastMeasuredLayout.getHeight());
       }
     }
-
     outputSize.width = lastMeasuredLayout.getWidth();
     outputSize.height = lastMeasuredLayout.getHeight();
+  }
+
+  private void cacheLastMeasuredLayout(ComponentContext c, InternalNode lastMeasuredLayout) {
+    final LayoutState layoutState = c.getLayoutState();
+    if (layoutState == null) {
+      throw new IllegalStateException(
+          "Cached layout should not be handled outside a LayoutState calculation");
+    }
+
+    if (layoutState.shouldCacheInternalNodeOnLayoutState()) {
+      layoutState.addLastMeasuredLayout(this, lastMeasuredLayout);
+    } else {
+      // We just want to make sure this isn't initialized on multiple threads
+      synchronized (this) {
+        if (mThreadIdToLastMeasuredLayout == null) {
+          mThreadIdToLastMeasuredLayout = new ConcurrentHashMap<>(2);
+        }
+      }
+      mThreadIdToLastMeasuredLayout.put(Thread.currentThread().getId(), lastMeasuredLayout);
+    }
+  }
+
+  /**
+   * Should not be used! Components should be manually measured only as part of a LayoutState
+   * calculation. This will measure a component and set the size in the outputSize object but the
+   * measurement result will not be cached and reused for future measurements of this component.
+   *
+   * <p>This is very inefficient because it throws away the InternalNode from measuring here and
+   * will have to remeasure when the component needs to be measured as part of a LayoutState. This
+   * will lead to suboptimal performance.
+   *
+   * <p>You probably don't need to use this. If you really need to measure your Component outside of
+   * a LayoutState calculation reach out to the Litho team to discuss an alternative solution.
+   *
+   * <p>If this is called during a LayoutState calculation, it will delegate to {@link
+   * Component#onMeasure(ComponentContext, ComponentLayout, int, int, Size)}, which does cache the
+   * measurement result for the duration of this LayoutState.
+   */
+  @Deprecated
+  public void measureMightNotCacheInternalNode(
+      ComponentContext c, int widthSpec, int heightSpec, Size outputSize) {
+    if (c.hasLayoutState()) {
+      measure(c, widthSpec, heightSpec, outputSize);
+      return;
+    }
+
+    final ComponentContext contextForLayout =
+        c.getStateHandler() == null
+            ? new ComponentContext(c, new StateHandler(), null, null, null)
+            : c;
+    final InternalNode internalNode =
+        LayoutState.createAndMeasureTreeForComponent(contextForLayout, this, widthSpec, heightSpec);
+
+    outputSize.width = internalNode.getWidth();
+    outputSize.height = internalNode.getHeight();
   }
 
   protected void copyInterStageImpl(Component component) {}
@@ -506,9 +552,23 @@ public abstract class Component extends ComponentLifecycle
     return (isLayoutSpec(component) && component.canMeasure());
   }
 
-  static boolean isNestedTree(@Nullable Component component) {
+  static boolean isNestedTree(ComponentContext context, @Nullable Component component) {
     return (isLayoutSpecWithSizeSpec(component)
-        || (component != null && component.getCachedLayout() != null));
+        || (component != null && component.hasCachedLayout(context)));
+  }
+
+  private boolean hasCachedLayout(ComponentContext c) {
+    if (c != null) {
+      final LayoutState layoutState = c.getLayoutState();
+
+      if (layoutState != null && layoutState.shouldCacheInternalNodeOnLayoutState()) {
+        return layoutState.hasCachedLayout(this);
+      }
+    }
+
+    return mThreadIdToLastMeasuredLayout == null
+        ? false
+        : mThreadIdToLastMeasuredLayout.get(Thread.currentThread().getId()) != null;
   }
 
   private static Component getFirstNonSimpleNameDelegate(Component component) {
@@ -577,19 +637,9 @@ public abstract class Component extends ComponentLifecycle
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
   protected void updateInternalChildState(ComponentContext parentContext) {
     if (ComponentsConfiguration.isDebugModeEnabled || ComponentsConfiguration.useGlobalKeys) {
-
-      final boolean isRefactoredKeyGenerationEnabled = parentContext.isReconciliationEnabled();
-
-      // allow overriding global key if the NestedTreeResolution Experiment is disabled
-      if (!isRefactoredKeyGenerationEnabled || getGlobalKey() == null) {
+      if (getGlobalKey() == null) {
         String globalKey = generateKey(parentContext);
         setGlobalKey(globalKey);
-
-        final KeyHandler keyHandler = parentContext.getKeyHandler();
-        // This is for testing, the keyHandler should never be null here otherwise.
-        if (!isRefactoredKeyGenerationEnabled && keyHandler != null) {
-          keyHandler.registerKey(this);
-        }
       }
     }
 
@@ -611,18 +661,16 @@ public abstract class Component extends ComponentLifecycle
       globalKey = key;
     } else {
       if (parentScope.getGlobalKey() == null) {
-        final ComponentsLogger logger = parentContext.getLogger();
-        if (logger != null) {
-          logger.emitMessage(
-              ComponentsLogger.LogLevel.ERROR,
-              "Trying to generate parent-based key for component "
-                  + getSimpleName()
-                  + " , but parent "
-                  + parentScope.getSimpleName()
-                  + " has a null global key \"."
-                  + " This is most likely a configuration mistake, check the value of ComponentsConfiguration.useGlobalKeys.");
-        }
-
+        ComponentsReporter.emitMessage(
+            ComponentsReporter.LogLevel.ERROR,
+            NULL_PARENT_KEY,
+            "Trying to generate parent-based key for component "
+                + getSimpleName()
+                + " , but parent "
+                + parentScope.getSimpleName()
+                + " has a null global key \"."
+                + " This is most likely a configuration mistake,"
+                + " check the value of ComponentsConfiguration.useGlobalKeys.");
         globalKey = "null" + key;
       } else {
         globalKey = parentScope.generateUniqueGlobalKeyForChild(this, key);
@@ -833,18 +881,15 @@ public abstract class Component extends ComponentLifecycle
     /** Set a key on the component that is local to its parent. */
     public T key(@Nullable String key) {
       if (key == null) {
-        final ComponentsLogger logger = mContext.getLogger();
-        if (logger != null) {
-          final String componentName =
-              mContext.getComponentScope() != null
-                  ? mContext.getComponentScope().getSimpleName()
-                  : "unknown component";
-          final String message =
-              "Setting a null key from "
-                  + componentName
-                  + " which is usually a mistake! If it is not, explicitly set the String 'null'";
-          logger.emitMessage(ComponentsLogger.LogLevel.ERROR, message);
-        }
+        final String componentName =
+            mContext.getComponentScope() != null
+                ? mContext.getComponentScope().getSimpleName()
+                : "unknown component";
+        final String message =
+            "Setting a null key from "
+                + componentName
+                + " which is usually a mistake! If it is not, explicitly set the String 'null'";
+        ComponentsReporter.emitMessage(ComponentsReporter.LogLevel.ERROR, NULL_KEY_SET, message);
         key = "null";
       }
       mComponent.setKey(key);

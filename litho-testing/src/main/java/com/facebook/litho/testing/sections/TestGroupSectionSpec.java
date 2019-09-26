@@ -61,9 +61,7 @@ public class TestGroupSectionSpec {
 
   @OnEvent(RenderEvent.class)
   protected static RenderInfo onRender(
-      SectionContext c,
-      @FromEvent Object model,
-      @Param ComponentContext context) {
+      SectionContext c, @FromEvent Object model, @Param ComponentContext context) {
     return ComponentRenderInfo.create()
         .customAttribute("model", model)
         .component(Text.create(context).text(model.toString()).build())

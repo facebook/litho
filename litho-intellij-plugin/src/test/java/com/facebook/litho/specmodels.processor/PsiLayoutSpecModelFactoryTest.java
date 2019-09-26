@@ -22,6 +22,5 @@ public class PsiLayoutSpecModelFactoryTest {
   PsiLayoutSpecModelFactory mFactory = new PsiLayoutSpecModelFactory();
 
   @Test
-  public void testCreateWithPsi() {
-  }
+  public void testCreateWithPsi() {}
 }

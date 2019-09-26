@@ -23,14 +23,10 @@ import java.util.List;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.TypeParameterElement;
 
-/**
- * Extracts type variables from the given input.
- */
+/** Extracts type variables from the given input. */
 public class TypeVariablesExtractor {
 
-  /**
-   * Get the type variables from the given {@link TypeElement}.
-   */
+  /** Get the type variables from the given {@link TypeElement}. */
   public static List<TypeVariableName> getTypeVariables(TypeElement typeElement) {
     final List<? extends TypeParameterElement> typeParameters = typeElement.getTypeParameters();
     final int typeParameterCount = typeParameters.size();

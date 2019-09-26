@@ -29,8 +29,8 @@ import org.hamcrest.TypeSafeMatcher;
 /**
  * Espresso matchers for {@link com.facebook.litho.LithoView}.
  *
- * This does only allow shallow matching on LithoViews and currently doesn't support
- * targeting individual components.
+ * <p>This does only allow shallow matching on LithoViews and currently doesn't support targeting
+ * individual components.
  */
 public class LithoViewMatchers {
 
@@ -58,23 +58,28 @@ public class LithoViewMatchers {
   }
 
   /**
-   * Find a {@link LithoView} containing a Component with the provided <pre>testKey</pre>.
-   * Note that this finds any {@link LithoView} containing a mounted component with that key and
+   * Find a {@link LithoView} containing a Component with the provided
+   *
+   * <pre>testKey</pre>
+   *
+   * . Note that this finds any {@link LithoView} containing a mounted component with that key and
    * there's currently no way to be more specific.
    */
   public static Matcher<View> withTestKey(final String testKey) {
-    return lithoView(new TypeSafeMatcher<LithoView>() {
-      @Override
-      protected boolean matchesSafely(LithoView lithoView) {
-        return LithoViewTestHelper.findTestItem(lithoView, testKey) != null;
-      }
+    return lithoView(
+        new TypeSafeMatcher<LithoView>() {
+          @Override
+          protected boolean matchesSafely(LithoView lithoView) {
+            return LithoViewTestHelper.findTestItem(lithoView, testKey) != null;
+          }
 
-      @Override
-      public void describeTo(Description description) {
-        description.appendText(
-            String.format(
-                "Could not find an item with test key '%s' within the given LithoView.", testKey));
-      }
-    });
+          @Override
+          public void describeTo(Description description) {
+            description.appendText(
+                String.format(
+                    "Could not find an item with test key '%s' within the given LithoView.",
+                    testKey));
+          }
+        });
   }
 }

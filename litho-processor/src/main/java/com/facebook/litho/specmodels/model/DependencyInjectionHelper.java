@@ -24,19 +24,15 @@ import com.squareup.javapoet.MethodSpec;
 import java.util.List;
 
 /**
- * An interface for generating certain methods that are required in order for Dependency
- * Injection to work.
+ * An interface for generating certain methods that are required in order for Dependency Injection
+ * to work.
  */
 public interface DependencyInjectionHelper {
 
-  /**
-   * Validate that the dependency injection for this spec is correctly defined.
-   */
+  /** Validate that the dependency injection for this spec is correctly defined. */
   List<SpecModelValidationError> validate(SpecModel specModel);
 
-  /**
-   * Whether a Spec annotation should be moved to the generated Component.
-   */
+  /** Whether a Spec annotation should be moved to the generated Component. */
   boolean isValidGeneratedComponentAnnotation(AnnotationSpec annotation);
 
   /** Generate the constructor required for Dependency Injection. */
@@ -49,14 +45,25 @@ public interface DependencyInjectionHelper {
    * Generate the necessary code to handle the {@link com.facebook.litho.annotations.InjectProp}
    * annotation. Field with the same name of the parameter should be returned to be usable.
    *
-   * @param injectPropParams
+   * @param specModel the model holding the spec being generated
+   * @param injectPropParams a list of the models for the injected params
    */
-  TypeSpecDataHolder generateInjectedFields(ImmutableList<InjectPropModel> injectPropParams);
+  TypeSpecDataHolder generateInjectedFields(
+      SpecModel specModel, ImmutableList<InjectPropModel> injectPropParams);
 
   /**
    * Generate an accessor for each injected field. This is used to generate matchers for TestSpecs
    * and can be necessary for DI mechanisms which do not allow direct access to the generated
    * fields. For instance, when field values are wrapped in a lazy wrapper.
    */
-  MethodSpec generateTestingFieldAccessor(InjectPropModel injectPropModel);
+  MethodSpec generateTestingFieldAccessor(SpecModel specModel, InjectPropModel injectPropModel);
+
+  /**
+   * Generate accessor code for each injected field. This is used to generate access from methods
+   * such as onCreateLayout.
+   *
+   * @param specModel the model holding the spc being generated
+   * @param methodParamModel the model for the method parameter being accessed
+   */
+  String generateImplAccessor(SpecModel specModel, MethodParamModel methodParamModel);
 }

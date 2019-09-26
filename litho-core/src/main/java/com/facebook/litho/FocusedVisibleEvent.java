@@ -24,5 +24,4 @@ import com.facebook.litho.annotations.Event;
  * when the it is fully visible.
  */
 @Event
-public class FocusedVisibleEvent {
-}
+public class FocusedVisibleEvent {}

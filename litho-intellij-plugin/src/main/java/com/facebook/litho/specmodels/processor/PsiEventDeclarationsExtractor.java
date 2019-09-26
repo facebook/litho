@@ -17,31 +17,29 @@ package com.facebook.litho.specmodels.processor;
 
 import com.facebook.litho.annotations.Event;
 import com.facebook.litho.annotations.LayoutSpec;
-import com.facebook.litho.intellij.PsiSearchUtils;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.EventDeclarationModel;
 import com.facebook.litho.specmodels.model.FieldModel;
 import com.intellij.codeInsight.AnnotationUtil;
-import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiAnnotation;
 import com.intellij.psi.PsiAnnotationMemberValue;
 import com.intellij.psi.PsiArrayInitializerMemberValue;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiClassObjectAccessExpression;
-import com.intellij.psi.PsiClassType;
 import com.intellij.psi.PsiField;
-import com.intellij.psi.PsiNameValuePair;
 import com.intellij.psi.PsiType;
+import com.intellij.psi.PsiTypeElement;
+import com.intellij.psi.util.PsiTypesUtil;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.TypeName;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import javax.annotation.Nullable;
 
 public class PsiEventDeclarationsExtractor {
 
-  public static ImmutableList<EventDeclarationModel> getEventDeclarations(
-      Project project, PsiClass psiClass) {
+  public static ImmutableList<EventDeclarationModel> getEventDeclarations(PsiClass psiClass) {
     final PsiAnnotation layoutSpecAnnotation =
         AnnotationUtil.findAnnotation(psiClass, LayoutSpec.class.getName());
     if (layoutSpecAnnotation == null) {
@@ -58,38 +56,26 @@ public class PsiEventDeclarationsExtractor {
       for (PsiAnnotationMemberValue annotationMemberValue : value.getInitializers()) {
         PsiClassObjectAccessExpression accessExpression =
             (PsiClassObjectAccessExpression) annotationMemberValue;
-        eventDeclarationModels.add(getEventDeclarationModel(project, accessExpression));
+        eventDeclarationModels.add(getEventDeclarationModel(accessExpression));
       }
-    } else {
-      PsiClassObjectAccessExpression accessExpression =
-          (PsiClassObjectAccessExpression) psiAnnotationMemberValue;
-      eventDeclarationModels.add(getEventDeclarationModel(project, accessExpression));
+    } else if (psiAnnotationMemberValue instanceof PsiClassObjectAccessExpression) {
+      eventDeclarationModels.add(
+          getEventDeclarationModel((PsiClassObjectAccessExpression) psiAnnotationMemberValue));
     }
 
     return ImmutableList.copyOf(eventDeclarationModels);
   }
 
   static EventDeclarationModel getEventDeclarationModel(
-      Project project, PsiClassObjectAccessExpression psiExpression) {
-    PsiType psiType = psiExpression.getType();
-
-    final String text;
-    if (psiType instanceof PsiClassType) {
-      text = ((PsiClassType) psiType).getParameters()[0].getCanonicalText();
-    } else {
-      text = psiType.getCanonicalText();
-    }
-
-    PsiClass eventClass = PsiSearchUtils.findClass(project, text);
-    if (eventClass == null) {
-      throw new RuntimeException("Annotation class not found, text is: " + text);
-    }
+      PsiClassObjectAccessExpression psiExpression) {
+    PsiType valueType = psiExpression.getOperand().getType();
+    PsiClass valueClass = PsiTypesUtil.getPsiClass(valueType);
 
     return new EventDeclarationModel(
-        PsiTypeUtils.guessClassName(text),
-        getReturnType(eventClass),
-        getFields(eventClass),
-        psiType);
+        PsiTypeUtils.guessClassName(valueType.getCanonicalText()),
+        getReturnType(valueClass),
+        getFields(valueClass),
+        psiExpression);
   }
 
   /**
@@ -101,27 +87,25 @@ public class PsiEventDeclarationsExtractor {
    *     provided class is not Event class.
    */
   @Nullable
-  static TypeName getReturnType(PsiClass eventClass) {
-    PsiAnnotation eventAnnotation =
-        AnnotationUtil.findAnnotation(eventClass, Event.class.getName());
-    if (eventAnnotation == null) {
-      return null;
-    }
-    PsiNameValuePair returnTypePair =
-        AnnotationUtil.findDeclaredAttribute(eventAnnotation, "returnType");
-
-    if (returnTypePair == null) {
-      return TypeName.VOID;
-    }
-
-    PsiClassObjectAccessExpression returnTypeClassExpression =
-        (PsiClassObjectAccessExpression) returnTypePair.getValue();
-    PsiType returnTypeType = returnTypeClassExpression.getOperand().getType();
-
-    return PsiTypeUtils.getTypeName(returnTypeType);
+  static TypeName getReturnType(@Nullable PsiClass eventClass) {
+    return PsiTypeUtils.getTypeName(getReturnPsiType(eventClass));
   }
 
-  static ImmutableList<FieldModel> getFields(PsiClass psiClass) {
+  public static PsiType getReturnPsiType(@Nullable PsiClass eventClass) {
+    return Optional.ofNullable(eventClass)
+        .map(cls -> AnnotationUtil.findAnnotation(eventClass, Event.class.getTypeName()))
+        .map(psiAnnotation -> psiAnnotation.findAttributeValue("returnType"))
+        .filter(PsiClassObjectAccessExpression.class::isInstance)
+        .map(PsiClassObjectAccessExpression.class::cast)
+        .map(PsiClassObjectAccessExpression::getOperand)
+        .map(PsiTypeElement::getType)
+        .orElse(PsiType.VOID);
+  }
+
+  static ImmutableList<FieldModel> getFields(@Nullable PsiClass psiClass) {
+    if (psiClass == null) {
+      return ImmutableList.of();
+    }
     final List<FieldModel> fieldModels = new ArrayList<>();
     for (PsiField psiField : psiClass.getFields()) {
       fieldModels.add(

@@ -16,9 +16,7 @@
 
 package com.facebook.litho.animation;
 
-/**
- * A {@link RuntimeValue} for a float property like scale or alpha.
- */
+/** A {@link RuntimeValue} for a float property like scale or alpha. */
 public class FloatValue implements RuntimeValue {
 
   private final float mValue;

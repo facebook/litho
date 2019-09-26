@@ -161,10 +161,14 @@ public final class TestMount<S extends View> extends Component implements TestTa
     if (mStateContainer.state1 != testMountRef.mStateContainer.state1) {
       return false;
     }
-    if (mStateContainer.state2 != null ? !mStateContainer.state2.equals(testMountRef.mStateContainer.state2) : testMountRef.mStateContainer.state2 != null) {
+    if (mStateContainer.state2 != null
+        ? !mStateContainer.state2.equals(testMountRef.mStateContainer.state2)
+        : testMountRef.mStateContainer.state2 != null) {
       return false;
     }
-    if (treeProp != null ? !treeProp.equals(testMountRef.treeProp) : testMountRef.treeProp != null) {
+    if (treeProp != null
+        ? !treeProp.equals(testMountRef.treeProp)
+        : testMountRef.treeProp != null) {
       return false;
     }
     return true;
@@ -201,9 +205,9 @@ public final class TestMount<S extends View> extends Component implements TestTa
   @Override
   protected TreeProps getTreePropsForChildren(ComponentContext c, TreeProps parentTreeProps) {
     final TreeProps childTreeProps = TreeProps.acquire(parentTreeProps);
-    childTreeProps.put(com.facebook.litho.processor.integration.resources.TestTreeProp.class, TestMountSpec.onCreateFeedPrefetcherProp(
-        (ComponentContext) c,
-        prop6));
+    childTreeProps.put(
+        com.facebook.litho.processor.integration.resources.TestTreeProp.class,
+        TestMountSpec.onCreateFeedPrefetcherProp((ComponentContext) c, prop6));
     return childTreeProps;
   }
 
@@ -349,7 +353,9 @@ public final class TestMount<S extends View> extends Component implements TestTa
     TestMount _prevImpl = (TestMount) _prevAbstractImpl;
     TestMount _nextImpl = (TestMount) _nextAbstractImpl;
     boolean _result;
-    Diff<Integer> prop1 = new Diff<Integer>(_prevImpl == null ? null : _prevImpl.prop1, _nextImpl == null ? null : _nextImpl.prop1);
+    Diff<Integer> prop1 =
+        new Diff<Integer>(
+            _prevImpl == null ? null : _prevImpl.prop1, _nextImpl == null ? null : _nextImpl.prop1);
     _result = (boolean) TestMountSpec.shouldUpdate((Diff<Integer>) prop1);
     return _result;
   }
@@ -378,11 +384,6 @@ public final class TestMount<S extends View> extends Component implements TestTa
 
   @Override
   public boolean hasChildLithoViews() {
-    return true;
-  }
-
-  @Override
-  public boolean shouldUseDisplayList() {
     return true;
   }
 
@@ -443,8 +444,9 @@ public final class TestMount<S extends View> extends Component implements TestTa
   public Object dispatchOnEvent(final EventHandler eventHandler, final Object eventState) {
     int id = eventHandler.id;
     switch (id) {
-      case 1328162206: {
-        ClickEvent _event = (ClickEvent) eventState;
+      case 1328162206:
+        {
+          ClickEvent _event = (ClickEvent) eventState;
           testLayoutEvent(
               eventHandler.mHasEventDispatcher,
               (ComponentContext) eventHandler.params[0],
@@ -494,21 +496,20 @@ public final class TestMount<S extends View> extends Component implements TestTa
 
   static void onClickEventTrigger(ComponentContext c, View view) {
     TestMount component = (TestMount) c.getComponentScope();
-    component.onClickEventTrigger(
-        (EventTriggerTarget) component,
-        view);
+    component.onClickEventTrigger((EventTriggerTarget) component, view);
   }
 
   @Override
   public Object acceptTriggerEvent(
       final EventTrigger eventTrigger, final Object eventState, final Object[] params) {
     int id = eventTrigger.mId;
-    switch(id) {
-      case -830639048: {
-        ClickEvent _event = (ClickEvent) eventState;
+    switch (id) {
+      case -830639048:
+        {
+          ClickEvent _event = (ClickEvent) eventState;
           onClickEventTrigger(eventTrigger.mTriggerTarget, _event.view);
-        return null;
-      }
+          return null;
+        }
       default:
         return null;
     }
@@ -538,8 +539,8 @@ public final class TestMount<S extends View> extends Component implements TestTa
     nextStateContainer.state2 = prevStateContainer.state2;
   }
 
-  private TestMountStateContainer getStateContainerWithLazyStateUpdatesApplied(ComponentContext c,
-      TestMount component) {
+  private TestMountStateContainer getStateContainerWithLazyStateUpdatesApplied(
+      ComponentContext c, TestMount component) {
     TestMountStateContainer stateContainer = new TestMountStateContainer();
     transferState(component.mStateContainer, stateContainer);
     c.applyLazyStateUpdatesForContainer(stateContainer);
@@ -561,7 +562,8 @@ public final class TestMount<S extends View> extends Component implements TestTa
     if (_component == null) {
       return;
     }
-    TestMount.UpdateCurrentStateStateUpdate _stateUpdate = ((TestMount) _component).createUpdateCurrentStateStateUpdate(someParam);
+    TestMount.UpdateCurrentStateStateUpdate _stateUpdate =
+        ((TestMount) _component).createUpdateCurrentStateStateUpdate(someParam);
     c.updateStateAsync(_stateUpdate, "TestMount.updateCurrentState");
   }
 
@@ -570,7 +572,8 @@ public final class TestMount<S extends View> extends Component implements TestTa
     if (_component == null) {
       return;
     }
-    TestMount.UpdateCurrentStateStateUpdate _stateUpdate = ((TestMount) _component).createUpdateCurrentStateStateUpdate(someParam);
+    TestMount.UpdateCurrentStateStateUpdate _stateUpdate =
+        ((TestMount) _component).createUpdateCurrentStateStateUpdate(someParam);
     c.updateStateSync(_stateUpdate, "TestMount.updateCurrentState");
   }
 
@@ -613,9 +616,7 @@ public final class TestMount<S extends View> extends Component implements TestTa
     return cached;
   }
 
-  @VisibleForTesting(
-      otherwise = 2
-  )
+  @VisibleForTesting(otherwise = 2)
   static class TestMountStateContainer<S extends View> implements StateContainer {
     @State
     @Comparable(type = 3)
@@ -639,7 +640,7 @@ public final class TestMount<S extends View> extends Component implements TestTa
       TestMountStateContainer<S> stateContainer = (TestMountStateContainer<S>) _stateContainer;
       StateValue<Long> state1 = new StateValue<Long>();
       state1.set(stateContainer.state1);
-      TestMountSpec.updateCurrentState(state1,mSomeParam);
+      TestMountSpec.updateCurrentState(state1, mSomeParam);
       stateContainer.state1 = state1.get();
     }
   }
@@ -746,7 +747,8 @@ public final class TestMount<S extends View> extends Component implements TestTa
     }
 
     private void onClickEventTriggerTrigger(String key) {
-      com.facebook.litho.EventTrigger onClickEventTriggerTrigger = this.mTestMount.onClickEventTriggerTrigger;
+      com.facebook.litho.EventTrigger onClickEventTriggerTrigger =
+          this.mTestMount.onClickEventTriggerTrigger;
       if (onClickEventTriggerTrigger == null) {
         onClickEventTriggerTrigger = TestMount.onClickEventTriggerTrigger(this.mContext, key);
       }

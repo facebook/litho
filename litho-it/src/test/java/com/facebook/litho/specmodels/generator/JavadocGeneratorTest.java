@@ -84,9 +84,7 @@ public class JavadocGeneratorTest {
   }
 
   private final String getJavadocsString(TypeSpecDataHolder dataHolder) {
-    return dataHolder
-        .getJavadocSpecs()
-        .stream()
+    return dataHolder.getJavadocSpecs().stream()
         .reduce("", (s, javadocSpec) -> s + javadocSpec, (s, s2) -> s + s2);
   }
 }

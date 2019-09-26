@@ -25,9 +25,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
 
-/**
- * Tests {@link ViewNodeInfo}
- */
+/** Tests {@link ViewNodeInfo} */
 @RunWith(ComponentsTestRunner.class)
 public class ViewNodeInfoTest {
 

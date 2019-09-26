@@ -31,7 +31,7 @@ import com.facebook.litho.widget.RecyclerEventsController;
 import com.facebook.litho.widget.SmoothScrollAlignmentType;
 import com.facebook.litho.widget.SnapUtil;
 import com.facebook.litho.widget.StaggeredGridLayoutHelper;
-import java.lang.ref.WeakReference;
+import javax.annotation.Nullable;
 
 /**
  * An controller that can be passed as {@link com.facebook.litho.annotations.Prop} to a
@@ -39,30 +39,29 @@ import java.lang.ref.WeakReference;
  */
 public class RecyclerCollectionEventsController extends RecyclerEventsController {
 
-  private WeakReference<SectionTree> mSectionTree;
+  @Nullable private SectionTree mSectionTree;
   private int mSnapMode = SNAP_NONE;
   private int mFirstCompletelyVisibleItemPosition = 0;
   private int mLastCompletelyVisibleItemPosition = 0;
 
-  /**
-   * Sent the RecyclerCollection a request to refresh it's backing data.
-   */
+  /** Sent the RecyclerCollection a request to refresh it's backing data. */
   public void requestRefresh() {
     requestRefresh(false);
   }
 
   /**
-   * Sent the RecyclerCollection a request to refresh it's backing data. If showSpinner is
-   * true, then refresh spinner is shown.
+   * Sent the RecyclerCollection a request to refresh it's backing data. If showSpinner is true,
+   * then refresh spinner is shown.
+   *
    * @param showSpinner
    */
   public void requestRefresh(boolean showSpinner) {
-    if (mSectionTree != null && mSectionTree.get() != null) {
+    if (mSectionTree != null) {
       if (showSpinner) {
         showRefreshing();
       }
 
-      mSectionTree.get().refresh();
+      mSectionTree.refresh();
     }
   }
 
@@ -123,6 +122,19 @@ public class RecyclerCollectionEventsController extends RecyclerEventsController
     }
 
     recyclerView.scrollBy(dx, dy);
+  }
+
+  /**
+   * Send the {@link RecyclerCollectionComponent} a request to scroll the content by the given
+   * margins, animate a scroll by the given amount of pixels along either axis.
+   */
+  public void requestSmoothScrollBy(int dx, int dy) {
+    final RecyclerView recyclerView = getRecyclerView();
+    if (recyclerView == null) {
+      return;
+    }
+
+    recyclerView.smoothScrollBy(dx, dy);
   }
 
   /**
@@ -225,7 +237,7 @@ public class RecyclerCollectionEventsController extends RecyclerEventsController
   }
 
   void setSectionTree(SectionTree sectionTree) {
-    mSectionTree = new WeakReference<>(sectionTree);
+    mSectionTree = sectionTree;
   }
 
   void setSnapMode(int snapMode) {
@@ -267,5 +279,4 @@ public class RecyclerCollectionEventsController extends RecyclerEventsController
       mLastCompletelyVisibleItemPosition = lastCompletelyVisibleItemPosition;
     }
   }
-
 }

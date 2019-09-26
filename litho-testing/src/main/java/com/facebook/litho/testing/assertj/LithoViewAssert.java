@@ -32,11 +32,11 @@ import org.assertj.core.api.Java6Assertions;
 /**
  * Assertion methods for {@link LithoView}s.
  *
- * <p> To create an instance of this class, invoke
- * <code>{@link LithoViewAssert#assertThat(LithoView)}</code>.
+ * <p>To create an instance of this class, invoke <code>
+ * {@link LithoViewAssert#assertThat(LithoView)}</code>.
  *
- * Alternatively, use {@link LithoAssertions} which provides entry points to
- * all Litho AssertJ helpers.
+ * <p>Alternatively, use {@link LithoAssertions} which provides entry points to all Litho AssertJ
+ * helpers.
  */
 public class LithoViewAssert extends AbstractAssert<LithoViewAssert, LithoView> {
 
@@ -61,9 +61,9 @@ public class LithoViewAssert extends AbstractAssert<LithoViewAssert, LithoView> 
             testKey,
             actual,
             count,
-            testItems.isEmpty() ?
-                "couldn't find it" :
-                String.format(Locale.ROOT, "saw it %d times instead", testItems.size()))
+            testItems.isEmpty()
+                ? "couldn't find it"
+                : String.format(Locale.ROOT, "saw it %d times instead", testItems.size()))
         .isNotNull();
 
     return this;
@@ -76,11 +76,9 @@ public class LithoViewAssert extends AbstractAssert<LithoViewAssert, LithoView> 
 
     Java6Assertions.assertThat(testItem)
         .overridingErrorMessage(
-            "Expected not to find test key <%s> in LithoView <%s>, but it was present at " +
-                "bounds %s.",
-            testKey,
-            actual,
-            bounds)
+            "Expected not to find test key <%s> in LithoView <%s>, but it was present at "
+                + "bounds %s.",
+            testKey, actual, bounds)
         .isNull();
 
     return this;
@@ -90,10 +88,7 @@ public class LithoViewAssert extends AbstractAssert<LithoViewAssert, LithoView> 
     return ViewTreeAssert.assertThat(ViewTree.of(actual));
   }
 
-  /**
-   * Assert that any view in the given Component has the provided content
-   * description.
-   */
+  /** Assert that any view in the given Component has the provided content description. */
   public LithoViewAssert hasContentDescription(String contentDescription) {
     assertThatViewTree().hasContentDescription(contentDescription);
 
@@ -110,45 +105,35 @@ public class LithoViewAssert extends AbstractAssert<LithoViewAssert, LithoView> 
     return this;
   }
 
-  /**
-   * Assert that the given component contains the drawable provided.
-   */
+  /** Assert that the given component contains the drawable provided. */
   public LithoViewAssert hasVisibleDrawable(Drawable drawable) {
     assertThatViewTree().hasVisibleDrawable(drawable);
 
     return this;
   }
 
-  /**
-   * Inverse of {@link #hasVisibleDrawable(Drawable)}
-   */
+  /** Inverse of {@link #hasVisibleDrawable(Drawable)} */
   public LithoViewAssert doesNotHaveVisibleDrawable(Drawable drawable) {
     assertThatViewTree().doesNotHaveVisibleDrawable(drawable);
 
     return this;
   }
 
-  /**
-   * Inverse of {@link #hasVisibleDrawable(int)}
-   */
+  /** Inverse of {@link #hasVisibleDrawable(int)} */
   public LithoViewAssert doesNotHaveVisibleDrawable(@DrawableRes int drawableRes) {
     assertThatViewTree().doesNotHaveVisibleDrawable(drawableRes);
 
     return this;
   }
 
-  /**
-   * Assert that the given component has the exact text provided.
-   */
+  /** Assert that the given component has the exact text provided. */
   public LithoViewAssert hasVisibleText(String text) {
     assertThatViewTree().hasVisibleText(text);
 
     return this;
   }
 
-  /**
-   * Inverse of {@link #hasVisibleText(String)}
-   */
+  /** Inverse of {@link #hasVisibleText(String)} */
   public LithoViewAssert doesNotHaveVisibleText(String text) {
     assertThatViewTree().doesNotHaveVisibleText(text);
 
@@ -165,22 +150,18 @@ public class LithoViewAssert extends AbstractAssert<LithoViewAssert, LithoView> 
     Java6Assertions.assertThat(actual.getMeasuredWidth())
         .overridingErrorMessage(
             "Expected LithoView to have a width of %d, but was %d.",
-            width,
-            actual.getMeasuredWidth())
+            width, actual.getMeasuredWidth())
         .isEqualTo(width);
 
     return this;
   }
 
-  /**
-   * Assert that the LithoView under test has the provided measured height.
-   */
+  /** Assert that the LithoView under test has the provided measured height. */
   public LithoViewAssert hasMeasuredHeightOf(int height) {
     Java6Assertions.assertThat(actual.getMeasuredHeight())
         .overridingErrorMessage(
             "Expected LithoView to have a height of %d, but was %d.",
-            height,
-            actual.getMeasuredHeight())
+            height, actual.getMeasuredHeight())
         .isEqualTo(height);
 
     return this;
@@ -188,6 +169,7 @@ public class LithoViewAssert extends AbstractAssert<LithoViewAssert, LithoView> 
 
   /**
    * Assert that the view tag is present for the given index.
+   *
    * @param tagId Index of the view tag.
    * @param tagValue View tag value.
    */

@@ -16,9 +16,7 @@
 
 package com.facebook.litho.dataflow;
 
-/**
- * Test node that allows setting of its next value.
- */
+/** Test node that allows setting of its next value. */
 public class SettableNode extends ValueNode implements NodeCanFinish {
 
   private float mValue;

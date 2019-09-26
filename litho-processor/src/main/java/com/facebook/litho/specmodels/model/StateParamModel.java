@@ -22,9 +22,7 @@ import java.lang.annotation.Annotation;
 import java.util.List;
 import javax.annotation.concurrent.Immutable;
 
-/**
- * Model that is an abstract representation of a {@link com.facebook.litho.annotations.State}.
- */
+/** Model that is an abstract representation of a {@link com.facebook.litho.annotations.State}. */
 @Immutable
 public class StateParamModel implements MethodParamModel {
   private final MethodParamModel mParamModel;

@@ -11,10 +11,17 @@
     </p>
   ]]>
   </description>
-  <version>0.0.7</version>
+  <version>0.0.10-SNAPSHOT</version>
   <change-notes><![CDATA[
-    <h2>0.0.7</h2>
+    <h2>0.0.9</h2>
     <ul>
+      <li>Fix: Array type parsing.</li>
+      <li>Fix: Trigger method return type and param annotations parsing.</li>
+    </ul>
+    <h2>0.0.7-0.0.8</h2>
+    <ul>
+      <li>Regenerate component on file saving is on hold.</li>
+      <li>Fix: Error on navigating to unrecognized ComponentSpec.</li>
       <li>Fix: Range method parsing.</li>
       <li>Fix: Wildcard parsing.</li>
       <li>Fix: Section context for the generated events.</li>
@@ -84,10 +91,11 @@
 
     <completion.contributor language="JAVA" implementationClass="com.facebook.litho.intellij.completion.StatePropCompletionContributor"/>
     <completion.contributor language="JAVA" implementationClass="com.facebook.litho.intellij.completion.OnEventCompletionContributor"/>
+    <completion.contributor language="JAVA" implementationClass="com.facebook.litho.intellij.completion.LayoutSpecAnnotationsContributor" order="first"/>
 
     <fileDocumentManagerListener implementation="com.facebook.litho.intellij.file.ComponentFileListener"/>
 
-    <findUsagesHandlerFactory language="JAVA" implementation="com.facebook.litho.intellij.file.ComponentFindUsagesHandlerFactory" />
+    <findUsagesHandlerFactory language="JAVA" implementation="com.facebook.litho.intellij.file.LithoFindUsagesHandlerFactory" />
   </extensions>
 
   <!-- 181 is IntelliJ 2018.1 and/or Android Studio 3.2 -->
@@ -95,13 +103,21 @@
 
   <actions>
     <group id="litho.EditorPopupMenu">
-      <add-to-group group-id="EditorPopupMenu" anchor="last" />
+      <add-to-group group-id="EditorPopupMenu" anchor="before" relative-to-action="EditorPopupMenu1"/>
       <action id="GenerateComponentAction"
           class="com.facebook.litho.intellij.actions.GenerateComponentAction"
           icon="LithoPluginIcons.BASE_ACTION"
       />
+      <action id="GoToGeneratedClass"
+          class="com.facebook.litho.intellij.actions.GoToGeneratedClassAction"
+          description="Go to generated file from given Spec file."
+          icon="LithoPluginIcons.BASE_ACTION"
+      />
+      <separator/>
     </group>
-    <group id="litho.GenerateGroup" text="[Litho] Insert..." popup="true">
+    <group id="litho.GenerateGroup"
+      class="com.facebook.litho.intellij.actions.LithoGenerateGroup"
+      text="[Litho] Insert..." popup="true">
       <add-to-group group-id="GenerateGroup" anchor="first"/>
       <action id="litho.OnEventGenerateAction"
           class="com.facebook.litho.intellij.actions.OnEventGenerateAction"
@@ -110,8 +126,8 @@
     <group id="litho.NewGroup">
       <add-to-group group-id="NewGroup" anchor="after" relative-to-action="NewGroup1"/>
       <action
-          id="litho.NewGroup.LayoutSpecTemplate"
-          class="com.facebook.litho.intellij.actions.NewComponentTemplateAction"
+          id="LithoSpecTemplate"
+          class="com.facebook.litho.intellij.actions.NewSpecTemplateAction"
           text="Litho Class"
           description="Create new Litho class"
           icon="LithoPluginIcons.BASE_ACTION"

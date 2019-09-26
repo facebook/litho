@@ -4,6 +4,8 @@
 # LICENSE file in the root directory of this source tree.
 
 load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_FBJNI_JAVA_TARGET", "LITHO_INFERANNOTATIONS_TARGET", "LITHO_JSR_TARGET", "LITHO_PROGUARDANNOTATIONS_TARGET", "LITHO_SOLOADER_TARGET", "LITHO_VISIBILITY", "litho_android_library")
+load("//tools/build_defs/oss:fb_native_wrapper.bzl", "fb_native")
+load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_VISIBILITY", "fb_java_library")
 
 litho_android_library(
     name = "yoga",
@@ -15,5 +17,25 @@ litho_android_library(
         LITHO_INFERANNOTATIONS_TARGET,
         LITHO_JSR_TARGET,
         LITHO_FBJNI_JAVA_TARGET,
+        ":proguard-annotations",
     ],
+)
+
+fb_java_library(
+    name = "proguard-annotations",
+    visibility = LITHO_VISIBILITY,
+    exported_deps = [
+        ":proguard-annotations-prebuilt",
+    ],
+)
+
+fb_native.prebuilt_jar(
+    name = "proguard-annotations-prebuilt",
+    binary_jar = ":proguard-annotations.jar",
+)
+
+fb_native.remote_file(
+    name = "proguard-annotations.jar",
+    sha1 = "3d015bb821875657ac8e4b808a223aae339defb2",
+    url = "mvn:com.facebook.yoga:proguard-annotations:jar:1.14.1",
 )

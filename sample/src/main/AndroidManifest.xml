@@ -48,6 +48,7 @@
     <activity android:name=".animations.renderthread.RenderThreadAnimationActivity" />
     <activity android:name=".dynamicprops.DynamicPropsActivity"/>
     <activity android:name=".fastscroll.FastScrollHandleActivity"/>
+    <activity android:name=".stats.StatsActivity"/>
   </application>
 
 

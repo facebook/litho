@@ -25,7 +25,7 @@ import java.util.ArrayList;
  * layout value, and output values could be the X/Y position of a View or its opacity. Input and
  * output values can be connected to each other via intermediate operators like springs or timing.
  *
- * NB: ValueNodes can be referenced by multiple GraphBindings (e.g. a view property).
+ * <p>NB: ValueNodes can be referenced by multiple GraphBindings (e.g. a view property).
  */
 public final class GraphBinding {
 
@@ -36,9 +36,7 @@ public final class GraphBinding {
   private boolean mIsActive = false;
   private boolean mHasBeenActivated = false;
 
-  /**
-   * Creates a {@link GraphBinding} associated with the default {@link DataFlowGraph} instance.
-   */
+  /** Creates a {@link GraphBinding} associated with the default {@link DataFlowGraph} instance. */
   public static GraphBinding create() {
     return new GraphBinding(DataFlowGraph.getInstance());
   }
@@ -76,9 +74,9 @@ public final class GraphBinding {
   }
 
   /**
-   * Activates a binding, adding the sub-graph defined by this binding to the main
-   * {@link DataFlowGraph} associated with this binding. This is expected to be called from
-   * framework code and should not be called by the end developer.
+   * Activates a binding, adding the sub-graph defined by this binding to the main {@link
+   * DataFlowGraph} associated with this binding. This is expected to be called from framework code
+   * and should not be called by the end developer.
    */
   public void activate() {
     mBindings.applyBindings();
@@ -104,9 +102,7 @@ public final class GraphBinding {
     mBindings.removeBindings();
   }
 
-  /**
-   * @return whether this binding has been activated and not yet deactivated.
-   */
+  /** @return whether this binding has been activated and not yet deactivated. */
   public boolean isActive() {
     return mIsActive;
   }
@@ -118,9 +114,7 @@ public final class GraphBinding {
     deactivate();
   }
 
-  /**
-   * Sets the {@link BindingListener}.
-   */
+  /** Sets the {@link BindingListener}. */
   public void setListener(BindingListener listener) {
     if (mListener != null && listener != null) {
       throw new RuntimeException("Overriding existing listener!");

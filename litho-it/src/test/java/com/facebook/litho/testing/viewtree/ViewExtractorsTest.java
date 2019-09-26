@@ -30,9 +30,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 
-/**
- * Tests {@link ViewExtractors}
- */
+/** Tests {@link ViewExtractors} */
 @RunWith(ComponentsTestRunner.class)
 public class ViewExtractorsTest {
 
@@ -73,16 +71,14 @@ public class ViewExtractorsTest {
 
   @Test
   public void testGetTextPrintsVisibity() {
-    assertThat(ViewExtractors.GET_TEXT_FUNCTION.apply(mTextView))
-        .contains("view is visible");
+    assertThat(ViewExtractors.GET_TEXT_FUNCTION.apply(mTextView)).contains("view is visible");
     assertThat(ViewExtractors.GET_TEXT_FUNCTION.apply(mGoneTextView))
         .contains("view is not visible");
   }
 
   @Test
   public void testViewWithoutText() {
-    assertThat(ViewExtractors.GET_TEXT_FUNCTION.apply(mView))
-        .contains("No text found");
+    assertThat(ViewExtractors.GET_TEXT_FUNCTION.apply(mView)).contains("No text found");
   }
 
   @Test
@@ -93,10 +89,8 @@ public class ViewExtractorsTest {
 
   @Test
   public void testGetDrawablePrintsVisibity() {
-    assertThat(ViewExtractors.GET_DRAWABLE_FUNCTION.apply(mImageView))
-        .contains("view is visible");
+    assertThat(ViewExtractors.GET_DRAWABLE_FUNCTION.apply(mImageView)).contains("view is visible");
     assertThat(ViewExtractors.GET_DRAWABLE_FUNCTION.apply(mGoneImageView))
         .contains("view is not visible");
   }
-
 }

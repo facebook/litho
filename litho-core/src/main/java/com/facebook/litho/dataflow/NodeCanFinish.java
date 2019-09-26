@@ -21,7 +21,7 @@ package com.facebook.litho.dataflow;
  * considered finished when 1) its inputs are also finished (i.e. won't change) and 2) it won't
  * output any new values of its own.
  *
- * For example, a {@link SpringNode} is considered finished when its inputs are finished and the
+ * <p>For example, a {@link SpringNode} is considered finished when its inputs are finished and the
  * spring is at rest. A {@link TimingNode} is considered finished when its inputs are finished and
  * it's reached the end of its duration.
  */

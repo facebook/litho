@@ -25,10 +25,7 @@ public final class ViewTreeUtil {
   /** @return the resource name or "<undefined>" */
   public static String getResourceName(final int resourceId) {
     try {
-      return RuntimeEnvironment
-          .application
-          .getResources()
-          .getResourceEntryName(resourceId);
+      return RuntimeEnvironment.application.getResources().getResourceEntryName(resourceId);
     } catch (final NotFoundException notFoundException) {
       return "<undefined>";
     }

@@ -81,8 +81,13 @@ public class LithoRecylerView extends RecyclerView implements HasPostDispatchDra
   }
 
   @Override
-  public void setPostDispatchDrawListener(@Nullable PostDispatchDrawListener listener) {
+  public void registerPostDispatchDrawListener(PostDispatchDrawListener listener) {
     mPostDispatchDrawListener = listener;
+  }
+
+  @Override
+  public void unregisterPostDispatchDrawListener(PostDispatchDrawListener listener) {
+    mPostDispatchDrawListener = null;
   }
 
   /** Allows to override {@link #onInterceptTouchEvent(MotionEvent)} behavior */

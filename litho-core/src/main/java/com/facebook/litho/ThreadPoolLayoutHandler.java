@@ -49,6 +49,11 @@ public class ThreadPoolLayoutHandler implements LithoHandler {
   }
 
   @Override
+  public void postAtFront(Runnable runnable, String tag) {
+    throw new IllegalStateException("postAtFront is not supported for ThreadPoolLayoutHandler");
+  }
+
+  @Override
   public void remove(Runnable runnable) {
     sLayoutThreadPoolExecutor.remove(runnable);
   }

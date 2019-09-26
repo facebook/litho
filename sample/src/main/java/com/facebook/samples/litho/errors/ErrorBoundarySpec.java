@@ -12,51 +12,35 @@
 
 package com.facebook.samples.litho.errors;
 
-import com.facebook.litho.Column;
+import androidx.annotation.Nullable;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.StateValue;
 import com.facebook.litho.annotations.LayoutSpec;
-import com.facebook.litho.annotations.OnCreateInitialState;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.OnError;
 import com.facebook.litho.annotations.OnUpdateState;
 import com.facebook.litho.annotations.Param;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.State;
-import com.facebook.yoga.YogaEdge;
-import java.util.Optional;
 
 @LayoutSpec
 public class ErrorBoundarySpec {
 
   @OnCreateLayout
   static Component onCreateLayout(
-      ComponentContext c, @Prop Component child, @State Optional<Exception> error) {
+      ComponentContext c, @Prop Component child, @State @Nullable Exception error) {
 
-    if (error.isPresent()) {
-      return Column.create(c)
-          .marginDip(YogaEdge.ALL, 16)
-          .child(
-              DebugErrorComponent.create(c)
-                  .message("Error Boundary")
-                  .throwable(error.get())
-                  .build())
-          .build();
+    if (error != null) {
+      return DebugErrorComponent.create(c).message("Error Boundary").throwable(error).build();
     }
 
     return child;
   }
 
-  @OnCreateInitialState
-  static void createInitialState(ComponentContext c, StateValue<Optional<Exception>> error) {
-
-    error.set(Optional.<Exception>empty());
-  }
-
   @OnUpdateState
-  static void updateError(StateValue<Optional<Exception>> error, @Param Exception e) {
-    error.set(Optional.of(e));
+  static void updateError(StateValue<Exception> error, @Param Exception e) {
+    error.set(e);
   }
 
   @OnError

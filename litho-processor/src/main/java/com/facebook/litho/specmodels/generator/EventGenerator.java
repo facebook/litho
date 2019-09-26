@@ -43,20 +43,18 @@ import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeVariableName;
 import javax.lang.model.element.Modifier;
 
-/**
- * Class that generates the event methods for a Component.
- */
+/** Class that generates the event methods for a Component. */
 public class EventGenerator {
 
-  private EventGenerator() {
-  }
+  private EventGenerator() {}
 
   public static TypeSpecDataHolder generate(SpecModel specModel) {
-    final TypeSpecDataHolder.Builder builder = TypeSpecDataHolder.newBuilder()
-        .addTypeSpecDataHolder(generateGetEventHandlerMethods(specModel))
-        .addTypeSpecDataHolder(generateEventDispatchers(specModel))
-        .addTypeSpecDataHolder(generateEventMethods(specModel))
-        .addTypeSpecDataHolder(generateEventHandlerFactories(specModel));
+    final TypeSpecDataHolder.Builder builder =
+        TypeSpecDataHolder.newBuilder()
+            .addTypeSpecDataHolder(generateGetEventHandlerMethods(specModel))
+            .addTypeSpecDataHolder(generateEventDispatchers(specModel))
+            .addTypeSpecDataHolder(generateEventMethods(specModel))
+            .addTypeSpecDataHolder(generateEventHandlerFactories(specModel));
 
     if (!specModel.getEventMethods().isEmpty()) {
       builder.addMethod(generateDispatchOnEvent(specModel));
@@ -76,8 +74,7 @@ public class EventGenerator {
   }
 
   static TypeSpecDataHolder generateGetEventHandlerMethod(
-      SpecModel specModel,
-      EventDeclarationModel eventDeclaration) {
+      SpecModel specModel, EventDeclarationModel eventDeclaration) {
     final String scopeMethodName = specModel.getScopeMethodName();
     return TypeSpecDataHolder.newBuilder()
         .addMethod(
@@ -161,16 +158,17 @@ public class EventGenerator {
   static MethodSpec generateEventMethod(
       SpecModel specModel, SpecMethodModel<EventMethod, EventDeclarationModel> eventMethodModel) {
     final String componentName = specModel.getComponentName();
-    final MethodSpec.Builder methodSpec = MethodSpec.methodBuilder(eventMethodModel.name.toString())
-        .addModifiers(Modifier.PRIVATE)
-        .returns(eventMethodModel.returnType)
-        .addParameter(ClassNames.HAS_EVENT_DISPATCHER_CLASSNAME, ABSTRACT_PARAM_NAME)
-        .addStatement(
-            "$L $L = ($L) $L",
-            componentName,
-            REF_VARIABLE_NAME,
-            componentName,
-            ABSTRACT_PARAM_NAME);
+    final MethodSpec.Builder methodSpec =
+        MethodSpec.methodBuilder(eventMethodModel.name.toString())
+            .addModifiers(Modifier.PRIVATE)
+            .returns(eventMethodModel.returnType)
+            .addParameter(ClassNames.HAS_EVENT_DISPATCHER_CLASSNAME, ABSTRACT_PARAM_NAME)
+            .addStatement(
+                "$L $L = ($L) $L",
+                componentName,
+                REF_VARIABLE_NAME,
+                componentName,
+                ABSTRACT_PARAM_NAME);
 
     final boolean hasLazyStateParams = SpecMethodModelUtils.hasLazyStateParams(eventMethodModel);
     if (hasLazyStateParams) {
@@ -203,9 +201,9 @@ public class EventGenerator {
     for (int i = 0, size = eventMethodModel.methodParams.size(); i < size; i++) {
       final MethodParamModel methodParamModel = eventMethodModel.methodParams.get(i);
 
-      if (MethodParamModelUtils.isAnnotatedWith(methodParamModel, FromEvent.class) ||
-          MethodParamModelUtils.isAnnotatedWith(methodParamModel, Param.class) ||
-          methodParamModel.getTypeName().equals(specModel.getContextClass())) {
+      if (MethodParamModelUtils.isAnnotatedWith(methodParamModel, FromEvent.class)
+          || MethodParamModelUtils.isAnnotatedWith(methodParamModel, Param.class)
+          || methodParamModel.getTypeName().equals(specModel.getContextClass())) {
         methodSpec.addParameter(methodParamModel.getTypeName(), methodParamModel.getName());
         delegation.add(methodParamModel.getName());
       } else if (hasLazyStateParams && methodParamModel instanceof StateParamModel) {
@@ -237,19 +235,16 @@ public class EventGenerator {
     return methodSpec.build();
   }
 
-  /**
-   * Generate a dispatchOnEvent() implementation for the component.
-   */
+  /** Generate a dispatchOnEvent() implementation for the component. */
   static MethodSpec generateDispatchOnEvent(SpecModel specModel) {
-    final MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder("dispatchOnEvent")
-        .addModifiers(Modifier.PUBLIC)
-        .addAnnotation(Override.class)
-        .returns(TypeName.OBJECT)
-        .addParameter(
-            ParameterSpec.builder(EVENT_HANDLER, "eventHandler", Modifier.FINAL)
-                .build())
-        .addParameter(
-            ParameterSpec.builder(OBJECT, "eventState", Modifier.FINAL).build());
+    final MethodSpec.Builder methodBuilder =
+        MethodSpec.methodBuilder("dispatchOnEvent")
+            .addModifiers(Modifier.PUBLIC)
+            .addAnnotation(Override.class)
+            .returns(TypeName.OBJECT)
+            .addParameter(
+                ParameterSpec.builder(EVENT_HANDLER, "eventHandler", Modifier.FINAL).build())
+            .addParameter(ParameterSpec.builder(OBJECT, "eventState", Modifier.FINAL).build());
 
     methodBuilder.addStatement("int id = eventHandler.id");
     methodBuilder.beginControlFlow("switch ($L)", "id");
@@ -261,9 +256,7 @@ public class EventGenerator {
         .withErrorPropagation(specModel.getComponentClass().equals(ClassNames.COMPONENT))
         .writeTo(methodBuilder);
 
-    return methodBuilder.addStatement("default:\nreturn null")
-        .endControlFlow()
-        .build();
+    return methodBuilder.addStatement("default:\nreturn null").endControlFlow().build();
   }
 
   static TypeSpecDataHolder generateEventHandlerFactories(SpecModel specModel) {
@@ -315,5 +308,4 @@ public class EventGenerator {
 
     return builder.build();
   }
-
 }

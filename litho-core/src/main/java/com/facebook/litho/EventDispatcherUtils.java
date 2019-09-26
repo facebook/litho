@@ -27,8 +27,8 @@ import androidx.core.view.AccessibilityDelegateCompat;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 
 /**
- * This class contains utility methods to send pre-defined events
- * (click, touch, accessibility, etc.) to {@link EventHandler} instances' {@link Component}s
+ * This class contains utility methods to send pre-defined events (click, touch, accessibility,
+ * etc.) to {@link EventHandler} instances' {@link Component}s
  */
 class EventDispatcherUtils {
 
@@ -68,9 +68,7 @@ class EventDispatcherUtils {
   }
 
   static void dispatchOnFocusChanged(
-      EventHandler<FocusChangedEvent> focusChangeHandler,
-      View view,
-      boolean hasFocus) {
+      EventHandler<FocusChangedEvent> focusChangeHandler, View view, boolean hasFocus) {
     assertMainThread();
 
     if (sFocusChangedEvent == null) {
@@ -186,9 +184,7 @@ class EventDispatcherUtils {
   }
 
   static boolean dispatchOnTouch(
-      EventHandler<TouchEvent> touchHandler,
-      View view,
-      MotionEvent event) {
+      EventHandler<TouchEvent> touchHandler, View view, MotionEvent event) {
     assertMainThread();
 
     if (sTouchEvent == null) {

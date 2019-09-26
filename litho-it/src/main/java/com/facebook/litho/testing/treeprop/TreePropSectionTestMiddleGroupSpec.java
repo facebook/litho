@@ -25,28 +25,24 @@ import com.facebook.litho.sections.annotations.GroupSectionSpec;
 import com.facebook.litho.sections.annotations.OnCreateChildren;
 import com.facebook.litho.testing.treeprop.TreePropSectionTestLeafGroupSpec.Result;
 
-/**
- * Used in TreePropSectionTest.
- */
+/** Used in TreePropSectionTest. */
 @GroupSectionSpec
 public class TreePropSectionTestMiddleGroupSpec {
 
   @OnCreateTreeProp
   static TreePropStringType onCreateTreePropB(
-      SectionContext c,
-      @TreeProp TreePropStringType propB) {
+      SectionContext c, @TreeProp TreePropStringType propB) {
     return new TreePropStringType(propB.getValue() + "_changed");
   }
 
   @OnCreateChildren
   static Children onCreateChildren(
-      final SectionContext c,
-      @Prop Result resultPropALeaf1,
-      @Prop Result resultPropBLeaf1) {
+      final SectionContext c, @Prop Result resultPropALeaf1, @Prop Result resultPropBLeaf1) {
     return Children.create()
-        .child(TreePropSectionTestLeafGroup.create(c)
-            .resultPropA(resultPropALeaf1)
-            .resultPropB(resultPropBLeaf1))
+        .child(
+            TreePropSectionTestLeafGroup.create(c)
+                .resultPropA(resultPropALeaf1)
+                .resultPropB(resultPropBLeaf1))
         .build();
   }
 }

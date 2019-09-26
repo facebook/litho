@@ -70,6 +70,6 @@ public class OnEventGenerateUtilsTest extends LithoPluginIntellijTest {
 
           return true;
         },
-        "OnEventSection.java");
+        "OnEventSectionSpec.java");
   }
 }

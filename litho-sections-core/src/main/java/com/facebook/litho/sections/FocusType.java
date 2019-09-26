@@ -16,9 +16,7 @@
 
 package com.facebook.litho.sections;
 
-/**
- * Can be used for requesting focus to a part of a Section.
- */
+/** Can be used for requesting focus to a part of a Section. */
 public enum FocusType {
   START,
   END

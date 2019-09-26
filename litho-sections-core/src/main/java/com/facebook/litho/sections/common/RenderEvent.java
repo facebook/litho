@@ -22,16 +22,15 @@ import com.facebook.litho.annotations.Event;
 import com.facebook.litho.widget.RenderInfo;
 
 /**
- * An {@link Event} that gets triggered by a
- * {@link com.facebook.litho.sections.annotations.DiffSectionSpec} to render the edges of the
- * connection.
+ * An {@link Event} that gets triggered by a {@link
+ * com.facebook.litho.sections.annotations.DiffSectionSpec} to render the edges of the connection.
  *
- * {@link RenderEvent} is triggered when the
- * {@link com.facebook.litho.sections.annotations.DiffSectionSpec}
- * is generating the {@link com.facebook.litho.sections.ChangeSet}.
+ * <p>{@link RenderEvent} is triggered when the {@link
+ * com.facebook.litho.sections.annotations.DiffSectionSpec} is generating the {@link
+ * com.facebook.litho.sections.ChangeSet}.
  *
- * This means that when {@link RenderEvent} is handled, the components are not inserted into
- * the adapter yet.
+ * <p>This means that when {@link RenderEvent} is handled, the components are not inserted into the
+ * adapter yet.
  *
  * @param index the index of the item in the collection.
  * @param model the edge model object.

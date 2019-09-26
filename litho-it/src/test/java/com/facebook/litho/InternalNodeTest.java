@@ -43,12 +43,17 @@ import static org.robolectric.RuntimeEnvironment.application;
 
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.util.Pair;
+import com.facebook.litho.LayoutState.LayoutStateReferenceWrapper;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.Whitebox;
+import com.facebook.litho.testing.logging.TestComponentsReporter;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.widget.SolidColor;
 import com.facebook.litho.widget.Text;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaNode;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
@@ -76,6 +81,8 @@ public class InternalNodeTest {
 
   private static InternalNode acquireInternalNode() {
     final ComponentContext context = new ComponentContext(RuntimeEnvironment.application);
+    context.setLayoutStateReferenceWrapperForTesting();
+
     return createAndMeasureTreeForComponent(
         context,
         Column.create(context).build(),
@@ -86,11 +93,20 @@ public class InternalNodeTest {
   private static InternalNode acquireInternalNodeWithLogger(ComponentsLogger logger) {
     final ComponentContext context =
         new ComponentContext(RuntimeEnvironment.application, "TEST", logger);
+    context.setLayoutStateReferenceWrapperForTesting();
+
     return createAndMeasureTreeForComponent(
         context,
         Column.create(context).build(),
         makeSizeSpec(0, UNSPECIFIED),
         makeSizeSpec(0, UNSPECIFIED));
+  }
+
+  private final TestComponentsReporter mComponentsReporter = new TestComponentsReporter();
+
+  @Before
+  public void setup() {
+    ComponentsReporter.provide(mComponentsReporter);
   }
 
   @Test
@@ -387,27 +403,50 @@ public class InternalNodeTest {
   @Test
   public void testComponentCreateAndRetrieveCachedLayout() {
     final ComponentContext c = new ComponentContext(application);
+
+    final LayoutState layoutState = new LayoutState(c);
+    c.setLayoutStateReferenceWrapper(new LayoutStateReferenceWrapper(layoutState));
+
     final int unspecifiedSizeSpec = makeSizeSpec(0, UNSPECIFIED);
     final int exactSizeSpec = makeSizeSpec(50, EXACTLY);
-    final Component textComponent = Text.create(c)
-        .textSizePx(16)
-        .text("test")
-        .build();
+    final Component textComponent = Text.create(c).textSizePx(16).text("test").build();
     final Size textSize = new Size();
-    textComponent.measure(
-        c,
-        exactSizeSpec,
-        unspecifiedSizeSpec,
-        textSize);
+    textComponent.measure(c, exactSizeSpec, unspecifiedSizeSpec, textSize);
 
-    assertThat(textComponent.getCachedLayout()).isNotNull();
-    InternalNode cachedLayout = textComponent.getCachedLayout();
+    assertThat(textComponent.getCachedLayout(c)).isNotNull();
+    InternalNode cachedLayout = textComponent.getCachedLayout(c);
     assertThat(cachedLayout).isNotNull();
     assertThat(cachedLayout.getLastWidthSpec()).isEqualTo(exactSizeSpec);
     assertThat(cachedLayout.getLastHeightSpec()).isEqualTo(unspecifiedSizeSpec);
 
-    textComponent.clearCachedLayout();
-    assertThat(textComponent.getCachedLayout()).isNull();
+    textComponent.clearCachedLayout(c);
+    assertThat(textComponent.getCachedLayout(c)).isNull();
+  }
+
+  @Test
+  public void testComponentCreateAndRetrieveCachedLayoutLS() {
+    ComponentsConfiguration.cacheInternalNodeOnLayoutState = true;
+    final ComponentContext baseContext = new ComponentContext(application);
+    final ComponentContext c =
+        ComponentContext.withComponentTree(baseContext, ComponentTree.create(baseContext).build());
+    final LayoutState layoutState = new LayoutState(c);
+    c.setLayoutStateReferenceWrapper(new LayoutStateReferenceWrapper(layoutState));
+
+    final int unspecifiedSizeSpec = makeSizeSpec(0, UNSPECIFIED);
+    final int exactSizeSpec = makeSizeSpec(50, EXACTLY);
+    final Component textComponent = Text.create(c).textSizePx(16).text("test").build();
+    final Size textSize = new Size();
+    textComponent.measure(c, exactSizeSpec, unspecifiedSizeSpec, textSize);
+
+    assertThat(layoutState.getCachedLayout(textComponent)).isNotNull();
+    InternalNode cachedLayout = layoutState.getCachedLayout(textComponent);
+    assertThat(cachedLayout).isNotNull();
+    assertThat(cachedLayout.getLastWidthSpec()).isEqualTo(exactSizeSpec);
+    assertThat(cachedLayout.getLastHeightSpec()).isEqualTo(unspecifiedSizeSpec);
+
+    layoutState.clearCachedLayout(textComponent);
+    assertThat(layoutState.getCachedLayout(textComponent)).isNull();
+    ComponentsConfiguration.cacheInternalNodeOnLayoutState = false;
   }
 
   @Test
@@ -427,15 +466,18 @@ public class InternalNodeTest {
     node.flex(1f);
 
     node.assertContextSpecificStyleNotSet();
-    verify(componentsLogger)
-        .emitMessage(
-            ComponentsLogger.LogLevel.WARNING,
-            "You should not set alignSelf, flex to a root layout in Column");
+    assertThat(mComponentsReporter.getLoggedMessages())
+        .contains(
+            new Pair<>(
+                ComponentsReporter.LogLevel.WARNING,
+                "You should not set alignSelf, flex to a root layout in Column"));
   }
 
   @Test
   public void testDeepClone() {
     final ComponentContext context = new ComponentContext(RuntimeEnvironment.application);
+    context.setLayoutStateReferenceWrapperForTesting();
+
     InternalNode layout =
         createAndMeasureTreeForComponent(
             context,

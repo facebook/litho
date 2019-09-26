@@ -28,9 +28,7 @@ import com.facebook.litho.LithoView;
 import com.facebook.litho.LithoViewTestHelper;
 import com.facebook.litho.TestItem;
 
-/**
- * Utilities for interacting with an app.
- */
+/** Utilities for interacting with an app. */
 public class InteractionUtil {
 
   /**
@@ -79,9 +77,9 @@ public class InteractionUtil {
     final int[] locationOnScreen = new int[2];
     view.getLocationOnScreen(locationOnScreen);
 
-    click(new Point(
-        locationOnScreen[0] + view.getWidth() / 2,
-        locationOnScreen[1] + view.getHeight() / 2));
+    click(
+        new Point(
+            locationOnScreen[0] + view.getWidth() / 2, locationOnScreen[1] + view.getHeight() / 2));
   }
 
   public static void click(LithoView lithoView, String testKey) {
@@ -94,9 +92,10 @@ public class InteractionUtil {
     final int[] locationOnScreen = new int[2];
     lithoView.getLocationOnScreen(locationOnScreen);
 
-    click(new Point(
-        locationOnScreen[0] + testItemBounds.centerX(),
-        locationOnScreen[1] + testItemBounds.centerY()));
+    click(
+        new Point(
+            locationOnScreen[0] + testItemBounds.centerX(),
+            locationOnScreen[1] + testItemBounds.centerY()));
   }
 
   public static void clickBottom(LithoView lithoView, String testKey) {
@@ -105,29 +104,19 @@ public class InteractionUtil {
     final int[] locationOnScreen = new int[2];
     lithoView.getLocationOnScreen(locationOnScreen);
 
-    click(new Point(
-        locationOnScreen[0] + testItemBounds.centerX(),
-        locationOnScreen[1] + testItemBounds.bottom - 1));
+    click(
+        new Point(
+            locationOnScreen[0] + testItemBounds.centerX(),
+            locationOnScreen[1] + testItemBounds.bottom - 1));
   }
 
   public static void click(Point location) {
     final long time = SystemClock.uptimeMillis();
     final MotionEvent actionDownEvent =
-        MotionEvent.obtain(
-            time,
-            time,
-            MotionEvent.ACTION_DOWN,
-            location.x,
-            location.y,
-            0);
+        MotionEvent.obtain(time, time, MotionEvent.ACTION_DOWN, location.x, location.y, 0);
     final MotionEvent actionUpEvent =
         MotionEvent.obtain(
-            time + 100,
-            time + 100,
-            MotionEvent.ACTION_UP,
-            location.x,
-            location.y,
-            0);
+            time + 100, time + 100, MotionEvent.ACTION_UP, location.x, location.y, 0);
 
     final Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
     instrumentation.sendPointerSync(actionDownEvent);

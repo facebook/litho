@@ -41,10 +41,10 @@ import javax.annotation.Nullable;
  * Defines how a property on a component should animate as it changes, allowing you to optionally
  * define appear-from values for appear animations and disappear-to values for disappear animations.
  *
- * TODO(t20719329): Better documentation for Transition class
+ * <p>TODO(t20719329): Better documentation for Transition class
  *
- * Note: This abstract class has no instance methods, abstract or otherwise. It's a marker class so
- * that {@link TransitionSet}s and {@link TransitionUnit}s can be composed with each other. It's
+ * <p>Note: This abstract class has no instance methods, abstract or otherwise. It's a marker class
+ * so that {@link TransitionSet}s and {@link TransitionUnit}s can be composed with each other. It's
  * abstract because before Java 8, static methods on interfaces are not allowed.
  */
 public abstract class Transition {
@@ -73,17 +73,14 @@ public abstract class Transition {
    * The default TransitionKeyType, assigned to component and transitions when user does not specify
    * what TransitionKeyType to use
    */
-  static final Transition.TransitionKeyType DEFAULT_TRANSITION_KEY_TYPE =
-      TransitionKeyType.LOCAL;
+  static final Transition.TransitionKeyType DEFAULT_TRANSITION_KEY_TYPE = TransitionKeyType.LOCAL;
 
   public enum TransitionKeyType {
     GLOBAL,
     LOCAL
   }
 
-  /**
-   * The type of a {@link ComponentTarget}.
-   */
+  /** The type of a {@link ComponentTarget}. */
   enum ComponentTargetType {
 
     /**
@@ -113,19 +110,13 @@ public abstract class Transition {
     AUTO_LAYOUT
   }
 
-  /**
-   * The type of a {@link PropertyTarget}.
-   */
+  /** The type of a {@link PropertyTarget}. */
   enum PropertyTargetType {
 
-    /**
-     * Targets a set of properties. Expected extra data: AnimatedProperty[] of properties.
-     */
+    /** Targets a set of properties. Expected extra data: AnimatedProperty[] of properties. */
     SET,
 
-    /**
-     * Targets a single property. Expected extra data: AnimatedProperty, a single property.
-     */
+    /** Targets a single property. Expected extra data: AnimatedProperty, a single property. */
     SINGLE,
 
     /**
@@ -135,9 +126,7 @@ public abstract class Transition {
     AUTO_LAYOUT,
   }
 
-  /**
-   * Specifies what components and properties a Transition should target.
-   */
+  /** Specifies what components and properties a Transition should target. */
   public static class AnimationTarget {
 
     public final ComponentTarget componentTarget;
@@ -149,9 +138,7 @@ public abstract class Transition {
     }
   }
 
-  /**
-   * Specifies the component(s) a Transition should target.
-   */
+  /** Specifies the component(s) a Transition should target. */
   public static class ComponentTarget {
 
     public final ComponentTargetType componentTargetType;
@@ -163,9 +150,7 @@ public abstract class Transition {
     }
   }
 
-  /**
-   * Specifies the property(s) a Transition should target.
-   */
+  /** Specifies the property(s) a Transition should target. */
   public static class PropertyTarget {
 
     public final PropertyTargetType propertyTargetType;
@@ -182,29 +167,25 @@ public abstract class Transition {
   private static final int DEFAULT_DURATION = 300;
 
   /**
-   * Class that knows how to create a {@link TransitionAnimationBinding} given a
-   * {@link PropertyAnimation}. This can be used to customize the type of animation using
-   * {@link TransitionUnitsBuilder#animator}.
+   * Class that knows how to create a {@link TransitionAnimationBinding} given a {@link
+   * PropertyAnimation}. This can be used to customize the type of animation using {@link
+   * TransitionUnitsBuilder#animator}.
    */
   public interface TransitionAnimator {
 
     /**
      * @return a {@link TransitionAnimationBinding} for the given {@link PropertyAnimation} that
-     * will animate the change in value on this property.
+     *     will animate the change in value on this property.
      */
     TransitionAnimationBinding createAnimation(PropertyAnimation propertyAnimation);
   }
 
-  /**
-   * Creates a Transition for the component with the given transition key.
-   */
+  /** Creates a Transition for the component with the given transition key. */
   public static TransitionUnitsBuilder create(String key) {
     return create(DEFAULT_TRANSITION_KEY_TYPE, key);
   }
 
-  /**
-   * Creates a Transition for the components with the given transition keys.
-   */
+  /** Creates a Transition for the components with the given transition keys. */
   public static TransitionUnitsBuilder create(String... keys) {
     return create(DEFAULT_TRANSITION_KEY_TYPE, keys);
   }
@@ -231,9 +212,7 @@ public abstract class Transition {
     }
   }
 
-  /**
-   * Creates a Transition for the components targeted by the given {@link ComponentTarget}.
-   */
+  /** Creates a Transition for the components targeted by the given {@link ComponentTarget}. */
   public static TransitionUnitsBuilder create(ComponentTarget target) {
     return new TransitionUnitsBuilder(target.componentTargetType, target.componentTargetExtraData);
   }
@@ -252,16 +231,12 @@ public abstract class Transition {
     return new ParallelTransitionSet(transitions);
   }
 
-  /**
-   * Creates a set of {@link Transition}s that will run in parallel but starting on a stagger.
-   */
+  /** Creates a set of {@link Transition}s that will run in parallel but starting on a stagger. */
   public static <T extends Transition> TransitionSet stagger(int staggerMs, T... transitions) {
     return new ParallelTransitionSet(staggerMs, transitions);
   }
 
-  /**
-   * Creates a sequence of {@link Transition}s that will run one after another.
-   */
+  /** Creates a sequence of {@link Transition}s that will run one after another. */
   public static <T extends Transition> TransitionSet sequence(T... transitions) {
     return new SequenceTransitionSet(transitions);
   }
@@ -450,15 +425,14 @@ public abstract class Transition {
     }
 
     TransitionUnitsBuilder(
-        ComponentTargetType componentTargetType,
-        Object componentTargetExtraData) {
+        ComponentTargetType componentTargetType, Object componentTargetExtraData) {
       mComponentTarget = new ComponentTarget(componentTargetType, componentTargetExtraData);
     }
 
     /**
      * Adds a given property to animate. This also puts the Builder in a state to configure the
-     * animation of this property using {@link #animator}, {@link #appearFrom}, and
-     * {@link #disappearTo}.
+     * animation of this property using {@link #animator}, {@link #appearFrom}, and {@link
+     * #disappearTo}.
      *
      * @param property the property to animate
      */
@@ -510,11 +484,11 @@ public abstract class Transition {
      * @see DimensionValue
      */
     public TransitionUnitsBuilder appearFrom(RuntimeValue value) {
-      if (mPropertyTarget == null ||
-          mPropertyTarget.propertyTargetType != PropertyTargetType.SINGLE) {
+      if (mPropertyTarget == null
+          || mPropertyTarget.propertyTargetType != PropertyTargetType.SINGLE) {
         throw new RuntimeException(
-            "Must specify a single property using #animate() before specifying an appearFrom " +
-                "value!");
+            "Must specify a single property using #animate() before specifying an appearFrom "
+                + "value!");
       }
       mAppearFrom = value;
       return this;
@@ -532,26 +506,22 @@ public abstract class Transition {
      * @see DimensionValue
      */
     public TransitionUnitsBuilder disappearTo(RuntimeValue value) {
-      if (mPropertyTarget == null ||
-          mPropertyTarget.propertyTargetType != PropertyTargetType.SINGLE) {
+      if (mPropertyTarget == null
+          || mPropertyTarget.propertyTargetType != PropertyTargetType.SINGLE) {
         throw new RuntimeException(
-            "Must specify a single property using #animate() before specifying an disappearTo " +
-                "value!");
+            "Must specify a single property using #animate() before specifying an disappearTo "
+                + "value!");
       }
       mDisappearTo = value;
       return this;
     }
 
-    /**
-     * Define a constant value where appear animations should start from.
-     */
+    /** Define a constant value where appear animations should start from. */
     public TransitionUnitsBuilder appearFrom(float value) {
       return appearFrom(new FloatValue(value));
     }
 
-    /**
-     * Define a constant value where disappear animations should end at.
-     */
+    /** Define a constant value where disappear animations should end at. */
     public TransitionUnitsBuilder disappearTo(float value) {
       return disappearTo(new FloatValue(value));
     }
@@ -623,9 +593,7 @@ public abstract class Transition {
     return false;
   }
 
-  /**
-   * Creates spring-driven animations.
-   */
+  /** Creates spring-driven animations. */
   public static class SpringTransitionAnimator implements TransitionAnimator {
 
     final SpringConfig mSpringConfig;
@@ -656,9 +624,7 @@ public abstract class Transition {
     }
   }
 
-  /**
-   * Creates timing-driven animations with the given duration.
-   */
+  /** Creates timing-driven animations with the given duration. */
   public static class TimingTransitionAnimator implements Transition.TransitionAnimator {
 
     final int mDurationMs;

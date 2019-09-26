@@ -92,10 +92,11 @@ public class DelegateMethodValidationTest {
         DelegateMethodValidation.validateLayoutSpecModel(mLayoutSpecModel);
     assertThat(validationErrors).hasSize(1);
     assertThat(validationErrors.get(0).element).isEqualTo(mModelRepresentedObject);
-    assertThat(validationErrors.get(0).message).isEqualTo(
-        "You need to have a method annotated with either @OnCreateLayout " +
-            "or @OnCreateLayoutWithSizeSpec in your spec. In most cases, @OnCreateLayout " +
-            "is what you want.");
+    assertThat(validationErrors.get(0).message)
+        .isEqualTo(
+            "You need to have a method annotated with either @OnCreateLayout "
+                + "or @OnCreateLayoutWithSizeSpec in your spec. In most cases, @OnCreateLayout "
+                + "is what you want.");
   }
 
   @Test
@@ -151,10 +152,11 @@ public class DelegateMethodValidationTest {
         DelegateMethodValidation.validateLayoutSpecModel(mLayoutSpecModel);
     assertThat(validationErrors).hasSize(1);
     assertThat(validationErrors.get(0).element).isEqualTo(mModelRepresentedObject);
-    assertThat(validationErrors.get(0).message).isEqualTo(
-        "Your LayoutSpec should have a method annotated with either @OnCreateLayout " +
-            "or @OnCreateLayoutWithSizeSpec, but not both. In most cases, @OnCreateLayout " +
-            "is what you want.");
+    assertThat(validationErrors.get(0).message)
+        .isEqualTo(
+            "Your LayoutSpec should have a method annotated with either @OnCreateLayout "
+                + "or @OnCreateLayoutWithSizeSpec, but not both. In most cases, @OnCreateLayout "
+                + "is what you want.");
   }
 
   @Test
@@ -178,11 +180,12 @@ public class DelegateMethodValidationTest {
         DelegateMethodValidation.validateLayoutSpecModel(mLayoutSpecModel);
     assertThat(validationErrors).hasSize(1);
     assertThat(validationErrors.get(0).element).isEqualTo(mDelegateMethodObject1);
-    assertThat(validationErrors.get(0).message).isEqualTo(
-        "Methods annotated with interface " +
-            "com.facebook.litho.annotations.OnCreateLayoutWithSizeSpec " +
-            "must have at least 3 parameters, and they should be of type " +
-            "com.facebook.litho.ComponentContext, int, int.");
+    assertThat(validationErrors.get(0).message)
+        .isEqualTo(
+            "Methods annotated with interface "
+                + "com.facebook.litho.annotations.OnCreateLayoutWithSizeSpec "
+                + "must have at least 3 parameters, and they should be of type "
+                + "com.facebook.litho.ComponentContext, int, int.");
   }
 
   @Test
@@ -235,10 +238,11 @@ public class DelegateMethodValidationTest {
         DelegateMethodValidation.validateLayoutSpecModel(mLayoutSpecModel);
     assertThat(validationErrors).hasSize(1);
     assertThat(validationErrors.get(0).element).isEqualTo(mMethodParamObject1);
-    assertThat(validationErrors.get(0).message).isEqualTo(
-        "Parameter in position 0 of a method annotated with interface " +
-            "com.facebook.litho.annotations.OnCreateLayout should be of type " +
-            "com.facebook.litho.ComponentContext.");
+    assertThat(validationErrors.get(0).message)
+        .isEqualTo(
+            "Parameter in position 0 of a method annotated with interface "
+                + "com.facebook.litho.annotations.OnCreateLayout should be of type "
+                + "com.facebook.litho.ComponentContext.");
   }
 
   @Test
@@ -372,8 +376,8 @@ public class DelegateMethodValidationTest {
         DelegateMethodValidation.validateMountSpecModel(mMountSpecModel);
     assertThat(validationErrors).hasSize(1);
     assertThat(validationErrors.get(0).element).isEqualTo(mMountSpecObject);
-    assertThat(validationErrors.get(0).message).isEqualTo(
-        "All MountSpecs need to have a method annotated with @OnCreateMountContent.");
+    assertThat(validationErrors.get(0).message)
+        .isEqualTo("All MountSpecs need to have a method annotated with @OnCreateMountContent.");
   }
 
   @Test
@@ -425,17 +429,19 @@ public class DelegateMethodValidationTest {
         DelegateMethodValidation.validateMountSpecModel(mMountSpecModel);
     assertThat(validationErrors).hasSize(2);
     assertThat(validationErrors.get(0).element).isEqualTo(mDelegateMethodObject1);
-    assertThat(validationErrors.get(0).message).isEqualTo(
-        "The second parameter of a method annotated with interface " +
-            "com.facebook.litho.annotations.OnMount must have the same type as the " +
-            "return type of the method annotated with @OnCreateMountContent (i.e. " +
-            "java.lang.MadeUpClass).");
+    assertThat(validationErrors.get(0).message)
+        .isEqualTo(
+            "The second parameter of a method annotated with interface "
+                + "com.facebook.litho.annotations.OnMount must have the same type as the "
+                + "return type of the method annotated with @OnCreateMountContent (i.e. "
+                + "java.lang.MadeUpClass).");
     assertThat(validationErrors.get(1).element).isEqualTo(mDelegateMethodObject2);
-    assertThat(validationErrors.get(1).message).isEqualTo(
-        "The second parameter of a method annotated with interface " +
-            "com.facebook.litho.annotations.OnBind must have the same type as the " +
-            "return type of the method annotated with @OnCreateMountContent (i.e. " +
-            "java.lang.MadeUpClass).");
+    assertThat(validationErrors.get(1).message)
+        .isEqualTo(
+            "The second parameter of a method annotated with interface "
+                + "com.facebook.litho.annotations.OnBind must have the same type as the "
+                + "return type of the method annotated with @OnCreateMountContent (i.e. "
+                + "java.lang.MadeUpClass).");
   }
 
   @Test
@@ -525,11 +531,12 @@ public class DelegateMethodValidationTest {
     }
     assertThat(validationErrors).hasSize(1);
     assertThat(validationErrors.get(0).element).isEqualTo(mMethodParamObject3);
-    assertThat(validationErrors.get(0).message).isEqualTo(
-        "To use interface com.facebook.litho.annotations.FromPrepare on param interStageInput " +
-            "you must have a method annotated with interface " +
-            "com.facebook.litho.annotations.OnPrepare that has a param Output<java.lang.Integer> " +
-            "interStageInput");
+    assertThat(validationErrors.get(0).message)
+        .isEqualTo(
+            "To use interface com.facebook.litho.annotations.FromPrepare on param interStageInput "
+                + "you must have a method annotated with interface "
+                + "com.facebook.litho.annotations.OnPrepare that has a param Output<java.lang.Integer> "
+                + "interStageInput");
   }
 
   @Test
@@ -591,10 +598,11 @@ public class DelegateMethodValidationTest {
     }
     assertThat(validationErrors).hasSize(1);
     assertThat(validationErrors.get(0).element).isEqualTo(mMethodParamObject3);
-    assertThat(validationErrors.get(0).message).isEqualTo(
-        "To use interface com.facebook.litho.annotations.FromPrepare on param interStageInput " +
-            "your method annotated with interface com.facebook.litho.annotations.OnPrepare must " +
-            "have a param Output<java.lang.Integer> interStageInput");
+    assertThat(validationErrors.get(0).message)
+        .isEqualTo(
+            "To use interface com.facebook.litho.annotations.FromPrepare on param interStageInput "
+                + "your method annotated with interface com.facebook.litho.annotations.OnPrepare must "
+                + "have a param Output<java.lang.Integer> interStageInput");
   }
 
   @Test

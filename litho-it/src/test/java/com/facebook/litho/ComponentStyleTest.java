@@ -42,36 +42,28 @@ public class ComponentStyleTest {
   private int mLargeDimen;
   private ComponentContext mContext;
 
-  @Rule
-  public ComponentsRule mComponentsRule = new ComponentsRule();
+  @Rule public ComponentsRule mComponentsRule = new ComponentsRule();
 
   @Before
   public void setup() {
-    mContext = new ComponentContext(
-        new ContextThemeWrapper(RuntimeEnvironment.application, R.style.TestTheme));
+    mContext =
+        new ComponentContext(
+            new ContextThemeWrapper(RuntimeEnvironment.application, R.style.TestTheme));
     mDimen = mContext.getResources().getDimensionPixelSize(R.dimen.test_dimen);
     mLargeDimen = mContext.getResources().getDimensionPixelSize(R.dimen.test_large_dimen);
   }
 
   @Test
   public void testStyleProp() {
-    Component component =
-        Text.create(mContext, 0, TextSizeStyle)
-            .text("text")
-            .build();
-    assertThat((int) getInternalState(component, "textSize"))
-        .isEqualTo(mDimen);
+    Component component = Text.create(mContext, 0, TextSizeStyle).text("text").build();
+    assertThat((int) getInternalState(component, "textSize")).isEqualTo(mDimen);
   }
 
   @Test
   public void testOverrideStyleProp() {
     Component component =
-        Text.create(mContext, 0, TextSizeStyle)
-            .text("text")
-            .textSizePx(2 * mDimen)
-            .build();
-    assertThat((int) getInternalState(component, "textSize"))
-        .isEqualTo(2 * mDimen);
+        Text.create(mContext, 0, TextSizeStyle).text("text").textSizePx(2 * mDimen).build();
+    assertThat((int) getInternalState(component, "textSize")).isEqualTo(2 * mDimen);
   }
 
   @Test
@@ -85,10 +77,7 @@ public class ComponentStyleTest {
   @Test
   public void testOverrideStyleLayout() {
     Component component =
-        Text.create(mContext, 0, PaddingStyle)
-            .text("text")
-            .paddingPx(ALL, mDimen * 2)
-            .build();
+        Text.create(mContext, 0, PaddingStyle).text("text").paddingPx(ALL, mDimen * 2).build();
     InternalNode node = (InternalNode) component.resolve(mContext);
     node.calculateLayout();
     assertThat(node.getPaddingLeft()).isEqualTo(2 * mDimen);
@@ -96,29 +85,20 @@ public class ComponentStyleTest {
 
   @Test
   public void testAttributeStyleProp() {
-    Component component =
-        Text.create(mContext, testAttrLargeText, 0)
-            .text("text")
-            .build();
-    assertThat((int) getInternalState(component, "textSize"))
-        .isEqualTo(mLargeDimen);
+    Component component = Text.create(mContext, testAttrLargeText, 0).text("text").build();
+    assertThat((int) getInternalState(component, "textSize")).isEqualTo(mLargeDimen);
   }
 
   @Test
   public void testOverrideAttributeStyleProp() {
     Component component =
-        Text.create(mContext, testAttrLargeText, 0)
-            .text("text")
-            .textSizePx(mDimen)
-            .build();
-    assertThat((int) getInternalState(component, "textSize"))
-        .isEqualTo(mDimen);
+        Text.create(mContext, testAttrLargeText, 0).text("text").textSizePx(mDimen).build();
+    assertThat((int) getInternalState(component, "textSize")).isEqualTo(mDimen);
   }
 
   @Test
   public void testAttributeStyleLayout() {
-    Component component =
-        Text.create(mContext, testAttrLargePadding, 0).text("text").build();
+    Component component = Text.create(mContext, testAttrLargePadding, 0).text("text").build();
     InternalNode node = (InternalNode) component.resolve(mContext);
     node.calculateLayout();
     assertThat(node.getPaddingLeft()).isEqualTo(mLargeDimen);
@@ -139,11 +119,8 @@ public class ComponentStyleTest {
   @Test
   public void testStyleResOverridenByAttrResForProp() {
     Component component =
-        Text.create(mContext, testAttrLargeText, TextSizeStyle)
-            .text("text")
-            .build();
-    assertThat((int) getInternalState(component, "textSize"))
-        .isEqualTo(mLargeDimen);
+        Text.create(mContext, testAttrLargeText, TextSizeStyle).text("text").build();
+    assertThat((int) getInternalState(component, "textSize")).isEqualTo(mLargeDimen);
   }
 
   @Test

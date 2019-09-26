@@ -23,8 +23,7 @@ import javax.lang.model.element.Modifier;
 
 public class PureRenderGenerator {
 
-  private PureRenderGenerator() {
-  }
+  private PureRenderGenerator() {}
 
   public static TypeSpecDataHolder generate(HasPureRender specModel) {
     TypeSpecDataHolder.Builder dataHolder = TypeSpecDataHolder.newBuilder();

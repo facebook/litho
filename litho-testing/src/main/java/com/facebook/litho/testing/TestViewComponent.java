@@ -28,7 +28,7 @@ import com.facebook.litho.SizeSpec;
 import javax.annotation.Nullable;
 
 public class TestViewComponent extends TestComponent {
-  
+
   private final boolean mCallsShouldUpdateOnMount;
   private final boolean mIsPureRender;
   private final boolean mCanMeasure;
@@ -121,9 +121,7 @@ public class TestViewComponent extends TestComponent {
   }
 
   public static Builder create(
-      ComponentContext context,
-      @AttrRes int defStyleAttr,
-      @StyleRes int defStyleRes) {
+      ComponentContext context, @AttrRes int defStyleAttr, @StyleRes int defStyleRes) {
     return create(context, defStyleAttr, defStyleRes, true, true, true, true);
   }
 
@@ -154,13 +152,7 @@ public class TestViewComponent extends TestComponent {
       boolean canMeasure,
       boolean canMountIncrementally) {
     return create(
-        context,
-        0,
-        0,
-        callsShouldUpdateOnMount,
-        isPureRender,
-        canMeasure,
-        canMountIncrementally);
+        context, 0, 0, callsShouldUpdateOnMount, isPureRender, canMeasure, canMountIncrementally);
   }
 
   private static Builder newBuilder(

@@ -16,14 +16,11 @@
 
 package com.facebook.litho.sections;
 
-/**
- * An empty implementation of {@link LoadEventsHandler}
- */
+/** An empty implementation of {@link LoadEventsHandler} */
 public class BaseLoadEventsHandler implements LoadEventsHandler {
 
   @Override
-  public void onInitialLoad() {
-  }
+  public void onInitialLoad() {}
 
   @Override
   public void onLoadStarted(boolean empty) {}
@@ -32,6 +29,5 @@ public class BaseLoadEventsHandler implements LoadEventsHandler {
   public void onLoadSucceeded(boolean empty) {}
 
   @Override
-  public void onLoadFailed(boolean empty) {
-  }
+  public void onLoadFailed(boolean empty) {}
 }

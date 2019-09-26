@@ -19,14 +19,17 @@ apply plugin: 'java'
 sourceSets.test.java.srcDir project(':litho-processor').file("src/test/java")
 
 dependencies {
-    testImplementation deps.junit
-    testImplementation deps.mockitoCore
     // Processor
     implementation project(':litho-sections-annotations')
     implementation project(':litho-sections-processor')
     implementation project(':litho-annotations')
     implementation project(':litho-processor')
     implementation deps.javapoet
+
+    // Testing
+    testImplementation deps.junit
+    testImplementation deps.mockitoCore
+    testImplementation deps.assertjCore
 }
 
 intellij {

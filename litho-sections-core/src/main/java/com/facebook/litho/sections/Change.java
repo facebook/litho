@@ -102,8 +102,8 @@ public final class Change {
 
   /**
    * @return a new Change with an index equal to its current index plus an offset. This is used
-   * internally by the framework when generating the final {@link ChangeSet} for the
-   * {@link com.facebook.litho.sections.SectionTree.Target}.
+   *     internally by the framework when generating the final {@link ChangeSet} for the {@link
+   *     com.facebook.litho.sections.SectionTree.Target}.
    */
   static Change offset(Change change, int offset) {
     final int toIndex = change.mToIndex >= 0 ? change.mToIndex + offset : -1;
@@ -118,9 +118,7 @@ public final class Change {
         change.mNextData);
   }
 
-  /**
-   * @return a new Change that is a copy of a given Change.
-   */
+  /** @return a new Change that is a copy of a given Change. */
   static Change copy(Change change) {
     return acquire(
         change.mType,
@@ -246,9 +244,7 @@ public final class Change {
     return mToIndex;
   }
 
-  /**
-   * @return the number of changes to be made. This is only valid if type is *_RANGE.
-   */
+  /** @return the number of changes to be made. This is only valid if type is *_RANGE. */
   public int getCount() {
     return mCount;
   }
@@ -322,7 +318,7 @@ public final class Change {
     return new Change(ct, index, toIndex, count, renderInfo, renderInfos, prevData, nextData);
   }
 
-  //TODO t11953296
+  // TODO t11953296
   void release() {
     mRenderInfo = null;
     mRenderInfos = null;

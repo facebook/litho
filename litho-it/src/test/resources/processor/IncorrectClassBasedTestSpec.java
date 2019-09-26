@@ -20,5 +20,4 @@ import com.facebook.litho.annotations.TestSpec;
 
 /* error: @TestSpecs must be interfaces. */
 @TestSpec(com.facebook.litho.processor.integration.resources.BasicLayoutSpec.class)
-public class IncorrectClassBasedTestSpec {
-}
+public class IncorrectClassBasedTestSpec {}

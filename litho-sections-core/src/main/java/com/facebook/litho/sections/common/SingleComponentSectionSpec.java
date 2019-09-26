@@ -17,6 +17,8 @@
 package com.facebook.litho.sections.common;
 
 import static com.facebook.litho.widget.RenderInfoDebugInfoRegistry.SONAR_SECTIONS_DEBUG_INFO_TAG;
+import static com.facebook.litho.widget.RenderInfoDebugInfoRegistry.SONAR_SINGLE_COMPONENT_SECTION_DATA_NEXT;
+import static com.facebook.litho.widget.RenderInfoDebugInfoRegistry.SONAR_SINGLE_COMPONENT_SECTION_DATA_PREV;
 
 import androidx.annotation.Nullable;
 import com.facebook.litho.Component;
@@ -87,7 +89,8 @@ public class SingleComponentSectionSpec {
     if (component.getPrevious() == null) {
       changeSet.insert(
           0,
-          addCustomAttributes(ComponentRenderInfo.create(), customAttributes.getNext(), context)
+          addCustomAttributes(
+                  ComponentRenderInfo.create(), customAttributes.getNext(), context, component)
               .component(component.getNext())
               .isSticky(isNextSticky)
               .spanSize(nextSpanSize)
@@ -124,7 +127,8 @@ public class SingleComponentSectionSpec {
         || !customAttributesEqual) {
       changeSet.update(
           0,
-          addCustomAttributes(ComponentRenderInfo.create(), customAttributes.getNext(), context)
+          addCustomAttributes(
+                  ComponentRenderInfo.create(), customAttributes.getNext(), context, component)
               .component(component.getNext())
               .isSticky(isNextSticky)
               .spanSize(nextSpanSize)
@@ -139,9 +143,12 @@ public class SingleComponentSectionSpec {
   private static ComponentRenderInfo.Builder addCustomAttributes(
       ComponentRenderInfo.Builder builder,
       @Nullable Map<String, Object> attributes,
-      SectionContext c) {
+      SectionContext c,
+      Diff<Component> component) {
     if (ComponentsConfiguration.isRenderInfoDebuggingEnabled()) {
       builder.debugInfo(SONAR_SECTIONS_DEBUG_INFO_TAG, c.getSectionScope());
+      builder.debugInfo(SONAR_SINGLE_COMPONENT_SECTION_DATA_PREV, component.getPrevious());
+      builder.debugInfo(SONAR_SINGLE_COMPONENT_SECTION_DATA_NEXT, component.getNext());
     }
 
     if (attributes == null) {

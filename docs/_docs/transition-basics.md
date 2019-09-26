@@ -14,7 +14,7 @@ To show that, let's imagine that we have a simple Component that renders a yello
 class MyComponentSpec {
 
     @OnCreateLayout
-    static Component onCreateLayout(ComponentContext c, @State boolean toLeft) {
+    static Component onCreateLayout(ComponentContext c, @State boolean toRight) {
         return Column.create(c)
             .child(
                 Rect.create(c)
@@ -48,7 +48,7 @@ To put it all together, here is what it would look like in our case:
 class MyComponentSpec {
 
     @OnCreateLayout
-    static Component onCreateLayout(ComponentContext c, @State boolean toLeft) {
+    static Component onCreateLayout(ComponentContext c, @State boolean toRight) {
         return Column.create(c)
             .child(
                 Rect.create(c)
@@ -60,7 +60,7 @@ class MyComponentSpec {
             .build();
     }
 
-    @OnCreateLayout
+    @OnCreateTransition
     static Transition onCreateTransition(ComponentContext c) {
         return Transition.create("square")
             .animate(AnimatedProperties.X);

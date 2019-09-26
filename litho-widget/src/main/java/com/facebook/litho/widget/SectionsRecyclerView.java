@@ -20,6 +20,7 @@ import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView.ItemAnimator;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
@@ -37,10 +38,15 @@ public class SectionsRecyclerView extends SwipeRefreshLayout implements HasLitho
   private final LithoView mStickyHeader;
   private final RecyclerView mRecyclerView;
   /**
-   * Indicates whether {@link RecyclerView} has been detached. In such case we need to make sure
-   * to relayout its children eventually.
+   * Indicates whether {@link RecyclerView} has been detached. In such case we need to make sure to
+   * relayout its children eventually.
    */
   private boolean mHasBeenDetachedFromWindow = false;
+  /**
+   * When we set an ItemAnimator during mount, we want to store the one that was already set on the
+   * RecyclerView so that we can reset it during unmount.
+   */
+  private ItemAnimator mDetachedItemAnimator;
 
   public SectionsRecyclerView(Context context, RecyclerView recyclerView) {
     super(context);
@@ -48,12 +54,13 @@ public class SectionsRecyclerView extends SwipeRefreshLayout implements HasLitho
     mRecyclerView = recyclerView;
 
     // We need to draw first visible item on top of other children to support sticky headers
-    mRecyclerView.setChildDrawingOrderCallback(new RecyclerView.ChildDrawingOrderCallback() {
-      @Override
-      public int onGetChildDrawingOrder(int childCount, int i) {
-        return childCount - 1 - i;
-      }
-    });
+    mRecyclerView.setChildDrawingOrderCallback(
+        new RecyclerView.ChildDrawingOrderCallback() {
+          @Override
+          public int onGetChildDrawingOrder(int childCount, int i) {
+            return childCount - 1 - i;
+          }
+        });
     // ViewCache doesn't work well with RecyclerBinder which assumes that whenever item comes back
     // to viewport it should be rebound which does not happen with ViewCache. Consider this case:
     // LithoView goes out of screen and it is added to ViewCache, then its ComponentTree is assigned
@@ -64,9 +71,9 @@ public class SectionsRecyclerView extends SwipeRefreshLayout implements HasLitho
 
     addView(mRecyclerView);
     mStickyHeader = new LithoView(new ComponentContext(getContext()), null);
-    mStickyHeader.setLayoutParams(new ViewGroup.LayoutParams(
-        ViewGroup.LayoutParams.MATCH_PARENT,
-        ViewGroup.LayoutParams.WRAP_CONTENT));
+    mStickyHeader.setLayoutParams(
+        new ViewGroup.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
     addView(mStickyHeader);
   }
@@ -103,6 +110,16 @@ public class SectionsRecyclerView extends SwipeRefreshLayout implements HasLitho
 
   public boolean isStickyHeaderHidden() {
     return mStickyHeader.getVisibility() == View.GONE;
+  }
+
+  public void setItemAnimator(ItemAnimator itemAnimator) {
+    mDetachedItemAnimator = mRecyclerView.getItemAnimator();
+    mRecyclerView.setItemAnimator(itemAnimator);
+  }
+
+  public void resetItemAnimator() {
+    mRecyclerView.setItemAnimator(mDetachedItemAnimator);
+    mDetachedItemAnimator = null;
   }
 
   @Override

@@ -19,8 +19,8 @@ package com.facebook.litho.sections.common;
 import com.facebook.litho.annotations.Event;
 
 /**
- * An {@link Event} that is handled by a
- * {@link HideableDataDiffSectionSpec} to remove an edge from the {@link DataDiffSection}
+ * An {@link Event} that is handled by a {@link HideableDataDiffSectionSpec} to remove an edge from
+ * the {@link DataDiffSection}
  *
  * @param model the edge model object.
  */

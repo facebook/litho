@@ -23,8 +23,8 @@ package com.facebook.litho.animation;
 public interface RuntimeValue {
 
   /**
-   * Uses the given {@link Resolver} to determine the runtime value based on the given
-   * {@link ComponentProperty}.
+   * Uses the given {@link Resolver} to determine the runtime value based on the given {@link
+   * ComponentProperty}.
    */
   float resolve(Resolver resolver, PropertyHandle propertyHandle);
 }

@@ -18,6 +18,7 @@ package com.facebook.litho.widget;
 
 import androidx.annotation.Nullable;
 import com.facebook.litho.Component;
+import com.facebook.litho.ComponentsLogger;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.RenderCompleteEvent;
 import com.facebook.litho.TreeProps;
@@ -51,6 +52,18 @@ public class TreePropsWrappedRenderInfo implements RenderInfo {
   @Override
   public boolean rendersComponent() {
     return mRenderInfo.rendersComponent();
+  }
+
+  @Nullable
+  @Override
+  public ComponentsLogger getComponentsLogger() {
+    return mRenderInfo.getComponentsLogger();
+  }
+
+  @Nullable
+  @Override
+  public String getLogTag() {
+    return mRenderInfo.getLogTag();
   }
 
   @Override

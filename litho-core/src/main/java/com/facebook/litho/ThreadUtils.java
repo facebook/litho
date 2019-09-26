@@ -24,9 +24,7 @@ import com.facebook.litho.config.ComponentsConfiguration;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/**
- * Thread assertion utilities.
- */
+/** Thread assertion utilities. */
 public class ThreadUtils {
   public static final int OVERRIDE_DISABLED = 0;
   public static final int OVERRIDE_MAIN_THREAD_TRUE = 1;
@@ -36,11 +34,9 @@ public class ThreadUtils {
   @Retention(RetentionPolicy.SOURCE)
   public @interface MainThreadOverride {}
 
-  @MainThreadOverride
-  private static int sMainThreadOverride = OVERRIDE_DISABLED;
+  @MainThreadOverride private static int sMainThreadOverride = OVERRIDE_DISABLED;
 
-  private ThreadUtils() {
-  }
+  private ThreadUtils() {}
 
   @VisibleForTesting
   public static void setMainThreadOverride(@MainThreadOverride int override) {

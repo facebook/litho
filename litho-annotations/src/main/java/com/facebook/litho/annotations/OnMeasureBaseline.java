@@ -22,10 +22,8 @@ import java.lang.annotation.RetentionPolicy;
 /**
  * A method that is annotated with this annotation will be used to compute the baseline of your
  * component. The default baseline of your component if this method is not implemented is the
- * computed height of your component. The baseline is the vertical location of your component
- * to be aligned when using .alignItems(BASELINE).
- *
- * <code>
+ * computed height of your component. The baseline is the vertical location of your component to be
+ * aligned when using .alignItems(BASELINE). <code>
  * {@literal @}LayoutSpec
  * public class MyComponentSpec {
  *
@@ -37,5 +35,4 @@ import java.lang.annotation.RetentionPolicy;
  * </code>
  */
 @Retention(RetentionPolicy.SOURCE)
-public @interface OnMeasureBaseline {
-}
+public @interface OnMeasureBaseline {}

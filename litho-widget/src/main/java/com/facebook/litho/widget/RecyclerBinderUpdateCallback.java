@@ -31,11 +31,12 @@ import java.util.List;
  * An implementation of {@link ListUpdateCallback} that generates the relevant {@link Component}s
  * when an item is inserted/updated.
  *
- * The user of this API is expected to provide a ComponentRenderer implementation to build a
+ * <p>The user of this API is expected to provide a ComponentRenderer implementation to build a
  * Component from a generic model object.
- *
  */
 public class RecyclerBinderUpdateCallback<T> implements ListUpdateCallback {
+
+  private static final String INCONSISTENT_SIZE = "RecyclerBinderUpdateCallback:InconsistentSize";
 
   public interface ComponentRenderer<T> {
     RenderInfo render(T t, int idx);
@@ -243,7 +244,8 @@ public class RecyclerBinderUpdateCallback<T> implements ListUpdateCallback {
       message.append("[").append(mNextData.get(i)).append("], ");
     }
     message.append("]");
-    ComponentsReporter.emitMessage(ComponentsReporter.LogLevel.ERROR, message.toString());
+    ComponentsReporter.emitMessage(
+        ComponentsReporter.LogLevel.ERROR, INCONSISTENT_SIZE, message.toString());
   }
 
   @VisibleForTesting

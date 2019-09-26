@@ -251,14 +251,10 @@ final class FullGroupSection<T> extends Section implements TestTag {
   private void testEvent(
       HasEventDispatcher _abstract, SectionContext c, TextView view, int someParam) {
     FullGroupSection _ref = (FullGroupSection) _abstract;
-    FullGroupSectionStateContainer stateContainer = getStateContainerWithLazyStateUpdatesApplied(c,
-        _ref);
+    FullGroupSectionStateContainer stateContainer =
+        getStateContainerWithLazyStateUpdatesApplied(c, _ref);
     FullGroupSectionSpec.testEvent(
-        c,
-        view,
-        someParam,
-        (Object) stateContainer.state2,
-        (String) _ref.prop2);
+        c, view, someParam, (Object) stateContainer.state2, (String) _ref.prop2);
   }
 
   public static EventHandler<ClickEvent> testEvent(SectionContext c, int someParam) {
@@ -366,8 +362,7 @@ final class FullGroupSection<T> extends Section implements TestTag {
     boolean _result;
     Diff<Integer> prop1 =
         new Diff<Integer>(
-            _prevImpl == null ? null : _prevImpl.prop1,
-            _nextImpl == null ? null : _nextImpl.prop1);
+            _prevImpl == null ? null : _prevImpl.prop1, _nextImpl == null ? null : _nextImpl.prop1);
     _result = (boolean) FullGroupSectionSpec.shouldUpdate((Diff<Integer>) prop1);
     return _result;
   }

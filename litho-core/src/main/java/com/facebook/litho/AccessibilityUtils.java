@@ -30,10 +30,7 @@ public class AccessibilityUtils {
   private static volatile boolean isCachedIsAccessibilityEnabledSet = false;
   private static volatile boolean cachedIsAccessibilityEnabled;
 
-  /**
-   * @returns True if accessibility touch exploration is currently enabled
-   * in the framework.
-   */
+  /** @returns True if accessibility touch exploration is currently enabled in the framework. */
   public static boolean isAccessibilityEnabled(Context context) {
     if (!isCachedIsAccessibilityEnabledSet) {
       final AccessibilityManager manager =

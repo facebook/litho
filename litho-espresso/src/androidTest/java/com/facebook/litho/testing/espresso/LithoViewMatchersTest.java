@@ -36,55 +36,40 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-/**
- * Tests {@link LithoViewMatchers}
- */
+/** Tests {@link LithoViewMatchers} */
 @RunWith(AndroidJUnit4.class)
 public class LithoViewMatchersTest {
 
-  @Rule
-  public UiThreadTestRule mUiThreadRule = new UiThreadTestRule();
+  @Rule public UiThreadTestRule mUiThreadRule = new UiThreadTestRule();
 
   private LithoView mView;
 
   @Before
   public void before() throws Throwable {
-    mUiThreadRule.runOnUiThread(new Runnable() {
-      @Override
-      public void run() {
-        ComponentsConfiguration.isEndToEndTestRun = true;
-      }
-    });
+    mUiThreadRule.runOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            ComponentsConfiguration.isEndToEndTestRun = true;
+          }
+        });
 
-    final ComponentContext mComponentContext = new ComponentContext(
-        InstrumentationRegistry.getTargetContext());
-    final Component mTextComponent = MyComponent.create(mComponentContext)
-        .text("foobar")
-        .build();
+    final ComponentContext mComponentContext =
+        new ComponentContext(InstrumentationRegistry.getTargetContext());
+    final Component mTextComponent = MyComponent.create(mComponentContext).text("foobar").build();
     mView = LithoView.create(InstrumentationRegistry.getTargetContext(), mTextComponent);
-    ViewHelpers.setupView(mView)
-        .setExactWidthPx(200)
-        .setExactHeightPx(100)
-        .layout();
+    ViewHelpers.setupView(mView).setExactWidthPx(200).setExactHeightPx(100).layout();
   }
 
   @Test
   public void testIsLithoView() throws Throwable {
-    assertThat(
-        new TextView(InstrumentationRegistry.getTargetContext()),
-        is(not(lithoView())));
-    assertThat(
-        mView,
-        is(lithoView()));
+    assertThat(new TextView(InstrumentationRegistry.getTargetContext()), is(not(lithoView())));
+    assertThat(mView, is(lithoView()));
   }
 
   @Test
   public void testHasTestKey() throws Throwable {
-    assertThat(
-        mView,
-        is(withTestKey("my_test_key")));
-    assertThat(
-        mView,
-        is(not(withTestKey("my_non_existant_test_key"))));
+    assertThat(mView, is(withTestKey("my_test_key")));
+    assertThat(mView, is(not(withTestKey("my_non_existant_test_key"))));
   }
 }

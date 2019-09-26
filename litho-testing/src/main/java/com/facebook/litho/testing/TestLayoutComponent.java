@@ -62,7 +62,7 @@ public class TestLayoutComponent extends TestComponent {
   protected Component onCreateLayout(ComponentContext c) {
     super.onCreateLayout(c);
     final Component mountSpecComponent =
-        TestDrawableComponent.create(c, false, true, true, false, false).build();
+        TestDrawableComponent.create(c, false, true, true, false).build();
 
     if (mIsDelegate) {
       return Wrapper.create(c).delegate(mountSpecComponent).build();
@@ -83,9 +83,7 @@ public class TestLayoutComponent extends TestComponent {
   }
 
   public static Builder create(
-      ComponentContext context,
-      @AttrRes int defStyleAttr,
-      @StyleRes int defStyleRes) {
+      ComponentContext context, @AttrRes int defStyleAttr, @StyleRes int defStyleRes) {
     return create(context, defStyleAttr, defStyleRes, true, true, false, false);
   }
 
@@ -110,9 +108,7 @@ public class TestLayoutComponent extends TestComponent {
   }
 
   public static Builder create(
-      ComponentContext context,
-      boolean callsShouldUpdateOnMount,
-      boolean isPureRender) {
+      ComponentContext context, boolean callsShouldUpdateOnMount, boolean isPureRender) {
     return create(context, 0, 0, callsShouldUpdateOnMount, isPureRender, false, false);
   }
 

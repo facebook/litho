@@ -59,7 +59,6 @@ public class PureRenderValidationTest {
     when(mSpecModel.getDelegateMethods()).thenReturn(ImmutableList.of(delegateMethod));
   }
 
-
   @Test
   public void testShouldUpdateDefinedButNotPureRender() {
     when(mSpecModel.isPureRender()).thenReturn(false);
@@ -67,8 +66,9 @@ public class PureRenderValidationTest {
     List<SpecModelValidationError> validationErrors = PureRenderValidation.validate(mSpecModel);
     assertThat(validationErrors).hasSize(1);
     assertThat(validationErrors.get(0).element).isEqualTo(mDelegateMethodRepresentedObject1);
-    assertThat(validationErrors.get(0).message).isEqualTo(
-        "Specs defining a method annotated with @ShouldUpdate should also set " +
-            "isPureRender = true in the top-level spec annotation.");
+    assertThat(validationErrors.get(0).message)
+        .isEqualTo(
+            "Specs defining a method annotated with @ShouldUpdate should also set "
+                + "isPureRender = true in the top-level spec annotation.");
   }
 }

@@ -30,8 +30,7 @@ import javax.lang.model.util.Types;
 
 /**
  * Tags a {@link TypeElement} and extract possible spec tags from it in the form of a {@link
- * TagModel}, retaining information about supertypes and potential methods for validation
- * purposes.
+ * TagModel}, retaining information about supertypes and potential methods for validation purposes.
  */
 public final class TagExtractor {
 
@@ -43,8 +42,7 @@ public final class TagExtractor {
     final List<TagModel> tags;
     if (interfaces != null) {
       tags =
-          interfaces
-              .stream()
+          interfaces.stream()
               .map(t -> ((DeclaredType) t).asElement())
               .map(t -> newTagModel(t, types))
               .collect(Collectors.toList());

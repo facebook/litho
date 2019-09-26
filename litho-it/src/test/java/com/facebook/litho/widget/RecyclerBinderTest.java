@@ -26,7 +26,6 @@ import static org.assertj.core.api.Java6Assertions.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyLong;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isNull;
 import static org.mockito.Mockito.mock;
@@ -56,7 +55,7 @@ import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
-import com.facebook.litho.ComponentsLogger;
+import com.facebook.litho.ComponentsReporter;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.LayoutThreadPoolConfigurationImpl;
 import com.facebook.litho.LithoHandler;
@@ -70,6 +69,7 @@ import com.facebook.litho.testing.TestAttachDetachComponent;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.Whitebox;
+import com.facebook.litho.testing.logging.TestComponentsReporter;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
 import com.facebook.litho.viewcompat.SimpleViewBinder;
@@ -98,9 +98,7 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
 import org.robolectric.shadows.ShadowLooper;
 
-/**
- * Tests for {@link RecyclerBinder}
- */
+/** Tests for {@link RecyclerBinder} */
 @RunWith(ComponentsTestRunner.class)
 public class RecyclerBinderTest {
 
@@ -170,7 +168,10 @@ public class RecyclerBinderTest {
               ComponentTreeMeasureListenerFactory componentTreeMeasureListenerFactory,
               boolean incrementalMountEnabled,
               boolean canInterruptAndMoveLayoutsBetweenThreads,
-              boolean useCancelableLayoutFutures) {
+              boolean cacheInternalNodeOnLayoutState,
+              boolean useCancelableLayoutFutures,
+              boolean isReconciliationEnabled,
+              boolean isLayoutDiffingEnabled) {
             final TestComponentTreeHolder holder = new TestComponentTreeHolder(renderInfo);
             if (renderInfo.rendersComponent()) {
               mHoldersForComponents.put(renderInfo.getComponent(), holder);
@@ -547,25 +548,27 @@ public class RecyclerBinderTest {
   public void testComponentWithDifferentSpanSize() {
     final List<ComponentRenderInfo> components = new ArrayList<>();
     for (int i = 0; i < 100; i++) {
-      components.add(create()
-          .component(mock(Component.class))
-          .spanSize((i == 0 || i % 3 == 0) ? 2 : 1)
-          .build());
+      components.add(
+          create()
+              .component(mock(Component.class))
+              .spanSize((i == 0 || i % 3 == 0) ? 2 : 1)
+              .build());
 
       mRecyclerBinder.insertItemAt(i, components.get(i));
     }
     mRecyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     when(mLayoutInfo.getChildWidthSpec(anyInt(), any(RenderInfo.class)))
-        .thenAnswer(new Answer<Integer>() {
-          @Override
-          public Integer answer(InvocationOnMock invocation) throws Throwable {
-            final RenderInfo renderInfo = (RenderInfo) invocation.getArguments()[1];
-            final int spanSize = renderInfo.getSpanSize();
+        .thenAnswer(
+            new Answer<Integer>() {
+              @Override
+              public Integer answer(InvocationOnMock invocation) throws Throwable {
+                final RenderInfo renderInfo = (RenderInfo) invocation.getArguments()[1];
+                final int spanSize = renderInfo.getSpanSize();
 
-            return makeSizeSpec(100 * spanSize, EXACTLY);
-          }
-        });
+                return makeSizeSpec(100 * spanSize, EXACTLY);
+              }
+            });
 
     for (int i = 0; i < 100; i++) {
       assertThat(mHoldersForComponents.get(components.get(i).getComponent())).isNotNull();
@@ -1076,13 +1079,11 @@ public class RecyclerBinderTest {
   @Test
   public void testInsertInVisibleRange() {
     final List<ComponentRenderInfo> components = prepareLoadedBinder();
-    final ComponentRenderInfo newRenderInfo =
-        create().component(mock(Component.class)).build();
+    final ComponentRenderInfo newRenderInfo = create().component(mock(Component.class)).build();
 
     mRecyclerBinder.insertItemAt(1, newRenderInfo);
     mRecyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
-    final TestComponentTreeHolder holder =
-        mHoldersForComponents.get(newRenderInfo.getComponent());
+    final TestComponentTreeHolder holder = mHoldersForComponents.get(newRenderInfo.getComponent());
 
     assertThat(holder.isTreeValid()).isTrue();
     assertThat(holder.mLayoutSyncCalled).isFalse();
@@ -1161,13 +1162,11 @@ public class RecyclerBinderTest {
   @Test
   public void testInsertInRange() {
     final List<ComponentRenderInfo> components = prepareLoadedBinder();
-    final ComponentRenderInfo newRenderInfo =
-        create().component(mock(Component.class)).build();
+    final ComponentRenderInfo newRenderInfo = create().component(mock(Component.class)).build();
 
     mRecyclerBinder.insertItemAt(RANGE_SIZE + 1, newRenderInfo);
     mRecyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
-    final TestComponentTreeHolder holder =
-        mHoldersForComponents.get(newRenderInfo.getComponent());
+    final TestComponentTreeHolder holder = mHoldersForComponents.get(newRenderInfo.getComponent());
 
     assertThat(holder.isTreeValid()).isTrue();
     assertThat(holder.mLayoutSyncCalled).isFalse();
@@ -1190,8 +1189,7 @@ public class RecyclerBinderTest {
     final List<RenderInfo> newComponents = new ArrayList<>();
 
     for (int i = 0; i < 3; i++) {
-      newComponents.add(
-          ComponentRenderInfo.create().component(mock(Component.class)).build());
+      newComponents.add(ComponentRenderInfo.create().component(mock(Component.class)).build());
     }
 
     mRecyclerBinder.insertRangeAt(0, newComponents);
@@ -1223,15 +1221,13 @@ public class RecyclerBinderTest {
   @Test
   public void testInsertOusideRange() {
     prepareLoadedBinder();
-    final ComponentRenderInfo newRenderInfo =
-        create().component(mock(Component.class)).build();
+    final ComponentRenderInfo newRenderInfo = create().component(mock(Component.class)).build();
     final int rangeTotal = (int) (RANGE_SIZE + (RANGE_RATIO * RANGE_SIZE));
 
     mRecyclerBinder.insertItemAt(rangeTotal + 1, newRenderInfo);
     mRecyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
-    final TestComponentTreeHolder holder =
-        mHoldersForComponents.get(newRenderInfo.getComponent());
+    final TestComponentTreeHolder holder = mHoldersForComponents.get(newRenderInfo.getComponent());
 
     assertThat(holder.isTreeValid()).isFalse();
     assertThat(holder.mLayoutSyncCalled).isFalse();
@@ -1296,8 +1292,7 @@ public class RecyclerBinderTest {
     holder.mTreeValid = false;
     assertThat(holder.isTreeValid()).isFalse();
 
-    final ComponentRenderInfo newRenderInfo =
-        create().component(mock(Component.class)).build();
+    final ComponentRenderInfo newRenderInfo = create().component(mock(Component.class)).build();
     mRecyclerBinder.updateItemAt(0, newRenderInfo);
     mRecyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
@@ -1319,8 +1314,7 @@ public class RecyclerBinderTest {
 
     final List<RenderInfo> newInfos = new ArrayList<>();
     for (int i = 0; i < RANGE_SIZE; i++) {
-      newInfos.add(
-          ComponentRenderInfo.create().component(mock(Component.class)).build());
+      newInfos.add(ComponentRenderInfo.create().component(mock(Component.class)).build());
     }
     mRecyclerBinder.updateRangeAt(0, newInfos);
     mRecyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
@@ -1791,9 +1785,7 @@ public class RecyclerBinderTest {
   public void testGetItemCount() {
     for (int i = 0; i < 100; i++) {
       assertThat(mRecyclerBinder.getItemCount()).isEqualTo(i);
-      mRecyclerBinder.insertItemAt(
-          i,
-          create().component(mock(Component.class)).build());
+      mRecyclerBinder.insertItemAt(i, create().component(mock(Component.class)).build());
     }
     mRecyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
   }
@@ -2372,9 +2364,7 @@ public class RecyclerBinderTest {
   @Test
   public void testInsertAsyncBeforeInitialMeasure() {
     final RecyclerBinder recyclerBinder =
-        new RecyclerBinder.Builder()
-            .rangeRatio(RANGE_RATIO)
-            .build(mComponentContext);
+        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
     final Component component =
         TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
     final ComponentRenderInfo renderInfo =
@@ -2503,9 +2493,7 @@ public class RecyclerBinderTest {
   public void testInsertRangeAsyncBeforeInitialMeasure() {
     final int NUM_TO_INSERT = 5;
     final RecyclerBinder recyclerBinder =
-        new RecyclerBinder.Builder()
-            .rangeRatio(RANGE_RATIO)
-            .build(mComponentContext);
+        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
     final ArrayList<Component> components = new ArrayList<>();
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
     for (int i = 0; i < NUM_TO_INSERT; i++) {
@@ -3653,9 +3641,7 @@ public class RecyclerBinderTest {
     final ChangeSetCompleteCallback changeSetCompleteCallback2 =
         mock(ChangeSetCompleteCallback.class);
     final RecyclerBinder recyclerBinder =
-        new RecyclerBinder.Builder()
-            .rangeRatio(RANGE_RATIO)
-            .build(mComponentContext);
+        new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
     final ArrayList<RenderInfo> renderInfos1 = new ArrayList<>();
     final ArrayList<RenderInfo> renderInfos2 = new ArrayList<>();
     for (int i = 0; i < 5; i++) {
@@ -4248,10 +4234,7 @@ public class RecyclerBinderTest {
           }
         };
 
-    RenderInfo renderInfo =
-        ComponentRenderInfo.create()
-            .component(initRangeComponent)
-            .build();
+    RenderInfo renderInfo = ComponentRenderInfo.create().component(initRangeComponent).build();
     components.add(renderInfo);
 
     for (int i = 1; i < 30; i++) {
@@ -4285,10 +4268,7 @@ public class RecyclerBinderTest {
             }
           };
 
-      renderInfo =
-          ComponentRenderInfo.create()
-              .component(component)
-              .build();
+      renderInfo = ComponentRenderInfo.create().component(component).build();
       components.add(renderInfo);
     }
 
@@ -4354,7 +4334,7 @@ public class RecyclerBinderTest {
 
     final RecyclerBinder recyclerBinder =
         new RecyclerBinder.Builder()
-            .bgScheduleAllInitRange(true)
+            .asyncInitRange(true)
             .rangeRatio(0)
             .layoutInfo(mLayoutInfo)
             .threadPoolConfig(new LayoutThreadPoolConfigurationImpl(1, 1, 5))
@@ -4545,11 +4525,11 @@ public class RecyclerBinderTest {
 
   @Test
   public void testDataRenderedCallbacksAreNotTriggered() {
+    final TestComponentsReporter reporter = new TestComponentsReporter();
+    ComponentsReporter.provide(reporter);
     final ChangeSetCompleteCallback changeSetCompleteCallback =
         mock(ChangeSetCompleteCallback.class);
-    final ComponentsLogger componentsLogger = mock(ComponentsLogger.class);
-    final ComponentContext componentContext =
-        new ComponentContext(RuntimeEnvironment.application, "", componentsLogger);
+    final ComponentContext componentContext = new ComponentContext(RuntimeEnvironment.application);
     final RecyclerBinder recyclerBinder =
         new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(componentContext);
     for (int i = 0; i < 40; i++) {
@@ -4566,7 +4546,7 @@ public class RecyclerBinderTest {
     recyclerBinder.mount(recyclerView);
 
     recyclerBinder.notifyChangeSetComplete(true, changeSetCompleteCallback);
-    verify(componentsLogger).emitMessage(eq(ComponentsLogger.LogLevel.ERROR), anyString());
+    assertThat(reporter.hasMessageType(ComponentsReporter.LogLevel.ERROR)).isTrue();
     assertThat(recyclerBinder.mDataRenderedCallbacks).isEmpty();
   }
 
@@ -4595,16 +4575,17 @@ public class RecyclerBinderTest {
       final CountDownLatch latch = new CountDownLatch(1);
 
       new Thread(
-          new Runnable() {
-            @Override
-            public void run() {
-              try {
-                recyclerBinder.insertItemAtAsync(0, renderInfo2);
-              } finally {
-                latch.countDown();
-              }
-            }
-          }).start();
+              new Runnable() {
+                @Override
+                public void run() {
+                  try {
+                    recyclerBinder.insertItemAtAsync(0, renderInfo2);
+                  } finally {
+                    latch.countDown();
+                  }
+                }
+              })
+          .start();
 
       assertThat(latch.await(5000, TimeUnit.MILLISECONDS)).isTrue();
 
@@ -5448,8 +5429,7 @@ public class RecyclerBinderTest {
 
   private void makeIndexSticky(List<ComponentRenderInfo> components, int i) {
     components.set(
-        i,
-        ComponentRenderInfo.create().component(mock(Component.class)).isSticky(true).build());
+        i, ComponentRenderInfo.create().component(mock(Component.class)).isSticky(true).build());
     mRecyclerBinder.removeItemAt(i);
     mRecyclerBinder.insertItemAt(i, components.get(i));
     mRecyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);

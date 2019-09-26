@@ -38,9 +38,7 @@ import org.junit.runner.RunWith;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
-/**
- * Tests {@link IncrementalMountUtils}
- */
+/** Tests {@link IncrementalMountUtils} */
 @RunWith(ComponentsTestRunner.class)
 public class IncrementalMountUtilsTest {
   private static final int SCROLLING_VIEW_WIDTH = 100;
@@ -138,11 +136,7 @@ public class IncrementalMountUtilsTest {
   @Test
   public void testIncrementalMountForLithoViewVisibleAtBottom() {
     setupViewBounds(
-        mLithoView,
-        0,
-        SCROLLING_VIEW_HEIGHT - 5,
-        SCROLLING_VIEW_WIDTH,
-        SCROLLING_VIEW_HEIGHT + 5);
+        mLithoView, 0, SCROLLING_VIEW_HEIGHT - 5, SCROLLING_VIEW_WIDTH, SCROLLING_VIEW_HEIGHT + 5);
 
     IncrementalMountUtils.performIncrementalMount(mViewGroup);
 
@@ -152,11 +146,7 @@ public class IncrementalMountUtilsTest {
   @Test
   public void testIncrementalMountForLithoViewVisibleAtRight() {
     setupViewBounds(
-        mLithoView,
-        SCROLLING_VIEW_WIDTH - 5,
-        0,
-        SCROLLING_VIEW_WIDTH + 5,
-        SCROLLING_VIEW_HEIGHT);
+        mLithoView, SCROLLING_VIEW_WIDTH - 5, 0, SCROLLING_VIEW_WIDTH + 5, SCROLLING_VIEW_HEIGHT);
 
     IncrementalMountUtils.performIncrementalMount(mViewGroup);
 
@@ -186,11 +176,7 @@ public class IncrementalMountUtilsTest {
   @Test
   public void testNoIncrementalMountWhenNotEnabled() {
     setupViewBounds(
-        mLithoView,
-        0,
-        SCROLLING_VIEW_HEIGHT - 5,
-        SCROLLING_VIEW_WIDTH,
-        SCROLLING_VIEW_HEIGHT + 5);
+        mLithoView, 0, SCROLLING_VIEW_HEIGHT - 5, SCROLLING_VIEW_WIDTH, SCROLLING_VIEW_HEIGHT + 5);
     when(mLithoView.isIncrementalMountEnabled()).thenReturn(false);
 
     IncrementalMountUtils.performIncrementalMount(mViewGroup);
@@ -263,10 +249,7 @@ public class IncrementalMountUtilsTest {
     when(view.getTranslationY()).thenReturn(translationY);
   }
 
-  private static void setupLithoViewPreviousBounds(
-      LithoView lithoView,
-      int width,
-      int height) {
+  private static void setupLithoViewPreviousBounds(LithoView lithoView, int width, int height) {
     when(lithoView.getPreviousMountBounds()).thenReturn(new Rect(0, 0, width, height));
   }
 

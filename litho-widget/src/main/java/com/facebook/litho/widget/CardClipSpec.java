@@ -34,8 +34,8 @@ import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.ResType;
 
 /**
- * A component that paints rounded edges to mimic a clipping operation on the
- * component being rendered below it. Used in {@link CardSpec}.
+ * A component that paints rounded edges to mimic a clipping operation on the component being
+ * rendered below it. Used in {@link CardSpec}.
  *
  * @prop clippingColor Color for corner clipping.
  * @prop cornerRadius Radius for corner clipping.
@@ -67,10 +67,10 @@ class CardClipSpec {
     cardClipDrawable.setClippingColor(clippingColor);
     cardClipDrawable.setCornerRadius(cornerRadius);
     int clipEdge =
-        (disableClipTopLeft ? TOP_LEFT : NONE) |
-        (disableClipTopRight ? TOP_RIGHT : NONE) |
-        (disableClipBottomLeft ? BOTTOM_LEFT : NONE) |
-        (disableClipBottomRight ? BOTTOM_RIGHT : NONE);
+        (disableClipTopLeft ? TOP_LEFT : NONE)
+            | (disableClipTopRight ? TOP_RIGHT : NONE)
+            | (disableClipBottomLeft ? BOTTOM_LEFT : NONE)
+            | (disableClipBottomRight ? BOTTOM_RIGHT : NONE);
     cardClipDrawable.setDisableClip(clipEdge);
   }
 

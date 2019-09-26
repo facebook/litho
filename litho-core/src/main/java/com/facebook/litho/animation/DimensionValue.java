@@ -19,21 +19,17 @@ package com.facebook.litho.animation;
 import android.content.Context;
 import android.util.DisplayMetrics;
 
-/**
- * A {@link RuntimeValue} for dimension properties like x/y/width/height.
- */
+/** A {@link RuntimeValue} for dimension properties like x/y/width/height. */
 public class DimensionValue implements RuntimeValue {
 
-  /**
-   * @return a RuntimeValue that resolves to an absolute value.
-   */
+  /** @return a RuntimeValue that resolves to an absolute value. */
   public static DimensionValue absolute(float value) {
     return new DimensionValue(Type.ABSOLUTE, value);
   }
 
   /**
    * @return a RuntimeValue that resolves to an offset relative to the current value of some mount
-   * content property.
+   *     content property.
    */
   public static DimensionValue offsetPx(float value) {
     return new DimensionValue(Type.OFFSET, value);
@@ -41,7 +37,7 @@ public class DimensionValue implements RuntimeValue {
 
   /**
    * @return a RuntimeValue that resolves to an offset relative to the current value of some mount
-   * content property.
+   *     content property.
    */
   public static DimensionValue offsetDip(Context context, int valueDp) {
     final DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
@@ -69,8 +65,7 @@ public class DimensionValue implements RuntimeValue {
     ABSOLUTE,
     OFFSET,
     OFFSET_WIDTH_PERCENTAGE,
-    OFFSET_HEIGHT_PERCENTAGE
-    ;
+    OFFSET_HEIGHT_PERCENTAGE;
   }
 
   private final Type mType;

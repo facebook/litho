@@ -30,7 +30,7 @@ public class ContextUtils {
 
   /**
    * @return the Activity representing this Context if the Context is backed by an Activity and the
-   * Activity has not been finished/destroyed yet. Returns null otherwise.
+   *     Activity has not been finished/destroyed yet. Returns null otherwise.
    */
   @Nullable
   static Activity getValidActivityForContext(Context context) {
@@ -45,9 +45,9 @@ public class ContextUtils {
 
   /**
    * @return the "most base" Context of this Context, i.e. the Activity, Application, or Service
-   *     backing this Context and all its ContextWrappers. In some cases, e.g. instrumentation
-   *     tests or other places we don't wrap a standard Context, this root Context may instead be a
-   *     raw ContextImpl.
+   *     backing this Context and all its ContextWrappers. In some cases, e.g. instrumentation tests
+   *     or other places we don't wrap a standard Context, this root Context may instead be a raw
+   *     ContextImpl.
    */
   static Context getRootContext(Context context) {
     Context currentContext = context;

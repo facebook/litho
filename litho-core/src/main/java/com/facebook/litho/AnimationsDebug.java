@@ -19,9 +19,7 @@ package com.facebook.litho;
 import android.util.Log;
 import com.facebook.litho.config.ComponentsConfiguration;
 
-/**
- * Utilities for animations debug.
- */
+/** Utilities for animations debug. */
 public class AnimationsDebug {
 
   public static final boolean ENABLED = ComponentsConfiguration.isEndToEndTestRun;
@@ -35,8 +33,7 @@ public class AnimationsDebug {
   }
 
   static void debugPrintAnimationLockedIndices(
-      LayoutState layoutState,
-      int[] animationLockedIndices) {
+      LayoutState layoutState, int[] animationLockedIndices) {
     if (!ENABLED) {
       return;
     }

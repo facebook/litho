@@ -47,7 +47,8 @@ public class DecadeSeparatorSpecTest {
         "These tests can only be run in debug mode.",
         ComponentsConfiguration.IS_INTERNAL_BUILD,
         is(true));
-    mComponent = DecadeSeparator.create(mComponentsRule.getContext()).decade(new Decade(2010)).build();
+    mComponent =
+        DecadeSeparator.create(mComponentsRule.getContext()).decade(new Decade(2010)).build();
   }
 
   @After
@@ -78,13 +79,16 @@ public class DecadeSeparatorSpecTest {
   @Test
   public void testSubComponentByClassWithExtraction() {
     final ComponentContext c = mComponentsRule.getContext();
-    assertThat(c, mComponent).extracting(SubComponentExtractor.subComponents(c))
-      .areExactly(1, new Condition<InspectableComponent>() {
-        @Override
-        public boolean matches(InspectableComponent value) {
-          return value.getComponentClass() == Text.class;
-        }
-      });
+    assertThat(c, mComponent)
+        .extracting(SubComponentExtractor.subComponents(c))
+        .areExactly(
+            1,
+            new Condition<InspectableComponent>() {
+              @Override
+              public boolean matches(InspectableComponent value) {
+                return value.getComponentClass() == Text.class;
+              }
+            });
   }
 
   @Test

@@ -107,33 +107,33 @@ public @interface LayoutSpec {
    * Class name of the generated component. When not provided defaults to name of the annotated
    * class sans the "Spec" suffix. E.g. "MyComponentSpec" to "MyComponent".
    *
-   * In order to avoid confusion, this should only be used if you have a very good reason for it.
+   * <p>In order to avoid confusion, this should only be used if you have a very good reason for it.
    * For instance to avoid naming collisions.
    */
   String value() default "";
 
   /**
    * @return Boolean indicating whether the generated class should be public. If not, it will be
-   * package-private.
+   *     package-private.
    */
   boolean isPublic() default true;
 
   /**
    * @return Boolean indicating Whether the component implements a pure render function. If this is
-   * true and the Component didn't change during an update of the ComponentTree measurements and
-   * LayoutOutputs will be reused instead of being calculated again.
+   *     true and the Component didn't change during an update of the ComponentTree measurements and
+   *     LayoutOutputs will be reused instead of being calculated again.
    */
   boolean isPureRender() default false;
 
   /**
    * @return List of event POJOs this component can dispatch. Used to generate event dispatch
-   * methods.
+   *     methods.
    */
   Class<?>[] events() default {};
 
   /**
    * @return List of trigger POJOs this component can dispatch. Used to generate trigger creation
-   * methods.
+   *     methods.
    */
   Class<?>[] triggers() default {};
 

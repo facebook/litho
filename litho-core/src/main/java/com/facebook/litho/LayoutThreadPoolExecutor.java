@@ -18,7 +18,6 @@ package com.facebook.litho;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /** Thread pool executor implementation used to calculate layout on multiple background threads. */
 public class LayoutThreadPoolExecutor extends ThreadPoolExecutor {

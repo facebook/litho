@@ -110,5 +110,4 @@ class DemoListComponentSpec {
             ? nextItem.name == null
             : nextItem.name.equals(previousItem.name);
   }
-
 }

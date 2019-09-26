@@ -16,10 +16,11 @@
 
 package com.facebook.litho.widget;
 
-import androidx.annotation.Nullable;
-
 public interface HasPostDispatchDrawListener {
 
-  // Provide a listener that would call postDispatchDraw() when ViewGroup#dispachDraw() is called.
-  void setPostDispatchDrawListener(@Nullable PostDispatchDrawListener listener);
+  // Register a listener that calls postDispatchDraw() when ViewGroup#dispachDraw() is called.
+  void registerPostDispatchDrawListener(PostDispatchDrawListener listener);
+
+  // Unregister the listener.
+  void unregisterPostDispatchDrawListener(PostDispatchDrawListener listener);
 }

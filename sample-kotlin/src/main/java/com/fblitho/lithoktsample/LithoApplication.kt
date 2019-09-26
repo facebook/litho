@@ -14,7 +14,9 @@ package com.fblitho.lithoktsample
 
 import android.app.Application
 import com.facebook.drawee.backends.pipeline.Fresco
+import com.facebook.litho.ComponentsReporter
 import com.facebook.soloader.SoLoader
+import com.fblitho.lithoktsample.logging.SampleComponentsReporter
 
 class LithoApplication : Application() {
 
@@ -22,5 +24,6 @@ class LithoApplication : Application() {
     super.onCreate()
     Fresco.initialize(this)
     SoLoader.init(this, false)
+    ComponentsReporter.provide(SampleComponentsReporter())
   }
 }

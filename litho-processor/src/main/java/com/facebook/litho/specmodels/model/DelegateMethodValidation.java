@@ -44,8 +44,7 @@ import javax.annotation.Nullable;
  */
 public class DelegateMethodValidation {
 
-  static List<SpecModelValidationError> validateLayoutSpecModel(
-      LayoutSpecModel specModel) {
+  static List<SpecModelValidationError> validateLayoutSpecModel(LayoutSpecModel specModel) {
     List<SpecModelValidationError> validationErrors = new ArrayList<>();
     validationErrors.addAll(
         validateMethods(
@@ -62,16 +61,16 @@ public class DelegateMethodValidation {
       validationErrors.add(
           new SpecModelValidationError(
               specModel.getRepresentedObject(),
-              "You need to have a method annotated with either @OnCreateLayout " +
-                  "or @OnCreateLayoutWithSizeSpec in your spec. In most cases, @OnCreateLayout " +
-                  "is what you want."));
+              "You need to have a method annotated with either @OnCreateLayout "
+                  + "or @OnCreateLayoutWithSizeSpec in your spec. In most cases, @OnCreateLayout "
+                  + "is what you want."));
     } else if (onCreateLayoutModel != null && onCreateLayoutWithSizeSpecModel != null) {
       validationErrors.add(
           new SpecModelValidationError(
               specModel.getRepresentedObject(),
-              "Your LayoutSpec should have a method annotated with either @OnCreateLayout " +
-                  "or @OnCreateLayoutWithSizeSpec, but not both. In most cases, @OnCreateLayout " +
-                  "is what you want."));
+              "Your LayoutSpec should have a method annotated with either @OnCreateLayout "
+                  + "or @OnCreateLayoutWithSizeSpec, but not both. In most cases, @OnCreateLayout "
+                  + "is what you want."));
     }
 
     return validationErrors;
@@ -99,15 +98,19 @@ public class DelegateMethodValidation {
       for (Class<? extends Annotation> annotation : methodsAcceptingMountTypeAsSecondParam) {
         final SpecMethodModel<DelegateMethod, Void> method =
             SpecModelUtils.getMethodModelWithAnnotation(specModel, annotation);
-        if (method != null &&
-            (method.methodParams.size() < 2 ||
-                !method.methodParams.get(1).getTypeName().equals(mountType))) {
+        if (method != null
+            && (method.methodParams.size() < 2
+                || !method.methodParams.get(1).getTypeName().equals(mountType))) {
           validationErrors.add(
               new SpecModelValidationError(
                   method.representedObject,
-                  "The second parameter of a method annotated with " + annotation + " must " +
-                      "have the same type as the return type of the method annotated with " +
-                      "@OnCreateMountContent (i.e. " + mountType + ")."));
+                  "The second parameter of a method annotated with "
+                      + annotation
+                      + " must "
+                      + "have the same type as the return type of the method annotated with "
+                      + "@OnCreateMountContent (i.e. "
+                      + mountType
+                      + ")."));
         }
       }
     }
@@ -335,12 +338,14 @@ public class DelegateMethodValidation {
   private static boolean hasMatchingInterStageOutput(
       SpecMethodModel<DelegateMethod, Void> method, MethodParamModel interStageInput) {
     for (MethodParamModel methodParam : method.methodParams) {
-      if (methodParam.getName().equals(interStageInput.getName()) &&
-          methodParam.getTypeName() instanceof ParameterizedTypeName &&
-          ((ParameterizedTypeName) methodParam.getTypeName()).rawType.equals(ClassNames.OUTPUT) &&
-          ((ParameterizedTypeName) methodParam.getTypeName()).typeArguments.size() == 1 &&
-          ((ParameterizedTypeName) methodParam.getTypeName()).typeArguments.get(0).equals(
-              interStageInput.getTypeName().box())) {
+      if (methodParam.getName().equals(interStageInput.getName())
+          && methodParam.getTypeName() instanceof ParameterizedTypeName
+          && ((ParameterizedTypeName) methodParam.getTypeName()).rawType.equals(ClassNames.OUTPUT)
+          && ((ParameterizedTypeName) methodParam.getTypeName()).typeArguments.size() == 1
+          && ((ParameterizedTypeName) methodParam.getTypeName())
+              .typeArguments
+              .get(0)
+              .equals(interStageInput.getTypeName().box())) {
         return true;
       }
     }
@@ -381,8 +386,9 @@ public class DelegateMethodValidation {
       case INJECT_PROP:
         return MethodParamModelUtils.isAnnotatedWith(methodParamModel, InjectProp.class);
       case INTER_STAGE_OUTPUT:
-        return methodParamModel.getTypeName() instanceof ParameterizedTypeName &&
-            ((ParameterizedTypeName) methodParamModel.getTypeName()).rawType.equals(ClassNames.OUTPUT);
+        return methodParamModel.getTypeName() instanceof ParameterizedTypeName
+            && ((ParameterizedTypeName) methodParamModel.getTypeName())
+                .rawType.equals(ClassNames.OUTPUT);
       case PROP_OUTPUT:
         return SpecModelUtils.isPropOutput(specModel, methodParamModel);
       case STATE_OUTPUT:
@@ -421,9 +427,7 @@ public class DelegateMethodValidation {
       ImmutableList<OptionalParameterType> optionalParameterTypes) {
     final StringBuilder stringBuilder = new StringBuilder();
     for (OptionalParameterType parameterType : optionalParameterTypes) {
-      stringBuilder
-          .append(getStringRepresentationOfParamType(parameterType))
-          .append(". ");
+      stringBuilder.append(getStringRepresentationOfParamType(parameterType)).append(". ");
     }
 
     return stringBuilder.toString();
@@ -463,17 +467,17 @@ public class DelegateMethodValidation {
       case INTER_STAGE_OUTPUT:
         return "Output<T> someOutputName";
       case PROP_OUTPUT:
-        return "Output<T> propName, where a prop with type T and name propName is " +
-            "declared elsewhere in the spec";
+        return "Output<T> propName, where a prop with type T and name propName is "
+            + "declared elsewhere in the spec";
       case STATE_OUTPUT:
-        return "Output<T> stateName, where a state param with type T and name stateName is " +
-            "declared elsewhere in the spec";
+        return "Output<T> stateName, where a state param with type T and name stateName is "
+            + "declared elsewhere in the spec";
       case STATE_VALUE:
-        return "StateValue<T> stateName, where a state param with type T and name stateName is " +
-            "declared elsewhere in the spec";
+        return "StateValue<T> stateName, where a state param with type T and name stateName is "
+            + "declared elsewhere in the spec";
       case DIFF:
-        return "@State Diff<T> stateName or @Prop Diff<T> propName, where stateName/propName is " +
-            "a declared state or prop param declared elsewhere in the spec.";
+        return "@State Diff<T> stateName or @Prop Diff<T> propName, where stateName/propName is "
+            + "a declared state or prop param declared elsewhere in the spec.";
       case CACHED_VALUE:
         return "@CachedValue T value, where the cached value has a corresponding "
             + "@OnCalculateCachedValue method";

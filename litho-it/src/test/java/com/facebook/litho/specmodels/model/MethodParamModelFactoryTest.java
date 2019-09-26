@@ -104,12 +104,13 @@ public class MethodParamModelFactoryTest {
   @Test
   public void testCreateInterStageInputModel() {
     final List<Annotation> annotations = new ArrayList<>();
-    Annotation fromPrepare= new Annotation() {
-      @Override
-      public Class<? extends Annotation> annotationType() {
-        return FromPrepare.class;
-      }
-    };
+    Annotation fromPrepare =
+        new Annotation() {
+          @Override
+          public Class<? extends Annotation> annotationType() {
+            return FromPrepare.class;
+          }
+        };
     annotations.add(fromPrepare);
     MethodParamModel methodParamModel =
         MethodParamModelFactory.create(
@@ -127,12 +128,13 @@ public class MethodParamModelFactoryTest {
   @Test
   public void testCreateDiffModel() {
     final List<Annotation> annotations = new ArrayList<>();
-    Annotation annotation = new Annotation() {
-      @Override
-      public Class<? extends Annotation> annotationType() {
-        return OnCreateTransition.class;
-      }
-    };
+    Annotation annotation =
+        new Annotation() {
+          @Override
+          public Class<? extends Annotation> annotationType() {
+            return OnCreateTransition.class;
+          }
+        };
     annotations.add(annotation);
 
     MethodParamModel methodParamModel =
@@ -151,12 +153,13 @@ public class MethodParamModelFactoryTest {
   @Test
   public void testDontCreateDiffForShouldUpdate() {
     final List<Annotation> annotations = new ArrayList<>();
-    Annotation annotation = new Annotation() {
-      @Override
-      public Class<? extends Annotation> annotationType() {
-        return ShouldUpdate.class;
-      }
-    };
+    Annotation annotation =
+        new Annotation() {
+          @Override
+          public Class<? extends Annotation> annotationType() {
+            return ShouldUpdate.class;
+          }
+        };
     annotations.add(annotation);
 
     MethodParamModel methodParamModel =

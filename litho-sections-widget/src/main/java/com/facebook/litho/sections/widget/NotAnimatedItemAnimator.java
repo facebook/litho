@@ -51,11 +51,7 @@ public class NotAnimatedItemAnimator extends SimpleItemAnimator {
 
   @Override
   public boolean animateMove(
-      RecyclerView.ViewHolder holder,
-      int fromX,
-      int fromY,
-      int toX,
-      int toY) {
+      RecyclerView.ViewHolder holder, int fromX, int fromY, int toX, int toY) {
     dispatchMoveStarting(holder);
     dispatchMoveFinished(holder);
     return true;
@@ -81,12 +77,10 @@ public class NotAnimatedItemAnimator extends SimpleItemAnimator {
   }
 
   @Override
-  public void endAnimation(RecyclerView.ViewHolder item) {
-  }
+  public void endAnimation(RecyclerView.ViewHolder item) {}
 
   @Override
-  public void endAnimations() {
-  }
+  public void endAnimations() {}
 
   @Override
   public boolean isRunning() {

@@ -17,10 +17,13 @@ package com.facebook.litho;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
+import com.facebook.litho.LayoutState.LayoutStateReferenceWrapper;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,25 +33,85 @@ import org.robolectric.RuntimeEnvironment;
 public class ComponentTest {
 
   private ComponentContext mContext;
+  private final boolean config = ComponentsConfiguration.cacheInternalNodeOnLayoutState;
 
   @Before
   public void setup() {
     mContext = new ComponentContext(RuntimeEnvironment.application);
+    ComponentsConfiguration.cacheInternalNodeOnLayoutState = false;
+  }
+
+  @After
+  public void cleanup() {
+    ComponentsConfiguration.cacheInternalNodeOnLayoutState = config;
   }
 
   @Test
   public void testShallowCopyCachedLayoutSameThread() {
+    final LayoutState layoutState = new LayoutState(mContext);
+    final ComponentContext c = new ComponentContext(mContext);
+    c.setLayoutStateReferenceWrapper(new LayoutStateReferenceWrapper(layoutState));
+
     Component component = TestDrawableComponent.create(mContext).build();
-    component.measure(mContext, 100, 100, new Size());
-    assertThat(component.getCachedLayout()).isNotNull();
-    assertThat(component.getCachedLayout()).isNotNull();
+    component.measure(c, 100, 100, new Size());
+    assertThat(component.getCachedLayout(c)).isNotNull();
 
     Component copyComponent = component.makeShallowCopy();
-    assertThat(copyComponent.getCachedLayout()).isNotNull();
+    assertThat(copyComponent.getCachedLayout(c)).isNotNull();
+  }
+
+  @Test
+  public void testShallowCopyCachedLayoutSameLayoutStateCacheLayoutState() {
+    boolean config = ComponentsConfiguration.cacheInternalNodeOnLayoutState;
+    ComponentsConfiguration.cacheInternalNodeOnLayoutState = true;
+    mContext = ComponentContext.withComponentTree(mContext, ComponentTree.create(mContext).build());
+
+    final LayoutState layoutState = new LayoutState(mContext);
+
+    final ComponentContext c = new ComponentContext(mContext);
+    c.setLayoutStateReferenceWrapper(new LayoutStateReferenceWrapper(layoutState));
+
+    Component component = TestDrawableComponent.create(mContext).unique().build();
+    component.measure(c, 100, 100, new Size());
+    assertThat(component.getCachedLayout(c)).isNotNull();
+
+    Component copyComponent = component.makeShallowCopy();
+    assertThat(copyComponent.getCachedLayout(c)).isNotNull();
+
+    assertThat(component.getCachedLayout(c)).isEqualTo(copyComponent.getCachedLayout(c));
+    ComponentsConfiguration.cacheInternalNodeOnLayoutState = config;
+  }
+
+  @Test
+  public void testShallowCopyCachedLayoutOtherLayoutStateCacheLayoutState() {
+    boolean config = ComponentsConfiguration.cacheInternalNodeOnLayoutState;
+    ComponentsConfiguration.cacheInternalNodeOnLayoutState = true;
+    mContext = ComponentContext.withComponentTree(mContext, ComponentTree.create(mContext).build());
+
+    final LayoutState layoutState1 = new LayoutState(mContext);
+    final LayoutState layoutState2 = new LayoutState(mContext);
+
+    final ComponentContext c1 = new ComponentContext(mContext);
+    c1.setLayoutStateReferenceWrapper(new LayoutStateReferenceWrapper(layoutState1));
+    final ComponentContext c2 = new ComponentContext(mContext);
+    c2.setLayoutStateReferenceWrapper(new LayoutStateReferenceWrapper(layoutState2));
+
+    Component component = TestDrawableComponent.create(mContext).unique().build();
+    component.measure(c1, 100, 100, new Size());
+    assertThat(component.getCachedLayout(c1)).isNotNull();
+
+    Component copyComponent = component.makeShallowCopy();
+    assertThat(copyComponent.getCachedLayout(c2)).isNull();
+
+    ComponentsConfiguration.cacheInternalNodeOnLayoutState = config;
   }
 
   @Test
   public void testShallowCopyCachedLayoutDifferentThreadsNoMeasureCopy() {
+    final LayoutState layoutState = new LayoutState(mContext);
+    final ComponentContext c = new ComponentContext(mContext);
+    c.setLayoutStateReferenceWrapper(new LayoutStateReferenceWrapper(layoutState));
+
     Component component = TestDrawableComponent.create(mContext).build();
     Component[] resultCopyComponent = new Component[1];
     InternalNode[] cachedLayouts = new InternalNode[2];
@@ -61,9 +124,9 @@ public class ComponentTest {
             new Runnable() {
               @Override
               public void run() {
-                component.measure(mContext, 100, 100, new Size());
+                component.measure(c, 100, 100, new Size());
 
-                cachedLayouts[0] = component.getCachedLayout();
+                cachedLayouts[0] = component.getCachedLayout(c);
 
                 lockWaitMeasure.countDown();
               }
@@ -82,7 +145,7 @@ public class ComponentTest {
                 }
 
                 resultCopyComponent[0] = component.makeShallowCopy();
-                cachedLayouts[1] = resultCopyComponent[0].getCachedLayout();
+                cachedLayouts[1] = resultCopyComponent[0].getCachedLayout(c);
 
                 testFinished.countDown();
               }
@@ -98,14 +161,14 @@ public class ComponentTest {
     }
 
     // On this thread, the cached layout should be null
-    assertThat(component.getCachedLayout()).isNull();
+    assertThat(component.getCachedLayout(c)).isNull();
 
     // The saved internal node should be not null
     assertThat(cachedLayouts[0]).isNotNull();
 
     // makeShallowCopy will create a thread local var for the cached layout but its value will be
     // null
-    assertThat(resultCopyComponent[0].getCachedLayout()).isNull();
+    assertThat(resultCopyComponent[0].getCachedLayout(c)).isNull();
 
     // The saved internal node should also be null
     assertThat(cachedLayouts[1]).isNull();
@@ -113,6 +176,10 @@ public class ComponentTest {
 
   @Test
   public void testShallowCopyCachedLayoutDifferentThreadsMeasureCopy() {
+    final LayoutState layoutState = new LayoutState(mContext);
+    final ComponentContext c = new ComponentContext(mContext);
+    c.setLayoutStateReferenceWrapper(new LayoutStateReferenceWrapper(layoutState));
+
     Component component = TestDrawableComponent.create(mContext).build();
     Component[] resultCopyComponent = new Component[1];
     InternalNode[] cachedLayouts = new InternalNode[2];
@@ -125,9 +192,9 @@ public class ComponentTest {
             new Runnable() {
               @Override
               public void run() {
-                component.measure(mContext, 100, 100, new Size());
+                component.measure(c, 100, 100, new Size());
 
-                cachedLayouts[0] = component.getCachedLayout();
+                cachedLayouts[0] = component.getCachedLayout(c);
 
                 lockWaitMeasure.countDown();
               }
@@ -146,8 +213,8 @@ public class ComponentTest {
                 }
 
                 resultCopyComponent[0] = component.makeShallowCopy();
-                resultCopyComponent[0].measure(mContext, 100, 100, new Size());
-                cachedLayouts[1] = resultCopyComponent[0].getCachedLayout();
+                resultCopyComponent[0].measure(c, 100, 100, new Size());
+                cachedLayouts[1] = resultCopyComponent[0].getCachedLayout(c);
 
                 testFinished.countDown();
               }
@@ -163,13 +230,13 @@ public class ComponentTest {
     }
 
     // On this thread, the cached layout should be null
-    assertThat(component.getCachedLayout()).isNull();
+    assertThat(component.getCachedLayout(c)).isNull();
 
     // The saved internal node should be not null
     assertThat(cachedLayouts[0]).isNotNull();
 
     // On this thread, the cached layout should be null
-    assertThat(resultCopyComponent[0].getCachedLayout()).isNull();
+    assertThat(resultCopyComponent[0].getCachedLayout(c)).isNull();
 
     // The saved internal node should be not null
     assertThat(cachedLayouts[1]).isNotNull();

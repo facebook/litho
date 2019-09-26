@@ -239,8 +239,8 @@ public class PropValidationTest {
             mSpecModel, PropValidation.COMMON_PROP_NAMES, PropValidation.VALID_COMMON_PROPS);
     assertThat(validationErrors).hasSize(1);
     assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject1);
-    assertThat(validationErrors.get(0).message).isEqualTo(
-        "name1 is not optional so it should not be declared with a default value.");
+    assertThat(validationErrors.get(0).message)
+        .isEqualTo("name1 is not optional so it should not be declared with a default value.");
   }
 
   @Test
@@ -253,9 +253,10 @@ public class PropValidationTest {
             mSpecModel, PropValidation.COMMON_PROP_NAMES, PropValidation.VALID_COMMON_PROPS);
     assertThat(validationErrors).hasSize(1);
     assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject1);
-    assertThat(validationErrors.get(0).message).isEqualTo(
-        "A prop declared with resType BOOL must be one of the following types: " +
-            "[boolean, java.lang.Boolean].");
+    assertThat(validationErrors.get(0).message)
+        .isEqualTo(
+            "A prop declared with resType BOOL must be one of the following types: "
+                + "[boolean, java.lang.Boolean].");
   }
 
   @Test
@@ -276,11 +277,11 @@ public class PropValidationTest {
             mSpecModel, PropValidation.COMMON_PROP_NAMES, PropValidation.VALID_COMMON_PROPS);
     assertThat(validationErrors).hasSize(2);
     assertThat(validationErrors.get(0).element).isEqualTo(propDefaultObject1);
-    assertThat(validationErrors.get(0).message).isEqualTo(
-        "PropDefault name1 of type char should be of type boolean");
+    assertThat(validationErrors.get(0).message)
+        .isEqualTo("PropDefault name1 of type char should be of type boolean");
     assertThat(validationErrors.get(1).element).isEqualTo(propDefaultObject2);
-    assertThat(validationErrors.get(1).message).isEqualTo(
-        "PropDefault notAPropName of type char does not correspond to any defined prop");
+    assertThat(validationErrors.get(1).message)
+        .isEqualTo("PropDefault notAPropName of type char does not correspond to any defined prop");
   }
 
   @Test
@@ -295,8 +296,8 @@ public class PropValidationTest {
             mSpecModel, PropValidation.COMMON_PROP_NAMES, PropValidation.VALID_COMMON_PROPS);
     assertThat(validationErrors).hasSize(1);
     assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject1);
-    assertThat(validationErrors.get(0).message).isEqualTo(
-        "name1 is a variable argument, and thus requires a parameterized List type.");
+    assertThat(validationErrors.get(0).message)
+        .isEqualTo("name1 is a variable argument, and thus requires a parameterized List type.");
   }
 
   @Test
@@ -312,8 +313,8 @@ public class PropValidationTest {
             mSpecModel, PropValidation.COMMON_PROP_NAMES, PropValidation.VALID_COMMON_PROPS);
     assertThat(validationErrors).hasSize(1);
     assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject1);
-    assertThat(validationErrors.get(0).message).isEqualTo(
-        "name1 is a variable argument, and thus should be a List<> type.");
+    assertThat(validationErrors.get(0).message)
+        .isEqualTo("name1 is a variable argument, and thus should be a List<> type.");
   }
 
   @Test

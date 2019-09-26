@@ -25,23 +25,17 @@ import com.facebook.litho.annotations.OnCreateTreeProp;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.yoga.YogaAlign;
 
-/**
- * Used in {@link TreePropTest}.
- */
+/** Used in {@link TreePropTest}. */
 @LayoutSpec
 public class TreePropTestParentSpec {
 
   @OnCreateTreeProp
-  static TreePropNumberType onCreateTreePropA(
-      ComponentContext c,
-      @Prop TreePropNumberType propA) {
+  static TreePropNumberType onCreateTreePropA(ComponentContext c, @Prop TreePropNumberType propA) {
     return propA;
   }
 
   @OnCreateTreeProp
-  static TreePropStringType onCreateTreePropB(
-      ComponentContext c,
-      @Prop TreePropStringType propB) {
+  static TreePropStringType onCreateTreePropB(ComponentContext c, @Prop TreePropStringType propB) {
     return propB;
   }
 
@@ -55,13 +49,12 @@ public class TreePropTestParentSpec {
     return Column.create(c)
         .flexShrink(0)
         .alignContent(YogaAlign.FLEX_START)
-        .child(TreePropTestMiddle.create(c)
-            .resultPropALeaf1(resultPropALeaf1)
-            .resultPropBLeaf1(resultPropBLeaf1))
-        .child(TreePropTestMount.create(c)
-            .resultPropA(resultPropAMount))
-        .child(TreePropTestLeaf.create(c)
-            .resultPropB(resultPropBLeaf2))
+        .child(
+            TreePropTestMiddle.create(c)
+                .resultPropALeaf1(resultPropALeaf1)
+                .resultPropBLeaf1(resultPropBLeaf1))
+        .child(TreePropTestMount.create(c).resultPropA(resultPropAMount))
+        .child(TreePropTestLeaf.create(c).resultPropB(resultPropBLeaf2))
         .build();
   }
 }

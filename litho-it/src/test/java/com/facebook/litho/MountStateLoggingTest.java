@@ -16,7 +16,6 @@
 
 package com.facebook.litho;
 
-import static com.facebook.litho.FrameworkLogEvents.EVENT_MOUNT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_MOUNTED_CONTENT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_MOUNTED_COUNT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_UNMOUNTED_CONTENT;
@@ -114,9 +113,7 @@ public class MountStateLoggingTest {
       List<String> mountedNames,
       List<String> unmountedNames) {
     final Optional<TestPerfEvent> maybePerfEvent =
-        mComponentsLogger
-            .getLoggedPerfEvents()
-            .stream()
+        mComponentsLogger.getLoggedPerfEvents().stream()
             .filter(
                 new Predicate<PerfEvent>() {
                   @Override

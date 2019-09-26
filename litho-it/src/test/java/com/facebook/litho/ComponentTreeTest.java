@@ -60,13 +60,11 @@ public class ComponentTreeTest {
   @Before
   public void setup() throws Exception {
     mContext = new ComponentContext(RuntimeEnvironment.application);
-    mComponent = TestDrawableComponent.create(mContext)
-        .build();
+    mComponent = TestDrawableComponent.create(mContext).build();
 
-    mLayoutThreadShadowLooper = Shadows.shadowOf(
-        (Looper) Whitebox.invokeMethod(
-            ComponentTree.class,
-            "getDefaultLayoutThreadLooper"));
+    mLayoutThreadShadowLooper =
+        Shadows.shadowOf(
+            (Looper) Whitebox.invokeMethod(ComponentTree.class, "getDefaultLayoutThreadLooper"));
 
     mWidthSpec = makeSizeSpec(39, EXACTLY);
     mWidthSpec2 = makeSizeSpec(40, EXACTLY);
@@ -96,40 +94,25 @@ public class ComponentTreeTest {
     Assert.assertFalse(isAttached(componentTree));
 
     // The component input should be the one we passed in
-    Assert.assertSame(
-        mComponent,
-        Whitebox.getInternalState(componentTree, "mRoot"));
+    Assert.assertSame(mComponent, Whitebox.getInternalState(componentTree, "mRoot"));
+  }
+
+  private void postSizeSpecChecks(ComponentTree componentTree, String layoutStateVariableName) {
+    postSizeSpecChecks(componentTree, layoutStateVariableName, mWidthSpec, mHeightSpec);
   }
 
   private void postSizeSpecChecks(
-      ComponentTree componentTree,
-      String layoutStateVariableName) {
-    postSizeSpecChecks(
-        componentTree,
-        layoutStateVariableName,
-        mWidthSpec,
-        mHeightSpec);
-  }
-
-  private void postSizeSpecChecks(
-      ComponentTree componentTree,
-      String layoutStateVariableName,
-      int widthSpec,
-      int heightSpec) {
+      ComponentTree componentTree, String layoutStateVariableName, int widthSpec, int heightSpec) {
     // Spec specified in create
 
     assertThat(componentTreeHasSizeSpec(componentTree)).isTrue();
-    assertThat((int) getInternalState(componentTree, "mWidthSpec"))
-        .isEqualTo(widthSpec);
+    assertThat((int) getInternalState(componentTree, "mWidthSpec")).isEqualTo(widthSpec);
 
-    assertThat((int) getInternalState(componentTree, "mHeightSpec"))
-        .isEqualTo(heightSpec);
+    assertThat((int) getInternalState(componentTree, "mHeightSpec")).isEqualTo(heightSpec);
 
-    LayoutState mainThreadLayoutState = getInternalState(
-        componentTree, "mMainThreadLayoutState");
+    LayoutState mainThreadLayoutState = getInternalState(componentTree, "mMainThreadLayoutState");
 
-    LayoutState backgroundLayoutState = getInternalState(
-        componentTree, "mBackgroundLayoutState");
+    LayoutState backgroundLayoutState = getInternalState(componentTree, "mBackgroundLayoutState");
 
     LayoutState layoutState = null;
     LayoutState nullLayoutState = null;
@@ -144,17 +127,13 @@ public class ComponentTreeTest {
     }
 
     Assert.assertNull(nullLayoutState);
-    assertThat(layoutState.isCompatibleComponentAndSpec(
-        mComponent.getId(),
-        widthSpec,
-        heightSpec)).isTrue();
+    assertThat(layoutState.isCompatibleComponentAndSpec(mComponent.getId(), widthSpec, heightSpec))
+        .isTrue();
   }
 
   @Test
   public void testCreate() {
-    ComponentTree componentTree =
-        ComponentTree.create(mContext, mComponent)
-            .build();
+    ComponentTree componentTree = ComponentTree.create(mContext, mComponent).build();
 
     creationCommonChecks(componentTree);
 
@@ -177,9 +156,7 @@ public class ComponentTreeTest {
 
   @Test
   public void testSetSizeSpec() {
-    ComponentTree componentTree =
-        ComponentTree.create(mContext, mComponent)
-            .build();
+    ComponentTree componentTree = ComponentTree.create(mContext, mComponent).build();
     componentTree.setSizeSpec(mWidthSpec, mHeightSpec);
 
     // Since this happens post creation, it's not in general safe to update the main thread layout
@@ -189,18 +166,14 @@ public class ComponentTreeTest {
 
   @Test
   public void testSetSizeSpecAsync() {
-    ComponentTree componentTree =
-        create(mContext, mComponent)
-            .build();
+    ComponentTree componentTree = create(mContext, mComponent).build();
     componentTree.setSizeSpecAsync(mWidthSpec, mHeightSpec);
 
     // Only fields changed but no layout is done yet.
 
     assertThat(componentTreeHasSizeSpec(componentTree)).isTrue();
-    assertThat((int) getInternalState(componentTree, "mWidthSpec"))
-        .isEqualTo(mWidthSpec);
-    assertThat((int) getInternalState(componentTree, "mHeightSpec"))
-        .isEqualTo(mHeightSpec);
+    assertThat((int) getInternalState(componentTree, "mWidthSpec")).isEqualTo(mWidthSpec);
+    assertThat((int) getInternalState(componentTree, "mHeightSpec")).isEqualTo(mHeightSpec);
     Assert.assertNull(getInternalState(componentTree, "mMainThreadLayoutState"));
     Assert.assertNull(getInternalState(componentTree, "mBackgroundLayoutState"));
 
@@ -233,9 +206,7 @@ public class ComponentTreeTest {
 
   @Test
   public void testSetSizeSpecAsyncThenSyncBeforeRunningTask() {
-    ComponentTree componentTree =
-        ComponentTree.create(mContext, mComponent)
-            .build();
+    ComponentTree componentTree = ComponentTree.create(mContext, mComponent).build();
 
     componentTree.setSizeSpecAsync(mWidthSpec, mHeightSpec);
     componentTree.setSizeSpec(mWidthSpec2, mHeightSpec2);
@@ -244,18 +215,12 @@ public class ComponentTreeTest {
 
     // Since this happens post creation, it's not in general safe to update the main thread layout
     // state synchronously, so the result should be in the background layout state
-    postSizeSpecChecks(
-        componentTree,
-        "mBackgroundLayoutState",
-        mWidthSpec2,
-        mHeightSpec2);
+    postSizeSpecChecks(componentTree, "mBackgroundLayoutState", mWidthSpec2, mHeightSpec2);
   }
 
   @Test
   public void testSetSizeSpecAsyncThenSyncAfterRunningTask() {
-    ComponentTree componentTree =
-        ComponentTree.create(mContext, mComponent)
-            .build();
+    ComponentTree componentTree = ComponentTree.create(mContext, mComponent).build();
     componentTree.setSizeSpecAsync(mWidthSpec, mHeightSpec);
 
     mLayoutThreadShadowLooper.runToEndOfTasks();
@@ -264,18 +229,12 @@ public class ComponentTreeTest {
 
     // Since this happens post creation, it's not in general safe to update the main thread layout
     // state synchronously, so the result should be in the background layout state
-    postSizeSpecChecks(
-        componentTree,
-        "mBackgroundLayoutState",
-        mWidthSpec2,
-        mHeightSpec2);
+    postSizeSpecChecks(componentTree, "mBackgroundLayoutState", mWidthSpec2, mHeightSpec2);
   }
 
   @Test
   public void testSetSizeSpecWithOutput() {
-    ComponentTree componentTree =
-        ComponentTree.create(mContext, mComponent)
-            .build();
+    ComponentTree componentTree = ComponentTree.create(mContext, mComponent).build();
 
     Size size = new Size();
 
@@ -327,16 +286,11 @@ public class ComponentTreeTest {
 
   @Test
   public void testSetCompatibleSizeSpec() {
-    ComponentTree componentTree =
-        create(mContext, mComponent)
-            .build();
+    ComponentTree componentTree = create(mContext, mComponent).build();
 
     Size size = new Size();
 
-    componentTree.setSizeSpec(
-        makeSizeSpec(100, AT_MOST),
-        makeSizeSpec(100, AT_MOST),
-        size);
+    componentTree.setSizeSpec(makeSizeSpec(100, AT_MOST), makeSizeSpec(100, AT_MOST), size);
 
     assertEquals(100, size.width, 0.0);
     assertEquals(100, size.height, 0.0);
@@ -344,10 +298,7 @@ public class ComponentTreeTest {
     LayoutState firstLayoutState = componentTree.getBackgroundLayoutState();
     assertThat(firstLayoutState).isNotNull();
 
-    componentTree.setSizeSpec(
-        makeSizeSpec(100, EXACTLY),
-        makeSizeSpec(100, EXACTLY),
-        size);
+    componentTree.setSizeSpec(makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY), size);
 
     assertEquals(100, size.width, 0.0);
     assertEquals(100, size.height, 0.0);
@@ -357,16 +308,11 @@ public class ComponentTreeTest {
 
   @Test
   public void testSetCompatibleSizeSpecWithDifferentRoot() {
-    ComponentTree componentTree =
-        create(mContext, mComponent)
-            .build();
+    ComponentTree componentTree = create(mContext, mComponent).build();
 
     Size size = new Size();
 
-    componentTree.setSizeSpec(
-        makeSizeSpec(100, AT_MOST),
-        makeSizeSpec(100, AT_MOST),
-        size);
+    componentTree.setSizeSpec(makeSizeSpec(100, AT_MOST), makeSizeSpec(100, AT_MOST), size);
 
     assertEquals(100, size.width, 0.0);
     assertEquals(100, size.height, 0.0);
@@ -443,12 +389,9 @@ public class ComponentTreeTest {
 
   @Test
   public void testSetInput() {
-    Component component = TestLayoutComponent.create(mContext)
-        .build();
+    Component component = TestLayoutComponent.create(mContext).build();
 
-    ComponentTree componentTree =
-        ComponentTree.create(mContext, component)
-            .build();
+    ComponentTree componentTree = ComponentTree.create(mContext, component).build();
 
     componentTree.setRoot(mComponent);
 
@@ -484,19 +427,11 @@ public class ComponentTreeTest {
 
   @Test
   public void testSetComponentFromView() {
-    Component component1 = TestDrawableComponent.create(mContext)
-        .build();
-    ComponentTree componentTree1 = ComponentTree.create(
-        mContext,
-        component1)
-        .build();
+    Component component1 = TestDrawableComponent.create(mContext).build();
+    ComponentTree componentTree1 = ComponentTree.create(mContext, component1).build();
 
-    Component component2 = TestDrawableComponent.create(mContext)
-        .build();
-    ComponentTree componentTree2 = ComponentTree.create(
-        mContext,
-        component2)
-        .build();
+    Component component2 = TestDrawableComponent.create(mContext).build();
+    ComponentTree componentTree2 = ComponentTree.create(mContext, component2).build();
 
     Assert.assertNull(getLithoView(componentTree1));
     Assert.assertNull(getLithoView(componentTree2));
@@ -515,12 +450,8 @@ public class ComponentTreeTest {
 
   @Test
   public void testComponentTreeReleaseClearsView() {
-    Component component = TestDrawableComponent.create(mContext)
-        .build();
-    ComponentTree componentTree = create(
-        mContext,
-        component)
-        .build();
+    Component component = TestDrawableComponent.create(mContext).build();
+    ComponentTree componentTree = create(mContext, component).build();
 
     LithoView lithoView = new LithoView(mContext);
     lithoView.setComponentTree(componentTree);
@@ -534,13 +465,9 @@ public class ComponentTreeTest {
 
   @Test
   public void testSetTreeToTwoViewsBothAttached() {
-    Component component = TestDrawableComponent.create(mContext)
-        .build();
+    Component component = TestDrawableComponent.create(mContext).build();
 
-    ComponentTree componentTree = ComponentTree.create(
-        mContext,
-        component)
-        .build();
+    ComponentTree componentTree = ComponentTree.create(mContext, component).build();
 
     // Attach first view.
     LithoView lithoView1 = new LithoView(mContext);
@@ -558,13 +485,9 @@ public class ComponentTreeTest {
 
   @Test
   public void testSettingNewViewToTree() {
-    Component component = TestDrawableComponent.create(mContext)
-        .build();
+    Component component = TestDrawableComponent.create(mContext).build();
 
-    ComponentTree componentTree = create(
-        mContext,
-        component)
-        .build();
+    ComponentTree componentTree = create(mContext, component).build();
 
     // Attach first view.
     LithoView lithoView1 = new LithoView(mContext);
@@ -825,7 +748,7 @@ public class ComponentTreeTest {
   }
 
   // TODO(T37885964): Fix me
-  //@Test
+  // @Test
   public void testCreateOneLayoutStateFuture() {
     MyTestComponent root1 = new MyTestComponent("MyTestComponent");
     root1.testId = 1;
@@ -834,9 +757,7 @@ public class ComponentTreeTest {
         new ThreadPoolLayoutHandler(new LayoutThreadPoolConfigurationImpl(1, 1, 5));
 
     ComponentTree componentTree =
-        ComponentTree.create(mContext, root1)
-            .layoutThreadHandler(handler)
-            .build();
+        ComponentTree.create(mContext, root1).layoutThreadHandler(handler).build();
 
     componentTree.setLithoView(new LithoView(mContext));
     componentTree.measure(mWidthSpec, mHeightSpec, new int[2], false);
@@ -865,7 +786,7 @@ public class ComponentTreeTest {
           @Override
           public void run() {
             assertEquals(1, layoutStateFuture.getWaitingCount());
-            layoutStateFuture.runAndGet();
+            layoutStateFuture.runAndGet(LayoutState.CalculateLayoutSource.SET_ROOT_ASYNC);
             assertEquals(0, layoutStateFuture.getWaitingCount());
             assertEquals(0, componentTree.getLayoutStateFutures().size());
           }
@@ -882,9 +803,7 @@ public class ComponentTreeTest {
         new ThreadPoolLayoutHandler(new LayoutThreadPoolConfigurationImpl(1, 1, 5));
 
     ComponentTree componentTree =
-        ComponentTree.create(mContext, root1)
-            .layoutThreadHandler(handler)
-            .build();
+        ComponentTree.create(mContext, root1).layoutThreadHandler(handler).build();
 
     componentTree.setLithoView(new LithoView(mContext));
     componentTree.measure(mWidthSpec, mHeightSpec, new int[2], false);
@@ -952,9 +871,7 @@ public class ComponentTreeTest {
         new ThreadPoolLayoutHandler(new LayoutThreadPoolConfigurationImpl(1, 1, 5));
 
     ComponentTree componentTree =
-        ComponentTree.create(mContext, root1)
-            .layoutThreadHandler(handler)
-            .build();
+        ComponentTree.create(mContext, root1).layoutThreadHandler(handler).build();
 
     componentTree.setLithoView(new LithoView(mContext));
     componentTree.measure(mWidthSpec, mHeightSpec, new int[2], false);
@@ -1098,7 +1015,7 @@ public class ComponentTreeTest {
       }
       return hasCssSpec;
     } catch (Exception e) {
-      throw new IllegalArgumentException("Failed to invoke hasSizeSpec on ComponentTree for: "+e);
+      throw new IllegalArgumentException("Failed to invoke hasSizeSpec on ComponentTree for: " + e);
     }
   }
 

@@ -22,8 +22,8 @@ import com.facebook.litho.annotations.Event;
  * This event is triggered by {@link DataDiffSectionSpec} when it needs to verify whether two model
  * objects that represent the same item also have the same content.
  *
- * todo(t16485443): The generic type declaration(OnCheckIsSameContentEvent<TEdgeModel>)
- * is temporarily removed until the bug in the attached task is fixed.
+ * <p>todo(t16485443): The generic type declaration(OnCheckIsSameContentEvent<TEdgeModel>) is
+ * temporarily removed until the bug in the attached task is fixed.
  */
 @Event(returnType = Boolean.class)
 public class OnCheckIsSameContentEvent {

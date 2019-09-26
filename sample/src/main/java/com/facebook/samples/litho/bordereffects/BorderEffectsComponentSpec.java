@@ -10,7 +10,6 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-
 package com.facebook.samples.litho.bordereffects;
 
 import com.facebook.litho.Component;
@@ -60,8 +59,7 @@ class BorderEffectsComponentSpec {
   }
 
   @OnEvent(RenderEvent.class)
-  static RenderInfo onRender(
-      ComponentContext c, @FromEvent Class<? extends Component> model) {
+  static RenderInfo onRender(ComponentContext c, @FromEvent Class<? extends Component> model) {
 
     try {
       Method createMethod = model.getMethod("create", ComponentContext.class);

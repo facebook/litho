@@ -601,8 +601,7 @@ public final class SpecModelImpl implements SpecModel {
     // Extract diff models first as they need special handling and need to be removed
     // from our raw props.
     final List<DiffPropModel> diffPropModels =
-        delegateMethods
-            .stream()
+        delegateMethods.stream()
             .flatMap(f -> f.methodParams.stream())
             .filter(f -> f instanceof DiffPropModel)
             .map(f -> (DiffPropModel) f)
@@ -632,8 +631,7 @@ public final class SpecModelImpl implements SpecModel {
                   final String cachedDiffPropName =
                       i < cachedPropNames.size() ? cachedPropNames.get(i) : null;
 
-                  if (props
-                      .stream()
+                  if (props.stream()
                       .noneMatch(
                           prop ->
                               diffPropModels

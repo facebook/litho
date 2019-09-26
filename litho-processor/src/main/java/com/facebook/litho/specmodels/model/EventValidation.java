@@ -36,8 +36,8 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.type.MirroredTypeException;
 
 /**
- * Class for validating that the event declarations and event methods within a {@link SpecModel}
- * are well-formed.
+ * Class for validating that the event declarations and event methods within a {@link SpecModel} are
+ * well-formed.
  */
 public class EventValidation {
 
@@ -61,9 +61,9 @@ public class EventValidation {
       }
 
       for (FieldModel fieldModel : eventDeclaration.fields) {
-        if (!fieldModel.field.modifiers.contains(Modifier.PUBLIC) ||
-                (fieldModel.field.modifiers.contains(Modifier.FINAL)
-                        && !fieldModel.field.modifiers.contains(Modifier.STATIC))) {
+        if (!fieldModel.field.modifiers.contains(Modifier.PUBLIC)
+            || (fieldModel.field.modifiers.contains(Modifier.FINAL)
+                && !fieldModel.field.modifiers.contains(Modifier.STATIC))) {
           validationErrors.add(
               new SpecModelValidationError(
                   fieldModel.representedObject,
@@ -88,8 +88,10 @@ public class EventValidation {
           validationErrors.add(
               new SpecModelValidationError(
                   eventMethods.get(i).representedObject,
-                  "Two methods annotated with @OnEvent should not have the same name " +
-                      "(" + eventMethods.get(i).name + ")."));
+                  "Two methods annotated with @OnEvent should not have the same name "
+                      + "("
+                      + eventMethods.get(i).name
+                      + ")."));
         }
       }
     }

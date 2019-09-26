@@ -25,9 +25,7 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import javax.lang.model.element.Modifier;
 
-/**
- * Model that is an abstract representation of a method.
- */
+/** Model that is an abstract representation of a method. */
 @Immutable
 public final class SpecMethodModel<Phantom, A> {
   public final ImmutableList<Annotation> annotations;
@@ -38,8 +36,7 @@ public final class SpecMethodModel<Phantom, A> {
   public final ImmutableList<TypeVariableName> typeVariables;
   public final ImmutableList<MethodParamModel> methodParams;
   public final Object representedObject;
-  @Nullable
-  public final A typeModel;
+  @Nullable public final A typeModel;
 
   public SpecMethodModel(
       ImmutableList<Annotation> annotations,

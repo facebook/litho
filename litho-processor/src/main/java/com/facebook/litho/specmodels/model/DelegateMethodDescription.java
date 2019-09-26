@@ -27,16 +27,14 @@ import javax.lang.model.element.Modifier;
 /**
  * Describes the signature and other feature of a delegate method.
  *
- * We use method descriptions to refer to abstract methods defined in
- * com.facebook.litho.ComponentLifecycle, so that we can define implementations that delegate
- * to client-declared methods with annotated props.
+ * <p>We use method descriptions to refer to abstract methods defined in
+ * com.facebook.litho.ComponentLifecycle, so that we can define implementations that delegate to
+ * client-declared methods with annotated props.
  */
 @Immutable
 public final class DelegateMethodDescription {
 
-  /**
-   * Defines possible param types that can be used in delegate methods.
-   */
+  /** Defines possible param types that can be used in delegate methods. */
   public enum OptionalParameterType {
     PROP,
     DIFF_PROP,
@@ -107,8 +105,7 @@ public final class DelegateMethodDescription {
     private ImmutableList<MethodSpec> extraMethods;
     private ImmutableList<TypeName> exceptions;
 
-    private Builder() {
-    }
+    private Builder() {}
 
     public Builder annotations(ImmutableList<AnnotationSpec> annotations) {
       this.annotations = annotations;
@@ -155,9 +152,7 @@ public final class DelegateMethodDescription {
       return this;
     }
 
-    /**
-     * A list of extra methods that should be generate when this method description is used.
-     */
+    /** A list of extra methods that should be generate when this method description is used. */
     public Builder extraMethods(ImmutableList<MethodSpec> extraMethods) {
       this.extraMethods = extraMethods;
       return this;

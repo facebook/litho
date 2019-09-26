@@ -48,8 +48,8 @@ public class TreePropTest {
   }
 
   /**
-   * Tests that a TreeProp is propagated down a Component Tree,
-   * is scoped correctly, and can be overwritten.
+   * Tests that a TreeProp is propagated down a Component Tree, is scoped correctly, and can be
+   * overwritten.
    */
   @Test
   public void testTreePropsPropagated() {

@@ -237,17 +237,15 @@ public final class FullDiffSection<T> extends Section implements TestTag {
     FullDiffSection _prevImpl = (FullDiffSection) _prevAbstractImpl;
     FullDiffSection _nextImpl = (FullDiffSection) _nextAbstractImpl;
     Diff<List<T>> data =
-            new Diff<List<T>>(
-                _prevImpl == null ? null : _prevImpl.data,
-                _nextImpl == null ? null : _nextImpl.data);
+        new Diff<List<T>>(
+            _prevImpl == null ? null : _prevImpl.data, _nextImpl == null ? null : _nextImpl.data);
     Diff<Component> prop3 =
-            new Diff<Component>(
-                _prevImpl == null ? null : _prevImpl.prop3,
-                _nextImpl == null ? null : _nextImpl.prop3);
+        new Diff<Component>(
+            _prevImpl == null ? null : _prevImpl.prop3, _nextImpl == null ? null : _nextImpl.prop3);
     Diff<Object> state1 =
-            new Diff<Object>(
-                _prevImpl == null ? null : _prevImpl.mStateContainer.state1,
-                _nextImpl == null ? null : _nextImpl.mStateContainer.state1);
+        new Diff<Object>(
+            _prevImpl == null ? null : _prevImpl.mStateContainer.state1,
+            _nextImpl == null ? null : _nextImpl.mStateContainer.state1);
     FullDiffSectionSpec.onDiff(
         (SectionContext) c,
         (ChangeSet) changeSet,
@@ -311,8 +309,7 @@ public final class FullDiffSection<T> extends Section implements TestTag {
     boolean _result;
     Diff<Integer> prop1 =
         new Diff<Integer>(
-            _prevImpl == null ? null : _prevImpl.prop1,
-            _nextImpl == null ? null : _nextImpl.prop1);
+            _prevImpl == null ? null : _prevImpl.prop1, _nextImpl == null ? null : _nextImpl.prop1);
     _result = (boolean) FullDiffSectionSpec.shouldUpdate((Diff<Integer>) prop1);
     return _result;
   }

@@ -20,9 +20,7 @@ import static com.facebook.litho.EventDispatcherUtils.dispatchOnLongClick;
 
 import android.view.View;
 
-/**
- * Long click listener that triggers its underlying event handler.
- */
+/** Long click listener that triggers its underlying event handler. */
 class ComponentLongClickListener implements View.OnLongClickListener {
 
   private EventHandler<LongClickEvent> mEventHandler;

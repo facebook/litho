@@ -18,21 +18,28 @@ package com.facebook.litho;
 
 import android.graphics.Rect;
 
-/**
- * Interface used to expose a limited API of {@link LayoutOutput} to the animations package.
- */
+/** Interface used to expose a limited API of {@link LayoutOutput} to the animations package. */
 public interface AnimatableItem {
 
   Rect getBounds();
+
   float getScale();
+
   float getAlpha();
+
   float getRotation();
+
   float getRotationX();
+
   float getRotationY();
 
   boolean isScaleSet();
+
   boolean isAlphaSet();
+
   boolean isRotationSet();
+
   boolean isRotationXSet();
+
   boolean isRotationYSet();
 }

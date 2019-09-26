@@ -17,10 +17,11 @@
 package com.facebook.litho.sections.annotations;
 
 /**
- * The method annotated with this annotation will be called when the Ui rendering the
- * <code>Section</code> requests a refresh of the content.
+ * The method annotated with this annotation will be called when the Ui rendering the <code>Section
+ * </code> requests a refresh of the content.
  *
  * <p>For example:
+ *
  * <pre><code>
  * {@literal @}DiffSectionSpec
  *  public class MyChangeSetSpec {
@@ -33,8 +34,5 @@ package com.facebook.litho.sections.annotations;
  *   }
  * }
  * </code></pre>
- *
  */
-public @interface OnRefresh {
-
-}
+public @interface OnRefresh {}

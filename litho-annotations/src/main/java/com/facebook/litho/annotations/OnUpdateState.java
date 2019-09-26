@@ -19,10 +19,6 @@ package com.facebook.litho.annotations;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/**
- * Used to mark a method that can update the state of a Component.
- */
+/** Used to mark a method that can update the state of a Component. */
 @Retention(RetentionPolicy.CLASS)
-public @interface OnUpdateState {
-
-}
+public @interface OnUpdateState {}

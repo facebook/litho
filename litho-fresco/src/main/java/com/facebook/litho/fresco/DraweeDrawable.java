@@ -30,11 +30,8 @@ import com.facebook.litho.Touchable;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * A Drawable that draws images using Drawee.
- */
-public class DraweeDrawable<DH extends DraweeHierarchy>
-    extends ForwardingDrawable
+/** A Drawable that draws images using Drawee. */
+public class DraweeDrawable<DH extends DraweeHierarchy> extends ForwardingDrawable
     implements ImageContent, Touchable {
 
   private final Drawable mNoOpDrawable = new NoOpDrawable();

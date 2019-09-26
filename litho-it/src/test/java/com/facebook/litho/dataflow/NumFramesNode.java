@@ -16,9 +16,7 @@
 
 package com.facebook.litho.dataflow;
 
-/**
- * Test node whose value is based on the number of frames it's seen.
- */
+/** Test node whose value is based on the number of frames it's seen. */
 public class NumFramesNode extends ValueNode implements NodeCanFinish {
 
   private int mNumFramesSeen = 0;

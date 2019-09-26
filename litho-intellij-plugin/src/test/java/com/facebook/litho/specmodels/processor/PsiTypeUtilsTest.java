@@ -22,7 +22,18 @@ public class PsiTypeUtilsTest {
 
   @Test
   public void guessClassName() {
-    Assert.assertEquals("Object", PsiTypeUtils.guessClassName("?").simpleName());
-    Assert.assertEquals("Hello", PsiTypeUtils.guessClassName("Hello").simpleName());
+    Assert.assertEquals("T", PsiTypeUtils.guessClassName("T").reflectionName());
+    Assert.assertEquals("com.Hello", PsiTypeUtils.guessClassName("com.Hello").reflectionName());
+  }
+
+  @Test
+  public void getWildcardTypeName() {
+    Assert.assertEquals("?", PsiTypeUtils.getWildcardTypeName("?").toString());
+    Assert.assertEquals("? super T", PsiTypeUtils.getWildcardTypeName("? super T").toString());
+    Assert.assertEquals(
+        "? extends com.some.Node",
+        PsiTypeUtils.getWildcardTypeName("? extends com.some.Node").toString());
+    Assert.assertEquals(
+        "? super com.A", PsiTypeUtils.getWildcardTypeName("? super com.A & com.B").toString());
   }
 }

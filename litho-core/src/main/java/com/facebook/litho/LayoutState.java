@@ -84,7 +84,11 @@ import javax.annotation.CheckReturnValue;
  * before-mentioned outputs based on the provided {@link InternalNode} for later use in {@link
  * MountState}.
  */
+// This needs to be accessible to statically mock the class in tests.
+@VisibleForTesting
 class LayoutState {
+
+  private static final String DUPLICATE_TRANSITION_IDS = "LayoutState:DuplicateTransitionIds";
 
   @IntDef({
     CalculateLayoutSource.TEST,
@@ -132,6 +136,40 @@ class LayoutState {
         }
       };
 
+  /**
+   * Wraps an instance of a LayoutState to access it in other classes such as ComponentContext
+   * during layout state calculation. When the layout calculation finishes, the LayoutState
+   * reference is nullified. Using a wrapper instead of accessing the LayoutState instance directly
+   * helps with clearing out the reference from all objects that hold on to it, without needing the
+   * LayoutState to know about them.
+   */
+  static final class LayoutStateReferenceWrapper {
+    private @Nullable LayoutState mLayoutStateRef;
+    private static @Nullable LayoutState sTestLayoutState;
+
+    public static LayoutStateReferenceWrapper getTestInstance(ComponentContext c) {
+      if (sTestLayoutState == null) {
+        sTestLayoutState = new LayoutState(c);
+      }
+      return new LayoutStateReferenceWrapper(sTestLayoutState);
+    }
+
+    @VisibleForTesting
+    LayoutStateReferenceWrapper(LayoutState layoutState) {
+      mLayoutStateRef = layoutState;
+    }
+
+    private void releaseReference() {
+      mLayoutStateRef = null;
+    }
+
+    /** Returns the LayoutState instance or null if the layout state has been released. */
+    @Nullable
+    LayoutState getLayoutState() {
+      return mLayoutStateRef;
+    }
+  }
+
   private static final AtomicInteger sIdGenerator = new AtomicInteger(1);
   private static final int NO_PREVIOUS_LAYOUT_STATE_ID = -1;
   private static final boolean IS_TEST = "robolectric".equals(Build.FINGERPRINT);
@@ -151,6 +189,7 @@ class LayoutState {
   private final LongSparseArray<Integer> mOutputsIdToPositionMap = new LongSparseArray<>(8);
   private final ArrayList<LayoutOutput> mMountableOutputTops = new ArrayList<>();
   private final ArrayList<LayoutOutput> mMountableOutputBottoms = new ArrayList<>();
+  private final @Nullable Map<Integer, InternalNode> mLastMeasuredLayouts;
 
   @Nullable private LayoutStateOutputIdCalculator mLayoutStateOutputIdCalculator;
 
@@ -198,6 +237,7 @@ class LayoutState {
   // If true, the LayoutState calculate call was interrupted and will need to be resumed to finish
   // creating and measuring the InternalNode of the LayoutState.
   private volatile boolean mIsPartialLayoutState;
+  private final boolean mCacheInternalNodeOnLayoutState;
 
   private static final Object debugLock = new Object();
   @Nullable private static Map<Integer, List<Boolean>> layoutCalculationsOnMainThread;
@@ -213,6 +253,10 @@ class LayoutState {
     mStateHandler = mContext.getStateHandler();
     mTestOutputs = ComponentsConfiguration.isEndToEndTestRun ? new ArrayList<TestOutput>(8) : null;
     mOrientation = context.getResources().getConfiguration().orientation;
+
+    mCacheInternalNodeOnLayoutState = context.isLayoutStateCachingEnabled();
+    mLastMeasuredLayouts =
+        mCacheInternalNodeOnLayoutState ? new HashMap<Integer, InternalNode>() : null;
   }
 
   @VisibleForTesting
@@ -420,8 +464,7 @@ class LayoutState {
    * stored in the {@link InternalNode}.
    */
   private static VisibilityOutput createVisibilityOutput(
-      InternalNode node,
-      LayoutState layoutState) {
+      InternalNode node, LayoutState layoutState) {
 
     final int l = layoutState.mCurrentX + node.getX();
     final int t = layoutState.mCurrentY + node.getY();
@@ -453,9 +496,7 @@ class LayoutState {
   }
 
   private static TestOutput createTestOutput(
-      InternalNode node,
-      LayoutState layoutState,
-      LayoutOutput layoutOutput) {
+      InternalNode node, LayoutState layoutState, LayoutOutput layoutOutput) {
     final int l = layoutState.mCurrentX + node.getX();
     final int t = layoutState.mCurrentY + node.getY();
     final int r = l + node.getWidth();
@@ -472,7 +513,8 @@ class LayoutState {
     return output;
   }
 
-  private static boolean isLayoutDirectionRTL(Context context) {
+  @VisibleForTesting
+  static boolean isLayoutDirectionRTL(Context context) {
     ApplicationInfo applicationInfo = context.getApplicationInfo();
 
     if ((SDK_INT >= JELLY_BEAN_MR1)
@@ -610,7 +652,7 @@ class LayoutState {
       }
       InternalNode nestedTree =
           resolveNestedTree(
-              parentContext.isReconciliationEnabled() ? parentContext : node.getContext(),
+              parentContext,
               node,
               SizeSpec.makeSizeSpec(node.getWidth(), EXACTLY),
               SizeSpec.makeSizeSpec(node.getHeight(), EXACTLY));
@@ -648,8 +690,7 @@ class LayoutState {
 
     final boolean shouldGenerateDiffTree = layoutState.mShouldGenerateDiffTree;
     final DiffNode currentDiffNode = node.getDiffNode();
-    final boolean shouldUseCachedOutputs =
-        isMountSpec(component) && currentDiffNode != null;
+    final boolean shouldUseCachedOutputs = isMountSpec(component) && currentDiffNode != null;
     final boolean isCachedOutputUpdated = shouldUseCachedOutputs && node.areCachedMeasuresValid();
 
     final DiffNode diffNode;
@@ -720,9 +761,8 @@ class LayoutState {
       if (layoutOutput != null && layoutOutput.getViewNodeInfo() != null) {
         layoutOutput.getViewNodeInfo().setBackground(background);
       } else {
-        final LayoutOutput convertBackground = (currentDiffNode != null)
-            ? currentDiffNode.getBackground()
-            : null;
+        final LayoutOutput convertBackground =
+            (currentDiffNode != null) ? currentDiffNode.getBackground() : null;
 
         final LayoutOutput backgroundOutput =
             addDrawableComponent(
@@ -764,14 +804,7 @@ class LayoutState {
     }
 
     // 4. Extract the Transitions.
-    final Context scopedAndroidContext;
-    if (component == null || component.getScopedContext() == null) {
-      scopedAndroidContext = null;
-    } else {
-      scopedAndroidContext = component.getScopedContext().getAndroidContext();
-    }
-
-    if (TransitionUtils.areTransitionsEnabled(scopedAndroidContext)) {
+    if (areTransitionsEnabled(component != null ? component.getScopedContext() : null)) {
       final ArrayList<Transition> transitions = node.getTransitions();
       if (transitions != null) {
         for (int i = 0, size = transitions.size(); i < size; i++) {
@@ -799,9 +832,8 @@ class LayoutState {
     layoutState.mCurrentX += node.getX();
     layoutState.mCurrentY += node.getY();
     @NodeInfo.EnabledState final int parentEnabledState = layoutState.mParentEnabledState;
-    layoutState.mParentEnabledState = (node.getNodeInfo() != null)
-        ? node.getNodeInfo().getEnabledState()
-        : ENABLED_UNSET;
+    layoutState.mParentEnabledState =
+        (node.getNodeInfo() != null) ? node.getNodeInfo().getEnabledState() : ENABLED_UNSET;
 
     // We must process the nodes in order so that the layout state output order is correct.
     for (int i = 0, size = node.getChildCount(); i < size; i++) {
@@ -835,9 +867,8 @@ class LayoutState {
       if (layoutOutput != null && layoutOutput.getViewNodeInfo() != null && SDK_INT >= M) {
         layoutOutput.getViewNodeInfo().setForeground(foreground);
       } else {
-        final LayoutOutput convertForeground = (currentDiffNode != null)
-            ? currentDiffNode.getForeground()
-            : null;
+        final LayoutOutput convertForeground =
+            (currentDiffNode != null) ? currentDiffNode.getForeground() : null;
 
         final LayoutOutput foregroundOutput =
             addDrawableComponent(
@@ -988,6 +1019,25 @@ class LayoutState {
     mComponents.clear();
   }
 
+  /**
+   * This method determine if transitions are enabled for the user. If the experiment is enabled for
+   * the user then they will get cached value else it will be determined using the utility method.
+   *
+   * @param context Component context.
+   * @return true if transitions are enabled.
+   */
+  static boolean areTransitionsEnabled(@Nullable ComponentContext context) {
+    if (context == null) {
+      return TransitionUtils.areTransitionsEnabled(null);
+    }
+    // Experiment of caching the transition check is enabled
+    if (ComponentsConfiguration.isTransitionCheckCached && context.getComponentTree() != null) {
+      return context.getComponentTree().areTransitionsEnabled();
+    }
+    // Fall back to the old flow when the experiment is not enabled.
+    return TransitionUtils.areTransitionsEnabled(context.getAndroidContext());
+  }
+
   @Nullable
   Map<String, Component> consumeAttachables() {
     @Nullable Map<String, Component> tmp = mAttachableContainer;
@@ -1070,9 +1120,7 @@ class LayoutState {
   }
 
   private static void addLayoutOutputIdToPositionsMap(
-      LongSparseArray outputsIdToPositionMap,
-      LayoutOutput layoutOutput,
-      int position) {
+      LongSparseArray outputsIdToPositionMap, LayoutOutput layoutOutput, int position) {
     if (outputsIdToPositionMap != null) {
       outputsIdToPositionMap.put(layoutOutput.getId(), position);
     }
@@ -1114,6 +1162,7 @@ class LayoutState {
         // Already seen component with the same manually set transition key
         ComponentsReporter.emitMessage(
             ComponentsReporter.LogLevel.FATAL,
+            DUPLICATE_TRANSITION_IDS,
             "The transitionId '"
                 + transitionId
                 + "' is defined multiple times in the same layout. TransitionIDs must be unique.\n"
@@ -1196,9 +1245,7 @@ class LayoutState {
     calculateAndSetHostOutputIdAndUpdateState(node, hostLayoutOutput, layoutState);
 
     addLayoutOutputIdToPositionsMap(
-        layoutState.mOutputsIdToPositionMap,
-        hostLayoutOutput,
-        hostOutputPosition);
+        layoutState.mOutputsIdToPositionMap, hostLayoutOutput, hostOutputPosition);
 
     maybeAddLayoutOutputToAffinityGroup(
         layoutState.mCurrentLayoutOutputAffinityGroup, OutputUnitType.HOST, hostLayoutOutput);
@@ -1259,6 +1306,8 @@ class LayoutState {
     final DiffNode diffTreeRoot =
         currentLayoutState != null ? currentLayoutState.mDiffTreeRoot : null;
     final LayoutState layoutState;
+    LayoutStateReferenceWrapper layoutStateWrapper = null;
+
     try {
       final PerfEvent logLayoutState =
           logger != null
@@ -1275,6 +1324,9 @@ class LayoutState {
       component.markLayoutStarted();
 
       layoutState = new LayoutState(c);
+      layoutStateWrapper = new LayoutStateReferenceWrapper(layoutState);
+      c.setLayoutStateReferenceWrapper(layoutStateWrapper);
+
       layoutState.mShouldGenerateDiffTree = shouldGenerateDiffTree;
       layoutState.mComponentTreeId = componentTreeId;
       layoutState.mPreviousLayoutStateId =
@@ -1289,6 +1341,10 @@ class LayoutState {
       layoutState.mRootComponentName = component.getSimpleName();
 
       final InternalNode layoutCreatedInWillRender = component.consumeLayoutCreatedInWillRender();
+      if (layoutCreatedInWillRender != null && layoutCreatedInWillRender.getContext() != null) {
+        layoutCreatedInWillRender.getContext().setLayoutStateReferenceWrapper(layoutStateWrapper);
+      }
+
       final boolean isReconcilable = isReconcilable(c, component, currentLayoutState);
 
       final InternalNode root =
@@ -1318,6 +1374,10 @@ class LayoutState {
 
       setSizeAfterMeasureAndCollectResults(c, layoutState);
 
+      if (layoutStateWrapper != null) {
+        layoutStateWrapper.releaseReference();
+      }
+
       if (logLayoutState != null) {
         logLayoutState.markerPoint("end_collect_results");
         logger.logPerfEvent(logLayoutState);
@@ -1343,6 +1403,10 @@ class LayoutState {
     if (!layoutState.mIsPartialLayoutState) {
       throw new IllegalStateException("Can not resume a finished LayoutState calculation");
     }
+
+    final LayoutStateReferenceWrapper layoutStateWrapper =
+        new LayoutStateReferenceWrapper(layoutState);
+    c.setLayoutStateReferenceWrapper(layoutStateWrapper);
 
     final Component component = layoutState.mComponent;
     final int componentTreeId = layoutState.mComponentTreeId;
@@ -1392,9 +1456,11 @@ class LayoutState {
           layoutState.mDiffTreeRoot,
           logLayoutState);
 
-      layoutState.mIsPartialLayoutState = false;
-
       setSizeAfterMeasureAndCollectResults(c, layoutState);
+
+      if (layoutStateWrapper != null) {
+        layoutStateWrapper.releaseReference();
+      }
 
       if (logLayoutState != null) {
         logger.logPerfEvent(logLayoutState);
@@ -1607,10 +1673,7 @@ class LayoutState {
 
   @VisibleForTesting
   static void measureTree(
-      InternalNode root,
-      int widthSpec,
-      int heightSpec,
-      DiffNode previousDiffTreeRoot) {
+      InternalNode root, int widthSpec, int heightSpec, DiffNode previousDiffTreeRoot) {
     final boolean isTracing = ComponentsSystrace.isTracing();
 
     if (isTracing) {
@@ -1627,7 +1690,7 @@ class LayoutState {
     if (previousDiffTreeRoot != null) {
       ComponentsSystrace.beginSection("applyDiffNode");
       applyDiffNodeToUnchangedNodes(root, previousDiffTreeRoot);
-      ComponentsSystrace.endSection(/* applyDiffNode */);
+      ComponentsSystrace.endSection(/* applyDiffNode */ );
     }
 
     root.calculateLayout(
@@ -1666,34 +1729,13 @@ class LayoutState {
 
       // Check if cached layout can be used.
       final InternalNode cachedLayout =
-          consumeCachedLayout(component, holder, widthSpec, heightSpec);
+          consumeCachedLayout(context, component, holder, widthSpec, heightSpec);
 
       if (cachedLayout != null) {
 
         // Use the cached layout.
         resolvedLayout = cachedLayout;
       } else {
-
-        final Component root = holder.getTailComponent();
-        if (context.isReconciliationEnabled() && root != null) {
-          /*
-           * We create a shallow copy of the component to ensure that component is resolved
-           * without any side effects caused by it's current internal state. In this case the
-           * global key is reset so that a new global key is not generated for the the root
-           * component; which would also change the global keys of it's descendants. This would
-           * break state updates.
-           */
-
-          // Create a shallow copy for measure.
-          final Component copy = root.makeShallowCopy();
-
-          // Set the original global key so that state update work.
-          copy.setGlobalKey(root.getGlobalKey());
-
-          // Set this component as the root.
-          holder.setRootComponent(copy);
-        }
-
         // Check if previous layout can be remeasured and used.
         if (nestedTree != null && component.canUsePreviousLayout(context)) {
           remeasureTree(nestedTree, widthSpec, heightSpec);
@@ -1703,7 +1745,7 @@ class LayoutState {
           resolvedLayout =
               createAndMeasureTreeForComponent(
                   context,
-                  component,
+                  component.makeShallowCopy(),
                   widthSpec,
                   heightSpec,
                   holder,
@@ -1741,14 +1783,9 @@ class LayoutState {
     measureTree(layout, widthSpec, heightSpec, layout.getDiffNode());
   }
 
-  /**
-   * Create and measure a component with the given size specs.
-   */
+  /** Create and measure a component with the given size specs. */
   static InternalNode createAndMeasureTreeForComponent(
-      ComponentContext c,
-      Component component,
-      int widthSpec,
-      int heightSpec) {
+      ComponentContext c, Component component, int widthSpec, int heightSpec) {
     return createAndMeasureTreeForComponent(
         c, component, widthSpec, heightSpec, null, null, null, null);
   }
@@ -1822,11 +1859,7 @@ class LayoutState {
       layoutStatePerfEvent.markerPoint("start_measure");
     }
 
-    measureTree(
-        root,
-        widthSpec,
-        heightSpec,
-        diffTreeRoot);
+    measureTree(root, widthSpec, heightSpec, diffTreeRoot);
 
     if (layoutStatePerfEvent != null) {
       layoutStatePerfEvent.markerPoint("end_measure");
@@ -1889,12 +1922,17 @@ class LayoutState {
     }
   }
 
+  boolean shouldCacheInternalNodeOnLayoutState() {
+    return mCacheInternalNodeOnLayoutState;
+  }
+
   @Nullable
   static InternalNode consumeCachedLayout(
-      Component component, InternalNode holder, int widthSpec, int heightSpec) {
-    final InternalNode cachedLayout = component.getCachedLayout();
+      ComponentContext c, Component component, InternalNode holder, int widthSpec, int heightSpec) {
+    final InternalNode cachedLayout = component.getCachedLayout(c);
+
     if (cachedLayout != null) {
-      component.clearCachedLayout();
+      component.clearCachedLayout(c);
 
       final boolean hasValidDirection =
           InternalNodeUtils.hasValidLayoutDirectionInNestedTree(holder, cachedLayout);
@@ -1916,6 +1954,24 @@ class LayoutState {
     return null;
   }
 
+  @Nullable
+  InternalNode getCachedLayout(Component component) {
+    return mLastMeasuredLayouts.get(component.getId());
+  }
+
+  boolean hasCachedLayout(Component component) {
+    return mLastMeasuredLayouts.containsKey(component.getId());
+  }
+
+  @VisibleForTesting
+  protected void clearCachedLayout(Component component) {
+    mLastMeasuredLayouts.remove(component.getId());
+  }
+
+  void addLastMeasuredLayout(Component component, InternalNode lastMeasuredLayout) {
+    mLastMeasuredLayouts.put(component.getId(), lastMeasuredLayout);
+  }
+
   static DiffNode createDiffNode(InternalNode node, DiffNode parent) {
     DiffNode diffNode = new DiffNode();
 
@@ -1933,16 +1989,10 @@ class LayoutState {
 
   boolean isCompatibleSpec(int widthSpec, int heightSpec) {
     final boolean widthIsCompatible =
-        MeasureComparisonUtils.isMeasureSpecCompatible(
-            mWidthSpec,
-            widthSpec,
-            mWidth);
+        MeasureComparisonUtils.isMeasureSpecCompatible(mWidthSpec, widthSpec, mWidth);
 
     final boolean heightIsCompatible =
-        MeasureComparisonUtils.isMeasureSpecCompatible(
-            mHeightSpec,
-            heightSpec,
-            mHeight);
+        MeasureComparisonUtils.isMeasureSpecCompatible(mHeightSpec, heightSpec, mHeight);
 
     return widthIsCompatible && heightIsCompatible;
   }
@@ -2051,10 +2101,7 @@ class LayoutState {
     return true;
   }
 
-  boolean isCompatibleComponentAndSpec(
-      int componentId,
-      int widthSpec,
-      int heightSpec) {
+  boolean isCompatibleComponentAndSpec(int componentId, int widthSpec, int heightSpec) {
     return mComponent.getId() == componentId && isCompatibleSpec(widthSpec, heightSpec);
   }
 
@@ -2111,9 +2158,7 @@ class LayoutState {
     return mHeight;
   }
 
-  /**
-   * @return The id of the {@link ComponentTree} that generated this {@link LayoutState}
-   */
+  /** @return The id of the {@link ComponentTree} that generated this {@link LayoutState} */
   int getComponentTreeId() {
     return mComponentTreeId;
   }
@@ -2156,16 +2201,15 @@ class LayoutState {
   }
 
   /**
-   * Check if a cached nested tree has compatible SizeSpec to be reused as is or
-   * if it needs to be recomputed.
+   * Check if a cached nested tree has compatible SizeSpec to be reused as is or if it needs to be
+   * recomputed.
    *
-   * The conditions to be able to re-use previous measurements are:
-   * 1) The measureSpec is the same
-   * 2) The new measureSpec is EXACTLY and the last measured size matches the measureSpec size.
+   * <p>The conditions to be able to re-use previous measurements are: 1) The measureSpec is the
+   * same 2) The new measureSpec is EXACTLY and the last measured size matches the measureSpec size.
    * 3) The old measureSpec is UNSPECIFIED, the new one is AT_MOST and the old measured size is
-   *    smaller that the maximum size the new measureSpec will allow.
-   * 4) Both measure specs are AT_MOST. The old measure spec allows a bigger size than the new and
-   *    the old measured size is smaller than the allowed max size for the new sizeSpec.
+   * smaller that the maximum size the new measureSpec will allow. 4) Both measure specs are
+   * AT_MOST. The old measure spec allows a bigger size than the new and the old measured size is
+   * smaller than the allowed max size for the new sizeSpec.
    */
   public static boolean hasCompatibleSizeSpec(
       int oldWidthSpec,
@@ -2176,23 +2220,18 @@ class LayoutState {
       float oldMeasuredHeight) {
     final boolean widthIsCompatible =
         MeasureComparisonUtils.isMeasureSpecCompatible(
-            oldWidthSpec,
-            newWidthSpec,
-            (int) oldMeasuredWidth);
+            oldWidthSpec, newWidthSpec, (int) oldMeasuredWidth);
 
     final boolean heightIsCompatible =
         MeasureComparisonUtils.isMeasureSpecCompatible(
-            oldHeightSpec,
-            newHeightSpec,
-            (int) oldMeasuredHeight);
-    return  widthIsCompatible && heightIsCompatible;
+            oldHeightSpec, newHeightSpec, (int) oldMeasuredHeight);
+    return widthIsCompatible && heightIsCompatible;
   }
 
-
   /**
-   * Returns true if this is the root node (which always generates a matching layout
-   * output), if the node has view attributes e.g. tags, content description, etc, or if
-   * the node has explicitly been forced to be wrapped in a view.
+   * Returns true if this is the root node (which always generates a matching layout output), if the
+   * node has view attributes e.g. tags, content description, etc, or if the node has explicitly
+   * been forced to be wrapped in a view.
    */
   private static boolean needsHostView(InternalNode node, LayoutState layoutState) {
     if (layoutState.isLayoutRoot(node)) {
@@ -2234,9 +2273,9 @@ class LayoutState {
   }
 
   /**
-   * @return the position of the {@link LayoutOutput} with id layoutOutputId in the
-   * {@link LayoutState} list of outputs or -1 if no {@link LayoutOutput} with that id exists in
-   * the {@link LayoutState}
+   * @return the position of the {@link LayoutOutput} with id layoutOutputId in the {@link
+   *     LayoutState} list of outputs or -1 if no {@link LayoutOutput} with that id exists in the
+   *     {@link LayoutState}
    */
   int getLayoutOutputPositionForId(long layoutOutputId) {
     return mOutputsIdToPositionMap.get(layoutOutputId, -1);
@@ -2388,7 +2427,7 @@ class LayoutState {
     }
 
     final boolean shouldDeferNestedTreeResolution =
-        Component.isNestedTree(component) && !shouldResolveNestedTree;
+        Component.isNestedTree(c, component) && !shouldResolveNestedTree;
     final InternalNode node;
 
     try {
@@ -2442,7 +2481,7 @@ class LayoutState {
         } else {
 
           // Resolve the root component's layout.
-          node = c.resolveLayout(root);
+          node = resolve(c, root);
 
           // If the root is a layout spec which can resolve itself, add it to the InternalNode.
           if (ComponentsConfiguration.isConsistentComponentHierarchyExperimentEnabled
@@ -2495,7 +2534,7 @@ class LayoutState {
     node.appendComponent(component);
 
     // 8. Create and add transition to this component's InternalNode.
-    if (TransitionUtils.areTransitionsEnabled(c.getAndroidContext())) {
+    if (areTransitionsEnabled(c)) {
       if (component.needsPreviousRenderData()) {
         node.addComponentNeedingPreviousRenderData(component);
       } else {
@@ -2544,21 +2583,17 @@ class LayoutState {
       DebugComponent.applyOverrides(parentContext, component);
     }
 
-    // 5. Resolve the Component into an InternalNode.
-    final InternalNode node;
     final ComponentContext c = component.getScopedContext();
-    if (component.canResolve()) { // 5.1 If the Component can resolve its own InternalNode.
 
-      // Resolve the component into an InternalNode.
-      node = (InternalNode) component.resolve(c);
+    // 5. Resolve the Component into an InternalNode.
+    final InternalNode node = (InternalNode) component.resolve(c);
 
-      // Explicitly copy the common props of the component into its InternalNode.
+    // Explicitly copy the common props into the InternalNode if it did resolve itself.
+    if (component.canResolve()) {
       final CommonPropsCopyable props = component.getCommonPropsCopyable();
       if (props != null) {
         props.copyInto(c, node);
       }
-    } else { // 5.2 Create this component's layout.
-      node = createLayout(c, component, false);
     }
 
     return node;

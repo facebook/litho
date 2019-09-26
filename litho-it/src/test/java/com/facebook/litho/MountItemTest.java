@@ -33,10 +33,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
 
-/**
- * Tests {@link MountItem}
- */
-
+/** Tests {@link MountItem} */
 @RunWith(ComponentsTestRunner.class)
 public class MountItemTest {
   private MountItem mMountItem;
@@ -233,7 +230,7 @@ public class MountItemTest {
     final MountItem mountItem =
         new MountItem(
             TestDrawableComponent.create(
-                    mContext, true, true, true, true, /* implementsAccessibility */ false)
+                    mContext, true, true, true, true /* implementsAccessibility */)
                 .build(),
             mComponentHost,
             mContent,
@@ -252,7 +249,7 @@ public class MountItemTest {
     final MountItem mountItem =
         new MountItem(
             TestDrawableComponent.create(
-                    mContext, true, true, true, true, /* implementsAccessibility */ false)
+                    mContext, true, true, true, true /* implementsAccessibility */)
                 .build(),
             mComponentHost,
             mContent,
@@ -271,7 +268,7 @@ public class MountItemTest {
     final MountItem mountItem =
         new MountItem(
             TestDrawableComponent.create(
-                    mContext, true, true, true, true, /* implementsAccessibility */ false)
+                    mContext, true, true, true, true /* implementsAccessibility */)
                 .build(),
             mComponentHost,
             mContent,

@@ -31,7 +31,7 @@ public class ComponentDeclarationHandler extends GotoDeclarationHandlerBase {
     return BaseLithoComponentsDeclarationHandler.getGotoDeclarationTarget(
         sourceElement,
         LithoPluginUtils::isComponentClass,
-        LithoPluginUtils::hasLithoAnnotation,
+        LithoPluginUtils::hasLithoComponentSpecAnnotation,
         EVENT);
   }
 }

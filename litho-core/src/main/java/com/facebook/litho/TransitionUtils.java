@@ -63,7 +63,7 @@ class TransitionUtils {
     }
   }
 
-  static boolean areTransitionsEnabled(Context context) {
+  static boolean areTransitionsEnabled(@Nullable Context context) {
     if (!ComponentsConfiguration.ARE_TRANSITIONS_SUPPORTED) {
       // Transitions use some APIs that are not available before ICS.
       return false;
@@ -74,6 +74,10 @@ class TransitionUtils {
     }
 
     if (!ComponentsConfiguration.CAN_CHECK_GLOBAL_ANIMATOR_SETTINGS) {
+      return false;
+    }
+
+    if (context == null) {
       return false;
     }
 

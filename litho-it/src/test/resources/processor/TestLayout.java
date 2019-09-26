@@ -155,9 +155,9 @@ public final class TestLayout<S extends View> extends Component implements TestT
   @Override
   protected TreeProps getTreePropsForChildren(ComponentContext c, TreeProps parentTreeProps) {
     final TreeProps childTreeProps = TreeProps.acquire(parentTreeProps);
-    childTreeProps.put(com.facebook.litho.processor.integration.resources.TestTreeProp.class, TestLayoutSpec.onCreateFeedPrefetcherProp(
-        (ComponentContext) c,
-        prop6));
+    childTreeProps.put(
+        com.facebook.litho.processor.integration.resources.TestTreeProp.class,
+        TestLayoutSpec.onCreateFeedPrefetcherProp((ComponentContext) c, prop6));
     return childTreeProps;
   }
 
@@ -286,8 +286,9 @@ public final class TestLayout<S extends View> extends Component implements TestT
   public Object dispatchOnEvent(final EventHandler eventHandler, final Object eventState) {
     int id = eventHandler.id;
     switch (id) {
-      case 1328162206: {
-        ClickEvent _event = (ClickEvent) eventState;
+      case 1328162206:
+        {
+          ClickEvent _event = (ClickEvent) eventState;
           testLayoutEvent(
               eventHandler.mHasEventDispatcher,
               (ComponentContext) eventHandler.params[0],
@@ -302,8 +303,8 @@ public final class TestLayout<S extends View> extends Component implements TestT
               eventHandler.mHasEventDispatcher,
               (ComponentContext) eventHandler.params[0],
               (Exception) _event.exception);
-        return null;
-      }
+          return null;
+        }
       default:
         return null;
     }
@@ -338,21 +339,20 @@ public final class TestLayout<S extends View> extends Component implements TestT
 
   static void onClickEventTrigger(ComponentContext c, View view) {
     TestLayout component = (TestLayout) c.getComponentScope();
-    component.onClickEventTrigger(
-        (EventTriggerTarget) component,
-        view);
+    component.onClickEventTrigger((EventTriggerTarget) component, view);
   }
 
   @Override
   public Object acceptTriggerEvent(
       final EventTrigger eventTrigger, final Object eventState, final Object[] params) {
     int id = eventTrigger.mId;
-    switch(id) {
-      case -1670292499: {
-        ClickEvent _event = (ClickEvent) eventState;
+    switch (id) {
+      case -1670292499:
+        {
+          ClickEvent _event = (ClickEvent) eventState;
           onClickEventTrigger(eventTrigger.mTriggerTarget, _event.view);
-        return null;
-      }
+          return null;
+        }
       default:
         return null;
     }
@@ -383,8 +383,8 @@ public final class TestLayout<S extends View> extends Component implements TestT
     nextStateContainer.state3 = prevStateContainer.state3;
   }
 
-  private TestLayoutStateContainer getStateContainerWithLazyStateUpdatesApplied(ComponentContext c,
-      TestLayout component) {
+  private TestLayoutStateContainer getStateContainerWithLazyStateUpdatesApplied(
+      ComponentContext c, TestLayout component) {
     TestLayoutStateContainer stateContainer = new TestLayoutStateContainer();
     transferState(component.mStateContainer, stateContainer);
     c.applyLazyStateUpdatesForContainer(stateContainer);
@@ -406,7 +406,8 @@ public final class TestLayout<S extends View> extends Component implements TestT
     if (_component == null) {
       return;
     }
-    TestLayout.UpdateCurrentStateStateUpdate _stateUpdate = ((TestLayout) _component).createUpdateCurrentStateStateUpdate(someParam);
+    TestLayout.UpdateCurrentStateStateUpdate _stateUpdate =
+        ((TestLayout) _component).createUpdateCurrentStateStateUpdate(someParam);
     c.updateStateAsync(_stateUpdate, "TestLayout.updateCurrentState");
   }
 
@@ -415,7 +416,8 @@ public final class TestLayout<S extends View> extends Component implements TestT
     if (_component == null) {
       return;
     }
-    TestLayout.UpdateCurrentStateStateUpdate _stateUpdate = ((TestLayout) _component).createUpdateCurrentStateStateUpdate(someParam);
+    TestLayout.UpdateCurrentStateStateUpdate _stateUpdate =
+        ((TestLayout) _component).createUpdateCurrentStateStateUpdate(someParam);
     c.updateStateSync(_stateUpdate, "TestLayout.updateCurrentState");
   }
 
@@ -441,7 +443,8 @@ public final class TestLayout<S extends View> extends Component implements TestT
   }
 
   @Override
-  protected ComponentLifecycle.RenderData recordRenderData(ComponentLifecycle.RenderData toRecycle) {
+  protected ComponentLifecycle.RenderData recordRenderData(
+      ComponentLifecycle.RenderData toRecycle) {
     TestLayoutRenderData renderInfo =
         toRecycle != null ? (TestLayoutRenderData) toRecycle : new TestLayoutRenderData();
     renderInfo.record(this);
@@ -489,9 +492,7 @@ public final class TestLayout<S extends View> extends Component implements TestT
     return child;
   }
 
-  @VisibleForTesting(
-      otherwise = 2
-  )
+  @VisibleForTesting(otherwise = 2)
   static class TestLayoutStateContainer<S extends View> implements StateContainer {
     @State
     @Comparable(type = 3)
@@ -506,9 +507,9 @@ public final class TestLayout<S extends View> extends Component implements TestT
     int state3;
   }
 
-  private static class TestLayoutRenderData<S extends View> implements ComponentLifecycle.RenderData {
-    @State
-    int state3;
+  private static class TestLayoutRenderData<S extends View>
+      implements ComponentLifecycle.RenderData {
+    @State int state3;
 
     void copy(TestLayoutRenderData info) {
       state3 = info.state3;
@@ -532,7 +533,7 @@ public final class TestLayout<S extends View> extends Component implements TestT
       TestLayoutStateContainer<S> stateContainer = (TestLayoutStateContainer<S>) _stateContainer;
       StateValue<Long> state1 = new StateValue<Long>();
       state1.set(stateContainer.state1);
-      TestLayoutSpec.updateCurrentState(state1,mSomeParam);
+      TestLayoutSpec.updateCurrentState(state1, mSomeParam);
       stateContainer.state1 = state1.get();
     }
   }
@@ -763,7 +764,8 @@ public final class TestLayout<S extends View> extends Component implements TestT
     }
 
     private void onClickEventTriggerTrigger(String key) {
-      com.facebook.litho.EventTrigger onClickEventTriggerTrigger = this.mTestLayout.onClickEventTriggerTrigger;
+      com.facebook.litho.EventTrigger onClickEventTriggerTrigger =
+          this.mTestLayout.onClickEventTriggerTrigger;
       if (onClickEventTriggerTrigger == null) {
         onClickEventTriggerTrigger = TestLayout.onClickEventTriggerTrigger(this.mContext, key);
       }

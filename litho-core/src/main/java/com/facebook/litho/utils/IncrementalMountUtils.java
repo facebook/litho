@@ -23,9 +23,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import com.facebook.litho.LithoView;
 
-/**
- * Provides methods for enabling incremental mount.
- */
+/** Provides methods for enabling incremental mount. */
 public class IncrementalMountUtils {
 
   /**
@@ -33,9 +31,7 @@ public class IncrementalMountUtils {
    */
   public interface WrapperView {
 
-    /**
-     * @return A child view that will be incrementally mounted.
-     */
+    /** @return A child view that will be incrementally mounted. */
     View getWrappedView();
   }
 
@@ -53,6 +49,7 @@ public class IncrementalMountUtils {
 
   /**
    * Performs incremental mount on the children views of the given ViewGroup.
+   *
    * @param scrollingViewParent ViewGroup container of views that will be incrementally mounted.
    */
   public static void performIncrementalMount(ViewGroup scrollingViewParent) {
@@ -62,19 +59,14 @@ public class IncrementalMountUtils {
     final int viewGroupHeight = scrollingViewParent.getHeight();
     for (int i = 0; i < scrollingViewParent.getChildCount(); i++) {
       maybePerformIncrementalMountOnView(
-          viewGroupWidth,
-          viewGroupHeight,
-          scrollingViewParent.getChildAt(i));
+          viewGroupWidth, viewGroupHeight, scrollingViewParent.getChildAt(i));
     }
   }
 
   private static void maybePerformIncrementalMountOnView(
-      int scrollingParentWidth,
-      int scrollingParentHeight,
-      View view) {
-    final View underlyingView = view instanceof WrapperView
-        ? ((WrapperView) view).getWrappedView()
-        : view;
+      int scrollingParentWidth, int scrollingParentHeight, View view) {
+    final View underlyingView =
+        view instanceof WrapperView ? ((WrapperView) view).getWrappedView() : view;
 
     if (!(underlyingView instanceof LithoView)) {
       return;
@@ -97,12 +89,12 @@ public class IncrementalMountUtils {
     final int left = view.getLeft() + translationX;
     final int right = view.getRight() + translationX;
 
-    if (left >= 0 &&
-        top >= 0 &&
-        right <= scrollingParentWidth &&
-        bottom <= scrollingParentHeight &&
-        lithoView.getPreviousMountBounds().width() == lithoView.getWidth() &&
-        lithoView.getPreviousMountBounds().height() == lithoView.getHeight()) {
+    if (left >= 0
+        && top >= 0
+        && right <= scrollingParentWidth
+        && bottom <= scrollingParentHeight
+        && lithoView.getPreviousMountBounds().width() == lithoView.getWidth()
+        && lithoView.getPreviousMountBounds().height() == lithoView.getHeight()) {
       // View is fully visible, and has already been completely mounted.
       return;
     }

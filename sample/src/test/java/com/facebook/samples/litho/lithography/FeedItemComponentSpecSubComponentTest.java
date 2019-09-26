@@ -102,13 +102,13 @@ public class FeedItemComponentSpecSubComponentTest {
         .has(
             subComponentWith(
                 c,
-                TestFooterComponent.matcher(c).clickHandler(IsNull.<EventHandler<ClickEvent>>nullValue(null)).build()));
+                TestFooterComponent.matcher(c)
+                    .clickHandler(IsNull.<EventHandler<ClickEvent>>nullValue(null))
+                    .build()));
   }
 
   private Component makeComponent(String value) {
     final ComponentContext c = mComponentsRule.getContext();
-    return FeedItemComponent.create(c)
-        .artist(new Artist("Some Name", value, 2001))
-        .build();
+    return FeedItemComponent.create(c).artist(new Artist("Some Name", value, 2001)).build();
   }
 }

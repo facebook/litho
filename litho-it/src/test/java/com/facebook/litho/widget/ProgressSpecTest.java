@@ -28,10 +28,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
 
-/**
- * Tests {@link ProgressSpec}
- */
-
+/** Tests {@link ProgressSpec} */
 @RunWith(ComponentsTestRunner.class)
 public class ProgressSpecTest {
   private ComponentContext mContext;
@@ -63,7 +60,6 @@ public class ProgressSpecTest {
   private LithoView getMountedView() {
     Progress.Builder progress = Progress.create(mContext);
 
-    return ComponentTestHelper.mountComponent(
-        progress);
+    return ComponentTestHelper.mountComponent(progress);
   }
 }

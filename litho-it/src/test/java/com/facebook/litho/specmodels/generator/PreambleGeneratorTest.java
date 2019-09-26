@@ -47,11 +47,12 @@ public class PreambleGeneratorTest {
 
   @Before
   public void setUp() {
-    mSpecModelWithoutDI = SpecModelImpl.newBuilder()
-        .qualifiedSpecClassName(TEST_QUALIFIED_SPEC_NAME)
-        .delegateMethods(ImmutableList.<SpecMethodModel<DelegateMethod, Void>>of())
-        .representedObject(new Object())
-        .build();
+    mSpecModelWithoutDI =
+        SpecModelImpl.newBuilder()
+            .qualifiedSpecClassName(TEST_QUALIFIED_SPEC_NAME)
+            .delegateMethods(ImmutableList.<SpecMethodModel<DelegateMethod, Void>>of())
+            .representedObject(new Object())
+            .build();
 
     mSpecModelWithDI =
         SpecModelImpl.newBuilder()
@@ -64,8 +65,7 @@ public class PreambleGeneratorTest {
 
   @Test
   public void testGenerateConstructorWithoutDependencyInjection() {
-    TypeSpecDataHolder typeSpecDataHolder =
-        generateConstructor(mSpecModelWithoutDI);
+    TypeSpecDataHolder typeSpecDataHolder = generateConstructor(mSpecModelWithoutDI);
 
     assertThat(typeSpecDataHolder.getFieldSpecs()).isEmpty();
     assertThat(typeSpecDataHolder.getMethodSpecs()).hasSize(1);
@@ -83,8 +83,7 @@ public class PreambleGeneratorTest {
             .addStatement("final Object testObject = new TestObject()")
             .build();
 
-    when(mDependencyInjectionHelper.generateConstructor(mSpecModelWithDI))
-        .thenReturn(constructor);
+    when(mDependencyInjectionHelper.generateConstructor(mSpecModelWithDI)).thenReturn(constructor);
 
     TypeSpecDataHolder typeSpecDataHolder = generateConstructor(mSpecModelWithDI);
 

@@ -17,7 +17,6 @@
 package com.facebook.litho.processor.integration.resources;
 
 import android.view.View;
-
 import com.facebook.litho.annotations.Event;
 
 @Event

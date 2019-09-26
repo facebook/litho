@@ -21,13 +21,13 @@ import java.lang.annotation.RetentionPolicy;
 
 /**
  * The method annotated with this annotation will be called when the data corresponding to this
- * Section props is now visible to the <code>SectionTree.Target</code> of the
- * <code>SectionTree</code>.
- * In the classic case where the Ui for the Section is represented by a RecyclerView, this means
- * that by the time OnDataBound is called the RecyclerView has visibility over the data contained
- * in this section.
+ * Section props is now visible to the <code>SectionTree.Target</code> of the <code>SectionTree
+ * </code>. In the classic case where the Ui for the Section is represented by a RecyclerView, this
+ * means that by the time OnDataBound is called the RecyclerView has visibility over the data
+ * contained in this section.
  *
  * <p>For example:
+ *
  * <pre>
  *  {@literal @GroupSectionSpec}
  *   public class MyGroupSectionSpec {
@@ -48,9 +48,6 @@ import java.lang.annotation.RetentionPolicy;
  *     }
  * }
  * </pre>
- *
  */
 @Retention(RetentionPolicy.RUNTIME)
-public @interface OnDataBound {
-
-}
+public @interface OnDataBound {}

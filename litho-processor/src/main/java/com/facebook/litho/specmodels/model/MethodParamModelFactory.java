@@ -28,9 +28,7 @@ import com.squareup.javapoet.AnnotationSpec;
 import java.lang.annotation.Annotation;
 import java.util.List;
 
-/**
- * Factory for creating {@link MethodParamModel}s.
- */
+/** Factory for creating {@link MethodParamModel}s. */
 public final class MethodParamModelFactory {
 
   public static MethodParamModel create(

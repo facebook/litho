@@ -63,10 +63,9 @@ public class SectionTreeTest {
   @Before
   public void setup() throws Exception {
     mSectionContext = new SectionContext(RuntimeEnvironment.application);
-    mChangeSetThreadShadowLooper = Shadows.shadowOf(
-        (Looper) Whitebox.invokeMethod(
-            SectionTree.class,
-            "getDefaultChangeSetThreadLooper"));
+    mChangeSetThreadShadowLooper =
+        Shadows.shadowOf(
+            (Looper) Whitebox.invokeMethod(SectionTree.class, "getDefaultChangeSetThreadLooper"));
   }
 
   @After
@@ -79,13 +78,11 @@ public class SectionTreeTest {
   @Test
   public void testSetRoot() {
 
-    final Section section = TestSectionCreator.createChangeSetComponent(
-        "leaf1",
-        Change.insert(0, makeComponentInfo()));
+    final Section section =
+        TestSectionCreator.createChangeSetComponent("leaf1", Change.insert(0, makeComponentInfo()));
 
     final TestTarget changeSetHandler = new TestTarget();
-    SectionTree tree = SectionTree.create(mSectionContext, changeSetHandler)
-        .build();
+    SectionTree tree = SectionTree.create(mSectionContext, changeSetHandler).build();
 
     tree.setRoot(section);
     assertChangeSetHandled(changeSetHandler);
@@ -159,15 +156,12 @@ public class SectionTreeTest {
 
   @Test
   public void testSetSameRoot() {
-    final Section section = TestSectionCreator.createChangeSetSection(
-        0,
-        "leaf1",
-        true,
-        Change.insert(0, makeComponentInfo()));
+    final Section section =
+        TestSectionCreator.createChangeSetSection(
+            0, "leaf1", true, Change.insert(0, makeComponentInfo()));
 
     final TestTarget changeSetHandler = new TestTarget();
-    SectionTree tree = SectionTree.create(mSectionContext, changeSetHandler)
-        .build();
+    SectionTree tree = SectionTree.create(mSectionContext, changeSetHandler).build();
 
     tree.setRoot(section);
     assertChangeSetHandled(changeSetHandler);
@@ -180,15 +174,12 @@ public class SectionTreeTest {
 
   @Test
   public void updateTree() {
-    final Section section = TestSectionCreator.createChangeSetSection(
-        0,
-        "leaf1",
-       true,
-       Change.insert(0, makeComponentInfo()));
+    final Section section =
+        TestSectionCreator.createChangeSetSection(
+            0, "leaf1", true, Change.insert(0, makeComponentInfo()));
 
     final TestTarget changeSetHandler = new TestTarget();
-    SectionTree tree = SectionTree.create(mSectionContext, changeSetHandler)
-        .build();
+    SectionTree tree = SectionTree.create(mSectionContext, changeSetHandler).build();
 
     tree.setRoot(section);
     changeSetHandler.clear();
@@ -196,11 +187,9 @@ public class SectionTreeTest {
 
     assertChangeSetNotSeen(changeSetHandler);
 
-    final Section secondSection = TestSectionCreator.createChangeSetSection(
-        0,
-        "leaf1",
-        true,
-        Change.update(0, makeComponentInfo()));
+    final Section secondSection =
+        TestSectionCreator.createChangeSetSection(
+            0, "leaf1", true, Change.update(0, makeComponentInfo()));
     tree.setRoot(secondSection);
 
     assertChangeSetHandled(changeSetHandler);
@@ -208,24 +197,24 @@ public class SectionTreeTest {
 
   @Test
   public void testUniqueGlobalKeys() {
-    final Section leaf1 = TestSectionCreator.createChangeSetComponent(
-        "leaf1",
-        Change.insert(0, ComponentRenderInfo.createEmpty()),
-        Change.insert(1, ComponentRenderInfo.createEmpty()),
-        Change.insert(2, ComponentRenderInfo.createEmpty()));
+    final Section leaf1 =
+        TestSectionCreator.createChangeSetComponent(
+            "leaf1",
+            Change.insert(0, ComponentRenderInfo.createEmpty()),
+            Change.insert(1, ComponentRenderInfo.createEmpty()),
+            Change.insert(2, ComponentRenderInfo.createEmpty()));
 
-    final Section leaf2 = TestSectionCreator.createChangeSetComponent(
-        "leaf1",
-        Change.insert(0, ComponentRenderInfo.createEmpty()),
-        Change.insert(1, ComponentRenderInfo.createEmpty()));
+    final Section leaf2 =
+        TestSectionCreator.createChangeSetComponent(
+            "leaf1",
+            Change.insert(0, ComponentRenderInfo.createEmpty()),
+            Change.insert(1, ComponentRenderInfo.createEmpty()));
 
-    final Section root = TestSectionCreator
-        .createSectionComponent("node1", leaf1, leaf2);
+    final Section root = TestSectionCreator.createSectionComponent("node1", leaf1, leaf2);
 
     final TestTarget changeSetHandler = new TestTarget();
 
-    SectionTree tree = SectionTree.create(mSectionContext, changeSetHandler)
-        .build();
+    SectionTree tree = SectionTree.create(mSectionContext, changeSetHandler).build();
 
     tree.setRoot(root);
 
@@ -281,38 +270,33 @@ public class SectionTreeTest {
 
   @Test
   public void testSetRootWithComplexTree() {
-    final Section leaf1 = TestSectionCreator.createChangeSetComponent(
-        "leaf1",
-        Change.insert(0, makeComponentInfo()),
-        Change.insert(1, makeComponentInfo()),
-        Change.insert(2, makeComponentInfo()));
+    final Section leaf1 =
+        TestSectionCreator.createChangeSetComponent(
+            "leaf1",
+            Change.insert(0, makeComponentInfo()),
+            Change.insert(1, makeComponentInfo()),
+            Change.insert(2, makeComponentInfo()));
 
-    final Section leaf2 = TestSectionCreator.createChangeSetComponent(
-        "leaf2",
-        Change.insert(0, makeComponentInfo()),
-        Change.insert(1, makeComponentInfo()));
+    final Section leaf2 =
+        TestSectionCreator.createChangeSetComponent(
+            "leaf2", Change.insert(0, makeComponentInfo()), Change.insert(1, makeComponentInfo()));
 
-    final Section node = TestSectionCreator
-        .createSectionComponent("node1", leaf1, leaf2);
+    final Section node = TestSectionCreator.createSectionComponent("node1", leaf1, leaf2);
 
-    final Section leaf3 = TestSectionCreator.createChangeSetComponent(
-        "leaf3",
-        Change.insert(0, makeComponentInfo()),
-        Change.insert(1, makeComponentInfo()));
+    final Section leaf3 =
+        TestSectionCreator.createChangeSetComponent(
+            "leaf3", Change.insert(0, makeComponentInfo()), Change.insert(1, makeComponentInfo()));
 
-    final Section leaf4 = TestSectionCreator.createChangeSetComponent(
-        "leaf4",
-        Change.insert(0, makeComponentInfo()),
-        Change.insert(1, makeComponentInfo()));
+    final Section leaf4 =
+        TestSectionCreator.createChangeSetComponent(
+            "leaf4", Change.insert(0, makeComponentInfo()), Change.insert(1, makeComponentInfo()));
 
-    final Section node1 = TestSectionCreator
-        .createSectionComponent("node2", leaf3, leaf4);
+    final Section node1 = TestSectionCreator.createSectionComponent("node2", leaf3, leaf4);
 
     final TestTarget changeSetHandler = new TestTarget();
 
     final Section root = TestSectionCreator.createSectionComponent("root", node, node1);
-    SectionTree tree = SectionTree.create(mSectionContext, changeSetHandler)
-        .build();
+    SectionTree tree = SectionTree.create(mSectionContext, changeSetHandler).build();
 
     tree.setRoot(root);
 
@@ -353,29 +337,22 @@ public class SectionTreeTest {
 
   @Test
   public void testRefresh() {
-    final Section leaf1 = TestSectionCreator.createChangeSetComponent(
-        "leaf1");
+    final Section leaf1 = TestSectionCreator.createChangeSetComponent("leaf1");
 
-    final Section leaf2 = TestSectionCreator.createChangeSetComponent(
-        "leaf2");
+    final Section leaf2 = TestSectionCreator.createChangeSetComponent("leaf2");
 
-    final Section node = TestSectionCreator
-        .createSectionComponent("node1", leaf1, leaf2);
+    final Section node = TestSectionCreator.createSectionComponent("node1", leaf1, leaf2);
 
-    final Section leaf3 = TestSectionCreator.createChangeSetComponent(
-        "leaf3");
+    final Section leaf3 = TestSectionCreator.createChangeSetComponent("leaf3");
 
-    final Section leaf4 = TestSectionCreator.createChangeSetComponent(
-        "leaf4");
+    final Section leaf4 = TestSectionCreator.createChangeSetComponent("leaf4");
 
-    final Section node1 = TestSectionCreator
-        .createSectionComponent("node2", leaf3, leaf4);
+    final Section node1 = TestSectionCreator.createSectionComponent("node2", leaf3, leaf4);
 
     final TestTarget changeSetHandler = new TestTarget();
 
     final Section root = TestSectionCreator.createSectionComponent("root", node, node1);
-    SectionTree tree = SectionTree.create(mSectionContext, changeSetHandler)
-        .build();
+    SectionTree tree = SectionTree.create(mSectionContext, changeSetHandler).build();
 
     tree.setRoot(root);
 
@@ -394,47 +371,43 @@ public class SectionTreeTest {
   @Test
   public void testRefreshWithEmptyTree() {
     final TestTarget changeSetHandler = new TestTarget();
-    final SectionTree tree = SectionTree.create(mSectionContext, changeSetHandler)
-        .build();
+    final SectionTree tree = SectionTree.create(mSectionContext, changeSetHandler).build();
 
     tree.refresh();
   }
 
   @Test
   public void testViewPortChanged() {
-    final Section leaf1 = TestSectionCreator.createChangeSetComponent(
-        "leaf1",
-        Change.insert(0, makeComponentInfo()),
-        Change.insert(1, makeComponentInfo()),
-        Change.insert(2, makeComponentInfo()));
+    final Section leaf1 =
+        TestSectionCreator.createChangeSetComponent(
+            "leaf1",
+            Change.insert(0, makeComponentInfo()),
+            Change.insert(1, makeComponentInfo()),
+            Change.insert(2, makeComponentInfo()));
 
-    final Section leaf2 = TestSectionCreator.createChangeSetComponent(
-        "leaf2",
-        Change.insert(0, makeComponentInfo()),
-        Change.insert(1, makeComponentInfo()));
+    final Section leaf2 =
+        TestSectionCreator.createChangeSetComponent(
+            "leaf2", Change.insert(0, makeComponentInfo()), Change.insert(1, makeComponentInfo()));
 
-    final Section node = TestSectionCreator
-        .createSectionComponent("node1", leaf1, leaf2);
+    final Section node = TestSectionCreator.createSectionComponent("node1", leaf1, leaf2);
 
-    final Section leaf3 = TestSectionCreator.createChangeSetComponent(
-        "leaf3",
-        Change.insert(0, makeComponentInfo()));
+    final Section leaf3 =
+        TestSectionCreator.createChangeSetComponent("leaf3", Change.insert(0, makeComponentInfo()));
 
-    final Section leaf4 = TestSectionCreator.createChangeSetComponent(
-        "leaf4",
-        Change.insert(0, makeComponentInfo()),
-        Change.insert(1, makeComponentInfo()),
-        Change.insert(2, makeComponentInfo()),
-        Change.insert(3, makeComponentInfo()));
+    final Section leaf4 =
+        TestSectionCreator.createChangeSetComponent(
+            "leaf4",
+            Change.insert(0, makeComponentInfo()),
+            Change.insert(1, makeComponentInfo()),
+            Change.insert(2, makeComponentInfo()),
+            Change.insert(3, makeComponentInfo()));
 
-    final Section node1 = TestSectionCreator
-        .createSectionComponent("node2", leaf3, leaf4);
+    final Section node1 = TestSectionCreator.createSectionComponent("node2", leaf3, leaf4);
 
     final TestTarget changeSetHandler = new TestTarget();
 
     final Section root = TestSectionCreator.createSectionComponent("root", node, node1);
-    SectionTree tree = SectionTree.create(mSectionContext, changeSetHandler)
-        .build();
+    SectionTree tree = SectionTree.create(mSectionContext, changeSetHandler).build();
 
     tree.setRoot(root);
 
@@ -491,14 +464,12 @@ public class SectionTreeTest {
 
   @Test
   public void testStateUpdate() {
-    final Section section = TestSectionCreator.createChangeSetComponent(
-        "leaf1",
-        Change.insert(0, makeComponentInfo()));
+    final Section section =
+        TestSectionCreator.createChangeSetComponent("leaf1", Change.insert(0, makeComponentInfo()));
     section.setKey("key");
 
     final TestTarget changeSetHandler = new TestTarget();
-    SectionTree tree = SectionTree.create(mSectionContext, changeSetHandler)
-        .build();
+    SectionTree tree = SectionTree.create(mSectionContext, changeSetHandler).build();
 
     tree.setRoot(section);
     assertChangeSetHandled(changeSetHandler);
@@ -514,14 +485,12 @@ public class SectionTreeTest {
 
   @Test
   public void testLazyStateUpdate() {
-    final Section section = TestSectionCreator.createChangeSetComponent(
-        "leaf1",
-        Change.insert(0, makeComponentInfo()));
+    final Section section =
+        TestSectionCreator.createChangeSetComponent("leaf1", Change.insert(0, makeComponentInfo()));
     section.setKey("key");
 
     final TestTarget changeSetHandler = new TestTarget();
-    SectionTree tree = SectionTree.create(mSectionContext, changeSetHandler)
-        .build();
+    SectionTree tree = SectionTree.create(mSectionContext, changeSetHandler).build();
 
     tree.setRoot(section);
     assertChangeSetHandled(changeSetHandler);
@@ -542,14 +511,12 @@ public class SectionTreeTest {
 
   @Test
   public void testStateUpdateOnReleasedTree() {
-    final Section section = TestSectionCreator.createChangeSetComponent(
-        "leaf1",
-        Change.insert(0, makeComponentInfo()));
+    final Section section =
+        TestSectionCreator.createChangeSetComponent("leaf1", Change.insert(0, makeComponentInfo()));
     section.setKey("key");
 
     final TestTarget changeSetHandler = new TestTarget();
-    SectionTree tree = SectionTree.create(mSectionContext, changeSetHandler)
-        .build();
+    SectionTree tree = SectionTree.create(mSectionContext, changeSetHandler).build();
 
     tree.setRoot(section);
     assertChangeSetHandled(changeSetHandler);
@@ -564,12 +531,10 @@ public class SectionTreeTest {
 
   @Test
   public void testSetRootAsync() {
-    final Section section = TestSectionCreator.createChangeSetComponent(
-        "leaf1",
-        Change.insert(0, makeComponentInfo()));
+    final Section section =
+        TestSectionCreator.createChangeSetComponent("leaf1", Change.insert(0, makeComponentInfo()));
     final TestTarget changeSetHandler = new TestTarget();
-    SectionTree tree = SectionTree.create(mSectionContext, changeSetHandler)
-        .build();
+    SectionTree tree = SectionTree.create(mSectionContext, changeSetHandler).build();
 
     tree.setRootAsync(section);
     mChangeSetThreadShadowLooper.runOneTask();
@@ -578,14 +543,12 @@ public class SectionTreeTest {
 
   @Test
   public void testUpdateStateAsync() {
-    final Section section = TestSectionCreator.createChangeSetComponent(
-        "leaf1",
-        Change.insert(0, makeComponentInfo()));
+    final Section section =
+        TestSectionCreator.createChangeSetComponent("leaf1", Change.insert(0, makeComponentInfo()));
     section.setKey("key");
 
     final TestTarget changeSetHandler = new TestTarget();
-    SectionTree tree = SectionTree.create(mSectionContext, changeSetHandler)
-        .build();
+    SectionTree tree = SectionTree.create(mSectionContext, changeSetHandler).build();
 
     tree.setRoot(section);
     assertChangeSetHandled(changeSetHandler);
@@ -632,8 +595,7 @@ public class SectionTreeTest {
     final Section section = TestSectionCreator.createChangeSetComponent("test");
     final TestTarget changeSetHandler = new TestTarget();
 
-    SectionTree tree = SectionTree.create(mSectionContext, changeSetHandler)
-        .build();
+    SectionTree tree = SectionTree.create(mSectionContext, changeSetHandler).build();
     tree.requestFocus(section, 0);
   }
 
@@ -642,46 +604,42 @@ public class SectionTreeTest {
     final Section section = TestSectionCreator.createChangeSetComponent("test");
     final TestTarget changeSetHandler = new TestTarget();
 
-    SectionTree tree = SectionTree.create(mSectionContext, changeSetHandler)
-        .build();
+    SectionTree tree = SectionTree.create(mSectionContext, changeSetHandler).build();
     tree.requestFocus(section, 1);
   }
 
   @Test
   public void testRequestFocusIndex() {
-    final Section leaf1 = TestSectionCreator.createChangeSetComponent(
-        "leaf1",
-        Change.insert(0, makeComponentInfo()),
-        Change.insert(1, makeComponentInfo()),
-        Change.insert(2, makeComponentInfo()));
+    final Section leaf1 =
+        TestSectionCreator.createChangeSetComponent(
+            "leaf1",
+            Change.insert(0, makeComponentInfo()),
+            Change.insert(1, makeComponentInfo()),
+            Change.insert(2, makeComponentInfo()));
 
-    final Section leaf2 = TestSectionCreator.createChangeSetComponent(
-        "leaf2",
-        Change.insert(0, makeComponentInfo()),
-        Change.insert(1, makeComponentInfo()));
+    final Section leaf2 =
+        TestSectionCreator.createChangeSetComponent(
+            "leaf2", Change.insert(0, makeComponentInfo()), Change.insert(1, makeComponentInfo()));
 
-    final Section node1 = TestSectionCreator
-        .createSectionComponent("node1", leaf1, leaf2);
+    final Section node1 = TestSectionCreator.createSectionComponent("node1", leaf1, leaf2);
 
-    final Section leaf3 = TestSectionCreator.createChangeSetComponent(
-        "leaf3",
-        Change.insert(0, makeComponentInfo()));
+    final Section leaf3 =
+        TestSectionCreator.createChangeSetComponent("leaf3", Change.insert(0, makeComponentInfo()));
 
-    final Section leaf4 = TestSectionCreator.createChangeSetComponent(
-        "leaf4",
-        Change.insert(0, makeComponentInfo()),
-        Change.insert(1, makeComponentInfo()),
-        Change.insert(2, makeComponentInfo()),
-        Change.insert(3, makeComponentInfo()));
+    final Section leaf4 =
+        TestSectionCreator.createChangeSetComponent(
+            "leaf4",
+            Change.insert(0, makeComponentInfo()),
+            Change.insert(1, makeComponentInfo()),
+            Change.insert(2, makeComponentInfo()),
+            Change.insert(3, makeComponentInfo()));
 
-    final Section node2 = TestSectionCreator
-        .createSectionComponent("node2", leaf3, leaf4);
+    final Section node2 = TestSectionCreator.createSectionComponent("node2", leaf3, leaf4);
 
     final TestTarget changeSetHandler = new TestTarget();
 
     final Section root = TestSectionCreator.createSectionComponent("root", node1, node2);
-    SectionTree tree = SectionTree.create(mSectionContext, changeSetHandler)
-        .build();
+    SectionTree tree = SectionTree.create(mSectionContext, changeSetHandler).build();
     tree.setRoot(root);
 
     tree.requestFocus(node1, 0);
@@ -708,8 +666,7 @@ public class SectionTreeTest {
     final Section section = TestSectionCreator.createChangeSetComponent("test");
     final TestTarget changeSetHandler = new TestTarget();
 
-    SectionTree tree = SectionTree.create(mSectionContext, changeSetHandler)
-        .build();
+    SectionTree tree = SectionTree.create(mSectionContext, changeSetHandler).build();
     tree.requestFocusWithOffset(section, 0, 0);
   }
 
@@ -718,46 +675,42 @@ public class SectionTreeTest {
     final Section section = TestSectionCreator.createChangeSetComponent("test");
     final TestTarget changeSetHandler = new TestTarget();
 
-    SectionTree tree = SectionTree.create(mSectionContext, changeSetHandler)
-        .build();
+    SectionTree tree = SectionTree.create(mSectionContext, changeSetHandler).build();
     tree.requestFocusWithOffset(section, 1, 0);
   }
 
   @Test
   public void testRequestFocusIndexWithOffset() {
-    final Section leaf1 = TestSectionCreator.createChangeSetComponent(
-        "leaf1",
-        Change.insert(0, makeComponentInfo()),
-        Change.insert(1, makeComponentInfo()),
-        Change.insert(2, makeComponentInfo()));
+    final Section leaf1 =
+        TestSectionCreator.createChangeSetComponent(
+            "leaf1",
+            Change.insert(0, makeComponentInfo()),
+            Change.insert(1, makeComponentInfo()),
+            Change.insert(2, makeComponentInfo()));
 
-    final Section leaf2 = TestSectionCreator.createChangeSetComponent(
-        "leaf2",
-        Change.insert(0, makeComponentInfo()),
-        Change.insert(1, makeComponentInfo()));
+    final Section leaf2 =
+        TestSectionCreator.createChangeSetComponent(
+            "leaf2", Change.insert(0, makeComponentInfo()), Change.insert(1, makeComponentInfo()));
 
-    final Section node1 = TestSectionCreator
-        .createSectionComponent("node1", leaf1, leaf2);
+    final Section node1 = TestSectionCreator.createSectionComponent("node1", leaf1, leaf2);
 
-    final Section leaf3 = TestSectionCreator.createChangeSetComponent(
-        "leaf3",
-        Change.insert(0, makeComponentInfo()));
+    final Section leaf3 =
+        TestSectionCreator.createChangeSetComponent("leaf3", Change.insert(0, makeComponentInfo()));
 
-    final Section leaf4 = TestSectionCreator.createChangeSetComponent(
-        "leaf4",
-        Change.insert(0, makeComponentInfo()),
-        Change.insert(1, makeComponentInfo()),
-        Change.insert(2, makeComponentInfo()),
-        Change.insert(3, makeComponentInfo()));
+    final Section leaf4 =
+        TestSectionCreator.createChangeSetComponent(
+            "leaf4",
+            Change.insert(0, makeComponentInfo()),
+            Change.insert(1, makeComponentInfo()),
+            Change.insert(2, makeComponentInfo()),
+            Change.insert(3, makeComponentInfo()));
 
-    final Section node2 = TestSectionCreator
-        .createSectionComponent("node2", leaf3, leaf4);
+    final Section node2 = TestSectionCreator.createSectionComponent("node2", leaf3, leaf4);
 
     final TestTarget changeSetHandler = new TestTarget();
 
     final Section root = TestSectionCreator.createSectionComponent("root", node1, node2);
-    SectionTree tree = SectionTree.create(mSectionContext, changeSetHandler)
-        .build();
+    SectionTree tree = SectionTree.create(mSectionContext, changeSetHandler).build();
     tree.setRoot(root);
 
     tree.requestFocusWithOffset(node1, 0, 100);
@@ -787,39 +740,36 @@ public class SectionTreeTest {
 
   @Test
   public void testRequestFocusFirst() {
-    final Section leaf1 = TestSectionCreator.createChangeSetComponent(
-        "leaf1",
-        Change.insert(0, makeComponentInfo()),
-        Change.insert(1, makeComponentInfo()),
-        Change.insert(2, makeComponentInfo()));
+    final Section leaf1 =
+        TestSectionCreator.createChangeSetComponent(
+            "leaf1",
+            Change.insert(0, makeComponentInfo()),
+            Change.insert(1, makeComponentInfo()),
+            Change.insert(2, makeComponentInfo()));
 
-    final Section leaf2 = TestSectionCreator.createChangeSetComponent(
-        "leaf2",
-        Change.insert(0, makeComponentInfo()),
-        Change.insert(1, makeComponentInfo()));
+    final Section leaf2 =
+        TestSectionCreator.createChangeSetComponent(
+            "leaf2", Change.insert(0, makeComponentInfo()), Change.insert(1, makeComponentInfo()));
 
-    final Section node1 = TestSectionCreator
-        .createSectionComponent("node1", leaf1, leaf2);
+    final Section node1 = TestSectionCreator.createSectionComponent("node1", leaf1, leaf2);
 
-    final Section leaf3 = TestSectionCreator.createChangeSetComponent(
-        "leaf3",
-        Change.insert(0, makeComponentInfo()));
+    final Section leaf3 =
+        TestSectionCreator.createChangeSetComponent("leaf3", Change.insert(0, makeComponentInfo()));
 
-    final Section leaf4 = TestSectionCreator.createChangeSetComponent(
-        "leaf4",
-        Change.insert(0, makeComponentInfo()),
-        Change.insert(1, makeComponentInfo()),
-        Change.insert(2, makeComponentInfo()),
-        Change.insert(3, makeComponentInfo()));
+    final Section leaf4 =
+        TestSectionCreator.createChangeSetComponent(
+            "leaf4",
+            Change.insert(0, makeComponentInfo()),
+            Change.insert(1, makeComponentInfo()),
+            Change.insert(2, makeComponentInfo()),
+            Change.insert(3, makeComponentInfo()));
 
-    final Section node2 = TestSectionCreator
-        .createSectionComponent("node2", leaf3, leaf4);
+    final Section node2 = TestSectionCreator.createSectionComponent("node2", leaf3, leaf4);
 
     final TestTarget changeSetHandler = new TestTarget();
 
     final Section root = TestSectionCreator.createSectionComponent("root", node1, node2);
-    SectionTree tree = SectionTree.create(mSectionContext, changeSetHandler)
-        .build();
+    SectionTree tree = SectionTree.create(mSectionContext, changeSetHandler).build();
     tree.setRoot(root);
 
     tree.requestFocusStart("rootnode1leaf1");
@@ -834,39 +784,36 @@ public class SectionTreeTest {
 
   @Test
   public void testRequestFocusEnd() {
-    final Section leaf1 = TestSectionCreator.createChangeSetComponent(
-        "leaf1",
-        Change.insert(0, makeComponentInfo()),
-        Change.insert(1, makeComponentInfo()),
-        Change.insert(2, makeComponentInfo()));
+    final Section leaf1 =
+        TestSectionCreator.createChangeSetComponent(
+            "leaf1",
+            Change.insert(0, makeComponentInfo()),
+            Change.insert(1, makeComponentInfo()),
+            Change.insert(2, makeComponentInfo()));
 
-    final Section leaf2 = TestSectionCreator.createChangeSetComponent(
-        "leaf2",
-        Change.insert(0, makeComponentInfo()),
-        Change.insert(1, makeComponentInfo()));
+    final Section leaf2 =
+        TestSectionCreator.createChangeSetComponent(
+            "leaf2", Change.insert(0, makeComponentInfo()), Change.insert(1, makeComponentInfo()));
 
-    final Section node1 = TestSectionCreator
-        .createSectionComponent("node1", leaf1, leaf2);
+    final Section node1 = TestSectionCreator.createSectionComponent("node1", leaf1, leaf2);
 
-    final Section leaf3 = TestSectionCreator.createChangeSetComponent(
-        "leaf3",
-        Change.insert(0, makeComponentInfo()));
+    final Section leaf3 =
+        TestSectionCreator.createChangeSetComponent("leaf3", Change.insert(0, makeComponentInfo()));
 
-    final Section leaf4 = TestSectionCreator.createChangeSetComponent(
-        "leaf4",
-        Change.insert(0, makeComponentInfo()),
-        Change.insert(1, makeComponentInfo()),
-        Change.insert(2, makeComponentInfo()),
-        Change.insert(3, makeComponentInfo()));
+    final Section leaf4 =
+        TestSectionCreator.createChangeSetComponent(
+            "leaf4",
+            Change.insert(0, makeComponentInfo()),
+            Change.insert(1, makeComponentInfo()),
+            Change.insert(2, makeComponentInfo()),
+            Change.insert(3, makeComponentInfo()));
 
-    final Section node2 = TestSectionCreator
-        .createSectionComponent("node2", leaf3, leaf4);
+    final Section node2 = TestSectionCreator.createSectionComponent("node2", leaf3, leaf4);
 
     final TestTarget changeSetHandler = new TestTarget();
 
     final Section root = TestSectionCreator.createSectionComponent("root", node1, node2);
-    SectionTree tree = SectionTree.create(mSectionContext, changeSetHandler)
-        .build();
+    SectionTree tree = SectionTree.create(mSectionContext, changeSetHandler).build();
     tree.setRoot(root);
 
     tree.requestFocusEnd("rootnode2");

@@ -47,9 +47,10 @@ public class SpecModelValidationTest {
 
     assertThat(validationErrors).hasSize(1);
     assertThat(validationErrors.get(0).element).isSameAs(mModelRepresentedObject);
-    assertThat(validationErrors.get(0).message).isEqualTo(
-        "You must suffix the class name of your spec with \"Spec\" e.g. a \"MyComponentSpec\" " +
-            "class name generates a component named \"MyComponent\".");
+    assertThat(validationErrors.get(0).message)
+        .isEqualTo(
+            "You must suffix the class name of your spec with \"Spec\" e.g. a \"MyComponentSpec\" "
+                + "class name generates a component named \"MyComponent\".");
   }
 
   @Test
@@ -60,20 +61,8 @@ public class SpecModelValidationTest {
 
     assertThat(validationErrors).hasSize(1);
     assertThat(validationErrors.get(0).element).isSameAs(mMountSpecModelRepresentedObject);
-    assertThat(validationErrors.get(0).message).isEqualTo(
-        "onCreateMountContent's return type should be either a View or a Drawable subclass.");
-  }
-
-  @Test
-  public void testDisplayListValidation() {
-    when(mMountSpecModel.shouldUseDisplayList()).thenReturn(true);
-    when(mMountSpecModel.getMountType()).thenReturn(ClassNames.COMPONENT_LIFECYCLE_MOUNT_TYPE_VIEW);
-    List<SpecModelValidationError> validationErrors =
-        SpecModelValidation.validateShouldUseDisplayLists(mMountSpecModel);
-
-    assertThat(validationErrors).hasSize(1);
-    assertThat(validationErrors.get(0).element).isSameAs(mMountSpecModelRepresentedObject);
-    assertThat(validationErrors.get(0).message).isEqualTo(
-        "shouldUseDisplayList = true can only be used on MountSpecs that mount a drawable.");
+    assertThat(validationErrors.get(0).message)
+        .isEqualTo(
+            "onCreateMountContent's return type should be either a View or a Drawable subclass.");
   }
 }

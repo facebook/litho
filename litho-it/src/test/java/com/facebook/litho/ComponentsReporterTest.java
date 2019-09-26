@@ -22,6 +22,7 @@ import static com.facebook.litho.ComponentsReporter.LogLevel.WARNING;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.assertj.core.api.ThrowableAssert.catchThrowable;
 
+import android.util.Pair;
 import com.facebook.litho.testing.logging.TestComponentsReporter;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import org.assertj.core.api.ThrowableAssert;
@@ -37,6 +38,7 @@ public class ComponentsReporterTest {
   private static final String FATAL_MSG = "fatal";
   private static final String ERROR_MSG = "error";
   private static final String WARNING_MSG = "warning";
+  private static final String CATEGORY_KEY = "categoryKey";
 
   private TestComponentsReporter mReporter;
 
@@ -58,10 +60,10 @@ public class ComponentsReporterTest {
             new ThrowableAssert.ThrowingCallable() {
               @Override
               public void call() throws Throwable {
-                ComponentsReporter.emitMessage(FATAL, FATAL_MSG);
+                ComponentsReporter.emitMessage(FATAL, CATEGORY_KEY, FATAL_MSG);
 
-                assertThat(mReporter.getLevel()).isEqualTo(FATAL);
-                assertThat(mReporter.getMessage()).isEqualTo(FATAL_MSG);
+                assertThat(mReporter.getLoggedMessages().size()).isEqualTo(1);
+                assertThat(mReporter.getLoggedMessages()).contains(new Pair<>(FATAL, FATAL_MSG));
               }
             });
     assertThat(throwable).isInstanceOf(RuntimeException.class);
@@ -70,17 +72,17 @@ public class ComponentsReporterTest {
 
   @Test
   public void testEmitErrorMessage() {
-    ComponentsReporter.emitMessage(ERROR, ERROR_MSG);
+    ComponentsReporter.emitMessage(ERROR, CATEGORY_KEY, ERROR_MSG);
 
-    assertThat(mReporter.getLevel()).isEqualTo(ERROR);
-    assertThat(mReporter.getMessage()).isEqualTo(ERROR_MSG);
+    assertThat(mReporter.getLoggedMessages().size()).isEqualTo(1);
+    assertThat(mReporter.getLoggedMessages()).contains(new Pair<>(ERROR, ERROR_MSG));
   }
 
   @Test
   public void testEmitWarningMessage() {
-    ComponentsReporter.emitMessage(WARNING, WARNING_MSG);
+    ComponentsReporter.emitMessage(WARNING, CATEGORY_KEY, WARNING_MSG);
 
-    assertThat(mReporter.getLevel()).isEqualTo(WARNING);
-    assertThat(mReporter.getMessage()).isEqualTo(WARNING_MSG);
+    assertThat(mReporter.getLoggedMessages().size()).isEqualTo(1);
+    assertThat(mReporter.getLoggedMessages()).contains(new Pair<>(WARNING, WARNING_MSG));
   }
 }

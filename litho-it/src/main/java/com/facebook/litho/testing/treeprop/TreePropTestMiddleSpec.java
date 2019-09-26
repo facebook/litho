@@ -24,16 +24,13 @@ import com.facebook.litho.annotations.OnCreateTreeProp;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.TreeProp;
 
-/**
- * Used in {@link TreePropTest}.
- */
+/** Used in {@link TreePropTest}. */
 @LayoutSpec
 public class TreePropTestMiddleSpec {
 
   @OnCreateTreeProp
   static TreePropStringType onCreateTreePropB(
-      ComponentContext c,
-      @TreeProp TreePropStringType propB) {
+      ComponentContext c, @TreeProp TreePropStringType propB) {
     return new TreePropStringType(propB.getValue() + "_changed");
   }
 

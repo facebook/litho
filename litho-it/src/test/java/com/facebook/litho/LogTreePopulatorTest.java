@@ -45,7 +45,7 @@ public class LogTreePopulatorTest {
 
   @Test
   public void testCustomTreePropLogger() {
-    final BaseComponentsLogger logger =
+    final ComponentsLogger logger =
         new TestComponentsLogger() {
           @Nullable
           @Override
@@ -102,7 +102,7 @@ public class LogTreePopulatorTest {
 
   @Test
   public void testNullTreePropLogger() {
-    final BaseComponentsLogger logger =
+    final ComponentsLogger logger =
         new TestComponentsLogger() {
           @Nullable
           @Override
@@ -124,7 +124,7 @@ public class LogTreePopulatorTest {
 
   @Test
   public void testGetAnnotationBundleFromLogger() {
-    final BaseComponentsLogger logger =
+    final ComponentsLogger logger =
         new TestComponentsLogger() {
           @Nullable
           @Override

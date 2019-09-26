@@ -75,11 +75,10 @@ import javax.annotation.concurrent.GuardedBy;
  * root component and recursively invokes its OnCreateLayout to create a tree of components.
  * ComponentTree is responsible for refreshing the mounted state of a component with new props.
  *
- * The usual use case for {@link ComponentTree} is:
- * <code>
+ * <p>The usual use case for {@link ComponentTree} is: <code>
  * ComponentTree component = ComponentTree.create(context, MyComponent.create());
  * myHostView.setRoot(component);
- * <code/>
+ * </code>
  */
 @ThreadSafe
 public class ComponentTree {
@@ -95,6 +94,7 @@ public class ComponentTree {
   private static final int SCHEDULE_LAYOUT_ASYNC = 1;
   private static final int SCHEDULE_LAYOUT_SYNC = 2;
   private static boolean sBoostPerfLayoutStateFuture = false;
+  private final boolean mAreTransitionsEnabled;
   private boolean mReleased;
   private String mReleasedComponent;
   private @Nullable AttachDetachHandler mAttachDetachHandler;
@@ -187,6 +187,7 @@ public class ComponentTree {
 
   private final Object mLayoutStateFutureLock = new Object();
   private final boolean mUseCancelableLayoutFutures;
+  private final boolean mCacheInternalNodeOnLayoutState;
 
   @GuardedBy("mLayoutStateFutureLock")
   private final List<LayoutStateFuture> mLayoutStateFutures = new ArrayList<>();
@@ -300,6 +301,7 @@ public class ComponentTree {
     mMeasureListener = builder.mMeasureListener;
     mUseCancelableLayoutFutures = builder.useCancelableLayoutFutures;
     mMoveLayoutsBetweenThreads = builder.canInterruptAndMoveLayoutsBetweenThreads;
+    mCacheInternalNodeOnLayoutState = builder.cacheInternalNodeOnLayoutState;
     isReconciliationEnabled = builder.isReconciliationEnabled;
     mCreateInitialStateOncePerThread =
         ComponentsConfiguration.createInitialStateOncePerThread || mUseCancelableLayoutFutures;
@@ -329,10 +331,6 @@ public class ComponentTree {
             ? new IncrementalMountHelper(this)
             : null;
 
-    if (ComponentsConfiguration.IS_INTERNAL_BUILD) {
-      HotswapManager.addComponentTree(this);
-    }
-
     // Instrument LithoHandlers.
     mMainThreadHandler = instrumentLithoHandler(mMainThreadHandler);
     mLayoutThreadHandler = ensureAndInstrumentLayoutThreadHandler(mLayoutThreadHandler);
@@ -341,6 +339,15 @@ public class ComponentTree {
     }
     mLogger = builder.logger;
     mLogTag = builder.logTag;
+    if (ComponentsConfiguration.isTransitionCheckCached) {
+      mAreTransitionsEnabled = TransitionUtils.areTransitionsEnabled(mContext.getAndroidContext());
+    } else {
+      mAreTransitionsEnabled = false;
+    }
+  }
+
+  boolean areTransitionsEnabled() {
+    return mAreTransitionsEnabled;
   }
 
   private static LithoHandler ensureAndInstrumentLayoutThreadHandler(
@@ -866,7 +873,7 @@ public class ComponentTree {
           "Base view context differs, view context is: "
               + view.getContext()
               + ", ComponentTree context is: "
-              + mContext);
+              + mContext.getAndroidContext());
     }
 
     mLithoView = view;
@@ -984,7 +991,7 @@ public class ComponentTree {
         components = new ArrayList<>(localLayoutState.getComponents());
         attachables = localLayoutState.consumeAttachables();
         if (layoutStateStateHandler != null) {
-          mStateHandler.commit(layoutStateStateHandler, isReconciliationEnabled);
+          mStateHandler.commit(layoutStateStateHandler);
         }
 
         localLayoutState.clearComponents();
@@ -1050,6 +1057,10 @@ public class ComponentTree {
 
   public boolean isReconciliationEnabled() {
     return isReconciliationEnabled;
+  }
+
+  boolean shouldCacheInternalNodeOnLayoutState() {
+    return mCacheInternalNodeOnLayoutState;
   }
 
   synchronized Component getRoot() {
@@ -1135,7 +1146,7 @@ public class ComponentTree {
       mStateHandler.queueStateUpdate(componentKey, stateUpdate, true);
     }
 
-    LithoStats.incStateUpdateLazy(1);
+    LithoStats.incrementStateUpdateLazy();
   }
 
   void applyLazyStateUpdatesForContainer(String componentKey, StateContainer container) {
@@ -1161,7 +1172,7 @@ public class ComponentTree {
       mStateHandler.queueStateUpdate(componentKey, stateUpdate, false);
     }
 
-    LithoStats.incStateUpdateSync(1);
+    LithoStats.incrementStateUpdateSync();
     final Looper looper = Looper.myLooper();
 
     if (looper == null) {
@@ -1221,6 +1232,7 @@ public class ComponentTree {
       mStateHandler.queueStateUpdate(componentKey, stateUpdate, false);
     }
 
+    LithoStats.incrementStateUpdateAsync();
     updateStateInternal(true, attribution);
   }
 
@@ -1777,7 +1789,7 @@ public class ComponentTree {
                 treeProps,
                 source,
                 extraAttribution)
-            : calculateLayoutState(layoutStateFuture);
+            : calculateLayoutState(source, layoutStateFuture);
 
     if (localLayoutState == null) {
       if (output != null) {
@@ -1812,7 +1824,7 @@ public class ComponentTree {
         final StateHandler layoutStateStateHandler = localLayoutState.consumeStateHandler();
         if (layoutStateStateHandler != null) {
           if (mStateHandler != null) { // we could have been released
-            mStateHandler.commit(layoutStateStateHandler, isReconciliationEnabled);
+            mStateHandler.commit(layoutStateStateHandler);
           }
         }
 
@@ -2165,8 +2177,9 @@ public class ComponentTree {
   }
 
   /** Calculates a LayoutState for the given LayoutStateFuture on the thread that calls this. */
-  private @Nullable LayoutState calculateLayoutState(LayoutStateFuture layoutStateFuture) {
-    final LayoutState layoutState = layoutStateFuture.runAndGet();
+  private @Nullable LayoutState calculateLayoutState(
+      int source, LayoutStateFuture layoutStateFuture) {
+    final LayoutState layoutState = layoutStateFuture.runAndGet(source);
 
     synchronized (mLayoutStateFutureLock) {
       layoutStateFuture.unregisterForResponse();
@@ -2224,7 +2237,7 @@ public class ComponentTree {
       localLayoutStateFuture.registerForResponse(waitingFromSyncLayout);
     }
 
-    final LayoutState layoutState = localLayoutStateFuture.runAndGet();
+    final LayoutState layoutState = localLayoutStateFuture.runAndGet(source);
 
     synchronized (mLayoutStateFutureLock) {
       localLayoutStateFuture.unregisterForResponse();
@@ -2357,18 +2370,13 @@ public class ComponentTree {
       final ComponentContext contextWithStateHandler;
 
       synchronized (ComponentTree.this) {
-        final KeyHandler keyHandler =
-            (ComponentsConfiguration.useGlobalKeys || ComponentsConfiguration.isDebugModeEnabled)
-                ? new KeyHandler(ComponentTree.this.getContextLogger())
-                : null;
-
         contextWithStateHandler =
             new ComponentContext(
                 context,
                 StateHandler.createNewInstance(ComponentTree.this.mStateHandler),
-                keyHandler,
                 treeProps,
-                layoutStateFuture);
+                layoutStateFuture,
+                null);
       }
 
       return contextWithStateHandler;
@@ -2433,17 +2441,17 @@ public class ComponentTree {
 
     @VisibleForTesting
     @Nullable
-    LayoutState runAndGet() {
+    LayoutState runAndGet(int source) {
       if (mMoveLayoutsBetweenThreads) {
-        return runAndGetSwitchThreadsWhenUIBlocked();
+        return runAndGetSwitchThreadsWhenUIBlocked(source);
       }
 
-      return runAndGetIncreasePriority();
+      return runAndGetIncreasePriority(source);
     }
 
     @VisibleForTesting
     @Nullable
-    LayoutState runAndGetIncreasePriority() {
+    LayoutState runAndGetIncreasePriority(int source) {
       if (runningThreadId.compareAndSet(-1, Process.myTid())) {
         futureTask.run();
       }
@@ -2453,7 +2461,15 @@ public class ComponentTree {
       final boolean didRaiseThreadPriority;
       final boolean notRunningOnMyThread = runningThreadId != Process.myTid();
 
-      if (isMainThread() && !futureTask.isDone() && notRunningOnMyThread) {
+      final boolean shouldWaitForResult = !futureTask.isDone() && notRunningOnMyThread;
+
+      // A background thread layout which doesn't need to return a size doesn't need to wait on the
+      // UI thread for the result.
+      if (shouldWaitForResult && !isMainThread() && !isFromSyncLayout(source)) {
+        return null;
+      }
+
+      if (isMainThread() && shouldWaitForResult) {
         // Main thread is about to be blocked, raise the running thread priority.
         originalThreadPriority =
             ComponentsConfiguration.inheritPriorityFromUiThread
@@ -2512,14 +2528,21 @@ public class ComponentTree {
 
     @VisibleForTesting
     @Nullable
-    LayoutState runAndGetSwitchThreadsWhenUIBlocked() {
+    LayoutState runAndGetSwitchThreadsWhenUIBlocked(int source) {
       if (runningThreadId.compareAndSet(-1, Process.myTid())) {
         futureTask.run();
       }
 
       final int runningThreadId = this.runningThreadId.get();
 
-      if (isMainThread() && !futureTask.isDone() && runningThreadId != Process.myTid()) {
+      final boolean shouldWaitForResult =
+          !futureTask.isDone() && runningThreadId != Process.myTid();
+
+      if (shouldWaitForResult && !isMainThread() && !isFromSyncLayout(source)) {
+        return null;
+      }
+
+      if (isMainThread() && shouldWaitForResult) {
         // This means the UI thread is about to be blocked by the bg thread. Instead of waiting,
         // the bg task is interrupted.
         if (!isFromSyncLayout) {
@@ -2705,6 +2728,8 @@ public class ComponentTree {
     private boolean splitLayoutForMeasureAndRangeEstimation =
         ComponentsConfiguration.splitLayoutForMeasureAndRangeEstimation;
     private boolean useCancelableLayoutFutures = ComponentsConfiguration.useCancelableLayoutFutures;
+    private boolean cacheInternalNodeOnLayoutState =
+        ComponentsConfiguration.cacheInternalNodeOnLayoutState;
     private @Nullable String logTag;
     private @Nullable ComponentsLogger logger;
 
@@ -2847,7 +2872,7 @@ public class ComponentTree {
       return this;
     }
 
-    /** Sets if is reconciliation is enabled */
+    /** Sets if reconciliation is enabled */
     public Builder isReconciliationEnabled(boolean isEnabled) {
       this.isReconciliationEnabled = isEnabled;
       return this;
@@ -2868,6 +2893,15 @@ public class ComponentTree {
      */
     public Builder canInterruptAndMoveLayoutsBetweenThreads(boolean isEnabled) {
       this.canInterruptAndMoveLayoutsBetweenThreads = isEnabled;
+      return this;
+    }
+
+    /**
+     * Experimental, do not use! If true, the measured InternalNode will be cached on the
+     * LayoutState instead of keeping it on the Component instance.
+     */
+    public Builder cacheInternalNodeOnLayoutState(boolean isEnabled) {
+      this.cacheInternalNodeOnLayoutState = isEnabled;
       return this;
     }
 

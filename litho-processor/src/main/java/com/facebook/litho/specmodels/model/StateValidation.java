@@ -34,9 +34,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-/**
- * Class for validating that the state models within a  {@link SpecModel} are well-formed.
- */
+/** Class for validating that the state models within a {@link SpecModel} are well-formed. */
 public class StateValidation {
 
   static List<SpecModelValidationError> validate(SpecModel specModel) {
@@ -52,22 +50,24 @@ public class StateValidation {
     final ImmutableList<StateParamModel> stateValues = specModel.getStateValues();
 
     for (int i = 0, size = stateValues.size(); i < size - 1; i++) {
-      final StateParamModel thisStateValue  = stateValues.get(i);
+      final StateParamModel thisStateValue = stateValues.get(i);
       for (int j = i + 1; j < size; j++) {
         final StateParamModel thatStateValue = stateValues.get(j);
 
         if (thisStateValue.getName().equals(thatStateValue.getName())) {
           if (!thisStateValue.getTypeName().box().equals(thatStateValue.getTypeName().box())) {
-            validationErrors.add(new SpecModelValidationError(
-                thatStateValue.getRepresentedObject(),
-                "State values with the same name must have the same type."));
+            validationErrors.add(
+                new SpecModelValidationError(
+                    thatStateValue.getRepresentedObject(),
+                    "State values with the same name must have the same type."));
           }
 
           if (thisStateValue.canUpdateLazily() != thatStateValue.canUpdateLazily()) {
-            validationErrors.add(new SpecModelValidationError(
-                thatStateValue.getRepresentedObject(),
-                "State values with the same name must have the same annotated value for " +
-                    "canUpdateLazily()."));
+            validationErrors.add(
+                new SpecModelValidationError(
+                    thatStateValue.getRepresentedObject(),
+                    "State values with the same name must have the same annotated value for "
+                        + "canUpdateLazily()."));
           }
         }
       }
@@ -130,30 +130,36 @@ public class StateValidation {
             validationErrors.add(
                 new SpecModelValidationError(
                     methodParam.getRepresentedObject(),
-                    "Parameters annotated with @Param should not have the same name as a @State " +
-                        "value."));
+                    "Parameters annotated with @Param should not have the same name as a @State "
+                        + "value."));
           }
         }
       } else {
         // Check #2
-        if (!(methodParam.getTypeName() instanceof ParameterizedTypeName) ||
-            !(((ParameterizedTypeName) methodParam.getTypeName()).rawType.equals(STATE_VALUE))) {
+        if (!(methodParam.getTypeName() instanceof ParameterizedTypeName)
+            || !(((ParameterizedTypeName) methodParam.getTypeName()).rawType.equals(STATE_VALUE))) {
           validationErrors.add(
               new SpecModelValidationError(
                   methodParam.getRepresentedObject(),
-                  "Only state parameters and parameters annotated with @Param are permitted in " +
-                      "@OnUpdateState method, and all state parameters must be of type " +
-                      "com.facebook.litho.StateValue, but " + methodParam.getName() +
-                      " is of type " + methodParam.getTypeName() + "."));
-        } else if (((ParameterizedTypeName) methodParam.getTypeName()).typeArguments.size() != 1 ||
-            ((ParameterizedTypeName) methodParam.getTypeName()).typeArguments.get(0)
+                  "Only state parameters and parameters annotated with @Param are permitted in "
+                      + "@OnUpdateState method, and all state parameters must be of type "
+                      + "com.facebook.litho.StateValue, but "
+                      + methodParam.getName()
+                      + " is of type "
+                      + methodParam.getTypeName()
+                      + "."));
+        } else if (((ParameterizedTypeName) methodParam.getTypeName()).typeArguments.size() != 1
+            || ((ParameterizedTypeName) methodParam.getTypeName()).typeArguments.get(0)
                 instanceof WildcardTypeName) {
           validationErrors.add(
               new SpecModelValidationError(
                   methodParam.getRepresentedObject(),
-                  "All parameters of type com.facebook.litho.StateValue must define a type " +
-                      "argument, " + methodParam.getName() + " in method " +
-                      updateStateMethodModel.name + " does not."));
+                  "All parameters of type com.facebook.litho.StateValue must define a type "
+                      + "argument, "
+                      + methodParam.getName()
+                      + " in method "
+                      + updateStateMethodModel.name
+                      + " does not."));
         } else if (!definesStateValue(
             specModel,
             methodParam.getName(),
@@ -162,8 +168,8 @@ public class StateValidation {
           validationErrors.add(
               new SpecModelValidationError(
                   methodParam.getRepresentedObject(),
-                  "Names of parameters of type StateValue must match the name and type of a " +
-                      "parameter annotated with @State."));
+                  "Names of parameters of type StateValue must match the name and type of a "
+                      + "parameter annotated with @State."));
         }
       }
     }
@@ -173,8 +179,7 @@ public class StateValidation {
 
   private static boolean definesStateValue(SpecModel specModel, String name, TypeName type) {
     for (StateParamModel stateValue : specModel.getStateValues()) {
-      if (stateValue.getName().equals(name) &&
-          stateValue.getTypeName().box().equals(type.box())) {
+      if (stateValue.getName().equals(name) && stateValue.getTypeName().box().equals(type.box())) {
         return true;
       }
     }
@@ -190,9 +195,7 @@ public class StateValidation {
       final MethodParamModel model = propModelList.get(i);
       if (stateNameSet.contains(model.getName())) {
         final Annotation paramAnnotation =
-            model
-                .getAnnotations()
-                .stream()
+            model.getAnnotations().stream()
                 .filter(
                     it -> it instanceof Prop || it instanceof InjectProp || it instanceof TreeProp)
                 .findFirst()

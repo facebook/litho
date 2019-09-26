@@ -310,6 +310,9 @@ public class RecyclerCollectionComponentSpec {
             .useCancelableLayoutFutures(binderConfiguration.useCancelableLayoutFutures())
             .canInterruptAndMoveLayoutsBetweenThreads(
                 binderConfiguration.moveLayoutsBetweenThreads())
+            .cacheInternalNodeOnLayoutState(binderConfiguration.cacheInternalNodeOnLayoutState())
+            .isReconciliationEnabled(binderConfiguration.isReconciliationEnabled())
+            .isLayoutDiffingEnabled(binderConfiguration.isLayoutDiffingEnabled())
             .build(c);
 
     SectionBinderTarget targetBinder =
@@ -329,6 +332,8 @@ public class RecyclerCollectionComponentSpec {
             .asyncStateUpdates(asyncStateUpdates)
             .forceSyncStateUpdates(forceSyncStateUpdates)
             .changeSetThreadHandler(binderConfiguration.getChangeSetThreadHandler())
+            .postToFrontOfQueueForFirstChangeset(
+                binderConfiguration.isPostToFrontOfQueueForFirstChangeset())
             .build();
     sectionTree.set(sectionTreeInstance);
 

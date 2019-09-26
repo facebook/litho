@@ -72,8 +72,7 @@ public class RenderState {
     mSeenGlobalKeys.add(key);
 
     final ComponentLifecycle.RenderData existingInfo = mRenderData.get(key);
-    final ComponentLifecycle.RenderData newInfo =
-        component.recordRenderData(existingInfo);
+    final ComponentLifecycle.RenderData newInfo = component.recordRenderData(existingInfo);
 
     mRenderData.put(key, newInfo);
   }

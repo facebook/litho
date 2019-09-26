@@ -27,17 +27,14 @@ import java.util.List;
 class ComponentHostUtils {
 
   /**
-   * Moves an item from oldIndex to newIndex. The item is taken from scrapitems if an item exists
-   * in scrapItems at oldPosition. Otherwise the item is taken from items. This assumes that there
-   * is no item at newIndex for the items array. If that's the case
-   * {@link ComponentHostUtils#scrapItemAt(int, SparseArrayCompat, SparseArrayCompat)}
-   * has to be called before invoking this.
+   * Moves an item from oldIndex to newIndex. The item is taken from scrapitems if an item exists in
+   * scrapItems at oldPosition. Otherwise the item is taken from items. This assumes that there is
+   * no item at newIndex for the items array. If that's the case {@link
+   * ComponentHostUtils#scrapItemAt(int, SparseArrayCompat, SparseArrayCompat)} has to be called
+   * before invoking this.
    */
   static <T> void moveItem(
-      int oldIndex,
-      int newIndex,
-      SparseArrayCompat<T> items,
-      SparseArrayCompat<T> scrapItems) {
+      int oldIndex, int newIndex, SparseArrayCompat<T> items, SparseArrayCompat<T> scrapItems) {
     T itemToMove;
 
     if (existsScrapItemAt(oldIndex, scrapItems)) {
@@ -60,9 +57,7 @@ class ComponentHostUtils {
    * the invocation of this method will have no effect.
    */
   static <T> void scrapItemAt(
-      int index,
-      SparseArrayCompat<T> items,
-      SparseArrayCompat<T> scrapItems) {
+      int index, SparseArrayCompat<T> items, SparseArrayCompat<T> scrapItems) {
     if (items == null || scrapItems == null) {
       return;
     }
@@ -72,21 +67,16 @@ class ComponentHostUtils {
     }
   }
 
-  /**
-   * Returns true if scrapItems is not null and contains an item with key index.
-   */
-  static <T> boolean existsScrapItemAt(
-      int index,
-      SparseArrayCompat<T> scrapItems) {
+  /** Returns true if scrapItems is not null and contains an item with key index. */
+  static <T> boolean existsScrapItemAt(int index, SparseArrayCompat<T> scrapItems) {
     return scrapItems != null && scrapItems.get(index) != null;
   }
 
-  /**
-   * Sets the state on a drawable if it is clickable or should duplicate its parent's state.
-   */
+  /** Sets the state on a drawable if it is clickable or should duplicate its parent's state. */
   static void maybeSetDrawableState(View view, Drawable drawable, int flags, NodeInfo nodeInfo) {
-    final boolean shouldSetState = (nodeInfo != null && nodeInfo.hasTouchEventHandlers())
-        || MountItem.isDuplicateParentState(flags);
+    final boolean shouldSetState =
+        (nodeInfo != null && nodeInfo.hasTouchEventHandlers())
+            || MountItem.isDuplicateParentState(flags);
 
     if (shouldSetState && drawable.isStateful()) {
       drawable.setState(view.getDrawableState());
@@ -98,9 +88,7 @@ class ComponentHostUtils {
    * item exists there at given index, otherwise it is removed from {@param items}.
    */
   static <T> void removeItem(
-      int index,
-      SparseArrayCompat<T> items,
-      SparseArrayCompat<T> scrapItems) {
+      int index, SparseArrayCompat<T> items, SparseArrayCompat<T> scrapItems) {
     if (existsScrapItemAt(index, scrapItems)) {
       scrapItems.remove(index);
     } else {
@@ -110,6 +98,7 @@ class ComponentHostUtils {
 
   /**
    * Mounts a drawable into a view.
+   *
    * @param view view into which the drawable should be mounted
    * @param drawable drawable to be mounted
    * @param bounds bounds of the drawable being mounted
@@ -117,11 +106,7 @@ class ComponentHostUtils {
    * @param nodeInfo nodeInfo associated to the drawable node
    */
   static void mountDrawable(
-      View view,
-      Drawable drawable,
-      Rect bounds,
-      int flags,
-      NodeInfo nodeInfo) {
+      View view, Drawable drawable, Rect bounds, int flags, NodeInfo nodeInfo) {
     drawable.setVisible(view.getVisibility() == View.VISIBLE, false);
     drawable.setCallback(view);
     maybeSetDrawableState(view, drawable, flags, nodeInfo);

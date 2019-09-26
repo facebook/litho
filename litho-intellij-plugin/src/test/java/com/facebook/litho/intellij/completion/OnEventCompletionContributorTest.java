@@ -21,7 +21,6 @@ import static org.junit.Assert.assertTrue;
 import com.facebook.litho.intellij.LithoPluginIntellijTest;
 import com.intellij.testFramework.fixtures.CodeInsightTestFixture;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 import org.junit.Test;
 
@@ -33,7 +32,7 @@ public class OnEventCompletionContributorTest extends LithoPluginIntellijTest {
 
   @Test
   public void testEventInLithoClassCompletion() throws IOException {
-    String clsName = "OnClickEventCompletionTest.java";
+    String clsName = "OnClickEventCompletionSpec.java";
 
     testHelper.configure(clsName);
     CodeInsightTestFixture fixture = testHelper.getFixture();
@@ -41,7 +40,7 @@ public class OnEventCompletionContributorTest extends LithoPluginIntellijTest {
     fixture.completeBasic();
     List<String> completion = fixture.getLookupElementStrings();
     assertNotNull(completion);
-    assertTrue(completion.containsAll(Arrays.asList("onClickEvent", "OnEventI")));
+    assertTrue(completion.contains("onClickEvent"));
   }
 
   @Test
@@ -59,7 +58,7 @@ public class OnEventCompletionContributorTest extends LithoPluginIntellijTest {
 
   @Test
   public void aboveMethodCompletion() throws IOException {
-    testHelper.configure("OnClickEventAboveMethodCompletion.java");
+    testHelper.configure("OnClickEventAboveMethodCompletionSpec.java");
     CodeInsightTestFixture fixture = testHelper.getFixture();
     fixture.completeBasic();
     fixture.completeBasic();

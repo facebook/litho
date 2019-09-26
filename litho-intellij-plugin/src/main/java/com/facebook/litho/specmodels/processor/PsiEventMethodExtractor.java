@@ -25,7 +25,6 @@ import com.facebook.litho.specmodels.model.EventMethod;
 import com.facebook.litho.specmodels.model.MethodParamModel;
 import com.facebook.litho.specmodels.model.SpecMethodModel;
 import com.intellij.codeInsight.AnnotationUtil;
-import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiAnnotation;
 import com.intellij.psi.PsiAnnotationMemberValue;
 import com.intellij.psi.PsiClass;
@@ -40,7 +39,6 @@ public class PsiEventMethodExtractor {
 
   public static ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>>
       getOnEventMethods(
-          Project project,
           PsiClass psiClass,
           List<Class<? extends Annotation>> permittedInterStageInputAnnotations) {
     final List<SpecMethodModel<EventMethod, EventDeclarationModel>> delegateMethods =
@@ -73,7 +71,7 @@ public class PsiEventMethodExtractor {
                 ImmutableList.copyOf(getTypeVariables(psiMethod)),
                 ImmutableList.copyOf(methodParams),
                 psiMethod,
-                PsiEventDeclarationsExtractor.getEventDeclarationModel(project, accessExpression));
+                PsiEventDeclarationsExtractor.getEventDeclarationModel(accessExpression));
         delegateMethods.add(eventMethod);
       }
     }

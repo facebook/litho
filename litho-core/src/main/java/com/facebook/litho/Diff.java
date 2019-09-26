@@ -16,18 +16,22 @@
 
 package com.facebook.litho;
 
+import com.facebook.litho.annotations.OnCreateTransition;
+import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.ShouldUpdate;
+import com.facebook.litho.annotations.State;
 import javax.annotation.Nullable;
 
 /**
- * Represents a diff between two values T. It should be used when defining the
- * {@link ShouldUpdate} callback in a ComponentSpec. a Diff
- * holds the previous and next value for a specific Prop for a ComponentSpec
+ * Represents a diff between two {@code T} values. It should be used when defining the {@link
+ * ShouldUpdate} callback in a ComponentSpec and may be used in {@link OnCreateTransition} to define
+ * animations based on incoming changes. A Diff holds the previous and next value for a specific
+ * {@link Prop} or {@link State} for a ComponentSpec.
  */
 public final class Diff<T> {
 
-  final @Nullable T mPrevious;
-  @Nullable T mNext;
+  private final @Nullable T mPrevious;
+  private @Nullable T mNext;
 
   public Diff(@Nullable T previous, @Nullable T next) {
     mPrevious = previous;

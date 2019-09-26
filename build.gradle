@@ -84,6 +84,8 @@ ext.deps = [
         mockitoCore        : 'org.mockito:mockito-core:1.9.5',
         assertjCore        : 'org.assertj:assertj-core:2.9.0',
         compileTesting     : 'com.google.testing.compile:compile-testing:0.14',
+        // Proguard annotations (published through Yoga)
+        proguardAnnotations: 'com.facebook.yoga:proguard-annotations:1.14.1',
         // Processor
         javapoet           : 'com.squareup:javapoet:1.9.0',
         // Misc
@@ -95,8 +97,8 @@ ext.deps = [
 // For releases, we want to depend on a stable version of Yoga.
 ext.deps.yoga =
     isSnapshot()
-        ? 'com.facebook.yoga:yoga:1.14.0' // can be a '-SNAPSHOT' release
-        : 'com.facebook.yoga:yoga:1.14.0'
+        ? 'com.facebook.yoga:yoga:1.16.0' // can be a '-SNAPSHOT' release
+        : 'com.facebook.yoga:yoga:1.16.0'
 
 // This should hopefully only serve as a temporary measure until
 // we have a proper Gradle setup for Yoga and JNI.

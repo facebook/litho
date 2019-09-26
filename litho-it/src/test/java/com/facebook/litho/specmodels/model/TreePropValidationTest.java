@@ -81,12 +81,13 @@ public class TreePropValidationTest {
     assertThat(validationErrors).hasSize(2);
 
     assertThat(validationErrors.get(0).element).isEqualTo(mDelegateMethodObject);
-    assertThat(validationErrors.get(0).message).isEqualTo(
-        "@OnCreateTreeProp methods cannot return void.");
+    assertThat(validationErrors.get(0).message)
+        .isEqualTo("@OnCreateTreeProp methods cannot return void.");
 
     assertThat(validationErrors.get(1).element).isEqualTo(mDelegateMethodObject);
-    assertThat(validationErrors.get(1).message).isEqualTo(
-        "The first argument of an @OnCreateTreeProp method should be " +
-            "com.facebook.litho.ComponentContext.");
+    assertThat(validationErrors.get(1).message)
+        .isEqualTo(
+            "The first argument of an @OnCreateTreeProp method should be "
+                + "com.facebook.litho.ComponentContext.");
   }
 }

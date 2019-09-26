@@ -25,7 +25,8 @@ public class ClassAnnotationsGenerator {
 
     if (specModel.hasInjectedDependencies()) {
       for (AnnotationSpec annotation : specModel.getClassAnnotations()) {
-        if (specModel.getDependencyInjectionHelper()
+        if (specModel
+            .getDependencyInjectionHelper()
             .isValidGeneratedComponentAnnotation(annotation)) {
           holder.addAnnotation(annotation);
         }

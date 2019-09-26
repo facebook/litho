@@ -28,9 +28,7 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 import com.facebook.litho.config.ComponentsConfiguration;
 
-/**
- * Draw operations used in developer options.
- */
+/** Draw operations used in developer options. */
 class DebugDraw {
 
   private static final int INTERACTIVE_VIEW_COLOR = 0x66C29BFF;
@@ -89,11 +87,7 @@ class DebugDraw {
       }
 
       canvas.drawRect(
-          view.getLeft(),
-          view.getTop(),
-          view.getRight(),
-          view.getBottom(),
-          sTouchDelegatePaint);
+          view.getLeft(), view.getTop(), view.getRight(), view.getBottom(), sTouchDelegatePaint);
     }
 
     // 3. Highlight expanded touch bounds.
@@ -169,47 +163,16 @@ class DebugDraw {
   }
 
   private static void drawMountBoundsCorners(
-      Canvas canvas,
-      Paint paint,
-      Rect bounds,
-      int cornerLength,
-      int cornerWidth) {
+      Canvas canvas, Paint paint, Rect bounds, int cornerLength, int cornerWidth) {
+
+    drawCorner(canvas, paint, bounds.left, bounds.top, cornerLength, cornerLength, cornerWidth);
+
+    drawCorner(canvas, paint, bounds.left, bounds.bottom, cornerLength, -cornerLength, cornerWidth);
+
+    drawCorner(canvas, paint, bounds.right, bounds.top, -cornerLength, cornerLength, cornerWidth);
 
     drawCorner(
-        canvas,
-        paint,
-        bounds.left,
-        bounds.top,
-        cornerLength,
-        cornerLength,
-        cornerWidth);
-
-    drawCorner(
-        canvas,
-        paint,
-        bounds.left,
-        bounds.bottom,
-        cornerLength,
-        -cornerLength,
-        cornerWidth);
-
-    drawCorner(
-        canvas,
-        paint,
-        bounds.right,
-        bounds.top,
-        -cornerLength,
-        cornerLength,
-        cornerWidth);
-
-    drawCorner(
-        canvas,
-        paint,
-        bounds.right,
-        bounds.bottom,
-        -cornerLength,
-        -cornerLength,
-        cornerWidth);
+        canvas, paint, bounds.right, bounds.bottom, -cornerLength, -cornerLength, cornerWidth);
   }
 
   private static boolean shouldHighlight(Component component) {
@@ -235,24 +198,13 @@ class DebugDraw {
   }
 
   private static void drawCorner(
-      Canvas c,
-      Paint paint,
-      int x,
-      int y,
-      int dx,
-      int dy,
-      int cornerWidth) {
+      Canvas c, Paint paint, int x, int y, int dx, int dy, int cornerWidth) {
     drawCornerLine(c, paint, x, y, x + dx, y + cornerWidth * sign(dy));
     drawCornerLine(c, paint, x, y, x + cornerWidth * sign(dx), y + dy);
   }
 
   private static void drawCornerLine(
-      Canvas canvas,
-      Paint paint,
-      int left,
-      int top,
-      int right,
-      int bottom) {
+      Canvas canvas, Paint paint, int left, int top, int right, int bottom) {
 
     if (left > right) {
       final int tmp = left;

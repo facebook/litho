@@ -16,13 +16,9 @@
 
 package com.facebook.litho.specmodels.model;
 
-/**
- * A SpecModel that wraps another SpecModel.
- */
+/** A SpecModel that wraps another SpecModel. */
 public interface HasEnclosedSpecModel {
 
-  /**
-   * Retrieve the spec model that is wrapped by this SpecModel.
-   */
+  /** Retrieve the spec model that is wrapped by this SpecModel. */
   SpecModel getEnclosedSpecModel();
 }

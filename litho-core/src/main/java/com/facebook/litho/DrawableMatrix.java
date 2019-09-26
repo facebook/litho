@@ -22,19 +22,14 @@ import android.graphics.drawable.Drawable;
 import android.widget.ImageView.ScaleType;
 import javax.annotation.Nullable;
 
-/**
- * Static class containing a factory method for creating a matrix to apply to a drawable.
- */
+/** Static class containing a factory method for creating a matrix to apply to a drawable. */
 public final class DrawableMatrix extends Matrix {
 
   private boolean mShouldClipRect;
 
-  private DrawableMatrix() {
-  }
+  private DrawableMatrix() {}
 
-  /**
-   * @return True if this Matrix requires a clipRect() on the bounds of the drawable.
-   */
+  /** @return True if this Matrix requires a clipRect() on the bounds of the drawable. */
   public boolean shouldClipRect() {
     return mShouldClipRect;
   }
@@ -108,9 +103,9 @@ public final class DrawableMatrix extends Matrix {
       if (intrinsicWidth <= width && intrinsicHeight <= height) {
         scale = 1.0f;
       } else {
-        scale = Math.min(
-            (float) width / (float) intrinsicWidth,
-            (float) height / (float) intrinsicHeight);
+        scale =
+            Math.min(
+                (float) width / (float) intrinsicWidth, (float) height / (float) intrinsicHeight);
       }
 
       final float dx = FastMath.round((width - intrinsicWidth * scale) * 0.5f);
@@ -132,7 +127,7 @@ public final class DrawableMatrix extends Matrix {
     return result;
   }
 
-  private static Matrix.ScaleToFit scaleTypeToScaleToFit(ScaleType st)  {
+  private static Matrix.ScaleToFit scaleTypeToScaleToFit(ScaleType st) {
     // ScaleToFit enum to their corresponding Matrix.ScaleToFit values
     switch (st) {
       case FIT_XY:

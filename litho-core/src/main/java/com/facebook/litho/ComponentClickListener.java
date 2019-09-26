@@ -20,9 +20,7 @@ import static com.facebook.litho.EventDispatcherUtils.dispatchOnClick;
 
 import android.view.View;
 
-/**
- * Click listener that triggers its underlying event handler.
- */
+/** Click listener that triggers its underlying event handler. */
 class ComponentClickListener implements View.OnClickListener {
 
   private EventHandler<ClickEvent> mEventHandler;

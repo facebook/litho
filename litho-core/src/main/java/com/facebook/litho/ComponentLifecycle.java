@@ -16,6 +16,8 @@
 
 package com.facebook.litho;
 
+import static com.facebook.litho.ComponentContext.NO_SCOPE_EVENT_HANDLER;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -50,6 +52,7 @@ import javax.annotation.concurrent.GuardedBy;
 public abstract class ComponentLifecycle implements EventDispatcher, EventTriggerTarget {
   private static final AtomicInteger sComponentTypeId = new AtomicInteger();
   private static final int DEFAULT_MAX_PREALLOCATION = 3;
+  private static final String NO_PARENT_NESTED_TREE = "ComponentLifecycle:NoParentNestedTree";
 
   // This name needs to match the generated code in specmodels in
   // com.facebook.litho.specmodels.generator.EventCaseGenerator#INTERNAL_ON_ERROR_HANDLER_NAME.
@@ -132,26 +135,24 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
           int outputWidth = 0;
           int outputHeight = 0;
 
-          if (Component.isNestedTree(component) || node.hasNestedTree()) {
+          ComponentContext context = node.getContext();
 
-            ComponentContext context = node.getContext();
+          if (Component.isNestedTree(context, component) || node.hasNestedTree()) {
 
             // TODO: (T39009736) evaluate why the parent is null sometimes
-            if (context.isReconciliationEnabled()) {
-              if (node.getParent() != null) {
-                context = node.getParent().getContext();
-              } else if (context.getLogger() != null) {
-                context
-                    .getLogger()
-                    .emitMessage(
-                        ComponentsLogger.LogLevel.ERROR,
-                        "component "
-                            + component.getSimpleName()
-                            + " is a nested tree but does not have a parent component."
-                            + "[mGlobalKey:"
-                            + component.getGlobalKey()
-                            + "]");
-              }
+            if (node.getParent() != null) {
+              context = node.getParent().getContext();
+            } else {
+              ComponentsReporter.emitMessage(
+                  ComponentsReporter.LogLevel.ERROR,
+                  NO_PARENT_NESTED_TREE,
+                  "component "
+                      + component.getSimpleName()
+                      + " is a nested tree but does not have a parent component."
+                      + "[mGlobalKey:"
+                      + component.getGlobalKey()
+                      + "]",
+                  100000);
             }
 
             final InternalNode nestedTree =
@@ -341,7 +342,12 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
    * For internal use, only. Use {@link #dispatchErrorEvent(ComponentContext, Exception)} instead.
    */
   public static void dispatchErrorEvent(ComponentContext c, ErrorEvent e) {
-    final EventHandler<ErrorEvent> errorHandler = c.getComponentScope().getErrorHandler();
+    final Component scope = c.getComponentScope();
+    if (scope == null) {
+      throw new RuntimeException(
+          "No component scope found for handler to throw error", e.exception);
+    }
+    final EventHandler<ErrorEvent> errorHandler = scope.getErrorHandler();
 
     // TODO(T26533980): This check is only necessary as long as we have the configuration flag as
     //                  the enabled state could theoretically change at runtime.
@@ -450,11 +456,6 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
    * enabled.
    */
   protected boolean hasChildLithoViews() {
-    return false;
-  }
-
-  /** Whether this drawable mount spec should cache its drawing in a display list. */
-  protected boolean shouldUseDisplayList() {
     return false;
   }
 
@@ -705,6 +706,12 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
   }
 
   protected static <E> EventHandler<E> newEventHandler(Component c, int id, Object[] params) {
+    if (c == null) {
+      ComponentsReporter.emitMessage(
+          ComponentsReporter.LogLevel.ERROR,
+          NO_SCOPE_EVENT_HANDLER,
+          "Creating event handler without scope.");
+    }
     final EventHandler<E> eventHandler = new EventHandler<>(c, id, params);
     if (c.getScopedContext() != null && c.getScopedContext().getComponentTree() != null) {
       c.getScopedContext().getComponentTree().recordEventHandler(c, eventHandler);

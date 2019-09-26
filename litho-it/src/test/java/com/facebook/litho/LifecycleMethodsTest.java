@@ -132,9 +132,7 @@ public class LifecycleMethodsTest {
     }
 
     @Override
-    protected void onMount(
-        ComponentContext c,
-        Object convertContent) {
+    protected void onMount(ComponentContext c, Object convertContent) {
       setCurrentStep(LifecycleStep.ON_MOUNT);
       final LifecycleMethodsDrawable d = (LifecycleMethodsDrawable) convertContent;
 
@@ -142,23 +140,17 @@ public class LifecycleMethodsTest {
     }
 
     @Override
-    protected void onUnmount(
-        ComponentContext c,
-        Object mountedContent) {
+    protected void onUnmount(ComponentContext c, Object mountedContent) {
       setCurrentStep(LifecycleStep.ON_UNMOUNT);
     }
 
     @Override
-    protected void onBind(
-        ComponentContext c,
-        Object mountedContent) {
+    protected void onBind(ComponentContext c, Object mountedContent) {
       setCurrentStep(LifecycleStep.ON_BIND);
     }
 
     @Override
-    protected void onUnbind(
-        ComponentContext c,
-        Object mountedContent) {
+    protected void onUnbind(ComponentContext c, Object mountedContent) {
       setCurrentStep(LifecycleStep.ON_UNBIND);
     }
 
@@ -199,26 +191,33 @@ public class LifecycleMethodsTest {
           break;
 
         case ON_MEASURE:
-          assertThat(mCurrentStep == LifecycleStep.ON_PREPARE ||
-              mCurrentStep == LifecycleStep.ON_MEASURE).isTrue();
+          assertThat(
+                  mCurrentStep == LifecycleStep.ON_PREPARE
+                      || mCurrentStep == LifecycleStep.ON_MEASURE)
+              .isTrue();
           break;
 
         case ON_BOUNDS_DEFINED:
-          assertThat(mCurrentStep == LifecycleStep.ON_PREPARE ||
-              mCurrentStep == LifecycleStep.ON_MEASURE).isTrue();
+          assertThat(
+                  mCurrentStep == LifecycleStep.ON_PREPARE
+                      || mCurrentStep == LifecycleStep.ON_MEASURE)
+              .isTrue();
           break;
 
         case ON_CREATE_MOUNT_CONTENT:
           assertThat(mCurrentStep == LifecycleStep.ON_BOUNDS_DEFINED).isTrue();
 
         case ON_MOUNT:
-          assertThat(mCurrentStep == LifecycleStep.ON_BOUNDS_DEFINED ||
-              mCurrentStep == LifecycleStep.ON_CREATE_MOUNT_CONTENT).isTrue();
+          assertThat(
+                  mCurrentStep == LifecycleStep.ON_BOUNDS_DEFINED
+                      || mCurrentStep == LifecycleStep.ON_CREATE_MOUNT_CONTENT)
+              .isTrue();
           break;
 
         case ON_BIND:
-          assertThat(mCurrentStep == LifecycleStep.ON_MOUNT ||
-              mCurrentStep == LifecycleStep.ON_UNBIND).isTrue();
+          assertThat(
+                  mCurrentStep == LifecycleStep.ON_MOUNT || mCurrentStep == LifecycleStep.ON_UNBIND)
+              .isTrue();
           break;
 
         case ON_UNBIND:
@@ -264,8 +263,10 @@ public class LifecycleMethodsTest {
       super.setBounds(l, t, r, b);
 
       if (drawableChecks) {
-        assertThat(mComponent.getCurrentStep() == LifecycleStep.ON_BIND ||
-            mComponent.getCurrentStep() == LifecycleStep.ON_UNBIND).isTrue();
+        assertThat(
+                mComponent.getCurrentStep() == LifecycleStep.ON_BIND
+                    || mComponent.getCurrentStep() == LifecycleStep.ON_UNBIND)
+            .isTrue();
       }
     }
 
@@ -277,12 +278,10 @@ public class LifecycleMethodsTest {
     }
 
     @Override
-    public void setAlpha(int alpha) {
-    }
+    public void setAlpha(int alpha) {}
 
     @Override
-    public void setColorFilter(ColorFilter cf) {
-    }
+    public void setColorFilter(ColorFilter cf) {}
 
     @Override
     public int getOpacity() {

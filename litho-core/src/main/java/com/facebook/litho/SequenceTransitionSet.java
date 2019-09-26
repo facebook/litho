@@ -15,14 +15,11 @@
  */
 package com.facebook.litho;
 
-import java.util.List;
-
 import com.facebook.litho.animation.AnimationBinding;
 import com.facebook.litho.animation.SequenceBinding;
+import java.util.List;
 
-/**
- * A {@link TransitionSet} that runs its child transitions in sequence, one after another.
- */
+/** A {@link TransitionSet} that runs its child transitions in sequence, one after another. */
 public class SequenceTransitionSet extends TransitionSet {
 
   public <T extends Transition> SequenceTransitionSet(T... children) {

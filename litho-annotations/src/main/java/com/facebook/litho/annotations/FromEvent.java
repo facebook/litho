@@ -36,5 +36,4 @@ public @interface FromEvent {
    * Event object.
    */
   Class baseClass() default Object.class;
-
 }

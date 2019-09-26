@@ -57,6 +57,7 @@ public class LayoutStateCreateTreeTest {
   @Before
   public void setup() throws Exception {
     mComponentContext = new ComponentContext(RuntimeEnvironment.application);
+    mComponentContext.setLayoutStateReferenceWrapperForTesting();
   }
 
   @After
@@ -249,7 +250,6 @@ public class LayoutStateCreateTreeTest {
     assertThat(node.getNodeInfo().getInterceptTouchHandler()).isEqualTo(interceptTouchHandler1);
     assertThat(node.getNodeInfo().getFocusChangeHandler()).isEqualTo(focusChangedHandler1);
   }
-
 
   @Test
   public void testOverridingHandlers() {
@@ -615,16 +615,15 @@ public class LayoutStateCreateTreeTest {
           }
         };
 
-    final InternalNode root =
-        LayoutState.createAndMeasureTreeForComponent(
-            new MockInternalNodeComponentContext(application), component, 800, 600);
+    final ComponentContext c = new MockInternalNodeComponentContext(application);
+
+    final InternalNode root = LayoutState.createAndMeasureTreeForComponent(c, component, 800, 600);
 
     assertThat(root.getChildAt(0) instanceof TestInternalNode).isTrue();
     assertThat(((TestInternalNode) root.getChildAt(0)).mFlexGrowCounter).isEqualTo(1);
   }
 
-  private static class TestDrawableComponentWithMockInternalNode
-      extends TestComponent {
+  private static class TestDrawableComponentWithMockInternalNode extends TestComponent {
 
     @Override
     protected boolean canResolve() {
@@ -668,6 +667,7 @@ public class LayoutStateCreateTreeTest {
 
     private MockInternalNodeComponentContext(Context context) {
       super(context);
+      setLayoutStateReferenceWrapperForTesting();
     }
 
     InternalNode newLayoutBuilder(@AttrRes int defStyleAttr, @StyleRes int defStyleRes) {
@@ -676,7 +676,11 @@ public class LayoutStateCreateTreeTest {
 
     @Override
     ComponentContext makeNewCopy() {
-      return new MockInternalNodeComponentContext(this.getAndroidContext());
+      MockInternalNodeComponentContext copy =
+          new MockInternalNodeComponentContext(this.getAndroidContext());
+      copy.setLayoutStateReferenceWrapperForTesting();
+
+      return copy;
     }
   }
 

@@ -18,7 +18,7 @@ package com.facebook.litho.processor.integration.resources;
 
 public class TestTreeProp {
 
-  final private long mValue;
+  private final long mValue;
 
   public TestTreeProp(long value) {
     mValue = value;

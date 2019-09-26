@@ -21,8 +21,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * Set of events and event params logged by the framework if a {@link ComponentsLogger} was
- * supplied to the {@link ComponentContext} used to create the tree.
+ * Set of events and event params logged by the framework if a {@link ComponentsLogger} was supplied
+ * to the {@link ComponentContext} used to create the tree.
  */
 public interface FrameworkLogEvents {
   // Previously int EVENT_CREATE_LAYOUT = 0; Now unused.

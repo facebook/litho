@@ -26,9 +26,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Class for validating that the state models within a  {@link SpecModel} are well-formed.
- */
+/** Class for validating that the state models within a {@link SpecModel} are well-formed. */
 public class PropValidation {
   // Using these names in props will cause conflicts with the method names for common props in
   // Component.Builder so we trigger a more user-friendly error if the component tries to use them.
@@ -412,8 +410,9 @@ public class PropValidation {
         validationErrors.add(
             new SpecModelValidationError(
                 prop.getRepresentedObject(),
-                prop.getName() + " is not optional so it should not be declared with a default " +
-                    "value."));
+                prop.getName()
+                    + " is not optional so it should not be declared with a default "
+                    + "value."));
       }
 
       if ((prop.getResType() == ResType.DIMEN_SIZE
@@ -445,14 +444,21 @@ public class PropValidation {
         validationErrors.add(
             new SpecModelValidationError(
                 propDefault.mRepresentedObject,
-                "PropDefault " + propDefault.mName + " of type " + propDefault.mType +
-                    " does not correspond to any defined prop"));
+                "PropDefault "
+                    + propDefault.mName
+                    + " of type "
+                    + propDefault.mType
+                    + " does not correspond to any defined prop"));
       } else if (!(propDefault.mType.box()).equals(prop.getTypeName().box())) {
         validationErrors.add(
             new SpecModelValidationError(
                 propDefault.mRepresentedObject,
-                "PropDefault " + propDefault.mName + " of type " + propDefault.mType +
-                    " should be of type " + prop.getTypeName()));
+                "PropDefault "
+                    + propDefault.mName
+                    + " of type "
+                    + propDefault.mType
+                    + " should be of type "
+                    + prop.getTypeName()));
       }
     }
 

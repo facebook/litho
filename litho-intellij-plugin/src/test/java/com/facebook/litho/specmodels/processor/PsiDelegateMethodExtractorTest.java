@@ -51,7 +51,7 @@ public class PsiDelegateMethodExtractorTest extends LithoPluginIntellijTest {
                   permittedParamAnnotations,
                   ImmutableList.<Class<? extends Annotation>>of());
 
-          PsiDelegateMethodExtractorTestHelper.assertDelegateMethodExtraction(delegateMethods);
+          DelegateMethodExtractorTestHelper.assertDelegateMethodExtraction(delegateMethods);
           return true;
         },
         "DelegateMethodExtractionClass.java");

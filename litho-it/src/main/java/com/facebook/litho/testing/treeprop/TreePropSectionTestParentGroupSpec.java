@@ -24,23 +24,17 @@ import com.facebook.litho.sections.annotations.GroupSectionSpec;
 import com.facebook.litho.sections.annotations.OnCreateChildren;
 import com.facebook.litho.testing.treeprop.TreePropSectionTestLeafGroupSpec.Result;
 
-/**
- * Used in TreePropSectionTest.
- */
+/** Used in TreePropSectionTest. */
 @GroupSectionSpec
 public class TreePropSectionTestParentGroupSpec {
 
   @OnCreateTreeProp
-  static TreePropNumberType onCreateTreePropA(
-      SectionContext c,
-      @Prop TreePropNumberType propA) {
+  static TreePropNumberType onCreateTreePropA(SectionContext c, @Prop TreePropNumberType propA) {
     return propA;
   }
 
   @OnCreateTreeProp
-  static TreePropStringType onCreateTreePropB(
-      SectionContext c,
-      @Prop TreePropStringType propB) {
+  static TreePropStringType onCreateTreePropB(SectionContext c, @Prop TreePropStringType propB) {
     return propB;
   }
 
@@ -52,11 +46,11 @@ public class TreePropSectionTestParentGroupSpec {
       @Prop Result resultPropBLeaf2) {
 
     return Children.create()
-        .child(TreePropSectionTestMiddleGroup.create(c)
-            .resultPropALeaf1(resultPropALeaf1)
-            .resultPropBLeaf1(resultPropBLeaf1))
-        .child(TreePropSectionTestLeafGroup.create(c)
-            .resultPropB(resultPropBLeaf2))
+        .child(
+            TreePropSectionTestMiddleGroup.create(c)
+                .resultPropALeaf1(resultPropALeaf1)
+                .resultPropBLeaf1(resultPropBLeaf1))
+        .child(TreePropSectionTestLeafGroup.create(c).resultPropB(resultPropBLeaf2))
         .build();
   }
 }

@@ -19,7 +19,7 @@ package com.facebook.litho.dataflow.springs;
 /**
  * Data structure for storing spring configuration.
  *
- * This code was forked from the facebook/rebound repository.
+ * <p>This code was forked from the facebook/rebound repository.
  */
 public class SpringConfig {
 
@@ -37,6 +37,7 @@ public class SpringConfig {
 
   /**
    * constructor for the SpringConfig
+   *
    * @param tension tension value for the SpringConfig
    * @param friction friction value for the SpringConfig
    */

@@ -33,9 +33,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import javax.annotation.Nullable;
 
-/**
- * A Drawable that wraps another drawable.
- */
+/** A Drawable that wraps another drawable. */
 public class MatrixDrawable<T extends Drawable> extends Drawable
     implements Drawable.Callback, Touchable {
 
@@ -73,16 +71,17 @@ public class MatrixDrawable<T extends Drawable> extends Drawable
     // We should clip rect if either the transformation matrix needs so or
     // if a ColorDrawable in Gingerbread is being drawn because it doesn't
     // respect its bounds.
-    mShouldClipRect = (mMatrix != null && mMatrix.shouldClipRect()) ||
-        (Build.VERSION.SDK_INT < HONEYCOMB && mDrawable instanceof ColorDrawable) ||
-        (mDrawable instanceof InsetDrawable);
+    mShouldClipRect =
+        (mMatrix != null && mMatrix.shouldClipRect())
+            || (Build.VERSION.SDK_INT < HONEYCOMB && mDrawable instanceof ColorDrawable)
+            || (mDrawable instanceof InsetDrawable);
 
     invalidateSelf();
   }
 
   /**
-   * Sets the necessary artifacts to display the given drawable.
-   * This method should be called in your component's @OnMount method.
+   * Sets the necessary artifacts to display the given drawable. This method should be called in
+   * your component's @OnMount method.
    *
    * @param drawable The drawable to be drawn.
    */
@@ -91,8 +90,8 @@ public class MatrixDrawable<T extends Drawable> extends Drawable
   }
 
   /**
-   * Applies the given dimensions to the drawable.
-   * This method should be called in your component's @OnBind method.
+   * Applies the given dimensions to the drawable. This method should be called in your
+   * component's @OnBind method.
    *
    * @param width The width of the drawable to be drawn.
    * @param height The height of the drawable to be drawn.
@@ -312,10 +311,10 @@ public class MatrixDrawable<T extends Drawable> extends Drawable
 
   @Override
   public boolean shouldHandleTouchEvent(MotionEvent event) {
-    return Build.VERSION.SDK_INT >= LOLLIPOP &&
-        mDrawable != null &&
-        mDrawable instanceof RippleDrawable &&
-        event.getActionMasked() == MotionEvent.ACTION_DOWN &&
-        getBounds().contains((int) event.getX(), (int) event.getY());
+    return Build.VERSION.SDK_INT >= LOLLIPOP
+        && mDrawable != null
+        && mDrawable instanceof RippleDrawable
+        && event.getActionMasked() == MotionEvent.ACTION_DOWN
+        && getBounds().contains((int) event.getX(), (int) event.getY());
   }
 }

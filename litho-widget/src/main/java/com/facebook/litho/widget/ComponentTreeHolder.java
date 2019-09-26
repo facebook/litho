@@ -26,6 +26,7 @@ import com.facebook.litho.LithoHandler;
 import com.facebook.litho.Size;
 import com.facebook.litho.StateHandler;
 import com.facebook.litho.TreeProps;
+import com.facebook.litho.config.ComponentsConfiguration;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.GuardedBy;
@@ -42,7 +43,10 @@ public class ComponentTreeHolder {
   private static final int UNINITIALIZED = -1;
   private static final AtomicInteger sIdGenerator = new AtomicInteger(1);
   private final boolean mCanInterruptAndMoveLayoutsBetweenThreads;
+  private final boolean mCacheInternalNodeOnLayoutState;
   private final boolean mUseCancelableLayoutFutures;
+  private final boolean mIsReconciliationEnabled;
+  private final boolean mIsLayoutDiffingEnabled;
 
   @IntDef({RENDER_UNINITIALIZED, RENDER_ADDED, RENDER_DRAWN})
   public @interface RenderState {}
@@ -102,6 +106,7 @@ public class ComponentTreeHolder {
   }
 
   public static class Builder {
+
     private RenderInfo renderInfo;
     private LithoHandler layoutHandler;
     private ComponentTreeMeasureListenerFactory componentTreeMeasureListenerFactory;
@@ -111,6 +116,10 @@ public class ComponentTreeHolder {
     private boolean incrementalMount = true;
     private boolean useCancelableLayoutFutures;
     private boolean canInterruptAndMoveLayoutsBetweenThreads;
+    private boolean isReconciliationEnabled = ComponentsConfiguration.isReconciliationEnabled;
+    private boolean isLayoutDiffingEnabled = ComponentsConfiguration.isLayoutDiffingEnabled;
+    private boolean cacheInternalNodeOnLayoutState =
+        ComponentsConfiguration.cacheInternalNodeOnLayoutState;
 
     private Builder() {}
 
@@ -161,6 +170,21 @@ public class ComponentTreeHolder {
       return this;
     }
 
+    public Builder cacheInternalNodeOnLayoutState(boolean isEnabled) {
+      this.cacheInternalNodeOnLayoutState = isEnabled;
+      return this;
+    }
+
+    public Builder isReconciliationEnabled(boolean isEnabled) {
+      isReconciliationEnabled = isEnabled;
+      return this;
+    }
+
+    public Builder isLayoutDiffingEnabled(boolean isEnabled) {
+      isLayoutDiffingEnabled = isEnabled;
+      return this;
+    }
+
     public ComponentTreeHolder build() {
       ensureMandatoryParams();
       return new ComponentTreeHolder(this);
@@ -186,6 +210,9 @@ public class ComponentTreeHolder {
     mCanInterruptAndMoveLayoutsBetweenThreads = builder.canInterruptAndMoveLayoutsBetweenThreads;
     mId = sIdGenerator.getAndIncrement();
     mIncrementalMount = builder.incrementalMount;
+    mIsReconciliationEnabled = builder.isReconciliationEnabled;
+    mIsLayoutDiffingEnabled = builder.isLayoutDiffingEnabled;
+    mCacheInternalNodeOnLayoutState = builder.cacheInternalNodeOnLayoutState;
   }
 
   public synchronized void acquireStateAndReleaseTree() {
@@ -384,19 +411,28 @@ public class ComponentTreeHolder {
   @GuardedBy("this")
   private void ensureComponentTree(ComponentContext context) {
     if (mComponentTree == null) {
-      final Object isReconciliationEnabled =
+      final ComponentTree.Builder builder =
+          ComponentTree.create(context, mRenderInfo.getComponent());
+
+      final Object isReconciliationEnabledAttr =
           mRenderInfo.getCustomAttribute(ComponentRenderInfo.RECONCILIATION_ENABLED);
       final Object layoutDiffingEnabledAttr =
           mRenderInfo.getCustomAttribute(ComponentRenderInfo.LAYOUT_DIFFING_ENABLED);
-      final ComponentTree.Builder builder =
-          ComponentTree.create(context, mRenderInfo.getComponent());
-      // If no custom attribute is set, defer to the default value of the builder.
-      if (isReconciliationEnabled != null) {
-        builder.layoutDiffing(!(boolean) isReconciliationEnabled);
-        builder.isReconciliationEnabled((boolean) isReconciliationEnabled);
-      } else if (layoutDiffingEnabledAttr != null) {
-        builder.layoutDiffing((boolean) layoutDiffingEnabledAttr);
+
+      // If the custom attribute is NOT set, defer to the value from the builder.
+
+      if (isReconciliationEnabledAttr != null) {
+        builder.isReconciliationEnabled((boolean) isReconciliationEnabledAttr);
+      } else {
+        builder.isReconciliationEnabled(mIsReconciliationEnabled);
       }
+
+      if (layoutDiffingEnabledAttr != null) {
+        builder.layoutDiffing((boolean) layoutDiffingEnabledAttr);
+      } else {
+        builder.layoutDiffing(mIsLayoutDiffingEnabled);
+      }
+
       mComponentTree =
           builder
               .layoutThreadHandler(mLayoutHandler)
@@ -411,7 +447,9 @@ public class ComponentTreeHolder {
               .hasMounted(mHasMounted)
               .incrementalMount(mIncrementalMount)
               .canInterruptAndMoveLayoutsBetweenThreads(mCanInterruptAndMoveLayoutsBetweenThreads)
+              .cacheInternalNodeOnLayoutState(mCacheInternalNodeOnLayoutState)
               .useCancelableLayoutFutures(mUseCancelableLayoutFutures)
+              .logger(mRenderInfo.getComponentsLogger(), mRenderInfo.getLogTag())
               .build();
       if (mPendingNewLayoutListener != null) {
         mComponentTree.setNewLayoutStateReadyListener(mPendingNewLayoutListener);

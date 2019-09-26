@@ -24,9 +24,7 @@ import com.facebook.litho.sections.annotations.GroupSectionSpec;
 import com.facebook.litho.sections.annotations.OnCreateChildren;
 import com.facebook.litho.sections.common.SingleComponentSection;
 
-/**
- * Used in TreePropSectionTest.
- */
+/** Used in TreePropSectionTest. */
 @GroupSectionSpec
 public class TreePropSectionTestLeafGroupSpec {
 

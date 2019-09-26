@@ -57,12 +57,9 @@ public class LayoutStateCalculateTopsAndBottomsTest {
           }
         };
 
-    LayoutState layoutState = calculateLayoutState(
-        application,
-        component,
-        -1,
-        makeSizeSpec(100, EXACTLY),
-        makeSizeSpec(100, AT_MOST));
+    LayoutState layoutState =
+        calculateLayoutState(
+            application, component, -1, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, AT_MOST));
 
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(5);
 
@@ -184,8 +181,8 @@ public class LayoutStateCalculateTopsAndBottomsTest {
       for (int j = 0; j < 4; j++) {
         for (int k = 0; k < 4; k++) {
           if (i != j && j != k && i != k) {
-            if (LayoutState.sTopsComparator.compare(layoutOutputs[i], layoutOutputs[j]) ==
-                LayoutState.sTopsComparator.compare(layoutOutputs[j], layoutOutputs[k])) {
+            if (LayoutState.sTopsComparator.compare(layoutOutputs[i], layoutOutputs[j])
+                == LayoutState.sTopsComparator.compare(layoutOutputs[j], layoutOutputs[k])) {
               assertThat(sTopsComparator.compare(layoutOutputs[j], layoutOutputs[k]))
                   .isEqualTo(sTopsComparator.compare(layoutOutputs[i], layoutOutputs[j]));
             }
@@ -230,8 +227,8 @@ public class LayoutStateCalculateTopsAndBottomsTest {
       for (int j = 0; j < 4; j++) {
         for (int k = 0; k < 4; k++) {
           if (i != j && j != k && i != k) {
-            if (LayoutState.sBottomsComparator.compare(layoutOutputs[i], layoutOutputs[j]) ==
-                LayoutState.sBottomsComparator.compare(layoutOutputs[j], layoutOutputs[k])) {
+            if (LayoutState.sBottomsComparator.compare(layoutOutputs[i], layoutOutputs[j])
+                == LayoutState.sBottomsComparator.compare(layoutOutputs[j], layoutOutputs[k])) {
               assertThat(sBottomsComparator.compare(layoutOutputs[j], layoutOutputs[k]))
                   .isEqualTo(sBottomsComparator.compare(layoutOutputs[i], layoutOutputs[j]));
             }
@@ -242,11 +239,7 @@ public class LayoutStateCalculateTopsAndBottomsTest {
   }
 
   private static LayoutState calculateLayoutState(
-      Context context,
-      Component component,
-      int componentTreeId,
-      int widthSpec,
-      int heightSpec) {
+      Context context, Component component, int componentTreeId, int widthSpec, int heightSpec) {
 
     return LayoutState.calculate(
         new ComponentContext(context),

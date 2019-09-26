@@ -35,9 +35,7 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 
-/**
- * Extracts event declarations from the given input.
- */
+/** Extracts event declarations from the given input. */
 public class EventDeclarationsExtractor {
 
   public static ImmutableList<EventDeclarationModel> getEventDeclarations(

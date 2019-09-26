@@ -100,12 +100,13 @@ public class DelegateMethodGeneratorTest {
             .typeModel(null)
             .build();
 
-    mSpecModelWithoutDI = SpecModelImpl.newBuilder()
-        .qualifiedSpecClassName(TEST_QUALIFIED_SPEC_NAME)
-        .componentClass(ClassNames.COMPONENT)
-        .delegateMethods(ImmutableList.of(mDelegateMethodModel))
-        .representedObject(new Object())
-        .build();
+    mSpecModelWithoutDI =
+        SpecModelImpl.newBuilder()
+            .qualifiedSpecClassName(TEST_QUALIFIED_SPEC_NAME)
+            .componentClass(ClassNames.COMPONENT)
+            .delegateMethods(ImmutableList.of(mDelegateMethodModel))
+            .representedObject(new Object())
+            .build();
 
     mSpecModelWithDI =
         SpecModelImpl.newBuilder()

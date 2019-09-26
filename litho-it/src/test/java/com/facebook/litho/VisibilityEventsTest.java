@@ -81,8 +81,7 @@ public class VisibilityEventsTest {
             10,
             5);
 
-    assertThat(content.getDispatchedEventHandlers())
-        .doesNotContain(visibleEventHandler);
+    assertThat(content.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler);
 
     lithoView.performIncrementalMount(new Rect(LEFT, 0, RIGHT, 10), true);
     assertThat(content.getDispatchedEventHandlers()).contains(visibleEventHandler);
@@ -234,8 +233,7 @@ public class VisibilityEventsTest {
     content.getDispatchedEventHandlers().clear();
 
     lithoView.performIncrementalMount(new Rect(LEFT, 0, RIGHT, 4), true);
-    assertThat(content.getDispatchedEventHandlers())
-        .doesNotContain(focusedEventHandler);
+    assertThat(content.getDispatchedEventHandlers()).doesNotContain(focusedEventHandler);
 
     lithoView.performIncrementalMount(new Rect(LEFT, 0, RIGHT, 5), true);
     assertThat(content.getDispatchedEventHandlers()).contains(focusedEventHandler);
@@ -265,8 +263,7 @@ public class VisibilityEventsTest {
     content.getDispatchedEventHandlers().clear();
 
     lithoView.performIncrementalMount(new Rect(LEFT, 0, RIGHT, 2), true);
-    assertThat(content.getDispatchedEventHandlers())
-        .doesNotContain(focusedEventHandler);
+    assertThat(content.getDispatchedEventHandlers()).doesNotContain(focusedEventHandler);
 
     lithoView.performIncrementalMount(new Rect(LEFT, 0, RIGHT, 3), true);
     assertThat(content.getDispatchedEventHandlers()).contains(focusedEventHandler);
@@ -341,8 +338,7 @@ public class VisibilityEventsTest {
         10,
         10);
 
-    assertThat(content.getDispatchedEventHandlers())
-        .contains(fullImpressionVisibleEvent);
+    assertThat(content.getDispatchedEventHandlers()).contains(fullImpressionVisibleEvent);
   }
 
   @Test
@@ -367,8 +363,7 @@ public class VisibilityEventsTest {
             10,
             10);
 
-    assertThat(content.getDispatchedEventHandlers())
-        .doesNotContain(invisibleEventHandler);
+    assertThat(content.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler);
 
     lithoView.performIncrementalMount(new Rect(LEFT, 0, RIGHT, 5), true);
     assertThat(content.getDispatchedEventHandlers()).contains(invisibleEventHandler);
@@ -544,26 +539,22 @@ public class VisibilityEventsTest {
             10);
 
     assertThat(content.getDispatchedEventHandlers()).contains(visibleEventHandler);
-    assertThat(content.getDispatchedEventHandlers())
-        .doesNotContain(invisibleEventHandler);
+    assertThat(content.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler);
 
     content.getDispatchedEventHandlers().clear();
     lithoView.performIncrementalMount(new Rect(LEFT, 0, RIGHT, 5), true);
     assertThat(content.getDispatchedEventHandlers()).contains(invisibleEventHandler);
-    assertThat(content.getDispatchedEventHandlers())
-        .doesNotContain(visibleEventHandler);
+    assertThat(content.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler);
 
     content.getDispatchedEventHandlers().clear();
     lithoView.performIncrementalMount(new Rect(LEFT, 3, RIGHT, 9), true);
     assertThat(content.getDispatchedEventHandlers()).contains(visibleEventHandler);
-    assertThat(content.getDispatchedEventHandlers())
-        .doesNotContain(invisibleEventHandler);
+    assertThat(content.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler);
 
     content.getDispatchedEventHandlers().clear();
     lithoView.performIncrementalMount(new Rect(LEFT, 10, RIGHT, 15), true);
     assertThat(content.getDispatchedEventHandlers()).contains(invisibleEventHandler);
-    assertThat(content.getDispatchedEventHandlers())
-        .doesNotContain(visibleEventHandler);
+    assertThat(content.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler);
   }
 
   @Test
@@ -615,10 +606,8 @@ public class VisibilityEventsTest {
     content2.getDispatchedEventHandlers().clear();
     content3.getDispatchedEventHandlers().clear();
     lithoView.performIncrementalMount(new Rect(LEFT, 0, RIGHT, 0), true);
-    assertThat(content1.getDispatchedEventHandlers())
-        .doesNotContain(visibleEventHandler1);
-    assertThat(content2.getDispatchedEventHandlers())
-        .doesNotContain(visibleEventHandler2);
+    assertThat(content1.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler1);
+    assertThat(content2.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler2);
     assertThat(content3.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler3);
     assertThat(content3.getDispatchedEventHandlers()).contains(visibilityChangedHandler);
 
@@ -627,16 +616,14 @@ public class VisibilityEventsTest {
     content3.getDispatchedEventHandlers().clear();
     lithoView.performIncrementalMount(new Rect(LEFT, 0, RIGHT, 3), true);
     assertThat(content1.getDispatchedEventHandlers()).contains(visibleEventHandler1);
-    assertThat(content2.getDispatchedEventHandlers())
-        .doesNotContain(visibleEventHandler2);
+    assertThat(content2.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler2);
     assertThat(content3.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler3);
     assertThat(content3.getDispatchedEventHandlers()).doesNotContain(visibilityChangedHandler);
 
     content1.getDispatchedEventHandlers().clear();
     content2.getDispatchedEventHandlers().clear();
     lithoView.performIncrementalMount(new Rect(LEFT, 3, RIGHT, 11), true);
-    assertThat(content1.getDispatchedEventHandlers())
-        .doesNotContain(visibleEventHandler1);
+    assertThat(content1.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler1);
     assertThat(content2.getDispatchedEventHandlers()).contains(visibleEventHandler2);
     assertThat(content3.getDispatchedEventHandlers()).contains(visibleEventHandler3);
     assertThat(content3.getDispatchedEventHandlers()).contains(visibilityChangedHandler);
@@ -663,8 +650,7 @@ public class VisibilityEventsTest {
     lithoView.performIncrementalMount(new Rect(LEFT, 0, RIGHT, 10), true);
     lithoView.release();
 
-    assertThat(content.getDispatchedEventHandlers())
-        .doesNotContain(invisibleEventHandler);
+    assertThat(content.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler);
     unbindComponent(lithoView);
     assertThat(content.getDispatchedEventHandlers()).contains(invisibleEventHandler);
   }
@@ -695,10 +681,8 @@ public class VisibilityEventsTest {
                 .build(),
             true);
 
-    assertThat(component1.getDispatchedEventHandlers())
-        .contains(visibleEventHandler1);
-    assertThat(component1.getDispatchedEventHandlers())
-        .contains(focusedEventHandler1);
+    assertThat(component1.getDispatchedEventHandlers()).contains(visibleEventHandler1);
+    assertThat(component1.getDispatchedEventHandlers()).contains(focusedEventHandler1);
 
     final TestComponent component2 = create(mContext).key("component2").build();
     final EventHandler<VisibleEvent> visibleEventHandler2 = new EventHandler<>(component2, 3);
@@ -718,12 +702,9 @@ public class VisibilityEventsTest {
 
     measureAndLayout(lithoView);
 
-    assertThat(component1.getDispatchedEventHandlers())
-        .contains(invisibleEventHandler1);
-    assertThat(component1.getDispatchedEventHandlers())
-        .contains(unfocusedEventHandler1);
-    assertThat(component2.getDispatchedEventHandlers())
-        .contains(visibleEventHandler2);
+    assertThat(component1.getDispatchedEventHandlers()).contains(invisibleEventHandler1);
+    assertThat(component1.getDispatchedEventHandlers()).contains(unfocusedEventHandler1);
+    assertThat(component2.getDispatchedEventHandlers()).contains(visibleEventHandler2);
   }
 
   @Test
@@ -748,13 +729,11 @@ public class VisibilityEventsTest {
     content.getDispatchedEventHandlers().clear();
 
     lithoView.setHasTransientState(true);
-    assertThat(content.getDispatchedEventHandlers())
-        .doesNotContain(visibleEventHandler);
+    assertThat(content.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler);
 
     lithoView.setMountStateDirty();
     lithoView.performIncrementalMount(new Rect(0, -10, 10, -5), true);
-    assertThat(content.getDispatchedEventHandlers())
-        .doesNotContain(visibleEventHandler);
+    assertThat(content.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler);
 
     lithoView.setHasTransientState(false);
     assertThat(content.getDispatchedEventHandlers()).contains(visibleEventHandler);

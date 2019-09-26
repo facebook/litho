@@ -20,9 +20,7 @@ import static com.facebook.litho.EventDispatcherUtils.dispatchOnFocusChanged;
 
 import android.view.View;
 
-/**
- * Focus change listener that triggers its underlying event handler.
- */
+/** Focus change listener that triggers its underlying event handler. */
 class ComponentFocusChangeListener implements View.OnFocusChangeListener {
 
   private EventHandler<FocusChangedEvent> mEventHandler;

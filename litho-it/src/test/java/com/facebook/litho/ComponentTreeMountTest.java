@@ -42,20 +42,13 @@ public class ComponentTreeMountTest {
 
   @Test
   public void testRemountsWithNewInputOnSameLayout() {
-    final LithoView lithoView = mountComponent(
-        mContext,
-        create(mContext)
-            .color(BLACK)
-            .build());
+    final LithoView lithoView = mountComponent(mContext, create(mContext).color(BLACK).build());
     shadowOf(lithoView).callOnAttachedToWindow();
 
     assertThat(lithoView.getDrawables()).hasSize(1);
     assertThat(((ColorDrawable) lithoView.getDrawables().get(0)).getColor()).isEqualTo(BLACK);
 
-    lithoView.getComponentTree().setRoot(
-        create(mContext)
-            .color(YELLOW)
-            .build());
+    lithoView.getComponentTree().setRoot(create(mContext).color(YELLOW).build());
     assertThat(lithoView.getDrawables()).hasSize(1);
     assertThat(((ColorDrawable) lithoView.getDrawables().get(0)).getColor()).isEqualTo(YELLOW);
   }

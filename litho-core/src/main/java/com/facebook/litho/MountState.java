@@ -83,6 +83,10 @@ import java.util.Set;
 class MountState implements TransitionManager.OnAnimationCompleteListener {
 
   static final long ROOT_HOST_ID = 0L;
+  private static final String DISAPPEAR_ANIM_TARGETING_ROOT =
+      "MountState:DisappearAnimTargetingRoot";
+  private static final String DANGLING_CONTENT_DURING_ANIM = "MountState:DanglingContentDuringAnim";
+  private static final String INVALID_ANIM_LOCK_INDICES = "MountState:InvalidAnimLockIndices";
   private static final double NS_IN_MS = 1000000.0;
   private static final Rect sTempRect = new Rect();
 
@@ -1092,8 +1096,16 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       return Collections.emptyList();
     }
 
+    if (mLayoutOutputsIds.length > 0 && isItemDisappearing(newLayoutState, 0)) {
+      ComponentsReporter.emitMessage(
+          ComponentsReporter.LogLevel.ERROR,
+          DISAPPEAR_ANIM_TARGETING_ROOT,
+          "Disppear animations cannot target the root LithoView! "
+              + getMountItemDebugMessage(mRootHostMountItem));
+    }
+
     List<Integer> indices = null;
-    int index = 0;
+    int index = 1;
     while (index < mLayoutOutputsIds.length) {
       if (isItemDisappearing(newLayoutState, index)) {
         final int lastDescendantIndex = findLastDescendantIndex(mLastMountedLayoutState, index);
@@ -1192,6 +1204,10 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   }
 
   private void removeDisappearingItemMappings(int fromIndex, int toIndex) {
+    if (fromIndex == 0) {
+      throw new RuntimeException("Cannot remove disappearing item mappings for root LithoView!");
+    }
+
     mLastDisappearRangeStart = fromIndex;
     mLastDisappearRangeEnd = toIndex;
 
@@ -1541,7 +1557,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       // Host view doesn't set its own padding, but gets absolute positions for inner content from
       // Yoga. Also bg/fg is used as separate drawables instead of using View's bg/fg attribute.
       if (!isHostView) {
-        unsetViewPadding(view, viewNodeInfo);
+        unsetViewPadding(view, item, viewNodeInfo);
         unsetViewBackground(view, viewNodeInfo);
         unsetViewForeground(view, viewNodeInfo);
         unsetViewLayoutDirection(view);
@@ -2034,12 +2050,24 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
         viewNodeInfo.getPaddingBottom());
   }
 
-  private static void unsetViewPadding(View view, ViewNodeInfo viewNodeInfo) {
+  private static void unsetViewPadding(View view, MountItem item, ViewNodeInfo viewNodeInfo) {
     if (!viewNodeInfo.hasPadding()) {
       return;
     }
 
-    view.setPadding(0, 0, 0, 0);
+    try {
+      view.setPadding(0, 0, 0, 0);
+    } catch (NullPointerException e) {
+      // T53931759 Gathering extra info around this NPE
+      final StringBuilder sb = new StringBuilder();
+      sb.append("Component: ");
+      sb.append(item.getComponent().getSimpleName());
+      sb.append(", view: ");
+      sb.append(view.getClass().getSimpleName());
+      sb.append(", message: ");
+      sb.append(e.getMessage());
+      throw new NullPointerException(sb.toString());
+    }
   }
 
   private static void setViewBackground(View view, ViewNodeInfo viewNodeInfo) {
@@ -2222,43 +2250,65 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       }
     }
     assertNoDanglingMountContent(item);
-    item.releaseMountContent(context.getAndroidContext());
+
+    try {
+      item.releaseMountContent(context.getAndroidContext(), "unmountDisappearingItemChild");
+    } catch (MountItem.ReleasingReleasedMountContentException e) {
+      throw new RuntimeException(e.getMessage() + " " + getMountItemDebugMessage(item));
+    }
   }
 
   private void assertNoDanglingMountContent(MountItem item) {
     final int index = mIndexToItemMap.indexOfValue(item);
     if (index > -1) {
-      final long id = mIndexToItemMap.keyAt(index);
-      int layoutOutputIndex = -1;
+      ComponentsReporter.emitMessage(
+          ComponentsReporter.LogLevel.ERROR,
+          DANGLING_CONTENT_DURING_ANIM,
+          "Got dangling mount content during animation: " + getMountItemDebugMessage(item));
+    }
+  }
+
+  private String getMountItemDebugMessage(MountItem item) {
+    final int index = mIndexToItemMap.indexOfValue(item);
+
+    long id = -1;
+    int layoutOutputIndex = -1;
+    if (index > -1) {
+      id = mIndexToItemMap.keyAt(index);
       for (int i = 0; i < mLayoutOutputsIds.length; i++) {
         if (id == mLayoutOutputsIds[i]) {
           layoutOutputIndex = i;
           break;
         }
       }
-      ComponentsReporter.emitMessage(
-          ComponentsReporter.LogLevel.ERROR,
-          "Got dangling mount content during animation: index="
-              + layoutOutputIndex
-              + ", mapIndex="
-              + index
-              + ", id="
-              + id
-              + ", disappearRange=["
-              + mLastDisappearRangeStart
-              + ","
-              + mLastDisappearRangeEnd
-              + "], contentType="
-              + item.getContent().getClass()
-              + ", component="
-              + (item.getComponent() != null ? item.getComponent().getSimpleName() : null)
-              + ", transitionId="
-              + item.getTransitionId()
-              + ", host="
-              + item.getHost()
-              + ", isRootHost="
-              + (mHostsByMarker.get(ROOT_HOST_ID) == item.getHost()));
     }
+
+    final ComponentTree componentTree = mLithoView.getComponentTree();
+    final String rootComponent =
+        componentTree == null ? "<null_component_tree>" : componentTree.getRoot().getSimpleName();
+
+    return "rootComponent="
+        + rootComponent
+        + ", index="
+        + layoutOutputIndex
+        + ", mapIndex="
+        + index
+        + ", id="
+        + id
+        + ", disappearRange=["
+        + mLastDisappearRangeStart
+        + ","
+        + mLastDisappearRangeEnd
+        + "], contentType="
+        + (item.getContent() != null ? item.getContent().getClass() : "<null_content>")
+        + ", component="
+        + (item.getComponent() != null ? item.getComponent().getSimpleName() : "<null_component>")
+        + ", transitionId="
+        + item.getTransitionId()
+        + ", host="
+        + (item.getHost() != null ? item.getHost().getClass() : "<null_host>")
+        + ", isRootHost="
+        + (mHostsByMarker.get(ROOT_HOST_ID) == item.getHost());
   }
 
   void unmountAllItems() {
@@ -2289,6 +2339,9 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       return;
     }
 
+    final long layoutOutputId = mLayoutOutputsIds[index];
+    mIndexToItemMap.remove(layoutOutputId);
+
     final Object content = item.getContent();
 
     // Recursively unmount mounted children items.
@@ -2301,10 +2354,11 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       // Concurrently remove items therefore traverse backwards.
       for (int i = host.getMountItemCount() - 1; i >= 0; i--) {
         final MountItem mountItem = host.getMountItemAt(i);
-        final long layoutOutputId = mIndexToItemMap.keyAt(mIndexToItemMap.indexOfValue(mountItem));
+        final long childLayoutOutputId =
+            mIndexToItemMap.keyAt(mIndexToItemMap.indexOfValue(mountItem));
 
         for (int mountIndex = mLayoutOutputsIds.length - 1; mountIndex >= 0; mountIndex--) {
-          if (mLayoutOutputsIds[mountIndex] == layoutOutputId) {
+          if (mLayoutOutputsIds[mountIndex] == childLayoutOutputId) {
             unmountItem(mountIndex, hostsByMarker);
             break;
           }
@@ -2348,8 +2402,6 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
     unbindAndUnmountLifecycle(item);
 
-    final long layoutOutputId = mLayoutOutputsIds[index];
-    mIndexToItemMap.remove(layoutOutputId);
     if (item.hasTransitionId()) {
       final @OutputUnitType int type = LayoutStateOutputIdCalculator.getTypeFromId(layoutOutputId);
       maybeRemoveAnimatingMountContent(item.getTransitionId(), type);
@@ -2359,7 +2411,11 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       mCanMountIncrementallyMountItems.delete(mLayoutOutputsIds[index]);
     }
 
-    item.releaseMountContent(mContext.getAndroidContext());
+    try {
+      item.releaseMountContent(mContext.getAndroidContext(), "unmountItem");
+    } catch (MountItem.ReleasingReleasedMountContentException e) {
+      throw new RuntimeException(e.getMessage() + " " + getMountItemDebugMessage(item));
+    }
 
     if (mMountStats.isLoggingEnabled) {
       mMountStats.unmountedTimes.add((System.nanoTime() - startTime) / NS_IN_MS);
@@ -2419,7 +2475,11 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
         }
       }
       assertNoDanglingMountContent(item);
-      item.releaseMountContent(mContext.getAndroidContext());
+      try {
+        item.releaseMountContent(mContext.getAndroidContext(), "endUnmountDisappearingItem");
+      } catch (MountItem.ReleasingReleasedMountContentException e) {
+        throw new RuntimeException(e.getMessage() + " " + getMountItemDebugMessage(item));
+      }
     }
   }
 
@@ -2483,6 +2543,10 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
         if (hasTransitionsToAnimate()) {
           createNewTransitions(layoutState, mRootTransition);
         }
+      }
+
+      if (mTransitionManager != null) {
+        mTransitionManager.finishUndeclaredTransitions();
       }
 
       mAnimationLockedIndices = null;
@@ -2600,7 +2664,9 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       } else {
         if (--mAnimationLockedIndices[i] < 0) {
           ComponentsReporter.emitMessage(
-              ComponentsReporter.LogLevel.FATAL, "Decremented animation lock count below 0!");
+              ComponentsReporter.LogLevel.FATAL,
+              INVALID_ANIM_LOCK_INDICES,
+              "Decremented animation lock count below 0!");
           mAnimationLockedIndices[i] = 0;
         }
       }
@@ -2615,7 +2681,9 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       } else {
         if (--mAnimationLockedIndices[hostIndex] < 0) {
           ComponentsReporter.emitMessage(
-              ComponentsReporter.LogLevel.FATAL, "Decremented animation lock count below 0!");
+              ComponentsReporter.LogLevel.FATAL,
+              INVALID_ANIM_LOCK_INDICES,
+              "Decremented animation lock count below 0!");
           mAnimationLockedIndices[hostIndex] = 0;
         }
       }

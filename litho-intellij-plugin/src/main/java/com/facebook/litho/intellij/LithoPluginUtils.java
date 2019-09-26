@@ -17,11 +17,11 @@ package com.facebook.litho.intellij;
 
 import com.facebook.litho.annotations.Event;
 import com.facebook.litho.annotations.LayoutSpec;
+import com.facebook.litho.annotations.MountSpec;
 import com.facebook.litho.annotations.Param;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.State;
-import com.facebook.litho.specmodels.processor.PsiAnnotationProxyUtils;
 import com.google.common.annotations.VisibleForTesting;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiAnnotation;
@@ -73,14 +73,33 @@ public class LithoPluginUtils {
 
   public static boolean isLithoSpec(@Nullable PsiClass psiClass) {
     return psiClass != null
-        && (hasLithoSectionAnnotation(psiClass) || hasLithoAnnotation(psiClass));
+        && (hasLithoComponentSpecAnnotation(psiClass) || hasLithoSectionSpecAnnotation(psiClass));
   }
 
-  public static boolean hasLithoAnnotation(@Nullable PsiClass psiClass) {
+  public static boolean isLayoutSpec(@Nullable PsiClass psiClass) {
+    return psiClass != null && hasAnnotation(psiClass, equals(LayoutSpec.class.getName()));
+  }
+
+  static boolean isMountSpec(@Nullable PsiClass psiClass) {
+    return psiClass != null && hasAnnotation(psiClass, equals(MountSpec.class.getName()));
+  }
+
+  public static boolean hasLithoComponentSpecAnnotation(@Nullable PsiClass psiClass) {
     if (psiClass == null) {
       return false;
     }
-    return hasAnnotation(psiClass, startsWith("com.facebook.litho.annotations"));
+    return isSpecName(psiClass.getName()) && (isLayoutSpec(psiClass) || isMountSpec(psiClass));
+  }
+
+  public static boolean hasLithoSectionSpecAnnotation(PsiClass psiClass) {
+    return isSpecName(psiClass.getName())
+        && hasAnnotation(psiClass, startsWith("com.facebook.litho.sections.annotations"));
+  }
+
+  @VisibleForTesting
+  /** @return if given name ends with "Spec". */
+  static boolean isSpecName(@Nullable String clsName) {
+    return clsName != null && clsName.endsWith(SPEC_SUFFIX);
   }
 
   @VisibleForTesting
@@ -104,10 +123,6 @@ public class LithoPluginUtils {
 
   private static Predicate<String> equals(String text) {
     return name -> name.equals(text);
-  }
-
-  public static boolean hasLithoSectionAnnotation(PsiClass psiClass) {
-    return hasAnnotation(psiClass, startsWith("com.facebook.litho.sections.annotations"));
   }
 
   public static boolean isPropOrState(PsiParameter parameter) {
@@ -136,7 +151,7 @@ public class LithoPluginUtils {
 
   @Nullable
   public static String getLithoComponentNameFromSpec(@Nullable String specName) {
-    if (specName != null && specName.endsWith(SPEC_SUFFIX)) {
+    if (isSpecName(specName)) {
       return specName.substring(0, specName.length() - SPEC_SUFFIX.length());
     }
     return null;
@@ -173,8 +188,9 @@ public class LithoPluginUtils {
    * @param qualifiedSpecName Name of the Spec to search component for. For example
    *     com.package.MySpec.java.
    * @param project Project to find Component in.
+   * @return {@link PsiJavaFile} for the generated Component, for example com.package.My.java
    */
-  public static Optional<PsiJavaFile> findComponentFile(String qualifiedSpecName, Project project) {
+  public static Optional<PsiJavaFile> findGeneratedFile(String qualifiedSpecName, Project project) {
     return Optional.of(qualifiedSpecName)
         .map(LithoPluginUtils::getLithoComponentNameFromSpec)
         .map(qualifiedComponentName -> PsiSearchUtils.findClass(project, qualifiedComponentName))
@@ -184,32 +200,30 @@ public class LithoPluginUtils {
   }
 
   /**
-   * Finds Component Class from the given Spec name.
+   * Finds Generated Class from the given Spec name.
    *
-   * @param qualifiedSpecName Name of the Spec to search component for. For example
-   *     com.package.MySpec.java.
-   * @param project Project to find Component in.
+   * @param qualifiedSpecName Name of the Spec to search generated class for. For example
+   *     com.package.MySpec.java. If you provide simple name MySpec.java returned class could be
+   *     found in wrong package.
+   * @param project Project to find generated class in.
    */
-  public static Optional<PsiClass> findComponent(String qualifiedSpecName, Project project) {
-    return findComponentFile(qualifiedSpecName, project)
-        .flatMap(LithoPluginUtils::getFirstComponent);
+  public static Optional<PsiClass> findGeneratedClass(String qualifiedSpecName, Project project) {
+    return findGeneratedFile(qualifiedSpecName, project)
+        .flatMap(
+            generatedFile ->
+                getFirstClass(
+                    generatedFile,
+                    psiClass ->
+                        LithoPluginUtils.isComponentClass(psiClass)
+                            || LithoPluginUtils.isSectionClass(psiClass)));
   }
 
   /** Finds LayoutSpec class in the given file. */
   public static Optional<PsiClass> getFirstLayoutSpec(PsiFile psiFile) {
-    return getFirstClass(
-        psiFile,
-        psiClass ->
-            PsiAnnotationProxyUtils.findAnnotationInHierarchy(psiClass, LayoutSpec.class) != null);
+    return getFirstClass(psiFile, LithoPluginUtils::isLayoutSpec);
   }
 
-  /** Finds Component class in the given file. */
-  public static Optional<PsiClass> getFirstComponent(PsiFile componentFile) {
-    return getFirstClass(componentFile, LithoPluginUtils::isComponentClass);
-  }
-
-  private static Optional<PsiClass> getFirstClass(
-      PsiFile psiFile, Predicate<PsiClass> classFilter) {
+  public static Optional<PsiClass> getFirstClass(PsiFile psiFile, Predicate<PsiClass> classFilter) {
     return Optional.of(psiFile)
         .map(currentFile -> PsiTreeUtil.getChildrenOfType(currentFile, PsiClass.class))
         .flatMap(

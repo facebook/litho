@@ -42,8 +42,7 @@ public class LayoutStateSpecTest {
     mContext = new ComponentContext(RuntimeEnvironment.application);
     mWidthSpec = SizeSpec.makeSizeSpec(39, SizeSpec.EXACTLY);
     mHeightSpec = SizeSpec.makeSizeSpec(41, SizeSpec.EXACTLY);
-    mComponent = TestLayoutComponent.create(mContext)
-        .build();
+    mComponent = TestLayoutComponent.create(mContext).build();
     Whitebox.setInternalState(mComponent, "mId", COMPONENT_ID);
 
     mLayoutState = new LayoutState(mContext);
@@ -54,24 +53,28 @@ public class LayoutStateSpecTest {
 
   @Test
   public void testCompatibleInputAndSpec() {
-    assertThat(mLayoutState.isCompatibleComponentAndSpec(COMPONENT_ID, mWidthSpec, mHeightSpec)).isTrue();
+    assertThat(mLayoutState.isCompatibleComponentAndSpec(COMPONENT_ID, mWidthSpec, mHeightSpec))
+        .isTrue();
   }
 
   @Test
   public void testIncompatibleInput() {
-    assertThat(mLayoutState.isCompatibleComponentAndSpec(
-        COMPONENT_ID + 1000, mWidthSpec, mHeightSpec)).isFalse();
+    assertThat(
+            mLayoutState.isCompatibleComponentAndSpec(COMPONENT_ID + 1000, mWidthSpec, mHeightSpec))
+        .isFalse();
   }
 
   @Test
   public void testIncompatibleWidthSpec() {
-    assertThat(mLayoutState.isCompatibleComponentAndSpec(
-        COMPONENT_ID, mWidthSpec + 1000, mHeightSpec)).isFalse();
+    assertThat(
+            mLayoutState.isCompatibleComponentAndSpec(COMPONENT_ID, mWidthSpec + 1000, mHeightSpec))
+        .isFalse();
   }
 
   @Test
   public void testIncompatibleHeightSpec() {
-    assertThat(mLayoutState.isCompatibleComponentAndSpec(
-        COMPONENT_ID, mWidthSpec, mHeightSpec + 1000)).isFalse();
+    assertThat(
+            mLayoutState.isCompatibleComponentAndSpec(COMPONENT_ID, mWidthSpec, mHeightSpec + 1000))
+        .isFalse();
   }
 }

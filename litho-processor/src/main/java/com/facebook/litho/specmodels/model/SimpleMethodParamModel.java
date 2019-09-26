@@ -23,9 +23,7 @@ import java.util.List;
 import java.util.Objects;
 import javax.annotation.concurrent.Immutable;
 
-/**
- * Model that is a simple base representation of a method param.
- */
+/** Model that is a simple base representation of a method param. */
 @Immutable
 public class SimpleMethodParamModel implements MethodParamModel {
   private final TypeSpec mTypeSpec;

@@ -33,9 +33,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
 
-/**
- * Tests {@link ViewCompatComponent}
- */
+/** Tests {@link ViewCompatComponent} */
 @RunWith(ComponentsTestRunner.class)
 public class ViewCompatComponentTest {
 
@@ -94,9 +92,7 @@ public class ViewCompatComponentTest {
     ViewBinder<TextView> binder =
         new ViewBinder<TextView>() {
           @Override
-          public void prepare() {
-
-          }
+          public void prepare() {}
 
           @Override
           public void bind(TextView view) {
@@ -104,15 +100,11 @@ public class ViewCompatComponentTest {
           }
 
           @Override
-          public void unbind(TextView view) {
-
-          }
+          public void unbind(TextView view) {}
         };
 
-    LithoView lithoView = mountComponent(
-        get(TEXT_VIEW_CREATOR, "TextView")
-            .create(mContext)
-            .viewBinder(binder));
+    LithoView lithoView =
+        mountComponent(get(TEXT_VIEW_CREATOR, "TextView").create(mContext).viewBinder(binder));
 
     assertThat(lithoView.getMountItemCount()).isEqualTo(1);
     TextView view = (TextView) lithoView.getMountItemAt(0).getContent();
@@ -136,15 +128,11 @@ public class ViewCompatComponentTest {
           }
 
           @Override
-          public void unbind(TextView view) {
-
-          }
+          public void unbind(TextView view) {}
         };
 
-    LithoView lithoView = mountComponent(
-        get(TEXT_VIEW_CREATOR, "TextView")
-            .create(mContext)
-            .viewBinder(binder));
+    LithoView lithoView =
+        mountComponent(get(TEXT_VIEW_CREATOR, "TextView").create(mContext).viewBinder(binder));
 
     assertThat(lithoView.getMountItemCount()).isEqualTo(1);
     TextView view = (TextView) lithoView.getMountItemAt(0).getContent();
@@ -173,10 +161,8 @@ public class ViewCompatComponentTest {
           }
         };
 
-    LithoView lithoView = mountComponent(
-        get(TEXT_VIEW_CREATOR, "TextView")
-            .create(mContext)
-            .viewBinder(binder));
+    LithoView lithoView =
+        mountComponent(get(TEXT_VIEW_CREATOR, "TextView").create(mContext).viewBinder(binder));
 
     unbindComponent(lithoView);
 

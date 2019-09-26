@@ -31,9 +31,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 
-/**
- * Tests {@link ViewTree}
- */
+/** Tests {@link ViewTree} */
 @RunWith(ComponentsTestRunner.class)
 public class ViewTreeTest {
 
@@ -85,34 +83,55 @@ public class ViewTreeTest {
 
   @Test
   public void testRespectShouldGoIntoChildren() throws Exception {
-    assertThat(mTree.findChild(
-        Predicates.<View>equalTo(mGrandchild2),
-        Predicates.not(Predicates.equalTo(mChildLayout))))
+    assertThat(
+            mTree.findChild(
+                Predicates.<View>equalTo(mGrandchild2),
+                Predicates.not(Predicates.equalTo(mChildLayout))))
         .isNull();
   }
 
   @Test
   public void testGenerateString() {
     final String expected =
-        getString(mRoot) + " (" + mRoot.hashCode() + ")\n" +
-            "  " + getString(mChild1) + " (" + mChild1.hashCode() + ")\n" +
-            "  " + getString(mChildLayout) + " (" + mChildLayout.hashCode() + ")\n" +
-            "    " + getString(mGrandchild1) + " (" + mGrandchild1.hashCode() + ")\n" +
-            "    " + getString(mGrandchild2) + " (" + mGrandchild2.hashCode() + ")";
+        getString(mRoot)
+            + " ("
+            + mRoot.hashCode()
+            + ")\n"
+            + "  "
+            + getString(mChild1)
+            + " ("
+            + mChild1.hashCode()
+            + ")\n"
+            + "  "
+            + getString(mChildLayout)
+            + " ("
+            + mChildLayout.hashCode()
+            + ")\n"
+            + "    "
+            + getString(mGrandchild1)
+            + " ("
+            + mGrandchild1.hashCode()
+            + ")\n"
+            + "    "
+            + getString(mGrandchild2)
+            + " ("
+            + mGrandchild2.hashCode()
+            + ")";
 
-    assertThat(mTree.makeString(new Function<View, String>() {
+    assertThat(
+            mTree.makeString(
+                new Function<View, String>() {
 
-      @Override
-      public String apply(@Nullable final View input) {
-        return String.valueOf(input.hashCode());
-      }
-    })).isEqualTo(expected);
+                  @Override
+                  public String apply(@Nullable final View input) {
+                    return String.valueOf(input.hashCode());
+                  }
+                }))
+        .isEqualTo(expected);
   }
 
   private String getString(final View view) {
-    return removePrefix(
-      removePrefix(view.toString(), "android.widget."),
-      "android.view.");
+    return removePrefix(removePrefix(view.toString(), "android.widget."), "android.view.");
   }
 
   private static String removePrefix(final String string, final String prefix) {

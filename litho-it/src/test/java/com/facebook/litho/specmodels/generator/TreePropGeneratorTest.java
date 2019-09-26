@@ -174,21 +174,21 @@ public class TreePropGeneratorTest {
 
   @Test
   public void testGenerate() {
-    TypeSpecDataHolder typeSpecDataHolder =
-        TreePropGenerator.generate(mSpecModel);
+    TypeSpecDataHolder typeSpecDataHolder = TreePropGenerator.generate(mSpecModel);
 
     assertThat(typeSpecDataHolder.getFieldSpecs()).isEmpty();
     assertThat(typeSpecDataHolder.getMethodSpecs()).hasSize(2);
     assertThat(typeSpecDataHolder.getTypeSpecs()).isEmpty();
 
-    assertThat(typeSpecDataHolder.getMethodSpecs().get(0).toString()).isEqualTo(
-        "@java.lang.Override\n" +
-            "protected void populateTreeProps(com.facebook.litho.TreeProps treeProps) {\n" +
-            "  if (treeProps == null) {\n" +
-            "    return;\n" +
-            "  }\n" +
-            "  treeProp = treeProps.get(int.class);\n" +
-            "}\n");
+    assertThat(typeSpecDataHolder.getMethodSpecs().get(0).toString())
+        .isEqualTo(
+            "@java.lang.Override\n"
+                + "protected void populateTreeProps(com.facebook.litho.TreeProps treeProps) {\n"
+                + "  if (treeProps == null) {\n"
+                + "    return;\n"
+                + "  }\n"
+                + "  treeProp = treeProps.get(int.class);\n"
+                + "}\n");
 
     assertThat(typeSpecDataHolder.getMethodSpecs().get(1).toString())
         .isEqualTo(

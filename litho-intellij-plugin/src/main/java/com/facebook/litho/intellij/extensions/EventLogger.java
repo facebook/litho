@@ -25,13 +25,15 @@ import java.util.Map;
  */
 public interface EventLogger {
 
-  String EVENT_ON_EVENT_GENERATION = "event.generation";
-  String EVENT_ON_EVENT_COMPLETION = "event.completion";
   String EVENT_ANNOTATOR = "error.annotation";
-  String EVENT_NEW_TEMPLATE = "file.template";
-  String EVENT_GOTO_NAVIGATION = "goto.navigation";
-  String EVENT_GENERATE_COMPONENT = "generate.component";
+  String EVENT_COMPLETION_ANNOTATION = "completion.annotation";
   String EVENT_FIND_USAGES = "find.usages";
+  String EVENT_GENERATE_COMPONENT = "generate.component";
+  String EVENT_GOTO_NAVIGATION = "goto.navigation";
+  String EVENT_GOTO_GENERATED = "goto.generated";
+  String EVENT_NEW_TEMPLATE = "file.template";
+  String EVENT_ON_EVENT_COMPLETION = "event.completion";
+  String EVENT_ON_EVENT_GENERATION = "event.generation";
 
   /**
    * Logs given event.

@@ -25,9 +25,8 @@ import com.google.common.collect.ImmutableList;
 import javax.annotation.Nullable;
 
 /**
- * This is a helper class to allow asserting on view trees and recursively
- * verify predicates on its nodes within the narrow abilities that
- * Robolectric affords us.
+ * This is a helper class to allow asserting on view trees and recursively verify predicates on its
+ * nodes within the narrow abilities that Robolectric affords us.
  */
 public final class ViewTree {
 
@@ -41,9 +40,7 @@ public final class ViewTree {
     mView = view;
   }
 
-  /**
-   * @return the view group used to generate this tree
-   */
+  /** @return the view group used to generate this tree */
   public View getRoot() {
     return mView;
   }
@@ -52,8 +49,8 @@ public final class ViewTree {
    * Find a view in the hierarchy for which the given predicate is true
    *
    * @param predicate the predicate to find a view upholding
-   * @return null if no such view is found, or a list showing the path in the hierarchy to the
-   * view for which the predicate holds
+   * @return null if no such view is found, or a list showing the path in the hierarchy to the view
+   *     for which the predicate holds
    */
   @Nullable
   public ImmutableList<View> findChild(Predicate<View> predicate) {
@@ -66,13 +63,12 @@ public final class ViewTree {
    *
    * @param predicate the predicate to find a view upholding
    * @param shouldCheckChildren a predicate to decide whether to
-   * @return null if no such view is found, or a list showing the path in the hierarchy to the
-   * view for which the predicate holds
+   * @return null if no such view is found, or a list showing the path in the hierarchy to the view
+   *     for which the predicate holds
    */
   @Nullable
   public ImmutableList<View> findChild(
-      Predicate<View> predicate,
-      Predicate<? super ViewGroup> shouldCheckChildren) {
+      Predicate<View> predicate, Predicate<? super ViewGroup> shouldCheckChildren) {
     return findChild(mView, predicate, shouldCheckChildren);
   }
 
@@ -80,14 +76,14 @@ public final class ViewTree {
    * Generates a string describing the views tree using the views' toString methods and an extra
    * information function.
    *
-   * The output is a string, with each view of the tree in its own line, indented according to its
-   * depth in the tree, and then the extra information supplied by teh function.
+   * <p>The output is a string, with each view of the tree in its own line, indented according to
+   * its depth in the tree, and then the extra information supplied by teh function.
    *
-   * This can be used, for example, to print all views and their respective text and is useful
+   * <p>This can be used, for example, to print all views and their respective text and is useful
    * for when assertions fail.
    *
-   * @param extraTextFunction the function returning extra information to print per view, or null
-   *   if not extra information should be printed
+   * @param extraTextFunction the function returning extra information to print per view, or null if
+   *     not extra information should be printed
    * @return a string describing the tree
    */
   public String makeString(Function<View, String> extraTextFunction) {
@@ -131,9 +127,7 @@ public final class ViewTree {
 
   @Nullable
   private ImmutableList<View> findChild(
-      View root,
-      Predicate<View> predicate,
-      Predicate<? super ViewGroup> shouldCheckChildren) {
+      View root, Predicate<View> predicate, Predicate<? super ViewGroup> shouldCheckChildren) {
 
     if (predicate.apply(root)) {
       return ImmutableList.of(root);
@@ -145,10 +139,7 @@ public final class ViewTree {
         View child = viewGroup.getChildAt(i);
         ImmutableList<View> result = findChild(child, predicate, shouldCheckChildren);
         if (result != null) {
-          return ImmutableList.<View>builder()
-              .add(root)
-              .addAll(result)
-              .build();
+          return ImmutableList.<View>builder().add(root).addAll(result).build();
         }
       }
     }

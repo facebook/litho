@@ -25,19 +25,19 @@ import com.google.common.base.Predicate;
 import java.util.List;
 import java.util.regex.Pattern;
 
-/**
- * Utility APIs to query the state of components.
- */
+/** Utility APIs to query the state of components. */
 class ComponentQueries {
 
   /**
    * Checks whether the given {@link ComponentHost} has the given text as it's text. It does not
    * look at the host's children.
+   *
    * @param host the component host
    * @param predicate the predicate to test
    * @return true if the host has the given text.
    */
-  static boolean hasTextMatchingPredicate(final ComponentHost host, final Predicate<String> predicate) {
+  static boolean hasTextMatchingPredicate(
+      final ComponentHost host, final Predicate<String> predicate) {
     for (final CharSequence foundText : host.getTextContent().getTextItems()) {
       if (predicate.apply(foundText.toString())) {
         return true;
@@ -50,6 +50,7 @@ class ComponentQueries {
   /**
    * Checks whether the given {@link ComponentHost} matches the given pattern. It does not look at
    * the host's children.
+   *
    * @param host the component host
    * @param pattern the pattern to match
    * @return true if the host has text matching the pattern.
@@ -65,8 +66,9 @@ class ComponentQueries {
   }
 
   /**
-   * Checks whether the given {@link ComponentHost} contains the given drawable. It does not look
-   * at the host's children.
+   * Checks whether the given {@link ComponentHost} contains the given drawable. It does not look at
+   * the host's children.
+   *
    * @param host the component host
    * @param drawable the drawable to look for
    * @return true if the given host contains the drawable.
@@ -126,11 +128,13 @@ class ComponentQueries {
 
   /**
    * Checks whether the given {@link ComponentHost} satisfy the given Predicate.
+   *
    * @param host the component host
    * @param predicate the predicate
    * @return true if the ComponentHost satisfies the condition.
    */
-  private static boolean satisfiesPredicate(final ComponentHost host, final Predicate<Drawable> predicate) {
+  private static boolean satisfiesPredicate(
+      final ComponentHost host, final Predicate<Drawable> predicate) {
     final List<Drawable> drawables = host.getDrawables();
     for (final Drawable drawable : drawables) {
       if (predicate.apply(drawable)) {

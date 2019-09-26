@@ -21,27 +21,24 @@ import static android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH;
 import static android.os.Build.VERSION_CODES.JELLY_BEAN_MR1;
 import static android.os.Build.VERSION_CODES.LOLLIPOP_MR1;
 
+import android.content.Context;
 import androidx.annotation.Nullable;
 import com.facebook.litho.BuildConfig;
 import com.facebook.litho.perfboost.LithoPerfBoosterFactory;
-import com.facebook.yoga.YogaLogger;
 
 /**
  * Hi there, traveller! This configuration class is not meant to be used by end-users of Litho. It
  * contains mainly flags for features that are either under active development and not ready for
  * public consumption, or for use in experiments.
  *
- * These values are safe defaults and should not require manual changes.
+ * <p>These values are safe defaults and should not require manual changes.
  */
 public class ComponentsConfiguration {
 
-  public static YogaLogger YOGA_LOGGER;
-
   /**
-   * Indicates whether this is an internal build. Note that the implementation
-   * of <code>BuildConfig</code> that this class is compiled against may not be
-   * the one that is included in the
-   * APK. See: <a
+   * Indicates whether this is an internal build. Note that the implementation of <code>BuildConfig
+   * </code> that this class is compiled against may not be the one that is included in the APK.
+   * See: <a
    * href="http://facebook.github.io/buck/rule/android_build_config.html">android_build_config</a>.
    */
   public static final boolean IS_INTERNAL_BUILD = BuildConfig.IS_INTERNAL_BUILD;
@@ -75,9 +72,7 @@ public class ComponentsConfiguration {
    */
   public static boolean isDebugModeEnabled = IS_INTERNAL_BUILD;
 
-  /**
-   * Debug option to highlight interactive areas in mounted components.
-   */
+  /** Debug option to highlight interactive areas in mounted components. */
   public static boolean debugHighlightInteractiveBounds = false;
 
   /**
@@ -86,14 +81,16 @@ public class ComponentsConfiguration {
    */
   public static boolean enableLithoViewDebugOverlay = false;
 
-  /**
-   * Debug option to highlight mount bounds of mounted components.
-   */
+  /** Debug option to highlight mount bounds of mounted components. */
   public static boolean debugHighlightMountBounds = false;
 
   /**
    * Populates additional metadata to find mounted components at runtime. Defaults to the presence
-   * of an <pre>IS_TESTING</pre> system property at startup but can be overridden at runtime.
+   * of an
+   *
+   * <pre>IS_TESTING</pre>
+   *
+   * system property at startup but can be overridden at runtime.
    */
   public static boolean isEndToEndTestRun = System.getProperty("IS_TESTING") != null;
 
@@ -127,15 +124,9 @@ public class ComponentsConfiguration {
 
   /**
    * If true, the async range calculation isn't blocked on the first item finishing layout and it
-   * will schedule one layout per bg thread during init range.
-   */
-  public static boolean asyncInitRange = false;
-
-  /**
-   * If true, the async range calculation isn't blocked on the first item finishing layout and it
    * will schedule as many bg layouts as it can while init range completes.
    */
-  public static boolean bgScheduleAllInitRange;
+  public static boolean asyncInitRange = false;
 
   /**
    * If non-null, a thread pool will be used for async layouts instead of a single layout thread.
@@ -172,6 +163,12 @@ public class ComponentsConfiguration {
 
   /** Sets if is reconciliation is enabled */
   public static boolean isReconciliationEnabled = false;
+
+  /**
+   * Sets if layout diffing is enabled. This should be used in conjugation with
+   * {@link#isReconciliationEnabled}.
+   */
+  public static boolean isLayoutDiffingEnabled = true;
 
   /** specifies if the ComparableAnimatedColorDrawable should be initialized in a lazy way */
   public static boolean lazyComparableAnimatedColorDrawable = false;
@@ -223,4 +220,19 @@ public class ComponentsConfiguration {
    * ComponentLifecycle#createLayout()
    */
   public static boolean isRefactoredLayoutCreationEnabled = false;
+
+  /**
+   * If true, the measured InternalNode will be cached on the LayoutState instead of keeping it on
+   * the Component instance.
+   */
+  public static boolean cacheInternalNodeOnLayoutState = false;
+
+  public static int percentageSleepLayoutCalculation = 0;
+
+  /**
+   * If true, the return value of {@link
+   * com.facebook.litho.TransitionUtils#areTransitionsEnabled(Context)} will be cached in {@link
+   * com.facebook.litho.ComponentTree}
+   */
+  public static boolean isTransitionCheckCached = false;
 }

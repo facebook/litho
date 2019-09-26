@@ -39,13 +39,12 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 
-/**
- * Extracts delegate methods from the given input.
- */
+/** Extracts delegate methods from the given input. */
 public class DelegateMethodExtractor {
 
   private static final List<Class<? extends Annotation>> METHOD_PARAM_ANNOTATIONS =
       new ArrayList<>();
+
   static {
     METHOD_PARAM_ANNOTATIONS.add(Prop.class);
     METHOD_PARAM_ANNOTATIONS.add(State.class);
@@ -103,13 +102,11 @@ public class DelegateMethodExtractor {
   }
 
   private static List<Annotation> getMethodAnnotations(
-      Element method,
-      List<Class<? extends Annotation>> permittedMethodAnnotations) {
+      Element method, List<Class<? extends Annotation>> permittedMethodAnnotations) {
     List<Annotation> methodAnnotations = new ArrayList<>();
     for (Class<? extends Annotation> possibleDelegateMethodAnnotation :
         permittedMethodAnnotations) {
-      final Annotation methodAnnotation =
-          method.getAnnotation(possibleDelegateMethodAnnotation);
+      final Annotation methodAnnotation = method.getAnnotation(possibleDelegateMethodAnnotation);
       if (methodAnnotation != null) {
         methodAnnotations.add(methodAnnotation);
       }

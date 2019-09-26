@@ -21,7 +21,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
 /**
  * Classical spring implementing Hooke's law with configurable friction and tension.
  *
- * This code was forked from the facebook/rebound repository.
+ * <p>This code was forked from the facebook/rebound repository.
  */
 public class Spring {
 
@@ -55,20 +55,18 @@ public class Spring {
   private double mDisplacementFromRestThreshold = 0.005;
   private double mTimeAccumulator = 0;
   private final CopyOnWriteArraySet<SpringListener> mListeners =
-    new CopyOnWriteArraySet<SpringListener>();
+      new CopyOnWriteArraySet<SpringListener>();
 
-  /**
-   * create a new spring
-   */
+  /** create a new spring */
   public Spring() {
     mId = "spring:" + ID++;
     setSpringConfig(SpringConfig.defaultConfig);
   }
 
   /**
-   * Destroys this Spring, meaning that it will be deregistered from its BaseSpringSystem so it won't be
-   * iterated anymore and will clear its set of listeners. Do not use the Spring after calling this,
-   * doing so may just cause an exception to be thrown.
+   * Destroys this Spring, meaning that it will be deregistered from its BaseSpringSystem so it
+   * won't be iterated anymore and will clear its set of listeners. Do not use the Spring after
+   * calling this, doing so may just cause an exception to be thrown.
    */
   public void destroy() {
     mListeners.clear();
@@ -76,6 +74,7 @@ public class Spring {
 
   /**
    * get the unique id for this spring
+   *
    * @return the unique id
    */
   public String getId() {
@@ -84,6 +83,7 @@ public class Spring {
 
   /**
    * set the config class
+   *
    * @param springConfig config class for the spring
    * @return this Spring instance for chaining
    */
@@ -97,6 +97,7 @@ public class Spring {
 
   /**
    * retrieve the spring config for this spring
+   *
    * @return the SpringConfig applied to this spring
    */
   public SpringConfig getSpringConfig() {
@@ -104,10 +105,10 @@ public class Spring {
   }
 
   /**
-   * Set the displaced value to determine the displacement for the spring from the rest value.
-   * This value is retained and used to calculate the displacement ratio.
-   * The default signature also sets the Spring at rest to facilitate the common behavior of moving
-   * a spring to a new position.
+   * Set the displaced value to determine the displacement for the spring from the rest value. This
+   * value is retained and used to calculate the displacement ratio. The default signature also sets
+   * the Spring at rest to facilitate the common behavior of moving a spring to a new position.
+   *
    * @param currentValue the new start and current value for the spring
    * @return the spring for chaining
    */
@@ -118,12 +119,13 @@ public class Spring {
   /**
    * The full signature for setCurrentValue includes the option of not setting the spring at rest
    * after updating its currentValue. Passing setAtRest false means that if the endValue of the
-   * spring is not equal to the currentValue, the physics system will start iterating to resolve
-   * the spring to the end value. This is almost never the behavior that you want, so the default
+   * spring is not equal to the currentValue, the physics system will start iterating to resolve the
+   * spring to the end value. This is almost never the behavior that you want, so the default
    * setCurrentValue signature passes true.
+   *
    * @param currentValue the new start and current value for the spring
-   * @param setAtRest optionally set the spring at rest after updating its current value.
-   *                  see {@link com.facebook.rebound.Spring#setAtRest()}
+   * @param setAtRest optionally set the spring at rest after updating its current value. see {@link
+   *     com.facebook.rebound.Spring#setAtRest()}
    * @return the spring for chaining
    */
   public Spring setCurrentValue(double currentValue, boolean setAtRest) {
@@ -140,6 +142,7 @@ public class Spring {
 
   /**
    * Get the displacement value from the last time setCurrentValue was called.
+   *
    * @return displacement value
    */
   public double getStartValue() {
@@ -148,6 +151,7 @@ public class Spring {
 
   /**
    * Get the current
+   *
    * @return current value
    */
   public double getCurrentValue() {
@@ -156,6 +160,7 @@ public class Spring {
 
   /**
    * get the displacement of the springs current value from its rest value.
+   *
    * @return the distance displaced by
    */
   public double getCurrentDisplacementDistance() {
@@ -164,6 +169,7 @@ public class Spring {
 
   /**
    * get the displacement from rest for a given physics state
+   *
    * @param state the state to measure from
    * @return the distance displaced by
    */
@@ -173,6 +179,7 @@ public class Spring {
 
   /**
    * set the rest value to determine the displacement for the spring
+   *
    * @param endValue the endValue for the spring
    * @return the spring for chaining
    */
@@ -190,6 +197,7 @@ public class Spring {
 
   /**
    * get the rest value used for determining the displacement of the spring
+   *
    * @return the rest value for the spring
    */
   public double getEndValue() {
@@ -198,6 +206,7 @@ public class Spring {
 
   /**
    * set the velocity on the spring in pixels per second
+   *
    * @param velocity velocity value
    * @return the spring for chaining
    */
@@ -211,6 +220,7 @@ public class Spring {
 
   /**
    * get the velocity of the spring
+   *
    * @return the current velocity
    */
   public double getVelocity() {
@@ -219,6 +229,7 @@ public class Spring {
 
   /**
    * Sets the speed at which the spring should be considered at rest.
+   *
    * @param restSpeedThreshold speed pixels per second
    * @return the spring for chaining
    */
@@ -229,6 +240,7 @@ public class Spring {
 
   /**
    * Returns the speed at which the spring should be considered at rest in pixels per second
+   *
    * @return speed in pixels per second
    */
   public double getRestSpeedThreshold() {
@@ -237,6 +249,7 @@ public class Spring {
 
   /**
    * set the threshold of displacement from rest below which the spring should be considered at rest
+   *
    * @param displacementFromRestThreshold displacement to consider resting below
    * @return the spring for chaining
    */
@@ -247,6 +260,7 @@ public class Spring {
 
   /**
    * get the threshold of displacement from rest below which the spring should be considered at rest
+   *
    * @return displacement to consider resting below
    */
   public double getRestDisplacementThreshold() {
@@ -255,6 +269,7 @@ public class Spring {
 
   /**
    * Force the spring to clamp at its end value to avoid overshooting the target value.
+   *
    * @param overshootClampingEnabled whether or not to enable overshoot clamping
    * @return the spring for chaining
    */
@@ -265,6 +280,7 @@ public class Spring {
 
   /**
    * Check if overshoot clamping is enabled.
+   *
    * @return is overshoot clamping enabled
    */
   public boolean isOvershootClampingEnabled() {
@@ -273,19 +289,20 @@ public class Spring {
 
   /**
    * Check if the spring is overshooting beyond its target.
+   *
    * @return true if the spring is overshooting its target
    */
   public boolean isOvershooting() {
-    return mSpringConfig.tension > 0 &&
-           ((mStartValue < mEndValue && getCurrentValue() > mEndValue) ||
-           (mStartValue > mEndValue && getCurrentValue() < mEndValue));
+    return mSpringConfig.tension > 0
+        && ((mStartValue < mEndValue && getCurrentValue() > mEndValue)
+            || (mStartValue > mEndValue && getCurrentValue() < mEndValue));
   }
 
   /**
    * advance the physics simulation in SOLVER_TIMESTEP_SEC sized chunks to fulfill the required
-   * realTimeDelta.
-   * The math is inlined inside the loop since it made a huge performance impact when there are
-   * several springs being advanced.
+   * realTimeDelta. The math is inlined inside the loop since it made a huge performance impact when
+   * there are several springs being advanced.
+   *
    * @param realDeltaTime clock drift
    */
   public void advance(double realDeltaTime) {
@@ -371,8 +388,8 @@ public class Spring {
       dAcceleration = (tension * (mEndValue - tempPosition)) - friction * tempVelocity;
 
       // Take the weighted sum of the 4 derivatives as the final output.
-      dxdt = 1.0/6.0 * (aVelocity + 2.0 * (bVelocity + cVelocity) + dVelocity);
-      dvdt = 1.0/6.0 * (aAcceleration + 2.0 * (bAcceleration + cAcceleration) + dAcceleration);
+      dxdt = 1.0 / 6.0 * (aVelocity + 2.0 * (bVelocity + cVelocity) + dVelocity);
+      dvdt = 1.0 / 6.0 * (aAcceleration + 2.0 * (bAcceleration + cAcceleration) + dAcceleration);
 
       position += dxdt * SOLVER_TIMESTEP_SEC;
       velocity += dvdt * SOLVER_TIMESTEP_SEC;
@@ -447,8 +464,9 @@ public class Spring {
   }
 
   /**
-   * Check if this spring should be advanced by the system.  * The rule is if the spring is
-   * currently at rest and it was at rest in the previous advance, the system can skip this spring
+   * Check if this spring should be advanced by the system. * The rule is if the spring is currently
+   * at rest and it was at rest in the previous advance, the system can skip this spring
+   *
    * @return should the system process this spring
    */
   public boolean systemShouldAdvance() {
@@ -458,6 +476,7 @@ public class Spring {
   /**
    * Check if the spring was at rest in the prior iteration. This is used for ensuring the ending
    * callbacks are fired as the spring comes to a rest.
+   *
    * @return true if the spring was at rest in the prior iteration
    */
   public boolean wasAtRest() {
@@ -466,17 +485,19 @@ public class Spring {
 
   /**
    * check if the current state is at rest
+   *
    * @return is the spring at rest
    */
   public boolean isAtRest() {
-    return Math.abs(mCurrentState.velocity) <= mRestSpeedThreshold &&
-        (getDisplacementDistanceForState(mCurrentState) <= mDisplacementFromRestThreshold ||
-         mSpringConfig.tension == 0);
+    return Math.abs(mCurrentState.velocity) <= mRestSpeedThreshold
+        && (getDisplacementDistanceForState(mCurrentState) <= mDisplacementFromRestThreshold
+            || mSpringConfig.tension == 0);
   }
 
   /**
    * Set the spring to be at rest by making its end value equal to its current value and setting
    * velocity to 0.
+   *
    * @return this object
    */
   public Spring setAtRest() {
@@ -489,17 +510,19 @@ public class Spring {
   /**
    * linear interpolation between the previous and current physics state based on the amount of
    * timestep remaining after processing the rendering delta time in timestep sized chunks.
+   *
    * @param alpha from 0 to 1, where 0 is the previous state, 1 is the current state
    */
   private void interpolate(double alpha) {
-    mCurrentState.position = mCurrentState.position * alpha + mPreviousState.position *(1-alpha);
-    mCurrentState.velocity = mCurrentState.velocity * alpha + mPreviousState.velocity *(1-alpha);
+    mCurrentState.position = mCurrentState.position * alpha + mPreviousState.position * (1 - alpha);
+    mCurrentState.velocity = mCurrentState.velocity * alpha + mPreviousState.velocity * (1 - alpha);
   }
 
-  /** listeners **/
+  /** listeners * */
 
   /**
    * add a listener
+   *
    * @param newListener to add
    * @return the spring for chaining
    */
@@ -513,6 +536,7 @@ public class Spring {
 
   /**
    * remove a listener
+   *
    * @param listenerToRemove to remove
    * @return the spring for chaining
    */
@@ -526,6 +550,7 @@ public class Spring {
 
   /**
    * remove all of the listeners
+   *
    * @return the spring for chaining
    */
   public Spring removeAllListeners() {
@@ -536,9 +561,10 @@ public class Spring {
   /**
    * This method checks to see that the current spring displacement value is equal to the input,
    * accounting for the spring's rest displacement threshold.
+   *
    * @param value The value to compare the spring value to
    * @return Whether the displacement value from the spring is within the bounds of the compare
-   * value, accounting for threshold
+   *     value, accounting for threshold
    */
   public boolean currentValueIsApproximately(double value) {
     return Math.abs(getCurrentValue() - value) <= getRestDisplacementThreshold();

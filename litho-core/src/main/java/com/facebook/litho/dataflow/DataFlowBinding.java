@@ -22,15 +22,15 @@ package com.facebook.litho.dataflow;
  * layout value, and output values could be the X/Y position of a View or its opacity. Input and
  * output values can be connected to each other via intermediate operators like springs or timing.
  *
- * A DataFlowBinding may represent a single one of these relationships, or a set of these
+ * <p>A DataFlowBinding may represent a single one of these relationships, or a set of these
  * relationships.
  */
 public interface DataFlowBinding {
 
   /**
-   * Activates a binding, adding the sub-graph defined by this binding to the main
-   * {@link DataFlowGraph} associated with this binding. This is expected to be called from
-   * framework code and should not be called by the end developer.
+   * Activates a binding, adding the sub-graph defined by this binding to the main {@link
+   * DataFlowGraph} associated with this binding. This is expected to be called from framework code
+   * and should not be called by the end developer.
    */
   void activate();
 
@@ -42,13 +42,9 @@ public interface DataFlowBinding {
    */
   void deactivate();
 
-  /**
-   * @return whether this binding has been activated and not yet deactivated.
-   */
+  /** @return whether this binding has been activated and not yet deactivated. */
   boolean isActive();
 
-  /**
-   * Sets the {@link BindingListener}.
-   */
+  /** Sets the {@link BindingListener}. */
   void setListener(BindingListener bindingListener);
 }

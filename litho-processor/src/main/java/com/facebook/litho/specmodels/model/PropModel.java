@@ -25,9 +25,7 @@ import java.util.List;
 import java.util.Objects;
 import javax.annotation.concurrent.Immutable;
 
-/**
- * Model that is an abstract representation of a {@link com.facebook.litho.annotations.Prop}.
- */
+/** Model that is an abstract representation of a {@link com.facebook.litho.annotations.Prop}. */
 @Immutable
 public class PropModel implements MethodParamModel {
   private final MethodParamModel mParamModel;
@@ -115,7 +113,7 @@ public class PropModel implements MethodParamModel {
 
   /**
    * @return true if this prop has a default specified in the given set of defaults, false
-   * otherwise.
+   *     otherwise.
    */
   public boolean hasDefault(ImmutableList<PropDefaultModel> propDefaults) {
     for (PropDefaultModel propDefault : propDefaults) {

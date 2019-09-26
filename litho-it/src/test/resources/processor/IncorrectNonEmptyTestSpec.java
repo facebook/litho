@@ -23,5 +23,6 @@ import java.util.List;
 @TestSpec(com.facebook.litho.processor.integration.resources.BasicLayoutSpec.class)
 public interface IncorrectNonEmptyTestSpec {
   void test();
+
   List<Integer> list();
 }

@@ -31,8 +31,10 @@ import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.BindDynamicValueMethod;
 import com.facebook.litho.specmodels.model.CachedValueParamModel;
 import com.facebook.litho.specmodels.model.ClassNames;
+import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import com.facebook.litho.specmodels.model.EventDeclarationModel;
 import com.facebook.litho.specmodels.model.EventMethod;
+import com.facebook.litho.specmodels.model.InjectPropModel;
 import com.facebook.litho.specmodels.model.InterStageInputParamModel;
 import com.facebook.litho.specmodels.model.MethodParamModel;
 import com.facebook.litho.specmodels.model.PropModel;
@@ -281,11 +283,15 @@ public class ComponentBodyGenerator {
       typeSpecDataHolder.addTypeSpecDataHolder(
           specModel
               .getDependencyInjectionHelper()
-              .generateInjectedFields(specModel.getInjectProps()));
+              .generateInjectedFields(specModel, specModel.getInjectProps()));
 
       final List<MethodSpec> testAccessors =
           specModel.getInjectProps().stream()
-              .map(p -> specModel.getDependencyInjectionHelper().generateTestingFieldAccessor(p))
+              .map(
+                  p ->
+                      specModel
+                          .getDependencyInjectionHelper()
+                          .generateTestingFieldAccessor(specModel, p))
               .collect(Collectors.toList());
       typeSpecDataHolder.addMethods(testAccessors);
     }
@@ -796,6 +802,12 @@ public class ComponentBodyGenerator {
         && ((PropModel) methodParamModel).isDynamic()
         && !shallow) {
       return "retrieveValue(" + methodParamModel.getName() + ")";
+    } else if (methodParamModel instanceof InjectPropModel) {
+      DependencyInjectionHelper dependencyInjectionHelper =
+          specModel.getDependencyInjectionHelper();
+      if (dependencyInjectionHelper != null) {
+        return dependencyInjectionHelper.generateImplAccessor(specModel, methodParamModel);
+      }
     }
 
     return methodParamModel.getName();

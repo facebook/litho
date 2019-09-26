@@ -54,14 +54,10 @@ public class MountStateRemountTest {
 
   @Test
   public void testRemountSameLayoutState() {
-    final TestComponent component1 = create(mContext)
-        .build();
-    final TestComponent component2 = create(mContext)
-        .build();
-    final TestComponent component3 = create(mContext)
-        .build();
-    final TestComponent component4 = create(mContext)
-        .build();
+    final TestComponent component1 = create(mContext).build();
+    final TestComponent component2 = create(mContext).build();
+    final TestComponent component3 = create(mContext).build();
+    final TestComponent component4 = create(mContext).build();
 
     final LithoView lithoView =
         mountComponent(
@@ -95,8 +91,8 @@ public class MountStateRemountTest {
 
   /**
    * There was a crash when mounting a drawing in place of a view. This test is here to make sure
-   * this does not regress. To reproduce this crash the pools needed to be in a specific state
-   * as view layout outputs and mount items were being re-used for drawables.
+   * this does not regress. To reproduce this crash the pools needed to be in a specific state as
+   * view layout outputs and mount items were being re-used for drawables.
    */
   @Test
   public void testRemountDifferentMountType() throws IllegalAccessException, NoSuchFieldException {
@@ -111,12 +107,8 @@ public class MountStateRemountTest {
   public void testRemountNewLayoutState() {
     final TestComponent component1 = create(mContext).color(Color.RED).build();
     final TestComponent component2 = create(mContext).color(Color.BLUE).build();
-    final TestComponent component3 = create(mContext)
-        .unique()
-        .build();
-    final TestComponent component4 = create(mContext)
-        .unique()
-        .build();
+    final TestComponent component3 = create(mContext).unique().build();
+    final TestComponent component4 = create(mContext).unique().build();
 
     final LithoView lithoView =
         mountComponent(
@@ -161,14 +153,10 @@ public class MountStateRemountTest {
 
   @Test
   public void testRemountPartiallyDifferentLayoutState() {
-    final TestComponent component1 = create(mContext)
-        .build();
-    final TestComponent component2 = create(mContext)
-        .build();
-    final TestComponent component3 = create(mContext)
-        .build();
-    final TestComponent component4 = create(mContext)
-        .build();
+    final TestComponent component1 = create(mContext).build();
+    final TestComponent component2 = create(mContext).build();
+    final TestComponent component3 = create(mContext).build();
+    final TestComponent component4 = create(mContext).build();
 
     final LithoView lithoView =
         mountComponent(
@@ -371,8 +359,7 @@ public class MountStateRemountTest {
   }
 
   private static void clearPool(String name) {
-    final RecyclePool<?> pool =
-        Whitebox.getInternalState(ComponentsPools.class, name);
+    final RecyclePool<?> pool = Whitebox.getInternalState(ComponentsPools.class, name);
 
     while (pool.acquire() != null) {
       // Run.

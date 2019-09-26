@@ -46,8 +46,8 @@ public class TreePropSectionTest {
   }
 
   /**
-   * Tests that a TreeProp is propagated down a Section Tree,
-   * is scoped correctly, and can be overwritten.
+   * Tests that a TreeProp is propagated down a Section Tree, is scoped correctly, and can be
+   * overwritten.
    */
   @Test
   public void testTreePropsPropagated() {
@@ -59,13 +59,14 @@ public class TreePropSectionTest {
     final TreePropStringType treePropBChanged = new TreePropStringType("propB_changed");
 
     final SectionTree tree = SectionTree.create(mContext, new TestTarget()).build();
-    tree.setRoot(TreePropSectionTestParentGroup.create(mContext)
-        .propA(treePropA)
-        .propB(treePropB)
-        .resultPropALeaf1(propALeaf1)
-        .resultPropBLeaf1(propBLeaf1)
-        .resultPropBLeaf2(propBLeaf2)
-        .build());
+    tree.setRoot(
+        TreePropSectionTestParentGroup.create(mContext)
+            .propA(treePropA)
+            .propB(treePropB)
+            .resultPropALeaf1(propALeaf1)
+            .resultPropBLeaf1(propBLeaf1)
+            .resultPropBLeaf2(propBLeaf2)
+            .build());
 
     assertThat(propALeaf1.mProp).isEqualTo(treePropA);
     // TreePropSectionTestMiddleGroupSpec modifies "propB".

@@ -33,6 +33,7 @@ import com.intellij.psi.PsiJavaFile;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeSpec;
 import javax.annotation.Nullable;
+import org.jetbrains.annotations.Contract;
 
 /**
  * Utility class helping to create {@link LayoutSpecModel}s from the given file and update generated
@@ -82,29 +83,7 @@ public class ComponentGenerateUtils {
    */
   private static boolean updateComponent(
       Project project, String qualifiedSpecName, SpecModel specModel) {
-    return LithoPluginUtils.findComponentFile(qualifiedSpecName, project)
-        .map(
-            componentFile -> {
-              Document componentDocument =
-                  PsiDocumentManager.getInstance(project).getDocument(componentFile);
-              if (componentDocument == null) {
-                return false;
-              }
-              TypeSpec typeSpec = specModel.generate(RunMode.normal());
-              String content =
-                  JavaFile.builder(componentFile.getPackageName(), typeSpec)
-                      .skipJavaLangImports(true)
-                      .build()
-                      .toString();
-              if (content.equals(componentDocument.getText())) {
-                return false;
-              }
-              componentDocument.setText(content);
-              PsiDocumentManager.getInstance(project)
-                  .doPostponedOperationsAndUnblockDocument(componentDocument);
-              return true;
-            })
-        .orElse(false);
+    return new ComponentUpdater(project, specModel).tryCreate(qualifiedSpecName).length > 0;
   }
 
   /** Example usage: new ComponentUpdater(project, specModel).tryCreate(qualifiedSpecName); */
@@ -120,12 +99,32 @@ public class ComponentGenerateUtils {
 
     @Override
     protected PsiElement[] create(String qualifiedSpecName) {
-      return LithoPluginUtils.findComponentFile(qualifiedSpecName, project)
+      return LithoPluginUtils.findGeneratedFile(qualifiedSpecName, project)
           .map(componentFile -> updateFileWithModel(componentFile, model))
-          .map(psiClass -> new PsiElement[] {psiClass})
+          .map(createdClass -> doPostponedOperationsAndUnblockDocument(createdClass, project))
+          .map(createdClass -> new PsiElement[] {createdClass})
           .orElse(PsiElement.EMPTY_ARRAY);
     }
 
+    /**
+     * Applies pending changes made through the PSI to the document.
+     *
+     * @param createdClass the PSI class for which the Document is requested.
+     * @param project the project for which the document manager is requested.
+     * @return createdClass.
+     */
+    @Contract("_, _ -> param1")
+    private static PsiClass doPostponedOperationsAndUnblockDocument(
+        PsiClass createdClass, Project project) {
+      PsiDocumentManager psiDocumentManager = PsiDocumentManager.getInstance(project);
+      Document document = psiDocumentManager.getDocument(createdClass.getContainingFile());
+      if (document != null) {
+        psiDocumentManager.doPostponedOperationsAndUnblockDocument(document);
+      }
+      return createdClass;
+    }
+
+    @Nullable
     private static PsiClass updateFileWithModel(PsiJavaFile componentFile, SpecModel model) {
       PsiDirectory targetDirectory = componentFile.getContainingDirectory();
       String packageName = componentFile.getPackageName();
@@ -135,6 +134,10 @@ public class ComponentGenerateUtils {
       TypeSpec typeSpec = model.generate(RunMode.normal());
       String content =
           JavaFile.builder(packageName, typeSpec).skipJavaLangImports(true).build().toString();
+
+      if (content.equals(componentFile.getText())) {
+        return null;
+      }
 
       // Invokes PsiDirectory#add method, shouldn't be called on EventDispatch Thread
       return JavaCreateFromTemplateHandler.createClassOrInterface(

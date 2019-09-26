@@ -40,6 +40,22 @@ public class LithoPluginUtilsFileTest extends LithoPluginIntellijTest {
           return true;
         },
         "LayoutSpec.java",
-        "OtherSpec.java");
+        "MountSpec.java");
+  }
+
+  @Test
+  public void isLayoutSpec() {
+    testHelper.getPsiClass(
+        psiClasses -> {
+          Assert.assertNotNull(psiClasses);
+          PsiClass layoutCls = psiClasses.get(0);
+          PsiClass otherCls = psiClasses.get(1);
+
+          Assert.assertTrue(LithoPluginUtils.isLayoutSpec(layoutCls));
+          Assert.assertFalse(LithoPluginUtils.isLayoutSpec(otherCls));
+          return true;
+        },
+        "LayoutSpec.java",
+        "MountSpec.java");
   }
 }

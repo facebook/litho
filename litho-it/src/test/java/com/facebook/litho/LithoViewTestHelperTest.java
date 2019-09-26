@@ -36,8 +36,8 @@ import org.robolectric.RuntimeEnvironment;
 public class LithoViewTestHelperTest {
   @Before
   public void skipIfRelease() {
-    Assume.assumeTrue("These tests cover debug functionality and can only be run " +
-            "for internal builds.",
+    Assume.assumeTrue(
+        "These tests cover debug functionality and can only be run " + "for internal builds.",
         ComponentsConfiguration.IS_INTERNAL_BUILD);
   }
 
@@ -58,9 +58,7 @@ public class LithoViewTestHelperTest {
 
     final LithoView lithoView = new LithoView(RuntimeEnvironment.application);
     lithoView.setComponent(component);
-    lithoView.measure(
-        makeMeasureSpec(0, UNSPECIFIED),
-        makeMeasureSpec(0, UNSPECIFIED));
+    lithoView.measure(makeMeasureSpec(0, UNSPECIFIED), makeMeasureSpec(0, UNSPECIFIED));
 
     final String string = LithoViewTestHelper.viewToString(lithoView);
 
@@ -89,9 +87,7 @@ public class LithoViewTestHelperTest {
 
     final LithoView lithoView = new LithoView(RuntimeEnvironment.application);
     lithoView.setComponent(component);
-    lithoView.measure(
-        makeMeasureSpec(0, UNSPECIFIED),
-        makeMeasureSpec(0, UNSPECIFIED));
+    lithoView.measure(makeMeasureSpec(0, UNSPECIFIED), makeMeasureSpec(0, UNSPECIFIED));
     lithoView.layout(0, 0, lithoView.getMeasuredWidth(), lithoView.getMeasuredHeight());
 
     final String string = LithoViewTestHelper.viewToString(lithoView);

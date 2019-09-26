@@ -20,9 +20,7 @@ import com.facebook.infer.annotation.ReturnsOwnership;
 import com.facebook.infer.annotation.ThreadSafe;
 import javax.annotation.Nullable;
 
-/**
- * Type for parameters that are logical outputs.
- */
+/** Type for parameters that are logical outputs. */
 public class Output<T> {
   private @Nullable T mT;
 

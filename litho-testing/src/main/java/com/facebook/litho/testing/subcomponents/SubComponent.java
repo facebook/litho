@@ -20,8 +20,8 @@ import com.facebook.litho.Component;
 import org.assertj.core.api.Condition;
 
 /**
- * Allows convenient type matching comparison for instances of {@link Component}s.
- * Useful for verifying the existence of sub-components that are part of a layout.
+ * Allows convenient type matching comparison for instances of {@link Component}s. Useful for
+ * verifying the existence of sub-components that are part of a layout.
  */
 public class SubComponent {
 
@@ -66,7 +66,7 @@ public class SubComponent {
 
   @Override
   public String toString() {
-    return mComponentType.toString() + " [" + super.toString() +"]";
+    return mComponentType.toString();
   }
 
   /**
@@ -74,15 +74,16 @@ public class SubComponent {
    * just ignore them.
    */
   private static boolean arePropsEqual(Component thatComponent, Component thisComponent) {
-    return thatComponent == null ||
-        thisComponent == null ||
-        thatComponent.isEquivalentTo(thisComponent);
+    return thatComponent == null
+        || thisComponent == null
+        || thatComponent.isEquivalentTo(thisComponent);
   }
 
   /**
    * Use an old-style {@link SubComponent} in an assertj Condition.
    *
-   * For instance:
+   * <p>For instance:
+   *
    * <pre><code>
    *   assertThat(c, mComponent)
    *    .has(

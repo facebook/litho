@@ -15,8 +15,6 @@
  */
 package com.facebook.litho.intellij.completion;
 
-import static com.intellij.patterns.StandardPatterns.or;
-
 import com.facebook.litho.intellij.LithoClassNames;
 import com.facebook.litho.intellij.LithoPluginUtils;
 import com.facebook.litho.intellij.PsiSearchUtils;
@@ -27,48 +25,22 @@ import com.intellij.codeInsight.completion.CompletionParameters;
 import com.intellij.codeInsight.completion.CompletionProvider;
 import com.intellij.codeInsight.completion.CompletionResultSet;
 import com.intellij.codeInsight.completion.CompletionType;
+import com.intellij.codeInsight.completion.InsertHandler;
+import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
-import com.intellij.lang.java.JavaLanguage;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.Iconable;
-import com.intellij.patterns.ElementPattern;
-import com.intellij.patterns.PlatformPatterns;
 import com.intellij.psi.JavaPsiFacade;
-import com.intellij.psi.PsiAnnotation;
 import com.intellij.psi.PsiClass;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiIdentifier;
 import com.intellij.psi.PsiMethod;
-import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.ProcessingContext;
 import java.util.Collections;
-import javax.swing.Icon;
 import org.jetbrains.annotations.NotNull;
 
 /** Contributor suggests completion for the Click event in the Litho Spec. */
 public class OnEventCompletionContributor extends CompletionContributor {
 
   public OnEventCompletionContributor() {
-    extend(
-        CompletionType.BASIC,
-        or(annotationInClass(), annotationAboveMethod()),
-        typeCompletionProvider());
-  }
-
-  private static ElementPattern<? extends PsiElement> annotationAboveMethod() {
-    // PsiIdentifier -> PsiJavaCodeReference -> PsiAnnotation -> PsiModifierList -> PsiMethod
-    return PlatformPatterns.psiElement(PsiIdentifier.class)
-        .withSuperParent(2, PsiAnnotation.class)
-        .withSuperParent(4, PsiMethod.class)
-        .withLanguage(JavaLanguage.INSTANCE);
-  }
-
-  private static ElementPattern<? extends PsiElement> annotationInClass() {
-    // PsiIdentifier -> PsiJavaCodeReference -> PsiAnnotation -> PsiModifierList -> PsiClass
-    return PlatformPatterns.psiElement(PsiIdentifier.class)
-        .withSuperParent(2, PsiAnnotation.class)
-        .withSuperParent(4, PsiClass.class)
-        .withLanguage(JavaLanguage.INSTANCE);
+    extend(CompletionType.BASIC, CompletionUtils.METHOD_ANNOTATION, typeCompletionProvider());
   }
 
   private static CompletionProvider<CompletionParameters> typeCompletionProvider() {
@@ -78,74 +50,65 @@ public class OnEventCompletionContributor extends CompletionContributor {
           @NotNull CompletionParameters parameters,
           ProcessingContext context,
           @NotNull CompletionResultSet result) {
-        PsiElement element = parameters.getPosition();
-        PsiElement parentElement = PsiTreeUtil.findFirstParent(element, PsiClass.class::isInstance);
-        if (parentElement == null) {
-          return;
-        }
-        PsiClass lithoSpecCls = (PsiClass) parentElement;
-        if (!LithoPluginUtils.isLithoSpec(lithoSpecCls)) {
-          return;
-        }
-        PsiMethod onEventMethod = createOnClickEventMethod(lithoSpecCls);
-        result.addElement(createMethodAnnotationLookup(onEventMethod, lithoSpecCls));
-      }
-
-      private PsiMethod createOnClickEventMethod(PsiClass context) {
-        Project project = context.getProject();
-        PsiClass clickEventClass =
-            PsiSearchUtils.findClass(project, LithoClassNames.CLICK_EVENT_CLASS_NAME);
-        if (clickEventClass == null) {
-          clickEventClass =
-              JavaPsiFacade.getElementFactory(project)
-                  .createClass(LithoClassNames.shortName(LithoClassNames.CLICK_EVENT_CLASS_NAME));
-        }
-        return OnEventGenerateUtils.createOnEventMethod(
-            context, clickEventClass, Collections.emptyList());
+        CompletionUtils.findFirstParent(parameters.getPosition(), LithoPluginUtils::isLithoSpec)
+            .ifPresent(
+                lithoSpecCls -> {
+                  PsiClass clickEventCls =
+                      getOrCreateClass(
+                          lithoSpecCls.getProject(), LithoClassNames.CLICK_EVENT_CLASS_NAME);
+                  result.addElement(
+                      createMethodLookup(
+                          OnEventGenerateUtils.createOnEventMethod(
+                              lithoSpecCls, clickEventCls, Collections.emptyList()),
+                          clickEventCls,
+                          OnEventGenerateUtils.createOnEventLookupString(clickEventCls)));
+                });
       }
     };
   }
 
-  private static LookupElementBuilder createMethodAnnotationLookup(
-      PsiMethod method, PsiClass parentClass) {
-    Icon icon = method.getIcon(Iconable.ICON_FLAG_VISIBILITY);
-    LookupElementBuilder elementBuilder =
-        LookupElementBuilder.create(method)
-            .withInsertHandler(
-                (insertionContext, item) -> {
-                  // Remove lookup string. As in the JavaGenerateMemberCompletionContributor
-                  insertionContext
-                      .getDocument()
-                      .deleteString(
-                          insertionContext.getStartOffset() - 1, insertionContext.getTailOffset());
-                  insertionContext.commitDocument();
-
-                  // Insert generation infos
-                  new MethodGenerateHandler(method)
-                      .invoke(
-                          insertionContext.getProject(),
-                          insertionContext.getEditor(),
-                          insertionContext.getFile());
-
-                  LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_ON_EVENT_COMPLETION);
-                  ComponentGenerateUtils.updateLayoutComponent(parentClass);
-                })
-            .appendTailText(" {...}", true)
-            .withTypeText(getTypeText(parentClass))
-            .withIcon(icon);
-
-    PsiAnnotation[] annotations = method.getAnnotations();
-    if (annotations.length > 0) {
-      String annotationName = annotations[0].getQualifiedName();
-      if (annotationName != null) {
-        annotationName = LithoClassNames.shortName(annotationName);
-        elementBuilder = elementBuilder.withLookupString(annotationName);
-      }
+  private static PsiClass getOrCreateClass(Project project, String qualifiedClassName) {
+    PsiClass cls = PsiSearchUtils.findClass(project, qualifiedClassName);
+    if (cls == null) {
+      cls =
+          JavaPsiFacade.getElementFactory(project)
+              .createClass(LithoClassNames.shortName(qualifiedClassName));
     }
-    return elementBuilder;
+    return cls;
   }
 
-  private static String getTypeText(PsiClass parentClass) {
-    return LithoPluginUtils.hasLithoSectionAnnotation(parentClass) ? "SectionSpec" : "LayoutSpec";
+  private static LookupElementBuilder createMethodLookup(
+      PsiMethod method, PsiClass documentationCls, String lookupString) {
+    return LookupElementBuilder.createWithIcon(method)
+        .withPresentableText(lookupString)
+        .withLookupString(lookupString)
+        .withCaseSensitivity(false)
+        .withInsertHandler(getOnEventInsertHandler(method))
+        .appendTailText(" {...}", true)
+        .withTypeText("Litho", true)
+        .withPsiElement(documentationCls);
+  }
+
+  /** Creates handler to insert given method in the lookup element insertion context. */
+  private static InsertHandler<LookupElement> getOnEventInsertHandler(PsiMethod method) {
+    return (insertionContext, item) -> {
+      // Remove lookup string. As in the JavaGenerateMemberCompletionContributor
+      insertionContext
+          .getDocument()
+          .deleteString(insertionContext.getStartOffset() - 1, insertionContext.getTailOffset());
+      insertionContext.commitDocument();
+
+      // Insert generation infos
+      new MethodGenerateHandler(method)
+          .invoke(
+              insertionContext.getProject(),
+              insertionContext.getEditor(),
+              insertionContext.getFile());
+
+      LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_ON_EVENT_COMPLETION);
+
+      LithoPluginUtils.getFirstLayoutSpec(insertionContext.getFile())
+          .ifPresent(ComponentGenerateUtils::updateLayoutComponent);
+    };
   }
 }

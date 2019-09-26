@@ -25,18 +25,18 @@ import java.util.Map;
 import javax.annotation.Nullable;
 
 /**
- * A single node in a {@link DataFlowGraph}. Nodes are added to a {@link DataFlowGraph} using
- * by creating a {@link GraphBinding} and calling {@link GraphBinding#addBinding}. The nodes will
+ * A single node in a {@link DataFlowGraph}. Nodes are added to a {@link DataFlowGraph} using by
+ * creating a {@link GraphBinding} and calling {@link GraphBinding#addBinding}. The nodes will
  * actually be added to the graph when {@link GraphBinding#activate} is called.
  *
- * The nodes in an active graph are visited on each frame in dependency order and given a chance to
- * compute a new value based on frame time and their parent (dependency) nodes.
+ * <p>The nodes in an active graph are visited on each frame in dependency order and given a chance
+ * to compute a new value based on frame time and their parent (dependency) nodes.
  *
- * A ValueNode should be able to return its latest value at any point in time.
+ * <p>A ValueNode should be able to return its latest value at any point in time.
  *
- * Sub-classes are expected to implement {@link #calculateValue}, which handles calculating
- * the new value for this frame based on the node's parents (i.e. nodes it depends on) and the
- * current frame time.
+ * <p>Sub-classes are expected to implement {@link #calculateValue}, which handles calculating the
+ * new value for this frame based on the node's parents (i.e. nodes it depends on) and the current
+ * frame time.
  */
 public abstract class ValueNode {
 
@@ -47,16 +47,12 @@ public abstract class ValueNode {
   private float mValue;
   private long mTimeNs = 0;
 
-  /**
-   * @return the most recently calculated value from {@link #calculateValue}.
-   */
+  /** @return the most recently calculated value from {@link #calculateValue}. */
   public float getValue() {
     return mValue;
   }
 
-  /**
-   * Manually sets the current value.
-   */
+  /** Manually sets the current value. */
   public void setValue(float value) {
     mValue = value;
   }
@@ -68,15 +64,15 @@ public abstract class ValueNode {
    */
   protected abstract float calculateValue(long frameTimeNanos);
 
-  /**
-   * @return the input node for the given input name
-   */
+  /** @return the input node for the given input name */
   protected ValueNode getInput(String name) {
     final ValueNode input = getInputUnsafe(name);
     if (input == null) {
       throw new RuntimeException(
-          "Tried to get non-existent input '" + name + "'. Node only has these inputs: " +
-              buildDebugInputsString());
+          "Tried to get non-existent input '"
+              + name
+              + "'. Node only has these inputs: "
+              + buildDebugInputsString());
     }
     return input;
   }
@@ -91,9 +87,7 @@ public abstract class ValueNode {
     return getInput(DEFAULT_INPUT);
   }
 
-  /**
-   * @return whether this node has an input with the given name
-   */
+  /** @return whether this node has an input with the given name */
   protected boolean hasInput(String name) {
     if (mInputs == null) {
       return false;
@@ -103,7 +97,7 @@ public abstract class ValueNode {
 
   /**
    * @return whether this node has a default input node. This should only be used for nodes that
-   * expect a single input.
+   *     expect a single input.
    */
   protected boolean hasInput() {
     if (getInputCount() > 1) {

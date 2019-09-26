@@ -30,6 +30,7 @@ import com.facebook.samples.litho.hscroll.HorizontalScrollWithSnapActivity;
 import com.facebook.samples.litho.lithography.LithographyActivity;
 import com.facebook.samples.litho.playground.PlaygroundActivity;
 import com.facebook.samples.litho.staticscroll.horizontalscroll.HorizontalScrollActivity;
+import com.facebook.samples.litho.stats.StatsActivity;
 import java.util.Arrays;
 import java.util.List;
 
@@ -57,7 +58,8 @@ public class DemoListActivity extends NavigatableDemoActivity {
                   new DemoListDataModel("Page Indicators", PageIndicatorsActivity.class),
                   new DemoListDataModel("Render Thread", RenderThreadAnimationActivity.class))),
           new DemoListDataModel("Dynamic Props", DynamicPropsActivity.class),
-          new DemoListDataModel("Fast Scroll Handle", FastScrollHandleActivity.class));
+          new DemoListDataModel("Fast Scroll Handle", FastScrollHandleActivity.class),
+          new DemoListDataModel("Litho Stats", StatsActivity.class));
 
   @Override
   public void onCreate(Bundle savedInstanceState) {

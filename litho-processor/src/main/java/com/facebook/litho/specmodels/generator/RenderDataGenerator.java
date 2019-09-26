@@ -17,7 +17,6 @@
 package com.facebook.litho.specmodels.generator;
 
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.PREVIOUS_RENDER_DATA_FIELD_NAME;
-import static com.facebook.litho.specmodels.generator.GeneratorConstants.REF_VARIABLE_NAME;
 
 import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.SpecModel;
@@ -86,12 +85,8 @@ public final class RenderDataGenerator {
             .addStatement("$L = null", PREVIOUS_RENDER_DATA_FIELD_NAME)
             .addStatement("return")
             .endControlFlow()
-            .beginControlFlow(
-                "if ($L == null)", PREVIOUS_RENDER_DATA_FIELD_NAME)
-            .addStatement(
-                "$L = new $T()",
-                PREVIOUS_RENDER_DATA_FIELD_NAME,
-                renderInfoTypeName)
+            .beginControlFlow("if ($L == null)", PREVIOUS_RENDER_DATA_FIELD_NAME)
+            .addStatement("$L = new $T()", PREVIOUS_RENDER_DATA_FIELD_NAME, renderInfoTypeName)
             .endControlFlow()
             .addStatement(
                 "$T $L = ($T) $L",
@@ -99,8 +94,7 @@ public final class RenderDataGenerator {
                 "infoImpl",
                 renderInfoTypeName,
                 "previousRenderData")
-            .addStatement(
-                "$L.copy($L)", PREVIOUS_RENDER_DATA_FIELD_NAME, "infoImpl")
+            .addStatement("$L.copy($L)", PREVIOUS_RENDER_DATA_FIELD_NAME, "infoImpl")
             .build();
 
     return MethodSpec.methodBuilder("applyPreviousRenderData")

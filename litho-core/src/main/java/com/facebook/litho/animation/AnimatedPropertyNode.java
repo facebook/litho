@@ -27,7 +27,7 @@ import javax.annotation.Nullable;
  * A ValueNode that allows getting and/or setting the value of a specific property (x, y, scale,
  * text color, etc) on a given mount content (View or Drawable).
  *
- * If there is no input hooked up to this node, it will output the current value of this property
+ * <p>If there is no input hooked up to this node, it will output the current value of this property
  * on the current mount content. Otherwise, this node will set the property of the given mount
  * content to that input value and pass on that value as an output.
  */

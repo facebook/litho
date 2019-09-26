@@ -25,8 +25,8 @@ import com.facebook.yoga.YogaDirection;
 import javax.annotation.Nullable;
 
 /**
- * Additional information passed between {@link LayoutState} and {@link MountState}
- * used on a {@link View}.
+ * Additional information passed between {@link LayoutState} and {@link MountState} used on a {@link
+ * View}.
  */
 class ViewNodeInfo {
 
@@ -72,8 +72,7 @@ class ViewNodeInfo {
 
   void setPadding(int l, int t, int r, int b) {
     if (mPadding != null) {
-      throw new IllegalStateException("Padding already initialized for this " +
-          "ViewNodeInfo.");
+      throw new IllegalStateException("Padding already initialized for this " + "ViewNodeInfo.");
     }
 
     mPadding = new Rect();
@@ -109,8 +108,8 @@ class ViewNodeInfo {
     }
 
     if (mExpandedTouchBounds != null) {
-      throw new IllegalStateException("ExpandedTouchBounds already initialized for this " +
-          "ViewNodeInfo.");
+      throw new IllegalStateException(
+          "ExpandedTouchBounds already initialized for this " + "ViewNodeInfo.");
     }
 
     mExpandedTouchBounds = new Rect();

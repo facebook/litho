@@ -20,9 +20,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * Annotation for a method that specifies how to animate this component to its new layout
- * and props.
+ * Annotation for a method that specifies how to animate this component to its new layout and props.
  */
 @Retention(RetentionPolicy.SOURCE)
-public @interface OnCreateTransition {
-}
+public @interface OnCreateTransition {}

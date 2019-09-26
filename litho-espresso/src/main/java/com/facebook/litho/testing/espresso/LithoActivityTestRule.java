@@ -21,10 +21,10 @@ import androidx.test.rule.ActivityTestRule;
 import com.facebook.litho.config.ComponentsConfiguration;
 
 /**
- * A test rule like {@link ActivityTestRule} ensuring that the activity is launched in
- * end to end test mode.
+ * A test rule like {@link ActivityTestRule} ensuring that the activity is launched in end to end
+ * test mode.
  *
- * Use in your Espresso tests like this:
+ * <p>Use in your Espresso tests like this:
  *
  * <pre>{@code  @Rule
  * public LithoActivityTestRule<DemoListActivity> mActivity =
@@ -40,8 +40,8 @@ public class LithoActivityTestRule<T extends Activity> extends ActivityTestRule<
     super(activityClass, initialTouchMode);
   }
 
-  public LithoActivityTestRule(Class<T> activityClass, boolean initialTouchMode,
-                               boolean launchActivity) {
+  public LithoActivityTestRule(
+      Class<T> activityClass, boolean initialTouchMode, boolean launchActivity) {
     super(activityClass, initialTouchMode, launchActivity);
   }
 

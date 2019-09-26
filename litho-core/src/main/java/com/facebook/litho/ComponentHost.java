@@ -47,9 +47,9 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * A {@link ViewGroup} that can host the mounted state of a {@link Component}. This is used
- * by {@link MountState} to wrap mounted drawables to handle click events and update drawable
- * states accordingly.
+ * A {@link ViewGroup} that can host the mounted state of a {@link Component}. This is used by
+ * {@link MountState} to wrap mounted drawables to handle click events and update drawable states
+ * accordingly.
  */
 @DoNotStrip
 public class ComponentHost extends ViewGroup {
@@ -129,8 +129,9 @@ public class ComponentHost extends ViewGroup {
 
   /**
    * Mounts the given {@link MountItem} with unique index.
+   *
    * @param index index of the {@link MountItem}. Guaranteed to be the same index as is passed for
-   * the corresponding {@code unmount(index, mountItem)} call.
+   *     the corresponding {@code unmount(index, mountItem)} call.
    * @param mountItem item to be mounted into the host.
    * @param bounds the bounds of the item that is to be mounted into the host
    */
@@ -183,8 +184,9 @@ public class ComponentHost extends ViewGroup {
 
   /**
    * Unmounts the given {@link MountItem} with unique index.
+   *
    * @param index index of the {@link MountItem}. Guaranteed to be the same index as was passed for
-   * the corresponding {@code mount(index, mountItem)} call.
+   *     the corresponding {@code mount(index, mountItem)} call.
    * @param mountItem item to be unmounted from the host.
    */
   public void unmount(int index, MountItem mountItem) {
@@ -275,9 +277,7 @@ public class ComponentHost extends ViewGroup {
       return;
     }
 
-    mTouchExpansionDelegate.moveTouchExpansionIndexes(
-        oldIndex,
-        newIndex);
+    mTouchExpansionDelegate.moveTouchExpansionIndexes(oldIndex, newIndex);
   }
 
   void maybeRegisterTouchExpansion(int index, MountItem mountItem) {
@@ -323,16 +323,12 @@ public class ComponentHost extends ViewGroup {
     mTouchExpansionDelegate.unregisterTouchExpansion(index);
   }
 
-  /**
-   * @return number of {@link MountItem}s that are currently mounted in the host.
-   */
+  /** @return number of {@link MountItem}s that are currently mounted in the host. */
   int getMountItemCount() {
     return mMountItems == null ? 0 : mMountItems.size();
   }
 
-  /**
-   * @return the {@link MountItem} that was mounted with the given index.
-   */
+  /** @return the {@link MountItem} that was mounted with the given index. */
   MountItem getMountItemAt(int index) {
     return mMountItems.valueAt(index);
   }
@@ -347,7 +343,8 @@ public class ComponentHost extends ViewGroup {
   MountItem getAccessibleMountItem() {
     for (int i = 0; i < getMountItemCount(); i++) {
       MountItem item = getMountItemAt(i);
-      if (item.isAccessible()) {
+      // For inexplicable reason, item is null sometimes.
+      if (item != null && item.isAccessible()) {
         return item;
       }
     }
@@ -355,9 +352,7 @@ public class ComponentHost extends ViewGroup {
     return null;
   }
 
-  /**
-   * @return list of drawables that are mounted on this host.
-   */
+  /** @return list of drawables that are mounted on this host. */
   public List<Drawable> getDrawables() {
     if (mDrawableMountItems == null || mDrawableMountItems.size() == 0) {
       return Collections.emptyList();
@@ -387,40 +382,31 @@ public class ComponentHost extends ViewGroup {
     return contentNames;
   }
 
-  /**
-   * @return the text content that is mounted on this host.
-   */
+  /** @return the text content that is mounted on this host. */
   @DoNotStrip
   public TextContent getTextContent() {
     ensureMountItems();
-    return ComponentHostUtils.extractTextContent(
-        ComponentHostUtils.extractContent(mMountItems));
+    return ComponentHostUtils.extractTextContent(ComponentHostUtils.extractContent(mMountItems));
   }
 
-  /**
-   * @return the image content that is mounted on this host.
-   */
+  /** @return the image content that is mounted on this host. */
   public ImageContent getImageContent() {
     ensureMountItems();
-    return ComponentHostUtils.extractImageContent(
-        ComponentHostUtils.extractContent(mMountItems));
+    return ComponentHostUtils.extractImageContent(ComponentHostUtils.extractContent(mMountItems));
   }
 
-  /**
-   * @return the content descriptons that are set on content mounted on this host
-   */
+  /** @return the content descriptons that are set on content mounted on this host */
   @Override
   public CharSequence getContentDescription() {
     return mContentDescription;
   }
 
   /**
-   * Host views implement their own content description handling instead of
-   * just delegating to the underlying view framework for performance reasons as
-   * the framework sets/resets content description very frequently on host views
-   * and the underlying accessibility notifications might cause performance issues.
-   * This is safe to do because the framework owns the accessibility state and
-   * knows how to update it efficiently.
+   * Host views implement their own content description handling instead of just delegating to the
+   * underlying view framework for performance reasons as the framework sets/resets content
+   * description very frequently on host views and the underlying accessibility notifications might
+   * cause performance issues. This is safe to do because the framework owns the accessibility state
+   * and knows how to update it efficiently.
    */
   @Override
   public void setContentDescription(CharSequence contentDescription) {
@@ -449,10 +435,10 @@ public class ComponentHost extends ViewGroup {
 
   /**
    * Moves the MountItem associated to oldIndex in the newIndex position. This happens when a
-   * LithoView needs to re-arrange the internal order of its items. If an item is already
-   * present in newIndex the item is guaranteed to be either unmounted or moved to a different index
-   * by subsequent calls to either {@link ComponentHost#unmount(int, MountItem)} or
-   * {@link ComponentHost#moveItem(MountItem, int, int)}.
+   * LithoView needs to re-arrange the internal order of its items. If an item is already present in
+   * newIndex the item is guaranteed to be either unmounted or moved to a different index by
+   * subsequent calls to either {@link ComponentHost#unmount(int, MountItem)} or {@link
+   * ComponentHost#moveItem(MountItem, int, int)}.
    *
    * @param item The item that has been moved.
    * @param oldIndex The current index of the MountItem.
@@ -506,6 +492,7 @@ public class ComponentHost extends ViewGroup {
 
   /**
    * Sets view tag on this host.
+   *
    * @param viewTag the object to set as tag.
    */
   public void setViewTag(Object viewTag) {
@@ -514,6 +501,7 @@ public class ComponentHost extends ViewGroup {
 
   /**
    * Sets view tags on this host.
+   *
    * @param viewTags the map containing the tags by id.
    */
   public void setViewTags(SparseArray<Object> viewTags) {
@@ -522,6 +510,7 @@ public class ComponentHost extends ViewGroup {
 
   /**
    * Sets a click listener on this host.
+   *
    * @param listener The listener to set on this host.
    */
   void setComponentClickListener(ComponentClickListener listener) {
@@ -529,15 +518,14 @@ public class ComponentHost extends ViewGroup {
     this.setOnClickListener(listener);
   }
 
-  /**
-   * @return The previously set click listener
-   */
+  /** @return The previously set click listener */
   ComponentClickListener getComponentClickListener() {
     return mOnClickListener;
   }
 
   /**
    * Sets a long click listener on this host.
+   *
    * @param listener The listener to set on this host.
    */
   void setComponentLongClickListener(ComponentLongClickListener listener) {
@@ -545,15 +533,14 @@ public class ComponentHost extends ViewGroup {
     this.setOnLongClickListener(listener);
   }
 
-  /**
-   * @return The previously set long click listener
-   */
+  /** @return The previously set long click listener */
   ComponentLongClickListener getComponentLongClickListener() {
     return mOnLongClickListener;
   }
 
   /**
    * Sets a focus change listener on this host.
+   *
    * @param listener The listener to set on this host.
    */
   void setComponentFocusChangeListener(ComponentFocusChangeListener listener) {
@@ -561,15 +548,14 @@ public class ComponentHost extends ViewGroup {
     this.setOnFocusChangeListener(listener);
   }
 
-  /**
-   * @return The previously set focus change listener
-   */
+  /** @return The previously set focus change listener */
   ComponentFocusChangeListener getComponentFocusChangeListener() {
     return mOnFocusChangeListener;
   }
 
   /**
    * Sets a touch listener on this host.
+   *
    * @param listener The listener to set on this host.
    */
   void setComponentTouchListener(ComponentTouchListener listener) {
@@ -578,8 +564,9 @@ public class ComponentHost extends ViewGroup {
   }
 
   /**
-   * Sets an {@link EventHandler} that will be invoked when
-   * {@link ComponentHost#onInterceptTouchEvent} is called.
+   * Sets an {@link EventHandler} that will be invoked when {@link
+   * ComponentHost#onInterceptTouchEvent} is called.
+   *
    * @param interceptTouchEventHandler the handler to be set on this host.
    */
   void setInterceptTouchEventHandler(EventHandler<InterceptTouchEvent> interceptTouchEventHandler) {
@@ -595,18 +582,15 @@ public class ComponentHost extends ViewGroup {
     return super.onInterceptTouchEvent(ev);
   }
 
-  /**
-   * @return The previous set touch listener.
-   */
+  /** @return The previous set touch listener. */
   public ComponentTouchListener getComponentTouchListener() {
     return mOnTouchListener;
   }
 
   /**
-   * This is used to collapse all invalidation calls on hosts during mount.
-   * While invalidations are suppressed, the hosts will simply bail on
-   * invalidations. Once the suppression is turned off, a single invalidation
-   * will be triggered on the affected hosts.
+   * This is used to collapse all invalidation calls on hosts during mount. While invalidations are
+   * suppressed, the hosts will simply bail on invalidations. Once the suppression is turned off, a
+   * single invalidation will be triggered on the affected hosts.
    */
   void suppressInvalidations(boolean suppressInvalidations) {
     if (mSuppressInvalidations == suppressInvalidations) {
@@ -636,9 +620,7 @@ public class ComponentHost extends ViewGroup {
     }
   }
 
-  /**
-   * Invalidates the accessibility node tree in this host.
-   */
+  /** Invalidates the accessibility node tree in this host. */
   void invalidateAccessibilityState() {
     if (!mIsComponentAccessibilityDelegateSet) {
       return;
@@ -657,9 +639,9 @@ public class ComponentHost extends ViewGroup {
   @Override
   public boolean dispatchHoverEvent(MotionEvent event) {
     return (mComponentAccessibilityDelegate != null
-      && implementsVirtualViews()
-      && mComponentAccessibilityDelegate.dispatchHoverEvent(event))
-      || super.dispatchHoverEvent(event);
+            && implementsVirtualViews()
+            && mComponentAccessibilityDelegate.dispatchHoverEvent(event))
+        || super.dispatchHoverEvent(event);
   }
 
   private boolean implementsVirtualViews() {
@@ -809,8 +791,7 @@ public class ComponentHost extends ViewGroup {
     return handled;
   }
 
-  void performLayout(boolean changed, int l, int t, int r, int b) {
-  }
+  void performLayout(boolean changed, int l, int t, int r, int b) {}
 
   @Override
   protected final void onLayout(boolean changed, int l, int t, int r, int b) {
@@ -880,6 +861,7 @@ public class ComponentHost extends ViewGroup {
 
   @Override
   public void setVisibility(int visibility) {
+    assertMainThread();
     super.setVisibility(visibility);
 
     for (int i = 0, size = (mDrawableMountItems == null) ? 0 : mDrawableMountItems.size();
@@ -967,8 +949,7 @@ public class ComponentHost extends ViewGroup {
     }
 
     ViewCompat.setAccessibilityDelegate(
-        this,
-        isAccessibilityEnabled ? mComponentAccessibilityDelegate : null);
+        this, isAccessibilityEnabled ? mComponentAccessibilityDelegate : null);
     mIsComponentAccessibilityDelegateSet = isAccessibilityEnabled;
 
     if (!isAccessibilityEnabled) {
@@ -980,8 +961,7 @@ public class ComponentHost extends ViewGroup {
       if (child instanceof ComponentHost) {
         ((ComponentHost) child).refreshAccessibilityDelegatesIfNeeded(true);
       } else {
-        final NodeInfo nodeInfo =
-            (NodeInfo) child.getTag(R.id.component_node_info);
+        final NodeInfo nodeInfo = (NodeInfo) child.getTag(R.id.component_node_info);
         if (nodeInfo != null) {
           ViewCompat.setAccessibilityDelegate(
               child,
@@ -1367,9 +1347,9 @@ public class ComponentHost extends ViewGroup {
   }
 
   /**
-   * Encapsulates the logic for drawing a set of views and drawables respecting
-   * their drawing order withing the component host i.e. allow interleaved views
-   * and drawables to be drawn with the correct z-index.
+   * Encapsulates the logic for drawing a set of views and drawables respecting their drawing order
+   * withing the component host i.e. allow interleaved views and drawables to be drawn with the
+   * correct z-index.
    */
   private class InterleavedDispatchDraw {
 
@@ -1377,8 +1357,7 @@ public class ComponentHost extends ViewGroup {
     private int mDrawIndex;
     private int mItemsToDraw;
 
-    private InterleavedDispatchDraw() {
-    }
+    private InterleavedDispatchDraw() {}
 
     private void start(Canvas canvas) {
       mCanvas = canvas;

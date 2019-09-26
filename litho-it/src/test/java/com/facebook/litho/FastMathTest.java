@@ -50,5 +50,4 @@ public class FastMathTest {
   public void testRoundNegativeDown() {
     assertThat(-2).isEqualTo(round(-1.6f));
   }
-
 }

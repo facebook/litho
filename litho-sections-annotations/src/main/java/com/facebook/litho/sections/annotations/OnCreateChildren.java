@@ -23,10 +23,10 @@ import java.lang.annotation.RetentionPolicy;
  * Every class that is annotated with {@link GroupSectionSpec} requires a method that is annotated
  * with {@link OnCreateChildren}.
  *
- * The method onCreateChildren is responsible for generating the children of a
- * {@link GroupSectionSpec}. Both {@link GroupSectionSpec} and {@link DiffSectionSpec} are valid
- * children. OnCreateChildren has access to both <code>{@literal @}Prop</code>
- * and/or <code>{@literal @}State</code> annotations.
+ * <p>The method onCreateChildren is responsible for generating the children of a {@link
+ * GroupSectionSpec}. Both {@link GroupSectionSpec} and {@link DiffSectionSpec} are valid children.
+ * OnCreateChildren has access to both <code>{@literal @}Prop</code> and/or <code>{@literal @}State
+ * </code> annotations.
  *
  * <pre>
  * {@literal @}OnCreateChildren
@@ -41,6 +41,4 @@ import java.lang.annotation.RetentionPolicy;
  * </pre>
  */
 @Retention(RetentionPolicy.RUNTIME)
-public @interface OnCreateChildren {
-
-}
+public @interface OnCreateChildren {}

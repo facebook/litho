@@ -19,9 +19,7 @@ package com.facebook.litho.dataflow;
 import com.facebook.litho.choreographercompat.ChoreographerCompat;
 import com.facebook.litho.choreographercompat.ChoreographerCompatImpl;
 
-/**
- * The default {@link TimingSource} hooked into Android's Choreographer.
- */
+/** The default {@link TimingSource} hooked into Android's Choreographer. */
 public class ChoreographerTimingSource implements TimingSource {
 
   private final ChoreographerCompat mChoreographerCompat;
@@ -33,12 +31,13 @@ public class ChoreographerTimingSource implements TimingSource {
 
   public ChoreographerTimingSource() {
     mChoreographerCompat = ChoreographerCompatImpl.getInstance();
-    mFrameCallback = new ChoreographerCompat.FrameCallback() {
-      @Override
-      public void doFrame(long frameTimeNanos) {
-        ChoreographerTimingSource.this.doFrame(frameTimeNanos);
-      }
-    };
+    mFrameCallback =
+        new ChoreographerCompat.FrameCallback() {
+          @Override
+          public void doFrame(long frameTimeNanos) {
+            ChoreographerTimingSource.this.doFrame(frameTimeNanos);
+          }
+        };
   }
 
   @Override

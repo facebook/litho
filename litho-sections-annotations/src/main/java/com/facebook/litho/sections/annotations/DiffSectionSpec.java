@@ -29,19 +29,19 @@ import java.lang.annotation.RetentionPolicy;
  * {@literal @}DiffSectionSpec
  *  public class MyDiffSectionSpec {
  *
- *   {@literal }OnDiff
+ *   {@literal @}OnDiff
  *    protected void onDiff(
- *      SectionContext c,
- *      ChangeSet changeSet,
- *      {@code Diff<MyProp>} prop) {
+ *        SectionContext c,
+ *        ChangeSet changeSet,
+ *       {@code Diff<MyProp>} prop) {
  *
  *      if(prop.getPrevious() == null) {
  *        changeSet.add(Change.insert(...));
  *      } else {
  *        changeSet.add(Change.update(...));
  *      }
- *   }
- * }
+ *    }
+ *  }
  * </pre>
  *
  * @see GroupSectionSpec

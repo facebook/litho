@@ -53,9 +53,7 @@ public class LayoutStateFutureReleaseTest {
 
   @Before
   public void setup() {
-    mContext =
-        new ComponentContext(
-            RuntimeEnvironment.application, null, null, null, new KeyHandler(null), null);
+    mContext = new ComponentContext(RuntimeEnvironment.application, null, null, null, null);
     ComponentsConfiguration.useCancelableLayoutFutures = true;
 
     mWidthSpec = makeSizeSpec(40, EXACTLY);
@@ -77,7 +75,8 @@ public class LayoutStateFutureReleaseTest {
         mock(ComponentTree.LayoutStateFuture.class);
 
     when(layoutStateFuture.isReleased()).thenReturn(false);
-    final ComponentContext c = new ComponentContext(mContext, null, null, null, layoutStateFuture);
+    final ComponentContext c = new ComponentContext(mContext, null, null, layoutStateFuture, null);
+    c.setLayoutStateReferenceWrapperForTesting();
 
     final CountDownLatch wait = new CountDownLatch(1);
     final TestChildComponent child1 =
@@ -107,7 +106,8 @@ public class LayoutStateFutureReleaseTest {
         mock(ComponentTree.LayoutStateFuture.class);
 
     when(layoutStateFuture.isReleased()).thenReturn(false);
-    final ComponentContext c = new ComponentContext(mContext, null, null, null, layoutStateFuture);
+    final ComponentContext c = new ComponentContext(mContext, null, null, layoutStateFuture, null);
+    c.setLayoutStateReferenceWrapperForTesting();
 
     final CountDownLatch wait = new CountDownLatch(1);
     final TestChildComponent child1 =
@@ -147,10 +147,7 @@ public class LayoutStateFutureReleaseTest {
     ThreadPoolLayoutHandler handler =
         new ThreadPoolLayoutHandler(new LayoutThreadPoolConfigurationImpl(1, 1, 5));
 
-    componentTree =
-        ComponentTree.create(mContext, column)
-            .layoutThreadHandler(handler)
-            .build();
+    componentTree = ComponentTree.create(mContext, column).layoutThreadHandler(handler).build();
 
     componentTree.setLithoView(new LithoView(mContext));
     componentTree.measure(mWidthSpec, mHeightSpec, new int[2], false);
@@ -216,10 +213,7 @@ public class LayoutStateFutureReleaseTest {
     ThreadPoolLayoutHandler handler =
         new ThreadPoolLayoutHandler(new LayoutThreadPoolConfigurationImpl(1, 1, 5));
 
-    componentTree =
-        ComponentTree.create(mContext, column)
-            .layoutThreadHandler(handler)
-            .build();
+    componentTree = ComponentTree.create(mContext, column).layoutThreadHandler(handler).build();
 
     componentTree.setLithoView(new LithoView(mContext));
     componentTree.measure(mWidthSpec, mHeightSpec, new int[2], false);
@@ -282,10 +276,7 @@ public class LayoutStateFutureReleaseTest {
     ThreadPoolLayoutHandler handler =
         new ThreadPoolLayoutHandler(new LayoutThreadPoolConfigurationImpl(1, 1, 5));
 
-    componentTree =
-        ComponentTree.create(mContext, column)
-            .layoutThreadHandler(handler)
-            .build();
+    componentTree = ComponentTree.create(mContext, column).layoutThreadHandler(handler).build();
 
     componentTree.setLithoView(new LithoView(mContext));
     componentTree.measure(mWidthSpec, mHeightSpec, new int[2], false);
@@ -351,10 +342,7 @@ public class LayoutStateFutureReleaseTest {
     ThreadPoolLayoutHandler handler =
         new ThreadPoolLayoutHandler(new LayoutThreadPoolConfigurationImpl(1, 1, 5));
 
-    componentTree =
-        ComponentTree.create(mContext, column)
-            .layoutThreadHandler(handler)
-            .build();
+    componentTree = ComponentTree.create(mContext, column).layoutThreadHandler(handler).build();
 
     componentTree.setLithoView(new LithoView(mContext));
     componentTree.measure(mWidthSpec, mHeightSpec, new int[2], false);
@@ -422,10 +410,7 @@ public class LayoutStateFutureReleaseTest {
     ThreadPoolLayoutHandler handler =
         new ThreadPoolLayoutHandler(new LayoutThreadPoolConfigurationImpl(1, 1, 5));
 
-    componentTree =
-        ComponentTree.create(mContext, column)
-            .layoutThreadHandler(handler)
-            .build();
+    componentTree = ComponentTree.create(mContext, column).layoutThreadHandler(handler).build();
 
     componentTree.setLithoView(new LithoView(mContext));
     componentTree.measure(mWidthSpec, mHeightSpec, new int[2], false);
@@ -509,10 +494,7 @@ public class LayoutStateFutureReleaseTest {
     ThreadPoolLayoutHandler handler =
         new ThreadPoolLayoutHandler(new LayoutThreadPoolConfigurationImpl(1, 1, 5));
 
-    componentTree =
-        ComponentTree.create(mContext, column_0)
-            .layoutThreadHandler(handler)
-            .build();
+    componentTree = ComponentTree.create(mContext, column_0).layoutThreadHandler(handler).build();
 
     componentTree.setLithoView(new LithoView(mContext));
 
@@ -566,10 +548,7 @@ public class LayoutStateFutureReleaseTest {
     ThreadPoolLayoutHandler handler =
         new ThreadPoolLayoutHandler(new LayoutThreadPoolConfigurationImpl(1, 1, 5));
 
-    componentTree =
-        ComponentTree.create(mContext, column_0)
-            .layoutThreadHandler(handler)
-            .build();
+    componentTree = ComponentTree.create(mContext, column_0).layoutThreadHandler(handler).build();
 
     componentTree.setLithoView(new LithoView(mContext));
 
@@ -634,10 +613,7 @@ public class LayoutStateFutureReleaseTest {
     ThreadPoolLayoutHandler handler =
         new ThreadPoolLayoutHandler(new LayoutThreadPoolConfigurationImpl(1, 1, 5));
 
-    componentTree =
-        ComponentTree.create(mContext, column_0)
-            .layoutThreadHandler(handler)
-            .build();
+    componentTree = ComponentTree.create(mContext, column_0).layoutThreadHandler(handler).build();
 
     componentTree.setLithoView(new LithoView(mContext));
 

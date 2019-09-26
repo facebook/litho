@@ -16,9 +16,7 @@
 
 package com.facebook.litho.dataflow;
 
-/**
- * Test node that only serves as an output node.
- */
+/** Test node that only serves as an output node. */
 public class OutputOnlyNode extends ValueNode {
 
   @Override
