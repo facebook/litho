@@ -226,15 +226,18 @@ public class ComponentBodyGenerator {
               ? propTypeName
               : ParameterizedTypeName.get(ClassNames.DYNAMIC_VALUE, propTypeName.box());
 
+      AnnotationSpec.Builder propAnnotationBuilder =
+          AnnotationSpec.builder(Prop.class)
+              .addMember("resType", "$T.$L", ResType.class, prop.getResType())
+              .addMember("optional", "$L", prop.isOptional());
+      if (prop.hasVarArgs()) {
+        propAnnotationBuilder.addMember("varArg", "$S", prop.getVarArgsSingleName());
+      }
       final FieldSpec.Builder fieldBuilder =
           FieldSpec.builder(
                   KotlinSpecUtils.getFieldTypeName(specModel, fieldTypeName), prop.getName())
               .addAnnotations(prop.getExternalAnnotations())
-              .addAnnotation(
-                  AnnotationSpec.builder(Prop.class)
-                      .addMember("resType", "$T.$L", ResType.class, prop.getResType())
-                      .addMember("optional", "$L", prop.isOptional())
-                      .build())
+              .addAnnotation(propAnnotationBuilder.build())
               .addAnnotation(
                   AnnotationSpec.builder(Comparable.class)
                       .addMember("type", "$L", getComparableType(fieldTypeName, prop.getTypeSpec()))

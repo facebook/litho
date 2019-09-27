@@ -89,7 +89,8 @@ public class ComponentBodyGeneratorTest {
         @Prop List<Component> arg5,
         @Prop List<String> arg6,
         @TreeProp Set<List<Row>> arg7,
-        @TreeProp Set<Integer> arg8) {}
+        @TreeProp Set<Integer> arg8,
+        @Prop(varArg = "item") java.util.List<? extends java.lang.Number> arg9) {}
 
     @OnEvent(Object.class)
     public void testEventMethod(
@@ -222,7 +223,7 @@ public class ComponentBodyGeneratorTest {
   @Test
   public void testGenerateProps() {
     TypeSpecDataHolder dataHolder = ComponentBodyGenerator.generateProps(mSpecModelDI);
-    assertThat(dataHolder.getFieldSpecs()).hasSize(4);
+    assertThat(dataHolder.getFieldSpecs()).hasSize(5);
     assertThat(dataHolder.getFieldSpecs().get(0).toString())
         .isEqualTo(
             "@com.facebook.litho.annotations.Prop(\n"
@@ -244,6 +245,18 @@ public class ComponentBodyGeneratorTest {
                 + "    type = 10\n"
                 + ")\n"
                 + "com.facebook.litho.Component arg4;\n");
+
+    assertThat(dataHolder.getFieldSpecs().get(4).toString())
+        .isEqualTo(
+            "@com.facebook.litho.annotations.Prop(\n"
+                + "    resType = com.facebook.litho.annotations.ResType.NONE,\n"
+                + "    optional = false,\n"
+                + "    varArg = \"item\"\n"
+                + ")\n"
+                + "@com.facebook.litho.annotations.Comparable(\n"
+                + "    type = 5\n"
+                + ")\n"
+                + "java.util.List<? extends java.lang.Number> arg9;\n");
 
     dataHolder = ComponentBodyGenerator.generateProps(mMountSpecModelDI);
     assertThat(dataHolder.getFieldSpecs()).hasSize(6);
@@ -270,7 +283,8 @@ public class ComponentBodyGeneratorTest {
         .isEqualTo(
             "@com.facebook.litho.annotations.Prop(\n"
                 + "    resType = com.facebook.litho.annotations.ResType.NONE,\n"
-                + "    optional = false\n"
+                + "    optional = false,\n"
+                + "    varArg = \"number\"\n"
                 + ")\n"
                 + "@com.facebook.litho.annotations.Comparable(\n"
                 + "    type = 5\n"
