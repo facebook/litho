@@ -1341,9 +1341,6 @@ class LayoutState {
       layoutState.mRootComponentName = component.getSimpleName();
 
       final InternalNode layoutCreatedInWillRender = component.consumeLayoutCreatedInWillRender();
-      if (layoutCreatedInWillRender != null && layoutCreatedInWillRender.getContext() != null) {
-        layoutCreatedInWillRender.getContext().setLayoutStateReferenceWrapper(layoutStateWrapper);
-      }
 
       final boolean isReconcilable = isReconcilable(c, component, currentLayoutState);
 
@@ -1359,6 +1356,10 @@ class LayoutState {
                   diffTreeRoot,
                   logLayoutState)
               : layoutCreatedInWillRender;
+      // Null check for tests.
+      if (root.getContext() != null) {
+        root.getContext().setLayoutStateReferenceWrapper(layoutStateWrapper);
+      }
 
       layoutState.mLayoutRoot = root;
       layoutState.mRootTransitionId = getTransitionIdForNode(root);
