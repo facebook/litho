@@ -17,7 +17,6 @@ package com.facebook.litho.widget;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
@@ -30,12 +29,16 @@ import org.robolectric.RuntimeEnvironment;
 public class ComponentWarmerTest {
 
   private ComponentContext mContext;
-  private Component mComponent;
+  private ComponentRenderInfo mComponentRenderInfo;
 
   @Before
   public void setup() {
     mContext = new ComponentContext(RuntimeEnvironment.application);
-    mComponent = TestDrawableComponent.create(mContext).build();
+    mComponentRenderInfo =
+        ComponentRenderInfo.create()
+            .component(TestDrawableComponent.create(mContext).build())
+            .customAttribute(ComponentWarmer.COMPONENT_WARMER_TAG, "tag1")
+            .build();
   }
 
   @Test
@@ -53,17 +56,11 @@ public class ComponentWarmerTest {
     final RecyclerBinder binder = new RecyclerBinder.Builder().build(mContext);
 
     final ComponentWarmer warmer = new ComponentWarmer(binder);
-    warmer.prepare("tag1", mComponent);
+    warmer.prepare("tag1", mComponentRenderInfo);
 
     assertThat(warmer.get("tag1")).isNotNull();
 
-    final RenderInfo renderInfo =
-        ComponentRenderInfo.create()
-            .component(mComponent)
-            .customAttribute(ComponentWarmer.COMPONENT_WARMER_TAG, "tag1")
-            .build();
-
-    binder.insertItemAt(0, renderInfo);
+    binder.insertItemAt(0, mComponentRenderInfo);
 
     assertThat(binder.getComponentTreeHolderAt(0)).isEqualTo(warmer.get("tag1"));
   }
@@ -73,17 +70,11 @@ public class ComponentWarmerTest {
     final RecyclerBinder binder = new RecyclerBinder.Builder().build(mContext);
 
     final ComponentWarmer warmer = new ComponentWarmer(binder);
-    warmer.prepareAsync("tag1", mComponent);
+    warmer.prepareAsync("tag1", mComponentRenderInfo);
 
     assertThat(warmer.get("tag1")).isNotNull();
 
-    final RenderInfo renderInfo =
-        ComponentRenderInfo.create()
-            .component(mComponent)
-            .customAttribute(ComponentWarmer.COMPONENT_WARMER_TAG, "tag1")
-            .build();
-
-    binder.insertItemAt(0, renderInfo);
+    binder.insertItemAt(0, mComponentRenderInfo);
 
     assertThat(binder.getComponentTreeHolderAt(0)).isEqualTo(warmer.get("tag1"));
   }

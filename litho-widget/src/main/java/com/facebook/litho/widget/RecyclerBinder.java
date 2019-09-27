@@ -3795,11 +3795,14 @@ public class RecyclerBinder
   private ComponentTreeHolder createComponentTreeHolder(RenderInfo renderInfo) {
     if (mComponentWarmer != null) {
       final Object tag = renderInfo.getCustomAttribute(ComponentWarmer.COMPONENT_WARMER_TAG);
-      if (tag != null) {
+      if (tag instanceof String) {
         final ComponentTreeHolder holder = mComponentWarmer.get((String) tag);
-        holder.setRenderInfo(renderInfo);
-
-        return holder;
+        if (holder != null) {
+          if (SectionsDebug.ENABLED) {
+            Log.d(SectionsDebug.TAG, "Got ComponentTreeHolder from ComponentWarner for key " + tag);
+          }
+          return holder;
+        }
       }
     }
 
@@ -3826,9 +3829,7 @@ public class RecyclerBinder
   ComponentTreeHolderPreparer getComponentTreeHolderPreparer() {
     return new ComponentTreeHolderPreparer() {
       @Override
-      public ComponentTreeHolder create(Component component) {
-        final RenderInfo renderInfo = ComponentRenderInfo.create().component(component).build();
-
+      public ComponentTreeHolder create(ComponentRenderInfo renderInfo) {
         return createComponentTreeHolder(renderInfo);
       }
 
