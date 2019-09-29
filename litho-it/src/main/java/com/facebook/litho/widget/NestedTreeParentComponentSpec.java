@@ -15,26 +15,30 @@
  */
 package com.facebook.litho.widget;
 
-import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateLayout;
+import com.facebook.litho.annotations.OnCreateTreeProp;
 
 @LayoutSpec
 public class NestedTreeParentComponentSpec {
 
   public static final String ROOT_KEY = "NestedTreeParentComponent";
 
+  @OnCreateTreeProp
+  public static B onCreateTreeProp(ComponentContext c) {
+    return new B();
+  }
+
   @OnCreateLayout
   static Component onCreateLayout(ComponentContext c) {
-    return Column.create(c)
-        .key("Column")
-        .child(NestedTreeComponent.create(c).key("NestedTreeComponent"))
-        .build();
+    return NestedTreeComponent.create(c).key("NestedTreeComponent").build();
   }
 
   public static NestedTreeParentComponent create(ComponentContext c) {
     return NestedTreeParentComponent.create(c).key(ROOT_KEY).build();
   }
+
+  public static class B {}
 }

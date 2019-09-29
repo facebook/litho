@@ -18,31 +18,36 @@ package com.facebook.litho.widget;
 import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
+import com.facebook.litho.StateValue;
 import com.facebook.litho.annotations.LayoutSpec;
+import com.facebook.litho.annotations.OnCreateInitialState;
 import com.facebook.litho.annotations.OnCreateLayout;
-import com.facebook.litho.annotations.TreeProp;
-import com.facebook.litho.widget.NestedTreeComponentSpec.C;
-import com.facebook.litho.widget.NestedTreeParentComponentSpec.B;
-import com.facebook.litho.widget.RootComponentWithTreePropsSpec.A;
+import com.facebook.litho.annotations.OnUpdateState;
+import com.facebook.litho.annotations.State;
+import com.facebook.yoga.YogaEdge;
 
 @LayoutSpec
-public class NestedTreeChildComponentSpec {
+class ChildComponentWithStateUpdateSpec {
+
+  @OnCreateInitialState
+  static void onCreateInitialState(final ComponentContext c, StateValue<Integer> count) {
+    count.set(0);
+  }
 
   @OnCreateLayout
-  static Component onCreateLayout(
-      ComponentContext context, @TreeProp A a, @TreeProp B b, @TreeProp C c) {
-    if (a == null) {
-      throw new IllegalStateException("A is null");
+  static Component onCreateLayout(ComponentContext c, @State int count) {
+    if (count == 0) {
+      ChildComponentWithStateUpdate.onUpdateStateSync(c);
     }
-    if (b == null) {
-      throw new IllegalStateException("B is null");
-    }
-    if (context == null) {
-      throw new IllegalStateException("C is null");
-    }
-    return Column.create(context)
-        .key("Column")
-        .child(CardClip.create(context).key("CardClip").widthDip(10).heightDip(10))
+    return Column.create(c)
+        .child(Text.create(c).text("click to dispatch").textSizeSp(18).paddingDip(YogaEdge.ALL, 16))
+        .child(Text.create(c).textSizeSp(18).text(String.valueOf(count)))
         .build();
+  }
+
+  @OnUpdateState
+  public static void onUpdateState(StateValue<Integer> count) {
+
+    count.set(count.get() + 1);
   }
 }

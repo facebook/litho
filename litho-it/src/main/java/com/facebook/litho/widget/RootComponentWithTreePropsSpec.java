@@ -19,24 +19,25 @@ import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.Row;
 import com.facebook.litho.annotations.LayoutSpec;
-import com.facebook.litho.annotations.OnCreateLayoutWithSizeSpec;
+import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.OnCreateTreeProp;
 
 @LayoutSpec
-public class NestedTreeComponentSpec {
+class RootComponentWithTreePropsSpec {
 
   @OnCreateTreeProp
-  public static C onCreateTreeProp(ComponentContext c) {
-    return new C();
+  public static A onCreateTreeProp(ComponentContext c) {
+    return new A();
   }
 
-  @OnCreateLayoutWithSizeSpec
-  static Component onCreateLayout(ComponentContext c, int widthSpec, int heightSpec) {
+  @OnCreateLayout
+  static Component onCreateLayout(ComponentContext c) {
     return Row.create(c)
         .key("Row")
-        .child(NestedTreeChildComponent.create(c).key("NestedTreeChildComponent"))
+        .child(ChildComponentWithStateUpdate.create(c))
+        .child(NestedTreeParentComponent.create(c).key("NestedTreeParentComponent").flexGrow(1))
         .build();
   }
 
-  public static class C {}
+  public static class A {}
 }

@@ -17,26 +17,30 @@ package com.facebook.litho.widget;
 
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
-import com.facebook.litho.Row;
 import com.facebook.litho.annotations.LayoutSpec;
-import com.facebook.litho.annotations.OnCreateLayoutWithSizeSpec;
-import com.facebook.litho.annotations.OnCreateTreeProp;
+import com.facebook.litho.annotations.OnCreateLayout;
 
 @LayoutSpec
-public class NestedTreeComponentSpec {
+public class TreePropTestContainerComponentSpec {
 
-  @OnCreateTreeProp
-  public static C onCreateTreeProp(ComponentContext c) {
-    return new C();
+  public static final String KEY = "TreePropTestContainerComponent";
+
+  public static final String EXPECTED_GLOBAL_KEY =
+      KEY
+          + ","
+          + "RootComponentWithTreeProps,"
+          + "Row,"
+          + "NestedTreeParentComponent,"
+          + "NestedTreeComponent,"
+          + "Row,"
+          + "NestedTreeChildComponent";
+
+  @OnCreateLayout
+  static Component onCreateLayout(ComponentContext c) {
+    return RootComponentWithTreeProps.create(c).key("RootComponentWithTreeProps").build();
   }
 
-  @OnCreateLayoutWithSizeSpec
-  static Component onCreateLayout(ComponentContext c, int widthSpec, int heightSpec) {
-    return Row.create(c)
-        .key("Row")
-        .child(NestedTreeChildComponent.create(c).key("NestedTreeChildComponent"))
-        .build();
+  public static TreePropTestContainerComponent create(ComponentContext c) {
+    return TreePropTestContainerComponent.create(c).key(KEY).build();
   }
-
-  public static class C {}
 }

@@ -28,9 +28,8 @@ import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
 import com.facebook.litho.widget.CardClip;
 import com.facebook.litho.widget.EditText;
-import com.facebook.litho.widget.NestedTreeChildComponentSpec;
-import com.facebook.litho.widget.NestedTreeParentComponentSpec;
 import com.facebook.litho.widget.Text;
+import com.facebook.litho.widget.TreePropTestContainerComponentSpec;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -375,11 +374,11 @@ public class ComponentGlobalKeyTest {
 
   @Test
   public void nestedTreeRemeasureKeyStabilityTest() {
-    final Component componentWithoutRemeasure = NestedTreeParentComponentSpec.create(mContext);
+    final Component componentWithoutRemeasure = TreePropTestContainerComponentSpec.create(mContext);
     final LithoView lithoView = getLithoView(componentWithoutRemeasure);
     Assert.assertEquals(
-        NestedTreeChildComponentSpec.EXPECTED_GLOBAL_KEY,
-        getComponentAt(lithoView, 0).getOwnerGlobalKey());
+        TreePropTestContainerComponentSpec.EXPECTED_GLOBAL_KEY,
+        getComponentAt(lithoView, 1).getOwnerGlobalKey());
   }
 
   private static Component getComponentAt(LithoView lithoView, int index) {

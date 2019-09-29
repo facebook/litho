@@ -385,6 +385,12 @@ public abstract class Component extends ComponentLifecycle
     // update the cloned component with the new context.
     clone.updateInternalChildState(c);
 
+    // create updated tree props for children.
+    final TreeProps treeProps = getTreePropsForChildren(c, c.getTreeProps());
+
+    // set updated tree props on the component.
+    clone.getScopedContext().setTreeProps(treeProps);
+
     return clone;
   }
 

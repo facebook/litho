@@ -1980,6 +1980,7 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
 
     // 2. Shallow copy this layout.
     final DefaultInternalNode layout = getCleanUpdatedShallowCopy(c, current, next, copiedNode);
+    ComponentContext parentContext = layout.getTailComponent().getScopedContext();
 
     // 3. Clear the nested tree
     if (layout.getNestedTree() != null) {
@@ -1996,7 +1997,7 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
       final Component component = components.get(Math.max(0, components.size() - 1));
 
       // 4.2 Update the head component of the child layout.
-      final Component updated = component.makeUpdatedShallowCopy(c);
+      final Component updated = component.makeUpdatedShallowCopy(parentContext);
 
       // 4.3 Reconcile child layout.
       final InternalNode copy;
