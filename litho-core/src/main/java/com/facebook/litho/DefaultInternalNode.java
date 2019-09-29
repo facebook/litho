@@ -1814,7 +1814,10 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   }
 
   private void updateWith(
-      ComponentContext c, YogaNode node, List<Component> components, @Nullable DiffNode diffNode) {
+      final ComponentContext c,
+      final YogaNode node,
+      final List<Component> components,
+      final @Nullable DiffNode diffNode) {
     // 1. Set new ComponentContext, YogaNode, and components.
     mComponentContext = c;
     mYogaNode = node;
@@ -1914,7 +1917,10 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
    * @return A new updated InternalNode.
    */
   private static InternalNode reconcile(
-      ComponentContext c, DefaultInternalNode current, Component next, Set<String> keys) {
+      final ComponentContext c,
+      final DefaultInternalNode current,
+      final Component next,
+      final Set<String> keys) {
     int mode = getReconciliationMode(next.getScopedContext(), current, keys);
     final InternalNode layout;
 
@@ -1947,11 +1953,11 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
    * @return A new updated InternalNode.
    */
   private static InternalNode reconcile(
-      ComponentContext c,
-      DefaultInternalNode current,
-      Component next,
-      Set<String> keys,
-      @ReconciliationMode int mode) {
+      final ComponentContext c,
+      final DefaultInternalNode current,
+      final Component next,
+      final Set<String> keys,
+      final @ReconciliationMode int mode) {
 
     final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
@@ -2017,7 +2023,10 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
    * InternalNode.
    */
   private static DefaultInternalNode getCleanUpdatedShallowCopy(
-      ComponentContext c, DefaultInternalNode current, Component head, YogaNode node) {
+      final ComponentContext c,
+      final DefaultInternalNode current,
+      final Component head,
+      final YogaNode node) {
 
     final boolean isTracing = ComponentsSystrace.isTracing();
 
@@ -2061,7 +2070,7 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
    */
   @VisibleForTesting
   static @ReconciliationMode int getReconciliationMode(
-      ComponentContext c, InternalNode current, Set<String> keys) {
+      final ComponentContext c, final InternalNode current, final Set<String> keys) {
     final List<Component> components = current.getComponents();
     final Component root = current.getHeadComponent();
 

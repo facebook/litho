@@ -373,8 +373,8 @@ public abstract class Component extends ComponentLifecycle
     return component;
   }
 
-  Component makeUpdatedShallowCopy(ComponentContext c) {
-    Component clone = makeShallowCopy();
+  Component makeUpdatedShallowCopy(final ComponentContext c) {
+    final Component clone = makeShallowCopy();
 
     // set the global key so that it is not generated again and overridden.
     clone.setGlobalKey(getGlobalKey());
