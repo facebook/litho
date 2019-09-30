@@ -21,11 +21,16 @@ import com.facebook.litho.intellij.logging.LithoLoggerProvider;
 import com.google.common.annotations.VisibleForTesting;
 import com.intellij.find.findUsages.FindUsagesHandler;
 import com.intellij.find.findUsages.FindUsagesHandlerFactory;
+import com.intellij.find.findUsages.FindUsagesOptions;
+import com.intellij.openapi.actionSystem.DataContext;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.search.SearchScope;
 import com.intellij.util.ArrayUtil;
 import java.util.Optional;
 import java.util.function.Function;
+import org.jetbrains.annotations.Nullable;
 
 public class LithoFindUsagesHandlerFactory extends FindUsagesHandlerFactory {
 
@@ -39,8 +44,12 @@ public class LithoFindUsagesHandlerFactory extends FindUsagesHandlerFactory {
     return new GeneratedClassFindUsagesHandler(element);
   }
 
+  /**
+   * Adds usages of corresponding Generated class to the search results of the Spec class, and
+   * excludes this generated class itself from the places to search.
+   */
   static class GeneratedClassFindUsagesHandler extends FindUsagesHandler {
-    private final Function<PsiClass, Optional<PsiClass>> findComponent;
+    private final Function<PsiClass, Optional<PsiClass>> findGeneratedClass;
 
     GeneratedClassFindUsagesHandler(PsiElement psiElement) {
       this(
@@ -52,9 +61,9 @@ public class LithoFindUsagesHandlerFactory extends FindUsagesHandlerFactory {
 
     @VisibleForTesting
     GeneratedClassFindUsagesHandler(
-        PsiElement psiElement, Function<PsiClass, Optional<PsiClass>> findComponent) {
+        PsiElement psiElement, Function<PsiClass, Optional<PsiClass>> findGeneratedClass) {
       super(psiElement);
-      this.findComponent = findComponent;
+      this.findGeneratedClass = findGeneratedClass;
     }
 
     @Override
@@ -64,7 +73,7 @@ public class LithoFindUsagesHandlerFactory extends FindUsagesHandlerFactory {
       return Optional.of(getPsiElement())
           .filter(PsiClass.class::isInstance)
           .map(PsiClass.class::cast)
-          .flatMap(findComponent)
+          .flatMap(findGeneratedClass)
           .map(
               psiClass -> {
                 LithoLoggerProvider.getEventLogger()
@@ -72,6 +81,61 @@ public class LithoFindUsagesHandlerFactory extends FindUsagesHandlerFactory {
                 return ArrayUtil.insert(super.getPrimaryElements(), 0, psiClass);
               })
           .orElseGet(super::getPrimaryElements);
+    }
+
+    @Override
+    public FindUsagesOptions getFindUsagesOptions(@Nullable DataContext dataContext) {
+      FindUsagesOptions findUsagesOptions = super.getFindUsagesOptions(dataContext);
+      PsiElement searchTarget = getPsiElement();
+      if (!(searchTarget instanceof PsiClass)) {
+        return findUsagesOptions;
+      }
+      Optional<PsiClass> generatedCls = findGeneratedClass.apply((PsiClass) searchTarget);
+      if (!generatedCls.isPresent()) {
+        return findUsagesOptions;
+      }
+      findUsagesOptions.searchScope =
+          new ExcludingScope(findUsagesOptions.searchScope, generatedCls.get());
+
+      return findUsagesOptions;
+    }
+
+    /**
+     * Scope delegates functions to the underlying {@link #searchScope}, but excludes passed {@link
+     * #excluded} from the search.
+     */
+    static class ExcludingScope extends SearchScope {
+      private final SearchScope searchScope;
+      private final VirtualFile excluded;
+
+      ExcludingScope(SearchScope searchScope, PsiClass excluded) {
+        this.searchScope = searchScope;
+        this.excluded = excluded.getContainingFile().getVirtualFile();
+      }
+
+      @Override
+      public SearchScope intersectWith(SearchScope scope2) {
+        return searchScope.intersectWith(scope2);
+      }
+
+      @Override
+      public SearchScope union(SearchScope scope) {
+        return searchScope.union(scope);
+      }
+
+      @Override
+      public boolean contains(VirtualFile file) {
+        return searchScope.contains(file) && !excluded(file);
+      }
+
+      @Override
+      public String getDisplayName() {
+        return "Litho Spec Usages";
+      }
+
+      private boolean excluded(VirtualFile file) {
+        return excluded.equals(file);
+      }
     }
   }
 }
