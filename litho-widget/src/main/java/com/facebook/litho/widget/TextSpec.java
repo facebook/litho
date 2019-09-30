@@ -321,12 +321,6 @@ class TextSpec {
       return;
     }
 
-    YogaDirection layoutDirection = layout.getResolvedLayoutDirection();
-    textDirection = getTextDirection(textDirection, layoutDirection);
-    Alignment finalLayoutAlignment =
-        getLayoutAlignment(
-            getTextAlignment(textAlignment, alignment), textDirection, text, layoutDirection);
-
     Layout newLayout =
         createTextLayout(
             widthSpec,
@@ -348,8 +342,9 @@ class TextSpec {
             letterSpacing,
             textStyle,
             typeface,
-            finalLayoutAlignment,
+            getTextAlignment(textAlignment, alignment),
             glyphWarming,
+            layout.getResolvedLayoutDirection(),
             minEms,
             maxEms,
             minTextWidth,
@@ -429,8 +424,9 @@ class TextSpec {
       float letterSpacing,
       int textStyle,
       Typeface typeface,
-      Alignment layoutAlignment,
+      TextAlignment textAlignment,
       boolean glyphWarming,
+      YogaDirection layoutDirection,
       int minEms,
       int maxEms,
       int minTextWidth,
@@ -520,8 +516,10 @@ class TextSpec {
       layoutBuilder.setTextStyle(textStyle);
     }
 
+    textDirection = getTextDirection(textDirection, layoutDirection);
     layoutBuilder.setTextDirection(textDirection);
-    layoutBuilder.setAlignment(layoutAlignment);
+    layoutBuilder.setAlignment(
+        getLayoutAlignment(textAlignment, textDirection, text, layoutDirection));
 
     newLayout = layoutBuilder.build();
 
@@ -576,7 +574,6 @@ class TextSpec {
       Output<Float> textLayoutTranslationY,
       Output<ClickableSpan[]> clickableSpans,
       Output<ImageSpan[]> imageSpans) {
-
     processedText.set(text);
     if (TextUtils.isEmpty(text)) {
       return;
@@ -587,18 +584,9 @@ class TextSpec {
     final float layoutHeight =
         layout.getHeight() - layout.getPaddingTop() - layout.getPaddingBottom();
 
-    YogaDirection layoutDirection = null;
-    Alignment finalLayoutAlignment = null;
-
     if (measureLayout != null && measuredWidth == layoutWidth && measuredHeight == layoutHeight) {
       textLayout.set(measureLayout);
     } else {
-      layoutDirection = layout.getResolvedLayoutDirection();
-      textDirection = getTextDirection(textDirection, layoutDirection);
-      finalLayoutAlignment =
-          getLayoutAlignment(
-              getTextAlignment(textAlignment, alignment), textDirection, text, layoutDirection);
-
       textLayout.set(
           createTextLayout(
               SizeSpec.makeSizeSpec((int) layoutWidth, EXACTLY),
@@ -620,8 +608,9 @@ class TextSpec {
               letterSpacing,
               textStyle,
               typeface,
-              finalLayoutAlignment,
+              getTextAlignment(textAlignment, alignment),
               glyphWarming,
+              layout.getResolvedLayoutDirection(),
               minEms,
               maxEms,
               minTextWidth,
@@ -654,13 +643,6 @@ class TextSpec {
     if (customEllipsisText != null && !customEllipsisText.equals("")) {
       final int ellipsizedLineNumber = getEllipsizedLineNumber(textLayout.get());
       if (ellipsizedLineNumber != -1) {
-        if (layoutDirection == null) {
-          layoutDirection = layout.getResolvedLayoutDirection();
-          textDirection = getTextDirection(textDirection, layoutDirection);
-          finalLayoutAlignment =
-              getLayoutAlignment(
-                  getTextAlignment(textAlignment, alignment), textDirection, text, layoutDirection);
-        }
         Layout customEllipsisLayout =
             createTextLayout(
                 SizeSpec.makeSizeSpec((int) layoutWidth, EXACTLY),
@@ -682,8 +664,9 @@ class TextSpec {
                 letterSpacing,
                 textStyle,
                 typeface,
-                finalLayoutAlignment,
+                getTextAlignment(textAlignment, alignment),
                 glyphWarming,
+                layout.getResolvedLayoutDirection(),
                 minEms,
                 maxEms,
                 minTextWidth,
@@ -694,7 +677,17 @@ class TextSpec {
                 justificationMode,
                 textDirection,
                 lineHeight);
-        boolean isRtl = textDirection.isRtl(text, 0, text.length());
+
+        YogaDirection layoutDirection = layout.getResolvedLayoutDirection();
+        TextDirectionHeuristicCompat finalTextDirection =
+            getTextDirection(textDirection, layoutDirection);
+        Layout.Alignment finalLayoutAlignment =
+            getLayoutAlignment(
+                getTextAlignment(textAlignment, alignment),
+                finalTextDirection,
+                text,
+                layoutDirection);
+        boolean isRtl = finalTextDirection.isRtl(text, 0, text.length());
         boolean isAlignedLeft = isRtl ^ (finalLayoutAlignment == Alignment.ALIGN_NORMAL);
         final CharSequence truncated =
             truncateText(
@@ -728,8 +721,9 @@ class TextSpec {
                 letterSpacing,
                 textStyle,
                 typeface,
-                finalLayoutAlignment,
+                getTextAlignment(textAlignment, alignment),
                 glyphWarming,
+                layout.getResolvedLayoutDirection(),
                 minEms,
                 maxEms,
                 minTextWidth,
