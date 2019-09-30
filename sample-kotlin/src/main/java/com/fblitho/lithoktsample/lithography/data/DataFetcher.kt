@@ -10,7 +10,6 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-
 package com.fblitho.lithoktsample.lithography.data
 
 import androidx.lifecycle.MutableLiveData
