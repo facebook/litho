@@ -9,6 +9,7 @@
  * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+
 package com.facebook.samples.litho.fastscroll;
 
 import static com.facebook.samples.litho.fastscroll.FastScrollHandleComponentSpec.HANDLE_SIZE_DP;

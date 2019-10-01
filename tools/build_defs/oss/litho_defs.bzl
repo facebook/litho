@@ -318,6 +318,7 @@ def define_fbjni_targets():
         srcs = native.glob(
             [
                 "src/main/cpp/fb/**/*.cpp",
+                "src/main/cpp/lyra/*.cpp",
             ],
         ),
         header_namespace = "",
@@ -325,6 +326,7 @@ def define_fbjni_targets():
             [
                 ("src/main/cpp", "fb/**/*.h"),
                 ("src/main/cpp", "fbjni/**/*.h"),
+                ("src/main/cpp", "lyra/*.h"),
             ],
         ),
         compiler_flags = [
@@ -335,22 +337,6 @@ def define_fbjni_targets():
             "-std=c++11",  # FIXME
             "-DDISABLE_CPUCAP",
             "-DDISABLE_XPLAT",
-        ],
-        exported_platform_headers = [
-            (
-                "^(?!android-arm$).*$",
-                subdir_glob([
-                    ("src/main/cpp", "lyra/*.h"),
-                ]),
-            ),
-        ],
-        platform_srcs = [
-            (
-                "^(?!android-arm$).*$",
-                native.glob([
-                    "src/main/cpp/lyra/*.cpp",
-                ]),
-            ),
         ],
         soname = "libfb.$(ext)",
         visibility = LITHO_VISIBILITY,

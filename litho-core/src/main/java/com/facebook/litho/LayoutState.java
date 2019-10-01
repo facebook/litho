@@ -1341,9 +1341,6 @@ class LayoutState {
       layoutState.mRootComponentName = component.getSimpleName();
 
       final InternalNode layoutCreatedInWillRender = component.consumeLayoutCreatedInWillRender();
-      if (layoutCreatedInWillRender != null && layoutCreatedInWillRender.getContext() != null) {
-        layoutCreatedInWillRender.getContext().setLayoutStateReferenceWrapper(layoutStateWrapper);
-      }
 
       final boolean isReconcilable = isReconcilable(c, component, currentLayoutState);
 
@@ -1359,6 +1356,10 @@ class LayoutState {
                   diffTreeRoot,
                   logLayoutState)
               : layoutCreatedInWillRender;
+      // Null check for tests.
+      if (root.getContext() != null) {
+        root.getContext().setLayoutStateReferenceWrapper(layoutStateWrapper);
+      }
 
       layoutState.mLayoutRoot = root;
       layoutState.mRootTransitionId = getTransitionIdForNode(root);
@@ -1741,11 +1742,22 @@ class LayoutState {
           remeasureTree(nestedTree, widthSpec, heightSpec);
           resolvedLayout = nestedTree;
         } else {
+
+          // We need to create a shallow copy of this component to clear
+          // the child counters as all the children may be created again.
+          final Component root = component.makeShallowCopy();
+
+          // We have to set the current global key to avoid generating
+          // a new global key; in addition that new global key would be
+          // incorrect because it will be de-duplicated by parent as the
+          // parent is still maintaining its child counters.
+          root.setGlobalKey(component.getGlobalKey());
+
           // Create a new layout.
           resolvedLayout =
               createAndMeasureTreeForComponent(
                   context,
-                  component.makeShallowCopy(),
+                  root,
                   widthSpec,
                   heightSpec,
                   holder,

@@ -142,7 +142,7 @@ public abstract class Component extends ComponentLifecycle
    * This should NOT be used in general use cases. Use the standard {@link #Component(String)}
    * instead.
    */
-  protected Component(String simpleName, Object type) {
+  Component(String simpleName, Object type) {
     super(type);
     mSimpleName = simpleName;
   }
@@ -373,8 +373,8 @@ public abstract class Component extends ComponentLifecycle
     return component;
   }
 
-  Component makeUpdatedShallowCopy(ComponentContext c) {
-    Component clone = makeShallowCopy();
+  Component makeUpdatedShallowCopy(final ComponentContext c) {
+    final Component clone = makeShallowCopy();
 
     // set the global key so that it is not generated again and overridden.
     clone.setGlobalKey(getGlobalKey());
@@ -384,6 +384,12 @@ public abstract class Component extends ComponentLifecycle
 
     // update the cloned component with the new context.
     clone.updateInternalChildState(c);
+
+    // create updated tree props for children.
+    final TreeProps treeProps = getTreePropsForChildren(c, c.getTreeProps());
+
+    // set updated tree props on the component.
+    clone.getScopedContext().setTreeProps(treeProps);
 
     return clone;
   }

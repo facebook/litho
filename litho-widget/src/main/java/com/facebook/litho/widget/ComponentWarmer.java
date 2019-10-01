@@ -17,7 +17,6 @@ package com.facebook.litho.widget;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.collection.LruCache;
-import com.facebook.litho.Component;
 import com.facebook.litho.Size;
 import javax.annotation.Nullable;
 
@@ -35,10 +34,10 @@ public class ComponentWarmer {
   public interface ComponentTreeHolderPreparer {
 
     /**
-     * Create a ComponentTreeHolder instance which will be used as an item in the underlying adapter
-     * of the RecyclerBinder.
+     * Create a ComponentTreeHolder instance from an existing render info which will be used as an
+     * item in the underlying adapter of the RecyclerBinder
      */
-    ComponentTreeHolder create(Component component);
+    ComponentTreeHolder create(ComponentRenderInfo renderInfo);
 
     /**
      * Triggers a synchronous layout calculation for the ComponentTree held by the provided
@@ -138,9 +137,12 @@ public class ComponentWarmer {
     mCache = cache == null ? new DefaultCache(DEFAULT_MAX_SIZE) : cache;
   }
 
-  public Size prepare(String tag, Component component) {
-    final ComponentTreeHolder holder = mFactory.create(component);
+  public Size prepare(String tag, ComponentRenderInfo componentRenderInfo) {
+    final ComponentTreeHolder holder = mFactory.create(componentRenderInfo);
+    return prepare(tag, holder);
+  }
 
+  private Size prepare(String tag, ComponentTreeHolder holder) {
     final Size size = new Size();
     mFactory.prepareSync(holder, size);
 
@@ -149,8 +151,8 @@ public class ComponentWarmer {
     return size;
   }
 
-  public void prepareAsync(String tag, Component component) {
-    final ComponentTreeHolder holder = mFactory.create(component);
+  public void prepareAsync(String tag, ComponentRenderInfo componentRenderInfo) {
+    final ComponentTreeHolder holder = mFactory.create(componentRenderInfo);
     mFactory.prepareAsync(holder);
     mCache.put(tag, holder);
   }

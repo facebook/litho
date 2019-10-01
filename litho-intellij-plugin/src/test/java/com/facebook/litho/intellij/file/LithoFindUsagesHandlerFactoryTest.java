@@ -15,13 +15,27 @@
  */
 package com.facebook.litho.intellij.file;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import com.facebook.litho.intellij.LithoPluginIntellijTest;
+import com.intellij.injected.editor.DocumentWindow;
+import com.intellij.injected.editor.VirtualFileWindow;
+import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.vfs.local.CoreLocalFileSystem;
+import com.intellij.openapi.vfs.local.CoreLocalVirtualFile;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiFile;
+import com.intellij.psi.search.SearchScope;
+import java.io.File;
 import java.util.Optional;
-import org.junit.Assert;
+import java.util.function.Function;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 public class LithoFindUsagesHandlerFactoryTest extends LithoPluginIntellijTest {
 
@@ -33,15 +47,15 @@ public class LithoFindUsagesHandlerFactoryTest extends LithoPluginIntellijTest {
   public void canFindUsages() {
     testHelper.getPsiClass(
         psiClasses -> {
-          Assert.assertNotNull(psiClasses);
+          assertNotNull(psiClasses);
           PsiClass layoutSpec = psiClasses.get(0);
           PsiClass otherSpec = psiClasses.get(1);
           PsiClass notSpec = psiClasses.get(2);
 
           LithoFindUsagesHandlerFactory factory = new LithoFindUsagesHandlerFactory();
-          Assert.assertTrue(factory.canFindUsages(layoutSpec));
-          Assert.assertTrue(factory.canFindUsages(otherSpec));
-          Assert.assertFalse(factory.canFindUsages(notSpec));
+          assertTrue(factory.canFindUsages(layoutSpec));
+          assertTrue(factory.canFindUsages(otherSpec));
+          assertFalse(factory.canFindUsages(notSpec));
 
           return true;
         },
@@ -52,17 +66,80 @@ public class LithoFindUsagesHandlerFactoryTest extends LithoPluginIntellijTest {
 
   @Test
   public void findUsages() {
-    PsiClass mockedElement = Mockito.mock(PsiClass.class);
-    PsiClass mockedResult = Mockito.mock(PsiClass.class);
+    PsiClass mockedElement = mock(PsiClass.class);
+    PsiClass mockedResult = mock(PsiClass.class);
 
+    // We mock this function because project search is not working in test environment
+    Function<PsiClass, Optional<PsiClass>> findGeneratedComponent =
+        psiClass -> Optional.of(mockedResult);
     LithoFindUsagesHandlerFactory.GeneratedClassFindUsagesHandler handler =
         new LithoFindUsagesHandlerFactory.GeneratedClassFindUsagesHandler(
-            mockedElement, psiClass -> Optional.of(mockedResult));
+            mockedElement, findGeneratedComponent);
 
-    // Includes both original element and "component" element to search for
+    // Includes both original element and "generated component" element
     PsiElement[] primaryElements = handler.getPrimaryElements();
-    Assert.assertEquals(2, primaryElements.length);
-    Assert.assertEquals(mockedResult, primaryElements[0]);
-    Assert.assertEquals(mockedElement, primaryElements[1]);
+    assertEquals(2, primaryElements.length);
+    assertEquals(mockedResult, primaryElements[0]);
+    assertEquals(mockedElement, primaryElements[1]);
+  }
+
+  @Test
+  public void getFindUsagesOptions() {
+    testHelper.getPsiClass(
+        psiClasses -> {
+          assertNotNull(psiClasses);
+          PsiClass layoutSpec = psiClasses.get(0);
+
+          // Associate generatedComponentVirtualFile with mockedGeneratedComponentCls
+          PsiClass mockedGeneratedComponentCls = mock(PsiClass.class);
+          PsiFile mockedGeneratedComponentFile = mock(PsiFile.class);
+          when(mockedGeneratedComponentCls.getContainingFile())
+              .thenReturn(mockedGeneratedComponentFile);
+          VirtualFile generatedComponentVirtualFile = createPresentInScopeVirtualFile();
+          when(mockedGeneratedComponentFile.getVirtualFile())
+              .thenReturn(generatedComponentVirtualFile);
+
+          VirtualFile presentInScopeVirtualFile = createPresentInScopeVirtualFile();
+
+          // We mock this function because project search is not working in test environment
+          Function<PsiClass, Optional<PsiClass>> findGeneratedComponent =
+              psiClass -> Optional.of(mockedGeneratedComponentCls);
+          LithoFindUsagesHandlerFactory.GeneratedClassFindUsagesHandler handler =
+              new LithoFindUsagesHandlerFactory.GeneratedClassFindUsagesHandler(
+                  layoutSpec, findGeneratedComponent);
+
+          // Search scope should not contain generated component
+          SearchScope searchScope = handler.getFindUsagesOptions(null).searchScope;
+          assertTrue(searchScope.contains(presentInScopeVirtualFile));
+          assertFalse(searchScope.contains(generatedComponentVirtualFile));
+
+          return true;
+        },
+        "LayoutSpec.java");
+  }
+
+  private VirtualFile createPresentInScopeVirtualFile() {
+    return new PresentInScopeVirtualFile(mock(CoreLocalFileSystem.class), mock(File.class));
+  }
+
+  /**
+   * {@link com.intellij.psi.search.ProjectScopeImpl#contains(VirtualFile)} implementation returns
+   * true if given file instanceof VirtualFileWindow.
+   */
+  class PresentInScopeVirtualFile extends CoreLocalVirtualFile implements VirtualFileWindow {
+
+    PresentInScopeVirtualFile(CoreLocalFileSystem fileSystem, File ioFile) {
+      super(fileSystem, ioFile);
+    }
+
+    @Override
+    public VirtualFile getDelegate() {
+      return null;
+    }
+
+    @Override
+    public DocumentWindow getDocumentWindow() {
+      return null;
+    }
   }
 }

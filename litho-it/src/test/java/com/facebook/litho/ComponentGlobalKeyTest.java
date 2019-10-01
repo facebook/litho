@@ -29,6 +29,7 @@ import com.facebook.litho.testing.util.InlineLayoutSpec;
 import com.facebook.litho.widget.CardClip;
 import com.facebook.litho.widget.EditText;
 import com.facebook.litho.widget.Text;
+import com.facebook.litho.widget.TreePropTestContainerComponentSpec;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -371,6 +372,15 @@ public class ComponentGlobalKeyTest {
     Assert.assertEquals(rootGlobalKey, getComponentAt(lithoView, 7).getOwnerGlobalKey());
   }
 
+  @Test
+  public void nestedTreeRemeasureKeyStabilityTest() {
+    final Component componentWithoutRemeasure = TreePropTestContainerComponentSpec.create(mContext);
+    final LithoView lithoView = getLithoView(componentWithoutRemeasure);
+    Assert.assertEquals(
+        TreePropTestContainerComponentSpec.EXPECTED_GLOBAL_KEY,
+        getComponentAt(lithoView, 1).getOwnerGlobalKey());
+  }
+
   private static Component getComponentAt(LithoView lithoView, int index) {
     return lithoView.getMountItemAt(index).getComponent();
   }
@@ -379,8 +389,8 @@ public class ComponentGlobalKeyTest {
     LithoView lithoView = new LithoView(mContext);
     lithoView.setComponent(component);
     lithoView.measure(
-        View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
-        View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+        View.MeasureSpec.makeMeasureSpec(640, View.MeasureSpec.UNSPECIFIED),
+        View.MeasureSpec.makeMeasureSpec(480, View.MeasureSpec.UNSPECIFIED));
     lithoView.layout(0, 0, lithoView.getMeasuredWidth(), lithoView.getMeasuredHeight());
     return lithoView;
   }

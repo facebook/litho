@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 class LayoutThreadFactory implements ThreadFactory {
   private static final AtomicInteger threadPoolId = new AtomicInteger(1);
   private final AtomicInteger threadNumber = new AtomicInteger(1);
-  private final int mThreadPriority;
+  private int mThreadPriority;
   private final int mThreadPoolId;
 
   public LayoutThreadFactory(int threadPriority) {
@@ -63,5 +63,9 @@ class LayoutThreadFactory implements ThreadFactory {
     thread.setPriority(Thread.MAX_PRIORITY);
 
     return thread;
+  }
+
+  void setThreadPriority(int threadPriority) {
+    mThreadPriority = threadPriority;
   }
 }
