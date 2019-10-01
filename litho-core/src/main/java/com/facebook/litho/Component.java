@@ -142,7 +142,7 @@ public abstract class Component extends ComponentLifecycle
    * This should NOT be used in general use cases. Use the standard {@link #Component(String)}
    * instead.
    */
-  protected Component(String simpleName, Object type) {
+  Component(String simpleName, Object type) {
     super(type);
     mSimpleName = simpleName;
   }

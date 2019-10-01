@@ -211,7 +211,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
    * This constructor should be called only if working with a manually crafted special Component.
    * This should NOT be used in general use cases.
    */
-  protected ComponentLifecycle(Object type) {
+  ComponentLifecycle(Object type) {
     if (type == null) {
       type = getClass();
     }
