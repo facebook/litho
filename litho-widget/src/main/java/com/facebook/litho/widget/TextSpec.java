@@ -678,6 +678,8 @@ class TextSpec {
                 textDirection,
                 lineHeight);
 
+        TextDirectionHeuristicCompat finalTextDirection =
+            getTextDirection(textDirection, layoutDirection);
         Layout.Alignment finalLayoutAlignment = customEllipsisLayout.getAlignment();
         boolean isRtl = finalTextDirection.isRtl(text, 0, text.length());
         boolean isAlignedLeft = isRtl ^ (finalLayoutAlignment == Alignment.ALIGN_NORMAL);
