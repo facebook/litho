@@ -678,15 +678,7 @@ class TextSpec {
                 textDirection,
                 lineHeight);
 
-        YogaDirection layoutDirection = layout.getResolvedLayoutDirection();
-        TextDirectionHeuristicCompat finalTextDirection =
-            getTextDirection(textDirection, layoutDirection);
-        Layout.Alignment finalLayoutAlignment =
-            getLayoutAlignment(
-                getTextAlignment(textAlignment, alignment),
-                finalTextDirection,
-                text,
-                layoutDirection);
+        Layout.Alignment finalLayoutAlignment = customEllipsisLayout.getAlignment();
         boolean isRtl = finalTextDirection.isRtl(text, 0, text.length());
         boolean isAlignedLeft = isRtl ^ (finalLayoutAlignment == Alignment.ALIGN_NORMAL);
         final CharSequence truncated =

@@ -16,7 +16,7 @@
 
 package com.facebook.litho.widget;
 
-import static android.support.v4.text.TextDirectionHeuristicsCompat.FIRSTSTRONG_LTR;
+import static androidx.core.text.TextDirectionHeuristicsCompat.FIRSTSTRONG_LTR;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.anyInt;
@@ -26,7 +26,6 @@ import static org.mockito.Mockito.when;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.support.v4.text.TextDirectionHeuristicCompat;
 import android.graphics.drawable.Drawable;
 import android.text.Layout;
 import android.text.Spannable;
@@ -35,6 +34,7 @@ import android.text.style.ClickableSpan;
 import android.util.SparseArray;
 import android.view.MotionEvent;
 import android.view.View;
+import androidx.core.text.TextDirectionHeuristicCompat;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.LithoView;
