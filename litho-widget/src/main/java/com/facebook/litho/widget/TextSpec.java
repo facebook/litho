@@ -678,6 +678,7 @@ class TextSpec {
                 textDirection,
                 lineHeight);
 
+        YogaDirection layoutDirection = layout.getResolvedLayoutDirection();
         TextDirectionHeuristicCompat finalTextDirection =
             getTextDirection(textDirection, layoutDirection);
         Layout.Alignment finalLayoutAlignment = customEllipsisLayout.getAlignment();
