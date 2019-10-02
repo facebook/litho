@@ -244,6 +244,7 @@ public class LayoutStateCalculateVisibilityOutputsTest {
     return LayoutState.calculate(
         new ComponentContext(context),
         component,
+        null,
         componentTreeId,
         widthSpec,
         heightSpec,

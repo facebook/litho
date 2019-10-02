@@ -80,8 +80,6 @@ public class ComponentContext {
   @ThreadConfined(ThreadConfined.ANY)
   private int mDefStyleAttr = 0;
 
-  private @Nullable ComponentTree.LayoutStateFuture mLayoutStateFuture;
-
   @ThreadConfined(ThreadConfined.ANY)
   private @Nullable LayoutStateReferenceWrapper mLayoutStateReferenceWrapper;
 
@@ -139,19 +137,13 @@ public class ComponentContext {
   }
 
   public ComponentContext(ComponentContext context) {
-    this(
-        context,
-        context.mStateHandler,
-        context.mTreeProps,
-        context.mLayoutStateFuture,
-        context.mLayoutStateReferenceWrapper);
+    this(context, context.mStateHandler, context.mTreeProps, context.mLayoutStateReferenceWrapper);
   }
 
   public ComponentContext(
       ComponentContext context,
       @Nullable StateHandler stateHandler,
       @Nullable TreeProps treeProps,
-      @Nullable ComponentTree.LayoutStateFuture layoutStateFuture,
       @Nullable LayoutStateReferenceWrapper layoutStateReferenceWrapper) {
 
     mContext = context.mContext;
@@ -170,7 +162,6 @@ public class ComponentContext {
 
     mStateHandler = stateHandler != null ? stateHandler : context.mStateHandler;
     mTreeProps = treeProps != null ? treeProps : context.mTreeProps;
-    mLayoutStateFuture = layoutStateFuture != null ? layoutStateFuture : context.mLayoutStateFuture;
   }
 
   ComponentContext makeNewCopy() {
@@ -244,7 +235,9 @@ public class ComponentContext {
   @Nullable
   @VisibleForTesting
   public ComponentTree.LayoutStateFuture getLayoutStateFuture() {
-    return mLayoutStateFuture;
+    return mLayoutStateReferenceWrapper == null
+        ? null
+        : mLayoutStateReferenceWrapper.getLayoutStateFuture();
   }
 
   /**
@@ -477,10 +470,9 @@ public class ComponentContext {
 
   static ComponentContext withComponentTree(ComponentContext context, ComponentTree componentTree) {
     ComponentContext componentContext =
-        new ComponentContext(context, new StateHandler(), null, null, null);
+        new ComponentContext(context, new StateHandler(), null, null);
     componentContext.mComponentTree = componentTree;
     componentContext.mComponentScope = null;
-    componentContext.mLayoutStateFuture = null;
 
     return componentContext;
   }
@@ -516,11 +508,15 @@ public class ComponentContext {
   }
 
   boolean wasLayoutCanceled() {
-    return mLayoutStateFuture != null && mLayoutStateFuture.isReleased();
+    return mLayoutStateReferenceWrapper == null
+        ? false
+        : mLayoutStateReferenceWrapper.isLayoutReleased();
   }
 
   boolean wasLayoutInterrupted() {
-    return mLayoutStateFuture != null && mLayoutStateFuture.isInterrupted();
+    return mLayoutStateReferenceWrapper == null
+        ? false
+        : mLayoutStateReferenceWrapper.isLayoutInterrupted();
   }
 
   public boolean isReconciliationEnabled() {

@@ -30,7 +30,7 @@ class TestComponentContext extends ComponentContext {
   }
 
   TestComponentContext(ComponentContext c, StateHandler stateHandler) {
-    super(c, stateHandler, null, null, null);
+    super(c, stateHandler, null, null);
   }
 
   @Override

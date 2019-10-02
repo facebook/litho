@@ -56,6 +56,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.collection.LongSparseArray;
 import com.facebook.infer.annotation.ThreadSafe;
+import com.facebook.litho.ComponentTree.LayoutStateFuture;
 import com.facebook.litho.annotations.ImportantForAccessibility;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.drawable.BorderColorDrawable;
@@ -63,8 +64,6 @@ import com.facebook.litho.drawable.ComparableDrawable;
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -101,7 +100,6 @@ class LayoutState {
     CalculateLayoutSource.UPDATE_STATE_ASYNC,
     CalculateLayoutSource.MEASURE
   })
-  @Retention(RetentionPolicy.SOURCE)
   public @interface CalculateLayoutSource {
     int TEST = -2;
     int NONE = -1;
@@ -137,36 +135,59 @@ class LayoutState {
       };
 
   /**
-   * Wraps an instance of a LayoutState to access it in other classes such as ComponentContext
-   * during layout state calculation. When the layout calculation finishes, the LayoutState
-   * reference is nullified. Using a wrapper instead of accessing the LayoutState instance directly
-   * helps with clearing out the reference from all objects that hold on to it, without needing the
-   * LayoutState to know about them.
+   * Wraps objects which should only be available for the duration of a LayoutState, to access them
+   * in other classes such as ComponentContext during layout state calculation. When the layout
+   * calculation finishes, all references are nullified. Using a wrapper instead of passing the
+   * instances directly helps with clearing out the reference from all objects that hold on to it,
+   * without having to keep track of all these objects to clear out the references.
    */
   static final class LayoutStateReferenceWrapper {
     private @Nullable LayoutState mLayoutStateRef;
+    private @Nullable LayoutStateFuture mLayoutStateFuture;
+
     private static @Nullable LayoutState sTestLayoutState;
 
     public static LayoutStateReferenceWrapper getTestInstance(ComponentContext c) {
       if (sTestLayoutState == null) {
         sTestLayoutState = new LayoutState(c);
       }
-      return new LayoutStateReferenceWrapper(sTestLayoutState);
+
+      return new LayoutStateReferenceWrapper(sTestLayoutState, null);
     }
 
     @VisibleForTesting
     LayoutStateReferenceWrapper(LayoutState layoutState) {
+      this(layoutState, null);
+    }
+
+    @VisibleForTesting
+    LayoutStateReferenceWrapper(
+        LayoutState layoutState, @Nullable LayoutStateFuture layoutStateFuture) {
       mLayoutStateRef = layoutState;
+      mLayoutStateFuture = layoutStateFuture;
     }
 
     private void releaseReference() {
       mLayoutStateRef = null;
+      mLayoutStateFuture = null;
     }
 
     /** Returns the LayoutState instance or null if the layout state has been released. */
     @Nullable
     LayoutState getLayoutState() {
       return mLayoutStateRef;
+    }
+
+    public @Nullable LayoutStateFuture getLayoutStateFuture() {
+      return mLayoutStateFuture;
+    }
+
+    boolean isLayoutInterrupted() {
+      return mLayoutStateFuture == null ? false : mLayoutStateFuture.isInterrupted();
+    }
+
+    boolean isLayoutReleased() {
+      return mLayoutStateFuture == null ? false : mLayoutStateFuture.isReleased();
     }
   }
 
@@ -1263,6 +1284,7 @@ class LayoutState {
     return calculate(
         c,
         component,
+        null,
         componentTreeId,
         widthSpec,
         heightSpec,
@@ -1275,6 +1297,7 @@ class LayoutState {
   static LayoutState calculate(
       ComponentContext c,
       Component component,
+      @Nullable LayoutStateFuture layoutStateFuture,
       int componentTreeId,
       int widthSpec,
       int heightSpec,
@@ -1324,7 +1347,7 @@ class LayoutState {
       component.markLayoutStarted();
 
       layoutState = new LayoutState(c);
-      layoutStateWrapper = new LayoutStateReferenceWrapper(layoutState);
+      layoutStateWrapper = new LayoutStateReferenceWrapper(layoutState, layoutStateFuture);
       c.setLayoutStateReferenceWrapper(layoutStateWrapper);
 
       layoutState.mShouldGenerateDiffTree = shouldGenerateDiffTree;
@@ -1364,7 +1387,7 @@ class LayoutState {
       layoutState.mLayoutRoot = root;
       layoutState.mRootTransitionId = getTransitionIdForNode(root);
 
-      if (c.wasLayoutInterrupted()) {
+      if (layoutStateWrapper.isLayoutInterrupted()) {
         layoutState.mIsPartialLayoutState = true;
         return layoutState;
       }
@@ -1406,7 +1429,7 @@ class LayoutState {
     }
 
     final LayoutStateReferenceWrapper layoutStateWrapper =
-        new LayoutStateReferenceWrapper(layoutState);
+        new LayoutStateReferenceWrapper(layoutState, null);
     c.setLayoutStateReferenceWrapper(layoutStateWrapper);
 
     final Component component = layoutState.mComponent;

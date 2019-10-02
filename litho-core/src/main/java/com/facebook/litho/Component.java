@@ -522,9 +522,7 @@ public abstract class Component extends ComponentLifecycle
     }
 
     final ComponentContext contextForLayout =
-        c.getStateHandler() == null
-            ? new ComponentContext(c, new StateHandler(), null, null, null)
-            : c;
+        c.getStateHandler() == null ? new ComponentContext(c, new StateHandler(), null, null) : c;
     final InternalNode internalNode =
         LayoutState.createAndMeasureTreeForComponent(contextForLayout, this, widthSpec, heightSpec);
 

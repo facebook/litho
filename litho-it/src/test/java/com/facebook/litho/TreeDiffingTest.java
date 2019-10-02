@@ -844,6 +844,7 @@ public class TreeDiffingTest {
     return calculate(
         context,
         component,
+        null,
         -1,
         widthSpec,
         heightSpec,
@@ -862,6 +863,7 @@ public class TreeDiffingTest {
     return calculate(
         context,
         component,
+        null,
         -1,
         widthSpec,
         heightSpec,
