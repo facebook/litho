@@ -1,0 +1,54 @@
+/*
+ * Copyright 2014-present Facebook, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+apply plugin: 'com.android.library'
+apply plugin: 'maven'
+apply plugin: 'kotlin-android'
+
+android {
+    compileSdkVersion rootProject.compileSdkVersion
+    buildToolsVersion rootProject.buildToolsVersion
+
+    defaultConfig {
+        minSdkVersion rootProject.minSdkVersion
+    }
+
+    // TODO(#62): Re-enable abort on error.
+    lintOptions {
+        abortOnError false
+    }
+}
+
+dependencies {
+    implementation project(':litho-core')
+
+    // Annotations
+    compileOnly deps.jsr305
+    compileOnly deps.inferAnnotations
+
+    implementation deps.kotlinStandardLib
+
+    // Android Support Library
+    compileOnly deps.supportAnnotations
+}
+
+apply from: rootProject.file('gradle/release.gradle')
+
+task sourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    archiveClassifier.set('sources')
+}
+artifacts.add('archives', sourcesJar)

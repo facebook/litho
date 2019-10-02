@@ -33,6 +33,7 @@ kapt {
 
 dependencies {
     implementation project(':litho-core')
+    implementation project(':litho-kotlin')
     implementation project(':litho-widget')
     implementation project(':litho-fresco')
     implementation project(':litho-sections-core')
