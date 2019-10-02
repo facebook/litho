@@ -54,10 +54,12 @@ import static org.robolectric.RuntimeEnvironment.application;
 
 import android.content.Context;
 import android.graphics.Rect;
+import android.graphics.drawable.ColorDrawable;
 import android.util.SparseArray;
 import android.view.accessibility.AccessibilityManager;
 import androidx.annotation.Nullable;
 import com.facebook.litho.LayoutState.LayoutStateReferenceWrapper;
+import com.facebook.litho.drawable.DefaultComparableDrawable;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestLayoutComponent;
@@ -1138,7 +1140,37 @@ public class LayoutStateCalculateTest {
 
     // First and third output are the background and the foreground
     assertThat(getComponentAt(layoutState, 1)).isInstanceOf(DrawableComponent.class);
+    assertThat(((DrawableComponent) getComponentAt(layoutState,1)).isBackground()).isTrue();
     assertThat(getComponentAt(layoutState, 3)).isInstanceOf(DrawableComponent.class);
+    assertThat(((DrawableComponent) getComponentAt(layoutState,3)).isBackground()).isFalse();
+  }
+
+  @Test
+  public void testLayoutOutputsForComponentWithBackgroundDrawable() {
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(final ComponentContext c) {
+            return create(c)
+                .background(DefaultComparableDrawable.create
+                    (new ColorDrawable(0xffff0000)))
+                .child(TestDrawableComponent.create(c))
+                .build();
+          }
+        };
+
+    final LayoutState layoutState = calculateLayoutState(
+        application,
+        component,
+        -1,
+        makeSizeSpec(100, EXACTLY),
+        makeSizeSpec(100, EXACTLY));
+
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(3);
+
+    // First output is the background
+    assertThat(getComponentAt(layoutState, 1)).isInstanceOf(DrawableComponent.class);
+    assertThat(((DrawableComponent) getComponentAt(layoutState,1)).isBackground()).isTrue();
   }
 
   @Test

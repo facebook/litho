@@ -39,15 +39,18 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.RippleDrawable;
 import android.os.Build;
 import android.util.SparseArray;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import androidx.collection.SparseArrayCompat;
+import com.facebook.litho.drawable.DefaultComparableDrawable;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestViewComponent;
 import com.facebook.litho.testing.Whitebox;
@@ -670,6 +673,47 @@ public class ComponentHostTest {
 
     assertThat(mHost.getChildDrawingOrder(mHost.getChildCount(), 0)).isEqualTo(0);
     assertThat(mHost.getChildDrawingOrder(mHost.getChildCount(), 1)).isEqualTo(1);
+  }
+
+  @Config(sdk = Build.VERSION_CODES.LOLLIPOP)
+  @Test
+  public void testMountComponentHostWithRippleBackground() {
+    RippleDrawable drawable = new RippleDrawable(ColorStateList.valueOf(0xff0000ff),null,null);
+    DefaultComparableDrawable backgroundDrawable = DefaultComparableDrawable.create(drawable);
+    DrawableComponent<Drawable> drawableComponent = DrawableComponent.create(backgroundDrawable);
+    drawableComponent.setIsBackground(true);
+    Object content = drawableComponent.onCreateMountContent(mContext.getAndroidContext());
+    drawableComponent.mount(mContext,content);
+
+    ComponentHost host = new ComponentHost(mContext);
+    assertThat(host.getBackground()).isNull();
+
+    MountItem mountItem = new MountItem(drawableComponent,host,content,new DefaultNodeInfo(),null,0,IMPORTANT_FOR_ACCESSIBILITY_AUTO,
+        ORIENTATION_PORTRAIT, null);
+    host.mount(0,mountItem,new Rect());
+    assertThat(host.getBackground()).isNotNull();
+    assertThat(host.getBackground()).isSameAs(drawable);
+  }
+
+
+  @Config(sdk = Build.VERSION_CODES.LOLLIPOP)
+  @Test
+  public void testUnmountComponentHostWithRippleBackground() {
+    RippleDrawable drawable = new RippleDrawable(ColorStateList.valueOf(0xff0000ff),null,null);
+    DefaultComparableDrawable backgroundDrawable = DefaultComparableDrawable.create(drawable);
+    DrawableComponent<Drawable> drawableComponent = DrawableComponent.create(backgroundDrawable);
+    drawableComponent.setIsBackground(true);
+    Object content = drawableComponent.onCreateMountContent(mContext.getAndroidContext());
+    drawableComponent.mount(mContext,content);
+
+    ComponentHost host = new ComponentHost(mContext);
+    assertThat(host.getBackground()).isNull();
+
+    MountItem mountItem = new MountItem(drawableComponent,host,content,new DefaultNodeInfo(),null,0,IMPORTANT_FOR_ACCESSIBILITY_AUTO,
+        ORIENTATION_PORTRAIT, null);
+    host.mount(0,mountItem,new Rect());
+    host.unmount(mountItem);
+    assertThat(host.getBackground()).isNull();
   }
 
   /**

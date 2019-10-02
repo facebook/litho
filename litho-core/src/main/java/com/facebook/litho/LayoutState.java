@@ -1085,6 +1085,12 @@ class LayoutState {
       @OutputUnitType int type,
       boolean matchHostBoundsTransitions) {
     final Component drawableComponent = DrawableComponent.create(drawable);
+
+    if (type == OutputUnitType.BACKGROUND) {
+      // set that this DrawableComponent is a background to be set on the ComponentHost.
+      ((DrawableComponent) drawableComponent).setIsBackground(true);
+    }
+
     drawableComponent.setScopedContext(
         ComponentContext.withComponentScope(node.getContext(), drawableComponent));
     final boolean isOutputUpdated;

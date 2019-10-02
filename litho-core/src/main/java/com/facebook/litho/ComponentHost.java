@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import static android.os.Build.VERSION.SDK_INT;
 import static com.facebook.litho.AccessibilityUtils.isAccessibilityEnabled;
 import static com.facebook.litho.ComponentHostUtils.maybeInvalidateAccessibilityState;
 import static com.facebook.litho.MountItem.isTouchableDisabled;
@@ -26,7 +27,9 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.RippleDrawable;
 import android.os.Build;
+import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.AttributeSet;
@@ -41,6 +44,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.collection.SparseArrayCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.view.ViewCompat;
+import com.facebook.litho.drawable.DefaultComparableDrawable;
 import com.facebook.proguard.annotations.DoNotStrip;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -1288,10 +1292,61 @@ public class ComponentHost extends ViewGroup {
 
     ensureDrawableMountItems();
     mDrawableMountItems.put(index, mountItem);
+
+    // Check if the drawable component is a ripple drawable and it's a background.
+    Drawable rippleDrawable = getRippleDrawable(mountItem);
+
+    // If the mountItem has a rippleDrawable, then we have to set it as this
+    // ComponentHost's background.
+    if (SDK_INT >= VERSION_CODES.LOLLIPOP && rippleDrawable instanceof RippleDrawable) {
+      this.setBackground(rippleDrawable);
+      return;
+    }
+
     final Drawable drawable = (Drawable) mountItem.getContent();
 
     ComponentHostUtils.mountDrawable(
         this, drawable, bounds, mountItem.getLayoutFlags(), mountItem.getNodeInfo());
+  }
+
+  /**
+   * Verifies if the {@link MountItem} contains a background for the ComponentHost and if this
+   * background is a {@link RippleDrawable}.
+   * <p>We return the {@link RippleDrawable} object if the mount item holds a background
+   * which is RippleDrawable or else, in all other cases this function will return null.
+   */
+  @Nullable
+  private static Drawable getRippleDrawable(MountItem mountItem) {
+    final Drawable drawable = (Drawable) mountItem.getContent();
+    final Component component = mountItem.getComponent();
+
+    if (SDK_INT < VERSION_CODES.LOLLIPOP) {
+      return null;
+    }
+
+    if (!(drawable instanceof MatrixDrawable)) {
+      return null;
+    }
+
+    if (!(component instanceof DrawableComponent)
+        && !((DrawableComponent) component).isBackground()) {
+      return null;
+    }
+
+    Drawable wrappedbyMatrix = ((MatrixDrawable) drawable).getMountedDrawable();
+    if (!(wrappedbyMatrix instanceof DefaultComparableDrawable)) {
+      return null;
+    }
+    // We need to unwrap the RippleDrawable from DefaultComparableDrawable since
+    // DefaultComparableDrawable does not override all the methods necessary for Ripple drawable to
+    // be projected outside the bounds.
+    // We need to get the wrapped drawable to identify if it's a ripple drawable or not.
+    Drawable unwrappedDrawable = ((DefaultComparableDrawable) wrappedbyMatrix).getWrappedDrawable();
+    // We will set the view's background only if it's RippleDrawable
+    if (unwrappedDrawable instanceof RippleDrawable) {
+      return unwrappedDrawable;
+    }
+    return null;
   }
 
   private void unmountDrawable(MountItem mountItem) {
@@ -1301,6 +1356,13 @@ public class ComponentHost extends ViewGroup {
     drawable.setCallback(null);
     invalidate(drawable.getBounds());
 
+    // Unset the background to null if the mountItem has a ripple drawable and it's set as
+    // background of ComponentHost in mountDrawable
+    if (SDK_INT >= VERSION_CODES.LOLLIPOP
+        && this.getBackground() instanceof RippleDrawable
+        && getRippleDrawable(mountItem) instanceof RippleDrawable) {
+      this.setBackground(null);
+    }
     releaseScrapDataStructuresIfNeeded();
   }
 

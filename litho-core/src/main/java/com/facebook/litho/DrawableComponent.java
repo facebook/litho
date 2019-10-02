@@ -25,6 +25,7 @@ class DrawableComponent<T extends Drawable> extends Component {
   ComparableDrawable mDrawable;
   int mDrawableWidth;
   int mDrawableHeight;
+  private boolean isBackground;
 
   private DrawableComponent(ComparableDrawable drawable) {
     super("DrawableComponent");
@@ -105,6 +106,26 @@ class DrawableComponent<T extends Drawable> extends Component {
 
   private void setDrawableWidth(int drawableWidth) {
     mDrawableWidth = drawableWidth;
+  }
+
+  /**
+   * Indicates if this component is a background for a ComponentHost.
+   *
+   * <p>This will help to check if the background is a ripple drawable. We have to set
+   * RippleDrawables to the view's background so ripple can be projected outside the view bounds.
+   */
+  public void setIsBackground(boolean isBackground) {
+    this.isBackground = isBackground;
+  }
+
+  /**
+   * Returns true if this component is a background for a ComponentHost or else returns false.
+   *
+   * <p>This will help to check if the background is a ripple drawable. We have to set
+   * RippleDrawables to the view's background so ripple can be projected outside the view bounds.
+   */
+  public boolean isBackground() {
+    return isBackground;
   }
 
   private int getDrawableWidth() {
