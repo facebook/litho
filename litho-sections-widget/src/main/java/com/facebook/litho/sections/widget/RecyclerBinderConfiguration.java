@@ -34,7 +34,6 @@ public class RecyclerBinderConfiguration {
   private final boolean mIsCircular;
   private final boolean mIsWrapContent;
   private final boolean mMoveLayoutsBetweenThreads;
-  private final boolean mCacheInternalNodeOnLayoutState;
   private final boolean mUseCancelableLayoutFutures;
   // TODO T34627443 make all fields final after removing setters
   private boolean mHasDynamicItemHeight;
@@ -76,7 +75,6 @@ public class RecyclerBinderConfiguration {
       boolean enableDetach,
       @Nullable LithoHandler changeSetThreadHandler,
       boolean moveLayoutsBetweenThreads,
-      boolean cacheInternalNodeOnLayoutState,
       boolean useCancelableLayoutFutures,
       boolean isReconciliationEnabled,
       boolean isLayoutDiffingEnabled,
@@ -96,7 +94,6 @@ public class RecyclerBinderConfiguration {
     mEnableDetach = enableDetach;
     mChangeSetThreadHandler = changeSetThreadHandler;
     mMoveLayoutsBetweenThreads = moveLayoutsBetweenThreads;
-    mCacheInternalNodeOnLayoutState = cacheInternalNodeOnLayoutState;
     mUseCancelableLayoutFutures = useCancelableLayoutFutures;
     mIsReconciliationEnabled = isReconciliationEnabled;
     mIsLayoutDiffingEnabled = isLayoutDiffingEnabled;
@@ -163,10 +160,6 @@ public class RecyclerBinderConfiguration {
     return mMoveLayoutsBetweenThreads;
   }
 
-  public boolean cacheInternalNodeOnLayoutState() {
-    return mCacheInternalNodeOnLayoutState;
-  }
-
   public boolean getEnableDetach() {
     return mEnableDetach;
   }
@@ -205,8 +198,6 @@ public class RecyclerBinderConfiguration {
         ComponentsConfiguration.useCancelableLayoutFutures;
     private boolean mMoveLayoutsBetweenThreads =
         ComponentsConfiguration.canInterruptAndMoveLayoutsBetweenThreads;
-    private boolean mCacheInternalNodeOnLayoutState =
-        ComponentsConfiguration.cacheInternalNodeOnLayoutState;
     private boolean mEnableDetach = false;
     @Nullable private LithoHandler mChangeSetThreadHandler;
     private boolean mIsReconciliationEnabled = ComponentsConfiguration.isReconciliationEnabled;
@@ -231,7 +222,6 @@ public class RecyclerBinderConfiguration {
           configuration.mSplitLayoutForMeasureAndRangeEstimation;
       this.mUseCancelableLayoutFutures = configuration.mUseCancelableLayoutFutures;
       this.mMoveLayoutsBetweenThreads = configuration.mMoveLayoutsBetweenThreads;
-      this.mCacheInternalNodeOnLayoutState = configuration.mCacheInternalNodeOnLayoutState;
       this.mEnableDetach = configuration.mEnableDetach;
       this.mChangeSetThreadHandler = configuration.mChangeSetThreadHandler;
       this.mIsReconciliationEnabled = configuration.mIsReconciliationEnabled;
@@ -347,11 +337,6 @@ public class RecyclerBinderConfiguration {
       return this;
     }
 
-    public Builder cacheInternalNodeOnLayoutState(boolean isEnabled) {
-      this.mCacheInternalNodeOnLayoutState = isEnabled;
-      return this;
-    }
-
     public Builder useCancelableLayoutFutures(boolean isEnabled) {
       this.mUseCancelableLayoutFutures = isEnabled;
       return this;
@@ -401,7 +386,6 @@ public class RecyclerBinderConfiguration {
           mEnableDetach,
           mChangeSetThreadHandler,
           mMoveLayoutsBetweenThreads,
-          mCacheInternalNodeOnLayoutState,
           mUseCancelableLayoutFutures,
           mIsReconciliationEnabled,
           mIsLayoutDiffingEnabled,

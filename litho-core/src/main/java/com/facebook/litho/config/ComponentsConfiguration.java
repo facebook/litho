@@ -221,12 +221,6 @@ public class ComponentsConfiguration {
    */
   public static boolean isRefactoredLayoutCreationEnabled = false;
 
-  /**
-   * If true, the measured InternalNode will be cached on the LayoutState instead of keeping it on
-   * the Component instance.
-   */
-  public static boolean cacheInternalNodeOnLayoutState = false;
-
   public static int percentageSleepLayoutCalculation = 0;
 
   /**

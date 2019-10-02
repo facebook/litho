@@ -37,7 +37,6 @@ import android.content.Context;
 import android.graphics.Rect;
 import android.os.Build;
 import com.facebook.litho.LayoutState.LayoutStateReferenceWrapper;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestLayoutComponent;
 import com.facebook.litho.testing.TestSizeDependentComponent;
@@ -95,8 +94,6 @@ public class LayoutStateCalculateTest {
 
   @Test
   public void testLayoutOutputWithCachedLayoutSpecDelegate() throws Exception {
-    final boolean config = overrideLayoutStateCacheConfig(true);
-
     final ComponentContext baseContext = new ComponentContext(application);
     final ComponentContext c =
         ComponentContext.withComponentTree(baseContext, ComponentTree.create(baseContext).build());
@@ -152,13 +149,10 @@ public class LayoutStateCalculateTest {
     assertThat(mountBounds).isEqualTo(new Rect(20, 0, 280, 0));
 
     validateMockitoUsage();
-    overrideLayoutStateCacheConfig(config);
   }
 
   @Test
   public void testLayoutOutputWithCachedLayoutSpecWithMeasureDelegate() throws Exception {
-    final boolean config = overrideLayoutStateCacheConfig(true);
-
     final ComponentContext baseContext = new ComponentContext(application);
     final ComponentContext c =
         ComponentContext.withComponentTree(baseContext, ComponentTree.create(baseContext).build());
@@ -224,14 +218,10 @@ public class LayoutStateCalculateTest {
     assertThat(mountBounds).isEqualTo(new Rect(20, 0, 280, 0));
 
     validateMockitoUsage();
-
-    overrideLayoutStateCacheConfig(config);
   }
 
   @Test
   public void testLayoutOutputWithCachedLayoutSpecWithMeasure() throws Exception {
-    final boolean config = overrideLayoutStateCacheConfig(true);
-
     final ComponentContext baseContext = new ComponentContext(application);
     final ComponentContext c =
         ComponentContext.withComponentTree(baseContext, ComponentTree.create(baseContext).build());
@@ -304,14 +294,10 @@ public class LayoutStateCalculateTest {
     assertThat(mountBounds).isEqualTo(new Rect(28, 8, 272, 8));
 
     validateMockitoUsage();
-
-    overrideLayoutStateCacheConfig(config);
   }
 
   @Test
   public void testLayoutOutputWithCachedLayoutSpec() throws Exception {
-    final boolean config = overrideLayoutStateCacheConfig(true);
-
     final ComponentContext baseContext = new ComponentContext(application);
     final ComponentContext c =
         ComponentContext.withComponentTree(baseContext, ComponentTree.create(baseContext).build());
@@ -371,15 +357,6 @@ public class LayoutStateCalculateTest {
     assertThat(mountBounds).isEqualTo(new Rect(20, 0, 280, 0));
 
     validateMockitoUsage();
-
-    overrideLayoutStateCacheConfig(config);
-  }
-
-  private static boolean overrideLayoutStateCacheConfig(boolean override) {
-    final boolean currentVal = ComponentsConfiguration.cacheInternalNodeOnLayoutState;
-    ComponentsConfiguration.cacheInternalNodeOnLayoutState = override;
-
-    return currentVal;
   }
 
   private static LayoutState calculateLayoutState(

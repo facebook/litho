@@ -25,7 +25,6 @@ import static com.facebook.litho.LayoutOutput.STATE_UNKNOWN;
 import static com.facebook.litho.LayoutOutput.STATE_UPDATED;
 import static com.facebook.litho.LayoutState.calculate;
 import static com.facebook.litho.LayoutState.createDiffNode;
-import static com.facebook.litho.SizeSpec.AT_MOST;
 import static com.facebook.litho.SizeSpec.getMode;
 import static com.facebook.litho.SizeSpec.getSize;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
@@ -39,20 +38,11 @@ import static com.facebook.yoga.YogaMeasureOutput.getHeight;
 import static com.facebook.yoga.YogaMeasureOutput.getWidth;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.junit.Assert.assertNotEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.robolectric.RuntimeEnvironment.application;
 
 import android.graphics.Color;
 import android.graphics.Rect;
 import androidx.collection.SparseArrayCompat;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.drawable.ComparableColorDrawable;
 import com.facebook.litho.drawable.ComparableDrawable;
 import com.facebook.litho.testing.TestComponent;
@@ -766,77 +756,6 @@ public class TreeDiffingTest {
     assertThat(nestedLeaf1.wasMeasureCalled()).isFalse();
     TestComponent nestedLeaf2 = (TestComponent) layoutState.getMountableOutputAt(4).getComponent();
     assertThat(nestedLeaf2.wasMeasureCalled()).isFalse();
-  }
-
-  @Test
-  public void testCachedMeasuresForCachedLayoutSpecWithMeasure() {
-    final boolean config = ComponentsConfiguration.cacheInternalNodeOnLayoutState;
-    ComponentsConfiguration.cacheInternalNodeOnLayoutState = false;
-
-    final ComponentContext c = new ComponentContext(application);
-    c.setLayoutStateReferenceWrapper(
-        new LayoutState.LayoutStateReferenceWrapper(new LayoutState(c)));
-
-    final int widthSpecContainer = makeSizeSpec(300, SizeSpec.EXACTLY);
-    final int heightSpec = makeSizeSpec(40, AT_MOST);
-    final int horizontalPadding = 20;
-    final int widthMeasuredComponent =
-        makeSizeSpec(
-            getSize(widthSpecContainer) - horizontalPadding - horizontalPadding, SizeSpec.EXACTLY);
-
-    final Component sizeDependentComponentSpy1 =
-        spy(TestSizeDependentComponent.create(c).setFixSizes(false).setDelegate(false).build());
-    Size sizeOutput1 = new Size();
-
-    sizeDependentComponentSpy1.measure(c, widthMeasuredComponent, heightSpec, sizeOutput1);
-
-    // Now embed the measured component in another container and calculate a layout.
-    final Component rootContainer1 =
-        new TestSimpleContainerLayout(sizeDependentComponentSpy1, horizontalPadding);
-
-    final Component sizeDependentComponentSpy2 =
-        spy(TestSizeDependentComponent.create(c).setFixSizes(false).setDelegate(false).build());
-    Size sizeOutput2 = new Size();
-    sizeDependentComponentSpy1.measure(c, widthMeasuredComponent, heightSpec, sizeOutput2);
-
-    // Now embed the measured component in another container and calculate a layout.
-    final Component rootContainer2 =
-        new TestSimpleContainerLayout(sizeDependentComponentSpy2, horizontalPadding);
-
-    // Reset the release/clear counts before issuing calculate().
-    reset(sizeDependentComponentSpy1);
-    doReturn(sizeDependentComponentSpy1).when(sizeDependentComponentSpy1).makeShallowCopy();
-
-    LayoutState prevLayoutState =
-        calculateLayoutStateWithDiffing(
-            mContext, rootContainer1, widthSpecContainer, heightSpec, null);
-
-    // Make sure we reused the cached layout.
-    verify(sizeDependentComponentSpy1, times(1)).clearCachedLayout(any(ComponentContext.class));
-
-    LayoutState layoutState =
-        calculateLayoutStateWithDiffing(
-            mContext, rootContainer2, widthSpecContainer, heightSpec, prevLayoutState);
-
-    verify(sizeDependentComponentSpy1).makeShallowCopy();
-
-    // Make sure we reused the cached layout.
-    verify(sizeDependentComponentSpy2, never()).clearCachedLayout(any(ComponentContext.class));
-
-    // The nested root measure() was called in the first layout calculation.
-    TestComponent prevNestedLeaf1 =
-        (TestComponent) prevLayoutState.getMountableOutputAt(2).getComponent();
-    assertThat(prevNestedLeaf1.wasMeasureCalled()).isTrue();
-    TestComponent prevNestedLeaf2 =
-        (TestComponent) prevLayoutState.getMountableOutputAt(3).getComponent();
-    assertThat(prevNestedLeaf2.wasMeasureCalled()).isTrue();
-
-    TestComponent nestedLeaf1 = (TestComponent) layoutState.getMountableOutputAt(2).getComponent();
-    assertThat(nestedLeaf1.wasMeasureCalled()).isFalse();
-    TestComponent nestedLeaf2 = (TestComponent) layoutState.getMountableOutputAt(3).getComponent();
-    assertThat(nestedLeaf2.wasMeasureCalled()).isFalse();
-
-    ComponentsConfiguration.cacheInternalNodeOnLayoutState = config;
   }
 
   private static LayoutState calculateLayoutState(

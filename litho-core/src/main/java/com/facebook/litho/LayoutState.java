@@ -258,7 +258,6 @@ class LayoutState {
   // If true, the LayoutState calculate call was interrupted and will need to be resumed to finish
   // creating and measuring the InternalNode of the LayoutState.
   private volatile boolean mIsPartialLayoutState;
-  private final boolean mCacheInternalNodeOnLayoutState;
 
   private static final Object debugLock = new Object();
   @Nullable private static Map<Integer, List<Boolean>> layoutCalculationsOnMainThread;
@@ -275,9 +274,7 @@ class LayoutState {
     mTestOutputs = ComponentsConfiguration.isEndToEndTestRun ? new ArrayList<TestOutput>(8) : null;
     mOrientation = context.getResources().getConfiguration().orientation;
 
-    mCacheInternalNodeOnLayoutState = context.isLayoutStateCachingEnabled();
-    mLastMeasuredLayouts =
-        mCacheInternalNodeOnLayoutState ? new HashMap<Integer, InternalNode>() : null;
+    mLastMeasuredLayouts = new HashMap<>();
   }
 
   @VisibleForTesting
@@ -1957,17 +1954,20 @@ class LayoutState {
     }
   }
 
-  boolean shouldCacheInternalNodeOnLayoutState() {
-    return mCacheInternalNodeOnLayoutState;
-  }
-
   @Nullable
   static InternalNode consumeCachedLayout(
       ComponentContext c, Component component, InternalNode holder, int widthSpec, int heightSpec) {
-    final InternalNode cachedLayout = component.getCachedLayout(c);
+    final LayoutState layoutState = c.getLayoutState();
+    if (layoutState == null) {
+      throw new IllegalStateException(
+          component.getSimpleName()
+              + ": Trying to access the cached InternalNode for a component outside of a LayoutState calculation. If that is what you must do, see Component#measureMightNotCacheInternalNode.");
+    }
+
+    final InternalNode cachedLayout = layoutState.getCachedLayout(component);
 
     if (cachedLayout != null) {
-      component.clearCachedLayout(c);
+      layoutState.clearCachedLayout(component);
 
       final boolean hasValidDirection =
           InternalNodeUtils.hasValidLayoutDirectionInNestedTree(holder, cachedLayout);

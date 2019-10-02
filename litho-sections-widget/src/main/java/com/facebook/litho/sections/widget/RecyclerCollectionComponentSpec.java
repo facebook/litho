@@ -310,7 +310,6 @@ public class RecyclerCollectionComponentSpec {
             .useCancelableLayoutFutures(binderConfiguration.useCancelableLayoutFutures())
             .canInterruptAndMoveLayoutsBetweenThreads(
                 binderConfiguration.moveLayoutsBetweenThreads())
-            .cacheInternalNodeOnLayoutState(binderConfiguration.cacheInternalNodeOnLayoutState())
             .isReconciliationEnabled(binderConfiguration.isReconciliationEnabled())
             .isLayoutDiffingEnabled(binderConfiguration.isLayoutDiffingEnabled())
             .build(c);

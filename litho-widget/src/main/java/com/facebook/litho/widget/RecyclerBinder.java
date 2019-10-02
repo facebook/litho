@@ -131,7 +131,6 @@ public class RecyclerBinder
   private boolean mAsyncInitRange;
   private final boolean mUseCancelableLayoutFutures;
   private final boolean mMoveLayoutsBetweenThreads;
-  private final boolean mCacheInternalNodeOnLayoutState;
   private final boolean mIsSubAdapter;
   private final boolean mHasManualEstimatedViewportCount;
   private final boolean mIsReconciliationEnabled;
@@ -354,7 +353,6 @@ public class RecyclerBinder
         ComponentTreeMeasureListenerFactory measureListenerFactory,
         boolean incrementalMountEnabled,
         boolean canInterruptAndMoveLayoutsBetweenThreads,
-        boolean cacheInternalNodeOnLayoutState,
         boolean useCancelableLayoutFutures,
         boolean isReconciliationEnabled,
         boolean isLayoutDiffingEnabled);
@@ -369,7 +367,6 @@ public class RecyclerBinder
             ComponentTreeMeasureListenerFactory measureListenerFactory,
             boolean incrementalMountEnabled,
             boolean canInterruptAndMoveLayoutsBetweenThreads,
-            boolean cacheInternalNodeOnLayoutState,
             boolean useCancelableLayoutFutures,
             boolean isReconciliationEnabled,
             boolean isLayoutDiffingEnabled) {
@@ -379,7 +376,6 @@ public class RecyclerBinder
               .componentTreeMeasureListenerFactory(measureListenerFactory)
               .incrementalMount(incrementalMountEnabled)
               .canInterruptAndMoveLayoutsBetweenThreads(canInterruptAndMoveLayoutsBetweenThreads)
-              .cacheInternalNodeOnLayoutState(cacheInternalNodeOnLayoutState)
               .useCancelableLayoutFutures(useCancelableLayoutFutures)
               .isReconciliationEnabled(isReconciliationEnabled)
               .isLayoutDiffingEnabled(isLayoutDiffingEnabled)
@@ -419,8 +415,6 @@ public class RecyclerBinder
     private boolean useCancelableLayoutFutures = ComponentsConfiguration.useCancelableLayoutFutures;
     private boolean canInterruptAndMoveLayoutsBetweenThreads =
         ComponentsConfiguration.canInterruptAndMoveLayoutsBetweenThreads;
-    public boolean cacheInternalNodeOnLayoutState =
-        ComponentsConfiguration.cacheInternalNodeOnLayoutState;
     private boolean isSubAdapter;
     private int estimatedViewportCount = UNSET;
     private boolean isReconciliationEnabled = ComponentsConfiguration.isReconciliationEnabled;
@@ -669,15 +663,6 @@ public class RecyclerBinder
     }
 
     /**
-     * Experimental, do not use! If true, the measured InternalNode will be cached on the
-     * LayoutState instead of keeping it on the Component instance.
-     */
-    public Builder cacheInternalNodeOnLayoutState(boolean isEnabled) {
-      this.cacheInternalNodeOnLayoutState = isEnabled;
-      return this;
-    }
-
-    /**
      * Note: this is an advanced usage of RecyclerBinder that requires much more manual hand-holding
      * of the RecyclerBinder than normal usage.
      *
@@ -908,7 +893,6 @@ public class RecyclerBinder
     mEnableDetach = builder.enableDetach;
     mUseCancelableLayoutFutures = builder.useCancelableLayoutFutures;
     mMoveLayoutsBetweenThreads = builder.canInterruptAndMoveLayoutsBetweenThreads;
-    mCacheInternalNodeOnLayoutState = builder.cacheInternalNodeOnLayoutState;
     mIsSubAdapter = builder.isSubAdapter;
     mIsReconciliationEnabled = builder.isReconciliationEnabled;
     mIsLayoutDiffingEnabled = builder.isLayoutDiffingEnabled;
@@ -3820,7 +3804,6 @@ public class RecyclerBinder
         mComponentTreeMeasureListenerFactory,
         mIncrementalMountEnabled,
         mMoveLayoutsBetweenThreads,
-        mCacheInternalNodeOnLayoutState,
         mUseCancelableLayoutFutures,
         mIsReconciliationEnabled,
         mIsLayoutDiffingEnabled);

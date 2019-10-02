@@ -43,7 +43,6 @@ public class ComponentTreeHolder {
   private static final int UNINITIALIZED = -1;
   private static final AtomicInteger sIdGenerator = new AtomicInteger(1);
   private final boolean mCanInterruptAndMoveLayoutsBetweenThreads;
-  private final boolean mCacheInternalNodeOnLayoutState;
   private final boolean mUseCancelableLayoutFutures;
   private final boolean mIsReconciliationEnabled;
   private final boolean mIsLayoutDiffingEnabled;
@@ -118,8 +117,6 @@ public class ComponentTreeHolder {
     private boolean canInterruptAndMoveLayoutsBetweenThreads;
     private boolean isReconciliationEnabled = ComponentsConfiguration.isReconciliationEnabled;
     private boolean isLayoutDiffingEnabled = ComponentsConfiguration.isLayoutDiffingEnabled;
-    private boolean cacheInternalNodeOnLayoutState =
-        ComponentsConfiguration.cacheInternalNodeOnLayoutState;
 
     private Builder() {}
 
@@ -170,11 +167,6 @@ public class ComponentTreeHolder {
       return this;
     }
 
-    public Builder cacheInternalNodeOnLayoutState(boolean isEnabled) {
-      this.cacheInternalNodeOnLayoutState = isEnabled;
-      return this;
-    }
-
     public Builder isReconciliationEnabled(boolean isEnabled) {
       isReconciliationEnabled = isEnabled;
       return this;
@@ -212,7 +204,6 @@ public class ComponentTreeHolder {
     mIncrementalMount = builder.incrementalMount;
     mIsReconciliationEnabled = builder.isReconciliationEnabled;
     mIsLayoutDiffingEnabled = builder.isLayoutDiffingEnabled;
-    mCacheInternalNodeOnLayoutState = builder.cacheInternalNodeOnLayoutState;
   }
 
   public synchronized void acquireStateAndReleaseTree() {
@@ -447,7 +438,6 @@ public class ComponentTreeHolder {
               .hasMounted(mHasMounted)
               .incrementalMount(mIncrementalMount)
               .canInterruptAndMoveLayoutsBetweenThreads(mCanInterruptAndMoveLayoutsBetweenThreads)
-              .cacheInternalNodeOnLayoutState(mCacheInternalNodeOnLayoutState)
               .useCancelableLayoutFutures(mUseCancelableLayoutFutures)
               .logger(mRenderInfo.getComponentsLogger(), mRenderInfo.getLogTag())
               .build();

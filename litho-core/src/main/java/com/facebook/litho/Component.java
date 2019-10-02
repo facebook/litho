@@ -63,7 +63,6 @@ import java.util.BitSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nullable;
@@ -99,10 +98,6 @@ public abstract class Component extends ComponentLifecycle
   private boolean mIsLayoutStarted = false;
 
   // If we have a cachedLayout, onPrepare and onMeasure would have been called on it already.
-  @ThreadConfined(ThreadConfined.ANY)
-  @GuardedBy("this")
-  public @Nullable ConcurrentHashMap<Long, InternalNode> mThreadIdToLastMeasuredLayout;
-
   @Nullable private CommonProps mCommonProps;
   @Nullable private SparseArray<DynamicValue<?>> mCommonDynamicProps;
 
@@ -394,24 +389,6 @@ public abstract class Component extends ComponentLifecycle
     return clone;
   }
 
-  @Nullable
-  InternalNode getCachedLayout(ComponentContext c) {
-    final LayoutState layoutState = c.getLayoutState();
-    if (layoutState == null) {
-      throw new IllegalStateException(
-          getSimpleName()
-              + ": Trying to access the cached InternalNode for a component outside of a LayoutState calculation. If that is what you must do, see Component#measureMightNotCacheInternalNode.");
-    }
-
-    if (layoutState.shouldCacheInternalNodeOnLayoutState()) {
-      return layoutState.getCachedLayout(this);
-    }
-
-    return mThreadIdToLastMeasuredLayout == null
-        ? null
-        : mThreadIdToLastMeasuredLayout.get(Thread.currentThread().getId());
-  }
-
   /**
    * Only use if absolutely needed! This removes the cached layout so this component will be
    * remeasured even if it has alread been measured with the same size specs.
@@ -424,11 +401,7 @@ public abstract class Component extends ComponentLifecycle
               + ": Trying to access the cached InternalNode for a component outside of a LayoutState calculation. If that is what you must do, see Component#measureMightNotCacheInternalNode.");
     }
 
-    if (layoutState.shouldCacheInternalNodeOnLayoutState()) {
-      layoutState.clearCachedLayout(this);
-    } else if (mThreadIdToLastMeasuredLayout != null) {
-      mThreadIdToLastMeasuredLayout.remove(Thread.currentThread().getId());
-    }
+    layoutState.clearCachedLayout(this);
   }
 
   void reset() {
@@ -444,24 +417,25 @@ public abstract class Component extends ComponentLifecycle
    * @param outputSize Size object that will be set with the measured dimensions.
    */
   public void measure(ComponentContext c, int widthSpec, int heightSpec, Size outputSize) {
-    if (!c.hasLayoutState()) {
+    final LayoutState layoutState = c.getLayoutState();
+    if (layoutState == null) {
       throw new IllegalStateException(
           getSimpleName()
               + ": Trying to measure a component outside of a LayoutState calculation. If that is what you must do, see Component#measureMightNotCacheInternalNode.");
     }
 
-    InternalNode lastMeasuredLayout = getCachedLayout(c);
+    InternalNode lastMeasuredLayout = layoutState.getCachedLayout(this);
     if (lastMeasuredLayout == null
         || !MeasureComparisonUtils.isMeasureSpecCompatible(
             lastMeasuredLayout.getLastWidthSpec(), widthSpec, lastMeasuredLayout.getWidth())
         || !MeasureComparisonUtils.isMeasureSpecCompatible(
             lastMeasuredLayout.getLastHeightSpec(), heightSpec, lastMeasuredLayout.getHeight())) {
-      clearCachedLayout(c);
+      layoutState.clearCachedLayout(this);
 
       lastMeasuredLayout =
           LayoutState.createAndMeasureTreeForComponent(c, this, widthSpec, heightSpec);
 
-      cacheLastMeasuredLayout(c, lastMeasuredLayout);
+      layoutState.addLastMeasuredLayout(this, lastMeasuredLayout);
 
       // This component resolution won't be deferred nor onMeasure called if it's a layout spec.
       // In that case it needs to manually save the latest saze specs.
@@ -475,26 +449,6 @@ public abstract class Component extends ComponentLifecycle
     }
     outputSize.width = lastMeasuredLayout.getWidth();
     outputSize.height = lastMeasuredLayout.getHeight();
-  }
-
-  private void cacheLastMeasuredLayout(ComponentContext c, InternalNode lastMeasuredLayout) {
-    final LayoutState layoutState = c.getLayoutState();
-    if (layoutState == null) {
-      throw new IllegalStateException(
-          "Cached layout should not be handled outside a LayoutState calculation");
-    }
-
-    if (layoutState.shouldCacheInternalNodeOnLayoutState()) {
-      layoutState.addLastMeasuredLayout(this, lastMeasuredLayout);
-    } else {
-      // We just want to make sure this isn't initialized on multiple threads
-      synchronized (this) {
-        if (mThreadIdToLastMeasuredLayout == null) {
-          mThreadIdToLastMeasuredLayout = new ConcurrentHashMap<>(2);
-        }
-      }
-      mThreadIdToLastMeasuredLayout.put(Thread.currentThread().getId(), lastMeasuredLayout);
-    }
   }
 
   /**
@@ -565,14 +519,12 @@ public abstract class Component extends ComponentLifecycle
     if (c != null) {
       final LayoutState layoutState = c.getLayoutState();
 
-      if (layoutState != null && layoutState.shouldCacheInternalNodeOnLayoutState()) {
+      if (layoutState != null) {
         return layoutState.hasCachedLayout(this);
       }
     }
 
-    return mThreadIdToLastMeasuredLayout == null
-        ? false
-        : mThreadIdToLastMeasuredLayout.get(Thread.currentThread().getId()) != null;
+    return false;
   }
 
   private static Component getFirstNonSimpleNameDelegate(Component component) {

@@ -45,7 +45,6 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.util.Pair;
 import com.facebook.litho.LayoutState.LayoutStateReferenceWrapper;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.logging.TestComponentsReporter;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
@@ -401,31 +400,7 @@ public class InternalNodeTest {
   }
 
   @Test
-  public void testComponentCreateAndRetrieveCachedLayout() {
-    final ComponentContext c = new ComponentContext(application);
-
-    final LayoutState layoutState = new LayoutState(c);
-    c.setLayoutStateReferenceWrapper(new LayoutStateReferenceWrapper(layoutState));
-
-    final int unspecifiedSizeSpec = makeSizeSpec(0, UNSPECIFIED);
-    final int exactSizeSpec = makeSizeSpec(50, EXACTLY);
-    final Component textComponent = Text.create(c).textSizePx(16).text("test").build();
-    final Size textSize = new Size();
-    textComponent.measure(c, exactSizeSpec, unspecifiedSizeSpec, textSize);
-
-    assertThat(textComponent.getCachedLayout(c)).isNotNull();
-    InternalNode cachedLayout = textComponent.getCachedLayout(c);
-    assertThat(cachedLayout).isNotNull();
-    assertThat(cachedLayout.getLastWidthSpec()).isEqualTo(exactSizeSpec);
-    assertThat(cachedLayout.getLastHeightSpec()).isEqualTo(unspecifiedSizeSpec);
-
-    textComponent.clearCachedLayout(c);
-    assertThat(textComponent.getCachedLayout(c)).isNull();
-  }
-
-  @Test
   public void testComponentCreateAndRetrieveCachedLayoutLS() {
-    ComponentsConfiguration.cacheInternalNodeOnLayoutState = true;
     final ComponentContext baseContext = new ComponentContext(application);
     final ComponentContext c =
         ComponentContext.withComponentTree(baseContext, ComponentTree.create(baseContext).build());
@@ -446,7 +421,6 @@ public class InternalNodeTest {
 
     layoutState.clearCachedLayout(textComponent);
     assertThat(layoutState.getCachedLayout(textComponent)).isNull();
-    ComponentsConfiguration.cacheInternalNodeOnLayoutState = false;
   }
 
   @Test
