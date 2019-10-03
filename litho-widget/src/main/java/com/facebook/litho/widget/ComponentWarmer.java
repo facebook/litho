@@ -144,9 +144,8 @@ public class ComponentWarmer {
 
   private Size prepare(String tag, ComponentTreeHolder holder) {
     final Size size = new Size();
-    mFactory.prepareSync(holder, size);
-
     mCache.put(tag, holder);
+    mFactory.prepareSync(holder, size);
 
     return size;
   }
