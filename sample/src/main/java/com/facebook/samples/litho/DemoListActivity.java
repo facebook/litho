@@ -23,6 +23,10 @@ import com.facebook.samples.litho.animations.expandableelement.ExpandableElement
 import com.facebook.samples.litho.animations.pageindicators.PageIndicatorsActivity;
 import com.facebook.samples.litho.animations.renderthread.RenderThreadAnimationActivity;
 import com.facebook.samples.litho.bordereffects.BorderEffectsActivity;
+import com.facebook.samples.litho.changesetdebug.ItemsRerenderingActivity;
+import com.facebook.samples.litho.changesetdebug.PropUpdatingActivity;
+import com.facebook.samples.litho.changesetdebug.ScrollingToBottomActivity;
+import com.facebook.samples.litho.changesetdebug.StateResettingActivity;
 import com.facebook.samples.litho.dynamicprops.DynamicPropsActivity;
 import com.facebook.samples.litho.errors.ErrorHandlingActivity;
 import com.facebook.samples.litho.fastscroll.FastScrollHandleActivity;
@@ -59,7 +63,15 @@ public class DemoListActivity extends NavigatableDemoActivity {
                   new DemoListDataModel("Render Thread", RenderThreadAnimationActivity.class))),
           new DemoListDataModel("Dynamic Props", DynamicPropsActivity.class),
           new DemoListDataModel("Fast Scroll Handle", FastScrollHandleActivity.class),
-          new DemoListDataModel("Litho Stats", StatsActivity.class));
+          new DemoListDataModel("Litho Stats", StatsActivity.class),
+          new DemoListDataModel(
+              "Changeset debug",
+              Arrays.asList(
+                  new DemoListDataModel("Resetting state", StateResettingActivity.class),
+                  new DemoListDataModel("Items re-rendering", ItemsRerenderingActivity.class),
+                  new DemoListDataModel("Not updating with new props", PropUpdatingActivity.class),
+                  new DemoListDataModel(
+                      "List scrolls to bottom", ScrollingToBottomActivity.class))));
 
   @Override
   public void onCreate(Bundle savedInstanceState) {

@@ -49,6 +49,10 @@
     <activity android:name=".dynamicprops.DynamicPropsActivity"/>
     <activity android:name=".fastscroll.FastScrollHandleActivity"/>
     <activity android:name=".stats.StatsActivity"/>
+    <activity android:name=".changesetdebug.StateResettingActivity"/>
+    <activity android:name=".changesetdebug.ItemsRerenderingActivity"/>
+    <activity android:name=".changesetdebug.PropUpdatingActivity"/>
+    <activity android:name=".changesetdebug.ScrollingToBottomActivity" />
   </application>
 
 
