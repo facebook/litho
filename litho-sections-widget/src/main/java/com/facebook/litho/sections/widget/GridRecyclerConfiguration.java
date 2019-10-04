@@ -17,9 +17,11 @@
 package com.facebook.litho.sections.widget;
 
 import static com.facebook.litho.widget.SnapUtil.SNAP_NONE;
+import static com.facebook.litho.widget.SnapUtil.SnapMode;
 
 import android.content.Context;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.OrientationHelper;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SnapHelper;
 import com.facebook.litho.ComponentContext;
@@ -38,10 +40,12 @@ public class GridRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
     implements RecyclerConfiguration {
   private final int mOrientation;
   private final int mNumColumns;
+  private final @SnapMode int mSnapMode;
   private final boolean mReverseLayout;
   private final RecyclerBinderConfiguration mRecyclerBinderConfiguration;
   private final GridLayoutInfoFactory mGridLayoutInfoFactory;
   private final boolean mAllowMeasureOverride;
+  private int mDeltaJumpThreshold = Integer.MAX_VALUE;
 
   public static GridRecyclerConfiguration.Builder create() {
     return new Builder();
@@ -96,7 +100,8 @@ public class GridRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
         reverseLayout,
         recyclerBinderConfiguration,
         allowMeasureOverride,
-        Builder.GRID_LAYOUT_INFO_FACTORY);
+        Builder.GRID_LAYOUT_INFO_FACTORY,
+        SNAP_NONE);
   }
 
   /** Use {@link #create()} instead. */
@@ -107,7 +112,8 @@ public class GridRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
       boolean reverseLayout,
       RecyclerBinderConfiguration recyclerBinderConfiguration,
       boolean allowMeasureOverride,
-      @Nullable GridLayoutInfoFactory gridLayoutInfoFactory) {
+      @Nullable GridLayoutInfoFactory gridLayoutInfoFactory,
+      @SnapMode int snapMode) {
     mOrientation = orientation;
     mNumColumns = numColumns;
     mReverseLayout = reverseLayout;
@@ -120,6 +126,7 @@ public class GridRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
         gridLayoutInfoFactory == null
             ? GridRecyclerConfiguration.Builder.GRID_LAYOUT_INFO_FACTORY
             : gridLayoutInfoFactory;
+    mSnapMode = snapMode;
   }
 
   @Override
@@ -129,12 +136,12 @@ public class GridRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
 
   @Override
   public @Nullable SnapHelper getSnapHelper() {
-    return null;
+    return SnapUtil.getSnapHelper(mSnapMode, mDeltaJumpThreshold);
   }
 
   @Override
   public int getSnapMode() {
-    return SNAP_NONE;
+    return mSnapMode;
   }
 
   @Override
@@ -179,6 +186,8 @@ public class GridRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
     private RecyclerBinderConfiguration mRecyclerBinderConfiguration =
         RECYCLER_BINDER_CONFIGURATION;
     private GridLayoutInfoFactory mGridLayoutInfoFactory = GRID_LAYOUT_INFO_FACTORY;
+    private int mDeltaJumpThreshold = Integer.MAX_VALUE;
+    private @SnapMode int mSnapMode = SNAP_NONE;
 
     Builder() {}
 
@@ -189,17 +198,24 @@ public class GridRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
       this.mAllowMeasureOverride = gridRecyclerConfiguration.mAllowMeasureOverride;
       this.mRecyclerBinderConfiguration = gridRecyclerConfiguration.mRecyclerBinderConfiguration;
       this.mGridLayoutInfoFactory = gridRecyclerConfiguration.mGridLayoutInfoFactory;
+      this.mDeltaJumpThreshold = gridRecyclerConfiguration.mDeltaJumpThreshold;
+      this.mSnapMode = gridRecyclerConfiguration.mSnapMode;
     }
 
     @Override
     public Builder snapMode(@SnapUtil.SnapMode int snapMode) {
-      throw new UnsupportedOperationException(
-          "SnapMode is not supported for GridRecyclerConfiguration");
+      mSnapMode = snapMode;
+      return this;
     }
 
     @Override
     public Builder orientation(int orientation) {
       mOrientation = orientation;
+      return this;
+    }
+
+    public Builder deltaJumpThreshold(int deltaJumpThreshold) {
+      mDeltaJumpThreshold = deltaJumpThreshold;
       return this;
     }
 
@@ -233,18 +249,32 @@ public class GridRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
       return this;
     }
 
+    private static void validate(GridRecyclerConfiguration configuration) {
+      int snapMode = configuration.getSnapMode();
+      if (configuration.getOrientation() == OrientationHelper.VERTICAL
+          && !(snapMode == SNAP_NONE || snapMode == SnapUtil.SNAP_TO_START)) {
+        throw new UnsupportedOperationException(
+            "Only snap to start is implemented for vertical lists");
+      }
+    }
+
     /**
      * Builds a {@link GridRecyclerConfiguration} using the parameters specified in this builder.
      */
     @Override
     public GridRecyclerConfiguration build() {
-      return new GridRecyclerConfiguration(
-          mOrientation,
-          mNumColumns,
-          mReverseLayout,
-          mRecyclerBinderConfiguration,
-          mAllowMeasureOverride,
-          mGridLayoutInfoFactory);
+      GridRecyclerConfiguration configuration =
+          new GridRecyclerConfiguration(
+              mOrientation,
+              mNumColumns,
+              mReverseLayout,
+              mRecyclerBinderConfiguration,
+              mAllowMeasureOverride,
+              mGridLayoutInfoFactory,
+              mSnapMode);
+      configuration.mDeltaJumpThreshold = mDeltaJumpThreshold;
+      validate(configuration);
+      return configuration;
     }
   }
 }
