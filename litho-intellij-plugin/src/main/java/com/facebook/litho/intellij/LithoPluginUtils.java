@@ -64,6 +64,10 @@ public class LithoPluginUtils {
         .isPresent();
   }
 
+  public static boolean isGeneratedClass(PsiClass psiClass) {
+    return LithoPluginUtils.isComponentClass(psiClass) || LithoPluginUtils.isSectionClass(psiClass);
+  }
+
   public static boolean isLithoSpec(@Nullable PsiFile psiFile) {
     if (psiFile == null) {
       return false;
@@ -209,13 +213,7 @@ public class LithoPluginUtils {
    */
   public static Optional<PsiClass> findGeneratedClass(String qualifiedSpecName, Project project) {
     return findGeneratedFile(qualifiedSpecName, project)
-        .flatMap(
-            generatedFile ->
-                getFirstClass(
-                    generatedFile,
-                    psiClass ->
-                        LithoPluginUtils.isComponentClass(psiClass)
-                            || LithoPluginUtils.isSectionClass(psiClass)));
+        .flatMap(generatedFile -> getFirstClass(generatedFile, LithoPluginUtils::isGeneratedClass));
   }
 
   /** Finds LayoutSpec class in the given file. */
