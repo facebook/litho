@@ -33,7 +33,6 @@ import android.util.SparseArray;
 import androidx.annotation.AttrRes;
 import androidx.annotation.StyleRes;
 import com.facebook.litho.annotations.ImportantForAccessibility;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.drawable.ComparableColorDrawable;
 import com.facebook.litho.drawable.ComparableDrawable;
 import com.facebook.litho.testing.TestComponent;
@@ -64,37 +63,11 @@ public class LayoutStateCreateTreeTest {
 
   @After
   public void after() {
-    ComponentsConfiguration.isConsistentComponentHierarchyExperimentEnabled = false;
     mComponentContext = null;
   }
 
   @Test
-  public void testSimpleLayoutCreatesExpectedInternalNodeTree() {
-    final Component component =
-        new InlineLayoutSpec(mComponentContext) {
-          @Override
-          protected Component onCreateLayout(final ComponentContext c) {
-            return Column.create(c)
-                .child(Column.create(c).child(TestDrawableComponent.create(c)))
-                .build();
-          }
-        };
-
-    InternalNode node = LayoutState.createTree(component, mComponentContext, null);
-    assertThat(node.getChildCount()).isEqualTo(1);
-    assertThat(node.getTailComponent()).isEqualTo(component);
-    node = node.getChildAt(0);
-    assertThat(node.getChildCount()).isEqualTo(1);
-    assertThat(node.getTailComponent()).isInstanceOf(Column.class);
-    node = node.getChildAt(0);
-    assertThat(node.getChildCount()).isEqualTo(0);
-    assertThat(node.getTailComponent()).isInstanceOf(TestDrawableComponent.class);
-  }
-
-  @Test
-  public void simpleLayoutCreatesExpectedInternalNodeTreeWithConsistentHierarchyExperiment() {
-    ComponentsConfiguration.isConsistentComponentHierarchyExperimentEnabled = true;
-
+  public void simpleLayoutCreatesExpectedInternalNodeTree() {
     final Component component =
         new InlineLayoutSpec(mComponentContext) {
           @Override

@@ -59,7 +59,7 @@ public class LifecycleMethodsTest {
   }
 
   @Test
-  public void testLifecycle() {
+  public void lifecycle() {
     mLithoView.onAttachedToWindow();
     measureAndLayout(mLithoView);
 
@@ -187,7 +187,11 @@ public class LifecycleMethodsTest {
           break;
 
         case ON_PREPARE:
-          assertThat(mCurrentStep).isEqualTo(LifecycleStep.ON_CREATE_LAYOUT);
+          if (getMountType() != MountType.NONE) {
+            assertThat(mCurrentStep).isEqualTo(LifecycleStep.ON_UNMOUNT);
+          } else {
+            assertThat(mCurrentStep).isEqualTo(LifecycleStep.ON_CREATE_LAYOUT);
+          }
           break;
 
         case ON_MEASURE:

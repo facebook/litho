@@ -24,13 +24,11 @@ import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.ComponentsRule;
-import com.facebook.litho.testing.assertj.SubComponentExtractor;
 import com.facebook.litho.testing.subcomponents.InspectableComponent;
 import com.facebook.litho.testing.subcomponents.SubComponent;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.widget.Text;
 import org.assertj.core.api.Condition;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -52,20 +50,8 @@ public class DecadeSeparatorSpecTest {
         DecadeSeparator.create(mComponentsRule.getContext()).decade(new Decade(2010)).build();
   }
 
-  @After
-  public void after() {
-    ComponentsConfiguration.isConsistentComponentHierarchyExperimentEnabled = false;
-  }
-
   @Test
-  public void testSubComponentsWithManualExtraction() {
-    final ComponentContext c = mComponentsRule.getContext();
-    assertThat(c, mComponent).extractingSubComponents(c).hasSize(3);
-  }
-
-  @Test
-  public void subComponentsWithManualExtractionWithConsistentHierarchyExperiment() {
-    ComponentsConfiguration.isConsistentComponentHierarchyExperimentEnabled = true;
+  public void subComponentsWithManualExtraction() {
     final ComponentContext c = mComponentsRule.getContext();
 
     assertThat(c, mComponent).extractingSubComponentAt(0).extractingSubComponents(c).hasSize(3);
@@ -78,24 +64,7 @@ public class DecadeSeparatorSpecTest {
   }
 
   @Test
-  public void testSubComponentByClassWithExtraction() {
-    final ComponentContext c = mComponentsRule.getContext();
-    assertThat(c, mComponent)
-        .extracting(SubComponentExtractor.subComponents(c))
-        .areExactly(
-            1,
-            new Condition<InspectableComponent>() {
-              @Override
-              public boolean matches(InspectableComponent value) {
-                return value.getComponentClass() == Text.class;
-              }
-            });
-  }
-
-  @Test
-  public void subComponentByClassWithExtractionWithConsistentHierarchyExperiment() {
-    ComponentsConfiguration.isConsistentComponentHierarchyExperimentEnabled = true;
-
+  public void subComponentByClassWithExtraction() {
     final ComponentContext c = mComponentsRule.getContext();
     assertThat(c, mComponent)
         .extractingSubComponentAt(0)
@@ -112,18 +81,6 @@ public class DecadeSeparatorSpecTest {
 
   @Test
   public void subComponentWithText() {
-    final ComponentContext c = mComponentsRule.getContext();
-    assertThat(c, mComponent)
-        .has(subComponentWith(c, textEquals("2010")))
-        // Silly things to test for, but left here to demonstrate the API.
-        .has(subComponentWith(c, text(containsString("10"))))
-        .doesNotHave(subComponentWith(c, textEquals("2011")));
-  }
-
-  @Test
-  public void subComponentWithTextWithConsistentHierarchyExperiment() {
-    ComponentsConfiguration.isConsistentComponentHierarchyExperimentEnabled = true;
-
     final ComponentContext c = mComponentsRule.getContext();
     assertThat(c, mComponent)
         .extractingSubComponentAt(0)

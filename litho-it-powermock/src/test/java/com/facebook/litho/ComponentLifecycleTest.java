@@ -162,7 +162,6 @@ public class ComponentLifecycleTest {
         setUpSpyComponentForCreateLayout(true /* isMountSpec */, false /* canMeasure */);
     InternalNode node = LayoutState.createLayout(mContext, component, true);
 
-    verify(component).onCreateLayout(mContext);
     verify(node).appendComponent(component);
     verify(node, never()).setMeasureFunction(any(YogaMeasureFunction.class));
     verify(component).onPrepare(mContext);
@@ -174,7 +173,6 @@ public class ComponentLifecycleTest {
         setUpSpyComponentForCreateLayout(true /* isMountSpec */, false /* canMeasure */);
     InternalNode node = LayoutState.createLayout(mContext, component, false);
 
-    verify(component).onCreateLayout(mContext);
     verify(node).appendComponent(component);
     verify(node, never()).setMeasureFunction(any(YogaMeasureFunction.class));
     verify(component).onPrepare(mContext);
@@ -186,7 +184,6 @@ public class ComponentLifecycleTest {
         setUpSpyComponentForCreateLayout(true /* isMountSpec */, true /* canMeasure */);
     InternalNode node = LayoutState.createLayout(mContext, component, true);
 
-    verify(component).onCreateLayout(mContext);
     verify(node).appendComponent(component);
     verify(node).setMeasureFunction(any(YogaMeasureFunction.class));
     verify(component).onPrepare(mContext);
@@ -198,7 +195,6 @@ public class ComponentLifecycleTest {
         setUpSpyComponentForCreateLayout(true /* isMountSpec */, true /* canMeasure */);
     InternalNode node = LayoutState.createLayout(mContext, component, false);
 
-    verify(component).onCreateLayout(mContext);
     verify(node).appendComponent(component);
     verify(node).setMeasureFunction(any(YogaMeasureFunction.class));
     verify(component).onPrepare(mContext);

@@ -213,7 +213,7 @@ public class ComponentsConfiguration {
   public static boolean isReleaseComponentTreeInRecyclerBinder;
 
   /** If true, add the root component of LayoutSpecs to InternalNodes */
-  public static boolean isConsistentComponentHierarchyExperimentEnabled = false;
+  public static boolean isConsistentComponentHierarchyExperimentEnabled = true;
 
   /**
    * If true the framework will use the refactored implementation of

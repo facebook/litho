@@ -59,6 +59,7 @@ public class FeedItemCardSpecTest {
   public void testShallowSubComponents() {
     final ComponentContext c = mComponentsRule.getContext();
     assertThat(c, mComponent)
+        .extractingSubComponentAt(0)
         .extractingSubComponents(c)
         .hasSize(1)
         .has(
@@ -79,8 +80,9 @@ public class FeedItemCardSpecTest {
     // matchers, but illustrates how it can be used in case more fine-grained assertions are
     // required.
     assertThat(c, mComponent)
+        .extractingSubComponentAt(0)
         .extractingSubComponentsDeeply(c)
-        .hasSize(16)
+        .hasSize(22) // TODO: T53372437 Remove or rewrite test.
         .has(
             new Condition<InspectableComponent>() {
               @Override
@@ -90,7 +92,7 @@ public class FeedItemCardSpecTest {
                     && "JavaScript Rockstar".equals(value.getTextContent());
               }
             },
-            atIndex(7));
+            atIndex(10));
   }
 
   @Test

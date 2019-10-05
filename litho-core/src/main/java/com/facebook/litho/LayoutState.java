@@ -2476,8 +2476,7 @@ class LayoutState {
         node = (InternalNode) component.resolve(c);
 
         // 4.3 If the Component is a MountSpec
-      } else if (ComponentsConfiguration.isConsistentComponentHierarchyExperimentEnabled
-          && isMountSpec(component)) {
+      } else if (isMountSpec(component)) {
 
         // Create a blank InternalNode for MountSpecs.
         node = c.newLayoutBuilder(0, 0);
@@ -2497,9 +2496,7 @@ class LayoutState {
           node = resolve(c, root);
 
           // If the root is a layout spec which can resolve itself, add it to the InternalNode.
-          if (ComponentsConfiguration.isConsistentComponentHierarchyExperimentEnabled
-              && Component.isLayoutSpec(root)
-              && root.canResolve()) {
+          if (Component.isLayoutSpec(root) && root.canResolve()) {
             node.appendComponent(root);
           }
         }

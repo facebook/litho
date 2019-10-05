@@ -19,7 +19,6 @@ import static com.facebook.litho.Component.isLayoutSpecWithSizeSpec;
 import static com.facebook.litho.Component.isMountSpec;
 import static com.facebook.litho.ComponentContext.NULL_LAYOUT;
 
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.yoga.YogaDirection;
 
 /**
@@ -73,8 +72,7 @@ public class TestLayoutState {
     if (component.canResolve()) {
       c.setTreeProps(c.getTreePropsCopy());
       node = (InternalNode) component.resolve(c);
-    } else if (ComponentsConfiguration.isConsistentComponentHierarchyExperimentEnabled
-        && isMountSpec(component)) {
+    } else if (isMountSpec(component)) {
       node = c.newLayoutBuilder(0, 0);
     } else {
       final Component root = component.createComponentLayout(c);
@@ -82,9 +80,7 @@ public class TestLayoutState {
         node = null;
       } else {
         node = resolveImmediateSubTree(c, root);
-        if (ComponentsConfiguration.isConsistentComponentHierarchyExperimentEnabled
-            && Component.isLayoutSpec(root)
-            && root.canResolve()) {
+        if (Component.isLayoutSpec(root) && root.canResolve()) {
           node.appendComponent(root);
         }
       }
