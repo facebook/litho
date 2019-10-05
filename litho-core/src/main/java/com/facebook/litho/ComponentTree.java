@@ -45,6 +45,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.infer.annotation.ReturnsOwnership;
 import com.facebook.infer.annotation.ThreadConfined;
@@ -60,6 +61,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -89,6 +91,9 @@ public class ComponentTree {
   private static final String DEFAULT_LAYOUT_THREAD_NAME = "ComponentLayoutThread";
   private static final String DEFAULT_PMC_THREAD_NAME = "PreallocateMountContentThread";
   private static final String EMPTY_STRING = "";
+  private static final String REENTRANT_MOUNTS_EXCEED_MAX_ATTEMPTS =
+      "ComponentTree:ReentrantMountsExceedMaxAttempts";
+  private static final int REENTRANT_MOUNTS_MAX_ATTEMPTS = 10;
 
   private static final int SCHEDULE_NONE = 0;
   private static final int SCHEDULE_LAYOUT_ASYNC = 1;
@@ -98,6 +103,7 @@ public class ComponentTree {
   private boolean mReleased;
   private String mReleasedComponent;
   private @Nullable AttachDetachHandler mAttachDetachHandler;
+  private @Nullable List<ReentrantMount> mReentrantMounts;
 
   @IntDef({SCHEDULE_NONE, SCHEDULE_LAYOUT_ASYNC, SCHEDULE_LAYOUT_SYNC})
   @Retention(RetentionPolicy.SOURCE)
@@ -629,6 +635,7 @@ public class ComponentTree {
     return false;
   }
 
+  @UiThread
   void incrementalMountComponent() {
     assertMainThread();
 
@@ -763,8 +770,14 @@ public class ComponentTree {
         || isCompatibleSpec(mBackgroundLayoutState, widthSpec, heightSpec);
   }
 
+  @UiThread
   void mountComponent(@Nullable Rect currentVisibleArea, boolean processVisibilityOutputs) {
     assertMainThread();
+
+    if (mIsMounting) {
+      collectReentrantMount(new ReentrantMount(currentVisibleArea, processVisibilityOutputs));
+      return;
+    }
 
     final LayoutState layoutState = mMainThreadLayoutState;
     if (layoutState == null) {
@@ -803,6 +816,42 @@ public class ComponentTree {
     if (isDirtyMount) {
       mLithoView.onDirtyMountComplete();
     }
+
+    consumeReentrantMounts();
+  }
+
+  private void collectReentrantMount(ReentrantMount reentrantMount) {
+    if (mReentrantMounts == null) {
+      mReentrantMounts = new ArrayList<>();
+    } else if (mReentrantMounts.size() > REENTRANT_MOUNTS_MAX_ATTEMPTS) {
+      logReentrantMountsExceedMaxAttempts();
+      mReentrantMounts.clear();
+      return;
+    }
+    mReentrantMounts.add(reentrantMount);
+  }
+
+  private void consumeReentrantMounts() {
+    if (mReentrantMounts != null && !mReentrantMounts.isEmpty()) {
+      final Iterator<ReentrantMount> iterator = mReentrantMounts.iterator();
+      while (iterator.hasNext()) {
+        final ReentrantMount reentrantMount = iterator.next();
+        iterator.remove();
+        mLithoView.setMountStateDirty();
+        mountComponent(reentrantMount.currentVisibleArea, reentrantMount.processVisibilityOutputs);
+      }
+    }
+  }
+
+  private void logReentrantMountsExceedMaxAttempts() {
+    final String message =
+        "Reentrant mounts exceed max attempts"
+            + ", view="
+            + (mLithoView != null ? LithoViewTestHelper.toDebugString(mLithoView) : null)
+            + ", component="
+            + (mRoot != null ? mRoot : getSimpleName());
+    ComponentsReporter.emitMessage(
+        ComponentsReporter.LogLevel.FATAL, REENTRANT_MOUNTS_EXCEED_MAX_ATTEMPTS, message);
   }
 
   void applyPreviousRenderData(LayoutState layoutState) {
@@ -2694,6 +2743,19 @@ public class ComponentTree {
 
   public synchronized void updateMeasureListener(@Nullable MeasureListener measureListener) {
     mMeasureListener = measureListener;
+  }
+
+  /**
+   * An encapsulation of currentVisibleArea and processVisibilityOutputs for each re-entrant mount.
+   */
+  private static final class ReentrantMount {
+    @Nullable final Rect currentVisibleArea;
+    final boolean processVisibilityOutputs;
+
+    private ReentrantMount(@Nullable Rect currentVisibleArea, boolean processVisibilityOutputs) {
+      this.currentVisibleArea = currentVisibleArea;
+      this.processVisibilityOutputs = processVisibilityOutputs;
+    }
   }
 
   /** A builder class that can be used to create a {@link ComponentTree}. */
