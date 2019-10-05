@@ -1933,7 +1933,11 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
 
     switch (mode) {
       case ReconciliationMode.COPY:
-        layout = reconcile(c, current, next, keys, ReconciliationMode.COPY);
+        if (ComponentsConfiguration.shouldUseDeepCloneDuringReconciliation) {
+          layout = current.deepClone();
+        } else {
+          layout = reconcile(c, current, next, keys, ReconciliationMode.COPY);
+        }
         break;
       case ReconciliationMode.RECONCILE:
         layout = reconcile(c, current, next, keys, ReconciliationMode.RECONCILE);

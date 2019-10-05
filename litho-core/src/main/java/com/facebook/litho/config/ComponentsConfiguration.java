@@ -229,4 +229,10 @@ public class ComponentsConfiguration {
    * com.facebook.litho.ComponentTree}
    */
   public static boolean isTransitionCheckCached = false;
+
+  /**
+   * When enabled reconciliation will use the deep clone method of the InternalNode with the
+   * simplified implementation of shallow copy.
+   */
+  public static boolean shouldUseDeepCloneDuringReconciliation = false;
 }
