@@ -269,6 +269,9 @@ public interface InternalNode extends ComponentLayout, LayoutProps, Copyable<Int
   String getTransitionKey();
 
   @Nullable
+  String getTransitionOwnerKey();
+
+  @Nullable
   Transition.TransitionKeyType getTransitionKeyType();
 
   @Nullable
@@ -370,7 +373,7 @@ public interface InternalNode extends ComponentLayout, LayoutProps, Copyable<Int
 
   InternalNode touchExpansionPx(YogaEdge edge, @Px int touchExpansion);
 
-  InternalNode transitionKey(@Nullable String key);
+  InternalNode transitionKey(@Nullable String key, @Nullable String ownerKey);
 
   InternalNode transitionKeyType(@Nullable Transition.TransitionKeyType type);
 

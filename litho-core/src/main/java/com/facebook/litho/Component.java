@@ -1819,7 +1819,7 @@ public abstract class Component extends ComponentLifecycle
     }
 
     public T transitionKey(@Nullable String key) {
-      mComponent.getOrCreateCommonProps().transitionKey(key);
+      mComponent.getOrCreateCommonProps().transitionKey(key, mComponent.mOwnerGlobalKey);
       if (mComponent.getOrCreateCommonProps().getTransitionKeyType() == null) {
         // If TransitionKeyType isn't set, set to default type
         transitionKeyType(Transition.DEFAULT_TRANSITION_KEY_TYPE);

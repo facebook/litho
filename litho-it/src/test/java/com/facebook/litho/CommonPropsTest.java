@@ -18,6 +18,8 @@ package com.facebook.litho;
 
 import static com.facebook.litho.it.R.drawable.background_with_padding;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -173,7 +175,7 @@ public class CommonPropsTest {
     mCommonProps.shadowElevationPx(60);
 
     mCommonProps.clipToOutline(false);
-    mCommonProps.transitionKey("transitionKey");
+    mCommonProps.transitionKey("transitionKey", "");
     mCommonProps.testKey("testKey");
 
     final EventHandler<DispatchPopulateAccessibilityEventEvent>
@@ -303,7 +305,7 @@ public class CommonPropsTest {
     verify(mNodeInfo).setShadowElevation(60);
 
     verify(mNodeInfo).setClipToOutline(false);
-    verify(mNode).transitionKey("transitionKey");
+    verify(mNode).transitionKey(eq("transitionKey"), anyString());
     verify(mNode).testKey("testKey");
 
     verify(mNodeInfo).setAccessibilityRole(AccessibilityRole.BUTTON);

@@ -506,6 +506,12 @@ class NoOpInternalNode implements InternalNode {
 
   @Nullable
   @Override
+  public String getTransitionOwnerKey() {
+    return null;
+  }
+
+  @Nullable
+  @Override
   public Transition.TransitionKeyType getTransitionKeyType() {
     return null;
   }
@@ -704,7 +710,7 @@ class NoOpInternalNode implements InternalNode {
   }
 
   @Override
-  public @Nullable InternalNode transitionKey(@Nullable String key) {
+  public @Nullable InternalNode transitionKey(@Nullable String key, @Nullable String ownerKey) {
     return null;
   }
 

@@ -176,7 +176,7 @@ public interface CommonProps extends CommonPropsCopyable, LayoutProps {
 
   void rotationY(float rotationY);
 
-  void transitionKey(@Nullable String key);
+  void transitionKey(@Nullable String key, @Nullable String ownerKey);
 
   void transitionKeyType(@Nullable Transition.TransitionKeyType type);
 

@@ -17,6 +17,8 @@
 package com.facebook.litho;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -582,7 +584,7 @@ public class LayoutStateCreateTreeTest {
     verify(nodeInfo).setShadowElevation(60);
 
     verify(nodeInfo).setClipToOutline(false);
-    verify(node).transitionKey("transitionKey");
+    verify(node).transitionKey(eq("transitionKey"), anyString());
     verify(node).transitionKeyType(Transition.TransitionKeyType.GLOBAL);
     verify(node).testKey("testKey");
 
