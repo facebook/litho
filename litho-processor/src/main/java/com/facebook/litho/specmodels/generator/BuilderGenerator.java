@@ -18,6 +18,7 @@ package com.facebook.litho.specmodels.generator;
 
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.DYNAMIC_PROPS;
 
+import com.facebook.litho.annotations.RequiredProp;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.BuilderMethodModel;
 import com.facebook.litho.specmodels.model.ClassNames;
@@ -1291,6 +1292,10 @@ public class BuilderGenerator {
 
     builder.addCode(codeBlock);
     if (!prop.isOptional()) {
+      builder.addAnnotation(
+          AnnotationSpec.builder(RequiredProp.class)
+              .addMember("value", "$S", prop.getName())
+              .build());
       builder.addStatement("$L.set($L)", "mRequired", requiredIndex);
     }
 

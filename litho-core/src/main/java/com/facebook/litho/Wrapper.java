@@ -17,6 +17,7 @@
 package com.facebook.litho;
 
 import com.facebook.litho.annotations.Prop;
+import com.facebook.litho.annotations.RequiredProp;
 import java.util.BitSet;
 import javax.annotation.Nullable;
 
@@ -97,6 +98,7 @@ public final class Wrapper extends Component {
       mWrapper = wrapper;
     }
 
+    @RequiredProp("delegate")
     public Builder delegate(@Nullable Component delegate) {
       mRequired.set(0);
       this.mWrapper.delegate = delegate;
