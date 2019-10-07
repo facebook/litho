@@ -406,7 +406,6 @@ public class RecyclerBinder
     private boolean asyncInitRange = ComponentsConfiguration.asyncInitRange;
     private boolean canMeasure;
     private boolean hscrollAsyncMode = false;
-    private boolean singleThreadPool = ComponentsConfiguration.useSingleThreadPool;
     private boolean incrementalMount = true;
     private boolean splitLayoutForMeasureAndRangeEstimation =
         ComponentsConfiguration.splitLayoutForMeasureAndRangeEstimation;
@@ -550,11 +549,6 @@ public class RecyclerBinder
      */
     public Builder threadPoolConfig(LayoutThreadPoolConfiguration config) {
       this.threadPoolConfig = config;
-      return this;
-    }
-
-    public Builder singleThreadPool(boolean singleThreadPool) {
-      this.singleThreadPool = singleThreadPool;
       return this;
     }
 
@@ -826,12 +820,7 @@ public class RecyclerBinder
         mThreadPoolHandler = new ThreadPoolLayoutHandler(mThreadPoolConfig);
       } else if (ComponentsConfiguration.threadPoolConfiguration != null) {
         mThreadPoolConfig = ComponentsConfiguration.threadPoolConfiguration;
-
-        if (builder.singleThreadPool) {
-          mThreadPoolHandler = getDefaultThreadPoolLayoutHandler();
-        } else {
-          mThreadPoolHandler = new ThreadPoolLayoutHandler(mThreadPoolConfig);
-        }
+        mThreadPoolHandler = new ThreadPoolLayoutHandler(mThreadPoolConfig);
       } else {
         mThreadPoolConfig = null;
         mThreadPoolHandler = null;

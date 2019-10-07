@@ -119,9 +119,6 @@ public class ComponentsConfiguration {
    */
   public static @Nullable LayoutThreadPoolConfiguration threadPoolForBackgroundThreadsConfig = null;
 
-  /** If true, a single thread pool will be used instead of creating one per RecyclerBinder. */
-  public static boolean useSingleThreadPool = false;
-
   /**
    * If true, the async range calculation isn't blocked on the first item finishing layout and it
    * will schedule as many bg layouts as it can while init range completes.
