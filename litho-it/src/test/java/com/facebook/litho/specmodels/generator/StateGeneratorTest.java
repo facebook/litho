@@ -16,6 +16,7 @@
 
 package com.facebook.litho.specmodels.generator;
 
+import static com.facebook.litho.specmodels.generator.StateGenerator.STATE_UPDATE_PREFIX;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
@@ -374,7 +375,9 @@ public class StateGeneratorTest {
                 + "    return;\n"
                 + "  }\n"
                 + "  com.facebook.litho.StateContainer.StateUpdate _stateUpdate = new com.facebook.litho.StateContainer.StateUpdate(0);\n"
-                + "  c.updateStateAsync(_stateUpdate, \"TestWithState.updateCurrentState\");\n"
+                + "  c.updateStateAsync(_stateUpdate, \""
+                + STATE_UPDATE_PREFIX
+                + "TestWithState.updateCurrentState\");\n"
                 + "}\n");
 
     assertThat(dataHolder.getMethodSpecs().get(1).toString())
@@ -385,7 +388,9 @@ public class StateGeneratorTest {
                 + "    return;\n"
                 + "  }\n"
                 + "  com.facebook.litho.StateContainer.StateUpdate _stateUpdate = new com.facebook.litho.StateContainer.StateUpdate(0);\n"
-                + "  c.updateStateAsync(_stateUpdate, \"TestWithState.updateCurrentState\");\n"
+                + "  c.updateStateAsync(_stateUpdate, \""
+                + STATE_UPDATE_PREFIX
+                + "TestWithState.updateCurrentState\");\n"
                 + "}\n");
 
     assertThat(dataHolder.getMethodSpecs().get(2).toString())
@@ -396,7 +401,9 @@ public class StateGeneratorTest {
                 + "    return;\n"
                 + "  }\n"
                 + "  com.facebook.litho.StateContainer.StateUpdate _stateUpdate = new com.facebook.litho.StateContainer.StateUpdate(0);\n"
-                + "  c.updateStateSync(_stateUpdate, \"TestWithState.updateCurrentState\");\n"
+                + "  c.updateStateSync(_stateUpdate, \""
+                + STATE_UPDATE_PREFIX
+                + "TestWithState.updateCurrentState\");\n"
                 + "}\n");
   }
 
@@ -415,7 +422,9 @@ public class StateGeneratorTest {
                 + "    return;\n"
                 + "  }\n"
                 + "  com.facebook.litho.StateContainer.StateUpdate _stateUpdate = new com.facebook.litho.StateContainer.StateUpdate(0);\n"
-                + "  c.updateStateWithTransition(_stateUpdate, \"TestWithStateWithTransition.updateCurrentState\");\n"
+                + "  c.updateStateWithTransition(_stateUpdate, \""
+                + STATE_UPDATE_PREFIX
+                + "TestWithStateWithTransition.updateCurrentState\");\n"
                 + "}\n");
   }
 
