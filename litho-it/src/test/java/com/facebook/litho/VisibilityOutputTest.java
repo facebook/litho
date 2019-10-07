@@ -101,8 +101,8 @@ public class VisibilityOutputTest {
     long stableIdSeq2 =
         calculateVisibilityOutputId(mVisibilityOutput, LEVEL_TEST + 1, SEQ_TEST + 1);
 
-    assertThat(toBinaryString(stableId)).isEqualTo("100000001000000000000000001");
-    assertThat(toBinaryString(stableIdSeq2)).isEqualTo("100000010000000000000000010");
+    assertThat(toBinaryString(stableId)).isEqualTo("1000000010000000000000000001");
+    assertThat(toBinaryString(stableIdSeq2)).isEqualTo("1000000100000000000000000010");
   }
 
   @Test
