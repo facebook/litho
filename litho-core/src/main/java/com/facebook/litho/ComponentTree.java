@@ -60,8 +60,9 @@ import com.facebook.litho.stats.LithoStats;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.ref.WeakReference;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.Deque;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -103,7 +104,7 @@ public class ComponentTree {
   private boolean mReleased;
   private String mReleasedComponent;
   private @Nullable AttachDetachHandler mAttachDetachHandler;
-  private @Nullable List<ReentrantMount> mReentrantMounts;
+  private @Nullable Deque<ReentrantMount> mReentrantMounts;
 
   @IntDef({SCHEDULE_NONE, SCHEDULE_LAYOUT_ASYNC, SCHEDULE_LAYOUT_SYNC})
   @Retention(RetentionPolicy.SOURCE)
@@ -822,7 +823,7 @@ public class ComponentTree {
 
   private void collectReentrantMount(ReentrantMount reentrantMount) {
     if (mReentrantMounts == null) {
-      mReentrantMounts = new ArrayList<>();
+      mReentrantMounts = new ArrayDeque<>();
     } else if (mReentrantMounts.size() > REENTRANT_MOUNTS_MAX_ATTEMPTS) {
       logReentrantMountsExceedMaxAttempts();
       mReentrantMounts.clear();
@@ -832,11 +833,12 @@ public class ComponentTree {
   }
 
   private void consumeReentrantMounts() {
-    if (mReentrantMounts != null && !mReentrantMounts.isEmpty()) {
-      final Iterator<ReentrantMount> iterator = mReentrantMounts.iterator();
-      while (iterator.hasNext()) {
-        final ReentrantMount reentrantMount = iterator.next();
-        iterator.remove();
+    if (mReentrantMounts != null) {
+      final Deque<ReentrantMount> reentrantMounts = new ArrayDeque<>(mReentrantMounts);
+      mReentrantMounts.clear();
+
+      while (!reentrantMounts.isEmpty()) {
+        final ReentrantMount reentrantMount = reentrantMounts.pollFirst();
         mLithoView.setMountStateDirty();
         mountComponent(reentrantMount.currentVisibleArea, reentrantMount.processVisibilityOutputs);
       }
