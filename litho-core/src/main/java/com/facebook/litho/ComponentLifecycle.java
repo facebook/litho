@@ -52,7 +52,6 @@ import javax.annotation.concurrent.GuardedBy;
 public abstract class ComponentLifecycle implements EventDispatcher, EventTriggerTarget {
   private static final AtomicInteger sComponentTypeId = new AtomicInteger();
   private static final int DEFAULT_MAX_PREALLOCATION = 3;
-  private static final String NO_PARENT_NESTED_TREE = "ComponentLifecycle:NoParentNestedTree";
 
   // This name needs to match the generated code in specmodels in
   // com.facebook.litho.specmodels.generator.EventCaseGenerator#INTERNAL_ON_ERROR_HANDLER_NAME.
@@ -138,21 +137,8 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
           ComponentContext context = node.getContext();
 
           if (Component.isNestedTree(context, component) || node.hasNestedTree()) {
-
-            // TODO: (T39009736) evaluate why the parent is null sometimes
             if (node.getParent() != null) {
               context = node.getParent().getContext();
-            } else {
-              ComponentsReporter.emitMessage(
-                  ComponentsReporter.LogLevel.ERROR,
-                  NO_PARENT_NESTED_TREE,
-                  "component "
-                      + component.getSimpleName()
-                      + " is a nested tree but does not have a parent component."
-                      + "[mGlobalKey:"
-                      + component.getGlobalKey()
-                      + "]",
-                  100000);
             }
 
             final InternalNode nestedTree =
