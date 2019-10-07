@@ -25,8 +25,6 @@ import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiMethod;
-import com.intellij.psi.PsiNameIdentifierOwner;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -50,17 +48,6 @@ public class LayoutSpecAnnotator implements Annotator {
     if (errors.size() > 0) {
       logger.log(EventLogger.EVENT_ANNOTATOR);
     }
-    errors.forEach(error -> addError(holder, error));
-  }
-
-  private void addError(AnnotationHolder holder, SpecModelValidationError error) {
-    PsiElement errorElement = (PsiElement) error.element;
-    holder.createErrorAnnotation(
-        Optional.of(errorElement)
-            .filter(element -> element instanceof PsiClass || element instanceof PsiMethod)
-            .map(PsiNameIdentifierOwner.class::cast)
-            .map(PsiNameIdentifierOwner::getNameIdentifier)
-            .orElse(errorElement),
-        error.message);
+    errors.forEach(error -> AnnotatorUtils.addError(holder, error));
   }
 }
