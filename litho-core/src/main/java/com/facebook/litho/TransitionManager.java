@@ -932,9 +932,11 @@ public class TransitionManager {
       for (int i = 0, size = mTempPropertyAnimations.size(); i < size; i++) {
         final PropertyAnimation propertyAnimation = mTempPropertyAnimations.get(i);
         final TransitionId transitionId = propertyAnimation.getTransitionId();
-        final AnimationState animationState = mAnimationStates.get(transitionId);
-        final PropertyState propertyState =
-            animationState.propertyStates.get(propertyAnimation.getProperty());
+        final @Nullable AnimationState animationState = mAnimationStates.get(transitionId);
+        final @Nullable PropertyState propertyState =
+            (animationState != null)
+                ? animationState.propertyStates.get(propertyAnimation.getProperty())
+                : null;
 
         if (AnimationsDebug.ENABLED) {
           Log.d(
@@ -948,7 +950,19 @@ public class TransitionManager {
                   + ":");
         }
 
-        if (propertyState.lastMountedValue != null
+        if (propertyState == null) {
+          if (AnimationsDebug.ENABLED) {
+            Log.d(
+                AnimationsDebug.TAG,
+                " - Canceling animation, transitionId not found in the AnimationState."
+                    + " It has been probably cancelled already.");
+          }
+
+          shouldStart = false;
+        }
+
+        if (shouldStart
+            && propertyState.lastMountedValue != null
             && propertyState.lastMountedValue != propertyAnimation.getTargetValue()) {
           if (AnimationsDebug.ENABLED) {
             Log.d(
