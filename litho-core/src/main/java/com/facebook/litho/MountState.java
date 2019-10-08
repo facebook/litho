@@ -87,6 +87,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       "MountState:DisappearAnimTargetingRoot";
   private static final String DANGLING_CONTENT_DURING_ANIM = "MountState:DanglingContentDuringAnim";
   private static final String INVALID_ANIM_LOCK_INDICES = "MountState:InvalidAnimLockIndices";
+  private static final String INVALID_REENTRANT_MOUNTS = "MountState:InvalidReentrantMounts";
   private static final double NS_IN_MS = 1000000.0;
   private static final Rect sTempRect = new Rect();
 
@@ -114,6 +115,9 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   // True if we are receiving a new LayoutState and we need to completely
   // refresh the content of the HostComponent. Always set from the main thread.
   private boolean mIsDirty;
+
+  // True if MountState is currently performing mount.
+  private boolean mIsMounting;
 
   // See #needsRemount()
   private boolean mNeedsRemount;
@@ -220,6 +224,15 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     if (layoutState == null) {
       throw new IllegalStateException("Trying to mount a null layoutState");
     }
+
+    if (mIsMounting) {
+      ComponentsReporter.emitMessage(
+          ComponentsReporter.LogLevel.FATAL,
+          INVALID_REENTRANT_MOUNTS,
+          "Trying to mount while already mounting! "
+              + getMountItemDebugMessage(mRootHostMountItem));
+    }
+    mIsMounting = true;
 
     final ComponentTree componentTree = mLithoView.getComponentTree();
     final boolean isIncrementalMountEnabled = localVisibleRect != null;
@@ -394,6 +407,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     if (isTracing) {
       ComponentsSystrace.endSection();
     }
+
+    mIsMounting = false;
   }
 
   private void logMountPerfEvent(
