@@ -1,11 +1,11 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright 2019-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.facebook.litho;
 
 import static android.os.Process.THREAD_PRIORITY_DEFAULT;
@@ -1037,13 +1036,13 @@ public class ComponentTree {
       @Nullable final Map<String, Component> attachables;
       synchronized (this) {
         final StateHandler layoutStateStateHandler = localLayoutState.consumeStateHandler();
-        components = new ArrayList<>(localLayoutState.getComponents());
+
         attachables = localLayoutState.consumeAttachables();
         if (layoutStateStateHandler != null) {
           mStateHandler.commit(layoutStateStateHandler);
         }
 
-        localLayoutState.clearComponents();
+        components = localLayoutState.consumeComponents();
         mMainThreadLayoutState = localLayoutState;
       }
 
@@ -1053,7 +1052,9 @@ public class ComponentTree {
         getOrCreateAttachDetachHandler().onAttached(attachables);
       }
 
-      bindEventAndTriggerHandlers(components);
+      if (components != null) {
+        bindEventAndTriggerHandlers(components);
+      }
 
       // We need to force remount on layout
       mLithoView.setMountStateDirty();
@@ -1878,9 +1879,7 @@ public class ComponentTree {
           rootHeight = localLayoutState.getHeight();
         }
 
-        components = new ArrayList<>(localLayoutState.getComponents());
-        localLayoutState.clearComponents();
-
+        components = localLayoutState.consumeComponents();
         attachables = localLayoutState.consumeAttachables();
 
         // Set the new layout state.

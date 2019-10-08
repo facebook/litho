@@ -1,11 +1,11 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright 2019-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.facebook.litho;
 
 import static android.content.Context.ACCESSIBILITY_SERVICE;
@@ -196,7 +195,7 @@ class LayoutState {
   private static final boolean IS_TEST = "robolectric".equals(Build.FINGERPRINT);
 
   private final Map<String, Rect> mComponentKeyToBounds = new HashMap<>();
-  private final List<Component> mComponents = new ArrayList<>();
+  @Nullable private List<Component> mComponents;
 
   private final ComponentContext mContext;
 
@@ -273,8 +272,8 @@ class LayoutState {
     mStateHandler = mContext.getStateHandler();
     mTestOutputs = ComponentsConfiguration.isEndToEndTestRun ? new ArrayList<TestOutput>(8) : null;
     mOrientation = context.getResources().getConfiguration().orientation;
-
     mLastMeasuredLayouts = new HashMap<>();
+    mComponents = new ArrayList<>();
   }
 
   @VisibleForTesting
@@ -963,7 +962,9 @@ class LayoutState {
         // calculation.
         if (delegate.getScopedContext() != null
             && delegate.getScopedContext().getComponentTree() != null) {
-          layoutState.mComponents.add(delegate);
+          if (layoutState.mComponents != null) {
+            layoutState.mComponents.add(delegate);
+          }
           if (delegate.hasAttachDetachCallback()) {
             if (layoutState.mAttachableContainer == null) {
               layoutState.mAttachableContainer = new HashMap<>();
@@ -1029,12 +1030,12 @@ class LayoutState {
     return mComponentKeyToBounds;
   }
 
-  List<Component> getComponents() {
-    return mComponents;
-  }
+  @Nullable
+  List<Component> consumeComponents() {
+    final List<Component> components = mComponents;
+    mComponents = null;
 
-  void clearComponents() {
-    mComponents.clear();
+    return components;
   }
 
   /**
