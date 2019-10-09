@@ -90,20 +90,10 @@ public class ComponentTreeMountTest {
                 mContext,
                 Column.create(mContext)
                     .child(
-                        SolidColor.create(mContext)
-                            .color(Color.YELLOW)
-                            .widthDip(10)
-                            .heightDip(10))
+                        SolidColor.create(mContext).color(Color.YELLOW).widthDip(10).heightDip(10))
                     .child(
-                        SolidColor.create(mContext)
-                            .color(Color.GREEN)
-                            .widthDip(10)
-                            .heightDip(10))
-                    .child(
-                        SolidColor.create(mContext)
-                            .color(Color.GRAY)
-                            .widthDip(10)
-                            .heightDip(10))
+                        SolidColor.create(mContext).color(Color.GREEN).widthDip(10).heightDip(10))
+                    .child(SolidColor.create(mContext).color(Color.GRAY).widthDip(10).heightDip(10))
                     .build())
             .visibleHandler(visibleEventHandler)
             .build());
