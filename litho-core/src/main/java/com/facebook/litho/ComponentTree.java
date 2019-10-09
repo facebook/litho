@@ -93,7 +93,7 @@ public class ComponentTree {
   private static final String EMPTY_STRING = "";
   private static final String REENTRANT_MOUNTS_EXCEED_MAX_ATTEMPTS =
       "ComponentTree:ReentrantMountsExceedMaxAttempts";
-  private static final int REENTRANT_MOUNTS_MAX_ATTEMPTS = 10;
+  private static final int REENTRANT_MOUNTS_MAX_ATTEMPTS = 25;
 
   private static final int SCHEDULE_NONE = 0;
   private static final int SCHEDULE_LAYOUT_ASYNC = 1;
@@ -779,6 +779,13 @@ public class ComponentTree {
       return;
     }
 
+    mountComponentInternal(currentVisibleArea, processVisibilityOutputs);
+
+    consumeReentrantMounts();
+  }
+
+  private void mountComponentInternal(
+      @Nullable Rect currentVisibleArea, boolean processVisibilityOutputs) {
     final LayoutState layoutState = mMainThreadLayoutState;
     if (layoutState == null) {
       Log.w(TAG, "Main Thread Layout state is not found");
@@ -816,8 +823,6 @@ public class ComponentTree {
     if (isDirtyMount) {
       mLithoView.onDirtyMountComplete();
     }
-
-    consumeReentrantMounts();
   }
 
   private void collectReentrantMount(ReentrantMount reentrantMount) {
@@ -839,7 +844,8 @@ public class ComponentTree {
       while (!reentrantMounts.isEmpty()) {
         final ReentrantMount reentrantMount = reentrantMounts.pollFirst();
         mLithoView.setMountStateDirty();
-        mountComponent(reentrantMount.currentVisibleArea, reentrantMount.processVisibilityOutputs);
+        mountComponentInternal(
+            reentrantMount.currentVisibleArea, reentrantMount.processVisibilityOutputs);
       }
     }
   }
