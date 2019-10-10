@@ -58,6 +58,23 @@ public class TestLayoutState {
     return root;
   }
 
+  /** Replacement for the deprecated TestComponentContext#newLayoutBuilder() */
+  static InternalNode newImmediateLayoutBuilder(final ComponentContext c, Component component) {
+    if (component.canResolve()) {
+      if (component instanceof Wrapper) {
+        return createImmediateLayout(c, component);
+      }
+      return LayoutState.createLayout(c, component);
+    }
+
+    final InternalNode node = InternalNodeUtils.create(c);
+    component.updateInternalChildState(c);
+
+    node.appendComponent(new TestComponent(component));
+
+    return node;
+  }
+
   static InternalNode createImmediateLayout(final ComponentContext c, final Component component) {
 
     final InternalNode node;
@@ -70,7 +87,14 @@ public class TestLayoutState {
     final TreeProps treeProps = c.getTreeProps();
     c.setTreeProps(component.getTreePropsForChildren(c, treeProps));
 
-    if (component.canResolve()) {
+    if (component instanceof Wrapper) {
+      Component delegate = ((Wrapper) component).delegate;
+      if (delegate == null) {
+        return NULL_LAYOUT;
+      } else {
+        return newImmediateLayoutBuilder(c, delegate);
+      }
+    } else if (component.canResolve()) {
       c.setTreeProps(c.getTreePropsCopy());
       node = (InternalNode) component.resolve(c);
     } else if (isMountSpec(component)) {
@@ -110,7 +134,14 @@ public class TestLayoutState {
   }
 
   static InternalNode resolveImmediateSubTree(final ComponentContext c, Component component) {
-    if (component.canResolve()) {
+    if (component instanceof Wrapper) {
+      Component delegate = ((Wrapper) component).delegate;
+      if (delegate == null) {
+        return NULL_LAYOUT;
+      } else {
+        return newImmediateLayoutBuilder(c, delegate);
+      }
+    } else if (component.canResolve()) {
       return LayoutState.resolve(c, component);
     }
 

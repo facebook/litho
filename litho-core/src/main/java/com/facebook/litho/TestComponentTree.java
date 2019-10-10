@@ -153,6 +153,8 @@ public class TestComponentTree extends ComponentTree {
   public static List<Component> extractImmediateSubComponents(
       ComponentContext context, Component component, int widthSpec, int heightSpec) {
 
+    NodeConfig.sInternalNodeFactory = new TestInternalNodeFactory();
+
     ComponentTree tree = ComponentTree.create(context).build();
     ComponentContext c =
         new TestComponentContext(
@@ -160,6 +162,8 @@ public class TestComponentTree extends ComponentTree {
             new StateHandler());
 
     InternalNode root = resolveImmediateSubtree(c, component, widthSpec, heightSpec);
+
+    NodeConfig.sInternalNodeFactory = null;
 
     return extractImmediateSubComponents(root);
   }
@@ -194,6 +198,29 @@ public class TestComponentTree extends ComponentTree {
     public TestComponentTree build() {
 
       return new TestComponentTree(this);
+    }
+  }
+
+  public static class TestDefaultInternalNode extends DefaultInternalNode {
+
+    public TestDefaultInternalNode(ComponentContext c) {
+      super(c);
+    }
+
+    @Override
+    public InternalNode child(Component child) {
+      if (child != null) {
+        return child(TestLayoutState.newImmediateLayoutBuilder(getContext(), child));
+      }
+      return this;
+    }
+  }
+
+  public static class TestInternalNodeFactory implements NodeConfig.InternalNodeFactory {
+
+    @Override
+    public InternalNode create(ComponentContext c) {
+      return new TestDefaultInternalNode(c);
     }
   }
 }
