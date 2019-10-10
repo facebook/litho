@@ -107,6 +107,7 @@
       implementationClass="com.facebook.litho.intellij.inspections.UppercaseStatePropInspection"/>
 
     <annotator language="JAVA" implementationClass="com.facebook.litho.intellij.inspections.LayoutSpecAnnotator"/>
+    <annotator language="JAVA" implementationClass="com.facebook.litho.intellij.inspections.RequiredPropAnnotator"/>
 
     <completion.contributor language="JAVA" implementationClass="com.facebook.litho.intellij.completion.StatePropCompletionContributor"/>
     <completion.contributor language="JAVA" implementationClass="com.facebook.litho.intellij.completion.OnEventCompletionContributor"/>
