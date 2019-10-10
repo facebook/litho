@@ -35,7 +35,7 @@ import java.util.Optional;
  * This re-uses Litho compile-time check.
  */
 public class LayoutSpecAnnotator implements Annotator {
-  private static final EventLogger logger = new DebounceEventLogger(4_000);
+  private static final EventLogger LOGGER = new DebounceEventLogger(4_000);
 
   @Override
   public void annotate(PsiElement element, AnnotationHolder holder) {
@@ -46,9 +46,9 @@ public class LayoutSpecAnnotator implements Annotator {
             .map(ComponentGenerateUtils::createLayoutModel)
             .map(model -> model.validate(RunMode.normal()))
             .orElse(Collections.emptyList());
-    if (errors.size() > 0) {
-      logger.log(EventLogger.EVENT_ANNOTATOR);
+    if (!errors.isEmpty()) {
+      LOGGER.log(EventLogger.EVENT_ANNOTATOR);
+      errors.forEach(error -> AnnotatorUtils.addError(holder, error));
     }
-    errors.forEach(error -> AnnotatorUtils.addError(holder, error));
   }
 }

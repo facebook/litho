@@ -50,7 +50,7 @@ import org.jetbrains.annotations.Nullable;
 public class LithoPluginUtils {
   private static final String SPEC_SUFFIX = "Spec";
 
-  public static boolean isComponentClass(PsiClass psiClass) {
+  public static boolean isComponentClass(@Nullable PsiClass psiClass) {
     return psiClass != null
         && psiClass.getSuperClass() != null
         && ("ComponentLifecycle".equals(psiClass.getSuperClass().getName())
@@ -65,7 +65,7 @@ public class LithoPluginUtils {
         .isPresent();
   }
 
-  public static boolean isGeneratedClass(PsiClass psiClass) {
+  public static boolean isGeneratedClass(@Nullable PsiClass psiClass) {
     return LithoPluginUtils.isComponentClass(psiClass) || LithoPluginUtils.isSectionClass(psiClass);
   }
 
@@ -102,6 +102,7 @@ public class LithoPluginUtils {
   }
 
   @VisibleForTesting
+  @Contract("null -> false")
   /** @return if given name ends with "Spec". */
   static boolean isSpecName(@Nullable String clsName) {
     return clsName != null && clsName.endsWith(SPEC_SUFFIX);
