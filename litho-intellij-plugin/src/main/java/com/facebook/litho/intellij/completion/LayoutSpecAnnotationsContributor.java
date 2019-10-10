@@ -212,7 +212,7 @@ public class LayoutSpecAnnotationsContributor extends CompletionContributor {
       lookupItem.handleInsert(context);
 
       LithoLoggerProvider.getEventLogger()
-          .log(EventLogger.EVENT_COMPLETION_ANNOTATION + "." + lookupItem.getPresentableText());
+          .log(EventLogger.EVENT_COMPLETION_ANNOTATION + "." + lookupItem.getLookupString());
     }
 
     @Override
