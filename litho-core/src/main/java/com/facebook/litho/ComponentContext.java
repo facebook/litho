@@ -403,12 +403,6 @@ public class ComponentContext {
     return new EventTrigger<>(parentKey, id, childKey);
   }
 
-  InternalNode newLayoutBuilder(@AttrRes int defStyleAttr, @StyleRes int defStyleRes) {
-    final InternalNode node = InternalNodeUtils.create(this);
-    applyStyle(node, defStyleAttr, defStyleRes);
-    return node;
-  }
-
   InternalNode newLayoutBuilder(
       Component component, @AttrRes int defStyleAttr, @StyleRes int defStyleRes) {
     final InternalNode layoutCreatedInWillRender = component.consumeLayoutCreatedInWillRender();
@@ -454,6 +448,9 @@ public class ComponentContext {
     return mStateHandler;
   }
 
+  /**
+   * TODO: (T55170222) Remove, use {@link InternalNodeUtils#applyStyles(InternalNode, int, int)}.
+   */
   void applyStyle(InternalNode node, @AttrRes int defStyleAttr, @StyleRes int defStyleRes) {
     if (defStyleAttr != 0 || defStyleRes != 0) {
       setDefStyle(defStyleAttr, defStyleRes);

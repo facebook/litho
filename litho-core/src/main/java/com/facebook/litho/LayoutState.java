@@ -2480,7 +2480,7 @@ class LayoutState {
       } else if (isMountSpec(component)) {
 
         // Create a blank InternalNode for MountSpecs.
-        node = c.newLayoutBuilder(0, 0);
+        node = InternalNodeUtils.create(c);
 
         // 4.4 Create and resolve the LayoutSpec.
       } else {

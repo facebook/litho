@@ -365,8 +365,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
 
   /**
    * Generate a tree of {@link ComponentLayout} representing the layout structure of the {@link
-   * Component} and its sub-components. You should use {@link ComponentContext#newLayoutBuilder} to
-   * build the layout tree.
+   * Component} and its sub-components.
    *
    * @param c The {@link ComponentContext} to build a {@link ComponentLayout} tree.
    */

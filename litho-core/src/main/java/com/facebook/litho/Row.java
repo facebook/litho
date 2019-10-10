@@ -87,7 +87,7 @@ public final class Row extends Component {
   @Override
   protected ComponentLayout resolve(ComponentContext c) {
     InternalNode node =
-        c.newLayoutBuilder(0, 0)
+        InternalNodeUtils.create(c)
             .flexDirection(reverse ? YogaFlexDirection.ROW_REVERSE : YogaFlexDirection.ROW);
 
     if (alignItems != null) {

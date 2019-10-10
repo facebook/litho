@@ -17,21 +17,18 @@
 package com.facebook.litho;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.robolectric.RuntimeEnvironment.application;
 
 import android.animation.StateListAnimator;
 import android.annotation.TargetApi;
-import android.content.Context;
 import android.graphics.Color;
 import android.os.Build;
 import android.util.SparseArray;
-import androidx.annotation.AttrRes;
-import androidx.annotation.StyleRes;
 import com.facebook.litho.annotations.ImportantForAccessibility;
 import com.facebook.litho.drawable.ComparableColorDrawable;
 import com.facebook.litho.drawable.ComparableDrawable;
@@ -586,16 +583,13 @@ public class LayoutStateCreateTreeTest {
         new InlineLayoutSpec() {
           @Override
           protected Component onCreateLayout(final ComponentContext c) {
-            return Column.create(c).child(Column.create(c).flexGrow(1)).build();
+            return TestDrawableComponentWithMockInternalNode.create(c).flexGrow(1).build();
           }
         };
 
-    final ComponentContext c = new MockInternalNodeComponentContext(application);
-
-    final InternalNode root = LayoutState.createAndMeasureTreeForComponent(c, component, 800, 600);
-
-    assertThat(root.getChildAt(0) instanceof TestInternalNode).isTrue();
-    assertThat(((TestInternalNode) root.getChildAt(0)).mFlexGrowCounter).isEqualTo(1);
+    final InternalNode root =
+        LayoutState.createAndMeasureTreeForComponent(mComponentContext, component, 800, 600);
+    verify(root).flexGrow(anyInt());
   }
 
   private static class TestDrawableComponentWithMockInternalNode extends TestComponent {
@@ -635,40 +629,6 @@ public class LayoutStateCreateTreeTest {
       public Component build() {
         return mComponent;
       }
-    }
-  }
-
-  private class MockInternalNodeComponentContext extends ComponentContext {
-
-    private MockInternalNodeComponentContext(Context context) {
-      super(context);
-      setLayoutStateReferenceWrapperForTesting();
-    }
-
-    InternalNode newLayoutBuilder(@AttrRes int defStyleAttr, @StyleRes int defStyleRes) {
-      return new TestInternalNode(this);
-    }
-
-    @Override
-    ComponentContext makeNewCopy() {
-      MockInternalNodeComponentContext copy =
-          new MockInternalNodeComponentContext(this.getAndroidContext());
-      copy.setLayoutStateReferenceWrapperForTesting();
-
-      return copy;
-    }
-  }
-
-  private class TestInternalNode extends DefaultInternalNode {
-    private int mFlexGrowCounter;
-
-    protected TestInternalNode(ComponentContext componentContext) {
-      super(componentContext);
-    }
-
-    @Override
-    public void flexGrow(float flex) {
-      mFlexGrowCounter++;
     }
   }
 }

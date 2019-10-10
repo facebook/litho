@@ -74,7 +74,7 @@ public class TestLayoutState {
       c.setTreeProps(c.getTreePropsCopy());
       node = (InternalNode) component.resolve(c);
     } else if (isMountSpec(component)) {
-      node = c.newLayoutBuilder(0, 0);
+      node = InternalNodeUtils.create(c);
     } else {
       final Component root = component.createComponentLayout(c);
       if (root == null || root.getId() <= 0) {

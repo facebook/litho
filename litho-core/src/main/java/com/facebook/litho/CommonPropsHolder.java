@@ -593,6 +593,7 @@ class CommonPropsHolder implements CommonProps {
       return;
     }
 
+    // TODO: (T55170222) Use InternalNodeUtils#applyStyles(InternalNode, int, int)} instead.
     c.applyStyle(node, mDefStyleAttr, mDefStyleRes);
 
     if (mNodeInfo != null) {

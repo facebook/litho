@@ -87,7 +87,7 @@ public final class Column extends Component {
   @Override
   protected ComponentLayout resolve(ComponentContext c) {
     InternalNode node =
-        c.newLayoutBuilder(0, 0)
+        InternalNodeUtils.create(c)
             .flexDirection(reverse ? YogaFlexDirection.COLUMN_REVERSE : YogaFlexDirection.COLUMN);
 
     if (alignItems != null) {
