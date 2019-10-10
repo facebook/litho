@@ -1684,7 +1684,7 @@ class LayoutState {
   }
 
   @VisibleForTesting
-  static InternalNode createTree(
+  static InternalNode createLayout(
       Component component, ComponentContext context, @Nullable InternalNode current) {
     if (current != null) {
       return current.reconcile(context, component);
@@ -1863,7 +1863,7 @@ class LayoutState {
     c.setWidthSpec(widthSpec);
     c.setHeightSpec(heightSpec);
 
-    final InternalNode root = createTree(component, c, current);
+    final InternalNode root = createLayout(component, c, current);
 
     c.setTreeProps(null);
     c.setWidthSpec(previousWidthSpec);
@@ -2424,6 +2424,30 @@ class LayoutState {
 
   private static @Nullable TransitionId getTransitionIdForNode(InternalNode node) {
     return TransitionUtils.createTransitionId(node);
+  }
+
+  /** TODO: (T55181318) Merge this and {@link #resolve(ComponentContext, Component)} */
+  static InternalNode createLayout(ComponentContext owner, Component component) {
+
+    // 1. Consume the layout created in willrender.
+    final InternalNode layoutCreatedInWillRender = component.consumeLayoutCreatedInWillRender();
+
+    // 2. Return immediately if will render returned a layout.
+    if (layoutCreatedInWillRender != null) {
+      return layoutCreatedInWillRender;
+    }
+
+    // 3. Create a shallow copy of this component for thread safety.
+    component = component.getThreadSafeInstance();
+
+    // 4. Update this component with its current parent context.
+    component.updateInternalChildState(owner);
+
+    if (ComponentsConfiguration.isDebugModeEnabled) {
+      DebugComponent.applyOverrides(owner, component);
+    }
+
+    return LayoutState.createLayout(component.getScopedContext(), component, false);
   }
 
   /**

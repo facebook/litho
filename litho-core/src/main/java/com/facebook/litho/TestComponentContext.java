@@ -16,9 +16,6 @@
 
 package com.facebook.litho;
 
-import androidx.annotation.AttrRes;
-import androidx.annotation.StyleRes;
-
 /**
  * {@link ComponentContext} for use within a test environment that is compatible with mock
  * ComponentSpecs in addition to real implementation.
@@ -31,21 +28,6 @@ class TestComponentContext extends ComponentContext {
 
   TestComponentContext(ComponentContext c, StateHandler stateHandler) {
     super(c, stateHandler, null, null);
-  }
-
-  @Override
-  public InternalNode newLayoutBuilder(
-      Component component, @AttrRes int defStyleAttr, @StyleRes int defStyleRes) {
-    if (component.canResolve()) {
-      return super.newLayoutBuilder(component, defStyleAttr, defStyleRes);
-    }
-
-    final InternalNode node = InternalNodeUtils.create(this);
-    component.updateInternalChildState(this);
-
-    node.appendComponent(new TestComponent(component));
-
-    return node;
   }
 
   @Override

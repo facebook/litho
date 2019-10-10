@@ -88,8 +88,6 @@ public class ResolveResTest {
     final ComponentContext c = new ComponentContext(mContext);
     c.setLayoutStateReferenceWrapperForTesting();
 
-    InternalNode node = Layout.create(c, component);
-
-    return node;
+    return LayoutState.createLayout(c, component);
   }
 }

@@ -557,7 +557,7 @@ public abstract class Component extends ComponentLifecycle
       return willRender(component.mLayoutCreatedInWillRender);
     }
 
-    component.mLayoutCreatedInWillRender = Layout.create(c, component);
+    component.mLayoutCreatedInWillRender = LayoutState.createLayout(c, component);
     return willRender(component.mLayoutCreatedInWillRender);
   }
 

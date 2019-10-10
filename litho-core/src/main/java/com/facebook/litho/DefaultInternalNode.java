@@ -369,7 +369,7 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   @Override
   public InternalNode child(Component child) {
     if (child != null) {
-      return child(Layout.create(mComponentContext, child));
+      return child(LayoutState.createLayout(mComponentContext, child));
     }
 
     return this;

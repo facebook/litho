@@ -141,7 +141,7 @@ public class TreeDiffingTest {
     component.setScopedContext(mContext);
     final ComponentContext c = new ComponentContext(mContext);
     c.setLayoutStateReferenceWrapperForTesting();
-    return LayoutState.createTree(component, c, null);
+    return LayoutState.createLayout(component, c, null);
   }
 
   private long measureInternalNode(
