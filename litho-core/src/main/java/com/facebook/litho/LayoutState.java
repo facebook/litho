@@ -64,6 +64,7 @@ import com.facebook.litho.drawable.ComparableDrawable;
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
+import com.facebook.yoga.YogaFlexDirection;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -2504,8 +2505,8 @@ class LayoutState {
         // 4.3 If the Component is a MountSpec
       } else if (isMountSpec(component)) {
 
-        // Create a blank InternalNode for MountSpecs.
-        node = InternalNodeUtils.create(c);
+        // Create a blank InternalNode for MountSpecs and set the default flex direction.
+        node = InternalNodeUtils.create(c).flexDirection(YogaFlexDirection.COLUMN);
 
         // 4.4 Create and resolve the LayoutSpec.
       } else {
