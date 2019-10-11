@@ -39,6 +39,11 @@ public class StartSnapHelper extends SnapHelper {
   @Nullable private LayoutManager mVerticalHelperLayoutManager;
   @Nullable private LayoutManager mHorizontalHelperLayoutManager;
   @Nullable private RecyclerView mRecyclerView;
+  private final int mFlingOffset;
+
+  public StartSnapHelper(int flingOffset) {
+    mFlingOffset = flingOffset;
+  }
 
   @Nullable
   @Override
@@ -109,9 +114,19 @@ public class StartSnapHelper extends SnapHelper {
       }
     }
 
-    return reverseLayout
-        ? (forwardDirection ? firstBeforeStartPosition - 1 : firstBeforeStartPosition)
-        : (forwardDirection ? firstBeforeStartPosition + 1 : firstBeforeStartPosition);
+    int targetPos =
+        forwardDirection
+            ? (reverseLayout
+                ? firstBeforeStartPosition - mFlingOffset
+                : firstBeforeStartPosition + mFlingOffset)
+            : firstBeforeStartPosition;
+    if (targetPos < 0) {
+      targetPos = 0;
+    }
+    if (targetPos >= itemCount) {
+      targetPos = itemCount - 1;
+    }
+    return targetPos;
   }
 
   @Override

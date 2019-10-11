@@ -46,6 +46,7 @@ public class GridRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
   private final GridLayoutInfoFactory mGridLayoutInfoFactory;
   private final boolean mAllowMeasureOverride;
   private int mDeltaJumpThreshold = Integer.MAX_VALUE;
+  private int mStartSnapFlingOffset = SnapUtil.SNAP_TO_START_DEFAULT_FLING_OFFSET;
 
   public static GridRecyclerConfiguration.Builder create() {
     return new Builder();
@@ -136,7 +137,7 @@ public class GridRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
 
   @Override
   public @Nullable SnapHelper getSnapHelper() {
-    return SnapUtil.getSnapHelper(mSnapMode, mDeltaJumpThreshold);
+    return SnapUtil.getSnapHelper(mSnapMode, mDeltaJumpThreshold, mStartSnapFlingOffset);
   }
 
   @Override
@@ -187,6 +188,7 @@ public class GridRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
         RECYCLER_BINDER_CONFIGURATION;
     private GridLayoutInfoFactory mGridLayoutInfoFactory = GRID_LAYOUT_INFO_FACTORY;
     private int mDeltaJumpThreshold = Integer.MAX_VALUE;
+    private int mStartSnapFlingOffset = SnapUtil.SNAP_TO_START_DEFAULT_FLING_OFFSET;
     private @SnapMode int mSnapMode = SNAP_NONE;
 
     Builder() {}
@@ -199,6 +201,7 @@ public class GridRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
       this.mRecyclerBinderConfiguration = gridRecyclerConfiguration.mRecyclerBinderConfiguration;
       this.mGridLayoutInfoFactory = gridRecyclerConfiguration.mGridLayoutInfoFactory;
       this.mDeltaJumpThreshold = gridRecyclerConfiguration.mDeltaJumpThreshold;
+      this.mStartSnapFlingOffset = gridRecyclerConfiguration.mStartSnapFlingOffset;
       this.mSnapMode = gridRecyclerConfiguration.mSnapMode;
     }
 
@@ -216,6 +219,11 @@ public class GridRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
 
     public Builder deltaJumpThreshold(int deltaJumpThreshold) {
       mDeltaJumpThreshold = deltaJumpThreshold;
+      return this;
+    }
+
+    public Builder startSnapFlingOffset(int startSnapFlingOffset) {
+      mStartSnapFlingOffset = startSnapFlingOffset;
       return this;
     }
 
@@ -273,6 +281,7 @@ public class GridRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
               mGridLayoutInfoFactory,
               mSnapMode);
       configuration.mDeltaJumpThreshold = mDeltaJumpThreshold;
+      configuration.mStartSnapFlingOffset = mStartSnapFlingOffset;
       validate(configuration);
       return configuration;
     }
