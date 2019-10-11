@@ -187,6 +187,8 @@ public class RecyclerBinder
 
   private final @Nullable ComponentTreeMeasureListenerFactory mComponentTreeMeasureListenerFactory;
   private @Nullable ComponentWarmer mComponentWarmer;
+  private final LithoHandler mPreallocateMountContentHandler;
+  private final boolean mPreallocatePerMountSpec;
 
   private MeasureListener getMeasureListener(final ComponentTreeHolder holder) {
     return new MeasureListener() {
@@ -355,7 +357,9 @@ public class RecyclerBinder
         boolean canInterruptAndMoveLayoutsBetweenThreads,
         boolean useCancelableLayoutFutures,
         boolean isReconciliationEnabled,
-        boolean isLayoutDiffingEnabled);
+        boolean isLayoutDiffingEnabled,
+        LithoHandler preallocateHandler,
+        boolean preallocatePerMountSpec);
   }
 
   static final ComponentTreeHolderFactory DEFAULT_COMPONENT_TREE_HOLDER_FACTORY =
@@ -369,7 +373,9 @@ public class RecyclerBinder
             boolean canInterruptAndMoveLayoutsBetweenThreads,
             boolean useCancelableLayoutFutures,
             boolean isReconciliationEnabled,
-            boolean isLayoutDiffingEnabled) {
+            boolean isLayoutDiffingEnabled,
+            LithoHandler preallocateHandler,
+            boolean preallocatePerMountSpec) {
           return ComponentTreeHolder.create()
               .renderInfo(renderInfo)
               .layoutHandler(layoutHandler)
@@ -379,6 +385,8 @@ public class RecyclerBinder
               .useCancelableLayoutFutures(useCancelableLayoutFutures)
               .isReconciliationEnabled(isReconciliationEnabled)
               .isLayoutDiffingEnabled(isLayoutDiffingEnabled)
+              .preallocateMountContentHandler(preallocateHandler)
+              .shouldPreallocatePerMountSpec(preallocatePerMountSpec)
               .build();
         }
       };
@@ -418,6 +426,8 @@ public class RecyclerBinder
     private int estimatedViewportCount = UNSET;
     private boolean isReconciliationEnabled = ComponentsConfiguration.isReconciliationEnabled;
     private boolean isLayoutDiffingEnabled = ComponentsConfiguration.isLayoutDiffingEnabled;
+    private LithoHandler preallocateMountContentHandler;
+    private boolean shouldPreallocatePerMountSpec;
 
     /**
      * @param rangeRatio specifies how big a range this binder should try to compute. The range is
@@ -484,6 +494,17 @@ public class RecyclerBinder
     public Builder componentTreeHolderFactory(
         ComponentTreeHolderFactory componentTreeHolderFactory) {
       this.componentTreeHolderFactory = componentTreeHolderFactory;
+      return this;
+    }
+
+    public Builder preallocateMountContentHandler(
+        @Nullable LithoHandler preallocateMountContentHandler) {
+      this.preallocateMountContentHandler = preallocateMountContentHandler;
+      return this;
+    }
+
+    public Builder shouldPreallocatePerMountSpec(boolean shouldPreallocatePerMountSpec) {
+      this.shouldPreallocatePerMountSpec = shouldPreallocatePerMountSpec;
       return this;
     }
 
@@ -885,6 +906,8 @@ public class RecyclerBinder
     mIsSubAdapter = builder.isSubAdapter;
     mIsReconciliationEnabled = builder.isReconciliationEnabled;
     mIsLayoutDiffingEnabled = builder.isLayoutDiffingEnabled;
+    mPreallocateMountContentHandler = builder.preallocateMountContentHandler;
+    mPreallocatePerMountSpec = builder.shouldPreallocatePerMountSpec;
   }
 
   /**
@@ -3795,7 +3818,9 @@ public class RecyclerBinder
         mMoveLayoutsBetweenThreads,
         mUseCancelableLayoutFutures,
         mIsReconciliationEnabled,
-        mIsLayoutDiffingEnabled);
+        mIsLayoutDiffingEnabled,
+        mPreallocateMountContentHandler,
+        mPreallocatePerMountSpec);
   }
 
   ComponentTreeHolderPreparer getComponentTreeHolderPreparer() {

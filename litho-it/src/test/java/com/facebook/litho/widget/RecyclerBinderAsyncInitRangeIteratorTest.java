@@ -81,7 +81,9 @@ public class RecyclerBinderAsyncInitRangeIteratorTest {
               boolean canInterruptAndMoveLayoutsBetweenThreads,
               boolean useCancelableLayoutFutures,
               boolean isReconciliationEnabled,
-              boolean isLayoutDiffingEnabled) {
+              boolean isLayoutDiffingEnabled,
+              LithoHandler preallocateHandler,
+              boolean preallocatePerMountSpec) {
             final TestComponentTreeHolder holder = new TestComponentTreeHolder(renderInfo);
             mAllHoldersList.add(holder);
 

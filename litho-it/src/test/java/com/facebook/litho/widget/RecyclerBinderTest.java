@@ -170,7 +170,9 @@ public class RecyclerBinderTest {
               boolean canInterruptAndMoveLayoutsBetweenThreads,
               boolean useCancelableLayoutFutures,
               boolean isReconciliationEnabled,
-              boolean isLayoutDiffingEnabled) {
+              boolean isLayoutDiffingEnabled,
+              LithoHandler preallocateHandler,
+              boolean preallocatePerMountSpec) {
             final TestComponentTreeHolder holder = new TestComponentTreeHolder(renderInfo);
             if (renderInfo.rendersComponent()) {
               mHoldersForComponents.put(renderInfo.getComponent(), holder);
