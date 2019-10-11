@@ -18,7 +18,7 @@ package com.facebook.litho;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
-import com.facebook.litho.LayoutState.LayoutStateReferenceWrapper;
+import com.facebook.litho.LayoutState.LayoutStateContext;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import org.junit.Before;
@@ -43,7 +43,7 @@ public class ComponentTest {
     final LayoutState layoutState = new LayoutState(mContext);
 
     final ComponentContext c = new ComponentContext(mContext);
-    c.setLayoutStateReferenceWrapper(new LayoutStateReferenceWrapper(layoutState));
+    c.setLayoutStateContext(new LayoutStateContext(layoutState));
 
     Component component = TestDrawableComponent.create(mContext).unique().build();
     component.measure(c, 100, 100, new Size());
@@ -64,9 +64,9 @@ public class ComponentTest {
     final LayoutState layoutState2 = new LayoutState(mContext);
 
     final ComponentContext c1 = new ComponentContext(mContext);
-    c1.setLayoutStateReferenceWrapper(new LayoutStateReferenceWrapper(layoutState1));
+    c1.setLayoutStateContext(new LayoutStateContext(layoutState1));
     final ComponentContext c2 = new ComponentContext(mContext);
-    c2.setLayoutStateReferenceWrapper(new LayoutStateReferenceWrapper(layoutState2));
+    c2.setLayoutStateContext(new LayoutStateContext(layoutState2));
 
     Component component = TestDrawableComponent.create(mContext).unique().build();
     component.measure(c1, 100, 100, new Size());

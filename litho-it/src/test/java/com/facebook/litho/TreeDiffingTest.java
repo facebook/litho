@@ -140,7 +140,7 @@ public class TreeDiffingTest {
   private InternalNode createInternalNodeForMeasurableComponent(Component component) {
     component.setScopedContext(mContext);
     final ComponentContext c = new ComponentContext(mContext);
-    c.setLayoutStateReferenceWrapperForTesting();
+    c.setLayoutStateContextForTesting();
     return LayoutState.createLayout(component, c, null);
   }
 

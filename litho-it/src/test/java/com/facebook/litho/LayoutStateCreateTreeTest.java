@@ -55,7 +55,7 @@ public class LayoutStateCreateTreeTest {
   @Before
   public void setup() throws Exception {
     mComponentContext = new ComponentContext(RuntimeEnvironment.application);
-    mComponentContext.setLayoutStateReferenceWrapperForTesting();
+    mComponentContext.setLayoutStateContextForTesting();
   }
 
   @After

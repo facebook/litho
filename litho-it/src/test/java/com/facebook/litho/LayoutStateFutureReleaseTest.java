@@ -28,7 +28,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import android.os.Looper;
-import com.facebook.litho.LayoutState.LayoutStateReferenceWrapper;
+import com.facebook.litho.LayoutState.LayoutStateContext;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
@@ -80,9 +80,9 @@ public class LayoutStateFutureReleaseTest {
     final ComponentContext c = new ComponentContext(mContext, null, null, null);
 
     final LayoutState layoutState = new LayoutState(c);
-    final LayoutStateReferenceWrapper layoutStateReferenceWrapper =
-        new LayoutStateReferenceWrapper(layoutState, layoutStateFuture);
-    c.setLayoutStateReferenceWrapper(layoutStateReferenceWrapper);
+    final LayoutStateContext layoutStateContext =
+        new LayoutStateContext(layoutState, layoutStateFuture);
+    c.setLayoutStateContext(layoutStateContext);
 
     final CountDownLatch wait = new CountDownLatch(1);
     final TestChildComponent child1 =
@@ -114,9 +114,9 @@ public class LayoutStateFutureReleaseTest {
     when(layoutStateFuture.isReleased()).thenReturn(false);
     final ComponentContext c = new ComponentContext(mContext, null, null, null);
     final LayoutState layoutState = new LayoutState(c);
-    final LayoutStateReferenceWrapper layoutStateReferenceWrapper =
-        new LayoutStateReferenceWrapper(layoutState, layoutStateFuture);
-    c.setLayoutStateReferenceWrapper(layoutStateReferenceWrapper);
+    final LayoutStateContext layoutStateContext =
+        new LayoutStateContext(layoutState, layoutStateFuture);
+    c.setLayoutStateContext(layoutStateContext);
 
     final CountDownLatch wait = new CountDownLatch(1);
     final TestChildComponent child1 =

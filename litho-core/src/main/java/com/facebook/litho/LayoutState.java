@@ -142,28 +142,27 @@ class LayoutState {
    * instances directly helps with clearing out the reference from all objects that hold on to it,
    * without having to keep track of all these objects to clear out the references.
    */
-  static final class LayoutStateReferenceWrapper {
+  static final class LayoutStateContext {
     private @Nullable LayoutState mLayoutStateRef;
     private @Nullable LayoutStateFuture mLayoutStateFuture;
 
     private static @Nullable LayoutState sTestLayoutState;
 
-    public static LayoutStateReferenceWrapper getTestInstance(ComponentContext c) {
+    public static LayoutStateContext getTestInstance(ComponentContext c) {
       if (sTestLayoutState == null) {
         sTestLayoutState = new LayoutState(c);
       }
 
-      return new LayoutStateReferenceWrapper(sTestLayoutState, null);
+      return new LayoutStateContext(sTestLayoutState, null);
     }
 
     @VisibleForTesting
-    LayoutStateReferenceWrapper(LayoutState layoutState) {
+    LayoutStateContext(LayoutState layoutState) {
       this(layoutState, null);
     }
 
     @VisibleForTesting
-    LayoutStateReferenceWrapper(
-        LayoutState layoutState, @Nullable LayoutStateFuture layoutStateFuture) {
+    LayoutStateContext(LayoutState layoutState, @Nullable LayoutStateFuture layoutStateFuture) {
       mLayoutStateRef = layoutState;
       mLayoutStateFuture = layoutStateFuture;
     }
@@ -1329,7 +1328,7 @@ class LayoutState {
     final DiffNode diffTreeRoot =
         currentLayoutState != null ? currentLayoutState.mDiffTreeRoot : null;
     final LayoutState layoutState;
-    LayoutStateReferenceWrapper layoutStateWrapper = null;
+    LayoutStateContext layoutStateContext = null;
 
     try {
       final PerfEvent logLayoutState =
@@ -1347,8 +1346,8 @@ class LayoutState {
       component.markLayoutStarted();
 
       layoutState = new LayoutState(c);
-      layoutStateWrapper = new LayoutStateReferenceWrapper(layoutState, layoutStateFuture);
-      c.setLayoutStateReferenceWrapper(layoutStateWrapper);
+      layoutStateContext = new LayoutStateContext(layoutState, layoutStateFuture);
+      c.setLayoutStateContext(layoutStateContext);
 
       layoutState.mShouldGenerateDiffTree = shouldGenerateDiffTree;
       layoutState.mComponentTreeId = componentTreeId;
@@ -1381,13 +1380,13 @@ class LayoutState {
               : layoutCreatedInWillRender;
       // Null check for tests.
       if (root.getContext() != null) {
-        root.getContext().setLayoutStateReferenceWrapper(layoutStateWrapper);
+        root.getContext().setLayoutStateContext(layoutStateContext);
       }
 
       layoutState.mLayoutRoot = root;
       layoutState.mRootTransitionId = getTransitionIdForNode(root);
 
-      if (layoutStateWrapper.isLayoutInterrupted()) {
+      if (layoutStateContext.isLayoutInterrupted()) {
         layoutState.mIsPartialLayoutState = true;
         return layoutState;
       }
@@ -1398,8 +1397,8 @@ class LayoutState {
 
       setSizeAfterMeasureAndCollectResults(c, layoutState);
 
-      if (layoutStateWrapper != null) {
-        layoutStateWrapper.releaseReference();
+      if (layoutStateContext != null) {
+        layoutStateContext.releaseReference();
       }
 
       if (logLayoutState != null) {
@@ -1428,9 +1427,8 @@ class LayoutState {
       throw new IllegalStateException("Can not resume a finished LayoutState calculation");
     }
 
-    final LayoutStateReferenceWrapper layoutStateWrapper =
-        new LayoutStateReferenceWrapper(layoutState, null);
-    c.setLayoutStateReferenceWrapper(layoutStateWrapper);
+    final LayoutStateContext layoutStateContext = new LayoutStateContext(layoutState, null);
+    c.setLayoutStateContext(layoutStateContext);
 
     final Component component = layoutState.mComponent;
     final int componentTreeId = layoutState.mComponentTreeId;
@@ -1482,8 +1480,8 @@ class LayoutState {
 
       setSizeAfterMeasureAndCollectResults(c, layoutState);
 
-      if (layoutStateWrapper != null) {
-        layoutStateWrapper.releaseReference();
+      if (layoutStateContext != null) {
+        layoutStateContext.releaseReference();
       }
 
       if (logLayoutState != null) {

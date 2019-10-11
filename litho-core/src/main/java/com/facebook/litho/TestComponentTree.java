@@ -118,7 +118,7 @@ public class TestComponentTree extends ComponentTree {
 
   public static InternalNode resolveImmediateSubtree(
       ComponentContext c, Component component, int widthSpec, int heightSpec) {
-    c.setLayoutStateReferenceWrapperForTesting();
+    c.setLayoutStateContextForTesting();
 
     InternalNode node =
         TestLayoutState.createAndMeasureTreeForComponent(c, component, widthSpec, heightSpec);

@@ -37,7 +37,7 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Rect;
 import android.os.Build;
-import com.facebook.litho.LayoutState.LayoutStateReferenceWrapper;
+import com.facebook.litho.LayoutState.LayoutStateContext;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestLayoutComponent;
 import com.facebook.litho.testing.TestSizeDependentComponent;
@@ -99,7 +99,7 @@ public class LayoutStateCalculateTest {
     final ComponentContext c =
         ComponentContext.withComponentTree(baseContext, ComponentTree.create(baseContext).build());
     final LayoutState layoutState = new LayoutState(c);
-    c.setLayoutStateReferenceWrapper(new LayoutStateReferenceWrapper(layoutState));
+    c.setLayoutStateContext(new LayoutStateContext(layoutState));
 
     final int widthSpecContainer = makeSizeSpec(300, EXACTLY);
     final int heightSpec = makeSizeSpec(0, UNSPECIFIED);
@@ -158,7 +158,7 @@ public class LayoutStateCalculateTest {
     final ComponentContext c =
         ComponentContext.withComponentTree(baseContext, ComponentTree.create(baseContext).build());
     final LayoutState layoutState = new LayoutState(c);
-    c.setLayoutStateReferenceWrapper(new LayoutStateReferenceWrapper(layoutState));
+    c.setLayoutStateContext(new LayoutStateContext(layoutState));
 
     final int widthSpecContainer = makeSizeSpec(300, EXACTLY);
     final int heightSpec = makeSizeSpec(0, UNSPECIFIED);
@@ -227,7 +227,7 @@ public class LayoutStateCalculateTest {
     final ComponentContext c =
         ComponentContext.withComponentTree(baseContext, ComponentTree.create(baseContext).build());
     final LayoutState layoutState = new LayoutState(c);
-    c.setLayoutStateReferenceWrapper(new LayoutStateReferenceWrapper(layoutState));
+    c.setLayoutStateContext(new LayoutStateContext(layoutState));
 
     final int widthSpecContainer = makeSizeSpec(300, EXACTLY);
     final int heightSpec = makeSizeSpec(0, UNSPECIFIED);
@@ -303,7 +303,7 @@ public class LayoutStateCalculateTest {
     final ComponentContext c =
         ComponentContext.withComponentTree(baseContext, ComponentTree.create(baseContext).build());
     final LayoutState layoutState = new LayoutState(c);
-    c.setLayoutStateReferenceWrapper(new LayoutStateReferenceWrapper(layoutState));
+    c.setLayoutStateContext(new LayoutStateContext(layoutState));
 
     final int widthSpecContainer = makeSizeSpec(300, EXACTLY);
     final int heightSpec = makeSizeSpec(0, UNSPECIFIED);

@@ -44,7 +44,7 @@ import static org.robolectric.RuntimeEnvironment.application;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.util.Pair;
-import com.facebook.litho.LayoutState.LayoutStateReferenceWrapper;
+import com.facebook.litho.LayoutState.LayoutStateContext;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.logging.TestComponentsReporter;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
@@ -80,7 +80,7 @@ public class InternalNodeTest {
 
   private static InternalNode acquireInternalNode() {
     final ComponentContext context = new ComponentContext(RuntimeEnvironment.application);
-    context.setLayoutStateReferenceWrapperForTesting();
+    context.setLayoutStateContextForTesting();
 
     return createAndMeasureTreeForComponent(
         context,
@@ -92,7 +92,7 @@ public class InternalNodeTest {
   private static InternalNode acquireInternalNodeWithLogger(ComponentsLogger logger) {
     final ComponentContext context =
         new ComponentContext(RuntimeEnvironment.application, "TEST", logger);
-    context.setLayoutStateReferenceWrapperForTesting();
+    context.setLayoutStateContextForTesting();
 
     return createAndMeasureTreeForComponent(
         context,
@@ -405,7 +405,7 @@ public class InternalNodeTest {
     final ComponentContext c =
         ComponentContext.withComponentTree(baseContext, ComponentTree.create(baseContext).build());
     final LayoutState layoutState = new LayoutState(c);
-    c.setLayoutStateReferenceWrapper(new LayoutStateReferenceWrapper(layoutState));
+    c.setLayoutStateContext(new LayoutStateContext(layoutState));
 
     final int unspecifiedSizeSpec = makeSizeSpec(0, UNSPECIFIED);
     final int exactSizeSpec = makeSizeSpec(50, EXACTLY);
@@ -450,7 +450,7 @@ public class InternalNodeTest {
   @Test
   public void testDeepClone() {
     final ComponentContext context = new ComponentContext(RuntimeEnvironment.application);
-    context.setLayoutStateReferenceWrapperForTesting();
+    context.setLayoutStateContextForTesting();
 
     InternalNode layout =
         createAndMeasureTreeForComponent(

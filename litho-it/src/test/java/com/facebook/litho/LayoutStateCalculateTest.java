@@ -57,7 +57,7 @@ import android.graphics.Rect;
 import android.util.SparseArray;
 import android.view.accessibility.AccessibilityManager;
 import androidx.annotation.Nullable;
-import com.facebook.litho.LayoutState.LayoutStateReferenceWrapper;
+import com.facebook.litho.LayoutState.LayoutStateContext;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestLayoutComponent;
@@ -933,7 +933,7 @@ public class LayoutStateCalculateTest {
     final ComponentContext c =
         ComponentContext.withComponentTree(baseContext, ComponentTree.create(baseContext).build());
     final LayoutState layoutState = new LayoutState(c);
-    c.setLayoutStateReferenceWrapper(new LayoutStateReferenceWrapper(layoutState));
+    c.setLayoutStateContext(new LayoutStateContext(layoutState));
 
     final Size size = new Size();
     final TestComponent innerComponent =
@@ -972,7 +972,7 @@ public class LayoutStateCalculateTest {
     final ComponentContext c =
         ComponentContext.withComponentTree(baseContext, ComponentTree.create(baseContext).build());
     final LayoutState layoutState = new LayoutState(c);
-    c.setLayoutStateReferenceWrapper(new LayoutStateReferenceWrapper(layoutState));
+    c.setLayoutStateContext(new LayoutStateContext(layoutState));
 
     final Size size = new Size();
     final TestComponent innerComponent =
@@ -1011,7 +1011,7 @@ public class LayoutStateCalculateTest {
     final ComponentContext c =
         ComponentContext.withComponentTree(baseContext, ComponentTree.create(baseContext).build());
     final LayoutState layoutState = new LayoutState(c);
-    c.setLayoutStateReferenceWrapper(new LayoutStateReferenceWrapper(layoutState));
+    c.setLayoutStateContext(new LayoutStateContext(layoutState));
 
     final Size size = new Size();
     final TestComponent innerComponent =
@@ -1048,7 +1048,7 @@ public class LayoutStateCalculateTest {
     final ComponentContext c =
         ComponentContext.withComponentTree(baseContext, ComponentTree.create(baseContext).build());
     final LayoutState layoutState = new LayoutState(c);
-    c.setLayoutStateReferenceWrapper(new LayoutStateReferenceWrapper(layoutState));
+    c.setLayoutStateContext(new LayoutStateContext(layoutState));
 
     final Size size = new Size();
     final TestComponent innerComponent =
@@ -1948,7 +1948,7 @@ public class LayoutStateCalculateTest {
     final int width = 50;
     final int height = 30;
     final ComponentContext c = new ComponentContext(application);
-    c.setLayoutStateReferenceWrapperForTesting();
+    c.setLayoutStateContextForTesting();
     final Component component =
         new InlineLayoutSpec() {
           @Override
@@ -2176,7 +2176,7 @@ public class LayoutStateCalculateTest {
   @Test
   public void testWillRenderLayoutsOnce() {
     ComponentContext c = new ComponentContext(application);
-    c.setLayoutStateReferenceWrapperForTesting();
+    c.setLayoutStateContextForTesting();
 
     final Component componentSpy =
         spy(TestLayoutComponent.create(c, 0, 0, true, true, true, false).build());
@@ -2201,7 +2201,7 @@ public class LayoutStateCalculateTest {
   @Test
   public void testResolveLayoutUsesWillRenderResult() {
     ComponentContext c = new ComponentContext(application);
-    c.setLayoutStateReferenceWrapperForTesting();
+    c.setLayoutStateContextForTesting();
 
     final Component component =
         TestLayoutComponent.create(c, 0, 0, true, true, true, false).build();
@@ -2219,7 +2219,7 @@ public class LayoutStateCalculateTest {
   @Test
   public void testNewLayoutBuilderUsesWillRenderResult() {
     ComponentContext c = new ComponentContext(application);
-    c.setLayoutStateReferenceWrapperForTesting();
+    c.setLayoutStateContextForTesting();
 
     final Component component =
         TestLayoutComponent.create(c, 0, 0, true, true, true, false).build();
@@ -2237,7 +2237,7 @@ public class LayoutStateCalculateTest {
   @Test
   public void testCreateLayoutUsesWillRenderResult() {
     ComponentContext c = new ComponentContext(application);
-    c.setLayoutStateReferenceWrapperForTesting();
+    c.setLayoutStateContextForTesting();
 
     final Component component =
         TestLayoutComponent.create(c, 0, 0, true, true, true, false).build();
@@ -2277,7 +2277,7 @@ public class LayoutStateCalculateTest {
   @Test
   public void testWillRenderTwiceDoesNotReCreateLayout() {
     ComponentContext c = new ComponentContext(application);
-    c.setLayoutStateReferenceWrapperForTesting();
+    c.setLayoutStateContextForTesting();
 
     final Component component =
         TestLayoutComponent.create(c, 0, 0, true, true, true, false).build();

@@ -107,7 +107,7 @@ public class ComponentLifecycleTest {
     StateHandler stateHandler = mock(StateHandler.class);
 
     final ComponentContext c = new ComponentContext(RuntimeEnvironment.application, stateHandler);
-    c.setLayoutStateReferenceWrapperForTesting();
+    c.setLayoutStateContextForTesting();
     mContext = spy(c);
     when(mNode.getContext()).thenReturn(mContext);
 

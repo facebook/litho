@@ -20,7 +20,7 @@ import static com.facebook.litho.testing.assertj.LithoAssertions.assertThat;
 import static org.robolectric.RuntimeEnvironment.application;
 
 import android.view.View;
-import com.facebook.litho.LayoutState.LayoutStateReferenceWrapper;
+import com.facebook.litho.LayoutState.LayoutStateContext;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
 import com.facebook.litho.testing.util.InlineLayoutWithSizeSpec;
@@ -68,14 +68,14 @@ public class WillRenderTest {
   @Test
   public void testWillRenderForComponentThatReturnsNull() {
     ComponentContext c = new ComponentContext(application);
-    c.setLayoutStateReferenceWrapper(LayoutStateReferenceWrapper.getTestInstance(c));
+    c.setLayoutStateContext(LayoutStateContext.getTestInstance(c));
     assertThat(c, Wrapper.create(c).delegate(mNullSpec).build()).wontRender();
   }
 
   @Test
   public void testWillRenderForComponentThatReturnsNonNull() {
     ComponentContext c = new ComponentContext(application);
-    c.setLayoutStateReferenceWrapper(LayoutStateReferenceWrapper.getTestInstance(c));
+    c.setLayoutStateContext(LayoutStateContext.getTestInstance(c));
     assertThat(c, Wrapper.create(c).delegate(mNonNullSpec).build()).willRender();
   }
 
@@ -85,7 +85,7 @@ public class WillRenderTest {
     mExpectedException.expectMessage("@OnCreateLayoutWithSizeSpec");
 
     ComponentContext c = new ComponentContext(application);
-    c.setLayoutStateReferenceWrapper(LayoutStateReferenceWrapper.getTestInstance(c));
+    c.setLayoutStateContext(LayoutStateContext.getTestInstance(c));
     Component.willRender(c, Wrapper.create(c).delegate(mLayoutWithSizeSpec).build());
   }
 }
