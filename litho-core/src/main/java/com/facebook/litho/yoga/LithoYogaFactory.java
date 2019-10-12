@@ -22,13 +22,15 @@ import com.facebook.yoga.YogaNode;
 import com.facebook.yoga.YogaNodeFactory;
 
 public abstract class LithoYogaFactory {
-  public static YogaConfig createYogaConfig() {
-    YogaConfig yogaConfig = YogaConfigFactory.create();
+  public static YogaConfig createYogaConfig(boolean useVanillaJNI) {
+    YogaConfig yogaConfig = YogaConfigFactory.create(useVanillaJNI);
+    yogaConfig.setUseVanillaJNI(useVanillaJNI);
     yogaConfig.setUseWebDefaults(true);
     return yogaConfig;
   }
 
-  public static YogaNode createYogaNode(YogaConfig config) {
+  public static YogaNode createYogaNode(YogaConfig config, boolean useVanillaJNI) {
+    config.setUseVanillaJNI(useVanillaJNI);
     return YogaNodeFactory.create(config);
   }
 }

@@ -232,4 +232,6 @@ public class ComponentsConfiguration {
    * simplified implementation of shallow copy.
    */
   public static boolean shouldUseDeepCloneDuringReconciliation = false;
+
+  public static boolean useVanillaJNI = false;
 }
