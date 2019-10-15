@@ -15,29 +15,32 @@
   ~ limitations under the License.
   -->
 
-<manifest package="com.fblitho.lithoktsample"
-          xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.facebook.samples.litho.kotlin">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
+  <uses-permission android:name="android.permission.INTERNET" />
 
-    <application
-        android:name=".LithoApplication"
-        android:allowBackup="true"
-        android:label="Litho Sample"
-        android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
-        <activity android:name=".demo.DemoListActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
-        </activity>
-        <activity android:name=".lithography.LithographyActivity"/>
-        <activity android:name=".errors.ErrorHandlingActivity" />
-        <activity android:name=".bordereffects.BorderEffectsActivity" />
-        <activity android:name=".animations.animatedbadge.AnimatedBadgeActivity" />
-        <activity android:name=".animations.animationcomposition.ComposedAnimationsActivity" />
-        <activity android:name=".animations.expandableelement.ExpandableElementActivity" />
-        <activity android:name=".animations.bounds.BoundsAnimationActivity" />
-        <activity android:name=".logging.LoggingActivity" />
-    </application>
+  <application
+      android:allowBackup="false"
+      android:label="Kotlin Litho Sample"
+      android:name=".LithoApplication"
+      android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
+      tools:ignore="GoogleAppIndexingWarning">
+
+    <activity android:name=".demo.DemoListActivity">
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN" />
+        <category android:name="android.intent.category.LAUNCHER" />
+      </intent-filter>
+    </activity>
+    <activity android:name=".lithography.LithographyActivity" />
+    <activity android:name=".bordereffects.BorderEffectsActivity" />
+    <activity android:name=".errors.ErrorHandlingActivity" />
+    <activity android:name=".animations.animatedbadge.AnimatedBadgeActivity" />
+    <activity android:name=".animations.animationcomposition.ComposedAnimationsActivity" />
+    <activity android:name=".animations.expandableelement.ExpandableElementActivity" />
+    <activity android:name=".animations.bounds.BoundsAnimationActivity" />
+    <activity android:name=".logging.LoggingActivity" />
+  </application>
 </manifest>
