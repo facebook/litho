@@ -8,6 +8,8 @@ docs/_site/
 /.buckd
 /gentest/test.html
 .buckversion
+
+.cxx
 .externalNativeBuild
 .gradle
 
