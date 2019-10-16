@@ -30,7 +30,7 @@ public final class Column extends Component {
 
   @Nullable
   @Prop(optional = true)
-  List<Component> children;
+  private List<Component> children;
 
   @Nullable
   @Prop(optional = true)
