@@ -34,6 +34,8 @@ android {
 
 dependencies {
     implementation project(':litho-core')
+    // TODO(colriot): Widget related stuff will be moved to a separate module
+    implementation project(':litho-widget')
 
     // Annotations
     compileOnly deps.jsr305
