@@ -15,24 +15,18 @@
  */
 
 plugins {
+    id 'idea'
     id 'java'
-    id 'org.jetbrains.intellij' version '0.4.4'
+    id 'org.jetbrains.intellij' version '0.4.10'
 }
 
 group 'com.facebook.litho.intellij'
 
-sourceCompatibility = 1.8
+sourceCompatibility = JavaVersion.VERSION_1_8
 
-repositories {
-    mavenCentral()
-    jcenter() // mockito
+sourceSets {
+    test.java.srcDirs += project(':litho-processor').file("src/test/java")
 }
-
-apply plugin: 'idea'
-apply plugin: 'org.jetbrains.intellij'
-apply plugin: 'java'
-
-sourceSets.test.java.srcDir project(':litho-processor').file("src/test/java")
 
 dependencies {
     // Processor
