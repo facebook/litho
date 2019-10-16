@@ -3792,7 +3792,7 @@ public class RecyclerBinder
     if (mComponentWarmer != null) {
       final Object tag = renderInfo.getCustomAttribute(ComponentWarmer.COMPONENT_WARMER_TAG);
       if (tag instanceof String) {
-        final ComponentTreeHolder holder = mComponentWarmer.get((String) tag);
+        final ComponentTreeHolder holder = mComponentWarmer.consume((String) tag);
         if (holder != null) {
           if (SectionsDebug.ENABLED) {
             Log.d(SectionsDebug.TAG, "Got ComponentTreeHolder from ComponentWarner for key " + tag);

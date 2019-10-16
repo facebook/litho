@@ -20,6 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.testing.TestDrawableComponent;
+import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import org.junit.Before;
 import org.junit.Test;
@@ -53,17 +54,30 @@ public class ComponentWarmerTest {
   }
 
   @Test
-  public void testPrepareForRecyclerBinder() {
+  public void testConsumeFromRecyclerBinder() {
     final RecyclerBinder binder = new RecyclerBinder.Builder().build(mContext);
 
     final ComponentWarmer warmer = new ComponentWarmer(binder);
     warmer.prepare("tag1", mComponentRenderInfo);
 
-    assertThat(warmer.get("tag1")).isNotNull();
+    assertThat(warmer.consume("tag1")).isNotNull();
+    assertThat(warmer.consume("tag1")).isNull();
+  }
+
+  @Test
+  public void testPrepareForRecyclerBinder() {
+    final RecyclerBinder binder = new RecyclerBinder.Builder().build(mContext);
+
+    final ComponentWarmer warmer = new ComponentWarmer(binder);
+    ComponentWarmer.Cache cache = Whitebox.getInternalState(warmer, "mCache");
+
+    warmer.prepare("tag1", mComponentRenderInfo);
+
+    final ComponentTreeHolder cachedCTH = cache.get("tag1");
 
     binder.insertItemAt(0, mComponentRenderInfo);
 
-    assertThat(binder.getComponentTreeHolderAt(0)).isEqualTo(warmer.get("tag1"));
+    assertThat(binder.getComponentTreeHolderAt(0)).isEqualTo(cachedCTH);
   }
 
   @Test
@@ -71,12 +85,14 @@ public class ComponentWarmerTest {
     final RecyclerBinder binder = new RecyclerBinder.Builder().build(mContext);
 
     final ComponentWarmer warmer = new ComponentWarmer(binder);
+    ComponentWarmer.Cache cache = Whitebox.getInternalState(warmer, "mCache");
+
     warmer.prepareAsync("tag1", mComponentRenderInfo);
 
-    assertThat(warmer.get("tag1")).isNotNull();
+    final ComponentTreeHolder cachedCTH = cache.get("tag1");
 
     binder.insertItemAt(0, mComponentRenderInfo);
 
-    assertThat(binder.getComponentTreeHolderAt(0)).isEqualTo(warmer.get("tag1"));
+    assertThat(binder.getComponentTreeHolderAt(0)).isEqualTo(cachedCTH);
   }
 }

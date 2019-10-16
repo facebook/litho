@@ -165,9 +165,12 @@ public class ComponentWarmer {
     mCache.remove(tag);
   }
 
+  /**
+   * If it exists, it returns the cached ComponentTreeHolder for this tag and removes it from cache.
+   */
   @Nullable
-  public ComponentTreeHolder get(String tag) {
-    return mCache.get(tag);
+  public ComponentTreeHolder consume(String tag) {
+    return mCache.remove(tag);
   }
 
   @VisibleForTesting
