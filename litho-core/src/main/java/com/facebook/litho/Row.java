@@ -51,7 +51,7 @@ public final class Row extends Component {
   @Prop(optional = true)
   private boolean reverse;
 
-  private Row(String simpleName) {
+  Row(String simpleName) {
     super(simpleName);
   }
 
@@ -168,7 +168,7 @@ public final class Row extends Component {
     Row mRow;
     ComponentContext mContext;
 
-    private void init(ComponentContext context, int defStyleAttr, int defStyleRes, Row row) {
+    void init(ComponentContext context, int defStyleAttr, int defStyleRes, Row row) {
       super.init(context, defStyleAttr, defStyleRes, row);
       mRow = row;
       mContext = context;

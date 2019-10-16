@@ -51,7 +51,7 @@ public final class Column extends Component {
   @Prop(optional = true)
   private boolean reverse;
 
-  private Column(String simpleName) {
+  Column(String simpleName) {
     super(simpleName);
   }
 
@@ -170,7 +170,7 @@ public final class Column extends Component {
     Column mColumn;
     ComponentContext mContext;
 
-    private void init(ComponentContext context, int defStyleAttr, int defStyleRes, Column column) {
+    void init(ComponentContext context, int defStyleAttr, int defStyleRes, Column column) {
       super.init(context, defStyleAttr, defStyleRes, column);
       mColumn = column;
       mContext = context;
