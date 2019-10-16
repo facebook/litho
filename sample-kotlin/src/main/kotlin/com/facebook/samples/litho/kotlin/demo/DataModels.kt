@@ -24,6 +24,7 @@ import com.facebook.samples.litho.kotlin.bordereffects.BorderEffectsActivity
 import com.facebook.samples.litho.kotlin.errors.ErrorHandlingActivity
 import com.facebook.samples.litho.kotlin.lithography.LithographyActivity
 import com.facebook.samples.litho.kotlin.logging.LoggingActivity
+import com.facebook.samples.litho.kotlin.playground.PlaygroundActivity
 
 object DataModels {
 
@@ -31,6 +32,10 @@ object DataModels {
       DemoListDataModel(
           name = "Lithography",
           klass = LithographyActivity::class.java
+      ),
+      DemoListDataModel(
+          name = "Playground",
+          klass = PlaygroundActivity::class.java
       ),
       DemoListDataModel(
           name = "Border effects",
