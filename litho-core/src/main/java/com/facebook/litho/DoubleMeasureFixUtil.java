@@ -23,10 +23,10 @@ import android.util.DisplayMetrics;
 
 public class DoubleMeasureFixUtil {
 
-  // Required to determine whether device used is a Chromebook.
-  // See https://stackoverflow.com/questions/39784415/ for details.
-  // TODO: T46211188 Figure out long-term fix encompassing regular Android devices and Chromebooks
-  private static final String SYSTEM_FEATURE = "org.chromium.arc.device_management";
+  private static final short NORMAL = 1;
+  private static final short CHROMEBOOK = 2;
+
+  private static short deviceType = 0;
 
   /**
    * Correction for an Android bug on some devices with "special" densities where the system will
@@ -44,7 +44,18 @@ public class DoubleMeasureFixUtil {
     if (mode == SizeSpec.UNSPECIFIED) {
       return widthSpec;
     }
-    final boolean isChromebook = packageManager.hasSystemFeature(SYSTEM_FEATURE);
+
+    // Will cache the device type to avoid repetitive package manager calls.
+    if (deviceType == 0) {
+      // Required to determine whether device used is a Chromebook.
+      // See https://stackoverflow.com/questions/39784415/ for details.
+      // TODO: T46211188 Figure out long-term fix encompassing regular Android devices and
+      // Chromebooks
+      deviceType =
+          packageManager.hasSystemFeature("org.chromium.arc.device_management")
+              ? CHROMEBOOK
+              : NORMAL;
+    }
 
     final Configuration configuration = resources.getConfiguration();
     final DisplayMetrics displayMetrics = resources.getDisplayMetrics();
@@ -53,7 +64,9 @@ public class DoubleMeasureFixUtil {
     // If device used is a Chromebook we need to use the window size instead of the screen size to
     // avoid layout issues.
     final int screenWidthPx =
-        isChromebook ? (int) (screenWidthDp * screenDensity + 0.5f) : displayMetrics.widthPixels;
+        (deviceType == CHROMEBOOK)
+            ? (int) (screenWidthDp * screenDensity + 0.5f)
+            : displayMetrics.widthPixels;
 
     // NB: Logic taken from ViewRootImpl#dipToPx
     final int calculatedScreenWidthPx = (int) (screenDensity * screenWidthDp + 0.5f);
