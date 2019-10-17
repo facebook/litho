@@ -87,6 +87,7 @@ import javax.annotation.concurrent.GuardedBy;
 public class ComponentTree {
 
   public static final int INVALID_ID = -1;
+  private static final String INVALID_KEY = "LithoTooltipController:InvalidKey";
   private static final String TAG = ComponentTree.class.getSimpleName();
   private static final int SIZE_UNINITIALIZED = -1;
   private static final String DEFAULT_LAYOUT_THREAD_NAME = "ComponentLayoutThread";
@@ -1578,8 +1579,11 @@ public class ComponentTree {
     }
 
     if (!componentKeysToBounds.containsKey(anchorGlobalKey)) {
-      throw new IllegalArgumentException(
+      ComponentsReporter.emitMessage(
+          ComponentsReporter.LogLevel.ERROR,
+          INVALID_KEY,
           "Cannot find a component with key " + anchorGlobalKey + " to use as anchor.");
+      return;
     }
 
     final Rect anchorBounds = componentKeysToBounds.get(anchorGlobalKey);
@@ -1596,8 +1600,11 @@ public class ComponentTree {
     }
 
     if (!componentKeysToBounds.containsKey(anchorGlobalKey)) {
-      throw new IllegalArgumentException(
+      ComponentsReporter.emitMessage(
+          ComponentsReporter.LogLevel.ERROR,
+          INVALID_KEY,
           "Cannot find a component with key " + anchorGlobalKey + " to use as anchor.");
+      return;
     }
 
     final Rect anchorBounds = componentKeysToBounds.get(anchorGlobalKey);
