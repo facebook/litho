@@ -754,7 +754,7 @@ public class ComponentTreeTest {
     root1.testId = 1;
 
     ThreadPoolLayoutHandler handler =
-        new ThreadPoolLayoutHandler(new LayoutThreadPoolConfigurationImpl(1, 1, 5));
+        ThreadPoolLayoutHandler.getNewInstance(new LayoutThreadPoolConfigurationImpl(1, 1, 5));
 
     ComponentTree componentTree =
         ComponentTree.create(mContext, root1).layoutThreadHandler(handler).build();
@@ -800,7 +800,7 @@ public class ComponentTreeTest {
     root1.testId = 1;
 
     ThreadPoolLayoutHandler handler =
-        new ThreadPoolLayoutHandler(new LayoutThreadPoolConfigurationImpl(1, 1, 5));
+        ThreadPoolLayoutHandler.getNewInstance(new LayoutThreadPoolConfigurationImpl(1, 1, 5));
 
     ComponentTree componentTree =
         ComponentTree.create(mContext, root1).layoutThreadHandler(handler).build();
@@ -868,7 +868,7 @@ public class ComponentTreeTest {
     root1.testId = 1;
 
     ThreadPoolLayoutHandler handler =
-        new ThreadPoolLayoutHandler(new LayoutThreadPoolConfigurationImpl(1, 1, 5));
+        ThreadPoolLayoutHandler.getNewInstance(new LayoutThreadPoolConfigurationImpl(1, 1, 5));
 
     ComponentTree componentTree =
         ComponentTree.create(mContext, root1).layoutThreadHandler(handler).build();

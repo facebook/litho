@@ -98,7 +98,7 @@ public class ComponentTreeTest {
     final CountDownLatch lockWaitForResults = new CountDownLatch(1);
 
     ThreadPoolLayoutHandler handler =
-        new ThreadPoolLayoutHandler(new LayoutThreadPoolConfigurationImpl(1, 1, 5));
+        ThreadPoolLayoutHandler.getNewInstance(new LayoutThreadPoolConfigurationImpl(1, 1, 5));
 
     final ComponentTree componentTree =
         ComponentTree.create(mContext, mainComponent).layoutThreadHandler(handler).build();

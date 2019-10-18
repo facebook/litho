@@ -362,8 +362,7 @@ public class ComponentTree {
       handler =
           ComponentsConfiguration.threadPoolForBackgroundThreadsConfig == null
               ? new DefaultLithoHandler(getDefaultLayoutThreadLooper())
-              : new ThreadPoolLayoutHandler(
-                  ComponentsConfiguration.threadPoolForBackgroundThreadsConfig);
+              : ThreadPoolLayoutHandler.getDefaultInstance();
     } else {
       if (sDefaultLayoutThreadLooper != null
           && sBoostPerfLayoutStateFuture == false

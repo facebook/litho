@@ -101,7 +101,6 @@ public class RecyclerBinder
   private static final String DATA_RENDERED_NOT_TRIGGERED =
       "RecyclerBinder:DataRenderedNotTriggered";
   static final int UNSET = -1;
-  private static ThreadPoolLayoutHandler sThreadPoolHandler;
 
   private static Field mViewHolderField;
 
@@ -563,7 +562,8 @@ public class RecyclerBinder
     /**
      * @param config RecyclerBinder will use this {@link LayoutThreadPoolConfiguration} to create
      *     {@link ThreadPoolLayoutHandler} which will be used to calculate layout in pool of
-     *     threads.
+     *     threads. However, this will create a new separate thread pool which might negatively
+     *     affect the app's performance.
      *     <p>Note: if {@link #layoutHandlerFactory(LayoutHandlerFactory)} is provided, the handler
      *     created by the factory will be used instead of the one that would have been created by
      *     this config.
@@ -838,10 +838,10 @@ public class RecyclerBinder
        */
       if (builder.threadPoolConfig != null) {
         mThreadPoolConfig = builder.threadPoolConfig;
-        mThreadPoolHandler = new ThreadPoolLayoutHandler(mThreadPoolConfig);
+        mThreadPoolHandler = ThreadPoolLayoutHandler.getNewInstance(mThreadPoolConfig);
       } else if (ComponentsConfiguration.threadPoolConfiguration != null) {
         mThreadPoolConfig = ComponentsConfiguration.threadPoolConfiguration;
-        mThreadPoolHandler = new ThreadPoolLayoutHandler(mThreadPoolConfig);
+        mThreadPoolHandler = ThreadPoolLayoutHandler.getNewInstance(mThreadPoolConfig);
       } else {
         mThreadPoolConfig = null;
         mThreadPoolHandler = null;
@@ -3902,13 +3902,8 @@ public class RecyclerBinder
     return holderForRangeInfo;
   }
 
-  private static synchronized ThreadPoolLayoutHandler getDefaultThreadPoolLayoutHandler() {
-    if (sThreadPoolHandler == null) {
-      sThreadPoolHandler =
-          new ThreadPoolLayoutHandler(ComponentsConfiguration.threadPoolConfiguration);
-    }
-
-    return sThreadPoolHandler;
+  private static ThreadPoolLayoutHandler getDefaultThreadPoolLayoutHandler() {
+    return ThreadPoolLayoutHandler.getDefaultInstance();
   }
 
   /**

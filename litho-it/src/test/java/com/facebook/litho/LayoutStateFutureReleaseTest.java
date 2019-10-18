@@ -154,7 +154,7 @@ public class LayoutStateFutureReleaseTest {
     final Column column = Column.create(mContext).child(child1).child(child2).build();
 
     ThreadPoolLayoutHandler handler =
-        new ThreadPoolLayoutHandler(new LayoutThreadPoolConfigurationImpl(1, 1, 5));
+        ThreadPoolLayoutHandler.getNewInstance(new LayoutThreadPoolConfigurationImpl(1, 1, 5));
 
     componentTree = ComponentTree.create(mContext, column).layoutThreadHandler(handler).build();
 
@@ -220,7 +220,7 @@ public class LayoutStateFutureReleaseTest {
     final Column column = Column.create(mContext).child(child1).child(child2).build();
 
     ThreadPoolLayoutHandler handler =
-        new ThreadPoolLayoutHandler(new LayoutThreadPoolConfigurationImpl(1, 1, 5));
+        ThreadPoolLayoutHandler.getNewInstance(new LayoutThreadPoolConfigurationImpl(1, 1, 5));
 
     componentTree = ComponentTree.create(mContext, column).layoutThreadHandler(handler).build();
 
@@ -283,7 +283,7 @@ public class LayoutStateFutureReleaseTest {
     final Column column = Column.create(mContext).child(child1).child(child2).build();
 
     ThreadPoolLayoutHandler handler =
-        new ThreadPoolLayoutHandler(new LayoutThreadPoolConfigurationImpl(1, 1, 5));
+        ThreadPoolLayoutHandler.getNewInstance(new LayoutThreadPoolConfigurationImpl(1, 1, 5));
 
     componentTree = ComponentTree.create(mContext, column).layoutThreadHandler(handler).build();
 
@@ -349,7 +349,7 @@ public class LayoutStateFutureReleaseTest {
     final Column column = Column.create(mContext).child(child1).child(child2).build();
 
     ThreadPoolLayoutHandler handler =
-        new ThreadPoolLayoutHandler(new LayoutThreadPoolConfigurationImpl(1, 1, 5));
+        ThreadPoolLayoutHandler.getNewInstance(new LayoutThreadPoolConfigurationImpl(1, 1, 5));
 
     componentTree = ComponentTree.create(mContext, column).layoutThreadHandler(handler).build();
 
@@ -417,7 +417,7 @@ public class LayoutStateFutureReleaseTest {
     final Column column = Column.create(mContext).child(child1).child(child2).build();
 
     ThreadPoolLayoutHandler handler =
-        new ThreadPoolLayoutHandler(new LayoutThreadPoolConfigurationImpl(1, 1, 5));
+        ThreadPoolLayoutHandler.getNewInstance(new LayoutThreadPoolConfigurationImpl(1, 1, 5));
 
     componentTree = ComponentTree.create(mContext, column).layoutThreadHandler(handler).build();
 
@@ -501,7 +501,7 @@ public class LayoutStateFutureReleaseTest {
     final Column column = Column.create(mContext).child(child1).build();
 
     ThreadPoolLayoutHandler handler =
-        new ThreadPoolLayoutHandler(new LayoutThreadPoolConfigurationImpl(1, 1, 5));
+        ThreadPoolLayoutHandler.getNewInstance(new LayoutThreadPoolConfigurationImpl(1, 1, 5));
 
     componentTree = ComponentTree.create(mContext, column_0).layoutThreadHandler(handler).build();
 
@@ -555,7 +555,7 @@ public class LayoutStateFutureReleaseTest {
     final Column column = Column.create(mContext).child(child1).build();
 
     ThreadPoolLayoutHandler handler =
-        new ThreadPoolLayoutHandler(new LayoutThreadPoolConfigurationImpl(1, 1, 5));
+        ThreadPoolLayoutHandler.getNewInstance(new LayoutThreadPoolConfigurationImpl(1, 1, 5));
 
     componentTree = ComponentTree.create(mContext, column_0).layoutThreadHandler(handler).build();
 
@@ -620,7 +620,7 @@ public class LayoutStateFutureReleaseTest {
     final Column column = Column.create(mContext).child(child1).build();
 
     ThreadPoolLayoutHandler handler =
-        new ThreadPoolLayoutHandler(new LayoutThreadPoolConfigurationImpl(1, 1, 5));
+        ThreadPoolLayoutHandler.getNewInstance(new LayoutThreadPoolConfigurationImpl(1, 1, 5));
 
     componentTree = ComponentTree.create(mContext, column_0).layoutThreadHandler(handler).build();
 
