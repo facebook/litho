@@ -234,4 +234,10 @@ public class ComponentsConfiguration {
   public static boolean shouldUseDeepCloneDuringReconciliation = false;
 
   public static boolean useVanillaJNI = false;
+
+  /**
+   * Cache the device type to eliminate expensive package manager calls when using the
+   * DoubleMeasureFixUtil.
+   */
+  public static boolean shouldCacheDeviceTypeOnDoubleMeasure = false;
 }

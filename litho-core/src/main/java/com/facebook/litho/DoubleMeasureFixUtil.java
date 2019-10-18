@@ -40,13 +40,18 @@ public class DoubleMeasureFixUtil {
    */
   public static int correctWidthSpecForAndroidDoubleMeasureBug(
       Resources resources, PackageManager packageManager, int widthSpec) {
+    return correctWidthSpecForAndroidDoubleMeasureBug(resources, packageManager, widthSpec, false);
+  }
+
+  public static int correctWidthSpecForAndroidDoubleMeasureBug(
+      Resources resources, PackageManager packageManager, int widthSpec, boolean shouldCache) {
     final @SizeSpec.MeasureSpecMode int mode = SizeSpec.getMode(widthSpec);
     if (mode == SizeSpec.UNSPECIFIED) {
       return widthSpec;
     }
 
     // Will cache the device type to avoid repetitive package manager calls.
-    if (deviceType == 0) {
+    if (deviceType == 0 || !shouldCache) {
       // Required to determine whether device used is a Chromebook.
       // See https://stackoverflow.com/questions/39784415/ for details.
       // TODO: T46211188 Figure out long-term fix encompassing regular Android devices and
