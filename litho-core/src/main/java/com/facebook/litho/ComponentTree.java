@@ -18,6 +18,7 @@ package com.facebook.litho;
 
 import static android.os.Process.THREAD_PRIORITY_DEFAULT;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_LAYOUT_CALCULATE;
+import static com.facebook.litho.FrameworkLogEvents.EVENT_LAYOUT_STATE_FUTURE_GET_WAIT;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_PRE_ALLOCATE_MOUNT_CONTENT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_ATTRIBUTION;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_IS_BACKGROUND_LAYOUT;
@@ -1823,8 +1824,8 @@ public class ComponentTree {
     final PerfEvent layoutEvent =
         logger != null
             ? LogTreePopulator.populatePerfEventFromLogger(
-                mContext,
                 logger,
+                mContext.getLogTag(),
                 logger.newPerformanceEvent(mContext, EVENT_LAYOUT_CALCULATE),
                 treeProps)
             : null;
@@ -2516,6 +2517,7 @@ public class ComponentTree {
       final int runningThreadId = this.runningThreadId.get();
       final int originalThreadPriority;
       final boolean didRaiseThreadPriority;
+      final boolean shouldLogWaiting;
       final boolean notRunningOnMyThread = runningThreadId != Process.myTid();
 
       final boolean shouldWaitForResult = !futureTask.isDone() && notRunningOnMyThread;
@@ -2534,10 +2536,11 @@ public class ComponentTree {
                 : ThreadUtils.tryRaiseThreadPriority(
                     runningThreadId, Process.THREAD_PRIORITY_DISPLAY);
         didRaiseThreadPriority = true;
-
+        shouldLogWaiting = true;
       } else {
         originalThreadPriority = THREAD_PRIORITY_DEFAULT;
         didRaiseThreadPriority = false;
+        shouldLogWaiting = false;
       }
 
       final LayoutState result;
@@ -2549,7 +2552,19 @@ public class ComponentTree {
               .arg("runningThreadId", runningThreadId)
               .flush();
         }
+
+        final ComponentsLogger logger = getContextLogger();
+        final PerfEvent logFutureTaskGetWaiting =
+            shouldLogWaiting && logger != null
+                ? LogTreePopulator.populatePerfEventFromLogger(
+                    mContext,
+                    logger,
+                    logger.newPerformanceEvent(mContext, EVENT_LAYOUT_STATE_FUTURE_GET_WAIT))
+                : null;
         result = futureTask.get();
+        if (logFutureTaskGetWaiting != null) {
+          logger.logPerfEvent(logFutureTaskGetWaiting);
+        }
         if (shouldTrace) {
           ComponentsSystrace.endSection();
         }

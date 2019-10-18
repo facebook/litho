@@ -21,6 +21,7 @@ import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 import static androidx.recyclerview.widget.OrientationHelper.HORIZONTAL;
 import static androidx.recyclerview.widget.OrientationHelper.VERTICAL;
 import static com.facebook.infer.annotation.ThreadConfined.UI;
+import static com.facebook.litho.FrameworkLogEvents.EVENT_INIT_RANGE;
 import static com.facebook.litho.MeasureComparisonUtils.isMeasureSpecCompatible;
 import static com.facebook.litho.widget.ComponentTreeHolder.RENDER_UNINITIALIZED;
 import static com.facebook.litho.widget.RenderInfoViewCreatorController.DEFAULT_COMPONENT_VIEW_TYPE;
@@ -49,13 +50,16 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLogParams;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.ComponentTree.MeasureListener;
+import com.facebook.litho.ComponentsLogger;
 import com.facebook.litho.ComponentsReporter;
 import com.facebook.litho.ComponentsSystrace;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.LithoHandler;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.LithoView.LayoutManagerOverrideParams;
+import com.facebook.litho.LogTreePopulator;
 import com.facebook.litho.MeasureComparisonUtils;
+import com.facebook.litho.PerfEvent;
 import com.facebook.litho.RenderCompleteEvent;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
@@ -2693,6 +2697,24 @@ public class RecyclerBinder
     if (isTracing) {
       ComponentsSystrace.beginSection("initRange");
     }
+    final ComponentsLogger logger;
+    final String logTag;
+    if (mComponentContext.getLogger() != null) {
+      logger = mComponentContext.getLogger();
+      logTag = mComponentContext.getLogTag();
+    } else {
+      logger = holder.getRenderInfo().getComponentsLogger();
+      logTag = holder.getRenderInfo().getLogTag();
+    }
+    final PerfEvent logInitRange =
+        logger == null
+            ? null
+            : LogTreePopulator.populatePerfEventFromLogger(
+                mComponentContext,
+                logger,
+                logTag,
+                logger.newPerformanceEvent(mComponentContext, EVENT_INIT_RANGE));
+
     try {
       final Size size = new Size();
       holder.computeLayoutSync(mComponentContext, childWidthSpec, childHeightSpec, size);
@@ -2703,6 +2725,9 @@ public class RecyclerBinder
       mSizeForMeasure = size;
       mEstimatedViewportCount = rangeSize;
     } finally {
+      if (logInitRange != null) {
+        logger.logPerfEvent(logInitRange);
+      }
       if (isTracing) {
         ComponentsSystrace.endSection();
       }

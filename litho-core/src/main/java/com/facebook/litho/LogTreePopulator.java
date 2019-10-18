@@ -39,7 +39,25 @@ public final class LogTreePopulator {
   @CheckReturnValue
   public static PerfEvent populatePerfEventFromLogger(
       ComponentContext c, ComponentsLogger logger, @Nullable PerfEvent perfEvent) {
-    return populatePerfEventFromLogger(c, logger, perfEvent, c.getTreeProps());
+    return populatePerfEventFromLogger(logger, c.getLogTag(), perfEvent, c.getTreeProps());
+  }
+
+  /**
+   * Annotate a log event with the log tag set in the context, and extract the {@link TreeProps}
+   * from a given {@link ComponentContext} and convert them into perf event annotations using a
+   * {@link ComponentsLogger} implementation.
+   *
+   * @return Annotated perf event, or <code>null</code> if the resulting event isn't deemed worthy
+   *     of reporting.
+   */
+  @Nullable
+  @CheckReturnValue
+  public static PerfEvent populatePerfEventFromLogger(
+      ComponentContext c,
+      ComponentsLogger logger,
+      @Nullable String logTag,
+      @Nullable PerfEvent perfEvent) {
+    return populatePerfEventFromLogger(logger, logTag, perfEvent, c.getTreeProps());
   }
 
   /**
@@ -51,16 +69,15 @@ public final class LogTreePopulator {
    */
   @Nullable
   @CheckReturnValue
-  public static PerfEvent populatePerfEventFromLogger(
-      ComponentContext c,
+  static PerfEvent populatePerfEventFromLogger(
       ComponentsLogger logger,
+      @Nullable String logTag,
       @Nullable PerfEvent perfEvent,
       @Nullable TreeProps treeProps) {
     if (perfEvent == null) {
       return null;
     }
 
-    final String logTag = c.getLogTag();
     if (logTag == null) {
       logger.cancelPerfEvent(perfEvent);
       return null;
