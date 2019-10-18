@@ -83,7 +83,11 @@ class TransparencyEnabledCardSpec {
       @Prop(optional = true, resType = ResType.COLOR) int shadowEndColor,
       @Prop(optional = true, resType = ResType.DIMEN_OFFSET) float cornerRadius,
       @Prop(optional = true, resType = ResType.DIMEN_OFFSET) float elevation,
-      @Prop(optional = true, resType = ResType.DIMEN_OFFSET) int shadowBottomOverride) {
+      @Prop(optional = true, resType = ResType.DIMEN_OFFSET) int shadowBottomOverride,
+      @Prop(optional = true) boolean disableClipTopLeft,
+      @Prop(optional = true) boolean disableClipTopRight,
+      @Prop(optional = true) boolean disableClipBottomLeft,
+      @Prop(optional = true) boolean disableClipBottomRight) {
 
     final Resources resources = c.getAndroidContext().getResources();
 
@@ -104,8 +108,9 @@ class TransparencyEnabledCardSpec {
         .child(
             Column.create(c)
                 .marginPx(HORIZONTAL, shadowHorizontal)
-                .marginPx(TOP, shadowTop)
-                .marginPx(BOTTOM, shadowBottom)
+                .marginPx(TOP, disableClipTopLeft && disableClipTopRight ? 0 : shadowTop)
+                .marginPx(
+                    BOTTOM, disableClipBottomLeft && disableClipBottomRight ? 0 : shadowBottom)
                 .backgroundColor(clippingColor)
                 .child(
                     TransparencyEnabledCardClip.create(c)
@@ -121,6 +126,8 @@ class TransparencyEnabledCardSpec {
                     .shadowEndColor(shadowEndColor)
                     .cornerRadiusPx(cornerRadius)
                     .shadowSizePx(elevation)
+                    .hideTopShadow(disableClipTopLeft && disableClipTopRight)
+                    .hideBottomShadow(disableClipBottomLeft && disableClipBottomRight)
                     .positionType(ABSOLUTE)
                     .positionPx(ALL, 0)
                 : null)
