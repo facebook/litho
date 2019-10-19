@@ -1,11 +1,11 @@
 /*
- * Copyright 2014-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,7 +26,6 @@ import static org.assertj.core.api.Java6Assertions.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyLong;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isNull;
 import static org.mockito.Mockito.mock;
@@ -56,7 +55,7 @@ import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
-import com.facebook.litho.ComponentsLogger;
+import com.facebook.litho.ComponentsReporter;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.LayoutThreadPoolConfigurationImpl;
 import com.facebook.litho.LithoHandler;
@@ -70,6 +69,7 @@ import com.facebook.litho.testing.TestAttachDetachComponent;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.Whitebox;
+import com.facebook.litho.testing.logging.TestComponentsReporter;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
 import com.facebook.litho.viewcompat.SimpleViewBinder;
@@ -168,7 +168,11 @@ public class RecyclerBinderTest {
               ComponentTreeMeasureListenerFactory componentTreeMeasureListenerFactory,
               boolean incrementalMountEnabled,
               boolean canInterruptAndMoveLayoutsBetweenThreads,
-              boolean useCancelableLayoutFutures) {
+              boolean useCancelableLayoutFutures,
+              boolean isReconciliationEnabled,
+              boolean isLayoutDiffingEnabled,
+              LithoHandler preallocateHandler,
+              boolean preallocatePerMountSpec) {
             final TestComponentTreeHolder holder = new TestComponentTreeHolder(renderInfo);
             if (renderInfo.rendersComponent()) {
               mHoldersForComponents.put(renderInfo.getComponent(), holder);
@@ -4331,7 +4335,7 @@ public class RecyclerBinderTest {
 
     final RecyclerBinder recyclerBinder =
         new RecyclerBinder.Builder()
-            .bgScheduleAllInitRange(true)
+            .asyncInitRange(true)
             .rangeRatio(0)
             .layoutInfo(mLayoutInfo)
             .threadPoolConfig(new LayoutThreadPoolConfigurationImpl(1, 1, 5))
@@ -4522,11 +4526,11 @@ public class RecyclerBinderTest {
 
   @Test
   public void testDataRenderedCallbacksAreNotTriggered() {
+    final TestComponentsReporter reporter = new TestComponentsReporter();
+    ComponentsReporter.provide(reporter);
     final ChangeSetCompleteCallback changeSetCompleteCallback =
         mock(ChangeSetCompleteCallback.class);
-    final ComponentsLogger componentsLogger = mock(ComponentsLogger.class);
-    final ComponentContext componentContext =
-        new ComponentContext(RuntimeEnvironment.application, "", componentsLogger);
+    final ComponentContext componentContext = new ComponentContext(RuntimeEnvironment.application);
     final RecyclerBinder recyclerBinder =
         new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(componentContext);
     for (int i = 0; i < 40; i++) {
@@ -4543,7 +4547,7 @@ public class RecyclerBinderTest {
     recyclerBinder.mount(recyclerView);
 
     recyclerBinder.notifyChangeSetComplete(true, changeSetCompleteCallback);
-    verify(componentsLogger).emitMessage(eq(ComponentsLogger.LogLevel.ERROR), anyString());
+    assertThat(reporter.hasMessageType(ComponentsReporter.LogLevel.ERROR)).isTrue();
     assertThat(recyclerBinder.mDataRenderedCallbacks).isEmpty();
   }
 

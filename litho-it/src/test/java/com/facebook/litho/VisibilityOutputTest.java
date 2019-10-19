@@ -1,11 +1,11 @@
 /*
- * Copyright 2014-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -101,8 +101,8 @@ public class VisibilityOutputTest {
     long stableIdSeq2 =
         calculateVisibilityOutputId(mVisibilityOutput, LEVEL_TEST + 1, SEQ_TEST + 1);
 
-    assertThat(toBinaryString(stableId)).isEqualTo("100000001000000000000000001");
-    assertThat(toBinaryString(stableIdSeq2)).isEqualTo("100000010000000000000000010");
+    assertThat(toBinaryString(stableId)).isEqualTo("1000000010000000000000000001");
+    assertThat(toBinaryString(stableIdSeq2)).isEqualTo("1000000100000000000000000010");
   }
 
   @Test

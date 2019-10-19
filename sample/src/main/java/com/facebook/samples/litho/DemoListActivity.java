@@ -1,13 +1,17 @@
 /*
- * This file provided by Facebook is for non-commercial testing and evaluation
- * purposes only.  Facebook reserves all rights not expressly granted.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
- * FACEBOOK BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.samples.litho;
@@ -23,6 +27,10 @@ import com.facebook.samples.litho.animations.expandableelement.ExpandableElement
 import com.facebook.samples.litho.animations.pageindicators.PageIndicatorsActivity;
 import com.facebook.samples.litho.animations.renderthread.RenderThreadAnimationActivity;
 import com.facebook.samples.litho.bordereffects.BorderEffectsActivity;
+import com.facebook.samples.litho.changesetdebug.ItemsRerenderingActivity;
+import com.facebook.samples.litho.changesetdebug.PropUpdatingActivity;
+import com.facebook.samples.litho.changesetdebug.ScrollingToBottomActivity;
+import com.facebook.samples.litho.changesetdebug.StateResettingActivity;
 import com.facebook.samples.litho.dynamicprops.DynamicPropsActivity;
 import com.facebook.samples.litho.errors.ErrorHandlingActivity;
 import com.facebook.samples.litho.fastscroll.FastScrollHandleActivity;
@@ -30,6 +38,7 @@ import com.facebook.samples.litho.hscroll.HorizontalScrollWithSnapActivity;
 import com.facebook.samples.litho.lithography.LithographyActivity;
 import com.facebook.samples.litho.playground.PlaygroundActivity;
 import com.facebook.samples.litho.staticscroll.horizontalscroll.HorizontalScrollActivity;
+import com.facebook.samples.litho.stats.StatsActivity;
 import java.util.Arrays;
 import java.util.List;
 
@@ -57,7 +66,16 @@ public class DemoListActivity extends NavigatableDemoActivity {
                   new DemoListDataModel("Page Indicators", PageIndicatorsActivity.class),
                   new DemoListDataModel("Render Thread", RenderThreadAnimationActivity.class))),
           new DemoListDataModel("Dynamic Props", DynamicPropsActivity.class),
-          new DemoListDataModel("Fast Scroll Handle", FastScrollHandleActivity.class));
+          new DemoListDataModel("Fast Scroll Handle", FastScrollHandleActivity.class),
+          new DemoListDataModel("Litho Stats", StatsActivity.class),
+          new DemoListDataModel(
+              "Changeset debug",
+              Arrays.asList(
+                  new DemoListDataModel("Resetting state", StateResettingActivity.class),
+                  new DemoListDataModel("Items re-rendering", ItemsRerenderingActivity.class),
+                  new DemoListDataModel("Not updating with new props", PropUpdatingActivity.class),
+                  new DemoListDataModel(
+                      "List scrolls to bottom", ScrollingToBottomActivity.class))));
 
   @Override
   public void onCreate(Bundle savedInstanceState) {

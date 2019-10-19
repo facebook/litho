@@ -1,14 +1,30 @@
 # Changelog
 
-
-## Version 0.30.1-SNAPSHOT
+## Version 0.31.1-SNAPSHOT
 
 _release-date_
 
- * TBA
+ * **Breaking:** Make ctors of `Component`/`ComponentLifecycle` that take an explicit type id package private.
+ * **Breaking:** Add `categoryKey` param for `ComponentsReporter.emitMessage()` API to distribute errors into different buckets.
+ * **Breaking:** Remove `ComponentsLogger.emitMessage()` API as it was fully replaced by `ComponentsReporter.emitMessage()`.
+ * **Breaking:** Remove `YogaNode` parameter from `YogaLogger#log`.
+ * **Breaking:** Remove error reporting from `ComponentsLogger`.
+ * **Breaking:** Limit scope of `Component`/`ComponentLifecycle` constructors that take explicit type param.
+ * New: Add API for providing custom logger on a per `ComponentRenderInfo` basis.
+ * Fix: Add generics support to `@OnCalculateCachedValue` methods
 
+## Version 0.31.0
 
-## Version 0.30
+_2019-09-09_
+
+ * **Breaking:** `Component.measure()` is only allowed during a LayoutState calculation.
+ * New: Add support to FrescoImage for photo focus points.
+ * New: Allow Child Classes to set `ComponentContext` on `DefaultInternalNode`.
+ * Fix: Immediately remove MountItem mapping on unmount to protect against re-entrancy.
+
+ For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.30.0...v0.31.0).
+
+## Version 0.30.0
 
 _2019-08-23_
 

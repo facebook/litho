@@ -1,11 +1,11 @@
 /*
- * Copyright 2014-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -214,16 +214,14 @@ public class StateHandler {
         }
       }
 
-      LithoStats.incStateUpdate(stateUpdatesForKey.size());
+      LithoStats.incrementAppliedStateUpdatesBy(stateUpdatesForKey.size());
 
-      if (component.getScopedContext().isReconciliationEnabled()) {
-        synchronized (this) {
-          mPendingStateUpdates.remove(key); // remove from pending
-          if (mPendingLazyStateUpdates != null) {
-            mPendingLazyStateUpdates.remove(key); // remove from pending lazy
-          }
-          mAppliedStateUpdates.put(key, stateUpdatesForKey); // add to applied
+      synchronized (this) {
+        mPendingStateUpdates.remove(key); // remove from pending
+        if (mPendingLazyStateUpdates != null) {
+          mPendingLazyStateUpdates.remove(key); // remove from pending lazy
         }
+        mAppliedStateUpdates.put(key, stateUpdatesForKey); // add to applied
       }
     }
 
@@ -320,13 +318,9 @@ public class StateHandler {
    * updates the map of current components with the given components.
    *
    * @param stateHandler state handler that was used to apply state updates in a layout pass
-   * @param isReconciliationEnabled is the NestedTree resolution experiment enabled
    */
-  void commit(StateHandler stateHandler, boolean isReconciliationEnabled) {
-    clearStateUpdates(
-        isReconciliationEnabled
-            ? stateHandler.getAppliedStateUpdates()
-            : stateHandler.getPendingStateUpdates());
+  void commit(StateHandler stateHandler) {
+    clearStateUpdates(stateHandler.getAppliedStateUpdates());
     clearUnusedStateContainers(this, stateHandler);
     copyCurrentStateContainers(stateHandler.getStateContainers());
     copyPendingStateTransitions(stateHandler.getPendingStateUpdateTransitions());

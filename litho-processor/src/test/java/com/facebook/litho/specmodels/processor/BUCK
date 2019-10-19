@@ -4,6 +4,7 @@
 # LICENSE file in the root directory of this source tree.
 load(
     "//tools/build_defs/oss:litho_defs.bzl",
+    "LITHO_ASSERTJ_TARGET",
     "LITHO_JUNIT_TARGET",
     "LITHO_VISIBILITY",
     "fb_java_test",
@@ -21,6 +22,7 @@ fb_java_test(
     target = "8",
     visibility = LITHO_VISIBILITY,
     deps = [
+        LITHO_ASSERTJ_TARGET,
         LITHO_JUNIT_TARGET,
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels:specmodels"),
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/internal:internal"),

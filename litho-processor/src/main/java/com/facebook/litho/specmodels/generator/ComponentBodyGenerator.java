@@ -1,11 +1,11 @@
 /*
- * Copyright 2014-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -31,8 +31,10 @@ import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.BindDynamicValueMethod;
 import com.facebook.litho.specmodels.model.CachedValueParamModel;
 import com.facebook.litho.specmodels.model.ClassNames;
+import com.facebook.litho.specmodels.model.DependencyInjectionHelper;
 import com.facebook.litho.specmodels.model.EventDeclarationModel;
 import com.facebook.litho.specmodels.model.EventMethod;
+import com.facebook.litho.specmodels.model.InjectPropModel;
 import com.facebook.litho.specmodels.model.InterStageInputParamModel;
 import com.facebook.litho.specmodels.model.MethodParamModel;
 import com.facebook.litho.specmodels.model.PropModel;
@@ -224,15 +226,18 @@ public class ComponentBodyGenerator {
               ? propTypeName
               : ParameterizedTypeName.get(ClassNames.DYNAMIC_VALUE, propTypeName.box());
 
+      AnnotationSpec.Builder propAnnotationBuilder =
+          AnnotationSpec.builder(Prop.class)
+              .addMember("resType", "$T.$L", ResType.class, prop.getResType())
+              .addMember("optional", "$L", prop.isOptional());
+      if (prop.hasVarArgs()) {
+        propAnnotationBuilder.addMember("varArg", "$S", prop.getVarArgsSingleName());
+      }
       final FieldSpec.Builder fieldBuilder =
           FieldSpec.builder(
                   KotlinSpecUtils.getFieldTypeName(specModel, fieldTypeName), prop.getName())
               .addAnnotations(prop.getExternalAnnotations())
-              .addAnnotation(
-                  AnnotationSpec.builder(Prop.class)
-                      .addMember("resType", "$T.$L", ResType.class, prop.getResType())
-                      .addMember("optional", "$L", prop.isOptional())
-                      .build())
+              .addAnnotation(propAnnotationBuilder.build())
               .addAnnotation(
                   AnnotationSpec.builder(Comparable.class)
                       .addMember("type", "$L", getComparableType(fieldTypeName, prop.getTypeSpec()))
@@ -281,11 +286,15 @@ public class ComponentBodyGenerator {
       typeSpecDataHolder.addTypeSpecDataHolder(
           specModel
               .getDependencyInjectionHelper()
-              .generateInjectedFields(specModel.getInjectProps()));
+              .generateInjectedFields(specModel, specModel.getInjectProps()));
 
       final List<MethodSpec> testAccessors =
           specModel.getInjectProps().stream()
-              .map(p -> specModel.getDependencyInjectionHelper().generateTestingFieldAccessor(p))
+              .map(
+                  p ->
+                      specModel
+                          .getDependencyInjectionHelper()
+                          .generateTestingFieldAccessor(specModel, p))
               .collect(Collectors.toList());
       typeSpecDataHolder.addMethods(testAccessors);
     }
@@ -796,6 +805,12 @@ public class ComponentBodyGenerator {
         && ((PropModel) methodParamModel).isDynamic()
         && !shallow) {
       return "retrieveValue(" + methodParamModel.getName() + ")";
+    } else if (methodParamModel instanceof InjectPropModel) {
+      DependencyInjectionHelper dependencyInjectionHelper =
+          specModel.getDependencyInjectionHelper();
+      if (dependencyInjectionHelper != null) {
+        return dependencyInjectionHelper.generateImplAccessor(specModel, methodParamModel);
+      }
     }
 
     return methodParamModel.getName();

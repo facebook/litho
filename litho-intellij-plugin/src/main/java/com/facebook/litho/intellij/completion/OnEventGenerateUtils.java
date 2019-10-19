@@ -1,11 +1,11 @@
 /*
- * Copyright 2019-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.facebook.litho.intellij.completion;
 
 import com.facebook.litho.annotations.Event;
@@ -20,11 +21,10 @@ import com.facebook.litho.annotations.FromEvent;
 import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.intellij.LithoClassNames;
 import com.facebook.litho.intellij.LithoPluginUtils;
-import com.intellij.codeInsight.AnnotationUtil;
+import com.facebook.litho.specmodels.processor.PsiEventDeclarationsExtractor;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.JavaPsiFacade;
 import com.intellij.psi.PsiClass;
-import com.intellij.psi.PsiClassObjectAccessExpression;
 import com.intellij.psi.PsiComment;
 import com.intellij.psi.PsiElementFactory;
 import com.intellij.psi.PsiField;
@@ -34,10 +34,8 @@ import com.intellij.psi.PsiModifierList;
 import com.intellij.psi.PsiParameter;
 import com.intellij.psi.PsiParameterList;
 import com.intellij.psi.PsiType;
-import com.intellij.psi.PsiTypeElement;
 import com.intellij.psi.search.GlobalSearchScope;
 import java.util.Collection;
-import java.util.Optional;
 
 /**
  * Helper class for Litho {@literal @OnEvent} method related code generation. Details about this
@@ -76,7 +74,7 @@ public class OnEventGenerateUtils {
     final Project project = context.getProject();
     final PsiElementFactory factory = JavaPsiFacade.getElementFactory(project);
 
-    final PsiType methodReturnType = getEventReturnType(eventClass);
+    final PsiType methodReturnType = PsiEventDeclarationsExtractor.getReturnPsiType(eventClass);
     final String methodName = "on" + eventClass.getName();
     final PsiMethod method = factory.createMethod(methodName, methodReturnType, context);
 
@@ -117,21 +115,19 @@ public class OnEventGenerateUtils {
     return method;
   }
 
-  private static String getContextClassName(PsiClass context) {
-    return LithoPluginUtils.hasLithoSectionAnnotation(context)
-        ? LithoClassNames.SECTION_CONTEXT_CLASS_NAME
-        : LithoClassNames.COMPONENT_CONTEXT_CLASS_NAME;
+  /**
+   * @return String representation of the @OnEvent method first line.
+   *     <p>Example:
+   *     <pre><code>{@literal @OnEvent(ColorChangedEvent.class)}</code></pre>
+   */
+  static String createOnEventLookupString(PsiClass eventClass) {
+    return "@" + OnEvent.class.getSimpleName() + "(" + eventClass.getName() + ".class)";
   }
 
-  private static PsiType getEventReturnType(PsiClass eventClass) {
-    return Optional.of(eventClass)
-        .map(cls -> AnnotationUtil.findAnnotation(eventClass, Event.class.getTypeName()))
-        .map(psiAnnotation -> psiAnnotation.findAttributeValue("returnType"))
-        .filter(PsiClassObjectAccessExpression.class::isInstance)
-        .map(PsiClassObjectAccessExpression.class::cast)
-        .map(PsiClassObjectAccessExpression::getOperand)
-        .map(PsiTypeElement::getType)
-        .orElse(PsiType.VOID);
+  private static String getContextClassName(PsiClass context) {
+    return LithoPluginUtils.hasLithoSectionSpecAnnotation(context)
+        ? LithoClassNames.SECTION_CONTEXT_CLASS_NAME
+        : LithoClassNames.COMPONENT_CONTEXT_CLASS_NAME;
   }
 
   /**

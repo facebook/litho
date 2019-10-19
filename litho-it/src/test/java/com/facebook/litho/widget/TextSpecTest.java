@@ -1,11 +1,11 @@
 /*
- * Copyright 2014-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -38,6 +38,8 @@ import com.facebook.litho.LithoView;
 import com.facebook.litho.testing.eventhandler.EventHandlerTestHelper;
 import com.facebook.litho.testing.helper.ComponentTestHelper;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.yoga.YogaDirection;
+import javax.annotation.Nullable;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -50,6 +52,8 @@ public class TextSpecTest {
 
   private static final int FULL_TEXT_WIDTH = 100;
   private static final int MINIMAL_TEXT_WIDTH = 95;
+  private static final String ARABIC_RTL_TEST_STRING =
+      "\u0645\u0646 \u0627\u0644\u064A\u0645\u064A\u0646 \u0627\u0644\u0649 \u0627\u0644\u064A\u0633\u0627\u0631";
 
   @Before
   public void setup() {
@@ -344,5 +348,190 @@ public class TextSpecTest {
     when(layout.getLineRight(anyInt())).thenReturn((float) minimalWidth);
 
     return layout;
+  }
+
+  @Test
+  public void testTextAlignment_textStart() {
+    assertThat(
+            getMountedDrawableLayoutAlignment(
+                "asdf", YogaDirection.LTR, null, TextAlignment.TEXT_START))
+        .isEqualTo(Layout.Alignment.ALIGN_NORMAL);
+
+    assertThat(
+            getMountedDrawableLayoutAlignment(
+                "asdf", YogaDirection.RTL, null, TextAlignment.TEXT_START))
+        .isEqualTo(Layout.Alignment.ALIGN_NORMAL);
+
+    // Layout.Alignment.ALIGN_NORMAL is mapped to TextAlignment.TEXT_START
+    assertThat(
+            getMountedDrawableLayoutAlignment(
+                "asdf", YogaDirection.LTR, Layout.Alignment.ALIGN_NORMAL, null))
+        .isEqualTo(Layout.Alignment.ALIGN_NORMAL);
+
+    assertThat(
+            getMountedDrawableLayoutAlignment(
+                "asdf", YogaDirection.RTL, Layout.Alignment.ALIGN_NORMAL, null))
+        .isEqualTo(Layout.Alignment.ALIGN_NORMAL);
+  }
+
+  @Test
+  public void testTextAlignment_textEnd() {
+    assertThat(
+            getMountedDrawableLayoutAlignment(
+                "asdf", YogaDirection.LTR, null, TextAlignment.TEXT_END))
+        .isEqualTo(Layout.Alignment.ALIGN_OPPOSITE);
+
+    assertThat(
+            getMountedDrawableLayoutAlignment(
+                "asdf", YogaDirection.RTL, null, TextAlignment.TEXT_END))
+        .isEqualTo(Layout.Alignment.ALIGN_OPPOSITE);
+
+    // Layout.Alignment.ALIGN_OPPOSITE is mapped to TextAlignment.TEXT_END
+    assertThat(
+            getMountedDrawableLayoutAlignment(
+                "asdf", YogaDirection.LTR, Layout.Alignment.ALIGN_OPPOSITE, null))
+        .isEqualTo(Layout.Alignment.ALIGN_OPPOSITE);
+
+    assertThat(
+            getMountedDrawableLayoutAlignment(
+                "asdf", YogaDirection.RTL, Layout.Alignment.ALIGN_OPPOSITE, null))
+        .isEqualTo(Layout.Alignment.ALIGN_OPPOSITE);
+  }
+
+  @Test
+  public void testTextAlignment_center() {
+    assertThat(
+            getMountedDrawableLayoutAlignment(
+                "asdf", YogaDirection.LTR, null, TextAlignment.CENTER))
+        .isEqualTo(Layout.Alignment.ALIGN_CENTER);
+
+    assertThat(
+            getMountedDrawableLayoutAlignment(
+                "asdf", YogaDirection.RTL, null, TextAlignment.CENTER))
+        .isEqualTo(Layout.Alignment.ALIGN_CENTER);
+
+    // Layout.Alignment.ALIGN_CENTER is mapped to TextAlignment.CENTER
+    assertThat(
+            getMountedDrawableLayoutAlignment(
+                "asdf", YogaDirection.LTR, Layout.Alignment.ALIGN_CENTER, null))
+        .isEqualTo(Layout.Alignment.ALIGN_CENTER);
+
+    assertThat(
+            getMountedDrawableLayoutAlignment(
+                "asdf", YogaDirection.RTL, Layout.Alignment.ALIGN_CENTER, null))
+        .isEqualTo(Layout.Alignment.ALIGN_CENTER);
+  }
+
+  @Test
+  public void testTextAlignment_layoutStart() {
+    assertThat(
+            getMountedDrawableLayoutAlignment(
+                "asdf", YogaDirection.LTR, null, TextAlignment.LAYOUT_START))
+        .isEqualTo(Layout.Alignment.ALIGN_NORMAL);
+
+    assertThat(
+            getMountedDrawableLayoutAlignment(
+                "asdf", YogaDirection.RTL, null, TextAlignment.LAYOUT_START))
+        .isEqualTo(Layout.Alignment.ALIGN_OPPOSITE);
+
+    assertThat(
+            getMountedDrawableLayoutAlignment(
+                ARABIC_RTL_TEST_STRING, YogaDirection.LTR, null, TextAlignment.LAYOUT_START))
+        .isEqualTo(Layout.Alignment.ALIGN_OPPOSITE);
+
+    assertThat(
+            getMountedDrawableLayoutAlignment(
+                ARABIC_RTL_TEST_STRING, YogaDirection.RTL, null, TextAlignment.LAYOUT_START))
+        .isEqualTo(Layout.Alignment.ALIGN_NORMAL);
+  }
+
+  @Test
+  public void testTextAlignment_layoutEnd() {
+    assertThat(
+            getMountedDrawableLayoutAlignment(
+                "asdf", YogaDirection.LTR, null, TextAlignment.LAYOUT_END))
+        .isEqualTo(Layout.Alignment.ALIGN_OPPOSITE);
+
+    assertThat(
+            getMountedDrawableLayoutAlignment(
+                "asdf", YogaDirection.RTL, null, TextAlignment.LAYOUT_END))
+        .isEqualTo(Layout.Alignment.ALIGN_NORMAL);
+
+    assertThat(
+            getMountedDrawableLayoutAlignment(
+                ARABIC_RTL_TEST_STRING, YogaDirection.LTR, null, TextAlignment.LAYOUT_END))
+        .isEqualTo(Layout.Alignment.ALIGN_NORMAL);
+
+    assertThat(
+            getMountedDrawableLayoutAlignment(
+                ARABIC_RTL_TEST_STRING, YogaDirection.RTL, null, TextAlignment.LAYOUT_END))
+        .isEqualTo(Layout.Alignment.ALIGN_OPPOSITE);
+  }
+
+  @Test
+  public void testTextAlignment_left() {
+    assertThat(
+            getMountedDrawableLayoutAlignment("asdf", YogaDirection.LTR, null, TextAlignment.LEFT))
+        .isEqualTo(Layout.Alignment.ALIGN_NORMAL);
+
+    assertThat(
+            getMountedDrawableLayoutAlignment("asdf", YogaDirection.RTL, null, TextAlignment.LEFT))
+        .isEqualTo(Layout.Alignment.ALIGN_NORMAL);
+
+    assertThat(
+            getMountedDrawableLayoutAlignment(
+                ARABIC_RTL_TEST_STRING, YogaDirection.LTR, null, TextAlignment.LEFT))
+        .isEqualTo(Layout.Alignment.ALIGN_OPPOSITE);
+
+    assertThat(
+            getMountedDrawableLayoutAlignment(
+                ARABIC_RTL_TEST_STRING, YogaDirection.RTL, null, TextAlignment.LEFT))
+        .isEqualTo(Layout.Alignment.ALIGN_OPPOSITE);
+  }
+
+  @Test
+  public void testTextAlignment_right() {
+    assertThat(
+            getMountedDrawableLayoutAlignment("asdf", YogaDirection.LTR, null, TextAlignment.RIGHT))
+        .isEqualTo(Layout.Alignment.ALIGN_OPPOSITE);
+
+    assertThat(
+            getMountedDrawableLayoutAlignment("asdf", YogaDirection.RTL, null, TextAlignment.RIGHT))
+        .isEqualTo(Layout.Alignment.ALIGN_OPPOSITE);
+
+    assertThat(
+            getMountedDrawableLayoutAlignment(
+                ARABIC_RTL_TEST_STRING, YogaDirection.LTR, null, TextAlignment.RIGHT))
+        .isEqualTo(Layout.Alignment.ALIGN_NORMAL);
+
+    assertThat(
+            getMountedDrawableLayoutAlignment(
+                ARABIC_RTL_TEST_STRING, YogaDirection.RTL, null, TextAlignment.RIGHT))
+        .isEqualTo(Layout.Alignment.ALIGN_NORMAL);
+  }
+
+  private Layout.Alignment getMountedDrawableLayoutAlignment(
+      String text,
+      @Nullable YogaDirection layoutDirection,
+      @Nullable Layout.Alignment deprecatedTextAlignment,
+      @Nullable TextAlignment textAlignment) {
+
+    Text.Builder builder = Text.create(mContext).text(text);
+
+    if (layoutDirection != null) {
+      builder.layoutDirection(layoutDirection);
+    }
+
+    if (deprecatedTextAlignment != null) {
+      builder.textAlignment(deprecatedTextAlignment);
+    }
+
+    if (textAlignment != null) {
+      builder.alignment(textAlignment);
+    }
+
+    return ((TextDrawable)
+            ComponentTestHelper.mountComponent(mContext, builder.build()).getDrawables().get(0))
+        .getLayoutAlignment();
   }
 }

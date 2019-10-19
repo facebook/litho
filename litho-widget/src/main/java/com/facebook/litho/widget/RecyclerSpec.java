@@ -1,11 +1,11 @@
 /*
- * Copyright 2014-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -34,7 +34,6 @@ import com.facebook.litho.EventHandler;
 import com.facebook.litho.Output;
 import com.facebook.litho.Size;
 import com.facebook.litho.StateValue;
-import com.facebook.litho.annotations.FromBind;
 import com.facebook.litho.annotations.FromPrepare;
 import com.facebook.litho.annotations.MountSpec;
 import com.facebook.litho.annotations.OnBind;
@@ -165,7 +164,8 @@ class RecyclerSpec {
       @Prop(optional = true, resType = ResType.DIMEN_SIZE) int fadingEdgeLength,
       @Prop(optional = true) @IdRes int recyclerViewId,
       @Prop(optional = true) int overScrollMode,
-      @Prop(optional = true, isCommonProp = true) CharSequence contentDescription) {
+      @Prop(optional = true, isCommonProp = true) CharSequence contentDescription,
+      @Prop(optional = true) ItemAnimator itemAnimator) {
     final RecyclerView recyclerView = sectionsRecycler.getRecyclerView();
 
     if (recyclerView == null) {
@@ -197,6 +197,9 @@ class RecyclerSpec {
       recyclerView.addItemDecoration(itemDecoration);
     }
 
+    sectionsRecycler.setItemAnimator(
+        itemAnimator != RecyclerSpec.itemAnimator ? itemAnimator : new NoUpdateItemAnimator());
+
     binder.mount(recyclerView);
   }
 
@@ -205,14 +208,12 @@ class RecyclerSpec {
       ComponentContext context,
       SectionsRecyclerView sectionsRecycler,
       @Prop Binder<RecyclerView> binder,
-      @Prop(optional = true) ItemAnimator itemAnimator,
       @Prop(optional = true) final RecyclerEventsController recyclerEventsController,
       @Prop(optional = true, varArg = "onScrollListener") List<OnScrollListener> onScrollListeners,
       @Prop(optional = true) SnapHelper snapHelper,
       @Prop(optional = true) boolean pullToRefresh,
       @Prop(optional = true) LithoRecylerView.TouchInterceptor touchInterceptor,
-      @FromPrepare OnRefreshListener onRefreshListener,
-      Output<ItemAnimator> oldAnimator) {
+      @FromPrepare OnRefreshListener onRefreshListener) {
 
     // contentDescription should be set on the recyclerView itself, and not the sectionsRecycler.
     sectionsRecycler.setContentDescription(null);
@@ -226,13 +227,6 @@ class RecyclerSpec {
       throw new IllegalStateException(
           "RecyclerView not found, it should not be removed from SwipeRefreshLayout "
               + "before unmounting");
-    }
-
-    oldAnimator.set(recyclerView.getItemAnimator());
-    if (itemAnimator != RecyclerSpec.itemAnimator) {
-      recyclerView.setItemAnimator(itemAnimator);
-    } else {
-      recyclerView.setItemAnimator(new NoUpdateItemAnimator());
     }
 
     if (onScrollListeners != null) {
@@ -269,8 +263,8 @@ class RecyclerSpec {
       SectionsRecyclerView sectionsRecycler,
       @Prop Binder<RecyclerView> binder,
       @Prop(optional = true) RecyclerEventsController recyclerEventsController,
-      @Prop(optional = true, varArg = "onScrollListener") List<OnScrollListener> onScrollListeners,
-      @FromBind ItemAnimator oldAnimator) {
+      @Prop(optional = true, varArg = "onScrollListener")
+          List<OnScrollListener> onScrollListeners) {
     final LithoRecylerView recyclerView = (LithoRecylerView) sectionsRecycler.getRecyclerView();
 
     if (recyclerView == null) {
@@ -278,8 +272,6 @@ class RecyclerSpec {
           "RecyclerView not found, it should not be removed from SwipeRefreshLayout "
               + "before unmounting");
     }
-
-    recyclerView.setItemAnimator(oldAnimator);
 
     binder.unbind(recyclerView);
 
@@ -331,6 +323,8 @@ class RecyclerSpec {
     if (snapHelper != null) {
       snapHelper.attachToRecyclerView(null);
     }
+
+    sectionsRecycler.resetItemAnimator();
   }
 
   @ShouldUpdate(onMount = true)
@@ -351,6 +345,7 @@ class RecyclerSpec {
       @Prop(optional = true) Diff<Boolean> horizontalFadingEdgeEnabled,
       @Prop(optional = true) Diff<Boolean> verticalFadingEdgeEnabled,
       @Prop(optional = true, resType = ResType.DIMEN_SIZE) Diff<Integer> fadingEdgeLength,
+      @Prop(optional = true) Diff<ItemAnimator> itemAnimator,
       @State Diff<Integer> measureVersion) {
 
     if (measureVersion.getPrevious().intValue() != measureVersion.getNext().intValue()) {
@@ -414,6 +409,15 @@ class RecyclerSpec {
     }
 
     if (!refreshProgressBarColor.getPrevious().equals(refreshProgressBarColor.getNext())) {
+      return true;
+    }
+
+    final ItemAnimator previousItemAnimator = itemAnimator.getPrevious();
+    final ItemAnimator nextItemAnimator = itemAnimator.getNext();
+
+    if (previousItemAnimator == null
+        ? nextItemAnimator != null
+        : !previousItemAnimator.getClass().equals(nextItemAnimator.getClass())) {
       return true;
     }
 

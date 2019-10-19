@@ -1,11 +1,11 @@
 /*
- * Copyright 2014-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,6 +15,8 @@
  */
 
 package com.facebook.litho;
+
+import java.util.Set;
 
 /**
  * This is intended as a hook into {@code android.util.Log}, but allows you to provide your own
@@ -35,9 +37,41 @@ public class ComponentsReporter {
   private static volatile Reporter sInstance = null;
 
   public interface Reporter {
-    void emitMessage(LogLevel level, String message);
+    /**
+     * Emit a message that can be logged or escalated by the logger implementation.
+     *
+     * @param level
+     * @param categoryKey Unique key for aggregating all occurrences of given error in error
+     *     aggregation systems
+     * @param message Message to log
+     */
+    void emitMessage(LogLevel level, String categoryKey, String message);
 
-    void emitMessage(LogLevel level, String message, int samplingFrequency);
+    /**
+     * Emit a message that can be logged or escalated by the logger implementation.
+     *
+     * @param level
+     * @param categoryKey Unique key for aggregating all occurrences of given error in error
+     *     aggregation systems
+     * @param message Message to log
+     * @param samplingFrequency sampling frequency to override default one
+     */
+    void emitMessage(LogLevel level, String categoryKey, String message, int samplingFrequency);
+
+    /**
+     * When a component key collision occurs, filenames that contain keywords contained in the
+     * returned set will be added to the error stack trace.
+     */
+    Set<String> getKeyCollisionStackTraceKeywords();
+
+    /**
+     * When a component key collision occurs, filenames that match the names contained in the
+     * returned set will be added to the error stack trace even if they match keywords in the
+     * whitelist.
+     *
+     * @see #getKeyCollisionStackTraceKeywords()
+     */
+    Set<String> getKeyCollisionStackTraceBlacklist();
   }
 
   private ComponentsReporter() {}
@@ -50,21 +84,34 @@ public class ComponentsReporter {
    * Emit a message that can be logged or escalated by the logger implementation.
    *
    * @param level
+   * @param categoryKey Unique key for aggregating all occurrences of given error in error
+   *     aggregation systems
    * @param message Message to log
    */
-  public static void emitMessage(LogLevel level, String message) {
-    getInstance().emitMessage(level, message);
+  public static void emitMessage(LogLevel level, String categoryKey, String message) {
+    getInstance().emitMessage(level, categoryKey, message);
+  }
+
+  public static Set<String> getKeyCollisionStackTraceKeywords() {
+    return getInstance().getKeyCollisionStackTraceKeywords();
+  }
+
+  public static Set<String> getKeyCollisionStackTraceBlacklist() {
+    return getInstance().getKeyCollisionStackTraceBlacklist();
   }
 
   /**
    * Emit a message that can be logged or escalated by the logger implementation.
    *
-   * @param level
+   * @param level One of {@link LogLevel#WARNING}, {@link LogLevel#ERROR}, {@link LogLevel#FATAL}.
+   * @param categoryKey Unique key for aggregating all occurrences of given error in error
+   *     aggregation systems
    * @param message Message to log
    * @param samplingFrequency sampling frequency to override default one
    */
-  public static void emitMessage(LogLevel level, String message, int samplingFrequency) {
-    getInstance().emitMessage(level, message, samplingFrequency);
+  public static void emitMessage(
+      LogLevel level, String categoryKey, String message, int samplingFrequency) {
+    getInstance().emitMessage(level, categoryKey, message, samplingFrequency);
   }
 
   private static Reporter getInstance() {

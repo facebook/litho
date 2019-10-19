@@ -1,11 +1,11 @@
 /*
- * Copyright 2014-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -29,15 +29,25 @@ class LayoutStateOutputIdCalculator {
   @Nullable private LongSparseArray<Integer> mLayoutCurrentSequenceForBaseId;
   @Nullable private LongSparseArray<Integer> mVisibilityCurrentSequenceForBaseId;
 
-  private static final int MAX_SEQUENCE = 65535; // (2^16 - 1)
-  private static final int MAX_LEVEL = 255; // (2^8 - 1)
+  // LayoutOutputID stored in long (64 bits):  1 bit for sign, 63 for ID
+  // 36 for component_ID, 8 for level, 3 for type, and 16 for sequence
+  // ------------------------------------########...****************
+  //            COMPONENT ID             LEVEL   TYP    SEQUENCE
 
-  // 16 bits are for sequence, 2 for type and 8 for level.
-  private static final int COMPONENT_ID_SHIFT = 26;
-  // 16 bits are sequence and then 2 for type.
-  private static final int LEVEL_SHIFT = 18;
-  // Last 16 bits are for sequence.
-  private static final int TYPE_SHIFT = 16;
+  private static final int SEQUENCE_BITS = 16;
+  private static final int TYPE_BITS = 3;
+  private static final int LEVEL_BITS = 8;
+
+  private static final int MAX_SEQUENCE = (1 << SEQUENCE_BITS) - 1; // (2^16 - 1)
+  private static final int MAX_LEVEL = (1 << LEVEL_BITS) - 1; // (2^8 - 1)
+
+  private static final int TYPE_SHIFT = SEQUENCE_BITS; // 16
+  private static final int LEVEL_SHIFT = TYPE_SHIFT + TYPE_BITS; // 19 = 16 + 3
+  private static final int COMPONENT_ID_SHIFT = LEVEL_SHIFT + LEVEL_BITS; // 27 = 19 + 8
+
+  private static final int SEQUENCE_MASK = (1 << SEQUENCE_BITS) - 1;
+  private static final int TYPE_MASK = (1 << TYPE_BITS) - 1;
+  private static final int LEVEL_MASK = (1 << LEVEL_BITS) - 1;
 
   public LayoutStateOutputIdCalculator() {}
 
@@ -173,12 +183,12 @@ class LayoutStateOutputIdCalculator {
 
   /** @return the sequence part of an id. */
   static int getSequenceFromId(long id) {
-    return (int) id & 0x00FFFF;
+    return (int) (id & SEQUENCE_MASK);
   }
 
   /** @return the level part of an id. */
   static int getLevelFromId(long id) {
-    return (int) ((id >> LEVEL_SHIFT) & 0xFF);
+    return (int) ((id >> LEVEL_SHIFT) & LEVEL_MASK);
   }
 
   /** @return the type part of an id. */
@@ -187,7 +197,7 @@ class LayoutStateOutputIdCalculator {
       // special case
       return OutputUnitType.HOST;
     }
-    return (int) ((id >> TYPE_SHIFT) & 0x3);
+    return (int) ((id >> TYPE_SHIFT) & TYPE_MASK);
   }
 
   /**

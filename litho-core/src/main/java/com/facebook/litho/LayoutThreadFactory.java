@@ -1,11 +1,11 @@
 /*
- * Copyright 2018-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.facebook.litho;
 
 import android.os.Looper;
@@ -23,7 +24,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 class LayoutThreadFactory implements ThreadFactory {
   private static final AtomicInteger threadPoolId = new AtomicInteger(1);
   private final AtomicInteger threadNumber = new AtomicInteger(1);
-  private final int mThreadPriority;
+  private int mThreadPriority;
   private final int mThreadPoolId;
 
   public LayoutThreadFactory(int threadPriority) {
@@ -63,5 +64,9 @@ class LayoutThreadFactory implements ThreadFactory {
     thread.setPriority(Thread.MAX_PRIORITY);
 
     return thread;
+  }
+
+  void setThreadPriority(int threadPriority) {
+    mThreadPriority = threadPriority;
   }
 }

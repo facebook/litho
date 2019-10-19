@@ -1,11 +1,11 @@
 /*
- * Copyright 2014-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,6 +15,8 @@
  */
 
 package com.facebook.litho;
+
+import static com.facebook.litho.ComponentContext.NO_SCOPE_EVENT_HANDLER;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -132,26 +134,11 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
           int outputWidth = 0;
           int outputHeight = 0;
 
-          if (Component.isNestedTree(component) || node.hasNestedTree()) {
+          ComponentContext context = node.getContext();
 
-            ComponentContext context = node.getContext();
-
-            // TODO: (T39009736) evaluate why the parent is null sometimes
-            if (context.isReconciliationEnabled()) {
-              if (node.getParent() != null) {
-                context = node.getParent().getContext();
-              } else if (context.getLogger() != null) {
-                context
-                    .getLogger()
-                    .emitMessage(
-                        ComponentsLogger.LogLevel.ERROR,
-                        "component "
-                            + component.getSimpleName()
-                            + " is a nested tree but does not have a parent component."
-                            + "[mGlobalKey:"
-                            + component.getGlobalKey()
-                            + "]");
-              }
+          if (Component.isNestedTree(context, component) || node.hasNestedTree()) {
+            if (node.getParent() != null) {
+              context = node.getParent().getContext();
             }
 
             final InternalNode nestedTree =
@@ -210,7 +197,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
    * This constructor should be called only if working with a manually crafted special Component.
    * This should NOT be used in general use cases.
    */
-  protected ComponentLifecycle(Object type) {
+  ComponentLifecycle(Object type) {
     if (type == null) {
       type = getClass();
     }
@@ -378,8 +365,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
 
   /**
    * Generate a tree of {@link ComponentLayout} representing the layout structure of the {@link
-   * Component} and its sub-components. You should use {@link ComponentContext#newLayoutBuilder} to
-   * build the layout tree.
+   * Component} and its sub-components.
    *
    * @param c The {@link ComponentContext} to build a {@link ComponentLayout} tree.
    */
@@ -705,6 +691,12 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
   }
 
   protected static <E> EventHandler<E> newEventHandler(Component c, int id, Object[] params) {
+    if (c == null) {
+      ComponentsReporter.emitMessage(
+          ComponentsReporter.LogLevel.ERROR,
+          NO_SCOPE_EVENT_HANDLER,
+          "Creating event handler without scope.");
+    }
     final EventHandler<E> eventHandler = new EventHandler<>(c, id, params);
     if (c.getScopedContext() != null && c.getScopedContext().getComponentTree() != null) {
       c.getScopedContext().getComponentTree().recordEventHandler(c, eventHandler);

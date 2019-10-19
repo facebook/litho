@@ -1,11 +1,11 @@
 /*
- * Copyright 2014-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -45,6 +45,8 @@ public interface FrameworkLogEvents {
   // Previously int EVENT_DRAW = 17; Now unused.
   int EVENT_BENCHMARK_RUN = 18;
   int EVENT_RESUME_CALCULATE_LAYOUT_STATE = 19;
+  int EVENT_INIT_RANGE = 20;
+  int EVENT_LAYOUT_STATE_FUTURE_GET_WAIT = 21;
 
   @IntDef({
     FrameworkLogEvents.EVENT_LAYOUT_CALCULATE,
@@ -58,6 +60,8 @@ public interface FrameworkLogEvents {
     FrameworkLogEvents.EVENT_CALCULATE_LAYOUT_STATE,
     FrameworkLogEvents.EVENT_BENCHMARK_RUN,
     FrameworkLogEvents.EVENT_RESUME_CALCULATE_LAYOUT_STATE,
+    FrameworkLogEvents.EVENT_INIT_RANGE,
+    FrameworkLogEvents.EVENT_LAYOUT_STATE_FUTURE_GET_WAIT,
   })
   @Retention(RetentionPolicy.SOURCE)
   @interface LogEventId {}

@@ -1,11 +1,11 @@
 /*
- * Copyright 2014-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -30,7 +30,7 @@ public final class Row extends Component {
 
   @Nullable
   @Prop(optional = true)
-  List<Component> children;
+  private List<Component> children;
 
   @Nullable
   @Prop(optional = true)
@@ -51,7 +51,7 @@ public final class Row extends Component {
   @Prop(optional = true)
   private boolean reverse;
 
-  private Row(String simpleName) {
+  Row(String simpleName) {
     super(simpleName);
   }
 
@@ -87,7 +87,7 @@ public final class Row extends Component {
   @Override
   protected ComponentLayout resolve(ComponentContext c) {
     InternalNode node =
-        c.newLayoutBuilder(0, 0)
+        InternalNodeUtils.create(c)
             .flexDirection(reverse ? YogaFlexDirection.ROW_REVERSE : YogaFlexDirection.ROW);
 
     if (alignItems != null) {
@@ -168,7 +168,7 @@ public final class Row extends Component {
     Row mRow;
     ComponentContext mContext;
 
-    private void init(ComponentContext context, int defStyleAttr, int defStyleRes, Row row) {
+    void init(ComponentContext context, int defStyleAttr, int defStyleRes, Row row) {
       super.init(context, defStyleAttr, defStyleRes, row);
       mRow = row;
       mContext = context;

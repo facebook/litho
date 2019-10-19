@@ -1,11 +1,11 @@
 /*
- * Copyright 2019-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.facebook.litho.sections;
 
 import com.facebook.litho.sections.SectionsLogEventUtils.ApplyNewChangeSet;
@@ -29,7 +30,70 @@ import javax.annotation.Nullable;
 public class ChangesetDebugConfiguration {
   private static @Nullable ChangesetDebugListener sListener;
 
+  public static class ChangesetDebugInfo {
+    final @ApplyNewChangeSet int mSource;
+    final @Nullable String mAttribution;
+    private StackTraceElement[] mStackTrace;
+    @Nullable Section mOldSection;
+    @Nullable String mUpdateStateAttribution;
+
+    ChangesetDebugInfo(
+        int source,
+        @Nullable String attribution,
+        @Nullable Section oldSection,
+        StackTraceElement[] stackTrace) {
+      this(source, attribution, null, oldSection, stackTrace);
+    }
+
+    ChangesetDebugInfo(
+        int source,
+        @Nullable String attribution,
+        @Nullable String updateStateAttribution,
+        @Nullable Section oldSection,
+        StackTraceElement[] stackTrace) {
+      mSource = source;
+      mAttribution = attribution;
+      mUpdateStateAttribution = updateStateAttribution;
+      mOldSection = oldSection;
+      mStackTrace = stackTrace;
+    }
+
+    /** Get the id for the type of event that triggered a new changeset generation. */
+    public int getSource() {
+      return mSource;
+    }
+
+    /** Get the name of the section to which a new changeset generation is attributed to. */
+    @Nullable
+    public String getAttribution() {
+      return mAttribution;
+    }
+
+    /** Get the root section from the old tree. */
+    @Nullable
+    public Section getOldSection() {
+      return mOldSection;
+    }
+
+    /** Get the name of the section which triggered a state update. */
+    @Nullable
+    public String getUpdateStateAttribution() {
+      return mUpdateStateAttribution;
+    }
+
+    public StackTraceElement[] getStackTrace() {
+      return mStackTrace;
+    }
+  }
+
   public interface ChangesetDebugListener {
+    void onChangesetApplied(
+        @Nullable Section rootSection,
+        ChangesInfo changesInfo,
+        String surfaceId,
+        ChangesetDebugInfo changesetDebugInfo);
+
+    @Deprecated
     void onChangesetApplied(
         @Nullable Section rootSection,
         @Nullable Section oldSection,

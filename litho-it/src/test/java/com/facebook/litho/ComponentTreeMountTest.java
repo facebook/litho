@@ -1,11 +1,11 @@
 /*
- * Copyright 2014-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,8 +23,15 @@ import static com.facebook.litho.testing.helper.ComponentTestHelper.mountCompone
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.robolectric.Shadows.shadowOf;
 
+import android.graphics.Color;
+import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
+import com.facebook.litho.testing.TestTransitionComponent;
+import com.facebook.litho.testing.eventhandler.EventHandlerTestHelper;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.widget.EmptyComponent;
+import com.facebook.litho.widget.SolidColor;
+import com.facebook.litho.widget.Text;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -51,5 +58,45 @@ public class ComponentTreeMountTest {
     lithoView.getComponentTree().setRoot(create(mContext).color(YELLOW).build());
     assertThat(lithoView.getDrawables()).hasSize(1);
     assertThat(((ColorDrawable) lithoView.getDrawables().get(0)).getColor()).isEqualTo(YELLOW);
+  }
+
+  @Test
+  public void testReentrantMounts() {
+    final LithoView lithoView =
+        mountComponent(mContext, EmptyComponent.create(mContext).build(), true);
+    final EventHandler<VisibleEvent> visibleEventHandler =
+        EventHandlerTestHelper.createMockEventHandler(
+            VisibleEvent.class,
+            new EventHandlerTestHelper.MockEventHandler<VisibleEvent, Void>() {
+              @Override
+              public Void handleEvent(VisibleEvent event) {
+                lithoView.setComponent(
+                    TestTransitionComponent.create(
+                            mContext,
+                            Row.create(mContext)
+                                .child(Text.create(mContext).text("text").textSizeDip(20))
+                                .child(
+                                    SolidColor.create(mContext)
+                                        .color(Color.BLUE)
+                                        .widthDip(20)
+                                        .heightDip(20))
+                                .build())
+                        .build());
+                return null;
+              }
+            });
+    lithoView.setComponent(
+        TestTransitionComponent.create(
+                mContext,
+                Column.create(mContext)
+                    .child(
+                        SolidColor.create(mContext).color(Color.YELLOW).widthDip(10).heightDip(10))
+                    .child(
+                        SolidColor.create(mContext).color(Color.GREEN).widthDip(10).heightDip(10))
+                    .child(SolidColor.create(mContext).color(Color.GRAY).widthDip(10).heightDip(10))
+                    .build())
+            .visibleHandler(visibleEventHandler)
+            .build());
+    lithoView.performIncrementalMount(new Rect(0, 0, 100, 100), true);
   }
 }

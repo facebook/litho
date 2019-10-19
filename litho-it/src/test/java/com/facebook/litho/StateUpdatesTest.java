@@ -1,11 +1,11 @@
 /*
- * Copyright 2014-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -43,6 +43,7 @@ import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -188,10 +189,10 @@ public class StateUpdatesTest {
 
   @Before
   public void setup() {
-    setup(false, false);
+    setup(false);
   }
 
-  public void setup(boolean isReconciliationEnabled, boolean enableComponentTreeSpy) {
+  public void setup(boolean enableComponentTreeSpy) {
     mComponentsLogger = new TestComponentsLogger();
     mContext = new ComponentContext(RuntimeEnvironment.application, mLogTag, mComponentsLogger);
     mWidthSpec = makeSizeSpec(39, EXACTLY);
@@ -202,10 +203,7 @@ public class StateUpdatesTest {
             (Looper) Whitebox.invokeMethod(ComponentTree.class, "getDefaultLayoutThreadLooper"));
     mTestComponent = new TestComponent();
 
-    mComponentTree =
-        ComponentTree.create(mContext, mTestComponent)
-            .isReconciliationEnabled(isReconciliationEnabled)
-            .build();
+    mComponentTree = ComponentTree.create(mContext, mTestComponent).build();
 
     if (enableComponentTreeSpy) {
       mComponentTree = spy(mComponentTree);
@@ -215,6 +213,12 @@ public class StateUpdatesTest {
     mLithoView.setComponentTree(mComponentTree);
     mLithoView.onAttachedToWindow();
     ComponentTestHelper.measureAndLayout(mLithoView);
+  }
+
+  @After
+  public void tearDown() {
+    // Empty all pending runnables.
+    mLayoutThreadShadowLooper.runToEndOfTasks();
   }
 
   @Test
@@ -376,25 +380,8 @@ public class StateUpdatesTest {
   }
 
   @Test
-  public void testEnqueueStateUpdate_withExperiment() {
-    setup(true, false);
-    mComponentTree.updateStateAsync(
-        mTestComponent.getGlobalKey(), createIncrementStateUpdate(), "test");
-    assertThat(getPendingStateUpdatesForComponent(mTestComponent)).hasSize(1);
-    mLayoutThreadShadowLooper.runToEndOfTasks();
-    mComponentTree.updateStateAsync(
-        mTestComponent.getGlobalKey(), createIncrementStateUpdate(), "test");
-    assertThat(
-            ((TestStateContainer) getStateContainersMap().get(mTestComponent.getGlobalKey()))
-                .mCount)
-        .isEqualTo(INITIAL_COUNT_STATE_VALUE + 1);
-    assertThat(getPendingStateUpdatesForComponent(mTestComponent.getComponentForStateUpdate()))
-        .hasSize(1);
-  }
-
-  @Test
-  public void testEnqueueStateUpdate_withExperiment_checkAppliedStateUpdate() {
-    setup(true, false);
+  public void testEnqueueStateUpdate_checkAppliedStateUpdate() {
+    setup(false);
     mComponentTree.updateStateAsync(
         mTestComponent.getGlobalKey(), createIncrementStateUpdate(), "test");
     assertThat(getPendingStateUpdatesForComponent(mTestComponent)).hasSize(1);
@@ -424,7 +411,7 @@ public class StateUpdatesTest {
 
   @Test
   public void testLazyUpdateState_doesNotTriggerRelayout() {
-    setup(false, true);
+    setup(true);
     reset(mComponentTree);
 
     mComponentTree.updateStateLazy(mTestComponent.getGlobalKey(), createIncrementStateUpdate());
@@ -496,47 +483,40 @@ public class StateUpdatesTest {
   }
 
   @Test
-  public void testStateUpdateStats_updateAsyncIncrementsTotalCount() {
-    final long before = LithoStats.getStateUpdates();
-
-    mComponentTree.updateStateAsync(
-        mTestComponent.getGlobalKey(), createIncrementStateUpdate(), "test");
-    mLayoutThreadShadowLooper.runToEndOfTasks();
-
-    final long after = LithoStats.getStateUpdates();
-
-    assertThat(after - before).isEqualTo(1);
-  }
-
-  @Test
-  public void testStateUpdateStats_updateAsyncDoesntIncrementSyncCount() {
+  public void testStateUpdateStats_updateAsyncIncrementsAsyncCountAndTotalCount() {
     final long beforeSync = LithoStats.getStateUpdatesSync();
-    final long beforeTotal = LithoStats.getStateUpdates();
+    final long beforeAsync = LithoStats.getStateUpdatesAsync();
+    final long beforeTotal = LithoStats.getAppliedStateUpdates();
 
     mComponentTree.updateStateAsync(
         mTestComponent.getGlobalKey(), createIncrementStateUpdate(), "test");
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     final long afterSync = LithoStats.getStateUpdatesSync();
-    final long afterTotal = LithoStats.getStateUpdates();
+    final long afterAsync = LithoStats.getStateUpdatesAsync();
+    final long afterTotal = LithoStats.getAppliedStateUpdates();
 
     assertThat(afterSync - beforeSync).isEqualTo(0);
+    assertThat(afterAsync - beforeAsync).isEqualTo(1);
     assertThat(afterTotal - beforeTotal).isEqualTo(1);
   }
 
   @Test
   public void testStateUpdateStats_updateSyncIncrementsSyncAndTotalCount() {
     final long beforeSync = LithoStats.getStateUpdatesSync();
-    final long beforeTotal = LithoStats.getStateUpdates();
+    final long beforeAsync = LithoStats.getStateUpdatesAsync();
+    final long beforeTotal = LithoStats.getAppliedStateUpdates();
 
     mComponentTree.updateStateSync(
         mTestComponent.getGlobalKey(), createIncrementStateUpdate(), "test");
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     final long afterSync = LithoStats.getStateUpdatesSync();
-    final long afterTotal = LithoStats.getStateUpdates();
+    final long afterAsync = LithoStats.getStateUpdatesAsync();
+    final long afterTotal = LithoStats.getAppliedStateUpdates();
 
     assertThat(afterSync - beforeSync).isEqualTo(1);
+    assertThat(afterAsync - beforeAsync).isEqualTo(0);
     assertThat(afterTotal - beforeTotal).isEqualTo(1);
   }
 
@@ -544,13 +524,13 @@ public class StateUpdatesTest {
   public void testStateUpdateStats_updateLazyDoesntIncrementTotalCount() {
     mLayoutThreadShadowLooper.runToEndOfTasks();
     final long beforeLazy = LithoStats.getStateUpdatesLazy();
-    final long beforeTotal = LithoStats.getStateUpdates();
+    final long beforeTotal = LithoStats.getAppliedStateUpdates();
 
     mComponentTree.updateStateLazy(mTestComponent.getGlobalKey(), createIncrementStateUpdate());
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     final long afterLazy = LithoStats.getStateUpdatesLazy();
-    final long afterTotal = LithoStats.getStateUpdates();
+    final long afterTotal = LithoStats.getAppliedStateUpdates();
 
     assertThat(afterLazy - beforeLazy).isEqualTo(1);
     assertThat(afterTotal - beforeTotal).isEqualTo(0);
@@ -560,7 +540,7 @@ public class StateUpdatesTest {
   public void testStateUpdateStats_updateLazyIncrementsTotalCountWhenCommitted() {
     mLayoutThreadShadowLooper.runToEndOfTasks();
     final long beforeLazy = LithoStats.getStateUpdatesLazy();
-    final long beforeTotal = LithoStats.getStateUpdates();
+    final long beforeTotal = LithoStats.getAppliedStateUpdates();
 
     mComponentTree.updateStateLazy(mTestComponent.getGlobalKey(), createIncrementStateUpdate());
     mComponentTree.updateStateAsync(
@@ -568,7 +548,7 @@ public class StateUpdatesTest {
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     final long afterLazy = LithoStats.getStateUpdatesLazy();
-    final long afterTotal = LithoStats.getStateUpdates();
+    final long afterTotal = LithoStats.getAppliedStateUpdates();
 
     assertThat(afterLazy - beforeLazy).isEqualTo(1);
     assertThat(afterTotal - beforeTotal).isEqualTo(2);

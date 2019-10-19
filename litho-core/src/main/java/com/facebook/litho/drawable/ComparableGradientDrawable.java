@@ -1,11 +1,11 @@
 /*
- * Copyright 2018-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.facebook.litho.drawable;
 
 import android.content.res.ColorStateList;
@@ -44,6 +45,10 @@ public class ComparableGradientDrawable extends ComparableDrawableWrapper {
   protected float strokeDashGap = 0.0f;
   protected int strokeColor;
   protected ColorStateList strokeColorStateList;
+
+  public static ComparableGradientDrawable create() {
+    return new ComparableGradientDrawable();
+  }
 
   public ComparableGradientDrawable() {
     super(new GradientDrawable());
@@ -115,83 +120,99 @@ public class ComparableGradientDrawable extends ComparableDrawableWrapper {
   }
 
   @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
-  public void setOrientation(GradientDrawable.Orientation orientation) {
+  public ComparableGradientDrawable setOrientation(GradientDrawable.Orientation orientation) {
     this.orientation = orientation;
     getGradientDrawable().setOrientation(orientation);
+    return this;
   }
 
-  public void setColor(int color) {
+  public ComparableGradientDrawable setColor(int color) {
     this.color = color;
     getGradientDrawable().setColor(color);
+    return this;
   }
 
   @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-  public void setColor(ColorStateList color) {
+  public ComparableGradientDrawable setColor(ColorStateList color) {
     this.colorStateList = color;
     getGradientDrawable().setColor(color);
+    return this;
   }
 
-  public void setColors(int[] colors) {
+  public ComparableGradientDrawable setColors(int[] colors) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
       this.colors = colors;
       getGradientDrawable().setColors(colors);
     }
+    return this;
   }
 
-  public void setCornerRadius(float cornerRadius) {
+  public ComparableGradientDrawable setCornerRadius(float cornerRadius) {
     this.cornerRadius = cornerRadius;
     getGradientDrawable().setCornerRadius(cornerRadius);
+    return this;
   }
 
-  public void setCornerRadii(float[] cornerRadii) {
+  public ComparableGradientDrawable setCornerRadii(float[] cornerRadii) {
     this.cornerRadii = cornerRadii;
     getGradientDrawable().setCornerRadii(cornerRadii);
+    return this;
   }
 
-  public void setGradientType(int gradientType) {
+  public ComparableGradientDrawable setGradientType(int gradientType) {
     this.gradientType = gradientType;
     getGradientDrawable().setGradientType(gradientType);
+    return this;
   }
 
-  public void setGradientRadius(int gradientRadius) {
+  public ComparableGradientDrawable setGradientRadius(int gradientRadius) {
     this.gradientRadius = gradientRadius;
     getGradientDrawable().setGradientRadius(gradientRadius);
+    return this;
   }
 
-  public void setShape(int shape) {
+  public ComparableGradientDrawable setShape(int shape) {
     this.shape = shape;
     getGradientDrawable().setShape(shape);
+    return this;
   }
 
-  public void setSize(int width, int height) {
+  public ComparableGradientDrawable setSize(int width, int height) {
     this.width = width;
     this.height = height;
     getGradientDrawable().setSize(width, height);
+    return this;
   }
 
-  public void setStroke(int width, @ColorInt int color) {
+  public ComparableGradientDrawable setStroke(int width, @ColorInt int color) {
     setStroke(width, color, 0, 0);
+    return this;
   }
 
   @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-  public void setStroke(int width, ColorStateList colorStateList) {
+  public ComparableGradientDrawable setStroke(int width, ColorStateList colorStateList) {
     setStroke(width, colorStateList, 0, 0);
+    return this;
   }
 
-  public void setStroke(int width, @ColorInt int color, float dashWidth, float dashGap) {
+  public ComparableGradientDrawable setStroke(
+      int width, @ColorInt int color, float dashWidth, float dashGap) {
     this.strokeWidth = width;
     this.strokeDashWidth = dashWidth;
     this.strokeDashGap = dashGap;
     this.strokeColor = color;
     getGradientDrawable().setStroke(width, color, dashWidth, dashGap);
+    return this;
   }
 
   @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-  public void setStroke(int width, ColorStateList colorStateList, float dashWidth, float dashGap) {
+  public ComparableGradientDrawable setStroke(
+      int width, ColorStateList colorStateList, float dashWidth, float dashGap) {
     this.strokeWidth = width;
     this.strokeDashWidth = dashWidth;
     this.strokeDashGap = dashGap;
     this.strokeColorStateList = colorStateList;
     getGradientDrawable().setStroke(width, colorStateList, dashWidth, dashGap);
+    return this;
   }
 }

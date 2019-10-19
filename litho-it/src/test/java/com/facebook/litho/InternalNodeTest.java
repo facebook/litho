@@ -1,11 +1,11 @@
 /*
- * Copyright 2014-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -43,12 +43,16 @@ import static org.robolectric.RuntimeEnvironment.application;
 
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.util.Pair;
+import com.facebook.litho.LayoutState.LayoutStateContext;
 import com.facebook.litho.testing.Whitebox;
+import com.facebook.litho.testing.logging.TestComponentsReporter;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.widget.SolidColor;
 import com.facebook.litho.widget.Text;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaNode;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
@@ -76,6 +80,8 @@ public class InternalNodeTest {
 
   private static InternalNode acquireInternalNode() {
     final ComponentContext context = new ComponentContext(RuntimeEnvironment.application);
+    context.setLayoutStateContextForTesting();
+
     return createAndMeasureTreeForComponent(
         context,
         Column.create(context).build(),
@@ -86,11 +92,20 @@ public class InternalNodeTest {
   private static InternalNode acquireInternalNodeWithLogger(ComponentsLogger logger) {
     final ComponentContext context =
         new ComponentContext(RuntimeEnvironment.application, "TEST", logger);
+    context.setLayoutStateContextForTesting();
+
     return createAndMeasureTreeForComponent(
         context,
         Column.create(context).build(),
         makeSizeSpec(0, UNSPECIFIED),
         makeSizeSpec(0, UNSPECIFIED));
+  }
+
+  private final TestComponentsReporter mComponentsReporter = new TestComponentsReporter();
+
+  @Before
+  public void setup() {
+    ComponentsReporter.provide(mComponentsReporter);
   }
 
   @Test
@@ -285,7 +300,7 @@ public class InternalNodeTest {
   @Test
   public void testTransitionKeyFlag() {
     final InternalNode node = acquireInternalNode();
-    node.transitionKey("key");
+    node.transitionKey("key", "");
     assertThat(isFlagSet(node, "PFLAG_TRANSITION_KEY_IS_SET")).isTrue();
     clearFlag(node, "PFLAG_TRANSITION_KEY_IS_SET");
     assertEmptyFlags(node);
@@ -385,22 +400,27 @@ public class InternalNodeTest {
   }
 
   @Test
-  public void testComponentCreateAndRetrieveCachedLayout() {
-    final ComponentContext c = new ComponentContext(application);
+  public void testComponentCreateAndRetrieveCachedLayoutLS() {
+    final ComponentContext baseContext = new ComponentContext(application);
+    final ComponentContext c =
+        ComponentContext.withComponentTree(baseContext, ComponentTree.create(baseContext).build());
+    final LayoutState layoutState = new LayoutState(c);
+    c.setLayoutStateContext(new LayoutStateContext(layoutState));
+
     final int unspecifiedSizeSpec = makeSizeSpec(0, UNSPECIFIED);
     final int exactSizeSpec = makeSizeSpec(50, EXACTLY);
     final Component textComponent = Text.create(c).textSizePx(16).text("test").build();
     final Size textSize = new Size();
     textComponent.measure(c, exactSizeSpec, unspecifiedSizeSpec, textSize);
 
-    assertThat(textComponent.getCachedLayout()).isNotNull();
-    InternalNode cachedLayout = textComponent.getCachedLayout();
+    assertThat(layoutState.getCachedLayout(textComponent)).isNotNull();
+    InternalNode cachedLayout = layoutState.getCachedLayout(textComponent);
     assertThat(cachedLayout).isNotNull();
     assertThat(cachedLayout.getLastWidthSpec()).isEqualTo(exactSizeSpec);
     assertThat(cachedLayout.getLastHeightSpec()).isEqualTo(unspecifiedSizeSpec);
 
-    textComponent.clearCachedLayout();
-    assertThat(textComponent.getCachedLayout()).isNull();
+    layoutState.clearCachedLayout(textComponent);
+    assertThat(layoutState.getCachedLayout(textComponent)).isNull();
   }
 
   @Test
@@ -420,15 +440,18 @@ public class InternalNodeTest {
     node.flex(1f);
 
     node.assertContextSpecificStyleNotSet();
-    verify(componentsLogger)
-        .emitMessage(
-            ComponentsLogger.LogLevel.WARNING,
-            "You should not set alignSelf, flex to a root layout in Column");
+    assertThat(mComponentsReporter.getLoggedMessages())
+        .contains(
+            new Pair<>(
+                ComponentsReporter.LogLevel.WARNING,
+                "You should not set alignSelf, flex to a root layout in Column"));
   }
 
   @Test
   public void testDeepClone() {
     final ComponentContext context = new ComponentContext(RuntimeEnvironment.application);
+    context.setLayoutStateContextForTesting();
+
     InternalNode layout =
         createAndMeasureTreeForComponent(
             context,
@@ -450,12 +473,12 @@ public class InternalNodeTest {
 
     assertThat(cloned.getChildCount()).isEqualTo(layout.getChildCount());
 
-    assertThat(cloned.getChildAt(0).getTailComponent())
-        .isSameAs(layout.getChildAt(0).getTailComponent());
-    assertThat(cloned.getChildAt(1).getTailComponent())
-        .isSameAs(layout.getChildAt(1).getTailComponent());
-    assertThat(cloned.getChildAt(2).getTailComponent())
-        .isSameAs(layout.getChildAt(2).getTailComponent());
+    assertThat(cloned.getChildAt(0).getTailComponent().getGlobalKey())
+        .isEqualTo(layout.getChildAt(0).getTailComponent().getGlobalKey());
+    assertThat(cloned.getChildAt(1).getTailComponent().getGlobalKey())
+        .isEqualTo(layout.getChildAt(1).getTailComponent().getGlobalKey());
+    assertThat(cloned.getChildAt(2).getTailComponent().getGlobalKey())
+        .isEqualTo(layout.getChildAt(2).getTailComponent().getGlobalKey());
 
     assertThat(cloned.getChildAt(0).getYogaNode()).isNotSameAs(layout.getChildAt(0).getYogaNode());
     assertThat(cloned.getChildAt(1).getYogaNode()).isNotSameAs(layout.getChildAt(1).getYogaNode());

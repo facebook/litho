@@ -1,11 +1,11 @@
 /*
- * Copyright 2014-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -70,11 +70,6 @@ public abstract class AbstractComponentsProcessor extends AbstractProcessor {
     mShouldSavePropNames = shouldSavePropNames;
   }
 
-  /** Use this to force hotswap mode to be turned on. */
-  public void forceHotswapMode() {
-    mRunMode.add(RunMode.HOTSWAP);
-  }
-
   @Override
   public void init(ProcessingEnvironment processingEnv) {
     super.init(processingEnv);
@@ -84,12 +79,6 @@ public abstract class AbstractComponentsProcessor extends AbstractProcessor {
         Boolean.valueOf(options.getOrDefault("com.facebook.buck.java.generating_abi", "false"));
     if (isGeneratingAbi) {
       mRunMode.add(RunMode.ABI);
-    }
-
-    boolean generateBuckHotswapCode =
-        Boolean.valueOf(options.getOrDefault("com.facebook.litho.hotswap", "false"));
-    if (generateBuckHotswapCode) {
-      mRunMode.add(RunMode.HOTSWAP);
     }
   }
 

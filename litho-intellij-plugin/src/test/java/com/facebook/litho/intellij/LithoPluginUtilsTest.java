@@ -1,11 +1,11 @@
 /*
- * Copyright 2004-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.facebook.litho.intellij;
 
 import com.intellij.psi.PsiAnnotation;
@@ -29,9 +30,22 @@ public class LithoPluginUtilsTest {
   public void isComponentClass() {
     PsiClass component = createSubclassOf("com.facebook.litho.Component");
     Assert.assertTrue(LithoPluginUtils.isComponentClass(component));
+    Assert.assertTrue(LithoPluginUtils.isGeneratedClass(component));
 
     PsiClass notComponent = createSubclassOf("com.facebook.litho.Column");
     Assert.assertFalse(LithoPluginUtils.isComponentClass(notComponent));
+    Assert.assertFalse(LithoPluginUtils.isGeneratedClass(notComponent));
+  }
+
+  @Test
+  public void isSectionClass() {
+    PsiClass section = createSubclassOf("com.facebook.litho.sections.Section");
+    Assert.assertTrue(LithoPluginUtils.isSectionClass(section));
+    Assert.assertTrue(LithoPluginUtils.isGeneratedClass(section));
+
+    PsiClass notSection = createSubclassOf("com.facebook.litho.sections.SectionTest");
+    Assert.assertFalse(LithoPluginUtils.isSectionClass(notSection));
+    Assert.assertFalse(LithoPluginUtils.isGeneratedClass(notSection));
   }
 
   private static PsiClass createSubclassOf(String superClass) {
@@ -40,15 +54,6 @@ public class LithoPluginUtilsTest {
     Mockito.when(componentClass.getQualifiedName()).thenReturn(superClass);
     Mockito.when(componentSubclass.getSuperClass()).thenReturn(componentClass);
     return componentSubclass;
-  }
-
-  @Test
-  public void isSectionClass() {
-    PsiClass section = createSubclassOf("com.facebook.litho.sections.Section");
-    Assert.assertTrue(LithoPluginUtils.isSectionClass(section));
-
-    PsiClass notSection = createSubclassOf("com.facebook.litho.sections.SectionTest");
-    Assert.assertFalse(LithoPluginUtils.isSectionClass(notSection));
   }
 
   @Test
@@ -78,24 +83,43 @@ public class LithoPluginUtilsTest {
   }
 
   @Test
-  public void hasLithoAnnotation() {
-    PsiClass withLitho = createWithAnnotation(PsiClass.class, "com.facebook.litho.annotations.Any");
-    Assert.assertTrue(LithoPluginUtils.hasLithoAnnotation(withLitho));
+  public void hasLithoComponentSpecAnnotation() {
+    PsiClass withLitho = createSpecWithAnnotation("com.facebook.litho.annotations.MountSpec");
+    Assert.assertTrue(LithoPluginUtils.hasLithoComponentSpecAnnotation(withLitho));
 
-    PsiClass withoutLitho =
-        createWithAnnotation(PsiClass.class, "com.facebook.litho.sections.annotations.Any");
-    Assert.assertFalse(LithoPluginUtils.hasLithoAnnotation(withoutLitho));
+    PsiClass withoutLitho = createSpecWithAnnotation("com.facebook.litho.sections.annotations.Any");
+    Assert.assertFalse(LithoPluginUtils.hasLithoComponentSpecAnnotation(withoutLitho));
+
+    PsiClass notSpec = createWithAnnotation(PsiClass.class, "com.facebook.litho.annotations.Any");
+    Assert.assertFalse(LithoPluginUtils.hasLithoComponentSpecAnnotation(notSpec));
   }
 
   @Test
-  public void hasLithoSectionAnnotation() {
+  public void hasLithoSectionSpecAnnotation() {
     PsiClass withLithoSection =
-        createWithAnnotation(PsiClass.class, "com.facebook.litho.sections.annotations.Any");
-    Assert.assertTrue(LithoPluginUtils.hasLithoSectionAnnotation(withLithoSection));
+        createSpecWithAnnotation("com.facebook.litho.sections.annotations.Any");
+    Assert.assertTrue(LithoPluginUtils.hasLithoSectionSpecAnnotation(withLithoSection));
 
-    PsiClass withoutLithoSection =
-        createWithAnnotation(PsiClass.class, "com.facebook.litho.annotations.Any");
-    Assert.assertFalse(LithoPluginUtils.hasLithoSectionAnnotation(withoutLithoSection));
+    PsiClass withoutLithoSection = createSpecWithAnnotation("com.facebook.litho.annotations.Any");
+    Assert.assertFalse(LithoPluginUtils.hasLithoSectionSpecAnnotation(withoutLithoSection));
+
+    PsiClass notSpec =
+        createWithAnnotation(PsiClass.class, "com.facebook.litho.sections.annotations.Any");
+    Assert.assertFalse(LithoPluginUtils.hasLithoSectionSpecAnnotation(notSpec));
+  }
+
+  @Test
+  public void isSpecName() {
+    Assert.assertTrue(LithoPluginUtils.isSpecName("AnySpec"));
+    Assert.assertTrue(LithoPluginUtils.isSpecName("my.domain.TestSpec"));
+    Assert.assertFalse(LithoPluginUtils.isSpecName("Any"));
+    Assert.assertFalse(LithoPluginUtils.isSpecName(""));
+  }
+
+  private static PsiClass createSpecWithAnnotation(String annotationName) {
+    PsiClass withAnnotation = createWithAnnotation(PsiClass.class, annotationName);
+    Mockito.when(withAnnotation.getName()).thenReturn("AnySpec");
+    return withAnnotation;
   }
 
   @Test

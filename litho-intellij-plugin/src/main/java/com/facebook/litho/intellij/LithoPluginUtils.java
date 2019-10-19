@@ -1,11 +1,11 @@
 /*
- * Copyright 2004-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,15 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.facebook.litho.intellij;
 
 import com.facebook.litho.annotations.Event;
 import com.facebook.litho.annotations.LayoutSpec;
+import com.facebook.litho.annotations.MountSpec;
 import com.facebook.litho.annotations.Param;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.State;
-import com.facebook.litho.specmodels.processor.PsiAnnotationProxyUtils;
 import com.google.common.annotations.VisibleForTesting;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiAnnotation;
@@ -49,7 +50,7 @@ import org.jetbrains.annotations.Nullable;
 public class LithoPluginUtils {
   private static final String SPEC_SUFFIX = "Spec";
 
-  public static boolean isComponentClass(PsiClass psiClass) {
+  public static boolean isComponentClass(@Nullable PsiClass psiClass) {
     return psiClass != null
         && psiClass.getSuperClass() != null
         && ("ComponentLifecycle".equals(psiClass.getSuperClass().getName())
@@ -64,6 +65,10 @@ public class LithoPluginUtils {
         .isPresent();
   }
 
+  public static boolean isGeneratedClass(@Nullable PsiClass psiClass) {
+    return LithoPluginUtils.isComponentClass(psiClass) || LithoPluginUtils.isSectionClass(psiClass);
+  }
+
   public static boolean isLithoSpec(@Nullable PsiFile psiFile) {
     if (psiFile == null) {
       return false;
@@ -73,14 +78,34 @@ public class LithoPluginUtils {
 
   public static boolean isLithoSpec(@Nullable PsiClass psiClass) {
     return psiClass != null
-        && (hasLithoSectionAnnotation(psiClass) || hasLithoAnnotation(psiClass));
+        && (hasLithoComponentSpecAnnotation(psiClass) || hasLithoSectionSpecAnnotation(psiClass));
   }
 
-  public static boolean hasLithoAnnotation(@Nullable PsiClass psiClass) {
+  public static boolean isLayoutSpec(@Nullable PsiClass psiClass) {
+    return psiClass != null && hasAnnotation(psiClass, equals(LayoutSpec.class.getName()));
+  }
+
+  static boolean isMountSpec(@Nullable PsiClass psiClass) {
+    return psiClass != null && hasAnnotation(psiClass, equals(MountSpec.class.getName()));
+  }
+
+  public static boolean hasLithoComponentSpecAnnotation(@Nullable PsiClass psiClass) {
     if (psiClass == null) {
       return false;
     }
-    return hasAnnotation(psiClass, startsWith("com.facebook.litho.annotations"));
+    return isSpecName(psiClass.getName()) && (isLayoutSpec(psiClass) || isMountSpec(psiClass));
+  }
+
+  public static boolean hasLithoSectionSpecAnnotation(PsiClass psiClass) {
+    return isSpecName(psiClass.getName())
+        && hasAnnotation(psiClass, startsWith("com.facebook.litho.sections.annotations"));
+  }
+
+  @VisibleForTesting
+  @Contract("null -> false")
+  /** @return if given name ends with "Spec". */
+  static boolean isSpecName(@Nullable String clsName) {
+    return clsName != null && clsName.endsWith(SPEC_SUFFIX);
   }
 
   @VisibleForTesting
@@ -104,10 +129,6 @@ public class LithoPluginUtils {
 
   private static Predicate<String> equals(String text) {
     return name -> name.equals(text);
-  }
-
-  public static boolean hasLithoSectionAnnotation(PsiClass psiClass) {
-    return hasAnnotation(psiClass, startsWith("com.facebook.litho.sections.annotations"));
   }
 
   public static boolean isPropOrState(PsiParameter parameter) {
@@ -136,7 +157,7 @@ public class LithoPluginUtils {
 
   @Nullable
   public static String getLithoComponentNameFromSpec(@Nullable String specName) {
-    if (specName != null && specName.endsWith(SPEC_SUFFIX)) {
+    if (isSpecName(specName)) {
       return specName.substring(0, specName.length() - SPEC_SUFFIX.length());
     }
     return null;
@@ -185,27 +206,24 @@ public class LithoPluginUtils {
   }
 
   /**
-   * Finds Component Class from the given Spec name.
+   * Finds Generated Class from the given Spec name.
    *
-   * @param qualifiedSpecName Name of the Spec to search component for. For example
-   *     com.package.MySpec.java.
-   * @param project Project to find Component in.
+   * @param qualifiedSpecName Name of the Spec to search generated class for. For example
+   *     com.package.MySpec.java. If you provide simple name MySpec.java returned class could be
+   *     found in wrong package.
+   * @param project Project to find generated class in.
    */
-  public static Optional<PsiClass> findComponent(String qualifiedSpecName, Project project) {
+  public static Optional<PsiClass> findGeneratedClass(String qualifiedSpecName, Project project) {
     return findGeneratedFile(qualifiedSpecName, project)
-        .flatMap(generatedFile -> getFirstClass(generatedFile, LithoPluginUtils::isComponentClass));
+        .flatMap(generatedFile -> getFirstClass(generatedFile, LithoPluginUtils::isGeneratedClass));
   }
 
   /** Finds LayoutSpec class in the given file. */
   public static Optional<PsiClass> getFirstLayoutSpec(PsiFile psiFile) {
-    return getFirstClass(
-        psiFile,
-        psiClass ->
-            PsiAnnotationProxyUtils.findAnnotationInHierarchy(psiClass, LayoutSpec.class) != null);
+    return getFirstClass(psiFile, LithoPluginUtils::isLayoutSpec);
   }
 
-  private static Optional<PsiClass> getFirstClass(
-      PsiFile psiFile, Predicate<PsiClass> classFilter) {
+  public static Optional<PsiClass> getFirstClass(PsiFile psiFile, Predicate<PsiClass> classFilter) {
     return Optional.of(psiFile)
         .map(currentFile -> PsiTreeUtil.getChildrenOfType(currentFile, PsiClass.class))
         .flatMap(

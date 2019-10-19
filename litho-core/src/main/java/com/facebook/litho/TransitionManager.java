@@ -1,11 +1,11 @@
 /*
- * Copyright 2014-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -172,6 +172,12 @@ public class TransitionManager {
      * {@link LayoutState}s.
      */
     public boolean seenInLastTransition = false;
+
+    /**
+     * If this animation is running but the layout changed and it appeared/diappeared without an
+     * equivalent Transition specified, we need to interrupt this animation.
+     */
+    public boolean shouldFinishUndeclaredAnimation;
   }
 
   private final Map<AnimationBinding, List<PropertyHandle>> mAnimationsToPropertyHandles =
@@ -283,6 +289,30 @@ public class TransitionManager {
 
     if (isTracing) {
       ComponentsSystrace.endSection();
+    }
+  }
+
+  /**
+   * This method will check for running transitions which do not exist after a layout change.
+   * Therefore, they need to be interrupted and "finished".
+   */
+  // TODO: This is only catching changes in appeared/disappeared items. We need to investigate items
+  //       which change without a change transition declared. Also the flag should probably belong
+  //       to the properties and not to the AnimationState.
+  void finishUndeclaredTransitions() {
+    for (AnimationState animationState : new ArrayList<>(mAnimationStates.values())) {
+      if (animationState.shouldFinishUndeclaredAnimation) {
+        animationState.shouldFinishUndeclaredAnimation = false;
+
+        for (PropertyState propertyState :
+            new ArrayList<>(animationState.propertyStates.values())) {
+          final AnimationBinding animationBinding = propertyState.animation;
+          if (animationBinding != null) {
+            animationBinding.stop();
+            mAnimationBindingListener.finishAnimation(animationBinding);
+          }
+        }
+      }
     }
   }
 
@@ -618,6 +648,9 @@ public class TransitionManager {
     final String changeTypeString = changeTypeToString(animationState.changeType);
     if ((changeType == ChangeType.APPEARED && !transition.hasAppearAnimation())
         || (changeType == ChangeType.DISAPPEARED && !transition.hasDisappearAnimation())) {
+      // Interrupt running transitions after a layout change, without the new changeType defined.
+      animationState.shouldFinishUndeclaredAnimation = true;
+
       if (AnimationsDebug.ENABLED) {
         Log.d(
             AnimationsDebug.TAG,
@@ -899,9 +932,11 @@ public class TransitionManager {
       for (int i = 0, size = mTempPropertyAnimations.size(); i < size; i++) {
         final PropertyAnimation propertyAnimation = mTempPropertyAnimations.get(i);
         final TransitionId transitionId = propertyAnimation.getTransitionId();
-        final AnimationState animationState = mAnimationStates.get(transitionId);
-        final PropertyState propertyState =
-            animationState.propertyStates.get(propertyAnimation.getProperty());
+        final @Nullable AnimationState animationState = mAnimationStates.get(transitionId);
+        final @Nullable PropertyState propertyState =
+            (animationState != null)
+                ? animationState.propertyStates.get(propertyAnimation.getProperty())
+                : null;
 
         if (AnimationsDebug.ENABLED) {
           Log.d(
@@ -915,7 +950,19 @@ public class TransitionManager {
                   + ":");
         }
 
-        if (propertyState.lastMountedValue != null
+        if (propertyState == null) {
+          if (AnimationsDebug.ENABLED) {
+            Log.d(
+                AnimationsDebug.TAG,
+                " - Canceling animation, transitionId not found in the AnimationState."
+                    + " It has been probably cancelled already.");
+          }
+
+          shouldStart = false;
+        }
+
+        if (shouldStart
+            && propertyState.lastMountedValue != null
             && propertyState.lastMountedValue != propertyAnimation.getTargetValue()) {
           if (AnimationsDebug.ENABLED) {
             Log.d(

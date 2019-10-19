@@ -1,11 +1,11 @@
 /*
- * Copyright 2014-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,7 +22,6 @@ import static android.os.Build.VERSION_CODES.JELLY_BEAN;
 import static android.os.Build.VERSION_CODES.JELLY_BEAN_MR1;
 import static com.facebook.litho.CommonUtils.addOrCreateList;
 import static com.facebook.litho.ComponentContext.NULL_LAYOUT;
-import static com.facebook.litho.ComponentsLogger.LogLevel.WARNING;
 import static com.facebook.yoga.YogaEdge.ALL;
 import static com.facebook.yoga.YogaEdge.BOTTOM;
 import static com.facebook.yoga.YogaEdge.END;
@@ -77,6 +76,8 @@ import javax.annotation.Nullable;
 @ThreadConfined(ThreadConfined.ANY)
 public class DefaultInternalNode implements InternalNode, Cloneable {
 
+  private static final String CONTEXT_SPECIFIC_STYLE_SET =
+      "DefaultInternalNode:ContextSpecificStyleSet";
   // Used to check whether or not the framework can use style IDs for
   // paddingStart/paddingEnd due to a bug in some Android devices.
   private static final boolean SUPPORTS_RTL = (SDK_INT >= JELLY_BEAN_MR1);
@@ -141,6 +142,7 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   private @Nullable boolean[] mIsPaddingPercent;
   private @Nullable Edges mTouchExpansion;
   private @Nullable String mTransitionKey;
+  private @Nullable String mTransitionOwnerKey;
   private @Nullable Transition.TransitionKeyType mTransitionKeyType;
   private @Nullable ArrayList<Transition> mTransitions;
   private @Nullable ArrayList<Component> mComponentsNeedingPreviousRenderData;
@@ -338,7 +340,25 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   @Override
   public void calculateLayout(float width, float height) {
     applyOverridesRecursive(this);
-    mYogaNode.calculateLayout(width, height);
+    if (ComponentsConfiguration.percentageSleepLayoutCalculation > 0) {
+      long start = System.nanoTime();
+      mYogaNode.calculateLayout(width, height);
+      long end = System.nanoTime();
+      long elapsedTime = 0;
+      long timeIntervalToSleep =
+          (long)
+              ((end - start) * (ComponentsConfiguration.percentageSleepLayoutCalculation / 100f));
+      long sum = 0;
+      while (elapsedTime < timeIntervalToSleep) {
+        long s = System.nanoTime();
+        for (int index = 0; index < 100; ++index) {
+          sum++;
+        }
+        elapsedTime += (System.nanoTime() - s);
+      }
+    } else {
+      mYogaNode.calculateLayout(width, height);
+    }
   }
 
   @Override
@@ -349,7 +369,7 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   @Override
   public InternalNode child(Component child) {
     if (child != null) {
-      return child(Layout.create(mComponentContext, child));
+      return child(LayoutState.createLayout(mComponentContext, child));
     }
 
     return this;
@@ -812,6 +832,11 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   }
 
   @Override
+  public @Nullable String getTransitionOwnerKey() {
+    return mTransitionOwnerKey;
+  }
+
+  @Override
   public @Nullable Transition.TransitionKeyType getTransitionKeyType() {
     return mTransitionKeyType;
   }
@@ -1242,10 +1267,11 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   }
 
   @Override
-  public InternalNode transitionKey(@Nullable String key) {
+  public InternalNode transitionKey(@Nullable String key, @Nullable String ownerKey) {
     if (SDK_INT >= ICE_CREAM_SANDWICH && !TextUtils.isEmpty(key)) {
       mPrivateFlags |= PFLAG_TRANSITION_KEY_IS_SET;
       mTransitionKey = key;
+      mTransitionOwnerKey = ownerKey;
     }
 
     return this;
@@ -1494,7 +1520,7 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
       target.border(mNestedTreeProps.mNestedTreeBorderWidth, mBorderColors, mBorderRadius);
     }
     if ((mPrivateFlags & PFLAG_TRANSITION_KEY_IS_SET) != 0L) {
-      target.transitionKey(mTransitionKey);
+      target.transitionKey(mTransitionKey, mTransitionOwnerKey);
     }
     if ((mPrivateFlags & PFLAG_TRANSITION_KEY_TYPE_IS_SET) != 0L) {
       target.transitionKeyType(mTransitionKeyType);
@@ -1635,15 +1661,13 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
 
     if (errorTypes != null) {
       final CharSequence errorStr = TextUtils.join(", ", errorTypes);
-      final ComponentsLogger logger = getContext().getLogger();
-      if (logger != null) {
-        logger.emitMessage(
-            WARNING,
-            "You should not set "
-                + errorStr
-                + " to a root layout in "
-                + getTailComponent().getClass().getSimpleName());
-      }
+      ComponentsReporter.emitMessage(
+          ComponentsReporter.LogLevel.WARNING,
+          CONTEXT_SPECIFIC_STYLE_SET,
+          "You should not set "
+              + errorStr
+              + " to a root layout in "
+              + getTailComponent().getClass().getSimpleName());
     }
   }
 
@@ -1690,6 +1714,10 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
     }
 
     return reconcile(c, this, next, keys);
+  }
+
+  void setComponentContext(ComponentContext c) {
+    mComponentContext = c;
   }
 
   protected DefaultInternalNode clone() {
@@ -1792,12 +1820,17 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
     resetResolvedLayoutProperties();
   }
 
-  private void updateWith(ComponentContext c, YogaNode node, List<Component> components) {
+  private void updateWith(
+      final ComponentContext c,
+      final YogaNode node,
+      final List<Component> components,
+      final @Nullable DiffNode diffNode) {
     // 1. Set new ComponentContext, YogaNode, and components.
     mComponentContext = c;
     mYogaNode = node;
     mYogaNode.setData(this);
     mComponents = components;
+    mDiffNode = diffNode;
 
     // 2. Update props.
 
@@ -1832,20 +1865,28 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   private List<Component> getUpdatedComponents(ComponentContext c, @Nullable Component head) {
     int size = mComponents.size();
     List<Component> updated = new ArrayList<>(size);
+    ComponentContext context;
 
-    // 1. Shallow copy and update all components, except the head component.
-    for (int i = 0; i < size - 1; i++) {
-      Component component = mComponents.get(i).makeUpdatedShallowCopy(c);
-      updated.add(component);
-    }
-
-    // 2. If head component is null manually update it.
+    // 1. If head component is null manually update it.
     if (head == null) {
       head = mComponents.get(size - 1).makeUpdatedShallowCopy(c);
+      context = head.getScopedContext();
+    } else {
+      context = c;
     }
 
-    // 3. Add the updated head component to the list.
+    // 2. Add the updated head component to the list.
     updated.add(head);
+
+    // 3. Shallow copy and update all components, except the head component.
+    for (int i = size - 2; i >= 0; i--) {
+      Component component = mComponents.get(i).makeUpdatedShallowCopy(context);
+      updated.add(component);
+      context = component.getScopedContext(); // set parent context for descendant
+    }
+
+    // 4. Reverse the list so that the root component is at index 0.
+    Collections.reverse(updated);
 
     return updated;
   }
@@ -1883,13 +1924,20 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
    * @return A new updated InternalNode.
    */
   private static InternalNode reconcile(
-      ComponentContext c, DefaultInternalNode current, Component next, Set<String> keys) {
+      final ComponentContext c,
+      final DefaultInternalNode current,
+      final Component next,
+      final Set<String> keys) {
     int mode = getReconciliationMode(next.getScopedContext(), current, keys);
     final InternalNode layout;
 
     switch (mode) {
       case ReconciliationMode.COPY:
-        layout = reconcile(c, current, next, keys, ReconciliationMode.COPY);
+        if (ComponentsConfiguration.shouldUseDeepCloneDuringReconciliation) {
+          layout = current.deepClone();
+        } else {
+          layout = reconcile(c, current, next, keys, ReconciliationMode.COPY);
+        }
         break;
       case ReconciliationMode.RECONCILE:
         layout = reconcile(c, current, next, keys, ReconciliationMode.RECONCILE);
@@ -1916,11 +1964,11 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
    * @return A new updated InternalNode.
    */
   private static InternalNode reconcile(
-      ComponentContext c,
-      DefaultInternalNode current,
-      Component next,
-      Set<String> keys,
-      @ReconciliationMode int mode) {
+      final ComponentContext c,
+      final DefaultInternalNode current,
+      final Component next,
+      final Set<String> keys,
+      final @ReconciliationMode int mode) {
 
     final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
@@ -1943,6 +1991,7 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
 
     // 2. Shallow copy this layout.
     final DefaultInternalNode layout = getCleanUpdatedShallowCopy(c, current, next, copiedNode);
+    ComponentContext parentContext = layout.getTailComponent().getScopedContext();
 
     // 3. Clear the nested tree
     if (layout.getNestedTree() != null) {
@@ -1959,7 +2008,7 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
       final Component component = components.get(Math.max(0, components.size() - 1));
 
       // 4.2 Update the head component of the child layout.
-      final Component updated = component.makeUpdatedShallowCopy(c);
+      final Component updated = component.makeUpdatedShallowCopy(parentContext);
 
       // 4.3 Reconcile child layout.
       final InternalNode copy;
@@ -1986,7 +2035,10 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
    * InternalNode.
    */
   private static DefaultInternalNode getCleanUpdatedShallowCopy(
-      ComponentContext c, DefaultInternalNode current, Component head, YogaNode node) {
+      final ComponentContext c,
+      final DefaultInternalNode current,
+      final Component head,
+      final YogaNode node) {
 
     final boolean isTracing = ComponentsSystrace.isTracing();
 
@@ -2014,7 +2066,7 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
     List<Component> updated = current.getUpdatedComponents(c, head);
 
     // 4. Update the layout with the new context and copied YogaNode.
-    layout.updateWith(c, node, updated);
+    layout.updateWith(c, node, updated, null);
 
     if (isTracing) {
       ComponentsSystrace.endSection();
@@ -2030,7 +2082,7 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
    */
   @VisibleForTesting
   static @ReconciliationMode int getReconciliationMode(
-      ComponentContext c, InternalNode current, Set<String> keys) {
+      final ComponentContext c, final InternalNode current, final Set<String> keys) {
     final List<Component> components = current.getComponents();
     final Component root = current.getHeadComponent();
 

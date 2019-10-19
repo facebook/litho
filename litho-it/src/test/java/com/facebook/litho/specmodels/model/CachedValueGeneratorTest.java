@@ -1,11 +1,11 @@
 /*
- * Copyright 2014-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -71,12 +71,24 @@ public class CachedValueGeneratorTest {
       return "DEF";
     }
 
+    @OnCalculateCachedValue(name = "expensiveValueWithGeneric")
+    static <E extends CharSequence> String onCreateExpensiveValueWithGeneric(@Prop E genericArg) {
+      return "GHI";
+    }
+
+    @OnCalculateCachedValue(name = "expensiveValueWithMoreGenerics")
+    static <E extends CharSequence> String onCreateExpensiveValueWithMoreGenerics(
+        @Prop E genericArg, @Prop E genericArg2) {
+      return "JKL";
+    }
+
     @OnCreateLayout
-    public void testDelegateMethod(
+    public <E extends CharSequence> void testDelegateMethod(
         @Prop boolean arg0,
         @Prop @Nullable Component arg1,
         @Prop List<Component> arg2,
         @Prop List<String> arg3,
+        @Prop E genericArg,
         @State int arg4,
         @Param Object arg5,
         @TreeProp long arg6,
@@ -141,6 +153,102 @@ public class CachedValueGeneratorTest {
                 + "      return false;\n"
                 + "    }\n"
                 + "    ExpensiveValueInputs cachedValueInputs = (ExpensiveValueInputs) other;\n"
+                + "    return true;\n"
+                + "  }\n"
+                + "}\n");
+  }
+
+  @Test
+  public void testGenerateInputsClassGenericParam() {
+    final List<SpecMethodModel<DelegateMethod, Void>> models =
+        SpecModelUtils.getMethodModelsWithAnnotation(
+            mLayoutSpecModel, OnCalculateCachedValue.class);
+    final SpecMethodModel<DelegateMethod, Void> specMethodModel =
+        models.stream()
+            .filter(m -> m.name.toString().equals("onCreateExpensiveValueWithGeneric"))
+            .findFirst()
+            .get();
+    final String inputsClassWithGenericParam =
+        CachedValueGenerator.createInputsClass(
+                mLayoutSpecModel, specMethodModel, "expensiveValueWithGeneric")
+            .toString();
+    assertThat(inputsClassWithGenericParam)
+        .isEqualTo(
+            "private static class ExpensiveValueWithGenericInputs<E extends java.lang.CharSequence> {\n"
+                + "  private final E genericArg;\n"
+                + "\n"
+                + "  ExpensiveValueWithGenericInputs(E genericArg) {\n"
+                + "    this.genericArg = genericArg;\n"
+                + "  }\n"
+                + "\n"
+                + "  @java.lang.Override\n"
+                + "  public int hashCode() {\n"
+                + "    return com.facebook.litho.CommonUtils.hash(genericArg);\n"
+                + "  }\n"
+                + "\n"
+                + "  @java.lang.Override\n"
+                + "  public boolean equals(java.lang.Object other) {\n"
+                + "    if (this == other) {\n"
+                + "      return true;\n"
+                + "    }\n"
+                + "    if (other == null || !(other instanceof ExpensiveValueWithGenericInputs)) {\n"
+                + "      return false;\n"
+                + "    }\n"
+                + "    ExpensiveValueWithGenericInputs cachedValueInputs = (ExpensiveValueWithGenericInputs) other;\n"
+                + "    if (genericArg != null ? !genericArg.equals(cachedValueInputs.genericArg) : cachedValueInputs.genericArg != null) {\n"
+                + "      return false;\n"
+                + "    }\n"
+                + "    return true;\n"
+                + "  }\n"
+                + "}\n");
+  }
+
+  @Test
+  public void testGenerateInputsClassMultipleGenericsParams() {
+    final List<SpecMethodModel<DelegateMethod, Void>> models =
+        SpecModelUtils.getMethodModelsWithAnnotation(
+            mLayoutSpecModel, OnCalculateCachedValue.class);
+    final SpecMethodModel<DelegateMethod, Void> specMethodModel =
+        models.stream()
+            .filter(m -> m.name.toString().equals("onCreateExpensiveValueWithMoreGenerics"))
+            .findFirst()
+            .get();
+    final String inputsClassWithGenericParam =
+        CachedValueGenerator.createInputsClass(
+                mLayoutSpecModel, specMethodModel, "expensiveValueWithMoreGenerics")
+            .toString();
+    assertThat(inputsClassWithGenericParam)
+        .isEqualTo(
+            "private static class ExpensiveValueWithMoreGenericsInputs<E extends java.lang.CharSequence> {\n"
+                + "  private final E genericArg;\n"
+                + "\n"
+                + "  private final E genericArg2;\n"
+                + "\n"
+                + "  ExpensiveValueWithMoreGenericsInputs(E genericArg, E genericArg2) {\n"
+                + "    this.genericArg = genericArg;\n"
+                + "    this.genericArg2 = genericArg2;\n"
+                + "  }\n"
+                + "\n"
+                + "  @java.lang.Override\n"
+                + "  public int hashCode() {\n"
+                + "    return com.facebook.litho.CommonUtils.hash(genericArg, genericArg2);\n"
+                + "  }\n"
+                + "\n"
+                + "  @java.lang.Override\n"
+                + "  public boolean equals(java.lang.Object other) {\n"
+                + "    if (this == other) {\n"
+                + "      return true;\n"
+                + "    }\n"
+                + "    if (other == null || !(other instanceof ExpensiveValueWithMoreGenericsInputs)) {\n"
+                + "      return false;\n"
+                + "    }\n"
+                + "    ExpensiveValueWithMoreGenericsInputs cachedValueInputs = (ExpensiveValueWithMoreGenericsInputs) other;\n"
+                + "    if (genericArg != null ? !genericArg.equals(cachedValueInputs.genericArg) : cachedValueInputs.genericArg != null) {\n"
+                + "      return false;\n"
+                + "    }\n"
+                + "    if (genericArg2 != null ? !genericArg2.equals(cachedValueInputs.genericArg2) : cachedValueInputs.genericArg2 != null) {\n"
+                + "      return false;\n"
+                + "    }\n"
                 + "    return true;\n"
                 + "  }\n"
                 + "}\n");

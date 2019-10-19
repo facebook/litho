@@ -1,11 +1,11 @@
 /*
- * Copyright 2017-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.facebook.litho.specmodels.processor;
 
 import com.facebook.litho.intellij.PsiSearchUtils;
@@ -53,6 +54,9 @@ public class PsiAnnotationExtractor {
    */
   private static boolean isValidAnnotation(Project project, PsiAnnotation psiAnnotation) {
     final String text = psiAnnotation.getQualifiedName();
+    if (text.startsWith("com.facebook.")) {
+      return false;
+    }
     PsiClass annotationClass = PsiSearchUtils.findClass(project, psiAnnotation.getQualifiedName());
     if (annotationClass == null) {
       throw new RuntimeException("Annotation class not found, text is: " + text);
@@ -61,10 +65,6 @@ public class PsiAnnotationExtractor {
     final Retention retention =
         PsiAnnotationProxyUtils.findAnnotationInHierarchy(annotationClass, Retention.class);
 
-    if (retention != null && retention.value() == RetentionPolicy.SOURCE) {
-      return false;
-    }
-
-    return !text.startsWith("com.facebook.");
+    return retention == null || retention.value() != RetentionPolicy.SOURCE;
   }
 }

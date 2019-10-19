@@ -1,11 +1,11 @@
 /*
- * Copyright 2004-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.facebook.litho.widget;
 
 import static com.facebook.litho.widget.CardShadowDrawable.getShadowBottom;
@@ -82,7 +83,11 @@ class TransparencyEnabledCardSpec {
       @Prop(optional = true, resType = ResType.COLOR) int shadowEndColor,
       @Prop(optional = true, resType = ResType.DIMEN_OFFSET) float cornerRadius,
       @Prop(optional = true, resType = ResType.DIMEN_OFFSET) float elevation,
-      @Prop(optional = true, resType = ResType.DIMEN_OFFSET) int shadowBottomOverride) {
+      @Prop(optional = true, resType = ResType.DIMEN_OFFSET) int shadowBottomOverride,
+      @Prop(optional = true) boolean disableClipTopLeft,
+      @Prop(optional = true) boolean disableClipTopRight,
+      @Prop(optional = true) boolean disableClipBottomLeft,
+      @Prop(optional = true) boolean disableClipBottomRight) {
 
     final Resources resources = c.getAndroidContext().getResources();
 
@@ -103,8 +108,9 @@ class TransparencyEnabledCardSpec {
         .child(
             Column.create(c)
                 .marginPx(HORIZONTAL, shadowHorizontal)
-                .marginPx(TOP, shadowTop)
-                .marginPx(BOTTOM, shadowBottom)
+                .marginPx(TOP, disableClipTopLeft && disableClipTopRight ? 0 : shadowTop)
+                .marginPx(
+                    BOTTOM, disableClipBottomLeft && disableClipBottomRight ? 0 : shadowBottom)
                 .backgroundColor(clippingColor)
                 .child(
                     TransparencyEnabledCardClip.create(c)
@@ -120,6 +126,8 @@ class TransparencyEnabledCardSpec {
                     .shadowEndColor(shadowEndColor)
                     .cornerRadiusPx(cornerRadius)
                     .shadowSizePx(elevation)
+                    .hideTopShadow(disableClipTopLeft && disableClipTopRight)
+                    .hideBottomShadow(disableClipBottomLeft && disableClipBottomRight)
                     .positionType(ABSOLUTE)
                     .positionPx(ALL, 0)
                 : null)

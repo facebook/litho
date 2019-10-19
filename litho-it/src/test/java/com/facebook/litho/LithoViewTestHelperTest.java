@@ -1,11 +1,11 @@
 /*
- * Copyright 2014-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,7 +25,6 @@ import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
 import com.facebook.litho.widget.Text;
-import org.junit.After;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,11 +38,6 @@ public class LithoViewTestHelperTest {
     Assume.assumeTrue(
         "These tests cover debug functionality and can only be run " + "for internal builds.",
         ComponentsConfiguration.IS_INTERNAL_BUILD);
-  }
-
-  @After
-  public void after() {
-    ComponentsConfiguration.isConsistentComponentHierarchyExperimentEnabled = false;
   }
 
   @Test
@@ -69,38 +63,7 @@ public class LithoViewTestHelperTest {
   }
 
   @Test
-  public void testViewToStringWithText() {
-    final Component component =
-        new InlineLayoutSpec() {
-          @Override
-          protected Component onCreateLayout(ComponentContext c) {
-            return Column.create(c)
-                .child(
-                    TestDrawableComponent.create(c)
-                        .testKey("test-drawable")
-                        .widthPx(100)
-                        .heightPx(100))
-                .child(Text.create(c).widthPx(100).heightPx(100).text("Hello, World"))
-                .build();
-          }
-        };
-
-    final LithoView lithoView = new LithoView(RuntimeEnvironment.application);
-    lithoView.setComponent(component);
-    lithoView.measure(makeMeasureSpec(0, UNSPECIFIED), makeMeasureSpec(0, UNSPECIFIED));
-    lithoView.layout(0, 0, lithoView.getMeasuredWidth(), lithoView.getMeasuredHeight());
-
-    final String string = LithoViewTestHelper.viewToString(lithoView);
-    assertThat(string)
-        .containsPattern(
-            "litho.InlineLayout\\{\\w+ V.E..... .. 0,0-100,200\\}\n"
-                + "  litho.TestDrawableComponent\\{\\w+ V.E..... .. 0,0-100,100 litho:id/test-drawable\\}\n"
-                + "  litho.Text\\{\\w+ V.E..... .. 0,100-100,200 text=\"Hello, World\"\\}");
-  }
-
-  @Test
-  public void viewToStringWithTextWithConsistentHierarchyExperiment() {
-    ComponentsConfiguration.isConsistentComponentHierarchyExperimentEnabled = true;
+  public void viewToStringWithText() {
     final Component component =
         new InlineLayoutSpec() {
           @Override

@@ -1,11 +1,11 @@
 /*
- * Copyright 2018-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.facebook.litho;
 
 import android.content.pm.PackageManager;
@@ -22,10 +23,10 @@ import android.util.DisplayMetrics;
 
 public class DoubleMeasureFixUtil {
 
-  // Required to determine whether device used is a Chromebook.
-  // See https://stackoverflow.com/questions/39784415/ for details.
-  // TODO: T46211188 Figure out long-term fix encompassing regular Android devices and Chromebooks
-  private static final String SYSTEM_FEATURE = "org.chromium.arc.device_management";
+  private static final short NORMAL = 1;
+  private static final short CHROMEBOOK = 2;
+
+  private static short deviceType = 0;
 
   /**
    * Correction for an Android bug on some devices with "special" densities where the system will
@@ -39,11 +40,27 @@ public class DoubleMeasureFixUtil {
    */
   public static int correctWidthSpecForAndroidDoubleMeasureBug(
       Resources resources, PackageManager packageManager, int widthSpec) {
+    return correctWidthSpecForAndroidDoubleMeasureBug(resources, packageManager, widthSpec, false);
+  }
+
+  public static int correctWidthSpecForAndroidDoubleMeasureBug(
+      Resources resources, PackageManager packageManager, int widthSpec, boolean shouldCache) {
     final @SizeSpec.MeasureSpecMode int mode = SizeSpec.getMode(widthSpec);
     if (mode == SizeSpec.UNSPECIFIED) {
       return widthSpec;
     }
-    final boolean isChromebook = packageManager.hasSystemFeature(SYSTEM_FEATURE);
+
+    // Will cache the device type to avoid repetitive package manager calls.
+    if (deviceType == 0 || !shouldCache) {
+      // Required to determine whether device used is a Chromebook.
+      // See https://stackoverflow.com/questions/39784415/ for details.
+      // TODO: T46211188 Figure out long-term fix encompassing regular Android devices and
+      // Chromebooks
+      deviceType =
+          packageManager.hasSystemFeature("org.chromium.arc.device_management")
+              ? CHROMEBOOK
+              : NORMAL;
+    }
 
     final Configuration configuration = resources.getConfiguration();
     final DisplayMetrics displayMetrics = resources.getDisplayMetrics();
@@ -52,7 +69,9 @@ public class DoubleMeasureFixUtil {
     // If device used is a Chromebook we need to use the window size instead of the screen size to
     // avoid layout issues.
     final int screenWidthPx =
-        isChromebook ? (int) (screenWidthDp * screenDensity + 0.5f) : displayMetrics.widthPixels;
+        (deviceType == CHROMEBOOK)
+            ? (int) (screenWidthDp * screenDensity + 0.5f)
+            : displayMetrics.widthPixels;
 
     // NB: Logic taken from ViewRootImpl#dipToPx
     final int calculatedScreenWidthPx = (int) (screenDensity * screenWidthDp + 0.5f);

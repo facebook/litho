@@ -1,11 +1,11 @@
 /*
- * Copyright 2014-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -45,14 +45,25 @@ public interface DependencyInjectionHelper {
    * Generate the necessary code to handle the {@link com.facebook.litho.annotations.InjectProp}
    * annotation. Field with the same name of the parameter should be returned to be usable.
    *
-   * @param injectPropParams
+   * @param specModel the model holding the spec being generated
+   * @param injectPropParams a list of the models for the injected params
    */
-  TypeSpecDataHolder generateInjectedFields(ImmutableList<InjectPropModel> injectPropParams);
+  TypeSpecDataHolder generateInjectedFields(
+      SpecModel specModel, ImmutableList<InjectPropModel> injectPropParams);
 
   /**
    * Generate an accessor for each injected field. This is used to generate matchers for TestSpecs
    * and can be necessary for DI mechanisms which do not allow direct access to the generated
    * fields. For instance, when field values are wrapped in a lazy wrapper.
    */
-  MethodSpec generateTestingFieldAccessor(InjectPropModel injectPropModel);
+  MethodSpec generateTestingFieldAccessor(SpecModel specModel, InjectPropModel injectPropModel);
+
+  /**
+   * Generate accessor code for each injected field. This is used to generate access from methods
+   * such as onCreateLayout.
+   *
+   * @param specModel the model holding the spc being generated
+   * @param methodParamModel the model for the method parameter being accessed
+   */
+  String generateImplAccessor(SpecModel specModel, MethodParamModel methodParamModel);
 }

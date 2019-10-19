@@ -1,11 +1,11 @@
 /*
- * Copyright 2014-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,6 +20,7 @@ import static com.facebook.litho.testing.assertj.LithoAssertions.assertThat;
 import static org.robolectric.RuntimeEnvironment.application;
 
 import android.view.View;
+import com.facebook.litho.LayoutState.LayoutStateContext;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
 import com.facebook.litho.testing.util.InlineLayoutWithSizeSpec;
@@ -67,12 +68,14 @@ public class WillRenderTest {
   @Test
   public void testWillRenderForComponentThatReturnsNull() {
     ComponentContext c = new ComponentContext(application);
+    c.setLayoutStateContext(LayoutStateContext.getTestInstance(c));
     assertThat(c, Wrapper.create(c).delegate(mNullSpec).build()).wontRender();
   }
 
   @Test
   public void testWillRenderForComponentThatReturnsNonNull() {
     ComponentContext c = new ComponentContext(application);
+    c.setLayoutStateContext(LayoutStateContext.getTestInstance(c));
     assertThat(c, Wrapper.create(c).delegate(mNonNullSpec).build()).willRender();
   }
 
@@ -82,6 +85,7 @@ public class WillRenderTest {
     mExpectedException.expectMessage("@OnCreateLayoutWithSizeSpec");
 
     ComponentContext c = new ComponentContext(application);
+    c.setLayoutStateContext(LayoutStateContext.getTestInstance(c));
     Component.willRender(c, Wrapper.create(c).delegate(mLayoutWithSizeSpec).build());
   }
 }

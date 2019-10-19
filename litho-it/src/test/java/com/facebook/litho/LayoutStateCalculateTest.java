@@ -1,11 +1,11 @@
 /*
- * Copyright 2014-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -33,7 +33,6 @@ import static com.facebook.litho.NodeInfo.SELECTED_SET_TRUE;
 import static com.facebook.litho.SizeSpec.AT_MOST;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.UNSPECIFIED;
-import static com.facebook.litho.SizeSpec.getSize;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
 import static com.facebook.yoga.YogaAlign.CENTER;
 import static com.facebook.yoga.YogaAlign.FLEX_START;
@@ -47,8 +46,6 @@ import static com.facebook.yoga.YogaJustify.SPACE_AROUND;
 import static com.facebook.yoga.YogaPositionType.ABSOLUTE;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.validateMockitoUsage;
@@ -60,6 +57,7 @@ import android.graphics.Rect;
 import android.util.SparseArray;
 import android.view.accessibility.AccessibilityManager;
 import androidx.annotation.Nullable;
+import com.facebook.litho.LayoutState.LayoutStateContext;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestLayoutComponent;
@@ -931,7 +929,11 @@ public class LayoutStateCalculateTest {
 
   @Test
   public void testNoMeasureOnNestedComponentWithSameSpecs() {
-    final ComponentContext c = new ComponentContext(application);
+    final ComponentContext baseContext = new ComponentContext(application);
+    final ComponentContext c =
+        ComponentContext.withComponentTree(baseContext, ComponentTree.create(baseContext).build());
+    final LayoutState layoutState = new LayoutState(c);
+    c.setLayoutStateContext(new LayoutStateContext(layoutState));
 
     final Size size = new Size();
     final TestComponent innerComponent =
@@ -940,7 +942,7 @@ public class LayoutStateCalculateTest {
     final int heightSpec = makeSizeSpec(100, EXACTLY);
     innerComponent.measure(c, widthSpec, heightSpec, size);
 
-    final InternalNode internalNode = ((Component) innerComponent).getCachedLayout();
+    final InternalNode internalNode = layoutState.getCachedLayout(innerComponent);
     internalNode.setLastWidthSpec(widthSpec);
     internalNode.setLastHeightSpec(heightSpec);
     internalNode.setLastMeasuredWidth(internalNode.getWidth());
@@ -966,7 +968,11 @@ public class LayoutStateCalculateTest {
 
   @Test
   public void testNoMeasureOnNestedComponentWithNewMeasureSpecExact() {
-    final ComponentContext c = new ComponentContext(application);
+    final ComponentContext baseContext = new ComponentContext(application);
+    final ComponentContext c =
+        ComponentContext.withComponentTree(baseContext, ComponentTree.create(baseContext).build());
+    final LayoutState layoutState = new LayoutState(c);
+    c.setLayoutStateContext(new LayoutStateContext(layoutState));
 
     final Size size = new Size();
     final TestComponent innerComponent =
@@ -975,7 +981,7 @@ public class LayoutStateCalculateTest {
     final int heightSpec = makeSizeSpec(100, AT_MOST);
     innerComponent.measure(c, widthSpec, heightSpec, size);
 
-    final InternalNode internalNode = ((Component) innerComponent).getCachedLayout();
+    final InternalNode internalNode = layoutState.getCachedLayout(innerComponent);
     internalNode.setLastWidthSpec(widthSpec);
     internalNode.setLastHeightSpec(heightSpec);
     internalNode.setLastMeasuredWidth(100);
@@ -1001,7 +1007,11 @@ public class LayoutStateCalculateTest {
 
   @Test
   public void testNoMeasureOnNestedComponentWithNewMeasureSpecOldUnspecified() {
-    final ComponentContext c = new ComponentContext(application);
+    final ComponentContext baseContext = new ComponentContext(application);
+    final ComponentContext c =
+        ComponentContext.withComponentTree(baseContext, ComponentTree.create(baseContext).build());
+    final LayoutState layoutState = new LayoutState(c);
+    c.setLayoutStateContext(new LayoutStateContext(layoutState));
 
     final Size size = new Size();
     final TestComponent innerComponent =
@@ -1010,7 +1020,7 @@ public class LayoutStateCalculateTest {
     final int heightSpec = makeSizeSpec(0, UNSPECIFIED);
     innerComponent.measure(c, widthSpec, heightSpec, size);
 
-    final InternalNode internalNode = ((Component) innerComponent).getCachedLayout();
+    final InternalNode internalNode = layoutState.getCachedLayout(innerComponent);
     internalNode.setLastWidthSpec(widthSpec);
     internalNode.setLastHeightSpec(heightSpec);
     internalNode.setLastMeasuredWidth(99);
@@ -1034,7 +1044,11 @@ public class LayoutStateCalculateTest {
 
   @Test
   public void testNoMeasureOnNestedComponentWithOldAndNewAtMost() {
-    final ComponentContext c = new ComponentContext(application);
+    final ComponentContext baseContext = new ComponentContext(application);
+    final ComponentContext c =
+        ComponentContext.withComponentTree(baseContext, ComponentTree.create(baseContext).build());
+    final LayoutState layoutState = new LayoutState(c);
+    c.setLayoutStateContext(new LayoutStateContext(layoutState));
 
     final Size size = new Size();
     final TestComponent innerComponent =
@@ -1043,7 +1057,7 @@ public class LayoutStateCalculateTest {
     final int heightSpec = makeSizeSpec(100, AT_MOST);
     innerComponent.measure(c, widthSpec, heightSpec, size);
 
-    final InternalNode internalNode = ((Component) innerComponent).getCachedLayout();
+    final InternalNode internalNode = layoutState.getCachedLayout(innerComponent);
     internalNode.setLastWidthSpec(widthSpec);
     internalNode.setLastHeightSpec(heightSpec);
     internalNode.setLastMeasuredWidth(50);
@@ -1934,6 +1948,7 @@ public class LayoutStateCalculateTest {
     final int width = 50;
     final int height = 30;
     final ComponentContext c = new ComponentContext(application);
+    c.setLayoutStateContextForTesting();
     final Component component =
         new InlineLayoutSpec() {
           @Override
@@ -1953,249 +1968,6 @@ public class LayoutStateCalculateTest {
     assertThat(node.getChildCount()).isEqualTo(1);
     assertThat(((InternalNode) node.getChildAt(0)).getWidth()).isEqualTo(width);
     assertThat(((InternalNode) node.getChildAt(0)).getHeight()).isEqualTo(height);
-  }
-
-  @Test
-  public void testLayoutOutputWithCachedLayoutSpec() {
-    final ComponentContext c = new ComponentContext(application);
-    final int widthSpecContainer = makeSizeSpec(300, EXACTLY);
-    final int heightSpec = makeSizeSpec(0, UNSPECIFIED);
-    final int horizontalPadding = 20;
-    final int widthMeasuredComponent =
-        makeSizeSpec(getSize(widthSpecContainer) - horizontalPadding - horizontalPadding, EXACTLY);
-
-    final Component componentSpy =
-        spy(TestLayoutComponent.create(c, 0, 0, true, true, true, false).build());
-    final Size sizeOutput = new Size();
-    componentSpy.measure(c, widthMeasuredComponent, heightSpec, sizeOutput);
-
-    // Reset the checks for layout release and clearing that happen during measurement
-    reset(componentSpy);
-    doReturn(componentSpy).when(componentSpy).makeShallowCopy();
-
-    // Check the cached measured component tree
-    assertThat(componentSpy.getCachedLayout()).isNotNull();
-    final InternalNode cachedLayout = componentSpy.getCachedLayout();
-    assertThat(cachedLayout.getChildCount()).isEqualTo(1);
-    assertThat(((InternalNode) cachedLayout.getChildAt(0)).getTailComponent())
-        .isInstanceOf(TestDrawableComponent.class);
-
-    // Now embed the measured component in another container and calculate a layout.
-    final Component rootContainer =
-        new InlineLayoutSpec() {
-          @Override
-          protected Component onCreateLayout(final ComponentContext c) {
-            return create(c).paddingPx(HORIZONTAL, horizontalPadding).child(componentSpy).build();
-          }
-        };
-
-    final LayoutState layoutState =
-        calculateLayoutState(application, rootContainer, -1, widthSpecContainer, heightSpec);
-
-    verify(componentSpy, times(1)).makeShallowCopy();
-
-    // Make sure we reused the cached layout.
-    verify(componentSpy, times(1)).clearCachedLayout();
-
-    // Check total layout outputs.
-    assertThat(layoutState.getMountableOutputCount()).isEqualTo(2);
-    final Rect mountBounds = new Rect();
-    // Check host.
-    assertThat(isHostComponent(getComponentAt(layoutState, 0))).isTrue();
-    layoutState.getMountableOutputAt(0).getMountBounds(mountBounds);
-    assertThat(mountBounds).isEqualTo(new Rect(0, 0, 300, sizeOutput.height));
-    assertThat(getComponentAt(layoutState, 1)).isInstanceOf(TestDrawableComponent.class);
-    layoutState.getMountableOutputAt(1).getMountBounds(mountBounds);
-    assertThat(mountBounds).isEqualTo(new Rect(20, 0, 280, 0));
-
-    validateMockitoUsage();
-  }
-
-  @Test
-  public void testLayoutOutputWithCachedLayoutSpecWithMeasure() {
-    final ComponentContext c = new ComponentContext(application);
-    final int widthSpecContainer = makeSizeSpec(300, EXACTLY);
-    final int heightSpec = makeSizeSpec(0, UNSPECIFIED);
-    final int horizontalPadding = 20;
-    final int widthMeasuredComponent =
-        makeSizeSpec(getSize(widthSpecContainer) - horizontalPadding - horizontalPadding, EXACTLY);
-
-    final Component sizeDependentComponentSpy =
-        spy(TestSizeDependentComponent.create(c).setFixSizes(false).setDelegate(false).build());
-    final Size sizeOutput = new Size();
-    sizeDependentComponentSpy.measure(c, widthMeasuredComponent, heightSpec, sizeOutput);
-
-    // Reset the checks for layout release and clearing that happen during measurement
-    reset(sizeDependentComponentSpy);
-    doReturn(sizeDependentComponentSpy).when(sizeDependentComponentSpy).makeShallowCopy();
-
-    // Check the cached measured component tree
-    assertThat(sizeDependentComponentSpy.getCachedLayout()).isNotNull();
-    final InternalNode cachedLayout = sizeDependentComponentSpy.getCachedLayout();
-    assertThat(cachedLayout.getChildCount()).isEqualTo(2);
-    assertThat(((InternalNode) cachedLayout.getChildAt(0)).getTailComponent())
-        .isInstanceOf(TestDrawableComponent.class);
-    assertThat(((InternalNode) cachedLayout.getChildAt(1)).getTailComponent())
-        .isInstanceOf(TestViewComponent.class);
-
-    // Now embed the measured component in another container and calculate a layout.
-    final Component rootContainer =
-        new InlineLayoutSpec() {
-          @Override
-          protected Component onCreateLayout(final ComponentContext c) {
-            return create(c)
-                .flexShrink(0)
-                .paddingPx(HORIZONTAL, horizontalPadding)
-                .child(sizeDependentComponentSpy)
-                .build();
-          }
-        };
-
-    final LayoutState layoutState =
-        calculateLayoutState(application, rootContainer, -1, widthSpecContainer, heightSpec);
-
-    verify(sizeDependentComponentSpy, times(1)).makeShallowCopy();
-
-    // Make sure we reused the cached layout.
-    verify(sizeDependentComponentSpy, times(1)).clearCachedLayout();
-
-    // Check total layout outputs.
-    assertThat(layoutState.getMountableOutputCount()).isEqualTo(4);
-    final Rect mountBounds = new Rect();
-    // Check host.
-    assertThat(isHostComponent(getComponentAt(layoutState, 0))).isTrue();
-    layoutState.getMountableOutputAt(0).getMountBounds(mountBounds);
-    assertThat(mountBounds).isEqualTo(new Rect(0, 0, 300, sizeOutput.height));
-    // Check NestedTree
-    assertThat(getComponentAt(layoutState, 1)).isInstanceOf(DrawableComponent.class);
-    layoutState.getMountableOutputAt(1).getMountBounds(mountBounds);
-    assertThat(mountBounds).isEqualTo(new Rect(25, 5, 275, 5));
-    assertThat(getComponentAt(layoutState, 2)).isInstanceOf(TestDrawableComponent.class);
-    layoutState.getMountableOutputAt(2).getMountBounds(mountBounds);
-    assertThat(mountBounds).isEqualTo(new Rect(25, 5, 275, 5));
-    assertThat(getComponentAt(layoutState, 3)).isInstanceOf(TestViewComponent.class);
-    layoutState.getMountableOutputAt(3).getMountBounds(mountBounds);
-    assertThat(mountBounds).isEqualTo(new Rect(28, 8, 272, 8));
-
-    validateMockitoUsage();
-  }
-
-  @Test
-  public void testLayoutOutputWithCachedLayoutSpecDelegate() {
-    final ComponentContext c = new ComponentContext(application);
-    final int widthSpecContainer = makeSizeSpec(300, EXACTLY);
-    final int heightSpec = makeSizeSpec(0, UNSPECIFIED);
-    final int horizontalPadding = 20;
-    final int widthMeasuredComponent =
-        makeSizeSpec(getSize(widthSpecContainer) - horizontalPadding - horizontalPadding, EXACTLY);
-
-    final Component componentSpy =
-        spy(TestLayoutComponent.create(c, 0, 0, true, true, true, true).build());
-
-    final Size sizeOutput = new Size();
-    componentSpy.measure(c, widthMeasuredComponent, heightSpec, sizeOutput);
-
-    // Reset the checks for layout release and clearing that happen during measurement
-    reset(componentSpy);
-    doReturn(componentSpy).when(componentSpy).makeShallowCopy();
-
-    // Check the cached measured component tree
-    assertThat(componentSpy.getCachedLayout()).isNotNull();
-    final InternalNode cachedLayout = componentSpy.getCachedLayout();
-    assertThat(cachedLayout.getChildCount()).isEqualTo(0);
-    assertThat(cachedLayout.getTailComponent()).isInstanceOf(TestDrawableComponent.class);
-
-    // Now embed the measured component in another container and calculate a layout.
-    final Component rootContainer =
-        new InlineLayoutSpec() {
-          @Override
-          protected Component onCreateLayout(final ComponentContext c) {
-            return create(c).paddingPx(HORIZONTAL, horizontalPadding).child(componentSpy).build();
-          }
-        };
-
-    final LayoutState layoutState =
-        calculateLayoutState(application, rootContainer, -1, widthSpecContainer, heightSpec);
-
-    verify(componentSpy, times(1)).makeShallowCopy();
-
-    // Make sure we reused the cached layout.
-    verify(componentSpy, times(1)).clearCachedLayout();
-
-    // Check total layout outputs.
-    assertThat(layoutState.getMountableOutputCount()).isEqualTo(2);
-    final Rect mountBounds = new Rect();
-    // Check host.
-    assertThat(isHostComponent(getComponentAt(layoutState, 0))).isTrue();
-    layoutState.getMountableOutputAt(0).getMountBounds(mountBounds);
-    assertThat(mountBounds).isEqualTo(new Rect(0, 0, 300, sizeOutput.height));
-    assertThat(getComponentAt(layoutState, 1)).isInstanceOf(TestDrawableComponent.class);
-    layoutState.getMountableOutputAt(1).getMountBounds(mountBounds);
-    assertThat(mountBounds).isEqualTo(new Rect(20, 0, 280, 0));
-
-    validateMockitoUsage();
-  }
-
-  @Test
-  public void testLayoutOutputWithCachedLayoutSpecWithMeasureDelegate() {
-    final ComponentContext c = new ComponentContext(application);
-    final int widthSpecContainer = makeSizeSpec(300, EXACTLY);
-    final int heightSpec = makeSizeSpec(0, UNSPECIFIED);
-    final int horizontalPadding = 20;
-    final int widthMeasuredComponent =
-        makeSizeSpec(getSize(widthSpecContainer) - horizontalPadding - horizontalPadding, EXACTLY);
-
-    final Component sizeDependentComponentSpy =
-        spy(TestSizeDependentComponent.create(c).setFixSizes(false).setDelegate(true).build());
-    final Size sizeOutput = new Size();
-    sizeDependentComponentSpy.measure(c, widthMeasuredComponent, heightSpec, sizeOutput);
-
-    // Reset the checks for layout release and clearing that happen during measurement
-    reset(sizeDependentComponentSpy);
-    doReturn(sizeDependentComponentSpy).when(sizeDependentComponentSpy).makeShallowCopy();
-
-    // Check the cached measured component tree
-    assertThat(sizeDependentComponentSpy.getCachedLayout()).isNotNull();
-    final InternalNode cachedLayout = sizeDependentComponentSpy.getCachedLayout();
-    assertThat(cachedLayout.getChildCount()).isEqualTo(0);
-    assertThat(cachedLayout.getTailComponent()).isInstanceOf(TestDrawableComponent.class);
-
-    // Now embed the measured component in another container and calculate a layout.
-    final Component rootContainer =
-        new InlineLayoutSpec() {
-          @Override
-          protected Component onCreateLayout(final ComponentContext c) {
-            return create(c)
-                .paddingPx(HORIZONTAL, horizontalPadding)
-                .child(sizeDependentComponentSpy)
-                .build();
-          }
-        };
-
-    final LayoutState layoutState =
-        calculateLayoutState(application, rootContainer, -1, widthSpecContainer, heightSpec);
-
-    verify(sizeDependentComponentSpy, times(1)).makeShallowCopy();
-
-    // Make sure we reused the cached layout.
-    verify(sizeDependentComponentSpy, times(1)).clearCachedLayout();
-
-    // Check total layout outputs.
-    assertThat(layoutState.getMountableOutputCount()).isEqualTo(3);
-    final Rect mountBounds = new Rect();
-    // Check host.
-    assertThat(isHostComponent(getComponentAt(layoutState, 0))).isTrue();
-    layoutState.getMountableOutputAt(0).getMountBounds(mountBounds);
-    assertThat(mountBounds).isEqualTo(new Rect(0, 0, 300, sizeOutput.height));
-    // Check NestedTree
-    assertThat(getComponentAt(layoutState, 1)).isInstanceOf(DrawableComponent.class);
-    layoutState.getMountableOutputAt(1).getMountBounds(mountBounds);
-    assertThat(mountBounds).isEqualTo(new Rect(20, 0, 280, 0));
-    assertThat(getComponentAt(layoutState, 2)).isInstanceOf(TestDrawableComponent.class);
-    layoutState.getMountableOutputAt(2).getMountBounds(mountBounds);
-    assertThat(mountBounds).isEqualTo(new Rect(20, 0, 280, 0));
-
-    validateMockitoUsage();
   }
 
   @Test
@@ -2312,38 +2084,6 @@ public class LayoutStateCalculateTest {
   }
 
   @Test
-  public void testLayoutOutputForRootNestedTreeComponentWithPercentPadding() {
-    final Component component =
-        new InlineLayoutSpec() {
-          @Override
-          protected Component onCreateLayout(final ComponentContext c) {
-            return create(c)
-                .alignItems(FLEX_START)
-                .widthPx(50)
-                .heightPx(50)
-                .child(
-                    TestSizeDependentComponent.create(c)
-                        .setFixSizes(true)
-                        .paddingPercent(ALL, 10)
-                        .backgroundColor(0xFFFF0000))
-                .build();
-          }
-        };
-
-    final InternalNode root =
-        createAndMeasureTreeForComponent(
-            new ComponentContext(application),
-            component,
-            makeSizeSpec(0, UNSPECIFIED),
-            makeSizeSpec(0, UNSPECIFIED));
-
-    assertThat(root.getChildAt(0).getNestedTree().getPaddingLeft()).isEqualTo(5);
-    assertThat(root.getChildAt(0).getNestedTree().getPaddingTop()).isEqualTo(5);
-    assertThat(root.getChildAt(0).getNestedTree().getPaddingRight()).isEqualTo(5);
-    assertThat(root.getChildAt(0).getNestedTree().getPaddingBottom()).isEqualTo(5);
-  }
-
-  @Test
   public void testLayoutOutputsForComponentWithBorderColorNoBorderWidth() {
     final Component component =
         new InlineLayoutSpec() {
@@ -2436,6 +2176,7 @@ public class LayoutStateCalculateTest {
   @Test
   public void testWillRenderLayoutsOnce() {
     ComponentContext c = new ComponentContext(application);
+    c.setLayoutStateContextForTesting();
 
     final Component componentSpy =
         spy(TestLayoutComponent.create(c, 0, 0, true, true, true, false).build());
@@ -2460,6 +2201,7 @@ public class LayoutStateCalculateTest {
   @Test
   public void testResolveLayoutUsesWillRenderResult() {
     ComponentContext c = new ComponentContext(application);
+    c.setLayoutStateContextForTesting();
 
     final Component component =
         TestLayoutComponent.create(c, 0, 0, true, true, true, false).build();
@@ -2477,6 +2219,7 @@ public class LayoutStateCalculateTest {
   @Test
   public void testNewLayoutBuilderUsesWillRenderResult() {
     ComponentContext c = new ComponentContext(application);
+    c.setLayoutStateContextForTesting();
 
     final Component component =
         TestLayoutComponent.create(c, 0, 0, true, true, true, false).build();
@@ -2486,7 +2229,7 @@ public class LayoutStateCalculateTest {
     final InternalNode cachedLayout = component.getLayoutCreatedInWillRenderForTesting();
     assertThat(cachedLayout).isNotNull();
 
-    InternalNode result = c.newLayoutBuilder(component, 0, 0);
+    InternalNode result = LayoutState.createLayout(c, component);
     assertThat(result).isEqualTo(cachedLayout);
     assertThat(component.getLayoutCreatedInWillRenderForTesting()).isNull();
   }
@@ -2494,6 +2237,7 @@ public class LayoutStateCalculateTest {
   @Test
   public void testCreateLayoutUsesWillRenderResult() {
     ComponentContext c = new ComponentContext(application);
+    c.setLayoutStateContextForTesting();
 
     final Component component =
         TestLayoutComponent.create(c, 0, 0, true, true, true, false).build();
@@ -2533,6 +2277,7 @@ public class LayoutStateCalculateTest {
   @Test
   public void testWillRenderTwiceDoesNotReCreateLayout() {
     ComponentContext c = new ComponentContext(application);
+    c.setLayoutStateContextForTesting();
 
     final Component component =
         TestLayoutComponent.create(c, 0, 0, true, true, true, false).build();

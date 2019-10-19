@@ -1,11 +1,11 @@
 /*
- * Copyright 2014-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -35,6 +35,8 @@ import java.util.List;
  * Component from a generic model object.
  */
 public class RecyclerBinderUpdateCallback<T> implements ListUpdateCallback {
+
+  private static final String INCONSISTENT_SIZE = "RecyclerBinderUpdateCallback:InconsistentSize";
 
   public interface ComponentRenderer<T> {
     RenderInfo render(T t, int idx);
@@ -242,7 +244,8 @@ public class RecyclerBinderUpdateCallback<T> implements ListUpdateCallback {
       message.append("[").append(mNextData.get(i)).append("], ");
     }
     message.append("]");
-    ComponentsReporter.emitMessage(ComponentsReporter.LogLevel.ERROR, message.toString());
+    ComponentsReporter.emitMessage(
+        ComponentsReporter.LogLevel.ERROR, INCONSISTENT_SIZE, message.toString());
   }
 
   @VisibleForTesting

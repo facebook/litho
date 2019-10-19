@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 buildscript {
 
     repositories {
@@ -5,7 +21,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.3.1'
+        classpath 'com.android.tools.build:gradle:3.5.1'
         classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:${GRADLE_BINTRAY_PLUGIN_VERSION}"
         classpath "com.github.dcendents:android-maven-gradle-plugin:${ANDROID_MAVEN_GRADLE_PLUGIN_VERSION}"
         classpath "com.github.ben-manes:gradle-versions-plugin:${GRADLE_VERSIONS_PLUGIN_VERSION}"
@@ -56,10 +72,10 @@ ext.deps = [
         supportCore        : 'androidx.core:core:1.0.0',
         supportCustomView  : 'androidx.customview:customview:1.0.0',
         supportRecyclerView: 'androidx.recyclerview:recyclerview:1.0.0',
-        supportEspresso    : 'androidx.test.espresso:espresso-core:3.1.0',
-        supportEspressoIntents : 'androidx.test.espresso:espresso-intents:3.1.0',
-        supportTestRunner  : 'androidx.test:runner:1.1.0',
-        supportTestRules   : 'androidx.test:rules:1.1.0',
+        supportEspresso    : 'androidx.test.espresso:espresso-core:3.1.1',
+        supportEspressoIntents : 'androidx.test.espresso:espresso-intents:3.1.1',
+        supportTestRunner  : 'androidx.test:runner:1.1.1',
+        supportTestRules   : 'androidx.test:rules:1.1.1',
         supportMultidex    : 'androidx.multidex:multidex:2.0.0',
         supportViewPager   : 'androidx.viewpager:viewpager:1.0.0',
         // Arch
@@ -69,7 +85,7 @@ ext.deps = [
         soloader           : 'com.facebook.soloader:soloader:0.6.0',
         textlayoutbuilder  : 'com.facebook.fbui.textlayoutbuilder:textlayoutbuilder:1.5.0',
         screenshot         : 'com.facebook.testing.screenshot:core:0.5.0',
-        flipper            : 'com.facebook.flipper:flipper:0.17.0',
+        flipper            : 'com.facebook.flipper:flipper:0.23.0',
         // Annotations
         jsr305             : 'com.google.code.findbugs:jsr305:3.0.1',
         inferAnnotations   : 'com.facebook.infer.annotation:infer-annotation:0.17.0',
@@ -97,8 +113,8 @@ ext.deps = [
 // For releases, we want to depend on a stable version of Yoga.
 ext.deps.yoga =
     isSnapshot()
-        ? 'com.facebook.yoga:yoga:1.14.0' // can be a '-SNAPSHOT' release
-        : 'com.facebook.yoga:yoga:1.14.0'
+        ? 'com.facebook.yoga:yoga:1.16.0' // can be a '-SNAPSHOT' release
+        : 'com.facebook.yoga:yoga:1.16.0'
 
 // This should hopefully only serve as a temporary measure until
 // we have a proper Gradle setup for Yoga and JNI.

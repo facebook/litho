@@ -1,11 +1,11 @@
 /*
- * Copyright 2019-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.facebook.litho;
 
 import androidx.annotation.Nullable;
@@ -24,7 +25,7 @@ import androidx.annotation.Nullable;
  */
 public final class WorkContinuationInstrumenter {
 
-  /** Allows to record work being stolen across threads. */
+  /** Allows to record work being continued across threads. */
   public interface Instrumenter {
 
     /**
@@ -42,6 +43,14 @@ public final class WorkContinuationInstrumenter {
      */
     @Nullable
     Object onAskForWorkToContinue(String tag);
+    /**
+     * Tracks when some work is ready to offered for continuation.
+     *
+     * @param tag name.
+     * @return a token object that allows to track the continuation.
+     */
+    @Nullable
+    Object onOfferWorkForContinuation(String tag);
 
     /**
      * Tracks when some work is ready to be stolen.
@@ -91,7 +100,7 @@ public final class WorkContinuationInstrumenter {
   }
 
   @Nullable
-  static Object onAskForWorkToContinue(String tag) {
+  public static Object onAskForWorkToContinue(String tag) {
     final Instrumenter instrumenter = sInstance;
     if (instrumenter == null) {
       return null;
@@ -100,7 +109,16 @@ public final class WorkContinuationInstrumenter {
   }
 
   @Nullable
-  static Object onOfferWorkForContinuation(String tag, @Nullable Object token) {
+  public static Object onOfferWorkForContinuation(String tag) {
+    final Instrumenter instrumenter = sInstance;
+    if (instrumenter == null) {
+      return null;
+    }
+    return instrumenter.onOfferWorkForContinuation(tag);
+  }
+
+  @Nullable
+  public static Object onOfferWorkForContinuation(String tag, @Nullable Object token) {
     final Instrumenter instrumenter = sInstance;
     if (instrumenter == null || token == null) {
       return null;
@@ -109,7 +127,7 @@ public final class WorkContinuationInstrumenter {
   }
 
   @Nullable
-  static Object onBeginWorkContinuation(String tag, @Nullable Object token) {
+  public static Object onBeginWorkContinuation(String tag, @Nullable Object token) {
     final Instrumenter instrumenter = sInstance;
     if (instrumenter == null || token == null) {
       return null;
@@ -117,7 +135,7 @@ public final class WorkContinuationInstrumenter {
     return instrumenter.onBeginWorkContinuation(tag, token);
   }
 
-  static void onEndWorkContinuation(@Nullable Object token) {
+  public static void onEndWorkContinuation(@Nullable Object token) {
     final Instrumenter instrumenter = sInstance;
     if (instrumenter == null || token == null) {
       return;

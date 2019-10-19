@@ -1,0 +1,15 @@
+load(
+    "//tools/build_defs/oss:litho_defs.bzl",
+    "LITHO_VISIBILITY",
+    "LITHO_YOGA_TARGET",
+    "litho_android_library",
+)
+
+litho_android_library(
+    name = "yoga",
+    srcs = glob(["*.java"]),
+    visibility = LITHO_VISIBILITY,
+    exported_deps = [
+        LITHO_YOGA_TARGET,
+    ],
+)

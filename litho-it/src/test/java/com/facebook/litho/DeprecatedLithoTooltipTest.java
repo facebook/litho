@@ -1,11 +1,11 @@
 /*
- * Copyright 2014-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -42,17 +42,20 @@ public class DeprecatedLithoTooltipTest {
   private static final int MARGIN_LEFT = 20;
   private static final int MARGIN_TOP = 10;
 
+  private static final String KEY_ANCHOR = "anchor";
+
   private ComponentContext mContext;
   private Component mComponent;
   @Mock public DeprecatedLithoTooltip mLithoTooltip;
   private ComponentTree mComponentTree;
   private LithoView mLithoView;
+  private String mAnchorGlobalKey;
 
   @Before
   public void setup() {
     MockitoAnnotations.initMocks(this);
-    mContext = new ComponentContext(RuntimeEnvironment.application);
 
+    mContext = new ComponentContext(RuntimeEnvironment.application);
     mComponent =
         new InlineLayoutSpec() {
           @Override
@@ -63,7 +66,7 @@ public class DeprecatedLithoTooltipTest {
                 .marginPx(YogaEdge.TOP, MARGIN_TOP)
                 .child(
                     TestDrawableComponent.create(c)
-                        .key("anchor")
+                        .key(KEY_ANCHOR)
                         .widthPx(ANCHOR_WIDTH)
                         .heightPx(ANCHOR_HEIGHT))
                 .build();
@@ -72,20 +75,20 @@ public class DeprecatedLithoTooltipTest {
 
     mComponentTree = ComponentTree.create(mContext, mComponent).build();
 
-    Whitebox.setInternalState(
-        mComponent,
-        "mGlobalKey",
-        ComponentKeyUtils.getKeyWithSeparator(
-            mComponent.getTypeId(), Row.create(mContext).build().getTypeId()));
+    Whitebox.setInternalState(mComponent, "mGlobalKey", mComponent.getKey());
+
     mContext = ComponentContext.withComponentTree(mContext, mComponentTree);
     mContext = ComponentContext.withComponentScope(mContext, mComponent);
     mLithoView = getLithoView(mComponentTree);
+
+    mAnchorGlobalKey =
+        ComponentKeyUtils.getKeyWithSeparator(Row.create(mContext).build().getTypeId(), KEY_ANCHOR);
   }
 
   @Test
   public void testBottomLeft() {
     LithoTooltipController.showTooltip(
-        mContext, mLithoTooltip, "anchor", TooltipPosition.BOTTOM_LEFT);
+        mContext, mLithoTooltip, mAnchorGlobalKey, TooltipPosition.BOTTOM_LEFT);
 
     verify(mLithoTooltip)
         .showBottomLeft(mLithoView, MARGIN_LEFT, -HOST_HEIGHT + MARGIN_TOP + ANCHOR_HEIGHT);
@@ -94,7 +97,7 @@ public class DeprecatedLithoTooltipTest {
   @Test
   public void testCenterBottom() {
     LithoTooltipController.showTooltip(
-        mContext, mLithoTooltip, "anchor", TooltipPosition.CENTER_BOTTOM);
+        mContext, mLithoTooltip, mAnchorGlobalKey, TooltipPosition.CENTER_BOTTOM);
 
     verify(mLithoTooltip)
         .showBottomLeft(
@@ -104,7 +107,7 @@ public class DeprecatedLithoTooltipTest {
   @Test
   public void testBottomRight() {
     LithoTooltipController.showTooltip(
-        mContext, mLithoTooltip, "anchor", TooltipPosition.BOTTOM_RIGHT);
+        mContext, mLithoTooltip, mAnchorGlobalKey, TooltipPosition.BOTTOM_RIGHT);
 
     verify(mLithoTooltip)
         .showBottomLeft(
@@ -114,7 +117,7 @@ public class DeprecatedLithoTooltipTest {
   @Test
   public void testCenterRight() {
     LithoTooltipController.showTooltip(
-        mContext, mLithoTooltip, "anchor", TooltipPosition.CENTER_RIGHT);
+        mContext, mLithoTooltip, mAnchorGlobalKey, TooltipPosition.CENTER_RIGHT);
 
     verify(mLithoTooltip)
         .showBottomLeft(
@@ -124,7 +127,7 @@ public class DeprecatedLithoTooltipTest {
   @Test
   public void testTopRight() {
     LithoTooltipController.showTooltip(
-        mContext, mLithoTooltip, "anchor", TooltipPosition.TOP_RIGHT);
+        mContext, mLithoTooltip, mAnchorGlobalKey, TooltipPosition.TOP_RIGHT);
 
     verify(mLithoTooltip)
         .showBottomLeft(mLithoView, MARGIN_LEFT + ANCHOR_WIDTH, -HOST_HEIGHT + MARGIN_TOP);
@@ -133,7 +136,7 @@ public class DeprecatedLithoTooltipTest {
   @Test
   public void testCenterTop() {
     LithoTooltipController.showTooltip(
-        mContext, mLithoTooltip, "anchor", TooltipPosition.CENTER_TOP);
+        mContext, mLithoTooltip, mAnchorGlobalKey, TooltipPosition.CENTER_TOP);
 
     verify(mLithoTooltip)
         .showBottomLeft(mLithoView, MARGIN_LEFT + ANCHOR_WIDTH / 2, -HOST_HEIGHT + MARGIN_TOP);
@@ -141,7 +144,8 @@ public class DeprecatedLithoTooltipTest {
 
   @Test
   public void testTopLeft() {
-    LithoTooltipController.showTooltip(mContext, mLithoTooltip, "anchor", TooltipPosition.TOP_LEFT);
+    LithoTooltipController.showTooltip(
+        mContext, mLithoTooltip, mAnchorGlobalKey, TooltipPosition.TOP_LEFT);
 
     verify(mLithoTooltip).showBottomLeft(mLithoView, MARGIN_LEFT, -HOST_HEIGHT + MARGIN_TOP);
   }
@@ -149,7 +153,7 @@ public class DeprecatedLithoTooltipTest {
   @Test
   public void testCenterLeft() {
     LithoTooltipController.showTooltip(
-        mContext, mLithoTooltip, "anchor", TooltipPosition.CENTER_LEFT);
+        mContext, mLithoTooltip, mAnchorGlobalKey, TooltipPosition.CENTER_LEFT);
 
     verify(mLithoTooltip)
         .showBottomLeft(mLithoView, MARGIN_LEFT, -HOST_HEIGHT + MARGIN_TOP + ANCHOR_HEIGHT / 2);
@@ -157,7 +161,8 @@ public class DeprecatedLithoTooltipTest {
 
   @Test
   public void testCenter() {
-    LithoTooltipController.showTooltip(mContext, mLithoTooltip, "anchor", TooltipPosition.CENTER);
+    LithoTooltipController.showTooltip(
+        mContext, mLithoTooltip, mAnchorGlobalKey, TooltipPosition.CENTER);
 
     verify(mLithoTooltip)
         .showBottomLeft(

@@ -1,11 +1,11 @@
 /*
- * Copyright 2014-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -254,7 +254,10 @@ public class LithoView extends ComponentHost {
   protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
     widthMeasureSpec =
         DoubleMeasureFixUtil.correctWidthSpecForAndroidDoubleMeasureBug(
-            getResources(), getContext().getPackageManager(), widthMeasureSpec);
+            getResources(),
+            getContext().getPackageManager(),
+            widthMeasureSpec,
+            ComponentsConfiguration.shouldCacheDeviceTypeOnDoubleMeasure);
 
     // mAnimatedWidth/mAnimatedHeight >= 0 if something is driving a width/height animation.
     final boolean animating = mAnimatedWidth != -1 || mAnimatedHeight != -1;
@@ -894,11 +897,6 @@ public class LithoView extends ComponentHost {
   }
 
   private void maybeLogInvalidZeroHeight() {
-    final ComponentsLogger logger = getComponentContext().getLogger();
-    if (logger == null) {
-      return;
-    }
-
     if (mComponentTree != null
         && mComponentTree.getMainThreadLayoutState() != null
         && mComponentTree.getMainThreadLayoutState().mLayoutRoot == null) {
@@ -933,18 +931,13 @@ public class LithoView extends ComponentHost {
     messageBuilder.append(mPreviousComponentSimpleName);
     messageBuilder.append(", view=");
     messageBuilder.append(LithoViewTestHelper.toDebugString(this));
-    logError(logger, messageBuilder.toString(), logParams);
+    logError(messageBuilder.toString(), ZERO_HEIGHT_LOG, logParams);
   }
 
   private void logSetAlreadyAttachedComponentTree(
       ComponentTree currentComponentTree,
       ComponentTree newComponentTree,
       ComponentLogParams logParams) {
-    final ComponentsLogger logger = getComponentContext().getLogger();
-    if (logger == null) {
-      return;
-    }
-
     final StringBuilder messageBuilder = new StringBuilder();
     messageBuilder.append(logParams.logProductId);
     messageBuilder.append("-");
@@ -957,14 +950,15 @@ public class LithoView extends ComponentHost {
     messageBuilder.append(currentComponentTree.getSimpleName());
     messageBuilder.append(", newComponent=");
     messageBuilder.append(newComponentTree.getSimpleName());
-    logError(logger, messageBuilder.toString(), logParams);
+    logError(messageBuilder.toString(), SET_ALREADY_ATTACHED_COMPONENT_TREE, logParams);
   }
 
-  private static void logError(
-      ComponentsLogger logger, String message, ComponentLogParams logParams) {
-    final ComponentsLogger.LogLevel logLevel =
-        logParams.failHarder ? ComponentsLogger.LogLevel.FATAL : ComponentsLogger.LogLevel.ERROR;
-    logger.emitMessage(logLevel, message, logParams.samplingFrequency);
+  private static void logError(String message, String categoryKey, ComponentLogParams logParams) {
+    final ComponentsReporter.LogLevel logLevel =
+        logParams.failHarder
+            ? ComponentsReporter.LogLevel.FATAL
+            : ComponentsReporter.LogLevel.ERROR;
+    ComponentsReporter.emitMessage(logLevel, categoryKey, message, logParams.samplingFrequency);
   }
 
   @DoNotStrip

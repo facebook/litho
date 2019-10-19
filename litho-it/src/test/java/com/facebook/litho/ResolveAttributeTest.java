@@ -1,11 +1,11 @@
 /*
- * Copyright 2014-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -53,7 +53,7 @@ public class ResolveAttributeTest {
   public void testResolveDrawableAttribute() {
     Column column = Column.create(mContext).backgroundAttr(testAttrDrawable, 0).build();
 
-    InternalNode node = Layout.create(mContext, column);
+    InternalNode node = createAndGetInternalNode(column);
 
     Drawable d = mContext.getResources().getDrawable(test_bg);
     ComparableDrawableWrapper comparable = (ComparableDrawableWrapper) node.getBackground();
@@ -65,7 +65,7 @@ public class ResolveAttributeTest {
   public void testResolveDimenAttribute() {
     Column column = Column.create(mContext).widthAttr(testAttrDimen, default_dimen).build();
 
-    InternalNode node = Layout.create(mContext, column);
+    InternalNode node = createAndGetInternalNode(column);
     node.calculateLayout();
 
     int dimen = mContext.getResources().getDimensionPixelSize(R.dimen.test_dimen);
@@ -76,7 +76,7 @@ public class ResolveAttributeTest {
   public void testDefaultDrawableAttribute() {
     Column column = Column.create(mContext).backgroundAttr(undefinedAttrDrawable, test_bg).build();
 
-    InternalNode node = Layout.create(mContext, column);
+    InternalNode node = createAndGetInternalNode(column);
 
     Drawable d = mContext.getResources().getDrawable(test_bg);
     ComparableDrawableWrapper comparable = (ComparableDrawableWrapper) node.getBackground();
@@ -88,7 +88,7 @@ public class ResolveAttributeTest {
   public void testDefaultDimenAttribute() {
     Column column = Column.create(mContext).widthAttr(undefinedAttrDimen, test_dimen).build();
 
-    InternalNode node = Layout.create(mContext, column);
+    InternalNode node = createAndGetInternalNode(column);
     node.calculateLayout();
 
     int dimen = mContext.getResources().getDimensionPixelSize(R.dimen.test_dimen);
@@ -99,7 +99,7 @@ public class ResolveAttributeTest {
   public void testFloatDimenWidthAttribute() {
     Column column = Column.create(mContext).widthAttr(undefinedAttrDimen, test_dimen_float).build();
 
-    InternalNode node = Layout.create(mContext, column);
+    InternalNode node = createAndGetInternalNode(column);
     node.calculateLayout();
 
     int dimen = mContext.getResources().getDimensionPixelSize(test_dimen_float);
@@ -111,10 +111,17 @@ public class ResolveAttributeTest {
     Column column =
         Column.create(mContext).paddingAttr(LEFT, undefinedAttrDimen, test_dimen_float).build();
 
-    InternalNode node = Layout.create(mContext, column);
+    InternalNode node = createAndGetInternalNode(column);
     node.calculateLayout();
 
     int dimen = mContext.getResources().getDimensionPixelSize(test_dimen_float);
     assertThat(node.getPaddingLeft()).isEqualTo(dimen);
+  }
+
+  private InternalNode createAndGetInternalNode(Component component) {
+    final ComponentContext c = new ComponentContext(mContext);
+    c.setLayoutStateContextForTesting();
+
+    return LayoutState.createLayout(c, component);
   }
 }

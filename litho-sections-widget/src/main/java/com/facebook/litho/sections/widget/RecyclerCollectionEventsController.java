@@ -1,11 +1,11 @@
 /*
- * Copyright 2014-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -31,7 +31,7 @@ import com.facebook.litho.widget.RecyclerEventsController;
 import com.facebook.litho.widget.SmoothScrollAlignmentType;
 import com.facebook.litho.widget.SnapUtil;
 import com.facebook.litho.widget.StaggeredGridLayoutHelper;
-import java.lang.ref.WeakReference;
+import javax.annotation.Nullable;
 
 /**
  * An controller that can be passed as {@link com.facebook.litho.annotations.Prop} to a
@@ -39,7 +39,7 @@ import java.lang.ref.WeakReference;
  */
 public class RecyclerCollectionEventsController extends RecyclerEventsController {
 
-  private WeakReference<SectionTree> mSectionTree;
+  @Nullable private SectionTree mSectionTree;
   private int mSnapMode = SNAP_NONE;
   private int mFirstCompletelyVisibleItemPosition = 0;
   private int mLastCompletelyVisibleItemPosition = 0;
@@ -56,12 +56,12 @@ public class RecyclerCollectionEventsController extends RecyclerEventsController
    * @param showSpinner
    */
   public void requestRefresh(boolean showSpinner) {
-    if (mSectionTree != null && mSectionTree.get() != null) {
+    if (mSectionTree != null) {
       if (showSpinner) {
         showRefreshing();
       }
 
-      mSectionTree.get().refresh();
+      mSectionTree.refresh();
     }
   }
 
@@ -122,6 +122,19 @@ public class RecyclerCollectionEventsController extends RecyclerEventsController
     }
 
     recyclerView.scrollBy(dx, dy);
+  }
+
+  /**
+   * Send the {@link RecyclerCollectionComponent} a request to scroll the content by the given
+   * margins, animate a scroll by the given amount of pixels along either axis.
+   */
+  public void requestSmoothScrollBy(int dx, int dy) {
+    final RecyclerView recyclerView = getRecyclerView();
+    if (recyclerView == null) {
+      return;
+    }
+
+    recyclerView.smoothScrollBy(dx, dy);
   }
 
   /**
@@ -224,7 +237,7 @@ public class RecyclerCollectionEventsController extends RecyclerEventsController
   }
 
   void setSectionTree(SectionTree sectionTree) {
-    mSectionTree = new WeakReference<>(sectionTree);
+    mSectionTree = sectionTree;
   }
 
   void setSnapMode(int snapMode) {

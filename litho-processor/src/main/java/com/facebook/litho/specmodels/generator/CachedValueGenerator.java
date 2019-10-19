@@ -1,11 +1,11 @@
 /*
- * Copyright 2014-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,6 +20,7 @@ import com.facebook.litho.annotations.OnCalculateCachedValue;
 import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.DelegateMethod;
 import com.facebook.litho.specmodels.model.MethodParamModel;
+import com.facebook.litho.specmodels.model.MethodParamModelUtils;
 import com.facebook.litho.specmodels.model.SpecMethodModel;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.SpecModelUtils;
@@ -29,8 +30,11 @@ import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
+import com.squareup.javapoet.TypeVariableName;
 import java.lang.annotation.Annotation;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.lang.model.element.Modifier;
 
 /** Class that generates the cached value methods for a Component. */
@@ -175,7 +179,10 @@ public class CachedValueGenerator {
 
     MethodSpec.Builder constructor = MethodSpec.constructorBuilder();
 
+    final Set<TypeVariableName> typeVariables = new HashSet<>();
+
     for (MethodParamModel param : onCalculateCachedValueMethod.methodParams) {
+      typeVariables.addAll(MethodParamModelUtils.getTypeVariables(param));
       typeSpec.addField(
           FieldSpec.builder(param.getTypeName(), param.getName(), Modifier.PRIVATE, Modifier.FINAL)
               .build());
@@ -184,6 +191,7 @@ public class CachedValueGenerator {
           .addStatement("this.$L = $L", param.getName(), param.getName());
     }
 
+    typeSpec.addTypeVariables(typeVariables);
     typeSpec.addMethod(constructor.build());
 
     final int paramSize = onCalculateCachedValueMethod.methodParams.size();

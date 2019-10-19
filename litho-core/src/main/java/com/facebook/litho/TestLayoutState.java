@@ -1,11 +1,11 @@
 /*
- * Copyright 2019-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.facebook.litho;
 
 import static com.facebook.litho.Component.isLayoutSpecWithSizeSpec;
 import static com.facebook.litho.Component.isMountSpec;
 import static com.facebook.litho.ComponentContext.NULL_LAYOUT;
 
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.yoga.YogaDirection;
 
 /**
@@ -58,6 +58,23 @@ public class TestLayoutState {
     return root;
   }
 
+  /** Replacement for the deprecated TestComponentContext#newLayoutBuilder() */
+  static InternalNode newImmediateLayoutBuilder(final ComponentContext c, Component component) {
+    if (component.canResolve()) {
+      if (component instanceof Wrapper) {
+        return createImmediateLayout(c, component);
+      }
+      return LayoutState.createLayout(c, component);
+    }
+
+    final InternalNode node = InternalNodeUtils.create(c);
+    component.updateInternalChildState(c);
+
+    node.appendComponent(new TestComponent(component));
+
+    return node;
+  }
+
   static InternalNode createImmediateLayout(final ComponentContext c, final Component component) {
 
     final InternalNode node;
@@ -70,21 +87,25 @@ public class TestLayoutState {
     final TreeProps treeProps = c.getTreeProps();
     c.setTreeProps(component.getTreePropsForChildren(c, treeProps));
 
-    if (component.canResolve()) {
+    if (component instanceof Wrapper) {
+      Component delegate = ((Wrapper) component).delegate;
+      if (delegate == null) {
+        return NULL_LAYOUT;
+      } else {
+        return newImmediateLayoutBuilder(c, delegate);
+      }
+    } else if (component.canResolve()) {
       c.setTreeProps(c.getTreePropsCopy());
       node = (InternalNode) component.resolve(c);
-    } else if (ComponentsConfiguration.isConsistentComponentHierarchyExperimentEnabled
-        && isMountSpec(component)) {
-      node = c.newLayoutBuilder(0, 0);
+    } else if (isMountSpec(component)) {
+      node = InternalNodeUtils.create(c);
     } else {
       final Component root = component.createComponentLayout(c);
       if (root == null || root.getId() <= 0) {
         node = null;
       } else {
         node = resolveImmediateSubTree(c, root);
-        if (ComponentsConfiguration.isConsistentComponentHierarchyExperimentEnabled
-            && Component.isLayoutSpec(root)
-            && root.canResolve()) {
+        if (Component.isLayoutSpec(root) && root.canResolve()) {
           node.appendComponent(root);
         }
       }
@@ -113,7 +134,14 @@ public class TestLayoutState {
   }
 
   static InternalNode resolveImmediateSubTree(final ComponentContext c, Component component) {
-    if (component.canResolve()) {
+    if (component instanceof Wrapper) {
+      Component delegate = ((Wrapper) component).delegate;
+      if (delegate == null) {
+        return NULL_LAYOUT;
+      } else {
+        return newImmediateLayoutBuilder(c, delegate);
+      }
+    } else if (component.canResolve()) {
       return LayoutState.resolve(c, component);
     }
 

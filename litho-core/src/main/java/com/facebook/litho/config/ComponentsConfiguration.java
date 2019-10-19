@@ -1,11 +1,11 @@
 /*
- * Copyright 2014-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,10 +21,10 @@ import static android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH;
 import static android.os.Build.VERSION_CODES.JELLY_BEAN_MR1;
 import static android.os.Build.VERSION_CODES.LOLLIPOP_MR1;
 
+import android.content.Context;
 import androidx.annotation.Nullable;
 import com.facebook.litho.BuildConfig;
 import com.facebook.litho.perfboost.LithoPerfBoosterFactory;
-import com.facebook.yoga.YogaLogger;
 
 /**
  * Hi there, traveller! This configuration class is not meant to be used by end-users of Litho. It
@@ -34,8 +34,6 @@ import com.facebook.yoga.YogaLogger;
  * <p>These values are safe defaults and should not require manual changes.
  */
 public class ComponentsConfiguration {
-
-  public static YogaLogger YOGA_LOGGER;
 
   /**
    * Indicates whether this is an internal build. Note that the implementation of <code>BuildConfig
@@ -121,20 +119,11 @@ public class ComponentsConfiguration {
    */
   public static @Nullable LayoutThreadPoolConfiguration threadPoolForBackgroundThreadsConfig = null;
 
-  /** If true, a single thread pool will be used instead of creating one per RecyclerBinder. */
-  public static boolean useSingleThreadPool = false;
-
-  /**
-   * If true, the async range calculation isn't blocked on the first item finishing layout and it
-   * will schedule one layout per bg thread during init range.
-   */
-  public static boolean asyncInitRange = false;
-
   /**
    * If true, the async range calculation isn't blocked on the first item finishing layout and it
    * will schedule as many bg layouts as it can while init range completes.
    */
-  public static boolean bgScheduleAllInitRange;
+  public static boolean asyncInitRange = false;
 
   /**
    * If non-null, a thread pool will be used for async layouts instead of a single layout thread.
@@ -171,6 +160,12 @@ public class ComponentsConfiguration {
 
   /** Sets if is reconciliation is enabled */
   public static boolean isReconciliationEnabled = false;
+
+  /**
+   * Sets if layout diffing is enabled. This should be used in conjugation with
+   * {@link#isReconciliationEnabled}.
+   */
+  public static boolean isLayoutDiffingEnabled = true;
 
   /** specifies if the ComparableAnimatedColorDrawable should be initialized in a lazy way */
   public static boolean lazyComparableAnimatedColorDrawable = false;
@@ -215,7 +210,7 @@ public class ComponentsConfiguration {
   public static boolean isReleaseComponentTreeInRecyclerBinder;
 
   /** If true, add the root component of LayoutSpecs to InternalNodes */
-  public static boolean isConsistentComponentHierarchyExperimentEnabled = false;
+  public static boolean isConsistentComponentHierarchyExperimentEnabled = true;
 
   /**
    * If true the framework will use the refactored implementation of
@@ -223,9 +218,26 @@ public class ComponentsConfiguration {
    */
   public static boolean isRefactoredLayoutCreationEnabled = false;
 
+  public static int percentageSleepLayoutCalculation = 0;
+
   /**
-   * Allows RecyclerBinder to apply ready async batches immediately before mounting. See
-   * RecyclerBinder.mount for more info.
+   * If true, the return value of {@link
+   * com.facebook.litho.TransitionUtils#areTransitionsEnabled(Context)} will be cached in {@link
+   * com.facebook.litho.ComponentTree}
    */
-  public static boolean applyReadyBatchesInMount = false;
+  public static boolean isTransitionCheckCached = false;
+
+  /**
+   * When enabled reconciliation will use the deep clone method of the InternalNode with the
+   * simplified implementation of shallow copy.
+   */
+  public static boolean shouldUseDeepCloneDuringReconciliation = false;
+
+  public static boolean useVanillaJNI = false;
+
+  /**
+   * Cache the device type to eliminate expensive package manager calls when using the
+   * DoubleMeasureFixUtil.
+   */
+  public static boolean shouldCacheDeviceTypeOnDoubleMeasure = false;
 }

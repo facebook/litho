@@ -1,11 +1,11 @@
 /*
- * Copyright 2014-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -39,6 +39,7 @@ import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.yoga.YogaMeasureFunction;
 import com.facebook.yoga.YogaMeasureOutput;
 import com.facebook.yoga.YogaNode;
+import com.facebook.yoga.YogaNodeFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -82,7 +83,7 @@ public class ComponentLifecycleTest {
           @Override
           public InternalNode create(ComponentContext componentContext) {
             InternalNode layout = spy(new DefaultInternalNode(componentContext));
-            YogaNode node = YogaNode.create();
+            YogaNode node = YogaNodeFactory.create();
             node.setData(layout);
             return layout;
           }
@@ -95,7 +96,7 @@ public class ComponentLifecycleTest {
 
     mDiffNode = mock(DiffNode.class);
     mNode = mock(DefaultInternalNode.class);
-    mYogaNode = YogaNode.create();
+    mYogaNode = YogaNodeFactory.create();
     mYogaNode.setData(mNode);
 
     when(mNode.getLastWidthSpec()).thenReturn(-1);
@@ -104,7 +105,11 @@ public class ComponentLifecycleTest {
     when(mDiffNode.getLastMeasuredHeight()).thenReturn(-1f);
 
     StateHandler stateHandler = mock(StateHandler.class);
-    mContext = spy(new ComponentContext(RuntimeEnvironment.application, stateHandler));
+
+    final ComponentContext c = new ComponentContext(RuntimeEnvironment.application, stateHandler);
+    c.setLayoutStateContextForTesting();
+    mContext = spy(c);
+    when(mNode.getContext()).thenReturn(mContext);
 
     mNestedTreeWidthSpec = SizeSpec.makeSizeSpec(400, SizeSpec.EXACTLY);
     mNestedTreeHeightSpec = SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY);
@@ -157,7 +162,6 @@ public class ComponentLifecycleTest {
         setUpSpyComponentForCreateLayout(true /* isMountSpec */, false /* canMeasure */);
     InternalNode node = LayoutState.createLayout(mContext, component, true);
 
-    verify(component).onCreateLayout(mContext);
     verify(node).appendComponent(component);
     verify(node, never()).setMeasureFunction(any(YogaMeasureFunction.class));
     verify(component).onPrepare(mContext);
@@ -169,7 +173,6 @@ public class ComponentLifecycleTest {
         setUpSpyComponentForCreateLayout(true /* isMountSpec */, false /* canMeasure */);
     InternalNode node = LayoutState.createLayout(mContext, component, false);
 
-    verify(component).onCreateLayout(mContext);
     verify(node).appendComponent(component);
     verify(node, never()).setMeasureFunction(any(YogaMeasureFunction.class));
     verify(component).onPrepare(mContext);
@@ -181,7 +184,6 @@ public class ComponentLifecycleTest {
         setUpSpyComponentForCreateLayout(true /* isMountSpec */, true /* canMeasure */);
     InternalNode node = LayoutState.createLayout(mContext, component, true);
 
-    verify(component).onCreateLayout(mContext);
     verify(node).appendComponent(component);
     verify(node).setMeasureFunction(any(YogaMeasureFunction.class));
     verify(component).onPrepare(mContext);
@@ -193,7 +195,6 @@ public class ComponentLifecycleTest {
         setUpSpyComponentForCreateLayout(true /* isMountSpec */, true /* canMeasure */);
     InternalNode node = LayoutState.createLayout(mContext, component, false);
 
-    verify(component).onCreateLayout(mContext);
     verify(node).appendComponent(component);
     verify(node).setMeasureFunction(any(YogaMeasureFunction.class));
     verify(component).onPrepare(mContext);
@@ -254,7 +255,6 @@ public class ComponentLifecycleTest {
 
   @Test
   public void testOnShouldCreateLayoutWithNewSizeSpec_FirstCall() {
-    ComponentsConfiguration.isReconciliationEnabled = true;
     ComponentsConfiguration.enableShouldCreateLayoutWithNewSizeSpec = true;
 
     Component component;
@@ -277,12 +277,10 @@ public class ComponentLifecycleTest {
         .onCreateLayoutWithSizeSpec(mContext, mContext.getWidthSpec(), mContext.getHeightSpec());
 
     ComponentsConfiguration.enableShouldCreateLayoutWithNewSizeSpec = false;
-    ComponentsConfiguration.isReconciliationEnabled = false;
   }
 
   @Test
   public void testOnShouldCreateLayoutWithNewSizeSpec_shouldUseCache() {
-    ComponentsConfiguration.isReconciliationEnabled = true;
     ComponentsConfiguration.enableShouldCreateLayoutWithNewSizeSpec = true;
 
     Component component;
@@ -333,12 +331,10 @@ public class ComponentLifecycleTest {
     LayoutState.remeasureTree(resolved, 100, 100);
 
     ComponentsConfiguration.enableShouldCreateLayoutWithNewSizeSpec = false;
-    ComponentsConfiguration.isReconciliationEnabled = false;
   }
 
   @Test
   public void testOnShouldCreateLayoutWithNewSizeSpec_shouldNotUseCache() {
-    ComponentsConfiguration.isReconciliationEnabled = true;
     ComponentsConfiguration.enableShouldCreateLayoutWithNewSizeSpec = true;
 
     Component component;
@@ -385,7 +381,6 @@ public class ComponentLifecycleTest {
         mContext, component, 100, 100, holder, null, null, null);
 
     ComponentsConfiguration.enableShouldCreateLayoutWithNewSizeSpec = false;
-    ComponentsConfiguration.isReconciliationEnabled = false;
   }
 
   @Test
@@ -512,6 +507,7 @@ public class ComponentLifecycleTest {
       ComponentContext context, TestBaseComponent component) {
     Component spy = spy(component);
     when(spy.getScopedContext()).thenReturn(context);
+    when(spy.makeShallowCopy()).thenReturn(spy);
     return spy;
   }
 

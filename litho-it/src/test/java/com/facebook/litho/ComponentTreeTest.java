@@ -1,11 +1,11 @@
 /*
- * Copyright 2014-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -754,7 +754,7 @@ public class ComponentTreeTest {
     root1.testId = 1;
 
     ThreadPoolLayoutHandler handler =
-        new ThreadPoolLayoutHandler(new LayoutThreadPoolConfigurationImpl(1, 1, 5));
+        ThreadPoolLayoutHandler.getNewInstance(new LayoutThreadPoolConfigurationImpl(1, 1, 5));
 
     ComponentTree componentTree =
         ComponentTree.create(mContext, root1).layoutThreadHandler(handler).build();
@@ -786,7 +786,7 @@ public class ComponentTreeTest {
           @Override
           public void run() {
             assertEquals(1, layoutStateFuture.getWaitingCount());
-            layoutStateFuture.runAndGet();
+            layoutStateFuture.runAndGet(LayoutState.CalculateLayoutSource.SET_ROOT_ASYNC);
             assertEquals(0, layoutStateFuture.getWaitingCount());
             assertEquals(0, componentTree.getLayoutStateFutures().size());
           }
@@ -800,7 +800,7 @@ public class ComponentTreeTest {
     root1.testId = 1;
 
     ThreadPoolLayoutHandler handler =
-        new ThreadPoolLayoutHandler(new LayoutThreadPoolConfigurationImpl(1, 1, 5));
+        ThreadPoolLayoutHandler.getNewInstance(new LayoutThreadPoolConfigurationImpl(1, 1, 5));
 
     ComponentTree componentTree =
         ComponentTree.create(mContext, root1).layoutThreadHandler(handler).build();
@@ -868,7 +868,7 @@ public class ComponentTreeTest {
     root1.testId = 1;
 
     ThreadPoolLayoutHandler handler =
-        new ThreadPoolLayoutHandler(new LayoutThreadPoolConfigurationImpl(1, 1, 5));
+        ThreadPoolLayoutHandler.getNewInstance(new LayoutThreadPoolConfigurationImpl(1, 1, 5));
 
     ComponentTree componentTree =
         ComponentTree.create(mContext, root1).layoutThreadHandler(handler).build();

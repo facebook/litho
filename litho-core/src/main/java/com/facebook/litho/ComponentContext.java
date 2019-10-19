@@ -1,11 +1,11 @@
 /*
- * Copyright 2014-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -29,6 +29,7 @@ import androidx.annotation.StringRes;
 import androidx.annotation.StyleRes;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.infer.annotation.ThreadConfined;
+import com.facebook.litho.LayoutState.LayoutStateContext;
 import com.facebook.litho.config.ComponentsConfiguration;
 
 /**
@@ -39,14 +40,12 @@ public class ComponentContext {
 
   public static final InternalNode NULL_LAYOUT = new NoOpInternalNode();
 
+  static final String NO_SCOPE_EVENT_HANDLER = "ComponentContext:NoScopeEventHandler";
   private final Context mContext;
   // TODO: T48229786 move to CT
   private final @Nullable String mLogTag;
   private final @Nullable ComponentsLogger mLogger;
   private final @Nullable StateHandler mStateHandler;
-
-  /** TODO: (T38237241) remove the usage of the key handler post the nested tree experiment */
-  private final @Nullable KeyHandler mKeyHandler;
 
   private @Nullable String mNoStateUpdatesMethod;
 
@@ -81,14 +80,19 @@ public class ComponentContext {
   @ThreadConfined(ThreadConfined.ANY)
   private int mDefStyleAttr = 0;
 
-  private @Nullable ComponentTree.LayoutStateFuture mLayoutStateFuture;
+  @ThreadConfined(ThreadConfined.ANY)
+  private @Nullable LayoutStateContext mLayoutStateContext;
 
   public ComponentContext(Context context) {
     this(context, null, null, null);
   }
 
+  public ComponentContext(Context context, LayoutStateContext layoutStateContext) {
+    this(context, null, null, null);
+  }
+
   public ComponentContext(Context context, StateHandler stateHandler) {
-    this(context, null, null, stateHandler, null, null);
+    this(context, null, null, stateHandler, null);
   }
 
   /**
@@ -108,7 +112,7 @@ public class ComponentContext {
       @Nullable String logTag,
       @Nullable ComponentsLogger logger,
       @Nullable TreeProps treeProps) {
-    this(context, logTag, logger, null, null, treeProps);
+    this(context, logTag, logger, null, treeProps);
   }
 
   public ComponentContext(
@@ -116,7 +120,6 @@ public class ComponentContext {
       @Nullable String logTag,
       @Nullable ComponentsLogger logger,
       @Nullable StateHandler stateHandler,
-      @Nullable KeyHandler keyHandler,
       @Nullable TreeProps treeProps) {
 
     if (logger != null && logTag == null) {
@@ -130,24 +133,17 @@ public class ComponentContext {
     mLogger = logger;
     mLogTag = logTag;
     mStateHandler = stateHandler;
-    mKeyHandler = keyHandler;
   }
 
   public ComponentContext(ComponentContext context) {
-    this(
-        context,
-        context.mStateHandler,
-        context.mKeyHandler,
-        context.mTreeProps,
-        context.mLayoutStateFuture);
+    this(context, context.mStateHandler, context.mTreeProps, context.mLayoutStateContext);
   }
 
   public ComponentContext(
       ComponentContext context,
       @Nullable StateHandler stateHandler,
-      @Nullable KeyHandler keyHandler,
       @Nullable TreeProps treeProps,
-      @Nullable ComponentTree.LayoutStateFuture layoutStateFuture) {
+      @Nullable LayoutStateContext layoutStateContext) {
 
     mContext = context.mContext;
     mResourceCache = context.mResourceCache;
@@ -156,6 +152,7 @@ public class ComponentContext {
     mHeightSpec = context.mHeightSpec;
     mComponentScope = context.mComponentScope;
     mComponentTree = context.mComponentTree;
+    mLayoutStateContext = layoutStateContext;
     mLogger = context.mLogger;
     mLogTag =
         context.mLogTag != null || mComponentTree == null
@@ -163,13 +160,32 @@ public class ComponentContext {
             : mComponentTree.getSimpleName();
 
     mStateHandler = stateHandler != null ? stateHandler : context.mStateHandler;
-    mKeyHandler = keyHandler != null ? keyHandler : context.mKeyHandler;
     mTreeProps = treeProps != null ? treeProps : context.mTreeProps;
-    mLayoutStateFuture = layoutStateFuture != null ? layoutStateFuture : context.mLayoutStateFuture;
   }
 
   ComponentContext makeNewCopy() {
     return new ComponentContext(this);
+  }
+
+  void setLayoutStateContext(LayoutStateContext layoutStateContext) {
+    mLayoutStateContext = layoutStateContext;
+  }
+
+  public void setLayoutStateContextForTesting() {
+    setLayoutStateContext(LayoutStateContext.getTestInstance(this));
+  }
+
+  /**
+   * Returns true if this method is called during a layout state calculation and the LayoutState
+   * reference hasn't been nullified.
+   */
+  boolean hasLayoutState() {
+    return mLayoutStateContext != null && mLayoutStateContext.getLayoutState() != null;
+  }
+
+  @Nullable
+  LayoutState getLayoutState() {
+    return mLayoutStateContext == null ? null : mLayoutStateContext.getLayoutState();
   }
 
   public final Context getAndroidContext() {
@@ -215,7 +231,7 @@ public class ComponentContext {
   @Nullable
   @VisibleForTesting
   public ComponentTree.LayoutStateFuture getLayoutStateFuture() {
-    return mLayoutStateFuture;
+    return mLayoutStateContext == null ? null : mLayoutStateContext.getLayoutStateFuture();
   }
 
   /**
@@ -340,11 +356,22 @@ public class ComponentContext {
   }
 
   EventHandler newEventHandler(int id) {
+    checkNotNullScope();
     return new EventHandler(mComponentScope, id);
   }
 
   public <E> EventHandler<E> newEventHandler(int id, Object[] params) {
+    checkNotNullScope();
     return new EventHandler<>(mComponentScope, id, params);
+  }
+
+  private void checkNotNullScope() {
+    if (mComponentScope == null) {
+      ComponentsReporter.emitMessage(
+          ComponentsReporter.LogLevel.ERROR,
+          NO_SCOPE_EVENT_HANDLER,
+          "Creating event handler without scope.");
+    }
   }
 
   @Nullable
@@ -370,36 +397,6 @@ public class ComponentContext {
     return new EventTrigger<>(parentKey, id, childKey);
   }
 
-  InternalNode newLayoutBuilder(@AttrRes int defStyleAttr, @StyleRes int defStyleRes) {
-    final InternalNode node = InternalNodeUtils.create(this);
-    applyStyle(node, defStyleAttr, defStyleRes);
-    return node;
-  }
-
-  InternalNode newLayoutBuilder(
-      Component component, @AttrRes int defStyleAttr, @StyleRes int defStyleRes) {
-    final InternalNode layoutCreatedInWillRender = component.consumeLayoutCreatedInWillRender();
-    if (layoutCreatedInWillRender != null) {
-      return layoutCreatedInWillRender;
-    }
-
-    component = component.getThreadSafeInstance();
-
-    component.updateInternalChildState(this);
-
-    if (ComponentsConfiguration.isDebugModeEnabled) {
-      DebugComponent.applyOverrides(this, component);
-    }
-
-    final InternalNode node =
-        LayoutState.createLayout(component.getScopedContext(), component, false);
-    if (node != NULL_LAYOUT) {
-      applyStyle(node, defStyleAttr, defStyleRes);
-    }
-
-    return node;
-  }
-
   int getWidthSpec() {
     return mWidthSpec;
   }
@@ -421,11 +418,9 @@ public class ComponentContext {
     return mStateHandler;
   }
 
-  @Nullable
-  KeyHandler getKeyHandler() {
-    return mKeyHandler;
-  }
-
+  /**
+   * TODO: (T55170222) Remove, use {@link InternalNodeUtils#applyStyles(InternalNode, int, int)}.
+   */
   void applyStyle(InternalNode node, @AttrRes int defStyleAttr, @StyleRes int defStyleRes) {
     if (defStyleAttr != 0 || defStyleRes != 0) {
       setDefStyle(defStyleAttr, defStyleRes);
@@ -442,10 +437,9 @@ public class ComponentContext {
 
   static ComponentContext withComponentTree(ComponentContext context, ComponentTree componentTree) {
     ComponentContext componentContext =
-        new ComponentContext(context, new StateHandler(), null, null, null);
+        new ComponentContext(context, new StateHandler(), null, null);
     componentContext.mComponentTree = componentTree;
     componentContext.mComponentScope = null;
-    componentContext.mLayoutStateFuture = null;
 
     return componentContext;
   }
@@ -477,11 +471,11 @@ public class ComponentContext {
   }
 
   boolean wasLayoutCanceled() {
-    return mLayoutStateFuture != null && mLayoutStateFuture.isReleased();
+    return mLayoutStateContext == null ? false : mLayoutStateContext.isLayoutReleased();
   }
 
   boolean wasLayoutInterrupted() {
-    return mLayoutStateFuture != null && mLayoutStateFuture.isInterrupted();
+    return mLayoutStateContext == null ? false : mLayoutStateContext.isLayoutInterrupted();
   }
 
   public boolean isReconciliationEnabled() {

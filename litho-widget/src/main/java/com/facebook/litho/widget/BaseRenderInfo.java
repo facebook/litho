@@ -1,11 +1,11 @@
 /*
- * Copyright 2014-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,6 +17,7 @@
 package com.facebook.litho.widget;
 
 import com.facebook.litho.Component;
+import com.facebook.litho.ComponentsLogger;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.RenderCompleteEvent;
 import com.facebook.litho.viewcompat.ViewBinder;
@@ -115,6 +116,26 @@ public abstract class BaseRenderInfo implements RenderInfo {
   public EventHandler<RenderCompleteEvent> getRenderCompleteEventHandler() {
     // TODO(T28620590): Support RenderCompleteEvent handler for ViewRenderInfo
     throw new UnsupportedOperationException();
+  }
+
+  /**
+   * @return Optional {@link ComponentsLogger} if {@link RenderInfo} was created through {@link
+   *     ComponentRenderInfo#create()}, null otherwise
+   */
+  @Override
+  @Nullable
+  public ComponentsLogger getComponentsLogger() {
+    return null;
+  }
+
+  /**
+   * @return Optional identifier for logging if {@link RenderInfo} was created through {@link
+   *     ComponentRenderInfo#create()}, null otherwise
+   */
+  @Nullable
+  @Override
+  public String getLogTag() {
+    return null;
   }
 
   /**

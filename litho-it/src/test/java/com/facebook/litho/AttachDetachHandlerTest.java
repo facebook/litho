@@ -1,11 +1,11 @@
 /*
- * Copyright 2014-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,6 +26,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import com.facebook.litho.LayoutState.LayoutStateContext;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.testing.TestAttachDetachComponent;
@@ -224,46 +225,53 @@ public class AttachDetachHandlerTest {
 
   @Test
   public void testMultipleSetSizeSpecWithNestedTree() {
-    ComponentsConfiguration.isReconciliationEnabled = true;
     ComponentsConfiguration.enableShouldCreateLayoutWithNewSizeSpec = true;
+
+    final ComponentContext measureContext = new ComponentContext(mContext);
+    measureContext.setLayoutStateContextForTesting();
 
     final Component c1 = spy(TestAttachDetachComponent.create(mContext).build());
     final Component c2 = spy(TestAttachDetachComponent.create(mContext).build());
     final Component component =
         spy(TestAttachDetachComponent.create(mContext, true, c1, c2).build());
-    assertThat(Component.isNestedTree(component)).isTrue();
+    assertThat(Component.isNestedTree(measureContext, component)).isTrue();
 
     testSetSizeSpec(mContext, component, 20);
 
     ComponentsConfiguration.enableShouldCreateLayoutWithNewSizeSpec = false;
-    ComponentsConfiguration.isReconciliationEnabled = false;
   }
 
   @Test
   public void testMultipleSetRootAndSizeSpecWithNestedTree() {
-    ComponentsConfiguration.isReconciliationEnabled = true;
     ComponentsConfiguration.enableShouldCreateLayoutWithNewSizeSpec = true;
+
+    final ComponentContext measureContext = new ComponentContext(mContext);
+    measureContext.setLayoutStateContextForTesting();
 
     final Component c1 = spy(TestAttachDetachComponent.create(mContext).build());
     final Component c2 = spy(TestAttachDetachComponent.create(mContext).build());
     final Component component =
         spy(TestAttachDetachComponent.create(mContext, true, c1, c2).build());
-    assertThat(Component.isNestedTree(component)).isTrue();
+    assertThat(Component.isNestedTree(measureContext, component)).isTrue();
 
     testSetRootAndSizeSpec(mContext, component, 20);
 
     ComponentsConfiguration.enableShouldCreateLayoutWithNewSizeSpec = false;
-    ComponentsConfiguration.isReconciliationEnabled = false;
   }
 
   @Test
   public void testAttachDetachWithComponentCachedLayout() {
+    final ComponentContext measureContext = new ComponentContext(mContext);
+    final LayoutState layoutState = new LayoutState(measureContext);
+    measureContext.setLayoutStateContext(new LayoutStateContext(layoutState));
+
     final Component component = spy(TestAttachDetachComponent.create(mContext, true).build());
+
     final int widthSpec = SizeSpec.makeSizeSpec(100, EXACTLY);
     final int heightSpec = SizeSpec.makeSizeSpec(100, EXACTLY);
     final Size outSize = new Size();
-    component.measure(mContext, widthSpec, heightSpec, outSize);
-    assertThat(component.getCachedLayout()).isNotNull();
+    component.measure(measureContext, widthSpec, heightSpec, outSize);
+    assertThat(layoutState.getCachedLayout(component)).isNotNull();
 
     final Component container = Column.create(mContext).child(component).build();
     final ComponentTree componentTree = ComponentTree.create(mContext, container).build();

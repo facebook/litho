@@ -1,11 +1,11 @@
 /*
- * Copyright 2014-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,7 +23,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView;
 import com.facebook.litho.ComponentTree;
-import com.facebook.litho.ComponentsLogger;
+import com.facebook.litho.ComponentsReporter;
 import com.facebook.litho.LithoView;
 
 /**
@@ -35,6 +35,8 @@ import com.facebook.litho.LithoView;
 class StickyHeaderControllerImpl extends RecyclerView.OnScrollListener
     implements StickyHeaderController {
 
+  private static final String FIRST_VISIBLE_STICKY_HEADER_NULL =
+      "StickyHeaderControllerImpl:FirstVisibleStickyHeaderNull";
   static final String RECYCLER_ARGUMENT_NULL = "Cannot initialize with null SectionsRecyclerView.";
   static final String RECYCLER_ALREADY_INITIALIZED =
       "SectionsRecyclerView has already been initialized but never reset.";
@@ -118,20 +120,18 @@ class StickyHeaderControllerImpl extends RecyclerView.OnScrollListener
       if (firstVisibleView == null) {
         // When RV has pending updates adapter position and layout position might not match
         // and firstVisibleView might be null.
-        final ComponentsLogger logger = firstVisibleItemComponentTree.getContext().getLogger();
-        if (logger != null) {
-          logger.emitMessage(
-              ComponentsLogger.LogLevel.ERROR,
-              "First visible sticky header item is null"
-                  + ", RV.hasPendingAdapterUpdates: "
-                  + mSectionsRecyclerView.getRecyclerView().hasPendingAdapterUpdates()
-                  + ", first visible component: "
-                  + firstVisibleItemComponentTree.getSimpleName()
-                  + ", hasMounted: "
-                  + firstVisibleItemComponentTree.hasMounted()
-                  + ", isReleased: "
-                  + firstVisibleItemComponentTree.isReleased());
-        }
+        ComponentsReporter.emitMessage(
+            ComponentsReporter.LogLevel.ERROR,
+            FIRST_VISIBLE_STICKY_HEADER_NULL,
+            "First visible sticky header item is null"
+                + ", RV.hasPendingAdapterUpdates: "
+                + mSectionsRecyclerView.getRecyclerView().hasPendingAdapterUpdates()
+                + ", first visible component: "
+                + firstVisibleItemComponentTree.getSimpleName()
+                + ", hasMounted: "
+                + firstVisibleItemComponentTree.hasMounted()
+                + ", isReleased: "
+                + firstVisibleItemComponentTree.isReleased());
       } else {
 
         // Translate first child, no need for sticky header.

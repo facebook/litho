@@ -1,11 +1,11 @@
 /*
- * Copyright 2014-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,6 +18,7 @@ package com.facebook.litho.specmodels.generator;
 
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.DYNAMIC_PROPS;
 
+import com.facebook.litho.annotations.RequiredProp;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.BuilderMethodModel;
 import com.facebook.litho.specmodels.model.ClassNames;
@@ -1291,6 +1292,10 @@ public class BuilderGenerator {
 
     builder.addCode(codeBlock);
     if (!prop.isOptional()) {
+      builder.addAnnotation(
+          AnnotationSpec.builder(RequiredProp.class)
+              .addMember("value", "$S", prop.getName())
+              .build());
       builder.addStatement("$L.set($L)", "mRequired", requiredIndex);
     }
 

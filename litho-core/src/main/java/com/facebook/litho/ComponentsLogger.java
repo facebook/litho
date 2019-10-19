@@ -1,11 +1,11 @@
 /*
- * Copyright 2014-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@ package com.facebook.litho;
 
 import androidx.annotation.Nullable;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * An interface for logging events and performance events in litho as well as in user defined
@@ -45,41 +44,6 @@ public interface ComponentsLogger {
 
   /** Release a previously obtained {@link PerfEvent} without logging it. */
   void cancelPerfEvent(PerfEvent event);
-
-  /**
-   * Emit a message that can be logged or escalated by the logger implementation.
-   *
-   * @param level
-   * @param message Message to log
-   * @deprecated Use {@link ComponentsReporter.Reporter} instead
-   */
-  @Deprecated
-  void emitMessage(LogLevel level, String message);
-
-  /**
-   * Emit a message that can be logged or escalated by the logger implementation.
-   *
-   * @param level
-   * @param message Message to log
-   * @param samplingFrequency sampling frequency to override default one
-   * @deprecated Use {@link ComponentsReporter.Reporter} instead
-   */
-  @Deprecated
-  void emitMessage(LogLevel level, String message, int samplingFrequency);
-
-  /**
-   * When a component key collision occurs, filenames that contain keywords contained in the
-   * returned set will be added to the error stack trace.
-   */
-  Set<String> getKeyCollisionStackTraceKeywords();
-
-  /**
-   * When a component key collision occurs, filenames that match the names contained in the returned
-   * set will be added to the error stack trace even if they match keywords in the whitelist.
-   *
-   * @see #getKeyCollisionStackTraceKeywords()
-   */
-  Set<String> getKeyCollisionStackTraceBlacklist();
 
   /**
    * Provide additional log metadata based on the tree props of the component hierarchy currently

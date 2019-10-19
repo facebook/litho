@@ -38,6 +38,8 @@ LITHO_LITHO_FRESCO_TARGET = make_dep_path("litho-fresco/src/main/java/com/facebo
 
 LITHO_STATS_TARGET = make_dep_path("litho-core/src/main/java/com/facebook/litho/stats:stats")
 
+LITHO_YOGA_FACTORY_TARGET = make_dep_path("litho-core/src/main/java/com/facebook/litho/yoga:yoga")
+
 LITHO_TESTING_CORE_V3_TARGET = make_dep_path("litho-testing/src/main/java/com/facebook/litho:litho")
 
 LITHO_TESTING_CORE_V4_TARGET = make_dep_path("litho-testing/src/main/java/com/facebook/litho:litho-v4")
@@ -316,6 +318,7 @@ def define_fbjni_targets():
         srcs = native.glob(
             [
                 "src/main/cpp/fb/**/*.cpp",
+                "src/main/cpp/lyra/*.cpp",
             ],
         ),
         header_namespace = "",
@@ -323,6 +326,7 @@ def define_fbjni_targets():
             [
                 ("src/main/cpp", "fb/**/*.h"),
                 ("src/main/cpp", "fbjni/**/*.h"),
+                ("src/main/cpp", "lyra/*.h"),
             ],
         ),
         compiler_flags = [
@@ -333,22 +337,6 @@ def define_fbjni_targets():
             "-std=c++11",  # FIXME
             "-DDISABLE_CPUCAP",
             "-DDISABLE_XPLAT",
-        ],
-        exported_platform_headers = [
-            (
-                "^(?!android-arm$).*$",
-                subdir_glob([
-                    ("src/main/cpp", "lyra/*.h"),
-                ]),
-            ),
-        ],
-        platform_srcs = [
-            (
-                "^(?!android-arm$).*$",
-                native.glob([
-                    "src/main/cpp/lyra/*.cpp",
-                ]),
-            ),
         ],
         soname = "libfb.$(ext)",
         visibility = LITHO_VISIBILITY,

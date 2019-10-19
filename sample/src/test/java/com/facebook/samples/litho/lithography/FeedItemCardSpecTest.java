@@ -1,14 +1,19 @@
 /*
- * This file provided by Facebook is for non-commercial testing and evaluation
- * purposes only.  Facebook reserves all rights not expressly granted.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
- * FACEBOOK BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
+
 package com.facebook.samples.litho.lithography;
 
 import static com.facebook.litho.testing.assertj.ComponentConditions.textEquals;
@@ -58,6 +63,7 @@ public class FeedItemCardSpecTest {
   public void testShallowSubComponents() {
     final ComponentContext c = mComponentsRule.getContext();
     assertThat(c, mComponent)
+        .extractingSubComponentAt(0)
         .extractingSubComponents(c)
         .hasSize(1)
         .has(
@@ -78,8 +84,9 @@ public class FeedItemCardSpecTest {
     // matchers, but illustrates how it can be used in case more fine-grained assertions are
     // required.
     assertThat(c, mComponent)
+        .extractingSubComponentAt(0)
         .extractingSubComponentsDeeply(c)
-        .hasSize(16)
+        .hasSize(22) // TODO: T53372437 Remove or rewrite test.
         .has(
             new Condition<InspectableComponent>() {
               @Override
@@ -89,7 +96,7 @@ public class FeedItemCardSpecTest {
                     && "JavaScript Rockstar".equals(value.getTextContent());
               }
             },
-            atIndex(7));
+            atIndex(10));
   }
 
   @Test
