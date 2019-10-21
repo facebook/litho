@@ -88,6 +88,7 @@ public abstract class Component extends ComponentLifecycle
   private String mGlobalKey;
   @Nullable private String mKey;
   private boolean mHasManualKey;
+  @Nullable private Handle mHandle;
 
   @GuardedBy("this")
   private AtomicBoolean mLayoutVersionGenerator = new AtomicBoolean();
@@ -258,6 +259,17 @@ public abstract class Component extends ComponentLifecycle
     return mHasManualKey;
   }
 
+  /** @return if has a handle set */
+  boolean hasHandle() {
+    return mHandle != null;
+  }
+
+  /** @return a handle that is unique to this component. */
+  @Nullable
+  Handle getHandle() {
+    return mHandle;
+  }
+
   /** @return a key that is local to the component's parent. */
   String getKey() {
     if (mKey == null && !mHasManualKey) {
@@ -274,6 +286,15 @@ public abstract class Component extends ComponentLifecycle
   void setKey(String key) {
     mHasManualKey = true;
     mKey = key;
+  }
+
+  /**
+   * Set a handle that is unique to this component.
+   *
+   * @param handle handle
+   */
+  void setHandle(Handle handle) {
+    mHandle = handle;
   }
 
   /**
@@ -849,6 +870,11 @@ public abstract class Component extends ComponentLifecycle
         key = "null";
       }
       mComponent.setKey(key);
+      return getThis();
+    }
+
+    public T handle(Handle handle) {
+      mComponent.setHandle(handle);
       return getThis();
     }
 

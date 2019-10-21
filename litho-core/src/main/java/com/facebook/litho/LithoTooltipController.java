@@ -191,8 +191,8 @@ public class LithoTooltipController {
    * Show the given tooltip on the component with the given anchorKey with the specified offsets
    * from the given position.
    *
-   * @deprecated
    * @see {{@link #showTooltip(ComponentContext, LithoTooltip, String, int, int)}}
+   * @deprecated
    */
   @Deprecated
   public static void showTooltip(
