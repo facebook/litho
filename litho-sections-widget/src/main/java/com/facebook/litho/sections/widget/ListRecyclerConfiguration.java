@@ -1,11 +1,11 @@
 /*
- * Copyright 2014-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -45,6 +45,7 @@ public class ListRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
   private final RecyclerBinderConfiguration mRecyclerBinderConfiguration;
   private final LinearLayoutInfoFactory mLinearLayoutInfoFactory;
   private int mDeltaJumpThreshold = Integer.MAX_VALUE;
+  private int mStartSnapFlingOffset = SnapUtil.SNAP_TO_START_DEFAULT_FLING_OFFSET;
 
   public static Builder create() {
     return new Builder();
@@ -134,7 +135,7 @@ public class ListRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
   @Nullable
   @Override
   public SnapHelper getSnapHelper() {
-    return SnapUtil.getSnapHelper(mSnapMode, mDeltaJumpThreshold);
+    return SnapUtil.getSnapHelper(mSnapMode, mDeltaJumpThreshold, mStartSnapFlingOffset);
   }
 
   @Override
@@ -179,6 +180,7 @@ public class ListRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
         RECYCLER_BINDER_CONFIGURATION;
     private LinearLayoutInfoFactory mLinearLayoutInfoFactory = LINEAR_LAYOUT_INFO_FACTORY;
     private int mDeltaJumpThreshold = Integer.MAX_VALUE;
+    private int mStartSnapFlingOffset = SnapUtil.SNAP_TO_START_DEFAULT_FLING_OFFSET;
 
     Builder() {}
 
@@ -189,6 +191,7 @@ public class ListRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
       this.mRecyclerBinderConfiguration = listRecyclerConfiguration.mRecyclerBinderConfiguration;
       this.mLinearLayoutInfoFactory = listRecyclerConfiguration.mLinearLayoutInfoFactory;
       this.mDeltaJumpThreshold = listRecyclerConfiguration.mDeltaJumpThreshold;
+      this.mStartSnapFlingOffset = listRecyclerConfiguration.mStartSnapFlingOffset;
     }
 
     @Override
@@ -225,6 +228,11 @@ public class ListRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
       return this;
     }
 
+    public Builder startSnapFlingOffset(int startSnapFlingOffset) {
+      mStartSnapFlingOffset = startSnapFlingOffset;
+      return this;
+    }
+
     private static void validate(ListRecyclerConfiguration configuration) {
       int snapMode = configuration.getSnapMode();
       if (configuration.getOrientation() == OrientationHelper.VERTICAL
@@ -247,6 +255,7 @@ public class ListRecyclerConfiguration<T extends SectionTree.Target & Binder<Rec
               mRecyclerBinderConfiguration,
               mLinearLayoutInfoFactory);
       configuration.mDeltaJumpThreshold = mDeltaJumpThreshold;
+      configuration.mStartSnapFlingOffset = mStartSnapFlingOffset;
       validate(configuration);
       return configuration;
     }

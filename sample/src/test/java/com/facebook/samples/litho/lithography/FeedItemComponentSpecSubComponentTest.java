@@ -1,13 +1,17 @@
 /*
- * This file provided by Facebook is for non-commercial testing and evaluation
- * purposes only.  Facebook reserves all rights not expressly granted.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
- * FACEBOOK BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.facebook.samples.litho.lithography;
@@ -48,58 +52,66 @@ public class FeedItemComponentSpecSubComponentTest {
   }
 
   @Test
-  public void testSubComponentWithoutProperties() {
+  public void subComponentWithoutProperties() {
     final ComponentContext c = mComponentsRule.getContext();
-    final Component component = makeComponent("Any String");
+    final Component component = makeComponentWithTextInSubcomponent("Any String");
 
     // This will match as long as there is a FooterComponent, with any props.
-    assertThat(c, component).has(subComponentWith(c, TestFooterComponent.matcher(c).build()));
+    assertThat(c, component)
+        .extractingSubComponentAt(0)
+        .has(subComponentWith(c, TestFooterComponent.matcher(c).build()));
   }
 
   @Test
-  public void testSubComponentWithRawText() {
+  public void subComponentWithRawText() {
     final ComponentContext c = mComponentsRule.getContext();
-    final Component component = makeComponent("Raw Text");
+    final Component component = makeComponentWithTextInSubcomponent("Raw Text");
 
     // This will match if the component has exactly the specified text as property.
     assertThat(c, component)
+        .extractingSubComponentAt(0)
         .has(subComponentWith(c, TestFooterComponent.matcher(c).text("Raw Text").build()));
   }
 
   @Test
-  public void testSubComponentWithMatcher() {
+  public void subComponentWithMatcher() {
     final ComponentContext c = mComponentsRule.getContext();
     final Component component =
-        makeComponent("Long Text That We Don't Want To Match In Its Entirety");
+        makeComponentWithTextInSubcomponent(
+            "Long Text That We Don't Want To Match In Its Entirety");
 
     // We can pass in any of the default hamcrest matchers here.
     assertThat(c, component)
+        .extractingSubComponentAt(0)
         .has(
             subComponentWith(
                 c, TestFooterComponent.matcher(c).text(containsString("Want To Match")).build()));
   }
 
   @Test
-  public void testSubComponentWithRes() {
+  public void subComponentWithRes() {
     final ComponentContext c = mComponentsRule.getContext();
-    final Component component = makeComponent("Cancel");
+    String string = c.getAndroidContext().getResources().getString(android.R.string.cancel);
+    final Component component = makeComponentWithTextInSubcomponent(string);
 
     // You can also reference resources here directly.
     assertThat(c, component)
+        .extractingSubComponentAt(0)
         .has(
             subComponentWith(
                 c, TestFooterComponent.matcher(c).textRes(android.R.string.cancel).build()));
   }
 
   @Test
-  public void testFooterHasNoClickHandler() {
+  public void footerHasNoClickHandler() {
     final ComponentContext c = mComponentsRule.getContext();
-    final Component component = makeComponent("Any Text");
+    final Component component = makeComponentWithTextInSubcomponent("Any Text");
 
     // Components commonly have conditional handlers assigned. Using the clickHandler matcher
     // we can assert whether or not a given component has a handler attached to them.
     //noinspection unchecked
     assertThat(c, component)
+        .extractingSubComponentAt(0)
         .has(
             subComponentWith(
                 c,
@@ -108,7 +120,7 @@ public class FeedItemComponentSpecSubComponentTest {
                     .build()));
   }
 
-  private Component makeComponent(String value) {
+  private Component makeComponentWithTextInSubcomponent(String value) {
     final ComponentContext c = mComponentsRule.getContext();
     return FeedItemComponent.create(c).artist(new Artist("Some Name", value, 2001)).build();
   }

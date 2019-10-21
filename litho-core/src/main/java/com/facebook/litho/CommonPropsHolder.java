@@ -1,11 +1,11 @@
 /*
- * Copyright 2014-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -551,8 +551,8 @@ class CommonPropsHolder implements CommonProps {
   }
 
   @Override
-  public void transitionKey(@Nullable String key) {
-    getOrCreateOtherProps().transitionKey(key);
+  public void transitionKey(@Nullable String key, @Nullable String ownerKey) {
+    getOrCreateOtherProps().transitionKey(key, ownerKey);
   }
 
   @Override
@@ -593,6 +593,7 @@ class CommonPropsHolder implements CommonProps {
       return;
     }
 
+    // TODO: (T55170222) Use InternalNodeUtils#applyStyles(InternalNode, int, int)} instead.
     c.applyStyle(node, mDefStyleAttr, mDefStyleRes);
 
     if (mNodeInfo != null) {
@@ -653,6 +654,7 @@ class CommonPropsHolder implements CommonProps {
     private boolean mDuplicateParentState;
     @Nullable private Edges mTouchExpansions;
     @Nullable private ComparableDrawable mForeground;
+    @Nullable private String mTransitionOwnerKey;
     @Nullable private String mTransitionKey;
     @Nullable private Transition.TransitionKeyType mTransitionKeyType;
     @Nullable private Border mBorder;
@@ -731,9 +733,10 @@ class CommonPropsHolder implements CommonProps {
       mVisibilityChangedHandler = visibilityChangedHandler;
     }
 
-    private void transitionKey(String key) {
+    private void transitionKey(@Nullable String key, @Nullable String ownerKey) {
       mPrivateFlags |= PFLAG_TRANSITION_KEY_IS_SET;
       mTransitionKey = key;
+      mTransitionOwnerKey = ownerKey;
     }
 
     private void transitionKeyType(Transition.TransitionKeyType type) {
@@ -783,7 +786,7 @@ class CommonPropsHolder implements CommonProps {
         node.visibilityChangedHandler(mVisibilityChangedHandler);
       }
       if ((mPrivateFlags & PFLAG_TRANSITION_KEY_IS_SET) != 0L) {
-        node.transitionKey(mTransitionKey);
+        node.transitionKey(mTransitionKey, mTransitionOwnerKey);
       }
       if ((mPrivateFlags & PFLAG_TRANSITION_KEY_TYPE_IS_SET) != 0L) {
         node.transitionKeyType(mTransitionKeyType);

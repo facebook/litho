@@ -1,11 +1,11 @@
 /*
- * Copyright 2014-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -119,9 +119,6 @@ public class ComponentsConfiguration {
    */
   public static @Nullable LayoutThreadPoolConfiguration threadPoolForBackgroundThreadsConfig = null;
 
-  /** If true, a single thread pool will be used instead of creating one per RecyclerBinder. */
-  public static boolean useSingleThreadPool = false;
-
   /**
    * If true, the async range calculation isn't blocked on the first item finishing layout and it
    * will schedule as many bg layouts as it can while init range completes.
@@ -213,7 +210,7 @@ public class ComponentsConfiguration {
   public static boolean isReleaseComponentTreeInRecyclerBinder;
 
   /** If true, add the root component of LayoutSpecs to InternalNodes */
-  public static boolean isConsistentComponentHierarchyExperimentEnabled = false;
+  public static boolean isConsistentComponentHierarchyExperimentEnabled = true;
 
   /**
    * If true the framework will use the refactored implementation of
@@ -229,4 +226,18 @@ public class ComponentsConfiguration {
    * com.facebook.litho.ComponentTree}
    */
   public static boolean isTransitionCheckCached = false;
+
+  /**
+   * When enabled reconciliation will use the deep clone method of the InternalNode with the
+   * simplified implementation of shallow copy.
+   */
+  public static boolean shouldUseDeepCloneDuringReconciliation = false;
+
+  public static boolean useVanillaJNI = false;
+
+  /**
+   * Cache the device type to eliminate expensive package manager calls when using the
+   * DoubleMeasureFixUtil.
+   */
+  public static boolean shouldCacheDeviceTypeOnDoubleMeasure = false;
 }

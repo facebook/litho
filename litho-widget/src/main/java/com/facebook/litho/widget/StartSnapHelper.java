@@ -1,11 +1,11 @@
 /*
- * Copyright 2014-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -39,6 +39,11 @@ public class StartSnapHelper extends SnapHelper {
   @Nullable private LayoutManager mVerticalHelperLayoutManager;
   @Nullable private LayoutManager mHorizontalHelperLayoutManager;
   @Nullable private RecyclerView mRecyclerView;
+  private final int mFlingOffset;
+
+  public StartSnapHelper(int flingOffset) {
+    mFlingOffset = flingOffset;
+  }
 
   @Nullable
   @Override
@@ -109,9 +114,19 @@ public class StartSnapHelper extends SnapHelper {
       }
     }
 
-    return reverseLayout
-        ? (forwardDirection ? firstBeforeStartPosition - 1 : firstBeforeStartPosition)
-        : (forwardDirection ? firstBeforeStartPosition + 1 : firstBeforeStartPosition);
+    int targetPos =
+        forwardDirection
+            ? (reverseLayout
+                ? firstBeforeStartPosition - mFlingOffset
+                : firstBeforeStartPosition + mFlingOffset)
+            : firstBeforeStartPosition;
+    if (targetPos < 0) {
+      targetPos = 0;
+    }
+    if (targetPos >= itemCount) {
+      targetPos = itemCount - 1;
+    }
+    return targetPos;
   }
 
   @Override

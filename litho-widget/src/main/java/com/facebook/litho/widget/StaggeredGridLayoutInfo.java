@@ -1,11 +1,11 @@
 /*
- * Copyright 2014-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -43,7 +43,18 @@ public class StaggeredGridLayoutInfo implements LayoutInfo {
 
   public StaggeredGridLayoutInfo(
       int spanCount, int orientation, boolean reverseLayout, int gapStrategy) {
-    mStaggeredGridLayoutManager = new LithoStaggeredGridLayoutManager(spanCount, orientation);
+    this(spanCount, orientation, reverseLayout, gapStrategy, false);
+  }
+
+  public StaggeredGridLayoutInfo(
+      int spanCount,
+      int orientation,
+      boolean reverseLayout,
+      int gapStrategy,
+      boolean eagerlyClearsSpanAssignmentsOnUpdates) {
+    mStaggeredGridLayoutManager =
+        new LithoStaggeredGridLayoutManager(
+            spanCount, orientation, eagerlyClearsSpanAssignmentsOnUpdates);
     mStaggeredGridLayoutManager.setReverseLayout(reverseLayout);
     mStaggeredGridLayoutManager.setGapStrategy(gapStrategy);
   }
@@ -197,8 +208,13 @@ public class StaggeredGridLayoutInfo implements LayoutInfo {
   }
 
   private static class LithoStaggeredGridLayoutManager extends StaggeredGridLayoutManager {
-    public LithoStaggeredGridLayoutManager(int spanCount, int orientation) {
+    private boolean mEagerlyClearsSpanAssignmentsOnUpdates;
+
+    public LithoStaggeredGridLayoutManager(
+        int spanCount, int orientation, boolean eagerlyClearsSpanAssignmentsOnUpdates) {
       super(spanCount, orientation);
+
+      mEagerlyClearsSpanAssignmentsOnUpdates = eagerlyClearsSpanAssignmentsOnUpdates;
     }
 
     @Override
@@ -207,6 +223,42 @@ public class StaggeredGridLayoutInfo implements LayoutInfo {
         return new LayoutParams((RecyclerViewLayoutManagerOverrideParams) lp);
       } else {
         return super.generateLayoutParams(lp);
+      }
+    }
+
+    @Override
+    public void onItemsRemoved(RecyclerView recyclerView, int positionStart, int itemCount) {
+      invalidateSpanAssignmentsEagerlyIfNeeded(recyclerView);
+      super.onItemsRemoved(recyclerView, positionStart, itemCount);
+    }
+
+    @Override
+    public void onItemsAdded(RecyclerView recyclerView, int positionStart, int itemCount) {
+      invalidateSpanAssignmentsEagerlyIfNeeded(recyclerView);
+      super.onItemsAdded(recyclerView, positionStart, itemCount);
+    }
+
+    @Override
+    public void onItemsMoved(RecyclerView recyclerView, int from, int to, int itemCount) {
+      invalidateSpanAssignmentsEagerlyIfNeeded(recyclerView);
+      super.onItemsMoved(recyclerView, from, to, itemCount);
+    }
+
+    @Override
+    public void onItemsUpdated(
+        RecyclerView recyclerView, int positionStart, int itemCount, Object payload) {
+      invalidateSpanAssignmentsEagerlyIfNeeded(recyclerView);
+      super.onItemsUpdated(recyclerView, positionStart, itemCount, payload);
+    }
+
+    private void invalidateSpanAssignmentsEagerlyIfNeeded(RecyclerView recyclerView) {
+      // StaggeredGridLayoutManager uses full spans to limit the extent it needs to reflow the rest
+      // of a grid layout (it stops after bumping into the next full span). However, there seem to
+      // be logical errors with this (or non-trivial bugs in our usage), so this param invalidates
+      // the span assignment cache, which avoids the logical errors / crashes. In general, this is
+      // likely terrible for performance (unbenchmarked), so it should be enabled with caution.
+      if (mEagerlyClearsSpanAssignmentsOnUpdates) {
+        this.onItemsChanged(recyclerView);
       }
     }
 

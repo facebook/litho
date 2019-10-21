@@ -1,11 +1,11 @@
 /*
- * Copyright 2019-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.facebook.litho.widget;
 
 import androidx.annotation.VisibleForTesting;
@@ -164,9 +165,25 @@ public class ComponentWarmer {
     mCache.remove(tag);
   }
 
+  /**
+   * If it exists, it returns the cached ComponentTreeHolder for this tag and removes it from cache.
+   */
   @Nullable
-  public ComponentTreeHolder get(String tag) {
-    return mCache.get(tag);
+  public ComponentTreeHolder consume(String tag) {
+    return mCache.remove(tag);
+  }
+
+  /**
+   * Cancels the prepare execution for the item with the given tag if it's currently running and it
+   * removes the item from the cache.
+   */
+  public void cancelPrepare(String tag) {
+    final ComponentTreeHolder holder = mCache.remove(tag);
+    if (holder == null || holder.getComponentTree() == null) {
+      return;
+    }
+
+    holder.getComponentTree().cancelLayoutAndReleaseTree();
   }
 
   @VisibleForTesting

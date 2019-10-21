@@ -1,11 +1,11 @@
 /*
- * Copyright 2014-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -64,6 +64,7 @@ import com.facebook.litho.drawable.ComparableDrawable;
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
+import com.facebook.yoga.YogaFlexDirection;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -141,28 +142,27 @@ class LayoutState {
    * instances directly helps with clearing out the reference from all objects that hold on to it,
    * without having to keep track of all these objects to clear out the references.
    */
-  static final class LayoutStateReferenceWrapper {
+  static final class LayoutStateContext {
     private @Nullable LayoutState mLayoutStateRef;
     private @Nullable LayoutStateFuture mLayoutStateFuture;
 
     private static @Nullable LayoutState sTestLayoutState;
 
-    public static LayoutStateReferenceWrapper getTestInstance(ComponentContext c) {
+    public static LayoutStateContext getTestInstance(ComponentContext c) {
       if (sTestLayoutState == null) {
         sTestLayoutState = new LayoutState(c);
       }
 
-      return new LayoutStateReferenceWrapper(sTestLayoutState, null);
+      return new LayoutStateContext(sTestLayoutState, null);
     }
 
     @VisibleForTesting
-    LayoutStateReferenceWrapper(LayoutState layoutState) {
+    LayoutStateContext(LayoutState layoutState) {
       this(layoutState, null);
     }
 
     @VisibleForTesting
-    LayoutStateReferenceWrapper(
-        LayoutState layoutState, @Nullable LayoutStateFuture layoutStateFuture) {
+    LayoutStateContext(LayoutState layoutState, @Nullable LayoutStateFuture layoutStateFuture) {
       mLayoutStateRef = layoutState;
       mLayoutStateFuture = layoutStateFuture;
     }
@@ -196,7 +196,8 @@ class LayoutState {
   private static final boolean IS_TEST = "robolectric".equals(Build.FINGERPRINT);
 
   private final Map<String, Rect> mComponentKeyToBounds = new HashMap<>();
-  private final List<Component> mComponents = new ArrayList<>();
+  private final Map<Handle, Rect> mComponentHandleToBounds = new HashMap<>();
+  @Nullable private List<Component> mComponents;
 
   private final ComponentContext mContext;
 
@@ -273,8 +274,8 @@ class LayoutState {
     mStateHandler = mContext.getStateHandler();
     mTestOutputs = ComponentsConfiguration.isEndToEndTestRun ? new ArrayList<TestOutput>(8) : null;
     mOrientation = context.getResources().getConfiguration().orientation;
-
     mLastMeasuredLayouts = new HashMap<>();
+    mComponents = new ArrayList<>();
   }
 
   @VisibleForTesting
@@ -963,7 +964,9 @@ class LayoutState {
         // calculation.
         if (delegate.getScopedContext() != null
             && delegate.getScopedContext().getComponentTree() != null) {
-          layoutState.mComponents.add(delegate);
+          if (layoutState.mComponents != null) {
+            layoutState.mComponents.add(delegate);
+          }
           if (delegate.hasAttachDetachCallback()) {
             if (layoutState.mAttachableContainer == null) {
               layoutState.mAttachableContainer = new HashMap<>();
@@ -973,6 +976,9 @@ class LayoutState {
         }
         if (delegate.getGlobalKey() != null) {
           layoutState.mComponentKeyToBounds.put(delegate.getGlobalKey(), copyRect);
+        }
+        if (delegate.hasHandle()) {
+          layoutState.mComponentHandleToBounds.put(delegate.getHandle(), copyRect);
         }
       }
     }
@@ -1029,12 +1035,16 @@ class LayoutState {
     return mComponentKeyToBounds;
   }
 
-  List<Component> getComponents() {
-    return mComponents;
+  Map<Handle, Rect> getComponentHandleToBounds() {
+    return mComponentHandleToBounds;
   }
 
-  void clearComponents() {
-    mComponents.clear();
+  @Nullable
+  List<Component> consumeComponents() {
+    final List<Component> components = mComponents;
+    mComponents = null;
+
+    return components;
   }
 
   /**
@@ -1332,7 +1342,7 @@ class LayoutState {
     final DiffNode diffTreeRoot =
         currentLayoutState != null ? currentLayoutState.mDiffTreeRoot : null;
     final LayoutState layoutState;
-    LayoutStateReferenceWrapper layoutStateWrapper = null;
+    LayoutStateContext layoutStateContext = null;
 
     try {
       final PerfEvent logLayoutState =
@@ -1350,8 +1360,8 @@ class LayoutState {
       component.markLayoutStarted();
 
       layoutState = new LayoutState(c);
-      layoutStateWrapper = new LayoutStateReferenceWrapper(layoutState, layoutStateFuture);
-      c.setLayoutStateReferenceWrapper(layoutStateWrapper);
+      layoutStateContext = new LayoutStateContext(layoutState, layoutStateFuture);
+      c.setLayoutStateContext(layoutStateContext);
 
       layoutState.mShouldGenerateDiffTree = shouldGenerateDiffTree;
       layoutState.mComponentTreeId = componentTreeId;
@@ -1384,13 +1394,13 @@ class LayoutState {
               : layoutCreatedInWillRender;
       // Null check for tests.
       if (root.getContext() != null) {
-        root.getContext().setLayoutStateReferenceWrapper(layoutStateWrapper);
+        root.getContext().setLayoutStateContext(layoutStateContext);
       }
 
       layoutState.mLayoutRoot = root;
       layoutState.mRootTransitionId = getTransitionIdForNode(root);
 
-      if (layoutStateWrapper.isLayoutInterrupted()) {
+      if (layoutStateContext.isLayoutInterrupted()) {
         layoutState.mIsPartialLayoutState = true;
         return layoutState;
       }
@@ -1401,8 +1411,8 @@ class LayoutState {
 
       setSizeAfterMeasureAndCollectResults(c, layoutState);
 
-      if (layoutStateWrapper != null) {
-        layoutStateWrapper.releaseReference();
+      if (layoutStateContext != null) {
+        layoutStateContext.releaseReference();
       }
 
       if (logLayoutState != null) {
@@ -1431,9 +1441,8 @@ class LayoutState {
       throw new IllegalStateException("Can not resume a finished LayoutState calculation");
     }
 
-    final LayoutStateReferenceWrapper layoutStateWrapper =
-        new LayoutStateReferenceWrapper(layoutState, null);
-    c.setLayoutStateReferenceWrapper(layoutStateWrapper);
+    final LayoutStateContext layoutStateContext = new LayoutStateContext(layoutState, null);
+    c.setLayoutStateContext(layoutStateContext);
 
     final Component component = layoutState.mComponent;
     final int componentTreeId = layoutState.mComponentTreeId;
@@ -1485,8 +1494,8 @@ class LayoutState {
 
       setSizeAfterMeasureAndCollectResults(c, layoutState);
 
-      if (layoutStateWrapper != null) {
-        layoutStateWrapper.releaseReference();
+      if (layoutStateContext != null) {
+        layoutStateContext.releaseReference();
       }
 
       if (logLayoutState != null) {
@@ -1689,7 +1698,7 @@ class LayoutState {
   }
 
   @VisibleForTesting
-  static InternalNode createTree(
+  static InternalNode createLayout(
       Component component, ComponentContext context, @Nullable InternalNode current) {
     if (current != null) {
       return current.reconcile(context, component);
@@ -1868,7 +1877,7 @@ class LayoutState {
     c.setWidthSpec(widthSpec);
     c.setHeightSpec(heightSpec);
 
-    final InternalNode root = createTree(component, c, current);
+    final InternalNode root = createLayout(component, c, current);
 
     c.setTreeProps(null);
     c.setWidthSpec(previousWidthSpec);
@@ -2428,29 +2437,31 @@ class LayoutState {
   }
 
   private static @Nullable TransitionId getTransitionIdForNode(InternalNode node) {
-    final Component component = node.getTailComponent();
+    return TransitionUtils.createTransitionId(node);
+  }
 
-    @TransitionId.Type int type;
-    String reference;
-    String extraData = null;
+  /** TODO: (T55181318) Merge this and {@link #resolve(ComponentContext, Component)} */
+  static InternalNode createLayout(ComponentContext owner, Component component) {
 
-    if (node.hasTransitionKey()) {
-      final Transition.TransitionKeyType transitionKeyType = node.getTransitionKeyType();
-      if (transitionKeyType == Transition.TransitionKeyType.GLOBAL) {
-        type = TransitionId.Type.GLOBAL;
-      } else if (transitionKeyType == Transition.TransitionKeyType.LOCAL) {
-        type = TransitionId.Type.SCOPED;
-        extraData = component != null ? component.getOwnerGlobalKey() : null;
-      } else {
-        throw new RuntimeException("Unhandled transition key type " + transitionKeyType);
-      }
-      reference = node.getTransitionKey();
-    } else {
-      type = TransitionId.Type.AUTOGENERATED;
-      reference = component != null ? component.getGlobalKey() : null;
+    // 1. Consume the layout created in willrender.
+    final InternalNode layoutCreatedInWillRender = component.consumeLayoutCreatedInWillRender();
+
+    // 2. Return immediately if will render returned a layout.
+    if (layoutCreatedInWillRender != null) {
+      return layoutCreatedInWillRender;
     }
 
-    return reference != null ? new TransitionId(type, reference, extraData) : null;
+    // 3. Create a shallow copy of this component for thread safety.
+    component = component.getThreadSafeInstance();
+
+    // 4. Update this component with its current parent context.
+    component.updateInternalChildState(owner);
+
+    if (ComponentsConfiguration.isDebugModeEnabled) {
+      DebugComponent.applyOverrides(owner, component);
+    }
+
+    return LayoutState.createLayout(component.getScopedContext(), component, false);
   }
 
   /**
@@ -2504,11 +2515,10 @@ class LayoutState {
         node = (InternalNode) component.resolve(c);
 
         // 4.3 If the Component is a MountSpec
-      } else if (ComponentsConfiguration.isConsistentComponentHierarchyExperimentEnabled
-          && isMountSpec(component)) {
+      } else if (isMountSpec(component)) {
 
-        // Create a blank InternalNode for MountSpecs.
-        node = c.newLayoutBuilder(0, 0);
+        // Create a blank InternalNode for MountSpecs and set the default flex direction.
+        node = InternalNodeUtils.create(c).flexDirection(YogaFlexDirection.COLUMN);
 
         // 4.4 Create and resolve the LayoutSpec.
       } else {
@@ -2525,9 +2535,7 @@ class LayoutState {
           node = resolve(c, root);
 
           // If the root is a layout spec which can resolve itself, add it to the InternalNode.
-          if (ComponentsConfiguration.isConsistentComponentHierarchyExperimentEnabled
-              && Component.isLayoutSpec(root)
-              && root.canResolve()) {
+          if (Component.isLayoutSpec(root) && root.canResolve()) {
             node.appendComponent(root);
           }
         }

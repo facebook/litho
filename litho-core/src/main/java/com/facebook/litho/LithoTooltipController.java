@@ -1,11 +1,11 @@
 /*
- * Copyright 2014-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.facebook.litho;
 
 import android.graphics.Rect;
@@ -55,9 +56,70 @@ public class LithoTooltipController {
   }
 
   /**
+   * Show the given tooltip on the component with the given handle instance.
+   *
+   * @param c
+   * @param lithoTooltip A {@link LithoTooltip} implementation to be shown on the anchor.
+   * @param handle A {@link Handle} used to discover the object in the hierarchy.
+   */
+  public static void showTooltipOnHandle(
+      ComponentContext c, LithoTooltip lithoTooltip, Handle handle) {
+    showTooltipOnHandle(c, lithoTooltip, handle, 0, 0);
+  }
+
+  /**
+   * Show the given tooltip on the component with the given handle instance.
+   *
+   * @param c
+   * @param lithoTooltip A {@link LithoTooltip} implementation to be shown on the anchor.
+   * @param handle A {@link Handle} used to discover the object in the hierarchy.
+   * @param xOffset horizontal offset from default position where the tooltip shows.
+   * @param yOffset vertical offset from default position where the tooltip shows.
+   */
+  public static void showTooltipOnHandle(
+      ComponentContext c, LithoTooltip lithoTooltip, Handle handle, int xOffset, int yOffset) {
+    final ComponentTree componentTree = c.getComponentTree();
+
+    if (componentTree == null || componentTree.isReleased() || !componentTree.hasMounted()) {
+      return;
+    }
+
+    componentTree.showTooltipOnHandle(c, lithoTooltip, handle, xOffset, yOffset);
+  }
+
+  /**
+   * Show the given tooltip on the component with the given handle instance.
+   *
+   * @param c
+   * @param popupWindow A {@link PopupWindow} implementation to be shown in the tooltip.
+   * @param handle A {@link Handle} used to discover the object in the hierarchy.
+   * @param xOffset horizontal offset from default position where the tooltip shows.
+   * @param yOffset vertical offset from default position where the tooltip shows.
+   */
+  public static void showTooltipOnHandle(
+      ComponentContext c, final PopupWindow popupWindow, Handle handle, int xOffset, int yOffset) {
+    showTooltipOnHandle(
+        c,
+        new LithoTooltip() {
+          @Override
+          public void showLithoTooltip(
+              View container, Rect anchorBounds, int xOffset, int yOffset) {
+            popupWindow.showAsDropDown(
+                container, anchorBounds.left + xOffset, anchorBounds.bottom + yOffset);
+          }
+        },
+        handle,
+        xOffset,
+        yOffset);
+  }
+
+  /**
    * Show the given tooltip with the specified offsets from the bottom-left corner of the component
    * with the given anchorKey.
+   *
+   * @deprecated @see {@link #showTooltipOnHandle(ComponentContext, PopupWindow, Handle, int, int)}
    */
+  @Deprecated
   public static void showTooltip(
       ComponentContext c,
       final PopupWindow popupWindow,
@@ -82,11 +144,9 @@ public class LithoTooltipController {
   /**
    * Show the given tooltip on the component with the given anchorKey.
    *
-   * @param c
-   * @param lithoTooltip A {@link LithoTooltip} implementation to be shown on the anchor.
-   * @param anchorKey key of the Litho Component that will be used as anchor. If unset, the root
-   *     component will be used as the anchor.
+   * @deprecated @see {@link #showTooltipOnHandle(ComponentContext, LithoTooltip, Handle)}
    */
+  @Deprecated
   public static void showTooltip(
       ComponentContext c, LithoTooltip lithoTooltip, @Nullable String anchorKey) {
     showTooltip(c, lithoTooltip, anchorKey, 0, 0);
@@ -95,13 +155,9 @@ public class LithoTooltipController {
   /**
    * Show the given tooltip on the component with the given anchorKey.
    *
-   * @param c
-   * @param lithoTooltip A {@link LithoTooltip} implementation to be shown on the anchor.
-   * @param anchorKey key of the Litho Component that will be used as anchor. If unset, the root
-   *     component will be used as the anchor.
-   * @param xOffset horizontal offset from default position where the tooltip shows.
-   * @param yOffset vertical offset from default position where the tooltip shows.
+   * @deprecated @see {@link #showTooltipOnHandle(ComponentContext, LithoTooltip, Handle, int, int)}
    */
+  @Deprecated
   public static void showTooltip(
       ComponentContext c,
       LithoTooltip lithoTooltip,
@@ -190,8 +246,8 @@ public class LithoTooltipController {
    * Show the given tooltip on the component with the given anchorKey with the specified offsets
    * from the given position.
    *
-   * @deprecated
    * @see {{@link #showTooltip(ComponentContext, LithoTooltip, String, int, int)}}
+   * @deprecated
    */
   @Deprecated
   public static void showTooltip(

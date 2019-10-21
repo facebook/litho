@@ -1,22 +1,32 @@
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 plugins {
+    id 'idea'
     id 'java'
-    id 'org.jetbrains.intellij' version '0.4.4'
+    id 'org.jetbrains.intellij' version '0.4.10'
 }
 
 group 'com.facebook.litho.intellij'
 
-sourceCompatibility = 1.8
+sourceCompatibility = JavaVersion.VERSION_1_8
 
-repositories {
-    mavenCentral()
-    jcenter() // mockito
+sourceSets {
+    test.java.srcDirs += project(':litho-processor').file("src/test/java")
 }
-
-apply plugin: 'idea'
-apply plugin: 'org.jetbrains.intellij'
-apply plugin: 'java'
-
-sourceSets.test.java.srcDir project(':litho-processor').file("src/test/java")
 
 dependencies {
     // Processor

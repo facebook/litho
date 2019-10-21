@@ -1,11 +1,11 @@
 /*
- * Copyright 2014-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,6 +17,7 @@
 package com.facebook.litho;
 
 import com.facebook.litho.annotations.Prop;
+import com.facebook.litho.annotations.RequiredProp;
 import java.util.BitSet;
 import javax.annotation.Nullable;
 
@@ -58,7 +59,7 @@ public final class Wrapper extends Component {
       return ComponentContext.NULL_LAYOUT;
     }
 
-    return c.newLayoutBuilder(delegate, 0, 0);
+    return LayoutState.createLayout(c, delegate);
   }
 
   @Override
@@ -97,6 +98,7 @@ public final class Wrapper extends Component {
       mWrapper = wrapper;
     }
 
+    @RequiredProp("delegate")
     public Builder delegate(@Nullable Component delegate) {
       mRequired.set(0);
       this.mWrapper.delegate = delegate;

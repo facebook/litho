@@ -1,11 +1,11 @@
 /*
- * Copyright 2014-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,6 +21,7 @@ import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 import static androidx.recyclerview.widget.OrientationHelper.HORIZONTAL;
 import static androidx.recyclerview.widget.OrientationHelper.VERTICAL;
 import static com.facebook.infer.annotation.ThreadConfined.UI;
+import static com.facebook.litho.FrameworkLogEvents.EVENT_INIT_RANGE;
 import static com.facebook.litho.MeasureComparisonUtils.isMeasureSpecCompatible;
 import static com.facebook.litho.widget.ComponentTreeHolder.RENDER_UNINITIALIZED;
 import static com.facebook.litho.widget.RenderInfoViewCreatorController.DEFAULT_COMPONENT_VIEW_TYPE;
@@ -49,13 +50,16 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLogParams;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.ComponentTree.MeasureListener;
+import com.facebook.litho.ComponentsLogger;
 import com.facebook.litho.ComponentsReporter;
 import com.facebook.litho.ComponentsSystrace;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.LithoHandler;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.LithoView.LayoutManagerOverrideParams;
+import com.facebook.litho.LogTreePopulator;
 import com.facebook.litho.MeasureComparisonUtils;
+import com.facebook.litho.PerfEvent;
 import com.facebook.litho.RenderCompleteEvent;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
@@ -101,7 +105,6 @@ public class RecyclerBinder
   private static final String DATA_RENDERED_NOT_TRIGGERED =
       "RecyclerBinder:DataRenderedNotTriggered";
   static final int UNSET = -1;
-  private static ThreadPoolLayoutHandler sThreadPoolHandler;
 
   private static Field mViewHolderField;
 
@@ -187,6 +190,8 @@ public class RecyclerBinder
 
   private final @Nullable ComponentTreeMeasureListenerFactory mComponentTreeMeasureListenerFactory;
   private @Nullable ComponentWarmer mComponentWarmer;
+  private final LithoHandler mPreallocateMountContentHandler;
+  private final boolean mPreallocatePerMountSpec;
 
   private MeasureListener getMeasureListener(final ComponentTreeHolder holder) {
     return new MeasureListener() {
@@ -355,7 +360,9 @@ public class RecyclerBinder
         boolean canInterruptAndMoveLayoutsBetweenThreads,
         boolean useCancelableLayoutFutures,
         boolean isReconciliationEnabled,
-        boolean isLayoutDiffingEnabled);
+        boolean isLayoutDiffingEnabled,
+        LithoHandler preallocateHandler,
+        boolean preallocatePerMountSpec);
   }
 
   static final ComponentTreeHolderFactory DEFAULT_COMPONENT_TREE_HOLDER_FACTORY =
@@ -369,7 +376,9 @@ public class RecyclerBinder
             boolean canInterruptAndMoveLayoutsBetweenThreads,
             boolean useCancelableLayoutFutures,
             boolean isReconciliationEnabled,
-            boolean isLayoutDiffingEnabled) {
+            boolean isLayoutDiffingEnabled,
+            LithoHandler preallocateHandler,
+            boolean preallocatePerMountSpec) {
           return ComponentTreeHolder.create()
               .renderInfo(renderInfo)
               .layoutHandler(layoutHandler)
@@ -379,6 +388,8 @@ public class RecyclerBinder
               .useCancelableLayoutFutures(useCancelableLayoutFutures)
               .isReconciliationEnabled(isReconciliationEnabled)
               .isLayoutDiffingEnabled(isLayoutDiffingEnabled)
+              .preallocateMountContentHandler(preallocateHandler)
+              .shouldPreallocatePerMountSpec(preallocatePerMountSpec)
               .build();
         }
       };
@@ -406,7 +417,6 @@ public class RecyclerBinder
     private boolean asyncInitRange = ComponentsConfiguration.asyncInitRange;
     private boolean canMeasure;
     private boolean hscrollAsyncMode = false;
-    private boolean singleThreadPool = ComponentsConfiguration.useSingleThreadPool;
     private boolean incrementalMount = true;
     private boolean splitLayoutForMeasureAndRangeEstimation =
         ComponentsConfiguration.splitLayoutForMeasureAndRangeEstimation;
@@ -419,6 +429,8 @@ public class RecyclerBinder
     private int estimatedViewportCount = UNSET;
     private boolean isReconciliationEnabled = ComponentsConfiguration.isReconciliationEnabled;
     private boolean isLayoutDiffingEnabled = ComponentsConfiguration.isLayoutDiffingEnabled;
+    private LithoHandler preallocateMountContentHandler;
+    private boolean shouldPreallocatePerMountSpec;
 
     /**
      * @param rangeRatio specifies how big a range this binder should try to compute. The range is
@@ -488,6 +500,17 @@ public class RecyclerBinder
       return this;
     }
 
+    public Builder preallocateMountContentHandler(
+        @Nullable LithoHandler preallocateMountContentHandler) {
+      this.preallocateMountContentHandler = preallocateMountContentHandler;
+      return this;
+    }
+
+    public Builder shouldPreallocatePerMountSpec(boolean shouldPreallocatePerMountSpec) {
+      this.shouldPreallocatePerMountSpec = shouldPreallocatePerMountSpec;
+      return this;
+    }
+
     /**
      * Do not enable this. This is an experimental feature and your Section surface will take a perf
      * hit if you use it.
@@ -543,18 +566,14 @@ public class RecyclerBinder
     /**
      * @param config RecyclerBinder will use this {@link LayoutThreadPoolConfiguration} to create
      *     {@link ThreadPoolLayoutHandler} which will be used to calculate layout in pool of
-     *     threads.
+     *     threads. However, this will create a new separate thread pool which might negatively
+     *     affect the app's performance.
      *     <p>Note: if {@link #layoutHandlerFactory(LayoutHandlerFactory)} is provided, the handler
      *     created by the factory will be used instead of the one that would have been created by
      *     this config.
      */
     public Builder threadPoolConfig(LayoutThreadPoolConfiguration config) {
       this.threadPoolConfig = config;
-      return this;
-    }
-
-    public Builder singleThreadPool(boolean singleThreadPool) {
-      this.singleThreadPool = singleThreadPool;
       return this;
     }
 
@@ -823,15 +842,10 @@ public class RecyclerBinder
        */
       if (builder.threadPoolConfig != null) {
         mThreadPoolConfig = builder.threadPoolConfig;
-        mThreadPoolHandler = new ThreadPoolLayoutHandler(mThreadPoolConfig);
+        mThreadPoolHandler = ThreadPoolLayoutHandler.getNewInstance(mThreadPoolConfig);
       } else if (ComponentsConfiguration.threadPoolConfiguration != null) {
         mThreadPoolConfig = ComponentsConfiguration.threadPoolConfiguration;
-
-        if (builder.singleThreadPool) {
-          mThreadPoolHandler = getDefaultThreadPoolLayoutHandler();
-        } else {
-          mThreadPoolHandler = new ThreadPoolLayoutHandler(mThreadPoolConfig);
-        }
+        mThreadPoolHandler = ThreadPoolLayoutHandler.getNewInstance(mThreadPoolConfig);
       } else {
         mThreadPoolConfig = null;
         mThreadPoolHandler = null;
@@ -896,6 +910,8 @@ public class RecyclerBinder
     mIsSubAdapter = builder.isSubAdapter;
     mIsReconciliationEnabled = builder.isReconciliationEnabled;
     mIsLayoutDiffingEnabled = builder.isLayoutDiffingEnabled;
+    mPreallocateMountContentHandler = builder.preallocateMountContentHandler;
+    mPreallocatePerMountSpec = builder.shouldPreallocatePerMountSpec;
   }
 
   /**
@@ -2681,6 +2697,24 @@ public class RecyclerBinder
     if (isTracing) {
       ComponentsSystrace.beginSection("initRange");
     }
+    final ComponentsLogger logger;
+    final String logTag;
+    if (mComponentContext.getLogger() != null) {
+      logger = mComponentContext.getLogger();
+      logTag = mComponentContext.getLogTag();
+    } else {
+      logger = holder.getRenderInfo().getComponentsLogger();
+      logTag = holder.getRenderInfo().getLogTag();
+    }
+    final PerfEvent logInitRange =
+        logger == null
+            ? null
+            : LogTreePopulator.populatePerfEventFromLogger(
+                mComponentContext,
+                logger,
+                logTag,
+                logger.newPerformanceEvent(mComponentContext, EVENT_INIT_RANGE));
+
     try {
       final Size size = new Size();
       holder.computeLayoutSync(mComponentContext, childWidthSpec, childHeightSpec, size);
@@ -2691,6 +2725,9 @@ public class RecyclerBinder
       mSizeForMeasure = size;
       mEstimatedViewportCount = rangeSize;
     } finally {
+      if (logInitRange != null) {
+        logger.logPerfEvent(logInitRange);
+      }
       if (isTracing) {
         ComponentsSystrace.endSection();
       }
@@ -3780,7 +3817,7 @@ public class RecyclerBinder
     if (mComponentWarmer != null) {
       final Object tag = renderInfo.getCustomAttribute(ComponentWarmer.COMPONENT_WARMER_TAG);
       if (tag instanceof String) {
-        final ComponentTreeHolder holder = mComponentWarmer.get((String) tag);
+        final ComponentTreeHolder holder = mComponentWarmer.consume((String) tag);
         if (holder != null) {
           if (SectionsDebug.ENABLED) {
             Log.d(SectionsDebug.TAG, "Got ComponentTreeHolder from ComponentWarner for key " + tag);
@@ -3806,7 +3843,9 @@ public class RecyclerBinder
         mMoveLayoutsBetweenThreads,
         mUseCancelableLayoutFutures,
         mIsReconciliationEnabled,
-        mIsLayoutDiffingEnabled);
+        mIsLayoutDiffingEnabled,
+        mPreallocateMountContentHandler,
+        mPreallocatePerMountSpec);
   }
 
   ComponentTreeHolderPreparer getComponentTreeHolderPreparer() {
@@ -3888,13 +3927,8 @@ public class RecyclerBinder
     return holderForRangeInfo;
   }
 
-  private static synchronized ThreadPoolLayoutHandler getDefaultThreadPoolLayoutHandler() {
-    if (sThreadPoolHandler == null) {
-      sThreadPoolHandler =
-          new ThreadPoolLayoutHandler(ComponentsConfiguration.threadPoolConfiguration);
-    }
-
-    return sThreadPoolHandler;
+  private static ThreadPoolLayoutHandler getDefaultThreadPoolLayoutHandler() {
+    return ThreadPoolLayoutHandler.getDefaultInstance();
   }
 
   /**

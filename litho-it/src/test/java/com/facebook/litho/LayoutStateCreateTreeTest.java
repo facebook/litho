@@ -1,11 +1,11 @@
 /*
- * Copyright 2014-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,21 +17,19 @@
 package com.facebook.litho;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.robolectric.RuntimeEnvironment.application;
 
 import android.animation.StateListAnimator;
 import android.annotation.TargetApi;
-import android.content.Context;
 import android.graphics.Color;
 import android.os.Build;
 import android.util.SparseArray;
-import androidx.annotation.AttrRes;
-import androidx.annotation.StyleRes;
 import com.facebook.litho.annotations.ImportantForAccessibility;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.drawable.ComparableColorDrawable;
 import com.facebook.litho.drawable.ComparableDrawable;
 import com.facebook.litho.testing.TestComponent;
@@ -57,17 +55,16 @@ public class LayoutStateCreateTreeTest {
   @Before
   public void setup() throws Exception {
     mComponentContext = new ComponentContext(RuntimeEnvironment.application);
-    mComponentContext.setLayoutStateReferenceWrapperForTesting();
+    mComponentContext.setLayoutStateContextForTesting();
   }
 
   @After
   public void after() {
-    ComponentsConfiguration.isConsistentComponentHierarchyExperimentEnabled = false;
     mComponentContext = null;
   }
 
   @Test
-  public void testSimpleLayoutCreatesExpectedInternalNodeTree() {
+  public void simpleLayoutCreatesExpectedInternalNodeTree() {
     final Component component =
         new InlineLayoutSpec(mComponentContext) {
           @Override
@@ -78,32 +75,7 @@ public class LayoutStateCreateTreeTest {
           }
         };
 
-    InternalNode node = LayoutState.createTree(component, mComponentContext, null);
-    assertThat(node.getChildCount()).isEqualTo(1);
-    assertThat(node.getTailComponent()).isEqualTo(component);
-    node = node.getChildAt(0);
-    assertThat(node.getChildCount()).isEqualTo(1);
-    assertThat(node.getTailComponent()).isInstanceOf(Column.class);
-    node = node.getChildAt(0);
-    assertThat(node.getChildCount()).isEqualTo(0);
-    assertThat(node.getTailComponent()).isInstanceOf(TestDrawableComponent.class);
-  }
-
-  @Test
-  public void simpleLayoutCreatesExpectedInternalNodeTreeWithConsistentHierarchyExperiment() {
-    ComponentsConfiguration.isConsistentComponentHierarchyExperimentEnabled = true;
-
-    final Component component =
-        new InlineLayoutSpec(mComponentContext) {
-          @Override
-          protected Component onCreateLayout(final ComponentContext c) {
-            return Column.create(c)
-                .child(Column.create(c).child(TestDrawableComponent.create(c)))
-                .build();
-          }
-        };
-
-    InternalNode node = LayoutState.createTree(component, mComponentContext, null);
+    InternalNode node = LayoutState.createLayout(component, mComponentContext, null);
     assertThat(node.getChildCount()).isEqualTo(1);
     assertThat(node.getHeadComponent()).isEqualTo(component);
     assertThat(node.getTailComponent()).isInstanceOf(Column.class);
@@ -161,7 +133,7 @@ public class LayoutStateCreateTreeTest {
           }
         };
 
-    InternalNode node = LayoutState.createTree(component, mComponentContext, null);
+    InternalNode node = LayoutState.createLayout(component, mComponentContext, null);
     assertThat(node.getNodeInfo().getClickHandler()).isEqualTo(clickHandler3);
     assertThat(node.getNodeInfo().getLongClickHandler()).isEqualTo(longClickHandler3);
     assertThat(node.getNodeInfo().getTouchHandler()).isEqualTo(touchHandler3);
@@ -229,7 +201,7 @@ public class LayoutStateCreateTreeTest {
           }
         };
 
-    InternalNode node = LayoutState.createTree(component, mComponentContext, null);
+    InternalNode node = LayoutState.createLayout(component, mComponentContext, null);
     assertThat(node.getNodeInfo().getClickHandler()).isEqualTo(clickHandler3);
     assertThat(node.getNodeInfo().getLongClickHandler()).isEqualTo(longClickHandler3);
     assertThat(node.getNodeInfo().getTouchHandler()).isEqualTo(touchHandler3);
@@ -291,7 +263,7 @@ public class LayoutStateCreateTreeTest {
           }
         };
 
-    InternalNode node = LayoutState.createTree(component, mComponentContext, null);
+    InternalNode node = LayoutState.createLayout(component, mComponentContext, null);
     assertThat(node.getChildCount()).isEqualTo(0);
     assertThat(node.getTailComponent()).isInstanceOf(TestDrawableComponent.class);
     assertThat(node.getNodeInfo().getClickHandler()).isEqualTo(clickHandler2);
@@ -341,7 +313,7 @@ public class LayoutStateCreateTreeTest {
           }
         };
 
-    InternalNode node = LayoutState.createTree(component, mComponentContext, null);
+    InternalNode node = LayoutState.createLayout(component, mComponentContext, null);
     assertThat(node.getChildCount()).isEqualTo(0);
     assertThat(node.getTailComponent()).isInstanceOf(TestSizeDependentComponent.class);
     assertThat(node.getNodeInfo().getClickHandler()).isEqualTo(clickHandler2);
@@ -488,7 +460,7 @@ public class LayoutStateCreateTreeTest {
 
     component.setScopedContext(mComponentContext);
 
-    InternalNode node = LayoutState.createTree(component, mComponentContext, null);
+    InternalNode node = LayoutState.createLayout(component, mComponentContext, null);
     NodeInfo nodeInfo = node.getOrCreateNodeInfo();
 
     verify(node).layoutDirection(YogaDirection.INHERIT);
@@ -582,7 +554,7 @@ public class LayoutStateCreateTreeTest {
     verify(nodeInfo).setShadowElevation(60);
 
     verify(nodeInfo).setClipToOutline(false);
-    verify(node).transitionKey("transitionKey");
+    verify(node).transitionKey(eq("transitionKey"), anyString());
     verify(node).transitionKeyType(Transition.TransitionKeyType.GLOBAL);
     verify(node).testKey("testKey");
 
@@ -611,16 +583,13 @@ public class LayoutStateCreateTreeTest {
         new InlineLayoutSpec() {
           @Override
           protected Component onCreateLayout(final ComponentContext c) {
-            return Column.create(c).child(Column.create(c).flexGrow(1)).build();
+            return TestDrawableComponentWithMockInternalNode.create(c).flexGrow(1).build();
           }
         };
 
-    final ComponentContext c = new MockInternalNodeComponentContext(application);
-
-    final InternalNode root = LayoutState.createAndMeasureTreeForComponent(c, component, 800, 600);
-
-    assertThat(root.getChildAt(0) instanceof TestInternalNode).isTrue();
-    assertThat(((TestInternalNode) root.getChildAt(0)).mFlexGrowCounter).isEqualTo(1);
+    final InternalNode root =
+        LayoutState.createAndMeasureTreeForComponent(mComponentContext, component, 800, 600);
+    verify(root).flexGrow(anyInt());
   }
 
   private static class TestDrawableComponentWithMockInternalNode extends TestComponent {
@@ -660,40 +629,6 @@ public class LayoutStateCreateTreeTest {
       public Component build() {
         return mComponent;
       }
-    }
-  }
-
-  private class MockInternalNodeComponentContext extends ComponentContext {
-
-    private MockInternalNodeComponentContext(Context context) {
-      super(context);
-      setLayoutStateReferenceWrapperForTesting();
-    }
-
-    InternalNode newLayoutBuilder(@AttrRes int defStyleAttr, @StyleRes int defStyleRes) {
-      return new TestInternalNode(this);
-    }
-
-    @Override
-    ComponentContext makeNewCopy() {
-      MockInternalNodeComponentContext copy =
-          new MockInternalNodeComponentContext(this.getAndroidContext());
-      copy.setLayoutStateReferenceWrapperForTesting();
-
-      return copy;
-    }
-  }
-
-  private class TestInternalNode extends DefaultInternalNode {
-    private int mFlexGrowCounter;
-
-    protected TestInternalNode(ComponentContext componentContext) {
-      super(componentContext);
-    }
-
-    @Override
-    public void flexGrow(float flex) {
-      mFlexGrowCounter++;
     }
   }
 }

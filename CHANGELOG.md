@@ -11,6 +11,7 @@ _release-date_
  * **Breaking:** Remove error reporting from `ComponentsLogger`.
  * **Breaking:** Limit scope of `Component`/`ComponentLifecycle` constructors that take explicit type param.
  * New: Add API for providing custom logger on a per `ComponentRenderInfo` basis.
+ * Fix: Add generics support to `@OnCalculateCachedValue` methods
 
 ## Version 0.31.0
 

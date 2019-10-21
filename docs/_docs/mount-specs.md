@@ -101,7 +101,7 @@ Now, let's suppose we want our `ColorComponent` to have a default width and enfo
 @OnMeasure
 static void onMeasure(
     ComponentContext context,
-    Component component,
+    ComponentLayout layout,
     int widthSpec,
     int heightSpec,
     Size size) {

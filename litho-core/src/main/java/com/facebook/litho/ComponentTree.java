@@ -1,11 +1,11 @@
 /*
- * Copyright 2014-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,6 +18,7 @@ package com.facebook.litho;
 
 import static android.os.Process.THREAD_PRIORITY_DEFAULT;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_LAYOUT_CALCULATE;
+import static com.facebook.litho.FrameworkLogEvents.EVENT_LAYOUT_STATE_FUTURE_GET_WAIT;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_PRE_ALLOCATE_MOUNT_CONTENT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_ATTRIBUTION;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_IS_BACKGROUND_LAYOUT;
@@ -45,6 +46,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.infer.annotation.ReturnsOwnership;
 import com.facebook.infer.annotation.ThreadConfined;
@@ -59,7 +61,9 @@ import com.facebook.litho.stats.LithoStats;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.ref.WeakReference;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -84,11 +88,16 @@ import javax.annotation.concurrent.GuardedBy;
 public class ComponentTree {
 
   public static final int INVALID_ID = -1;
+  private static final String INVALID_KEY = "LithoTooltipController:InvalidKey";
+  private static final String INVALID_HANDLE = "LithoTooltipController:InvalidHandle";
   private static final String TAG = ComponentTree.class.getSimpleName();
   private static final int SIZE_UNINITIALIZED = -1;
   private static final String DEFAULT_LAYOUT_THREAD_NAME = "ComponentLayoutThread";
   private static final String DEFAULT_PMC_THREAD_NAME = "PreallocateMountContentThread";
   private static final String EMPTY_STRING = "";
+  private static final String REENTRANT_MOUNTS_EXCEED_MAX_ATTEMPTS =
+      "ComponentTree:ReentrantMountsExceedMaxAttempts";
+  private static final int REENTRANT_MOUNTS_MAX_ATTEMPTS = 25;
 
   private static final int SCHEDULE_NONE = 0;
   private static final int SCHEDULE_LAYOUT_ASYNC = 1;
@@ -98,6 +107,7 @@ public class ComponentTree {
   private boolean mReleased;
   private String mReleasedComponent;
   private @Nullable AttachDetachHandler mAttachDetachHandler;
+  private @Nullable Deque<ReentrantMount> mReentrantMounts;
 
   @IntDef({SCHEDULE_NONE, SCHEDULE_LAYOUT_ASYNC, SCHEDULE_LAYOUT_SYNC})
   @Retention(RetentionPolicy.SOURCE)
@@ -354,8 +364,7 @@ public class ComponentTree {
       handler =
           ComponentsConfiguration.threadPoolForBackgroundThreadsConfig == null
               ? new DefaultLithoHandler(getDefaultLayoutThreadLooper())
-              : new ThreadPoolLayoutHandler(
-                  ComponentsConfiguration.threadPoolForBackgroundThreadsConfig);
+              : ThreadPoolLayoutHandler.getDefaultInstance();
     } else {
       if (sDefaultLayoutThreadLooper != null
           && sBoostPerfLayoutStateFuture == false
@@ -629,6 +638,7 @@ public class ComponentTree {
     return false;
   }
 
+  @UiThread
   void incrementalMountComponent() {
     assertMainThread();
 
@@ -763,9 +773,22 @@ public class ComponentTree {
         || isCompatibleSpec(mBackgroundLayoutState, widthSpec, heightSpec);
   }
 
+  @UiThread
   void mountComponent(@Nullable Rect currentVisibleArea, boolean processVisibilityOutputs) {
     assertMainThread();
 
+    if (mIsMounting) {
+      collectReentrantMount(new ReentrantMount(currentVisibleArea, processVisibilityOutputs));
+      return;
+    }
+
+    mountComponentInternal(currentVisibleArea, processVisibilityOutputs);
+
+    consumeReentrantMounts();
+  }
+
+  private void mountComponentInternal(
+      @Nullable Rect currentVisibleArea, boolean processVisibilityOutputs) {
     final LayoutState layoutState = mMainThreadLayoutState;
     if (layoutState == null) {
       Log.w(TAG, "Main Thread Layout state is not found");
@@ -803,6 +826,42 @@ public class ComponentTree {
     if (isDirtyMount) {
       mLithoView.onDirtyMountComplete();
     }
+  }
+
+  private void collectReentrantMount(ReentrantMount reentrantMount) {
+    if (mReentrantMounts == null) {
+      mReentrantMounts = new ArrayDeque<>();
+    } else if (mReentrantMounts.size() > REENTRANT_MOUNTS_MAX_ATTEMPTS) {
+      logReentrantMountsExceedMaxAttempts();
+      mReentrantMounts.clear();
+      return;
+    }
+    mReentrantMounts.add(reentrantMount);
+  }
+
+  private void consumeReentrantMounts() {
+    if (mReentrantMounts != null) {
+      final Deque<ReentrantMount> reentrantMounts = new ArrayDeque<>(mReentrantMounts);
+      mReentrantMounts.clear();
+
+      while (!reentrantMounts.isEmpty()) {
+        final ReentrantMount reentrantMount = reentrantMounts.pollFirst();
+        mLithoView.setMountStateDirty();
+        mountComponentInternal(
+            reentrantMount.currentVisibleArea, reentrantMount.processVisibilityOutputs);
+      }
+    }
+  }
+
+  private void logReentrantMountsExceedMaxAttempts() {
+    final String message =
+        "Reentrant mounts exceed max attempts"
+            + ", view="
+            + (mLithoView != null ? LithoViewTestHelper.toDebugString(mLithoView) : null)
+            + ", component="
+            + (mRoot != null ? mRoot : getSimpleName());
+    ComponentsReporter.emitMessage(
+        ComponentsReporter.LogLevel.FATAL, REENTRANT_MOUNTS_EXCEED_MAX_ATTEMPTS, message);
   }
 
   void applyPreviousRenderData(LayoutState layoutState) {
@@ -986,13 +1045,13 @@ public class ComponentTree {
       @Nullable final Map<String, Component> attachables;
       synchronized (this) {
         final StateHandler layoutStateStateHandler = localLayoutState.consumeStateHandler();
-        components = new ArrayList<>(localLayoutState.getComponents());
+
         attachables = localLayoutState.consumeAttachables();
         if (layoutStateStateHandler != null) {
           mStateHandler.commit(layoutStateStateHandler);
         }
 
-        localLayoutState.clearComponents();
+        components = localLayoutState.consumeComponents();
         mMainThreadLayoutState = localLayoutState;
       }
 
@@ -1002,7 +1061,9 @@ public class ComponentTree {
         getOrCreateAttachDetachHandler().onAttached(attachables);
       }
 
-      bindEventAndTriggerHandlers(components);
+      if (components != null) {
+        bindEventAndTriggerHandlers(components);
+      }
 
       // We need to force remount on layout
       mLithoView.setMountStateDirty();
@@ -1519,13 +1580,45 @@ public class ComponentTree {
     }
 
     if (!componentKeysToBounds.containsKey(anchorGlobalKey)) {
-      throw new IllegalArgumentException(
+      ComponentsReporter.emitMessage(
+          ComponentsReporter.LogLevel.ERROR,
+          INVALID_KEY,
           "Cannot find a component with key " + anchorGlobalKey + " to use as anchor.");
+      return;
     }
 
     final Rect anchorBounds = componentKeysToBounds.get(anchorGlobalKey);
     LithoTooltipController.showOnAnchor(
         tooltip, anchorBounds, mLithoView, tooltipPosition, xOffset, yOffset);
+  }
+
+  void showTooltipOnHandle(
+      ComponentContext componentContext,
+      LithoTooltip lithoTooltip,
+      Handle handle,
+      int xOffset,
+      int yOffset) {
+    assertMainThread();
+
+    final Map<Handle, Rect> componentHandleToBounds;
+    synchronized (this) {
+      componentHandleToBounds = mMainThreadLayoutState.getComponentHandleToBounds();
+    }
+
+    final Rect anchorBounds = componentHandleToBounds.get(handle);
+
+    if (handle == null || anchorBounds == null) {
+      ComponentsReporter.emitMessage(
+          ComponentsReporter.LogLevel.ERROR,
+          INVALID_HANDLE,
+          "Cannot find a component with handle "
+              + handle
+              + " to use as anchor.\nComponent: "
+              + componentContext.getComponentScope().getSimpleName());
+      return;
+    }
+
+    lithoTooltip.showLithoTooltip(mLithoView, anchorBounds, xOffset, yOffset);
   }
 
   void showTooltip(LithoTooltip lithoTooltip, String anchorGlobalKey, int xOffset, int yOffset) {
@@ -1537,8 +1630,11 @@ public class ComponentTree {
     }
 
     if (!componentKeysToBounds.containsKey(anchorGlobalKey)) {
-      throw new IllegalArgumentException(
+      ComponentsReporter.emitMessage(
+          ComponentsReporter.LogLevel.ERROR,
+          INVALID_KEY,
           "Cannot find a component with key " + anchorGlobalKey + " to use as anchor.");
+      return;
     }
 
     final Rect anchorBounds = componentKeysToBounds.get(anchorGlobalKey);
@@ -1758,8 +1854,8 @@ public class ComponentTree {
     final PerfEvent layoutEvent =
         logger != null
             ? LogTreePopulator.populatePerfEventFromLogger(
-                mContext,
                 logger,
+                mContext.getLogTag(),
                 logger.newPerformanceEvent(mContext, EVENT_LAYOUT_CALCULATE),
                 treeProps)
             : null;
@@ -1827,9 +1923,7 @@ public class ComponentTree {
           rootHeight = localLayoutState.getHeight();
         }
 
-        components = new ArrayList<>(localLayoutState.getComponents());
-        localLayoutState.clearComponents();
-
+        components = localLayoutState.consumeComponents();
         attachables = localLayoutState.consumeAttachables();
 
         // Set the new layout state.
@@ -2170,6 +2264,29 @@ public class ComponentTree {
     return localLayoutStateFuture;
   }
 
+  /*
+   * The layouts which this ComponentTree was currently calculating will be terminated before
+   * a valid result is computed. It's not safe to try to compute any layouts for this ComponentTree
+   * after that because it's in an incomplete state, so it needs to be released.
+   */
+  public void cancelLayoutAndReleaseTree() {
+    if (!mUseCancelableLayoutFutures) {
+      ComponentsReporter.emitMessage(
+          ComponentsReporter.LogLevel.ERROR,
+          TAG,
+          "Cancelling layouts for a ComponentTree with useCancelableLayoutFutures set to false is a no-op.");
+      return;
+    }
+
+    synchronized (mLayoutStateFutureLock) {
+      for (int i = 0, size = mLayoutStateFutures.size(); i < size; i++) {
+        mLayoutStateFutures.get(i).release();
+      }
+    }
+
+    release();
+  }
+
   /** Calculates a LayoutState for the given LayoutStateFuture on the thread that calls this. */
   private @Nullable LayoutState calculateLayoutState(
       int source, LayoutStateFuture layoutStateFuture) {
@@ -2453,6 +2570,7 @@ public class ComponentTree {
       final int runningThreadId = this.runningThreadId.get();
       final int originalThreadPriority;
       final boolean didRaiseThreadPriority;
+      final boolean shouldLogWaiting;
       final boolean notRunningOnMyThread = runningThreadId != Process.myTid();
 
       final boolean shouldWaitForResult = !futureTask.isDone() && notRunningOnMyThread;
@@ -2471,10 +2589,11 @@ public class ComponentTree {
                 : ThreadUtils.tryRaiseThreadPriority(
                     runningThreadId, Process.THREAD_PRIORITY_DISPLAY);
         didRaiseThreadPriority = true;
-
+        shouldLogWaiting = true;
       } else {
         originalThreadPriority = THREAD_PRIORITY_DEFAULT;
         didRaiseThreadPriority = false;
+        shouldLogWaiting = false;
       }
 
       final LayoutState result;
@@ -2486,7 +2605,19 @@ public class ComponentTree {
               .arg("runningThreadId", runningThreadId)
               .flush();
         }
+
+        final ComponentsLogger logger = getContextLogger();
+        final PerfEvent logFutureTaskGetWaiting =
+            shouldLogWaiting && logger != null
+                ? LogTreePopulator.populatePerfEventFromLogger(
+                    mContext,
+                    logger,
+                    logger.newPerformanceEvent(mContext, EVENT_LAYOUT_STATE_FUTURE_GET_WAIT))
+                : null;
         result = futureTask.get();
+        if (logFutureTaskGetWaiting != null) {
+          logger.logPerfEvent(logFutureTaskGetWaiting);
+        }
         if (shouldTrace) {
           ComponentsSystrace.endSection();
         }
@@ -2694,6 +2825,19 @@ public class ComponentTree {
 
   public synchronized void updateMeasureListener(@Nullable MeasureListener measureListener) {
     mMeasureListener = measureListener;
+  }
+
+  /**
+   * An encapsulation of currentVisibleArea and processVisibilityOutputs for each re-entrant mount.
+   */
+  private static final class ReentrantMount {
+    @Nullable final Rect currentVisibleArea;
+    final boolean processVisibilityOutputs;
+
+    private ReentrantMount(@Nullable Rect currentVisibleArea, boolean processVisibilityOutputs) {
+      this.currentVisibleArea = currentVisibleArea;
+      this.processVisibilityOutputs = processVisibilityOutputs;
+    }
   }
 
   /** A builder class that can be used to create a {@link ComponentTree}. */

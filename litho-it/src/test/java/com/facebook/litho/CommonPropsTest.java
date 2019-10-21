@@ -1,11 +1,11 @@
 /*
- * Copyright 2014-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,6 +18,8 @@ package com.facebook.litho;
 
 import static com.facebook.litho.it.R.drawable.background_with_padding;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -173,7 +175,7 @@ public class CommonPropsTest {
     mCommonProps.shadowElevationPx(60);
 
     mCommonProps.clipToOutline(false);
-    mCommonProps.transitionKey("transitionKey");
+    mCommonProps.transitionKey("transitionKey", "");
     mCommonProps.testKey("testKey");
 
     final EventHandler<DispatchPopulateAccessibilityEventEvent>
@@ -303,7 +305,7 @@ public class CommonPropsTest {
     verify(mNodeInfo).setShadowElevation(60);
 
     verify(mNodeInfo).setClipToOutline(false);
-    verify(mNode).transitionKey("transitionKey");
+    verify(mNode).transitionKey(eq("transitionKey"), anyString());
     verify(mNode).testKey("testKey");
 
     verify(mNodeInfo).setAccessibilityRole(AccessibilityRole.BUTTON);

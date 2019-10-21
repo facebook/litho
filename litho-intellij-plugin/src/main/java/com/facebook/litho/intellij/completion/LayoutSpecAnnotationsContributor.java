@@ -1,11 +1,11 @@
 /*
- * Copyright 2019-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.facebook.litho.intellij.completion;
 
 import static com.facebook.litho.intellij.completion.CompletionUtils.METHOD_ANNOTATION;
@@ -48,11 +49,13 @@ import com.intellij.codeInsight.completion.CompletionType;
 import com.intellij.codeInsight.completion.InsertionContext;
 import com.intellij.codeInsight.completion.JavaClassNameCompletionContributor;
 import com.intellij.codeInsight.lookup.LookupElement;
+import com.intellij.codeInsight.lookup.LookupElementDecorator;
 import com.intellij.codeInsight.lookup.LookupElementPresentation;
 import com.intellij.codeInsight.lookup.LookupItem;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.JavaPsiFacade;
 import com.intellij.psi.PsiClass;
+import com.intellij.psi.PsiElement;
 import com.intellij.util.Consumer;
 import com.intellij.util.IncorrectOperationException;
 import com.intellij.util.ProcessingContext;
@@ -66,15 +69,15 @@ import java.util.Set;
 /** Contributor suggests completion for the available annotations in the Layout Spec. */
 public class LayoutSpecAnnotationsContributor extends CompletionContributor {
 
-  private static final CompletionProvider<CompletionParameters> LAYOUT_SPEC_ANNOTATION_PROVIDER =
-      new LayoutSpecAnnotationsCompletionProvider();
-
   public LayoutSpecAnnotationsContributor() {
-    extend(CompletionType.BASIC, METHOD_ANNOTATION, LAYOUT_SPEC_ANNOTATION_PROVIDER);
+    extend(
+        CompletionType.BASIC, METHOD_ANNOTATION, LayoutSpecAnnotationsCompletionProvider.INSTANCE);
   }
 
   static class LayoutSpecAnnotationsCompletionProvider
       extends CompletionProvider<CompletionParameters> {
+    static final CompletionProvider<CompletionParameters> INSTANCE =
+        new LayoutSpecAnnotationsCompletionProvider();
 
     static final Set<String> ANNOTATION_QUALIFIED_NAMES = new HashSet<>();
 
@@ -137,14 +140,14 @@ public class LayoutSpecAnnotationsContributor extends CompletionContributor {
 
     @Override
     public void consume(CompletionResult completionResult) {
+      PsiElement psiElement = completionResult.getLookupElement().getPsiElement();
       Optional<String> qualifiedName =
-          Optional.ofNullable(completionResult.getLookupElement().getPsiElement())
+          Optional.ofNullable(psiElement)
               .filter(PsiClass.class::isInstance)
-              .map(PsiClass.class::cast)
-              .map(PsiClass::getQualifiedName)
+              .map(psiClass -> ((PsiClass) psiClass).getQualifiedName())
               .filter(replacedQualifiedNames::remove);
       if (qualifiedName.isPresent()) {
-        result.addElement(SpecLookupElement.create(qualifiedName.get(), project));
+        result.addElement(SpecLookupElement.create((PsiClass) psiElement));
       } else {
         result.passResult(completionResult);
       }
@@ -160,10 +163,9 @@ public class LayoutSpecAnnotationsContributor extends CompletionContributor {
     }
   }
 
-  /** Lookup item logs its usage, and renders an element with Spec type shown. */
-  static class SpecLookupElement extends LookupElement {
+  /** Lookup item logs its usage, and renders an element with Litho type. */
+  static class SpecLookupElement extends LookupElementDecorator<LookupItem> {
     static final Map<String, LookupElement> CACHE = new HashMap<>(20);
-    private final LookupItem<Object> lookupItem;
 
     /**
      * @param qualifiedName the name of the class to create lookup.
@@ -188,35 +190,30 @@ public class LayoutSpecAnnotationsContributor extends CompletionContributor {
       return new SpecLookupElement(typeCls);
     }
 
+    static LookupElement create(PsiClass typeCls) {
+      String qualifiedName = typeCls.getQualifiedName();
+      if (CACHE.containsKey(qualifiedName)) {
+        return CACHE.get(qualifiedName);
+      }
+      SpecLookupElement lookupElement = new SpecLookupElement(typeCls);
+      CACHE.put(qualifiedName, lookupElement);
+      return lookupElement;
+    }
+
     private SpecLookupElement(PsiClass typeCls) {
-      this(JavaClassNameCompletionContributor.createClassLookupItem(typeCls, true));
-    }
-
-    private SpecLookupElement(LookupItem<Object> lookupItem) {
-      this.lookupItem = lookupItem;
-    }
-
-    @Override
-    public String getLookupString() {
-      return lookupItem.getLookupString();
-    }
-
-    @Override
-    public Set<String> getAllLookupStrings() {
-      return lookupItem.getAllLookupStrings();
+      super(JavaClassNameCompletionContributor.createClassLookupItem(typeCls, true));
     }
 
     @Override
     public void handleInsert(InsertionContext context) {
-      lookupItem.handleInsert(context);
-
+      super.handleInsert(context);
       LithoLoggerProvider.getEventLogger()
-          .log(EventLogger.EVENT_COMPLETION_ANNOTATION + "." + lookupItem.getPresentableText());
+          .log(EventLogger.EVENT_COMPLETION_ANNOTATION + "." + super.getLookupString());
     }
 
     @Override
     public void renderElement(LookupElementPresentation presentation) {
-      lookupItem.renderElement(presentation);
+      super.renderElement(presentation);
       presentation.setTypeText("Litho");
       presentation.setTypeGrayed(true);
     }
@@ -224,21 +221,6 @@ public class LayoutSpecAnnotationsContributor extends CompletionContributor {
     @Override
     public boolean isCaseSensitive() {
       return false;
-    }
-
-    @Override
-    public int hashCode() {
-      return lookupItem.hashCode();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-      return lookupItem.equals(o);
-    }
-
-    @Override
-    public Object getObject() {
-      return lookupItem.getObject();
     }
   }
 }

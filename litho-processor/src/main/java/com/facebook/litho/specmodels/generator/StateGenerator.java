@@ -1,11 +1,11 @@
 /*
- * Copyright 2014-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,6 +19,7 @@ package com.facebook.litho.specmodels.generator;
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.STATE_CONTAINER_FIELD_NAME;
 import static com.facebook.litho.specmodels.generator.StateContainerGenerator.getStateContainerClassName;
 
+import androidx.annotation.VisibleForTesting;
 import com.facebook.litho.annotations.Param;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.ClassNames;
@@ -42,9 +43,9 @@ import javax.lang.model.element.Modifier;
 public class StateGenerator {
   static final int FLAG_LAZY = 1 << 31;
 
-  private static final String STATE_UPDATE_IMPL_NAME_SUFFIX = "StateUpdate";
   private static final String STATE_CONTAINER_NAME = "_stateContainer";
   private static final String LAZY_STATE_UPDATE_VALUE_PARAM = "lazyUpdateValue";
+  @VisibleForTesting public static final String STATE_UPDATE_PREFIX = "updateState:";
 
   private enum StateUpdateType {
     DEFAULT,
@@ -251,9 +252,9 @@ public class StateGenerator {
     }
     codeBlockBuilder.add(");\n");
     builder.addCode(codeBlockBuilder.build());
-
+    final String methodName = updateStateMethod.name.toString();
     final String stateUpdateAttribution =
-        '"' + specModel.getComponentName() + "." + updateStateMethod.name.toString() + '"';
+        '"' + STATE_UPDATE_PREFIX + specModel.getComponentName() + '.' + methodName + '"';
     final String stateUpdateMethod;
     switch (stateUpdateType) {
       case SYNC:

@@ -1,11 +1,11 @@
 /*
- * Copyright 2014-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -142,6 +142,7 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   private @Nullable boolean[] mIsPaddingPercent;
   private @Nullable Edges mTouchExpansion;
   private @Nullable String mTransitionKey;
+  private @Nullable String mTransitionOwnerKey;
   private @Nullable Transition.TransitionKeyType mTransitionKeyType;
   private @Nullable ArrayList<Transition> mTransitions;
   private @Nullable ArrayList<Component> mComponentsNeedingPreviousRenderData;
@@ -368,7 +369,7 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   @Override
   public InternalNode child(Component child) {
     if (child != null) {
-      return child(Layout.create(mComponentContext, child));
+      return child(LayoutState.createLayout(mComponentContext, child));
     }
 
     return this;
@@ -831,6 +832,11 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   }
 
   @Override
+  public @Nullable String getTransitionOwnerKey() {
+    return mTransitionOwnerKey;
+  }
+
+  @Override
   public @Nullable Transition.TransitionKeyType getTransitionKeyType() {
     return mTransitionKeyType;
   }
@@ -1261,10 +1267,11 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   }
 
   @Override
-  public InternalNode transitionKey(@Nullable String key) {
+  public InternalNode transitionKey(@Nullable String key, @Nullable String ownerKey) {
     if (SDK_INT >= ICE_CREAM_SANDWICH && !TextUtils.isEmpty(key)) {
       mPrivateFlags |= PFLAG_TRANSITION_KEY_IS_SET;
       mTransitionKey = key;
+      mTransitionOwnerKey = ownerKey;
     }
 
     return this;
@@ -1513,7 +1520,7 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
       target.border(mNestedTreeProps.mNestedTreeBorderWidth, mBorderColors, mBorderRadius);
     }
     if ((mPrivateFlags & PFLAG_TRANSITION_KEY_IS_SET) != 0L) {
-      target.transitionKey(mTransitionKey);
+      target.transitionKey(mTransitionKey, mTransitionOwnerKey);
     }
     if ((mPrivateFlags & PFLAG_TRANSITION_KEY_TYPE_IS_SET) != 0L) {
       target.transitionKeyType(mTransitionKeyType);
@@ -1926,7 +1933,11 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
 
     switch (mode) {
       case ReconciliationMode.COPY:
-        layout = reconcile(c, current, next, keys, ReconciliationMode.COPY);
+        if (ComponentsConfiguration.shouldUseDeepCloneDuringReconciliation) {
+          layout = current.deepClone();
+        } else {
+          layout = reconcile(c, current, next, keys, ReconciliationMode.COPY);
+        }
         break;
       case ReconciliationMode.RECONCILE:
         layout = reconcile(c, current, next, keys, ReconciliationMode.RECONCILE);

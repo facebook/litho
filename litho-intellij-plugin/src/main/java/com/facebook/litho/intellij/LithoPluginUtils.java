@@ -1,11 +1,11 @@
 /*
- * Copyright 2004-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.facebook.litho.intellij;
 
 import com.facebook.litho.annotations.Event;
@@ -49,7 +50,7 @@ import org.jetbrains.annotations.Nullable;
 public class LithoPluginUtils {
   private static final String SPEC_SUFFIX = "Spec";
 
-  public static boolean isComponentClass(PsiClass psiClass) {
+  public static boolean isComponentClass(@Nullable PsiClass psiClass) {
     return psiClass != null
         && psiClass.getSuperClass() != null
         && ("ComponentLifecycle".equals(psiClass.getSuperClass().getName())
@@ -62,6 +63,10 @@ public class LithoPluginUtils {
         .map(PsiClass::getQualifiedName)
         .filter(LithoClassNames.SECTION_CLASS_NAME::equals)
         .isPresent();
+  }
+
+  public static boolean isGeneratedClass(@Nullable PsiClass psiClass) {
+    return LithoPluginUtils.isComponentClass(psiClass) || LithoPluginUtils.isSectionClass(psiClass);
   }
 
   public static boolean isLithoSpec(@Nullable PsiFile psiFile) {
@@ -97,6 +102,7 @@ public class LithoPluginUtils {
   }
 
   @VisibleForTesting
+  @Contract("null -> false")
   /** @return if given name ends with "Spec". */
   static boolean isSpecName(@Nullable String clsName) {
     return clsName != null && clsName.endsWith(SPEC_SUFFIX);
@@ -209,13 +215,7 @@ public class LithoPluginUtils {
    */
   public static Optional<PsiClass> findGeneratedClass(String qualifiedSpecName, Project project) {
     return findGeneratedFile(qualifiedSpecName, project)
-        .flatMap(
-            generatedFile ->
-                getFirstClass(
-                    generatedFile,
-                    psiClass ->
-                        LithoPluginUtils.isComponentClass(psiClass)
-                            || LithoPluginUtils.isSectionClass(psiClass)));
+        .flatMap(generatedFile -> getFirstClass(generatedFile, LithoPluginUtils::isGeneratedClass));
   }
 
   /** Finds LayoutSpec class in the given file. */

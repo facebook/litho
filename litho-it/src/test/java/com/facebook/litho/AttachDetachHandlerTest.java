@@ -1,11 +1,11 @@
 /*
- * Copyright 2014-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,7 +26,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import com.facebook.litho.LayoutState.LayoutStateReferenceWrapper;
+import com.facebook.litho.LayoutState.LayoutStateContext;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.testing.TestAttachDetachComponent;
@@ -228,7 +228,7 @@ public class AttachDetachHandlerTest {
     ComponentsConfiguration.enableShouldCreateLayoutWithNewSizeSpec = true;
 
     final ComponentContext measureContext = new ComponentContext(mContext);
-    measureContext.setLayoutStateReferenceWrapperForTesting();
+    measureContext.setLayoutStateContextForTesting();
 
     final Component c1 = spy(TestAttachDetachComponent.create(mContext).build());
     final Component c2 = spy(TestAttachDetachComponent.create(mContext).build());
@@ -246,7 +246,7 @@ public class AttachDetachHandlerTest {
     ComponentsConfiguration.enableShouldCreateLayoutWithNewSizeSpec = true;
 
     final ComponentContext measureContext = new ComponentContext(mContext);
-    measureContext.setLayoutStateReferenceWrapperForTesting();
+    measureContext.setLayoutStateContextForTesting();
 
     final Component c1 = spy(TestAttachDetachComponent.create(mContext).build());
     final Component c2 = spy(TestAttachDetachComponent.create(mContext).build());
@@ -263,7 +263,7 @@ public class AttachDetachHandlerTest {
   public void testAttachDetachWithComponentCachedLayout() {
     final ComponentContext measureContext = new ComponentContext(mContext);
     final LayoutState layoutState = new LayoutState(measureContext);
-    measureContext.setLayoutStateReferenceWrapper(new LayoutStateReferenceWrapper(layoutState));
+    measureContext.setLayoutStateContext(new LayoutStateContext(layoutState));
 
     final Component component = spy(TestAttachDetachComponent.create(mContext, true).build());
 

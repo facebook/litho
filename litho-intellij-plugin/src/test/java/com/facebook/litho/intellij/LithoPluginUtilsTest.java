@@ -1,11 +1,11 @@
 /*
- * Copyright 2004-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.facebook.litho.intellij;
 
 import com.intellij.psi.PsiAnnotation;
@@ -29,9 +30,22 @@ public class LithoPluginUtilsTest {
   public void isComponentClass() {
     PsiClass component = createSubclassOf("com.facebook.litho.Component");
     Assert.assertTrue(LithoPluginUtils.isComponentClass(component));
+    Assert.assertTrue(LithoPluginUtils.isGeneratedClass(component));
 
     PsiClass notComponent = createSubclassOf("com.facebook.litho.Column");
     Assert.assertFalse(LithoPluginUtils.isComponentClass(notComponent));
+    Assert.assertFalse(LithoPluginUtils.isGeneratedClass(notComponent));
+  }
+
+  @Test
+  public void isSectionClass() {
+    PsiClass section = createSubclassOf("com.facebook.litho.sections.Section");
+    Assert.assertTrue(LithoPluginUtils.isSectionClass(section));
+    Assert.assertTrue(LithoPluginUtils.isGeneratedClass(section));
+
+    PsiClass notSection = createSubclassOf("com.facebook.litho.sections.SectionTest");
+    Assert.assertFalse(LithoPluginUtils.isSectionClass(notSection));
+    Assert.assertFalse(LithoPluginUtils.isGeneratedClass(notSection));
   }
 
   private static PsiClass createSubclassOf(String superClass) {
@@ -40,15 +54,6 @@ public class LithoPluginUtilsTest {
     Mockito.when(componentClass.getQualifiedName()).thenReturn(superClass);
     Mockito.when(componentSubclass.getSuperClass()).thenReturn(componentClass);
     return componentSubclass;
-  }
-
-  @Test
-  public void isSectionClass() {
-    PsiClass section = createSubclassOf("com.facebook.litho.sections.Section");
-    Assert.assertTrue(LithoPluginUtils.isSectionClass(section));
-
-    PsiClass notSection = createSubclassOf("com.facebook.litho.sections.SectionTest");
-    Assert.assertFalse(LithoPluginUtils.isSectionClass(notSection));
   }
 
   @Test

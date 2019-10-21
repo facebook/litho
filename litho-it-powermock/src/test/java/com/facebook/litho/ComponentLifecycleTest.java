@@ -1,11 +1,11 @@
 /*
- * Copyright 2014-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -107,7 +107,7 @@ public class ComponentLifecycleTest {
     StateHandler stateHandler = mock(StateHandler.class);
 
     final ComponentContext c = new ComponentContext(RuntimeEnvironment.application, stateHandler);
-    c.setLayoutStateReferenceWrapperForTesting();
+    c.setLayoutStateContextForTesting();
     mContext = spy(c);
     when(mNode.getContext()).thenReturn(mContext);
 
@@ -162,7 +162,6 @@ public class ComponentLifecycleTest {
         setUpSpyComponentForCreateLayout(true /* isMountSpec */, false /* canMeasure */);
     InternalNode node = LayoutState.createLayout(mContext, component, true);
 
-    verify(component).onCreateLayout(mContext);
     verify(node).appendComponent(component);
     verify(node, never()).setMeasureFunction(any(YogaMeasureFunction.class));
     verify(component).onPrepare(mContext);
@@ -174,7 +173,6 @@ public class ComponentLifecycleTest {
         setUpSpyComponentForCreateLayout(true /* isMountSpec */, false /* canMeasure */);
     InternalNode node = LayoutState.createLayout(mContext, component, false);
 
-    verify(component).onCreateLayout(mContext);
     verify(node).appendComponent(component);
     verify(node, never()).setMeasureFunction(any(YogaMeasureFunction.class));
     verify(component).onPrepare(mContext);
@@ -186,7 +184,6 @@ public class ComponentLifecycleTest {
         setUpSpyComponentForCreateLayout(true /* isMountSpec */, true /* canMeasure */);
     InternalNode node = LayoutState.createLayout(mContext, component, true);
 
-    verify(component).onCreateLayout(mContext);
     verify(node).appendComponent(component);
     verify(node).setMeasureFunction(any(YogaMeasureFunction.class));
     verify(component).onPrepare(mContext);
@@ -198,7 +195,6 @@ public class ComponentLifecycleTest {
         setUpSpyComponentForCreateLayout(true /* isMountSpec */, true /* canMeasure */);
     InternalNode node = LayoutState.createLayout(mContext, component, false);
 
-    verify(component).onCreateLayout(mContext);
     verify(node).appendComponent(component);
     verify(node).setMeasureFunction(any(YogaMeasureFunction.class));
     verify(component).onPrepare(mContext);

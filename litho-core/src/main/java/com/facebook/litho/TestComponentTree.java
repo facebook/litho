@@ -1,11 +1,11 @@
 /*
- * Copyright 2014-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -118,7 +118,7 @@ public class TestComponentTree extends ComponentTree {
 
   public static InternalNode resolveImmediateSubtree(
       ComponentContext c, Component component, int widthSpec, int heightSpec) {
-    c.setLayoutStateReferenceWrapperForTesting();
+    c.setLayoutStateContextForTesting();
 
     InternalNode node =
         TestLayoutState.createAndMeasureTreeForComponent(c, component, widthSpec, heightSpec);
@@ -153,6 +153,8 @@ public class TestComponentTree extends ComponentTree {
   public static List<Component> extractImmediateSubComponents(
       ComponentContext context, Component component, int widthSpec, int heightSpec) {
 
+    NodeConfig.sInternalNodeFactory = new TestInternalNodeFactory();
+
     ComponentTree tree = ComponentTree.create(context).build();
     ComponentContext c =
         new TestComponentContext(
@@ -160,6 +162,8 @@ public class TestComponentTree extends ComponentTree {
             new StateHandler());
 
     InternalNode root = resolveImmediateSubtree(c, component, widthSpec, heightSpec);
+
+    NodeConfig.sInternalNodeFactory = null;
 
     return extractImmediateSubComponents(root);
   }
@@ -194,6 +198,29 @@ public class TestComponentTree extends ComponentTree {
     public TestComponentTree build() {
 
       return new TestComponentTree(this);
+    }
+  }
+
+  public static class TestDefaultInternalNode extends DefaultInternalNode {
+
+    public TestDefaultInternalNode(ComponentContext c) {
+      super(c);
+    }
+
+    @Override
+    public InternalNode child(Component child) {
+      if (child != null) {
+        return child(TestLayoutState.newImmediateLayoutBuilder(getContext(), child));
+      }
+      return this;
+    }
+  }
+
+  public static class TestInternalNodeFactory implements NodeConfig.InternalNodeFactory {
+
+    @Override
+    public InternalNode create(ComponentContext c) {
+      return new TestDefaultInternalNode(c);
     }
   }
 }

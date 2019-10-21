@@ -1,11 +1,11 @@
 /*
- * Copyright 2018-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.facebook.litho.widget;
 
 import android.content.Context;
@@ -42,6 +43,9 @@ public class SnapUtil {
   /* This snap mode will cause a custom LinearSnapHelper to be used */
   public static final int SNAP_TO_CENTER_CHILD_WITH_CUSTOM_SPEED = Integer.MAX_VALUE - 2;
 
+  /* The default fling offset for StartSnapHelper */
+  public static final int SNAP_TO_START_DEFAULT_FLING_OFFSET = 1;
+
   @IntDef({
     SNAP_NONE,
     SNAP_TO_END,
@@ -54,12 +58,13 @@ public class SnapUtil {
   public @interface SnapMode {}
 
   @Nullable
-  public static SnapHelper getSnapHelper(@SnapMode int snapMode, int deltaJumpThreshold) {
+  public static SnapHelper getSnapHelper(
+      @SnapMode int snapMode, int deltaJumpThreshold, int startSnapFlingOffset) {
     switch (snapMode) {
       case SNAP_TO_CENTER:
         return new PagerSnapHelper();
       case SNAP_TO_START:
-        return new StartSnapHelper();
+        return new StartSnapHelper(startSnapFlingOffset);
       case SNAP_TO_CENTER_CHILD:
         return new LinearSnapHelper();
       case SNAP_TO_CENTER_CHILD_WITH_CUSTOM_SPEED:

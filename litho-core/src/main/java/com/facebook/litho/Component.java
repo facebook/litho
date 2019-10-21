@@ -1,11 +1,11 @@
 /*
- * Copyright 2014-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -88,6 +88,7 @@ public abstract class Component extends ComponentLifecycle
   private String mGlobalKey;
   @Nullable private String mKey;
   private boolean mHasManualKey;
+  @Nullable private Handle mHandle;
 
   @GuardedBy("this")
   private AtomicBoolean mLayoutVersionGenerator = new AtomicBoolean();
@@ -258,6 +259,17 @@ public abstract class Component extends ComponentLifecycle
     return mHasManualKey;
   }
 
+  /** @return if has a handle set */
+  boolean hasHandle() {
+    return mHandle != null;
+  }
+
+  /** @return a handle that is unique to this component. */
+  @Nullable
+  Handle getHandle() {
+    return mHandle;
+  }
+
   /** @return a key that is local to the component's parent. */
   String getKey() {
     if (mKey == null && !mHasManualKey) {
@@ -274,6 +286,15 @@ public abstract class Component extends ComponentLifecycle
   void setKey(String key) {
     mHasManualKey = true;
     mKey = key;
+  }
+
+  /**
+   * Set a handle that is unique to this component.
+   *
+   * @param handle handle
+   */
+  void setHandle(Handle handle) {
+    mHandle = handle;
   }
 
   /**
@@ -557,7 +578,7 @@ public abstract class Component extends ComponentLifecycle
       return willRender(component.mLayoutCreatedInWillRender);
     }
 
-    component.mLayoutCreatedInWillRender = Layout.create(c, component);
+    component.mLayoutCreatedInWillRender = LayoutState.createLayout(c, component);
     return willRender(component.mLayoutCreatedInWillRender);
   }
 
@@ -849,6 +870,11 @@ public abstract class Component extends ComponentLifecycle
         key = "null";
       }
       mComponent.setKey(key);
+      return getThis();
+    }
+
+    public T handle(Handle handle) {
+      mComponent.setHandle(handle);
       return getThis();
     }
 
@@ -1819,7 +1845,7 @@ public abstract class Component extends ComponentLifecycle
     }
 
     public T transitionKey(@Nullable String key) {
-      mComponent.getOrCreateCommonProps().transitionKey(key);
+      mComponent.getOrCreateCommonProps().transitionKey(key, mComponent.mOwnerGlobalKey);
       if (mComponent.getOrCreateCommonProps().getTransitionKeyType() == null) {
         // If TransitionKeyType isn't set, set to default type
         transitionKeyType(Transition.DEFAULT_TRANSITION_KEY_TYPE);

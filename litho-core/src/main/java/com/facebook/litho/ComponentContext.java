@@ -1,11 +1,11 @@
 /*
- * Copyright 2014-present Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -29,7 +29,7 @@ import androidx.annotation.StringRes;
 import androidx.annotation.StyleRes;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.infer.annotation.ThreadConfined;
-import com.facebook.litho.LayoutState.LayoutStateReferenceWrapper;
+import com.facebook.litho.LayoutState.LayoutStateContext;
 import com.facebook.litho.config.ComponentsConfiguration;
 
 /**
@@ -81,14 +81,13 @@ public class ComponentContext {
   private int mDefStyleAttr = 0;
 
   @ThreadConfined(ThreadConfined.ANY)
-  private @Nullable LayoutStateReferenceWrapper mLayoutStateReferenceWrapper;
+  private @Nullable LayoutStateContext mLayoutStateContext;
 
   public ComponentContext(Context context) {
     this(context, null, null, null);
   }
 
-  public ComponentContext(
-      Context context, LayoutStateReferenceWrapper layoutStateReferenceWrapper) {
+  public ComponentContext(Context context, LayoutStateContext layoutStateContext) {
     this(context, null, null, null);
   }
 
@@ -137,14 +136,14 @@ public class ComponentContext {
   }
 
   public ComponentContext(ComponentContext context) {
-    this(context, context.mStateHandler, context.mTreeProps, context.mLayoutStateReferenceWrapper);
+    this(context, context.mStateHandler, context.mTreeProps, context.mLayoutStateContext);
   }
 
   public ComponentContext(
       ComponentContext context,
       @Nullable StateHandler stateHandler,
       @Nullable TreeProps treeProps,
-      @Nullable LayoutStateReferenceWrapper layoutStateReferenceWrapper) {
+      @Nullable LayoutStateContext layoutStateContext) {
 
     mContext = context.mContext;
     mResourceCache = context.mResourceCache;
@@ -153,7 +152,7 @@ public class ComponentContext {
     mHeightSpec = context.mHeightSpec;
     mComponentScope = context.mComponentScope;
     mComponentTree = context.mComponentTree;
-    mLayoutStateReferenceWrapper = layoutStateReferenceWrapper;
+    mLayoutStateContext = layoutStateContext;
     mLogger = context.mLogger;
     mLogTag =
         context.mLogTag != null || mComponentTree == null
@@ -168,12 +167,12 @@ public class ComponentContext {
     return new ComponentContext(this);
   }
 
-  void setLayoutStateReferenceWrapper(LayoutStateReferenceWrapper layoutStateReferenceWrapper) {
-    mLayoutStateReferenceWrapper = layoutStateReferenceWrapper;
+  void setLayoutStateContext(LayoutStateContext layoutStateContext) {
+    mLayoutStateContext = layoutStateContext;
   }
 
-  public void setLayoutStateReferenceWrapperForTesting() {
-    setLayoutStateReferenceWrapper(LayoutStateReferenceWrapper.getTestInstance(this));
+  public void setLayoutStateContextForTesting() {
+    setLayoutStateContext(LayoutStateContext.getTestInstance(this));
   }
 
   /**
@@ -181,15 +180,12 @@ public class ComponentContext {
    * reference hasn't been nullified.
    */
   boolean hasLayoutState() {
-    return mLayoutStateReferenceWrapper != null
-        && mLayoutStateReferenceWrapper.getLayoutState() != null;
+    return mLayoutStateContext != null && mLayoutStateContext.getLayoutState() != null;
   }
 
   @Nullable
   LayoutState getLayoutState() {
-    return mLayoutStateReferenceWrapper == null
-        ? null
-        : mLayoutStateReferenceWrapper.getLayoutState();
+    return mLayoutStateContext == null ? null : mLayoutStateContext.getLayoutState();
   }
 
   public final Context getAndroidContext() {
@@ -235,9 +231,7 @@ public class ComponentContext {
   @Nullable
   @VisibleForTesting
   public ComponentTree.LayoutStateFuture getLayoutStateFuture() {
-    return mLayoutStateReferenceWrapper == null
-        ? null
-        : mLayoutStateReferenceWrapper.getLayoutStateFuture();
+    return mLayoutStateContext == null ? null : mLayoutStateContext.getLayoutStateFuture();
   }
 
   /**
@@ -403,36 +397,6 @@ public class ComponentContext {
     return new EventTrigger<>(parentKey, id, childKey);
   }
 
-  InternalNode newLayoutBuilder(@AttrRes int defStyleAttr, @StyleRes int defStyleRes) {
-    final InternalNode node = InternalNodeUtils.create(this);
-    applyStyle(node, defStyleAttr, defStyleRes);
-    return node;
-  }
-
-  InternalNode newLayoutBuilder(
-      Component component, @AttrRes int defStyleAttr, @StyleRes int defStyleRes) {
-    final InternalNode layoutCreatedInWillRender = component.consumeLayoutCreatedInWillRender();
-    if (layoutCreatedInWillRender != null) {
-      return layoutCreatedInWillRender;
-    }
-
-    component = component.getThreadSafeInstance();
-
-    component.updateInternalChildState(this);
-
-    if (ComponentsConfiguration.isDebugModeEnabled) {
-      DebugComponent.applyOverrides(this, component);
-    }
-
-    final InternalNode node =
-        LayoutState.createLayout(component.getScopedContext(), component, false);
-    if (node != NULL_LAYOUT) {
-      applyStyle(node, defStyleAttr, defStyleRes);
-    }
-
-    return node;
-  }
-
   int getWidthSpec() {
     return mWidthSpec;
   }
@@ -454,6 +418,9 @@ public class ComponentContext {
     return mStateHandler;
   }
 
+  /**
+   * TODO: (T55170222) Remove, use {@link InternalNodeUtils#applyStyles(InternalNode, int, int)}.
+   */
   void applyStyle(InternalNode node, @AttrRes int defStyleAttr, @StyleRes int defStyleRes) {
     if (defStyleAttr != 0 || defStyleRes != 0) {
       setDefStyle(defStyleAttr, defStyleRes);
@@ -504,15 +471,11 @@ public class ComponentContext {
   }
 
   boolean wasLayoutCanceled() {
-    return mLayoutStateReferenceWrapper == null
-        ? false
-        : mLayoutStateReferenceWrapper.isLayoutReleased();
+    return mLayoutStateContext == null ? false : mLayoutStateContext.isLayoutReleased();
   }
 
   boolean wasLayoutInterrupted() {
-    return mLayoutStateReferenceWrapper == null
-        ? false
-        : mLayoutStateReferenceWrapper.isLayoutInterrupted();
+    return mLayoutStateContext == null ? false : mLayoutStateContext.isLayoutInterrupted();
   }
 
   public boolean isReconciliationEnabled() {
