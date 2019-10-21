@@ -1140,9 +1140,9 @@ public class LayoutStateCalculateTest {
 
     // First and third output are the background and the foreground
     assertThat(getComponentAt(layoutState, 1)).isInstanceOf(DrawableComponent.class);
-    assertThat(((DrawableComponent) getComponentAt(layoutState,1)).isBackground()).isTrue();
+    assertThat(((DrawableComponent) getComponentAt(layoutState,1)).isRippleBackground()).isFalse();
     assertThat(getComponentAt(layoutState, 3)).isInstanceOf(DrawableComponent.class);
-    assertThat(((DrawableComponent) getComponentAt(layoutState,3)).isBackground()).isFalse();
+    assertThat(((DrawableComponent) getComponentAt(layoutState,3)).isRippleBackground()).isFalse();
   }
 
   @Test
@@ -1170,7 +1170,7 @@ public class LayoutStateCalculateTest {
 
     // First output is the background
     assertThat(getComponentAt(layoutState, 1)).isInstanceOf(DrawableComponent.class);
-    assertThat(((DrawableComponent) getComponentAt(layoutState,1)).isBackground()).isTrue();
+    assertThat(((DrawableComponent) getComponentAt(layoutState,1)).isRippleBackground()).isFalse();
   }
 
   @Test

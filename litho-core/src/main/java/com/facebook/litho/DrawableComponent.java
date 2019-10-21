@@ -16,20 +16,26 @@
 
 package com.facebook.litho;
 
+import static android.os.Build.VERSION.SDK_INT;
+
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.RippleDrawable;
+import android.os.Build.VERSION_CODES;
 import com.facebook.litho.drawable.ComparableDrawable;
+import com.facebook.litho.drawable.DefaultComparableDrawable;
 
 class DrawableComponent<T extends Drawable> extends Component {
 
-  ComparableDrawable mDrawable;
+  private final  ComparableDrawable mDrawable;
   int mDrawableWidth;
   int mDrawableHeight;
-  private boolean isBackground;
+  private boolean isRippleBackground;
 
   private DrawableComponent(ComparableDrawable drawable) {
     super("DrawableComponent");
     mDrawable = drawable;
+    isRippleBackground = false;
   }
 
   @Override
@@ -85,7 +91,7 @@ class DrawableComponent<T extends Drawable> extends Component {
     return !previousDrawable.isEquivalentTo(nextDrawable);
   }
 
-  private ComparableDrawable getDrawable() {
+  ComparableDrawable getDrawable() {
     return mDrawable;
   }
 
@@ -108,24 +114,41 @@ class DrawableComponent<T extends Drawable> extends Component {
     mDrawableWidth = drawableWidth;
   }
 
+
   /**
-   * Indicates if this component is a background for a ComponentHost.
+   * Indicates if this component is a ripple drawable background for a ComponentHost.
    *
    * <p>This will help to check if the background is a ripple drawable. We have to set
    * RippleDrawables to the view's background so ripple can be projected outside the view bounds.
    */
-  public void setIsBackground(boolean isBackground) {
-    this.isBackground = isBackground;
+  public void mayBeSetIsRippleBackground() {
+    if (SDK_INT < VERSION_CODES.LOLLIPOP) {
+      return;
+    }
+
+    if (!(mDrawable instanceof DefaultComparableDrawable)) {
+      return;
+    }
+    // We need to unwrap the RippleDrawable from DefaultComparableDrawable since
+    // DefaultComparableDrawable does not override all the methods necessary for Ripple drawable to
+    // be projected outside the bounds.
+    // We need to get the wrapped drawable to identify if it's a ripple drawable or not.
+    Drawable unwrappedDrawable = ((DefaultComparableDrawable) mDrawable).getWrappedDrawable();
+    // We will set the view's background only if it's RippleDrawable
+    if (unwrappedDrawable instanceof RippleDrawable) {
+      isRippleBackground = true;
+    }
   }
 
   /**
-   * Returns true if this component is a background for a ComponentHost or else returns false.
+   * Returns true if this component contains a RippleDrawable background for a ComponentHost or else
+   * returns false.
    *
    * <p>This will help to check if the background is a ripple drawable. We have to set
    * RippleDrawables to the view's background so ripple can be projected outside the view bounds.
    */
-  public boolean isBackground() {
-    return isBackground;
+  public boolean isRippleBackground() {
+    return isRippleBackground;
   }
 
   private int getDrawableWidth() {
