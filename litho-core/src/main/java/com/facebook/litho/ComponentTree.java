@@ -89,6 +89,7 @@ public class ComponentTree {
 
   public static final int INVALID_ID = -1;
   private static final String INVALID_KEY = "LithoTooltipController:InvalidKey";
+  private static final String INVALID_HANDLE = "LithoTooltipController:InvalidHandle";
   private static final String TAG = ComponentTree.class.getSimpleName();
   private static final int SIZE_UNINITIALIZED = -1;
   private static final String DEFAULT_LAYOUT_THREAD_NAME = "ComponentLayoutThread";
@@ -1589,6 +1590,35 @@ public class ComponentTree {
     final Rect anchorBounds = componentKeysToBounds.get(anchorGlobalKey);
     LithoTooltipController.showOnAnchor(
         tooltip, anchorBounds, mLithoView, tooltipPosition, xOffset, yOffset);
+  }
+
+  void showTooltipOnHandle(
+      ComponentContext componentContext,
+      LithoTooltip lithoTooltip,
+      Handle handle,
+      int xOffset,
+      int yOffset) {
+    assertMainThread();
+
+    final Map<Handle, Rect> componentHandleToBounds;
+    synchronized (this) {
+      componentHandleToBounds = mMainThreadLayoutState.getComponentHandleToBounds();
+    }
+
+    final Rect anchorBounds = componentHandleToBounds.get(handle);
+
+    if (handle == null || anchorBounds == null) {
+      ComponentsReporter.emitMessage(
+          ComponentsReporter.LogLevel.ERROR,
+          INVALID_HANDLE,
+          "Cannot find a component with handle "
+              + handle
+              + " to use as anchor.\nComponent: "
+              + componentContext.getComponentScope().getSimpleName());
+      return;
+    }
+
+    lithoTooltip.showLithoTooltip(mLithoView, anchorBounds, xOffset, yOffset);
   }
 
   void showTooltip(LithoTooltip lithoTooltip, String anchorGlobalKey, int xOffset, int yOffset) {

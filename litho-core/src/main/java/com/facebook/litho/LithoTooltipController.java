@@ -63,7 +63,9 @@ public class LithoTooltipController {
    * @param handle A {@link Handle} used to discover the object in the hierarchy.
    */
   public static void showTooltipOnHandle(
-      ComponentContext c, LithoTooltip lithoTooltip, Handle handle) {}
+      ComponentContext c, LithoTooltip lithoTooltip, Handle handle) {
+    showTooltipOnHandle(c, lithoTooltip, handle, 0, 0);
+  }
 
   /**
    * Show the given tooltip on the component with the given handle instance.
@@ -75,7 +77,15 @@ public class LithoTooltipController {
    * @param yOffset vertical offset from default position where the tooltip shows.
    */
   public static void showTooltipOnHandle(
-      ComponentContext c, LithoTooltip lithoTooltip, Handle handle, int xOffset, int yOffset) {}
+      ComponentContext c, LithoTooltip lithoTooltip, Handle handle, int xOffset, int yOffset) {
+    final ComponentTree componentTree = c.getComponentTree();
+
+    if (componentTree == null || componentTree.isReleased() || !componentTree.hasMounted()) {
+      return;
+    }
+
+    componentTree.showTooltipOnHandle(c, lithoTooltip, handle, xOffset, yOffset);
+  }
 
   /**
    * Show the given tooltip on the component with the given handle instance.
@@ -87,7 +97,21 @@ public class LithoTooltipController {
    * @param yOffset vertical offset from default position where the tooltip shows.
    */
   public static void showTooltipOnHandle(
-      ComponentContext c, PopupWindow popupWindow, Handle handle, int xOffset, int yOffset) {}
+      ComponentContext c, final PopupWindow popupWindow, Handle handle, int xOffset, int yOffset) {
+    showTooltipOnHandle(
+        c,
+        new LithoTooltip() {
+          @Override
+          public void showLithoTooltip(
+              View container, Rect anchorBounds, int xOffset, int yOffset) {
+            popupWindow.showAsDropDown(
+                container, anchorBounds.left + xOffset, anchorBounds.bottom + yOffset);
+          }
+        },
+        handle,
+        xOffset,
+        yOffset);
+  }
 
   /**
    * Show the given tooltip with the specified offsets from the bottom-left corner of the component
@@ -120,10 +144,7 @@ public class LithoTooltipController {
   /**
    * Show the given tooltip on the component with the given anchorKey.
    *
-   * @param c
-   * @param lithoTooltip A {@link LithoTooltip} implementation to be shown on the anchor.
-   * @param anchorKey key of the Litho Component that will be used as anchor. If unset, the root
-   *     component will be used as the anchor.
+   * @deprecated @see {@link #showTooltipOnHandle(ComponentContext, LithoTooltip, Handle)}
    */
   @Deprecated
   public static void showTooltip(
@@ -134,12 +155,7 @@ public class LithoTooltipController {
   /**
    * Show the given tooltip on the component with the given anchorKey.
    *
-   * @param c
-   * @param lithoTooltip A {@link LithoTooltip} implementation to be shown on the anchor.
-   * @param anchorKey key of the Litho Component that will be used as anchor. If unset, the root
-   *     component will be used as the anchor.
-   * @param xOffset horizontal offset from default position where the tooltip shows.
-   * @param yOffset vertical offset from default position where the tooltip shows.
+   * @deprecated @see {@link #showTooltipOnHandle(ComponentContext, LithoTooltip, Handle, int, int)}
    */
   @Deprecated
   public static void showTooltip(

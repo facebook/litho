@@ -196,6 +196,7 @@ class LayoutState {
   private static final boolean IS_TEST = "robolectric".equals(Build.FINGERPRINT);
 
   private final Map<String, Rect> mComponentKeyToBounds = new HashMap<>();
+  private final Map<Handle, Rect> mComponentHandleToBounds = new HashMap<>();
   @Nullable private List<Component> mComponents;
 
   private final ComponentContext mContext;
@@ -976,6 +977,9 @@ class LayoutState {
         if (delegate.getGlobalKey() != null) {
           layoutState.mComponentKeyToBounds.put(delegate.getGlobalKey(), copyRect);
         }
+        if (delegate.hasHandle()) {
+          layoutState.mComponentHandleToBounds.put(delegate.getHandle(), copyRect);
+        }
       }
     }
 
@@ -1029,6 +1033,10 @@ class LayoutState {
 
   Map<String, Rect> getComponentKeyToBounds() {
     return mComponentKeyToBounds;
+  }
+
+  Map<Handle, Rect> getComponentHandleToBounds() {
+    return mComponentHandleToBounds;
   }
 
   @Nullable
