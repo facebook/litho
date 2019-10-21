@@ -1097,8 +1097,9 @@ class LayoutState {
     final Component drawableComponent = DrawableComponent.create(drawable);
 
     if (type == OutputUnitType.BACKGROUND) {
-      // set that this DrawableComponent is a background to be set on the ComponentHost.
-      ((DrawableComponent) drawableComponent).setIsBackground(true);
+      // set that this DrawableComponent is a background to be set on the ComponentHost only if the
+      // drawableComponent contains a ripple drawable.
+      ((DrawableComponent) drawableComponent).mayBeSetIsRippleBackground();
     }
 
     drawableComponent.setScopedContext(

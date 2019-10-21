@@ -1317,33 +1317,15 @@ public class ComponentHost extends ViewGroup {
    */
   @Nullable
   private static Drawable getRippleDrawable(MountItem mountItem) {
-    final Drawable drawable = (Drawable) mountItem.getContent();
     final Component component = mountItem.getComponent();
-
-    if (SDK_INT < VERSION_CODES.LOLLIPOP) {
-      return null;
-    }
-
-    if (!(drawable instanceof MatrixDrawable)) {
-      return null;
-    }
-
-    if (!(component instanceof DrawableComponent)
-        && !((DrawableComponent) component).isBackground()) {
-      return null;
-    }
-
-    Drawable wrappedbyMatrix = ((MatrixDrawable) drawable).getMountedDrawable();
-    if (!(wrappedbyMatrix instanceof DefaultComparableDrawable)) {
-      return null;
-    }
-    // We need to unwrap the RippleDrawable from DefaultComparableDrawable since
-    // DefaultComparableDrawable does not override all the methods necessary for Ripple drawable to
-    // be projected outside the bounds.
-    // We need to get the wrapped drawable to identify if it's a ripple drawable or not.
-    Drawable unwrappedDrawable = ((DefaultComparableDrawable) wrappedbyMatrix).getWrappedDrawable();
-    // We will set the view's background only if it's RippleDrawable
-    if (unwrappedDrawable instanceof RippleDrawable) {
+    // Check if the drawable component is a ripple drawable and it's a background.
+    // If the mountItem has a rippleDrawable, then we have to set it as this
+    // ComponentHost's background.
+    if (component instanceof DrawableComponent
+        && ((DrawableComponent) component).isRippleBackground()) {
+      Drawable unwrappedDrawable =
+          ((DefaultComparableDrawable) ((DrawableComponent) component).getDrawable())
+              .getWrappedDrawable();
       return unwrappedDrawable;
     }
     return null;
