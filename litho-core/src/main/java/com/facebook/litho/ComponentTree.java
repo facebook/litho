@@ -2264,6 +2264,29 @@ public class ComponentTree {
     return localLayoutStateFuture;
   }
 
+  /*
+   * The layouts which this ComponentTree was currently calculating will be terminated before
+   * a valid result is computed. It's not safe to try to compute any layouts for this ComponentTree
+   * after that because it's in an incomplete state, so it needs to be released.
+   */
+  public void cancelLayoutAndReleaseTree() {
+    if (!mUseCancelableLayoutFutures) {
+      ComponentsReporter.emitMessage(
+          ComponentsReporter.LogLevel.ERROR,
+          TAG,
+          "Cancelling layouts for a ComponentTree with useCancelableLayoutFutures set to false is a no-op.");
+      return;
+    }
+
+    synchronized (mLayoutStateFutureLock) {
+      for (int i = 0, size = mLayoutStateFutures.size(); i < size; i++) {
+        mLayoutStateFutures.get(i).release();
+      }
+    }
+
+    release();
+  }
+
   /** Calculates a LayoutState for the given LayoutStateFuture on the thread that calls this. */
   private @Nullable LayoutState calculateLayoutState(
       int source, LayoutStateFuture layoutStateFuture) {

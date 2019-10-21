@@ -173,6 +173,19 @@ public class ComponentWarmer {
     return mCache.remove(tag);
   }
 
+  /**
+   * Cancels the prepare execution for the item with the given tag if it's currently running and it
+   * removes the item from the cache.
+   */
+  public void cancelPrepare(String tag) {
+    final ComponentTreeHolder holder = mCache.remove(tag);
+    if (holder == null || holder.getComponentTree() == null) {
+      return;
+    }
+
+    holder.getComponentTree().cancelLayoutAndReleaseTree();
+  }
+
   @VisibleForTesting
   @Nullable
   ComponentTreeHolderPreparer getFactory() {
