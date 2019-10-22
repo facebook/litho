@@ -46,15 +46,43 @@ import javax.annotation.concurrent.GuardedBy;
  * things. This is the base class from which all new component types inherit.
  */
 public abstract class ComponentLifecycle implements EventDispatcher, EventTriggerTarget {
+  private static final AtomicInteger sComponentTypeId = new AtomicInteger();
+  private static final int DEFAULT_MAX_PREALLOCATION = 3;
+
   // This name needs to match the generated code in specmodels in
   // com.facebook.litho.specmodels.generator.EventCaseGenerator#INTERNAL_ON_ERROR_HANDLER_NAME.
   // Since we cannot easily share this identifier across modules, we verify the consistency through
   // integration tests.
   static final int ERROR_EVENT_HANDLER_ID = "__internalOnErrorHandler".hashCode();
-  static final YogaMeasureFunction sMeasureFunction = new LithoYogaMeasureFunction();
-  private static final AtomicInteger sComponentTypeId = new AtomicInteger();
-  private static final int DEFAULT_MAX_PREALLOCATION = 3;
+
+  public enum MountType {
+    NONE,
+    DRAWABLE,
+    VIEW,
+  }
+
+  /**
+   * Generated component's state container could implement this interface along with {@link
+   * StateContainer} when componentspec specifies state update method with {@link
+   * com.facebook.litho.annotations.OnUpdateStateWithTransition} annotation.
+   */
+  public interface TransitionContainer {
+
+    /** Remove and return transition provided from OnUpdateStateWithTransition. */
+    Transition consumeTransition();
+  }
+
+  /**
+   * A per-Component-class data structure to keep track of some of the last mounted @Prop/@State
+   * params a component was rendered with. The exact params that are tracked are just the ones
+   * needed to support that Component's use of {@link Diff} params in their lifecycle methods that
+   * allow Diff params (e.g. {@link #onCreateTransition}).
+   */
+  public interface RenderData {}
+
   private static final YogaBaselineFunction sBaselineFunction = new LithoYogaBaselineFunction();
+
+  static final YogaMeasureFunction sMeasureFunction = new LithoYogaMeasureFunction();
 
   @GuardedBy("sTypeIdByComponentType")
   private static final Map<Object, Integer> sTypeIdByComponentType = new HashMap<>();
@@ -83,11 +111,8 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     }
   }
 
-  @Override
-  @Nullable
-  public Object acceptTriggerEvent(EventTrigger eventTrigger, Object eventState, Object[] params) {
-    // Do nothing by default
-    return null;
+  int getTypeId() {
+    return mTypeId;
   }
 
   @ThreadSafe(enableChecks = false)
@@ -103,90 +128,6 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
         ComponentsSystrace.endSection();
       }
     }
-  }
-
-  @Override
-  public @Nullable Object dispatchOnEvent(EventHandler eventHandler, Object eventState) {
-    if (ComponentsConfiguration.enableOnErrorHandling
-        && eventHandler.id == ERROR_EVENT_HANDLER_ID) {
-      ((Component) this).getErrorHandler().dispatchEvent(((ErrorEvent) eventState));
-    }
-
-    // Don't do anything by default, unless we're handling an error.
-    return null;
-  }
-
-  /**
-   * This indicates the type of the {@link Object} that will be returned by {@link
-   * ComponentLifecycle#mount}.
-   *
-   * @return one of {@link ComponentLifecycle.MountType}
-   */
-  public MountType getMountType() {
-    return MountType.NONE;
-  }
-
-  void bind(ComponentContext c, Object mountedContent) {
-    c.enterNoStateUpdatesMethod("bind");
-
-    final boolean isTracing = ComponentsSystrace.isTracing();
-    if (isTracing) {
-      ComponentsSystrace.beginSection("onBind:" + ((Component) this).getSimpleName());
-    }
-    try {
-      onBind(c, mountedContent);
-    } finally {
-      if (isTracing) {
-        ComponentsSystrace.endSection();
-      }
-    }
-
-    c.exitNoStateUpdatesMethod();
-  }
-
-  boolean canUsePreviousLayout(ComponentContext context) {
-    return ComponentsConfiguration.enableShouldCreateLayoutWithNewSizeSpec
-        && !onShouldCreateLayoutWithNewSizeSpec(
-            context, context.getWidthSpec(), context.getHeightSpec());
-  }
-
-  @ThreadSafe(enableChecks = false)
-  Component createComponentLayout(ComponentContext c) {
-    Component layoutComponent = null;
-
-    try {
-      if (Component.isLayoutSpecWithSizeSpec(((Component) this))) {
-        layoutComponent = onCreateLayoutWithSizeSpec(c, c.getWidthSpec(), c.getHeightSpec());
-      } else {
-        layoutComponent = onCreateLayout(c);
-      }
-    } catch (Exception e) {
-      dispatchErrorEvent(c, e);
-    }
-
-    return layoutComponent;
-  }
-
-  final @Nullable Transition createTransition(ComponentContext c) {
-    final Transition transition = onCreateTransition(c);
-    if (transition != null) {
-      TransitionUtils.setOwnerKey(transition, ((Component) this).getGlobalKey());
-    }
-    return transition;
-  }
-
-  int getTypeId() {
-    return mTypeId;
-  }
-
-  void loadStyle(ComponentContext c, @AttrRes int defStyleAttr, @StyleRes int defStyleRes) {
-    c.setDefStyle(defStyleAttr, defStyleRes);
-    onLoadStyle(c);
-    c.setDefStyle(0, 0);
-  }
-
-  void loadStyle(ComponentContext c) {
-    onLoadStyle(c);
   }
 
   void mount(ComponentContext c, Object convertContent) {
@@ -210,12 +151,22 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     c.exitNoStateUpdatesMethod();
   }
 
-  final boolean shouldComponentUpdate(Component previous, Component next) {
-    if (isPureRender()) {
-      return shouldUpdate(previous, next);
+  void bind(ComponentContext c, Object mountedContent) {
+    c.enterNoStateUpdatesMethod("bind");
+
+    final boolean isTracing = ComponentsSystrace.isTracing();
+    if (isTracing) {
+      ComponentsSystrace.beginSection("onBind:" + ((Component) this).getSimpleName());
+    }
+    try {
+      onBind(c, mountedContent);
+    } finally {
+      if (isTracing) {
+        ComponentsSystrace.endSection();
+      }
     }
 
-    return true;
+    c.exitNoStateUpdatesMethod();
   }
 
   void unbind(ComponentContext c, Object mountedContent) {
@@ -226,336 +177,30 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     onUnmount(c, mountedContent);
   }
 
-  protected void applyPreviousRenderData(RenderData previousRenderData) {}
-
-  protected boolean callsShouldUpdateOnMount() {
-    return false;
+  final @Nullable Transition createTransition(ComponentContext c) {
+    final Transition transition = onCreateTransition(c);
+    if (transition != null) {
+      TransitionUtils.setOwnerKey(transition, ((Component) this).getGlobalKey());
+    }
+    return transition;
   }
 
-  /**
-   * Whether this {@link ComponentLifecycle} is able to measure itself according to specific size
-   * constraints.
-   */
-  protected boolean canMeasure() {
-    return false;
+  @ThreadSafe(enableChecks = false)
+  Component createComponentLayout(ComponentContext c) {
+    Component layoutComponent = null;
+
+    try {
+      if (Component.isLayoutSpecWithSizeSpec(((Component) this))) {
+        layoutComponent = onCreateLayoutWithSizeSpec(c, c.getWidthSpec(), c.getHeightSpec());
+      } else {
+        layoutComponent = onCreateLayout(c);
+      }
+    } catch (Exception e) {
+      dispatchErrorEvent(c, e);
+    }
+
+    return layoutComponent;
   }
-
-  /** @return true if this component can be preallocated. */
-  protected boolean canPreallocate() {
-    return false;
-  }
-
-  protected void createInitialState(ComponentContext c) {}
-
-  protected void dispatchOnEnteredRange(String name) {
-    // Do nothing by default
-  }
-
-  protected void dispatchOnExitedRange(String name) {
-    // Do nothing by default
-  }
-
-  /**
-   * Get extra accessibility node id at a given point within the component.
-   *
-   * @param x x co-ordinate within the mounted component
-   * @param y y co-ordinate within the mounted component
-   * @return the extra virtual view id if one is found, otherwise {@code
-   *     ExploreByTouchHelper#INVALID_ID}
-   */
-  protected int getExtraAccessibilityNodeAt(int x, int y) {
-    return ExploreByTouchHelper.INVALID_ID;
-  }
-
-  /**
-   * The number of extra accessibility nodes that this component wishes to provides to the
-   * accessibility system.
-   *
-   * @return the number of extra nodes
-   */
-  protected int getExtraAccessibilityNodesCount() {
-    return 0;
-  }
-
-  /** Updates the TreeProps map with outputs from all {@link OnCreateTreeProp} methods. */
-  protected TreeProps getTreePropsForChildren(ComponentContext c, TreeProps previousTreeProps) {
-    return previousTreeProps;
-  }
-
-  /**
-   * @return true if the component implements {@link OnAttached} or {@link OnDetached} delegate
-   *     methods.
-   */
-  protected boolean hasAttachDetachCallback() {
-    return false;
-  }
-
-  /**
-   * Whether this {@link ComponentLifecycle} mounts views that contain component-based content that
-   * can be incrementally mounted e.g. if the mounted view has a LithoView with incremental mount
-   * enabled.
-   */
-  protected boolean hasChildLithoViews() {
-    return false;
-  }
-
-  /** @return true if the Component is using state, false otherwise. */
-  protected boolean hasState() {
-    return false;
-  }
-
-  /**
-   * Whether this component will populate any accessibility nodes or events that are passed to it.
-   *
-   * @return true if the component implements accessibility info
-   */
-  protected boolean implementsAccessibility() {
-    return false;
-  }
-
-  /**
-   * Whether this component will expose any virtual views to the accessibility framework
-   *
-   * @return true if the component exposes extra accessibility nodes
-   */
-  protected boolean implementsExtraAccessibilityNodes() {
-    return false;
-  }
-
-  /**
-   * @return {@code true} iff the {@link LayoutSpec} implements {@link
-   *     OnShouldCreateLayoutWithNewSizeSpec} to {@code true}.
-   */
-  protected boolean isLayoutSpecWithSizeSpecCheck() {
-    return false;
-  }
-
-  /** @return true if Mount uses @FromMeasure or @FromOnBoundsDefined parameters. */
-  protected boolean isMountSizeDependent() {
-    return false;
-  }
-
-  protected boolean isPureRender() {
-    return false;
-  }
-
-  protected boolean needsPreviousRenderData() {
-    return false;
-  }
-
-  /**
-   * Called when the component is attached to the {@link ComponentTree}.
-   *
-   * @param c The {@link ComponentContext} the Component was constructed with.
-   */
-  protected void onAttached(ComponentContext c) {}
-
-  protected void onBind(ComponentContext c, Object mountedContent) {
-    // Do nothing by default.
-  }
-
-  /**
-   * Called after the layout calculation is finished and the given {@link ComponentLayout} has its
-   * bounds defined. You can use {@link ComponentLayout#getX()}, {@link ComponentLayout#getY()},
-   * {@link ComponentLayout#getWidth()}, and {@link ComponentLayout#getHeight()} to get the size and
-   * position of the component in the layout tree.
-   *
-   * @param c The {@link Context} used by this component.
-   * @param layout The {@link ComponentLayout} with defined position and size.
-   */
-  protected void onBoundsDefined(ComponentContext c, ComponentLayout layout) {}
-
-  /**
-   * Generate a tree of {@link ComponentLayout} representing the layout structure of the {@link
-   * Component} and its sub-components.
-   *
-   * @param c The {@link ComponentContext} to build a {@link ComponentLayout} tree.
-   */
-  protected Component onCreateLayout(ComponentContext c) {
-    return Column.create(c).build();
-  }
-
-  protected Component onCreateLayoutWithSizeSpec(
-      ComponentContext c, int widthSpec, int heightSpec) {
-    return Column.create(c).build();
-  }
-
-  /**
-   * Create the object that will be mounted in the {@link LithoView}.
-   *
-   * @param context The {@link Context} to be used to create the content.
-   * @return an Object that can be mounted for this component.
-   */
-  protected Object onCreateMountContent(Context context) {
-    throw new RuntimeException(
-        "Trying to mount a MountSpec that doesn't implement @OnCreateMountContent");
-  }
-
-  /**
-   * @return the MountContentPool that should be used to recycle mount content for this mount spec.
-   */
-  protected MountContentPool onCreateMountContentPool() {
-    return new DefaultMountContentPool(getClass().getSimpleName(), poolSize(), true);
-  }
-
-  /**
-   * @return a {@link TransitionSet} specifying how to animate this component to its new layout and
-   *     props.
-   */
-  protected @Nullable Transition onCreateTransition(ComponentContext c) {
-    return null;
-  }
-
-  /**
-   * Called when the component is detached from the {@link ComponentTree}.
-   *
-   * @param c The {@link ComponentContext} the Component was constructed with.
-   */
-  protected void onDetached(ComponentContext c) {}
-
-  /**
-   * Called to provide a fallback if a supported lifecycle method throws an exception. It is
-   * possible to either recover from the error here or reraise the exception to catch it at a higher
-   * level or crash the application.
-   *
-   * @see com.facebook.litho.annotations.OnError
-   * @param c The {@link ComponentContext} the Component was constructed with.
-   * @param e The exception caught.
-   */
-  protected void onError(ComponentContext c, Exception e) {
-    throw new RuntimeException(e);
-  }
-
-  protected void onLoadStyle(ComponentContext c) {}
-
-  protected void onMeasure(
-      ComponentContext c, ComponentLayout layout, int widthSpec, int heightSpec, Size size) {
-    throw new IllegalStateException(
-        "You must override onMeasure() if you return true in canMeasure(), "
-            + "ComponentLifecycle is: "
-            + this);
-  }
-
-  /**
-   * Called during layout calculation to determine the baseline of a component.
-   *
-   * @param c The {@link Context} used by this component.
-   * @param width The width of this component.
-   * @param height The height of this component.
-   */
-  protected int onMeasureBaseline(ComponentContext c, int width, int height) {
-    return height;
-  }
-
-  /**
-   * Deploy all UI elements representing the final bounds defined in the given {@link
-   * ComponentLayout}. Return either a {@link Drawable} or a {@link View} or {@code null} to be
-   * mounted.
-   *
-   * @param c The {@link ComponentContext} to mount the component into.
-   */
-  protected void onMount(ComponentContext c, Object convertContent) {
-    // Do nothing by default.
-  }
-
-  /**
-   * Populate an accessibility node with information about the component.
-   *
-   * @param accessibilityNode node to populate
-   */
-  protected void onPopulateAccessibilityNode(
-      View host, AccessibilityNodeInfoCompat accessibilityNode) {}
-
-  /**
-   * Populate an extra accessibility node.
-   *
-   * @param accessibilityNode node to populate
-   * @param extraNodeIndex index of extra node
-   * @param componentBoundsX left bound of the mounted component
-   * @param componentBoundsY top bound of the mounted component
-   */
-  protected void onPopulateExtraAccessibilityNode(
-      AccessibilityNodeInfoCompat accessibilityNode,
-      int extraNodeIndex,
-      int componentBoundsX,
-      int componentBoundsY) {}
-
-  protected void onPrepare(ComponentContext c) {
-    // do nothing, by default
-  }
-
-  protected boolean onShouldCreateLayoutWithNewSizeSpec(
-      ComponentContext context, int newWidthSpec, int newHeightSpec) {
-    return true;
-  }
-
-  protected void onUnbind(ComponentContext c, Object mountedContent) {
-    // Do nothing by default.
-  }
-
-  /**
-   * Unload UI elements associated with this component.
-   *
-   * @param c The {@link Context} for this mount operation.
-   * @param mountedContent The {@link Drawable} or {@link View} mounted by this component.
-   */
-  protected void onUnmount(ComponentContext c, Object mountedContent) {
-    // Do nothing by default.
-  }
-
-  @ThreadSafe
-  protected int poolSize() {
-    return DEFAULT_MAX_PREALLOCATION;
-  }
-
-  /**
-   * Retrieves all of the tree props used by this Component from the TreeProps map and sets the tree
-   * props as fields on the ComponentImpl.
-   */
-  protected void populateTreeProps(TreeProps parentTreeProps) {}
-
-  protected @Nullable RenderData recordRenderData(RenderData toRecycle) {
-    return null;
-  }
-
-  /** Resolves the {@link ComponentLayout} for the given {@link Component}. */
-  protected ComponentLayout resolve(ComponentContext c) {
-    return LayoutState.createLayout(c, (Component) this, false);
-  }
-
-  /**
-   * @return true if the Component should always be measured when receiving a remeasure event, false
-   *     otherwise.
-   */
-  protected boolean shouldAlwaysRemeasure() {
-    return false;
-  }
-
-  /**
-   * Whether the component needs updating.
-   *
-   * <p>For layout components, the framework will verify that none of the children of the component
-   * need updating, and that both components have the same number of children. Therefore this method
-   * just needs to determine any changes to the top-level component that would cause it to need to
-   * be updated (for example, a click handler was added).
-   *
-   * <p>For mount specs, the framework does nothing extra and this method alone determines whether
-   * the component is updated or not.
-   *
-   * @param previous the previous component to compare against.
-   * @param next the component that is now in use.
-   * @return true if the component needs an update, false otherwise.
-   */
-  protected boolean shouldUpdate(Component previous, Component next) {
-    return !previous.isEquivalentTo(next);
-  }
-
-  /**
-   * Call this to transfer the {@link com.facebook.litho.annotations.State} annotated values between
-   * two {@link Component} with the same global scope.
-   */
-  protected void transferState(
-      StateContainer previousStateContainer, StateContainer nextStateContainer) {}
 
   /**
    * Reraise an error event up the hierarchy so it can be caught by another component, or reach the
@@ -597,20 +242,342 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     }
   }
 
+  void loadStyle(ComponentContext c, @AttrRes int defStyleAttr, @StyleRes int defStyleRes) {
+    c.setDefStyle(defStyleAttr, defStyleRes);
+    onLoadStyle(c);
+    c.setDefStyle(0, 0);
+  }
+
+  void loadStyle(ComponentContext c) {
+    onLoadStyle(c);
+  }
+
+  /**
+   * Retrieves all of the tree props used by this Component from the TreeProps map and sets the tree
+   * props as fields on the ComponentImpl.
+   */
+  protected void populateTreeProps(TreeProps parentTreeProps) {}
+
+  /** Updates the TreeProps map with outputs from all {@link OnCreateTreeProp} methods. */
+  protected TreeProps getTreePropsForChildren(ComponentContext c, TreeProps previousTreeProps) {
+    return previousTreeProps;
+  }
+
+  /**
+   * Generate a tree of {@link ComponentLayout} representing the layout structure of the {@link
+   * Component} and its sub-components.
+   *
+   * @param c The {@link ComponentContext} to build a {@link ComponentLayout} tree.
+   */
+  protected Component onCreateLayout(ComponentContext c) {
+    return Column.create(c).build();
+  }
+
+  protected Component onCreateLayoutWithSizeSpec(
+      ComponentContext c, int widthSpec, int heightSpec) {
+    return Column.create(c).build();
+  }
+
+  /** Resolves the {@link ComponentLayout} for the given {@link Component}. */
+  protected ComponentLayout resolve(ComponentContext c) {
+    return LayoutState.createLayout(c, (Component) this, false);
+  }
+
+  protected void onPrepare(ComponentContext c) {
+    // do nothing, by default
+  }
+
+  protected void onLoadStyle(ComponentContext c) {}
+
+  /**
+   * Called after the layout calculation is finished and the given {@link ComponentLayout} has its
+   * bounds defined. You can use {@link ComponentLayout#getX()}, {@link ComponentLayout#getY()},
+   * {@link ComponentLayout#getWidth()}, and {@link ComponentLayout#getHeight()} to get the size and
+   * position of the component in the layout tree.
+   *
+   * @param c The {@link Context} used by this component.
+   * @param layout The {@link ComponentLayout} with defined position and size.
+   */
+  protected void onBoundsDefined(ComponentContext c, ComponentLayout layout) {}
+
+  /**
+   * Called during layout calculation to determine the baseline of a component.
+   *
+   * @param c The {@link Context} used by this component.
+   * @param width The width of this component.
+   * @param height The height of this component.
+   */
+  protected int onMeasureBaseline(ComponentContext c, int width, int height) {
+    return height;
+  }
+
+  /**
+   * Whether this {@link ComponentLifecycle} is able to measure itself according to specific size
+   * constraints.
+   */
+  protected boolean canMeasure() {
+    return false;
+  }
+
+  /**
+   * @return {@code true} iff the {@link LayoutSpec} implements {@link
+   *     OnShouldCreateLayoutWithNewSizeSpec} to {@code true}.
+   */
+  protected boolean isLayoutSpecWithSizeSpecCheck() {
+    return false;
+  }
+
+  protected void onMeasure(
+      ComponentContext c, ComponentLayout layout, int widthSpec, int heightSpec, Size size) {
+    throw new IllegalStateException(
+        "You must override onMeasure() if you return true in canMeasure(), "
+            + "ComponentLifecycle is: "
+            + this);
+  }
+
+  /**
+   * Whether this {@link ComponentLifecycle} mounts views that contain component-based content that
+   * can be incrementally mounted e.g. if the mounted view has a LithoView with incremental mount
+   * enabled.
+   */
+  protected boolean hasChildLithoViews() {
+    return false;
+  }
+
+  /**
+   * Create the object that will be mounted in the {@link LithoView}.
+   *
+   * @param context The {@link Context} to be used to create the content.
+   * @return an Object that can be mounted for this component.
+   */
+  protected Object onCreateMountContent(Context context) {
+    throw new RuntimeException(
+        "Trying to mount a MountSpec that doesn't implement @OnCreateMountContent");
+  }
+
+  /**
+   * @return the MountContentPool that should be used to recycle mount content for this mount spec.
+   */
+  protected MountContentPool onCreateMountContentPool() {
+    return new DefaultMountContentPool(getClass().getSimpleName(), poolSize(), true);
+  }
+
+  /**
+   * Deploy all UI elements representing the final bounds defined in the given {@link
+   * ComponentLayout}. Return either a {@link Drawable} or a {@link View} or {@code null} to be
+   * mounted.
+   *
+   * @param c The {@link ComponentContext} to mount the component into.
+   */
+  protected void onMount(ComponentContext c, Object convertContent) {
+    // Do nothing by default.
+  }
+
+  /**
+   * Unload UI elements associated with this component.
+   *
+   * @param c The {@link Context} for this mount operation.
+   * @param mountedContent The {@link Drawable} or {@link View} mounted by this component.
+   */
+  protected void onUnmount(ComponentContext c, Object mountedContent) {
+    // Do nothing by default.
+  }
+
+  protected void onBind(ComponentContext c, Object mountedContent) {
+    // Do nothing by default.
+  }
+
+  protected void onUnbind(ComponentContext c, Object mountedContent) {
+    // Do nothing by default.
+  }
+
+  /**
+   * This indicates the type of the {@link Object} that will be returned by {@link
+   * ComponentLifecycle#mount}.
+   *
+   * @return one of {@link ComponentLifecycle.MountType}
+   */
+  public MountType getMountType() {
+    return MountType.NONE;
+  }
+
+  /**
+   * Populate an accessibility node with information about the component.
+   *
+   * @param accessibilityNode node to populate
+   */
+  protected void onPopulateAccessibilityNode(
+      View host, AccessibilityNodeInfoCompat accessibilityNode) {}
+
+  /**
+   * Populate an extra accessibility node.
+   *
+   * @param accessibilityNode node to populate
+   * @param extraNodeIndex index of extra node
+   * @param componentBoundsX left bound of the mounted component
+   * @param componentBoundsY top bound of the mounted component
+   */
+  protected void onPopulateExtraAccessibilityNode(
+      AccessibilityNodeInfoCompat accessibilityNode,
+      int extraNodeIndex,
+      int componentBoundsX,
+      int componentBoundsY) {}
+
+  /**
+   * Get extra accessibility node id at a given point within the component.
+   *
+   * @param x x co-ordinate within the mounted component
+   * @param y y co-ordinate within the mounted component
+   * @return the extra virtual view id if one is found, otherwise {@code
+   *     ExploreByTouchHelper#INVALID_ID}
+   */
+  protected int getExtraAccessibilityNodeAt(int x, int y) {
+    return ExploreByTouchHelper.INVALID_ID;
+  }
+
+  /**
+   * The number of extra accessibility nodes that this component wishes to provides to the
+   * accessibility system.
+   *
+   * @return the number of extra nodes
+   */
+  protected int getExtraAccessibilityNodesCount() {
+    return 0;
+  }
+
+  /**
+   * Whether this component will expose any virtual views to the accessibility framework
+   *
+   * @return true if the component exposes extra accessibility nodes
+   */
+  protected boolean implementsExtraAccessibilityNodes() {
+    return false;
+  }
+
+  /**
+   * Whether this component will populate any accessibility nodes or events that are passed to it.
+   *
+   * @return true if the component implements accessibility info
+   */
+  protected boolean implementsAccessibility() {
+    return false;
+  }
+
+  /**
+   * Call this to transfer the {@link com.facebook.litho.annotations.State} annotated values between
+   * two {@link Component} with the same global scope.
+   */
+  protected void transferState(
+      StateContainer previousStateContainer, StateContainer nextStateContainer) {}
+
+  protected void createInitialState(ComponentContext c) {}
+
+  /**
+   * Called to provide a fallback if a supported lifecycle method throws an exception. It is
+   * possible to either recover from the error here or reraise the exception to catch it at a higher
+   * level or crash the application.
+   *
+   * @see com.facebook.litho.annotations.OnError
+   * @param c The {@link ComponentContext} the Component was constructed with.
+   * @param e The exception caught.
+   */
+  protected void onError(ComponentContext c, Exception e) {
+    throw new RuntimeException(e);
+  }
+
+  @Override
+  public @Nullable Object dispatchOnEvent(EventHandler eventHandler, Object eventState) {
+    if (ComponentsConfiguration.enableOnErrorHandling
+        && eventHandler.id == ERROR_EVENT_HANDLER_ID) {
+      ((Component) this).getErrorHandler().dispatchEvent(((ErrorEvent) eventState));
+    }
+
+    // Don't do anything by default, unless we're handling an error.
+    return null;
+  }
+
+  @Override
   @Nullable
-  protected static EventTrigger getEventTrigger(ComponentContext c, int id, String key) {
-    if (c.getComponentScope() == null) {
-      return null;
+  public Object acceptTriggerEvent(EventTrigger eventTrigger, Object eventState, Object[] params) {
+    // Do nothing by default
+    return null;
+  }
+
+  protected void dispatchOnEnteredRange(String name) {
+    // Do nothing by default
+  }
+
+  protected void dispatchOnExitedRange(String name) {
+    // Do nothing by default
+  }
+
+  protected boolean isPureRender() {
+    return false;
+  }
+
+  protected boolean callsShouldUpdateOnMount() {
+    return false;
+  }
+
+  /** @return true if Mount uses @FromMeasure or @FromOnBoundsDefined parameters. */
+  protected boolean isMountSizeDependent() {
+    return false;
+  }
+
+  @ThreadSafe
+  protected int poolSize() {
+    return DEFAULT_MAX_PREALLOCATION;
+  }
+
+  /** @return true if this component can be preallocated. */
+  protected boolean canPreallocate() {
+    return false;
+  }
+
+  final boolean shouldComponentUpdate(Component previous, Component next) {
+    if (isPureRender()) {
+      return shouldUpdate(previous, next);
     }
 
-    EventTrigger trigger =
-        c.getComponentTree().getEventTrigger(c.getComponentScope().getGlobalKey() + id + key);
+    return true;
+  }
 
-    if (trigger == null) {
-      return null;
-    }
+  /**
+   * Whether the component needs updating.
+   *
+   * <p>For layout components, the framework will verify that none of the children of the component
+   * need updating, and that both components have the same number of children. Therefore this method
+   * just needs to determine any changes to the top-level component that would cause it to need to
+   * be updated (for example, a click handler was added).
+   *
+   * <p>For mount specs, the framework does nothing extra and this method alone determines whether
+   * the component is updated or not.
+   *
+   * @param previous the previous component to compare against.
+   * @param next the component that is now in use.
+   * @return true if the component needs an update, false otherwise.
+   */
+  protected boolean shouldUpdate(Component previous, Component next) {
+    return !previous.isEquivalentTo(next);
+  }
 
-    return trigger;
+  boolean canUsePreviousLayout(ComponentContext context) {
+    return ComponentsConfiguration.enableShouldCreateLayoutWithNewSizeSpec
+        && !onShouldCreateLayoutWithNewSizeSpec(
+            context, context.getWidthSpec(), context.getHeightSpec());
+  }
+
+  protected boolean onShouldCreateLayoutWithNewSizeSpec(
+      ComponentContext context, int newWidthSpec, int newHeightSpec) {
+    return true;
+  }
+
+  /**
+   * @return a {@link TransitionSet} specifying how to animate this component to its new layout and
+   *     props.
+   */
+  protected @Nullable Transition onCreateTransition(ComponentContext c) {
+    return null;
   }
 
   protected static <E> EventHandler<E> newEventHandler(
@@ -643,30 +610,66 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     return c.newEventTrigger(childKey, id);
   }
 
-  public enum MountType {
-    NONE,
-    DRAWABLE,
-    VIEW,
+  @Nullable
+  protected static EventTrigger getEventTrigger(ComponentContext c, int id, String key) {
+    if (c.getComponentScope() == null) {
+      return null;
+    }
+
+    EventTrigger trigger =
+        c.getComponentTree().getEventTrigger(c.getComponentScope().getGlobalKey() + id + key);
+
+    if (trigger == null) {
+      return null;
+    }
+
+    return trigger;
+  }
+
+  protected boolean needsPreviousRenderData() {
+    return false;
+  }
+
+  protected @Nullable RenderData recordRenderData(RenderData toRecycle) {
+    return null;
+  }
+
+  protected void applyPreviousRenderData(RenderData previousRenderData) {}
+
+  /** @return true if the Component is using state, false otherwise. */
+  protected boolean hasState() {
+    return false;
   }
 
   /**
-   * Generated component's state container could implement this interface along with {@link
-   * StateContainer} when componentspec specifies state update method with {@link
-   * com.facebook.litho.annotations.OnUpdateStateWithTransition} annotation.
+   * @return true if the Component should always be measured when receiving a remeasure event, false
+   *     otherwise.
    */
-  public interface TransitionContainer {
-
-    /** Remove and return transition provided from OnUpdateStateWithTransition. */
-    Transition consumeTransition();
+  protected boolean shouldAlwaysRemeasure() {
+    return false;
   }
 
   /**
-   * A per-Component-class data structure to keep track of some of the last mounted @Prop/@State
-   * params a component was rendered with. The exact params that are tracked are just the ones
-   * needed to support that Component's use of {@link Diff} params in their lifecycle methods that
-   * allow Diff params (e.g. {@link #onCreateTransition}).
+   * Called when the component is attached to the {@link ComponentTree}.
+   *
+   * @param c The {@link ComponentContext} the Component was constructed with.
    */
-  public interface RenderData {}
+  protected void onAttached(ComponentContext c) {}
+
+  /**
+   * Called when the component is detached from the {@link ComponentTree}.
+   *
+   * @param c The {@link ComponentContext} the Component was constructed with.
+   */
+  protected void onDetached(ComponentContext c) {}
+
+  /**
+   * @return true if the component implements {@link OnAttached} or {@link OnDetached} delegate
+   *     methods.
+   */
+  protected boolean hasAttachDetachCallback() {
+    return false;
+  }
 
   /**
    * Exception class used to print the Components' hierarchy involved in a layout creation crash.
