@@ -14,18 +14,24 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.widget
+package com.facebook.litho
 
-import com.facebook.litho.ComponentContext
-import com.facebook.litho.Sp
-import com.facebook.litho.sp
+inline class Px(val px: Int) {
+  inline fun toPx(c: ComponentContext): Px = this
+}
 
-/**
- * Temporary builder function for creating [TextSpec] components. In the future it will either be
- * auto-generated or modified to have the final set of parameters.
- */
-@Suppress("NOTHING_TO_INLINE")
-inline fun ComponentContext.Text(text: CharSequence, textSize: Sp = 14.sp): Text.Builder =
-    Text.create(this)
-        .text(text)
-        .textSizeSp(textSize.sp.toFloat())
+inline class Dp(val dp: Int) {
+  inline fun toPx(c: ComponentContext): Px =
+      Px(c.resourceResolver.dipsToPixels(dp.toFloat()))
+}
+
+inline class Sp(val sp: Int) {
+  inline fun toPx(c: ComponentContext): Px =
+      Px(c.resourceResolver.sipsToPixels(sp.toFloat()))
+}
+
+inline val Int.dp: Dp get() = Dp(this)
+
+inline val Int.sp: Sp get() = Sp(this)
+
+inline val Int.px: Px get() = Px(this)

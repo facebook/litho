@@ -32,6 +32,12 @@ android {
     }
 }
 
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+    kotlinOptions {
+        freeCompilerArgs = ["-XXLanguage:+InlineClasses"]
+    }
+}
+
 dependencies {
     implementation project(':litho-core')
     // TODO(colriot): Widget related stuff will be moved to a separate module
