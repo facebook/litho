@@ -28,7 +28,6 @@ import com.facebook.litho.build
 import com.facebook.litho.sections.SectionContext
 import com.facebook.litho.sections.widget.ListRecyclerConfiguration
 import com.facebook.litho.sections.widget.RecyclerCollectionComponent
-import com.facebook.litho.sections.widget.SectionBinderTarget
 import com.facebook.litho.widget.SnapUtil.SNAP_TO_CENTER
 import com.facebook.litho.widget.Text
 import com.facebook.samples.litho.kotlin.lithography.data.Artist
@@ -41,8 +40,10 @@ import com.facebook.yoga.YogaPositionType.ABSOLUTE
 @LayoutSpec
 object FeedItemComponentSpec {
 
-  private val recyclerConfiguration: ListRecyclerConfiguration<SectionBinderTarget> =
-      ListRecyclerConfiguration(LinearLayout.HORIZONTAL, false, SNAP_TO_CENTER)
+  private val recyclerConfiguration = ListRecyclerConfiguration.create()
+      .orientation(LinearLayout.HORIZONTAL)
+      .snapMode(SNAP_TO_CENTER)
+      .build()
 
   @OnCreateLayout
   fun onCreateLayout(
@@ -70,10 +71,10 @@ object FeedItemComponentSpec {
   private fun ComponentContext.imageBlock(artist: Artist): Component.Builder<*> =
       when (artist.images.size) {
         1 -> singleImage(artist)
-        else -> recycler(artist)
+        else -> imageRecycler(artist)
       }
 
-  private fun ComponentContext.recycler(artist: Artist): Component.Builder<*> =
+  private fun ComponentContext.imageRecycler(artist: Artist): Component.Builder<*> =
       RecyclerCollectionComponent.create(this)
           .recyclerConfiguration(recyclerConfiguration)
           .section(
@@ -84,6 +85,6 @@ object FeedItemComponentSpec {
 
   private fun ComponentContext.singleImage(artist: Artist): Component.Builder<*> =
       SingleImageComponent.create(this)
-          .image(artist.images[0])
+          .imageUri(artist.images[0])
           .imageAspectRatio(2f)
 }

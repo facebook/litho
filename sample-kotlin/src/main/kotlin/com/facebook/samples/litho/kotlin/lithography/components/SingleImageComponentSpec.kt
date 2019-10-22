@@ -23,6 +23,7 @@ import com.facebook.litho.annotations.LayoutSpec
 import com.facebook.litho.annotations.OnCreateLayout
 import com.facebook.litho.annotations.Prop
 import com.facebook.litho.annotations.PropDefault
+import com.facebook.litho.build
 import com.facebook.litho.fresco.FrescoImage
 
 @LayoutSpec
@@ -34,15 +35,12 @@ object SingleImageComponentSpec {
   @OnCreateLayout
   fun onCreateLayout(
       c: ComponentContext,
-      @Prop image: String,
+      @Prop imageUri: String,
       @Prop(optional = true) imageAspectRatio: Float
-  ): Component =
-      Fresco.newDraweeControllerBuilder()
-          .setUri(image)
-          .build().let {
-        FrescoImage.create(c)
-            .controller(it)
-            .imageAspectRatio(imageAspectRatio)
-            .build()
-      }
+  ): Component = build(c) {
+    FrescoImage(
+        controller = Fresco.newDraweeControllerBuilder().setUri(imageUri).build(),
+        imageAspectRatio = imageAspectRatio
+    )
+  }
 }
