@@ -16,6 +16,7 @@
 
 package com.facebook.samples.litho.kotlin.playground
 
+import android.graphics.Typeface
 import android.os.Bundle
 import com.facebook.litho.Column
 import com.facebook.litho.Padding
@@ -34,7 +35,7 @@ class PlaygroundActivity : NavigatableDemoActivity() {
       Padding(16.dp) {
         Column {
           +Text(text = "Hello, Kotlin World!", textSize = 20.sp)
-          +Text(text = "with ❤️ from London")
+          +Text(text = "with ❤️ from London", textStyle = Typeface.ITALIC)
         }
       }
     }

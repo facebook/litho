@@ -16,6 +16,9 @@
 
 package com.facebook.litho.widget
 
+import android.graphics.Color
+import android.graphics.Typeface.NORMAL
+import androidx.annotation.ColorInt
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.Sp
 import com.facebook.litho.sp
@@ -25,7 +28,14 @@ import com.facebook.litho.sp
  * auto-generated or modified to have the final set of parameters.
  */
 @Suppress("NOTHING_TO_INLINE")
-inline fun ComponentContext.Text(text: CharSequence, textSize: Sp = 14.sp): Text.Builder =
+inline fun ComponentContext.Text(
+    text: CharSequence,
+    textSize: Sp = 14.sp,
+    @ColorInt textColor: Int = Color.BLACK,
+    textStyle: Int = NORMAL
+): Text.Builder =
     Text.create(this)
         .text(text)
         .textSizeSp(textSize.sp.toFloat())
+        .textColor(textColor)
+        .textStyle(textStyle)
