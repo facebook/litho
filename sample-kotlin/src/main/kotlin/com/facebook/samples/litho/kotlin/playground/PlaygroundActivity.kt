@@ -18,6 +18,8 @@ package com.facebook.samples.litho.kotlin.playground
 
 import android.os.Bundle
 import com.facebook.litho.Column
+import com.facebook.litho.Padding
+import com.facebook.litho.dp
 import com.facebook.litho.setContent
 import com.facebook.litho.sp
 import com.facebook.litho.widget.Text
@@ -29,9 +31,11 @@ class PlaygroundActivity : NavigatableDemoActivity() {
     super.onCreate(savedInstanceState)
 
     setContent {
-      Column {
-        +Text(text = "Hello, Kotlin World!", textSize = 20.sp)
-        +Text(text = "with ❤️ from London")
+      Padding(16.dp) {
+        Column {
+          +Text(text = "Hello, Kotlin World!", textSize = 20.sp)
+          +Text(text = "with ❤️ from London")
+        }
       }
     }
   }

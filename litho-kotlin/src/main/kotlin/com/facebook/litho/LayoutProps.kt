@@ -1,0 +1,47 @@
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.facebook.litho
+
+import com.facebook.yoga.YogaEdge
+
+inline fun <C : Component.Builder<C>> ComponentContext.Padding(
+    all: Dp,
+    content: ComponentContext.() -> C
+): C =
+    content().paddingDip(YogaEdge.ALL, all.dp.toFloat())
+
+inline fun <C : Component.Builder<C>> ComponentContext.Padding(
+    horizontal: Dp = 0.dp,
+    vertical: Dp = 0.dp,
+    content: ComponentContext.() -> C
+): C =
+    content()
+        .paddingDip(YogaEdge.HORIZONTAL, horizontal.dp.toFloat())
+        .paddingDip(YogaEdge.VERTICAL, vertical.dp.toFloat())
+
+inline fun <C : Component.Builder<C>> ComponentContext.Padding(
+    left: Dp = 0.dp,
+    top: Dp = 0.dp,
+    right: Dp = 0.dp,
+    bottom: Dp = 0.dp,
+    content: ComponentContext.() -> C
+): C =
+    content()
+        .paddingDip(YogaEdge.LEFT, left.dp.toFloat())
+        .paddingDip(YogaEdge.TOP, top.dp.toFloat())
+        .paddingDip(YogaEdge.RIGHT, right.dp.toFloat())
+        .paddingDip(YogaEdge.BOTTOM, bottom.dp.toFloat())
