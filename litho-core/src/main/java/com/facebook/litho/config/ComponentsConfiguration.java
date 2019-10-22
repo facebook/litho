@@ -94,6 +94,9 @@ public class ComponentsConfiguration {
    */
   public static boolean isEndToEndTestRun = System.getProperty("IS_TESTING") != null;
 
+  public static boolean isAnimationDisabled =
+      "true".equals(System.getProperty("litho.animation.disabled"));
+
   /**
    * By default end-to-end tests will disable transitions and this flag lets to explicitly enable
    * transitions to test animation related behavior.
