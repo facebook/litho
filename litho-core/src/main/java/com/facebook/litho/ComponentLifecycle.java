@@ -84,15 +84,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
    */
   public interface RenderData {}
 
-  private static final YogaBaselineFunction sBaselineFunction =
-      new YogaBaselineFunction() {
-        @Override
-        public float baseline(YogaNode cssNode, float width, float height) {
-          final InternalNode node = (InternalNode) cssNode.getData();
-          return node.getTailComponent()
-              .onMeasureBaseline(node.getContext(), (int) width, (int) height);
-        }
-      };
+  private static final YogaBaselineFunction sBaselineFunction = new LithoYogaBaselineFunction();
 
   static final YogaMeasureFunction sMeasureFunction =
       new YogaMeasureFunction() {
