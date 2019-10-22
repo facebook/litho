@@ -16,6 +16,7 @@
 
 package com.facebook.litho
 
+import androidx.annotation.ColorInt
 import com.facebook.yoga.YogaEdge
 import com.facebook.yoga.YogaPositionType
 
@@ -67,3 +68,27 @@ inline fun <C : Component.Builder<C>> ComponentContext.Position(
           right?.let { positionDip(YogaEdge.RIGHT, it.dp.toFloat()) }
           bottom?.let { positionDip(YogaEdge.BOTTOM, it.dp.toFloat()) }
         }
+
+/**
+ * Builder for decorating a child component with [backgroundColor] or [foregroundColor].
+ */
+inline fun <C : Component.Builder<C>> ComponentContext.Decoration(
+    @ColorInt foregroundColor: Int? = null,
+    @ColorInt backgroundColor: Int? = null,
+    content: ComponentContext.() -> C
+): C =
+    content()
+        .apply {
+          foregroundColor?.let { foregroundColor(it) }
+          backgroundColor?.let { backgroundColor(it) }
+        }
+
+/**
+ * Builder for decorating a child component with [backgroundColor] or [foregroundColor].
+ */
+inline fun <C : Component.Builder<C>> ComponentContext.Decoration(
+    @ColorInt foregroundColor: Long? = null,
+    @ColorInt backgroundColor: Long? = null,
+    content: ComponentContext.() -> C
+): C =
+    Decoration(foregroundColor?.toInt(), backgroundColor?.toInt(), content)

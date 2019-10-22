@@ -18,6 +18,7 @@ package com.facebook.samples.litho.kotlin.lithography.components
 
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
+import com.facebook.litho.Decoration
 import com.facebook.litho.Padding
 import com.facebook.litho.Position
 import com.facebook.litho.Row
@@ -32,10 +33,12 @@ object ActionsComponentSpec {
   @OnCreateLayout
   fun onCreateLayout(c: ComponentContext): Component = build(c) {
     Position(top = 4.dp, right = 4.dp) {
-      Padding(2.dp) {
-        Row.create(this)
-            .backgroundColor(0xDDFFFFFF.toInt())
-            .child(FavouriteButton.create(this))
+      Decoration(backgroundColor = 0xddffffff) {
+        Padding(2.dp) {
+          Row {
+            +FavouriteButton.create(c)
+          }
+        }
       }
     }
   }

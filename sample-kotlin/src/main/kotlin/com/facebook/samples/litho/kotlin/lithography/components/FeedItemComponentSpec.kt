@@ -16,11 +16,12 @@
 
 package com.facebook.samples.litho.kotlin.lithography.components
 
-import android.graphics.Typeface
+import android.graphics.Typeface.BOLD
 import android.widget.LinearLayout
 import com.facebook.litho.Column
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
+import com.facebook.litho.Decoration
 import com.facebook.litho.Padding
 import com.facebook.litho.Position
 import com.facebook.litho.annotations.LayoutSpec
@@ -31,6 +32,7 @@ import com.facebook.litho.dp
 import com.facebook.litho.sections.SectionContext
 import com.facebook.litho.sections.widget.ListRecyclerConfiguration
 import com.facebook.litho.sections.widget.RecyclerCollectionComponent
+import com.facebook.litho.sp
 import com.facebook.litho.widget.SnapUtil.SNAP_TO_CENTER
 import com.facebook.litho.widget.Text
 import com.facebook.samples.litho.kotlin.lithography.data.Artist
@@ -54,11 +56,9 @@ object FeedItemComponentSpec {
         +imageBlock(artist)
         +Position(left = 4.dp, bottom = 4.dp) {
           Padding(horizontal = 6.dp) {
-            Text.create(c)
-                .text(artist.name)
-                .textStyle(Typeface.BOLD)
-                .textSizeDip(24f)
-                .backgroundColor(0xDDFFFFFF.toInt())
+            Decoration(backgroundColor = 0xddffffff) {
+              Text(text = artist.name, textSize = 24.sp, textStyle = BOLD)
+            }
           }
         }
         +ActionsComponent.create(c)
