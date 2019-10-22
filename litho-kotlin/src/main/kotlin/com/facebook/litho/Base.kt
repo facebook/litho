@@ -18,16 +18,16 @@ package com.facebook.litho
 
 import android.app.Activity
 
-inline fun dom(
+inline fun build(
     c: ComponentContext,
-    content: ComponentContext.() -> Component.Builder<*>?
-): Component? = c.content()?.build()
+    content: ComponentContext.() -> Component.Builder<*>
+): Component = c.content().build()
 
 fun Activity.setContent(component: Component) {
   setContentView(LithoView.create(this, component))
 }
 
-/*inline*/ fun Activity.setContent(content: ComponentContext.() -> Component.Builder<*>) {
+inline fun Activity.setContent(content: ComponentContext.() -> Component.Builder<*>) {
   val c = ComponentContext(this)
   setContentView(LithoView.create(c, c.content().build()))
 }

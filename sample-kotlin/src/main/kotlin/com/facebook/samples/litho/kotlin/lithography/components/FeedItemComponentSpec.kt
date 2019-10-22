@@ -24,6 +24,7 @@ import com.facebook.litho.ComponentContext
 import com.facebook.litho.annotations.LayoutSpec
 import com.facebook.litho.annotations.OnCreateLayout
 import com.facebook.litho.annotations.Prop
+import com.facebook.litho.build
 import com.facebook.litho.sections.SectionContext
 import com.facebook.litho.sections.widget.ListRecyclerConfiguration
 import com.facebook.litho.sections.widget.RecyclerCollectionComponent
@@ -47,44 +48,42 @@ object FeedItemComponentSpec {
   fun onCreateLayout(
       c: ComponentContext,
       @Prop artist: Artist
-  ): Component =
-      Column.create(c)
-          .child(
-              Column.create(c)
-                  .child(imageBlock(artist, c))
-                  .child(
-                      Text.create(c)
-                          .text(artist.name)
-                          .textStyle(Typeface.BOLD)
-                          .textSizeDip(24f)
-                          .backgroundColor(0xDDFFFFFF.toInt())
-                          .positionType(ABSOLUTE)
-                          .positionDip(BOTTOM, 4f)
-                          .positionDip(LEFT, 4f)
-                          .paddingDip(HORIZONTAL, 6f))
-                  .child(ActionsComponent.create(c)))
-          .child(FooterComponent.create(c).text(artist.biography))
-          .build()
+  ): Component = build(c) {
+    Column {
+      +Column {
+        +imageBlock(artist)
+        +Text.create(c)
+            .text(artist.name)
+            .textStyle(Typeface.BOLD)
+            .textSizeDip(24f)
+            .backgroundColor(0xDDFFFFFF.toInt())
+            .positionType(ABSOLUTE)
+            .positionDip(BOTTOM, 4f)
+            .positionDip(LEFT, 4f)
+            .paddingDip(HORIZONTAL, 6f)
+        +ActionsComponent.create(c)
+      }
+      +FooterComponent.create(c).text(artist.biography)
+    }
+  }
 
-  private fun imageBlock(artist: Artist, c: ComponentContext): Component =
+  private fun ComponentContext.imageBlock(artist: Artist): Component.Builder<*> =
       when (artist.images.size) {
-        1 -> singleImage(c, artist)
-        else -> recycler(c, artist)
+        1 -> singleImage(artist)
+        else -> recycler(artist)
       }
 
-  private fun recycler(c: ComponentContext, artist: Artist): Component =
-      RecyclerCollectionComponent.create(c)
+  private fun ComponentContext.recycler(artist: Artist): Component.Builder<*> =
+      RecyclerCollectionComponent.create(this)
           .recyclerConfiguration(recyclerConfiguration)
           .section(
-              ImagesSection.create(SectionContext(c))
+              ImagesSection.create(SectionContext(this))
                   .images(artist.images)
                   .build())
           .aspectRatio(2f)
-          .build()
 
-  private fun singleImage(c: ComponentContext, artist: Artist): Component =
-      SingleImageComponent.create(c)
+  private fun ComponentContext.singleImage(artist: Artist): Component.Builder<*> =
+      SingleImageComponent.create(this)
           .image(artist.images[0])
           .imageAspectRatio(2f)
-          .build()
 }

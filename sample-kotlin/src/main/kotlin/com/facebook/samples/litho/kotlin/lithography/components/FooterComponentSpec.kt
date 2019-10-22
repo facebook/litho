@@ -21,12 +21,14 @@ import android.graphics.Typeface.ITALIC
 import com.facebook.litho.Column
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
+import com.facebook.litho.Padding
 import com.facebook.litho.annotations.LayoutSpec
 import com.facebook.litho.annotations.OnCreateLayout
 import com.facebook.litho.annotations.Prop
 import com.facebook.litho.annotations.ResType.STRING
+import com.facebook.litho.build
+import com.facebook.litho.dp
 import com.facebook.litho.widget.Text
-import com.facebook.yoga.YogaEdge.ALL
 
 @LayoutSpec
 object FooterComponentSpec {
@@ -35,14 +37,11 @@ object FooterComponentSpec {
   fun onCreateLayout(
       c: ComponentContext,
       @Prop(resType = STRING) text: String
-  ): Component =
-      Column.create(c)
-          .paddingDip(ALL, 8f)
-          .child(
-              Text.create(c)
-                  .text(text)
-                  .textSizeDip(14f)
-                  .textColor(GRAY)
-                  .textStyle(ITALIC))
-          .build()
+  ): Component = build(c) {
+    Padding(8.dp) {
+      Column {
+        +Text(text = text, textColor = GRAY, textStyle = ITALIC)
+      }
+    }
+  }
 }
