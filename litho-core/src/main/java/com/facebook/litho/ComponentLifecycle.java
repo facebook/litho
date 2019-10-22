@@ -18,7 +18,6 @@ package com.facebook.litho;
 
 import static com.facebook.litho.ComponentContext.NO_SCOPE_EVENT_HANDLER;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.View;
@@ -36,9 +35,6 @@ import com.facebook.litho.annotations.OnShouldCreateLayoutWithNewSizeSpec;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.yoga.YogaBaselineFunction;
 import com.facebook.yoga.YogaMeasureFunction;
-import com.facebook.yoga.YogaMeasureMode;
-import com.facebook.yoga.YogaMeasureOutput;
-import com.facebook.yoga.YogaNode;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -86,95 +82,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
 
   private static final YogaBaselineFunction sBaselineFunction = new LithoYogaBaselineFunction();
 
-  static final YogaMeasureFunction sMeasureFunction =
-      new YogaMeasureFunction() {
-
-        private Size acquireSize(int initialValue) {
-          return new Size(initialValue, initialValue);
-        }
-
-        @Override
-        @SuppressLint("WrongCall")
-        @SuppressWarnings("unchecked")
-        public long measure(
-            YogaNode cssNode,
-            float width,
-            YogaMeasureMode widthMode,
-            float height,
-            YogaMeasureMode heightMode) {
-          final InternalNode node = (InternalNode) cssNode.getData();
-          final DiffNode diffNode = node.areCachedMeasuresValid() ? node.getDiffNode() : null;
-          final Component component = node.getTailComponent();
-          final int widthSpec;
-          final int heightSpec;
-          final boolean isTracing = ComponentsSystrace.isTracing();
-
-          widthSpec = SizeSpec.makeSizeSpecFromCssSpec(width, widthMode);
-          heightSpec = SizeSpec.makeSizeSpecFromCssSpec(height, heightMode);
-
-          if (isTracing) {
-            ComponentsSystrace.beginSectionWithArgs("measure:" + component.getSimpleName())
-                .arg("widthSpec", SizeSpec.toString(widthSpec))
-                .arg("heightSpec", SizeSpec.toString(heightSpec))
-                .arg("componentId", component.getId())
-                .flush();
-          }
-
-          node.setLastWidthSpec(widthSpec);
-          node.setLastHeightSpec(heightSpec);
-
-          int outputWidth = 0;
-          int outputHeight = 0;
-
-          ComponentContext context = node.getContext();
-
-          if (Component.isNestedTree(context, component) || node.hasNestedTree()) {
-            if (node.getParent() != null) {
-              context = node.getParent().getContext();
-            }
-
-            final InternalNode nestedTree =
-                LayoutState.resolveNestedTree(context, node, widthSpec, heightSpec);
-
-            outputWidth = nestedTree.getWidth();
-            outputHeight = nestedTree.getHeight();
-          } else if (diffNode != null
-              && diffNode.getLastWidthSpec() == widthSpec
-              && diffNode.getLastHeightSpec() == heightSpec
-              && !component.shouldAlwaysRemeasure()) {
-            outputWidth = (int) diffNode.getLastMeasuredWidth();
-            outputHeight = (int) diffNode.getLastMeasuredHeight();
-          } else {
-            final Size size = acquireSize(Integer.MIN_VALUE /* initialValue */);
-
-            component.onMeasure(component.getScopedContext(), node, widthSpec, heightSpec, size);
-
-            if (size.width < 0 || size.height < 0) {
-              throw new IllegalStateException(
-                  "MeasureOutput not set, ComponentLifecycle is: " + component);
-            }
-
-            outputWidth = size.width;
-            outputHeight = size.height;
-
-            if (node.getDiffNode() != null) {
-              node.getDiffNode().setLastWidthSpec(widthSpec);
-              node.getDiffNode().setLastHeightSpec(heightSpec);
-              node.getDiffNode().setLastMeasuredWidth(outputWidth);
-              node.getDiffNode().setLastMeasuredHeight(outputHeight);
-            }
-          }
-
-          node.setLastMeasuredWidth(outputWidth);
-          node.setLastMeasuredHeight(outputHeight);
-
-          if (isTracing) {
-            ComponentsSystrace.endSection();
-          }
-
-          return YogaMeasureOutput.make(outputWidth, outputHeight);
-        }
-      };
+  static final YogaMeasureFunction sMeasureFunction = new LithoYogaMeasureFunction();
 
   @GuardedBy("sTypeIdByComponentType")
   private static final Map<Object, Integer> sTypeIdByComponentType = new HashMap<>();
