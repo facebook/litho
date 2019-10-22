@@ -83,6 +83,15 @@ public abstract class Component extends ComponentLifecycle
   private static final AtomicInteger sIdGenerator = new AtomicInteger(1);
   private static final DynamicValue[] sEmptyArray = new DynamicValue[0];
 
+  /** Holds an identifying name of the component, set at construction time. */
+  private final String mSimpleName;
+
+  /**
+   * Holds a list of working range related data. {@link LayoutState} will use it to update {@link
+   * LayoutState#mWorkingRangeContainer} when calculate method is finished.
+   */
+  @Nullable List<WorkingRangeContainer.Registration> mWorkingRangeRegistrations;
+
   private int mId = sIdGenerator.getAndIncrement();
   @Nullable private String mOwnerGlobalKey;
   private String mGlobalKey;
@@ -116,18 +125,9 @@ public abstract class Component extends ComponentLifecycle
    */
   @Nullable private EventHandler<ErrorEvent> mErrorEventHandler;
 
-  // Keep hold of the layout that we resolved during will render in order to use it again in
-  // createLayout.
+  // Keep hold of the layout that we resolved during will render
+  // in order to use it again in createLayout.
   @Nullable private InternalNode mLayoutCreatedInWillRender;
-
-  /**
-   * Holds a list of working range related data. {@link LayoutState} will use it to update {@link
-   * LayoutState#mWorkingRangeContainer} when calculate method is finished.
-   */
-  @Nullable List<WorkingRangeContainer.Registration> mWorkingRangeRegistrations;
-
-  /** Holds an identifying name of the component, set at construction time. */
-  private final String mSimpleName;
 
   protected Component(String simpleName) {
     this(simpleName, null);
@@ -143,6 +143,44 @@ public abstract class Component extends ComponentLifecycle
     mSimpleName = simpleName;
   }
 
+  /**
+   * Only use if absolutely needed! This removes the cached layout so this component will be
+   * remeasured even if it has alread been measured with the same size specs.
+   */
+  public void clearCachedLayout(ComponentContext c) {
+    final LayoutState layoutState = c.getLayoutState();
+    if (layoutState == null) {
+      throw new IllegalStateException(
+          getSimpleName()
+              + ": Trying to access the cached InternalNode for a component outside of a LayoutState calculation. If that is what you must do, see Component#measureMightNotCacheInternalNode.");
+    }
+
+    layoutState.clearCachedLayout(this);
+  }
+
+  @Nullable
+  public CommonProps getCommonProps() {
+    return mCommonProps;
+  }
+
+  @Deprecated
+  @Override
+  public EventDispatcher getEventDispatcher() {
+    return this;
+  }
+
+  public ComponentContext getScopedContext() {
+    return mScopedContext;
+  }
+
+  public void setScopedContext(ComponentContext scopedContext) {
+    mScopedContext = scopedContext;
+
+    if (mLayoutCreatedInWillRender != null) {
+      assertSameBaseContext(scopedContext, mLayoutCreatedInWillRender.getContext());
+    }
+  }
+
   /** Should only be used by logging to provide more readable messages. */
   public String getSimpleName() {
     final Component delegate = getSimpleNameDelegate();
@@ -153,12 +191,14 @@ public abstract class Component extends ComponentLifecycle
     return mSimpleName + "(" + getFirstNonSimpleNameDelegate(delegate).getSimpleName() + ")";
   }
 
-  /**
-   * @return the Component this Component should delegate its getSimpleName calls to. See {@link
-   *     LayoutSpec#simpleNameDelegate()}
-   */
-  protected @Nullable Component getSimpleNameDelegate() {
-    return null;
+  public boolean hasBackgroundSet() {
+    return mCommonProps != null && mCommonProps.getBackground() != null;
+  }
+
+  public boolean hasClickHandlerSet() {
+    return mCommonProps != null
+        && mCommonProps.getNullableNodeInfo() != null
+        && mCommonProps.getNullableNodeInfo().getClickHandler() != null;
   }
 
   /**
@@ -186,184 +226,6 @@ public abstract class Component extends ComponentLifecycle
     return ComponentUtils.hasEquivalentFields(this, other);
   }
 
-  protected @Nullable StateContainer getStateContainer() {
-    return null;
-  }
-
-  public ComponentContext getScopedContext() {
-    return mScopedContext;
-  }
-
-  public void setScopedContext(ComponentContext scopedContext) {
-    mScopedContext = scopedContext;
-
-    if (mLayoutCreatedInWillRender != null) {
-      assertSameBaseContext(scopedContext, mLayoutCreatedInWillRender.getContext());
-    }
-  }
-
-  // TODO(t30797526): Remove
-  private static void assertSameBaseContext(
-      ComponentContext scopedContext, ComponentContext willRenderContext) {
-    if (scopedContext.getAndroidContext() != willRenderContext.getAndroidContext()) {
-      ComponentsReporter.emitMessage(
-          ComponentsReporter.LogLevel.ERROR,
-          MISMATCHING_BASE_CONTEXT,
-          "Found mismatching base contexts between the Component's Context ("
-              + scopedContext.getAndroidContext()
-              + ") and the Context used in willRender ("
-              + willRenderContext.getAndroidContext()
-              + ")!");
-    }
-  }
-
-  synchronized void markLayoutStarted() {
-    if (mIsLayoutStarted) {
-      throw new IllegalStateException("Duplicate layout of a component: " + this);
-    }
-    mIsLayoutStarted = true;
-  }
-
-  // Get an id that is identical across cloned instances, but otherwise unique
-  protected int getId() {
-    return mId;
-  }
-
-  @Nullable
-  String getOwnerGlobalKey() {
-    return mOwnerGlobalKey;
-  }
-
-  /**
-   * Get a key that is unique to this component within its tree.
-   *
-   * @return
-   */
-  String getGlobalKey() {
-    return mGlobalKey;
-  }
-
-  /**
-   * Set a key for this component that is unique within its tree.
-   *
-   * @param key
-   */
-  // thread-safe because the one write is before all the reads
-  @ThreadSafe(enableChecks = false)
-  void setGlobalKey(String key) {
-    mGlobalKey = key;
-  }
-
-  /** @return if has a manually set key */
-  boolean hasManualKey() {
-    return mHasManualKey;
-  }
-
-  /** @return if has a handle set */
-  boolean hasHandle() {
-    return mHandle != null;
-  }
-
-  /** @return a handle that is unique to this component. */
-  @Nullable
-  Handle getHandle() {
-    return mHandle;
-  }
-
-  /** @return a key that is local to the component's parent. */
-  String getKey() {
-    if (mKey == null && !mHasManualKey) {
-      mKey = Integer.toString(getTypeId());
-    }
-    return mKey;
-  }
-
-  /**
-   * Set a key that is local to the parent of this component.
-   *
-   * @param key key
-   */
-  void setKey(String key) {
-    mHasManualKey = true;
-    mKey = key;
-  }
-
-  /**
-   * Set a handle that is unique to this component.
-   *
-   * @param handle handle
-   */
-  void setHandle(Handle handle) {
-    mHandle = handle;
-  }
-
-  /**
-   * Generate a global key for the given component that is unique among all of this component's
-   * children of the same type. If a manual key has been set on the child component using the .key()
-   * method, return the manual key.
-   *
-   * <p>TODO: (T38237241) remove the usage of the key handler post the nested tree experiment
-   *
-   * @param component the child component for which we're finding a unique global key
-   * @param key the key of the child component as determined by its lifecycle id or manual setting
-   * @return a unique global key for this component relative to its siblings.
-   */
-  private String generateUniqueGlobalKeyForChild(Component component, String key) {
-    final String childKey = ComponentKeyUtils.getKeyWithSeparator(getGlobalKey(), key);
-
-    if (component.mHasManualKey) { // if the component has a manual key
-      if (mManualKeys == null) {
-        mManualKeys = new HashSet<>();
-      }
-      if (mManualKeys.contains(childKey)) { // if it is a duplicate
-        logDuplicateManualKeyWarning(component, key); // log a warning and generate a unique key
-      } else {
-        mManualKeys.add(childKey);
-        getChildCountAndIncrement(component); // to avoid subsequent clash with a generated key
-        return childKey; // return it
-      }
-    }
-
-    int childCount = getChildCountAndIncrement(component);
-
-    if (childCount == 0) { // if first child of type then return the child key
-      return childKey;
-    } else { // if NOT first child of type append the child count to the child key
-      return getKeyForChildPosition(childKey, childCount);
-    }
-  }
-
-  /**
-   * Returns the number of children of a given type {@code this} component has and then increments
-   * it by 1.
-   *
-   * @param component the child component
-   * @return the number of children of {@param component} type
-   */
-  private int getChildCountAndIncrement(Component component) {
-    if (mChildCounters == null) {
-      mChildCounters = new SparseIntArray();
-    }
-
-    final int typeId = component.getTypeId();
-    final int count = mChildCounters.get(typeId, 0);
-    mChildCounters.put(typeId, count + 1);
-
-    return count;
-  }
-
-  private void logDuplicateManualKeyWarning(Component component, String key) {
-    ComponentsReporter.emitMessage(
-        ComponentsReporter.LogLevel.WARNING,
-        DUPLICATE_MANUAL_KEY,
-        "The manual key "
-            + key
-            + " you are setting on this "
-            + component.getSimpleName()
-            + " is a duplicate and will be changed into a unique one. "
-            + "This will result in unexpected behavior if you don't change it.");
-  }
-
   public Component makeShallowCopy() {
     try {
       final Component component = (Component) super.clone();
@@ -381,52 +243,6 @@ public abstract class Component extends ComponentLifecycle
       // This class implements Cloneable, so this is impossible
       throw new RuntimeException(e);
     }
-  }
-
-  Component makeShallowCopyWithNewId() {
-    final Component component = makeShallowCopy();
-    component.mId = sIdGenerator.incrementAndGet();
-    return component;
-  }
-
-  Component makeUpdatedShallowCopy(final ComponentContext c) {
-    final Component clone = makeShallowCopy();
-
-    // set the global key so that it is not generated again and overridden.
-    clone.setGlobalKey(getGlobalKey());
-
-    // copy the inter-stage props so that they are set again.
-    clone.copyInterStageImpl(this);
-
-    // update the cloned component with the new context.
-    clone.updateInternalChildState(c);
-
-    // create updated tree props for children.
-    final TreeProps treeProps = getTreePropsForChildren(c, c.getTreeProps());
-
-    // set updated tree props on the component.
-    clone.getScopedContext().setTreeProps(treeProps);
-
-    return clone;
-  }
-
-  /**
-   * Only use if absolutely needed! This removes the cached layout so this component will be
-   * remeasured even if it has alread been measured with the same size specs.
-   */
-  public void clearCachedLayout(ComponentContext c) {
-    final LayoutState layoutState = c.getLayoutState();
-    if (layoutState == null) {
-      throw new IllegalStateException(
-          getSimpleName()
-              + ": Trying to access the cached InternalNode for a component outside of a LayoutState calculation. If that is what you must do, see Component#measureMightNotCacheInternalNode.");
-    }
-
-    layoutState.clearCachedLayout(this);
-  }
-
-  void reset() {
-    mIsLayoutStarted = false;
   }
 
   /**
@@ -505,98 +321,9 @@ public abstract class Component extends ComponentLifecycle
     outputSize.height = internalNode.getHeight();
   }
 
-  protected void copyInterStageImpl(Component component) {}
-
-  static boolean isHostSpec(@Nullable Component component) {
-    return (component instanceof HostComponent);
-  }
-
-  static boolean isLayoutSpec(@Nullable Component component) {
-    return (component != null && component.getMountType() == MountType.NONE);
-  }
-
-  static boolean isMountSpec(@Nullable Component component) {
-    return (component != null && component.getMountType() != MountType.NONE);
-  }
-
-  static boolean isMountDrawableSpec(@Nullable Component component) {
-    return (component != null && component.getMountType() == MountType.DRAWABLE);
-  }
-
-  static boolean isMountViewSpec(@Nullable Component component) {
-    return (component != null && component.getMountType() == MountType.VIEW);
-  }
-
-  static boolean isLayoutSpecWithSizeSpec(@Nullable Component component) {
-    return (isLayoutSpec(component) && component.canMeasure());
-  }
-
-  static boolean isNestedTree(ComponentContext context, @Nullable Component component) {
-    return (isLayoutSpecWithSizeSpec(component)
-        || (component != null && component.hasCachedLayout(context)));
-  }
-
-  private boolean hasCachedLayout(ComponentContext c) {
-    if (c != null) {
-      final LayoutState layoutState = c.getLayoutState();
-
-      if (layoutState != null) {
-        return layoutState.hasCachedLayout(this);
-      }
-    }
-
-    return false;
-  }
-
-  private static Component getFirstNonSimpleNameDelegate(Component component) {
-    Component current = component;
-    while (current.getSimpleNameDelegate() != null) {
-      current = current.getSimpleNameDelegate();
-    }
-    return current;
-  }
-
-  /**
-   * @return whether the given component will render because it returns non-null from its resolved
-   *     onCreateLayout, based on its current props and state. Returns true if the resolved layout
-   *     is non-null, otherwise false.
-   * @deprecated Using willRender is regarded as an anti-pattern, since it will load all classes
-   *     into memory in order to potentially decide not to use any of them.
-   */
-  @Deprecated
-  public static boolean willRender(ComponentContext c, Component component) {
-    if (component == null) {
-      return false;
-    }
-
-    final ComponentContext scopedContext = component.getScopedContext();
-    if (scopedContext != null) {
-      assertSameBaseContext(scopedContext, c);
-    }
-
-    if (component.mLayoutCreatedInWillRender != null) {
-      return willRender(component.mLayoutCreatedInWillRender);
-    }
-
-    component.mLayoutCreatedInWillRender = LayoutState.createLayout(c, component);
-    return willRender(component.mLayoutCreatedInWillRender);
-  }
-
-  private static boolean willRender(InternalNode node) {
-    if (node == null || ComponentContext.NULL_LAYOUT.equals(node)) {
-      return false;
-    }
-
-    if (node.isNestedTreeHolder()) {
-      // Components using @OnCreateLayoutWithSizeSpec are lazily resolved after the rest of the tree
-      // has been measured (so that we have the proper measurements to pass in). This means we can't
-      // eagerly check the result of OnCreateLayoutWithSizeSpec.
-      throw new IllegalArgumentException(
-          "Cannot check willRender on a component that uses @OnCreateLayoutWithSizeSpec! "
-              + "Try wrapping this component in one that uses @OnCreateLayout if possible.");
-    }
-
-    return true;
+  @Override
+  public void recordEventTrigger(EventTriggersContainer container) {
+    // Do nothing by default
   }
 
   InternalNode consumeLayoutCreatedInWillRender() {
@@ -605,9 +332,200 @@ public abstract class Component extends ComponentLifecycle
     return layout;
   }
 
+  /**
+   * @return {@link SparseArray} that holds common dynamic Props
+   * @see DynamicPropsManager
+   */
+  @Nullable
+  SparseArray<DynamicValue<?>> getCommonDynamicProps() {
+    return mCommonDynamicProps;
+  }
+
+  @Nullable
+  CommonPropsCopyable getCommonPropsCopyable() {
+    return mCommonProps;
+  }
+
+  /**
+   * @return The error handler dispatching to either the parent component if available, or reraising
+   *     the exception. Null if the component isn't initialized.
+   */
+  @Nullable
+  EventHandler<ErrorEvent> getErrorHandler() {
+    return mErrorEventHandler;
+  }
+
+  /**
+   * Get a key that is unique to this component within its tree.
+   *
+   * @return
+   */
+  String getGlobalKey() {
+    return mGlobalKey;
+  }
+
+  /**
+   * Set a key for this component that is unique within its tree.
+   *
+   * @param key
+   */
+  // thread-safe because the one write is before all the reads
+  @ThreadSafe(enableChecks = false)
+  void setGlobalKey(String key) {
+    mGlobalKey = key;
+  }
+
+  /** @return a handle that is unique to this component. */
+  @Nullable
+  Handle getHandle() {
+    return mHandle;
+  }
+
+  /**
+   * Set a handle that is unique to this component.
+   *
+   * @param handle handle
+   */
+  void setHandle(Handle handle) {
+    mHandle = handle;
+  }
+
+  /** @return a key that is local to the component's parent. */
+  String getKey() {
+    if (mKey == null && !mHasManualKey) {
+      mKey = Integer.toString(getTypeId());
+    }
+    return mKey;
+  }
+
+  /**
+   * Set a key that is local to the parent of this component.
+   *
+   * @param key key
+   */
+  void setKey(String key) {
+    mHasManualKey = true;
+    mKey = key;
+  }
+
   @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
   InternalNode getLayoutCreatedInWillRenderForTesting() {
     return mLayoutCreatedInWillRender;
+  }
+
+  @Nullable
+  String getOwnerGlobalKey() {
+    return mOwnerGlobalKey;
+  }
+
+  /**
+   * If this component instance had its layout created on a different thread, we need to create a
+   * copy to create its layout on this thread, otherwise we'll end up accessing the internal data
+   * structures of the same instance on different threads. This can happen when the component is
+   * passed as a prop and the same instance can be used in layout calculations on main and
+   * background threads. https://github.com/facebook/litho/issues/360
+   */
+  Component getThreadSafeInstance() {
+    // Needed for tests, mocks can run into this.
+    if (mLayoutVersionGenerator == null) {
+      return this;
+    }
+
+    final boolean shouldCreateNewInstance = mLayoutVersionGenerator.getAndSet(true);
+
+    return shouldCreateNewInstance ? makeShallowCopy() : this;
+  }
+
+  /**
+   * @return true if component has common dynamic props, false - otherwise. If so {@link
+   *     #getCommonDynamicProps()} will return not null value
+   * @see DynamicPropsManager
+   */
+  boolean hasCommonDynamicProps() {
+    return mCommonDynamicProps != null;
+  }
+
+  /** @return if has a handle set */
+  boolean hasHandle() {
+    return mHandle != null;
+  }
+
+  /** @return if has a manually set key */
+  boolean hasManualKey() {
+    return mHasManualKey;
+  }
+
+  Component makeShallowCopyWithNewId() {
+    final Component component = makeShallowCopy();
+    component.mId = sIdGenerator.incrementAndGet();
+    return component;
+  }
+
+  Component makeUpdatedShallowCopy(final ComponentContext c) {
+    final Component clone = makeShallowCopy();
+
+    // set the global key so that it is not generated again and overridden.
+    clone.setGlobalKey(getGlobalKey());
+
+    // copy the inter-stage props so that they are set again.
+    clone.copyInterStageImpl(this);
+
+    // update the cloned component with the new context.
+    clone.updateInternalChildState(c);
+
+    // create updated tree props for children.
+    final TreeProps treeProps = getTreePropsForChildren(c, c.getTreeProps());
+
+    // set updated tree props on the component.
+    clone.getScopedContext().setTreeProps(treeProps);
+
+    return clone;
+  }
+
+  synchronized void markLayoutStarted() {
+    if (mIsLayoutStarted) {
+      throw new IllegalStateException("Duplicate layout of a component: " + this);
+    }
+    mIsLayoutStarted = true;
+  }
+
+  void reset() {
+    mIsLayoutStarted = false;
+  }
+
+  protected void bindDynamicProp(int dynamicPropIndex, Object value, Object content) {
+    throw new RuntimeException("Components that have dynamic Props must override this method");
+  }
+
+  /**
+   * Indicate that this component implements its own {@link #resolve(ComponentContext)} logic
+   * instead of going through {@link #createComponentLayout(ComponentContext)}.
+   */
+  protected boolean canResolve() {
+    return false;
+  }
+
+  protected void copyInterStageImpl(Component component) {}
+
+  protected DynamicValue[] getDynamicProps() {
+    return sEmptyArray;
+  }
+
+  // Get an id that is identical across cloned instances, but otherwise unique
+  protected int getId() {
+    return mId;
+  }
+
+  /**
+   * @return the Component this Component should delegate its getSimpleName calls to. See {@link
+   *     LayoutSpec#simpleNameDelegate()}
+   */
+  protected @Nullable Component getSimpleNameDelegate() {
+    return null;
+  }
+
+  protected @Nullable StateContainer getStateContainer() {
+    return null;
   }
 
   /** Called to install internal state based on a component's parent context. */
@@ -626,6 +544,37 @@ public abstract class Component extends ComponentLifecycle
     // Needed for tests, mocks can run into this.
     if (mLayoutVersionGenerator != null) {
       mLayoutVersionGenerator.set(true);
+    }
+  }
+
+  /**
+   * Prepares a component for calling any pending state updates on it by setting the TreeProps which
+   * the component requires from its parent, setting a scoped component context and applies the
+   * pending state updates.
+   *
+   * @param c component context
+   */
+  private void applyStateUpdates(ComponentContext c) {
+    setScopedContext(ComponentContext.withComponentScope(c, this));
+    populateTreeProps(getScopedContext().getTreeProps());
+    if (hasState()) {
+      c.getStateHandler().applyStateUpdatesForComponent(this);
+    }
+  }
+
+  private void generateErrorEventHandler(ComponentContext parentContext) {
+    if (ComponentsConfiguration.enableOnErrorHandling && mErrorEventHandler == null) {
+      HasEventDispatcher parentEventDispatcherProvider = parentContext.getComponentScope();
+
+      // We have no parent, which means we're sitting at the root of the hierarchy. Since we cannot
+      // pass the event on any further, we reraise it.
+      if (parentEventDispatcherProvider == null) {
+        parentEventDispatcherProvider = new DefaultErrorEventDispatcher();
+      }
+
+      mErrorEventHandler =
+          new EventHandler<>(
+              parentEventDispatcherProvider, ERROR_EVENT_HANDLER_ID, new Object[] {parentContext});
     }
   }
 
@@ -657,84 +606,59 @@ public abstract class Component extends ComponentLifecycle
     return globalKey;
   }
 
-  private void generateErrorEventHandler(ComponentContext parentContext) {
-    if (ComponentsConfiguration.enableOnErrorHandling && mErrorEventHandler == null) {
-      HasEventDispatcher parentEventDispatcherProvider = parentContext.getComponentScope();
-
-      // We have no parent, which means we're sitting at the root of the hierarchy. Since we cannot
-      // pass the event on any further, we reraise it.
-      if (parentEventDispatcherProvider == null) {
-        parentEventDispatcherProvider = new DefaultErrorEventDispatcher();
-      }
-
-      mErrorEventHandler =
-          new EventHandler<>(
-              parentEventDispatcherProvider, ERROR_EVENT_HANDLER_ID, new Object[] {parentContext});
-    }
-  }
-
   /**
-   * Prepares a component for calling any pending state updates on it by setting the TreeProps which
-   * the component requires from its parent, setting a scoped component context and applies the
-   * pending state updates.
+   * Generate a global key for the given component that is unique among all of this component's
+   * children of the same type. If a manual key has been set on the child component using the .key()
+   * method, return the manual key.
    *
-   * @param c component context
+   * <p>TODO: (T38237241) remove the usage of the key handler post the nested tree experiment
+   *
+   * @param component the child component for which we're finding a unique global key
+   * @param key the key of the child component as determined by its lifecycle id or manual setting
+   * @return a unique global key for this component relative to its siblings.
    */
-  private void applyStateUpdates(ComponentContext c) {
-    setScopedContext(ComponentContext.withComponentScope(c, this));
-    populateTreeProps(getScopedContext().getTreeProps());
-    if (hasState()) {
-      c.getStateHandler().applyStateUpdatesForComponent(this);
+  private String generateUniqueGlobalKeyForChild(Component component, String key) {
+    final String childKey = ComponentKeyUtils.getKeyWithSeparator(getGlobalKey(), key);
+
+    if (component.mHasManualKey) { // if the component has a manual key
+      if (mManualKeys == null) {
+        mManualKeys = new HashSet<>();
+      }
+      if (mManualKeys.contains(childKey)) { // if it is a duplicate
+        logDuplicateManualKeyWarning(component, key); // log a warning and generate a unique key
+      } else {
+        mManualKeys.add(childKey);
+        getChildCountAndIncrement(component); // to avoid subsequent clash with a generated key
+        return childKey; // return it
+      }
+    }
+
+    int childCount = getChildCountAndIncrement(component);
+
+    if (childCount == 0) { // if first child of type then return the child key
+      return childKey;
+    } else { // if NOT first child of type append the child count to the child key
+      return getKeyForChildPosition(childKey, childCount);
     }
   }
 
   /**
-   * If this component instance had its layout created on a different thread, we need to create a
-   * copy to create its layout on this thread, otherwise we'll end up accessing the internal data
-   * structures of the same instance on different threads. This can happen when the component is
-   * passed as a prop and the same instance can be used in layout calculations on main and
-   * background threads. https://github.com/facebook/litho/issues/360
+   * Returns the number of children of a given type {@code this} component has and then increments
+   * it by 1.
+   *
+   * @param component the child component
+   * @return the number of children of {@param component} type
    */
-  Component getThreadSafeInstance() {
-    // Needed for tests, mocks can run into this.
-    if (mLayoutVersionGenerator == null) {
-      return this;
+  private int getChildCountAndIncrement(Component component) {
+    if (mChildCounters == null) {
+      mChildCounters = new SparseIntArray();
     }
 
-    final boolean shouldCreateNewInstance = mLayoutVersionGenerator.getAndSet(true);
+    final int typeId = component.getTypeId();
+    final int count = mChildCounters.get(typeId, 0);
+    mChildCounters.put(typeId, count + 1);
 
-    return shouldCreateNewInstance ? makeShallowCopy() : this;
-  }
-
-  @Override
-  public void recordEventTrigger(EventTriggersContainer container) {
-    // Do nothing by default
-  }
-
-  /**
-   * Indicate that this component implements its own {@link #resolve(ComponentContext)} logic
-   * instead of going through {@link #createComponentLayout(ComponentContext)}.
-   */
-  protected boolean canResolve() {
-    return false;
-  }
-
-  @Nullable
-  CommonPropsCopyable getCommonPropsCopyable() {
-    return mCommonProps;
-  }
-
-  @Nullable
-  public CommonProps getCommonProps() {
-    return mCommonProps;
-  }
-
-  private CommonProps getOrCreateCommonProps() {
-    if (mCommonProps == null) {
-      mCommonProps = new CommonPropsHolder();
-    }
-
-    return mCommonProps;
+    return count;
   }
 
   /**
@@ -749,37 +673,91 @@ public abstract class Component extends ComponentLifecycle
     return mCommonDynamicProps;
   }
 
-  /**
-   * @return {@link SparseArray} that holds common dynamic Props
-   * @see DynamicPropsManager
-   */
-  @Nullable
-  SparseArray<DynamicValue<?>> getCommonDynamicProps() {
-    return mCommonDynamicProps;
+  private CommonProps getOrCreateCommonProps() {
+    if (mCommonProps == null) {
+      mCommonProps = new CommonPropsHolder();
+    }
+
+    return mCommonProps;
+  }
+
+  private boolean hasCachedLayout(ComponentContext c) {
+    if (c != null) {
+      final LayoutState layoutState = c.getLayoutState();
+
+      if (layoutState != null) {
+        return layoutState.hasCachedLayout(this);
+      }
+    }
+
+    return false;
+  }
+
+  private void logDuplicateManualKeyWarning(Component component, String key) {
+    ComponentsReporter.emitMessage(
+        ComponentsReporter.LogLevel.WARNING,
+        DUPLICATE_MANUAL_KEY,
+        "The manual key "
+            + key
+            + " you are setting on this "
+            + component.getSimpleName()
+            + " is a duplicate and will be changed into a unique one. "
+            + "This will result in unexpected behavior if you don't change it.");
   }
 
   /**
-   * @return true if component has common dynamic props, false - otherwise. If so {@link
-   *     #getCommonDynamicProps()} will return not null value
-   * @see DynamicPropsManager
+   * @return whether the given component will render because it returns non-null from its resolved
+   *     onCreateLayout, based on its current props and state. Returns true if the resolved layout
+   *     is non-null, otherwise false.
+   * @deprecated Using willRender is regarded as an anti-pattern, since it will load all classes
+   *     into memory in order to potentially decide not to use any of them.
    */
-  boolean hasCommonDynamicProps() {
-    return mCommonDynamicProps != null;
-  }
-
   @Deprecated
-  @Override
-  public EventDispatcher getEventDispatcher() {
-    return this;
+  public static boolean willRender(ComponentContext c, Component component) {
+    if (component == null) {
+      return false;
+    }
+
+    final ComponentContext scopedContext = component.getScopedContext();
+    if (scopedContext != null) {
+      assertSameBaseContext(scopedContext, c);
+    }
+
+    if (component.mLayoutCreatedInWillRender != null) {
+      return willRender(component.mLayoutCreatedInWillRender);
+    }
+
+    component.mLayoutCreatedInWillRender = LayoutState.createLayout(c, component);
+    return willRender(component.mLayoutCreatedInWillRender);
   }
 
-  /**
-   * @return The error handler dispatching to either the parent component if available, or reraising
-   *     the exception. Null if the component isn't initialized.
-   */
-  @Nullable
-  EventHandler<ErrorEvent> getErrorHandler() {
-    return mErrorEventHandler;
+  static boolean isHostSpec(@Nullable Component component) {
+    return (component instanceof HostComponent);
+  }
+
+  static boolean isLayoutSpec(@Nullable Component component) {
+    return (component != null && component.getMountType() == MountType.NONE);
+  }
+
+  static boolean isLayoutSpecWithSizeSpec(@Nullable Component component) {
+    return (isLayoutSpec(component) && component.canMeasure());
+  }
+
+  static boolean isMountDrawableSpec(@Nullable Component component) {
+    return (component != null && component.getMountType() == MountType.DRAWABLE);
+  }
+
+  static boolean isMountSpec(@Nullable Component component) {
+    return (component != null && component.getMountType() != MountType.NONE);
+  }
+
+  static boolean isMountViewSpec(@Nullable Component component) {
+    return (component != null && component.getMountType() == MountType.VIEW);
+  }
+
+  static boolean isNestedTree(ComponentContext context, @Nullable Component component) {
+    return (isLayoutSpecWithSizeSpec(component)
+        || (component != null && component.hasCachedLayout(context)));
   }
 
   /** Store a working range information into a list for later use by {@link LayoutState}. */
@@ -792,26 +770,48 @@ public abstract class Component extends ComponentLifecycle
         new WorkingRangeContainer.Registration(name, workingRange, component));
   }
 
-  public boolean hasBackgroundSet() {
-    return mCommonProps != null && mCommonProps.getBackground() != null;
-  }
-
-  public boolean hasClickHandlerSet() {
-    return mCommonProps != null
-        && mCommonProps.getNullableNodeInfo() != null
-        && mCommonProps.getNullableNodeInfo().getClickHandler() != null;
-  }
-
-  protected DynamicValue[] getDynamicProps() {
-    return sEmptyArray;
-  }
-
-  protected void bindDynamicProp(int dynamicPropIndex, Object value, Object content) {
-    throw new RuntimeException("Components that have dynamic Props must override this method");
-  }
-
   protected static <T> T retrieveValue(DynamicValue<T> dynamicValue) {
     return dynamicValue.get();
+  }
+
+  // TODO(t30797526): Remove
+  private static void assertSameBaseContext(
+      ComponentContext scopedContext, ComponentContext willRenderContext) {
+    if (scopedContext.getAndroidContext() != willRenderContext.getAndroidContext()) {
+      ComponentsReporter.emitMessage(
+          ComponentsReporter.LogLevel.ERROR,
+          MISMATCHING_BASE_CONTEXT,
+          "Found mismatching base contexts between the Component's Context ("
+              + scopedContext.getAndroidContext()
+              + ") and the Context used in willRender ("
+              + willRenderContext.getAndroidContext()
+              + ")!");
+    }
+  }
+
+  private static Component getFirstNonSimpleNameDelegate(Component component) {
+    Component current = component;
+    while (current.getSimpleNameDelegate() != null) {
+      current = current.getSimpleNameDelegate();
+    }
+    return current;
+  }
+
+  private static boolean willRender(InternalNode node) {
+    if (node == null || ComponentContext.NULL_LAYOUT.equals(node)) {
+      return false;
+    }
+
+    if (node.isNestedTreeHolder()) {
+      // Components using @OnCreateLayoutWithSizeSpec are lazily resolved after the rest of the tree
+      // has been measured (so that we have the proper measurements to pass in). This means we can't
+      // eagerly check the result of OnCreateLayoutWithSizeSpec.
+      throw new IllegalArgumentException(
+          "Cannot check willRender on a component that uses @OnCreateLayoutWithSizeSpec! "
+              + "Try wrapping this component in one that uses @OnCreateLayout if possible.");
+    }
+
+    return true;
   }
 
   /**
@@ -820,225 +820,14 @@ public abstract class Component extends ComponentLifecycle
    */
   public abstract static class Builder<T extends Builder<T>> {
 
+    protected ResourceResolver mResourceResolver;
     @Nullable private ComponentContext mContext;
     private Component mComponent;
-    protected ResourceResolver mResourceResolver;
-
-    protected void init(
-        ComponentContext c,
-        @AttrRes int defStyleAttr,
-        @StyleRes int defStyleRes,
-        Component component) {
-      mResourceResolver = c.getResourceResolver();
-      mComponent = component;
-      mContext = c;
-
-      final Component owner = getOwner();
-      if (owner != null) {
-        mComponent.mOwnerGlobalKey = owner.getGlobalKey();
-      }
-
-      if (defStyleAttr != 0 || defStyleRes != 0) {
-        mComponent.getOrCreateCommonProps().setStyle(defStyleAttr, defStyleRes);
-        component.loadStyle(c, defStyleAttr, defStyleRes);
-      }
-    }
-
-    /**
-     * @return the {@link ComponentContext} for this {@link Builder}, useful for Kotlin DSL. Will be
-     *     null if the Builder was already used to {@link #build()} a component.
-     */
-    @Nullable
-    public ComponentContext getContext() {
-      return mContext;
-    }
-
-    public abstract T getThis();
-
-    /** Set a key on the component that is local to its parent. */
-    public T key(@Nullable String key) {
-      if (key == null) {
-        final String componentName =
-            mContext.getComponentScope() != null
-                ? mContext.getComponentScope().getSimpleName()
-                : "unknown component";
-        final String message =
-            "Setting a null key from "
-                + componentName
-                + " which is usually a mistake! If it is not, explicitly set the String 'null'";
-        ComponentsReporter.emitMessage(ComponentsReporter.LogLevel.ERROR, NULL_KEY_SET, message);
-        key = "null";
-      }
-      mComponent.setKey(key);
-      return getThis();
-    }
-
-    public T handle(Handle handle) {
-      mComponent.setHandle(handle);
-      return getThis();
-    }
-
-    /**
-     * Checks that all the required props are supplied, and if not throws a useful exception
-     *
-     * @param requiredPropsCount expected number of props
-     * @param required the bit set that identifies which props have been supplied
-     * @param requiredPropsNames the names of all props used for a useful error message
-     */
-    protected static void checkArgs(
-        int requiredPropsCount, BitSet required, String[] requiredPropsNames) {
-      if (required != null && required.nextClearBit(0) < requiredPropsCount) {
-        List<String> missingProps = new ArrayList<>();
-        for (int i = 0; i < requiredPropsCount; i++) {
-          if (!required.get(i)) {
-            missingProps.add(requiredPropsNames[i]);
-          }
-        }
-        throw new IllegalStateException(
-            "The following props are not marked as optional and were not supplied: "
-                + Arrays.toString(missingProps.toArray()));
-      }
-    }
 
     @ReturnsOwnership
     public abstract Component build();
 
-    /**
-     * The RTL/LTR direction of components and text. Determines whether {@link YogaEdge#START} and
-     * {@link YogaEdge#END} will resolve to the left or right side, among other things. INHERIT
-     * indicates this setting will be inherited from this component's parent.
-     *
-     * <p>Default: {@link YogaDirection#INHERIT}
-     */
-    public T layoutDirection(@Nullable YogaDirection layoutDirection) {
-      mComponent.getOrCreateCommonProps().layoutDirection(layoutDirection);
-      return getThis();
-    }
-
-    /**
-     * Controls how a child aligns in the cross direction, overriding the alignItems of the parent.
-     * See <a
-     * href="https://yogalayout.com/docs/align-items">https://yogalayout.com/docs/align-items</a>
-     * for more information.
-     *
-     * <p>Default: {@link YogaAlign#AUTO}
-     */
-    public T alignSelf(@Nullable YogaAlign alignSelf) {
-      mComponent.getOrCreateCommonProps().alignSelf(alignSelf);
-      return getThis();
-    }
-
-    /**
-     * Controls how this component will be positioned within its parent. See <a
-     * href="https://yogalayout.com/docs/absolute-relative-layout">https://yogalayout.com/docs/absolute-relative-layout</a>
-     * for more details.
-     *
-     * <p>Default: {@link YogaPositionType#RELATIVE}
-     */
-    public T positionType(@Nullable YogaPositionType positionType) {
-      mComponent.getOrCreateCommonProps().positionType(positionType);
-      return getThis();
-    }
-
-    /**
-     * Sets flexGrow, flexShrink, and flexBasis at the same time.
-     *
-     * <p>When flex is a positive number, it makes the component flexible and it will be sized
-     * proportional to its flex value. So a component with flex set to 2 will take twice the space
-     * as a component with flex set to 1.
-     *
-     * <p>When flex is 0, the component is sized according to width and height and it is inflexible.
-     *
-     * <p>When flex is -1, the component is normally sized according width and height. However, if
-     * there's not enough space, the component will shrink to its minWidth and minHeight.
-     *
-     * <p>See <a href="https://yogalayout.com/docs/flex">https://yogalayout.com/docs/flex</a> for
-     * more information.
-     *
-     * <p>Default: 0
-     */
-    public T flex(float flex) {
-      mComponent.getOrCreateCommonProps().flex(flex);
-      return getThis();
-    }
-
-    /**
-     * If the sum of childrens' main axis dimensions is less than the minimum size, how much should
-     * this component grow? This value represents the "flex grow factor" and determines how much
-     * this component should grow along the main axis in relation to any other flexible children.
-     * See <a href="https://yogalayout.com/docs/flex">https://yogalayout.com/docs/flex</a> for more
-     * information.
-     *
-     * <p>Default: 0
-     */
-    public T flexGrow(float flexGrow) {
-      mComponent.getOrCreateCommonProps().flexGrow(flexGrow);
-      return getThis();
-    }
-
-    /**
-     * The FlexShrink property describes how to shrink children along the main axis in the case that
-     * the total size of the children overflow the size of the container on the main axis. See <a
-     * href="https://yogalayout.com/docs/flex">https://yogalayout.com/docs/flex</a> for more
-     * information.
-     *
-     * <p>Default: 1
-     */
-    public T flexShrink(float flexShrink) {
-      mComponent.getOrCreateCommonProps().flexShrink(flexShrink);
-      return getThis();
-    }
-
-    /**
-     * The FlexBasis property is an axis-independent way of providing the default size of an item on
-     * the main axis. Setting the FlexBasis of a child is similar to setting the Width of that child
-     * if its parent is a container with FlexDirection = row or setting the Height of a child if its
-     * parent is a container with FlexDirection = column. The FlexBasis of an item is the default
-     * size of that item, the size of the item before any FlexGrow and FlexShrink calculations are
-     * performed. See <a
-     * href="https://yogalayout.com/docs/flex">https://yogalayout.com/docs/flex</a> for more
-     * information.
-     *
-     * <p>Default: 0
-     */
-    public T flexBasisPx(@Px int flexBasis) {
-      mComponent.getOrCreateCommonProps().flexBasisPx(flexBasis);
-      return getThis();
-    }
-
-    /**
-     * @see #flexBasisPx
-     * @param percent a value between 0 and 100.
-     */
-    public T flexBasisPercent(float percent) {
-      mComponent.getOrCreateCommonProps().flexBasisPercent(percent);
-      return getThis();
-    }
-
-    /** @see #flexBasisPx */
-    public T flexBasisAttr(@AttrRes int resId, @DimenRes int defaultResId) {
-      return flexBasisPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
-    }
-
-    /** @see #flexBasisPx */
-    public T flexBasisAttr(@AttrRes int resId) {
-      return flexBasisAttr(resId, 0);
-    }
-
-    /** @see #flexBasisPx */
-    public T flexBasisRes(@DimenRes int resId) {
-      return flexBasisPx(mResourceResolver.resolveDimenSizeRes(resId));
-    }
-
-    /** @see #flexBasisPx */
-    public T flexBasisDip(@Dimension(unit = DP) float flexBasis) {
-      return flexBasisPx(mResourceResolver.dipsToPixels(flexBasis));
-    }
-
-    public T importantForAccessibility(int importantForAccessibility) {
-      mComponent.getOrCreateCommonProps().importantForAccessibility(importantForAccessibility);
-      return getThis();
-    }
+    public abstract T getThis();
 
     /**
      * Ports {@link android.view.ViewCompat#setAccessibilityHeading} into components world. However,
@@ -1059,385 +848,51 @@ public abstract class Component extends ComponentLifecycle
       return getThis();
     }
 
-    /**
-     * If true, component duplicates its drawable state (focused, pressed, etc.) from the direct
-     * parent.
-     *
-     * <p>In the following example, when {@code Row} gets pressed state, its child {@code
-     * OtherStatefulDrawable} will get that pressed state within itself, too:
-     *
-     * <pre>{@code
-     * Row.create(c)
-     *     .drawable(stateListDrawable)
-     *     .clickable(true)
-     *     .child(
-     *         OtherStatefulDrawable.create(c)
-     *             .duplicateParentState(true))
-     * }</pre>
-     */
-    public T duplicateParentState(boolean duplicateParentState) {
-      mComponent.getOrCreateCommonProps().duplicateParentState(duplicateParentState);
+    public T accessibilityRole(@Nullable @AccessibilityRole.AccessibilityRoleType String role) {
+      mComponent.getOrCreateCommonProps().accessibilityRole(role);
       return getThis();
+    }
+
+    public T accessibilityRoleDescription(CharSequence roleDescription) {
+      mComponent.getOrCreateCommonProps().accessibilityRoleDescription(roleDescription);
+      return getThis();
+    }
+
+    public T accessibilityRoleDescription(@StringRes int stringId) {
+      return accessibilityRoleDescription(mContext.getResources().getString(stringId));
+    }
+
+    public T accessibilityRoleDescription(@StringRes int stringId, Object... formatArgs) {
+      return accessibilityRoleDescription(mContext.getResources().getString(stringId, formatArgs));
     }
 
     /**
-     * Effects the spacing around the outside of a node. A node with margin will offset itself from
-     * the bounds of its parent but also offset the location of any siblings. See <a
-     * href="https://yogalayout.com/docs/margins-paddings-borders">https://yogalayout.com/docs/margins-paddings-borders</a>
-     * for more information
-     */
-    public T marginPx(@Nullable YogaEdge edge, @Px int margin) {
-      mComponent.getOrCreateCommonProps().marginPx(edge, margin);
-      return getThis();
-    }
-
-    /**
-     * @see #marginPx
-     * @param percent a value between 0 and 100.
-     */
-    public T marginPercent(@Nullable YogaEdge edge, float percent) {
-      mComponent.getOrCreateCommonProps().marginPercent(edge, percent);
-      return getThis();
-    }
-
-    /** @see #marginPx */
-    public T marginAuto(@Nullable YogaEdge edge) {
-      mComponent.getOrCreateCommonProps().marginAuto(edge);
-      return getThis();
-    }
-
-    /** @see #marginPx */
-    public T marginAttr(@Nullable YogaEdge edge, @AttrRes int resId, @DimenRes int defaultResId) {
-      return marginPx(edge, mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
-    }
-
-    /** @see #marginPx */
-    public T marginAttr(@Nullable YogaEdge edge, @AttrRes int resId) {
-      return marginAttr(edge, resId, 0);
-    }
-
-    /** @see #marginPx */
-    public T marginRes(@Nullable YogaEdge edge, @DimenRes int resId) {
-      return marginPx(edge, mResourceResolver.resolveDimenSizeRes(resId));
-    }
-
-    /** @see #marginPx */
-    public T marginDip(@Nullable YogaEdge edge, @Dimension(unit = DP) float margin) {
-      return marginPx(edge, mResourceResolver.dipsToPixels(margin));
-    }
-
-    /**
-     * Affects the size of the node it is applied to. Padding will not add to the total size of an
-     * element if it has an explicit size set. See <a
-     * href="https://yogalayout.com/docs/margins-paddings-borders">https://yogalayout.com/docs/margins-paddings-borders</a>
-     * for more information
-     */
-    public T paddingPx(@Nullable YogaEdge edge, @Px int padding) {
-      mComponent.getOrCreateCommonProps().paddingPx(edge, padding);
-      return getThis();
-    }
-
-    /**
-     * @see #paddingPx
-     * @param percent a value between 0 and 100.
-     */
-    public T paddingPercent(@Nullable YogaEdge edge, float percent) {
-      mComponent.getOrCreateCommonProps().paddingPercent(edge, percent);
-      return getThis();
-    }
-
-    /** @see #paddingPx */
-    public T paddingAttr(@Nullable YogaEdge edge, @AttrRes int resId, @DimenRes int defaultResId) {
-      return paddingPx(edge, mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
-    }
-
-    /** @see #paddingPx */
-    public T paddingAttr(@Nullable YogaEdge edge, @AttrRes int resId) {
-      return paddingAttr(edge, resId, 0);
-    }
-
-    /** @see #paddingPx */
-    public T paddingRes(@Nullable YogaEdge edge, @DimenRes int resId) {
-      return paddingPx(edge, mResourceResolver.resolveDimenSizeRes(resId));
-    }
-
-    /** @see #paddingPx */
-    public T paddingDip(@Nullable YogaEdge edge, @Dimension(unit = DP) float padding) {
-      return paddingPx(edge, mResourceResolver.dipsToPixels(padding));
-    }
-
-    public T border(@Nullable Border border) {
-      mComponent.getOrCreateCommonProps().border(border);
-      return getThis();
-    }
-
-    /**
-     * When used in combination with {@link #positionType} of {@link YogaPositionType#ABSOLUTE},
-     * allows the component to specify how it should be positioned within its parent. See <a
-     * href="https://yogalayout.com/docs/absolute-relative-layout">https://yogalayout.com/docs/absolute-relative-layout</a>
+     * Controls how a child aligns in the cross direction, overriding the alignItems of the parent.
+     * See <a
+     * href="https://yogalayout.com/docs/align-items">https://yogalayout.com/docs/align-items</a>
      * for more information.
-     */
-    public T positionPx(@Nullable YogaEdge edge, @Px int position) {
-      mComponent.getOrCreateCommonProps().positionPx(edge, position);
-      return getThis();
-    }
-
-    /**
-     * @see #positionPx
-     * @param percent a value between 0 and 100.
-     */
-    public T positionPercent(@Nullable YogaEdge edge, float percent) {
-      mComponent.getOrCreateCommonProps().positionPercent(edge, percent);
-      return getThis();
-    }
-
-    /** @see #positionPx */
-    public T positionAttr(@Nullable YogaEdge edge, @AttrRes int resId, @DimenRes int defaultResId) {
-      return positionPx(edge, mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
-    }
-
-    /** @see #positionPx */
-    public T positionAttr(@Nullable YogaEdge edge, @AttrRes int resId) {
-      return positionAttr(edge, resId, 0);
-    }
-
-    /** @see #positionPx */
-    public T positionRes(@Nullable YogaEdge edge, @DimenRes int resId) {
-      return positionPx(edge, mResourceResolver.resolveDimenSizeRes(resId));
-    }
-
-    /** @see #positionPx */
-    public T positionDip(@Nullable YogaEdge edge, @Dimension(unit = DP) float position) {
-      return positionPx(edge, mResourceResolver.dipsToPixels(position));
-    }
-
-    /**
-     * Specifies the width of the element's content area. See <a
-     * href="https://yogalayout.com/docs/width-height">https://yogalayout.com/docs/width-height</a>
-     * for more information
-     */
-    public T widthPx(@Px int width) {
-      mComponent.getOrCreateCommonProps().widthPx(width);
-      return getThis();
-    }
-
-    /**
-     * Sets the width of the Component to be a percentage of its parent's width. Note that if the
-     * parent has unspecified width (e.g. it is an HScroll), then setting this will have no effect.
      *
-     * @see #widthPx
-     * @param percent a value between 0 and 100.
+     * <p>Default: {@link YogaAlign#AUTO}
      */
-    public T widthPercent(float percent) {
-      mComponent.getOrCreateCommonProps().widthPercent(percent);
+    public T alignSelf(@Nullable YogaAlign alignSelf) {
+      mComponent.getOrCreateCommonProps().alignSelf(alignSelf);
       return getThis();
     }
 
-    /** @see #widthPx */
-    public T widthRes(@DimenRes int resId) {
-      return widthPx(mResourceResolver.resolveDimenSizeRes(resId));
-    }
-
-    /** @see #widthPx */
-    public T widthAttr(@AttrRes int resId, @DimenRes int defaultResId) {
-      return widthPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
-    }
-
-    /** @see #widthPx */
-    public T widthAttr(@AttrRes int resId) {
-      return widthAttr(resId, 0);
-    }
-
-    /** @see #widthPx */
-    public T widthDip(@Dimension(unit = DP) float width) {
-      return widthPx(mResourceResolver.dipsToPixels(width));
-    }
-
-    /**
-     * This property has higher priority than all other properties and will always be respected. See
-     * <a href="https://yogalayout.com/docs/min-max/">https://yogalayout.com/docs/min-max/</a> for
-     * more information
-     */
-    public T minWidthPx(@Px int minWidth) {
-      mComponent.getOrCreateCommonProps().minWidthPx(minWidth);
+    /** Sets the alpha (opacity) of this component. */
+    public T alpha(float alpha) {
+      mComponent.getOrCreateCommonProps().alpha(alpha);
       return getThis();
     }
 
     /**
-     * @see #minWidthPx
-     * @param percent a value between 0 and 100.
-     */
-    public T minWidthPercent(float percent) {
-      mComponent.getOrCreateCommonProps().minWidthPercent(percent);
-      return getThis();
-    }
-
-    /** @see #minWidthPx */
-    public T minWidthAttr(@AttrRes int resId, @DimenRes int defaultResId) {
-      return minWidthPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
-    }
-
-    /** @see #minWidthPx */
-    public T minWidthAttr(@AttrRes int resId) {
-      return minWidthAttr(resId, 0);
-    }
-
-    /** @see #minWidthPx */
-    public T minWidthRes(@DimenRes int resId) {
-      return minWidthPx(mResourceResolver.resolveDimenSizeRes(resId));
-    }
-
-    /** @see #minWidthPx */
-    public T minWidthDip(@Dimension(unit = DP) float minWidth) {
-      return minWidthPx(mResourceResolver.dipsToPixels(minWidth));
-    }
-
-    /** @see #minWidthPx */
-    public T maxWidthPx(@Px int maxWidth) {
-      mComponent.getOrCreateCommonProps().maxWidthPx(maxWidth);
-      return getThis();
-    }
-
-    /**
-     * @see #minWidthPx
-     * @param percent a value between 0 and 100.
-     */
-    public T maxWidthPercent(float percent) {
-      mComponent.getOrCreateCommonProps().maxWidthPercent(percent);
-      return getThis();
-    }
-
-    /** @see #minWidthPx */
-    public T maxWidthAttr(@AttrRes int resId, @DimenRes int defaultResId) {
-      return maxWidthPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
-    }
-
-    /** @see #minWidthPx */
-    public T maxWidthAttr(@AttrRes int resId) {
-      return maxWidthAttr(resId, 0);
-    }
-
-    /** @see #minWidthPx */
-    public T maxWidthRes(@DimenRes int resId) {
-      return maxWidthPx(mResourceResolver.resolveDimenSizeRes(resId));
-    }
-
-    /** @see #minWidthPx */
-    public T maxWidthDip(@Dimension(unit = DP) float maxWidth) {
-      return maxWidthPx(mResourceResolver.dipsToPixels(maxWidth));
-    }
-
-    /**
-     * Specifies the height of the element's content area. See <a
-     * href="https://yogalayout.com/docs/width-height">https://yogalayout.com/docs/width-height</a>
-     * for more information
-     */
-    public T heightPx(@Px int height) {
-      mComponent.getOrCreateCommonProps().heightPx(height);
-      return getThis();
-    }
-
-    /**
-     * Sets the height of the Component to be a percentage of its parent's height. Note that if the
-     * parent has unspecified height (e.g. it is a RecyclerView), then setting this will have no
-     * effect.
+     * Links a {@link DynamicValue} object ot the alpha value for this Component
      *
-     * @see #heightPx
-     * @param percent a value between 0 and 100.
+     * @param value controller for the alpha value
      */
-    public T heightPercent(float percent) {
-      mComponent.getOrCreateCommonProps().heightPercent(percent);
+    public T alpha(DynamicValue<Float> value) {
+      mComponent.getOrCreateCommonDynamicProps().put(KEY_ALPHA, value);
       return getThis();
-    }
-
-    /** @see #heightPx */
-    public T heightRes(@DimenRes int resId) {
-      return heightPx(mResourceResolver.resolveDimenSizeRes(resId));
-    }
-
-    /** @see #heightPx */
-    public T heightAttr(@AttrRes int resId, @DimenRes int defaultResId) {
-      return heightPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
-    }
-
-    /** @see #heightPx */
-    public T heightAttr(@AttrRes int resId) {
-      return heightAttr(resId, 0);
-    }
-
-    /** @see #heightPx */
-    public T heightDip(@Dimension(unit = DP) float height) {
-      return heightPx(mResourceResolver.dipsToPixels(height));
-    }
-
-    /** @see #minWidthPx */
-    public T minHeightPx(@Px int minHeight) {
-      mComponent.getOrCreateCommonProps().minHeightPx(minHeight);
-      return getThis();
-    }
-
-    /**
-     * @see #minWidthPx
-     * @param percent a value between 0 and 100.
-     */
-    public T minHeightPercent(float percent) {
-      mComponent.getOrCreateCommonProps().minHeightPercent(percent);
-      return getThis();
-    }
-
-    /** @see #minWidthPx */
-    public T minHeightAttr(@AttrRes int resId, @DimenRes int defaultResId) {
-      return minHeightPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
-    }
-
-    /** @see #minWidthPx */
-    public T minHeightAttr(@AttrRes int resId) {
-      return minHeightAttr(resId, 0);
-    }
-
-    /** @see #minWidthPx */
-    public T minHeightRes(@DimenRes int resId) {
-      return minHeightPx(mResourceResolver.resolveDimenSizeRes(resId));
-    }
-
-    /** @see #minWidthPx */
-    public T minHeightDip(@Dimension(unit = DP) float minHeight) {
-      return minHeightPx(mResourceResolver.dipsToPixels(minHeight));
-    }
-
-    /** @see #minWidthPx */
-    public T maxHeightPx(@Px int maxHeight) {
-      mComponent.getOrCreateCommonProps().maxHeightPx(maxHeight);
-      return getThis();
-    }
-
-    /**
-     * @see #minWidthPx
-     * @param percent a value between 0 and 100.
-     */
-    public T maxHeightPercent(float percent) {
-      mComponent.getOrCreateCommonProps().maxHeightPercent(percent);
-      return getThis();
-    }
-
-    /** @see #minWidthPx */
-    public T maxHeightAttr(@AttrRes int resId, @DimenRes int defaultResId) {
-      return maxHeightPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
-    }
-
-    /** @see #minWidthPx */
-    public T maxHeightAttr(@AttrRes int resId) {
-      return maxHeightAttr(resId, 0);
-    }
-
-    /** @see #minWidthPx */
-    public T maxHeightRes(@DimenRes int resId) {
-      return maxHeightPx(mResourceResolver.resolveDimenSizeRes(resId));
-    }
-
-    /** @see #minWidthPx */
-    public T maxHeightDip(@Dimension(unit = DP) float maxHeight) {
-      return maxHeightPx(mResourceResolver.dipsToPixels(maxHeight));
     }
 
     /**
@@ -1448,34 +903,6 @@ public abstract class Component extends ComponentLifecycle
     public T aspectRatio(float aspectRatio) {
       mComponent.getOrCreateCommonProps().aspectRatio(aspectRatio);
       return getThis();
-    }
-
-    public T isReferenceBaseline(boolean isReferenceBaseline) {
-      mComponent.getOrCreateCommonProps().isReferenceBaseline(isReferenceBaseline);
-      return getThis();
-    }
-
-    public T touchExpansionPx(@Nullable YogaEdge edge, @Px int touchExpansion) {
-      mComponent.getOrCreateCommonProps().touchExpansionPx(edge, touchExpansion);
-      return getThis();
-    }
-
-    public T touchExpansionAttr(
-        @Nullable YogaEdge edge, @AttrRes int resId, @DimenRes int defaultResId) {
-      return touchExpansionPx(edge, mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
-    }
-
-    public T touchExpansionAttr(@Nullable YogaEdge edge, @AttrRes int resId) {
-      return touchExpansionAttr(edge, resId, 0);
-    }
-
-    public T touchExpansionRes(@Nullable YogaEdge edge, @DimenRes int resId) {
-      return touchExpansionPx(edge, mResourceResolver.resolveDimenSizeRes(resId));
-    }
-
-    public T touchExpansionDip(
-        @Nullable YogaEdge edge, @Dimension(unit = DP) float touchExpansion) {
-      return touchExpansionPx(edge, mResourceResolver.dipsToPixels(touchExpansion));
     }
 
     /**
@@ -1513,14 +940,6 @@ public abstract class Component extends ComponentLifecycle
       return backgroundAttr(resId, 0);
     }
 
-    public T backgroundRes(@DrawableRes int resId) {
-      if (resId == 0) {
-        return background((ComparableDrawable) null);
-      }
-
-      return background(ComparableResDrawable.create(mContext.getAndroidContext(), resId));
-    }
-
     public T backgroundColor(@ColorInt int backgroundColor) {
       return background(ComparableColorDrawable.create(backgroundColor));
     }
@@ -1532,6 +951,208 @@ public abstract class Component extends ComponentLifecycle
      */
     public T backgroundColor(DynamicValue<Integer> value) {
       mComponent.getOrCreateCommonDynamicProps().put(KEY_BACKGROUND_COLOR, value);
+      return getThis();
+    }
+
+    public T backgroundRes(@DrawableRes int resId) {
+      if (resId == 0) {
+        return background((ComparableDrawable) null);
+      }
+
+      return background(ComparableResDrawable.create(mContext.getAndroidContext(), resId));
+    }
+
+    public T border(@Nullable Border border) {
+      mComponent.getOrCreateCommonProps().border(border);
+      return getThis();
+    }
+
+    public T clickHandler(@Nullable EventHandler<ClickEvent> clickHandler) {
+      mComponent.getOrCreateCommonProps().clickHandler(clickHandler);
+      return getThis();
+    }
+
+    public T clickable(boolean isClickable) {
+      mComponent.getOrCreateCommonProps().clickable(isClickable);
+      return getThis();
+    }
+
+    /**
+     * Ports {@link android.view.ViewGroup#setClipChildren(boolean)} into components world. However,
+     * there is no guarantee that child of this component would be translated into direct view child
+     * in the resulting view hierarchy.
+     *
+     * @param clipChildren true to clip children to their bounds. False allows each child to draw
+     *     outside of its own bounds within the parent, it doesn't allow children to draw outside of
+     *     the parent itself.
+     */
+    public T clipChildren(boolean clipChildren) {
+      mComponent.getOrCreateCommonProps().clipChildren(clipChildren);
+      return getThis();
+    }
+
+    public T clipToOutline(boolean clipToOutline) {
+      mComponent.getOrCreateCommonProps().clipToOutline(clipToOutline);
+      return getThis();
+    }
+
+    public T contentDescription(@Nullable CharSequence contentDescription) {
+      mComponent.getOrCreateCommonProps().contentDescription(contentDescription);
+      return getThis();
+    }
+
+    public T contentDescription(@StringRes int stringId) {
+      return contentDescription(mContext.getAndroidContext().getResources().getString(stringId));
+    }
+
+    public T contentDescription(@StringRes int stringId, Object... formatArgs) {
+      return contentDescription(
+          mContext.getAndroidContext().getResources().getString(stringId, formatArgs));
+    }
+
+    public T dispatchPopulateAccessibilityEventHandler(
+        @Nullable
+            EventHandler<DispatchPopulateAccessibilityEventEvent>
+                dispatchPopulateAccessibilityEventHandler) {
+      mComponent
+          .getOrCreateCommonProps()
+          .dispatchPopulateAccessibilityEventHandler(dispatchPopulateAccessibilityEventHandler);
+      return getThis();
+    }
+
+    /**
+     * If true, component duplicates its drawable state (focused, pressed, etc.) from the direct
+     * parent.
+     *
+     * <p>In the following example, when {@code Row} gets pressed state, its child {@code
+     * OtherStatefulDrawable} will get that pressed state within itself, too:
+     *
+     * <pre>{@code
+     * Row.create(c)
+     *     .drawable(stateListDrawable)
+     *     .clickable(true)
+     *     .child(
+     *         OtherStatefulDrawable.create(c)
+     *             .duplicateParentState(true))
+     * }</pre>
+     */
+    public T duplicateParentState(boolean duplicateParentState) {
+      mComponent.getOrCreateCommonProps().duplicateParentState(duplicateParentState);
+      return getThis();
+    }
+
+    public T enabled(boolean isEnabled) {
+      mComponent.getOrCreateCommonProps().enabled(isEnabled);
+      return getThis();
+    }
+
+    /**
+     * Sets flexGrow, flexShrink, and flexBasis at the same time.
+     *
+     * <p>When flex is a positive number, it makes the component flexible and it will be sized
+     * proportional to its flex value. So a component with flex set to 2 will take twice the space
+     * as a component with flex set to 1.
+     *
+     * <p>When flex is 0, the component is sized according to width and height and it is inflexible.
+     *
+     * <p>When flex is -1, the component is normally sized according width and height. However, if
+     * there's not enough space, the component will shrink to its minWidth and minHeight.
+     *
+     * <p>See <a href="https://yogalayout.com/docs/flex">https://yogalayout.com/docs/flex</a> for
+     * more information.
+     *
+     * <p>Default: 0
+     */
+    public T flex(float flex) {
+      mComponent.getOrCreateCommonProps().flex(flex);
+      return getThis();
+    }
+
+    /** @see #flexBasisPx */
+    public T flexBasisAttr(@AttrRes int resId, @DimenRes int defaultResId) {
+      return flexBasisPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
+    }
+
+    /** @see #flexBasisPx */
+    public T flexBasisAttr(@AttrRes int resId) {
+      return flexBasisAttr(resId, 0);
+    }
+
+    /** @see #flexBasisPx */
+    public T flexBasisDip(@Dimension(unit = DP) float flexBasis) {
+      return flexBasisPx(mResourceResolver.dipsToPixels(flexBasis));
+    }
+
+    /**
+     * @see #flexBasisPx
+     * @param percent a value between 0 and 100.
+     */
+    public T flexBasisPercent(float percent) {
+      mComponent.getOrCreateCommonProps().flexBasisPercent(percent);
+      return getThis();
+    }
+
+    /**
+     * The FlexBasis property is an axis-independent way of providing the default size of an item on
+     * the main axis. Setting the FlexBasis of a child is similar to setting the Width of that child
+     * if its parent is a container with FlexDirection = row or setting the Height of a child if its
+     * parent is a container with FlexDirection = column. The FlexBasis of an item is the default
+     * size of that item, the size of the item before any FlexGrow and FlexShrink calculations are
+     * performed. See <a
+     * href="https://yogalayout.com/docs/flex">https://yogalayout.com/docs/flex</a> for more
+     * information.
+     *
+     * <p>Default: 0
+     */
+    public T flexBasisPx(@Px int flexBasis) {
+      mComponent.getOrCreateCommonProps().flexBasisPx(flexBasis);
+      return getThis();
+    }
+
+    /** @see #flexBasisPx */
+    public T flexBasisRes(@DimenRes int resId) {
+      return flexBasisPx(mResourceResolver.resolveDimenSizeRes(resId));
+    }
+
+    /**
+     * If the sum of childrens' main axis dimensions is less than the minimum size, how much should
+     * this component grow? This value represents the "flex grow factor" and determines how much
+     * this component should grow along the main axis in relation to any other flexible children.
+     * See <a href="https://yogalayout.com/docs/flex">https://yogalayout.com/docs/flex</a> for more
+     * information.
+     *
+     * <p>Default: 0
+     */
+    public T flexGrow(float flexGrow) {
+      mComponent.getOrCreateCommonProps().flexGrow(flexGrow);
+      return getThis();
+    }
+
+    /**
+     * The FlexShrink property describes how to shrink children along the main axis in the case that
+     * the total size of the children overflow the size of the container on the main axis. See <a
+     * href="https://yogalayout.com/docs/flex">https://yogalayout.com/docs/flex</a> for more
+     * information.
+     *
+     * <p>Default: 1
+     */
+    public T flexShrink(float flexShrink) {
+      mComponent.getOrCreateCommonProps().flexShrink(flexShrink);
+      return getThis();
+    }
+
+    public T focusChangeHandler(@Nullable EventHandler<FocusChangedEvent> focusChangeHandler) {
+      mComponent.getOrCreateCommonProps().focusChangeHandler(focusChangeHandler);
+      return getThis();
+    }
+
+    public T focusable(boolean isFocusable) {
+      mComponent.getOrCreateCommonProps().focusable(isFocusable);
+      return getThis();
+    }
+
+    public T focusedHandler(@Nullable EventHandler<FocusedVisibleEvent> focusedHandler) {
+      mComponent.getOrCreateCommonProps().focusedHandler(focusedHandler);
       return getThis();
     }
 
@@ -1568,6 +1189,10 @@ public abstract class Component extends ComponentLifecycle
       return foregroundAttr(resId, 0);
     }
 
+    public T foregroundColor(@ColorInt int foregroundColor) {
+      return foreground(ComparableColorDrawable.create(foregroundColor));
+    }
+
     public T foregroundRes(@DrawableRes int resId) {
       if (resId == 0) {
         return foreground(null);
@@ -1576,32 +1201,79 @@ public abstract class Component extends ComponentLifecycle
       return foreground(ComparableResDrawable.create(mContext.getAndroidContext(), resId));
     }
 
-    public T foregroundColor(@ColorInt int foregroundColor) {
-      return foreground(ComparableColorDrawable.create(foregroundColor));
-    }
-
-    public T wrapInView() {
-      mComponent.getOrCreateCommonProps().wrapInView();
+    public T fullImpressionHandler(
+        @Nullable EventHandler<FullImpressionVisibleEvent> fullImpressionHandler) {
+      mComponent.getOrCreateCommonProps().fullImpressionHandler(fullImpressionHandler);
       return getThis();
     }
 
-    public T clickHandler(@Nullable EventHandler<ClickEvent> clickHandler) {
-      mComponent.getOrCreateCommonProps().clickHandler(clickHandler);
+    /**
+     * @return the {@link ComponentContext} for this {@link Builder}, useful for Kotlin DSL. Will be
+     *     null if the Builder was already used to {@link #build()} a component.
+     */
+    @Nullable
+    public ComponentContext getContext() {
+      return mContext;
+    }
+
+    public T handle(Handle handle) {
+      mComponent.setHandle(handle);
       return getThis();
     }
 
-    public T longClickHandler(@Nullable EventHandler<LongClickEvent> longClickHandler) {
-      mComponent.getOrCreateCommonProps().longClickHandler(longClickHandler);
+    public boolean hasBackgroundSet() {
+      return mComponent.hasBackgroundSet();
+    }
+
+    public boolean hasClickHandlerSet() {
+      return mComponent.hasClickHandlerSet();
+    }
+
+    /** @see #heightPx */
+    public T heightAttr(@AttrRes int resId, @DimenRes int defaultResId) {
+      return heightPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
+    }
+
+    /** @see #heightPx */
+    public T heightAttr(@AttrRes int resId) {
+      return heightAttr(resId, 0);
+    }
+
+    /** @see #heightPx */
+    public T heightDip(@Dimension(unit = DP) float height) {
+      return heightPx(mResourceResolver.dipsToPixels(height));
+    }
+
+    /**
+     * Sets the height of the Component to be a percentage of its parent's height. Note that if the
+     * parent has unspecified height (e.g. it is a RecyclerView), then setting this will have no
+     * effect.
+     *
+     * @see #heightPx
+     * @param percent a value between 0 and 100.
+     */
+    public T heightPercent(float percent) {
+      mComponent.getOrCreateCommonProps().heightPercent(percent);
       return getThis();
     }
 
-    public T focusChangeHandler(@Nullable EventHandler<FocusChangedEvent> focusChangeHandler) {
-      mComponent.getOrCreateCommonProps().focusChangeHandler(focusChangeHandler);
+    /**
+     * Specifies the height of the element's content area. See <a
+     * href="https://yogalayout.com/docs/width-height">https://yogalayout.com/docs/width-height</a>
+     * for more information
+     */
+    public T heightPx(@Px int height) {
+      mComponent.getOrCreateCommonProps().heightPx(height);
       return getThis();
     }
 
-    public T touchHandler(@Nullable EventHandler<TouchEvent> touchHandler) {
-      mComponent.getOrCreateCommonProps().touchHandler(touchHandler);
+    /** @see #heightPx */
+    public T heightRes(@DimenRes int resId) {
+      return heightPx(mResourceResolver.resolveDimenSizeRes(resId));
+    }
+
+    public T importantForAccessibility(int importantForAccessibility) {
+      mComponent.getOrCreateCommonProps().importantForAccessibility(importantForAccessibility);
       return getThis();
     }
 
@@ -1611,172 +1283,239 @@ public abstract class Component extends ComponentLifecycle
       return getThis();
     }
 
-    public T focusable(boolean isFocusable) {
-      mComponent.getOrCreateCommonProps().focusable(isFocusable);
-      return getThis();
-    }
-
-    public T clickable(boolean isClickable) {
-      mComponent.getOrCreateCommonProps().clickable(isClickable);
-      return getThis();
-    }
-
-    public T enabled(boolean isEnabled) {
-      mComponent.getOrCreateCommonProps().enabled(isEnabled);
-      return getThis();
-    }
-
-    public T selected(boolean isSelected) {
-      mComponent.getOrCreateCommonProps().selected(isSelected);
-      return getThis();
-    }
-
-    public T visibleHeightRatio(float visibleHeightRatio) {
-      mComponent.getOrCreateCommonProps().visibleHeightRatio(visibleHeightRatio);
-      return getThis();
-    }
-
-    public T visibleWidthRatio(float visibleWidthRatio) {
-      mComponent.getOrCreateCommonProps().visibleWidthRatio(visibleWidthRatio);
-      return getThis();
-    }
-
-    public T visibleHandler(@Nullable EventHandler<VisibleEvent> visibleHandler) {
-      mComponent.getOrCreateCommonProps().visibleHandler(visibleHandler);
-      return getThis();
-    }
-
-    public T focusedHandler(@Nullable EventHandler<FocusedVisibleEvent> focusedHandler) {
-      mComponent.getOrCreateCommonProps().focusedHandler(focusedHandler);
-      return getThis();
-    }
-
-    public T unfocusedHandler(@Nullable EventHandler<UnfocusedVisibleEvent> unfocusedHandler) {
-      mComponent.getOrCreateCommonProps().unfocusedHandler(unfocusedHandler);
-      return getThis();
-    }
-
-    public T fullImpressionHandler(
-        @Nullable EventHandler<FullImpressionVisibleEvent> fullImpressionHandler) {
-      mComponent.getOrCreateCommonProps().fullImpressionHandler(fullImpressionHandler);
-      return getThis();
-    }
-
     public T invisibleHandler(@Nullable EventHandler<InvisibleEvent> invisibleHandler) {
       mComponent.getOrCreateCommonProps().invisibleHandler(invisibleHandler);
       return getThis();
     }
 
-    public T visibilityChangedHandler(
-        @Nullable EventHandler<VisibilityChangedEvent> visibilityChangedHandler) {
-      mComponent.getOrCreateCommonProps().visibilityChangedHandler(visibilityChangedHandler);
+    public T isReferenceBaseline(boolean isReferenceBaseline) {
+      mComponent.getOrCreateCommonProps().isReferenceBaseline(isReferenceBaseline);
       return getThis();
     }
 
-    public T contentDescription(@Nullable CharSequence contentDescription) {
-      mComponent.getOrCreateCommonProps().contentDescription(contentDescription);
-      return getThis();
-    }
-
-    public T contentDescription(@StringRes int stringId) {
-      return contentDescription(mContext.getAndroidContext().getResources().getString(stringId));
-    }
-
-    public T contentDescription(@StringRes int stringId, Object... formatArgs) {
-      return contentDescription(
-          mContext.getAndroidContext().getResources().getString(stringId, formatArgs));
-    }
-
-    public T viewTag(@Nullable Object viewTag) {
-      mComponent.getOrCreateCommonProps().viewTag(viewTag);
-      return getThis();
-    }
-
-    public T viewTags(@Nullable SparseArray<Object> viewTags) {
-      mComponent.getOrCreateCommonProps().viewTags(viewTags);
+    /** Set a key on the component that is local to its parent. */
+    public T key(@Nullable String key) {
+      if (key == null) {
+        final String componentName =
+            mContext.getComponentScope() != null
+                ? mContext.getComponentScope().getSimpleName()
+                : "unknown component";
+        final String message =
+            "Setting a null key from "
+                + componentName
+                + " which is usually a mistake! If it is not, explicitly set the String 'null'";
+        ComponentsReporter.emitMessage(ComponentsReporter.LogLevel.ERROR, NULL_KEY_SET, message);
+        key = "null";
+      }
+      mComponent.setKey(key);
       return getThis();
     }
 
     /**
-     * Shadow elevation and outline provider methods are only functional on {@link
-     * android.os.Build.VERSION_CODES#LOLLIPOP} and above.
-     */
-    public T shadowElevationPx(float shadowElevation) {
-      mComponent.getOrCreateCommonProps().shadowElevationPx(shadowElevation);
-      return getThis();
-    }
-
-    public T shadowElevationAttr(@AttrRes int resId, @DimenRes int defaultResId) {
-      return shadowElevationPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
-    }
-
-    public T shadowElevationAttr(@AttrRes int resId) {
-      return shadowElevationAttr(resId, 0);
-    }
-
-    public T shadowElevationRes(@DimenRes int resId) {
-      return shadowElevationPx(mResourceResolver.resolveDimenSizeRes(resId));
-    }
-
-    public T shadowElevationDip(@Dimension(unit = DP) float shadowElevation) {
-      return shadowElevationPx(mResourceResolver.dipsToPixels(shadowElevation));
-    }
-
-    public T outlineProvider(@Nullable ViewOutlineProvider outlineProvider) {
-      mComponent.getOrCreateCommonProps().outlineProvider(outlineProvider);
-      return getThis();
-    }
-
-    public T clipToOutline(boolean clipToOutline) {
-      mComponent.getOrCreateCommonProps().clipToOutline(clipToOutline);
-      return getThis();
-    }
-
-    /**
-     * Ports {@link android.view.ViewGroup#setClipChildren(boolean)} into components world. However,
-     * there is no guarantee that child of this component would be translated into direct view child
-     * in the resulting view hierarchy.
+     * The RTL/LTR direction of components and text. Determines whether {@link YogaEdge#START} and
+     * {@link YogaEdge#END} will resolve to the left or right side, among other things. INHERIT
+     * indicates this setting will be inherited from this component's parent.
      *
-     * @param clipChildren true to clip children to their bounds. False allows each child to draw
-     *     outside of its own bounds within the parent, it doesn't allow children to draw outside of
-     *     the parent itself.
+     * <p>Default: {@link YogaDirection#INHERIT}
      */
-    public T clipChildren(boolean clipChildren) {
-      mComponent.getOrCreateCommonProps().clipChildren(clipChildren);
+    public T layoutDirection(@Nullable YogaDirection layoutDirection) {
+      mComponent.getOrCreateCommonProps().layoutDirection(layoutDirection);
       return getThis();
     }
 
-    public T testKey(@Nullable String testKey) {
-      mComponent.getOrCreateCommonProps().testKey(testKey);
+    public T longClickHandler(@Nullable EventHandler<LongClickEvent> longClickHandler) {
+      mComponent.getOrCreateCommonProps().longClickHandler(longClickHandler);
       return getThis();
     }
 
-    public T accessibilityRole(@Nullable @AccessibilityRole.AccessibilityRoleType String role) {
-      mComponent.getOrCreateCommonProps().accessibilityRole(role);
+    /** @see #marginPx */
+    public T marginAttr(@Nullable YogaEdge edge, @AttrRes int resId, @DimenRes int defaultResId) {
+      return marginPx(edge, mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
+    }
+
+    /** @see #marginPx */
+    public T marginAttr(@Nullable YogaEdge edge, @AttrRes int resId) {
+      return marginAttr(edge, resId, 0);
+    }
+
+    /** @see #marginPx */
+    public T marginAuto(@Nullable YogaEdge edge) {
+      mComponent.getOrCreateCommonProps().marginAuto(edge);
       return getThis();
     }
 
-    public T accessibilityRoleDescription(CharSequence roleDescription) {
-      mComponent.getOrCreateCommonProps().accessibilityRoleDescription(roleDescription);
+    /** @see #marginPx */
+    public T marginDip(@Nullable YogaEdge edge, @Dimension(unit = DP) float margin) {
+      return marginPx(edge, mResourceResolver.dipsToPixels(margin));
+    }
+
+    /**
+     * @see #marginPx
+     * @param percent a value between 0 and 100.
+     */
+    public T marginPercent(@Nullable YogaEdge edge, float percent) {
+      mComponent.getOrCreateCommonProps().marginPercent(edge, percent);
       return getThis();
     }
 
-    public T accessibilityRoleDescription(@StringRes int stringId) {
-      return accessibilityRoleDescription(mContext.getResources().getString(stringId));
-    }
-
-    public T accessibilityRoleDescription(@StringRes int stringId, Object... formatArgs) {
-      return accessibilityRoleDescription(mContext.getResources().getString(stringId, formatArgs));
-    }
-
-    public T dispatchPopulateAccessibilityEventHandler(
-        @Nullable
-            EventHandler<DispatchPopulateAccessibilityEventEvent>
-                dispatchPopulateAccessibilityEventHandler) {
-      mComponent
-          .getOrCreateCommonProps()
-          .dispatchPopulateAccessibilityEventHandler(dispatchPopulateAccessibilityEventHandler);
+    /**
+     * Effects the spacing around the outside of a node. A node with margin will offset itself from
+     * the bounds of its parent but also offset the location of any siblings. See <a
+     * href="https://yogalayout.com/docs/margins-paddings-borders">https://yogalayout.com/docs/margins-paddings-borders</a>
+     * for more information
+     */
+    public T marginPx(@Nullable YogaEdge edge, @Px int margin) {
+      mComponent.getOrCreateCommonProps().marginPx(edge, margin);
       return getThis();
+    }
+
+    /** @see #marginPx */
+    public T marginRes(@Nullable YogaEdge edge, @DimenRes int resId) {
+      return marginPx(edge, mResourceResolver.resolveDimenSizeRes(resId));
+    }
+
+    /** @see #minWidthPx */
+    public T maxHeightAttr(@AttrRes int resId, @DimenRes int defaultResId) {
+      return maxHeightPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
+    }
+
+    /** @see #minWidthPx */
+    public T maxHeightAttr(@AttrRes int resId) {
+      return maxHeightAttr(resId, 0);
+    }
+
+    /** @see #minWidthPx */
+    public T maxHeightDip(@Dimension(unit = DP) float maxHeight) {
+      return maxHeightPx(mResourceResolver.dipsToPixels(maxHeight));
+    }
+
+    /**
+     * @see #minWidthPx
+     * @param percent a value between 0 and 100.
+     */
+    public T maxHeightPercent(float percent) {
+      mComponent.getOrCreateCommonProps().maxHeightPercent(percent);
+      return getThis();
+    }
+
+    /** @see #minWidthPx */
+    public T maxHeightPx(@Px int maxHeight) {
+      mComponent.getOrCreateCommonProps().maxHeightPx(maxHeight);
+      return getThis();
+    }
+
+    /** @see #minWidthPx */
+    public T maxHeightRes(@DimenRes int resId) {
+      return maxHeightPx(mResourceResolver.resolveDimenSizeRes(resId));
+    }
+
+    /** @see #minWidthPx */
+    public T maxWidthAttr(@AttrRes int resId, @DimenRes int defaultResId) {
+      return maxWidthPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
+    }
+
+    /** @see #minWidthPx */
+    public T maxWidthAttr(@AttrRes int resId) {
+      return maxWidthAttr(resId, 0);
+    }
+
+    /** @see #minWidthPx */
+    public T maxWidthDip(@Dimension(unit = DP) float maxWidth) {
+      return maxWidthPx(mResourceResolver.dipsToPixels(maxWidth));
+    }
+
+    /**
+     * @see #minWidthPx
+     * @param percent a value between 0 and 100.
+     */
+    public T maxWidthPercent(float percent) {
+      mComponent.getOrCreateCommonProps().maxWidthPercent(percent);
+      return getThis();
+    }
+
+    /** @see #minWidthPx */
+    public T maxWidthPx(@Px int maxWidth) {
+      mComponent.getOrCreateCommonProps().maxWidthPx(maxWidth);
+      return getThis();
+    }
+
+    /** @see #minWidthPx */
+    public T maxWidthRes(@DimenRes int resId) {
+      return maxWidthPx(mResourceResolver.resolveDimenSizeRes(resId));
+    }
+
+    /** @see #minWidthPx */
+    public T minHeightAttr(@AttrRes int resId, @DimenRes int defaultResId) {
+      return minHeightPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
+    }
+
+    /** @see #minWidthPx */
+    public T minHeightAttr(@AttrRes int resId) {
+      return minHeightAttr(resId, 0);
+    }
+
+    /** @see #minWidthPx */
+    public T minHeightDip(@Dimension(unit = DP) float minHeight) {
+      return minHeightPx(mResourceResolver.dipsToPixels(minHeight));
+    }
+
+    /**
+     * @see #minWidthPx
+     * @param percent a value between 0 and 100.
+     */
+    public T minHeightPercent(float percent) {
+      mComponent.getOrCreateCommonProps().minHeightPercent(percent);
+      return getThis();
+    }
+
+    /** @see #minWidthPx */
+    public T minHeightPx(@Px int minHeight) {
+      mComponent.getOrCreateCommonProps().minHeightPx(minHeight);
+      return getThis();
+    }
+
+    /** @see #minWidthPx */
+    public T minHeightRes(@DimenRes int resId) {
+      return minHeightPx(mResourceResolver.resolveDimenSizeRes(resId));
+    }
+
+    /** @see #minWidthPx */
+    public T minWidthAttr(@AttrRes int resId, @DimenRes int defaultResId) {
+      return minWidthPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
+    }
+
+    /** @see #minWidthPx */
+    public T minWidthAttr(@AttrRes int resId) {
+      return minWidthAttr(resId, 0);
+    }
+
+    /** @see #minWidthPx */
+    public T minWidthDip(@Dimension(unit = DP) float minWidth) {
+      return minWidthPx(mResourceResolver.dipsToPixels(minWidth));
+    }
+
+    /**
+     * @see #minWidthPx
+     * @param percent a value between 0 and 100.
+     */
+    public T minWidthPercent(float percent) {
+      mComponent.getOrCreateCommonProps().minWidthPercent(percent);
+      return getThis();
+    }
+
+    /**
+     * This property has higher priority than all other properties and will always be respected. See
+     * <a href="https://yogalayout.com/docs/min-max/">https://yogalayout.com/docs/min-max/</a> for
+     * more information
+     */
+    public T minWidthPx(@Px int minWidth) {
+      mComponent.getOrCreateCommonProps().minWidthPx(minWidth);
+      return getThis();
+    }
+
+    /** @see #minWidthPx */
+    public T minWidthRes(@DimenRes int resId) {
+      return minWidthPx(mResourceResolver.resolveDimenSizeRes(resId));
     }
 
     public T onInitializeAccessibilityEventHandler(
@@ -1818,6 +1557,51 @@ public abstract class Component extends ComponentLifecycle
       return getThis();
     }
 
+    public T outlineProvider(@Nullable ViewOutlineProvider outlineProvider) {
+      mComponent.getOrCreateCommonProps().outlineProvider(outlineProvider);
+      return getThis();
+    }
+
+    /** @see #paddingPx */
+    public T paddingAttr(@Nullable YogaEdge edge, @AttrRes int resId, @DimenRes int defaultResId) {
+      return paddingPx(edge, mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
+    }
+
+    /** @see #paddingPx */
+    public T paddingAttr(@Nullable YogaEdge edge, @AttrRes int resId) {
+      return paddingAttr(edge, resId, 0);
+    }
+
+    /** @see #paddingPx */
+    public T paddingDip(@Nullable YogaEdge edge, @Dimension(unit = DP) float padding) {
+      return paddingPx(edge, mResourceResolver.dipsToPixels(padding));
+    }
+
+    /**
+     * @see #paddingPx
+     * @param percent a value between 0 and 100.
+     */
+    public T paddingPercent(@Nullable YogaEdge edge, float percent) {
+      mComponent.getOrCreateCommonProps().paddingPercent(edge, percent);
+      return getThis();
+    }
+
+    /**
+     * Affects the size of the node it is applied to. Padding will not add to the total size of an
+     * element if it has an explicit size set. See <a
+     * href="https://yogalayout.com/docs/margins-paddings-borders">https://yogalayout.com/docs/margins-paddings-borders</a>
+     * for more information
+     */
+    public T paddingPx(@Nullable YogaEdge edge, @Px int padding) {
+      mComponent.getOrCreateCommonProps().paddingPx(edge, padding);
+      return getThis();
+    }
+
+    /** @see #paddingPx */
+    public T paddingRes(@Nullable YogaEdge edge, @DimenRes int resId) {
+      return paddingPx(edge, mResourceResolver.resolveDimenSizeRes(resId));
+    }
+
     public T performAccessibilityActionHandler(
         @Nullable EventHandler<PerformAccessibilityActionEvent> performAccessibilityActionHandler) {
       mComponent
@@ -1826,54 +1610,82 @@ public abstract class Component extends ComponentLifecycle
       return getThis();
     }
 
-    public T sendAccessibilityEventHandler(
-        @Nullable EventHandler<SendAccessibilityEventEvent> sendAccessibilityEventHandler) {
-      mComponent
-          .getOrCreateCommonProps()
-          .sendAccessibilityEventHandler(sendAccessibilityEventHandler);
-      return getThis();
+    /** @see #positionPx */
+    public T positionAttr(@Nullable YogaEdge edge, @AttrRes int resId, @DimenRes int defaultResId) {
+      return positionPx(edge, mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
     }
 
-    public T sendAccessibilityEventUncheckedHandler(
-        @Nullable
-            EventHandler<SendAccessibilityEventUncheckedEvent>
-                sendAccessibilityEventUncheckedHandler) {
-      mComponent
-          .getOrCreateCommonProps()
-          .sendAccessibilityEventUncheckedHandler(sendAccessibilityEventUncheckedHandler);
-      return getThis();
+    /** @see #positionPx */
+    public T positionAttr(@Nullable YogaEdge edge, @AttrRes int resId) {
+      return positionAttr(edge, resId, 0);
     }
 
-    public T transitionKey(@Nullable String key) {
-      mComponent.getOrCreateCommonProps().transitionKey(key, mComponent.mOwnerGlobalKey);
-      if (mComponent.getOrCreateCommonProps().getTransitionKeyType() == null) {
-        // If TransitionKeyType isn't set, set to default type
-        transitionKeyType(Transition.DEFAULT_TRANSITION_KEY_TYPE);
-      }
-      return getThis();
+    /** @see #positionPx */
+    public T positionDip(@Nullable YogaEdge edge, @Dimension(unit = DP) float position) {
+      return positionPx(edge, mResourceResolver.dipsToPixels(position));
     }
 
-    public T transitionKeyType(Transition.TransitionKeyType type) {
-      if (type == null) {
-        throw new IllegalArgumentException("TransitionKeyType must not be null");
-      }
-      mComponent.getOrCreateCommonProps().transitionKeyType(type);
-      return getThis();
-    }
-
-    /** Sets the alpha (opacity) of this component. */
-    public T alpha(float alpha) {
-      mComponent.getOrCreateCommonProps().alpha(alpha);
+    /**
+     * @see #positionPx
+     * @param percent a value between 0 and 100.
+     */
+    public T positionPercent(@Nullable YogaEdge edge, float percent) {
+      mComponent.getOrCreateCommonProps().positionPercent(edge, percent);
       return getThis();
     }
 
     /**
-     * Links a {@link DynamicValue} object ot the alpha value for this Component
-     *
-     * @param value controller for the alpha value
+     * When used in combination with {@link #positionType} of {@link YogaPositionType#ABSOLUTE},
+     * allows the component to specify how it should be positioned within its parent. See <a
+     * href="https://yogalayout.com/docs/absolute-relative-layout">https://yogalayout.com/docs/absolute-relative-layout</a>
+     * for more information.
      */
-    public T alpha(DynamicValue<Float> value) {
-      mComponent.getOrCreateCommonDynamicProps().put(KEY_ALPHA, value);
+    public T positionPx(@Nullable YogaEdge edge, @Px int position) {
+      mComponent.getOrCreateCommonProps().positionPx(edge, position);
+      return getThis();
+    }
+
+    /** @see #positionPx */
+    public T positionRes(@Nullable YogaEdge edge, @DimenRes int resId) {
+      return positionPx(edge, mResourceResolver.resolveDimenSizeRes(resId));
+    }
+
+    /**
+     * Controls how this component will be positioned within its parent. See <a
+     * href="https://yogalayout.com/docs/absolute-relative-layout">https://yogalayout.com/docs/absolute-relative-layout</a>
+     * for more details.
+     *
+     * <p>Default: {@link YogaPositionType#RELATIVE}
+     */
+    public T positionType(@Nullable YogaPositionType positionType) {
+      mComponent.getOrCreateCommonProps().positionType(positionType);
+      return getThis();
+    }
+
+    /**
+     * Sets the degree that this component is rotated around the pivot point. Increasing the value
+     * results in clockwise rotation. By default, the pivot point is centered on the component.
+     */
+    public T rotation(float rotation) {
+      mComponent.getOrCreateCommonProps().rotation(rotation);
+      return getThis();
+    }
+
+    /**
+     * Sets the degree that this component is rotated around the horizontal axis through the pivot
+     * point.
+     */
+    public T rotationX(float rotationX) {
+      mComponent.getOrCreateCommonProps().rotationX(rotationX);
+      return getThis();
+    }
+
+    /**
+     * Sets the degree that this component is rotated around the vertical axis through the pivot
+     * point.
+     */
+    public T rotationY(float rotationY) {
+      mComponent.getOrCreateCommonProps().rotationY(rotationY);
       return getThis();
     }
 
@@ -1907,51 +1719,52 @@ public abstract class Component extends ComponentLifecycle
       return getThis();
     }
 
-    /**
-     * Links a {@link DynamicValue} object ot the translationX value for this Component
-     *
-     * @param value controller for the translationY value
-     */
-    public T translationX(DynamicValue<Float> value) {
-      mComponent.getOrCreateCommonDynamicProps().put(KEY_TRANSLATION_X, value);
+    public T selected(boolean isSelected) {
+      mComponent.getOrCreateCommonProps().selected(isSelected);
       return getThis();
     }
 
-    /**
-     * Links a {@link DynamicValue} object ot the translationY value for this Component
-     *
-     * @param value controller for the translationY value
-     */
-    public T translationY(DynamicValue<Float> value) {
-      mComponent.getOrCreateCommonDynamicProps().put(KEY_TRANSLATION_Y, value);
+    public T sendAccessibilityEventHandler(
+        @Nullable EventHandler<SendAccessibilityEventEvent> sendAccessibilityEventHandler) {
+      mComponent
+          .getOrCreateCommonProps()
+          .sendAccessibilityEventHandler(sendAccessibilityEventHandler);
       return getThis();
     }
 
-    /**
-     * Sets the degree that this component is rotated around the pivot point. Increasing the value
-     * results in clockwise rotation. By default, the pivot point is centered on the component.
-     */
-    public T rotation(float rotation) {
-      mComponent.getOrCreateCommonProps().rotation(rotation);
+    public T sendAccessibilityEventUncheckedHandler(
+        @Nullable
+            EventHandler<SendAccessibilityEventUncheckedEvent>
+                sendAccessibilityEventUncheckedHandler) {
+      mComponent
+          .getOrCreateCommonProps()
+          .sendAccessibilityEventUncheckedHandler(sendAccessibilityEventUncheckedHandler);
       return getThis();
     }
 
-    /**
-     * Sets the degree that this component is rotated around the horizontal axis through the pivot
-     * point.
-     */
-    public T rotationX(float rotationX) {
-      mComponent.getOrCreateCommonProps().rotationX(rotationX);
-      return getThis();
+    public T shadowElevationAttr(@AttrRes int resId, @DimenRes int defaultResId) {
+      return shadowElevationPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
+    }
+
+    public T shadowElevationAttr(@AttrRes int resId) {
+      return shadowElevationAttr(resId, 0);
+    }
+
+    public T shadowElevationDip(@Dimension(unit = DP) float shadowElevation) {
+      return shadowElevationPx(mResourceResolver.dipsToPixels(shadowElevation));
     }
 
     /**
-     * Sets the degree that this component is rotated around the vertical axis through the pivot
-     * point.
+     * Shadow elevation and outline provider methods are only functional on {@link
+     * android.os.Build.VERSION_CODES#LOLLIPOP} and above.
      */
-    public T rotationY(float rotationY) {
-      mComponent.getOrCreateCommonProps().rotationY(rotationY);
+    public T shadowElevationPx(float shadowElevation) {
+      mComponent.getOrCreateCommonProps().shadowElevationPx(shadowElevation);
       return getThis();
+    }
+
+    public T shadowElevationRes(@DimenRes int resId) {
+      return shadowElevationPx(mResourceResolver.resolveDimenSizeRes(resId));
     }
 
     /**
@@ -1989,6 +1802,81 @@ public abstract class Component extends ComponentLifecycle
       return getThis();
     }
 
+    public T testKey(@Nullable String testKey) {
+      mComponent.getOrCreateCommonProps().testKey(testKey);
+      return getThis();
+    }
+
+    public T touchExpansionAttr(
+        @Nullable YogaEdge edge, @AttrRes int resId, @DimenRes int defaultResId) {
+      return touchExpansionPx(edge, mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
+    }
+
+    public T touchExpansionAttr(@Nullable YogaEdge edge, @AttrRes int resId) {
+      return touchExpansionAttr(edge, resId, 0);
+    }
+
+    public T touchExpansionDip(
+        @Nullable YogaEdge edge, @Dimension(unit = DP) float touchExpansion) {
+      return touchExpansionPx(edge, mResourceResolver.dipsToPixels(touchExpansion));
+    }
+
+    public T touchExpansionPx(@Nullable YogaEdge edge, @Px int touchExpansion) {
+      mComponent.getOrCreateCommonProps().touchExpansionPx(edge, touchExpansion);
+      return getThis();
+    }
+
+    public T touchExpansionRes(@Nullable YogaEdge edge, @DimenRes int resId) {
+      return touchExpansionPx(edge, mResourceResolver.resolveDimenSizeRes(resId));
+    }
+
+    public T touchHandler(@Nullable EventHandler<TouchEvent> touchHandler) {
+      mComponent.getOrCreateCommonProps().touchHandler(touchHandler);
+      return getThis();
+    }
+
+    public T transitionKey(@Nullable String key) {
+      mComponent.getOrCreateCommonProps().transitionKey(key, mComponent.mOwnerGlobalKey);
+      if (mComponent.getOrCreateCommonProps().getTransitionKeyType() == null) {
+        // If TransitionKeyType isn't set, set to default type
+        transitionKeyType(Transition.DEFAULT_TRANSITION_KEY_TYPE);
+      }
+      return getThis();
+    }
+
+    public T transitionKeyType(Transition.TransitionKeyType type) {
+      if (type == null) {
+        throw new IllegalArgumentException("TransitionKeyType must not be null");
+      }
+      mComponent.getOrCreateCommonProps().transitionKeyType(type);
+      return getThis();
+    }
+
+    /**
+     * Links a {@link DynamicValue} object ot the translationX value for this Component
+     *
+     * @param value controller for the translationY value
+     */
+    public T translationX(DynamicValue<Float> value) {
+      mComponent.getOrCreateCommonDynamicProps().put(KEY_TRANSLATION_X, value);
+      return getThis();
+    }
+
+    /**
+     * Links a {@link DynamicValue} object ot the translationY value for this Component
+     *
+     * @param value controller for the translationY value
+     */
+    public T translationY(DynamicValue<Float> value) {
+      mComponent.getOrCreateCommonDynamicProps().put(KEY_TRANSLATION_Y, value);
+      return getThis();
+    }
+
+    public T unfocusedHandler(@Nullable EventHandler<UnfocusedVisibleEvent> unfocusedHandler) {
+      mComponent.getOrCreateCommonProps().unfocusedHandler(unfocusedHandler);
+      return getThis();
+    }
+
     /**
      * When set to true, overrides the default behaviour of baseline calculation and uses height of
      * component as baseline. By default the baseline of a component is the baseline of first child
@@ -2000,24 +1888,132 @@ public abstract class Component extends ComponentLifecycle
       return getThis();
     }
 
-    public boolean hasClickHandlerSet() {
-      return mComponent.hasClickHandlerSet();
+    public T viewTag(@Nullable Object viewTag) {
+      mComponent.getOrCreateCommonProps().viewTag(viewTag);
+      return getThis();
     }
 
-    public boolean hasBackgroundSet() {
-      return mComponent.hasBackgroundSet();
+    public T viewTags(@Nullable SparseArray<Object> viewTags) {
+      mComponent.getOrCreateCommonProps().viewTags(viewTags);
+      return getThis();
+    }
+
+    public T visibilityChangedHandler(
+        @Nullable EventHandler<VisibilityChangedEvent> visibilityChangedHandler) {
+      mComponent.getOrCreateCommonProps().visibilityChangedHandler(visibilityChangedHandler);
+      return getThis();
+    }
+
+    public T visibleHandler(@Nullable EventHandler<VisibleEvent> visibleHandler) {
+      mComponent.getOrCreateCommonProps().visibleHandler(visibleHandler);
+      return getThis();
+    }
+
+    public T visibleHeightRatio(float visibleHeightRatio) {
+      mComponent.getOrCreateCommonProps().visibleHeightRatio(visibleHeightRatio);
+      return getThis();
+    }
+
+    public T visibleWidthRatio(float visibleWidthRatio) {
+      mComponent.getOrCreateCommonProps().visibleWidthRatio(visibleWidthRatio);
+      return getThis();
+    }
+
+    /** @see #widthPx */
+    public T widthAttr(@AttrRes int resId, @DimenRes int defaultResId) {
+      return widthPx(mResourceResolver.resolveDimenSizeAttr(resId, defaultResId));
+    }
+
+    /** @see #widthPx */
+    public T widthAttr(@AttrRes int resId) {
+      return widthAttr(resId, 0);
+    }
+
+    /** @see #widthPx */
+    public T widthDip(@Dimension(unit = DP) float width) {
+      return widthPx(mResourceResolver.dipsToPixels(width));
+    }
+
+    /**
+     * Sets the width of the Component to be a percentage of its parent's width. Note that if the
+     * parent has unspecified width (e.g. it is an HScroll), then setting this will have no effect.
+     *
+     * @see #widthPx
+     * @param percent a value between 0 and 100.
+     */
+    public T widthPercent(float percent) {
+      mComponent.getOrCreateCommonProps().widthPercent(percent);
+      return getThis();
+    }
+
+    /**
+     * Specifies the width of the element's content area. See <a
+     * href="https://yogalayout.com/docs/width-height">https://yogalayout.com/docs/width-height</a>
+     * for more information
+     */
+    public T widthPx(@Px int width) {
+      mComponent.getOrCreateCommonProps().widthPx(width);
+      return getThis();
+    }
+
+    /** @see #widthPx */
+    public T widthRes(@DimenRes int resId) {
+      return widthPx(mResourceResolver.resolveDimenSizeRes(resId));
+    }
+
+    public T wrapInView() {
+      mComponent.getOrCreateCommonProps().wrapInView();
+      return getThis();
+    }
+
+    protected void init(
+        ComponentContext c,
+        @AttrRes int defStyleAttr,
+        @StyleRes int defStyleRes,
+        Component component) {
+      mResourceResolver = c.getResourceResolver();
+      mComponent = component;
+      mContext = c;
+
+      final Component owner = getOwner();
+      if (owner != null) {
+        mComponent.mOwnerGlobalKey = owner.getGlobalKey();
+      }
+
+      if (defStyleAttr != 0 || defStyleRes != 0) {
+        mComponent.getOrCreateCommonProps().setStyle(defStyleAttr, defStyleRes);
+        component.loadStyle(c, defStyleAttr, defStyleRes);
+      }
     }
 
     private Component getOwner() {
       return mContext.getComponentScope();
     }
+
+    /**
+     * Checks that all the required props are supplied, and if not throws a useful exception
+     *
+     * @param requiredPropsCount expected number of props
+     * @param required the bit set that identifies which props have been supplied
+     * @param requiredPropsNames the names of all props used for a useful error message
+     */
+    protected static void checkArgs(
+        int requiredPropsCount, BitSet required, String[] requiredPropsNames) {
+      if (required != null && required.nextClearBit(0) < requiredPropsCount) {
+        List<String> missingProps = new ArrayList<>();
+        for (int i = 0; i < requiredPropsCount; i++) {
+          if (!required.get(i)) {
+            missingProps.add(requiredPropsNames[i]);
+          }
+        }
+        throw new IllegalStateException(
+            "The following props are not marked as optional and were not supplied: "
+                + Arrays.toString(missingProps.toArray()));
+      }
+    }
   }
 
   public abstract static class ContainerBuilder<T extends ContainerBuilder<T>> extends Builder<T> {
-    public abstract T child(@Nullable Component child);
-
-    public abstract T child(@Nullable Component.Builder<?> child);
-
     /**
      * The AlignSelf property has the same options and effect as AlignItems but instead of affecting
      * the children within a container, you can apply this property to a single child to change its
@@ -2040,6 +2036,10 @@ public abstract class Component extends ComponentLifecycle
      */
     public abstract T alignItems(@Nullable YogaAlign alignItems);
 
+    public abstract T child(@Nullable Component child);
+
+    public abstract T child(@Nullable Component.Builder<?> child);
+
     /**
      * The JustifyContent property describes how to align children within the main axis of a
      * container. For example, you can use this property to center a child horizontally within a
@@ -2051,6 +2051,9 @@ public abstract class Component extends ComponentLifecycle
      * <p>Default: {@link YogaJustify#FLEX_START}
      */
     public abstract T justifyContent(@Nullable YogaJustify justifyContent);
+
+    /** Set this to true if you want the container to be laid out in reverse. */
+    public abstract T reverse(boolean reverse);
 
     /**
      * The FlexWrap property is set on containers and controls what happens when children overflow
@@ -2066,9 +2069,6 @@ public abstract class Component extends ComponentLifecycle
      * <p>Default: {@link YogaWrap#NO_WRAP}
      */
     public abstract T wrap(@Nullable YogaWrap wrap);
-
-    /** Set this to true if you want the container to be laid out in reverse. */
-    public abstract T reverse(boolean reverse);
   }
 
   /** An event handler to be used for the root of the hierarchy that reraises error events. */
