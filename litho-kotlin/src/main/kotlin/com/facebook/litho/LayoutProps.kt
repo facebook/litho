@@ -17,6 +17,7 @@
 package com.facebook.litho
 
 import com.facebook.yoga.YogaEdge
+import com.facebook.yoga.YogaPositionType
 
 inline fun <C : Component.Builder<C>> ComponentContext.Padding(
     all: Dp,
@@ -45,3 +46,24 @@ inline fun <C : Component.Builder<C>> ComponentContext.Padding(
         .paddingDip(YogaEdge.TOP, top.dp.toFloat())
         .paddingDip(YogaEdge.RIGHT, right.dp.toFloat())
         .paddingDip(YogaEdge.BOTTOM, bottom.dp.toFloat())
+
+/**
+ * Builder for positioning a child component absolutely within its parent's edges, independent of
+ * its siblings. [left], [top], [right], [bottom] specify the offset of the child's respective side
+ * from the same side of the parent.
+ */
+inline fun <C : Component.Builder<C>> ComponentContext.Position(
+    left: Dp? = null,
+    top: Dp? = null,
+    right: Dp? = null,
+    bottom: Dp? = null,
+    content: ComponentContext.() -> C
+): C =
+    content()
+        .positionType(YogaPositionType.ABSOLUTE)
+        .apply {
+          left?.let { positionDip(YogaEdge.LEFT, it.dp.toFloat()) }
+          top?.let { positionDip(YogaEdge.TOP, it.dp.toFloat()) }
+          right?.let { positionDip(YogaEdge.RIGHT, it.dp.toFloat()) }
+          bottom?.let { positionDip(YogaEdge.BOTTOM, it.dp.toFloat()) }
+        }

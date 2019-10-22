@@ -21,10 +21,13 @@ import android.widget.LinearLayout
 import com.facebook.litho.Column
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
+import com.facebook.litho.Padding
+import com.facebook.litho.Position
 import com.facebook.litho.annotations.LayoutSpec
 import com.facebook.litho.annotations.OnCreateLayout
 import com.facebook.litho.annotations.Prop
 import com.facebook.litho.build
+import com.facebook.litho.dp
 import com.facebook.litho.sections.SectionContext
 import com.facebook.litho.sections.widget.ListRecyclerConfiguration
 import com.facebook.litho.sections.widget.RecyclerCollectionComponent
@@ -32,10 +35,6 @@ import com.facebook.litho.widget.SnapUtil.SNAP_TO_CENTER
 import com.facebook.litho.widget.Text
 import com.facebook.samples.litho.kotlin.lithography.data.Artist
 import com.facebook.samples.litho.kotlin.lithography.sections.ImagesSection
-import com.facebook.yoga.YogaEdge.BOTTOM
-import com.facebook.yoga.YogaEdge.HORIZONTAL
-import com.facebook.yoga.YogaEdge.LEFT
-import com.facebook.yoga.YogaPositionType.ABSOLUTE
 
 @LayoutSpec
 object FeedItemComponentSpec {
@@ -53,15 +52,15 @@ object FeedItemComponentSpec {
     Column {
       +Column {
         +imageBlock(artist)
-        +Text.create(c)
-            .text(artist.name)
-            .textStyle(Typeface.BOLD)
-            .textSizeDip(24f)
-            .backgroundColor(0xDDFFFFFF.toInt())
-            .positionType(ABSOLUTE)
-            .positionDip(BOTTOM, 4f)
-            .positionDip(LEFT, 4f)
-            .paddingDip(HORIZONTAL, 6f)
+        +Position(left = 4.dp, bottom = 4.dp) {
+          Padding(horizontal = 6.dp) {
+            Text.create(c)
+                .text(artist.name)
+                .textStyle(Typeface.BOLD)
+                .textSizeDip(24f)
+                .backgroundColor(0xDDFFFFFF.toInt())
+          }
+        }
         +ActionsComponent.create(c)
       }
       +FooterComponent.create(c).text(artist.biography)
