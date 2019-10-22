@@ -42,6 +42,8 @@ dependencies {
     implementation project(':litho-core')
     // TODO(colriot): Widget related stuff will be moved to a separate module
     implementation project(':litho-widget')
+    implementation project(':litho-fresco')
+    compileOnly deps.fresco
 
     // Annotations
     compileOnly deps.jsr305
