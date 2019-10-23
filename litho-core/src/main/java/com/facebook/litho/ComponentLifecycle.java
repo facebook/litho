@@ -278,8 +278,9 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
   }
 
   /** Updates the TreeProps map with outputs from all {@link OnCreateTreeProp} methods. */
-  protected TreeProps getTreePropsForChildren(ComponentContext c, TreeProps previousTreeProps) {
-    return previousTreeProps;
+  protected @Nullable TreeProps getTreePropsForChildren(
+      ComponentContext c, @Nullable TreeProps treeProps) {
+    return treeProps;
   }
 
   /**
@@ -512,7 +513,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
    * Retrieves all of the tree props used by this Component from the TreeProps map and sets the tree
    * props as fields on the ComponentImpl.
    */
-  protected void populateTreeProps(TreeProps parentTreeProps) {}
+  protected void populateTreeProps(@Nullable TreeProps parentTreeProps) {}
 
   protected @Nullable RenderData recordRenderData(RenderData toRecycle) {
     return null;

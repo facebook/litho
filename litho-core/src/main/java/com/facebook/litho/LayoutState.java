@@ -1703,7 +1703,7 @@ class LayoutState {
 
   @VisibleForTesting
   static void measureTree(
-      InternalNode root, int widthSpec, int heightSpec, DiffNode previousDiffTreeRoot) {
+      InternalNode root, int widthSpec, int heightSpec, @Nullable DiffNode previousDiffTreeRoot) {
     final boolean isTracing = ComponentsSystrace.isTracing();
 
     if (isTracing) {

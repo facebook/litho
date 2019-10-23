@@ -339,7 +339,7 @@ public interface InternalNode extends ComponentLayout, LayoutProps, Copyable<Int
   InternalNode justifyContent(YogaJustify justifyContent);
 
   /** Mark this node as a nested tree root holder. */
-  void markIsNestedTreeHolder(TreeProps currentTreeProps);
+  void markIsNestedTreeHolder(@Nullable TreeProps currentTreeProps);
 
   void markLayoutSeen();
 

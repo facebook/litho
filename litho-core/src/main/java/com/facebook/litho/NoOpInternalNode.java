@@ -648,7 +648,7 @@ class NoOpInternalNode implements InternalNode {
   }
 
   @Override
-  public void markIsNestedTreeHolder(TreeProps currentTreeProps) {}
+  public void markIsNestedTreeHolder(@Nullable TreeProps currentTreeProps) {}
 
   @Override
   public void markLayoutSeen() {}

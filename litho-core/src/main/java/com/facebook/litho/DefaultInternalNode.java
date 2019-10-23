@@ -1037,7 +1037,7 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
 
   /** Mark this node as a nested tree root holder. */
   @Override
-  public void markIsNestedTreeHolder(TreeProps currentTreeProps) {
+  public void markIsNestedTreeHolder(@Nullable TreeProps currentTreeProps) {
     getOrCreateNestedTreeProps().mIsNestedTreeHolder = true;
     getOrCreateNestedTreeProps().mPendingTreeProps = TreeProps.copy(currentTreeProps);
   }
