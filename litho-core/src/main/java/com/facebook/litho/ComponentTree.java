@@ -2597,10 +2597,12 @@ public class ComponentTree {
       }
 
       final LayoutState result;
+      final boolean shouldTrace = notRunningOnMyThread && ComponentsSystrace.isTracing();
+
       try {
-        final boolean shouldTrace = notRunningOnMyThread && ComponentsSystrace.isTracing();
         if (shouldTrace) {
-          ComponentsSystrace.beginSectionWithArgs("LayoutStateFuture.get")
+          ComponentsSystrace.beginSectionWithArgs("LayoutStateFuture.wait")
+              .arg("treeId", ComponentTree.this.mId)
               .arg("root", root.getSimpleName())
               .arg("runningThreadId", runningThreadId)
               .flush();
@@ -2618,9 +2620,6 @@ public class ComponentTree {
         if (logFutureTaskGetWaiting != null) {
           logger.logPerfEvent(logFutureTaskGetWaiting);
         }
-        if (shouldTrace) {
-          ComponentsSystrace.endSection();
-        }
       } catch (ExecutionException e) {
         final Throwable cause = e.getCause();
         if (cause instanceof RuntimeException) {
@@ -2631,6 +2630,10 @@ public class ComponentTree {
       } catch (InterruptedException | CancellationException e) {
         throw new RuntimeException(e.getMessage(), e);
       } finally {
+        if (shouldTrace) {
+          ComponentsSystrace.endSection();
+        }
+
         if (didRaiseThreadPriority) {
           // Reset the running thread's priority after we're unblocked.
           try {
@@ -2659,9 +2662,9 @@ public class ComponentTree {
       }
 
       final int runningThreadId = this.runningThreadId.get();
+      final boolean notRunningOnMyThread = runningThreadId != Process.myTid();
 
-      final boolean shouldWaitForResult =
-          !futureTask.isDone() && runningThreadId != Process.myTid();
+      final boolean shouldWaitForResult = !futureTask.isDone() && notRunningOnMyThread;
 
       if (shouldWaitForResult && !isMainThread() && !isFromSyncLayout(source)) {
         return null;
@@ -2678,8 +2681,29 @@ public class ComponentTree {
       }
 
       LayoutState result;
+      final boolean shouldTrace = notRunningOnMyThread && ComponentsSystrace.isTracing();
+
       try {
+        if (shouldTrace) {
+          ComponentsSystrace.beginSectionWithArgs("LayoutStateFuture.get")
+              .arg("treeId", ComponentTree.this.mId)
+              .arg("root", root.getSimpleName())
+              .arg("runningThreadId", runningThreadId)
+              .flush();
+
+          ComponentsSystrace.beginSectionWithArgs("LayoutStateFuture.wait")
+              .arg("treeId", ComponentTree.this.mId)
+              .arg("root", root.getSimpleName())
+              .arg("runningThreadId", runningThreadId)
+              .flush();
+        }
+
         result = futureTask.get();
+
+        if (shouldTrace) {
+          ComponentsSystrace.endSection();
+        }
+
         if (interrupted && result.isPartialLayoutState()) {
           if (ThreadUtils.isMainThread()) {
             // This means that the bg task was interrupted and it returned a partially resolved
@@ -2704,11 +2728,20 @@ public class ComponentTree {
         }
 
       } catch (ExecutionException | InterruptedException | CancellationException e) {
+
+        if (shouldTrace) {
+          ComponentsSystrace.endSection();
+        }
+
         final Throwable cause = e.getCause();
         if (cause instanceof RuntimeException) {
           throw (RuntimeException) cause;
         } else {
           throw new RuntimeException(e.getMessage(), e);
+        }
+      } finally {
+        if (shouldTrace) {
+          ComponentsSystrace.endSection();
         }
       }
 
