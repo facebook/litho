@@ -22,6 +22,8 @@ import static com.facebook.litho.FrameworkLogEvents.EVENT_LAYOUT_STATE_FUTURE_GE
 import static com.facebook.litho.FrameworkLogEvents.EVENT_PRE_ALLOCATE_MOUNT_CONTENT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_ATTRIBUTION;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_IS_BACKGROUND_LAYOUT;
+import static com.facebook.litho.FrameworkLogEvents.PARAM_IS_MAIN_THREAD;
+import static com.facebook.litho.FrameworkLogEvents.PARAM_LAYOUT_FUTURE_WAIT_FOR_RESULT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_ROOT_COMPONENT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_TREE_DIFF_ENABLED;
 import static com.facebook.litho.HandlerInstrumenter.instrumentLithoHandler;
@@ -2570,7 +2572,6 @@ public class ComponentTree {
       final int runningThreadId = this.runningThreadId.get();
       final int originalThreadPriority;
       final boolean didRaiseThreadPriority;
-      final boolean shouldLogWaiting;
       final boolean notRunningOnMyThread = runningThreadId != Process.myTid();
 
       final boolean shouldWaitForResult = !futureTask.isDone() && notRunningOnMyThread;
@@ -2589,11 +2590,9 @@ public class ComponentTree {
                 : ThreadUtils.tryRaiseThreadPriority(
                     runningThreadId, Process.THREAD_PRIORITY_DISPLAY);
         didRaiseThreadPriority = true;
-        shouldLogWaiting = true;
       } else {
         originalThreadPriority = THREAD_PRIORITY_DEFAULT;
         didRaiseThreadPriority = false;
-        shouldLogWaiting = false;
       }
 
       final LayoutState result;
@@ -2610,7 +2609,7 @@ public class ComponentTree {
 
         final ComponentsLogger logger = getContextLogger();
         final PerfEvent logFutureTaskGetWaiting =
-            shouldLogWaiting && logger != null
+            logger != null
                 ? LogTreePopulator.populatePerfEventFromLogger(
                     mContext,
                     logger,
@@ -2618,6 +2617,9 @@ public class ComponentTree {
                 : null;
         result = futureTask.get();
         if (logFutureTaskGetWaiting != null) {
+          logFutureTaskGetWaiting.markerAnnotate(
+              PARAM_LAYOUT_FUTURE_WAIT_FOR_RESULT, shouldWaitForResult);
+          logFutureTaskGetWaiting.markerAnnotate(PARAM_IS_MAIN_THREAD, isMainThread());
           logger.logPerfEvent(logFutureTaskGetWaiting);
         }
       } catch (ExecutionException e) {
@@ -2681,8 +2683,9 @@ public class ComponentTree {
       }
 
       LayoutState result;
+      PerfEvent logFutureTaskGetWaiting = null;
+      final ComponentsLogger logger = getContextLogger();
       final boolean shouldTrace = notRunningOnMyThread && ComponentsSystrace.isTracing();
-
       try {
         if (shouldTrace) {
           ComponentsSystrace.beginSectionWithArgs("LayoutStateFuture.get")
@@ -2698,12 +2701,22 @@ public class ComponentTree {
               .flush();
         }
 
+        logFutureTaskGetWaiting =
+            logger != null
+                ? LogTreePopulator.populatePerfEventFromLogger(
+                    mContext,
+                    logger,
+                    logger.newPerformanceEvent(mContext, EVENT_LAYOUT_STATE_FUTURE_GET_WAIT))
+                : null;
         result = futureTask.get();
 
         if (shouldTrace) {
           ComponentsSystrace.endSection();
         }
 
+        if (logFutureTaskGetWaiting != null) {
+          logFutureTaskGetWaiting.markerPoint("FUTURE_TASK_END");
+        }
         if (interrupted && result.isPartialLayoutState()) {
           if (ThreadUtils.isMainThread()) {
             // This means that the bg task was interrupted and it returned a partially resolved
@@ -2726,7 +2739,6 @@ public class ComponentTree {
             interruptToken = null;
           }
         }
-
       } catch (ExecutionException | InterruptedException | CancellationException e) {
 
         if (shouldTrace) {
@@ -2742,6 +2754,12 @@ public class ComponentTree {
       } finally {
         if (shouldTrace) {
           ComponentsSystrace.endSection();
+        }
+        if (logFutureTaskGetWaiting != null) {
+          logFutureTaskGetWaiting.markerAnnotate(
+              PARAM_LAYOUT_FUTURE_WAIT_FOR_RESULT, shouldWaitForResult);
+          logFutureTaskGetWaiting.markerAnnotate(PARAM_IS_MAIN_THREAD, isMainThread());
+          logger.logPerfEvent(logFutureTaskGetWaiting);
         }
       }
 

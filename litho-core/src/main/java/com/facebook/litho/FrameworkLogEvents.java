@@ -99,6 +99,8 @@ public interface FrameworkLogEvents {
   String PARAM_SET_ROOT_ON_BG_THREAD = "sections_set_root_bg_thread";
   String PARAM_LAYOUT_STATE_SOURCE = "calculate_layout_state_source";
   String PARAM_ROOT_COMPONENT = "root_component";
+  String PARAM_LAYOUT_FUTURE_WAIT_FOR_RESULT = "wait_for_result";
+  String PARAM_IS_MAIN_THREAD = "is_main_thread";
 
   String PARAM_CHANGESET_EFFECTIVE_COUNT = "changeset_effective_count";
   String PARAM_CHANGESET_INSERT_SINGLE_COUNT = "changeset_insert_single_count";
