@@ -226,7 +226,7 @@ public class SectionTree {
     }
 
     @Override
-    public void tracedRun(Throwable tracedThrowable) {
+    public void tracedRun(ThreadTracingRunnable prevTracingRunnable) {
       @ApplyNewChangeSet int source;
       final String attribution;
       final ChangesetDebugInfo changesetDebugInfo = mChangesetDebugInfo;
@@ -242,7 +242,7 @@ public class SectionTree {
       }
 
       try {
-        applyNewChangeSet(source, attribution, tracedThrowable, changesetDebugInfo);
+        applyNewChangeSet(source, attribution, prevTracingRunnable, changesetDebugInfo);
       } catch (IndexOutOfBoundsException e) {
         throw new RuntimeException(getDebugInfo(SectionTree.this) + e.getMessage(), e);
       }
@@ -1005,7 +1005,7 @@ public class SectionTree {
   private void applyNewChangeSet(
       @ApplyNewChangeSet int source,
       @Nullable String attribution,
-      Throwable tracedThrowable,
+      ThreadTracingRunnable prevTracingRunnable,
       ChangesetDebugInfo changesetDebugInfo) {
     if (attribution == null) {
       attribution = mTag;
@@ -1140,7 +1140,7 @@ public class SectionTree {
           }
 
           mEventHandlersController.clearUnusedEventHandlers();
-          postNewChangeSets(tracedThrowable, changesetDebugInfo);
+          postNewChangeSets(prevTracingRunnable, changesetDebugInfo);
         }
 
         synchronized (this) {
@@ -1263,7 +1263,7 @@ public class SectionTree {
   }
 
   private void postNewChangeSets(
-      Throwable tracedThrowable, final ChangesetDebugInfo changesetDebugInfo) {
+      ThreadTracingRunnable prevTracingRunnable, final ChangesetDebugInfo changesetDebugInfo) {
     if (mUseBackgroundChangeSets) {
       applyChangeSetsToTargetBackgroundAllowed(changesetDebugInfo);
       return;
@@ -1281,9 +1281,9 @@ public class SectionTree {
         tag = "SectionTree.postNewChangeSets - " + mTag;
       }
       final Runnable applyChangeSetsRunnable =
-          new ThreadTracingRunnable(tracedThrowable) {
+          new ThreadTracingRunnable(prevTracingRunnable) {
             @Override
-            public void tracedRun(Throwable tracedThrowable) {
+            public void tracedRun(ThreadTracingRunnable prevTracingRunnable) {
               final SectionTree tree = SectionTree.this;
               try {
                 tree.applyChangeSetsToTargetUIThreadOnly(changesetDebugInfo);

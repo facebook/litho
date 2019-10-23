@@ -2855,7 +2855,7 @@ public class ComponentTree {
     }
 
     @Override
-    public void tracedRun(Throwable tracedThrowable) {
+    public void tracedRun(ThreadTracingRunnable prevTracingRunnable) {
       calculateLayout(null, mSource, mAttribution, mTreeProps, mLayoutStateFuture);
     }
   }
@@ -2869,7 +2869,7 @@ public class ComponentTree {
     }
 
     @Override
-    public void tracedRun(Throwable tracedThrowable) {
+    public void tracedRun(ThreadTracingRunnable prevTracingRunnable) {
       updateStateInternal(false, mAttribution);
     }
   }

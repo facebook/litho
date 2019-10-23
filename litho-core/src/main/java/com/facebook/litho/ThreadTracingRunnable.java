@@ -17,6 +17,7 @@
 package com.facebook.litho;
 
 import android.util.Log;
+import androidx.annotation.Nullable;
 import com.facebook.litho.config.ComponentsConfiguration;
 
 /**
@@ -28,53 +29,72 @@ import com.facebook.litho.config.ComponentsConfiguration;
  * method.
  *
  * <p>To use this class, just extends it instead of implementing {@link Runnable}. Then just
- * implement {@link #tracedRun(Throwable)}.
+ * implement {@link #tracedRun(ThreadTracingRunnable)}.
  *
  * <p>If the runnable is created ahead of time and used somewhere else later, a new, more relevant,
  * stacktrace can be created calling {@link #resetTrace()}.
  *
  * <p>If you need to chain another Runnable from your run method, you can pass the Throwable
- * parameter from {@link #tracedRun(Throwable)} to the constructor {@link
- * ThreadTracingRunnable#tracedRun(Throwable)}. Therefore, the crash can now be tracked across
- * boundaries of multiple threads.
+ * parameter from {@link #tracedRun(ThreadTracingRunnable)} to the constructor {@link
+ * ThreadTracingRunnable#tracedRun(ThreadTracingRunnable)}. Therefore, the crash can now be tracked
+ * across boundaries of multiple threads.
  */
 public abstract class ThreadTracingRunnable implements Runnable {
 
   private static final String MESSAGE_PART_1 = "Runnable instantiated on thread id: ";
   private static final String MESSAGE_PART_2 = ", name: ";
 
-  private final Throwable mTracingThrowable;
+  // If null, we are not tracing in this instance.
+  private final @Nullable Throwable mTracingThrowable;
+
+  private ThreadTracingRunnable(boolean isTracingEnabled) {
+    // This Throwable is saving the call stack which created this Runnable.
+    if (isTracingEnabled) {
+      final Thread thread = Thread.currentThread();
+      mTracingThrowable =
+          new Throwable(
+              new StringBuilder(MESSAGE_PART_1)
+                  .append(thread.getId())
+                  .append(MESSAGE_PART_2)
+                  .append(thread.getName())
+                  .toString());
+    } else {
+      mTracingThrowable = null;
+    }
+  }
 
   public ThreadTracingRunnable() {
-    Thread thread = Thread.currentThread();
-    // This Throwable is saving the call stack which created this Runnable.
-    mTracingThrowable =
-        new Throwable(
-            new StringBuilder(MESSAGE_PART_1)
-                .append(thread.getId())
-                .append(MESSAGE_PART_2)
-                .append(thread.getName())
-                .toString());
+    this(ComponentsConfiguration.enableThreadTracingStacktrace /* isTracingEnabled */);
   }
 
   /**
    * If you are chaining multiple Runnable together that are going to schedule each other within
    * their run() method, use this constructor to track their stacktraces across threads. The
-   * required parameter here is the argument coming from {@link #tracedRun(Throwable)}.
+   * required parameter here is the argument coming from {@link #tracedRun(ThreadTracingRunnable)}.
    */
-  public ThreadTracingRunnable(Throwable prevTracingThrowable) {
-    this();
-    mTracingThrowable.initCause(prevTracingThrowable);
+  public ThreadTracingRunnable(@Nullable ThreadTracingRunnable prevTracingRunnable) {
+    // If there's a previous ThreadTracingRunnable, use its "isTracingEnable" setting to decide if
+    // enabling tracing for this instance too or not.
+    // If the previous ThreadTracingRunnable is null, then check the ComponentsConfiguration to
+    // enable the tracing.
+    this(
+        prevTracingRunnable != null
+            ? prevTracingRunnable.mTracingThrowable != null
+            : ComponentsConfiguration.enableThreadTracingStacktrace);
+
+    if (mTracingThrowable != null && prevTracingRunnable != null) {
+      mTracingThrowable.initCause(prevTracingRunnable.mTracingThrowable);
+    }
   }
 
   /**
    * Implement here your {@link Runnable#run()} code.
    *
-   * @param tracingThrowable If this Runnable schedule another Runnable to another thread, pass this
-   *     parameter to the new ThreadTracingRunnable class with {@link
-   *     #ThreadTracingRunnable(Throwable)}.
+   * @param prevTracingRunnable If this ThreadTracingRunnable schedule another ThreadTracingRunnable
+   *     to another thread, pass this parameter to the new ThreadTracingRunnable class with {@link
+   *     #ThreadTracingRunnable(ThreadTracingRunnable)}.
    */
-  public abstract void tracedRun(Throwable tracingThrowable);
+  public abstract void tracedRun(ThreadTracingRunnable prevTracingRunnable);
 
   /**
    * Reset the stacktrace of this Runnable to this point. To be called right before the runnable is
@@ -82,15 +102,17 @@ public abstract class ThreadTracingRunnable implements Runnable {
    * flow.
    */
   public void resetTrace() {
-    mTracingThrowable.fillInStackTrace();
+    if (mTracingThrowable != null) {
+      mTracingThrowable.fillInStackTrace();
+    }
   }
 
   @Override
   public final void run() {
     try {
-      tracedRun(mTracingThrowable);
+      tracedRun(this);
     } catch (Throwable t) {
-      if (ComponentsConfiguration.enableThreadTracingStacktrace) {
+      if (mTracingThrowable != null) {
         Log.w("LithoThreadTracing", "--- start debug trace");
         Log.w("LithoThreadTracing", "Thread tracing stacktrace", mTracingThrowable);
         Log.w("LithoThreadTracing", "--- end debug trace");
