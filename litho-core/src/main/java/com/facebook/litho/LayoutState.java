@@ -1848,6 +1848,10 @@ class LayoutState {
 
     component.updateInternalChildState(c);
 
+    if (layoutStatePerfEvent != null) {
+      layoutStatePerfEvent.markerPoint("end_update_state");
+    }
+
     if (ComponentsConfiguration.isDebugModeEnabled) {
       DebugComponent.applyOverrides(c, component);
     }
