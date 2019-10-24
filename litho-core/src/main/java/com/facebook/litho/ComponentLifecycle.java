@@ -52,35 +52,39 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
   // integration tests.
   static final int ERROR_EVENT_HANDLER_ID = "__internalOnErrorHandler".hashCode();
   static final YogaMeasureFunction sMeasureFunction = new LithoYogaMeasureFunction();
-  private static final AtomicInteger sComponentTypeId = new AtomicInteger();
   private static final int DEFAULT_MAX_PREALLOCATION = 3;
   private static final YogaBaselineFunction sBaselineFunction = new LithoYogaBaselineFunction();
 
   @GuardedBy("sTypeIdByComponentType")
   private static final Map<Object, Integer> sTypeIdByComponentType = new HashMap<>();
 
+  private static final AtomicInteger sComponentTypeId = new AtomicInteger();
   private final int mTypeId;
 
+  /**
+   * @return the globally unique ID associated with {@param type}, creating one if necessary.
+   *     Allocated IDs map 1-to-1 with objects passed to this method.
+   */
+  private static int getOrCreateId(Object type) {
+    synchronized (sTypeIdByComponentType) {
+      if (!sTypeIdByComponentType.containsKey(type)) {
+        sTypeIdByComponentType.put(type, sComponentTypeId.incrementAndGet());
+      }
+
+      return sTypeIdByComponentType.get(type);
+    }
+  }
+
   ComponentLifecycle() {
-    this(null);
+    mTypeId = getOrCreateId(getClass());
   }
 
   /**
    * This constructor should be called only if working with a manually crafted special Component.
    * This should NOT be used in general use cases.
    */
-  ComponentLifecycle(Object type) {
-    if (type == null) {
-      type = getClass();
-    }
-
-    synchronized (sTypeIdByComponentType) {
-      if (!sTypeIdByComponentType.containsKey(type)) {
-        sTypeIdByComponentType.put(type, sComponentTypeId.incrementAndGet());
-      }
-
-      mTypeId = sTypeIdByComponentType.get(type);
-    }
+  ComponentLifecycle(int identityHashCode) {
+    mTypeId = getOrCreateId(identityHashCode);
   }
 
   @Override

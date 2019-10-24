@@ -130,7 +130,7 @@ public abstract class Component extends ComponentLifecycle
   @Nullable private InternalNode mLayoutCreatedInWillRender;
 
   protected Component(String simpleName) {
-    this(simpleName, null);
+    mSimpleName = simpleName;
   }
 
   /**
@@ -138,8 +138,8 @@ public abstract class Component extends ComponentLifecycle
    * This should NOT be used in general use cases. Use the standard {@link #Component(String)}
    * instead.
    */
-  Component(String simpleName, Object type) {
-    super(type);
+  Component(String simpleName, int identityHashCode) {
+    super(identityHashCode);
     mSimpleName = simpleName;
   }
 
