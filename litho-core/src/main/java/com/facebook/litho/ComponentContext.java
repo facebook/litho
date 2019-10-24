@@ -485,4 +485,10 @@ public class ComponentContext {
       return ComponentsConfiguration.isReconciliationEnabled;
     }
   }
+
+  void markLayoutUninterruptible() {
+    if (mLayoutStateContext != null) {
+      mLayoutStateContext.markLayoutUninterruptible();
+    }
+  }
 }

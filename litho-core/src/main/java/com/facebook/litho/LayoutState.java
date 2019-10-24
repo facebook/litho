@@ -183,11 +183,21 @@ class LayoutState {
     }
 
     boolean isLayoutInterrupted() {
-      return mLayoutStateFuture == null ? false : mLayoutStateFuture.isInterrupted();
+      boolean isInterruptRequested =
+          mLayoutStateFuture == null ? false : mLayoutStateFuture.isInterruptRequested();
+      boolean isInterruptible = mLayoutStateRef == null ? false : mLayoutStateRef.mIsInterruptible;
+
+      return isInterruptible && isInterruptRequested;
     }
 
     boolean isLayoutReleased() {
       return mLayoutStateFuture == null ? false : mLayoutStateFuture.isReleased();
+    }
+
+    public void markLayoutUninterruptible() {
+      if (mLayoutStateRef != null) {
+        mLayoutStateRef.mIsInterruptible = false;
+      }
     }
   }
 
@@ -259,6 +269,7 @@ class LayoutState {
   // If true, the LayoutState calculate call was interrupted and will need to be resumed to finish
   // creating and measuring the InternalNode of the LayoutState.
   private volatile boolean mIsPartialLayoutState;
+  private volatile boolean mIsInterruptible = true;
 
   private static final Object debugLock = new Object();
   @Nullable private static Map<Integer, List<Boolean>> layoutCalculationsOnMainThread;
@@ -1887,6 +1898,8 @@ class LayoutState {
 
     if (root == NULL_LAYOUT || c.wasLayoutInterrupted()) {
       return root;
+    } else {
+      c.markLayoutUninterruptible();
     }
 
     // If measuring a ComponentTree with a LayoutSpecWithSizeSpec at the root, the nested tree
