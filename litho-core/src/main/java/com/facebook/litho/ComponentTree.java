@@ -2665,6 +2665,8 @@ public class ComponentTree {
 
       final int runningThreadId = this.runningThreadId.get();
       final boolean notRunningOnMyThread = runningThreadId != Process.myTid();
+      final int originalThreadPriority;
+      final boolean didRaiseThreadPriority;
 
       final boolean shouldWaitForResult = !futureTask.isDone() && notRunningOnMyThread;
 
@@ -2680,6 +2682,13 @@ public class ComponentTree {
           interruptToken =
               WorkContinuationInstrumenter.onAskForWorkToContinue("interruptCalculateLayout");
         }
+
+        originalThreadPriority =
+            ThreadUtils.tryRaiseThreadPriority(runningThreadId, Process.THREAD_PRIORITY_DISPLAY);
+        didRaiseThreadPriority = true;
+      } else {
+        originalThreadPriority = THREAD_PRIORITY_DEFAULT;
+        didRaiseThreadPriority = false;
       }
 
       LayoutState result;
@@ -2716,6 +2725,14 @@ public class ComponentTree {
 
         if (logFutureTaskGetWaiting != null) {
           logFutureTaskGetWaiting.markerPoint("FUTURE_TASK_END");
+        }
+
+        if (didRaiseThreadPriority) {
+          // Reset the running thread's priority after we're unblocked.
+          try {
+            Process.setThreadPriority(runningThreadId, originalThreadPriority);
+          } catch (IllegalArgumentException | SecurityException ignored) {
+          }
         }
 
         if (interruptRequested && result.isPartialLayoutState()) {
