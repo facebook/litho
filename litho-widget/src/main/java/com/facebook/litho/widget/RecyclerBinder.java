@@ -3856,11 +3856,11 @@ public class RecyclerBinder
       }
 
       @Override
-      public void prepareSync(ComponentTreeHolder holder, Size size) {
+      public void prepareSync(ComponentTreeHolder holder, @Nullable Size size) {
         final int childrenWidthSpec = getActualChildrenWidthSpec(holder);
         final int childrenHeightSpec = getActualChildrenHeightSpec(holder);
 
-        if (holder.isTreeValidForSizeSpecs(childrenWidthSpec, childrenHeightSpec)) {
+        if (size != null && holder.isTreeValidForSizeSpecs(childrenWidthSpec, childrenHeightSpec)) {
           size.width = SizeSpec.getSize(childrenWidthSpec);
           size.height = SizeSpec.getSize(childrenHeightSpec);
 
