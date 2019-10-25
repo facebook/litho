@@ -64,8 +64,21 @@ public class LithoYogaMeasureFunction implements YogaMeasureFunction {
     ComponentContext context = node.getContext();
 
     if (Component.isNestedTree(context, component) || node.hasNestedTree()) {
-      if (node.getParent() != null) {
-        context = node.getParent().getContext();
+
+      // Find the nearest parent component context.
+      final Component head = node.getHeadComponent();
+      final Component parent;
+
+      if (component != head) { // If the head and tail are different, use the head.
+        parent = head;
+      } else if (node.getParent() != null) { // Otherwise use the tail of the parent node.
+        parent = node.getParent().getTailComponent();
+      } else {
+        parent = null;
+      }
+
+      if (parent != null) {
+        context = parent.getScopedContext();
       }
 
       final InternalNode nestedTree =

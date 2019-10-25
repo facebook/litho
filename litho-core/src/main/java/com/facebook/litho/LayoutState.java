@@ -203,7 +203,7 @@ class LayoutState {
 
   private static final AtomicInteger sIdGenerator = new AtomicInteger(1);
   private static final int NO_PREVIOUS_LAYOUT_STATE_ID = -1;
-  private static final boolean IS_TEST = "robolectric".equals(Build.FINGERPRINT);
+  static final boolean IS_TEST = "robolectric".equals(Build.FINGERPRINT);
 
   private final Map<String, Rect> mComponentKeyToBounds = new HashMap<>();
   private final Map<Handle, Rect> mComponentHandleToBounds = new HashMap<>();
@@ -1707,7 +1707,6 @@ class LayoutState {
     return createLayout(context, component, true /* resolveNestedTree */);
   }
 
-  @VisibleForTesting
   static void measureTree(
       InternalNode root, int widthSpec, int heightSpec, @Nullable DiffNode previousDiffTreeRoot) {
     final boolean isTracing = ComponentsSystrace.isTracing();
@@ -1745,6 +1744,10 @@ class LayoutState {
   /** Create and measure the nested tree or return the cached one for the same size specs. */
   static InternalNode resolveNestedTree(
       ComponentContext context, InternalNode holder, int widthSpec, int heightSpec) {
+
+    if (ComponentsConfiguration.useNewCreateLayoutImplementation) {
+      return Layout.create(context, holder, widthSpec, heightSpec);
+    }
 
     final Component component = holder.getTailComponent();
     final InternalNode layoutFromWillRender = component.consumeLayoutCreatedInWillRender();
@@ -1847,6 +1850,11 @@ class LayoutState {
       @Nullable InternalNode current,
       @Nullable DiffNode diffTreeRoot,
       @Nullable PerfEvent layoutStatePerfEvent) {
+
+    if (ComponentsConfiguration.useNewCreateLayoutImplementation) {
+      return Layout.createAndMeasureComponent(
+          c, component, widthSpec, heightSpec, current, diffTreeRoot, layoutStatePerfEvent);
+    }
 
     if (layoutStatePerfEvent != null) {
       layoutStatePerfEvent.markerPoint("start_create_layout");
@@ -2449,6 +2457,10 @@ class LayoutState {
   /** TODO: (T55181318) Merge this and {@link #resolve(ComponentContext, Component)} */
   static InternalNode createLayout(ComponentContext owner, Component component) {
 
+    if (ComponentsConfiguration.useNewCreateLayoutImplementation) {
+      return Layout.create(owner, component, false);
+    }
+
     // 1. Consume the layout created in willrender.
     final InternalNode layoutCreatedInWillRender = component.consumeLayoutCreatedInWillRender();
 
@@ -2479,6 +2491,11 @@ class LayoutState {
    */
   static InternalNode createLayout(
       final ComponentContext c, final Component component, final boolean shouldResolveNestedTree) {
+
+    if (ComponentsConfiguration.useNewCreateLayoutImplementation) {
+      return Layout.create(c, component, shouldResolveNestedTree);
+    }
+
     final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
       ComponentsSystrace.beginSection("createLayout:" + component.getSimpleName());
