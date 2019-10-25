@@ -1066,15 +1066,10 @@ class LayoutState {
    * @return true if transitions are enabled.
    */
   static boolean areTransitionsEnabled(@Nullable ComponentContext context) {
-    if (context == null) {
+    if (context == null || context.getComponentTree() == null) {
       return TransitionUtils.areTransitionsEnabled(null);
     }
-    // Experiment of caching the transition check is enabled
-    if (ComponentsConfiguration.isTransitionCheckCached && context.getComponentTree() != null) {
-      return context.getComponentTree().areTransitionsEnabled();
-    }
-    // Fall back to the old flow when the experiment is not enabled.
-    return TransitionUtils.areTransitionsEnabled(context.getAndroidContext());
+    return context.getComponentTree().areTransitionsEnabled();
   }
 
   @Nullable

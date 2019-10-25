@@ -349,11 +349,7 @@ public class ComponentTree {
     }
     mLogger = builder.logger;
     mLogTag = builder.logTag;
-    if (ComponentsConfiguration.isTransitionCheckCached) {
-      mAreTransitionsEnabled = TransitionUtils.areTransitionsEnabled(mContext.getAndroidContext());
-    } else {
-      mAreTransitionsEnabled = false;
-    }
+    mAreTransitionsEnabled = TransitionUtils.areTransitionsEnabled(mContext.getAndroidContext());
   }
 
   boolean areTransitionsEnabled() {
