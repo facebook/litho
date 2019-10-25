@@ -130,6 +130,12 @@ class Layout {
 
       // Calls the onCreateLayout or onCreateLayoutWithSizeSpec on the Spec.
       final Component root = onCreateLayout(c, component);
+      if (root == component) {
+        throw new RuntimeException(
+            component.getSimpleName()
+                + " returns itself in its onCreateLayout."
+                + " Please override Component#canResolve() and return true.");
+      }
       if (root != null) {
         node = create(c, root, false);
       } else {

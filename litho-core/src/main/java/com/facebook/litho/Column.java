@@ -81,7 +81,7 @@ public final class Column extends Component {
 
   @Override
   protected Component onCreateLayout(ComponentContext c) {
-    return this;
+    throw new UnsupportedOperationException("Call resolve() instead.");
   }
 
   @Override
