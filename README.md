@@ -45,6 +45,7 @@ public void onCreate(Bundle savedInstanceState) {
     setContentView(LithoView.create(context, component));
 }
 ```
+sus was here
 ## Run sample
 You can find more examples in our [sample app](https://github.com/facebook/litho/tree/master/sample).
 
