@@ -14,20 +14,16 @@
  * limitations under the License.
  */
 
-apply plugin: 'com.android.application'
+apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-kapt'
+apply plugin: 'maven'
 
 android {
     compileSdkVersion rootProject.compileSdkVersion
     buildToolsVersion rootProject.buildToolsVersion
 
-    targetCompatibility = targetCompatibilityVersion
-    sourceCompatibility = sourceCompatibilityVersion
-
     defaultConfig {
         minSdkVersion rootProject.minSdkVersion
-        targetSdkVersion rootProject.targetSdkVersion
     }
 
     sourceSets {
@@ -36,29 +32,30 @@ android {
     }
 }
 
-kapt {
-    correctErrorTypes true
-    mapDiagnosticLocations true
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+    kotlinOptions {
+        freeCompilerArgs = ["-XXLanguage:+InlineClasses"]
+    }
 }
 
 dependencies {
     implementation project(':litho-core-kotlin')
-    implementation project(':litho-widget-kotlin')
-    implementation project(':litho-fresco-kotlin')
+    api project(':litho-widget')
 
-    implementation project(':litho-sections-core')
-    implementation project(':litho-sections-widget')
+    // Annotations
+    compileOnly deps.jsr305
+    compileOnly deps.inferAnnotations
 
-    compileOnly project(':litho-sections-annotations')
-    kapt project(':litho-processor')
-    kapt project(':litho-sections-processor')
-
-    implementation deps.soloader
-    implementation deps.fresco
-
-    implementation deps.supportRecyclerView
     implementation deps.kotlinStandardLib
-    implementation deps.supportAppCompat
 
-    implementation deps.archLifecycle
+    // Android Support Library
+    compileOnly deps.supportAnnotations
 }
+
+apply from: rootProject.file('gradle/release.gradle')
+
+task sourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    archiveClassifier.set('sources')
+}
+artifacts.add('archives', sourcesJar)
