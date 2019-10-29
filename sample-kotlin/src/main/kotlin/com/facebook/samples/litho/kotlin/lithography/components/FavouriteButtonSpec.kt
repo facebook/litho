@@ -22,31 +22,34 @@ import com.facebook.litho.ClickEvent
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.Row
-import com.facebook.litho.StateValue
+import com.facebook.litho.State
 import com.facebook.litho.annotations.LayoutSpec
 import com.facebook.litho.annotations.OnCreateLayout
 import com.facebook.litho.annotations.OnEvent
-import com.facebook.litho.annotations.OnUpdateState
-import com.facebook.litho.annotations.State
+import com.facebook.litho.updateState
+import com.facebook.litho.useState
+import com.facebook.litho.value
 
 @LayoutSpec
 object FavouriteButtonSpec {
 
   @OnCreateLayout
-  fun onCreateLayout(
-      c: ComponentContext,
-      @State favourited: Boolean
-  ): Component =
-      Row.create(c)
-          .backgroundRes(if (favourited) star_on else star_off)
-          .widthDip(32f)
-          .heightDip(32f)
-          .clickHandler(FavouriteButton.onClick(c))
-          .build()
+  fun onCreateLayout(c: ComponentContext): Component {
+    val favourited: State<Boolean> by useState(c) { false }
 
-  @OnUpdateState
-  fun toggleFavourited(favourited: StateValue<Boolean>) = favourited.set(!(favourited.get()!!))
+    return Row.create(c)
+        .backgroundRes(if (favourited.value) star_on else star_off)
+        .widthDip(32f)
+        .heightDip(32f)
+        .clickHandler(FavouriteButton.onClick(c))
+        .build()
+  }
 
   @OnEvent(ClickEvent::class)
-  fun onClick(c: ComponentContext): Unit = FavouriteButton.toggleFavourited(c)
+  fun onClick(c: ComponentContext) {
+    val favourited: State<Boolean> by useState(c) { false }
+    updateState(c) {
+      favourited.value = !favourited.value
+    }
+  }
 }
