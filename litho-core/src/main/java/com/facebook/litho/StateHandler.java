@@ -74,6 +74,10 @@ public class StateHandler {
 
   private Map<String, Object> mCreateInitialStateLock;
 
+  private Map<String, Object> mHookState;
+  private List<HookUpdater> mPendingHookUpdates;
+  private List<HookUpdater> mAppliedHookUpdates;
+
   public StateHandler() {
     this(null);
   }
@@ -90,6 +94,7 @@ public class StateHandler {
           stateHandler.getAppliedStateUpdates());
       copyCurrentStateContainers(stateHandler.getStateContainers());
       copyPendingStateTransitions(stateHandler.getPendingStateUpdateTransitions());
+      copyAndRunHooks(stateHandler);
     }
   }
 
@@ -106,19 +111,13 @@ public class StateHandler {
   }
 
   public synchronized boolean isEmpty() {
-    return mStateContainers == null || mStateContainers.isEmpty();
+    return (mStateContainers == null || mStateContainers.isEmpty())
+        && (mHookState == null || mHookState.isEmpty());
   }
 
   synchronized boolean hasPendingUpdates() {
-    if (mPendingStateUpdates != null && !mPendingStateUpdates.isEmpty()) {
-      for (List<StateUpdate> entry : mPendingStateUpdates.values()) {
-        if (!entry.isEmpty()) {
-          return true;
-        }
-      }
-    }
-
-    return false;
+    return (mPendingStateUpdates != null && !mPendingStateUpdates.isEmpty())
+        || (mPendingHookUpdates != null && !mPendingHookUpdates.isEmpty());
   }
 
   /**
@@ -324,6 +323,7 @@ public class StateHandler {
     clearUnusedStateContainers(this, stateHandler);
     copyCurrentStateContainers(stateHandler.getStateContainers());
     copyPendingStateTransitions(stateHandler.getPendingStateUpdateTransitions());
+    commitHookState(stateHandler);
   }
 
   synchronized Set<String> getKeysForPendingUpdates() {
@@ -582,6 +582,77 @@ public class StateHandler {
   private synchronized void maybeInitLazyStateUpdatesMap() {
     if (mPendingLazyStateUpdates == null) {
       mPendingLazyStateUpdates = new HashMap<>(INITIAL_MAP_CAPACITY);
+    }
+  }
+
+  //
+  // Hooks - Experimental - see KState.kt
+  //
+
+  /** Returns the mapping of hook keys to values. */
+  Map<String, Object> getHookState() {
+    if (mHookState == null) {
+      mHookState = new HashMap<>();
+    }
+    return mHookState;
+  }
+
+  /**
+   * Registers the given block to be run before the next layout calculation to update hook state.
+   */
+  void queueHookStateUpdate(HookUpdater updater) {
+    if (mPendingHookUpdates == null) {
+      mPendingHookUpdates = new ArrayList<>();
+    }
+    mPendingHookUpdates.add(updater);
+  }
+
+  /**
+   * Called when creating a new StateHandler for a layout calculation. It copies the source of truth
+   * state, and then the current list of HookUpdater blocks that need to be applied. Unlike normal
+   * state, these blocks are run immediately to update this StateHandlers hook state before we start
+   * creating components.
+   *
+   * @param other the ComponentTree's source-of-truth StateHandler where pending state updates are
+   *     collected
+   */
+  private void copyAndRunHooks(StateHandler other) {
+    if (other.mHookState != null) {
+      mHookState = new HashMap<>(other.mHookState);
+    }
+
+    if (other.mPendingHookUpdates != null) {
+      List<HookUpdater> updaters = new ArrayList<>(other.mPendingHookUpdates);
+      for (HookUpdater updater : updaters) {
+        updater.apply(this);
+      }
+      mAppliedHookUpdates = updaters;
+    }
+  }
+
+  /**
+   * Called on the ComponentTree's source-of-truth StateHandler when a layout has completed and new
+   * state needs to be committed. In this case, we want to remove any pending state updates that
+   * this StateHandler applied, while leaving new ones that have accumulated in the interim. We also
+   * copy over the new mapping from hook state keys to values.
+   *
+   * @param stateHandler the StateHandler whose layout is being committed
+   */
+  private void commitHookState(StateHandler stateHandler) {
+    if (mHookState != null) {
+      mHookState.clear();
+    }
+
+    if (stateHandler.mHookState != null && !stateHandler.mHookState.isEmpty()) {
+      if (mHookState == null) {
+        mHookState = new HashMap<>(stateHandler.mHookState);
+      } else {
+        mHookState.putAll(stateHandler.mHookState);
+      }
+    }
+
+    if (mPendingHookUpdates != null && stateHandler.mAppliedHookUpdates != null) {
+      mPendingHookUpdates.removeAll(stateHandler.mAppliedHookUpdates);
     }
   }
 }

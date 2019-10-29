@@ -1289,6 +1289,19 @@ public class ComponentTree {
     updateStateInternal(true, attribution);
   }
 
+  void updateHookStateAsync(HookUpdater updater, String attribution) {
+    synchronized (this) {
+      if (mRoot == null) {
+        return;
+      }
+
+      mStateHandler.queueHookStateUpdate(updater);
+    }
+
+    LithoStats.incrementStateUpdateAsync();
+    updateStateInternal(true, attribution);
+  }
+
   void updateStateInternal(boolean isAsync, String attribution) {
 
     final Component root;
@@ -1694,9 +1707,7 @@ public class ComponentTree {
         return;
       }
 
-      final Map<String, List<StateUpdate>> pendingStateUpdates =
-          mStateHandler == null ? null : mStateHandler.getPendingStateUpdates();
-      if (pendingStateUpdates != null && pendingStateUpdates.size() > 0 && root != null) {
+      if (mStateHandler.hasPendingUpdates() && root != null) {
         root = root.makeShallowCopyWithNewId();
       }
 
