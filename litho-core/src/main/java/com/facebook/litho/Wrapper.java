@@ -50,7 +50,7 @@ public final class Wrapper extends Component {
 
   @Override
   protected Component onCreateLayout(ComponentContext c) {
-    throw new UnsupportedOperationException("Call resolve() instead.");
+    return this;
   }
 
   @Override
