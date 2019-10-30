@@ -346,6 +346,9 @@ class LayoutState {
 
     ViewNodeInfo viewNodeInfo = hostOutput.getViewNodeInfo();
     if (viewNodeInfo != null) {
+      if (node.getBackground() != null) {
+        viewNodeInfo.setBackground(node.getBackground());
+      }
       if (node.hasStateListAnimatorResSet()) {
         viewNodeInfo.setStateListAnimatorRes(node.getStateListAnimatorRes());
       } else {
@@ -779,7 +782,10 @@ class LayoutState {
     if (background != null) {
       if (layoutOutput != null && layoutOutput.getViewNodeInfo() != null) {
         layoutOutput.getViewNodeInfo().setBackground(background);
-      } else {
+      } else if (!needsHostView) {
+        // If this node needs a host view, then we have already set the background on the
+        // HostComponent that's created for this node.
+        // Background will be set here only for those nodes which doesn't need a host view.
         final LayoutOutput convertBackground =
             (currentDiffNode != null) ? currentDiffNode.getBackground() : null;
 
