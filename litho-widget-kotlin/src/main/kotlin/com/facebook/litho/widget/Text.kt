@@ -36,6 +36,6 @@ inline fun ComponentContext.Text(
 ): Text.Builder =
     Text.create(this)
         .text(text)
-        .textSizeSp(textSize.sp.toFloat())
+        .textSizeSp(textSize.sp)
         .textColor(textColor)
         .textStyle(textStyle)

@@ -42,8 +42,8 @@ inline fun ComponentContext.Card(
 ): Card.Builder =
     Card.create(this)
         .cardBackgroundColor(cardBackgroundColor)
-        .cornerRadiusDip(cornerRadius.dp.toFloat())
-        .elevationDip(elevation.dp.toFloat())
+        .cornerRadiusDip(cornerRadius.dp)
+        .elevationDip(elevation.dp)
         .clippingColor(clippingColor)
         .shadowStartColor(shadowStartColor)
         .shadowEndColor(shadowEndColor)

@@ -24,7 +24,7 @@ inline fun <C : Component.Builder<C>> ComponentContext.Padding(
     all: Dp,
     content: ComponentContext.() -> C
 ): C =
-    content().paddingDip(YogaEdge.ALL, all.dp.toFloat())
+    content().paddingDip(YogaEdge.ALL, all.dp)
 
 inline fun <C : Component.Builder<C>> ComponentContext.Padding(
     horizontal: Dp = 0.dp,
@@ -32,8 +32,8 @@ inline fun <C : Component.Builder<C>> ComponentContext.Padding(
     content: ComponentContext.() -> C
 ): C =
     content()
-        .paddingDip(YogaEdge.HORIZONTAL, horizontal.dp.toFloat())
-        .paddingDip(YogaEdge.VERTICAL, vertical.dp.toFloat())
+        .paddingDip(YogaEdge.HORIZONTAL, horizontal.dp)
+        .paddingDip(YogaEdge.VERTICAL, vertical.dp)
 
 inline fun <C : Component.Builder<C>> ComponentContext.Padding(
     left: Dp = 0.dp,
@@ -43,10 +43,10 @@ inline fun <C : Component.Builder<C>> ComponentContext.Padding(
     content: ComponentContext.() -> C
 ): C =
     content()
-        .paddingDip(YogaEdge.LEFT, left.dp.toFloat())
-        .paddingDip(YogaEdge.TOP, top.dp.toFloat())
-        .paddingDip(YogaEdge.RIGHT, right.dp.toFloat())
-        .paddingDip(YogaEdge.BOTTOM, bottom.dp.toFloat())
+        .paddingDip(YogaEdge.LEFT, left.dp)
+        .paddingDip(YogaEdge.TOP, top.dp)
+        .paddingDip(YogaEdge.RIGHT, right.dp)
+        .paddingDip(YogaEdge.BOTTOM, bottom.dp)
 
 /**
  * Builder for positioning a child component absolutely within its parent's edges, independent of
@@ -63,10 +63,10 @@ inline fun <C : Component.Builder<C>> ComponentContext.Position(
     content()
         .positionType(YogaPositionType.ABSOLUTE)
         .apply {
-          left?.let { positionDip(YogaEdge.LEFT, it.dp.toFloat()) }
-          top?.let { positionDip(YogaEdge.TOP, it.dp.toFloat()) }
-          right?.let { positionDip(YogaEdge.RIGHT, it.dp.toFloat()) }
-          bottom?.let { positionDip(YogaEdge.BOTTOM, it.dp.toFloat()) }
+          left?.let { positionDip(YogaEdge.LEFT, it.dp) }
+          top?.let { positionDip(YogaEdge.TOP, it.dp) }
+          right?.let { positionDip(YogaEdge.RIGHT, it.dp) }
+          bottom?.let { positionDip(YogaEdge.BOTTOM, it.dp) }
         }
 
 /**

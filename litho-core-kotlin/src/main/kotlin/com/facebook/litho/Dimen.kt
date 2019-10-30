@@ -20,18 +20,24 @@ inline class Px(val px: Int) {
   inline fun toPx(c: ComponentContext): Px = this
 }
 
-inline class Dp(val dp: Int) {
+inline class Dp(val dp: Float) {
   inline fun toPx(c: ComponentContext): Px =
-      Px(c.resourceResolver.dipsToPixels(dp.toFloat()))
+      Px(c.resourceResolver.dipsToPixels(dp))
 }
 
-inline class Sp(val sp: Int) {
+inline class Sp(val sp: Float) {
   inline fun toPx(c: ComponentContext): Px =
-      Px(c.resourceResolver.sipsToPixels(sp.toFloat()))
+      Px(c.resourceResolver.sipsToPixels(sp))
 }
 
-inline val Int.dp: Dp get() = Dp(this)
+inline val Int.dp: Dp get() = Dp(this.toFloat())
+inline val Float.dp: Dp get() = Dp(this)
+inline val Double.dp: Dp get() = Dp(this.toFloat())
 
-inline val Int.sp: Sp get() = Sp(this)
+inline val Int.sp: Sp get() = Sp(this.toFloat())
+inline val Float.sp: Sp get() = Sp(this)
+inline val Double.sp: Sp get() = Sp(this.toFloat())
 
 inline val Int.px: Px get() = Px(this)
+inline val Float.px: Px get() = Px(this.toInt())
+inline val Double.px: Px get() = Px(this.toInt())
