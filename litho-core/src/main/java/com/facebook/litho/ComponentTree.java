@@ -281,8 +281,6 @@ public class ComponentTree {
 
   private final boolean mMoveLayoutsBetweenThreads;
 
-  private final boolean mCreateInitialStateOncePerThread;
-
   private final @Nullable String mLogTag;
 
   private final @Nullable ComponentsLogger mLogger;
@@ -313,7 +311,6 @@ public class ComponentTree {
     mUseCancelableLayoutFutures = builder.useCancelableLayoutFutures;
     mMoveLayoutsBetweenThreads = builder.canInterruptAndMoveLayoutsBetweenThreads;
     isReconciliationEnabled = builder.isReconciliationEnabled;
-    mCreateInitialStateOncePerThread = ComponentsConfiguration.createInitialStateOncePerThread;
 
     if (mPreAllocateMountContentHandler == null && builder.canPreallocateOnDefaultHandler) {
       mPreAllocateMountContentHandler =
@@ -1341,10 +1338,6 @@ public class ComponentTree {
 
   StateHandler getStateHandler() {
     return mStateHandler;
-  }
-
-  boolean shouldCreateInitialStateOncePerThread() {
-    return mCreateInitialStateOncePerThread;
   }
 
   void recordEventHandler(Component component, EventHandler eventHandler) {
