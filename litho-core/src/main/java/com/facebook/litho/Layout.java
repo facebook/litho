@@ -85,6 +85,11 @@ class Layout {
   static InternalNode create(
       final ComponentContext parent, Component component, final boolean resolveNestedTree) {
 
+    final boolean isTracing = ComponentsSystrace.isTracing();
+    if (isTracing) {
+      ComponentsSystrace.beginSection("createLayout:" + component.getSimpleName());
+    }
+
     // 1. Consume the layout created in `willrender`.
     final InternalNode cached = component.consumeLayoutCreatedInWillRender();
 
@@ -105,52 +110,66 @@ class Layout {
     final boolean shouldDeferNestedTreeResolution =
         isNestedTree(c, component) && !resolveNestedTree;
 
-    // If nested tree resolution is deferred, then create an nested tree holder.
-    if (shouldDeferNestedTreeResolution) {
-      node = InternalNodeUtils.create(c);
-      node.markIsNestedTreeHolder(c.getTreeProps());
-    }
+    try {
 
-    // If the component can resolve itself resolve it.
-    else if (component.canResolve()) {
-
-      // Resolve the component into an InternalNode.
-      node = (InternalNode) component.resolve(c);
-    }
-
-    // If the component is a MountSpec.
-    else if (isMountSpec(component)) {
-
-      // Create a blank InternalNode for MountSpecs and set the default flex direction.
-      node = InternalNodeUtils.create(c).flexDirection(YogaFlexDirection.COLUMN);
-    }
-
-    // If the component is a LayoutSpec.
-    else if (isLayoutSpec(component)) {
-
-      // Calls the onCreateLayout or onCreateLayoutWithSizeSpec on the Spec.
-      final Component root = onCreateLayout(c, component);
-      if (root == component) {
-        throw new RuntimeException(
-            component.getSimpleName()
-                + " returns itself in its onCreateLayout."
-                + " Please override Component#canResolve() and return true.");
+      // If nested tree resolution is deferred, then create an nested tree holder.
+      if (shouldDeferNestedTreeResolution) {
+        node = InternalNodeUtils.create(c);
+        node.markIsNestedTreeHolder(c.getTreeProps());
       }
-      if (root != null) {
-        node = create(c, root, false);
-      } else {
-        node = null;
+
+      // If the component can resolve itself resolve it.
+      else if (component.canResolve()) {
+
+        // Resolve the component into an InternalNode.
+        node = (InternalNode) component.resolve(c);
+      }
+
+      // If the component is a MountSpec.
+      else if (isMountSpec(component)) {
+
+        // Create a blank InternalNode for MountSpecs and set the default flex direction.
+        node = InternalNodeUtils.create(c).flexDirection(YogaFlexDirection.COLUMN);
+      }
+
+      // If the component is a LayoutSpec.
+      else if (isLayoutSpec(component)) {
+
+        // Calls the onCreateLayout or onCreateLayoutWithSizeSpec on the Spec.
+        final Component root = onCreateLayout(c, component);
+        if (root == component) {
+          throw new RuntimeException(
+              component.getSimpleName()
+                  + " returns itself in its onCreateLayout."
+                  + " Please override Component#canResolve() and return true.");
+        }
+        if (root != null) {
+          node = create(c, root, false);
+        } else {
+          node = null;
+        }
+      }
+
+      // What even is this?
+      else {
+        throw new IllegalArgumentException("component:" + component.getSimpleName());
+      }
+
+      // 7. If the layout is null then return immediately.
+      if (node == null || node == NULL_LAYOUT) {
+        return NULL_LAYOUT;
+      }
+
+    } catch (Throwable t) {
+      throw new ComponentsChainException(component, t);
+    } finally {
+      if (isTracing) {
+        ComponentsSystrace.endSection();
       }
     }
 
-    // What even is this?
-    else {
-      throw new IllegalArgumentException("component:" + component.getSimpleName());
-    }
-
-    // 7. If the layout is null then return immediately.
-    if (node == null || node == NULL_LAYOUT) {
-      return NULL_LAYOUT;
+    if (isTracing) {
+      ComponentsSystrace.beginSection("afterCreateLayout:" + component.getSimpleName());
     }
 
     // 8. Set the measure function
@@ -200,6 +219,10 @@ class Layout {
     if (component.mWorkingRangeRegistrations != null
         && !component.mWorkingRangeRegistrations.isEmpty()) {
       node.addWorkingRanges(component.mWorkingRangeRegistrations);
+    }
+
+    if (isTracing) {
+      ComponentsSystrace.endSection();
     }
 
     return node;
