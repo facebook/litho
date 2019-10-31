@@ -57,6 +57,11 @@ public class GenerateComponentAction extends AnAction {
     LithoLoggerProvider.getEventLogger().log(TAG);
 
     LithoPluginUtils.getFirstLayoutSpec(file)
-        .ifPresent(ComponentGenerateUtils::updateLayoutComponent);
+        .filter(ComponentGenerateUtils::updateLayoutComponent)
+        .ifPresent(
+            specCls -> {
+              String name = LithoPluginUtils.getLithoComponentNameFromSpec(specCls.getName());
+              LithoPluginUtils.showInfo(name + " component was regenerated", specCls.getProject());
+            });
   }
 }

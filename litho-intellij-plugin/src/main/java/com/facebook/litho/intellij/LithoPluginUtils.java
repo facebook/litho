@@ -24,6 +24,8 @@ import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.State;
 import com.google.common.annotations.VisibleForTesting;
+import com.intellij.notification.NotificationGroup;
+import com.intellij.notification.NotificationType;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiAnnotation;
 import com.intellij.psi.PsiClass;
@@ -46,6 +48,8 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
 public class LithoPluginUtils {
+  private static final NotificationGroup NOTIFICATION_GROUP =
+      NotificationGroup.balloonGroup("Litho");
   private static final String SPEC_SUFFIX = "Spec";
 
   public static boolean isComponentClass(@Nullable PsiClass psiClass) {
@@ -214,5 +218,11 @@ public class LithoPluginUtils {
                     .filter(Objects::nonNull)
                     .filter(classFilter)
                     .findFirst());
+  }
+
+  public static void showInfo(String infoMessage, Project project) {
+    NOTIFICATION_GROUP
+        .createNotification(infoMessage, NotificationType.INFORMATION)
+        .notify(project);
   }
 }
