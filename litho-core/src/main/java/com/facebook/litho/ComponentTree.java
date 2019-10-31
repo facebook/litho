@@ -313,8 +313,7 @@ public class ComponentTree {
     mUseCancelableLayoutFutures = builder.useCancelableLayoutFutures;
     mMoveLayoutsBetweenThreads = builder.canInterruptAndMoveLayoutsBetweenThreads;
     isReconciliationEnabled = builder.isReconciliationEnabled;
-    mCreateInitialStateOncePerThread =
-        ComponentsConfiguration.createInitialStateOncePerThread || mUseCancelableLayoutFutures;
+    mCreateInitialStateOncePerThread = ComponentsConfiguration.createInitialStateOncePerThread;
 
     if (mPreAllocateMountContentHandler == null && builder.canPreallocateOnDefaultHandler) {
       mPreAllocateMountContentHandler =
