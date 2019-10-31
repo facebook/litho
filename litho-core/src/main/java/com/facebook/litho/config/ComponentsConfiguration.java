@@ -211,15 +211,6 @@ public class ComponentsConfiguration {
   /** If true, release ComponentTrees held in RecyclerBinder when item are removed or detached. */
   public static boolean isReleaseComponentTreeInRecyclerBinder;
 
-  /** If true, add the root component of LayoutSpecs to InternalNodes */
-  public static boolean isConsistentComponentHierarchyExperimentEnabled = true;
-
-  /**
-   * If true the framework will use the refactored implementation of
-   * ComponentLifecycle#createLayout()
-   */
-  public static boolean isRefactoredLayoutCreationEnabled = false;
-
   public static int percentageSleepLayoutCalculation = 0;
 
   /**
