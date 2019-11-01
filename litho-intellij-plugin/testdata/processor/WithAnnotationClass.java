@@ -16,10 +16,10 @@
 
 class WithAnnotationClass {
 
-  static void someMethod(@com.facebook.litho.annotations.Prop int x,
-                         @com.facebook.litho.annotations.Prop(optional = true,
-                             resType = DRAWABLE,
-                             overrideCommonPropBehavior = true,
-                             isCommonProp = true,
-                             dynamic = true) int y) { }
+    static void someMethod(@com.facebook.litho.annotations.Prop int x,
+                           @com.facebook.litho.annotations.Prop(optional = true,
+                             resType = DRAWABLE, overrideCommonPropBehavior = true,
+                             isCommonProp = true, dynamic = true) int y,
+                           @com.facebook.litho.annotations.Prop int z) {
+    }
 }
