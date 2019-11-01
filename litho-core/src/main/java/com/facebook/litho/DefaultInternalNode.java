@@ -1820,7 +1820,7 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
     resetResolvedLayoutProperties();
   }
 
-  private void updateWith(
+  void updateWith(
       final ComponentContext c,
       final YogaNode node,
       final List<Component> components,
