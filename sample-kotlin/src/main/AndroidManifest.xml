@@ -26,6 +26,7 @@
       android:label="Kotlin Litho Sample"
       android:name=".LithoApplication"
       android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
+      android:supportsRtl="true"
       tools:ignore="GoogleAppIndexingWarning">
 
     <activity android:name=".demo.DemoListActivity">
