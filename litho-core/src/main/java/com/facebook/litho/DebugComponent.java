@@ -225,6 +225,11 @@ public final class DebugComponent {
     return new Rect(x, y, x + mNode.getWidth(), y + mNode.getHeight());
   }
 
+  /** @return True if this and given debug components share the same internal node */
+  public boolean isSameNode(DebugComponent other) {
+    return this.mNode == other.mNode;
+  }
+
   /** @return the {@link ComponentContext} for this component. */
   public ComponentContext getContext() {
     return mNode.getContext();
