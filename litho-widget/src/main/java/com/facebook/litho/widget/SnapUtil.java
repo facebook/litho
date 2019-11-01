@@ -93,4 +93,25 @@ public class SnapUtil {
       return new LinearSmoothScroller(context);
     }
   }
+
+  public static int getSnapModeFromString(@Nullable String snapString) {
+    if (snapString == null) {
+      return SNAP_NONE;
+    }
+    switch (snapString) {
+      case "SNAP_TO_END":
+        return SNAP_TO_END;
+      case "SNAP_TO_START":
+        return SNAP_TO_START;
+      case "SNAP_TO_CENTER":
+        return SNAP_TO_CENTER;
+      case "SNAP_TO_CENTER_CHILD":
+        return SNAP_TO_CENTER_CHILD;
+      case "SNAP_TO_CENTER_CHILD_WITH_CUSTOM_SPEED":
+        return SNAP_TO_CENTER_CHILD_WITH_CUSTOM_SPEED;
+      case "SNAP_NONE":
+      default:
+        return SNAP_NONE;
+    }
+  }
 }

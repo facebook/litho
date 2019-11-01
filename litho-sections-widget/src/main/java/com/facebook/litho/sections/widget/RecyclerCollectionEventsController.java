@@ -103,6 +103,14 @@ public class RecyclerCollectionEventsController extends RecyclerEventsController
 
   /**
    * Send the {@link RecyclerCollectionComponent} a request to scroll the content to the given
+   * target position taking into account snapping behavior. Can toggle if the scroll is animated
+   */
+  public void requestScrollToPositionWithSnap(final int target, final boolean animated) {
+    requestScrollToPositionInner(animated, target, target);
+  }
+
+  /**
+   * Send the {@link RecyclerCollectionComponent} a request to scroll the content to the given
    * target position taking into account provided snapping behavior. The provided smoothScroller is
    * used to scroll to the target.
    */
@@ -240,7 +248,7 @@ public class RecyclerCollectionEventsController extends RecyclerEventsController
     mSectionTree = sectionTree;
   }
 
-  void setSnapMode(int snapMode) {
+  public void setSnapMode(int snapMode) {
     mSnapMode = snapMode;
   }
 
