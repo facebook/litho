@@ -33,7 +33,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 /** Utility class helping resolve component class to componentSpec class. */
 class BaseLithoComponentsDeclarationHandler {

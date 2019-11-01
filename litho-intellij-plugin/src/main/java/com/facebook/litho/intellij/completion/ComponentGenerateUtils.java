@@ -33,8 +33,8 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiJavaFile;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeSpec;
-import javax.annotation.Nullable;
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Utility class helping to create {@link LayoutSpecModel}s from the given file and update generated

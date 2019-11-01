@@ -35,7 +35,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiClass;
 import java.lang.annotation.Annotation;
 import java.util.List;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 /** Factory for creating {@link LayoutSpecModel}s. */
 public class PsiLayoutSpecModelFactory {
