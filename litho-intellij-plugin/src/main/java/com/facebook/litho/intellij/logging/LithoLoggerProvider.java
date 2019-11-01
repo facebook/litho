@@ -29,15 +29,15 @@ import java.util.concurrent.Executor;
  * Provides logger to track common user flow events: completion action usage, dialog opening, etc.
  */
 public final class LithoLoggerProvider {
-  private static final EventLogger EVENT_LOGGER = new LithoEventLogger();
 
   private LithoLoggerProvider() {}
 
   public static EventLogger getEventLogger() {
-    return EVENT_LOGGER;
+    return LithoEventLogger.INSTANCE;
   }
 
   static class LithoEventLogger implements EventLogger {
+    static final EventLogger INSTANCE = new LithoEventLogger();
     static final ExtensionPointName<EventLogger> EP_NAME =
         ExtensionPointName.create("com.facebook.litho.intellij.eventLogger");
     private final EventLogger[] loggers;
