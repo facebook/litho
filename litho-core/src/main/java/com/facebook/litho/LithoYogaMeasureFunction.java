@@ -38,8 +38,15 @@ public class LithoYogaMeasureFunction implements YogaMeasureFunction {
       float height,
       YogaMeasureMode heightMode) {
     final InternalNode node = (InternalNode) cssNode.getData();
-    final DiffNode diffNode = node.areCachedMeasuresValid() ? node.getDiffNode() : null;
     final Component component = node.getTailComponent();
+    final ComponentContext componentScopedContext = component.getScopedContext();
+
+    if (componentScopedContext != null && componentScopedContext.wasLayoutCanceled()) {
+      return 0;
+    }
+
+    final DiffNode diffNode = node.areCachedMeasuresValid() ? node.getDiffNode() : null;
+
     final int widthSpec;
     final int heightSpec;
     final boolean isTracing = ComponentsSystrace.isTracing();
@@ -95,7 +102,7 @@ public class LithoYogaMeasureFunction implements YogaMeasureFunction {
     } else {
       final Size size = acquireSize(Integer.MIN_VALUE /* initialValue */);
 
-      component.onMeasure(component.getScopedContext(), node, widthSpec, heightSpec, size);
+      component.onMeasure(componentScopedContext, node, widthSpec, heightSpec, size);
 
       if (size.width < 0 || size.height < 0) {
         throw new IllegalStateException(

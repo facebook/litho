@@ -663,6 +663,10 @@ class LayoutState {
       InternalNode node,
       LayoutState layoutState,
       DiffNode parentDiffNode) {
+    if (parentContext.wasLayoutCanceled()) {
+      return;
+    }
+
     if (node.hasNewLayout()) {
       node.markLayoutSeen();
     }
@@ -1515,6 +1519,10 @@ class LayoutState {
 
   private static void setSizeAfterMeasureAndCollectResults(
       ComponentContext c, LayoutState layoutState) {
+    if (c.wasLayoutCanceled()) {
+      return;
+    }
+
     final boolean isTracing = ComponentsSystrace.isTracing();
     final int widthSpec = layoutState.mWidthSpec;
     final int heightSpec = layoutState.mHeightSpec;
