@@ -194,8 +194,8 @@ public class LithoPluginUtils {
    * Finds Generated Class from the given Spec name.
    *
    * @param qualifiedSpecName Name of the Spec to search generated class for. For example
-   *     com.package.MySpec.java. If you provide simple name MySpec.java returned class could be
-   *     found in wrong package.
+   *     com.package.MySpec.java. If it's a simple name MySpec.java returned class could be found in
+   *     a wrong package.
    * @param project Project to find generated class in.
    */
   public static Optional<PsiClass> findGeneratedClass(String qualifiedSpecName, Project project) {
