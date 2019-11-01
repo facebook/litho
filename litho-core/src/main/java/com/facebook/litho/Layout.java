@@ -139,7 +139,7 @@ class Layout {
         final Component root = onCreateLayout(c, component);
         if (root == component) {
           throw new RuntimeException(
-              component.getSimpleName()
+              component.getClass().getName()
                   + " returns itself in its onCreateLayout."
                   + " Please override Component#canResolve() and return true.");
         }
