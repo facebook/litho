@@ -340,25 +340,7 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   @Override
   public void calculateLayout(float width, float height) {
     applyOverridesRecursive(this);
-    if (ComponentsConfiguration.percentageSleepLayoutCalculation > 0) {
-      long start = System.nanoTime();
-      mYogaNode.calculateLayout(width, height);
-      long end = System.nanoTime();
-      long elapsedTime = 0;
-      long timeIntervalToSleep =
-          (long)
-              ((end - start) * (ComponentsConfiguration.percentageSleepLayoutCalculation / 100f));
-      long sum = 0;
-      while (elapsedTime < timeIntervalToSleep) {
-        long s = System.nanoTime();
-        for (int index = 0; index < 100; ++index) {
-          sum++;
-        }
-        elapsedTime += (System.nanoTime() - s);
-      }
-    } else {
-      mYogaNode.calculateLayout(width, height);
-    }
+    mYogaNode.calculateLayout(width, height);
   }
 
   @Override

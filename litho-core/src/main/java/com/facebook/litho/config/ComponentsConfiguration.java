@@ -210,8 +210,6 @@ public class ComponentsConfiguration {
   /** If true, release ComponentTrees held in RecyclerBinder when item are removed or detached. */
   public static boolean isReleaseComponentTreeInRecyclerBinder;
 
-  public static int percentageSleepLayoutCalculation = 0;
-
   /**
    * When enabled reconciliation will use the deep clone method of the InternalNode with the
    * simplified implementation of shallow copy.
