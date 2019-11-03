@@ -571,13 +571,14 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
         hasGlobalKeyChanged = false;
       }
 
-      if (isFullyVisible && wasFullyVisible) {
-        // VisibilityOutput is still fully visible, no new events to dispatch, skip to next
-        if (isTracing) {
-          ComponentsSystrace.endSection();
-        }
-        continue;
-      }
+      // Disabling the optimized skip because of T56795005 and T56779496
+      //      if (isFullyVisible && wasFullyVisible) {
+      //        // VisibilityOutput is still fully visible, no new events to dispatch, skip to next
+      //        if (isTracing) {
+      //          ComponentsSystrace.endSection();
+      //        }
+      //        continue;
+      //      }
 
       final long handlerStartTime = isDoingPerfLog ? System.nanoTime() : 0;
       final EventHandler<VisibleEvent> visibleHandler = visibilityOutput.getVisibleEventHandler();
