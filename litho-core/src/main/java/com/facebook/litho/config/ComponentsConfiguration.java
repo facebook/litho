@@ -71,6 +71,9 @@ public class ComponentsConfiguration {
    */
   public static boolean isDebugModeEnabled = IS_INTERNAL_BUILD;
 
+  /** Lightweight tracking of component class hierarchy of MountItems. */
+  public static boolean isDebugHierarchyEnabled = false;
+
   /** Debug option to highlight interactive areas in mounted components. */
   public static boolean debugHighlightInteractiveBounds = false;
 

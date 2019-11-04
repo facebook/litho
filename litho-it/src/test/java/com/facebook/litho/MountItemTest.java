@@ -89,6 +89,7 @@ public class MountItemTest {
             mComponent,
             mComponentHost,
             mContent,
+            null,
             mNodeInfo,
             null,
             mFlags,
@@ -129,6 +130,7 @@ public class MountItemTest {
             mComponent,
             mComponentHost,
             mContent,
+            null,
             mNodeInfo,
             null,
             mFlags,
@@ -145,6 +147,7 @@ public class MountItemTest {
             mComponent,
             mComponentHost,
             mContent,
+            null,
             mNodeInfo,
             null,
             mFlags,
@@ -170,6 +173,7 @@ public class MountItemTest {
             mComponent,
             mComponentHost,
             view,
+            null,
             mNodeInfo,
             null,
             mFlags,
@@ -194,6 +198,7 @@ public class MountItemTest {
             mComponent,
             mComponentHost,
             view,
+            null,
             mNodeInfo,
             null,
             mFlags,
@@ -215,6 +220,7 @@ public class MountItemTest {
             mComponent,
             mComponentHost,
             mContent,
+            null,
             mNodeInfo,
             null,
             mFlags,
@@ -234,6 +240,7 @@ public class MountItemTest {
                 .build(),
             mComponentHost,
             mContent,
+            null,
             mNodeInfo,
             null,
             mFlags,
@@ -253,6 +260,7 @@ public class MountItemTest {
                 .build(),
             mComponentHost,
             mContent,
+            null,
             mNodeInfo,
             null,
             mFlags,
@@ -272,6 +280,7 @@ public class MountItemTest {
                 .build(),
             mComponentHost,
             mContent,
+            null,
             mNodeInfo,
             null,
             mFlags,
@@ -290,7 +299,7 @@ public class MountItemTest {
   @Test
   public void testUpdateDoesntChangeFlags() {
     LayoutOutput layoutOutput =
-        new LayoutOutput(mNodeInfo, null, mComponent, new Rect(0, 0, 0, 0), 0, 0, 0, 0, 0, 0, null);
+        new LayoutOutput(mNodeInfo, null, null, mComponent, new Rect(0, 0, 0, 0), 0, 0, 0, 0, 0, 0, null);
 
     View view = new View(RuntimeEnvironment.application);
 

@@ -305,7 +305,10 @@ class LayoutState {
    */
   @Nullable
   private static LayoutOutput createGenericLayoutOutput(
-      InternalNode node, LayoutState layoutState, boolean hasHostView) {
+      InternalNode node,
+      LayoutState layoutState,
+      @Nullable DebugHierarchy.Node hierarchy,
+      boolean hasHostView) {
     final Component component = node.getTailComponent();
 
     // Skip empty nodes and layout specs because they don't mount anything.
@@ -322,13 +325,15 @@ class LayoutState {
         hostMarker,
         layoutState,
         node,
+        hierarchy,
         true /* useNodePadding */,
         node.getImportantForAccessibility(),
         layoutState.mShouldDuplicateParentState,
         hasHostView);
   }
 
-  private static LayoutOutput createHostLayoutOutput(LayoutState layoutState, InternalNode node) {
+  private static LayoutOutput createHostLayoutOutput(
+      LayoutState layoutState, InternalNode node, @Nullable DebugHierarchy.Node hierarchy) {
 
     final HostComponent hostComponent = HostComponent.create();
 
@@ -350,6 +355,7 @@ class LayoutState {
             hostMarker,
             layoutState,
             node,
+            hierarchy,
             false /* useNodePadding */,
             node.getImportantForAccessibility(),
             node.isDuplicateParentStateEnabled(),
@@ -368,7 +374,11 @@ class LayoutState {
   }
 
   private static LayoutOutput createDrawableLayoutOutput(
-      Component component, LayoutState layoutState, InternalNode node, boolean hasHostView) {
+      Component component,
+      LayoutState layoutState,
+      @Nullable DebugHierarchy.Node hierarchy,
+      InternalNode node,
+      boolean hasHostView) {
     // The mount operation will need both the marker for the target host and its matching
     // parent host to ensure the correct hierarchy when nesting the host views.
     long hostMarker = layoutState.mCurrentHostMarker;
@@ -378,6 +388,7 @@ class LayoutState {
         hostMarker,
         layoutState,
         node,
+        hierarchy,
         false /* useNodePadding */,
         IMPORTANT_FOR_ACCESSIBILITY_NO,
         layoutState.mShouldDuplicateParentState,
@@ -389,6 +400,7 @@ class LayoutState {
       long hostMarker,
       LayoutState layoutState,
       InternalNode node,
+      @Nullable DebugHierarchy.Node hierarchy,
       boolean useNodePadding,
       int importantForAccessibility,
       boolean duplicateParentState,
@@ -478,6 +490,7 @@ class LayoutState {
     return new LayoutOutput(
         layoutOutputNodeInfo,
         layoutOutputViewNodeInfo,
+        hierarchy,
         component,
         bounds,
         hostTranslationX,
@@ -654,12 +667,14 @@ class LayoutState {
    * <p>
    *
    * @param parentContext the parent component context
+   * @param parentHierarchy The parent hierarchy linked list or null.
    * @param node InternalNode to process.
    * @param layoutState the LayoutState currently operating.
    * @param parentDiffNode whether this method also populates the diff tree and assigns the root
    */
   private static void collectResults(
       ComponentContext parentContext,
+      @Nullable DebugHierarchy.Node parentHierarchy,
       InternalNode node,
       LayoutState layoutState,
       DiffNode parentDiffNode) {
@@ -672,6 +687,14 @@ class LayoutState {
     }
     final Component component = node.getTailComponent();
     final boolean isTracing = ComponentsSystrace.isTracing();
+
+    final DebugHierarchy.Node hierarchy;
+    // Update the hierarchy if we are tracking it.
+    if (ComponentsConfiguration.isDebugHierarchyEnabled) {
+      hierarchy = new DebugHierarchy.Node(parentHierarchy, component, node.getComponents());
+    } else {
+      hierarchy = null;
+    }
 
     // Early return if collecting results of a node holding a nested tree.
     if (node.isNestedTreeHolder()) {
@@ -702,7 +725,7 @@ class LayoutState {
       layoutState.mCurrentX += node.getX();
       layoutState.mCurrentY += node.getY();
 
-      collectResults(parentContext, nestedTree, layoutState, parentDiffNode);
+      collectResults(parentContext, hierarchy, nestedTree, layoutState, parentDiffNode);
 
       layoutState.mCurrentX -= node.getX();
       layoutState.mCurrentY -= node.getY();
@@ -759,7 +782,7 @@ class LayoutState {
 
     // 1. Insert a host LayoutOutput if we have some interactive content to be attached to.
     if (needsHostView) {
-      final int hostLayoutPosition = addHostLayoutOutput(node, layoutState, diffNode);
+      final int hostLayoutPosition = addHostLayoutOutput(node, layoutState, diffNode, hierarchy);
       addCurrentAffinityGroupToTransitionMapping(layoutState);
 
       layoutState.mCurrentLevel++;
@@ -777,7 +800,8 @@ class LayoutState {
         needsHostView || (shouldDuplicateParentState && node.isDuplicateParentStateEnabled());
 
     // Generate the layoutOutput for the given node.
-    final LayoutOutput layoutOutput = createGenericLayoutOutput(node, layoutState, needsHostView);
+    final LayoutOutput layoutOutput =
+        createGenericLayoutOutput(node, layoutState, hierarchy, needsHostView);
 
     if (layoutOutput != null) {
       final long previousId = shouldUseCachedOutputs ? currentDiffNode.getContent().getId() : -1;
@@ -803,6 +827,7 @@ class LayoutState {
                 node,
                 layoutState,
                 convertBackground,
+                hierarchy,
                 background,
                 OutputUnitType.BACKGROUND,
                 needsHostView);
@@ -871,7 +896,7 @@ class LayoutState {
 
     // We must process the nodes in order so that the layout state output order is correct.
     for (int i = 0, size = node.getChildCount(); i < size; i++) {
-      collectResults(node.getContext(), node.getChildAt(i), layoutState, diffNode);
+      collectResults(node.getContext(), hierarchy, node.getChildAt(i), layoutState, diffNode);
     }
 
     layoutState.mParentEnabledState = parentEnabledState;
@@ -887,6 +912,7 @@ class LayoutState {
               node,
               layoutState,
               convertBorder,
+              hierarchy,
               getBorderColorDrawable(node),
               OutputUnitType.BORDER,
               needsHostView);
@@ -909,6 +935,7 @@ class LayoutState {
                 node,
                 layoutState,
                 convertForeground,
+                hierarchy,
                 foreground,
                 OutputUnitType.FOREGROUND,
                 needsHostView);
@@ -1022,6 +1049,7 @@ class LayoutState {
             node,
             layoutState,
             null,
+            hierarchy,
             new DebugOverlayDrawable(mainThreadCalculations),
             OutputUnitType.FOREGROUND,
             needsHostView);
@@ -1101,6 +1129,7 @@ class LayoutState {
       InternalNode node,
       LayoutState layoutState,
       @Nullable LayoutOutput recycle,
+      @Nullable DebugHierarchy.Node hierarchy,
       ComparableDrawable drawable,
       @OutputUnitType int type,
       boolean matchHostBoundsTransitions) {
@@ -1120,6 +1149,7 @@ class LayoutState {
         addDrawableLayoutOutput(
             drawableComponent,
             layoutState,
+            hierarchy,
             node,
             type,
             previousId,
@@ -1216,6 +1246,7 @@ class LayoutState {
   private static LayoutOutput addDrawableLayoutOutput(
       Component drawableComponent,
       LayoutState layoutState,
+      @Nullable DebugHierarchy.Node hierarchy,
       InternalNode node,
       @OutputUnitType int outputType,
       long previousId,
@@ -1233,7 +1264,7 @@ class LayoutState {
 
     final LayoutOutput drawableLayoutOutput =
         createDrawableLayoutOutput(
-            drawableComponent, layoutState, node, matchHostBoundsTransitions);
+            drawableComponent, layoutState, hierarchy, node, matchHostBoundsTransitions);
 
     layoutState.calculateAndSetLayoutOutputIdAndUpdateState(
         drawableLayoutOutput,
@@ -1259,7 +1290,10 @@ class LayoutState {
    * @return The position the HostLayoutOutput was inserted.
    */
   private static int addHostLayoutOutput(
-      InternalNode node, LayoutState layoutState, DiffNode diffNode) {
+      InternalNode node,
+      LayoutState layoutState,
+      DiffNode diffNode,
+      @Nullable DebugHierarchy.Node hierarchy) {
     final Component component = node.getTailComponent();
 
     // Only the root host is allowed to wrap view mount specs as a layout output
@@ -1268,7 +1302,7 @@ class LayoutState {
       throw new IllegalArgumentException("We shouldn't insert a host as a parent of a View");
     }
 
-    final LayoutOutput hostLayoutOutput = createHostLayoutOutput(layoutState, node);
+    final LayoutOutput hostLayoutOutput = createHostLayoutOutput(layoutState, node, hierarchy);
 
     // The component of the hostLayoutOutput will be set later after all the
     // children got processed.
@@ -1564,7 +1598,7 @@ class LayoutState {
     if (isTracing) {
       ComponentsSystrace.beginSection("collectResults");
     }
-    collectResults(c, root, layoutState, null);
+    collectResults(c, null, root, layoutState, null);
     if (isTracing) {
       ComponentsSystrace.endSection();
     }

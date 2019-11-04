@@ -124,9 +124,8 @@ public interface InternalNode extends ComponentLayout, LayoutProps, Copyable<Int
   int getChildIndex(InternalNode child);
 
   /**
-   * Return the list of components contributing to this InternalNode. We have no need for this in
-   * production but it is useful information to have while debugging. Therefor this list will only
-   * contain the root component if running in production mode.
+   * Return the list of components contributing to this InternalNode. This exists in both debug and
+   * production mode.
    */
   List<Component> getComponents();
 
