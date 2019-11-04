@@ -26,6 +26,7 @@ import com.facebook.litho.annotations.LayoutSpec
 import com.facebook.litho.annotations.OnCreateLayout
 import com.facebook.litho.build
 import com.facebook.litho.dp
+import com.facebook.litho.drawableColor
 
 @LayoutSpec
 object ActionsComponentSpec {
@@ -33,7 +34,7 @@ object ActionsComponentSpec {
   @OnCreateLayout
   fun onCreateLayout(c: ComponentContext): Component = build(c) {
     Position(top = 4.dp, right = 4.dp) {
-      Decoration(backgroundColor = 0xddffffff) {
+      Decoration(background = drawableColor(0xddffffff)) {
         Padding(2.dp) {
           Row {
             +FavouriteButton.create(c)

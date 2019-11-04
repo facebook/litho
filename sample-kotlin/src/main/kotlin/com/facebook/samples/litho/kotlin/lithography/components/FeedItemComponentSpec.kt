@@ -29,6 +29,7 @@ import com.facebook.litho.annotations.OnCreateLayout
 import com.facebook.litho.annotations.Prop
 import com.facebook.litho.build
 import com.facebook.litho.dp
+import com.facebook.litho.drawableColor
 import com.facebook.litho.sections.SectionContext
 import com.facebook.litho.sections.widget.ListRecyclerConfiguration
 import com.facebook.litho.sections.widget.RecyclerCollectionComponent
@@ -56,7 +57,7 @@ object FeedItemComponentSpec {
         +imageBlock(artist)
         +Position(left = 4.dp, bottom = 4.dp) {
           Padding(horizontal = 6.dp) {
-            Decoration(backgroundColor = 0xddffffff) {
+            Decoration(background = drawableColor(0xddffffff)) {
               Text(text = artist.name, textSize = 24.sp, textStyle = BOLD)
             }
           }
