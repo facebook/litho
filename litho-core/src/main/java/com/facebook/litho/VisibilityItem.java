@@ -40,7 +40,6 @@ class VisibilityItem {
   @Nullable private EventHandler<UnfocusedVisibleEvent> mUnfocusedHandler;
   private @Nullable final EventHandler<VisibilityChangedEvent> mVisibilityChangedHandler;
   private boolean mDoNotClearInThisPass;
-  private boolean mWasFullyVisible;
 
   public VisibilityItem(
       String globalKey,
@@ -136,13 +135,5 @@ class VisibilityItem {
 
   void setDoNotClearInThisPass(boolean doNotClearInThisPass) {
     mDoNotClearInThisPass = doNotClearInThisPass;
-  }
-
-  boolean wasFullyVisible() {
-    return mWasFullyVisible;
-  }
-
-  void setWasFullyVisible(boolean fullyVisible) {
-    mWasFullyVisible = fullyVisible;
   }
 }
