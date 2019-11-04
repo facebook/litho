@@ -125,12 +125,6 @@ public class ComponentsConfiguration {
   public static @Nullable LayoutThreadPoolConfiguration threadPoolForBackgroundThreadsConfig = null;
 
   /**
-   * If true, the async range calculation isn't blocked on the first item finishing layout and it
-   * will schedule as many bg layouts as it can while init range completes.
-   */
-  public static boolean asyncInitRange = false;
-
-  /**
    * If non-null, a thread pool will be used for async layouts instead of a single layout thread.
    */
   public static @Nullable LayoutThreadPoolConfiguration threadPoolConfiguration = null;

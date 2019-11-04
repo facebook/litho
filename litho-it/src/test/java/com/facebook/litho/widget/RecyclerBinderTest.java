@@ -89,7 +89,6 @@ import java.util.concurrent.TimeUnit;
 import junit.framework.Assert;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.invocation.InvocationOnMock;
@@ -151,6 +150,8 @@ public class RecyclerBinderTest {
   private ComponentContext mComponentContext;
   private ShadowLooper mLayoutThreadShadowLooper;
   private RecyclerBinder.ComponentTreeHolderFactory mComponentTreeHolderFactory;
+  private RecyclerBinder.ComponentTreeHolderFactory
+      mComponentTreeHolderFactoryLayoutFinishedListener;
 
   @Before
   public void setup() throws Exception {
@@ -183,6 +184,30 @@ public class RecyclerBinderTest {
           }
         };
 
+    mComponentTreeHolderFactoryLayoutFinishedListener =
+        new RecyclerBinder.ComponentTreeHolderFactory() {
+          @Override
+          public ComponentTreeHolder create(
+              RenderInfo renderInfo,
+              LithoHandler layoutHandler,
+              ComponentTreeMeasureListenerFactory componentTreeMeasureListenerFactory,
+              boolean incrementalMountEnabled,
+              boolean canInterruptAndMoveLayoutsBetweenThreads,
+              boolean useCancelableLayoutFutures,
+              boolean isReconciliationEnabled,
+              boolean isLayoutDiffingEnabled,
+              LithoHandler preallocateHandler,
+              boolean preallocatePerMountSpec) {
+            final TestComponentTreeHolder holder = new TestComponentTreeHolder(renderInfo, true);
+            if (renderInfo.rendersComponent()) {
+              mHoldersForComponents.put(renderInfo.getComponent(), holder);
+              holder.mLayoutHandler = layoutHandler;
+            }
+
+            return holder;
+          }
+        };
+
     mLayoutInfo = mock(LayoutInfo.class);
     mCircularLayoutInfo = mock(LayoutInfo.class);
 
@@ -198,9 +223,8 @@ public class RecyclerBinderTest {
     mRecyclerBinderForAsyncInitRangeBuilder =
         new RecyclerBinder.Builder()
             .rangeRatio(0)
-            .asyncInitRange(true)
             .layoutInfo(mLayoutInfo)
-            .componentTreeHolderFactory(mComponentTreeHolderFactory);
+            .componentTreeHolderFactory(mComponentTreeHolderFactoryLayoutFinishedListener);
 
     mRecyclerBinder = mRecyclerBinderBuilder.build(mComponentContext);
 
@@ -220,7 +244,6 @@ public class RecyclerBinderTest {
   @After
   public void tearDown() {
     mLayoutThreadShadowLooper.runToEndOfTasks();
-    mRecyclerBinder.setAsyncInitRange(false);
   }
 
   private void setupBaseLayoutInfoMock(LayoutInfo layoutInfo, int orientation) {
@@ -4210,7 +4233,6 @@ public class RecyclerBinderTest {
 
     final RecyclerBinder recyclerBinder =
         new RecyclerBinder.Builder()
-            .asyncInitRange(true)
             .rangeRatio(0)
             .layoutInfo(mLayoutInfo)
             .threadPoolConfig(new LayoutThreadPoolConfigurationImpl(2, 2, 5))
@@ -4320,12 +4342,10 @@ public class RecyclerBinderTest {
     assertThat(syncLayouts.get(3)).isEqualTo(NOT_SET);
   }
 
-  // TODO: Test is flaky, refer to the task for context
-  @Ignore("T37835958")
   @Test
   public void testInitRangeAsyncFirstLayoutIsLongSchedMany() {
-    final CountDownLatch lockInitRangeLayout = new CountDownLatch(1);
-    final CountDownLatch lockTest = new CountDownLatch(2);
+    final CountDownLatch lockInitRangeLayout = new CountDownLatch(2);
+    final CountDownLatch lockTest = new CountDownLatch(1);
 
     when(mLayoutInfo.getChildHeightSpec(anyInt(), any(RenderInfo.class)))
         .thenReturn(SizeSpec.makeSizeSpec(0, SizeSpec.EXACTLY));
@@ -4335,7 +4355,6 @@ public class RecyclerBinderTest {
 
     final RecyclerBinder recyclerBinder =
         new RecyclerBinder.Builder()
-            .asyncInitRange(true)
             .rangeRatio(0)
             .layoutInfo(mLayoutInfo)
             .threadPoolConfig(new LayoutThreadPoolConfigurationImpl(1, 1, 5))
@@ -4377,12 +4396,8 @@ public class RecyclerBinderTest {
             protected Component onCreateLayout(ComponentContext c) {
               syncLayouts.set(finalI, ThreadUtils.isMainThread() ? SYNC : ASYNC);
 
-              if (finalI == 1) {
+              if (finalI == 1 || finalI == 2) {
                 lockInitRangeLayout.countDown();
-              }
-
-              if (finalI == 2) {
-                lockTest.countDown();
               }
 
               return null;
@@ -4485,7 +4500,7 @@ public class RecyclerBinderTest {
         new RecyclerBinder.Builder()
             .layoutInfo(
                 new LinearLayoutInfo(mComponentContext, OrientationHelper.HORIZONTAL, false))
-            .componentTreeHolderFactory(mComponentTreeHolderFactory)
+            .componentTreeHolderFactory(mComponentTreeHolderFactoryLayoutFinishedListener)
             .build(mComponentContext);
 
     final ArrayList<Component> components = new ArrayList<>();

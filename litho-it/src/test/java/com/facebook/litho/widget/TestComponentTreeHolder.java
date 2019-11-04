@@ -27,6 +27,7 @@ import com.facebook.litho.SizeSpec;
 
 public class TestComponentTreeHolder extends ComponentTreeHolder {
 
+  private final boolean mEnableAsyncLayoutsDuringInitRange;
   boolean mTreeValid;
   private ComponentTree mComponentTree;
   private RenderInfo mRenderInfo;
@@ -43,6 +44,13 @@ public class TestComponentTreeHolder extends ComponentTreeHolder {
   TestComponentTreeHolder(RenderInfo renderInfo) {
     super(ComponentTreeHolder.create().renderInfo(renderInfo));
     mRenderInfo = renderInfo;
+    mEnableAsyncLayoutsDuringInitRange = false;
+  }
+
+  TestComponentTreeHolder(RenderInfo renderInfo, boolean enableAsyncLayoutsDuringInitRange) {
+    super(ComponentTreeHolder.create().renderInfo(renderInfo));
+    mRenderInfo = renderInfo;
+    mEnableAsyncLayoutsDuringInitRange = enableAsyncLayoutsDuringInitRange;
   }
 
   @Override
@@ -80,7 +88,7 @@ public class TestComponentTreeHolder extends ComponentTreeHolder {
     mLayoutAsyncCalled = true;
     mChildWidth = SizeSpec.getSize(widthSpec);
     mChildHeight = SizeSpec.getSize(heightSpec);
-    if (measureListener != null) {
+    if (measureListener != null && mEnableAsyncLayoutsDuringInitRange) {
       measureListener.onSetRootAndSizeSpec(mChildWidth, mChildHeight);
     }
   }
