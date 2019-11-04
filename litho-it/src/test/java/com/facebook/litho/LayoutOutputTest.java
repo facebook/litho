@@ -64,7 +64,8 @@ public class LayoutOutputTest {
   @Test
   public void testPositionAndSizeSet() {
     LayoutOutput layoutOutput =
-        new LayoutOutput(null, null, null, mTestComponent, new Rect(0, 1, 3, 4), 0, 0, 0, -1, 0, 0, null);
+        new LayoutOutput(
+            null, null, null, mTestComponent, new Rect(0, 1, 3, 4), 0, 0, 0, -1, 0, 0, null);
 
     assertThat(layoutOutput.getBounds().left).isEqualTo(0);
     assertThat(layoutOutput.getBounds().top).isEqualTo(1);
@@ -83,14 +84,16 @@ public class LayoutOutputTest {
   @Test
   public void testFlagsSet() {
     LayoutOutput layoutOutput =
-        new LayoutOutput(null, null, null, mTestComponent, new Rect(0, 1, 3, 4), 0, 0, 1, 0, 0, 0, null);
+        new LayoutOutput(
+            null, null, null, mTestComponent, new Rect(0, 1, 3, 4), 0, 0, 1, 0, 0, 0, null);
     assertThat(layoutOutput.getFlags()).isEqualTo(1);
   }
 
   @Test
   public void testStableIdCalculation() {
     LayoutOutput layoutOutput =
-        new LayoutOutput(null, null, null, mTestComponent, new Rect(0, 1, 3, 4), 0, 0, 0, 0, 0, 0, null);
+        new LayoutOutput(
+            null, null, null, mTestComponent, new Rect(0, 1, 3, 4), 0, 0, 0, 0, 0, 0, null);
 
     long stableId =
         calculateLayoutOutputId(layoutOutput, LEVEL_TEST, OutputUnitType.CONTENT, SEQ_TEST);
@@ -105,7 +108,8 @@ public class LayoutOutputTest {
   @Test
   public void testStableIdBackgroundType() {
     LayoutOutput layoutOutput =
-        new LayoutOutput(null, null, null, mTestComponent, new Rect(0, 1, 3, 4), 0, 0, 0, 0, 0, 0, null);
+        new LayoutOutput(
+            null, null, null, mTestComponent, new Rect(0, 1, 3, 4), 0, 0, 0, 0, 0, 0, null);
 
     layoutOutput.setId(
         calculateLayoutOutputId(layoutOutput, LEVEL_TEST, OutputUnitType.BACKGROUND, SEQ_TEST));
@@ -117,7 +121,8 @@ public class LayoutOutputTest {
   @Test
   public void testStableIdForegroundType() {
     LayoutOutput layoutOutput =
-        new LayoutOutput(null, null, null, mTestComponent, new Rect(0, 1, 3, 4), 0, 0, 0, 0, 0, 0, null);
+        new LayoutOutput(
+            null, null, null, mTestComponent, new Rect(0, 1, 3, 4), 0, 0, 0, 0, 0, 0, null);
 
     layoutOutput.setId(
         calculateLayoutOutputId(layoutOutput, LEVEL_TEST, OutputUnitType.FOREGROUND, SEQ_TEST));
@@ -129,7 +134,8 @@ public class LayoutOutputTest {
   @Test
   public void testStableIdHostType() {
     LayoutOutput layoutOutput =
-        new LayoutOutput(null, null, null, mTestComponent, new Rect(0, 1, 3, 4), 0, 0, 0, 0, 0, 0, null);
+        new LayoutOutput(
+            null, null, null, mTestComponent, new Rect(0, 1, 3, 4), 0, 0, 0, 0, 0, 0, null);
     layoutOutput.setId(
         calculateLayoutOutputId(layoutOutput, LEVEL_TEST, OutputUnitType.HOST, SEQ_TEST));
 
@@ -140,7 +146,8 @@ public class LayoutOutputTest {
   @Test
   public void testStableIdBorderType() {
     LayoutOutput layoutOutput =
-        new LayoutOutput(null, null, null, mTestComponent, new Rect(0, 1, 3, 4), 0, 0, 0, 0, 0, 0, null);
+        new LayoutOutput(
+            null, null, null, mTestComponent, new Rect(0, 1, 3, 4), 0, 0, 0, 0, 0, 0, null);
     layoutOutput.setId(
         calculateLayoutOutputId(layoutOutput, LEVEL_TEST, OutputUnitType.BORDER, SEQ_TEST));
 
@@ -151,7 +158,8 @@ public class LayoutOutputTest {
   @Test
   public void testGetIdLevel() {
     LayoutOutput layoutOutput =
-        new LayoutOutput(null, null, null, mTestComponent, new Rect(0, 1, 3, 4), 0, 0, 0, 0, 0, 0, null);
+        new LayoutOutput(
+            null, null, null, mTestComponent, new Rect(0, 1, 3, 4), 0, 0, 0, 0, 0, 0, null);
 
     layoutOutput.setId(
         calculateLayoutOutputId(layoutOutput, LEVEL_TEST, OutputUnitType.HOST, SEQ_TEST));
@@ -166,7 +174,8 @@ public class LayoutOutputTest {
   @Test
   public void testGetIdSequence() {
     LayoutOutput layoutOutput =
-        new LayoutOutput(null, null, null, mTestComponent, new Rect(0, 1, 3, 4), 0, 0, 0, 0, 0, 0, null);
+        new LayoutOutput(
+            null, null, null, mTestComponent, new Rect(0, 1, 3, 4), 0, 0, 0, 0, 0, 0, null);
 
     layoutOutput.setId(
         calculateLayoutOutputId(layoutOutput, LEVEL_TEST, OutputUnitType.HOST, SEQ_TEST));
@@ -181,7 +190,8 @@ public class LayoutOutputTest {
   @Test(expected = IllegalArgumentException.class)
   public void levelOutOfRangeTest() {
     LayoutOutput layoutOutput =
-        new LayoutOutput(null, null, null, mTestComponent, new Rect(0, 1, 3, 4), 0, 0, 0, 0, 0, 0, null);
+        new LayoutOutput(
+            null, null, null, mTestComponent, new Rect(0, 1, 3, 4), 0, 0, 0, 0, 0, 0, null);
 
     layoutOutput.setId(
         LayoutStateOutputIdCalculator.calculateLayoutOutputId(
@@ -191,7 +201,8 @@ public class LayoutOutputTest {
   @Test(expected = IllegalArgumentException.class)
   public void sequenceOutOfRangeTest() {
     LayoutOutput layoutOutput =
-        new LayoutOutput(null, null, null, mTestComponent, new Rect(0, 1, 3, 4), 0, 0, 0, 0, 0, 0, null);
+        new LayoutOutput(
+            null, null, null, mTestComponent, new Rect(0, 1, 3, 4), 0, 0, 0, 0, 0, 0, null);
 
     layoutOutput.setId(
         LayoutStateOutputIdCalculator.calculateLayoutOutputId(

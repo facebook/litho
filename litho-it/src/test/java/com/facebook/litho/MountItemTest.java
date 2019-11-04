@@ -299,7 +299,8 @@ public class MountItemTest {
   @Test
   public void testUpdateDoesntChangeFlags() {
     LayoutOutput layoutOutput =
-        new LayoutOutput(mNodeInfo, null, null, mComponent, new Rect(0, 0, 0, 0), 0, 0, 0, 0, 0, 0, null);
+        new LayoutOutput(
+            mNodeInfo, null, null, mComponent, new Rect(0, 0, 0, 0), 0, 0, 0, 0, 0, 0, null);
 
     View view = new View(RuntimeEnvironment.application);
 
