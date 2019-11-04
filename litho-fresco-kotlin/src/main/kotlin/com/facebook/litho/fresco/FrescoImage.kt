@@ -22,7 +22,7 @@ import com.facebook.litho.ComponentContext
 /**
  * Builder function for creating [FrescoImageSpec] components.
  */
-@Suppress("NOTHING_TO_INLINE")
+@Suppress("NOTHING_TO_INLINE", "FunctionName")
 inline fun ComponentContext.FrescoImage(
     controller: DraweeController,
     imageAspectRatio: Float

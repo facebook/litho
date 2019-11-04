@@ -26,6 +26,7 @@ import com.facebook.litho.dp
 /**
  * Builder function for creating [CardSpec] components.
  */
+@Suppress("FunctionName")
 inline fun ComponentContext.Card(
     @ColorInt cardBackgroundColor: Int = Color.WHITE,
     cornerRadius: Dp = 2.dp,

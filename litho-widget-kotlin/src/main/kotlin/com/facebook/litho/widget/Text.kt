@@ -27,7 +27,7 @@ import com.facebook.litho.sp
  * Temporary builder function for creating [TextSpec] components. In the future it will either be
  * auto-generated or modified to have the final set of parameters.
  */
-@Suppress("NOTHING_TO_INLINE")
+@Suppress("NOTHING_TO_INLINE", "FunctionName")
 inline fun ComponentContext.Text(
     text: CharSequence,
     textSize: Sp = 14.sp,

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+@file:Suppress("FunctionName")
+
 package com.facebook.litho
 
 import android.graphics.drawable.Drawable
@@ -77,9 +79,9 @@ inline fun <C : Component.Builder<C>> ComponentContext.Decoration(
     background: Drawable? = null,
     content: ComponentContext.() -> C
 ): C =
+    @Suppress("DEPRECATION")
     content()
         .apply {
           foreground?.let { foreground(it) }
           background?.let { background(it) }
         }
-
