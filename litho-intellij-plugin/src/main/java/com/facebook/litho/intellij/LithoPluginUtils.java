@@ -221,8 +221,15 @@ public class LithoPluginUtils {
   }
 
   public static void showInfo(String infoMessage, @Nullable Project project) {
-    NOTIFICATION_GROUP
-        .createNotification(infoMessage, NotificationType.INFORMATION)
-        .notify(project);
+    showNotification(infoMessage, NotificationType.INFORMATION, project);
+  }
+
+  public static void showWarning(String infoMessage, @Nullable Project project) {
+    showNotification(infoMessage, NotificationType.WARNING, project);
+  }
+
+  private static void showNotification(
+      String infoMessage, NotificationType type, @Nullable Project project) {
+    NOTIFICATION_GROUP.createNotification(infoMessage, type).notify(project);
   }
 }
