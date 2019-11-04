@@ -220,7 +220,7 @@ public class LithoPluginUtils {
                     .findFirst());
   }
 
-  public static void showInfo(String infoMessage, Project project) {
+  public static void showInfo(String infoMessage, @Nullable Project project) {
     NOTIFICATION_GROUP
         .createNotification(infoMessage, NotificationType.INFORMATION)
         .notify(project);
