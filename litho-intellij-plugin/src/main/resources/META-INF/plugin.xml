@@ -87,10 +87,10 @@
     </vendor>
 
   <extensionPoints>
-    <extensionPoint
-        name="eventLogger"
-        interface="com.facebook.litho.intellij.extensions.EventLogger"
-    />
+    <extensionPoint name="eventLogger"
+        interface="com.facebook.litho.intellij.extensions.EventLogger"/>
+    <extensionPoint name="buildInfoProvider"
+        interface="com.facebook.litho.intellij.extensions.BuildInfoProvider"/>
   </extensionPoints>
 
   <extensions defaultExtensionNs="com.intellij">
