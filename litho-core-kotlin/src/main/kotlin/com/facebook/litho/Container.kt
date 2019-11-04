@@ -62,7 +62,11 @@ class DslRowBuilder(c: ComponentContext) : Row.Builder() {
     init(c, 0, 0, Row("Row"))
   }
 
-  inline operator fun Component.Builder<*>.unaryPlus() {
+  inline operator fun Component.Builder<*>?.unaryPlus() {
+    child(this)
+  }
+
+  inline operator fun Component?.unaryPlus() {
     child(this)
   }
 }
@@ -73,7 +77,11 @@ class DslColumnBuilder(c: ComponentContext) : Column.Builder() {
     init(c, 0, 0, Column("Column"))
   }
 
-  inline operator fun Component.Builder<*>.unaryPlus() {
+  inline operator fun Component.Builder<*>?.unaryPlus() {
+    child(this)
+  }
+
+  inline operator fun Component?.unaryPlus() {
     child(this)
   }
 }
