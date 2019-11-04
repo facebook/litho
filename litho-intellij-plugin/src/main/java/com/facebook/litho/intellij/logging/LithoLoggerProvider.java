@@ -37,11 +37,11 @@ public final class LithoLoggerProvider {
   }
 
   static class LithoEventLogger implements EventLogger {
-    static final EventLogger INSTANCE = new LithoEventLogger();
     static final ExtensionPointName<EventLogger> EP_NAME =
         ExtensionPointName.create("com.facebook.litho.intellij.eventLogger");
     private final EventLogger[] loggers;
     private final Executor executor;
+    static final EventLogger INSTANCE = new LithoEventLogger();
 
     LithoEventLogger() {
       this(Extensions.getExtensions(EP_NAME));
