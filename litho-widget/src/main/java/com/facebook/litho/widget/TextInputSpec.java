@@ -152,7 +152,9 @@ import javax.annotation.Nullable;
  * @prop multiline If set to true, type of the input will be changed to multiline TEXT. Because
  *     passwords or numbers couldn't be multiline by definition.
  * @prop textWatchers Used to register text watchers e.g. mentions detection.
- * @prop ellipsize If sets, specifies the position of the text to be ellispized.
+ * @prop ellipsize If set, specifies the position of the text to be ellipsized. See <a
+ *     href="https://developer.android.com/reference/android/widget/TextView.html#setEllipsize(android.text.TextUtils.TruncateAt)">android
+ *     documentation</a> for behavior description.
  * @prop minLines Minimum number of lines to show.
  * @prop maxLines Maximum number of lines to show.
  * @prop textWatchers Used to register text watchers e.g. mentions detection.
