@@ -22,10 +22,8 @@ import kotlin.reflect.KProperty
  * Declares a state variable within a Component. The initializer will provide the initial value if
  * it hasn't already been initialized in a previously lifecycle of the Component.
  */
-fun <T> useState(
-    c: ComponentContext,
-    initializer: () -> T
-): StateDelegate<T> = StateDelegate(c, initializer)
+fun <T> ComponentContext.useState(initializer: () -> T): StateDelegate<T> =
+    StateDelegate(this, initializer)
 
 /** Delegate to access and initialize a state variable. */
 class StateDelegate<T>(private val c: ComponentContext, private val initializer: () -> T) {
@@ -61,8 +59,8 @@ class StateUpdater(private val stateHandler: StateHandler) {
 }
 
 /** Enqueues a block to be run before the next layout in order to update hook state. */
-fun updateState(c: ComponentContext, block: StateUpdater.() -> Unit) {
-  c.updateHookStateAsync { stateHandler: StateHandler ->
+fun ComponentContext.updateState(block: StateUpdater.() -> Unit) {
+  updateHookStateAsync { stateHandler: StateHandler ->
     StateUpdater(stateHandler).block()
   }
 }

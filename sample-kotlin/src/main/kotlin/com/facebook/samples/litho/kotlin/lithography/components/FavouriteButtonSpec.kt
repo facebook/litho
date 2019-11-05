@@ -39,10 +39,10 @@ object FavouriteButtonSpec {
   @OnCreateLayout
   fun onCreateLayout(c: ComponentContext): Component = build(c) {
 
-    val isFavourite by useState(c) { false }
+    val isFavourite by useState { false }
     val background = drawableRes(if (isFavourite.value) star_on else star_off)
 
-    Clickable(onClick = { updateState(c) { isFavourite.value = !isFavourite.value } }) {
+    Clickable(onClick = { updateState { isFavourite.value = !isFavourite.value } }) {
       FixedSize(width = 32.dp, height = 32.dp) {
         Decoration(background = background) {
           Row()
