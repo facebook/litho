@@ -1165,7 +1165,7 @@ public class ComponentTree {
 
     toPrePopulate.preAllocateMountContent(shouldPreallocatePerMountSpec);
 
-    if (logger != null) {
+    if (event != null) {
       logger.logPerfEvent(event);
     }
   }
