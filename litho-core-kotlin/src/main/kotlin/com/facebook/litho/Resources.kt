@@ -18,6 +18,7 @@ package com.facebook.litho
 
 import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
+import androidx.annotation.ColorRes
 import androidx.annotation.DimenRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
@@ -51,6 +52,24 @@ fun ComponentContext.stringRes(@StringRes id: Int, vararg formatArgs: Any): Stri
     resourceResolver.resolveStringRes(id, formatArgs)
 
 /**
+ * Retrieve a [android.graphics.drawable.Drawable] for a resource ID as a [ComparableDrawable]
+ * instance.
+ */
+fun ComponentContext.drawableRes(@DrawableRes id: Int): ComparableDrawable? =
+    if (id == 0) null else ComparableResDrawable.create(androidContext, id)
+
+/**
+ * Retrieve a [android.graphics.drawable.Drawable], corresponding to an attribute resource ID, as
+ * a [ComparableDrawable] instance. If given attribute ID can not be found, default Drawable
+ * resource ID [defResId] is used.
+ */
+fun ComponentContext.drawableAttr(
+    @AttrRes id: Int,
+    @DrawableRes defResId: Int = 0
+): ComparableDrawable? =
+    drawableRes(resourceResolver.resolveResIdAttr(id, defResId))
+
+/**
  * Return a [android.graphics.drawable.Drawable] for a [ColorInt] value as a [ComparableDrawable]
  * instance.
  */
@@ -65,15 +84,14 @@ fun ComponentContext.drawableColor(@ColorInt color: Long): ComparableDrawable =
     ComparableColorDrawable.create(color.toInt())
 
 /**
- * Retrieve a [android.graphics.drawable.Drawable] for a resource ID as a [ComparableDrawable]
- * instance.
+ * Return a [ColorInt] value for a color resource ID.
  */
-fun ComponentContext.drawableRes(@DrawableRes id: Int): ComparableDrawable? =
-    if (id == 0) null else ComparableResDrawable.create(androidContext, id)
+@ColorInt fun ComponentContext.colorRes(@ColorRes id: Int): Int =
+    resourceResolver.resolveColorRes(id)
 
 /**
- * Retrieve a [android.graphics.drawable.Drawable], corresponding to an attribute resource ID, as
- * a [ComparableDrawable] instance.
+ * Return a [ColorInt] value, corresponding to an attribute resource ID. If given attribute ID can
+ * not be found, default color resource ID [defResId] is used.
  */
-fun ComponentContext.drawableAttr(@AttrRes id: Int): ComparableDrawable? =
-    drawableRes(resourceResolver.resolveResIdAttr(id, 0))
+@ColorInt fun ComponentContext.colorAttr(@AttrRes id: Int, @ColorRes defResId: Int = 0): Int =
+    resourceResolver.resolveColorAttr(id, defResId)
