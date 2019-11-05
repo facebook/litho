@@ -21,6 +21,20 @@ package com.facebook.litho
 import android.graphics.drawable.Drawable
 
 /**
+ * Builder for setting an [onClick] event handler for component.
+ *
+ * TODO Currently lambda captures possibly old props. Find a better option.
+ *  This will work for core Litho, but may break Sections.
+ */
+inline fun <C : Component.Builder<C>> ComponentContext.Clickable(
+    crossinline onClick: () -> Unit,
+    content: ComponentContext.() -> C
+): C =
+    content().clickHandler(
+        EventHandler<ClickEvent>({ EventDispatcher { _, _ -> onClick() } }, 0, null)
+    )
+
+/**
  * Builder for decorating a child component with [background] or [foreground].
  */
 inline fun <C : Component.Builder<C>> ComponentContext.Decoration(

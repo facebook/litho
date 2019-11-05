@@ -28,7 +28,7 @@ inline fun ComponentContext.Column(
     justifyContent: YogaJustify? = null,
     wrap: YogaWrap? = null,
     reverse: Boolean = false,
-    content: DslColumnBuilder.() -> Unit
+    content: DslColumnBuilder.() -> Unit = {}
 ): Column.Builder =
     DslColumnBuilder(this).apply {
       alignContent(alignContent)
@@ -45,7 +45,7 @@ inline fun ComponentContext.Row(
     justifyContent: YogaJustify? = null,
     wrap: YogaWrap? = null,
     reverse: Boolean = false,
-    content: DslRowBuilder.() -> Unit
+    content: DslRowBuilder.() -> Unit = {}
 ): Row.Builder =
     DslRowBuilder(this).apply {
       alignContent(alignContent)
