@@ -18,7 +18,6 @@
 
 package com.facebook.litho
 
-import android.graphics.drawable.Drawable
 import com.facebook.yoga.YogaEdge
 import com.facebook.yoga.YogaPositionType
 
@@ -72,16 +71,15 @@ inline fun <C : Component.Builder<C>> ComponentContext.Position(
         }
 
 /**
- * Builder for decorating a child component with [background] or [foreground].
+ * Builder for setting a specific [width] and [height] for a child component.
  */
-inline fun <C : Component.Builder<C>> ComponentContext.Decoration(
-    foreground: Drawable? = null,
-    background: Drawable? = null,
+inline fun <C : Component.Builder<C>> ComponentContext.FixedSize(
+    width: Dp? = null,
+    height: Dp? = null,
     content: ComponentContext.() -> C
 ): C =
-    @Suppress("DEPRECATION")
     content()
         .apply {
-          foreground?.let { foreground(it) }
-          background?.let { background(it) }
+          width?.let { widthDip(it.dp) }
+          height?.let { heightDip(it.dp) }
         }
