@@ -49,7 +49,7 @@ public class ComponentTreeHasCompatibleLayoutTest {
   public void setup() throws Exception {
     mContext = new ComponentContext(RuntimeEnvironment.application);
     mComponent = TestDrawableComponent.create(mContext).build();
-    mComponentTree = create(mContext, mComponent).build();
+    mComponentTree = create(mContext, mComponent).isReconciliationEnabled(false).build();
 
     mLayoutThreadShadowLooper =
         Shadows.shadowOf(

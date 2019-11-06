@@ -403,7 +403,8 @@ public class InternalNodeTest {
   public void testComponentCreateAndRetrieveCachedLayoutLS() {
     final ComponentContext baseContext = new ComponentContext(application);
     final ComponentContext c =
-        ComponentContext.withComponentTree(baseContext, ComponentTree.create(baseContext).build());
+        ComponentContext.withComponentTree(
+            baseContext, ComponentTree.create(baseContext).isReconciliationEnabled(false).build());
     final LayoutState layoutState = new LayoutState(c);
     c.setLayoutStateContext(new LayoutStateContext(layoutState));
 

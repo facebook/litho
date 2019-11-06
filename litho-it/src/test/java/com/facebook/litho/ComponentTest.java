@@ -38,7 +38,9 @@ public class ComponentTest {
 
   @Test
   public void testShallowCopyCachedLayoutSameLayoutState() {
-    mContext = ComponentContext.withComponentTree(mContext, ComponentTree.create(mContext).build());
+    mContext =
+        ComponentContext.withComponentTree(
+            mContext, ComponentTree.create(mContext).isReconciliationEnabled(false).build());
 
     final LayoutState layoutState = new LayoutState(mContext);
 
@@ -58,7 +60,9 @@ public class ComponentTest {
 
   @Test
   public void testShallowCopyCachedLayoutOtherLayoutStateCacheLayoutState() {
-    mContext = ComponentContext.withComponentTree(mContext, ComponentTree.create(mContext).build());
+    mContext =
+        ComponentContext.withComponentTree(
+            mContext, ComponentTree.create(mContext).isReconciliationEnabled(false).build());
 
     final LayoutState layoutState1 = new LayoutState(mContext);
     final LayoutState layoutState2 = new LayoutState(mContext);

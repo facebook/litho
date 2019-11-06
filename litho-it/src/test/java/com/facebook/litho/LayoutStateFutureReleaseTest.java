@@ -156,7 +156,11 @@ public class LayoutStateFutureReleaseTest {
     ThreadPoolLayoutHandler handler =
         ThreadPoolLayoutHandler.getNewInstance(new LayoutThreadPoolConfigurationImpl(1, 1, 5));
 
-    componentTree = ComponentTree.create(mContext, column).layoutThreadHandler(handler).build();
+    componentTree =
+        ComponentTree.create(mContext, column)
+            .layoutThreadHandler(handler)
+            .isReconciliationEnabled(false)
+            .build();
 
     componentTree.setLithoView(new LithoView(mContext));
     componentTree.measure(mWidthSpec, mHeightSpec, new int[2], false);
@@ -222,7 +226,11 @@ public class LayoutStateFutureReleaseTest {
     ThreadPoolLayoutHandler handler =
         ThreadPoolLayoutHandler.getNewInstance(new LayoutThreadPoolConfigurationImpl(1, 1, 5));
 
-    componentTree = ComponentTree.create(mContext, column).layoutThreadHandler(handler).build();
+    componentTree =
+        ComponentTree.create(mContext, column)
+            .layoutThreadHandler(handler)
+            .isReconciliationEnabled(false)
+            .build();
 
     componentTree.setLithoView(new LithoView(mContext));
     componentTree.measure(mWidthSpec, mHeightSpec, new int[2], false);
@@ -285,7 +293,11 @@ public class LayoutStateFutureReleaseTest {
     ThreadPoolLayoutHandler handler =
         ThreadPoolLayoutHandler.getNewInstance(new LayoutThreadPoolConfigurationImpl(1, 1, 5));
 
-    componentTree = ComponentTree.create(mContext, column).layoutThreadHandler(handler).build();
+    componentTree =
+        ComponentTree.create(mContext, column)
+            .layoutThreadHandler(handler)
+            .isReconciliationEnabled(false)
+            .build();
 
     componentTree.setLithoView(new LithoView(mContext));
     componentTree.measure(mWidthSpec, mHeightSpec, new int[2], false);
@@ -351,7 +363,11 @@ public class LayoutStateFutureReleaseTest {
     ThreadPoolLayoutHandler handler =
         ThreadPoolLayoutHandler.getNewInstance(new LayoutThreadPoolConfigurationImpl(1, 1, 5));
 
-    componentTree = ComponentTree.create(mContext, column).layoutThreadHandler(handler).build();
+    componentTree =
+        ComponentTree.create(mContext, column)
+            .layoutThreadHandler(handler)
+            .isReconciliationEnabled(false)
+            .build();
 
     componentTree.setLithoView(new LithoView(mContext));
     componentTree.measure(mWidthSpec, mHeightSpec, new int[2], false);
@@ -419,7 +435,11 @@ public class LayoutStateFutureReleaseTest {
     ThreadPoolLayoutHandler handler =
         ThreadPoolLayoutHandler.getNewInstance(new LayoutThreadPoolConfigurationImpl(1, 1, 5));
 
-    componentTree = ComponentTree.create(mContext, column).layoutThreadHandler(handler).build();
+    componentTree =
+        ComponentTree.create(mContext, column)
+            .layoutThreadHandler(handler)
+            .isReconciliationEnabled(false)
+            .build();
 
     componentTree.setLithoView(new LithoView(mContext));
     componentTree.measure(mWidthSpec, mHeightSpec, new int[2], false);
@@ -503,7 +523,11 @@ public class LayoutStateFutureReleaseTest {
     ThreadPoolLayoutHandler handler =
         ThreadPoolLayoutHandler.getNewInstance(new LayoutThreadPoolConfigurationImpl(1, 1, 5));
 
-    componentTree = ComponentTree.create(mContext, column_0).layoutThreadHandler(handler).build();
+    componentTree =
+        ComponentTree.create(mContext, column_0)
+            .layoutThreadHandler(handler)
+            .isReconciliationEnabled(false)
+            .build();
 
     componentTree.setLithoView(new LithoView(mContext));
 
@@ -557,7 +581,11 @@ public class LayoutStateFutureReleaseTest {
     ThreadPoolLayoutHandler handler =
         ThreadPoolLayoutHandler.getNewInstance(new LayoutThreadPoolConfigurationImpl(1, 1, 5));
 
-    componentTree = ComponentTree.create(mContext, column_0).layoutThreadHandler(handler).build();
+    componentTree =
+        ComponentTree.create(mContext, column_0)
+            .layoutThreadHandler(handler)
+            .isReconciliationEnabled(false)
+            .build();
 
     componentTree.setLithoView(new LithoView(mContext));
 
@@ -622,7 +650,11 @@ public class LayoutStateFutureReleaseTest {
     ThreadPoolLayoutHandler handler =
         ThreadPoolLayoutHandler.getNewInstance(new LayoutThreadPoolConfigurationImpl(1, 1, 5));
 
-    componentTree = ComponentTree.create(mContext, column_0).layoutThreadHandler(handler).build();
+    componentTree =
+        ComponentTree.create(mContext, column_0)
+            .layoutThreadHandler(handler)
+            .isReconciliationEnabled(false)
+            .build();
 
     componentTree.setLithoView(new LithoView(mContext));
 

@@ -698,6 +698,7 @@ public class VisibilityEventsTest {
                             .widthPx(10)
                             .heightPx(10))
                     .build())
+            .isReconciliationEnabled(false)
             .build());
 
     measureAndLayout(lithoView);

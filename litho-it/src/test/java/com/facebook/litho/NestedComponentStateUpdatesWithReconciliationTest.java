@@ -56,7 +56,6 @@ public class NestedComponentStateUpdatesWithReconciliationTest {
   @Before
   public void before() {
     ComponentsConfiguration.isEndToEndTestRun = true;
-    ComponentsConfiguration.isReconciliationEnabled = true;
 
     NodeConfig.sInternalNodeFactory =
         new NodeConfig.InternalNodeFactory() {
@@ -77,7 +76,6 @@ public class NestedComponentStateUpdatesWithReconciliationTest {
   @After
   public void after() {
     ComponentsConfiguration.isEndToEndTestRun = false;
-    ComponentsConfiguration.isReconciliationEnabled = false;
     NodeConfig.sInternalNodeFactory = null;
     NodeConfig.sYogaNodeFactory = null;
   }
@@ -253,7 +251,7 @@ public class NestedComponentStateUpdatesWithReconciliationTest {
   }
 
   private void measureAndLayoutComponent(Component root) {
-    mComponentTree = spy(ComponentTree.create(c, root).build());
+    mComponentTree = spy(ComponentTree.create(c, root).isReconciliationEnabled(true).build());
     mLithoView = new LithoView(c);
     mLithoView.setComponentTree(mComponentTree);
     mLithoView.onAttachedToWindow();

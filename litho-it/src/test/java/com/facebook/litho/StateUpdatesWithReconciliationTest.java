@@ -53,7 +53,6 @@ public class StateUpdatesWithReconciliationTest {
   @Before
   public void before() {
     ComponentsConfiguration.isEndToEndTestRun = true;
-    ComponentsConfiguration.isReconciliationEnabled = true;
 
     NodeConfig.sInternalNodeFactory =
         new NodeConfig.InternalNodeFactory() {
@@ -69,7 +68,8 @@ public class StateUpdatesWithReconciliationTest {
             (Looper) Whitebox.invokeMethod(ComponentTree.class, "getDefaultLayoutThreadLooper"));
     mRootComponent = new DummyComponent();
     mLithoView = new LithoView(mContext);
-    mComponentTree = spy(ComponentTree.create(mContext, mRootComponent).build());
+    mComponentTree =
+        spy(ComponentTree.create(mContext, mRootComponent).isReconciliationEnabled(true).build());
 
     mLithoView.setComponentTree(mComponentTree);
     mLithoView.onAttachedToWindow();
@@ -80,7 +80,6 @@ public class StateUpdatesWithReconciliationTest {
   @After
   public void after() {
     ComponentsConfiguration.isEndToEndTestRun = false;
-    ComponentsConfiguration.isReconciliationEnabled = false;
     NodeConfig.sInternalNodeFactory = null;
   }
 

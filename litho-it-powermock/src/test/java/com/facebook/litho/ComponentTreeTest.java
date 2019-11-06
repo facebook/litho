@@ -101,7 +101,10 @@ public class ComponentTreeTest {
         ThreadPoolLayoutHandler.getNewInstance(new LayoutThreadPoolConfigurationImpl(1, 1, 5));
 
     final ComponentTree componentTree =
-        ComponentTree.create(mContext, mainComponent).layoutThreadHandler(handler).build();
+        ComponentTree.create(mContext, mainComponent)
+            .layoutThreadHandler(handler)
+            .isReconciliationEnabled(false)
+            .build();
     componentTree.setLithoView(new LithoView(mContext));
 
     final LayoutState[] mainLS = {null};

@@ -198,7 +198,8 @@ public class StateUpdatesTest {
             (Looper) Whitebox.invokeMethod(ComponentTree.class, "getDefaultLayoutThreadLooper"));
     mTestComponent = new TestComponent();
 
-    mComponentTree = ComponentTree.create(mContext, mTestComponent).build();
+    mComponentTree =
+        ComponentTree.create(mContext, mTestComponent).isReconciliationEnabled(false).build();
 
     if (enableComponentTreeSpy) {
       mComponentTree = spy(mComponentTree);

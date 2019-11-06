@@ -113,7 +113,8 @@ public class LithoView extends ComponentHost {
    */
   public static LithoView create(ComponentContext context, Component component) {
     final LithoView lithoView = new LithoView(context);
-    lithoView.setComponentTree(ComponentTree.create(context, component).build());
+    lithoView.setComponentTree(
+        ComponentTree.create(context, component).isReconciliationEnabled(false).build());
 
     return lithoView;
   }
@@ -515,7 +516,10 @@ public class LithoView extends ComponentHost {
   /** Change the root component synchronously. */
   public void setComponent(Component component) {
     if (mComponentTree == null) {
-      setComponentTree(ComponentTree.create(getComponentContext(), component).build());
+      setComponentTree(
+          ComponentTree.create(getComponentContext(), component)
+              .isReconciliationEnabled(false)
+              .build());
     } else {
       mComponentTree.setRoot(component);
     }
@@ -528,7 +532,10 @@ public class LithoView extends ComponentHost {
    */
   public void setComponentAsync(Component component) {
     if (mComponentTree == null) {
-      setComponentTree(ComponentTree.create(getComponentContext(), component).build());
+      setComponentTree(
+          ComponentTree.create(getComponentContext(), component)
+              .isReconciliationEnabled(false)
+              .build());
     } else {
       mComponentTree.setRootAsync(component);
     }

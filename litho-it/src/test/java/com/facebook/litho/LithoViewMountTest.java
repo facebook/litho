@@ -259,6 +259,7 @@ public class LithoViewMountTest {
         ComponentTree.create(mContext, mComponent)
             .incrementalMount(incMountEnabled)
             .layoutDiffing(false)
+            .isReconciliationEnabled(false)
             .build();
     componentTree.setSizeSpec(
         SizeSpec.makeSizeSpec(width, EXACTLY), SizeSpec.makeSizeSpec(height, EXACTLY));

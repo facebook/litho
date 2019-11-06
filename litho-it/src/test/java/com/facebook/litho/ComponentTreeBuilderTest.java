@@ -53,7 +53,7 @@ public class ComponentTreeBuilderTest {
 
   @Test
   public void testDefaultCreation() {
-    ComponentTree componentTree = mComponentTreeBuilder.build();
+    ComponentTree componentTree = mComponentTreeBuilder.isReconciliationEnabled(false).build();
 
     assertSameAsInternalState(componentTree, mRoot, "mRoot");
     assertDefaults(componentTree);
@@ -61,7 +61,8 @@ public class ComponentTreeBuilderTest {
 
   @Test
   public void testCreationWithInputs() {
-    ComponentTree componentTree = mComponentTreeBuilder.layoutThreadLooper(mLooper).build();
+    ComponentTree componentTree =
+        mComponentTreeBuilder.layoutThreadLooper(mLooper).isReconciliationEnabled(false).build();
 
     assertSameAsInternalState(componentTree, mRoot, "mRoot");
     assertEqualToInternalState(componentTree, true, "mIsLayoutDiffingEnabled");

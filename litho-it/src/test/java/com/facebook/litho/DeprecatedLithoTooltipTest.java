@@ -73,7 +73,8 @@ public class DeprecatedLithoTooltipTest {
           }
         };
 
-    mComponentTree = ComponentTree.create(mContext, mComponent).build();
+    mComponentTree =
+        ComponentTree.create(mContext, mComponent).isReconciliationEnabled(false).build();
 
     Whitebox.setInternalState(mComponent, "mGlobalKey", mComponent.getKey());
 
