@@ -19,6 +19,7 @@ package com.facebook.litho.specmodels.processor;
 import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 
 import com.facebook.litho.annotations.Prop;
@@ -28,7 +29,8 @@ import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiParameter;
 import com.intellij.psi.PsiParameterList;
 import com.intellij.psi.util.PsiTreeUtil;
-import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 import org.junit.Test;
 
 public class PsiAnnotationProxyUtilsTest extends LithoPluginIntellijTest {
@@ -60,7 +62,7 @@ public class PsiAnnotationProxyUtilsTest extends LithoPluginIntellijTest {
   }
 
   @Test
-  public void setValues() throws IOException {
+  public void setValues() {
     testHelper.getPsiClass(
         psiClasses -> {
           assertNotNull(psiClasses);
@@ -75,6 +77,84 @@ public class PsiAnnotationProxyUtilsTest extends LithoPluginIntellijTest {
           assertTrue(prop.overrideCommonPropBehavior());
           assertTrue(prop.dynamic());
           assertEquals(ResType.DRAWABLE, prop.resType());
+
+          return true;
+        },
+        "WithAnnotationClass.java");
+  }
+
+  @Test
+  public void proxyEquals_equal() {
+    testHelper.getPsiClass(
+        psiClasses -> {
+          assertNotNull(psiClasses);
+          PsiClass psiClass = psiClasses.get(0);
+          PsiParameter[] parameters =
+              PsiTreeUtil.findChildOfType(psiClass, PsiParameterList.class).getParameters();
+
+          Prop prop1 = PsiAnnotationProxyUtils.findAnnotationInHierarchy(parameters[0], Prop.class);
+          Prop prop2 = PsiAnnotationProxyUtils.findAnnotationInHierarchy(parameters[2], Prop.class);
+          // Calls proxy
+          assertEquals(prop1, prop2);
+
+          return true;
+        },
+        "WithAnnotationClass.java");
+  }
+
+  @Test
+  public void proxyEquals_not_equal() {
+    testHelper.getPsiClass(
+        psiClasses -> {
+          assertNotNull(psiClasses);
+          PsiClass psiClass = psiClasses.get(0);
+          PsiParameter[] parameters =
+              PsiTreeUtil.findChildOfType(psiClass, PsiParameterList.class).getParameters();
+
+          Prop prop1 = PsiAnnotationProxyUtils.findAnnotationInHierarchy(parameters[0], Prop.class);
+          Prop prop2 = PsiAnnotationProxyUtils.findAnnotationInHierarchy(parameters[1], Prop.class);
+          // Calls proxy
+          assertNotEquals(prop1, prop2);
+
+          return true;
+        },
+        "WithAnnotationClass.java");
+  }
+
+  @Test
+  public void proxyHashCode() {
+    testHelper.getPsiClass(
+        psiClasses -> {
+          assertNotNull(psiClasses);
+          PsiClass psiClass = psiClasses.get(0);
+          PsiParameter[] parameters =
+              PsiTreeUtil.findChildOfType(psiClass, PsiParameterList.class).getParameters();
+
+          Prop prop1 = PsiAnnotationProxyUtils.findAnnotationInHierarchy(parameters[0], Prop.class);
+          Prop prop2 = PsiAnnotationProxyUtils.findAnnotationInHierarchy(parameters[2], Prop.class);
+          Set<Prop> props = new HashSet<>(1);
+          props.add(prop1);
+          props.add(prop2);
+          // Calls proxy
+          assertEquals(1, props.size());
+
+          return true;
+        },
+        "WithAnnotationClass.java");
+  }
+
+  @Test
+  public void proxyToString() {
+    testHelper.getPsiClass(
+        psiClasses -> {
+          assertNotNull(psiClasses);
+          PsiClass psiClass = psiClasses.get(0);
+          PsiParameter[] parameters =
+              PsiTreeUtil.findChildOfType(psiClass, PsiParameterList.class).getParameters();
+
+          Prop prop = PsiAnnotationProxyUtils.findAnnotationInHierarchy(parameters[0], Prop.class);
+          // Calls proxy
+          assertEquals("@com.facebook.litho.annotations.Prop()", prop.toString());
 
           return true;
         },

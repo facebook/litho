@@ -21,6 +21,7 @@
   <application
       android:name="com.facebook.samples.lithobarebones.SampleApplication"
       android:label="Litho Barebones"
+      android:supportsRtl="true"
       android:allowBackup="true">
     <activity android:name="com.facebook.samples.lithobarebones.SampleActivity">
       <intent-filter>

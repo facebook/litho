@@ -131,7 +131,6 @@ public class RecyclerBinder
   private final boolean mHScrollAsyncMode;
   private final boolean mIncrementalMountEnabled;
   private final boolean mEnableDetach;
-  private boolean mAsyncInitRange;
   private final boolean mUseCancelableLayoutFutures;
   private final boolean mMoveLayoutsBetweenThreads;
   private final boolean mIsSubAdapter;
@@ -414,7 +413,6 @@ public class RecyclerBinder
     private @Nullable List<ComponentLogParams> invalidStateLogParamsList;
     private RecyclerRangeTraverser recyclerRangeTraverser;
     private LayoutThreadPoolConfiguration threadPoolConfig;
-    private boolean asyncInitRange = ComponentsConfiguration.asyncInitRange;
     private boolean canMeasure;
     private boolean hscrollAsyncMode = false;
     private boolean incrementalMount = true;
@@ -590,15 +588,6 @@ public class RecyclerBinder
     @VisibleForTesting
     Builder overrideInternalAdapter(RecyclerView.Adapter overrideInternalAdapter) {
       this.overrideInternalAdapter = overrideInternalAdapter;
-      return this;
-    }
-
-    /**
-     * If true, the async range calculation isn't blocked on the first item finishing layout and it
-     * will schedule as many bg layouts as it can while init range completes.
-     */
-    public Builder asyncInitRange(boolean asyncInitRange) {
-      this.asyncInitRange = asyncInitRange;
       return this;
     }
 
@@ -900,7 +889,6 @@ public class RecyclerBinder
       mHasManualEstimatedViewportCount = false;
     }
 
-    mAsyncInitRange = builder.asyncInitRange;
     mHScrollAsyncMode = builder.hscrollAsyncMode;
     mIncrementalMountEnabled = builder.incrementalMount;
     mStickyHeaderControllerFactory = builder.stickyHeaderControllerFactory;
@@ -2607,9 +2595,7 @@ public class RecyclerBinder
   @GuardedBy("this")
   private void maybeScheduleAsyncLayoutsDuringInitRange(
       final ComponentAsyncInitRangeIterator asyncRangeIterator) {
-    if (!asyncInitRangeEnabled()
-        || mComponentTreeHolders == null
-        || mComponentTreeHolders.isEmpty()) {
+    if (mComponentTreeHolders == null || mComponentTreeHolders.isEmpty()) {
       // checked null for tests
       return;
     }
@@ -2625,8 +2611,7 @@ public class RecyclerBinder
       final ComponentAsyncInitRangeIterator asyncRangeIterator) {
     final ComponentTreeHolder nextHolder = asyncRangeIterator.next();
 
-    if (!asyncInitRangeEnabled()
-        || mComponentTreeHolders == null
+    if (mComponentTreeHolders == null
         || mComponentTreeHolders.isEmpty()
         || nextHolder == null
         || mEstimatedViewportCount != UNSET) {
@@ -2653,15 +2638,6 @@ public class RecyclerBinder
         mComponentContext, childWidthSpec, childHeightSpec, measureListener);
   }
 
-  private boolean asyncInitRangeEnabled() {
-    return mAsyncInitRange;
-  }
-
-  @VisibleForTesting
-  public void setAsyncInitRange(boolean asyncInitRange) {
-    mAsyncInitRange = asyncInitRange;
-  }
-
   @VisibleForTesting
   @GuardedBy("this")
   void initRange(
@@ -2671,23 +2647,21 @@ public class RecyclerBinder
     }
     final boolean isTracing = ComponentsSystrace.isTracing();
 
-    if (asyncInitRangeEnabled()) {
-      // We can schedule a maximum of number of items minus one (which is being calculated
-      // synchronously) to run at the same time as the sync layout.
-      final ComponentAsyncInitRangeIterator asyncInitRangeIterator =
-          new ComponentAsyncInitRangeIterator(
-              holderRangeInfo.mHolders,
-              holderRangeInfo.mPosition,
-              mComponentTreeHolders.size() - 1,
-              mTraverseLayoutBackwards);
+    // We can schedule a maximum of number of items minus one (which is being calculated
+    // synchronously) to run at the same time as the sync layout.
+    final ComponentAsyncInitRangeIterator asyncInitRangeIterator =
+        new ComponentAsyncInitRangeIterator(
+            holderRangeInfo.mHolders,
+            holderRangeInfo.mPosition,
+            mComponentTreeHolders.size() - 1,
+            mTraverseLayoutBackwards);
 
-      if (isTracing) {
-        ComponentsSystrace.beginSection("maybeScheduleAsyncLayoutsDuringInitRange");
-      }
-      maybeScheduleAsyncLayoutsDuringInitRange(asyncInitRangeIterator);
-      if (isTracing) {
-        ComponentsSystrace.endSection();
-      }
+    if (isTracing) {
+      ComponentsSystrace.beginSection("maybeScheduleAsyncLayoutsDuringInitRange");
+    }
+    maybeScheduleAsyncLayoutsDuringInitRange(asyncInitRangeIterator);
+    if (isTracing) {
+      ComponentsSystrace.endSection();
     }
 
     final ComponentTreeHolder holder = holderRangeInfo.mHolders.get(holderRangeInfo.mPosition);
@@ -3856,11 +3830,11 @@ public class RecyclerBinder
       }
 
       @Override
-      public void prepareSync(ComponentTreeHolder holder, Size size) {
+      public void prepareSync(ComponentTreeHolder holder, @Nullable Size size) {
         final int childrenWidthSpec = getActualChildrenWidthSpec(holder);
         final int childrenHeightSpec = getActualChildrenHeightSpec(holder);
 
-        if (holder.isTreeValidForSizeSpecs(childrenWidthSpec, childrenHeightSpec)) {
+        if (size != null && holder.isTreeValidForSizeSpecs(childrenWidthSpec, childrenHeightSpec)) {
           size.width = SizeSpec.getSize(childrenWidthSpec);
           size.height = SizeSpec.getSize(childrenHeightSpec);
 

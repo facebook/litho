@@ -42,7 +42,8 @@ jint ensureInitialized(JNIEnv** env, JavaVM* vm) {
   return JNI_VERSION_1_6;
 }
 
-JNIEnv* getCurrentEnv() {
+// TODO why we need JNIEXPORT for getCurrentEnv ?
+JNIEXPORT JNIEnv* getCurrentEnv() {
   JNIEnv* env;
   jint ret = globalVm->GetEnv((void**) &env, JNI_VERSION_1_6);
   if (ret != JNI_OK) {
@@ -62,12 +63,16 @@ void logErrorMessageAndDie(const char* message) {
 }
 
 void assertNoPendingJniException(JNIEnv* env) {
-  // This method cannot call any other method of the library, since other
-  // methods of the library use it to check for exceptions too
-  if (env->ExceptionCheck()) {
-    env->ExceptionDescribe();
-    logErrorMessageAndDie("Aborting due to pending Java exception in JNI");
+  if (env->ExceptionCheck() == JNI_FALSE) {
+    return;
   }
+
+  auto throwable = env->ExceptionOccurred();
+  if (!throwable) {
+    logErrorMessageAndDie("Unable to get pending JNI exception.");
+  }
+  env->ExceptionClear();
+  throw throwable;
 }
 
 } // namespace vanillajni

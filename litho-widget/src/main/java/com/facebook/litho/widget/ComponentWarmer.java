@@ -44,7 +44,7 @@ public class ComponentWarmer {
      * Triggers a synchronous layout calculation for the ComponentTree held by the provided
      * ComponentTreeHolder.
      */
-    void prepareSync(ComponentTreeHolder holder, Size size);
+    void prepareSync(ComponentTreeHolder holder, @Nullable Size size);
 
     /**
      * Triggers an asynchronous layout calculation for the ComponentTree held by the provided
@@ -138,17 +138,19 @@ public class ComponentWarmer {
     mCache = cache == null ? new DefaultCache(DEFAULT_MAX_SIZE) : cache;
   }
 
-  public Size prepare(String tag, ComponentRenderInfo componentRenderInfo) {
+  /**
+   * Synchronously prepare the ComponentTree for the given ComponentRenderInfo.
+   *
+   * @param tag Set a tag on the prepared ComponentTree so it can be retrieved from cache.
+   * @param componentRenderInfo to be prepared.
+   * @param size if not null, it will have the size result at the end of computing the layout.
+   *     Prepare calls which require a size result to be computed cannot be cancelled (@see {@link
+   *     #cancelPrepare(String)}).
+   */
+  public void prepare(String tag, ComponentRenderInfo componentRenderInfo, @Nullable Size size) {
     final ComponentTreeHolder holder = mFactory.create(componentRenderInfo);
-    return prepare(tag, holder);
-  }
-
-  private Size prepare(String tag, ComponentTreeHolder holder) {
-    final Size size = new Size();
     mCache.put(tag, holder);
     mFactory.prepareSync(holder, size);
-
-    return size;
   }
 
   public void prepareAsync(String tag, ComponentRenderInfo componentRenderInfo) {

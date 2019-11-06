@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-@file:Suppress("NOTHING_TO_INLINE")
+@file:Suppress("NOTHING_TO_INLINE", "FunctionName")
 
 package com.facebook.litho
 
@@ -28,7 +28,7 @@ inline fun ComponentContext.Column(
     justifyContent: YogaJustify? = null,
     wrap: YogaWrap? = null,
     reverse: Boolean = false,
-    content: DslColumnBuilder.() -> Unit
+    content: DslColumnBuilder.() -> Unit = {}
 ): Column.Builder =
     DslColumnBuilder(this).apply {
       alignContent(alignContent)
@@ -45,7 +45,7 @@ inline fun ComponentContext.Row(
     justifyContent: YogaJustify? = null,
     wrap: YogaWrap? = null,
     reverse: Boolean = false,
-    content: DslRowBuilder.() -> Unit
+    content: DslRowBuilder.() -> Unit = {}
 ): Row.Builder =
     DslRowBuilder(this).apply {
       alignContent(alignContent)
@@ -62,7 +62,11 @@ class DslRowBuilder(c: ComponentContext) : Row.Builder() {
     init(c, 0, 0, Row("Row"))
   }
 
-  inline operator fun Component.Builder<*>.unaryPlus() {
+  inline operator fun Component.Builder<*>?.unaryPlus() {
+    child(this)
+  }
+
+  inline operator fun Component?.unaryPlus() {
     child(this)
   }
 }
@@ -73,7 +77,11 @@ class DslColumnBuilder(c: ComponentContext) : Column.Builder() {
     init(c, 0, 0, Column("Column"))
   }
 
-  inline operator fun Component.Builder<*>.unaryPlus() {
+  inline operator fun Component.Builder<*>?.unaryPlus() {
+    child(this)
+  }
+
+  inline operator fun Component?.unaryPlus() {
     child(this)
   }
 }

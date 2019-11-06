@@ -21,7 +21,6 @@ import static android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH;
 import static android.os.Build.VERSION_CODES.JELLY_BEAN_MR1;
 import static android.os.Build.VERSION_CODES.LOLLIPOP_MR1;
 
-import android.content.Context;
 import androidx.annotation.Nullable;
 import com.facebook.litho.BuildConfig;
 import com.facebook.litho.perfboost.LithoPerfBoosterFactory;
@@ -72,6 +71,9 @@ public class ComponentsConfiguration {
    */
   public static boolean isDebugModeEnabled = IS_INTERNAL_BUILD;
 
+  /** Lightweight tracking of component class hierarchy of MountItems. */
+  public static boolean isDebugHierarchyEnabled = false;
+
   /** Debug option to highlight interactive areas in mounted components. */
   public static boolean debugHighlightInteractiveBounds = false;
 
@@ -93,6 +95,9 @@ public class ComponentsConfiguration {
    * system property at startup but can be overridden at runtime.
    */
   public static boolean isEndToEndTestRun = System.getProperty("IS_TESTING") != null;
+
+  public static boolean isAnimationDisabled =
+      "true".equals(System.getProperty("litho.animation.disabled"));
 
   /**
    * By default end-to-end tests will disable transitions and this flag lets to explicitly enable
@@ -118,12 +123,6 @@ public class ComponentsConfiguration {
    * single default thread will be used for background layout.
    */
   public static @Nullable LayoutThreadPoolConfiguration threadPoolForBackgroundThreadsConfig = null;
-
-  /**
-   * If true, the async range calculation isn't blocked on the first item finishing layout and it
-   * will schedule as many bg layouts as it can while init range completes.
-   */
-  public static boolean asyncInitRange = false;
 
   /**
    * If non-null, a thread pool will be used for async layouts instead of a single layout thread.
@@ -176,7 +175,6 @@ public class ComponentsConfiguration {
 
   public static boolean useCancelableLayoutFutures;
   public static boolean canInterruptAndMoveLayoutsBetweenThreads;
-  public static boolean createInitialStateOncePerThread;
 
   public static boolean isRenderInfoDebuggingEnabled() {
     return isDebugModeEnabled && enableRenderInfoDebugging;
@@ -209,24 +207,6 @@ public class ComponentsConfiguration {
   /** If true, release ComponentTrees held in RecyclerBinder when item are removed or detached. */
   public static boolean isReleaseComponentTreeInRecyclerBinder;
 
-  /** If true, add the root component of LayoutSpecs to InternalNodes */
-  public static boolean isConsistentComponentHierarchyExperimentEnabled = true;
-
-  /**
-   * If true the framework will use the refactored implementation of
-   * ComponentLifecycle#createLayout()
-   */
-  public static boolean isRefactoredLayoutCreationEnabled = false;
-
-  public static int percentageSleepLayoutCalculation = 0;
-
-  /**
-   * If true, the return value of {@link
-   * com.facebook.litho.TransitionUtils#areTransitionsEnabled(Context)} will be cached in {@link
-   * com.facebook.litho.ComponentTree}
-   */
-  public static boolean isTransitionCheckCached = false;
-
   /**
    * When enabled reconciliation will use the deep clone method of the InternalNode with the
    * simplified implementation of shallow copy.
@@ -240,4 +220,7 @@ public class ComponentsConfiguration {
    * DoubleMeasureFixUtil.
    */
   public static boolean shouldCacheDeviceTypeOnDoubleMeasure = false;
+
+  /** When enabled uses the refactored implementation of create layout. */
+  public static boolean useNewCreateLayoutImplementation = false;
 }

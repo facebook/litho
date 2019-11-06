@@ -33,8 +33,8 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiJavaFile;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeSpec;
-import javax.annotation.Nullable;
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Utility class helping to create {@link LayoutSpecModel}s from the given file and update generated
@@ -68,6 +68,7 @@ public class ComponentGenerateUtils {
    *     {@link com.facebook.litho.annotations.LayoutSpec} class.
    */
   @Nullable
+  @Contract("null -> null")
   public static LayoutSpecModel createLayoutModel(@Nullable PsiClass layoutSpecCls) {
     if (layoutSpecCls == null) {
       return null;
@@ -100,8 +101,10 @@ public class ComponentGenerateUtils {
 
     @Override
     protected PsiElement[] create(String qualifiedSpecName) {
-      return LithoPluginUtils.findGeneratedFile(qualifiedSpecName, project)
-          .map(componentFile -> updateFileWithModel(componentFile, model))
+      return LithoPluginUtils.findGeneratedClass(qualifiedSpecName, project)
+          .map(PsiElement::getContainingFile)
+          .filter(PsiJavaFile.class::isInstance)
+          .map(componentFile -> updateFileWithModel((PsiJavaFile) componentFile, model))
           .map(createdClass -> doPostponedOperationsAndUnblockDocument(createdClass, project))
           .map(createdClass -> new PsiElement[] {createdClass})
           .orElse(PsiElement.EMPTY_ARRAY);

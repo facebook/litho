@@ -45,9 +45,19 @@ public class ResourceResolver {
     return FastMath.round(dips * scale);
   }
 
-  public int sipsToPixels(float dips) {
+  public int sipsToPixels(float sips) {
     final float scale = mResources.getDisplayMetrics().scaledDensity;
-    return FastMath.round(dips * scale);
+    return FastMath.round(sips * scale);
+  }
+
+  public float pixelsToDips(int pixels) {
+    final float scale = mResources.getDisplayMetrics().density;
+    return pixels / scale;
+  }
+
+  public float pixelsToSips(int pixels) {
+    final float scale = mResources.getDisplayMetrics().scaledDensity;
+    return pixels / scale;
   }
 
   public @Nullable String resolveStringRes(@StringRes int resId) {

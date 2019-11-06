@@ -74,6 +74,10 @@ public class StateHandler {
 
   private Map<String, Object> mCreateInitialStateLock;
 
+  private Map<String, Object> mHookState;
+  private List<HookUpdater> mPendingHookUpdates;
+  private List<HookUpdater> mAppliedHookUpdates;
+
   public StateHandler() {
     this(null);
   }
@@ -90,6 +94,7 @@ public class StateHandler {
           stateHandler.getAppliedStateUpdates());
       copyCurrentStateContainers(stateHandler.getStateContainers());
       copyPendingStateTransitions(stateHandler.getPendingStateUpdateTransitions());
+      copyAndRunHooks(stateHandler);
     }
   }
 
@@ -106,19 +111,13 @@ public class StateHandler {
   }
 
   public synchronized boolean isEmpty() {
-    return mStateContainers == null || mStateContainers.isEmpty();
+    return (mStateContainers == null || mStateContainers.isEmpty())
+        && (mHookState == null || mHookState.isEmpty());
   }
 
   synchronized boolean hasPendingUpdates() {
-    if (mPendingStateUpdates != null && !mPendingStateUpdates.isEmpty()) {
-      for (List<StateUpdate> entry : mPendingStateUpdates.values()) {
-        if (!entry.isEmpty()) {
-          return true;
-        }
-      }
-    }
-
-    return false;
+    return (mPendingStateUpdates != null && !mPendingStateUpdates.isEmpty())
+        || (mPendingHookUpdates != null && !mPendingHookUpdates.isEmpty());
   }
 
   /**
@@ -180,16 +179,7 @@ public class StateHandler {
     if (currentStateContainer != null) {
       component.transferState(currentStateContainer, component.getStateContainer());
     } else {
-      final ComponentTree componentTree = component.getScopedContext().getComponentTree();
-
-      // It's possible that Component.measure is called from outside a ComponentTree LayoutState
-      // calculation. In that case, we can't reuse or store the StateContainer in the ComponentTree,
-      // so we call createInitialState immediately and exit.
-      if (componentTree == null || !componentTree.shouldCreateInitialStateOncePerThread()) {
-        component.createInitialState(component.getScopedContext());
-      } else {
-        maybeCreateInitialStateAndCommitResult(component, componentTree);
-      }
+      component.createInitialState(component.getScopedContext());
     }
 
     final List<StateUpdate> stateUpdatesForKey;
@@ -243,61 +233,6 @@ public class StateHandler {
     return null;
   }
 
-  static void maybeCreateInitialStateAndCommitResult(
-      Component component, ComponentTree componentTree) {
-    final StateHandler stateHandler = componentTree.getStateHandler();
-
-    // Tree has been released, we can exit immediately.
-    if (stateHandler == null) {
-      return;
-    }
-
-    final String key = component.getGlobalKey();
-
-    // Each createInitialState call creates a lock. The ComponentTree will store the first lock
-    // that is passed to it to use for sync with other createInitialState calls, so that it only
-    // gets executed once.
-    final Object initLock = new Object();
-    synchronized (initLock) {
-      final Object lock = stateHandler.getCreateInitialStateLock(key, initLock);
-
-      synchronized (lock) {
-        if (initLock == lock) {
-          // createInitialState has not been called for this component. Call it and immediately
-          // commit the result to this state handler.
-          component.createInitialState(component.getScopedContext());
-          stateHandler.maybeInitStateContainers();
-          stateHandler.mStateContainers.put(key, component.getStateContainer());
-        } else {
-          // This means that createInitialState was already called for this component. Transfer the
-          // result without calling it again.
-          component.transferState(
-              stateHandler.mStateContainers.get(key), component.getStateContainer());
-        }
-      }
-    }
-  }
-
-  private Object getCreateInitialStateLock(String globalKey, Object lock) {
-    synchronized (this) {
-      if (mCreateInitialStateLock == null) {
-        mCreateInitialStateLock = new HashMap<>();
-      }
-    }
-
-    synchronized (mCreateInitialStateLock) {
-      Object existingLock = mCreateInitialStateLock.get(globalKey);
-
-      if (existingLock != null) {
-        return existingLock;
-      }
-
-      mCreateInitialStateLock.put(globalKey, lock);
-    }
-
-    return lock;
-  }
-
   void applyLazyStateUpdatesForContainer(String componentKey, StateContainer container) {
     final List<StateUpdate> stateUpdatesForKey;
 
@@ -321,9 +256,10 @@ public class StateHandler {
    */
   void commit(StateHandler stateHandler) {
     clearStateUpdates(stateHandler.getAppliedStateUpdates());
-    clearUnusedStateContainers(this, stateHandler);
+    clearUnusedStateContainers(stateHandler);
     copyCurrentStateContainers(stateHandler.getStateContainers());
     copyPendingStateTransitions(stateHandler.getPendingStateUpdateTransitions());
+    commitHookState(stateHandler);
   }
 
   synchronized Set<String> getKeysForPendingUpdates() {
@@ -515,26 +451,18 @@ public class StateHandler {
     }
   }
 
-  private static void clearUnusedStateContainers(
-      StateHandler createInitialStateLockingStateHandler, StateHandler currentStateHandler) {
+  private static void clearUnusedStateContainers(StateHandler currentStateHandler) {
     final HashSet<String> neededStateContainers = currentStateHandler.mNeededStateContainers;
     final List<String> stateContainerKeys = new ArrayList<>();
     if (neededStateContainers == null || currentStateHandler.mStateContainers == null) {
       return;
     }
 
-    final boolean shouldCleanLocks =
-        createInitialStateLockingStateHandler.mCreateInitialStateLock != null
-            && !createInitialStateLockingStateHandler.mCreateInitialStateLock.isEmpty();
-
     stateContainerKeys.addAll(currentStateHandler.mStateContainers.keySet());
 
     for (String key : stateContainerKeys) {
       if (!neededStateContainers.contains(key)) {
         currentStateHandler.mStateContainers.remove(key);
-        if (shouldCleanLocks) {
-          createInitialStateLockingStateHandler.mCreateInitialStateLock.remove(key);
-        }
       }
     }
   }
@@ -582,6 +510,77 @@ public class StateHandler {
   private synchronized void maybeInitLazyStateUpdatesMap() {
     if (mPendingLazyStateUpdates == null) {
       mPendingLazyStateUpdates = new HashMap<>(INITIAL_MAP_CAPACITY);
+    }
+  }
+
+  //
+  // Hooks - Experimental - see KState.kt
+  //
+
+  /** Returns the mapping of hook keys to values. */
+  Map<String, Object> getHookState() {
+    if (mHookState == null) {
+      mHookState = new HashMap<>();
+    }
+    return mHookState;
+  }
+
+  /**
+   * Registers the given block to be run before the next layout calculation to update hook state.
+   */
+  void queueHookStateUpdate(HookUpdater updater) {
+    if (mPendingHookUpdates == null) {
+      mPendingHookUpdates = new ArrayList<>();
+    }
+    mPendingHookUpdates.add(updater);
+  }
+
+  /**
+   * Called when creating a new StateHandler for a layout calculation. It copies the source of truth
+   * state, and then the current list of HookUpdater blocks that need to be applied. Unlike normal
+   * state, these blocks are run immediately to update this StateHandlers hook state before we start
+   * creating components.
+   *
+   * @param other the ComponentTree's source-of-truth StateHandler where pending state updates are
+   *     collected
+   */
+  private void copyAndRunHooks(StateHandler other) {
+    if (other.mHookState != null) {
+      mHookState = new HashMap<>(other.mHookState);
+    }
+
+    if (other.mPendingHookUpdates != null) {
+      List<HookUpdater> updaters = new ArrayList<>(other.mPendingHookUpdates);
+      for (HookUpdater updater : updaters) {
+        updater.apply(this);
+      }
+      mAppliedHookUpdates = updaters;
+    }
+  }
+
+  /**
+   * Called on the ComponentTree's source-of-truth StateHandler when a layout has completed and new
+   * state needs to be committed. In this case, we want to remove any pending state updates that
+   * this StateHandler applied, while leaving new ones that have accumulated in the interim. We also
+   * copy over the new mapping from hook state keys to values.
+   *
+   * @param stateHandler the StateHandler whose layout is being committed
+   */
+  private void commitHookState(StateHandler stateHandler) {
+    if (mHookState != null) {
+      mHookState.clear();
+    }
+
+    if (stateHandler.mHookState != null && !stateHandler.mHookState.isEmpty()) {
+      if (mHookState == null) {
+        mHookState = new HashMap<>(stateHandler.mHookState);
+      } else {
+        mHookState.putAll(stateHandler.mHookState);
+      }
+    }
+
+    if (mPendingHookUpdates != null && stateHandler.mAppliedHookUpdates != null) {
+      mPendingHookUpdates.removeAll(stateHandler.mAppliedHookUpdates);
     }
   }
 }

@@ -123,7 +123,8 @@ public class TransitionTest {
         };
 
     LayoutOutput rootLayout =
-        new LayoutOutput(null, null, component, new Rect(0, 0, 300, 100), 0, 0, 0, 0, 0, 0, null);
+        new LayoutOutput(
+            null, null, null, component, new Rect(0, 0, 300, 100), 0, 0, 0, 0, 0, 0, null);
 
     when(layoutState.getMountableOutputAt(0)).thenReturn(rootLayout);
 
@@ -162,7 +163,8 @@ public class TransitionTest {
         };
 
     LayoutOutput rootLayout =
-        new LayoutOutput(null, null, component, new Rect(0, 0, 300, 100), 0, 0, 0, 0, 0, 0, null);
+        new LayoutOutput(
+            null, null, null, component, new Rect(0, 0, 300, 100), 0, 0, 0, 0, 0, 0, null);
 
     when(layoutState.getMountableOutputAt(0)).thenReturn(rootLayout);
 

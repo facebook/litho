@@ -400,7 +400,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
     suppressInvalidationsOnHosts(false);
 
-    if (logger != null) {
+    if (mountPerfEvent != null) {
       logMountPerfEvent(logger, mountPerfEvent, wasDirty);
     }
 
@@ -412,8 +412,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   }
 
   private void logMountPerfEvent(
-      ComponentsLogger logger, @Nullable PerfEvent mountPerfEvent, boolean isDirty) {
-    if (!mMountStats.isLoggingEnabled || mountPerfEvent == null) {
+      ComponentsLogger logger, PerfEvent mountPerfEvent, boolean isDirty) {
+    if (!mMountStats.isLoggingEnabled) {
       logger.cancelPerfEvent(mountPerfEvent);
       return;
     }

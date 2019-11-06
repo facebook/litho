@@ -19,5 +19,6 @@ docs/.bundle/
 
 # Android Studio/IntelliJ
 .idea
+.idea/libraries
 *.iml
 local.properties

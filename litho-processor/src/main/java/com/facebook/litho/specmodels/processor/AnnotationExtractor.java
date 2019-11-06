@@ -42,6 +42,9 @@ public class AnnotationExtractor {
    * We consider an annotation to be valid for extraction if it's not an internal annotation (i.e.
    * is in the <code>com.facebook.litho</code> package and is not a source-only annotation.
    *
+   * <p>We also do not consider the kotlin.Metadata annotation to be valid as it represents the
+   * metadata of the Spec class and not of the class that we are generating.
+   *
    * @return Whether or not to extract the given annotation.
    */
   private static boolean isValidAnnotation(AnnotationMirror annotation) {
@@ -52,6 +55,8 @@ public class AnnotationExtractor {
       return false;
     }
 
-    return !annotation.getAnnotationType().toString().startsWith("com.facebook.");
+    String annotationName = annotation.getAnnotationType().toString();
+
+    return !annotationName.startsWith("com.facebook.") && !annotationName.equals("kotlin.Metadata");
   }
 }

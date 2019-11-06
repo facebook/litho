@@ -21,15 +21,16 @@ import com.facebook.litho.intellij.LithoPluginUtils;
 import com.facebook.litho.intellij.completion.ComponentGenerateUtils;
 import com.facebook.litho.intellij.extensions.EventLogger;
 import com.facebook.litho.intellij.logging.LithoLoggerProvider;
+import com.google.common.annotations.VisibleForTesting;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
+import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiClass;
-import com.intellij.psi.PsiFile;
 import java.util.Optional;
 
 /**
- * Updates Component file for the given Spec file. Update implementation is defined by the {@link
+ * Updates Component file for the given Spec file. Update logic is defined by the {@link
  * ComponentGenerateUtils}. Currently works with the {@link LayoutSpec} only.
  */
 public class GenerateComponentAction extends AnAction {
@@ -38,25 +39,50 @@ public class GenerateComponentAction extends AnAction {
   @Override
   public void update(AnActionEvent e) {
     super.update(e);
-    Optional<PsiClass> component =
-        Optional.of(e)
-            .map(event -> event.getData(CommonDataKeys.PSI_FILE))
-            .flatMap(LithoPluginUtils::getFirstLayoutSpec)
-            .flatMap(
-                specCls ->
-                    LithoPluginUtils.findGeneratedClass(
-                        specCls.getQualifiedName(), specCls.getProject()));
-    e.getPresentation().setEnabledAndVisible(component.isPresent());
-    component.ifPresent(
-        cls -> e.getPresentation().setText("Regenerate " + cls.getName() + " Component"));
+    Optional<PsiClass> specCls = getValidSpec(e);
+    e.getPresentation().setEnabledAndVisible(specCls.isPresent());
+
+    specCls.ifPresent(
+        cls ->
+            e.getPresentation()
+                .setText(
+                    "Regenerate "
+                        + LithoPluginUtils.getLithoComponentNameFromSpec(cls.getName())
+                        + " Component"));
   }
 
   @Override
   public void actionPerformed(AnActionEvent e) {
-    final PsiFile file = e.getData(CommonDataKeys.PSI_FILE);
-    LithoLoggerProvider.getEventLogger().log(TAG);
+    LithoLoggerProvider.getEventLogger().log(TAG + ".invoke");
+    getValidSpec(e)
+        .ifPresent(
+            specCls -> {
+              String componentName =
+                  LithoPluginUtils.getLithoComponentNameFromSpec(specCls.getQualifiedName());
+              Project project = e.getProject();
 
-    LithoPluginUtils.getFirstLayoutSpec(file)
-        .ifPresent(ComponentGenerateUtils::updateLayoutComponent);
+              if (ComponentGenerateUtils.updateLayoutComponent(specCls)) {
+                LithoPluginUtils.showInfo(componentName + " component was regenerated", project);
+                LithoLoggerProvider.getEventLogger().log(TAG + ".success");
+              } else {
+                LithoPluginUtils.showWarning(
+                    componentName
+                        + " component destination was not found to regenerate. Build "
+                        + specCls.getName()
+                        + " first",
+                    project);
+              }
+            });
+  }
+
+  /**
+   * @return {@link Optional} with {@link PsiClass} from {@link AnActionEvent} if it's a valid class
+   *     for which GenerateComponent action is enabled. Or empty {@link Optional} otherwise.
+   */
+  @VisibleForTesting
+  static Optional<PsiClass> getValidSpec(AnActionEvent e) {
+    return Optional.of(e)
+        .map(event -> event.getData(CommonDataKeys.PSI_FILE))
+        .flatMap(LithoPluginUtils::getFirstLayoutSpec);
   }
 }

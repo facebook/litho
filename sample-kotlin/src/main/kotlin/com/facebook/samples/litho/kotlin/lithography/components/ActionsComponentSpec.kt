@@ -18,25 +18,29 @@ package com.facebook.samples.litho.kotlin.lithography.components
 
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
+import com.facebook.litho.Decoration
+import com.facebook.litho.Padding
+import com.facebook.litho.Position
 import com.facebook.litho.Row
 import com.facebook.litho.annotations.LayoutSpec
 import com.facebook.litho.annotations.OnCreateLayout
-import com.facebook.yoga.YogaEdge.ALL
-import com.facebook.yoga.YogaEdge.RIGHT
-import com.facebook.yoga.YogaEdge.TOP
-import com.facebook.yoga.YogaPositionType.ABSOLUTE
+import com.facebook.litho.build
+import com.facebook.litho.dp
+import com.facebook.litho.drawableColor
 
 @LayoutSpec
 object ActionsComponentSpec {
 
   @OnCreateLayout
-  fun onCreateLayout(c: ComponentContext): Component =
-      Row.create(c)
-          .backgroundColor(0xDDFFFFFF.toInt())
-          .positionType(ABSOLUTE)
-          .positionDip(RIGHT, 4f)
-          .positionDip(TOP, 4f)
-          .paddingDip(ALL, 2f)
-          .child(FavouriteButton.create(c))
-          .build()
+  fun onCreateLayout(c: ComponentContext): Component = build(c) {
+    Position(top = 4.dp, right = 4.dp) {
+      Decoration(background = drawableColor(0xddffffff)) {
+        Padding(2.dp) {
+          Row {
+            +FavouriteButton.create(c)
+          }
+        }
+      }
+    }
+  }
 }

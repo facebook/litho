@@ -14,20 +14,14 @@
  * limitations under the License.
  */
 
-package com.facebook.litho
+package com.facebook.litho;
 
-import android.app.Activity
+/**
+ * EXPERIMENTAL - interface for a block of code that will update state created with useState. See
+ * KState.kt for more details.
+ */
+public interface HookUpdater {
 
-inline fun dom(
-    c: ComponentContext,
-    content: ComponentContext.() -> Component.Builder<*>?
-): Component? = c.content()?.build()
-
-fun Activity.setContent(component: Component) {
-  setContentView(LithoView.create(this, component))
-}
-
-/*inline*/ fun Activity.setContent(content: ComponentContext.() -> Component.Builder<*>) {
-  val c = ComponentContext(this)
-  setContentView(LithoView.create(c, c.content().build()))
+  /** Apply updates to the given StateHandler. */
+  void apply(StateHandler stateHandler);
 }

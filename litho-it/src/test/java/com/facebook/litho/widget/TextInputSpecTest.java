@@ -143,6 +143,16 @@ public class TextInputSpecTest {
         .isInstanceOf(ArrowKeyMovementMethod.class);
   }
 
+  @Test
+  public void testErrorState() {
+    String errorMessage = "Error message";
+    Component.Builder component = TextInput.create(mContext).error(errorMessage);
+    final android.widget.EditText editText = getEditText(component);
+    assertThat(editText.getError()).isEqualTo(errorMessage);
+    component = TextInput.create(mContext).error(null);
+    assertThat(getEditText(component).getError()).isNullOrEmpty();
+  }
+
   private static android.widget.EditText getEditText(Component.Builder component) {
     final LithoView lithoView = ComponentTestHelper.mountComponent(component);
     return (android.widget.EditText) lithoView.getChildAt(0);

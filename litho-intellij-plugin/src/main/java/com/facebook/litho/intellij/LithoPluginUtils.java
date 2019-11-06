@@ -24,13 +24,13 @@ import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.State;
 import com.google.common.annotations.VisibleForTesting;
+import com.intellij.notification.NotificationGroup;
+import com.intellij.notification.NotificationType;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiAnnotation;
 import com.intellij.psi.PsiClass;
-import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiField;
 import com.intellij.psi.PsiFile;
-import com.intellij.psi.PsiJavaFile;
 import com.intellij.psi.PsiMethod;
 import com.intellij.psi.PsiModifierListOwner;
 import com.intellij.psi.PsiParameter;
@@ -48,6 +48,8 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
 public class LithoPluginUtils {
+  private static final NotificationGroup NOTIFICATION_GROUP =
+      NotificationGroup.balloonGroup("Litho");
   private static final String SPEC_SUFFIX = "Spec";
 
   public static boolean isComponentClass(@Nullable PsiClass psiClass) {
@@ -189,33 +191,17 @@ public class LithoPluginUtils {
   }
 
   /**
-   * Finds file containing Component from the given Spec name.
-   *
-   * @param qualifiedSpecName Name of the Spec to search component for. For example
-   *     com.package.MySpec.java.
-   * @param project Project to find Component in.
-   * @return {@link PsiJavaFile} for the generated Component, for example com.package.My.java
-   */
-  public static Optional<PsiJavaFile> findGeneratedFile(String qualifiedSpecName, Project project) {
-    return Optional.of(qualifiedSpecName)
-        .map(LithoPluginUtils::getLithoComponentNameFromSpec)
-        .map(qualifiedComponentName -> PsiSearchUtils.findClass(project, qualifiedComponentName))
-        .map(PsiElement::getContainingFile)
-        .filter(PsiJavaFile.class::isInstance)
-        .map(PsiJavaFile.class::cast);
-  }
-
-  /**
    * Finds Generated Class from the given Spec name.
    *
    * @param qualifiedSpecName Name of the Spec to search generated class for. For example
-   *     com.package.MySpec.java. If you provide simple name MySpec.java returned class could be
-   *     found in wrong package.
+   *     com.package.MySpec.java. If it's a simple name MySpec.java returned class could be found in
+   *     a wrong package.
    * @param project Project to find generated class in.
    */
   public static Optional<PsiClass> findGeneratedClass(String qualifiedSpecName, Project project) {
-    return findGeneratedFile(qualifiedSpecName, project)
-        .flatMap(generatedFile -> getFirstClass(generatedFile, LithoPluginUtils::isGeneratedClass));
+    return Optional.of(qualifiedSpecName)
+        .map(LithoPluginUtils::getLithoComponentNameFromSpec)
+        .map(qualifiedComponentName -> PsiSearchUtils.findClass(project, qualifiedComponentName));
   }
 
   /** Finds LayoutSpec class in the given file. */
@@ -232,5 +218,18 @@ public class LithoPluginUtils {
                     .filter(Objects::nonNull)
                     .filter(classFilter)
                     .findFirst());
+  }
+
+  public static void showInfo(String infoMessage, @Nullable Project project) {
+    showNotification(infoMessage, NotificationType.INFORMATION, project);
+  }
+
+  public static void showWarning(String infoMessage, @Nullable Project project) {
+    showNotification(infoMessage, NotificationType.WARNING, project);
+  }
+
+  private static void showNotification(
+      String infoMessage, NotificationType type, @Nullable Project project) {
+    NOTIFICATION_GROUP.createNotification(infoMessage, type).notify(project);
   }
 }

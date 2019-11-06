@@ -67,7 +67,7 @@ public class ComponentWarmerTest {
     final RecyclerBinder binder = new RecyclerBinder.Builder().build(mContext);
 
     final ComponentWarmer warmer = new ComponentWarmer(binder);
-    warmer.prepare("tag1", mComponentRenderInfo);
+    warmer.prepare("tag1", mComponentRenderInfo, null);
 
     assertThat(warmer.consume("tag1")).isNotNull();
     assertThat(warmer.consume("tag1")).isNull();
@@ -80,7 +80,7 @@ public class ComponentWarmerTest {
     final ComponentWarmer warmer = new ComponentWarmer(binder);
     ComponentWarmer.Cache cache = Whitebox.getInternalState(warmer, "mCache");
 
-    warmer.prepare("tag1", mComponentRenderInfo);
+    warmer.prepare("tag1", mComponentRenderInfo, null);
 
     final ComponentTreeHolder cachedCTH = cache.get("tag1");
 
@@ -106,7 +106,7 @@ public class ComponentWarmerTest {
   }
 
   @Test
-  public void testCancelDuringPrepare() {
+  public void testCancelDuringPrepareAsync() {
     final RecyclerBinder binder =
         new RecyclerBinder.Builder()
             .useCancelableLayoutFutures(true)
@@ -174,5 +174,97 @@ public class ComponentWarmerTest {
     assertThat(childrenResolved[0]).isTrue();
     assertThat(childrenResolved[1]).isFalse();
     assertThat(warmer.consume("tag1")).isNull();
+  }
+
+  @Test
+  public void testCancelDuringPrepare() {
+    final RecyclerBinder binder =
+        new RecyclerBinder.Builder().useCancelableLayoutFutures(true).build(mContext);
+
+    binder.measure(
+        new Size(),
+        SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY),
+        SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY),
+        null);
+
+    final ComponentWarmer warmer = new ComponentWarmer(binder);
+
+    final CountDownLatch waitToResolveChild = new CountDownLatch(1);
+    final CountDownLatch waitToCancel = new CountDownLatch(1);
+    final CountDownLatch waitToAssert = new CountDownLatch(1);
+
+    final boolean[] childrenResolved = {false, false};
+
+    final Component childComponent1 =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(ComponentContext c) {
+            childrenResolved[0] = true;
+            waitToResolveChild.countDown();
+            try {
+              boolean wait = waitToCancel.await(7, TimeUnit.SECONDS);
+            } catch (InterruptedException e) {
+              e.printStackTrace();
+            }
+
+            return Row.create(c).build();
+          }
+        };
+
+    final Component childComponent2 =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(ComponentContext c) {
+            childrenResolved[1] = true;
+            return Row.create(c).build();
+          }
+        };
+
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(ComponentContext c) {
+            return Column.create(c).child(childComponent1).child(childComponent2).build();
+          }
+        };
+
+    runOnBackgroundThreadSync(
+        new Runnable() {
+          @Override
+          public void run() {
+            warmer.prepare("tag1", ComponentRenderInfo.create().component(component).build(), null);
+            waitToAssert.countDown();
+          }
+        });
+
+    try {
+      waitToResolveChild.await(5, TimeUnit.SECONDS);
+      warmer.cancelPrepare("tag1");
+      waitToCancel.countDown();
+
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
+
+    try {
+      waitToAssert.await(5, TimeUnit.SECONDS);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
+
+    assertThat(childrenResolved[0]).isTrue();
+    assertThat(childrenResolved[1]).isFalse();
+    assertThat(warmer.consume("tag1")).isNull();
+  }
+
+  private static void runOnBackgroundThreadSync(final Runnable runnable) {
+    new Thread(
+            new Runnable() {
+              @Override
+              public void run() {
+                runnable.run();
+              }
+            })
+        .start();
   }
 }

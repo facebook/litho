@@ -22,6 +22,8 @@ import static com.facebook.litho.FrameworkLogEvents.EVENT_LAYOUT_STATE_FUTURE_GE
 import static com.facebook.litho.FrameworkLogEvents.EVENT_PRE_ALLOCATE_MOUNT_CONTENT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_ATTRIBUTION;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_IS_BACKGROUND_LAYOUT;
+import static com.facebook.litho.FrameworkLogEvents.PARAM_IS_MAIN_THREAD;
+import static com.facebook.litho.FrameworkLogEvents.PARAM_LAYOUT_FUTURE_WAIT_FOR_RESULT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_ROOT_COMPONENT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_TREE_DIFF_ENABLED;
 import static com.facebook.litho.HandlerInstrumenter.instrumentLithoHandler;
@@ -279,8 +281,6 @@ public class ComponentTree {
 
   private final boolean mMoveLayoutsBetweenThreads;
 
-  private final boolean mCreateInitialStateOncePerThread;
-
   private final @Nullable String mLogTag;
 
   private final @Nullable ComponentsLogger mLogger;
@@ -311,8 +311,6 @@ public class ComponentTree {
     mUseCancelableLayoutFutures = builder.useCancelableLayoutFutures;
     mMoveLayoutsBetweenThreads = builder.canInterruptAndMoveLayoutsBetweenThreads;
     isReconciliationEnabled = builder.isReconciliationEnabled;
-    mCreateInitialStateOncePerThread =
-        ComponentsConfiguration.createInitialStateOncePerThread || mUseCancelableLayoutFutures;
 
     if (mPreAllocateMountContentHandler == null && builder.canPreallocateOnDefaultHandler) {
       mPreAllocateMountContentHandler =
@@ -347,11 +345,7 @@ public class ComponentTree {
     }
     mLogger = builder.logger;
     mLogTag = builder.logTag;
-    if (ComponentsConfiguration.isTransitionCheckCached) {
-      mAreTransitionsEnabled = TransitionUtils.areTransitionsEnabled(mContext.getAndroidContext());
-    } else {
-      mAreTransitionsEnabled = false;
-    }
+    mAreTransitionsEnabled = TransitionUtils.areTransitionsEnabled(mContext.getAndroidContext());
   }
 
   boolean areTransitionsEnabled() {
@@ -1171,7 +1165,7 @@ public class ComponentTree {
 
     toPrePopulate.preAllocateMountContent(shouldPreallocatePerMountSpec);
 
-    if (logger != null) {
+    if (event != null) {
       logger.logPerfEvent(event);
     }
   }
@@ -1291,6 +1285,19 @@ public class ComponentTree {
     updateStateInternal(true, attribution);
   }
 
+  void updateHookStateAsync(HookUpdater updater, String attribution) {
+    synchronized (this) {
+      if (mRoot == null) {
+        return;
+      }
+
+      mStateHandler.queueHookStateUpdate(updater);
+    }
+
+    LithoStats.incrementStateUpdateAsync();
+    updateStateInternal(true, attribution);
+  }
+
   void updateStateInternal(boolean isAsync, String attribution) {
 
     final Component root;
@@ -1331,10 +1338,6 @@ public class ComponentTree {
 
   StateHandler getStateHandler() {
     return mStateHandler;
-  }
-
-  boolean shouldCreateInitialStateOncePerThread() {
-    return mCreateInitialStateOncePerThread;
   }
 
   void recordEventHandler(Component component, EventHandler eventHandler) {
@@ -1696,9 +1699,7 @@ public class ComponentTree {
         return;
       }
 
-      final Map<String, List<StateUpdate>> pendingStateUpdates =
-          mStateHandler == null ? null : mStateHandler.getPendingStateUpdates();
-      if (pendingStateUpdates != null && pendingStateUpdates.size() > 0 && root != null) {
+      if (mStateHandler.hasPendingUpdates() && root != null) {
         root = root.makeShallowCopyWithNewId();
       }
 
@@ -2396,7 +2397,7 @@ public class ComponentTree {
     private final FutureTask<LayoutState> futureTask;
     private final AtomicInteger refCount = new AtomicInteger(0);
     private final boolean isFromSyncLayout;
-    private volatile boolean interrupted;
+    private volatile boolean interruptRequested;
     private final int source;
     private final String extraAttribution;
 
@@ -2519,12 +2520,12 @@ public class ComponentTree {
       return released;
     }
 
-    boolean isInterrupted() {
-      return !ThreadUtils.isMainThread() && interrupted;
+    boolean isInterruptRequested() {
+      return !ThreadUtils.isMainThread() && interruptRequested;
     }
 
-    void interrupt() {
-      interrupted = true;
+    private void interrupt() {
+      interruptRequested = true;
     }
 
     void unregisterForResponse() {
@@ -2570,7 +2571,6 @@ public class ComponentTree {
       final int runningThreadId = this.runningThreadId.get();
       final int originalThreadPriority;
       final boolean didRaiseThreadPriority;
-      final boolean shouldLogWaiting;
       final boolean notRunningOnMyThread = runningThreadId != Process.myTid();
 
       final boolean shouldWaitForResult = !futureTask.isDone() && notRunningOnMyThread;
@@ -2589,18 +2589,18 @@ public class ComponentTree {
                 : ThreadUtils.tryRaiseThreadPriority(
                     runningThreadId, Process.THREAD_PRIORITY_DISPLAY);
         didRaiseThreadPriority = true;
-        shouldLogWaiting = true;
       } else {
         originalThreadPriority = THREAD_PRIORITY_DEFAULT;
         didRaiseThreadPriority = false;
-        shouldLogWaiting = false;
       }
 
       final LayoutState result;
+      final boolean shouldTrace = notRunningOnMyThread && ComponentsSystrace.isTracing();
+
       try {
-        final boolean shouldTrace = notRunningOnMyThread && ComponentsSystrace.isTracing();
         if (shouldTrace) {
-          ComponentsSystrace.beginSectionWithArgs("LayoutStateFuture.get")
+          ComponentsSystrace.beginSectionWithArgs("LayoutStateFuture.wait")
+              .arg("treeId", ComponentTree.this.mId)
               .arg("root", root.getSimpleName())
               .arg("runningThreadId", runningThreadId)
               .flush();
@@ -2608,7 +2608,7 @@ public class ComponentTree {
 
         final ComponentsLogger logger = getContextLogger();
         final PerfEvent logFutureTaskGetWaiting =
-            shouldLogWaiting && logger != null
+            logger != null
                 ? LogTreePopulator.populatePerfEventFromLogger(
                     mContext,
                     logger,
@@ -2616,10 +2616,10 @@ public class ComponentTree {
                 : null;
         result = futureTask.get();
         if (logFutureTaskGetWaiting != null) {
+          logFutureTaskGetWaiting.markerAnnotate(
+              PARAM_LAYOUT_FUTURE_WAIT_FOR_RESULT, shouldWaitForResult);
+          logFutureTaskGetWaiting.markerAnnotate(PARAM_IS_MAIN_THREAD, isMainThread());
           logger.logPerfEvent(logFutureTaskGetWaiting);
-        }
-        if (shouldTrace) {
-          ComponentsSystrace.endSection();
         }
       } catch (ExecutionException e) {
         final Throwable cause = e.getCause();
@@ -2631,6 +2631,10 @@ public class ComponentTree {
       } catch (InterruptedException | CancellationException e) {
         throw new RuntimeException(e.getMessage(), e);
       } finally {
+        if (shouldTrace) {
+          ComponentsSystrace.endSection();
+        }
+
         if (didRaiseThreadPriority) {
           // Reset the running thread's priority after we're unblocked.
           try {
@@ -2659,9 +2663,11 @@ public class ComponentTree {
       }
 
       final int runningThreadId = this.runningThreadId.get();
+      final boolean notRunningOnMyThread = runningThreadId != Process.myTid();
+      final int originalThreadPriority;
+      final boolean didRaiseThreadPriority;
 
-      final boolean shouldWaitForResult =
-          !futureTask.isDone() && runningThreadId != Process.myTid();
+      final boolean shouldWaitForResult = !futureTask.isDone() && notRunningOnMyThread;
 
       if (shouldWaitForResult && !isMainThread() && !isFromSyncLayout(source)) {
         return null;
@@ -2675,12 +2681,60 @@ public class ComponentTree {
           interruptToken =
               WorkContinuationInstrumenter.onAskForWorkToContinue("interruptCalculateLayout");
         }
+
+        originalThreadPriority =
+            ThreadUtils.tryRaiseThreadPriority(runningThreadId, Process.THREAD_PRIORITY_DISPLAY);
+        didRaiseThreadPriority = true;
+      } else {
+        originalThreadPriority = THREAD_PRIORITY_DEFAULT;
+        didRaiseThreadPriority = false;
       }
 
       LayoutState result;
+      PerfEvent logFutureTaskGetWaiting = null;
+      final ComponentsLogger logger = getContextLogger();
+      final boolean shouldTrace = notRunningOnMyThread && ComponentsSystrace.isTracing();
       try {
+        if (shouldTrace) {
+          ComponentsSystrace.beginSectionWithArgs("LayoutStateFuture.get")
+              .arg("treeId", ComponentTree.this.mId)
+              .arg("root", root.getSimpleName())
+              .arg("runningThreadId", runningThreadId)
+              .flush();
+
+          ComponentsSystrace.beginSectionWithArgs("LayoutStateFuture.wait")
+              .arg("treeId", ComponentTree.this.mId)
+              .arg("root", root.getSimpleName())
+              .arg("runningThreadId", runningThreadId)
+              .flush();
+        }
+
+        logFutureTaskGetWaiting =
+            logger != null
+                ? LogTreePopulator.populatePerfEventFromLogger(
+                    mContext,
+                    logger,
+                    logger.newPerformanceEvent(mContext, EVENT_LAYOUT_STATE_FUTURE_GET_WAIT))
+                : null;
         result = futureTask.get();
-        if (interrupted && result.isPartialLayoutState()) {
+
+        if (shouldTrace) {
+          ComponentsSystrace.endSection();
+        }
+
+        if (logFutureTaskGetWaiting != null) {
+          logFutureTaskGetWaiting.markerPoint("FUTURE_TASK_END");
+        }
+
+        if (didRaiseThreadPriority) {
+          // Reset the running thread's priority after we're unblocked.
+          try {
+            Process.setThreadPriority(runningThreadId, originalThreadPriority);
+          } catch (IllegalArgumentException | SecurityException ignored) {
+          }
+        }
+
+        if (interruptRequested && result.isPartialLayoutState()) {
           if (ThreadUtils.isMainThread()) {
             // This means that the bg task was interrupted and it returned a partially resolved
             // InternalNode. We need to finish computing this LayoutState.
@@ -2702,13 +2756,27 @@ public class ComponentTree {
             interruptToken = null;
           }
         }
-
       } catch (ExecutionException | InterruptedException | CancellationException e) {
+
+        if (shouldTrace) {
+          ComponentsSystrace.endSection();
+        }
+
         final Throwable cause = e.getCause();
         if (cause instanceof RuntimeException) {
           throw (RuntimeException) cause;
         } else {
           throw new RuntimeException(e.getMessage(), e);
+        }
+      } finally {
+        if (shouldTrace) {
+          ComponentsSystrace.endSection();
+        }
+        if (logFutureTaskGetWaiting != null) {
+          logFutureTaskGetWaiting.markerAnnotate(
+              PARAM_LAYOUT_FUTURE_WAIT_FOR_RESULT, shouldWaitForResult);
+          logFutureTaskGetWaiting.markerAnnotate(PARAM_IS_MAIN_THREAD, isMainThread());
+          logger.logPerfEvent(logFutureTaskGetWaiting);
         }
       }
 
@@ -2804,7 +2872,7 @@ public class ComponentTree {
     }
 
     @Override
-    public void tracedRun(Throwable tracedThrowable) {
+    public void tracedRun(ThreadTracingRunnable prevTracingRunnable) {
       calculateLayout(null, mSource, mAttribution, mTreeProps, mLayoutStateFuture);
     }
   }
@@ -2818,7 +2886,7 @@ public class ComponentTree {
     }
 
     @Override
-    public void tracedRun(Throwable tracedThrowable) {
+    public void tracedRun(ThreadTracingRunnable prevTracingRunnable) {
       updateStateInternal(false, mAttribution);
     }
   }

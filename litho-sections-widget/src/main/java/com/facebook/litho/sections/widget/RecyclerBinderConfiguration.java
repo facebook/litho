@@ -42,7 +42,6 @@ public class RecyclerBinderConfiguration {
   private boolean mEnableStableIds;
   private LayoutThreadPoolConfiguration mThreadPoolConfiguration =
       ComponentsConfiguration.threadPoolConfiguration;
-  private boolean mAsyncInitRange = ComponentsConfiguration.asyncInitRange;
   @Nullable private List<ComponentLogParams> mInvalidStateLogParamsList;
   private final boolean mSplitLayoutForMeasureAndRangeEstimation;
   @Nullable private LithoHandler mChangeSetThreadHandler;
@@ -70,7 +69,6 @@ public class RecyclerBinderConfiguration {
       boolean useBackgroundChangeSets,
       boolean hScrollAsyncMode,
       boolean enableStableIds,
-      boolean asyncInitRange,
       boolean splitLayoutForMeasureAndRangeEstimation,
       boolean enableDetach,
       @Nullable LithoHandler changeSetThreadHandler,
@@ -89,7 +87,6 @@ public class RecyclerBinderConfiguration {
     mUseBackgroundChangeSets = useBackgroundChangeSets;
     mHScrollAsyncMode = hScrollAsyncMode;
     mEnableStableIds = enableStableIds;
-    mAsyncInitRange = asyncInitRange;
     mSplitLayoutForMeasureAndRangeEstimation = splitLayoutForMeasureAndRangeEstimation;
     mEnableDetach = enableDetach;
     mChangeSetThreadHandler = changeSetThreadHandler;
@@ -130,10 +127,6 @@ public class RecyclerBinderConfiguration {
 
   public LayoutThreadPoolConfiguration getThreadPoolConfiguration() {
     return mThreadPoolConfiguration;
-  }
-
-  public boolean getAsyncInitRange() {
-    return mAsyncInitRange;
   }
 
   public boolean getEnableStableIds() {
@@ -191,7 +184,6 @@ public class RecyclerBinderConfiguration {
     private boolean mHScrollAsyncMode = false;
     private boolean mEnableStableIds = false;
     private boolean mUseBackgroundChangeSets = SectionsConfiguration.useBackgroundChangeSets;
-    private boolean mAsyncInitRange = ComponentsConfiguration.asyncInitRange;
     private boolean mSplitLayoutForMeasureAndRangeEstimation =
         ComponentsConfiguration.splitLayoutForMeasureAndRangeEstimation;
     private boolean mUseCancelableLayoutFutures =
@@ -217,7 +209,6 @@ public class RecyclerBinderConfiguration {
       this.mHScrollAsyncMode = configuration.mHScrollAsyncMode;
       this.mEnableStableIds = configuration.mEnableStableIds;
       this.mUseBackgroundChangeSets = configuration.mUseBackgroundChangeSets;
-      this.mAsyncInitRange = configuration.mAsyncInitRange;
       this.mSplitLayoutForMeasureAndRangeEstimation =
           configuration.mSplitLayoutForMeasureAndRangeEstimation;
       this.mUseCancelableLayoutFutures = configuration.mUseCancelableLayoutFutures;
@@ -321,11 +312,6 @@ public class RecyclerBinderConfiguration {
       return this;
     }
 
-    public Builder asyncInitRange(boolean asyncInitRange) {
-      mAsyncInitRange = asyncInitRange;
-      return this;
-    }
-
     public Builder splitLayoutForMeasureAndRangeEstimation(
         boolean splitLayoutForMeasureAndRangeEstimation) {
       mSplitLayoutForMeasureAndRangeEstimation = splitLayoutForMeasureAndRangeEstimation;
@@ -381,7 +367,6 @@ public class RecyclerBinderConfiguration {
           mUseBackgroundChangeSets,
           mHScrollAsyncMode,
           mEnableStableIds,
-          mAsyncInitRange,
           mSplitLayoutForMeasureAndRangeEstimation,
           mEnableDetach,
           mChangeSetThreadHandler,

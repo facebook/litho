@@ -340,25 +340,7 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   @Override
   public void calculateLayout(float width, float height) {
     applyOverridesRecursive(this);
-    if (ComponentsConfiguration.percentageSleepLayoutCalculation > 0) {
-      long start = System.nanoTime();
-      mYogaNode.calculateLayout(width, height);
-      long end = System.nanoTime();
-      long elapsedTime = 0;
-      long timeIntervalToSleep =
-          (long)
-              ((end - start) * (ComponentsConfiguration.percentageSleepLayoutCalculation / 100f));
-      long sum = 0;
-      while (elapsedTime < timeIntervalToSleep) {
-        long s = System.nanoTime();
-        for (int index = 0; index < 100; ++index) {
-          sum++;
-        }
-        elapsedTime += (System.nanoTime() - s);
-      }
-    } else {
-      mYogaNode.calculateLayout(width, height);
-    }
+    mYogaNode.calculateLayout(width, height);
   }
 
   @Override
@@ -1037,7 +1019,7 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
 
   /** Mark this node as a nested tree root holder. */
   @Override
-  public void markIsNestedTreeHolder(TreeProps currentTreeProps) {
+  public void markIsNestedTreeHolder(@Nullable TreeProps currentTreeProps) {
     getOrCreateNestedTreeProps().mIsNestedTreeHolder = true;
     getOrCreateNestedTreeProps().mPendingTreeProps = TreeProps.copy(currentTreeProps);
   }
@@ -1820,7 +1802,7 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
     resetResolvedLayoutProperties();
   }
 
-  private void updateWith(
+  void updateWith(
       final ComponentContext c,
       final YogaNode node,
       final List<Component> components,

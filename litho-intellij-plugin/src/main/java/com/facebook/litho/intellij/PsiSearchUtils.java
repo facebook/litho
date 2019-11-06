@@ -20,7 +20,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.JavaPsiFacade;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.search.GlobalSearchScope;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 public class PsiSearchUtils {
 

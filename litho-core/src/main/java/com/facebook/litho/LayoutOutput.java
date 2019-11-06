@@ -37,6 +37,7 @@ class LayoutOutput implements Cloneable, AnimatableItem {
 
   private final @Nullable NodeInfo mNodeInfo;
   private final @Nullable ViewNodeInfo mViewNodeInfo;
+  private final @Nullable DebugHierarchy.Node mHierarchy;
   private final Component mComponent;
   private final Rect mBounds;
   private final int mHostTranslationX;
@@ -55,6 +56,7 @@ class LayoutOutput implements Cloneable, AnimatableItem {
   public LayoutOutput(
       @Nullable NodeInfo nodeInfo,
       @Nullable ViewNodeInfo viewNodeInfo,
+      @Nullable DebugHierarchy.Node hierarchy,
       Component component,
       Rect bounds,
       int hostTranslationX,
@@ -71,6 +73,7 @@ class LayoutOutput implements Cloneable, AnimatableItem {
 
     mNodeInfo = nodeInfo;
     mViewNodeInfo = viewNodeInfo;
+    mHierarchy = hierarchy;
     mComponent = component;
     mBounds = bounds;
     mHostTranslationX = hostTranslationX;
@@ -175,6 +178,11 @@ class LayoutOutput implements Cloneable, AnimatableItem {
 
   void setIndex(int index) {
     mIndex = index;
+  }
+
+  @Nullable
+  DebugHierarchy.Node getHierarchy() {
+    return mHierarchy;
   }
 
   NodeInfo getNodeInfo() {

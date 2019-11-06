@@ -70,6 +70,11 @@ class TransitionUtils {
       return false;
     }
 
+    if (ComponentsConfiguration.isAnimationDisabled) {
+      // mostly for unit tests
+      return false;
+    }
+
     if (!ComponentsConfiguration.isEndToEndTestRun) {
       return true;
     }

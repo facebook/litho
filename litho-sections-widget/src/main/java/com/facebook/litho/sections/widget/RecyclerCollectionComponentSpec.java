@@ -298,7 +298,6 @@ public class RecyclerCollectionComponentSpec {
             .enableStableIds(binderConfiguration.getEnableStableIds())
             .invalidStateLogParamsList(binderConfiguration.getInvalidStateLogParamsList())
             .threadPoolConfig(binderConfiguration.getThreadPoolConfiguration())
-            .asyncInitRange(binderConfiguration.getAsyncInitRange())
             .hscrollAsyncMode(binderConfiguration.getHScrollAsyncMode())
             .isCircular(binderConfiguration.isCircular())
             .hasDynamicItemHeight(binderConfiguration.hasDynamicItemHeight())

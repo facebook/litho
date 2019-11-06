@@ -276,6 +276,22 @@ public class ComponentContext {
     mComponentTree.updateStateLazy(mComponentScope.getGlobalKey(), stateUpdate);
   }
 
+  /**
+   * EXPERIMENTAL - called to enqueue a HookUpdater that will update State that was created via
+   * useState.
+   */
+  public void updateHookStateAsync(HookUpdater updateBlock) {
+    checkIfNoStateUpdatesMethod();
+
+    if (mComponentTree == null) {
+      return;
+    }
+
+    final Component scope = getComponentScope();
+    mComponentTree.updateHookStateAsync(
+        updateBlock, scope != null ? scope.getSimpleName() : "hook");
+  }
+
   public void applyLazyStateUpdatesForContainer(StateContainer container) {
     if (mComponentTree == null) {
       return;
@@ -483,6 +499,12 @@ public class ComponentContext {
       return getComponentTree().isReconciliationEnabled();
     } else {
       return ComponentsConfiguration.isReconciliationEnabled;
+    }
+  }
+
+  void markLayoutUninterruptible() {
+    if (mLayoutStateContext != null) {
+      mLayoutStateContext.markLayoutUninterruptible();
     }
   }
 }

@@ -152,12 +152,21 @@ import javax.annotation.Nullable;
  * @prop multiline If set to true, type of the input will be changed to multiline TEXT. Because
  *     passwords or numbers couldn't be multiline by definition.
  * @prop textWatchers Used to register text watchers e.g. mentions detection.
- * @prop ellipsize If sets, specifies the position of the text to be ellispized.
+ * @prop ellipsize If set, specifies the position of the text to be ellipsized. See <a
+ *     href="https://developer.android.com/reference/android/widget/TextView.html#setEllipsize(android.text.TextUtils.TruncateAt)">android
+ *     documentation</a> for behavior description.
  * @prop minLines Minimum number of lines to show.
  * @prop maxLines Maximum number of lines to show.
  * @prop textWatchers Used to register text watchers e.g. mentions detection.
  * @prop movementMethod Used to set cursor positioning, scrolling and text selection functionality
  *     in EditText
+ * @prop error Sets the right-hand compound drawable of the TextView to the "error" icon and sets an
+ *     error message that will be displayed in a popup when the TextView has focus. The icon and
+ *     error message will be reset to null when any key events cause changes to the TextView's text.
+ *     If the error is null, the error message and icon will be cleared. See
+ *     https://developer.android.com/reference/android/widget/TextView.html#setError for more
+ *     details.
+ * @prop errorDrawable Will show along with the error message when a message is set.
  * @see {@link EditText}
  */
 @MountSpec(
@@ -248,6 +257,8 @@ class TextInputSpec {
       @Prop(optional = true) int minLines,
       @Prop(optional = true) int maxLines,
       @Prop(optional = true) int cursorDrawableRes,
+      @Prop(optional = true, resType = ResType.STRING) CharSequence error,
+      @Prop(optional = true, resType = ResType.DRAWABLE) Drawable errorDrawable,
       @State AtomicReference<CharSequence> savedText,
       @State int measureSeqNumber) {
 
@@ -287,7 +298,9 @@ class TextInputSpec {
         // onMeasure happens:
         // 1. After initState before onMount: savedText = initText.
         // 2. After onMount before onUnmount: savedText preserved from underlying editText.
-        text);
+        text,
+        error,
+        errorDrawable);
     forMeasure.measure(
         MeasureUtils.getViewMeasureSpec(widthSpec), MeasureUtils.getViewMeasureSpec(heightSpec));
 
@@ -326,7 +339,9 @@ class TextInputSpec {
       int maxLines,
       int cursorDrawableRes,
       MovementMethod movementMethod,
-      @Nullable CharSequence text) {
+      @Nullable CharSequence text,
+      @Nullable CharSequence error,
+      @Nullable Drawable errorDrawable) {
     if (multiline) {
       inputType |= EditorInfo.TYPE_CLASS_TEXT | EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE;
       editText.setMinLines(minLines);
@@ -371,6 +386,17 @@ class TextInputSpec {
     editText.setHintTextColor(hintColorStateList);
     editText.setHighlightColor(highlightColor);
     editText.setMovementMethod(movementMethod);
+
+    /**
+     * Sets error state on the TextInput, which shows an error icon provided by errorDrawable and an
+     * error message
+     *
+     * @param error Message that will be shown when error is not null and text input is in focused
+     *     state
+     * @param errorDrawable icon that signals an existing error and anchors a popover showing the
+     *     errorMessage when component is focused.
+     */
+    editText.setError(error, errorDrawable);
 
     if (cursorDrawableRes != -1) {
       try {
@@ -426,6 +452,7 @@ class TextInputSpec {
       @Prop(optional = true) Diff<Integer> maxLines,
       @Prop(optional = true) Diff<Integer> cursorDrawableRes,
       @Prop(optional = true) Diff<MovementMethod> movementMethod,
+      @Prop(optional = true, resType = ResType.STRING) Diff<CharSequence> error,
       @State Diff<Integer> measureSeqNumber) {
     if (!equals(measureSeqNumber.getPrevious(), measureSeqNumber.getNext())) {
       return true;
@@ -500,6 +527,9 @@ class TextInputSpec {
       return true;
     }
     if (!equals(movementMethod.getPrevious(), movementMethod.getNext())) {
+      return true;
+    }
+    if (!equals(error.getPrevious(), error.getNext())) {
       return true;
     }
     // Save the nastiest for last: trying to diff drawables.
@@ -600,6 +630,8 @@ class TextInputSpec {
       @Prop(optional = true) TextUtils.TruncateAt ellipsize,
       @Prop(optional = true) int cursorDrawableRes,
       @Prop(optional = true) MovementMethod movementMethod,
+      @Prop(optional = true, resType = ResType.STRING) CharSequence error,
+      @Prop(optional = true, resType = ResType.DRAWABLE) Drawable errorDrawable,
       @State AtomicReference<CharSequence> savedText,
       @State AtomicReference<EditTextWithEventHandlers> mountedView) {
     mountedView.set(editText);
@@ -632,7 +664,9 @@ class TextInputSpec {
         // onMount happens:
         // 1. After initState: savedText = initText.
         // 2. After onUnmount: savedText preserved from underlying editText.
-        savedText.get());
+        savedText.get(),
+        error,
+        errorDrawable);
     editText.setTextState(savedText);
   }
 

@@ -30,6 +30,7 @@
       android:icon="@drawable/ic_launcher"
       android:allowBackup="false"
       android:debuggable="true"
+      android:supportsRtl="true"
       android:theme="@style/NoTitleBarWhiteBG">
     <activity android:name=".DemoListActivity">
       <intent-filter>

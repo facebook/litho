@@ -19,9 +19,12 @@ package com.facebook.samples.litho.kotlin.lithography.components
 import android.graphics.Color
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
+import com.facebook.litho.FixedSize
 import com.facebook.litho.Row
 import com.facebook.litho.annotations.LayoutSpec
 import com.facebook.litho.annotations.OnCreateLayout
+import com.facebook.litho.build
+import com.facebook.litho.dp
 import com.facebook.litho.widget.Progress
 import com.facebook.yoga.YogaJustify.CENTER
 
@@ -29,12 +32,11 @@ import com.facebook.yoga.YogaJustify.CENTER
 object LoadingComponentSpec {
 
   @OnCreateLayout
-  fun onCreateLayout(c: ComponentContext): Component =
-      Row.create(c)
-          .justifyContent(CENTER)
-          .child(
-              Progress.create(c)
-                  .color(Color.DKGRAY)
-                  .widthDip(50f))
-          .build()
+  fun onCreateLayout(c: ComponentContext): Component = build(c) {
+    Row(justifyContent = CENTER) {
+      +FixedSize(width = 50.dp) {
+        Progress(color = Color.DKGRAY)
+      }
+    }
+  }
 }

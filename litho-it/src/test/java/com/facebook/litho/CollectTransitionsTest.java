@@ -21,6 +21,7 @@ import static org.robolectric.RuntimeEnvironment.application;
 
 import android.view.View;
 import com.facebook.litho.animation.AnimatedProperties;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
 import org.junit.Rule;
@@ -70,6 +71,9 @@ public class CollectTransitionsTest {
 
   @Test
   public void testCollectsWrappingTransitions() {
+    boolean originalValue = ComponentsConfiguration.isAnimationDisabled;
+    ComponentsConfiguration.isAnimationDisabled = false;
+
     ComponentContext c = new ComponentContext(application);
     LayoutState layoutState =
         LayoutState.calculate(
@@ -80,5 +84,6 @@ public class CollectTransitionsTest {
             View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
             LayoutState.CalculateLayoutSource.TEST);
     assertThat(layoutState.getTransitions()).hasSize(2);
+    ComponentsConfiguration.isAnimationDisabled = originalValue;
   }
 }

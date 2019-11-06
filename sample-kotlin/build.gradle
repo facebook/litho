@@ -37,14 +37,15 @@ android {
 }
 
 kapt {
-    mapDiagnosticLocations = true
+    correctErrorTypes true
+    mapDiagnosticLocations true
 }
 
 dependencies {
-    implementation project(':litho-core')
-    implementation project(':litho-kotlin')
-    implementation project(':litho-widget')
-    implementation project(':litho-fresco')
+    implementation project(':litho-core-kotlin')
+    implementation project(':litho-widget-kotlin')
+    implementation project(':litho-fresco-kotlin')
+
     implementation project(':litho-sections-core')
     implementation project(':litho-sections-widget')
 

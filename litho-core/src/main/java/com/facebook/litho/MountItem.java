@@ -47,6 +47,7 @@ class MountItem {
   private ViewNodeInfo mViewNodeInfo;
   private Component mComponent;
   private ComponentHost mHost;
+  private @Nullable DebugHierarchy.Node mHierarchy;
   private boolean mIsBound;
   private int mImportantForAccessibility = IMPORTANT_FOR_ACCESSIBILITY_AUTO;
   private @Nullable TransitionId mTransitionId;
@@ -71,6 +72,7 @@ class MountItem {
             lithoView,
             lithoView,
             null,
+            null,
             viewNodeInfo,
             0,
             IMPORTANT_FOR_ACCESSIBILITY_AUTO,
@@ -84,6 +86,7 @@ class MountItem {
         component,
         host,
         content,
+        layoutOutput.getHierarchy(),
         layoutOutput.getNodeInfo(),
         layoutOutput.getViewNodeInfo(),
         layoutOutput.getFlags(),
@@ -96,6 +99,7 @@ class MountItem {
       Component component,
       ComponentHost host,
       Object content,
+      @Nullable DebugHierarchy.Node hierarchy,
       NodeInfo nodeInfo,
       ViewNodeInfo viewNodeInfo,
       int layoutFlags,
@@ -113,6 +117,10 @@ class MountItem {
     mImportantForAccessibility = importantForAccessibility;
     mOrientation = orientation;
     mTransitionId = transitionId;
+
+    if (hierarchy != null) {
+      mHierarchy = hierarchy;
+    }
 
     if (nodeInfo != null) {
       mNodeInfo = nodeInfo;
@@ -166,6 +174,10 @@ class MountItem {
     mNodeInfo = null;
     mViewNodeInfo = null;
 
+    if (layoutOutput.getHierarchy() != null) {
+      mHierarchy = layoutOutput.getHierarchy();
+    }
+
     if (layoutOutput.getNodeInfo() != null) {
       mNodeInfo = layoutOutput.getNodeInfo();
     }
@@ -207,6 +219,11 @@ class MountItem {
 
   int getOrientation() {
     return mOrientation;
+  }
+
+  @Nullable
+  DebugHierarchy.Node getHierarchy() {
+    return mHierarchy;
   }
 
   NodeInfo getNodeInfo() {
