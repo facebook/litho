@@ -198,10 +198,12 @@ public class LithoPluginUtils {
    *     a wrong package.
    * @param project Project to find generated class in.
    */
-  public static Optional<PsiClass> findGeneratedClass(String qualifiedSpecName, Project project) {
+  @Nullable
+  public static PsiClass findGeneratedClass(String qualifiedSpecName, Project project) {
     return Optional.of(qualifiedSpecName)
         .map(LithoPluginUtils::getLithoComponentNameFromSpec)
-        .map(qualifiedComponentName -> PsiSearchUtils.findClass(project, qualifiedComponentName));
+        .map(qualifiedComponentName -> PsiSearchUtils.findClass(project, qualifiedComponentName))
+        .orElse(null);
   }
 
   /** Finds LayoutSpec class in the given file. */

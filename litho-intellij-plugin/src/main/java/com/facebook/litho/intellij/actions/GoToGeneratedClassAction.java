@@ -41,10 +41,9 @@ public class GoToGeneratedClassAction extends AnAction {
   }
 
   private static Optional<PsiClass> getNavigatableComponent(AnActionEvent e) {
-    return Optional.of(e)
-        .map(event -> event.getData(CommonDataKeys.PSI_FILE))
+    return Optional.ofNullable(e.getData(CommonDataKeys.PSI_FILE))
         .flatMap(psiFile -> LithoPluginUtils.getFirstClass(psiFile, LithoPluginUtils::isLithoSpec))
-        .flatMap(
+        .map(
             specCls ->
                 LithoPluginUtils.findGeneratedClass(
                     specCls.getQualifiedName(), specCls.getProject()))
