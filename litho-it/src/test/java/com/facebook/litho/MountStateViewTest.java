@@ -30,6 +30,7 @@ import android.graphics.drawable.Drawable;
 import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.view.ViewGroup;
+import com.facebook.litho.drawable.ComparableColorDrawable;
 import com.facebook.litho.drawable.ComparableDrawableWrapper;
 import com.facebook.litho.it.R;
 import com.facebook.litho.testing.TestComponent;
@@ -88,6 +89,54 @@ public class MountStateViewTest {
     assertThat(child.getPaddingBottom()).isEqualTo(8);
     assertThat(background).isInstanceOf(ColorDrawable.class);
     assertThat(((ColorDrawable) background).getColor()).isEqualTo(color);
+  }
+
+  @Test
+  public void testMountComponentBackgroundAndClickHandler() {
+    final int color = 0xFFFF0000;
+    final LithoView lithoView =
+        mountComponent(
+            mContext,
+            new InlineLayoutSpec() {
+              @Override
+              protected Component onCreateLayout(ComponentContext c) {
+                return create(c)
+                    .child(
+                        TestDrawableComponent.create(c)
+                            .clickHandler(c.newEventHandler(1))
+                            .backgroundColor(color))
+                    .build();
+              }
+            });
+
+    final View child = lithoView.getChildAt(0);
+    Drawable background = child.getBackground();
+    assertThat(child.isClickable()).isTrue();
+    assertThat(background).isInstanceOf(ComparableColorDrawable.class);
+    assertThat(((ComparableColorDrawable) background).getColor()).isEqualTo(color);
+  }
+
+  @Test
+  public void testUnmountComponentBackgroundAndClickHandler() {
+    final int color = 0xFFFF0000;
+    final LithoView lithoView =
+        mountComponent(
+            mContext,
+            new InlineLayoutSpec() {
+              @Override
+              protected Component onCreateLayout(ComponentContext c) {
+                return create(c)
+                    .child(
+                        TestDrawableComponent.create(c)
+                            .clickHandler(c.newEventHandler(1))
+                            .backgroundColor(color))
+                    .build();
+              }
+            });
+    assertThat(lithoView.getChildCount()).isEqualTo(1);
+    assertThat(lithoView.getChildAt(0).getBackground()).isNotNull();
+    lithoView.unmountAllItems();
+    assertThat(lithoView.getChildCount()).isEqualTo(0);
   }
 
   @Test

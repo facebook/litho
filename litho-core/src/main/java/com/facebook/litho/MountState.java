@@ -1570,7 +1570,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       unsetViewStateListAnimator(view, viewNodeInfo);
       unsetViewBackground(view, viewNodeInfo);
       // Host view doesn't set its own padding, but gets absolute positions for inner content from
-      // Yoga. Also bg/fg is used as separate drawables instead of using View's bg/fg attribute.
+      // Yoga. Also fg is used as separate drawables instead of using View's fg attribute.
       if (!isHostView) {
         unsetViewPadding(view, item, viewNodeInfo);
         unsetViewForeground(view, viewNodeInfo);
