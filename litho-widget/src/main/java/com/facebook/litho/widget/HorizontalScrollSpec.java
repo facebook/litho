@@ -242,6 +242,7 @@ class HorizontalScrollSpec {
                     c.getAndroidContext(), c.getLogTag(), c.getLogger(), c.getTreePropsCopy()),
                 contentProps)
             .incrementalMount(false)
+            .isReconciliationEnabled(false)
             .build());
   }
 

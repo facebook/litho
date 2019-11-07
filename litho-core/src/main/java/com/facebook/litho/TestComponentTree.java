@@ -155,7 +155,7 @@ public class TestComponentTree extends ComponentTree {
 
     NodeConfig.sInternalNodeFactory = new TestInternalNodeFactory();
 
-    ComponentTree tree = ComponentTree.create(context).build();
+    ComponentTree tree = ComponentTree.create(context).isReconciliationEnabled(false).build();
     ComponentContext c =
         new TestComponentContext(
             ComponentContext.withComponentTree(new TestComponentContext(context), tree),
@@ -195,8 +195,12 @@ public class TestComponentTree extends ComponentTree {
     }
 
     @Override
-    public TestComponentTree build() {
+    public Builder isReconciliationEnabled(boolean isEnabled) {
+      return (Builder) super.isReconciliationEnabled(isEnabled);
+    }
 
+    @Override
+    public TestComponentTree build() {
       return new TestComponentTree(this);
     }
   }

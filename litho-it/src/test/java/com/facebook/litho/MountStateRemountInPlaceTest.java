@@ -182,6 +182,7 @@ public class MountStateRemountInPlaceTest {
         mountComponent(
             new LithoView(mContext),
             ComponentTree.create(mContext, Column.create(mContext).child(firstComponent).build())
+                .isReconciliationEnabled(false)
                 .build(),
             makeMeasureSpec(100, AT_MOST),
             makeMeasureSpec(100, AT_MOST));
@@ -211,6 +212,7 @@ public class MountStateRemountInPlaceTest {
         mountComponent(
             new LithoView(mContext),
             ComponentTree.create(mContext, Column.create(mContext).child(firstComponent).build())
+                .isReconciliationEnabled(false)
                 .build(),
             makeMeasureSpec(100, EXACTLY),
             makeMeasureSpec(100, EXACTLY));
@@ -239,6 +241,7 @@ public class MountStateRemountInPlaceTest {
         mountComponent(
             new LithoView(mContext),
             ComponentTree.create(mContext, Column.create(mContext).child(firstComponent).build())
+                .isReconciliationEnabled(false)
                 .build(),
             makeMeasureSpec(100, EXACTLY),
             makeMeasureSpec(100, EXACTLY));
@@ -314,6 +317,7 @@ public class MountStateRemountInPlaceTest {
 
     final ComponentTree secondTree =
         ComponentTree.create(mContext, Column.create(mContext).child(secondComponent).build())
+            .isReconciliationEnabled(false)
             .build();
     secondTree.setSizeSpec(100, 100);
 
@@ -348,6 +352,7 @@ public class MountStateRemountInPlaceTest {
 
     final ComponentTree secondTree =
         ComponentTree.create(mContext, Column.create(mContext).child(secondComponent).build())
+            .isReconciliationEnabled(false)
             .build();
     secondTree.setSizeSpec(100, 100);
 
@@ -410,7 +415,8 @@ public class MountStateRemountInPlaceTest {
                     .child(Text.create(mContext).widthPx(100).heightPx(100).text("test2")))
             .build();
 
-    ComponentTree tree = ComponentTree.create(mContext, firstLayout).build();
+    ComponentTree tree =
+        ComponentTree.create(mContext, firstLayout).isReconciliationEnabled(false).build();
     LithoView cv = new LithoView(mContext);
 
     ComponentTestHelper.mountComponent(cv, tree);

@@ -58,7 +58,8 @@ public class DynamicPropsActivity extends NavigatableDemoActivity
     final ComponentContext c = new ComponentContext(this);
     final Component component =
         ClockComponent.create(c).time(mTimeValue).alpha(mAlphaValue).build();
-    lithoView.setComponentTree(ComponentTree.create(c, component).build());
+    lithoView.setComponentTree(
+        ComponentTree.create(c, component).isReconciliationEnabled(false).build());
 
     mSeekBar = findViewById(R.id.seekBar);
     mSeekBar.setMax((int) DAY);

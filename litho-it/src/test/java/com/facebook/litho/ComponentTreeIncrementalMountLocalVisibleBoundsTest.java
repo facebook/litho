@@ -53,6 +53,7 @@ public class ComponentTreeIncrementalMountLocalVisibleBoundsTest {
         ComponentTree.create(
                 context, TestDrawableComponent.create(context).color(Color.BLACK).build())
             .layoutDiffing(false)
+            .isReconciliationEnabled(false)
             .build();
 
     mLithoView = mock(TestLithoView.class);

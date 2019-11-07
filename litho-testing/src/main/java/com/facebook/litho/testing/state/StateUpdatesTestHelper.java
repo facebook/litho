@@ -170,6 +170,7 @@ public final class StateUpdatesTestHelper {
         ComponentTree.create(context, component)
             .incrementalMount(incrementalMountEnabled)
             .layoutDiffing(false)
+            .isReconciliationEnabled(false)
             .build();
 
     final LithoView lithoView = new LithoView(context);

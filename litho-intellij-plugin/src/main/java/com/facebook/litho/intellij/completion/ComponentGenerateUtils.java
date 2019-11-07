@@ -33,6 +33,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiJavaFile;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeSpec;
+import java.util.Optional;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
@@ -101,7 +102,7 @@ public class ComponentGenerateUtils {
 
     @Override
     protected PsiElement[] create(String qualifiedSpecName) {
-      return LithoPluginUtils.findGeneratedClass(qualifiedSpecName, project)
+      return Optional.ofNullable(LithoPluginUtils.findGeneratedClass(qualifiedSpecName, project))
           .map(PsiElement::getContainingFile)
           .filter(PsiJavaFile.class::isInstance)
           .map(componentFile -> updateFileWithModel((PsiJavaFile) componentFile, model))

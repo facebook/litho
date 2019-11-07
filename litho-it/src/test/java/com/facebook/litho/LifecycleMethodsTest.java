@@ -54,7 +54,7 @@ public class LifecycleMethodsTest {
     mComponent = LifecycleMethodsComponent.create(10);
 
     final ComponentContext c = new ComponentContext(RuntimeEnvironment.application);
-    mComponentTree = ComponentTree.create(c, mComponent).build();
+    mComponentTree = ComponentTree.create(c, mComponent).isReconciliationEnabled(false).build();
     mLithoView.setComponentTree(mComponentTree);
   }
 

@@ -50,7 +50,7 @@ public class LithoFindUsagesHandlerFactory extends FindUsagesHandlerFactory {
    * excludes this generated class itself from the places to search.
    */
   static class GeneratedClassFindUsagesHandler extends FindUsagesHandler {
-    private final Function<PsiClass, Optional<PsiClass>> findGeneratedClass;
+    private final Function<PsiClass, PsiClass> findGeneratedClass;
 
     GeneratedClassFindUsagesHandler(PsiElement psiElement) {
       this(
@@ -62,7 +62,7 @@ public class LithoFindUsagesHandlerFactory extends FindUsagesHandlerFactory {
 
     @VisibleForTesting
     GeneratedClassFindUsagesHandler(
-        PsiElement psiElement, Function<PsiClass, Optional<PsiClass>> findGeneratedClass) {
+        PsiElement psiElement, Function<PsiClass, PsiClass> findGeneratedClass) {
       super(psiElement);
       this.findGeneratedClass = findGeneratedClass;
     }
@@ -74,7 +74,7 @@ public class LithoFindUsagesHandlerFactory extends FindUsagesHandlerFactory {
       return Optional.of(getPsiElement())
           .filter(PsiClass.class::isInstance)
           .map(PsiClass.class::cast)
-          .flatMap(findGeneratedClass)
+          .map(findGeneratedClass)
           .map(
               psiClass -> {
                 LithoLoggerProvider.getEventLogger()
@@ -87,17 +87,15 @@ public class LithoFindUsagesHandlerFactory extends FindUsagesHandlerFactory {
     @Override
     public FindUsagesOptions getFindUsagesOptions(@Nullable DataContext dataContext) {
       FindUsagesOptions findUsagesOptions = super.getFindUsagesOptions(dataContext);
-      PsiElement searchTarget = getPsiElement();
-      if (!(searchTarget instanceof PsiClass)) {
-        return findUsagesOptions;
-      }
-      Optional<PsiClass> generatedCls = findGeneratedClass.apply((PsiClass) searchTarget);
-      if (!generatedCls.isPresent()) {
-        return findUsagesOptions;
-      }
-      findUsagesOptions.searchScope =
-          new ExcludingScope(findUsagesOptions.searchScope, generatedCls.get());
-
+      Optional.of(getPsiElement())
+          .filter(PsiClass.class::isInstance)
+          .map(PsiClass.class::cast)
+          .map(findGeneratedClass)
+          .ifPresent(
+              generatedCls -> {
+                findUsagesOptions.searchScope =
+                    new ExcludingScope(findUsagesOptions.searchScope, generatedCls);
+              });
       return findUsagesOptions;
     }
 

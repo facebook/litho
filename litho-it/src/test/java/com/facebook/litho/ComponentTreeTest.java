@@ -133,7 +133,8 @@ public class ComponentTreeTest {
 
   @Test
   public void testCreate() {
-    ComponentTree componentTree = ComponentTree.create(mContext, mComponent).build();
+    ComponentTree componentTree =
+        ComponentTree.create(mContext, mComponent).isReconciliationEnabled(false).build();
 
     creationCommonChecks(componentTree);
 
@@ -148,7 +149,8 @@ public class ComponentTreeTest {
   public void testCreate_ContextIsNotScoped() {
     ComponentContext scopedContext =
         ComponentContext.withComponentScope(mContext, Row.create(mContext).build());
-    ComponentTree componentTree = ComponentTree.create(scopedContext, mComponent).build();
+    ComponentTree componentTree =
+        ComponentTree.create(scopedContext, mComponent).isReconciliationEnabled(false).build();
 
     ComponentContext c = Whitebox.getInternalState(componentTree, "mContext");
     Assert.assertNull(c.getComponentScope());
@@ -156,7 +158,8 @@ public class ComponentTreeTest {
 
   @Test
   public void testSetSizeSpec() {
-    ComponentTree componentTree = ComponentTree.create(mContext, mComponent).build();
+    ComponentTree componentTree =
+        ComponentTree.create(mContext, mComponent).isReconciliationEnabled(false).build();
     componentTree.setSizeSpec(mWidthSpec, mHeightSpec);
 
     // Since this happens post creation, it's not in general safe to update the main thread layout
@@ -166,7 +169,8 @@ public class ComponentTreeTest {
 
   @Test
   public void testSetSizeSpecAsync() {
-    ComponentTree componentTree = create(mContext, mComponent).build();
+    ComponentTree componentTree =
+        create(mContext, mComponent).isReconciliationEnabled(false).build();
     componentTree.setSizeSpecAsync(mWidthSpec, mHeightSpec);
 
     // Only fields changed but no layout is done yet.
@@ -191,7 +195,8 @@ public class ComponentTreeTest {
         ComponentContext.withComponentScope(mContext, Row.create(mContext).build());
     Component root = Column.create(scopedContext).build();
 
-    ComponentTree componentTree = ComponentTree.create(scopedContext, root).build();
+    ComponentTree componentTree =
+        ComponentTree.create(scopedContext, root).isReconciliationEnabled(false).build();
 
     componentTree.setSizeSpecAsync(mWidthSpec, mHeightSpec);
 
@@ -206,7 +211,8 @@ public class ComponentTreeTest {
 
   @Test
   public void testSetSizeSpecAsyncThenSyncBeforeRunningTask() {
-    ComponentTree componentTree = ComponentTree.create(mContext, mComponent).build();
+    ComponentTree componentTree =
+        ComponentTree.create(mContext, mComponent).isReconciliationEnabled(false).build();
 
     componentTree.setSizeSpecAsync(mWidthSpec, mHeightSpec);
     componentTree.setSizeSpec(mWidthSpec2, mHeightSpec2);
@@ -220,7 +226,8 @@ public class ComponentTreeTest {
 
   @Test
   public void testSetSizeSpecAsyncThenSyncAfterRunningTask() {
-    ComponentTree componentTree = ComponentTree.create(mContext, mComponent).build();
+    ComponentTree componentTree =
+        ComponentTree.create(mContext, mComponent).isReconciliationEnabled(false).build();
     componentTree.setSizeSpecAsync(mWidthSpec, mHeightSpec);
 
     mLayoutThreadShadowLooper.runToEndOfTasks();
@@ -234,7 +241,8 @@ public class ComponentTreeTest {
 
   @Test
   public void testSetSizeSpecWithOutput() {
-    ComponentTree componentTree = ComponentTree.create(mContext, mComponent).build();
+    ComponentTree componentTree =
+        ComponentTree.create(mContext, mComponent).isReconciliationEnabled(false).build();
 
     Size size = new Size();
 
@@ -250,7 +258,8 @@ public class ComponentTreeTest {
 
   @Test
   public void testSetSizeSpecWithOutputWhenAttachedToViewWithSameSpec() {
-    ComponentTree componentTree = ComponentTree.create(mContext, mComponent).build();
+    ComponentTree componentTree =
+        ComponentTree.create(mContext, mComponent).isReconciliationEnabled(false).build();
     componentTree.setLithoView(new LithoView(mContext));
 
     Size size = new Size();
@@ -268,7 +277,8 @@ public class ComponentTreeTest {
 
   @Test
   public void testSetSizeSpecWithOutputWhenAttachedToViewWithNewSpec() {
-    ComponentTree componentTree = ComponentTree.create(mContext, mComponent).build();
+    ComponentTree componentTree =
+        ComponentTree.create(mContext, mComponent).isReconciliationEnabled(false).build();
     componentTree.setLithoView(new LithoView(mContext));
 
     Size size = new Size();
@@ -286,7 +296,8 @@ public class ComponentTreeTest {
 
   @Test
   public void testSetCompatibleSizeSpec() {
-    ComponentTree componentTree = create(mContext, mComponent).build();
+    ComponentTree componentTree =
+        create(mContext, mComponent).isReconciliationEnabled(false).build();
 
     Size size = new Size();
 
@@ -308,7 +319,8 @@ public class ComponentTreeTest {
 
   @Test
   public void testSetCompatibleSizeSpecWithDifferentRoot() {
-    ComponentTree componentTree = create(mContext, mComponent).build();
+    ComponentTree componentTree =
+        create(mContext, mComponent).isReconciliationEnabled(false).build();
 
     Size size = new Size();
 
@@ -331,7 +343,8 @@ public class ComponentTreeTest {
 
   @Test
   public void testSetRootAndSizeSpecWithTreeProps() {
-    ComponentTree componentTree = create(mContext, mComponent).build();
+    ComponentTree componentTree =
+        create(mContext, mComponent).isReconciliationEnabled(false).build();
 
     final Size size = new Size();
     final TreeProps treeProps = new TreeProps();
@@ -351,7 +364,7 @@ public class ComponentTreeTest {
 
   @Test
   public void testDefaultInitialisationAndSetRoot() {
-    ComponentTree componentTree = create(mContext).build();
+    ComponentTree componentTree = create(mContext).isReconciliationEnabled(false).build();
     componentTree.setLithoView(new LithoView(mContext));
     componentTree.attach();
 
@@ -364,7 +377,8 @@ public class ComponentTreeTest {
 
   @Test
   public void testSetRootWithTreePropsThenMeasure() {
-    ComponentTree componentTree = create(mContext, mComponent).build();
+    ComponentTree componentTree =
+        create(mContext, mComponent).isReconciliationEnabled(false).build();
     componentTree.setLithoView(new LithoView(mContext));
     componentTree.attach();
 
@@ -391,7 +405,8 @@ public class ComponentTreeTest {
   public void testSetInput() {
     Component component = TestLayoutComponent.create(mContext).build();
 
-    ComponentTree componentTree = ComponentTree.create(mContext, component).build();
+    ComponentTree componentTree =
+        ComponentTree.create(mContext, component).isReconciliationEnabled(false).build();
 
     componentTree.setRoot(mComponent);
 
@@ -419,7 +434,8 @@ public class ComponentTreeTest {
           }
         };
 
-    ComponentTree componentTree = ComponentTree.create(mContext, component).build();
+    ComponentTree componentTree =
+        ComponentTree.create(mContext, component).isReconciliationEnabled(false).build();
 
     componentTree.setRootAndSizeSpec(mComponent, mWidthSpec, mHeightSpec);
     assertThat(componentTree.getRoot()).isEqualTo(wrapperComponent);
@@ -428,10 +444,12 @@ public class ComponentTreeTest {
   @Test
   public void testSetComponentFromView() {
     Component component1 = TestDrawableComponent.create(mContext).build();
-    ComponentTree componentTree1 = ComponentTree.create(mContext, component1).build();
+    ComponentTree componentTree1 =
+        ComponentTree.create(mContext, component1).isReconciliationEnabled(false).build();
 
     Component component2 = TestDrawableComponent.create(mContext).build();
-    ComponentTree componentTree2 = ComponentTree.create(mContext, component2).build();
+    ComponentTree componentTree2 =
+        ComponentTree.create(mContext, component2).isReconciliationEnabled(false).build();
 
     Assert.assertNull(getLithoView(componentTree1));
     Assert.assertNull(getLithoView(componentTree2));
@@ -451,7 +469,8 @@ public class ComponentTreeTest {
   @Test
   public void testComponentTreeReleaseClearsView() {
     Component component = TestDrawableComponent.create(mContext).build();
-    ComponentTree componentTree = create(mContext, component).build();
+    ComponentTree componentTree =
+        create(mContext, component).isReconciliationEnabled(false).build();
 
     LithoView lithoView = new LithoView(mContext);
     lithoView.setComponentTree(componentTree);
@@ -467,7 +486,8 @@ public class ComponentTreeTest {
   public void testSetTreeToTwoViewsBothAttached() {
     Component component = TestDrawableComponent.create(mContext).build();
 
-    ComponentTree componentTree = ComponentTree.create(mContext, component).build();
+    ComponentTree componentTree =
+        ComponentTree.create(mContext, component).isReconciliationEnabled(false).build();
 
     // Attach first view.
     LithoView lithoView1 = new LithoView(mContext);
@@ -487,7 +507,8 @@ public class ComponentTreeTest {
   public void testSettingNewViewToTree() {
     Component component = TestDrawableComponent.create(mContext).build();
 
-    ComponentTree componentTree = create(mContext, component).build();
+    ComponentTree componentTree =
+        create(mContext, component).isReconciliationEnabled(false).build();
 
     // Attach first view.
     LithoView lithoView1 = new LithoView(mContext);
@@ -511,7 +532,8 @@ public class ComponentTreeTest {
 
   @Test
   public void testSetRootAsyncFollowedByMeasureDoesntComputeSyncLayout() {
-    ComponentTree componentTree = ComponentTree.create(mContext, mComponent).build();
+    ComponentTree componentTree =
+        ComponentTree.create(mContext, mComponent).isReconciliationEnabled(false).build();
     componentTree.setLithoView(new LithoView(mContext));
 
     componentTree.measure(mWidthSpec, mHeightSpec, new int[2], false);
@@ -534,7 +556,8 @@ public class ComponentTreeTest {
 
   @Test
   public void testSetRootAsyncFollowedByNonCompatibleMeasureComputesSyncLayout() {
-    ComponentTree componentTree = ComponentTree.create(mContext, mComponent).build();
+    ComponentTree componentTree =
+        ComponentTree.create(mContext, mComponent).isReconciliationEnabled(false).build();
     componentTree.setLithoView(new LithoView(mContext));
 
     componentTree.measure(mWidthSpec, mHeightSpec, new int[2], false);
@@ -556,7 +579,8 @@ public class ComponentTreeTest {
 
   @Test
   public void testMeasureWithIncompatibleSetRootAsyncBeforeStart() {
-    ComponentTree componentTree = ComponentTree.create(mContext, mComponent).build();
+    ComponentTree componentTree =
+        ComponentTree.create(mContext, mComponent).isReconciliationEnabled(false).build();
     componentTree.setLithoView(new LithoView(mContext));
 
     int widthSpec1 = SizeSpec.makeSizeSpec(1000, SizeSpec.EXACTLY);
@@ -600,7 +624,8 @@ public class ComponentTreeTest {
 
   @Test
   public void testMeasureWithIncompatibleSetRootAsyncThatFinishes() {
-    ComponentTree componentTree = ComponentTree.create(mContext, mComponent).build();
+    ComponentTree componentTree =
+        ComponentTree.create(mContext, mComponent).isReconciliationEnabled(false).build();
     componentTree.setLithoView(new LithoView(mContext));
 
     int widthSpec1 = SizeSpec.makeSizeSpec(1000, SizeSpec.EXACTLY);
@@ -637,7 +662,8 @@ public class ComponentTreeTest {
 
   @Test
   public void testMeasureWithIncompatibleSetRootAsync() throws InterruptedException {
-    ComponentTree componentTree = ComponentTree.create(mContext, mComponent).build();
+    ComponentTree componentTree =
+        ComponentTree.create(mContext, mComponent).isReconciliationEnabled(false).build();
     componentTree.setLithoView(new LithoView(mContext));
 
     int widthSpec1 = SizeSpec.makeSizeSpec(1000, SizeSpec.EXACTLY);
@@ -718,7 +744,8 @@ public class ComponentTreeTest {
 
   @Test
   public void testSetRootAfterRelease() {
-    ComponentTree componentTree = ComponentTree.create(mContext, mComponent).build();
+    ComponentTree componentTree =
+        ComponentTree.create(mContext, mComponent).isReconciliationEnabled(false).build();
 
     componentTree.release();
 
@@ -728,7 +755,8 @@ public class ComponentTreeTest {
 
   @Test
   public void testCachedValues() {
-    ComponentTree componentTree = ComponentTree.create(mContext, mComponent).build();
+    ComponentTree componentTree =
+        ComponentTree.create(mContext, mComponent).isReconciliationEnabled(false).build();
     assertThat(componentTree.getCachedValue("key1")).isNull();
     componentTree.putCachedValue("key1", "value1");
     assertThat(componentTree.getCachedValue("key1")).isEqualTo("value1");
@@ -757,7 +785,10 @@ public class ComponentTreeTest {
         ThreadPoolLayoutHandler.getNewInstance(new LayoutThreadPoolConfigurationImpl(1, 1, 5));
 
     ComponentTree componentTree =
-        ComponentTree.create(mContext, root1).layoutThreadHandler(handler).build();
+        ComponentTree.create(mContext, root1)
+            .layoutThreadHandler(handler)
+            .isReconciliationEnabled(false)
+            .build();
 
     componentTree.setLithoView(new LithoView(mContext));
     componentTree.measure(mWidthSpec, mHeightSpec, new int[2], false);
@@ -803,7 +834,10 @@ public class ComponentTreeTest {
         ThreadPoolLayoutHandler.getNewInstance(new LayoutThreadPoolConfigurationImpl(1, 1, 5));
 
     ComponentTree componentTree =
-        ComponentTree.create(mContext, root1).layoutThreadHandler(handler).build();
+        ComponentTree.create(mContext, root1)
+            .layoutThreadHandler(handler)
+            .isReconciliationEnabled(false)
+            .build();
 
     componentTree.setLithoView(new LithoView(mContext));
     componentTree.measure(mWidthSpec, mHeightSpec, new int[2], false);
@@ -871,7 +905,10 @@ public class ComponentTreeTest {
         ThreadPoolLayoutHandler.getNewInstance(new LayoutThreadPoolConfigurationImpl(1, 1, 5));
 
     ComponentTree componentTree =
-        ComponentTree.create(mContext, root1).layoutThreadHandler(handler).build();
+        ComponentTree.create(mContext, root1)
+            .layoutThreadHandler(handler)
+            .isReconciliationEnabled(false)
+            .build();
 
     componentTree.setLithoView(new LithoView(mContext));
     componentTree.measure(mWidthSpec, mHeightSpec, new int[2], false);
@@ -935,7 +972,8 @@ public class ComponentTreeTest {
     final Component component = TestLayoutComponent.create(mContext).build();
     final LithoView lithoView = new LithoView(mContext);
 
-    final ComponentTree componentTree = ComponentTree.create(mContext, component).build();
+    final ComponentTree componentTree =
+        ComponentTree.create(mContext, component).isReconciliationEnabled(false).build();
     lithoView.setComponentTree(componentTree);
 
     componentTree.setNewLayoutStateReadyListener(
@@ -954,7 +992,8 @@ public class ComponentTreeTest {
     final Component component = TestLayoutComponent.create(mContext).build();
     final LithoView lithoView = new LithoView(mContext);
 
-    final ComponentTree componentTree = ComponentTree.create(mContext, component).build();
+    final ComponentTree componentTree =
+        ComponentTree.create(mContext, component).isReconciliationEnabled(false).build();
     lithoView.setComponentTree(componentTree);
     lithoView.onAttachedToWindow();
 

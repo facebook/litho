@@ -168,6 +168,7 @@ public final class ComponentTestHelper {
         ComponentTree.create(context, component)
             .incrementalMount(incrementalMountEnabled)
             .layoutDiffing(false)
+            .isReconciliationEnabled(false)
             .build(),
         makeMeasureSpec(width, EXACTLY),
         makeMeasureSpec(height, EXACTLY));

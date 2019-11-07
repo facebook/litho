@@ -774,7 +774,6 @@ public abstract class Component extends ComponentLifecycle
     return dynamicValue.get();
   }
 
-  // TODO(t30797526): Remove
   private static void assertSameBaseContext(
       ComponentContext scopedContext, ComponentContext willRenderContext) {
     if (scopedContext.getAndroidContext() != willRenderContext.getAndroidContext()) {

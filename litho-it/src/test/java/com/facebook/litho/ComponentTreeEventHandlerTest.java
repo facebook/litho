@@ -39,7 +39,8 @@ public class ComponentTreeEventHandlerTest {
   @Test
   public void testNoDuplicateWhenEventHandlerIsReplacedInEventHandlerWrapper() {
     Component component = mock(Component.class);
-    ComponentTree componentTree = ComponentTree.create(mContext, component).build();
+    ComponentTree componentTree =
+        ComponentTree.create(mContext, component).isReconciliationEnabled(false).build();
     EventHandlersController eventHandlersController = componentTree.getEventHandlersController();
 
     EventHandler eventHandler1 = mContext.newEventHandler(1);
@@ -71,7 +72,8 @@ public class ComponentTreeEventHandlerTest {
   @Test
   public void testClearUnusedEntries() {
     Component component = mock(Component.class);
-    ComponentTree componentTree = ComponentTree.create(mContext, component).build();
+    ComponentTree componentTree =
+        ComponentTree.create(mContext, component).isReconciliationEnabled(false).build();
     EventHandlersController eventHandlersController = componentTree.getEventHandlersController();
 
     EventHandler eventHandler1 = mContext.newEventHandler(1);

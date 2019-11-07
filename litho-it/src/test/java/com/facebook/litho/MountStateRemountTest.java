@@ -135,7 +135,9 @@ public class MountStateRemountTest {
 
     final LithoView lithoView = new LithoView(mContext);
     final ComponentTree componentTree =
-        ComponentTree.create(mContext, Column.create(mContext).child(component1).build()).build();
+        ComponentTree.create(mContext, Column.create(mContext).child(component1).build())
+            .isReconciliationEnabled(false)
+            .build();
     mountComponent(
         lithoView, componentTree, makeMeasureSpec(100, EXACTLY), makeMeasureSpec(100, EXACTLY));
 
@@ -198,6 +200,7 @@ public class MountStateRemountTest {
         ComponentTree.create(mContext, oldComponent)
             .incrementalMount(false)
             .layoutDiffing(true)
+            .isReconciliationEnabled(false)
             .build();
 
     mountComponent(
@@ -259,6 +262,7 @@ public class MountStateRemountTest {
         ComponentTree.create(mContext, oldComponent)
             .incrementalMount(false)
             .layoutDiffing(true)
+            .isReconciliationEnabled(false)
             .build();
 
     mountComponent(
@@ -315,6 +319,7 @@ public class MountStateRemountTest {
         ComponentTree.create(mContext, oldComponent)
             .incrementalMount(false)
             .layoutDiffing(true)
+            .isReconciliationEnabled(false)
             .build();
 
     mountComponent(

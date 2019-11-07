@@ -5361,6 +5361,7 @@ public class RecyclerBinderTest {
     final ComponentTree parent =
         ComponentTree.create(mComponentContext, TestDrawableComponent.create(parentContext).build())
             .incrementalMount(false)
+            .isReconciliationEnabled(false)
             .build();
 
     assertThat(ComponentContext.isIncrementalMountEnabled(parent.getContext())).isFalse();
@@ -5389,6 +5390,7 @@ public class RecyclerBinderTest {
     final ComponentTree parent =
         ComponentTree.create(mComponentContext, TestDrawableComponent.create(parentContext).build())
             .incrementalMount(true)
+            .isReconciliationEnabled(false)
             .build();
 
     assertThat(ComponentContext.isIncrementalMountEnabled(parent.getContext())).isTrue();

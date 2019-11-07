@@ -34,7 +34,6 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.search.SearchScope;
 import java.io.File;
-import java.util.Optional;
 import java.util.function.Function;
 import org.junit.Test;
 
@@ -71,8 +70,7 @@ public class LithoFindUsagesHandlerFactoryTest extends LithoPluginIntellijTest {
     PsiClass mockedResult = mock(PsiClass.class);
 
     // We mock this function because project search is not working in test environment
-    Function<PsiClass, Optional<PsiClass>> findGeneratedComponent =
-        psiClass -> Optional.of(mockedResult);
+    Function<PsiClass, PsiClass> findGeneratedComponent = psiClass -> mockedResult;
     LithoFindUsagesHandlerFactory.GeneratedClassFindUsagesHandler handler =
         new LithoFindUsagesHandlerFactory.GeneratedClassFindUsagesHandler(
             mockedElement, findGeneratedComponent);
@@ -103,8 +101,8 @@ public class LithoFindUsagesHandlerFactoryTest extends LithoPluginIntellijTest {
           VirtualFile presentInScopeVirtualFile = createPresentInScopeVirtualFile();
 
           // We mock this function because project search is not working in test environment
-          Function<PsiClass, Optional<PsiClass>> findGeneratedComponent =
-              psiClass -> Optional.of(mockedGeneratedComponentCls);
+          Function<PsiClass, PsiClass> findGeneratedComponent =
+              psiClass -> mockedGeneratedComponentCls;
           LithoFindUsagesHandlerFactory.GeneratedClassFindUsagesHandler handler =
               new LithoFindUsagesHandlerFactory.GeneratedClassFindUsagesHandler(
                   layoutSpec, findGeneratedComponent);
