@@ -139,18 +139,14 @@ public class LithoViewTestHelper {
   private static void viewToString(
       DebugComponent component, StringBuilder sb, boolean embedded, int depth) {
     for (DebugComponent child : component.getChildComponents()) {
-      int nextDepth = depth;
-      // TODO(T37986749): add unit test for this scenario (need to create non-layout somehow)
-      if (!ComponentsConfiguration.isEndToEndTestRun || child.isLayoutNode()) {
-        // if the component shares the same node with the child the position will be incorrect as
-        // bounds retrieved from the node instance
-        int left = component.isSameNode(child) ? -component.getBounds().left : 0;
-        int top = component.isSameNode(child) ? -component.getBounds().top : 0;
-        writeNewLineWithIndentByDepth(sb, nextDepth);
-        DebugComponentDescriptionHelper.addViewDescription(left, top, child, sb, embedded);
-        nextDepth++;
-      }
-      viewToString(child, sb, embedded, nextDepth);
+      // if the component shares the same node with the child the position will be incorrect as
+      // bounds retrieved from the node instance
+      int left = component.isSameNode(child) ? -component.getBounds().left : 0;
+      int top = component.isSameNode(child) ? -component.getBounds().top : 0;
+      writeNewLineWithIndentByDepth(sb, depth);
+      DebugComponentDescriptionHelper.addViewDescription(left, top, child, sb, embedded);
+
+      viewToString(child, sb, embedded, depth + 1);
     }
   }
 
