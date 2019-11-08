@@ -79,13 +79,14 @@ public class CachedValueValidation {
     for (SpecMethodModel<DelegateMethod, Void> onCalculateCachedValueMethod :
         onCalculateCachedValueMethods) {
       for (MethodParamModel param : onCalculateCachedValueMethod.methodParams) {
-        if (!(param instanceof PropModel)
+        if (!(MethodParamModelUtils.isComponentContextParam(param))
+            && !(param instanceof PropModel)
             && !(param instanceof StateParamModel)
             && !(param instanceof InjectPropModel)) {
           validationErrors.add(
               new SpecModelValidationError(
                   param.getRepresentedObject(),
-                  "@OnCalculateCachedValue methods may only take Props, @InjectProps and State as params."));
+                  "@OnCalculateCachedValue methods may only take ComponentContext, Props, @InjectProps and State as params."));
         }
       }
     }

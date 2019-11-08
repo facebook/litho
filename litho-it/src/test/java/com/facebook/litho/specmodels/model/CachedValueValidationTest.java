@@ -154,8 +154,8 @@ public class CachedValueValidationTest {
             .methodParams(
                 ImmutableList.of(
                     MockMethodParamModel.newBuilder()
-                        .name("c")
-                        .type(ClassNames.COMPONENT_CONTEXT)
+                        .name("cl")
+                        .type(ClassNames.COMPONENT_LAYOUT)
                         .representedObject(paramObject)
                         .build()))
             .representedObject(mDelegateMethodRepresentedObject1)
@@ -167,7 +167,44 @@ public class CachedValueValidationTest {
     assertThat(validationErrors.get(0).element).isEqualTo(paramObject);
     assertThat(validationErrors.get(0).message)
         .isEqualTo(
-            "@OnCalculateCachedValue methods may only take Props, @InjectProps and State as params.");
+            "@OnCalculateCachedValue methods may only take ComponentContext, Props, @InjectProps and State as params.");
+  }
+
+  @Test
+  public void testOnCalculateCachedValueWithContext() {
+    Object paramObject = new Object();
+    SpecMethodModel<DelegateMethod, Void> delegateMethod =
+        SpecMethodModel.<DelegateMethod, Void>builder()
+            .annotations(
+                ImmutableList.<Annotation>of(
+                    new OnCalculateCachedValue() {
+                      @Override
+                      public String name() {
+                        return "name1";
+                      }
+
+                      @Override
+                      public Class<? extends Annotation> annotationType() {
+                        return OnCalculateCachedValue.class;
+                      }
+                    }))
+            .modifiers(ImmutableList.<Modifier>of())
+            .name("onCalculateName1")
+            .returnTypeSpec(new TypeSpec(TypeName.BOOLEAN))
+            .typeVariables(ImmutableList.of())
+            .methodParams(
+                ImmutableList.of(
+                    MockMethodParamModel.newBuilder()
+                        .name("c")
+                        .type(ClassNames.COMPONENT_CONTEXT)
+                        .representedObject(paramObject)
+                        .build()))
+            .representedObject(mDelegateMethodRepresentedObject1)
+            .build();
+    when(mSpecModel.getDelegateMethods()).thenReturn(ImmutableList.of(delegateMethod));
+
+    List<SpecModelValidationError> validationErrors = CachedValueValidation.validate(mSpecModel);
+    assertThat(validationErrors).hasSize(0);
   }
 
   @Test

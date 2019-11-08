@@ -67,6 +67,10 @@ public class MethodParamModelUtils {
         && ((StateParamModel) methodParamModel).canUpdateLazily();
   }
 
+  public static boolean isComponentContextParam(MethodParamModel methodParamModel) {
+    return methodParamModel.getTypeName().equals(ClassNames.COMPONENT_CONTEXT);
+  }
+
   public static List<TypeVariableName> getTypeVariables(MethodParamModel methodParam) {
     return getTypeVariables(methodParam.getTypeName());
   }

@@ -35,6 +35,7 @@ import java.lang.annotation.Annotation;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import javax.lang.model.element.Modifier;
 
 /** Class that generates the cached value methods for a Component. */
@@ -109,16 +110,17 @@ public class CachedValueGenerator {
       codeBlock.add(");\n");
     } else {
       for (int i = 0; i < paramSize; i++) {
+        MethodParamModel methodParamModel = onCalculateCachedValueMethod.methodParams.get(i);
+        // Skip the ComponentContext param from the input class creation since the context can
+        // change during the lifetime of the cache.
+        if (MethodParamModelUtils.isComponentContextParam(methodParamModel)) {
+          continue;
+        }
         if (i < paramSize - 1) {
-          codeBlock.add(
-              "$L,",
-              ComponentBodyGenerator.getImplAccessor(
-                  specModel, onCalculateCachedValueMethod.methodParams.get(i)));
+          codeBlock.add("$L,", ComponentBodyGenerator.getImplAccessor(specModel, methodParamModel));
         } else {
           codeBlock.add(
-              "$L);\n",
-              ComponentBodyGenerator.getImplAccessor(
-                  specModel, onCalculateCachedValueMethod.methodParams.get(i)));
+              "$L);\n", ComponentBodyGenerator.getImplAccessor(specModel, methodParamModel));
         }
       }
     }
@@ -146,16 +148,17 @@ public class CachedValueGenerator {
       delegation.add(");\n");
     } else {
       for (int i = 0; i < paramSize; i++) {
-        if (i < paramSize - 1) {
-          delegation.add(
-              "$L,",
-              ComponentBodyGenerator.getImplAccessor(
-                  specModel, onCalculateCachedValueMethod.methodParams.get(i)));
+        MethodParamModel methodParamModel = onCalculateCachedValueMethod.methodParams.get(i);
+        String argName;
+        if (MethodParamModelUtils.isComponentContextParam(methodParamModel)) {
+          argName = "c";
         } else {
-          delegation.add(
-              "$L);\n",
-              ComponentBodyGenerator.getImplAccessor(
-                  specModel, onCalculateCachedValueMethod.methodParams.get(i)));
+          argName = ComponentBodyGenerator.getImplAccessor(specModel, methodParamModel);
+        }
+        if (i < paramSize - 1) {
+          delegation.add("$L,", argName);
+        } else {
+          delegation.add("$L);\n", argName);
         }
       }
     }
@@ -177,11 +180,20 @@ public class CachedValueGenerator {
         TypeSpec.classBuilder(getInputsClassName(cachedValueName))
             .addModifiers(Modifier.PRIVATE, Modifier.STATIC);
 
+    // Skip the ComponentContext param from the input class creation since the context can change
+    // during the lifetime of the cache.
+    List<MethodParamModel> onCalculateCachedValueMethodParams =
+        onCalculateCachedValueMethod.methodParams.stream()
+            .filter(
+                methodParamModel ->
+                    !MethodParamModelUtils.isComponentContextParam(methodParamModel))
+            .collect(Collectors.toList());
+
     MethodSpec.Builder constructor = MethodSpec.constructorBuilder();
 
     final Set<TypeVariableName> typeVariables = new HashSet<>();
 
-    for (MethodParamModel param : onCalculateCachedValueMethod.methodParams) {
+    for (MethodParamModel param : onCalculateCachedValueMethodParams) {
       typeVariables.addAll(MethodParamModelUtils.getTypeVariables(param));
       typeSpec.addField(
           FieldSpec.builder(param.getTypeName(), param.getName(), Modifier.PRIVATE, Modifier.FINAL)
@@ -194,7 +206,7 @@ public class CachedValueGenerator {
     typeSpec.addTypeVariables(typeVariables);
     typeSpec.addMethod(constructor.build());
 
-    final int paramSize = onCalculateCachedValueMethod.methodParams.size();
+    final int paramSize = onCalculateCachedValueMethodParams.size();
     MethodSpec.Builder hashCodeMethod =
         MethodSpec.methodBuilder("hashCode")
             .addAnnotation(Override.class)
@@ -206,9 +218,9 @@ public class CachedValueGenerator {
     if (paramSize > 0) {
       for (int i = 0; i < paramSize; i++) {
         if (i < paramSize - 1) {
-          codeBlock.add("$L, ", onCalculateCachedValueMethod.methodParams.get(i).getName());
+          codeBlock.add("$L, ", onCalculateCachedValueMethodParams.get(i).getName());
         } else {
-          codeBlock.add("$L);\n", onCalculateCachedValueMethod.methodParams.get(i).getName());
+          codeBlock.add("$L);\n", onCalculateCachedValueMethodParams.get(i).getName());
         }
       }
     } else {
@@ -235,7 +247,7 @@ public class CachedValueGenerator {
                 getInputsClassName(cachedValueName),
                 getInputsClassName(cachedValueName));
 
-    for (MethodParamModel methodParamModel : onCalculateCachedValueMethod.methodParams) {
+    for (MethodParamModel methodParamModel : onCalculateCachedValueMethodParams) {
       equalsMethod.addCode(
           ComponentBodyGenerator.getCompareStatement(
               specModel,

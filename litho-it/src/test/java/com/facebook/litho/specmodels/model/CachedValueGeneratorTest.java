@@ -20,6 +20,7 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import androidx.annotation.Nullable;
 import com.facebook.litho.Component;
+import com.facebook.litho.ComponentContext;
 import com.facebook.litho.Row;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCalculateCachedValue;
@@ -66,8 +67,19 @@ public class CachedValueGeneratorTest {
       return "ABC";
     }
 
+    @OnCalculateCachedValue(name = "expensiveValueWithContext")
+    static String onCreateExpensiveValueWithContext(ComponentContext context) {
+      return "ABC";
+    }
+
     @OnCalculateCachedValue(name = "moreExpensiveValue")
     static String onCreateMoreExpensiveValue(@Prop boolean arg0, @State int arg1) {
+      return "DEF";
+    }
+
+    @OnCalculateCachedValue(name = "moreExpensiveValueWithContext")
+    static String onCreateMoreExpensiveValueWithContext(
+        @Prop boolean arg0, @State int arg1, ComponentContext context) {
       return "DEF";
     }
 
@@ -79,6 +91,12 @@ public class CachedValueGeneratorTest {
     @OnCalculateCachedValue(name = "expensiveValueWithMoreGenerics")
     static <E extends CharSequence> String onCreateExpensiveValueWithMoreGenerics(
         @Prop E genericArg, @Prop E genericArg2) {
+      return "JKL";
+    }
+
+    @OnCalculateCachedValue(name = "expensiveValueWithMoreGenericsAndContext")
+    static <E extends CharSequence> String onCreateExpensiveValueWithMoreGenericsAndContext(
+        ComponentContext context, @Prop E genericArg, @Prop E genericArg2) {
       return "JKL";
     }
 
@@ -153,6 +171,45 @@ public class CachedValueGeneratorTest {
                 + "      return false;\n"
                 + "    }\n"
                 + "    ExpensiveValueInputs cachedValueInputs = (ExpensiveValueInputs) other;\n"
+                + "    return true;\n"
+                + "  }\n"
+                + "}\n");
+  }
+
+  @Test
+  public void testGenerateInputsClassWithContextParam() {
+    final List<SpecMethodModel<DelegateMethod, Void>> models =
+        SpecModelUtils.getMethodModelsWithAnnotation(
+            mLayoutSpecModel, OnCalculateCachedValue.class);
+    final SpecMethodModel<DelegateMethod, Void> specMethodModel =
+        models.stream()
+            .filter(m -> m.name.toString().equals("onCreateExpensiveValueWithContext"))
+            .findFirst()
+            .get();
+    final String expensiveValueInputsClass =
+        CachedValueGenerator.createInputsClass(
+                mLayoutSpecModel, specMethodModel, "expensiveValueWithContext")
+            .toString();
+    assertThat(expensiveValueInputsClass)
+        .isEqualTo(
+            "private static class ExpensiveValueWithContextInputs {\n"
+                + "  ExpensiveValueWithContextInputs() {\n"
+                + "  }\n"
+                + "\n"
+                + "  @java.lang.Override\n"
+                + "  public int hashCode() {\n"
+                + "    return com.facebook.litho.CommonUtils.hash(getClass());\n"
+                + "  }\n"
+                + "\n"
+                + "  @java.lang.Override\n"
+                + "  public boolean equals(java.lang.Object other) {\n"
+                + "    if (this == other) {\n"
+                + "      return true;\n"
+                + "    }\n"
+                + "    if (other == null || !(other instanceof ExpensiveValueWithContextInputs)) {\n"
+                + "      return false;\n"
+                + "    }\n"
+                + "    ExpensiveValueWithContextInputs cachedValueInputs = (ExpensiveValueWithContextInputs) other;\n"
                 + "    return true;\n"
                 + "  }\n"
                 + "}\n");
@@ -255,6 +312,58 @@ public class CachedValueGeneratorTest {
   }
 
   @Test
+  public void testGenerateInputsClassMultipleGenericsParamsAndContext() {
+    final List<SpecMethodModel<DelegateMethod, Void>> models =
+        SpecModelUtils.getMethodModelsWithAnnotation(
+            mLayoutSpecModel, OnCalculateCachedValue.class);
+    final SpecMethodModel<DelegateMethod, Void> specMethodModel =
+        models.stream()
+            .filter(
+                m -> m.name.toString().equals("onCreateExpensiveValueWithMoreGenericsAndContext"))
+            .findFirst()
+            .get();
+    final String inputsClassWithGenericParam =
+        CachedValueGenerator.createInputsClass(
+                mLayoutSpecModel, specMethodModel, "expensiveValueWithMoreGenericsAndContext")
+            .toString();
+    assertThat(inputsClassWithGenericParam)
+        .isEqualTo(
+            "private static class ExpensiveValueWithMoreGenericsAndContextInputs<E extends java.lang.CharSequence> {\n"
+                + "  private final E genericArg;\n"
+                + "\n"
+                + "  private final E genericArg2;\n"
+                + "\n"
+                + "  ExpensiveValueWithMoreGenericsAndContextInputs(E genericArg, E genericArg2) {\n"
+                + "    this.genericArg = genericArg;\n"
+                + "    this.genericArg2 = genericArg2;\n"
+                + "  }\n"
+                + "\n"
+                + "  @java.lang.Override\n"
+                + "  public int hashCode() {\n"
+                + "    return com.facebook.litho.CommonUtils.hash(genericArg, genericArg2);\n"
+                + "  }\n"
+                + "\n"
+                + "  @java.lang.Override\n"
+                + "  public boolean equals(java.lang.Object other) {\n"
+                + "    if (this == other) {\n"
+                + "      return true;\n"
+                + "    }\n"
+                + "    if (other == null || !(other instanceof ExpensiveValueWithMoreGenericsAndContextInputs)) {\n"
+                + "      return false;\n"
+                + "    }\n"
+                + "    ExpensiveValueWithMoreGenericsAndContextInputs cachedValueInputs = (ExpensiveValueWithMoreGenericsAndContextInputs) other;\n"
+                + "    if (genericArg != null ? !genericArg.equals(cachedValueInputs.genericArg) : cachedValueInputs.genericArg != null) {\n"
+                + "      return false;\n"
+                + "    }\n"
+                + "    if (genericArg2 != null ? !genericArg2.equals(cachedValueInputs.genericArg2) : cachedValueInputs.genericArg2 != null) {\n"
+                + "      return false;\n"
+                + "    }\n"
+                + "    return true;\n"
+                + "  }\n"
+                + "}\n");
+  }
+
+  @Test
   public void testGenerateInputsClassWithParam() {
     final List<SpecMethodModel<DelegateMethod, Void>> models =
         SpecModelUtils.getMethodModelsWithAnnotation(
@@ -294,6 +403,57 @@ public class CachedValueGeneratorTest {
                 + "      return false;\n"
                 + "    }\n"
                 + "    MoreExpensiveValueInputs cachedValueInputs = (MoreExpensiveValueInputs) other;\n"
+                + "    if (arg0 != cachedValueInputs.arg0) {\n"
+                + "      return false;\n"
+                + "    }\n"
+                + "    if (arg1 != cachedValueInputs.arg1) {\n"
+                + "      return false;\n"
+                + "    }\n"
+                + "    return true;\n"
+                + "  }\n"
+                + "}\n");
+  }
+
+  @Test
+  public void testGenerateInputsClassWithParamAndContext() {
+    final List<SpecMethodModel<DelegateMethod, Void>> models =
+        SpecModelUtils.getMethodModelsWithAnnotation(
+            mLayoutSpecModel, OnCalculateCachedValue.class);
+    final SpecMethodModel<DelegateMethod, Void> specMethodModel =
+        models.stream()
+            .filter(m -> m.name.toString().equals("onCreateMoreExpensiveValueWithContext"))
+            .findFirst()
+            .get();
+    final String expensiveValueInputsClass =
+        CachedValueGenerator.createInputsClass(
+                mLayoutSpecModel, specMethodModel, "moreExpensiveValueWithContext")
+            .toString();
+    assertThat(expensiveValueInputsClass)
+        .isEqualTo(
+            "private static class MoreExpensiveValueWithContextInputs {\n"
+                + "  private final boolean arg0;\n"
+                + "\n"
+                + "  private final int arg1;\n"
+                + "\n"
+                + "  MoreExpensiveValueWithContextInputs(boolean arg0, int arg1) {\n"
+                + "    this.arg0 = arg0;\n"
+                + "    this.arg1 = arg1;\n"
+                + "  }\n"
+                + "\n"
+                + "  @java.lang.Override\n"
+                + "  public int hashCode() {\n"
+                + "    return com.facebook.litho.CommonUtils.hash(arg0, arg1);\n"
+                + "  }\n"
+                + "\n"
+                + "  @java.lang.Override\n"
+                + "  public boolean equals(java.lang.Object other) {\n"
+                + "    if (this == other) {\n"
+                + "      return true;\n"
+                + "    }\n"
+                + "    if (other == null || !(other instanceof MoreExpensiveValueWithContextInputs)) {\n"
+                + "      return false;\n"
+                + "    }\n"
+                + "    MoreExpensiveValueWithContextInputs cachedValueInputs = (MoreExpensiveValueWithContextInputs) other;\n"
                 + "    if (arg0 != cachedValueInputs.arg0) {\n"
                 + "      return false;\n"
                 + "    }\n"
