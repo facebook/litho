@@ -25,6 +25,7 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 import android.graphics.Rect;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import androidx.collection.LongSparseArray;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestViewComponent;
@@ -627,6 +628,385 @@ public class VisibilityEventsTest {
     assertThat(content2.getDispatchedEventHandlers()).contains(visibleEventHandler2);
     assertThat(content3.getDispatchedEventHandlers()).contains(visibleEventHandler3);
     assertThat(content3.getDispatchedEventHandlers()).contains(visibilityChangedHandler);
+  }
+
+  @Test
+  public void testMultipleVisibleAndInvisibleEvents() {
+    final TestComponent content1 = create(mContext).build();
+    final TestComponent content2 = create(mContext).build();
+    final TestComponent content3 = create(mContext).build();
+    final EventHandler<VisibleEvent> visibleEventHandler1 = new EventHandler<>(content1, 1);
+    final EventHandler<VisibleEvent> visibleEventHandler2 = new EventHandler<>(content2, 2);
+    final EventHandler<VisibleEvent> visibleEventHandler3 = new EventHandler<>(content3, 3);
+    final EventHandler<InvisibleEvent> invisibleEventHandler1 = new EventHandler<>(content1, 1);
+    final EventHandler<InvisibleEvent> invisibleEventHandler2 = new EventHandler<>(content2, 2);
+    final EventHandler<InvisibleEvent> invisibleEventHandler3 = new EventHandler<>(content3, 3);
+
+    final LithoView lithoView =
+        mountComponent(
+            mContext,
+            mLithoView,
+            Column.create(mContext)
+                .child(
+                    Wrapper.create(mContext)
+                        .delegate(content1)
+                        .visibleHandler(visibleEventHandler1)
+                        .invisibleHandler(invisibleEventHandler1)
+                        .widthPx(10)
+                        .heightPx(5))
+                .child(
+                    Wrapper.create(mContext)
+                        .delegate(content2)
+                        .visibleHandler(visibleEventHandler2)
+                        .invisibleHandler(invisibleEventHandler2)
+                        .widthPx(10)
+                        .heightPx(5))
+                .child(
+                    Wrapper.create(mContext)
+                        .delegate(content3)
+                        .visibleHandler(visibleEventHandler3)
+                        .invisibleHandler(invisibleEventHandler3)
+                        .widthPx(10)
+                        .heightPx(5))
+                .build(),
+            true,
+            15,
+            15);
+
+    assertThat(content1.getDispatchedEventHandlers()).contains(visibleEventHandler1);
+    assertThat(content2.getDispatchedEventHandlers()).contains(visibleEventHandler2);
+    assertThat(content3.getDispatchedEventHandlers()).contains(visibleEventHandler3);
+    assertThat(content1.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler1);
+    assertThat(content2.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler2);
+    assertThat(content3.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler3);
+
+    content1.getDispatchedEventHandlers().clear();
+    content2.getDispatchedEventHandlers().clear();
+    content3.getDispatchedEventHandlers().clear();
+
+    lithoView.setMountStateDirty();
+    lithoView.performIncrementalMount(new Rect(LEFT, 0, RIGHT, 15), true);
+    assertThat(content1.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler1);
+    assertThat(content2.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler2);
+    assertThat(content3.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler3);
+    assertThat(content1.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler1);
+    assertThat(content2.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler2);
+    assertThat(content3.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler3);
+
+    content1.getDispatchedEventHandlers().clear();
+    content2.getDispatchedEventHandlers().clear();
+    content3.getDispatchedEventHandlers().clear();
+
+    lithoView.setMountStateDirty();
+    lithoView.performIncrementalMount(new Rect(LEFT, 0, RIGHT, 0), true);
+    assertThat(content1.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler1);
+    assertThat(content2.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler2);
+    assertThat(content3.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler3);
+    assertThat(content1.getDispatchedEventHandlers()).contains(invisibleEventHandler1);
+    assertThat(content2.getDispatchedEventHandlers()).contains(invisibleEventHandler2);
+    assertThat(content3.getDispatchedEventHandlers()).contains(invisibleEventHandler3);
+
+    content1.getDispatchedEventHandlers().clear();
+    content2.getDispatchedEventHandlers().clear();
+    content3.getDispatchedEventHandlers().clear();
+    lithoView.setMountStateDirty();
+    lithoView.performIncrementalMount(new Rect(LEFT, 0, RIGHT, 0), true);
+    assertThat(content1.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler1);
+    assertThat(content2.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler2);
+    assertThat(content3.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler3);
+    assertThat(content1.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler1);
+    assertThat(content2.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler2);
+    assertThat(content3.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler3);
+
+    content1.getDispatchedEventHandlers().clear();
+    content2.getDispatchedEventHandlers().clear();
+    content3.getDispatchedEventHandlers().clear();
+    lithoView.setMountStateDirty();
+    lithoView.performIncrementalMount(new Rect(LEFT, 0, RIGHT, 3), true);
+    assertThat(content1.getDispatchedEventHandlers()).contains(visibleEventHandler1);
+    assertThat(content2.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler2);
+    assertThat(content3.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler3);
+    assertThat(content1.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler1);
+    assertThat(content2.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler2);
+    assertThat(content3.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler3);
+
+    content1.getDispatchedEventHandlers().clear();
+    content2.getDispatchedEventHandlers().clear();
+    content3.getDispatchedEventHandlers().clear();
+    lithoView.setMountStateDirty();
+    lithoView.performIncrementalMount(new Rect(LEFT, 3, RIGHT, 11), true);
+    assertThat(content1.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler1);
+    assertThat(content2.getDispatchedEventHandlers()).contains(visibleEventHandler2);
+    assertThat(content3.getDispatchedEventHandlers()).contains(visibleEventHandler3);
+    assertThat(content1.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler1);
+    assertThat(content2.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler2);
+    assertThat(content3.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler3);
+
+    content1.getDispatchedEventHandlers().clear();
+    content2.getDispatchedEventHandlers().clear();
+    content3.getDispatchedEventHandlers().clear();
+    lithoView.setMountStateDirty();
+    lithoView.performIncrementalMount(new Rect(LEFT, 5, RIGHT, 11), true);
+    assertThat(content1.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler1);
+    assertThat(content2.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler2);
+    assertThat(content3.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler3);
+    assertThat(content1.getDispatchedEventHandlers()).contains(invisibleEventHandler1);
+    assertThat(content2.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler2);
+    assertThat(content3.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler3);
+  }
+
+  @Test
+  public void testSkipFullyVisible() {
+    final TestComponent content1 = create(mContext).build();
+    final TestComponent content2 = create(mContext).build();
+    final TestComponent content3 = create(mContext).build();
+    final EventHandler<VisibleEvent> visibleEventHandler1 = new EventHandler<>(content1, 1);
+    final EventHandler<VisibleEvent> visibleEventHandler2 = new EventHandler<>(content2, 2);
+    final EventHandler<VisibleEvent> visibleEventHandler3 = new EventHandler<>(content3, 3);
+    final EventHandler<InvisibleEvent> invisibleEventHandler1 = new EventHandler<>(content1, 1);
+    final EventHandler<InvisibleEvent> invisibleEventHandler2 = new EventHandler<>(content2, 2);
+    final EventHandler<InvisibleEvent> invisibleEventHandler3 = new EventHandler<>(content3, 3);
+
+    final LithoView lithoView =
+        mountComponent(
+            mContext,
+            mLithoView,
+            Column.create(mContext)
+                .child(
+                    Wrapper.create(mContext)
+                        .delegate(content1)
+                        .visibleHandler(visibleEventHandler1)
+                        .invisibleHandler(invisibleEventHandler1)
+                        .widthPx(10)
+                        .heightPx(5))
+                .child(
+                    Wrapper.create(mContext)
+                        .delegate(content2)
+                        .visibleHandler(visibleEventHandler2)
+                        .invisibleHandler(invisibleEventHandler2)
+                        .widthPx(10)
+                        .heightPx(5))
+                .child(
+                    Wrapper.create(mContext)
+                        .delegate(content3)
+                        .visibleHandler(visibleEventHandler3)
+                        .invisibleHandler(invisibleEventHandler3)
+                        .widthPx(10)
+                        .heightPx(5))
+                .build(),
+            true,
+            15,
+            15);
+
+    LongSparseArray<VisibilityItem> visibilityItemLongSparseArray =
+        lithoView.getMountState().getVisibilityIdToItemMap();
+    for (int i = 0; i < visibilityItemLongSparseArray.size(); i++) {
+      VisibilityItem item = visibilityItemLongSparseArray.valueAt(i);
+      assertThat(item.wasFullyVisible()).isTrue();
+    }
+
+    assertThat(content1.getDispatchedEventHandlers()).contains(visibleEventHandler1);
+    assertThat(content2.getDispatchedEventHandlers()).contains(visibleEventHandler2);
+    assertThat(content3.getDispatchedEventHandlers()).contains(visibleEventHandler3);
+    assertThat(content1.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler1);
+    assertThat(content2.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler2);
+    assertThat(content3.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler3);
+
+    content1.getDispatchedEventHandlers().clear();
+    content2.getDispatchedEventHandlers().clear();
+    content3.getDispatchedEventHandlers().clear();
+    lithoView.setMountStateDirty();
+
+    lithoView.performIncrementalMount(new Rect(LEFT, 0, RIGHT, 15), true);
+    assertThat(content1.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler1);
+    assertThat(content2.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler2);
+    assertThat(content3.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler3);
+    assertThat(content1.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler1);
+    assertThat(content2.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler2);
+    assertThat(content3.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler3);
+
+    visibilityItemLongSparseArray = lithoView.getMountState().getVisibilityIdToItemMap();
+    assertThat(visibilityItemLongSparseArray.size()).isEqualTo(3);
+    for (int i = 0; i < visibilityItemLongSparseArray.size(); i++) {
+      VisibilityItem item = visibilityItemLongSparseArray.valueAt(i);
+      assertThat(item.wasFullyVisible()).isTrue();
+    }
+
+    content1.getDispatchedEventHandlers().clear();
+    content2.getDispatchedEventHandlers().clear();
+    content3.getDispatchedEventHandlers().clear();
+    lithoView.setMountStateDirty();
+
+    lithoView.performIncrementalMount(new Rect(LEFT, 3, RIGHT, 12), true);
+    assertThat(content1.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler1);
+    assertThat(content2.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler2);
+    assertThat(content3.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler3);
+    assertThat(content1.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler1);
+    assertThat(content2.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler2);
+    assertThat(content3.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler3);
+
+    visibilityItemLongSparseArray = lithoView.getMountState().getVisibilityIdToItemMap();
+    assertThat(visibilityItemLongSparseArray.size()).isEqualTo(3);
+
+    assertThat(visibilityItemLongSparseArray.valueAt(0).wasFullyVisible()).isFalse();
+    assertThat(visibilityItemLongSparseArray.valueAt(1).wasFullyVisible()).isTrue();
+    assertThat(visibilityItemLongSparseArray.valueAt(2).wasFullyVisible()).isFalse();
+
+    content1.getDispatchedEventHandlers().clear();
+    content2.getDispatchedEventHandlers().clear();
+    content3.getDispatchedEventHandlers().clear();
+    lithoView.setMountStateDirty();
+
+    lithoView.performIncrementalMount(new Rect(LEFT, 0, RIGHT, 0), true);
+    assertThat(content1.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler1);
+    assertThat(content2.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler2);
+    assertThat(content3.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler3);
+    assertThat(content1.getDispatchedEventHandlers()).contains(invisibleEventHandler1);
+    assertThat(content2.getDispatchedEventHandlers()).contains(invisibleEventHandler2);
+    assertThat(content3.getDispatchedEventHandlers()).contains(invisibleEventHandler3);
+
+    visibilityItemLongSparseArray = lithoView.getMountState().getVisibilityIdToItemMap();
+    assertThat(visibilityItemLongSparseArray.size()).isEqualTo(0);
+
+    content1.getDispatchedEventHandlers().clear();
+    content2.getDispatchedEventHandlers().clear();
+    content3.getDispatchedEventHandlers().clear();
+    lithoView.setMountStateDirty();
+
+    lithoView.performIncrementalMount(new Rect(LEFT, 0, RIGHT, 0), true);
+    assertThat(content1.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler1);
+    assertThat(content2.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler2);
+    assertThat(content3.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler3);
+    assertThat(content1.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler1);
+    assertThat(content2.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler2);
+    assertThat(content3.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler3);
+
+    content1.getDispatchedEventHandlers().clear();
+    content2.getDispatchedEventHandlers().clear();
+    content3.getDispatchedEventHandlers().clear();
+    lithoView.setMountStateDirty();
+
+    lithoView.performIncrementalMount(new Rect(LEFT, 3, RIGHT, 12), true);
+    assertThat(content1.getDispatchedEventHandlers()).contains(visibleEventHandler1);
+    assertThat(content2.getDispatchedEventHandlers()).contains(visibleEventHandler2);
+    assertThat(content3.getDispatchedEventHandlers()).contains(visibleEventHandler3);
+    assertThat(content1.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler1);
+    assertThat(content2.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler2);
+    assertThat(content3.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler3);
+
+    visibilityItemLongSparseArray = lithoView.getMountState().getVisibilityIdToItemMap();
+    assertThat(visibilityItemLongSparseArray.size()).isEqualTo(3);
+    assertThat(visibilityItemLongSparseArray.valueAt(0).wasFullyVisible()).isFalse();
+    assertThat(visibilityItemLongSparseArray.valueAt(1).wasFullyVisible()).isTrue();
+    assertThat(visibilityItemLongSparseArray.valueAt(2).wasFullyVisible()).isFalse();
+
+    content1.getDispatchedEventHandlers().clear();
+    content2.getDispatchedEventHandlers().clear();
+    content3.getDispatchedEventHandlers().clear();
+    lithoView.setMountStateDirty();
+
+    lithoView.performIncrementalMount(new Rect(LEFT, 0, RIGHT, 15), true);
+    assertThat(content1.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler1);
+    assertThat(content2.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler2);
+    assertThat(content3.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler3);
+    assertThat(content1.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler1);
+    assertThat(content2.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler2);
+    assertThat(content3.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler3);
+
+    visibilityItemLongSparseArray = lithoView.getMountState().getVisibilityIdToItemMap();
+    assertThat(visibilityItemLongSparseArray.size()).isEqualTo(3);
+    assertThat(visibilityItemLongSparseArray.valueAt(0).wasFullyVisible()).isTrue();
+    assertThat(visibilityItemLongSparseArray.valueAt(1).wasFullyVisible()).isTrue();
+    assertThat(visibilityItemLongSparseArray.valueAt(2).wasFullyVisible()).isTrue();
+  }
+
+  @Test
+  public void testDispatchFocusedHandler() {
+    final TestComponent content1 = create(mContext).build();
+    final TestComponent content2 = create(mContext).build();
+    final TestComponent content3 = create(mContext).build();
+
+    final EventHandler<FocusedVisibleEvent> focusedEventHandler1 = new EventHandler<>(content1, 1);
+    final EventHandler<FocusedVisibleEvent> focusedEventHandler2 = new EventHandler<>(content2, 2);
+    final EventHandler<FocusedVisibleEvent> focusedEventHandler3 = new EventHandler<>(content3, 3);
+
+    final EventHandler<UnfocusedVisibleEvent> unfocusedEventHandler1 =
+        new EventHandler<>(content1, 4);
+    final EventHandler<UnfocusedVisibleEvent> unfocusedEventHandler2 =
+        new EventHandler<>(content2, 5);
+    final EventHandler<UnfocusedVisibleEvent> unfocusedEventHandler3 =
+        new EventHandler<>(content3, 6);
+
+    final LithoView lithoView =
+        mountComponent(
+            mContext,
+            mLithoView,
+            Column.create(mContext)
+                .child(
+                    Wrapper.create(mContext)
+                        .delegate(content1)
+                        .focusedHandler(focusedEventHandler1)
+                        .unfocusedHandler(unfocusedEventHandler1)
+                        .widthPx(10)
+                        .heightPx(5))
+                .child(
+                    Wrapper.create(mContext)
+                        .delegate(content2)
+                        .focusedHandler(focusedEventHandler2)
+                        .unfocusedHandler(unfocusedEventHandler2)
+                        .widthPx(10)
+                        .heightPx(5))
+                .child(
+                    Wrapper.create(mContext)
+                        .delegate(content3)
+                        .focusedHandler(focusedEventHandler3)
+                        .unfocusedHandler(unfocusedEventHandler3)
+                        .widthPx(10)
+                        .heightPx(5))
+                .build(),
+            true,
+            10,
+            15);
+
+    LongSparseArray<VisibilityItem> visibilityItemLongSparseArray =
+        lithoView.getMountState().getVisibilityIdToItemMap();
+    for (int i = 0; i < visibilityItemLongSparseArray.size(); i++) {
+      VisibilityItem item = visibilityItemLongSparseArray.valueAt(i);
+      assertThat(item.wasFullyVisible());
+    }
+
+    assertThat(content1.getDispatchedEventHandlers()).contains(focusedEventHandler1);
+    assertThat(content2.getDispatchedEventHandlers()).contains(focusedEventHandler2);
+    assertThat(content3.getDispatchedEventHandlers()).contains(focusedEventHandler3);
+    assertThat(content1.getDispatchedEventHandlers()).doesNotContain(unfocusedEventHandler1);
+    assertThat(content2.getDispatchedEventHandlers()).doesNotContain(unfocusedEventHandler2);
+    assertThat(content3.getDispatchedEventHandlers()).doesNotContain(unfocusedEventHandler3);
+
+    content1.getDispatchedEventHandlers().clear();
+    content2.getDispatchedEventHandlers().clear();
+    content3.getDispatchedEventHandlers().clear();
+    lithoView.setMountStateDirty();
+
+    lithoView.performIncrementalMount(new Rect(LEFT, 4, RIGHT, 15), true);
+    assertThat(content1.getDispatchedEventHandlers()).doesNotContain(focusedEventHandler1);
+    assertThat(content2.getDispatchedEventHandlers()).doesNotContain(focusedEventHandler2);
+    assertThat(content3.getDispatchedEventHandlers()).doesNotContain(focusedEventHandler3);
+    assertThat(content1.getDispatchedEventHandlers()).contains(unfocusedEventHandler1);
+    assertThat(content2.getDispatchedEventHandlers()).doesNotContain(unfocusedEventHandler2);
+    assertThat(content3.getDispatchedEventHandlers()).doesNotContain(unfocusedEventHandler3);
+
+    content1.getDispatchedEventHandlers().clear();
+    content2.getDispatchedEventHandlers().clear();
+    content3.getDispatchedEventHandlers().clear();
+    lithoView.setMountStateDirty();
+
+    lithoView.performIncrementalMount(new Rect(LEFT, 0, RIGHT, 15), true);
+    assertThat(content1.getDispatchedEventHandlers()).contains(focusedEventHandler1);
+    assertThat(content2.getDispatchedEventHandlers()).doesNotContain(focusedEventHandler2);
+    assertThat(content3.getDispatchedEventHandlers()).doesNotContain(focusedEventHandler3);
+    assertThat(content1.getDispatchedEventHandlers()).doesNotContain(unfocusedEventHandler1);
+    assertThat(content2.getDispatchedEventHandlers()).doesNotContain(unfocusedEventHandler2);
+    assertThat(content3.getDispatchedEventHandlers()).doesNotContain(unfocusedEventHandler3);
   }
 
   @Test

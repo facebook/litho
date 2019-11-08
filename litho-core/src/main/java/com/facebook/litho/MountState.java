@@ -542,6 +542,46 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
                 : "Unknown";
         ComponentsSystrace.beginSection("visibilityHandlers:" + componentName);
       }
+
+      final Rect visibilityOutputBounds = visibilityOutput.getBounds();
+      final boolean boundsIntersect =
+          sTempRect.setIntersect(visibilityOutputBounds, localVisibleRect);
+      final boolean isFullyVisible = boundsIntersect && sTempRect.equals(visibilityOutputBounds);
+      final long visibilityOutputId = visibilityOutput.getId();
+      VisibilityItem visibilityItem = mVisibilityIdToItemMap.get(visibilityOutputId);
+
+      final boolean wasFullyVisible;
+      final boolean hasGlobalKeyChanged;
+      if (visibilityItem != null) {
+        final String previousGlobalKey = visibilityItem.getGlobalKey();
+        final String currentGlobalKey =
+            visibilityOutput.getComponent() != null
+                ? visibilityOutput.getComponent().getGlobalKey()
+                : null;
+        hasGlobalKeyChanged =
+            previousGlobalKey != null && !previousGlobalKey.equals(currentGlobalKey);
+        if (hasGlobalKeyChanged) {
+          visibilityItem.setWasFullyVisible(false);
+        }
+        wasFullyVisible = visibilityItem.wasFullyVisible();
+        visibilityItem.setWasFullyVisible(isFullyVisible);
+      } else {
+        wasFullyVisible = false;
+        hasGlobalKeyChanged = false;
+      }
+
+      if (isFullyVisible
+          && wasFullyVisible
+          && ComponentsConfiguration.skipVisChecksForFullyVisible) {
+        // VisibilityOutput is still fully visible, no new events to dispatch, skip to next
+        if (isTracing) {
+          ComponentsSystrace.endSection();
+        }
+
+        visibilityItem.setDoNotClearInThisPass(mIsDirty);
+        continue;
+      }
+
       final long handlerStartTime = isDoingPerfLog ? System.nanoTime() : 0;
       final EventHandler<VisibleEvent> visibleHandler = visibilityOutput.getVisibleEventHandler();
       final EventHandler<FocusedVisibleEvent> focusedHandler =
@@ -554,22 +594,11 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
           visibilityOutput.getInvisibleEventHandler();
       final EventHandler<VisibilityChangedEvent> visibilityChangedHandler =
           visibilityOutput.getVisibilityChangedEventHandler();
-      final long visibilityOutputId = visibilityOutput.getId();
-      final Rect visibilityOutputBounds = visibilityOutput.getBounds();
 
-      boolean boundsIntersect = sTempRect.setIntersect(visibilityOutputBounds, localVisibleRect);
       final boolean isCurrentlyVisible =
           boundsIntersect && isInVisibleRange(visibilityOutput, visibilityOutputBounds, sTempRect);
 
-      VisibilityItem visibilityItem = mVisibilityIdToItemMap.get(visibilityOutputId);
       if (visibilityItem != null) {
-        final String previousGlobalKey = visibilityItem.getGlobalKey();
-        final String currentGlobalKey =
-            visibilityOutput.getComponent() != null
-                ? visibilityOutput.getComponent().getGlobalKey()
-                : null;
-        final boolean hasGlobalKeyChanged =
-            previousGlobalKey != null && !previousGlobalKey.equals(currentGlobalKey);
 
         if (!hasGlobalKeyChanged) {
           // If we did a relayout due to e.g. a state update then the handlers will have changed,
@@ -617,6 +646,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
               new VisibilityItem(
                   globalKey, invisibleHandler, unfocusedHandler, visibilityChangedHandler);
           visibilityItem.setDoNotClearInThisPass(mIsDirty);
+          visibilityItem.setWasFullyVisible(isFullyVisible);
           mVisibilityIdToItemMap.put(visibilityOutputId, visibilityItem);
 
           if (visibleHandler != null) {
@@ -687,6 +717,11 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     if (mountPerfEvent != null) {
       mountPerfEvent.markerPoint("VISIBILITY_HANDLERS_END");
     }
+  }
+
+  @VisibleForTesting
+  LongSparseArray<VisibilityItem> getVisibilityIdToItemMap() {
+    return mVisibilityIdToItemMap;
   }
 
   /** Clears and re-populates the test item map if we are in e2e test mode. */
@@ -800,6 +835,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
         if (visibilityChangedHandler != null) {
           EventDispatcherUtils.dispatchOnVisibilityChanged(visibilityChangedHandler, 0, 0, 0f, 0f);
         }
+
+        visibilityItem.setWasFullyVisible(false);
 
         mVisibilityIdToItemMap.removeAt(i);
       }
