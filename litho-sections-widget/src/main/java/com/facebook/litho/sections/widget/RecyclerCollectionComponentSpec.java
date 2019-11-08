@@ -311,6 +311,7 @@ public class RecyclerCollectionComponentSpec {
                 binderConfiguration.moveLayoutsBetweenThreads())
             .isReconciliationEnabled(binderConfiguration.isReconciliationEnabled())
             .isLayoutDiffingEnabled(binderConfiguration.isLayoutDiffingEnabled())
+            .componentWarmer(binderConfiguration.getComponentWarmer())
             .build(c);
 
     SectionBinderTarget targetBinder =

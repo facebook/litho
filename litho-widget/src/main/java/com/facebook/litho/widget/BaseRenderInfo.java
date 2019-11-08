@@ -45,7 +45,7 @@ public abstract class BaseRenderInfo implements RenderInfo {
   private static final String SPAN_SIZE = "span_size";
   private static final String IS_FULL_SPAN = "is_full_span";
 
-  private final @Nullable Map<String, Object> mCustomAttributes;
+  private @Nullable Map<String, Object> mCustomAttributes;
   private @Nullable Map<String, Object> mDebugInfo;
 
   protected BaseRenderInfo(Builder builder) {
@@ -83,6 +83,14 @@ public abstract class BaseRenderInfo implements RenderInfo {
   @Override
   public @Nullable Object getCustomAttribute(String key) {
     return mCustomAttributes == null ? null : mCustomAttributes.get(key);
+  }
+
+  @Override
+  public void addCustomAttribute(String key, Object value) {
+    if (mCustomAttributes == null) {
+      mCustomAttributes = Collections.synchronizedMap(new HashMap<String, Object>());
+    }
+    mCustomAttributes.put(key, value);
   }
 
   /**

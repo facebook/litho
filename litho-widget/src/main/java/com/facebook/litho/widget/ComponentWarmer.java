@@ -18,7 +18,11 @@ package com.facebook.litho.widget;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.collection.LruCache;
+import com.facebook.litho.ComponentsReporter;
+import com.facebook.litho.LithoHandler;
 import com.facebook.litho.Size;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 import javax.annotation.Nullable;
 
 /**
@@ -30,7 +34,9 @@ import javax.annotation.Nullable;
 public class ComponentWarmer {
 
   public static final String COMPONENT_WARMER_TAG = "component_warmer_tag";
+  public static final String COMPONENT_WARMER_PREPARE_HANDLER = "component_warmer_prepare_handler";
   public static final int DEFAULT_MAX_SIZE = 10;
+  private static final String COMPONENT_WARMER_LOG_TAG = "ComponentWarmer";
 
   public interface ComponentTreeHolderPreparer {
 
@@ -51,6 +57,15 @@ public class ComponentWarmer {
      * ComponentTreeHolder.
      */
     void prepareAsync(ComponentTreeHolder holder);
+  }
+
+  public interface ComponentWarmerReadyListener {
+
+    /**
+     * Called from a RecyclerBinder when a ComponentWarmer instance associated with it can be used
+     * to prepare items because the RecyclerBinder has been measured.
+     */
+    void onInstanceReadyToPrepare();
   }
 
   public interface Cache {
@@ -94,8 +109,27 @@ public class ComponentWarmer {
     }
   }
 
-  private final Cache mCache;
-  private final ComponentTreeHolderPreparer mFactory;
+  private Cache mCache;
+  private @Nullable ComponentTreeHolderPreparer mFactory;
+  private boolean mIsReady;
+  private @Nullable ComponentWarmerReadyListener mReadyListener;
+  private BlockingQueue<ComponentRenderInfo> mPendingRenderInfos;
+
+  /**
+   * Creates a ComponentWarmer instance which is not ready to prepare items yet. If trying to
+   * prepare an item before the ComponentWarmer is ready, the requests will be enqueued and will
+   * only be executed once this instance is bound to a ComponentTreeHolderPreparer.
+   *
+   * <p>Pass in a {@link ComponentWarmerReadyListener} instance to be notified when the instance is
+   * ready. Uses a {@link LruCache} to manage the internal cache.
+   */
+  public ComponentWarmer() {
+    init(null, null);
+  }
+
+  public ComponentWarmer(Cache cache) {
+    init(null, cache);
+  }
 
   /**
    * Creates a ComponentWarmer for this RecyclerBinder. This ComponentWarmer instance will use the
@@ -134,8 +168,66 @@ public class ComponentWarmer {
       throw new NullPointerException("factory == null");
     }
 
-    mFactory = factory;
+    init(factory, cache);
+  }
+
+  public void setComponentWarmerReadyListener(ComponentWarmerReadyListener listener) {
+    mReadyListener = listener;
+  }
+
+  public synchronized boolean isReady() {
+    return mIsReady;
+  }
+
+  private void init(@Nullable ComponentTreeHolderPreparer factory, @Nullable Cache cache) {
     mCache = cache == null ? new DefaultCache(DEFAULT_MAX_SIZE) : cache;
+
+    if (factory != null) {
+      mIsReady = true;
+      setComponentTreeHolderFactory(factory);
+    }
+  }
+
+  void setComponentTreeHolderFactory(ComponentTreeHolderPreparer factory) {
+    if (factory == null) {
+      throw new NullPointerException("factory == null");
+    }
+
+    mFactory = factory;
+
+    if (!isReady()) {
+      if (mReadyListener != null) {
+        mReadyListener.onInstanceReadyToPrepare();
+      }
+
+      executePending();
+      synchronized (this) {
+        mIsReady = true;
+      }
+    }
+  }
+
+  /**
+   * Synchronously post preparing the ComponentTree for the given ComponentRenderInfo to the
+   * handler.
+   */
+  public void prepare(
+      String tag,
+      ComponentRenderInfo componentRenderInfo,
+      @Nullable Size size,
+      LithoHandler handler) {
+    if (!isReady()) {
+      ComponentsReporter.emitMessage(
+          ComponentsReporter.LogLevel.WARNING,
+          COMPONENT_WARMER_LOG_TAG,
+          "ComponentWarmer not ready: unable to prepare sync. This will be executed asynchronously when the ComponentWarmer is ready.");
+
+      addToPending(tag, componentRenderInfo, handler);
+
+      return;
+    }
+
+    executePrepare(tag, componentRenderInfo, size, false, handler);
   }
 
   /**
@@ -145,18 +237,117 @@ public class ComponentWarmer {
    * @param componentRenderInfo to be prepared.
    * @param size if not null, it will have the size result at the end of computing the layout.
    *     Prepare calls which require a size result to be computed cannot be cancelled (@see {@link
-   *     #cancelPrepare(String)}).
+   *     #cancelPrepare(String)}). Prepare calls which are not immediately executed because the
+   *     ComponentWarmer is not ready will not set a size.
    */
   public void prepare(String tag, ComponentRenderInfo componentRenderInfo, @Nullable Size size) {
-    final ComponentTreeHolder holder = mFactory.create(componentRenderInfo);
-    mCache.put(tag, holder);
-    mFactory.prepareSync(holder, size);
+    prepare(tag, componentRenderInfo, size, null);
   }
 
+  /**
+   * Asynchronously prepare the ComponentTree for the given ComponentRenderInfo.
+   *
+   * <p>The thread on which this ComponentRenderInfo is prepared is the background thread that the
+   * associated RecyclerBinder uses. To change it, you can implement a {@link
+   * ComponentTreeHolderPreparer} and configure the layout handler when creating the ComponentTree.
+   *
+   * <p>Alternatively you can use {@link #prepare(String, ComponentRenderInfo, Size, LithoHandler)}
+   * to synchronously post the prepare call to a custom handler.
+   */
   public void prepareAsync(String tag, ComponentRenderInfo componentRenderInfo) {
-    final ComponentTreeHolder holder = mFactory.create(componentRenderInfo);
-    mFactory.prepareAsync(holder);
+    if (!isReady()) {
+      addToPending(tag, componentRenderInfo, null);
+
+      return;
+    }
+
+    executePrepare(tag, componentRenderInfo, null, true, null);
+  }
+
+  private void executePrepare(
+      String tag,
+      ComponentRenderInfo renderInfo,
+      @Nullable final Size size,
+      boolean isAsync,
+      @Nullable LithoHandler handler) {
+    if (mFactory == null) {
+      throw new IllegalStateException(
+          "ComponentWarmer: trying to execute prepare but ComponentWarmer is not ready.");
+    }
+
+    final ComponentTreeHolder holder = mFactory.create(renderInfo);
     mCache.put(tag, holder);
+
+    if (isAsync) {
+      mFactory.prepareAsync(holder);
+    } else {
+      if (handler != null) {
+        handler.post(
+            new Runnable() {
+              @Override
+              public void run() {
+                mFactory.prepareSync(holder, size);
+              }
+            },
+            "prepare");
+      } else {
+        mFactory.prepareSync(holder, size);
+      }
+    }
+  }
+
+  private void addToPending(
+      String tag, ComponentRenderInfo componentRenderInfo, @Nullable LithoHandler handler) {
+    ensurePendingQueue();
+
+    componentRenderInfo.addCustomAttribute(COMPONENT_WARMER_TAG, tag);
+
+    if (handler != null) {
+      componentRenderInfo.addCustomAttribute(COMPONENT_WARMER_PREPARE_HANDLER, handler);
+    }
+
+    mPendingRenderInfos.offer(componentRenderInfo);
+  }
+
+  private void executePending() {
+    synchronized (this) {
+      if (mPendingRenderInfos == null) {
+        mIsReady = true;
+        return;
+      }
+    }
+
+    while (!mPendingRenderInfos.isEmpty()) {
+      final ComponentRenderInfo renderInfo = mPendingRenderInfos.poll();
+
+      final Object customAttrTag = renderInfo.getCustomAttribute(COMPONENT_WARMER_TAG);
+      if (customAttrTag == null) {
+        continue;
+      }
+
+      final String tag = (String) customAttrTag;
+
+      if (renderInfo.getCustomAttribute(COMPONENT_WARMER_PREPARE_HANDLER) != null) {
+        final LithoHandler handler =
+            (LithoHandler) renderInfo.getCustomAttribute(COMPONENT_WARMER_PREPARE_HANDLER);
+        executePrepare(tag, renderInfo, null, false, handler);
+      } else {
+        executePrepare(tag, renderInfo, null, true, null);
+      }
+
+      // Sync around mPendingRenderInfos.isEmpty() because otherwise this can happen:
+      // 1. T1: check if is ready in prepare(), get false
+      // 2. T2: here, check mPendingRenderInfos.isEmpty(), get true
+      // 3. T1: add item to pending list
+      // 4. T2: make mIsReady true
+      // 5. T1: do step 1 again, read mIsReady true, execute layout before T2 loops. Prepare calls
+      // are executed out of order.
+      synchronized (this) {
+        if (mPendingRenderInfos.isEmpty()) {
+          mIsReady = true;
+        }
+      }
+    }
   }
 
   public void evictAll() {
@@ -192,5 +383,21 @@ public class ComponentWarmer {
   @Nullable
   ComponentTreeHolderPreparer getFactory() {
     return mFactory;
+  }
+
+  private synchronized void ensurePendingQueue() {
+    if (mPendingRenderInfos == null) {
+      mPendingRenderInfos = new LinkedBlockingQueue<>(10);
+    }
+  }
+
+  @VisibleForTesting
+  BlockingQueue<ComponentRenderInfo> getPending() {
+    return mPendingRenderInfos;
+  }
+
+  @VisibleForTesting
+  Cache getCache() {
+    return mCache;
   }
 }

@@ -23,6 +23,7 @@ import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.config.LayoutThreadPoolConfiguration;
 import com.facebook.litho.sections.SectionTree;
 import com.facebook.litho.sections.config.SectionsConfiguration;
+import com.facebook.litho.widget.ComponentWarmer;
 import com.facebook.litho.widget.LayoutHandlerFactory;
 import com.facebook.litho.widget.RecyclerBinder;
 import java.util.List;
@@ -35,6 +36,7 @@ public class RecyclerBinderConfiguration {
   private final boolean mIsWrapContent;
   private final boolean mMoveLayoutsBetweenThreads;
   private final boolean mUseCancelableLayoutFutures;
+  private final @Nullable ComponentWarmer mComponentWarmer;
   // TODO T34627443 make all fields final after removing setters
   private boolean mHasDynamicItemHeight;
   private boolean mUseBackgroundChangeSets = SectionsConfiguration.useBackgroundChangeSets;
@@ -76,7 +78,8 @@ public class RecyclerBinderConfiguration {
       boolean useCancelableLayoutFutures,
       boolean isReconciliationEnabled,
       boolean isLayoutDiffingEnabled,
-      boolean postToFrontOfQueueForFirstChangeset) {
+      boolean postToFrontOfQueueForFirstChangeset,
+      @Nullable ComponentWarmer componentWarmer) {
     mRangeRatio = rangeRatio;
     mLayoutHandlerFactory = layoutHandlerFactory;
     mIsCircular = circular;
@@ -95,6 +98,7 @@ public class RecyclerBinderConfiguration {
     mIsReconciliationEnabled = isReconciliationEnabled;
     mIsLayoutDiffingEnabled = isLayoutDiffingEnabled;
     mPostToFrontOfQueueForFirstChangeset = postToFrontOfQueueForFirstChangeset;
+    mComponentWarmer = componentWarmer;
   }
 
   public float getRangeRatio() {
@@ -169,6 +173,10 @@ public class RecyclerBinderConfiguration {
     return mPostToFrontOfQueueForFirstChangeset;
   }
 
+  public @Nullable ComponentWarmer getComponentWarmer() {
+    return mComponentWarmer;
+  }
+
   public static class Builder {
     public static final LayoutThreadPoolConfiguration DEFAULT_THREAD_POOL_CONFIG =
         ComponentsConfiguration.threadPoolConfiguration;
@@ -195,6 +203,7 @@ public class RecyclerBinderConfiguration {
     private boolean mIsReconciliationEnabled = ComponentsConfiguration.isReconciliationEnabled;
     private boolean mIsLayoutDiffingEnabled = ComponentsConfiguration.isLayoutDiffingEnabled;
     private boolean mPostToFrontOfQueueForFirstChangeset;
+    private @Nullable ComponentWarmer mComponentWarmer;
 
     Builder() {}
 
@@ -219,6 +228,7 @@ public class RecyclerBinderConfiguration {
       this.mIsLayoutDiffingEnabled = configuration.mIsLayoutDiffingEnabled;
       this.mPostToFrontOfQueueForFirstChangeset =
           configuration.mPostToFrontOfQueueForFirstChangeset;
+      this.mComponentWarmer = configuration.mComponentWarmer;
     }
 
     /**
@@ -355,6 +365,11 @@ public class RecyclerBinderConfiguration {
       return this;
     }
 
+    public Builder componentWarmer(ComponentWarmer componentWarmer) {
+      mComponentWarmer = componentWarmer;
+      return this;
+    }
+
     public RecyclerBinderConfiguration build() {
       return new RecyclerBinderConfiguration(
           mRangeRatio,
@@ -374,7 +389,8 @@ public class RecyclerBinderConfiguration {
           mUseCancelableLayoutFutures,
           mIsReconciliationEnabled,
           mIsLayoutDiffingEnabled,
-          mPostToFrontOfQueueForFirstChangeset);
+          mPostToFrontOfQueueForFirstChangeset,
+          mComponentWarmer);
     }
   }
 }

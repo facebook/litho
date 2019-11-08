@@ -35,6 +35,8 @@ public interface RenderInfo {
   @Nullable
   Object getCustomAttribute(String key);
 
+  void addCustomAttribute(String key, Object value);
+
   boolean rendersComponent();
 
   Component getComponent();

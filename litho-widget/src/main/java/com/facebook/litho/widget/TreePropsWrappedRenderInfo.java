@@ -92,6 +92,11 @@ public class TreePropsWrappedRenderInfo implements RenderInfo {
     return mRenderInfo.getCustomAttribute(key);
   }
 
+  @Override
+  public void addCustomAttribute(String key, Object value) {
+    mRenderInfo.addCustomAttribute(key, value);
+  }
+
   /**
    * @return true, if {@link RenderInfo} was created through {@link ViewRenderInfo#create()}, or
    *     false otherwise. This should be queried before accessing view related methods, such as

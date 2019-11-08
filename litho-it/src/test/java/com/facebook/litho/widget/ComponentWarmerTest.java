@@ -18,10 +18,14 @@ package com.facebook.litho.widget;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import android.os.HandlerThread;
+import android.os.Looper;
 import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
+import com.facebook.litho.ComponentTree;
 import com.facebook.litho.LayoutThreadPoolConfigurationImpl;
+import com.facebook.litho.LithoHandler;
 import com.facebook.litho.Row;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
@@ -31,16 +35,23 @@ import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
+import org.robolectric.Shadows;
+import org.robolectric.shadows.ShadowLooper;
 
 @RunWith(ComponentsTestRunner.class)
 public class ComponentWarmerTest {
 
   private ComponentContext mContext;
   private ComponentRenderInfo mComponentRenderInfo;
+  private ComponentRenderInfo mPrepareComponentRenderInfo;
+  private ShadowLooper mLayoutThreadShadowLooper;
+  private int mWidthSpec;
+  private int mHeightSpec;
 
   @Before
   public void setup() {
@@ -50,6 +61,15 @@ public class ComponentWarmerTest {
             .component(TestDrawableComponent.create(mContext).build())
             .customAttribute(ComponentWarmer.COMPONENT_WARMER_TAG, "tag1")
             .build();
+    mPrepareComponentRenderInfo =
+        ComponentRenderInfo.create()
+            .component(TestDrawableComponent.create(mContext).build())
+            .build();
+    mLayoutThreadShadowLooper =
+        Shadows.shadowOf(
+            (Looper) Whitebox.invokeMethod(ComponentTree.class, "getDefaultLayoutThreadLooper"));
+    mWidthSpec = SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY);
+    mHeightSpec = SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY);
   }
 
   @Test
@@ -67,7 +87,7 @@ public class ComponentWarmerTest {
     final RecyclerBinder binder = new RecyclerBinder.Builder().build(mContext);
 
     final ComponentWarmer warmer = new ComponentWarmer(binder);
-    warmer.prepare("tag1", mComponentRenderInfo, null);
+    warmer.prepare("tag1", mPrepareComponentRenderInfo, null);
 
     assertThat(warmer.consume("tag1")).isNotNull();
     assertThat(warmer.consume("tag1")).isNull();
@@ -80,7 +100,7 @@ public class ComponentWarmerTest {
     final ComponentWarmer warmer = new ComponentWarmer(binder);
     ComponentWarmer.Cache cache = Whitebox.getInternalState(warmer, "mCache");
 
-    warmer.prepare("tag1", mComponentRenderInfo, null);
+    warmer.prepare("tag1", mPrepareComponentRenderInfo, null);
 
     final ComponentTreeHolder cachedCTH = cache.get("tag1");
 
@@ -96,7 +116,7 @@ public class ComponentWarmerTest {
     final ComponentWarmer warmer = new ComponentWarmer(binder);
     ComponentWarmer.Cache cache = Whitebox.getInternalState(warmer, "mCache");
 
-    warmer.prepareAsync("tag1", mComponentRenderInfo);
+    warmer.prepareAsync("tag1", mPrepareComponentRenderInfo);
 
     final ComponentTreeHolder cachedCTH = cache.get("tag1");
 
@@ -257,6 +277,219 @@ public class ComponentWarmerTest {
     assertThat(warmer.consume("tag1")).isNull();
   }
 
+  @Test
+  public void testLazyComponentWarmerCreation() {
+    final ComponentWarmer warmer = new ComponentWarmer();
+    assertThat(warmer.isReady()).isFalse();
+
+    RecyclerBinder binder = new RecyclerBinder.Builder().componentWarmer(warmer).build(mContext);
+
+    assertThat(warmer.isReady()).isFalse();
+
+    binder.measure(new Size(), mWidthSpec, mHeightSpec, null);
+
+    assertThat(warmer.isReady()).isTrue();
+  }
+
+  @Test
+  public void testLazySyncPrepareAddToPending() {
+    final ComponentWarmer warmer = new ComponentWarmer();
+    final ComponentRenderInfo renderInfo =
+        ComponentRenderInfo.create()
+            .component(TestDrawableComponent.create(mContext).build())
+            .customAttribute(ComponentWarmer.COMPONENT_WARMER_TAG, "tag1")
+            .build();
+
+    warmer.prepare("tag1", renderInfo, null);
+    assertThat(warmer.getPending().size()).isEqualTo(1);
+    assertThat(warmer.getPending().poll()).isEqualTo(renderInfo);
+    assertThat(warmer.getCache().get("tag1")).isNull();
+
+    assertThat(renderInfo.getCustomAttribute(ComponentWarmer.COMPONENT_WARMER_TAG))
+        .isEqualTo("tag1");
+  }
+
+  @Test
+  public void testLazySyncPrepareWithHandlerAddToPending() {
+    final ComponentWarmer warmer = new ComponentWarmer();
+    final ComponentRenderInfo renderInfo =
+        ComponentRenderInfo.create()
+            .component(TestDrawableComponent.create(mContext).build())
+            .customAttribute(ComponentWarmer.COMPONENT_WARMER_TAG, "tag1")
+            .build();
+    final LithoHandler handler = new LithoHandler.DefaultLithoHandler(Looper.myLooper());
+
+    warmer.prepare("tag1", renderInfo, null, handler);
+    assertThat(warmer.getPending().size()).isEqualTo(1);
+    assertThat(warmer.getPending().poll()).isEqualTo(renderInfo);
+    assertThat(warmer.getCache().get("tag1")).isNull();
+    assertThat(renderInfo.getCustomAttribute(ComponentWarmer.COMPONENT_WARMER_TAG))
+        .isEqualTo("tag1");
+    assertThat(renderInfo.getCustomAttribute(ComponentWarmer.COMPONENT_WARMER_PREPARE_HANDLER))
+        .isEqualTo(handler);
+  }
+
+  @Test
+  public void testLazyAsyncPrepareAddToPending() {
+    final ComponentWarmer warmer = new ComponentWarmer();
+
+    final ComponentRenderInfo renderInfo =
+        ComponentRenderInfo.create()
+            .component(TestDrawableComponent.create(mContext).build())
+            .customAttribute(ComponentWarmer.COMPONENT_WARMER_TAG, "tag1")
+            .build();
+
+    warmer.prepareAsync("tag1", renderInfo);
+    assertThat(warmer.getCache().get("tag1")).isNull();
+    assertThat(warmer.getPending().size()).isEqualTo(1);
+    assertThat(warmer.getPending().poll()).isEqualTo(renderInfo);
+
+    assertThat(renderInfo.getCustomAttribute(ComponentWarmer.COMPONENT_WARMER_TAG))
+        .isEqualTo("tag1");
+  }
+
+  @Test
+  public void testLazySyncPrepare() {
+    final ComponentWarmer warmer = new ComponentWarmer();
+
+    final TestComponent component1 = new TestComponent("tag1");
+    final ComponentRenderInfo renderInfo1 =
+        ComponentRenderInfo.create()
+            .component(component1)
+            .customAttribute(ComponentWarmer.COMPONENT_WARMER_TAG, "tag1")
+            .build();
+
+    final TestComponent component2 = new TestComponent("tag2");
+    final ComponentRenderInfo renderInfo2 =
+        ComponentRenderInfo.create()
+            .component(component2)
+            .customAttribute(ComponentWarmer.COMPONENT_WARMER_TAG, "tag1")
+            .build();
+
+    warmer.prepare("tag1", renderInfo1, null);
+    warmer.prepare("tag2", renderInfo2, null);
+
+    RecyclerBinder binder = new RecyclerBinder.Builder().componentWarmer(warmer).build(mContext);
+
+    assertThat(warmer.getPending().size()).isEqualTo(2);
+    assertThat(warmer.getCache().get("tag1")).isNull();
+    assertThat(warmer.getCache().get("tag2")).isNull();
+
+    binder.measure(new Size(), mWidthSpec, mHeightSpec, null);
+
+    assertThat(warmer.getPending()).isEmpty();
+
+    final ComponentTreeHolder holder1 = warmer.getCache().get("tag1");
+    assertThat(holder1).isNotNull();
+    assertThat(holder1.isTreeValid()).isTrue();
+
+    final ComponentTreeHolder holder2 = warmer.getCache().get("tag2");
+    assertThat(holder2).isNotNull();
+    assertThat(holder2.isTreeValid()).isTrue();
+
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+    assertThat(component1.ranLayout.get()).isTrue();
+    assertThat(component2.ranLayout.get()).isTrue();
+  }
+
+  @Test
+  public void testLazySyncPrepareWithHandler() {
+    final ComponentWarmer warmer = new ComponentWarmer();
+
+    final TestComponent component1 = new TestComponent("tag1");
+    final ComponentRenderInfo renderInfo1 =
+        ComponentRenderInfo.create()
+            .component(component1)
+            .customAttribute(ComponentWarmer.COMPONENT_WARMER_TAG, "tag1")
+            .build();
+
+    final TestComponent component2 = new TestComponent("tag2");
+    final ComponentRenderInfo renderInfo2 =
+        ComponentRenderInfo.create()
+            .component(component2)
+            .customAttribute(ComponentWarmer.COMPONENT_WARMER_TAG, "tag1")
+            .build();
+
+    final HandlerThread handlerThread = new HandlerThread("testt1");
+    handlerThread.start();
+
+    final Looper looper = handlerThread.getLooper();
+    final LithoHandler.DefaultLithoHandler lithoHandler =
+        new LithoHandler.DefaultLithoHandler(looper);
+
+    warmer.prepare("tag1", renderInfo1, null, lithoHandler);
+    warmer.prepare("tag2", renderInfo2, null, lithoHandler);
+
+    RecyclerBinder binder = new RecyclerBinder.Builder().componentWarmer(warmer).build(mContext);
+
+    assertThat(warmer.getPending().size()).isEqualTo(2);
+    assertThat(warmer.getCache().get("tag1")).isNull();
+    assertThat(warmer.getCache().get("tag2")).isNull();
+
+    binder.measure(new Size(), mWidthSpec, mHeightSpec, null);
+
+    assertThat(warmer.getPending()).isEmpty();
+
+    ShadowLooper shadowLooper = Shadows.shadowOf(looper);
+    shadowLooper.runToEndOfTasks();
+
+    final ComponentTreeHolder holder1 = warmer.getCache().get("tag1");
+    assertThat(holder1).isNotNull();
+    assertThat(holder1.isTreeValid()).isTrue();
+
+    final ComponentTreeHolder holder2 = warmer.getCache().get("tag2");
+    assertThat(holder2).isNotNull();
+    assertThat(holder2.isTreeValid()).isTrue();
+
+    assertThat(component1.ranLayout.get()).isTrue();
+    assertThat(component2.ranLayout.get()).isTrue();
+  }
+
+  @Test
+  public void testLazyAsyncPrepare() {
+    final ComponentWarmer warmer = new ComponentWarmer();
+
+    final TestComponent component1 = new TestComponent("tag1");
+    final ComponentRenderInfo renderInfo1 =
+        ComponentRenderInfo.create()
+            .component(component1)
+            .customAttribute(ComponentWarmer.COMPONENT_WARMER_TAG, "tag1")
+            .build();
+
+    final TestComponent component2 = new TestComponent("tag2");
+    final ComponentRenderInfo renderInfo2 =
+        ComponentRenderInfo.create()
+            .component(component2)
+            .customAttribute(ComponentWarmer.COMPONENT_WARMER_TAG, "tag1")
+            .build();
+
+    warmer.prepareAsync("tag1", renderInfo1);
+    warmer.prepareAsync("tag2", renderInfo2);
+
+    RecyclerBinder binder = new RecyclerBinder.Builder().componentWarmer(warmer).build(mContext);
+
+    assertThat(warmer.getPending().size()).isEqualTo(2);
+    assertThat(warmer.getCache().get("tag1")).isNull();
+    assertThat(warmer.getCache().get("tag2")).isNull();
+
+    binder.measure(new Size(), mWidthSpec, mHeightSpec, null);
+
+    assertThat(warmer.getPending().isEmpty()).isTrue();
+
+    final ComponentTreeHolder holder1 = warmer.getCache().get("tag1");
+    assertThat(holder1).isNotNull();
+    assertThat(holder1.isTreeValid()).isTrue();
+
+    final ComponentTreeHolder holder2 = warmer.getCache().get("tag2");
+    assertThat(holder2).isNotNull();
+    assertThat(holder2.isTreeValid()).isTrue();
+
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+
+    assertThat(component1.ranLayout.get()).isTrue();
+    assertThat(component2.ranLayout.get()).isTrue();
+  }
+
   private static void runOnBackgroundThreadSync(final Runnable runnable) {
     new Thread(
             new Runnable() {
@@ -266,5 +499,28 @@ public class ComponentWarmerTest {
               }
             })
         .start();
+  }
+
+  final class TestComponent extends Component {
+
+    AtomicBoolean ranLayout = new AtomicBoolean(false);
+
+    protected TestComponent(String simpleName) {
+      super(simpleName);
+    }
+
+    @Override
+    protected Component onCreateLayout(ComponentContext c) {
+      ranLayout.set(true);
+      return Column.create(c).build();
+    }
+
+    @Override
+    public Component makeShallowCopy() {
+      TestComponent copy = (TestComponent) super.makeShallowCopy();
+      copy.ranLayout = ranLayout;
+
+      return copy;
+    }
   }
 }

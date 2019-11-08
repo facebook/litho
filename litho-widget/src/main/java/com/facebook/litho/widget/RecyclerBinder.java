@@ -429,6 +429,7 @@ public class RecyclerBinder
     private boolean isLayoutDiffingEnabled = ComponentsConfiguration.isLayoutDiffingEnabled;
     private LithoHandler preallocateMountContentHandler;
     private boolean shouldPreallocatePerMountSpec;
+    private @Nullable ComponentWarmer mComponentWarmer;
 
     /**
      * @param rangeRatio specifies how big a range this binder should try to compute. The range is
@@ -701,6 +702,11 @@ public class RecyclerBinder
       return this;
     }
 
+    public Builder componentWarmer(ComponentWarmer componentWarmer) {
+      mComponentWarmer = componentWarmer;
+      return this;
+    }
+
     /** @param c The {@link ComponentContext} the RecyclerBinder will use. */
     public RecyclerBinder build(ComponentContext c) {
       componentContext =
@@ -900,6 +906,7 @@ public class RecyclerBinder
     mIsLayoutDiffingEnabled = builder.isLayoutDiffingEnabled;
     mPreallocateMountContentHandler = builder.preallocateMountContentHandler;
     mPreallocatePerMountSpec = builder.shouldPreallocatePerMountSpec;
+    mComponentWarmer = builder.mComponentWarmer;
   }
 
   /**
@@ -2234,6 +2241,10 @@ public class RecyclerBinder
 
         mMeasuredSize = new Size(outSize.width, outSize.height);
         mIsMeasured.set(true);
+
+        if (mComponentWarmer != null) {
+          mComponentWarmer.setComponentTreeHolderFactory(getComponentTreeHolderPreparer());
+        }
 
         maybeFillHScrollViewport();
         updateAsyncInsertOperations();
