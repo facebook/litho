@@ -490,6 +490,42 @@ public class ComponentWarmerTest {
     assertThat(component2.ranLayout.get()).isTrue();
   }
 
+  @Test
+  public void prepareWithSizeSpecs() {
+    final ComponentWarmer warmer = new ComponentWarmer(mContext, mWidthSpec, mHeightSpec);
+    assertThat(warmer.isReady()).isTrue();
+
+    final ComponentWarmer.ComponentTreeHolderPreparer preparer = warmer.getFactory();
+
+    final TestComponent testComponentPrepare = new TestComponent("t1");
+    final ComponentRenderInfo renderInfoPrepare =
+        ComponentRenderInfo.create().component(testComponentPrepare).build();
+
+    warmer.prepare("tag1", renderInfoPrepare, null);
+
+    final ComponentTreeHolder holder = warmer.getCache().get("tag1");
+    assertThat(holder).isNotNull();
+    assertThat(testComponentPrepare.ranLayout.get()).isTrue();
+
+    final RecyclerBinder recyclerBinder =
+        new RecyclerBinder.Builder().componentWarmer(warmer).build(mContext);
+
+    final TestComponent testComponentInsert = new TestComponent("t2");
+    final ComponentRenderInfo renderInfoInsert =
+        ComponentRenderInfo.create()
+            .customAttribute(ComponentWarmer.COMPONENT_WARMER_TAG, "tag1")
+            .component(testComponentInsert)
+            .build();
+    recyclerBinder.insertItemAt(0, renderInfoInsert);
+
+    assertThat(recyclerBinder.getComponentTreeHolderAt(0)).isEqualTo(holder);
+
+    assertThat(warmer.getFactory()).isEqualTo(preparer);
+
+    recyclerBinder.measure(new Size(), mWidthSpec, mHeightSpec, null);
+    assertThat(warmer.getFactory()).isNotEqualTo(preparer);
+  }
+
   private static void runOnBackgroundThreadSync(final Runnable runnable) {
     new Thread(
             new Runnable() {

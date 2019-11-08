@@ -18,6 +18,7 @@ package com.facebook.litho.widget;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.collection.LruCache;
+import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentsReporter;
 import com.facebook.litho.LithoHandler;
 import com.facebook.litho.Size;
@@ -57,6 +58,35 @@ public class ComponentWarmer {
      * ComponentTreeHolder.
      */
     void prepareAsync(ComponentTreeHolder holder);
+  }
+
+  public class ComponentTreeHolderPreparerWithSizeImpl implements ComponentTreeHolderPreparer {
+
+    private final int mHeightSpec;
+    private final int mWidthSpec;
+    private final ComponentContext mComponentContext;
+
+    public ComponentTreeHolderPreparerWithSizeImpl(
+        ComponentContext c, int widthSpec, int heightSpec) {
+      mWidthSpec = widthSpec;
+      mHeightSpec = heightSpec;
+      mComponentContext = c;
+    }
+
+    @Override
+    public ComponentTreeHolder create(ComponentRenderInfo renderInfo) {
+      return ComponentTreeHolder.create().renderInfo(renderInfo).build();
+    }
+
+    @Override
+    public void prepareSync(ComponentTreeHolder holder, @Nullable Size size) {
+      holder.computeLayoutSync(mComponentContext, mWidthSpec, mHeightSpec, size);
+    }
+
+    @Override
+    public void prepareAsync(ComponentTreeHolder holder) {
+      holder.computeLayoutAsync(mComponentContext, mWidthSpec, mHeightSpec);
+    }
   }
 
   public interface ComponentWarmerReadyListener {
@@ -114,6 +144,17 @@ public class ComponentWarmer {
   private boolean mIsReady;
   private @Nullable ComponentWarmerReadyListener mReadyListener;
   private BlockingQueue<ComponentRenderInfo> mPendingRenderInfos;
+
+  /**
+   * Sets up a {@link ComponentTreeHolderPreparerWithSizeImpl} as the {@link
+   * ComponentTreeHolderPreparer} of this instance. All prepare calls will use the provided width
+   * and height specs for preparing, until this instance is configured on a RecyclerBinder and a new
+   * {@link ComponentTreeHolderPreparer} created by the RecyclerBinder is used, which uses the
+   * RecyclerBinder's measurements.
+   */
+  public ComponentWarmer(ComponentContext c, int widthSpec, int heightSpec) {
+    init(new ComponentTreeHolderPreparerWithSizeImpl(c, widthSpec, heightSpec), null);
+  }
 
   /**
    * Creates a ComponentWarmer instance which is not ready to prepare items yet. If trying to
@@ -399,5 +440,10 @@ public class ComponentWarmer {
   @VisibleForTesting
   Cache getCache() {
     return mCache;
+  }
+
+  @VisibleForTesting
+  ComponentTreeHolderPreparer getPrepareImpl() {
+    return mFactory;
   }
 }
