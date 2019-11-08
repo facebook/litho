@@ -17,23 +17,18 @@
 package com.facebook.litho.intellij.completion;
 
 import com.facebook.litho.annotations.RequiredProp;
-import com.facebook.litho.intellij.extensions.EventLogger;
-import com.facebook.litho.intellij.logging.LithoLoggerProvider;
 import com.facebook.litho.specmodels.processor.PsiAnnotationProxyUtils;
+import com.google.common.annotations.VisibleForTesting;
 import com.intellij.codeInsight.completion.CompletionContributor;
 import com.intellij.codeInsight.completion.CompletionParameters;
 import com.intellij.codeInsight.completion.CompletionProvider;
 import com.intellij.codeInsight.completion.CompletionResult;
 import com.intellij.codeInsight.completion.CompletionResultSet;
 import com.intellij.codeInsight.completion.CompletionType;
-import com.intellij.codeInsight.completion.InsertionContext;
 import com.intellij.codeInsight.completion.JavaKeywordCompletion;
 import com.intellij.codeInsight.lookup.LookupElement;
-import com.intellij.codeInsight.lookup.LookupElementDecorator;
-import com.intellij.codeInsight.lookup.LookupElementPresentation;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiMethod;
-import com.intellij.psi.PsiModifierListOwner;
 import com.intellij.util.ProcessingContext;
 
 public class RequiredPropMethodContributor extends CompletionContributor {
@@ -52,47 +47,31 @@ public class RequiredPropMethodContributor extends CompletionContributor {
         CompletionParameters parameters, ProcessingContext context, CompletionResultSet result) {
       result.runRemainingContributors(
           parameters,
-          completionResult -> {
-            PsiElement suggestedElement = completionResult.getLookupElement().getPsiElement();
-            if (suggestedElement instanceof PsiMethod
-                && PsiAnnotationProxyUtils.findAnnotationInHierarchy(
-                        (PsiModifierListOwner) suggestedElement, RequiredProp.class)
-                    != null) {
-              completionResult =
-                  CompletionResult.wrap(
-                      RequiredPropLookupElement.create(completionResult.getLookupElement()),
-                      completionResult.getPrefixMatcher(),
-                      completionResult.getSorter());
+          suggestedCompletion -> {
+            LookupElement suggestedLookup = suggestedCompletion.getLookupElement();
+            PsiElement suggestedElement = suggestedLookup.getPsiElement();
+            CompletionResult completion = null;
+
+            if (suggestedElement instanceof PsiMethod) {
+              PsiMethod suggestedMethod = (PsiMethod) suggestedElement;
+              if (isRequiredPropSetter(suggestedMethod)) {
+                completion =
+                    wrap(suggestedCompletion, RequiredPropLookupElement.create(suggestedLookup));
+              }
             }
-            if (completionResult == null) {
-              return;
-            }
-            result.passResult(completionResult);
+            result.passResult(completion == null ? suggestedCompletion : completion);
           });
     }
-  }
 
-  static class RequiredPropLookupElement extends LookupElementDecorator<LookupElement> {
-
-    static RequiredPropLookupElement create(LookupElement delegate) {
-      return new RequiredPropLookupElement(delegate);
+    @VisibleForTesting
+    static boolean isRequiredPropSetter(PsiMethod suggestedMethod) {
+      return PsiAnnotationProxyUtils.findAnnotationInHierarchy(suggestedMethod, RequiredProp.class)
+          != null;
     }
 
-    private RequiredPropLookupElement(LookupElement delegate) {
-      super(delegate);
-    }
-
-    @Override
-    public void renderElement(LookupElementPresentation presentation) {
-      super.renderElement(presentation);
-      presentation.appendTailTextItalic(" required Prop", true);
-      presentation.setItemTextUnderlined(true);
-    }
-
-    @Override
-    public void handleInsert(InsertionContext context) {
-      super.handleInsert(context);
-      LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_COMPLETION_REQUIRED_PROP);
+    private static CompletionResult wrap(CompletionResult completionResult, LookupElement lookup) {
+      return CompletionResult.wrap(
+          lookup, completionResult.getPrefixMatcher(), completionResult.getSorter());
     }
   }
 }

@@ -16,14 +16,20 @@
 
 package com.facebook.litho.intellij.completion;
 
+import com.facebook.litho.intellij.LithoPluginIntellijTest;
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementPresentation;
+import com.intellij.psi.PsiClass;
 import com.intellij.testFramework.fixtures.TestLookupElementPresentation;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-public class RequiredPropMethodContributorTest {
+public class RequiredPropMethodContributorTest extends LithoPluginIntellijTest {
+
+  public RequiredPropMethodContributorTest() {
+    super("testdata/completion");
+  }
 
   @Test
   public void renderElement() {
@@ -31,10 +37,26 @@ public class RequiredPropMethodContributorTest {
     LookupElement mockedDelegate = Mockito.mock(LookupElement.class);
 
     // Excluding input parameters influence on the render result
-    RequiredPropMethodContributor.RequiredPropLookupElement.create(mockedDelegate)
-        .renderElement(testPresentation);
+    RequiredPropLookupElement.create(mockedDelegate).renderElement(testPresentation);
 
     Assert.assertEquals(" required Prop", testPresentation.getTailText());
     Assert.assertTrue(testPresentation.isItemTextUnderlined());
+  }
+
+  @Test
+  public void isRequiredPropSetter() {
+    testHelper.getPsiClass(
+        psiClasses -> {
+          PsiClass cls = psiClasses.get(0);
+
+          Assert.assertTrue(
+              RequiredPropMethodContributor.RequiredPropMethodProvider.isRequiredPropSetter(
+                  cls.getMethods()[0]));
+          Assert.assertFalse(
+              RequiredPropMethodContributor.RequiredPropMethodProvider.isRequiredPropSetter(
+                  cls.getMethods()[1]));
+          return true;
+        },
+        "RequiredPropMethodContributorTest.java");
   }
 }
