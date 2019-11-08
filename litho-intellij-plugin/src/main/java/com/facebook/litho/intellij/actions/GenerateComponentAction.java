@@ -58,7 +58,7 @@ public class GenerateComponentAction extends AnAction {
         .ifPresent(
             specCls -> {
               String componentName =
-                  LithoPluginUtils.getLithoComponentNameFromSpec(specCls.getQualifiedName());
+                  LithoPluginUtils.getLithoComponentNameFromSpec(specCls.getName());
               Project project = e.getProject();
 
               if (ComponentGenerateUtils.updateLayoutComponent(specCls)) {

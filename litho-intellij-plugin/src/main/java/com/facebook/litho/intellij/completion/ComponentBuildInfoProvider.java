@@ -16,6 +16,7 @@
 
 package com.facebook.litho.intellij.completion;
 
+import com.facebook.litho.intellij.LithoPluginUtils;
 import com.facebook.litho.intellij.extensions.BuildInfoProvider;
 import com.google.common.annotations.VisibleForTesting;
 import com.intellij.openapi.extensions.ExtensionPointName;
@@ -23,11 +24,16 @@ import com.intellij.openapi.extensions.Extensions;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiDirectory;
+import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiFile;
+import com.intellij.psi.PsiJavaFile;
 import com.intellij.psi.PsiManager;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Stream;
 import org.jetbrains.annotations.Nullable;
 
@@ -54,11 +60,25 @@ class ComponentBuildInfoProvider {
    * @see BuildInfoProvider#provideGeneratedComponentDir(String, String)
    */
   Stream<PsiDirectory> provideGeneratedComponentDirs(
-      String specDirPath, String specPackageName, Project project) {
+      String specDirPath, String specQualifiedName, Project project) {
+    String specPackageName = StringUtil.getPackageName(specQualifiedName);
     VirtualFile baseDir = project.getBaseDir();
     PsiManager psiManager = PsiManager.getInstance(project);
-    return provideGeneratedComponentDirs(
-        providers, specDirPath, specPackageName, baseDir, psiManager);
+    PsiClass generatedClass = LithoPluginUtils.findGeneratedClass(specQualifiedName, project);
+    return Stream.concat(
+        getContainingDirectory(generatedClass),
+        provideGeneratedComponentDirs(
+            providers, specDirPath, specPackageName, baseDir, psiManager));
+  }
+
+  @VisibleForTesting
+  static Stream<PsiDirectory> getContainingDirectory(@Nullable PsiClass component) {
+    return Optional.ofNullable(component)
+        .map(PsiElement::getContainingFile)
+        .filter(PsiJavaFile.class::isInstance)
+        .map(PsiFile::getContainingDirectory)
+        .map(Stream::of)
+        .orElse(Stream.empty());
   }
 
   @VisibleForTesting

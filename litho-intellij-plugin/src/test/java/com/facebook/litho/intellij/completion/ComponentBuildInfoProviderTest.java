@@ -16,20 +16,25 @@
 
 package com.facebook.litho.intellij.completion;
 
+import static com.facebook.litho.intellij.completion.MockHelper.createPathMocks;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import com.facebook.litho.intellij.LithoPluginIntellijTest;
 import com.facebook.litho.intellij.extensions.BuildInfoProvider;
 import com.intellij.mock.MockPsiManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiDirectory;
+import com.intellij.psi.PsiFile;
+import com.intellij.psi.PsiJavaFile;
 import java.util.Optional;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 public class ComponentBuildInfoProviderTest extends LithoPluginIntellijTest {
 
@@ -51,33 +56,33 @@ public class ComponentBuildInfoProviderTest extends LithoPluginIntellijTest {
 
   @Test
   public void findTargetDirectory_exists() {
-    VirtualFile[] mocks = createMocks("com", "example");
+    VirtualFile[] mocks = createPathMocks("com", "example");
 
     assertEquals(mocks[1], ComponentBuildInfoProvider.findTargetDirectory("com/example", mocks[0]));
   }
 
   @Test
   public void findTargetDirectory_doesNotExist() {
-    VirtualFile rootDir = Mockito.mock(VirtualFile.class);
+    VirtualFile rootDir = mock(VirtualFile.class);
     assertNull(ComponentBuildInfoProvider.findTargetDirectory("com/example", rootDir));
 
-    VirtualFile[] mocks = createMocks("com", "test1", "test2");
+    VirtualFile[] mocks = createPathMocks("com", "test1", "test2");
     assertNull(ComponentBuildInfoProvider.findTargetDirectory("com/example", mocks[0]));
   }
 
   @Test
   public void findTargetDirectory_invalidPath() {
-    VirtualFile[] mocks = createMocks("com", "example", "test");
+    VirtualFile[] mocks = createPathMocks("com", "example", "test");
     assertNull(ComponentBuildInfoProvider.findTargetDirectory("com.example.test", mocks[0]));
   }
 
   @Test
   public void provideGeneratedComponentDirs_valid() {
     BuildInfoProvider[] providers = {(dir, packageName) -> "app/com/test/example"};
-    VirtualFile[] mocks = createMocks("app", "com", "test", "example");
-    Project mockProject = Mockito.mock(Project.class);
+    VirtualFile[] mocks = createPathMocks("app", "com", "test", "example");
+    Project mockProject = mock(Project.class);
     MockPsiManager mockPsiManager = new MockPsiManager(mockProject);
-    PsiDirectory mockDirectory = Mockito.mock(PsiDirectory.class);
+    PsiDirectory mockDirectory = mock(PsiDirectory.class);
     mockPsiManager.addPsiDirectory(mocks[1], mockDirectory);
 
     PsiDirectory found =
@@ -92,10 +97,10 @@ public class ComponentBuildInfoProviderTest extends LithoPluginIntellijTest {
   @Test
   public void provideGeneratedComponentDirs_doesNotExist() {
     BuildInfoProvider[] providers = {(dir, packageName) -> "app/com/my/example"};
-    VirtualFile[] mocks = createMocks("app", "com", "test", "example");
-    Project mockProject = Mockito.mock(Project.class);
+    VirtualFile[] mocks = createPathMocks("app", "com", "test", "example");
+    Project mockProject = mock(Project.class);
     MockPsiManager mockPsiManager = new MockPsiManager(mockProject);
-    PsiDirectory mockDirectory = Mockito.mock(PsiDirectory.class);
+    PsiDirectory mockDirectory = mock(PsiDirectory.class);
     mockPsiManager.addPsiDirectory(mocks[1], mockDirectory);
 
     Optional<PsiDirectory> found =
@@ -106,17 +111,24 @@ public class ComponentBuildInfoProviderTest extends LithoPluginIntellijTest {
     assertFalse(found.isPresent());
   }
 
-  private static VirtualFile[] createMocks(String... path) {
-    VirtualFile rootDir = Mockito.mock(VirtualFile.class);
-    VirtualFile curDir = rootDir;
-    for (String s : path) {
-      VirtualFile nextDir = Mockito.mock(VirtualFile.class);
-      Mockito.when(curDir.findChild(s)).thenReturn(nextDir);
-      curDir = nextDir;
-    }
-    VirtualFile[] dirs = new VirtualFile[2];
-    dirs[0] = rootDir;
-    dirs[1] = curDir;
-    return dirs;
+  @Test
+  public void getContainingDirectory_valid() {
+    PsiClass mockCls = mock(PsiClass.class);
+    PsiJavaFile mockFile = mock(PsiJavaFile.class);
+    PsiDirectory mockDir = mock(PsiDirectory.class);
+    when(mockCls.getContainingFile()).thenReturn(mockFile);
+    when(mockFile.getContainingDirectory()).thenReturn(mockDir);
+    assertEquals(
+        mockDir, ComponentBuildInfoProvider.getContainingDirectory(mockCls).findAny().get());
+  }
+
+  @Test
+  public void getContainingDirectory_invalidFile() {
+    PsiClass mockCls = mock(PsiClass.class);
+    PsiFile mockFile = mock(PsiFile.class);
+    PsiDirectory mockDir = mock(PsiDirectory.class);
+    when(mockCls.getContainingFile()).thenReturn(mockFile);
+    when(mockFile.getContainingDirectory()).thenReturn(mockDir);
+    assertEquals(0, ComponentBuildInfoProvider.getContainingDirectory(mockCls).count());
   }
 }
