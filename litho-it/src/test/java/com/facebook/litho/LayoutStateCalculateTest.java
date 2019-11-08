@@ -401,7 +401,7 @@ public class LayoutStateCalculateTest {
     assertThat(textLayoutBounds.right + paddingSize).isEqualTo(textBackgroundBounds.right);
     assertThat(textLayoutBounds.bottom + paddingSize).isEqualTo(textBackgroundBounds.bottom);
 
-    ViewNodeInfo viewNodeInfo = layoutState.getMountableOutputAt(4).getViewNodeInfo();
+    final ViewNodeInfo viewNodeInfo = layoutState.getMountableOutputAt(4).getViewNodeInfo();
     assertThat(viewNodeInfo.getBackground()).isNull();
   }
 
@@ -1130,7 +1130,7 @@ public class LayoutStateCalculateTest {
 
   @Test
   public void testLayoutOutputsForComponentWithBackgrounds() {
-    int color = 0xFFFF0000;
+    final int color = 0xFFFF0000;
     final Component component =
         new InlineLayoutSpec() {
           @Override
@@ -1159,7 +1159,7 @@ public class LayoutStateCalculateTest {
 
   @Test
   public void testLayoutOutputsForComponentWithBackgroundAndClickHandler() {
-    int color = 0xFFFF0000;
+    final int color = 0xFFFF0000;
     final Component component =
         new InlineLayoutSpec() {
           @Override
@@ -1180,7 +1180,7 @@ public class LayoutStateCalculateTest {
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(3);
 
     assertThat(getComponentAt(layoutState, 0)).isInstanceOf(HostComponent.class);
-    Drawable background = layoutState.getMountableOutputAt(0).getViewNodeInfo().getBackground();
+    final Drawable background = layoutState.getMountableOutputAt(0).getViewNodeInfo().getBackground();
     // background is set on the HostComponent's ViewNodeInfo
     assertThat(background).isNotNull();
     assertThat(background).isInstanceOf(ComparableColorDrawable.class);

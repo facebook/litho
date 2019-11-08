@@ -110,7 +110,7 @@ public class MountStateViewTest {
             });
 
     final View child = lithoView.getChildAt(0);
-    Drawable background = child.getBackground();
+    final Drawable background = child.getBackground();
     assertThat(child.isClickable()).isTrue();
     assertThat(background).isInstanceOf(ComparableColorDrawable.class);
     assertThat(((ComparableColorDrawable) background).getColor()).isEqualTo(color);
