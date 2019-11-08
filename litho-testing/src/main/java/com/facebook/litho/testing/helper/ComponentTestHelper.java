@@ -489,7 +489,7 @@ public final class ComponentTestHelper {
   }
 
   /** Access the shadow of the default layout thread looper for testing purposes only. */
-  public static ShadowLooper getDefaultLayoutThreadShadowLooper() throws Exception {
+  public static ShadowLooper getDefaultLayoutThreadShadowLooper() {
     return shadowOf(getDefaultLayoutThreadLooper());
   }
 }
