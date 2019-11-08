@@ -55,6 +55,7 @@ import com.facebook.litho.sections.ChangesetDebugConfiguration.ChangesetDebugLis
 import com.facebook.litho.sections.SectionsLogEventUtils.ApplyNewChangeSet;
 import com.facebook.litho.sections.config.SectionsConfiguration;
 import com.facebook.litho.sections.logger.SectionsDebugLogger;
+import com.facebook.litho.stats.LithoStats;
 import com.facebook.litho.widget.ChangeSetCompleteCallback;
 import com.facebook.litho.widget.RecyclerBinder.CommitPolicy;
 import com.facebook.litho.widget.RenderInfo;
@@ -917,6 +918,8 @@ public class SectionTree {
                   Thread.currentThread().getStackTrace());
       mCalculateChangeSetOnMainThreadRunnable.ensurePosted(
           ApplyNewChangeSet.UPDATE_STATE, attribution, changesetDebugInfo);
+
+      LithoStats.incrementSectionStateUpdateSyncCount();
     }
   }
 
@@ -947,6 +950,8 @@ public class SectionTree {
                   Thread.currentThread().getStackTrace());
       mCalculateChangeSetRunnable.ensurePosted(
           ApplyNewChangeSet.UPDATE_STATE_ASYNC, attribution, changesetDebugInfo);
+
+      LithoStats.incrementSectionStateUpdateAsyncCount();
     }
   }
 
@@ -1167,6 +1172,10 @@ public class SectionTree {
         if (attribution != null) {
           ComponentsSystrace.endSection();
         }
+      }
+      LithoStats.incrementSectionCalculateNewChangesetCount();
+      if (ThreadUtils.isMainThread()) {
+        LithoStats.incrementSectionCalculateNewChangesetOnUICount();
       }
     }
   }
@@ -1598,6 +1607,8 @@ public class SectionTree {
         for (int i = 0, size = stateUpdates.size(); i < size; i++) {
           stateContainer.applyStateUpdate(stateUpdates.get(i));
         }
+
+        LithoStats.incrementSectionAppliedStateUpdateCountBy(stateUpdates.size());
 
         if (nextRoot.shouldComponentUpdate(currentRoot, nextRoot)) {
           nextRoot.invalidate();

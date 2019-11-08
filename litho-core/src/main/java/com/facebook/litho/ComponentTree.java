@@ -1194,8 +1194,6 @@ public class ComponentTree {
 
       mStateHandler.queueStateUpdate(componentKey, stateUpdate, true);
     }
-
-    LithoStats.incrementStateUpdateLazy();
   }
 
   void applyLazyStateUpdatesForContainer(String componentKey, StateContainer container) {
@@ -1221,7 +1219,7 @@ public class ComponentTree {
       mStateHandler.queueStateUpdate(componentKey, stateUpdate, false);
     }
 
-    LithoStats.incrementStateUpdateSync();
+    LithoStats.incrementComponentStateUpdateSyncCount();
     final Looper looper = Looper.myLooper();
 
     if (looper == null) {
@@ -1281,7 +1279,7 @@ public class ComponentTree {
       mStateHandler.queueStateUpdate(componentKey, stateUpdate, false);
     }
 
-    LithoStats.incrementStateUpdateAsync();
+    LithoStats.incrementComponentStateUpdateAsyncCount();
     updateStateInternal(true, attribution);
   }
 
@@ -1294,7 +1292,7 @@ public class ComponentTree {
       mStateHandler.queueHookStateUpdate(updater);
     }
 
-    LithoStats.incrementStateUpdateAsync();
+    LithoStats.incrementComponentStateUpdateAsyncCount();
     updateStateInternal(true, attribution);
   }
 

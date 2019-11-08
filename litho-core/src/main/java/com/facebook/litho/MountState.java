@@ -60,6 +60,7 @@ import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.animation.AnimatedProperties;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.drawable.ComparableDrawable;
+import com.facebook.litho.stats.LithoStats;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Deque;
@@ -407,6 +408,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     if (isTracing) {
       ComponentsSystrace.endSection();
     }
+    LithoStats.incrementComponentMountCount();
 
     mIsMounting = false;
   }

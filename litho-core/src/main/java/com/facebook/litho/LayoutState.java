@@ -61,6 +61,7 @@ import com.facebook.litho.annotations.ImportantForAccessibility;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.drawable.BorderColorDrawable;
 import com.facebook.litho.drawable.ComparableDrawable;
+import com.facebook.litho.stats.LithoStats;
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
@@ -1464,6 +1465,10 @@ class LayoutState {
           ComponentsSystrace.endSection();
         }
       }
+    }
+    LithoStats.incrementComponentCalculateLayoutCount();
+    if (ThreadUtils.isMainThread()) {
+      LithoStats.incrementComponentCalculateLayoutOnUICount();
     }
 
     return layoutState;

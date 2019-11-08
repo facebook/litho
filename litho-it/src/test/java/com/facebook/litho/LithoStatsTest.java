@@ -22,6 +22,7 @@ import com.facebook.litho.stats.LithoStats;
 import com.facebook.litho.testing.helper.ComponentTestHelper;
 import com.facebook.litho.testing.logging.TestComponentsLogger;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import java.util.concurrent.CountDownLatch;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -58,9 +59,9 @@ public class LithoStatsTest {
 
   @Test
   public void updateStateAsync_incrementsAsyncCountAndTotalCount() {
-    final long beforeSync = LithoStats.getStateUpdatesSync();
-    final long beforeAsync = LithoStats.getStateUpdatesAsync();
-    final long beforeTotal = LithoStats.getAppliedStateUpdates();
+    final long beforeSync = LithoStats.getComponentTriggeredSyncStateUpdateCount();
+    final long beforeAsync = LithoStats.getComponentTriggeredAsyncStateUpdateCount();
+    final long beforeTotal = LithoStats.getComponentAppliedStateUpdateCount();
 
     mComponentTree.updateStateAsync(
         mTestComponent.getGlobalKey(),
@@ -68,9 +69,9 @@ public class LithoStatsTest {
         "test");
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
-    final long afterSync = LithoStats.getStateUpdatesSync();
-    final long afterAsync = LithoStats.getStateUpdatesAsync();
-    final long afterTotal = LithoStats.getAppliedStateUpdates();
+    final long afterSync = LithoStats.getComponentTriggeredSyncStateUpdateCount();
+    final long afterAsync = LithoStats.getComponentTriggeredAsyncStateUpdateCount();
+    final long afterTotal = LithoStats.getComponentAppliedStateUpdateCount();
 
     assertThat(afterSync - beforeSync).isEqualTo(0);
     assertThat(afterAsync - beforeAsync).isEqualTo(1);
@@ -79,9 +80,9 @@ public class LithoStatsTest {
 
   @Test
   public void updateStateSync_incrementsSyncAndTotalCount() {
-    final long beforeSync = LithoStats.getStateUpdatesSync();
-    final long beforeAsync = LithoStats.getStateUpdatesAsync();
-    final long beforeTotal = LithoStats.getAppliedStateUpdates();
+    final long beforeSync = LithoStats.getComponentTriggeredSyncStateUpdateCount();
+    final long beforeAsync = LithoStats.getComponentTriggeredAsyncStateUpdateCount();
+    final long beforeTotal = LithoStats.getComponentAppliedStateUpdateCount();
 
     mComponentTree.updateStateSync(
         mTestComponent.getGlobalKey(),
@@ -89,12 +90,65 @@ public class LithoStatsTest {
         "test");
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
-    final long afterSync = LithoStats.getStateUpdatesSync();
-    final long afterAsync = LithoStats.getStateUpdatesAsync();
-    final long afterTotal = LithoStats.getAppliedStateUpdates();
+    final long afterSync = LithoStats.getComponentTriggeredSyncStateUpdateCount();
+    final long afterAsync = LithoStats.getComponentTriggeredAsyncStateUpdateCount();
+    final long afterTotal = LithoStats.getComponentAppliedStateUpdateCount();
 
     assertThat(afterSync - beforeSync).isEqualTo(1);
     assertThat(afterAsync - beforeAsync).isEqualTo(0);
     assertThat(afterTotal - beforeTotal).isEqualTo(1);
+  }
+
+  @Test
+  public void setRoot_incrementsCalculateLayoutOnUIAndTotalCount() {
+    final long beforeLayoutCalculationCount = LithoStats.getComponentCalculateLayoutCount();
+    final long beforeLayoutCalculationOnUICount = LithoStats.getComponentCalculateLayoutOnUICount();
+
+    mComponentTree.setRoot(new StateUpdateTestComponent());
+
+    final long afterLayoutCalculationCount = LithoStats.getComponentCalculateLayoutCount();
+    final long afterLayoutCalculationOnUICount = LithoStats.getComponentCalculateLayoutOnUICount();
+
+    assertThat(afterLayoutCalculationCount - beforeLayoutCalculationCount).isEqualTo(1);
+    assertThat(afterLayoutCalculationOnUICount - beforeLayoutCalculationOnUICount).isEqualTo(1);
+  }
+
+  @Test
+  public void setRootAsync_incrementsCalculateLayoutTotalCount() throws InterruptedException {
+    final long beforeLayoutCalculationCount = LithoStats.getComponentCalculateLayoutCount();
+    final long beforeLayoutCalculationOnUICount = LithoStats.getComponentCalculateLayoutOnUICount();
+
+    mComponentTree.setRootAsync(new StateUpdateTestComponent());
+
+    CountDownLatch latch = new CountDownLatch(1);
+
+    new Thread(
+            new Runnable() {
+              @Override
+              public void run() {
+                // We have to do this inside another thread otherwise the execution of
+                // mChangeSetThreadShadowLooper will happen on Main Thread
+                mLayoutThreadShadowLooper.runOneTask();
+                latch.countDown();
+              }
+            })
+        .start();
+    latch.await();
+
+    final long afterLayoutCalculationCount = LithoStats.getComponentCalculateLayoutCount();
+    final long afterLayoutCalculationOnUICount = LithoStats.getComponentCalculateLayoutOnUICount();
+
+    assertThat(afterLayoutCalculationCount - beforeLayoutCalculationCount).isEqualTo(1);
+    assertThat(afterLayoutCalculationOnUICount - beforeLayoutCalculationOnUICount).isEqualTo(0);
+  }
+
+  @Test
+  public void mount_incrementsMountCount() {
+    final long beforeMountCount = LithoStats.getComponentMountCount();
+
+    ComponentTestHelper.mountComponent(mContext, mTestComponent);
+
+    final long afterMountCount = LithoStats.getComponentMountCount();
+    assertThat(afterMountCount - beforeMountCount).isEqualTo(1);
   }
 }

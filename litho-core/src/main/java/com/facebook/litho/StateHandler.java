@@ -204,7 +204,7 @@ public class StateHandler {
         }
       }
 
-      LithoStats.incrementAppliedStateUpdatesBy(stateUpdatesForKey.size());
+      LithoStats.incrementComponentAppliedStateUpdateCountBy(stateUpdatesForKey.size());
 
       synchronized (this) {
         mPendingStateUpdates.remove(key); // remove from pending
