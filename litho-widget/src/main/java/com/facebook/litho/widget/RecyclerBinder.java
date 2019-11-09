@@ -56,6 +56,7 @@ import com.facebook.litho.ComponentsSystrace;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.LithoHandler;
 import com.facebook.litho.LithoStartupLogger;
+import com.facebook.litho.LithoStartupLoggerUtil;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.LithoView.LayoutManagerOverrideParams;
 import com.facebook.litho.LogTreePopulator;
@@ -272,6 +273,8 @@ public class RecyclerBinder
   private boolean mHasFilledViewport = false;
   private int mApplyReadyBatchesRetries = 0;
   private @Nullable LithoStartupLogger mStartupLogger;
+  private String mStartupLoggerAttribution = "";
+  private final boolean[] mFirstMountLogged = new boolean[1];
 
   @GuardedBy("this")
   private @Nullable AsyncBatch mCurrentBatch = null;
@@ -1787,6 +1790,10 @@ public class RecyclerBinder
       maybeDispatchDataRendered();
 
       if (isDataChanged) {
+        if (LithoStartupLoggerUtil.isEnabled(mStartupLogger)) {
+          mStartupLoggerAttribution = mStartupLogger.getLatestDataAttribution();
+        }
+
         maybeUpdateRangeOrRemeasureForMutation();
       }
     } finally {
@@ -2666,6 +2673,11 @@ public class RecyclerBinder
       return;
     }
     final boolean isTracing = ComponentsSystrace.isTracing();
+    final boolean loggingForStartup = LithoStartupLoggerUtil.isEnabled(mStartupLogger);
+    if (loggingForStartup) {
+      mStartupLogger.markPoint(
+          LithoStartupLogger.INIT_RANGE, LithoStartupLogger.START, mStartupLoggerAttribution);
+    }
 
     // We can schedule a maximum of number of items minus one (which is being calculated
     // synchronously) to run at the same time as the sync layout.
@@ -2724,6 +2736,10 @@ public class RecyclerBinder
       }
       if (isTracing) {
         ComponentsSystrace.endSection();
+      }
+      if (loggingForStartup) {
+        mStartupLogger.markPoint(
+            LithoStartupLogger.INIT_RANGE, LithoStartupLogger.END, mStartupLoggerAttribution);
       }
     }
   }
@@ -3606,6 +3622,8 @@ public class RecyclerBinder
     @Override
     @GuardedBy("RecyclerBinder.this")
     public void onBindViewHolder(BaseViewHolder holder, int position) {
+      final boolean loggingForStartup =
+          LithoStartupLoggerUtil.isEnabled(mStartupLogger) && !mStartupLoggerAttribution.isEmpty();
       final int normalizedPosition = getNormalizedPosition(position);
 
       // We can ignore the synchronization here. We'll only add to this from the UiThread.
@@ -3665,6 +3683,10 @@ public class RecyclerBinder
                 }
               });
         }
+        if (loggingForStartup) {
+          lithoView.setStartupLoggingContext(
+              mStartupLogger, mStartupLoggerAttribution, mFirstMountLogged);
+        }
       } else {
         final ViewBinder viewBinder = renderInfo.getViewBinder();
         holder.viewBinder = viewBinder;
@@ -3709,6 +3731,7 @@ public class RecyclerBinder
         lithoView.unmountAllItems();
         lithoView.setComponentTree(null);
         lithoView.setInvalidStateLogParamsList(null);
+        lithoView.setStartupLoggingContext(null, "", null);
       } else {
         final ViewBinder viewBinder = holder.viewBinder;
         if (viewBinder != null) {

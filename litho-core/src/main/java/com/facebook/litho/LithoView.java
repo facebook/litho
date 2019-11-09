@@ -90,6 +90,9 @@ public class LithoView extends ComponentHost {
   @Nullable private Map<String, ComponentLogParams> mInvalidStateLogParams;
   @Nullable private String mPreviousComponentSimpleName;
   @Nullable private String mNullComponentCause;
+  @Nullable private LithoStartupLogger mStartupLogger;
+  @Nullable private boolean[] mFirstMountCalled;
+  private String mStartupLoggerDataAttribution;
 
   /**
    * Create a new {@link LithoView} instance and initialize it with the given {@link Component}
@@ -795,7 +798,20 @@ public class LithoView extends ComponentHost {
       mPreviousMountVisibleRectBounds.set(currentVisibleArea);
     }
 
+    boolean loggedStart = false;
+    if (LithoStartupLoggerUtil.isEnabled(mStartupLogger)
+        && mFirstMountCalled != null
+        && !mFirstMountCalled[0]) {
+      mStartupLogger.markPoint(
+          LithoStartupLogger.FIRST_MOUNT, LithoStartupLogger.START, mStartupLoggerDataAttribution);
+      mFirstMountCalled[0] = true;
+      loggedStart = true;
+    }
     mMountState.mount(layoutState, currentVisibleArea, processVisibilityOutputs);
+    if (loggedStart) {
+      mStartupLogger.markPoint(
+          LithoStartupLogger.FIRST_MOUNT, LithoStartupLogger.END, mStartupLoggerDataAttribution);
+    }
   }
 
   /**
@@ -888,6 +904,15 @@ public class LithoView extends ComponentHost {
 
   MountState getMountState() {
     return mMountState;
+  }
+
+  public void setStartupLoggingContext(
+      @Nullable LithoStartupLogger startupLogger,
+      String startupLoggerAttribution,
+      @Nullable boolean[] firstMountCalled) {
+    mStartupLogger = startupLogger;
+    mFirstMountCalled = firstMountCalled;
+    mStartupLoggerDataAttribution = startupLoggerAttribution;
   }
 
   /** Register for particular invalid state logs. */
