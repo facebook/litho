@@ -35,6 +35,7 @@ import com.facebook.litho.Component;
 import com.facebook.litho.Component.ContainerBuilder;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.EventHandler;
+import com.facebook.litho.LithoStartupLogger;
 import com.facebook.litho.StateValue;
 import com.facebook.litho.TouchEvent;
 import com.facebook.litho.Wrapper;
@@ -284,6 +285,7 @@ public class RecyclerCollectionComponentSpec {
       @Prop(optional = true) boolean canMeasureRecycler,
       // Don't use this. If false, off incremental mount for all subviews of this Recycler.
       @Prop(optional = true) boolean incrementalMount,
+      @Prop(optional = true) LithoStartupLogger startupLogger,
       @Prop(optional = true) StickyHeaderControllerFactory stickyHeaderControllerFactory) {
 
     RecyclerBinderConfiguration binderConfiguration =
@@ -312,6 +314,7 @@ public class RecyclerCollectionComponentSpec {
             .isReconciliationEnabled(binderConfiguration.isReconciliationEnabled())
             .isLayoutDiffingEnabled(binderConfiguration.isLayoutDiffingEnabled())
             .componentWarmer(binderConfiguration.getComponentWarmer())
+            .startupLogger(startupLogger)
             .build(c);
 
     SectionBinderTarget targetBinder =

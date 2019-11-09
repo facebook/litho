@@ -55,6 +55,7 @@ import com.facebook.litho.ComponentsReporter;
 import com.facebook.litho.ComponentsSystrace;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.LithoHandler;
+import com.facebook.litho.LithoStartupLogger;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.LithoView.LayoutManagerOverrideParams;
 import com.facebook.litho.LogTreePopulator;
@@ -270,6 +271,7 @@ public class RecyclerBinder
   private @CommitPolicy int mCommitPolicy = CommitPolicy.IMMEDIATE;
   private boolean mHasFilledViewport = false;
   private int mApplyReadyBatchesRetries = 0;
+  private @Nullable LithoStartupLogger mStartupLogger;
 
   @GuardedBy("this")
   private @Nullable AsyncBatch mCurrentBatch = null;
@@ -430,6 +432,7 @@ public class RecyclerBinder
     private LithoHandler preallocateMountContentHandler;
     private boolean shouldPreallocatePerMountSpec;
     private @Nullable ComponentWarmer mComponentWarmer;
+    private @Nullable LithoStartupLogger startupLogger;
 
     /**
      * @param rangeRatio specifies how big a range this binder should try to compute. The range is
@@ -707,6 +710,11 @@ public class RecyclerBinder
       return this;
     }
 
+    public Builder startupLogger(@Nullable LithoStartupLogger logger) {
+      startupLogger = logger;
+      return this;
+    }
+
     /** @param c The {@link ComponentContext} the RecyclerBinder will use. */
     public RecyclerBinder build(ComponentContext c) {
       componentContext =
@@ -907,6 +915,7 @@ public class RecyclerBinder
     mPreallocateMountContentHandler = builder.preallocateMountContentHandler;
     mPreallocatePerMountSpec = builder.shouldPreallocatePerMountSpec;
     mComponentWarmer = builder.mComponentWarmer;
+    mStartupLogger = builder.startupLogger;
   }
 
   /**
