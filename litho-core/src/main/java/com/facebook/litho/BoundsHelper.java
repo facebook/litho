@@ -52,7 +52,6 @@ public class BoundsHelper {
     final Rect bounds = drawable.getBounds();
     drawable.setBounds(bounds.left, bounds.top, bounds.left + width, bounds.top + height);
 
-    // TODO(t22432769): Remove this after D5965597 lands
     if (drawable instanceof MatrixDrawable) {
       ((MatrixDrawable) drawable).bind(width, height);
     }
