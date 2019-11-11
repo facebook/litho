@@ -20,4 +20,15 @@ class RequiredPropMethodContributorTest {
   void requirecPropSetter() {}
 
   void second() {}
+
+  static class Builder {
+
+    @com.facebook.litho.annotations.RequiredProp()
+    void one() {}
+
+    void two() {}
+
+    @com.facebook.litho.annotations.RequiredProp()
+    void three() {}
+  }
 }

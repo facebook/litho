@@ -16,12 +16,21 @@
 
 package com.facebook.litho.intellij.completion;
 
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import com.facebook.litho.intellij.LithoPluginIntellijTest;
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementPresentation;
+import com.intellij.lang.jvm.JvmParameter;
 import com.intellij.psi.PsiClass;
+import com.intellij.psi.PsiMethod;
 import com.intellij.testFramework.fixtures.TestLookupElementPresentation;
-import org.junit.Assert;
+import java.util.List;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -34,13 +43,13 @@ public class RequiredPropMethodContributorTest extends LithoPluginIntellijTest {
   @Test
   public void renderElement() {
     LookupElementPresentation testPresentation = new TestLookupElementPresentation();
-    LookupElement mockedDelegate = Mockito.mock(LookupElement.class);
+    LookupElement mockedDelegate = mock(LookupElement.class);
 
     // Excluding input parameters influence on the render result
     RequiredPropLookupElement.create(mockedDelegate).renderElement(testPresentation);
 
-    Assert.assertEquals(" required Prop", testPresentation.getTailText());
-    Assert.assertTrue(testPresentation.isItemTextUnderlined());
+    assertEquals(" required Prop", testPresentation.getTailText());
+    assertTrue(testPresentation.isItemTextUnderlined());
   }
 
   @Test
@@ -49,14 +58,59 @@ public class RequiredPropMethodContributorTest extends LithoPluginIntellijTest {
         psiClasses -> {
           PsiClass cls = psiClasses.get(0);
 
-          Assert.assertTrue(
+          assertTrue(
               RequiredPropMethodContributor.RequiredPropMethodProvider.isRequiredPropSetter(
                   cls.getMethods()[0]));
-          Assert.assertFalse(
+          assertFalse(
               RequiredPropMethodContributor.RequiredPropMethodProvider.isRequiredPropSetter(
                   cls.getMethods()[1]));
           return true;
         },
         "RequiredPropMethodContributorTest.java");
+  }
+
+  @Test
+  public void isComponentCreateMethod() {
+    PsiMethod mockedMethod = mock(PsiMethod.class);
+    PsiClass component = mockComponent();
+    when(mockedMethod.getParent()).thenReturn(component);
+    when(mockedMethod.getParameters()).thenReturn(new JvmParameter[1]);
+
+    assertFalse(
+        RequiredPropMethodContributor.RequiredPropMethodProvider.isComponentCreateMethod(
+            mockedMethod));
+
+    when(mockedMethod.getName()).thenReturn("create");
+    assertTrue(
+        RequiredPropMethodContributor.RequiredPropMethodProvider.isComponentCreateMethod(
+            mockedMethod));
+  }
+
+  @Test
+  public void findRequiredPropSetterNames() {
+    testHelper.getPsiClass(
+        psiClasses -> {
+          PsiClass cls = psiClasses.get(0);
+          String[] expected = {"one", "three"};
+
+          List<String> names =
+              RequiredPropMethodContributor.RequiredPropMethodProvider.findRequiredPropSetterNames(
+                  cls);
+          assertEquals(2, names.size());
+          assertArrayEquals(expected, names.toArray());
+          return true;
+        },
+        "RequiredPropMethodContributorTest.java");
+  }
+
+  static PsiClass mockComponent() {
+    // We can't get PsiFile with super parent for testing, thant's why mocking whole hierarchy
+    PsiClass mockedComponentLifecycle = mock(PsiClass.class);
+    Mockito.when(mockedComponentLifecycle.getName()).thenReturn("ComponentLifecycle");
+
+    PsiClass mockedSubComponent = mock(PsiClass.class);
+    Mockito.when(mockedSubComponent.getSuperClass()).thenReturn(mockedComponentLifecycle);
+
+    return mockedSubComponent;
   }
 }

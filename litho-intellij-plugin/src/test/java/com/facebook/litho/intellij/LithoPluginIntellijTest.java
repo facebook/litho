@@ -18,6 +18,7 @@ package com.facebook.litho.intellij;
 
 import com.intellij.ide.highlighter.JavaFileType;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiClassOwner;
 import com.intellij.psi.PsiFileFactory;
@@ -42,6 +43,10 @@ import org.junit.Before;
 
 public class LithoPluginIntellijTest {
 
+  public interface RunnableWithProject {
+    void run(Project project);
+  }
+
   protected final TestHelper testHelper;
 
   public LithoPluginIntellijTest(String testPath) {
@@ -63,7 +68,7 @@ public class LithoPluginIntellijTest {
     private CodeInsightTestFixture fixture;
 
     /** @param testPath in the form "testdata/dir" */
-    public TestHelper(String testPath) {
+    TestHelper(String testPath) {
       this.testPath = new File(testPath).getAbsolutePath();
     }
 
@@ -146,6 +151,10 @@ public class LithoPluginIntellijTest {
                   handler.apply(psiClasses);
                 }
               });
+    }
+
+    public void runInReadAction(RunnableWithProject runnable) {
+      ApplicationManager.getApplication().runReadAction(() -> runnable.run(fixture.getProject()));
     }
   }
 }

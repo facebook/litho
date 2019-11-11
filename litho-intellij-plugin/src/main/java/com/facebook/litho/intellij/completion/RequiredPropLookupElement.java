@@ -23,6 +23,9 @@ import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementDecorator;
 import com.intellij.codeInsight.lookup.LookupElementPresentation;
 
+/**
+ * Emphasizes the lookup element passed as a delegate by adding underline and "required Prop" text.
+ */
 class RequiredPropLookupElement extends LookupElementDecorator<LookupElement> {
 
   static RequiredPropLookupElement create(LookupElement delegate) {

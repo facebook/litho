@@ -17,6 +17,7 @@
 package com.facebook.litho.intellij.completion;
 
 import com.facebook.litho.annotations.RequiredProp;
+import com.facebook.litho.intellij.LithoPluginUtils;
 import com.facebook.litho.specmodels.processor.PsiAnnotationProxyUtils;
 import com.google.common.annotations.VisibleForTesting;
 import com.intellij.codeInsight.completion.CompletionContributor;
@@ -27,9 +28,16 @@ import com.intellij.codeInsight.completion.CompletionResultSet;
 import com.intellij.codeInsight.completion.CompletionType;
 import com.intellij.codeInsight.completion.JavaKeywordCompletion;
 import com.intellij.codeInsight.lookup.LookupElement;
+import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiMethod;
 import com.intellij.util.ProcessingContext;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import org.jetbrains.annotations.Nullable;
 
 public class RequiredPropMethodContributor extends CompletionContributor {
 
@@ -57,6 +65,20 @@ public class RequiredPropMethodContributor extends CompletionContributor {
               if (isRequiredPropSetter(suggestedMethod)) {
                 completion =
                     wrap(suggestedCompletion, RequiredPropLookupElement.create(suggestedLookup));
+              } else if (isComponentCreateMethod(suggestedMethod)) {
+                Optional.of(suggestedMethod.getParent())
+                    .map(cls -> findRequiredPropSetterNames((PsiClass) cls))
+                    .filter(methodNames -> !methodNames.isEmpty())
+                    .map(
+                        methodNames ->
+                            MethodChainLookupElement.create(
+                                suggestedLookup,
+                                suggestedMethod.getName(),
+                                methodNames,
+                                parameters.getPosition().getPrevSibling(),
+                                parameters.getEditor().getProject()))
+                    .map(lookupElement -> wrap(suggestedCompletion, lookupElement))
+                    .ifPresent(result::passResult);
               }
             }
             result.passResult(completion == null ? suggestedCompletion : completion);
@@ -64,14 +86,42 @@ public class RequiredPropMethodContributor extends CompletionContributor {
     }
 
     @VisibleForTesting
-    static boolean isRequiredPropSetter(PsiMethod suggestedMethod) {
-      return PsiAnnotationProxyUtils.findAnnotationInHierarchy(suggestedMethod, RequiredProp.class)
-          != null;
+    static boolean isRequiredPropSetter(PsiMethod method) {
+      return PsiAnnotationProxyUtils.findAnnotationInHierarchy(method, RequiredProp.class) != null;
     }
 
+    @Nullable
     private static CompletionResult wrap(CompletionResult completionResult, LookupElement lookup) {
       return CompletionResult.wrap(
           lookup, completionResult.getPrefixMatcher(), completionResult.getSorter());
+    }
+
+    @VisibleForTesting
+    static boolean isComponentCreateMethod(PsiMethod method) {
+      if (!"create".equals(method.getName())) {
+        return false;
+      }
+      if (method.getParameters().length != 1) {
+        return false;
+      }
+      PsiElement parent = method.getParent();
+      if (!(parent instanceof PsiClass)) {
+        return false;
+      }
+      return LithoPluginUtils.isComponentClass((PsiClass) parent);
+    }
+
+    @VisibleForTesting
+    static List<String> findRequiredPropSetterNames(PsiClass component) {
+      return Optional.ofNullable(component.findInnerClassByName("Builder", false))
+          .map(PsiClass::getMethods)
+          .map(
+              methods ->
+                  Arrays.stream(methods)
+                      .filter(RequiredPropMethodProvider::isRequiredPropSetter)
+                      .map(PsiMethod::getName))
+          .orElse(Stream.empty())
+          .collect(Collectors.toList());
     }
   }
 }
