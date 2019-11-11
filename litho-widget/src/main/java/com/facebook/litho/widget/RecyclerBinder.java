@@ -40,10 +40,12 @@ import androidx.annotation.IntDef;
 import androidx.annotation.UiThread;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.ViewCompat;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.OrientationHelper;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.LayoutManager;
+import androidx.recyclerview.widget.RecyclerViewAccessibilityDelegate;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
@@ -2985,6 +2987,30 @@ public class RecyclerBinder
                       && mCurrentFirstVisiblePosition >= 0
                   ? mCurrentFirstVisiblePosition
                   : 0));
+
+      // Circular RecyclerViews report their size as Integer.MAX_VALUE, which makes Talkback
+      // actually announce "In List, 2147483674 items". This overrides the row/column count on the
+      // AccessibilityNodeInfo to accurately reflect the real number of items in the list.
+      view.setAccessibilityDelegateCompat(
+          new RecyclerViewAccessibilityDelegate(view) {
+            @Override
+            public void onInitializeAccessibilityNodeInfo(
+                View host, AccessibilityNodeInfoCompat info) {
+              super.onInitializeAccessibilityNodeInfo(host, info);
+
+              int itemCount = getComponentTreeHolders().size();
+              int rowCount = layoutManager.canScrollVertically() ? itemCount : 1;
+              int colCount = layoutManager.canScrollHorizontally() ? itemCount : 1;
+
+              final AccessibilityNodeInfoCompat.CollectionInfoCompat collectionInfo =
+                  AccessibilityNodeInfoCompat.CollectionInfoCompat.obtain(
+                      rowCount,
+                      colCount,
+                      false,
+                      AccessibilityNodeInfoCompat.CollectionInfoCompat.SELECTION_MODE_NONE);
+              info.setCollectionInfo(collectionInfo);
+            }
+          });
     }
 
     enableStickyHeader(mMountedView);
