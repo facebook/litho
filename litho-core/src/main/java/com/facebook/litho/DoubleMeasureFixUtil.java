@@ -52,14 +52,19 @@ public class DoubleMeasureFixUtil {
 
     // Will cache the device type to avoid repetitive package manager calls.
     if (deviceType == 0 || !shouldCache) {
-      // Required to determine whether device used is a Chromebook.
-      // See https://stackoverflow.com/questions/39784415/ for details.
-      // TODO: T46211188 Figure out long-term fix encompassing regular Android devices and
-      // Chromebooks
-      deviceType =
-          packageManager.hasSystemFeature("org.chromium.arc.device_management")
-              ? CHROMEBOOK
-              : NORMAL;
+      try {
+        // Required to determine whether device used is a Chromebook.
+        // See https://stackoverflow.com/questions/39784415/ for details.
+        deviceType =
+            packageManager.hasSystemFeature("org.chromium.arc.device_management")
+                ? CHROMEBOOK
+                : NORMAL;
+      } catch (RuntimeException e) {
+        // To catch RuntimeException("Package manager has died") that can occur on some version of
+        // Android, when the remote PackageManager is unavailable. I suspect this sometimes occurs
+        // when the App is being reinstalled.
+        deviceType = NORMAL;
+      }
     }
 
     final Configuration configuration = resources.getConfiguration();
