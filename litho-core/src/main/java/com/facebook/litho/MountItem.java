@@ -202,10 +202,9 @@ class MountItem {
 
   /** @return Mount content created by the component. */
   Object getContent() {
-    // TODO(t46457238): Re-enable mIsReleased assertion
-    // if (mIsReleased) {
-    //   throw new RuntimeException("Trying to access released mount content!");
-    // }
+    if (mIsReleased) {
+      throw new RuntimeException("Trying to access released mount content!");
+    }
     return mContent;
   }
 
