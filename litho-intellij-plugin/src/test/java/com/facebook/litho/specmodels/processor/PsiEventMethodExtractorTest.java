@@ -46,7 +46,7 @@ public class PsiEventMethodExtractorTest extends LithoPluginIntellijTest {
           ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> methods =
               PsiEventMethodExtractor.getOnEventMethods(psiClass, INTER_STAGE_INPUT_ANNOTATIONS);
 
-          EventMethodExtractorTestHelper.assertMethodExtraction(methods, 0);
+          EventMethodExtractorTestHelper.assertMethodExtraction(methods);
           return true;
         },
         "PsiEventMethodExtractionClass.java");

@@ -16,46 +16,63 @@
 
 package com.facebook.litho.specmodels.processor;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.EventDeclarationModel;
 import com.facebook.litho.specmodels.model.EventMethod;
+import com.facebook.litho.specmodels.model.MethodParamModel;
 import com.facebook.litho.specmodels.model.SpecMethodModel;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeName;
+import com.squareup.javapoet.TypeVariableName;
 import java.util.List;
 import javax.lang.model.element.Modifier;
-import org.junit.Assert;
 
 public class EventMethodExtractorTestHelper {
   static void assertMethodExtraction(
-      List<SpecMethodModel<EventMethod, EventDeclarationModel>> methods,
-      int expectedNumAnnotations) {
-    Assert.assertEquals(methods.size(), 1);
+      List<SpecMethodModel<EventMethod, EventDeclarationModel>> methods) {
+    assertEquals(methods.size(), 1);
 
     SpecMethodModel<EventMethod, EventDeclarationModel> eventMethod = methods.iterator().next();
-    Assert.assertNotNull(eventMethod.typeModel);
-    Assert.assertEquals(eventMethod.typeModel.name, ClassName.bestGuess("java.lang.Object"));
 
-    Assert.assertEquals(eventMethod.modifiers.size(), 1);
-    Assert.assertEquals(eventMethod.modifiers.get(0), Modifier.PUBLIC);
+    ImmutableList<TypeVariableName> typeVariables = eventMethod.typeVariables;
+    assertEquals(1, typeVariables.size());
+    TypeVariableName typeVariable = typeVariables.get(0);
+    assertEquals("T", typeVariable.name);
+    assertEquals(1, typeVariable.bounds.size());
+    assertEquals("java.lang.Integer", typeVariable.bounds.get(0).toString());
 
-    Assert.assertEquals(eventMethod.name.toString(), "testMethod");
+    assertNotNull(eventMethod.typeModel);
+    assertEquals(eventMethod.typeModel.name, ClassName.bestGuess("java.lang.Object"));
 
-    Assert.assertEquals(eventMethod.returnType, TypeName.VOID);
+    assertEquals(eventMethod.modifiers.size(), 1);
+    assertEquals(eventMethod.modifiers.get(0), Modifier.PUBLIC);
 
-    Assert.assertEquals(eventMethod.methodParams.size(), 3);
+    assertEquals(eventMethod.name.toString(), "testMethod");
 
-    Assert.assertEquals(eventMethod.methodParams.get(0).getName(), "testProp");
-    Assert.assertEquals(eventMethod.methodParams.get(0).getTypeName(), TypeName.BOOLEAN);
-    Assert.assertEquals(eventMethod.methodParams.get(0).getAnnotations().size(), 1);
+    assertEquals(eventMethod.returnType, TypeName.VOID);
 
-    Assert.assertEquals(eventMethod.methodParams.get(1).getName(), "testState");
-    Assert.assertEquals(eventMethod.methodParams.get(1).getTypeName(), TypeName.INT);
-    Assert.assertEquals(eventMethod.methodParams.get(1).getAnnotations().size(), 1);
+    assertEquals(eventMethod.methodParams.size(), 5);
 
-    Assert.assertEquals(eventMethod.methodParams.get(2).getName(), "testPermittedAnnotation");
-    Assert.assertEquals(
-        eventMethod.methodParams.get(2).getTypeName(), ClassName.bestGuess("java.lang.Object"));
-    Assert.assertEquals(
-        eventMethod.methodParams.get(2).getAnnotations().size(), expectedNumAnnotations);
+    MethodParamModel testProp = eventMethod.methodParams.get(0);
+    assertEquals(testProp.getName(), "testProp");
+    assertEquals(testProp.getTypeName(), TypeName.BOOLEAN);
+    assertEquals(testProp.getAnnotations().size(), 1);
+
+    MethodParamModel testState = eventMethod.methodParams.get(1);
+    assertEquals(testState.getName(), "testState");
+    assertEquals(testState.getTypeName(), TypeName.INT);
+    assertEquals(testState.getAnnotations().size(), 1);
+
+    MethodParamModel testPermittedAnnotation = eventMethod.methodParams.get(2);
+    assertEquals(testPermittedAnnotation.getName(), "testPermittedAnnotation");
+    assertEquals(testPermittedAnnotation.getTypeName(), ClassName.bestGuess("java.lang.Object"));
+    assertEquals(1, testPermittedAnnotation.getAnnotations().size());
+
+    MethodParamModel testNotPermittedAnnotation = eventMethod.methodParams.get(3);
+    assertEquals(testNotPermittedAnnotation.getName(), "testNotPermittedAnnotation");
+    assertEquals(0, testNotPermittedAnnotation.getAnnotations().size());
   }
 }

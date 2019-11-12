@@ -18,6 +18,7 @@ package com.facebook.litho.specmodels.processor;
 
 import static org.mockito.Mockito.mock;
 
+import com.facebook.litho.annotations.Event;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.annotations.OnUpdateState;
@@ -52,8 +53,12 @@ public class EventMethodExtractorTest {
     public void ignored() {}
 
     @OnEvent(Object.class)
-    public void testMethod(
-        @Prop boolean testProp, @State int testState, @Param Object testPermittedAnnotation) {
+    public <T extends Integer> void testMethod(
+        @Prop boolean testProp,
+        @State int testState,
+        @Param Object testPermittedAnnotation,
+        @Event Object testNotPermittedAnnotation,
+        T testTypeVariable) {
       // Don't do anything.
     }
 
@@ -76,6 +81,6 @@ public class EventMethodExtractorTest {
             mock(Messager.class),
             RunMode.normal());
 
-    EventMethodExtractorTestHelper.assertMethodExtraction(methods, 1);
+    EventMethodExtractorTestHelper.assertMethodExtraction(methods);
   }
 }

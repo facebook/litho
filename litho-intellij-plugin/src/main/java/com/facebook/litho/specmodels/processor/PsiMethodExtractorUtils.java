@@ -25,27 +25,34 @@ import com.intellij.psi.PsiAnnotation;
 import com.intellij.psi.PsiMethod;
 import com.intellij.psi.PsiNameValuePair;
 import com.intellij.psi.PsiParameter;
+import com.intellij.psi.PsiType;
 import com.intellij.psi.PsiTypeParameter;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeVariableName;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /** Extracts methods from the given input. */
 public class PsiMethodExtractorUtils {
 
   static List<TypeVariableName> getTypeVariables(PsiMethod method) {
-    final List<TypeVariableName> typeVariables = new ArrayList<>();
-    for (PsiTypeParameter psiTypeParameter : method.getTypeParameters()) {
-      typeVariables.add(
-          TypeVariableName.get(
-              psiTypeParameter.getName(),
-              (TypeName[]) null)); // getBounds(psiTypeParameter))); // TODO Need PsiTypeName
-    }
+    return Arrays.stream(method.getTypeParameters())
+        .map(PsiMethodExtractorUtils::toTypeVariableName)
+        .collect(Collectors.toList());
+  }
 
-    return typeVariables;
+  private static TypeVariableName toTypeVariableName(PsiTypeParameter psiTypeParameter) {
+    String typeName = psiTypeParameter.getName();
+    TypeName[] typeBounds =
+        Arrays.stream(psiTypeParameter.getBounds())
+            .filter(PsiType.class::isInstance)
+            .map(bound -> PsiTypeUtils.getTypeName((PsiType) bound))
+            .toArray(TypeName[]::new);
+    return TypeVariableName.get(typeName, typeBounds);
   }
 
   static List<MethodParamModel> getMethodParams(

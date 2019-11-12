@@ -19,10 +19,12 @@ class PsiEventMethodExtractionClass {
   public void ignored() {}
 
   @com.facebook.litho.annotations.OnEvent(java.lang.Object.class)
-  public void testMethod(
+  public <T extends java.lang.Integer> void testMethod(
       @com.facebook.litho.annotations.Prop boolean testProp,
       @com.facebook.litho.annotations.State int testState,
-      @com.facebook.litho.annotations.Event java.lang.Object testPermittedAnnotation) {
+      @com.facebook.litho.annotations.Param java.lang.Object testPermittedAnnotation,
+      @com.facebook.litho.annotations.Event java.lang.Object testNotPermittedAnnotation,
+      T testTypeVariable) {
     // Don't do anything.
   }
 
