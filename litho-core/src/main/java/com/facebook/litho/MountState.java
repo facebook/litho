@@ -240,15 +240,11 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
       final StringBuilder sectionName =
-          new StringBuilder(isIncrementalMountEnabled ? "incrementalMount" : "mount")
-              .append("_")
-              .append(componentTree.getSimpleName());
-      final String logTag = componentTree.getContext().getLogTag();
-      if (logTag != null) {
-        sectionName.append("_").append(logTag);
-      }
+          new StringBuilder(isIncrementalMountEnabled ? "incrementalMount" : "mount");
       ComponentsSystrace.beginSectionWithArgs(sectionName.toString())
           .arg("treeId", layoutState.getComponentTreeId())
+          .arg("component", componentTree.getSimpleName())
+          .arg("logTag", componentTree.getContext().getLogTag())
           .flush();
     }
 
