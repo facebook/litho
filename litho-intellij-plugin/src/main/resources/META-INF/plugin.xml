@@ -27,8 +27,19 @@
     </p>
   ]]>
   </description>
-  <version>1.0.1-SNAPSHOT</version>
+  <version>1.1.0</version>
   <change-notes><![CDATA[
+    <h2>1.1.0</h2>
+    <ul>
+      <li>New: annotator for Required Props in single statement</li>
+      <li>New: quick completion to Required Props on builder</li>
+      <li>New: accent on Required Prop methods</li>
+      <li>New: regenerate component notification</li>
+      <li>New: plugin icon</li>
+      <li>New: BuildInfoProvider extension point</li>
+      <li>Fix: PsiAnnotationProxy comparison</li>
+      <li>Fix: type parsing for method generic type</li>
+    </ul>
     <h2>1.0.0</h2>
     <ul>
       <li>Added GoTo Component action in EditorPopup menu</li>
