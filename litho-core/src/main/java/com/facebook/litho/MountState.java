@@ -378,9 +378,13 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     }
 
     if (processVisibilityOutputs) {
-      ComponentsSystrace.beginSection("processVisibilityOutputs");
+      if (isTracing) {
+        ComponentsSystrace.beginSection("processVisibilityOutputs");
+      }
       processVisibilityOutputs(layoutState, localVisibleRect, mountPerfEvent);
-      ComponentsSystrace.endSection();
+      if (isTracing) {
+        ComponentsSystrace.endSection();
+      }
     }
 
     mRootTransition = null;
@@ -481,6 +485,11 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       return;
     }
 
+    final boolean isTracing = ComponentsSystrace.isTracing();
+    if (isTracing) {
+      ComponentsSystrace.beginSection("updateAnimatingMountContent");
+    }
+
     // Group mount content (represents current LayoutStates only) into groups and pass it to the
     // TransitionManager
     final Map<TransitionId, OutputUnitsAffinityGroup<Object>> animatingContent =
@@ -515,6 +524,10 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
         mountContentGroup.add(type, mountItem.getContent());
       }
       mTransitionManager.setMountContent(entry.getKey(), mountContentGroup);
+    }
+
+    if (isTracing) {
+      ComponentsSystrace.endSection();
     }
   }
 
@@ -1093,6 +1106,12 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   /** Prepare the {@link MountState} to mount a new {@link LayoutState}. */
   @SuppressWarnings("unchecked")
   private void prepareMount(LayoutState layoutState, @Nullable PerfEvent perfEvent) {
+    final boolean isTracing = ComponentsSystrace.isTracing();
+
+    if (isTracing) {
+      ComponentsSystrace.beginSection("prepareMount");
+    }
+
     final List<Integer> disappearingItems = extractDisappearingItems(layoutState);
     final PrepareMountStats stats = unmountOrMoveOldItems(layoutState, disappearingItems);
 
@@ -1117,6 +1136,10 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
     for (int i = 0; i < outputCount; i++) {
       mLayoutOutputsIds[i] = layoutState.getMountableOutputAt(i).getId();
+    }
+
+    if (isTracing) {
+      ComponentsSystrace.endSection();
     }
   }
 

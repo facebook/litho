@@ -322,6 +322,11 @@ public class TransitionManager {
    * the corresponding animations.
    */
   void runTransitions() {
+    final boolean isTracing = ComponentsSystrace.isTracing();
+    if (isTracing) {
+      ComponentsSystrace.beginSection("runTransitions");
+    }
+
     restoreInitialStates();
 
     if (AnimationsDebug.ENABLED) {
@@ -332,6 +337,10 @@ public class TransitionManager {
       mRootAnimationToRun.addListener(mRootAnimationListener);
       mRootAnimationToRun.start(mResolver);
       mRootAnimationToRun = null;
+    }
+
+    if (isTracing) {
+      ComponentsSystrace.endSection();
     }
   }
 
