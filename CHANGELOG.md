@@ -1,8 +1,8 @@
 # Changelog
 
-## Version 0.32.0
+## Version 0.31.1-SNAPSHOT
 
-_2019-11-13_
+_release-date_
 
  * **Breaking:** Make ctors of `Component`/`ComponentLifecycle` that take an explicit type id package private.
  * **Breaking:** Add `categoryKey` param for `ComponentsReporter.emitMessage()` API to distribute errors into different buckets.
@@ -32,7 +32,7 @@ _2019-11-13_
  * Fix: Postpone `mountComponent` for reentrant mounts, then mount new layoutState afterwards.
  * Fix: Enable automatic RTL support in sample apps.
 
-For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.31.0...v0.32.0).
+For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.31.0...master).
  
 
 ## Version 0.31.0
