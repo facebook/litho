@@ -1544,11 +1544,10 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     final ViewNodeInfo viewNodeInfo = item.getViewNodeInfo();
     if (viewNodeInfo != null) {
       setViewStateListAnimator(view, viewNodeInfo);
+      // Set view background, if applicable.  Do this before padding
+      // as it otherwise overrides the padding.
+      setViewBackground(view, viewNodeInfo);
       if (!isHostSpec(component)) {
-        // Set view background, if applicable.  Do this before padding
-        // as it otherwise overrides the padding.
-        setViewBackground(view, viewNodeInfo);
-
         setViewPadding(view, viewNodeInfo);
 
         setViewForeground(view, viewNodeInfo);
@@ -1627,11 +1626,11 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     final ViewNodeInfo viewNodeInfo = item.getViewNodeInfo();
     if (viewNodeInfo != null) {
       unsetViewStateListAnimator(view, viewNodeInfo);
+      unsetViewBackground(view, viewNodeInfo);
       // Host view doesn't set its own padding, but gets absolute positions for inner content from
-      // Yoga. Also bg/fg is used as separate drawables instead of using View's bg/fg attribute.
+      // Yoga. Also fg is used as separate drawables instead of using View's fg attribute.
       if (!isHostView) {
         unsetViewPadding(view, item, viewNodeInfo);
-        unsetViewBackground(view, viewNodeInfo);
         unsetViewForeground(view, viewNodeInfo);
         unsetViewLayoutDirection(view);
       }

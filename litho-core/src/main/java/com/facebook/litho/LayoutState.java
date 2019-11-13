@@ -364,6 +364,9 @@ class LayoutState {
 
     ViewNodeInfo viewNodeInfo = hostOutput.getViewNodeInfo();
     if (viewNodeInfo != null) {
+      if (node.getBackground() != null) {
+        viewNodeInfo.setBackground(node.getBackground());
+      }
       if (node.hasStateListAnimatorResSet()) {
         viewNodeInfo.setStateListAnimatorRes(node.getStateListAnimatorRes());
       } else {
@@ -816,10 +819,15 @@ class LayoutState {
 
     // 2. Add background if defined.
     final ComparableDrawable background = node.getBackground();
-    if (background != null) {
+    // If this node needs a host view, then we have already set the background on the
+    // HostComponent that's created for this node.
+    if (background != null && !needsHostView) {
       if (layoutOutput != null && layoutOutput.getViewNodeInfo() != null) {
         layoutOutput.getViewNodeInfo().setBackground(background);
       } else {
+        // Background will be converted as a DrawableComponent only for those nodes
+        // which doesn't need a hostview and the layout output of the node doesn't
+        // have a ViewNodeInfo.
         final LayoutOutput convertBackground =
             (currentDiffNode != null) ? currentDiffNode.getBackground() : null;
 

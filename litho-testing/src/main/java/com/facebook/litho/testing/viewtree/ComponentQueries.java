@@ -148,6 +148,11 @@ class ComponentQueries {
       }
     }
 
+    // ComponentHost's background will be applied to view directly.
+    if (host.getBackground() != null && predicate.apply(host.getBackground())) {
+      return true;
+    }
+
     return false;
   }
 }
