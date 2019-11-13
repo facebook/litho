@@ -17,31 +17,18 @@
 package com.facebook.samples.litho.kotlin.lithography.components
 
 import com.facebook.litho.Column
-import com.facebook.litho.Component
-import com.facebook.litho.ComponentContext
+import com.facebook.litho.KComponent
 import com.facebook.litho.Padding
-import com.facebook.litho.annotations.LayoutSpec
-import com.facebook.litho.annotations.OnCreateLayout
-import com.facebook.litho.annotations.Prop
-import com.facebook.litho.build
 import com.facebook.litho.dp
 import com.facebook.litho.widget.Card
 import com.facebook.samples.litho.kotlin.lithography.data.Artist
 
-@LayoutSpec
-object FeedItemCardSpec {
-
-  @OnCreateLayout
-  fun onCreateLayout(
-      c: ComponentContext,
-      @Prop artist: Artist
-  ): Component = build(c) {
-    Padding(horizontal = 16.dp, vertical = 8.dp) {
-      Column {
-        +Card {
-          FeedItemComponent.create(c).artist(artist)
-        }
+class FeedItemCard(artist: Artist) : KComponent({
+  Padding(horizontal = 16.dp, vertical = 8.dp) {
+    Column {
+      +Card {
+        FeedItemComponent.create(this).artist(artist)
       }
     }
   }
-}
+})

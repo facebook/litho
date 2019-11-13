@@ -56,7 +56,7 @@ object DecadeSectionSpec {
   @OnEvent(RenderEvent::class)
   fun render(c: SectionContext, @FromEvent model: Artist): RenderInfo =
       ComponentRenderInfo.create()
-          .component(FeedItemCard.create(c).artist(model).build())
+          .component(FeedItemCard(artist = model))
           .build()
 
   @OnEvent(OnCheckIsSameItemEvent::class)

@@ -19,35 +19,26 @@ package com.facebook.samples.litho.kotlin.lithography.components
 import android.R.drawable.star_off
 import android.R.drawable.star_on
 import com.facebook.litho.Clickable
-import com.facebook.litho.Component
-import com.facebook.litho.ComponentContext
 import com.facebook.litho.Decoration
 import com.facebook.litho.FixedSize
+import com.facebook.litho.KComponent
 import com.facebook.litho.Row
-import com.facebook.litho.annotations.LayoutSpec
-import com.facebook.litho.annotations.OnCreateLayout
-import com.facebook.litho.build
 import com.facebook.litho.dp
 import com.facebook.litho.drawableRes
 import com.facebook.litho.updateState
 import com.facebook.litho.useState
 import com.facebook.litho.value
 
-@LayoutSpec
-object FavouriteButtonSpec {
+class FavouriteButton : KComponent({
 
-  @OnCreateLayout
-  fun onCreateLayout(c: ComponentContext): Component = build(c) {
+  val isFavourite by useState { false }
+  val background = drawableRes(if (isFavourite.value) star_on else star_off)
 
-    val isFavourite by useState { false }
-    val background = drawableRes(if (isFavourite.value) star_on else star_off)
-
-    Clickable(onClick = { updateState { isFavourite.value = !isFavourite.value } }) {
-      FixedSize(width = 32.dp, height = 32.dp) {
-        Decoration(background = background) {
-          Row()
-        }
+  Clickable(onClick = { updateState { isFavourite.value = !isFavourite.value } }) {
+    FixedSize(width = 32.dp, height = 32.dp) {
+      Decoration(background = background) {
+        Row()
       }
     }
   }
-}
+})

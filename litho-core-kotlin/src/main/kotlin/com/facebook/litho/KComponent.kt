@@ -16,17 +16,11 @@
 
 package com.facebook.litho
 
-import android.app.Activity
-
-inline fun build(
-    c: ComponentContext,
-    content: ComponentContext.() -> Component.Builder<*>
-): Component = c.content().build()
-
-fun Activity.setContent(component: Component) {
-  setContentView(LithoView.create(this, component))
-}
-
-fun Activity.setContent(content: ComponentContext.() -> Component.Builder<*>) {
-  setContent(KComponent(content))
+/** Base class for Kotlin Components. */
+open class KComponent(
+    private val content: ComponentContext.() -> Builder<*>?
+) : Component("KComponent") {
+  override fun onCreateLayout(c: ComponentContext): Component? {
+    return c.content()?.build()
+  }
 }

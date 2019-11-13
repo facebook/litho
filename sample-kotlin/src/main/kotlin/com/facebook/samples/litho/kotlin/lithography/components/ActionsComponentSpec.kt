@@ -37,7 +37,7 @@ object ActionsComponentSpec {
       Decoration(background = drawableColor(0xddffffff)) {
         Padding(2.dp) {
           Row {
-            +FavouriteButton.create(c)
+            +FavouriteButton()
           }
         }
       }
