@@ -20,6 +20,9 @@ package com.facebook.litho
 
 import android.graphics.drawable.Drawable
 
+inline fun <reified T> eventHandler(crossinline onEvent: () -> Unit): EventHandler<T> =
+    EventHandler({ EventDispatcher { _, _ -> onEvent() } }, 0, null)
+
 /**
  * Builder for setting an [onClick] event handler for component.
  *
@@ -30,9 +33,7 @@ inline fun <C : Component.Builder<C>> ComponentContext.Clickable(
     crossinline onClick: () -> Unit,
     content: ComponentContext.() -> C
 ): C =
-    content().clickHandler(
-        EventHandler<ClickEvent>({ EventDispatcher { _, _ -> onClick() } }, 0, null)
-    )
+    content().clickHandler(eventHandler(onClick))
 
 /**
  * Builder for decorating a child component with [background] or [foreground].
