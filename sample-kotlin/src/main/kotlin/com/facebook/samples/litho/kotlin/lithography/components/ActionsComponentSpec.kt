@@ -32,7 +32,7 @@ import com.facebook.litho.drawableColor
 object ActionsComponentSpec {
 
   @OnCreateLayout
-  fun onCreateLayout(c: ComponentContext): Component = build(c) {
+  fun onCreateLayout(c: ComponentContext): Component? = build(c) {
     Position(top = 4.dp, right = 4.dp) {
       Decoration(background = drawableColor(0xddffffff)) {
         Padding(2.dp) {

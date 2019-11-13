@@ -20,8 +20,8 @@ import android.app.Activity
 
 inline fun build(
     c: ComponentContext,
-    content: ComponentContext.() -> Component.Builder<*>
-): Component = c.content().build()
+    content: ComponentContext.() -> Component.Builder<*>?
+): Component? = c.content()?.build()
 
 fun Activity.setContent(component: Component) {
   setContentView(LithoView.create(this, component))

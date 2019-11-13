@@ -32,7 +32,7 @@ import com.facebook.yoga.YogaJustify.CENTER
 object LoadingComponentSpec {
 
   @OnCreateLayout
-  fun onCreateLayout(c: ComponentContext): Component = build(c) {
+  fun onCreateLayout(c: ComponentContext): Component? = build(c) {
     Row(justifyContent = CENTER) {
       +FixedSize(width = 50.dp) {
         Progress(color = Color.DKGRAY)

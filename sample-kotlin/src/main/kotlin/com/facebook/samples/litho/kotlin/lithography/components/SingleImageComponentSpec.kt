@@ -37,7 +37,7 @@ object SingleImageComponentSpec {
       c: ComponentContext,
       @Prop imageUri: String,
       @Prop(optional = true) imageAspectRatio: Float
-  ): Component = build(c) {
+  ): Component? = build(c) {
     FrescoImage(
         controller = Fresco.newDraweeControllerBuilder().setUri(imageUri).build(),
         imageAspectRatio = imageAspectRatio

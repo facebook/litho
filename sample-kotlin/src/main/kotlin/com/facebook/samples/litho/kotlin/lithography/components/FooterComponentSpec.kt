@@ -37,7 +37,7 @@ object FooterComponentSpec {
   fun onCreateLayout(
       c: ComponentContext,
       @Prop(resType = STRING) text: String
-  ): Component = build(c) {
+  ): Component? = build(c) {
     Padding(8.dp) {
       Column {
         +Text(text = text, textColor = GRAY, textStyle = ITALIC)

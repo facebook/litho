@@ -51,7 +51,7 @@ object FeedItemComponentSpec {
   fun onCreateLayout(
       c: ComponentContext,
       @Prop artist: Artist
-  ): Component = build(c) {
+  ): Component? = build(c) {
     Column {
       +Column {
         +imageBlock(artist)
