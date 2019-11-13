@@ -10,8 +10,30 @@ _release-date_
  * **Breaking:** Remove `YogaNode` parameter from `YogaLogger#log`.
  * **Breaking:** Remove error reporting from `ComponentsLogger`.
  * **Breaking:** Limit scope of `Component`/`ComponentLifecycle` constructors that take explicit type param.
- * New: Add API for providing custom logger on a per `ComponentRenderInfo` basis.
- * Fix: Add generics support to `@OnCalculateCachedValue` methods
+ * New: Add `requestSmoothScrollBy()` and `requestScrollToPositionWithSnap()` APIs for `RecyclerCollectionEventsController`.
+ * New: Add ability to provide custom `ComponentsLogger` per `ComponentRenderInfo`
+ * New: Add new counters (calculateLayout, section state update, section changeset calculation) to `LithoStats` global counter.
+ * New: Allow custom `StaggeredGridLayoutInfo` when using `StaggeredGridRecyclerConfiguration`.
+ * New: Add support for more `textAlignment` values for `TextSpec`
+ * New: Add `ComponentWarmer` API to allow calculating layout ahead of time.
+ * New: Add `ThreadPoolDynamicPriorityLayoutHandler` to enable changing priority of threads calculating layouts.
+ * New: Add `varArgs` to the generated `Component`.
+ * New: Add snap support for `GridRecyclerConfiguration`.
+ * New: Add support for custom fling offset for `StartSnapHelper`.
+ * New: Allow disabling top or bottom shadow in `TransparencyEnabledCardSpec`.
+ * New: Add `Handle` API for Litho `Tooltip`s via `LithoTooltipController.showTooltipOnHandle()` that replaces previous way of anchoring tooltip with concatenated keys.
+ * New: Track component hierarchy using `DebugHierarchy` after mount time.
+ * Fix: Add generics support to `@OnCalculateCachedValue` methods.
+ * Fix: Move setting `ItemAnimator` from `onBind`/`onUnbind` to `onMount`/`onUnmount` in `RecyclerSpec`.
+ * Fix: Stop and clean running transitions that do not exist and not declared in the new layout.
+ * Fix: Fix concurrent modification on finishing undeclared transitions.
+ * Fix: Allow `TreeProp`s to be used in `@OnCreateInitialState` of Sections.
+ * Fix: Define default color for spannable link in `TextSpec`.
+ * Fix: Postpone `mountComponent` for reentrant mounts, then mount new layoutState afterwards.
+ * Fix: Enable automatic RTL support in sample apps.
+
+For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.31.0...master).
+ 
 
 ## Version 0.31.0
 
@@ -23,6 +45,7 @@ _2019-09-09_
  * Fix: Immediately remove MountItem mapping on unmount to protect against re-entrancy.
 
  For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.30.0...v0.31.0).
+
 
 ## Version 0.30.0
 
