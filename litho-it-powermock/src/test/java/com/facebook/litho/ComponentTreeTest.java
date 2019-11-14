@@ -28,6 +28,7 @@ import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -66,6 +67,7 @@ public class ComponentTreeTest {
    * finishes calculating the LayoutState. - Make assertions when both LayoutStateFutures have
    * returned from runAndGet().
    */
+  @Ignore("T57495493")
   @Test
   public void testLayoutStateFutureBgNotWaitingOnMainCT() {
     mockStatic(Process.class);

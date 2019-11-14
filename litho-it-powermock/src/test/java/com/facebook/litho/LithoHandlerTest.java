@@ -28,6 +28,7 @@ import android.os.Process;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -47,6 +48,7 @@ public class LithoHandlerTest {
 
   @Rule public PowerMockRule mPowerMockRule = new PowerMockRule();
 
+  @Ignore("T57495493")
   @Test
   public void testSetThreadPoolPriority() {
     mockStatic(Process.class);
@@ -111,6 +113,7 @@ public class LithoHandlerTest {
     assertThat(threadPriority[0]).isEqualTo(3);
   }
 
+  @Ignore("T57495493")
   @Test
   public void testLithoHandlerDynamicPriority() {
     mockStatic(Process.class);
