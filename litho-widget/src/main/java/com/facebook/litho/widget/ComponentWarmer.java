@@ -315,6 +315,7 @@ public class ComponentWarmer {
       throw new IllegalStateException(
           "ComponentWarmer: trying to execute prepare but ComponentWarmer is not ready.");
     }
+    renderInfo.addCustomAttribute(COMPONENT_WARMER_TAG, tag);
 
     final ComponentTreeHolder holder = mFactory.create(renderInfo);
     mCache.put(tag, holder);
