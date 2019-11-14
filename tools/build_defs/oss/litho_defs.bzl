@@ -40,6 +40,14 @@ LITHO_STATS_TARGET = make_dep_path("litho-core/src/main/java/com/facebook/litho/
 
 LITHO_YOGA_FACTORY_TARGET = make_dep_path("litho-core/src/main/java/com/facebook/litho/yoga:yoga")
 
+# Kotlin targets
+LITHO_KOTLIN_TARGET = make_dep_path("litho-core-kotlin/src/main/kotlin/com/facebook/litho:litho-kotlin")
+
+LITHO_WIDGET_KOTLIN_TARGET = make_dep_path("litho-widget-kotlin/src/main/kotlin/com/facebook/litho/widget:widget-kotlin")
+
+LITHO_FRESCO_KOTLIN_TARGET = make_dep_path("litho-fresco-kotlin/src/main/kotlin/com/facebook/litho/fresco:fresco-kotlin")
+
+# Testing targets
 LITHO_TESTING_CORE_V3_TARGET = make_dep_path("litho-testing/src/main/java/com/facebook/litho:litho")
 
 LITHO_TESTING_CORE_V4_TARGET = make_dep_path("litho-testing/src/main/java/com/facebook/litho:litho-v4")
@@ -123,6 +131,8 @@ LITHO_JAVAPOET_TARGET = make_dep_path("lib/javapoet:javapoet")
 LITHO_FBCORE_TARGET = make_dep_path("lib/fbcore:fbcore")
 
 LITHO_SOLOADER_TARGET = make_dep_path("lib/soloader:soloader")
+
+LITHO_KOTLIN_STDLIB_TARGET = make_dep_path("lib/kotlin:kotlin-stdlib")
 
 LITHO_ASSERTJ_TARGET = make_dep_path("lib/assertj:assertj")
 

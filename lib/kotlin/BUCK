@@ -1,0 +1,52 @@
+# Copyright (c) 2017-present, Facebook, Inc.
+#
+# This source code is licensed under the Apache 2.0 license found in the
+# LICENSE file in the root directory of this source tree.
+
+load("//tools/build_defs/oss:fb_native_wrapper.bzl", "fb_native")
+load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_VISIBILITY", "fb_java_library")
+
+fb_java_library(
+    name = "kotlin",
+    visibility = LITHO_VISIBILITY,
+    exported_deps = [
+        ":jetbrains-annotations",
+        ":kotlin-stdlib",
+    ],
+)
+
+fb_native.prebuilt_jar(
+    name = "kotlin-stdlib",
+    binary_jar = ":kotlin-stdlib.jar",
+    visibility = LITHO_VISIBILITY,
+)
+
+fb_native.remote_file(
+    name = "kotlin-stdlib.jar",
+    sha1 = "b529d1738c7e98bbfa36a4134039528f2ce78ebf",
+    url = "mvn:org.jetbrains.kotlin:kotlin-stdlib:jar:1.3.50",
+)
+
+fb_native.prebuilt_jar(
+    name = "kotlin-stdlib-jdk7",
+    binary_jar = ":kotlin-stdlib-jdk7.jar",
+    visibility = LITHO_VISIBILITY,
+)
+
+fb_native.remote_file(
+    name = "kotlin-stdlib-jdk7.jar",
+    sha1 = "50ad05ea1c2595fb31b800e76db464d08d599af3",
+    url = "mvn:org.jetbrains.kotlin:kotlin-stdlib-jdk7:jar:1.3.50",
+)
+
+fb_native.prebuilt_jar(
+    name = "jetbrains-annotations",
+    binary_jar = ":annotations.jar",
+    visibility = LITHO_VISIBILITY,
+)
+
+fb_native.remote_file(
+    name = "annotations.jar",
+    sha1 = "919f0dfe192fb4e063e7dacadee7f8bb9a2672a9",
+    url = "mvn:org.jetbrains:annotations:jar:13.0",
+)
