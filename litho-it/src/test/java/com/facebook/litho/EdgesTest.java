@@ -18,13 +18,13 @@ package com.facebook.litho;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
+import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaEdge;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.internal.util.reflection.Whitebox;
 
 @RunWith(ComponentsTestRunner.class)
 public class EdgesTest {
