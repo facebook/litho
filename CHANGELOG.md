@@ -10,6 +10,7 @@ _release-date_
  * **Breaking:** Remove `YogaNode` parameter from `YogaLogger#log`.
  * **Breaking:** Remove error reporting from `ComponentsLogger`.
  * **Breaking:** Limit scope of `Component`/`ComponentLifecycle` constructors that take explicit type param.
+ * **Breaking:** TextSpec default text size changed to 14sp (from 13px)
  * New: Add `requestSmoothScrollBy()` and `requestScrollToPositionWithSnap()` APIs for `RecyclerCollectionEventsController`.
  * New: Add ability to provide custom `ComponentsLogger` per `ComponentRenderInfo`
  * New: Add new counters (calculateLayout, section state update, section changeset calculation) to `LithoStats` global counter.

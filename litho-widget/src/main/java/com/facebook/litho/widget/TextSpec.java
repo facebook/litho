@@ -46,7 +46,9 @@ import android.text.TextUtils;
 import android.text.TextUtils.TruncateAt;
 import android.text.style.ClickableSpan;
 import android.text.style.ImageSpan;
+import android.util.TypedValue;
 import android.view.View;
+import androidx.annotation.Dimension;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.text.TextDirectionHeuristicCompat;
@@ -166,6 +168,8 @@ import com.facebook.yoga.YogaDirection;
 class TextSpec {
 
   private static final Typeface DEFAULT_TYPEFACE = Typeface.DEFAULT;
+  private static final @Dimension(unit = Dimension.SP) int DEFAULT_TEXT_SIZE_SP = 14;
+  private static final int UNSET = -1;
   private static final int DEFAULT_COLOR = 0;
   private static final String TAG = "TextSpec";
   private static final String WRONG_TEXT_SIZE = "TextSpec:WrongTextSize";
@@ -188,7 +192,7 @@ class TextSpec {
       new ColorStateList(
           DEFAULT_TEXT_COLOR_STATE_LIST_STATES, DEFAULT_TEXT_COLOR_STATE_LIST_COLORS);
 
-  @PropDefault protected static final int textSize = 13;
+  @PropDefault protected static final int textSize = UNSET;
   @PropDefault protected static final int textStyle = DEFAULT_TYPEFACE.getStyle();
   @PropDefault protected static final Typeface typeface = DEFAULT_TYPEFACE;
   @PropDefault protected static final float spacingMultiplier = 1.0f;
@@ -323,6 +327,7 @@ class TextSpec {
 
     Layout newLayout =
         createTextLayout(
+            context,
             widthSpec,
             ellipsize,
             shouldIncludeFontPadding,
@@ -405,6 +410,7 @@ class TextSpec {
   }
 
   private static Layout createTextLayout(
+      ComponentContext context,
       int widthSpec,
       TruncateAt ellipsize,
       boolean shouldIncludeFontPadding,
@@ -474,7 +480,6 @@ class TextSpec {
         .setShadowLayer(shadowRadius, shadowDx, shadowDy, shadowColor)
         .setSingleLine(isSingleLine)
         .setText(text)
-        .setTextSize(textSize)
         .setWidth(SizeSpec.getSize(widthSpec), textMeasureMode)
         .setIncludeFontPadding(shouldIncludeFontPadding)
         .setTextSpacingExtra(extraSpacing)
@@ -508,6 +513,18 @@ class TextSpec {
       layoutBuilder.setTextColor(textColor);
     } else {
       layoutBuilder.setTextColor(textColorStateList);
+    }
+
+    if (textSize != -1) {
+      layoutBuilder.setTextSize(textSize);
+    } else {
+      int defaultTextSize =
+          (int)
+              TypedValue.applyDimension(
+                  TypedValue.COMPLEX_UNIT_SP,
+                  DEFAULT_TEXT_SIZE_SP,
+                  context.getAndroidContext().getResources().getDisplayMetrics());
+      layoutBuilder.setTextSize(defaultTextSize);
     }
 
     if (!DEFAULT_TYPEFACE.equals(typeface)) {
@@ -631,6 +648,7 @@ class TextSpec {
     } else {
       textLayout.set(
           createTextLayout(
+              c,
               SizeSpec.makeSizeSpec((int) layoutWidth, EXACTLY),
               ellipsize,
               shouldIncludeFontPadding,
@@ -691,6 +709,7 @@ class TextSpec {
 
         Layout newLayout =
             createTextLayout(
+                c,
                 SizeSpec.makeSizeSpec((int) layoutWidth, EXACTLY),
                 ellipsize,
                 shouldIncludeFontPadding,
