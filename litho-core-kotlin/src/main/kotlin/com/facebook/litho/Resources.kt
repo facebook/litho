@@ -43,30 +43,32 @@ fun ComponentContext.spRes(@DimenRes id: Int): Sp =
 /**
  * Return a string for a resource ID.
  */
-fun ComponentContext.stringRes(@StringRes id: Int): String? = resourceResolver.resolveStringRes(id)
+fun ComponentContext.stringRes(@StringRes id: Int): String =
+    requireNotNull(resourceResolver.resolveStringRes(id)) {
+      "String resource not found for ID #0x${Integer.toHexString(id)}"
+    }
 
 /**
  * Return a string for a resource ID, substituting the format arguments with [formatArgs].
  */
-fun ComponentContext.stringRes(@StringRes id: Int, vararg formatArgs: Any): String? =
-    resourceResolver.resolveStringRes(id, formatArgs)
+fun ComponentContext.stringRes(@StringRes id: Int, vararg formatArgs: Any): String =
+    requireNotNull(resourceResolver.resolveStringRes(id, formatArgs)) {
+      "String resource not found for ID #0x${Integer.toHexString(id)}"
+    }
 
 /**
  * Retrieve a [android.graphics.drawable.Drawable] for a resource ID as a [ComparableDrawable]
  * instance.
  */
-fun ComponentContext.drawableRes(@DrawableRes id: Int): ComparableDrawable? =
-    if (id == 0) null else ComparableResDrawable.create(androidContext, id)
+fun ComponentContext.drawableRes(@DrawableRes id: Int): ComparableDrawable =
+    ComparableResDrawable.create(androidContext, id)
 
 /**
  * Retrieve a [android.graphics.drawable.Drawable], corresponding to an attribute resource ID, as
  * a [ComparableDrawable] instance. If given attribute ID can not be found, default Drawable
  * resource ID [defResId] is used.
  */
-fun ComponentContext.drawableAttr(
-    @AttrRes id: Int,
-    @DrawableRes defResId: Int = 0
-): ComparableDrawable? =
+fun ComponentContext.drawableAttr(@AttrRes id: Int, @DrawableRes defResId: Int = 0): ComparableDrawable =
     drawableRes(resourceResolver.resolveResIdAttr(id, defResId))
 
 /**

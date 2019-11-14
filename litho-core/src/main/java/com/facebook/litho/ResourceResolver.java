@@ -22,6 +22,7 @@ import android.graphics.drawable.Drawable;
 import androidx.annotation.ArrayRes;
 import androidx.annotation.AttrRes;
 import androidx.annotation.BoolRes;
+import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 import androidx.annotation.DimenRes;
 import androidx.annotation.DrawableRes;
@@ -157,7 +158,7 @@ public class ResourceResolver {
     return false;
   }
 
-  public int resolveColorRes(@ColorRes int resId) {
+  public @ColorInt int resolveColorRes(@ColorRes int resId) {
     if (resId != 0) {
       Integer cached = mResourceCache.get(resId);
       if (cached != null) {
