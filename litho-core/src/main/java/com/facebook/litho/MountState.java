@@ -377,7 +377,13 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       if (isTracing) {
         ComponentsSystrace.beginSection("processVisibilityOutputs");
       }
+      if (mountPerfEvent != null) {
+        mountPerfEvent.markerPoint("EVENT_PROCESS_VISIBILITY_OUTPUTS_START");
+      }
       processVisibilityOutputs(layoutState, localVisibleRect, mountPerfEvent);
+      if (mountPerfEvent != null) {
+        mountPerfEvent.markerPoint("EVENT_PROCESS_VISIBILITY_OUTPUTS_END");
+      }
       if (isTracing) {
         ComponentsSystrace.endSection();
       }
