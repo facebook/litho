@@ -220,6 +220,9 @@ public class ComponentsConfiguration {
    */
   public static boolean shouldCacheDeviceTypeOnDoubleMeasure = false;
 
+  /** When enabled Litho will immediately release non-reconcilable InternalNode tree. */
+  public static boolean shouldReleaseNonReconcilableTree = false;
+
   /** When enabled uses the refactored implementation of create layout. */
   public static boolean useNewCreateLayoutImplementation = false;
 }
