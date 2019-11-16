@@ -87,7 +87,7 @@ public class DuplicateParentStateTest {
             mUnspecifiedSizeSpec,
             LayoutState.CalculateLayoutSource.TEST);
 
-    assertThat(layoutState.getMountableOutputCount()).isEqualTo(11);
+    assertThat(layoutState.getMountableOutputCount()).isEqualTo(12);
 
     assertTrue(
         "Clickable root output has duplicate state",
@@ -110,14 +110,17 @@ public class DuplicateParentStateTest {
         isDuplicateParentState(layoutState.getMountableOutputAt(6).getFlags()));
 
     assertTrue(
-        "Foreground should duplicate clickable node state",
+        "Background should duplicate clickable node state",
         isDuplicateParentState(layoutState.getMountableOutputAt(8).getFlags()));
+    assertTrue(
+        "Foreground should duplicate clickable node state",
+        isDuplicateParentState(layoutState.getMountableOutputAt(9).getFlags()));
 
     assertFalse(
         "Background should duplicate non-clickable node state",
-        isDuplicateParentState(layoutState.getMountableOutputAt(9).getFlags()));
+        isDuplicateParentState(layoutState.getMountableOutputAt(10).getFlags()));
     assertFalse(
         "Foreground should duplicate non-clickable node state",
-        isDuplicateParentState(layoutState.getMountableOutputAt(10).getFlags()));
+        isDuplicateParentState(layoutState.getMountableOutputAt(11).getFlags()));
   }
 }
