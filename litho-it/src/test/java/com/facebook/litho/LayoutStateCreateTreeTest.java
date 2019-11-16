@@ -621,6 +621,11 @@ public class LayoutStateCreateTreeTest {
       private Component mComponent;
 
       @Override
+      protected void setComponent(Component component) {
+        mComponent = component;
+      }
+
+      @Override
       public Builder getThis() {
         return this;
       }

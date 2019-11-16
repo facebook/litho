@@ -24,6 +24,8 @@ import com.facebook.litho.specmodels.model.BuilderMethodModel;
 import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.EventDeclarationModel;
 import com.facebook.litho.specmodels.model.EventMethod;
+import com.facebook.litho.specmodels.model.LayoutSpecModel;
+import com.facebook.litho.specmodels.model.MountSpecModel;
 import com.facebook.litho.specmodels.model.PropDefaultModel;
 import com.facebook.litho.specmodels.model.PropModel;
 import com.facebook.litho.specmodels.model.SpecElementType;
@@ -164,6 +166,16 @@ public class BuilderGenerator {
       initMethodSpec.addStatement("initPropDefaults()");
     }
 
+    final MethodSpec.Builder setComponentMethodSpec =
+        MethodSpec.methodBuilder("setComponent")
+            .addModifiers(Modifier.PROTECTED)
+            .addAnnotation(Override.class)
+            .addParameter(ClassNames.COMPONENT, "component")
+            .addStatement(
+                "$L = ($T) component",
+                getComponentMemberInstanceName(specModel),
+                specModel.getComponentTypeName());
+
     final boolean builderHasTypeVariables = !specModel.getTypeVariables().isEmpty();
 
     TypeName builderType = getBuilderType(specModel);
@@ -214,6 +226,10 @@ public class BuilderGenerator {
     }
 
     propsBuilderClassBuilder.addMethod(initMethodSpec.build());
+
+    if (specModel instanceof LayoutSpecModel || specModel instanceof MountSpecModel) {
+      propsBuilderClassBuilder.addMethod(setComponentMethodSpec.build());
+    }
 
     if (isResResolvable) {
       MethodSpec.Builder initResTypePropDefaultsSpec = MethodSpec.methodBuilder("initPropDefaults");

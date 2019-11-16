@@ -175,6 +175,11 @@ public final class Row extends Component {
     }
 
     @Override
+    protected void setComponent(Component component) {
+      mRow = (Row) component;
+    }
+
+    @Override
     public Builder child(@Nullable Component child) {
       if (child == null) {
         return this;

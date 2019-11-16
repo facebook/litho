@@ -127,6 +127,11 @@ public class TestAttachDetachComponent extends TestComponent {
     }
 
     @Override
+    protected void setComponent(Component component) {
+      mState = (TestAttachDetachComponent) component;
+    }
+
+    @Override
     public TestAttachDetachComponent.Builder getThis() {
       return this;
     }

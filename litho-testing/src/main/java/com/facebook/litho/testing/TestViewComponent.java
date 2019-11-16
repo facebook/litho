@@ -196,6 +196,11 @@ public class TestViewComponent extends TestComponent {
       mState = state;
     }
 
+    @Override
+    protected void setComponent(Component component) {
+      mState = (TestViewComponent) component;
+    }
+
     public Builder unique() {
       mState.mIsUnique = true;
       return this;

@@ -153,6 +153,11 @@ public class TestLayoutComponent extends TestComponent {
       mState = state;
     }
 
+    @Override
+    protected void setComponent(Component component) {
+      mState = (TestLayoutComponent) component;
+    }
+
     public Builder unique() {
       mState.mIsUnique = true;
       return this;

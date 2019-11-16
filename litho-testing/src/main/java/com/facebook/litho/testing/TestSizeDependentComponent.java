@@ -101,6 +101,11 @@ public class TestSizeDependentComponent extends Component {
       mTestSizeDependentComponent = state;
     }
 
+    @Override
+    protected void setComponent(Component component) {
+      mTestSizeDependentComponent = (TestSizeDependentComponent) component;
+    }
+
     public Builder setFixSizes(boolean hasFixSizes) {
       mTestSizeDependentComponent.hasFixedSizes = hasFixSizes;
       return this;

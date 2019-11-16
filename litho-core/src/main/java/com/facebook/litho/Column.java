@@ -177,6 +177,11 @@ public final class Column extends Component {
     }
 
     @Override
+    protected void setComponent(Component component) {
+      mColumn = (Column) component;
+    }
+
+    @Override
     public Builder child(@Nullable Component child) {
       if (child == null) {
         return this;

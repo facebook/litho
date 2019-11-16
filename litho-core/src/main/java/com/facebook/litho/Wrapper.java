@@ -107,6 +107,11 @@ public final class Wrapper extends Component {
     }
 
     @Override
+    protected void setComponent(Component component) {
+      mWrapper = (Wrapper) component;
+    }
+
+    @Override
     public Builder getThis() {
       return this;
     }

@@ -115,6 +115,11 @@ public class TestTransitionComponent extends TestComponent {
       mState = state;
     }
 
+    @Override
+    protected void setComponent(Component component) {
+      mState = (TestTransitionComponent) component;
+    }
+
     public Builder unique() {
       mState.mIsUnique = true;
       return this;

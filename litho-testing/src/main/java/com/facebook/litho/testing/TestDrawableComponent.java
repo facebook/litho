@@ -263,6 +263,11 @@ public class TestDrawableComponent extends TestComponent {
       mComponent = component;
     }
 
+    @Override
+    protected void setComponent(Component component) {
+      mComponent = (TestDrawableComponent) component;
+    }
+
     public Builder measuredWidth(int width) {
       mComponent.measuredWidth = width;
       return this;

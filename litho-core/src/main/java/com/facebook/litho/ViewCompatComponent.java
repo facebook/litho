@@ -137,6 +137,11 @@ public class ViewCompatComponent<V extends View> extends Component {
     }
 
     @Override
+    protected void setComponent(Component component) {
+      mViewCompatComponent = (ViewCompatComponent) component;
+    }
+
+    @Override
     public Builder<V> getThis() {
       return this;
     }
