@@ -569,23 +569,11 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       VisibilityItem visibilityItem = mVisibilityIdToItemMap.get(visibilityOutputId);
 
       final boolean wasFullyVisible;
-      final boolean hasGlobalKeyChanged;
       if (visibilityItem != null) {
-        final String previousGlobalKey = visibilityItem.getGlobalKey();
-        final String currentGlobalKey =
-            visibilityOutput.getComponent() != null
-                ? visibilityOutput.getComponent().getGlobalKey()
-                : null;
-        hasGlobalKeyChanged =
-            previousGlobalKey != null && !previousGlobalKey.equals(currentGlobalKey);
-        if (hasGlobalKeyChanged) {
-          visibilityItem.setWasFullyVisible(false);
-        }
         wasFullyVisible = visibilityItem.wasFullyVisible();
         visibilityItem.setWasFullyVisible(isFullyVisible);
       } else {
         wasFullyVisible = false;
-        hasGlobalKeyChanged = false;
       }
 
       if (isFullyVisible
@@ -618,14 +606,12 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
       if (visibilityItem != null) {
 
-        if (!hasGlobalKeyChanged) {
-          // If we did a relayout due to e.g. a state update then the handlers will have changed,
-          // so we should keep them up to date.
-          visibilityItem.setUnfocusedHandler(unfocusedHandler);
-          visibilityItem.setInvisibleHandler(invisibleHandler);
-        }
+        // If we did a relayout due to e.g. a state update then the handlers will have changed,
+        // so we should keep them up to date.
+        visibilityItem.setUnfocusedHandler(unfocusedHandler);
+        visibilityItem.setInvisibleHandler(invisibleHandler);
 
-        if (!isCurrentlyVisible || hasGlobalKeyChanged) {
+        if (!isCurrentlyVisible) {
           // Either the component is invisible now, but used to be visible, or the key on the
           // component has changed so we should generate new visibility events for the new
           // component.
