@@ -66,4 +66,8 @@ public class BenchmarkTestHelper {
   public static void initComponentStateValues(ComponentContext c, Component component) {
     component.updateInternalChildState(c);
   }
+
+  public static void setMountStateDirty(LithoView lithoView) {
+    lithoView.setMountStateDirty();
+  }
 }
