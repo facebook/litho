@@ -26,7 +26,6 @@ import androidx.annotation.Nullable;
  */
 class VisibilityOutput {
 
-  private long mId;
   private Component mComponent;
   private final Rect mBounds = new Rect();
   private float mVisibleHeightRatio;
@@ -38,12 +37,9 @@ class VisibilityOutput {
   private EventHandler<InvisibleEvent> mInvisibleEventHandler;
   private @Nullable EventHandler<VisibilityChangedEvent> mVisibilityChangedEventHandler;
 
-  long getId() {
-    return mId;
-  }
-
-  void setId(long id) {
-    mId = id;
+  @Nullable
+  String getId() {
+    return mComponent == null ? null : mComponent.getGlobalKey();
   }
 
   Component getComponent() {

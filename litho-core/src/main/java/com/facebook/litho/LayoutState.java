@@ -958,13 +958,7 @@ class LayoutState {
     // 7. Add VisibilityOutputs if any visibility-related event handlers are present.
     if (node.hasVisibilityHandlers()) {
       final VisibilityOutput visibilityOutput = createVisibilityOutput(node, layoutState);
-      final long previousId =
-          shouldUseCachedOutputs && currentDiffNode.getVisibilityOutput() != null
-              ? currentDiffNode.getVisibilityOutput().getId()
-              : -1;
 
-      layoutState.calculateAndSetVisibilityOutputId(
-          visibilityOutput, layoutState.mCurrentLevel, previousId);
       layoutState.mVisibilityOutputs.add(visibilityOutput);
 
       if (diffNode != null) {
@@ -1748,15 +1742,6 @@ class LayoutState {
     }
     mLayoutStateOutputIdCalculator.calculateAndSetLayoutOutputIdAndUpdateState(
         layoutOutput, level, type, previousId, isCachedOutputUpdated);
-  }
-
-  private void calculateAndSetVisibilityOutputId(
-      VisibilityOutput visibilityOutput, int level, long previousId) {
-    if (mLayoutStateOutputIdCalculator == null) {
-      mLayoutStateOutputIdCalculator = new LayoutStateOutputIdCalculator();
-    }
-    mLayoutStateOutputIdCalculator.calculateAndSetVisibilityOutputId(
-        visibilityOutput, level, previousId);
   }
 
   @VisibleForTesting

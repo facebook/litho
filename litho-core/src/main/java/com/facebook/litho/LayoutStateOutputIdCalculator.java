@@ -27,7 +27,6 @@ import androidx.collection.LongSparseArray;
 class LayoutStateOutputIdCalculator {
 
   @Nullable private LongSparseArray<Integer> mLayoutCurrentSequenceForBaseId;
-  @Nullable private LongSparseArray<Integer> mVisibilityCurrentSequenceForBaseId;
 
   // LayoutOutputID stored in long (64 bits):  1 bit for sign, 63 for ID
   // 36 for component_ID, 8 for level, 3 for type, and 16 for sequence
@@ -99,45 +98,9 @@ class LayoutStateOutputIdCalculator {
     mLayoutCurrentSequenceForBaseId.put(baseLayoutId, sequence + 1);
   }
 
-  void calculateAndSetVisibilityOutputId(
-      VisibilityOutput visibilityOutput, int level, long previousId) {
-
-    if (mVisibilityCurrentSequenceForBaseId == null) {
-      mVisibilityCurrentSequenceForBaseId = new LongSparseArray<>(2);
-    }
-
-    // We need to assign an id to this VisibilityOutput. We want the ids to be as consistent as
-    // possible between different layout calculations. For this reason the id generation is a
-    // function based on the component of the VisibilityOutput, the depth of this output in the view
-    // hierarchy and an incremental sequence number for VisibilityOutputs that have all the other
-    // parameters in common.
-    final long baseVisibilityId = calculateVisibilityOutputBaseId(visibilityOutput, level);
-    int sequence;
-    if (previousId > 0 && getLevelFromId(previousId) == level) {
-      sequence = getSequenceFromId(previousId);
-    } else {
-      sequence = -1;
-    }
-
-    final int currentSequence = mVisibilityCurrentSequenceForBaseId.get(baseVisibilityId, 0);
-    // If sequence is positive we are trying to re-use the id from a previous VisibilityOutput.
-    // We can only do that if the sequence that visibilityOutput used is not already assigned.
-    if (sequence < currentSequence) {
-      sequence = currentSequence + 1;
-    }
-
-    final long visibilityOutputId = calculateId(baseVisibilityId, sequence);
-    visibilityOutput.setId(visibilityOutputId);
-
-    mVisibilityCurrentSequenceForBaseId.put(baseVisibilityId, sequence + 1);
-  }
-
   void clear() {
     if (mLayoutCurrentSequenceForBaseId != null) {
       mLayoutCurrentSequenceForBaseId.clear();
-    }
-    if (mVisibilityCurrentSequenceForBaseId != null) {
-      mVisibilityCurrentSequenceForBaseId.clear();
     }
   }
 
@@ -167,17 +130,6 @@ class LayoutStateOutputIdCalculator {
   static long calculateLayoutOutputId(
       LayoutOutput layoutOutput, int level, @OutputUnitType int type, int sequence) {
     long baseId = calculateLayoutOutputBaseId(layoutOutput, level, type);
-    return calculateId(baseId, sequence);
-  }
-
-  /**
-   * Calculates an id for a {@link VisibilityOutput}. See {@link
-   * LayoutStateOutputIdCalculator#calculateVisibilityOutputBaseId(VisibilityOutput, int)} and
-   * {@link LayoutStateOutputIdCalculator#calculateId(long, int)}.
-   */
-  static long calculateVisibilityOutputId(
-      VisibilityOutput visibilityOutput, int level, int sequence) {
-    final long baseId = calculateVisibilityOutputBaseId(visibilityOutput, level);
     return calculateId(baseId, sequence);
   }
 

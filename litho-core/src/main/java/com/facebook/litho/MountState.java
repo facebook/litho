@@ -100,7 +100,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   // stored in LayoutState. An item is inserted in this map if its corresponding component is
   // visible. When the component exits the viewport, the item associated with it is removed from the
   // map.
-  private final LongSparseArray<VisibilityItem> mVisibilityIdToItemMap;
+  private final Map<String, VisibilityItem> mVisibilityIdToItemMap;
 
   // Holds a list of MountItems that are currently mounted which can mount incrementally.
   private final LongSparseArray<MountItem> mCanMountIncrementallyMountItems;
@@ -154,7 +154,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
   public MountState(LithoView view) {
     mIndexToItemMap = new LongSparseArray<>();
-    mVisibilityIdToItemMap = new LongSparseArray<>();
+    mVisibilityIdToItemMap = new HashMap<>();
     mCanMountIncrementallyMountItems = new LongSparseArray<>();
     mContext = view.getComponentContext();
     mLithoView = view;
@@ -550,6 +550,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     final boolean isDoingPerfLog = mMountStats.isLoggingEnabled;
     final boolean isTracing = ComponentsSystrace.isTracing();
     final long totalStartTime = isDoingPerfLog ? System.nanoTime() : 0L;
+
     for (int j = 0, size = layoutState.getVisibilityOutputCount(); j < size; j++) {
       final VisibilityOutput visibilityOutput = layoutState.getVisibilityOutputAt(j);
       if (isTracing) {
@@ -564,7 +565,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       final boolean boundsIntersect =
           sTempRect.setIntersect(visibilityOutputBounds, localVisibleRect);
       final boolean isFullyVisible = boundsIntersect && sTempRect.equals(visibilityOutputBounds);
-      final long visibilityOutputId = visibilityOutput.getId();
+      final String visibilityOutputId = visibilityOutput.getId();
       VisibilityItem visibilityItem = mVisibilityIdToItemMap.get(visibilityOutputId);
 
       final boolean wasFullyVisible;
@@ -737,7 +738,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   }
 
   @VisibleForTesting
-  LongSparseArray<VisibilityItem> getVisibilityIdToItemMap() {
+  Map<String, VisibilityItem> getVisibilityIdToItemMap() {
     return mVisibilityIdToItemMap;
   }
 
@@ -826,37 +827,46 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       ComponentsSystrace.beginSection("MountState.clearVisibilityItems");
     }
 
-    for (int i = mVisibilityIdToItemMap.size() - 1; i >= 0; i--) {
-      final VisibilityItem visibilityItem = mVisibilityIdToItemMap.valueAt(i);
+    List<String> toClear = new ArrayList<>();
+
+    for (String key : mVisibilityIdToItemMap.keySet()) {
+      final VisibilityItem visibilityItem = mVisibilityIdToItemMap.get(key);
       if (visibilityItem.doNotClearInThisPass()) {
         // This visibility item has already been accounted for in this pass, so ignore it.
         visibilityItem.setDoNotClearInThisPass(false);
       } else {
-        final EventHandler<InvisibleEvent> invisibleHandler = visibilityItem.getInvisibleHandler();
-        final EventHandler<UnfocusedVisibleEvent> unfocusedHandler =
-            visibilityItem.getUnfocusedHandler();
-        final EventHandler<VisibilityChangedEvent> visibilityChangedHandler =
-            visibilityItem.getVisibilityChangedHandler();
-
-        if (invisibleHandler != null) {
-          EventDispatcherUtils.dispatchOnInvisible(invisibleHandler);
-        }
-
-        if (visibilityItem.isInFocusedRange()) {
-          visibilityItem.setFocusedRange(false);
-          if (unfocusedHandler != null) {
-            EventDispatcherUtils.dispatchOnUnfocused(unfocusedHandler);
-          }
-        }
-
-        if (visibilityChangedHandler != null) {
-          EventDispatcherUtils.dispatchOnVisibilityChanged(visibilityChangedHandler, 0, 0, 0f, 0f);
-        }
-
-        visibilityItem.setWasFullyVisible(false);
-
-        mVisibilityIdToItemMap.removeAt(i);
+        toClear.add(key);
       }
+    }
+
+    for (int i = 0, size = toClear.size(); i < size; i++) {
+      final String key = toClear.get(i);
+      final VisibilityItem visibilityItem = mVisibilityIdToItemMap.get(key);
+
+      final EventHandler<InvisibleEvent> invisibleHandler = visibilityItem.getInvisibleHandler();
+      final EventHandler<UnfocusedVisibleEvent> unfocusedHandler =
+          visibilityItem.getUnfocusedHandler();
+      final EventHandler<VisibilityChangedEvent> visibilityChangedHandler =
+          visibilityItem.getVisibilityChangedHandler();
+
+      if (invisibleHandler != null) {
+        EventDispatcherUtils.dispatchOnInvisible(invisibleHandler);
+      }
+
+      if (visibilityItem.isInFocusedRange()) {
+        visibilityItem.setFocusedRange(false);
+        if (unfocusedHandler != null) {
+          EventDispatcherUtils.dispatchOnUnfocused(unfocusedHandler);
+        }
+      }
+
+      if (visibilityChangedHandler != null) {
+        EventDispatcherUtils.dispatchOnVisibilityChanged(visibilityChangedHandler, 0, 0, 0f, 0f);
+      }
+
+      visibilityItem.setWasFullyVisible(false);
+
+      mVisibilityIdToItemMap.remove(key);
     }
 
     if (isTracing) {

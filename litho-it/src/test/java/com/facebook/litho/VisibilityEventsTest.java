@@ -25,7 +25,6 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 import android.graphics.Rect;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import androidx.collection.LongSparseArray;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestViewComponent;
@@ -33,6 +32,7 @@ import com.facebook.litho.testing.ViewGroupWithLithoViewChildren;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
 import com.facebook.yoga.YogaEdge;
+import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -757,9 +757,9 @@ public class VisibilityEventsTest {
 
   @Test
   public void testSkipFullyVisible() {
-    final TestComponent content1 = create(mContext).build();
-    final TestComponent content2 = create(mContext).build();
-    final TestComponent content3 = create(mContext).build();
+    final TestComponent content1 = create(mContext).key("tc1").build();
+    final TestComponent content2 = create(mContext).key("tc2").build();
+    final TestComponent content3 = create(mContext).key("tc3").build();
     final EventHandler<VisibleEvent> visibleEventHandler1 = new EventHandler<>(content1, 1);
     final EventHandler<VisibleEvent> visibleEventHandler2 = new EventHandler<>(content2, 2);
     final EventHandler<VisibleEvent> visibleEventHandler3 = new EventHandler<>(content3, 3);
@@ -772,8 +772,10 @@ public class VisibilityEventsTest {
             mContext,
             mLithoView,
             Column.create(mContext)
+                .key("root")
                 .child(
                     Wrapper.create(mContext)
+                        .key("child1")
                         .delegate(content1)
                         .visibleHandler(visibleEventHandler1)
                         .invisibleHandler(invisibleEventHandler1)
@@ -781,6 +783,7 @@ public class VisibilityEventsTest {
                         .heightPx(5))
                 .child(
                     Wrapper.create(mContext)
+                        .key("child2")
                         .delegate(content2)
                         .visibleHandler(visibleEventHandler2)
                         .invisibleHandler(invisibleEventHandler2)
@@ -788,6 +791,7 @@ public class VisibilityEventsTest {
                         .heightPx(5))
                 .child(
                     Wrapper.create(mContext)
+                        .key("child3")
                         .delegate(content3)
                         .visibleHandler(visibleEventHandler3)
                         .invisibleHandler(invisibleEventHandler3)
@@ -798,10 +802,10 @@ public class VisibilityEventsTest {
             15,
             15);
 
-    LongSparseArray<VisibilityItem> visibilityItemLongSparseArray =
+    Map<String, VisibilityItem> visibilityItemMap =
         lithoView.getMountState().getVisibilityIdToItemMap();
-    for (int i = 0; i < visibilityItemLongSparseArray.size(); i++) {
-      VisibilityItem item = visibilityItemLongSparseArray.valueAt(i);
+    for (String key : visibilityItemMap.keySet()) {
+      VisibilityItem item = visibilityItemMap.get(key);
       assertThat(item.wasFullyVisible()).isTrue();
     }
 
@@ -825,10 +829,10 @@ public class VisibilityEventsTest {
     assertThat(content2.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler2);
     assertThat(content3.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler3);
 
-    visibilityItemLongSparseArray = lithoView.getMountState().getVisibilityIdToItemMap();
-    assertThat(visibilityItemLongSparseArray.size()).isEqualTo(3);
-    for (int i = 0; i < visibilityItemLongSparseArray.size(); i++) {
-      VisibilityItem item = visibilityItemLongSparseArray.valueAt(i);
+    visibilityItemMap = lithoView.getMountState().getVisibilityIdToItemMap();
+    assertThat(visibilityItemMap.size()).isEqualTo(3);
+    for (String key : visibilityItemMap.keySet()) {
+      VisibilityItem item = visibilityItemMap.get(key);
       assertThat(item.wasFullyVisible()).isTrue();
     }
 
@@ -845,12 +849,24 @@ public class VisibilityEventsTest {
     assertThat(content2.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler2);
     assertThat(content3.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler3);
 
-    visibilityItemLongSparseArray = lithoView.getMountState().getVisibilityIdToItemMap();
-    assertThat(visibilityItemLongSparseArray.size()).isEqualTo(3);
+    visibilityItemMap = lithoView.getMountState().getVisibilityIdToItemMap();
+    assertThat(visibilityItemMap.size()).isEqualTo(3);
 
-    assertThat(visibilityItemLongSparseArray.valueAt(0).wasFullyVisible()).isFalse();
-    assertThat(visibilityItemLongSparseArray.valueAt(1).wasFullyVisible()).isTrue();
-    assertThat(visibilityItemLongSparseArray.valueAt(2).wasFullyVisible()).isFalse();
+    assertThat(
+            visibilityItemMap
+                .get(ComponentKeyUtils.getKeyWithSeparator("root", "child1", "tc1"))
+                .wasFullyVisible())
+        .isFalse();
+    assertThat(
+            visibilityItemMap
+                .get(ComponentKeyUtils.getKeyWithSeparator("root", "child2", "tc2"))
+                .wasFullyVisible())
+        .isTrue();
+    assertThat(
+            visibilityItemMap
+                .get(ComponentKeyUtils.getKeyWithSeparator("root", "child3", "tc3"))
+                .wasFullyVisible())
+        .isFalse();
 
     content1.getDispatchedEventHandlers().clear();
     content2.getDispatchedEventHandlers().clear();
@@ -865,8 +881,8 @@ public class VisibilityEventsTest {
     assertThat(content2.getDispatchedEventHandlers()).contains(invisibleEventHandler2);
     assertThat(content3.getDispatchedEventHandlers()).contains(invisibleEventHandler3);
 
-    visibilityItemLongSparseArray = lithoView.getMountState().getVisibilityIdToItemMap();
-    assertThat(visibilityItemLongSparseArray.size()).isEqualTo(0);
+    visibilityItemMap = lithoView.getMountState().getVisibilityIdToItemMap();
+    assertThat(visibilityItemMap.size()).isEqualTo(0);
 
     content1.getDispatchedEventHandlers().clear();
     content2.getDispatchedEventHandlers().clear();
@@ -894,11 +910,23 @@ public class VisibilityEventsTest {
     assertThat(content2.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler2);
     assertThat(content3.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler3);
 
-    visibilityItemLongSparseArray = lithoView.getMountState().getVisibilityIdToItemMap();
-    assertThat(visibilityItemLongSparseArray.size()).isEqualTo(3);
-    assertThat(visibilityItemLongSparseArray.valueAt(0).wasFullyVisible()).isFalse();
-    assertThat(visibilityItemLongSparseArray.valueAt(1).wasFullyVisible()).isTrue();
-    assertThat(visibilityItemLongSparseArray.valueAt(2).wasFullyVisible()).isFalse();
+    visibilityItemMap = lithoView.getMountState().getVisibilityIdToItemMap();
+    assertThat(visibilityItemMap.size()).isEqualTo(3);
+    assertThat(
+            visibilityItemMap
+                .get(ComponentKeyUtils.getKeyWithSeparator("root", "child1", "tc1"))
+                .wasFullyVisible())
+        .isFalse();
+    assertThat(
+            visibilityItemMap
+                .get(ComponentKeyUtils.getKeyWithSeparator("root", "child2", "tc2"))
+                .wasFullyVisible())
+        .isTrue();
+    assertThat(
+            visibilityItemMap
+                .get(ComponentKeyUtils.getKeyWithSeparator("root", "child3", "tc3"))
+                .wasFullyVisible())
+        .isFalse();
 
     content1.getDispatchedEventHandlers().clear();
     content2.getDispatchedEventHandlers().clear();
@@ -913,18 +941,30 @@ public class VisibilityEventsTest {
     assertThat(content2.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler2);
     assertThat(content3.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler3);
 
-    visibilityItemLongSparseArray = lithoView.getMountState().getVisibilityIdToItemMap();
-    assertThat(visibilityItemLongSparseArray.size()).isEqualTo(3);
-    assertThat(visibilityItemLongSparseArray.valueAt(0).wasFullyVisible()).isTrue();
-    assertThat(visibilityItemLongSparseArray.valueAt(1).wasFullyVisible()).isTrue();
-    assertThat(visibilityItemLongSparseArray.valueAt(2).wasFullyVisible()).isTrue();
+    visibilityItemMap = lithoView.getMountState().getVisibilityIdToItemMap();
+    assertThat(visibilityItemMap.size()).isEqualTo(3);
+    assertThat(
+            visibilityItemMap
+                .get(ComponentKeyUtils.getKeyWithSeparator("root", "child1", "tc1"))
+                .wasFullyVisible())
+        .isTrue();
+    assertThat(
+            visibilityItemMap
+                .get(ComponentKeyUtils.getKeyWithSeparator("root", "child2", "tc2"))
+                .wasFullyVisible())
+        .isTrue();
+    assertThat(
+            visibilityItemMap
+                .get(ComponentKeyUtils.getKeyWithSeparator("root", "child3", "tc3"))
+                .wasFullyVisible())
+        .isTrue();
   }
 
   @Test
   public void testDispatchFocusedHandler() {
-    final TestComponent content1 = create(mContext).build();
-    final TestComponent content2 = create(mContext).build();
-    final TestComponent content3 = create(mContext).build();
+    final TestComponent content1 = create(mContext).key("tc1").build();
+    final TestComponent content2 = create(mContext).key("tc2").build();
+    final TestComponent content3 = create(mContext).key("tc3").build();
 
     final EventHandler<FocusedVisibleEvent> focusedEventHandler1 = new EventHandler<>(content1, 1);
     final EventHandler<FocusedVisibleEvent> focusedEventHandler2 = new EventHandler<>(content2, 2);
@@ -942,8 +982,10 @@ public class VisibilityEventsTest {
             mContext,
             mLithoView,
             Column.create(mContext)
+                .key("root")
                 .child(
                     Wrapper.create(mContext)
+                        .key("child1")
                         .delegate(content1)
                         .focusedHandler(focusedEventHandler1)
                         .unfocusedHandler(unfocusedEventHandler1)
@@ -951,6 +993,7 @@ public class VisibilityEventsTest {
                         .heightPx(5))
                 .child(
                     Wrapper.create(mContext)
+                        .key("child2")
                         .delegate(content2)
                         .focusedHandler(focusedEventHandler2)
                         .unfocusedHandler(unfocusedEventHandler2)
@@ -958,6 +1001,7 @@ public class VisibilityEventsTest {
                         .heightPx(5))
                 .child(
                     Wrapper.create(mContext)
+                        .key("child3")
                         .delegate(content3)
                         .focusedHandler(focusedEventHandler3)
                         .unfocusedHandler(unfocusedEventHandler3)
@@ -968,10 +1012,10 @@ public class VisibilityEventsTest {
             10,
             15);
 
-    LongSparseArray<VisibilityItem> visibilityItemLongSparseArray =
+    Map<String, VisibilityItem> visibilityItemLongSparseArray =
         lithoView.getMountState().getVisibilityIdToItemMap();
-    for (int i = 0; i < visibilityItemLongSparseArray.size(); i++) {
-      VisibilityItem item = visibilityItemLongSparseArray.valueAt(i);
+    for (String key : visibilityItemLongSparseArray.keySet()) {
+      VisibilityItem item = visibilityItemLongSparseArray.get(key);
       assertThat(item.wasFullyVisible());
     }
 

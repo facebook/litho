@@ -16,10 +16,6 @@
 
 package com.facebook.litho;
 
-import static com.facebook.litho.LayoutStateOutputIdCalculator.calculateVisibilityOutputId;
-import static com.facebook.litho.LayoutStateOutputIdCalculator.getLevelFromId;
-import static com.facebook.litho.LayoutStateOutputIdCalculator.getSequenceFromId;
-import static java.lang.Long.toBinaryString;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import android.graphics.Rect;
@@ -32,10 +28,6 @@ import org.junit.runner.RunWith;
 public class VisibilityOutputTest {
 
   private static final int LIFECYCLE_TEST_ID = 1;
-  private static final int LEVEL_TEST = 1;
-  private static final int SEQ_TEST = 1;
-  private static final int MAX_LEVEL_TEST = 255;
-  private static final int MAX_SEQ_TEST = 65535;
 
   private Component mComponent;
   private VisibilityOutput mVisibilityOutput;
@@ -49,6 +41,11 @@ public class VisibilityOutputTest {
           @Override
           int getTypeId() {
             return LIFECYCLE_TEST_ID;
+          }
+
+          @Override
+          String getGlobalKey() {
+            return "testKey";
           }
         };
   }
@@ -93,55 +90,8 @@ public class VisibilityOutputTest {
   }
 
   @Test
-  public void testStableIdCalculation() {
+  public void testId() {
     mVisibilityOutput.setComponent(mComponent);
-
-    long stableId = calculateVisibilityOutputId(mVisibilityOutput, LEVEL_TEST, SEQ_TEST);
-
-    long stableIdSeq2 =
-        calculateVisibilityOutputId(mVisibilityOutput, LEVEL_TEST + 1, SEQ_TEST + 1);
-
-    assertThat(toBinaryString(stableId)).isEqualTo("1000000010000000000000000001");
-    assertThat(toBinaryString(stableIdSeq2)).isEqualTo("1000000100000000000000000010");
-  }
-
-  @Test
-  public void testGetIdLevel() {
-    mVisibilityOutput.setComponent(mComponent);
-    mVisibilityOutput.setId(calculateVisibilityOutputId(mVisibilityOutput, LEVEL_TEST, SEQ_TEST));
-    assertThat(LEVEL_TEST).isEqualTo(getLevelFromId(mVisibilityOutput.getId()));
-
-    mVisibilityOutput.setId(
-        calculateVisibilityOutputId(mVisibilityOutput, MAX_LEVEL_TEST, SEQ_TEST));
-
-    assertThat(MAX_LEVEL_TEST).isEqualTo(getLevelFromId(mVisibilityOutput.getId()));
-  }
-
-  @Test
-  public void testGetIdSequence() {
-    mVisibilityOutput.setComponent(mComponent);
-    mVisibilityOutput.setId(calculateVisibilityOutputId(mVisibilityOutput, LEVEL_TEST, SEQ_TEST));
-    assertThat(SEQ_TEST).isEqualTo(getSequenceFromId(mVisibilityOutput.getId()));
-
-    mVisibilityOutput.setId(
-        calculateVisibilityOutputId(mVisibilityOutput, LEVEL_TEST, MAX_SEQ_TEST));
-
-    assertThat(MAX_SEQ_TEST).isEqualTo(getSequenceFromId(mVisibilityOutput.getId()));
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void levelOutOfRangeTest() {
-    mVisibilityOutput.setComponent(mComponent);
-    mVisibilityOutput.setId(
-        LayoutStateOutputIdCalculator.calculateVisibilityOutputId(
-            mVisibilityOutput, MAX_LEVEL_TEST + 1, SEQ_TEST));
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void sequenceOutOfRangeTest() {
-    mVisibilityOutput.setComponent(mComponent);
-    mVisibilityOutput.setId(
-        LayoutStateOutputIdCalculator.calculateVisibilityOutputId(
-            mVisibilityOutput, LEVEL_TEST, MAX_SEQ_TEST + 1));
+    assertThat(mVisibilityOutput.getId()).isEqualTo(mComponent.getGlobalKey());
   }
 }
