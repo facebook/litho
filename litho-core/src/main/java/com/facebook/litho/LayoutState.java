@@ -90,6 +90,8 @@ import javax.annotation.CheckReturnValue;
 class LayoutState {
 
   private static final String DUPLICATE_TRANSITION_IDS = "LayoutState:DuplicateTransitionIds";
+  private static final String DUPLICATE_MANUAL_KEY = "LayoutState:DuplicateManualKey";
+  private static final String NULL_PARENT_KEY = "LayoutState:NullParentKey";
 
   @IntDef({
     CalculateLayoutSource.TEST,
@@ -209,6 +211,12 @@ class LayoutState {
   private final Map<String, Rect> mComponentKeyToBounds = new HashMap<>();
   private final Map<Handle, Rect> mComponentHandleToBounds = new HashMap<>();
   @Nullable private List<Component> mComponents;
+
+  /**
+   * Holds onto how many clashed global keys exist in the tree. Used for automatically generating
+   * unique global keys for all sibling components of the same type.
+   */
+  private @Nullable Map<String, Integer> mGlobalKeysCounter;
 
   private final ComponentContext mContext;
 
@@ -1983,6 +1991,89 @@ class LayoutState {
     return root;
   }
 
+  /**
+   * Generate a global key for the given components that is unique among all of the components in
+   * the layout.
+   */
+  static String generateGlobalKey(ComponentContext parentContext, Component component) {
+    final LayoutState layoutState = parentContext.getLayoutState();
+    if (layoutState == null) {
+      throw new IllegalStateException(
+          component.getSimpleName()
+              + ": Trying to generate global key of component outside of a LayoutState calculation.");
+    }
+
+    final Component parentScope = parentContext.getComponentScope();
+    final String globalKey;
+
+    if (parentScope == null) {
+      globalKey = component.getKey();
+    } else {
+      if (parentScope.getGlobalKey() == null) {
+        ComponentsReporter.emitMessage(
+            ComponentsReporter.LogLevel.ERROR,
+            NULL_PARENT_KEY,
+            "Trying to generate parent-based key for component "
+                + component.getSimpleName()
+                + " , but parent "
+                + parentScope.getSimpleName()
+                + " has a null global key \"."
+                + " This is most likely a configuration mistake,"
+                + " check the value of ComponentsConfiguration.useGlobalKeys.");
+      }
+      globalKey =
+          generateUniqueGlobalKeyForChild(layoutState, parentScope.getGlobalKey(), component);
+    }
+
+    return globalKey;
+  }
+
+  /**
+   * Generate a global key for the given components that is unique among all of the components in
+   * the layout.
+   *
+   * @param layoutState the LayoutState currently operating
+   * @param parentGlobalKey the global key of the parent component
+   * @param component the child component for which the unique global key will be generated
+   * @return a unique global key for given component
+   */
+  private static String generateUniqueGlobalKeyForChild(
+      LayoutState layoutState, @Nullable String parentGlobalKey, Component component) {
+
+    if (parentGlobalKey == null) {
+      parentGlobalKey = "null";
+    }
+
+    final String childKey =
+        ComponentKeyUtils.getKeyWithSeparator(parentGlobalKey, component.getKey());
+    final int childCount = layoutState.getGlobalKeyCountAndIncrement(childKey);
+
+    if (component.hasManualKey()) {
+      final String manualKey =
+          ComponentKeyUtils.getKeyWithSeparator(parentGlobalKey, component.getKey(), true);
+      if (layoutState.hasGlobalKey(manualKey)) {
+        ComponentsReporter.emitMessage(
+            ComponentsReporter.LogLevel.WARNING,
+            DUPLICATE_MANUAL_KEY,
+            "The manual key "
+                + component.getKey()
+                + " you are setting on this "
+                + component.getSimpleName()
+                + " is a duplicate and will be changed into a unique one. "
+                + "This will result in unexpected behavior if you don't change it.");
+      } else {
+        layoutState.getGlobalKeyCountAndIncrement(manualKey);
+        return manualKey;
+      }
+    }
+
+    if (childCount == 0) {
+      return childKey;
+    } else {
+      return ComponentKeyUtils.getKeyForChildPosition(childKey, childCount);
+    }
+  }
+
   private static InternalNode resumeCreateAndMeasureTreeForComponent(
       ComponentContext c,
       Component component,
@@ -2443,6 +2534,27 @@ class LayoutState {
   @Nullable
   TransitionId getRootTransitionId() {
     return mRootTransitionId;
+  }
+
+  private int getGlobalKeyCountAndIncrement(String key) {
+    if (mGlobalKeysCounter == null) {
+      mGlobalKeysCounter = new HashMap<>();
+    }
+
+    Integer count = mGlobalKeysCounter.get(key);
+    if (count == null) {
+      count = 0;
+    }
+
+    mGlobalKeysCounter.put(key, count + 1);
+    return count;
+  }
+
+  private boolean hasGlobalKey(String key) {
+    if (mGlobalKeysCounter == null) {
+      return false;
+    }
+    return mGlobalKeysCounter.containsKey(key);
   }
 
   /** Debug-only: return a string representation of this LayoutState and its LayoutOutputs. */

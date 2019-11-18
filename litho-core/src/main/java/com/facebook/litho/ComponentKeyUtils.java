@@ -18,6 +18,8 @@ package com.facebook.litho;
 
 public class ComponentKeyUtils {
 
+  private static final String PREFIX_MANUAL_KEY = "m_";
+
   /**
    * @param keyParts a list of objects that will be concatenated to form another component's key
    * @return a key formed by concatenating the key parts delimited by a separator.
@@ -33,10 +35,19 @@ public class ComponentKeyUtils {
   }
 
   public static String getKeyWithSeparator(String parentGlobalKey, String key) {
+    return getKeyWithSeparator(parentGlobalKey, key, false);
+  }
+
+  public static String getKeyWithSeparator(String parentGlobalKey, String key, boolean manualKey) {
     int parentLength = parentGlobalKey.length();
     int keyLength = key.length();
-    final StringBuilder sb = new StringBuilder(parentLength + keyLength + 1);
-    sb.append(parentGlobalKey).append(',').append(key);
+    int prefixLength = manualKey ? PREFIX_MANUAL_KEY.length() : 0;
+    final StringBuilder sb = new StringBuilder(parentLength + keyLength + prefixLength + 1);
+    sb.append(parentGlobalKey).append(',');
+    if (manualKey) {
+      sb.append(PREFIX_MANUAL_KEY);
+    }
+    sb.append(key);
 
     return sb.toString();
   }

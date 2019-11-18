@@ -533,7 +533,12 @@ public abstract class Component extends ComponentLifecycle
   protected void updateInternalChildState(ComponentContext parentContext) {
     if (ComponentsConfiguration.isDebugModeEnabled || ComponentsConfiguration.useGlobalKeys) {
       if (getGlobalKey() == null) {
-        String globalKey = generateKey(parentContext);
+        final String globalKey;
+        if (ComponentsConfiguration.useNewGenerateMechanismForGlobalKeys) {
+          globalKey = LayoutState.generateGlobalKey(parentContext, this);
+        } else {
+          globalKey = generateKey(parentContext);
+        }
         setGlobalKey(globalKey);
       }
     }
