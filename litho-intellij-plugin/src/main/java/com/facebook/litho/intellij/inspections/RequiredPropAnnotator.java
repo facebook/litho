@@ -51,7 +51,7 @@ import java.util.function.Function;
 import org.jetbrains.annotations.Nullable;
 
 public final class RequiredPropAnnotator implements Annotator {
-  private static final EventLogger LOGGER = new DebounceEventLogger(4_000);
+  private static final EventLogger LOGGER = new DebounceEventLogger(7 * 60_000);
   private final Function<PsiMethodCallExpression, PsiClass> generatedClassResolver;
 
   public RequiredPropAnnotator() {
