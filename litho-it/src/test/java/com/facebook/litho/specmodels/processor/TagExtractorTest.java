@@ -20,9 +20,11 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.specmodels.internal.ImmutableList;
+import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.TagModel;
 import com.google.testing.compile.CompilationRule;
 import com.squareup.javapoet.ClassName;
+import java.util.EnumSet;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import org.junit.Before;
@@ -37,6 +39,7 @@ public class TagExtractorTest {
 
   @Rule public CompilationRule mCompilationRule = new CompilationRule();
   private ImmutableList<TagModel> mTagModels;
+  private ImmutableList<TagModel> mTagModelsInAbiMode;
 
   interface EmptyInterface {}
 
@@ -54,23 +57,41 @@ public class TagExtractorTest {
   }
 
   @Before
-  public void setUp() throws Exception {
+  public void setUp() {
     Elements elements = mCompilationRule.getElements();
     Types types = mCompilationRule.getTypes();
 
     mTagModels =
         TagExtractor.extractTagsFromSpecClass(
-            types, elements.getTypeElement(TestClass.class.getCanonicalName()));
+            types, elements.getTypeElement(TestClass.class.getCanonicalName()), RunMode.normal());
+
+    mTagModelsInAbiMode =
+        TagExtractor.extractTagsFromSpecClass(
+            types,
+            elements.getTypeElement(TestClass.class.getCanonicalName()),
+            EnumSet.of(RunMode.ABI));
   }
 
   @Test
   public void testExtractsAllTags() {
     assertThat(mTagModels).hasSize(3);
+    assertThat(mTagModelsInAbiMode).hasSize(3);
   }
 
   @Test
   public void testValidExtraction() {
     TagModel emptyInterface = mTagModels.get(0);
+    assertThat(emptyInterface.name)
+        .isEqualTo(
+            ClassName.bestGuess(
+                "com.facebook.litho.specmodels.processor.TagExtractorTest.EmptyInterface"));
+    assertThat(emptyInterface.hasMethods).isFalse();
+    assertThat(emptyInterface.hasSupertype).isFalse();
+  }
+
+  @Test
+  public void testValidExtractionInAbiMode() {
+    TagModel emptyInterface = mTagModelsInAbiMode.get(0);
     assertThat(emptyInterface.name)
         .isEqualTo(
             ClassName.bestGuess(
@@ -90,6 +111,16 @@ public class TagExtractorTest {
   }
 
   @Test
+  public void testNonEmptyTagInAbiMode() {
+    TagModel nonEmptyInterface = mTagModelsInAbiMode.get(1);
+    assertThat(nonEmptyInterface.name)
+        .isEqualTo(
+            ClassName.bestGuess(
+                "com.facebook.litho.specmodels.processor.TagExtractorTest.NonEmptyInterface"));
+    assertThat(nonEmptyInterface.hasMethods).isFalse();
+  }
+
+  @Test
   public void testTagWithExtend() {
     TagModel extendedInterface = mTagModels.get(2);
     assertThat(extendedInterface.name)
@@ -97,5 +128,15 @@ public class TagExtractorTest {
             ClassName.bestGuess(
                 "com.facebook.litho.specmodels.processor.TagExtractorTest.ExtendedInterface"));
     assertThat(extendedInterface.hasSupertype).isTrue();
+  }
+
+  @Test
+  public void testTagWithExtendInAbiMode() {
+    TagModel extendedInterface = mTagModelsInAbiMode.get(2);
+    assertThat(extendedInterface.name)
+        .isEqualTo(
+            ClassName.bestGuess(
+                "com.facebook.litho.specmodels.processor.TagExtractorTest.ExtendedInterface"));
+    assertThat(extendedInterface.hasSupertype).isFalse();
   }
 }

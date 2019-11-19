@@ -149,7 +149,7 @@ public class GroupSectionSpecModelFactory implements SpecModelFactory<GroupSecti
             elements, element, GroupSectionSpec.class, runMode),
         AnnotationExtractor.extractValidAnnotations(element),
         ImmutableList.of(BuilderMethodModel.KEY_BUILDER_METHOD, LOADING_EVENT_BUILDER_METHOD),
-        TagExtractor.extractTagsFromSpecClass(types, element),
+        TagExtractor.extractTagsFromSpecClass(types, element, runMode),
         JavadocExtractor.getClassJavadoc(elements, element),
         JavadocExtractor.getPropJavadocs(elements, element),
         element.getAnnotation(GroupSectionSpec.class).isPublic(),

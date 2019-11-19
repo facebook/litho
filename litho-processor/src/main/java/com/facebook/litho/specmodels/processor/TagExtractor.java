@@ -17,9 +17,11 @@
 package com.facebook.litho.specmodels.processor;
 
 import com.facebook.litho.specmodels.internal.ImmutableList;
+import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.TagModel;
 import com.squareup.javapoet.ClassName;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.lang.model.element.Element;
@@ -36,7 +38,8 @@ public final class TagExtractor {
 
   private TagExtractor() {}
 
-  public static ImmutableList<TagModel> extractTagsFromSpecClass(Types types, TypeElement element) {
+  public static ImmutableList<TagModel> extractTagsFromSpecClass(
+      Types types, TypeElement element, EnumSet<RunMode> runMode) {
     final List<? extends TypeMirror> interfaces = element.getInterfaces();
 
     final List<TagModel> tags;
@@ -44,7 +47,7 @@ public final class TagExtractor {
       tags =
           interfaces.stream()
               .map(t -> ((DeclaredType) t).asElement())
-              .map(t -> newTagModel(t, types))
+              .map(t -> newTagModel(t, types, runMode))
               .collect(Collectors.toList());
     } else {
       tags = Collections.emptyList();
@@ -53,12 +56,13 @@ public final class TagExtractor {
     return ImmutableList.copyOf(tags);
   }
 
-  private static TagModel newTagModel(Element typeElement, Types types) {
+  private static TagModel newTagModel(Element typeElement, Types types, EnumSet<RunMode> runMode) {
     return new TagModel(
         ClassName.bestGuess(typeElement.toString()),
-        types.directSupertypes(typeElement.asType()).size()
-            > 1, // java.lang.Object is always a supertype
-        !typeElement.getEnclosedElements().isEmpty(),
+        !runMode.contains(RunMode.ABI)
+            && types.directSupertypes(typeElement.asType()).size()
+                > 1, // java.lang.Object is always a supertype
+        !runMode.contains(RunMode.ABI) && !typeElement.getEnclosedElements().isEmpty(),
         typeElement);
   }
 }

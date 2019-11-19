@@ -129,7 +129,7 @@ public class LayoutSpecModelFactory implements SpecModelFactory<LayoutSpecModel>
         EventDeclarationsExtractor.getEventDeclarations(
             elements, element, LayoutSpec.class, runMode),
         AnnotationExtractor.extractValidAnnotations(element),
-        TagExtractor.extractTagsFromSpecClass(types, element),
+        TagExtractor.extractTagsFromSpecClass(types, element, runMode),
         JavadocExtractor.getClassJavadoc(elements, element),
         JavadocExtractor.getPropJavadocs(elements, element),
         element.getAnnotation(LayoutSpec.class).isPublic(),

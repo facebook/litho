@@ -149,7 +149,7 @@ public class DiffSectionSpecModelFactory implements SpecModelFactory<DiffSection
         EventDeclarationsExtractor.getEventDeclarations(
             elements, element, DiffSectionSpec.class, runMode),
         ImmutableList.of(BuilderMethodModel.KEY_BUILDER_METHOD, LOADING_EVENT_BUILDER_METHOD),
-        TagExtractor.extractTagsFromSpecClass(types, element),
+        TagExtractor.extractTagsFromSpecClass(types, element, runMode),
         JavadocExtractor.getClassJavadoc(elements, element),
         JavadocExtractor.getPropJavadocs(elements, element),
         element.getAnnotation(DiffSectionSpec.class).isPublic(),
