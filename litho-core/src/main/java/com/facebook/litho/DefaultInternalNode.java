@@ -1840,31 +1840,24 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
    * Optionally replace the head component with a new component. The head component is the root
    * component in the Component hierarchy representing this InternalNode.
    *
-   * @param c The ComponentContext to update with.
    * @param head The root component of this InternalNode's Component hierarchy.
    * @return List of updated shallow copied components of this InternalNode.
    */
-  private List<Component> getUpdatedComponents(ComponentContext c, @Nullable Component head) {
+  private List<Component> getUpdatedComponents(Component head) {
     int size = mComponents.size();
     List<Component> updated = new ArrayList<>(size);
-    ComponentContext context;
 
-    // 1. If head component is null manually update it.
-    if (head == null) {
-      head = mComponents.get(size - 1).makeUpdatedShallowCopy(c);
-      context = head.getScopedContext();
-    } else {
-      context = c;
-    }
-
-    // 2. Add the updated head component to the list.
+    // 1. Add the updated head component to the list.
     updated.add(head);
+
+    // 2. Set parent context for descendants.
+    ComponentContext parentContext = head.getScopedContext();
 
     // 3. Shallow copy and update all components, except the head component.
     for (int i = size - 2; i >= 0; i--) {
-      Component component = mComponents.get(i).makeUpdatedShallowCopy(context);
+      Component component = mComponents.get(i).makeUpdatedShallowCopy(parentContext);
       updated.add(component);
-      context = component.getScopedContext(); // set parent context for descendant
+      parentContext = component.getScopedContext(); // set parent context for descendant
     }
 
     // 4. Reverse the list so that the root component is at index 0.
@@ -1896,17 +1889,17 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   }
 
   /**
-   * Internal method to reconcile the {@param current} InternalNode with a newComponentContext,
-   * updated head component and a {@link ReconciliationMode}.
+   * Internal method to <b>try</b> and reconcile the {@param current} InternalNode with a new {@link
+   * ComponentContext} and an updated head {@link Component}.
    *
-   * @param c The ComponentContext.
+   * @param parentContext The ComponentContext.
    * @param current The current InternalNode which should be updated.
    * @param next The updated component to be used to reconcile this InternalNode.
    * @param keys The keys of mutated components.
    * @return A new updated InternalNode.
    */
   private static InternalNode reconcile(
-      final ComponentContext c,
+      final ComponentContext parentContext,
       final DefaultInternalNode current,
       final Component next,
       final Set<String> keys) {
@@ -1918,14 +1911,14 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
         if (ComponentsConfiguration.shouldUseDeepCloneDuringReconciliation) {
           layout = current.deepClone();
         } else {
-          layout = reconcile(c, current, next, keys, ReconciliationMode.COPY);
+          layout = reconcile(current, next, keys, ReconciliationMode.COPY);
         }
         break;
       case ReconciliationMode.RECONCILE:
-        layout = reconcile(c, current, next, keys, ReconciliationMode.RECONCILE);
+        layout = reconcile(current, next, keys, ReconciliationMode.RECONCILE);
         break;
       case ReconciliationMode.RECREATE:
-        layout = LayoutState.createLayout(next.getScopedContext(), next, false);
+        layout = LayoutState.createLayout(parentContext, next, false);
         break;
       default:
         throw new IllegalArgumentException(mode + " is not a valid ReconciliationMode");
@@ -1935,10 +1928,9 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   }
 
   /**
-   * Internal method to reconcile the {@param current} InternalNode with a newComponentContext,
-   * updated head component and a {@link ReconciliationMode}.
+   * Internal method to reconcile the {@param current} InternalNode with a new {@link
+   * ComponentContext} and an updated head {@link Component} and a {@link ReconciliationMode}.
    *
-   * @param c The ComponentContext.
    * @param current The current InternalNode which should be updated.
    * @param next The updated component to be used to reconcile this InternalNode.
    * @param keys The keys of mutated components.
@@ -1946,7 +1938,6 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
    * @return A new updated InternalNode.
    */
   private static InternalNode reconcile(
-      final ComponentContext c,
       final DefaultInternalNode current,
       final Component next,
       final Set<String> keys,
@@ -1972,7 +1963,7 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
     }
 
     // 2. Shallow copy this layout.
-    final DefaultInternalNode layout = getCleanUpdatedShallowCopy(c, current, next, copiedNode);
+    final DefaultInternalNode layout = getCleanUpdatedShallowCopy(current, next, copiedNode);
     ComponentContext parentContext = layout.getTailComponent().getScopedContext();
 
     // 3. Clear the nested tree
@@ -1995,9 +1986,9 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
       // 4.3 Reconcile child layout.
       final InternalNode copy;
       if (mode == ReconciliationMode.COPY) {
-        copy = reconcile(updated.getScopedContext(), child, updated, keys, ReconciliationMode.COPY);
+        copy = reconcile(child, updated, keys, ReconciliationMode.COPY);
       } else {
-        copy = reconcile(updated.getScopedContext(), child, updated, keys);
+        copy = reconcile(parentContext, child, updated, keys);
       }
 
       // 4.3 Add the child to the cloned yoga node
@@ -2017,10 +2008,7 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
    * InternalNode.
    */
   private static DefaultInternalNode getCleanUpdatedShallowCopy(
-      final ComponentContext c,
-      final DefaultInternalNode current,
-      final Component head,
-      final YogaNode node) {
+      final DefaultInternalNode current, final Component head, final YogaNode node) {
 
     final boolean isTracing = ComponentsSystrace.isTracing();
 
@@ -2045,10 +2033,10 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
     }
 
     // 3. Get updated components
-    List<Component> updated = current.getUpdatedComponents(c, head);
+    List<Component> updated = current.getUpdatedComponents(head);
 
-    // 4. Update the layout with the new context and copied YogaNode.
-    layout.updateWith(c, node, updated, null);
+    // 4. Update the layout with the updated context, components, and YogaNode.
+    layout.updateWith(head.getScopedContext(), node, updated, null);
 
     if (isTracing) {
       ComponentsSystrace.endSection();

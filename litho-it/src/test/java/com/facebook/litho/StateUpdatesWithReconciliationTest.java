@@ -28,6 +28,7 @@ import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.helper.ComponentTestHelper;
 import com.facebook.litho.testing.logging.TestComponentsLogger;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.widget.SameManualKeyRootComponentSpec;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -43,7 +44,7 @@ public class StateUpdatesWithReconciliationTest {
 
   private ShadowLooper mLayoutThreadShadowLooper;
   private ComponentContext mContext;
-  private DummyComponent mRootComponent;
+  private Component mRootComponent;
   private ComponentTree mComponentTree;
   private ComponentsLogger mComponentsLogger;
   private LithoView mLithoView;
@@ -52,6 +53,10 @@ public class StateUpdatesWithReconciliationTest {
 
   @Before
   public void before() {
+    before(null);
+  }
+
+  public void before(Component component) {
     ComponentsConfiguration.isEndToEndTestRun = true;
 
     NodeConfig.sInternalNodeFactory =
@@ -66,7 +71,7 @@ public class StateUpdatesWithReconciliationTest {
     mLayoutThreadShadowLooper =
         Shadows.shadowOf(
             (Looper) Whitebox.invokeMethod(ComponentTree.class, "getDefaultLayoutThreadLooper"));
-    mRootComponent = new DummyComponent();
+    mRootComponent = component != null ? component : new DummyComponent();
     mLithoView = new LithoView(mContext);
     mComponentTree =
         spy(ComponentTree.create(mContext, mRootComponent).isReconciliationEnabled(true).build());
@@ -164,6 +169,21 @@ public class StateUpdatesWithReconciliationTest {
         current.getRootComponent().getGlobalKey(), createStateUpdate(), "test");
 
     verify(layout, times(1)).reconcile(any(), any());
+  }
+
+  @Test
+  public void testStateUpdateWithComponentsWhichHaveSameManualKey() {
+    after();
+    ComponentsConfiguration.useNewCreateLayoutImplementation = true;
+
+    // Set custom root component
+    before(SameManualKeyRootComponentSpec.create(mContext));
+
+    mComponentTree.updateStateAsync(
+        SameManualKeyRootComponentSpec.getGlobalKeyForStateUpdate(), createStateUpdate(), "test");
+    mLayoutThreadShadowLooper.runToEndOfTasks();
+
+    ComponentsConfiguration.useNewCreateLayoutImplementation = false;
   }
 
   static class DummyComponent extends Component {
