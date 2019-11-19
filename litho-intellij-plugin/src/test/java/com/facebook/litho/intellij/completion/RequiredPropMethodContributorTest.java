@@ -43,30 +43,12 @@ public class RequiredPropMethodContributorTest extends LithoPluginIntellijTest {
   @Test
   public void renderElement() {
     LookupElementPresentation testPresentation = new TestLookupElementPresentation();
-    LookupElement mockedDelegate = mock(LookupElement.class);
 
     // Excluding input parameters influence on the render result
-    RequiredPropLookupElement.create(mockedDelegate).renderElement(testPresentation);
+    RequiredPropLookupElement.create(mock(LookupElement.class), true)
+        .renderElement(testPresentation);
 
-    assertEquals(" required Prop", testPresentation.getTailText());
-    assertTrue(testPresentation.isItemTextUnderlined());
-  }
-
-  @Test
-  public void isRequiredPropSetter() {
-    testHelper.getPsiClass(
-        psiClasses -> {
-          PsiClass cls = psiClasses.get(0);
-
-          assertTrue(
-              RequiredPropMethodContributor.RequiredPropMethodProvider.isRequiredPropSetter(
-                  cls.getMethods()[0]));
-          assertFalse(
-              RequiredPropMethodContributor.RequiredPropMethodProvider.isRequiredPropSetter(
-                  cls.getMethods()[1]));
-          return true;
-        },
-        "RequiredPropMethodContributorTest.java");
+    assertEquals(" - required Prop", testPresentation.getTailText());
   }
 
   @Test

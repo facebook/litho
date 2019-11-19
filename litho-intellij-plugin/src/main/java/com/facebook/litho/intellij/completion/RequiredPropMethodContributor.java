@@ -34,11 +34,16 @@ import com.intellij.psi.PsiMethod;
 import com.intellij.util.ProcessingContext;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Contributor improves available method completions: prioritizes existing required prop setters,
+ * adds new component builder completion.
+ */
 public class RequiredPropMethodContributor extends CompletionContributor {
 
   public RequiredPropMethodContributor() {
@@ -58,13 +63,22 @@ public class RequiredPropMethodContributor extends CompletionContributor {
           suggestedCompletion -> {
             LookupElement suggestedLookup = suggestedCompletion.getLookupElement();
             PsiElement suggestedElement = suggestedLookup.getPsiElement();
-            CompletionResult completion = null;
+            CompletionResult replacingCompletion = null;
 
             if (suggestedElement instanceof PsiMethod) {
               PsiMethod suggestedMethod = (PsiMethod) suggestedElement;
-              if (isRequiredPropSetter(suggestedMethod)) {
-                completion =
-                    wrap(suggestedCompletion, RequiredPropLookupElement.create(suggestedLookup));
+
+              RequiredProp requiredPropAnnotation =
+                  PsiAnnotationProxyUtils.findAnnotationInHierarchy(
+                      suggestedMethod, RequiredProp.class);
+              if (requiredPropAnnotation != null) {
+                RequiredPropLookupElement newLookupElement =
+                    RequiredPropLookupElement.create(
+                        suggestedLookup,
+                        isMainRequiredPropertySetter(
+                            suggestedMethod.getName(), requiredPropAnnotation));
+                replacingCompletion = wrap(suggestedCompletion, newLookupElement);
+
               } else if (isComponentCreateMethod(suggestedMethod)) {
                 Optional.of(suggestedMethod.getParent())
                     .map(cls -> findRequiredPropSetterNames((PsiClass) cls))
@@ -77,17 +91,22 @@ public class RequiredPropMethodContributor extends CompletionContributor {
                                 methodNames,
                                 parameters.getPosition().getPrevSibling(),
                                 parameters.getEditor().getProject()))
-                    .map(lookupElement -> wrap(suggestedCompletion, lookupElement))
+                    .map(newLookupElement -> wrap(suggestedCompletion, newLookupElement))
                     .ifPresent(result::passResult);
               }
             }
-            result.passResult(completion == null ? suggestedCompletion : completion);
+            result.passResult(
+                replacingCompletion == null ? suggestedCompletion : replacingCompletion);
           });
     }
 
-    @VisibleForTesting
-    static boolean isRequiredPropSetter(PsiMethod method) {
-      return PsiAnnotationProxyUtils.findAnnotationInHierarchy(method, RequiredProp.class) != null;
+    /**
+     * Required property setter has different variations: {@code text()} (main), {@code textRes()},
+     * {@code textAttr()}, etc.
+     */
+    private static boolean isMainRequiredPropertySetter(
+        String methodName, RequiredProp methodAnnotation) {
+      return methodName.equals(methodAnnotation.value());
     }
 
     @Nullable
@@ -118,8 +137,21 @@ public class RequiredPropMethodContributor extends CompletionContributor {
           .map(
               methods ->
                   Arrays.stream(methods)
-                      .filter(RequiredPropMethodProvider::isRequiredPropSetter)
-                      .map(PsiMethod::getName))
+                      .map(
+                          method -> {
+                            RequiredProp annotation =
+                                PsiAnnotationProxyUtils.findAnnotationInHierarchy(
+                                    method, RequiredProp.class);
+                            if (annotation == null) {
+                              return null;
+                            }
+                            String methodName = method.getName();
+                            if (!isMainRequiredPropertySetter(methodName, annotation)) {
+                              return null;
+                            }
+                            return methodName;
+                          })
+                      .filter(Objects::nonNull))
           .orElse(Stream.empty())
           .collect(Collectors.toList());
     }

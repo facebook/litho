@@ -19,16 +19,18 @@ package com.facebook.litho.intellij.completion;
 import com.facebook.litho.intellij.extensions.EventLogger;
 import com.facebook.litho.intellij.logging.LithoLoggerProvider;
 import com.intellij.codeInsight.completion.InsertionContext;
+import com.intellij.codeInsight.completion.PrioritizedLookupElement;
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementDecorator;
 import com.intellij.codeInsight.lookup.LookupElementPresentation;
 
-/**
- * Emphasizes the lookup element passed as a delegate by adding underline and "required Prop" text.
- */
+/** Emphasizes the lookup element passed as a delegate by adding "required Prop" tail text. */
 class RequiredPropLookupElement extends LookupElementDecorator<LookupElement> {
 
-  static RequiredPropLookupElement create(LookupElement delegate) {
+  static RequiredPropLookupElement create(LookupElement delegate, boolean shouldPrioritize) {
+    if (shouldPrioritize) {
+      delegate = PrioritizedLookupElement.withPriority(delegate, Integer.MAX_VALUE);
+    }
     return new RequiredPropLookupElement(delegate);
   }
 
@@ -39,8 +41,7 @@ class RequiredPropLookupElement extends LookupElementDecorator<LookupElement> {
   @Override
   public void renderElement(LookupElementPresentation presentation) {
     super.renderElement(presentation);
-    presentation.appendTailTextItalic(" required Prop", true);
-    presentation.setItemTextUnderlined(true);
+    presentation.appendTailText(" - required Prop", false);
   }
 
   @Override

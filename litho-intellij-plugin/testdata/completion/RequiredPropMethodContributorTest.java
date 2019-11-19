@@ -16,19 +16,19 @@
 
 class RequiredPropMethodContributorTest {
 
-  @com.facebook.litho.annotations.RequiredProp()
-  void requirecPropSetter() {}
-
   void second() {}
 
   static class Builder {
 
-    @com.facebook.litho.annotations.RequiredProp()
+    @com.facebook.litho.annotations.RequiredProp(value="one")
     void one() {}
 
     void two() {}
 
-    @com.facebook.litho.annotations.RequiredProp()
+    @com.facebook.litho.annotations.RequiredProp(value="three")
     void three() {}
+
+      @com.facebook.litho.annotations.RequiredProp(value="three")
+      void threeRes() {}
   }
 }
