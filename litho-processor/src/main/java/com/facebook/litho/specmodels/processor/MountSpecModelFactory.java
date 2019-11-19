@@ -145,7 +145,7 @@ public class MountSpecModelFactory implements SpecModelFactory<MountSpecModel> {
         element.getAnnotation(MountSpec.class).hasChildLithoViews(),
         element.getAnnotation(MountSpec.class).poolSize(),
         element.getAnnotation(MountSpec.class).canPreallocate(),
-        getMountType(elements, element),
+        getMountType(elements, element, runMode),
         SpecElementTypeDeterminator.determine(element),
         element,
         mMountSpecGenerator,
@@ -153,7 +153,8 @@ public class MountSpecModelFactory implements SpecModelFactory<MountSpecModel> {
         BindDynamicValuesMethodExtractor.getOnBindDynamicValuesMethods(element, messager));
   }
 
-  private static TypeName getMountType(Elements elements, TypeElement element) {
+  private static TypeName getMountType(
+      Elements elements, TypeElement element, EnumSet<RunMode> runMode) {
     TypeElement viewType = elements.getTypeElement(ClassNames.VIEW_NAME);
     TypeElement drawableType = elements.getTypeElement(ClassNames.DRAWABLE_NAME);
 
@@ -170,15 +171,41 @@ public class MountSpecModelFactory implements SpecModelFactory<MountSpecModel> {
         if (annotation.mountingType() == MountingType.DRAWABLE) {
           return ClassNames.COMPONENT_LIFECYCLE_MOUNT_TYPE_DRAWABLE;
         }
-        TypeMirror returnType = ((ExecutableElement) enclosedElement).getReturnType();
+
+        TypeMirror initialReturnType = ((ExecutableElement) enclosedElement).getReturnType();
+        if (runMode.contains(RunMode.ABI)) {
+          // We can't access the supertypes of the return type, so let's guess, and we'll verify
+          // that our guess was correct when we do a full build later.
+          if (initialReturnType.toString().contains("Drawable")) {
+            return ClassNames.COMPONENT_LIFECYCLE_MOUNT_TYPE_DRAWABLE;
+          } else {
+            return ClassNames.COMPONENT_LIFECYCLE_MOUNT_TYPE_VIEW;
+          }
+        }
+
+        TypeMirror returnType = initialReturnType;
         while (returnType.getKind() != TypeKind.NONE && returnType.getKind() != TypeKind.VOID) {
           final TypeElement returnElement = (TypeElement) ((DeclaredType) returnType).asElement();
 
           if (returnElement.equals(viewType)) {
+            if (initialReturnType.toString().contains("Drawable")) {
+              throw new ComponentsProcessingException(
+                  "Mount type cannot be correctly inferred from the name of "
+                      + element
+                      + ".  Please specify `@OnCreateMountContent(mountingType = MountingType.VIEW)`.");
+            }
+
             return ClassNames.COMPONENT_LIFECYCLE_MOUNT_TYPE_VIEW;
           } else if (returnElement.equals(drawableType)) {
+            if (!initialReturnType.toString().contains("Drawable")) {
+              throw new ComponentsProcessingException(
+                  "Mount type cannot be correctly inferred from the name of "
+                      + element
+                      + ".  Please specify `@OnCreateMountContent(mountingType = MountingType.DRAWABLE)`.");
+            }
             return ClassNames.COMPONENT_LIFECYCLE_MOUNT_TYPE_DRAWABLE;
           }
+
           try {
             returnType = returnElement.getSuperclass();
           } catch (RuntimeException e) {
