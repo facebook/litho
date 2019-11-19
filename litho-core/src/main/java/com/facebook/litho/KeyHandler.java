@@ -93,12 +93,6 @@ public class KeyHandler {
 
       final boolean hasJustBeenAdded =
           !specHierarchy.isEmpty() && specHierarchy.get(specHierarchy.size() - 1).equals(fileName);
-
-      if (hasMatch(fileName)
-          && !ComponentsReporter.getKeyCollisionStackTraceBlacklist().contains(fileName)
-          && !hasJustBeenAdded) {
-        specHierarchy.add(fileName);
-      }
     }
 
     if (specHierarchy.isEmpty()) {
@@ -125,15 +119,5 @@ public class KeyHandler {
     }
 
     return messageBuilder.toString();
-  }
-
-  private boolean hasMatch(String filename) {
-    for (String query : ComponentsReporter.getKeyCollisionStackTraceKeywords()) {
-      if (filename.contains(query)) {
-        return true;
-      }
-    }
-
-    return false;
   }
 }

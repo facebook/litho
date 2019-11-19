@@ -16,8 +16,6 @@
 
 package com.facebook.litho;
 
-import java.util.Set;
-
 /**
  * This is intended as a hook into {@code android.util.Log}, but allows you to provide your own
  * functionality. Use it as
@@ -57,21 +55,6 @@ public class ComponentsReporter {
      * @param samplingFrequency sampling frequency to override default one
      */
     void emitMessage(LogLevel level, String categoryKey, String message, int samplingFrequency);
-
-    /**
-     * When a component key collision occurs, filenames that contain keywords contained in the
-     * returned set will be added to the error stack trace.
-     */
-    Set<String> getKeyCollisionStackTraceKeywords();
-
-    /**
-     * When a component key collision occurs, filenames that match the names contained in the
-     * returned set will be added to the error stack trace even if they match keywords in the
-     * whitelist.
-     *
-     * @see #getKeyCollisionStackTraceKeywords()
-     */
-    Set<String> getKeyCollisionStackTraceBlacklist();
   }
 
   private ComponentsReporter() {}
@@ -90,14 +73,6 @@ public class ComponentsReporter {
    */
   public static void emitMessage(LogLevel level, String categoryKey, String message) {
     getInstance().emitMessage(level, categoryKey, message);
-  }
-
-  public static Set<String> getKeyCollisionStackTraceKeywords() {
-    return getInstance().getKeyCollisionStackTraceKeywords();
-  }
-
-  public static Set<String> getKeyCollisionStackTraceBlacklist() {
-    return getInstance().getKeyCollisionStackTraceBlacklist();
   }
 
   /**

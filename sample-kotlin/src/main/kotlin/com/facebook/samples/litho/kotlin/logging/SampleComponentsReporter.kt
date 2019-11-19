@@ -42,8 +42,4 @@ class SampleComponentsReporter : ComponentsReporter.Reporter {
     ) {
         emitMessage(level, categoryKey, message)
     }
-
-    override fun getKeyCollisionStackTraceKeywords() = emptySet<String>()
-
-    override fun getKeyCollisionStackTraceBlacklist() = emptySet<String>()
 }

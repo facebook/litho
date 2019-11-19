@@ -4,10 +4,9 @@
 
 _release-date_
 
-* TBA 
+* **Breaking:**: Removed unused methods `getKeyCollisionStackTraceBlacklist` `getKeyCollisionStackTraceKeywords` from the `ComponentsReporter.Reporter` interface.
 
 For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.32.0...master).
-
 
 ## Version 0.32.0
 

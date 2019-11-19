@@ -17,8 +17,6 @@
 package com.facebook.litho;
 
 import android.util.Log;
-import java.util.Collections;
-import java.util.Set;
 
 public class DefaultComponentsReporter implements ComponentsReporter.Reporter {
   private static final String CATEGORY_PREFIX = "Litho:";
@@ -45,15 +43,5 @@ public class DefaultComponentsReporter implements ComponentsReporter.Reporter {
         Log.e(CATEGORY_PREFIX + categoryKey, message);
         throw new RuntimeException(message);
     }
-  }
-
-  @Override
-  public Set<String> getKeyCollisionStackTraceKeywords() {
-    return Collections.emptySet();
-  }
-
-  @Override
-  public Set<String> getKeyCollisionStackTraceBlacklist() {
-    return Collections.emptySet();
   }
 }
