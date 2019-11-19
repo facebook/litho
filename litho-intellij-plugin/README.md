@@ -3,7 +3,7 @@
 ## Overview
 Litho IntelliJ Plugin supports better integration with a Litho framework in IntelliJ IDEA.
 Provided features are described in the release notes of
-[plugin.xml](https://github.com/facebook/litho/blob/master/litho-intellij-plugin/src/main/resources/META-INF/plugin.xml) file.
+[plugin.xml](src/main/resources/META-INF/plugin.xml) file.
 
 ## Installation
 Plugin is currently under development. You can manually build and install it by following these steps:

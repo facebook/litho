@@ -19,78 +19,32 @@
   <name>Litho</name>
   <description>
   <![CDATA[
-    <p>Litho is a declarative UI framework for Android. This plugin provides better
-      Litho integration in IntelliJ IDEA.
-    <p>
-      For more information checkout documentation:
-      <A HREF='https://fblitho.com/'>Litho: A declarative UI framework for Android</A>
-    </p>
+    <p><a href='https://fblitho.com/'>Litho</a> is a declarative UI framework for Android.
+    This plugin provides better Litho integration in IntelliJ IDEA.
+    <p>The following features are available:
+    <ul>
+      <li>Command-click on a Section or Component takes you to Spec</li>
+      <li>Component usages in the search results</li>
+      <li>MountSpec, LayoutSpec, and GroupSectionSpec templates under File -> New menu</li>
+      <li>Completion for valid method annotations in LayoutSpec</li>
+      <li>Completion for ClickEvent handler</li>
+      <li>Completion for component builder</li>
+      <li>Error annotations for LayoutSpec</li>
+      <li>Error annotations for missing Required Props</li>
+      <li><code>@DefaultProp</code> value near the <code>@Prop</code> parameter as a folding</li>
+      <li>Regenerate Component action in Editor menu</li>
+    </ul>
   ]]>
   </description>
   <version>1.1.1-SNAPSHOT</version>
   <change-notes><![CDATA[
-    <h2>1.1.0</h2>
+    <h2>1.1.1</h2>
     <ul>
-      <li>New: annotator for Required Props in single statement</li>
-      <li>New: quick completion to Required Props on builder</li>
-      <li>New: accent on Required Prop methods</li>
-      <li>New: regenerate component notification</li>
-      <li>New: plugin icon</li>
-      <li>New: BuildInfoProvider extension point</li>
-      <li>Fix: PsiAnnotationProxy comparison</li>
-      <li>Fix: type parsing for method generic type</li>
+      <li>Fix: Prioritize required prop setters</li>
+      <li>Fix: Remove method duplicates for component builder completion</li>
     </ul>
-    <h2>1.0.0</h2>
-    <ul>
-      <li>Added GoTo Component action in EditorPopup menu</li>
-      <li>Added list of available method annotations completion in the LayoutSpec</li>
-      <li>Hidden generated class from the found usages places</li>
-    </ul>
-    <h2>0.0.7-0.0.9</h2>
-    <ul>
-      <li>Regenerate component on file saving is on hold.</li>
-      <li>Fix: Error on navigating to unrecognized ComponentSpec.</li>
-      <li>Fix: Section context for the generated events.</li>
-      <li>Fix: Range method parsing.</li>
-      <li>Fix: Trigger method return type and param annotations parsing.</li>
-      <li>Fix: Wildcard parsing.</li>
-      <li>Fix: Array type parsing.</li>
-    </ul>
-    <h2>0.0.6</h2>
-    <ul>
-      <li>FindUsages shows Component occurrences in the search results.</li>
-      <li>Component is regenerated on file saving.</li>
-    </ul>
-    <h2>0.0.5</h2>
-    <ul>
-      <li>Editor menu contains Regenerate Component option.</li>
-      <li>Component is updated after Event Handler completion.</li>
-    </ul>
-    <h2>0.0.4</h2>
-    <ul>
-      <li>Minor bug fixes.</li>
-    </ul>
-    <h2>0.0.3</h2>
-    <ul>
-      <li>Added logging as an extension point.</li>
-      <li>Fixed event completion return value.</li>
-    </ul>
-    <h2>0.0.2</h2>
-    <ul>
-      <li>On-the-go error check is enabled for LayoutSpec.</li>
-      <li>ClickEvent handler is autocompleted on typing.</li>
-      <li>File New menu contains Litho Mount Component option.</li>
-      <li>File New menu contains Litho GroupSection Component option.</li>
-    </ul>
-    <h2>0.0.1</h2>
-    <ul>
-      <li>Generate menu contains OnEvent method creation option.</li>
-      <li>Command-click on a LithoSection takes you to the SectionSpec.</li>
-      <li>Command-click on a LithoComponent takes you to the ComponentSpec</li>
-      <li>@DefaultProp value is shown near the @Prop parameter as a folding.</li>
-      <li>@Prop and @State method parameters have completion suggestions.</li>
-      <li>File New menu contains Litho Layout Component option.</li>
-    </ul>
+    <h2>Older Versions</h2>
+    <p>Check the <a href='https://github.com/facebook/litho/blob/master/litho-intellij-plugin/CHANGELOG.md'>Changelog</a> for full version history.
   ]]></change-notes>
 
     <vendor url="https://github.com/facebook/litho/tree/master/litho-intellij-plugin">
