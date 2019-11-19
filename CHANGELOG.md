@@ -11,7 +11,7 @@ For more details, see the [full diff](https://github.com/facebook/litho/compare/
 
 ## Version 0.32.0
 
-_2019-11-13_
+_2019-11-15_
 
  * **Breaking:** Make ctors of `Component`/`ComponentLifecycle` that take an explicit type id package private.
  * **Breaking:** Add `categoryKey` param for `ComponentsReporter.emitMessage()` API to distribute errors into different buckets.
