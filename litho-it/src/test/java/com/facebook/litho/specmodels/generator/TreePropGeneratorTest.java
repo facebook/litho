@@ -128,8 +128,8 @@ public class TreePropGeneratorTest {
                     ClassName.get(GenericObject.class),
                     GenericObject.class.getName(),
                     () -> new TypeSpec(TypeName.OBJECT),
-                    ImmutableList.of(),
-                    ImmutableList.of(new TypeSpec(TypeName.INT))))
+                    () -> ImmutableList.of(),
+                    () -> ImmutableList.of(new TypeSpec(TypeName.INT))))
             .typeVariables(ImmutableList.<TypeVariableName>of())
             .methodParams(
                 ImmutableList.of(
@@ -146,8 +146,8 @@ public class TreePropGeneratorTest {
                             ClassName.get(GenericObject.class),
                             GenericObject.class.getName(),
                             () -> new TypeSpec(TypeName.OBJECT),
-                            ImmutableList.of(),
-                            ImmutableList.of(new TypeSpec(TypeName.INT))),
+                            () -> ImmutableList.of(),
+                            () -> ImmutableList.of(new TypeSpec(TypeName.INT))),
                         "prop",
                         ImmutableList.of(createAnnotation(Prop.class)),
                         new ArrayList<AnnotationSpec>(),

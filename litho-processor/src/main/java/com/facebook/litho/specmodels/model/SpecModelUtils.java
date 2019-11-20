@@ -16,11 +16,11 @@
 
 package com.facebook.litho.specmodels.model;
 
-import static com.facebook.litho.specmodels.internal.ImmutableList.copyOf;
 import static com.facebook.litho.specmodels.model.ClassNames.OUTPUT;
 
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.State;
+import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.internal.SimpleMemoizingSupplier;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.ParameterizedTypeName;
@@ -197,31 +197,36 @@ public class SpecModelUtils {
                           : generateTypeSpec(mirror);
                     });
 
-            final List<? extends TypeMirror> mirrors = typeElement.getInterfaces();
-            final List<TypeSpec> superinterfaces =
-                mirrors != null && !mirrors.isEmpty()
-                    ? mirrors.stream()
-                        .filter(mirror -> mirror.getKind() == TypeKind.DECLARED)
-                        .map(SpecModelUtils::generateTypeSpec)
-                        .collect(Collectors.toList())
-                    : Collections.emptyList();
+            final Supplier<ImmutableList<TypeSpec>> superinterfaces =
+                new SimpleMemoizingSupplier<>(
+                    () -> {
+                      final List<? extends TypeMirror> mirrors = typeElement.getInterfaces();
+                      return ImmutableList.copyOf(
+                          mirrors != null && !mirrors.isEmpty()
+                              ? mirrors.stream()
+                                  .filter(mirror -> mirror.getKind() == TypeKind.DECLARED)
+                                  .map(SpecModelUtils::generateTypeSpec)
+                                  .collect(Collectors.toList())
+                              : Collections.emptyList());
+                    });
 
-            final List<TypeSpec> typeArguments =
-                ClassName.bestGuess(qualifiedName).equals(ClassNames.DIFF)
-                        || superinterfaces.stream()
-                            .anyMatch(typeSpec -> typeSpec.isSubInterface(ClassNames.COLLECTION))
-                    ? ((DeclaredType) type)
-                        .getTypeArguments().stream()
-                            .map(SpecModelUtils::generateTypeSpec)
-                            .collect(Collectors.toList())
-                    : Collections.emptyList();
+            final Supplier<ImmutableList<TypeSpec>> typeArguments =
+                new SimpleMemoizingSupplier<>(
+                    () ->
+                        ImmutableList.copyOf(
+                            ClassName.bestGuess(qualifiedName).equals(ClassNames.DIFF)
+                                    || superinterfaces.get().stream()
+                                        .anyMatch(
+                                            typeSpec ->
+                                                typeSpec.isSubInterface(ClassNames.COLLECTION))
+                                ? ((DeclaredType) type)
+                                    .getTypeArguments().stream()
+                                        .map(SpecModelUtils::generateTypeSpec)
+                                        .collect(Collectors.toList())
+                                : Collections.emptyList()));
 
             return new TypeSpec.DeclaredTypeSpec(
-                safelyGetTypeName(t),
-                qualifiedName,
-                superclass,
-                copyOf(superinterfaces),
-                copyOf(typeArguments));
+                safelyGetTypeName(t), qualifiedName, superclass, superinterfaces, typeArguments);
           }
         },
         null);

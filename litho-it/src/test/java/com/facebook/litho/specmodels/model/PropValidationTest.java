@@ -210,8 +210,8 @@ public class PropValidationTest {
                 ClassNames.COMPONENT_BUILDER,
                 ClassNames.COMPONENT_BUILDER.toString(),
                 () -> new TypeSpec(TypeName.OBJECT),
-                ImmutableList.of(),
-                ImmutableList.of()));
+                () -> ImmutableList.of(),
+                () -> ImmutableList.of()));
 
     List<SpecModelValidationError> validationErrors =
         PropValidation.validate(
@@ -238,10 +238,10 @@ public class PropValidationTest {
                         ClassNames.COMPONENT_BUILDER,
                         ClassNames.COMPONENT_BUILDER.toString(),
                         () -> new TypeSpec(TypeName.OBJECT),
-                        ImmutableList.of(),
-                        ImmutableList.of()),
-                ImmutableList.of(),
-                ImmutableList.of()));
+                        () -> ImmutableList.of(),
+                        () -> ImmutableList.of()),
+                () -> ImmutableList.of(),
+                () -> ImmutableList.of()));
 
     List<SpecModelValidationError> validationErrors =
         PropValidation.validate(

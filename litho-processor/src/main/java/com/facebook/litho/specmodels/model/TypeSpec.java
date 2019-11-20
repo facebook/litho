@@ -84,15 +84,15 @@ public class TypeSpec {
   public static class DeclaredTypeSpec extends TypeSpec {
     private final String mQualifiedName;
     private final Supplier<TypeSpec> mSuperclass;
-    private final ImmutableList<TypeSpec> mSuperinterfaces;
-    private final ImmutableList<TypeSpec> mTypeArguments;
+    private final Supplier<ImmutableList<TypeSpec>> mSuperinterfaces;
+    private final Supplier<ImmutableList<TypeSpec>> mTypeArguments;
 
     public DeclaredTypeSpec(
         TypeName typeName,
         String qualifiedName,
         Supplier<TypeSpec> superclass,
-        ImmutableList<TypeSpec> superinterfaces,
-        ImmutableList<TypeSpec> typeArguments) {
+        Supplier<ImmutableList<TypeSpec>> superinterfaces,
+        Supplier<ImmutableList<TypeSpec>> typeArguments) {
       super(typeName);
       mQualifiedName = qualifiedName;
       mSuperclass = superclass;
@@ -109,7 +109,7 @@ public class TypeSpec {
     @Override
     public boolean isSubInterface(TypeName type) {
       return type.toString().equals(mQualifiedName)
-          || mSuperinterfaces.stream().anyMatch(typeSpec -> typeSpec.isSubInterface(type));
+          || mSuperinterfaces.get().stream().anyMatch(typeSpec -> typeSpec.isSubInterface(type));
     }
 
     @Override
@@ -118,7 +118,7 @@ public class TypeSpec {
     }
 
     public ImmutableList<TypeSpec> getTypeArguments() {
-      return mTypeArguments;
+      return mTypeArguments.get();
     }
   }
 }
