@@ -83,6 +83,11 @@ public class TestingDIComponentProcessor extends AbstractComponentsProcessor {
     }
 
     @Override
+    public ImmutableList<AnnotationSpec> getAdditionalClassAnnotations(SpecModel specModel) {
+      return ImmutableList.of();
+    }
+
+    @Override
     public MethodSpec generateConstructor(SpecModel specModel) {
       return MethodSpec.constructorBuilder()
           .addModifiers(Modifier.PUBLIC)

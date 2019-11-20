@@ -35,6 +35,9 @@ public interface DependencyInjectionHelper {
   /** Whether a Spec annotation should be moved to the generated Component. */
   boolean isValidGeneratedComponentAnnotation(AnnotationSpec annotation);
 
+  /** Returns a list of additional annotations to add to the generated component class */
+  ImmutableList<AnnotationSpec> getAdditionalClassAnnotations(SpecModel specModel);
+
   /** Generate the constructor required for Dependency Injection. */
   MethodSpec generateConstructor(SpecModel specModel);
 
