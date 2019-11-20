@@ -18,12 +18,14 @@ package com.facebook.litho.specmodels.model;
 
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.specmodels.internal.ImmutableList;
+import com.facebook.litho.specmodels.internal.RunMode;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.WildcardTypeName;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.List;
 
 /** Class for validating that the state models within a {@link SpecModel} are well-formed. */
@@ -300,7 +302,8 @@ public class PropValidation {
   static List<SpecModelValidationError> validate(
       SpecModel specModel,
       List<String> reservedPropNames,
-      List<CommonPropModel> permittedCommonProps) {
+      List<CommonPropModel> permittedCommonProps,
+      EnumSet<RunMode> runMode) {
     final List<SpecModelValidationError> validationErrors = new ArrayList<>();
 
     final ImmutableList<PropModel> props = specModel.getProps();
@@ -393,7 +396,7 @@ public class PropValidation {
                   "Props may not be declared with argument type: "
                       + illegalPropType
                       + " or its inherited types."));
-        } else if (typeSpec.isSubType(illegalPropType)) {
+        } else if (!runMode.contains(RunMode.ABI) && typeSpec.isSubType(illegalPropType)) {
           validationErrors.add(
               new SpecModelValidationError(
                   prop.getRepresentedObject(),

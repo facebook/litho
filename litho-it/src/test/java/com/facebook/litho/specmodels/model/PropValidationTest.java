@@ -23,6 +23,7 @@ import static org.mockito.Mockito.when;
 
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.specmodels.internal.ImmutableList;
+import com.facebook.litho.specmodels.internal.RunMode;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.ParameterizedTypeName;
@@ -71,7 +72,10 @@ public class PropValidationTest {
 
     List<SpecModelValidationError> validationErrors =
         PropValidation.validate(
-            mSpecModel, PropValidation.COMMON_PROP_NAMES, PropValidation.VALID_COMMON_PROPS);
+            mSpecModel,
+            PropValidation.COMMON_PROP_NAMES,
+            PropValidation.VALID_COMMON_PROPS,
+            RunMode.normal());
     assertThat(validationErrors).hasSize(1);
     assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject1);
     assertThat(validationErrors.get(0).message)
@@ -91,7 +95,10 @@ public class PropValidationTest {
 
     List<SpecModelValidationError> validationErrors =
         PropValidation.validate(
-            mSpecModel, PropValidation.COMMON_PROP_NAMES, PropValidation.VALID_COMMON_PROPS);
+            mSpecModel,
+            PropValidation.COMMON_PROP_NAMES,
+            PropValidation.VALID_COMMON_PROPS,
+            RunMode.normal());
     assertThat(validationErrors).hasSize(1);
     assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject1);
     assertThat(validationErrors.get(0).message)
@@ -111,7 +118,10 @@ public class PropValidationTest {
 
     List<SpecModelValidationError> validationErrors =
         PropValidation.validate(
-            mSpecModel, PropValidation.COMMON_PROP_NAMES, PropValidation.VALID_COMMON_PROPS);
+            mSpecModel,
+            PropValidation.COMMON_PROP_NAMES,
+            PropValidation.VALID_COMMON_PROPS,
+            RunMode.normal());
     assertThat(validationErrors).hasSize(1);
     assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject1);
     assertThat(validationErrors.get(0).message)
@@ -127,7 +137,10 @@ public class PropValidationTest {
 
     List<SpecModelValidationError> validationErrors =
         PropValidation.validate(
-            mSpecModel, PropValidation.COMMON_PROP_NAMES, PropValidation.VALID_COMMON_PROPS);
+            mSpecModel,
+            PropValidation.COMMON_PROP_NAMES,
+            PropValidation.VALID_COMMON_PROPS,
+            RunMode.normal());
     assertThat(validationErrors).hasSize(1);
     assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject1);
     assertThat(validationErrors.get(0).message)
@@ -143,7 +156,10 @@ public class PropValidationTest {
 
     List<SpecModelValidationError> validationErrors =
         PropValidation.validate(
-            mSpecModel, PropValidation.COMMON_PROP_NAMES, PropValidation.VALID_COMMON_PROPS);
+            mSpecModel,
+            PropValidation.COMMON_PROP_NAMES,
+            PropValidation.VALID_COMMON_PROPS,
+            RunMode.normal());
     assertThat(validationErrors).hasSize(1);
     assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject1);
     assertThat(validationErrors.get(0).message)
@@ -159,7 +175,10 @@ public class PropValidationTest {
 
     List<SpecModelValidationError> validationErrors =
         PropValidation.validate(
-            mSpecModel, PropValidation.COMMON_PROP_NAMES, PropValidation.VALID_COMMON_PROPS);
+            mSpecModel,
+            PropValidation.COMMON_PROP_NAMES,
+            PropValidation.VALID_COMMON_PROPS,
+            RunMode.normal());
     assertThat(validationErrors).hasSize(1);
     assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject1);
     assertThat(validationErrors.get(0).message)
@@ -173,7 +192,10 @@ public class PropValidationTest {
 
     List<SpecModelValidationError> validationErrors =
         PropValidation.validate(
-            mSpecModel, PropValidation.COMMON_PROP_NAMES, PropValidation.VALID_COMMON_PROPS);
+            mSpecModel,
+            PropValidation.COMMON_PROP_NAMES,
+            PropValidation.VALID_COMMON_PROPS,
+            RunMode.normal());
     assertThat(validationErrors).hasSize(1);
     assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject1);
     assertThat(validationErrors.get(0).message)
@@ -193,7 +215,10 @@ public class PropValidationTest {
 
     List<SpecModelValidationError> validationErrors =
         PropValidation.validate(
-            mSpecModel, PropValidation.COMMON_PROP_NAMES, PropValidation.VALID_COMMON_PROPS);
+            mSpecModel,
+            PropValidation.COMMON_PROP_NAMES,
+            PropValidation.VALID_COMMON_PROPS,
+            RunMode.normal());
     assertThat(validationErrors).hasSize(1);
     assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject1);
     assertThat(validationErrors.get(0).message)
@@ -220,7 +245,10 @@ public class PropValidationTest {
 
     List<SpecModelValidationError> validationErrors =
         PropValidation.validate(
-            mSpecModel, PropValidation.COMMON_PROP_NAMES, PropValidation.VALID_COMMON_PROPS);
+            mSpecModel,
+            PropValidation.COMMON_PROP_NAMES,
+            PropValidation.VALID_COMMON_PROPS,
+            RunMode.normal());
     assertThat(validationErrors).hasSize(1);
     assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject1);
     assertThat(validationErrors.get(0).message)
@@ -236,7 +264,10 @@ public class PropValidationTest {
 
     List<SpecModelValidationError> validationErrors =
         PropValidation.validate(
-            mSpecModel, PropValidation.COMMON_PROP_NAMES, PropValidation.VALID_COMMON_PROPS);
+            mSpecModel,
+            PropValidation.COMMON_PROP_NAMES,
+            PropValidation.VALID_COMMON_PROPS,
+            RunMode.normal());
     assertThat(validationErrors).hasSize(1);
     assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject1);
     assertThat(validationErrors.get(0).message)
@@ -250,7 +281,10 @@ public class PropValidationTest {
 
     List<SpecModelValidationError> validationErrors =
         PropValidation.validate(
-            mSpecModel, PropValidation.COMMON_PROP_NAMES, PropValidation.VALID_COMMON_PROPS);
+            mSpecModel,
+            PropValidation.COMMON_PROP_NAMES,
+            PropValidation.VALID_COMMON_PROPS,
+            RunMode.normal());
     assertThat(validationErrors).hasSize(1);
     assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject1);
     assertThat(validationErrors.get(0).message)
@@ -274,7 +308,10 @@ public class PropValidationTest {
 
     List<SpecModelValidationError> validationErrors =
         PropValidation.validate(
-            mSpecModel, PropValidation.COMMON_PROP_NAMES, PropValidation.VALID_COMMON_PROPS);
+            mSpecModel,
+            PropValidation.COMMON_PROP_NAMES,
+            PropValidation.VALID_COMMON_PROPS,
+            RunMode.normal());
     assertThat(validationErrors).hasSize(2);
     assertThat(validationErrors.get(0).element).isEqualTo(propDefaultObject1);
     assertThat(validationErrors.get(0).message)
@@ -293,7 +330,10 @@ public class PropValidationTest {
 
     List<SpecModelValidationError> validationErrors =
         PropValidation.validate(
-            mSpecModel, PropValidation.COMMON_PROP_NAMES, PropValidation.VALID_COMMON_PROPS);
+            mSpecModel,
+            PropValidation.COMMON_PROP_NAMES,
+            PropValidation.VALID_COMMON_PROPS,
+            RunMode.normal());
     assertThat(validationErrors).hasSize(1);
     assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject1);
     assertThat(validationErrors.get(0).message)
@@ -310,7 +350,10 @@ public class PropValidationTest {
 
     List<SpecModelValidationError> validationErrors =
         PropValidation.validate(
-            mSpecModel, PropValidation.COMMON_PROP_NAMES, PropValidation.VALID_COMMON_PROPS);
+            mSpecModel,
+            PropValidation.COMMON_PROP_NAMES,
+            PropValidation.VALID_COMMON_PROPS,
+            RunMode.normal());
     assertThat(validationErrors).hasSize(1);
     assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject1);
     assertThat(validationErrors.get(0).message)
@@ -326,7 +369,10 @@ public class PropValidationTest {
 
     List<SpecModelValidationError> validationErrors =
         PropValidation.validate(
-            mSpecModel, PropValidation.COMMON_PROP_NAMES, PropValidation.VALID_COMMON_PROPS);
+            mSpecModel,
+            PropValidation.COMMON_PROP_NAMES,
+            PropValidation.VALID_COMMON_PROPS,
+            RunMode.normal());
     assertThat(validationErrors).hasSize(1);
     assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject1);
     assertThat(validationErrors.get(0).message)
@@ -349,7 +395,10 @@ public class PropValidationTest {
 
     List<SpecModelValidationError> validationErrors =
         PropValidation.validate(
-            mSpecModel, PropValidation.COMMON_PROP_NAMES, PropValidation.VALID_COMMON_PROPS);
+            mSpecModel,
+            PropValidation.COMMON_PROP_NAMES,
+            PropValidation.VALID_COMMON_PROPS,
+            RunMode.normal());
     assertThat(validationErrors).hasSize(2);
     assertThat(validationErrors.get(0).element).isEqualTo(mRepresentedObject1);
     assertThat(validationErrors.get(0).message)
