@@ -149,7 +149,7 @@ public class CachedValueGeneratorTest {
             .findFirst()
             .get();
     final String expensiveValueInputsClass =
-        CachedValueGenerator.createInputsClass(mLayoutSpecModel, specMethodModel, "expensiveValue")
+        CachedValueGenerator.createInputsClass(specMethodModel, "expensiveValue", RunMode.normal())
             .toString();
     assertThat(expensiveValueInputsClass)
         .isEqualTo(
@@ -188,7 +188,7 @@ public class CachedValueGeneratorTest {
             .get();
     final String expensiveValueInputsClass =
         CachedValueGenerator.createInputsClass(
-                mLayoutSpecModel, specMethodModel, "expensiveValueWithContext")
+                specMethodModel, "expensiveValueWithContext", RunMode.normal())
             .toString();
     assertThat(expensiveValueInputsClass)
         .isEqualTo(
@@ -227,7 +227,7 @@ public class CachedValueGeneratorTest {
             .get();
     final String inputsClassWithGenericParam =
         CachedValueGenerator.createInputsClass(
-                mLayoutSpecModel, specMethodModel, "expensiveValueWithGeneric")
+                specMethodModel, "expensiveValueWithGeneric", RunMode.normal())
             .toString();
     assertThat(inputsClassWithGenericParam)
         .isEqualTo(
@@ -272,7 +272,7 @@ public class CachedValueGeneratorTest {
             .get();
     final String inputsClassWithGenericParam =
         CachedValueGenerator.createInputsClass(
-                mLayoutSpecModel, specMethodModel, "expensiveValueWithMoreGenerics")
+                specMethodModel, "expensiveValueWithMoreGenerics", RunMode.normal())
             .toString();
     assertThat(inputsClassWithGenericParam)
         .isEqualTo(
@@ -324,7 +324,7 @@ public class CachedValueGeneratorTest {
             .get();
     final String inputsClassWithGenericParam =
         CachedValueGenerator.createInputsClass(
-                mLayoutSpecModel, specMethodModel, "expensiveValueWithMoreGenericsAndContext")
+                specMethodModel, "expensiveValueWithMoreGenericsAndContext", RunMode.normal())
             .toString();
     assertThat(inputsClassWithGenericParam)
         .isEqualTo(
@@ -375,7 +375,7 @@ public class CachedValueGeneratorTest {
             .get();
     final String expensiveValueInputsClass =
         CachedValueGenerator.createInputsClass(
-                mLayoutSpecModel, specMethodModel, "moreExpensiveValue")
+                specMethodModel, "moreExpensiveValue", RunMode.normal())
             .toString();
     assertThat(expensiveValueInputsClass)
         .isEqualTo(
@@ -426,7 +426,7 @@ public class CachedValueGeneratorTest {
             .get();
     final String expensiveValueInputsClass =
         CachedValueGenerator.createInputsClass(
-                mLayoutSpecModel, specMethodModel, "moreExpensiveValueWithContext")
+                specMethodModel, "moreExpensiveValueWithContext", RunMode.normal())
             .toString();
     assertThat(expensiveValueInputsClass)
         .isEqualTo(

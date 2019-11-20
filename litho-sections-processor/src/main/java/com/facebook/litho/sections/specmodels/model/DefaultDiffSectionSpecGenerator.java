@@ -73,7 +73,7 @@ public class DefaultDiffSectionSpecGenerator implements SpecGenerator<DiffSectio
         .addTypeSpecDataHolder(JavadocGenerator.generate(specModel))
         .addTypeSpecDataHolder(PreambleGenerator.generate(specModel))
         .addTypeSpecDataHolder(
-            ComponentBodyGenerator.generate(specModel, specModel.getServiceParam()))
+            ComponentBodyGenerator.generate(specModel, specModel.getServiceParam(), runMode))
         .addTypeSpecDataHolder(BuilderGenerator.generate(specModel))
         .addTypeSpecDataHolder(StateGenerator.generate(specModel))
         .addTypeSpecDataHolder(EventGenerator.generate(specModel))
@@ -84,7 +84,7 @@ public class DefaultDiffSectionSpecGenerator implements SpecGenerator<DiffSectio
                 runMode))
         .addTypeSpecDataHolder(TriggerGenerator.generate(specModel))
         .addTypeSpecDataHolder(TagGenerator.generate(specModel, mBlacklistedTagInterfaces))
-        .addTypeSpecDataHolder(CachedValueGenerator.generate(specModel))
+        .addTypeSpecDataHolder(CachedValueGenerator.generate(specModel, runMode))
         .build()
         .addToTypeSpec(typeSpec);
 

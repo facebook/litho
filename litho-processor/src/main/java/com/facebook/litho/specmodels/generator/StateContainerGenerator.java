@@ -25,6 +25,7 @@ import androidx.annotation.VisibleForTesting;
 import com.facebook.litho.annotations.Comparable;
 import com.facebook.litho.annotations.Param;
 import com.facebook.litho.annotations.State;
+import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.MethodParamModel;
 import com.facebook.litho.specmodels.model.MethodParamModelUtils;
@@ -41,6 +42,7 @@ import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
+import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.List;
 import javax.lang.model.element.Modifier;
@@ -51,7 +53,7 @@ public class StateContainerGenerator {
   private static final String PARAM_NAME_STATE_UPDATE = "stateUpdate";
   private static final String VAR_NAME_PARAMS = "params";
 
-  static TypeSpec generate(SpecModel specModel) {
+  static TypeSpec generate(SpecModel specModel, EnumSet<RunMode> runMode) {
     final TypeSpec.Builder stateContainerClassBuilder =
         TypeSpec.classBuilder(getStateContainerClassName(specModel))
             .superclass(specModel.getStateContainerClass())
@@ -73,7 +75,7 @@ public class StateContainerGenerator {
               .addAnnotation(State.class)
               .addAnnotation(
                   AnnotationSpec.builder(Comparable.class)
-                      .addMember("type", "$L", getComparableType(specModel, stateValue))
+                      .addMember("type", "$L", getComparableType(stateValue, runMode))
                       .build())
               .build());
     }

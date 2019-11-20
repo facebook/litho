@@ -118,7 +118,7 @@ public class StateContainerGeneratorTest {
 
   @Test
   public void testGenerateStateContainerImpl() {
-    assertThat(StateContainerGenerator.generate(mSpecModelWithState).toString())
+    assertThat(StateContainerGenerator.generate(mSpecModelWithState, RunMode.normal()).toString())
         .isEqualTo(
             "@androidx.annotation.VisibleForTesting(\n"
                 + "    otherwise = 2\n"
@@ -157,7 +157,9 @@ public class StateContainerGeneratorTest {
 
   @Test
   public void testGenerateStateContainerWithTransitionImpl() {
-    assertThat(StateContainerGenerator.generate(mSpecModelWithStateWithTransition).toString())
+    assertThat(
+            StateContainerGenerator.generate(mSpecModelWithStateWithTransition, RunMode.normal())
+                .toString())
         .isEqualTo(
             "@androidx.annotation.VisibleForTesting(\n"
                 + "    otherwise = 2\n"
@@ -206,7 +208,9 @@ public class StateContainerGeneratorTest {
 
   @Test
   public void testGenerateStateContainerWithBothMethodsImpl() {
-    assertThat(StateContainerGenerator.generate(mSpecModelWithBothMethods).toString())
+    assertThat(
+            StateContainerGenerator.generate(mSpecModelWithBothMethods, RunMode.normal())
+                .toString())
         .isEqualTo(
             "@androidx.annotation.VisibleForTesting(\n"
                 + "    otherwise = 2\n"
@@ -259,7 +263,10 @@ public class StateContainerGeneratorTest {
 
   @Test
   public void testGenerateStateContainerWithSameGenericMultipleTimesImpl() {
-    assertThat(StateContainerGenerator.generate(mSpecModelWithSameGenericMultipleTimes).toString())
+    assertThat(
+            StateContainerGenerator.generate(
+                    mSpecModelWithSameGenericMultipleTimes, RunMode.normal())
+                .toString())
         .isEqualTo(
             "@androidx.annotation.VisibleForTesting(\n"
                 + "    otherwise = 2\n"
@@ -290,7 +297,9 @@ public class StateContainerGeneratorTest {
 
   @Test
   public void testGenerateStateContainerWithMultipleGenericsImpl() {
-    assertThat(StateContainerGenerator.generate(mSpecModelWithMultipleGenerics).toString())
+    assertThat(
+            StateContainerGenerator.generate(mSpecModelWithMultipleGenerics, RunMode.normal())
+                .toString())
         .isEqualTo(
             "@androidx.annotation.VisibleForTesting(\n"
                 + "    otherwise = 2\n"

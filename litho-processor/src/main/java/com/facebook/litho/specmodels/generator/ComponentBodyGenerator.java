@@ -28,6 +28,7 @@ import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.annotations.TreeProp;
 import com.facebook.litho.specmodels.internal.ImmutableList;
+import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.BindDynamicValueMethod;
 import com.facebook.litho.specmodels.model.CachedValueParamModel;
 import com.facebook.litho.specmodels.model.ClassNames;
@@ -60,6 +61,7 @@ import com.squareup.javapoet.TypeSpec;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -74,7 +76,7 @@ public class ComponentBodyGenerator {
   private ComponentBodyGenerator() {}
 
   public static TypeSpecDataHolder generate(
-      SpecModel specModel, @Nullable MethodParamModel optionalField) {
+      SpecModel specModel, @Nullable MethodParamModel optionalField, EnumSet<RunMode> runMode) {
     final TypeSpecDataHolder.Builder builder = TypeSpecDataHolder.newBuilder();
 
     final boolean hasState = !specModel.getStateValues().isEmpty();
@@ -100,15 +102,15 @@ public class ComponentBodyGenerator {
 
     builder
         .addTypeSpecDataHolder(generateInjectedFields(specModel))
-        .addTypeSpecDataHolder(generateProps(specModel))
-        .addTypeSpecDataHolder(generateTreeProps(specModel))
+        .addTypeSpecDataHolder(generateProps(specModel, runMode))
+        .addTypeSpecDataHolder(generateTreeProps(specModel, runMode))
         .addTypeSpecDataHolder(generateInterStageInputs(specModel))
         .addTypeSpecDataHolder(generateOptionalField(optionalField))
         .addTypeSpecDataHolder(generateEventHandlers(specModel))
         .addTypeSpecDataHolder(generateEventTriggers(specModel));
 
     if (specModel.shouldGenerateIsEquivalentTo()) {
-      builder.addMethod(generateIsEquivalentMethod(specModel));
+      builder.addMethod(generateIsEquivalentMethod(specModel, runMode));
     }
 
     builder.addTypeSpecDataHolder(generateCopyInterStageImpl(specModel));
@@ -117,7 +119,7 @@ public class ComponentBodyGenerator {
     builder.addTypeSpecDataHolder(generateBindDynamicProp(specModel));
 
     if (hasState) {
-      builder.addType(StateContainerGenerator.generate(specModel));
+      builder.addType(StateContainerGenerator.generate(specModel, runMode));
     }
     if (needsRenderDataInfra) {
       builder.addType(generatePreviousRenderDataContainerImpl(specModel));
@@ -214,7 +216,7 @@ public class ComponentBodyGenerator {
         .build();
   }
 
-  public static TypeSpecDataHolder generateProps(SpecModel specModel) {
+  public static TypeSpecDataHolder generateProps(SpecModel specModel, EnumSet<RunMode> runMode) {
     final TypeSpecDataHolder.Builder typeSpecDataHolder = TypeSpecDataHolder.newBuilder();
     final ImmutableList<PropModel> props = specModel.getProps();
 
@@ -240,7 +242,7 @@ public class ComponentBodyGenerator {
               .addAnnotation(propAnnotationBuilder.build())
               .addAnnotation(
                   AnnotationSpec.builder(Comparable.class)
-                      .addMember("type", "$L", getComparableType(fieldTypeName, prop.getTypeSpec()))
+                      .addMember("type", "$L", getComparableType(prop, runMode))
                       .build());
       if (prop.hasDefault(specModel.getPropDefaults())) {
         assignInitializer(fieldBuilder, specModel, prop);
@@ -302,7 +304,7 @@ public class ComponentBodyGenerator {
     return typeSpecDataHolder.build();
   }
 
-  static TypeSpecDataHolder generateTreeProps(SpecModel specModel) {
+  static TypeSpecDataHolder generateTreeProps(SpecModel specModel, EnumSet<RunMode> runMode) {
     final TypeSpecDataHolder.Builder typeSpecDataHolder = TypeSpecDataHolder.newBuilder();
     final ImmutableList<TreePropModel> treeProps = specModel.getTreeProps();
 
@@ -312,7 +314,7 @@ public class ComponentBodyGenerator {
               .addAnnotation(TreeProp.class)
               .addAnnotation(
                   AnnotationSpec.builder(Comparable.class)
-                      .addMember("type", "$L", getComparableType(specModel, treeProp))
+                      .addMember("type", "$L", getComparableType(treeProp, runMode))
                       .build())
               .build());
     }
@@ -376,7 +378,7 @@ public class ComponentBodyGenerator {
         + "Trigger";
   }
 
-  static MethodSpec generateIsEquivalentMethod(SpecModel specModel) {
+  static MethodSpec generateIsEquivalentMethod(SpecModel specModel, EnumSet<RunMode> runMode) {
     final String className = specModel.getComponentName();
     final String instanceRefName = getInstanceRefName(specModel);
 
@@ -402,15 +404,16 @@ public class ComponentBodyGenerator {
     }
 
     for (PropModel prop : specModel.getProps()) {
-      isEquivalentBuilder.addCode(getCompareStatement(specModel, instanceRefName, prop));
+      isEquivalentBuilder.addCode(getCompareStatement(specModel, instanceRefName, prop, runMode));
     }
 
     for (StateParamModel state : specModel.getStateValues()) {
-      isEquivalentBuilder.addCode(getCompareStatement(specModel, instanceRefName, state));
+      isEquivalentBuilder.addCode(getCompareStatement(specModel, instanceRefName, state, runMode));
     }
 
     for (TreePropModel treeProp : specModel.getTreeProps()) {
-      isEquivalentBuilder.addCode(getCompareStatement(specModel, instanceRefName, treeProp));
+      isEquivalentBuilder.addCode(
+          getCompareStatement(specModel, instanceRefName, treeProp, runMode));
     }
 
     isEquivalentBuilder.addStatement("return true");
@@ -614,21 +617,23 @@ public class ComponentBodyGenerator {
   }
 
   static CodeBlock getCompareStatement(
-      SpecModel specModel, String implInstanceName, MethodParamModel field) {
+      SpecModel specModel,
+      String implInstanceName,
+      MethodParamModel field,
+      EnumSet<RunMode> runMode) {
     final String implAccessor = getImplAccessor(specModel, field, true);
 
-    return getCompareStatement(
-        specModel, field, implAccessor, implInstanceName + "." + implAccessor);
+    return getCompareStatement(field, implAccessor, implInstanceName + "." + implAccessor, runMode);
   }
 
   static CodeBlock getCompareStatement(
-      SpecModel specModel,
       MethodParamModel field,
       String firstComparator,
-      String secondComparator) {
+      String secondComparator,
+      EnumSet<RunMode> runMode) {
     final CodeBlock.Builder codeBlock = CodeBlock.builder();
 
-    @Comparable.Type int comparableType = getComparableType(specModel, field);
+    @Comparable.Type int comparableType = getComparableType(field, runMode);
     switch (comparableType) {
       case Comparable.FLOAT:
         codeBlock
@@ -735,12 +740,14 @@ public class ComponentBodyGenerator {
     return codeBlock.build();
   }
 
-  static @Comparable.Type int getComparableType(SpecModel specModel, MethodParamModel field) {
-    return getComparableType(field.getTypeName(), field.getTypeSpec());
+  static @Comparable.Type int getComparableType(MethodParamModel field, EnumSet<RunMode> runMode) {
+    return getComparableType(field.getTypeName(), field.getTypeSpec(), runMode);
   }
 
   private static @Comparable.Type int getComparableType(
-      TypeName typeName, com.facebook.litho.specmodels.model.TypeSpec typeSpec) {
+      TypeName typeName,
+      com.facebook.litho.specmodels.model.TypeSpec typeSpec,
+      EnumSet<RunMode> runMode) {
     if (typeName.equals(TypeName.FLOAT)) {
       return Comparable.FLOAT;
     } else if (typeName.equals(TypeName.DOUBLE)) {
@@ -753,7 +760,7 @@ public class ComponentBodyGenerator {
       return Comparable.PRIMITIVE;
     } else if (typeName.equals(ClassNames.COMPARABLE_DRAWABLE)) {
       return Comparable.COMPARABLE_DRAWABLE;
-    } else if (typeSpec.isSubInterface(ClassNames.COLLECTION)) {
+    } else if (!runMode.contains(RunMode.ABI) && typeSpec.isSubInterface(ClassNames.COLLECTION)) {
       final int level = calculateLevelOfComponentInCollections((DeclaredTypeSpec) typeSpec);
       switch (level) {
         case 0:

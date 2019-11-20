@@ -222,7 +222,8 @@ public class ComponentBodyGeneratorTest {
 
   @Test
   public void testGenerateProps() {
-    TypeSpecDataHolder dataHolder = ComponentBodyGenerator.generateProps(mSpecModelDI);
+    TypeSpecDataHolder dataHolder =
+        ComponentBodyGenerator.generateProps(mSpecModelDI, RunMode.normal());
     assertThat(dataHolder.getFieldSpecs()).hasSize(5);
     assertThat(dataHolder.getFieldSpecs().get(0).toString())
         .isEqualTo(
@@ -258,7 +259,7 @@ public class ComponentBodyGeneratorTest {
                 + ")\n"
                 + "java.util.List<? extends java.lang.Number> arg9;\n");
 
-    dataHolder = ComponentBodyGenerator.generateProps(mMountSpecModelDI);
+    dataHolder = ComponentBodyGenerator.generateProps(mMountSpecModelDI, RunMode.normal());
     assertThat(dataHolder.getFieldSpecs()).hasSize(6);
     assertThat(dataHolder.getFieldSpecs().get(4).toString())
         .isEqualTo(
@@ -277,7 +278,8 @@ public class ComponentBodyGeneratorTest {
 
   @Test
   public void testGeneratePropsForKotlinWildcards() {
-    TypeSpecDataHolder dataHolder = ComponentBodyGenerator.generateProps(mKotlinWildcardsSpecModel);
+    TypeSpecDataHolder dataHolder =
+        ComponentBodyGenerator.generateProps(mKotlinWildcardsSpecModel, RunMode.normal());
     assertThat(dataHolder.getFieldSpecs()).hasSize(1);
     assertThat(dataHolder.getFieldSpecs().get(0).toString())
         .isEqualTo(
@@ -294,7 +296,8 @@ public class ComponentBodyGeneratorTest {
 
   @Test
   public void testGenerateTreeProps() {
-    TypeSpecDataHolder dataHolder = ComponentBodyGenerator.generateTreeProps(mSpecModelDI);
+    TypeSpecDataHolder dataHolder =
+        ComponentBodyGenerator.generateTreeProps(mSpecModelDI, RunMode.normal());
     assertThat(dataHolder.getFieldSpecs()).hasSize(3);
     assertThat(dataHolder.getFieldSpecs().get(0).toString())
         .isEqualTo(
@@ -328,7 +331,9 @@ public class ComponentBodyGeneratorTest {
 
   @Test
   public void testGenerateIsEquivalentMethod() {
-    assertThat(ComponentBodyGenerator.generateIsEquivalentMethod(mMountSpecModelDI).toString())
+    assertThat(
+            ComponentBodyGenerator.generateIsEquivalentMethod(mMountSpecModelDI, RunMode.normal())
+                .toString())
         .isEqualTo(
             "@java.lang.Override\n"
                 + "public boolean isEquivalentTo(com.facebook.litho.Component other) {\n"

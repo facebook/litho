@@ -75,7 +75,7 @@ public class DefaultGroupSectionSpecGenerator implements SpecGenerator<GroupSect
         .addTypeSpecDataHolder(JavadocGenerator.generate(specModel))
         .addTypeSpecDataHolder(PreambleGenerator.generate(specModel))
         .addTypeSpecDataHolder(
-            ComponentBodyGenerator.generate(specModel, specModel.getServiceParam()))
+            ComponentBodyGenerator.generate(specModel, specModel.getServiceParam(), runMode))
         .addTypeSpecDataHolder(BuilderGenerator.generate(specModel))
         .addTypeSpecDataHolder(StateGenerator.generate(specModel))
         .addTypeSpecDataHolder(EventGenerator.generate(specModel))
@@ -87,7 +87,7 @@ public class DefaultGroupSectionSpecGenerator implements SpecGenerator<GroupSect
         .addTypeSpecDataHolder(TreePropGenerator.generate(specModel))
         .addTypeSpecDataHolder(TriggerGenerator.generate(specModel))
         .addTypeSpecDataHolder(TagGenerator.generate(specModel, mBlacklistedTagInterfaces))
-        .addTypeSpecDataHolder(CachedValueGenerator.generate(specModel))
+        .addTypeSpecDataHolder(CachedValueGenerator.generate(specModel, runMode))
         .build()
         .addToTypeSpec(typeSpec);
 

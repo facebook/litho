@@ -17,6 +17,7 @@
 package com.facebook.litho.specmodels.generator;
 
 import com.facebook.litho.annotations.OnCalculateCachedValue;
+import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.DelegateMethod;
 import com.facebook.litho.specmodels.model.MethodParamModel;
@@ -32,6 +33,7 @@ import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeVariableName;
 import java.lang.annotation.Annotation;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -43,7 +45,7 @@ public class CachedValueGenerator {
 
   private CachedValueGenerator() {}
 
-  public static TypeSpecDataHolder generate(SpecModel specModel) {
+  public static TypeSpecDataHolder generate(SpecModel specModel, EnumSet<RunMode> runMode) {
     final List<SpecMethodModel<DelegateMethod, Void>> onCalculateCachedValueMethods =
         SpecModelUtils.getMethodModelsWithAnnotation(specModel, OnCalculateCachedValue.class);
 
@@ -55,14 +57,16 @@ public class CachedValueGenerator {
     for (SpecMethodModel<DelegateMethod, Void> onCalculateCachedValueMethod :
         onCalculateCachedValueMethods) {
       builder.addTypeSpecDataHolder(
-          generateCachedValueMethodsAndClasses(specModel, onCalculateCachedValueMethod));
+          generateCachedValueMethodsAndClasses(specModel, onCalculateCachedValueMethod, runMode));
     }
 
     return builder.build();
   }
 
   private static TypeSpecDataHolder generateCachedValueMethodsAndClasses(
-      SpecModel specModel, SpecMethodModel<DelegateMethod, Void> onCalculateCachedValueMethod) {
+      SpecModel specModel,
+      SpecMethodModel<DelegateMethod, Void> onCalculateCachedValueMethod,
+      EnumSet<RunMode> runMode) {
     TypeSpecDataHolder.Builder typeSpecDataHolder = TypeSpecDataHolder.newBuilder();
 
     String cachedValueName = getAnnotatedName(onCalculateCachedValueMethod);
@@ -70,7 +74,7 @@ public class CachedValueGenerator {
     typeSpecDataHolder.addMethod(
         createGetterMethod(specModel, onCalculateCachedValueMethod, cachedValueName));
     typeSpecDataHolder.addType(
-        createInputsClass(specModel, onCalculateCachedValueMethod, cachedValueName));
+        createInputsClass(onCalculateCachedValueMethod, cachedValueName, runMode));
 
     return typeSpecDataHolder.build();
   }
@@ -173,9 +177,9 @@ public class CachedValueGenerator {
   }
 
   public static TypeSpec createInputsClass(
-      SpecModel specModel,
       SpecMethodModel<DelegateMethod, Void> onCalculateCachedValueMethod,
-      String cachedValueName) {
+      String cachedValueName,
+      EnumSet<RunMode> runMode) {
     TypeSpec.Builder typeSpec =
         TypeSpec.classBuilder(getInputsClassName(cachedValueName))
             .addModifiers(Modifier.PRIVATE, Modifier.STATIC);
@@ -250,10 +254,10 @@ public class CachedValueGenerator {
     for (MethodParamModel methodParamModel : onCalculateCachedValueMethodParams) {
       equalsMethod.addCode(
           ComponentBodyGenerator.getCompareStatement(
-              specModel,
               methodParamModel,
               methodParamModel.getName(),
-              "cachedValueInputs." + methodParamModel.getName()));
+              "cachedValueInputs." + methodParamModel.getName(),
+              runMode));
     }
 
     equalsMethod.addStatement("return true");

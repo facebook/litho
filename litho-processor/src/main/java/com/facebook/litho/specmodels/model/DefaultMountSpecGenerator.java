@@ -77,7 +77,7 @@ public class DefaultMountSpecGenerator implements SpecGenerator<MountSpecModel> 
         .addTypeSpecDataHolder(JavadocGenerator.generate(mountSpecModel))
         .addTypeSpecDataHolder(ClassAnnotationsGenerator.generate(mountSpecModel))
         .addTypeSpecDataHolder(PreambleGenerator.generate(mountSpecModel))
-        .addTypeSpecDataHolder(ComponentBodyGenerator.generate(mountSpecModel, null))
+        .addTypeSpecDataHolder(ComponentBodyGenerator.generate(mountSpecModel, null, runMode))
         .addTypeSpecDataHolder(TreePropGenerator.generate(mountSpecModel))
         .addTypeSpecDataHolder(
             DelegateMethodGenerator.generateDelegates(
@@ -98,7 +98,7 @@ public class DefaultMountSpecGenerator implements SpecGenerator<MountSpecModel> 
         .addTypeSpecDataHolder(RenderDataGenerator.generate(mountSpecModel))
         .addTypeSpecDataHolder(BuilderGenerator.generate(mountSpecModel))
         .addTypeSpecDataHolder(TagGenerator.generate(mountSpecModel, mBlacklistedTagInterfaces))
-        .addTypeSpecDataHolder(CachedValueGenerator.generate(mountSpecModel))
+        .addTypeSpecDataHolder(CachedValueGenerator.generate(mountSpecModel, runMode))
         .build()
         .addToTypeSpec(typeSpec);
 

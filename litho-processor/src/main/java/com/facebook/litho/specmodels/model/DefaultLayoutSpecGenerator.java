@@ -65,7 +65,7 @@ public class DefaultLayoutSpecGenerator implements SpecGenerator<LayoutSpecModel
         .addTypeSpecDataHolder(JavadocGenerator.generate(layoutSpecModel))
         .addTypeSpecDataHolder(ClassAnnotationsGenerator.generate(layoutSpecModel))
         .addTypeSpecDataHolder(PreambleGenerator.generate(layoutSpecModel))
-        .addTypeSpecDataHolder(ComponentBodyGenerator.generate(layoutSpecModel, null))
+        .addTypeSpecDataHolder(ComponentBodyGenerator.generate(layoutSpecModel, null, runMode))
         .addTypeSpecDataHolder(TreePropGenerator.generate(layoutSpecModel))
         .addTypeSpecDataHolder(
             DelegateMethodGenerator.generateDelegates(
@@ -80,7 +80,7 @@ public class DefaultLayoutSpecGenerator implements SpecGenerator<LayoutSpecModel
         .addTypeSpecDataHolder(RenderDataGenerator.generate(layoutSpecModel))
         .addTypeSpecDataHolder(BuilderGenerator.generate(layoutSpecModel))
         .addTypeSpecDataHolder(TagGenerator.generate(layoutSpecModel, new LinkedHashSet<>()))
-        .addTypeSpecDataHolder(CachedValueGenerator.generate(layoutSpecModel))
+        .addTypeSpecDataHolder(CachedValueGenerator.generate(layoutSpecModel, runMode))
         .addTypeSpecDataHolder(SimpleNameDelegateGenerator.generate(layoutSpecModel))
         .build()
         .addToTypeSpec(typeSpec);
