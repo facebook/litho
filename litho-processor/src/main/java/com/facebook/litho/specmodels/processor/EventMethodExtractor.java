@@ -98,9 +98,12 @@ public class EventMethodExtractor {
                 elements, executableElement, OnEvent.class, "value", DeclaredType.class);
         final Element eventClass = eventClassDeclaredType.asElement();
 
+        // In full mode, we get the return type from the Event class so that we can verify that it
+        // matches the return type of the method. In ABI mode, we can't access the Event class so
+        // we just use the method return type and leave validation for the full build.
         final TypeName returnType =
             runMode.contains(RunMode.ABI)
-                ? TypeName.VOID
+                ? TypeName.get(executableElement.getReturnType())
                 : EventDeclarationsExtractor.getReturnType(elements, eventClass);
         final ImmutableList<FieldModel> fields =
             runMode.contains(RunMode.ABI)
