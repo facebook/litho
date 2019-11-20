@@ -16,6 +16,7 @@
 
 package com.facebook.litho
 
+import android.graphics.drawable.Drawable
 import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
@@ -23,8 +24,6 @@ import androidx.annotation.DimenRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import com.facebook.litho.drawable.ComparableColorDrawable
-import com.facebook.litho.drawable.ComparableDrawable
-import com.facebook.litho.drawable.ComparableResDrawable
 
 /**
  * Retrieve a dimensional for a resource ID as a [Dp] value.
@@ -57,32 +56,32 @@ fun ComponentContext.stringRes(@StringRes id: Int, vararg formatArgs: Any): Stri
     }
 
 /**
- * Retrieve a [android.graphics.drawable.Drawable] for a resource ID as a [ComparableDrawable]
+ * Retrieve a [android.graphics.drawable.Drawable] for a resource ID as a [Drawable]
  * instance.
  */
-fun ComponentContext.drawableRes(@DrawableRes id: Int): ComparableDrawable =
-    ComparableResDrawable.create(androidContext, id)
+fun ComponentContext.drawableRes(@DrawableRes id: Int): Drawable? =
+    resourceResolver.resolveDrawableRes(id)
 
 /**
  * Retrieve a [android.graphics.drawable.Drawable], corresponding to an attribute resource ID, as
- * a [ComparableDrawable] instance. If given attribute ID can not be found, default Drawable
+ * a [Drawable] instance. If given attribute ID can not be found, default Drawable
  * resource ID [defResId] is used.
  */
-fun ComponentContext.drawableAttr(@AttrRes id: Int, @DrawableRes defResId: Int = 0): ComparableDrawable =
+fun ComponentContext.drawableAttr(@AttrRes id: Int, @DrawableRes defResId: Int = 0): Drawable? =
     drawableRes(resourceResolver.resolveResIdAttr(id, defResId))
 
 /**
- * Return a [android.graphics.drawable.Drawable] for a [ColorInt] value as a [ComparableDrawable]
+ * Return a [android.graphics.drawable.Drawable] for a [ColorInt] value as a [Drawable]
  * instance.
  */
-fun ComponentContext.drawableColor(@ColorInt color: Int): ComparableDrawable =
+fun ComponentContext.drawableColor(@ColorInt color: Int): Drawable =
     ComparableColorDrawable.create(color)
 
 /**
- * Return a [android.graphics.drawable.Drawable] for a [ColorInt] value as a [ComparableDrawable]
+ * Return a [android.graphics.drawable.Drawable] for a [ColorInt] value as a [Drawable]
  * instance.
  */
-fun ComponentContext.drawableColor(@ColorInt color: Long): ComparableDrawable =
+fun ComponentContext.drawableColor(@ColorInt color: Long): Drawable =
     ComparableColorDrawable.create(color.toInt())
 
 /**

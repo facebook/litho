@@ -20,7 +20,6 @@ import android.animation.StateListAnimator;
 import android.content.res.TypedArray;
 import android.graphics.PathEffect;
 import android.graphics.drawable.Drawable;
-import com.facebook.litho.drawable.ComparableDrawable;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
@@ -73,11 +72,6 @@ class NoOpInternalNode implements InternalNode {
   @Override
   public boolean areCachedMeasuresValid() {
     return false;
-  }
-
-  @Override
-  public @Nullable InternalNode background(@Nullable ComparableDrawable background) {
-    return null;
   }
 
   @Override
@@ -150,11 +144,6 @@ class NoOpInternalNode implements InternalNode {
 
   @Override
   public @Nullable InternalNode foreground(@Nullable Drawable foreground) {
-    return null;
-  }
-
-  @Override
-  public @Nullable InternalNode foreground(@Nullable ComparableDrawable foreground) {
     return null;
   }
 
@@ -279,9 +268,8 @@ class NoOpInternalNode implements InternalNode {
     return false;
   }
 
-  @androidx.annotation.Nullable
   @Override
-  public ComparableDrawable getBackground() {
+  public @Nullable Drawable getBackground() {
     return null;
   }
 
@@ -301,7 +289,7 @@ class NoOpInternalNode implements InternalNode {
 
   @Nullable
   @Override
-  public ComparableDrawable getForeground() {
+  public Drawable getForeground() {
     return null;
   }
 

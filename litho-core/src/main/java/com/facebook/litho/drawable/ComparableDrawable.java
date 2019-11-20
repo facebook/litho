@@ -24,26 +24,13 @@ import android.graphics.drawable.Drawable;
  * way, instead of using {@link Drawable#equals(Object)} which only checks if the references are
  * equal.
  *
- * @see ComparableDrawableWrapper
  * @see ComparableColorDrawable
- * @see ComparableResDrawable
  */
-public abstract class ComparableDrawable extends Drawable {
+public interface ComparableDrawable {
 
   /**
    * @param other The other drawable
    * @return {@code true} iff this drawable is equivalent to the {@param other}.
    */
-  public abstract boolean isEquivalentTo(ComparableDrawable other);
-
-  /** null safe utility method to check equality of 2 comparable drawables */
-  public static boolean isEquivalentTo(ComparableDrawable x, ComparableDrawable y) {
-    if (x == null) {
-      return y == null;
-    } else if (y == null) {
-      return true;
-    }
-
-    return x.isEquivalentTo(y);
-  }
+  boolean isEquivalentTo(ComparableDrawable other);
 }

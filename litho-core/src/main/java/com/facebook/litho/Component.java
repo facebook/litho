@@ -42,6 +42,7 @@ import androidx.annotation.Px;
 import androidx.annotation.StringRes;
 import androidx.annotation.StyleRes;
 import androidx.annotation.VisibleForTesting;
+import androidx.core.content.ContextCompat;
 import com.facebook.infer.annotation.ReturnsOwnership;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
@@ -49,8 +50,6 @@ import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.drawable.ComparableColorDrawable;
 import com.facebook.litho.drawable.ComparableDrawable;
-import com.facebook.litho.drawable.ComparableResDrawable;
-import com.facebook.litho.drawable.DefaultComparableDrawable;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
@@ -925,28 +924,12 @@ public abstract class Component extends ComponentLifecycle
     }
 
     /**
-     * @deprecated use {@link #background(ComparableDrawable)} more efficient diffing of drawables.
-     * @see ComparableDrawable
-     */
-    @Deprecated
-    public T background(@Nullable Drawable background) {
-      if (background instanceof ComparableDrawable || background == null) {
-        return background((ComparableDrawable) background);
-      }
-
-      return background(DefaultComparableDrawable.create(background));
-    }
-
-    /**
-     * Set the background of this component. The background drawable must extend {@link *
+     * Set the background of this component. The background drawable can implement {@link
      * ComparableDrawable} for more efficient diffing while when drawables are remounted or updated.
-     * * If the drawable does not extend {@link ComparableDrawable} then create a new class which *
-     * extends {@link ComparableDrawable} and implement the * {@link
-     * ComparableDrawable#isEquivalentTo(ComparableDrawable)}.
      *
      * @see ComparableDrawable
      */
-    public T background(@Nullable ComparableDrawable background) {
+    public T background(@Nullable Drawable background) {
       mComponent.getOrCreateCommonProps().background(background);
       return getThis();
     }
@@ -975,10 +958,10 @@ public abstract class Component extends ComponentLifecycle
 
     public T backgroundRes(@DrawableRes int resId) {
       if (resId == 0) {
-        return background((ComparableDrawable) null);
+        return background(null);
       }
 
-      return background(ComparableResDrawable.create(mContext.getAndroidContext(), resId));
+      return background(ContextCompat.getDrawable(mContext.getAndroidContext(), resId));
     }
 
     public T border(@Nullable Border border) {
@@ -1184,20 +1167,9 @@ public abstract class Component extends ComponentLifecycle
      *
      * @see ComparableDrawable
      */
-    public T foreground(@Nullable ComparableDrawable foreground) {
+    public T foreground(@Nullable Drawable foreground) {
       mComponent.getOrCreateCommonProps().foreground(foreground);
       return getThis();
-    }
-
-    /**
-     * @deprecated use {@link #foreground(ComparableDrawable)} more efficient diffing of drawables.
-     */
-    @Deprecated
-    public T foreground(@Nullable Drawable foreground) {
-      if (foreground instanceof ComparableDrawable || foreground == null) {
-        return foreground((ComparableDrawable) foreground);
-      }
-      return foreground(foreground != null ? DefaultComparableDrawable.create(foreground) : null);
     }
 
     public T foregroundAttr(@AttrRes int resId, @DrawableRes int defaultResId) {
@@ -1217,7 +1189,7 @@ public abstract class Component extends ComponentLifecycle
         return foreground(null);
       }
 
-      return foreground(ComparableResDrawable.create(mContext.getAndroidContext(), resId));
+      return foreground(ContextCompat.getDrawable(mContext.getAndroidContext(), resId));
     }
 
     public T fullImpressionHandler(

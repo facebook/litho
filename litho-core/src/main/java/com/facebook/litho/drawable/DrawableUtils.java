@@ -16,30 +16,23 @@
 
 package com.facebook.litho.drawable;
 
-import android.graphics.drawable.ColorDrawable;
-import androidx.annotation.ColorInt;
+import android.graphics.drawable.Drawable;
+import androidx.annotation.Nullable;
 
-/** A comparable color drawable. */
-public class ComparableColorDrawable extends ColorDrawable implements ComparableDrawable {
+public class DrawableUtils {
 
-  private ComparableColorDrawable(@ColorInt int color) {
-    super(color);
-  }
-
-  @Override
-  public boolean isEquivalentTo(ComparableDrawable other) {
-    if (this == other) {
-      return true;
-    }
-
-    if (!(other instanceof ComparableColorDrawable)) {
+  /** null safe utility method to check equality of 2 comparable drawables */
+  public static boolean isEquivalentTo(@Nullable Drawable x, @Nullable Drawable y) {
+    if (x == null) {
+      return y == null;
+    } else if (y == null) {
       return false;
     }
 
-    return getColor() == ((ComparableColorDrawable) other).getColor();
-  }
+    if (x instanceof ComparableDrawable && y instanceof ComparableDrawable) {
+      return ((ComparableDrawable) x).isEquivalentTo((ComparableDrawable) y);
+    }
 
-  public static ComparableColorDrawable create(@ColorInt int color) {
-    return new ComparableColorDrawable(color);
+    return x.equals(y);
   }
 }

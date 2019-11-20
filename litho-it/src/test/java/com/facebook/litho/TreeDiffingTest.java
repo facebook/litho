@@ -42,9 +42,9 @@ import static org.mockito.Mockito.mock;
 
 import android.graphics.Color;
 import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import androidx.collection.SparseArrayCompat;
 import com.facebook.litho.drawable.ComparableColorDrawable;
-import com.facebook.litho.drawable.ComparableDrawable;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestSizeDependentComponent;
@@ -60,9 +60,9 @@ import org.robolectric.RuntimeEnvironment;
 @RunWith(ComponentsTestRunner.class)
 public class TreeDiffingTest {
 
-  private static ComparableDrawable sRedDrawable;
-  private static ComparableDrawable sBlackDrawable;
-  private static ComparableDrawable sTransparentDrawable;
+  private static Drawable sRedDrawable;
+  private static Drawable sBlackDrawable;
+  private static Drawable sTransparentDrawable;
 
   private int mUnspecifiedSpec;
 

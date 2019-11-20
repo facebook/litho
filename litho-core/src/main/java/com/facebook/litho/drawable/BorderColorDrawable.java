@@ -25,6 +25,7 @@ import android.graphics.PathEffect;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.graphics.drawable.Drawable;
 import androidx.annotation.ColorInt;
 import androidx.annotation.Px;
 import com.facebook.litho.CommonUtils;
@@ -32,7 +33,7 @@ import java.util.Arrays;
 import javax.annotation.Nullable;
 
 /** Drawable that draws border lines with given color, widths and path effect. */
-public class BorderColorDrawable extends ComparableDrawable {
+public class BorderColorDrawable extends Drawable implements ComparableDrawable {
 
   private static final int QUICK_REJECT_COLOR = Color.TRANSPARENT;
   private static final float CLIP_ANGLE = 45f;

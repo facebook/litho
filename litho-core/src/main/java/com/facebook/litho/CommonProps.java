@@ -17,6 +17,7 @@
 package com.facebook.litho;
 
 import android.animation.StateListAnimator;
+import android.graphics.drawable.Drawable;
 import android.util.SparseArray;
 import android.view.ViewOutlineProvider;
 import androidx.annotation.AttrRes;
@@ -25,7 +26,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.annotation.StyleRes;
 import com.facebook.infer.annotation.ThreadConfined;
-import com.facebook.litho.drawable.ComparableDrawable;
 import com.facebook.yoga.YogaEdge;
 
 /** Common props that are accessible outside of the framework. */
@@ -54,7 +54,7 @@ public interface CommonProps extends CommonPropsCopyable, LayoutProps {
 
   void setStyle(@AttrRes int defStyleAttr, @StyleRes int defStyleRes);
 
-  void background(@Nullable ComparableDrawable background);
+  void background(@Nullable Drawable background);
 
   void testKey(String testKey);
 
@@ -72,12 +72,12 @@ public interface CommonProps extends CommonPropsCopyable, LayoutProps {
 
   void touchExpansionPx(@Nullable YogaEdge edge, @Px int touchExpansion);
 
-  void foreground(@Nullable ComparableDrawable foreground);
+  void foreground(@Nullable Drawable foreground);
 
   void clickHandler(EventHandler<ClickEvent> clickHandler);
 
   @Nullable
-  ComparableDrawable getBackground();
+  Drawable getBackground();
 
   void longClickHandler(EventHandler<LongClickEvent> longClickHandler);
 

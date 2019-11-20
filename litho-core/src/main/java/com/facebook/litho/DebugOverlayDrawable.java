@@ -22,6 +22,7 @@ import android.graphics.ColorFilter;
 import android.graphics.Paint;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.litho.drawable.ComparableDrawable;
 import java.util.List;
@@ -31,7 +32,7 @@ import java.util.List;
  * the top left corner with text representing the number of columns. Add overlay color within
  * drawing bounds.
  */
-public class DebugOverlayDrawable extends ComparableDrawable {
+public class DebugOverlayDrawable extends Drawable implements ComparableDrawable {
 
   @VisibleForTesting static final int COLOR_RED_SEMITRANSPARENT = Color.parseColor("#22FF0000");
   @VisibleForTesting static final int BOX_WIDTH_PX = 16;

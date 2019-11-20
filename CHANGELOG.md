@@ -5,6 +5,13 @@
 _release-date_
 
 * **Breaking:**: Removed unused methods `getKeyCollisionStackTraceBlacklist` `getKeyCollisionStackTraceKeywords` from the `ComponentsReporter.Reporter` interface.
+* **Breaking:** `ComparableDrawable` is an interface now (instead of a Drawable).
+    * Litho's DrawableWrapper doesn't mimic Android support library implementations of DrawableWrapper, e.g. DrawableWrapperApi21.java etc. Litho's wrapper will have to implement this correctly to have a legitimate chance of working across OS versions and all drawable types. This is not a good position to be in. It is better to remove the wrapper all together; this diff doesn't removes it but stops usages except for specific internal ones.
+
+    * In essence if a background or foreground Drawable is also a ComparableDrawable Litho will invoke the isEquivalentTo method for comparison (instead of equals). Also, ComparableDrawable is now an optional interface; so non comparable drawables will not be wrapped.
+    * The usage remains largely unchanged (except for the removal of Litho's DrawableWrapper implementation)
+* **Breaking:** Removes `Component.Builder#background(ComparableDrawable)` and `Component.Builder#foreground(ComparableDrawable)`.
+* **Breaking:** Removes `ComparableResDrawable`, `ComparableIntIdDrawable`, `DefaultComparableDrawable`,
 
 For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.32.0...master).
 
@@ -41,7 +48,7 @@ _2019-11-15_
  * Fix: Enable automatic RTL support in sample apps.
 
 For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.31.0...v0.32.0).
- 
+
 
 ## Version 0.31.0
 
@@ -67,7 +74,7 @@ _2019-08-23_
  * New: Allow to provide custom `GridLayoutInfo` (i.e. custom `GridLayoutManager`) through `GridLayoutInfoFactory`. ([4568d58](https://github.com/facebook/litho/commit/4568d581249a05c32397565300cc000a1a2f1011))
  * New: Allow creating `ComponentTree` without specifying root.
  * New: Deprecate `ComponentsLogger.emitMessage()` in favor of `ComponentsReporter.Reporter.emitMessage()`. ([9cb4caf](https://github.com/facebook/litho/commit/9cb4cafb1ffb03dedfe6698bc24ccdef48f0a9a1))
- * New: Auto set `Text.ellipsize()` if `maxLines()` is specified without an accompanying ellipsize, to make behavior consistent across different Android versions. ([3bef059](https://github.com/facebook/litho/commit/3bef059cef217e1820c9bd8a3a9f7cb8364abfa1)) 
+ * New: Auto set `Text.ellipsize()` if `maxLines()` is specified without an accompanying ellipsize, to make behavior consistent across different Android versions. ([3bef059](https://github.com/facebook/litho/commit/3bef059cef217e1820c9bd8a3a9f7cb8364abfa1))
  * New: Share the same `ResourceResolver` across all `Component`s in the same tree. ([c93517c](https://github.com/facebook/litho/commit/c93517c6fed1d05e186e4d9b71de19c9fb26830c), [7656822](https://github.com/facebook/litho/commit/7656822c8dc1d565520bb26111ebbd20ba74ca19), [dde30dc](https://github.com/facebook/litho/commit/dde30dc0fa1a7d1617f90129651d0801c0079299))
  * New: Add support for A11y headers. ([#573](https://github.com/facebook/litho/pull/573))
  * New: Update documentation and javadocs.
@@ -76,30 +83,30 @@ _2019-08-23_
  * Fix: Propagate injected `treeProps` for Layout PerfEvent. ([#574](https://github.com/facebook/litho/pull/574))
  * Fix: Don't crash when using primitive `@CachedValue`s together with HotSwap mode. ([501f1a1](https://github.com/facebook/litho/commit/501f1a171e3df30bf40330b9eaffbb13f61cc007))
  * Fix: Improve `@OnUpdateStateWithTransition`'s behavior.
- 
+
  For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.29.0...v0.30.0).
 
 
 ## Version 0.29.0
 
 _2019-07-11_
- 
+
  * New: Additional Sections debugging APIs:
    - Make `Change.getRenderInfos()` public.
    - Add `ChangesInfo.getAllChanges()`.
  * Fix: Don't crash on dangling mount content.
- 
+
  For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.28.0...v0.29.0).
- 
+
 
 ## Version 0.28.0
 
 _2019-07-05_
- 
+
  * New: Plain code Codelabs with README instructions. Try them out in [codelabs](codelabs).
  * New: Add interface `ChangesetDebugConfiguration.ChangesetDebugListener` for listening for `ChangeSet` generation in Sections.
  * Fix: Cleanup some unused code.
- 
+
  For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.27.0...v0.28.0).
 
 
@@ -122,10 +129,10 @@ _2019-06-24_
  * Fix: Fix perf logging for dirty mounts. ([3ad8bfb](https://github.com/facebook/litho/commit/3ad8bfba12a43e108602bcd8c63fd2404e6203cb))
  * Fix: Don't crash when `@OnCalculateCachedValue` takes no args. ([2a0f524](https://github.com/facebook/litho/commit/2a0f5240bc8c711d8e45db0e5426517f8bfbf49a))
  * Fix: Reduce number of systrace markers in `collectResults`: these were skewing the perceived size of `LayoutState.collectResults` in production and weren't actionable. ([3107467](https://github.com/facebook/litho/commit/3107467a4e3fd649821757699a5adba683f47edd))
- 
+
  For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.26.0...v0.27.0).
- 
- 
+
+
 ## Version 0.26.1
 
 _2019-05-28_
@@ -149,9 +156,9 @@ _2019-05-13_
  * Fix: Cleanup tests and unused code.
  * Fix: Remove object pooling everywhere.
  * Fix: Make Robolectric tests work. ([a92018a](https://github.com/facebook/litho/commit/a92018a32d5241ace4d27f4120908595fb26b51a))
- 
+
  For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.25.0...v0.26.0).
- 
+
 
 ## Version 0.25.0
 

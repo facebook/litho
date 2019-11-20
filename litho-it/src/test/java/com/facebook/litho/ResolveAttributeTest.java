@@ -30,7 +30,6 @@ import static org.robolectric.Shadows.shadowOf;
 
 import android.graphics.drawable.Drawable;
 import android.view.ContextThemeWrapper;
-import com.facebook.litho.drawable.ComparableDrawableWrapper;
 import com.facebook.litho.it.R;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import org.junit.Before;
@@ -56,8 +55,8 @@ public class ResolveAttributeTest {
     InternalNode node = createAndGetInternalNode(column);
 
     Drawable d = mContext.getResources().getDrawable(test_bg);
-    ComparableDrawableWrapper comparable = (ComparableDrawableWrapper) node.getBackground();
-    assertThat(shadowOf(comparable.getWrappedDrawable()).getCreatedFromResId())
+    Drawable drawable = node.getBackground();
+    assertThat(shadowOf(drawable).getCreatedFromResId())
         .isEqualTo(shadowOf(d).getCreatedFromResId());
   }
 
@@ -79,8 +78,8 @@ public class ResolveAttributeTest {
     InternalNode node = createAndGetInternalNode(column);
 
     Drawable d = mContext.getResources().getDrawable(test_bg);
-    ComparableDrawableWrapper comparable = (ComparableDrawableWrapper) node.getBackground();
-    assertThat(shadowOf(comparable.getWrappedDrawable()).getCreatedFromResId())
+    Drawable drawable = node.getBackground();
+    assertThat(shadowOf(drawable).getCreatedFromResId())
         .isEqualTo(shadowOf(d).getCreatedFromResId());
   }
 

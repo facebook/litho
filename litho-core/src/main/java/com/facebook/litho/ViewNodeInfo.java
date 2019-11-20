@@ -18,9 +18,10 @@ package com.facebook.litho;
 
 import android.animation.StateListAnimator;
 import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.view.View;
 import androidx.annotation.DrawableRes;
-import com.facebook.litho.drawable.ComparableDrawable;
+import com.facebook.litho.drawable.DrawableUtils;
 import com.facebook.yoga.YogaDirection;
 import javax.annotation.Nullable;
 
@@ -30,27 +31,29 @@ import javax.annotation.Nullable;
  */
 class ViewNodeInfo {
 
-  private ComparableDrawable mBackground;
-  private ComparableDrawable mForeground;
+  private @Nullable Drawable mBackground;
+  private @Nullable Drawable mForeground;
   private Rect mPadding;
   private Rect mExpandedTouchBounds;
   private YogaDirection mLayoutDirection;
   private @Nullable StateListAnimator mStateListAnimator;
   private @DrawableRes int mStateListAnimatorRes;
 
-  void setBackground(ComparableDrawable background) {
+  void setBackground(@Nullable Drawable background) {
     mBackground = background;
   }
 
-  ComparableDrawable getBackground() {
+  @Nullable
+  Drawable getBackground() {
     return mBackground;
   }
 
-  void setForeground(ComparableDrawable foreground) {
+  void setForeground(@Nullable Drawable foreground) {
     mForeground = foreground;
   }
 
-  ComparableDrawable getForeground() {
+  @Nullable
+  Drawable getForeground() {
     return mForeground;
   }
 
@@ -162,11 +165,11 @@ class ViewNodeInfo {
       return false;
     }
 
-    if (!ComparableDrawable.isEquivalentTo(mBackground, other.mBackground)) {
+    if (!DrawableUtils.isEquivalentTo(mBackground, other.mBackground)) {
       return false;
     }
 
-    if (!ComparableDrawable.isEquivalentTo(mForeground, other.mForeground)) {
+    if (!DrawableUtils.isEquivalentTo(mForeground, other.mForeground)) {
       return false;
     }
 

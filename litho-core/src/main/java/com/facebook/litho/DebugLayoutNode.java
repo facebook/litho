@@ -17,7 +17,6 @@
 package com.facebook.litho;
 
 import android.graphics.drawable.Drawable;
-import com.facebook.litho.drawable.ComparableDrawable;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaDirection;
@@ -50,7 +49,7 @@ public final class DebugLayoutNode {
   }
 
   @Nullable
-  public ComparableDrawable getBackground() {
+  public Drawable getBackground() {
     return mNode.getBackground();
   }
 

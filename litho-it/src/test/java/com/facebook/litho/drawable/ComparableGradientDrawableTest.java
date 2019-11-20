@@ -32,7 +32,6 @@ public class ComparableGradientDrawableTest {
     ComparableGradientDrawable comparable = new ComparableGradientDrawable();
 
     assertThat(comparable).isNotNull();
-    assertThat(comparable.getWrappedDrawable()).isNotNull();
   }
 
   @Test

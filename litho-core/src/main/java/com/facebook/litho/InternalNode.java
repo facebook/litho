@@ -24,7 +24,6 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.Px;
 import com.facebook.infer.annotation.ThreadConfined;
-import com.facebook.litho.drawable.ComparableDrawable;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
@@ -59,12 +58,6 @@ public interface InternalNode extends ComponentLayout, LayoutProps, Copyable<Int
 
   boolean areCachedMeasuresValid();
 
-  InternalNode background(@Nullable ComparableDrawable background);
-
-  /**
-   * @deprecated use {@link #background(ComparableDrawable)} more efficient diffing of drawables.
-   */
-  @Deprecated
   InternalNode background(@Nullable Drawable background);
 
   InternalNode backgroundColor(@ColorInt int backgroundColor);
@@ -94,13 +87,7 @@ public interface InternalNode extends ComponentLayout, LayoutProps, Copyable<Int
 
   InternalNode focusedHandler(@Nullable EventHandler<FocusedVisibleEvent> focusedHandler);
 
-  /**
-   * @deprecated use {@link #foreground(ComparableDrawable)} more efficient diffing of drawables.
-   */
-  @Deprecated
   InternalNode foreground(@Nullable Drawable foreground);
-
-  InternalNode foreground(@Nullable ComparableDrawable foreground);
 
   InternalNode foregroundColor(@ColorInt int foregroundColor);
 
@@ -146,7 +133,7 @@ public interface InternalNode extends ComponentLayout, LayoutProps, Copyable<Int
   EventHandler<FocusedVisibleEvent> getFocusedHandler();
 
   @Nullable
-  ComparableDrawable getForeground();
+  Drawable getForeground();
 
   @Nullable
   EventHandler<FullImpressionVisibleEvent> getFullImpressionHandler();

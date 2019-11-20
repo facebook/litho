@@ -35,8 +35,8 @@ import com.facebook.infer.annotation.OkToExtend;
  * wrapping, otherwise internal {@link Drawable.Callback} may be dropped.
  */
 @OkToExtend
-public abstract class ComparableDrawableWrapper extends ComparableDrawable
-    implements Drawable.Callback {
+public abstract class ComparableDrawableWrapper extends Drawable
+    implements ComparableDrawable, Drawable.Callback {
 
   private Drawable mDrawable;
 

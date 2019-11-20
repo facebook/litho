@@ -44,15 +44,13 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.ViewCompat;
 import com.facebook.infer.annotation.OkToExtend;
 import com.facebook.infer.annotation.ReturnsOwnership;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.drawable.ComparableColorDrawable;
-import com.facebook.litho.drawable.ComparableDrawable;
-import com.facebook.litho.drawable.ComparableResDrawable;
-import com.facebook.litho.drawable.DefaultComparableDrawable;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaBaselineFunction;
 import com.facebook.yoga.YogaConstants;
@@ -135,8 +133,8 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   private @Nullable EventHandler<FullImpressionVisibleEvent> mFullImpressionHandler;
   private @Nullable EventHandler<InvisibleEvent> mInvisibleHandler;
   private @Nullable EventHandler<VisibilityChangedEvent> mVisibilityChangedHandler;
-  private @Nullable ComparableDrawable mBackground;
-  private @Nullable ComparableDrawable mForeground;
+  private @Nullable Drawable mBackground;
+  private @Nullable Drawable mForeground;
   private @Nullable PathEffect mBorderPathEffect;
   private @Nullable StateListAnimator mStateListAnimator;
   private @Nullable boolean[] mIsPaddingPercent;
@@ -274,23 +272,11 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   }
 
   @Override
-  public InternalNode background(@Nullable ComparableDrawable background) {
+  public InternalNode background(@Nullable Drawable background) {
     mPrivateFlags |= PFLAG_BACKGROUND_IS_SET;
     mBackground = background;
     setPaddingFromBackground(background);
     return this;
-  }
-
-  /**
-   * @deprecated use {@link #background(ComparableDrawable)} more efficient diffing of drawables.
-   */
-  @Deprecated
-  @Override
-  public InternalNode background(@Nullable Drawable background) {
-    if (background instanceof ComparableDrawable) {
-      return background((ComparableDrawable) background);
-    }
-    return background(background != null ? DefaultComparableDrawable.create(background) : null);
   }
 
   @Override
@@ -304,7 +290,7 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
       return background(null);
     }
 
-    return background(ComparableResDrawable.create(mComponentContext.getAndroidContext(), resId));
+    return background(ContextCompat.getDrawable(mComponentContext.getAndroidContext(), resId));
   }
 
   @Override
@@ -431,17 +417,8 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
     return this;
   }
 
-  /**
-   * @deprecated use {@link #foreground(ComparableDrawable)} more efficient diffing of drawables.
-   */
-  @Deprecated
   @Override
   public InternalNode foreground(@Nullable Drawable foreground) {
-    return foreground(foreground != null ? DefaultComparableDrawable.create(foreground) : null);
-  }
-
-  @Override
-  public InternalNode foreground(@Nullable ComparableDrawable foreground) {
     mPrivateFlags |= PFLAG_FOREGROUND_IS_SET;
     mForeground = foreground;
     return this;
@@ -458,7 +435,7 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
       return foreground(null);
     }
 
-    return foreground(ComparableResDrawable.create(mComponentContext.getAndroidContext(), resId));
+    return foreground(ContextCompat.getDrawable(mComponentContext.getAndroidContext(), resId));
   }
 
   @Override
@@ -545,7 +522,7 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   }
 
   @Override
-  public @Nullable ComparableDrawable getForeground() {
+  public @Nullable Drawable getForeground() {
     return mForeground;
   }
 
@@ -1415,7 +1392,7 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   }
 
   @Override
-  public @Nullable ComparableDrawable getBackground() {
+  public @Nullable Drawable getBackground() {
     return mBackground;
   }
 

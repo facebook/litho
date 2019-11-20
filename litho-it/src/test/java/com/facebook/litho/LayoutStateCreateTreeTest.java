@@ -27,11 +27,11 @@ import static org.mockito.Mockito.when;
 import android.animation.StateListAnimator;
 import android.annotation.TargetApi;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.SparseArray;
 import com.facebook.litho.annotations.ImportantForAccessibility;
 import com.facebook.litho.drawable.ComparableColorDrawable;
-import com.facebook.litho.drawable.ComparableDrawable;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestSizeDependentComponent;
@@ -327,8 +327,8 @@ public class LayoutStateCreateTreeTest {
   @Config(sdk = Build.VERSION_CODES.LOLLIPOP)
   @TargetApi(Build.VERSION_CODES.LOLLIPOP)
   public void testAddingAllAttributes() {
-    final ComparableDrawable background = ComparableColorDrawable.create(Color.RED);
-    final ComparableDrawable foreground = ComparableColorDrawable.create(Color.BLACK);
+    final Drawable background = ComparableColorDrawable.create(Color.RED);
+    final Drawable foreground = ComparableColorDrawable.create(Color.BLACK);
     final EventHandler<ClickEvent> clickHandler = mock(EventHandler.class);
     final EventHandler<LongClickEvent> longClickHandler = mock(EventHandler.class);
     final EventHandler<TouchEvent> touchHandler = mock(EventHandler.class);

@@ -18,15 +18,15 @@ package com.facebook.litho;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import com.facebook.litho.drawable.ComparableDrawable;
+import com.facebook.litho.drawable.DrawableUtils;
 
 class DrawableComponent<T extends Drawable> extends Component {
 
-  ComparableDrawable mDrawable;
+  Drawable mDrawable;
   int mDrawableWidth;
   int mDrawableHeight;
 
-  private DrawableComponent(ComparableDrawable drawable) {
+  private DrawableComponent(Drawable drawable) {
     super("DrawableComponent");
     mDrawable = drawable;
   }
@@ -72,19 +72,19 @@ class DrawableComponent<T extends Drawable> extends Component {
     return MountType.DRAWABLE;
   }
 
-  public static DrawableComponent create(ComparableDrawable drawable) {
+  public static DrawableComponent create(Drawable drawable) {
     return new DrawableComponent<>(drawable);
   }
 
   @Override
   protected boolean shouldUpdate(Component previous, Component next) {
-    final ComparableDrawable previousDrawable = ((DrawableComponent) previous).getDrawable();
-    final ComparableDrawable nextDrawable = ((DrawableComponent) next).getDrawable();
+    final Drawable previousDrawable = ((DrawableComponent) previous).getDrawable();
+    final Drawable nextDrawable = ((DrawableComponent) next).getDrawable();
 
-    return !previousDrawable.isEquivalentTo(nextDrawable);
+    return !DrawableUtils.isEquivalentTo(previousDrawable, nextDrawable);
   }
 
-  private ComparableDrawable getDrawable() {
+  private Drawable getDrawable() {
     return mDrawable;
   }
 

@@ -27,7 +27,6 @@ import com.facebook.litho.EventHandler;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.LithoViewTestHelper;
 import com.facebook.litho.StateContainer;
-import com.facebook.litho.drawable.ComparableDrawable;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -179,7 +178,7 @@ public class InspectableComponent {
 
   /** @return The background drawable asscociated with this debug component. May be null. */
   @Nullable
-  public ComparableDrawable getBackground() {
+  public Drawable getBackground() {
     final DebugLayoutNode layout = mComponent.getLayoutNode();
     return layout == null ? null : layout.getBackground();
   }

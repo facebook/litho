@@ -47,6 +47,7 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.text.TextUtils;
 import android.view.View;
@@ -60,7 +61,6 @@ import com.facebook.litho.ComponentTree.LayoutStateFuture;
 import com.facebook.litho.annotations.ImportantForAccessibility;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.drawable.BorderColorDrawable;
-import com.facebook.litho.drawable.ComparableDrawable;
 import com.facebook.litho.stats.LithoStats;
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaDirection;
@@ -823,7 +823,7 @@ class LayoutState {
     }
 
     // 2. Add background if defined.
-    final ComparableDrawable background = node.getBackground();
+    final Drawable background = node.getBackground();
     if (background != null) {
       if (layoutOutput != null && layoutOutput.getViewNodeInfo() != null) {
         layoutOutput.getViewNodeInfo().setBackground(background);
@@ -931,7 +931,7 @@ class LayoutState {
     }
 
     // 6. Add foreground if defined.
-    final ComparableDrawable foreground = node.getForeground();
+    final Drawable foreground = node.getForeground();
     if (foreground != null) {
       if (layoutOutput != null && layoutOutput.getViewNodeInfo() != null && SDK_INT >= M) {
         layoutOutput.getViewNodeInfo().setForeground(foreground);
@@ -1133,7 +1133,7 @@ class LayoutState {
       LayoutState layoutState,
       @Nullable LayoutOutput recycle,
       @Nullable DebugHierarchy.Node hierarchy,
-      ComparableDrawable drawable,
+      Drawable drawable,
       @OutputUnitType int type,
       boolean matchHostBoundsTransitions) {
     final Component drawableComponent = DrawableComponent.create(drawable);
@@ -1165,7 +1165,7 @@ class LayoutState {
     return output;
   }
 
-  private static ComparableDrawable getBorderColorDrawable(InternalNode node) {
+  private static Drawable getBorderColorDrawable(InternalNode node) {
     if (!node.shouldDrawBorders()) {
       throw new RuntimeException("This node does not support drawing border color");
     }
