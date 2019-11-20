@@ -220,12 +220,6 @@ public class ComponentsConfiguration {
    */
   public static boolean shouldUseDeepCloneDuringReconciliation = false;
 
-  /**
-   * Cache the device type to eliminate expensive package manager calls when using the
-   * DoubleMeasureFixUtil.
-   */
-  public static boolean shouldCacheDeviceTypeOnDoubleMeasure = false;
-
   /** When enabled Litho will immediately release non-reconcilable InternalNode tree. */
   public static boolean shouldReleaseNonReconcilableTree = false;
 

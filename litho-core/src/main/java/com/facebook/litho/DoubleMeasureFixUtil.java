@@ -23,10 +23,11 @@ import android.util.DisplayMetrics;
 
 public class DoubleMeasureFixUtil {
 
-  private static final short NORMAL = 1;
-  private static final short CHROMEBOOK = 2;
+  private static final byte UNSET = 0;
+  private static final byte NORMAL = 1;
+  private static final byte CHROMEBOOK = 2;
 
-  private static short deviceType = 0;
+  private static byte deviceType = UNSET;
 
   /**
    * Correction for an Android bug on some devices with "special" densities where the system will
@@ -40,18 +41,13 @@ public class DoubleMeasureFixUtil {
    */
   public static int correctWidthSpecForAndroidDoubleMeasureBug(
       Resources resources, PackageManager packageManager, int widthSpec) {
-    return correctWidthSpecForAndroidDoubleMeasureBug(resources, packageManager, widthSpec, false);
-  }
-
-  public static int correctWidthSpecForAndroidDoubleMeasureBug(
-      Resources resources, PackageManager packageManager, int widthSpec, boolean shouldCache) {
     final @SizeSpec.MeasureSpecMode int mode = SizeSpec.getMode(widthSpec);
     if (mode == SizeSpec.UNSPECIFIED) {
       return widthSpec;
     }
 
     // Will cache the device type to avoid repetitive package manager calls.
-    if (deviceType == 0 || !shouldCache) {
+    if (deviceType == UNSET) {
       try {
         // Required to determine whether device used is a Chromebook.
         // See https://stackoverflow.com/questions/39784415/ for details.
