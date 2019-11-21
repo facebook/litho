@@ -367,57 +367,59 @@ public class MountStateRemountInPlaceTest {
 
   @Test
   public void testRemountSameSubTreeWithDifferentParentHost() {
+    ComponentContext scopedContext =
+        ComponentContext.withComponentScope(mContext, Row.create(mContext).build());
     final TestComponent firstComponent =
-        TestDrawableComponent.create(mContext, false, true, true, false)
+        TestDrawableComponent.create(scopedContext, false, true, true, false)
             .widthPx(100)
             .heightPx(100)
             .build();
 
     final Component firstLayout =
-        Column.create(mContext)
+        Column.create(scopedContext)
             .child(
-                Column.create(mContext)
-                    .clickHandler(mContext.newEventHandler(3))
-                    .child(Text.create(mContext).widthPx(100).heightPx(100).text("test")))
+                Column.create(scopedContext)
+                    .clickHandler(scopedContext.newEventHandler(3))
+                    .child(Text.create(scopedContext).widthPx(100).heightPx(100).text("test")))
             .child(
-                Column.create(mContext)
-                    .clickHandler(mContext.newEventHandler(2))
-                    .child(Text.create(mContext).widthPx(100).heightPx(100).text("test2"))
+                Column.create(scopedContext)
+                    .clickHandler(scopedContext.newEventHandler(2))
+                    .child(Text.create(scopedContext).widthPx(100).heightPx(100).text("test2"))
                     .child(
-                        Column.create(mContext)
-                            .clickHandler(mContext.newEventHandler(1))
+                        Column.create(scopedContext)
+                            .clickHandler(scopedContext.newEventHandler(1))
                             .child(firstComponent)
                             .child(
-                                SolidColor.create(mContext)
+                                SolidColor.create(scopedContext)
                                     .widthPx(100)
                                     .heightPx(100)
                                     .color(Color.GREEN))))
             .build();
 
     final Component secondLayout =
-        Column.create(mContext)
+        Column.create(scopedContext)
             .child(
-                Column.create(mContext)
-                    .clickHandler(mContext.newEventHandler(3))
-                    .child(Text.create(mContext).widthPx(100).heightPx(100).text("test"))
+                Column.create(scopedContext)
+                    .clickHandler(scopedContext.newEventHandler(3))
+                    .child(Text.create(scopedContext).widthPx(100).heightPx(100).text("test"))
                     .child(
-                        Column.create(mContext)
-                            .clickHandler(mContext.newEventHandler(1))
+                        Column.create(scopedContext)
+                            .clickHandler(scopedContext.newEventHandler(1))
                             .child(firstComponent)
                             .child(
-                                SolidColor.create(mContext)
+                                SolidColor.create(scopedContext)
                                     .widthPx(100)
                                     .heightPx(100)
                                     .color(Color.GREEN))))
             .child(
-                Column.create(mContext)
-                    .clickHandler(mContext.newEventHandler(2))
-                    .child(Text.create(mContext).widthPx(100).heightPx(100).text("test2")))
+                Column.create(scopedContext)
+                    .clickHandler(scopedContext.newEventHandler(2))
+                    .child(Text.create(scopedContext).widthPx(100).heightPx(100).text("test2")))
             .build();
 
     ComponentTree tree =
-        ComponentTree.create(mContext, firstLayout).isReconciliationEnabled(false).build();
-    LithoView cv = new LithoView(mContext);
+        ComponentTree.create(scopedContext, firstLayout).isReconciliationEnabled(false).build();
+    LithoView cv = new LithoView(scopedContext);
 
     ComponentTestHelper.mountComponent(cv, tree);
     tree.setRoot(secondLayout);
