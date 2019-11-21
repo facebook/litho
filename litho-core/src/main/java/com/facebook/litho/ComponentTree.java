@@ -120,7 +120,7 @@ public class ComponentTree {
   }
 
   @GuardedBy("this")
-  private @Nullable MeasureListener mMeasureListener;
+  private @Nullable List<MeasureListener> mMeasureListeners;
 
   /**
    * Listener that will be notified when a new LayoutState is computed and ready to be committed to
@@ -307,7 +307,7 @@ public class ComponentTree {
     mPreAllocateMountContentHandler = builder.preAllocateMountContentHandler;
     mIsAsyncUpdateStateEnabled = builder.asyncStateUpdates;
     mHasMounted = builder.hasMounted;
-    mMeasureListener = builder.mMeasureListener;
+    addMeasureListener(builder.mMeasureListener);
     mUseCancelableLayoutFutures = builder.useCancelableLayoutFutures;
     mMoveLayoutsBetweenThreads = builder.canInterruptAndMoveLayoutsBetweenThreads;
     isReconciliationEnabled = builder.isReconciliationEnabled;
@@ -346,6 +346,35 @@ public class ComponentTree {
     mLogger = builder.logger;
     mLogTag = builder.logTag;
     mAreTransitionsEnabled = TransitionUtils.areTransitionsEnabled(mContext.getAndroidContext());
+  }
+
+  /**
+   * The provided measureListener will be called when a valid layout is commited.
+   *
+   * @param measureListener
+   */
+  public void addMeasureListener(@Nullable MeasureListener measureListener) {
+    if (measureListener == null) {
+      return;
+    }
+
+    synchronized (this) {
+      if (mMeasureListeners == null) {
+        mMeasureListeners = new ArrayList<>();
+      }
+
+      mMeasureListeners.add(measureListener);
+    }
+  }
+
+  public void clearMeasureListener(MeasureListener measureListener) {
+    if (measureListener == null) {
+      return;
+    }
+
+    synchronized (this) {
+      mMeasureListeners.remove(measureListener);
+    }
   }
 
   boolean areTransitionsEnabled() {
@@ -1908,7 +1937,7 @@ public class ComponentTree {
           }
         }
 
-        if (mMeasureListener != null) {
+        if (mMeasureListeners != null) {
           rootWidth = localLayoutState.getWidth();
           rootHeight = localLayoutState.getHeight();
         }
@@ -1923,8 +1952,15 @@ public class ComponentTree {
     }
 
     if (noCompatibleComponent) {
-      if (mMeasureListener != null) {
-        mMeasureListener.onSetRootAndSizeSpec(rootWidth, rootHeight);
+      final List<MeasureListener> measureListeners;
+      synchronized (this) {
+        measureListeners = mMeasureListeners == null ? null : new ArrayList<>(mMeasureListeners);
+      }
+
+      if (measureListeners != null) {
+        for (MeasureListener measureListener : measureListeners) {
+          measureListener.onSetRootAndSizeSpec(rootWidth, rootHeight);
+        }
       }
 
       if (mAttachDetachHandler != null) {
@@ -2048,6 +2084,7 @@ public class ComponentTree {
       mStateHandler = null;
       mPreviousRenderState = null;
       mPreviousRenderStateSetFromBuilder = false;
+      mMeasureListeners = null;
     }
 
     synchronized (mEventTriggersContainer) {
@@ -2777,10 +2814,6 @@ public class ComponentTree {
     public void tracedRun(ThreadTracingRunnable prevTracingRunnable) {
       updateStateInternal(false, mAttribution);
     }
-  }
-
-  public synchronized void updateMeasureListener(@Nullable MeasureListener measureListener) {
-    mMeasureListener = measureListener;
   }
 
   /**

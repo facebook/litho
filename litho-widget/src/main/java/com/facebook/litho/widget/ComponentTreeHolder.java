@@ -302,7 +302,7 @@ public class ComponentTreeHolder {
     }
 
     if (measureListener != null) {
-      componentTree.updateMeasureListener(measureListener);
+      componentTree.addMeasureListener(measureListener);
     }
 
     componentTree.setRootAndSizeSpecAsync(component, widthSpec, heightSpec, treeProps);
@@ -314,9 +314,15 @@ public class ComponentTreeHolder {
     }
   }
 
-  public synchronized void updateMeasureListener(@Nullable MeasureListener measureListener) {
+  public synchronized void addMeasureListener(@Nullable MeasureListener measureListener) {
     if (mComponentTree != null) {
-      mComponentTree.updateMeasureListener(measureListener);
+      mComponentTree.addMeasureListener(measureListener);
+    }
+  }
+
+  public synchronized void clearMeasureListener(@Nullable MeasureListener measureListener) {
+    if (mComponentTree != null) {
+      mComponentTree.clearMeasureListener(measureListener);
     }
   }
 

@@ -2659,7 +2659,7 @@ public class RecyclerBinder
           @Override
           public void onSetRootAndSizeSpec(int w, int h) {
             maybeScheduleOneAsyncLayoutDuringInitRange(asyncRangeIterator);
-            nextHolder.updateMeasureListener(null);
+            nextHolder.clearMeasureListener(this);
           }
         };
 
@@ -2806,7 +2806,7 @@ public class RecyclerBinder
             if (listener != null) {
               listener.onFinish();
             }
-            holder.updateMeasureListener(null);
+            holder.clearMeasureListener(this);
           }
         });
   }
