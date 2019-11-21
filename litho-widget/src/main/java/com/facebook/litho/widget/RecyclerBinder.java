@@ -228,6 +228,7 @@ public class RecyclerBinder
         @Override
         public void onNewLayoutStateReady(ComponentTree componentTree) {
           applyReadyBatches();
+          componentTree.setNewLayoutStateReadyListener(null);
         }
       };
 
@@ -1073,7 +1074,8 @@ public class RecyclerBinder
   }
 
   @UiThread
-  private void applyReadyBatches() {
+  @VisibleForTesting
+  void applyReadyBatches() {
     ThreadUtils.assertMainThread();
 
     final boolean isTracing = ComponentsSystrace.isTracing();
@@ -2532,6 +2534,16 @@ public class RecyclerBinder
     final int heightSpec = getActualChildrenHeightSpec(holder);
 
     if (holder.isTreeValidForSizeSpecs(widthSpec, heightSpec)) {
+      if (holder.hasCompletedLatestLayout()) {
+        final ComponentTree componentTree = holder.getComponentTree();
+        final ComponentTree.NewLayoutStateReadyListener listener =
+            componentTree.getNewLayoutStateReadyListener();
+        if (listener != null) {
+          componentTree.setNewLayoutStateReadyListener(null);
+          ensureApplyReadyBatches();
+        }
+      }
+
       return;
     }
 

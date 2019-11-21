@@ -31,6 +31,7 @@ import static org.mockito.Matchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -2256,6 +2257,42 @@ public class RecyclerBinderTest {
       } else {
         assertThat(componentTreeHolder.mCheckWorkingRangeCalled).isFalse();
       }
+    }
+  }
+
+  @Test
+  public void testInsertAsyncWithComponentWarmer() {
+    final RecyclerBinder recyclerBinder =
+        spy(new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext));
+    final Component component =
+        TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+
+    final ComponentRenderInfo renderInfoWarmer =
+        ComponentRenderInfo.create().component(component).build();
+
+    recyclerBinder.measure(
+        new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
+
+    ComponentWarmer componentWarmer = new ComponentWarmer(recyclerBinder);
+    componentWarmer.prepare("tag", renderInfoWarmer, null);
+
+    final ComponentRenderInfo renderInfo =
+        ComponentRenderInfo.create()
+            .component(component)
+            .customAttribute(ComponentWarmer.COMPONENT_WARMER_TAG, "tag")
+            .build();
+
+    recyclerBinder.insertItemAtAsync(0, renderInfo);
+    verify(recyclerBinder).applyReadyBatches();
+  }
+
+  private class NewLayoutStateReadyListener
+      implements com.facebook.litho.ComponentTree.NewLayoutStateReadyListener {
+    int timesCalled = 0;
+
+    @Override
+    public void onNewLayoutStateReady(ComponentTree componentTree) {
+      timesCalled++;
     }
   }
 
