@@ -139,6 +139,7 @@ public class FullGroupSectionSpec<T> implements TestTag {
       int firstVisibleIndex,
       int lastVisibleIndex,
       ChangesInfo changesInfo,
+      int globalOffset,
       @Prop int prop1,
       @State(canUpdateLazily = true) Object state2,
       @CachedValue int cached) {}

@@ -34,12 +34,15 @@ public class ChangesInfo {
   }
 
   /** @return a list of change in the visible range. */
-  public List<Change> getVisibleChanges(int firstVisibleIndex, int lastVisibleIndex) {
+  public List<Change> getVisibleChanges(
+      int firstVisibleIndex, int lastVisibleIndex, int globalOffset) {
+    int globalFirstVisibleIndex = globalOffset + firstVisibleIndex >= 0 ? firstVisibleIndex : 0;
+    int globalLastVisibleIndex = globalOffset + lastVisibleIndex >= 0 ? lastVisibleIndex : 0;
     final List<Change> result = new ArrayList<>();
     for (int i = 0, size = mChanges.size(); i < size; i++) {
       final Change change = mChanges.get(i);
-      if (change.getIndex() > lastVisibleIndex
-          || change.getIndex() + change.getCount() - 1 < firstVisibleIndex) {
+      if (change.getIndex() > globalLastVisibleIndex
+          || change.getIndex() + change.getCount() - 1 < globalFirstVisibleIndex) {
         continue;
       }
       result.add(change);

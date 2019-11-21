@@ -77,6 +77,7 @@ public class GroupSectionSpecGeneratorTest {
         int firstVisibleIndex,
         int lastVisibleIndex,
         ChangesInfo changesInfo,
+        int globalOffset,
         @Prop boolean arg0,
         @State int arg1) {}
   }
@@ -119,7 +120,7 @@ public class GroupSectionSpecGeneratorTest {
             "@java.lang.Override\n"
                 + "protected void dataRendered(com.facebook.litho.sections.SectionContext c, boolean isDataChanged,\n"
                 + "    boolean isMounted, long uptimeMillis, int firstVisibleIndex, int lastVisibleIndex,\n"
-                + "    com.facebook.litho.sections.ChangesInfo changesInfo) {\n"
+                + "    com.facebook.litho.sections.ChangesInfo changesInfo, int globalOffset) {\n"
                 + "  TestGroupSectionSpec.onDataRendered(\n"
                 + "    (com.facebook.litho.sections.SectionContext) c,\n"
                 + "    (boolean) isDataChanged,\n"
@@ -128,6 +129,7 @@ public class GroupSectionSpecGeneratorTest {
                 + "    (int) firstVisibleIndex,\n"
                 + "    (int) lastVisibleIndex,\n"
                 + "    (com.facebook.litho.sections.ChangesInfo) changesInfo,\n"
+                + "    (int) globalOffset,\n"
                 + "    (boolean) arg0,\n"
                 + "    (int) mStateContainer.arg1);\n"
                 + "}\n");

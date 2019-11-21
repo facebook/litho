@@ -64,7 +64,8 @@ public abstract class SectionLifecycle implements EventDispatcher, EventTriggerT
       long uptimeMillis,
       int firstVisibleIndex,
       int lastVisibleIndex,
-      ChangesInfo changesInfo) {}
+      ChangesInfo changesInfo,
+      int globalOffset) {}
 
   protected void bindService(SectionContext c) {}
 

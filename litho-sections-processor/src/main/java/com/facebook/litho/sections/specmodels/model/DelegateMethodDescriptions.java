@@ -110,7 +110,8 @@ public class DelegateMethodDescriptions {
                   TypeName.LONG,
                   TypeName.INT,
                   TypeName.INT,
-                  SectionClassNames.CHANGE_CHANGES_INFO))
+                  SectionClassNames.CHANGE_CHANGES_INFO,
+                  TypeName.INT))
           .optionalParameterTypes(
               ImmutableList.of(PROP, TREE_PROP, STATE, INJECT_PROP, CACHED_VALUE))
           .build();

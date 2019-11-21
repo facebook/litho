@@ -527,7 +527,7 @@ public class SectionTree {
     ThreadUtils.assertMainThread();
 
     if (currentSection != null) {
-      dataRenderedRecursive(currentSection, isDataChanged, isMounted, uptimeMillis, changesInfo);
+      dataRenderedRecursive(currentSection, isDataChanged, isMounted, uptimeMillis, changesInfo, 0);
     }
   }
 
@@ -537,7 +537,8 @@ public class SectionTree {
       boolean isDataChanged,
       boolean isMounted,
       long uptimeMillis,
-      ChangesInfo changesInfo) {
+      ChangesInfo changesInfo,
+      int globalOffset) {
     if (section.isDiffSectionSpec()) {
       return;
     }
@@ -558,11 +559,15 @@ public class SectionTree {
         uptimeMillis,
         firstVisibleIndex,
         lastVisibleIndex,
-        changesInfo);
+        changesInfo,
+        globalOffset);
 
     final List<Section> children = section.getChildren();
     for (int i = 0, size = children.size(); i < size; i++) {
-      dataRenderedRecursive(children.get(i), isDataChanged, isMounted, uptimeMillis, changesInfo);
+      final Section child = children.get(i);
+      dataRenderedRecursive(
+          child, isDataChanged, isMounted, uptimeMillis, changesInfo, globalOffset);
+      globalOffset += child.getCount();
     }
   }
 

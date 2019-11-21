@@ -106,6 +106,7 @@ public class FullDiffSectionSpec<T> implements TestTag {
       int firstVisibleIndex,
       int lastVisibleIndex,
       ChangesInfo changesInfo,
+      int globalOffset,
       @Prop Integer prop1,
       @CachedValue int cached) {}
 

@@ -12,6 +12,7 @@ _release-date_
     * The usage remains largely unchanged (except for the removal of Litho's DrawableWrapper implementation)
 * **Breaking:** Removes `Component.Builder#background(ComparableDrawable)` and `Component.Builder#foreground(ComparableDrawable)`.
 * **Breaking:** Removes `ComparableResDrawable`, `ComparableIntIdDrawable`, `DefaultComparableDrawable`,
+* **Breaking:** Provide global offset of the section into @OnDataRendered method.
 
 For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.32.0...master).
 

@@ -115,7 +115,8 @@ public class TestSectionCreator {
         long uptimeMillis,
         int firstVisibleIndex,
         int lastVisibleIndex,
-        ChangesInfo changesInfo) {
+        ChangesInfo changesInfo,
+        int globalOffset) {
       onDataRendered = true;
       mChangesInfo = changesInfo;
     }

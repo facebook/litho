@@ -36,6 +36,6 @@ public class ChangesInfoTest {
     }
 
     final ChangesInfo changesInfo = new ChangesInfo(changes);
-    assertThat(changesInfo.getVisibleChanges(0, 5)).isEqualTo(changes.subList(0, 6));
+    assertThat(changesInfo.getVisibleChanges(0, 5, 0)).isEqualTo(changes.subList(0, 6));
   }
 }

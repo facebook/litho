@@ -36,9 +36,9 @@ import com.facebook.litho.sections.annotations.OnCreateChildren
 import com.facebook.litho.sections.annotations.OnCreateService
 import com.facebook.litho.sections.annotations.OnDataBound
 import com.facebook.litho.sections.annotations.OnDataRendered
-import com.facebook.litho.sections.annotations.OnViewportChanged
 import com.facebook.litho.sections.annotations.OnRefresh
 import com.facebook.litho.sections.annotations.OnUnbindService
+import com.facebook.litho.sections.annotations.OnViewportChanged
 import com.facebook.litho.sections.common.DataDiffSection
 import com.facebook.litho.sections.common.RenderEvent
 import com.facebook.litho.widget.Card
@@ -122,6 +122,7 @@ object LifecycleGroupSectionSpec {
       firstVisibleIndex: Int,
       lastVisibleIndex: Int,
       changesInfo: ChangesInfo,
+      globalOffset: Int,
       @Prop lifecycleListener: LifecycleListener,
       @State startTime: Long
   ) {

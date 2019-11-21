@@ -33,6 +33,12 @@ import java.lang.annotation.RetentionPolicy;
  *     protected void onDataRendered(
  *       SectionContext c,
  *       boolean isDataChanged,
+ *       boolean isMounted,
+ *       long uptimeMillis,
+ *       int firstVisibleIndex,
+ *       int lastVisibleIndex,
+ *       ChangesInfo changesInfo,
+ *       int globalOffset,
  *      {@literal @}State GraphQLResponse response,
  *      {@literal @}State DataSource dataSource,
  *      {@literal @}Prop String someProp) {
