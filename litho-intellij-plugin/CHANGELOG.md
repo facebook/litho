@@ -1,5 +1,14 @@
 # CHANGELOG
 
+## Version 1.1.1
+
+_2019-11-21_
+
+* Fix: `RequiredPropMethodContributor` doesn't create duplicate methods for `Component.Builder`.
+* Fix: `RequiredPropMethodContributor` sets high priority to `Component` required methods.
+* Fix: `TypeSpec.DeclaredTypeSpec` usage is aligned with changes in its constructor in `PsiTypeUtils`.
+* Fix: `RequiredPropAnnotator` logging interval is increased.
+
 ## Version 1.1.0
 
 _2019-11-13_
