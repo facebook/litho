@@ -122,8 +122,8 @@ class PsiTypeUtils {
                 getTypeName(type),
                 qualifiedName,
                 () -> superClassSpec,
-                copyOf(superInterfaceSpecs),
-                copyOf(typeArguments));
+                () -> copyOf(superInterfaceSpecs),
+                () -> copyOf(typeArguments));
           }
         });
   }
