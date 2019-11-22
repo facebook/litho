@@ -289,8 +289,7 @@ public final class MatcherGenerator {
         specModel,
         prop,
         prop.getName(),
-        Collections.singletonList(
-            parameter(prop, prop.getTypeName(), prop.getName(), extraAnnotations)),
+        Collections.singletonList(parameter(prop, extraAnnotations)),
         prop.getName());
   }
 
@@ -465,8 +464,7 @@ public final class MatcherGenerator {
         specModel,
         prop,
         prop.getName() + "Px",
-        Collections.singletonList(
-            parameter(prop, prop.getTypeName(), prop.getName(), annotation(ClassNames.PX))),
+        Collections.singletonList(parameter(prop, annotation(ClassNames.PX))),
         prop.getName());
   }
 

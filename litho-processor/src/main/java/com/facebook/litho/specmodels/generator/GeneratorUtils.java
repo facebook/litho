@@ -30,6 +30,11 @@ public final class GeneratorUtils {
   }
 
   public static ParameterSpec parameter(
+      MethodParamModel param, AnnotationSpec... extraAnnotations) {
+    return parameter(param, param.getTypeName(), param.getName(), extraAnnotations);
+  }
+
+  public static ParameterSpec parameter(
       MethodParamModel param, TypeName type, String name, AnnotationSpec... extraAnnotations) {
     return parameter(type, name, param.getExternalAnnotations(), extraAnnotations);
   }

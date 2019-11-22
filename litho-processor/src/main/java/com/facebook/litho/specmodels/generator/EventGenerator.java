@@ -229,7 +229,7 @@ public class EventGenerator {
             getImplAccessor(specModel, methodParamModel));
       }
 
-      if (i < eventMethodModel.methodParams.size() - 1) {
+      if (i < size - 1) {
         delegation.add(",\n");
       } else {
         delegation.add(");\n");
@@ -302,9 +302,7 @@ public class EventGenerator {
     final Set<TypeVariableName> paramTypeVariables = new HashSet<>();
     for (MethodParamModel methodParamModel : eventMethodModel.methodParams) {
       if (MethodParamModelUtils.isAnnotatedWith(methodParamModel, Param.class)) {
-        builder.addParameter(
-            parameter(
-                methodParamModel, methodParamModel.getTypeName(), methodParamModel.getName()));
+        builder.addParameter(parameter(methodParamModel));
         paramsBlock.add("$L,\n", methodParamModel.getName());
 
         if (methodParamModel.getTypeName() instanceof TypeVariableName) {

@@ -522,7 +522,7 @@ public class BuilderGenerator {
             prop,
             requiredIndex,
             prop.getName(),
-            Arrays.asList(parameter(prop, prop.getTypeName(), prop.getName())),
+            Arrays.asList(parameter(prop)),
             "$L == null ? null : $L.makeShallowCopy()",
             prop.getName(),
             prop.getName())
