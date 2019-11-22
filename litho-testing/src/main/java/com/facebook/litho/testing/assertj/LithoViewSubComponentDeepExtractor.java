@@ -17,6 +17,7 @@
 package com.facebook.litho.testing.assertj;
 
 import com.facebook.litho.LithoView;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.subcomponents.InspectableComponent;
 import java.util.LinkedList;
 import java.util.List;
@@ -43,10 +44,12 @@ public final class LithoViewSubComponentDeepExtractor
     final Stack<InspectableComponent> stack = new Stack<>();
 
     final InspectableComponent rootInstance = InspectableComponent.getRootInstance(lithoView);
-    Preconditions.checkNotNull(
-        rootInstance,
-        "Could not obtain DebugComponent. "
-            + "Please ensure that ComponentsConfiguration.IS_INTERNAL_BUILD is enabled.");
+    if (rootInstance == null) {
+      Preconditions.checkState(
+          ComponentsConfiguration.IS_INTERNAL_BUILD,
+          "Please ensure that ComponentsConfiguration.IS_INTERNAL_BUILD is enabled");
+      throw new IllegalStateException("Component rendered to <null>");
+    }
     stack.add(rootInstance);
 
     while (!stack.isEmpty()) {
