@@ -460,7 +460,8 @@ public abstract class Component extends ComponentLifecycle
     return component;
   }
 
-  Component makeUpdatedShallowCopy(final ComponentContext c) {
+  /** Returns an updated shallow copy of this component with the same global key. */
+  Component makeUpdatedShallowCopy(final ComponentContext parentContext) {
     final Component clone = makeShallowCopy();
 
     // set the global key so that it is not generated again and overridden.
@@ -470,10 +471,11 @@ public abstract class Component extends ComponentLifecycle
     clone.copyInterStageImpl(this);
 
     // update the cloned component with the new context.
-    clone.updateInternalChildState(c);
+    clone.updateInternalChildState(parentContext);
 
     // create updated tree props for children.
-    final TreeProps treeProps = getTreePropsForChildren(c, c.getTreeProps());
+    final TreeProps treeProps =
+        getTreePropsForChildren(parentContext, parentContext.getTreeProps());
 
     // set updated tree props on the component.
     clone.getScopedContext().setTreeProps(treeProps);
