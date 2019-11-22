@@ -20,6 +20,7 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import androidx.annotation.Nullable;
 import com.facebook.litho.annotations.FromEvent;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnEvent;
@@ -66,7 +67,8 @@ public class EventGeneratorTest {
         @State int arg1,
         @Param Object arg2,
         @Param T arg3,
-        @FromEvent long arg4) {}
+        @FromEvent long arg4,
+        @Param @Nullable T arg6) {}
 
     @OnEvent(Object.class)
     public void testEventMethod2(
@@ -112,14 +114,15 @@ public class EventGeneratorTest {
     assertThat(dataHolder.getMethodSpecs().get(0).toString())
         .isEqualTo(
             "private void testEventMethod1(com.facebook.litho.HasEventDispatcher _abstract,\n"
-                + "    java.lang.Object arg2, T arg3) {\n"
+                + "    java.lang.Object arg2, T arg3, @androidx.annotation.Nullable T arg6) {\n"
                 + "  Test _ref = (Test) _abstract;\n"
                 + "  TestSpec.testEventMethod1(\n"
                 + "    (boolean) _ref.arg0,\n"
                 + "    (int) _ref.mStateContainer.arg1,\n"
                 + "    arg2,\n"
                 + "    arg3,\n"
-                + "    (long) _ref.arg4);\n"
+                + "    (long) _ref.arg4,\n"
+                + "    arg6);\n"
                 + "}\n");
 
     assertThat(dataHolder.getMethodSpecs().get(1).toString())
@@ -143,11 +146,12 @@ public class EventGeneratorTest {
     assertThat(dataHolder.getMethodSpecs().get(0).toString())
         .isEqualTo(
             "public static <T extends java.lang.CharSequence> com.facebook.litho.EventHandler<java.lang.Object> testEventMethod1(com.facebook.litho.ComponentContext c,\n"
-                + "    java.lang.Object arg2, T arg3) {\n"
+                + "    java.lang.Object arg2, T arg3, @androidx.annotation.Nullable T arg6) {\n"
                 + "  return newEventHandler(c, -1400079064, new Object[] {\n"
                 + "        c,\n"
                 + "        arg2,\n"
                 + "        arg3,\n"
+                + "        arg6,\n"
                 + "      });\n"
                 + "}\n");
 
@@ -174,7 +178,8 @@ public class EventGeneratorTest {
                 + "      testEventMethod1(\n"
                 + "            eventHandler.mHasEventDispatcher,\n"
                 + "            (java.lang.Object) eventHandler.params[0],\n"
-                + "            (T) eventHandler.params[1]);\n"
+                + "            (T) eventHandler.params[1],\n"
+                + "            (T) eventHandler.params[2]);\n"
                 + "      return null;\n"
                 + "    }\n"
                 + "    case -1400079063: {\n"

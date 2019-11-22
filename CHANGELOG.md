@@ -7,14 +7,15 @@ _release-date_
 * **Breaking:**: Removed unused methods `getKeyCollisionStackTraceBlacklist` `getKeyCollisionStackTraceKeywords` from the `ComponentsReporter.Reporter` interface.
 * **Breaking:** `ComparableDrawable` is an interface now (instead of a Drawable).
     * Litho's DrawableWrapper doesn't mimic Android support library implementations of DrawableWrapper, e.g. DrawableWrapperApi21.java etc. Litho's wrapper will have to implement this correctly to have a legitimate chance of working across OS versions and all drawable types. This is not a good position to be in. It is better to remove the wrapper all together; this diff doesn't removes it but stops usages except for specific internal ones.
-
     * In essence if a background or foreground Drawable is also a ComparableDrawable Litho will invoke the isEquivalentTo method for comparison (instead of equals). Also, ComparableDrawable is now an optional interface; so non comparable drawables will not be wrapped.
     * The usage remains largely unchanged (except for the removal of Litho's DrawableWrapper implementation)
 * **Breaking:** Removes `Component.Builder#background(ComparableDrawable)` and `Component.Builder#foreground(ComparableDrawable)`.
 * **Breaking:** Removes `ComparableResDrawable`, `ComparableIntIdDrawable`, `DefaultComparableDrawable`,
 * **Breaking:** Provide global offset of the section into @OnDataRendered method.
+* Fix: Propagate annotations specified on `@Param` args from `@OnEvent` methods to generated methods.
 
 For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.32.0...master).
+
 
 ## Version 0.32.0
 

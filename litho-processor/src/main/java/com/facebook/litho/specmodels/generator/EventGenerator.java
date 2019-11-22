@@ -19,6 +19,7 @@ package com.facebook.litho.specmodels.generator;
 import static com.facebook.litho.specmodels.generator.ComponentBodyGenerator.getImplAccessor;
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.ABSTRACT_PARAM_NAME;
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.REF_VARIABLE_NAME;
+import static com.facebook.litho.specmodels.generator.GeneratorUtils.parameter;
 import static com.facebook.litho.specmodels.model.ClassNames.EVENT_HANDLER;
 import static com.facebook.litho.specmodels.model.ClassNames.OBJECT;
 
@@ -41,6 +42,7 @@ import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeVariableName;
+import java.util.Collections;
 import javax.lang.model.element.Modifier;
 
 /** Class that generates the event methods for a Component. */
@@ -201,10 +203,18 @@ public class EventGenerator {
     for (int i = 0, size = eventMethodModel.methodParams.size(); i < size; i++) {
       final MethodParamModel methodParamModel = eventMethodModel.methodParams.get(i);
 
-      if (MethodParamModelUtils.isAnnotatedWith(methodParamModel, FromEvent.class)
-          || MethodParamModelUtils.isAnnotatedWith(methodParamModel, Param.class)
+      final boolean hasParamAnnotation =
+          MethodParamModelUtils.isAnnotatedWith(methodParamModel, Param.class);
+      if (hasParamAnnotation
+          || MethodParamModelUtils.isAnnotatedWith(methodParamModel, FromEvent.class)
           || methodParamModel.getTypeName().equals(specModel.getContextClass())) {
-        methodSpec.addParameter(methodParamModel.getTypeName(), methodParamModel.getName());
+        methodSpec.addParameter(
+            parameter(
+                methodParamModel.getTypeName(),
+                methodParamModel.getName(),
+                hasParamAnnotation
+                    ? methodParamModel.getExternalAnnotations()
+                    : Collections.emptyList()));
         delegation.add(methodParamModel.getName());
       } else if (hasLazyStateParams && methodParamModel instanceof StateParamModel) {
         delegation.add(
@@ -289,7 +299,9 @@ public class EventGenerator {
 
     for (MethodParamModel methodParamModel : eventMethodModel.methodParams) {
       if (MethodParamModelUtils.isAnnotatedWith(methodParamModel, Param.class)) {
-        builder.addParameter(methodParamModel.getTypeName(), methodParamModel.getName());
+        builder.addParameter(
+            parameter(
+                methodParamModel, methodParamModel.getTypeName(), methodParamModel.getName()));
         paramsBlock.add("$L,\n", methodParamModel.getName());
 
         if (methodParamModel.getTypeName() instanceof TypeVariableName) {
