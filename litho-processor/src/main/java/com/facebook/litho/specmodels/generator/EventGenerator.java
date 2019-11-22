@@ -43,6 +43,8 @@ import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeVariableName;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import javax.lang.model.element.Modifier;
 
 /** Class that generates the event methods for a Component. */
@@ -297,6 +299,7 @@ public class EventGenerator {
     paramsBlock.indent();
     paramsBlock.add("c,\n");
 
+    final Set<TypeVariableName> paramTypeVariables = new HashSet<>();
     for (MethodParamModel methodParamModel : eventMethodModel.methodParams) {
       if (MethodParamModelUtils.isAnnotatedWith(methodParamModel, Param.class)) {
         builder.addParameter(
@@ -305,10 +308,11 @@ public class EventGenerator {
         paramsBlock.add("$L,\n", methodParamModel.getName());
 
         if (methodParamModel.getTypeName() instanceof TypeVariableName) {
-          builder.addTypeVariable((TypeVariableName) methodParamModel.getTypeName());
+          paramTypeVariables.add((TypeVariableName) methodParamModel.getTypeName());
         }
       }
     }
+    builder.addTypeVariables(paramTypeVariables);
 
     paramsBlock.unindent();
     paramsBlock.add("}");
