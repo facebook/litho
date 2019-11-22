@@ -2207,8 +2207,6 @@ class LayoutState {
    *
    * @param layoutNode the root of the LayoutTree
    * @param diffNode the root of the diffTree
-   * @return true if the layout node requires updating, false if it can re-use the measurements from
-   *     the diff node.
    */
   static void applyDiffNodeToUnchangedNodes(InternalNode layoutNode, DiffNode diffNode) {
     try {
