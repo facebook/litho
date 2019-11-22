@@ -17,6 +17,8 @@
 package com.facebook.litho.specmodels.generator;
 
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.DYNAMIC_PROPS;
+import static com.facebook.litho.specmodels.generator.GeneratorUtils.annotation;
+import static com.facebook.litho.specmodels.generator.GeneratorUtils.parameter;
 
 import com.facebook.litho.annotations.RequiredProp;
 import com.facebook.litho.specmodels.internal.ImmutableList;
@@ -1073,30 +1075,6 @@ public class BuilderGenerator {
     }
 
     return parameter(type, name, externalAnnotations, extraAnnotations);
-  }
-
-  private static ParameterSpec parameter(
-      PropModel prop, TypeName type, String name, AnnotationSpec... extraAnnotations) {
-    return parameter(type, name, prop.getExternalAnnotations(), extraAnnotations);
-  }
-
-  private static ParameterSpec parameter(
-      TypeName type,
-      String name,
-      List<AnnotationSpec> externalAnnotations,
-      AnnotationSpec... extraAnnotations) {
-    final ParameterSpec.Builder builder =
-        ParameterSpec.builder(type, name).addAnnotations(externalAnnotations);
-
-    for (AnnotationSpec annotation : extraAnnotations) {
-      builder.addAnnotation(annotation);
-    }
-
-    return builder.build();
-  }
-
-  private static AnnotationSpec annotation(ClassName className) {
-    return AnnotationSpec.builder(className).build();
   }
 
   private static MethodSpec.Builder resTypeListBuilder(

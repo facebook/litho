@@ -16,6 +16,9 @@
 
 package com.facebook.litho.specmodels.generator.testing;
 
+import static com.facebook.litho.specmodels.generator.GeneratorUtils.annotation;
+import static com.facebook.litho.specmodels.generator.GeneratorUtils.parameter;
+
 import com.facebook.litho.specmodels.generator.TypeSpecDataHolder;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.ClassNames;
@@ -530,25 +533,6 @@ public final class MatcherGenerator {
     } else {
       return new TypeName[] {typeParameter};
     }
-  }
-
-  private static ParameterSpec parameter(
-      final PropModel prop,
-      final TypeName type,
-      final String name,
-      final AnnotationSpec... extraAnnotations) {
-    final ParameterSpec.Builder builder =
-        ParameterSpec.builder(type, name).addAnnotations(prop.getExternalAnnotations());
-
-    for (final AnnotationSpec annotation : extraAnnotations) {
-      builder.addAnnotation(annotation);
-    }
-
-    return builder.build();
-  }
-
-  private static AnnotationSpec annotation(final ClassName className) {
-    return AnnotationSpec.builder(className).build();
   }
 
   private static MethodSpec builder(
