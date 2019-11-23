@@ -12,6 +12,7 @@ _release-date_
 * **Breaking:** Removes `Component.Builder#background(ComparableDrawable)` and `Component.Builder#foreground(ComparableDrawable)`.
 * **Breaking:** Removes `ComparableResDrawable`, `ComparableIntIdDrawable`, `DefaultComparableDrawable`,
 * **Breaking:** Provide global offset of the section into @OnDataRendered method.
+* **Breaking:** `LithoViewAssert#hasVisibleDrawable` no longer relies on the broken `ShadowDrawable#equals()` implementation in Robolectric 3.X. Now Drawable equality relies on the descriptions being equal, or the resource ID they were created with being equal.
 * Fix: Propagate annotations specified on `@Param` args from `@OnEvent` methods to generated methods.
 * Fix: Produce correct generated code for `@OnEvent` method when it has several args of the same generic type.
 

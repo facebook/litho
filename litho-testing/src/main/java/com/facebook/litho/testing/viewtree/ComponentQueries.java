@@ -18,11 +18,13 @@ package com.facebook.litho.testing.viewtree;
 
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.view.View;
 import com.facebook.litho.ComponentHost;
 import com.facebook.litho.MatrixDrawable;
 import com.google.common.base.Predicate;
 import java.util.List;
 import java.util.regex.Pattern;
+import org.robolectric.Shadows;
 
 /** Utility APIs to query the state of components. */
 class ComponentQueries {
@@ -99,23 +101,20 @@ class ComponentQueries {
           .contains(drawnDrawableDescription);
     }
 
-    // Some Drawables do not have a description. However they can be compared directly.
+    // Robolectric 3.X provides a shadow implementation of equals() for Drawables, but it only
+    // checks that the bounds are equal, which is a pretty weak assertion. This buggy equals()
+    // implementation was removed in Robolectric 4.0, and Android Drawable does not implement
+    // equals().
 
-    // The drawable being compared is a Robolectric shadow drawable whose bounds are not set.
-    // However, the containingDrawable in its mounted state has its bounds set in the components
-    // testing environment. Therefore, the bounds must be set to 0 for comparison.
-    containingDrawable = containingDrawable.mutate();
-    containingDrawable.setBounds(0, 0, 0, 0);
-
-    if (drawable.equals(containingDrawable)) {
+    // For Drawables created from a resource we can compare the resource ID they were created with.
+    int containingDrawableResId = Shadows.shadowOf(containingDrawable).getCreatedFromResId();
+    int drawableResId = Shadows.shadowOf(drawable).getCreatedFromResId();
+    if (drawableResId != View.NO_ID && containingDrawableResId == drawableResId) {
       return true;
     }
 
-    // The drawable being compared might have pre-set bounds.
-    drawable = drawable.mutate();
-    drawable.setBounds(0, 0, 0, 0);
-
-    return drawable.equals(containingDrawable);
+    // Otherwise we cannot meaningfully compare them. Fall back to pointer equality.
+    return containingDrawable == drawable;
   }
 
   /**
