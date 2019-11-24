@@ -84,6 +84,14 @@ class Layout {
 
   static InternalNode create(
       final ComponentContext parent, Component component, final boolean resolveNestedTree) {
+    return create(parent, component, resolveNestedTree, false);
+  }
+
+  static InternalNode create(
+      final ComponentContext parent,
+      Component component,
+      final boolean resolveNestedTree,
+      final boolean reuseGlobalKey) {
 
     final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
@@ -99,7 +107,7 @@ class Layout {
     }
 
     // 4. Update the component.
-    component = update(parent, component, resolveNestedTree);
+    component = update(parent, component, reuseGlobalKey);
 
     // 5. Get the scoped context of the updated component.
     final ComponentContext c = component.getScopedContext();

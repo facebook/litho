@@ -172,7 +172,7 @@ public class StateUpdatesWithReconciliationTest {
   }
 
   @Test
-  public void testStateUpdateWithComponentsWhichHaveSameManualKey() {
+  public void testStateUpdateWithComponentsWhichHaveSameManualKeyWithNewLayoutCreation() {
     after();
     ComponentsConfiguration.useNewCreateLayoutImplementation = true;
 
@@ -184,6 +184,18 @@ public class StateUpdatesWithReconciliationTest {
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     ComponentsConfiguration.useNewCreateLayoutImplementation = false;
+  }
+
+  @Test
+  public void testStateUpdateWithComponentsWhichHaveSameManualKey() {
+    after();
+
+    // Set custom root component
+    before(SameManualKeyRootComponentSpec.create(mContext));
+
+    mComponentTree.updateStateAsync(
+        SameManualKeyRootComponentSpec.getGlobalKeyForStateUpdate(), createStateUpdate(), "test");
+    mLayoutThreadShadowLooper.runToEndOfTasks();
   }
 
   static class DummyComponent extends Component {

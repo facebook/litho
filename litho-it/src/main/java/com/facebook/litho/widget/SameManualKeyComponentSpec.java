@@ -16,13 +16,17 @@
 
 package com.facebook.litho.widget;
 
+import android.view.View;
+import com.facebook.litho.ClickEvent;
 import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.StateValue;
+import com.facebook.litho.annotations.FromEvent;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCreateInitialState;
 import com.facebook.litho.annotations.OnCreateLayout;
+import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.annotations.State;
 
 @LayoutSpec
@@ -35,6 +39,9 @@ public class SameManualKeyComponentSpec {
 
   @OnCreateLayout
   static Component onCreateLayout(ComponentContext c, @State String state) {
-    return Column.create(c).build();
+    return Column.create(c).clickHandler(SameManualKeyComponent.onClick(c)).build();
   }
+
+  @OnEvent(ClickEvent.class)
+  static void onClick(ComponentContext c, @FromEvent View view, @State String state) {}
 }
