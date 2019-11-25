@@ -631,9 +631,10 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
   protected static <E> EventHandler<E> newEventHandler(Component c, int id, Object[] params) {
     if (c == null) {
       ComponentsReporter.emitMessage(
-          ComponentsReporter.LogLevel.ERROR,
+          ComponentsReporter.LogLevel.FATAL,
           NO_SCOPE_EVENT_HANDLER,
           "Creating event handler without scope.");
+      return NoOpEventHandler.getNoOpEventHandler();
     }
     final EventHandler<E> eventHandler = new EventHandler<>(c, id, params);
     if (c.getScopedContext() != null && c.getScopedContext().getComponentTree() != null) {

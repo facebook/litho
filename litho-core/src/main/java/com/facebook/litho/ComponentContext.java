@@ -372,22 +372,26 @@ public class ComponentContext {
   }
 
   EventHandler newEventHandler(int id) {
-    checkNotNullScope();
+    if (mComponentScope == null) {
+      warnNullScope();
+      return NoOpEventHandler.getNoOpEventHandler();
+    }
     return new EventHandler(mComponentScope, id);
   }
 
   public <E> EventHandler<E> newEventHandler(int id, Object[] params) {
-    checkNotNullScope();
+    if (mComponentScope == null) {
+      warnNullScope();
+      return NoOpEventHandler.getNoOpEventHandler();
+    }
     return new EventHandler<>(mComponentScope, id, params);
   }
 
-  private void checkNotNullScope() {
-    if (mComponentScope == null) {
-      ComponentsReporter.emitMessage(
-          ComponentsReporter.LogLevel.ERROR,
-          NO_SCOPE_EVENT_HANDLER,
-          "Creating event handler without scope.");
-    }
+  private static void warnNullScope() {
+    ComponentsReporter.emitMessage(
+        ComponentsReporter.LogLevel.FATAL,
+        NO_SCOPE_EVENT_HANDLER,
+        "Creating event handler without scope.");
   }
 
   @Nullable
