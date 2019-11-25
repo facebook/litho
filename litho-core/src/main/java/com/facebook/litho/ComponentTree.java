@@ -108,7 +108,7 @@ public class ComponentTree {
   private final boolean mAreTransitionsEnabled;
   private boolean mReleased;
   private String mReleasedComponent;
-  private @Nullable AttachDetachHandler mAttachDetachHandler;
+  private @Nullable volatile AttachDetachHandler mAttachDetachHandler;
   private @Nullable Deque<ReentrantMount> mReentrantMounts;
 
   @IntDef({SCHEDULE_NONE, SCHEDULE_LAYOUT_ASYNC, SCHEDULE_LAYOUT_SYNC})
