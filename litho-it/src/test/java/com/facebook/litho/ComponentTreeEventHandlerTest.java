@@ -38,16 +38,18 @@ public class ComponentTreeEventHandlerTest {
 
   @Test
   public void testNoDuplicateWhenEventHandlerIsReplacedInEventHandlerWrapper() {
+    ComponentContext scopedContext =
+        ComponentContext.withComponentScope(mContext, Row.create(mContext).build());
     Component component = mock(Component.class);
     ComponentTree componentTree =
-        ComponentTree.create(mContext, component).isReconciliationEnabled(false).build();
+        ComponentTree.create(scopedContext, component).isReconciliationEnabled(false).build();
     EventHandlersController eventHandlersController = componentTree.getEventHandlersController();
 
-    EventHandler eventHandler1 = mContext.newEventHandler(1);
+    EventHandler eventHandler1 = scopedContext.newEventHandler(1);
     when(component.getGlobalKey()).thenReturn("component1");
 
     componentTree.recordEventHandler(component, eventHandler1);
-    eventHandlersController.bindEventHandlers(mContext, component, component.getGlobalKey());
+    eventHandlersController.bindEventHandlers(scopedContext, component, component.getGlobalKey());
     eventHandlersController.clearUnusedEventHandlers();
 
     assertThat(eventHandlersController.getEventHandlers().size()).isEqualTo(1);
@@ -57,10 +59,10 @@ public class ComponentTreeEventHandlerTest {
 
     assertThat(eventHandlersWrapper.getEventHandlers().size()).isEqualTo(1);
 
-    EventHandler eventHandler2 = mContext.newEventHandler(1);
+    EventHandler eventHandler2 = scopedContext.newEventHandler(1);
 
     componentTree.recordEventHandler(component, eventHandler2);
-    eventHandlersController.bindEventHandlers(mContext, component, component.getGlobalKey());
+    eventHandlersController.bindEventHandlers(scopedContext, component, component.getGlobalKey());
     eventHandlersController.clearUnusedEventHandlers();
 
     assertThat(eventHandlersController.getEventHandlers().size()).isEqualTo(1);
@@ -71,16 +73,18 @@ public class ComponentTreeEventHandlerTest {
 
   @Test
   public void testClearUnusedEntries() {
+    ComponentContext scopedContext =
+        ComponentContext.withComponentScope(mContext, Row.create(mContext).build());
     Component component = mock(Component.class);
     ComponentTree componentTree =
-        ComponentTree.create(mContext, component).isReconciliationEnabled(false).build();
+        ComponentTree.create(scopedContext, component).isReconciliationEnabled(false).build();
     EventHandlersController eventHandlersController = componentTree.getEventHandlersController();
 
-    EventHandler eventHandler1 = mContext.newEventHandler(1);
+    EventHandler eventHandler1 = scopedContext.newEventHandler(1);
     when(component.getGlobalKey()).thenReturn("component1");
 
     componentTree.recordEventHandler(component, eventHandler1);
-    eventHandlersController.bindEventHandlers(mContext, component, component.getGlobalKey());
+    eventHandlersController.bindEventHandlers(scopedContext, component, component.getGlobalKey());
     eventHandlersController.clearUnusedEventHandlers();
 
     assertThat(eventHandlersController.getEventHandlers().size()).isEqualTo(1);
@@ -88,7 +92,7 @@ public class ComponentTreeEventHandlerTest {
     when(component.getGlobalKey()).thenReturn("component2");
     componentTree.setRoot(component);
     componentTree.recordEventHandler(component, eventHandler1);
-    eventHandlersController.bindEventHandlers(mContext, component, component.getGlobalKey());
+    eventHandlersController.bindEventHandlers(scopedContext, component, component.getGlobalKey());
     eventHandlersController.clearUnusedEventHandlers();
 
     assertThat(eventHandlersController.getEventHandlers().size()).isEqualTo(1);
