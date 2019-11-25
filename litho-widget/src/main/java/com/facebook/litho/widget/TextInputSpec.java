@@ -195,7 +195,7 @@ class TextInputSpec {
   @PropDefault static final CharSequence hint = "";
   @PropDefault static final CharSequence initialText = "";
   @PropDefault protected static final int shadowColor = Color.GRAY;
-  @PropDefault protected static final int textSize = 13;
+  @PropDefault protected static final int textSize = TextSpec.UNSET;
   @PropDefault protected static final Drawable inputBackground = UNSET_DRAWABLE;
   @PropDefault protected static final Typeface typeface = Typeface.DEFAULT;
   @PropDefault protected static final int textAlignment = TEXT_ALIGNMENT_GRAVITY;
@@ -342,6 +342,13 @@ class TextInputSpec {
       @Nullable CharSequence text,
       @Nullable CharSequence error,
       @Nullable Drawable errorDrawable) {
+
+    if (textSize == TextSpec.UNSET) {
+      editText.setTextSize(TypedValue.COMPLEX_UNIT_SP, TextSpec.DEFAULT_TEXT_SIZE_SP);
+    } else {
+      editText.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
+    }
+
     if (multiline) {
       inputType |= EditorInfo.TYPE_CLASS_TEXT | EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE;
       editText.setMinLines(minLines);
@@ -373,7 +380,6 @@ class TextInputSpec {
       editText.setPadding(0, 0, 0, 0);
     }
     editText.setShadowLayer(shadowRadius, shadowDx, shadowDy, shadowColor);
-    editText.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
     editText.setTypeface(typeface, 0);
     editText.setGravity(gravity);
     editText.setImeOptions(imeOptions);
