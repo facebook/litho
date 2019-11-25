@@ -27,7 +27,6 @@ import com.facebook.litho.specmodels.model.MethodParamModel;
 import com.facebook.litho.specmodels.model.SpecMethodModel;
 import com.intellij.codeInsight.AnnotationUtil;
 import com.intellij.psi.PsiAnnotation;
-import com.intellij.psi.PsiAnnotationMemberValue;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiClassObjectAccessExpression;
 import com.intellij.psi.PsiMethod;
@@ -38,43 +37,39 @@ import java.util.List;
 /** Extracts event methods from the given input. */
 public class PsiEventMethodExtractor {
 
-  public static ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>>
-      getOnEventMethods(
-          PsiClass psiClass,
-          List<Class<? extends Annotation>> permittedInterStageInputAnnotations) {
+  static ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> getOnEventMethods(
+      PsiClass psiClass, List<Class<? extends Annotation>> permittedInterStageInputAnnotations) {
     final List<SpecMethodModel<EventMethod, EventDeclarationModel>> delegateMethods =
         new ArrayList<>();
 
     for (PsiMethod psiMethod : psiClass.getMethods()) {
       final PsiAnnotation onEventAnnotation =
           AnnotationUtil.findAnnotation(psiMethod, OnEvent.class.getName());
-      if (onEventAnnotation != null) {
-        final List<MethodParamModel> methodParams =
-            getMethodParams(
-                psiMethod,
-                EventMethodExtractor.getPermittedMethodParamAnnotations(
-                    permittedInterStageInputAnnotations),
-                permittedInterStageInputAnnotations,
-                ImmutableList.<Class<? extends Annotation>>of());
-
-        PsiAnnotationMemberValue psiAnnotationMemberValue =
-            onEventAnnotation.findAttributeValue("value");
-
-        PsiClassObjectAccessExpression accessExpression =
-            (PsiClassObjectAccessExpression) psiAnnotationMemberValue;
-
-        final SpecMethodModel<EventMethod, EventDeclarationModel> eventMethod =
-            new SpecMethodModel<>(
-                ImmutableList.<Annotation>of(),
-                PsiModifierExtractor.extractModifiers(psiMethod.getModifierList()),
-                psiMethod.getName(),
-                PsiTypeUtils.generateTypeSpec(psiMethod.getReturnType()),
-                ImmutableList.copyOf(getTypeVariables(psiMethod)),
-                ImmutableList.copyOf(methodParams),
-                psiMethod,
-                PsiEventDeclarationsExtractor.getEventDeclarationModel(accessExpression));
-        delegateMethods.add(eventMethod);
+      if (onEventAnnotation == null) {
+        continue;
       }
+
+      PsiClassObjectAccessExpression accessExpression =
+          (PsiClassObjectAccessExpression) onEventAnnotation.findAttributeValue("value");
+      final List<MethodParamModel> methodParams =
+          getMethodParams(
+              psiMethod,
+              EventMethodExtractor.getPermittedMethodParamAnnotations(
+                  permittedInterStageInputAnnotations),
+              permittedInterStageInputAnnotations,
+              ImmutableList.of());
+
+      final SpecMethodModel<EventMethod, EventDeclarationModel> eventMethod =
+          new SpecMethodModel<>(
+              ImmutableList.of(),
+              PsiModifierExtractor.extractModifiers(psiMethod.getModifierList()),
+              psiMethod.getName(),
+              PsiTypeUtils.generateTypeSpec(psiMethod.getReturnType()),
+              ImmutableList.copyOf(getTypeVariables(psiMethod)),
+              ImmutableList.copyOf(methodParams),
+              psiMethod,
+              PsiEventDeclarationsExtractor.getEventDeclarationModel(accessExpression));
+      delegateMethods.add(eventMethod);
     }
 
     return ImmutableList.copyOf(delegateMethods);
