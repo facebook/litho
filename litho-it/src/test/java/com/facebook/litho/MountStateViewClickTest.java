@@ -127,15 +127,13 @@ public class MountStateViewClickTest {
 
   @Test
   public void testRootHostClickableUnmount() {
-    ComponentContext scopedContext =
-        ComponentContext.withComponentScope(mContext, Row.create(mContext).build());
     final LithoView lithoView =
         mountComponent(
-            scopedContext,
-            Column.create(scopedContext)
-                .clickHandler(scopedContext.newEventHandler(1))
-                .longClickHandler(scopedContext.newEventHandler(2))
-                .child(TestDrawableComponent.create(scopedContext))
+            mContext,
+            Column.create(mContext)
+                .clickHandler(mContext.newEventHandler(1))
+                .longClickHandler(mContext.newEventHandler(2))
+                .child(TestDrawableComponent.create(mContext))
                 .build(),
             true);
 
