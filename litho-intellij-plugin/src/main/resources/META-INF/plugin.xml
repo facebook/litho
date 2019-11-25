@@ -73,6 +73,7 @@
 
     <annotator language="JAVA" implementationClass="com.facebook.litho.intellij.inspections.LayoutSpecAnnotator"/>
     <annotator language="JAVA" implementationClass="com.facebook.litho.intellij.inspections.RequiredPropAnnotator"/>
+    <annotator language="JAVA" implementationClass="com.facebook.litho.intellij.inspections.EventHandlerAnnotator"/>
 
     <completion.contributor language="JAVA" implementationClass="com.facebook.litho.intellij.completion.StatePropCompletionContributor"/>
     <completion.contributor language="JAVA" implementationClass="com.facebook.litho.intellij.completion.OnEventCompletionContributor"/>

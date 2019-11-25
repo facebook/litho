@@ -30,12 +30,15 @@ import org.jetbrains.annotations.Nullable;
 class TestHolder implements AnnotationHolder {
   final List<PsiElement> errorElements = new ArrayList<>();
   final List<String> errorMessages = new ArrayList<>();
+  final List<Annotation> createdAnnotations = new ArrayList<>();
 
   @Override
   public Annotation createErrorAnnotation(PsiElement elt, @Nullable String message) {
     errorElements.add(elt);
     errorMessages.add(message);
-    return null;
+    Annotation stub = new Annotation(0, 0, HighlightSeverity.ERROR, "", "");
+    createdAnnotations.add(stub);
+    return stub;
   }
 
   @Override

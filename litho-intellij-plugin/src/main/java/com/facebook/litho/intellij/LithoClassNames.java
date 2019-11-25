@@ -22,6 +22,7 @@ public class LithoClassNames {
 
   // litho-core module
   public static final String CLICK_EVENT_CLASS_NAME = "com.facebook.litho.ClickEvent";
+  public static final String EVENT_HANDLER_CLASS_NAME = "com.facebook.litho.EventHandler";
   public static final String COMPONENT_CONTEXT_CLASS_NAME = "com.facebook.litho.ComponentContext";
   // litho-sections-core module
   public static final String SECTION_CONTEXT_CLASS_NAME =
