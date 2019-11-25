@@ -180,7 +180,7 @@ class EditTextSpec {
           DEFAULT_HINT_COLOR_STATE_LIST_STATES, DEFAULT_HINT_COLOR_STATE_LIST_COLORS);
 
   @PropDefault protected static final int linkColor = DEFAULT_COLOR;
-  @PropDefault protected static final int textSize = 13;
+  @PropDefault protected static final int textSize = TextSpec.UNSET;
   @PropDefault protected static final int textStyle = DEFAULT_TYPEFACE.getStyle();
   @PropDefault protected static final Typeface typeface = DEFAULT_TYPEFACE;
   @PropDefault protected static final float spacingMultiplier = 1.0f;
@@ -608,6 +608,12 @@ class EditTextSpec {
       boolean requestFocus,
       int cursorDrawableRes) {
 
+    if (textSize == TextSpec.UNSET) {
+      editText.setTextSize(TypedValue.COMPLEX_UNIT_SP, TextSpec.DEFAULT_TEXT_SIZE_SP);
+    } else {
+      editText.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
+    }
+
     // We only want to change the input type if it actually needs changing, and we need to take
     // isSingleLine into account so that we get the correct input type.
     if (isSingleLine) {
@@ -664,7 +670,6 @@ class EditTextSpec {
     editText.setShadowLayer(shadowRadius, shadowDx, shadowDy, shadowColor);
     editText.setLinkTextColor(linkColor);
     editText.setHighlightColor(highlightColor);
-    editText.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
     editText.setLineSpacing(extraSpacing, spacingMultiplier);
     editText.setTypeface(typeface, textStyle);
     editText.setGravity(gravity);

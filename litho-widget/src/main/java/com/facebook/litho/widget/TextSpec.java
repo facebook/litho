@@ -166,9 +166,10 @@ import com.facebook.yoga.YogaDirection;
     events = {TextOffsetOnTouchEvent.class})
 class TextSpec {
 
+  public static final @Dimension(unit = Dimension.SP) int DEFAULT_TEXT_SIZE_SP = 14;
+  public static final int UNSET = -1;
+
   private static final Typeface DEFAULT_TYPEFACE = Typeface.DEFAULT;
-  private static final @Dimension(unit = Dimension.SP) int DEFAULT_TEXT_SIZE_SP = 14;
-  private static final int UNSET = -1;
   private static final int DEFAULT_COLOR = 0;
   private static final String TAG = "TextSpec";
   private static final String WRONG_TEXT_SIZE = "TextSpec:WrongTextSize";
