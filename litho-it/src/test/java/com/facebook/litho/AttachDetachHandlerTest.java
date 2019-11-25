@@ -359,6 +359,27 @@ public class AttachDetachHandlerTest {
     verifyOnDetached(root);
   }
 
+  @Test
+  public void testSetRootWithMeasure() {
+    final Component root = spy(TestAttachDetachComponent.create(mContext).build());
+    final Component container = Column.create(mContext).child(root).build();
+    final ComponentTree componentTree =
+        ComponentTree.create(mContext, container).isReconciliationEnabled(false).build();
+    final int widthSpec = SizeSpec.makeSizeSpec(1024, AT_MOST);
+    final int heightSpec = SizeSpec.makeSizeSpec(1024, AT_MOST);
+    componentTree.setRootAndSizeSpec(container, widthSpec, heightSpec);
+
+    verify(root, times(1)).onAttached(any(ComponentContext.class));
+    verify(root, never()).onDetached(any(ComponentContext.class));
+
+    LithoView lithoView = new LithoView(mContext);
+    lithoView.setComponentTree(componentTree);
+    lithoView.measure(widthSpec, heightSpec);
+
+    verify(root, times(1)).onAttached(any(ComponentContext.class));
+    verify(root, never()).onDetached(any(ComponentContext.class));
+  }
+
   private static void testSetSizeSpec(ComponentContext c, Component component, int times) {
     final ComponentTree componentTree =
         ComponentTree.create(c, Column.create(c).child(component))

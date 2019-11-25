@@ -1078,9 +1078,7 @@ public class ComponentTree {
         mMainThreadLayoutState = localLayoutState;
       }
 
-      if (mAttachDetachHandler != null) {
-        mAttachDetachHandler.onAttached(attachables);
-      } else if (attachables != null) {
+      if (attachables != null) {
         getOrCreateAttachDetachHandler().onAttached(attachables);
       }
 
