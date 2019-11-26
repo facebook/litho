@@ -1950,9 +1950,11 @@ public class RecyclerBinder
       return;
     }
 
-    if (mRequiresRemeasure.get()) {
+    if (mRequiresRemeasure.get() || mWrapContent) {
       maybeRequestRemeasureIfBoundsChanged();
-      return;
+      if (!mWrapContent) {
+        return;
+      }
     }
 
     if (!hasComputedRange()) {
@@ -1982,9 +1984,8 @@ public class RecyclerBinder
       return;
     }
 
-    if (mRequiresRemeasure.get()) {
+    if (mRequiresRemeasure.get() || mWrapContent) {
       maybeRequestRemeasureIfBoundsChanged();
-      return;
     }
 
     if (!hasComputedRange()) {
@@ -2187,7 +2188,8 @@ public class RecyclerBinder
     try {
       synchronized (this) {
         if (mLastWidthSpec != LayoutManagerOverrideParams.UNINITIALIZED
-            && !mRequiresRemeasure.get()) {
+            && !mRequiresRemeasure.get()
+            && !mWrapContent) {
           switch (scrollDirection) {
             case VERTICAL:
               if (MeasureComparisonUtils.isMeasureSpecCompatible(
@@ -2229,10 +2231,9 @@ public class RecyclerBinder
           case OrientationHelper.VERTICAL:
             if (!shouldMeasureItemForSize || mSizeForMeasure != null) {
               mReMeasureEventEventHandler = mWrapContent ? reMeasureEventHandler : null;
-              mRequiresRemeasure.set(mWrapContent);
             } else {
               mReMeasureEventEventHandler = reMeasureEventHandler;
-              mRequiresRemeasure.set(true);
+              mRequiresRemeasure.set(!mWrapContent);
             }
             break;
 
@@ -2241,10 +2242,10 @@ public class RecyclerBinder
             if (!shouldMeasureItemForSize || mSizeForMeasure != null) {
               mReMeasureEventEventHandler =
                   (mHasDynamicItemHeight || mWrapContent) ? reMeasureEventHandler : null;
-              mRequiresRemeasure.set(mHasDynamicItemHeight || mWrapContent);
+              mRequiresRemeasure.set(mHasDynamicItemHeight);
             } else {
               mReMeasureEventEventHandler = reMeasureEventHandler;
-              mRequiresRemeasure.set(true);
+              mRequiresRemeasure.set(!mWrapContent);
             }
             break;
         }
