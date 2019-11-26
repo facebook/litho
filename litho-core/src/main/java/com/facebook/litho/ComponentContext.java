@@ -465,7 +465,16 @@ public class ComponentContext {
     }
   }
 
-  static ComponentContext withComponentTree(ComponentContext context, ComponentTree componentTree) {
+  /**
+   * Creates a new ComponentContext instance and sets the {@link ComponentTree} on the component.
+   *
+   * @param context context scoped to the parent component
+   * @param componentTree component tree associated with the newly created context
+   * @return a new ComponentContext instance
+   */
+  @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+  public static ComponentContext withComponentTree(
+      ComponentContext context, ComponentTree componentTree) {
     ComponentContext componentContext =
         new ComponentContext(context, new StateHandler(), null, null);
     componentContext.mComponentTree = componentTree;
