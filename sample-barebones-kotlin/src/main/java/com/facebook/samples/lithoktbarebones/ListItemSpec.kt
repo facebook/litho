@@ -23,10 +23,11 @@ import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.annotations.LayoutSpec
 import com.facebook.litho.annotations.OnCreateLayout
+import com.facebook.litho.annotations.OnEvent
 import com.facebook.litho.annotations.Prop
 import com.facebook.litho.widget.Text
 
-@LayoutSpec
+@LayoutSpec(events = [BoxItemChangedEvent::class])
 object ListItemSpec {
   
   @OnCreateLayout
