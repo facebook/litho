@@ -46,10 +46,7 @@ import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeVariableName;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-import java.util.function.Predicate;
-import java.util.stream.Stream;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 
