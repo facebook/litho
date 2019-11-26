@@ -16,6 +16,7 @@
 
 package com.facebook.litho.sections;
 
+import static com.facebook.litho.ComponentTree.STATE_UPDATES_IN_LOOP_THRESHOLD;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_SECTIONS_CREATE_NEW_TREE;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_SECTIONS_ON_CREATE_CHILDREN;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_SECTIONS_SET_ROOT;
@@ -92,6 +93,9 @@ public class SectionTree {
   private static final String OUT_OF_BOUNDS_REQUEST_FOCUS = "SectionTree:OutOfBoundsRequestFocus";
   private static final String NULL_TO_NON_NULL_SERVICE_TRANSFER =
       "SectionTree:NullToNonNullServiceTransfer";
+  private static final String STATE_UPDATES_IN_LOOP_EXCEED_THRESHOLD =
+      "SectionTree:StateUpdatesFromInsideChangeSetCalculateExceedsThreshold";
+
   private final SectionsDebugLogger mSectionsDebugLogger;
   private volatile boolean mReleased;
 
@@ -255,6 +259,12 @@ public class SectionTree {
 
   @GuardedBy("this")
   private @Nullable Section mNextSection;
+
+  @GuardedBy("this")
+  private boolean mIsChangeSetCalculationInProgress;
+
+  @GuardedBy("this")
+  private int mStateUpdatesFromChangeSetCount;
 
   @ThreadConfined(ThreadConfined.UI)
   private @Nullable Section mBoundSection;
@@ -995,6 +1005,9 @@ public class SectionTree {
       throw new IllegalStateException("State set with no attached Section");
     }
 
+    if (mIsChangeSetCalculationInProgress) {
+      logStateUpdateWhenChangeSetInProgress();
+    }
     mPendingStateUpdates.addStateUpdate(key, stateUpdate, isLazyStateUpdate);
 
     // If the state update is lazy, do not create a new tree root because the calculation of
@@ -1009,6 +1022,22 @@ public class SectionTree {
       mNextSection = copy(mCurrentSection, false);
     } else {
       mNextSection = copy(mNextSection, false);
+    }
+  }
+
+  /**
+   * State updates can be triggered from inside the change set calculation which causes an infinite
+   * loop because state updates calculates the change set again. To prevent this we keep a track of
+   * how many times consequently state updates was invoked from within change set. If this crosses
+   * the threshold a runtime exception is thrown.
+   */
+  @GuardedBy(value = "this")
+  private void logStateUpdateWhenChangeSetInProgress() {
+    if (++mStateUpdatesFromChangeSetCount == STATE_UPDATES_IN_LOOP_THRESHOLD) {
+      ComponentsReporter.emitMessage(
+          ComponentsReporter.LogLevel.FATAL,
+          STATE_UPDATES_IN_LOOP_EXCEED_THRESHOLD,
+          "Large number of state updates detected which indicates an infinite loop leading to unresponsive apps");
     }
   }
 
@@ -1068,6 +1097,7 @@ public class SectionTree {
         nextRoot = copy(mNextSection, false);
         logger = mContext.getLogger();
         pendingStateUpdates = mPendingStateUpdates.copy();
+        mIsChangeSetCalculationInProgress = true;
       }
 
       final PerfEvent logEvent =
@@ -1126,6 +1156,7 @@ public class SectionTree {
 
             mCurrentSection = newRoot;
             mNextSection = null;
+            resetStateUpdatesCount();
             mPendingStateUpdates.removeCompletedStateUpdates(pendingStateUpdates);
             mPendingChangeSets.add(changeSetState.getChangeSet());
 
@@ -1164,6 +1195,9 @@ public class SectionTree {
           nextRoot = copy(mNextSection, false);
           if (nextRoot != null) {
             pendingStateUpdates = mPendingStateUpdates.copy();
+            mIsChangeSetCalculationInProgress = true;
+          } else {
+            resetStateUpdatesCount();
           }
         }
       }
@@ -1183,6 +1217,13 @@ public class SectionTree {
         LithoStats.incrementSectionCalculateNewChangesetOnUICount();
       }
     }
+  }
+
+  /** Resetting the count of state updates which happened from within calculation of change set. */
+  @GuardedBy("this")
+  private void resetStateUpdatesCount() {
+    mIsChangeSetCalculationInProgress = false;
+    mStateUpdatesFromChangeSetCount = 0;
   }
 
   /**
