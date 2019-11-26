@@ -262,6 +262,7 @@ class LayoutState {
   private final int mId;
   // Id of the layout state (if any) that was used in comparisons with this layout state.
   private int mPreviousLayoutStateId = NO_PREVIOUS_LAYOUT_STATE_ID;
+  private boolean mIsCreateLayoutInProgress;
 
   private AccessibilityManager mAccessibilityManager;
   private boolean mAccessibilityEnabled = false;
@@ -305,6 +306,10 @@ class LayoutState {
 
   boolean isPartialLayoutState() {
     return mIsPartialLayoutState;
+  }
+
+  boolean isCreateLayoutInProgress() {
+    return mIsCreateLayoutInProgress;
   }
 
   /**
@@ -1416,6 +1421,7 @@ class LayoutState {
       layoutState.mWidthSpec = widthSpec;
       layoutState.mHeightSpec = heightSpec;
       layoutState.mRootComponentName = component.getSimpleName();
+      layoutState.mIsCreateLayoutInProgress = true;
 
       final InternalNode layoutCreatedInWillRender = component.consumeLayoutCreatedInWillRender();
 
@@ -1447,6 +1453,7 @@ class LayoutState {
 
       layoutState.mLayoutRoot = root;
       layoutState.mRootTransitionId = getTransitionIdForNode(root);
+      layoutState.mIsCreateLayoutInProgress = false;
 
       if (layoutStateContext.isLayoutInterrupted()) {
         layoutState.mIsPartialLayoutState = true;

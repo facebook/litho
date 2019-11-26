@@ -66,7 +66,8 @@ public class LithoStatsTest {
     mComponentTree.updateStateAsync(
         mTestComponent.getGlobalKey(),
         StateUpdateTestComponent.createIncrementStateUpdate(),
-        "test");
+        "test",
+        false);
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     final long afterSync = LithoStats.getComponentTriggeredSyncStateUpdateCount();
@@ -87,7 +88,8 @@ public class LithoStatsTest {
     mComponentTree.updateStateSync(
         mTestComponent.getGlobalKey(),
         StateUpdateTestComponent.createIncrementStateUpdate(),
-        "test");
+        "test",
+        false);
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     final long afterSync = LithoStats.getComponentTriggeredSyncStateUpdateCount();

@@ -183,6 +183,14 @@ public class ComponentContext {
     return mLayoutStateContext != null && mLayoutStateContext.getLayoutState() != null;
   }
 
+  /** Returns true if this method is called during layout creation. */
+  boolean isCreateLayoutInProgress() {
+    if (mLayoutStateContext == null || mLayoutStateContext.getLayoutState() == null) {
+      return false;
+    }
+    return mLayoutStateContext.getLayoutState().isCreateLayoutInProgress();
+  }
+
   @Nullable
   LayoutState getLayoutState() {
     return mLayoutStateContext == null ? null : mLayoutStateContext.getLayoutState();
@@ -246,7 +254,8 @@ public class ComponentContext {
       return;
     }
 
-    mComponentTree.updateStateSync(mComponentScope.getGlobalKey(), stateUpdate, attribution);
+    mComponentTree.updateStateSync(
+        mComponentScope.getGlobalKey(), stateUpdate, attribution, isCreateLayoutInProgress());
   }
 
   /**
@@ -261,7 +270,8 @@ public class ComponentContext {
       return;
     }
 
-    mComponentTree.updateStateAsync(mComponentScope.getGlobalKey(), stateUpdate, attribution);
+    mComponentTree.updateStateAsync(
+        mComponentScope.getGlobalKey(), stateUpdate, attribution, isCreateLayoutInProgress());
   }
 
   public void updateStateWithTransition(StateUpdate stateUpdate, String attribution) {
@@ -289,7 +299,7 @@ public class ComponentContext {
 
     final Component scope = getComponentScope();
     mComponentTree.updateHookStateAsync(
-        updateBlock, scope != null ? scope.getSimpleName() : "hook");
+        updateBlock, scope != null ? scope.getSimpleName() : "hook", isCreateLayoutInProgress());
   }
 
   public void applyLazyStateUpdatesForContainer(StateContainer container) {

@@ -104,7 +104,7 @@ public class NestedComponentStateUpdatesWithReconciliationTest {
     LayoutState current = mComponentTree.getMainThreadLayoutState();
     DefaultInternalNode layout = (DefaultInternalNode) current.getLayoutRoot();
 
-    mComponentTree.updateStateSync("root,B,C", createStateUpdate(), "test");
+    mComponentTree.updateStateSync("root,B,C", createStateUpdate(), "test", false);
 
     Set<String> set = new HashSet<>();
     set.add("root");
@@ -130,7 +130,7 @@ public class NestedComponentStateUpdatesWithReconciliationTest {
     LayoutState current = mComponentTree.getMainThreadLayoutState();
     DefaultInternalNode layout = (DefaultInternalNode) current.getLayoutRoot();
 
-    mComponentTree.updateStateAsync("root,B,C", createStateUpdate(), "test");
+    mComponentTree.updateStateAsync("root,B,C", createStateUpdate(), "test", false);
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     Set<String> set = new HashSet<>();
@@ -157,7 +157,7 @@ public class NestedComponentStateUpdatesWithReconciliationTest {
     LayoutState current = mComponentTree.getMainThreadLayoutState();
     DefaultInternalNode layout = (DefaultInternalNode) current.getLayoutRoot();
 
-    mComponentTree.updateStateSync("root,B,D", createStateUpdate(), "test");
+    mComponentTree.updateStateSync("root,B,D", createStateUpdate(), "test", false);
 
     Set<String> set = new HashSet<>();
     set.add("root");
@@ -183,7 +183,7 @@ public class NestedComponentStateUpdatesWithReconciliationTest {
     LayoutState current = mComponentTree.getMainThreadLayoutState();
     DefaultInternalNode layout = (DefaultInternalNode) current.getLayoutRoot();
 
-    mComponentTree.updateStateAsync("root,B,D", createStateUpdate(), "test");
+    mComponentTree.updateStateAsync("root,B,D", createStateUpdate(), "test", false);
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     Set<String> set = new HashSet<>();
@@ -210,8 +210,8 @@ public class NestedComponentStateUpdatesWithReconciliationTest {
     LayoutState current = mComponentTree.getMainThreadLayoutState();
     DefaultInternalNode layout = (DefaultInternalNode) current.getLayoutRoot();
 
-    mComponentTree.updateStateAsync("root,B,C", createStateUpdate(), "test-0");
-    mComponentTree.updateStateAsync("root,B,D", createStateUpdate(), "test-1");
+    mComponentTree.updateStateAsync("root,B,C", createStateUpdate(), "test-0", false);
+    mComponentTree.updateStateAsync("root,B,D", createStateUpdate(), "test-1", false);
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     Set<String> set = new HashSet<>();

@@ -143,7 +143,7 @@ public class StateUpdatesWithReconciliationTest {
     InternalNode layout = current.getLayoutRoot();
 
     mComponentTree.updateStateSync(
-        current.getRootComponent().getGlobalKey(), createStateUpdate(), "test");
+        current.getRootComponent().getGlobalKey(), createStateUpdate(), "test", false);
 
     verify(layout, times(1)).reconcile(any(), any());
   }
@@ -154,7 +154,7 @@ public class StateUpdatesWithReconciliationTest {
     InternalNode layout = current.getLayoutRoot();
 
     mComponentTree.updateStateAsync(
-        current.getRootComponent().getGlobalKey(), createStateUpdate(), "test");
+        current.getRootComponent().getGlobalKey(), createStateUpdate(), "test", false);
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     verify(layout, times(1)).reconcile(any(), any());
@@ -166,7 +166,7 @@ public class StateUpdatesWithReconciliationTest {
     InternalNode layout = current.getLayoutRoot();
 
     mComponentTree.updateStateSync(
-        current.getRootComponent().getGlobalKey(), createStateUpdate(), "test");
+        current.getRootComponent().getGlobalKey(), createStateUpdate(), "test", false);
 
     verify(layout, times(1)).reconcile(any(), any());
   }
@@ -180,7 +180,10 @@ public class StateUpdatesWithReconciliationTest {
     before(SameManualKeyRootComponentSpec.create(mContext));
 
     mComponentTree.updateStateAsync(
-        SameManualKeyRootComponentSpec.getGlobalKeyForStateUpdate(), createStateUpdate(), "test");
+        SameManualKeyRootComponentSpec.getGlobalKeyForStateUpdate(),
+        createStateUpdate(),
+        "test",
+        false);
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     ComponentsConfiguration.useNewCreateLayoutImplementation = false;
@@ -194,7 +197,10 @@ public class StateUpdatesWithReconciliationTest {
     before(SameManualKeyRootComponentSpec.create(mContext));
 
     mComponentTree.updateStateAsync(
-        SameManualKeyRootComponentSpec.getGlobalKeyForStateUpdate(), createStateUpdate(), "test");
+        SameManualKeyRootComponentSpec.getGlobalKeyForStateUpdate(),
+        createStateUpdate(),
+        "test",
+        false);
     mLayoutThreadShadowLooper.runToEndOfTasks();
   }
 
