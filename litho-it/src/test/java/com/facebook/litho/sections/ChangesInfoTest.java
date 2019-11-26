@@ -38,4 +38,15 @@ public class ChangesInfoTest {
     final ChangesInfo changesInfo = new ChangesInfo(changes);
     assertThat(changesInfo.getVisibleChanges(0, 5, 0)).isEqualTo(changes.subList(0, 6));
   }
+
+  @Test
+  public void testGetVisibleChangesWithOffset() {
+    final List<Change> changes = new ArrayList<>();
+    for (int i = 0; i < 10; i++) {
+      changes.add(Change.insert(i, null, new Object()));
+    }
+
+    final ChangesInfo changesInfo = new ChangesInfo(changes);
+    assertThat(changesInfo.getVisibleChanges(0, 5, 2)).isEqualTo(changes.subList(2, 8));
+  }
 }

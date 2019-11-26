@@ -36,21 +36,34 @@ public class ChangesInfo {
   /** @return a list of change in the visible range. */
   public List<Change> getVisibleChanges(
       int firstVisibleIndex, int lastVisibleIndex, int globalOffset) {
-    int globalFirstVisibleIndex = globalOffset + firstVisibleIndex >= 0 ? firstVisibleIndex : 0;
-    int globalLastVisibleIndex = globalOffset + lastVisibleIndex >= 0 ? lastVisibleIndex : 0;
+    int globalFirstVisibleIndex = globalOffset + (firstVisibleIndex >= 0 ? firstVisibleIndex : 0);
+    int globalLastVisibleIndex = globalOffset + (lastVisibleIndex >= 0 ? lastVisibleIndex : 0);
     final List<Change> result = new ArrayList<>();
     for (int i = 0, size = mChanges.size(); i < size; i++) {
       final Change change = mChanges.get(i);
-      if (change.getIndex() > globalLastVisibleIndex
-          || change.getIndex() + change.getCount() - 1 < globalFirstVisibleIndex) {
-        continue;
+      if (isRangeOverlap(
+          globalFirstVisibleIndex,
+          globalLastVisibleIndex,
+          change.getIndex(),
+          change.getIndex() + change.getCount() - 1)) {
+        result.add(change);
       }
-      result.add(change);
     }
     return result;
   }
 
   public List<Change> getAllChanges() {
     return mChanges;
+  }
+
+  /**
+   * @param s1 Starting point from Range 1
+   * @param e1 Ending point from Range 1
+   * @param s2 Starting point from Range 2
+   * @param e2 Ending point from Range 2
+   * @return True if range 1 overlaps with range 2
+   */
+  private static boolean isRangeOverlap(int s1, int e1, int s2, int e2) {
+    return Math.max(s1, s2) <= Math.min(e1, e2);
   }
 }
