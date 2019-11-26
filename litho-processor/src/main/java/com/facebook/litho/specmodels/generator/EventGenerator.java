@@ -276,14 +276,17 @@ public class EventGenerator {
     for (SpecMethodModel<EventMethod, EventDeclarationModel> eventMethodModel :
         specModel.getEventMethods()) {
       typeSpecDataHolder.addMethod(
-          generateEventHandlerFactory(eventMethodModel, specModel.getContextClass()));
+          generateEventHandlerFactory(
+              eventMethodModel, specModel.getContextClass(), specModel.getComponentName()));
     }
 
     return typeSpecDataHolder.build();
   }
 
   static MethodSpec generateEventHandlerFactory(
-      SpecMethodModel<EventMethod, EventDeclarationModel> eventMethodModel, TypeName paramClass) {
+      SpecMethodModel<EventMethod, EventDeclarationModel> eventMethodModel,
+      TypeName paramClass,
+      String componentName) {
     final MethodSpec.Builder builder =
         MethodSpec.methodBuilder(eventMethodModel.name.toString())
             .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
@@ -316,7 +319,8 @@ public class EventGenerator {
     paramsBlock.add("}");
 
     builder.addStatement(
-        "return newEventHandler(c, $L, $L)",
+        "return newEventHandler($L.class, c, $L, $L)",
+        componentName,
         eventMethodModel.name.toString().hashCode(),
         paramsBlock.build());
 

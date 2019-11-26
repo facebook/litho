@@ -56,8 +56,10 @@ public class NoOpEventHandlerTest {
   @Test(expected = RuntimeException.class)
   public void testComponentLifeCycleThrowsExceptionWithoutComponentScope() {
     ComponentContext componentContext = new ComponentContext(RuntimeEnvironment.application);
+    Component component = null;
     assertThat(
-            ComponentLifecycle.newEventHandler(componentContext, 1, new Object[1])
+            ComponentLifecycle.newEventHandler(
+                    component.getClass(), componentContext, 1, new Object[1])
                 .isEquivalentTo(NoOpEventHandler.getNoOpEventHandler()))
         .isTrue();
   }

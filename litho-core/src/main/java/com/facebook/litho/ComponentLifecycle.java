@@ -51,6 +51,8 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
   // Since we cannot easily share this identifier across modules, we verify the consistency through
   // integration tests.
   static final int ERROR_EVENT_HANDLER_ID = "__internalOnErrorHandler".hashCode();
+  static final String WRONG_CONTEXT_FOR_EVENT_HANDLER =
+      "ComponentLifecycle:WrongContextForEventHandler";
   static final YogaMeasureFunction sMeasureFunction = new LithoYogaMeasureFunction();
   private static final int DEFAULT_MAX_PREALLOCATION = 3;
   private static final YogaBaselineFunction sBaselineFunction = new LithoYogaBaselineFunction();
@@ -619,26 +621,25 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
   }
 
   protected static <E> EventHandler<E> newEventHandler(
-      ComponentContext c, int id, Object[] params) {
-    final EventHandler<E> eventHandler = c.newEventHandler(id, params);
-    if (c.getComponentTree() != null) {
-      c.getComponentTree().recordEventHandler(c.getComponentScope(), eventHandler);
-    }
-
-    return eventHandler;
-  }
-
-  protected static <E> EventHandler<E> newEventHandler(Component c, int id, Object[] params) {
-    if (c == null) {
+      Class<? extends Component> reference, ComponentContext c, int id, Object[] params) {
+    if (c == null || c.getComponentScope() == null) {
       ComponentsReporter.emitMessage(
           ComponentsReporter.LogLevel.FATAL,
           NO_SCOPE_EVENT_HANDLER,
           "Creating event handler without scope.");
       return NoOpEventHandler.getNoOpEventHandler();
+    } else if (reference != c.getComponentScope().getClass()) {
+      ComponentsReporter.emitMessage(
+          ComponentsReporter.LogLevel.ERROR,
+          WRONG_CONTEXT_FOR_EVENT_HANDLER,
+          String.format(
+              "Event handler created for %s using a context from %s",
+              reference, c.getComponentScope().getClass()));
+      return NoOpEventHandler.getNoOpEventHandler();
     }
-    final EventHandler<E> eventHandler = new EventHandler<>(c, id, params);
-    if (c.getScopedContext() != null && c.getScopedContext().getComponentTree() != null) {
-      c.getScopedContext().getComponentTree().recordEventHandler(c, eventHandler);
+    final EventHandler<E> eventHandler = c.newEventHandler(id, params);
+    if (c.getComponentTree() != null) {
+      c.getComponentTree().recordEventHandler(c.getComponentScope(), eventHandler);
     }
 
     return eventHandler;
