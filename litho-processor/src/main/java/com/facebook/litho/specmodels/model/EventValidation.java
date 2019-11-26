@@ -27,12 +27,14 @@ import com.facebook.litho.annotations.State;
 import com.facebook.litho.annotations.TreeProp;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.internal.RunMode;
+import com.facebook.litho.specmodels.processor.SpecElementTypeDeterminator;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeName;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import javax.lang.model.element.Modifier;
+import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.MirroredTypeException;
 
 /**
@@ -58,6 +60,13 @@ public class EventValidation {
             new SpecModelValidationError(
                 eventDeclaration.representedObject,
                 "Event declarations must be annotated with @Event."));
+      }
+
+      final boolean isKotlinClass = SpecElementTypeDeterminator.determine(
+          (TypeElement) eventDeclaration.representedObject) == SpecElementType.KOTLIN_CLASS;
+
+      if (isKotlinClass) {
+        continue;
       }
 
       for (FieldModel fieldModel : eventDeclaration.fields) {
