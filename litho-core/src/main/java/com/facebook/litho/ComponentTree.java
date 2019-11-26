@@ -1754,7 +1754,10 @@ public class ComponentTree {
                       heightSpec,
                       mostRecentLayoutState.getWidth(),
                       mostRecentLayoutState.getHeight()));
-      final boolean rootDidntChange = !rootInitialized || root.getId() == mRoot.getId();
+      final boolean rootDidntChange =
+          !rootInitialized
+              || (mostRecentLayoutState != null
+                  && root.getId() == mostRecentLayoutState.getRootComponent().getId());
 
       if (rootDidntChange && sizeSpecsAreCompatible) {
         // The spec and the root haven't changed. Either we have a layout already, or we're

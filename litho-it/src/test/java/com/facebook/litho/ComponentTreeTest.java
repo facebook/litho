@@ -225,6 +225,33 @@ public class ComponentTreeTest {
   }
 
   @Test
+  public void testSetRootSynchThenAsyncThenSync() {
+    ComponentTree componentTree = ComponentTree.create(mContext).build();
+    componentTree.setRootAndSizeSpec(
+        TestDrawableComponent.create(mContext).measuredWidth(200).measuredHeight(200).build(),
+        SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED),
+        SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED));
+
+    TestDrawableComponent newComponent =
+        TestDrawableComponent.create(mContext).measuredWidth(100).measuredHeight(100).build();
+
+    componentTree.setRootAndSizeSpecAsync(
+        newComponent,
+        SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED),
+        SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED));
+
+    Size size = new Size();
+    componentTree.setRootAndSizeSpec(
+        newComponent,
+        SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED),
+        SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED),
+        size);
+
+    assertEquals(size.width, 100);
+    assertEquals(size.height, 100);
+  }
+
+  @Test
   public void testSetSizeSpecAsyncThenSyncAfterRunningTask() {
     ComponentTree componentTree =
         ComponentTree.create(mContext, mComponent).isReconciliationEnabled(false).build();
