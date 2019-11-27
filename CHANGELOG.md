@@ -16,6 +16,7 @@ _release-date_
 * **Breaking:** TextSpec default text size changed to 14sp (from 13px)
 * Fix: Propagate annotations specified on `@Param` args from `@OnEvent` methods to generated methods.
 * Fix: Produce correct generated code for `@OnEvent` method when it has several args of the same generic type.
+* Fix: Fix IndexOutOfBounds via `removeItemAt` in Sections when SingleComponentSection is given a null Component.
 
 For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.32.0...master).
 

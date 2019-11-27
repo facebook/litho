@@ -65,8 +65,14 @@ public class SingleComponentSectionSpec {
       @Prop(optional = true) Diff<Object> data) {
     final Object prevData = data.getPrevious();
     final Object nextData = data.getNext();
+    final Component prevComponent = component.getPrevious();
+    final Component nextComponent = component.getNext();
 
-    if (component.getNext() == null) {
+    if (prevComponent == null && nextComponent == null) {
+      return;
+    }
+
+    if (prevComponent != null && nextComponent == null) {
       changeSet.delete(0, prevData);
       return;
     }
@@ -86,12 +92,12 @@ public class SingleComponentSectionSpec {
       isNextFullSpan = isFullSpan.getNext();
     }
 
-    if (component.getPrevious() == null) {
+    if (prevComponent == null && nextComponent != null) {
       changeSet.insert(
           0,
           addCustomAttributes(
                   ComponentRenderInfo.create(), customAttributes.getNext(), context, component)
-              .component(component.getNext())
+              .component(nextComponent)
               .isSticky(isNextSticky)
               .spanSize(nextSpanSize)
               .isFullSpan(isNextFullSpan)
@@ -101,7 +107,7 @@ public class SingleComponentSectionSpec {
       return;
     }
 
-    // Check if update is required.
+    // Both previous and next components are non-null -- check if an update is required.
     boolean isPrevSticky = false;
     if (sticky != null && sticky.getPrevious() != null) {
       isPrevSticky = sticky.getPrevious();
@@ -123,13 +129,13 @@ public class SingleComponentSectionSpec {
     if (isPrevSticky != isNextSticky
         || prevSpanSize != nextSpanSize
         || isPrevFullSpan != isNextFullSpan
-        || !component.getPrevious().isEquivalentTo(component.getNext())
+        || !prevComponent.isEquivalentTo(nextComponent)
         || !customAttributesEqual) {
       changeSet.update(
           0,
           addCustomAttributes(
                   ComponentRenderInfo.create(), customAttributes.getNext(), context, component)
-              .component(component.getNext())
+              .component(nextComponent)
               .isSticky(isNextSticky)
               .spanSize(nextSpanSize)
               .isFullSpan(isNextFullSpan)

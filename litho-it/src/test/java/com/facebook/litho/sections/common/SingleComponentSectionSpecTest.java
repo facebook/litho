@@ -49,8 +49,73 @@ public class SingleComponentSectionSpecTest {
   }
 
   @Test
-  public void testDeleteComponent() {
+  public void testNullComponent() {
     Diff<Component> componentDiff = new Diff<>(null, null);
+    Diff<Boolean> stickyDiff = new Diff<>(null, null);
+    Diff<Integer> spanSizeDiff = new Diff<>(null, null);
+    Diff<Boolean> isFullSpanDiff = new Diff<>(null, null);
+    Diff<Map<String, Object>> customAttributesDiff = new Diff<>(null, null);
+    Diff<Object> dataDiff = new Diff<>(null, null);
+    SingleComponentSectionSpec.onCreateChangeSet(
+        mSectionContext,
+        mChangeSet,
+        componentDiff,
+        stickyDiff,
+        spanSizeDiff,
+        isFullSpanDiff,
+        customAttributesDiff,
+        dataDiff);
+
+    assertThat(mChangeSet.getChangeCount()).isEqualTo(0);
+  }
+
+  @Test
+  public void testNullComponentWithRenderInfo() {
+    Diff<Component> componentDiff = new Diff<>(null, null);
+    Diff<Boolean> stickyDiff = new Diff<>(null, true);
+    Diff<Integer> spanSizeDiff = new Diff<>(null, 1);
+    Diff<Boolean> isFullSpanDiff = new Diff<>(null, true);
+    Diff<Map<String, Object>> customAttributesDiff =
+        new Diff<>(null, new HashMap<String, Object>());
+    Diff<Object> dataDiff = new Diff<>(null, 1);
+    SingleComponentSectionSpec.onCreateChangeSet(
+        mSectionContext,
+        mChangeSet,
+        componentDiff,
+        stickyDiff,
+        spanSizeDiff,
+        isFullSpanDiff,
+        customAttributesDiff,
+        dataDiff);
+
+    assertThat(mChangeSet.getChangeCount()).isEqualTo(0);
+  }
+
+  @Test
+  public void testNullComponentWithPrevRenderInfo() {
+    Diff<Component> componentDiff = new Diff<>(null, null);
+    Diff<Boolean> stickyDiff = new Diff<>(true, true);
+    Diff<Integer> spanSizeDiff = new Diff<>(2, 1);
+    Diff<Boolean> isFullSpanDiff = new Diff<>(false, true);
+    Diff<Map<String, Object>> customAttributesDiff =
+        new Diff<>(null, new HashMap<String, Object>());
+    Diff<Object> dataDiff = new Diff<>(1, null);
+    SingleComponentSectionSpec.onCreateChangeSet(
+        mSectionContext,
+        mChangeSet,
+        componentDiff,
+        stickyDiff,
+        spanSizeDiff,
+        isFullSpanDiff,
+        customAttributesDiff,
+        dataDiff);
+
+    assertThat(mChangeSet.getChangeCount()).isEqualTo(0);
+  }
+
+  @Test
+  public void testDeleteComponent() {
+    Diff<Component> componentDiff = new Diff<>(mock(Component.class), null);
     Diff<Boolean> stickyDiff = new Diff<>(null, null);
     Diff<Integer> spanSizeDiff = new Diff<>(null, null);
     Diff<Boolean> isFullSpanDiff = new Diff<>(null, null);
