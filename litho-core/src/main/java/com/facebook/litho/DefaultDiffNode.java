@@ -129,7 +129,7 @@ public class DefaultDiffNode implements DiffNode {
   }
 
   @Override
-  public LayoutOutput getBackground() {
+  public LayoutOutput getBackgroundOutput() {
     return mBackground;
   }
 
@@ -139,7 +139,7 @@ public class DefaultDiffNode implements DiffNode {
   }
 
   @Override
-  public LayoutOutput getForeground() {
+  public LayoutOutput getForegroundOutput() {
     return mForeground;
   }
 

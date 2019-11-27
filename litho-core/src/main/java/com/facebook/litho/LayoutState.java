@@ -834,7 +834,7 @@ class LayoutState {
         layoutOutput.getViewNodeInfo().setBackground(background);
       } else {
         final LayoutOutput convertBackground =
-            (currentDiffNode != null) ? currentDiffNode.getBackground() : null;
+            (currentDiffNode != null) ? currentDiffNode.getBackgroundOutput() : null;
 
         final LayoutOutput backgroundOutput =
             addDrawableComponent(
@@ -942,7 +942,7 @@ class LayoutState {
         layoutOutput.getViewNodeInfo().setForeground(foreground);
       } else {
         final LayoutOutput convertForeground =
-            (currentDiffNode != null) ? currentDiffNode.getForeground() : null;
+            (currentDiffNode != null) ? currentDiffNode.getForegroundOutput() : null;
 
         final LayoutOutput foregroundOutput =
             addDrawableComponent(

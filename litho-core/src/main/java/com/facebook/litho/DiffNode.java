@@ -62,11 +62,11 @@ public interface DiffNode extends Cloneable {
 
   void setVisibilityOutput(VisibilityOutput visibilityOutput);
 
-  LayoutOutput getBackground();
+  LayoutOutput getBackgroundOutput();
 
   void setBackground(LayoutOutput background);
 
-  LayoutOutput getForeground();
+  LayoutOutput getForegroundOutput();
 
   void setForeground(LayoutOutput foreground);
 
