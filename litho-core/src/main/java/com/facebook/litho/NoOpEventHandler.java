@@ -26,30 +26,28 @@ public class NoOpEventHandler<E> extends EventHandler<E> {
   private static final int ID = -1;
   @VisibleForTesting static final NoOpEventHandler sNoOpEventHandler = new NoOpEventHandler();
 
-  @VisibleForTesting
-  static final HasEventDispatcher sNoOpHasEventDispatcher =
-      new HasEventDispatcher() {
+  private static final class NoOpHasEventDispatcher implements HasEventDispatcher {
+    @Override
+    public EventDispatcher getEventDispatcher() {
+      return new EventDispatcher() {
+        @Nullable
         @Override
-        public EventDispatcher getEventDispatcher() {
-          return new EventDispatcher() {
-            @Nullable
-            @Override
-            public Object dispatchOnEvent(EventHandler eventHandler, Object eventState) {
-              // DO NOTHING HERE
-              // The exception should be thrown when the handler is create, much before any events
-              // get dispatched.
-              return null;
-            }
-          };
+        public Object dispatchOnEvent(EventHandler eventHandler, Object eventState) {
+          // DO NOTHING HERE
+          // The exception should be thrown when the handler is create, much before any events
+          // get dispatched.
+          return null;
         }
       };
+    }
+  }
 
   private NoOpEventHandler(HasEventDispatcher hasEventDispatcher, int id) {
     super(hasEventDispatcher, id);
   }
 
   private NoOpEventHandler() {
-    super(sNoOpHasEventDispatcher, ID);
+    super(new NoOpHasEventDispatcher(), ID);
   }
 
   private NoOpEventHandler(
