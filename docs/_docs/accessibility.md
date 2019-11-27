@@ -141,3 +141,14 @@ static Component onCreateLayout(
 }
 ```
 
+## Accessibility Heading
+
+Heading is an accessibility property and will help the users to choose to "Navigate by Headings" and ignore scrolling through each and every subitem under a heading. "Navigate based on Heading" can be selected from "Local Context Menu" when talkback is on. Talkback gesture for "Local Context Menu" is **Swipe up then right**.
+Making any component an Accessibility Header is as simple as:
+
+```java
+Row.create(c)
+    .contentDescription("This is an accessibility heading")
+    .accessibilityHeading(true)
+    .build()
+```
