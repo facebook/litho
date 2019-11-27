@@ -159,7 +159,7 @@ public class TreeDiffingTest {
     final Component component = TestDrawableComponent.create(mContext).build();
 
     InternalNode node = createInternalNodeForMeasurableComponent(component);
-    DiffNode diffNode = new DiffNode();
+    DiffNode diffNode = new DefaultDiffNode();
     diffNode.setLastHeightSpec(mUnspecifiedSpec);
     diffNode.setLastWidthSpec(mUnspecifiedSpec);
     diffNode.setLastMeasuredWidth(10);
@@ -180,7 +180,7 @@ public class TreeDiffingTest {
     final Component component = TestDrawableComponent.create(mContext).build();
 
     InternalNode node = createInternalNodeForMeasurableComponent(component);
-    DiffNode diffNode = new DiffNode();
+    DiffNode diffNode = new DefaultDiffNode();
     diffNode.setLastWidthSpec(makeSizeSpec(10, SizeSpec.EXACTLY));
     diffNode.setLastHeightSpec(makeSizeSpec(5, SizeSpec.EXACTLY));
     diffNode.setLastMeasuredWidth(10f);

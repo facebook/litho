@@ -2174,7 +2174,7 @@ class LayoutState {
   }
 
   static DiffNode createDiffNode(InternalNode node, DiffNode parent) {
-    DiffNode diffNode = new DiffNode();
+    DiffNode diffNode = new DefaultDiffNode();
 
     diffNode.setLastWidthSpec(node.getLastWidthSpec());
     diffNode.setLastHeightSpec(node.getLastHeightSpec());
