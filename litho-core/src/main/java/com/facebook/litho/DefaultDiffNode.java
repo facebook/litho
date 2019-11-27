@@ -16,27 +16,27 @@
 
 package com.facebook.litho;
 
+import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
 public class DefaultDiffNode implements DiffNode {
 
-  private LayoutOutput mContent;
-  private LayoutOutput mBackground;
-  private LayoutOutput mForeground;
-  private LayoutOutput mBorder;
-  private LayoutOutput mHost;
-  private VisibilityOutput mVisibilityOutput;
-  private Component mComponent;
+  private @Nullable LayoutOutput mContent;
+  private @Nullable LayoutOutput mBackground;
+  private @Nullable LayoutOutput mForeground;
+  private @Nullable LayoutOutput mBorder;
+  private @Nullable LayoutOutput mHost;
+  private @Nullable VisibilityOutput mVisibilityOutput;
+  private @Nullable Component mComponent;
   private float mLastMeasuredWidth;
   private float mLastMeasuredHeight;
   private int mLastWidthSpec;
   private int mLastHeightSpec;
-  private final List<DiffNode> mChildren;
+  private final List<DiffNode> mChildren = new ArrayList<>(4);
 
-  DefaultDiffNode() {
-    mChildren = new ArrayList<>(4);
-  }
+  /** package private constructor */
+  DefaultDiffNode() {}
 
   @Override
   public int getChildCount() {
@@ -44,17 +44,17 @@ public class DefaultDiffNode implements DiffNode {
   }
 
   @Override
-  public DiffNode getChildAt(int i) {
+  public @Nullable DiffNode getChildAt(int i) {
     return mChildren.get(i);
   }
 
   @Override
-  public Component getComponent() {
+  public @Nullable Component getComponent() {
     return mComponent;
   }
 
   @Override
-  public void setComponent(Component component) {
+  public void setComponent(@Nullable Component component) {
     mComponent = component;
   }
 
@@ -84,13 +84,13 @@ public class DefaultDiffNode implements DiffNode {
   }
 
   @Override
-  public int getLastHeightSpec() {
-    return mLastHeightSpec;
+  public void setLastWidthSpec(int widthSpec) {
+    mLastWidthSpec = widthSpec;
   }
 
   @Override
-  public void setLastWidthSpec(int widthSpec) {
-    mLastWidthSpec = widthSpec;
+  public int getLastHeightSpec() {
+    return mLastHeightSpec;
   }
 
   @Override
@@ -109,62 +109,62 @@ public class DefaultDiffNode implements DiffNode {
   }
 
   @Override
-  public LayoutOutput getContentOutput() {
+  public @Nullable LayoutOutput getContentOutput() {
     return mContent;
   }
 
   @Override
-  public void setContentOutput(LayoutOutput content) {
+  public void setContentOutput(@Nullable LayoutOutput content) {
     mContent = content;
   }
 
   @Override
-  public VisibilityOutput getVisibilityOutput() {
+  public @Nullable VisibilityOutput getVisibilityOutput() {
     return mVisibilityOutput;
   }
 
   @Override
-  public void setVisibilityOutput(VisibilityOutput visibilityOutput) {
+  public void setVisibilityOutput(@Nullable VisibilityOutput visibilityOutput) {
     mVisibilityOutput = visibilityOutput;
   }
 
   @Override
-  public LayoutOutput getBackgroundOutput() {
+  public @Nullable LayoutOutput getBackgroundOutput() {
     return mBackground;
   }
 
   @Override
-  public void setBackgroundOutput(LayoutOutput background) {
+  public void setBackgroundOutput(@Nullable LayoutOutput background) {
     mBackground = background;
   }
 
   @Override
-  public LayoutOutput getForegroundOutput() {
+  public @Nullable LayoutOutput getForegroundOutput() {
     return mForeground;
   }
 
   @Override
-  public void setForegroundOutput(LayoutOutput foreground) {
+  public void setForegroundOutput(@Nullable LayoutOutput foreground) {
     mForeground = foreground;
   }
 
   @Override
-  public LayoutOutput getBorderOutput() {
+  public @Nullable LayoutOutput getBorderOutput() {
     return mBorder;
   }
 
   @Override
-  public void setBorderOutput(LayoutOutput border) {
+  public void setBorderOutput(@Nullable LayoutOutput border) {
     mBorder = border;
   }
 
   @Override
-  public LayoutOutput getHostOutput() {
+  public @Nullable LayoutOutput getHostOutput() {
     return mHost;
   }
 
   @Override
-  public void setHostOutput(LayoutOutput host) {
+  public void setHostOutput(@Nullable LayoutOutput host) {
     mHost = host;
   }
 }

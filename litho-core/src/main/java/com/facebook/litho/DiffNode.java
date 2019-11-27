@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import androidx.annotation.Nullable;
 import java.util.List;
 
 /**
@@ -28,11 +29,13 @@ public interface DiffNode extends Cloneable {
 
   int getChildCount();
 
+  @Nullable
   DiffNode getChildAt(int i);
 
+  @Nullable
   Component getComponent();
 
-  void setComponent(Component component);
+  void setComponent(@Nullable Component component);
 
   float getLastMeasuredWidth();
 
@@ -44,9 +47,9 @@ public interface DiffNode extends Cloneable {
 
   int getLastWidthSpec();
 
-  int getLastHeightSpec();
-
   void setLastWidthSpec(int widthSpec);
+
+  int getLastHeightSpec();
 
   void setLastHeightSpec(int heightSpec);
 
@@ -54,27 +57,33 @@ public interface DiffNode extends Cloneable {
 
   void addChild(DiffNode node);
 
+  @Nullable
   LayoutOutput getContentOutput();
 
-  void setContentOutput(LayoutOutput content);
+  void setContentOutput(@Nullable LayoutOutput content);
 
+  @Nullable
   VisibilityOutput getVisibilityOutput();
 
-  void setVisibilityOutput(VisibilityOutput visibilityOutput);
+  void setVisibilityOutput(@Nullable VisibilityOutput visibilityOutput);
 
+  @Nullable
   LayoutOutput getBackgroundOutput();
 
-  void setBackgroundOutput(LayoutOutput background);
+  void setBackgroundOutput(@Nullable LayoutOutput background);
 
+  @Nullable
   LayoutOutput getForegroundOutput();
 
-  void setForegroundOutput(LayoutOutput foreground);
+  void setForegroundOutput(@Nullable LayoutOutput foreground);
 
+  @Nullable
   LayoutOutput getBorderOutput();
 
-  void setBorderOutput(LayoutOutput border);
+  void setBorderOutput(@Nullable LayoutOutput border);
 
+  @Nullable
   LayoutOutput getHostOutput();
 
-  void setHostOutput(LayoutOutput host);
+  void setHostOutput(@Nullable LayoutOutput host);
 }
