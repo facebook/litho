@@ -520,7 +520,11 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
 
   @Override
   public void setDiffNode(@Nullable DiffNode diffNode) {
-    mDiffNode = diffNode;
+    if (diffNode instanceof InternalNode && ((InternalNode) diffNode).isNestedTreeHolder()) {
+      mDiffNode = ((InternalNode) diffNode).getNestedTree();
+    } else {
+      mDiffNode = diffNode;
+    }
   }
 
   @Override
