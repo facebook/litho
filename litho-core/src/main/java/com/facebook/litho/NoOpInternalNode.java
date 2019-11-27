@@ -20,6 +20,7 @@ import android.animation.StateListAnimator;
 import android.content.res.TypedArray;
 import android.graphics.PathEffect;
 import android.graphics.drawable.Drawable;
+import androidx.annotation.Nullable;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
@@ -30,8 +31,8 @@ import com.facebook.yoga.YogaNode;
 import com.facebook.yoga.YogaPositionType;
 import com.facebook.yoga.YogaWrap;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import javax.annotation.Nullable;
 
 /**
  * Class representing an empty InternalNode with a null ComponentLayout. All methods have been
@@ -185,6 +186,15 @@ class NoOpInternalNode implements InternalNode {
     return null;
   }
 
+  @Nullable
+  @Override
+  public Component getComponent() {
+    return null;
+  }
+
+  @Override
+  public void setComponent(@Nullable Component component) {}
+
   @Override
   public int getChildCount() {
     return 0;
@@ -323,6 +333,68 @@ class NoOpInternalNode implements InternalNode {
 
   @Override
   public void setLastHeightSpec(int heightSpec) {}
+
+  @Override
+  public List<DiffNode> getChildren() {
+    return Collections.emptyList();
+  }
+
+  @Override
+  public void addChild(DiffNode node) {}
+
+  @Nullable
+  @Override
+  public LayoutOutput getContentOutput() {
+    return null;
+  }
+
+  @Override
+  public void setContentOutput(@Nullable LayoutOutput content) {}
+
+  @Nullable
+  @Override
+  public VisibilityOutput getVisibilityOutput() {
+    return null;
+  }
+
+  @Override
+  public void setVisibilityOutput(@Nullable VisibilityOutput visibilityOutput) {}
+
+  @Nullable
+  @Override
+  public LayoutOutput getBackgroundOutput() {
+    return null;
+  }
+
+  @Override
+  public void setBackgroundOutput(@Nullable LayoutOutput background) {}
+
+  @Nullable
+  @Override
+  public LayoutOutput getForegroundOutput() {
+    return null;
+  }
+
+  @Override
+  public void setForegroundOutput(@Nullable LayoutOutput foreground) {}
+
+  @Nullable
+  @Override
+  public LayoutOutput getBorderOutput() {
+    return null;
+  }
+
+  @Override
+  public void setBorderOutput(@Nullable LayoutOutput border) {}
+
+  @Nullable
+  @Override
+  public LayoutOutput getHostOutput() {
+    return null;
+  }
+
+  @Override
+  public void setHostOutput(@Nullable LayoutOutput host) {}
 
   @Override
   public float getLastMeasuredHeight() {
@@ -801,7 +873,7 @@ class NoOpInternalNode implements InternalNode {
   public void aspectRatio(float aspectRatio) {}
 
   @Override
-  public void positionType(@androidx.annotation.Nullable YogaPositionType positionType) {}
+  public void positionType(@Nullable YogaPositionType positionType) {}
 
   @Override
   public void positionPx(YogaEdge edge, int position) {}

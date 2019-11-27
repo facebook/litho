@@ -38,7 +38,8 @@ import javax.annotation.Nullable;
 
 /** Internal class representing a {@link ComponentLayout}. */
 @ThreadConfined(ThreadConfined.ANY)
-public interface InternalNode extends ComponentLayout, LayoutProps, Copyable<InternalNode> {
+public interface InternalNode
+    extends ComponentLayout, LayoutProps, DiffNode, Copyable<InternalNode> {
 
   void addChildAt(InternalNode child, int index);
 
@@ -406,5 +407,14 @@ public interface InternalNode extends ComponentLayout, LayoutProps, Copyable<Int
     @Nullable Edges mNestedTreePadding;
     @Nullable Edges mNestedTreeBorderWidth;
     @Nullable TreeProps mPendingTreeProps;
+  }
+
+  class Outputs {
+    @Nullable LayoutOutput contentOutput;
+    @Nullable LayoutOutput hostOutput;
+    @Nullable LayoutOutput backgroundOutput;
+    @Nullable LayoutOutput foregroundOutput;
+    @Nullable LayoutOutput borderOutput;
+    @Nullable VisibilityOutput visibilityOutput;
   }
 }
