@@ -18,8 +18,6 @@ package com.facebook.litho.specmodels.processor;
 
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.SpecElementType;
-import java.util.function.Predicate;
-import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
@@ -39,35 +37,9 @@ public class SpecElementTypeDeterminator {
                 });
   }
 
-  /**
-   * Determine whether we are handling a Kotlin class.
-   * For that to happen we check the AnnotationMirrors, in order to find an indication
-   * that there is a `kotlin.Metadata` Annotation available.
-   *
-   * If one is found we also check that we are not a Kotlin singleton, since that
-   * would require different handling.
-   * */
-  static boolean isKotlinClass(TypeElement element) {
-    final boolean isClassKind = element.getKind() == ElementKind.CLASS;
-    final boolean hasMetadataAnnotation = element
-        .getAnnotationMirrors()
-        .stream()
-        .anyMatch(
-            (Predicate<AnnotationMirror>) annotationMirror -> ((TypeElement) annotationMirror
-                .getAnnotationType()
-                .asElement()).getQualifiedName().toString().equals("kotlin.Metadata"));
-    final boolean isKotlinSingleton = isKotlinSingleton(element);
-
-    return isClassKind && hasMetadataAnnotation && !isKotlinSingleton;
-  }
-
   public static SpecElementType determine(TypeElement element) {
     if (isKotlinSingleton(element)) {
       return SpecElementType.KOTLIN_SINGLETON;
-    }
-
-    if(isKotlinClass(element)) {
-      return SpecElementType.KOTLIN_CLASS;
     }
 
     return SpecElementType.JAVA_CLASS;

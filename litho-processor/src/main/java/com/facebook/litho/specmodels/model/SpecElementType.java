@@ -19,5 +19,4 @@ package com.facebook.litho.specmodels.model;
 public enum SpecElementType {
   JAVA_CLASS,
   KOTLIN_SINGLETON,
-  KOTLIN_CLASS,
 }

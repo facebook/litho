@@ -25,14 +25,17 @@ import com.facebook.litho.annotations.Param;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.annotations.TreeProp;
+import com.facebook.litho.specmodels.generator.TypeElementCtorsInfo;
+import com.facebook.litho.specmodels.generator.TypeElementUtils;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.internal.RunMode;
-import com.facebook.litho.specmodels.processor.SpecElementTypeDeterminator;
 import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.TypeName;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.MirroredTypeException;
@@ -62,21 +65,62 @@ public class EventValidation {
                 "Event declarations must be annotated with @Event."));
       }
 
-      final boolean isKotlinClass = SpecElementTypeDeterminator.determine(
-          (TypeElement) eventDeclaration.representedObject) == SpecElementType.KOTLIN_CLASS;
+      final TypeElement eventRepresentedObject = (TypeElement) eventDeclaration.representedObject;
+      final TypeElementCtorsInfo eventClassCtorsInfo = TypeElementUtils
+          .extractCtorsInfo(eventRepresentedObject);
 
-      if (isKotlinClass) {
-        continue;
+      if (eventClassCtorsInfo == TypeElementCtorsInfo.MULTIPLE) {
+        validationErrors.add(
+            new SpecModelValidationError(
+                eventRepresentedObject,
+                "Event should have only one constructor. "
+                    + "If in Kotlin, use constructor without default values."));
+
+        return validationErrors;
       }
 
+      final Set<String> eventDeclarationAccessorMethods =
+          TypeElementUtils.extractAccessorMethodNames(eventRepresentedObject);
+
+      final boolean canHavePublicFields =
+          eventClassCtorsInfo == TypeElementCtorsInfo.SINGLE_EMPTY;
+
       for (FieldModel fieldModel : eventDeclaration.fields) {
-        if (!fieldModel.field.modifiers.contains(Modifier.PUBLIC)
-            || (fieldModel.field.modifiers.contains(Modifier.FINAL)
-                && !fieldModel.field.modifiers.contains(Modifier.STATIC))) {
+        final FieldSpec fieldSpec = fieldModel.field;
+        final Set<Modifier> fieldModifiers = fieldSpec.modifiers;
+        final boolean isPublicField = fieldModifiers.contains(Modifier.PUBLIC);
+        final boolean isFinalField = fieldModifiers.contains(Modifier.FINAL);
+        final boolean isStaticFinalField = fieldModifiers.contains(Modifier.STATIC) && isFinalField;
+
+        if (isStaticFinalField) {
+          continue;
+        }
+
+        final String fieldName = fieldSpec.name;
+        final String fieldMethodName = fieldName.substring(0, 1).toUpperCase() +
+            fieldName.substring(1);
+
+        final String possibleFieldGet = "get" + fieldMethodName;
+        final String possibleFieldIs = "is" + fieldMethodName;
+
+        final boolean hasFieldAccessor =
+            eventDeclarationAccessorMethods.contains(possibleFieldGet)
+                || eventDeclarationAccessorMethods.contains(possibleFieldIs);
+
+        final boolean isValidField = canHavePublicFields
+            && isPublicField
+            && !isFinalField
+            || hasFieldAccessor
+            && !isPublicField
+            && !canHavePublicFields;
+
+        if (!isValidField) {
           validationErrors.add(
               new SpecModelValidationError(
                   fieldModel.representedObject,
-                  "Event fields must be declared as public non-final."));
+                  "Event fields must be declared as public non-final "
+                      + "or have a corresponding getter method.")
+          );
         }
       }
     }

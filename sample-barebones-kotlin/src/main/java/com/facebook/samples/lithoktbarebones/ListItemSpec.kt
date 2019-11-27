@@ -23,13 +23,20 @@ import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.annotations.LayoutSpec
 import com.facebook.litho.annotations.OnCreateLayout
-import com.facebook.litho.annotations.OnEvent
 import com.facebook.litho.annotations.Prop
 import com.facebook.litho.widget.Text
 
-@LayoutSpec(events = [BoxItemChangedEvent::class])
+@LayoutSpec(
+    events = [
+      BoxItemChangedEvent::class,
+      BoxItemChangedEventJava::class,
+      BoxItemChangedEventEmpty::class,
+      BoxItemChangedEventEmptyJava::class,
+      BoxItemChangedEventEmptyPublicFieldsJava::class
+    ]
+)
 object ListItemSpec {
-  
+
   @OnCreateLayout
   fun onCreateLayout(
       c: ComponentContext,

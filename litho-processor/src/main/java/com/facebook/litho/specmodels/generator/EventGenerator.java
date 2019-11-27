@@ -31,21 +31,21 @@ import com.facebook.litho.specmodels.model.EventMethod;
 import com.facebook.litho.specmodels.model.FieldModel;
 import com.facebook.litho.specmodels.model.MethodParamModel;
 import com.facebook.litho.specmodels.model.MethodParamModelUtils;
-import com.facebook.litho.specmodels.model.SpecElementType;
 import com.facebook.litho.specmodels.model.SpecMethodModel;
 import com.facebook.litho.specmodels.model.SpecMethodModelUtils;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.SpecModelUtils;
 import com.facebook.litho.specmodels.model.StateParamModel;
-import com.facebook.litho.specmodels.processor.SpecElementTypeDeterminator;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeVariableName;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
@@ -122,23 +122,87 @@ public class EventGenerator {
             .addModifiers(Modifier.STATIC)
             .addParameter(ClassNames.EVENT_HANDLER, "_eventHandler");
 
-    eventDispatcherMethod.addStatement(
-        "final $T _eventState = new $T()", eventDeclaration.name, eventDeclaration.name);
+    final TypeElement eventRepresentedObject = (TypeElement) eventDeclaration.representedObject;
+    final TypeElementCtorsInfo eventClassCtorsInfo =
+        TypeElementUtils.extractCtorsInfo(eventRepresentedObject);
 
-    for (FieldModel fieldModel : eventDeclaration.fields) {
-      if (fieldModel.field.modifiers.contains(Modifier.FINAL)) {
-        continue;
+    /*
+     * Check if our class has any non-empty constructors. If so we will instantiate the
+     * Event class using that one instead of accessing mutable fields.
+     * */
+    if (eventClassCtorsInfo == TypeElementCtorsInfo.SINGLE_NON_EMPTY) {
+      final StringBuilder ctorParamsPlaceholder = new StringBuilder();
+      final List<String> ctorParamNames = new ArrayList<>();
+
+      /*
+       * Iterate over the Event fields in order to achieve the following:
+       *
+       * 1) Add the parameters to the method under construction.
+       * 2) Create a parameter name placeholder for JavaPoet.
+       * 3) Keep a list of all parameter names.
+       * */
+      for (FieldModel fieldModel : eventDeclaration.fields) {
+        if (fieldModel.field.modifiers.contains(Modifier.STATIC)
+            && fieldModel.field.modifiers.contains(Modifier.FINAL)) {
+          continue;
+        }
+
+        eventDispatcherMethod
+            .addParameter(fieldModel.field.type, fieldModel.field.name);
+
+        // We do not want ',' appended on the first loop
+        if (!ctorParamNames.isEmpty()) {
+          ctorParamsPlaceholder.append(", ");
+        }
+
+        ctorParamsPlaceholder.append("$L");
+
+        ctorParamNames.add(fieldModel.field.name);
       }
 
-      // Ignore the generics Type Arguments in the method parameters.
-      TypeName typeName = fieldModel.field.type;
-      if (typeName instanceof ParameterizedTypeName) {
-        typeName = ((ParameterizedTypeName) fieldModel.field.type).rawType;
-      }
+      /*
+       * Create a list of all arguments for Event instantiation statement below.
+       * Should be the following:
+       *
+       * 1) Event class name (type declaration)
+       * 2) Event class name (constructor call)
+       * 3) Event constructor parameters' names
+       * */
+      final List<Object> ctorStatementArgs = new ArrayList<>();
+      // Type declaration
+      ctorStatementArgs.add(eventDeclaration.name);
+      // Class instantiation
+      ctorStatementArgs.add(eventDeclaration.name);
+      ctorStatementArgs.addAll(ctorParamNames);
 
       eventDispatcherMethod
-          .addParameter(typeName, fieldModel.field.name)
-          .addStatement("_eventState.$L = $L", fieldModel.field.name, fieldModel.field.name);
+          .addStatement(
+              "final $T _eventState = new $T(" + ctorParamsPlaceholder + ")",
+              ctorStatementArgs.toArray(new Object[0])
+          );
+    } else {
+      eventDispatcherMethod
+          .addStatement(
+              "final $T _eventState = new $T()",
+              eventDeclaration.name,
+              eventDeclaration.name
+          );
+
+      for (FieldModel fieldModel : eventDeclaration.fields) {
+        if (fieldModel.field.modifiers.contains(Modifier.FINAL)) {
+          continue;
+        }
+
+        // Ignore the generics Type Arguments in the method parameters.
+        TypeName typeName = fieldModel.field.type;
+        if (typeName instanceof ParameterizedTypeName) {
+          typeName = ((ParameterizedTypeName) fieldModel.field.type).rawType;
+        }
+
+        eventDispatcherMethod
+            .addParameter(typeName, fieldModel.field.name)
+            .addStatement("_eventState.$L = $L", fieldModel.field.name, fieldModel.field.name);
+      }
     }
 
     eventDispatcherMethod.addStatement(
