@@ -109,12 +109,12 @@ public class DefaultDiffNode implements DiffNode {
   }
 
   @Override
-  public LayoutOutput getContent() {
+  public LayoutOutput getContentOutput() {
     return mContent;
   }
 
   @Override
-  public void setContent(LayoutOutput content) {
+  public void setContentOutput(LayoutOutput content) {
     mContent = content;
   }
 
@@ -134,7 +134,7 @@ public class DefaultDiffNode implements DiffNode {
   }
 
   @Override
-  public void setBackground(LayoutOutput background) {
+  public void setBackgroundOutput(LayoutOutput background) {
     mBackground = background;
   }
 
@@ -144,27 +144,27 @@ public class DefaultDiffNode implements DiffNode {
   }
 
   @Override
-  public void setForeground(LayoutOutput foreground) {
+  public void setForegroundOutput(LayoutOutput foreground) {
     mForeground = foreground;
   }
 
   @Override
-  public LayoutOutput getBorder() {
+  public LayoutOutput getBorderOutput() {
     return mBorder;
   }
 
   @Override
-  public void setBorder(LayoutOutput border) {
+  public void setBorderOutput(LayoutOutput border) {
     mBorder = border;
   }
 
   @Override
-  public LayoutOutput getHost() {
+  public LayoutOutput getHostOutput() {
     return mHost;
   }
 
   @Override
-  public void setHost(LayoutOutput host) {
+  public void setHostOutput(LayoutOutput host) {
     mHost = host;
   }
 }

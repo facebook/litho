@@ -54,9 +54,9 @@ public interface DiffNode extends Cloneable {
 
   void addChild(DiffNode node);
 
-  LayoutOutput getContent();
+  LayoutOutput getContentOutput();
 
-  void setContent(LayoutOutput content);
+  void setContentOutput(LayoutOutput content);
 
   VisibilityOutput getVisibilityOutput();
 
@@ -64,17 +64,17 @@ public interface DiffNode extends Cloneable {
 
   LayoutOutput getBackgroundOutput();
 
-  void setBackground(LayoutOutput background);
+  void setBackgroundOutput(LayoutOutput background);
 
   LayoutOutput getForegroundOutput();
 
-  void setForeground(LayoutOutput foreground);
+  void setForegroundOutput(LayoutOutput foreground);
 
-  LayoutOutput getBorder();
+  LayoutOutput getBorderOutput();
 
-  void setBorder(LayoutOutput border);
+  void setBorderOutput(LayoutOutput border);
 
-  LayoutOutput getHost();
+  LayoutOutput getHostOutput();
 
-  void setHost(LayoutOutput host);
+  void setHostOutput(LayoutOutput host);
 }

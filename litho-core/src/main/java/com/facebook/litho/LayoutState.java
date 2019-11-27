@@ -818,7 +818,8 @@ class LayoutState {
         createGenericLayoutOutput(node, layoutState, hierarchy, needsHostView);
 
     if (layoutOutput != null) {
-      final long previousId = shouldUseCachedOutputs ? currentDiffNode.getContent().getId() : -1;
+      final long previousId =
+          shouldUseCachedOutputs ? currentDiffNode.getContentOutput().getId() : -1;
       layoutState.calculateAndSetLayoutOutputIdAndUpdateState(
           layoutOutput,
           layoutState.mCurrentLevel,
@@ -847,7 +848,7 @@ class LayoutState {
                 needsHostView);
 
         if (diffNode != null) {
-          diffNode.setBackground(backgroundOutput);
+          diffNode.setBackgroundOutput(backgroundOutput);
         }
       }
     }
@@ -872,7 +873,7 @@ class LayoutState {
           layoutState.mCurrentLayoutOutputAffinityGroup, OutputUnitType.CONTENT, layoutOutput);
 
       if (diffNode != null) {
-        diffNode.setContent(layoutOutput);
+        diffNode.setContentOutput(layoutOutput);
       }
     }
 
@@ -920,7 +921,7 @@ class LayoutState {
     // 5. Add border color if defined.
     if (node.shouldDrawBorders()) {
       final LayoutOutput convertBorder =
-          (currentDiffNode != null) ? currentDiffNode.getBorder() : null;
+          (currentDiffNode != null) ? currentDiffNode.getBorderOutput() : null;
       final LayoutOutput borderOutput =
           addDrawableComponent(
               node,
@@ -931,7 +932,7 @@ class LayoutState {
               OutputUnitType.BORDER,
               needsHostView);
       if (diffNode != null) {
-        diffNode.setBorder(borderOutput);
+        diffNode.setBorderOutput(borderOutput);
       }
     }
 
@@ -955,7 +956,7 @@ class LayoutState {
                 needsHostView);
 
         if (diffNode != null) {
-          diffNode.setForeground(foregroundOutput);
+          diffNode.setForegroundOutput(foregroundOutput);
         }
       }
     }
@@ -1319,7 +1320,7 @@ class LayoutState {
     final int hostOutputPosition = layoutState.mMountableOutputs.size() - 1;
 
     if (diffNode != null) {
-      diffNode.setHost(hostLayoutOutput);
+      diffNode.setHostOutput(hostLayoutOutput);
     }
 
     calculateAndSetHostOutputIdAndUpdateState(node, hostLayoutOutput, layoutState);
