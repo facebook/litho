@@ -766,7 +766,11 @@ class LayoutState {
 
     final DiffNode diffNode;
     if (shouldGenerateDiffTree) {
-      diffNode = createDiffNode(node, parentDiffNode);
+      if (ComponentsConfiguration.useInternalNodesForLayoutDiffing) {
+        diffNode = node;
+      } else {
+        diffNode = createDiffNode(node, parentDiffNode);
+      }
       if (parentDiffNode == null) {
         layoutState.mDiffTreeRoot = diffNode;
       }
@@ -1635,9 +1639,9 @@ class LayoutState {
     }
 
     if (!c.isReconciliationEnabled()
+        && !ComponentsConfiguration.useInternalNodesForLayoutDiffing
         && !ComponentsConfiguration.isDebugModeEnabled
-        && !ComponentsConfiguration.isEndToEndTestRun
-        && layoutState.mLayoutRoot != null) {
+        && !ComponentsConfiguration.isEndToEndTestRun) {
       layoutState.mLayoutRoot = null;
     }
   }
