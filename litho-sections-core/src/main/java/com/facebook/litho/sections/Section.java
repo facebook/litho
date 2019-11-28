@@ -22,6 +22,7 @@ import com.facebook.litho.Equivalence;
 import com.facebook.litho.EventDispatcher;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.EventTriggersContainer;
+import com.facebook.litho.Handle;
 import com.facebook.litho.HasEventDispatcher;
 import com.facebook.litho.HasEventTrigger;
 import com.facebook.litho.ResourceResolver;
@@ -95,6 +96,11 @@ public abstract class Section extends SectionLifecycle
       mResourceResolver = context.getResourceResolver();
     }
 
+    public T handle(Handle handle) {
+      mSection.setHandle(handle);
+      return getThis();
+    }
+
     /** Sets the key of this {@link Section} local to its parent. */
     public T key(String key) {
       mSection.setKey(key);
@@ -147,6 +153,7 @@ public abstract class Section extends SectionLifecycle
   private List<Section> mChildren;
   private String mGlobalKey;
   private String mKey;
+  @Nullable private Handle mHandle;
 
   /** @return a unique key for this {@link Section} within its tree. */
   @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
@@ -160,12 +167,27 @@ public abstract class Section extends SectionLifecycle
     mGlobalKey = key;
   }
 
+  /** @return get the {@link Handle} associated with this section. */
+  @Nullable
+  protected Handle getHandle() {
+    return mHandle;
+  }
+
+  /**
+   * Associate a {@link Handle} with this section
+   *
+   * @param handle handle
+   */
+  void setHandle(Handle handle) {
+    mHandle = handle;
+  }
+
   /**
    * @return a key for this {@link Section} that is local between its siblings. A parent is
    *     responsible to set different localScopes to children with the same {@link
    *     SectionLifecycle}.
    */
-  String getKey() {
+  protected String getKey() {
     return mKey;
   }
 
