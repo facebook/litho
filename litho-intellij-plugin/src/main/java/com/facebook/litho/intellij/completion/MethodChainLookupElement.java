@@ -20,6 +20,7 @@ import com.facebook.litho.intellij.extensions.EventLogger;
 import com.facebook.litho.intellij.logging.LithoLoggerProvider;
 import com.google.common.annotations.VisibleForTesting;
 import com.intellij.codeInsight.completion.InsertionContext;
+import com.intellij.codeInsight.completion.PrioritizedLookupElement;
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementDecorator;
 import com.intellij.codeInsight.lookup.LookupElementPresentation;
@@ -61,7 +62,9 @@ public class MethodChainLookupElement extends LookupElementDecorator<LookupEleme
     PsiElement elementInTree = placeholder.replace(stub);
     CodeStyleManager.getInstance(project).reformat(elementInTree, false);
     Template template = createTemplate(elementInTree);
-    return new MethodChainLookupElement(lookupPresentation, template);
+    LookupElement prioritized =
+        PrioritizedLookupElement.withPriority(lookupPresentation, Integer.MAX_VALUE);
+    return new MethodChainLookupElement(prioritized, template);
   }
 
   @VisibleForTesting
