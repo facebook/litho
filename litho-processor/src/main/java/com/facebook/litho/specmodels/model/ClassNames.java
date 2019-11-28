@@ -135,4 +135,6 @@ public interface ClassNames {
   ClassName JAVA_METHOD = ClassName.bestGuess("java.lang.reflect.Method");
 
   ClassName DYNAMIC_VALUE = ClassName.bestGuess("com.facebook.litho.DynamicValue");
+
+  ClassName HANDLE = ClassName.bestGuess("com.facebook.litho.Handle");
 }

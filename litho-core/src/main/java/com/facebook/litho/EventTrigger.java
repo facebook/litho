@@ -28,10 +28,12 @@ public class EventTrigger<E> {
   @Nullable public EventTriggerTarget mTriggerTarget;
   public final int mId;
   public final String mKey;
+  @Nullable public final Handle mHandle;
 
-  public EventTrigger(String parentKey, int id, String childKey) {
+  public EventTrigger(String parentKey, int id, String childKey, Handle handle) {
     mId = id;
     mKey = parentKey + id + childKey;
+    mHandle = handle;
   }
 
   @Nullable

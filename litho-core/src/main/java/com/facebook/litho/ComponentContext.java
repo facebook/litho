@@ -422,9 +422,9 @@ public class ComponentContext {
   /**
    * @return New instance of {@link EventTrigger} that is created by the current mComponentScope.
    */
-  <E> EventTrigger<E> newEventTrigger(String childKey, int id) {
+  <E> EventTrigger<E> newEventTrigger(String childKey, int id, Handle handle) {
     String parentKey = mComponentScope == null ? "" : mComponentScope.getGlobalKey();
-    return new EventTrigger<>(parentKey, id, childKey);
+    return new EventTrigger<>(parentKey, id, childKey, handle);
   }
 
   int getWidthSpec() {

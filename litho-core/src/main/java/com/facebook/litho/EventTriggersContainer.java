@@ -28,7 +28,7 @@ public class EventTriggersContainer {
 
   @GuardedBy("this")
   @Nullable
-  private Map<String, EventTrigger> mEventTriggers;
+  private Map<Object, EventTrigger> mEventTriggers;
 
   /**
    * Record an {@link EventTrigger} according to its key.
@@ -45,8 +45,23 @@ public class EventTriggersContainer {
         mEventTriggers = new HashMap<>();
       }
 
-      mEventTriggers.put(trigger.mKey, trigger);
+      if (trigger.mKey != null) {
+        mEventTriggers.put(trigger.mKey, trigger);
+      }
+
+      if (trigger.mHandle != null) {
+        mEventTriggers.put(trigger.mHandle, trigger);
+      }
     }
+  }
+
+  @Nullable
+  private synchronized EventTrigger getEventTriggerInternal(Object triggerKeyOrHandle) {
+    if (mEventTriggers == null || !mEventTriggers.containsKey(triggerKeyOrHandle)) {
+      return null;
+    }
+
+    return mEventTriggers.get(triggerKeyOrHandle);
   }
 
   /**
@@ -56,12 +71,19 @@ public class EventTriggersContainer {
    * @return EventTrigger with the triggerKey given.
    */
   @Nullable
-  public synchronized EventTrigger getEventTrigger(String triggerKey) {
-    if (mEventTriggers == null || !mEventTriggers.containsKey(triggerKey)) {
-      return null;
-    }
+  public EventTrigger getEventTrigger(String triggerKey) {
+    return getEventTriggerInternal(triggerKey);
+  }
 
-    return mEventTriggers.get(triggerKey);
+  /**
+   * Retrieve and return an {@link EventTrigger} based on the given handle.
+   *
+   * @param handle
+   * @return EventTrigger with the handle given.
+   */
+  @Nullable
+  public EventTrigger getEventTrigger(Handle handle) {
+    return getEventTriggerInternal(handle);
   }
 
   public synchronized void clear() {

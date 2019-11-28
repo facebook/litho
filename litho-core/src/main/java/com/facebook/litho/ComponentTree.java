@@ -1423,6 +1423,13 @@ public class ComponentTree {
     }
   }
 
+  @Nullable
+  EventTrigger getEventTrigger(Handle handle) {
+    synchronized (mEventTriggersContainer) {
+      return mEventTriggersContainer.getEventTrigger(handle);
+    }
+  }
+
   /**
    * Check if the any child components stored in {@link LayoutState} have entered/exited the working
    * range, and dispatch the event to trigger the corresponding registered methods.

@@ -225,9 +225,33 @@ public class TriggerGenerator {
       typeSpecDataHolder.addMethod(
           generateStaticGetTrigger(
               specModel.getComponentName(), specModel.getContextClass(), eventMethodModel));
+      typeSpecDataHolder.addMethod(
+          generateDeprecatedStaticGetTrigger(specModel.getContextClass(), eventMethodModel));
     }
 
     return typeSpecDataHolder.build();
+  }
+
+  private static MethodSpec generateDeprecatedStaticGetTrigger(
+      ClassName contextClassName,
+      SpecMethodModel<EventMethod, EventDeclarationModel> eventMethodModel) {
+
+    MethodSpec.Builder triggerMethod =
+        MethodSpec.methodBuilder(
+                ComponentBodyGenerator.getEventTriggerInstanceName(eventMethodModel.name))
+            .returns(ClassNames.EVENT_TRIGGER)
+            .addModifiers(Modifier.PUBLIC, Modifier.STATIC);
+
+    triggerMethod
+        .addJavadoc("@Deprecated Do not use this method to trigger events.")
+        .addAnnotation(java.lang.Deprecated.class)
+        .addParameter(contextClassName, "c")
+        .addParameter(ClassNames.STRING, "key")
+        .addStatement(
+            "return $L(c, key, null)",
+            ComponentBodyGenerator.getEventTriggerInstanceName(eventMethodModel.name));
+
+    return triggerMethod.build();
   }
 
   private static MethodSpec generateStaticGetTrigger(
@@ -239,7 +263,7 @@ public class TriggerGenerator {
         MethodSpec.methodBuilder(
                 ComponentBodyGenerator.getEventTriggerInstanceName(eventMethodModel.name))
             .returns(ClassNames.EVENT_TRIGGER)
-            .addModifiers(Modifier.PUBLIC, Modifier.STATIC);
+            .addModifiers(Modifier.PRIVATE, Modifier.STATIC);
 
     String methodId =
         componentName + ComponentBodyGenerator.getEventTriggerInstanceName(eventMethodModel.name);
@@ -247,10 +271,25 @@ public class TriggerGenerator {
     triggerMethod
         .addParameter(contextClassName, "c")
         .addParameter(ClassNames.STRING, "key")
+        .addParameter(ClassNames.HANDLE, "handle")
         .addStatement("$T methodId = $L", TypeName.INT, methodId.hashCode())
-        .addStatement("return newEventTrigger(c, key, methodId)");
+        .addStatement("return newEventTrigger(c, key, methodId, handle)");
 
     return triggerMethod.build();
+  }
+
+  private enum TriggerLookup {
+    HANDLE(ClassNames.HANDLE, "handle"),
+    KEY(ClassNames.STRING, "key"),
+    ;
+
+    TriggerLookup(ClassName keyType, String paramName) {
+      this.keyType = keyType;
+      this.paramName = paramName;
+    }
+
+    public ClassName keyType;
+    public String paramName;
   }
 
   static TypeSpecDataHolder generateStaticTriggerMethods(SpecModel specModel) {
@@ -258,8 +297,18 @@ public class TriggerGenerator {
     for (SpecMethodModel<EventMethod, EventDeclarationModel> eventMethodModel :
         specModel.getTriggerMethods()) {
       typeSpecDataHolder.addMethod(
-          generateStaticTriggerMethodWithKey(
-              specModel.getComponentName(), specModel.getContextClass(), eventMethodModel));
+          generateStaticTriggerMethod(
+              specModel.getComponentName(),
+              specModel.getContextClass(),
+              eventMethodModel,
+              TriggerLookup.HANDLE));
+
+      typeSpecDataHolder.addMethod(
+          generateStaticTriggerMethod(
+              specModel.getComponentName(),
+              specModel.getContextClass(),
+              eventMethodModel,
+              TriggerLookup.KEY));
 
       typeSpecDataHolder.addMethod(
           generateStaticTriggerMethodWithTriggerHandler(
@@ -276,10 +325,11 @@ public class TriggerGenerator {
     return typeSpecDataHolder.build();
   }
 
-  private static MethodSpec generateStaticTriggerMethodWithKey(
+  private static MethodSpec generateStaticTriggerMethod(
       String componentName,
       ClassName contextClassName,
-      SpecMethodModel<EventMethod, EventDeclarationModel> eventMethodModel) {
+      SpecMethodModel<EventMethod, EventDeclarationModel> eventMethodModel,
+      TriggerLookup triggerLookup) {
 
     MethodSpec.Builder triggerMethod =
         MethodSpec.methodBuilder(eventMethodModel.name.toString())
@@ -290,9 +340,11 @@ public class TriggerGenerator {
 
     triggerMethod
         .addParameter(contextClassName, "c")
-        .addParameter(ClassNames.STRING, "key")
+        .addParameter(triggerLookup.keyType, triggerLookup.paramName)
         .addStatement("$T methodId = $L", TypeName.INT, methodId.hashCode())
-        .addStatement("$T trigger = getEventTrigger(c, methodId, key)", ClassNames.EVENT_TRIGGER);
+        .addStatement(
+            "$T trigger = getEventTrigger(c, methodId, " + triggerLookup.paramName + ")",
+            ClassNames.EVENT_TRIGGER);
 
     EventDeclarationModel eventDeclaration = eventMethodModel.typeModel;
 

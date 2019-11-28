@@ -620,6 +620,21 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     return trigger;
   }
 
+  @Nullable
+  protected static EventTrigger getEventTrigger(ComponentContext c, int id, Handle handle) {
+    if (c.getComponentScope() == null || c.getComponentTree() == null) {
+      return null;
+    }
+
+    EventTrigger trigger = c.getComponentTree().getEventTrigger(handle);
+
+    if (trigger == null) {
+      return null;
+    }
+
+    return trigger;
+  }
+
   protected static <E> EventHandler<E> newEventHandler(
       Class<? extends Component> reference, ComponentContext c, int id, Object[] params) {
     if (c == null || c.getComponentScope() == null) {
@@ -646,8 +661,8 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
   }
 
   protected static <E> EventTrigger<E> newEventTrigger(
-      ComponentContext c, String childKey, int id) {
-    return c.newEventTrigger(childKey, id);
+      ComponentContext c, String childKey, int id, Handle handle) {
+    return c.newEventTrigger(childKey, id, handle);
   }
 
   public enum MountType {

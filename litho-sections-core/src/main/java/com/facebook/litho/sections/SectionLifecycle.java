@@ -21,6 +21,7 @@ import com.facebook.litho.EventDispatcher;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.EventTrigger;
 import com.facebook.litho.EventTriggerTarget;
+import com.facebook.litho.Handle;
 import com.facebook.litho.StateContainer;
 import com.facebook.litho.TreeProps;
 import com.facebook.litho.annotations.OnCreateTreeProp;
@@ -158,8 +159,9 @@ public abstract class SectionLifecycle implements EventDispatcher, EventTriggerT
     return eventHandler;
   }
 
-  protected static <E> EventTrigger<E> newEventTrigger(SectionContext c, String childKey, int id) {
-    return c.newEventTrigger(childKey, id);
+  protected static <E> EventTrigger<E> newEventTrigger(
+      SectionContext c, String childKey, int id, Handle handle) {
+    return c.newEventTrigger(childKey, id, handle);
   }
 
   @Nullable
@@ -176,6 +178,12 @@ public abstract class SectionLifecycle implements EventDispatcher, EventTriggerT
     }
 
     return trigger;
+  }
+
+  @Nullable
+  protected static EventTrigger getEventTrigger(SectionContext c, int id, Handle handle) {
+    // TODO(tT57266768): Implement handle API for Triggers in Sections
+    return null;
   }
 
   private static void recordEventHandler(Section section, EventHandler eventHandler) {

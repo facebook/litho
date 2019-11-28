@@ -17,9 +17,8 @@
 package com.facebook.litho;
 
 /**
- * This class is used to uniquely identify a component as the anchor target of a tooltip. By adding
- * a {@link Handle} prop to a {@link Component} it can be used as an anchor to show a {@link
- * LithoTooltip} on it.
+ * Instances of this class are used to uniquely identify {@link Component}s for triggering external
+ * events including showing a {@link LithoTooltip} or triggering an {@Link OnTrigger} event.
  *
  * @see {@link LithoTooltipController}
  */

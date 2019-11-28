@@ -24,6 +24,7 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentsLogger;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.EventTrigger;
+import com.facebook.litho.Handle;
 import com.facebook.litho.StateContainer;
 import com.facebook.litho.TreeProps;
 import com.facebook.litho.widget.SectionsDebug;
@@ -144,10 +145,10 @@ public class SectionContext extends ComponentContext {
   }
 
   /** @return New instance of {@link EventTrigger} that is created by the current mScope. */
-  <E> EventTrigger<E> newEventTrigger(String childKey, int id) {
+  <E> EventTrigger<E> newEventTrigger(String childKey, int id, Handle handle) {
     final Section section = mScope == null ? null : mScope.get();
     String parentKey = section == null ? "" : section.getGlobalKey();
-    return new EventTrigger<>(parentKey, id, childKey);
+    return new EventTrigger<>(parentKey, id, childKey, handle);
   }
 
   public Section getSectionScope() {

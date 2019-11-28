@@ -277,7 +277,7 @@ public class BuilderGenerator {
 
     if (!specModel.getTriggerMethods().isEmpty()) {
       propsBuilderClassBuilder.addMethod(
-          generateKeySetterMethod(specModel, specModel.getTriggerMethods()));
+          generateRegisterEventTriggersMethod(specModel.getTriggerMethods()));
     }
 
     for (BuilderMethodModel builderMethodModel : specModel.getExtraBuilderMethods()) {
@@ -1339,6 +1339,7 @@ public class BuilderGenerator {
     return MethodSpec.methodBuilder(getEventTriggerKeyResetMethodName(triggerMethodModel.name))
         .addModifiers(Modifier.PRIVATE)
         .addParameter(ClassNames.STRING, "key")
+        .addParameter(ClassNames.HANDLE, "handle")
         .addStatement(
             "$L $L = this.$L.$L",
             ClassNames.EVENT_TRIGGER,
@@ -1347,7 +1348,7 @@ public class BuilderGenerator {
             eventTriggerName)
         .beginControlFlow("if ($L == null)", eventTriggerName)
         .addStatement(
-            "$L = $L.$L(this.mContext, key)",
+            "$L = $L.$L(this.mContext, key, handle)",
             eventTriggerName,
             specModel.getComponentName(),
             eventTriggerName)
@@ -1365,21 +1366,18 @@ public class BuilderGenerator {
         .build();
   }
 
-  private static MethodSpec generateKeySetterMethod(
-      SpecModel specModel,
+  private static MethodSpec generateRegisterEventTriggersMethod(
       ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> triggerMethods) {
     MethodSpec.Builder builder =
-        MethodSpec.methodBuilder("key")
-            .addAnnotation(Override.class)
-            .addModifiers(Modifier.PUBLIC)
+        MethodSpec.methodBuilder("registerEventTriggers")
+            .addModifiers(Modifier.PRIVATE)
             .addParameter(ClassNames.STRING, "key")
-            .addStatement("super.key(key)");
+            .addParameter(ClassNames.HANDLE, "handle");
 
     for (SpecMethodModel<EventMethod, EventDeclarationModel> triggerMethod : triggerMethods) {
-      builder.addStatement("$L(key)", getEventTriggerKeyResetMethodName(triggerMethod.name));
+      builder.addStatement(
+          "$L(key, handle)", getEventTriggerKeyResetMethodName(triggerMethod.name));
     }
-
-    builder.addStatement("return this").returns(getBuilderType(specModel));
 
     return builder.build();
   }
@@ -1429,6 +1427,12 @@ public class BuilderGenerator {
             componentRef,
             dynamicProps.get(i).getName());
       }
+    }
+
+    if (!specModel.getTriggerMethods().isEmpty()) {
+      String building = getComponentMemberInstanceName(specModel);
+      buildMethodBuilder.addStatement(
+          "registerEventTriggers($L.getKey(), $L.getHandle())", building, building);
     }
 
     return buildMethodBuilder
