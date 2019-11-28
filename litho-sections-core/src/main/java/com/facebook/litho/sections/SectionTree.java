@@ -43,6 +43,7 @@ import com.facebook.litho.EventHandler;
 import com.facebook.litho.EventHandlersController;
 import com.facebook.litho.EventTrigger;
 import com.facebook.litho.EventTriggersContainer;
+import com.facebook.litho.Handle;
 import com.facebook.litho.LithoHandler;
 import com.facebook.litho.LithoHandler.DefaultLithoHandler;
 import com.facebook.litho.PerfEvent;
@@ -313,6 +314,11 @@ public class SectionTree {
   @Nullable
   synchronized EventTrigger getEventTrigger(String triggerKey) {
     return mEventTriggersContainer.getEventTrigger(triggerKey);
+  }
+
+  @Nullable
+  synchronized EventTrigger getEventTrigger(Handle handle) {
+    return mEventTriggersContainer.getEventTrigger(handle);
   }
 
   private SectionTree(Builder builder) {

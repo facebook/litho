@@ -182,8 +182,17 @@ public abstract class SectionLifecycle implements EventDispatcher, EventTriggerT
 
   @Nullable
   protected static EventTrigger getEventTrigger(SectionContext c, int id, Handle handle) {
-    // TODO(tT57266768): Implement handle API for Triggers in Sections
-    return null;
+    if (c.getSectionScope() == null) {
+      return null;
+    }
+
+    EventTrigger trigger = c.getSectionTree().getEventTrigger(handle);
+
+    if (trigger == null) {
+      return null;
+    }
+
+    return trigger;
   }
 
   private static void recordEventHandler(Section section, EventHandler eventHandler) {
