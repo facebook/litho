@@ -45,12 +45,12 @@ public class EventTriggersContainer {
         mEventTriggers = new HashMap<>();
       }
 
-      if (trigger.mKey != null) {
-        mEventTriggers.put(trigger.mKey, trigger);
+      if (trigger.getKey() != null) {
+        mEventTriggers.put(trigger.getKey(), trigger);
       }
 
-      if (trigger.mHandle != null) {
-        mEventTriggers.put(trigger.mHandle, trigger);
+      if (trigger.getHandle() != null) {
+        mEventTriggers.put(trigger.getHandle(), trigger);
       }
     }
   }

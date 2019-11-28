@@ -27,13 +27,22 @@ public class EventTrigger<E> {
 
   @Nullable public EventTriggerTarget mTriggerTarget;
   public final int mId;
-  public final String mKey;
-  @Nullable public final Handle mHandle;
+  private final String mKey;
+  @Nullable private final Handle mHandle;
 
   public EventTrigger(String parentKey, int id, String childKey, Handle handle) {
     mId = id;
     mKey = parentKey + id + childKey;
     mHandle = handle;
+  }
+
+  public String getKey() {
+    return mKey;
+  }
+
+  @Nullable
+  public Handle getHandle() {
+    return mHandle;
   }
 
   @Nullable
