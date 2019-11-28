@@ -45,7 +45,6 @@ public class RecyclerBinderConfiguration {
   private LayoutThreadPoolConfiguration mThreadPoolConfiguration =
       ComponentsConfiguration.threadPoolConfiguration;
   @Nullable private List<ComponentLogParams> mInvalidStateLogParamsList;
-  private final boolean mSplitLayoutForMeasureAndRangeEstimation;
   @Nullable private LithoHandler mChangeSetThreadHandler;
   private final boolean mEnableDetach;
   private final boolean mIsReconciliationEnabled;
@@ -71,7 +70,6 @@ public class RecyclerBinderConfiguration {
       boolean useBackgroundChangeSets,
       boolean hScrollAsyncMode,
       boolean enableStableIds,
-      boolean splitLayoutForMeasureAndRangeEstimation,
       boolean enableDetach,
       @Nullable LithoHandler changeSetThreadHandler,
       boolean moveLayoutsBetweenThreads,
@@ -90,7 +88,6 @@ public class RecyclerBinderConfiguration {
     mUseBackgroundChangeSets = useBackgroundChangeSets;
     mHScrollAsyncMode = hScrollAsyncMode;
     mEnableStableIds = enableStableIds;
-    mSplitLayoutForMeasureAndRangeEstimation = splitLayoutForMeasureAndRangeEstimation;
     mEnableDetach = enableDetach;
     mChangeSetThreadHandler = changeSetThreadHandler;
     mMoveLayoutsBetweenThreads = moveLayoutsBetweenThreads;
@@ -145,10 +142,6 @@ public class RecyclerBinderConfiguration {
     return mChangeSetThreadHandler;
   }
 
-  public boolean splitLayoutForMeasureAndRangeEstimation() {
-    return mSplitLayoutForMeasureAndRangeEstimation;
-  }
-
   public boolean useCancelableLayoutFutures() {
     return mUseCancelableLayoutFutures;
   }
@@ -192,8 +185,6 @@ public class RecyclerBinderConfiguration {
     private boolean mHScrollAsyncMode = false;
     private boolean mEnableStableIds = false;
     private boolean mUseBackgroundChangeSets = SectionsConfiguration.useBackgroundChangeSets;
-    private boolean mSplitLayoutForMeasureAndRangeEstimation =
-        ComponentsConfiguration.splitLayoutForMeasureAndRangeEstimation;
     private boolean mUseCancelableLayoutFutures =
         ComponentsConfiguration.useCancelableLayoutFutures;
     private boolean mMoveLayoutsBetweenThreads =
@@ -218,8 +209,6 @@ public class RecyclerBinderConfiguration {
       this.mHScrollAsyncMode = configuration.mHScrollAsyncMode;
       this.mEnableStableIds = configuration.mEnableStableIds;
       this.mUseBackgroundChangeSets = configuration.mUseBackgroundChangeSets;
-      this.mSplitLayoutForMeasureAndRangeEstimation =
-          configuration.mSplitLayoutForMeasureAndRangeEstimation;
       this.mUseCancelableLayoutFutures = configuration.mUseCancelableLayoutFutures;
       this.mMoveLayoutsBetweenThreads = configuration.mMoveLayoutsBetweenThreads;
       this.mEnableDetach = configuration.mEnableDetach;
@@ -322,12 +311,6 @@ public class RecyclerBinderConfiguration {
       return this;
     }
 
-    public Builder splitLayoutForMeasureAndRangeEstimation(
-        boolean splitLayoutForMeasureAndRangeEstimation) {
-      mSplitLayoutForMeasureAndRangeEstimation = splitLayoutForMeasureAndRangeEstimation;
-      return this;
-    }
-
     public Builder canInterruptAndMoveLayoutsBetweenThreads(boolean isEnabled) {
       this.mMoveLayoutsBetweenThreads = isEnabled;
       return this;
@@ -382,7 +365,6 @@ public class RecyclerBinderConfiguration {
           mUseBackgroundChangeSets,
           mHScrollAsyncMode,
           mEnableStableIds,
-          mSplitLayoutForMeasureAndRangeEstimation,
           mEnableDetach,
           mChangeSetThreadHandler,
           mMoveLayoutsBetweenThreads,

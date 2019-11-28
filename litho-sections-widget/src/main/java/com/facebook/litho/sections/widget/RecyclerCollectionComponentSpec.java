@@ -304,8 +304,6 @@ public class RecyclerCollectionComponentSpec {
             .isCircular(binderConfiguration.isCircular())
             .hasDynamicItemHeight(binderConfiguration.hasDynamicItemHeight())
             .incrementalMount(incrementalMount)
-            .splitLayoutForMeasureAndRangeEstimation(
-                binderConfiguration.splitLayoutForMeasureAndRangeEstimation())
             .enableDetach(binderConfiguration.getEnableDetach())
             .stickyHeaderControllerFactory(stickyHeaderControllerFactory)
             .useCancelableLayoutFutures(binderConfiguration.useCancelableLayoutFutures())

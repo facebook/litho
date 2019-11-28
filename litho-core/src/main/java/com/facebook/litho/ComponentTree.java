@@ -1247,7 +1247,6 @@ public class ComponentTree {
       StateUpdate stateUpdate,
       String attribution,
       boolean isCreateLayoutInProgress) {
-
     synchronized (this) {
       if (mRoot == null) {
         return;
@@ -2927,8 +2926,6 @@ public class ComponentTree {
     private boolean isReconciliationEnabled = ComponentsConfiguration.isReconciliationEnabled;
     private boolean canInterruptAndMoveLayoutsBetweenThreads =
         ComponentsConfiguration.canInterruptAndMoveLayoutsBetweenThreads;
-    private boolean splitLayoutForMeasureAndRangeEstimation =
-        ComponentsConfiguration.splitLayoutForMeasureAndRangeEstimation;
     private boolean useCancelableLayoutFutures = ComponentsConfiguration.useCancelableLayoutFutures;
     private @Nullable String logTag;
     private @Nullable ComponentsLogger logger;
