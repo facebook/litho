@@ -33,6 +33,17 @@ public class BenchmarkTestHelper {
     return lithoView;
   }
 
+  public static void createLithoViewAndExecLifecycleMethods(
+      ComponentContext c, Component component, int widthSpec, int heightSpec) {
+    final ComponentTree componentTree =
+        ComponentTree.create(c, component).isReconciliationEnabled(false).build();
+    final LithoView lithoView = new LithoView(c.getAndroidContext());
+    lithoView.setComponentTree(componentTree);
+    lithoView.onAttachedToWindow();
+    lithoView.measure(widthSpec, heightSpec);
+    lithoView.layout(0, 0, lithoView.getMeasuredWidth(), lithoView.getMeasuredHeight());
+  }
+
   public static void mountLithoView(LithoView lithoView) {
     lithoView.getComponentTree().mountComponent(null, true);
   }
