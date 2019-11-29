@@ -2541,10 +2541,6 @@ public class RecyclerBinder
     }
     final boolean isTracing = ComponentsSystrace.isTracing();
     final boolean loggingForStartup = LithoStartupLoggerUtil.isEnabled(mStartupLogger);
-    if (loggingForStartup) {
-      mStartupLogger.markPoint(
-          LithoStartupLogger.INIT_RANGE, LithoStartupLogger.START, mStartupLoggerAttribution);
-    }
 
     // We can schedule a maximum of number of items minus one (which is being calculated
     // synchronously) to run at the same time as the sync layout.
@@ -2567,6 +2563,10 @@ public class RecyclerBinder
     final int childWidthSpec = getActualChildrenWidthSpec(holder);
     final int childHeightSpec = getActualChildrenHeightSpec(holder);
 
+    if (loggingForStartup) {
+      mStartupLogger.markPoint(
+          LithoStartupLogger.INIT_RANGE, LithoStartupLogger.START, mStartupLoggerAttribution);
+    }
     if (isTracing) {
       ComponentsSystrace.beginSection("initRange");
     }
