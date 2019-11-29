@@ -175,8 +175,7 @@ commands:
           name: Build <<parameters.module_name>> with BUCK
           command: |
             cd workspace/repo
-            # buck fetch //... # explicitly exclude Kotlin modules until OSS BUCK config will be fixed
-            buck fetch //:components sample sample-barebones sample-codelab litho-it/... litho-it-powermock/...
+            buck fetch <<parameters.module_name>>
             buck build <<parameters.module_name>> --num-threads=4
   
   gradle_build:
@@ -203,8 +202,7 @@ commands:
           name: Run <<parameters.module_name>> tests with BUCK
           command: |
             cd workspace/repo
-            # buck fetch //... # explicitly exclude Kotlin modules until OSS BUCK config will be fixed
-            buck fetch //:components sample sample-barebones sample-codelab litho-it/... litho-it-powermock/...
+            buck fetch <<parameters.module_name>>/...
             buck test <<parameters.module_name>>/src/test/... --num-threads=4 --xml <<parameters.module_name>>_tests.xml
       - run: *save-litho-buck-tests-results
       - *store_litho_tests_results
