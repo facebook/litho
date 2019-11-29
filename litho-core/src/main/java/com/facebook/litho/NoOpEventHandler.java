@@ -42,12 +42,12 @@ public class NoOpEventHandler<E> extends EventHandler<E> {
     }
   }
 
-  private NoOpEventHandler(HasEventDispatcher hasEventDispatcher, int id) {
-    super(hasEventDispatcher, id);
-  }
-
   private NoOpEventHandler() {
     super(new NoOpHasEventDispatcher(), ID);
+  }
+
+  private NoOpEventHandler(HasEventDispatcher hasEventDispatcher, int id) {
+    super(hasEventDispatcher, id);
   }
 
   private NoOpEventHandler(
@@ -55,7 +55,8 @@ public class NoOpEventHandler<E> extends EventHandler<E> {
     super(hasEventDispatcher, id, params);
   }
 
-  public static NoOpEventHandler getNoOpEventHandler() {
+  public static <E> NoOpEventHandler<E> getNoOpEventHandler() {
+    //noinspection unchecked
     return sNoOpEventHandler;
   }
 }
