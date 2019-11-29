@@ -36,13 +36,13 @@
     </ul>
   ]]>
   </description>
-  <version>1.1.2-SNAPSHOT</version>
+  <version>1.2.0</version>
   <change-notes><![CDATA[
-    <h2>1.1.1</h2>
-    <ul>
-      <li>Fix: Prioritize required prop setters</li>
-      <li>Fix: Remove method duplicates for component builder completion</li>
-    </ul>
+    <h2>1.2.0</h2>
+     <ul>
+      <li>Add: QuickFix to add existing EventHandler as builder method parameter</li>
+      <li>Change: Prioritize component builder with setters completion</li>
+     </ul>
     <h2>Older Versions</h2>
     <p>Check the <a href='https://github.com/facebook/litho/blob/master/litho-intellij-plugin/CHANGELOG.md'>Changelog</a> for full version history.
   ]]></change-notes>

@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## Version 1.2.0
+
+_2019-11-29_
+
+* New: QuickFix to add existing `EventHandler` as `Component.Builder` method parameter.
+* New: Prioritize `Component.Builder` with required properties completion.
+
 ## Version 1.1.1
 
 _2019-11-21_
