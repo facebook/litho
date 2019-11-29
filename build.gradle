@@ -42,7 +42,7 @@ subprojects {
         maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
     }
     afterEvaluate {
-        tasks.withType(Test) {
+        tasks.withType(com.android.build.gradle.tasks.factory.AndroidUnitTest) {
             it.dependsOn copyYogaLibs
             systemProperty 'java.library.path', "${rootDir}/build/jniLibs"
             environment 'LD_LIBRARY_PATH', "${rootDir}/build/jniLibs"
