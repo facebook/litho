@@ -73,6 +73,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
         sTypeIdByComponentType.put(type, sComponentTypeId.incrementAndGet());
       }
 
+      //noinspection ConstantConditions
       return sTypeIdByComponentType.get(type);
     }
   }
@@ -610,14 +611,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
       return null;
     }
 
-    EventTrigger trigger =
-        c.getComponentTree().getEventTrigger(c.getComponentScope().getGlobalKey() + id + key);
-
-    if (trigger == null) {
-      return null;
-    }
-
-    return trigger;
+    return c.getComponentTree().getEventTrigger(c.getComponentScope().getGlobalKey() + id + key);
   }
 
   @Nullable
@@ -689,15 +683,4 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
    * allow Diff params (e.g. {@link #onCreateTransition}).
    */
   public interface RenderData {}
-
-  /**
-   * Exception class used to print the Components' hierarchy involved in a layout creation crash.
-   */
-  private static class CreateLayoutException extends RuntimeException {
-    CreateLayoutException(Component c, Throwable cause) {
-      super(c.getSimpleName());
-      initCause(cause);
-      setStackTrace(new StackTraceElement[0]);
-    }
-  }
 }
