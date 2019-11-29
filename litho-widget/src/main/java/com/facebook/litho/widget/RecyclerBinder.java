@@ -1119,6 +1119,10 @@ public class RecyclerBinder
       }
 
       if (appliedBatch) {
+        if (LithoStartupLoggerUtil.isEnabled(mStartupLogger)) {
+          mStartupLoggerAttribution = mStartupLogger.getLatestDataAttribution();
+        }
+
         maybeUpdateRangeOrRemeasureForMutation();
       }
     } finally {
@@ -1741,6 +1745,10 @@ public class RecyclerBinder
       if (ThreadUtils.isMainThread()) {
         applyReadyBatches();
         if (isDataChanged) {
+          if (LithoStartupLoggerUtil.isEnabled(mStartupLogger)) {
+            mStartupLoggerAttribution = mStartupLogger.getLatestDataAttribution();
+          }
+
           maybeUpdateRangeOrRemeasureForMutation();
         }
       } else {
