@@ -40,8 +40,6 @@ dependencies {
     annotationProcessor project(':test-processor')
 
     // Testing deps
-    implementation deps.junit
-    implementation deps.robolectric
     implementation deps.jsr305
     implementation deps.assertjCore
     implementation deps.mockitoCore

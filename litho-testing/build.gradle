@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import org.gradle.internal.jvm.Jvm
-
 apply plugin: 'com.android.library'
 apply plugin: 'maven'
 
@@ -23,6 +21,7 @@ android {
     compileSdkVersion rootProject.compileSdkVersion
     buildToolsVersion rootProject.buildToolsVersion
 
+    // TODO migrate to Robolectric 4 and remove
     useLibrary 'org.apache.http.legacy'
 
     defaultConfig {
@@ -46,9 +45,6 @@ dependencies {
     implementation project(':litho-processor')
     annotationProcessor project(':litho-processor')
     annotationProcessor project(':litho-sections-processor')
-
-    implementation files(Jvm.current().getToolsJar())
-    implementation files(Jvm.current().getJre().homeDir.getAbsolutePath() + '/lib/rt.jar')
 
     implementation deps.javapoet
     implementation deps.assertjCore

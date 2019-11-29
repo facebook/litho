@@ -18,6 +18,7 @@ package com.facebook.litho.testing;
 
 import android.graphics.Canvas;
 import android.graphics.ColorFilter;
+import android.graphics.PixelFormat;
 import android.graphics.drawable.Drawable;
 import androidx.annotation.Nullable;
 
@@ -33,6 +34,6 @@ public class TestDrawable extends Drawable {
 
   @Override
   public int getOpacity() {
-    return 0;
+    return PixelFormat.UNKNOWN;
   }
 }

@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import org.gradle.internal.jvm.Jvm
-
 apply plugin: 'java'
 apply plugin: 'maven-publish'
 
@@ -27,6 +25,4 @@ dependencies {
     implementation project(':litho-processor')
     implementation deps.jsr305
     implementation deps.javapoet
-
-    compileOnly files(Jvm.current().getToolsJar())
 }
