@@ -100,7 +100,7 @@ class DrawableComponent<T extends Drawable> extends Component {
 
     DrawableComponent drawableComponent = (DrawableComponent) o;
 
-    return mDrawable.equals(drawableComponent.mDrawable);
+    return DrawableUtils.isEquivalentTo(mDrawable, drawableComponent.mDrawable);
   }
 
   private void setDrawableWidth(int drawableWidth) {
