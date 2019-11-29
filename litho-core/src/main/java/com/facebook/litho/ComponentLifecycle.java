@@ -644,7 +644,6 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
           String.format(
               "Event handler created for %s using a context from %s",
               reference, c.getComponentScope().getClass()));
-      return NoOpEventHandler.getNoOpEventHandler();
     }
     final EventHandler<E> eventHandler = c.newEventHandler(id, params);
     if (c.getComponentTree() != null) {
