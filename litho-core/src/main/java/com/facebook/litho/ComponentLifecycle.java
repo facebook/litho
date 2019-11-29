@@ -640,7 +640,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
     } else if (reference != c.getComponentScope().getClass()) {
       ComponentsReporter.emitMessage(
           ComponentsReporter.LogLevel.ERROR,
-          WRONG_CONTEXT_FOR_EVENT_HANDLER,
+          WRONG_CONTEXT_FOR_EVENT_HANDLER + ":" + c.getComponentScope().getClass(),
           String.format(
               "Event handler created for %s using a context from %s",
               reference, c.getComponentScope().getClass()));
