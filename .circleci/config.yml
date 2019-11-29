@@ -273,18 +273,6 @@ jobs:
       - buck_build:
           module_name: "sample-codelab"
 
-  gradle_sample_build:
-    executor: litho-executor
-    steps:
-      - gradle_build:
-          module_name: "sample"
-  
-  gradle_sample_kotlin_build:
-    executor: litho-executor
-    steps:
-      - gradle_build:
-          module_name: "sample-kotlin"
-  
   buck_litho_it_tests_run:
     executor: litho-executor
     steps:
@@ -297,15 +285,15 @@ jobs:
       - buck_tests:
           module_name: "litho-it-powermock"
 
-  gradle_tests_run:
+  gradle_build_run:
     executor: litho-executor
     steps:
       - attach_restore_setup_buck
       - run:
-          name: Run tests with Gradle
+          name: Run build with Gradle
           command: |
             cd workspace/repo
-            ./gradlew test --no-daemon --max-workers 2
+            ./gradlew build --no-daemon --max-workers 4
       - run: *save-litho-gradle-tests-results
       - *store_litho_tests_results
       - *store_litho_artifacts
@@ -322,7 +310,7 @@ jobs:
             scripts/circle-ci-publish-snapshot.sh
 
 workflows:
-  version: 2
+  version: 3
   build_and_test:
     jobs:
       - checkout_code
@@ -338,10 +326,7 @@ workflows:
       - buck_sample_codelab_build:
           requires:
             - build
-      - gradle_sample_build:
-          requires:
-            - build
-      - gradle_sample_kotlin_build:
+      - gradle_build_run:
           requires:
             - build
       - buck_litho_it_tests_run:
@@ -350,14 +335,11 @@ workflows:
       - buck_litho_it_powermock_tests_run:
           requires:
             - build
-      - gradle_tests_run:
-          requires:
-            - build
       - publish_snapshot:
           requires:
             - buck_litho_it_tests_run
             - buck_litho_it_powermock_tests_run
-            - gradle_tests_run
+            - gradle_build_run
           filters:
             branches:
               only: master
