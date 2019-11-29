@@ -122,7 +122,6 @@ object LifecycleGroupSectionSpec {
       firstVisibleIndex: Int,
       lastVisibleIndex: Int,
       changesInfo: ChangesInfo,
-      globalOffset: Int,
       @Prop lifecycleListener: LifecycleListener,
       @State startTime: Long
   ) {

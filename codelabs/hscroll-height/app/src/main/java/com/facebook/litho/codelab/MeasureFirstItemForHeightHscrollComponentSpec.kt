@@ -17,7 +17,6 @@
 package com.facebook.litho.codelab
 
 import androidx.recyclerview.widget.OrientationHelper
-
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.annotations.FromEvent
@@ -69,7 +68,7 @@ object MeasureFirstItemForHeightHscrollComponentSpec {
 
     if (index == 1) {
       return ComponentRenderInfo.create()
-      component(SolidColor.create(c).color(model).heightDip(200f).widthDip(100f))
+          .component(SolidColor.create(c).color(model).heightDip(200f).widthDip(100f))
           .build()
     }
 
