@@ -47,7 +47,7 @@ public class LayoutSpecAnnotator implements Annotator {
             .map(model -> model.validate(RunMode.normal()))
             .orElse(Collections.emptyList());
     if (!errors.isEmpty()) {
-      LOGGER.log(EventLogger.EVENT_ANNOTATOR);
+      LOGGER.log(EventLogger.EVENT_ANNOTATOR + ".layout_spec");
       errors.forEach(error -> AnnotatorUtils.addError(holder, error));
     }
   }
