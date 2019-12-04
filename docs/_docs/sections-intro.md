@@ -5,11 +5,13 @@ layout: docs
 permalink: /docs/sections-intro
 ---
 
-Litho is primarily a rendering API, but efficient UI rendering is only part of the challenge you have to deal with to write a performant surface.
-If you take a closer look at the apps on your device, you'll notice that a lot of them center around a scrollable surface that fetches and displays lists of data. When you build a list with RecyclerView you have to think about how to maintain the adapters in sync with your data and notify the adapters of any changes. This typically requires a lot of manual index handling and it results in stateful, imperative code that is difficult to maintain and reason about as your product grows. RecyclerView adapters are also difficult to compose and integrating multiple data sources into the same surface is not trivial.
+**The Sections API is a declarative, composable, and thread-safe API for writing highly-optimized list screens, built on top of Litho.** It tries to address issues we've had at Facebook when writing complex lists, such as maintaining many view types, handling multiple data sources and composing lists together.
 
-Sections are built on top of Litho to provide a declarative and composable API for writing highly-optimized list surfaces.
-While Litho Components are used for displaying pieces of UI, Sections are a way of structuring the data and translating it into Litho Components. If you visualize your surface as being a tree of components, the nodes for the root of the tree and the subtrees are Sections, while the leaves are Litho Components that represent individual items that will be displayed on screen.
+When building a list with RecyclerView, you have to think about how to maintain the adapters in sync with your data and notify the adapters of any changes. This typically requires manual index handling and results in stateful, imperative code that is difficult to maintain and reason about as your product grows. RecyclerView adapters are also difficult to compose and integrating multiple data sources into the same surface is not trivial.
+
+Instead, the Sections API looks a lot like the Components API: your list is defined by a root Section. That root section can have children which are either single rows, a list of rows, or other nested Sections. This tree ends up resolving to a flat list of rows that the RecyclerView can understand. Any updates for your list are sent to the Adapter using the standard granular notification calls (e.g. `notifyItemInserted`) -- Sections basically eliminated `notifyDataSetChanged` except in exceptional circumstances!
+
+While Litho Components are used for displaying pieces of UI, Sections are a way of composing data into a list of Litho Components or Views. If you visualize your screen as being a tree of components, the nodes for the root of the tree and the subtrees are Sections, while the leaves are Litho Components that represent individual items that will be displayed on screen.
 
 <img src="/static/images/sections-intro.png" style="width: 800px;">
 
