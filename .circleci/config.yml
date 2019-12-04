@@ -293,7 +293,7 @@ jobs:
           name: Run build with Gradle
           command: |
             cd workspace/repo
-            ./gradlew build --no-daemon --max-workers 4
+            ./gradlew assemble test --no-daemon --max-workers 2
       - run: *save-litho-gradle-tests-results
       - *store_litho_tests_results
       - *store_litho_artifacts
