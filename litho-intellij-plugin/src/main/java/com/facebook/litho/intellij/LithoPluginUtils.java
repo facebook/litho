@@ -103,9 +103,9 @@ public class LithoPluginUtils {
         && hasAnnotation(psiClass, startsWith("com.facebook.litho.sections.annotations"));
   }
 
+  /** @return true if given name ends with "Spec". */
   @VisibleForTesting
   @Contract("null -> false")
-  /** @return if given name ends with "Spec". */
   static boolean isSpecName(@Nullable String clsName) {
     return clsName != null && clsName.endsWith(SPEC_SUFFIX);
   }
