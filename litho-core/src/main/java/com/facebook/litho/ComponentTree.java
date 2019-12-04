@@ -2194,8 +2194,8 @@ public class ComponentTree {
   }
 
   @Nullable
-  Object getCachedValue(Object cachedValueInputs) {
-    if (isReleased()) {
+  synchronized Object getCachedValue(Object cachedValueInputs) {
+    if (mReleased) {
       return null;
     }
     return mStateHandler.getCachedValue(cachedValueInputs);
@@ -2207,8 +2207,8 @@ public class ComponentTree {
     return mAttachDetachHandler;
   }
 
-  void putCachedValue(Object cachedValueInputs, Object cachedValue) {
-    if (isReleased()) {
+  synchronized void putCachedValue(Object cachedValueInputs, Object cachedValue) {
+    if (mReleased) {
       return;
     }
     mStateHandler.putCachedValue(cachedValueInputs, cachedValue);
