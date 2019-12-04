@@ -56,7 +56,7 @@ public class ComponentsConfiguration {
   public static final boolean NEEDS_THEME_SYNCHRONIZATION = (SDK_INT <= LOLLIPOP_MR1);
 
   /** The default priority for threads that perform background layout calculations. */
-  public static final int DEFAULT_BACKGROUND_THREAD_PRIORITY = 5;
+  public static int DEFAULT_BACKGROUND_THREAD_PRIORITY = 5;
 
   /** The default priority for threads that perform background sections change set calculations. */
   public static final int DEFAULT_CHANGE_SET_THREAD_PRIORITY = 0;
