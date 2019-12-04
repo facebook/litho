@@ -16,6 +16,8 @@
 
 package com.facebook.litho.intellij.inspections;
 
+import com.facebook.litho.intellij.extensions.EventLogger;
+import com.facebook.litho.intellij.logging.LithoLoggerProvider;
 import com.intellij.codeInsight.intention.HighPriorityAction;
 import com.intellij.codeInsight.intention.IntentionAction;
 import com.intellij.codeInsight.intention.impl.BaseIntentionAction;
@@ -65,6 +67,7 @@ public class AddArgumentFix extends BaseIntentionAction implements HighPriorityA
     int offset = originalCall.getArgumentList().getLastChild().getTextOffset() - 1;
     // Move cursor before the ')'.
     editor.getCaretModel().moveToOffset(offset);
+    LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_FIX_EVENT_HANDLER);
   }
 
   /** Creates new fix, that adds static method call as an argument to the originalMethodCall. */

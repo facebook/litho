@@ -30,6 +30,7 @@ public interface EventLogger {
   String EVENT_COMPLETION_ANNOTATION = "completion.annotation";
   String EVENT_COMPLETION_REQUIRED_PROP = "completion.required";
   String EVENT_FIND_USAGES = "find.usages";
+  String EVENT_FIX_EVENT_HANDLER = "fix.event_handler";
   String EVENT_GENERATE_COMPONENT = "generate.component";
   String EVENT_GOTO_NAVIGATION = "goto.navigation";
   String EVENT_GOTO_GENERATED = "goto.generated";
