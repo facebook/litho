@@ -145,14 +145,10 @@ class Layout {
 
         // Calls the onCreateLayout or onCreateLayoutWithSizeSpec on the Spec.
         final Component root = onCreateLayout(c, component);
+
+        // TODO: (T57741374) this step is required because of a bug in redex.
         if (root == component) {
           node = (InternalNode) root.resolve(c);
-          ComponentsReporter.emitMessage(
-              ComponentsReporter.LogLevel.ERROR,
-              "ComponentShouldResolve",
-              component.getClass().getName()
-                  + " returns itself in its onCreateLayout."
-                  + " Please override Component#canResolve() and return true.");
         } else if (root != null) {
           node = create(c, root, false);
         } else {
