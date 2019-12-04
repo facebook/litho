@@ -381,11 +381,14 @@ public final class ComponentTestHelper {
    *
    * <p>{@link com.facebook.litho.VisibleEvent}
    *
+   * <p>DEPRECATED: Prefer using {@link #triggerVisibilityEvent(LithoView, Class)} instead
+   *
    * @param context A components context
    * @param onVisibleHandler SpecificComponent.onVisible(component)
    * @param component The component builder which to get the subcomponent from
    * @return A LithoView with the component mounted in it.
    */
+  @Deprecated
   public static LithoView dispatchOnVisibleEvent(
       ComponentContext context, EventHandler onVisibleHandler, Component component) {
     return dispatchVisibilityEvent(context, onVisibleHandler, new VisibleEvent(), component);
@@ -397,11 +400,14 @@ public final class ComponentTestHelper {
    *
    * <p>{@link com.facebook.litho.FocusedVisibleEvent}
    *
+   * <p>DEPRECATED: Prefer using {@link #triggerVisibilityEvent(LithoView, Class)} instead
+   *
    * @param context A components context
    * @param onFocusedVisibleHandler SpecificComponent.onFocusedVisible(component)
    * @param component The component builder which to get the subcomponent from
    * @return A LithoView with the component mounted in it.
    */
+  @Deprecated
   public static LithoView dispatchOnFocusedVisibleEvent(
       ComponentContext context, EventHandler onFocusedVisibleHandler, Component component) {
     return dispatchVisibilityEvent(
@@ -414,16 +420,21 @@ public final class ComponentTestHelper {
    *
    * <p>{@link com.facebook.litho.InvisibleEvent}
    *
+   * <p>DEPRECATED: Prefer using {@link #triggerVisibilityEvent(LithoView, Class)} instead
+   *
    * @param context A components context
    * @param onInvisibleHandler SpecificComponent.onInvisible(component)
    * @param component The component builder which to get the subcomponent from
    * @return A LithoView with the component mounted in it.
    */
+  @Deprecated
   public static LithoView dispatchOnInvisibleEvent(
       ComponentContext context, EventHandler onInvisibleHandler, Component component) {
     return dispatchVisibilityEvent(context, onInvisibleHandler, new InvisibleEvent(), component);
   }
 
+  /** Use {@link #triggerVisibilityEvent(LithoView, Class)} instead */
+  @Deprecated
   private static LithoView dispatchVisibilityEvent(
       ComponentContext context,
       EventHandler eventHandler,
