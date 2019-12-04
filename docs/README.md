@@ -21,7 +21,7 @@ comes out of Cupertino, use [Docker for Mac](https://docs.docker.com/docker-for-
 In the `docs/` folder, run this:
 
 ```
-docker run -t --rm -v "$PWD":/usr/src/app -p "4000:4000" passy/github-pages:193
+docker run -t --rm -v "$PWD":/usr/src/app -p "4000:4000" passy/github-pages:198
 ```
 
 This will launch a web server on http://localhost:4000/ that monitors the docs
