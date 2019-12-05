@@ -18,20 +18,7 @@ package com.facebook.litho.intellij.completion;
 
 import static com.facebook.litho.intellij.completion.CompletionUtils.METHOD_ANNOTATION;
 
-import com.facebook.litho.annotations.OnAttached;
-import com.facebook.litho.annotations.OnCalculateCachedValue;
-import com.facebook.litho.annotations.OnCreateInitialState;
-import com.facebook.litho.annotations.OnCreateLayout;
-import com.facebook.litho.annotations.OnCreateLayoutWithSizeSpec;
-import com.facebook.litho.annotations.OnCreateTransition;
-import com.facebook.litho.annotations.OnCreateTreeProp;
-import com.facebook.litho.annotations.OnDetached;
-import com.facebook.litho.annotations.OnEnteredRange;
-import com.facebook.litho.annotations.OnError;
 import com.facebook.litho.annotations.OnEvent;
-import com.facebook.litho.annotations.OnExitedRange;
-import com.facebook.litho.annotations.OnRegisterRanges;
-import com.facebook.litho.annotations.OnShouldCreateLayoutWithNewSizeSpec;
 import com.facebook.litho.annotations.OnTrigger;
 import com.facebook.litho.annotations.OnUpdateState;
 import com.facebook.litho.annotations.OnUpdateStateWithTransition;
@@ -40,6 +27,7 @@ import com.facebook.litho.intellij.LithoPluginUtils;
 import com.facebook.litho.intellij.PsiSearchUtils;
 import com.facebook.litho.intellij.extensions.EventLogger;
 import com.facebook.litho.intellij.logging.LithoLoggerProvider;
+import com.facebook.litho.specmodels.processor.LayoutSpecModelFactory;
 import com.intellij.codeInsight.completion.CompletionContributor;
 import com.intellij.codeInsight.completion.CompletionParameters;
 import com.intellij.codeInsight.completion.CompletionProvider;
@@ -82,23 +70,13 @@ public class LayoutSpecAnnotationsContributor extends CompletionContributor {
     static final Set<String> ANNOTATION_QUALIFIED_NAMES = new HashSet<>();
 
     static {
-      ANNOTATION_QUALIFIED_NAMES.add(OnAttached.class.getTypeName());
-      ANNOTATION_QUALIFIED_NAMES.add(OnCalculateCachedValue.class.getTypeName());
-      ANNOTATION_QUALIFIED_NAMES.add(OnCreateInitialState.class.getTypeName());
-      ANNOTATION_QUALIFIED_NAMES.add(OnCreateLayout.class.getTypeName());
-      ANNOTATION_QUALIFIED_NAMES.add(OnCreateLayoutWithSizeSpec.class.getTypeName());
-      ANNOTATION_QUALIFIED_NAMES.add(OnCreateTreeProp.class.getTypeName());
-      ANNOTATION_QUALIFIED_NAMES.add(OnCreateTransition.class.getTypeName());
-      ANNOTATION_QUALIFIED_NAMES.add(OnDetached.class.getTypeName());
-      ANNOTATION_QUALIFIED_NAMES.add(OnEnteredRange.class.getTypeName());
-      ANNOTATION_QUALIFIED_NAMES.add(OnError.class.getTypeName());
+      for (Class permittedMethod : LayoutSpecModelFactory.DELEGATE_METHOD_ANNOTATIONS) {
+        ANNOTATION_QUALIFIED_NAMES.add(permittedMethod.getTypeName());
+      }
       ANNOTATION_QUALIFIED_NAMES.add(OnEvent.class.getTypeName());
-      ANNOTATION_QUALIFIED_NAMES.add(OnExitedRange.class.getTypeName());
-      ANNOTATION_QUALIFIED_NAMES.add(OnRegisterRanges.class.getTypeName());
-      ANNOTATION_QUALIFIED_NAMES.add(OnShouldCreateLayoutWithNewSizeSpec.class.getTypeName());
       ANNOTATION_QUALIFIED_NAMES.add(OnTrigger.class.getTypeName());
-      ANNOTATION_QUALIFIED_NAMES.add(OnUpdateStateWithTransition.class.getTypeName());
       ANNOTATION_QUALIFIED_NAMES.add(OnUpdateState.class.getTypeName());
+      ANNOTATION_QUALIFIED_NAMES.add(OnUpdateStateWithTransition.class.getTypeName());
     }
 
     @Override
