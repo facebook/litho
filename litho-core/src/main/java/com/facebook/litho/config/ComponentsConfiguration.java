@@ -225,4 +225,6 @@ public class ComponentsConfiguration {
 
   /** When enabled uses the refactored implementation of create layout. */
   public static boolean useNewCreateLayoutImplementation = false;
+
+  public static boolean shouldCompareStateInIsEquivalentTo = true;
 }

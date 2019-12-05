@@ -212,17 +212,29 @@ public abstract class Component extends ComponentLifecycle
    */
   @Override
   public boolean isEquivalentTo(Component other) {
-    if (this == other) {
+    return isEquivalentTo(this, other, ComponentsConfiguration.shouldCompareStateInIsEquivalentTo);
+  }
+
+  static boolean isEquivalentTo(
+      final Component previous,
+      final @Nullable Component next,
+      final boolean shouldCompareStateContainers) {
+
+    if (previous == next) {
       return true;
     }
-    if (other == null || getClass() != other.getClass()) {
+    if (next == null || previous.getClass() != next.getClass()) {
       return false;
     }
-    if (getId() == other.getId()) {
+    if (previous.getId() == next.getId()) {
       return true;
     }
 
-    return ComponentUtils.hasEquivalentFields(this, other);
+    if (shouldCompareStateContainers) {
+      return ComponentUtils.hasEquivalentFields(previous, next);
+    } else {
+      return ComponentUtils.hasEquivalentFieldsIgnoringState(previous, next);
+    }
   }
 
   public Component makeShallowCopy() {
