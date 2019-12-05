@@ -277,6 +277,7 @@ public class RecyclerBinder
   private @Nullable LithoStartupLogger mStartupLogger;
   private String mStartupLoggerAttribution = "";
   private final boolean[] mFirstMountLogged = new boolean[1];
+  private final boolean[] mLastMountLogged = new boolean[1];
 
   @GuardedBy("this")
   private @Nullable AsyncBatch mCurrentBatch = null;
@@ -3496,8 +3497,13 @@ public class RecyclerBinder
               });
         }
         if (loggingForStartup) {
-          lithoView.setStartupLoggingContext(
-              mStartupLogger, mStartupLoggerAttribution, mFirstMountLogged);
+          lithoView.setMountStartupLoggingInfo(
+              mStartupLogger,
+              mStartupLoggerAttribution,
+              mFirstMountLogged,
+              mLastMountLogged,
+              position == getItemCount(),
+              isOrientationVertical);
         }
       } else {
         final ViewBinder viewBinder = renderInfo.getViewBinder();
@@ -3543,7 +3549,7 @@ public class RecyclerBinder
         lithoView.unmountAllItems();
         lithoView.setComponentTree(null);
         lithoView.setInvalidStateLogParamsList(null);
-        lithoView.setStartupLoggingContext(null, "", null);
+        lithoView.setMountStartupLoggingInfo(null, "", null, null, false, false);
       } else {
         final ViewBinder viewBinder = holder.viewBinder;
         if (viewBinder != null) {

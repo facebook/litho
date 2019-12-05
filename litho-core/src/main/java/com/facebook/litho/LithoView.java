@@ -90,9 +90,7 @@ public class LithoView extends ComponentHost {
   @Nullable private Map<String, ComponentLogParams> mInvalidStateLogParams;
   @Nullable private String mPreviousComponentSimpleName;
   @Nullable private String mNullComponentCause;
-  @Nullable private LithoStartupLogger mStartupLogger;
-  @Nullable private boolean[] mFirstMountCalled;
-  private String mStartupLoggerDataAttribution;
+  @Nullable private MountStartupLoggingInfo mMountStartupLoggingInfo;
 
   /**
    * Create a new {@link LithoView} instance and initialize it with the given {@link Component}
@@ -795,19 +793,17 @@ public class LithoView extends ComponentHost {
       mPreviousMountVisibleRectBounds.set(currentVisibleArea);
     }
 
-    boolean loggedStart = false;
-    if (LithoStartupLoggerUtil.isEnabled(mStartupLogger)
-        && mFirstMountCalled != null
-        && !mFirstMountCalled[0]) {
-      mStartupLogger.markPoint(
-          LithoStartupLogger.FIRST_MOUNT, LithoStartupLogger.START, mStartupLoggerDataAttribution);
-      mFirstMountCalled[0] = true;
-      loggedStart = true;
-    }
+    final boolean loggedFirstMount =
+        MountStartupLoggingInfo.maybeLogFirstMountStart(mMountStartupLoggingInfo);
+    final boolean loggedLastMount =
+        MountStartupLoggingInfo.maybeLogLastMountStart(mMountStartupLoggingInfo, this);
+
     mMountState.mount(layoutState, currentVisibleArea, processVisibilityOutputs);
-    if (loggedStart) {
-      mStartupLogger.markPoint(
-          LithoStartupLogger.FIRST_MOUNT, LithoStartupLogger.END, mStartupLoggerDataAttribution);
+    if (loggedFirstMount) {
+      MountStartupLoggingInfo.logFirstMountEnd(mMountStartupLoggingInfo);
+    }
+    if (loggedLastMount) {
+      MountStartupLoggingInfo.logLastMountEnd(mMountStartupLoggingInfo);
     }
   }
 
@@ -903,13 +899,22 @@ public class LithoView extends ComponentHost {
     return mMountState;
   }
 
-  public void setStartupLoggingContext(
+  public void setMountStartupLoggingInfo(
       @Nullable LithoStartupLogger startupLogger,
       String startupLoggerAttribution,
-      @Nullable boolean[] firstMountCalled) {
-    mStartupLogger = startupLogger;
-    mFirstMountCalled = firstMountCalled;
-    mStartupLoggerDataAttribution = startupLoggerAttribution;
+      @Nullable boolean[] firstMountCalled,
+      @Nullable boolean[] lastMountCalled,
+      boolean isLastAdapterItem,
+      boolean isOrientationVertical) {
+
+    mMountStartupLoggingInfo =
+        new MountStartupLoggingInfo(
+            startupLogger,
+            startupLoggerAttribution,
+            firstMountCalled,
+            lastMountCalled,
+            isLastAdapterItem,
+            isOrientationVertical);
   }
 
   /** Register for particular invalid state logs. */
@@ -1050,5 +1055,84 @@ public class LithoView extends ComponentHost {
   @Override
   public String toString() {
     return LithoViewTestHelper.viewToString(this, true);
+  }
+
+  static class MountStartupLoggingInfo {
+    @Nullable private final LithoStartupLogger startupLogger;
+    private final String startupLoggerAttribution;
+    @Nullable private final boolean[] firstMountLogged;
+    @Nullable private final boolean[] lastMountLogged;
+    private final boolean isLastAdapterItem;
+    private final boolean isOrientationVertical;
+
+    MountStartupLoggingInfo(
+        @Nullable LithoStartupLogger startupLogger,
+        String startupLoggerAttribution,
+        @Nullable boolean[] firstMountLogged,
+        @Nullable boolean[] lastMountLogged,
+        boolean isLastAdapterItem,
+        boolean isOrientationVertical) {
+      this.startupLogger = startupLogger;
+      this.startupLoggerAttribution = startupLoggerAttribution;
+      this.firstMountLogged = firstMountLogged;
+      this.lastMountLogged = lastMountLogged;
+      this.isLastAdapterItem = isLastAdapterItem;
+      this.isOrientationVertical = isOrientationVertical;
+    }
+
+    static boolean maybeLogFirstMountStart(@Nullable MountStartupLoggingInfo loggingInfo) {
+      if (loggingInfo != null
+          && LithoStartupLoggerUtil.isEnabled(loggingInfo.startupLogger)
+          && loggingInfo.firstMountLogged != null
+          && !loggingInfo.firstMountLogged[0]) {
+        loggingInfo.startupLogger.markPoint(
+            LithoStartupLogger.FIRST_MOUNT,
+            LithoStartupLogger.START,
+            loggingInfo.startupLoggerAttribution);
+        return true;
+      }
+      return false;
+    }
+
+    static boolean maybeLogLastMountStart(
+        @Nullable MountStartupLoggingInfo loggingInfo, LithoView lithoView) {
+      if (loggingInfo != null
+          && LithoStartupLoggerUtil.isEnabled(loggingInfo.startupLogger)
+          && loggingInfo.firstMountLogged != null
+          && loggingInfo.firstMountLogged[0]
+          && loggingInfo.lastMountLogged != null
+          && !loggingInfo.lastMountLogged[0]) {
+
+        final ViewGroup parent = (ViewGroup) lithoView.getParent();
+
+        if (loggingInfo.isLastAdapterItem
+            || (loggingInfo.isOrientationVertical
+                ? lithoView.getBottom() >= parent.getHeight() - parent.getPaddingBottom()
+                : lithoView.getRight() >= parent.getWidth() - parent.getPaddingRight())) {
+          loggingInfo.startupLogger.markPoint(
+              LithoStartupLogger.LAST_MOUNT,
+              LithoStartupLogger.START,
+              loggingInfo.startupLoggerAttribution);
+          return true;
+        }
+      }
+      return false;
+    }
+
+    static void logFirstMountEnd(MountStartupLoggingInfo loggingInfo) {
+      loggingInfo.startupLogger.markPoint(
+          LithoStartupLogger.FIRST_MOUNT,
+          LithoStartupLogger.END,
+          loggingInfo.startupLoggerAttribution);
+      loggingInfo.firstMountLogged[0] = true;
+    }
+
+    static void logLastMountEnd(MountStartupLoggingInfo loggingInfo) {
+      loggingInfo.startupLogger.markPoint(
+          LithoStartupLogger.LAST_MOUNT,
+          LithoStartupLogger.END,
+          loggingInfo.startupLoggerAttribution);
+      loggingInfo.lastMountLogged[0] = true;
+    }
   }
 }
