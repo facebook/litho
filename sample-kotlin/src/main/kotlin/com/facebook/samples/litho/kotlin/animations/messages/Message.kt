@@ -22,49 +22,27 @@ import com.facebook.litho.widget.RenderInfo
 import com.facebook.samples.litho.kotlin.animations.expandableelement.ExpandableElementMe
 import com.facebook.samples.litho.kotlin.animations.expandableelement.ExpandableElementOther
 
-class Message {
-
-  private val mIsMe: Boolean
-  private val mMessage: String
-  private val mSeen: Boolean
-  private val mTimestamp: String
-  private val mForceAnimateOnAppear: Boolean
-
-  constructor(isMe: Boolean, message: String, seen: Boolean, timestamp: String) {
-    mIsMe = isMe
-    mMessage = message
-    mSeen = seen
-    mTimestamp = timestamp
-    mForceAnimateOnAppear = false
-  }
-
-  constructor(
-      isMe: Boolean,
-      message: String,
-      seen: Boolean,
-      timestamp: String,
-      forceAnimateOnInsert: Boolean
-  ) {
-    mIsMe = isMe
-    mMessage = message
-    mSeen = seen
-    mTimestamp = timestamp
-    mForceAnimateOnAppear = forceAnimateOnInsert
-  }
+class Message(
+    private val isMe: Boolean,
+    private val message: String,
+    private val seen: Boolean,
+    private val timestamp: String,
+    private val forceAnimateOnInsert: Boolean = false
+) {
 
   fun createComponent(c: ComponentContext): RenderInfo {
-    val component = if (mIsMe) {
+    val component = if (isMe) {
       ExpandableElementMe.create(c)
-          .messageText(mMessage)
-          .timestamp(mTimestamp)
-          .seen(mSeen)
-          .forceAnimateOnAppear(mForceAnimateOnAppear)
+          .messageText(message)
+          .timestamp(timestamp)
+          .seen(seen)
+          .forceAnimateOnAppear(forceAnimateOnInsert)
           .build()
     } else {
       ExpandableElementOther.create(c)
-          .messageText(mMessage)
-          .timestamp(mTimestamp)
-          .seen(mSeen)
+          .messageText(message)
+          .timestamp(timestamp)
+          .seen(seen)
           .build()
     }
 
@@ -74,9 +52,9 @@ class Message {
   companion object {
     val MESSAGES = listOf(
         Message(true,
-            "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque "
-                + "laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi "
-                + "architecto beatae vitae dicta sunt explicabo",
+            "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque " +
+                "laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi " +
+                "architecto beatae vitae dicta sunt explicabo",
             true,
             "DEC 25 AT 9:55"),
         Message(false,
@@ -91,19 +69,19 @@ class Message {
         Message(false, "qui dolorem ipsum quia dolor sit amet", true, "DEC 25 AT 10:01"),
         Message(true, "consectetur, adipisci velit", true, "DEC 25 AT 10:02"),
         Message(true,
-            ("sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam "
-                + "quaerat voluptatem"),
+            ("sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam " +
+                "quaerat voluptatem"),
             true,
             "DEC 25 AT 10:07"),
         Message(true,
-            ("Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit "
-                + "laboriosam"),
+            ("Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit " +
+                "laboriosam"),
             true,
             "DEC 25 AT 10:11"),
         Message(false, "nisi ut aliquid ex ea commodi consequatur?", true, "DEC 25 AT 10:16"),
         Message(true,
-            ("Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil"
-                + " molestiae consequatur"),
+            ("Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil" +
+                " molestiae consequatur"),
             true,
             "DEC 25 AT 10:21"),
         Message(false,
@@ -111,10 +89,10 @@ class Message {
             false,
             "DEC 25 AT 10:25"),
         Message(false,
-            ("At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis "
-                + "praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias "
-                + "excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui "
-                + "officia deserunt mollitia animi, id est laborum et dolorum fuga."),
+            ("At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis " +
+                "praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias " +
+                "excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui " +
+                "officia deserunt mollitia animi, id est laborum et dolorum fuga."),
             false,
             "DEC 25 AT 10:29"))
   }
