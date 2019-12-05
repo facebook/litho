@@ -3,7 +3,7 @@
 # This source code is licensed under the Apache 2.0 license found in the
 # LICENSE file in the root directory of this source tree.
 
-load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_FBJNI_JAVA_TARGET", "LITHO_INFERANNOTATIONS_TARGET", "LITHO_JSR_TARGET", "LITHO_PROGUARDANNOTATIONS_TARGET", "LITHO_SOLOADER_TARGET", "LITHO_VISIBILITY", "litho_android_library")
+load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_INFERANNOTATIONS_TARGET", "LITHO_JSR_TARGET", "LITHO_PROGUARDANNOTATIONS_TARGET", "LITHO_SOLOADER_TARGET", "LITHO_VISIBILITY", "litho_android_library")
 load("//tools/build_defs/oss:fb_native_wrapper.bzl", "fb_native")
 load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_VISIBILITY", "fb_java_library")
 
@@ -16,7 +16,6 @@ litho_android_library(
         LITHO_SOLOADER_TARGET,
         LITHO_INFERANNOTATIONS_TARGET,
         LITHO_JSR_TARGET,
-        LITHO_FBJNI_JAVA_TARGET,
         ":proguard-annotations",
     ],
 )

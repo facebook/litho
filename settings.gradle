@@ -43,10 +43,8 @@ include ':sample-barebones-kotlin'
 include ':sample-codelab'
 include ':yoga'
 include ':yogajni'
-include ':fbjni'
 
 project(':yoga').projectDir = file('lib/yoga')
 project(':yogajni').projectDir = file('lib/yogajni')
-project(':fbjni').projectDir = file('lib/fbjni')
 project(':test-processor').projectDir = file('litho-it/processor')
 project(':test-specs').projectDir = file('litho-it/specs')
