@@ -15,7 +15,6 @@ dependencies {
     implementation deps.jsr305
     implementation deps.inferAnnotations
     implementation project(':litho-annotations')
-    implementation project(':fbjni')
     compileOnly    deps.proguardAnnotations
 }
 

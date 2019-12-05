@@ -14,6 +14,7 @@ _release-date_
 * **Breaking:** Provide global offset of the section into @OnDataRendered method.
 * **Breaking:** `LithoViewAssert#hasVisibleDrawable` no longer relies on the broken `ShadowDrawable#equals()` implementation in Robolectric 3.X. Now Drawable equality relies on the descriptions being equal, or the resource ID they were created with being equal.
 * **Breaking:** TextSpec default text size changed to 14sp (from 13px)
+* **Breaking:** FBJNI got removed from the build process. If you relied on `libfbjni.so` to be present, you can get the artifact from [the fbjni repository](https://github.com/facebookincubator/fbjni).
 * Fix: Propagate annotations specified on `@Param` args from `@OnEvent` methods to generated methods.
 * Fix: Produce correct generated code for `@OnEvent` method when it has several args of the same generic type.
 * Fix: Fix IndexOutOfBounds via `removeItemAt` in Sections when SingleComponentSection is given a null Component.

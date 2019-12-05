@@ -1,5 +1,3 @@
-load(":glob_defs.bzl", "subdir_glob")
-
 LITHO_ROOT = "//"
 
 LITHO_VISIBILITY = [
@@ -90,8 +88,6 @@ LITHO_SECTIONS_DEBUG_TARGET = make_dep_path("litho-sections-debug/src/main/java/
 
 LITHO_SECTIONS_DEBUG_WIDGET_TARGET = make_dep_path("litho-sections-debug/src/main/java/com/facebook/litho/sections/debug/widget:widget")
 
-LITHO_FBJNI_JAVA_TARGET = make_dep_path("lib/fbjni/src/main/java/com/facebook/jni:jni")
-
 # Test source
 LITHO_TEST_TARGET = make_dep_path("litho-it/src/test/java/com/facebook/litho:litho")
 
@@ -145,8 +141,6 @@ LITHO_MOCKITO_TARGET = make_dep_path("lib/mockito:mockito")
 LITHO_POWERMOCK_MOCKITO_TARGET = make_dep_path("lib/powermock:powermock-mockito")
 
 LITHO_JNI_TARGET = make_dep_path("lib/jni-hack:jni-hack")
-
-LITHO_FBJNI_TARGET = make_dep_path("lib/fbjni:jni")
 
 LITHO_GUAVA_TARGET = make_dep_path("lib/guava:guava")
 
@@ -230,7 +224,6 @@ def components_robolectric_test(
     kwargs["use_cxx_libraries"] = True
     kwargs["cxx_library_whitelist"] = [
         "//lib/yogajni:jni",
-        "//lib/fbjni:jni",
     ]
 
     # T41117446 Remove after AndroidX conversion is done.
@@ -313,53 +306,6 @@ def fb_core_android_library(**kwargs):
     kwargs.pop("is_androidx", False)
     native.android_library(**kwargs)
 
-def define_fbjni_targets():
-    # This target is only used in open source
-    fb_prebuilt_cxx_library(
-        name = "ndklog",
-        exported_platform_linker_flags = [
-            (
-                "^android.*",
-                ["-llog"],
-            ),
-        ],
-        header_only = True,
-        visibility = LITHO_VISIBILITY,
-    )
-
-    fb_xplat_cxx_library(
-        name = "jni",
-        srcs = native.glob(
-            [
-                "src/main/cpp/fb/**/*.cpp",
-                "src/main/cpp/lyra/*.cpp",
-            ],
-        ),
-        header_namespace = "",
-        exported_headers = subdir_glob(
-            [
-                ("src/main/cpp", "fb/**/*.h"),
-                ("src/main/cpp", "fbjni/**/*.h"),
-                ("src/main/cpp", "lyra/*.h"),
-            ],
-        ),
-        compiler_flags = [
-            "-fno-omit-frame-pointer",
-            "-fexceptions",
-            "-frtti",
-            "-Wall",
-            "-std=c++11",  # FIXME
-            "-DDISABLE_CPUCAP",
-            "-DDISABLE_XPLAT",
-        ],
-        soname = "libfb.$(ext)",
-        visibility = LITHO_VISIBILITY,
-        deps = [
-            LITHO_JNI_TARGET,
-            ":ndklog",
-        ],
-    )
-
 # This target is only used in open source and will break the monobuild
 # because we cannot define `soname` multiple times.
 def define_yogajni_targets():
@@ -390,7 +336,7 @@ def define_yogajni_targets():
         visibility = LITHO_VISIBILITY,
         deps = [
             make_dep_path("lib/yoga/src/main/cpp:yoga"),
-            LITHO_FBJNI_TARGET,
+            LITHO_JNI_TARGET,
             ":ndklog",
         ],
     )

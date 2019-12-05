@@ -29,6 +29,5 @@ android {
     dependencies {
         // We want to export the Java APIs
         api project(':yoga')
-        api project(':fbjni')
     }
 }
