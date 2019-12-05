@@ -1,0 +1,31 @@
+load(
+    "//tools/build_defs/oss:litho_defs.bzl",
+    "ANDROID_STUDIO_PLUGIN_SDK_FOR_TESTS",
+    "LITHO_ASSERTJ_TARGET",
+    "LITHO_MOCKITO_TARGET",
+    "fb_java_test",
+    "make_dep_path",
+)
+
+fb_java_test(
+    name = "test",
+    #     TODO: T58412963 enable intelliJ tests
+    srcs = [
+        "intellij/LithoPluginUtilsTest.java",
+        "intellij/inspections/AnnotatorUtilsTest.java",
+        "intellij/inspections/TestHolder.java",
+        "intellij/logging/DebounceEventLoggerTest.java",
+        "specmodels/processor/PsiTypeUtilsTest.java",
+    ],
+    source = "8",
+    target = "8",
+    visibility = ["PUBLIC"],
+    deps = [
+        ANDROID_STUDIO_PLUGIN_SDK_FOR_TESTS,
+        LITHO_ASSERTJ_TARGET,
+        LITHO_MOCKITO_TARGET,
+        make_dep_path("litho-intellij-plugin/src/main:main"),
+        make_dep_path("litho-intellij-plugin/src/main/java/com/facebook/litho/intellij/extensions:lib"),
+        make_dep_path("litho-processor/src/test/java/com/facebook/litho/specmodels/processor:processor"),
+    ],
+)

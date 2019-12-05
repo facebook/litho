@@ -1,0 +1,56 @@
+load("//tools/build_defs/oss:litho_defs.bzl", "fb_java_library")
+
+fb_java_library(
+    name = "intellij-plugin-sdk",
+    visibility = ["PUBLIC"],
+    exported_deps = [
+        ":annotations",
+        ":extensions",
+        ":idea",
+        ":java-api",
+        ":java-impl",
+        ":platform-api",
+        ":platform-impl",
+        ":util",
+    ],
+)
+
+prebuilt_jar(
+    name = "annotations",
+    binary_jar = "annotations.jar",
+)
+
+prebuilt_jar(
+    name = "extensions",
+    binary_jar = "extensions.jar",
+)
+
+prebuilt_jar(
+    name = "idea",
+    binary_jar = "idea.jar",
+)
+
+prebuilt_jar(
+    name = "java-api",
+    binary_jar = "java-api.jar",
+)
+
+prebuilt_jar(
+    name = "java-impl",
+    binary_jar = "java-impl.jar",
+)
+
+prebuilt_jar(
+    name = "platform-api",
+    binary_jar = "platform-api.jar",
+)
+
+prebuilt_jar(
+    name = "platform-impl",
+    binary_jar = "platform-impl.jar",
+)
+
+prebuilt_jar(
+    name = "util",
+    binary_jar = "util.jar",
+)

@@ -150,6 +150,10 @@ LITHO_FBJNI_TARGET = make_dep_path("lib/fbjni:jni")
 
 LITHO_GUAVA_TARGET = make_dep_path("lib/guava:guava")
 
+ANDROID_STUDIO_PLUGIN_SDK = make_dep_path("lib/intellij-plugin-sdk:intellij-plugin-sdk")
+
+ANDROID_STUDIO_PLUGIN_SDK_FOR_TESTS = make_dep_path("lib/intellij-plugin-sdk:intellij-plugin-sdk")
+
 LITHO_DIFFUTILS_TARGET = make_dep_path("lib/diff-utils:diff-utils")
 
 LITHO_ESPRESSO_TARGET = make_dep_path("lib/espresso:espresso")

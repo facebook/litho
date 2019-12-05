@@ -1,0 +1,34 @@
+load(
+    "//tools/build_defs/oss:litho_defs.bzl",
+    "ANDROID_STUDIO_PLUGIN_SDK",
+    "LITHO_GUAVA_TARGET",
+    "LITHO_JAVAPOET_TARGET",
+    "LITHO_SECTIONS_ANNOTATIONS_TARGET",
+    "fb_java_library",
+    "make_dep_path",
+)
+
+fb_java_library(
+    name = "main",
+    srcs = glob(
+        ["java/**/*.java"],
+        exclude = ["java/com/facebook/litho/intellij/extensions/*.java"],
+    ),
+    provided_deps = [
+        ANDROID_STUDIO_PLUGIN_SDK,
+    ],
+    resources = glob(["resources/**/*"]),
+    resources_root = "resources",
+    source = "8",
+    target = "8",
+    visibility = ["PUBLIC"],
+    exported_deps = [
+        LITHO_GUAVA_TARGET,
+        LITHO_JAVAPOET_TARGET,
+        LITHO_SECTIONS_ANNOTATIONS_TARGET,
+        make_dep_path("litho-intellij-plugin/src/main/java/com/facebook/litho/intellij/extensions:lib"),
+        make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/processor:processor-lib-bare"),
+        make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/internal:internal"),
+        make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels:specmodels-bare"),
+    ],
+)

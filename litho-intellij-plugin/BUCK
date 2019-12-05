@@ -1,0 +1,15 @@
+load(
+    "//tools/build_defs/oss:litho_defs.bzl",
+    "fb_java_binary",
+    "make_dep_path",
+)
+
+fb_java_binary(
+    name = "litho-intellij-plugin",
+    tests = [
+        make_dep_path("litho-intellij-plugin/src/test/java/com/facebook/litho:test"),
+    ],
+    deps = [
+        make_dep_path("litho-intellij-plugin/src/main:main"),
+    ],
+)
