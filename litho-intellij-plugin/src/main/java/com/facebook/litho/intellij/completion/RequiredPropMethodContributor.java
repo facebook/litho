@@ -26,7 +26,6 @@ import com.intellij.codeInsight.completion.CompletionProvider;
 import com.intellij.codeInsight.completion.CompletionResult;
 import com.intellij.codeInsight.completion.CompletionResultSet;
 import com.intellij.codeInsight.completion.CompletionType;
-import com.intellij.codeInsight.completion.JavaKeywordCompletion;
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
@@ -38,7 +37,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * Contributor improves available method completions: prioritizes existing required prop setters,
@@ -47,8 +45,7 @@ import org.jetbrains.annotations.Nullable;
 public class RequiredPropMethodContributor extends CompletionContributor {
 
   public RequiredPropMethodContributor() {
-    extend(
-        CompletionType.BASIC, JavaKeywordCompletion.AFTER_DOT, RequiredPropMethodProvider.INSTANCE);
+    extend(CompletionType.BASIC, CompletionUtils.AFTER_DOT, RequiredPropMethodProvider.INSTANCE);
   }
 
   public static class RequiredPropMethodProvider extends CompletionProvider<CompletionParameters> {
@@ -77,7 +74,7 @@ public class RequiredPropMethodContributor extends CompletionContributor {
                         suggestedLookup,
                         isMainRequiredPropertySetter(
                             suggestedMethod.getName(), requiredPropAnnotation));
-                replacingCompletion = wrap(suggestedCompletion, newLookupElement);
+                replacingCompletion = CompletionUtils.wrap(suggestedCompletion, newLookupElement);
 
               } else if (isComponentCreateMethod(suggestedMethod)) {
                 Optional.of(suggestedMethod.getParent())
@@ -91,7 +88,9 @@ public class RequiredPropMethodContributor extends CompletionContributor {
                                 methodNames,
                                 parameters.getPosition().getPrevSibling(),
                                 parameters.getEditor().getProject()))
-                    .map(newLookupElement -> wrap(suggestedCompletion, newLookupElement))
+                    .map(
+                        newLookupElement ->
+                            CompletionUtils.wrap(suggestedCompletion, newLookupElement))
                     .ifPresent(result::passResult);
               }
             }
@@ -107,12 +106,6 @@ public class RequiredPropMethodContributor extends CompletionContributor {
     private static boolean isMainRequiredPropertySetter(
         String methodName, RequiredProp methodAnnotation) {
       return methodName.equals(methodAnnotation.value());
-    }
-
-    @Nullable
-    private static CompletionResult wrap(CompletionResult completionResult, LookupElement lookup) {
-      return CompletionResult.wrap(
-          lookup, completionResult.getPrefixMatcher(), completionResult.getSorter());
     }
 
     @VisibleForTesting

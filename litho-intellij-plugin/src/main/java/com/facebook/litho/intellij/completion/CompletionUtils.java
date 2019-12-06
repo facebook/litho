@@ -18,6 +18,8 @@ package com.facebook.litho.intellij.completion;
 
 import static com.intellij.patterns.StandardPatterns.or;
 
+import com.intellij.codeInsight.completion.CompletionResult;
+import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.lang.java.JavaLanguage;
 import com.intellij.patterns.ElementPattern;
 import com.intellij.patterns.PlatformPatterns;
@@ -26,9 +28,11 @@ import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiIdentifier;
 import com.intellij.psi.PsiMethod;
+import com.intellij.psi.PsiStatement;
 import com.intellij.psi.util.PsiTreeUtil;
 import java.util.Optional;
 import java.util.function.Predicate;
+import org.jetbrains.annotations.Nullable;
 
 class CompletionUtils {
   static final ElementPattern<PsiElement> METHOD_ANNOTATION =
@@ -56,5 +60,17 @@ class CompletionUtils {
     return Optional.ofNullable(PsiTreeUtil.findFirstParent(element, PsiClass.class::isInstance))
         .map(PsiClass.class::cast)
         .filter(condition);
+  }
+
+  static final ElementPattern<? extends PsiElement> AFTER_DOT =
+      PlatformPatterns.psiElement(PsiIdentifier.class)
+          .inside(PsiStatement.class)
+          .afterLeaf(".")
+          .withLanguage(JavaLanguage.INSTANCE);
+
+  @Nullable
+  static CompletionResult wrap(CompletionResult completionResult, LookupElement lookup) {
+    return CompletionResult.wrap(
+        lookup, completionResult.getPrefixMatcher(), completionResult.getSorter());
   }
 }
