@@ -14,17 +14,4 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.intellij.completion;
-
-import static com.facebook.litho.intellij.completion.CompletionUtils.METHOD_ANNOTATION;
-
-import com.intellij.codeInsight.completion.CompletionContributor;
-import com.intellij.codeInsight.completion.CompletionType;
-
-/** Contributor suggests completion for the available annotations in the Layout Spec. */
-public class LayoutSpecAnnotationsContributor extends CompletionContributor {
-
-  public LayoutSpecAnnotationsContributor() {
-    extend(CompletionType.BASIC, METHOD_ANNOTATION, LayoutSpecMethodAnnotationsProvider.INSTANCE);
-  }
-}
+class One {}

@@ -40,13 +40,10 @@ public class LayoutSpecAnnotationsContributorTest extends LithoPluginIntellijTes
     testHelper.configure(clsName);
     CodeInsightTestFixture fixture = testHelper.getFixture();
     fixture.completeBasic();
-    fixture.completeBasic();
     List<String> completion = fixture.getLookupElementStrings();
     assertNotNull(completion);
 
-    for (String name :
-        LayoutSpecAnnotationsContributor.LayoutSpecAnnotationsCompletionProvider
-            .ANNOTATION_QUALIFIED_NAMES) {
+    for (String name : LayoutSpecMethodAnnotationsProvider.ANNOTATION_QUALIFIED_NAMES) {
       assertTrue(completion.contains(LithoClassNames.shortName(name)));
     }
   }
@@ -62,9 +59,7 @@ public class LayoutSpecAnnotationsContributorTest extends LithoPluginIntellijTes
     List<String> completion = fixture.getLookupElementStrings();
     assertNotNull(completion);
 
-    for (String name :
-        LayoutSpecAnnotationsContributor.LayoutSpecAnnotationsCompletionProvider
-            .ANNOTATION_QUALIFIED_NAMES) {
+    for (String name : LayoutSpecMethodAnnotationsProvider.ANNOTATION_QUALIFIED_NAMES) {
       assertFalse(completion.contains(LithoClassNames.shortName(name)));
     }
   }
