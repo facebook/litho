@@ -3504,6 +3504,8 @@ public class RecyclerBinder
               mLastMountLogged,
               position == getItemCount(),
               isOrientationVertical);
+        } else {
+          lithoView.resetMountStartupLoggingInfo();
         }
       } else {
         final ViewBinder viewBinder = renderInfo.getViewBinder();
@@ -3549,7 +3551,7 @@ public class RecyclerBinder
         lithoView.unmountAllItems();
         lithoView.setComponentTree(null);
         lithoView.setInvalidStateLogParamsList(null);
-        lithoView.setMountStartupLoggingInfo(null, "", null, null, false, false);
+        lithoView.resetMountStartupLoggingInfo();
       } else {
         final ViewBinder viewBinder = holder.viewBinder;
         if (viewBinder != null) {

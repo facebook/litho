@@ -900,10 +900,10 @@ public class LithoView extends ComponentHost {
   }
 
   public void setMountStartupLoggingInfo(
-      @Nullable LithoStartupLogger startupLogger,
+      LithoStartupLogger startupLogger,
       String startupLoggerAttribution,
-      @Nullable boolean[] firstMountCalled,
-      @Nullable boolean[] lastMountCalled,
+      boolean[] firstMountCalled,
+      boolean[] lastMountCalled,
       boolean isLastAdapterItem,
       boolean isOrientationVertical) {
 
@@ -915,6 +915,10 @@ public class LithoView extends ComponentHost {
             lastMountCalled,
             isLastAdapterItem,
             isOrientationVertical);
+  }
+
+  public void resetMountStartupLoggingInfo() {
+    mMountStartupLoggingInfo = null;
   }
 
   /** Register for particular invalid state logs. */
@@ -1058,18 +1062,18 @@ public class LithoView extends ComponentHost {
   }
 
   static class MountStartupLoggingInfo {
-    @Nullable private final LithoStartupLogger startupLogger;
+    private final LithoStartupLogger startupLogger;
     private final String startupLoggerAttribution;
-    @Nullable private final boolean[] firstMountLogged;
-    @Nullable private final boolean[] lastMountLogged;
+    private final boolean[] firstMountLogged;
+    private final boolean[] lastMountLogged;
     private final boolean isLastAdapterItem;
     private final boolean isOrientationVertical;
 
     MountStartupLoggingInfo(
-        @Nullable LithoStartupLogger startupLogger,
+        LithoStartupLogger startupLogger,
         String startupLoggerAttribution,
-        @Nullable boolean[] firstMountLogged,
-        @Nullable boolean[] lastMountLogged,
+        boolean[] firstMountLogged,
+        boolean[] lastMountLogged,
         boolean isLastAdapterItem,
         boolean isOrientationVertical) {
       this.startupLogger = startupLogger;
@@ -1104,6 +1108,9 @@ public class LithoView extends ComponentHost {
           && !loggingInfo.lastMountLogged[0]) {
 
         final ViewGroup parent = (ViewGroup) lithoView.getParent();
+        if (parent == null) {
+          return false;
+        }
 
         if (loggingInfo.isLastAdapterItem
             || (loggingInfo.isOrientationVertical
