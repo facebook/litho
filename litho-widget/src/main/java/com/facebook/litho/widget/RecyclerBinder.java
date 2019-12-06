@@ -129,6 +129,7 @@ public class RecyclerBinder
   private final AtomicBoolean mIsMeasured = new AtomicBoolean(false);
   private final AtomicBoolean mRequiresRemeasure = new AtomicBoolean(false);
   private final boolean mEnableStableIds;
+  private final @Nullable LithoHandler mAsyncInsertHandler;
   private @Nullable List<ComponentLogParams> mInvalidStateLogParamsList;
   private final RecyclerRangeTraverser mRangeTraverser;
   private final boolean mHScrollAsyncMode;
@@ -437,6 +438,7 @@ public class RecyclerBinder
     private boolean shouldPreallocatePerMountSpec;
     private @Nullable ComponentWarmer mComponentWarmer;
     private @Nullable LithoStartupLogger startupLogger;
+    private LithoHandler mAsyncInsertLayoutHandler;
 
     /**
      * @param rangeRatio specifies how big a range this binder should try to compute. The range is
@@ -713,6 +715,11 @@ public class RecyclerBinder
       return this;
     }
 
+    public Builder asyncInsertLayoutHandler(LithoHandler handler) {
+      mAsyncInsertLayoutHandler = handler;
+      return this;
+    }
+
     /** @param c The {@link ComponentContext} the RecyclerBinder will use. */
     public RecyclerBinder build(ComponentContext c) {
       componentContext =
@@ -831,6 +838,7 @@ public class RecyclerBinder
     mRangeRatio = builder.rangeRatio;
     mLayoutInfo = builder.layoutInfo;
     mLayoutHandlerFactory = builder.layoutHandlerFactory;
+    mAsyncInsertHandler = builder.mAsyncInsertLayoutHandler;
     mLithoViewFactory = builder.lithoViewFactory;
 
     if (mLayoutHandlerFactory == null) {
@@ -2389,7 +2397,7 @@ public class RecyclerBinder
   }
 
   @GuardedBy("this")
-  private void computeLayoutAsync(ComponentTreeHolder holder) {
+  private void computeLayoutAsync(final ComponentTreeHolder holder) {
     // If there's an existing async layout that's compatible, this is a no-op. Otherwise, that
     // computation will be canceled (if it hasn't started) and this new one will run.
     final int widthSpec = getActualChildrenWidthSpec(holder);
@@ -2409,7 +2417,18 @@ public class RecyclerBinder
       return;
     }
 
-    holder.computeLayoutAsync(mComponentContext, widthSpec, heightSpec);
+    if (mAsyncInsertHandler != null) {
+      mAsyncInsertHandler.post(
+          new Runnable() {
+            @Override
+            public void run() {
+              holder.computeLayoutSync(mComponentContext, widthSpec, heightSpec, new Size());
+            }
+          },
+          "AsyncInsertLayout");
+    } else {
+      holder.computeLayoutAsync(mComponentContext, widthSpec, heightSpec);
+    }
   }
 
   static int findInitialComponentPosition(
