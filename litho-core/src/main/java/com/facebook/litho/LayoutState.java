@@ -1462,6 +1462,9 @@ class LayoutState {
 
       if (layoutStateContext.isLayoutInterrupted()) {
         layoutState.mIsPartialLayoutState = true;
+        if (logLayoutState != null) {
+          logger.logPerfEvent(logLayoutState);
+        }
         return layoutState;
       }
 
