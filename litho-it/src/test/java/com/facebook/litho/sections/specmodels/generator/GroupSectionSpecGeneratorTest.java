@@ -109,7 +109,8 @@ public class GroupSectionSpecGeneratorTest {
     assertThat(dataHolder.getMethodSpecs().get(0).toString())
         .isEqualTo(
             "@java.lang.Override\n"
-                + "protected com.facebook.litho.sections.Children createChildren(com.facebook.litho.sections.SectionContext c) {\n"
+                + "protected com.facebook.litho.sections.Children createChildren(\n"
+                + "    com.facebook.litho.sections.SectionContext c) {\n"
                 + "  com.facebook.litho.sections.Children _result;\n"
                 + "  _result = (com.facebook.litho.sections.Children) TestGroupSectionSpec.onCreateChildren(\n"
                 + "    (com.facebook.litho.sections.SectionContext) c);\n"

@@ -145,8 +145,9 @@ public class EventGeneratorTest {
 
     assertThat(dataHolder.getMethodSpecs().get(0).toString())
         .isEqualTo(
-            "public static <T extends java.lang.CharSequence> com.facebook.litho.EventHandler<java.lang.Object> testEventMethod1(com.facebook.litho.ComponentContext c,\n"
-                + "    java.lang.Object arg2, T arg3, @androidx.annotation.Nullable T arg6) {\n"
+            "public static <T extends java.lang.CharSequence> com.facebook.litho.EventHandler<java.lang.Object> testEventMethod1(\n"
+                + "    com.facebook.litho.ComponentContext c, java.lang.Object arg2, T arg3,\n"
+                + "    @androidx.annotation.Nullable T arg6) {\n"
                 + "  return newEventHandler(Test.class, c, -1400079064, new Object[] {\n"
                 + "        c,\n"
                 + "        arg2,\n"
@@ -157,7 +158,8 @@ public class EventGeneratorTest {
 
     assertThat(dataHolder.getMethodSpecs().get(1).toString())
         .isEqualTo(
-            "public static com.facebook.litho.EventHandler<java.lang.Object> testEventMethod2(com.facebook.litho.ComponentContext c) {\n"
+            "public static com.facebook.litho.EventHandler<java.lang.Object> testEventMethod2(\n"
+                + "    com.facebook.litho.ComponentContext c) {\n"
                 + "  return newEventHandler(Test.class, c, -1400079063, new Object[] {\n"
                 + "        c,\n"
                 + "      });\n"
@@ -205,7 +207,8 @@ public class EventGeneratorTest {
     assertThat(dataHolder.getMethodSpecs()).hasSize(1);
     assertThat(dataHolder.getMethodSpecs().get(0).toString())
         .isEqualTo(
-            "public static com.facebook.litho.EventHandler getObjectHandler(com.facebook.litho.ComponentContext context) {\n"
+            "public static com.facebook.litho.EventHandler getObjectHandler(\n"
+                + "    com.facebook.litho.ComponentContext context) {\n"
                 + "  if (context.getComponentScope() == null) {\n"
                 + "    return null;\n"
                 + "  }\n"
