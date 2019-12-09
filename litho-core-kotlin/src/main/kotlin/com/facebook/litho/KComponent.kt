@@ -19,7 +19,7 @@ package com.facebook.litho
 /** Base class for Kotlin Components. */
 open class KComponent(
     private val content: DslScope.() -> Builder<*>?
-) : Component("KComponent") {
+) : Component() {
   override fun onCreateLayout(c: ComponentContext): Component? {
     return c.content()?.build()
   }

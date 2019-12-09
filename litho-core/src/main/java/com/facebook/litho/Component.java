@@ -128,6 +128,10 @@ public abstract class Component extends ComponentLifecycle
   // in order to use it again in createLayout.
   @Nullable private InternalNode mLayoutCreatedInWillRender;
 
+  protected Component() {
+    mSimpleName = getClass().getSimpleName();
+  }
+
   protected Component(String simpleName) {
     mSimpleName = simpleName;
   }
