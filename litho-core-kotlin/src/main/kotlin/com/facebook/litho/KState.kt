@@ -20,7 +20,10 @@ import kotlin.reflect.KProperty
 
 /**
  * Declares a state variable within a Component. The initializer will provide the initial value if
- * it hasn't already been initialized in a previously lifecycle of the Component.
+ * it hasn't already been initialized in a previous lifecycle of the Component.
+ *
+ * Assignments to the state variables are allowed only in [updateState] block to batch updates and
+ * trigger a UI layout only once per batch.
  */
 fun <T> ComponentContext.useState(initializer: () -> T): StateDelegate<T> =
     StateDelegate(this, initializer)
@@ -58,7 +61,10 @@ class StateUpdater(private val stateHandler: StateHandler) {
     }
 }
 
-/** Enqueues a block to be run before the next layout in order to update hook state. */
+/**
+ * Enqueues a state update block to be run before the next layout in order to update hook state.
+ * Assignments to the state variables, created by [useState], are only allowed inside this block.
+ */
 fun ComponentContext.updateState(block: StateUpdater.() -> Unit) {
   updateHookStateAsync { stateHandler: StateHandler ->
     StateUpdater(stateHandler).block()
