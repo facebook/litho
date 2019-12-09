@@ -43,7 +43,6 @@ inline fun <C : Component.Builder<C>> DslScope.Decoration(
     background: Drawable? = null,
     content: DslScope.() -> C
 ): C =
-    @Suppress("DEPRECATION")
     content()
         .apply {
           foreground?.let { foreground(it) }
