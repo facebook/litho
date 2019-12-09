@@ -22,7 +22,7 @@ import com.facebook.yoga.YogaAlign
 import com.facebook.yoga.YogaJustify
 import com.facebook.yoga.YogaWrap
 
-inline fun ComponentContext.Column(
+inline fun DslScope.Column(
     alignContent: YogaAlign? = null,
     alignItems: YogaAlign? = null,
     justifyContent: YogaJustify? = null,
@@ -39,7 +39,7 @@ inline fun ComponentContext.Column(
       content()
     }
 
-inline fun ComponentContext.Row(
+inline fun DslScope.Row(
     alignContent: YogaAlign? = null,
     alignItems: YogaAlign? = null,
     justifyContent: YogaJustify? = null,

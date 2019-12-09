@@ -18,15 +18,17 @@ package com.facebook.litho
 
 import android.app.Activity
 
+typealias DslScope = ComponentContext
+
 inline fun build(
     c: ComponentContext,
-    content: ComponentContext.() -> Component.Builder<*>?
+    content: DslScope.() -> Component.Builder<*>?
 ): Component? = c.content()?.build()
 
 fun Activity.setContent(component: Component) {
   setContentView(LithoView.create(this, component))
 }
 
-fun Activity.setContent(content: ComponentContext.() -> Component.Builder<*>) {
+fun Activity.setContent(content: DslScope.() -> Component.Builder<*>) {
   setContent(KComponent(content))
 }

@@ -22,6 +22,7 @@ import com.facebook.litho.Column
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.Decoration
+import com.facebook.litho.DslScope
 import com.facebook.litho.Padding
 import com.facebook.litho.Position
 import com.facebook.litho.annotations.LayoutSpec
@@ -68,13 +69,13 @@ object FeedItemComponentSpec {
     }
   }
 
-  private fun ComponentContext.imageBlock(artist: Artist): Component.Builder<*> =
+  private fun DslScope.imageBlock(artist: Artist): Component.Builder<*> =
       when (artist.images.size) {
         1 -> singleImage(artist)
         else -> imageRecycler(artist)
       }
 
-  private fun ComponentContext.imageRecycler(artist: Artist): Component.Builder<*> =
+  private fun DslScope.imageRecycler(artist: Artist): Component.Builder<*> =
       RecyclerCollectionComponent.create(this)
           .recyclerConfiguration(recyclerConfiguration)
           .section(
@@ -83,7 +84,7 @@ object FeedItemComponentSpec {
                   .build())
           .aspectRatio(2f)
 
-  private fun ComponentContext.singleImage(artist: Artist): Component.Builder<*> =
+  private fun DslScope.singleImage(artist: Artist): Component.Builder<*> =
       SingleImageComponent.create(this)
           .imageUri(artist.images[0])
           .imageAspectRatio(2f)

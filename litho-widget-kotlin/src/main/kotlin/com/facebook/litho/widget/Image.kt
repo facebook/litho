@@ -21,12 +21,12 @@ package com.facebook.litho.widget
 import android.graphics.drawable.Drawable
 import android.widget.ImageView.ScaleType
 import androidx.annotation.DrawableRes
-import com.facebook.litho.ComponentContext
+import com.facebook.litho.DslScope
 
 /**
  * Builder function for creating [ImageSpec] components.
  */
-inline fun ComponentContext.Image(
+inline fun DslScope.Image(
     drawable: Drawable,
     scaleType: ScaleType = ScaleType.FIT_CENTER
 ): Image.Builder =
@@ -37,7 +37,7 @@ inline fun ComponentContext.Image(
 /**
  * Builder function for creating [ImageSpec] components.
  */
-inline fun ComponentContext.Image(
+inline fun DslScope.Image(
     @DrawableRes drawableRes: Int,
     scaleType: ScaleType = ScaleType.FIT_CENTER
 ): Image.Builder =

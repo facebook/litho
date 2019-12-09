@@ -25,7 +25,7 @@ import kotlin.reflect.KProperty
  * Assignments to the state variables are allowed only in [updateState] block to batch updates and
  * trigger a UI layout only once per batch.
  */
-fun <T> ComponentContext.useState(initializer: () -> T): StateDelegate<T> =
+fun <T> DslScope.useState(initializer: () -> T): StateDelegate<T> =
     StateDelegate(this, initializer)
 
 /** Delegate to access and initialize a state variable. */
@@ -65,8 +65,8 @@ class StateUpdater(private val stateHandler: StateHandler) {
  * Enqueues a state update block to be run before the next layout in order to update hook state.
  * Assignments to the state variables, created by [useState], are only allowed inside this block.
  */
-fun ComponentContext.updateState(block: StateUpdater.() -> Unit) {
-  updateHookStateAsync { stateHandler: StateHandler ->
+fun DslScope.updateState(block: StateUpdater.() -> Unit) {
+  this.updateHookStateAsync { stateHandler: StateHandler ->
     StateUpdater(stateHandler).block()
   }
 }

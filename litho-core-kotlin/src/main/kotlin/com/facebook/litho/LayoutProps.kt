@@ -21,27 +21,27 @@ package com.facebook.litho
 import com.facebook.yoga.YogaEdge
 import com.facebook.yoga.YogaPositionType
 
-inline fun <C : Component.Builder<C>> ComponentContext.Padding(
+inline fun <C : Component.Builder<C>> DslScope.Padding(
     all: Dp,
-    content: ComponentContext.() -> C
+    content: DslScope.() -> C
 ): C =
     content().paddingDip(YogaEdge.ALL, all.dp)
 
-inline fun <C : Component.Builder<C>> ComponentContext.Padding(
+inline fun <C : Component.Builder<C>> DslScope.Padding(
     horizontal: Dp = 0.dp,
     vertical: Dp = 0.dp,
-    content: ComponentContext.() -> C
+    content: DslScope.() -> C
 ): C =
     content()
         .paddingDip(YogaEdge.HORIZONTAL, horizontal.dp)
         .paddingDip(YogaEdge.VERTICAL, vertical.dp)
 
-inline fun <C : Component.Builder<C>> ComponentContext.Padding(
+inline fun <C : Component.Builder<C>> DslScope.Padding(
     left: Dp = 0.dp,
     top: Dp = 0.dp,
     right: Dp = 0.dp,
     bottom: Dp = 0.dp,
-    content: ComponentContext.() -> C
+    content: DslScope.() -> C
 ): C =
     content()
         .paddingDip(YogaEdge.LEFT, left.dp)
@@ -54,12 +54,12 @@ inline fun <C : Component.Builder<C>> ComponentContext.Padding(
  * its siblings. [left], [top], [right], [bottom] specify the offset of the child's respective side
  * from the same side of the parent.
  */
-inline fun <C : Component.Builder<C>> ComponentContext.Position(
+inline fun <C : Component.Builder<C>> DslScope.Position(
     left: Dp? = null,
     top: Dp? = null,
     right: Dp? = null,
     bottom: Dp? = null,
-    content: ComponentContext.() -> C
+    content: DslScope.() -> C
 ): C =
     content()
         .positionType(YogaPositionType.ABSOLUTE)
@@ -73,10 +73,10 @@ inline fun <C : Component.Builder<C>> ComponentContext.Position(
 /**
  * Builder for setting a specific [width] and [height] for a child component.
  */
-inline fun <C : Component.Builder<C>> ComponentContext.FixedSize(
+inline fun <C : Component.Builder<C>> DslScope.FixedSize(
     width: Dp? = null,
     height: Dp? = null,
-    content: ComponentContext.() -> C
+    content: DslScope.() -> C
 ): C =
     content()
         .apply {

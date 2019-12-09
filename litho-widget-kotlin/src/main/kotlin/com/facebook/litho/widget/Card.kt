@@ -19,15 +19,15 @@ package com.facebook.litho.widget
 import android.graphics.Color
 import androidx.annotation.ColorInt
 import com.facebook.litho.Component
-import com.facebook.litho.ComponentContext
 import com.facebook.litho.Dp
+import com.facebook.litho.DslScope
 import com.facebook.litho.dp
 
 /**
  * Builder function for creating [CardSpec] components.
  */
 @Suppress("FunctionName")
-inline fun ComponentContext.Card(
+inline fun DslScope.Card(
     @ColorInt cardBackgroundColor: Int = Color.WHITE,
     cornerRadius: Dp = 2.dp,
     elevation: Dp = 2.dp,
@@ -39,7 +39,7 @@ inline fun ComponentContext.Card(
     disableClipTopRight: Boolean = false,
     disableClipBottomLeft: Boolean = false,
     disableClipBottomRight: Boolean = false,
-    child: ComponentContext.() -> Component.Builder<*>
+    child: DslScope.() -> Component.Builder<*>
 ): Card.Builder =
     Card.create(this)
         .cardBackgroundColor(cardBackgroundColor)

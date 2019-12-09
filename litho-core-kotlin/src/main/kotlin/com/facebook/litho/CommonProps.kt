@@ -29,19 +29,19 @@ inline fun <reified T> eventHandler(crossinline onEvent: () -> Unit): EventHandl
  * TODO Currently lambda captures possibly old props. Find a better option.
  *  This will work for core Litho, but may break Sections.
  */
-inline fun <C : Component.Builder<C>> ComponentContext.Clickable(
+inline fun <C : Component.Builder<C>> DslScope.Clickable(
     crossinline onClick: () -> Unit,
-    content: ComponentContext.() -> C
+    content: DslScope.() -> C
 ): C =
     content().clickHandler(eventHandler(onClick))
 
 /**
  * Builder for decorating a child component with [background] or [foreground].
  */
-inline fun <C : Component.Builder<C>> ComponentContext.Decoration(
+inline fun <C : Component.Builder<C>> DslScope.Decoration(
     foreground: Drawable? = null,
     background: Drawable? = null,
-    content: ComponentContext.() -> C
+    content: DslScope.() -> C
 ): C =
     @Suppress("DEPRECATION")
     content()
