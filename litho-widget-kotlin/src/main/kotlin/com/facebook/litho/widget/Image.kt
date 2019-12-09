@@ -14,33 +14,20 @@
  * limitations under the License.
  */
 
-@file:Suppress("NOTHING_TO_INLINE", "FunctionName")
-
 package com.facebook.litho.widget
 
 import android.graphics.drawable.Drawable
 import android.widget.ImageView.ScaleType
-import androidx.annotation.DrawableRes
 import com.facebook.litho.DslScope
 
 /**
  * Builder function for creating [ImageSpec] components.
  */
+@Suppress("NOTHING_TO_INLINE", "FunctionName")
 inline fun DslScope.Image(
     drawable: Drawable,
     scaleType: ScaleType = ScaleType.FIT_CENTER
 ): Image.Builder =
     Image.create(this)
         .drawable(drawable)
-        .scaleType(scaleType)
-
-/**
- * Builder function for creating [ImageSpec] components.
- */
-inline fun DslScope.Image(
-    @DrawableRes drawableRes: Int,
-    scaleType: ScaleType = ScaleType.FIT_CENTER
-): Image.Builder =
-    Image.create(this)
-        .drawableRes(drawableRes)
         .scaleType(scaleType)
