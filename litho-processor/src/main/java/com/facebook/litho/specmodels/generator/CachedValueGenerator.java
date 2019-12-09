@@ -90,7 +90,7 @@ public class CachedValueGenerator {
     throw new RuntimeException("Should be unreachable, please report to Litho team");
   }
 
-  private static MethodSpec createGetterMethod(
+  public static MethodSpec createGetterMethod(
       SpecModel specModel,
       SpecMethodModel<DelegateMethod, Void> onCalculateCachedValueMethod,
       String cachedValueName) {
@@ -109,27 +109,28 @@ public class CachedValueGenerator {
             getInputsClassName(cachedValueName))
         .indent();
 
-    final int paramSize = onCalculateCachedValueMethod.methodParams.size();
-    if (paramSize == 0) {
-      codeBlock.add(");\n");
-    } else {
-      for (int i = 0; i < paramSize; i++) {
-        MethodParamModel methodParamModel = onCalculateCachedValueMethod.methodParams.get(i);
-        // Skip the ComponentContext param from the input class creation since the context can
-        // change during the lifetime of the cache.
-        if (MethodParamModelUtils.isComponentContextParam(methodParamModel)) {
-          continue;
-        }
-        if (i < paramSize - 1) {
-          codeBlock.add("$L,", ComponentBodyGenerator.getImplAccessor(specModel, methodParamModel));
-        } else {
-          codeBlock.add(
-              "$L);\n", ComponentBodyGenerator.getImplAccessor(specModel, methodParamModel));
-        }
+    // Skip the ComponentContext param from the input class creation since the context can change
+    // during the lifetime of the cache.
+    List<MethodParamModel> onCalculateCachedValueMethodParams =
+        onCalculateCachedValueMethod.methodParams.stream()
+            .filter(
+                methodParamModel ->
+                    !MethodParamModelUtils.isComponentContextParam(methodParamModel))
+            .collect(Collectors.toList());
+
+    final int filteredParamSize = onCalculateCachedValueMethodParams.size();
+
+    for (int i = 0; i < filteredParamSize; i++) {
+      MethodParamModel methodParamModel = onCalculateCachedValueMethodParams.get(i);
+      codeBlock.add("$L", ComponentBodyGenerator.getImplAccessor(specModel, methodParamModel));
+      if (i < filteredParamSize - 1) {
+        codeBlock.add(",");
       }
     }
-
+    codeBlock.add(");\n");
     codeBlock.unindent();
+
+    final int paramSize = onCalculateCachedValueMethod.methodParams.size();
 
     methodSpec
         .addCode(codeBlock.build())
