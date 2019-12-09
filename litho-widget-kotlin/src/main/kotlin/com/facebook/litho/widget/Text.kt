@@ -36,6 +36,6 @@ inline fun DslScope.Text(
 ): Text.Builder =
     Text.create(this)
         .text(text)
-        .textSizeSp(textSize.sp)
+        .textSizeSp(textSize.value)
         .textColor(textColor)
         .textStyle(textStyle)

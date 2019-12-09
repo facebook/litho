@@ -16,18 +16,18 @@
 
 package com.facebook.litho
 
-inline class Px(val px: Int) {
+inline class Px(val value: Int) {
   inline fun toPx(scope: DslScope): Px = this
 }
 
-inline class Dp(val dp: Float) {
+inline class Dp(val value: Float) {
   inline fun toPx(scope: DslScope): Px =
-      Px(scope.resourceResolver.dipsToPixels(dp))
+      Px(scope.resourceResolver.dipsToPixels(value))
 }
 
-inline class Sp(val sp: Float) {
+inline class Sp(val value: Float) {
   inline fun toPx(scope: DslScope): Px =
-      Px(scope.resourceResolver.sipsToPixels(sp))
+      Px(scope.resourceResolver.sipsToPixels(value))
 }
 
 inline val Int.dp: Dp get() = Dp(this.toFloat())

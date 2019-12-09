@@ -25,7 +25,7 @@ inline fun <C : Component.Builder<C>> DslScope.Padding(
     all: Dp,
     content: DslScope.() -> C
 ): C =
-    content().paddingDip(YogaEdge.ALL, all.dp)
+    content().paddingDip(YogaEdge.ALL, all.value)
 
 inline fun <C : Component.Builder<C>> DslScope.Padding(
     horizontal: Dp = 0.dp,
@@ -33,8 +33,8 @@ inline fun <C : Component.Builder<C>> DslScope.Padding(
     content: DslScope.() -> C
 ): C =
     content()
-        .paddingDip(YogaEdge.HORIZONTAL, horizontal.dp)
-        .paddingDip(YogaEdge.VERTICAL, vertical.dp)
+        .paddingDip(YogaEdge.HORIZONTAL, horizontal.value)
+        .paddingDip(YogaEdge.VERTICAL, vertical.value)
 
 inline fun <C : Component.Builder<C>> DslScope.Padding(
     left: Dp = 0.dp,
@@ -44,10 +44,10 @@ inline fun <C : Component.Builder<C>> DslScope.Padding(
     content: DslScope.() -> C
 ): C =
     content()
-        .paddingDip(YogaEdge.LEFT, left.dp)
-        .paddingDip(YogaEdge.TOP, top.dp)
-        .paddingDip(YogaEdge.RIGHT, right.dp)
-        .paddingDip(YogaEdge.BOTTOM, bottom.dp)
+        .paddingDip(YogaEdge.LEFT, left.value)
+        .paddingDip(YogaEdge.TOP, top.value)
+        .paddingDip(YogaEdge.RIGHT, right.value)
+        .paddingDip(YogaEdge.BOTTOM, bottom.value)
 
 /**
  * Builder for positioning a child component absolutely within its parent's edges, independent of
@@ -64,10 +64,10 @@ inline fun <C : Component.Builder<C>> DslScope.Position(
     content()
         .positionType(YogaPositionType.ABSOLUTE)
         .apply {
-          left?.let { positionDip(YogaEdge.LEFT, it.dp) }
-          top?.let { positionDip(YogaEdge.TOP, it.dp) }
-          right?.let { positionDip(YogaEdge.RIGHT, it.dp) }
-          bottom?.let { positionDip(YogaEdge.BOTTOM, it.dp) }
+          left?.let { positionDip(YogaEdge.LEFT, it.value) }
+          top?.let { positionDip(YogaEdge.TOP, it.value) }
+          right?.let { positionDip(YogaEdge.RIGHT, it.value) }
+          bottom?.let { positionDip(YogaEdge.BOTTOM, it.value) }
         }
 
 /**
@@ -80,6 +80,6 @@ inline fun <C : Component.Builder<C>> DslScope.FixedSize(
 ): C =
     content()
         .apply {
-          width?.let { widthDip(it.dp) }
-          height?.let { heightDip(it.dp) }
+          width?.let { widthDip(it.value) }
+          height?.let { heightDip(it.value) }
         }
