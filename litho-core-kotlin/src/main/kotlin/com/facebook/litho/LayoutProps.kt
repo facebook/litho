@@ -22,12 +22,18 @@ import com.facebook.yoga.YogaAlign
 import com.facebook.yoga.YogaEdge
 import com.facebook.yoga.YogaPositionType
 
+/**
+ * Builder for setting the same [all] padding to each edge of the child component.
+ */
 inline fun <C : Component.Builder<C>> DslScope.Padding(
     all: Dp,
     content: DslScope.() -> C
 ): C =
     content().paddingDip(YogaEdge.ALL, all.value)
 
+/**
+ * Builder for setting [horizontal] and [vertical] paddings to the child component.
+ */
 inline fun <C : Component.Builder<C>> DslScope.Padding(
     horizontal: Dp = 0.dp,
     vertical: Dp = 0.dp,
@@ -37,6 +43,9 @@ inline fun <C : Component.Builder<C>> DslScope.Padding(
         .paddingDip(YogaEdge.HORIZONTAL, horizontal.value)
         .paddingDip(YogaEdge.VERTICAL, vertical.value)
 
+/**
+ * Builder for setting granular [left], [top], [right] and [bottom] paddings to the child component.
+ */
 inline fun <C : Component.Builder<C>> DslScope.Padding(
     left: Dp = 0.dp,
     top: Dp = 0.dp,
@@ -49,6 +58,43 @@ inline fun <C : Component.Builder<C>> DslScope.Padding(
         .paddingDip(YogaEdge.TOP, top.value)
         .paddingDip(YogaEdge.RIGHT, right.value)
         .paddingDip(YogaEdge.BOTTOM, bottom.value)
+
+/**
+ * Builder for setting the same [all] margin for each edge of the child component.
+ */
+inline fun <C : Component.Builder<C>> DslScope.Margin(
+    all: Dp,
+    content: DslScope.() -> C
+): C =
+    content().marginDip(YogaEdge.ALL, all.value)
+
+/**
+ * Builder for setting [horizontal] and [vertical] margins for the child component.
+ */
+inline fun <C : Component.Builder<C>> DslScope.Margin(
+    horizontal: Dp = 0.dp,
+    vertical: Dp = 0.dp,
+    content: DslScope.() -> C
+): C =
+    content()
+        .marginDip(YogaEdge.HORIZONTAL, horizontal.value)
+        .marginDip(YogaEdge.VERTICAL, vertical.value)
+
+/**
+ * Builder for setting granular [left], [top], [right] and [bottom] paddings to the child component.
+ */
+inline fun <C : Component.Builder<C>> DslScope.Margin(
+    left: Dp = 0.dp,
+    top: Dp = 0.dp,
+    right: Dp = 0.dp,
+    bottom: Dp = 0.dp,
+    content: DslScope.() -> C
+): C =
+    content()
+        .marginDip(YogaEdge.LEFT, left.value)
+        .marginDip(YogaEdge.TOP, top.value)
+        .marginDip(YogaEdge.RIGHT, right.value)
+        .marginDip(YogaEdge.BOTTOM, bottom.value)
 
 /**
  * Builder for positioning a child component absolutely within its parent's edges, independent of
