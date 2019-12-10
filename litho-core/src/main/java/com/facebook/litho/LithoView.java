@@ -315,7 +315,11 @@ public class LithoView extends ComponentHost {
     if (mComponentTree != null && !mSuppressMeasureComponentTree) {
       boolean forceRelayout = mForceLayout;
       mForceLayout = false;
-      mComponentTree.measure(widthMeasureSpec, heightMeasureSpec, sLayoutSize, forceRelayout);
+      mComponentTree.measure(
+          adjustMeasureSpecForPadding(widthMeasureSpec, getPaddingRight() + getPaddingLeft()),
+          adjustMeasureSpecForPadding(heightMeasureSpec, getPaddingTop() + getPaddingBottom()),
+          sLayoutSize,
+          forceRelayout);
 
       width = sLayoutSize[0];
       height = sLayoutSize[1];
@@ -363,10 +367,15 @@ public class LithoView extends ComponentHost {
       }
 
       if (mDoMeasureInLayout || mComponentTree.getMainThreadLayoutState() == null) {
+        final int widthWithoutPadding =
+            Math.max(0, right - left - getPaddingRight() - getPaddingLeft());
+        final int heightWithoutPadding =
+            Math.max(0, bottom - top - getPaddingTop() - getPaddingBottom());
+
         // Call measure so that we get a layout state that we can use for layout.
         mComponentTree.measure(
-            MeasureSpec.makeMeasureSpec(right - left, MeasureSpec.EXACTLY),
-            MeasureSpec.makeMeasureSpec(bottom - top, MeasureSpec.EXACTLY),
+            MeasureSpec.makeMeasureSpec(widthWithoutPadding, MeasureSpec.EXACTLY),
+            MeasureSpec.makeMeasureSpec(heightWithoutPadding, MeasureSpec.EXACTLY),
             sLayoutSize,
             false);
         mHasNewComponentTree = false;
@@ -389,6 +398,15 @@ public class LithoView extends ComponentHost {
         performLayoutOnChildrenIfNecessary(this);
       }
     }
+  }
+
+  private static int adjustMeasureSpecForPadding(int measureSpec, int padding) {
+    final int mode = MeasureSpec.getMode(measureSpec);
+    if (mode == MeasureSpec.UNSPECIFIED) {
+      return measureSpec;
+    }
+    final int size = Math.max(0, MeasureSpec.getSize(measureSpec) - padding);
+    return MeasureSpec.makeMeasureSpec(size, mode);
   }
 
   /**
@@ -663,6 +681,7 @@ public class LithoView extends ComponentHost {
 
   @Override
   public void draw(Canvas canvas) {
+    canvas.translate(getPaddingLeft(), getPaddingTop());
     super.draw(canvas);
 
     if (mOnPostDrawListener != null) {
