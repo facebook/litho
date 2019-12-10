@@ -1820,7 +1820,13 @@ class LayoutState {
     }
   }
 
-  /** Create and measure the nested tree or return the cached one for the same size specs. */
+  /**
+   * Create and measure the nested tree or return the cached one for the same size specs.
+   *
+   * @deprecated Please do not modify this implementation or its usages; it will be replace with
+   *     {@link Layout#create(ComponentContext, InternalNode, int, int)}.
+   */
+  @Deprecated
   static InternalNode resolveNestedTree(
       ComponentContext context, InternalNode holder, int widthSpec, int heightSpec) {
 
@@ -1919,6 +1925,12 @@ class LayoutState {
         c, component, widthSpec, heightSpec, null, null, null, null);
   }
 
+  /**
+   * @deprecated Please do not modify this implementation or its usages; it will be replace with
+   *     {@link Layout#createAndMeasureComponent(ComponentContext, Component, int, int,
+   *     InternalNode, DiffNode, PerfEvent)}.
+   */
+  @Deprecated
   @VisibleForTesting
   static InternalNode createAndMeasureTreeForComponent(
       ComponentContext c,
@@ -2638,7 +2650,13 @@ class LayoutState {
     return TransitionUtils.createTransitionId(node);
   }
 
-  /** TODO: (T55181318) Merge this and {@link #resolve(ComponentContext, Component)} */
+  /**
+   * TODO: (T55181318) Merge this and {@link #resolve(ComponentContext, Component)}
+   *
+   * @deprecated Please do not modify this implementation or its usages; it will be replace with
+   *     {@link Layout#create(ComponentContext, Component, boolean)}.
+   */
+  @Deprecated
   static InternalNode createLayout(ComponentContext owner, Component component) {
 
     if (ComponentsConfiguration.useNewCreateLayoutImplementation) {
@@ -2672,7 +2690,10 @@ class LayoutState {
    * @param component the root component.
    * @param shouldResolveNestedTree if the layout of the component should be immediately resolved.
    * @return New InternalNode associated with the given component.
+   * @deprecated Please do not modify this implementation or its usages; it will be replace with
+   *     {@link Layout#create(ComponentContext, Component, boolean)}.
    */
+  @Deprecated
   static InternalNode createLayout(
       final ComponentContext c, final Component component, final boolean shouldResolveNestedTree) {
 
@@ -2819,6 +2840,11 @@ class LayoutState {
     return node;
   }
 
+  /**
+   * @deprecated This method will be removed with {@link #createLayout(ComponentContext, Component,
+   *     boolean)}.
+   */
+  @Deprecated
   static InternalNode resolve(final ComponentContext parentContext, Component component) {
 
     // 1. Consume the layout created in will render.
