@@ -18,6 +18,7 @@
 
 package com.facebook.litho
 
+import com.facebook.yoga.YogaAlign
 import com.facebook.yoga.YogaEdge
 import com.facebook.yoga.YogaPositionType
 
@@ -83,3 +84,22 @@ inline fun <C : Component.Builder<C>> DslScope.FixedSize(
           width?.let { widthDip(it.value) }
           height?.let { heightDip(it.value) }
         }
+
+inline fun <C : Component.Builder<C>> DslScope.Flex(
+    grow: Float = 0f,
+    shrink: Float = 1f,
+    basis: Dp? = null,
+    content: DslScope.() -> C
+): C =
+    content()
+        .flexGrow(grow)
+        .flexShrink(shrink)
+        .apply {
+          basis?.let { flexBasisDip(it.value) }
+        }
+
+inline fun <C : Component.Builder<C>> DslScope.Alignment(
+    align: YogaAlign,
+    content: DslScope.() -> C
+): C =
+    content().alignSelf(align)
