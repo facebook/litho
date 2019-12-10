@@ -50,6 +50,7 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.text.TextUtils;
+import android.util.SparseArray;
 import android.view.View;
 import android.view.accessibility.AccessibilityManager;
 import androidx.annotation.IntDef;
@@ -346,6 +347,25 @@ class LayoutState {
         hasHostView);
   }
 
+  private static SparseArray<DynamicValue<?>> mergeCommonDynamicProps(List<Component> components) {
+    final SparseArray<DynamicValue<?>> mergedDynamicProps = new SparseArray<>();
+    for (Component component : components) {
+      final SparseArray<DynamicValue<?>> commonDynamicProps = component.getCommonDynamicProps();
+      if (commonDynamicProps == null) {
+        continue;
+      }
+      for (int i = 0; i < commonDynamicProps.size(); i++) {
+        final int key = commonDynamicProps.keyAt(i);
+        final DynamicValue<?> commonDynamicProp = commonDynamicProps.get(key);
+        if (commonDynamicProp != null) {
+          mergedDynamicProps.append(key, commonDynamicProp);
+        }
+      }
+    }
+
+    return mergedDynamicProps;
+  }
+
   private static LayoutOutput createHostLayoutOutput(
       LayoutState layoutState, InternalNode node, @Nullable DebugHierarchy.Node hierarchy) {
 
@@ -355,10 +375,7 @@ class LayoutState {
     // views, so we'll need to set them up, when binding HostComponent to ComponentHost. At the same
     // time, we don't remove them from the current component, as we may calculate multiple
     // LayoutStates using same Components
-    Component tailComponent = node.getTailComponent();
-    if (tailComponent != null) {
-      hostComponent.setCommonDynamicProps(tailComponent.getCommonDynamicProps());
-    }
+    hostComponent.setCommonDynamicProps(mergeCommonDynamicProps(node.getComponents()));
 
     long hostMarker =
         layoutState.isLayoutRoot(node) ? ROOT_HOST_ID : layoutState.mCurrentHostMarker;
@@ -2463,9 +2480,12 @@ class LayoutState {
       return true;
     }
 
-    if (component != null && component.hasCommonDynamicProps()) {
-      // Need a host View to apply the dynamic props to
-      return true;
+    final List<Component> components = node.getComponents();
+    for (Component comp : components) {
+      if (comp != null && comp.hasCommonDynamicProps()) {
+        // Need a host View to apply the dynamic props to
+        return true;
+      }
     }
 
     if (needsHostViewForTransition(node)) {
