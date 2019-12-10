@@ -42,8 +42,7 @@ This is only applicable for components which mount drawables, since if the compo
 On more complex mount specs that need to expose extra nodes to the accessibility framework, you'll have to implement three extra methods with the following annotations:
 
 - **GetExtraAccessibilityNodesCount**: Returns number of extra accessibility nodes exposed by the component.
-- **OnPopulateExtraAccessibilityNode**: Populates the extra accessibility node with the given bounds. 
-- **GetExtraVirtualViewAt**: Returns the index of the extra accessibility node for the given position within the component.
+- **OnPopulateExtraAccessibilityNode**: Populates the extra accessibility node with the given bounds.
 
 ## Accessibility Handling
 
