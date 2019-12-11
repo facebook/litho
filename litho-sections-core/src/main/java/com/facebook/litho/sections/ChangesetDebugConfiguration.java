@@ -37,24 +37,18 @@ public class ChangesetDebugConfiguration {
     @Nullable Section mOldSection;
     @Nullable String mUpdateStateAttribution;
 
-    ChangesetDebugInfo(
-        int source,
-        @Nullable String attribution,
-        @Nullable Section oldSection,
-        StackTraceElement[] stackTrace) {
-      this(source, attribution, null, oldSection, stackTrace);
+    ChangesetDebugInfo(int source, @Nullable String attribution, StackTraceElement[] stackTrace) {
+      this(source, attribution, null, stackTrace);
     }
 
     ChangesetDebugInfo(
         int source,
         @Nullable String attribution,
         @Nullable String updateStateAttribution,
-        @Nullable Section oldSection,
         StackTraceElement[] stackTrace) {
       mSource = source;
       mAttribution = attribution;
       mUpdateStateAttribution = updateStateAttribution;
-      mOldSection = oldSection;
       mStackTrace = stackTrace;
     }
 
@@ -73,6 +67,10 @@ public class ChangesetDebugConfiguration {
     @Nullable
     public Section getOldSection() {
       return mOldSection;
+    }
+
+    public void setOldSection(@Nullable Section section) {
+      mOldSection = section;
     }
 
     /** Get the name of the section which triggered a state update. */

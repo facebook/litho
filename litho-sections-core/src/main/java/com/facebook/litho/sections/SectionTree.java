@@ -261,6 +261,9 @@ public class SectionTree {
   private @Nullable Section mCurrentSection;
 
   @GuardedBy("this")
+  private @Nullable Section mPreviousSection;
+
+  @GuardedBy("this")
   private @Nullable Section mNextSection;
 
   @GuardedBy("this")
@@ -400,7 +403,6 @@ public class SectionTree {
               : new ChangesetDebugInfo(
                   ApplyNewChangeSet.SET_ROOT_ASYNC,
                   section.getSimpleName(),
-                  mCurrentSection,
                   Thread.currentThread().getStackTrace());
       mCalculateChangeSetRunnable.ensurePosted(
           ApplyNewChangeSet.SET_ROOT_ASYNC, null, changesetDebugInfo);
@@ -411,7 +413,6 @@ public class SectionTree {
               : new ChangesetDebugInfo(
                   ApplyNewChangeSet.SET_ROOT,
                   section.getSimpleName(),
-                  mCurrentSection,
                   Thread.currentThread().getStackTrace());
       applyNewChangeSet(ApplyNewChangeSet.SET_ROOT, null, null, changesetDebugInfo);
     }
@@ -448,7 +449,6 @@ public class SectionTree {
             : new ChangesetDebugInfo(
                 ApplyNewChangeSet.SET_ROOT_ASYNC,
                 section.getSimpleName(),
-                mCurrentSection,
                 Thread.currentThread().getStackTrace());
     mCalculateChangeSetRunnable.ensurePosted(
         ApplyNewChangeSet.SET_ROOT_ASYNC, null, changesetDebugInfo);
@@ -937,7 +937,6 @@ public class SectionTree {
                   ApplyNewChangeSet.UPDATE_STATE,
                   attribution,
                   key,
-                  mCurrentSection,
                   Thread.currentThread().getStackTrace());
       mCalculateChangeSetOnMainThreadRunnable.ensurePosted(
           ApplyNewChangeSet.UPDATE_STATE, attribution, changesetDebugInfo);
@@ -969,7 +968,6 @@ public class SectionTree {
                   ApplyNewChangeSet.UPDATE_STATE_ASYNC,
                   attribution,
                   key,
-                  mCurrentSection,
                   Thread.currentThread().getStackTrace());
       mCalculateChangeSetRunnable.ensurePosted(
           ApplyNewChangeSet.UPDATE_STATE_ASYNC, attribution, changesetDebugInfo);
@@ -1517,12 +1515,23 @@ public class SectionTree {
 
       final boolean isDataChanged = appliedChanges;
       final ChangesInfo changesInfo = new ChangesInfo(changes);
+
+      if (changesetDebugInfo != null) {
+        final Section previousSection;
+        synchronized (this) {
+          previousSection = mPreviousSection;
+          mPreviousSection = mCurrentSection;
+        }
+
+        changesetDebugInfo.setOldSection(previousSection);
+      }
+
       mTarget.notifyChangeSetComplete(
           isDataChanged,
           new ChangeSetCompleteCallback() {
             @Override
             public void onDataBound() {
-              if (mChangesetDebug != null) {
+              if (mChangesetDebug != null && changesetDebugInfo != null) {
                 mChangesetDebug.onChangesetApplied(
                     mCurrentSection,
                     changesInfo,
