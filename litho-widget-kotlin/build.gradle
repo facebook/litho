@@ -52,7 +52,7 @@ dependencies {
     compileOnly deps.supportAnnotations
 }
 
-//apply from: rootProject.file('gradle/release.gradle')
+apply from: rootProject.file('gradle/release.gradle')
 
 task sourcesJar(type: Jar) {
     from android.sourceSets.main.java.srcDirs
