@@ -4,21 +4,21 @@
 
 _release-date_
 
-* **Breaking:**: Removed unused methods `getKeyCollisionStackTraceBlacklist` `getKeyCollisionStackTraceKeywords` from the `ComponentsReporter.Reporter` interface.
-* **Breaking:** `ComparableDrawable` is an interface now (instead of a Drawable).
-    * Litho's DrawableWrapper doesn't mimic Android support library implementations of DrawableWrapper, e.g. DrawableWrapperApi21.java etc. Litho's wrapper will have to implement this correctly to have a legitimate chance of working across OS versions and all drawable types. This is not a good position to be in. It is better to remove the wrapper all together; this diff doesn't removes it but stops usages except for specific internal ones.
-    * In essence if a background or foreground Drawable is also a ComparableDrawable Litho will invoke the isEquivalentTo method for comparison (instead of equals). Also, ComparableDrawable is now an optional interface; so non comparable drawables will not be wrapped.
-    * The usage remains largely unchanged (except for the removal of Litho's DrawableWrapper implementation)
-* **Breaking:** Removes `Component.Builder#background(ComparableDrawable)` and `Component.Builder#foreground(ComparableDrawable)`.
-* **Breaking:** Removes `ComparableResDrawable`, `ComparableIntIdDrawable`, `DefaultComparableDrawable`,
-* **Breaking:** Provide global offset of the section into @OnDataRendered method.
-* **Breaking:** `LithoViewAssert#hasVisibleDrawable` no longer relies on the broken `ShadowDrawable#equals()` implementation in Robolectric 3.X. Now Drawable equality relies on the descriptions being equal, or the resource ID they were created with being equal.
-* **Breaking:** TextSpec default text size changed to 14sp (from 13px)
+* **Breaking: Changes in working with `ComparableDrawable`**. Litho's `DrawableWrapper` doesn't mimic Android Jetpack's implementations of `WrappedDrawable`, e.g. `WrappedDrawableApi21`, etc. Litho's wrapper will have to implement this correctly to have a legitimate chance of working across OS versions and all drawable types. This is not a good position to be in. It is better to remove the wrapper all together; this change doesn't remove it, but blocks usages except for specific internal ones. In essence, if a background or foreground `Drawable` is also a `ComparableDrawable`, Litho will invoke the `isEquivalentTo()` for comparison (instead of `equals()`). Also, `ComparableDrawable` is now an optional interface; so non comparable drawables will not be wrapped. The usage remains largely unchanged (except for the removal of Litho's `DrawableWrapper` implementation).
+  - `ComparableDrawable` is a plain interface now (instead of a `Drawable`).
+  - Remove `Component.Builder.background(ComparableDrawable)` and `Component.Builder.foreground(ComparableDrawable)`.
+  - Remove `ComparableResDrawable`, `ComparableIntIdDrawable` and `DefaultComparableDrawable` implementations.
+* **Breaking:** Provide global offset of the Section into `@OnDataRendered` method.
+* **Breaking:** Fix default text size of `TextSpec`, `EditTextSpec` and `TextInputSpec` to be 14sp (from 13px).
 * **Breaking:** FBJNI got removed from the build process. If you relied on `libfbjni.so` to be present, you can get the artifact from [the fbjni repository](https://github.com/facebookincubator/fbjni).
+* **Breaking:** `LithoViewAssert.hasVisibleDrawable()` no longer relies on the broken `ShadowDrawable.equals()` implementation in Robolectric 3.X. Now Drawable equality relies on the descriptions being equal, or the resource ID they were created with being equal.
+* **Breaking:** Remove unused `getKeyCollisionStackTraceBlacklist()` and `getKeyCollisionStackTraceKeywords()` from the `ComponentsReporter.Reporter` interface.
+* New: Allow triggering `@OnTrigger` Events on Components using a `Handle` API.
 * Fix: Propagate annotations specified on `@Param` args from `@OnEvent` methods to generated methods.
 * Fix: Produce correct generated code for `@OnEvent` method when it has several args of the same generic type.
-* Fix: Fix IndexOutOfBounds via `removeItemAt` in Sections when SingleComponentSection is given a null Component.
-* Fix: Support DynamicProps for `LayoutSpec`s
+* Fix: Fix generating `@OnCalculateCachedValue` related methods when it has `ComponentContext` as a parameter.
+* Fix: Fix `IndexOutOfBoundsException` in `RecyclerBinder.removeItemAt()` in Sections when `SingleComponentSection` is given a `null` Component.
+* Fix: Support Dynamic Props for `LayoutSpec`s.
 
 For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.32.0...master).
 
@@ -30,14 +30,14 @@ _2019-11-15_
  * **Breaking:** Make ctors of `Component`/`ComponentLifecycle` that take an explicit type id package private.
  * **Breaking:** Add `categoryKey` param for `ComponentsReporter.emitMessage()` API to distribute errors into different buckets.
  * **Breaking:** Remove `ComponentsLogger.emitMessage()` API as it was fully replaced by `ComponentsReporter.emitMessage()`.
- * **Breaking:** Remove `YogaNode` parameter from `YogaLogger#log`.
+ * **Breaking:** Remove `YogaNode` parameter from `YogaLogger.log()`.
  * **Breaking:** Remove error reporting from `ComponentsLogger`.
  * **Breaking:** Limit scope of `Component`/`ComponentLifecycle` constructors that take explicit type param.
  * New: Add `requestSmoothScrollBy()` and `requestScrollToPositionWithSnap()` APIs for `RecyclerCollectionEventsController`.
- * New: Add ability to provide custom `ComponentsLogger` per `ComponentRenderInfo`
+ * New: Add ability to provide custom `ComponentsLogger` per `ComponentRenderInfo`.
  * New: Add new counters (calculateLayout, section state update, section changeset calculation) to `LithoStats` global counter.
  * New: Allow custom `StaggeredGridLayoutInfo` when using `StaggeredGridRecyclerConfiguration`.
- * New: Add support for more `textAlignment` values for `TextSpec`
+ * New: Add support for more `textAlignment` values for `TextSpec`.
  * New: Add `ComponentWarmer` API to allow calculating layout ahead of time.
  * New: Add `ThreadPoolDynamicPriorityLayoutHandler` to enable changing priority of threads calculating layouts.
  * New: Add `varArgs` to the generated `Component`.
@@ -52,7 +52,7 @@ _2019-11-15_
  * Fix: Fix concurrent modification on finishing undeclared transitions.
  * Fix: Allow `TreeProp`s to be used in `@OnCreateInitialState` of Sections.
  * Fix: Define default color for spannable link in `TextSpec`.
- * Fix: Postpone `mountComponent` for reentrant mounts, then mount new layoutState afterwards.
+ * Fix: Postpone `ComponentTree.mountComponent()` for reentrant mounts, then mount new `LayoutState` afterwards.
  * Fix: Enable automatic RTL support in sample apps.
 
 For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.31.0...v0.32.0).
@@ -62,10 +62,10 @@ For more details, see the [full diff](https://github.com/facebook/litho/compare/
 
 _2019-09-09_
 
- * **Breaking:** `Component.measure()` is only allowed during a LayoutState calculation.
- * New: Add support to FrescoImage for photo focus points.
+ * **Breaking:** `Component.measure()` is only allowed during a `LayoutState` calculation.
+ * New: Add support to `FrescoImageSpec` for photo focus points.
  * New: Allow Child Classes to set `ComponentContext` on `DefaultInternalNode`.
- * Fix: Immediately remove MountItem mapping on unmount to protect against re-entrancy.
+ * Fix: Immediately remove `MountItem` mapping on unmount to protect against re-entrancy.
 
  For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.30.0...v0.31.0).
 
