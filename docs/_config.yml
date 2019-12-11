@@ -35,7 +35,7 @@ ghrepo: "facebook/litho"
 repository: "facebook/litho"
 
 # These can be used in documentation with e.g. {{site.litho-version}}
-litho-version: 0.32.0
+litho-version: 0.33.0
 litho-snapshot-version: 0.32.1-SNAPSHOT
 soloader-version: 0.5.1
 

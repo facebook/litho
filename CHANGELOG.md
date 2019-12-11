@@ -1,8 +1,8 @@
 # Changelog
 
-## Version 0.32.1-SNAPSHOT
+## Version 0.33.0
 
-_release-date_
+_2019-12-11_
 
 * **Breaking: Changes in working with `ComparableDrawable`**. Litho's `DrawableWrapper` doesn't mimic Android Jetpack's implementations of `WrappedDrawable`, e.g. `WrappedDrawableApi21`, etc. Litho's wrapper will have to implement this correctly to have a legitimate chance of working across OS versions and all drawable types. This is not a good position to be in. It is better to remove the wrapper all together; this change doesn't remove it, but blocks usages except for specific internal ones. In essence, if a background or foreground `Drawable` is also a `ComparableDrawable`, Litho will invoke the `isEquivalentTo()` for comparison (instead of `equals()`). Also, `ComparableDrawable` is now an optional interface; so non comparable drawables will not be wrapped. The usage remains largely unchanged (except for the removal of Litho's `DrawableWrapper` implementation).
   - `ComparableDrawable` is a plain interface now (instead of a `Drawable`).
@@ -20,7 +20,7 @@ _release-date_
 * Fix: Fix `IndexOutOfBoundsException` in `RecyclerBinder.removeItemAt()` in Sections when `SingleComponentSection` is given a `null` Component.
 * Fix: Support Dynamic Props for `LayoutSpec`s.
 
-For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.32.0...master).
+For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.32.0...v0.33.0).
 
 
 ## Version 0.32.0
