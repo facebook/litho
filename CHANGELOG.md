@@ -18,6 +18,7 @@ _release-date_
 * Fix: Propagate annotations specified on `@Param` args from `@OnEvent` methods to generated methods.
 * Fix: Produce correct generated code for `@OnEvent` method when it has several args of the same generic type.
 * Fix: Fix IndexOutOfBounds via `removeItemAt` in Sections when SingleComponentSection is given a null Component.
+* Fix: Support DynamicProps for `LayoutSpec`s
 
 For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.32.0...master).
 
