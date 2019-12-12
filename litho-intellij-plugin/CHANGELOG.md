@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## Version 1.3.0
+
+_2019_12_13_
+
+* New: QuickFix to create new `EventHandler` as `Component.Builder` method parameter.
+* New: Annotation completion for LayoutSpec delegate method parameters.
+* New: BUCK file
+* Fix: More precise LayoutSpec log tag.
+* Fix: AddArgumentFix logging.
+
 ## Version 1.2.0
 
 _2019-11-29_
