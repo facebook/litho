@@ -38,7 +38,6 @@ public class OnEventCompletionContributorTest extends LithoPluginIntellijTest {
     testHelper.configure(clsName);
     CodeInsightTestFixture fixture = testHelper.getFixture();
     fixture.completeBasic();
-    fixture.completeBasic();
     List<String> completion = fixture.getLookupElementStrings();
     assertNotNull(completion);
     assertTrue(completion.contains("onClickEvent"));
@@ -50,7 +49,6 @@ public class OnEventCompletionContributorTest extends LithoPluginIntellijTest {
 
     testHelper.configure(clsName);
     CodeInsightTestFixture fixture = testHelper.getFixture();
-    fixture.completeBasic();
     fixture.completeBasic();
     List<String> completion = fixture.getLookupElementStrings();
     assertNotNull(completion);
