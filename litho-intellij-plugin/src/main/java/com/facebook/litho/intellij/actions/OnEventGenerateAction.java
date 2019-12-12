@@ -21,6 +21,7 @@ import com.facebook.litho.intellij.completion.ComponentGenerateUtils;
 import com.facebook.litho.intellij.completion.OnEventGenerateUtils;
 import com.facebook.litho.intellij.extensions.EventLogger;
 import com.facebook.litho.intellij.logging.LithoLoggerProvider;
+import com.intellij.codeInsight.CodeInsightActionHandler;
 import com.intellij.codeInsight.generation.ClassMember;
 import com.intellij.codeInsight.generation.GenerateMembersHandlerBase;
 import com.intellij.codeInsight.generation.GenerationInfo;
@@ -30,6 +31,7 @@ import com.intellij.codeInsight.generation.actions.BaseGenerateAction;
 import com.intellij.ide.util.TreeJavaClassChooserDialog;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiFile;
@@ -39,7 +41,9 @@ import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.util.IncorrectOperationException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
+import javax.annotation.Nullable;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -47,8 +51,54 @@ import org.jetbrains.annotations.NotNull;
  * https://fblitho.com/docs/events-overview
  */
 public class OnEventGenerateAction extends BaseGenerateAction {
+
+  public interface EventChooser {
+    PsiClass choose(PsiClass context, Project project);
+  }
+
+  @Nullable
+  public interface OnEventRefactorer {
+    PsiMethod changeSignature(Project project, PsiMethod originalOnEventMethod, PsiClass context);
+  }
+
+  public interface OnEventGeneratedListener {
+    void onGenerated(PsiMethod onEvent);
+  }
+
+  public static CodeInsightActionHandler createHandler(
+      EventChooser eventChooser, OnEventGeneratedListener onEventGeneratedListener) {
+    return new OnEventGenerateHandler(
+        eventChooser,
+        (project, originalOnEventMethod, context) -> {
+          if (ApplicationManager.getApplication().isUnitTestMode()) {
+            return originalOnEventMethod;
+          }
+          final OnEventChangeSignatureDialog onEventMethodSignatureChooser =
+              new OnEventChangeSignatureDialog(project, originalOnEventMethod, context);
+          onEventMethodSignatureChooser.show();
+          return onEventMethodSignatureChooser.getMethod();
+        },
+        onEventGeneratedListener);
+  }
+
   public OnEventGenerateAction() {
-    super(new OnEventGenerateHandler());
+    super(
+        createHandler(
+            (context, project) -> {
+              // Choose event to generate method for
+              final TreeJavaClassChooserDialog chooseEventDialog =
+                  new TreeJavaClassChooserDialog(
+                      "Choose Event",
+                      project,
+                      GlobalSearchScope.allScope(project),
+                      LithoPluginUtils::isEvent,
+                      context /* Any initial class */);
+              chooseEventDialog.show();
+              return chooseEventDialog.getSelected();
+            },
+            onEventMethod ->
+                LithoLoggerProvider.getEventLogger()
+                    .log(EventLogger.EVENT_ON_EVENT_GENERATION + ".success")));
   }
 
   @Override
@@ -63,8 +113,8 @@ public class OnEventGenerateAction extends BaseGenerateAction {
 
   @Override
   public void actionPerformed(AnActionEvent e) {
-    super.actionPerformed(e);
     LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_ON_EVENT_GENERATION + ".invoke");
+    super.actionPerformed(e);
     final PsiFile file = e.getData(CommonDataKeys.PSI_FILE);
     LithoPluginUtils.getFirstLayoutSpec(file)
         .ifPresent(ComponentGenerateUtils::updateLayoutComponent);
@@ -77,50 +127,40 @@ public class OnEventGenerateAction extends BaseGenerateAction {
    * @see com.facebook.litho.intellij.completion.MethodGenerateHandler
    */
   static class OnEventGenerateHandler extends GenerateMembersHandlerBase {
+    private final EventChooser eventChooser;
+    private final OnEventGeneratedListener onEventGeneratedListener;
+    private final OnEventRefactorer onEventRefactorer;
 
-    OnEventGenerateHandler() {
+    OnEventGenerateHandler(
+        EventChooser eventChooser,
+        OnEventRefactorer onEventRefactorer,
+        OnEventGeneratedListener onEventGeneratedListener) {
       super("");
+      this.eventChooser = eventChooser;
+      this.onEventGeneratedListener = onEventGeneratedListener;
+      this.onEventRefactorer = onEventRefactorer;
     }
 
     /** @return method based on user choice. */
     @Override
     protected ClassMember[] chooseOriginalMembers(PsiClass aClass, Project project) {
-      // Choose event to generate method for
-      final TreeJavaClassChooserDialog chooseEventDialog =
-          new TreeJavaClassChooserDialog(
-              "Choose Event",
-              project,
-              GlobalSearchScope.allScope(project),
-              LithoPluginUtils::isEvent,
-              aClass /* Any initial class */);
-      chooseEventDialog.show();
-      final PsiClass eventClass = chooseEventDialog.getSelected();
-      if (eventClass == null) {
-        return ClassMember.EMPTY_ARRAY;
-      }
-
-      final List<PsiParameter> propsAndStates =
-          LithoPluginUtils.getPsiParameterStream(null, aClass.getMethods())
-              .filter(LithoPluginUtils::isPropOrState)
-              .collect(Collectors.toList());
-
-      final PsiMethod onEventMethod =
-          OnEventGenerateUtils.createOnEventMethod(aClass, eventClass, propsAndStates);
-
-      final OnEventChangeSignatureDialog onEventMethodSignatureChooser =
-          new OnEventChangeSignatureDialog(project, onEventMethod, aClass);
-      onEventMethodSignatureChooser.show();
-      final PsiMethod customMethod = onEventMethodSignatureChooser.getMethod();
-
-      if (customMethod == null) {
-        return ClassMember.EMPTY_ARRAY;
-      }
-
-      OnEventGenerateUtils.addComment(aClass, customMethod);
-
-      LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_ON_EVENT_GENERATION + ".success");
-
-      return new ClassMember[] {new PsiMethodMember(customMethod)};
+      return Optional.ofNullable(eventChooser.choose(aClass, project))
+          .map(
+              eventClass -> {
+                final List<PsiParameter> propsAndStates =
+                    LithoPluginUtils.getPsiParameterStream(null, aClass.getMethods())
+                        .filter(LithoPluginUtils::isPropOrState)
+                        .collect(Collectors.toList());
+                return OnEventGenerateUtils.createOnEventMethod(aClass, eventClass, propsAndStates);
+              })
+          .map(onEventMethod -> onEventRefactorer.changeSignature(project, onEventMethod, aClass))
+          .map(
+              customMethod -> {
+                OnEventGenerateUtils.addComment(aClass, customMethod);
+                onEventGeneratedListener.onGenerated(customMethod);
+                return new ClassMember[] {new PsiMethodMember(customMethod)};
+              })
+          .orElse(ClassMember.EMPTY_ARRAY);
     }
 
     @Override
