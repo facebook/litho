@@ -3,7 +3,6 @@ For example, in MacOS it could be `/Applications/Android Studio.app/Contents/lib
 
 To build plugin with BUCK use the following commands:
 ```
-$ cd components
 $ buck build //litho-intellij-plugin --out output_path
 ```
 

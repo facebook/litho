@@ -8,6 +8,10 @@ Provided features are described in the release notes of
 ## Installation
 Plugin is currently under development. You can manually build and install it by following these steps:
 
+### BUCK
+Follow instructions <a href='https://github.com/facebook/litho/blob/master/lib/intellij-plugin-sdk/README.md'>here</a>.
+
+### Gradle
 1. From the Litho project root directory run `$./gradlew :litho-intellij-plugin:jar`
 This will produce a *litho-intellij-plugin.jar* file in the **litho-intellij-plugin/build/libs** directory.
 2. In the IDE open **Preferences** and choose **Plugins** option in the menu on the left.
