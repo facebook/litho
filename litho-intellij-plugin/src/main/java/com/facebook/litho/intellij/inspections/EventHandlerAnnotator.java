@@ -17,6 +17,7 @@
 package com.facebook.litho.intellij.inspections;
 
 import com.facebook.litho.intellij.LithoClassNames;
+import com.facebook.litho.intellij.PsiSearchUtils;
 import com.facebook.litho.intellij.completion.ComponentGenerateUtils;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.EventDeclarationModel;
@@ -27,6 +28,7 @@ import com.facebook.litho.specmodels.model.SpecModelValidationError;
 import com.intellij.codeInsight.intention.IntentionAction;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
+import com.intellij.openapi.project.Project;
 import com.intellij.psi.JavaPsiFacade;
 import com.intellij.psi.JavaResolveResult;
 import com.intellij.psi.PsiClass;
@@ -44,6 +46,8 @@ import org.jetbrains.annotations.Nullable;
 
 /** Annotator creates quick fix to add existing EventHandler to the method without arguments. */
 public class EventHandlerAnnotator implements Annotator {
+  static final String FIX_FAMILY_NAME = "LithoFix";
+
   @Override
   public void annotate(PsiElement element, AnnotationHolder holder) {
     // Implementation similar to {@link HighlightMethodUtil#checkMethodCall}
@@ -60,22 +64,20 @@ public class EventHandlerAnnotator implements Annotator {
     if (eventQualifiedName == null) {
       return;
     }
-    LayoutSpecModel currentLayoutModel =
-        Optional.ofNullable(
-                PsiTreeUtil.findFirstParent(eventHandlerSetter, PsiClass.class::isInstance))
-            .map(cls -> ComponentGenerateUtils.createLayoutModel((PsiClass) cls))
-            .orElse(null);
-    if (currentLayoutModel == null) {
+    PsiClass parentCls =
+        (PsiClass) PsiTreeUtil.findFirstParent(eventHandlerSetter, PsiClass.class::isInstance);
+    if (parentCls == null) {
+      return;
+    }
+    LayoutSpecModel parentLayoutModel = ComponentGenerateUtils.createLayoutModel(parentCls);
+    if (parentLayoutModel == null) {
       return;
     }
     ImmutableList<SpecMethodModel<EventMethod, EventDeclarationModel>> implementedEventHandlers =
-        currentLayoutModel.getEventMethods();
-    if (implementedEventHandlers.isEmpty()) {
-      return;
-    }
-    String componentQualifiedName = currentLayoutModel.getComponentTypeName().toString();
-    PsiElementFactory elementFactory =
-        JavaPsiFacade.getInstance(eventHandlerSetter.getProject()).getElementFactory();
+        parentLayoutModel.getEventMethods();
+    String componentQualifiedName = parentLayoutModel.getComponentTypeName().toString();
+    Project project = eventHandlerSetter.getProject();
+    PsiElementFactory elementFactory = JavaPsiFacade.getInstance(project).getElementFactory();
     SpecModelValidationError error =
         new SpecModelValidationError(
             list, "Add " + AddArgumentFix.getCapitalizedMethoName(eventHandlerSetter));
@@ -91,6 +93,12 @@ public class EventHandlerAnnotator implements Annotator {
                         eventHandlerSetter, componentQualifiedName, methodName, elementFactory))
             .collect(Collectors.toList());
 
+    PsiClass event = PsiSearchUtils.findClass(project, eventQualifiedName);
+    if (event != null) {
+      fixes.add(
+          AddArgumentFix.createNewMethodCallFix(
+              eventHandlerSetter, componentQualifiedName, event, parentCls));
+    }
     AnnotatorUtils.addError(holder, error, fixes);
   }
 

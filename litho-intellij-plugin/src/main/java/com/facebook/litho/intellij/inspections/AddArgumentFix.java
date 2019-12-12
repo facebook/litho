@@ -25,6 +25,7 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.PsiCall;
+import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementFactory;
 import com.intellij.psi.PsiExpressionList;
@@ -48,7 +49,7 @@ public class AddArgumentFix extends BaseIntentionAction implements HighPriorityA
   @Nls(capitalization = Nls.Capitalization.Sentence)
   @Override
   public String getFamilyName() {
-    return "Litho";
+    return EventHandlerAnnotator.FIX_FAMILY_NAME;
   }
 
   @Override
@@ -83,11 +84,25 @@ public class AddArgumentFix extends BaseIntentionAction implements HighPriorityA
     return new AddArgumentFix(originalMethodCall, newArgumentList, fixDescription);
   }
 
+  /**
+   * Creates new fix, that generates OnEvent method and adds static method call as an argument to
+   * the originalMethodCall.
+   */
+  static IntentionAction createNewMethodCallFix(
+      PsiMethodCallExpression originalMethodCall,
+      String clsName,
+      PsiClass event,
+      PsiClass parentLayoutSpec) {
+    String fixDescription = "Create new " + getCapitalizedMethoName(originalMethodCall);
+    return new OnEventCreateFix(
+        originalMethodCall, clsName, event, parentLayoutSpec, fixDescription);
+  }
+
   static String getCapitalizedMethoName(PsiMethodCallExpression methodCall) {
     return StringUtil.capitalize(methodCall.getMethodExpression().getReferenceName());
   }
 
-  private static PsiExpressionList createArgumentList(
+  static PsiExpressionList createArgumentList(
       PsiElement context, String clsName, String methodName, PsiElementFactory elementFactory) {
     final PsiMethodCallExpression stub =
         (PsiMethodCallExpression)
