@@ -20,7 +20,6 @@ import static com.intellij.patterns.StandardPatterns.or;
 
 import com.intellij.codeInsight.completion.CompletionResult;
 import com.intellij.codeInsight.lookup.LookupElement;
-import com.intellij.lang.java.JavaLanguage;
 import com.intellij.patterns.ElementPattern;
 import com.intellij.patterns.PlatformPatterns;
 import com.intellij.psi.PsiAnnotation;
@@ -28,6 +27,7 @@ import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiIdentifier;
 import com.intellij.psi.PsiMethod;
+import com.intellij.psi.PsiParameterList;
 import com.intellij.psi.PsiStatement;
 import com.intellij.psi.util.PsiTreeUtil;
 import java.util.Optional;
@@ -35,7 +35,12 @@ import java.util.function.Predicate;
 import org.jetbrains.annotations.Nullable;
 
 class CompletionUtils {
-  static final ElementPattern<PsiElement> METHOD_ANNOTATION =
+  static final ElementPattern<? extends PsiElement> METHOD_PARAMETER_ANNOTATION =
+      PlatformPatterns.psiElement(PsiIdentifier.class)
+          .inside(PsiParameterList.class)
+          .afterLeaf("@");
+
+  static final ElementPattern<? extends PsiElement> METHOD_ANNOTATION =
       or(annotationInClass(), annotationAboveMethod());
 
   private static ElementPattern<? extends PsiElement> annotationAboveMethod() {
@@ -43,8 +48,7 @@ class CompletionUtils {
     return PlatformPatterns.psiElement(PsiIdentifier.class)
         .withSuperParent(2, PsiAnnotation.class)
         .withSuperParent(4, PsiMethod.class)
-        .afterLeaf("@")
-        .withLanguage(JavaLanguage.INSTANCE);
+        .afterLeaf("@");
   }
 
   private static ElementPattern<? extends PsiElement> annotationInClass() {
@@ -52,8 +56,7 @@ class CompletionUtils {
     return PlatformPatterns.psiElement(PsiIdentifier.class)
         .withSuperParent(2, PsiAnnotation.class)
         .withSuperParent(4, PsiClass.class)
-        .afterLeaf("@")
-        .withLanguage(JavaLanguage.INSTANCE);
+        .afterLeaf("@");
   }
 
   static Optional<PsiClass> findFirstParent(PsiElement element, Predicate<PsiClass> condition) {
@@ -63,11 +66,16 @@ class CompletionUtils {
   }
 
   static final ElementPattern<? extends PsiElement> AFTER_DOT =
-      PlatformPatterns.psiElement(PsiIdentifier.class)
-          .inside(PsiStatement.class)
-          .afterLeaf(".")
-          .withLanguage(JavaLanguage.INSTANCE);
+      PlatformPatterns.psiElement(PsiIdentifier.class).inside(PsiStatement.class).afterLeaf(".");
 
+  /**
+   * Creates new {@link CompletionResult}.
+   *
+   * @param completionResult provides matcher, and sorter for new instance
+   * @param lookup is used in new instance instead of {@link LookupElement} from the provided
+   *     completionResult
+   * @return new {@link CompletionResult} or null, if matcher doesn't match new lookup
+   */
   @Nullable
   static CompletionResult wrap(CompletionResult completionResult, LookupElement lookup) {
     return CompletionResult.wrap(

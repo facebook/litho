@@ -14,12 +14,6 @@
  * limitations under the License.
  */
 
-import android.view.View;
-import com.facebook.litho.ClickEvent;
-import com.facebook.litho.ComponentContext;
-import com.facebook.litho.annotations.FromEvent;
-import com.facebook.litho.annotations.OnEvent;
-
 @com.facebook.litho.annotations.MountSpec
 public class OnClickEventAboveMethodCompletionSpec {
 

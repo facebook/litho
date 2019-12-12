@@ -38,9 +38,10 @@ class SpecLookupElement extends LookupElementDecorator<LookupItem> {
   static final Map<String, LookupElement> CACHE = new HashMap<>(20);
 
   /**
-   * @param qualifiedName the name of the class to create lookup.
-   * @param project to find the lookup annotation class.
-   * @throws IncorrectOperationException if the qualifiedName does not specify a valid type.
+   * @param qualifiedName the name of the class to create lookup
+   * @param project to find the lookup annotation class
+   * @throws IncorrectOperationException if the qualifiedName does not specify a valid type
+   * @return new {@link LookupElement} or cached instance if it was created previously
    */
   static LookupElement create(String qualifiedName, Project project)
       throws IncorrectOperationException {
@@ -53,6 +54,7 @@ class SpecLookupElement extends LookupElementDecorator<LookupItem> {
       CACHE.put(qualifiedName, lookupElement);
       return lookupElement;
     }
+    // This is a dummy class, we don't want to cache it.
     typeCls =
         JavaPsiFacade.getInstance(project)
             .getElementFactory()
@@ -60,6 +62,10 @@ class SpecLookupElement extends LookupElementDecorator<LookupItem> {
     return new SpecLookupElement(typeCls);
   }
 
+  /**
+   * @param typeCls the class to create lookup
+   * @return new {@link LookupElement} or cached instance if it was created previously
+   */
   static LookupElement create(PsiClass typeCls) {
     String qualifiedName = typeCls.getQualifiedName();
     if (CACHE.containsKey(qualifiedName)) {

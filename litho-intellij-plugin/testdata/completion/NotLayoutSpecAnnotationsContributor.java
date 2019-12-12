@@ -14,13 +14,6 @@
  * limitations under the License.
  */
 
-import com.facebook.litho.Component;
-import com.facebook.litho.ComponentContext;
-import com.facebook.litho.Column;
-import LayoutSpec;
-import com.facebook.litho.annotations.OnCreateInitialState;
-import com.facebook.litho.annotations.OnCreateLayout;
-
 class NotLayoutSpecAnnotationsContributor {
 
   @<caret>

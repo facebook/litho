@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-@com.facebook.litho.annotations.LayoutSpec
-public class OnClickEventCompletionSpec {
+class LayoutSpecMethodParameterAnnotationsContributorSpec {
 
-  public @interface OnEventI {
-  }
-
-  @OnEven<caret>
+  static Component onCreateLayout(ComponentContext c, @<caret>) {}
 }

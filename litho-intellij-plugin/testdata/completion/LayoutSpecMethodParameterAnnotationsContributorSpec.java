@@ -15,10 +15,8 @@
  */
 
 @com.facebook.litho.annotations.LayoutSpec
-public class OnClickEventCompletionSpec {
+class LayoutSpecMethodParameterAnnotationsContributorSpec {
 
-  public @interface OnEventI {
-  }
-
-  @OnEven<caret>
+  @com.facebook.litho.annotations.OnCreateLayout
+  static Component onCreateLayout(ComponentContext c, @<caret>) {}
 }

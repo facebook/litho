@@ -16,26 +16,26 @@
 
 package com.facebook.litho.intellij.completion;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static junit.framework.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import com.facebook.litho.intellij.LithoClassNames;
 import com.facebook.litho.intellij.LithoPluginIntellijTest;
 import com.intellij.testFramework.fixtures.CodeInsightTestFixture;
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 import org.junit.Test;
 
-public class LayoutSpecAnnotationsContributorTest extends LithoPluginIntellijTest {
+public class LayoutSpecMethodParameterAnnotationsContributorTest extends LithoPluginIntellijTest {
 
-  public LayoutSpecAnnotationsContributorTest() {
+  public LayoutSpecMethodParameterAnnotationsContributorTest() {
     super("testdata/completion");
   }
 
   @Test
   public void addCompletions_inLayoutSpec() throws IOException {
-    String clsName = "LayoutSpecAnnotationsContributorSpec.java";
+    String clsName = "LayoutSpecMethodParameterAnnotationsContributorSpec.java";
 
     testHelper.configure(clsName);
     CodeInsightTestFixture fixture = testHelper.getFixture();
@@ -43,24 +43,26 @@ public class LayoutSpecAnnotationsContributorTest extends LithoPluginIntellijTes
     List<String> completion = fixture.getLookupElementStrings();
     assertNotNull(completion);
 
-    for (String name : LayoutSpecMethodAnnotationsProvider.ANNOTATION_QUALIFIED_NAMES) {
-      assertTrue(completion.contains(LithoClassNames.shortName(name)));
+    Set<String> params =
+        LayoutSpecMethodParameterAnnotationsContributor.Provider
+            .LAYOUT_SPEC_DELEGATE_METHOD_TO_PARAMETER_ANNOTATIONS
+            .get("com.facebook.litho.annotations.OnCreateLayout");
+    assertThat(completion).hasSize(params.size());
+
+    for (String name : params) {
+      assertThat(completion).contains(LithoClassNames.shortName(name));
     }
   }
 
   @Test
   public void addCompletions_notInLayoutSpec() throws IOException {
-    String clsName = "NotLayoutSpecAnnotationsContributor.java";
+    String clsName = "NotLayoutSpecMethodParameterAnnotationsContributorSpec.java";
 
     testHelper.configure(clsName);
     CodeInsightTestFixture fixture = testHelper.getFixture();
     fixture.completeBasic();
-    fixture.completeBasic();
     List<String> completion = fixture.getLookupElementStrings();
     assertNotNull(completion);
-
-    for (String name : LayoutSpecMethodAnnotationsProvider.ANNOTATION_QUALIFIED_NAMES) {
-      assertFalse(completion.contains(LithoClassNames.shortName(name)));
-    }
+    assertThat(completion).isEmpty();
   }
 }

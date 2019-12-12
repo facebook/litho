@@ -61,9 +61,7 @@ class ReplacingConsumer implements Consumer<CompletionResult> {
     }
   }
 
-  /**
-   * Adds {@link LookupElement} for any {@link #replacedQualifiedNames} unseen during consumption.
-   */
+  /** Adds {@link LookupElement} for the {@link #replacedQualifiedNames} unseen before. */
   void addRemainingCompletions(Project project) {
     for (String qualifiedName : replacedQualifiedNames) {
       result.addElement(SpecLookupElement.create(qualifiedName, project));
