@@ -2000,7 +2000,7 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
         layout = reconcile(current, next, keys, ReconciliationMode.RECONCILE);
         break;
       case ReconciliationMode.RECREATE:
-        if (ComponentsConfiguration.useNewCreateLayoutImplementation) {
+        if (parentContext.isNewCreateLayoutEnabled()) {
 
           // The new implementation expects the parent context.
           layout = Layout.create(parentContext, next, false, true);

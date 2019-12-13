@@ -303,7 +303,7 @@ class Layout {
           context.setHeightSpec(heightSpec);
 
           // Create a new layout.
-          layout = create(context, component, true);
+          layout = create(context, component, true, true);
 
           holder.copyInto(layout);
 

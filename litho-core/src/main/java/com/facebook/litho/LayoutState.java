@@ -1830,7 +1830,7 @@ class LayoutState {
   static InternalNode resolveNestedTree(
       ComponentContext context, InternalNode holder, int widthSpec, int heightSpec) {
 
-    if (ComponentsConfiguration.useNewCreateLayoutImplementation) {
+    if (context.isNewCreateLayoutEnabled()) {
       return Layout.create(context, holder, widthSpec, heightSpec);
     }
 
@@ -1942,7 +1942,7 @@ class LayoutState {
       @Nullable DiffNode diffTreeRoot,
       @Nullable PerfEvent layoutStatePerfEvent) {
 
-    if (ComponentsConfiguration.useNewCreateLayoutImplementation) {
+    if (c.isNewCreateLayoutEnabled()) {
       return Layout.createAndMeasureComponent(
           c, component, widthSpec, heightSpec, current, diffTreeRoot, layoutStatePerfEvent);
     }
@@ -2659,7 +2659,7 @@ class LayoutState {
   @Deprecated
   static InternalNode createLayout(ComponentContext owner, Component component) {
 
-    if (ComponentsConfiguration.useNewCreateLayoutImplementation) {
+    if (owner.isNewCreateLayoutEnabled()) {
       return Layout.create(owner, component, false);
     }
 
@@ -2697,7 +2697,7 @@ class LayoutState {
   static InternalNode createLayout(
       final ComponentContext c, final Component component, final boolean shouldResolveNestedTree) {
 
-    if (ComponentsConfiguration.useNewCreateLayoutImplementation) {
+    if (c.isNewCreateLayoutEnabled()) {
       return Layout.create(c, component, shouldResolveNestedTree);
     }
 
