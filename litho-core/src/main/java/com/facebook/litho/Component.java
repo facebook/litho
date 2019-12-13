@@ -1709,7 +1709,7 @@ public abstract class Component extends ComponentLifecycle
     }
 
     /**
-     * Links a {@link DynamicValue} object ot the scaleX value for this Component
+     * Links a {@link DynamicValue} object to the scaleX value for this Component
      *
      * @param value controller for the scaleX value
      */
@@ -1719,7 +1719,7 @@ public abstract class Component extends ComponentLifecycle
     }
 
     /**
-     * Links a {@link DynamicValue} object ot the scaleY value for this Component
+     * Links a {@link DynamicValue} object to the scaleY value for this Component
      *
      * @param value controller for the scaleY value
      */
@@ -1862,7 +1862,7 @@ public abstract class Component extends ComponentLifecycle
     }
 
     /**
-     * Links a {@link DynamicValue} object ot the translationX value for this Component
+     * Links a {@link DynamicValue} object to the translationX value for this Component
      *
      * @param value controller for the translationY value
      */
@@ -1872,7 +1872,7 @@ public abstract class Component extends ComponentLifecycle
     }
 
     /**
-     * Links a {@link DynamicValue} object ot the translationY value for this Component
+     * Links a {@link DynamicValue} object to the translationY value for this Component
      *
      * @param value controller for the translationY value
      */
