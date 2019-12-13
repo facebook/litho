@@ -155,4 +155,26 @@ public class DynamicPropsTest {
     backgroundColorDV.set(Color.TRANSPARENT);
     assertThat(((ColorDrawable) lithoView.getBackground()).getColor()).isEqualTo(Color.TRANSPARENT);
   }
+
+  @Test
+  public void testDynamicRotationApplied() {
+    final float startValue = 0f;
+    final DynamicValue<Float> rotationDV = new DynamicValue<>(startValue);
+
+    final LithoView lithoView =
+        mountComponent(
+            mContext,
+            Column.create(mContext).widthPx(80).heightPx(80).rotation(rotationDV).build());
+
+    assertThat(lithoView.getRotation()).isEqualTo(startValue);
+
+    rotationDV.set(364f);
+    assertThat(lithoView.getRotation()).isEqualTo(364f);
+
+    rotationDV.set(520f);
+    assertThat(lithoView.getRotation()).isEqualTo(520f);
+
+    rotationDV.set(-1.f);
+    assertThat(lithoView.getRotation()).isEqualTo(-1.f);
+  }
 }

@@ -44,6 +44,7 @@ class CommonDynamicPropAnimationsComponentSpec {
     SCALE,
     TRANSLATION,
     BACKGROUND_COLOR,
+    ROTATION,
     ;
   }
 
@@ -66,6 +67,7 @@ class CommonDynamicPropAnimationsComponentSpec {
       @Prop DynamicValue<Float> dynamicScale,
       @Prop DynamicValue<Float> dynamicTranslation,
       @Prop DynamicValue<Integer> dynamicBgColor,
+      @Prop DynamicValue<Float> dynamicRotation,
       @FromEvent CommonDynamicPropsExample model) {
     Component.Builder builder = Column.create(c).widthDip(100).heightDip(100);
 
@@ -84,6 +86,9 @@ class CommonDynamicPropAnimationsComponentSpec {
       case BACKGROUND_COLOR:
         builder.backgroundColor(dynamicBgColor);
         shouldApplyBgColor = false;
+        break;
+      case ROTATION:
+        builder.rotation(dynamicRotation);
         break;
     }
 

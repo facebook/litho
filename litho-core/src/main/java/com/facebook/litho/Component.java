@@ -20,6 +20,7 @@ import static androidx.annotation.Dimension.DP;
 import static com.facebook.litho.ComponentKeyUtils.getKeyForChildPosition;
 import static com.facebook.litho.DynamicPropsManager.KEY_ALPHA;
 import static com.facebook.litho.DynamicPropsManager.KEY_BACKGROUND_COLOR;
+import static com.facebook.litho.DynamicPropsManager.KEY_ROTATION;
 import static com.facebook.litho.DynamicPropsManager.KEY_SCALE_X;
 import static com.facebook.litho.DynamicPropsManager.KEY_SCALE_Y;
 import static com.facebook.litho.DynamicPropsManager.KEY_TRANSLATION_X;
@@ -1677,6 +1678,16 @@ public abstract class Component extends ComponentLifecycle
      */
     public T rotation(float rotation) {
       mComponent.getOrCreateCommonProps().rotation(rotation);
+      return getThis();
+    }
+
+    /**
+     * Links a {@link DynamicValue} object to the rotation value for this Component
+     *
+     * @param value controller for the rotation value
+     */
+    public T rotation(DynamicValue<Float> rotation) {
+      mComponent.getOrCreateCommonDynamicProps().put(KEY_ROTATION, rotation);
       return getThis();
     }
 
