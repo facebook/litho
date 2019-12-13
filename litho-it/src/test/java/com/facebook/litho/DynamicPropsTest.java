@@ -16,15 +16,12 @@
 
 package com.facebook.litho;
 
-import static com.facebook.litho.testing.TestDrawableComponent.create;
 import static com.facebook.litho.testing.helper.ComponentTestHelper.mountComponent;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import android.graphics.Color;
-import android.view.View;
-import com.facebook.litho.testing.TestViewComponent;
+import android.graphics.drawable.ColorDrawable;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
-import com.facebook.litho.testing.util.InlineLayoutSpec;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,124 +37,122 @@ public class DynamicPropsTest {
   }
 
   @Test
-  public void testLayoutSpecComponent() {
+  public void testDynamicAlphaApplied() {
     final float startValue = 0.8f;
     final DynamicValue<Float> alphaDV = new DynamicValue<>(startValue);
+
     final LithoView lithoView =
         mountComponent(
-            mContext,
-            new InlineLayoutSpec() {
-              @Override
-              protected Component onCreateLayout(ComponentContext c) {
-                return Column.create(c)
-                    .widthPx(100)
-                    .widthPx(100)
-                    .child(
-                        Column.create(c)
-                            .widthPx(80)
-                            .heightPx(80)
-                            .backgroundColor(Color.WHITE)
-                            .alpha(alphaDV))
-                    .build();
-              }
-            });
+            mContext, Column.create(mContext).widthPx(80).heightPx(80).alpha(alphaDV).build());
 
-    // The Column component with dynamic alpha should've gotten a HostComponent, thus there should
-    // be a mounted ComponentHost, which gets bound to the DynamicValue
-    assertThat(lithoView.getChildCount()).isEqualTo(1);
-    assertThat(lithoView.getChildAt(0)).isInstanceOf(ComponentHost.class);
-
-    final ComponentHost host = (ComponentHost) lithoView.getChildAt(0);
-
-    assertThat(host.getAlpha()).isEqualTo(startValue);
+    assertThat(lithoView.getAlpha()).isEqualTo(startValue);
 
     alphaDV.set(0.5f);
-    assertThat(host.getAlpha()).isEqualTo(0.5f);
+    assertThat(lithoView.getAlpha()).isEqualTo(0.5f);
 
     alphaDV.set(0.f);
-    assertThat(host.getAlpha()).isEqualTo(0.f);
+    assertThat(lithoView.getAlpha()).isEqualTo(0.f);
 
     alphaDV.set(1.f);
-    assertThat(host.getAlpha()).isEqualTo(1.f);
+    assertThat(lithoView.getAlpha()).isEqualTo(1.f);
   }
 
   @Test
-  public void testMountDrawableComponent() {
-    final float startValue = 100;
-    final DynamicValue<Float> translationDV = new DynamicValue<>(startValue);
+  public void testDynamicTranslationApplied() {
+    final float startValueX = 100;
+    final float startValueY = -100;
+    final DynamicValue<Float> translationXDV = new DynamicValue<>(startValueX);
+    final DynamicValue<Float> translationYDV = new DynamicValue<>(startValueY);
+
     final LithoView lithoView =
         mountComponent(
             mContext,
-            new InlineLayoutSpec() {
-              @Override
-              protected Component onCreateLayout(ComponentContext c) {
-                return Column.create(c)
-                    .widthPx(100)
-                    .widthPx(100)
-                    .child(create(c).widthPx(80).heightPx(80).alpha(translationDV))
-                    .build();
-              }
-            });
+            Column.create(mContext)
+                .widthPx(80)
+                .heightPx(80)
+                .translationX(translationXDV)
+                .translationY(translationYDV)
+                .build());
 
-    // The TestDrawableComponent with dynamic alpha should've gotten a HostComponent, thus there
-    // should be a mounted ComponentHost, which gets bound to the DynamicValue
-    assertThat(lithoView.getChildCount()).isEqualTo(1);
-    assertThat(lithoView.getChildAt(0)).isInstanceOf(ComponentHost.class);
+    assertThat(lithoView.getTranslationX()).isEqualTo(startValueX);
+    assertThat(lithoView.getTranslationY()).isEqualTo(startValueY);
 
-    final ComponentHost host = (ComponentHost) lithoView.getChildAt(0);
+    translationXDV.set(50.f);
+    translationYDV.set(20.f);
+    assertThat(lithoView.getTranslationX()).isEqualTo(50.f);
+    assertThat(lithoView.getTranslationY()).isEqualTo(20.f);
 
-    assertThat(host.getAlpha()).isEqualTo(startValue);
+    translationXDV.set(-50.f);
+    translationYDV.set(-20.f);
+    assertThat(lithoView.getTranslationX()).isEqualTo(-50.f);
+    assertThat(lithoView.getTranslationY()).isEqualTo(-20.f);
 
-    translationDV.set(50.f);
-    assertThat(host.getAlpha()).isEqualTo(50.f);
-
-    translationDV.set(-100.f);
-    assertThat(host.getAlpha()).isEqualTo(-100.f);
-
-    translationDV.set(0.f);
-    assertThat(host.getAlpha()).isEqualTo(0.f);
+    translationXDV.set(0f);
+    translationYDV.set(0f);
+    assertThat(lithoView.getTranslationX()).isEqualTo(0f);
+    assertThat(lithoView.getTranslationY()).isEqualTo(0f);
   }
 
   @Test
-  public void testMountViewComponent() {
-    final float startValue = 1.5f;
-    final DynamicValue<Float> scaleDV = new DynamicValue<>(startValue);
+  public void testDynamicScaleApplied() {
+    final float startValueX = 1.5f;
+    final float startValueY = -1.5f;
+    final DynamicValue<Float> scaleXDV = new DynamicValue<>(startValueX);
+    final DynamicValue<Float> scaleYDV = new DynamicValue<>(startValueY);
+
     final LithoView lithoView =
         mountComponent(
             mContext,
-            new InlineLayoutSpec() {
-              @Override
-              protected Component onCreateLayout(ComponentContext c) {
-                return Column.create(c)
-                    .widthPx(100)
-                    .widthPx(100)
-                    .child(
-                        TestViewComponent.create(c)
-                            .widthPx(80)
-                            .heightPx(80)
-                            .scaleX(scaleDV)
-                            .scaleY(scaleDV))
-                    .build();
-              }
-            });
+            Column.create(mContext)
+                .widthPx(80)
+                .heightPx(80)
+                .scaleX(scaleXDV)
+                .scaleY(scaleYDV)
+                .build());
 
-    assertThat(lithoView.getChildCount()).isEqualTo(1);
+    assertThat(lithoView.getScaleX()).isEqualTo(startValueX);
+    assertThat(lithoView.getScaleY()).isEqualTo(startValueY);
 
-    final View view = lithoView.getChildAt(0);
+    scaleXDV.set(0.5f);
+    scaleYDV.set(2.f);
+    assertThat(lithoView.getScaleX()).isEqualTo(0.5f);
+    assertThat(lithoView.getScaleY()).isEqualTo(2.f);
 
-    assertThat(view.getScaleX()).isEqualTo(startValue);
-    assertThat(view.getScaleY()).isEqualTo(startValue);
+    scaleXDV.set(2.f);
+    scaleYDV.set(0.5f);
+    assertThat(lithoView.getScaleX()).isEqualTo(2.f);
+    assertThat(lithoView.getScaleY()).isEqualTo(.5f);
 
-    scaleDV.set(0.5f);
-    assertThat(view.getScaleX()).isEqualTo(0.5f);
-    assertThat(view.getScaleY()).isEqualTo(0.5f);
+    scaleXDV.set(0f);
+    scaleYDV.set(0f);
+    assertThat(lithoView.getScaleX()).isEqualTo(0f);
+    assertThat(lithoView.getScaleY()).isEqualTo(0f);
+  }
 
-    scaleDV.set(2.f);
-    assertThat(view.getScaleX()).isEqualTo(2.f);
-    assertThat(view.getScaleY()).isEqualTo(2.f);
+  @Test
+  public void testDynamicBackgroundColorApplied() {
+    final int startValue = Color.RED;
+    final DynamicValue<Integer> backgroundColorDV = new DynamicValue<>(startValue);
 
-    scaleDV.set(1.f);
-    assertThat(view.getScaleX()).isEqualTo(1.f);
-    assertThat(view.getScaleY()).isEqualTo(1.f);
+    final LithoView lithoView =
+        mountComponent(
+            mContext,
+            Column.create(mContext)
+                .widthPx(80)
+                .heightPx(80)
+                .backgroundColor(backgroundColorDV)
+                .build());
+
+    assertThat(lithoView.getBackground()).isInstanceOf(ColorDrawable.class);
+    assertThat(((ColorDrawable) lithoView.getBackground()).getColor()).isEqualTo(startValue);
+
+    backgroundColorDV.set(Color.BLUE);
+    assertThat(((ColorDrawable) lithoView.getBackground()).getColor()).isEqualTo(Color.BLUE);
+
+    backgroundColorDV.set(0x88888888);
+    assertThat(((ColorDrawable) lithoView.getBackground()).getColor()).isEqualTo(0x88888888);
+
+    backgroundColorDV.set(Color.TRANSPARENT);
+    assertThat(((ColorDrawable) lithoView.getBackground()).getColor()).isEqualTo(Color.TRANSPARENT);
   }
 }
