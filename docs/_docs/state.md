@@ -137,8 +137,8 @@ static void updateMultipleStates(
 ## Calling state updates
 
 For each `@OnUpdateState` method in your spec, the generated component will have two methods that will delegate to the `@OnUpdateState` method under the hood:
-* a static method with the same name, which will synchronously apply the state updates.
-* a static method with the same name and an *Async* suffix, which will asynchronously trigger the state updates.
+* a static method with the same name, which will asynchronously apply the state updates.
+* a static method with the same name and a *Sync* suffix, which will synchronously trigger the state updates.
 Both methods take a `ComponentContext` as first parameter, followed by all the parameters declared with `@Param` in your `@OnUpdateState` method.
 
 Here's how you would call the state update method to update your checkbox when a user clicks it:
@@ -168,8 +168,8 @@ public class CheckboxSpec {
 
   @OnEvent(ClickEvent.class)
   static void onCheckboxClicked(ComponentContext c) {
-    Checkbox.updateCheckboxAsync(c);
-    // Checkbox.updateCheckbox(c); for a sync update
+    Checkbox.updateCheckboxSync(c);
+    // Checkbox.updateCheckbox(c); for an async update
   }
 }
 ```
