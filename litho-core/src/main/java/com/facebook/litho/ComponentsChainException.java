@@ -24,4 +24,10 @@ class ComponentsChainException extends RuntimeException {
     initCause(cause);
     setStackTrace(new StackTraceElement[0]);
   }
+
+  ComponentsChainException(String prefixMessage, Component c, Throwable cause) {
+    super(prefixMessage + " " + c.getSimpleName());
+    initCause(cause);
+    setStackTrace(new StackTraceElement[0]);
+  }
 }

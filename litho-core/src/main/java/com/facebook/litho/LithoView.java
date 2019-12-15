@@ -681,8 +681,17 @@ public class LithoView extends ComponentHost {
 
   @Override
   public void draw(Canvas canvas) {
-    canvas.translate(getPaddingLeft(), getPaddingTop());
-    super.draw(canvas);
+    try {
+      canvas.translate(getPaddingLeft(), getPaddingTop());
+      super.draw(canvas);
+    } catch (Throwable t) {
+      if (mComponentTree != null && mComponentTree.getRoot() != null) {
+        throw new ComponentsChainException(
+            "Component root of the crashing hierarchy:", mComponentTree.getRoot(), t);
+      }
+
+      throw t;
+    }
 
     if (mOnPostDrawListener != null) {
       mOnPostDrawListener.onPostDraw();
