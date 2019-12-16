@@ -21,8 +21,10 @@ import com.facebook.yoga.YogaEdge.ALL
 import com.facebook.litho.Column
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
+import com.facebook.litho.annotations.FromEvent
 import com.facebook.litho.annotations.LayoutSpec
 import com.facebook.litho.annotations.OnCreateLayout
+import com.facebook.litho.annotations.OnEvent
 import com.facebook.litho.annotations.Prop
 import com.facebook.litho.widget.Text
 
@@ -54,4 +56,7 @@ object ListItemSpec {
                 .text(subtitle)
                 .textSizeSp(20f))
         .build()
+
+  @OnEvent(BoxItemChangedEventJava::class)
+  fun onEvent(c: ComponentContext, @FromEvent newColor: Int, @FromEvent newBoolean: Boolean) {}
 }

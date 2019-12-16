@@ -29,6 +29,8 @@ import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeName;
+import javax.lang.model.element.Modifier;
+import javax.lang.model.element.TypeElement;
 
 /** Generator for the cases within the event handler switch clause. */
 public class EventCaseGenerator {
@@ -92,16 +94,41 @@ public class EventCaseGenerator {
 
     int paramIndex = 0;
     for (MethodParamModel methodParamModel : eventMethodModel.methodParams) {
+      final TypeName methodParamModelTypeName = methodParamModel.getTypeName();
+
       if (MethodParamModelUtils.isAnnotatedWith(methodParamModel, FromEvent.class)) {
+        final String methodParamModelName = methodParamModel.getName();
+
+        final String modifiedMethodParamModelName;
+
+        final boolean isPrivateFieldInEvent = TypeElementUtils
+            .extractFieldModifiers(
+                (TypeElement) eventMethodModel.typeModel.representedObject,
+                methodParamModelName
+            ).contains(Modifier.PRIVATE);
+
+        if (isPrivateFieldInEvent) {
+          final String accessorMethodName = methodParamModelName.substring(0,1).toUpperCase()
+              + methodParamModelName.substring(1);
+
+          if (methodParamModelTypeName == TypeName.BOOLEAN) {
+            modifiedMethodParamModelName = "is" + accessorMethodName + "()";
+          } else {
+            modifiedMethodParamModelName = "get" + accessorMethodName + "()";
+          }
+        } else {
+          modifiedMethodParamModelName = methodParamModel.getName();
+        }
+
         eventHandlerParams.add(
             ",\n($T) $L.$L",
-            methodParamModel.getTypeName(),
+            methodParamModelTypeName,
             eventVariableName,
-            methodParamModel.getName());
+            modifiedMethodParamModelName);
       } else if (MethodParamModelUtils.isAnnotatedWith(methodParamModel, Param.class)
-          || methodParamModel.getTypeName().equals(mContextClass)) {
+          || methodParamModelTypeName.equals(mContextClass)) {
         eventHandlerParams.add(
-            ",\n($T) eventHandler.params[$L]", methodParamModel.getTypeName(), paramIndex++);
+            ",\n($T) eventHandler.params[$L]", methodParamModelTypeName, paramIndex++);
       }
     }
 

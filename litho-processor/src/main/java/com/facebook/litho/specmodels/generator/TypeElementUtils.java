@@ -6,9 +6,12 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import javax.annotation.Nullable;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 
 public class TypeElementUtils {
@@ -51,6 +54,21 @@ public class TypeElementUtils {
         })
         .map((Function<Element, String>) enclosedElement -> enclosedElement.getSimpleName()
             .toString())
+        .collect(Collectors.toSet());
+  }
+
+  static Set<Modifier> extractFieldModifiers(@Nullable final TypeElement typeElement,
+      final String fieldName) {
+    if (typeElement == null || typeElement.getKind() != ElementKind.CLASS) {
+      return Collections.emptySet();
+    }
+
+    return typeElement.getEnclosedElements()
+        .stream()
+        .filter((Predicate<Element>) innerElement -> innerElement.getKind() == ElementKind.FIELD &&
+            innerElement.getSimpleName().toString().equals(fieldName))
+        .flatMap((Function<Element, Stream<Modifier>>)
+            innerElement -> innerElement.getModifiers().stream())
         .collect(Collectors.toSet());
   }
 }
