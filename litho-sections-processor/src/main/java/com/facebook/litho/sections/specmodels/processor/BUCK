@@ -15,6 +15,7 @@ fb_native.java_annotation_processor(
     deps = [
         ":processor-lib",
     ],
+    supports_abi_generation_from_source = True,
 )
 
 fb_java_library(
