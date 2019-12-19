@@ -50,7 +50,7 @@ import java.util.List;
  * This {@link Section} emits the following events:
  *
  * <p>{@link RenderEvent} whenever it needs a {@link Component} to render a model T from the {@code
- * List<T> data}. Providing a handler for this {@link OnEvent} is mandatory.
+ * List<? extends T> data}. Providing a handler for this {@link OnEvent} is mandatory.
  *
  * <p>{@link OnCheckIsSameItemEvent} whenever during a diffing it wants to check whether two items
  * represent the same piece of data.
@@ -58,7 +58,7 @@ import java.util.List;
  * <p>{@link OnCheckIsSameContentEvent} whenever during a diffing it wants to check whether two
  * items that represent the same piece of data have exactly the same content.
  *
- * <p>Diffing happens when the new {@code List<T> data} is provided. Changes in {@link
+ * <p>Diffing happens when the new {@code List<? extends T> data} is provided. Changes in {@link
  * com.facebook.litho.annotations.State} alone will not trigger diffing.
  *
  * <ul>
@@ -67,8 +67,8 @@ import java.util.List;
  *   <li>If {@link OnCheckIsSameContentEvent} returns false {@link RenderEvent} is triggered.
  * </ul>
  *
- * If {@link OnCheckIsSameItemEvent} is not implemented, new {@code List<T> data} is considered to
- * be completely different and relayout will happen on every data update.
+ * If {@link OnCheckIsSameItemEvent} is not implemented, new {@code List<? extends T> data} is
+ * considered to be completely different and relayout will happen on every data update.
  *
  * <p>Example usage:
  *
@@ -79,9 +79,9 @@ import java.util.List;
  *   '@'OnCreateChildren
  *   protected Children onCreateChildren(
  *     SectionContext c,
- *     '@'Prop List<Model> modelList) {
+ *     '@'Prop List<? extends Model> modelList) {
  *
- *     return Children.create().child(DataDiffSection.create(c)
+ *     return Children.create().child(DataDiffSection.<Model>create(c)
  *       .data(modelList)
  *       .renderEventHandler(MyGroupSection.onRender(c))
  *       .onCheckIsSameItemEventHandler(MyGroupSection.onCheckIsSameItem(c))
@@ -95,7 +95,7 @@ import java.util.List;
  *   }
  *
  *   '@'OnEvent(RenderEvent.class)
- *   protected RenderInfo onRender(ComponentContext c, @FromEvent Object model) {
+ *   protected RenderInfo onRender(ComponentContext c, @FromEvent Model model) {
  *     return ComponentRenderInfo.create()
  *       .component(MyComponent.create(c).model(model).build())
  *       .build();
@@ -111,11 +111,11 @@ public class DataDiffSectionSpec<T> {
   public static <T> void onCreateChangeSet(
       SectionContext c,
       ChangeSet changeSet,
-      @Prop Diff<List<T>> data,
+      @Prop Diff<List<? extends T>> data,
       @Prop(optional = true) @Nullable Diff<Boolean> detectMoves) {
 
-    final List<T> previousData = data.getPrevious();
-    final List<T> nextData = data.getNext();
+    final List<? extends T> previousData = data.getPrevious();
+    final List<? extends T> nextData = data.getNext();
     final ComponentRenderer componentRenderer =
         new ComponentRenderer(DataDiffSection.getRenderEventHandler(c), c);
     final DiffSectionOperationExecutor operationExecutor =
@@ -289,13 +289,14 @@ public class DataDiffSectionSpec<T> {
   @VisibleForTesting
   static class Callback<T> extends DiffUtil.Callback {
 
-    private final List<T> mPreviousData;
-    private final List<T> mNextData;
+    private final List<? extends T> mPreviousData;
+    private final List<? extends T> mNextData;
     private final SectionContext mSectionContext;
     private final EventHandler<OnCheckIsSameItemEvent> mIsSameItemEventHandler;
     private final EventHandler<OnCheckIsSameContentEvent> mIsSameContentEventHandler;
 
-    Callback(SectionContext sectionContext, List<T> previousData, List<T> nextData) {
+    Callback(
+        SectionContext sectionContext, List<? extends T> previousData, List<? extends T> nextData) {
       mSectionContext = sectionContext;
       mIsSameItemEventHandler = DataDiffSection.getOnCheckIsSameItemEventHandler(mSectionContext);
       mIsSameContentEventHandler =
