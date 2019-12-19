@@ -18,6 +18,8 @@ package com.facebook.litho;
 
 import static android.graphics.Color.BLUE;
 import static android.graphics.Color.RED;
+import static android.os.Build.VERSION.SDK_INT;
+import static android.os.Build.VERSION_CODES.M;
 import static com.facebook.litho.Column.create;
 import static com.facebook.litho.LayoutState.calculate;
 import static com.facebook.litho.MountItem.isDuplicateParentState;
@@ -87,7 +89,11 @@ public class DuplicateParentStateTest {
             mUnspecifiedSizeSpec,
             LayoutState.CalculateLayoutSource.TEST);
 
-    assertThat(layoutState.getMountableOutputCount()).isEqualTo(12);
+    // Account for Android version in the foreground. If >= M the foreground is part of the
+    // ViewLayoutOutput otherwise it has its own LayoutOutput.
+    final boolean setForegroundNotSupported = SDK_INT < M;
+    assertThat(layoutState.getMountableOutputCount())
+        .isEqualTo(setForegroundNotSupported ? 11 : 10);
 
     assertTrue(
         "Clickable root output has duplicate state",
@@ -109,18 +115,19 @@ public class DuplicateParentStateTest {
         "Drawable doesn't duplicate clickable parent state",
         isDuplicateParentState(layoutState.getMountableOutputAt(6).getFlags()));
 
-    assertTrue(
-        "Background should duplicate clickable node state",
-        isDuplicateParentState(layoutState.getMountableOutputAt(8).getFlags()));
-    assertTrue(
-        "Foreground should duplicate clickable node state",
-        isDuplicateParentState(layoutState.getMountableOutputAt(9).getFlags()));
+    if (setForegroundNotSupported) {
+      assertTrue(
+          "Foreground should duplicate clickable node state",
+          isDuplicateParentState(layoutState.getMountableOutputAt(8).getFlags()));
+    }
 
     assertFalse(
         "Background should duplicate non-clickable node state",
-        isDuplicateParentState(layoutState.getMountableOutputAt(10).getFlags()));
+        isDuplicateParentState(
+            layoutState.getMountableOutputAt(setForegroundNotSupported ? 9 : 8).getFlags()));
     assertFalse(
         "Foreground should duplicate non-clickable node state",
-        isDuplicateParentState(layoutState.getMountableOutputAt(11).getFlags()));
+        isDuplicateParentState(
+            layoutState.getMountableOutputAt(setForegroundNotSupported ? 10 : 9).getFlags()));
   }
 }

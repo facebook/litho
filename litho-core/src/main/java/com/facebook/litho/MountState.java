@@ -43,6 +43,7 @@ import static com.facebook.litho.ThreadUtils.assertMainThread;
 
 import android.animation.AnimatorInflater;
 import android.animation.StateListAnimator;
+import android.annotation.TargetApi;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -1545,15 +1546,16 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     final ViewNodeInfo viewNodeInfo = item.getViewNodeInfo();
     if (viewNodeInfo != null) {
       setViewStateListAnimator(view, viewNodeInfo);
+      // Set view background, if applicable.  Do this before padding
+      // as it otherwise overrides the padding.
+      setViewBackground(view, viewNodeInfo);
       if (!isHostSpec(component)) {
-        // Set view background, if applicable.  Do this before padding
-        // as it otherwise overrides the padding.
-        setViewBackground(view, viewNodeInfo);
-
         setViewPadding(view, viewNodeInfo);
-
+      }
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
         setViewForeground(view, viewNodeInfo);
-
+      }
+      if (!isHostSpec(component)) {
         setViewLayoutDirection(view, viewNodeInfo);
       }
     }
@@ -1628,12 +1630,12 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     final ViewNodeInfo viewNodeInfo = item.getViewNodeInfo();
     if (viewNodeInfo != null) {
       unsetViewStateListAnimator(view, viewNodeInfo);
-      // Host view doesn't set its own padding, but gets absolute positions for inner content from
-      // Yoga. Also bg/fg is used as separate drawables instead of using View's bg/fg attribute.
-      if (!isHostView) {
-        unsetViewPadding(view, item, viewNodeInfo);
-        unsetViewBackground(view, viewNodeInfo);
+      unsetViewBackground(view, viewNodeInfo);
+      unsetViewPadding(view, item, viewNodeInfo, isHostView);
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
         unsetViewForeground(view, viewNodeInfo);
+      }
+      if (!isHostView) {
         unsetViewLayoutDirection(view);
       }
     }
@@ -2124,8 +2126,15 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
         viewNodeInfo.getPaddingBottom());
   }
 
-  private static void unsetViewPadding(View view, MountItem item, ViewNodeInfo viewNodeInfo) {
-    if (!viewNodeInfo.hasPadding()) {
+  private static void unsetViewPadding(
+      View view, MountItem item, ViewNodeInfo viewNodeInfo, boolean isHostView) {
+    if (!isHostView && !viewNodeInfo.hasPadding()) {
+      return;
+    }
+
+    // Host view doesn't set its own padding, but gets absolute positions for inner content from
+    // Yoga. However, background set to host view might have added padding implicitly.
+    if (isHostView && viewNodeInfo.getBackground() == null) {
       return;
     }
 
@@ -2167,28 +2176,18 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     }
   }
 
+  @TargetApi(Build.VERSION_CODES.M)
   private static void setViewForeground(View view, ViewNodeInfo viewNodeInfo) {
     final Drawable foreground = viewNodeInfo.getForeground();
     if (foreground != null) {
-      if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-        throw new IllegalStateException(
-            "MountState has a ViewNodeInfo with foreground however "
-                + "the current Android version doesn't support foreground on Views");
-      }
-
       view.setForeground(foreground);
     }
   }
 
+  @TargetApi(Build.VERSION_CODES.M)
   private static void unsetViewForeground(View view, ViewNodeInfo viewNodeInfo) {
     final Drawable foreground = viewNodeInfo.getForeground();
     if (foreground != null) {
-      if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-        throw new IllegalStateException(
-            "MountState has a ViewNodeInfo with foreground however "
-                + "the current Android version doesn't support foreground on Views");
-      }
-
       view.setForeground(null);
     }
   }
