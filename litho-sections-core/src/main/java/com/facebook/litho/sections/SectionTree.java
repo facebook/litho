@@ -1011,9 +1011,6 @@ public class SectionTree {
       throw new IllegalStateException("State set with no attached Section");
     }
 
-    if (mIsChangeSetCalculationInProgress) {
-      logStateUpdateWhenChangeSetInProgress();
-    }
     mPendingStateUpdates.addStateUpdate(key, stateUpdate, isLazyStateUpdate);
 
     // If the state update is lazy, do not create a new tree root because the calculation of
@@ -1022,6 +1019,9 @@ public class SectionTree {
       return;
     }
 
+    if (mIsChangeSetCalculationInProgress) {
+      logStateUpdateWhenChangeSetInProgress();
+    }
     // Need to calculate a new tree since the state changed. The next tree root will be the same
     // of the current tree or a copy of the next pending root.
     if (mNextSection == null) {
