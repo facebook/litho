@@ -86,6 +86,7 @@ public class PropValidation {
           "maxWidthAttr",
           "maxWidthRes",
           "maxWidthDip",
+          "handle",
           "height",
           "heightPx",
           "heightPercent",
