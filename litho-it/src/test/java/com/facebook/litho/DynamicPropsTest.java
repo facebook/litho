@@ -18,14 +18,19 @@ package com.facebook.litho;
 
 import static com.facebook.litho.testing.helper.ComponentTestHelper.mountComponent;
 import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
+import android.annotation.TargetApi;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
+import org.robolectric.annotation.Config;
 
 @RunWith(ComponentsTestRunner.class)
 public class DynamicPropsTest {
@@ -176,5 +181,60 @@ public class DynamicPropsTest {
 
     rotationDV.set(-1.f);
     assertThat(lithoView.getRotation()).isEqualTo(-1.f);
+  }
+
+  @Test
+  @Config(sdk = Build.VERSION_CODES.LOLLIPOP)
+  @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+  public void testDynamicElevationApplied() {
+    // We are using an old version of Robolectric which has a very limited implementation of
+    // RenderNode which will always return an elevation of 0.
+    // To get around this we can call the relevant mounting methods directly and verify the
+    // correct values are applied using using a mock LithoView.
+
+    final Component.Builder componentBuilder =
+        new Component.Builder() {
+          private Component component;
+
+          {
+            component =
+                new Component("Test") {
+                  @Override
+                  public MountType getMountType() {
+                    return MountType.VIEW;
+                  }
+                };
+            super.init(mContext, -1, -1, component);
+          }
+
+          @Override
+          public Component build() {
+            return component;
+          }
+
+          @Override
+          public Component.Builder getThis() {
+            return this;
+          }
+
+          @Override
+          protected void setComponent(Component component) {}
+        };
+
+    final float startValue = 1f;
+    final DynamicValue<Float> elevationDV = new DynamicValue<>(startValue);
+    final Component component = componentBuilder.shadowElevation(elevationDV).build();
+
+    final LithoView mockLithoView = mock(LithoView.class);
+    final DynamicPropsManager dynamicPropsManager = new DynamicPropsManager();
+    dynamicPropsManager.onBindComponentToContent(component, mockLithoView);
+
+    verify(mockLithoView).setElevation(startValue);
+
+    elevationDV.set(50f);
+    verify(mockLithoView).setElevation(50f);
+
+    elevationDV.set(-50f);
+    verify(mockLithoView).setElevation(-50f);
   }
 }

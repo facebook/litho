@@ -47,6 +47,7 @@ public class CommonDynamicPropsAnimationActivity extends NavigatableDemoActivity
   private final DynamicValue<Float> translation = new DynamicValue<>(0f);
   private final DynamicValue<Integer> backgroundColor = new DynamicValue<>(START_COLOR);
   private final DynamicValue<Float> rotation = new DynamicValue<>(0f);
+  private final DynamicValue<Float> elevation = new DynamicValue<>(0f);
 
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -67,6 +68,7 @@ public class CommonDynamicPropsAnimationActivity extends NavigatableDemoActivity
             translation.set(floatEvaluator.evaluate(d, 0, MAX_TRANSLATION));
             backgroundColor.set((int) argbEvaluator.evaluate(d, START_COLOR, END_COLOR));
             rotation.set(floatEvaluator.evaluate(d, 0, 360));
+            elevation.set(floatEvaluator.evaluate(d, 0, 50));
           }
         });
     animator.start();
@@ -81,6 +83,7 @@ public class CommonDynamicPropsAnimationActivity extends NavigatableDemoActivity
                 .dynamicTranslation(translation)
                 .dynamicBgColor(backgroundColor)
                 .dynamicRotation(rotation)
+                .dynamicElevation(elevation)
                 .build()));
   }
 }

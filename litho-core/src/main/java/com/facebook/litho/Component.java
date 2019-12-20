@@ -20,6 +20,7 @@ import static androidx.annotation.Dimension.DP;
 import static com.facebook.litho.ComponentKeyUtils.getKeyForChildPosition;
 import static com.facebook.litho.DynamicPropsManager.KEY_ALPHA;
 import static com.facebook.litho.DynamicPropsManager.KEY_BACKGROUND_COLOR;
+import static com.facebook.litho.DynamicPropsManager.KEY_ELEVATION;
 import static com.facebook.litho.DynamicPropsManager.KEY_ROTATION;
 import static com.facebook.litho.DynamicPropsManager.KEY_SCALE_X;
 import static com.facebook.litho.DynamicPropsManager.KEY_SCALE_Y;
@@ -1787,6 +1788,18 @@ public abstract class Component extends ComponentLifecycle
 
     public T shadowElevationRes(@DimenRes int resId) {
       return shadowElevationPx(mResourceResolver.resolveDimenSizeRes(resId));
+    }
+
+    /**
+     * Links a {@link DynamicValue} object to the elevation value for this Component
+     *
+     * @param value controller for the elevation value
+     */
+    public T shadowElevation(DynamicValue<Float> value) {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        mComponent.getOrCreateCommonDynamicProps().put(KEY_ELEVATION, value);
+      }
+      return getThis();
     }
 
     /**
