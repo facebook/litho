@@ -514,7 +514,7 @@ public class TreeDiffingTest {
             LayoutState.CalculateLayoutSource.TEST,
             null);
 
-    assertThat(4).isEqualTo(secondState.getMountableOutputCount());
+    assertThat(5).isEqualTo(secondState.getMountableOutputCount());
     assertOutputsState(secondState, STATE_UPDATED);
 
     LayoutState thirdState =
@@ -529,11 +529,11 @@ public class TreeDiffingTest {
             LayoutState.CalculateLayoutSource.TEST,
             null);
 
-    assertThat(4).isEqualTo(thirdState.getMountableOutputCount());
-    assertThat(thirdState.getMountableOutputAt(0).getUpdateState()).isEqualTo(STATE_DIRTY);
-    assertThat(thirdState.getMountableOutputAt(1).getUpdateState()).isEqualTo(STATE_UPDATED);
+    assertThat(5).isEqualTo(thirdState.getMountableOutputCount());
+    assertThat(thirdState.getMountableOutputAt(1).getUpdateState()).isEqualTo(STATE_DIRTY);
     assertThat(thirdState.getMountableOutputAt(2).getUpdateState()).isEqualTo(STATE_UPDATED);
     assertThat(thirdState.getMountableOutputAt(3).getUpdateState()).isEqualTo(STATE_UPDATED);
+    assertThat(thirdState.getMountableOutputAt(4).getUpdateState()).isEqualTo(STATE_UPDATED);
   }
 
   // This test covers the same case with the foreground since the code path is the same!
@@ -557,7 +557,7 @@ public class TreeDiffingTest {
             LayoutState.CalculateLayoutSource.TEST,
             null);
 
-    assertThat(state.getMountableOutputAt(1).getUpdateState()).isEqualTo(STATE_UNKNOWN);
+    assertThat(state.getMountableOutputAt(2).getUpdateState()).isEqualTo(STATE_UNKNOWN);
 
     LayoutState secondState =
         componentTree.calculateLayoutState(
@@ -571,7 +571,7 @@ public class TreeDiffingTest {
             LayoutState.CalculateLayoutSource.TEST,
             null);
 
-    assertThat(secondState.getMountableOutputAt(1).getUpdateState()).isEqualTo(STATE_UPDATED);
+    assertThat(secondState.getMountableOutputAt(2).getUpdateState()).isEqualTo(STATE_UPDATED);
 
     LayoutState thirdState =
         componentTree.calculateLayoutState(
@@ -585,7 +585,7 @@ public class TreeDiffingTest {
             LayoutState.CalculateLayoutSource.TEST,
             null);
 
-    assertThat(thirdState.getMountableOutputAt(1).getUpdateState()).isEqualTo(STATE_DIRTY);
+    assertThat(thirdState.getMountableOutputAt(2).getUpdateState()).isEqualTo(STATE_DIRTY);
   }
 
   @Test

@@ -18,7 +18,6 @@ package com.facebook.litho.testing.viewtree;
 
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.view.View;
 import com.facebook.litho.ComponentHost;
 import com.facebook.litho.MatrixDrawable;
@@ -138,16 +137,6 @@ class ComponentQueries {
       if (predicate.apply(drawable)) {
         return true;
       }
-    }
-
-    // ComponentHost's background will be applied to view directly.
-    if (host.getBackground() != null && predicate.apply(host.getBackground())) {
-      return true;
-    }
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
-        && host.getForeground() != null
-        && predicate.apply(host.getForeground())) {
-      return true;
     }
 
     return false;

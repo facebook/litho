@@ -396,12 +396,6 @@ class LayoutState {
 
     ViewNodeInfo viewNodeInfo = hostOutput.getViewNodeInfo();
     if (viewNodeInfo != null) {
-      if (node.getBackground() != null) {
-        viewNodeInfo.setBackground(node.getBackground());
-      }
-      if (node.getForeground() != null && SDK_INT >= M) {
-        viewNodeInfo.setForeground(node.getForeground());
-      }
       if (node.hasStateListAnimatorResSet()) {
         viewNodeInfo.setStateListAnimatorRes(node.getStateListAnimatorRes());
       } else {
@@ -861,15 +855,10 @@ class LayoutState {
 
     // 2. Add background if defined.
     final Drawable background = node.getBackground();
-    // If this node needs a host view, then we have already set the background on the
-    // HostComponent that's created for this node.
-    if (background != null && !needsHostView) {
+    if (background != null) {
       if (layoutOutput != null && layoutOutput.getViewNodeInfo() != null) {
         layoutOutput.getViewNodeInfo().setBackground(background);
       } else {
-        // Background will be converted as a DrawableComponent only for those nodes
-        // which doesn't need a hostview and the layout output of the node doesn't
-        // have a ViewNodeInfo.
         final LayoutOutput convertBackground =
             (currentDiffNode != null) ? currentDiffNode.getBackgroundOutput() : null;
 
@@ -972,16 +961,12 @@ class LayoutState {
       }
     }
 
-    // 6. Add foreground if defined and needed.
+    // 6. Add foreground if defined.
     final Drawable foreground = node.getForeground();
     if (foreground != null) {
-      // If this node needs a host view and android version supports setting foreground, then we
-      // have already set the foreground on the HostComponent that's created for this node.
-      if (SDK_INT < M
-          || (!needsHostView && layoutOutput != null && layoutOutput.getViewNodeInfo() == null)) {
-        // Foreground will be converted as a DrawableComponent only for those nodes
-        // which does not need a hostview (MountSpec) and the layout output of the node doesn't
-        // have a ViewNodeInfo (Drawable MountSpec).
+      if (layoutOutput != null && layoutOutput.getViewNodeInfo() != null && SDK_INT >= M) {
+        layoutOutput.getViewNodeInfo().setForeground(foreground);
+      } else {
         final LayoutOutput convertForeground =
             (currentDiffNode != null) ? currentDiffNode.getForegroundOutput() : null;
 
@@ -998,8 +983,6 @@ class LayoutState {
         if (diffNode != null) {
           diffNode.setForegroundOutput(foregroundOutput);
         }
-      } else if (!needsHostView && layoutOutput != null && layoutOutput.getViewNodeInfo() != null) {
-        layoutOutput.getViewNodeInfo().setForeground(foreground);
       }
     }
 
