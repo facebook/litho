@@ -60,9 +60,9 @@ import com.facebook.yoga.YogaWrap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nullable;
@@ -117,7 +117,8 @@ public abstract class Component extends ComponentLifecycle
    */
   @Nullable private SparseIntArray mChildCounters;
 
-  @Nullable private Set<String> mManualKeys;
+  /** Count the times a manual key is used so that clashes can be resolved. */
+  @Nullable private Map<String, Integer> mManualKeysCounter;
 
   /**
    * Holds an event handler with its dispatcher set to the parent component, or - in case that this
@@ -252,7 +253,7 @@ public abstract class Component extends ComponentLifecycle
       component.mLayoutVersionGenerator = new AtomicBoolean();
       component.mScopedContext = null;
       component.mChildCounters = null;
-      component.mManualKeys = null;
+      component.mManualKeysCounter = null;
 
       return component;
     } catch (CloneNotSupportedException e) {
@@ -643,25 +644,16 @@ public abstract class Component extends ComponentLifecycle
   private String generateUniqueGlobalKeyForChild(Component component, String key) {
     final String childKey = ComponentKeyUtils.getKeyWithSeparator(getGlobalKey(), key);
 
-    if (component.mHasManualKey) { // if the component has a manual key
-      if (mManualKeys == null) {
-        mManualKeys = new HashSet<>();
+    if (component.mHasManualKey) {
+      final int manualKeyIndex = getManualKeyUsagesCountAndIncrement(childKey);
+      if (manualKeyIndex != 0) {
+        logDuplicateManualKeyWarning(component, key);
       }
-      if (mManualKeys.contains(childKey)) { // if it is a duplicate
-        logDuplicateManualKeyWarning(component, key); // log a warning and generate a unique key
-      } else {
-        mManualKeys.add(childKey);
-        return childKey; // return it
-      }
+      return getKeyForChildPosition(childKey, manualKeyIndex);
     }
 
-    int childCount = getChildCountAndIncrement(component);
-
-    if (childCount == 0) { // if first child of type then return the child key
-      return childKey;
-    } else { // if NOT first child of type append the child count to the child key
-      return getKeyForChildPosition(childKey, childCount);
-    }
+    final int childIndex = getChildCountAndIncrement(component);
+    return getKeyForChildPosition(childKey, childIndex);
   }
 
   /**
@@ -681,6 +673,17 @@ public abstract class Component extends ComponentLifecycle
     mChildCounters.put(typeId, count + 1);
 
     return count;
+  }
+
+  private int getManualKeyUsagesCountAndIncrement(String manualKey) {
+    if (mManualKeysCounter == null) {
+      mManualKeysCounter = new HashMap<>();
+    }
+    int manualKeyIndex =
+        mManualKeysCounter.containsKey(manualKey) ? mManualKeysCounter.get(manualKey) : 0;
+
+    mManualKeysCounter.put(manualKey, manualKeyIndex + 1);
+    return manualKeyIndex;
   }
 
   /**

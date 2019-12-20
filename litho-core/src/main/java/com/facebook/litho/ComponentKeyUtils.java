@@ -53,6 +53,10 @@ public class ComponentKeyUtils {
   }
 
   public static String getKeyForChildPosition(String currentKey, int index) {
+    if (index == 0) {
+      return currentKey;
+    }
+
     // Index will almost always be under 3 digits
     final StringBuilder sb = new StringBuilder(currentKey.length() + 4);
     sb.append(currentKey).append('!').append(index);

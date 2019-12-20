@@ -29,6 +29,7 @@ import com.facebook.litho.testing.util.InlineLayoutSpec;
 import com.facebook.litho.widget.CardClip;
 import com.facebook.litho.widget.EditText;
 import com.facebook.litho.widget.Text;
+import com.facebook.litho.widget.TextInput;
 import com.facebook.litho.widget.TreePropTestContainerComponentSpec;
 import org.junit.Assert;
 import org.junit.Before;
@@ -197,6 +198,42 @@ public class ComponentGlobalKeyTest {
   }
 
   @Test
+  public void testSiblingsOfDifferentTypesManualKeyDeduplication() {
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          @OnCreateLayout
+          protected Component onCreateLayout(ComponentContext c) {
+            return Column.create(c)
+                .child(Text.create(c).text("").key("sameKey").widthDip(10).heightDip(10))
+                .child(Text.create(c).text("").widthDip(10).heightDip(10))
+                .child(TestViewComponent.create(c).widthDip(10).heightDip(10).key("sameKey"))
+                .child(
+                    TextInput.create(c).initialText("").key("sameKey").widthDip(10).heightDip(10))
+                .build();
+          }
+        };
+
+    LithoView lithoView = getLithoView(component);
+
+    final Component column = Column.create(mContext).build();
+    final int columnSpecId = column.getTypeId();
+    final int layoutSpecId = component.getTypeId();
+
+    Assert.assertEquals(
+        ComponentKeyUtils.getKeyWithSeparator(layoutSpecId, columnSpecId, "sameKey"),
+        getComponentAt(lithoView, 0).getGlobalKey());
+
+    Assert.assertEquals(
+        ComponentKeyUtils.getKeyWithSeparator(layoutSpecId, columnSpecId, "sameKey!1"),
+        getComponentAt(lithoView, 2).getGlobalKey());
+
+    Assert.assertEquals(
+        ComponentKeyUtils.getKeyWithSeparator(layoutSpecId, columnSpecId, "sameKey!2"),
+        getComponentAt(lithoView, 3).getGlobalKey());
+  }
+
+  @Test
   public void testColumnSiblingsUniqueKeyRequirement() {
     final Component component =
         new InlineLayoutSpec() {
@@ -250,6 +287,34 @@ public class ComponentGlobalKeyTest {
     Assert.assertEquals(
         ComponentKeyUtils.getKeyWithSeparator(layoutSpecId, columnTypeId, textSpecId + "!1"),
         getComponentAt(lithoView, 1).getGlobalKey());
+  }
+
+  @Test
+  public void testAutogenSiblingsUniqueKeysSkipsManualKeys() {
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          @OnCreateLayout
+          protected Component onCreateLayout(ComponentContext c) {
+            return Column.create(c)
+                .child(Text.create(c).text("").widthDip(10).heightDip(10))
+                .child(Text.create(c).text("").widthDip(10).heightDip(10))
+                .child(Text.create(c).text("").widthDip(10).heightDip(10).key("manual_key"))
+                .child(Text.create(c).text("").widthDip(10).heightDip(10))
+                .build();
+          }
+        };
+
+    final LithoView lithoView = getLithoView(component);
+
+    final String firstKey = getComponentAt(lithoView, 0).getGlobalKey();
+    final String secondKey = getComponentAt(lithoView, 1).getGlobalKey();
+    final String fourthKey = getComponentAt(lithoView, 3).getGlobalKey();
+
+    assertThat(firstKey).isNotBlank();
+    assertThat(secondKey).isEqualTo(firstKey + "!1");
+    // The third key is a manual key, so will have no impact on the unique suffix
+    assertThat(fourthKey).isEqualTo(firstKey + "!2");
   }
 
   @Test
