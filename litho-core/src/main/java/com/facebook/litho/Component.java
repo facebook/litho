@@ -651,7 +651,6 @@ public abstract class Component extends ComponentLifecycle
         logDuplicateManualKeyWarning(component, key); // log a warning and generate a unique key
       } else {
         mManualKeys.add(childKey);
-        getChildCountAndIncrement(component); // to avoid subsequent clash with a generated key
         return childKey; // return it
       }
     }

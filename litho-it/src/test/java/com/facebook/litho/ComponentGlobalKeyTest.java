@@ -188,11 +188,11 @@ public class ComponentGlobalKeyTest {
         getComponentAt(lithoView, 0).getGlobalKey());
 
     Assert.assertEquals(
-        ComponentKeyUtils.getKeyWithSeparator(layoutSpecId, columnSpecId, "sameKey!2"),
+        ComponentKeyUtils.getKeyWithSeparator(layoutSpecId, columnSpecId, "sameKey!1"),
         getComponentAt(lithoView, 2).getGlobalKey());
 
     Assert.assertEquals(
-        ComponentKeyUtils.getKeyWithSeparator(layoutSpecId, columnSpecId, "sameKey!3"),
+        ComponentKeyUtils.getKeyWithSeparator(layoutSpecId, columnSpecId, "sameKey!2"),
         getComponentAt(lithoView, 3).getGlobalKey());
   }
 
