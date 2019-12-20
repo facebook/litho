@@ -846,7 +846,9 @@ class LayoutState {
 
     if (layoutOutput != null) {
       final long previousId =
-          shouldUseCachedOutputs ? currentDiffNode.getContentOutput().getId() : -1;
+          shouldUseCachedOutputs && currentDiffNode.getContentOutput() != null
+              ? currentDiffNode.getContentOutput().getId()
+              : -1;
       layoutState.calculateAndSetLayoutOutputIdAndUpdateState(
           layoutOutput,
           layoutState.mCurrentLevel,
