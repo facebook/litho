@@ -219,6 +219,8 @@ class LayoutState {
    */
   private @Nullable Map<String, Integer> mGlobalKeysCounter;
 
+  private @Nullable Map<String, Integer> mGlobalManualKeysCounter;
+
   private final ComponentContext mContext;
 
   private Component mComponent;
@@ -2094,12 +2096,10 @@ class LayoutState {
 
     final String childKey =
         ComponentKeyUtils.getKeyWithSeparator(parentGlobalKey, component.getKey());
-    final int childCount = layoutState.getGlobalKeyCountAndIncrement(childKey);
 
     if (component.hasManualKey()) {
-      final String manualKey =
-          ComponentKeyUtils.getKeyWithSeparator(parentGlobalKey, component.getKey(), true);
-      if (layoutState.hasGlobalKey(manualKey)) {
+      final int manualKeyIndex = layoutState.getGlobalManualKeyCountAndIncrement(childKey);
+      if (manualKeyIndex != 0) {
         ComponentsReporter.emitMessage(
             ComponentsReporter.LogLevel.WARNING,
             DUPLICATE_MANUAL_KEY,
@@ -2109,17 +2109,12 @@ class LayoutState {
                 + component.getSimpleName()
                 + " is a duplicate and will be changed into a unique one. "
                 + "This will result in unexpected behavior if you don't change it.");
-      } else {
-        layoutState.getGlobalKeyCountAndIncrement(manualKey);
-        return manualKey;
       }
+      return ComponentKeyUtils.getKeyForChildPosition(childKey, manualKeyIndex);
     }
 
-    if (childCount == 0) {
-      return childKey;
-    } else {
-      return ComponentKeyUtils.getKeyForChildPosition(childKey, childCount);
-    }
+    final int childIndex = layoutState.getGlobalKeyCountAndIncrement(childKey);
+    return ComponentKeyUtils.getKeyForChildPosition(childKey, childIndex);
   }
 
   private static InternalNode resumeCreateAndMeasureTreeForComponent(
@@ -2599,11 +2594,18 @@ class LayoutState {
     return count;
   }
 
-  private boolean hasGlobalKey(String key) {
-    if (mGlobalKeysCounter == null) {
-      return false;
+  private int getGlobalManualKeyCountAndIncrement(String manualKey) {
+    if (mGlobalManualKeysCounter == null) {
+      mGlobalManualKeysCounter = new HashMap<>();
     }
-    return mGlobalKeysCounter.containsKey(key);
+
+    Integer count = mGlobalManualKeysCounter.get(manualKey);
+    if (count == null) {
+      count = 0;
+    }
+
+    mGlobalManualKeysCounter.put(manualKey, count + 1);
+    return count;
   }
 
   /** Debug-only: return a string representation of this LayoutState and its LayoutOutputs. */
