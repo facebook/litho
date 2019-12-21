@@ -98,10 +98,49 @@ public class LithoView extends ComponentHost {
    *
    * @param context Android {@link Context}.
    * @param component The root component to draw.
+   * @param isReconciliationEnabled should enable reconciliation.
+   * @return {@link LithoView} able to render a {@link Component} hierarchy.
+   * @deprecated Use {@link #create(Context, Component)} instead and set config explicitly on the
+   *     {@link ComponentTree} using {@link ComponentTree.Builder#isReconciliationEnabled(boolean)}.
+   */
+  @Deprecated
+  public static LithoView create(
+      Context context, Component component, boolean isReconciliationEnabled) {
+    return create(new ComponentContext(context), component, isReconciliationEnabled);
+  }
+
+  /**
+   * Create a new {@link LithoView} instance and initialize it with the given {@link Component}
+   * root.
+   *
+   * @param context Android {@link Context}.
+   * @param component The root component to draw.
    * @return {@link LithoView} able to render a {@link Component} hierarchy.
    */
   public static LithoView create(Context context, Component component) {
     return create(new ComponentContext(context), component);
+  }
+  /**
+   * Create a new {@link LithoView} instance and initialize it with the given {@link Component}
+   * root.
+   *
+   * @param context {@link ComponentContext}.
+   * @param component The root component to draw.
+   * @param isReconciliationEnabled should enable reconciliation.
+   * @return {@link LithoView} able to render a {@link Component} hierarchy.
+   * @deprecated Use {@link #create(Context, Component)} instead and set config explicitly on the
+   *     {@link ComponentTree} using {@link ComponentTree.Builder#isReconciliationEnabled(boolean)}.
+   */
+  @Deprecated
+  public static LithoView create(
+      ComponentContext context, Component component, boolean isReconciliationEnabled) {
+    final LithoView lithoView = new LithoView(context);
+    lithoView.setComponentTree(
+        ComponentTree.create(context, component)
+            .isReconciliationEnabled(isReconciliationEnabled)
+            .build());
+
+    return lithoView;
   }
 
   /**
@@ -114,9 +153,7 @@ public class LithoView extends ComponentHost {
    */
   public static LithoView create(ComponentContext context, Component component) {
     final LithoView lithoView = new LithoView(context);
-    lithoView.setComponentTree(
-        ComponentTree.create(context, component).isReconciliationEnabled(false).build());
-
+    lithoView.setComponentTree(ComponentTree.create(context, component).build());
     return lithoView;
   }
 
