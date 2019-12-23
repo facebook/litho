@@ -1972,7 +1972,7 @@ public class ComponentTree {
             extraAttribution);
 
     if (localLayoutState == null) {
-      if (output != null) {
+      if (!mReleased && output != null) {
         throw new IllegalStateException(
             "LayoutState is null, but only async operations can return a null LayoutState");
       }
