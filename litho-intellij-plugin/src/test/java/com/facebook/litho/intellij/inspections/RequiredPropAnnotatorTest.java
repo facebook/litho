@@ -35,7 +35,7 @@ public class RequiredPropAnnotatorTest extends LithoPluginIntellijTest {
   }
 
   @Test
-  public void annotateReturnStatement() {
+  public void annotateStatement() {
     testHelper.getPsiClass(
         psiClasses -> {
           assertEquals(2, psiClasses.size());

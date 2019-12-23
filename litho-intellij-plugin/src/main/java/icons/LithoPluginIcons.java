@@ -21,4 +21,5 @@ import javax.swing.Icon;
 
 public interface LithoPluginIcons {
   Icon BASE_ACTION = IconLoader.getIcon("/icons/lithoLogo.svg");
+  Icon ERROR_ACTION = IconLoader.getIcon("/icons/lithoErrorLogo.svg");
 }

@@ -77,6 +77,8 @@
     <annotator language="JAVA" implementationClass="com.facebook.litho.intellij.inspections.RequiredPropAnnotator"/>
     <annotator language="JAVA" implementationClass="com.facebook.litho.intellij.inspections.EventHandlerAnnotator"/>
 
+    <codeInsight.lineMarkerProvider language="JAVA" implementationClass="com.facebook.litho.intellij.inspections.RequiredPropLineMarkerProvider"/>
+
     <completion.contributor language="JAVA" implementationClass="com.facebook.litho.intellij.completion.StatePropCompletionContributor"/>
     <completion.contributor language="JAVA" implementationClass="com.facebook.litho.intellij.completion.OnEventCompletionContributor"/>
     <completion.contributor language="JAVA" implementationClass="com.facebook.litho.intellij.completion.RequiredPropMethodContributor" order="first"/>
