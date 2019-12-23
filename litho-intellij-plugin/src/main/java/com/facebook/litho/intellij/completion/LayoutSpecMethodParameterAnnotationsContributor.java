@@ -24,6 +24,7 @@ import com.facebook.litho.annotations.Param;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.annotations.TreeProp;
+import com.facebook.litho.intellij.extensions.EventLogger;
 import com.facebook.litho.specmodels.model.DelegateMethodDescription;
 import com.facebook.litho.specmodels.model.DelegateMethodDescriptions;
 import com.google.common.annotations.VisibleForTesting;
@@ -104,7 +105,10 @@ public class LayoutSpecMethodParameterAnnotationsContributor extends CompletionC
       PsiElement element = parameters.getPosition();
       Optional.ofNullable(PsiTreeUtil.findFirstParent(element, PsiMethod.class::isInstance))
           .flatMap(method -> getParameterAnnotations((PsiMethod) method))
-          .map(annotations -> new ReplacingConsumer(annotations, result))
+          .map(
+              annotations ->
+                  new ReplacingConsumer(
+                      annotations, result, EventLogger.EVENT_COMPLETION_ANNOTATION + ".parameter"))
           .ifPresent(
               replacingConsumer -> {
                 // We want our suggestions at the top, that's why adding them first

@@ -21,6 +21,7 @@ import com.facebook.litho.annotations.OnTrigger;
 import com.facebook.litho.annotations.OnUpdateState;
 import com.facebook.litho.annotations.OnUpdateStateWithTransition;
 import com.facebook.litho.intellij.LithoPluginUtils;
+import com.facebook.litho.intellij.extensions.EventLogger;
 import com.facebook.litho.specmodels.processor.LayoutSpecModelFactory;
 import com.intellij.codeInsight.completion.CompletionParameters;
 import com.intellij.codeInsight.completion.CompletionProvider;
@@ -55,7 +56,12 @@ class LayoutSpecMethodAnnotationsProvider extends CompletionProvider<CompletionP
       CompletionParameters parameters, ProcessingContext context, CompletionResultSet result) {
     PsiElement position = parameters.getPosition();
     CompletionUtils.findFirstParent(position, LithoPluginUtils::isLayoutSpec)
-        .map(layoutSpecCls -> new ReplacingConsumer(ANNOTATION_QUALIFIED_NAMES, result))
+        .map(
+            layoutSpecCls ->
+                new ReplacingConsumer(
+                    ANNOTATION_QUALIFIED_NAMES,
+                    result,
+                    EventLogger.EVENT_COMPLETION_ANNOTATION + ".method"))
         .ifPresent(
             replacingConsumer -> {
               result.runRemainingContributors(parameters, replacingConsumer);

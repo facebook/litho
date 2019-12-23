@@ -54,16 +54,20 @@ public class ReplacingConsumerTest extends LithoPluginIntellijTest {
           namesToReplace.add("One");
           namesToReplace.add("Other");
 
-          ReplacingConsumer replacingConsumer = new ReplacingConsumer(namesToReplace, mutate);
-          replacingConsumer.consume(createCompletionResultFor(OneCls));
+          ReplacingConsumer replacingConsumer =
+              new ReplacingConsumer(namesToReplace, mutate, "Test");
 
+          // Consumes CompletionResult and passes SpecLookupElement replacement to the provided
+          // CompletionResultSet
+          replacingConsumer.consume(createCompletionResultFor(OneCls));
           assertThat(mutate.elements).hasSize(1);
           assertThat(mutate.elements.get(0).getLookupString()).isEqualTo("One");
+          assertThat(mutate.elements.get(0)).isInstanceOf(SpecLookupElement.class);
 
           replacingConsumer.consume(createCompletionResultFor(LayoutSpecCls));
-
-          assertThat(mutate.elements).hasSize(1);
-          assertThat(mutate.elements.get(0).getLookupString()).isEqualTo("One");
+          assertThat(mutate.elements).hasSize(2);
+          assertThat(mutate.elements.get(1).getLookupString()).isEqualTo("LayoutSpec");
+          assertThat(mutate.elements.get(1)).isNotInstanceOf(SpecLookupElement.class);
 
           return true;
         },
@@ -79,6 +83,32 @@ public class ReplacingConsumerTest extends LithoPluginIntellijTest {
   }
 
   @Test
+  public void insertHandler() {
+    testHelper.getPsiClass(
+        classes -> {
+          PsiClass OneCls = classes.get(0);
+
+          List<String> inserts = new ArrayList<>(1);
+          TestCompletionResultSet mutate = new TestCompletionResultSet();
+          List<String> namesToReplace = new ArrayList<>();
+          namesToReplace.add("One");
+
+          ReplacingConsumer replacingConsumer =
+              new ReplacingConsumer(
+                  namesToReplace, mutate, (context, item) -> inserts.add(item.getLookupString()));
+
+          replacingConsumer.consume(createCompletionResultFor(OneCls));
+          mutate.elements.get(0).handleInsert(null);
+
+          assertThat(inserts).hasSize(1);
+          assertThat(inserts.get(0)).isEqualTo("One");
+
+          return true;
+        },
+        "One.java");
+  }
+
+  @Test
   public void addRemainingCompletions() {
     testHelper.runInReadAction(
         project -> {
@@ -87,8 +117,9 @@ public class ReplacingConsumerTest extends LithoPluginIntellijTest {
           namesToReplace.add("one");
           namesToReplace.add("other");
 
-          new ReplacingConsumer(namesToReplace, mutate).addRemainingCompletions(project);
+          new ReplacingConsumer(namesToReplace, mutate, "Test").addRemainingCompletions(project);
 
+          // Creates Completions without consumption
           assertThat(mutate.elements).hasSize(2);
           assertThat(mutate.elements.get(0).getLookupString()).isEqualTo("other");
           assertThat(mutate.elements.get(1).getLookupString()).isEqualTo("one");
@@ -117,7 +148,7 @@ public class ReplacingConsumerTest extends LithoPluginIntellijTest {
   }
 
   static class TestCompletionResultSet extends CompletionResultSet {
-    List<LookupElement> elements = new ArrayList<>();
+    private final List<LookupElement> elements = new ArrayList<>();
 
     TestCompletionResultSet() {
       super(
@@ -129,6 +160,11 @@ public class ReplacingConsumerTest extends LithoPluginIntellijTest {
     @Override
     public void addElement(LookupElement element) {
       elements.add(element);
+    }
+
+    @Override
+    public void passResult(CompletionResult result) {
+      elements.add(result.getLookupElement());
     }
 
     @Override

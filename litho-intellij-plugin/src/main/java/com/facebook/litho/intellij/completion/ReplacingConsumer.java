@@ -16,12 +16,14 @@
 
 package com.facebook.litho.intellij.completion;
 
+import com.facebook.litho.intellij.logging.LithoLoggerProvider;
+import com.google.common.annotations.VisibleForTesting;
 import com.intellij.codeInsight.completion.CompletionResult;
 import com.intellij.codeInsight.completion.CompletionResultSet;
+import com.intellij.codeInsight.completion.InsertHandler;
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiClass;
-import com.intellij.psi.PsiElement;
 import com.intellij.util.Consumer;
 import java.util.Collection;
 import java.util.HashSet;
@@ -40,31 +42,47 @@ import java.util.Set;
 class ReplacingConsumer implements Consumer<CompletionResult> {
   private final Set<String> replacedQualifiedNames;
   private final CompletionResultSet result;
+  private final InsertHandler<LookupElement> insertHandler;
 
-  ReplacingConsumer(Collection<String> replacedQualifiedNames, CompletionResultSet result) {
+  ReplacingConsumer(
+      Collection<String> replacedQualifiedNames, CompletionResultSet result, String logTag) {
+    this(
+        replacedQualifiedNames,
+        result,
+        (context, item) ->
+            LithoLoggerProvider.getEventLogger().log(logTag + "." + item.getLookupString()));
+  }
+
+  @VisibleForTesting
+  ReplacingConsumer(
+      Collection<String> replacedQualifiedNames,
+      CompletionResultSet result,
+      InsertHandler<LookupElement> insertHandler) {
     this.replacedQualifiedNames = new HashSet<>(replacedQualifiedNames);
     this.result = result;
+    this.insertHandler = insertHandler;
   }
 
   @Override
   public void consume(CompletionResult completionResult) {
-    PsiElement psiElement = completionResult.getLookupElement().getPsiElement();
-    Optional<String> qualifiedName =
-        Optional.ofNullable(psiElement)
+    LookupElement lookupElement = completionResult.getLookupElement();
+    result.passResult(
+        Optional.ofNullable(lookupElement.getPsiElement())
             .filter(PsiClass.class::isInstance)
             .map(psiClass -> ((PsiClass) psiClass).getQualifiedName())
-            .filter(replacedQualifiedNames::remove);
-    if (qualifiedName.isPresent()) {
-      result.addElement(SpecLookupElement.create((PsiClass) psiElement));
-    } else {
-      result.passResult(completionResult);
-    }
+            .filter(replacedQualifiedNames::remove)
+            .map(
+                qualifiedName ->
+                    CompletionUtils.wrap(
+                        completionResult,
+                        SpecLookupElement.create(lookupElement, qualifiedName, insertHandler)))
+            .orElse(completionResult));
   }
 
   /** Adds {@link LookupElement} for the {@link #replacedQualifiedNames} unseen before. */
   void addRemainingCompletions(Project project) {
     for (String qualifiedName : replacedQualifiedNames) {
-      result.addElement(SpecLookupElement.create(qualifiedName, project));
+      result.addElement(SpecLookupElement.create(qualifiedName, project, insertHandler));
     }
   }
 }
