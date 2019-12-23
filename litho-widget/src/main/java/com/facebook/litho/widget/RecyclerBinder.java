@@ -2591,11 +2591,14 @@ public class RecyclerBinder
     final int childHeightSpec = getActualChildrenHeightSpec(holder);
 
     if (loggingForStartup) {
+      // TODO T59559565 Remove init_range log points
       mStartupLogger.markPoint(
           LithoStartupLogger.INIT_RANGE, LithoStartupLogger.START, mStartupLoggerAttribution);
+      mStartupLogger.markPoint(
+          LithoStartupLogger.FIRST_LAYOUT, LithoStartupLogger.START, mStartupLoggerAttribution);
     }
     if (isTracing) {
-      ComponentsSystrace.beginSection("initRange");
+      ComponentsSystrace.beginSection("firstLayout");
     }
     final ComponentsLogger logger;
     final String logTag;
@@ -2632,8 +2635,11 @@ public class RecyclerBinder
         ComponentsSystrace.endSection();
       }
       if (loggingForStartup) {
+        // TODO T59559565 Remove init_range log points
         mStartupLogger.markPoint(
             LithoStartupLogger.INIT_RANGE, LithoStartupLogger.END, mStartupLoggerAttribution);
+        mStartupLogger.markPoint(
+            LithoStartupLogger.FIRST_LAYOUT, LithoStartupLogger.END, mStartupLoggerAttribution);
       }
     }
   }

@@ -97,7 +97,7 @@ public class LithoStartupLoggerTest {
   }
 
   @Test
-  public void initRange_noDataAttribution() {
+  public void firstlayout_noDataAttribution() {
     final List<RenderInfo> components = new ArrayList<>();
     for (int i = 0; i < 3; i++) {
       components.add(
@@ -113,13 +113,13 @@ public class LithoStartupLoggerTest {
     mRecyclerBinder.measure(
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
 
-    assertThat(mTestLithoStartupLogger.tracePointCount()).isEqualTo(2);
-    assertThat(mTestLithoStartupLogger.getTracedPointAt(0)).isEqualTo("litho_ui_initrange_start");
-    assertThat(mTestLithoStartupLogger.getTracedPointAt(1)).isEqualTo("litho_ui_initrange_end");
+    assertThat(mTestLithoStartupLogger.tracePointCount()).isEqualTo(4);
+    assertThat(mTestLithoStartupLogger.getTracedPointAt(1)).isEqualTo("litho_ui_firstlayout_start");
+    assertThat(mTestLithoStartupLogger.getTracedPointAt(3)).isEqualTo("litho_ui_firstlayout_end");
   }
 
   @Test
-  public void initRange_withDataAttribution() {
+  public void firstlayout_withDataAttribution() {
     mTestLithoStartupLogger.setDataAttribution("myquery");
 
     final List<RenderInfo> components = new ArrayList<>();
@@ -138,11 +138,11 @@ public class LithoStartupLoggerTest {
     mRecyclerBinder.measure(
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
 
-    assertThat(mTestLithoStartupLogger.tracePointCount()).isEqualTo(2);
-    assertThat(mTestLithoStartupLogger.getTracedPointAt(0))
-        .isEqualTo("litho_ui_myquery_initrange_start");
+    assertThat(mTestLithoStartupLogger.tracePointCount()).isEqualTo(4);
     assertThat(mTestLithoStartupLogger.getTracedPointAt(1))
-        .isEqualTo("litho_ui_myquery_initrange_end");
+        .isEqualTo("litho_ui_myquery_firstlayout_start");
+    assertThat(mTestLithoStartupLogger.getTracedPointAt(3))
+        .isEqualTo("litho_ui_myquery_firstlayout_end");
   }
 
   @Test
@@ -252,20 +252,20 @@ public class LithoStartupLoggerTest {
     mRecyclerBinder.measure(
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(150, EXACTLY), null);
 
-    assertThat(mTestLithoStartupLogger.tracePointCount()).isEqualTo(2); // init_range points
+    assertThat(mTestLithoStartupLogger.tracePointCount()).isEqualTo(4); // first_layout points
 
     mRecyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     createBindAndMountLithoView(recyclerView, 0);
 
-    assertThat(mTestLithoStartupLogger.tracePointCount()).isEqualTo(4); // first_mount points
+    assertThat(mTestLithoStartupLogger.tracePointCount()).isEqualTo(6); // first_mount points
 
     createBindAndMountLithoView(recyclerView, 1);
+    assertThat(mTestLithoStartupLogger.tracePointCount()).isEqualTo(8);
 
-    assertThat(mTestLithoStartupLogger.tracePointCount()).isEqualTo(6);
-    assertThat(mTestLithoStartupLogger.getTracedPointAt(4))
+    assertThat(mTestLithoStartupLogger.getTracedPointAt(6))
         .isEqualTo("litho_myquery_lastmount_start");
-    assertThat(mTestLithoStartupLogger.getTracedPointAt(5))
+    assertThat(mTestLithoStartupLogger.getTracedPointAt(7))
         .isEqualTo("litho_myquery_lastmount_end");
   }
 
@@ -283,5 +283,28 @@ public class LithoStartupLoggerTest {
 
     @Override
     public void onDataRendered(boolean isMounted, long uptimeMillis) {}
+  }
+
+  private static class TestLithoStartupLogger extends LithoStartupLogger {
+
+    private final ArrayList<String> mTracedPoints = new ArrayList<>();
+
+    @Override
+    protected void onMarkPoint(String name) {
+      mTracedPoints.add(name);
+    }
+
+    @Override
+    public boolean isEnabled() {
+      return true;
+    }
+
+    int tracePointCount() {
+      return mTracedPoints.size();
+    }
+
+    String getTracedPointAt(int position) {
+      return mTracedPoints.get(position);
+    }
   }
 }
