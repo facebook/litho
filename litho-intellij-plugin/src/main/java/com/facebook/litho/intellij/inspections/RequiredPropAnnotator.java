@@ -36,6 +36,7 @@ import com.intellij.psi.PsiMethod;
 import com.intellij.psi.PsiMethodCallExpression;
 import com.intellij.psi.PsiReferenceExpression;
 import com.intellij.psi.PsiReturnStatement;
+import com.intellij.psi.PsiStatement;
 import com.intellij.psi.PsiVariable;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.psi.util.PsiUtil;
@@ -47,26 +48,32 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Annotator adds error to the {@code Component.create()} call in a statement, when this statement
+ * misses required prop.
+ */
 public final class RequiredPropAnnotator implements Annotator {
-  private static final EventLogger LOGGER = new DebounceEventLogger(7 * 60_000);
+  private static final EventLogger LOGGER = new DebounceEventLogger(60 * 60_000);
+  static final Function<PsiMethodCallExpression, PsiClass> GENERATED_CLASS_RESOLVER =
+      methodCallExpression -> {
+        PsiMethod psiMethod = methodCallExpression.resolveMethod();
+        if (psiMethod == null) {
+          return null;
+        }
+        PsiClass topLevelClass = PsiUtil.getTopLevelClass(psiMethod);
+        if (LithoPluginUtils.isGeneratedClass(topLevelClass)) {
+          return topLevelClass;
+        }
+        return null;
+      };
   private final Function<PsiMethodCallExpression, PsiClass> generatedClassResolver;
 
   public RequiredPropAnnotator() {
-    this(
-        methodCallExpression -> {
-          PsiMethod psiMethod = methodCallExpression.resolveMethod();
-          if (psiMethod == null) {
-            return null;
-          }
-          PsiClass topLevelClass = PsiUtil.getTopLevelClass(psiMethod);
-          if (LithoPluginUtils.isGeneratedClass(topLevelClass)) {
-            return topLevelClass;
-          }
-          return null;
-        });
+    this(GENERATED_CLASS_RESOLVER);
   }
 
   /**
@@ -80,29 +87,64 @@ public final class RequiredPropAnnotator implements Annotator {
 
   @Override
   public void annotate(PsiElement element, AnnotationHolder holder) {
+    annotate(
+        element,
+        (missingRequiredProps, methodExpression) -> {
+          LOGGER.log(EventLogger.EVENT_ANNOTATOR + ".required_prop");
+          AnnotatorUtils.addError(
+              holder,
+              new SpecModelValidationError(
+                  methodExpression,
+                  "The following props are not marked as optional and were not supplied: "
+                      + StringUtil.join(missingRequiredProps, ", ")));
+        },
+        generatedClassResolver);
+  }
+
+  /**
+   * If element is a {@link PsiStatement} with {@code Component.create()} call, finds missing
+   * required props for it.
+   *
+   * @param element element to verify
+   * @param errorHandler handles a list of missing required props and reference to the {@code
+   *     Component.create()} call in the statement
+   * @param generatedClassResolver returns generated Litho class, or null if the provided method
+   *     doesn't belong to any
+   */
+  static void annotate(
+      PsiElement element,
+      BiConsumer<Collection<String>, PsiReferenceExpression> errorHandler,
+      Function<PsiMethodCallExpression, PsiClass> generatedClassResolver) {
     if (element instanceof PsiDeclarationStatement) {
       Arrays.stream(((PsiDeclarationStatement) element).getDeclaredElements())
           .filter(PsiVariable.class::isInstance)
           .map(declaredVariable -> ((PsiVariable) declaredVariable).getInitializer())
-          .forEach(expression -> handleIfMethodCall(expression, holder));
+          .forEach(
+              expression -> handleIfMethodCall(expression, errorHandler, generatedClassResolver));
     } else if (element instanceof PsiExpressionStatement) {
-      handleIfMethodCall(((PsiExpressionStatement) element).getExpression(), holder);
+      handleIfMethodCall(
+          ((PsiExpressionStatement) element).getExpression(), errorHandler, generatedClassResolver);
     } else if (element instanceof PsiReturnStatement) {
-      handleIfMethodCall(((PsiReturnStatement) element).getReturnValue(), holder);
+      handleIfMethodCall(
+          ((PsiReturnStatement) element).getReturnValue(), errorHandler, generatedClassResolver);
     }
   }
 
-  private void handleIfMethodCall(@Nullable PsiExpression expression, AnnotationHolder holder) {
+  private static void handleIfMethodCall(
+      @Nullable PsiExpression expression,
+      BiConsumer<Collection<String>, PsiReferenceExpression> errorHandler,
+      Function<PsiMethodCallExpression, PsiClass> generatedClassResolver) {
     if (expression instanceof PsiMethodCallExpression) {
       PsiMethodCallExpression rootMethodCall = (PsiMethodCallExpression) expression;
-      handleMethodCall(rootMethodCall, new HashSet<>(), holder);
+      handleMethodCall(rootMethodCall, new HashSet<>(), errorHandler, generatedClassResolver);
     }
   }
 
-  private void handleMethodCall(
+  private static void handleMethodCall(
       PsiMethodCallExpression currentMethodCall,
       Set<String> methodNamesCalled,
-      AnnotationHolder holder) {
+      BiConsumer<Collection<String>, PsiReferenceExpression> errorHandler,
+      Function<PsiMethodCallExpression, PsiClass> generatedClassResolver) {
     PsiReferenceExpression methodExpression = currentMethodCall.getMethodExpression();
     methodNamesCalled.add(methodExpression.getReferenceName());
 
@@ -110,7 +152,7 @@ public final class RequiredPropAnnotator implements Annotator {
     PsiMethodCallExpression nextMethodCall =
         PsiTreeUtil.getChildOfType(methodExpression, PsiMethodCallExpression.class);
     if (nextMethodCall != null) {
-      handleMethodCall(nextMethodCall, methodNamesCalled, holder);
+      handleMethodCall(nextMethodCall, methodNamesCalled, errorHandler, generatedClassResolver);
     } else if ("create".equals(methodExpression.getReferenceName())) {
       // Finish call chain
       // TODO T47712852: allow setting required prop in another statement
@@ -118,20 +160,12 @@ public final class RequiredPropAnnotator implements Annotator {
           .map(generatedCls -> collectMissingRequiredProps(generatedCls, methodNamesCalled))
           .filter(result -> !result.isEmpty())
           .ifPresent(
-              missingRequiredProps -> {
-                LOGGER.log(EventLogger.EVENT_ANNOTATOR + ".required_prop");
-                AnnotatorUtils.addError(
-                    holder,
-                    new SpecModelValidationError(
-                        methodExpression,
-                        "The following props are not marked as optional and were not supplied: "
-                            + StringUtil.join(missingRequiredProps, ", ")));
-              });
+              missingRequiredProps -> errorHandler.accept(missingRequiredProps, methodExpression));
     }
 
     PsiExpressionList argumentList = currentMethodCall.getArgumentList();
     for (PsiExpression argument : argumentList.getExpressions()) {
-      handleIfMethodCall(argument, holder);
+      handleIfMethodCall(argument, errorHandler, generatedClassResolver);
     }
   }
 
