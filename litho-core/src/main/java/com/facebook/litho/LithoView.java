@@ -1151,7 +1151,7 @@ public class LithoView extends ComponentHost {
 
     static boolean maybeLogFirstMountStart(@Nullable MountStartupLoggingInfo loggingInfo) {
       if (loggingInfo != null
-          && LithoStartupLoggerUtil.isEnabled(loggingInfo.startupLogger)
+          && LithoStartupLogger.isEnabled(loggingInfo.startupLogger)
           && loggingInfo.firstMountLogged != null
           && !loggingInfo.firstMountLogged[0]) {
         loggingInfo.startupLogger.markPoint(
@@ -1166,7 +1166,7 @@ public class LithoView extends ComponentHost {
     static boolean maybeLogLastMountStart(
         @Nullable MountStartupLoggingInfo loggingInfo, LithoView lithoView) {
       if (loggingInfo != null
-          && LithoStartupLoggerUtil.isEnabled(loggingInfo.startupLogger)
+          && LithoStartupLogger.isEnabled(loggingInfo.startupLogger)
           && loggingInfo.firstMountLogged != null
           && loggingInfo.firstMountLogged[0]
           && loggingInfo.lastMountLogged != null

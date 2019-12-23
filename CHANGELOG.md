@@ -4,7 +4,8 @@
 
 _release-date_
 
-* TBA
+* **Breaking:** Merge `BaseLithoStartupLogging` abstract class, `LithoStartupLoggerUtil` helper class and `LithoStartupLogger` interface into single `LithoStartupLogger` abstract class.
+
 
 For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.33.0...master).
 

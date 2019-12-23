@@ -47,7 +47,6 @@ import com.facebook.litho.Handle;
 import com.facebook.litho.LithoHandler;
 import com.facebook.litho.LithoHandler.DefaultLithoHandler;
 import com.facebook.litho.LithoStartupLogger;
-import com.facebook.litho.LithoStartupLoggerUtil;
 import com.facebook.litho.PerfEvent;
 import com.facebook.litho.StateContainer;
 import com.facebook.litho.ThreadTracingRunnable;
@@ -1212,7 +1211,7 @@ public class SectionTree {
           mContext.getTreeProps() == null
               ? null
               : mContext.getTreeProps().get(LithoStartupLogger.class);
-      if (LithoStartupLoggerUtil.isEnabled(startupLogger)) {
+      if (LithoStartupLogger.isEnabled(startupLogger)) {
         startupLogger.markPoint(LithoStartupLogger.CHANGESET_CALCULATION, LithoStartupLogger.END);
       }
 

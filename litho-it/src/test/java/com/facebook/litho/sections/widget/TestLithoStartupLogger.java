@@ -16,10 +16,10 @@
 
 package com.facebook.litho.sections.widget;
 
-import com.facebook.litho.BaseLithoStartupLogger;
+import com.facebook.litho.LithoStartupLogger;
 import java.util.ArrayList;
 
-class TestLithoStartupLogger extends BaseLithoStartupLogger {
+class TestLithoStartupLogger extends LithoStartupLogger {
 
   private final ArrayList<String> mTracedPoints = new ArrayList<>();
 

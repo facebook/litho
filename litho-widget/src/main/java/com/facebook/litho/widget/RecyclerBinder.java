@@ -58,7 +58,6 @@ import com.facebook.litho.ComponentsSystrace;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.LithoHandler;
 import com.facebook.litho.LithoStartupLogger;
-import com.facebook.litho.LithoStartupLoggerUtil;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.LithoView.LayoutManagerOverrideParams;
 import com.facebook.litho.LogTreePopulator;
@@ -1128,7 +1127,7 @@ public class RecyclerBinder
       }
 
       if (appliedBatch) {
-        if (LithoStartupLoggerUtil.isEnabled(mStartupLogger)) {
+        if (LithoStartupLogger.isEnabled(mStartupLogger)) {
           mStartupLoggerAttribution = mStartupLogger.getLatestDataAttribution();
         }
 
@@ -1754,7 +1753,7 @@ public class RecyclerBinder
       if (ThreadUtils.isMainThread()) {
         applyReadyBatches();
         if (isDataChanged) {
-          if (LithoStartupLoggerUtil.isEnabled(mStartupLogger)) {
+          if (LithoStartupLogger.isEnabled(mStartupLogger)) {
             mStartupLoggerAttribution = mStartupLogger.getLatestDataAttribution();
           }
 
@@ -1801,7 +1800,7 @@ public class RecyclerBinder
       maybeDispatchDataRendered();
 
       if (isDataChanged) {
-        if (LithoStartupLoggerUtil.isEnabled(mStartupLogger)) {
+        if (LithoStartupLogger.isEnabled(mStartupLogger)) {
           mStartupLoggerAttribution = mStartupLogger.getLatestDataAttribution();
         }
 
@@ -2568,7 +2567,7 @@ public class RecyclerBinder
       return;
     }
     final boolean isTracing = ComponentsSystrace.isTracing();
-    final boolean loggingForStartup = LithoStartupLoggerUtil.isEnabled(mStartupLogger);
+    final boolean loggingForStartup = LithoStartupLogger.isEnabled(mStartupLogger);
 
     // We can schedule a maximum of number of items minus one (which is being calculated
     // synchronously) to run at the same time as the sync layout.
@@ -3455,7 +3454,7 @@ public class RecyclerBinder
     @GuardedBy("RecyclerBinder.this")
     public void onBindViewHolder(BaseViewHolder holder, int position) {
       final boolean loggingForStartup =
-          LithoStartupLoggerUtil.isEnabled(mStartupLogger) && !mStartupLoggerAttribution.isEmpty();
+          LithoStartupLogger.isEnabled(mStartupLogger) && !mStartupLoggerAttribution.isEmpty();
       final int normalizedPosition = getNormalizedPosition(position);
 
       // We can ignore the synchronization here. We'll only add to this from the UiThread.
