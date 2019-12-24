@@ -569,6 +569,24 @@ public class LithoView extends ComponentHost {
   /** Change the root component synchronously. */
   public void setComponent(Component component) {
     if (mComponentTree == null) {
+      setComponentTree(ComponentTree.create(getComponentContext(), component).build());
+    } else {
+      mComponentTree.setRoot(component);
+    }
+  }
+
+  /**
+   * Change the root component synchronously. Creates a new component tree with reconciliation
+   * disabled if required. <b>DO NOT USE</b> this method; it was added only to deprecate the current
+   * usages of {@link #setComponent(Component)}.
+   *
+   * @deprecated Use {@link #getComponentTree()} and {@link ComponentTree#setRoot(Component)}
+   *     instead; set the config explicitly on the {@link ComponentTree} using {@link
+   *     ComponentTree.Builder#isReconciliationEnabled(boolean)}.
+   */
+  @Deprecated
+  public void setComponentWithoutReconciliation(Component component) {
+    if (mComponentTree == null) {
       setComponentTree(
           ComponentTree.create(getComponentContext(), component)
               .isReconciliationEnabled(false)
