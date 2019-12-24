@@ -603,6 +603,25 @@ public class LithoView extends ComponentHost {
    */
   public void setComponentAsync(Component component) {
     if (mComponentTree == null) {
+      setComponentTree(ComponentTree.create(getComponentContext(), component).build());
+    } else {
+      mComponentTree.setRootAsync(component);
+    }
+  }
+
+  /**
+   * Change the root component measuring it on a background thread before updating the UI. If this
+   * {@link LithoView} doesn't have a ComponentTree initialized, the root will be computed
+   * synchronously with reconciliation disabled. <b>DO NOT USE</b> this method; it was added only to
+   * deprecate the current usages of {@link #setComponentAsync(Component)}.
+   *
+   * @deprecated Use {@link #getComponentTree()} and {@link ComponentTree#setRootAsync(Component)}
+   *     instead; set the config explicitly on the {@link ComponentTree} using {@link
+   *     ComponentTree.Builder#isReconciliationEnabled(boolean)}.
+   */
+  @Deprecated
+  public void setComponentAsyncWithoutReconciliation(Component component) {
+    if (mComponentTree == null) {
       setComponentTree(
           ComponentTree.create(getComponentContext(), component)
               .isReconciliationEnabled(false)
