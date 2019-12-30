@@ -29,7 +29,6 @@ public abstract class LithoStartupLogger {
   public static final String LITHO_PREFIX = "litho";
 
   public static final String CHANGESET_CALCULATION = "_changeset";
-  public static final String INIT_RANGE = "_initrange";
   public static final String FIRST_LAYOUT = "_firstlayout";
   public static final String FIRST_MOUNT = "_firstmount";
   public static final String LAST_MOUNT = "_lastmount";
@@ -41,7 +40,6 @@ public abstract class LithoStartupLogger {
 
   static {
     NEEDS_THREAD_INFO.add(CHANGESET_CALCULATION);
-    NEEDS_THREAD_INFO.add(INIT_RANGE);
     NEEDS_THREAD_INFO.add(FIRST_LAYOUT);
   }
 
