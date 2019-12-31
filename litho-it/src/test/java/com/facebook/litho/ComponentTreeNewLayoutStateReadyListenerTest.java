@@ -54,7 +54,7 @@ public class ComponentTreeNewLayoutStateReadyListenerTest {
   public void setup() throws Exception {
     mContext = new ComponentContext(RuntimeEnvironment.application);
     mComponent = TestDrawableComponent.create(mContext).build();
-    mComponentTree = create(mContext, mComponent).isReconciliationEnabled(false).build();
+    mComponentTree = create(mContext, mComponent).build();
 
     mLayoutThreadShadowLooper =
         Shadows.shadowOf(

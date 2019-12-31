@@ -22,8 +22,7 @@ public class BenchmarkTestHelper {
 
   public static LithoView createAndMeasureLithoView(
       ComponentContext c, Component component, int widthSpec, int heightSpec) {
-    final ComponentTree componentTree =
-        ComponentTree.create(c, component).isReconciliationEnabled(false).build();
+    final ComponentTree componentTree = ComponentTree.create(c, component).build();
     final LithoView lithoView = new LithoView(c);
     lithoView.setComponentTree(componentTree);
     lithoView.onAttachedToWindow();
@@ -35,8 +34,7 @@ public class BenchmarkTestHelper {
 
   public static void createLithoViewAndExecLifecycleMethods(
       ComponentContext c, Component component, int widthSpec, int heightSpec) {
-    final ComponentTree componentTree =
-        ComponentTree.create(c, component).isReconciliationEnabled(false).build();
+    final ComponentTree componentTree = ComponentTree.create(c, component).build();
     final LithoView lithoView = new LithoView(c.getAndroidContext());
     lithoView.setComponentTree(componentTree);
     lithoView.onAttachedToWindow();

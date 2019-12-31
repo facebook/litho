@@ -435,8 +435,7 @@ public class TreeDiffingTest {
     final Component thirdComponent =
         TestDrawableComponent.create(mContext).color(Color.WHITE).build();
 
-    ComponentTree componentTree =
-        ComponentTree.create(mContext, firstComponent).isReconciliationEnabled(false).build();
+    ComponentTree componentTree = ComponentTree.create(mContext, firstComponent).build();
     LayoutState state =
         componentTree.calculateLayoutState(
             mContext,
@@ -486,8 +485,7 @@ public class TreeDiffingTest {
     final Component component2 = new TestLayoutSpecBgState(false);
     final Component component3 = new TestLayoutSpecBgState(true);
 
-    ComponentTree componentTree =
-        ComponentTree.create(mContext, component1).isReconciliationEnabled(false).build();
+    ComponentTree componentTree = ComponentTree.create(mContext, component1).build();
     LayoutState state =
         componentTree.calculateLayoutState(
             mContext,
@@ -543,8 +541,7 @@ public class TreeDiffingTest {
     final Component component2 = new TestLayoutSpecInnerState(false);
     final Component component3 = new TestLayoutSpecInnerState(true);
 
-    ComponentTree componentTree =
-        ComponentTree.create(mContext, component1).isReconciliationEnabled(false).build();
+    ComponentTree componentTree = ComponentTree.create(mContext, component1).build();
     LayoutState state =
         componentTree.calculateLayoutState(
             mContext,
@@ -593,8 +590,7 @@ public class TreeDiffingTest {
     final Component component1 = new TestLayoutWithStateIdClash(false);
     final Component component2 = new TestLayoutWithStateIdClash(true);
 
-    ComponentTree componentTree =
-        ComponentTree.create(mContext, component1).isReconciliationEnabled(false).build();
+    ComponentTree componentTree = ComponentTree.create(mContext, component1).build();
     LayoutState state =
         componentTree.calculateLayoutState(
             mContext,

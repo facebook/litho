@@ -62,8 +62,7 @@ public class ComponentPropThreadSafetyTest {
         new TestWrappedComponentPropSpec.ComponentWrapper(testComponent);
     final Component root = TestWrappedComponentProp.create(mContext).wrapper(wrapper).build();
 
-    final ComponentTree componentTree =
-        ComponentTree.create(mContext, root).isReconciliationEnabled(false).build();
+    final ComponentTree componentTree = ComponentTree.create(mContext, root).build();
 
     componentTree.setRootAndSizeSpec(
         TestWrappedComponentProp.create(mContext).wrapper(wrapper).build(),
@@ -92,8 +91,7 @@ public class ComponentPropThreadSafetyTest {
     final Component root =
         TestWrappedComponentProp.create(mContext).componentList(componentList).build();
 
-    final ComponentTree componentTree =
-        ComponentTree.create(mContext, root).isReconciliationEnabled(false).build();
+    final ComponentTree componentTree = ComponentTree.create(mContext, root).build();
 
     componentTree.setRootAndSizeSpec(
         TestWrappedComponentProp.create(mContext).componentList(componentList).build(),

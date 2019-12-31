@@ -155,7 +155,7 @@ public class TestComponentTree extends ComponentTree {
 
     NodeConfig.sInternalNodeFactory = new TestInternalNodeFactory();
 
-    ComponentTree tree = ComponentTree.create(context).isReconciliationEnabled(false).build();
+    ComponentTree tree = ComponentTree.create(context).build();
     ComponentContext c =
         new TestComponentContext(
             ComponentContext.withComponentTree(new TestComponentContext(context), tree),

@@ -274,8 +274,7 @@ public class AttachDetachHandlerTest {
     assertThat(layoutState.getCachedLayout(component)).isNotNull();
 
     final Component container = Column.create(mContext).child(component).build();
-    final ComponentTree componentTree =
-        ComponentTree.create(mContext, container).isReconciliationEnabled(false).build();
+    final ComponentTree componentTree = ComponentTree.create(mContext, container).build();
     componentTree.setSizeSpec(
         SizeSpec.makeSizeSpec(1024, AT_MOST), SizeSpec.makeSizeSpec(1024, AT_MOST));
 
@@ -296,9 +295,7 @@ public class AttachDetachHandlerTest {
   public void testSetSizeSpecConcurrently() throws InterruptedException {
     final Component component = spy(TestAttachDetachComponent.create(mContext).build());
     final ComponentTree componentTree =
-        ComponentTree.create(mContext, Column.create(mContext).child(component))
-            .isReconciliationEnabled(false)
-            .build();
+        ComponentTree.create(mContext, Column.create(mContext).child(component)).build();
 
     final CountDownLatch latch1 = new CountDownLatch(1);
     final Thread thread1 =
@@ -343,8 +340,7 @@ public class AttachDetachHandlerTest {
   public void testAttachDetachWithDifferentRoots() {
     final Component root = spy(TestAttachDetachComponent.create(mContext).build());
     final Component container = Column.create(mContext).child(root).build();
-    final ComponentTree componentTree =
-        ComponentTree.create(mContext, container).isReconciliationEnabled(false).build();
+    final ComponentTree componentTree = ComponentTree.create(mContext, container).build();
     componentTree.setRootAndSizeSpec(
         container, SizeSpec.makeSizeSpec(1024, AT_MOST), SizeSpec.makeSizeSpec(1024, AT_MOST));
 
@@ -363,8 +359,7 @@ public class AttachDetachHandlerTest {
   public void testSetRootWithMeasure() {
     final Component root = spy(TestAttachDetachComponent.create(mContext).build());
     final Component container = Column.create(mContext).child(root).build();
-    final ComponentTree componentTree =
-        ComponentTree.create(mContext, container).isReconciliationEnabled(false).build();
+    final ComponentTree componentTree = ComponentTree.create(mContext, container).build();
     final int widthSpec = SizeSpec.makeSizeSpec(1024, AT_MOST);
     final int heightSpec = SizeSpec.makeSizeSpec(1024, AT_MOST);
     componentTree.setRootAndSizeSpec(container, widthSpec, heightSpec);
@@ -382,9 +377,7 @@ public class AttachDetachHandlerTest {
 
   private static void testSetSizeSpec(ComponentContext c, Component component, int times) {
     final ComponentTree componentTree =
-        ComponentTree.create(c, Column.create(c).child(component))
-            .isReconciliationEnabled(false)
-            .build();
+        ComponentTree.create(c, Column.create(c).child(component)).build();
 
     final int width = 100;
     final int height = 100;
@@ -402,9 +395,8 @@ public class AttachDetachHandlerTest {
 
   private static void testSetRootAndSizeSpec(ComponentContext c, Component component, int times) {
     final ComponentTree componentTree =
-        ComponentTree.create(c, Wrapper.create(c).delegate(component))
-            .isReconciliationEnabled(false)
-            .build();
+        ComponentTree.create(c, Wrapper.create(c).delegate(component)).build();
+
     final int width = 100;
     final int height = 100;
 

@@ -931,8 +931,7 @@ public class LayoutStateCalculateTest {
   public void testNoMeasureOnNestedComponentWithSameSpecs() {
     final ComponentContext baseContext = new ComponentContext(application);
     final ComponentContext c =
-        ComponentContext.withComponentTree(
-            baseContext, ComponentTree.create(baseContext).isReconciliationEnabled(false).build());
+        ComponentContext.withComponentTree(baseContext, ComponentTree.create(baseContext).build());
     final LayoutState layoutState = new LayoutState(c);
     c.setLayoutStateContext(new LayoutStateContext(layoutState));
 
@@ -971,8 +970,7 @@ public class LayoutStateCalculateTest {
   public void testNoMeasureOnNestedComponentWithNewMeasureSpecExact() {
     final ComponentContext baseContext = new ComponentContext(application);
     final ComponentContext c =
-        ComponentContext.withComponentTree(
-            baseContext, ComponentTree.create(baseContext).isReconciliationEnabled(false).build());
+        ComponentContext.withComponentTree(baseContext, ComponentTree.create(baseContext).build());
     final LayoutState layoutState = new LayoutState(c);
     c.setLayoutStateContext(new LayoutStateContext(layoutState));
 
@@ -1011,8 +1009,7 @@ public class LayoutStateCalculateTest {
   public void testNoMeasureOnNestedComponentWithNewMeasureSpecOldUnspecified() {
     final ComponentContext baseContext = new ComponentContext(application);
     final ComponentContext c =
-        ComponentContext.withComponentTree(
-            baseContext, ComponentTree.create(baseContext).isReconciliationEnabled(false).build());
+        ComponentContext.withComponentTree(baseContext, ComponentTree.create(baseContext).build());
     final LayoutState layoutState = new LayoutState(c);
     c.setLayoutStateContext(new LayoutStateContext(layoutState));
 
@@ -1049,8 +1046,7 @@ public class LayoutStateCalculateTest {
   public void testNoMeasureOnNestedComponentWithOldAndNewAtMost() {
     final ComponentContext baseContext = new ComponentContext(application);
     final ComponentContext c =
-        ComponentContext.withComponentTree(
-            baseContext, ComponentTree.create(baseContext).isReconciliationEnabled(false).build());
+        ComponentContext.withComponentTree(baseContext, ComponentTree.create(baseContext).build());
     final LayoutState layoutState = new LayoutState(c);
     c.setLayoutStateContext(new LayoutStateContext(layoutState));
 

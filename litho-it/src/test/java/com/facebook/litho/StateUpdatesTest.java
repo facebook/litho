@@ -73,8 +73,7 @@ public class StateUpdatesTest {
     mLayoutThreadShadowLooper = ComponentTestHelper.getDefaultLayoutThreadShadowLooper();
     mTestComponent = new StateUpdateTestComponent();
 
-    mComponentTree =
-        ComponentTree.create(mContext, mTestComponent).isReconciliationEnabled(false).build();
+    mComponentTree = ComponentTree.create(mContext, mTestComponent).build();
 
     if (enableComponentTreeSpy) {
       mComponentTree = spy(mComponentTree);

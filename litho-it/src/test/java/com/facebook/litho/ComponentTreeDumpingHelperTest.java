@@ -51,8 +51,7 @@ public class ComponentTreeDumpingHelperTest {
         };
 
     ComponentContext componentContext = new ComponentContext(RuntimeEnvironment.application);
-    final ComponentTree componentTree =
-        ComponentTree.create(componentContext, component).isReconciliationEnabled(false).build();
+    final ComponentTree componentTree = ComponentTree.create(componentContext, component).build();
 
     componentContext = ComponentContext.withComponentTree(componentContext, componentTree);
 

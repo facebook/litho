@@ -41,8 +41,7 @@ public class ComponentTreeEventHandlerTest {
     ComponentContext scopedContext =
         ComponentContext.withComponentScope(mContext, Row.create(mContext).build());
     Component component = mock(Component.class);
-    ComponentTree componentTree =
-        ComponentTree.create(scopedContext, component).isReconciliationEnabled(false).build();
+    ComponentTree componentTree = ComponentTree.create(scopedContext, component).build();
     EventHandlersController eventHandlersController = componentTree.getEventHandlersController();
 
     EventHandler eventHandler1 = scopedContext.newEventHandler(1);
@@ -76,8 +75,7 @@ public class ComponentTreeEventHandlerTest {
     ComponentContext scopedContext =
         ComponentContext.withComponentScope(mContext, Row.create(mContext).build());
     Component component = mock(Component.class);
-    ComponentTree componentTree =
-        ComponentTree.create(scopedContext, component).isReconciliationEnabled(false).build();
+    ComponentTree componentTree = ComponentTree.create(scopedContext, component).build();
     EventHandlersController eventHandlersController = componentTree.getEventHandlersController();
 
     EventHandler eventHandler1 = scopedContext.newEventHandler(1);

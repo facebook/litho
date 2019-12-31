@@ -96,7 +96,6 @@ public class VerticalScrollSpec {
                     context.getTreePropsCopy()),
                 childComponent)
             .incrementalMount(incrementalMountEnabled)
-            .isReconciliationEnabled(false)
             .build());
   }
 
