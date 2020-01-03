@@ -1458,9 +1458,7 @@ class LayoutState {
       final boolean isReconcilable = isReconcilable(c, component, currentLayoutState);
 
       // Release the current InternalNode tree if it is not reconcilable.
-      if (ComponentsConfiguration.shouldReleaseNonReconcilableTree
-          && !isReconcilable
-          && currentLayoutState != null) {
+      if (!isReconcilable && currentLayoutState != null) {
         currentLayoutState.mLayoutRoot = null;
       }
 

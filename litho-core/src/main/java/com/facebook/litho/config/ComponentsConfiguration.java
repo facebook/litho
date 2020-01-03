@@ -217,9 +217,6 @@ public class ComponentsConfiguration {
    */
   public static boolean shouldUseDeepCloneDuringReconciliation = false;
 
-  /** When enabled Litho will immediately release non-reconcilable InternalNode tree. */
-  public static boolean shouldReleaseNonReconcilableTree = false;
-
   /** When enabled it would use Internal Nodes for layout diffing instead Diff Nodes. */
   public static boolean useInternalNodesForLayoutDiffing = false;
 
