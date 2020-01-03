@@ -28,7 +28,7 @@ public interface FrameworkLogEvents {
   // Previously int EVENT_CREATE_LAYOUT = 0; Now unused.
   // Previously int EVENT_CSS_LAYOUT = 1; Now unused.
   // Previously int EVENT_COLLECT_RESULTS = 2; Now unused.
-  int EVENT_LAYOUT_CALCULATE = 3;
+  // Previously int EVENT_LAYOUT_CALCULATE = 3; Now unused.
   // Previously int EVENT_PREPARE_PART_DEFINITION = 4; Now unused.
   // Previously int EVENT_PREPARE_MOUNT = 5; Now unused.
   int EVENT_MOUNT = 6;
@@ -49,7 +49,6 @@ public interface FrameworkLogEvents {
   int EVENT_LAYOUT_STATE_FUTURE_GET_WAIT = 21;
 
   @IntDef({
-    FrameworkLogEvents.EVENT_LAYOUT_CALCULATE,
     FrameworkLogEvents.EVENT_MOUNT,
     FrameworkLogEvents.EVENT_PRE_ALLOCATE_MOUNT_CONTENT,
     FrameworkLogEvents.EVENT_SECTIONS_CREATE_NEW_TREE,

@@ -17,15 +17,10 @@
 package com.facebook.litho;
 
 import static android.os.Process.THREAD_PRIORITY_DEFAULT;
-import static com.facebook.litho.FrameworkLogEvents.EVENT_LAYOUT_CALCULATE;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_LAYOUT_STATE_FUTURE_GET_WAIT;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_PRE_ALLOCATE_MOUNT_CONTENT;
-import static com.facebook.litho.FrameworkLogEvents.PARAM_ATTRIBUTION;
-import static com.facebook.litho.FrameworkLogEvents.PARAM_IS_BACKGROUND_LAYOUT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_IS_MAIN_THREAD;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_LAYOUT_FUTURE_WAIT_FOR_RESULT;
-import static com.facebook.litho.FrameworkLogEvents.PARAM_ROOT_COMPONENT;
-import static com.facebook.litho.FrameworkLogEvents.PARAM_TREE_DIFF_ENABLED;
 import static com.facebook.litho.HandlerInstrumenter.instrumentLithoHandler;
 import static com.facebook.litho.LayoutState.CalculateLayoutSource;
 import static com.facebook.litho.StateContainer.StateUpdate;
@@ -1942,24 +1937,7 @@ public class ComponentTree {
       }
     }
 
-    final ComponentsLogger logger = getContextLogger();
-    final PerfEvent layoutEvent =
-        logger != null
-            ? LogTreePopulator.populatePerfEventFromLogger(
-                logger,
-                mContext.getLogTag(),
-                logger.newPerformanceEvent(mContext, EVENT_LAYOUT_CALCULATE),
-                treeProps)
-            : null;
-
-    if (layoutEvent != null) {
-      layoutEvent.markerAnnotate(PARAM_ROOT_COMPONENT, root.getSimpleName());
-      layoutEvent.markerAnnotate(PARAM_IS_BACKGROUND_LAYOUT, !ThreadUtils.isMainThread());
-      layoutEvent.markerAnnotate(PARAM_TREE_DIFF_ENABLED, mIsLayoutDiffingEnabled);
-      layoutEvent.markerAnnotate(PARAM_ATTRIBUTION, extraAttribution);
-    }
-
-    LayoutState localLayoutState =
+    final LayoutState localLayoutState =
         calculateLayoutState(
             mContext,
             root,
@@ -2065,10 +2043,6 @@ public class ComponentTree {
         }
       }
       mPreAllocateMountContentHandler.post(mPreAllocateMountContentRunnable, tag);
-    }
-
-    if (layoutEvent != null) {
-      logger.logPerfEvent(layoutEvent);
     }
   }
 
