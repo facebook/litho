@@ -59,6 +59,19 @@ class Layout {
     final InternalNode layout;
     if (current == null) {
       layout = create(c, component, true);
+
+      // This needs to finish layout on the UI thread.
+      if (c.wasLayoutInterrupted()) {
+        if (layoutStatePerfEvent != null) {
+          layoutStatePerfEvent.markerPoint(EVENT_END_CREATE_LAYOUT);
+        }
+
+        return layout;
+      } else {
+        // Layout is complete, disable interruption from this point on.
+        c.markLayoutUninterruptible();
+      }
+
     } else {
       Component updated = update(c, component, true);
       layout = current.reconcile(c, updated);
