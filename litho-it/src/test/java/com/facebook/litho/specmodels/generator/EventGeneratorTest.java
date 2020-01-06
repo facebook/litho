@@ -38,7 +38,9 @@ import com.facebook.litho.specmodels.processor.LayoutSpecModelFactory;
 import com.google.testing.compile.CompilationRule;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.FieldSpec;
+import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
+import java.util.List;
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
@@ -225,6 +227,35 @@ public class EventGeneratorTest {
                 + "  final java.lang.Object _eventState = new java.lang.Object();\n"
                 + "  _eventState.field1 = field1;\n"
                 + "  _eventState.field2 = field2;\n"
+                + "  com.facebook.litho.EventDispatcher _lifecycle = _eventHandler.mHasEventDispatcher.getEventDispatcher();\n"
+                + "  return (java.lang.Object) _lifecycle.dispatchOnEvent(_eventHandler, _eventState);\n"
+                + "}\n");
+  }
+
+  @Test
+  public void testGenerateEventDispatchersIgnoresGenericTypesInFields() {
+    FieldModel fieldWithTypeArguments =
+        new FieldModel(
+            FieldSpec.builder(
+                    ParameterizedTypeName.get(List.class, String.class), "field1", Modifier.PUBLIC)
+                .build(),
+            new Object());
+
+    EventDeclarationModel eventDeclarationModel =
+        new EventDeclarationModel(
+            ClassName.OBJECT,
+            ClassName.OBJECT,
+            ImmutableList.of(fieldWithTypeArguments),
+            new Object());
+    when(mMockSpecModel.getEventDeclarations()).thenReturn(ImmutableList.of(eventDeclarationModel));
+
+    TypeSpecDataHolder dataHolder = EventGenerator.generateEventDispatchers(mMockSpecModel);
+    assertThat(dataHolder.getMethodSpecs().get(0).toString())
+        .isEqualTo(
+            "static java.lang.Object dispatchObject(com.facebook.litho.EventHandler _eventHandler,\n"
+                + "    java.util.List field1) {\n"
+                + "  final java.lang.Object _eventState = new java.lang.Object();\n"
+                + "  _eventState.field1 = field1;\n"
                 + "  com.facebook.litho.EventDispatcher _lifecycle = _eventHandler.mHasEventDispatcher.getEventDispatcher();\n"
                 + "  return (java.lang.Object) _lifecycle.dispatchOnEvent(_eventHandler, _eventState);\n"
                 + "}\n");

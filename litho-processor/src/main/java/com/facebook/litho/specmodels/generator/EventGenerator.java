@@ -126,8 +126,15 @@ public class EventGenerator {
       if (fieldModel.field.modifiers.contains(Modifier.FINAL)) {
         continue;
       }
+
+      // Ignore the generics Type Arguments in the method parameters.
+      TypeName typeName = fieldModel.field.type;
+      if (typeName instanceof ParameterizedTypeName) {
+        typeName = ((ParameterizedTypeName) fieldModel.field.type).rawType;
+      }
+
       eventDispatcherMethod
-          .addParameter(fieldModel.field.type, fieldModel.field.name)
+          .addParameter(typeName, fieldModel.field.name)
           .addStatement("_eventState.$L = $L", fieldModel.field.name, fieldModel.field.name);
     }
 
