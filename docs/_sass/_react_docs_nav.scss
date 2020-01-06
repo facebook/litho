@@ -171,8 +171,7 @@ nav.toc {
 
       li {
         list-style-type: none;
-        padding-bottom: 0;
-        padding-left: 0;
+        padding: 0;
 
         a {
           border: none;
@@ -181,11 +180,19 @@ nav.toc {
           font-size: 14px;
           line-height: 1.1em;
           margin: 0;
-          transition: color 0.3s;
+          transition: background-color 0.1s ease, color 0.2s ease;
+          width: 100%;
+          border-radius: 2px;
+          padding: 0.25em;
 
-          &.navItemActive {
-            font-weight: 600;
-            color: $text;
+          &.navItemActive, &:hover {
+            color: #ffffff;
+            background: #f36b7f;
+            text-decoration: none;
+          }
+
+          &:active {
+            background: #D23D53;
           }
         }
       }
