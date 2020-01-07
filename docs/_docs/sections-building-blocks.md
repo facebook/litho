@@ -23,6 +23,12 @@ final Section loadingSection = SingleComponentSection.create(c)
 
 ## DataDiffSection
 
+If you're new to using `DataDiffSection`, we recommend you watch this Litho Lesson which covers the basics of how to do diffing:
+
+<iframe style="padding-top: 10px" width="560" height="315" src="https://www.youtube-nocookie.com/embed/-Ahskig2Lw0" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+### How to Use DataDiffSection
+
 > **NOTE**: Because Sections diffing can occur on a background thread, mutations to the list or its elements from another thread can cause `DiffUtils` to emit an invalid diff! This can manifest as an `IndexOutOfBoundsException` from the Adapter. Because of this, we recommend to only use immutable lists and immutable data with `DataDiffSection` and the Sections API.
 
 A `DataDiffSection` is used to represent a homogeneous list of data. The minimal information that you have to pass to a `DataDiffSection` is the list of items that it needs to render and a callback for rendering each item in this list.
