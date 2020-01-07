@@ -40,6 +40,7 @@ public class SpecModelValidation {
         PropValidation.validate(specModel, reservedPropNames, permittedCommonProps, runMode));
     validationErrors.addAll(StateValidation.validate(specModel));
     validationErrors.addAll(EventValidation.validate(specModel, runMode));
+    validationErrors.addAll(TriggerValidation.validate(specModel, runMode));
     validationErrors.addAll(TreePropValidation.validate(specModel));
     validationErrors.addAll(DiffValidation.validate(specModel));
     validationErrors.addAll(TagValidation.validate(specModel));
