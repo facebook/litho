@@ -1,5 +1,5 @@
 ---
-docid: sections-intro
+docid: sections-tutorial
 title: Sections Tutorial
 layout: docs
 permalink: /docs/sections-tutorial
