@@ -1,8 +1,15 @@
 # CHANGELOG
 
+## Version 1.3.1
+
+_2020-01-07_
+
+* New: Logtag for method annotations and method parameter annotations.
+* New: Line marker for missing required prop.
+
 ## Version 1.3.0
 
-_2019_12_13_
+_2019-12-13_
 
 * New: QuickFix to create new `EventHandler` as `Component.Builder` method parameter.
 * New: Annotation completion for LayoutSpec delegate method parameters.

@@ -36,12 +36,11 @@
     </ul>
   ]]>
   </description>
-  <version>1.3.1-SNAPSHOT</version>
+  <version>1.3.1</version>
   <change-notes><![CDATA[
-    <h2>1.3.0</h2>
+    <h2>1.3.1</h2>
       <ul>
-        <li>New: QuickFix to create new `EventHandler` as `Component.Builder` method parameter</li>
-        <li>New: Annotation completion for LayoutSpec delegate method parameters</li>
+        <li>New: Line marker for missing required prop</li>
       </ul>
     <h2>Older Versions</h2>
     <p>Check the <a href='https://github.com/facebook/litho/blob/master/litho-intellij-plugin/CHANGELOG.md'>Changelog</a> for full version history.
