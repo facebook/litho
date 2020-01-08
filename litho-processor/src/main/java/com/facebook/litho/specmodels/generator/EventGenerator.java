@@ -147,8 +147,14 @@ public class EventGenerator {
           continue;
         }
 
+        // Ignore the generics Type Arguments in the method parameters.
+        TypeName typeName = fieldModel.field.type;
+        if (typeName instanceof ParameterizedTypeName) {
+          typeName = ((ParameterizedTypeName) fieldModel.field.type).rawType;
+        }
+
         eventDispatcherMethod
-            .addParameter(fieldModel.field.type, fieldModel.field.name);
+            .addParameter(typeName, fieldModel.field.name);
 
         // We do not want ',' appended on the first loop
         if (!ctorParamNames.isEmpty()) {
