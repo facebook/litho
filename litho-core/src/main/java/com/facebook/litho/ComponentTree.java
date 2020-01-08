@@ -2534,110 +2534,6 @@ public class ComponentTree {
     @VisibleForTesting
     @Nullable
     LayoutState runAndGet(int source) {
-      if (mMoveLayoutsBetweenThreads) {
-        return runAndGetSwitchThreadsWhenUIBlocked(source);
-      }
-
-      return runAndGetIncreasePriority(source);
-    }
-
-    @VisibleForTesting
-    @Nullable
-    LayoutState runAndGetIncreasePriority(int source) {
-      if (runningThreadId.compareAndSet(-1, Process.myTid())) {
-        futureTask.run();
-      }
-
-      final int runningThreadId = this.runningThreadId.get();
-      final int originalThreadPriority;
-      final boolean didRaiseThreadPriority;
-      final boolean notRunningOnMyThread = runningThreadId != Process.myTid();
-
-      final boolean shouldWaitForResult = !futureTask.isDone() && notRunningOnMyThread;
-
-      // A background thread layout which doesn't need to return a size doesn't need to wait on the
-      // UI thread for the result.
-      if (shouldWaitForResult && !isMainThread() && !isFromSyncLayout(source)) {
-        return null;
-      }
-
-      if (isMainThread() && shouldWaitForResult) {
-        // Main thread is about to be blocked, raise the running thread priority.
-        originalThreadPriority =
-            ComponentsConfiguration.inheritPriorityFromUiThread
-                ? ThreadUtils.tryInheritThreadPriorityFromCurrentThread(runningThreadId)
-                : ThreadUtils.tryRaiseThreadPriority(
-                    runningThreadId, Process.THREAD_PRIORITY_DISPLAY);
-        didRaiseThreadPriority = true;
-      } else {
-        originalThreadPriority = THREAD_PRIORITY_DEFAULT;
-        didRaiseThreadPriority = false;
-      }
-
-      final LayoutState result;
-      final boolean shouldTrace = notRunningOnMyThread && ComponentsSystrace.isTracing();
-
-      try {
-        if (shouldTrace) {
-          ComponentsSystrace.beginSectionWithArgs("LayoutStateFuture.wait")
-              .arg("treeId", ComponentTree.this.mId)
-              .arg("root", root.getSimpleName())
-              .arg("runningThreadId", runningThreadId)
-              .flush();
-        }
-
-        final ComponentsLogger logger = getContextLogger();
-        final PerfEvent logFutureTaskGetWaiting =
-            logger != null
-                ? LogTreePopulator.populatePerfEventFromLogger(
-                    mContext,
-                    logger,
-                    logger.newPerformanceEvent(mContext, EVENT_LAYOUT_STATE_FUTURE_GET_WAIT))
-                : null;
-        result = futureTask.get();
-        if (logFutureTaskGetWaiting != null) {
-          logFutureTaskGetWaiting.markerAnnotate(
-              PARAM_LAYOUT_FUTURE_WAIT_FOR_RESULT, shouldWaitForResult);
-          logFutureTaskGetWaiting.markerAnnotate(PARAM_IS_MAIN_THREAD, isMainThread());
-          logger.logPerfEvent(logFutureTaskGetWaiting);
-        }
-      } catch (ExecutionException e) {
-        final Throwable cause = e.getCause();
-        if (cause instanceof RuntimeException) {
-          throw (RuntimeException) cause;
-        } else {
-          throw new RuntimeException(e.getMessage(), e);
-        }
-      } catch (InterruptedException | CancellationException e) {
-        throw new RuntimeException(e.getMessage(), e);
-      } finally {
-        if (shouldTrace) {
-          ComponentsSystrace.endSection();
-        }
-
-        if (didRaiseThreadPriority) {
-          // Reset the running thread's priority after we're unblocked.
-          try {
-            Process.setThreadPriority(runningThreadId, originalThreadPriority);
-          } catch (IllegalArgumentException | SecurityException ignored) {
-          }
-        }
-      }
-
-      if (result == null) {
-        return null;
-      }
-      synchronized (LayoutStateFuture.this) {
-        if (released) {
-          return null;
-        }
-        return result;
-      }
-    }
-
-    @VisibleForTesting
-    @Nullable
-    LayoutState runAndGetSwitchThreadsWhenUIBlocked(int source) {
       if (runningThreadId.compareAndSet(-1, Process.myTid())) {
         futureTask.run();
       }
@@ -2656,7 +2552,7 @@ public class ComponentTree {
       if (isMainThread() && shouldWaitForResult) {
         // This means the UI thread is about to be blocked by the bg thread. Instead of waiting,
         // the bg task is interrupted.
-        if (!isFromSyncLayout) {
+        if (mMoveLayoutsBetweenThreads && !isFromSyncLayout) {
           interrupt();
           interruptToken =
               WorkContinuationInstrumenter.onAskForWorkToContinue("interruptCalculateLayout");
