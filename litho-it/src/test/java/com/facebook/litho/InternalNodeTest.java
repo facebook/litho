@@ -17,7 +17,7 @@
 package com.facebook.litho;
 
 import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
-import static com.facebook.litho.LayoutState.createAndMeasureTreeForComponent;
+import static com.facebook.litho.Layout.createAndMeasureComponent;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.UNSPECIFIED;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
@@ -82,7 +82,7 @@ public class InternalNodeTest {
     final ComponentContext context = new ComponentContext(RuntimeEnvironment.application);
     context.setLayoutStateContextForTesting();
 
-    return createAndMeasureTreeForComponent(
+    return createAndMeasureComponent(
         context,
         Column.create(context).build(),
         makeSizeSpec(0, UNSPECIFIED),
@@ -94,7 +94,7 @@ public class InternalNodeTest {
         new ComponentContext(RuntimeEnvironment.application, "TEST", logger);
     context.setLayoutStateContextForTesting();
 
-    return createAndMeasureTreeForComponent(
+    return createAndMeasureComponent(
         context,
         Column.create(context).build(),
         makeSizeSpec(0, UNSPECIFIED),
@@ -453,7 +453,7 @@ public class InternalNodeTest {
     context.setLayoutStateContextForTesting();
 
     InternalNode layout =
-        createAndMeasureTreeForComponent(
+        createAndMeasureComponent(
             context,
             Column.create(context)
                 .child(Row.create(context).child(Column.create(context)))

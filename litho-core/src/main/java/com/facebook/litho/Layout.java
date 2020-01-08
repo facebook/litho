@@ -16,28 +16,43 @@
 
 package com.facebook.litho;
 
+import static android.os.Build.VERSION.SDK_INT;
+import static android.os.Build.VERSION_CODES.JELLY_BEAN_MR1;
 import static com.facebook.litho.Component.isLayoutSpec;
 import static com.facebook.litho.Component.isLayoutSpecWithSizeSpec;
 import static com.facebook.litho.Component.isMountSpec;
 import static com.facebook.litho.Component.isNestedTree;
 import static com.facebook.litho.ComponentContext.NULL_LAYOUT;
-import static com.facebook.litho.LayoutState.IS_TEST;
-import static com.facebook.litho.LayoutState.areTransitionsEnabled;
-import static com.facebook.litho.LayoutState.consumeCachedLayout;
-import static com.facebook.litho.LayoutState.hasCompatibleSizeSpec;
-import static com.facebook.litho.LayoutState.remeasureTree;
 
+import android.annotation.TargetApi;
+import android.content.Context;
+import android.content.pm.ApplicationInfo;
+import android.os.Build;
+import android.view.View;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaFlexDirection;
+import java.util.List;
 
 class Layout {
+
+  static final boolean IS_TEST = "robolectric".equals(Build.FINGERPRINT);
 
   private static final String EVENT_START_CREATE_LAYOUT = "start_create_layout";
   private static final String EVENT_END_CREATE_LAYOUT = "end_create_layout";
   private static final String EVENT_START_RECONCILE = "start_reconcile_layout";
   private static final String EVENT_END_RECONCILE = "end_reconcile_layout";
+
+  static InternalNode createAndMeasureComponent(
+      final ComponentContext c,
+      final Component component,
+      final int widthSpec,
+      final int heightSpec) {
+    return createAndMeasureComponent(c, component, widthSpec, heightSpec, null, null, null);
+  }
 
   static InternalNode createAndMeasureComponent(
       final ComponentContext c,
@@ -95,8 +110,12 @@ class Layout {
     return layout;
   }
 
+  public static InternalNode create(final ComponentContext parent, final Component component) {
+    return create(parent, component, false, false);
+  }
+
   static InternalNode create(
-      final ComponentContext parent, Component component, final boolean resolveNestedTree) {
+      final ComponentContext parent, final Component component, final boolean resolveNestedTree) {
     return create(parent, component, resolveNestedTree, false);
   }
 
@@ -247,12 +266,6 @@ class Layout {
     return node;
   }
 
-  static @Nullable Component onCreateLayout(final ComponentContext c, final Component component) {
-    final Component root = component.createComponentLayout(c);
-    return root != null && root.getId() > 0 ? root : null;
-  }
-
-  /** Replaces {@link LayoutState#resolveNestedTree(ComponentContext, InternalNode, int, int)} */
   static InternalNode create(
       final ComponentContext parentContext,
       final InternalNode holder,
@@ -290,7 +303,7 @@ class Layout {
 
         // Check if previous layout can be remeasured and used.
         if (currentLayout != null && component.canUsePreviousLayout(parentContext)) {
-          remeasureTree(currentLayout, widthSpec, heightSpec);
+          remeasure(currentLayout, widthSpec, heightSpec);
           layout = currentLayout;
         } else {
 
@@ -342,18 +355,9 @@ class Layout {
     return layout;
   }
 
-  static void measure(
-      ComponentContext c,
-      final InternalNode root,
-      final int widthSpec,
-      final int heightSpec,
-      final @Nullable DiffNode diff) {
-    if (root.getStyleDirection() == com.facebook.yoga.YogaDirection.INHERIT
-        && LayoutState.isLayoutDirectionRTL(c.getAndroidContext())) {
-      root.layoutDirection(YogaDirection.RTL);
-    }
-
-    LayoutState.measureTree(root, widthSpec, heightSpec, diff);
+  static @Nullable Component onCreateLayout(final ComponentContext c, final Component component) {
+    final Component root = component.createComponentLayout(c);
+    return root != null && root.getId() > 0 ? root : null;
   }
 
   /** TODO: This should be done in {@link Component#updateInternalChildState(ComponentContext)}. */
@@ -386,5 +390,290 @@ class Layout {
     }
 
     return component;
+  }
+
+  static void measure(
+      final ComponentContext c,
+      final InternalNode root,
+      final int widthSpec,
+      final int heightSpec,
+      final @Nullable DiffNode diff) {
+
+    final boolean isTracing = ComponentsSystrace.isTracing();
+    if (isTracing) {
+      ComponentsSystrace.beginSection("measureTree:" + root.getSimpleName());
+    }
+
+    if (root.getStyleDirection() == com.facebook.yoga.YogaDirection.INHERIT
+        && isLayoutDirectionRTL(c.getAndroidContext())) {
+      root.layoutDirection(YogaDirection.RTL);
+    }
+
+    if (YogaConstants.isUndefined(root.getStyleWidth())) {
+      root.setStyleWidthFromSpec(widthSpec);
+    }
+    if (YogaConstants.isUndefined(root.getStyleHeight())) {
+      root.setStyleHeightFromSpec(heightSpec);
+    }
+
+    if (diff != null) {
+      ComponentsSystrace.beginSection("applyDiffNode");
+      applyDiffNodeToUnchangedNodes(root, diff);
+      ComponentsSystrace.endSection(/* applyDiffNode */ );
+    }
+
+    root.calculateLayout(
+        SizeSpec.getMode(widthSpec) == SizeSpec.UNSPECIFIED
+            ? YogaConstants.UNDEFINED
+            : SizeSpec.getSize(widthSpec),
+        SizeSpec.getMode(heightSpec) == SizeSpec.UNSPECIFIED
+            ? YogaConstants.UNDEFINED
+            : SizeSpec.getSize(heightSpec));
+
+    if (isTracing) {
+      ComponentsSystrace.endSection(/* measureTree */ );
+    }
+  }
+
+  static void resumeCreateAndMeasureComponent(
+      final ComponentContext c,
+      final InternalNode root,
+      final int widthSpec,
+      final int heightSpec,
+      final @Nullable DiffNode diff,
+      final @Nullable PerfEvent logLayoutState) {
+
+    if (root == NULL_LAYOUT) {
+      return;
+    }
+
+    resume(root);
+
+    if (logLayoutState != null) {
+      logLayoutState.markerPoint("start_measure");
+    }
+
+    measure(c, root, widthSpec, heightSpec, diff);
+
+    if (logLayoutState != null) {
+      logLayoutState.markerPoint("end_measure");
+    }
+  }
+
+  static void resume(final InternalNode root) {
+    final List<Component> unresolved = root.getUnresolvedComponents();
+
+    if (unresolved != null) {
+      for (int i = 0, size = unresolved.size(); i < size; i++) {
+        root.child(unresolved.get(i));
+      }
+      root.getUnresolvedComponents().clear();
+    }
+
+    for (int i = 0, size = root.getChildCount(); i < size; i++) {
+      resume(root.getChildAt(i));
+    }
+  }
+
+  @VisibleForTesting
+  static void remeasure(final InternalNode layout, final int widthSpec, final int heightSpec) {
+    if (layout == NULL_LAYOUT) { // If NULL LAYOUT return immediately.
+      return;
+    }
+
+    layout.resetResolvedLayoutProperties(); // Reset all resolved props to force-remeasure.
+    measure(layout.getContext(), layout, widthSpec, heightSpec, layout.getDiffNode());
+  }
+
+  /**
+   * Traverses the layoutTree and the diffTree recursively. If a layoutNode has a compatible host
+   * type {@link Layout#hostIsCompatible} it assigns the DiffNode to the layout node in order to try
+   * to re-use the LayoutOutputs that will be generated during result collection. If a layout node
+   * component returns false when shouldComponentUpdate is called with the DiffNode Component it
+   * also tries to re-use the old measurements and therefore marks as valid the cachedMeasures for
+   * the whole component subtree.
+   *
+   * @param layoutNode the root of the LayoutTree
+   * @param diffNode the root of the diffTree
+   */
+  static void applyDiffNodeToUnchangedNodes(
+      final InternalNode layoutNode, final DiffNode diffNode) {
+    try {
+      // Root of the main tree or of a nested tree.
+      final boolean isTreeRoot = layoutNode.getParent() == null;
+      if (isLayoutSpecWithSizeSpec(layoutNode.getTailComponent()) && !isTreeRoot) {
+        layoutNode.setDiffNode(diffNode);
+        return;
+      }
+
+      if (!hostIsCompatible(layoutNode, diffNode)) {
+        return;
+      }
+
+      layoutNode.setDiffNode(diffNode);
+
+      final int layoutCount = layoutNode.getChildCount();
+      final int diffCount = diffNode.getChildCount();
+
+      if (layoutCount != 0 && diffCount != 0) {
+        for (int i = 0; i < layoutCount && i < diffCount; i++) {
+          applyDiffNodeToUnchangedNodes(layoutNode.getChildAt(i), diffNode.getChildAt(i));
+        }
+
+        // Apply the DiffNode to a leaf node (i.e. MountSpec) only if it should NOT update.
+      } else if (!shouldComponentUpdate(layoutNode, diffNode)) {
+        applyDiffNodeToLayoutNode(layoutNode, diffNode);
+      }
+    } catch (Throwable t) {
+      final Component c = layoutNode.getTailComponent();
+      if (c != null) {
+        throw new ComponentsChainException(c, t);
+      }
+
+      throw t;
+    }
+  }
+
+  /**
+   * Copies the inter stage state (if any) from the DiffNode's component to the layout node's
+   * component, and declares that the cached measures on the diff node are valid for the layout
+   * node.
+   */
+  private static void applyDiffNodeToLayoutNode(
+      final InternalNode layoutNode, final DiffNode diffNode) {
+    final Component component = layoutNode.getTailComponent();
+    if (component != null) {
+      component.copyInterStageImpl(diffNode.getComponent());
+    }
+
+    layoutNode.setCachedMeasuresValid(true);
+  }
+
+  @Nullable
+  static InternalNode consumeCachedLayout(
+      final ComponentContext c,
+      final Component component,
+      final InternalNode holder,
+      final int widthSpec,
+      final int heightSpec) {
+    final LayoutState layoutState = c.getLayoutState();
+    if (layoutState == null) {
+      throw new IllegalStateException(
+          component.getSimpleName()
+              + ": Trying to access the cached InternalNode for a component outside of a"
+              + " LayoutState calculation. If that is what you must do, see"
+              + " Component#measureMightNotCacheInternalNode.");
+    }
+
+    final InternalNode cachedLayout = layoutState.getCachedLayout(component);
+
+    if (cachedLayout != null) {
+      layoutState.clearCachedLayout(component);
+
+      final boolean hasValidDirection =
+          InternalNodeUtils.hasValidLayoutDirectionInNestedTree(holder, cachedLayout);
+      final boolean hasCompatibleSizeSpec =
+          hasCompatibleSizeSpec(
+              cachedLayout.getLastWidthSpec(),
+              cachedLayout.getLastHeightSpec(),
+              widthSpec,
+              heightSpec,
+              cachedLayout.getLastMeasuredWidth(),
+              cachedLayout.getLastMeasuredHeight());
+
+      // Transfer the cached layout to the node it if it's compatible.
+      if (hasValidDirection && hasCompatibleSizeSpec) {
+        return cachedLayout;
+      }
+    }
+
+    return null;
+  }
+
+  /**
+   * Check if a cached nested tree has compatible SizeSpec to be reused as is or if it needs to be
+   * recomputed.
+   *
+   * <p>The conditions to be able to re-use previous measurements are: 1) The measureSpec is the
+   * same 2) The new measureSpec is EXACTLY and the last measured size matches the measureSpec size.
+   * 3) The old measureSpec is UNSPECIFIED, the new one is AT_MOST and the old measured size is
+   * smaller that the maximum size the new measureSpec will allow. 4) Both measure specs are
+   * AT_MOST. The old measure spec allows a bigger size than the new and the old measured size is
+   * smaller than the allowed max size for the new sizeSpec.
+   */
+  public static boolean hasCompatibleSizeSpec(
+      final int oldWidthSpec,
+      final int oldHeightSpec,
+      final int newWidthSpec,
+      final int newHeightSpec,
+      final float oldMeasuredWidth,
+      final float oldMeasuredHeight) {
+    final boolean widthIsCompatible =
+        MeasureComparisonUtils.isMeasureSpecCompatible(
+            oldWidthSpec, newWidthSpec, (int) oldMeasuredWidth);
+
+    final boolean heightIsCompatible =
+        MeasureComparisonUtils.isMeasureSpecCompatible(
+            oldHeightSpec, newHeightSpec, (int) oldMeasuredHeight);
+    return widthIsCompatible && heightIsCompatible;
+  }
+
+  /**
+   * This method determine if transitions are enabled for the user. If the experiment is enabled for
+   * the user then they will get cached value else it will be determined using the utility method.
+   *
+   * @param context Component context.
+   * @return true if transitions are enabled.
+   */
+  static boolean areTransitionsEnabled(final @Nullable ComponentContext context) {
+    if (context == null || context.getComponentTree() == null) {
+      return TransitionUtils.areTransitionsEnabled(null);
+    }
+    return context.getComponentTree().areTransitionsEnabled();
+  }
+
+  /**
+   * Returns true either if the two nodes have the same Component type or if both don't have a
+   * Component.
+   */
+  private static boolean hostIsCompatible(final InternalNode node, final DiffNode diffNode) {
+    if (diffNode == null) {
+      return false;
+    }
+
+    return ComponentUtils.isSameComponentType(node.getTailComponent(), diffNode.getComponent());
+  }
+
+  private static boolean shouldComponentUpdate(
+      final InternalNode layoutNode, final DiffNode diffNode) {
+    if (diffNode == null) {
+      return true;
+    }
+
+    final Component component = layoutNode.getTailComponent();
+    if (component != null) {
+      return component.shouldComponentUpdate(component, diffNode.getComponent());
+    }
+
+    return true;
+  }
+
+  @VisibleForTesting
+  static boolean isLayoutDirectionRTL(final Context context) {
+    ApplicationInfo applicationInfo = context.getApplicationInfo();
+
+    if ((SDK_INT >= JELLY_BEAN_MR1)
+        && (applicationInfo.flags & ApplicationInfo.FLAG_SUPPORTS_RTL) != 0) {
+
+      int layoutDirection = getLayoutDirection(context);
+      return layoutDirection == View.LAYOUT_DIRECTION_RTL;
+    }
+
+    return false;
+  }
+
+  @TargetApi(JELLY_BEAN_MR1)
+  private static int getLayoutDirection(final Context context) {
+    return context.getResources().getConfiguration().getLayoutDirection();
   }
 }

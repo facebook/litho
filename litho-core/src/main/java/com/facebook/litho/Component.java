@@ -287,8 +287,7 @@ public abstract class Component extends ComponentLifecycle
             lastMeasuredLayout.getLastHeightSpec(), heightSpec, lastMeasuredLayout.getHeight())) {
       layoutState.clearCachedLayout(this);
 
-      lastMeasuredLayout =
-          LayoutState.createAndMeasureTreeForComponent(c, this, widthSpec, heightSpec);
+      lastMeasuredLayout = Layout.createAndMeasureComponent(c, this, widthSpec, heightSpec);
 
       layoutState.addLastMeasuredLayout(this, lastMeasuredLayout);
 
@@ -333,7 +332,7 @@ public abstract class Component extends ComponentLifecycle
     final ComponentContext contextForLayout =
         c.getStateHandler() == null ? new ComponentContext(c, new StateHandler(), null, null) : c;
     final InternalNode internalNode =
-        LayoutState.createAndMeasureTreeForComponent(contextForLayout, this, widthSpec, heightSpec);
+        Layout.createAndMeasureComponent(contextForLayout, this, widthSpec, heightSpec);
 
     outputSize.width = internalNode.getWidth();
     outputSize.height = internalNode.getHeight();
@@ -753,7 +752,7 @@ public abstract class Component extends ComponentLifecycle
       return willRender(component.mLayoutCreatedInWillRender);
     }
 
-    component.mLayoutCreatedInWillRender = LayoutState.createLayout(c, component);
+    component.mLayoutCreatedInWillRender = Layout.create(c, component);
     return willRender(component.mLayoutCreatedInWillRender);
   }
 

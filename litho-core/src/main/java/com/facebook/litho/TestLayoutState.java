@@ -49,11 +49,11 @@ public class TestLayoutState {
     }
 
     if (root.getStyleDirection() == com.facebook.yoga.YogaDirection.INHERIT
-        && LayoutState.isLayoutDirectionRTL(c.getAndroidContext())) {
+        && Layout.isLayoutDirectionRTL(c.getAndroidContext())) {
       root.layoutDirection(YogaDirection.RTL);
     }
 
-    LayoutState.measureTree(root, widthSpec, heightSpec, null);
+    Layout.measure(c, root, widthSpec, heightSpec, null);
 
     return root;
   }
@@ -64,7 +64,7 @@ public class TestLayoutState {
       if (component instanceof Wrapper) {
         return createImmediateLayout(c, component);
       }
-      return LayoutState.createLayout(c, component);
+      return Layout.create(c, component);
     }
 
     final InternalNode node = InternalNodeUtils.create(c);
@@ -142,7 +142,7 @@ public class TestLayoutState {
         return newImmediateLayoutBuilder(c, delegate);
       }
     } else if (component.canResolve()) {
-      return LayoutState.resolve(c, component);
+      return Layout.create(c, component);
     }
 
     InternalNode node = InternalNodeUtils.create(c);

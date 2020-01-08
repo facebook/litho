@@ -26,7 +26,7 @@ import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO;
 import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS;
 import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_YES;
 import static com.facebook.litho.Column.create;
-import static com.facebook.litho.LayoutState.createAndMeasureTreeForComponent;
+import static com.facebook.litho.Layout.createAndMeasureComponent;
 import static com.facebook.litho.NodeInfo.ENABLED_SET_FALSE;
 import static com.facebook.litho.NodeInfo.FOCUS_SET_TRUE;
 import static com.facebook.litho.NodeInfo.SELECTED_SET_TRUE;
@@ -1960,7 +1960,7 @@ public class LayoutStateCalculateTest {
         };
 
     final InternalNode node =
-        createAndMeasureTreeForComponent(
+        createAndMeasureComponent(
             c, component, makeSizeSpec(width, AT_MOST), makeSizeSpec(height, AT_MOST));
 
     assertThat(node.getWidth()).isEqualTo(width);
@@ -2211,7 +2211,7 @@ public class LayoutStateCalculateTest {
     final InternalNode cachedLayout = component.getLayoutCreatedInWillRenderForTesting();
     assertThat(cachedLayout).isNotNull();
 
-    InternalNode result = LayoutState.resolve(c, component);
+    InternalNode result = Layout.create(c, component);
     assertThat(result).isEqualTo(cachedLayout);
     assertThat(component.getLayoutCreatedInWillRenderForTesting()).isNull();
   }
@@ -2229,7 +2229,7 @@ public class LayoutStateCalculateTest {
     final InternalNode cachedLayout = component.getLayoutCreatedInWillRenderForTesting();
     assertThat(cachedLayout).isNotNull();
 
-    InternalNode result = LayoutState.createLayout(c, component);
+    InternalNode result = Layout.create(c, component);
     assertThat(result).isEqualTo(cachedLayout);
     assertThat(component.getLayoutCreatedInWillRenderForTesting()).isNull();
   }
@@ -2247,7 +2247,7 @@ public class LayoutStateCalculateTest {
     final InternalNode cachedLayout = component.getLayoutCreatedInWillRenderForTesting();
     assertThat(cachedLayout).isNotNull();
 
-    InternalNode result = LayoutState.createLayout(c, component, false);
+    InternalNode result = Layout.create(c, component);
     assertThat(result).isEqualTo(cachedLayout);
     assertThat(component.getLayoutCreatedInWillRenderForTesting()).isNull();
   }

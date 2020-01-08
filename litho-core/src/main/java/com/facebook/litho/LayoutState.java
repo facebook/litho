@@ -18,11 +18,9 @@ package com.facebook.litho;
 
 import static android.content.Context.ACCESSIBILITY_SERVICE;
 import static android.os.Build.VERSION.SDK_INT;
-import static android.os.Build.VERSION_CODES.JELLY_BEAN_MR1;
 import static android.os.Build.VERSION_CODES.M;
 import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
 import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO;
-import static com.facebook.litho.Component.isLayoutSpecWithSizeSpec;
 import static com.facebook.litho.Component.isMountSpec;
 import static com.facebook.litho.Component.isMountViewSpec;
 import static com.facebook.litho.ComponentContext.NULL_LAYOUT;
@@ -45,15 +43,10 @@ import static com.facebook.litho.NodeInfo.ENABLED_UNSET;
 import static com.facebook.litho.NodeInfo.FOCUS_SET_TRUE;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 
-import android.annotation.TargetApi;
-import android.content.Context;
-import android.content.pm.ApplicationInfo;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.text.TextUtils;
 import android.util.SparseArray;
-import android.view.View;
 import android.view.accessibility.AccessibilityManager;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
@@ -65,10 +58,8 @@ import com.facebook.litho.annotations.ImportantForAccessibility;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.drawable.BorderColorDrawable;
 import com.facebook.litho.stats.LithoStats;
-import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
-import com.facebook.yoga.YogaFlexDirection;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -209,7 +200,6 @@ class LayoutState {
 
   private static final AtomicInteger sIdGenerator = new AtomicInteger(1);
   private static final int NO_PREVIOUS_LAYOUT_STATE_ID = -1;
-  static final boolean IS_TEST = "robolectric".equals(Build.FINGERPRINT);
 
   private final Map<String, Rect> mComponentKeyToBounds = new HashMap<>();
   private final Map<Handle, Rect> mComponentHandleToBounds = new HashMap<>();
@@ -591,25 +581,6 @@ class LayoutState {
     return output;
   }
 
-  @VisibleForTesting
-  static boolean isLayoutDirectionRTL(Context context) {
-    ApplicationInfo applicationInfo = context.getApplicationInfo();
-
-    if ((SDK_INT >= JELLY_BEAN_MR1)
-        && (applicationInfo.flags & ApplicationInfo.FLAG_SUPPORTS_RTL) != 0) {
-
-      int layoutDirection = getLayoutDirection(context);
-      return layoutDirection == View.LAYOUT_DIRECTION_RTL;
-    }
-
-    return false;
-  }
-
-  @TargetApi(JELLY_BEAN_MR1)
-  private static int getLayoutDirection(Context context) {
-    return context.getResources().getConfiguration().getLayoutDirection();
-  }
-
   /**
    * Determine if a given {@link InternalNode} within the context of a given {@link LayoutState}
    * requires to be wrapped inside a view.
@@ -743,7 +714,7 @@ class LayoutState {
             .flush();
       }
       InternalNode nestedTree =
-          resolveNestedTree(
+          Layout.create(
               parentContext,
               node,
               SizeSpec.makeSizeSpec(node.getWidth(), EXACTLY),
@@ -905,7 +876,7 @@ class LayoutState {
     }
 
     // 4. Extract the Transitions.
-    if (areTransitionsEnabled(component != null ? component.getScopedContext() : null)) {
+    if (Layout.areTransitionsEnabled(component != null ? component.getScopedContext() : null)) {
       final ArrayList<Transition> transitions = node.getTransitions();
       if (transitions != null) {
         for (int i = 0, size = transitions.size(); i < size; i++) {
@@ -1124,20 +1095,6 @@ class LayoutState {
     mComponents = null;
 
     return components;
-  }
-
-  /**
-   * This method determine if transitions are enabled for the user. If the experiment is enabled for
-   * the user then they will get cached value else it will be determined using the utility method.
-   *
-   * @param context Component context.
-   * @return true if transitions are enabled.
-   */
-  static boolean areTransitionsEnabled(@Nullable ComponentContext context) {
-    if (context == null || context.getComponentTree() == null) {
-      return TransitionUtils.areTransitionsEnabled(null);
-    }
-    return context.getComponentTree().areTransitionsEnabled();
   }
 
   @Nullable
@@ -1464,12 +1421,11 @@ class LayoutState {
 
       final InternalNode root =
           layoutCreatedInWillRender == null
-              ? createAndMeasureTreeForComponent(
+              ? Layout.createAndMeasureComponent(
                   c,
                   component,
                   widthSpec,
                   heightSpec,
-                  null, // nestedTreeHolder is null as this is measuring the root component tree.
                   isReconcilable ? currentLayoutState.mLayoutRoot : null,
                   diffTreeRoot,
                   logLayoutState)
@@ -1572,21 +1528,17 @@ class LayoutState {
 
       // If we already have a LayoutState but the InternalNode is only partially resolved,
       // resume resolving the InternalNode and measure it.
-      resumeCreateAndMeasureTreeForComponent(
+      Layout.resumeCreateAndMeasureComponent(
           c,
-          component,
+          layoutState.mLayoutRoot,
           widthSpec,
           heightSpec,
-          null, // nestedTreeHolder is null as this is measuring the root component tree.)
-          layoutState.mLayoutRoot,
           layoutState.mDiffTreeRoot,
           logLayoutState);
 
       setSizeAfterMeasureAndCollectResults(c, layoutState);
 
-      if (layoutStateContext != null) {
-        layoutStateContext.releaseReference();
-      }
+      layoutStateContext.releaseReference();
 
       if (logLayoutState != null) {
         logger.logPerfEvent(logLayoutState);
@@ -1689,7 +1641,7 @@ class LayoutState {
     }
 
     final Component previous = currentLayoutState.mComponent;
-    if (!isSameComponentType(previous, nextRootComponent)) {
+    if (!ComponentUtils.isSameComponentType(previous, nextRootComponent)) {
       return false;
     }
 
@@ -1782,250 +1734,6 @@ class LayoutState {
         layoutOutput, level, type, previousId, isCachedOutputUpdated);
   }
 
-  @VisibleForTesting
-  static InternalNode createLayout(
-      Component component, ComponentContext context, @Nullable InternalNode current) {
-    if (current != null) {
-      return current.reconcile(context, component);
-    }
-
-    return createLayout(context, component, true /* resolveNestedTree */);
-  }
-
-  static void measureTree(
-      InternalNode root, int widthSpec, int heightSpec, @Nullable DiffNode previousDiffTreeRoot) {
-    final boolean isTracing = ComponentsSystrace.isTracing();
-
-    if (isTracing) {
-      ComponentsSystrace.beginSection("measureTree:" + root.getSimpleName());
-    }
-
-    if (YogaConstants.isUndefined(root.getStyleWidth())) {
-      root.setStyleWidthFromSpec(widthSpec);
-    }
-    if (YogaConstants.isUndefined(root.getStyleHeight())) {
-      root.setStyleHeightFromSpec(heightSpec);
-    }
-
-    if (previousDiffTreeRoot != null) {
-      ComponentsSystrace.beginSection("applyDiffNode");
-      applyDiffNodeToUnchangedNodes(root, previousDiffTreeRoot);
-      ComponentsSystrace.endSection(/* applyDiffNode */ );
-    }
-
-    root.calculateLayout(
-        SizeSpec.getMode(widthSpec) == SizeSpec.UNSPECIFIED
-            ? YogaConstants.UNDEFINED
-            : SizeSpec.getSize(widthSpec),
-        SizeSpec.getMode(heightSpec) == SizeSpec.UNSPECIFIED
-            ? YogaConstants.UNDEFINED
-            : SizeSpec.getSize(heightSpec));
-
-    if (isTracing) {
-      ComponentsSystrace.endSection(/* measureTree */ );
-    }
-  }
-
-  /**
-   * Create and measure the nested tree or return the cached one for the same size specs.
-   *
-   * @deprecated Please do not modify this implementation or its usages; it will be replace with
-   *     {@link Layout#create(ComponentContext, InternalNode, int, int)}.
-   */
-  @Deprecated
-  static InternalNode resolveNestedTree(
-      ComponentContext context, InternalNode holder, int widthSpec, int heightSpec) {
-
-    if (context.isNewCreateLayoutEnabled()) {
-      return Layout.create(context, holder, widthSpec, heightSpec);
-    }
-
-    final Component component = holder.getTailComponent();
-    final InternalNode layoutFromWillRender = component.consumeLayoutCreatedInWillRender();
-    final InternalNode nestedTree =
-        layoutFromWillRender == null ? holder.getNestedTree() : layoutFromWillRender;
-
-    // The resolved layout to return.
-    final InternalNode resolvedLayout;
-
-    if (nestedTree == null
-        || !hasCompatibleSizeSpec(
-            nestedTree.getLastWidthSpec(),
-            nestedTree.getLastHeightSpec(),
-            widthSpec,
-            heightSpec,
-            nestedTree.getLastMeasuredWidth(),
-            nestedTree.getLastMeasuredHeight())) {
-
-      // Check if cached layout can be used.
-      final InternalNode cachedLayout =
-          consumeCachedLayout(context, component, holder, widthSpec, heightSpec);
-
-      if (cachedLayout != null) {
-
-        // Use the cached layout.
-        resolvedLayout = cachedLayout;
-      } else {
-        // Check if previous layout can be remeasured and used.
-        if (nestedTree != null && component.canUsePreviousLayout(context)) {
-          remeasureTree(nestedTree, widthSpec, heightSpec);
-          resolvedLayout = nestedTree;
-        } else {
-
-          // We need to create a shallow copy of this component to clear
-          // the child counters as all the children may be created again.
-          final Component root = component.makeShallowCopy();
-
-          // We have to set the current global key to avoid generating
-          // a new global key; in addition that new global key would be
-          // incorrect because it will be de-duplicated by parent as the
-          // parent is still maintaining its child counters.
-          root.setGlobalKey(component.getGlobalKey());
-
-          // Create a new layout.
-          resolvedLayout =
-              createAndMeasureTreeForComponent(
-                  context,
-                  root,
-                  widthSpec,
-                  heightSpec,
-                  holder,
-                  null,
-                  holder.getDiffNode(), // Was set while traversing the holder's tree.
-                  null);
-        }
-
-        resolvedLayout.setLastWidthSpec(widthSpec);
-        resolvedLayout.setLastHeightSpec(heightSpec);
-        resolvedLayout.setLastMeasuredHeight(resolvedLayout.getHeight());
-        resolvedLayout.setLastMeasuredWidth(resolvedLayout.getWidth());
-      }
-
-      holder.setNestedTree(resolvedLayout);
-    } else {
-
-      // Use the previous layout.
-      resolvedLayout = nestedTree;
-    }
-
-    // This is checking only nested tree roots however should be moved to check all the tree roots.
-    resolvedLayout.assertContextSpecificStyleNotSet();
-
-    return resolvedLayout;
-  }
-
-  @VisibleForTesting
-  static void remeasureTree(InternalNode layout, int widthSpec, int heightSpec) {
-    if (layout == NULL_LAYOUT) { // If NULL LAYOUT return immediately.
-      return;
-    }
-
-    layout.resetResolvedLayoutProperties(); // Reset all resolved props to force-remeasure.
-    measureTree(layout, widthSpec, heightSpec, layout.getDiffNode());
-  }
-
-  /** Create and measure a component with the given size specs. */
-  static InternalNode createAndMeasureTreeForComponent(
-      ComponentContext c, Component component, int widthSpec, int heightSpec) {
-    return createAndMeasureTreeForComponent(
-        c, component, widthSpec, heightSpec, null, null, null, null);
-  }
-
-  /**
-   * @deprecated Please do not modify this implementation or its usages; it will be replace with
-   *     {@link Layout#createAndMeasureComponent(ComponentContext, Component, int, int,
-   *     InternalNode, DiffNode, PerfEvent)}.
-   */
-  @Deprecated
-  @VisibleForTesting
-  static InternalNode createAndMeasureTreeForComponent(
-      ComponentContext c,
-      Component component,
-      int widthSpec,
-      int heightSpec,
-      @Nullable InternalNode nestedTreeHolder, // Will be set iff resolving a nested tree.
-      @Nullable InternalNode current,
-      @Nullable DiffNode diffTreeRoot,
-      @Nullable PerfEvent layoutStatePerfEvent) {
-
-    if (c.isNewCreateLayoutEnabled()) {
-      return Layout.createAndMeasureComponent(
-          c, component, widthSpec, heightSpec, current, diffTreeRoot, layoutStatePerfEvent);
-    }
-
-    if (layoutStatePerfEvent != null) {
-      layoutStatePerfEvent.markerPoint("start_create_layout");
-    }
-
-    component.updateInternalChildState(c);
-
-    if (layoutStatePerfEvent != null) {
-      layoutStatePerfEvent.markerPoint("end_update_state");
-    }
-
-    if (ComponentsConfiguration.isDebugModeEnabled) {
-      DebugComponent.applyOverrides(c, component);
-    }
-
-    c = component.getScopedContext();
-    // Copy the context so that it can have its own set of tree props.
-    // Robolectric tests keep the context so that tree props can be set externally.
-    if (!IS_TEST) {
-      c = c.makeNewCopy();
-    }
-
-    final boolean hasNestedTreeHolder = nestedTreeHolder != null;
-    if (hasNestedTreeHolder) {
-      c.setTreeProps(nestedTreeHolder.getPendingTreeProps());
-    }
-
-    // Account for the size specs in ComponentContext in case the tree is a NestedTree.
-    final int previousWidthSpec = c.getWidthSpec();
-    final int previousHeightSpec = c.getHeightSpec();
-
-    c.setWidthSpec(widthSpec);
-    c.setHeightSpec(heightSpec);
-
-    final InternalNode root = createLayout(component, c, current);
-
-    c.setTreeProps(null);
-    c.setWidthSpec(previousWidthSpec);
-    c.setHeightSpec(previousHeightSpec);
-
-    if (layoutStatePerfEvent != null) {
-      layoutStatePerfEvent.markerPoint("end_create_layout");
-    }
-
-    if (root == NULL_LAYOUT || c.wasLayoutInterrupted()) {
-      return root;
-    } else {
-      c.markLayoutUninterruptible();
-    }
-
-    // If measuring a ComponentTree with a LayoutSpecWithSizeSpec at the root, the nested tree
-    // holder argument will be null.
-    if (hasNestedTreeHolder && isLayoutSpecWithSizeSpec(component)) {
-      // Transfer information from the holder node to the nested tree root before measurement.
-      nestedTreeHolder.copyInto(root);
-      diffTreeRoot = nestedTreeHolder.getDiffNode();
-    } else if (root.getStyleDirection() == com.facebook.yoga.YogaDirection.INHERIT
-        && LayoutState.isLayoutDirectionRTL(c.getAndroidContext())) {
-      root.layoutDirection(YogaDirection.RTL);
-    }
-
-    if (layoutStatePerfEvent != null) {
-      layoutStatePerfEvent.markerPoint("start_measure");
-    }
-
-    measureTree(root, widthSpec, heightSpec, diffTreeRoot);
-
-    if (layoutStatePerfEvent != null) {
-      layoutStatePerfEvent.markerPoint("end_measure");
-    }
-
-    return root;
-  }
-
   /**
    * Generate a global key for the given components that is unique among all of the components in
    * the layout.
@@ -2102,95 +1810,6 @@ class LayoutState {
     return ComponentKeyUtils.getKeyForChildPosition(childKey, childIndex);
   }
 
-  private static InternalNode resumeCreateAndMeasureTreeForComponent(
-      ComponentContext c,
-      Component component,
-      int widthSpec,
-      int heightSpec,
-      @Nullable InternalNode nestedTreeHolder, // Will be set iff resolving a nested tree.
-      InternalNode root,
-      @Nullable DiffNode diffTreeRoot,
-      @Nullable PerfEvent logLayoutState) {
-    resumeCreateTree(c, root);
-
-    if (root == NULL_LAYOUT) {
-      return root;
-    }
-
-    // If measuring a ComponentTree with a LayoutSpecWithSizeSpec at the root, the nested tree
-    // holder argument will be null.
-    if (nestedTreeHolder != null && isLayoutSpecWithSizeSpec(component)) {
-      // Transfer information from the holder node to the nested tree root before measurement.
-      nestedTreeHolder.copyInto(root);
-      diffTreeRoot = nestedTreeHolder.getDiffNode();
-    } else if (root.getStyleDirection() == com.facebook.yoga.YogaDirection.INHERIT
-        && LayoutState.isLayoutDirectionRTL(c.getAndroidContext())) {
-      root.layoutDirection(YogaDirection.RTL);
-    }
-
-    if (logLayoutState != null) {
-      logLayoutState.markerPoint("start_measure");
-    }
-
-    measureTree(root, widthSpec, heightSpec, diffTreeRoot);
-
-    if (logLayoutState != null) {
-      logLayoutState.markerPoint("end_measure");
-    }
-
-    return root;
-  }
-
-  private static void resumeCreateTree(ComponentContext c, InternalNode root) {
-    final List<Component> unresolved = root.getUnresolvedComponents();
-
-    if (unresolved != null) {
-      for (int i = 0, size = unresolved.size(); i < size; i++) {
-        root.child(unresolved.get(i));
-      }
-      root.getUnresolvedComponents().clear();
-    }
-
-    for (int i = 0, size = root.getChildCount(); i < size; i++) {
-      resumeCreateTree(c, root.getChildAt(i));
-    }
-  }
-
-  @Nullable
-  static InternalNode consumeCachedLayout(
-      ComponentContext c, Component component, InternalNode holder, int widthSpec, int heightSpec) {
-    final LayoutState layoutState = c.getLayoutState();
-    if (layoutState == null) {
-      throw new IllegalStateException(
-          component.getSimpleName()
-              + ": Trying to access the cached InternalNode for a component outside of a LayoutState calculation. If that is what you must do, see Component#measureMightNotCacheInternalNode.");
-    }
-
-    final InternalNode cachedLayout = layoutState.getCachedLayout(component);
-
-    if (cachedLayout != null) {
-      layoutState.clearCachedLayout(component);
-
-      final boolean hasValidDirection =
-          InternalNodeUtils.hasValidLayoutDirectionInNestedTree(holder, cachedLayout);
-      final boolean hasCompatibleSizeSpec =
-          hasCompatibleSizeSpec(
-              cachedLayout.getLastWidthSpec(),
-              cachedLayout.getLastHeightSpec(),
-              widthSpec,
-              heightSpec,
-              cachedLayout.getLastMeasuredWidth(),
-              cachedLayout.getLastMeasuredHeight());
-
-      // Transfer the cached layout to the node it if it's compatible.
-      if (hasValidDirection && hasCompatibleSizeSpec) {
-        return cachedLayout;
-      }
-    }
-
-    return null;
-  }
-
   @Nullable
   InternalNode getCachedLayout(Component component) {
     return mLastMeasuredLayouts.get(component.getId());
@@ -2237,103 +1856,6 @@ class LayoutState {
   boolean isCompatibleAccessibility() {
     return AccessibilityUtils.isAccessibilityEnabled(mAccessibilityManager)
         == mAccessibilityEnabled;
-  }
-
-  /**
-   * Traverses the layoutTree and the diffTree recursively. If a layoutNode has a compatible host
-   * type {@link LayoutState#hostIsCompatible} it assigns the DiffNode to the layout node in order
-   * to try to re-use the LayoutOutputs that will be generated by {@link
-   * LayoutState#collectResults(ComponentContext, InternalNode, LayoutState, DiffNode)}. If a
-   * layoutNode component returns false when shouldComponentUpdate is called with the DiffNode
-   * Component it also tries to re-use the old measurements and therefore marks as valid the
-   * cachedMeasures for the whole component subtree.
-   *
-   * @param layoutNode the root of the LayoutTree
-   * @param diffNode the root of the diffTree
-   */
-  static void applyDiffNodeToUnchangedNodes(InternalNode layoutNode, DiffNode diffNode) {
-    try {
-      // Root of the main tree or of a nested tree.
-      final boolean isTreeRoot = layoutNode.getParent() == null;
-      if (isLayoutSpecWithSizeSpec(layoutNode.getTailComponent()) && !isTreeRoot) {
-        layoutNode.setDiffNode(diffNode);
-        return;
-      }
-
-      if (!hostIsCompatible(layoutNode, diffNode)) {
-        return;
-      }
-
-      layoutNode.setDiffNode(diffNode);
-
-      final int layoutCount = layoutNode.getChildCount();
-      final int diffCount = diffNode.getChildCount();
-
-      if (layoutCount != 0 && diffCount != 0) {
-        for (int i = 0; i < layoutCount && i < diffCount; i++) {
-          applyDiffNodeToUnchangedNodes(layoutNode.getChildAt(i), diffNode.getChildAt(i));
-        }
-
-        // Apply the DiffNode to a leaf node (i.e. MountSpec) only if it should NOT update.
-      } else if (!shouldComponentUpdate(layoutNode, diffNode)) {
-        applyDiffNodeToLayoutNode(layoutNode, diffNode);
-      }
-    } catch (Throwable t) {
-      final Component c = layoutNode.getTailComponent();
-      if (c != null) {
-        throw new ComponentsChainException(c, t);
-      }
-
-      throw t;
-    }
-  }
-
-  /**
-   * Copies the inter stage state (if any) from the DiffNode's component to the layout node's
-   * component, and declares that the cached measures on the diff node are valid for the layout
-   * node.
-   */
-  private static void applyDiffNodeToLayoutNode(InternalNode layoutNode, DiffNode diffNode) {
-    final Component component = layoutNode.getTailComponent();
-    if (component != null) {
-      component.copyInterStageImpl(diffNode.getComponent());
-    }
-
-    layoutNode.setCachedMeasuresValid(true);
-  }
-
-  /**
-   * Returns true either if the two nodes have the same Component type or if both don't have a
-   * Component.
-   */
-  private static boolean hostIsCompatible(InternalNode node, DiffNode diffNode) {
-    if (diffNode == null) {
-      return false;
-    }
-
-    return isSameComponentType(node.getTailComponent(), diffNode.getComponent());
-  }
-
-  private static boolean isSameComponentType(Component a, Component b) {
-    if (a == b) {
-      return true;
-    } else if (a == null || b == null) {
-      return false;
-    }
-    return a.getClass().equals(b.getClass());
-  }
-
-  private static boolean shouldComponentUpdate(InternalNode layoutNode, DiffNode diffNode) {
-    if (diffNode == null) {
-      return true;
-    }
-
-    final Component component = layoutNode.getTailComponent();
-    if (component != null) {
-      return component.shouldComponentUpdate(component, diffNode.getComponent());
-    }
-
-    return true;
   }
 
   boolean isCompatibleComponentAndSpec(int componentId, int widthSpec, int heightSpec) {
@@ -2433,34 +1955,6 @@ class LayoutState {
     return mLayoutRoot.isNestedTreeHolder()
         ? node == mLayoutRoot.getNestedTree()
         : node == mLayoutRoot;
-  }
-
-  /**
-   * Check if a cached nested tree has compatible SizeSpec to be reused as is or if it needs to be
-   * recomputed.
-   *
-   * <p>The conditions to be able to re-use previous measurements are: 1) The measureSpec is the
-   * same 2) The new measureSpec is EXACTLY and the last measured size matches the measureSpec size.
-   * 3) The old measureSpec is UNSPECIFIED, the new one is AT_MOST and the old measured size is
-   * smaller that the maximum size the new measureSpec will allow. 4) Both measure specs are
-   * AT_MOST. The old measure spec allows a bigger size than the new and the old measured size is
-   * smaller than the allowed max size for the new sizeSpec.
-   */
-  public static boolean hasCompatibleSizeSpec(
-      int oldWidthSpec,
-      int oldHeightSpec,
-      int newWidthSpec,
-      int newHeightSpec,
-      float oldMeasuredWidth,
-      float oldMeasuredHeight) {
-    final boolean widthIsCompatible =
-        MeasureComparisonUtils.isMeasureSpecCompatible(
-            oldWidthSpec, newWidthSpec, (int) oldMeasuredWidth);
-
-    final boolean heightIsCompatible =
-        MeasureComparisonUtils.isMeasureSpecCompatible(
-            oldHeightSpec, newHeightSpec, (int) oldMeasuredHeight);
-    return widthIsCompatible && heightIsCompatible;
   }
 
   /**
@@ -2654,236 +2148,5 @@ class LayoutState {
 
   private static @Nullable TransitionId getTransitionIdForNode(InternalNode node) {
     return TransitionUtils.createTransitionId(node);
-  }
-
-  /**
-   * TODO: (T55181318) Merge this and {@link #resolve(ComponentContext, Component)}
-   *
-   * @deprecated Please do not modify this implementation or its usages; it will be replace with
-   *     {@link Layout#create(ComponentContext, Component, boolean)}.
-   */
-  @Deprecated
-  static InternalNode createLayout(ComponentContext owner, Component component) {
-
-    if (owner.isNewCreateLayoutEnabled()) {
-      return Layout.create(owner, component, false);
-    }
-
-    // 1. Consume the layout created in willrender.
-    final InternalNode layoutCreatedInWillRender = component.consumeLayoutCreatedInWillRender();
-
-    // 2. Return immediately if will render returned a layout.
-    if (layoutCreatedInWillRender != null) {
-      return layoutCreatedInWillRender;
-    }
-
-    // 3. Create a shallow copy of this component for thread safety.
-    component = component.getThreadSafeInstance();
-
-    // 4. Update this component with its current parent context.
-    component.updateInternalChildState(owner);
-
-    if (ComponentsConfiguration.isDebugModeEnabled) {
-      DebugComponent.applyOverrides(owner, component);
-    }
-
-    return LayoutState.createLayout(component.getScopedContext(), component, false);
-  }
-
-  /**
-   * Create a layout from the given component.
-   *
-   * @param component the root component.
-   * @param shouldResolveNestedTree if the layout of the component should be immediately resolved.
-   * @return New InternalNode associated with the given component.
-   * @deprecated Please do not modify this implementation or its usages; it will be replace with
-   *     {@link Layout#create(ComponentContext, Component, boolean)}.
-   */
-  @Deprecated
-  static InternalNode createLayout(
-      final ComponentContext c, final Component component, final boolean shouldResolveNestedTree) {
-
-    if (c.isNewCreateLayoutEnabled()) {
-      return Layout.create(c, component, shouldResolveNestedTree);
-    }
-
-    final boolean isTracing = ComponentsSystrace.isTracing();
-    if (isTracing) {
-      ComponentsSystrace.beginSection("createLayout:" + component.getSimpleName());
-    }
-
-    final boolean shouldDeferNestedTreeResolution =
-        Component.isNestedTree(c, component) && !shouldResolveNestedTree;
-    final InternalNode node;
-
-    try {
-
-      // 1. Consume the layout created in will render.
-      final InternalNode layoutCreatedInWillRender = component.consumeLayoutCreatedInWillRender();
-
-      // 2. Return immediately if will render returned a layout.
-      if (layoutCreatedInWillRender != null) {
-        return layoutCreatedInWillRender;
-      }
-
-      // 3. Add this component's tree props to the current context.
-      final TreeProps treeProps = c.getTreeProps();
-      c.setTreeProps(component.getTreePropsForChildren(c, treeProps));
-
-      // 4. Resolve the Component into an InternalNode.
-
-      // 4.1 If nested tree resolution should be deferred.
-      if (shouldDeferNestedTreeResolution) {
-
-        // Create a blank InternalNode for the nested tree holder.
-        node = InternalNodeUtils.create(c);
-        node.markIsNestedTreeHolder(c.getTreeProps());
-
-        // 4.2 If the Component can resolve its own InternalNode.
-      } else if (component.canResolve()) {
-
-        // Copy the tree props and set it again.
-        c.setTreeProps(c.getTreePropsCopy());
-
-        // Resolve the component into an InternalNode.
-        node = (InternalNode) component.resolve(c);
-
-        // 4.3 If the Component is a MountSpec
-      } else if (isMountSpec(component)) {
-
-        // Create a blank InternalNode for MountSpecs and set the default flex direction.
-        node = InternalNodeUtils.create(c).flexDirection(YogaFlexDirection.COLUMN);
-
-        // 4.4 Create and resolve the LayoutSpec.
-      } else {
-
-        // Create the component's layout.
-        final Component root = component.createComponentLayout(c);
-
-        // Resolve the layout into an InternalNode.
-        if (root == null || root.getId() <= 0) {
-          node = null;
-        } else {
-
-          // Resolve the root component's layout.
-          node = resolve(c, root);
-
-          // If the root is a layout spec which can resolve itself, add it to the InternalNode.
-          if (Component.isLayoutSpec(root) && root.canResolve()) {
-            node.appendComponent(root);
-          }
-        }
-      }
-
-      if (node == null || node == NULL_LAYOUT) {
-        return NULL_LAYOUT;
-      }
-
-    } catch (Throwable t) {
-      throw new ComponentsChainException(component, t);
-    } finally {
-      if (isTracing) {
-        ComponentsSystrace.endSection();
-      }
-    }
-
-    if (isTracing) {
-      ComponentsSystrace.beginSection("afterCreateLayout:" + component.getSimpleName());
-    }
-
-    // 5. Copy common props of this Component into its InternalNode.
-    // If this is a layout spec with size spec, and we're not deferring the nested tree resolution,
-    // then we already added the props earlier on (when we did defer resolution), and
-    // therefore we shouldn't add them again here.
-    final CommonPropsCopyable commonProps = component.getCommonPropsCopyable();
-    if (commonProps != null
-        && (shouldDeferNestedTreeResolution || !isLayoutSpecWithSizeSpec(component))) {
-      commonProps.copyInto(c, node);
-    }
-
-    // 6. Set the measure function.
-    // Set measure func on the root node of the generated tree so that the mount calls use
-    // those (see Controller.mountNodeTree()). Handle the case where the component simply
-    // delegates its layout creation to another component, i.e. the root node belongs to
-    // another component.
-    if (node.getTailComponent() == null) {
-      final boolean isMountSpecWithMeasure = component.canMeasure() && isMountSpec(component);
-      if (isMountSpecWithMeasure || shouldDeferNestedTreeResolution) {
-        node.setMeasureFunction(ComponentLifecycle.sMeasureFunction);
-      }
-    }
-
-    // 7. Add the component to its InternalNode.
-    node.appendComponent(component);
-
-    // 8. Create and add transition to this component's InternalNode.
-    if (areTransitionsEnabled(c)) {
-      if (component.needsPreviousRenderData()) {
-        node.addComponentNeedingPreviousRenderData(component);
-      } else {
-        final Transition transition = component.createTransition(c);
-        if (transition != null) {
-          node.addTransition(transition);
-        }
-      }
-    }
-
-    // 9. Call onPrepare for MountSpecs.
-    if (!shouldDeferNestedTreeResolution) {
-      component.onPrepare(c);
-    }
-
-    // 10. Add working ranges to the InternalNode.
-    if (component.mWorkingRangeRegistrations != null
-        && !component.mWorkingRangeRegistrations.isEmpty()) {
-      node.addWorkingRanges(component.mWorkingRangeRegistrations);
-    }
-
-    if (isTracing) {
-      ComponentsSystrace.endSection();
-    }
-
-    return node;
-  }
-
-  /**
-   * @deprecated This method will be removed with {@link #createLayout(ComponentContext, Component,
-   *     boolean)}.
-   */
-  @Deprecated
-  static InternalNode resolve(final ComponentContext parentContext, Component component) {
-
-    // 1. Consume the layout created in will render.
-    final InternalNode layoutCreatedInWillRender = component.consumeLayoutCreatedInWillRender();
-
-    // 2. Return immediately if will render returned a layout.
-    if (layoutCreatedInWillRender != null) {
-      return layoutCreatedInWillRender;
-    }
-
-    // 3. Create a shallow copy of this component for thread safety.
-    component = component.getThreadSafeInstance();
-
-    // 4. Update this component with its current parent context.
-    component.updateInternalChildState(parentContext);
-
-    if (ComponentsConfiguration.isDebugModeEnabled) {
-      DebugComponent.applyOverrides(parentContext, component);
-    }
-
-    final ComponentContext c = component.getScopedContext();
-
-    // 5. Resolve the Component into an InternalNode.
-    final InternalNode node = (InternalNode) component.resolve(c);
-
-    // Explicitly copy the common props into the InternalNode if it did resolve itself.
-    if (component.canResolve()) {
-      final CommonPropsCopyable props = component.getCommonPropsCopyable();
-      if (props != null) {
-        props.copyInto(c, node);
-      }
-    }
-
-    return node;
   }
 }

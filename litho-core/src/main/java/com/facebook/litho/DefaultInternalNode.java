@@ -344,7 +344,7 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   @Override
   public InternalNode child(Component child) {
     if (child != null) {
-      return child(LayoutState.createLayout(mComponentContext, child));
+      return child(Layout.create(mComponentContext, child));
     }
 
     return this;
@@ -963,7 +963,7 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
 
   /**
    * @return Whether this node is holding a nested tree or not. The decision was made during tree
-   *     creation {@link LayoutState#createLayout(ComponentContext, Component, boolean)}.
+   *     creation {@link Layout#create(ComponentContext, Component, boolean)}.
    */
   @Override
   public boolean isNestedTreeHolder() {
@@ -2000,15 +2000,7 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
         layout = reconcile(current, next, keys, ReconciliationMode.RECONCILE);
         break;
       case ReconciliationMode.RECREATE:
-        if (parentContext.isNewCreateLayoutEnabled()) {
-
-          // The new implementation expects the parent context.
-          layout = Layout.create(parentContext, next, false, true);
-        } else {
-
-          // The current implementation expects the component's scoped context.
-          layout = LayoutState.createLayout(next.getScopedContext(), next, false);
-        }
+        layout = Layout.create(parentContext, next, false, true);
         break;
       default:
         throw new IllegalArgumentException(mode + " is not a valid ReconciliationMode");

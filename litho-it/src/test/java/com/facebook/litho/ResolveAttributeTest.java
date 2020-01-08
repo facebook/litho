@@ -121,6 +121,6 @@ public class ResolveAttributeTest {
     final ComponentContext c = new ComponentContext(mContext);
     c.setLayoutStateContextForTesting();
 
-    return LayoutState.createLayout(c, component);
+    return Layout.create(c, component);
   }
 }

@@ -1808,7 +1808,7 @@ public class ComponentTree {
           sizeSpecDidntChange
               || (allSpecsWereInitialized
                   && mostRecentLayoutState != null
-                  && LayoutState.hasCompatibleSizeSpec(
+                  && Layout.hasCompatibleSizeSpec(
                       mWidthSpec,
                       mHeightSpec,
                       widthSpec,

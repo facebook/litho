@@ -28,6 +28,15 @@ import javax.annotation.Nullable;
 
 public class ComponentUtils {
 
+  public static boolean isSameComponentType(Component a, Component b) {
+    if (a == b) {
+      return true;
+    } else if (a == null || b == null) {
+      return false;
+    }
+    return a.getClass().equals(b.getClass());
+  }
+
   private static boolean hasEquivalentFields(
       final Object obj1, final Object obj2, final boolean shouldCompareStateContainers) {
     if (obj1 == null || obj2 == null || obj1.getClass() != obj2.getClass()) {

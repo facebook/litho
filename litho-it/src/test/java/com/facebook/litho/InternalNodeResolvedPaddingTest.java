@@ -16,7 +16,7 @@
 
 package com.facebook.litho;
 
-import static com.facebook.litho.LayoutState.createAndMeasureTreeForComponent;
+import static com.facebook.litho.Layout.createAndMeasureComponent;
 import static com.facebook.litho.SizeSpec.UNSPECIFIED;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
 import static com.facebook.yoga.YogaDirection.LTR;
@@ -44,7 +44,7 @@ public class InternalNodeResolvedPaddingTest {
     context.setLayoutStateContextForTesting();
 
     mInternalNode =
-        createAndMeasureTreeForComponent(
+        createAndMeasureComponent(
             context,
             Column.create(context).build(),
             makeSizeSpec(0, UNSPECIFIED),
