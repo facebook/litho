@@ -620,7 +620,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
       return null;
     }
 
-    EventTrigger trigger = c.getComponentTree().getEventTrigger(handle);
+    EventTrigger trigger = c.getComponentTree().getEventTrigger(handle, id);
 
     if (trigger == null) {
       return null;

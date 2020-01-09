@@ -45,6 +45,10 @@ public class EventTrigger<E> {
     return mHandle;
   }
 
+  public int getId() {
+    return mId;
+  }
+
   @Nullable
   public Object dispatchOnTrigger(E event) {
     return dispatchOnTrigger(event, new Object[] {});

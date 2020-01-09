@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import android.util.SparseArray;
 import androidx.annotation.GuardedBy;
 import androidx.annotation.Nullable;
 import java.util.HashMap;
@@ -29,6 +30,10 @@ public class EventTriggersContainer {
   @GuardedBy("this")
   @Nullable
   private Map<Object, EventTrigger> mEventTriggers;
+
+  @GuardedBy("this")
+  @Nullable
+  private Map<Handle, SparseArray<EventTrigger>> mHandleEventTriggers;
 
   /**
    * Record an {@link EventTrigger} according to its key.
@@ -45,12 +50,24 @@ public class EventTriggersContainer {
         mEventTriggers = new HashMap<>();
       }
 
+      if (mHandleEventTriggers == null) {
+        mHandleEventTriggers = new HashMap<>();
+      }
+
       if (trigger.getKey() != null) {
         mEventTriggers.put(trigger.getKey(), trigger);
       }
 
       if (trigger.getHandle() != null) {
-        mEventTriggers.put(trigger.getHandle(), trigger);
+
+        SparseArray<EventTrigger> methodMap = mHandleEventTriggers.get(trigger.getHandle());
+        if (methodMap == null) {
+          methodMap = new SparseArray<>();
+        }
+
+        methodMap.put(trigger.getId(), trigger);
+
+        mHandleEventTriggers.put(trigger.getHandle(), methodMap);
       }
     }
   }
@@ -82,13 +99,26 @@ public class EventTriggersContainer {
    * @return EventTrigger with the handle given.
    */
   @Nullable
-  public EventTrigger getEventTrigger(Handle handle) {
-    return getEventTriggerInternal(handle);
+  public synchronized EventTrigger getEventTrigger(Handle handle, int methodId) {
+    if (mHandleEventTriggers == null) {
+      return null;
+    }
+
+    SparseArray<EventTrigger> triggers = mHandleEventTriggers.get(handle);
+    if (triggers == null) {
+      return null;
+    }
+
+    return triggers.get(methodId);
   }
 
   public synchronized void clear() {
     if (mEventTriggers != null) {
       mEventTriggers.clear();
+    }
+
+    if (mHandleEventTriggers != null) {
+      mHandleEventTriggers.clear();
     }
   }
 }

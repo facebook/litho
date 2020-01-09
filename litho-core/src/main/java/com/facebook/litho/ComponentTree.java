@@ -1427,9 +1427,9 @@ public class ComponentTree {
   }
 
   @Nullable
-  EventTrigger getEventTrigger(Handle handle) {
+  EventTrigger getEventTrigger(Handle handle, int methodId) {
     synchronized (mEventTriggersContainer) {
-      return mEventTriggersContainer.getEventTrigger(handle);
+      return mEventTriggersContainer.getEventTrigger(handle, methodId);
     }
   }
 

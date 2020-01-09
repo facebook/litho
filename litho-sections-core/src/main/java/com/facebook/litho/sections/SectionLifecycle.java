@@ -186,7 +186,7 @@ public abstract class SectionLifecycle implements EventDispatcher, EventTriggerT
       return null;
     }
 
-    EventTrigger trigger = c.getSectionTree().getEventTrigger(handle);
+    EventTrigger trigger = c.getSectionTree().getEventTrigger(handle, id);
 
     if (trigger == null) {
       return null;

@@ -321,8 +321,8 @@ public class SectionTree {
   }
 
   @Nullable
-  synchronized EventTrigger getEventTrigger(Handle handle) {
-    return mEventTriggersContainer.getEventTrigger(handle);
+  synchronized EventTrigger getEventTrigger(Handle handle, int methodId) {
+    return mEventTriggersContainer.getEventTrigger(handle, methodId);
   }
 
   private SectionTree(Builder builder) {
