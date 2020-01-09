@@ -10,36 +10,40 @@ If you want to show an Android [PopupWindow](https://developer.android.com/refer
 
 Litho provides a utility class called [LithoTooltipController](https://fblitho.com/javadoc/com/facebook/litho/LithoTooltipController.html) as a Tooltip API that allows you to show a tooltip anchored on a Component without dealing with view search.
 
-Here's how you'd use the Tooltip API to show a tooltip on a component when that component becomes visible:
+Here's how you'd use the Tooltip API to show a tooltip on a component 1. when that component becomes visible and 2. on a click event:
 
 ```java
 @LayoutSpec
-public class ComponentWithAnchorSpec {
+public class TooltipTriggerExampleComponentSpec {
 
   @OnCreateLayout
-  static Component onCreateLayout(
-      ComponentContext c) {
+  static Component onCreateLayout(ComponentContext c) {
+    final Handle anchorHandle = new Handle();
     return Column.create(c)
-        .key("column_key")
         .child(
-            Row.create(c)
-                .key("row_key")
-                .child(
-                    Text.create(c)
-                    .text("This is an anchor")
-                    .key("anchor")))
-        .visibleHandler(ComponentWithAnchor.onVisible(c))
+            Text.create(c)
+                .text("Click to Trigger show tooltip")
+                .clickHandler(TooltipTriggerExampleComponent.onClick(c, anchorHandle)))
+        .child(Text.create(c).text("Tooltip anchor").handle(anchorHandle))
+        .visibleHandler(TooltipTriggerExampleComponent.onVisible(c, anchorHandle))
         .build();
   }
 
+  @OnEvent(ClickEvent.class)
+  static void onClick(ComponentContext c, @Param Handle anchorHandle) {
+    TooltipTriggerExampleComponentSpec.showToolTip(c, anchorHandle);
+  }
+
   @OnEvent(VisibleEvent.class)
-  static void onVisible(
-      ComponentContext c,
-      @Prop LithoTooltip tooltip) {
-    LithoTooltipController.showTooltip(
-        c,
-        tooltip,
-        ComponentKeyUtils.getKeyWithSeparator("column_key", "row_key","anchor"));
+  static void onVisible(ComponentContext c, @Param Handle anchorHandle) {
+    // Show a tooltip when the component becomes visible.
+    // NB: Incremental mount must be enabled for the component to receive visibility callbacks.
+    TooltipTriggerExampleComponentSpec.showToolTip(c, anchorHandle);
+  }
+
+  static void showToolTip(ComponentContext c, Handle anchorHandle) {
+    final LithoTooltip tooltip = /* Provide an implementation of LithoTooltip or PopupWindow */;
+    LithoTooltipController.showTooltipOnHandle(c, tooltip, anchorHandle);
   }
 }
 ```
@@ -48,21 +52,20 @@ public class ComponentWithAnchorSpec {
 
 The interface forces the implementation of `showLithoTooltip`, a method that shows a tooltip given the bounds of the anchor Component inside a hosting view.
 
-For finding the component that is used as anchor, you need to specify keys not only on the anchor but also on all containers that wrap that anchor component. You'll need to pass these keys in order from parent container to anchor to `ComponentKeyUtils.getKeyWithSeparator` to tell the framework which component the tooltip should be shown on.
+For finding the component that is used as anchor, you need to specify a handle on the anchor component.
 
 For convenience, you can call `LithoTooltipController.showTooltip` on a [PopupWindow](https://developer.android.com/reference/android/widget/PopupWindow) directly without having to create a `LithoTooltip` implementation yourself. By default it shows the tooltip as a dropdown with the specified offsets. The example above would change to:
 ```java
 @OnEvent(VisibleEvent.class)
-  static void onVisible(
-      ComponentContext c,
-      @Prop PopupWindow tooltip) {
-    LithoTooltipController.showTooltip(
-        c,
-        tooltip,
-        ComponentKeyUtils.getKeyWithSeparator("column_key", "row_key","anchor"),
-        0, /* horizontal offset */
-        0 /* vertical offset */);
-  }
+static void onVisible(
+    ComponentContext c,
+    @Prop PopupWindow tooltip,
+    @State Handle anchorHandle) {
+  LithoTooltipController.showTooltipOnHandle(
+      c,
+      tooltip,
+      anchorHandle);
+}
 ```
 
 At the moment the API only supports View tooltips. We might add Component tooltip support in the future if there's a need for it - contact us if that's the case for you.
