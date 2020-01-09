@@ -40,6 +40,9 @@ import com.facebook.samples.litho.lithography.LithographyActivity;
 import com.facebook.samples.litho.playground.PlaygroundActivity;
 import com.facebook.samples.litho.staticscroll.horizontalscroll.HorizontalScrollActivity;
 import com.facebook.samples.litho.stats.StatsActivity;
+import com.facebook.samples.litho.triggers.ClearTextTriggerExampleActivity;
+import com.facebook.samples.litho.triggers.CustomEventTriggerExampleActivity;
+import com.facebook.samples.litho.triggers.TooltipTriggerExampleActivity;
 import java.util.Arrays;
 import java.util.List;
 
@@ -79,7 +82,15 @@ public class DemoListActivity extends NavigatableDemoActivity {
                   new DemoListDataModel("Items re-rendering", ItemsRerenderingActivity.class),
                   new DemoListDataModel("Not updating with new props", PropUpdatingActivity.class),
                   new DemoListDataModel(
-                      "List scrolls to bottom", ScrollingToBottomActivity.class))));
+                      "List scrolls to bottom", ScrollingToBottomActivity.class))),
+          new DemoListDataModel(
+              "Triggers",
+              Arrays.asList(
+                  new DemoListDataModel(
+                      "Clear Text Trigger", ClearTextTriggerExampleActivity.class),
+                  new DemoListDataModel(
+                      "Custom Event Trigger", CustomEventTriggerExampleActivity.class),
+                  new DemoListDataModel("Tooltip Trigger", TooltipTriggerExampleActivity.class))));
 
   @Override
   public void onCreate(Bundle savedInstanceState) {
