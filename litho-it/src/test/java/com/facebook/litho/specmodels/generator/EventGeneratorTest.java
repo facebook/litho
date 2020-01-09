@@ -241,6 +241,9 @@ public class EventGeneratorTest {
 
   @Test
   public void testGenerateEventDispatchersIgnoresGenericTypesInFields() {
+    Elements elements = mCompilationRule.getElements();
+    TypeElement eventTypeElement = elements.getTypeElement(TestEventClass.class.getCanonicalName());
+
     FieldModel fieldWithTypeArguments =
         new FieldModel(
             FieldSpec.builder(
@@ -253,7 +256,7 @@ public class EventGeneratorTest {
             ClassName.OBJECT,
             ClassName.OBJECT,
             ImmutableList.of(fieldWithTypeArguments),
-            new Object());
+            eventTypeElement);
     when(mMockSpecModel.getEventDeclarations()).thenReturn(ImmutableList.of(eventDeclarationModel));
 
     TypeSpecDataHolder dataHolder = EventGenerator.generateEventDispatchers(mMockSpecModel);
