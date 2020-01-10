@@ -50,6 +50,7 @@ public class RecyclerBinderConfiguration {
   private final boolean mIsReconciliationEnabled;
   private final boolean mIsLayoutDiffingEnabled;
   private final boolean mPostToFrontOfQueueForFirstChangeset;
+  private final int mEstimatedViewportCount;
 
   public static Builder create() {
     return new Builder();
@@ -77,7 +78,8 @@ public class RecyclerBinderConfiguration {
       boolean isReconciliationEnabled,
       boolean isLayoutDiffingEnabled,
       boolean postToFrontOfQueueForFirstChangeset,
-      @Nullable ComponentWarmer componentWarmer) {
+      @Nullable ComponentWarmer componentWarmer,
+      int estimatedViewportCount) {
     mRangeRatio = rangeRatio;
     mLayoutHandlerFactory = layoutHandlerFactory;
     mIsCircular = circular;
@@ -96,6 +98,7 @@ public class RecyclerBinderConfiguration {
     mIsLayoutDiffingEnabled = isLayoutDiffingEnabled;
     mPostToFrontOfQueueForFirstChangeset = postToFrontOfQueueForFirstChangeset;
     mComponentWarmer = componentWarmer;
+    mEstimatedViewportCount = estimatedViewportCount;
   }
 
   public float getRangeRatio() {
@@ -170,10 +173,15 @@ public class RecyclerBinderConfiguration {
     return mComponentWarmer;
   }
 
+  public int getEstimatedViewportCount() {
+    return mEstimatedViewportCount;
+  }
+
   public static class Builder {
     public static final LayoutThreadPoolConfiguration DEFAULT_THREAD_POOL_CONFIG =
         ComponentsConfiguration.threadPoolConfiguration;
     static final float DEFAULT_RANGE = RecyclerBinder.Builder.DEFAULT_RANGE_RATIO;
+    static final int UNSET = -1;
 
     @Nullable private LayoutHandlerFactory mLayoutHandlerFactory;
     @Nullable private List<ComponentLogParams> mInvalidStateLogParamsList;
@@ -195,6 +203,7 @@ public class RecyclerBinderConfiguration {
     private boolean mIsLayoutDiffingEnabled = ComponentsConfiguration.isLayoutDiffingEnabled;
     private boolean mPostToFrontOfQueueForFirstChangeset;
     private @Nullable ComponentWarmer mComponentWarmer;
+    private int mEstimatedViewportCount = UNSET;
 
     Builder() {}
 
@@ -218,6 +227,7 @@ public class RecyclerBinderConfiguration {
       this.mPostToFrontOfQueueForFirstChangeset =
           configuration.mPostToFrontOfQueueForFirstChangeset;
       this.mComponentWarmer = configuration.mComponentWarmer;
+      this.mEstimatedViewportCount = configuration.mEstimatedViewportCount;
     }
 
     /**
@@ -353,6 +363,20 @@ public class RecyclerBinderConfiguration {
       return this;
     }
 
+    /**
+     * This is a temporary hack that allows a surface to manually provide an estimated range. It
+     * will go away so don't depend on it.
+     */
+    @Deprecated
+    public Builder estimatedViewportCount(int estimatedViewportCount) {
+      if (estimatedViewportCount <= 0) {
+        throw new IllegalArgumentException(
+            "Estimated viewport count must be > 0: " + estimatedViewportCount);
+      }
+      mEstimatedViewportCount = estimatedViewportCount;
+      return this;
+    }
+
     public RecyclerBinderConfiguration build() {
       return new RecyclerBinderConfiguration(
           mRangeRatio,
@@ -372,7 +396,8 @@ public class RecyclerBinderConfiguration {
           mIsReconciliationEnabled,
           mIsLayoutDiffingEnabled,
           mPostToFrontOfQueueForFirstChangeset,
-          mComponentWarmer);
+          mComponentWarmer,
+          mEstimatedViewportCount);
     }
   }
 }

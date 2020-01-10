@@ -291,7 +291,7 @@ public class RecyclerCollectionComponentSpec {
     RecyclerBinderConfiguration binderConfiguration =
         recyclerConfiguration.getRecyclerBinderConfiguration();
 
-    RecyclerBinder recyclerBinder =
+    RecyclerBinder.Builder recyclerBinderBuilder =
         new RecyclerBinder.Builder()
             .layoutInfo(recyclerConfiguration.getLayoutInfo(c))
             .rangeRatio(binderConfiguration.getRangeRatio())
@@ -312,8 +312,13 @@ public class RecyclerCollectionComponentSpec {
             .isReconciliationEnabled(binderConfiguration.isReconciliationEnabled())
             .isLayoutDiffingEnabled(binderConfiguration.isLayoutDiffingEnabled())
             .componentWarmer(binderConfiguration.getComponentWarmer())
-            .startupLogger(startupLogger)
-            .build(c);
+            .startupLogger(startupLogger);
+
+    if (binderConfiguration.getEstimatedViewportCount()
+        != RecyclerBinderConfiguration.Builder.UNSET) {
+      recyclerBinderBuilder.estimatedViewportCount(binderConfiguration.getEstimatedViewportCount());
+    }
+    RecyclerBinder recyclerBinder = recyclerBinderBuilder.build(c);
 
     SectionBinderTarget targetBinder =
         new SectionBinderTarget(recyclerBinder, binderConfiguration.getUseBackgroundChangeSets());
