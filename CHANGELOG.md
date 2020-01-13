@@ -4,8 +4,14 @@
 
 _release-date_
 
+* **Breaking: Reconciliation for state updates is enabled by default**. Reconciliation makes state updates faster at the expense of increase in memory usage. New APIs added to explicitly disable reconciliation when an explicit `ComponentTree` is not set on the `LithoView`. Read more about it in [the documentation](http://fblitho.com/docs/reconciliation).
+  - `LithoView.create(Context, Component, boolean)`
+  - `LithoView.create(ComponentContext, Component, boolean)`
+  - `LithoView.setComponentWithoutReconciliation(Component)`
+  - `LithoView.setComponentAsyncWithoutReconciliation(Component)`
 * **Breaking:** Merge `BaseLithoStartupLogging` abstract class, `LithoStartupLoggerUtil` helper class and `LithoStartupLogger` interface into single `LithoStartupLogger` abstract class.
 * **Breaking:** Consolidate two layout calculation `PerfEvent`s into one: remove `FrameworkLogEvents.EVENT_LAYOUT_CALCULATE` and move some of its annotations to `FrameworkLogEvents.CALCULATE_LAYOUT_STATE` which will be used instead.
+
 
 
 For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.33.0...master).
