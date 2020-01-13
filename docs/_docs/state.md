@@ -50,8 +50,8 @@ public class CheckboxSpec {
                 : R.drawable.is_unchecked))
         .child(Text.create(c)
             .text("Submit")
-            .clickHandler(Checkbox.onClickedText(c))
-        .build;
+            .clickHandler(Checkbox.onClickedText(c)))
+        .build();
   }
 
   @OnEvent(ClickEvent.class)
@@ -82,7 +82,7 @@ Here's how you would initialize the checkbox state with a value passed down from
 public class CheckboxSpec {
 
   @OnCreateInitialState
-  static void createInitialState(
+  static void onCreateInitialState(
       ComponentContext c,
       StateValue<Boolean> isChecked,
       @Prop boolean initChecked) {
@@ -101,7 +101,7 @@ Each call to an `@OnUpdateState` method will trigger a new layout calculation fo
 
 This is what you need to know when writing an `@OnUpdateState`  method:
 
-* Parameters representing the states must match the name of a parameter annotated with @State and their type must be a StateValue parameterized with the type of the matching @State.
+* Parameters representing the states must match the name of a parameter annotated with `@State` and their type must be a `StateValue` parameterized with the type of the matching `@State`.
 * `@Param` parameters are allowed. If the value of your state depends on props, you can declare them like this and pass the value of the prop when the update call is triggered.
 * All other parameters must have a corresponding parameter annotated with `@State` in the other lifecycle methods, and their type must be a `StateValue` parameterized with the type of the matching `@State` element.
 
@@ -154,11 +154,11 @@ public class CheckboxSpec {
 
     return Column.create(c)
         .child(Image.create(c)
-        .drawableRes(isChecked
-            ? R.drawable.is_checked
-            : R.drawable.is_unchecked))
-        .clickHandler(Checkbox.onCheckboxClicked(c)))
-    .build;
+            .drawableRes(isChecked
+                ? R.drawable.is_checked
+                : R.drawable.is_unchecked))
+        .clickHandler(Checkbox.onCheckboxClicked(c))
+        .build();
   }
 
   @OnUpdateState
@@ -168,8 +168,8 @@ public class CheckboxSpec {
 
   @OnEvent(ClickEvent.class)
   static void onCheckboxClicked(ComponentContext c) {
-    Checkbox.updateCheckboxSync(c);
-    // Checkbox.updateCheckbox(c); for an async update
+    Checkbox.updateCheckbox(c);
+    // Checkbox.updateCheckboxSync(c); for a sync update
   }
 }
 ```
@@ -177,12 +177,10 @@ public class CheckboxSpec {
 This is what you need to keep in mind when calling state update methods:
 
 * When calling a state update method, the `ComponentContext` instance passed as first parameter must always be the one that is passed down as parameter in the lifecycle method in which the update state is triggered. This context contains important information about the currently known state values and it's important for transferring these values from the old components to the new ones during new layout calculations.
-* In `LayoutSpecs`, you should avoid calling state update methods in `onCreateLayout`, unless you are absolutely certain they will happen only a deterministic, small number of times.
+* In `LayoutSpec`s, you should avoid calling state update methods in `onCreateLayout`, unless you are absolutely certain they will happen only a deterministic, small number of times.
 Every call to a state update method will trigger a new layout calculation on the ComponentTree, which in turn will call `onCreateLayout` on all its components, so it's rather easy to go into an infinite loop. You should consider whether a lazy state update (described below) wouldn't be more appropriate for your use case.
-* In `MountSpecs`, you should never call update state methods from `bind` and `mount` methods. If you need to update a state value in those methods, you should instead use a lazy state update, described below.
-* State is a concept local to components. You cannot call a state update method
-  from outside a component. [Props](/docs/props) are the mechanism to update a
-  component based on outside changes. You can read more about that [here](https://fblitho.com/docs/best-practices#props-vs-state).
+* In `MountSpec`s, you should never call update state methods from `bind` and `mount` methods. If you need to update a state value in those methods, you should instead use a lazy state update, described below.
+* State is a concept local to components. You cannot call a state update method from outside a component. [Props](/docs/props) are the mechanism to update a component based on outside changes. You can read more about that [here](https://fblitho.com/docs/best-practices#props-vs-state).
 
 ## Keys and identifying components
 The framework sets a key on each component, based on its type and the key of its parent. This key is used to determine which component we want to update when calling a state update and finding this component when traversing the tree.
@@ -194,7 +192,7 @@ Moreover, when a Component's state or props are updated and the `ComponentTree` 
 Whenever a key collision is detected in a ComponentTree, which can happen when a parent component created multiple children components of the same type, we assign a unique key on those siblings which depends on the order in which they added to the parent.
 However, with the current implementation, there's no easy way for us to detect that a component is the same when the order of the components in your hierarchy changes. This means that the keys that are autogenerated are not stable through component moves. If you expect your components to move around, you have to assign manual keys.
 
-The `Component.Builder` class exposes a .key() method that you can call when creating a component to assign a unique key to it that will be used to identify this component.
+The `Component.Builder` class exposes a `.key()` method that you can call when creating a component to assign a unique key to it that will be used to identify this component.
 
 You should set this key whenever you have multiple children of the same component with the same type or you expect the content of your layout to be dynamic.
 The manual key you set on a component using the `key` prop will always take precedence over the autogenerated one.
@@ -219,11 +217,11 @@ If a component with key `A` updates its state, and later it is removed from the 
 
 
 ## Lazy State Updates
-For situations where you want to update the value of a `State` but don't need to immediately trigger a new layout calculation, you can use **lazy state updates**. After a lazy state update is called, the component will hold the same value for that state until the next layout calculation is triggered by something else (receiving new props or regular state updates) and the value will be updated. This is useful for updating internal Component information and persisting it between ComponentTree re-layouts when an immediate layout calculation is not needed.
+For situations where you want to update the value of a `State`, but don't need to immediately trigger a new layout calculation, you can use **lazy state updates**. After a lazy state update is called, the component will hold the same value for that state until the next layout calculation is triggered by something else (receiving new props or regular state updates) and the value will be updated. This is useful for updating internal Component information and persisting it between ComponentTree re-layouts when an immediate layout calculation is not needed.
 
-To use lazy state updates, you need to set the `canUpdateLazily` parameter on the `@State` annotation to true.
+To use lazy state updates, you need to set the `canUpdateLazily` parameter on the `@State` annotation to `true`.
 
-For a state parameter `foo` marked with `canUpdateLazily`, the framework will generate a static state update method named `lazyUpdateFoo` which takes a new value as parameter that will be set as the new value for foo.
+For a state parameter `foo` marked with `canUpdateLazily`, the framework will generate a static state update method named `lazyUpdateFoo` which takes a new value as parameter that will be set as the new value for `foo`.
 
 States marked as `canUpdateLazily` can still be used for regular state updates.
 
@@ -251,7 +249,7 @@ static void onCreateInitialState(
 }
 ```
 
-The first time FooComponent is rendered, its child `Text` component will display *first foo*, even if `foo` is lazily updated with another value. When a regular state update or receiving new props will trigger a new layout calculation, the lazy state update will be applied and the `Text` will render *updated foo*.
+The first time FooComponent is rendered, its child `Text` component will display *"first foo"*, even if `foo` is lazily updated with another value. When a regular state update or receiving new props will trigger a new layout calculation, the lazy state update will be applied and the `Text` will render *"updated foo"*.
 
 ## Immutability
 Because of [background layout](/docs/asynchronous-layout), `State` can be accessed at anytime by multiple threads. To ensure thread safety, `State` objects should be immutable (and if for some rare reason this is not possible, then at least thread safe). The simplest solution is to express your state in terms of primitives since primitives are by definition immutable.
