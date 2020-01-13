@@ -208,9 +208,6 @@ public class ComponentsConfiguration {
    */
   public static boolean boostPerfLayoutStateFuture;
 
-  /** If true, release ComponentTrees held in RecyclerBinder when item are removed or detached. */
-  public static boolean isReleaseComponentTreeInRecyclerBinder;
-
   /**
    * When enabled reconciliation will use the deep clone method of the InternalNode with the
    * simplified implementation of shallow copy.

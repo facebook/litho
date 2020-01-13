@@ -5089,7 +5089,6 @@ public class RecyclerBinderTest {
 
   @Test
   public void testItemsOnDetached() {
-    ComponentsConfiguration.isReleaseComponentTreeInRecyclerBinder = true;
     final int childHeightPx = 20;
     final int widthPx = 200;
     final int heightPx = 200;
@@ -5133,12 +5132,10 @@ public class RecyclerBinderTest {
     for (int i = rangeStart + rangeTotal + 1; i < 200; i++) {
       assertThat(components.get(i).wasOnDetachedCalled()).isFalse();
     }
-    ComponentsConfiguration.isReleaseComponentTreeInRecyclerBinder = false;
   }
 
   @Test
   public void testOnDetachedWithRemoveItemAt() {
-    ComponentsConfiguration.isReleaseComponentTreeInRecyclerBinder = true;
     final int childHeightPx = 20;
     final int widthPx = 200;
     final int heightPx = 200;
@@ -5174,12 +5171,10 @@ public class RecyclerBinderTest {
     ShadowLooper.runUiThreadTasks();
 
     assertThat(components.get(0).wasOnDetachedCalled()).isTrue();
-    ComponentsConfiguration.isReleaseComponentTreeInRecyclerBinder = false;
   }
 
   @Test
   public void testOnDetachedWithRemoveRangeAt() {
-    ComponentsConfiguration.isReleaseComponentTreeInRecyclerBinder = true;
     final int childHeightPx = 20;
     final int widthPx = 200;
     final int heightPx = 200;
@@ -5218,12 +5213,10 @@ public class RecyclerBinderTest {
     for (int i = 0; i < removeItemCount; i++) {
       assertThat(components.get(i).wasOnDetachedCalled()).isTrue();
     }
-    ComponentsConfiguration.isReleaseComponentTreeInRecyclerBinder = false;
   }
 
   @Test
   public void testOnDetachedWithReplaceAll() {
-    ComponentsConfiguration.isReleaseComponentTreeInRecyclerBinder = true;
     final int childHeightPx = 20;
     final int widthPx = 200;
     final int heightPx = 200;
@@ -5274,7 +5267,6 @@ public class RecyclerBinderTest {
     for (int i = rangeStart + rangeTotal + 1; i < 200; i++) {
       assertThat(components.get(i).wasOnDetachedCalled()).isFalse();
     }
-    ComponentsConfiguration.isReleaseComponentTreeInRecyclerBinder = false;
   }
 
   @Test
