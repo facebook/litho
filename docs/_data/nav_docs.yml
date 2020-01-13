@@ -78,6 +78,7 @@
   - id: recycler-component
   - id: custom-layout
   - id: inc-mount
+  - id: reconciliation
   - id: component-tree
   - id: error-boundaries
 - title: Architecture
