@@ -1,0 +1,34 @@
+# Copyright (c) 2017-present, Facebook, Inc.
+#
+# This source code is licensed under the Apache 2.0 license found in the
+# LICENSE file in the root directory of this source tree.
+
+load(
+    "//tools/build_defs/oss:litho_defs.bzl",
+    "LITHO_ANDROIDSUPPORT_TARGET",
+    "LITHO_INFERANNOTATIONS_TARGET",
+    "LITHO_JSR_TARGET",
+    "LITHO_PROGUARD_ANNOTATIONS_TARGET",
+    "LITHO_RES_TARGET",
+    "LITHO_VISIBILITY",
+    "litho_android_library",
+)
+
+litho_android_library(
+    name = "rendercore-stub",
+    srcs = glob([
+        "*.java",
+    ]),
+    is_androidx = True,
+    provided_deps = [
+        LITHO_ANDROIDSUPPORT_TARGET,
+        LITHO_JSR_TARGET,
+        LITHO_PROGUARD_ANNOTATIONS_TARGET,
+    ],
+    required_for_source_only_abi = True,
+    visibility = LITHO_VISIBILITY,
+    deps = [
+        LITHO_INFERANNOTATIONS_TARGET,
+        LITHO_RES_TARGET,
+    ],
+)

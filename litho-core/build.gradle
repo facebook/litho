@@ -55,6 +55,7 @@ android {
 dependencies {
     // Project dependencies
     api project(':litho-annotations')
+    api project(':litho-rendercore')
 
     // Annotations
     compileOnly deps.jsr305

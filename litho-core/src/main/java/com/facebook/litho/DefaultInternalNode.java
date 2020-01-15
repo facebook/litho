@@ -51,6 +51,7 @@ import com.facebook.infer.annotation.ReturnsOwnership;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.drawable.ComparableColorDrawable;
+import com.facebook.rendercore.Node;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaBaselineFunction;
 import com.facebook.yoga.YogaConstants;
@@ -72,7 +73,7 @@ import javax.annotation.Nullable;
 /** Default implementation of {@link InternalNode}. */
 @OkToExtend
 @ThreadConfined(ThreadConfined.ANY)
-public class DefaultInternalNode implements InternalNode, Cloneable {
+public class DefaultInternalNode extends Node implements InternalNode, Cloneable {
 
   private static final String CONTEXT_SPECIFIC_STYLE_SET =
       "DefaultInternalNode:ContextSpecificStyleSet";
@@ -194,6 +195,7 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
 
   protected DefaultInternalNode(
       ComponentContext componentContext, YogaNode yogaNode, boolean createDebugComponentsInCtor) {
+    super(LithoLayoutFunction.INSTANCE);
     mComponentContext = componentContext;
 
     if (yogaNode != null) {
@@ -469,8 +471,28 @@ public class DefaultInternalNode implements InternalNode, Cloneable {
   }
 
   @Override
+  public DefaultInternalNode getNode() {
+    return this;
+  }
+
+  @Override
+  public int getChildrenCount() {
+    return getChildCount();
+  }
+
+  @Override
   public @Nullable InternalNode getChildAt(int index) {
     return (InternalNode) mYogaNode.getChildAt(index).getData();
+  }
+
+  @Override
+  public int getXForChildAtIndex(int index) {
+    return getChildAt(index).getX();
+  }
+
+  @Override
+  public int getYForChildAtIndex(int index) {
+    return getChildAt(index).getY();
   }
 
   @Override
