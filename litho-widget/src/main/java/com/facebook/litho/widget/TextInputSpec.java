@@ -42,6 +42,7 @@ import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputConnection;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -177,7 +178,8 @@ import javax.annotation.Nullable;
       KeyUpEvent.class,
       KeyPreImeEvent.class,
       EditorActionEvent.class,
-      SetTextEvent.class
+      SetTextEvent.class,
+      InputConnectionEvent.class,
     })
 class TextInputSpec {
   /**
@@ -689,6 +691,7 @@ class TextInputSpec {
     editText.setKeyUpEventHandler(TextInput.getKeyUpEventHandler(c));
     editText.setKeyPreImeEventEventHandler(TextInput.getKeyPreImeEventHandler(c));
     editText.setEditorActionEventHandler(TextInput.getEditorActionEventHandler(c));
+    editText.setInputConnectionEventHandler(TextInput.getInputConnectionEventHandler(c));
   }
 
   @OnUnmount
@@ -710,6 +713,7 @@ class TextInputSpec {
     editText.setKeyUpEventHandler(null);
     editText.setKeyPreImeEventEventHandler(null);
     editText.setEditorActionEventHandler(null);
+    editText.setInputConnectionEventHandler(null);
   }
 
   @Nullable
@@ -818,6 +822,7 @@ class TextInputSpec {
     @Nullable private EventHandler<KeyUpEvent> mKeyUpEventHandler;
     @Nullable private EventHandler<KeyPreImeEvent> mKeyPreImeEventEventHandler;
     @Nullable private EventHandler<EditorActionEvent> mEditorActionEventHandler;
+    @Nullable private EventHandler<InputConnectionEvent> mInputConnectionEventHandler;
     @Nullable private ComponentContext mComponentContext;
     @Nullable private AtomicReference<CharSequence> mTextState;
     private int mLineCount = UNMEASURED_LINE_COUNT;
@@ -888,6 +893,16 @@ class TextInputSpec {
       return false;
     }
 
+    @Override
+    public InputConnection onCreateInputConnection(EditorInfo editorInfo) {
+      InputConnection inputConnection = super.onCreateInputConnection(editorInfo);
+      if (mInputConnectionEventHandler != null) {
+        return TextInput.dispatchInputConnectionEvent(
+            mInputConnectionEventHandler, inputConnection, editorInfo);
+      }
+      return inputConnection;
+    }
+
     void setTextChangedEventHandler(
         @Nullable EventHandler<TextChangedEvent> textChangedEventHandler) {
       mTextChangedEventHandler = textChangedEventHandler;
@@ -910,6 +925,11 @@ class TextInputSpec {
     void setEditorActionEventHandler(
         @Nullable EventHandler<EditorActionEvent> editorActionEventHandler) {
       mEditorActionEventHandler = editorActionEventHandler;
+    }
+
+    void setInputConnectionEventHandler(
+        @Nullable EventHandler<InputConnectionEvent> inputConnectionEventHandler) {
+      mInputConnectionEventHandler = inputConnectionEventHandler;
     }
 
     /** Sets context for state update, when the text height has changed. */

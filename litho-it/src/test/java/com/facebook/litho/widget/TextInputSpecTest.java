@@ -17,17 +17,22 @@
 package com.facebook.litho.widget;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.text.method.ArrowKeyMovementMethod;
 import android.text.method.LinkMovementMethod;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputConnection;
 import android.widget.EditText;
 import android.widget.TextView;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
+import com.facebook.litho.EventHandler;
 import com.facebook.litho.LithoView;
+import com.facebook.litho.testing.eventhandler.EventHandlerTestHelper;
 import com.facebook.litho.testing.helper.ComponentTestHelper;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import java.lang.reflect.Field;
@@ -151,6 +156,26 @@ public class TextInputSpecTest {
     assertThat(editText.getError()).isEqualTo(errorMessage);
     component = TextInput.create(mContext).error(null);
     assertThat(getEditText(component).getError()).isNullOrEmpty();
+  }
+
+  @Test
+  public void testOnConnectionEventHandler() {
+    InputConnection inputConnection = mock(InputConnection.class);
+    EventHandler<InputConnectionEvent> inputConnectionEventHandler =
+        EventHandlerTestHelper.createMockEventHandler(
+            InputConnectionEvent.class,
+            new EventHandlerTestHelper.MockEventHandler<InputConnectionEvent, Object>() {
+              @Override
+              public Object handleEvent(InputConnectionEvent event) {
+                return inputConnection;
+              }
+            });
+    Component.Builder component =
+        TextInput.create(mContext).inputConnectionEventHandler(inputConnectionEventHandler);
+    final android.widget.EditText editText = getEditText(component);
+    InputConnection editTextInputConnection =
+        editText.onCreateInputConnection(mock(EditorInfo.class));
+    assertThat(editTextInputConnection).isEqualTo(inputConnection);
   }
 
   private static android.widget.EditText getEditText(Component.Builder component) {
