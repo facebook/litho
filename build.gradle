@@ -103,7 +103,7 @@ ext.deps = [
         // Proguard annotations (published through Yoga)
         proguardAnnotations: 'com.facebook.yoga:proguard-annotations:1.14.1',
         // Processor
-        javapoet           : 'com.squareup:javapoet:1.9.0',
+        javapoet           : 'com.squareup:javapoet:1.11.1',
         // Misc
         khronos            : 'org.khronos:opengl-api:gl1.1-android-2.1_r1',
         // Kotlin

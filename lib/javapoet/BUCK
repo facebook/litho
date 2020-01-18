@@ -14,6 +14,6 @@ fb_native.prebuilt_jar(
 
 fb_native.remote_file(
     name = "javapoet.jar",
-    sha1 = "00ecc5cf9c221d55481163e773b24336db149e51",
-    url = "mvn:com.squareup:javapoet:jar:1.9.0",
+    sha1 = "210e69f58dfa76c5529a303913b4a30c2bfeb76b",
+    url = "mvn:com.squareup:javapoet:jar:1.11.1",
 )
