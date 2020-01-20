@@ -31,7 +31,7 @@ import com.facebook.litho.annotations.State;
 import com.facebook.litho.widget.Text;
 
 @LayoutSpec
-public class CompnentWithCustomEventTriggerComponentSpec {
+public class ComponentWithCustomEventTriggerComponentSpec {
 
   @OnCreateInitialState
   static void onCreateInitialState(ComponentContext c, StateValue<Integer> exampleState) {
@@ -50,6 +50,6 @@ public class CompnentWithCustomEventTriggerComponentSpec {
 
   @OnTrigger(CustomEvent.class)
   static void triggerCustomEvent(ComponentContext c, @FromTrigger int increaseBy) {
-    CompnentWithCustomEventTriggerComponent.increaseExampleState(c, increaseBy);
+    ComponentWithCustomEventTriggerComponent.increaseExampleState(c, increaseBy);
   }
 }
