@@ -3002,7 +3002,8 @@ public class RecyclerBinder
   @UiThread
   @GuardedBy("this")
   public boolean isSticky(int position) {
-    return mComponentTreeHolders.get(position).getRenderInfo().isSticky();
+    return isValidPosition(position)
+        && mComponentTreeHolders.get(position).getRenderInfo().isSticky();
   }
 
   @Override
