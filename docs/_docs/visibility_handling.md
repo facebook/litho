@@ -5,7 +5,7 @@ layout: docs
 permalink: /docs/visibility-handling
 ---
 
-### Types of Visibility Range ###
+### Types of Visibility Range
 
 The framework currently supports six types of Visibility Event:
 
@@ -16,7 +16,7 @@ The framework currently supports six types of Visibility Event:
 - [Full Impression Visible Event](/javadoc/com/facebook/litho/FullImpressionVisibleEvent): this event is triggered when the entire Component has passed through the viewport at some point.
 - [VisibilityChangedEvent](/javadoc/com/facebook/litho/VisibilityChangedEvent): this event is triggered when the visibility of the Component on the screen changes.
 
-### Usage ###
+### Usage
 
 > IMPORTANT: Visibility ranges require [incremental mount](/docs/inc-mount#manual-incremental-mount) to be enabled on the relevant Component.
 

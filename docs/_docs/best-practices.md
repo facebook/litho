@@ -7,7 +7,7 @@ permalink: /docs/best-practices
 
 ## Coding Style
 
-#### Guidelines: ####
+#### Guidelines:
 
  * Name your specs consistently with *NAMEComponentSpec* to generate a component called *NAMEComponent*.
  * The *ComponentContext* argument should be simply called `c` to make your layout code less verbose and more readable.
