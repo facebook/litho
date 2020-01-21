@@ -35,7 +35,7 @@ public class CustomEventTriggerExampleComponentSpec {
     final Handle textInputHandle = new Handle();
     return Column.create(c)
         .child(
-            Text.create(c)
+            Text.create(c, android.R.attr.buttonStyle, 0)
                 .text("Trigger custom event")
                 .clickHandler(CustomEventTriggerExampleComponent.onClick(c, textInputHandle)))
         .child(ComponentWithCustomEventTriggerComponent.create(c).handle(textInputHandle))

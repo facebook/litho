@@ -36,7 +36,7 @@ public class ClearTextTriggerExampleComponentSpec {
     final Handle textInputHandle = new Handle();
     return Column.create(c)
         .child(
-            Text.create(c)
+            Text.create(c, android.R.attr.buttonStyle, 0)
                 .text("Clear")
                 .clickHandler(ClearTextTriggerExampleComponent.onClearClick(c, textInputHandle)))
         .child(TextInputContainerComponent.create(c).textInputHandle(textInputHandle))

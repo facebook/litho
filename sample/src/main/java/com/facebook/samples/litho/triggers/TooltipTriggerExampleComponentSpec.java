@@ -47,8 +47,8 @@ public class TooltipTriggerExampleComponentSpec {
     return Column.create(c)
         .alignItems(YogaAlign.CENTER)
         .child(
-            Text.create(c)
-                .paddingDip(YogaEdge.BOTTOM, 50)
+            Text.create(c, android.R.attr.buttonStyle, 0)
+                .marginDip(YogaEdge.BOTTOM, 50)
                 .text("Click to Trigger show tooltip")
                 .clickHandler(TooltipTriggerExampleComponent.onClick(c, anchorHandle)))
         .child(Text.create(c).text("Tooltip anchor").handle(anchorHandle))
