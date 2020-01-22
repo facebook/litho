@@ -25,16 +25,17 @@ import java.lang.annotation.RetentionPolicy;
  * accessed in multiple lifecycle methods. The annotation processor will validate that the props are
  * being used with the correct type and name.
  *
- * <p>For each unique prop defined on the spec, the annotation processor add a setter method on the
+ * <p>For each unique prop defined on the spec, the annotation processor adds a setter method on the
  * Component's Builder that has the same name as the prop. By default props are required but can be
- * marked as optional. A prop can also be constrained further using by setting it's {@code resType}.
+ * marked as {@link #optional()}. A prop can also be constrained further by setting it's {@link
+ * #resType()}.
  *
- * <p>The parent component sets the the props when it creates the component in it's {@link
- * OnCreateLayout} method. The props cannot be updated throughout the lifecycle of the component. If
- * the props need to be updated, the parent has to create a new component and set new props. The
- * props <em>should</em> be immutable since the layout can be calculated on multiple threads.
- * Immutability of the props ensures that no thread safety issues can occur in the component
- * hierarchy.
+ * <p>The parent component sets the props when it creates the component in it's {@link
+ * OnCreateLayout} method. The props cannot be updated throughout the lifecycle of the component
+ * unless they are marked as {@link #dynamic()}. If the layout need to be updated, the parent has to
+ * create a new component and set new props. The props <em>should</em> be immutable since the layout
+ * can be calculated on multiple threads. Immutability of the props ensures that no thread safety
+ * issues can occur in the component hierarchy.
  *
  * <p><b>Creating Props:</b> <br>
  *
@@ -45,15 +46,18 @@ import java.lang.annotation.RetentionPolicy;
  *   static Component onCreateLayout(
  *     ComponentContext c,
  *    {@literal @Prop} MyTitles title,
- *    {@literal @Prop} String imageUrl,
+ *    {@literal @Prop(varArg = imageUrl)} List<String> urls,
  *    {@literal @Prop(optional = true)} boolean isSelected) {
+ *     if (urls.isEmpty()) {
+ *       return null;
+ *     }
  *
  *     return Column.create(c)
  *       .paddingDip(YogaEdge.ALL, 8)
  *       .backgroundColor(isSelected ? Color.WHITE : Color.GREEN)
  *       .child(
  *         Image.create(c)
- *           .url(imageUrl)
+ *           .url(urls.get(0))
  *           .marginDip(YogaEdge.BOTTOM, 4)
  *       )
  *       .child(
@@ -134,9 +138,11 @@ public @interface Prop {
    * Declares this prop supports a variable arguments, and provide utility methods to add values to
    * the prop.
    *
-   * <p>For example, having {@code @Prop(@varArg="name") List<CharSequence> names} would generate a
-   * setter {@code name} method which can be called multiple times to add a set of names. The prop
-   * must be a parameterized list with a resource type of {@code resType = ResType.NONE}.
+   * <p>For example, having {@code @Prop(varArg="name") List<CharSequence> names} would generate a
+   * setter {@code name} method which can be called multiple times to add a set of names.
+   *
+   * <p>The prop must be a parameterized list. It is effectively always {@link #optional()}, and has
+   * an empty list (immutable) as a default value.
    *
    * <pre><code>
    *   MyComponent.create(c)
@@ -149,7 +155,7 @@ public @interface Prop {
    */
   String varArg() default "";
 
-  /** @return {@code true} iff the name of the prop conflicts with a common prop. */
+  /** @return {@code true} if the name of the prop conflicts with a common prop. */
   boolean isCommonProp() default false;
 
   /**
@@ -158,7 +164,7 @@ public @interface Prop {
    * common prop will applied by the framework level as normal as well as any behavior that the
    * component declares within the spec.
    *
-   * @return {@code true} iff the framework should not apply the common prop.
+   * @return {@code true} if the framework should not apply the common prop.
    */
   boolean overrideCommonPropBehavior() default false;
 

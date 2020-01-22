@@ -61,6 +61,7 @@ import com.squareup.javapoet.TypeSpec;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.List;
@@ -235,9 +236,9 @@ public class ComponentBodyGenerator {
       if (prop.hasVarArgs()) {
         propAnnotationBuilder.addMember("varArg", "$S", prop.getVarArgsSingleName());
       }
+      TypeName propFieldTypeName = KotlinSpecUtils.getFieldTypeName(specModel, fieldTypeName);
       final FieldSpec.Builder fieldBuilder =
-          FieldSpec.builder(
-                  KotlinSpecUtils.getFieldTypeName(specModel, fieldTypeName), prop.getName())
+          FieldSpec.builder(propFieldTypeName, prop.getName())
               .addAnnotations(prop.getExternalAnnotations())
               .addAnnotation(propAnnotationBuilder.build())
               .addAnnotation(
@@ -246,6 +247,9 @@ public class ComponentBodyGenerator {
                       .build());
       if (prop.hasDefault(specModel.getPropDefaults())) {
         assignInitializer(fieldBuilder, specModel, prop);
+      } else if (prop.hasVarArgs()) {
+        fieldBuilder.initializer(
+            "($T) $T.EMPTY_LIST", propFieldTypeName, ClassName.get(Collections.class));
       }
 
       typeSpecDataHolder.addField(fieldBuilder.build());

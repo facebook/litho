@@ -48,6 +48,7 @@ import com.squareup.javapoet.WildcardTypeName;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
+import java.util.Collections;
 import java.util.List;
 import javax.lang.model.element.Modifier;
 
@@ -643,7 +644,10 @@ public class BuilderGenerator {
           varArgPropName);
     } else {
       codeBlockBuilder.beginControlFlow(
-          "if (this.$L.$L == null)", componentMemberInstanceName, varArgPropName);
+          "if (this.$L.$L == $T.EMPTY_LIST)",
+          componentMemberInstanceName,
+          varArgPropName,
+          ClassName.get(Collections.class));
     }
     final ParameterizedTypeName listType =
         ParameterizedTypeName.get(ClassName.get(ArrayList.class), varArgParameterType);
@@ -756,7 +760,7 @@ public class BuilderGenerator {
 
     if (hasVarArgs) {
       dataHolder.addMethod(
-          resTypeListBuilder(
+          resTypeVarArgBuilder(
                   specModel,
                   prop,
                   requiredIndex,
@@ -806,7 +810,7 @@ public class BuilderGenerator {
 
     if (hasVarArgs) {
       dataHolder.addMethod(
-          resTypeListBuilder(
+          resTypeVarArgBuilder(
                   specModel,
                   prop,
                   requiredIndex,
@@ -875,7 +879,7 @@ public class BuilderGenerator {
 
     if (hasVarArgs) {
       dataHolder.addMethod(
-          resTypeListBuilder(
+          resTypeVarArgBuilder(
                   specModel,
                   prop,
                   requiredIndex,
@@ -894,7 +898,7 @@ public class BuilderGenerator {
               .build());
 
       dataHolder.addMethod(
-          resTypeListBuilder(
+          resTypeVarArgBuilder(
                   specModel,
                   prop,
                   requiredIndex,
@@ -942,7 +946,7 @@ public class BuilderGenerator {
 
     if (hasVarArgs) {
       dataHolder.addMethod(
-          resTypeListBuilder(
+          resTypeVarArgBuilder(
                   specModel,
                   prop,
                   requiredIndex,
@@ -984,7 +988,7 @@ public class BuilderGenerator {
 
     if (hasVarArgs) {
       dataHolder.addMethod(
-          resTypeListBuilder(
+          resTypeVarArgBuilder(
                   specModel,
                   prop,
                   requiredIndex,
@@ -1029,7 +1033,7 @@ public class BuilderGenerator {
 
     if (hasVarArgs) {
       dataHolder.addMethod(
-          resTypeListBuilder(
+          resTypeVarArgBuilder(
                   specModel,
                   prop,
                   requiredIndex,
@@ -1101,7 +1105,7 @@ public class BuilderGenerator {
     return parameter(type, name, externalAnnotations, extraAnnotations);
   }
 
-  private static MethodSpec.Builder resTypeListBuilder(
+  private static MethodSpec.Builder resTypeVarArgBuilder(
       SpecModel specModel,
       PropModel prop,
       int requiredIndex,
@@ -1201,11 +1205,7 @@ public class BuilderGenerator {
             propName);
       } else {
         codeBlockBuilder.beginControlFlow(
-            "if (this.$L.$L == null || this.$L.$L.isEmpty())",
-            componentMemberInstanceName,
-            propName,
-            componentMemberInstanceName,
-            propName);
+            "if (this.$L.$L.isEmpty())", componentMemberInstanceName, propName);
       }
 
       codeBlockBuilder

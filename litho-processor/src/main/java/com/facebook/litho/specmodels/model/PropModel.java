@@ -45,7 +45,7 @@ public class PropModel implements MethodParamModel {
       ResType resType,
       String varArg) {
     mParamModel = paramModel;
-    mIsOptional = isOptional;
+    mIsOptional = isOptional || (varArg != null && !varArg.isEmpty());
     mIsCommonProp = isCommonProp;
     mOverrideCommonPropBehavior = overrideCommonPropBehavior;
     mIsDynamic = dynamic;

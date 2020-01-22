@@ -251,13 +251,13 @@ public class ComponentBodyGeneratorTest {
         .isEqualTo(
             "@com.facebook.litho.annotations.Prop(\n"
                 + "    resType = com.facebook.litho.annotations.ResType.NONE,\n"
-                + "    optional = false,\n"
+                + "    optional = true,\n"
                 + "    varArg = \"item\"\n"
                 + ")\n"
                 + "@com.facebook.litho.annotations.Comparable(\n"
                 + "    type = 5\n"
                 + ")\n"
-                + "java.util.List<? extends java.lang.Number> arg9;\n");
+                + "java.util.List<? extends java.lang.Number> arg9 = (java.util.List<? extends java.lang.Number>) java.util.Collections.EMPTY_LIST;\n");
 
     dataHolder = ComponentBodyGenerator.generateProps(mMountSpecModelDI, RunMode.normal());
     assertThat(dataHolder.getFieldSpecs()).hasSize(6);
@@ -285,13 +285,13 @@ public class ComponentBodyGeneratorTest {
         .isEqualTo(
             "@com.facebook.litho.annotations.Prop(\n"
                 + "    resType = com.facebook.litho.annotations.ResType.NONE,\n"
-                + "    optional = false,\n"
+                + "    optional = true,\n"
                 + "    varArg = \"number\"\n"
                 + ")\n"
                 + "@com.facebook.litho.annotations.Comparable(\n"
                 + "    type = 5\n"
                 + ")\n"
-                + "java.util.List<java.lang.Number> numbers;\n");
+                + "java.util.List<java.lang.Number> numbers = (java.util.List<java.lang.Number>) java.util.Collections.EMPTY_LIST;\n");
   }
 
   @Test

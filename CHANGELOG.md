@@ -11,6 +11,7 @@ _release-date_
   - `LithoView.setComponentAsyncWithoutReconciliation(Component)`
 * **Breaking:** Merge `BaseLithoStartupLogging` abstract class, `LithoStartupLoggerUtil` helper class and `LithoStartupLogger` interface into single `LithoStartupLogger` abstract class.
 * **Breaking:** Consolidate two layout calculation `PerfEvent`s into one: remove `FrameworkLogEvents.EVENT_LAYOUT_CALCULATE` and move some of its annotations to `FrameworkLogEvents.CALCULATE_LAYOUT_STATE` which will be used instead.
+* **Breaking:** Make `varArg` props effectively optional with a `Collections.EMPTY_LIST` as a default value.
 
 
 
