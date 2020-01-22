@@ -51,10 +51,8 @@ dependencies {
 
     // First-party
     implementation deps.soloader
-    implementation(deps.flipper) {
-        exclude group: 'com.facebook.flipper', module: 'fbjni'
-        exclude group: 'com.squareup.okhttp3'
-    }
+    implementation deps.flipper
+    implementation deps.flipperLithoPlugin
     implementation deps.fresco
     implementation deps.guava
 
