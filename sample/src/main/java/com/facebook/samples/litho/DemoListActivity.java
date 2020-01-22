@@ -22,6 +22,7 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
 import com.facebook.samples.litho.animations.animatedbadge.AnimatedBadgeActivity;
 import com.facebook.samples.litho.animations.animationcomposition.ComposedAnimationsActivity;
+import com.facebook.samples.litho.animations.bounceexample.BounceExampleActivity;
 import com.facebook.samples.litho.animations.bounds.BoundsAnimationActivity;
 import com.facebook.samples.litho.animations.commondynamicprops.CommonDynamicPropsAnimationActivity;
 import com.facebook.samples.litho.animations.expandableelement.ExpandableElementActivity;
@@ -70,8 +71,9 @@ public class DemoListActivity extends NavigatableDemoActivity {
                   new DemoListDataModel("Page Indicators", PageIndicatorsActivity.class),
                   new DemoListDataModel("Render Thread", RenderThreadAnimationActivity.class),
                   new DemoListDataModel(
-                      "Common Dynamic Props Animations",
-                      CommonDynamicPropsAnimationActivity.class))),
+                      "Common Dynamic Props Animations", CommonDynamicPropsAnimationActivity.class),
+                  new DemoListDataModel(
+                      "Bouncing Component Example", BounceExampleActivity.class))),
           new DemoListDataModel("Dynamic Props", DynamicPropsActivity.class),
           new DemoListDataModel("Fast Scroll Handle", FastScrollHandleActivity.class),
           new DemoListDataModel("Litho Stats", StatsActivity.class),
