@@ -584,39 +584,25 @@ public class BuilderGenerator {
       SpecModel specModel, PropModel prop, int requiredIndex, AnnotationSpec... extraAnnotations) {
     String varArgName = prop.getVarArgsSingleName();
 
-    final String propName = prop.getName();
-    final String implMemberInstanceName = getComponentMemberInstanceName(specModel);
     final ParameterizedTypeName varArgType = (ParameterizedTypeName) prop.getTypeName();
     final TypeName varArgTypeArgumentTypeName = varArgType.typeArguments.get(0);
     final TypeName varArgTypeName = getParameterTypeName(specModel, varArgTypeArgumentTypeName);
 
-    final ParameterizedTypeName listType =
-        ParameterizedTypeName.get(ClassName.get(ArrayList.class), varArgTypeName);
     CodeBlock.Builder codeBlockBuilder =
         CodeBlock.builder()
             .beginControlFlow("if ($L == null)", varArgName)
             .addStatement("return this")
             .endControlFlow();
 
-    if (prop.hasDefault(specModel.getPropDefaults())) {
-      codeBlockBuilder.beginControlFlow(
-          "if (this.$L.$L == null || this.$L.$L == $L.$L)",
-          implMemberInstanceName,
-          propName,
-          implMemberInstanceName,
-          propName,
-          specModel.getSpecName(),
-          propName);
-    } else {
-      codeBlockBuilder.beginControlFlow(
-          "if (this.$L.$L == null)", implMemberInstanceName, propName);
-    }
+    createListIfDefault(codeBlockBuilder, specModel, prop, varArgTypeName);
 
     CodeBlock codeBlock =
         codeBlockBuilder
-            .addStatement("this.$L.$L = new $T()", implMemberInstanceName, propName, listType)
-            .endControlFlow()
-            .addStatement("this.$L.$L.add($L)", implMemberInstanceName, propName, varArgName)
+            .addStatement(
+                "this.$L.$L.add($L)",
+                getComponentMemberInstanceName(specModel),
+                prop.getName(),
+                varArgName)
             .build();
 
     return getMethodSpecBuilder(
@@ -627,6 +613,44 @@ public class BuilderGenerator {
             Arrays.asList(parameter(prop, varArgTypeName, varArgName, extraAnnotations)),
             codeBlock)
         .build();
+  }
+
+  /**
+   * Adds code to the {@code codeBlockBuilder}, which checks if {@code varArgProp} member variable
+   * equals default value and assigns a new list if true.
+   *
+   * <pre>{@code
+   * if (this.mComponentName.varArgPropName == ...) {
+   *   this.mComponentName.varArgPropName = new ...;
+   * }
+   * }</pre>
+   */
+  private static void createListIfDefault(
+      CodeBlock.Builder codeBlockBuilder,
+      SpecModel specModel,
+      PropModel varArgProp,
+      TypeName varArgParameterType) {
+    final String varArgPropName = varArgProp.getName();
+    final String componentMemberInstanceName = getComponentMemberInstanceName(specModel);
+    if (varArgProp.hasDefault(specModel.getPropDefaults())) {
+      codeBlockBuilder.beginControlFlow(
+          "if (this.$L.$L == null || this.$L.$L == $L.$L)",
+          componentMemberInstanceName,
+          varArgPropName,
+          componentMemberInstanceName,
+          varArgPropName,
+          specModel.getSpecName(),
+          varArgPropName);
+    } else {
+      codeBlockBuilder.beginControlFlow(
+          "if (this.$L.$L == null)", componentMemberInstanceName, varArgPropName);
+    }
+    final ParameterizedTypeName listType =
+        ParameterizedTypeName.get(ClassName.get(ArrayList.class), varArgParameterType);
+    codeBlockBuilder
+        .addStatement(
+            "this.$L.$L = new $T()", componentMemberInstanceName, varArgPropName, listType)
+        .endControlFlow();
   }
 
   private static TypeName getParameterTypeName(
@@ -1085,13 +1109,9 @@ public class BuilderGenerator {
       List<ParameterSpec> parameters,
       String statement,
       Object... formatObjects) {
-    final String propName = prop.getName();
     final String parameterName = parameters.get(0).name;
-    final String componentMemberInstanceName = getComponentMemberInstanceName(specModel);
     final ParameterizedTypeName varArgType = (ParameterizedTypeName) prop.getTypeName();
     final TypeName resType = varArgType.typeArguments.get(0);
-    final ParameterizedTypeName listType =
-        ParameterizedTypeName.get(ClassName.get(ArrayList.class), resType);
 
     CodeBlock.Builder codeBlockBuilder =
         CodeBlock.builder()
@@ -1099,28 +1119,15 @@ public class BuilderGenerator {
             .addStatement("return this")
             .endControlFlow();
 
-    if (prop.hasDefault(specModel.getPropDefaults())) {
-      codeBlockBuilder.beginControlFlow(
-          "if (this.$L.$L == null || this.$L.$L == $L.$L)",
-          componentMemberInstanceName,
-          propName,
-          componentMemberInstanceName,
-          propName,
-          specModel.getSpecName(),
-          propName);
-    } else {
-      codeBlockBuilder.beginControlFlow(
-          "if (this.$L.$L == null)", componentMemberInstanceName, propName);
-    }
+    createListIfDefault(codeBlockBuilder, specModel, prop, resType);
 
     CodeBlock codeBlock =
         codeBlockBuilder
-            .addStatement("this.$L.$L = new $T()", componentMemberInstanceName, propName, listType)
-            .endControlFlow()
             .beginControlFlow("for (int i = 0; i < $L.size(); i++)", parameterName)
             .add("final $T res = ", resType.isBoxedPrimitive() ? resType.unbox() : resType)
             .addStatement(statement, formatObjects)
-            .addStatement("this.$L.$L.add(res)", componentMemberInstanceName, propName)
+            .addStatement(
+                "this.$L.$L.add(res)", getComponentMemberInstanceName(specModel), prop.getName())
             .endControlFlow()
             .build();
 
@@ -1137,39 +1144,22 @@ public class BuilderGenerator {
       Object... formatObjects) {
 
     if (prop.hasVarArgs()) {
-      final String propName = prop.getName();
-      final String componentMemberInstanceName = getComponentMemberInstanceName(specModel);
       final ParameterizedTypeName varArgType = (ParameterizedTypeName) prop.getTypeName();
       final TypeName singleParameterType = varArgType.typeArguments.get(0);
-      final ParameterizedTypeName listType =
-          ParameterizedTypeName.get(ClassName.get(ArrayList.class), singleParameterType);
 
       CodeBlock.Builder codeBlockBuilder = CodeBlock.builder();
 
-      if (prop.hasDefault(specModel.getPropDefaults())) {
-        codeBlockBuilder.beginControlFlow(
-            "if (this.$L.$L == null || this.$L.$L == $L.$L)",
-            componentMemberInstanceName,
-            propName,
-            componentMemberInstanceName,
-            propName,
-            specModel.getSpecName(),
-            propName);
-      } else {
-        codeBlockBuilder.beginControlFlow(
-            "if (this.$L.$L == null)", componentMemberInstanceName, propName);
-      }
+      createListIfDefault(codeBlockBuilder, specModel, prop, singleParameterType);
 
       codeBlockBuilder
-          .addStatement("this.$L.$L = new $T()", componentMemberInstanceName, propName, listType)
-          .endControlFlow()
           .add(
               "final $T res = ",
               singleParameterType.isBoxedPrimitive()
                   ? singleParameterType.unbox()
                   : singleParameterType)
           .addStatement(statement, formatObjects)
-          .addStatement("this.$L.$L.add(res)", componentMemberInstanceName, propName);
+          .addStatement(
+              "this.$L.$L.add(res)", getComponentMemberInstanceName(specModel), prop.getName());
 
       return getMethodSpecBuilder(
           specModel, prop, requiredIndex, name, parameters, codeBlockBuilder.build());
