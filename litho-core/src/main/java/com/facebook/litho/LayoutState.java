@@ -857,7 +857,7 @@ class LayoutState {
       if (isTracing) {
         ComponentsSystrace.beginSection("onBoundsDefined:" + node.getSimpleName());
       }
-      component.onBoundsDefined(layoutState.mContext, node);
+      component.onBoundsDefined(component.getScopedContext(), node);
       if (isTracing) {
         ComponentsSystrace.endSection();
       }
