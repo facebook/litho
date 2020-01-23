@@ -14,21 +14,31 @@
  * limitations under the License.
  */
 
-package com.facebook.samples.litho.animations.bounceexample;
+package com.facebook.samples.litho.animations.animationcookbook;
 
 import android.os.Bundle;
+import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
+import com.facebook.litho.sections.SectionContext;
+import com.facebook.litho.sections.widget.RecyclerCollectionComponent;
 import com.facebook.samples.litho.NavigatableDemoActivity;
 import javax.annotation.Nullable;
 
-public class BounceExampleActivity extends NavigatableDemoActivity {
+public class AnimationCookBookActivity extends NavigatableDemoActivity {
 
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-
     final ComponentContext componentContext = new ComponentContext(this);
-    setContentView(LithoView.create(this, BounceExampleComponent.create(componentContext).build()));
+    Component component =
+        RecyclerCollectionComponent.create(componentContext)
+            .disablePTR(true)
+            .section(
+                AnimationCookBookListSection.create(new SectionContext(componentContext)).build())
+            .build();
+    LithoView lithoView = LithoView.create(this, component);
+    lithoView.performIncrementalMount();
+    setContentView(lithoView);
   }
 }

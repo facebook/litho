@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.facebook.samples.litho.animations.bounceexample;
+package com.facebook.samples.litho.animations.animationcookbook;
 
 import android.animation.Animator;
 import android.animation.AnimatorSet;
@@ -35,6 +35,7 @@ import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.annotations.State;
 import com.facebook.litho.widget.Text;
 import com.facebook.yoga.YogaAlign;
+import com.facebook.yoga.YogaEdge;
 import com.facebook.yoga.YogaJustify;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -94,6 +95,7 @@ class BounceExampleComponentSpec {
     return Column.create(c)
         .alignItems(YogaAlign.CENTER)
         .justifyContent(YogaJustify.CENTER)
+        .paddingDip(YogaEdge.ALL, 50)
         .clickHandler(BounceExampleComponent.onClick(c))
         .child(Text.create(c).text("\u26BD").textSizeSp(50).translationY(translationY))
         .build();

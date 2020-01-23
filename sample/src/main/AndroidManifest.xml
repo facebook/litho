@@ -51,7 +51,7 @@
     <activity android:name=".animations.pageindicators.PageIndicatorsActivity" />
     <activity android:name=".animations.renderthread.RenderThreadAnimationActivity" />
     <activity android:name=".animations.commondynamicprops.CommonDynamicPropsAnimationActivity" />
-    <activity android:name=".animations.bounceexample.BounceExampleActivity" />
+    <activity android:name=".animations.animationcookbook.AnimationCookBookActivity" />
     <activity android:name=".dynamicprops.DynamicPropsActivity"/>
     <activity android:name=".fastscroll.FastScrollHandleActivity"/>
     <activity android:name=".stats.StatsActivity"/>
