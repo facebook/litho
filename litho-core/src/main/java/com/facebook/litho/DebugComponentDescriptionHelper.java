@@ -72,9 +72,13 @@ public class DebugComponentDescriptionHelper {
       sb.append(String.format(" litho:id/%s", testKey.replace(' ', '_')));
     }
 
-    final String textContent = debugComponent.getTextContent();
+    String textContent = debugComponent.getTextContent();
     if (textContent != null && !TextUtils.isEmpty(textContent)) {
-      sb.append(String.format(" text=\"%s\"", textContent.replace("\n", "").replace("\"", "")));
+      textContent = textContent.replace("\n", "").replace("\"", "");
+      if (textContent.length() > 200) {
+        textContent = textContent.substring(0, 200) + "...";
+      }
+      sb.append(String.format(" text=\"%s\"", textContent));
     }
 
     if (!embedded && layout != null && layout.getClickHandler() != null) {
