@@ -88,4 +88,21 @@ public class DebugHierarchy {
   public static @Nullable Node getMountItemHierarchy(ComponentHost host, int mountItemIndex) {
     return host.getMountItemAt(mountItemIndex).getHierarchy();
   }
+
+  public static @Nullable String getOutputUnitTypeName(@OutputUnitType int type) {
+    switch (type) {
+      case OutputUnitType.CONTENT:
+        return "CONTENT";
+      case OutputUnitType.BACKGROUND:
+        return "BACKGROUND";
+      case OutputUnitType.FOREGROUND:
+        return "FOREGROUND";
+      case OutputUnitType.HOST:
+        return "HOST";
+      case OutputUnitType.BORDER:
+        return "BORDER";
+      default:
+        return null;
+    }
+  }
 }
