@@ -254,7 +254,7 @@ public class LayoutStateCalculateTopsAndBottomsTest {
       Component component, int top, int bottom, int index) {
     LayoutOutput layoutOutput =
         new LayoutOutput(
-            null, null, null, component, new Rect(0, top, 10, bottom), 0, 0, 0, 0, 0, 0, null);
+            null, null, component, new Rect(0, top, 10, bottom), 0, 0, 0, 0, 0, 0, null);
     layoutOutput.setIndex(index);
     return layoutOutput;
   }

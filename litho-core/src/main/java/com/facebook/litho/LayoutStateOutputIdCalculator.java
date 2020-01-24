@@ -55,7 +55,8 @@ class LayoutStateOutputIdCalculator {
       int level,
       @OutputUnitType int type,
       long previousId,
-      boolean isCachedOutputUpdated) {
+      boolean isCachedOutputUpdated,
+      @Nullable DebugHierarchy.Node hierarchy) {
 
     if (mLayoutCurrentSequenceForBaseId == null) {
       mLayoutCurrentSequenceForBaseId = new LongSparseArray<>(2);
@@ -94,6 +95,10 @@ class LayoutStateOutputIdCalculator {
 
     long layoutOutputId = LayoutStateOutputIdCalculator.calculateId(baseLayoutId, sequence);
     layoutOutput.setId(layoutOutputId);
+    if (hierarchy != null) {
+      // Add the type to the debug hierarchy.
+      layoutOutput.setHierarchy(hierarchy.mutateType(type));
+    }
 
     mLayoutCurrentSequenceForBaseId.put(baseLayoutId, sequence + 1);
   }

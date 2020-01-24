@@ -32,14 +32,25 @@ public class DebugHierarchy {
     public final @Nullable Node parent;
     public final @Nullable Component component;
     public final @Nullable List<Component> components;
+    public final @OutputUnitType int type;
 
     public Node(
         @Nullable Node parent,
         @Nullable Component component,
-        @Nullable List<Component> components) {
+        @Nullable List<Component> components,
+        @OutputUnitType int type) {
       this.parent = parent;
       this.component = component;
       this.components = components;
+      this.type = type;
+    }
+
+    public Node mutateType(int type) {
+      if (this.type == type) {
+        return this;
+      }
+
+      return new Node(parent, component, components, type);
     }
 
     @Override
@@ -57,6 +68,11 @@ public class DebugHierarchy {
       sb.append('}');
       return sb.toString();
     }
+  }
+
+  public static Node newNode(
+      @Nullable Node parent, @Nullable Component component, @Nullable List<Component> components) {
+    return new Node(parent, component, components, OutputUnitType.HOST);
   }
 
   private DebugHierarchy() {}

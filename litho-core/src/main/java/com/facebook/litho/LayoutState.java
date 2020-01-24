@@ -334,7 +334,6 @@ class LayoutState {
         hostMarker,
         layoutState,
         node,
-        hierarchy,
         true /* useNodePadding */,
         node.getImportantForAccessibility(),
         layoutState.mShouldDuplicateParentState,
@@ -360,8 +359,7 @@ class LayoutState {
     return mergedDynamicProps;
   }
 
-  private static LayoutOutput createHostLayoutOutput(
-      LayoutState layoutState, InternalNode node, @Nullable DebugHierarchy.Node hierarchy) {
+  private static LayoutOutput createHostLayoutOutput(LayoutState layoutState, InternalNode node) {
 
     final HostComponent hostComponent = HostComponent.create();
 
@@ -380,7 +378,6 @@ class LayoutState {
             hostMarker,
             layoutState,
             node,
-            hierarchy,
             false /* useNodePadding */,
             node.getImportantForAccessibility(),
             node.isDuplicateParentStateEnabled(),
@@ -399,11 +396,7 @@ class LayoutState {
   }
 
   private static LayoutOutput createDrawableLayoutOutput(
-      Component component,
-      LayoutState layoutState,
-      @Nullable DebugHierarchy.Node hierarchy,
-      InternalNode node,
-      boolean hasHostView) {
+      Component component, LayoutState layoutState, InternalNode node, boolean hasHostView) {
     // The mount operation will need both the marker for the target host and its matching
     // parent host to ensure the correct hierarchy when nesting the host views.
     long hostMarker = layoutState.mCurrentHostMarker;
@@ -413,7 +406,6 @@ class LayoutState {
         hostMarker,
         layoutState,
         node,
-        hierarchy,
         false /* useNodePadding */,
         IMPORTANT_FOR_ACCESSIBILITY_NO,
         layoutState.mShouldDuplicateParentState,
@@ -425,7 +417,6 @@ class LayoutState {
       long hostMarker,
       LayoutState layoutState,
       InternalNode node,
-      @Nullable DebugHierarchy.Node hierarchy,
       boolean useNodePadding,
       int importantForAccessibility,
       boolean duplicateParentState,
@@ -515,7 +506,6 @@ class LayoutState {
     return new LayoutOutput(
         layoutOutputNodeInfo,
         layoutOutputViewNodeInfo,
-        hierarchy,
         component,
         bounds,
         hostTranslationX,
@@ -697,7 +687,7 @@ class LayoutState {
     final DebugHierarchy.Node hierarchy;
     // Update the hierarchy if we are tracking it.
     if (ComponentsConfiguration.isDebugHierarchyEnabled) {
-      hierarchy = new DebugHierarchy.Node(parentHierarchy, component, node.getComponents());
+      hierarchy = DebugHierarchy.newNode(parentHierarchy, component, node.getComponents());
     } else {
       hierarchy = null;
     }
@@ -823,7 +813,8 @@ class LayoutState {
           layoutState.mCurrentLevel,
           OutputUnitType.CONTENT,
           previousId,
-          isCachedOutputUpdated);
+          isCachedOutputUpdated,
+          hierarchy);
     }
 
     // 2. Add background if defined.
@@ -1105,16 +1096,22 @@ class LayoutState {
   }
 
   private static void calculateAndSetHostOutputIdAndUpdateState(
-      InternalNode node, LayoutOutput hostOutput, LayoutState layoutState) {
+      InternalNode node,
+      LayoutOutput hostOutput,
+      LayoutState layoutState,
+      @Nullable DebugHierarchy.Node hierarchy) {
     if (layoutState.isLayoutRoot(node)) {
       // The root host (LithoView) always has ID 0 and is unconditionally
       // set as dirty i.e. no need to use shouldComponentUpdate().
       hostOutput.setId(ROOT_HOST_ID);
+      if (hierarchy != null) {
+        hostOutput.setHierarchy(hierarchy.mutateType(OutputUnitType.HOST));
+      }
 
       hostOutput.setUpdateState(LayoutOutput.STATE_DIRTY);
     } else {
       layoutState.calculateAndSetLayoutOutputIdAndUpdateState(
-          hostOutput, layoutState.mCurrentLevel, OutputUnitType.HOST, -1, false);
+          hostOutput, layoutState.mCurrentLevel, OutputUnitType.HOST, -1, false, hierarchy);
     }
   }
 
@@ -1257,14 +1254,15 @@ class LayoutState {
 
     final LayoutOutput drawableLayoutOutput =
         createDrawableLayoutOutput(
-            drawableComponent, layoutState, hierarchy, node, matchHostBoundsTransitions);
+            drawableComponent, layoutState, node, matchHostBoundsTransitions);
 
     layoutState.calculateAndSetLayoutOutputIdAndUpdateState(
         drawableLayoutOutput,
         layoutState.mCurrentLevel,
         outputType,
         previousId,
-        isCachedOutputUpdated);
+        isCachedOutputUpdated,
+        hierarchy);
 
     addMountableOutput(layoutState, drawableLayoutOutput);
     addLayoutOutputIdToPositionsMap(
@@ -1295,7 +1293,7 @@ class LayoutState {
       throw new IllegalArgumentException("We shouldn't insert a host as a parent of a View");
     }
 
-    final LayoutOutput hostLayoutOutput = createHostLayoutOutput(layoutState, node, hierarchy);
+    final LayoutOutput hostLayoutOutput = createHostLayoutOutput(layoutState, node);
 
     // The component of the hostLayoutOutput will be set later after all the
     // children got processed.
@@ -1307,7 +1305,7 @@ class LayoutState {
       diffNode.setHostOutput(hostLayoutOutput);
     }
 
-    calculateAndSetHostOutputIdAndUpdateState(node, hostLayoutOutput, layoutState);
+    calculateAndSetHostOutputIdAndUpdateState(node, hostLayoutOutput, layoutState, hierarchy);
 
     addLayoutOutputIdToPositionsMap(
         layoutState.mOutputsIdToPositionMap, hostLayoutOutput, hostOutputPosition);
@@ -1726,12 +1724,13 @@ class LayoutState {
       int level,
       @OutputUnitType int type,
       long previousId,
-      boolean isCachedOutputUpdated) {
+      boolean isCachedOutputUpdated,
+      @Nullable DebugHierarchy.Node hierarchy) {
     if (mLayoutStateOutputIdCalculator == null) {
       mLayoutStateOutputIdCalculator = new LayoutStateOutputIdCalculator();
     }
     mLayoutStateOutputIdCalculator.calculateAndSetLayoutOutputIdAndUpdateState(
-        layoutOutput, level, type, previousId, isCachedOutputUpdated);
+        layoutOutput, level, type, previousId, isCachedOutputUpdated, hierarchy);
   }
 
   /**
