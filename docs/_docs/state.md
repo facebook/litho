@@ -217,7 +217,9 @@ If a component with key `A` updates its state, and later it is removed from the 
 
 
 ## Lazy State Updates
-For situations where you want to update the value of a `State`, but don't need to immediately trigger a new layout calculation, you can use **lazy state updates**. After a lazy state update is called, the component will hold the same value for that state until the next layout calculation is triggered by something else (receiving new props or regular state updates) and the value will be updated. This is useful for updating internal Component information and persisting it between ComponentTree re-layouts when an immediate layout calculation is not needed.
+For situations where you want to update the value of a `State`, but don't need to immediately trigger a new layout calculation, you can use **lazy state updates**. After a lazy state update, the new state value will be visible in event handlers, but a new layout will not be triggered. Currently, the value is **not** visible to other lifecycle callbacks (e.g. `onMount`).
+
+This is useful for updating state that doesn't need to be reflected in the UI. For example, say you want to log an analytics event only the first time a Component becomes visible. If you use lazy state, you can record whether a log was sent in a lazy `@State` variable without causing the UI to reflow.
 
 To use lazy state updates, you need to set the `canUpdateLazily` parameter on the `@State` annotation to `true`.
 
