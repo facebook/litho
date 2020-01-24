@@ -53,18 +53,28 @@ public class DebugHierarchy {
       return new Node(parent, component, components, type);
     }
 
-    @Override
-    public String toString() {
-      if (components == null || components.isEmpty()) {
-        return "(no components)";
+    private void toHierarchyString(StringBuilder sb) {
+      if (parent != null) {
+        parent.toHierarchyString(sb);
       }
+      if (components == null || components.isEmpty()) {
+        sb.append("(no components)");
+        sb.append(',');
+        return;
+      }
+      for (int i = components.size() - 1; i >= 0; i--) {
+        sb.append(components.get(i).getSimpleName());
+        sb.append(',');
+      }
+    }
+
+    public String toHierarchyString() {
       StringBuilder sb = new StringBuilder();
       sb.append('{');
-      for (Component component : components) {
-        sb.append(component.getSimpleName());
-        sb.append(", ");
+      toHierarchyString(sb);
+      if (sb.length() > 1) {
+        sb.deleteCharAt(sb.length() - 1);
       }
-      sb.deleteCharAt(sb.length() - 1);
       sb.append('}');
       return sb.toString();
     }
