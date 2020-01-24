@@ -775,9 +775,9 @@ public class SectionTree {
   void requestFocusEnd(final String sectionKey) {
     focusRequestOnUiThread(
         mMainThreadHandler,
-        new Runnable() {
+        new ThreadTracingRunnable() {
           @Override
-          public void run() {
+          public void tracedRun(ThreadTracingRunnable prevTracingRunnable) {
             final SectionLocationInfo locationInfo = findSectionForKey(sectionKey);
             mFocusDispatcher.requestFocus(
                 locationInfo.mStartIndex + locationInfo.mSection.getCount() - 1);
@@ -788,9 +788,9 @@ public class SectionTree {
   private void requestFocus(final String sectionKey, final int index) {
     focusRequestOnUiThread(
         mMainThreadHandler,
-        new Runnable() {
+        new ThreadTracingRunnable() {
           @Override
-          public void run() {
+          public void tracedRun(ThreadTracingRunnable prevTracingRunnable) {
             final SectionLocationInfo sectionLocationInfo = findSectionForKey(sectionKey);
             if (isFocusValid(sectionLocationInfo, index)) {
               mFocusDispatcher.requestFocus(sectionLocationInfo.mStartIndex + index);
@@ -810,9 +810,9 @@ public class SectionTree {
   void requestFocusWithOffset(final String sectionKey, final int index, final int offset) {
     focusRequestOnUiThread(
         mMainThreadHandler,
-        new Runnable() {
+        new ThreadTracingRunnable() {
           @Override
-          public void run() {
+          public void tracedRun(ThreadTracingRunnable prevTracingRunnable) {
             final SectionLocationInfo sectionLocationInfo = findSectionForKey(sectionKey);
             if (isFocusValid(sectionLocationInfo, index)) {
               mFocusDispatcher.requestFocusWithOffset(
@@ -829,9 +829,9 @@ public class SectionTree {
       final SmoothScrollAlignmentType type) {
     focusRequestOnUiThread(
         mMainThreadHandler,
-        new Runnable() {
+        new ThreadTracingRunnable() {
           @Override
-          public void run() {
+          public void tracedRun(ThreadTracingRunnable prevTracingRunnable) {
             final SectionLocationInfo sectionLocationInfo = findSectionForKey(globalKey);
             if (isFocusValid(sectionLocationInfo, index)) {
               mFocusDispatcher.requestSmoothFocus(
@@ -1282,9 +1282,9 @@ public class SectionTree {
         tag = "SectionTree.postLoadingStateToFocusDispatch - " + loadingState.name() + " - " + mTag;
       }
       mMainThreadHandler.post(
-          new Runnable() {
+          new ThreadTracingRunnable() {
             @Override
-            public void run() {
+            public void tracedRun(ThreadTracingRunnable prevTracingRunnable) {
               setLoadingStateToFocusDispatch(loadingState);
             }
           },
@@ -1333,7 +1333,7 @@ public class SectionTree {
   private void postNewChangeSets(
       ThreadTracingRunnable prevTracingRunnable, final ChangesetDebugInfo changesetDebugInfo) {
     if (mUseBackgroundChangeSets) {
-      applyChangeSetsToTargetBackgroundAllowed(changesetDebugInfo);
+      applyChangeSetsToTargetBackgroundAllowed(prevTracingRunnable, changesetDebugInfo);
       return;
     }
 
@@ -1370,7 +1370,8 @@ public class SectionTree {
   }
 
   @ThreadConfined(ThreadConfined.ANY)
-  private void applyChangeSetsToTargetBackgroundAllowed(ChangesetDebugInfo changesetDebugInfo) {
+  private void applyChangeSetsToTargetBackgroundAllowed(
+      ThreadTracingRunnable prevTracingRunnable, ChangesetDebugInfo changesetDebugInfo) {
     if (!mUseBackgroundChangeSets) {
       throw new IllegalStateException(
           "Must use UIThread-only variant when background change sets are not enabled.");
@@ -1402,9 +1403,9 @@ public class SectionTree {
           tag = "SectionTree.applyChangeSetsToTargetBackgroundAllowed - " + mTag;
         }
         mMainThreadHandler.post(
-            new Runnable() {
+            new ThreadTracingRunnable(prevTracingRunnable) {
               @Override
-              public void run() {
+              public void tracedRun(ThreadTracingRunnable prevTracingRunnable) {
                 maybeDispatchFocusRequests();
               }
             },
