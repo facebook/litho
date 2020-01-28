@@ -22,7 +22,7 @@ class MyComponentSpec {
   @OnPrepare
   static void onPrepare(
       ComponentContext c,
-      @Prop(optional = true) String prop1) {
+      @Prop(optional = true) @Nullable String prop1) {
     ...
   }
 
@@ -30,7 +30,7 @@ class MyComponentSpec {
   static void onMount(
       ComponentContext c,
       SomeDrawable convertDrawable,
-      @Prop(optional = true) String prop1,
+      @Prop(optional = true) @Nullable String prop1,
       @Prop int prop2) {
     if (prop1 != null) {
       ...
@@ -62,13 +62,13 @@ MyComponent.create(c)
 
 [`PropDefault`](/javadoc/com/facebook/litho/annotations/PropDefault.html) can be used for setting
 the default value of an optional `Prop` in a `LayoutSpec` or `MountSpec`. The annotated field must
-be a constant (i.e. static final) with the same name and type as the `Prop`. We'll often want to
-define explicit default values for ours optional props instead of simply using Java's defaults.
+be a constant (i.e. `static final`) with the same name and type as the `Prop`. We'll often want to
+define explicit default values for our optional props instead of simply using Java's defaults.
 
 Let's see an how we can declare and use `PropDefault`.
 
 ```java
-@LayoutSpec}
+@LayoutSpec
 class SomeSpec {
 
   @PropDefault static final String name = "John Doe";  // default value for name
@@ -76,10 +76,10 @@ class SomeSpec {
   @OnCreateLayout
   static Component onCreateLayout(ComponentContext c, @Prop(optional = true) String name) {
     return Text.create(c)
-             .text(title.getTitle())
-             .textSizeSp(16)
-             .marginDip(YogaEdge.BOTTOM, 4)
-             .build();
+        .text(name)
+        .textSizeSp(16)
+        .marginDip(YogaEdge.BOTTOM, 4)
+        .build();
   }
 }
 ```
@@ -102,7 +102,7 @@ public class MyComponentSpec {
 
   @OnCreateLayout
   static Component onCreateLayout(
-      LayoutContext context,
+      ComponentContext c,
       @Prop CharSequence someString,
       @Prop int someSize,
       @Prop int someColor) {
@@ -130,7 +130,7 @@ public class MyComponentSpec {
 
   @OnCreateLayout
   static Component onCreateLayout(
-      LayoutContext context,
+      ComponentContext c,
       @Prop(resType = ResType.STRING) CharSequence someString,
       @Prop(resType = ResType.DIMEN_SIZE) int someSize,
       @Prop(resType = ResType.COLOR) int someColor) {
@@ -155,7 +155,7 @@ Other supported resource types are `ResType.STRING_ARRAY`, `ResType.INT`, `ResTy
 
 Sometimes, you want to support having a list of items. This can unfortunately
 be a bit painful since it requires the developer to make a list, add all the
-items to it, and pass those items to the component create. The `varArg`
+items to it, and pass list to the component builder's method. The `varArg`
 parameter aims to makes this a little easier.
 
 ```java
@@ -164,9 +164,9 @@ public class MyComponentSpec {
 
    @OnCreateLayout
    static Component onCreateLayout(
-      LayoutContext context,
-      @Prop(varArg = "name") List<String> names) {
-      ...
+       ComponentContext c,
+       @Prop(varArg = "name") List<String> names) {
+     ...
    }
 }
 ```
@@ -175,13 +175,12 @@ This can then be used as follows:
 
 ```java
 MyComponent.create(c)
-   .name("One")
-   .name("Two")
-   .name("Three")
+    .name("One")
+    .name("Two")
+    .name("Three")
 ```
 
-As of version 0.6.2, this also works for props with a `resType`. For instance, given a
-Component like this:
+This also works for props with a `resType`. For instance, given a Component like this:
 
 ```java
 @LayoutSpec
@@ -189,9 +188,9 @@ public class MyComponent2Spec {
 
    @OnCreateLayout
    static Component onCreateLayout(
-      LayoutContext context,
-      @Prop(varArg = "sizes", resType = ResType.DIMEN_TEXT) List<Float> sizes) {
-      ...
+       ComponentContext c,
+       @Prop(varArg = "size", resType = ResType.DIMEN_TEXT) List<Float> sizes) {
+     ...
    }
 }
 ```
@@ -200,20 +199,20 @@ You can add multiple sizes through calls to the builder:
 
 ```java
 MyComponent2.create(c)
-   .sizesPx(1f)
-   .sizesRes(resId)
-   .sizesAttr(attrResId)
-   .sizesDip(1f)
-   .sizesSp(1f)
+    .sizePx(1f)
+    .sizeRes(resId)
+    .sizeAttr(attrResId)
+    .sizeDip(1f)
+    .sizeSp(1f)
 ```
 
 ## Immutability
 
 The props of a Component are read-only. The Component's parent passes down values for the props when it creates the Component and they cannot change throughout the lifecycle of the Component. If the props values must be updated, the parent has to create a new Component and pass down new values for the props.
-The props objects should be made immutable. Due to [background layout](/docs/asynchronous-layout), props may be accessed on multiple threads. Props immutability ensures that no thread safety issues enter into your component hierarchy.
+The props objects should be made immutable. Due to [background layout](/docs/asynchronous-layout), props may be accessed on multiple threads. Props immutability ensures that no thread safety issues can happen during the component's lifecycle.
 
 ## Common Props
 
 Common props are props that are available on all Components, e.g. `margin`, `padding`, `flex` etc. A full list of CommonProps can be found in the code [here](https://github.com/facebook/litho/blob/master/litho-core/src/main/java/com/facebook/litho/Component.java).
 
-You may want to access a Common Prop inside your Component (e.g. to see if a click handler was set on it), in which case you should use set `@Prop` param `isCommonProp()`, and name your prop using the same name as the Common Prop. If you wish to override the behavior of the Common Prop, then you should also set the `@Prop` param `overrideCommonPropBehavior` to true.
+You may want to access a Common Prop inside your Component (e.g. to see if a click handler was set on it), in which case you should use set `@Prop` param `isCommonProp`, and name your prop using the same name as the Common Prop. If you wish to override the behavior of the Common Prop, then you should also set the `@Prop` param `overrideCommonPropBehavior` to `true`.
