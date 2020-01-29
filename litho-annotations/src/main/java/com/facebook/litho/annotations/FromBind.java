@@ -36,13 +36,13 @@ import java.lang.annotation.RetentionPolicy;
  * public class MyComponentSpec {
  *
  *  {@literal @}OnCreateMountContent
- *   MyDrawable onCreateMountContent(Context c) {
+ *   MyDrawable onCreateMountContent(Context context) {
  *     return new MyDrawable(c);
  *   }
  *
  *  {@literal @}OnMount
  *   void onMount(
- *       ComponentContext context,
+ *       ComponentContext c,
  *       MyDrawable myDrawable,
  *       {@literal @}Prop MyProp prop) {
  *     myDrawable.setMyProp(prop);
@@ -50,7 +50,7 @@ import java.lang.annotation.RetentionPolicy;
  *
  *  {@literal @}OnBind
  *   void onBind(
- *       ComponentContext context,
+ *       ComponentContext c,
  *       MyDrawable myDrawable,
  *       Output&lt;MyFromBindObject&gt; fromBindObject) {
  *     MyFromBindObject myFromBindObject = new MyFromBindObject();
@@ -59,7 +59,7 @@ import java.lang.annotation.RetentionPolicy;
  *
  *  {@literal @}OnUnbind
  *   void onUnbind(
- *       ComponentContext context,
+ *       ComponentContext c,
  *       MyDrawable myDrawable,
  *       {@literal @}FromBind MyFromBindObject fromBindObject) {
  *     fromBindObject.doSomething();

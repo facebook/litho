@@ -9,11 +9,11 @@ Generated component classes provide a simple builder with the props you defined 
 You can assign a component to be rendered by a `LithoView` as follows:
 
 ```java
-final Component component = MyComponent.create(componentContext)
+final Component component = MyComponent.create(c)
     .title("My title")
     .imageUri(Uri.parse("http://example.com/myimage"))
     .build();
-LithoView view = LithoView.create(context, component);
+LithoView view = LithoView.create(c, component);
 ```
 
 In this example, `MyComponent` will be laid out by the hosting `LithoView`, which you can use in your application as you would normally use an Android View. See the [tutorial](/docs/tutorial) for an example on how to use it in an Activity.

@@ -17,13 +17,13 @@ public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
     final LithoView lithoView = new LithoView(this);
-    final ComponentContext context = new ComponentContext(this);
+    final ComponentContext c = new ComponentContext(this);
 
-    final Component text = Text.create(context)
+    final Component text = Text.create(c)
         .text("Hello World")
         .textSizeDip(50)
         .build();
-    final ComponentTree componentTree = ComponentTree.create(context, text).build();
+    final ComponentTree componentTree = ComponentTree.create(c, text).build();
 
     lithoView.setComponentTree(componentTree);
     setContentView(lithoView);

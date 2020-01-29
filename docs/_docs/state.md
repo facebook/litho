@@ -235,7 +235,7 @@ static Component onCreateLayout(
     final ComponentContext c,
     @State(canUpdateLazily = true) String foo) {
 
-  FooComponent.lazyUpdateFoo(context, "updated foo");
+  FooComponent.lazyUpdateFoo(c, "updated foo");
   return Column.create(c)
       .child(
           Text.create(c)

@@ -14,12 +14,12 @@ public class SampleActivity extends Activity {
     super.onCreate(savedInstanceState);
 
     final LithoView lithoView = new LithoView(this);
-    final ComponentContext context = new ComponentContext(this);
+    final ComponentContext c = new ComponentContext(this);
 
-    final Component text = Text.create(context)
+    final Component text = Text.create(c)
         .text("Hello, World!")
         .build();
-    final ComponentTree componentTree = ComponentTree.create(context, text)
+    final ComponentTree componentTree = ComponentTree.create(c, text)
         .build();
 
     lithoView.setComponent(componentTree);

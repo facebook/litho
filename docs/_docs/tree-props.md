@@ -53,7 +53,7 @@ The child component can access the TreeProp value through a param annotated with
 class ChildComponentSpec {
   @OnCreateLayout
   static Component onCreateLayout(
-      ComponentContext context,
+      ComponentContext c,
       @TreeProp Prefetcher prefetcher,
       @Prop Uri imageUri) {
     if (prefetcher != null) {
@@ -74,7 +74,7 @@ public class ParentComponentSpec {
 
   @OnCreateInitialState
   static void createInitialState(
-      ComponentContext context,
+      ComponentContext c,
       StateValue<ImportantHelper> helper) {
 
     helper.set(new ImportantHelper());

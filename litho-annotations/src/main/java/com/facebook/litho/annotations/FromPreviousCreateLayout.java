@@ -69,7 +69,7 @@ import java.lang.annotation.RetentionPolicy;
  *
  *  {@literal @OnShouldCreateLayoutWithNewSizeSpec}
  *   static boolean onShouldCreateLayoutWithNewSizeSpec(
- *       ComponentContext context,
+ *       ComponentContext c,
  *       int newWidthSpec,
  *       int newHeightSpec,
  *      {@literal @FromPreviousCreateLayout} int textWidth,  // Get the output value

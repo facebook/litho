@@ -90,7 +90,7 @@ class MyComponentSpec {
 ```java
 @OnShouldCreateLayoutWithNewSizeSpec
 static boolean onShouldCreateLayoutWithNewSizeSpec(
-    ComponentContext context,
+    ComponentContext c,
     int newWidthSpec,
     int newHeightSpec, ...)
 ```
@@ -138,7 +138,7 @@ class MyComponentSpec {
 
   @OnShouldCreateLayoutWithNewSizeSpec
   static boolean onShouldCreateLayoutWithNewSizeSpec(
-      ComponentContext context,
+      ComponentContext c,
       int newWidthSpec,
       int newHeightSpec,
       @FromPreviousCreateLayout int textWidth,

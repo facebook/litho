@@ -89,7 +89,7 @@ final Component component =
 Because this component is backed by Android's `EditText`, many native capabilities are applicable!
 - Use an `android.text.InputFilter ` to set a text length limit or modify text input.
 - Change the input representation by passing an `android.text.InputType` constants.
-- For performance reasons, avoid re-creating the Component with different props to change its configuration. You can instead use Event triggers `OnTrigger` to update text, request view focus or set selection. e.g. `TextInput.setText(context, "myTextInputKey", "myText")`.
+- For performance reasons, avoid re-creating the Component with different props to change its configuration. You can instead use Event triggers `OnTrigger` to update text, request view focus or set selection. e.g. `TextInput.setText(c, "myTextInputKey", "myText")`.
 
 ```java
 private static final InputFilter lenFilter = new InputFilter.LengthFilter(maxLength);

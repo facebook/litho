@@ -37,14 +37,14 @@ Next, add a predefined [Text](/javadoc/com/facebook/litho/widget/Text) Litho com
 public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
-    final ComponentContext context = new ComponentContext(this);
+    final ComponentContext c = new ComponentContext(this);
 
-    final Component component = Text.create(context)
+    final Component component = Text.create(c)
         .text("Hello World")
         .textSizeDip(50)
         .build();
 
-    setContentView(LithoView.create(context, component));
+    setContentView(LithoView.create(c, component));
 }
 ```
 
@@ -53,7 +53,7 @@ public void onCreate(Bundle savedInstanceState) {
 How do the components come into play? Let's zero in on this piece of code:
 
 ```java
-Text.create(context)
+Text.create(c)
     .text("Hello World")
     .textSizeDip(50)
     .build();
@@ -107,7 +107,7 @@ You should recognize the `Text` component from the previous tutorial step. In th
 How do you render this component? In your activity, simply change the `Component` definition to:
 
 ```java
-final Component component = ListItem.create(context).build();
+final Component component = ListItem.create(c).build();
 ```
 
 **Note:** That's `ListItem` you're using, not `ListItemSpec`.
@@ -153,9 +153,9 @@ public class ListSectionSpec {
 ```java
 
 final Component component =
-    RecyclerCollectionComponent.create(context)
+    RecyclerCollectionComponent.create(c)
         .disablePTR(true)
-        .section(ListSection.create(new SectionContext(context)).build())
+        .section(ListSection.create(new SectionContext(c)).build())
         .build();
 
 ```

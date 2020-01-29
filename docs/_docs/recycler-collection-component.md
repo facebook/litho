@@ -43,8 +43,8 @@ final RecyclerCollectionComponentSpec.RecyclerConfiguration
               LinearLayoutManager.HORIZONTAL, false /* reverse layout */);
 
 final Component component =
-    RecyclerCollectionComponent.create(context)
-        .section(FooSection.create(new SectionContext(context)).build())
+    RecyclerCollectionComponent.create(c)
+        .section(FooSection.create(new SectionContext(c)).build())
         .recyclerConfiguration(recyclerConfiguration)
         .build();
 ```
@@ -61,8 +61,8 @@ final RecyclerCollectionComponentSpec.RecyclerConfiguration
               LinearLayoutManager.HORIZONTAL, false /* reverse layout */, SNAP_TO_START);
 
 final Component component =
-    RecyclerCollectionComponent.create(context)
-        .section(FooSection.create(new SectionContext(context)).build())
+    RecyclerCollectionComponent.create(c)
+        .section(FooSection.create(new SectionContext(c)).build())
         .recyclerConfiguration(recyclerConfiguration)
         .build();
 ```
@@ -77,8 +77,8 @@ In this case, the client knows the height of the h-scroll when it creates it. Th
 To do this, just set the height through the `height` prop on your `RecyclerCollectionComponent`:
 ```java
 final Component component =
-    RecyclerCollectionComponent.create(context)
-        .section(FooSection.create(new SectionContext(context)).build())
+    RecyclerCollectionComponent.create(c)
+        .section(FooSection.create(new SectionContext(c)).build())
         .height(heightValue)
         .build();
  ```
@@ -88,8 +88,8 @@ To enable this, instead of passing a `height` prop on the `RecyclerCollectionCom
 
 ```java
 final Component component =
-    RecyclerCollectionComponent.create(context)
-        .section(FooSection.create(new SectionContext(context)).build())
+    RecyclerCollectionComponent.create(c)
+        .section(FooSection.create(new SectionContext(c)).build())
         .canMeasureRecycler(true)
         .build();
  ```
@@ -119,8 +119,8 @@ RecyclerConfiguration recyclerConfiguration =
         configuration);
 
 final Component component =
-    RecyclerCollectionComponent.create(context)
-        .section(FooSection.create(new SectionContext(context)).build())
+    RecyclerCollectionComponent.create(c)
+        .section(FooSection.create(new SectionContext(c)).build())
         .recyclerConfiguration(recyclerConfiguration)
         .canMeasureRecycler(true)
         .build();
@@ -132,8 +132,8 @@ final Component component =
 
 ```java
 final Component component =
-    RecyclerCollectionComponent.create(context)
-        .section(FooSection.create(new SectionContext(context)).build())
+    RecyclerCollectionComponent.create(c)
+        .section(FooSection.create(new SectionContext(c)).build())
         .recyclerConfiguration(recyclerConfiguration)
         .disablePTR(true)
         .build();
@@ -148,8 +148,8 @@ With the sections API you can also integrate your data fetching through [Loading
 
 ```java
 final Component component =
-    RecyclerCollectionComponent.create(context)
-        .section(FooSection.create(new SectionContext(context)).build())
+    RecyclerCollectionComponent.create(c)
+        .section(FooSection.create(new SectionContext(c)).build())
         .recyclerConfiguration(recyclerConfiguration)
         .loadingComponent(
             Progress.create(c)

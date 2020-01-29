@@ -35,14 +35,14 @@ public class SampleApplication extends Application {
 public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
-    final ComponentContext context = new ComponentContext(this);
+    final ComponentContext c = new ComponentContext(this);
 
-    final Component component = Text.create(context)
+    final Component component = Text.create(c)
         .text("Hello World")
         .textSizeDip(50)
         .build();
 
-    setContentView(LithoView.create(context, component));
+    setContentView(LithoView.create(c, component));
 }
 ```
 ## Run sample

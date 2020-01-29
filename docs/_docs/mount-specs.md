@@ -32,13 +32,13 @@ Let's start with a simple `ColorComponent` that takes a color name as a prop and
 public class ColorComponentSpec {
 
   @OnCreateMountContent
-  static ColorDrawable onCreateMountContent(Context c) {
+  static ColorDrawable onCreateMountContent(Context context) {
     return new ColorDrawable();
   }
 
   @OnMount
   static void onMount(
-      ComponentContext context,
+      ComponentContext c,
       ColorDrawable colorDrawable,
       @Prop String colorName) {
     colorDrawable.setColor(Color.parseColor(colorName));
@@ -66,20 +66,20 @@ public class ColorComponentSpec {
 
   @OnPrepare
   static void onPrepare(
-      ComponentContext context,
+      ComponentContext c,
       @Prop String colorName,
       Output<Integer> color) {
     color.set(Color.parseColor(colorName));
   }
 
   @OnCreateMountContent
-  static ColorDrawable onCreateMountContent(Context c) {
+  static ColorDrawable onCreateMountContent(Context context) {
     return new ColorDrawable();
   }
 
   @OnMount
   static void onMount(
-      ComponentContext context,
+      ComponentContext c,
       ColorDrawable colorDrawable,
       @FromPrepare int color) {
     colorDrawable.setColor(color);
@@ -100,7 +100,7 @@ Now, let's suppose we want our `ColorComponent` to have a default width and enfo
 ```java
 @OnMeasure
 static void onMeasure(
-    ComponentContext context,
+    ComponentContext c,
     ComponentLayout layout,
     int widthSpec,
     int heightSpec,

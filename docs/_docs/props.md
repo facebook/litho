@@ -114,7 +114,7 @@ public class MyComponentSpec {
 In the example above, `MyComponent` has props that are expected to take a color integer (`someColor`), a pixel dimension (`someSize`), and a string (`someString`) as value. Very often, you'll want to set the value of these props using resource values:
 
 ```java
-Resources res = context.getResources();
+Resources res = c.getResources();
 
 MyComponent.create(c)
     .someString(res.getString(R.string.my_string))
