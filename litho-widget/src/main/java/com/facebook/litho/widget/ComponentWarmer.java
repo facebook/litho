@@ -144,6 +144,7 @@ public class ComponentWarmer {
   private boolean mIsReady;
   private @Nullable ComponentWarmerReadyListener mReadyListener;
   private BlockingQueue<ComponentRenderInfo> mPendingRenderInfos;
+  private boolean mSkipAlreadyPreparedKeys;
 
   /**
    * Sets up a {@link ComponentTreeHolderPreparerWithSizeImpl} as the {@link
@@ -214,6 +215,10 @@ public class ComponentWarmer {
 
   public void setComponentWarmerReadyListener(ComponentWarmerReadyListener listener) {
     mReadyListener = listener;
+  }
+
+  public void setSkipAlreadyPreparedKeys(boolean skipAlreadyPreparedKeys) {
+    this.mSkipAlreadyPreparedKeys = skipAlreadyPreparedKeys;
   }
 
   public synchronized boolean isReady() {
@@ -315,8 +320,11 @@ public class ComponentWarmer {
       throw new IllegalStateException(
           "ComponentWarmer: trying to execute prepare but ComponentWarmer is not ready.");
     }
+    if (mSkipAlreadyPreparedKeys && mCache.get(tag) != null) {
+      // Already prepared
+      return;
+    }
     renderInfo.addCustomAttribute(COMPONENT_WARMER_TAG, tag);
-
     final ComponentTreeHolder holder = mFactory.create(renderInfo);
     mCache.put(tag, holder);
 
