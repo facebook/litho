@@ -28,8 +28,8 @@ import javax.annotation.Nullable;
  *
  * {@literal @}OnEvent(LoadingEvent.class)
  *  static void onLoadingStateChanged(
+ *     SectionContext context,
  *     {@literal @}FromEvent LoadingState loadingState,
- *     {@literal @}Param SectionContext context,
  *     {@literal @}Prop int someProp) {
  *       context.updateLoadingState(loadingState);
  *  }

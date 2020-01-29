@@ -40,7 +40,7 @@ import java.lang.annotation.RetentionPolicy;
  *       builder.child(
  *           FrescoImage.create(c)
  *               .uri(face)
- *               .clickHandler(FacePileComponent.onFaceClicked(c, face));
+ *               .clickHandler(FacePileComponent.onFaceClicked(c, face)));
  *     }
  *
  *     return builder.build();

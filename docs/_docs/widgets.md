@@ -133,7 +133,7 @@ If your card is rendered on top of a dynamically colored background which cannot
 #### Usage
 ```java
 Component component =
-	  Card.create(c)
+	Card.create(c)
         .content(myContentComponent)
         .clippingColorRes(R.color.my_clipping_color)
         .cornerRadiusDip(8)

@@ -66,7 +66,7 @@ class MyComponentSpec {
         .child(
             ColorComponent.create(c)
                 .color(someColor)
-                .colorChangedHandler(MyComponent.onColorChanged(c))
+                .colorChangedHandler(MyComponent.onColorChanged(c)))
         ...
         .build();
 
@@ -95,11 +95,11 @@ class FacePileComponentSpec {
       ComponentContext c,
       @Prop Uri[] faces) {
     Component.Builder builder = Column.create(c);
-    for (Uri face : avatarUrls) {
+    for (Uri face : faces) {
       builder.child(
           FrescoImage.create(c)
               .uri(face)
-              .clickHandler(FacePileComponent.onFaceClicked(c, face));
+              .clickHandler(FacePileComponent.onFaceClicked(c, face)));
     }
 
     return builder.build();
