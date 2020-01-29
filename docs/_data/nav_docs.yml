@@ -81,6 +81,7 @@
   - id: reconciliation
   - id: component-tree
   - id: error-boundaries
+  - id: onattached-ondetached
 - title: Architecture
   items:
   - id: codegen
