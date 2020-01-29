@@ -46,9 +46,14 @@ android {
 dependencies {
     // For main targets
     implementation project(':litho-core')
+    implementation project(':litho-widget')
+    implementation project(':litho-sections-annotations')
+    implementation project(':litho-sections-core')
+    implementation project(':litho-sections-widget')
 
     // Test project dependencies
     testAnnotationProcessor project(':litho-processor')
+    testAnnotationProcessor project(':litho-sections-processor')
     testImplementation project(':litho-testing')
 
     // Testing deps

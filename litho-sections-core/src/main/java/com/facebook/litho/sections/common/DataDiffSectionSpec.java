@@ -278,6 +278,11 @@ public class DataDiffSectionSpec<T> {
       final RenderInfo renderInfo =
           DataDiffSection.dispatchRenderEvent(mRenderEventEventHandler, index, o, null);
 
+      if (renderInfo == null) {
+        throw new IllegalStateException(
+            "Method annotated with '@OnEvent(RenderEvent.class)' is not allowed to return 'null'.");
+      }
+
       if (ComponentsConfiguration.isRenderInfoDebuggingEnabled()) {
         renderInfo.addDebugInfo(SONAR_SECTIONS_DEBUG_INFO_TAG, mSectionContext.getSectionScope());
       }
