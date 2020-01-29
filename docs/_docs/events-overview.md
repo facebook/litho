@@ -58,7 +58,7 @@ class MyComponentSpec {
 
   @OnCreateLayout
   static Component onCreateLayout(
-      LayoutContext c,
+      ComponentContext c,
       @Prop String someColor) {
 
     return Column.create(c)
@@ -92,7 +92,7 @@ class FacePileComponentSpec {
 
   @OnCreateLayout
   static Component onCreateLayout(
-      LayoutContext c,
+      ComponentContext c,
       @Prop Uri[] faces) {
     Component.Builder builder = Column.create(c);
     for (Uri face : avatarUrls) {

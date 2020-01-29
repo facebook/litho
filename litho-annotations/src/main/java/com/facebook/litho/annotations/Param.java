@@ -32,7 +32,7 @@ import java.lang.annotation.RetentionPolicy;
  *
  *  {@literal @OnCreateLayout}
  *   static Component onCreateLayout(
- *       LayoutContext c,
+ *       ComponentContext c,
  *      {@literal @Prop} Uri[] faces) {
  *
  *     Component.Builder builder = Column.create(c);

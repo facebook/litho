@@ -28,7 +28,7 @@ import java.lang.annotation.RetentionPolicy;
  * public class MyComponentSpec {
  *
  *   {@literal @}OnMeasureBaseline
- *   int onMeasureBaseline(LayoutContext c, int width, int height) {
+ *   int onMeasureBaseline(ComponentContext c, int width, int height) {
  *     return height / 2;
  *   }
  * }
