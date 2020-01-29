@@ -62,6 +62,7 @@
     <activity android:name=".triggers.ClearTextTriggerExampleActivity" />
     <activity android:name=".triggers.CustomEventTriggerExampleActivity" />
     <activity android:name=".triggers.TooltipTriggerExampleActivity" />
+    <activity android:name=".lifecycle.LifecycleDelegateActivity" />
   </application>
 
 

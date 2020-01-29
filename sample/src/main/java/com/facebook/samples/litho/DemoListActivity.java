@@ -37,6 +37,7 @@ import com.facebook.samples.litho.dynamicprops.DynamicPropsActivity;
 import com.facebook.samples.litho.errors.ErrorHandlingActivity;
 import com.facebook.samples.litho.fastscroll.FastScrollHandleActivity;
 import com.facebook.samples.litho.hscroll.HorizontalScrollWithSnapActivity;
+import com.facebook.samples.litho.lifecycle.LifecycleDelegateActivity;
 import com.facebook.samples.litho.lithography.LithographyActivity;
 import com.facebook.samples.litho.playground.PlaygroundActivity;
 import com.facebook.samples.litho.staticscroll.horizontalscroll.HorizontalScrollActivity;
@@ -91,7 +92,8 @@ public class DemoListActivity extends NavigatableDemoActivity {
                       "Clear Text Trigger", ClearTextTriggerExampleActivity.class),
                   new DemoListDataModel(
                       "Custom Event Trigger", CustomEventTriggerExampleActivity.class),
-                  new DemoListDataModel("Tooltip Trigger", TooltipTriggerExampleActivity.class))));
+                  new DemoListDataModel("Tooltip Trigger", TooltipTriggerExampleActivity.class))),
+          new DemoListDataModel("Component Lifecycle Example", LifecycleDelegateActivity.class));
 
   @Override
   public void onCreate(Bundle savedInstanceState) {
