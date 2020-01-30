@@ -27,6 +27,18 @@ android {
         minSdkVersion rootProject.minSdkVersion
     }
 
+    buildTypes {
+        def internalBuildField = 'IS_INTERNAL_BUILD'
+
+        debug {
+            buildConfigField 'boolean', internalBuildField, 'true'
+        }
+
+        release {
+            buildConfigField 'boolean', internalBuildField, 'false'
+        }
+    }
+
     // TODO(#62): Re-enable abort on error.
     lintOptions {
         abortOnError false

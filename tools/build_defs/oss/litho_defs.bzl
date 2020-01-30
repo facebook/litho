@@ -156,7 +156,7 @@ LITHO_SCREENSHOT_TARGET = make_dep_path("lib/screenshot:screenshot")
 
 LITHO_JAVAC_TOOLS_TARGET = make_dep_path("lib/javac-tools:javac-tools")
 
-LITHO_RENDERCORE_TARGET = make_dep_path("litho-rendercore/src/main/java/com/facebook/rendercore:rendercore-stub")
+LITHO_RENDERCORE_TARGET = make_dep_path("litho-rendercore:rendercore-stub")
 
 # Fresco
 LITHO_FRESCO_TARGET = make_dep_path("lib/fresco:fresco")

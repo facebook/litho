@@ -17,7 +17,7 @@ load(
 litho_android_library(
     name = "rendercore-stub",
     srcs = glob([
-        "*.java",
+        "src/main/java/com/facebook/rendercore/**/*.java",
     ]),
     is_androidx = True,
     provided_deps = [
@@ -28,7 +28,24 @@ litho_android_library(
     required_for_source_only_abi = True,
     visibility = LITHO_VISIBILITY,
     deps = [
+        ":build_config",
         LITHO_INFERANNOTATIONS_TARGET,
         LITHO_RES_TARGET,
     ],
+)
+
+android_build_config(
+    name = "build_config",
+    package = "com.facebook.rendercore",
+    values_file = ":build_config_values",
+    visibility = LITHO_VISIBILITY,
+)
+
+genrule(
+    name = "build_config_values",
+    srcs = [
+        "config/build_config_values",
+    ],
+    out = "extra_build_config_values",
+    cmd = "SRCARR=($SRCS); cat ${SRCARR[0]} | sed 's/{{IS_DEBUG}}/%s/' > $OUT" % (read_config("rendercore-stub", "is_debug", "true")),
 )

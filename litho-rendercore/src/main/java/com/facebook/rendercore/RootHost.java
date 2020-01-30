@@ -2,7 +2,7 @@
 
 package com.facebook.rendercore;
 
-public interface Copyable extends Cloneable {
+public interface RootHost {
 
-  Copyable makeCopy();
+  void setRenderState(RenderState renderState);
 }
