@@ -59,6 +59,8 @@ dependencies {
     kapt project(':litho-sections-processor')
 
     implementation deps.soloader
+    implementation deps.flipper
+    implementation deps.flipperLithoPlugin
     implementation deps.fresco
 
     implementation deps.supportRecyclerView

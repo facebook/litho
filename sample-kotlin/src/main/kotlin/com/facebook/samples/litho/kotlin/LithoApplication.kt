@@ -18,6 +18,11 @@ package com.facebook.samples.litho.kotlin
 
 import android.app.Application
 import com.facebook.drawee.backends.pipeline.Fresco
+import com.facebook.flipper.android.AndroidFlipperClient
+import com.facebook.flipper.android.utils.FlipperUtils
+import com.facebook.flipper.plugins.inspector.DescriptorMapping
+import com.facebook.flipper.plugins.inspector.InspectorFlipperPlugin
+import com.facebook.flipper.plugins.litho.LithoFlipperDescriptors
 import com.facebook.litho.ComponentsReporter
 import com.facebook.samples.litho.kotlin.logging.SampleComponentsReporter
 import com.facebook.soloader.SoLoader
@@ -29,5 +34,13 @@ class LithoApplication : Application() {
     Fresco.initialize(this)
     SoLoader.init(this, false)
     ComponentsReporter.provide(SampleComponentsReporter())
+
+    if (FlipperUtils.shouldEnableFlipper(this)) {
+      val client = AndroidFlipperClient.getInstance(this)
+      val descriptorMapping = DescriptorMapping.withDefaults()
+      LithoFlipperDescriptors.add(descriptorMapping)
+      client.addPlugin(InspectorFlipperPlugin(this, descriptorMapping))
+      client.start()
+    }
   }
 }
