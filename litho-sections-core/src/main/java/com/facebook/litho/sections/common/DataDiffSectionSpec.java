@@ -77,31 +77,33 @@ import java.util.List;
  * public class MyGroupSectionSpec {
  *
  *   '@'OnCreateChildren
- *   protected Children onCreateChildren(
+ *   static Children onCreateChildren(
  *     SectionContext c,
  *     '@'Prop List<? extends Model> modelList) {
  *
- *     return Children.create().child(DataDiffSection.<Model>create(c)
- *       .data(modelList)
- *       .renderEventHandler(MyGroupSection.onRender(c))
- *       .onCheckIsSameItemEventHandler(MyGroupSection.onCheckIsSameItem(c))
- *       .onCheckIsSameContentEventHandler(...)
- *       .build());
+ *     return Children.create()
+ *         .child(
+ *             DataDiffSection.<Model>create(c)
+ *                 .data(modelList)
+ *                 .renderEventHandler(MyGroupSection.onRender(c))
+ *                 .onCheckIsSameItemEventHandler(MyGroupSection.onCheckIsSameItem(c))
+ *                 .onCheckIsSameContentEventHandler(...))
+ *        .build();
  *   }
  *
  *   '@'OnEvent(OnCheckIsSameItemEvent.class)
- *   protected boolean onCheckIsSameItem(@FromEvent Model previousItem, @FromEvent Model nextItem) {
+ *   static boolean onCheckIsSameItem(SectionContext c, @FromEvent Model previousItem, @FromEvent Model nextItem) {
  *     return previousItem.getId() == nextItem.getId();
  *   }
  *
  *   '@'OnEvent(RenderEvent.class)
- *   protected RenderInfo onRender(ComponentContext c, @FromEvent Model model) {
+ *   static RenderInfo onRender(SectionContext c, @FromEvent Model model) {
  *     return ComponentRenderInfo.create()
- *       .component(MyComponent.create(c).model(model).build())
- *       .build();
+ *         .component(MyComponent.create(c).model(model).build())
+ *         .build();
  *   }
  * }
- * }</pre>
+ * </pre>
  */
 @DiffSectionSpec(
     events = {OnCheckIsSameContentEvent.class, OnCheckIsSameItemEvent.class, RenderEvent.class})
