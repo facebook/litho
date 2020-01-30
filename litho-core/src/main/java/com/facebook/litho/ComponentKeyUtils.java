@@ -17,6 +17,7 @@
 package com.facebook.litho;
 
 public class ComponentKeyUtils {
+  private static final String SEPARATOR = ",";
 
   /**
    * @param keyParts a list of objects that will be concatenated to form another component's key
@@ -26,7 +27,7 @@ public class ComponentKeyUtils {
     final StringBuilder sb = new StringBuilder();
     sb.append(keyParts[0]);
     for (int i = 1; i < keyParts.length; i++) {
-      sb.append(',').append(keyParts[i]);
+      sb.append(SEPARATOR).append(keyParts[i]);
     }
 
     return sb.toString();
@@ -37,7 +38,7 @@ public class ComponentKeyUtils {
     int keyLength = key.length();
     return new StringBuilder(parentLength + keyLength + 1)
         .append(parentGlobalKey)
-        .append(',')
+        .append(SEPARATOR)
         .append(key)
         .toString();
   }
