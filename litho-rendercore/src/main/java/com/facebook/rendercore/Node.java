@@ -26,12 +26,14 @@ public abstract class Node implements Copyable {
 
   public Node(LayoutFunction layoutFunction) {}
 
+  /** Represent a function that can calculate a LayoutResult from a Node tree. */
   public interface LayoutFunction {
     LayoutResult calculateLayout(
         final Context context,
         final Node node,
         final int widthSpec,
         final int heightSpec,
+        final LayoutCache layoutCache,
         final Map layoutContexts);
   }
 

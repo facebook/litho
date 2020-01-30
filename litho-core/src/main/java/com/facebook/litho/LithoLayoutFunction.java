@@ -17,6 +17,7 @@
 package com.facebook.litho;
 
 import android.content.Context;
+import com.facebook.rendercore.LayoutCache;
 import com.facebook.rendercore.Node;
 import java.util.Map;
 
@@ -32,6 +33,7 @@ public class LithoLayoutFunction implements Node.LayoutFunction {
       final Node node,
       final int widthSpec,
       final int heightSpec,
+      LayoutCache layoutCache,
       final Map layoutContexts) {
 
     DefaultInternalNode result = ((DefaultInternalNode) node);
