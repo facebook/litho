@@ -130,27 +130,29 @@ class Layout {
       ComponentsSystrace.beginSection("createLayout:" + component.getSimpleName());
     }
 
-    // 1. Consume the layout created in `willrender`.
-    final InternalNode cached = component.consumeLayoutCreatedInWillRender();
-
-    // 2. Return immediately if cached layout is available.
-    if (cached != null) {
-      return cached;
-    }
-
-    // 4. Update the component.
-    component = update(parent, component, reuseGlobalKey);
-
-    // 5. Get the scoped context of the updated component.
-    final ComponentContext c = component.getScopedContext();
-
-    // 6. Resolve the component into an InternalNode tree.
     final InternalNode node;
-
-    final boolean shouldDeferNestedTreeResolution =
-        isNestedTree(c, component) && !resolveNestedTree;
+    final ComponentContext c;
 
     try {
+
+      // 1. Consume the layout created in `willrender`.
+      final InternalNode cached = component.consumeLayoutCreatedInWillRender();
+
+      // 2. Return immediately if cached layout is available.
+      if (cached != null) {
+        return cached;
+      }
+
+      // 4. Update the component.
+      component = update(parent, component, reuseGlobalKey);
+
+      // 5. Get the scoped context of the updated component.
+      c = component.getScopedContext();
+
+      // 6. Resolve the component into an InternalNode tree.
+
+      final boolean shouldDeferNestedTreeResolution =
+          isNestedTree(c, component) && !resolveNestedTree;
 
       // If nested tree resolution is deferred, then create an nested tree holder.
       if (shouldDeferNestedTreeResolution) {
