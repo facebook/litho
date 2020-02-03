@@ -24,6 +24,7 @@ import com.facebook.flipper.core.FlipperClient;
 import com.facebook.flipper.plugins.inspector.DescriptorMapping;
 import com.facebook.flipper.plugins.inspector.InspectorFlipperPlugin;
 import com.facebook.flipper.plugins.litho.LithoFlipperDescriptors;
+import com.facebook.flipper.plugins.sections.SectionsFlipperPlugin;
 import com.facebook.soloader.SoLoader;
 
 public class LithoSampleApplication extends Application {
@@ -40,6 +41,7 @@ public class LithoSampleApplication extends Application {
       final DescriptorMapping descriptorMapping = DescriptorMapping.withDefaults();
       LithoFlipperDescriptors.add(descriptorMapping);
       client.addPlugin(new InspectorFlipperPlugin(this, descriptorMapping));
+      client.addPlugin(new SectionsFlipperPlugin(true));
       client.start();
     }
   }
