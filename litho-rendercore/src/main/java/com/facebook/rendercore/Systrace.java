@@ -31,16 +31,14 @@ public interface Systrace {
 
     @Override
     public void beginSection(String name) {
-      if (BuildConfig.IS_INTERNAL_BUILD
-          && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+      if (BuildConfig.DEBUG && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
         Trace.beginSection(name);
       }
     }
 
     @Override
     public void endSection() {
-      if (BuildConfig.IS_INTERNAL_BUILD
-          && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+      if (BuildConfig.DEBUG && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
         Trace.endSection();
       }
     }
