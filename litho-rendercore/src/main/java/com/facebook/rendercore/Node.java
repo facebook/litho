@@ -63,7 +63,7 @@ public abstract class Node implements Copyable {
   /**
    * Implementations of Node are responsible to calculate a layout based on the width/height
    * constraints provided. A Node could decide to implement its own layout function or to delegate
-   * to its RenderUnit calculateLayout
+   * to its RenderUnit measure
    *
    * @param widthSpec a measure spec for the width in the format of {@link View.MeasureSpec}
    * @param heightSpec a measure spec for the height in the format of {@link View.MeasureSpec}

@@ -17,6 +17,7 @@
 package com.facebook.rendercore;
 
 import android.content.Context;
+import android.view.View;
 import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
@@ -89,87 +90,23 @@ public abstract class RenderUnit<T> implements Copyable {
   public abstract long getId();
 
   /**
-   * RenderUnits that can measure their content should implement this method and write the result of
-   * the measure call into the outSize array where outSize[0] is the width and outSize[1] is the
-   * height. Measure is not guaranteed to be called as certain layout algorithms might size children
-   * based on their own constraints rather than the child's measure function.
+   * RenderUnits that can measure their content should implement this metho. Measure is not
+   * guaranteed to be called as certain layout algorithms might size children based on their own
+   * constraints rather than the child's measure function.
    */
-  public void measure(
-      Context context, int widthSpec, int heightSpec, int[] outSize, Map layoutContexts) {}
-
-  public Node.LayoutResult calculateLayout(
+  public MeasureResult measure(
       Context context, final int widthSpec, final int heightSpec, Map layoutContexts) {
-    final int[] size = new int[2];
 
-    measure(context, widthSpec, heightSpec, size, layoutContexts);
-
-    return new Node.LayoutResult() {
-      @Nullable
-      @Override
-      public RenderUnit getRenderUnit() {
-        return RenderUnit.this;
-      }
-
-      @Override
-      public int getChildrenCount() {
-        return 0;
-      }
-
-      @Override
-      public Node.LayoutResult getChildAt(int index) {
-        return null;
-      }
-
-      @Override
-      public int getXForChildAtIndex(int index) {
-        return 0;
-      }
-
-      @Override
-      public int getYForChildAtIndex(int index) {
-        return 0;
-      }
-
-      @Override
-      public int getWidth() {
-        return size[0];
-      }
-
-      @Override
-      public int getHeight() {
-        return size[1];
-      }
-
-      @Override
-      public int getPaddingTop() {
-        return 0;
-      }
-
-      @Override
-      public int getPaddingRight() {
-        return 0;
-      }
-
-      @Override
-      public int getPaddingBottom() {
-        return 0;
-      }
-
-      @Override
-      public int getPaddingLeft() {
-        return 0;
-      }
-
-      @Override
-      public int getWidthSpec() {
-        return widthSpec;
-      }
-
-      @Override
-      public int getHeightSpec() {
-        return heightSpec;
-      }
-    };
+    return new MeasureResult(
+        this,
+        widthSpec,
+        heightSpec,
+        View.MeasureSpec.getMode(widthSpec) == View.MeasureSpec.EXACTLY
+            ? View.MeasureSpec.getSize(widthSpec)
+            : 0,
+        View.MeasureSpec.getMode(heightSpec) == View.MeasureSpec.EXACTLY
+            ? View.MeasureSpec.getSize(heightSpec)
+            : 0);
   }
 
   /**
