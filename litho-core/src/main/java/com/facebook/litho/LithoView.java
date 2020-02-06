@@ -171,7 +171,6 @@ public class LithoView extends ComponentHost {
 
   public LithoView(ComponentContext context, AttributeSet attrs) {
     super(context, attrs);
-
     mComponentContext = context;
     mMountState = new MountState(this);
     mAccessibilityManager =

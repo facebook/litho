@@ -221,4 +221,6 @@ public class ComponentsConfiguration {
   public static boolean useNewCreateLayoutImplementation = false;
 
   public static boolean shouldCompareStateInIsEquivalentTo = true;
+
+  public static boolean incrementalVisibilityHandling = false;
 }

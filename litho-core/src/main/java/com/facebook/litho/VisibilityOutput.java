@@ -36,6 +36,7 @@ class VisibilityOutput {
   private EventHandler<FullImpressionVisibleEvent> mFullImpressionEventHandler;
   private EventHandler<InvisibleEvent> mInvisibleEventHandler;
   private @Nullable EventHandler<VisibilityChangedEvent> mVisibilityChangedEventHandler;
+  private float mFocusedRatio;
 
   @Nullable
   String getId() {
@@ -62,6 +63,62 @@ class VisibilityOutput {
     mBounds.set(bounds);
   }
 
+  float getVisibilityTop() {
+    if (getVisibleHeightRatio() == 0) {
+      return mBounds.top;
+    }
+
+    return mBounds.top + getVisibleHeightRatio() * (mBounds.bottom - mBounds.top);
+  }
+
+  float getVisibilityBottom() {
+    if (getVisibleHeightRatio() == 0) {
+      return mBounds.bottom;
+    }
+
+    return mBounds.bottom - getVisibleHeightRatio() * (mBounds.bottom - mBounds.top);
+  }
+
+  float getVisibilityLeft() {
+    return mBounds.left + getVisibleWidthRatio() * (mBounds.right - mBounds.left);
+  }
+
+  float getVisibilityRight() {
+    return mBounds.right - getVisibleHeightRatio() * (mBounds.right - mBounds.left);
+  }
+
+  float getFullImpressionTop() {
+    return mBounds.bottom;
+  }
+
+  float getFullImpressionBottom() {
+    return mBounds.top;
+  }
+
+  float getFullImpressionLeft() {
+    return mBounds.right;
+  }
+
+  float getFullImpressionRight() {
+    return mBounds.left;
+  }
+
+  float getFocusedTop() {
+    return mBounds.top + mFocusedRatio * (mBounds.bottom - mBounds.top);
+  }
+
+  float getFocusedBottom() {
+    return mBounds.bottom - mFocusedRatio * (mBounds.bottom - mBounds.top);
+  }
+
+  float getFocusedLeft() {
+    return mBounds.left + mFocusedRatio * (mBounds.right - mBounds.left);
+  }
+
+  float getFocusedRight() {
+    return mBounds.right - mFocusedRatio * (mBounds.right - mBounds.left);
+  }
+
   void setVisibleHeightRatio(float visibleHeightRatio) {
     mVisibleHeightRatio = visibleHeightRatio;
   }
@@ -78,6 +135,10 @@ class VisibilityOutput {
     return mVisibleWidthRatio;
   }
 
+  void setFocusedRatio(float focusedRatio) {
+    mFocusedRatio = focusedRatio;
+  }
+
   void setVisibleEventHandler(EventHandler<VisibleEvent> visibleEventHandler) {
     mVisibleEventHandler = visibleEventHandler;
   }
@@ -88,6 +149,11 @@ class VisibilityOutput {
 
   void setFocusedEventHandler(EventHandler<FocusedVisibleEvent> focusedEventHandler) {
     mFocusedEventHandler = focusedEventHandler;
+  }
+
+  int getComponentArea() {
+    final Rect rect = getBounds();
+    return rect.isEmpty() ? 0 : (rect.width() * rect.height());
   }
 
   EventHandler<FocusedVisibleEvent> getFocusedEventHandler() {

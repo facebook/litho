@@ -150,6 +150,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   private final Set<Long> mComponentIdsMountedInThisFrame = new HashSet<>();
 
   private final DynamicPropsManager mDynamicPropsManager = new DynamicPropsManager();
+  private @Nullable VisibilityModule mVisibilityModule;
 
   public MountState(LithoView view) {
     mIndexToItemMap = new LongSparseArray<>();
@@ -536,14 +537,52 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       LayoutState layoutState,
       @Nullable Rect localVisibleRect,
       @Nullable PerfEvent mountPerfEvent) {
+    final boolean isTracing = ComponentsSystrace.isTracing();
+
+    try {
+      if (mountPerfEvent != null) {
+        mountPerfEvent.markerPoint("VISIBILITY_HANDLERS_START");
+      }
+
+      if (isTracing) {
+        ComponentsSystrace.beginSection("processVisibilityOutputs");
+      }
+
+      if (layoutState.incrementalVisibilityEnabled()) {
+        if (mVisibilityModule == null) {
+          if (mLithoView == null) {
+            return;
+          }
+
+          mVisibilityModule = new VisibilityModule(mLithoView);
+        }
+
+        mVisibilityModule.processVisibilityOutputs(
+            mIsDirty,
+            layoutState.getVisibilityModuleInput(),
+            localVisibleRect,
+            mPreviousLocalVisibleRect);
+      } else {
+        processVisibilityOutputsNonInc(layoutState, localVisibleRect);
+      }
+
+    } finally {
+      if (isTracing) {
+        ComponentsSystrace.endSection();
+      }
+
+      if (mountPerfEvent != null) {
+        mountPerfEvent.markerPoint("VISIBILITY_HANDLERS_END");
+      }
+    }
+  }
+
+  private void processVisibilityOutputsNonInc(
+      LayoutState layoutState, @Nullable Rect localVisibleRect) {
     assertMainThread();
 
     if (localVisibleRect == null) {
       return;
-    }
-
-    if (mountPerfEvent != null) {
-      mountPerfEvent.markerPoint("VISIBILITY_HANDLERS_START");
     }
 
     final boolean isDoingPerfLog = mMountStats.isLoggingEnabled;
@@ -716,10 +755,6 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     if (isDoingPerfLog) {
       mMountStats.visibilityHandlersTotalTime = (System.nanoTime() - totalStartTime) / NS_IN_MS;
     }
-
-    if (mountPerfEvent != null) {
-      mountPerfEvent.markerPoint("VISIBILITY_HANDLERS_END");
-    }
   }
 
   @VisibleForTesting
@@ -806,10 +841,35 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   }
 
   void clearVisibilityItems() {
+    if (mVisibilityModule != null) {
+      clearVisibilityItemsIncremental();
+    } else {
+      clearVisibilityItemsNonincremental();
+    }
+  }
+
+  private void clearVisibilityItemsIncremental() {
+    assertMainThread();
+
+    boolean isTracing = ComponentsSystrace.isTracing();
+    if (isTracing) {
+      ComponentsSystrace.beginSection("MountState.clearIncrementalItems");
+    }
+
+    if (mVisibilityModule != null) {
+      mVisibilityModule.clearIncrementalItems();
+    }
+
+    if (isTracing) {
+      ComponentsSystrace.endSection();
+    }
+  }
+
+  private void clearVisibilityItemsNonincremental() {
     assertMainThread();
     boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
-      ComponentsSystrace.beginSection("MountState.clearVisibilityItems");
+      ComponentsSystrace.beginSection("MountState.clearIncrementalItems");
     }
 
     List<String> toClear = new ArrayList<>();

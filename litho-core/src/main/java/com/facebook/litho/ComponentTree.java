@@ -112,6 +112,8 @@ public class ComponentTree {
   @GuardedBy("this")
   private int mStateUpdatesFromCreateLayoutCount;
 
+  private final boolean mIncrementalVisibility;
+
   @IntDef({SCHEDULE_NONE, SCHEDULE_LAYOUT_ASYNC, SCHEDULE_LAYOUT_SYNC})
   @Retention(RetentionPolicy.SOURCE)
   private @interface PendingLayoutCalculation {}
@@ -350,6 +352,7 @@ public class ComponentTree {
     mLogger = builder.logger;
     mLogTag = builder.logTag;
     mAreTransitionsEnabled = TransitionUtils.areTransitionsEnabled(mContext.getAndroidContext());
+    mIncrementalVisibility = builder.incrementalVisibility;
   }
 
   /**
@@ -1604,6 +1607,10 @@ public class ComponentTree {
     return mLithoView;
   }
 
+  boolean hasIncrementalVisibility() {
+    return mIncrementalVisibility;
+  }
+
   /**
    * Provides a new instance from the StateHandler pool that is initialized with the information
    * from the StateHandler currently held by the ComponentTree. Once the state updates have been
@@ -2808,6 +2815,7 @@ public class ComponentTree {
     private boolean useCancelableLayoutFutures = ComponentsConfiguration.useCancelableLayoutFutures;
     private @Nullable String logTag;
     private @Nullable ComponentsLogger logger;
+    private boolean incrementalVisibility = ComponentsConfiguration.incrementalVisibilityHandling;
 
     protected Builder(ComponentContext context) {
       this.context = context;
@@ -2960,6 +2968,11 @@ public class ComponentTree {
      */
     public Builder useCancelableLayoutFutures(boolean isEnabled) {
       this.useCancelableLayoutFutures = isEnabled;
+      return this;
+    }
+
+    public Builder incrementalVisibility(boolean isEnabled) {
+      this.incrementalVisibility = isEnabled;
       return this;
     }
 

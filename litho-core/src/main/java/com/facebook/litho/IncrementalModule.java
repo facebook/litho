@@ -119,7 +119,7 @@ class IncrementalModule {
    * Triggers exit range callbacks for all items which were inside the range, used for example when
    * the LithoView is not visible anymore.
    */
-  void clearIncrementalVisibilityItems() {
+  void clearIncrementalItems() {
     for (String key : mPreviousIncrementalVertical.keySet()) {
       mPreviousIncrementalVertical.get(key).onExitVisibleRange();
     }

@@ -86,6 +86,7 @@ class LayoutState {
   private static final String DUPLICATE_TRANSITION_IDS = "LayoutState:DuplicateTransitionIds";
   private static final String DUPLICATE_MANUAL_KEY = "LayoutState:DuplicateManualKey";
   private static final String NULL_PARENT_KEY = "LayoutState:NullParentKey";
+  private final boolean mIncrementalVisibility;
 
   @IntDef({
     CalculateLayoutSource.TEST,
@@ -221,10 +222,18 @@ class LayoutState {
   private int mHeightSpec;
 
   private final List<LayoutOutput> mMountableOutputs = new ArrayList<>(8);
-  private final List<VisibilityOutput> mVisibilityOutputs = new ArrayList<>(8);
+  private List<VisibilityOutput> mVisibilityOutputs;
   private final LongSparseArray<Integer> mOutputsIdToPositionMap = new LongSparseArray<>(8);
   private final ArrayList<LayoutOutput> mMountableOutputTops = new ArrayList<>();
   private final ArrayList<LayoutOutput> mMountableOutputBottoms = new ArrayList<>();
+  /*private ArrayList<IncrementalModuleItem> mIncrementalVisibilityItemsTops;
+  private ArrayList<IncrementalModuleItem> mIncrementalVisibilitytemsBottoms;
+  private ArrayList<IncrementalModuleItem> mIncrementalFullImpressionItemsTops;
+  private ArrayList<IncrementalModuleItem> mIncrementalFullImpressionItemsBottoms;
+  private ArrayList<FocusedIncrementalModuleItem> mIncrementalFocusedItems;
+  private ArrayList<VisibilityOutput> mVisibilityChangedOutputs;*/
+  private final @Nullable VisibilityModuleInput mVisibilityModuleInput;
+
   private final @Nullable Map<Integer, InternalNode> mLastMeasuredLayouts;
 
   @Nullable private LayoutStateOutputIdCalculator mLayoutStateOutputIdCalculator;
@@ -292,6 +301,19 @@ class LayoutState {
     mOrientation = context.getResources().getConfiguration().orientation;
     mLastMeasuredLayouts = new HashMap<>();
     mComponents = new ArrayList<>();
+
+    if (context.getComponentTree() != null) {
+      mIncrementalVisibility = context.getComponentTree().hasIncrementalVisibility();
+    } else {
+      mIncrementalVisibility = false;
+    }
+
+    mVisibilityModuleInput = mIncrementalVisibility ? new VisibilityModuleInput() : null;
+    mVisibilityOutputs = new ArrayList<>(8);
+  }
+
+  boolean incrementalVisibilityEnabled() {
+    return mIncrementalVisibility;
   }
 
   @VisibleForTesting
@@ -1610,6 +1632,12 @@ class LayoutState {
     }
     Collections.sort(layoutState.mMountableOutputTops, sTopsComparator);
     Collections.sort(layoutState.mMountableOutputBottoms, sBottomsComparator);
+
+    if (layoutState.mIncrementalVisibility) {
+      layoutState.mVisibilityModuleInput.setIncrementalModuleItems(layoutState.mVisibilityOutputs);
+      layoutState.mVisibilityOutputs.clear();
+    }
+
     if (isTracing) {
       ComponentsSystrace.endSection();
     }
@@ -1891,6 +1919,36 @@ class LayoutState {
 
   VisibilityOutput getVisibilityOutputAt(int index) {
     return mVisibilityOutputs.get(index);
+  }
+
+  /*
+  ArrayList<IncrementalModuleItem> getIncrementalVisibilityItemsTops() {
+    return mIncrementalVisibilityItemsTops;
+  }
+
+  ArrayList<IncrementalModuleItem> getIncrementalVisibilityItemsBottoms() {
+    return mIncrementalVisibilitytemsBottoms;
+  }
+
+  ArrayList<IncrementalModuleItem> getFullImpressionItemsTops() {
+    return mIncrementalFullImpressionItemsTops;
+  }
+
+  ArrayList<IncrementalModuleItem> getFullImpressionItemsBottoms() {
+    return mIncrementalFullImpressionItemsBottoms;
+  }
+
+  ArrayList<FocusedIncrementalModuleItem> getIncrementalFocusedItems() {
+    return mIncrementalFocusedItems;
+  }
+
+  ArrayList<VisibilityOutput> getVisibilityChangedOutputs() {
+    return mVisibilityChangedOutputs;
+  }
+   */
+
+  VisibilityModuleInput getVisibilityModuleInput() {
+    return mVisibilityModuleInput;
   }
 
   int getTestOutputCount() {
