@@ -46,6 +46,7 @@ public class ComponentTreeHolder {
   private final boolean mUseCancelableLayoutFutures;
   private final boolean mIsReconciliationEnabled;
   private final boolean mIsLayoutDiffingEnabled;
+  private final boolean mIncrementalVisibilityEnabled;
 
   @IntDef({RENDER_UNINITIALIZED, RENDER_ADDED, RENDER_DRAWN})
   public @interface RenderState {}
@@ -117,6 +118,7 @@ public class ComponentTreeHolder {
     private boolean canInterruptAndMoveLayoutsBetweenThreads;
     private boolean isReconciliationEnabled = ComponentsConfiguration.isReconciliationEnabled;
     private boolean isLayoutDiffingEnabled = ComponentsConfiguration.isLayoutDiffingEnabled;
+    private boolean incrementalVisibility;
 
     private Builder() {}
 
@@ -177,6 +179,11 @@ public class ComponentTreeHolder {
       return this;
     }
 
+    public Builder incrementalVisibility(boolean isEnabled) {
+      incrementalVisibility = isEnabled;
+      return this;
+    }
+
     public ComponentTreeHolder build() {
       ensureMandatoryParams();
       return new ComponentTreeHolder(this);
@@ -204,6 +211,7 @@ public class ComponentTreeHolder {
     mIncrementalMount = builder.incrementalMount;
     mIsReconciliationEnabled = builder.isReconciliationEnabled;
     mIsLayoutDiffingEnabled = builder.isLayoutDiffingEnabled;
+    mIncrementalVisibilityEnabled = builder.incrementalVisibility;
   }
 
   public synchronized void acquireStateAndReleaseTree() {
@@ -445,6 +453,7 @@ public class ComponentTreeHolder {
               .incrementalMount(mIncrementalMount)
               .canInterruptAndMoveLayoutsBetweenThreads(mCanInterruptAndMoveLayoutsBetweenThreads)
               .useCancelableLayoutFutures(mUseCancelableLayoutFutures)
+              .incrementalVisibility(mIncrementalVisibilityEnabled)
               .logger(mRenderInfo.getComponentsLogger(), mRenderInfo.getLogTag())
               .build();
       if (mPendingNewLayoutListener != null) {

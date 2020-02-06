@@ -174,7 +174,8 @@ public class RecyclerBinderTest {
               boolean isReconciliationEnabled,
               boolean isLayoutDiffingEnabled,
               LithoHandler preallocateHandler,
-              boolean preallocatePerMountSpec) {
+              boolean preallocatePerMountSpec,
+              boolean incrementalVisibility) {
             final TestComponentTreeHolder holder = new TestComponentTreeHolder(renderInfo);
             if (renderInfo.rendersComponent()) {
               mHoldersForComponents.put(renderInfo.getComponent(), holder);
@@ -198,7 +199,8 @@ public class RecyclerBinderTest {
               boolean isReconciliationEnabled,
               boolean isLayoutDiffingEnabled,
               LithoHandler preallocateHandler,
-              boolean preallocatePerMountSpec) {
+              boolean preallocatePerMountSpec,
+              boolean incrementalVisibility) {
             final TestComponentTreeHolder holder = new TestComponentTreeHolder(renderInfo, true);
             if (renderInfo.rendersComponent()) {
               mHoldersForComponents.put(renderInfo.getComponent(), holder);

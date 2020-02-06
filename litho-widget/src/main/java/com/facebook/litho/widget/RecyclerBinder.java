@@ -140,6 +140,7 @@ public class RecyclerBinder
   private final boolean mHasManualEstimatedViewportCount;
   private final boolean mIsReconciliationEnabled;
   private final boolean mIsLayoutDiffingEnabled;
+  private final boolean mIncrementalVisibility;
 
   private AtomicLong mCurrentChangeSetThreadId = new AtomicLong(-1);
   @VisibleForTesting final boolean mTraverseLayoutBackwards;
@@ -369,7 +370,8 @@ public class RecyclerBinder
         boolean isReconciliationEnabled,
         boolean isLayoutDiffingEnabled,
         LithoHandler preallocateHandler,
-        boolean preallocatePerMountSpec);
+        boolean preallocatePerMountSpec,
+        boolean incrementalVisibility);
   }
 
   static final ComponentTreeHolderFactory DEFAULT_COMPONENT_TREE_HOLDER_FACTORY =
@@ -385,7 +387,8 @@ public class RecyclerBinder
             boolean isReconciliationEnabled,
             boolean isLayoutDiffingEnabled,
             LithoHandler preallocateHandler,
-            boolean preallocatePerMountSpec) {
+            boolean preallocatePerMountSpec,
+            boolean incrementalVisibility) {
           return ComponentTreeHolder.create()
               .renderInfo(renderInfo)
               .layoutHandler(layoutHandler)
@@ -397,6 +400,7 @@ public class RecyclerBinder
               .isLayoutDiffingEnabled(isLayoutDiffingEnabled)
               .preallocateMountContentHandler(preallocateHandler)
               .shouldPreallocatePerMountSpec(preallocatePerMountSpec)
+              .incrementalVisibility(incrementalVisibility)
               .build();
         }
       };
@@ -438,6 +442,7 @@ public class RecyclerBinder
     private @Nullable ComponentWarmer mComponentWarmer;
     private @Nullable LithoStartupLogger startupLogger;
     private LithoHandler mAsyncInsertLayoutHandler;
+    private boolean mIncrementalVisibility = ComponentsConfiguration.incrementalVisibilityHandling;
 
     /**
      * @param rangeRatio specifies how big a range this binder should try to compute. The range is
@@ -611,6 +616,11 @@ public class RecyclerBinder
             "Estimated viewport count must be > 0: " + estimatedViewportCount);
       }
       this.estimatedViewportCount = estimatedViewportCount;
+      return this;
+    }
+
+    public Builder incrementalVisibilityHandling(boolean isEnabled) {
+      mIncrementalVisibility = isEnabled;
       return this;
     }
 
@@ -837,6 +847,7 @@ public class RecyclerBinder
     mLayoutHandlerFactory = builder.layoutHandlerFactory;
     mAsyncInsertHandler = builder.mAsyncInsertLayoutHandler;
     mLithoViewFactory = builder.lithoViewFactory;
+    mIncrementalVisibility = builder.mIncrementalVisibility;
 
     if (mLayoutHandlerFactory == null) {
 
@@ -3693,7 +3704,8 @@ public class RecyclerBinder
         mIsReconciliationEnabled,
         mIsLayoutDiffingEnabled,
         mPreallocateMountContentHandler,
-        mPreallocatePerMountSpec);
+        mPreallocatePerMountSpec,
+        mIncrementalVisibility);
   }
 
   ComponentTreeHolderPreparer getComponentTreeHolderPreparer() {
