@@ -207,6 +207,16 @@ class NoOpInternalNode implements InternalNode {
     return 0;
   }
 
+  @Override
+  public int getHeightSpec() {
+    return 0;
+  }
+
+  @Override
+  public int getWidthSpec() {
+    return 0;
+  }
+
   @Nullable
   @Override
   public Component getComponent() {

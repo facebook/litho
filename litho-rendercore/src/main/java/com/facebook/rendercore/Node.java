@@ -166,6 +166,12 @@ public abstract class Node implements Copyable {
     /** @return the resolved left padding for the Node */
     @Px
     int getPaddingLeft();
+
+    /** @return the width measurement that generated this LayoutResult */
+    int getWidthSpec();
+
+    /** @return the height measurement that generated this LayoutResult */
+    int getHeightSpec();
   }
 
   @Override

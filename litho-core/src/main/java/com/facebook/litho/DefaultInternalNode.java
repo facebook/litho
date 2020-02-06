@@ -496,6 +496,16 @@ public class DefaultInternalNode extends Node implements InternalNode, Cloneable
   }
 
   @Override
+  public int getHeightSpec() {
+    return mLastHeightSpec;
+  }
+
+  @Override
+  public int getWidthSpec() {
+    return mLastWidthSpec;
+  }
+
+  @Override
   public int getChildCount() {
     return mYogaNode.getChildCount();
   }

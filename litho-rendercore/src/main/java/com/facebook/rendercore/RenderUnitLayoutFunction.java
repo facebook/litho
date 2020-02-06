@@ -27,8 +27,8 @@ public class RenderUnitLayoutFunction implements Node.LayoutFunction {
   public Node.LayoutResult calculateLayout(
       Context context,
       final Node node,
-      int widthSpec,
-      int heightSpec,
+      final int widthSpec,
+      final int heightSpec,
       LayoutCache layoutCache,
       Map layoutContexts) {
     if (node.getRenderUnit() == null) {
@@ -94,6 +94,16 @@ public class RenderUnitLayoutFunction implements Node.LayoutFunction {
       @Override
       public int getPaddingLeft() {
         return 0;
+      }
+
+      @Override
+      public int getWidthSpec() {
+        return widthSpec;
+      }
+
+      @Override
+      public int getHeightSpec() {
+        return heightSpec;
       }
     };
   }
