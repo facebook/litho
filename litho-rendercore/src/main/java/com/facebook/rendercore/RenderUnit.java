@@ -20,6 +20,7 @@ import android.content.Context;
 import android.view.View;
 import androidx.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -43,13 +44,13 @@ public abstract class RenderUnit<T> implements Copyable {
   private List<Binder<RenderUnit<T>, T>> mMountUnmountFunctionsWithExtensions;
 
   public RenderUnit(RenderType renderType) {
-    this(renderType, null, null);
+    this(renderType, Collections.EMPTY_LIST, Collections.EMPTY_LIST);
   }
 
   public RenderUnit(
       RenderType renderType,
       List<? extends Binder<? extends RenderUnit<T>, T>> mountUnmountFunctions) {
-    this(renderType, mountUnmountFunctions, null);
+    this(renderType, mountUnmountFunctions, Collections.EMPTY_LIST);
   }
 
   public RenderUnit(
@@ -128,8 +129,7 @@ public abstract class RenderUnit<T> implements Copyable {
    * Adds an extension function that will be invoked with the other mount/unmount binders. Can be
    * used to add generic functionality (e.g. accessibility) to a RenderUnit.
    */
-  public <B extends Binder<? extends RenderUnit<? extends T>, ? extends T>>
-      void addMountUnmountExtension(B binder) {
+  public void addMountUnmountExtension(Binder binder) {
     if (mMountUnmountFunctionsWithExtensions == null) {
       mMountUnmountFunctionsWithExtensions = new ArrayList<>(mBaseMountUnmountFunctions.size() + 4);
       mMountUnmountFunctionsWithExtensions.addAll(mBaseMountUnmountFunctions);
