@@ -28,19 +28,16 @@ import java.util.Map;
  */
 public abstract class Node implements Copyable {
 
-  private final LayoutFunction mLayoutFunction;
   private Copyable mProps;
   private Copyable mLayoutParams;
   private RenderUnit mRenderUnit;
 
-  public Node(LayoutFunction layoutFunction, Copyable props) {
-    mLayoutFunction = layoutFunction;
-    mProps = props;
+  public Node() {
+    this(null);
   }
 
-  public Node(LayoutFunction layoutFunction) {
-    mLayoutFunction = layoutFunction;
-    mProps = null;
+  public Node(Copyable props) {
+    mProps = props;
   }
 
   /** @return a RenderUnit that represents the rendering content of this Node. */
@@ -64,18 +61,15 @@ public abstract class Node implements Copyable {
   }
 
   /**
-   * Calling calculateLayout on this Node will invoke its {@link LayoutFunction} and assign size and
-   * positions to itself and its children. It's responsibility of the LayoutFunction to recursively
-   * call calculateLayout on the entire tree.
+   * Implementations of Node are responsible to calculate a layout based on the width/height
+   * constraints provided. A Node could decide to implement its own layout function or to delegate
+   * to its RenderUnit calculateLayout
    *
    * @param widthSpec a measure spec for the width in the format of {@link View.MeasureSpec}
    * @param heightSpec a measure spec for the height in the format of {@link View.MeasureSpec}
    */
-  public final LayoutResult calculateLayout(
-      Context context, int widthSpec, int heightSpec, LayoutCache layoutCache, Map layoutContexts) {
-    return mLayoutFunction.calculateLayout(
-        context, this, widthSpec, heightSpec, layoutCache, layoutContexts);
-  }
+  public abstract LayoutResult calculateLayout(
+      Context context, int widthSpec, int heightSpec, LayoutCache layoutCache, Map layoutContexts);
 
   public Copyable getLayoutParams() {
     return mLayoutParams;
@@ -95,17 +89,6 @@ public abstract class Node implements Copyable {
 
     /** @return the child of this node at position index */
     T getChildAt(int index);
-  }
-
-  /** Represent a function that can calculate a LayoutResult from a Node tree. */
-  public interface LayoutFunction {
-    LayoutResult calculateLayout(
-        Context context,
-        Node node,
-        int widthSpec,
-        int heightSpec,
-        LayoutCache layoutCache,
-        Map layoutContexts);
   }
 
   /**

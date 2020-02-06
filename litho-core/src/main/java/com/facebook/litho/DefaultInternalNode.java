@@ -33,6 +33,7 @@ import static com.facebook.yoga.YogaEdge.TOP;
 import static com.facebook.yoga.YogaEdge.VERTICAL;
 
 import android.animation.StateListAnimator;
+import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.PathEffect;
@@ -51,6 +52,7 @@ import com.facebook.infer.annotation.ReturnsOwnership;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.drawable.ComparableColorDrawable;
+import com.facebook.rendercore.LayoutCache;
 import com.facebook.rendercore.Node;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaBaselineFunction;
@@ -67,6 +69,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import javax.annotation.Nullable;
 
@@ -195,7 +198,7 @@ public class DefaultInternalNode extends Node implements InternalNode, Cloneable
 
   protected DefaultInternalNode(
       ComponentContext componentContext, YogaNode yogaNode, boolean createDebugComponentsInCtor) {
-    super(LithoLayoutFunction.INSTANCE);
+    super();
     mComponentContext = componentContext;
 
     if (yogaNode != null) {
@@ -503,6 +506,14 @@ public class DefaultInternalNode extends Node implements InternalNode, Cloneable
   @Override
   public int getChildCount() {
     return mYogaNode.getChildCount();
+  }
+
+  @Override
+  public LayoutResult calculateLayout(
+      Context context, int widthSpec, int heightSpec, LayoutCache layoutCache, Map layoutContexts) {
+    Layout.measure(getContext(), this, widthSpec, heightSpec, null);
+
+    return this;
   }
 
   @Override

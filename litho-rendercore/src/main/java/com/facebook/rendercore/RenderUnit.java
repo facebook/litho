@@ -97,6 +97,81 @@ public abstract class RenderUnit<T> implements Copyable {
   public void measure(
       Context context, int widthSpec, int heightSpec, int[] outSize, Map layoutContexts) {}
 
+  public Node.LayoutResult calculateLayout(
+      Context context, final int widthSpec, final int heightSpec, Map layoutContexts) {
+    final int[] size = new int[2];
+
+    measure(context, widthSpec, heightSpec, size, layoutContexts);
+
+    return new Node.LayoutResult() {
+      @Nullable
+      @Override
+      public RenderUnit getRenderUnit() {
+        return RenderUnit.this;
+      }
+
+      @Override
+      public int getChildrenCount() {
+        return 0;
+      }
+
+      @Override
+      public Node.LayoutResult getChildAt(int index) {
+        return null;
+      }
+
+      @Override
+      public int getXForChildAtIndex(int index) {
+        return 0;
+      }
+
+      @Override
+      public int getYForChildAtIndex(int index) {
+        return 0;
+      }
+
+      @Override
+      public int getWidth() {
+        return size[0];
+      }
+
+      @Override
+      public int getHeight() {
+        return size[1];
+      }
+
+      @Override
+      public int getPaddingTop() {
+        return 0;
+      }
+
+      @Override
+      public int getPaddingRight() {
+        return 0;
+      }
+
+      @Override
+      public int getPaddingBottom() {
+        return 0;
+      }
+
+      @Override
+      public int getPaddingLeft() {
+        return 0;
+      }
+
+      @Override
+      public int getWidthSpec() {
+        return widthSpec;
+      }
+
+      @Override
+      public int getHeightSpec() {
+        return heightSpec;
+      }
+    };
+  }
+
   /**
    * This callback is invoked when the final size for this RenderUnit has been determined. unlike
    * measure this is guaranteed to be called at the end of the layout process.
