@@ -21,7 +21,7 @@ import android.content.res.TypedArray;
 import android.graphics.PathEffect;
 import android.graphics.drawable.Drawable;
 import androidx.annotation.Nullable;
-import com.facebook.rendercore.Node;
+import com.facebook.rendercore.RenderUnit;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
@@ -182,7 +182,7 @@ class NoOpInternalNode implements InternalNode {
   }
 
   @Override
-  public Node getNode() {
+  public RenderUnit getRenderUnit() {
     return null;
   }
 

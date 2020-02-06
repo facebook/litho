@@ -54,9 +54,9 @@ public class Reducer {
     if (layoutResult.getWidth() == 0 && layoutResult.getHeight() == 0) {
       return;
     }
-    final RenderUnit hostRenderUnit = layoutResult.getNode().getHostRenderUnit();
+    final RenderUnit renderUnit = layoutResult.getRenderUnit();
 
-    if (hostRenderUnit != null) {
+    if (renderUnit != null && layoutResult.getChildrenCount() > 0) { // The renderUnit is a host
       // The translated position keeps into account all the parent Layouts that did not render
       // to any host.
       final int translatedXPosition = x + xTranslation;
@@ -64,7 +64,7 @@ public class Reducer {
 
       RenderTreeNode newHost =
           createRenderTreeNode(
-              layoutResult, hostRenderUnit, latestHost, translatedXPosition, translatedYPosition);
+              layoutResult, renderUnit, latestHost, translatedXPosition, translatedYPosition);
       flattenedTree.add(newHost);
       latestHost.child(newHost);
       latestHost = newHost;
@@ -73,21 +73,11 @@ public class Reducer {
       // If this Node also has a RenderUnit its position inside the Host will be 0,0
       x = 0;
       y = 0;
-    } else if (layoutResult.getChildrenCount() > 0) {
-      xTranslation += x;
-      yTranslation += y;
-    }
-
-    /**
-     * This is a layoutResult with Content and therefore it's a leaf layoutResult. We just add it to
-     * the currently active host.
-     */
-    final RenderUnit renderContent = layoutResult.getNode().getRenderUnit();
-    if (renderContent != null) {
+    } else if (renderUnit != null) { // The renderUnit is a leaf content
       if (layoutResult.getChildrenCount() > 0) {
         throw new IllegalStateException(
             "Only nodes without children can have content. A layoutResult with content "
-                + renderContent
+                + renderUnit
                 + " has "
                 + layoutResult.getChildrenCount()
                 + " children");
@@ -97,10 +87,14 @@ public class Reducer {
 
       RenderTreeNode content =
           createRenderTreeNode(
-              layoutResult, renderContent, latestHost, translatedXPosition, translatedYPosition);
-      renderContent.onSizeDefined(context, layoutResult, layoutContexts);
+              layoutResult, renderUnit, latestHost, translatedXPosition, translatedYPosition);
+      renderUnit.onSizeDefined(context, layoutResult, layoutContexts);
       flattenedTree.add(content);
       latestHost.child(content);
+    } else if (layoutResult.getChildrenCount() > 0) { // No render unit, update the translated
+      // position.
+      xTranslation += x;
+      yTranslation += y;
     }
 
     for (int i = 0; i < layoutResult.getChildrenCount(); i++) {

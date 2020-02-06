@@ -471,11 +471,6 @@ public class DefaultInternalNode extends Node implements InternalNode, Cloneable
   }
 
   @Override
-  public DefaultInternalNode getNode() {
-    return this;
-  }
-
-  @Override
   public int getChildrenCount() {
     return getChildCount();
   }

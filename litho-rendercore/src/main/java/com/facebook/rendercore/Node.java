@@ -28,13 +28,10 @@ import java.util.Map;
  */
 public abstract class Node implements Copyable {
 
-  private static final int DEFAULT_SIZE = 4;
-
   private final LayoutFunction mLayoutFunction;
   private Copyable mProps;
   private Copyable mLayoutParams;
   private RenderUnit mRenderUnit;
-  private RenderUnit<? extends Host> mHostRenderUnit;
 
   public Node(LayoutFunction layoutFunction, Copyable props) {
     mLayoutFunction = layoutFunction;
@@ -64,15 +61,6 @@ public abstract class Node implements Copyable {
 
   public final void setRenderUnit(RenderUnit content) {
     mRenderUnit = content;
-  }
-
-  /** Sets the View that will wrap this Node and its children RenderUnits. */
-  public void setHostRenderUnit(RenderUnit<? extends Host> hostRenderUnit) {
-    mHostRenderUnit = hostRenderUnit;
-  }
-
-  public RenderUnit<? extends Host> getHostRenderUnit() {
-    return mHostRenderUnit;
   }
 
   /**
@@ -126,8 +114,9 @@ public abstract class Node implements Copyable {
    */
   public interface LayoutResult {
 
-    /** @return the Node which layout this LayoutResult represents. */
-    Node getNode();
+    /** @return the RenderUnit that should be rendered by this layout result. */
+    @Nullable
+    RenderUnit getRenderUnit();
 
     /** @return the number of children of this LayoutResult. */
     int getChildrenCount();
@@ -181,9 +170,6 @@ public abstract class Node implements Copyable {
       clone = (Node) super.clone();
       if (mRenderUnit != null) {
         clone.mRenderUnit = mRenderUnit.makeCopy();
-      }
-      if (mHostRenderUnit != null) {
-        clone.mHostRenderUnit = mHostRenderUnit.makeCopy();
       }
 
       if (mProps != null) {

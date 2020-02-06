@@ -31,19 +31,19 @@ public class RenderUnitLayoutFunction implements Node.LayoutFunction {
       final int heightSpec,
       LayoutCache layoutCache,
       Map layoutContexts) {
-    if (node.getRenderUnit() == null) {
+    final RenderUnit renderUnit = node.getRenderUnit();
+    if (renderUnit == null) {
       throw new IllegalStateException(
           "Calling a RenderUnitLayoutFunction on a Node that does not have a RenderUnit");
     }
 
-    final RenderUnit renderUnit = node.getRenderUnit();
     final int[] size = new int[2];
     renderUnit.measure(context, widthSpec, heightSpec, size, layoutContexts);
 
     return new Node.LayoutResult() {
       @Override
-      public Node getNode() {
-        return node;
+      public RenderUnit getRenderUnit() {
+        return renderUnit;
       }
 
       @Override
