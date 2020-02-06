@@ -43,7 +43,7 @@ public class MountItemsPool {
 
   private MountItemsPool() {}
 
-  private static final Map<Context, Map<Class, Pools.SimplePool>> sMountContentPoolsByContext =
+  private static final Map<Context, Map<Object, Pools.SimplePool>> sMountContentPoolsByContext =
       new HashMap<>(4);
 
   // This Map is used as a set and the values are ignored.
@@ -59,7 +59,7 @@ public class MountItemsPool {
   static boolean sIsManualCallbacks;
 
   static Object acquireMountContent(Context context, RenderUnit renderUnit) {
-    final Pools.SimplePool pool = getMountContentPool(context, renderUnit.getClass());
+    final Pools.SimplePool pool = getMountContentPool(context, renderUnit.getRenderContentType());
     Object content = null;
     if (pool == null) {
       return renderUnit.createContent(context);
@@ -81,10 +81,9 @@ public class MountItemsPool {
     }
   }
 
-  private static @Nullable Pools.SimplePool getMountContentPool(
-      Context context, Class<? extends RenderUnit> lifecycle) {
+  private static @Nullable Pools.SimplePool getMountContentPool(Context context, Object lifecycle) {
 
-    Map<Class, Pools.SimplePool> poolsMap = sMountContentPoolsByContext.get(context);
+    Map<Object, Pools.SimplePool> poolsMap = sMountContentPoolsByContext.get(context);
     if (poolsMap == null) {
       final Context rootContext = getRootContext(context);
       if (sDestroyedRootContexts.containsKey(rootContext)) {
@@ -92,7 +91,7 @@ public class MountItemsPool {
       }
 
       ensureActivityCallbacks(context);
-      poolsMap = new HashMap<Class, Pools.SimplePool>();
+      poolsMap = new HashMap<Object, Pools.SimplePool>();
       sMountContentPoolsByContext.put(context, poolsMap);
     }
 
@@ -187,7 +186,7 @@ public class MountItemsPool {
     sMountContentPoolsByContext.remove(context);
 
     // Clear any context wrappers holding a reference to this activity.
-    final Iterator<Map.Entry<Context, Map<Class, Pools.SimplePool>>> it =
+    final Iterator<Map.Entry<Context, Map<Object, Pools.SimplePool>>> it =
         sMountContentPoolsByContext.entrySet().iterator();
 
     while (it.hasNext()) {
