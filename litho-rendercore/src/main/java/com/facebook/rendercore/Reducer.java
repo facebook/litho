@@ -88,7 +88,6 @@ public class Reducer {
       RenderTreeNode content =
           createRenderTreeNode(
               layoutResult, renderUnit, latestHost, translatedXPosition, translatedYPosition);
-      renderUnit.onSizeDefined(context, layoutResult, layoutContexts);
       flattenedTree.add(content);
       latestHost.child(content);
     } else if (layoutResult.getChildrenCount() > 0) { // No render unit, update the translated

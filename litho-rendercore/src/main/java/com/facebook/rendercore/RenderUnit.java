@@ -95,9 +95,9 @@ public abstract class RenderUnit<T> implements Copyable {
   }
 
   /**
-   * RenderUnits that can measure their content should implement this metho. Measure is not
-   * guaranteed to be called as certain layout algorithms might size children based on their own
-   * constraints rather than the child's measure function.
+   * RenderUnits that can measure their content should implement this method and return a
+   * MeasureResult with the bounds of their content. Measure is guaranteed to be called at least
+   * once before this RenderUnit is mounted.
    */
   public MeasureResult measure(
       Context context, final int widthSpec, final int heightSpec, Map layoutContexts) {
@@ -113,12 +113,6 @@ public abstract class RenderUnit<T> implements Copyable {
             ? View.MeasureSpec.getSize(heightSpec)
             : 0);
   }
-
-  /**
-   * This callback is invoked when the final size for this RenderUnit has been determined. unlike
-   * measure this is guaranteed to be called at the end of the layout process.
-   */
-  public void onSizeDefined(Context context, Node.LayoutResult layoutResult, Map layoutContexts) {}
 
   @Override
   public RenderUnit makeCopy() {
