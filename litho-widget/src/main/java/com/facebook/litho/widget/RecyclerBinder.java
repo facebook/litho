@@ -3193,6 +3193,7 @@ public class RecyclerBinder
 
   private static void maybeAcquireStateAndReleaseTree(ComponentTreeHolder holder) {
     if (holder.isTreeValid()
+        && !holder.shouldPreventRelease()
         && !holder.getRenderInfo().isSticky()
         && (holder.getComponentTree() != null
             && holder.getComponentTree().getLithoView() == null)) {
@@ -3680,6 +3681,13 @@ public class RecyclerBinder
         if (holder != null) {
           if (SectionsDebug.ENABLED) {
             Log.d(SectionsDebug.TAG, "Got ComponentTreeHolder from ComponentWarner for key " + tag);
+          }
+          final Object preventRelease =
+              renderInfo.getCustomAttribute(ComponentTreeHolder.PREVENT_RELEASE_TAG);
+          if (preventRelease != null) {
+            holder
+                .getRenderInfo()
+                .addCustomAttribute(ComponentTreeHolder.PREVENT_RELEASE_TAG, preventRelease);
           }
           return holder;
         }

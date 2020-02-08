@@ -1104,6 +1104,42 @@ public class RecyclerBinderTest {
   }
 
   @Test
+  public void testPreventReleaseAttribute() {
+    final List<RenderInfo> components = new ArrayList<>();
+    for (int i = 0; i < 100; i++) {
+      final ComponentRenderInfo.Builder builder =
+          ComponentRenderInfo.create().component(EmptyComponent.create(mComponentContext).build());
+      if (i == 0 || i == 7) {
+        builder.customAttribute(ComponentTreeHolder.PREVENT_RELEASE_TAG, true);
+      }
+
+      components.add(builder.build());
+    }
+    final RecyclerBinder binder = new RecyclerBinder.Builder().build(mComponentContext);
+    binder.insertRangeAt(0, components);
+
+    Size size = new Size();
+    int widthSpec = SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY);
+    int heightSpec = SizeSpec.makeSizeSpec(200, SizeSpec.EXACTLY);
+
+    binder.measure(size, widthSpec, heightSpec, null);
+
+    RecyclerView recyclerView = new RecyclerView(RuntimeEnvironment.application);
+    binder.mount(recyclerView);
+
+    assertThat(binder.getComponentTreeHolderAt(0).isTreeValid()).isTrue();
+
+    final int firstVisible = 40;
+    final int lastVisible = 50;
+
+    binder.onNewVisibleRange(firstVisible, lastVisible);
+
+    assertThat(binder.getComponentTreeHolderAt(0).isTreeValid()).isTrue();
+    assertThat(binder.getComponentTreeHolderAt(7).isTreeValid()).isTrue();
+    assertThat(binder.getComponentTreeHolderAt(1).isTreeValid()).isFalse();
+  }
+
+  @Test
   public void testInsertInVisibleRange() {
     final List<ComponentRenderInfo> components = prepareLoadedBinder();
     final ComponentRenderInfo newRenderInfo = create().component(mock(Component.class)).build();

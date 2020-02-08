@@ -47,6 +47,7 @@ public class ComponentTreeHolder {
   private final boolean mIsReconciliationEnabled;
   private final boolean mIsLayoutDiffingEnabled;
   private final boolean mIncrementalVisibilityEnabled;
+  public static final String PREVENT_RELEASE_TAG = "prevent_release";
 
   @IntDef({RENDER_UNINITIALIZED, RENDER_ADDED, RENDER_DRAWN})
   public @interface RenderState {}
@@ -469,6 +470,15 @@ public class ComponentTreeHolder {
     }
 
     mIsTreeValid = false;
+  }
+
+  boolean shouldPreventRelease() {
+    final Object preventRelease = mRenderInfo.getCustomAttribute(PREVENT_RELEASE_TAG);
+    if (preventRelease instanceof Boolean) {
+      return (Boolean) preventRelease;
+    }
+
+    return false;
   }
 
   @GuardedBy("this")
