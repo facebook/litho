@@ -46,7 +46,7 @@ import java.lang.annotation.RetentionPolicy;
  *   static Component onCreateLayout(
  *     ComponentContext c,
  *    {@literal @Prop} MyTitles title,
- *    {@literal @Prop(varArg = imageUrl)} List<String> urls,
+ *    {@literal @Prop(varArg = imageUrl)} List&lt;String&gt; urls,
  *    {@literal @Prop(optional = true)} boolean isSelected) {
  *     if (urls.isEmpty()) {
  *       return null;
