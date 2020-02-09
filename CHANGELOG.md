@@ -1,8 +1,16 @@
 # Changelog
 
-## Version 0.33.1-SNAPSHOT
+## Version 0.34.1-SNAPSHOT
 
 _release-date_
+
+## Version 0.34.0
+
+
+For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.34.0...master).
+
+
+_2020-02-09_
 
 * **Breaking: Reconciliation for state updates is enabled by default**. Reconciliation makes state updates faster at the expense of increase in memory usage. New APIs added to explicitly disable reconciliation when an explicit `ComponentTree` is not set on the `LithoView`. Read more about it in [the documentation](http://fblitho.com/docs/reconciliation).
   - `LithoView.create(Context, Component, boolean)`
@@ -14,8 +22,7 @@ _release-date_
 * **Breaking:** Make `varArg` props effectively optional with a `Collections.EMPTY_LIST` as a default value.
 
 
-
-For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.33.0...master).
+For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.33.0...v0.34.0).
 
 
 ## Version 0.33.0
