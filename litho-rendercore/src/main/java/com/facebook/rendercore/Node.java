@@ -63,7 +63,18 @@ public abstract class Node implements Copyable {
   /**
    * Implementations of Node are responsible to calculate a layout based on the width/height
    * constraints provided. A Node could decide to implement its own layout function or to delegate
-   * to its RenderUnit measure
+   * to its RenderUnit measure.
+   *
+   * <ul>
+   *   The general contract is:
+   *   <li>- A Node must call calculateLayout on each child (if it has any) at least once, even if
+   *       the Node is going to assign that child an exact size -- this gives a chance for children
+   *       to lay out their own children and produce artifacts like text layouts.
+   *   <li>- If a Node calls layout on a child with flexible specs (UNSPECIFIED or AT_MOST) to get
+   *       sizing information, but ultimately decides to assign that child a different size than the
+   *       child returned, the Node must call calculateLayout again on that child with a mode of
+   *       EXACTLY to enforce the assigned size.
+   * </ul>
    *
    * @param widthSpec a measure spec for the width in the format of {@link View.MeasureSpec}
    * @param heightSpec a measure spec for the height in the format of {@link View.MeasureSpec}
