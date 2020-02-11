@@ -380,7 +380,9 @@ public class ComponentTree {
     }
 
     synchronized (this) {
-      mMeasureListeners.remove(measureListener);
+      if (mMeasureListeners != null) {
+        mMeasureListeners.remove(measureListener);
+      }
     }
   }
 
