@@ -4,11 +4,11 @@
 
 _release-date_
 
-## Version 0.34.0
-
 
 For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.34.0...master).
 
+
+## Version 0.34.0
 
 _2020-02-09_
 
