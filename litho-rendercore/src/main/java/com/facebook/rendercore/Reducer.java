@@ -20,7 +20,6 @@ import android.content.Context;
 import android.graphics.Rect;
 import androidx.annotation.Nullable;
 import java.util.ArrayList;
-import java.util.Map;
 
 /**
  * Reduces a tree of Node into a flattened tree of RenderTreeNode. As part of the reduction process
@@ -49,8 +48,7 @@ public class Reducer {
       int yTranslation,
       int x,
       int y,
-      ArrayList<RenderTreeNode> flattenedTree,
-      Map layoutContexts) {
+      ArrayList<RenderTreeNode> flattenedTree) {
     if (layoutResult.getWidth() == 0 && layoutResult.getHeight() == 0) {
       return;
     }
@@ -105,8 +103,7 @@ public class Reducer {
           yTranslation,
           layoutResult.getXForChildAtIndex(i),
           layoutResult.getYForChildAtIndex(i),
-          flattenedTree,
-          layoutContexts);
+          flattenedTree);
     }
 
     return;
@@ -137,6 +134,7 @@ public class Reducer {
         new RenderTreeNode(
             parent,
             renderUnit,
+            layoutResult.getLayoutData(),
             new Rect(x, y, x + layoutResult.getWidth(), y + layoutResult.getHeight()),
             padding,
             parent != null ? parent.getChildrenCount() : 0);
@@ -145,20 +143,15 @@ public class Reducer {
   }
 
   public static RenderTree getReducedTree(
-      Context context,
-      Node.LayoutResult layoutResult,
-      Map layoutContexts,
-      int widthSpec,
-      int heightSpec) {
+      Context context, Node.LayoutResult layoutResult, int widthSpec, int heightSpec) {
     ArrayList<RenderTreeNode> flattenedTree = new ArrayList<>();
     RenderTreeNode rootHostNode =
         createRenderTreeNode(layoutResult, sRootHostRenderUnit, null, 0, 0);
     flattenedTree.add(rootHostNode);
-    reduceTree(context, layoutResult, rootHostNode, 0, 0, 0, 0, flattenedTree, layoutContexts);
+    reduceTree(context, layoutResult, rootHostNode, 0, 0, 0, 0, flattenedTree);
     RenderTreeNode[] trimmedRenderNodeTree =
         flattenedTree.toArray(new RenderTreeNode[flattenedTree.size()]);
 
-    return new RenderTree(
-        rootHostNode, trimmedRenderNodeTree, layoutContexts, widthSpec, heightSpec);
+    return new RenderTree(rootHostNode, trimmedRenderNodeTree, widthSpec, heightSpec);
   }
 }

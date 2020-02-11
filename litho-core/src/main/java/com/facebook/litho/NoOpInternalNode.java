@@ -217,6 +217,11 @@ class NoOpInternalNode implements InternalNode {
     return 0;
   }
 
+  @Override
+  public Object getLayoutData() {
+    return null;
+  }
+
   @Nullable
   @Override
   public Component getComponent() {

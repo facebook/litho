@@ -69,7 +69,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import javax.annotation.Nullable;
 
@@ -509,8 +508,13 @@ public class DefaultInternalNode extends Node implements InternalNode, Cloneable
   }
 
   @Override
+  public Object getLayoutData() {
+    return mYogaNode;
+  }
+
+  @Override
   public LayoutResult calculateLayout(
-      Context context, int widthSpec, int heightSpec, LayoutCache layoutCache, Map layoutContexts) {
+      Context context, int widthSpec, int heightSpec, LayoutCache layoutCache) {
     Layout.measure(getContext(), this, widthSpec, heightSpec, null);
 
     return this;

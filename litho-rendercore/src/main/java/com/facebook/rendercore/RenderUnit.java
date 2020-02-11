@@ -22,7 +22,6 @@ import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 /**
  * A RenderUnit represents a single rendering primitive for RenderCore. Every RenderUnit has to
@@ -31,7 +30,7 @@ import java.util.Map;
  * RenderUnit should in most cases declare how it intends to bind data returning Binders from its
  * mountUnmountFunctions callback or from the attachDetachFunctions callback.
  */
-public abstract class RenderUnit<T> implements Copyable {
+public abstract class RenderUnit<MOUNT_CONTENT> implements Copyable {
 
   public enum RenderType {
     DRAWABLE,
@@ -39,9 +38,10 @@ public abstract class RenderUnit<T> implements Copyable {
   }
 
   private final RenderType mRenderType;
-  private final List<Binder<RenderUnit<T>, T>> mBaseMountUnmountFunctions;
-  private final List<Binder<RenderUnit<T>, T>> mBaseAttachDetachFunctions;
-  private List<Binder<RenderUnit<T>, T>> mMountUnmountFunctionsWithExtensions;
+  private final List<Binder<RenderUnit<MOUNT_CONTENT>, MOUNT_CONTENT>> mBaseMountUnmountFunctions;
+  private final List<Binder<RenderUnit<MOUNT_CONTENT>, MOUNT_CONTENT>> mBaseAttachDetachFunctions;
+  private List<Binder<RenderUnit<MOUNT_CONTENT>, MOUNT_CONTENT>>
+      mMountUnmountFunctionsWithExtensions;
 
   public RenderUnit(RenderType renderType) {
     this(renderType, Collections.EMPTY_LIST, Collections.EMPTY_LIST);
@@ -49,28 +49,33 @@ public abstract class RenderUnit<T> implements Copyable {
 
   public RenderUnit(
       RenderType renderType,
-      List<? extends Binder<? extends RenderUnit<T>, T>> mountUnmountFunctions) {
+      List<? extends Binder<? extends RenderUnit<MOUNT_CONTENT>, MOUNT_CONTENT>>
+          mountUnmountFunctions) {
     this(renderType, mountUnmountFunctions, Collections.EMPTY_LIST);
   }
 
   public RenderUnit(
       RenderType renderType,
-      List<? extends Binder<? extends RenderUnit<T>, T>> mountUnmountFunctions,
-      List<? extends Binder<? extends RenderUnit<T>, T>> attachDetachFunctions) {
+      List<? extends Binder<? extends RenderUnit<MOUNT_CONTENT>, MOUNT_CONTENT>>
+          mountUnmountFunctions,
+      List<? extends Binder<? extends RenderUnit<MOUNT_CONTENT>, MOUNT_CONTENT>>
+          attachDetachFunctions) {
     mRenderType = renderType;
-    mBaseMountUnmountFunctions = (List<Binder<RenderUnit<T>, T>>) mountUnmountFunctions;
-    mBaseAttachDetachFunctions = (List<Binder<RenderUnit<T>, T>>) attachDetachFunctions;
+    mBaseMountUnmountFunctions =
+        (List<Binder<RenderUnit<MOUNT_CONTENT>, MOUNT_CONTENT>>) mountUnmountFunctions;
+    mBaseAttachDetachFunctions =
+        (List<Binder<RenderUnit<MOUNT_CONTENT>, MOUNT_CONTENT>>) attachDetachFunctions;
   }
 
   public RenderType getRenderType() {
     return mRenderType;
   }
 
-  public abstract T createContent(Context c);
+  public abstract MOUNT_CONTENT createContent(Context c);
 
   /** @return a list of binding functions that will be invoked during the mount process. */
   @Nullable
-  public final List<Binder<RenderUnit<T>, T>> mountUnmountFunctions() {
+  public final List<Binder<RenderUnit<MOUNT_CONTENT>, MOUNT_CONTENT>> mountUnmountFunctions() {
     return mMountUnmountFunctionsWithExtensions != null
         ? mMountUnmountFunctionsWithExtensions
         : mBaseMountUnmountFunctions;
@@ -83,7 +88,7 @@ public abstract class RenderUnit<T> implements Copyable {
    *     guaranteed to be called once.
    */
   @Nullable
-  public final List<Binder<RenderUnit<T>, T>> attachDetachFunctions() {
+  public final List<Binder<RenderUnit<MOUNT_CONTENT>, MOUNT_CONTENT>> attachDetachFunctions() {
     return mBaseAttachDetachFunctions;
   }
 
@@ -99,8 +104,7 @@ public abstract class RenderUnit<T> implements Copyable {
    * MeasureResult with the bounds of their content. Measure is guaranteed to be called at least
    * once before this RenderUnit is mounted.
    */
-  public MeasureResult measure(
-      Context context, final int widthSpec, final int heightSpec, Map layoutContexts) {
+  public MeasureResult measure(Context context, final int widthSpec, final int heightSpec) {
 
     return new MeasureResult(
         this,
@@ -132,7 +136,8 @@ public abstract class RenderUnit<T> implements Copyable {
       mMountUnmountFunctionsWithExtensions = new ArrayList<>(mBaseMountUnmountFunctions.size() + 4);
       mMountUnmountFunctionsWithExtensions.addAll(mBaseMountUnmountFunctions);
     }
-    mMountUnmountFunctionsWithExtensions.add((Binder<RenderUnit<T>, T>) binder);
+    mMountUnmountFunctionsWithExtensions.add(
+        (Binder<RenderUnit<MOUNT_CONTENT>, MOUNT_CONTENT>) binder);
   }
 
   /**
@@ -143,11 +148,11 @@ public abstract class RenderUnit<T> implements Copyable {
     boolean shouldUpdate(
         RENDER_UNIT currentValue,
         RENDER_UNIT newValue,
-        Map currentLayoutContexts,
-        Map nextLayoutContexts);
+        Object currentLayoutData,
+        Object nextLayoutData);
 
-    void bind(Context context, CONTENT content, RENDER_UNIT renderUnit, Map layoutContexts);
+    void bind(Context context, CONTENT content, RENDER_UNIT renderUnit, Object layoutData);
 
-    void unbind(Context context, CONTENT content, RENDER_UNIT renderUnit, Map layoutContexts);
+    void unbind(Context context, CONTENT content, RENDER_UNIT renderUnit, Object layoutData);
   }
 }

@@ -4,27 +4,45 @@ package com.facebook.rendercore;
 
 import androidx.annotation.Nullable;
 
-public class MeasureResult implements Node.LayoutResult {
+public class MeasureResult<T> implements Node.LayoutResult<T> {
 
   private final RenderUnit mRenderUnit;
   private final int mMeasuredWidth;
   private final int mMeasuredHeight;
   private final int mWidthSpec;
   private final int mHeightSpec;
+  private final T mLayoutData;
 
   public MeasureResult(
       RenderUnit renderUnit, int widthSpec, int heightSpec, int measuredWidth, int measuredHeight) {
+    this(renderUnit, widthSpec, heightSpec, measuredWidth, measuredHeight, null);
+  }
+
+  public MeasureResult(
+      RenderUnit renderUnit,
+      int widthSpec,
+      int heightSpec,
+      int measuredWidth,
+      int measuredHeight,
+      T layoutData) {
     mRenderUnit = renderUnit;
     mMeasuredWidth = measuredWidth;
     mMeasuredHeight = measuredHeight;
     mWidthSpec = widthSpec;
     mHeightSpec = heightSpec;
+    mLayoutData = layoutData;
   }
 
   @Nullable
   @Override
-  public RenderUnit getRenderUnit() {
+  public final RenderUnit getRenderUnit() {
     return mRenderUnit;
+  }
+
+  @Nullable
+  @Override
+  public final T getLayoutData() {
+    return mLayoutData;
   }
 
   @Override
@@ -48,12 +66,12 @@ public class MeasureResult implements Node.LayoutResult {
   }
 
   @Override
-  public int getWidth() {
+  public final int getWidth() {
     return mMeasuredWidth;
   }
 
   @Override
-  public int getHeight() {
+  public final int getHeight() {
     return mMeasuredHeight;
   }
 

@@ -27,8 +27,6 @@ import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.rendercore.Node.LayoutResult;
 import com.facebook.rendercore.utils.MeasureSpecUtils;
 import com.facebook.rendercore.utils.ThreadUtils;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
@@ -264,23 +262,14 @@ public class RenderState<State> {
   }
 
   private static LayoutResult layout(
-      Context context,
-      Node newTree,
-      int widthSpec,
-      int heightSpec,
-      LayoutCache layoutCache,
-      Map<?, ?> layoutContexts) {
+      Context context, Node newTree, int widthSpec, int heightSpec, LayoutCache layoutCache) {
 
-    return newTree.calculateLayout(context, widthSpec, heightSpec, layoutCache, layoutContexts);
+    return newTree.calculateLayout(context, widthSpec, heightSpec, layoutCache);
   }
 
   private static RenderTree reduce(
-      Context context,
-      Map<?, ?> layoutContexts,
-      int widthSpec,
-      int heightSpec,
-      LayoutResult layoutRoot) {
-    return Reducer.getReducedTree(context, layoutRoot, layoutContexts, widthSpec, heightSpec);
+      Context context, int widthSpec, int heightSpec, LayoutResult layoutRoot) {
+    return Reducer.getReducedTree(context, layoutRoot, widthSpec, heightSpec);
   }
 
   private boolean hasCompatibleSize(RenderTree tree, int widthSpec, int heightSpec) {
@@ -340,21 +329,14 @@ public class RenderState<State> {
                   Systrace.sInstance.endSection();
 
                   Systrace.sInstance.beginSection("RC Layout");
-                  final Map<?, ?> layoutContexts = new HashMap<>();
                   final LayoutResult layoutResult =
-                      layout(
-                          context,
-                          result.first,
-                          widthSpec,
-                          heightSpec,
-                          layoutCache,
-                          layoutContexts);
+                      layout(context, result.first, widthSpec, heightSpec, layoutCache);
                   Systrace.sInstance.endSection();
 
                   Systrace.sInstance.beginSection("RC Reduce");
                   final RenderResult renderResult =
                       new RenderResult<>(
-                          reduce(context, layoutContexts, widthSpec, heightSpec, layoutResult),
+                          reduce(context, widthSpec, heightSpec, layoutResult),
                           result.first,
                           layoutCache,
                           result.second);

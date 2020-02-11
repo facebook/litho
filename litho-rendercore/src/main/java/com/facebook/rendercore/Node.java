@@ -20,7 +20,6 @@ import android.content.Context;
 import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
-import java.util.Map;
 
 /**
  * Represents a single node in a RenderCore Tree. A Node has children, base layout information, and
@@ -80,7 +79,7 @@ public abstract class Node implements Copyable {
    * @param heightSpec a measure spec for the height in the format of {@link View.MeasureSpec}
    */
   public abstract LayoutResult calculateLayout(
-      Context context, int widthSpec, int heightSpec, LayoutCache layoutCache, Map layoutContexts);
+      Context context, int widthSpec, int heightSpec, LayoutCache layoutCache);
 
   public Copyable getLayoutParams() {
     return mLayoutParams;
@@ -106,11 +105,18 @@ public abstract class Node implements Copyable {
    * Represents the result of a Layout pass. A LayoutResult has a reference to its originating Node
    * and all the layout information needed to position the content of such Node.
    */
-  public interface LayoutResult {
+  public interface LayoutResult<T> {
 
     /** @return the RenderUnit that should be rendered by this layout result. */
     @Nullable
     RenderUnit getRenderUnit();
+
+    /**
+     * @return layout specific data that was generated during the layout pass that created this
+     *     LayoutResult.
+     */
+    @Nullable
+    T getLayoutData();
 
     /** @return the number of children of this LayoutResult. */
     int getChildrenCount();
