@@ -26,7 +26,8 @@ import com.facebook.litho.DslScope
 inline fun DslScope.FrescoImage(
     controller: DraweeController,
     imageAspectRatio: Float
-): FrescoImage.Builder =
+): FrescoImage =
     FrescoImage.create(this)
         .controller(controller)
         .imageAspectRatio(imageAspectRatio)
+        .build()

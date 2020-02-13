@@ -698,7 +698,7 @@ public abstract class Component extends ComponentLifecycle
     return mCommonDynamicProps;
   }
 
-  private CommonProps getOrCreateCommonProps() {
+  CommonProps getOrCreateCommonProps() {
     if (mCommonProps == null) {
       mCommonProps = new CommonPropsHolder();
     }

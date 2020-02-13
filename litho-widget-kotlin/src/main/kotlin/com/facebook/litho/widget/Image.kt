@@ -27,7 +27,8 @@ import com.facebook.litho.DslScope
 inline fun DslScope.Image(
     drawable: Drawable,
     scaleType: ScaleType = ScaleType.FIT_CENTER
-): Image.Builder =
+): Image =
     Image.create(this)
         .drawable(drawable)
         .scaleType(scaleType)
+        .build()

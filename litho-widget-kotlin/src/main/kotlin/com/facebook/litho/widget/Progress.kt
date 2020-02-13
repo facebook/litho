@@ -27,7 +27,8 @@ import com.facebook.litho.DslScope
 inline fun DslScope.Progress(
     @ColorInt color: Int,
     indeterminateDrawable: Drawable? = null
-): Progress.Builder =
+): Progress =
     Progress.create(this)
         .color(color)
         .indeterminateDrawable(indeterminateDrawable)
+        .build()
