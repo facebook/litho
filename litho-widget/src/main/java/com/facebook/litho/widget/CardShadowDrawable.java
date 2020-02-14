@@ -66,19 +66,19 @@ public class CardShadowDrawable extends Drawable {
   }
 
   public static int getShadowHorizontal(float shadowSize) {
-    return (int) Math.ceil(shadowSize);
+    return (int) Math.ceil(toEven(shadowSize));
   }
 
   public static int getShadowTop(float shadowSize) {
-    return (int) Math.ceil(shadowSize / 2);
+    return (int) Math.ceil(toEven(shadowSize) / 2);
   }
 
   public static int getShadowRight(float shadowSize) {
-    return (int) Math.ceil(shadowSize);
+    return (int) Math.ceil(toEven(shadowSize));
   }
 
   public static int getShadowBottom(float shadowSize) {
-    return (int) Math.ceil(shadowSize * SHADOW_MULTIPLIER);
+    return (int) Math.ceil(toEven(shadowSize) * SHADOW_MULTIPLIER);
   }
 
   @Override
