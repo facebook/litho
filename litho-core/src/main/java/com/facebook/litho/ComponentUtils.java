@@ -60,7 +60,19 @@ public class ComponentUtils {
         throw new IllegalStateException("Unable to get fields by reflection.", e);
       }
 
-      @Comparable.Type int comparableType = field.getAnnotation(Comparable.class).type();
+      @Comparable.Type int comparableType;
+      try {
+        comparableType = field.getAnnotation(Comparable.class).type();
+      } catch (IncompatibleClassChangeError | NullPointerException ignore) {
+        /**
+         * Libraries which uses annotations is facing this intermittently in Lollypop 5.0, 5.0.1 &
+         * 5.0.2). Google closed this saying it is infeasible to fix this in older OS versions.
+         *
+         * <p>https://issuetracker.google.com/issues/37045084
+         * https://github.com/google/gson/issues/726
+         */
+        return false;
+      }
       switch (comparableType) {
         case Comparable.FLOAT:
           if (Float.compare((Float) val1, (Float) val2) != 0) {
