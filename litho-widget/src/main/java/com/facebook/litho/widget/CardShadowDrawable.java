@@ -30,21 +30,22 @@ import android.graphics.drawable.Drawable;
 
 public class CardShadowDrawable extends Drawable {
 
-  static final float SHADOW_MULTIPLIER = 1.5f;
-
   private int mShadowStartColor;
   private int mShadowEndColor;
 
   private final Paint mEdgeShadowPaint;
 
-  private final Path mCornerShadowTopPath = new Path();
-  private final Path mCornerShadowBottomPath = new Path();
+  private final Path mCornerShadowTopLeftPath = new Path();
+  private final Path mCornerShadowBottomLeftPath = new Path();
+  private final Path mCornerShadowTopRightPath = new Path();
+  private final Path mCornerShadowBottomRightPath = new Path();
 
   private final Paint mCornerShadowPaint;
 
   private float mCornerRadius;
   private float mShadowSize;
-  private float mRawShadowSize;
+  private float mShadowDx;
+  private float mShadowDy;
 
   private boolean mHideTopShadow;
   private boolean mHideBottomShadow;
@@ -65,20 +66,20 @@ public class CardShadowDrawable extends Drawable {
     mEdgeShadowPaint.setAlpha(alpha);
   }
 
-  public static int getShadowHorizontal(float shadowSize) {
-    return (int) Math.ceil(shadowSize);
+  public static int getShadowLeft(float shadowSize, float shadowDx) {
+    return (int) Math.ceil(shadowSize - shadowDx);
   }
 
-  public static int getShadowTop(float shadowSize) {
-    return (int) Math.ceil(shadowSize / 2);
+  public static int getShadowTop(float shadowSize, float shadowDy) {
+    return (int) Math.ceil(shadowSize - shadowDy);
   }
 
-  public static int getShadowRight(float shadowSize) {
-    return (int) Math.ceil(shadowSize);
+  public static int getShadowRight(float shadowSize, float shadowDx) {
+    return (int) Math.ceil(shadowSize + shadowDx);
   }
 
-  public static int getShadowBottom(float shadowSize) {
-    return (int) Math.ceil(shadowSize * SHADOW_MULTIPLIER);
+  public static int getShadowBottom(float shadowSize, float shadowDy) {
+    return (int) Math.ceil(shadowSize + shadowDy);
   }
 
   @Override
@@ -145,12 +146,33 @@ public class CardShadowDrawable extends Drawable {
     }
 
     shadowSize = toEven(shadowSize);
-    if (mRawShadowSize == shadowSize) {
+    if (mShadowSize == shadowSize) {
       return;
     }
 
-    mRawShadowSize = shadowSize;
-    mShadowSize = (int) (shadowSize * SHADOW_MULTIPLIER + .5f);
+    mShadowSize = shadowSize;
+
+    mDirty = true;
+    invalidateSelf();
+  }
+
+  void setShadowDx(float shadowDx) {
+    if (shadowDx == mShadowDx) {
+      return;
+    }
+
+    mShadowDx = shadowDx;
+
+    mDirty = true;
+    invalidateSelf();
+  }
+
+  void setShadowDy(float shadowDy) {
+    if (shadowDy == mShadowDy) {
+      return;
+    }
+
+    mShadowDy = shadowDy;
 
     mDirty = true;
     invalidateSelf();
@@ -164,11 +186,28 @@ public class CardShadowDrawable extends Drawable {
     mHideBottomShadow = hideBottomShadow;
   }
 
+  private static void setPath(Path path, int shadowX, int shadowY, float cornerRadius) {
+
+    final RectF innerBounds =
+        new RectF(shadowX, shadowY, shadowX + 2 * cornerRadius, shadowY + 2 * cornerRadius);
+
+    final RectF outerBounds = new RectF(0, 0, 2 * cornerRadius, 2 * cornerRadius);
+
+    path.reset();
+    path.setFillType(Path.FillType.EVEN_ODD);
+    path.moveTo(shadowX + cornerRadius, shadowY);
+    path.arcTo(innerBounds, 270f, -90f, true);
+    path.rLineTo(-shadowX, 0);
+    path.lineTo(0, cornerRadius);
+    path.arcTo(outerBounds, 180f, 90f, true);
+    path.lineTo(shadowX + cornerRadius, 0);
+    path.rLineTo(0, shadowY);
+    path.close();
+  }
+
   private void buildShadow() {
-    final int shadowHorizontal = getShadowHorizontal(mRawShadowSize);
-    final int shadowTop = getShadowTop(mRawShadowSize);
-    final int shadowBottom = getShadowBottom(mRawShadowSize);
-    final float shadowCornerRadius = shadowHorizontal + mCornerRadius;
+
+    final float shadowCornerRadius = mShadowSize + mCornerRadius;
 
     mCornerShadowPaint.setShader(
         new RadialGradient(
@@ -179,45 +218,15 @@ public class CardShadowDrawable extends Drawable {
             new float[] {0f, .2f, 1f},
             Shader.TileMode.CLAMP));
 
-    final RectF topInnerBounds =
-        new RectF(
-            shadowHorizontal,
-            shadowTop,
-            shadowHorizontal + 2 * mCornerRadius,
-            shadowTop + 2 * mCornerRadius);
+    final int shadowLeft = getShadowLeft(mShadowSize, mShadowDx);
+    final int shadowRight = getShadowRight(mShadowSize, mShadowDx);
+    final int shadowTop = getShadowTop(mShadowSize, mShadowDy);
+    final int shadowBottom = getShadowBottom(mShadowSize, mShadowDy);
 
-    final RectF topOuterBounds = new RectF(0, 0, 2 * mCornerRadius, 2 * mCornerRadius);
-
-    mCornerShadowTopPath.reset();
-    mCornerShadowTopPath.setFillType(Path.FillType.EVEN_ODD);
-    mCornerShadowTopPath.moveTo(shadowHorizontal + mCornerRadius, shadowTop);
-    mCornerShadowTopPath.arcTo(topInnerBounds, 270f, -90f, true);
-    mCornerShadowTopPath.rLineTo(-shadowHorizontal, 0);
-    mCornerShadowTopPath.lineTo(0, mCornerRadius);
-    mCornerShadowTopPath.arcTo(topOuterBounds, 180f, 90f, true);
-    mCornerShadowTopPath.lineTo(shadowHorizontal + mCornerRadius, 0);
-    mCornerShadowTopPath.rLineTo(0, shadowTop);
-    mCornerShadowTopPath.close();
-
-    final RectF bottomInnerBounds =
-        new RectF(
-            getShadowHorizontal(mRawShadowSize),
-            getShadowBottom(mRawShadowSize),
-            getShadowHorizontal(mRawShadowSize) + 2 * mCornerRadius,
-            getShadowBottom(mRawShadowSize) + 2 * mCornerRadius);
-
-    final RectF bottomOuterBounds = new RectF(0, 0, 2 * mCornerRadius, 2 * mCornerRadius);
-
-    mCornerShadowBottomPath.reset();
-    mCornerShadowBottomPath.setFillType(Path.FillType.EVEN_ODD);
-    mCornerShadowBottomPath.moveTo(shadowHorizontal + mCornerRadius, shadowBottom);
-    mCornerShadowBottomPath.arcTo(bottomInnerBounds, 270f, -90f, true);
-    mCornerShadowBottomPath.rLineTo(-shadowHorizontal, 0);
-    mCornerShadowBottomPath.lineTo(0, mCornerRadius);
-    mCornerShadowBottomPath.arcTo(bottomOuterBounds, 180f, 90f, true);
-    mCornerShadowBottomPath.lineTo(shadowHorizontal + mCornerRadius, 0);
-    mCornerShadowBottomPath.rLineTo(0, shadowBottom);
-    mCornerShadowBottomPath.close();
+    setPath(mCornerShadowTopLeftPath, shadowLeft, shadowTop, mCornerRadius);
+    setPath(mCornerShadowTopRightPath, shadowRight, shadowTop, mCornerRadius);
+    setPath(mCornerShadowBottomLeftPath, shadowLeft, shadowBottom, mCornerRadius);
+    setPath(mCornerShadowBottomRightPath, shadowRight, shadowBottom, mCornerRadius);
 
     // We offset the content (shadowSize / 2) pixels up to make it more realistic.
     // This is why edge shadow shader has some extra space. When drawing bottom edge
@@ -240,14 +249,14 @@ public class CardShadowDrawable extends Drawable {
     if (!mHideTopShadow) {
       // left-top
       canvas.translate(bounds.left, bounds.top);
-      canvas.drawPath(mCornerShadowTopPath, mCornerShadowPaint);
+      canvas.drawPath(mCornerShadowTopLeftPath, mCornerShadowPaint);
       canvas.restoreToCount(saved);
 
       // right-top
       saved = canvas.save();
       canvas.translate(bounds.right, bounds.top);
       canvas.scale(-1f, 1f);
-      canvas.drawPath(mCornerShadowTopPath, mCornerShadowPaint);
+      canvas.drawPath(mCornerShadowTopRightPath, mCornerShadowPaint);
       canvas.restoreToCount(saved);
     }
 
@@ -256,23 +265,23 @@ public class CardShadowDrawable extends Drawable {
       saved = canvas.save();
       canvas.translate(bounds.right, bounds.bottom);
       canvas.scale(-1f, -1f);
-      canvas.drawPath(mCornerShadowBottomPath, mCornerShadowPaint);
+      canvas.drawPath(mCornerShadowBottomRightPath, mCornerShadowPaint);
       canvas.restoreToCount(saved);
 
       // left-bottom
       saved = canvas.save();
       canvas.translate(bounds.left, bounds.bottom);
       canvas.scale(1f, -1f);
-      canvas.drawPath(mCornerShadowBottomPath, mCornerShadowPaint);
+      canvas.drawPath(mCornerShadowBottomLeftPath, mCornerShadowPaint);
       canvas.restoreToCount(saved);
     }
   }
 
   private void drawShadowEdges(Canvas canvas, Rect bounds) {
-    final int paddingLeft = getShadowHorizontal(mRawShadowSize);
-    final int paddingTop = getShadowTop(mRawShadowSize);
-    final int paddingRight = getShadowRight(mRawShadowSize);
-    final int paddingBottom = getShadowBottom(mRawShadowSize);
+    final int paddingLeft = getShadowLeft(mShadowSize, mShadowDx);
+    final int paddingTop = getShadowTop(mShadowSize, mShadowDy);
+    final int paddingRight = getShadowRight(mShadowSize, mShadowDx);
+    final int paddingBottom = getShadowBottom(mShadowSize, mShadowDy);
 
     int saved = canvas.save();
 
