@@ -3187,7 +3187,7 @@ public class RecyclerBinder
       childrenHeightSpec = getActualChildrenHeightSpec(holder);
     }
 
-    if (index >= rangeStart && index <= rangeEnd) {
+    if ((index >= rangeStart || holder.getRenderInfo().isSticky()) && index <= rangeEnd) {
       if (!holder.isTreeValidForSizeSpecs(childrenWidthSpec, childrenHeightSpec)) {
         holder.computeLayoutAsync(mComponentContext, childrenWidthSpec, childrenHeightSpec);
       }
