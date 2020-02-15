@@ -909,43 +909,49 @@ public class RecyclerBinderTest {
   }
 
   @Test
-  public void testStickyComponentsStayValidOutsideRange() {
+  public void testStickyComponentsOutsideRange_updateShownStickysLayoutAfterViewportChanges() {
     final List<ComponentRenderInfo> components = prepareLoadedBinder();
     makeIndexSticky(components, 5);
     makeIndexSticky(components, 40);
     makeIndexSticky(components, 80);
 
-    Size size = new Size();
-    int widthSpec = makeSizeSpec(200, EXACTLY);
-    int heightSpec = makeSizeSpec(200, EXACTLY);
-
-    mRecyclerBinder.measure(size, widthSpec, heightSpec, null);
-
     assertThat(mHoldersForComponents.get(components.get(5).getComponent()).isTreeValid()).isTrue();
 
-    final int newRangeStart = 40;
-    final int newRangeEnd = 50;
-    int rangeSize = newRangeEnd - newRangeStart;
-    final int rangeTotal = (int) (rangeSize + (RANGE_RATIO * rangeSize));
+    final int firstVisibleIndex = 40;
+    final int lastVisibleIndex = 50;
+    mRecyclerBinder.onNewVisibleRange(firstVisibleIndex, lastVisibleIndex);
 
-    mRecyclerBinder.onNewVisibleRange(newRangeStart, newRangeEnd);
+    final int viewportSize = lastVisibleIndex - firstVisibleIndex;
+    final int rangeStart = (int) (firstVisibleIndex - RANGE_RATIO * viewportSize);
+    final int rangeEnd = (int) (lastVisibleIndex + RANGE_RATIO * viewportSize);
 
     TestComponentTreeHolder componentTreeHolder;
     for (int i = 0; i < components.size(); i++) {
       componentTreeHolder = mHoldersForComponents.get(components.get(i).getComponent());
-      boolean isIndexInRange =
-          i >= newRangeStart - (RANGE_RATIO * rangeSize) && i <= newRangeStart + rangeTotal;
-      boolean isPreviouslyComputedTreeAndSticky =
-          i <= newRangeStart + rangeTotal && componentTreeHolder.getRenderInfo().isSticky();
+      final boolean isIndexInRange = rangeStart <= i && i <= rangeEnd;
+      final boolean isPreviouslyComputedTreeAndSticky =
+          i <= rangeEnd && componentTreeHolder.getRenderInfo().isSticky();
 
       if (isIndexInRange || isPreviouslyComputedTreeAndSticky) {
-        assertThat(componentTreeHolder.isTreeValid()).isTrue();
-        assertThat(componentTreeHolder.mLayoutAsyncCalled).isTrue();
-        assertThat(componentTreeHolder.mLayoutSyncCalled).isFalse();
+        assertThat(componentTreeHolder.isTreeValid())
+            .describedAs("Holder with index:" + i)
+            .isTrue();
+        assertThat(componentTreeHolder.mLayoutAsyncCalled)
+            .describedAs("Holder with index:" + i)
+            .isTrue();
+        assertThat(componentTreeHolder.mLayoutSyncCalled)
+            .describedAs("Holder with index:" + i)
+            .isFalse();
       } else {
-        assertThat(componentTreeHolder.isTreeValid()).isFalse();
-        assertThat(componentTreeHolder.mLayoutAsyncCalled).isFalse();
-        assertThat(componentTreeHolder.mLayoutSyncCalled).isFalse();
+        assertThat(componentTreeHolder.isTreeValid())
+            .describedAs("Holder with index:" + i)
+            .isFalse();
+        assertThat(componentTreeHolder.mLayoutAsyncCalled)
+            .describedAs("Holder with index:" + i)
+            .isFalse();
+        assertThat(componentTreeHolder.mLayoutSyncCalled)
+            .describedAs("Holder with index:" + i)
+            .isFalse();
       }
     }
   }
