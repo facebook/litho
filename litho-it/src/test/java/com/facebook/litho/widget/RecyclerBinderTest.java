@@ -957,6 +957,57 @@ public class RecyclerBinderTest {
   }
 
   @Test
+  public void testStickyComponentsOutsideRange_updateShownStickysLayoutAfterComponentUpdates() {
+    final List<ComponentRenderInfo> components = prepareLoadedBinder();
+    makeIndexSticky(components, 5);
+    makeIndexSticky(components, 40);
+    makeIndexSticky(components, 80);
+
+    final int firstVisibleIndex = 40;
+    final int lastVisibleIndex = 50;
+    mRecyclerBinder.onNewVisibleRange(firstVisibleIndex, lastVisibleIndex);
+
+    final int viewportSize = lastVisibleIndex - firstVisibleIndex;
+    final int rangeStart = (int) (firstVisibleIndex - RANGE_RATIO * viewportSize);
+    final int rangeEnd = (int) (lastVisibleIndex + RANGE_RATIO * viewportSize);
+
+    mRecyclerBinder.updateItemAt(5, components.get(5));
+    mRecyclerBinder.updateItemAt(40, components.get(40));
+    mRecyclerBinder.updateItemAt(80, components.get(80));
+    mRecyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
+
+    TestComponentTreeHolder componentTreeHolder;
+    for (int i = 0; i < components.size(); i++) {
+      componentTreeHolder = mHoldersForComponents.get(components.get(i).getComponent());
+      final boolean isIndexInRange = rangeStart <= i && i <= rangeEnd;
+      final boolean isPreviouslyComputedTreeAndSticky =
+          i <= rangeEnd && componentTreeHolder.getRenderInfo().isSticky();
+
+      if (isIndexInRange || isPreviouslyComputedTreeAndSticky) {
+        assertThat(componentTreeHolder.isTreeValid())
+            .describedAs("Holder with index:" + i)
+            .isTrue();
+        assertThat(componentTreeHolder.mLayoutAsyncCalled)
+            .describedAs("Holder with index:" + i)
+            .isTrue();
+        assertThat(componentTreeHolder.mLayoutSyncCalled)
+            .describedAs("Holder with index:" + i)
+            .isFalse();
+      } else {
+        assertThat(componentTreeHolder.isTreeValid())
+            .describedAs("Holder with index:" + i)
+            .isFalse();
+        assertThat(componentTreeHolder.mLayoutAsyncCalled)
+            .describedAs("Holder with index:" + i)
+            .isFalse();
+        assertThat(componentTreeHolder.mLayoutSyncCalled)
+            .describedAs("Holder with index:" + i)
+            .isFalse();
+      }
+    }
+  }
+
+  @Test
   public void testMoveRangeToEnd() {
     final List<ComponentRenderInfo> components = prepareLoadedBinder();
     final int newRangeStart = 99;
