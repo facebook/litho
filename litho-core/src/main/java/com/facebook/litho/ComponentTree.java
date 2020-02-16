@@ -282,8 +282,6 @@ public class ComponentTree {
 
   private final boolean isReconciliationEnabled;
 
-  private final boolean isNewCreateLayoutEnabled;
-
   private final boolean mMoveLayoutsBetweenThreads;
 
   private final @Nullable String mLogTag;
@@ -316,7 +314,6 @@ public class ComponentTree {
     mUseCancelableLayoutFutures = builder.useCancelableLayoutFutures;
     mMoveLayoutsBetweenThreads = builder.canInterruptAndMoveLayoutsBetweenThreads;
     isReconciliationEnabled = builder.isReconciliationEnabled;
-    isNewCreateLayoutEnabled = ComponentsConfiguration.useNewCreateLayoutImplementation;
 
     if (mPreAllocateMountContentHandler == null && builder.canPreallocateOnDefaultHandler) {
       mPreAllocateMountContentHandler =
@@ -1148,10 +1145,6 @@ public class ComponentTree {
 
   public boolean isReconciliationEnabled() {
     return isReconciliationEnabled;
-  }
-
-  boolean isNewCreateLayoutEnabled() {
-    return isNewCreateLayoutEnabled;
   }
 
   synchronized Component getRoot() {

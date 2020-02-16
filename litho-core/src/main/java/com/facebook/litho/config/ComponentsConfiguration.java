@@ -217,9 +217,6 @@ public class ComponentsConfiguration {
   /** When enabled it would use Internal Nodes for layout diffing instead Diff Nodes. */
   public static boolean useInternalNodesForLayoutDiffing = false;
 
-  /** When enabled uses the refactored implementation of create layout. */
-  public static boolean useNewCreateLayoutImplementation = false;
-
   public static boolean shouldCompareStateInIsEquivalentTo = true;
 
   public static boolean incrementalVisibilityHandling = false;

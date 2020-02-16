@@ -525,14 +525,6 @@ public class ComponentContext {
     }
   }
 
-  public boolean isNewCreateLayoutEnabled() {
-    if (getComponentTree() != null) {
-      return getComponentTree().isNewCreateLayoutEnabled();
-    } else {
-      return ComponentsConfiguration.useNewCreateLayoutImplementation;
-    }
-  }
-
   void markLayoutUninterruptible() {
     if (mLayoutStateContext != null) {
       mLayoutStateContext.markLayoutUninterruptible();
