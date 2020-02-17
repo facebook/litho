@@ -38,6 +38,18 @@ inline fun DslScope.Clickable(
     }
 
 /**
+ * Builder for setting a [ClickEvent] [EventHandler] for a component. Can be used to provide an [EventHandler]
+ * generated from a Spec.
+ */
+inline fun DslScope.Clickable(
+    clickHandler: EventHandler<ClickEvent>,
+    content: DslScope.() -> Component
+): Component =
+    content().apply {
+      getOrCreateCommonProps.clickHandler(clickHandler)
+    }
+
+/**
  * Builder for decorating a child component with [background] or [foreground].
  */
 inline fun DslScope.Decoration(
