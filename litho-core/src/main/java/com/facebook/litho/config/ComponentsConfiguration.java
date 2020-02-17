@@ -180,7 +180,7 @@ public class ComponentsConfiguration {
   public static boolean enableRenderInfoDebugging = false;
 
   public static boolean useCancelableLayoutFutures;
-  public static boolean canInterruptAndMoveLayoutsBetweenThreads;
+  public static boolean canInterruptAndMoveLayoutsBetweenThreads = false;
   public static boolean skipVisChecksForFullyVisible;
 
   public static boolean isRenderInfoDebuggingEnabled() {
