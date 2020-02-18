@@ -40,6 +40,8 @@ android {
 
     testOptions {
         unitTests.all {
+            systemProperty 'robolectric.dependency.repo.url', 'https://repo1.maven.org/maven2'
+
             jvmArgs '-Dcom.facebook.litho.is_oss=true'
             testLogging {
                 events "passed", "skipped", "failed", "standardOut", "standardError"
