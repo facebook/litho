@@ -76,16 +76,16 @@ object FeedItemComponentSpec {
       }
 
   private fun DslScope.imageRecycler(artist: Artist): Component.Builder<*> =
-      RecyclerCollectionComponent.create(this)
+      RecyclerCollectionComponent.create(context)
           .recyclerConfiguration(recyclerConfiguration)
           .section(
-              ImagesSection.create(SectionContext(this))
+              ImagesSection.create(SectionContext(context))
                   .images(artist.images)
                   .build())
           .aspectRatio(2f)
 
   private fun DslScope.singleImage(artist: Artist): Component.Builder<*> =
-      SingleImageComponent.create(this)
+      SingleImageComponent.create(context)
           .imageUri(artist.images[0])
           .imageAspectRatio(2f)
 }

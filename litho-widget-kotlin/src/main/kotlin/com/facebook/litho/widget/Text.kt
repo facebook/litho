@@ -34,7 +34,7 @@ inline fun DslScope.Text(
     @ColorInt textColor: Int = Color.BLACK,
     textStyle: Int = NORMAL
 ): Text =
-    Text.create(this)
+    Text.create(context)
         .text(text)
         .textSizeSp(textSize.value)
         .textColor(textColor)

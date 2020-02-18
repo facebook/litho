@@ -28,7 +28,7 @@ inline fun DslScope.Progress(
     @ColorInt color: Int,
     indeterminateDrawable: Drawable? = null
 ): Progress =
-    Progress.create(this)
+    Progress.create(context)
         .color(color)
         .indeterminateDrawable(indeterminateDrawable)
         .build()

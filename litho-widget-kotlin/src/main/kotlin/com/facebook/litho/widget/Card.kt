@@ -41,7 +41,7 @@ inline fun DslScope.Card(
     disableClipBottomRight: Boolean = false,
     child: DslScope.() -> Component.Builder<*>
 ): Card =
-    Card.create(this)
+    Card.create(context)
         .cardBackgroundColor(cardBackgroundColor)
         .cornerRadiusDip(cornerRadius.value)
         .elevationDip(elevation.value)
