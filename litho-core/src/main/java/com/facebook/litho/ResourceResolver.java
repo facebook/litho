@@ -19,6 +19,7 @@ package com.facebook.litho;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import androidx.annotation.ArrayRes;
 import androidx.annotation.AttrRes;
 import androidx.annotation.BoolRes;
@@ -227,8 +228,11 @@ public class ResourceResolver {
     if (resId == 0) {
       return null;
     }
-
-    return mResources.getDrawable(resId);
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      return mResources.getDrawable(resId, mTheme);
+    } else {
+      return mResources.getDrawable(resId);
+    }
   }
 
   public String resolveStringAttr(@AttrRes int attrResId, @StringRes int defResId) {
