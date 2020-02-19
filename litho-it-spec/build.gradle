@@ -58,6 +58,7 @@ dependencies {
 
     // Testing deps
     testImplementation deps.assertjCore
+    testImplementation deps.junit
     testImplementation deps.robolectric
 }
 

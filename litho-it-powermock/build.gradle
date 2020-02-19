@@ -53,6 +53,7 @@ dependencies {
     testImplementation deps.assertjCore
     testImplementation deps.guava
     testImplementation deps.inferAnnotations
+    testImplementation deps.junit
     testImplementation deps.powermockJunit
     testImplementation deps.powermockMockito
     testImplementation deps.powermockXstream
