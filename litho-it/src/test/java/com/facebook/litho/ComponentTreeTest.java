@@ -38,6 +38,7 @@ import java.util.concurrent.TimeUnit;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
@@ -775,7 +776,8 @@ public class ComponentTreeTest {
   }
 
   // TODO(T37885964): Fix me
-  // @Test
+  @Test
+  @Ignore
   public void testCreateOneLayoutStateFuture() {
     MyTestComponent root1 = new MyTestComponent("MyTestComponent");
     root1.testId = 1;
