@@ -8,6 +8,7 @@ fb_java_library(
     name = "internal",
     srcs = glob(["*.java"]),
     java_version = "8",
+    labels = ["supermodule:android/default/litho.core"],
     tests = [
         make_dep_path("litho-it/src/test/java/com/facebook/litho/specmodels:specmodels"),
     ],

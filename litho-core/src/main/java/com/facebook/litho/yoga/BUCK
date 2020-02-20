@@ -8,6 +8,7 @@ load(
 litho_android_library(
     name = "yoga",
     srcs = glob(["*.java"]),
+    labels = ["supermodule:android/default/litho.core"],
     visibility = LITHO_VISIBILITY,
     exported_deps = [
         LITHO_YOGA_TARGET,

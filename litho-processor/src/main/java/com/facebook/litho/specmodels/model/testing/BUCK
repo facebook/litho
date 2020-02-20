@@ -8,6 +8,7 @@ fb_java_library(
     name = "testing",
     srcs = glob(["*.java"]),
     is_androidx = True,
+    labels = ["supermodule:android/default/litho.core"],
     source = "8",
     target = "8",
     tests = [

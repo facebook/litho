@@ -9,6 +9,7 @@ litho_android_library(
     name = "utils",
     srcs = glob(["*.java"]),
     is_androidx = True,
+    labels = ["supermodule:android/default/litho.core"],
     tests = [
         make_dep_path("litho-it/src/test/java/com/facebook/litho/utils:utils"),
     ],

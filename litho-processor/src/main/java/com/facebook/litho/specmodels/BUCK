@@ -6,6 +6,7 @@ load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_ANDROIDSUPPORT_TARGET", "LI
 
 fb_java_library(
     name = "specmodels",
+    labels = ["supermodule:android/default/litho.core"],
     tests = [
         make_dep_path("litho-it/src/test/java/com/facebook/litho/specmodels:specmodels"),
     ],
@@ -30,6 +31,7 @@ fb_java_library(
         ]),
     ),
     is_androidx = True,
+    labels = ["supermodule:android/default/litho.core"],
     provided_deps = [
         LITHO_JAVAPOET_TARGET,
         LITHO_JSR_TARGET,

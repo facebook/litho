@@ -8,6 +8,7 @@ load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_JAVA_TARGET", "LITHO_JSR_TA
 litho_android_library(
     name = "accessibility",
     srcs = glob(["**/*.java"]),
+    labels = ["supermodule:android/default/litho.core"],
     provided_deps = [
         LITHO_JAVA_TARGET,
         LITHO_JSR_TARGET,

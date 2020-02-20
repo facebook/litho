@@ -30,6 +30,7 @@ fb_native.java_annotation_processor(
 
 fb_java_library(
     name = "processor-lib",
+    labels = ["supermodule:android/default/litho.core"],
     tests = [
         make_dep_path("litho-it/src/test/java/com/facebook/litho/specmodels/processor:processor"),
     ],
@@ -48,6 +49,7 @@ fb_java_library(
 fb_java_library(
     name = "processor-lib-bare",
     srcs = glob(["*.java"]),
+    labels = ["supermodule:android/default/litho.core"],
     provided_deps = [
         LITHO_JAVAC_TOOLS_TARGET,
         LITHO_JAVAPOET_TARGET,
