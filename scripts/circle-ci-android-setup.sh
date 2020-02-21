@@ -42,7 +42,7 @@ function installsdk() {
 
 function getAndroidSDK {
   TMP=/tmp/sdk$$.zip
-  download 'https://dl.google.com/android/repository/tools_r25.2.3-linux.zip' $TMP
+  download 'https://dl.google.com/android/repository/tools_r26.1.1-linux.zip' $TMP
   unzip -qod "$ANDROID_SDK" $TMP
   rm $TMP
 }
@@ -70,5 +70,5 @@ function installAndroidSDK {
   echo > "$ANDROID_HOME/licenses/android-sdk-license"
   echo -n 24333f8a63b6825ea9c5514f83c2829b004d1fee > "$ANDROID_HOME/licenses/android-sdk-license"
 
-  installsdk 'platforms;android-28' 'cmake;3.6.4111459' 'build-tools;28.0.3'
+  installsdk 'platforms;android-29' 'cmake;3.6.4111459' 'build-tools;29.0.3'
 }
