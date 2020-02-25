@@ -220,4 +220,7 @@ public class ComponentsConfiguration {
   public static boolean shouldCompareStateInIsEquivalentTo = true;
 
   public static boolean incrementalVisibilityHandling = false;
+
+  /** Enabling this will force all updateStateSync methods to be updateStateAsync. * */
+  public static boolean shouldForceAsyncStateUpdate = false;
 }

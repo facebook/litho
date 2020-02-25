@@ -284,6 +284,8 @@ public class ComponentTree {
 
   private final boolean mMoveLayoutsBetweenThreads;
 
+  private final boolean mForceAsyncStateUpdate;
+
   private final @Nullable String mLogTag;
 
   private final @Nullable ComponentsLogger mLogger;
@@ -314,6 +316,7 @@ public class ComponentTree {
     mUseCancelableLayoutFutures = builder.useCancelableLayoutFutures;
     mMoveLayoutsBetweenThreads = builder.canInterruptAndMoveLayoutsBetweenThreads;
     isReconciliationEnabled = builder.isReconciliationEnabled;
+    mForceAsyncStateUpdate = builder.shouldForceAsyncStateUpdate;
 
     if (mPreAllocateMountContentHandler == null && builder.canPreallocateOnDefaultHandler) {
       mPreAllocateMountContentHandler =
@@ -1249,6 +1252,12 @@ public class ComponentTree {
       StateUpdate stateUpdate,
       String attribution,
       boolean isCreateLayoutInProgress) {
+
+    if (mForceAsyncStateUpdate && mIsAsyncUpdateStateEnabled) {
+      updateStateAsync(componentKey, stateUpdate, attribution, isCreateLayoutInProgress);
+      return;
+    }
+
     synchronized (this) {
       if (mRoot == null) {
         return;
@@ -2811,6 +2820,8 @@ public class ComponentTree {
     private @Nullable String logTag;
     private @Nullable ComponentsLogger logger;
     private boolean incrementalVisibility = ComponentsConfiguration.incrementalVisibilityHandling;
+    private boolean shouldForceAsyncStateUpdate =
+        ComponentsConfiguration.shouldForceAsyncStateUpdate;
 
     protected Builder(ComponentContext context) {
       this.context = context;
