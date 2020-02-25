@@ -119,7 +119,7 @@ class MountState {
     }
     // Let's unmount all the content from the Root host. Everything else will be recursively
     // unmounted from there.
-    for (int i = 0; i < mRootHost.getMountItemCount(); i++) {
+    for (int i = mRootHost.getMountItemCount() - 1; i >= 0; i--) {
       unmountItem(mRootHost.getMountItemAt(i));
     }
     mNeedsRemount = true;
