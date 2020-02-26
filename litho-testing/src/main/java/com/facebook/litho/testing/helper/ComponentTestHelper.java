@@ -186,6 +186,21 @@ public final class ComponentTestHelper {
   }
 
   /**
+   * Set a root component to a component tree, and mount it into a component view.
+   *
+   * @param lithoView The view to mount the component tree into
+   * @param componentTree The component tree to mount
+   * @param component The root component
+   * @return A LithoView with the component tree mounted in it.
+   */
+  public static LithoView mountComponent(
+      LithoView lithoView, ComponentTree componentTree, Component component) {
+    componentTree.setRoot(component);
+    return mountComponent(
+        lithoView, componentTree, makeMeasureSpec(100, EXACTLY), makeMeasureSpec(100, EXACTLY));
+  }
+
+  /**
    * Mount a component tree into a component view.
    *
    * @param lithoView The view to mount the component tree into
