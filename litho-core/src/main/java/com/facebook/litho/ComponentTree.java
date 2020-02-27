@@ -218,12 +218,12 @@ public class ComponentTree {
   @Nullable
   Transition.RootBoundsTransition mRootHeightAnimation;
 
-  // TODO(6606683): Enable recycling of mComponent.
-  // We will need to ensure there are no background threads referencing mComponent. We'll need
-  // to keep a reference count or something. :-/
   @Nullable
   @GuardedBy("this")
   private Component mRoot;
+
+  @GuardedBy("this")
+  private int mExternalRootVersion = -1;
 
   @Nullable
   @GuardedBy("this")
@@ -1129,6 +1129,7 @@ public class ComponentTree {
           layoutScheduleType == SCHEDULE_LAYOUT_ASYNC,
           null /*output */,
           CalculateLayoutSource.MEASURE,
+          -1,
           null,
           rootTreeProps);
     }
@@ -1159,18 +1160,19 @@ public class ComponentTree {
    * we will run a layout and then proxy a message to the main thread to cause a
    * relayout/invalidate.
    */
-  public void setRoot(Component rootComponent) {
-    if (rootComponent == null) {
+  public void setRoot(Component root) {
+    if (root == null) {
       throw new IllegalArgumentException("Root component can't be null");
     }
 
     setRootAndSizeSpecAndWrapper(
-        rootComponent,
+        root,
         SIZE_UNINITIALIZED,
         SIZE_UNINITIALIZED,
         false /* isAsync */,
         null /* output */,
         CalculateLayoutSource.SET_ROOT_SYNC,
+        -1,
         null,
         null);
   }
@@ -1208,18 +1210,19 @@ public class ComponentTree {
     }
   }
 
-  public void setRootAsync(Component rootComponent) {
-    if (rootComponent == null) {
+  public void setRootAsync(Component root) {
+    if (root == null) {
       throw new IllegalArgumentException("Root component can't be null");
     }
 
     setRootAndSizeSpecAndWrapper(
-        rootComponent,
+        root,
         SIZE_UNINITIALIZED,
         SIZE_UNINITIALIZED,
         true /* isAsync */,
         null /* output */,
         CalculateLayoutSource.SET_ROOT_ASYNC,
+        -1,
         null,
         null);
   }
@@ -1387,6 +1390,7 @@ public class ComponentTree {
         isAsync
             ? CalculateLayoutSource.UPDATE_STATE_ASYNC
             : CalculateLayoutSource.UPDATE_STATE_SYNC,
+        -1,
         attribution,
         rootTreeProps,
         isCreateLayoutInProgress);
@@ -1500,6 +1504,7 @@ public class ComponentTree {
         false /* isAsync */,
         output /* output */,
         CalculateLayoutSource.SET_SIZE_SPEC_SYNC,
+        -1,
         null,
         null);
   }
@@ -1512,6 +1517,7 @@ public class ComponentTree {
         true /* isAsync */,
         null /* output */,
         CalculateLayoutSource.SET_SIZE_SPEC_ASYNC,
+        -1,
         null,
         null);
   }
@@ -1529,6 +1535,7 @@ public class ComponentTree {
         true /* isAsync */,
         null /* output */,
         CalculateLayoutSource.SET_ROOT_ASYNC,
+        -1,
         null,
         null);
   }
@@ -1549,6 +1556,7 @@ public class ComponentTree {
         true /* isAsync */,
         null /* output */,
         CalculateLayoutSource.SET_ROOT_ASYNC,
+        -1,
         null,
         treeProps);
   }
@@ -1566,6 +1574,7 @@ public class ComponentTree {
         false /* isAsync */,
         null /* output */,
         CalculateLayoutSource.SET_ROOT_SYNC,
+        -1,
         null,
         null);
   }
@@ -1582,6 +1591,7 @@ public class ComponentTree {
         false /* isAsync */,
         output,
         CalculateLayoutSource.SET_ROOT_SYNC,
+        -1,
         null,
         null);
   }
@@ -1599,6 +1609,30 @@ public class ComponentTree {
         false /* isAsync */,
         output,
         CalculateLayoutSource.SET_ROOT_SYNC,
+        -1,
+        null,
+        treeProps);
+  }
+
+  public void setVersionedRootAndSizeSpec(
+      Component root,
+      int widthSpec,
+      int heightSpec,
+      Size output,
+      @Nullable TreeProps treeProps,
+      int externalRootVersion) {
+    if (root == null) {
+      throw new IllegalArgumentException("Root component can't be null");
+    }
+
+    setRootAndSizeSpecAndWrapper(
+        root,
+        widthSpec,
+        heightSpec,
+        false /* isAsync */,
+        output,
+        CalculateLayoutSource.SET_ROOT_SYNC,
+        externalRootVersion,
         null,
         treeProps);
   }
@@ -1740,6 +1774,7 @@ public class ComponentTree {
       boolean isAsync,
       Size output,
       @CalculateLayoutSource int source,
+      int externalRootVersion,
       String extraAttribution,
       @Nullable TreeProps treeProps) {
 
@@ -1750,6 +1785,7 @@ public class ComponentTree {
         isAsync,
         output,
         source,
+        externalRootVersion,
         extraAttribution,
         treeProps);
   }
@@ -1771,10 +1807,20 @@ public class ComponentTree {
       boolean isAsync,
       @Nullable Size output,
       @CalculateLayoutSource int source,
+      int externalRootVersion,
       String extraAttribution,
       @Nullable TreeProps treeProps) {
     setRootAndSizeSpecInternal(
-        root, widthSpec, heightSpec, isAsync, output, source, extraAttribution, treeProps, false);
+        root,
+        widthSpec,
+        heightSpec,
+        isAsync,
+        output,
+        source,
+        externalRootVersion,
+        extraAttribution,
+        treeProps,
+        false);
   }
 
   private void setRootAndSizeSpecInternal(
@@ -1784,6 +1830,7 @@ public class ComponentTree {
       boolean isAsync,
       @Nullable Size output,
       @CalculateLayoutSource int source,
+      int externalRootVersion,
       String extraAttribution,
       @Nullable TreeProps treeProps,
       boolean isCreateLayoutInProgress) {
@@ -1794,6 +1841,24 @@ public class ComponentTree {
         //
         // NB: This is only safe because we don't re-use released ComponentTrees.
         return;
+      }
+
+      // If this is coming from a setRoot
+      if (source == CalculateLayoutSource.SET_ROOT_SYNC
+          || source == CalculateLayoutSource.SET_ROOT_ASYNC) {
+        if (mExternalRootVersion >= 0 && externalRootVersion < 0) {
+          throw new IllegalStateException(
+              "Setting an unversioned root after calling setVersionedRootAndSizeSpec is not "
+                  + "supported. If this ComponentTree takes its version from a parent tree make "
+                  + "sure to always call setVersionedRootAndSizeSpec");
+        }
+
+        if (mExternalRootVersion > externalRootVersion) {
+          // Since this layout is not really valid we don't need to set a Size.
+          return;
+        }
+
+        mExternalRootVersion = externalRootVersion;
       }
 
       if (mStateHandler.hasPendingUpdates() && root != null) {

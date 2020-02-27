@@ -878,6 +878,7 @@ public class ComponentTreeTest {
 
                 // At this point, the current thread is unblocked after waiting for the first to
                 // finish layout.
+                //TODO T62608123 This actually never runs
                 assertFalse(root3.hasRunLayout);
                 assertTrue(root2.hasRunLayout);
               }
@@ -946,6 +947,7 @@ public class ComponentTreeTest {
 
                 // At this point, the current thread is unblocked after waiting for the first to
                 // finish layout.
+                //TODO T62608123 This actually never runs
                 assertTrue(root3.hasRunLayout);
                 assertTrue(root2.hasRunLayout);
               }
@@ -957,6 +959,35 @@ public class ComponentTreeTest {
     // Unblock the first thread to continue through onCreateLayout. The second thread will only
     // unblock once the first thread's onCreateLayout finishes
     lockOnCreateLayoutFinish.countDown();
+  }
+
+  @Test
+  public void testVersioningCalculate() {
+    MyTestComponent root1 = new MyTestComponent("MyTestComponent");
+    root1.testId = 1;
+
+    ComponentTree componentTree = ComponentTree.create(mContext).build();
+
+    componentTree.setVersionedRootAndSizeSpec(root1, mWidthSpec, mHeightSpec, new Size(), null, 0);
+
+    LayoutState backgroundLayoutState = getInternalState(componentTree, "mBackgroundLayoutState");
+    assertEquals(root1.testId, backgroundLayoutState.getRootComponent().getId());
+
+    MyTestComponent root2 = new MyTestComponent("MyTestComponent");
+    root2.testId = 2;
+
+    MyTestComponent root3 = new MyTestComponent("MyTestComponent");
+    root3.testId = 3;
+
+    componentTree.setVersionedRootAndSizeSpec(root3, mWidthSpec, mHeightSpec, new Size(), null, 2);
+
+    backgroundLayoutState = getInternalState(componentTree, "mBackgroundLayoutState");
+    assertEquals(root3.testId, backgroundLayoutState.getRootComponent().getId());
+
+    componentTree.setVersionedRootAndSizeSpec(root2, mWidthSpec, mHeightSpec, new Size(), null, 1);
+
+    backgroundLayoutState = getInternalState(componentTree, "mBackgroundLayoutState");
+    assertEquals(root3.testId, backgroundLayoutState.getRootComponent().getId());
   }
 
   @Test
