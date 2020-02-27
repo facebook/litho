@@ -263,6 +263,7 @@ class LayoutState {
 
   private boolean mShouldGenerateDiffTree = false;
   private int mComponentTreeId = -1;
+  int mLayoutVersion;
   private final int mId;
   // Id of the layout state (if any) that was used in comparisons with this layout state.
   private int mPreviousLayoutStateId = NO_PREVIOUS_LAYOUT_STATE_ID;
@@ -1338,6 +1339,7 @@ class LayoutState {
     return hostOutputPosition;
   }
 
+  @VisibleForTesting
   static LayoutState calculate(
       ComponentContext c,
       Component component,
@@ -1352,6 +1354,7 @@ class LayoutState {
         componentTreeId,
         widthSpec,
         heightSpec,
+        -1,
         false /* shouldGenerateDiffTree */,
         null /* previousDiffTreeRoot */,
         source,
@@ -1365,6 +1368,7 @@ class LayoutState {
       int componentTreeId,
       int widthSpec,
       int heightSpec,
+      int layoutVersion,
       boolean shouldGenerateDiffTree,
       @Nullable LayoutState currentLayoutState,
       @CalculateLayoutSource int source,
@@ -1418,6 +1422,7 @@ class LayoutState {
 
       layoutState.mShouldGenerateDiffTree = shouldGenerateDiffTree;
       layoutState.mComponentTreeId = componentTreeId;
+      layoutState.mLayoutVersion = layoutVersion;
       layoutState.mPreviousLayoutStateId =
           currentLayoutState != null ? currentLayoutState.mId : NO_PREVIOUS_LAYOUT_STATE_ID;
       layoutState.mAccessibilityManager =

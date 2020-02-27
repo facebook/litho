@@ -225,6 +225,12 @@ public class ComponentTree {
   @GuardedBy("this")
   private int mExternalRootVersion = -1;
 
+  // Versioning that gets incremented every time we start a new layout computation. This can
+  // be useful for stateful objects shared across layouts that need to check whether for example
+  // a measure/onCreateLayout call is being executed in the context of an old layout calculation.
+  @GuardedBy("this")
+  private int mLayoutVersion;
+
   @Nullable
   @GuardedBy("this")
   private TreeProps mRootTreeProps;
@@ -1021,6 +1027,8 @@ public class ComponentTree {
 
     Component component = null;
     TreeProps treeProps = null;
+    int layoutVersion = -1;
+
     synchronized (this) {
       mIsMeasuring = true;
 
@@ -1043,6 +1051,7 @@ public class ComponentTree {
         // Since outputs get set on the same object during the lifecycle calls,
         // we need to copy it in order to use it concurrently.
         component = mRoot.makeShallowCopy();
+        layoutVersion = ++mLayoutVersion;
         treeProps = TreeProps.copy(mRootTreeProps);
         mForceLayout = false;
       }
@@ -1065,6 +1074,7 @@ public class ComponentTree {
               component,
               widthSpec,
               heightSpec,
+              layoutVersion,
               mIsLayoutDiffingEnabled,
               null,
               treeProps,
@@ -1974,6 +1984,7 @@ public class ComponentTree {
     final int widthSpec;
     final int heightSpec;
     final Component root;
+    final int layoutVersion;
     LayoutState previousLayoutState = null;
 
     // Cancel any scheduled layout requests we might have in the background queue
@@ -2007,7 +2018,7 @@ public class ComponentTree {
       mPendingLayoutWidthSpec = widthSpec;
       mPendingLayoutHeightSpec = heightSpec;
       root = mRoot.makeShallowCopy();
-
+      layoutVersion = ++mLayoutVersion;
       if (mMainThreadLayoutState != null) {
         previousLayoutState = mMainThreadLayoutState;
       }
@@ -2019,6 +2030,7 @@ public class ComponentTree {
             root,
             widthSpec,
             heightSpec,
+            layoutVersion,
             mIsLayoutDiffingEnabled,
             previousLayoutState,
             treeProps,
@@ -2368,6 +2380,7 @@ public class ComponentTree {
       Component root,
       int widthSpec,
       int heightSpec,
+      int layoutVersion,
       boolean diffingEnabled,
       @Nullable LayoutState previousLayoutState,
       @Nullable TreeProps treeProps,
@@ -2380,6 +2393,7 @@ public class ComponentTree {
             root,
             widthSpec,
             heightSpec,
+            layoutVersion,
             diffingEnabled,
             previousLayoutState,
             treeProps,
@@ -2453,6 +2467,7 @@ public class ComponentTree {
     private final FutureTask<LayoutState> futureTask;
     private final AtomicInteger refCount = new AtomicInteger(0);
     private final boolean isFromSyncLayout;
+    private final int layoutVersion;
     private volatile boolean interruptRequested;
     private final int source;
     private final String extraAttribution;
@@ -2463,10 +2478,6 @@ public class ComponentTree {
     @GuardedBy("LayoutStateFuture.this")
     private volatile boolean released = false;
 
-    @GuardedBy("LayoutStateFuture.this")
-    @Nullable
-    private volatile LayoutState layoutState = null;
-
     private boolean isBlockingSyncLayout;
 
     private LayoutStateFuture(
@@ -2474,6 +2485,7 @@ public class ComponentTree {
         final Component root,
         final int widthSpec,
         final int heightSpec,
+        int layoutVersion,
         final boolean diffingEnabled,
         @Nullable final LayoutState previousLayoutState,
         @Nullable final TreeProps treeProps,
@@ -2489,6 +2501,7 @@ public class ComponentTree {
       this.isFromSyncLayout = isFromSyncLayout(source);
       this.source = source;
       this.extraAttribution = extraAttribution;
+      this.layoutVersion = layoutVersion;
 
       this.futureTask =
           new FutureTask<>(
@@ -2505,7 +2518,6 @@ public class ComponentTree {
                     if (released) {
                       return null;
                     } else {
-                      layoutState = result;
                       return result;
                     }
                   }
@@ -2529,6 +2541,7 @@ public class ComponentTree {
           ComponentTree.this.mId,
           widthSpec,
           heightSpec,
+          layoutVersion,
           diffingEnabled,
           previousLayoutState,
           source,
@@ -2567,7 +2580,6 @@ public class ComponentTree {
       if (released) {
         return;
       }
-      layoutState = null;
       interruptToken = continuationToken = null;
       released = true;
     }

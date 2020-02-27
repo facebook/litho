@@ -248,6 +248,7 @@ public class LayoutStateCalculateVisibilityOutputsTest {
         componentTreeId,
         widthSpec,
         heightSpec,
+        -1,
         false /* shouldGenerateDiffTree */,
         null /* previousDiffTreeRoot */,
         LayoutState.CalculateLayoutSource.TEST,

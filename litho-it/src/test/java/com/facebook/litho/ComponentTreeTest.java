@@ -33,6 +33,7 @@ import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestLayoutComponent;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.testing.util.InlineLayoutSpec;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import org.junit.After;
@@ -203,6 +204,96 @@ public class ComponentTreeTest {
     assertThat(c).isNotEqualTo(scopedContext);
     Assert.assertNull(c.getComponentScope());
     assertThat(layoutState.getRootComponent().getScopedContext()).isNotEqualTo(scopedContext);
+  }
+
+  private static class MeasureListener implements ComponentTree.MeasureListener {
+    int mWidth = 0;
+    int mHeight = 0;
+
+    @Override
+    public void onSetRootAndSizeSpec(int width, int height) {
+      mWidth = width;
+      mHeight = height;
+    }
+  }
+
+  @Test
+  public void testRacyLayouts() {
+    final CountDownLatch asyncLatch = new CountDownLatch(1);
+    final CountDownLatch syncLatch = new CountDownLatch(1);
+    final CountDownLatch endOfTest = new CountDownLatch(1);
+
+    final int widthSpec = SizeSpec.makeSizeSpec(100, EXACTLY);
+    final int heightSpec = SizeSpec.makeSizeSpec(100, EXACTLY);
+    final int asyncWidthSpec = SizeSpec.makeSizeSpec(200, EXACTLY);
+    final int asyncHeightSpec = SizeSpec.makeSizeSpec(200, EXACTLY);
+
+    final ComponentTree componentTree = ComponentTree.create(mContext).build();
+    final ComponentTree innerComponentTree = ComponentTree.create(mContext).build();
+    final MeasureListener measureListener = new MeasureListener();
+    innerComponentTree.addMeasureListener(measureListener);
+
+    Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(ComponentContext c) {
+            innerComponentTree.setVersionedRootAndSizeSpec(
+                new InlineLayoutSpec() {}, widthSpec, heightSpec, null, null, c.getLayoutVersion());
+            return super.onCreateLayout(c);
+          }
+        };
+
+    Component asyncComponent =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(ComponentContext c) {
+            // TODO
+            try {
+              syncLatch.countDown();
+              asyncLatch.await();
+            } catch (InterruptedException e) {
+              e.printStackTrace();
+            }
+            innerComponentTree.setVersionedRootAndSizeSpec(
+                new InlineLayoutSpec() {},
+                asyncWidthSpec,
+                asyncHeightSpec,
+                null,
+                null,
+                c.getLayoutVersion());
+            return super.onCreateLayout(c);
+          }
+        };
+
+    new Thread() {
+      @Override
+      public void run() {
+        componentTree.setRootAndSizeSpec(asyncComponent, 0, 0);
+        endOfTest.countDown();
+      }
+    }.start();
+
+    try {
+      syncLatch.await();
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
+    componentTree.setRootAndSizeSpec(component, 0, 0);
+    assertEquals(measureListener.mWidth, 100);
+    assertEquals(measureListener.mHeight, 100);
+
+    asyncLatch.countDown();
+
+    componentTree.setRootAsync(component);
+
+    try {
+      endOfTest.await();
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
+    // Verify your stuff at this point
+    assertEquals(measureListener.mWidth, 100);
+    assertEquals(measureListener.mHeight, 100);
   }
 
   @Test
@@ -870,6 +961,7 @@ public class ComponentTreeTest {
                     root3,
                     mWidthSpec,
                     mHeightSpec,
+                    -1,
                     true,
                     null,
                     null,
@@ -878,7 +970,7 @@ public class ComponentTreeTest {
 
                 // At this point, the current thread is unblocked after waiting for the first to
                 // finish layout.
-                //TODO T62608123 This actually never runs
+                // TODO T62608123 This actually never runs
                 assertFalse(root3.hasRunLayout);
                 assertTrue(root2.hasRunLayout);
               }
@@ -939,6 +1031,7 @@ public class ComponentTreeTest {
                     root3,
                     mWidthSpec,
                     mHeightSpec,
+                    -1,
                     true,
                     null,
                     null,
@@ -947,7 +1040,7 @@ public class ComponentTreeTest {
 
                 // At this point, the current thread is unblocked after waiting for the first to
                 // finish layout.
-                //TODO T62608123 This actually never runs
+                // TODO T62608123 This actually never runs
                 assertTrue(root3.hasRunLayout);
                 assertTrue(root2.hasRunLayout);
               }
