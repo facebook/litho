@@ -16,6 +16,7 @@
 
 package com.facebook.litho.stats;
 
+import androidx.annotation.VisibleForTesting;
 import java.util.concurrent.atomic.AtomicLong;
 
 /** Provides global counters about Litho internals. Useful for performance analyses. */
@@ -143,6 +144,11 @@ public final class LithoStats {
    */
   public static long incrementComponentStateUpdateAsyncCount() {
     return sComponentTriggeredAsyncStateUpdateCount.addAndGet(1);
+  }
+
+  @VisibleForTesting
+  public static void resetComponentStateUpdateAsyncCount() {
+    sComponentTriggeredAsyncStateUpdateCount.set(0);
   }
 
   /**
