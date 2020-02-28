@@ -224,4 +224,19 @@ public final class LithoStats {
   public static long incrementSectionCalculateNewChangesetOnUICount() {
     return sSectionCalculateNewChangesetOnUICount.addAndGet(1);
   }
+
+  @VisibleForTesting
+  public synchronized void resetAllCounters() {
+    sComponentAppliedStateUpdateCount.set(0);
+    sComponentTriggeredSyncStateUpdateCount.set(0);
+    sComponentTriggeredAsyncStateUpdateCount.set(0);
+    sComponentCalculateLayoutCount.set(0);
+    sComponentCalculateLayoutOnUICount.set(0);
+    sComponentMountCount.set(0);
+    sSectionAppliedStateUpdateCount.set(0);
+    sSectionTriggeredSyncStateUpdateCount.set(0);
+    sSectionTriggeredAsyncStateUpdateCount.set(0);
+    sSectionCalculateNewChangesetCount.set(0);
+    sSectionCalculateNewChangesetOnUICount.set(0);
+  }
 }
