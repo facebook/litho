@@ -80,6 +80,7 @@ public class RenderState<State> {
   private @Nullable RenderResult<State> mUIRenderResult;
   private @Nullable RenderResult<State> mCommittedRenderResult;
   private @Nullable TreeFactory<State> mLatestTreeFactory;
+  private int mExternalRootVersion = -1;
   private @Nullable RenderResultFuture<State> mRenderResultFuture;
   private int mNextSetRootId = 0;
   private int mCommittedSetRootId = UNSET;
@@ -92,11 +93,53 @@ public class RenderState<State> {
   }
 
   @ThreadConfined(ThreadConfined.ANY)
+  public void setVersionedTree(
+      TreeFactory<State> treeFactory,
+      int version,
+      int widthSpec,
+      int heightSpec,
+      @Nullable int[] measureOutput) {
+    setTreeInternal(treeFactory, version, widthSpec, heightSpec, measureOutput);
+  }
+
+  @ThreadConfined(ThreadConfined.ANY)
   public void setTree(TreeFactory<State> treeFactory) {
+    setTreeInternal(treeFactory, -1, UNSET, UNSET, null);
+  }
+
+  private void setTreeInternal(
+      TreeFactory<State> treeFactory,
+      int version,
+      int widthSpec,
+      int heightSpec,
+      @Nullable int[] measureOutput) {
     final int setRootId;
     final RenderResultFuture<State> future;
     synchronized (this) {
+      if (version > -1) {
+        if (mExternalRootVersion > version) {
+          // Since this layout is not really valid we can just return early.
+          return;
+        }
+      } else {
+        if (mExternalRootVersion > -1) {
+          throw new IllegalStateException(
+              "Setting an unversioned tree after calling setVersionedTree is not "
+                  + "supported. If this RenderState takes its version from a parent tree make "
+                  + "sure to always call setVersionedTree");
+        }
+      }
+
+      mExternalRootVersion = version;
       mLatestTreeFactory = treeFactory;
+
+      if (widthSpec != UNSET) {
+        mWidthSpec = widthSpec;
+      }
+
+      if (heightSpec != UNSET) {
+        mHeightSpec = heightSpec;
+      }
 
       if (mWidthSpec == UNSET || mHeightSpec == UNSET) {
         return;
@@ -119,14 +162,19 @@ public class RenderState<State> {
       // we only go "forward in time" and will eventually get to the latest layout.
       if (setRootId > mCommittedSetRootId) {
         mDelegate.commit(
-            mCommittedRenderResult.mRenderTree,
+            mCommittedRenderResult != null ? mCommittedRenderResult.mRenderTree : null,
             result.mRenderTree,
-            mCommittedRenderResult.mState,
+            mCommittedRenderResult != null ? mCommittedRenderResult.mState : null,
             result.mState);
 
         mCommittedSetRootId = setRootId;
         mCommittedRenderResult = result;
         committedNewLayout = true;
+      }
+
+      if (measureOutput != null && mCommittedRenderResult != null) {
+        measureOutput[0] = mCommittedRenderResult.mRenderTree.getWidth();
+        measureOutput[1] = mCommittedRenderResult.mRenderTree.getHeight();
       }
 
       if (mRenderResultFuture == future) {
