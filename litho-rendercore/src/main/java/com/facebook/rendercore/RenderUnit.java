@@ -19,6 +19,7 @@ package com.facebook.rendercore;
 import android.content.Context;
 import android.view.View;
 import androidx.annotation.Nullable;
+import com.facebook.rendercore.RenderState.LayoutContext;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -104,7 +105,7 @@ public abstract class RenderUnit<MOUNT_CONTENT> implements Copyable {
    * MeasureResult with the bounds of their content. Measure is guaranteed to be called at least
    * once before this RenderUnit is mounted.
    */
-  public MeasureResult measure(Context context, final int widthSpec, final int heightSpec) {
+  public MeasureResult measure(LayoutContext context, final int widthSpec, final int heightSpec) {
 
     return new MeasureResult(
         this,

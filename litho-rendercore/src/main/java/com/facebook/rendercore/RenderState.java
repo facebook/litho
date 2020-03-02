@@ -23,6 +23,7 @@ import android.os.Message;
 import android.os.Process;
 import android.util.Pair;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.rendercore.Node.LayoutResult;
 import com.facebook.rendercore.utils.MeasureSpecUtils;
@@ -262,9 +263,9 @@ public class RenderState<State> {
   }
 
   private static LayoutResult layout(
-      Context context, Node newTree, int widthSpec, int heightSpec, LayoutCache layoutCache) {
+      LayoutContext context, Node newTree, int widthSpec, int heightSpec, LayoutCache layoutCache) {
 
-    return newTree.calculateLayout(context, widthSpec, heightSpec, layoutCache);
+    return newTree.calculateLayout(context, widthSpec, heightSpec);
   }
 
   private static RenderTree reduce(
@@ -301,7 +302,7 @@ public class RenderState<State> {
         final Context context,
         TreeFactory<State> treeFactory,
         RenderResult<State> previousResult,
-        int setRootId,
+        final int setRootId,
         final int widthSpec,
         final int heightSpec) {
       mTreeFactory = treeFactory;
@@ -323,6 +324,15 @@ public class RenderState<State> {
                           ? new LayoutCache(mPreviousResult.mLayoutCache.getWriteCache())
                           : new LayoutCache(null);
 
+                  if (mPreviousResult != null) {
+                    android.util.Log.e(
+                        "CACHE",
+                        "USING A CACHE OF SIZE: "
+                            + mPreviousResult.mLayoutCache.getWriteCache().size());
+                  }
+                  final LayoutContext layoutContext =
+                      new LayoutContext(context, setRootId, layoutCache);
+
                   Systrace.sInstance.beginSection("RC Create Tree");
                   final Pair<Node, State> result =
                       mTreeFactory.createTree(previousTree, previousState);
@@ -330,7 +340,7 @@ public class RenderState<State> {
 
                   Systrace.sInstance.beginSection("RC Layout");
                   final LayoutResult layoutResult =
-                      layout(context, result.first, widthSpec, heightSpec, layoutCache);
+                      layout(layoutContext, result.first, widthSpec, heightSpec, layoutCache);
                   Systrace.sInstance.endSection();
 
                   Systrace.sInstance.beginSection("RC Reduce");
@@ -341,6 +351,7 @@ public class RenderState<State> {
                           layoutCache,
                           result.second);
                   Systrace.sInstance.endSection();
+                  layoutContext.layoutCache = null;
                   return renderResult;
                 }
               });
@@ -389,6 +400,42 @@ public class RenderState<State> {
         default:
           throw new RuntimeException("Unknown message: " + msg.what);
       }
+    }
+  }
+
+  /**
+   * A LayoutContext encapsulates all the data needed during a layout pass. It contains - The
+   * Android context associated with this layout calculation. - The version of the layout
+   * calculation. - The LayoutCache for this layout calculation. Access to the cache is only valid
+   * during the execution of the Node's calculateLayout function.
+   */
+  public static class LayoutContext {
+    private final Context androidContext;
+    private final int layoutVersion;
+    private @Nullable LayoutCache layoutCache;
+
+    @VisibleForTesting
+    LayoutContext(Context androidContext, int layoutVersion, LayoutCache layoutCache) {
+      this.androidContext = androidContext;
+      this.layoutVersion = layoutVersion;
+      this.layoutCache = layoutCache;
+    }
+
+    public Context getAndroidContext() {
+      return androidContext;
+    }
+
+    public int getLayoutVersion() {
+      return layoutVersion;
+    }
+
+    public LayoutCache getLayoutCache() {
+      if (layoutCache == null) {
+        throw new IllegalStateException(
+            "Trying to access the LayoutCache from outside a layout call");
+      }
+
+      return layoutCache;
     }
   }
 }
