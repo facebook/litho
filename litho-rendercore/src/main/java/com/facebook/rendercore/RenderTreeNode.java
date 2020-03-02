@@ -25,13 +25,15 @@ public class RenderTreeNode {
 
   private static final int DEFAULT_SIZE = 4;
 
-  private List<RenderTreeNode> mChildren;
-  @Nullable private final RenderTreeNode mParent;
+  private final @Nullable RenderTreeNode mParent;
   private final RenderUnit mRenderUnit;
-  @Nullable private final Object mLayoutData;
+  private final @Nullable Object mLayoutData;
   private final Rect mBounds;
-  @Nullable private final Rect mResolvedPadding;
+  private final @Nullable Rect mResolvedPadding;
+
   final int mPositionInParent;
+
+  private List<RenderTreeNode> mChildren;
 
   public RenderTreeNode(
       @Nullable RenderTreeNode parent,
