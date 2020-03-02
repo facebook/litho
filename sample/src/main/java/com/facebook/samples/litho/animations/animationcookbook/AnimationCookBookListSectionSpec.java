@@ -31,6 +31,7 @@ class AnimationCookBookListSectionSpec {
         .child(SingleComponentSection.create(c).component(BounceExampleComponent.create(c)))
         .child(SingleComponentSection.create(c).component(CallbackExampleComponent.create(c)))
         .child(SingleComponentSection.create(c).component(ContinuousExampleComponent.create(c)))
+        .child(SingleComponentSection.create(c).component(PathExampleComponent.create(c)))
         .build();
   }
 }
