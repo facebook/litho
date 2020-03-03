@@ -2777,12 +2777,7 @@ public class RecyclerBinder
         scrollSmoothToPosition(
             mCurrentFirstVisiblePosition, mCurrentOffset, mSmoothScrollAlignmentType);
       } else {
-        if (layoutManager instanceof LinearLayoutManager) {
-          ((LinearLayoutManager) layoutManager)
-              .scrollToPositionWithOffset(mCurrentFirstVisiblePosition, mCurrentOffset);
-        } else {
-          view.scrollToPosition(mCurrentFirstVisiblePosition);
-        }
+        mLayoutInfo.scrollToPositionWithOffset(mCurrentFirstVisiblePosition, mCurrentOffset);
       }
     } else if (mIsCircular) {
       // Initialize circular RecyclerView position
@@ -2963,14 +2958,13 @@ public class RecyclerBinder
 
   @UiThread
   public void scrollToPositionWithOffset(int position, int offset) {
-    if (mMountedView == null || !(mMountedView.getLayoutManager() instanceof LinearLayoutManager)) {
+    if (mMountedView == null) {
       mCurrentFirstVisiblePosition = position;
       mCurrentOffset = offset;
       return;
     }
 
-    ((LinearLayoutManager) mMountedView.getLayoutManager())
-        .scrollToPositionWithOffset(position, offset);
+    mLayoutInfo.scrollToPositionWithOffset(position, offset);
   }
 
   @GuardedBy("this")

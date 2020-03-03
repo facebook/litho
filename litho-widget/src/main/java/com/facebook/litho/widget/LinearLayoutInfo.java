@@ -94,6 +94,11 @@ public class LinearLayoutInfo implements LayoutInfo {
   }
 
   @Override
+  public void scrollToPositionWithOffset(int position, int offset) {
+    mLinearLayoutManager.scrollToPositionWithOffset(position, offset);
+  }
+
+  @Override
   public int approximateRangeSize(
       int firstMeasuredItemWidth,
       int firstMeasuredItemHeight,

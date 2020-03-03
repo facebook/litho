@@ -110,6 +110,11 @@ public class GridLayoutInfo implements LayoutInfo {
   }
 
   @Override
+  public void scrollToPositionWithOffset(int position, int offset) {
+    mGridLayoutManager.scrollToPositionWithOffset(position, offset);
+  }
+
+  @Override
   public int approximateRangeSize(
       int firstMeasuredItemWidth,
       int firstMeasuredItemHeight,

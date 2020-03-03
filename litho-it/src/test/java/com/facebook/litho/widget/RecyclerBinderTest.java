@@ -519,7 +519,7 @@ public class RecyclerBinderTest {
     // Remount the RecyclerView, causing it to scroll using the stored scroll offset.
     recyclerBinder.mount(recyclerView);
 
-    verify(layoutManager).scrollToPositionWithOffset(SCROLL_RESTORATION_VIEW_POSITION, trueOffset);
+    verify(layoutInfo).scrollToPositionWithOffset(SCROLL_RESTORATION_VIEW_POSITION, trueOffset);
   }
 
   @Test
