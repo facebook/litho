@@ -217,8 +217,6 @@ public class ComponentsConfiguration {
   /** When enabled it would use Internal Nodes for layout diffing instead Diff Nodes. */
   public static boolean useInternalNodesForLayoutDiffing = false;
 
-  public static boolean shouldCompareStateInIsEquivalentTo = true;
-
   public static boolean incrementalVisibilityHandling = false;
 
   /** Enabling this will force all updateStateSync methods to be updateStateAsync. * */

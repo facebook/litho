@@ -317,6 +317,31 @@ public class TreeDiffingTest {
   }
 
   @Test
+  public void testIsEquivalentToCalled() {
+    final Component component1 = new TestMountComponent();
+
+    final TestComponent component2 = new TestMountComponent();
+
+    LayoutState prevLayoutState =
+        calculateLayoutStateWithDiffing(
+            mContext,
+            new TestSimpleContainerLayout(component1, 0),
+            makeSizeSpec(350, SizeSpec.EXACTLY),
+            makeSizeSpec(200, SizeSpec.EXACTLY),
+            null);
+
+    LayoutState layoutState =
+        calculateLayoutStateWithDiffing(
+            mContext,
+            new TestSimpleContainerLayout(component2, 0),
+            makeSizeSpec(350, SizeSpec.EXACTLY),
+            makeSizeSpec(200, SizeSpec.EXACTLY),
+            prevLayoutState);
+
+    assertThat(component2.isEquivalentToCalled()).isTrue();
+  }
+
+  @Test
   public void testLayoutOutputPartialReuse() {
     final Component component1 =
         new InlineLayoutSpec() {
@@ -855,6 +880,18 @@ public class TreeDiffingTest {
       return create(c).paddingPx(HORIZONTAL, mHorizontalPadding).child(mComponent).build();
     }
   }
+
+  private static class TestMountComponent extends TestComponent {
+    @Override
+    protected boolean isPureRender() {
+      return true;
+    }
+
+    @Override
+    public ComponentLifecycle.MountType getMountType() {
+      return ComponentLifecycle.MountType.VIEW;
+    }
+  };
 
   private static class TestSimpleContainerLayout2 extends InlineLayoutSpec {
     private final Component mComponent;
