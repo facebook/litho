@@ -17,6 +17,8 @@ The dynamic properties that are available for **all** `Components` are:
 * Scale X/Y
 * Translation X/Y
 * Background Color
+* Rotation
+* Elevation (from Lollipop and above)
 
 To use this, all you need to do is to create and pass a `DynamicValue<T>` object to the corresponding [`Component.Builder`](/javadoc/com/facebook/litho/Component.Builder) method.
 Normally, you would hold on to this object, and use its [`set()`](/javadoc/com/facebook/litho/DynamicValue.html#set-T-) method to update the actual value.
@@ -206,3 +208,98 @@ Then, it is the responsibility of the framework to invoke these methods to keep 
 </video>
 
 [Here](https://github.com/facebook/litho/tree/master/sample/src/main/java/com/facebook/samples/litho/dynamicprops) you find the full implementation of the sample above.
+
+### Animating Common Dynamic Props
+
+Dynamic Props values can be used with Android Animators to create custom animations.
+In the following example we define a click event that starts an animation. As this is using Android's animation api we can easily set properties like duration and interpolation. We can also register for callbacks using `Animator.addListener(..)`.
+
+```
+@LayoutSpec
+class CallbackExampleComponentSpec {
+
+  private static final long ANIMATION_DURATION_MS = 1000;
+  private static final float SCALE_TO = 1.7f;
+
+  private static Animator createScaleAnimator(final DynamicValue<Float> scale) {
+    // Create an Android Animator
+    final ValueAnimator scaleAnimator = ValueAnimator.ofFloat(1f, SCALE_TO, 1f);
+    scaleAnimator.setDuration(ANIMATION_DURATION_MS);
+    scaleAnimator.setInterpolator(new AccelerateDecelerateInterpolator());
+    scaleAnimator.addUpdateListener(
+        new ValueAnimator.AnimatorUpdateListener() {
+          @Override
+          public void onAnimationUpdate(ValueAnimator animation) {
+            // Update the dynamic value every frame
+            scale.set((Float) animation.getAnimatedValue());
+          }
+        });
+    return scaleAnimator;
+  }
+
+  @OnCreateInitialState
+  static void createInitialState(
+      ComponentContext c,
+      StateValue<AtomicReference<Animator>> animatorRef,
+      StateValue<DynamicValue<Float>> scale) {
+    animatorRef.set(new AtomicReference<Animator>(null));
+    scale.set(new DynamicValue<>(1f));
+  }
+
+  @OnCreateLayout
+  static Component onCreateLayout(ComponentContext c, @State DynamicValue<Float> scale) {
+    return Column.create(c)
+        .alignItems(YogaAlign.CENTER)
+        .justifyContent(YogaJustify.CENTER)
+        .paddingDip(YogaEdge.ALL, 50)
+        .clickHandler(CallbackExampleComponent.onClick(c))
+        .child(
+            // Create the component that will animate, and set the dynamic value on it
+            Text.create(c).text("\uD83D\uDE18").textSizeSp(50).scaleX(scale).scaleY(scale))
+        .build();
+  }
+
+  @OnEvent(ClickEvent.class)
+  static void onClick(
+      final ComponentContext c,
+      @State AtomicReference<Animator> animatorRef,
+      @State DynamicValue<Float> scale) {
+    // Wrapping the Animator in an AtomicReference allows us to easily access 
+    // the previous Animator so it can be cancelled.
+    Animator oldAnimator = animatorRef.get();
+    if (oldAnimator != null) {
+      oldAnimator.cancel();
+    }
+
+    final Animator newAnimator = createScaleAnimator(scale);
+    animatorRef.set(newAnimator);
+    
+    // Add custom callbacks to animation events
+    newAnimator.addListener(
+        new Animator.AnimatorListener() {
+          @Override
+          public void onAnimationStart(Animator animation) {}
+
+          @Override
+          public void onAnimationEnd(Animator animation) {
+            Toast.makeText(c.getAndroidContext(), "Animation finished", Toast.LENGTH_SHORT).show();
+          }
+
+          @Override
+          public void onAnimationCancel(Animator animation) {}
+
+          @Override
+          public void onAnimationRepeat(Animator animation) {}
+        });
+        
+    newAnimator.start();
+  }
+}
+```
+
+In this example we have created a simple `LayoutSpec` that contains a `Text` component that animates when we click it.
+The scale of the `Text` defined by a `DynamicValue`, which will trigger a re-draw when ever it is updated. The `DynamicValue` is defined within a `@State` so that it can be easily shared between the `LayoutSpec`'s static functions.
+There is an `Animator` that updates the scale `DynamicValue`. The `Animator` is defined as a `@State` so the instance can be shared between different on click events. It is also wrapped inside an `AtomicReference` which allows us to replace the Animator instance so we don't have to re-use the same `Animator` for different animations.
+
+For more examples of creating Animations using Common Dynamic Props, see our [Animations Cook Book](https://github.com/facebook/litho/tree/master/sample/src/main/java/com/facebook/samples/litho/animations/animationcookbook) in the Sample App.
+
