@@ -66,8 +66,6 @@ public class VisibilityEventsHelper {
             && getEventHandler(visibilityOutput, "FullImpression") != null) {
           dispatch(getEventHandler(visibilityOutput, "FullImpression"), "FullImpression");
           return true;
-        } else {
-          throw new RuntimeException("Unexpected visibility event type: " + visibilityEventType);
         }
       }
       return false;
