@@ -9,6 +9,7 @@ load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_JAVA_TARGET", "LITHO_WIDGET
 litho_android_library(
     name = "logger",
     srcs = glob(["*.java"]),
+    labels = ["supermodule:android/default/litho.core"],
     visibility = [
         "PUBLIC",
     ],

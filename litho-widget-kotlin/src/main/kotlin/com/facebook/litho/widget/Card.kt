@@ -40,7 +40,7 @@ inline fun DslScope.Card(
     disableClipBottomLeft: Boolean = false,
     disableClipBottomRight: Boolean = false,
     child: DslScope.() -> Component.Builder<*>
-): Card.Builder =
+): Card =
     Card.create(this)
         .cardBackgroundColor(cardBackgroundColor)
         .cornerRadiusDip(cornerRadius.value)
@@ -54,3 +54,4 @@ inline fun DslScope.Card(
         .disableClipBottomLeft(disableClipBottomLeft)
         .disableClipBottomRight(disableClipBottomRight)
         .content(child())
+        .build()

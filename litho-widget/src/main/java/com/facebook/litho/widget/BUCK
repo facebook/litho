@@ -7,6 +7,7 @@ load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_ANDROIDSUPPORT_RECYCLERVIEW
 
 litho_android_library(
     name = "widget",
+    labels = ["supermodule:android/default/litho.core"],
     visibility = [
         "PUBLIC",
     ],
@@ -20,6 +21,7 @@ litho_android_library(
     name = "widget-bare",
     srcs = glob(["*.java"]),
     is_androidx = True,
+    labels = ["supermodule:android/default/litho.core"],
     plugins = [
         LITHO_PROCESSOR_TARGET,
     ],

@@ -116,6 +116,7 @@ public class TestComponentTreeHolder extends ComponentTreeHolder {
 
   @Override
   public void setRenderInfo(RenderInfo renderInfo) {
+    mTreeValid = false;
     mRenderInfo = renderInfo;
   }
 

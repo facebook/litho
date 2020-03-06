@@ -80,8 +80,12 @@ public class HorizontalScrollWithSnapComponentSpec {
       @State int snapMode) {
 
     final RecyclerConfiguration recyclerConfiguration =
-        new ListRecyclerConfiguration(
-            LinearLayoutManager.HORIZONTAL, /*reverseLayout*/ false, snapMode);
+        ListRecyclerConfiguration.create()
+            .orientation(LinearLayoutManager.HORIZONTAL)
+            .reverseLayout(false)
+            .snapMode(snapMode)
+            .build();
+
     return Column.create(c)
         .paddingDip(YogaEdge.ALL, 5)
         .child(

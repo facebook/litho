@@ -8,6 +8,7 @@ fb_java_library(
     name = "annotations",
     srcs = glob(["*.java"]),
     is_androidx = True,
+    labels = ["supermodule:android/default/litho.core"],
     provided_deps = [
         LITHO_ANDROIDSUPPORT_TARGET,
     ],

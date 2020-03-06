@@ -174,7 +174,6 @@ public class StateUpdatesWithReconciliationTest {
   @Test
   public void testStateUpdateWithComponentsWhichHaveSameManualKeyWithNewLayoutCreation() {
     after();
-    ComponentsConfiguration.useNewCreateLayoutImplementation = true;
 
     // Set custom root component
     before(SameManualKeyRootComponentSpec.create(mContext));
@@ -185,8 +184,6 @@ public class StateUpdatesWithReconciliationTest {
         "test",
         false);
     mLayoutThreadShadowLooper.runToEndOfTasks();
-
-    ComponentsConfiguration.useNewCreateLayoutImplementation = false;
   }
 
   @Test

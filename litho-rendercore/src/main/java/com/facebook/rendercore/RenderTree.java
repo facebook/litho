@@ -16,26 +16,17 @@
 
 package com.facebook.rendercore;
 
-import java.util.Map;
-
 /** TODO add javadoc */
 public class RenderTree {
 
   private final RenderTreeNode mRoot;
   private final RenderTreeNode[] mFlatList;
-  private final Map<?, ?> mLayoutContexts;
   private final int mWidthSpec;
   private final int mHeightSpec;
 
-  public RenderTree(
-      RenderTreeNode root,
-      RenderTreeNode[] flatList,
-      Map<?, ?> layoutContexts,
-      int widthSpec,
-      int heightSpec) {
+  public RenderTree(RenderTreeNode root, RenderTreeNode[] flatList, int widthSpec, int heightSpec) {
     mRoot = root;
     mFlatList = flatList;
-    mLayoutContexts = layoutContexts;
     mWidthSpec = widthSpec;
     mHeightSpec = heightSpec;
   }
@@ -72,9 +63,5 @@ public class RenderTree {
 
   public int getMountableOutputCount() {
     return mFlatList.length;
-  }
-
-  public Map getLayoutContexts() {
-    return mLayoutContexts;
   }
 }

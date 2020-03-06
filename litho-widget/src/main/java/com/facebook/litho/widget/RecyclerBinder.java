@@ -696,8 +696,9 @@ public class RecyclerBinder
      * adapters.
      *
      * <p>Additionally, since the RecyclerBinder will never mount to a RecyclerView, the owner of
-     * this RecyclerBinder must manually dispatch {@link #updateSubAdapterVisibleRange} events if
-     * this RecyclerBinder can contains more than a screens worth of content.
+     * this RecyclerBinder must manually dispatch {@link #updateSubAdapterVisibleRange} and {@link
+     * #updateSubAdapterWorkingRange} events if this RecyclerBinder can contains more than a screens
+     * worth of content.
      */
     public Builder isSubAdapter(boolean isSubAdapter) {
       this.isSubAdapter = isSubAdapter;
@@ -2776,12 +2777,7 @@ public class RecyclerBinder
         scrollSmoothToPosition(
             mCurrentFirstVisiblePosition, mCurrentOffset, mSmoothScrollAlignmentType);
       } else {
-        if (layoutManager instanceof LinearLayoutManager) {
-          ((LinearLayoutManager) layoutManager)
-              .scrollToPositionWithOffset(mCurrentFirstVisiblePosition, mCurrentOffset);
-        } else {
-          view.scrollToPosition(mCurrentFirstVisiblePosition);
-        }
+        mLayoutInfo.scrollToPositionWithOffset(mCurrentFirstVisiblePosition, mCurrentOffset);
       }
     } else if (mIsCircular) {
       // Initialize circular RecyclerView position
@@ -2962,14 +2958,13 @@ public class RecyclerBinder
 
   @UiThread
   public void scrollToPositionWithOffset(int position, int offset) {
-    if (mMountedView == null || !(mMountedView.getLayoutManager() instanceof LinearLayoutManager)) {
+    if (mMountedView == null) {
       mCurrentFirstVisiblePosition = position;
       mCurrentOffset = offset;
       return;
     }
 
-    ((LinearLayoutManager) mMountedView.getLayoutManager())
-        .scrollToPositionWithOffset(position, offset);
+    mLayoutInfo.scrollToPositionWithOffset(position, offset);
   }
 
   @GuardedBy("this")
@@ -3066,6 +3061,25 @@ public class RecyclerBinder
           "updateSubAdapterVisibleRange can only be called in sub adapter mode");
     }
     onNewVisibleRange(firstVisiblePosition, lastVisiblePosition);
+  }
+
+  /**
+   * Updates the working range when in sub adapter mode. Do not call this otherwise. This method
+   * exists because in sub adapter mode, the RecyclerBinder is never mounted to a RecyclerView and
+   * needs outside signals from the multiplexing adapter to determine which of its indices are
+   * visible.
+   */
+  public void updateSubAdapterWorkingRange(
+      int firstVisibleIndex,
+      int lastVisibleIndex,
+      int firstFullyVisibleIndex,
+      int lastFullyVisibleIndex) {
+    if (!mIsSubAdapter) {
+      throw new RuntimeException(
+          "updateSubAdapterWorkingRange can only be called in sub adapter mode");
+    }
+    onNewWorkingRange(
+        firstVisibleIndex, lastVisibleIndex, firstFullyVisibleIndex, lastFullyVisibleIndex);
   }
 
   @VisibleForTesting
@@ -3167,7 +3181,7 @@ public class RecyclerBinder
       childrenHeightSpec = getActualChildrenHeightSpec(holder);
     }
 
-    if (index >= rangeStart && index <= rangeEnd) {
+    if ((index >= rangeStart || holder.getRenderInfo().isSticky()) && index <= rangeEnd) {
       if (!holder.isTreeValidForSizeSpecs(childrenWidthSpec, childrenHeightSpec)) {
         holder.computeLayoutAsync(mComponentContext, childrenWidthSpec, childrenHeightSpec);
       }

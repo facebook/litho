@@ -81,6 +81,11 @@ public class StaggeredGridLayoutInfo implements LayoutInfo {
   }
 
   @Override
+  public void scrollToPositionWithOffset(int position, int offset) {
+    mStaggeredGridLayoutManager.scrollToPositionWithOffset(position, offset);
+  }
+
+  @Override
   public int approximateRangeSize(
       int firstMeasuredItemWidth,
       int firstMeasuredItemHeight,

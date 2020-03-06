@@ -21,6 +21,7 @@ import android.graphics.Color;
 import android.view.View;
 import androidx.annotation.IdRes;
 import androidx.annotation.Nullable;
+import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ItemAnimator;
@@ -176,7 +177,8 @@ class RecyclerSpec {
     recyclerView.setHasFixedSize(hasFixedSize);
     recyclerView.setClipToPadding(clipToPadding);
     sectionsRecycler.setClipToPadding(clipToPadding);
-    recyclerView.setPadding(leftPadding, topPadding, rightPadding, bottomPadding);
+    ViewCompat.setPaddingRelative(
+        recyclerView, leftPadding, topPadding, rightPadding, bottomPadding);
     recyclerView.setClipChildren(clipChildren);
     sectionsRecycler.setClipChildren(clipChildren);
     recyclerView.setNestedScrollingEnabled(nestedScrollingEnabled);

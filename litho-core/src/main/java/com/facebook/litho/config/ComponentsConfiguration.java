@@ -180,7 +180,7 @@ public class ComponentsConfiguration {
   public static boolean enableRenderInfoDebugging = false;
 
   public static boolean useCancelableLayoutFutures;
-  public static boolean canInterruptAndMoveLayoutsBetweenThreads;
+  public static boolean canInterruptAndMoveLayoutsBetweenThreads = false;
   public static boolean skipVisChecksForFullyVisible;
 
   public static boolean isRenderInfoDebuggingEnabled() {
@@ -217,10 +217,8 @@ public class ComponentsConfiguration {
   /** When enabled it would use Internal Nodes for layout diffing instead Diff Nodes. */
   public static boolean useInternalNodesForLayoutDiffing = false;
 
-  /** When enabled uses the refactored implementation of create layout. */
-  public static boolean useNewCreateLayoutImplementation = false;
-
-  public static boolean shouldCompareStateInIsEquivalentTo = true;
-
   public static boolean incrementalVisibilityHandling = false;
+
+  /** Enabling this will force all updateStateSync methods to be updateStateAsync. * */
+  public static boolean shouldForceAsyncStateUpdate = false;
 }

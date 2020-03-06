@@ -218,12 +218,18 @@ public class ComponentTree {
   @Nullable
   Transition.RootBoundsTransition mRootHeightAnimation;
 
-  // TODO(6606683): Enable recycling of mComponent.
-  // We will need to ensure there are no background threads referencing mComponent. We'll need
-  // to keep a reference count or something. :-/
   @Nullable
   @GuardedBy("this")
   private Component mRoot;
+
+  @GuardedBy("this")
+  private int mExternalRootVersion = -1;
+
+  // Versioning that gets incremented every time we start a new layout computation. This can
+  // be useful for stateful objects shared across layouts that need to check whether for example
+  // a measure/onCreateLayout call is being executed in the context of an old layout calculation.
+  @GuardedBy("this")
+  private int mLayoutVersion;
 
   @Nullable
   @GuardedBy("this")
@@ -282,9 +288,9 @@ public class ComponentTree {
 
   private final boolean isReconciliationEnabled;
 
-  private final boolean isNewCreateLayoutEnabled;
-
   private final boolean mMoveLayoutsBetweenThreads;
+
+  private final boolean mForceAsyncStateUpdate;
 
   private final @Nullable String mLogTag;
 
@@ -316,7 +322,7 @@ public class ComponentTree {
     mUseCancelableLayoutFutures = builder.useCancelableLayoutFutures;
     mMoveLayoutsBetweenThreads = builder.canInterruptAndMoveLayoutsBetweenThreads;
     isReconciliationEnabled = builder.isReconciliationEnabled;
-    isNewCreateLayoutEnabled = ComponentsConfiguration.useNewCreateLayoutImplementation;
+    mForceAsyncStateUpdate = builder.shouldForceAsyncStateUpdate;
 
     if (mPreAllocateMountContentHandler == null && builder.canPreallocateOnDefaultHandler) {
       mPreAllocateMountContentHandler =
@@ -1021,6 +1027,8 @@ public class ComponentTree {
 
     Component component = null;
     TreeProps treeProps = null;
+    int layoutVersion = -1;
+
     synchronized (this) {
       mIsMeasuring = true;
 
@@ -1043,6 +1051,7 @@ public class ComponentTree {
         // Since outputs get set on the same object during the lifecycle calls,
         // we need to copy it in order to use it concurrently.
         component = mRoot.makeShallowCopy();
+        layoutVersion = ++mLayoutVersion;
         treeProps = TreeProps.copy(mRootTreeProps);
         mForceLayout = false;
       }
@@ -1065,6 +1074,7 @@ public class ComponentTree {
               component,
               widthSpec,
               heightSpec,
+              layoutVersion,
               mIsLayoutDiffingEnabled,
               null,
               treeProps,
@@ -1129,6 +1139,7 @@ public class ComponentTree {
           layoutScheduleType == SCHEDULE_LAYOUT_ASYNC,
           null /*output */,
           CalculateLayoutSource.MEASURE,
+          -1,
           null,
           rootTreeProps);
     }
@@ -1150,10 +1161,6 @@ public class ComponentTree {
     return isReconciliationEnabled;
   }
 
-  boolean isNewCreateLayoutEnabled() {
-    return isNewCreateLayoutEnabled;
-  }
-
   synchronized Component getRoot() {
     return mRoot;
   }
@@ -1163,18 +1170,19 @@ public class ComponentTree {
    * we will run a layout and then proxy a message to the main thread to cause a
    * relayout/invalidate.
    */
-  public void setRoot(Component rootComponent) {
-    if (rootComponent == null) {
+  public void setRoot(Component root) {
+    if (root == null) {
       throw new IllegalArgumentException("Root component can't be null");
     }
 
     setRootAndSizeSpecAndWrapper(
-        rootComponent,
+        root,
         SIZE_UNINITIALIZED,
         SIZE_UNINITIALIZED,
         false /* isAsync */,
         null /* output */,
         CalculateLayoutSource.SET_ROOT_SYNC,
+        -1,
         null,
         null);
   }
@@ -1212,18 +1220,19 @@ public class ComponentTree {
     }
   }
 
-  public void setRootAsync(Component rootComponent) {
-    if (rootComponent == null) {
+  public void setRootAsync(Component root) {
+    if (root == null) {
       throw new IllegalArgumentException("Root component can't be null");
     }
 
     setRootAndSizeSpecAndWrapper(
-        rootComponent,
+        root,
         SIZE_UNINITIALIZED,
         SIZE_UNINITIALIZED,
         true /* isAsync */,
         null /* output */,
         CalculateLayoutSource.SET_ROOT_ASYNC,
+        -1,
         null,
         null);
   }
@@ -1256,6 +1265,12 @@ public class ComponentTree {
       StateUpdate stateUpdate,
       String attribution,
       boolean isCreateLayoutInProgress) {
+
+    if (mForceAsyncStateUpdate && mIsAsyncUpdateStateEnabled) {
+      updateStateAsync(componentKey, stateUpdate, attribution, isCreateLayoutInProgress);
+      return;
+    }
+
     synchronized (this) {
       if (mRoot == null) {
         return;
@@ -1385,6 +1400,7 @@ public class ComponentTree {
         isAsync
             ? CalculateLayoutSource.UPDATE_STATE_ASYNC
             : CalculateLayoutSource.UPDATE_STATE_SYNC,
+        -1,
         attribution,
         rootTreeProps,
         isCreateLayoutInProgress);
@@ -1498,6 +1514,7 @@ public class ComponentTree {
         false /* isAsync */,
         output /* output */,
         CalculateLayoutSource.SET_SIZE_SPEC_SYNC,
+        -1,
         null,
         null);
   }
@@ -1510,6 +1527,7 @@ public class ComponentTree {
         true /* isAsync */,
         null /* output */,
         CalculateLayoutSource.SET_SIZE_SPEC_ASYNC,
+        -1,
         null,
         null);
   }
@@ -1527,6 +1545,7 @@ public class ComponentTree {
         true /* isAsync */,
         null /* output */,
         CalculateLayoutSource.SET_ROOT_ASYNC,
+        -1,
         null,
         null);
   }
@@ -1547,6 +1566,7 @@ public class ComponentTree {
         true /* isAsync */,
         null /* output */,
         CalculateLayoutSource.SET_ROOT_ASYNC,
+        -1,
         null,
         treeProps);
   }
@@ -1564,6 +1584,7 @@ public class ComponentTree {
         false /* isAsync */,
         null /* output */,
         CalculateLayoutSource.SET_ROOT_SYNC,
+        -1,
         null,
         null);
   }
@@ -1580,6 +1601,7 @@ public class ComponentTree {
         false /* isAsync */,
         output,
         CalculateLayoutSource.SET_ROOT_SYNC,
+        -1,
         null,
         null);
   }
@@ -1597,6 +1619,30 @@ public class ComponentTree {
         false /* isAsync */,
         output,
         CalculateLayoutSource.SET_ROOT_SYNC,
+        -1,
+        null,
+        treeProps);
+  }
+
+  public void setVersionedRootAndSizeSpec(
+      Component root,
+      int widthSpec,
+      int heightSpec,
+      Size output,
+      @Nullable TreeProps treeProps,
+      int externalRootVersion) {
+    if (root == null) {
+      throw new IllegalArgumentException("Root component can't be null");
+    }
+
+    setRootAndSizeSpecAndWrapper(
+        root,
+        widthSpec,
+        heightSpec,
+        false /* isAsync */,
+        output,
+        CalculateLayoutSource.SET_ROOT_SYNC,
+        externalRootVersion,
         null,
         treeProps);
   }
@@ -1738,6 +1784,7 @@ public class ComponentTree {
       boolean isAsync,
       Size output,
       @CalculateLayoutSource int source,
+      int externalRootVersion,
       String extraAttribution,
       @Nullable TreeProps treeProps) {
 
@@ -1748,6 +1795,7 @@ public class ComponentTree {
         isAsync,
         output,
         source,
+        externalRootVersion,
         extraAttribution,
         treeProps);
   }
@@ -1769,10 +1817,20 @@ public class ComponentTree {
       boolean isAsync,
       @Nullable Size output,
       @CalculateLayoutSource int source,
+      int externalRootVersion,
       String extraAttribution,
       @Nullable TreeProps treeProps) {
     setRootAndSizeSpecInternal(
-        root, widthSpec, heightSpec, isAsync, output, source, extraAttribution, treeProps, false);
+        root,
+        widthSpec,
+        heightSpec,
+        isAsync,
+        output,
+        source,
+        externalRootVersion,
+        extraAttribution,
+        treeProps,
+        false);
   }
 
   private void setRootAndSizeSpecInternal(
@@ -1782,6 +1840,7 @@ public class ComponentTree {
       boolean isAsync,
       @Nullable Size output,
       @CalculateLayoutSource int source,
+      int externalRootVersion,
       String extraAttribution,
       @Nullable TreeProps treeProps,
       boolean isCreateLayoutInProgress) {
@@ -1792,6 +1851,24 @@ public class ComponentTree {
         //
         // NB: This is only safe because we don't re-use released ComponentTrees.
         return;
+      }
+
+      // If this is coming from a setRoot
+      if (source == CalculateLayoutSource.SET_ROOT_SYNC
+          || source == CalculateLayoutSource.SET_ROOT_ASYNC) {
+        if (mExternalRootVersion >= 0 && externalRootVersion < 0) {
+          throw new IllegalStateException(
+              "Setting an unversioned root after calling setVersionedRootAndSizeSpec is not "
+                  + "supported. If this ComponentTree takes its version from a parent tree make "
+                  + "sure to always call setVersionedRootAndSizeSpec");
+        }
+
+        if (mExternalRootVersion > externalRootVersion) {
+          // Since this layout is not really valid we don't need to set a Size.
+          return;
+        }
+
+        mExternalRootVersion = externalRootVersion;
       }
 
       if (mStateHandler.hasPendingUpdates() && root != null) {
@@ -1907,6 +1984,7 @@ public class ComponentTree {
     final int widthSpec;
     final int heightSpec;
     final Component root;
+    final int layoutVersion;
     LayoutState previousLayoutState = null;
 
     // Cancel any scheduled layout requests we might have in the background queue
@@ -1940,7 +2018,7 @@ public class ComponentTree {
       mPendingLayoutWidthSpec = widthSpec;
       mPendingLayoutHeightSpec = heightSpec;
       root = mRoot.makeShallowCopy();
-
+      layoutVersion = ++mLayoutVersion;
       if (mMainThreadLayoutState != null) {
         previousLayoutState = mMainThreadLayoutState;
       }
@@ -1952,6 +2030,7 @@ public class ComponentTree {
             root,
             widthSpec,
             heightSpec,
+            layoutVersion,
             mIsLayoutDiffingEnabled,
             previousLayoutState,
             treeProps,
@@ -2301,6 +2380,7 @@ public class ComponentTree {
       Component root,
       int widthSpec,
       int heightSpec,
+      int layoutVersion,
       boolean diffingEnabled,
       @Nullable LayoutState previousLayoutState,
       @Nullable TreeProps treeProps,
@@ -2313,6 +2393,7 @@ public class ComponentTree {
             root,
             widthSpec,
             heightSpec,
+            layoutVersion,
             diffingEnabled,
             previousLayoutState,
             treeProps,
@@ -2386,6 +2467,7 @@ public class ComponentTree {
     private final FutureTask<LayoutState> futureTask;
     private final AtomicInteger refCount = new AtomicInteger(0);
     private final boolean isFromSyncLayout;
+    private final int layoutVersion;
     private volatile boolean interruptRequested;
     private final int source;
     private final String extraAttribution;
@@ -2396,10 +2478,6 @@ public class ComponentTree {
     @GuardedBy("LayoutStateFuture.this")
     private volatile boolean released = false;
 
-    @GuardedBy("LayoutStateFuture.this")
-    @Nullable
-    private volatile LayoutState layoutState = null;
-
     private boolean isBlockingSyncLayout;
 
     private LayoutStateFuture(
@@ -2407,6 +2485,7 @@ public class ComponentTree {
         final Component root,
         final int widthSpec,
         final int heightSpec,
+        int layoutVersion,
         final boolean diffingEnabled,
         @Nullable final LayoutState previousLayoutState,
         @Nullable final TreeProps treeProps,
@@ -2422,6 +2501,7 @@ public class ComponentTree {
       this.isFromSyncLayout = isFromSyncLayout(source);
       this.source = source;
       this.extraAttribution = extraAttribution;
+      this.layoutVersion = layoutVersion;
 
       this.futureTask =
           new FutureTask<>(
@@ -2438,7 +2518,6 @@ public class ComponentTree {
                     if (released) {
                       return null;
                     } else {
-                      layoutState = result;
                       return result;
                     }
                   }
@@ -2462,6 +2541,7 @@ public class ComponentTree {
           ComponentTree.this.mId,
           widthSpec,
           heightSpec,
+          layoutVersion,
           diffingEnabled,
           previousLayoutState,
           source,
@@ -2500,7 +2580,6 @@ public class ComponentTree {
       if (released) {
         return;
       }
-      layoutState = null;
       interruptToken = continuationToken = null;
       released = true;
     }
@@ -2818,6 +2897,8 @@ public class ComponentTree {
     private @Nullable String logTag;
     private @Nullable ComponentsLogger logger;
     private boolean incrementalVisibility = ComponentsConfiguration.incrementalVisibilityHandling;
+    private boolean shouldForceAsyncStateUpdate =
+        ComponentsConfiguration.shouldForceAsyncStateUpdate;
 
     protected Builder(ComponentContext context) {
       this.context = context;

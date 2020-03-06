@@ -22,13 +22,13 @@ typealias DslScope = ComponentContext
 
 inline fun build(
     c: ComponentContext,
-    content: DslScope.() -> Component.Builder<*>?
-): Component? = c.content()?.build()
+    content: DslScope.() -> Component?
+): Component? = c.content()
 
 fun Activity.setContent(component: Component) {
   setContentView(LithoView.create(this, component))
 }
 
-fun Activity.setContent(content: DslScope.() -> Component.Builder<*>) {
+fun Activity.setContent(content: DslScope.() -> Component) {
   setContent(KComponent(content))
 }

@@ -17,7 +17,8 @@
 package com.facebook.samples.litho.animations.animationcookbook;
 
 import android.animation.Animator;
-import android.animation.ValueAnimator;
+import android.animation.FloatEvaluator;
+import android.animation.TimeAnimator;
 import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
@@ -40,18 +41,18 @@ class ContinuousExampleComponentSpec {
   private static final long ANIMATION_DURATION_MS = 3000;
 
   private static Animator createRotationAnimator(final DynamicValue<Float> rotation) {
-    final ValueAnimator rotationAnimator = ValueAnimator.ofFloat(0f, 365f);
-    rotationAnimator.setDuration(ANIMATION_DURATION_MS);
-    rotationAnimator.setInterpolator(null);
-    rotationAnimator.setRepeatCount(ValueAnimator.INFINITE);
-    rotationAnimator.addUpdateListener(
-        new ValueAnimator.AnimatorUpdateListener() {
+    final TimeAnimator animator = new TimeAnimator();
+    final FloatEvaluator floatEvaluator = new FloatEvaluator();
+    animator.setTimeListener(
+        new TimeAnimator.TimeListener() {
           @Override
-          public void onAnimationUpdate(ValueAnimator animation) {
-            rotation.set((Float) animation.getAnimatedValue());
+          public void onTimeUpdate(TimeAnimator animation, long totalTime, long deltaTime) {
+            float fraction =
+                Float.valueOf(totalTime % ANIMATION_DURATION_MS) / ANIMATION_DURATION_MS;
+            rotation.set(fraction * 360);
           }
         });
-    return rotationAnimator;
+    return animator;
   }
 
   @OnCreateInitialState

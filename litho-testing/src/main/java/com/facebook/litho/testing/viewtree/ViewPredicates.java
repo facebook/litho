@@ -180,8 +180,9 @@ final class ViewPredicates {
         }
 
         final String drawnDrawableDescription = getDrawnDrawableDescription(drawable);
+        String drawnViewDescription = getDrawnViewDescription(input);
         return !drawnDrawableDescription.isEmpty()
-            && getDrawnViewDescription(input).contains(drawnDrawableDescription);
+            && drawnViewDescription.contains(drawnDrawableDescription);
       }
     };
   }
@@ -214,14 +215,54 @@ final class ViewPredicates {
     }
 
     try {
-      final Method onDraw = view.getClass().getMethod("onDraw", Canvas.class);
-      onDraw.setAccessible(true);
+      Method onDraw = getOnDrawMethod(view.getClass());
+
+      if (onDraw == null) {
+        throw new RuntimeException(
+            view.getClass().getCanonicalName()
+                + " has no implementation of View.onDraw(), which should be impossible");
+      }
+
       onDraw.invoke(view, canvas);
       final ShadowCanvas shadowCanvas2 = Shadows.shadowOf(canvas);
       return shadowCanvas2.getDescription();
-    } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+    } catch (IllegalAccessException | InvocationTargetException e) {
       throw new RuntimeException(e);
     }
+  }
+
+  /**
+   * {@link View#onDraw(Canvas)} is used by Robolectric to get the view description after rendering
+   * the view. This method is protected, but we need a reference to it. We walk up the class
+   * definition hierarchy to find where it's declared and return it.
+   *
+   * <p>{@link Class#getMethod()} does work recursively, but only on public methods and so doesn't
+   * fit here.
+   *
+   * <p>see {@link #getDrawnViewDescription(View)}
+   *
+   * @param viewClass
+   * @return the method instance, or null if no definition can be found
+   */
+  @Nullable
+  private static Method getOnDrawMethod(Class<? extends View> viewClass) {
+    if (viewClass == null) {
+      return null;
+    }
+
+    try {
+      Method onDraw = viewClass.getDeclaredMethod("onDraw", Canvas.class);
+      onDraw.setAccessible(true);
+      return onDraw;
+    } catch (NoSuchMethodException e) {
+      // swallow exception and recur
+    }
+
+    Class<?> superclass = viewClass.getSuperclass();
+    if (superclass == null || !View.class.isAssignableFrom(superclass)) {
+      return null;
+    }
+    return getOnDrawMethod((Class<? extends View>) superclass);
   }
 
   public static Predicate<View> hasId(final int id) {

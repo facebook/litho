@@ -377,6 +377,16 @@ public class ComponentContext {
     return TreeProps.copy(mTreeProps);
   }
 
+  public int getLayoutVersion() {
+    if (mLayoutStateContext == null || mLayoutStateContext.getLayoutState() == null) {
+      throw new IllegalStateException(
+          "LayoutVersion is only available during layout calculation."
+              + "Please only invoke getLayoutVersion from OnCreateLayout/OnMeasure/OnPrepare");
+    }
+
+    return mLayoutStateContext.getLayoutState().mLayoutVersion;
+  }
+
   public ResourceCache getResourceCache() {
     return mResourceCache;
   }
@@ -522,14 +532,6 @@ public class ComponentContext {
       return getComponentTree().isReconciliationEnabled();
     } else {
       return ComponentsConfiguration.isReconciliationEnabled;
-    }
-  }
-
-  public boolean isNewCreateLayoutEnabled() {
-    if (getComponentTree() != null) {
-      return getComponentTree().isNewCreateLayoutEnabled();
-    } else {
-      return ComponentsConfiguration.useNewCreateLayoutImplementation;
     }
   }
 

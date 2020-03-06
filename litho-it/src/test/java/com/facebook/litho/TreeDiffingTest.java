@@ -317,6 +317,31 @@ public class TreeDiffingTest {
   }
 
   @Test
+  public void testIsEquivalentToCalled() {
+    final Component component1 = new TestMountComponent();
+
+    final TestComponent component2 = new TestMountComponent();
+
+    LayoutState prevLayoutState =
+        calculateLayoutStateWithDiffing(
+            mContext,
+            new TestSimpleContainerLayout(component1, 0),
+            makeSizeSpec(350, SizeSpec.EXACTLY),
+            makeSizeSpec(200, SizeSpec.EXACTLY),
+            null);
+
+    LayoutState layoutState =
+        calculateLayoutStateWithDiffing(
+            mContext,
+            new TestSimpleContainerLayout(component2, 0),
+            makeSizeSpec(350, SizeSpec.EXACTLY),
+            makeSizeSpec(200, SizeSpec.EXACTLY),
+            prevLayoutState);
+
+    assertThat(component2.isEquivalentToCalled()).isTrue();
+  }
+
+  @Test
   public void testLayoutOutputPartialReuse() {
     final Component component1 =
         new InlineLayoutSpec() {
@@ -442,6 +467,7 @@ public class TreeDiffingTest {
             firstComponent,
             SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
             SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
+            -1,
             true,
             null,
             null,
@@ -456,6 +482,7 @@ public class TreeDiffingTest {
             secondComponent,
             SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
             SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
+            -1,
             true,
             state,
             null,
@@ -470,6 +497,7 @@ public class TreeDiffingTest {
             thirdComponent,
             SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
             SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
+            -1,
             true,
             secondState,
             null,
@@ -492,6 +520,7 @@ public class TreeDiffingTest {
             component1,
             makeSizeSpec(10, SizeSpec.EXACTLY),
             makeSizeSpec(10, SizeSpec.EXACTLY),
+            -1,
             true,
             null,
             null,
@@ -506,6 +535,7 @@ public class TreeDiffingTest {
             component2,
             makeSizeSpec(10, SizeSpec.EXACTLY),
             makeSizeSpec(10, SizeSpec.EXACTLY),
+            -1,
             true,
             state,
             null,
@@ -521,6 +551,7 @@ public class TreeDiffingTest {
             component3,
             makeSizeSpec(10, SizeSpec.EXACTLY),
             makeSizeSpec(10, SizeSpec.EXACTLY),
+            -1,
             true,
             secondState,
             null,
@@ -548,6 +579,7 @@ public class TreeDiffingTest {
             component1,
             makeSizeSpec(10, SizeSpec.EXACTLY),
             makeSizeSpec(10, SizeSpec.EXACTLY),
+            -1,
             true,
             null,
             null,
@@ -562,6 +594,7 @@ public class TreeDiffingTest {
             component2,
             makeSizeSpec(10, SizeSpec.EXACTLY),
             makeSizeSpec(10, SizeSpec.EXACTLY),
+            -1,
             true,
             state,
             null,
@@ -576,6 +609,7 @@ public class TreeDiffingTest {
             component3,
             makeSizeSpec(10, SizeSpec.EXACTLY),
             makeSizeSpec(10, SizeSpec.EXACTLY),
+            -1,
             true,
             secondState,
             null,
@@ -597,6 +631,7 @@ public class TreeDiffingTest {
             component1,
             makeSizeSpec(10, SizeSpec.EXACTLY),
             makeSizeSpec(10, SizeSpec.EXACTLY),
+            -1,
             true,
             null,
             null,
@@ -611,6 +646,7 @@ public class TreeDiffingTest {
             component2,
             makeSizeSpec(10, SizeSpec.EXACTLY),
             makeSizeSpec(10, SizeSpec.EXACTLY),
+            -1,
             true,
             state,
             null,
@@ -767,6 +803,7 @@ public class TreeDiffingTest {
         -1,
         widthSpec,
         heightSpec,
+        -1,
         false,
         null,
         LayoutState.CalculateLayoutSource.TEST,
@@ -786,6 +823,7 @@ public class TreeDiffingTest {
         -1,
         widthSpec,
         heightSpec,
+        -1,
         true,
         previousLayoutState,
         LayoutState.CalculateLayoutSource.TEST,
@@ -842,6 +880,18 @@ public class TreeDiffingTest {
       return create(c).paddingPx(HORIZONTAL, mHorizontalPadding).child(mComponent).build();
     }
   }
+
+  private static class TestMountComponent extends TestComponent {
+    @Override
+    protected boolean isPureRender() {
+      return true;
+    }
+
+    @Override
+    public ComponentLifecycle.MountType getMountType() {
+      return ComponentLifecycle.MountType.VIEW;
+    }
+  };
 
   private static class TestSimpleContainerLayout2 extends InlineLayoutSpec {
     private final Component mComponent;

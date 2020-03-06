@@ -34,6 +34,7 @@ litho_android_library(
         "drawable/*.java",
     ]),
     is_androidx = True,
+    labels = ["supermodule:android/default/litho.core"],
     provided_deps = [
         LITHO_ANDROIDSUPPORT_TARGET,
         LITHO_JSR_TARGET,

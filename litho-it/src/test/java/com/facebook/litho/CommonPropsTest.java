@@ -18,9 +18,11 @@ package com.facebook.litho;
 
 import static com.facebook.litho.it.R.drawable.background_with_padding;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyFloat;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -337,6 +339,16 @@ public class CommonPropsTest {
   }
 
   @Test
+  public void testSetFullScalePropsDoesNotWrapInView() {
+    mCommonProps.scale(0.5f);
+    mCommonProps.scale(1f);
+    mCommonProps.copyInto(mComponentContext, mNode);
+
+    verify(mNodeInfo, never()).setScale(1f);
+    verify(mNode, never()).wrapInView();
+  }
+
+  @Test
   public void testSetAlphaPropsWrapsInView() {
     mCommonProps.alpha(5);
     mCommonProps.copyInto(mComponentContext, mNode);
@@ -346,12 +358,32 @@ public class CommonPropsTest {
   }
 
   @Test
+  public void testSetFullAlphaPropsDoesNotWrapInView() {
+    mCommonProps.alpha(5);
+    mCommonProps.alpha(1f);
+    mCommonProps.copyInto(mComponentContext, mNode);
+
+    verify(mNodeInfo, never()).setAlpha(anyFloat());
+    verify(mNode, never()).wrapInView();
+  }
+
+  @Test
   public void testSetRotationPropsWrapsInView() {
     mCommonProps.rotation(5);
     mCommonProps.copyInto(mComponentContext, mNode);
 
     verify(mNodeInfo).setRotation(5);
     verify(mNode).wrapInView();
+  }
+
+  @Test
+  public void testSetZeroRotationPropsDoesNotWrapInView() {
+    mCommonProps.rotation(1f);
+    mCommonProps.rotation(0f);
+    mCommonProps.copyInto(mComponentContext, mNode);
+
+    verify(mNodeInfo, never()).setRotation(anyFloat());
+    verify(mNode, never()).wrapInView();
   }
 
   @Test

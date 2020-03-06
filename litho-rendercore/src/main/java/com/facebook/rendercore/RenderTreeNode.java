@@ -25,21 +25,26 @@ public class RenderTreeNode {
 
   private static final int DEFAULT_SIZE = 4;
 
-  private List<RenderTreeNode> mChildren;
-  @Nullable private final RenderTreeNode mParent;
+  private final @Nullable RenderTreeNode mParent;
   private final RenderUnit mRenderUnit;
+  private final @Nullable Object mLayoutData;
   private final Rect mBounds;
-  @Nullable private final Rect mResolvedPadding;
+  private final @Nullable Rect mResolvedPadding;
+
   final int mPositionInParent;
+
+  private List<RenderTreeNode> mChildren;
 
   public RenderTreeNode(
       @Nullable RenderTreeNode parent,
       RenderUnit renderUnit,
+      @Nullable Object layoutData,
       Rect bounds,
       @Nullable Rect resolvedPadding,
       int positionInParent) {
     mParent = parent;
     mRenderUnit = renderUnit;
+    mLayoutData = layoutData;
     mBounds = bounds;
     mResolvedPadding = resolvedPadding;
     mPositionInParent = positionInParent;
@@ -77,5 +82,10 @@ public class RenderTreeNode {
 
   public int getPositionInParent() {
     return mPositionInParent;
+  }
+
+  @Nullable
+  public Object getLayoutData() {
+    return mLayoutData;
   }
 }

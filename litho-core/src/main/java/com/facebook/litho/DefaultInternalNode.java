@@ -33,7 +33,6 @@ import static com.facebook.yoga.YogaEdge.TOP;
 import static com.facebook.yoga.YogaEdge.VERTICAL;
 
 import android.animation.StateListAnimator;
-import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.PathEffect;
@@ -52,8 +51,8 @@ import com.facebook.infer.annotation.ReturnsOwnership;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.drawable.ComparableColorDrawable;
-import com.facebook.rendercore.LayoutCache;
 import com.facebook.rendercore.Node;
+import com.facebook.rendercore.RenderState;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaBaselineFunction;
 import com.facebook.yoga.YogaConstants;
@@ -69,7 +68,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import javax.annotation.Nullable;
 
@@ -509,8 +507,13 @@ public class DefaultInternalNode extends Node implements InternalNode, Cloneable
   }
 
   @Override
+  public Object getLayoutData() {
+    return mYogaNode;
+  }
+
+  @Override
   public LayoutResult calculateLayout(
-      Context context, int widthSpec, int heightSpec, LayoutCache layoutCache, Map layoutContexts) {
+      RenderState.LayoutContext context, int widthSpec, int heightSpec) {
     Layout.measure(getContext(), this, widthSpec, heightSpec, null);
 
     return this;

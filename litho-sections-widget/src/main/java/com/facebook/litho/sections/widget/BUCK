@@ -12,6 +12,7 @@ fb_core_android_library(
         "**/*.java",
     ]),
     is_androidx = True,
+    labels = ["supermodule:android/default/litho.core"],
     plugins = [
         LITHO_PROCESSOR_TARGET,
         LITHO_SECTIONS_PROCESSOR_TARGET,

@@ -37,8 +37,17 @@ public class ComponentUtils {
     return a.getClass().equals(b.getClass());
   }
 
-  private static boolean hasEquivalentFields(
-      final Object obj1, final Object obj2, final boolean shouldCompareStateContainers) {
+  /**
+   * Given two object instances of the same type, this method accesses all their internal fields,
+   * including the fields of StateContainer if the class type is Component, to check if they are
+   * equivalent. There's special equality code to handle special class types e.g. Components,
+   * EventHandlers, etc.
+   *
+   * @param obj1
+   * @param obj2
+   * @return true if the two instances are equivalent. False otherwise.
+   */
+  public static boolean hasEquivalentFields(Object obj1, Object obj2) {
     if (obj1 == null || obj2 == null || obj1.getClass() != obj2.getClass()) {
       throw new IllegalArgumentException("The input is invalid.");
     }
@@ -60,7 +69,19 @@ public class ComponentUtils {
         throw new IllegalStateException("Unable to get fields by reflection.", e);
       }
 
-      @Comparable.Type int comparableType = field.getAnnotation(Comparable.class).type();
+      @Comparable.Type int comparableType;
+      try {
+        comparableType = field.getAnnotation(Comparable.class).type();
+      } catch (IncompatibleClassChangeError | NullPointerException ignore) {
+        /**
+         * Libraries which uses annotations is facing this intermittently in Lollypop 5.0, 5.0.1 &
+         * 5.0.2). Google closed this saying it is infeasible to fix this in older OS versions.
+         *
+         * <p>https://issuetracker.google.com/issues/37045084
+         * https://github.com/google/gson/issues/726
+         */
+        return false;
+      }
       switch (comparableType) {
         case Comparable.FLOAT:
           if (Float.compare((Float) val1, (Float) val2) != 0) {
@@ -134,46 +155,16 @@ public class ComponentUtils {
           break;
 
         case Comparable.STATE_CONTAINER:
-          if (shouldCompareStateContainers) {
-            // If we have a state container field, we need to recursively call this method to
-            // inspect the state fields.
-            if (!hasEquivalentFields(val1, val2, /* shouldCompareStateContainers */ true)) {
-              return false;
-            }
+          // If we have a state container field, we need to recursively call this method to
+          // inspect the state fields.
+          if (!hasEquivalentFields(val1, val2)) {
+            return false;
           }
           break;
       }
     }
 
     return true;
-  }
-
-  /**
-   * Given two object instances of the same type, this method accesses all their internal fields,
-   * excluding the fields of StateContainer if the class type is a Component, to check if they are
-   * equivalent. There's special equality code to handle special class types e.g. Components,
-   * EventHandlers, etc.
-   *
-   * @param obj1
-   * @param obj2
-   * @return true if the two instances are equivalent. False otherwise.
-   */
-  public static boolean hasEquivalentFieldsIgnoringState(Object obj1, Object obj2) {
-    return hasEquivalentFields(obj1, obj2, /* shouldCompareStateContainers */ false);
-  }
-
-  /**
-   * Given two object instances of the same type, this method accesses all their internal fields,
-   * including the fields of StateContainer if the class type is Component, to check if they are
-   * equivalent. There's special equality code to handle special class types e.g. Components,
-   * EventHandlers, etc.
-   *
-   * @param obj1
-   * @param obj2
-   * @return true if the two instances are equivalent. False otherwise.
-   */
-  public static boolean hasEquivalentFields(Object obj1, Object obj2) {
-    return hasEquivalentFields(obj1, obj2, /* shouldCompareStateContainers */ true);
   }
 
   private static boolean areArraysEquals(Class<?> classType, Object val1, Object val2) {

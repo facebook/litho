@@ -29,7 +29,7 @@ inline fun DslScope.Column(
     wrap: YogaWrap? = null,
     reverse: Boolean = false,
     content: DslColumnBuilder.() -> Unit = {}
-): Column.Builder =
+): Column =
     DslColumnBuilder(this).apply {
       alignContent(alignContent)
       alignItems(alignItems)
@@ -37,7 +37,7 @@ inline fun DslScope.Column(
       wrap(wrap)
       reverse(reverse)
       content()
-    }
+    }.build()
 
 inline fun DslScope.Row(
     alignContent: YogaAlign? = null,
@@ -46,7 +46,7 @@ inline fun DslScope.Row(
     wrap: YogaWrap? = null,
     reverse: Boolean = false,
     content: DslRowBuilder.() -> Unit = {}
-): Row.Builder =
+): Row =
     DslRowBuilder(this).apply {
       alignContent(alignContent)
       alignItems(alignItems)
@@ -54,7 +54,7 @@ inline fun DslScope.Row(
       wrap(wrap)
       reverse(reverse)
       content()
-    }
+    }.build()
 
 /** Custom [Row.Builder] that exposes [unaryPlus] operator in its context for adding children. */
 class DslRowBuilder(c: ComponentContext) : Row.Builder() {

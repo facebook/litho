@@ -23,12 +23,11 @@ import android.os.Message;
 import android.os.Process;
 import android.util.Pair;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.rendercore.Node.LayoutResult;
 import com.facebook.rendercore.utils.MeasureSpecUtils;
 import com.facebook.rendercore.utils.ThreadUtils;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
@@ -81,6 +80,7 @@ public class RenderState<State> {
   private @Nullable RenderResult<State> mUIRenderResult;
   private @Nullable RenderResult<State> mCommittedRenderResult;
   private @Nullable TreeFactory<State> mLatestTreeFactory;
+  private int mExternalRootVersion = -1;
   private @Nullable RenderResultFuture<State> mRenderResultFuture;
   private int mNextSetRootId = 0;
   private int mCommittedSetRootId = UNSET;
@@ -93,11 +93,53 @@ public class RenderState<State> {
   }
 
   @ThreadConfined(ThreadConfined.ANY)
+  public void setVersionedTree(
+      TreeFactory<State> treeFactory,
+      int version,
+      int widthSpec,
+      int heightSpec,
+      @Nullable int[] measureOutput) {
+    setTreeInternal(treeFactory, version, widthSpec, heightSpec, measureOutput);
+  }
+
+  @ThreadConfined(ThreadConfined.ANY)
   public void setTree(TreeFactory<State> treeFactory) {
+    setTreeInternal(treeFactory, -1, UNSET, UNSET, null);
+  }
+
+  private void setTreeInternal(
+      TreeFactory<State> treeFactory,
+      int version,
+      int widthSpec,
+      int heightSpec,
+      @Nullable int[] measureOutput) {
     final int setRootId;
     final RenderResultFuture<State> future;
     synchronized (this) {
+      if (version > -1) {
+        if (mExternalRootVersion > version) {
+          // Since this layout is not really valid we can just return early.
+          return;
+        }
+      } else {
+        if (mExternalRootVersion > -1) {
+          throw new IllegalStateException(
+              "Setting an unversioned tree after calling setVersionedTree is not "
+                  + "supported. If this RenderState takes its version from a parent tree make "
+                  + "sure to always call setVersionedTree");
+        }
+      }
+
+      mExternalRootVersion = version;
       mLatestTreeFactory = treeFactory;
+
+      if (widthSpec != UNSET) {
+        mWidthSpec = widthSpec;
+      }
+
+      if (heightSpec != UNSET) {
+        mHeightSpec = heightSpec;
+      }
 
       if (mWidthSpec == UNSET || mHeightSpec == UNSET) {
         return;
@@ -120,14 +162,19 @@ public class RenderState<State> {
       // we only go "forward in time" and will eventually get to the latest layout.
       if (setRootId > mCommittedSetRootId) {
         mDelegate.commit(
-            mCommittedRenderResult.mRenderTree,
+            mCommittedRenderResult != null ? mCommittedRenderResult.mRenderTree : null,
             result.mRenderTree,
-            mCommittedRenderResult.mState,
+            mCommittedRenderResult != null ? mCommittedRenderResult.mState : null,
             result.mState);
 
         mCommittedSetRootId = setRootId;
         mCommittedRenderResult = result;
         committedNewLayout = true;
+      }
+
+      if (measureOutput != null && mCommittedRenderResult != null) {
+        measureOutput[0] = mCommittedRenderResult.mRenderTree.getWidth();
+        measureOutput[1] = mCommittedRenderResult.mRenderTree.getHeight();
       }
 
       if (mRenderResultFuture == future) {
@@ -264,23 +311,14 @@ public class RenderState<State> {
   }
 
   private static LayoutResult layout(
-      Context context,
-      Node newTree,
-      int widthSpec,
-      int heightSpec,
-      LayoutCache layoutCache,
-      Map<?, ?> layoutContexts) {
+      LayoutContext context, Node newTree, int widthSpec, int heightSpec, LayoutCache layoutCache) {
 
-    return newTree.calculateLayout(context, widthSpec, heightSpec, layoutCache, layoutContexts);
+    return newTree.calculateLayout(context, widthSpec, heightSpec);
   }
 
   private static RenderTree reduce(
-      Context context,
-      Map<?, ?> layoutContexts,
-      int widthSpec,
-      int heightSpec,
-      LayoutResult layoutRoot) {
-    return Reducer.getReducedTree(context, layoutRoot, layoutContexts, widthSpec, heightSpec);
+      Context context, int widthSpec, int heightSpec, LayoutResult layoutRoot) {
+    return Reducer.getReducedTree(context, layoutRoot, widthSpec, heightSpec);
   }
 
   private boolean hasCompatibleSize(RenderTree tree, int widthSpec, int heightSpec) {
@@ -312,7 +350,7 @@ public class RenderState<State> {
         final Context context,
         TreeFactory<State> treeFactory,
         RenderResult<State> previousResult,
-        int setRootId,
+        final int setRootId,
         final int widthSpec,
         final int heightSpec) {
       mTreeFactory = treeFactory;
@@ -334,31 +372,34 @@ public class RenderState<State> {
                           ? new LayoutCache(mPreviousResult.mLayoutCache.getWriteCache())
                           : new LayoutCache(null);
 
+                  if (mPreviousResult != null) {
+                    android.util.Log.e(
+                        "CACHE",
+                        "USING A CACHE OF SIZE: "
+                            + mPreviousResult.mLayoutCache.getWriteCache().size());
+                  }
+                  final LayoutContext layoutContext =
+                      new LayoutContext(context, setRootId, layoutCache);
+
                   Systrace.sInstance.beginSection("RC Create Tree");
                   final Pair<Node, State> result =
                       mTreeFactory.createTree(previousTree, previousState);
                   Systrace.sInstance.endSection();
 
                   Systrace.sInstance.beginSection("RC Layout");
-                  final Map<?, ?> layoutContexts = new HashMap<>();
                   final LayoutResult layoutResult =
-                      layout(
-                          context,
-                          result.first,
-                          widthSpec,
-                          heightSpec,
-                          layoutCache,
-                          layoutContexts);
+                      layout(layoutContext, result.first, widthSpec, heightSpec, layoutCache);
                   Systrace.sInstance.endSection();
 
                   Systrace.sInstance.beginSection("RC Reduce");
                   final RenderResult renderResult =
                       new RenderResult<>(
-                          reduce(context, layoutContexts, widthSpec, heightSpec, layoutResult),
+                          reduce(context, widthSpec, heightSpec, layoutResult),
                           result.first,
                           layoutCache,
                           result.second);
                   Systrace.sInstance.endSection();
+                  layoutContext.layoutCache = null;
                   return renderResult;
                 }
               });
@@ -407,6 +448,42 @@ public class RenderState<State> {
         default:
           throw new RuntimeException("Unknown message: " + msg.what);
       }
+    }
+  }
+
+  /**
+   * A LayoutContext encapsulates all the data needed during a layout pass. It contains - The
+   * Android context associated with this layout calculation. - The version of the layout
+   * calculation. - The LayoutCache for this layout calculation. Access to the cache is only valid
+   * during the execution of the Node's calculateLayout function.
+   */
+  public static class LayoutContext {
+    private final Context androidContext;
+    private final int layoutVersion;
+    private @Nullable LayoutCache layoutCache;
+
+    @VisibleForTesting
+    LayoutContext(Context androidContext, int layoutVersion, LayoutCache layoutCache) {
+      this.androidContext = androidContext;
+      this.layoutVersion = layoutVersion;
+      this.layoutCache = layoutCache;
+    }
+
+    public Context getAndroidContext() {
+      return androidContext;
+    }
+
+    public int getLayoutVersion() {
+      return layoutVersion;
+    }
+
+    public LayoutCache getLayoutCache() {
+      if (layoutCache == null) {
+        throw new IllegalStateException(
+            "Trying to access the LayoutCache from outside a layout call");
+      }
+
+      return layoutCache;
     }
   }
 }

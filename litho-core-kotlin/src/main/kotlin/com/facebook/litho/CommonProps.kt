@@ -29,22 +29,41 @@ inline fun <reified T> eventHandler(crossinline onEvent: () -> Unit): EventHandl
  * TODO Currently lambda captures possibly old props. Find a better option.
  *  This will work for core Litho, but may break Sections.
  */
-inline fun <C : Component.Builder<C>> DslScope.Clickable(
+inline fun DslScope.Clickable(
     crossinline onClick: () -> Unit,
-    content: DslScope.() -> C
-): C =
-    content().clickHandler(eventHandler(onClick))
+    content: DslScope.() -> Component
+): Component =
+    content().apply {
+      getOrCreateCommonProps.clickHandler(eventHandler(onClick))
+    }
+
+/**
+ * Builder for setting a [ClickEvent] [EventHandler] for a component. Can be used to provide an [EventHandler]
+ * generated from a Spec.
+ */
+inline fun DslScope.Clickable(
+    clickHandler: EventHandler<ClickEvent>,
+    content: DslScope.() -> Component
+): Component =
+    content().apply {
+      getOrCreateCommonProps.clickHandler(clickHandler)
+    }
 
 /**
  * Builder for decorating a child component with [background] or [foreground].
  */
-inline fun <C : Component.Builder<C>> DslScope.Decoration(
+inline fun DslScope.Decoration(
     foreground: Drawable? = null,
     background: Drawable? = null,
-    content: DslScope.() -> C
-): C =
-    content()
-        .apply {
-          foreground?.let { foreground(it) }
-          background?.let { background(it) }
-        }
+    content: DslScope.() -> Component
+): Component =
+    content().apply {
+      getOrCreateCommonProps.apply {
+        foreground?.let { foreground(it) }
+        background?.let { background(it) }
+      }
+    }
+
+@PublishedApi
+internal val Component.getOrCreateCommonProps: CommonProps
+  get() = this.getOrCreateCommonProps()

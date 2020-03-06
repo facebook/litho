@@ -18,7 +18,6 @@ package com.facebook.rendercore;
 
 import android.content.Context;
 import androidx.annotation.Nullable;
-import java.util.Map;
 
 class MountItem {
 
@@ -26,17 +25,11 @@ class MountItem {
   private @Nullable Host mHost;
   private boolean mBound;
   private RenderTreeNode mRenderTreeNode;
-  private Map<?, ?> mLayoutContexts;
 
-  MountItem(
-      RenderTreeNode renderTreeNode,
-      @Nullable Host host,
-      Object content,
-      Map<?, ?> layoutContexts) {
+  MountItem(RenderTreeNode renderTreeNode, @Nullable Host host, Object content) {
     mRenderTreeNode = renderTreeNode;
     mHost = host;
     mContent = content;
-    mLayoutContexts = layoutContexts;
   }
 
   Object getContent() {
@@ -64,9 +57,8 @@ class MountItem {
     return mHost;
   }
 
-  void update(RenderTreeNode renderTreeNode, Map layoutContexts) {
+  void update(RenderTreeNode renderTreeNode) {
     mRenderTreeNode = renderTreeNode;
-    mLayoutContexts = layoutContexts;
   }
 
   public void releaseMountContent(Context context) {
@@ -75,9 +67,5 @@ class MountItem {
 
   public @Nullable RenderTreeNode getRenderTreeNode() {
     return mRenderTreeNode;
-  }
-
-  public Map getLayoutContexts() {
-    return mLayoutContexts;
   }
 }

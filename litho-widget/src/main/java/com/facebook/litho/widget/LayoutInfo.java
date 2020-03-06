@@ -42,6 +42,17 @@ public interface LayoutInfo extends ViewportInfo {
   void setRenderInfoCollection(RenderInfoCollection renderInfoCollection);
 
   /**
+   * RecyclerBinder delegates scrolling responsibilities to the LayoutInfo, as the varied
+   * LayoutManagers wrapped by a LayoutInfo lack a common scrolling interface. Typical
+   * implementations should forward the call to the underlying LayoutManager's
+   * scrollToPositionWithOffset() or an equivalent.
+   *
+   * @param position Index of the item in the adapter
+   * @param offset Additional adjustment to control the precise position the scroll moves to.
+   */
+  void scrollToPositionWithOffset(int position, int offset);
+
+  /**
    * This is called when the {@link RecyclerBinder} needs to calculate a range size. The returned
    * value should be an approximate range size based on the size of the first measured item.
    *

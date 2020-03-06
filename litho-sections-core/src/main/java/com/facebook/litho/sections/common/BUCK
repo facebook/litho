@@ -9,6 +9,7 @@ litho_android_library(
     name = "common",
     srcs = glob(["*.java"]),
     is_androidx = True,
+    labels = ["supermodule:android/default/litho.core"],
     plugins = [
         LITHO_SECTIONS_PROCESSOR_TARGET,
     ],

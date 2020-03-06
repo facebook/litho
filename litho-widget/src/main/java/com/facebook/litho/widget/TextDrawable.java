@@ -467,6 +467,10 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
     return mLayout.getPaint().getTextSize();
   }
 
+  public Layout getLayout() {
+    return mLayout;
+  }
+
   @Override
   public List<CharSequence> getTextItems() {
     return mText != null ? Collections.singletonList(mText) : Collections.<CharSequence>emptyList();

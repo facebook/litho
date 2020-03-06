@@ -7,6 +7,7 @@ load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_ANNOTATIONS_TARGET", "LITHO
 fb_java_library(
     name = "testing",
     srcs = glob(["*.java"]),
+    labels = ["supermodule:android/default/litho.core"],
     provided_deps = [
         LITHO_JAVAC_TOOLS_TARGET,
         LITHO_JAVAPOET_TARGET,

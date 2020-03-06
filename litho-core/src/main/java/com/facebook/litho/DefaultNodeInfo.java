@@ -499,7 +499,11 @@ class DefaultNodeInfo implements NodeInfo {
   @Override
   public void setScale(float scale) {
     mScale = scale;
-    mPrivateFlags |= PFLAG_SCALE_IS_SET;
+    if (scale == 1) {
+      mPrivateFlags &= ~PFLAG_SCALE_IS_SET;
+    } else {
+      mPrivateFlags |= PFLAG_SCALE_IS_SET;
+    }
   }
 
   @Override
@@ -515,7 +519,11 @@ class DefaultNodeInfo implements NodeInfo {
   @Override
   public void setAlpha(float alpha) {
     mAlpha = alpha;
-    mPrivateFlags |= PFLAG_ALPHA_IS_SET;
+    if (alpha == 1) {
+      mPrivateFlags &= ~PFLAG_ALPHA_IS_SET;
+    } else {
+      mPrivateFlags |= PFLAG_ALPHA_IS_SET;
+    }
   }
 
   @Override
@@ -531,7 +539,11 @@ class DefaultNodeInfo implements NodeInfo {
   @Override
   public void setRotation(float rotation) {
     mRotation = rotation;
-    mPrivateFlags |= PFLAG_ROTATION_IS_SET;
+    if (rotation == 0) {
+      mPrivateFlags &= ~PFLAG_ROTATION_IS_SET;
+    } else {
+      mPrivateFlags |= PFLAG_ROTATION_IS_SET;
+    }
   }
 
   @Override

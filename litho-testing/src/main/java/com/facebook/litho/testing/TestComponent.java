@@ -42,6 +42,7 @@ public abstract class TestComponent extends Component {
   private boolean mOnMeasureCalled;
   private boolean mOnAttachedCalled;
   private boolean mOnDetachedCalled;
+  private boolean mIsEquivalentToCalled;
 
   protected TestComponent(String simpleName) {
     super(simpleName);
@@ -155,6 +156,7 @@ public abstract class TestComponent extends Component {
 
   @Override
   public boolean isEquivalentTo(Component other) {
+    mIsEquivalentToCalled = true;
     return this == other;
   }
 
@@ -168,6 +170,7 @@ public abstract class TestComponent extends Component {
     mOnUnmountCalled = false;
     mOnAttachedCalled = false;
     mOnDetachedCalled = false;
+    mIsEquivalentToCalled = false;
   }
 
   @Override
@@ -182,5 +185,9 @@ public abstract class TestComponent extends Component {
 
   public @Nullable Object getEventState(EventHandler eventHandler) {
     return mDispatchedEventHandlers.get(eventHandler);
+  }
+
+  public boolean isEquivalentToCalled() {
+    return mIsEquivalentToCalled;
   }
 }

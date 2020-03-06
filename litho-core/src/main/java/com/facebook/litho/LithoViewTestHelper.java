@@ -17,10 +17,10 @@
 package com.facebook.litho;
 
 import android.text.TextUtils;
+import android.view.View;
 import android.view.ViewParent;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.widget.NestedScrollView;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.proguard.annotations.DoNotStrip;
@@ -120,19 +120,35 @@ public class LithoViewTestHelper {
 
     final StringBuilder sb = new StringBuilder();
 
-    int left = view.getLeft();
-    int top = view.getTop();
-    if (view.getParent() instanceof NestedScrollView) {
-      // TODO(T37986749): understand why we need it and not for RecyclerView
-      NestedScrollView scrollingParentView = (NestedScrollView) view.getParent();
-      left -= scrollingParentView.computeHorizontalScrollOffset();
-      top -= scrollingParentView.computeVerticalScrollOffset();
-    }
-    DebugComponentDescriptionHelper.addViewDescription(left, top, root, sb, embedded);
+    int[] rootLoc = getLithoRootViewLocation(view);
+    DebugComponentDescriptionHelper.addViewDescription(rootLoc[0], rootLoc[1], root, sb, embedded);
 
-    int depth = embedded ? getLithoViewDepthInAndroid(view) : 0;
-    viewToString(root, sb, embedded, depth);
+    viewToString(root, sb, embedded, embedded ? getLithoViewDepthInAndroid(view) : 0);
     return sb.toString();
+  }
+
+  /**
+   * Calculate the location of the litho view relative to the parent view. This will handle
+   * scrolling of the litho view inside tha prent scrollable container.
+   */
+  private static int[] getLithoRootViewLocation(LithoView view) {
+    int[] location = new int[2];
+
+    ViewParent parent = view.getParent();
+    if (!(parent instanceof View)) {
+      location[0] = view.getLeft();
+      location[1] = view.getTop();
+      return location;
+    }
+
+    view.getLocationOnScreen(location);
+
+    int[] parentLocation = new int[2];
+    ((View) parent).getLocationOnScreen(parentLocation);
+
+    location[0] -= parentLocation[0];
+    location[1] -= parentLocation[1];
+    return location;
   }
 
   /** For E2E tests we remove non-layout components because they break view-hierarchy parsing. */

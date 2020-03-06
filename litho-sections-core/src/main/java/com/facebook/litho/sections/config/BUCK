@@ -8,6 +8,7 @@ load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_JSR_TARGET", "litho_android
 litho_android_library(
     name = "config",
     srcs = glob(["*.java"]),
+    labels = ["supermodule:android/default/litho.core"],
     visibility = ["PUBLIC"],
     deps = [
         LITHO_JSR_TARGET,

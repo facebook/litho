@@ -24,6 +24,7 @@ fb_java_library(
         "*.java",
         "**/*.java",
     ]),
+    labels = ["supermodule:android/default/litho.core"],
     source = "8",
     target = "8",
     visibility = ["PUBLIC"],

@@ -16,7 +16,7 @@ recreating the entire layout tree for every update reconciliation enables Litho 
 unmodified subtrees and only recreate the subtree which has changed.
 
 When using Litho, the component hierarchy is determined by what is returned by the
-OnCreateLayout method. On the next state or prop update, the `OnCreateLayout` may return a different
+`OnCreateLayout` method. On the next state or prop update, the `OnCreateLayout` may return a different
 tree of components. Litho uses reconciliation to figure out which components should be re-created
 and which can be re-used (read cloned).
 
@@ -24,7 +24,7 @@ In essence, this means Litho will not call (most) lifecycle methods of component
 unaffected by the update. Reconciliation doubles down on the requirement that component specs must
 be immutable and should not rely on side effects to achieve any desired behaviour.
 
-## Enable or disable reconciliation!
+## Enable or disable reconciliation
 
 There are various integration points.
 
@@ -39,9 +39,9 @@ ComponentTree.create(context)
   .build();
 ```
 
-**Note: In this integration the config is not passed into any sections within the component
-hierarchy. It needs to be explicitly set in the sections (see below). There are plans to enable
-propagation over the section boundary in future milestones.**
+**Note: In this integration the config is not passed into any Sections within the component
+hierarchy. It needs to be explicitly set in the Sections (see below). There are plans to enable
+propagation over the Section boundary in future milestones.**
 
 ### **`RecyclerCollectionComponent`**
 
@@ -63,7 +63,7 @@ new RecyclerBinder.Builder()
 ### **`Sections`**
 
 The `ComponentRenderInfo` builder exposes an API to enable or disable reconciliation for individual
-sections in a GroupSectionSpec.
+Sections in a `GroupSectionSpec`.
 
 ```java
 ComponentRenderInfo.create()

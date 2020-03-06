@@ -44,6 +44,10 @@ class CommonPropsHolder implements CommonProps {
   private static final byte PFLAG_BACKGROUND_IS_SET = 1 << 0;
   private static final byte PFLAG_TEST_KEY_IS_SET = 1 << 1;
 
+  private static final byte PFLAG_SCALE_KEY_IS_SET = 1 << 2;
+  private static final byte PFLAG_ALPHA_KEY_IS_SET = 1 << 3;
+  private static final byte PFLAG_ROTATION_KEY_IS_SET = 1 << 4;
+
   private byte mPrivateFlags;
   @Nullable private OtherProps mOtherProps;
   @Nullable private NodeInfo mNodeInfo;
@@ -111,6 +115,13 @@ class CommonPropsHolder implements CommonProps {
   @Override
   public void wrapInView() {
     mWrapInView = true;
+  }
+
+  private boolean shouldWrapInView() {
+    return mWrapInView
+        || (mPrivateFlags
+                & (PFLAG_SCALE_KEY_IS_SET | PFLAG_ALPHA_KEY_IS_SET | PFLAG_ROTATION_KEY_IS_SET))
+            != 0L;
   }
 
   @Override
@@ -522,20 +533,32 @@ class CommonPropsHolder implements CommonProps {
 
   @Override
   public void scale(float scale) {
-    wrapInView();
     getOrCreateNodeInfo().setScale(scale);
+    if (scale == 1) {
+      mPrivateFlags &= ~PFLAG_SCALE_KEY_IS_SET;
+    } else {
+      mPrivateFlags |= PFLAG_SCALE_KEY_IS_SET;
+    }
   }
 
   @Override
   public void alpha(float alpha) {
-    wrapInView();
     getOrCreateNodeInfo().setAlpha(alpha);
+    if (alpha == 1f) {
+      mPrivateFlags &= ~PFLAG_ALPHA_KEY_IS_SET;
+    } else {
+      mPrivateFlags |= PFLAG_ALPHA_KEY_IS_SET;
+    }
   }
 
   @Override
   public void rotation(float rotation) {
-    wrapInView();
     getOrCreateNodeInfo().setRotation(rotation);
+    if (rotation == 0) {
+      mPrivateFlags &= ~PFLAG_ROTATION_KEY_IS_SET;
+    } else {
+      mPrivateFlags |= PFLAG_ROTATION_KEY_IS_SET;
+    }
   }
 
   @Override
@@ -606,7 +629,7 @@ class CommonPropsHolder implements CommonProps {
     if ((mPrivateFlags & PFLAG_TEST_KEY_IS_SET) != 0L) {
       node.testKey(mTestKey);
     }
-    if (mWrapInView) {
+    if (shouldWrapInView()) {
       node.wrapInView();
     }
 

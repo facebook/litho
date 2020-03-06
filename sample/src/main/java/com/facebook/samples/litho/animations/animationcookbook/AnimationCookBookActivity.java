@@ -38,7 +38,6 @@ public class AnimationCookBookActivity extends NavigatableDemoActivity {
                 AnimationCookBookListSection.create(new SectionContext(componentContext)).build())
             .build();
     LithoView lithoView = LithoView.create(this, component);
-    lithoView.performIncrementalMount();
     setContentView(lithoView);
   }
 }
