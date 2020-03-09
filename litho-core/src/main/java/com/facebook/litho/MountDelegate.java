@@ -16,6 +16,8 @@
 
 package com.facebook.litho;
 
+import static com.facebook.litho.LayoutOutput.getLayoutOutput;
+
 import android.util.LongSparseArray;
 import com.facebook.rendercore.MountItem;
 import com.facebook.rendercore.RenderTreeNode;
@@ -34,7 +36,7 @@ public class MountDelegate {
 
   // RenderCore MountState API
   interface MountDelegateTarget {
-    void notifyMount(MountDelegateInput input, RenderTreeNode renderTreeNode, int position);
+    void notifyMount(MountDelegateInput input, RenderTreeNode node, int position);
 
     void notifyUnmount(int position);
 
@@ -42,6 +44,9 @@ public class MountDelegate {
     MountItem getItemAt(int i);
 
     MountItem getRootMountItem();
+
+    // TODO: remove when ref counting for animations.
+    boolean isAnimationLocked(int position);
   }
 
   // IGNORE - Will be removed. Check out D4182567 for context.
@@ -58,6 +63,11 @@ public class MountDelegate {
   void addExtension(MountDelegateExtension mountDelegateExtension) {
     mMountDelegateExtensions.add(mountDelegateExtension);
     mountDelegateExtension.registerToDelegate(this);
+  }
+
+  // TODO remove this
+  boolean isAnimationLocked(int position) {
+    return mMountDelegateTarget.isAnimationLocked(position);
   }
 
   MountItem getItemAt(int position) {
@@ -77,10 +87,9 @@ public class MountDelegate {
   }
 
   void acquireMountRef(RenderTreeNode node, int i, MountDelegateInput input, boolean isMounting) {
-    final LayoutOutput layoutOutput = LayoutOutput.getLayoutOutput(node);
     final boolean wasLockedForMount = isLockedForMount(node);
 
-    incrementExtensionRefCount(layoutOutput);
+    incrementExtensionRefCount(node);
 
     // Only mount if we're during a mounting phase, otherwise the mounting phase will take care of
     // that.
@@ -90,9 +99,8 @@ public class MountDelegate {
   }
 
   void releaseMountRef(RenderTreeNode node, int i) {
-    final LayoutOutput layoutOutput = LayoutOutput.getLayoutOutput(node);
     final boolean wasLockedForMount = isLockedForMount(node);
-    decrementExtensionRefCount(layoutOutput);
+    decrementExtensionRefCount(node);
 
     if (wasLockedForMount && !isLockedForMount(node)) {
       mMountDelegateTarget.notifyUnmount(i);
@@ -103,7 +111,8 @@ public class MountDelegate {
     mReferenceCountMap.clear();
   }
 
-  private void incrementExtensionRefCount(LayoutOutput layoutOutput) {
+  private void incrementExtensionRefCount(RenderTreeNode node) {
+    final LayoutOutput layoutOutput = getLayoutOutput(node);
     final long layoutOutputId = layoutOutput.getId();
     Integer refCount = mReferenceCountMap.get(layoutOutputId);
 
@@ -114,7 +123,8 @@ public class MountDelegate {
     mReferenceCountMap.put(layoutOutputId, refCount + 1);
   }
 
-  private void decrementExtensionRefCount(LayoutOutput layoutOutput) {
+  private void decrementExtensionRefCount(RenderTreeNode node) {
+    final LayoutOutput layoutOutput = getLayoutOutput(node);
     final long layoutOutputId = layoutOutput.getId();
     Integer refCount = mReferenceCountMap.get(layoutOutputId);
 
