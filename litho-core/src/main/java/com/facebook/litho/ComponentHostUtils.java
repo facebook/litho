@@ -20,6 +20,7 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import androidx.collection.SparseArrayCompat;
+import com.facebook.rendercore.MountItem;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -76,7 +77,7 @@ class ComponentHostUtils {
   static void maybeSetDrawableState(View view, Drawable drawable, int flags, NodeInfo nodeInfo) {
     final boolean shouldSetState =
         (nodeInfo != null && nodeInfo.hasTouchEventHandlers())
-            || MountItem.isDuplicateParentState(flags);
+            || LithoMountData.isDuplicateParentState(flags);
 
     if (shouldSetState && drawable.isStateful()) {
       drawable.setState(view.getDrawableState());
@@ -177,8 +178,9 @@ class ComponentHostUtils {
   }
 
   static void maybeInvalidateAccessibilityState(MountItem mountItem) {
-    if (mountItem.isAccessible()) {
-      mountItem.getHost().invalidateAccessibilityState();
+    final LithoMountData data = (LithoMountData) mountItem.getMountData();
+    if (data.isAccessible()) {
+      ((ComponentHost) mountItem.getHost()).invalidateAccessibilityState();
     }
   }
 }

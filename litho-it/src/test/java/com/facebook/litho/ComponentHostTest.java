@@ -25,8 +25,8 @@ import static android.view.View.INVISIBLE;
 import static android.view.View.MeasureSpec.EXACTLY;
 import static android.view.View.MeasureSpec.makeMeasureSpec;
 import static android.view.View.VISIBLE;
-import static com.facebook.litho.MountItem.LAYOUT_FLAG_DUPLICATE_PARENT_STATE;
-import static com.facebook.litho.MountItem.LAYOUT_FLAG_MATCH_HOST_BOUNDS;
+import static com.facebook.litho.LithoMountData.LAYOUT_FLAG_DUPLICATE_PARENT_STATE;
+import static com.facebook.litho.LithoMountData.LAYOUT_FLAG_MATCH_HOST_BOUNDS;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
@@ -52,6 +52,7 @@ import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestViewComponent;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.rendercore.MountItem;
 import com.facebook.yoga.YogaDirection;
 import java.util.List;
 import org.junit.Before;
@@ -228,14 +229,14 @@ public class ComponentHostTest {
 
     MountItem mountItem1 = mount(0, new ColorDrawable());
     MountItem mountItem2 =
-        mount(1, new TouchableDrawable(), MountItem.LAYOUT_FLAG_DISABLE_TOUCHABLE);
+        mount(1, new TouchableDrawable(), LithoMountData.LAYOUT_FLAG_DISABLE_TOUCHABLE);
     MountItem mountItem3 = mount(2, new View(mContext.getAndroidContext()));
     MountItem mountItem4 = mount(4, spy(new TouchableDrawable()));
     MountItem mountItem5 =
-        mount(5, new TouchableDrawable(), MountItem.LAYOUT_FLAG_DISABLE_TOUCHABLE);
+        mount(5, new TouchableDrawable(), LithoMountData.LAYOUT_FLAG_DISABLE_TOUCHABLE);
     MountItem mountItem6 = mount(7, new View(mContext.getAndroidContext()));
     MountItem mountItem7 =
-        mount(8, new TouchableDrawable(), MountItem.LAYOUT_FLAG_DISABLE_TOUCHABLE);
+        mount(8, new TouchableDrawable(), LithoMountData.LAYOUT_FLAG_DISABLE_TOUCHABLE);
 
     assertThat(mHost.getMountItemAt(0)).isEqualTo(mountItem1);
     assertThat(mHost.getMountItemAt(1)).isEqualTo(mountItem2);
@@ -935,14 +936,17 @@ public class ComponentHostTest {
     nodeInfo.setContentDescription(contentDescription);
 
     MountItem mountItem =
-        new MountItem(
+        MountItemTestHelper.create(
             content instanceof Drawable ? mDrawableComponent : mViewComponent,
             null,
             content,
-            null,
             nodeInfo,
             null,
+            null,
+            0,
+            0,
             flags,
+            0,
             IMPORTANT_FOR_ACCESSIBILITY_AUTO,
             ORIENTATION_PORTRAIT,
             null);
@@ -968,13 +972,16 @@ public class ComponentHostTest {
     viewNodeInfo.setExpandedTouchBounds(node, 1, 1, 1, 1);
 
     MountItem viewMountItem =
-        new MountItem(
+        MountItemTestHelper.create(
             mViewComponent,
             null,
             content,
             null,
-            null,
             viewNodeInfo,
+            null,
+            0,
+            0,
+            0,
             0,
             IMPORTANT_FOR_ACCESSIBILITY_AUTO,
             ORIENTATION_PORTRAIT,

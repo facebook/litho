@@ -16,6 +16,8 @@
 
 package com.facebook.litho;
 
+import static com.facebook.litho.LithoMountData.getMountData;
+
 import java.util.List;
 import javax.annotation.Nullable;
 
@@ -96,7 +98,7 @@ public class DebugHierarchy {
   }
 
   public static @Nullable Node getMountItemHierarchy(ComponentHost host, int mountItemIndex) {
-    return host.getMountItemAt(mountItemIndex).getHierarchy();
+    return getMountData(host.getMountItemAt(mountItemIndex)).getHierarchy();
   }
 
   public static @Nullable String getOutputUnitTypeName(@OutputUnitType int type) {

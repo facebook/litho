@@ -20,16 +20,14 @@ import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
 import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.view.View;
 import androidx.annotation.Nullable;
+import com.facebook.rendercore.MountItem;
+import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.yoga.YogaDirection;
 
-/**
- * Represents a mounted UI element in a {@link MountState}. It holds a key and a content instance
- * which might be any type of UI element supported by the framework e.g. {@link Drawable}.
- */
-class MountItem {
+/** Contains the addition data of a mountable item. */
+class LithoMountData {
 
   static final int LAYOUT_FLAG_DUPLICATE_PARENT_STATE = 1 << 0;
   static final int LAYOUT_FLAG_DISABLE_TOUCHABLE = 1 << 1;
@@ -41,23 +39,10 @@ class MountItem {
   private static final int FLAG_VIEW_ENABLED = 1 << 3;
   private static final int FLAG_VIEW_SELECTED = 1 << 4;
 
-  private final Object mContent;
+  private LayoutOutput mOutput;
 
-  private NodeInfo mNodeInfo;
-  private ViewNodeInfo mViewNodeInfo;
-  private Component mComponent;
-  private ComponentHost mHost;
-  private @Nullable DebugHierarchy.Node mHierarchy;
-  private boolean mIsBound;
-  private int mImportantForAccessibility = IMPORTANT_FOR_ACCESSIBILITY_AUTO;
-  private @Nullable TransitionId mTransitionId;
-  private int mOrientation;
   private boolean mIsReleased;
   private String mReleaseCause;
-
-  // ComponentHost flags defined in the LayoutOutput specifying
-  // the behaviour of this item when mounted.
-  private int mLayoutFlags;
 
   // Flags that track view-related behaviour of mounted view content.
   private int mMountViewFlags;
@@ -66,72 +51,29 @@ class MountItem {
   static MountItem createRootHostMountItem(LithoView lithoView) {
     final ViewNodeInfo viewNodeInfo = new ViewNodeInfo();
     viewNodeInfo.setLayoutDirection(YogaDirection.INHERIT);
-    MountItem item =
-        new MountItem(
-            HostComponent.create(),
-            lithoView,
-            lithoView,
-            null,
+    LayoutOutput output =
+        new LayoutOutput(
             null,
             viewNodeInfo,
+            HostComponent.create(),
+            lithoView.getPreviousMountBounds(),
+            0,
+            0,
+            0,
             0,
             IMPORTANT_FOR_ACCESSIBILITY_AUTO,
             lithoView.getContext().getResources().getConfiguration().orientation,
             null);
+    MountItem item = new MountItem(LayoutOutput.create(output, null), lithoView, lithoView);
+    item.setMountData(new LithoMountData(output, lithoView));
     return item;
   }
 
-  MountItem(Component component, ComponentHost host, Object content, LayoutOutput layoutOutput) {
-    this(
-        component,
-        host,
-        content,
-        layoutOutput.getHierarchy(),
-        layoutOutput.getNodeInfo(),
-        layoutOutput.getViewNodeInfo(),
-        layoutOutput.getFlags(),
-        layoutOutput.getImportantForAccessibility(),
-        layoutOutput.getOrientation(),
-        layoutOutput.getTransitionId());
-  }
+  LithoMountData(LayoutOutput output, Object content) {
+    mOutput = output;
 
-  MountItem(
-      Component component,
-      ComponentHost host,
-      Object content,
-      @Nullable DebugHierarchy.Node hierarchy,
-      NodeInfo nodeInfo,
-      ViewNodeInfo viewNodeInfo,
-      int layoutFlags,
-      int importantForAccessibility,
-      int orientation,
-      TransitionId transitionId) {
-    if (component == null) {
-      throw new RuntimeException("Calling init() on a MountItem with a null Component!");
-    }
-
-    mComponent = component;
-    mContent = content;
-    mHost = host;
-    mLayoutFlags = layoutFlags;
-    mImportantForAccessibility = importantForAccessibility;
-    mOrientation = orientation;
-    mTransitionId = transitionId;
-
-    if (hierarchy != null) {
-      mHierarchy = hierarchy;
-    }
-
-    if (nodeInfo != null) {
-      mNodeInfo = nodeInfo;
-    }
-
-    if (viewNodeInfo != null) {
-      mViewNodeInfo = viewNodeInfo;
-    }
-
-    if (mContent instanceof View) {
-      final View view = (View) mContent;
+    if (content instanceof View) {
+      final View view = (View) content;
 
       if (view.isClickable()) {
         mMountViewFlags |= FLAG_VIEW_CLICKABLE;
@@ -162,103 +104,97 @@ class MountItem {
    * again now some of the values may be wrong (e.g. the Litho framework may add a click listener to
    * a view that was not originally clickable.
    */
-  void update(LayoutOutput layoutOutput) {
-    mComponent = layoutOutput.getComponent();
-    if (mComponent == null) {
-      throw new RuntimeException("Trying to update a MountItem with a null Component!");
-    }
-    mLayoutFlags = layoutOutput.getFlags();
-    mImportantForAccessibility = layoutOutput.getImportantForAccessibility();
-    mOrientation = layoutOutput.getOrientation();
-    mTransitionId = layoutOutput.getTransitionId();
-    mNodeInfo = null;
-    mViewNodeInfo = null;
+  void update(RenderTreeNode node) {
+    LayoutOutput output = (LayoutOutput) node.getLayoutData();
+    if (output != null) {
+      final NodeInfo nodeInfo;
+      if (output.getNodeInfo() != null) {
+        nodeInfo = output.getNodeInfo();
+      } else {
+        nodeInfo = null;
+      }
 
-    if (layoutOutput.getHierarchy() != null) {
-      mHierarchy = layoutOutput.getHierarchy();
-    }
+      final ViewNodeInfo viewNodeInfo;
+      if (output.getViewNodeInfo() != null) {
+        viewNodeInfo = output.getViewNodeInfo();
+      } else {
+        viewNodeInfo = null;
+      }
 
-    if (layoutOutput.getNodeInfo() != null) {
-      mNodeInfo = layoutOutput.getNodeInfo();
-    }
-
-    if (layoutOutput.getViewNodeInfo() != null) {
-      mViewNodeInfo = layoutOutput.getViewNodeInfo();
+      mOutput =
+          new LayoutOutput(
+              nodeInfo,
+              viewNodeInfo,
+              output.getComponent(),
+              output.getBounds(),
+              output.getHostTranslationX(),
+              output.getHostTranslationY(),
+              output.getFlags(),
+              output.getHostMarker(),
+              output.getImportantForAccessibility(),
+              output.getOrientation(),
+              output.getTransitionId());
     }
   }
 
-  @Nullable
   Component getComponent() {
-    return mComponent;
-  }
-
-  void setHost(ComponentHost host) {
-    mHost = host;
-  }
-
-  ComponentHost getHost() {
-    return mHost;
-  }
-
-  /** @return Mount content created by the component. */
-  Object getContent() {
-    if (mIsReleased) {
-      throw new RuntimeException("Trying to access released mount content!");
-    }
-    return mContent;
+    return mOutput.getComponent();
   }
 
   int getLayoutFlags() {
-    return mLayoutFlags;
+    return mOutput.getFlags();
   }
 
   int getImportantForAccessibility() {
-    return mImportantForAccessibility;
+    return mOutput.getImportantForAccessibility();
   }
 
   int getOrientation() {
-    return mOrientation;
+    return mOutput.getOrientation();
   }
 
   @Nullable
   DebugHierarchy.Node getHierarchy() {
-    return mHierarchy;
+    return mOutput.getHierarchy();
   }
 
+  @Nullable
   NodeInfo getNodeInfo() {
-    return mNodeInfo;
+    return mOutput.getNodeInfo();
   }
 
+  @Nullable
   ViewNodeInfo getViewNodeInfo() {
-    return mViewNodeInfo;
+    return mOutput.getViewNodeInfo();
   }
 
   @Nullable
   TransitionId getTransitionId() {
-    return mTransitionId;
+    return mOutput.getTransitionId();
   }
 
   boolean hasTransitionId() {
-    return mTransitionId != null;
+    return getTransitionId() != null;
   }
 
   boolean isAccessible() {
-    if (mComponent == null) {
+    if (mOutput.getComponent() == null) {
       return false;
     }
 
-    if (mImportantForAccessibility == IMPORTANT_FOR_ACCESSIBILITY_NO) {
+    if (getImportantForAccessibility() == IMPORTANT_FOR_ACCESSIBILITY_NO) {
       return false;
     }
 
-    return (mNodeInfo != null && mNodeInfo.needsAccessibilityDelegate())
-        || mComponent.implementsAccessibility();
+    return (getNodeInfo() != null && getNodeInfo().needsAccessibilityDelegate())
+        || getComponent().implementsAccessibility();
   }
 
   void releaseMountContent(Context context, String releaseCause) {
     if (mIsReleased) {
-      final String componentName = mComponent != null ? mComponent.getSimpleName() : "<null>";
-      final String globalKey = mComponent != null ? mComponent.getGlobalKey() : "<null>";
+      Component component = getComponent();
+      final String componentName = component != null ? component.getSimpleName() : "<null>";
+      final String globalKey = component != null ? component.getGlobalKey() : "<null>";
       throw new ReleasingReleasedMountContentException(
           "Releasing released mount content! component: "
               + componentName
@@ -269,7 +205,6 @@ class MountItem {
               + ", previousReleaseCause: "
               + mReleaseCause);
     }
-    ComponentsPools.release(context, mComponent, mContent);
     mIsReleased = true;
     mReleaseCause = releaseCause;
   }
@@ -307,17 +242,8 @@ class MountItem {
     return (mMountViewFlags & FLAG_VIEW_SELECTED) == FLAG_VIEW_SELECTED;
   }
 
-  /**
-   * @return Whether this MountItem is currently bound. A bound mount item is a Mount item that has
-   *     been mounted and is currently active on screen.
-   */
-  boolean isBound() {
-    return mIsBound;
-  }
-
-  /** Sets whether this MountItem is currently bound. */
-  void setIsBound(boolean bound) {
-    mIsBound = bound;
+  public static LithoMountData getMountData(MountItem item) {
+    return (LithoMountData) item.getMountData();
   }
 
   public static class ReleasingReleasedMountContentException extends RuntimeException {

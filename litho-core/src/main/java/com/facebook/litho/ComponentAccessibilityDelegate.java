@@ -16,6 +16,8 @@
 
 package com.facebook.litho;
 
+import static com.facebook.litho.LithoMountData.getMountData;
+
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -28,6 +30,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import androidx.core.view.accessibility.AccessibilityNodeProviderCompat;
 import androidx.customview.widget.ExploreByTouchHelper;
+import com.facebook.rendercore.MountItem;
 import java.util.List;
 import javax.annotation.Nullable;
 
@@ -85,7 +88,7 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
       // Coalesce the accessible mount item's information with the
       // the root host view's as they are meant to behave as a single
       // node in the accessibility framework.
-      final Component component = mountItem.getComponent();
+      final Component component = getMountData(mountItem).getComponent();
       component.onPopulateAccessibilityNode(host, node);
     } else {
       super.onInitializeAccessibilityNodeInfo(host, node);
@@ -122,7 +125,7 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
       return;
     }
 
-    final Component component = mountItem.getComponent();
+    final Component component = getMountData(mountItem).getComponent();
 
     final int extraAccessibilityNodesCount = component.getExtraAccessibilityNodesCount();
 
@@ -146,10 +149,11 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
       return;
     }
 
+    final LithoMountData data = getMountData(mountItem);
     final Drawable drawable = (Drawable) mountItem.getContent();
     final Rect bounds = drawable.getBounds();
 
-    final Component component = mountItem.getComponent();
+    final Component component = data.getComponent();
     final ComponentLifecycle lifecycle = component;
 
     node.setClassName(lifecycle.getClass().getName());
@@ -177,7 +181,7 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
       return INVALID_ID;
     }
 
-    final Component component = mountItem.getComponent();
+    final Component component = getMountData(mountItem).getComponent();
     final ComponentLifecycle lifecycle = component;
 
     if (lifecycle.getExtraAccessibilityNodesCount() == 0) {
@@ -215,7 +219,8 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
   @Override
   public @Nullable AccessibilityNodeProviderCompat getAccessibilityNodeProvider(View host) {
     final MountItem mountItem = getAccessibleMountItem(mView);
-    if (mountItem != null && mountItem.getComponent().implementsExtraAccessibilityNodes()) {
+    if (mountItem != null
+        && getMountData(mountItem).getComponent().implementsExtraAccessibilityNodes()) {
       return super.getAccessibilityNodeProvider(host);
     }
 

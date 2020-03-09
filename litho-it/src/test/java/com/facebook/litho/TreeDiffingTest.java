@@ -23,6 +23,7 @@ import static com.facebook.litho.Column.create;
 import static com.facebook.litho.LayoutOutput.STATE_DIRTY;
 import static com.facebook.litho.LayoutOutput.STATE_UNKNOWN;
 import static com.facebook.litho.LayoutOutput.STATE_UPDATED;
+import static com.facebook.litho.LayoutOutput.getLayoutOutput;
 import static com.facebook.litho.LayoutState.calculate;
 import static com.facebook.litho.LayoutState.createDiffNode;
 import static com.facebook.litho.SizeSpec.getMode;
@@ -39,6 +40,7 @@ import static com.facebook.yoga.YogaMeasureOutput.getWidth;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.junit.Assert.assertNotEquals;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import android.graphics.Color;
 import android.graphics.Rect;
@@ -51,6 +53,7 @@ import com.facebook.litho.testing.TestSizeDependentComponent;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
+import com.facebook.rendercore.MountItem;
 import com.facebook.yoga.YogaMeasureFunction;
 import org.junit.Before;
 import org.junit.Test;
@@ -311,8 +314,8 @@ public class TreeDiffingTest {
     assertThat(layoutState.getMountableOutputCount())
         .isEqualTo(prevLayoutState.getMountableOutputCount());
     for (int i = 0, count = prevLayoutState.getMountableOutputCount(); i < count; i++) {
-      assertThat(layoutState.getMountableOutputAt(i).getId())
-          .isEqualTo(prevLayoutState.getMountableOutputAt(i).getId());
+      assertThat(getLayoutOutput(layoutState.getMountableOutputAt(i)).getId())
+          .isEqualTo(getLayoutOutput(prevLayoutState.getMountableOutputAt(i)).getId());
     }
   }
 
@@ -384,8 +387,8 @@ public class TreeDiffingTest {
     assertNotEquals(
         prevLayoutState.getMountableOutputCount(), layoutState.getMountableOutputCount());
     for (int i = 0, count = prevLayoutState.getMountableOutputCount(); i < count; i++) {
-      assertThat(layoutState.getMountableOutputAt(i).getId())
-          .isEqualTo(prevLayoutState.getMountableOutputAt(i).getId());
+      assertThat(getLayoutOutput(layoutState.getMountableOutputAt(i)).getId())
+          .isEqualTo(getLayoutOutput(prevLayoutState.getMountableOutputAt(i)).getId());
     }
   }
 
@@ -407,8 +410,14 @@ public class TreeDiffingTest {
   public void testComponentHostMoveItem() {
     ComponentHost hostHolder = new ComponentHost(mContext);
     MountItem mountItem = mock(MountItem.class);
+    LithoMountData mountData = mock(LithoMountData.class);
+    when(mountItem.getMountData()).thenReturn(mountData);
     MountItem mountItem1 = mock(MountItem.class);
+    LithoMountData mountData1 = mock(LithoMountData.class);
+    when(mountItem1.getMountData()).thenReturn(mountData1);
     MountItem mountItem2 = mock(MountItem.class);
+    LithoMountData mountData2 = mock(LithoMountData.class);
+    when(mountItem2.getMountData()).thenReturn(mountData2);
     hostHolder.mount(0, mountItem, new Rect());
     hostHolder.mount(1, mountItem1, new Rect());
     hostHolder.mount(2, mountItem2, new Rect());
@@ -426,8 +435,14 @@ public class TreeDiffingTest {
   public void testComponentHostMoveItemPartial() {
     ComponentHost hostHolder = new ComponentHost(mContext);
     MountItem mountItem = mock(MountItem.class);
+    LithoMountData mountData = mock(LithoMountData.class);
+    when(mountItem.getMountData()).thenReturn(mountData);
     MountItem mountItem1 = mock(MountItem.class);
+    LithoMountData mountData1 = mock(LithoMountData.class);
+    when(mountItem1.getMountData()).thenReturn(mountData1);
     MountItem mountItem2 = mock(MountItem.class);
+    LithoMountData mountData2 = mock(LithoMountData.class);
+    when(mountItem2.getMountData()).thenReturn(mountData2);
     hostHolder.mount(0, mountItem, new Rect());
     hostHolder.mount(1, mountItem1, new Rect());
     hostHolder.mount(2, mountItem2, new Rect());
@@ -559,10 +574,14 @@ public class TreeDiffingTest {
             null);
 
     assertThat(5).isEqualTo(thirdState.getMountableOutputCount());
-    assertThat(thirdState.getMountableOutputAt(1).getUpdateState()).isEqualTo(STATE_DIRTY);
-    assertThat(thirdState.getMountableOutputAt(2).getUpdateState()).isEqualTo(STATE_UPDATED);
-    assertThat(thirdState.getMountableOutputAt(3).getUpdateState()).isEqualTo(STATE_UPDATED);
-    assertThat(thirdState.getMountableOutputAt(4).getUpdateState()).isEqualTo(STATE_UPDATED);
+    assertThat(getLayoutOutput(thirdState.getMountableOutputAt(1)).getUpdateState())
+        .isEqualTo(STATE_DIRTY);
+    assertThat(getLayoutOutput(thirdState.getMountableOutputAt(2)).getUpdateState())
+        .isEqualTo(STATE_UPDATED);
+    assertThat(getLayoutOutput(thirdState.getMountableOutputAt(3)).getUpdateState())
+        .isEqualTo(STATE_UPDATED);
+    assertThat(getLayoutOutput(thirdState.getMountableOutputAt(4)).getUpdateState())
+        .isEqualTo(STATE_UPDATED);
   }
 
   // This test covers the same case with the foreground since the code path is the same!
@@ -586,7 +605,8 @@ public class TreeDiffingTest {
             LayoutState.CalculateLayoutSource.TEST,
             null);
 
-    assertThat(state.getMountableOutputAt(2).getUpdateState()).isEqualTo(STATE_UNKNOWN);
+    assertThat(getLayoutOutput(state.getMountableOutputAt(2)).getUpdateState())
+        .isEqualTo(STATE_UNKNOWN);
 
     LayoutState secondState =
         componentTree.calculateLayoutState(
@@ -601,7 +621,8 @@ public class TreeDiffingTest {
             LayoutState.CalculateLayoutSource.TEST,
             null);
 
-    assertThat(secondState.getMountableOutputAt(2).getUpdateState()).isEqualTo(STATE_UPDATED);
+    assertThat(getLayoutOutput(secondState.getMountableOutputAt(2)).getUpdateState())
+        .isEqualTo(STATE_UPDATED);
 
     LayoutState thirdState =
         componentTree.calculateLayoutState(
@@ -616,7 +637,8 @@ public class TreeDiffingTest {
             LayoutState.CalculateLayoutSource.TEST,
             null);
 
-    assertThat(thirdState.getMountableOutputAt(2).getUpdateState()).isEqualTo(STATE_DIRTY);
+    assertThat(getLayoutOutput(thirdState.getMountableOutputAt(2)).getUpdateState())
+        .isEqualTo(STATE_DIRTY);
   }
 
   @Test
@@ -654,12 +676,18 @@ public class TreeDiffingTest {
             null);
 
     assertThat(6).isEqualTo(secondState.getMountableOutputCount());
-    assertThat(STATE_DIRTY).isEqualTo(secondState.getMountableOutputAt(0).getUpdateState());
-    assertThat(STATE_UNKNOWN).isEqualTo(secondState.getMountableOutputAt(1).getUpdateState());
-    assertThat(STATE_UPDATED).isEqualTo(secondState.getMountableOutputAt(2).getUpdateState());
-    assertThat(STATE_UNKNOWN).isEqualTo(secondState.getMountableOutputAt(3).getUpdateState());
-    assertThat(STATE_UNKNOWN).isEqualTo(secondState.getMountableOutputAt(4).getUpdateState());
-    assertThat(STATE_UNKNOWN).isEqualTo(secondState.getMountableOutputAt(5).getUpdateState());
+    assertThat(STATE_DIRTY)
+        .isEqualTo(getLayoutOutput(secondState.getMountableOutputAt(0)).getUpdateState());
+    assertThat(STATE_UNKNOWN)
+        .isEqualTo(getLayoutOutput(secondState.getMountableOutputAt(1)).getUpdateState());
+    assertThat(STATE_UPDATED)
+        .isEqualTo(getLayoutOutput(secondState.getMountableOutputAt(2)).getUpdateState());
+    assertThat(STATE_UNKNOWN)
+        .isEqualTo(getLayoutOutput(secondState.getMountableOutputAt(3)).getUpdateState());
+    assertThat(STATE_UNKNOWN)
+        .isEqualTo(getLayoutOutput(secondState.getMountableOutputAt(4)).getUpdateState());
+    assertThat(STATE_UNKNOWN)
+        .isEqualTo(getLayoutOutput(secondState.getMountableOutputAt(5)).getUpdateState());
   }
 
   @Test
@@ -747,10 +775,11 @@ public class TreeDiffingTest {
 
     // The nested root measure() was called in the first layout calculation.
     TestComponent prevNestedRoot =
-        (TestComponent) prevLayoutState.getMountableOutputAt(2).getComponent();
+        (TestComponent) getLayoutOutput(prevLayoutState.getMountableOutputAt(2)).getComponent();
     assertThat(prevNestedRoot.wasMeasureCalled()).isTrue();
 
-    TestComponent nestedRoot = (TestComponent) layoutState.getMountableOutputAt(2).getComponent();
+    TestComponent nestedRoot =
+        (TestComponent) getLayoutOutput(layoutState.getMountableOutputAt(2)).getComponent();
     assertThat(nestedRoot.wasMeasureCalled()).isFalse();
   }
 
@@ -777,20 +806,23 @@ public class TreeDiffingTest {
 
     // The nested root measure() was called in the first layout calculation.
     TestComponent prevMainTreeLeaf =
-        (TestComponent) prevLayoutState.getMountableOutputAt(1).getComponent();
+        (TestComponent) getLayoutOutput(prevLayoutState.getMountableOutputAt(1)).getComponent();
     assertThat(prevMainTreeLeaf.wasMeasureCalled()).isTrue();
     TestComponent prevNestedLeaf1 =
-        (TestComponent) prevLayoutState.getMountableOutputAt(3).getComponent();
+        (TestComponent) getLayoutOutput(prevLayoutState.getMountableOutputAt(3)).getComponent();
     assertThat(prevNestedLeaf1.wasMeasureCalled()).isTrue();
     TestComponent prevNestedLeaf2 =
-        (TestComponent) prevLayoutState.getMountableOutputAt(4).getComponent();
+        (TestComponent) getLayoutOutput(prevLayoutState.getMountableOutputAt(4)).getComponent();
     assertThat(prevNestedLeaf2.wasMeasureCalled()).isTrue();
 
-    TestComponent mainTreeLeaf = (TestComponent) layoutState.getMountableOutputAt(1).getComponent();
+    TestComponent mainTreeLeaf =
+        (TestComponent) getLayoutOutput(layoutState.getMountableOutputAt(1)).getComponent();
     assertThat(mainTreeLeaf.wasMeasureCalled()).isFalse();
-    TestComponent nestedLeaf1 = (TestComponent) layoutState.getMountableOutputAt(3).getComponent();
+    TestComponent nestedLeaf1 =
+        (TestComponent) getLayoutOutput(layoutState.getMountableOutputAt(3)).getComponent();
     assertThat(nestedLeaf1.wasMeasureCalled()).isFalse();
-    TestComponent nestedLeaf2 = (TestComponent) layoutState.getMountableOutputAt(4).getComponent();
+    TestComponent nestedLeaf2 =
+        (TestComponent) getLayoutOutput(layoutState.getMountableOutputAt(4)).getComponent();
     assertThat(nestedLeaf2.wasMeasureCalled()).isFalse();
   }
 
@@ -832,9 +864,10 @@ public class TreeDiffingTest {
 
   private static void assertOutputsState(
       LayoutState layoutState, @LayoutOutput.UpdateState int state) {
-    assertThat(STATE_DIRTY).isEqualTo(layoutState.getMountableOutputAt(0).getUpdateState());
+    assertThat(STATE_DIRTY)
+        .isEqualTo(getLayoutOutput(layoutState.getMountableOutputAt(0)).getUpdateState());
     for (int i = 1; i < layoutState.getMountableOutputCount(); i++) {
-      LayoutOutput output = layoutState.getMountableOutputAt(i);
+      LayoutOutput output = getLayoutOutput(layoutState.getMountableOutputAt(i));
       assertThat(state).isEqualTo(output.getUpdateState());
     }
   }
