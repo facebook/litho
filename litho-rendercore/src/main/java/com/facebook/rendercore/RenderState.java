@@ -40,8 +40,19 @@ public class RenderState<State> {
   private static final int PROMOTION_MESSAGE = 99;
   private static final AtomicInteger ID_GENERATOR = new AtomicInteger(0);
 
-  public interface TreeFactory<State> {
-    Pair<Node, State> createTree();
+  /**
+   * Represents a function capable of creating a tree. The tree is lazy so that the creation can be
+   * done inline with the layout pass.
+   *
+   * @param <State> Represents the State that this tree would like to commit when the tree itself is
+   *     committed
+   */
+  public interface LazyTree<State> {
+    /**
+     * Resolves the tree represented by this LazyTree. Results for resolve might be cached. The
+     * assumption is that multiple resolve calls on a LazyTree would return equivalent trees.
+     */
+    Pair<Node, State> resolve();
   }
 
   public interface Delegate<State> {
@@ -56,19 +67,19 @@ public class RenderState<State> {
 
   private static class RenderResult<State> {
     private final RenderTree mRenderTree;
-    private final TreeFactory mTreeFactory;
+    private final LazyTree mLazyTree;
     private final Node mNodeTree;
     private final LayoutCache mLayoutCache;
     private final State mState;
 
     public RenderResult(
         RenderTree renderTree,
-        TreeFactory treeFactory,
+        LazyTree lazyTree,
         Node nodeTree,
         LayoutCache layoutCache,
         State state) {
       mRenderTree = renderTree;
-      mTreeFactory = treeFactory;
+      mLazyTree = lazyTree;
       mNodeTree = nodeTree;
       mLayoutCache = layoutCache;
       mState = state;
@@ -85,7 +96,7 @@ public class RenderState<State> {
 
   private @Nullable RenderResult<State> mUIRenderResult;
   private @Nullable RenderResult<State> mCommittedRenderResult;
-  private @Nullable TreeFactory<State> mLatestTreeFactory;
+  private @Nullable LazyTree<State> mLatestLazyTree;
   private int mExternalRootVersion = -1;
   private @Nullable RenderResultFuture<State> mRenderResultFuture;
   private int mNextSetRootId = 0;
@@ -100,21 +111,21 @@ public class RenderState<State> {
 
   @ThreadConfined(ThreadConfined.ANY)
   public void setVersionedTree(
-      TreeFactory<State> treeFactory,
+      LazyTree<State> lazyTree,
       int version,
       int widthSpec,
       int heightSpec,
       @Nullable int[] measureOutput) {
-    setTreeInternal(treeFactory, version, widthSpec, heightSpec, measureOutput);
+    setTreeInternal(lazyTree, version, widthSpec, heightSpec, measureOutput);
   }
 
   @ThreadConfined(ThreadConfined.ANY)
-  public void setTree(TreeFactory<State> treeFactory) {
-    setTreeInternal(treeFactory, -1, UNSET, UNSET, null);
+  public void setTree(LazyTree<State> lazyTree) {
+    setTreeInternal(lazyTree, -1, UNSET, UNSET, null);
   }
 
   private void setTreeInternal(
-      TreeFactory<State> treeFactory,
+      LazyTree<State> lazyTree,
       int version,
       int widthSpec,
       int heightSpec,
@@ -137,7 +148,7 @@ public class RenderState<State> {
       }
 
       mExternalRootVersion = version;
-      mLatestTreeFactory = treeFactory;
+      mLatestLazyTree = lazyTree;
 
       if (widthSpec != UNSET) {
         mWidthSpec = widthSpec;
@@ -154,7 +165,7 @@ public class RenderState<State> {
       setRootId = mNextSetRootId++;
       future =
           new RenderResultFuture<>(
-              mContext, treeFactory, mCommittedRenderResult, setRootId, mWidthSpec, mHeightSpec);
+              mContext, lazyTree, mCommittedRenderResult, setRootId, mWidthSpec, mHeightSpec);
       mRenderResultFuture = future;
     }
 
@@ -253,7 +264,7 @@ public class RenderState<State> {
         future =
             new RenderResultFuture<>(
                 mContext,
-                mLatestTreeFactory,
+                mLatestLazyTree,
                 mCommittedRenderResult,
                 setRootId,
                 mWidthSpec,
@@ -344,7 +355,7 @@ public class RenderState<State> {
 
   private static class RenderResultFuture<State> {
 
-    private final TreeFactory<State> mTreeFactory;
+    private final LazyTree<State> mLazyTree;
     private final RenderResult<State> mPreviousResult;
     private final int mSetRootId;
     private final int mWidthSpec;
@@ -354,12 +365,12 @@ public class RenderState<State> {
 
     private RenderResultFuture(
         final Context context,
-        TreeFactory<State> treeFactory,
+        LazyTree<State> lazyTree,
         final RenderResult<State> previousResult,
         final int setRootId,
         final int widthSpec,
         final int heightSpec) {
-      mTreeFactory = treeFactory;
+      mLazyTree = lazyTree;
       mPreviousResult = previousResult;
       mSetRootId = setRootId;
       mWidthSpec = widthSpec;
@@ -390,10 +401,10 @@ public class RenderState<State> {
                   Systrace.sInstance.beginSection("RC Create Tree");
                   final Pair<Node, State> result;
 
-                  if (mPreviousResult != null && mTreeFactory == mPreviousResult.mTreeFactory) {
+                  if (mPreviousResult != null && mLazyTree == mPreviousResult.mLazyTree) {
                     result = new Pair<>(previousTree, previousState);
                   } else {
-                    result = mTreeFactory.createTree();
+                    result = mLazyTree.resolve();
                   }
 
                   Systrace.sInstance.endSection();
@@ -407,7 +418,7 @@ public class RenderState<State> {
                   final RenderResult renderResult =
                       new RenderResult<>(
                           reduce(context, widthSpec, heightSpec, layoutResult),
-                          mTreeFactory,
+                          mLazyTree,
                           result.first,
                           layoutCache,
                           result.second);
