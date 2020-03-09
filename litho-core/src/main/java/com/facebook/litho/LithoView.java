@@ -590,10 +590,26 @@ public class LithoView extends Host {
     if (mLithoHostListenerCoordinator == null) {
       mLithoHostListenerCoordinator = new LithoHostListenerCoordinator();
 
+      mLithoHostListenerCoordinator.enableVisibilityProcessing(this);
+
       if (componentTree != null && componentTree.isIncrementalMountEnabled()) {
         mLithoHostListenerCoordinator.enableIncrementalMount(this, mMountState);
       }
     }
+  }
+
+  @Override
+  boolean isInTransientState() {
+    if (hasTransientState()) {
+      return true;
+    }
+
+    if (getParent() instanceof View) {
+      View parent = (View) getParent();
+      return parent.hasTransientState();
+    }
+
+    return false;
   }
 
   /** Change the root component synchronously. */
@@ -737,6 +753,8 @@ public class LithoView extends Host {
 
   @Override
   public void setHasTransientState(boolean hasTransientState) {
+    super.setHasTransientState(hasTransientState);
+
     if (hasTransientState) {
       if (mTransientStateCount == 0
           && mComponentTree != null
@@ -758,8 +776,6 @@ public class LithoView extends Host {
         mTransientStateCount = 0;
       }
     }
-
-    super.setHasTransientState(hasTransientState);
   }
 
   @Override
