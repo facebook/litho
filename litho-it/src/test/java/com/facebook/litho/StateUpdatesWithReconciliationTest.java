@@ -29,6 +29,8 @@ import com.facebook.litho.testing.helper.ComponentTestHelper;
 import com.facebook.litho.testing.logging.TestComponentsLogger;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.widget.SameManualKeyRootComponentSpec;
+import com.facebook.litho.widget.SimpleStateUpdateEmulator;
+import com.facebook.litho.widget.SimpleStateUpdateEmulatorSpec;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -199,6 +201,48 @@ public class StateUpdatesWithReconciliationTest {
         "test",
         false);
     mLayoutThreadShadowLooper.runToEndOfTasks();
+  }
+
+  @Test
+  public void testIsReconcilableForRootComponentWithUpdatedState() {
+    after();
+
+    SimpleStateUpdateEmulatorSpec.Caller caller = new SimpleStateUpdateEmulatorSpec.Caller();
+    before(SimpleStateUpdateEmulator.create(mContext).caller(caller).build());
+
+    LayoutState current = mComponentTree.getMainThreadLayoutState();
+    InternalNode layout = current.getLayoutRoot();
+
+    // trigger a state update
+    caller.increment();
+
+    mComponentTree.setRoot(SimpleStateUpdateEmulator.create(mContext).caller(caller).build());
+
+    // reconciliation should be invoked
+    verify(layout, times(1)).reconcile(any(), any());
+  }
+
+  @Test
+  public void testIsReconcilableForRootComponentWithDifferentPropValues() {
+    after();
+
+    SimpleStateUpdateEmulatorSpec.Caller caller = new SimpleStateUpdateEmulatorSpec.Caller();
+    before(SimpleStateUpdateEmulator.create(mContext).caller(caller).build());
+
+    LayoutState current = mComponentTree.getMainThreadLayoutState();
+    InternalNode layout = current.getLayoutRoot();
+
+    // trigger a state update
+    caller.increment();
+
+    // Passing a new caller
+    mComponentTree.setRoot(
+        SimpleStateUpdateEmulator.create(mContext)
+            .caller(new SimpleStateUpdateEmulatorSpec.Caller())
+            .build());
+
+    // reconciliation should not be invoked
+    verify(layout, times(0)).reconcile(any(), any());
   }
 
   static class DummyComponent extends Component {

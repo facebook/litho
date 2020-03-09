@@ -1695,7 +1695,11 @@ class LayoutState {
       return false;
     }
 
-    if (!nextRootComponent.isEquivalentTo(previous)) {
+    if (isMountSpec(nextRootComponent) && !nextRootComponent.isEquivalentTo(previous)) {
+      return false;
+    }
+
+    if (!ComponentUtils.isEquivalentToIgnoringState(previous, nextRootComponent)) {
       return false;
     }
 

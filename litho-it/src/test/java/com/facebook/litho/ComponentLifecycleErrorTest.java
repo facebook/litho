@@ -65,6 +65,11 @@ public class ComponentLifecycleErrorTest {
   @Test
   public void testOnCreateLayoutErrorBoundary() throws Exception {
     ComponentsConfiguration.enableOnErrorHandling = true;
+    final boolean currentValue = ComponentsConfiguration.isReconciliationEnabled;
+
+    // Disable reconciliation so that the onCreateLayout is
+    // called for TestCrasherOnCreateLayout is called.
+    ComponentsConfiguration.isReconciliationEnabled = false;
 
     final ComponentContext c = mComponentsRule.getContext();
 
@@ -72,6 +77,9 @@ public class ComponentLifecycleErrorTest {
         TestErrorBoundary.create(c).child(TestCrasherOnCreateLayout.create(c).build()).build();
 
     assertThat(c, component).afterStateUpdate().hasVisibleTextMatching("onCreateLayout crash");
+
+    // Reset the the value of the config.
+    ComponentsConfiguration.isReconciliationEnabled = currentValue;
   }
 
   @Test
