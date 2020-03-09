@@ -58,6 +58,7 @@ import com.facebook.litho.annotations.ImportantForAccessibility;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.drawable.BorderColorDrawable;
 import com.facebook.litho.stats.LithoStats;
+import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
 import java.util.ArrayList;
@@ -75,9 +76,9 @@ import javax.annotation.CheckReturnValue;
 /**
  * The main role of {@link LayoutState} is to hold the output of layout calculation. This includes
  * mountable outputs and visibility outputs. A centerpiece of the class is {@link
- * #collectResults(ComponentContext, InternalNode, LayoutState, DiffNode)} which prepares the
- * before-mentioned outputs based on the provided {@link InternalNode} for later use in {@link
- * MountState}.
+ * #collectResults(RenderTreeNode, ComponentContext, DebugHierarchy.Node, InternalNode, LayoutState,
+ * DiffNode)} which prepares the before-mentioned outputs based on the provided {@link InternalNode}
+ * for later use in {@link MountState}.
  */
 // This needs to be accessible to statically mock the class in tests.
 @VisibleForTesting
@@ -111,10 +112,12 @@ class LayoutState {
     int MEASURE = 6;
   }
 
-  static final Comparator<LayoutOutput> sTopsComparator =
-      new Comparator<LayoutOutput>() {
+  static final Comparator<RenderTreeNode> sTopsComparator =
+      new Comparator<RenderTreeNode>() {
         @Override
-        public int compare(LayoutOutput lhs, LayoutOutput rhs) {
+        public int compare(RenderTreeNode l, RenderTreeNode r) {
+          LayoutOutput lhs = (LayoutOutput) l.getLayoutData();
+          LayoutOutput rhs = (LayoutOutput) r.getLayoutData();
           final int lhsTop = lhs.getBounds().top;
           final int rhsTop = rhs.getBounds().top;
           // Lower indices should be higher for tops so that they are mounted first if possible.
@@ -122,10 +125,12 @@ class LayoutState {
         }
       };
 
-  static final Comparator<LayoutOutput> sBottomsComparator =
-      new Comparator<LayoutOutput>() {
+  static final Comparator<RenderTreeNode> sBottomsComparator =
+      new Comparator<RenderTreeNode>() {
         @Override
-        public int compare(LayoutOutput lhs, LayoutOutput rhs) {
+        public int compare(RenderTreeNode l, RenderTreeNode r) {
+          LayoutOutput lhs = (LayoutOutput) l.getLayoutData();
+          LayoutOutput rhs = (LayoutOutput) r.getLayoutData();
           final int lhsBottom = lhs.getBounds().bottom;
           final int rhsBottom = rhs.getBounds().bottom;
           // Lower indices should be lower for bottoms so that they are mounted first if possible.
@@ -221,11 +226,11 @@ class LayoutState {
   private int mWidthSpec;
   private int mHeightSpec;
 
-  private final List<LayoutOutput> mMountableOutputs = new ArrayList<>(8);
+  private final List<RenderTreeNode> mMountableOutputs = new ArrayList<>(8);
   private List<VisibilityOutput> mVisibilityOutputs;
   private final LongSparseArray<Integer> mOutputsIdToPositionMap = new LongSparseArray<>(8);
-  private final ArrayList<LayoutOutput> mMountableOutputTops = new ArrayList<>();
-  private final ArrayList<LayoutOutput> mMountableOutputBottoms = new ArrayList<>();
+  private final ArrayList<RenderTreeNode> mMountableOutputTops = new ArrayList<>();
+  private final ArrayList<RenderTreeNode> mMountableOutputBottoms = new ArrayList<>();
   /*private ArrayList<IncrementalModuleItem> mIncrementalVisibilityItemsTops;
   private ArrayList<IncrementalModuleItem> mIncrementalVisibilitytemsBottoms;
   private ArrayList<IncrementalModuleItem> mIncrementalFullImpressionItemsTops;
@@ -449,7 +454,7 @@ class LayoutState {
     final int hostTranslationX;
     final int hostTranslationY;
     if (layoutState.mCurrentHostOutputPosition >= 0) {
-      final LayoutOutput hostOutput =
+      final RenderTreeNode hostOutput =
           layoutState.mMountableOutputs.get(layoutState.mCurrentHostOutputPosition);
 
       final Rect hostBounds = hostOutput.getBounds();
@@ -685,6 +690,7 @@ class LayoutState {
    *
    * <p>
    *
+   * @param parent
    * @param parentContext the parent component context
    * @param parentHierarchy The parent hierarchy linked list or null.
    * @param node InternalNode to process.
@@ -692,6 +698,7 @@ class LayoutState {
    * @param parentDiffNode whether this method also populates the diff tree and assigns the root
    */
   private static void collectResults(
+      @Nullable RenderTreeNode parent,
       ComponentContext parentContext,
       @Nullable DebugHierarchy.Node parentHierarchy,
       InternalNode node,
@@ -744,7 +751,7 @@ class LayoutState {
       layoutState.mCurrentX += node.getX();
       layoutState.mCurrentY += node.getY();
 
-      collectResults(parentContext, hierarchy, nestedTree, layoutState, parentDiffNode);
+      collectResults(parent, parentContext, hierarchy, nestedTree, layoutState, parentDiffNode);
 
       layoutState.mCurrentX -= node.getX();
       layoutState.mCurrentY -= node.getY();
@@ -805,12 +812,15 @@ class LayoutState {
 
     // 1. Insert a host LayoutOutput if we have some interactive content to be attached to.
     if (needsHostView) {
-      final int hostLayoutPosition = addHostLayoutOutput(node, layoutState, diffNode, hierarchy);
+      final int hostLayoutPosition =
+          addHostLayoutOutput(parent, node, layoutState, diffNode, hierarchy);
       addCurrentAffinityGroupToTransitionMapping(layoutState);
 
+      parent = layoutState.mMountableOutputs.get(hostLayoutPosition);
+      final LayoutOutput output = (LayoutOutput) parent.getLayoutData();
+
       layoutState.mCurrentLevel++;
-      layoutState.mCurrentHostMarker =
-          layoutState.mMountableOutputs.get(hostLayoutPosition).getId();
+      layoutState.mCurrentHostMarker = output.getId();
       layoutState.mCurrentHostOutputPosition = hostLayoutPosition;
     }
 
@@ -851,6 +861,7 @@ class LayoutState {
 
         final LayoutOutput backgroundOutput =
             addDrawableComponent(
+                parent,
                 node,
                 layoutState,
                 convertBackground,
@@ -876,7 +887,7 @@ class LayoutState {
         ComponentsSystrace.endSection();
       }
 
-      addMountableOutput(layoutState, layoutOutput);
+      addMountableOutput(layoutState, layoutOutput, parent);
       addLayoutOutputIdToPositionsMap(
           layoutState.mOutputsIdToPositionMap,
           layoutOutput,
@@ -923,7 +934,8 @@ class LayoutState {
 
     // We must process the nodes in order so that the layout state output order is correct.
     for (int i = 0, size = node.getChildCount(); i < size; i++) {
-      collectResults(node.getContext(), hierarchy, node.getChildAt(i), layoutState, diffNode);
+      collectResults(
+          parent, node.getContext(), hierarchy, node.getChildAt(i), layoutState, diffNode);
     }
 
     layoutState.mParentEnabledState = parentEnabledState;
@@ -936,6 +948,7 @@ class LayoutState {
           (currentDiffNode != null) ? currentDiffNode.getBorderOutput() : null;
       final LayoutOutput borderOutput =
           addDrawableComponent(
+              parent,
               node,
               layoutState,
               convertBorder,
@@ -959,6 +972,7 @@ class LayoutState {
 
         final LayoutOutput foregroundOutput =
             addDrawableComponent(
+                parent,
                 node,
                 layoutState,
                 convertForeground,
@@ -1067,6 +1081,7 @@ class LayoutState {
         }
 
         addDrawableComponent(
+            parent,
             node,
             layoutState,
             null,
@@ -1139,6 +1154,7 @@ class LayoutState {
   }
 
   private static LayoutOutput addDrawableComponent(
+      final @Nullable RenderTreeNode parent,
       InternalNode node,
       LayoutState layoutState,
       @Nullable LayoutOutput recycle,
@@ -1160,6 +1176,7 @@ class LayoutState {
     final long previousId = recycle != null ? recycle.getId() : -1;
     final LayoutOutput output =
         addDrawableLayoutOutput(
+            parent,
             drawableComponent,
             layoutState,
             hierarchy,
@@ -1257,6 +1274,7 @@ class LayoutState {
   }
 
   private static LayoutOutput addDrawableLayoutOutput(
+      final @Nullable RenderTreeNode parent,
       Component drawableComponent,
       LayoutState layoutState,
       @Nullable DebugHierarchy.Node hierarchy,
@@ -1287,7 +1305,7 @@ class LayoutState {
         isCachedOutputUpdated,
         hierarchy);
 
-    addMountableOutput(layoutState, drawableLayoutOutput);
+    addMountableOutput(layoutState, drawableLayoutOutput, parent);
     addLayoutOutputIdToPositionsMap(
         layoutState.mOutputsIdToPositionMap,
         drawableLayoutOutput,
@@ -1304,6 +1322,7 @@ class LayoutState {
    * @return The position the HostLayoutOutput was inserted.
    */
   private static int addHostLayoutOutput(
+      final @Nullable RenderTreeNode parent,
       InternalNode node,
       LayoutState layoutState,
       DiffNode diffNode,
@@ -1318,17 +1337,17 @@ class LayoutState {
 
     final LayoutOutput hostLayoutOutput = createHostLayoutOutput(layoutState, node);
 
-    // The component of the hostLayoutOutput will be set later after all the
-    // children got processed.
-    addMountableOutput(layoutState, hostLayoutOutput);
-
-    final int hostOutputPosition = layoutState.mMountableOutputs.size() - 1;
-
     if (diffNode != null) {
       diffNode.setHostOutput(hostLayoutOutput);
     }
 
     calculateAndSetHostOutputIdAndUpdateState(node, hostLayoutOutput, layoutState, hierarchy);
+
+    // The component of the hostLayoutOutput will be set later after all the
+    // children got processed.
+    addMountableOutput(layoutState, hostLayoutOutput, parent);
+
+    final int hostOutputPosition = layoutState.mMountableOutputs.size() - 1;
 
     addLayoutOutputIdToPositionsMap(
         layoutState.mOutputsIdToPositionMap, hostLayoutOutput, hostOutputPosition);
@@ -1627,7 +1646,7 @@ class LayoutState {
     if (isTracing) {
       ComponentsSystrace.beginSection("collectResults");
     }
-    collectResults(c, null, root, layoutState, null);
+    collectResults(null, c, null, root, layoutState, null);
     if (isTracing) {
       ComponentsSystrace.endSection();
     }
@@ -1717,7 +1736,9 @@ class LayoutState {
 
     if (mMountableOutputs != null && !mMountableOutputs.isEmpty()) {
       for (int i = 0, size = mMountableOutputs.size(); i < size; i++) {
-        final Component component = mMountableOutputs.get(i).getComponent();
+        final RenderTreeNode treeNode = mMountableOutputs.get(i);
+        final LayoutOutput output = (LayoutOutput) treeNode.getLayoutData();
+        final Component component = output.getComponent();
 
         if (shouldPreallocatePerMountSpec && !component.canPreallocate()) {
           continue;
@@ -1907,14 +1928,14 @@ class LayoutState {
   }
 
   LayoutOutput getMountableOutputAt(int index) {
-    return mMountableOutputs.get(index);
+    return (LayoutOutput) mMountableOutputs.get(index).getLayoutData();
   }
 
-  ArrayList<LayoutOutput> getMountableOutputTops() {
+  ArrayList<RenderTreeNode> getMountableOutputTops() {
     return mMountableOutputTops;
   }
 
-  ArrayList<LayoutOutput> getMountableOutputBottoms() {
+  ArrayList<RenderTreeNode> getMountableOutputBottoms() {
     return mMountableOutputBottoms;
   }
 
@@ -2099,12 +2120,18 @@ class LayoutState {
     return mTransitionIdMapping.get(transitionId);
   }
 
-  private static void addMountableOutput(LayoutState layoutState, LayoutOutput layoutOutput) {
+  private static void addMountableOutput(
+      final LayoutState layoutState,
+      final LayoutOutput layoutOutput,
+      final @Nullable RenderTreeNode parent) {
+
     layoutOutput.setIndex(layoutState.mMountableOutputs.size());
 
-    layoutState.mMountableOutputs.add(layoutOutput);
-    layoutState.mMountableOutputTops.add(layoutOutput);
-    layoutState.mMountableOutputBottoms.add(layoutOutput);
+    final RenderTreeNode node = LayoutOutput.create(layoutOutput, parent);
+
+    layoutState.mMountableOutputs.add(node);
+    layoutState.mMountableOutputTops.add(node);
+    layoutState.mMountableOutputBottoms.add(node);
   }
 
   /**

@@ -33,6 +33,7 @@ import android.graphics.Rect;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
+import com.facebook.rendercore.RenderTreeNode;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -76,22 +77,22 @@ public class LayoutStateCalculateTopsAndBottomsTest {
     assertThat(layoutState.getMountableOutputBottoms().get(4).getBounds().bottom).isEqualTo(70);
 
     assertThat(layoutState.getMountableOutputAt(2))
-        .isSameAs(layoutState.getMountableOutputTops().get(2));
+        .isSameAs(layoutState.getMountableOutputTops().get(2).getLayoutData());
     assertThat(layoutState.getMountableOutputAt(4))
-        .isSameAs(layoutState.getMountableOutputTops().get(3));
+        .isSameAs(layoutState.getMountableOutputTops().get(3).getLayoutData());
     assertThat(layoutState.getMountableOutputAt(3))
-        .isSameAs(layoutState.getMountableOutputTops().get(4));
+        .isSameAs(layoutState.getMountableOutputTops().get(4).getLayoutData());
 
     assertThat(layoutState.getMountableOutputAt(4))
-        .isSameAs(layoutState.getMountableOutputBottoms().get(0));
+        .isSameAs(layoutState.getMountableOutputBottoms().get(0).getLayoutData());
     assertThat(layoutState.getMountableOutputAt(2))
-        .isSameAs(layoutState.getMountableOutputBottoms().get(1));
+        .isSameAs(layoutState.getMountableOutputBottoms().get(1).getLayoutData());
     assertThat(layoutState.getMountableOutputAt(1))
-        .isSameAs(layoutState.getMountableOutputBottoms().get(2));
+        .isSameAs(layoutState.getMountableOutputBottoms().get(2).getLayoutData());
     assertThat(layoutState.getMountableOutputAt(3))
-        .isSameAs(layoutState.getMountableOutputBottoms().get(3));
+        .isSameAs(layoutState.getMountableOutputBottoms().get(3).getLayoutData());
     assertThat(layoutState.getMountableOutputAt(0))
-        .isSameAs(layoutState.getMountableOutputBottoms().get(4));
+        .isSameAs(layoutState.getMountableOutputBottoms().get(4).getLayoutData());
   }
 
   @Test
@@ -129,22 +130,22 @@ public class LayoutStateCalculateTopsAndBottomsTest {
     assertThat(layoutState.getMountableOutputBottoms().get(3).getBounds().bottom).isEqualTo(50);
 
     assertThat(layoutState.getMountableOutputAt(0))
-        .isSameAs(layoutState.getMountableOutputTops().get(0));
+        .isSameAs(layoutState.getMountableOutputTops().get(0).getLayoutData());
     assertThat(layoutState.getMountableOutputAt(1))
-        .isSameAs(layoutState.getMountableOutputTops().get(1));
+        .isSameAs(layoutState.getMountableOutputTops().get(1).getLayoutData());
     assertThat(layoutState.getMountableOutputAt(2))
-        .isSameAs(layoutState.getMountableOutputTops().get(2));
+        .isSameAs(layoutState.getMountableOutputTops().get(2).getLayoutData());
     assertThat(layoutState.getMountableOutputAt(3))
-        .isSameAs(layoutState.getMountableOutputTops().get(3));
+        .isSameAs(layoutState.getMountableOutputTops().get(3).getLayoutData());
 
     assertThat(layoutState.getMountableOutputAt(0))
-        .isSameAs(layoutState.getMountableOutputBottoms().get(3));
+        .isSameAs(layoutState.getMountableOutputBottoms().get(3).getLayoutData());
     assertThat(layoutState.getMountableOutputAt(1))
-        .isSameAs(layoutState.getMountableOutputBottoms().get(2));
+        .isSameAs(layoutState.getMountableOutputBottoms().get(2).getLayoutData());
     assertThat(layoutState.getMountableOutputAt(2))
-        .isSameAs(layoutState.getMountableOutputBottoms().get(1));
+        .isSameAs(layoutState.getMountableOutputBottoms().get(1).getLayoutData());
     assertThat(layoutState.getMountableOutputAt(3))
-        .isSameAs(layoutState.getMountableOutputBottoms().get(0));
+        .isSameAs(layoutState.getMountableOutputBottoms().get(0).getLayoutData());
   }
 
   @Test
@@ -157,14 +158,14 @@ public class LayoutStateCalculateTopsAndBottomsTest {
           }
         };
 
-    LayoutOutput[] layoutOutputs = new LayoutOutput[4];
+    RenderTreeNode[] layoutOutputs = new RenderTreeNode[4];
     layoutOutputs[0] = createLayoutOutput(component, 0, 10, 0);
     layoutOutputs[1] = createLayoutOutput(component, 0, 10, 1);
     layoutOutputs[2] = createLayoutOutput(component, 0, 20, 2);
     layoutOutputs[3] = createLayoutOutput(component, 0, 20, 3);
 
     // reflexive
-    for (LayoutOutput layoutOutput : layoutOutputs) {
+    for (RenderTreeNode layoutOutput : layoutOutputs) {
       assertThat(sTopsComparator.compare(layoutOutput, layoutOutput)).isEqualTo(0);
     }
 
@@ -203,14 +204,14 @@ public class LayoutStateCalculateTopsAndBottomsTest {
         };
     ;
 
-    LayoutOutput[] layoutOutputs = new LayoutOutput[4];
+    RenderTreeNode[] layoutOutputs = new RenderTreeNode[4];
     layoutOutputs[0] = createLayoutOutput(component, 0, 10, 0);
     layoutOutputs[1] = createLayoutOutput(component, 0, 10, 1);
     layoutOutputs[2] = createLayoutOutput(component, 0, 20, 2);
     layoutOutputs[3] = createLayoutOutput(component, 0, 20, 3);
 
     // reflexive
-    for (LayoutOutput layoutOutput : layoutOutputs) {
+    for (RenderTreeNode layoutOutput : layoutOutputs) {
       assertThat(sBottomsComparator.compare(layoutOutput, layoutOutput)).isEqualTo(0);
     }
 
@@ -250,12 +251,12 @@ public class LayoutStateCalculateTopsAndBottomsTest {
         LayoutState.CalculateLayoutSource.TEST);
   }
 
-  private static LayoutOutput createLayoutOutput(
+  private static RenderTreeNode createLayoutOutput(
       Component component, int top, int bottom, int index) {
     LayoutOutput layoutOutput =
         new LayoutOutput(
             null, null, component, new Rect(0, top, 10, bottom), 0, 0, 0, 0, 0, 0, null);
     layoutOutput.setIndex(index);
-    return layoutOutput;
+    return LayoutOutput.create(layoutOutput, null);
   }
 }

@@ -57,6 +57,11 @@ class ViewNodeInfo {
     return mForeground;
   }
 
+  @Nullable
+  Rect getPadding() {
+    return mPadding;
+  }
+
   int getPaddingLeft() {
     return (mPadding != null) ? mPadding.left : 0;
   }

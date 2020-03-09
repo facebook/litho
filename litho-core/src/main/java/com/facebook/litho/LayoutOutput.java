@@ -19,6 +19,8 @@ package com.facebook.litho;
 import android.graphics.Rect;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
+import com.facebook.rendercore.Reducer;
+import com.facebook.rendercore.RenderTreeNode;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -216,5 +218,15 @@ class LayoutOutput implements Cloneable, AnimatableItem {
   @Nullable
   public TransitionId getTransitionId() {
     return mTransitionId;
+  }
+
+  static RenderTreeNode create(final LayoutOutput output, final @Nullable RenderTreeNode parent) {
+    return new RenderTreeNode(
+        parent,
+        parent != null ? new LithoRenderUnit(output) : Reducer.sRootHostRenderUnit,
+        output,
+        output.getBounds(),
+        output.getViewNodeInfo() != null ? output.getViewNodeInfo().getPadding() : null,
+        parent != null ? parent.getChildrenCount() : 0);
   }
 }

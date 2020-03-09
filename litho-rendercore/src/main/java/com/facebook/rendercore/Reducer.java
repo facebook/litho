@@ -27,7 +27,7 @@ import java.util.ArrayList;
  */
 public class Reducer {
 
-  private static final RenderUnit sRootHostRenderUnit =
+  public static final RenderUnit sRootHostRenderUnit =
       new RenderUnit(RenderUnit.RenderType.VIEW) {
         @Override
         public Object createContent(Context c) {
