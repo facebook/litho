@@ -41,7 +41,7 @@ public class RenderState<State> {
   private static final AtomicInteger ID_GENERATOR = new AtomicInteger(0);
 
   public interface TreeFactory<State> {
-    Pair<Node, State> createTree(Node currentTree, State currentState);
+    Pair<Node, State> createTree();
   }
 
   public interface Delegate<State> {
@@ -56,13 +56,19 @@ public class RenderState<State> {
 
   private static class RenderResult<State> {
     private final RenderTree mRenderTree;
+    private final TreeFactory mTreeFactory;
     private final Node mNodeTree;
     private final LayoutCache mLayoutCache;
     private final State mState;
 
     public RenderResult(
-        RenderTree renderTree, Node nodeTree, LayoutCache layoutCache, State state) {
+        RenderTree renderTree,
+        TreeFactory treeFactory,
+        Node nodeTree,
+        LayoutCache layoutCache,
+        State state) {
       mRenderTree = renderTree;
+      mTreeFactory = treeFactory;
       mNodeTree = nodeTree;
       mLayoutCache = layoutCache;
       mState = state;
@@ -349,7 +355,7 @@ public class RenderState<State> {
     private RenderResultFuture(
         final Context context,
         TreeFactory<State> treeFactory,
-        RenderResult<State> previousResult,
+        final RenderResult<State> previousResult,
         final int setRootId,
         final int widthSpec,
         final int heightSpec) {
@@ -382,8 +388,14 @@ public class RenderState<State> {
                       new LayoutContext(context, setRootId, layoutCache);
 
                   Systrace.sInstance.beginSection("RC Create Tree");
-                  final Pair<Node, State> result =
-                      mTreeFactory.createTree(previousTree, previousState);
+                  final Pair<Node, State> result;
+
+                  if (mPreviousResult != null && mTreeFactory == mPreviousResult.mTreeFactory) {
+                    result = new Pair<>(previousTree, previousState);
+                  } else {
+                    result = mTreeFactory.createTree();
+                  }
+
                   Systrace.sInstance.endSection();
 
                   Systrace.sInstance.beginSection("RC Layout");
@@ -395,6 +407,7 @@ public class RenderState<State> {
                   final RenderResult renderResult =
                       new RenderResult<>(
                           reduce(context, widthSpec, heightSpec, layoutResult),
+                          mTreeFactory,
                           result.first,
                           layoutCache,
                           result.second);
