@@ -25,6 +25,7 @@ class MountItem {
   private @Nullable Host mHost;
   private boolean mBound;
   private RenderTreeNode mRenderTreeNode;
+  private Object mMountData;
 
   MountItem(RenderTreeNode renderTreeNode, @Nullable Host host, Object content) {
     mRenderTreeNode = renderTreeNode;
@@ -67,5 +68,13 @@ class MountItem {
 
   public @Nullable RenderTreeNode getRenderTreeNode() {
     return mRenderTreeNode;
+  }
+
+  public Object getMountData() {
+    return mMountData;
+  }
+
+  public void setMountData(Object mountData) {
+    mMountData = mountData;
   }
 }
