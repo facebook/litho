@@ -56,7 +56,12 @@ public class RenderState<State> {
   }
 
   public interface Delegate<State> {
-    void commit(RenderTree current, RenderTree next, State currentState, State nextState);
+    void commit(
+        int layoutVersion,
+        RenderTree current,
+        RenderTree next,
+        State currentState,
+        State nextState);
 
     void commitToUI(RenderTree tree, State state);
   }
@@ -132,6 +137,8 @@ public class RenderState<State> {
       @Nullable int[] measureOutput) {
     final int setRootId;
     final RenderResultFuture<State> future;
+    final RenderResult<State> previousRenderResult;
+
     synchronized (this) {
       if (version > -1) {
         if (mExternalRootVersion > version) {
@@ -147,6 +154,7 @@ public class RenderState<State> {
         }
       }
 
+      previousRenderResult = mCommittedRenderResult;
       mExternalRootVersion = version;
       mLatestLazyTree = lazyTree;
 
@@ -178,12 +186,6 @@ public class RenderState<State> {
       // handle this, we make sure that the committed setRootId is only ever increased, meaning
       // we only go "forward in time" and will eventually get to the latest layout.
       if (setRootId > mCommittedSetRootId) {
-        mDelegate.commit(
-            mCommittedRenderResult != null ? mCommittedRenderResult.mRenderTree : null,
-            result.mRenderTree,
-            mCommittedRenderResult != null ? mCommittedRenderResult.mState : null,
-            result.mState);
-
         mCommittedSetRootId = setRootId;
         mCommittedRenderResult = result;
         committedNewLayout = true;
@@ -200,6 +202,12 @@ public class RenderState<State> {
     }
 
     if (committedNewLayout) {
+      mDelegate.commit(
+          setRootId,
+          previousRenderResult != null ? previousRenderResult.mRenderTree : null,
+          result.mRenderTree,
+          previousRenderResult != null ? previousRenderResult.mState : null,
+          result.mState);
       schedulePromoteCommittedTreeToUI();
     }
   }
@@ -244,9 +252,11 @@ public class RenderState<State> {
   private void measureImpl(int widthSpec, int heightSpec, @Nullable int[] measureOutput) {
     final int setRootId;
     final RenderResultFuture<State> future;
+    final RenderResult<State> previousResult;
     synchronized (this) {
       mWidthSpec = widthSpec;
       mHeightSpec = heightSpec;
+      previousResult = mCommittedRenderResult;
 
       if (mCommittedRenderResult != null
           && hasCompatibleSize(mCommittedRenderResult.mRenderTree, widthSpec, heightSpec)
@@ -278,12 +288,6 @@ public class RenderState<State> {
     boolean committedNewLayout = false;
     synchronized (this) {
       if (setRootId > mCommittedSetRootId) {
-        mDelegate.commit(
-            mCommittedRenderResult != null ? mCommittedRenderResult.mRenderTree : null,
-            result.mRenderTree,
-            mCommittedRenderResult != null ? mCommittedRenderResult.mState : null,
-            result.mState);
-
         mCommittedSetRootId = setRootId;
         mCommittedRenderResult = result;
         committedNewLayout = true;
@@ -300,6 +304,12 @@ public class RenderState<State> {
     }
 
     if (committedNewLayout) {
+      mDelegate.commit(
+          setRootId,
+          previousResult != null ? previousResult.mRenderTree : null,
+          result.mRenderTree,
+          previousResult != null ? previousResult.mState : null,
+          result.mState);
       schedulePromoteCommittedTreeToUI();
     }
   }
