@@ -20,18 +20,29 @@ import static com.facebook.litho.ComponentUtils.hasEquivalentFields;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import com.facebook.litho.annotations.Comparable;
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.config.ComponentsConfiguration;
 import java.util.Arrays;
 import java.util.Collection;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.ParameterizedRobolectricTestRunner;
 
-@RunWith(ComponentsTestRunner.class)
+@RunWith(ParameterizedRobolectricTestRunner.class)
 public class ComponentUtilsTest {
 
   private ComponentTest mC1;
   private ComponentTest mC2;
+
+  @ParameterizedRobolectricTestRunner.Parameters(name = "{0}")
+  public static Collection data() {
+    return Arrays.asList(new Object[][] {{true}, {false}});
+  }
+
+  // Run all the tests with and without field.getAnnotationUsage()
+  public ComponentUtilsTest(boolean disableGetAnnotationUsage) {
+    ComponentsConfiguration.disableGetAnnotationUsage = disableGetAnnotationUsage;
+  }
 
   @Before
   public void setUp() {
