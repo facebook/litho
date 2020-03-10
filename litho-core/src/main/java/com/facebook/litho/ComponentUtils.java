@@ -17,8 +17,12 @@
 package com.facebook.litho;
 
 import com.facebook.litho.annotations.Comparable;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.drawable.ComparableDrawable;
 import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.lang.reflect.WildcardType;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Deque;
@@ -104,104 +108,224 @@ public class ComponentUtils {
         throw new IllegalStateException("Unable to get fields by reflection.", e);
       }
 
-      @Comparable.Type int comparableType;
-      try {
-        comparableType = field.getAnnotation(Comparable.class).type();
-      } catch (IncompatibleClassChangeError | NullPointerException ignore) {
-        /**
-         * Libraries which uses annotations is facing this intermittently in Lollypop 5.0, 5.0.1 &
-         * 5.0.2). Google closed this saying it is infeasible to fix this in older OS versions.
-         *
-         * <p>https://issuetracker.google.com/issues/37045084
-         * https://github.com/google/gson/issues/726
-         */
-        return false;
-      }
-      switch (comparableType) {
-        case Comparable.FLOAT:
-          if (Float.compare((Float) val1, (Float) val2) != 0) {
-            return false;
-          }
-          break;
-
-        case Comparable.DOUBLE:
-          if (Double.compare((Double) val1, (Double) val2) != 0) {
-            return false;
-          }
-          break;
-
-        case Comparable.ARRAY:
-          if (!areArraysEquals(classType, val1, val2)) {
-            return false;
-          }
-          break;
-
-        case Comparable.PRIMITIVE:
-          if (!val1.equals(val2)) {
-            return false;
-          }
-          break;
-
-        case Comparable.COMPARABLE_DRAWABLE:
-          if (!((ComparableDrawable) val1).isEquivalentTo((ComparableDrawable) val2)) {
-            return false;
-          }
-          break;
-
-        case Comparable.COLLECTION_COMPLEVEL_0:
-          final Collection c1 = (Collection) val1;
-          final Collection c2 = (Collection) val2;
-          if (c1 != null ? !c1.equals(c2) : c2 != null) {
-            return false;
-          }
-          break;
-
-        case Comparable.COLLECTION_COMPLEVEL_1:
-        case Comparable.COLLECTION_COMPLEVEL_2:
-        case Comparable.COLLECTION_COMPLEVEL_3:
-        case Comparable.COLLECTION_COMPLEVEL_4:
-          // N.B. This relies on the IntDef to be in increasing order.
-          int level = comparableType - Comparable.COLLECTION_COMPLEVEL_0;
-          if (!areComponentCollectionsEquals(level, (Collection) val1, (Collection) val2)) {
-            return false;
-          }
-          break;
-
-        case Comparable.COMPONENT:
-        case Comparable.SECTION:
-          if (val1 != null ? !((Equivalence) val1).isEquivalentTo(val2) : val2 != null) {
-            return false;
-          }
-          break;
-
-        case Comparable.EVENT_HANDLER:
-        case Comparable.EVENT_HANDLER_IN_PARAMETERIZED_TYPE:
-          if (val1 != null
-              ? !((EventHandler) val1).isEquivalentTo((EventHandler) val2)
-              : val2 != null) {
-            return false;
-          }
-          break;
-
-        case Comparable.OTHER:
-          if (val1 != null ? !val1.equals(val2) : val2 != null) {
-            return false;
-          }
-          break;
-
-        case Comparable.STATE_CONTAINER:
-          if (shouldCompareStateContainers) {
-            // If we have a state container field, we need to recursively call this method to
-            // inspect the state fields.
-            if (!hasEquivalentFields(val1, val2, /* shouldCompareStateContainers */ true)) {
-              return false;
-            }
-          }
-          break;
+      boolean intermediateResult =
+          ComponentsConfiguration.disableGetAnnotationUsage
+              ? isEquivalentUtilWithoutGetAnnotation(
+                  field, classType, val1, val2, shouldCompareStateContainers)
+              : isEquivalentUtil(field, classType, val1, val2, shouldCompareStateContainers);
+      if (!intermediateResult) {
+        return intermediateResult;
       }
     }
 
     return true;
+  }
+
+  private static boolean isEquivalentUtil(
+      Field field,
+      Class<?> classType,
+      @Nullable Object val1,
+      @Nullable Object val2,
+      boolean shouldCompareStateContainers) {
+    @Comparable.Type int comparableType;
+    try {
+      comparableType = field.getAnnotation(Comparable.class).type();
+    } catch (IncompatibleClassChangeError | NullPointerException ignore) {
+      /**
+       * Libraries which uses annotations is facing this intermittently in Lollypop 5.0, 5.0.1 &
+       * 5.0.2). Google closed this saying it is infeasible to fix this in older OS versions.
+       *
+       * <p>https://issuetracker.google.com/issues/37045084
+       * https://github.com/google/gson/issues/726
+       */
+      return false;
+    }
+    switch (comparableType) {
+      case Comparable.FLOAT:
+        if (Float.compare((Float) val1, (Float) val2) != 0) {
+          return false;
+        }
+        break;
+
+      case Comparable.DOUBLE:
+        if (Double.compare((Double) val1, (Double) val2) != 0) {
+          return false;
+        }
+        break;
+
+      case Comparable.ARRAY:
+        if (!areArraysEquals(classType, val1, val2)) {
+          return false;
+        }
+        break;
+
+      case Comparable.PRIMITIVE:
+        if (!val1.equals(val2)) {
+          return false;
+        }
+        break;
+
+      case Comparable.COMPARABLE_DRAWABLE:
+        if (!((ComparableDrawable) val1).isEquivalentTo((ComparableDrawable) val2)) {
+          return false;
+        }
+        break;
+
+      case Comparable.COLLECTION_COMPLEVEL_0:
+        final Collection c1 = (Collection) val1;
+        final Collection c2 = (Collection) val2;
+        if (c1 != null ? !c1.equals(c2) : c2 != null) {
+          return false;
+        }
+        break;
+
+      case Comparable.COLLECTION_COMPLEVEL_1:
+      case Comparable.COLLECTION_COMPLEVEL_2:
+      case Comparable.COLLECTION_COMPLEVEL_3:
+      case Comparable.COLLECTION_COMPLEVEL_4:
+        // N.B. This relies on the IntDef to be in increasing order.
+        int level = comparableType - Comparable.COLLECTION_COMPLEVEL_0;
+        if (!areComponentCollectionsEquals(level, (Collection) val1, (Collection) val2)) {
+          return false;
+        }
+        break;
+
+      case Comparable.COMPONENT:
+      case Comparable.SECTION:
+        if (val1 != null ? !((Equivalence) val1).isEquivalentTo(val2) : val2 != null) {
+          return false;
+        }
+        break;
+
+      case Comparable.EVENT_HANDLER:
+      case Comparable.EVENT_HANDLER_IN_PARAMETERIZED_TYPE:
+        if (val1 != null
+            ? !((EventHandler) val1).isEquivalentTo((EventHandler) val2)
+            : val2 != null) {
+          return false;
+        }
+        break;
+
+      case Comparable.OTHER:
+        if (val1 != null ? !val1.equals(val2) : val2 != null) {
+          return false;
+        }
+        break;
+
+      case Comparable.STATE_CONTAINER:
+        if (shouldCompareStateContainers) {
+          // If we have a state container field, we need to recursively call this method to
+          // inspect the state fields.
+          if (!hasEquivalentFields(val1, val2, /* shouldCompareStateContainers */ true)) {
+            return false;
+          }
+        }
+        break;
+    }
+    return true;
+  }
+
+  private static boolean isEquivalentUtilWithoutGetAnnotation(
+      Field field,
+      Class<?> classType,
+      @Nullable Object val1,
+      @Nullable Object val2,
+      boolean shouldCompareStateContainers) {
+
+    final Type type = field.getGenericType();
+
+    if (classType.isArray()) {
+      if (!areArraysEquals(classType, val1, val2)) {
+        return false;
+      }
+
+    } else if (Double.TYPE.isAssignableFrom(classType)) {
+      if (Double.compare((Double) val1, (Double) val2) != 0) {
+        return false;
+      }
+
+    } else if (Float.TYPE.isAssignableFrom(classType)) {
+      if (Float.compare((Float) val1, (Float) val2) != 0) {
+        return false;
+      }
+
+    } else if (ComparableDrawable.class.isAssignableFrom(classType)) {
+      if (val1 != null
+          ? !((ComparableDrawable) val1).isEquivalentTo((ComparableDrawable) val2)
+          : val2 != null) {
+        return false;
+      }
+
+    } else if (Collection.class.isAssignableFrom(classType)) {
+      final Collection c1 = (Collection) val1;
+      final Collection c2 = (Collection) val2;
+      final int level = levelOfComponentsInCollection(type);
+      if (level > 0) {
+        if (!areComponentCollectionsEquals(level, c1, c2)) {
+          return false;
+        }
+      } else {
+        if (c1 != null ? !c1.equals(c2) : c2 != null) {
+          return false;
+        }
+      }
+      // Sections & Components implement Equivalence interface.
+    } else if (Equivalence.class.isAssignableFrom(classType)) {
+      if (val1 != null ? !((Equivalence) val1).isEquivalentTo(val2) : val2 != null) {
+        return false;
+      }
+
+    } else if (EventHandler.class.isAssignableFrom(classType)
+        || (type instanceof ParameterizedType
+            && EventHandler.class.isAssignableFrom(
+                (Class) ((ParameterizedType) type).getRawType()))) {
+      if (val1 != null
+          ? !((EventHandler) val1).isEquivalentTo((EventHandler) val2)
+          : val2 != null) {
+        return false;
+      }
+
+      // StateContainers have also fields that we need to check for being equivalent.
+    } else if (shouldCompareStateContainers && StateContainer.class.isAssignableFrom(classType)) {
+      if (!hasEquivalentFields(val1, val2)) {
+        return false;
+      }
+
+    } else if (val1 != null ? !val1.equals(val2) : val2 != null) {
+      return false;
+    }
+    return true;
+  }
+
+  /**
+   * Calculate the level of the target Component/Section. The level here means how many bracket
+   * pairs are needed to break until reaching the component type. For example, the level of
+   * {@literal List<Component>} is 1, and the level of {@literal List<List<Component>>} is 2.
+   *
+   * @return the level of the target component, or 0 if the target isn't a component.
+   */
+  static int levelOfComponentsInCollection(Type type) {
+    int level = 0;
+
+    while (true) {
+      if (isParameterizedCollection(type)) {
+        type = ((ParameterizedType) type).getActualTypeArguments()[0];
+        level++;
+
+      } else if (type instanceof WildcardType) {
+        type = ((WildcardType) type).getUpperBounds()[0];
+
+      } else {
+        break;
+      }
+    }
+
+    return (type instanceof Class) && Component.class.isAssignableFrom((Class) type) ? level : 0;
+  }
+
+  private static boolean isParameterizedCollection(Type type) {
+    return (type instanceof ParameterizedType)
+        && Collection.class.isAssignableFrom((Class) ((ParameterizedType) type).getRawType());
   }
 
   private static boolean areArraysEquals(Class<?> classType, Object val1, Object val2) {
