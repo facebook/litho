@@ -199,7 +199,8 @@ public class RecyclerBinder
   private MeasureListener getMeasureListener(final ComponentTreeHolder holder) {
     return new MeasureListener() {
       @Override
-      public void onSetRootAndSizeSpec(int width, int height) {
+      public void onSetRootAndSizeSpec(
+          int layoutVersion, int width, int height, boolean stateUpdate) {
         if (holder.getMeasuredHeight() == height) {
           return;
         }
@@ -2553,7 +2554,7 @@ public class RecyclerBinder
     final MeasureListener measureListener =
         new ComponentTree.MeasureListener() {
           @Override
-          public void onSetRootAndSizeSpec(int w, int h) {
+          public void onSetRootAndSizeSpec(int layoutVersion, int w, int h, boolean stateUpdate) {
             maybeScheduleOneAsyncLayoutDuringInitRange(asyncRangeIterator);
             nextHolder.clearMeasureListener(this);
           }

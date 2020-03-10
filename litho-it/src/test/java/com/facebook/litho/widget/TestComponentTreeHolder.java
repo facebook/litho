@@ -89,7 +89,7 @@ public class TestComponentTreeHolder extends ComponentTreeHolder {
     mChildWidth = SizeSpec.getSize(widthSpec);
     mChildHeight = SizeSpec.getSize(heightSpec);
     if (measureListener != null && mEnableAsyncLayoutsDuringInitRange) {
-      measureListener.onSetRootAndSizeSpec(mChildWidth, mChildHeight);
+      measureListener.onSetRootAndSizeSpec(0, mChildWidth, mChildHeight, false);
     }
   }
 

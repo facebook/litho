@@ -211,7 +211,8 @@ public class ComponentTreeTest {
     int mHeight = 0;
 
     @Override
-    public void onSetRootAndSizeSpec(int width, int height) {
+    public void onSetRootAndSizeSpec(
+        int layoutVersion, int width, int height, boolean stateUpdate) {
       mWidth = width;
       mHeight = height;
     }
