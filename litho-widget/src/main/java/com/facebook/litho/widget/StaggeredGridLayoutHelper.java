@@ -19,40 +19,25 @@ package com.facebook.litho.widget;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 public class StaggeredGridLayoutHelper {
-  private static int[] mItemPositionsHolder;
 
   public static int findFirstVisibleItemPosition(
       StaggeredGridLayoutManager staggeredGridLayoutManager) {
-    if (mItemPositionsHolder == null) {
-      mItemPositionsHolder = new int[staggeredGridLayoutManager.getSpanCount()];
-    }
-    return min(staggeredGridLayoutManager.findFirstVisibleItemPositions(mItemPositionsHolder));
+    return min(staggeredGridLayoutManager.findFirstVisibleItemPositions(null));
   }
 
   public static int findLastVisibleItemPosition(
       StaggeredGridLayoutManager staggeredGridLayoutManager) {
-    if (mItemPositionsHolder == null) {
-      mItemPositionsHolder = new int[staggeredGridLayoutManager.getSpanCount()];
-    }
-    return max(staggeredGridLayoutManager.findLastVisibleItemPositions(mItemPositionsHolder));
+    return max(staggeredGridLayoutManager.findLastVisibleItemPositions(null));
   }
 
   public static int findFirstFullyVisibleItemPosition(
       StaggeredGridLayoutManager staggeredGridLayoutManager) {
-    if (mItemPositionsHolder == null) {
-      mItemPositionsHolder = new int[staggeredGridLayoutManager.getSpanCount()];
-    }
-    return min(
-        staggeredGridLayoutManager.findFirstCompletelyVisibleItemPositions(mItemPositionsHolder));
+    return min(staggeredGridLayoutManager.findFirstCompletelyVisibleItemPositions(null));
   }
 
   public static int findLastFullyVisibleItemPosition(
       StaggeredGridLayoutManager staggeredGridLayoutManager) {
-    if (mItemPositionsHolder == null) {
-      mItemPositionsHolder = new int[staggeredGridLayoutManager.getSpanCount()];
-    }
-    return max(
-        staggeredGridLayoutManager.findLastCompletelyVisibleItemPositions(mItemPositionsHolder));
+    return max(staggeredGridLayoutManager.findLastCompletelyVisibleItemPositions(null));
   }
 
   private static int min(int[] a) {

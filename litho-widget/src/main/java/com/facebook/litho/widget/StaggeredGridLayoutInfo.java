@@ -221,6 +221,8 @@ public class StaggeredGridLayoutInfo implements LayoutInfo {
   private static class LithoStaggeredGridLayoutManager extends StaggeredGridLayoutManager {
     private boolean mEagerlyClearsSpanAssignmentsOnUpdates;
     private boolean mInvalidatesItemDecorationsOnUpdates;
+    // We hold this staggered grid result to avoid unnecessary int[] creations.
+    private int[] mStaggeredGridResult;
 
     // Pairs with mInvalidatesItemDecorationsOnUpdates to store the RecyclerView requiring
     // invalidation, since the RecyclerView isn't available as a member.
@@ -233,7 +235,6 @@ public class StaggeredGridLayoutInfo implements LayoutInfo {
         boolean eagerlyClearsSpanAssignmentsOnUpdates,
         boolean invalidatesItemDecorationsOnUpdates) {
       super(spanCount, orientation);
-
       mEagerlyClearsSpanAssignmentsOnUpdates = eagerlyClearsSpanAssignmentsOnUpdates;
       mInvalidatesItemDecorationsOnUpdates = invalidatesItemDecorationsOnUpdates;
     }
@@ -358,6 +359,36 @@ public class StaggeredGridLayoutInfo implements LayoutInfo {
       public boolean hasValidAdapterPosition() {
         return false;
       }
+    }
+
+    @Override
+    public int[] findLastCompletelyVisibleItemPositions(@Nullable int[] into) {
+      return super.findLastCompletelyVisibleItemPositions(getStaggeredGridResult(into));
+    }
+
+    @Override
+    public int[] findFirstCompletelyVisibleItemPositions(@Nullable int[] into) {
+      return super.findLastCompletelyVisibleItemPositions(getStaggeredGridResult(into));
+    }
+
+    @Override
+    public int[] findLastVisibleItemPositions(@Nullable int[] into) {
+      return super.findLastVisibleItemPositions(getStaggeredGridResult(into));
+    }
+
+    @Override
+    public int[] findFirstVisibleItemPositions(@Nullable int[] into) {
+      return super.findFirstVisibleItemPositions(getStaggeredGridResult(into));
+    }
+
+    private int[] getStaggeredGridResult(int[] into) {
+      if (into == null) {
+        if (mStaggeredGridResult == null) {
+          mStaggeredGridResult = new int[getSpanCount()];
+        }
+        into = mStaggeredGridResult;
+      }
+      return into;
     }
   }
 

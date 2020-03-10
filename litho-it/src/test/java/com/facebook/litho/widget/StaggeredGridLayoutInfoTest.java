@@ -219,6 +219,24 @@ public class StaggeredGridLayoutInfoTest {
     assertThat(viewportFiller.getFill()).isEqualTo(maxWidth);
   }
 
+  /**
+   * This test created for SLA task T63231517 Creating two different staggered grid layouts with the
+   * first one with a smaller span count would crash the second one.
+   */
+  @Test
+  public void testTwoStaggeredGridWithDifferentSpanCounts() {
+    final int spanCountOne = 2;
+    final int spanCountTow = 3;
+
+    StaggeredGridLayoutInfo staggeredGridLayoutInfoOne =
+        createStaggeredGridLayoutInfo(VERTICAL, spanCountOne);
+    StaggeredGridLayoutInfo staggeredGridLayoutInfoTwo =
+        createStaggeredGridLayoutInfo(VERTICAL, spanCountTow);
+
+    staggeredGridLayoutInfoOne.findFirstFullyVisibleItemPosition();
+    staggeredGridLayoutInfoTwo.findFirstFullyVisibleItemPosition();
+  }
+
   private static StaggeredGridLayoutInfo createStaggeredGridLayoutInfo(
       int direction, int spanCount) {
     return new StaggeredGridLayoutInfo(
