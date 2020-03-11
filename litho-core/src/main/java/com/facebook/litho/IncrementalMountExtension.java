@@ -24,6 +24,7 @@ import static com.facebook.litho.ThreadUtils.assertMainThread;
 import android.graphics.Rect;
 import android.view.View;
 import android.view.ViewGroup;
+import androidx.annotation.Nullable;
 import com.facebook.litho.MountDelegate.MountDelegateInput;
 import com.facebook.litho.stats.LithoStats;
 import com.facebook.rendercore.MountItem;
@@ -66,6 +67,7 @@ public class IncrementalMountExtension extends MountDelegateExtension
 
     final Rect localVisibleRect = mLithoView.getVisibleRect();
     initIncrementalMount(localVisibleRect);
+    setVisibleRect(localVisibleRect);
   }
 
   @Override
@@ -93,13 +95,17 @@ public class IncrementalMountExtension extends MountDelegateExtension
       performIncrementalMount(localVisibleRect);
     }
 
-    if (localVisibleRect != null) {
-      mPreviousLocalVisibleRect.set(localVisibleRect);
-    }
+    setVisibleRect(localVisibleRect);
 
     LithoStats.incrementComponentMountCount();
 
     mIsMounting = false;
+  }
+
+  private void setVisibleRect(@Nullable Rect localVisibleRect) {
+    if (localVisibleRect != null) {
+      mPreviousLocalVisibleRect.set(localVisibleRect);
+    }
   }
 
   @Override
