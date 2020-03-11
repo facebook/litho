@@ -43,7 +43,6 @@ import com.facebook.litho.widget.TextAlignment
 import com.facebook.samples.litho.kotlin.animations.messages.Message
 import com.facebook.yoga.YogaAlign
 import com.facebook.yoga.YogaEdge
-import java.util.ArrayList
 
 @LayoutSpec
 object ExpandableElementRootComponentSpec {
@@ -116,7 +115,7 @@ object ExpandableElementRootComponentSpec {
       @Param adding: Boolean,
       @Param initialMessagesSize: Int
   ) {
-    val updatedMessageList = ArrayList(messages.get())
+    val updatedMessageList = messages.get()!!.toMutableList()
 
     val counterValue = counter.get()
     if (adding) {
