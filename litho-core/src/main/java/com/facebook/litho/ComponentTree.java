@@ -121,18 +121,17 @@ public class ComponentTree {
   public interface MeasureListener {
 
     /**
-     * This callback gets called every time a ComponentTree commits a new layout computation.
-     * The call is executed on the same thread that computed the newly committed layout but
-     * outside the commit lock.
-     * This means that in practice the calls are not guaranteed to be ordered. A layout X committed
-     * before a layout Y could end up executing its MeasureListener's callback after the callback
-     * of layout Y.
-     * Clients that need guarantee over the ordering can rely on the layoutVersion parameter that
-     * is guaranteed to be increasing for successive commits (in the example layout X callback will
-     * receive a layoutVersion that is lower than the layoutVersion for layout Y)
+     * This callback gets called every time a ComponentTree commits a new layout computation. The
+     * call is executed on the same thread that computed the newly committed layout but outside the
+     * commit lock. This means that in practice the calls are not guaranteed to be ordered. A layout
+     * X committed before a layout Y could end up executing its MeasureListener's callback after the
+     * callback of layout Y. Clients that need guarantee over the ordering can rely on the
+     * layoutVersion parameter that is guaranteed to be increasing for successive commits (in the
+     * example layout X callback will receive a layoutVersion that is lower than the layoutVersion
+     * for layout Y)
      *
      * @param layoutVersion the layout version associated with the layout that triggered this
-     * callback
+     *     callback
      * @param width the resulting width from the committed layout computation
      * @param height the resulting height from the committed layout computation
      * @param stateUpdate whether this layout computation was triggered by a state update.
