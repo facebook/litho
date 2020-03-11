@@ -709,15 +709,19 @@ class EditTextSpec {
     }
 
     if (cursorDrawableRes != -1) {
-      try {
-        // Uses reflection because there is no public API to change cursor color programmatically.
-        // Based on
-        // http://stackoverflow.com/questions/25996032/how-to-change-programatically-edittext-cursor-color-in-android.
-        Field f = TextView.class.getDeclaredField("mCursorDrawableRes");
-        f.setAccessible(true);
-        f.set(editText, cursorDrawableRes);
-      } catch (Exception exception) {
-        // no-op don't set cursor drawable
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        editText.setTextCursorDrawable(cursorDrawableRes);
+      } else {
+        try {
+          // Uses reflection because there is no public API to change cursor color programmatically.
+          // Based on
+          // http://stackoverflow.com/questions/25996032/how-to-change-programatically-edittext-cursor-color-in-android.
+          Field f = TextView.class.getDeclaredField("mCursorDrawableRes");
+          f.setAccessible(true);
+          f.set(editText, cursorDrawableRes);
+        } catch (Exception exception) {
+          // no-op don't set cursor drawable
+        }
       }
     }
 
