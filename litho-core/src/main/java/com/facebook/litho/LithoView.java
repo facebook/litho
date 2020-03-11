@@ -964,6 +964,10 @@ public class LithoView extends Host {
       if (currentVisibleArea != null && !mMountState.isDirty()) {
         mLithoHostListenerCoordinator.onViewOffset();
       } else {
+
+        // TODO: move to extension or handle in some way. T
+        mMountState.updateTransitions(layoutState, getComponentTree());
+
         if (mLithoHostListenerCoordinator != null) {
           mLithoHostListenerCoordinator.beforeMount(layoutState);
         }
