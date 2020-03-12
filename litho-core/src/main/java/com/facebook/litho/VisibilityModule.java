@@ -17,7 +17,6 @@
 package com.facebook.litho;
 
 import android.graphics.Rect;
-import android.view.View;
 import androidx.annotation.Nullable;
 import com.facebook.litho.IncrementalModule.IncrementalModuleItem;
 import com.facebook.litho.VisibilityModuleInput.FocusedIncrementalModuleItem;
@@ -35,13 +34,13 @@ public class VisibilityModule {
   private @Nullable Map<String, VisibilityOutput> mVisibilityRatioChanged;
   private final List<IncrementalModuleItem> mLazySortTops = new ArrayList<>();
   private final List<IncrementalModuleItem> mLazySortBottoms = new ArrayList<>();
-  private View mView;
+  private LithoView mLithoView;
 
-  public VisibilityModule(View view) {
-    mView = view;
-    mIncrementalModuleVisibility = new IncrementalModule(view);
-    mIncrementalModuleFullImpression = new IncrementalModule(view);
-    mIncrementalModuleFocused = new IncrementalModule(view);
+  public VisibilityModule(LithoView lithoView) {
+    mLithoView = lithoView;
+    mIncrementalModuleVisibility = new IncrementalModule(lithoView);
+    mIncrementalModuleFullImpression = new IncrementalModule(lithoView);
+    mIncrementalModuleFocused = new IncrementalModule(lithoView);
     mVisibilityRatioChanged = new HashMap<>();
   }
 
@@ -50,7 +49,7 @@ public class VisibilityModule {
       VisibilityModuleInput visibilityModuleInput,
       @Nullable Rect localVisibleRect,
       @Nullable Rect previousLocalVisibleRect) {
-    if (mView == null) {
+    if (mLithoView == null) {
       throw new IllegalStateException(
           "Trying to process visibility outputs but module has not been initialized with a LithoView");
     }
@@ -69,7 +68,7 @@ public class VisibilityModule {
 
           if (!lazySortItems.isEmpty()) {
             for (int i = 0, size = lazySortItems.size(); i < size; i++) {
-              lazySortItems.get(i).onLithoViewAvailable(mView);
+              lazySortItems.get(i).onLithoViewAvailable(mLithoView);
             }
             Collections.sort(mLazySortTops, IncrementalModule.sTopsComparators);
             Collections.sort(mLazySortBottoms, IncrementalModule.sBottomsComparator);

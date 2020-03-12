@@ -25,7 +25,6 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 import android.graphics.Rect;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestViewComponent;
@@ -34,7 +33,6 @@ import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
 import com.facebook.yoga.YogaEdge;
 import java.util.Map;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -48,12 +46,9 @@ public class VisibilityEventsTest {
   private ComponentContext mContext;
   private LithoView mLithoView;
   private FrameLayout mParent;
-  private boolean configWithExtensions;
 
   @Before
   public void setup() {
-    configWithExtensions = ComponentsConfiguration.useRenderCoreMount;
-    ComponentsConfiguration.useRenderCoreMount = false;
     mContext = new ComponentContext(RuntimeEnvironment.application);
 
     mLithoView = new LithoView(mContext);
@@ -63,11 +58,6 @@ public class VisibilityEventsTest {
     mParent.setRight(10);
     mParent.setBottom(10);
     mParent.addView(mLithoView);
-  }
-
-  @After
-  public void cleanup() {
-    ComponentsConfiguration.useRenderCoreMount = configWithExtensions;
   }
 
   @Test

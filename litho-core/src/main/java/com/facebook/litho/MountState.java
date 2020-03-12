@@ -751,7 +751,7 @@ class MountState
         ComponentsSystrace.beginSection("processVisibilityOutputs");
       }
 
-      if (layoutState.isIncrementalVisibilityEnabled()) {
+      if (layoutState.incrementalVisibilityEnabled()) {
         if (mVisibilityModule == null) {
           if (mLithoView == null) {
             return;

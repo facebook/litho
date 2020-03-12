@@ -24,7 +24,6 @@ public class LithoHostListenerCoordinator implements HostListenerExtension<Objec
 
   private final List<HostListenerExtension> mMountExtensions;
   private IncrementalMountExtension mIncrementalMountExtension;
-  private VisibilityOutputsExtension mVisibilityOutputsExtension;
 
   public LithoHostListenerCoordinator() {
     mMountExtensions = new ArrayList<>();
@@ -75,16 +74,6 @@ public class LithoHostListenerCoordinator implements HostListenerExtension<Objec
     mIncrementalMountExtension = new IncrementalMountExtension(lithoView);
     mountState.registerMountDelegateExtension(mIncrementalMountExtension);
     registerListener(mIncrementalMountExtension);
-  }
-
-  void enableVisibilityProcessing(LithoView lithoView) {
-    if (mVisibilityOutputsExtension != null) {
-      throw new IllegalStateException(
-          "Visibility processing has already been enabled on this coordinator");
-    }
-
-    mVisibilityOutputsExtension = new VisibilityOutputsExtension(lithoView);
-    registerListener(mVisibilityOutputsExtension);
   }
 
   private void registerListener(HostListenerExtension mountListenerExtension) {
