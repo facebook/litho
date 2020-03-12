@@ -19,9 +19,8 @@ package com.facebook.litho;
 import static android.graphics.Color.BLUE;
 import static android.graphics.Color.RED;
 import static com.facebook.litho.Column.create;
-import static com.facebook.litho.LayoutOutput.getLayoutOutput;
 import static com.facebook.litho.LayoutState.calculate;
-import static com.facebook.litho.LithoMountData.isDuplicateParentState;
+import static com.facebook.litho.MountItem.isDuplicateParentState;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 import static org.assertj.core.api.Java6Assertions.assertThat;
@@ -92,36 +91,36 @@ public class DuplicateParentStateTest {
 
     assertTrue(
         "Clickable root output has duplicate state",
-        isDuplicateParentState(getLayoutOutput(layoutState.getMountableOutputAt(0)).getFlags()));
+        isDuplicateParentState(layoutState.getMountableOutputAt(0).getFlags()));
 
     assertFalse(
         "Parent doesn't duplicate host state",
-        isDuplicateParentState(getLayoutOutput(layoutState.getMountableOutputAt(1)).getFlags()));
+        isDuplicateParentState(layoutState.getMountableOutputAt(1).getFlags()));
 
     assertTrue(
         "Parent does duplicate host state",
-        isDuplicateParentState(getLayoutOutput(layoutState.getMountableOutputAt(2)).getFlags()));
+        isDuplicateParentState(layoutState.getMountableOutputAt(2).getFlags()));
 
     assertTrue(
         "Drawable duplicates clickable parent state",
-        isDuplicateParentState(getLayoutOutput(layoutState.getMountableOutputAt(4)).getFlags()));
+        isDuplicateParentState(layoutState.getMountableOutputAt(4).getFlags()));
 
     assertFalse(
         "Drawable doesn't duplicate clickable parent state",
-        isDuplicateParentState(getLayoutOutput(layoutState.getMountableOutputAt(6)).getFlags()));
+        isDuplicateParentState(layoutState.getMountableOutputAt(6).getFlags()));
 
     assertTrue(
         "Background should duplicate clickable node state",
-        isDuplicateParentState(getLayoutOutput(layoutState.getMountableOutputAt(8)).getFlags()));
+        isDuplicateParentState(layoutState.getMountableOutputAt(8).getFlags()));
     assertTrue(
         "Foreground should duplicate clickable node state",
-        isDuplicateParentState(getLayoutOutput(layoutState.getMountableOutputAt(9)).getFlags()));
+        isDuplicateParentState(layoutState.getMountableOutputAt(9).getFlags()));
 
     assertFalse(
         "Background should duplicate non-clickable node state",
-        isDuplicateParentState(getLayoutOutput(layoutState.getMountableOutputAt(10)).getFlags()));
+        isDuplicateParentState(layoutState.getMountableOutputAt(10).getFlags()));
     assertFalse(
         "Foreground should duplicate non-clickable node state",
-        isDuplicateParentState(getLayoutOutput(layoutState.getMountableOutputAt(11)).getFlags()));
+        isDuplicateParentState(layoutState.getMountableOutputAt(11).getFlags()));
   }
 }

@@ -18,7 +18,6 @@ package com.facebook.litho;
 
 import static com.facebook.litho.Component.isHostSpec;
 import static com.facebook.litho.Component.isMountViewSpec;
-import static com.facebook.litho.LithoMountData.getMountData;
 
 import android.content.res.Resources;
 import android.graphics.Canvas;
@@ -28,7 +27,6 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import com.facebook.litho.config.ComponentsConfiguration;
-import com.facebook.rendercore.MountItem;
 
 /** Draw operations used in developer options. */
 class DebugDraw {
@@ -78,7 +76,7 @@ class DebugDraw {
     for (int i = host.getMountItemCount() - 1; i >= 0; i--) {
       final MountItem item = host.getMountItemAt(i);
 
-      final Component component = getMountData(item).getComponent();
+      final Component component = item.getComponent();
       if (!isMountViewSpec(component) || isHostSpec(component)) {
         continue;
       }
@@ -121,7 +119,7 @@ class DebugDraw {
     for (int i = host.getMountItemCount() - 1; i >= 0; i--) {
       final MountItem item = host.getMountItemAt(i);
 
-      final Component component = getMountData(item).getComponent();
+      final Component component = item.getComponent();
       final Object content = item.getContent();
 
       if (!shouldHighlight(component)) {

@@ -33,9 +33,9 @@ import static com.facebook.litho.FrameworkLogEvents.PARAM_COMPONENT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_IS_BACKGROUND_LAYOUT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_LAYOUT_STATE_SOURCE;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_TREE_DIFF_ENABLED;
-import static com.facebook.litho.LithoMountData.LAYOUT_FLAG_DISABLE_TOUCHABLE;
-import static com.facebook.litho.LithoMountData.LAYOUT_FLAG_DUPLICATE_PARENT_STATE;
-import static com.facebook.litho.LithoMountData.LAYOUT_FLAG_MATCH_HOST_BOUNDS;
+import static com.facebook.litho.MountItem.LAYOUT_FLAG_DISABLE_TOUCHABLE;
+import static com.facebook.litho.MountItem.LAYOUT_FLAG_DUPLICATE_PARENT_STATE;
+import static com.facebook.litho.MountItem.LAYOUT_FLAG_MATCH_HOST_BOUNDS;
 import static com.facebook.litho.MountState.ROOT_HOST_ID;
 import static com.facebook.litho.NodeInfo.CLICKABLE_SET_TRUE;
 import static com.facebook.litho.NodeInfo.ENABLED_SET_FALSE;
@@ -1931,8 +1931,8 @@ class LayoutState {
     return mMountableOutputs.size();
   }
 
-  RenderTreeNode getMountableOutputAt(int index) {
-    return mMountableOutputs.get(index);
+  LayoutOutput getMountableOutputAt(int index) {
+    return (LayoutOutput) mMountableOutputs.get(index).getLayoutData();
   }
 
   ArrayList<RenderTreeNode> getMountableOutputTops() {
@@ -2104,7 +2104,7 @@ class LayoutState {
   @Nullable
   LayoutOutput getLayoutOutput(long layoutOutputId) {
     final int position = getLayoutOutputPositionForId(layoutOutputId);
-    return position < 0 ? null : LayoutOutput.getLayoutOutput(getMountableOutputAt(position));
+    return position < 0 ? null : getMountableOutputAt(position);
   }
 
   @Nullable
@@ -2195,7 +2195,7 @@ class LayoutState {
             + "\n";
 
     for (int i = 0; i < getMountableOutputCount(); i++) {
-      final LayoutOutput layoutOutput = LayoutOutput.getLayoutOutput(getMountableOutputAt(i));
+      final LayoutOutput layoutOutput = getMountableOutputAt(i);
       res +=
           "  ["
               + i

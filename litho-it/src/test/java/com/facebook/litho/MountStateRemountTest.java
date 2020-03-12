@@ -18,7 +18,6 @@ package com.facebook.litho;
 
 import static android.view.View.MeasureSpec.EXACTLY;
 import static android.view.View.MeasureSpec.makeMeasureSpec;
-import static com.facebook.litho.LithoMountData.getMountData;
 import static com.facebook.litho.testing.TestDrawableComponent.create;
 import static com.facebook.litho.testing.Whitebox.getInternalState;
 import static com.facebook.litho.testing.helper.ComponentTestHelper.mountComponent;
@@ -37,7 +36,6 @@ import com.facebook.litho.testing.helper.ComponentTestHelper;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.widget.EditText;
 import com.facebook.litho.widget.Text;
-import com.facebook.rendercore.MountItem;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Before;
@@ -82,7 +80,7 @@ public class MountStateRemountTest {
 
     final List<Component> components = new ArrayList<>();
     for (int i = 0; i < indexToItemMap.size(); i++) {
-      components.add(getMountData(indexToItemMap.valueAt(i)).getComponent());
+      components.add(indexToItemMap.valueAt(i).getComponent());
     }
 
     assertThat(containsRef(components, component1)).isFalse();

@@ -18,9 +18,7 @@ package com.facebook.litho;
 
 import static com.facebook.litho.AccessibilityUtils.isAccessibilityEnabled;
 import static com.facebook.litho.ComponentHostUtils.maybeInvalidateAccessibilityState;
-import static com.facebook.litho.LayoutOutput.getLayoutOutput;
-import static com.facebook.litho.LithoMountData.getMountData;
-import static com.facebook.litho.LithoMountData.isTouchableDisabled;
+import static com.facebook.litho.MountItem.isTouchableDisabled;
 import static com.facebook.litho.ThreadUtils.assertMainThread;
 
 import android.annotation.SuppressLint;
@@ -44,8 +42,6 @@ import androidx.collection.SparseArrayCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.view.ViewCompat;
 import com.facebook.proguard.annotations.DoNotStrip;
-import com.facebook.rendercore.Host;
-import com.facebook.rendercore.MountItem;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -56,7 +52,7 @@ import java.util.List;
  * accordingly.
  */
 @DoNotStrip
-public class ComponentHost extends Host {
+public class ComponentHost extends ViewGroup {
 
   private static final int SCRAP_ARRAY_INITIAL_SIZE = 4;
 
@@ -115,14 +111,6 @@ public class ComponentHost extends Host {
     this(new ComponentContext(context), attrs);
   }
 
-  @Override
-  public void mount(int index, MountItem mountItem) {
-    LayoutOutput output = getLayoutOutput(mountItem.getRenderTreeNode());
-    Rect rect = new Rect();
-    output.getMountBounds(rect);
-    mount(index, mountItem, rect);
-  }
-
   public ComponentHost(ComponentContext context) {
     this(context, null);
   }
@@ -154,7 +142,7 @@ public class ComponentHost extends Host {
     } else if (content instanceof View) {
       ensureViewMountItems();
       mViewMountItems.put(index, mountItem);
-      mountView((View) content, getMountData(mountItem).getLayoutFlags());
+      mountView((View) content, mountItem.getLayoutFlags());
       maybeRegisterTouchExpansion(index, mountItem);
     }
 
@@ -188,7 +176,7 @@ public class ComponentHost extends Host {
     }
   }
 
-  public void unmount(MountItem item) {
+  void unmount(MountItem item) {
     ensureMountItems();
     final int index = mMountItems.keyAt(mMountItems.indexOfValue(item));
     unmount(index, item);
@@ -246,7 +234,7 @@ public class ComponentHost extends Host {
   void unmountDisappearingItem(MountItem disappearingItem) {
     ensureDisappearingItems();
     if (!mDisappearingItems.remove(disappearingItem)) {
-      final TransitionId transitionId = getMountData(disappearingItem).getTransitionId();
+      final TransitionId transitionId = disappearingItem.getTransitionId();
       throw new RuntimeException(
           "Tried to remove non-existent disappearing item, transitionId: " + transitionId);
     }
@@ -272,14 +260,14 @@ public class ComponentHost extends Host {
     }
     final List<TransitionId> ids = new ArrayList<>();
     for (int i = 0, size = mDisappearingItems.size(); i < size; i++) {
-      ids.add(getMountData(mDisappearingItems.get(i)).getTransitionId());
+      ids.add(mDisappearingItems.get(i).getTransitionId());
     }
 
     return ids;
   }
 
   private void maybeMoveTouchExpansionIndexes(MountItem item, int oldIndex, int newIndex) {
-    final ViewNodeInfo viewNodeInfo = getMountData(item).getViewNodeInfo();
+    final ViewNodeInfo viewNodeInfo = item.getViewNodeInfo();
     if (viewNodeInfo == null) {
       return;
     }
@@ -293,7 +281,7 @@ public class ComponentHost extends Host {
   }
 
   void maybeRegisterTouchExpansion(int index, MountItem mountItem) {
-    final ViewNodeInfo viewNodeInfo = getMountData(mountItem).getViewNodeInfo();
+    final ViewNodeInfo viewNodeInfo = mountItem.getViewNodeInfo();
     if (viewNodeInfo == null) {
       return;
     }
@@ -318,7 +306,7 @@ public class ComponentHost extends Host {
   }
 
   void maybeUnregisterTouchExpansion(int index, MountItem mountItem) {
-    final ViewNodeInfo viewNodeInfo = getMountData(mountItem).getViewNodeInfo();
+    final ViewNodeInfo viewNodeInfo = mountItem.getViewNodeInfo();
     if (viewNodeInfo == null) {
       return;
     }
@@ -336,12 +324,12 @@ public class ComponentHost extends Host {
   }
 
   /** @return number of {@link MountItem}s that are currently mounted in the host. */
-  public int getMountItemCount() {
+  int getMountItemCount() {
     return mMountItems == null ? 0 : mMountItems.size();
   }
 
   /** @return the {@link MountItem} that was mounted with the given index. */
-  public MountItem getMountItemAt(int index) {
+  MountItem getMountItemAt(int index) {
     return mMountItems.valueAt(index);
   }
 
@@ -356,7 +344,7 @@ public class ComponentHost extends Host {
     for (int i = 0; i < getMountItemCount(); i++) {
       MountItem item = getMountItemAt(i);
       // For inexplicable reason, item is null sometimes.
-      if (item != null && getMountData(item).isAccessible()) {
+      if (item != null && item.isAccessible()) {
         return item;
       }
     }
@@ -456,7 +444,7 @@ public class ComponentHost extends Host {
    * @param oldIndex The current index of the MountItem.
    * @param newIndex The new index of the MountItem.
    */
-  public void moveItem(MountItem item, int oldIndex, int newIndex) {
+  void moveItem(MountItem item, int oldIndex, int newIndex) {
     if (item == null && mScrapMountItemsArray != null) {
       item = mScrapMountItemsArray.get(oldIndex);
     }
@@ -658,7 +646,7 @@ public class ComponentHost extends Host {
 
   private boolean implementsVirtualViews() {
     MountItem item = getAccessibleMountItem();
-    return item != null && getMountData(item).getComponent().implementsExtraAccessibilityNodes();
+    return item != null && item.getComponent().implementsExtraAccessibilityNodes();
   }
 
   public List<CharSequence> getContentDescriptions() {
@@ -666,7 +654,7 @@ public class ComponentHost extends Host {
     for (int i = 0, size = mDrawableMountItems == null ? 0 : mDrawableMountItems.size();
         i < size;
         i++) {
-      final NodeInfo nodeInfo = getMountData(mDrawableMountItems.valueAt(i)).getNodeInfo();
+      final NodeInfo nodeInfo = mDrawableMountItems.valueAt(i).getNodeInfo();
       if (nodeInfo == null) {
         continue;
       }
@@ -685,7 +673,7 @@ public class ComponentHost extends Host {
   }
 
   private void mountView(View view, int flags) {
-    view.setDuplicateParentStateEnabled(LithoMountData.isDuplicateParentState(flags));
+    view.setDuplicateParentStateEnabled(MountItem.isDuplicateParentState(flags));
 
     mIsChildDrawingOrderDirty = true;
 
@@ -786,8 +774,7 @@ public class ComponentHost extends Host {
           i--) {
         final MountItem item = mDrawableMountItems.valueAt(i);
 
-        if (item.getContent() instanceof Touchable
-            && !isTouchableDisabled(getMountData(item).getLayoutFlags())) {
+        if (item.getContent() instanceof Touchable && !isTouchableDisabled(item.getLayoutFlags())) {
           final Touchable t = (Touchable) item.getContent();
           if (t.shouldHandleTouchEvent(event) && t.onTouchEvent(event, this)) {
             handled = true;
@@ -852,9 +839,11 @@ public class ComponentHost extends Host {
         i < size;
         i++) {
       final MountItem mountItem = mDrawableMountItems.valueAt(i);
-      LithoMountData data = getMountData(mountItem);
       ComponentHostUtils.maybeSetDrawableState(
-          this, (Drawable) mountItem.getContent(), data.getLayoutFlags(), data.getNodeInfo());
+          this,
+          (Drawable) mountItem.getContent(),
+          mountItem.getLayoutFlags(),
+          mountItem.getNodeInfo());
     }
   }
 
@@ -1232,8 +1221,7 @@ public class ComponentHost extends Host {
         i < size;
         i++) {
       final MountItem mountItem = mDrawableMountItems.valueAt(i);
-      if ((getMountData(mountItem).getLayoutFlags() & LithoMountData.LAYOUT_FLAG_MATCH_HOST_BOUNDS)
-          != 0) {
+      if ((mountItem.getLayoutFlags() & MountItem.LAYOUT_FLAG_MATCH_HOST_BOUNDS) != 0) {
         if (drawables == null) {
           drawables = new ArrayList<>();
         }
@@ -1301,9 +1289,9 @@ public class ComponentHost extends Host {
     ensureDrawableMountItems();
     mDrawableMountItems.put(index, mountItem);
     final Drawable drawable = (Drawable) mountItem.getContent();
-    final LithoMountData data = getMountData(mountItem);
+
     ComponentHostUtils.mountDrawable(
-        this, drawable, bounds, data.getLayoutFlags(), data.getNodeInfo());
+        this, drawable, bounds, mountItem.getLayoutFlags(), mountItem.getNodeInfo());
   }
 
   private void unmountDrawable(MountItem mountItem) {
@@ -1424,7 +1412,7 @@ public class ComponentHost extends Host {
   }
 
   private static String getMountItemName(MountItem mountItem) {
-    return getMountData(mountItem).getComponent().getSimpleName();
+    return mountItem.getComponent().getSimpleName();
   }
 
   @Override

@@ -16,13 +16,10 @@
 
 package com.facebook.litho;
 
-import static com.facebook.litho.LithoMountData.getMountData;
-
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.TextView;
-import com.facebook.rendercore.MountItem;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -266,8 +263,8 @@ public final class DebugComponent {
 
     for (int i = 0, size = mountState.getItemCount(); i < size; i++) {
       final MountItem mountItem = mountState.getItemAt(i);
-      final Component component = mountItem == null ? null : getMountData(mountItem).getComponent();
-      if (component != null) {
+      final Component mountItemComponent = mountItem == null ? null : mountItem.getComponent();
+      if (mountItemComponent != null) {
         final Object content = mountItem.getContent();
 
         if (content instanceof TextContent) {
@@ -298,8 +295,7 @@ public final class DebugComponent {
     final MountState mountState = lithoView.getMountState();
     for (int i = 0, size = mountState.getItemCount(); i < size; i++) {
       final MountItem mountItem = mountState.getItemAt(i);
-      final Component mountItemComponent =
-          mountItem == null ? null : getMountData(mountItem).getComponent();
+      final Component mountItemComponent = mountItem == null ? null : mountItem.getComponent();
       if (mountItemComponent != null && mountItemComponent.getId() == component.getId()) {
         final Object content = mountItem.getContent();
         final StringBuilder sb = new StringBuilder();
@@ -330,10 +326,9 @@ public final class DebugComponent {
 
     for (int i = 0, size = lithoView.getMountState().getItemCount(); i < size; i++) {
       final MountItem mountItem = lithoView.getMountState().getItemAt(i);
-      final Component mountItemComponent =
-          mountItem == null ? null : getMountData(mountItem).getComponent();
+      final Component mountItemComponent = mountItem == null ? null : mountItem.getComponent();
       if (mountItemComponent != null && mountItemComponent.isEquivalentTo(component)) {
-        return (ComponentHost) mountItem.getHost();
+        return mountItem.getHost();
       }
     }
 
@@ -417,8 +412,7 @@ public final class DebugComponent {
     if (mountState != null) {
       for (int i = 0, count = mountState.getItemCount(); i < count; i++) {
         final MountItem mountItem = mountState.getItemAt(i);
-        final Component component =
-            mountItem == null ? null : getMountData(mountItem).getComponent();
+        final Component component = mountItem == null ? null : mountItem.getComponent();
 
         if (component != null && component == mNode.getTailComponent()) {
           return mountItem.getContent();

@@ -125,7 +125,7 @@ public class TransitionTest {
     LayoutOutput rootLayout =
         new LayoutOutput(null, null, component, new Rect(0, 0, 300, 100), 0, 0, 0, 0, 0, 0, null);
 
-    when(layoutState.getMountableOutputAt(0)).thenReturn(LayoutOutput.create(rootLayout, null));
+    when(layoutState.getMountableOutputAt(0)).thenReturn(rootLayout);
 
     int animateFrom =
         (int)
@@ -164,7 +164,7 @@ public class TransitionTest {
     LayoutOutput rootLayout =
         new LayoutOutput(null, null, component, new Rect(0, 0, 300, 100), 0, 0, 0, 0, 0, 0, null);
 
-    when(layoutState.getMountableOutputAt(0)).thenReturn(LayoutOutput.create(rootLayout, null));
+    when(layoutState.getMountableOutputAt(0)).thenReturn(rootLayout);
 
     int animateFrom =
         (int)

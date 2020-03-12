@@ -19,8 +19,7 @@ package com.facebook.rendercore;
 import android.content.Context;
 import androidx.annotation.Nullable;
 
-// TODO: Make package private once Litho is rebased on render-core
-public class MountItem {
+class MountItem {
 
   private Object mContent;
   private @Nullable Host mHost;
@@ -28,17 +27,17 @@ public class MountItem {
   private RenderTreeNode mRenderTreeNode;
   private Object mMountData;
 
-  public MountItem(RenderTreeNode renderTreeNode, @Nullable Host host, Object content) {
+  MountItem(RenderTreeNode renderTreeNode, @Nullable Host host, Object content) {
     mRenderTreeNode = renderTreeNode;
     mHost = host;
     mContent = content;
   }
 
-  public Object getContent() {
+  Object getContent() {
     return mContent;
   }
 
-  public boolean isBound() {
+  boolean isBound() {
     return mBound;
   }
 
@@ -51,7 +50,7 @@ public class MountItem {
     mContent = content;
   }
 
-  public void setIsBound(boolean bound) {
+  void setIsBound(boolean bound) {
     mBound = bound;
   }
 
@@ -59,11 +58,7 @@ public class MountItem {
     return mHost;
   }
 
-  public void setHost(@Nullable Host host) {
-    mHost = host;
-  }
-
-  public void update(RenderTreeNode renderTreeNode) {
+  void update(RenderTreeNode renderTreeNode) {
     mRenderTreeNode = renderTreeNode;
   }
 

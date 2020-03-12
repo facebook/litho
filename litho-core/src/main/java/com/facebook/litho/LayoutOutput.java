@@ -220,18 +220,6 @@ class LayoutOutput implements Cloneable, AnimatableItem {
     return mTransitionId;
   }
 
-  public int getHostTranslationX() {
-    return mHostTranslationX;
-  }
-
-  public int getHostTranslationY() {
-    return mHostTranslationY;
-  }
-
-  public static LayoutOutput getLayoutOutput(RenderTreeNode node) {
-    return (LayoutOutput) node.getLayoutData();
-  }
-
   static RenderTreeNode create(final LayoutOutput output, final @Nullable RenderTreeNode parent) {
     return new RenderTreeNode(
         parent,
