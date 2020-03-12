@@ -38,7 +38,6 @@ import static org.mockito.Mockito.when;
 import android.content.Context;
 import android.graphics.Rect;
 import android.view.ViewGroup;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestViewComponent;
@@ -53,7 +52,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -65,19 +63,11 @@ import org.robolectric.RuntimeEnvironment;
 public class MountStateIncrementalMountTest {
   private ComponentContext mContext;
   private TestComponentsLogger mComponentsLogger;
-  boolean useMountWithExtensions;
 
   @Before
   public void setup() {
     mComponentsLogger = new TestComponentsLogger();
     mContext = new ComponentContext(RuntimeEnvironment.application, "tag", mComponentsLogger);
-    useMountWithExtensions = ComponentsConfiguration.useRenderCoreMount;
-    ComponentsConfiguration.useRenderCoreMount = false;
-  }
-
-  @After
-  public void cleanup() {
-    ComponentsConfiguration.useRenderCoreMount = useMountWithExtensions;
   }
 
   /** Tests incremental mount behaviour of a vertical stack of components with a View mount type. */

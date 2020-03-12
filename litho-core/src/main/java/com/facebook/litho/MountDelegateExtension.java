@@ -42,11 +42,6 @@ public class MountDelegateExtension {
     mLayoutOutputMountRefs = new HashSet<>();
   }
 
-  // TODO remove when we have a MountDelegateExtension for transitions.
-  protected boolean isAnimationLocked(int position) {
-    return mMountDelegate.isAnimationLocked(position);
-  }
-
   protected MountItem getRootMountItem() {
     return mMountDelegate.getRootMountItem();
   }
@@ -77,9 +72,5 @@ public class MountDelegateExtension {
 
     mLayoutOutputMountRefs.remove(layoutOutput.getId());
     mMountDelegate.releaseMountRef(node, position);
-  }
-
-  protected boolean isLockedForMount(RenderTreeNode node) {
-    return mMountDelegate.isLockedForMount(node);
   }
 }

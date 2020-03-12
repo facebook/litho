@@ -23,7 +23,6 @@ import java.util.List;
 public class LithoHostListenerCoordinator implements HostListenerExtension<Object> {
 
   private final List<HostListenerExtension> mMountExtensions;
-  private IncrementalMountExtension mIncrementalMountExtension;
 
   public LithoHostListenerCoordinator() {
     mMountExtensions = new ArrayList<>();
@@ -63,17 +62,6 @@ public class LithoHostListenerCoordinator implements HostListenerExtension<Objec
     for (int i = 0, size = mMountExtensions.size(); i < size; i++) {
       mMountExtensions.get(i).onHostVisibilityChanged(isVisible);
     }
-  }
-
-  void enableIncrementalMount(LithoView lithoView, MountState mountState) {
-    if (mIncrementalMountExtension != null) {
-      throw new IllegalStateException(
-          "Incremental mount has already been enabled on this coordinator.");
-    }
-
-    mIncrementalMountExtension = new IncrementalMountExtension(lithoView);
-    mountState.registerMountDelegateExtension(mIncrementalMountExtension);
-    registerListener(mIncrementalMountExtension);
   }
 
   private void registerListener(HostListenerExtension mountListenerExtension) {
