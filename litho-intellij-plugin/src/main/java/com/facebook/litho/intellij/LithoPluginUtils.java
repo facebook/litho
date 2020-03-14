@@ -191,7 +191,8 @@ public class LithoPluginUtils {
   }
 
   /**
-   * Finds Generated Class from the given Spec name.
+   * Finds Generated Class from the given Spec name. Access is allowed from event dispatch thread or
+   * inside read-action only.
    *
    * @param qualifiedSpecName Name of the Spec to search generated class for. For example
    *     com.package.MySpec.java. If it's a simple name MySpec.java returned class could be found in

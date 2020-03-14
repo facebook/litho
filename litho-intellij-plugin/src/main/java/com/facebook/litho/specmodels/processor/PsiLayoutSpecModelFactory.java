@@ -56,7 +56,7 @@ public class PsiLayoutSpecModelFactory {
 
   /**
    * @return a new {@link LayoutSpecModel} or null if provided class isn't a {@link LayoutSpec}
-   *     class.
+   *     class. Access is allowed from event dispatch thread or inside read-action only.
    */
   @Nullable
   public LayoutSpecModel createWithPsi(

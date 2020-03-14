@@ -108,7 +108,10 @@ public class ComponentGenerateUtils {
     return MODEL_FACTORY.createWithPsi(layoutSpecCls.getProject(), layoutSpecCls, null);
   }
 
-  /** Example usage: new ComponentUpdater(project, specModel).tryCreate(qualifiedSpecName); */
+  /**
+   * Access is allowed from event dispatch thread only. Example usage: new
+   * ComponentUpdater(..).tryCreate(..);
+   */
   private static class ComponentUpdater extends ElementCreator {
     private final Project project;
     private final SpecModel model;
