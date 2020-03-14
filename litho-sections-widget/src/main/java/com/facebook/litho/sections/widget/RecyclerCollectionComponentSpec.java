@@ -60,6 +60,7 @@ import com.facebook.litho.sections.SectionLifecycle;
 import com.facebook.litho.sections.SectionTree;
 import com.facebook.litho.sections.annotations.GroupSectionSpec;
 import com.facebook.litho.widget.Binder;
+import com.facebook.litho.widget.LayoutInfo;
 import com.facebook.litho.widget.LithoRecylerView;
 import com.facebook.litho.widget.PTRRefreshEvent;
 import com.facebook.litho.widget.Recycler;
@@ -162,6 +163,7 @@ public class RecyclerCollectionComponentSpec {
       @Prop(optional = true) RecyclerConfiguration recyclerConfiguration,
       @State(canUpdateLazily = true) boolean hasSetSectionTreeRoot,
       @State RecyclerCollectionEventsController internalEventsController,
+      @State LayoutInfo layoutInfo,
       @State LoadingState loadingState,
       @State Binder<RecyclerView> binder,
       @State SectionTree sectionTree,
@@ -211,7 +213,8 @@ public class RecyclerCollectionComponentSpec {
             .horizontalFadingEdgeEnabled(horizontalFadingEdgeEnabled)
             .verticalFadingEdgeEnabled(verticalFadingEdgeEnabled)
             .fadingEdgeLengthDip(fadingEdgeLength)
-            .onScrollListener(new RecyclerCollectionOnScrollListener(internalEventsController))
+            .onScrollListener(
+                new RecyclerCollectionOnScrollListener(internalEventsController, layoutInfo))
             .onScrollListeners(onScrollListeners)
             .refreshProgressBarBackgroundColor(refreshProgressBarBackgroundColor)
             .refreshProgressBarColor(refreshProgressBarColor)
@@ -268,6 +271,7 @@ public class RecyclerCollectionComponentSpec {
       StateValue<Binder<RecyclerView>> binder,
       StateValue<LoadingState> loadingState,
       StateValue<RecyclerCollectionEventsController> internalEventsController,
+      StateValue<LayoutInfo> layoutInfo,
       @Prop Section section,
       @Prop(optional = true) RecyclerConfiguration recyclerConfiguration,
       @Prop(optional = true) RecyclerCollectionEventsController eventsController,
@@ -291,9 +295,12 @@ public class RecyclerCollectionComponentSpec {
     RecyclerBinderConfiguration binderConfiguration =
         recyclerConfiguration.getRecyclerBinderConfiguration();
 
+    final LayoutInfo newLayoutInfo = recyclerConfiguration.getLayoutInfo(c);
+    layoutInfo.set(newLayoutInfo);
+
     RecyclerBinder.Builder recyclerBinderBuilder =
         new RecyclerBinder.Builder()
-            .layoutInfo(recyclerConfiguration.getLayoutInfo(c))
+            .layoutInfo(newLayoutInfo)
             .rangeRatio(binderConfiguration.getRangeRatio())
             .layoutHandlerFactory(binderConfiguration.getLayoutHandlerFactory())
             .wrapContent(binderConfiguration.isWrapContent())
@@ -434,17 +441,19 @@ public class RecyclerCollectionComponentSpec {
   private static class RecyclerCollectionOnScrollListener extends OnScrollListener {
 
     private final RecyclerCollectionEventsController mEventsController;
+    private final LayoutInfo mLayoutInfo;
 
     private RecyclerCollectionOnScrollListener(
-        RecyclerCollectionEventsController eventsController) {
+        RecyclerCollectionEventsController eventsController, LayoutInfo layoutInfo) {
       mEventsController = eventsController;
+      mLayoutInfo = layoutInfo;
     }
 
     @Override
     public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
       super.onScrolled(recyclerView, dx, dy);
 
-      mEventsController.updateFirstLastFullyVisibleItemPositions(recyclerView.getLayoutManager());
+      mEventsController.updateFirstLastFullyVisibleItemPositions(mLayoutInfo);
     }
   }
 
