@@ -17,6 +17,9 @@
 package com.facebook.litho.intellij.completion;
 
 import com.facebook.litho.annotations.LayoutSpec;
+import com.facebook.litho.intellij.LithoPluginUtils;
+import com.facebook.litho.intellij.extensions.EventLogger;
+import com.facebook.litho.intellij.logging.LithoLoggerProvider;
 import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.LayoutSpecModel;
 import com.facebook.litho.specmodels.model.SpecModel;
@@ -46,6 +49,7 @@ import org.jetbrains.annotations.Nullable;
  * Component files with the new model.
  */
 public class ComponentGenerateUtils {
+  private static final String TAG = EventLogger.EVENT_GENERATE_COMPONENT + ".method";
 
   private static final PsiLayoutSpecModelFactory MODEL_FACTORY = new PsiLayoutSpecModelFactory();
 
@@ -56,25 +60,32 @@ public class ComponentGenerateUtils {
    * class doesn't contain {@link LayoutSpec}.
    *
    * @param layoutSpecCls class containing {@link LayoutSpec} class.
-   * @return true, if Component file was updated. False otherwise.
    */
-  public static boolean updateLayoutComponent(PsiClass layoutSpecCls) {
+  public static void updateLayoutComponent(PsiClass layoutSpecCls) {
+    LithoLoggerProvider.getEventLogger().log(TAG + ".invoke");
     String specName = layoutSpecCls.getQualifiedName();
     if (specName == null) {
-      return false;
+      return;
     }
     SpecModel model = createLayoutModel(layoutSpecCls);
     if (model == null) {
-      return false;
+      return;
     }
     String dirPath = getDirectoryPath(layoutSpecCls.getContainingFile().getContainingDirectory());
     if (dirPath == null) {
-      return false;
+      return;
     }
-    return new ComponentUpdater(specName, model, dirPath, layoutSpecCls.getProject())
-            .tryCreate(specName)
-            .length
-        > 0;
+    final Project project = layoutSpecCls.getProject();
+    final int created =
+        new ComponentUpdater(specName, model, dirPath, project).tryCreate(specName).length;
+    final String componentName = model.getComponentName();
+    // TODO: T56876413 improve notifications
+    if (created > 0) {
+      LithoPluginUtils.showInfo(componentName + " component was regenerated", project);
+      LithoLoggerProvider.getEventLogger().log(TAG + ".success");
+    } else {
+      LithoPluginUtils.showWarning(componentName + " component was not found", project);
+    }
   }
 
   @VisibleForTesting

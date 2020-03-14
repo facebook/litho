@@ -45,13 +45,8 @@ public class ComponentFileListener implements FileDocumentManagerListener {
       new DebounceEventLogger(60 /*minutes*/ * 60 /*seconds*/ * 1000);
   private final Consumer<PsiClass> savingFileConsumer;
 
-  public ComponentFileListener() {
-    this(
-        layoutSpecCls -> {
-          if (ComponentGenerateUtils.updateLayoutComponent(layoutSpecCls)) {
-            logger.log(TAG);
-          }
-        });
+  ComponentFileListener() {
+    this(ComponentGenerateUtils::updateLayoutComponent);
   }
 
   @VisibleForTesting

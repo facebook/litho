@@ -19,13 +19,10 @@ package com.facebook.litho.intellij.actions;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.intellij.LithoPluginUtils;
 import com.facebook.litho.intellij.completion.ComponentGenerateUtils;
-import com.facebook.litho.intellij.extensions.EventLogger;
-import com.facebook.litho.intellij.logging.LithoLoggerProvider;
 import com.google.common.annotations.VisibleForTesting;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
-import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiClass;
 import java.util.Optional;
 
@@ -34,7 +31,6 @@ import java.util.Optional;
  * ComponentGenerateUtils}. Currently works with the {@link LayoutSpec} only.
  */
 public class GenerateComponentAction extends AnAction {
-  private static final String TAG = EventLogger.EVENT_GENERATE_COMPONENT + ".action";
 
   @Override
   public void update(AnActionEvent e) {
@@ -53,26 +49,7 @@ public class GenerateComponentAction extends AnAction {
 
   @Override
   public void actionPerformed(AnActionEvent e) {
-    LithoLoggerProvider.getEventLogger().log(TAG + ".invoke");
-    getValidSpec(e)
-        .ifPresent(
-            specCls -> {
-              String componentName =
-                  LithoPluginUtils.getLithoComponentNameFromSpec(specCls.getName());
-              Project project = e.getProject();
-
-              if (ComponentGenerateUtils.updateLayoutComponent(specCls)) {
-                LithoPluginUtils.showInfo(componentName + " component was regenerated", project);
-                LithoLoggerProvider.getEventLogger().log(TAG + ".success");
-              } else {
-                LithoPluginUtils.showWarning(
-                    componentName
-                        + " component destination was not found to regenerate. Build "
-                        + specCls.getName()
-                        + " first",
-                    project);
-              }
-            });
+    getValidSpec(e).ifPresent(ComponentGenerateUtils::updateLayoutComponent);
   }
 
   /**
