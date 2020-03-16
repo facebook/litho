@@ -1522,10 +1522,10 @@ class LayoutState {
   }
 
   static LayoutState resumeCalculate(
-      ComponentContext c,
       @CalculateLayoutSource int source,
       @Nullable String extraAttribution,
       LayoutState layoutState) {
+    final ComponentContext c = layoutState.mContext;
 
     if (!layoutState.mIsPartialLayoutState) {
       throw new IllegalStateException("Can not resume a finished LayoutState calculation");

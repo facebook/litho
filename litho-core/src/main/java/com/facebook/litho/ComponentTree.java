@@ -2554,7 +2554,16 @@ public class ComponentTree {
                   || ComponentTree.this.mUseCancelableLayoutFutures
               ? LayoutStateFuture.this
               : null;
-      final ComponentContext contextWithStateHandler = getNewContextForLayout();
+      final ComponentContext contextWithStateHandler;
+
+      synchronized (ComponentTree.this) {
+        contextWithStateHandler =
+            new ComponentContext(
+                context,
+                StateHandler.createNewInstance(ComponentTree.this.mStateHandler),
+                treeProps,
+                null);
+      }
 
       return LayoutState.calculate(
           contextWithStateHandler,
@@ -2568,21 +2577,6 @@ public class ComponentTree {
           previousLayoutState,
           source,
           extraAttribution);
-    }
-
-    private ComponentContext getNewContextForLayout() {
-      final ComponentContext contextWithStateHandler;
-
-      synchronized (ComponentTree.this) {
-        contextWithStateHandler =
-            new ComponentContext(
-                context,
-                StateHandler.createNewInstance(ComponentTree.this.mStateHandler),
-                treeProps,
-                null);
-      }
-
-      return contextWithStateHandler;
     }
 
     private boolean isFromSyncLayout(@CalculateLayoutSource int source) {
@@ -2783,8 +2777,7 @@ public class ComponentTree {
         return null;
       }
       final LayoutState result =
-          LayoutState.resumeCalculate(
-              getNewContextForLayout(), source, extraAttribution, partialLayoutState);
+          LayoutState.resumeCalculate(source, extraAttribution, partialLayoutState);
 
       synchronized (LayoutStateFuture.this) {
         return released ? null : result;
