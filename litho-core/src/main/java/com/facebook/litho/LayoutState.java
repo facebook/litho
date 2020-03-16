@@ -2133,6 +2133,10 @@ class LayoutState {
 
     final RenderTreeNode node = LayoutOutput.create(layoutOutput, parent);
 
+    if (parent != null) {
+      parent.child(node);
+    }
+
     layoutState.mMountableOutputs.add(node);
     layoutState.mMountableOutputTops.add(node);
     layoutState.mMountableOutputBottoms.add(node);

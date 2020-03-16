@@ -50,7 +50,7 @@ public class RenderTreeNode {
     mPositionInParent = positionInParent;
   }
 
-  void child(RenderTreeNode renderTreeNode) {
+  public void child(RenderTreeNode renderTreeNode) {
     if (mChildren == null) {
       mChildren = new ArrayList<>(DEFAULT_SIZE);
     }
