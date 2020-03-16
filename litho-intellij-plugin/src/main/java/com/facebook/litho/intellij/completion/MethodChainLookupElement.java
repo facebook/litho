@@ -26,9 +26,10 @@ import com.intellij.codeInsight.lookup.LookupElementDecorator;
 import com.intellij.codeInsight.lookup.LookupElementPresentation;
 import com.intellij.codeInsight.template.Template;
 import com.intellij.codeInsight.template.TemplateBuilderImpl;
-import com.intellij.codeInsight.template.impl.LiveTemplateLookupElementImpl;
+import com.intellij.codeInsight.template.TemplateManager;
 import com.intellij.codeInsight.template.impl.TextExpression;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.JavaPsiFacade;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementFactory;
@@ -37,6 +38,7 @@ import com.intellij.psi.PsiIdentifier;
 import com.intellij.psi.codeStyle.CodeStyleManager;
 import com.intellij.psi.util.PsiTreeUtil;
 import java.util.List;
+import java.util.Optional;
 
 /** Completes suggestion with a chain of method calls. */
 public class MethodChainLookupElement extends LookupElementDecorator<LookupElement> {
@@ -58,13 +60,17 @@ public class MethodChainLookupElement extends LookupElementDecorator<LookupEleme
       List<? extends String> otherMethodNames,
       PsiElement placeholder,
       Project project) {
-    PsiExpression stub = createMethodChain(project, firstMethodName, otherMethodNames);
-    PsiElement elementInTree = placeholder.replace(stub);
-    CodeStyleManager.getInstance(project).reformat(elementInTree, false);
-    Template template = createTemplate(elementInTree);
-    LookupElement prioritized =
-        PrioritizedLookupElement.withPriority(lookupPresentation, Integer.MAX_VALUE);
-    return new MethodChainLookupElement(prioritized, template);
+    return Optional.of(createMethodChain(project, firstMethodName, otherMethodNames))
+        .map(placeholder::replace)
+        .map(elementInTree -> CodeStyleManager.getInstance(project).reformat(elementInTree, false))
+        .map(MethodChainLookupElement::createTemplate)
+        .<LookupElement>map(
+            template -> {
+              final LookupElement prioritized =
+                  PrioritizedLookupElement.withPriority(lookupPresentation, Integer.MAX_VALUE);
+              return new MethodChainLookupElement(prioritized, template);
+            })
+        .orElse(lookupPresentation);
   }
 
   @VisibleForTesting
@@ -113,9 +119,23 @@ public class MethodChainLookupElement extends LookupElementDecorator<LookupEleme
 
   @Override
   public void handleInsert(InsertionContext context) {
-    LiveTemplateLookupElementImpl.startTemplate(context, fromTemplate);
+    // Copied from LiveTemplateLookupElementImpl
+    context.getDocument().deleteString(findOffsetAfterDot(context), context.getTailOffset());
+    context.setAddCompletionChar(false);
+    TemplateManager.getInstance(context.getProject())
+        .startTemplate(context.getEditor(), fromTemplate);
     LithoLoggerProvider.getEventLogger()
         .log(EventLogger.EVENT_COMPLETION_REQUIRED_PROP + ".builder");
+  }
+
+  private static int findOffsetAfterDot(InsertionContext context) {
+    final int startOffset = context.getStartOffset();
+    return context
+            .getDocument()
+            .getText(TextRange.create(startOffset, context.getTailOffset()))
+            .indexOf('.')
+        + 1
+        + startOffset;
   }
 
   @Override
