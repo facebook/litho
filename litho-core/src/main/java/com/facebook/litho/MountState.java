@@ -39,6 +39,7 @@ import static com.facebook.litho.FrameworkLogEvents.PARAM_UPDATED_TIME;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_VISIBILITY_HANDLER;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_VISIBILITY_HANDLERS_TOTAL_TIME;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_VISIBILITY_HANDLER_TIME;
+import static com.facebook.litho.LayoutOutput.getLayoutOutput;
 import static com.facebook.litho.ThreadUtils.assertMainThread;
 
 import android.animation.AnimatorInflater;
@@ -291,7 +292,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       final MountItem rootMountItem = mIndexToItemMap.get(ROOT_HOST_ID);
 
       for (int i = 0, size = layoutState.getMountableOutputCount(); i < size; i++) {
-        final LayoutOutput layoutOutput = layoutState.getMountableOutputAt(i);
+        final LayoutOutput layoutOutput = getLayoutOutput(layoutState.getMountableOutputAt(i));
         final Component component = layoutOutput.getComponent();
         if (isTracing) {
           ComponentsSystrace.beginSection(component.getSimpleName());
@@ -1193,7 +1194,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     }
 
     for (int i = 0; i < outputCount; i++) {
-      mLayoutOutputsIds[i] = layoutState.getMountableOutputAt(i).getId();
+      mLayoutOutputsIds[i] = getLayoutOutput(layoutState.getMountableOutputAt(i)).getId();
     }
 
     if (isTracing) {
@@ -1211,7 +1212,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       return false;
     }
 
-    final LayoutOutput layoutOutput = mLastMountedLayoutState.getMountableOutputAt(index);
+    final LayoutOutput layoutOutput =
+        getLayoutOutput(mLastMountedLayoutState.getMountableOutputAt(index));
     final TransitionId transitionId = layoutOutput.getTransitionId();
     if (transitionId == null) {
       return false;
@@ -1257,7 +1259,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
             // Item is already mounted - skip
             continue;
           }
-          final LayoutOutput layoutOutput = mLastMountedLayoutState.getMountableOutputAt(j);
+          final LayoutOutput layoutOutput =
+              getLayoutOutput(mLastMountedLayoutState.getMountableOutputAt(j));
           mountLayoutOutput(j, layoutOutput, mLastMountedLayoutState);
         }
 
@@ -1470,7 +1473,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     if (host == null) {
       // Host has not yet been mounted - mount it now.
       final int hostMountIndex = layoutState.getLayoutOutputPositionForId(hostMarker);
-      final LayoutOutput hostLayoutOutput = layoutState.getMountableOutputAt(hostMountIndex);
+      final LayoutOutput hostLayoutOutput =
+          getLayoutOutput(layoutState.getMountableOutputAt(hostMountIndex));
       mountLayoutOutput(hostMountIndex, hostLayoutOutput, layoutState);
 
       host = mHostsByMarker.get(hostMarker);
@@ -2763,11 +2767,11 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   }
 
   private int findLastDescendantIndex(LayoutState layoutState, int index) {
-    final LayoutOutput host = layoutState.getMountableOutputAt(index);
+    final LayoutOutput host = getLayoutOutput(layoutState.getMountableOutputAt(index));
     final long hostId = host.getId();
 
     for (int i = index + 1, size = layoutState.getMountableOutputCount(); i < size; i++) {
-      final LayoutOutput layoutOutput = layoutState.getMountableOutputAt(i);
+      final LayoutOutput layoutOutput = getLayoutOutput(layoutState.getMountableOutputAt(i));
 
       // Walk up the parents looking for the host's id: if we find it, it's a descendant. If we
       // reach the root, then it's not a descendant and we can stop.
@@ -2778,7 +2782,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
         }
 
         final int parentIndex = layoutState.getLayoutOutputPositionForId(curentHostId);
-        final LayoutOutput parent = layoutState.getMountableOutputAt(parentIndex);
+        final LayoutOutput parent = getLayoutOutput(layoutState.getMountableOutputAt(parentIndex));
         curentHostId = parent.getHostMarker();
       }
     }
@@ -2808,7 +2812,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     }
 
     // Update parents
-    long hostId = layoutState.getMountableOutputAt(index).getHostMarker();
+    long hostId = getLayoutOutput(layoutState.getMountableOutputAt(index)).getHostMarker();
     while (hostId != ROOT_HOST_ID) {
       final int hostIndex = layoutState.getLayoutOutputPositionForId(hostId);
       if (increment) {
@@ -2822,7 +2826,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
           mAnimationLockedIndices[hostIndex] = 0;
         }
       }
-      hostId = layoutState.getMountableOutputAt(hostIndex).getHostMarker();
+      hostId = getLayoutOutput(layoutState.getMountableOutputAt(hostIndex)).getHostMarker();
     }
   }
 
@@ -3075,7 +3079,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
           && localVisibleRect.top
               >= layoutOutputBottoms.get(mPreviousBottomsIndex).getBounds().bottom) {
         final RenderTreeNode node = layoutOutputBottoms.get(mPreviousBottomsIndex);
-        final long id = ((LayoutOutput) node.getLayoutData()).getId();
+        final long id = getLayoutOutput(node).getId();
         final int layoutOutputIndex = layoutState.getLayoutOutputPositionForId(id);
         if (!isAnimationLocked(layoutOutputIndex)) {
           unmountItem(layoutOutputIndex, mHostsByMarker);
@@ -3088,7 +3092,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
               < layoutOutputBottoms.get(mPreviousBottomsIndex - 1).getBounds().bottom) {
         mPreviousBottomsIndex--;
         final RenderTreeNode node = layoutOutputBottoms.get(mPreviousBottomsIndex);
-        final LayoutOutput layoutOutput = (LayoutOutput) node.getLayoutData();
+        final LayoutOutput layoutOutput = getLayoutOutput(node);
         final int layoutOutputIndex =
             layoutState.getLayoutOutputPositionForId(layoutOutput.getId());
         if (getItemAt(layoutOutputIndex) == null) {
@@ -3108,7 +3112,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       while (mPreviousTopsIndex < count
           && localVisibleRect.bottom > layoutOutputTops.get(mPreviousTopsIndex).getBounds().top) {
         final RenderTreeNode node = layoutOutputTops.get(mPreviousTopsIndex);
-        final LayoutOutput layoutOutput = (LayoutOutput) node.getLayoutData();
+        final LayoutOutput layoutOutput = getLayoutOutput(node);
         final int layoutOutputIndex =
             layoutState.getLayoutOutputPositionForId(layoutOutput.getId());
         if (getItemAt(layoutOutputIndex) == null) {
@@ -3126,7 +3130,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
               <= layoutOutputTops.get(mPreviousTopsIndex - 1).getBounds().top) {
         mPreviousTopsIndex--;
         final RenderTreeNode node = layoutOutputTops.get(mPreviousTopsIndex);
-        final long id = ((LayoutOutput) node.getLayoutData()).getId();
+        final long id = getLayoutOutput(node).getId();
         final int layoutOutputIndex = layoutState.getLayoutOutputPositionForId(id);
         if (!isAnimationLocked(layoutOutputIndex)) {
           unmountItem(layoutOutputIndex, mHostsByMarker);

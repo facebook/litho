@@ -229,4 +229,8 @@ class LayoutOutput implements Cloneable, AnimatableItem {
         output.getViewNodeInfo() != null ? output.getViewNodeInfo().getPadding() : null,
         parent != null ? parent.getChildrenCount() : 0);
   }
+
+  static LayoutOutput getLayoutOutput(RenderTreeNode node) {
+    return (LayoutOutput) node.getLayoutData();
+  }
 }

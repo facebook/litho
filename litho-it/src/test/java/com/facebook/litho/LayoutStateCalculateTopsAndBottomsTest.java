@@ -76,22 +76,22 @@ public class LayoutStateCalculateTopsAndBottomsTest {
     assertThat(layoutState.getMountableOutputBottoms().get(3).getBounds().bottom).isEqualTo(70);
     assertThat(layoutState.getMountableOutputBottoms().get(4).getBounds().bottom).isEqualTo(70);
 
-    assertThat(layoutState.getMountableOutputAt(2))
+    assertThat(layoutState.getMountableOutputAt(2).getLayoutData())
         .isSameAs(layoutState.getMountableOutputTops().get(2).getLayoutData());
-    assertThat(layoutState.getMountableOutputAt(4))
+    assertThat(layoutState.getMountableOutputAt(4).getLayoutData())
         .isSameAs(layoutState.getMountableOutputTops().get(3).getLayoutData());
-    assertThat(layoutState.getMountableOutputAt(3))
+    assertThat(layoutState.getMountableOutputAt(3).getLayoutData())
         .isSameAs(layoutState.getMountableOutputTops().get(4).getLayoutData());
 
-    assertThat(layoutState.getMountableOutputAt(4))
+    assertThat(layoutState.getMountableOutputAt(4).getLayoutData())
         .isSameAs(layoutState.getMountableOutputBottoms().get(0).getLayoutData());
-    assertThat(layoutState.getMountableOutputAt(2))
+    assertThat(layoutState.getMountableOutputAt(2).getLayoutData())
         .isSameAs(layoutState.getMountableOutputBottoms().get(1).getLayoutData());
-    assertThat(layoutState.getMountableOutputAt(1))
+    assertThat(layoutState.getMountableOutputAt(1).getLayoutData())
         .isSameAs(layoutState.getMountableOutputBottoms().get(2).getLayoutData());
-    assertThat(layoutState.getMountableOutputAt(3))
+    assertThat(layoutState.getMountableOutputAt(3).getLayoutData())
         .isSameAs(layoutState.getMountableOutputBottoms().get(3).getLayoutData());
-    assertThat(layoutState.getMountableOutputAt(0))
+    assertThat(layoutState.getMountableOutputAt(0).getLayoutData())
         .isSameAs(layoutState.getMountableOutputBottoms().get(4).getLayoutData());
   }
 
@@ -129,22 +129,22 @@ public class LayoutStateCalculateTopsAndBottomsTest {
     assertThat(layoutState.getMountableOutputBottoms().get(2).getBounds().bottom).isEqualTo(50);
     assertThat(layoutState.getMountableOutputBottoms().get(3).getBounds().bottom).isEqualTo(50);
 
-    assertThat(layoutState.getMountableOutputAt(0))
+    assertThat(layoutState.getMountableOutputAt(0).getLayoutData())
         .isSameAs(layoutState.getMountableOutputTops().get(0).getLayoutData());
-    assertThat(layoutState.getMountableOutputAt(1))
+    assertThat(layoutState.getMountableOutputAt(1).getLayoutData())
         .isSameAs(layoutState.getMountableOutputTops().get(1).getLayoutData());
-    assertThat(layoutState.getMountableOutputAt(2))
+    assertThat(layoutState.getMountableOutputAt(2).getLayoutData())
         .isSameAs(layoutState.getMountableOutputTops().get(2).getLayoutData());
-    assertThat(layoutState.getMountableOutputAt(3))
+    assertThat(layoutState.getMountableOutputAt(3).getLayoutData())
         .isSameAs(layoutState.getMountableOutputTops().get(3).getLayoutData());
 
-    assertThat(layoutState.getMountableOutputAt(0))
+    assertThat(layoutState.getMountableOutputAt(0).getLayoutData())
         .isSameAs(layoutState.getMountableOutputBottoms().get(3).getLayoutData());
-    assertThat(layoutState.getMountableOutputAt(1))
+    assertThat(layoutState.getMountableOutputAt(1).getLayoutData())
         .isSameAs(layoutState.getMountableOutputBottoms().get(2).getLayoutData());
-    assertThat(layoutState.getMountableOutputAt(2))
+    assertThat(layoutState.getMountableOutputAt(2).getLayoutData())
         .isSameAs(layoutState.getMountableOutputBottoms().get(1).getLayoutData());
-    assertThat(layoutState.getMountableOutputAt(3))
+    assertThat(layoutState.getMountableOutputAt(3).getLayoutData())
         .isSameAs(layoutState.getMountableOutputBottoms().get(0).getLayoutData());
   }
 

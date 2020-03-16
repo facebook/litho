@@ -116,8 +116,8 @@ class LayoutState {
       new Comparator<RenderTreeNode>() {
         @Override
         public int compare(RenderTreeNode l, RenderTreeNode r) {
-          LayoutOutput lhs = (LayoutOutput) l.getLayoutData();
-          LayoutOutput rhs = (LayoutOutput) r.getLayoutData();
+          LayoutOutput lhs = LayoutOutput.getLayoutOutput(l);
+          LayoutOutput rhs = LayoutOutput.getLayoutOutput(r);
           final int lhsTop = lhs.getBounds().top;
           final int rhsTop = rhs.getBounds().top;
           // Lower indices should be higher for tops so that they are mounted first if possible.
@@ -129,8 +129,8 @@ class LayoutState {
       new Comparator<RenderTreeNode>() {
         @Override
         public int compare(RenderTreeNode l, RenderTreeNode r) {
-          LayoutOutput lhs = (LayoutOutput) l.getLayoutData();
-          LayoutOutput rhs = (LayoutOutput) r.getLayoutData();
+          LayoutOutput lhs = LayoutOutput.getLayoutOutput(l);
+          LayoutOutput rhs = LayoutOutput.getLayoutOutput(r);
           final int lhsBottom = lhs.getBounds().bottom;
           final int rhsBottom = rhs.getBounds().bottom;
           // Lower indices should be lower for bottoms so that they are mounted first if possible.
@@ -817,7 +817,7 @@ class LayoutState {
       addCurrentAffinityGroupToTransitionMapping(layoutState);
 
       parent = layoutState.mMountableOutputs.get(hostLayoutPosition);
-      final LayoutOutput output = (LayoutOutput) parent.getLayoutData();
+      final LayoutOutput output = LayoutOutput.getLayoutOutput(parent);
 
       layoutState.mCurrentLevel++;
       layoutState.mCurrentHostMarker = output.getId();
@@ -1741,7 +1741,7 @@ class LayoutState {
     if (mMountableOutputs != null && !mMountableOutputs.isEmpty()) {
       for (int i = 0, size = mMountableOutputs.size(); i < size; i++) {
         final RenderTreeNode treeNode = mMountableOutputs.get(i);
-        final LayoutOutput output = (LayoutOutput) treeNode.getLayoutData();
+        final LayoutOutput output = LayoutOutput.getLayoutOutput(treeNode);
         final Component component = output.getComponent();
 
         if (shouldPreallocatePerMountSpec && !component.canPreallocate()) {
@@ -1931,8 +1931,8 @@ class LayoutState {
     return mMountableOutputs.size();
   }
 
-  LayoutOutput getMountableOutputAt(int index) {
-    return (LayoutOutput) mMountableOutputs.get(index).getLayoutData();
+  RenderTreeNode getMountableOutputAt(int index) {
+    return mMountableOutputs.get(index);
   }
 
   ArrayList<RenderTreeNode> getMountableOutputTops() {
@@ -2104,7 +2104,7 @@ class LayoutState {
   @Nullable
   LayoutOutput getLayoutOutput(long layoutOutputId) {
     final int position = getLayoutOutputPositionForId(layoutOutputId);
-    return position < 0 ? null : getMountableOutputAt(position);
+    return position < 0 ? null : LayoutOutput.getLayoutOutput(getMountableOutputAt(position));
   }
 
   @Nullable
@@ -2199,7 +2199,7 @@ class LayoutState {
             + "\n";
 
     for (int i = 0; i < getMountableOutputCount(); i++) {
-      final LayoutOutput layoutOutput = getMountableOutputAt(i);
+      final LayoutOutput layoutOutput = LayoutOutput.getLayoutOutput(getMountableOutputAt(i));
       res +=
           "  ["
               + i

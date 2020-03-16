@@ -16,6 +16,8 @@
 
 package com.facebook.litho;
 
+import static com.facebook.litho.LayoutOutput.getLayoutOutput;
+
 import android.animation.TimeInterpolator;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Interpolator;
@@ -681,7 +683,7 @@ public abstract class Transition {
 
     @Override
     public float getCurrentState(PropertyHandle propertyHandle) {
-      final LayoutOutput root = mLayoutState.getMountableOutputAt(0);
+      final LayoutOutput root = getLayoutOutput(mLayoutState.getMountableOutputAt(0));
       return mAnimatedProperty.get(root);
     }
 

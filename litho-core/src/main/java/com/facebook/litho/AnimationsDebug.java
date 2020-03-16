@@ -16,6 +16,8 @@
 
 package com.facebook.litho;
 
+import static com.facebook.litho.LayoutOutput.getLayoutOutput;
+
 import android.util.Log;
 import com.facebook.litho.config.ComponentsConfiguration;
 
@@ -40,7 +42,7 @@ public class AnimationsDebug {
 
     if (animationLockedIndices != null) {
       for (int i = 0; i < animationLockedIndices.length; i++) {
-        final LayoutOutput output = layoutState.getMountableOutputAt(i);
+        final LayoutOutput output = getLayoutOutput(layoutState.getMountableOutputAt(i));
         Log.d(
             TAG,
             ""
