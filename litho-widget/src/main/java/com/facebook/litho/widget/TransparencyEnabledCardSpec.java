@@ -17,7 +17,7 @@
 package com.facebook.litho.widget;
 
 import static com.facebook.litho.widget.CardShadowDrawable.getShadowBottom;
-import static com.facebook.litho.widget.CardShadowDrawable.getShadowLeft;
+import static com.facebook.litho.widget.CardShadowDrawable.getShadowHorizontal;
 import static com.facebook.litho.widget.CardShadowDrawable.getShadowTop;
 import static com.facebook.yoga.YogaEdge.ALL;
 import static com.facebook.yoga.YogaEdge.BOTTOM;
@@ -99,11 +99,10 @@ class TransparencyEnabledCardSpec {
       elevation = pixels(resources, DEFAULT_SHADOW_SIZE_DP);
     }
 
-    final float shadowDy = 0.5f * elevation;
-    final int shadowTop = getShadowTop(elevation, shadowDy);
+    final int shadowTop = getShadowTop(elevation);
     final int shadowBottom =
-        shadowBottomOverride == -1 ? getShadowBottom(elevation, shadowDy) : shadowBottomOverride;
-    final int shadowHorizontal = getShadowLeft(elevation, 0f);
+        shadowBottomOverride == -1 ? getShadowBottom(elevation) : shadowBottomOverride;
+    final int shadowHorizontal = getShadowHorizontal(elevation);
 
     return Column.create(c)
         .child(
@@ -127,7 +126,6 @@ class TransparencyEnabledCardSpec {
                     .shadowEndColor(shadowEndColor)
                     .cornerRadiusPx(cornerRadius)
                     .shadowSizePx(elevation)
-                    .shadowDyPx(shadowDy)
                     .hideTopShadow(disableClipTopLeft && disableClipTopRight)
                     .hideBottomShadow(disableClipBottomLeft && disableClipBottomRight)
                     .positionType(ABSOLUTE)

@@ -32,8 +32,6 @@ import com.facebook.litho.annotations.ResType;
  * @prop shadowEndColor End color for the shadow.
  * @prop cornerRadius Corner radius for the card that shows the shadow.
  * @prop shadowSize Size of the shadow.
- * @prop shadowDx The x offset of the shadow.
- * @prop shadowDy The y offset of the shadow.
  */
 @MountSpec(isPureRender = true)
 class CardShadowSpec {
@@ -51,8 +49,6 @@ class CardShadowSpec {
       @Prop(optional = true, resType = ResType.COLOR) int shadowEndColor,
       @Prop(optional = true, resType = ResType.DIMEN_OFFSET) float cornerRadius,
       @Prop(optional = true, resType = ResType.DIMEN_SIZE) float shadowSize,
-      @Prop(optional = true, resType = ResType.DIMEN_OFFSET) float shadowDx,
-      @Prop(optional = true, resType = ResType.DIMEN_OFFSET) float shadowDy,
       @Prop(optional = true) boolean hideTopShadow,
       @Prop(optional = true) boolean hideBottomShadow) {
 
@@ -62,7 +58,5 @@ class CardShadowSpec {
     cardShadowDrawable.setShadowSize(shadowSize);
     cardShadowDrawable.setHideTopShadow(hideTopShadow);
     cardShadowDrawable.setHideBottomShadow(hideBottomShadow);
-    cardShadowDrawable.setShadowDx(shadowDx);
-    cardShadowDrawable.setShadowDy(shadowDy);
   }
 }
