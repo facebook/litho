@@ -158,6 +158,7 @@ public class LithoPluginUtils {
   }
 
   @Nullable
+  @Contract("null -> null")
   public static String getLithoComponentNameFromSpec(@Nullable String specName) {
     if (isSpecName(specName)) {
       return specName.substring(0, specName.length() - SPEC_SUFFIX.length());

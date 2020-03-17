@@ -17,6 +17,8 @@
 <idea-plugin>
   <id>com.facebook.litho.intellij</id>
   <name>Litho</name>
+  <!-- 181 is IntelliJ 2018.1 and/or Android Studio 3.2 -->
+  <idea-version since-build="181"/>
   <description>
   <![CDATA[
     <p><a href='https://fblitho.com/'>Litho</a> is a declarative UI framework for Android.
@@ -48,7 +50,7 @@
 
   <vendor url="https://github.com/facebook/litho/tree/master/litho-intellij-plugin">
         Facebook,Inc.
-    </vendor>
+  </vendor>
 
   <extensionPoints>
     <extensionPoint name="eventLogger"
@@ -60,6 +62,8 @@
   <depends>com.intellij.modules.java</depends>
 
   <extensions defaultExtensionNs="com.intellij">
+    <projectService serviceImplementation="com.facebook.litho.intellij.services.ComponentsCacheService"/>
+
     <gotoDeclarationHandler implementation="com.facebook.litho.intellij.navigation.SectionDeclarationHandler"/>
     <gotoDeclarationHandler implementation="com.facebook.litho.intellij.navigation.ComponentDeclarationHandler"/>
 
@@ -88,9 +92,6 @@
 
     <findUsagesHandlerFactory language="JAVA" implementation="com.facebook.litho.intellij.file.LithoFindUsagesHandlerFactory" />
   </extensions>
-
-  <!-- 181 is IntelliJ 2018.1 and/or Android Studio 3.2 -->
-  <idea-version since-build="181"/>
 
   <actions>
     <group id="litho.EditorPopupMenu">
