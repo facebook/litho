@@ -119,6 +119,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   // See #needsRemount()
   private boolean mNeedsRemount;
 
+  private boolean mIsBound;
+
   // Holds the list of known component hosts during a mount pass.
   private final LongSparseArray<ComponentHost> mHostsByMarker = new LongSparseArray<>();
 
@@ -199,6 +201,12 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     assertMainThread();
 
     return mNeedsRemount;
+  }
+
+  boolean isBound() {
+    assertMainThread();
+
+    return mIsBound;
   }
 
   /**
@@ -388,6 +396,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     final boolean wasDirty = mIsDirty;
     mIsDirty = false;
     mNeedsRemount = false;
+    mIsBound = true;
     mIsFirstMountOfComponentTree = false;
     if (localVisibleRect != null) {
       mPreviousLocalVisibleRect.set(localVisibleRect);
@@ -2824,6 +2833,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     if (isTracing) {
       ComponentsSystrace.endSection();
     }
+
+    mIsBound = false;
   }
 
   void detach() {
@@ -2863,6 +2874,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
             view, view.getLeft(), view.getTop(), view.getRight(), view.getBottom(), true);
       }
     }
+    mIsBound = true;
   }
 
   /**

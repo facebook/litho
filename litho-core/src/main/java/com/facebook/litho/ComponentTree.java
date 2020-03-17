@@ -623,6 +623,10 @@ public class ComponentTree {
       return true;
     }
 
+    if (!mLithoView.mountStateIsBound()) {
+      mLithoView.rebind();
+    }
+
     return false;
   }
 
