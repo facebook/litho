@@ -19,6 +19,7 @@ package com.facebook.litho;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import android.graphics.Rect;
+import android.view.View;
 import android.widget.FrameLayout;
 import com.facebook.litho.IncrementalModule.IncrementalModuleItem;
 import com.facebook.litho.testing.helper.ComponentTestHelper;
@@ -103,7 +104,7 @@ public class IncrementalModuleTest {
     }
 
     @Override
-    public void onLithoViewAvailable(LithoView lithoView) {}
+    public void onLithoViewAvailable(View view) {}
 
     void enterRangeHeightRatio(float heightRatio) {
       mHeightRatio = heightRatio;

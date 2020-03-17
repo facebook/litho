@@ -32,4 +32,6 @@ public abstract class Host extends ComponentHost {
   }
 
   abstract Rect getVisibleRect();
+
+  abstract boolean isInTransientState();
 }

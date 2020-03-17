@@ -55,6 +55,7 @@ import androidx.collection.LongSparseArray;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.ComponentTree.LayoutStateFuture;
 import com.facebook.litho.IncrementalMountExtension.IncrementalMountExtensionInput;
+import com.facebook.litho.VisibilityOutputsExtension.VisibilityOutputsExtensionInput;
 import com.facebook.litho.annotations.ImportantForAccessibility;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.drawable.BorderColorDrawable;
@@ -83,7 +84,7 @@ import javax.annotation.CheckReturnValue;
  */
 // This needs to be accessible to statically mock the class in tests.
 @VisibleForTesting
-class LayoutState implements IncrementalMountExtensionInput {
+class LayoutState implements IncrementalMountExtensionInput, VisibilityOutputsExtensionInput {
 
   private static final String DUPLICATE_TRANSITION_IDS = "LayoutState:DuplicateTransitionIds";
   private static final String DUPLICATE_MANUAL_KEY = "LayoutState:DuplicateManualKey";
@@ -319,7 +320,8 @@ class LayoutState implements IncrementalMountExtensionInput {
     mVisibilityOutputs = new ArrayList<>(8);
   }
 
-  boolean incrementalVisibilityEnabled() {
+  @Override
+  public boolean isIncrementalVisibilityEnabled() {
     return mIncrementalVisibility;
   }
 
@@ -1957,6 +1959,11 @@ class LayoutState implements IncrementalMountExtensionInput {
     return mVisibilityOutputs.get(index);
   }
 
+  @Override
+  public List<VisibilityOutput> getVisibilityOutputs() {
+    return mVisibilityOutputs;
+  }
+
   /*
   ArrayList<IncrementalModuleItem> getIncrementalVisibilityItemsTops() {
     return mIncrementalVisibilityItemsTops;
@@ -1983,7 +1990,8 @@ class LayoutState implements IncrementalMountExtensionInput {
   }
    */
 
-  VisibilityModuleInput getVisibilityModuleInput() {
+  @Override
+  public VisibilityModuleInput getVisibilityModuleInput() {
     return mVisibilityModuleInput;
   }
 

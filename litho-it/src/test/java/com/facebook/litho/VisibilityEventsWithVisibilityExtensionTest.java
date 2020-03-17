@@ -1,3 +1,5 @@
+// (c) Facebook, Inc. and its affiliates. Confidential and proprietary.
+
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -30,9 +32,11 @@ import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestViewComponent;
 import com.facebook.litho.testing.ViewGroupWithLithoViewChildren;
+import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
 import com.facebook.yoga.YogaEdge;
+import java.util.List;
 import java.util.Map;
 import org.junit.After;
 import org.junit.Before;
@@ -41,19 +45,19 @@ import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
 
 @RunWith(ComponentsTestRunner.class)
-public class VisibilityEventsTest {
+public class VisibilityEventsWithVisibilityExtensionTest {
   private static final int LEFT = 0;
   private static final int RIGHT = 10;
 
   private ComponentContext mContext;
   private LithoView mLithoView;
   private FrameLayout mParent;
-  private boolean configWithExtensions;
+  private boolean configValue;
 
   @Before
   public void setup() {
-    configWithExtensions = ComponentsConfiguration.useRenderCoreMount;
-    ComponentsConfiguration.useRenderCoreMount = false;
+    configValue = ComponentsConfiguration.useRenderCoreMount;
+    ComponentsConfiguration.useRenderCoreMount = true;
     mContext = new ComponentContext(RuntimeEnvironment.application);
 
     mLithoView = new LithoView(mContext);
@@ -67,7 +71,7 @@ public class VisibilityEventsTest {
 
   @After
   public void cleanup() {
-    ComponentsConfiguration.useRenderCoreMount = configWithExtensions;
+    ComponentsConfiguration.useRenderCoreMount = configValue;
   }
 
   @Test
@@ -861,8 +865,7 @@ public class VisibilityEventsTest {
             15,
             15);
 
-    Map<String, VisibilityItem> visibilityItemMap =
-        lithoView.getMountState().getVisibilityIdToItemMap();
+    Map<String, VisibilityItem> visibilityItemMap = getVisibilityIdToItemMap(lithoView);
     for (String key : visibilityItemMap.keySet()) {
       VisibilityItem item = visibilityItemMap.get(key);
       assertThat(item.wasFullyVisible()).isTrue();
@@ -888,7 +891,7 @@ public class VisibilityEventsTest {
     assertThat(content2.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler2);
     assertThat(content3.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler3);
 
-    visibilityItemMap = lithoView.getMountState().getVisibilityIdToItemMap();
+    visibilityItemMap = getVisibilityIdToItemMap(lithoView);
     assertThat(visibilityItemMap.size()).isEqualTo(3);
     for (String key : visibilityItemMap.keySet()) {
       VisibilityItem item = visibilityItemMap.get(key);
@@ -908,7 +911,7 @@ public class VisibilityEventsTest {
     assertThat(content2.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler2);
     assertThat(content3.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler3);
 
-    visibilityItemMap = lithoView.getMountState().getVisibilityIdToItemMap();
+    visibilityItemMap = getVisibilityIdToItemMap(lithoView);
     assertThat(visibilityItemMap.size()).isEqualTo(3);
 
     assertThat(
@@ -940,7 +943,7 @@ public class VisibilityEventsTest {
     assertThat(content2.getDispatchedEventHandlers()).contains(invisibleEventHandler2);
     assertThat(content3.getDispatchedEventHandlers()).contains(invisibleEventHandler3);
 
-    visibilityItemMap = lithoView.getMountState().getVisibilityIdToItemMap();
+    visibilityItemMap = getVisibilityIdToItemMap(lithoView);
     assertThat(visibilityItemMap.size()).isEqualTo(0);
 
     content1.getDispatchedEventHandlers().clear();
@@ -969,7 +972,7 @@ public class VisibilityEventsTest {
     assertThat(content2.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler2);
     assertThat(content3.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler3);
 
-    visibilityItemMap = lithoView.getMountState().getVisibilityIdToItemMap();
+    visibilityItemMap = getVisibilityIdToItemMap(lithoView);
     assertThat(visibilityItemMap.size()).isEqualTo(3);
     assertThat(
             visibilityItemMap
@@ -1000,7 +1003,7 @@ public class VisibilityEventsTest {
     assertThat(content2.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler2);
     assertThat(content3.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler3);
 
-    visibilityItemMap = lithoView.getMountState().getVisibilityIdToItemMap();
+    visibilityItemMap = getVisibilityIdToItemMap(lithoView);
     assertThat(visibilityItemMap.size()).isEqualTo(3);
     assertThat(
             visibilityItemMap
@@ -1017,6 +1020,22 @@ public class VisibilityEventsTest {
                 .get(ComponentKeyUtils.getKeyWithSeparator("root", "child3", "tc3"))
                 .wasFullyVisible())
         .isTrue();
+  }
+
+  private Map<String, VisibilityItem> getVisibilityIdToItemMap(LithoView lithoView) {
+    LithoHostListenerCoordinator lithoHostListenerCoordinator =
+        Whitebox.getInternalState(lithoView, "mLithoHostListenerCoordinator");
+    List<HostListenerExtension> extensions =
+        Whitebox.getInternalState(lithoHostListenerCoordinator, "mMountExtensions");
+    for (int i = 0, size = extensions.size(); i < size; i++) {
+      if (extensions.get(i) instanceof VisibilityOutputsExtension) {
+        VisibilityOutputsExtension visibilityOutputsExtension =
+            (VisibilityOutputsExtension) extensions.get(i);
+        return visibilityOutputsExtension.getVisibilityIdToItemMap();
+      }
+    }
+
+    return null;
   }
 
   @Test

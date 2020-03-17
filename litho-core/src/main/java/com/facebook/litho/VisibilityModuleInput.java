@@ -217,7 +217,7 @@ public class VisibilityModuleInput {
     }
 
     @Override
-    public void onLithoViewAvailable(LithoView lithoView) {}
+    public void onLithoViewAvailable(View view) {}
   }
 
   static final class FocusedIncrementalModuleItem
@@ -259,8 +259,8 @@ public class VisibilityModuleInput {
       processUnfocused(mVisibilityOutput);
     }
 
-    public void onLithoViewAvailable(LithoView lithoView) {
-      final View parent = (View) lithoView.getParent();
+    public void onLithoViewAvailable(View view) {
+      final View parent = (View) view.getParent();
       if (parent == null) {
         return;
       }
@@ -314,6 +314,6 @@ public class VisibilityModuleInput {
     public void onExitVisibleRange() {}
 
     @Override
-    public void onLithoViewAvailable(LithoView lithoView) {}
+    public void onLithoViewAvailable(View view) {}
   }
 }

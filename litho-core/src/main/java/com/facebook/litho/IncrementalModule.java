@@ -88,7 +88,7 @@ class IncrementalModule {
      * need to know the size of the parent LithoView to decide how much the item needs to be visible
      * to be eligible.
      */
-    void onLithoViewAvailable(LithoView lithoView);
+    void onLithoViewAvailable(View view);
   }
 
   static final Comparator<IncrementalModuleItem> sTopsComparators =
