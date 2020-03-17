@@ -35,8 +35,10 @@ litho_android_library(
         "PUBLIC",
     ],
     deps = [
-        LITHO_JAVA_TARGET,
         LITHO_YOGA_TARGET,
         LITHO_KOTLIN_STDLIB_TARGET,
+    ],
+    exported_deps = [
+        LITHO_JAVA_TARGET,
     ],
 )
