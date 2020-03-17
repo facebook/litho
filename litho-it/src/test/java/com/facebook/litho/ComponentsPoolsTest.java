@@ -121,6 +121,31 @@ public class ComponentsPoolsTest {
   }
 
   @Test
+  public void testAcquireMountContentWhenRecyclingModeIsNoViewReuse() {
+    assertThat(
+            acquireMountContent(mContext1, mLifecycle, ComponentTree.RecyclingMode.NO_VIEW_REUSE))
+        .isSameAs(mNewMountContent);
+
+    release(mContext1, mLifecycle, mMountContent, ComponentTree.RecyclingMode.NO_VIEW_REUSE);
+
+    // In spite of recycling we get a new mount content.
+    assertThat(
+            acquireMountContent(mContext1, mLifecycle, ComponentTree.RecyclingMode.NO_VIEW_REUSE))
+        .isSameAs(mNewMountContent);
+  }
+
+  @Test
+  public void testNotPreallocateWhenRecyclingModeIsNoViewRecycle() {
+    maybePreallocateContent(mContext1, mLifecycle, ComponentTree.RecyclingMode.NO_VIEW_RECYCLING);
+    mNewMountContent = new View(mContext1);
+    // Pre allocation has no impact, we get a new mount content on acquiring.
+    assertThat(
+            acquireMountContent(
+                mContext1, mLifecycle, ComponentTree.RecyclingMode.NO_VIEW_RECYCLING))
+        .isSameAs(mNewMountContent);
+  }
+
+  @Test
   public void testReleaseMountContentForDestroyedContextDoesNothing() {
     // Assert pooling was working before
     assertThat(acquireMountContent(mActivity, mLifecycle, ComponentTree.RecyclingMode.DEFAULT))
