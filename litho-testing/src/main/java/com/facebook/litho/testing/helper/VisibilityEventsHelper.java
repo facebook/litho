@@ -90,10 +90,10 @@ public class VisibilityEventsHelper {
     return Whitebox.invokeMethod(layoutState, "get" + name + "EventHandler");
   }
 
-  private static void dispatch(Object visibilityOutput, String name) throws ClassNotFoundException {
+  private static void dispatch(Object eventHandler, String name) throws ClassNotFoundException {
     Whitebox.invokeMethod(
         Class.forName("com.facebook.litho.EventDispatcherUtils"),
         "dispatchOn" + name,
-        visibilityOutput);
+        eventHandler);
   }
 }
