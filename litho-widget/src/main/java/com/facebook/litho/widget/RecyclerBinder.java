@@ -448,7 +448,7 @@ public class RecyclerBinder
     private @Nullable LithoStartupLogger startupLogger;
     private LithoHandler mAsyncInsertLayoutHandler;
     private boolean mIncrementalVisibility = ComponentsConfiguration.incrementalVisibilityHandling;
-    private int recyclingMode;
+    private @ComponentTree.RecyclingMode int recyclingMode = ComponentTree.RecyclingMode.DEFAULT;
 
     /**
      * @param rangeRatio specifies how big a range this binder should try to compute. The range is
@@ -716,6 +716,11 @@ public class RecyclerBinder
       return this;
     }
 
+    public Builder recyclingMode(@ComponentTree.RecyclingMode int recyclingMode) {
+      this.recyclingMode = recyclingMode;
+      return this;
+    }
+
     public Builder isLayoutDiffingEnabled(boolean isEnabled) {
       isLayoutDiffingEnabled = isEnabled;
       return this;
@@ -745,7 +750,11 @@ public class RecyclerBinder
       // Incremental mount will not work if this ComponentTree is nested in a parent with it turned
       // off, so always disable it in that case
       incrementalMount = incrementalMount && ComponentContext.isIncrementalMountEnabled(c);
-      recyclingMode = c.getRecyclingMode();
+
+      if (recyclingMode == ComponentTree.RecyclingMode.DEFAULT) {
+        // Only override from parent if recycling mode is not explicitly set.
+        recyclingMode = c.getRecyclingMode();
+      }
 
       if (layoutInfo == null) {
         layoutInfo = new LinearLayoutInfo(c.getAndroidContext(), VERTICAL, false);

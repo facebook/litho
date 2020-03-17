@@ -18,6 +18,7 @@ package com.facebook.litho.sections.widget;
 
 import androidx.annotation.Nullable;
 import com.facebook.litho.ComponentLogParams;
+import com.facebook.litho.ComponentTree;
 import com.facebook.litho.LithoHandler;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.config.LayoutThreadPoolConfiguration;
@@ -37,6 +38,7 @@ public class RecyclerBinderConfiguration {
   private final boolean mMoveLayoutsBetweenThreads;
   private final boolean mUseCancelableLayoutFutures;
   private final @Nullable ComponentWarmer mComponentWarmer;
+  private final @ComponentTree.RecyclingMode int mRecyclingMode;
   // TODO T34627443 make all fields final after removing setters
   private boolean mHasDynamicItemHeight;
   private boolean mUseBackgroundChangeSets = SectionsConfiguration.useBackgroundChangeSets;
@@ -76,6 +78,7 @@ public class RecyclerBinderConfiguration {
       boolean moveLayoutsBetweenThreads,
       boolean useCancelableLayoutFutures,
       boolean isReconciliationEnabled,
+      @ComponentTree.RecyclingMode int recyclingMode,
       boolean isLayoutDiffingEnabled,
       boolean postToFrontOfQueueForFirstChangeset,
       @Nullable ComponentWarmer componentWarmer,
@@ -95,6 +98,7 @@ public class RecyclerBinderConfiguration {
     mMoveLayoutsBetweenThreads = moveLayoutsBetweenThreads;
     mUseCancelableLayoutFutures = useCancelableLayoutFutures;
     mIsReconciliationEnabled = isReconciliationEnabled;
+    mRecyclingMode = recyclingMode;
     mIsLayoutDiffingEnabled = isLayoutDiffingEnabled;
     mPostToFrontOfQueueForFirstChangeset = postToFrontOfQueueForFirstChangeset;
     mComponentWarmer = componentWarmer;
@@ -161,6 +165,10 @@ public class RecyclerBinderConfiguration {
     return mIsReconciliationEnabled;
   }
 
+  public @ComponentTree.RecyclingMode int getRecyclingMode() {
+    return mRecyclingMode;
+  }
+
   public boolean isLayoutDiffingEnabled() {
     return mIsLayoutDiffingEnabled;
   }
@@ -204,6 +212,7 @@ public class RecyclerBinderConfiguration {
     private boolean mPostToFrontOfQueueForFirstChangeset;
     private @Nullable ComponentWarmer mComponentWarmer;
     private int mEstimatedViewportCount = UNSET;
+    private @ComponentTree.RecyclingMode int mRecyclingMode = ComponentTree.RecyclingMode.DEFAULT;
 
     Builder() {}
 
@@ -223,6 +232,7 @@ public class RecyclerBinderConfiguration {
       this.mEnableDetach = configuration.mEnableDetach;
       this.mChangeSetThreadHandler = configuration.mChangeSetThreadHandler;
       this.mIsReconciliationEnabled = configuration.mIsReconciliationEnabled;
+      this.mRecyclingMode = configuration.mRecyclingMode;
       this.mIsLayoutDiffingEnabled = configuration.mIsLayoutDiffingEnabled;
       this.mPostToFrontOfQueueForFirstChangeset =
           configuration.mPostToFrontOfQueueForFirstChangeset;
@@ -347,6 +357,11 @@ public class RecyclerBinderConfiguration {
       return this;
     }
 
+    public Builder recyclingMode(@ComponentTree.RecyclingMode int recyclingMode) {
+      mRecyclingMode = recyclingMode;
+      return this;
+    }
+
     public Builder isLayoutDiffingEnabled(boolean isEnabled) {
       mIsLayoutDiffingEnabled = isEnabled;
       return this;
@@ -394,6 +409,7 @@ public class RecyclerBinderConfiguration {
           mMoveLayoutsBetweenThreads,
           mUseCancelableLayoutFutures,
           mIsReconciliationEnabled,
+          mRecyclingMode,
           mIsLayoutDiffingEnabled,
           mPostToFrontOfQueueForFirstChangeset,
           mComponentWarmer,
