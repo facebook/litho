@@ -18,7 +18,9 @@ package com.facebook.litho.drawable;
 
 import android.content.res.ColorStateList;
 import android.graphics.drawable.GradientDrawable;
+import android.os.Build;
 import androidx.annotation.ColorInt;
+import androidx.annotation.Nullable;
 import com.facebook.infer.annotation.OkToExtend;
 import com.facebook.litho.CommonUtils;
 import java.util.Arrays;
@@ -72,7 +74,7 @@ public class ComparableGradientDrawable extends GradientDrawable implements Comp
         && strokeDashWidth == that.strokeDashWidth
         && strokeDashGap == that.strokeDashGap
         && strokeColor == that.strokeColor
-        && getOrientation() == that.getOrientation()
+        && getOrientationOrNullOnAPI15() == that.getOrientationOrNullOnAPI15()
         && Arrays.equals(colors, that.colors)
         && Arrays.equals(cornerRadii, that.cornerRadii)
         && CommonUtils.equals(strokeColorStateList, that.strokeColorStateList);
@@ -80,11 +82,10 @@ public class ComparableGradientDrawable extends GradientDrawable implements Comp
 
   @Override
   public int hashCode() {
-
     int result =
         Arrays.hashCode(
             new Object[] {
-              getOrientation(),
+              getOrientationOrNullOnAPI15(),
               color,
               colorStateList,
               cornerRadius,
@@ -102,6 +103,17 @@ public class ComparableGradientDrawable extends GradientDrawable implements Comp
     result = 31 * result + Arrays.hashCode(colors);
     result = 31 * result + Arrays.hashCode(cornerRadii);
     return result;
+  }
+
+  /**
+   * On API 15, get/setOrientation didn't exist so we need to not call it. It also wasn't possible
+   * to change the orientation so we don't need to compare it anyway.
+   */
+  private @Nullable Orientation getOrientationOrNullOnAPI15() {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
+      return null;
+    }
+    return getOrientation();
   }
 
   @Override
