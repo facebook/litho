@@ -115,6 +115,10 @@ public class ComponentTree {
   private final boolean mIncrementalVisibility;
   private final @RecyclingMode int mRecyclingMode;
 
+  @VisibleForTesting
+  InitialStateContainer mInitialStateContainer =
+      ComponentsConfiguration.createInitialStateOncePerThread ? new InitialStateContainer() : null;
+
   @IntDef({SCHEDULE_NONE, SCHEDULE_LAYOUT_ASYNC, SCHEDULE_LAYOUT_SYNC})
   @Retention(RetentionPolicy.SOURCE)
   private @interface PendingLayoutCalculation {}
@@ -1112,6 +1116,9 @@ public class ComponentTree {
         attachables = localLayoutState.consumeAttachables();
         if (layoutStateStateHandler != null) {
           mStateHandler.commit(layoutStateStateHandler);
+          if (mInitialStateContainer != null) {
+            mInitialStateContainer.unregisterStateHandler(layoutStateStateHandler);
+          }
         }
 
         components = localLayoutState.consumeComponents();
@@ -1795,6 +1802,15 @@ public class ComponentTree {
   }
 
   /**
+   * @return the InitialStateContainer associated with this tree. This is basically a look-aside
+   *     table for initial states so that we can guarantee that onCreateInitialState doesn't get
+   *     called multiple times for the same Component.
+   */
+  InitialStateContainer getInitialStateContainer() {
+    return mInitialStateContainer;
+  }
+
+  /**
    * This internal version of {@link #setRootAndSizeSpecInternal(Component, int, int, boolean, Size,
    * int, String, TreeProps)} wraps the provided root in a wrapper component first. Ensure to only
    * call this for entry calls to setRoot, i.e. non-recurring calls as you will otherwise continue
@@ -2089,8 +2105,8 @@ public class ComponentTree {
       noCompatibleComponent =
           !hasCompatibleComponentAndSpec()
               && isCompatibleSpec(localLayoutState, mWidthSpec, mHeightSpec);
+      final StateHandler layoutStateStateHandler = localLayoutState.consumeStateHandler();
       if (noCompatibleComponent) {
-        final StateHandler layoutStateStateHandler = localLayoutState.consumeStateHandler();
         if (layoutStateStateHandler != null) {
           if (mStateHandler != null) { // we could have been released
             mStateHandler.commit(layoutStateStateHandler);
@@ -2108,6 +2124,10 @@ public class ComponentTree {
         // Set the new layout state.
         mBackgroundLayoutState = localLayoutState;
         layoutStateUpdated = true;
+      }
+
+      if (layoutStateStateHandler != null && mInitialStateContainer != null) {
+        mInitialStateContainer.unregisterStateHandler(layoutStateStateHandler);
       }
       // Resetting the count after layout calculation is complete and it was triggered from within
       // layout creation
@@ -2596,12 +2616,12 @@ public class ComponentTree {
       final ComponentContext contextWithStateHandler;
 
       synchronized (ComponentTree.this) {
-        contextWithStateHandler =
-            new ComponentContext(
-                context,
-                StateHandler.createNewInstance(ComponentTree.this.mStateHandler),
-                treeProps,
-                null);
+        final StateHandler stateHandler =
+            StateHandler.createNewInstance(ComponentTree.this.mStateHandler);
+        contextWithStateHandler = new ComponentContext(context, stateHandler, treeProps, null);
+        if (mInitialStateContainer != null) {
+          mInitialStateContainer.registerStateHandler(stateHandler);
+        }
       }
 
       return LayoutState.calculate(

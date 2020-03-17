@@ -30,6 +30,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
 import com.facebook.litho.StateUpdateTestComponent.TestStateContainer;
+import com.facebook.litho.components.StateUpdateTestLayout;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.helper.ComponentTestHelper;
 import com.facebook.litho.testing.logging.TestComponentsLogger;
@@ -37,6 +38,9 @@ import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -366,6 +370,80 @@ public class StateUpdatesTest {
     mLayoutThreadShadowLooper.runToEndOfTasks();
     assertThat(mTestComponent.getComponentForStateUpdate().getCount())
         .isEqualTo(StateUpdateTestComponent.INITIAL_COUNT_STATE_VALUE + 2);
+  }
+
+  @Test
+  public void testStateContainerDrained() {
+    ComponentTree componentTree = ComponentTree.create(mContext).build();
+    componentTree.mInitialStateContainer = new InitialStateContainer();
+
+    final CountDownLatch check = new CountDownLatch(2);
+    final CountDownLatch waitForFirstLayoutToStart = new CountDownLatch(1);
+    final CountDownLatch waitForFirstThreadToStart = new CountDownLatch(1);
+
+    AtomicInteger stateUpdateCalled = new AtomicInteger(0);
+    AtomicInteger stateValue = new AtomicInteger(0);
+    AtomicInteger secondStateValue = new AtomicInteger(0);
+
+    // The threading here is a bit tricky. The idea is that the first thread unlocks the second
+    // thread from its onCreateLayout execution and blocks immediately. At this point the second
+    // thread's onCreateLayout unblocks the first thread. We are now in the situation that we want
+    // to test where both threads are executing a layout and the state for the inner component
+    // has not been created yet.
+
+    Thread thread1 =
+        new Thread() {
+          @Override
+          public void run() {
+            componentTree.setRootAndSizeSpec(
+                StateUpdateTestLayout.create(mContext)
+                    .awaitable(waitForFirstLayoutToStart)
+                    .countDownLatch(waitForFirstThreadToStart)
+                    .createStateCount(stateUpdateCalled)
+                    .outStateValue(stateValue)
+                    .build(),
+                SizeSpec.makeSizeSpec(100, EXACTLY),
+                SizeSpec.makeSizeSpec(100, EXACTLY));
+            check.countDown();
+          }
+        };
+
+    Thread thread2 =
+        new Thread() {
+          @Override
+          public void run() {
+            try {
+              waitForFirstThreadToStart.await();
+            } catch (InterruptedException e) {
+              e.printStackTrace();
+            }
+            componentTree.setRootAndSizeSpec(
+                StateUpdateTestLayout.create(mContext)
+                    .awaitable(null)
+                    .countDownLatch(waitForFirstLayoutToStart)
+                    .createStateCount(stateUpdateCalled)
+                    .outStateValue(secondStateValue)
+                    .build(),
+                SizeSpec.makeSizeSpec(200, EXACTLY),
+                SizeSpec.makeSizeSpec(200, EXACTLY));
+            check.countDown();
+          }
+        };
+
+    thread1.start();
+    thread2.start();
+
+    try {
+      check.await(5000, TimeUnit.MILLISECONDS);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
+
+    assertThat(componentTree.getInitialStateContainer().mInitialStates.isEmpty()).isTrue();
+    assertThat(componentTree.getInitialStateContainer().mPendingStateHandlers.isEmpty()).isTrue();
+    assertThat(stateUpdateCalled.intValue()).isEqualTo(1);
+    assertThat(stateValue.intValue()).isEqualTo(secondStateValue.intValue());
+    assertThat(stateValue.intValue()).isEqualTo(10);
   }
 
   private StateHandler getStateHandler() {

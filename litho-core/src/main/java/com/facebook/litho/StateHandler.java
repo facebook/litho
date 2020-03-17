@@ -72,8 +72,6 @@ public class StateHandler {
   @Nullable
   private Map<Object, Object> mCachedValues;
 
-  private Map<String, Object> mCreateInitialStateLock;
-
   private Map<String, Object> mHookState;
   private List<HookUpdater> mPendingHookUpdates;
   private List<HookUpdater> mAppliedHookUpdates;
@@ -179,7 +177,12 @@ public class StateHandler {
     if (currentStateContainer != null) {
       component.transferState(currentStateContainer, component.getStateContainer());
     } else {
-      component.createInitialState(component.getScopedContext());
+      final ComponentTree componentTree = component.getScopedContext().getComponentTree();
+      if (componentTree != null && componentTree.getInitialStateContainer() != null) {
+        componentTree.getInitialStateContainer().createOrGetInitialStateForComponent(component);
+      } else {
+        component.createInitialState(component.getScopedContext());
+      }
     }
 
     final List<StateUpdate> stateUpdatesForKey;
