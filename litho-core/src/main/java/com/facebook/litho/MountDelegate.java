@@ -17,6 +17,7 @@
 package com.facebook.litho;
 
 import android.util.LongSparseArray;
+import com.facebook.rendercore.RenderTreeNode;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,13 +41,16 @@ public class MountDelegate {
     MountItem getItemAt(int i);
 
     MountItem getRootMountItem();
+
+    // TODO: remove when ref counting for animations.
+    boolean isAnimationLocked(int position);
   }
 
   // IGNORE - Will be removed. Check out D4182567 for context.
   interface MountDelegateInput {
     int getLayoutOutputPositionForId(long id);
 
-    LayoutOutput getMountableOutputAt(int position);
+    RenderTreeNode getMountableOutputAt(int position);
   }
 
   public MountDelegate(MountDelegateTarget mountDelegateTarget) {
@@ -56,6 +60,11 @@ public class MountDelegate {
   void addExtension(MountDelegateExtension mountDelegateExtension) {
     mMountDelegateExtensions.add(mountDelegateExtension);
     mountDelegateExtension.registerToDelegate(this);
+  }
+
+  // TODO remove this
+  boolean isAnimationLocked(int position) {
+    return mMountDelegateTarget.isAnimationLocked(position);
   }
 
   MountItem getItemAt(int position) {

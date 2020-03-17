@@ -40,7 +40,7 @@ import java.util.Map;
 import javax.annotation.Nullable;
 
 /** A {@link ViewGroup} that can host the mounted state of a {@link Component}. */
-public class LithoView extends ComponentHost {
+public class LithoView extends Host {
 
   public static final String ZERO_HEIGHT_LOG = "LithoView:0-height";
   public static final String SET_ALREADY_ATTACHED_COMPONENT_TREE =
@@ -229,6 +229,11 @@ public class LithoView extends ComponentHost {
   public void onFinishTemporaryDetach() {
     super.onFinishTemporaryDetach();
     onAttach();
+  }
+
+  @Override
+  public Rect getVisibleRect() {
+    return mPreviousMountVisibleRectBounds;
   }
 
   private void onAttach() {
@@ -585,6 +590,10 @@ public class LithoView extends ComponentHost {
 
     if (mLithoHostListenerCoordinator == null) {
       mLithoHostListenerCoordinator = new LithoHostListenerCoordinator();
+
+      if (componentTree != null && componentTree.isIncrementalMountEnabled()) {
+        mLithoHostListenerCoordinator.enableIncrementalMount(this, mMountState);
+      }
     }
   }
 

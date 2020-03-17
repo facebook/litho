@@ -2845,6 +2845,16 @@ class MountState
   @Override
   public MountItem getItemAt(int i) {
     assertMainThread();
+
+    // TODO simplify when replacing with getContent.
+    if (mIndexToItemMap == null || mLayoutOutputsIds == null) {
+      return null;
+    }
+
+    if (i >= mLayoutOutputsIds.length) {
+      return null;
+    }
+
     return mIndexToItemMap.get(mLayoutOutputsIds[i]);
   }
 
@@ -3261,7 +3271,8 @@ class MountState
    * is that this item (or it's parent) may have a translation X/Y that actually shows it on the
    * screen, even though the non-translated bounds are off the screen.
    */
-  private boolean isAnimationLocked(int index) {
+  @Override
+  public boolean isAnimationLocked(int index) {
     if (mAnimationLockedIndices == null) {
       return false;
     }

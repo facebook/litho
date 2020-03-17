@@ -16,8 +16,6 @@
 
 package com.facebook.litho;
 
-import static com.facebook.litho.FrameworkLogEvents.PARAM_MOUNTED_COUNT;
-import static com.facebook.litho.FrameworkLogEvents.PARAM_UNMOUNTED_COUNT;
 import static com.facebook.litho.testing.TestViewComponent.create;
 import static com.facebook.litho.testing.helper.ComponentTestHelper.mountComponent;
 import static com.facebook.yoga.YogaEdge.ALL;
@@ -48,11 +46,6 @@ import com.facebook.litho.testing.logging.TestComponentsLogger;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
 import com.facebook.yoga.YogaEdge;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.function.Function;
-import java.util.function.Predicate;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -62,22 +55,22 @@ import org.mockito.stubbing.Answer;
 import org.robolectric.RuntimeEnvironment;
 
 @RunWith(ComponentsTestRunner.class)
-public class MountStateIncrementalMountTest {
+public class MountStateWithExtensionsIncrementalMountTest {
   private ComponentContext mContext;
   private TestComponentsLogger mComponentsLogger;
-  boolean useMountWithExtensions;
+  private boolean configValue;
 
   @Before
   public void setup() {
     mComponentsLogger = new TestComponentsLogger();
     mContext = new ComponentContext(RuntimeEnvironment.application, "tag", mComponentsLogger);
-    useMountWithExtensions = ComponentsConfiguration.useRenderCoreMount;
-    ComponentsConfiguration.useRenderCoreMount = false;
+    configValue = ComponentsConfiguration.useRenderCoreMount;
+    ComponentsConfiguration.useRenderCoreMount = true;
   }
 
   @After
   public void cleanup() {
-    ComponentsConfiguration.useRenderCoreMount = useMountWithExtensions;
+    ComponentsConfiguration.useRenderCoreMount = configValue;
   }
 
   /** Tests incremental mount behaviour of a vertical stack of components with a View mount type. */
@@ -96,34 +89,28 @@ public class MountStateIncrementalMountTest {
                     .child(Wrapper.create(c).delegate(child2).widthPx(10).heightPx(10))
                     .build();
               }
-            });
-
-    verifyLoggingAndResetLogger(2, 0);
+            },
+            true);
 
     lithoView.getComponentTree().mountComponent(new Rect(0, -10, 10, -5), true);
     assertThat(child1.isMounted()).isFalse();
     assertThat(child2.isMounted()).isFalse();
-    verifyLoggingAndResetLogger(0, 2);
 
     lithoView.getComponentTree().mountComponent(new Rect(0, 0, 10, 5), true);
     assertThat(child1.isMounted()).isTrue();
     assertThat(child2.isMounted()).isFalse();
-    verifyLoggingAndResetLogger(1, 0);
 
     lithoView.getComponentTree().mountComponent(new Rect(0, 5, 10, 15), true);
     assertThat(child1.isMounted()).isTrue();
     assertThat(child2.isMounted()).isTrue();
-    verifyLoggingAndResetLogger(1, 0);
 
     lithoView.getComponentTree().mountComponent(new Rect(0, 15, 10, 25), true);
     assertThat(child1.isMounted()).isFalse();
     assertThat(child2.isMounted()).isTrue();
-    verifyLoggingAndResetLogger(0, 1);
 
     lithoView.getComponentTree().mountComponent(new Rect(0, 20, 10, 30), true);
     assertThat(child1.isMounted()).isFalse();
     assertThat(child2.isMounted()).isFalse();
-    verifyLoggingAndResetLogger(0, 1);
   }
 
   @Test
@@ -141,34 +128,28 @@ public class MountStateIncrementalMountTest {
                     .child(Wrapper.create(c).delegate(child2).widthPx(10).heightPx(10))
                     .build();
               }
-            });
-
-    verifyLoggingAndResetLogger(2, 0);
+            },
+            true);
 
     lithoView.getComponentTree().mountComponent(new Rect(0, 20, 10, 30), true);
     assertThat(child1.isMounted()).isFalse();
     assertThat(child2.isMounted()).isFalse();
-    verifyLoggingAndResetLogger(0, 2);
 
     lithoView.getComponentTree().mountComponent(new Rect(0, 15, 10, 25), true);
     assertThat(child1.isMounted()).isFalse();
     assertThat(child2.isMounted()).isTrue();
-    verifyLoggingAndResetLogger(1, 0);
 
     lithoView.getComponentTree().mountComponent(new Rect(0, 5, 10, 15), true);
     assertThat(child1.isMounted()).isTrue();
     assertThat(child2.isMounted()).isTrue();
-    verifyLoggingAndResetLogger(1, 0);
 
     lithoView.getComponentTree().mountComponent(new Rect(0, 0, 10, 10), true);
     assertThat(child1.isMounted()).isTrue();
     assertThat(child2.isMounted()).isFalse();
-    verifyLoggingAndResetLogger(0, 1);
 
     lithoView.getComponentTree().mountComponent(new Rect(0, -10, 10, -5), true);
     assertThat(child1.isMounted()).isFalse();
     assertThat(child2.isMounted()).isFalse();
-    verifyLoggingAndResetLogger(0, 1);
   }
 
   /**
@@ -189,34 +170,28 @@ public class MountStateIncrementalMountTest {
                     .child(Wrapper.create(c).delegate(child2).widthPx(10).heightPx(10))
                     .build();
               }
-            });
-
-    verifyLoggingAndResetLogger(2, 0);
+            },
+            true);
 
     lithoView.getComponentTree().mountComponent(new Rect(-10, 0, -5, 10), true);
     assertThat(child1.isMounted()).isFalse();
     assertThat(child2.isMounted()).isFalse();
-    verifyLoggingAndResetLogger(0, 2);
 
     lithoView.getComponentTree().mountComponent(new Rect(0, 0, 5, 10), true);
     assertThat(child1.isMounted()).isTrue();
     assertThat(child2.isMounted()).isFalse();
-    verifyLoggingAndResetLogger(1, 0);
 
     lithoView.getComponentTree().mountComponent(new Rect(5, 0, 15, 10), true);
     assertThat(child1.isMounted()).isTrue();
     assertThat(child2.isMounted()).isTrue();
-    verifyLoggingAndResetLogger(1, 0);
 
     lithoView.getComponentTree().mountComponent(new Rect(15, 0, 25, 10), true);
     assertThat(child1.isMounted()).isFalse();
     assertThat(child2.isMounted()).isTrue();
-    verifyLoggingAndResetLogger(0, 1);
 
     lithoView.getComponentTree().mountComponent(new Rect(20, 0, 30, 10), true);
     assertThat(child1.isMounted()).isFalse();
     assertThat(child2.isMounted()).isFalse();
-    verifyLoggingAndResetLogger(0, 1);
   }
 
   /**
@@ -237,34 +212,28 @@ public class MountStateIncrementalMountTest {
                     .child(Wrapper.create(c).delegate(child2).widthPx(10).heightPx(10))
                     .build();
               }
-            });
-
-    verifyLoggingAndResetLogger(2, 0);
+            },
+            true);
 
     lithoView.getComponentTree().mountComponent(new Rect(0, -10, 10, -5), true);
     assertThat(child1.isMounted()).isFalse();
     assertThat(child2.isMounted()).isFalse();
-    verifyLoggingAndResetLogger(0, 2);
 
     lithoView.getComponentTree().mountComponent(new Rect(0, 0, 10, 5), true);
     assertThat(child1.isMounted()).isTrue();
     assertThat(child2.isMounted()).isFalse();
-    verifyLoggingAndResetLogger(1, 0);
 
     lithoView.getComponentTree().mountComponent(new Rect(0, 5, 10, 15), true);
     assertThat(child1.isMounted()).isTrue();
     assertThat(child2.isMounted()).isTrue();
-    verifyLoggingAndResetLogger(1, 0);
 
     lithoView.getComponentTree().mountComponent(new Rect(0, 15, 10, 25), true);
     assertThat(child1.isMounted()).isFalse();
     assertThat(child2.isMounted()).isTrue();
-    verifyLoggingAndResetLogger(0, 1);
 
     lithoView.getComponentTree().mountComponent(new Rect(0, 20, 10, 30), true);
     assertThat(child1.isMounted()).isFalse();
     assertThat(child2.isMounted()).isFalse();
-    verifyLoggingAndResetLogger(0, 1);
   }
 
   /** Tests incremental mount behaviour of a view mount item in a nested hierarchy. */
@@ -284,21 +253,17 @@ public class MountStateIncrementalMountTest {
                     .child(TestDrawableComponent.create(c))
                     .build();
               }
-            });
-
-    verifyLoggingAndResetLogger(2, 0);
+            },
+            true);
 
     lithoView.getComponentTree().mountComponent(new Rect(0, 0, 50, 20), true);
     assertThat(child.isMounted()).isFalse();
-    verifyLoggingAndResetLogger(0, 2);
 
     lithoView.getComponentTree().mountComponent(new Rect(0, 0, 50, 40), true);
     assertThat(child.isMounted()).isTrue();
-    verifyLoggingAndResetLogger(2, 0);
 
     lithoView.getComponentTree().mountComponent(new Rect(30, 0, 50, 40), true);
     assertThat(child.isMounted()).isFalse();
-    verifyLoggingAndResetLogger(0, 1);
   }
 
   /**
@@ -324,12 +289,10 @@ public class MountStateIncrementalMountTest {
                             .marginDip(YogaEdge.TOP, -10))
                     .build();
               }
-            });
-
-    verifyLoggingAndResetLogger(2, 0);
+            },
+            true);
 
     lithoView.getComponentTree().mountComponent(new Rect(0, -10, 10, -5), true);
-    verifyLoggingAndResetLogger(0, 0);
   }
 
   /** Tests incremental mount behaviour of overlapping view mount items. */
@@ -363,29 +326,24 @@ public class MountStateIncrementalMountTest {
                     .child(TestDrawableComponent.create(c))
                     .build();
               }
-            });
-
-    verifyLoggingAndResetLogger(3, 0);
+            },
+            true);
 
     lithoView.getComponentTree().mountComponent(new Rect(0, 0, 5, 5), true);
     assertThat(child1.isMounted()).isTrue();
     assertThat(child2.isMounted()).isFalse();
-    verifyLoggingAndResetLogger(0, 1);
 
     lithoView.getComponentTree().mountComponent(new Rect(5, 5, 10, 10), true);
     assertThat(child1.isMounted()).isTrue();
     assertThat(child2.isMounted()).isTrue();
-    verifyLoggingAndResetLogger(1, 0);
 
     lithoView.getComponentTree().mountComponent(new Rect(10, 10, 15, 15), true);
     assertThat(child1.isMounted()).isFalse();
     assertThat(child2.isMounted()).isTrue();
-    verifyLoggingAndResetLogger(0, 1);
 
     lithoView.getComponentTree().mountComponent(new Rect(15, 15, 20, 20), true);
     assertThat(child1.isMounted()).isFalse();
     assertThat(child2.isMounted()).isFalse();
-    verifyLoggingAndResetLogger(0, 1);
   }
 
   @Test
@@ -404,7 +362,7 @@ public class MountStateIncrementalMountTest {
 
     final LithoView lithoView =
         ComponentTestHelper.mountComponent(
-            TestViewComponent.create(mContext).testView(mountedView));
+            TestViewComponent.create(mContext).testView(mountedView), true);
 
     lithoView.getComponentTree().mountComponent(new Rect(15, 15, 40, 40), true);
 
@@ -435,7 +393,7 @@ public class MountStateIncrementalMountTest {
 
     final LithoView lithoView =
         ComponentTestHelper.mountComponent(
-            TestViewComponent.create(mContext).testView(mountedView));
+            TestViewComponent.create(mContext).testView(mountedView), true);
 
     // Can't verify directly as the object will have changed by the time we get the chance to
     // verify it.
@@ -481,11 +439,11 @@ public class MountStateIncrementalMountTest {
         .when(childView3)
         .performIncrementalMount(any(Rect.class), eq(true));
 
-    lithoView.getComponentTree().mountComponent(new Rect(0, 0, 100, 100), false);
+    lithoView.getComponentTree().mountComponent(new Rect(0, 0, 100, 100), true);
 
-    verify(childView1).performIncrementalMount(any(Rect.class), eq(false));
-    verify(childView2).performIncrementalMount(any(Rect.class), eq(false));
-    verify(childView3).performIncrementalMount(any(Rect.class), eq(false));
+    verify(childView1).performIncrementalMount();
+    verify(childView2).performIncrementalMount();
+    verify(childView3).performIncrementalMount();
   }
 
   /** Tests incremental mount behaviour of a vertical stack of components with a View mount type. */
@@ -502,7 +460,8 @@ public class MountStateIncrementalMountTest {
                     .child(Wrapper.create(c).delegate(child1).widthPx(10).heightPx(10))
                     .build();
               }
-            });
+            },
+            true);
 
     lithoView.getComponentTree().mountComponent(new Rect(0, -10, 10, -5), true);
     assertThat(child1.isMounted()).isFalse();
@@ -542,7 +501,8 @@ public class MountStateIncrementalMountTest {
                     .child(Wrapper.create(c).delegate(child2).widthPx(10).heightPx(10))
                     .build();
               }
-            });
+            },
+            true);
 
     lithoView.getComponentTree().mountComponent(new Rect(0, -10, 10, -5), true);
     assertThat(child1.isMounted()).isFalse();
@@ -584,55 +544,23 @@ public class MountStateIncrementalMountTest {
             TestViewComponent.create(mContext, true, true, true, true).testView(viewGroup), true);
 
     // Mount views with visible rect
-    lithoViewParent.getComponentTree().mountComponent(new Rect(0, 0, 100, 1000), false);
-    verify(lithoView).performIncrementalMount(any(Rect.class), eq(false));
+    lithoViewParent.getComponentTree().mountComponent(new Rect(0, 0, 100, 1000), true);
+    verify(lithoView).performIncrementalMount();
     reset(lithoView);
     when(lithoView.isIncrementalMountEnabled()).thenReturn(true);
 
     // Unmount views with visible rect outside
-    lithoViewParent.getComponentTree().mountComponent(new Rect(0, -10, 100, -5), false);
-    verify(lithoView, never()).performIncrementalMount(any(Rect.class), eq(false));
+    lithoViewParent.getComponentTree().mountComponent(new Rect(0, -10, 100, -5), true);
+    verify(lithoView, never()).performIncrementalMount();
     reset(lithoView);
     when(lithoView.isIncrementalMountEnabled()).thenReturn(true);
 
     // Mount again with visible rect
-    lithoViewParent.getComponentTree().mountComponent(new Rect(0, 0, 100, 1000), false);
+    lithoViewParent.getComponentTree().mountComponent(new Rect(0, 0, 100, 1000), true);
 
     // Now LithoView performIncrementalMount should not be called as the LithoView is mounted when
     // it is laid out and therefore doesn't need mounting again in the same frame
-    verify(lithoView, never()).performIncrementalMount(any(Rect.class), eq(false));
-  }
-
-  private void verifyLoggingAndResetLogger(int mountedCount, int unmountedCount) {
-    final List<PerfEvent> loggedPerfEvents = mComponentsLogger.getLoggedPerfEvents();
-    final Optional<TestPerfEvent> perfEvent =
-        loggedPerfEvents.stream()
-            .filter(
-                new Predicate<PerfEvent>() {
-                  @Override
-                  public boolean test(PerfEvent e) {
-                    return e.getMarkerId() == FrameworkLogEvents.EVENT_MOUNT;
-                  }
-                })
-            .map(
-                new Function<PerfEvent, TestPerfEvent>() {
-                  @Override
-                  public TestPerfEvent apply(PerfEvent e) {
-                    return (TestPerfEvent) e;
-                  }
-                })
-            .findFirst();
-
-    // Disabled as part of T31729233.
-    if (mountedCount > 0) {
-      assertThat(perfEvent.isPresent()).isTrue();
-
-      final Map<String, Object> annotations = perfEvent.get().getAnnotations();
-      assertThat(annotations).containsEntry(PARAM_MOUNTED_COUNT, mountedCount);
-      assertThat(annotations).containsEntry(PARAM_UNMOUNTED_COUNT, unmountedCount);
-    }
-
-    mComponentsLogger.reset();
+    verify(lithoView, never()).performIncrementalMount();
   }
 
   private static LithoView getMockLithoViewWithBounds(Rect bounds) {

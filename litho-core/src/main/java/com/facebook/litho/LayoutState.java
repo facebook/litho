@@ -54,6 +54,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.collection.LongSparseArray;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.ComponentTree.LayoutStateFuture;
+import com.facebook.litho.IncrementalMountExtension.IncrementalMountExtensionInput;
 import com.facebook.litho.annotations.ImportantForAccessibility;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.drawable.BorderColorDrawable;
@@ -82,7 +83,7 @@ import javax.annotation.CheckReturnValue;
  */
 // This needs to be accessible to statically mock the class in tests.
 @VisibleForTesting
-class LayoutState {
+class LayoutState implements IncrementalMountExtensionInput {
 
   private static final String DUPLICATE_TRANSITION_IDS = "LayoutState:DuplicateTransitionIds";
   private static final String DUPLICATE_MANUAL_KEY = "LayoutState:DuplicateManualKey";
@@ -1928,19 +1929,23 @@ class LayoutState {
     return mComponent.getId() == componentId;
   }
 
-  int getMountableOutputCount() {
+  @Override
+  public int getMountableOutputCount() {
     return mMountableOutputs.size();
   }
 
-  RenderTreeNode getMountableOutputAt(int index) {
+  @Override
+  public RenderTreeNode getMountableOutputAt(int index) {
     return mMountableOutputs.get(index);
   }
 
-  ArrayList<RenderTreeNode> getMountableOutputTops() {
+  @Override
+  public ArrayList<RenderTreeNode> getMountableOutputTops() {
     return mMountableOutputTops;
   }
 
-  ArrayList<RenderTreeNode> getMountableOutputBottoms() {
+  @Override
+  public ArrayList<RenderTreeNode> getMountableOutputBottoms() {
     return mMountableOutputBottoms;
   }
 
@@ -2097,7 +2102,8 @@ class LayoutState {
    *     LayoutState} list of outputs or -1 if no {@link LayoutOutput} with that id exists in the
    *     {@link LayoutState}
    */
-  int getLayoutOutputPositionForId(long layoutOutputId) {
+  @Override
+  public int getLayoutOutputPositionForId(long layoutOutputId) {
     return mOutputsIdToPositionMap.get(layoutOutputId, -1);
   }
 
