@@ -255,7 +255,7 @@ class MountItem {
         || mComponent.implementsAccessibility();
   }
 
-  void releaseMountContent(Context context, String releaseCause) {
+  void releaseMountContent(Context context, String releaseCause, int recyclingMode) {
     if (mIsReleased) {
       final String componentName = mComponent != null ? mComponent.getSimpleName() : "<null>";
       final String globalKey = mComponent != null ? mComponent.getGlobalKey() : "<null>";
@@ -269,7 +269,7 @@ class MountItem {
               + ", previousReleaseCause: "
               + mReleaseCause);
     }
-    ComponentsPools.release(context, mComponent, mContent);
+    ComponentsPools.release(context, mComponent, mContent, recyclingMode);
     mIsReleased = true;
     mReleaseCause = releaseCause;
   }

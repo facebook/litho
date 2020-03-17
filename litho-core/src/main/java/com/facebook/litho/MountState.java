@@ -154,6 +154,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
   private final DynamicPropsManager mDynamicPropsManager = new DynamicPropsManager();
   private @Nullable VisibilityModule mVisibilityModule;
 
+  private @ComponentTree.RecyclingMode int mRecyclingMode = ComponentTree.RecyclingMode.DEFAULT;
+
   public MountState(LithoView view) {
     mIndexToItemMap = new LongSparseArray<>();
     mVisibilityIdToItemMap = new HashMap<>();
@@ -198,6 +200,9 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     return mNeedsRemount;
   }
 
+  void setRecyclingMode(@ComponentTree.RecyclingMode int recyclingMode) {
+    this.mRecyclingMode = recyclingMode;
+  }
   /**
    * Sets whether the next mount will be the first mount of this ComponentTree. This is used to
    * determine whether to run animations or not (we want animations to run on the first mount of
@@ -1486,7 +1491,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       throw new RuntimeException("Trying to mount a LayoutOutput with a null Component.");
     }
     final Object content =
-        ComponentsPools.acquireMountContent(mContext.getAndroidContext(), component);
+        ComponentsPools.acquireMountContent(
+            mContext.getAndroidContext(), component, mRecyclingMode);
 
     final ComponentContext context = getContextForComponent(component);
     component.mount(context, content);
@@ -2391,7 +2397,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     assertNoDanglingMountContent(item);
 
     try {
-      item.releaseMountContent(context.getAndroidContext(), "unmountDisappearingItemChild");
+      item.releaseMountContent(
+          context.getAndroidContext(), "unmountDisappearingItemChild", mRecyclingMode);
     } catch (MountItem.ReleasingReleasedMountContentException e) {
       throw new RuntimeException(e.getMessage() + " " + getMountItemDebugMessage(item));
     }
@@ -2551,7 +2558,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     }
 
     try {
-      item.releaseMountContent(mContext.getAndroidContext(), "unmountItem");
+      item.releaseMountContent(mContext.getAndroidContext(), "unmountItem", mRecyclingMode);
     } catch (MountItem.ReleasingReleasedMountContentException e) {
       throw new RuntimeException(e.getMessage() + " " + getMountItemDebugMessage(item));
     }
@@ -2573,7 +2580,9 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       component.onUnbind(context, content);
       item.setIsBound(false);
     }
-    component.unmount(context, content);
+    if (mRecyclingMode != ComponentTree.RecyclingMode.NO_UNMOUNTING) {
+      component.unmount(context, content);
+    }
   }
 
   private void endUnmountDisappearingItem(OutputUnitsAffinityGroup<MountItem> group) {
@@ -2615,7 +2624,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
       }
       assertNoDanglingMountContent(item);
       try {
-        item.releaseMountContent(mContext.getAndroidContext(), "endUnmountDisappearingItem");
+        item.releaseMountContent(
+            mContext.getAndroidContext(), "endUnmountDisappearingItem", mRecyclingMode);
       } catch (MountItem.ReleasingReleasedMountContentException e) {
         throw new RuntimeException(e.getMessage() + " " + getMountItemDebugMessage(item));
       }

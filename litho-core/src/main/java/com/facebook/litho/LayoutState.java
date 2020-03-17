@@ -1732,7 +1732,7 @@ class LayoutState {
   }
 
   @ThreadSafe(enableChecks = false)
-  void preAllocateMountContent(boolean shouldPreallocatePerMountSpec) {
+  void preAllocateMountContent(boolean shouldPreallocatePerMountSpec, int recyclingMode) {
     final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
       ComponentsSystrace.beginSection("preAllocateMountContent:" + mComponent.getSimpleName());
@@ -1753,7 +1753,8 @@ class LayoutState {
             ComponentsSystrace.beginSection("preAllocateMountContent:" + component.getSimpleName());
           }
 
-          ComponentsPools.maybePreallocateContent(mContext.getAndroidContext(), component);
+          ComponentsPools.maybePreallocateContent(
+              mContext.getAndroidContext(), component, recyclingMode);
 
           if (isTracing) {
             ComponentsSystrace.endSection();

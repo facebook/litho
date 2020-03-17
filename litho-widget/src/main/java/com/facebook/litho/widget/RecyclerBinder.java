@@ -129,6 +129,7 @@ public class RecyclerBinder
   private final AtomicBoolean mRequiresRemeasure = new AtomicBoolean(false);
   private final boolean mEnableStableIds;
   private final @Nullable LithoHandler mAsyncInsertHandler;
+  private final int mRecyclingMode;
   private @Nullable List<ComponentLogParams> mInvalidStateLogParamsList;
   private final RecyclerRangeTraverser mRangeTraverser;
   private final boolean mHScrollAsyncMode;
@@ -369,6 +370,7 @@ public class RecyclerBinder
         boolean canInterruptAndMoveLayoutsBetweenThreads,
         boolean useCancelableLayoutFutures,
         boolean isReconciliationEnabled,
+        int recyclingMode,
         boolean isLayoutDiffingEnabled,
         LithoHandler preallocateHandler,
         boolean preallocatePerMountSpec,
@@ -386,6 +388,7 @@ public class RecyclerBinder
             boolean canInterruptAndMoveLayoutsBetweenThreads,
             boolean useCancelableLayoutFutures,
             boolean isReconciliationEnabled,
+            int recyclingMode,
             boolean isLayoutDiffingEnabled,
             LithoHandler preallocateHandler,
             boolean preallocatePerMountSpec,
@@ -398,6 +401,7 @@ public class RecyclerBinder
               .canInterruptAndMoveLayoutsBetweenThreads(canInterruptAndMoveLayoutsBetweenThreads)
               .useCancelableLayoutFutures(useCancelableLayoutFutures)
               .isReconciliationEnabled(isReconciliationEnabled)
+              .recyclingMode(recyclingMode)
               .isLayoutDiffingEnabled(isLayoutDiffingEnabled)
               .preallocateMountContentHandler(preallocateHandler)
               .shouldPreallocatePerMountSpec(preallocatePerMountSpec)
@@ -444,6 +448,7 @@ public class RecyclerBinder
     private @Nullable LithoStartupLogger startupLogger;
     private LithoHandler mAsyncInsertLayoutHandler;
     private boolean mIncrementalVisibility = ComponentsConfiguration.incrementalVisibilityHandling;
+    private int recyclingMode;
 
     /**
      * @param rangeRatio specifies how big a range this binder should try to compute. The range is
@@ -740,6 +745,7 @@ public class RecyclerBinder
       // Incremental mount will not work if this ComponentTree is nested in a parent with it turned
       // off, so always disable it in that case
       incrementalMount = incrementalMount && ComponentContext.isIncrementalMountEnabled(c);
+      recyclingMode = c.getRecyclingMode();
 
       if (layoutInfo == null) {
         layoutInfo = new LinearLayoutInfo(c.getAndroidContext(), VERTICAL, false);
@@ -931,6 +937,7 @@ public class RecyclerBinder
     mPreallocatePerMountSpec = builder.shouldPreallocatePerMountSpec;
     mComponentWarmer = builder.mComponentWarmer;
     mStartupLogger = builder.startupLogger;
+    mRecyclingMode = builder.recyclingMode;
   }
 
   /**
@@ -3725,6 +3732,7 @@ public class RecyclerBinder
         mMoveLayoutsBetweenThreads,
         mUseCancelableLayoutFutures,
         mIsReconciliationEnabled,
+        mRecyclingMode,
         mIsLayoutDiffingEnabled,
         mPreallocateMountContentHandler,
         mPreallocatePerMountSpec,

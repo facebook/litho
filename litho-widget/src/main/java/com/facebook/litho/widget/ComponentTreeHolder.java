@@ -48,6 +48,7 @@ public class ComponentTreeHolder {
   private final boolean mIsLayoutDiffingEnabled;
   private final boolean mIncrementalVisibilityEnabled;
   public static final String PREVENT_RELEASE_TAG = "prevent_release";
+  private final int mRecyclingMode;
 
   @IntDef({RENDER_UNINITIALIZED, RENDER_ADDED, RENDER_DRAWN})
   public @interface RenderState {}
@@ -120,6 +121,7 @@ public class ComponentTreeHolder {
     private boolean isReconciliationEnabled = ComponentsConfiguration.isReconciliationEnabled;
     private boolean isLayoutDiffingEnabled = ComponentsConfiguration.isLayoutDiffingEnabled;
     private boolean incrementalVisibility;
+    private int recyclingMode;
 
     private Builder() {}
 
@@ -175,6 +177,11 @@ public class ComponentTreeHolder {
       return this;
     }
 
+    public Builder recyclingMode(int recyclingMode) {
+      this.recyclingMode = recyclingMode;
+      return this;
+    }
+
     public Builder isLayoutDiffingEnabled(boolean isEnabled) {
       isLayoutDiffingEnabled = isEnabled;
       return this;
@@ -213,6 +220,7 @@ public class ComponentTreeHolder {
     mIsReconciliationEnabled = builder.isReconciliationEnabled;
     mIsLayoutDiffingEnabled = builder.isLayoutDiffingEnabled;
     mIncrementalVisibilityEnabled = builder.incrementalVisibility;
+    mRecyclingMode = builder.recyclingMode;
   }
 
   public synchronized void acquireStateAndReleaseTree() {
@@ -432,6 +440,8 @@ public class ComponentTreeHolder {
       } else {
         builder.isReconciliationEnabled(mIsReconciliationEnabled);
       }
+
+      builder.recyclingMode(mRecyclingMode);
 
       if (layoutDiffingEnabledAttr != null) {
         builder.layoutDiffing((boolean) layoutDiffingEnabledAttr);

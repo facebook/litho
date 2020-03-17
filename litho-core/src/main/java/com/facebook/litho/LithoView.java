@@ -555,6 +555,7 @@ public class LithoView extends ComponentHost {
                 + mComponentTree.getReleasedComponent());
       }
       mComponentTree.setLithoView(this);
+      mMountState.setRecyclingMode(mComponentTree.getRecyclingMode());
 
       if (mIsAttached) {
         mComponentTree.attach();

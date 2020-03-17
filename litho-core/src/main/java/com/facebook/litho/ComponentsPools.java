@@ -64,17 +64,27 @@ public class ComponentsPools {
    */
   static boolean sIsManualCallbacks;
 
-  static Object acquireMountContent(Context context, ComponentLifecycle lifecycle) {
-    final MountContentPool pool = getMountContentPool(context, lifecycle);
+  static Object acquireMountContent(
+      Context context,
+      ComponentLifecycle lifecycle,
+      @ComponentTree.RecyclingMode int recyclingMode) {
+    final MountContentPool pool = getMountContentPool(context, lifecycle, recyclingMode);
     if (pool == null) {
       return lifecycle.createMountContent(context);
     }
 
-    return pool.acquire(context, lifecycle);
+    Object content = pool.acquire(context, lifecycle);
+    if (recyclingMode == ComponentTree.RecyclingMode.NO_VIEW_REUSE) {
+      // Throw acquired content if N0_VIEW_REUSE recycling mode!
+      return lifecycle.createMountContent(context);
+    }
+
+    return content;
   }
 
-  static void release(Context context, ComponentLifecycle lifecycle, Object mountContent) {
-    final MountContentPool pool = getMountContentPool(context, lifecycle);
+  static void release(
+      Context context, ComponentLifecycle lifecycle, Object mountContent, int recyclingMode) {
+    final MountContentPool pool = getMountContentPool(context, lifecycle, recyclingMode);
     if (pool != null) {
       pool.release(mountContent);
     }
@@ -84,16 +94,17 @@ public class ComponentsPools {
    * Pre-allocates mount content for this component type within the pool for this context unless the
    * pre-allocation limit has been hit in which case we do nothing.
    */
-  public static void maybePreallocateContent(Context context, ComponentLifecycle lifecycle) {
-    final MountContentPool pool = getMountContentPool(context, lifecycle);
+  public static void maybePreallocateContent(
+      Context context, ComponentLifecycle lifecycle, int recyclingMode) {
+    final MountContentPool pool = getMountContentPool(context, lifecycle, recyclingMode);
     if (pool != null) {
       pool.maybePreallocateContent(context, lifecycle);
     }
   }
 
   private static @Nullable MountContentPool getMountContentPool(
-      Context context, ComponentLifecycle lifecycle) {
-    if (lifecycle.poolSize() == 0) {
+      Context context, ComponentLifecycle lifecycle, int recyclingMode) {
+    if (lifecycle.poolSize() == 0 || !shouldCreateMountContentPool(recyclingMode)) {
       return null;
     }
 
@@ -118,6 +129,11 @@ public class ComponentsPools {
 
       return pool;
     }
+  }
+
+  private static boolean shouldCreateMountContentPool(int recyclingMode) {
+    return recyclingMode == ComponentTree.RecyclingMode.DEFAULT
+        || recyclingMode == ComponentTree.RecyclingMode.NO_VIEW_REUSE;
   }
 
   @GuardedBy("sMountContentLock")

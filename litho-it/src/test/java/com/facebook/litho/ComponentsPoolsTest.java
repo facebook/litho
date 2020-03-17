@@ -100,36 +100,43 @@ public class ComponentsPoolsTest {
 
   @Test
   public void testAcquireMountContentWithSameContext() {
-    assertThat(acquireMountContent(mContext1, mLifecycle)).isSameAs(mNewMountContent);
+    assertThat(acquireMountContent(mContext1, mLifecycle, ComponentTree.RecyclingMode.DEFAULT))
+        .isSameAs(mNewMountContent);
 
-    release(mContext1, mLifecycle, mMountContent);
+    release(mContext1, mLifecycle, mMountContent, ComponentTree.RecyclingMode.DEFAULT);
 
-    assertThat(mMountContent).isSameAs(acquireMountContent(mContext1, mLifecycle));
+    assertThat(mMountContent)
+        .isSameAs(acquireMountContent(mContext1, mLifecycle, ComponentTree.RecyclingMode.DEFAULT));
   }
 
   @Test
   public void testAcquireMountContentWithSameRootContext() {
-    assertThat(acquireMountContent(mContext1, mLifecycle)).isSameAs(mNewMountContent);
+    assertThat(acquireMountContent(mContext1, mLifecycle, ComponentTree.RecyclingMode.DEFAULT))
+        .isSameAs(mNewMountContent);
 
-    release(mContext1, mLifecycle, mMountContent);
+    release(mContext1, mLifecycle, mMountContent, ComponentTree.RecyclingMode.DEFAULT);
 
-    assertThat(acquireMountContent(mContext2, mLifecycle)).isSameAs(mNewMountContent);
+    assertThat(acquireMountContent(mContext2, mLifecycle, ComponentTree.RecyclingMode.DEFAULT))
+        .isSameAs(mNewMountContent);
   }
 
   @Test
   public void testReleaseMountContentForDestroyedContextDoesNothing() {
     // Assert pooling was working before
-    assertThat(acquireMountContent(mActivity, mLifecycle)).isSameAs(mNewMountContent);
+    assertThat(acquireMountContent(mActivity, mLifecycle, ComponentTree.RecyclingMode.DEFAULT))
+        .isSameAs(mNewMountContent);
 
-    release(mActivity, mLifecycle, mMountContent);
+    release(mActivity, mLifecycle, mMountContent, ComponentTree.RecyclingMode.DEFAULT);
 
-    assertThat(mMountContent).isSameAs(acquireMountContent(mActivity, mLifecycle));
+    assertThat(mMountContent)
+        .isSameAs(acquireMountContent(mActivity, mLifecycle, ComponentTree.RecyclingMode.DEFAULT));
 
     // Now destroy it and assert pooling no longer works
     mActivityController.destroy();
-    release(mActivity, mLifecycle, mMountContent);
+    release(mActivity, mLifecycle, mMountContent, ComponentTree.RecyclingMode.DEFAULT);
 
-    assertThat(acquireMountContent(mActivity, mLifecycle)).isSameAs(mNewMountContent);
+    assertThat(acquireMountContent(mActivity, mLifecycle, ComponentTree.RecyclingMode.DEFAULT))
+        .isSameAs(mNewMountContent);
   }
 
   @Test
@@ -137,64 +144,75 @@ public class ComponentsPoolsTest {
     mActivityController.destroy();
     ComponentsPools.onContextDestroyed(mActivity);
 
-    release(mContext1, mLifecycle, mMountContent);
+    release(mContext1, mLifecycle, mMountContent, ComponentTree.RecyclingMode.DEFAULT);
 
-    assertThat(acquireMountContent(mContext1, mLifecycle)).isSameAs(mMountContent);
+    assertThat(acquireMountContent(mContext1, mLifecycle, ComponentTree.RecyclingMode.DEFAULT))
+        .isSameAs(mMountContent);
   }
 
   @Test
   public void testPreallocateContent() {
-    assertThat(acquireMountContent(mContext1, mLifecycle)).isSameAs(mNewMountContent);
+    assertThat(acquireMountContent(mContext1, mLifecycle, ComponentTree.RecyclingMode.DEFAULT))
+        .isSameAs(mNewMountContent);
 
-    maybePreallocateContent(mContext1, mLifecycle);
+    maybePreallocateContent(mContext1, mLifecycle, ComponentTree.RecyclingMode.DEFAULT);
 
     // Change the content that's returned when we create new mount content to make sure we're
     // getting the one from preallocating above.
     mNewMountContent = new View(mContext1);
-    assertThat(acquireMountContent(mContext1, mLifecycle)).isNotSameAs(mNewMountContent);
+    assertThat(acquireMountContent(mContext1, mLifecycle, ComponentTree.RecyclingMode.DEFAULT))
+        .isNotSameAs(mNewMountContent);
   }
 
   @Test
   public void testDoNotPreallocateContentBeyondPoolSize() {
     for (int i = 0; i < POOL_SIZE; i++) {
-      maybePreallocateContent(mContext1, mLifecycle);
-      acquireMountContent(mContext1, mLifecycle);
+      maybePreallocateContent(mContext1, mLifecycle, ComponentTree.RecyclingMode.DEFAULT);
+      acquireMountContent(mContext1, mLifecycle, ComponentTree.RecyclingMode.DEFAULT);
     }
 
-    maybePreallocateContent(mContext1, mLifecycle);
+    maybePreallocateContent(mContext1, mLifecycle, ComponentTree.RecyclingMode.DEFAULT);
 
     mNewMountContent = new View(mContext1);
-    assertThat(acquireMountContent(mContext1, mLifecycle)).isSameAs(mNewMountContent);
+    assertThat(acquireMountContent(mContext1, mLifecycle, ComponentTree.RecyclingMode.DEFAULT))
+        .isSameAs(mNewMountContent);
   }
 
   @Test
   public void testAllocationsCountTowardsPreallocationLimit() {
     for (int i = 0; i < POOL_SIZE - 1; i++) {
-      maybePreallocateContent(mContext1, mLifecycle);
-      acquireMountContent(mContext1, mLifecycle);
+      maybePreallocateContent(mContext1, mLifecycle, ComponentTree.RecyclingMode.DEFAULT);
+      acquireMountContent(mContext1, mLifecycle, ComponentTree.RecyclingMode.DEFAULT);
     }
-    acquireMountContent(mContext1, mLifecycle);
+    acquireMountContent(mContext1, mLifecycle, ComponentTree.RecyclingMode.DEFAULT);
 
     // Allocation limit should be hit now, so we shouldn't preallocate anything
-    maybePreallocateContent(mContext1, mLifecycle);
+    maybePreallocateContent(mContext1, mLifecycle, ComponentTree.RecyclingMode.DEFAULT);
 
     mNewMountContent = new View(mContext1);
-    assertThat(acquireMountContent(mContext1, mLifecycle)).isSameAs(mNewMountContent);
+    assertThat(acquireMountContent(mContext1, mLifecycle, ComponentTree.RecyclingMode.DEFAULT))
+        .isSameAs(mNewMountContent);
   }
 
   @Test
   public void testReleaseAndAcquireWithNoPoolSize() {
-    release(mContext1, mLifecycleWithEmptyPoolSize, mMountContent);
-    assertThat(acquireMountContent(mContext1, mLifecycleWithEmptyPoolSize))
+    release(
+        mContext1, mLifecycleWithEmptyPoolSize, mMountContent, ComponentTree.RecyclingMode.DEFAULT);
+    assertThat(
+            acquireMountContent(
+                mContext1, mLifecycleWithEmptyPoolSize, ComponentTree.RecyclingMode.DEFAULT))
         .isSameAs(mNewMountContent);
   }
 
   @Test
   public void testPreallocateWithEmptyPoolSize() {
-    maybePreallocateContent(mContext1, mLifecycleWithEmptyPoolSize);
+    maybePreallocateContent(
+        mContext1, mLifecycleWithEmptyPoolSize, ComponentTree.RecyclingMode.DEFAULT);
 
     mNewMountContent = new View(mContext1);
-    assertThat(acquireMountContent(mContext1, mLifecycleWithEmptyPoolSize))
+    assertThat(
+            acquireMountContent(
+                mContext1, mLifecycleWithEmptyPoolSize, ComponentTree.RecyclingMode.DEFAULT))
         .isSameAs(mNewMountContent);
   }
 }

@@ -17,6 +17,7 @@
 package com.facebook.litho;
 
 import androidx.core.util.Pools;
+import com.facebook.infer.annotation.OkToExtend;
 import com.facebook.infer.annotation.ThreadSafe;
 
 /**
@@ -24,11 +25,12 @@ import com.facebook.infer.annotation.ThreadSafe;
  * RecyclePool} will keep track of its own size so that it can be queried to debug pool sizes.
  */
 @ThreadSafe(enableChecks = false)
+@OkToExtend
 public class RecyclePool<T> implements PoolWithDebugInfo {
   private final String mName;
   private final int mMaxSize;
   private final boolean mIsSync;
-  private final Pools.Pool<T> mPool;
+  private Pools.Pool<T> mPool;
   private int mCurrentSize = 0;
 
   public RecyclePool(String name, int maxSize, boolean sync) {

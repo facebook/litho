@@ -113,6 +113,7 @@ public class ComponentTree {
   private int mStateUpdatesFromCreateLayoutCount;
 
   private final boolean mIncrementalVisibility;
+  private final @RecyclingMode int mRecyclingMode;
 
   @IntDef({SCHEDULE_NONE, SCHEDULE_LAYOUT_ASYNC, SCHEDULE_LAYOUT_SYNC})
   @Retention(RetentionPolicy.SOURCE)
@@ -340,6 +341,7 @@ public class ComponentTree {
     mMoveLayoutsBetweenThreads = builder.canInterruptAndMoveLayoutsBetweenThreads;
     isReconciliationEnabled = builder.isReconciliationEnabled;
     mForceAsyncStateUpdate = builder.shouldForceAsyncStateUpdate;
+    mRecyclingMode = builder.recyclingMode;
 
     if (mPreAllocateMountContentHandler == null && builder.canPreallocateOnDefaultHandler) {
       mPreAllocateMountContentHandler =
@@ -1173,6 +1175,10 @@ public class ComponentTree {
   public boolean isIncrementalMountEnabled() {
     return mIncrementalMountEnabled;
   }
+  /** Returns the recycling mode. Please see {@link RecyclingMode for details of different modes} */
+  public @RecyclingMode int getRecyclingMode() {
+    return mRecyclingMode;
+  }
 
   public boolean isReconciliationEnabled() {
     return isReconciliationEnabled;
@@ -1230,7 +1236,7 @@ public class ComponentTree {
                 logger.newPerformanceEvent(mContext, EVENT_PRE_ALLOCATE_MOUNT_CONTENT))
             : null;
 
-    toPrePopulate.preAllocateMountContent(shouldPreallocatePerMountSpec);
+    toPrePopulate.preAllocateMountContent(shouldPreallocatePerMountSpec, mRecyclingMode);
 
     if (event != null) {
       logger.logPerfEvent(event);
@@ -2475,6 +2481,39 @@ public class ComponentTree {
     return localAttachDetachHandler;
   }
 
+  @IntDef({
+    RecyclingMode.DEFAULT,
+    RecyclingMode.NO_VIEW_REUSE,
+    RecyclingMode.NO_VIEW_RECYCLING,
+    RecyclingMode.NO_UNMOUNTING
+  })
+  public @interface RecyclingMode {
+    /** Default recycling mode. */
+    int DEFAULT = 0;
+    /**
+     * Keep calling unmount and returning Views to the recycle pool, but do not actually reuse them.
+     * Take a view out of the pool but throw it away. Create a new view instead of using it. This is
+     * to test the hypothesis that the crashes are related to the actual re-use of views (i.e. the
+     * view is in a bad state and we re-attach it to the tree and cause a crash)
+     */
+    int NO_VIEW_REUSE = 1;
+    /**
+     * Keep calling unmount, but do not put Views into the recycle pool. This is to test the
+     * hypothesis that the crashes are more related to holding onto Views longer rather than the
+     * actual re-use of them. If we see crashes decrease in this variant but not in the
+     * NO_VIEW_REUSE variant, this would be indicative of just holding onto views being the problem.
+     */
+    int NO_VIEW_RECYCLING = 2;
+    /**
+     * Do not call Component.unmount, do not put Views into the recycle pool. This is to test the
+     * hypothesis that the crashes are more related to unmount calls (which also execute product
+     * logic). If we do not see crashes improving in the first two variants but improving in this
+     * one, this would be indicative of one of the unmount implementations being involved in the
+     * crash (e.g. unmount racing with onCreateLayout on another thread).
+     */
+    int NO_UNMOUNTING = 3;
+  }
+
   /** Wraps a {@link FutureTask} to deduplicate calculating the same LayoutState across threads. */
   class LayoutStateFuture {
 
@@ -2890,6 +2929,7 @@ public class ComponentTree {
 
     // required
     private final ComponentContext context;
+    private @RecyclingMode int recyclingMode = RecyclingMode.DEFAULT;
     private Component root;
 
     // optional
@@ -3057,6 +3097,12 @@ public class ComponentTree {
     /** Sets if reconciliation is enabled */
     public Builder isReconciliationEnabled(boolean isEnabled) {
       this.isReconciliationEnabled = isEnabled;
+      return this;
+    }
+
+    /** Experimental, do not use!! If used recycling for components may not happen. */
+    public Builder recyclingMode(@RecyclingMode int recyclingMode) {
+      this.recyclingMode = recyclingMode;
       return this;
     }
 

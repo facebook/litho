@@ -540,4 +540,11 @@ public class ComponentContext {
       mLayoutStateContext.markLayoutUninterruptible();
     }
   }
+
+  public @ComponentTree.RecyclingMode int getRecyclingMode() {
+    if (mComponentTree == null) {
+      return ComponentTree.RecyclingMode.DEFAULT;
+    }
+    return mComponentTree.getRecyclingMode();
+  }
 }
