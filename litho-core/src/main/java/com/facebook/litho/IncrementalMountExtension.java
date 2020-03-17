@@ -60,7 +60,6 @@ public class IncrementalMountExtension extends MountDelegateExtension
   @Override
   public void beforeMount(IncrementalMountExtensionInput input) {
     mInput = input;
-    resetAcquiredReferences();
     mPreviousLocalVisibleRect.setEmpty();
 
     final Rect localVisibleRect = mLithoView.getVisibleRect();
@@ -130,9 +129,10 @@ public class IncrementalMountExtension extends MountDelegateExtension
               || Rect.intersects(localVisibleRect, layoutOutput.getBounds())
               || isAnimationLocked(i)
               || (currentMountItem != null && currentMountItem == rootMountItem);
-      if (isMountable) {
+      final boolean hasAcquiredMountRef = ownsReference(layoutOutput);
+      if (isMountable && !hasAcquiredMountRef) {
         acquireMountReference(layoutOutput, i, mInput, mIsMounting);
-      } else {
+      } else if (!isMountable && hasAcquiredMountRef) {
         releaseMountReference(layoutOutput, i);
       }
 

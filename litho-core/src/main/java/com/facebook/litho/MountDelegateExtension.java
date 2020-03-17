@@ -56,8 +56,8 @@ public class MountDelegateExtension {
       int position,
       MountDelegate.MountDelegateInput input,
       boolean isMounting) {
-    if (mLayoutOutputMountRefs.contains(layoutOutput.getId())) {
-      return;
+    if (ownsReference(layoutOutput)) {
+      throw new IllegalStateException("Cannot acquire the same reference more than once.");
     }
 
     mLayoutOutputMountRefs.add(layoutOutput.getId());
@@ -65,8 +65,8 @@ public class MountDelegateExtension {
   }
 
   protected void releaseMountReference(LayoutOutput layoutOutput, int position) {
-    if (!mLayoutOutputMountRefs.contains(layoutOutput.getId())) {
-      return;
+    if (!ownsReference(layoutOutput)) {
+      throw new IllegalStateException("Trying to release a reference that wasn't acquired.");
     }
 
     mLayoutOutputMountRefs.remove(layoutOutput.getId());
@@ -75,5 +75,9 @@ public class MountDelegateExtension {
 
   protected boolean isLockedForMount(LayoutOutput layoutOutput) {
     return mMountDelegate.isLockedForMount(layoutOutput);
+  }
+
+  protected boolean ownsReference(LayoutOutput layoutOutput) {
+    return mLayoutOutputMountRefs.contains(layoutOutput.getId());
   }
 }
