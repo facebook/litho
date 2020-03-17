@@ -82,7 +82,8 @@ import java.util.Set;
  * @see LayoutState
  */
 @ThreadConfined(ThreadConfined.UI)
-class MountState implements TransitionManager.OnAnimationCompleteListener {
+class MountState
+    implements TransitionManager.OnAnimationCompleteListener, MountDelegate.MountDelegateTarget {
 
   static final long ROOT_HOST_ID = 0L;
   private static final String DISAPPEAR_ANIM_TARGETING_ROOT =
@@ -153,6 +154,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
 
   private final DynamicPropsManager mDynamicPropsManager = new DynamicPropsManager();
   private @Nullable VisibilityModule mVisibilityModule;
+  private @Nullable MountDelegate mMountDelegate;
 
   private @ComponentTree.RecyclingMode int mRecyclingMode = ComponentTree.RecyclingMode.DEFAULT;
 
@@ -170,6 +172,13 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     // The mount item representing the top-level root host (LithoView) which
     // is always automatically mounted.
     mRootHostMountItem = MountItem.createRootHostMountItem(mLithoView);
+  }
+
+  void registerMountDelegateExtension(MountDelegateExtension mountDelegateExtension) {
+    if (mMountDelegate == null) {
+      mMountDelegate = new MountDelegate(this);
+    }
+    mMountDelegate.addExtension(mountDelegateExtension);
   }
 
   /**
@@ -424,6 +433,193 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     LithoStats.incrementComponentMountCount();
 
     mIsMounting = false;
+  }
+
+  /**
+   * Mount only. Similar shape to RenderCore's mount. For extras such as incremental mount,
+   * visibility outputs etc register an extension. To do: extract transitions logic from here.
+   */
+  void mount(LayoutState layoutState) {
+    assertMainThread();
+
+    if (layoutState == null) {
+      throw new IllegalStateException("Trying to mount a null layoutState");
+    }
+
+    if (mIsMounting) {
+      ComponentsReporter.emitMessage(
+          ComponentsReporter.LogLevel.FATAL,
+          INVALID_REENTRANT_MOUNTS,
+          "Trying to mount while already mounting! "
+              + getMountItemDebugMessage(mRootHostMountItem));
+    }
+    mIsMounting = true;
+
+    final ComponentTree componentTree = mLithoView.getComponentTree();
+    final boolean isTracing = ComponentsSystrace.isTracing();
+    if (isTracing) {
+      final StringBuilder sectionName = new StringBuilder("mount");
+      ComponentsSystrace.beginSectionWithArgs(sectionName.toString())
+          .arg("treeId", layoutState.getComponentTreeId())
+          .arg("component", componentTree.getSimpleName())
+          .arg("logTag", componentTree.getContext().getLogTag())
+          .flush();
+    }
+
+    final ComponentsLogger logger = componentTree.getContext().getLogger();
+    final int componentTreeId = layoutState.getComponentTreeId();
+    if (componentTreeId != mLastMountedComponentTreeId) {
+      // If we're mounting a new ComponentTree, don't keep around and use the previous LayoutState
+      // since things like transition animations aren't relevant.
+      mLastMountedLayoutState = null;
+    }
+
+    final PerfEvent mountPerfEvent =
+        logger == null
+            ? null
+            : LogTreePopulator.populatePerfEventFromLogger(
+                componentTree.getContext(),
+                logger,
+                logger.newPerformanceEvent(componentTree.getContext(), EVENT_MOUNT));
+
+    // TODO: move to extension or handle in some way. T
+    updateTransitions(layoutState, componentTree);
+
+    suppressInvalidationsOnHosts(true);
+
+    // Prepare the data structure for the new LayoutState and removes mountItems
+    // that are not present anymore if isUpdateMountInPlace is enabled.
+    if (mountPerfEvent != null) {
+      mountPerfEvent.markerPoint("PREPARE_MOUNT_START");
+    }
+    prepareMount(layoutState, mountPerfEvent);
+    if (mountPerfEvent != null) {
+      mountPerfEvent.markerPoint("PREPARE_MOUNT_END");
+    }
+
+    mMountStats.reset();
+    if (mountPerfEvent != null && logger.isTracing(mountPerfEvent)) {
+      mMountStats.enableLogging();
+    }
+
+    for (int i = 0, size = layoutState.getMountableOutputCount(); i < size; i++) {
+      final LayoutOutput layoutOutput = getLayoutOutput(layoutState.getMountableOutputAt(i));
+      final Component component = layoutOutput.getComponent();
+      if (isTracing) {
+        ComponentsSystrace.beginSection(component.getSimpleName());
+      }
+
+      final MountItem currentMountItem = getItemAt(i);
+      final boolean isMounted = currentMountItem != null;
+      final boolean isMountable = isMountable(layoutOutput);
+
+      if (!isMountable) {
+        ComponentsSystrace.endSection();
+        continue;
+      }
+
+      if (!isMounted) {
+        mountLayoutOutput(i, layoutOutput, layoutState);
+      } else {
+        final boolean useUpdateValueFromLayoutOutput =
+            mLastMountedLayoutState != null
+                && mLastMountedLayoutState.getId() == layoutState.getPreviousLayoutStateId();
+
+        final long startTime = System.nanoTime();
+        final TransitionId transitionId = currentMountItem.getTransitionId();
+        final boolean itemUpdated =
+            updateMountItemIfNeeded(
+                layoutOutput,
+                layoutState,
+                currentMountItem,
+                useUpdateValueFromLayoutOutput,
+                componentTreeId,
+                i);
+
+        if (itemUpdated) {
+          // This mount content might be animating and we may be remounting it as a different
+          // component in the same tree, or as a component in a totally different tree so we
+          // will reset animating content for its key
+          maybeRemoveAnimatingMountContent(transitionId);
+        }
+
+        if (mMountStats.isLoggingEnabled) {
+          if (itemUpdated) {
+            mMountStats.updatedNames.add(component.getSimpleName());
+            mMountStats.updatedTimes.add((System.nanoTime() - startTime) / NS_IN_MS);
+            mMountStats.updatedCount++;
+          } else {
+            mMountStats.noOpCount++;
+          }
+        }
+      }
+
+      if (isTracing) {
+        ComponentsSystrace.endSection();
+      }
+    }
+
+    // TODO: move to extension or handle in some way. T
+    maybeUpdateAnimatingMountContent();
+
+    // TODO: move to extension or handle in some way. T
+    if (shouldAnimateTransitions(layoutState) && hasTransitionsToAnimate()) {
+      mTransitionManager.runTransitions();
+    }
+
+    mRootTransition = null;
+    mTransitionsHasBeenCollected = false;
+    final boolean wasDirty = mIsDirty;
+    mIsDirty = false;
+    mNeedsRemount = false;
+    mIsFirstMountOfComponentTree = false;
+
+    mLastMountedLayoutState = null;
+    mLastMountedComponentTreeId = componentTreeId;
+    mLastMountedLayoutState = layoutState;
+
+    processTestOutputs(layoutState);
+
+    suppressInvalidationsOnHosts(false);
+
+    if (mountPerfEvent != null) {
+      logMountPerfEvent(logger, mountPerfEvent, wasDirty);
+    }
+
+    if (isTracing) {
+      ComponentsSystrace.endSection();
+    }
+    LithoStats.incrementComponentMountCount();
+
+    mIsMounting = false;
+  }
+
+  private boolean isMountable(LayoutOutput layoutOutput) {
+    if (mMountDelegate == null) {
+      return true;
+    }
+
+    return mMountDelegate.isLockedForMount(layoutOutput);
+  }
+
+  @Override
+  public void notifyMount(
+      MountDelegate.MountDelegateInput input, LayoutOutput layoutOutput, int position) {
+    // We need the LayoutState here to get the parent host. Check out D4182567
+    // Temporary - will get rid of passing this MountDelegateInput around.
+    // We either also keep the parent host on the LayoutOutput or we move to use
+    // RenderTreeNode.
+    if (input instanceof LayoutState) {
+      LayoutState layoutState = (LayoutState) input;
+      mountLayoutOutput(position, layoutOutput, layoutState);
+    } else {
+      throw new IllegalStateException("This is not supported for now");
+    }
+  }
+
+  @Override
+  public void notifyUnmount(int position) {
+    unmountItem(position, mHostsByMarker);
   }
 
   private void logMountPerfEvent(
@@ -2467,6 +2663,10 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     }
     mPreviousLocalVisibleRect.setEmpty();
     mNeedsRemount = true;
+
+    if (mMountDelegate != null) {
+      mMountDelegate.resetExtensionReferenceCount();
+    }
   }
 
   private void unmountItem(int index, LongSparseArray<ComponentHost> hostsByMarker) {
@@ -2632,12 +2832,18 @@ class MountState implements TransitionManager.OnAnimationCompleteListener {
     }
   }
 
+  @Override
+  public MountItem getRootMountItem() {
+    return mIndexToItemMap.get(ROOT_HOST_ID);
+  }
+
   int getItemCount() {
     assertMainThread();
     return mLayoutOutputsIds == null ? 0 : mLayoutOutputsIds.length;
   }
 
-  MountItem getItemAt(int i) {
+  @Override
+  public MountItem getItemAt(int i) {
     assertMainThread();
     return mIndexToItemMap.get(mLayoutOutputsIds[i]);
   }

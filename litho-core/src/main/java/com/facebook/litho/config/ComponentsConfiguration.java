@@ -227,4 +227,6 @@ public class ComponentsConfiguration {
 
   /** Enabling this will force all updateStateSync methods to be updateStateAsync. * */
   public static boolean shouldForceAsyncStateUpdate = false;
+
+  public static boolean useRenderCoreMount = false;
 }
