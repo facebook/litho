@@ -35,5 +35,5 @@ litho_android_library(
     ],
     exported_deps = [
         LITHO_WIDGET_TARGET,
-    ]
+    ],
 )
