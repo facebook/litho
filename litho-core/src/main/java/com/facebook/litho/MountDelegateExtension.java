@@ -80,4 +80,8 @@ public class MountDelegateExtension {
   protected boolean ownsReference(LayoutOutput layoutOutput) {
     return mLayoutOutputMountRefs.contains(layoutOutput.getId());
   }
+
+  protected boolean canPreventMount() {
+    return false;
+  }
 }

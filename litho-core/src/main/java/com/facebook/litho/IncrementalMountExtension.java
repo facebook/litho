@@ -334,4 +334,9 @@ public class IncrementalMountExtension extends MountDelegateExtension
       }
     }
   }
+
+  @Override
+  protected boolean canPreventMount() {
+    return true;
+  }
 }

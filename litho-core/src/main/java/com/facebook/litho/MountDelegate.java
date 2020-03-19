@@ -30,6 +30,7 @@ public class MountDelegate {
   private final LongSparseArray<Integer> mReferenceCountMap = new LongSparseArray<>();
   private final List<MountDelegateExtension> mMountDelegateExtensions = new ArrayList<>();
   private final MountDelegateTarget mMountDelegateTarget;
+  private boolean mReferenceCountingEnabled = false;
 
   // RenderCore MountState API
   interface MountDelegateTarget {
@@ -60,6 +61,8 @@ public class MountDelegate {
   void addExtension(MountDelegateExtension mountDelegateExtension) {
     mMountDelegateExtensions.add(mountDelegateExtension);
     mountDelegateExtension.registerToDelegate(this);
+    mReferenceCountingEnabled =
+        mReferenceCountingEnabled || mountDelegateExtension.canPreventMount();
   }
 
   // TODO remove this
@@ -76,6 +79,10 @@ public class MountDelegate {
   }
 
   boolean isLockedForMount(LayoutOutput layoutOutput) {
+    if (!mReferenceCountingEnabled) {
+      return true;
+    }
+
     final long layoutOutputId = layoutOutput.getId();
     final Integer refCount = mReferenceCountMap.get(layoutOutputId);
 
@@ -105,10 +112,18 @@ public class MountDelegate {
   }
 
   void resetExtensionReferenceCount() {
+    if (!mReferenceCountingEnabled) {
+      return;
+    }
+
     mReferenceCountMap.clear();
   }
 
   private void incrementExtensionRefCount(LayoutOutput layoutOutput) {
+    if (!mReferenceCountingEnabled) {
+      return;
+    }
+
     final long layoutOutputId = layoutOutput.getId();
     Integer refCount = mReferenceCountMap.get(layoutOutputId);
 
@@ -120,6 +135,10 @@ public class MountDelegate {
   }
 
   private void decrementExtensionRefCount(LayoutOutput layoutOutput) {
+    if (!mReferenceCountingEnabled) {
+      return;
+    }
+
     final long layoutOutputId = layoutOutput.getId();
     Integer refCount = mReferenceCountMap.get(layoutOutputId);
 
