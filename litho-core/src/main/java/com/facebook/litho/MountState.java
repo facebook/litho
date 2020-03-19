@@ -482,9 +482,6 @@ class MountState
                 logger,
                 logger.newPerformanceEvent(componentTree.getContext(), EVENT_MOUNT));
 
-    // TODO: move to extension or handle in some way. T
-    updateTransitions(layoutState, componentTree);
-
     suppressInvalidationsOnHosts(true);
 
     // Prepare the data structure for the new LayoutState and removes mountItems
@@ -2871,7 +2868,7 @@ class MountState
    * want to make sure are not unmounted due to incremental mount and being outside of visibility
    * bounds.
    */
-  private void updateTransitions(LayoutState layoutState, ComponentTree componentTree) {
+  public void updateTransitions(LayoutState layoutState, ComponentTree componentTree) {
     if (!mIsDirty) {
       throw new RuntimeException("Should only process transitions on dirty mounts");
     }
