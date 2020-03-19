@@ -30,7 +30,7 @@ inline fun DslScope.Column(
     reverse: Boolean = false,
     content: DslColumnBuilder.() -> Unit = {}
 ): Column =
-    DslColumnBuilder(this).apply {
+    DslColumnBuilder(context).apply {
       alignContent(alignContent)
       alignItems(alignItems)
       justifyContent(justifyContent)
@@ -47,7 +47,7 @@ inline fun DslScope.Row(
     reverse: Boolean = false,
     content: DslRowBuilder.() -> Unit = {}
 ): Row =
-    DslRowBuilder(this).apply {
+    DslRowBuilder(context).apply {
       alignContent(alignContent)
       alignItems(alignItems)
       justifyContent(justifyContent)

@@ -27,7 +27,7 @@ inline fun DslScope.FrescoImage(
     controller: DraweeController,
     imageAspectRatio: Float
 ): FrescoImage =
-    FrescoImage.create(this)
+    FrescoImage.create(context)
         .controller(controller)
         .imageAspectRatio(imageAspectRatio)
         .build()

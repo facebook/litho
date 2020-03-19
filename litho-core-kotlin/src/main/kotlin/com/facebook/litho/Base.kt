@@ -18,12 +18,16 @@ package com.facebook.litho
 
 import android.app.Activity
 
-typealias DslScope = ComponentContext
+/*inline*/ class DslScope(c: ComponentContext) {
+  val context = c
+  val androidContext = c.androidContext
+  val resourceResolver = c.resourceResolver
+}
 
 inline fun build(
     c: ComponentContext,
     content: DslScope.() -> Component?
-): Component? = c.content()
+): Component? = DslScope(c).content()
 
 fun Activity.setContent(component: Component) {
   setContentView(LithoView.create(this, component))

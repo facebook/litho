@@ -26,7 +26,7 @@ import kotlin.reflect.KProperty
  * trigger a UI layout only once per batch.
  */
 fun <T> DslScope.useState(initializer: () -> T): StateDelegate<T> =
-    StateDelegate(this, initializer)
+    StateDelegate(context, initializer)
 
 /** Delegate to access and initialize a state variable. */
 class StateDelegate<T>(private val c: ComponentContext, private val initializer: () -> T) {
@@ -66,7 +66,7 @@ class StateUpdater(private val stateHandler: StateHandler) {
  * Assignments to the state variables, created by [useState], are only allowed inside this block.
  */
 fun DslScope.updateState(block: StateUpdater.() -> Unit) {
-  this.updateHookStateAsync { stateHandler: StateHandler ->
+  context.updateHookStateAsync { stateHandler: StateHandler ->
     StateUpdater(stateHandler).block()
   }
 }

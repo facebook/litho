@@ -28,7 +28,7 @@ inline fun DslScope.Image(
     drawable: Drawable,
     scaleType: ScaleType = ScaleType.FIT_CENTER
 ): Image =
-    Image.create(this)
+    Image.create(context)
         .drawable(drawable)
         .scaleType(scaleType)
         .build()

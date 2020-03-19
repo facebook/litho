@@ -21,6 +21,6 @@ open class KComponent(
     private val content: DslScope.() -> Component?
 ) : Component() {
   override fun onCreateLayout(c: ComponentContext): Component? {
-    return c.content()
+    return DslScope(c).content()
   }
 }
