@@ -209,10 +209,6 @@ LITHO_FLIPPER_TARGETS = [
 
 LITHO_FRESCO_PIPELINE_TARGET = [make_dep_path("lib/fresco:imagepipeline")]
 
-LITHO_FRESCO_CONTROLLER_TARGET = []
-
-LITHO_FRESCO_INTERFACES_TARGET = []
-
 def components_robolectric_test(
         name,
         *args,

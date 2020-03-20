@@ -14,7 +14,7 @@
 
 load(
     "//tools/build_defs/oss:litho_defs.bzl",
-    "LITHO_FRESCO_INTERFACES_TARGET",
+    "LITHO_FRESCO_TARGETS",
     "LITHO_KOTLIN_TARGET",
     "LITHO_LITHO_FRESCO_TARGET",
     "litho_android_library",
@@ -24,7 +24,7 @@ litho_android_library(
     name = "fresco-kotlin",
     srcs = glob(["*.kt"]),
     language = "KOTLIN",
-    provided_deps = LITHO_FRESCO_INTERFACES_TARGET,
+    provided_deps = LITHO_FRESCO_TARGETS,
     required_for_source_only_abi = True,
     visibility = ["PUBLIC"],
     deps = [
