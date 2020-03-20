@@ -122,7 +122,13 @@ public abstract class RenderUnit<MOUNT_CONTENT> implements Copyable {
   @Override
   public RenderUnit makeCopy() {
     try {
-      return (RenderUnit) super.clone();
+      RenderUnit renderUnit = (RenderUnit) super.clone();
+      if (mMountUnmountFunctionsWithExtensions != null) {
+        renderUnit.mMountUnmountFunctionsWithExtensions =
+            new ArrayList(mMountUnmountFunctionsWithExtensions);
+      }
+
+      return renderUnit;
     } catch (CloneNotSupportedException e) {
       throw new RuntimeException(e);
     }
@@ -139,6 +145,13 @@ public abstract class RenderUnit<MOUNT_CONTENT> implements Copyable {
     }
     mMountUnmountFunctionsWithExtensions.add(
         (Binder<RenderUnit<MOUNT_CONTENT>, MOUNT_CONTENT>) binder);
+  }
+
+  /**
+   * removes an extension function previously added with addMountUnmountExtension
+   */
+  public void removeMountUnmountExtension(Binder binder) {
+    mMountUnmountFunctionsWithExtensions.remove(binder);
   }
 
   /**
