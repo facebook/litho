@@ -69,6 +69,9 @@ public class ComponentContext {
   private @Nullable TreeProps mTreeProps;
 
   @ThreadConfined(ThreadConfined.ANY)
+  private boolean mIsParentTreePropsCloned;
+
+  @ThreadConfined(ThreadConfined.ANY)
   private ComponentTree mComponentTree;
 
   // Used to hold styling information applied to components
@@ -364,6 +367,18 @@ public class ComponentContext {
   @Nullable
   protected TreeProps getTreeProps() {
     return mTreeProps;
+  }
+
+  /**
+   * @return true if parent's TreeProps are cloned and assigned to mTreeProps. Notice this method
+   *     should be accessed by Kotlin API only.
+   */
+  protected boolean isParentTreePropsCloned() {
+    return mIsParentTreePropsCloned;
+  }
+
+  protected void setParentTreePropsCloned(boolean isParentTreePropsCloned) {
+    mIsParentTreePropsCloned = isParentTreePropsCloned;
   }
 
   @Nullable
