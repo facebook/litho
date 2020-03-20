@@ -84,6 +84,7 @@ public class EventGenerator {
         .addMethod(
             MethodSpec.methodBuilder("get" + eventDeclaration.name.simpleName() + "Handler")
                 .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
+                .addAnnotation(ClassNames.NULLABLE)
                 .returns(ClassNames.EVENT_HANDLER)
                 .addParameter(specModel.getContextClass(), "context")
                 .addCode(

@@ -28,6 +28,7 @@ public interface ClassNames {
   ClassName STRING = ClassName.bestGuess("java.lang.String");
   ClassName EXCEPTION = ClassName.bestGuess("java.lang.Exception");
   ClassName COMMON_UTILS = ClassName.bestGuess("com.facebook.litho.CommonUtils");
+  ClassName NULLABLE = ClassName.bestGuess("androidx.annotation.Nullable");
 
   String VIEW_NAME = "android.view.View";
   ClassName VIEW = ClassName.bestGuess(VIEW_NAME);

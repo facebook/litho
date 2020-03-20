@@ -74,18 +74,18 @@ public interface CommonProps extends CommonPropsCopyable, LayoutProps {
 
   void foreground(@Nullable Drawable foreground);
 
-  void clickHandler(EventHandler<ClickEvent> clickHandler);
+  void clickHandler(@Nullable EventHandler<ClickEvent> clickHandler);
 
   @Nullable
   Drawable getBackground();
 
-  void longClickHandler(EventHandler<LongClickEvent> longClickHandler);
+  void longClickHandler(@Nullable EventHandler<LongClickEvent> longClickHandler);
 
-  void focusChangeHandler(EventHandler<FocusChangedEvent> focusChangeHandler);
+  void focusChangeHandler(@Nullable EventHandler<FocusChangedEvent> focusChangeHandler);
 
-  void touchHandler(EventHandler<TouchEvent> touchHandler);
+  void touchHandler(@Nullable EventHandler<TouchEvent> touchHandler);
 
-  void interceptTouchHandler(EventHandler<InterceptTouchEvent> interceptTouchHandler);
+  void interceptTouchHandler(@Nullable EventHandler<InterceptTouchEvent> interceptTouchHandler);
 
   void focusable(boolean isFocusable);
 

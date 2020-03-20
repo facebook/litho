@@ -290,7 +290,7 @@ class CommonPropsHolder implements CommonProps {
   }
 
   @Override
-  public void clickHandler(EventHandler<ClickEvent> clickHandler) {
+  public void clickHandler(@Nullable EventHandler<ClickEvent> clickHandler) {
     getOrCreateNodeInfo().setClickHandler(clickHandler);
   }
 
@@ -307,7 +307,7 @@ class CommonPropsHolder implements CommonProps {
   }
 
   @Override
-  public void longClickHandler(EventHandler<LongClickEvent> longClickHandler) {
+  public void longClickHandler(@Nullable EventHandler<LongClickEvent> longClickHandler) {
     getOrCreateNodeInfo().setLongClickHandler(longClickHandler);
   }
 
@@ -318,7 +318,7 @@ class CommonPropsHolder implements CommonProps {
   }
 
   @Override
-  public void focusChangeHandler(EventHandler<FocusChangedEvent> focusChangeHandler) {
+  public void focusChangeHandler(@Nullable EventHandler<FocusChangedEvent> focusChangeHandler) {
     getOrCreateNodeInfo().setFocusChangeHandler(focusChangeHandler);
   }
 
@@ -329,7 +329,7 @@ class CommonPropsHolder implements CommonProps {
   }
 
   @Override
-  public void touchHandler(EventHandler<TouchEvent> touchHandler) {
+  public void touchHandler(@Nullable EventHandler<TouchEvent> touchHandler) {
     getOrCreateNodeInfo().setTouchHandler(touchHandler);
   }
 
@@ -340,7 +340,8 @@ class CommonPropsHolder implements CommonProps {
   }
 
   @Override
-  public void interceptTouchHandler(EventHandler<InterceptTouchEvent> interceptTouchHandler) {
+  public void interceptTouchHandler(
+      @Nullable EventHandler<InterceptTouchEvent> interceptTouchHandler) {
     getOrCreateNodeInfo().setInterceptTouchHandler(interceptTouchHandler);
   }
 

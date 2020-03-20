@@ -1295,7 +1295,10 @@ public class BuilderGenerator {
     return MethodSpec.methodBuilder(eventHandlerName)
         .addModifiers(Modifier.PUBLIC)
         .returns(getBuilderType(specModel))
-        .addParameter(ClassNames.EVENT_HANDLER, eventHandlerName)
+        .addParameter(
+            ParameterSpec.builder(ClassNames.EVENT_HANDLER, eventHandlerName)
+                .addAnnotation(ClassNames.NULLABLE)
+                .build())
         .addStatement(
             "this.$L.$L = $L",
             getComponentMemberInstanceName(specModel),

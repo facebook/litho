@@ -207,7 +207,8 @@ public class EventGeneratorTest {
     assertThat(dataHolder.getMethodSpecs()).hasSize(1);
     assertThat(dataHolder.getMethodSpecs().get(0).toString())
         .isEqualTo(
-            "public static com.facebook.litho.EventHandler getObjectHandler(com.facebook.litho.ComponentContext context) {\n"
+            "@androidx.annotation.Nullable\n"
+                + "public static com.facebook.litho.EventHandler getObjectHandler(com.facebook.litho.ComponentContext context) {\n"
                 + "  if (context.getComponentScope() == null) {\n"
                 + "    return null;\n"
                 + "  }\n"

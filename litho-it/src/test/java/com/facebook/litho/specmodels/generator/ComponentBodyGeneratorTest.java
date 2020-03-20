@@ -326,7 +326,8 @@ public class ComponentBodyGeneratorTest {
     TypeSpecDataHolder dataHolder = ComponentBodyGenerator.generateEventHandlers(specModel);
     assertThat(dataHolder.getFieldSpecs()).hasSize(1);
     assertThat(dataHolder.getFieldSpecs().get(0).toString())
-        .isEqualTo("com.facebook.litho.EventHandler objectHandler;\n");
+        .isEqualTo(
+            "@androidx.annotation.Nullable\n" + "com.facebook.litho.EventHandler objectHandler;\n");
   }
 
   @Test

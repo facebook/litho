@@ -21,6 +21,7 @@ import static com.facebook.litho.specmodels.generator.GeneratorConstants.PREVIOU
 import static com.facebook.litho.specmodels.generator.GeneratorConstants.STATE_CONTAINER_FIELD_NAME;
 import static com.facebook.litho.specmodels.generator.StateContainerGenerator.getStateContainerClassName;
 
+import androidx.annotation.Nullable;
 import com.facebook.litho.annotations.Comparable;
 import com.facebook.litho.annotations.Param;
 import com.facebook.litho.annotations.Prop;
@@ -68,7 +69,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import javax.annotation.Nullable;
 import javax.lang.model.element.Modifier;
 
 /** Class that generates the implementation of a Component. */
@@ -347,6 +347,7 @@ public class ComponentBodyGenerator {
       typeSpecDataHolder.addField(
           FieldSpec.builder(
                   ClassNames.EVENT_HANDLER, getEventHandlerInstanceName(eventDeclaration.name))
+              .addAnnotation(ClassNames.NULLABLE)
               .build());
     }
 
