@@ -40,7 +40,6 @@ import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.EventDeclarationModel;
-import com.facebook.litho.specmodels.model.FieldModel;
 import com.facebook.litho.specmodels.model.PropModel;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.SpecModelUtils;
@@ -321,7 +320,7 @@ public class ComponentBodyGeneratorTest {
         .thenReturn(
             ImmutableList.of(
                 new EventDeclarationModel(
-                    ClassName.OBJECT, ClassName.OBJECT, ImmutableList.<FieldModel>of(), null)));
+                    ClassName.OBJECT, ClassName.OBJECT, ImmutableList.of(), null)));
 
     TypeSpecDataHolder dataHolder = ComponentBodyGenerator.generateEventHandlers(specModel);
     assertThat(dataHolder.getFieldSpecs()).hasSize(1);
