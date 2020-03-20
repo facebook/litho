@@ -399,12 +399,6 @@ public class RenderState<State> {
                           ? new LayoutCache(mPreviousResult.mLayoutCache.getWriteCache())
                           : new LayoutCache(null);
 
-                  if (mPreviousResult != null) {
-                    android.util.Log.e(
-                        "CACHE",
-                        "USING A CACHE OF SIZE: "
-                            + mPreviousResult.mLayoutCache.getWriteCache().size());
-                  }
                   final LayoutContext layoutContext =
                       new LayoutContext(context, setRootId, layoutCache);
 
