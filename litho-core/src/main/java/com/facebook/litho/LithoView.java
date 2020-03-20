@@ -1048,7 +1048,12 @@ public class LithoView extends Host {
   }
 
   void processVisibilityOutputs(LayoutState layoutState, Rect currentVisibleArea) {
-    mMountState.processVisibilityOutputs(layoutState, currentVisibleArea, null);
+    mMountState.processVisibilityOutputs(
+        layoutState,
+        currentVisibleArea,
+        mPreviousMountVisibleRectBounds,
+        mMountState.isDirty(),
+        null);
   }
 
   public void unmountAllItems() {

@@ -396,7 +396,8 @@ class MountState
       if (mountPerfEvent != null) {
         mountPerfEvent.markerPoint("EVENT_PROCESS_VISIBILITY_OUTPUTS_START");
       }
-      processVisibilityOutputs(layoutState, localVisibleRect, mountPerfEvent);
+      processVisibilityOutputs(
+          layoutState, localVisibleRect, mPreviousLocalVisibleRect, mIsDirty, mountPerfEvent);
       if (mountPerfEvent != null) {
         mountPerfEvent.markerPoint("EVENT_PROCESS_VISIBILITY_OUTPUTS_END");
       }
@@ -739,6 +740,8 @@ class MountState
   void processVisibilityOutputs(
       LayoutState layoutState,
       @Nullable Rect localVisibleRect,
+      Rect previousLocalVisibleRect,
+      boolean isDirty,
       @Nullable PerfEvent mountPerfEvent) {
     final boolean isTracing = ComponentsSystrace.isTracing();
 
@@ -761,12 +764,12 @@ class MountState
         }
 
         mVisibilityModule.processVisibilityOutputs(
-            mIsDirty,
+            isDirty,
             layoutState.getVisibilityModuleInput(),
             localVisibleRect,
-            mPreviousLocalVisibleRect);
+            previousLocalVisibleRect);
       } else {
-        processVisibilityOutputsNonInc(layoutState, localVisibleRect);
+        processVisibilityOutputsNonInc(layoutState, localVisibleRect, isDirty);
       }
 
     } finally {
@@ -781,7 +784,7 @@ class MountState
   }
 
   private void processVisibilityOutputsNonInc(
-      LayoutState layoutState, @Nullable Rect localVisibleRect) {
+      LayoutState layoutState, @Nullable Rect localVisibleRect, boolean isDirty) {
     assertMainThread();
 
     if (localVisibleRect == null) {
@@ -825,7 +828,7 @@ class MountState
           ComponentsSystrace.endSection();
         }
 
-        visibilityItem.setDoNotClearInThisPass(mIsDirty);
+        visibilityItem.setDoNotClearInThisPass(isDirty);
         continue;
       }
 
@@ -876,7 +879,7 @@ class MountState
           visibilityItem = null;
         } else {
           // Processed, do not clear.
-          visibilityItem.setDoNotClearInThisPass(mIsDirty);
+          visibilityItem.setDoNotClearInThisPass(isDirty);
         }
       }
 
@@ -890,7 +893,7 @@ class MountState
           visibilityItem =
               new VisibilityItem(
                   globalKey, invisibleHandler, unfocusedHandler, visibilityChangedHandler);
-          visibilityItem.setDoNotClearInThisPass(mIsDirty);
+          visibilityItem.setDoNotClearInThisPass(isDirty);
           visibilityItem.setWasFullyVisible(isFullyVisible);
           mVisibilityIdToItemMap.put(visibilityOutputId, visibilityItem);
 
@@ -951,7 +954,7 @@ class MountState
       }
     }
 
-    if (mIsDirty) {
+    if (isDirty) {
       clearVisibilityItems();
     }
 
