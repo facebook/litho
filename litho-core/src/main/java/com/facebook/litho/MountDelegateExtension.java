@@ -64,13 +64,14 @@ public class MountDelegateExtension {
     mMountDelegate.acquireMountRef(layoutOutput, position, input, isMounting);
   }
 
-  protected void releaseMountReference(LayoutOutput layoutOutput, int position) {
+  protected void releaseMountReference(
+      LayoutOutput layoutOutput, int position, boolean isMounting) {
     if (!ownsReference(layoutOutput)) {
       throw new IllegalStateException("Trying to release a reference that wasn't acquired.");
     }
 
     mLayoutOutputMountRefs.remove(layoutOutput.getId());
-    mMountDelegate.releaseMountRef(layoutOutput, position);
+    mMountDelegate.releaseMountRef(layoutOutput, position, isMounting);
   }
 
   protected boolean isLockedForMount(LayoutOutput layoutOutput) {

@@ -602,6 +602,9 @@ class MountState
   @Override
   public void notifyMount(
       MountDelegate.MountDelegateInput input, LayoutOutput layoutOutput, int position) {
+    if (getItemAt(position) != null) {
+      return;
+    }
     // We need the LayoutState here to get the parent host. Check out D4182567
     // Temporary - will get rid of passing this MountDelegateInput around.
     // We either also keep the parent host on the LayoutOutput or we move to use

@@ -102,11 +102,11 @@ public class MountDelegate {
     }
   }
 
-  void releaseMountRef(LayoutOutput layoutOutput, int i) {
+  void releaseMountRef(LayoutOutput layoutOutput, int i, boolean isMounting) {
     final boolean wasLockedForMount = isLockedForMount(layoutOutput);
     decrementExtensionRefCount(layoutOutput);
 
-    if (wasLockedForMount && !isLockedForMount(layoutOutput)) {
+    if (wasLockedForMount && !isLockedForMount(layoutOutput) && isMounting) {
       mMountDelegateTarget.notifyUnmount(i);
     }
   }

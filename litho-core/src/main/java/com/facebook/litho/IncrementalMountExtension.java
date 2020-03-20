@@ -36,7 +36,6 @@ public class IncrementalMountExtension extends MountDelegateExtension
     implements HostListenerExtension<IncrementalMountExtension.IncrementalMountExtensionInput> {
 
   private final Host mLithoView;
-  private boolean mIsMounting;
   private int mPreviousTopsIndex;
   private int mPreviousBottomsIndex;
   private final Rect mPreviousLocalVisibleRect = new Rect();
@@ -61,9 +60,10 @@ public class IncrementalMountExtension extends MountDelegateExtension
   public void beforeMount(IncrementalMountExtensionInput input) {
     mInput = input;
     mPreviousLocalVisibleRect.setEmpty();
+    resetAcquiredReferences();
 
     final Rect localVisibleRect = mLithoView.getVisibleRect();
-    initIncrementalMount(localVisibleRect);
+    initIncrementalMount(localVisibleRect, false);
     setVisibleRect(localVisibleRect);
   }
 
@@ -81,13 +81,12 @@ public class IncrementalMountExtension extends MountDelegateExtension
   public void onViewOffset() {
     assertMainThread();
 
-    mIsMounting = true;
     final Rect localVisibleRect = mLithoView.getVisibleRect();
 
     // Horizontally scrolling, can't incrementally mount.
     if (localVisibleRect.left != mPreviousLocalVisibleRect.left
         || localVisibleRect.right != mPreviousLocalVisibleRect.right) {
-      initIncrementalMount(localVisibleRect);
+      initIncrementalMount(localVisibleRect, true);
     } else {
       performIncrementalMount(localVisibleRect);
     }
@@ -95,8 +94,6 @@ public class IncrementalMountExtension extends MountDelegateExtension
     setVisibleRect(localVisibleRect);
 
     LithoStats.incrementComponentMountCount();
-
-    mIsMounting = false;
   }
 
   private void setVisibleRect(@Nullable Rect localVisibleRect) {
@@ -111,7 +108,7 @@ public class IncrementalMountExtension extends MountDelegateExtension
   @Override
   public void onHostVisibilityChanged(boolean isVisible) {}
 
-  private void initIncrementalMount(Rect localVisibleRect) {
+  private void initIncrementalMount(Rect localVisibleRect, boolean isMounting) {
     final MountItem rootMountItem = getRootMountItem();
 
     for (int i = 0, size = mInput.getMountableOutputCount(); i < size; i++) {
@@ -131,17 +128,8 @@ public class IncrementalMountExtension extends MountDelegateExtension
               || (currentMountItem != null && currentMountItem == rootMountItem);
       final boolean hasAcquiredMountRef = ownsReference(layoutOutput);
       if (isMountable && !hasAcquiredMountRef) {
-        acquireMountReference(layoutOutput, i, mInput, mIsMounting);
-      } else if (!isMountable && hasAcquiredMountRef) {
-        releaseMountReference(layoutOutput, i);
-      }
+        acquireMountReference(layoutOutput, i, mInput, isMounting);
 
-      if (!isMountable) {
-        continue;
-      }
-
-      // TODO: extract animations logic out of this.
-      if (!isMounted) {
         if (isAnimationLocked(i) && component.hasChildLithoViews()) {
           // If the component is locked for animation then we need to make sure that all the
           // children are also mounted.
@@ -150,7 +138,9 @@ public class IncrementalMountExtension extends MountDelegateExtension
           // accurate.
           mountViewIncrementally(view, true);
         }
-      } else {
+      } else if (!isMountable && hasAcquiredMountRef) {
+        releaseMountReference(layoutOutput, i, isMounting);
+      } else if (isMountable && hasAcquiredMountRef) {
         if (component.hasChildLithoViews()) {
           mountItemIncrementally(currentMountItem);
         }
@@ -180,8 +170,8 @@ public class IncrementalMountExtension extends MountDelegateExtension
         final LayoutOutput layoutOutput = (LayoutOutput) node.getLayoutData();
         final long id = layoutOutput.getId();
         final int layoutOutputIndex = mInput.getLayoutOutputPositionForId(id);
-        if (!isAnimationLocked(layoutOutputIndex)) {
-          releaseMountReference(layoutOutput, layoutOutputIndex);
+        if (!isAnimationLocked(layoutOutputIndex) && ownsReference(layoutOutput)) {
+          releaseMountReference(layoutOutput, layoutOutputIndex, true);
         }
         mPreviousBottomsIndex++;
       }
@@ -192,13 +182,12 @@ public class IncrementalMountExtension extends MountDelegateExtension
         mPreviousBottomsIndex--;
         final RenderTreeNode node = layoutOutputBottoms.get(mPreviousBottomsIndex);
         final LayoutOutput layoutOutput = (LayoutOutput) node.getLayoutData();
-        final int layoutOutputIndex = mInput.getLayoutOutputPositionForId(layoutOutput.getId());
-        if (getItemAt(layoutOutputIndex) == null) {
+        if (!ownsReference(layoutOutput)) {
           acquireMountReference(
               layoutOutput,
               mInput.getLayoutOutputPositionForId(layoutOutput.getId()),
               mInput,
-              mIsMounting);
+              true);
           mComponentIdsMountedInThisFrame.add(layoutOutput.getId());
         }
       }
@@ -212,13 +201,12 @@ public class IncrementalMountExtension extends MountDelegateExtension
           && localVisibleRect.bottom > layoutOutputTops.get(mPreviousTopsIndex).getBounds().top) {
         final RenderTreeNode node = layoutOutputTops.get(mPreviousTopsIndex);
         final LayoutOutput layoutOutput = (LayoutOutput) node.getLayoutData();
-        final int layoutOutputIndex = mInput.getLayoutOutputPositionForId(layoutOutput.getId());
-        if (getItemAt(layoutOutputIndex) == null) {
+        if (!ownsReference(layoutOutput)) {
           acquireMountReference(
               layoutOutput,
               mInput.getLayoutOutputPositionForId(layoutOutput.getId()),
               mInput,
-              mIsMounting);
+              true);
           mComponentIdsMountedInThisFrame.add(layoutOutput.getId());
         }
         mPreviousTopsIndex++;
@@ -232,8 +220,8 @@ public class IncrementalMountExtension extends MountDelegateExtension
         final LayoutOutput layoutOutput = (LayoutOutput) node.getLayoutData();
         final long id = layoutOutput.getId();
         final int layoutOutputIndex = mInput.getLayoutOutputPositionForId(id);
-        if (!isAnimationLocked(layoutOutputIndex)) {
-          releaseMountReference(layoutOutput, layoutOutputIndex);
+        if (!isAnimationLocked(layoutOutputIndex) && ownsReference(layoutOutput)) {
+          releaseMountReference(layoutOutput, layoutOutputIndex, true);
         }
       }
     }
