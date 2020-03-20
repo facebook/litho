@@ -25,6 +25,7 @@ public class LithoHostListenerCoordinator implements HostListenerExtension<Objec
   private final List<HostListenerExtension> mMountExtensions;
   private IncrementalMountExtension mIncrementalMountExtension;
   private VisibilityOutputsExtension mVisibilityOutputsExtension;
+  private TransitionsExtension mTransitionsExtension;
 
   public LithoHostListenerCoordinator() {
     mMountExtensions = new ArrayList<>();
@@ -85,6 +86,16 @@ public class LithoHostListenerCoordinator implements HostListenerExtension<Objec
 
     mVisibilityOutputsExtension = new VisibilityOutputsExtension(lithoView);
     registerListener(mVisibilityOutputsExtension);
+  }
+
+  void enableTransitions(LithoView lithoView, MountState mountState) {
+    if (mTransitionsExtension != null) {
+      throw new IllegalStateException("Transitions have already been enabled on this coordinator.");
+    }
+
+    mTransitionsExtension = new TransitionsExtension(lithoView);
+    mountState.registerMountDelegateExtension(mTransitionsExtension);
+    registerListener(mTransitionsExtension);
   }
 
   private void registerListener(HostListenerExtension mountListenerExtension) {

@@ -596,6 +596,8 @@ public class LithoView extends Host {
       if (componentTree != null && componentTree.isIncrementalMountEnabled()) {
         mLithoHostListenerCoordinator.enableIncrementalMount(this, mMountState);
       }
+
+      mLithoHostListenerCoordinator.enableTransitions(this, mMountState);
     }
   }
 
