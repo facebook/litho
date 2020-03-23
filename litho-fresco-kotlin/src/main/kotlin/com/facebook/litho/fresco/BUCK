@@ -29,6 +29,8 @@ litho_android_library(
     visibility = ["PUBLIC"],
     deps = [
         LITHO_KOTLIN_TARGET,
+    ],
+    exported_deps = [
         LITHO_LITHO_FRESCO_TARGET,
     ],
 )
