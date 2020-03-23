@@ -23,13 +23,13 @@ load(
     "LITHO_GUAVA_TARGET",
     "LITHO_JSR_TARGET",
     "LITHO_LITHO_FRESCO_TARGET",
-    "LITHO_PROCESSOR_LIB_TARGET",
+    "LITHO_PROCESSOR_TARGET",
     "LITHO_RES_TARGET",
     "LITHO_ROOT_TARGET",
     "LITHO_SAMPLE_RES",
     "LITHO_SECTIONS_ANNOTATIONS_TARGET",
     "LITHO_SECTIONS_COMMON_TARGET",
-    "LITHO_SECTIONS_PROCESSOR_LIB_TARGET",
+    "LITHO_SECTIONS_PROCESSOR_TARGET",
     "LITHO_SECTIONS_TARGET",
     "LITHO_SECTIONS_WIDGET_TARGET",
     "LITHO_SOLOADER_TARGET",
@@ -44,15 +44,11 @@ load(
 fb_core_android_library(
     name = "litho",
     srcs = glob(["**/*.java"]),
-    annotation_processor_deps = [
-        LITHO_PROCESSOR_LIB_TARGET,
-        LITHO_SECTIONS_PROCESSOR_LIB_TARGET,
-    ],
-    annotation_processors = [
-        "com.facebook.litho.specmodels.processor.ComponentsProcessor",
-        "com.facebook.litho.sections.specmodels.processor.SectionsComponentProcessor",
-    ],
     is_androidx = True,
+    plugins = [
+        LITHO_PROCESSOR_TARGET,
+        LITHO_SECTIONS_PROCESSOR_TARGET,
+    ],
     visibility = [
         "PUBLIC",
     ],
