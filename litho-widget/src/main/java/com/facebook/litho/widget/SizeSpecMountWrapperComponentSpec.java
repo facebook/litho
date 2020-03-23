@@ -33,12 +33,14 @@ import com.facebook.litho.annotations.OnBind;
 import com.facebook.litho.annotations.OnBoundsDefined;
 import com.facebook.litho.annotations.OnCreateInitialState;
 import com.facebook.litho.annotations.OnCreateMountContent;
+import com.facebook.litho.annotations.OnDetached;
 import com.facebook.litho.annotations.OnMeasure;
 import com.facebook.litho.annotations.OnMount;
 import com.facebook.litho.annotations.OnUnbind;
 import com.facebook.litho.annotations.OnUnmount;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.State;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * A {@link MountSpec} implementation to provide width and height information to the wrapped
@@ -52,9 +54,10 @@ import com.facebook.litho.annotations.State;
 public class SizeSpecMountWrapperComponentSpec {
 
   @OnCreateInitialState
-  static void onCreateInitialState(ComponentContext c, StateValue<ComponentTree> componentTree) {
+  static void onCreateInitialState(
+      ComponentContext c, StateValue<AtomicReference<ComponentTree>> componentTree) {
     // This is the component tree to be added to the LithoView.
-    componentTree.set(ComponentTree.create(c).build());
+    componentTree.set(new AtomicReference<>(ComponentTree.create(c).build()));
   }
 
   @OnCreateMountContent
@@ -69,8 +72,10 @@ public class SizeSpecMountWrapperComponentSpec {
   @UiThread
   @OnMount
   static void onMount(
-      ComponentContext c, FrameLayout wrapperView, @State ComponentTree componentTree) {
-    ((LithoView) wrapperView.getChildAt(0)).setComponentTree(componentTree);
+      ComponentContext c,
+      FrameLayout wrapperView,
+      @State AtomicReference<ComponentTree> componentTree) {
+    ((LithoView) wrapperView.getChildAt(0)).setComponentTree(componentTree.get());
   }
 
   @UiThread
@@ -87,9 +92,16 @@ public class SizeSpecMountWrapperComponentSpec {
       int heightSpec,
       Size size,
       @Prop Component component,
-      @State ComponentTree componentTree) {
-    componentTree.setRootAndSizeSpec(
-        component, widthSpec, heightSpec, size, getTreePropWithSize(c, widthSpec, heightSpec));
+      @State AtomicReference<ComponentTree> componentTree) {
+    componentTree
+        .get()
+        .setVersionedRootAndSizeSpec(
+            component,
+            widthSpec,
+            heightSpec,
+            size,
+            getTreePropWithSize(c, widthSpec, heightSpec),
+            c.getLayoutVersion());
   }
 
   @OnBoundsDefined
@@ -97,17 +109,31 @@ public class SizeSpecMountWrapperComponentSpec {
       ComponentContext c,
       ComponentLayout layout,
       @Prop Component component,
-      @State ComponentTree componentTree) {
+      @State AtomicReference<ComponentTree> componentTree) {
     // the updated width and height is passed down.
     int widthSpec = SizeSpec.makeSizeSpec(layout.getWidth(), SizeSpec.EXACTLY);
     int heightSpec = SizeSpec.makeSizeSpec(layout.getHeight(), SizeSpec.EXACTLY);
     // This check is also done in the setRootAndSizeSpec method, but we need to do this here since
     // it will fail if a ErrorBoundariesConfiguration.rootWrapperComponentFactory was set.
     // TODO: T60426216
-    if (!componentTree.hasCompatibleLayout(widthSpec, heightSpec)) {
-      componentTree.setRootAndSizeSpec(
-          component, widthSpec, heightSpec, null, getTreePropWithSize(c, widthSpec, heightSpec));
+    if (!componentTree.get().hasCompatibleLayout(widthSpec, heightSpec)) {
+      componentTree
+          .get()
+          .setVersionedRootAndSizeSpec(
+              component,
+              widthSpec,
+              heightSpec,
+              null,
+              getTreePropWithSize(c, widthSpec, heightSpec),
+              c.getLayoutVersion());
     }
+  }
+
+  @OnDetached
+  static void onDetached(ComponentContext c, @State AtomicReference<ComponentTree> componentTree) {
+    // We need to release the component tree here to allow for a proper memory deallocation
+    componentTree.get().release();
+    componentTree.set(null);
   }
 
   @UiThread
