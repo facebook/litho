@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package com.facebook.litho;
+package com.facebook.rendercore;
 
-import com.facebook.rendercore.RenderTreeNode;
+import androidx.annotation.VisibleForTesting;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -83,7 +83,8 @@ public class MountDelegateExtension {
     return mLayoutOutputMountRefs.contains(renderTreeNode.getRenderUnit().getId());
   }
 
-  protected boolean canPreventMount() {
+  @VisibleForTesting(otherwise = 4)
+  public boolean canPreventMount() {
     return false;
   }
 }

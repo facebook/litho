@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package com.facebook.litho;
+package com.facebook.rendercore;
 
 import android.util.LongSparseArray;
-import com.facebook.rendercore.RenderTreeNode;
+import androidx.annotation.VisibleForTesting;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,7 +33,7 @@ public class MountDelegate {
   private boolean mReferenceCountingEnabled = false;
 
   // RenderCore MountState API
-  interface MountDelegateTarget {
+  public interface MountDelegateTarget {
     void notifyMount(MountDelegateInput input, RenderTreeNode renderTreeNode, int position);
 
     void notifyUnmount(int position);
@@ -47,7 +47,7 @@ public class MountDelegate {
   }
 
   // IGNORE - Will be removed. Check out D4182567 for context.
-  interface MountDelegateInput {
+  public interface MountDelegateInput {
     int getLayoutOutputPositionForId(long id);
 
     RenderTreeNode getMountableOutputAt(int position);
@@ -57,7 +57,7 @@ public class MountDelegate {
     mMountDelegateTarget = mountDelegateTarget;
   }
 
-  void addExtension(MountDelegateExtension mountDelegateExtension) {
+  public void addExtension(MountDelegateExtension mountDelegateExtension) {
     mMountDelegateExtensions.add(mountDelegateExtension);
     mountDelegateExtension.registerToDelegate(this);
     mReferenceCountingEnabled =
@@ -77,7 +77,7 @@ public class MountDelegate {
     return mMountDelegateTarget.isRootItem(position);
   }
 
-  boolean isLockedForMount(RenderTreeNode renderTreeNode) {
+  public boolean isLockedForMount(RenderTreeNode renderTreeNode) {
     if (!mReferenceCountingEnabled) {
       return true;
     }
@@ -88,7 +88,8 @@ public class MountDelegate {
     return refCount != null && refCount > 0;
   }
 
-  void acquireMountRef(
+  @VisibleForTesting
+  public void acquireMountRef(
       RenderTreeNode renderTreeNode, int i, MountDelegateInput input, boolean isMounting) {
     final boolean wasLockedForMount = isLockedForMount(renderTreeNode);
 
@@ -101,7 +102,8 @@ public class MountDelegate {
     }
   }
 
-  void releaseMountRef(RenderTreeNode renderTreeNode, int i, boolean isMounting) {
+  @VisibleForTesting
+  public void releaseMountRef(RenderTreeNode renderTreeNode, int i, boolean isMounting) {
     final boolean wasLockedForMount = isLockedForMount(renderTreeNode);
     decrementExtensionRefCount(renderTreeNode);
 
@@ -110,7 +112,7 @@ public class MountDelegate {
     }
   }
 
-  void resetExtensionReferenceCount() {
+  public void resetExtensionReferenceCount() {
     if (!mReferenceCountingEnabled) {
       return;
     }

@@ -61,6 +61,9 @@ import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.animation.AnimatedProperties;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.stats.LithoStats;
+import com.facebook.rendercore.MountDelegate;
+import com.facebook.rendercore.MountDelegate.MountDelegateTarget;
+import com.facebook.rendercore.MountDelegateExtension;
 import com.facebook.rendercore.RenderTreeNode;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -82,8 +85,7 @@ import java.util.Set;
  * @see LayoutState
  */
 @ThreadConfined(ThreadConfined.UI)
-class MountState
-    implements TransitionManager.OnAnimationCompleteListener, MountDelegate.MountDelegateTarget {
+class MountState implements TransitionManager.OnAnimationCompleteListener, MountDelegateTarget {
 
   static final long ROOT_HOST_ID = 0L;
   private static final String DISAPPEAR_ANIM_TARGETING_ROOT =

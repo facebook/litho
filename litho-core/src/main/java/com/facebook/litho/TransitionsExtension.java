@@ -16,7 +16,8 @@
 
 package com.facebook.litho;
 
-import com.facebook.litho.MountDelegate.MountDelegateInput;
+import com.facebook.rendercore.MountDelegate.MountDelegateInput;
+import com.facebook.rendercore.MountDelegateExtension;
 
 /** Extension for performing transitions. */
 public class TransitionsExtension extends MountDelegateExtension

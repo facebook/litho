@@ -21,6 +21,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.rendercore.MountDelegate;
+import com.facebook.rendercore.MountDelegateExtension;
 import com.facebook.rendercore.RenderTreeNode;
 import org.junit.Test;
 import org.junit.runner.RunWith;

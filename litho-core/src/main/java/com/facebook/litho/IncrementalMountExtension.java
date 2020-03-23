@@ -24,8 +24,9 @@ import android.graphics.Rect;
 import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.Nullable;
-import com.facebook.litho.MountDelegate.MountDelegateInput;
 import com.facebook.litho.stats.LithoStats;
+import com.facebook.rendercore.MountDelegate.MountDelegateInput;
+import com.facebook.rendercore.MountDelegateExtension;
 import com.facebook.rendercore.RenderTreeNode;
 import java.util.HashSet;
 import java.util.List;
@@ -309,7 +310,7 @@ public class IncrementalMountExtension extends MountDelegateExtension
   }
 
   @Override
-  protected boolean canPreventMount() {
+  public boolean canPreventMount() {
     return true;
   }
 }
