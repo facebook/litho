@@ -1815,6 +1815,10 @@ class MountState
     final ViewNodeInfo viewNodeInfo = item.getViewNodeInfo();
     if (viewNodeInfo != null) {
       setViewStateListAnimator(view, viewNodeInfo);
+      if (item.areDrawableOutputsDisabled()) {
+        setViewBackground(view, viewNodeInfo);
+        setViewForeground(view, viewNodeInfo);
+      }
       if (!isHostSpec(component)) {
         // Set view background, if applicable.  Do this before padding
         // as it otherwise overrides the padding.
@@ -1900,6 +1904,10 @@ class MountState
       unsetViewStateListAnimator(view, viewNodeInfo);
       // Host view doesn't set its own padding, but gets absolute positions for inner content from
       // Yoga. Also bg/fg is used as separate drawables instead of using View's bg/fg attribute.
+      if (item.areDrawableOutputsDisabled()) {
+        unsetViewBackground(view, viewNodeInfo);
+        unsetViewForeground(view, viewNodeInfo);
+      }
       if (!isHostView) {
         unsetViewPadding(view, item, viewNodeInfo);
         unsetViewBackground(view, viewNodeInfo);

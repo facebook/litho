@@ -34,6 +34,7 @@ class MountItem {
   static final int LAYOUT_FLAG_DUPLICATE_PARENT_STATE = 1 << 0;
   static final int LAYOUT_FLAG_DISABLE_TOUCHABLE = 1 << 1;
   static final int LAYOUT_FLAG_MATCH_HOST_BOUNDS = 1 << 2;
+  static final int LAYOUT_FLAG_DRAWABLE_OUTPUTS_DISABLED = 1 << 3;
 
   private static final int FLAG_VIEW_CLICKABLE = 1 << 0;
   private static final int FLAG_VIEW_LONG_CLICKABLE = 1 << 1;
@@ -280,6 +281,10 @@ class MountItem {
 
   static boolean isTouchableDisabled(int flags) {
     return (flags & LAYOUT_FLAG_DISABLE_TOUCHABLE) == LAYOUT_FLAG_DISABLE_TOUCHABLE;
+  }
+
+  public boolean areDrawableOutputsDisabled() {
+    return (mLayoutFlags & LAYOUT_FLAG_DRAWABLE_OUTPUTS_DISABLED) != 0;
   }
 
   /** @return Whether the view associated with this MountItem is clickable. */

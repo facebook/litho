@@ -34,6 +34,7 @@ import static com.facebook.litho.FrameworkLogEvents.PARAM_IS_BACKGROUND_LAYOUT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_LAYOUT_STATE_SOURCE;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_TREE_DIFF_ENABLED;
 import static com.facebook.litho.MountItem.LAYOUT_FLAG_DISABLE_TOUCHABLE;
+import static com.facebook.litho.MountItem.LAYOUT_FLAG_DRAWABLE_OUTPUTS_DISABLED;
 import static com.facebook.litho.MountItem.LAYOUT_FLAG_DUPLICATE_PARENT_STATE;
 import static com.facebook.litho.MountItem.LAYOUT_FLAG_MATCH_HOST_BOUNDS;
 import static com.facebook.litho.MountState.ROOT_HOST_ID;
@@ -305,6 +306,9 @@ class LayoutState
   /** A container stores components whose OnAttached delegate methods are about to be executed. */
   @Nullable private Map<String, Component> mAttachableContainer;
 
+  final boolean mShouldDisableDrawableOutputs =
+      ComponentsConfiguration.shouldDisableDrawableOutputs;
+
   LayoutState(ComponentContext context) {
     mContext = context;
     mId = sIdGenerator.getAndIncrement();
@@ -499,6 +503,12 @@ class LayoutState
       layoutOutputNodeInfo = nodeInfo;
       // Acquire a ViewNodeInfo, set it up and release it after passing it to the LayoutOutput.
       final ViewNodeInfo viewNodeInfo = new ViewNodeInfo();
+      if (layoutState.mShouldDisableDrawableOutputs) {
+        viewNodeInfo.setBackground(node.getBackground());
+        if (SDK_INT >= M) {
+          viewNodeInfo.setForeground(node.getForeground());
+        }
+      }
       if (useNodePadding && node.isPaddingSet()) {
         viewNodeInfo.setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom);
       }
@@ -536,6 +546,10 @@ class LayoutState
     } else {
       // If there is a host view, the transition key will be set on the view's layout output
       transitionId = layoutState.mCurrentTransitionId;
+    }
+
+    if (layoutState.mShouldDisableDrawableOutputs) {
+      flags |= LAYOUT_FLAG_DRAWABLE_OUTPUTS_DISABLED;
     }
 
     return new LayoutOutput(
@@ -635,6 +649,9 @@ class LayoutState
     // so that such flag is applied in the resulting view hierarchy after the component
     // tree is mounted. Click handling is also considered accessibility content but
     // this is already covered separately i.e. click handler is not null.
+    final boolean hasBackgroundOrForeground =
+        layoutState.mShouldDisableDrawableOutputs
+            && (node.getBackground() != null || node.getForeground() != null);
     final boolean hasAccessibilityContent =
         layoutState.mAccessibilityEnabled
             && importantForAccessibility != IMPORTANT_FOR_ACCESSIBILITY_NO
@@ -658,7 +675,8 @@ class LayoutState
         (nodeInfo != null && nodeInfo.getClickableState() == CLICKABLE_SET_TRUE);
     final boolean hasClipChildrenSet = (nodeInfo != null && nodeInfo.isClipChildrenSet());
 
-    return hasFocusChangeHandler
+    return hasBackgroundOrForeground
+        || hasFocusChangeHandler
         || hasEnabledTouchEventHandlers
         || hasViewTag
         || hasViewTags
@@ -858,27 +876,29 @@ class LayoutState
     }
 
     // 2. Add background if defined.
-    final Drawable background = node.getBackground();
-    if (background != null) {
-      if (layoutOutput != null && layoutOutput.getViewNodeInfo() != null) {
-        layoutOutput.getViewNodeInfo().setBackground(background);
-      } else {
-        final LayoutOutput convertBackground =
-            (currentDiffNode != null) ? currentDiffNode.getBackgroundOutput() : null;
+    if (!layoutState.mShouldDisableDrawableOutputs) {
+      final Drawable background = node.getBackground();
+      if (background != null) {
+        if (layoutOutput != null && layoutOutput.getViewNodeInfo() != null) {
+          layoutOutput.getViewNodeInfo().setBackground(background);
+        } else {
+          final LayoutOutput convertBackground =
+              (currentDiffNode != null) ? currentDiffNode.getBackgroundOutput() : null;
 
-        final LayoutOutput backgroundOutput =
-            addDrawableComponent(
-                parent,
-                node,
-                layoutState,
-                convertBackground,
-                hierarchy,
-                background,
-                OutputUnitType.BACKGROUND,
-                needsHostView);
+          final LayoutOutput backgroundOutput =
+              addDrawableComponent(
+                  parent,
+                  node,
+                  layoutState,
+                  convertBackground,
+                  hierarchy,
+                  background,
+                  OutputUnitType.BACKGROUND,
+                  needsHostView);
 
-        if (diffNode != null) {
-          diffNode.setBackgroundOutput(backgroundOutput);
+          if (diffNode != null) {
+            diffNode.setBackgroundOutput(backgroundOutput);
+          }
         }
       }
     }
@@ -969,27 +989,29 @@ class LayoutState
     }
 
     // 6. Add foreground if defined.
-    final Drawable foreground = node.getForeground();
-    if (foreground != null) {
-      if (layoutOutput != null && layoutOutput.getViewNodeInfo() != null && SDK_INT >= M) {
-        layoutOutput.getViewNodeInfo().setForeground(foreground);
-      } else {
-        final LayoutOutput convertForeground =
-            (currentDiffNode != null) ? currentDiffNode.getForegroundOutput() : null;
+    if (!layoutState.mShouldDisableDrawableOutputs) {
+      final Drawable foreground = node.getForeground();
+      if (foreground != null) {
+        if (layoutOutput != null && layoutOutput.getViewNodeInfo() != null && SDK_INT >= M) {
+          layoutOutput.getViewNodeInfo().setForeground(foreground);
+        } else {
+          final LayoutOutput convertForeground =
+              (currentDiffNode != null) ? currentDiffNode.getForegroundOutput() : null;
 
-        final LayoutOutput foregroundOutput =
-            addDrawableComponent(
-                parent,
-                node,
-                layoutState,
-                convertForeground,
-                hierarchy,
-                foreground,
-                OutputUnitType.FOREGROUND,
-                needsHostView);
+          final LayoutOutput foregroundOutput =
+              addDrawableComponent(
+                  parent,
+                  node,
+                  layoutState,
+                  convertForeground,
+                  hierarchy,
+                  foreground,
+                  OutputUnitType.FOREGROUND,
+                  needsHostView);
 
-        if (diffNode != null) {
-          diffNode.setForegroundOutput(foregroundOutput);
+          if (diffNode != null) {
+            diffNode.setForegroundOutput(foregroundOutput);
+          }
         }
       }
     }
