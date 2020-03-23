@@ -2844,8 +2844,13 @@ class MountState
   }
 
   @Override
-  public MountItem getRootMountItem() {
-    return mIndexToItemMap.get(ROOT_HOST_ID);
+  public boolean isRootItem(int position) {
+    final MountItem mountItem = getItemAt(position);
+    if (mountItem == null) {
+      return false;
+    }
+
+    return mountItem == mIndexToItemMap.get(ROOT_HOST_ID);
   }
 
   int getItemCount() {
@@ -2853,8 +2858,7 @@ class MountState
     return mLayoutOutputsIds == null ? 0 : mLayoutOutputsIds.length;
   }
 
-  @Override
-  public MountItem getItemAt(int i) {
+  MountItem getItemAt(int i) {
     assertMainThread();
 
     // TODO simplify when replacing with getContent.
@@ -2867,6 +2871,16 @@ class MountState
     }
 
     return mIndexToItemMap.get(mLayoutOutputsIds[i]);
+  }
+
+  @Override
+  public Object getContentAt(int i) {
+    final MountItem mountItem = getItemAt(i);
+    if (mountItem == null) {
+      return null;
+    }
+
+    return mountItem.getContent();
   }
 
   /**

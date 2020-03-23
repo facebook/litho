@@ -43,12 +43,12 @@ public class MountDelegateExtension {
     return mMountDelegate.isAnimationLocked(position);
   }
 
-  protected MountItem getRootMountItem() {
-    return mMountDelegate.getRootMountItem();
+  protected boolean isRootItem(int position) {
+    return mMountDelegate.isRootItem(position);
   }
 
-  protected MountItem getItemAt(int position) {
-    return mMountDelegate.getItemAt(position);
+  protected Object getContentAt(int position) {
+    return mMountDelegate.getContentAt(position);
   }
 
   protected void acquireMountReference(

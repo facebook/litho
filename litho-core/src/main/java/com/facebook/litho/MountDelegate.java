@@ -38,13 +38,12 @@ public class MountDelegate {
 
     void notifyUnmount(int position);
 
-    // TODO change to getContentAt and isItemMounted.
-    MountItem getItemAt(int i);
-
-    MountItem getRootMountItem();
+    boolean isRootItem(int position);
 
     // TODO: remove when ref counting for animations.
     boolean isAnimationLocked(int position);
+
+    Object getContentAt(int position);
   }
 
   // IGNORE - Will be removed. Check out D4182567 for context.
@@ -70,12 +69,12 @@ public class MountDelegate {
     return mMountDelegateTarget.isAnimationLocked(position);
   }
 
-  MountItem getItemAt(int position) {
-    return mMountDelegateTarget.getItemAt(position);
+  Object getContentAt(int position) {
+    return mMountDelegateTarget.getContentAt(position);
   }
 
-  MountItem getRootMountItem() {
-    return mMountDelegateTarget.getRootMountItem();
+  boolean isRootItem(int position) {
+    return mMountDelegateTarget.isRootItem(position);
   }
 
   boolean isLockedForMount(LayoutOutput layoutOutput) {

@@ -109,23 +109,19 @@ public class IncrementalMountExtension extends MountDelegateExtension
   public void onHostVisibilityChanged(boolean isVisible) {}
 
   private void initIncrementalMount(Rect localVisibleRect, boolean isMounting) {
-    final MountItem rootMountItem = getRootMountItem();
-
     for (int i = 0, size = mInput.getMountableOutputCount(); i < size; i++) {
       final LayoutOutput layoutOutput = getLayoutOutput(mInput.getMountableOutputAt(i));
       final Component component = layoutOutput.getComponent();
-      // TODO: pass in the list of mounted items.
-      final MountItem currentMountItem = getItemAt(i);
-      final boolean isMounted = currentMountItem != null;
+      final Object content = getContentAt(i);
 
       // By default, a LayoutOutput passed in to mount will be mountable. Incremental mount can
       // override that if the item is outside the visible bounds.
       // TODO: extract animations logic out of this.
       final boolean isMountable =
-          isMountedHostWithChildContent(currentMountItem)
+          isMountedHostWithChildContent(content)
               || Rect.intersects(localVisibleRect, layoutOutput.getBounds())
               || isAnimationLocked(i)
-              || (currentMountItem != null && currentMountItem == rootMountItem);
+              || isRootItem(i);
       final boolean hasAcquiredMountRef = ownsReference(layoutOutput);
       if (isMountable && !hasAcquiredMountRef) {
         acquireMountReference(layoutOutput, i, mInput, isMounting);
@@ -133,7 +129,7 @@ public class IncrementalMountExtension extends MountDelegateExtension
         if (isAnimationLocked(i) && component.hasChildLithoViews()) {
           // If the component is locked for animation then we need to make sure that all the
           // children are also mounted.
-          final View view = (View) getItemAt(i).getContent();
+          final View view = (View) content;
           // We're mounting everything, don't process visibility outputs as they will not be
           // accurate.
           mountViewIncrementally(view, true);
@@ -142,7 +138,7 @@ public class IncrementalMountExtension extends MountDelegateExtension
         releaseMountReference(layoutOutput, i, isMounting);
       } else if (isMountable && hasAcquiredMountRef) {
         if (component.hasChildLithoViews()) {
-          mountItemIncrementally(currentMountItem);
+          mountItemIncrementally(content, component);
         }
       }
     }
@@ -235,7 +231,7 @@ public class IncrementalMountExtension extends MountDelegateExtension
         if (component.hasChildLithoViews() && isLockedForMount(layoutOutput)) {
           final int layoutOutputPosition = mInput.getLayoutOutputPositionForId(layoutOutputId);
           if (layoutOutputPosition != -1) {
-            mountItemIncrementally(getItemAt(i));
+            mountItemIncrementally(getContentAt(i), component);
           }
         }
       }
@@ -272,12 +268,7 @@ public class IncrementalMountExtension extends MountDelegateExtension
     }
   }
 
-  private boolean isMountedHostWithChildContent(MountItem mountItem) {
-    if (mountItem == null) {
-      return false;
-    }
-
-    final Object content = mountItem.getContent();
+  private static boolean isMountedHostWithChildContent(@Nullable Object content) {
     if (!(content instanceof ComponentHost)) {
       return false;
     }
@@ -286,16 +277,14 @@ public class IncrementalMountExtension extends MountDelegateExtension
     return host.getMountItemCount() > 0;
   }
 
-  private static void mountItemIncrementally(MountItem item) {
-    final Component component = item.getComponent();
-
+  private static void mountItemIncrementally(Object content, Component component) {
     if (!isMountViewSpec(component)) {
       return;
     }
 
     // We can't just use the bounds of the View since we need the bounds relative to the
     // hosting LithoView (which is what the localVisibleRect is measured relative to).
-    final View view = (View) item.getContent();
+    final View view = (View) content;
 
     mountViewIncrementally(view, false);
   }
