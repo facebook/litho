@@ -21,6 +21,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.rendercore.RenderTreeNode;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -30,10 +31,15 @@ public class MountDelegateCanPreventMountTest {
   @Test
   public void testIsLockedForMount() {
     // Create test LayoutOutputs with unique ids
-    LayoutOutput layoutOutput1 = mock(LayoutOutput.class);
-    when(layoutOutput1.getId()).thenReturn(1l);
-    LayoutOutput layoutOutput2 = mock(LayoutOutput.class);
-    when(layoutOutput2.getId()).thenReturn(2l);
+    LithoRenderUnit lithoRenderUnit1 = mock(LithoRenderUnit.class);
+    RenderTreeNode layoutOutput1 = mock(RenderTreeNode.class);
+    when(layoutOutput1.getRenderUnit()).thenReturn(lithoRenderUnit1);
+    when(lithoRenderUnit1.getId()).thenReturn(1l);
+
+    LithoRenderUnit lithoRenderUnit2 = mock(LithoRenderUnit.class);
+    RenderTreeNode layoutOutput2 = mock(RenderTreeNode.class);
+    when(layoutOutput2.getRenderUnit()).thenReturn(lithoRenderUnit2);
+    when(lithoRenderUnit2.getId()).thenReturn(2l);
 
     MountDelegate.MountDelegateTarget mountDelegateTarget =
         mock(MountDelegate.MountDelegateTarget.class);
@@ -69,8 +75,10 @@ public class MountDelegateCanPreventMountTest {
 
   @Test(expected = IllegalStateException.class)
   public void testInbalancedLocking() {
-    LayoutOutput layoutOutput1 = mock(LayoutOutput.class);
-    when(layoutOutput1.getId()).thenReturn(1l);
+    LithoRenderUnit lithoRenderUnit = mock(LithoRenderUnit.class);
+    RenderTreeNode layoutOutput1 = mock(RenderTreeNode.class);
+    when(layoutOutput1.getRenderUnit()).thenReturn(lithoRenderUnit);
+    when(lithoRenderUnit.getId()).thenReturn(1l);
 
     MountDelegate.MountDelegateTarget mountDelegateTarget =
         mock(MountDelegate.MountDelegateTarget.class);

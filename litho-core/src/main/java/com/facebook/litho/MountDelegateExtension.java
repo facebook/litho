@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import com.facebook.rendercore.RenderTreeNode;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -52,34 +53,34 @@ public class MountDelegateExtension {
   }
 
   protected void acquireMountReference(
-      LayoutOutput layoutOutput,
+      RenderTreeNode renderTreeNode,
       int position,
       MountDelegate.MountDelegateInput input,
       boolean isMounting) {
-    if (ownsReference(layoutOutput)) {
+    if (ownsReference(renderTreeNode)) {
       throw new IllegalStateException("Cannot acquire the same reference more than once.");
     }
 
-    mLayoutOutputMountRefs.add(layoutOutput.getId());
-    mMountDelegate.acquireMountRef(layoutOutput, position, input, isMounting);
+    mLayoutOutputMountRefs.add(renderTreeNode.getRenderUnit().getId());
+    mMountDelegate.acquireMountRef(renderTreeNode, position, input, isMounting);
   }
 
   protected void releaseMountReference(
-      LayoutOutput layoutOutput, int position, boolean isMounting) {
-    if (!ownsReference(layoutOutput)) {
+      RenderTreeNode renderTreeNode, int position, boolean isMounting) {
+    if (!ownsReference(renderTreeNode)) {
       throw new IllegalStateException("Trying to release a reference that wasn't acquired.");
     }
 
-    mLayoutOutputMountRefs.remove(layoutOutput.getId());
-    mMountDelegate.releaseMountRef(layoutOutput, position, isMounting);
+    mLayoutOutputMountRefs.remove(renderTreeNode.getRenderUnit().getId());
+    mMountDelegate.releaseMountRef(renderTreeNode, position, isMounting);
   }
 
-  protected boolean isLockedForMount(LayoutOutput layoutOutput) {
-    return mMountDelegate.isLockedForMount(layoutOutput);
+  protected boolean isLockedForMount(RenderTreeNode renderTreeNode) {
+    return mMountDelegate.isLockedForMount(renderTreeNode);
   }
 
-  protected boolean ownsReference(LayoutOutput layoutOutput) {
-    return mLayoutOutputMountRefs.contains(layoutOutput.getId());
+  protected boolean ownsReference(RenderTreeNode renderTreeNode) {
+    return mLayoutOutputMountRefs.contains(renderTreeNode.getRenderUnit().getId());
   }
 
   protected boolean canPreventMount() {

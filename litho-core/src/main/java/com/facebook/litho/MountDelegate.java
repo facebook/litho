@@ -34,7 +34,7 @@ public class MountDelegate {
 
   // RenderCore MountState API
   interface MountDelegateTarget {
-    void notifyMount(MountDelegateInput input, LayoutOutput layoutOutput, int position);
+    void notifyMount(MountDelegateInput input, RenderTreeNode renderTreeNode, int position);
 
     void notifyUnmount(int position);
 
@@ -77,35 +77,35 @@ public class MountDelegate {
     return mMountDelegateTarget.isRootItem(position);
   }
 
-  boolean isLockedForMount(LayoutOutput layoutOutput) {
+  boolean isLockedForMount(RenderTreeNode renderTreeNode) {
     if (!mReferenceCountingEnabled) {
       return true;
     }
 
-    final long layoutOutputId = layoutOutput.getId();
-    final Integer refCount = mReferenceCountMap.get(layoutOutputId);
+    final long renderUnitId = renderTreeNode.getRenderUnit().getId();
+    final Integer refCount = mReferenceCountMap.get(renderUnitId);
 
     return refCount != null && refCount > 0;
   }
 
   void acquireMountRef(
-      LayoutOutput layoutOutput, int i, MountDelegateInput input, boolean isMounting) {
-    final boolean wasLockedForMount = isLockedForMount(layoutOutput);
+      RenderTreeNode renderTreeNode, int i, MountDelegateInput input, boolean isMounting) {
+    final boolean wasLockedForMount = isLockedForMount(renderTreeNode);
 
-    incrementExtensionRefCount(layoutOutput);
+    incrementExtensionRefCount(renderTreeNode);
 
     // Only mount if we're during a mounting phase, otherwise the mounting phase will take care of
     // that.
     if (!wasLockedForMount && isMounting) {
-      mMountDelegateTarget.notifyMount(input, layoutOutput, i);
+      mMountDelegateTarget.notifyMount(input, renderTreeNode, i);
     }
   }
 
-  void releaseMountRef(LayoutOutput layoutOutput, int i, boolean isMounting) {
-    final boolean wasLockedForMount = isLockedForMount(layoutOutput);
-    decrementExtensionRefCount(layoutOutput);
+  void releaseMountRef(RenderTreeNode renderTreeNode, int i, boolean isMounting) {
+    final boolean wasLockedForMount = isLockedForMount(renderTreeNode);
+    decrementExtensionRefCount(renderTreeNode);
 
-    if (wasLockedForMount && !isLockedForMount(layoutOutput) && isMounting) {
+    if (wasLockedForMount && !isLockedForMount(renderTreeNode) && isMounting) {
       mMountDelegateTarget.notifyUnmount(i);
     }
   }
@@ -118,34 +118,34 @@ public class MountDelegate {
     mReferenceCountMap.clear();
   }
 
-  private void incrementExtensionRefCount(LayoutOutput layoutOutput) {
+  private void incrementExtensionRefCount(RenderTreeNode renderTreeNode) {
     if (!mReferenceCountingEnabled) {
       return;
     }
 
-    final long layoutOutputId = layoutOutput.getId();
-    Integer refCount = mReferenceCountMap.get(layoutOutputId);
+    final long renderUnitId = renderTreeNode.getRenderUnit().getId();
+    Integer refCount = mReferenceCountMap.get(renderUnitId);
 
     if (refCount == null) {
       refCount = 0;
     }
 
-    mReferenceCountMap.put(layoutOutputId, refCount + 1);
+    mReferenceCountMap.put(renderUnitId, refCount + 1);
   }
 
-  private void decrementExtensionRefCount(LayoutOutput layoutOutput) {
+  private void decrementExtensionRefCount(RenderTreeNode renderTreeNode) {
     if (!mReferenceCountingEnabled) {
       return;
     }
 
-    final long layoutOutputId = layoutOutput.getId();
-    Integer refCount = mReferenceCountMap.get(layoutOutputId);
+    final long renderUnitId = renderTreeNode.getRenderUnit().getId();
+    Integer refCount = mReferenceCountMap.get(renderUnitId);
 
     if (refCount == null || refCount == 0) {
       throw new IllegalStateException(
           "Trying to decrement reference count for an item you don't own.");
     }
 
-    mReferenceCountMap.put(layoutOutputId, refCount - 1);
+    mReferenceCountMap.put(renderUnitId, refCount - 1);
   }
 }

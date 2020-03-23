@@ -501,7 +501,8 @@ class MountState
     }
 
     for (int i = 0, size = layoutState.getMountableOutputCount(); i < size; i++) {
-      final LayoutOutput layoutOutput = getLayoutOutput(layoutState.getMountableOutputAt(i));
+      final RenderTreeNode renderTreeNode = layoutState.getMountableOutputAt(i);
+      final LayoutOutput layoutOutput = getLayoutOutput(renderTreeNode);
       final Component component = layoutOutput.getComponent();
       if (isTracing) {
         ComponentsSystrace.beginSection(component.getSimpleName());
@@ -509,7 +510,7 @@ class MountState
 
       final MountItem currentMountItem = getItemAt(i);
       final boolean isMounted = currentMountItem != null;
-      final boolean isMountable = isMountable(layoutOutput);
+      final boolean isMountable = isMountable(renderTreeNode);
 
       if (!isMountable) {
         ComponentsSystrace.endSection();
@@ -592,17 +593,17 @@ class MountState
     mIsMounting = false;
   }
 
-  private boolean isMountable(LayoutOutput layoutOutput) {
+  private boolean isMountable(RenderTreeNode renderTreeNode) {
     if (mMountDelegate == null) {
       return true;
     }
 
-    return mMountDelegate.isLockedForMount(layoutOutput);
+    return mMountDelegate.isLockedForMount(renderTreeNode);
   }
 
   @Override
   public void notifyMount(
-      MountDelegate.MountDelegateInput input, LayoutOutput layoutOutput, int position) {
+      MountDelegate.MountDelegateInput input, RenderTreeNode renderTreeNode, int position) {
     if (getItemAt(position) != null) {
       return;
     }
@@ -612,7 +613,7 @@ class MountState
     // RenderTreeNode.
     if (input instanceof LayoutState) {
       LayoutState layoutState = (LayoutState) input;
-      mountLayoutOutput(position, layoutOutput, layoutState);
+      mountLayoutOutput(position, getLayoutOutput(renderTreeNode), layoutState);
     } else {
       throw new IllegalStateException("This is not supported for now");
     }
