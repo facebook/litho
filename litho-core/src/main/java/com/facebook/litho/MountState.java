@@ -158,6 +158,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener, Mount
   private @Nullable VisibilityModule mVisibilityModule;
   private @Nullable MountDelegate mMountDelegate;
   private @Nullable IncrementalMountExtension mIncrementalMountExtension;
+  private @Nullable VisibilityOutputsExtension mVisibilityOutputsExtension;
 
   private @ComponentTree.RecyclingMode int mRecyclingMode = ComponentTree.RecyclingMode.DEFAULT;
 
@@ -175,10 +176,15 @@ class MountState implements TransitionManager.OnAnimationCompleteListener, Mount
     // The mount item representing the top-level root host (LithoView) which
     // is always automatically mounted.
     mRootHostMountItem = MountItem.createRootHostMountItem(mLithoView);
-    if (!ComponentsConfiguration.useRenderCoreMount
-        && ComponentsConfiguration.useIncrementalMountExtension) {
-      mIncrementalMountExtension = new IncrementalMountExtension(mLithoView);
-      registerMountDelegateExtension(mIncrementalMountExtension);
+    if (!ComponentsConfiguration.useRenderCoreMount) {
+      if (ComponentsConfiguration.useIncrementalMountExtension) {
+        mIncrementalMountExtension = new IncrementalMountExtension(mLithoView);
+        registerMountDelegateExtension(mIncrementalMountExtension);
+      }
+
+      if (ComponentsConfiguration.useVisibilityExtension) {
+        mVisibilityOutputsExtension = new VisibilityOutputsExtension(mLithoView);
+      }
     }
   }
 
@@ -775,6 +781,16 @@ class MountState implements TransitionManager.OnAnimationCompleteListener, Mount
       Rect previousLocalVisibleRect,
       boolean isDirty,
       @Nullable PerfEvent mountPerfEvent) {
+
+    if (mVisibilityOutputsExtension != null) {
+      if (isDirty) {
+        mVisibilityOutputsExtension.beforeMount(layoutState);
+      } else {
+        mVisibilityOutputsExtension.onViewOffset();
+      }
+      return;
+    }
+
     final boolean isTracing = ComponentsSystrace.isTracing();
 
     try {
@@ -1079,6 +1095,11 @@ class MountState implements TransitionManager.OnAnimationCompleteListener, Mount
   }
 
   void clearVisibilityItems() {
+    if (mVisibilityOutputsExtension != null) {
+      mVisibilityOutputsExtension.onHostVisibilityChanged(false);
+      return;
+    }
+
     if (mVisibilityModule != null) {
       clearVisibilityItemsIncremental();
     } else {
@@ -2714,6 +2735,10 @@ class MountState implements TransitionManager.OnAnimationCompleteListener, Mount
     if (mIncrementalMountExtension != null) {
       mIncrementalMountExtension.onUnmount();
     }
+
+    if (mVisibilityOutputsExtension != null) {
+      mVisibilityOutputsExtension.onUnmount();
+    }
   }
 
   private void unmountItem(int index, LongSparseArray<ComponentHost> hostsByMarker) {
@@ -3284,6 +3309,10 @@ class MountState implements TransitionManager.OnAnimationCompleteListener, Mount
 
     if (mIncrementalMountExtension != null) {
       mIncrementalMountExtension.onUnbind();
+    }
+
+    if (mVisibilityOutputsExtension != null) {
+      mVisibilityOutputsExtension.onUnbind();
     }
 
     if (isTracing) {

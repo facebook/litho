@@ -41,22 +41,19 @@ import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
 
 @RunWith(ComponentsTestRunner.class)
-public class VisibilityEventsTest {
+public class VisibilityEventsTestWithExtensionInMountStateTest {
   private static final int LEFT = 0;
   private static final int RIGHT = 10;
 
   private ComponentContext mContext;
   private LithoView mLithoView;
   private FrameLayout mParent;
-  private boolean configWithExtensions;
-  private boolean configVisExtension;
+  private boolean useVisibilityExtension;
 
   @Before
   public void setup() {
-    configWithExtensions = ComponentsConfiguration.useRenderCoreMount;
-    configVisExtension = ComponentsConfiguration.useVisibilityExtension;
-    ComponentsConfiguration.useRenderCoreMount = false;
-    ComponentsConfiguration.useVisibilityExtension = false;
+    useVisibilityExtension = ComponentsConfiguration.useVisibilityExtension;
+    ComponentsConfiguration.useVisibilityExtension = true;
     mContext = new ComponentContext(RuntimeEnvironment.application);
 
     mLithoView = new LithoView(mContext);
@@ -70,8 +67,7 @@ public class VisibilityEventsTest {
 
   @After
   public void cleanup() {
-    ComponentsConfiguration.useRenderCoreMount = configWithExtensions;
-    ComponentsConfiguration.useVisibilityExtension = configVisExtension;
+    ComponentsConfiguration.useVisibilityExtension = useVisibilityExtension;
   }
 
   @Test
@@ -146,81 +142,6 @@ public class VisibilityEventsTest {
     assertThat(content.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler);
 
     lithoView.performIncrementalMount(new Rect(LEFT, 0, RIGHT, 7), true);
-    assertThat(content.getDispatchedEventHandlers()).contains(visibleEventHandler);
-  }
-
-  @Test
-  public void testVisibleEventWithWidthRatio() {
-    final TestComponent content = create(mContext).build();
-    final EventHandler<VisibleEvent> visibleEventHandler = new EventHandler<>(content, 2);
-
-    final LithoView lithoView =
-        mountComponent(
-            mContext,
-            mLithoView,
-            Column.create(mContext)
-                .child(
-                    Wrapper.create(mContext)
-                        .delegate(content)
-                        .visibleWidthRatio(0.4f)
-                        .visibleHandler(visibleEventHandler)
-                        .widthPx(10)
-                        .heightPx(5)
-                        .marginPx(YogaEdge.TOP, 5))
-                .build(),
-            true,
-            10,
-            5);
-
-    assertThat(content.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler);
-
-    lithoView.performIncrementalMount(new Rect(LEFT, 0, 3, 10), true);
-    assertThat(content.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler);
-
-    lithoView.performIncrementalMount(new Rect(LEFT, 0, 5, 10), true);
-    assertThat(content.getDispatchedEventHandlers()).contains(visibleEventHandler);
-  }
-
-  @Test
-  public void testVisibleEventWithHeightAndWidthRatio() {
-    final TestComponent content = create(mContext).build();
-    final EventHandler<VisibleEvent> visibleEventHandler = new EventHandler<>(content, 2);
-
-    final LithoView lithoView =
-        mountComponent(
-            mContext,
-            mLithoView,
-            Column.create(mContext)
-                .child(
-                    Wrapper.create(mContext)
-                        .delegate(content)
-                        .visibleWidthRatio(0.4f)
-                        .visibleHeightRatio(0.4f)
-                        .visibleHandler(visibleEventHandler)
-                        .widthPx(10)
-                        .heightPx(5)
-                        .marginPx(YogaEdge.TOP, 5))
-                .build(),
-            true,
-            10,
-            10);
-
-    content.getDispatchedEventHandlers().clear();
-
-    // Neither width or height are in visible range
-    lithoView.performIncrementalMount(new Rect(LEFT, 0, 3, 6), true);
-    assertThat(content.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler);
-
-    // Width but not height are in visible range
-    lithoView.performIncrementalMount(new Rect(LEFT, 0, 5, 6), true);
-    assertThat(content.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler);
-
-    // Height but not width are in visible range
-    lithoView.performIncrementalMount(new Rect(LEFT, 0, 3, 8), true);
-    assertThat(content.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler);
-
-    // Height and width are both in visible range
-    lithoView.performIncrementalMount(new Rect(LEFT, 0, 5, 8), true);
     assertThat(content.getDispatchedEventHandlers()).contains(visibleEventHandler);
   }
 
@@ -819,211 +740,6 @@ public class VisibilityEventsTest {
   }
 
   @Test
-  public void testSkipFullyVisible() {
-    final TestComponent content1 = create(mContext).key("tc1").build();
-    final TestComponent content2 = create(mContext).key("tc2").build();
-    final TestComponent content3 = create(mContext).key("tc3").build();
-    final EventHandler<VisibleEvent> visibleEventHandler1 = new EventHandler<>(content1, 1);
-    final EventHandler<VisibleEvent> visibleEventHandler2 = new EventHandler<>(content2, 2);
-    final EventHandler<VisibleEvent> visibleEventHandler3 = new EventHandler<>(content3, 3);
-    final EventHandler<InvisibleEvent> invisibleEventHandler1 = new EventHandler<>(content1, 1);
-    final EventHandler<InvisibleEvent> invisibleEventHandler2 = new EventHandler<>(content2, 2);
-    final EventHandler<InvisibleEvent> invisibleEventHandler3 = new EventHandler<>(content3, 3);
-
-    final LithoView lithoView =
-        mountComponent(
-            mContext,
-            mLithoView,
-            Column.create(mContext)
-                .key("root")
-                .child(
-                    Wrapper.create(mContext)
-                        .key("child1")
-                        .delegate(content1)
-                        .visibleHandler(visibleEventHandler1)
-                        .invisibleHandler(invisibleEventHandler1)
-                        .widthPx(10)
-                        .heightPx(5))
-                .child(
-                    Wrapper.create(mContext)
-                        .key("child2")
-                        .delegate(content2)
-                        .visibleHandler(visibleEventHandler2)
-                        .invisibleHandler(invisibleEventHandler2)
-                        .widthPx(10)
-                        .heightPx(5))
-                .child(
-                    Wrapper.create(mContext)
-                        .key("child3")
-                        .delegate(content3)
-                        .visibleHandler(visibleEventHandler3)
-                        .invisibleHandler(invisibleEventHandler3)
-                        .widthPx(10)
-                        .heightPx(5))
-                .build(),
-            true,
-            15,
-            15);
-
-    Map<String, VisibilityItem> visibilityItemMap =
-        lithoView.getMountState().getVisibilityIdToItemMap();
-    for (String key : visibilityItemMap.keySet()) {
-      VisibilityItem item = visibilityItemMap.get(key);
-      assertThat(item.wasFullyVisible()).isTrue();
-    }
-
-    assertThat(content1.getDispatchedEventHandlers()).contains(visibleEventHandler1);
-    assertThat(content2.getDispatchedEventHandlers()).contains(visibleEventHandler2);
-    assertThat(content3.getDispatchedEventHandlers()).contains(visibleEventHandler3);
-    assertThat(content1.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler1);
-    assertThat(content2.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler2);
-    assertThat(content3.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler3);
-
-    content1.getDispatchedEventHandlers().clear();
-    content2.getDispatchedEventHandlers().clear();
-    content3.getDispatchedEventHandlers().clear();
-    lithoView.setMountStateDirty();
-
-    lithoView.performIncrementalMount(new Rect(LEFT, 0, RIGHT, 15), true);
-    assertThat(content1.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler1);
-    assertThat(content2.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler2);
-    assertThat(content3.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler3);
-    assertThat(content1.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler1);
-    assertThat(content2.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler2);
-    assertThat(content3.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler3);
-
-    visibilityItemMap = lithoView.getMountState().getVisibilityIdToItemMap();
-    assertThat(visibilityItemMap.size()).isEqualTo(3);
-    for (String key : visibilityItemMap.keySet()) {
-      VisibilityItem item = visibilityItemMap.get(key);
-      assertThat(item.wasFullyVisible()).isTrue();
-    }
-
-    content1.getDispatchedEventHandlers().clear();
-    content2.getDispatchedEventHandlers().clear();
-    content3.getDispatchedEventHandlers().clear();
-    lithoView.setMountStateDirty();
-
-    lithoView.performIncrementalMount(new Rect(LEFT, 3, RIGHT, 12), true);
-    assertThat(content1.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler1);
-    assertThat(content2.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler2);
-    assertThat(content3.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler3);
-    assertThat(content1.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler1);
-    assertThat(content2.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler2);
-    assertThat(content3.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler3);
-
-    visibilityItemMap = lithoView.getMountState().getVisibilityIdToItemMap();
-    assertThat(visibilityItemMap.size()).isEqualTo(3);
-
-    assertThat(
-            visibilityItemMap
-                .get(ComponentKeyUtils.getKeyWithSeparator("root", "child1", "tc1"))
-                .wasFullyVisible())
-        .isFalse();
-    assertThat(
-            visibilityItemMap
-                .get(ComponentKeyUtils.getKeyWithSeparator("root", "child2", "tc2"))
-                .wasFullyVisible())
-        .isTrue();
-    assertThat(
-            visibilityItemMap
-                .get(ComponentKeyUtils.getKeyWithSeparator("root", "child3", "tc3"))
-                .wasFullyVisible())
-        .isFalse();
-
-    content1.getDispatchedEventHandlers().clear();
-    content2.getDispatchedEventHandlers().clear();
-    content3.getDispatchedEventHandlers().clear();
-    lithoView.setMountStateDirty();
-
-    lithoView.performIncrementalMount(new Rect(LEFT, 0, RIGHT, 0), true);
-    assertThat(content1.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler1);
-    assertThat(content2.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler2);
-    assertThat(content3.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler3);
-    assertThat(content1.getDispatchedEventHandlers()).contains(invisibleEventHandler1);
-    assertThat(content2.getDispatchedEventHandlers()).contains(invisibleEventHandler2);
-    assertThat(content3.getDispatchedEventHandlers()).contains(invisibleEventHandler3);
-
-    visibilityItemMap = lithoView.getMountState().getVisibilityIdToItemMap();
-    assertThat(visibilityItemMap.size()).isEqualTo(0);
-
-    content1.getDispatchedEventHandlers().clear();
-    content2.getDispatchedEventHandlers().clear();
-    content3.getDispatchedEventHandlers().clear();
-    lithoView.setMountStateDirty();
-
-    lithoView.performIncrementalMount(new Rect(LEFT, 0, RIGHT, 0), true);
-    assertThat(content1.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler1);
-    assertThat(content2.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler2);
-    assertThat(content3.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler3);
-    assertThat(content1.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler1);
-    assertThat(content2.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler2);
-    assertThat(content3.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler3);
-
-    content1.getDispatchedEventHandlers().clear();
-    content2.getDispatchedEventHandlers().clear();
-    content3.getDispatchedEventHandlers().clear();
-    lithoView.setMountStateDirty();
-
-    lithoView.performIncrementalMount(new Rect(LEFT, 3, RIGHT, 12), true);
-    assertThat(content1.getDispatchedEventHandlers()).contains(visibleEventHandler1);
-    assertThat(content2.getDispatchedEventHandlers()).contains(visibleEventHandler2);
-    assertThat(content3.getDispatchedEventHandlers()).contains(visibleEventHandler3);
-    assertThat(content1.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler1);
-    assertThat(content2.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler2);
-    assertThat(content3.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler3);
-
-    visibilityItemMap = lithoView.getMountState().getVisibilityIdToItemMap();
-    assertThat(visibilityItemMap.size()).isEqualTo(3);
-    assertThat(
-            visibilityItemMap
-                .get(ComponentKeyUtils.getKeyWithSeparator("root", "child1", "tc1"))
-                .wasFullyVisible())
-        .isFalse();
-    assertThat(
-            visibilityItemMap
-                .get(ComponentKeyUtils.getKeyWithSeparator("root", "child2", "tc2"))
-                .wasFullyVisible())
-        .isTrue();
-    assertThat(
-            visibilityItemMap
-                .get(ComponentKeyUtils.getKeyWithSeparator("root", "child3", "tc3"))
-                .wasFullyVisible())
-        .isFalse();
-
-    content1.getDispatchedEventHandlers().clear();
-    content2.getDispatchedEventHandlers().clear();
-    content3.getDispatchedEventHandlers().clear();
-    lithoView.setMountStateDirty();
-
-    lithoView.performIncrementalMount(new Rect(LEFT, 0, RIGHT, 15), true);
-    assertThat(content1.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler1);
-    assertThat(content2.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler2);
-    assertThat(content3.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler3);
-    assertThat(content1.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler1);
-    assertThat(content2.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler2);
-    assertThat(content3.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler3);
-
-    visibilityItemMap = lithoView.getMountState().getVisibilityIdToItemMap();
-    assertThat(visibilityItemMap.size()).isEqualTo(3);
-    assertThat(
-            visibilityItemMap
-                .get(ComponentKeyUtils.getKeyWithSeparator("root", "child1", "tc1"))
-                .wasFullyVisible())
-        .isTrue();
-    assertThat(
-            visibilityItemMap
-                .get(ComponentKeyUtils.getKeyWithSeparator("root", "child2", "tc2"))
-                .wasFullyVisible())
-        .isTrue();
-    assertThat(
-            visibilityItemMap
-                .get(ComponentKeyUtils.getKeyWithSeparator("root", "child3", "tc3"))
-                .wasFullyVisible())
-        .isTrue();
-  }
-
-  @Test
   public void testDispatchFocusedHandler() {
     final TestComponent content1 = create(mContext).key("tc1").build();
     final TestComponent content2 = create(mContext).key("tc2").build();
@@ -1079,7 +795,7 @@ public class VisibilityEventsTest {
         lithoView.getMountState().getVisibilityIdToItemMap();
     for (String key : visibilityItemLongSparseArray.keySet()) {
       VisibilityItem item = visibilityItemLongSparseArray.get(key);
-      assertThat(item.wasFullyVisible());
+      assertThat(item.wasFullyVisible()).isTrue();
     }
 
     assertThat(content1.getDispatchedEventHandlers()).contains(focusedEventHandler1);
@@ -1140,6 +856,38 @@ public class VisibilityEventsTest {
     assertThat(content.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler);
     unbindComponent(lithoView);
     assertThat(content.getDispatchedEventHandlers()).contains(invisibleEventHandler);
+  }
+
+  @Test
+  public void testDetachWithReleasedTreeTriggersVisibilityChanged() {
+    final TestComponent content = create(mContext).build();
+    final EventHandler<VisibilityChangedEvent> visibilityChangedEventHandler =
+        new EventHandler<>(content, 2);
+
+    final LithoView lithoView =
+        mountComponent(
+            mContext,
+            Column.create(mContext)
+                .child(
+                    Wrapper.create(mContext)
+                        .delegate(content)
+                        .visibilityChangedHandler(visibilityChangedEventHandler)
+                        .widthPx(10)
+                        .heightPx(10))
+                .build(),
+            true);
+    assertThat(content.getDispatchedEventHandlers()).contains(visibilityChangedEventHandler);
+    content.getDispatchedEventHandlers().clear();
+
+    lithoView.performIncrementalMount(new Rect(LEFT, 0, RIGHT, 10), true);
+    assertThat(content.getDispatchedEventHandlers()).contains(visibilityChangedEventHandler);
+    content.getDispatchedEventHandlers().clear();
+
+    lithoView.release();
+
+    assertThat(content.getDispatchedEventHandlers()).doesNotContain(visibilityChangedEventHandler);
+    unbindComponent(lithoView);
+    assertThat(content.getDispatchedEventHandlers()).contains(visibilityChangedEventHandler);
   }
 
   @Test
@@ -1262,6 +1010,35 @@ public class VisibilityEventsTest {
     lithoView.setComponent(Column.create(mContext).child(wrappedContent).build());
     assertThat(content.getDispatchedEventHandlers()).contains(visibleEventHandler);
     assertThat(content.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler);
+  }
+
+  @Test
+  public void testRemovingComponentTriggersVisibilityChanged() {
+    final TestComponent content = create(mContext).build();
+    final EventHandler<VisibilityChangedEvent> visibilityChangedHandler =
+        new EventHandler<>(content, 1);
+    final Component wrappedContent =
+        Wrapper.create(mContext)
+            .delegate(content)
+            .widthPx(10)
+            .heightPx(5)
+            .visibilityChangedHandler(visibilityChangedHandler)
+            .build();
+
+    final LithoView lithoView =
+        mountComponent(
+            mContext,
+            mLithoView,
+            Column.create(mContext).child(wrappedContent).build(),
+            true,
+            10,
+            10);
+
+    assertThat(content.getDispatchedEventHandlers()).contains(visibilityChangedHandler);
+    content.getDispatchedEventHandlers().clear();
+
+    lithoView.setComponent(Column.create(mContext).build());
+    assertThat(content.getDispatchedEventHandlers()).contains(visibilityChangedHandler);
   }
 
   @Test
@@ -1418,7 +1195,8 @@ public class VisibilityEventsTest {
     final LithoView child = mountComponent(mContext, mountedTestComponentInner, true);
 
     assertThat(testComponentInner.getDispatchedEventHandlers().size()).isEqualTo(1);
-    assertThat(testComponentInner.getDispatchedEventHandlers().contains(visibleEventHandlerInner));
+    assertThat(testComponentInner.getDispatchedEventHandlers().contains(visibleEventHandlerInner))
+        .isTrue();
     testComponentInner.getDispatchedEventHandlers().clear();
 
     final ViewGroupWithLithoViewChildren viewGroup =
@@ -1435,13 +1213,14 @@ public class VisibilityEventsTest {
     parentView.setVisibilityHint(false);
 
     assertThat(testComponentInner.getDispatchedEventHandlers().size()).isEqualTo(1);
-    assertThat(
-        testComponentInner.getDispatchedEventHandlers().contains(invisibleEventHandlerInner));
+    assertThat(testComponentInner.getDispatchedEventHandlers().contains(invisibleEventHandlerInner))
+        .isTrue();
     testComponentInner.getDispatchedEventHandlers().clear();
 
     parentView.setVisibilityHint(true);
 
     assertThat(testComponentInner.getDispatchedEventHandlers().size()).isEqualTo(1);
-    assertThat(testComponentInner.getDispatchedEventHandlers().contains(visibleEventHandlerInner));
+    assertThat(testComponentInner.getDispatchedEventHandlers().contains(visibleEventHandlerInner))
+        .isTrue();
   }
 }
