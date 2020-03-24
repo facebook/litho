@@ -157,6 +157,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener, Mount
   private final DynamicPropsManager mDynamicPropsManager = new DynamicPropsManager();
   private @Nullable VisibilityModule mVisibilityModule;
   private @Nullable MountDelegate mMountDelegate;
+  private @Nullable IncrementalMountExtension mIncrementalMountExtension;
 
   private @ComponentTree.RecyclingMode int mRecyclingMode = ComponentTree.RecyclingMode.DEFAULT;
 
@@ -174,6 +175,11 @@ class MountState implements TransitionManager.OnAnimationCompleteListener, Mount
     // The mount item representing the top-level root host (LithoView) which
     // is always automatically mounted.
     mRootHostMountItem = MountItem.createRootHostMountItem(mLithoView);
+    if (!ComponentsConfiguration.useRenderCoreMount
+        && ComponentsConfiguration.useIncrementalMountExtension) {
+      mIncrementalMountExtension = new IncrementalMountExtension(mLithoView);
+      registerMountDelegateExtension(mIncrementalMountExtension);
+    }
   }
 
   void registerMountDelegateExtension(MountDelegateExtension mountDelegateExtension) {
@@ -238,6 +244,12 @@ class MountState implements TransitionManager.OnAnimationCompleteListener, Mount
    */
   void mount(
       LayoutState layoutState, @Nullable Rect localVisibleRect, boolean processVisibilityOutputs) {
+    final boolean isIncrementalMountEnabled = localVisibleRect != null;
+    if (mIncrementalMountExtension != null && isIncrementalMountEnabled) {
+      mountWithIncrementalMountExtension(layoutState, localVisibleRect, processVisibilityOutputs);
+      return;
+    }
+
     assertMainThread();
 
     if (layoutState == null) {
@@ -254,7 +266,6 @@ class MountState implements TransitionManager.OnAnimationCompleteListener, Mount
     mIsMounting = true;
 
     final ComponentTree componentTree = mLithoView.getComponentTree();
-    final boolean isIncrementalMountEnabled = localVisibleRect != null;
     final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
       final StringBuilder sectionName =
@@ -436,6 +447,24 @@ class MountState implements TransitionManager.OnAnimationCompleteListener, Mount
     LithoStats.incrementComponentMountCount();
 
     mIsMounting = false;
+  }
+
+  private void mountWithIncrementalMountExtension(
+      LayoutState layoutState, @Nullable Rect localVisibleRect, boolean processVisibilityOutputs) {
+    final Rect previousLocalVisibleRect = mPreviousLocalVisibleRect;
+    final boolean wasDirty = mIsDirty;
+
+    if (mIsDirty) {
+      mIncrementalMountExtension.beforeMount(layoutState);
+      mount(layoutState);
+    } else {
+      mIncrementalMountExtension.onViewOffset();
+    }
+
+    if (processVisibilityOutputs) {
+      processVisibilityOutputs(
+          layoutState, localVisibleRect, previousLocalVisibleRect, wasDirty, null);
+    }
   }
 
   /**
@@ -2681,6 +2710,10 @@ class MountState implements TransitionManager.OnAnimationCompleteListener, Mount
     if (mMountDelegate != null) {
       mMountDelegate.resetExtensionReferenceCount();
     }
+
+    if (mIncrementalMountExtension != null) {
+      mIncrementalMountExtension.onUnmount();
+    }
   }
 
   private void unmountItem(int index, LongSparseArray<ComponentHost> hostsByMarker) {
@@ -3248,6 +3281,10 @@ class MountState implements TransitionManager.OnAnimationCompleteListener, Mount
     }
 
     clearVisibilityItems();
+
+    if (mIncrementalMountExtension != null) {
+      mIncrementalMountExtension.onUnbind();
+    }
 
     if (isTracing) {
       ComponentsSystrace.endSection();

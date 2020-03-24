@@ -237,4 +237,6 @@ public class ComponentsConfiguration {
   public static boolean createInitialStateOncePerThread = false;
 
   public static boolean shouldDisableDrawableOutputs = false;
+
+  public static boolean useIncrementalMountExtension = false;
 }
