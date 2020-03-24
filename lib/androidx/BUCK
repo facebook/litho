@@ -160,6 +160,39 @@ fb_native.remote_file(
 )
 
 fb_native.android_prebuilt_aar(
+    name = "androidx-lifecycle-livedata-aar",
+    aar = ":androidx-lifecycle-livedata.aar",
+)
+
+fb_native.remote_file(
+    name = "androidx-lifecycle-livedata.aar",
+    sha1 = "c17007cd0b21d6401910b0becdd16c438c68a9af",
+    url = "mvn:androidx.lifecycle:lifecycle-livedata:aar:2.0.0",
+)
+
+fb_native.android_prebuilt_aar(
+    name = "androidx-lifecycle-livedata-core-aar",
+    aar = ":androidx-lifecycle-livedata-core.aar",
+)
+
+fb_native.remote_file(
+    name = "androidx-lifecycle-livedata-core.aar",
+    sha1 = "1a7cee84b43fa935231b016f0665cd56a72fa9db",
+    url = "mvn:androidx.lifecycle:lifecycle-livedata-core:aar:2.0.0",
+)
+
+fb_native.android_prebuilt_aar(
+    name = "androidx-lifecycle-extensions-aar",
+    aar = ":androidx-lifecycle-extensions.aar",
+)
+
+fb_native.remote_file(
+    name = "androidx-lifecycle-extensions.aar",
+    sha1 = "79e74ad99f7343ede522cb3b3bd5ce729c3c94ea",
+    url = "mvn:androidx.lifecycle:lifecycle-extensions:aar:2.0.0",
+)
+
+fb_native.android_prebuilt_aar(
     name = "androidx-viewpager-aar",
     aar = ":androidx-viewpager.aar",
 )
@@ -257,6 +290,20 @@ fb_java_library(
         ":androidx-appcompat-aar",
         ":androidx-drawerlayout-aar",
         ":androidx-lifecycle-common-jar",
+        ":androidx-lifecycle-viewmodel-aar",
+    ],
+)
+
+fb_java_library(
+    name = "androidx-lifecycle-extensions",
+    visibility = LITHO_VISIBILITY,
+    exported_deps = [
+        ":androidx-core-aar",
+        ":androidx-fragment-aar",
+        ":androidx-lifecycle-common-jar",
+        ":androidx-lifecycle-extensions-aar",
+        ":androidx-lifecycle-livedata-aar",
+        ":androidx-lifecycle-livedata-core-aar",
         ":androidx-lifecycle-viewmodel-aar",
     ],
 )
