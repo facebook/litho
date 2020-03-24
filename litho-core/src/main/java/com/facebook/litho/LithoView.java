@@ -968,10 +968,12 @@ public class LithoView extends Host {
         mLithoHostListenerCoordinator.onViewOffset();
       } else {
         if (mLithoHostListenerCoordinator != null) {
-          mMountState.updateTransitions(layoutState, mComponentTree);
           mLithoHostListenerCoordinator.beforeMount(layoutState);
         }
         mMountState.mount(layoutState);
+        if (mLithoHostListenerCoordinator != null) {
+          mLithoHostListenerCoordinator.afterMount();
+        }
       }
     } else {
       mMountState.mount(layoutState, currentVisibleArea, processVisibilityOutputs);

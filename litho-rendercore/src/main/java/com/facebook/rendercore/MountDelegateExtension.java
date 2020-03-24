@@ -87,4 +87,10 @@ public class MountDelegateExtension {
   public boolean canPreventMount() {
     return false;
   }
+
+  public void onUmountItem(Object item, long layoutOutputId) {}
+
+  public MountDelegate.MountDelegateTarget getMountTarget() {
+    return mMountDelegate.getMountDelegateTarget();
+  }
 }

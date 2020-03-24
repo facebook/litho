@@ -402,6 +402,9 @@ class VisibilityOutputsExtension
   }
 
   @Override
+  public void afterMount() {}
+
+  @Override
   public void onViewOffset() {
     boolean processVisibilityOutputs = !mHost.isInTransientState();
     if (processVisibilityOutputs) {

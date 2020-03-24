@@ -26,6 +26,9 @@ public interface HostListenerExtension<T> {
    */
   void beforeMount(T input);
 
+  /** Called immediately after mounting. */
+  void afterMount();
+
   /** Called when the visible bounds of the Host change. */
   void onViewOffset();
 

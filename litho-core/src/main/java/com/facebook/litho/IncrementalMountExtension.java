@@ -69,6 +69,9 @@ public class IncrementalMountExtension extends MountDelegateExtension
   }
 
   @Override
+  public void afterMount() {}
+
+  @Override
   public void onUnmount() {
     resetAcquiredReferences();
     mPreviousLocalVisibleRect.setEmpty();

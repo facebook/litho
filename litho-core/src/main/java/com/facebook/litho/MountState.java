@@ -595,14 +595,6 @@ class MountState implements TransitionManager.OnAnimationCompleteListener, Mount
       }
     }
 
-    // TODO: move to extension or handle in some way. T
-    maybeUpdateAnimatingMountContent();
-
-    // TODO: move to extension or handle in some way. T
-    if (shouldAnimateTransitions(layoutState) && hasTransitionsToAnimate()) {
-      mTransitionManager.runTransitions();
-    }
-
     mRootTransition = null;
     mTransitionsHasBeenCollected = false;
     final boolean wasDirty = mIsDirty;
@@ -2820,9 +2812,17 @@ class MountState implements TransitionManager.OnAnimationCompleteListener, Mount
 
     unbindAndUnmountLifecycle(item);
 
-    if (item.hasTransitionId()) {
-      final @OutputUnitType int type = LayoutStateOutputIdCalculator.getTypeFromId(layoutOutputId);
-      maybeRemoveAnimatingMountContent(item.getTransitionId(), type);
+    if (ComponentsConfiguration.useRenderCoreMount) {
+      if (mMountDelegate != null) {
+        // TODO (T64352474): Use a RenderUnit instead of a callback from MountState
+        mMountDelegate.onUmountItem(item, layoutOutputId);
+      }
+    } else {
+      if (item.hasTransitionId()) {
+        final @OutputUnitType int type =
+            LayoutStateOutputIdCalculator.getTypeFromId(layoutOutputId);
+        maybeRemoveAnimatingMountContent(item.getTransitionId(), type);
+      }
     }
 
     if (component.hasChildLithoViews()) {
@@ -2942,6 +2942,10 @@ class MountState implements TransitionManager.OnAnimationCompleteListener, Mount
     }
 
     return mountItem.getContent();
+  }
+
+  public androidx.collection.LongSparseArray<MountItem> getIndexToItemMap() {
+    return mIndexToItemMap;
   }
 
   /**

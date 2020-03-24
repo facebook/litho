@@ -2287,4 +2287,9 @@ class LayoutState
   private static @Nullable TransitionId getTransitionIdForNode(InternalNode node) {
     return TransitionUtils.createTransitionId(node);
   }
+
+  @Override
+  public boolean hasMounted() {
+    return mContext.getComponentTree().hasMounted();
+  }
 }

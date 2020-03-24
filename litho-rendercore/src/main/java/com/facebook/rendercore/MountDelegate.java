@@ -150,4 +150,17 @@ public class MountDelegate {
 
     mReferenceCountMap.put(renderUnitId, refCount - 1);
   }
+
+  public void onUmountItem(Object item, long layoutOutputId) {
+    for (MountDelegateExtension mountDelegateExtension : mMountDelegateExtensions) {
+      if (mountDelegateExtension == null) {
+        continue;
+      }
+      mountDelegateExtension.onUmountItem(item, layoutOutputId);
+    }
+  }
+
+  public MountDelegateTarget getMountDelegateTarget() {
+    return mMountDelegateTarget;
+  }
 }
