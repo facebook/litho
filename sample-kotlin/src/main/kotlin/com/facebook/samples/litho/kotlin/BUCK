@@ -1,0 +1,76 @@
+# Copyright (c) Facebook, Inc. and its affiliates.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+load(
+    "//tools/build_defs/oss:litho_defs.bzl",
+    "LITHO_ANDROIDSUPPORT_APPCOMPAT_TARGET",
+    "LITHO_ANDROIDSUPPORT_RECYCLERVIEW_TARGET",
+    "LITHO_ANDROIDSUPPORT_TARGET",
+    "LITHO_FLIPPER_TARGETS",
+    "LITHO_FRESCO_KOTLIN_TARGET",
+    "LITHO_FRESCO_PIPELINE_TARGET",
+    "LITHO_FRESCO_TARGETS",
+    "LITHO_KOTLIN_STDLIB_TARGET",
+    "LITHO_PROCESSOR_TARGET",
+    "LITHO_RES_TARGET",
+    "LITHO_ROOT_KOTLIN_TARGET",
+    "LITHO_SECTIONS_ANNOTATIONS_TARGET",
+    "LITHO_SECTIONS_COMMON_TARGET",
+    "LITHO_SECTIONS_PROCESSOR_TARGET",
+    "LITHO_SECTIONS_TARGET",
+    "LITHO_SECTIONS_WIDGET_TARGET",
+    "LITHO_SOLOADER_TARGET",
+    "LITHO_STATS_TARGET",
+    "LITHO_UTILS_TARGET",
+    "LITHO_WIDGET_KOTLIN_TARGET",
+    "LITHO_YOGAJNI_TARGET",
+    "LITHO_YOGA_TARGET",
+    "fb_android_library",
+)
+
+fb_android_library(
+    name = "litho",
+    srcs = glob(["**/*.kt"]),
+    is_androidx = True,
+    language = "KOTLIN",
+    plugins = [
+        LITHO_PROCESSOR_TARGET,
+        LITHO_SECTIONS_PROCESSOR_TARGET,
+    ],
+    visibility = [
+        "PUBLIC",
+    ],
+    deps =
+        LITHO_FRESCO_PIPELINE_TARGET +
+        LITHO_FRESCO_TARGETS +
+        LITHO_FLIPPER_TARGETS + [
+            LITHO_ANDROIDSUPPORT_APPCOMPAT_TARGET,
+            LITHO_ANDROIDSUPPORT_RECYCLERVIEW_TARGET,
+            LITHO_ANDROIDSUPPORT_TARGET,
+            LITHO_FRESCO_KOTLIN_TARGET,
+            LITHO_KOTLIN_STDLIB_TARGET,
+            LITHO_RES_TARGET,
+            LITHO_ROOT_KOTLIN_TARGET,
+            LITHO_SECTIONS_ANNOTATIONS_TARGET,
+            LITHO_SECTIONS_COMMON_TARGET,
+            LITHO_SECTIONS_TARGET,
+            LITHO_SECTIONS_WIDGET_TARGET,
+            LITHO_SOLOADER_TARGET,
+            LITHO_STATS_TARGET,
+            LITHO_UTILS_TARGET,
+            LITHO_WIDGET_KOTLIN_TARGET,
+            LITHO_YOGAJNI_TARGET,
+            LITHO_YOGA_TARGET,
+        ],
+)

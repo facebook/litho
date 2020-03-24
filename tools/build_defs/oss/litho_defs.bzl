@@ -15,6 +15,8 @@ def make_dep_path(pth):
 
 LITHO_ROOT_TARGET = make_dep_path(":components")
 
+LITHO_ROOT_KOTLIN_TARGET = make_dep_path(":litho_core_kotlin")
+
 # Java source
 LITHO_JAVA_TARGET = make_dep_path("litho-core/src/main/java/com/facebook/litho:litho")
 
@@ -190,6 +192,8 @@ LITHO_SAMPLE_CODELAB_JAVA = make_dep_path("sample-codelab/src/main/java/com/face
 LITHO_SAMPLE_CODELAB_RES = make_dep_path("sample-codelab:res")
 
 LITHO_SAMPLE_RES = make_dep_path("sample:res")
+
+LITHO_SAMPLE_KOTLIN = make_dep_path("sample-kotlin/src/main/kotlin/com/facebook/samples/litho/kotlin:litho")
 
 # Other targets
 LITHO_OSS_TARGET = make_dep_path(":components")
