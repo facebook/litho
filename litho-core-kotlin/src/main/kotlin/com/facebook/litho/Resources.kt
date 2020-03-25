@@ -59,15 +59,17 @@ fun DslScope.stringRes(@StringRes id: Int, vararg formatArgs: Any): String =
  * Retrieve a [android.graphics.drawable.Drawable] for a resource ID as a [Drawable]
  * instance.
  */
-fun DslScope.drawableRes(@DrawableRes id: Int): Drawable? =
-    resourceResolver.resolveDrawableRes(id)
+fun DslScope.drawableRes(@DrawableRes id: Int): Drawable =
+    requireNotNull(resourceResolver.resolveDrawableRes(id)) {
+      "Drawable resource not found for ID #0x${Integer.toHexString(id)}"
+    }
 
 /**
  * Retrieve a [android.graphics.drawable.Drawable], corresponding to an attribute resource ID, as
  * a [Drawable] instance. If given attribute ID can not be found, default Drawable
  * resource ID [defResId] is used.
  */
-fun DslScope.drawableAttr(@AttrRes id: Int, @DrawableRes defResId: Int = 0): Drawable? =
+fun DslScope.drawableAttr(@AttrRes id: Int, @DrawableRes defResId: Int = 0): Drawable =
     drawableRes(resourceResolver.resolveResIdAttr(id, defResId))
 
 /**
