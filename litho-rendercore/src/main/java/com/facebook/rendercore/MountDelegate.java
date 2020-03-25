@@ -45,6 +45,8 @@ public class MountDelegate {
 
     Object getContentAt(int position);
 
+    List<Object> getAllMountedContent();
+
     void registerMountDelegateExtension(MountDelegateExtension mountDelegateExtension);
   }
 

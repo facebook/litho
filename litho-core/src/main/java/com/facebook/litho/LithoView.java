@@ -32,7 +32,9 @@ import androidx.core.view.accessibility.AccessibilityManagerCompat;
 import androidx.core.view.accessibility.AccessibilityManagerCompat.AccessibilityStateChangeListenerCompat;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.proguard.annotations.DoNotStrip;
+import com.facebook.rendercore.MountDelegate.MountDelegateTarget;
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
@@ -746,8 +748,7 @@ public class LithoView extends Host {
   }
 
   private void recursivelySetVisibleHint(boolean isVisible) {
-    final List<LithoView> childLithoViews =
-        mMountState.getChildLithoViewsFromCurrentlyMountedItems();
+    final List<LithoView> childLithoViews = getChildLithoViewsFromCurrentlyMountedItems();
     for (int i = childLithoViews.size() - 1; i >= 0; i--) {
       final LithoView lithoView = childLithoViews.get(i);
       lithoView.setVisibilityHint(isVisible);
@@ -1016,11 +1017,30 @@ public class LithoView extends Host {
         dispatchVisibilityEvent(layoutState.getVisibilityOutputAt(i), visibilityEventType);
       }
 
-      List<LithoView> childViews = mMountState.getChildLithoViewsFromCurrentlyMountedItems();
+      List<LithoView> childViews = getChildLithoViewsFromCurrentlyMountedItems();
       for (LithoView lithoView : childViews) {
         lithoView.dispatchVisibilityEvent(visibilityEventType);
       }
     }
+  }
+
+  private List<LithoView> getChildLithoViewsFromCurrentlyMountedItems() {
+    return mMountState.getChildLithoViewsFromCurrentlyMountedItems();
+  }
+
+  private static List<LithoView> getChildLithoViewsFromCurrentlyMountedItems(
+      MountDelegateTarget mountDelegateTarget) {
+    final List<Object> allContent = mountDelegateTarget.getAllMountedContent();
+    final ArrayList<LithoView> childLithoViews = new ArrayList<>();
+
+    for (int i = 0, size = allContent.size(); i < size; i++) {
+      final Object content = allContent.get(i);
+      if (content instanceof HasLithoViewChildren) {
+        ((HasLithoViewChildren) content).obtainLithoViewChildren(childLithoViews);
+      }
+    }
+
+    return childLithoViews;
   }
 
   private void dispatchVisibilityEvent(

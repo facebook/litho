@@ -2949,6 +2949,18 @@ class MountState implements TransitionManager.OnAnimationCompleteListener, Mount
     return mIndexToItemMap;
   }
 
+  @Override
+  public List<Object> getAllMountedContent() {
+    final List<Object> contents = new ArrayList<>();
+
+    for (int i = 0, size = mIndexToItemMap.size(); i < size; i++) {
+      final long layoutOutputId = mIndexToItemMap.keyAt(i);
+      contents.add(mIndexToItemMap.get(layoutOutputId).getContent());
+    }
+
+    return contents;
+  }
+
   /**
    * Creates and updates transitions for a new LayoutState. The steps are as follows:
    *
