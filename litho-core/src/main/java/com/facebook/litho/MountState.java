@@ -188,7 +188,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener, Mount
     }
   }
 
-  void registerMountDelegateExtension(MountDelegateExtension mountDelegateExtension) {
+  @Override
+  public void registerMountDelegateExtension(MountDelegateExtension mountDelegateExtension) {
     if (mMountDelegate == null) {
       mMountDelegate = new MountDelegate(this);
     }

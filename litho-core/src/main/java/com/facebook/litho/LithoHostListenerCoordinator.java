@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import com.facebook.rendercore.MountDelegate.MountDelegateTarget;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -81,14 +82,14 @@ public class LithoHostListenerCoordinator implements HostListenerExtension<Objec
     }
   }
 
-  void enableIncrementalMount(LithoView lithoView, MountState mountState) {
+  void enableIncrementalMount(LithoView lithoView, MountDelegateTarget mountDelegateTarget) {
     if (mIncrementalMountExtension != null) {
       throw new IllegalStateException(
           "Incremental mount has already been enabled on this coordinator.");
     }
 
     mIncrementalMountExtension = new IncrementalMountExtension(lithoView);
-    mountState.registerMountDelegateExtension(mIncrementalMountExtension);
+    mountDelegateTarget.registerMountDelegateExtension(mIncrementalMountExtension);
     registerListener(mIncrementalMountExtension);
   }
 
@@ -102,13 +103,13 @@ public class LithoHostListenerCoordinator implements HostListenerExtension<Objec
     registerListener(mVisibilityOutputsExtension);
   }
 
-  void enableTransitions(LithoView lithoView, MountState mountState) {
+  void enableTransitions(LithoView lithoView, MountDelegateTarget mountDelegateTarget) {
     if (mTransitionsExtension != null) {
       throw new IllegalStateException("Transitions have already been enabled on this coordinator.");
     }
 
     mTransitionsExtension = new TransitionsExtension(lithoView);
-    mountState.registerMountDelegateExtension(mTransitionsExtension);
+    mountDelegateTarget.registerMountDelegateExtension(mTransitionsExtension);
     registerListener(mTransitionsExtension);
   }
 

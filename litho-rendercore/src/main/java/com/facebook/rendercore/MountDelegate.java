@@ -44,6 +44,8 @@ public class MountDelegate {
     boolean isAnimationLocked(int position);
 
     Object getContentAt(int position);
+
+    void registerMountDelegateExtension(MountDelegateExtension mountDelegateExtension);
   }
 
   // IGNORE - Will be removed. Check out D4182567 for context.
