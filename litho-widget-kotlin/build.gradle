@@ -46,6 +46,7 @@ dependencies {
     compileOnly deps.jsr305
     compileOnly deps.inferAnnotations
 
+    implementation deps.supportCore
     implementation deps.kotlinStandardLib
 
     // Android Support Library

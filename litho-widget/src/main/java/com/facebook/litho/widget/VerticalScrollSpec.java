@@ -24,7 +24,9 @@ import android.content.Context;
 import android.os.Build;
 import android.view.MotionEvent;
 import android.view.ViewTreeObserver;
+import androidx.annotation.Nullable;
 import androidx.core.widget.NestedScrollView;
+import androidx.core.widget.NestedScrollView.OnScrollChangeListener;
 import androidx.recyclerview.widget.RecyclerView;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
@@ -50,7 +52,6 @@ import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.ShouldUpdate;
 import com.facebook.litho.annotations.State;
-import javax.annotation.Nullable;
 
 /**
  * Component that wraps another component, allowing it to be vertically scrollable. It's analogous
@@ -80,11 +81,11 @@ public class VerticalScrollSpec {
       ComponentContext context,
       StateValue<ScrollPosition> scrollPosition,
       StateValue<ComponentTree> childComponentTree,
-      @Prop(optional = true) Integer initialScrollOffsetPixels,
-      @Prop(optional = true) boolean incrementalMountEnabled,
-      @Prop Component childComponent) {
+      @Prop Component childComponent,
+      @Prop(optional = true) int initialScrollOffsetPixels,
+      @Prop(optional = true) boolean incrementalMountEnabled) {
     ScrollPosition initialScrollPosition = new ScrollPosition();
-    initialScrollPosition.y = initialScrollOffsetPixels == null ? 0 : initialScrollOffsetPixels;
+    initialScrollPosition.y = initialScrollOffsetPixels;
     scrollPosition.set(initialScrollPosition);
 
     childComponentTree.set(
@@ -149,7 +150,7 @@ public class VerticalScrollSpec {
         fillViewport);
   }
 
-  static void measureVerticalScroll(
+  private static void measureVerticalScroll(
       ComponentContext c,
       int widthSpec,
       int heightSpec,
@@ -200,9 +201,9 @@ public class VerticalScrollSpec {
       @Prop(optional = true) boolean incrementalMountEnabled,
       @Prop(optional = true) boolean verticalFadingEdgeEnabled,
       @Prop(optional = true, resType = ResType.DIMEN_SIZE) int fadingEdgeLength,
-      @Prop(optional = true) NestedScrollView.OnScrollChangeListener onScrollChangeListener,
+      @Prop(optional = true) @Nullable OnScrollChangeListener onScrollChangeListener,
       // NOT THE SAME AS LITHO'S interceptTouchHandler COMMON PROP, see class javadocs
-      @Prop(optional = true) OnInterceptTouchListener onInterceptTouchListener,
+      @Prop(optional = true) @Nullable OnInterceptTouchListener onInterceptTouchListener,
       @State ComponentTree childComponentTree,
       @State final ScrollPosition scrollPosition) {
     lithoScrollView.mount(childComponentTree, scrollPosition, incrementalMountEnabled);
@@ -225,7 +226,7 @@ public class VerticalScrollSpec {
 
   @OnUnmount
   static void onUnmount(ComponentContext context, LithoScrollView lithoScrollView) {
-    lithoScrollView.setOnScrollChangeListener((NestedScrollView.OnScrollChangeListener) null);
+    lithoScrollView.setOnScrollChangeListener((OnScrollChangeListener) null);
     lithoScrollView.setOnInterceptTouchListener(null);
     lithoScrollView.unmount();
   }
@@ -251,8 +252,8 @@ public class VerticalScrollSpec {
 
     @Nullable private ScrollPosition mScrollPosition;
     @Nullable private ViewTreeObserver.OnPreDrawListener mOnPreDrawListener;
+    @Nullable private OnInterceptTouchListener mOnInterceptTouchListener;
     private boolean mIsIncrementalMountEnabled;
-    private OnInterceptTouchListener mOnInterceptTouchListener;
 
     LithoScrollView(Context context) {
       super(context);
@@ -297,7 +298,8 @@ public class VerticalScrollSpec {
       return super.dispatchNestedFling(velocityX, velocityY, true);
     }
 
-    public void setOnInterceptTouchListener(OnInterceptTouchListener onInterceptTouchListener) {
+    public void setOnInterceptTouchListener(
+        @Nullable OnInterceptTouchListener onInterceptTouchListener) {
       mOnInterceptTouchListener = onInterceptTouchListener;
     }
 
@@ -336,7 +338,7 @@ public class VerticalScrollSpec {
   }
 
   static class ScrollPosition {
-    int y = 0;
+    int y;
   }
 
   public interface OnInterceptTouchListener {
