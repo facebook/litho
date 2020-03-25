@@ -232,23 +232,27 @@ public class TestDrawableComponent extends TestComponent {
   }
 
   @Override
-  public int hashCode() {
-    return super.hashCode() + color;
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    if (!super.equals(o)) return false;
+
+    TestDrawableComponent that = (TestDrawableComponent) o;
+
+    if (color != that.color) return false;
+    if (measuredWidth != that.measuredWidth) return false;
+    if (measuredHeight != that.measuredHeight) return false;
+    return mReturnSelfInMakeShallowCopy == that.mReturnSelfInMakeShallowCopy;
   }
 
   @Override
-  public boolean equals(Object o) {
-    if (o == null) {
-      return false;
-    }
-    if (!super.equals(o)) {
-      return false;
-    }
-    if (o instanceof TestDrawableComponent) {
-      TestDrawableComponent s = (TestDrawableComponent) o;
-      return color == s.color;
-    }
-    return false;
+  public int hashCode() {
+    int result = super.hashCode();
+    result = 31 * result + color;
+    result = 31 * result + measuredWidth;
+    result = 31 * result + measuredHeight;
+    result = 31 * result + (mReturnSelfInMakeShallowCopy ? 1 : 0);
+    return result;
   }
 
   public static class Builder extends com.facebook.litho.Component.Builder<Builder> {
