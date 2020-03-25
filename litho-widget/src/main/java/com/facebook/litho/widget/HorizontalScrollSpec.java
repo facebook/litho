@@ -24,6 +24,7 @@ import android.content.res.TypedArray;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.HorizontalScrollView;
+import androidx.annotation.Nullable;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
@@ -49,7 +50,6 @@ import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.annotations.State;
 import com.facebook.yoga.YogaDirection;
-import javax.annotation.Nullable;
 
 /**
  * A component that wraps another component and allow it to be horizontally scrollable. It's
@@ -63,6 +63,7 @@ class HorizontalScrollSpec {
   private static final int LAST_SCROLL_POSITION_UNSET = -1;
 
   @PropDefault static final boolean scrollbarEnabled = true;
+  @PropDefault static final int initialScrollPosition = LAST_SCROLL_POSITION_UNSET;
 
   /** Scroll change listener invoked when the scroll position changes. */
   public interface OnScrollChangeListener {
@@ -172,8 +173,8 @@ class HorizontalScrollSpec {
       final ComponentContext context,
       final HorizontalScrollLithoView horizontalScrollLithoView,
       @Prop(optional = true, resType = ResType.BOOL) boolean scrollbarEnabled,
-      @Prop(optional = true) HorizontalScrollEventsController eventsController,
-      @Prop(optional = true) final OnScrollChangeListener onScrollChangeListener,
+      @Prop(optional = true) @Nullable HorizontalScrollEventsController eventsController,
+      @Prop(optional = true) @Nullable OnScrollChangeListener onScrollChangeListener,
       @State final ScrollPosition lastScrollPosition,
       @State ComponentTree childComponentTree,
       @FromBoundsDefined int componentWidth,
@@ -216,7 +217,7 @@ class HorizontalScrollSpec {
   static void onUnmount(
       ComponentContext context,
       HorizontalScrollLithoView mountedView,
-      @Prop(optional = true) HorizontalScrollEventsController eventsController) {
+      @Prop(optional = true) @Nullable HorizontalScrollEventsController eventsController) {
 
     mountedView.unmount();
 
@@ -231,11 +232,9 @@ class HorizontalScrollSpec {
       StateValue<ScrollPosition> lastScrollPosition,
       StateValue<ComponentTree> childComponentTree,
       @Prop Component contentProps,
-      @Prop(optional = true) Integer initialScrollPosition) {
+      @Prop(optional = true) int initialScrollPosition) {
 
-    lastScrollPosition.set(
-        new ScrollPosition(
-            initialScrollPosition == null ? LAST_SCROLL_POSITION_UNSET : initialScrollPosition));
+    lastScrollPosition.set(new ScrollPosition(initialScrollPosition));
     childComponentTree.set(
         ComponentTree.create(
                 new ComponentContext(
@@ -289,8 +288,8 @@ class HorizontalScrollSpec {
 
     void mount(
         ComponentTree componentTree,
-        final ScrollPosition scrollPosition,
-        HorizontalScrollSpec.OnScrollChangeListener onScrollChangeListener,
+        ScrollPosition scrollPosition,
+        @Nullable HorizontalScrollSpec.OnScrollChangeListener onScrollChangeListener,
         int width,
         int height) {
       mLithoView.setComponentTree(componentTree);
