@@ -334,8 +334,8 @@ public class ComponentTreeTest {
         SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED),
         size);
 
-    assertEquals(size.width, 100);
-    assertEquals(size.height, 100);
+    assertThat(size.width).isEqualTo(100);
+    assertThat(size.height).isEqualTo(100);
   }
 
   @Test
@@ -965,7 +965,6 @@ public class ComponentTreeTest {
                     -1,
                     true,
                     null,
-                    null,
                     LayoutState.CalculateLayoutSource.TEST,
                     null);
 
@@ -1034,7 +1033,6 @@ public class ComponentTreeTest {
                     mHeightSpec,
                     -1,
                     true,
-                    null,
                     null,
                     LayoutState.CalculateLayoutSource.TEST,
                     null);

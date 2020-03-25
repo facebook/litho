@@ -124,7 +124,6 @@ public class ComponentTreeTest {
                         -1,
                         false,
                         null,
-                        null,
                         LayoutState.CalculateLayoutSource.SET_ROOT_SYNC,
                         null);
 
@@ -161,7 +160,6 @@ public class ComponentTreeTest {
                         mHeightSpec,
                         -1,
                         false,
-                        null,
                         null,
                         LayoutState.CalculateLayoutSource.SET_ROOT_ASYNC,
                         null);

@@ -280,6 +280,11 @@ public class ComponentTree {
   @Nullable
   private LayoutState mBackgroundLayoutState;
 
+  // TODO(t64511317): Merge mLatestLayoutState and mBackgroundLayoutState
+  @GuardedBy("this")
+  @Nullable
+  private LayoutState mLatestLayoutState;
+
   @GuardedBy("this")
   private StateHandler mStateHandler;
 
@@ -1099,7 +1104,6 @@ public class ComponentTree {
               heightSpec,
               layoutVersion,
               mIsLayoutDiffingEnabled,
-              null,
               treeProps,
               CalculateLayoutSource.MEASURE,
               null);
@@ -1123,6 +1127,7 @@ public class ComponentTree {
 
         components = localLayoutState.consumeComponents();
         mMainThreadLayoutState = localLayoutState;
+        mLatestLayoutState = localLayoutState;
       }
 
       if (attachables != null) {
@@ -2024,7 +2029,6 @@ public class ComponentTree {
     final int heightSpec;
     final Component root;
     final int layoutVersion;
-    LayoutState previousLayoutState = null;
 
     // Cancel any scheduled layout requests we might have in the background queue
     // since we are starting a new layout computation.
@@ -2058,9 +2062,6 @@ public class ComponentTree {
       mPendingLayoutHeightSpec = heightSpec;
       root = mRoot.makeShallowCopy();
       layoutVersion = ++mLayoutVersion;
-      if (mMainThreadLayoutState != null) {
-        previousLayoutState = mMainThreadLayoutState;
-      }
     }
 
     final LayoutState localLayoutState =
@@ -2071,7 +2072,6 @@ public class ComponentTree {
             heightSpec,
             layoutVersion,
             mIsLayoutDiffingEnabled,
-            previousLayoutState,
             treeProps,
             source,
             extraAttribution);
@@ -2123,6 +2123,7 @@ public class ComponentTree {
 
         // Set the new layout state.
         mBackgroundLayoutState = localLayoutState;
+        mLatestLayoutState = localLayoutState;
         layoutStateUpdated = true;
       }
 
@@ -2267,6 +2268,7 @@ public class ComponentTree {
 
       mMainThreadLayoutState = null;
       mBackgroundLayoutState = null;
+      mLatestLayoutState = null;
       mStateHandler = null;
       mPreviousRenderState = null;
       mPreviousRenderStateSetFromBuilder = false;
@@ -2430,7 +2432,6 @@ public class ComponentTree {
       int heightSpec,
       int layoutVersion,
       boolean diffingEnabled,
-      @Nullable LayoutState previousLayoutState,
       @Nullable TreeProps treeProps,
       @CalculateLayoutSource int source,
       @Nullable String extraAttribution) {
@@ -2443,7 +2444,6 @@ public class ComponentTree {
             heightSpec,
             layoutVersion,
             diffingEnabled,
-            previousLayoutState,
             treeProps,
             source,
             extraAttribution);
@@ -2543,7 +2543,6 @@ public class ComponentTree {
     private final int widthSpec;
     private final int heightSpec;
     private final boolean diffingEnabled;
-    @Nullable private final LayoutState previousLayoutState;
     @Nullable private final TreeProps treeProps;
     private final FutureTask<LayoutState> futureTask;
     private final AtomicInteger refCount = new AtomicInteger(0);
@@ -2568,7 +2567,6 @@ public class ComponentTree {
         final int heightSpec,
         int layoutVersion,
         final boolean diffingEnabled,
-        @Nullable final LayoutState previousLayoutState,
         @Nullable final TreeProps treeProps,
         @CalculateLayoutSource final int source,
         @Nullable final String extraAttribution) {
@@ -2577,7 +2575,6 @@ public class ComponentTree {
       this.widthSpec = widthSpec;
       this.heightSpec = heightSpec;
       this.diffingEnabled = diffingEnabled;
-      this.previousLayoutState = previousLayoutState;
       this.treeProps = treeProps;
       this.isFromSyncLayout = isFromSyncLayout(source);
       this.source = source;
@@ -2614,10 +2611,12 @@ public class ComponentTree {
               ? LayoutStateFuture.this
               : null;
       final ComponentContext contextWithStateHandler;
+      final LayoutState previousLayoutState;
 
       synchronized (ComponentTree.this) {
         final StateHandler stateHandler =
             StateHandler.createNewInstance(ComponentTree.this.mStateHandler);
+        previousLayoutState = mLatestLayoutState;
         contextWithStateHandler = new ComponentContext(context, stateHandler, treeProps, null);
         if (mInitialStateContainer != null) {
           mInitialStateContainer.registerStateHandler(stateHandler);

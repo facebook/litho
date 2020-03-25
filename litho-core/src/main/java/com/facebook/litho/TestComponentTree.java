@@ -51,7 +51,6 @@ public class TestComponentTree extends ComponentTree {
       int heightSpec,
       int layoutVersion,
       boolean diffingEnabled,
-      @Nullable LayoutState previousLayoutState,
       TreeProps treeProps,
       @LayoutState.CalculateLayoutSource int source,
       String extraAttribution) {
@@ -66,7 +65,7 @@ public class TestComponentTree extends ComponentTree {
         heightSpec,
         layoutVersion,
         diffingEnabled,
-        previousLayoutState,
+        null,
         source,
         extraAttribution);
   }

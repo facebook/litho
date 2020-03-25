@@ -22,8 +22,13 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Looper;
+import android.view.View;
+import android.view.ViewGroup;
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.litho.testing.BackgroundLayoutLooperRule;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.helper.ComponentTestHelper;
 import com.facebook.litho.testing.logging.TestComponentsLogger;
@@ -33,6 +38,7 @@ import com.facebook.litho.widget.SimpleStateUpdateEmulator;
 import com.facebook.litho.widget.SimpleStateUpdateEmulatorSpec;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
@@ -41,6 +47,9 @@ import org.robolectric.shadows.ShadowLooper;
 
 @RunWith(ComponentsTestRunner.class)
 public class StateUpdatesWithReconciliationTest {
+
+  public @Rule BackgroundLayoutLooperRule mBackgroundLayoutLooperRule =
+      new BackgroundLayoutLooperRule();
 
   private static final String mLogTag = "logTag";
 
@@ -245,6 +254,77 @@ public class StateUpdatesWithReconciliationTest {
     verify(layout, times(0)).reconcile(any(), any());
   }
 
+  /**
+   * In this scenario, we make sure that if a state update happens in the background followed by a
+   * second state update in the background before the first can commit on the main thread, that the
+   * final result includes both state updates.
+   */
+  @Test
+  public void testMultipleBackgroundStateUpdates() {
+    after();
+
+    ComponentContext c = new ComponentContext(RuntimeEnvironment.application);
+    LithoView lithoView = new LithoView(c);
+    ComponentTree componentTree = ComponentTree.create(c).build();
+    lithoView.setComponentTree(componentTree);
+    lithoView.measure(
+        View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
+        View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY));
+    lithoView.layout(0, 0, 100, 100);
+    lithoView.onAttachedToWindow();
+
+    final SimpleStateUpdateEmulatorSpec.Caller stateUpdater1 =
+        new SimpleStateUpdateEmulatorSpec.Caller();
+    final SimpleStateUpdateEmulatorSpec.Caller stateUpdater2 =
+        new SimpleStateUpdateEmulatorSpec.Caller();
+
+    componentTree.setRootAsync(
+        Row.create(c)
+            .child(
+                Column.create(c)
+                    .child(
+                        SimpleStateUpdateEmulator.create(c)
+                            .caller(stateUpdater1)
+                            .widthPx(100)
+                            .heightPx(100)
+                            .tagPrefix("First:")
+                            .background(new ColorDrawable(Color.RED)))
+                    .child(
+                        SimpleStateUpdateEmulator.create(c)
+                            .caller(stateUpdater2)
+                            .widthPx(100)
+                            .heightPx(100)
+                            .tagPrefix("Second:")
+                            .background(new ColorDrawable(Color.RED))))
+            .build());
+
+    mBackgroundLayoutLooperRule.runToEndOfTasksSync();
+
+    ShadowLooper.idleMainLooper();
+    lithoView.layout(0, 0, 100, 100);
+
+    // Do two state updates sequentially without draining the main thread queue
+    stateUpdater1.incrementAsync();
+    mBackgroundLayoutLooperRule.runToEndOfTasksSync();
+
+    stateUpdater2.incrementAsync();
+    mBackgroundLayoutLooperRule.runToEndOfTasksSync();
+
+    // Now drain the main thread queue and mount the result
+    ShadowLooper.idleMainLooper();
+    lithoView.layout(0, 0, 100, 100);
+
+    // We're using the fact that SimpleStateUpdateEmulator will write the state to a view tag
+    // TODO(t64502673): This is a really ugly way to do this, fix after we upgrade to robolectric 4
+    // by just checking against mounted text
+    assertThat(findViewWithTag(lithoView, "First:" + 2))
+        .describedAs("Expected first state update to be applied in final result.")
+        .isNotNull();
+    assertThat(findViewWithTag(lithoView, "Second:" + 2))
+        .describedAs("Expected second state update to be applied in final result.")
+        .isNotNull();
+  }
+
   static class DummyComponent extends Component {
 
     private final DummyStateContainer mStateContainer;
@@ -293,5 +373,23 @@ public class StateUpdatesWithReconciliationTest {
 
   private StateContainer.StateUpdate createStateUpdate() {
     return new StateContainer.StateUpdate(0);
+  }
+
+  private static View findViewWithTag(View root, String tag) {
+    if (tag.equals(root.getTag())) {
+      return root;
+    }
+
+    if (root instanceof ViewGroup) {
+      ViewGroup vg = (ViewGroup) root;
+      for (int i = 0; i < vg.getChildCount(); i++) {
+        View v = findViewWithTag(vg.getChildAt(i), tag);
+        if (v != null) {
+          return v;
+        }
+      }
+    }
+
+    return null;
   }
 }

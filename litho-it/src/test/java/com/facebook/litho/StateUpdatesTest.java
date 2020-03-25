@@ -276,16 +276,7 @@ public class StateUpdatesTest {
 
     verify(mComponentTree, never())
         .calculateLayoutState(
-            any(),
-            any(),
-            anyInt(),
-            anyInt(),
-            anyInt(),
-            anyBoolean(),
-            any(),
-            any(),
-            anyInt(),
-            any());
+            any(), any(), anyInt(), anyInt(), anyInt(), anyBoolean(), any(), anyInt(), any());
   }
 
   @Test

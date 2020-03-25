@@ -38,9 +38,16 @@ public class SimpleStateUpdateEmulatorSpec {
   }
 
   @OnCreateLayout
-  static Component onCreateLayout(ComponentContext c, @Prop Caller caller, @State int count) {
+  static Component onCreateLayout(
+      ComponentContext c,
+      @Prop Caller caller,
+      @Prop(optional = true) String tagPrefix,
+      @State int count) {
     caller.set(c);
-    return Column.create(c).child(Text.create(c).text("" + count)).build();
+    return Column.create(c)
+        .child(Text.create(c).text("Text: " + count))
+        .viewTag((tagPrefix != null ? tagPrefix : "") + count)
+        .build();
   }
 
   @OnUpdateState
@@ -62,6 +69,10 @@ public class SimpleStateUpdateEmulatorSpec {
 
     public void increment() {
       SimpleStateUpdateEmulator.onIncrementCountSync(c);
+    }
+
+    public void incrementAsync() {
+      SimpleStateUpdateEmulator.onIncrementCount(c);
     }
   }
 }

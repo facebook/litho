@@ -461,49 +461,26 @@ public class TreeDiffingTest {
     final Component thirdComponent =
         TestDrawableComponent.create(mContext).color(Color.WHITE).build();
 
+    LithoView lithoView = new LithoView(mContext);
     ComponentTree componentTree = ComponentTree.create(mContext, firstComponent).build();
-    LayoutState state =
-        componentTree.calculateLayoutState(
-            mContext,
-            firstComponent,
-            SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
-            SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
-            -1,
-            true,
-            null,
-            null,
-            LayoutState.CalculateLayoutSource.TEST,
-            null);
+    lithoView.setComponentTree(componentTree);
+    lithoView.onAttachedToWindow();
+
+    componentTree.setRootAndSizeSpec(
+        firstComponent,
+        SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
+        SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY));
+    LayoutState state = componentTree.getMainThreadLayoutState();
 
     assertOutputsState(state, LayoutOutput.STATE_UNKNOWN);
 
-    LayoutState secondState =
-        componentTree.calculateLayoutState(
-            mContext,
-            secondComponent,
-            SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
-            SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
-            -1,
-            true,
-            state,
-            null,
-            LayoutState.CalculateLayoutSource.TEST,
-            null);
+    componentTree.setRoot(secondComponent);
+    LayoutState secondState = componentTree.getMainThreadLayoutState();
 
     assertOutputsState(secondState, LayoutOutput.STATE_UPDATED);
 
-    LayoutState thirdState =
-        componentTree.calculateLayoutState(
-            mContext,
-            thirdComponent,
-            SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
-            SizeSpec.makeSizeSpec(10, SizeSpec.EXACTLY),
-            -1,
-            true,
-            secondState,
-            null,
-            LayoutState.CalculateLayoutSource.TEST,
-            null);
+    componentTree.setRoot(thirdComponent);
+    LayoutState thirdState = componentTree.getMainThreadLayoutState();
 
     assertOutputsState(thirdState, LayoutOutput.STATE_DIRTY);
   }
@@ -514,50 +491,25 @@ public class TreeDiffingTest {
     final Component component2 = new TestLayoutSpecBgState(false);
     final Component component3 = new TestLayoutSpecBgState(true);
 
+    LithoView lithoView = new LithoView(mContext);
     ComponentTree componentTree = ComponentTree.create(mContext, component1).build();
-    LayoutState state =
-        componentTree.calculateLayoutState(
-            mContext,
-            component1,
-            makeSizeSpec(10, SizeSpec.EXACTLY),
-            makeSizeSpec(10, SizeSpec.EXACTLY),
-            -1,
-            true,
-            null,
-            null,
-            LayoutState.CalculateLayoutSource.TEST,
-            null);
+    lithoView.setComponentTree(componentTree);
+    lithoView.onAttachedToWindow();
+
+    componentTree.setRootAndSizeSpec(
+        component1, makeSizeSpec(10, SizeSpec.EXACTLY), makeSizeSpec(10, SizeSpec.EXACTLY));
+    LayoutState state = componentTree.getMainThreadLayoutState();
 
     assertOutputsState(state, STATE_UNKNOWN);
 
-    LayoutState secondState =
-        componentTree.calculateLayoutState(
-            mContext,
-            component2,
-            makeSizeSpec(10, SizeSpec.EXACTLY),
-            makeSizeSpec(10, SizeSpec.EXACTLY),
-            -1,
-            true,
-            state,
-            null,
-            LayoutState.CalculateLayoutSource.TEST,
-            null);
+    componentTree.setRoot(component2);
+    LayoutState secondState = componentTree.getMainThreadLayoutState();
 
     assertThat(5).isEqualTo(secondState.getMountableOutputCount());
     assertOutputsState(secondState, STATE_UPDATED);
 
-    LayoutState thirdState =
-        componentTree.calculateLayoutState(
-            mContext,
-            component3,
-            makeSizeSpec(10, SizeSpec.EXACTLY),
-            makeSizeSpec(10, SizeSpec.EXACTLY),
-            -1,
-            true,
-            secondState,
-            null,
-            LayoutState.CalculateLayoutSource.TEST,
-            null);
+    componentTree.setRoot(component3);
+    LayoutState thirdState = componentTree.getMainThreadLayoutState();
 
     assertThat(5).isEqualTo(thirdState.getMountableOutputCount());
     assertThat(getLayoutOutput(thirdState.getMountableOutputAt(1)).getUpdateState())
@@ -577,51 +529,26 @@ public class TreeDiffingTest {
     final Component component2 = new TestLayoutSpecInnerState(false);
     final Component component3 = new TestLayoutSpecInnerState(true);
 
+    LithoView lithoView = new LithoView(mContext);
     ComponentTree componentTree = ComponentTree.create(mContext, component1).build();
-    LayoutState state =
-        componentTree.calculateLayoutState(
-            mContext,
-            component1,
-            makeSizeSpec(10, SizeSpec.EXACTLY),
-            makeSizeSpec(10, SizeSpec.EXACTLY),
-            -1,
-            true,
-            null,
-            null,
-            LayoutState.CalculateLayoutSource.TEST,
-            null);
+    lithoView.setComponentTree(componentTree);
+    lithoView.onAttachedToWindow();
+
+    componentTree.setRootAndSizeSpec(
+        component1, makeSizeSpec(10, SizeSpec.EXACTLY), makeSizeSpec(10, SizeSpec.EXACTLY));
+    LayoutState state = componentTree.getMainThreadLayoutState();
 
     assertThat(getLayoutOutput(state.getMountableOutputAt(2)).getUpdateState())
         .isEqualTo(STATE_UNKNOWN);
 
-    LayoutState secondState =
-        componentTree.calculateLayoutState(
-            mContext,
-            component2,
-            makeSizeSpec(10, SizeSpec.EXACTLY),
-            makeSizeSpec(10, SizeSpec.EXACTLY),
-            -1,
-            true,
-            state,
-            null,
-            LayoutState.CalculateLayoutSource.TEST,
-            null);
+    componentTree.setRoot(component2);
+    LayoutState secondState = componentTree.getMainThreadLayoutState();
 
     assertThat(getLayoutOutput(secondState.getMountableOutputAt(2)).getUpdateState())
         .isEqualTo(STATE_UPDATED);
 
-    LayoutState thirdState =
-        componentTree.calculateLayoutState(
-            mContext,
-            component3,
-            makeSizeSpec(10, SizeSpec.EXACTLY),
-            makeSizeSpec(10, SizeSpec.EXACTLY),
-            -1,
-            true,
-            secondState,
-            null,
-            LayoutState.CalculateLayoutSource.TEST,
-            null);
+    componentTree.setRoot(component3);
+    LayoutState thirdState = componentTree.getMainThreadLayoutState();
 
     assertThat(getLayoutOutput(thirdState.getMountableOutputAt(2)).getUpdateState())
         .isEqualTo(STATE_DIRTY);
@@ -632,34 +559,19 @@ public class TreeDiffingTest {
     final Component component1 = new TestLayoutWithStateIdClash(false);
     final Component component2 = new TestLayoutWithStateIdClash(true);
 
+    LithoView lithoView = new LithoView(mContext);
     ComponentTree componentTree = ComponentTree.create(mContext, component1).build();
-    LayoutState state =
-        componentTree.calculateLayoutState(
-            mContext,
-            component1,
-            makeSizeSpec(10, SizeSpec.EXACTLY),
-            makeSizeSpec(10, SizeSpec.EXACTLY),
-            -1,
-            true,
-            null,
-            null,
-            LayoutState.CalculateLayoutSource.TEST,
-            null);
+    lithoView.setComponentTree(componentTree);
+    lithoView.onAttachedToWindow();
+
+    componentTree.setRootAndSizeSpec(
+        component1, makeSizeSpec(10, SizeSpec.EXACTLY), makeSizeSpec(10, SizeSpec.EXACTLY));
+    LayoutState state = componentTree.getMainThreadLayoutState();
 
     assertOutputsState(state, STATE_UNKNOWN);
 
-    LayoutState secondState =
-        componentTree.calculateLayoutState(
-            mContext,
-            component2,
-            makeSizeSpec(10, SizeSpec.EXACTLY),
-            makeSizeSpec(10, SizeSpec.EXACTLY),
-            -1,
-            true,
-            state,
-            null,
-            LayoutState.CalculateLayoutSource.TEST,
-            null);
+    componentTree.setRoot(component2);
+    LayoutState secondState = componentTree.getMainThreadLayoutState();
 
     assertThat(6).isEqualTo(secondState.getMountableOutputCount());
     assertThat(STATE_DIRTY)
