@@ -22,6 +22,9 @@ import android.app.Activity
   val context = c
   val androidContext = c.androidContext
   val resourceResolver = c.resourceResolver
+
+  /*inline*/ fun Dp.toPx(): Px = Px(resourceResolver.dipsToPixels(value))
+  /*inline*/ fun Sp.toPx(): Px = Px(resourceResolver.sipsToPixels(value))
 }
 
 inline fun build(

@@ -48,7 +48,7 @@ inline fun DslScope.Card(
         .clippingColor(clippingColor)
         .shadowStartColor(shadowStartColor)
         .shadowEndColor(shadowEndColor)
-        .shadowBottomOverridePx(shadowBottomOverride?.toPx(this)?.value ?: -1)
+        .shadowBottomOverridePx(shadowBottomOverride?.toPx()?.value ?: -1)
         .disableClipTopLeft(disableClipTopLeft)
         .disableClipTopRight(disableClipTopRight)
         .disableClipBottomLeft(disableClipBottomLeft)

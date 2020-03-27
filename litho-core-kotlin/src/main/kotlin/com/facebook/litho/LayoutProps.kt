@@ -30,7 +30,7 @@ inline fun DslScope.Padding(
     content: DslScope.() -> Component
 ): Component =
     content().apply {
-      getOrCreateCommonProps.paddingPx(YogaEdge.ALL, all.toPx(this@Padding).value)
+      getOrCreateCommonProps.paddingPx(YogaEdge.ALL, all.toPx().value)
     }
 
 /**
@@ -43,8 +43,8 @@ inline fun DslScope.Padding(
 ): Component =
     content().apply {
       getOrCreateCommonProps.apply {
-        paddingPx(YogaEdge.HORIZONTAL, horizontal.toPx(this@Padding).value)
-        paddingPx(YogaEdge.VERTICAL, vertical.toPx(this@Padding).value)
+        paddingPx(YogaEdge.HORIZONTAL, horizontal.toPx().value)
+        paddingPx(YogaEdge.VERTICAL, vertical.toPx().value)
       }
     }
 
@@ -60,10 +60,10 @@ inline fun DslScope.Padding(
 ): Component =
     content().apply {
       getOrCreateCommonProps.apply {
-        paddingPx(YogaEdge.LEFT, left.toPx(this@Padding).value)
-        paddingPx(YogaEdge.TOP, top.toPx(this@Padding).value)
-        paddingPx(YogaEdge.RIGHT, right.toPx(this@Padding).value)
-        paddingPx(YogaEdge.BOTTOM, bottom.toPx(this@Padding).value)
+        paddingPx(YogaEdge.LEFT, left.toPx().value)
+        paddingPx(YogaEdge.TOP, top.toPx().value)
+        paddingPx(YogaEdge.RIGHT, right.toPx().value)
+        paddingPx(YogaEdge.BOTTOM, bottom.toPx().value)
       }
     }
 
@@ -75,7 +75,7 @@ inline fun DslScope.Margin(
     content: DslScope.() -> Component
 ): Component =
     content().apply {
-      getOrCreateCommonProps.marginPx(YogaEdge.ALL, all.toPx(this@Margin).value)
+      getOrCreateCommonProps.marginPx(YogaEdge.ALL, all.toPx().value)
     }
 
 /**
@@ -88,8 +88,8 @@ inline fun DslScope.Margin(
 ): Component =
     content().apply {
       getOrCreateCommonProps.apply {
-        marginPx(YogaEdge.HORIZONTAL, horizontal.toPx(this@Margin).value)
-        marginPx(YogaEdge.VERTICAL, vertical.toPx(this@Margin).value)
+        marginPx(YogaEdge.HORIZONTAL, horizontal.toPx().value)
+        marginPx(YogaEdge.VERTICAL, vertical.toPx().value)
       }
     }
 
@@ -105,10 +105,10 @@ inline fun DslScope.Margin(
 ): Component =
     content().apply {
       getOrCreateCommonProps.apply {
-        marginPx(YogaEdge.LEFT, left.toPx(this@Margin).value)
-        marginPx(YogaEdge.TOP, top.toPx(this@Margin).value)
-        marginPx(YogaEdge.RIGHT, right.toPx(this@Margin).value)
-        marginPx(YogaEdge.BOTTOM, bottom.toPx(this@Margin).value)
+        marginPx(YogaEdge.LEFT, left.toPx().value)
+        marginPx(YogaEdge.TOP, top.toPx().value)
+        marginPx(YogaEdge.RIGHT, right.toPx().value)
+        marginPx(YogaEdge.BOTTOM, bottom.toPx().value)
       }
     }
 
@@ -127,10 +127,10 @@ inline fun DslScope.Position(
     content().apply {
       getOrCreateCommonProps.apply {
         positionType(YogaPositionType.ABSOLUTE)
-        left?.let { positionPx(YogaEdge.LEFT, it.toPx(this@Position).value) }
-        top?.let { positionPx(YogaEdge.TOP, it.toPx(this@Position).value) }
-        right?.let { positionPx(YogaEdge.RIGHT, it.toPx(this@Position).value) }
-        bottom?.let { positionPx(YogaEdge.BOTTOM, it.toPx(this@Position).value) }
+        left?.let { positionPx(YogaEdge.LEFT, it.toPx().value) }
+        top?.let { positionPx(YogaEdge.TOP, it.toPx().value) }
+        right?.let { positionPx(YogaEdge.RIGHT, it.toPx().value) }
+        bottom?.let { positionPx(YogaEdge.BOTTOM, it.toPx().value) }
       }
     }
 
@@ -144,8 +144,8 @@ inline fun DslScope.FixedSize(
 ): Component =
     content().apply {
       getOrCreateCommonProps.apply {
-        width?.let { widthPx(it.toPx(this@FixedSize).value) }
-        height?.let { heightPx(it.toPx(this@FixedSize).value) }
+        width?.let { widthPx(it.toPx().value) }
+        height?.let { heightPx(it.toPx().value) }
       }
     }
 
@@ -159,7 +159,7 @@ inline fun DslScope.Flex(
       getOrCreateCommonProps.apply {
         flexGrow(grow)
         flexShrink(shrink)
-        basis?.let { flexBasisPx(it.toPx(this@Flex).value) }
+        basis?.let { flexBasisPx(it.toPx().value) }
       }
     }
 
