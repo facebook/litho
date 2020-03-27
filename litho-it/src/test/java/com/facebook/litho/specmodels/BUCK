@@ -11,7 +11,6 @@ fb_java_test(
         ["**/*Test.java"],
         exclude = glob(["processor/**/*.java"]),
     ),
-    is_androidx = True,
     provided_deps = [
         LITHO_ROBOLECTRIC_V3_TARGET,
     ],
