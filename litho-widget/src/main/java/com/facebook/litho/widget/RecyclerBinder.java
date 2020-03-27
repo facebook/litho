@@ -216,9 +216,8 @@ public class RecyclerBinder
 
         synchronized (RecyclerBinder.this) {
           resetMeasuredSize(width);
+          requestRemeasure();
         }
-
-        requestRemeasure();
       }
     };
   }
