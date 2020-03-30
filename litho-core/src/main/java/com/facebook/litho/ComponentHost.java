@@ -75,6 +75,7 @@ public class ComponentHost extends ViewGroup {
   private boolean mWasInvalidatedForAccessibilityWhileSuppressed;
   private boolean mWasRequestedFocusWhileSuppressed;
   private boolean mSuppressInvalidations;
+  private boolean mDisallowIntercept;
 
   private final InterleavedDispatchDraw mDispatchDraw = new InterleavedDispatchDraw();
 
@@ -463,7 +464,9 @@ public class ComponentHost extends ViewGroup {
     } else if (content instanceof View) {
       mIsChildDrawingOrderDirty = true;
 
-      startTemporaryDetach(((View) content));
+      if (!mDisallowIntercept) {
+        startTemporaryDetach(((View) content));
+      }
 
       if (mViewMountItems.get(newIndex) != null) {
         ensureScrapViewMountItemsArray();
@@ -485,7 +488,7 @@ public class ComponentHost extends ViewGroup {
 
     releaseScrapDataStructuresIfNeeded();
 
-    if (content instanceof View) {
+    if (!mDisallowIntercept && content instanceof View) {
       finishTemporaryDetach(((View) content));
     }
   }
@@ -575,11 +578,22 @@ public class ComponentHost extends ViewGroup {
 
   @Override
   public boolean onInterceptTouchEvent(MotionEvent ev) {
+    int action = ev.getAction();
+    if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
+      mDisallowIntercept = false;
+    }
+
     if (mOnInterceptTouchEventHandler != null) {
       return EventDispatcherUtils.dispatchOnInterceptTouch(mOnInterceptTouchEventHandler, this, ev);
     }
 
     return super.onInterceptTouchEvent(ev);
+  }
+
+  @Override
+  public void requestDisallowInterceptTouchEvent(boolean disallowIntercept) {
+    super.requestDisallowInterceptTouchEvent(disallowIntercept);
+    this.mDisallowIntercept = disallowIntercept;
   }
 
   /** @return The previous set touch listener. */
