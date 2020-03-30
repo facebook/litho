@@ -108,6 +108,8 @@ public class ComponentsConfiguration {
   /** Enable exception delegation to {@link com.facebook.litho.annotations.OnError}. */
   public static boolean enableOnErrorHandling = false;
 
+  public static boolean enableErrorBoundaryComponent = false;
+
   /**
    * If false, global keys will not be generated (litho level state updates won't work). It's highly
    * discouraged to to change this to false, unless you handle all your updates outside of the litho
