@@ -54,30 +54,30 @@ public class SpecModelValidation {
   public static List<SpecModelValidationError> validateLayoutSpecModel(
       LayoutSpecModel specModel, EnumSet<RunMode> runMode) {
     List<SpecModelValidationError> validationErrors = new ArrayList<>();
+    validationErrors.addAll(PureRenderValidation.validate(specModel));
+    validationErrors.addAll(DelegateMethodValidation.validateLayoutSpecModel(specModel));
+    validationErrors.addAll(SimpleNameDelegateValidation.validate(specModel));
     validationErrors.addAll(
         validateSpecModel(
             specModel,
             PropValidation.COMMON_PROP_NAMES,
             PropValidation.VALID_COMMON_PROPS,
             runMode));
-    validationErrors.addAll(PureRenderValidation.validate(specModel));
-    validationErrors.addAll(DelegateMethodValidation.validateLayoutSpecModel(specModel));
-    validationErrors.addAll(SimpleNameDelegateValidation.validate(specModel));
     return validationErrors;
   }
 
   public static List<SpecModelValidationError> validateMountSpecModel(
       MountSpecModel specModel, EnumSet<RunMode> runMode) {
     List<SpecModelValidationError> validationErrors = new ArrayList<>();
+    validationErrors.addAll(PureRenderValidation.validate(specModel));
+    validationErrors.addAll(DelegateMethodValidation.validateMountSpecModel(specModel));
+    validationErrors.addAll(validateGetMountType(specModel));
     validationErrors.addAll(
         validateSpecModel(
             specModel,
             PropValidation.COMMON_PROP_NAMES,
             PropValidation.VALID_COMMON_PROPS,
             runMode));
-    validationErrors.addAll(PureRenderValidation.validate(specModel));
-    validationErrors.addAll(DelegateMethodValidation.validateMountSpecModel(specModel));
-    validationErrors.addAll(validateGetMountType(specModel));
     return validationErrors;
   }
 

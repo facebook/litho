@@ -38,9 +38,18 @@ class DynamicPropsValidation {
 
     final List<SpecModelValidationError> validationErrors = new ArrayList<>();
 
-    final TypeName mountType =
-        SpecModelUtils.getMethodModelWithAnnotation(specModel, OnCreateMountContent.class)
-            .returnType;
+    final SpecMethodModel method =
+        SpecModelUtils.getMethodModelWithAnnotation(specModel, OnCreateMountContent.class);
+    if (method == null) {
+      validationErrors.add(
+          new SpecModelValidationError(
+              specModel.getRepresentedObject(),
+              specModel.getSpecName()
+                  + " does not define @OnCreateMountContent method which is required for all @MountSpecs."));
+      return validationErrors;
+    }
+
+    final TypeName mountType = method.returnType;
 
     final Map<String, List<SpecMethodModel<BindDynamicValueMethod, Void>>> propToMethodMap =
         new HashMap<>();
