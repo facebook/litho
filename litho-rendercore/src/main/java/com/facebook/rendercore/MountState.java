@@ -360,7 +360,9 @@ class MountState {
     final RenderUnit renderUnit = item.getRenderUnit();
     final List<RenderUnit.Binder> mountUnmountFunctions = renderUnit.mountUnmountFunctions();
     if (mountUnmountFunctions != null) {
-      for (RenderUnit.Binder binder : mountUnmountFunctions) {
+      int size = mountUnmountFunctions.size();
+      for (int i = size - 1; i >= 0; i--) {
+        RenderUnit.Binder binder = mountUnmountFunctions.get(i);
         binder.unbind(
             mContext, item.getContent(), renderUnit, item.getRenderTreeNode().getLayoutData());
       }
@@ -388,7 +390,9 @@ class MountState {
     final RenderUnit renderUnit = item.getRenderUnit();
     final List<RenderUnit.Binder> bindingFunctions = renderUnit.attachDetachFunctions();
     if (bindingFunctions != null) {
-      for (RenderUnit.Binder binder : bindingFunctions) {
+      int size = bindingFunctions.size();
+      for (int i = size - 1; i >= 0; i--) {
+        RenderUnit.Binder binder = bindingFunctions.get(i);
         binder.unbind(
             context, item.getContent(), renderUnit, item.getRenderTreeNode().getLayoutData());
       }
