@@ -1030,11 +1030,10 @@ public class LithoView extends Host {
 
   private static List<LithoView> getChildLithoViewsFromCurrentlyMountedItems(
       MountDelegateTarget mountDelegateTarget) {
-    final List<Object> allContent = mountDelegateTarget.getAllMountedContent();
     final ArrayList<LithoView> childLithoViews = new ArrayList<>();
 
-    for (int i = 0, size = allContent.size(); i < size; i++) {
-      final Object content = allContent.get(i);
+    for (int i = 0, size = mountDelegateTarget.getContentCount(); i < size; i++) {
+      final Object content = mountDelegateTarget.getContentAt(i);
       if (content instanceof HasLithoViewChildren) {
         ((HasLithoViewChildren) content).obtainLithoViewChildren(childLithoViews);
       }

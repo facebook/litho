@@ -43,7 +43,7 @@ public class MountDelegate {
 
     Object getContentAt(int position);
 
-    List<Object> getAllMountedContent();
+    int getContentCount();
 
     void registerMountDelegateExtension(MountDelegateExtension mountDelegateExtension);
   }
