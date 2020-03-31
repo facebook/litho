@@ -49,8 +49,8 @@ class KTreePropsTest {
       createTreeProp { rect }
 
       KComponent { // child
-        treeProp1Ref.prop = useTreeProps<Int>()
-        treeProp2Ref.prop = useTreeProps<Rect>()
+        treeProp1Ref.prop = useTreeProp<Int>()
+        treeProp2Ref.prop = useTreeProp<Rect>()
         null
       }
     }
@@ -71,7 +71,7 @@ class KTreePropsTest {
         createTreeProp { 24 } // override TreeProp!
 
         KComponent { // child
-          treePropRef.prop = useTreeProps<Int>()
+          treePropRef.prop = useTreeProp<Int>()
           null
         }
       }
@@ -94,13 +94,13 @@ class KTreePropsTest {
         +KComponent { // child 1
           createTreeProp { 42 }
 
-          child1StringPropRef.prop = useTreeProps<String>()
-          child1IntPropRef.prop = useTreeProps<Int>()
+          child1StringPropRef.prop = useTreeProp<String>()
+          child1IntPropRef.prop = useTreeProp<Int>()
           null
         }
 
         +KComponent { // child 2
-          child2IntPropRef.prop = useTreeProps<Int>()
+          child2IntPropRef.prop = useTreeProp<Int>()
           null
         }
       }

@@ -34,4 +34,4 @@ internal fun <T> DslScope.createTreeProp(clazz: Class<T>, value: T) {
 }
 
 @Suppress("UNCHECKED_CAST")
-inline fun <reified T : Any> DslScope.useTreeProps(): T? = context.getTreeProp(T::class.java)
+inline fun <reified T : Any> DslScope.useTreeProp(): T? = context.getTreeProp(T::class.java)
