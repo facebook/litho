@@ -1112,6 +1112,10 @@ public class LithoView extends Host {
     return mMountState;
   }
 
+  void setIsFirstMountOfComponentTree() {
+    mMountState.setIsFirstMountOfComponentTree();
+  }
+
   public void setMountStartupLoggingInfo(
       LithoStartupLogger startupLogger,
       String startupLoggerAttribution,

@@ -874,7 +874,7 @@ public class ComponentTree {
     mIsMounting = true;
 
     if (!mHasMounted) {
-      mLithoView.getMountState().setIsFirstMountOfComponentTree();
+      mLithoView.setIsFirstMountOfComponentTree();
       mHasMounted = true;
     }
 
