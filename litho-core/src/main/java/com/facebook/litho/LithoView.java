@@ -47,6 +47,7 @@ public class LithoView extends Host {
   public static final String ZERO_HEIGHT_LOG = "LithoView:0-height";
   public static final String SET_ALREADY_ATTACHED_COMPONENT_TREE =
       "LithoView:SetAlreadyAttachedComponentTree";
+  private boolean mIsMountStateDirty;
 
   public interface OnDirtyMountListener {
     /**
@@ -944,7 +945,7 @@ public class LithoView extends Host {
       // If transient state is set but the MountState is dirty we want to re-mount everything.
       // Otherwise, we don't need to do anything as the entire LithoView was mounted when the
       // transient state was set.
-      if (!mMountState.isDirty()) {
+      if (!isMountStateDirty()) {
         return;
       } else {
         currentVisibleArea = new Rect(0, 0, getWidth(), getHeight());
@@ -965,7 +966,7 @@ public class LithoView extends Host {
 
     if (ComponentsConfiguration.useRenderCoreMount) {
 
-      if (currentVisibleArea != null && !mMountState.isDirty()) {
+      if (currentVisibleArea != null && !isMountStateDirty()) {
         mLithoHostListenerCoordinator.onViewOffset();
       } else {
         if (mLithoHostListenerCoordinator != null) {
@@ -979,6 +980,8 @@ public class LithoView extends Host {
     } else {
       mMountState.mount(layoutState, currentVisibleArea, processVisibilityOutputs);
     }
+
+    mIsMountStateDirty = false;
 
     if (loggedFirstMount) {
       MountStartupLoggingInfo.logFirstMountEnd(mMountStartupLoggingInfo);
@@ -1073,7 +1076,7 @@ public class LithoView extends Host {
         layoutState,
         currentVisibleArea,
         mPreviousMountVisibleRectBounds,
-        mMountState.isDirty(),
+        isMountStateDirty(),
         null);
   }
 
@@ -1094,6 +1097,7 @@ public class LithoView extends Host {
   void setMountStateDirty() {
     mMountState.setDirty();
     mPreviousMountVisibleRectBounds.setEmpty();
+    mIsMountStateDirty = true;
   }
 
   boolean isMountStateDirty() {
