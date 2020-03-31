@@ -35,14 +35,8 @@ public class LithoHostListenerCoordinator implements HostListenerExtension<Objec
   // TODO figure out how to better enforce the input type here.
   @Override
   public void beforeMount(Object input) {
-    if (mTransitionsExtension != null) {
-      mTransitionsExtension.beforeMount((TransitionsExtension.TransitionsExtensionInput) input);
-    }
     for (int i = 0, size = mMountExtensions.size(); i < size; i++) {
       HostListenerExtension hostListenerExtension = mMountExtensions.get(i);
-      if (hostListenerExtension == mTransitionsExtension) {
-        continue;
-      }
       hostListenerExtension.beforeMount(input);
     }
   }

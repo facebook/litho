@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import static com.facebook.litho.LayoutOutput.getLayoutOutput;
 import static com.facebook.litho.ThreadUtils.assertMainThread;
 
 import android.util.Log;
@@ -24,6 +25,7 @@ import androidx.collection.LongSparseArray;
 import com.facebook.litho.animation.AnimatedProperties;
 import com.facebook.rendercore.MountDelegate.MountDelegateInput;
 import com.facebook.rendercore.MountDelegateExtension;
+import com.facebook.rendercore.RenderTreeNode;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -55,6 +57,7 @@ public class TransitionsExtension extends MountDelegateExtension
 
   @Override
   public void beforeMount(TransitionsExtensionInput input) {
+    resetAcquiredReferences();
     mInput = input;
 
     LayoutState layoutState = (LayoutState) input;
@@ -85,14 +88,17 @@ public class TransitionsExtension extends MountDelegateExtension
     mTransitionsHasBeenCollected = false;
   }
 
-  @Override
   public void onViewOffset() {}
 
   @Override
-  public void onUnmount() {}
+  public void onUnmount() {
+    resetAcquiredReferences();
+  }
 
   @Override
-  public void onUnbind() {}
+  public void onUnbind() {
+    resetAcquiredReferences();
+  }
 
   @Override
   public void onHostVisibilityChanged(boolean isVisible) {}
@@ -150,6 +156,10 @@ public class TransitionsExtension extends MountDelegateExtension
       if (mTransitionManager != null) {
         mTransitionManager.finishUndeclaredTransitions();
       }
+
+      if (!mAnimatingTransitionIds.isEmpty()) {
+        regenerateAnimationLockedIndices(layoutState);
+      }
     } finally {
       if (isTracing) {
         ComponentsSystrace.endSection();
@@ -168,6 +178,26 @@ public class TransitionsExtension extends MountDelegateExtension
     //    mDisappearingMountItems.clear();
     mAnimatingTransitionIds.clear();
     mTransitionManager.reset();
+  }
+
+  private void regenerateAnimationLockedIndices(LayoutState newLayoutState) {
+    final Map<TransitionId, OutputUnitsAffinityGroup<LayoutOutput>> transitionMapping =
+        newLayoutState.getTransitionIdMapping();
+    if (transitionMapping != null) {
+      for (Map.Entry<TransitionId, OutputUnitsAffinityGroup<LayoutOutput>> transition :
+          transitionMapping.entrySet()) {
+        if (!mAnimatingTransitionIds.contains(transition.getKey())) {
+          continue;
+        }
+
+        final OutputUnitsAffinityGroup<LayoutOutput> group = transition.getValue();
+        for (int j = 0, sz = group.size(); j < sz; j++) {
+          final LayoutOutput layoutOutput = group.getAt(j);
+          final int position = newLayoutState.getLayoutOutputPositionForId(layoutOutput.getId());
+          updateAnimationLockCount(newLayoutState, position, true, true);
+        }
+      }
+    }
   }
 
   /**
@@ -299,6 +329,12 @@ public class TransitionsExtension extends MountDelegateExtension
       // was removed from the component.
       return;
     }
+
+    for (int i = 0, size = layoutOutputGroup.size(); i < size; i++) {
+      final LayoutOutput layoutOutput = layoutOutputGroup.getAt(i);
+      final int position = layoutOutput.getIndex();
+      updateAnimationLockCount(mLastMountedLayoutState, position, false, false);
+    }
     // TODO (T64352474): Handle disappearing items
     //    }
   }
@@ -378,5 +414,68 @@ public class TransitionsExtension extends MountDelegateExtension
     }
 
     mTransitionManager.removeMountContent(transitionId, type);
+  }
+
+  /**
+   * Update the animation locked count for all children and each parent of the animating item. Mount
+   * items that have a lock count > 0 will not be unmounted during incremental mount.
+   */
+  private void updateAnimationLockCount(
+      LayoutState layoutState, int index, boolean increment, boolean isMounting) {
+    // Update children
+    final int lastDescendantIndex = findLastDescendantIndex(layoutState, index);
+    for (int i = index; i <= lastDescendantIndex; i++) {
+      final RenderTreeNode renderTreeNode = layoutState.getMountableOutputAt(i);
+      if (increment) {
+        if (!ownsReference(renderTreeNode)) {
+          acquireMountReference(renderTreeNode, i, mInput, false);
+        }
+      } else {
+        if (ownsReference(renderTreeNode)) {
+          releaseMountReference(renderTreeNode, i, false);
+        }
+      }
+    }
+
+    // Update parents
+    long hostId = getLayoutOutput(layoutState.getMountableOutputAt(index)).getHostMarker();
+    while (hostId != MountState.ROOT_HOST_ID) {
+      final int hostIndex = layoutState.getLayoutOutputPositionForId(hostId);
+      final RenderTreeNode renderTreeNode = layoutState.getMountableOutputAt(hostIndex);
+      if (increment) {
+        if (!ownsReference(renderTreeNode)) {
+          acquireMountReference(renderTreeNode, hostIndex, mInput, false);
+        }
+      } else {
+        if (ownsReference(renderTreeNode)) {
+          releaseMountReference(renderTreeNode, hostIndex, false);
+        }
+      }
+      hostId = getLayoutOutput(layoutState.getMountableOutputAt(hostIndex)).getHostMarker();
+    }
+  }
+
+  private static int findLastDescendantIndex(LayoutState layoutState, int index) {
+    final LayoutOutput host = getLayoutOutput(layoutState.getMountableOutputAt(index));
+    final long hostId = host.getId();
+
+    for (int i = index + 1, size = layoutState.getMountableOutputCount(); i < size; i++) {
+      final LayoutOutput layoutOutput = getLayoutOutput(layoutState.getMountableOutputAt(i));
+
+      // Walk up the parents looking for the host's id: if we find it, it's a descendant. If we
+      // reach the root, then it's not a descendant and we can stop.
+      long curentHostId = layoutOutput.getHostMarker();
+      while (curentHostId != hostId) {
+        if (curentHostId == MountState.ROOT_HOST_ID) {
+          return i - 1;
+        }
+
+        final int parentIndex = layoutState.getLayoutOutputPositionForId(curentHostId);
+        final LayoutOutput parent = getLayoutOutput(layoutState.getMountableOutputAt(parentIndex));
+        curentHostId = parent.getHostMarker();
+      }
+    }
+
+    return layoutState.getMountableOutputCount() - 1;
   }
 }

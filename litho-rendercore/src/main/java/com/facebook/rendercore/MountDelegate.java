@@ -31,6 +31,7 @@ public class MountDelegate {
   private final List<MountDelegateExtension> mMountDelegateExtensions = new ArrayList<>();
   private final MountDelegateTarget mMountDelegateTarget;
   private boolean mReferenceCountingEnabled = false;
+  private MountDelegateExtension mTransitionsExtension;
 
   // RenderCore MountState API
   public interface MountDelegateTarget {
@@ -39,9 +40,6 @@ public class MountDelegate {
     void notifyUnmount(int position);
 
     boolean isRootItem(int position);
-
-    // TODO: remove when ref counting for animations.
-    boolean isAnimationLocked(int position);
 
     Object getContentAt(int position);
 
@@ -68,9 +66,18 @@ public class MountDelegate {
         mReferenceCountingEnabled || mountDelegateExtension.canPreventMount();
   }
 
+  public void addTransitionsExtension(MountDelegateExtension mountDelegateExtension) {
+    addExtension(mountDelegateExtension);
+    mTransitionsExtension = mountDelegateExtension;
+  }
+
   // TODO remove this
-  boolean isAnimationLocked(int position) {
-    return mMountDelegateTarget.isAnimationLocked(position);
+  boolean isAnimationLocked(RenderTreeNode renderTreeNode) {
+    if (mTransitionsExtension == null) {
+      return false;
+    }
+
+    return mTransitionsExtension.ownsReference(renderTreeNode);
   }
 
   Object getContentAt(int position) {

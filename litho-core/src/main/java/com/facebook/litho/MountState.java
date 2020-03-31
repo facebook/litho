@@ -3382,8 +3382,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener, Mount
    * is that this item (or it's parent) may have a translation X/Y that actually shows it on the
    * screen, even though the non-translated bounds are off the screen.
    */
-  @Override
-  public boolean isAnimationLocked(int index) {
+  private boolean isAnimationLocked(int index) {
     if (mAnimationLockedIndices == null) {
       return false;
     }

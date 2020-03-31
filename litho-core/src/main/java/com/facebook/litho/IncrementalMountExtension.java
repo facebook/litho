@@ -121,17 +121,16 @@ public class IncrementalMountExtension extends MountDelegateExtension
 
       // By default, a LayoutOutput passed in to mount will be mountable. Incremental mount can
       // override that if the item is outside the visible bounds.
-      // TODO: extract animations logic out of this.
+      // TODO (T64830748): extract animations logic out of this.
       final boolean isMountable =
           isMountedHostWithChildContent(content)
               || Rect.intersects(localVisibleRect, layoutOutput.getBounds())
-              || isAnimationLocked(i)
+              || isAnimationLocked(renderTreeNode)
               || isRootItem(i);
       final boolean hasAcquiredMountRef = ownsReference(renderTreeNode);
       if (isMountable && !hasAcquiredMountRef) {
         acquireMountReference(renderTreeNode, i, mInput, isMounting);
-
-        if (isAnimationLocked(i) && component.hasChildLithoViews()) {
+        if (isAnimationLocked(renderTreeNode) && component.hasChildLithoViews()) {
           // If the component is locked for animation then we need to make sure that all the
           // children are also mounted.
           final View view = (View) content;
@@ -171,7 +170,7 @@ public class IncrementalMountExtension extends MountDelegateExtension
         final LayoutOutput layoutOutput = (LayoutOutput) node.getLayoutData();
         final long id = layoutOutput.getId();
         final int layoutOutputIndex = mInput.getLayoutOutputPositionForId(id);
-        if (!isAnimationLocked(layoutOutputIndex) && ownsReference(node)) {
+        if (ownsReference(node)) {
           releaseMountReference(node, layoutOutputIndex, true);
         }
         mPreviousBottomsIndex++;
@@ -215,7 +214,7 @@ public class IncrementalMountExtension extends MountDelegateExtension
         final LayoutOutput layoutOutput = (LayoutOutput) node.getLayoutData();
         final long id = layoutOutput.getId();
         final int layoutOutputIndex = mInput.getLayoutOutputPositionForId(id);
-        if (!isAnimationLocked(layoutOutputIndex) && ownsReference(node)) {
+        if (ownsReference(node)) {
           releaseMountReference(node, layoutOutputIndex, true);
         }
       }
