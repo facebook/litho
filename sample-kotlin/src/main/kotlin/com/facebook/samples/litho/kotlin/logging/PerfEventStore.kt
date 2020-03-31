@@ -33,7 +33,7 @@ object PerfEventStore {
         return event
     }
 
-    fun markerAnnotate(event: SamplePerfEvent, annotationKey: String, annotationValue: Any) {
+    fun markerAnnotate(event: SamplePerfEvent, annotationKey: String, annotationValue: Any?) {
         // We can be pretty lose with lookup here as we control event creation.
         // Also, if we misuse the APIs in the framework, we don't want that to silently fail.
         events[event]!!.addAnnotation(annotationKey, annotationValue)

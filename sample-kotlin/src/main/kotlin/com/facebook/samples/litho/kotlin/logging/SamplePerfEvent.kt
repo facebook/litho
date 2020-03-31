@@ -24,7 +24,7 @@ class SamplePerfEvent(private val markerId: Int, private val instanceKey: Int) :
 
     override fun getMarkerId(): Int = markerId
 
-    override fun markerAnnotate(annotationKey: String, annotationValue: String) {
+    override fun markerAnnotate(annotationKey: String, annotationValue: String?) {
         PerfEventStore.markerAnnotate(this, annotationKey, annotationValue)
     }
 
