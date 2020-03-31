@@ -17,7 +17,6 @@
 package com.facebook.samples.litho.kotlin.logging
 
 import android.util.Log
-import com.facebook.litho.ComponentsLogger
 import com.facebook.litho.ComponentsReporter
 
 class SampleComponentsReporter : ComponentsReporter.Reporter {
@@ -25,11 +24,15 @@ class SampleComponentsReporter : ComponentsReporter.Reporter {
 
   override fun emitMessage(level: ComponentsReporter.LogLevel?, categoryKey: String?, message: String?) {
     when (level) {
-      ComponentsLogger.LogLevel.WARNING -> {
+      ComponentsReporter.LogLevel.WARNING -> {
         Log.w(tag, message)
       }
-      ComponentsLogger.LogLevel.ERROR -> {
+      ComponentsReporter.LogLevel.ERROR -> {
         Log.e(tag, message)
+      }
+      ComponentsReporter.LogLevel.FATAL -> {
+        Log.wtf(tag, message)
+        throw RuntimeException(message)
       }
     }
   }

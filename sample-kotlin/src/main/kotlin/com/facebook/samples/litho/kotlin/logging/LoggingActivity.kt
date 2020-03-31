@@ -16,19 +16,17 @@
 
 package com.facebook.samples.litho.kotlin.logging
 
-import android.app.Activity
 import android.os.Bundle
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.LithoView
+import com.facebook.samples.litho.kotlin.NavigatableDemoActivity
 
-class LoggingActivity : Activity() {
+class LoggingActivity : NavigatableDemoActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
     val c = ComponentContext(this, "LITHOSAMPLE", SampleComponentsLogger())
-    val view = LithoView.create(c, LoggingRootComponent.create(c).build())
-
-    setContentView(view)
+    setContentView(LithoView.create(c, LoggingRootComponent.create(c).build()))
   }
 }

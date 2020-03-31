@@ -89,6 +89,10 @@ class SampleComponentsLogger : ComponentsLogger {
         FrameworkLogEvents.EVENT_SECTIONS_ON_CREATE_CHILDREN -> "SECTIONS_ON_CREATE_CHILDREN"
         FrameworkLogEvents.EVENT_SECTIONS_SET_ROOT -> "SECTIONS_SET_ROOT"
         FrameworkLogEvents.EVENT_CALCULATE_LAYOUT_STATE -> "CALCULATE_LAYOUT_STATE"
+        FrameworkLogEvents.EVENT_BENCHMARK_RUN -> "EVENT_BENCHMARK_RUN"
+        FrameworkLogEvents.EVENT_RESUME_CALCULATE_LAYOUT_STATE -> "EVENT_RESUME_CALCULATE_LAYOUT_STATE"
+        FrameworkLogEvents.EVENT_INIT_RANGE -> "EVENT_INIT_RANGE"
+        FrameworkLogEvents.EVENT_LAYOUT_STATE_FUTURE_GET_WAIT -> "EVENT_LAYOUT_STATE_FUTURE_GET_WAIT"
         else -> "UNKNOWN"
       }
 
