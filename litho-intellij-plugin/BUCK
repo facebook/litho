@@ -9,6 +9,7 @@ fb_java_binary(
     tests = [
         make_dep_path("litho-intellij-plugin/src/test/java/com/facebook/litho:test"),
     ],
+    visibility = ["PUBLIC"],
     deps = [
         make_dep_path("litho-intellij-plugin/src/main:main"),
     ],
