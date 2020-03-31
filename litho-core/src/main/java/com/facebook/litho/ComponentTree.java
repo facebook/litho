@@ -2485,7 +2485,11 @@ public class ComponentTree {
               + ", ComponentTree context="
               + context.getAndroidContext()
               + ", root builder context="
-              + root.getBuilderContext();
+              + root.getBuilderContext()
+              + ", root="
+              + root.getSimpleName()
+              + ", ContextTree="
+              + ComponentTreeDumpingHelper.dumpContextTree(context);
       ComponentsReporter.emitMessage(
           ComponentsReporter.LogLevel.ERROR,
           CT_CONTEXT_IS_DIFFERENT_FROM_ROOT_BUILDER_CONTEXT,
