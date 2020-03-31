@@ -26,11 +26,11 @@ import com.facebook.litho.widget.Text
 
 @LayoutSpec
 object ChildComponentSpec {
-    @OnCreateLayout
-    fun onCreateLayout(c: ComponentContext): Component =
-            Text.create(c).text("Hello, Logger.").build()
+  @OnCreateLayout
+  fun onCreateLayout(c: ComponentContext): Component =
+      Text.create(c).text("Hello, Logger.").build()
 
-    @OnCreateTreeProp
-    fun onCreateTreeProp(c: ComponentContext, @TreeProp parent: LogContext?): LogContext =
-            LogContext.append(parent, "child")
+  @OnCreateTreeProp
+  fun onCreateTreeProp(c: ComponentContext, @TreeProp parent: LogContext?): LogContext =
+      LogContext.append(parent, "child")
 }

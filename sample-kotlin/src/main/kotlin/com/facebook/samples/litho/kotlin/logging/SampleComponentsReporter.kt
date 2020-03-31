@@ -21,25 +21,25 @@ import com.facebook.litho.ComponentsLogger
 import com.facebook.litho.ComponentsReporter
 
 class SampleComponentsReporter : ComponentsReporter.Reporter {
-    private val tag = "LITHOSAMPLE"
+  private val tag = "LITHOSAMPLE"
 
-    override fun emitMessage(level: ComponentsReporter.LogLevel?, categoryKey: String?, message: String?) {
-        when (level) {
-            ComponentsLogger.LogLevel.WARNING -> {
-                Log.w(tag, message)
-            }
-            ComponentsLogger.LogLevel.ERROR -> {
-                Log.e(tag, message)
-            }
-        }
+  override fun emitMessage(level: ComponentsReporter.LogLevel?, categoryKey: String?, message: String?) {
+    when (level) {
+      ComponentsLogger.LogLevel.WARNING -> {
+        Log.w(tag, message)
+      }
+      ComponentsLogger.LogLevel.ERROR -> {
+        Log.e(tag, message)
+      }
     }
+  }
 
-    override fun emitMessage(
-        level: ComponentsReporter.LogLevel?,
-        categoryKey: String?,
-        message: String?,
-        samplingFrequency: Int
-    ) {
-        emitMessage(level, categoryKey, message)
-    }
+  override fun emitMessage(
+      level: ComponentsReporter.LogLevel?,
+      categoryKey: String?,
+      message: String?,
+      samplingFrequency: Int
+  ) {
+    emitMessage(level, categoryKey, message)
+  }
 }

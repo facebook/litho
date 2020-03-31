@@ -23,12 +23,12 @@ import com.facebook.litho.LithoView
 
 class LoggingActivity : Activity() {
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
 
-        val c = ComponentContext(this, "LITHOSAMPLE", SampleComponentsLogger())
-        val view = LithoView.create(c, LoggingRootComponent.create(c).build())
+    val c = ComponentContext(this, "LITHOSAMPLE", SampleComponentsLogger())
+    val view = LithoView.create(c, LoggingRootComponent.create(c).build())
 
-        setContentView(view)
-    }
+    setContentView(view)
+  }
 }

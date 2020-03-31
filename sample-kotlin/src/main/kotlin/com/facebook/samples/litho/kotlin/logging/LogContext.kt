@@ -18,12 +18,10 @@ package com.facebook.samples.litho.kotlin.logging
 
 data class LogContext(val s: String) {
 
-    override fun toString(): String = s
+  override fun toString(): String = s
 
-    companion object {
-        fun append(t: LogContext?, s: String): LogContext =
-                if (t == null) {
-                    LogContext(s)
-                } else LogContext(t.s + ":" + s)
-    }
+  companion object {
+    fun append(t: LogContext?, s: String): LogContext =
+        if (t == null) LogContext(s) else LogContext(t.s + ":" + s)
+  }
 }

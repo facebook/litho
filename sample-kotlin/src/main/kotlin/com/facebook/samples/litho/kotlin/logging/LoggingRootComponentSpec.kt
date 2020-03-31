@@ -25,11 +25,11 @@ import com.facebook.litho.widget.Text
 
 @LayoutSpec
 object LoggingRootComponentSpec {
-    @OnCreateLayout
-    fun onCreateLayout(c: ComponentContext): Component =
-            Text.create(c).text("Hello, Logger.").build()
+  @OnCreateLayout
+  fun onCreateLayout(c: ComponentContext): Component =
+      Text.create(c).text("Hello, Logger.").build()
 
-    @OnCreateTreeProp
-    fun onCreateTreeProp(c: ComponentContext): LogContext =
-            LogContext("root")
+  @OnCreateTreeProp
+  fun onCreateTreeProp(c: ComponentContext): LogContext =
+      LogContext("root")
 }
