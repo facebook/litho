@@ -44,7 +44,7 @@ class SampleComponentsLogger : ComponentsLogger {
 
   override fun getExtraAnnotations(treeProps: TreeProps?): Map<String, String> =
       treeProps?.get(LogContext::class.java)?.let {
-        mapOf("log_context" to it.toString())
+        mapOf("log_context" to "$it")
       } ?: emptyMap()
 
   private fun printEventData(event: PerfEvent, data: EventData) {
@@ -72,8 +72,7 @@ class SampleComponentsLogger : ComponentsLogger {
 
   private fun formatMarkers(data: EventData): String =
       data.getMarkers().joinToString {
-        "${((it.first - data.startTimeNs) / (1000 * 1000f)).withDigits(
-            2)}ms -> ${it.second}"
+        "${((it.first - data.startTimeNs) / (1000 * 1000f)).withDigits(2)}ms -> ${it.second}"
       }
 
   private fun formatAnnotations(data: EventData): String =
@@ -96,5 +95,5 @@ class SampleComponentsLogger : ComponentsLogger {
         else -> "UNKNOWN"
       }
 
-  private fun Float.withDigits(digits: Int) = java.lang.String.format("%.${digits}f", this)
+  private fun Float.withDigits(digits: Int) = "%.${digits}f".format(this)
 }

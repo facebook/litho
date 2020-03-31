@@ -17,8 +17,10 @@
 package com.facebook.samples.litho.kotlin.logging
 
 data class EventData(val startTimeNs: Long) {
-  private val annotations: MutableMap<String, Any?> = HashMap()
-  private val markers: MutableList<Pair<Long, String>> = ArrayList()
+  private val annotations: MutableMap<String, Any?> = hashMapOf()
+  private val markers: MutableList<Pair<Long, String>> = mutableListOf()
+
+  var endTimeNs: Long? = null
 
   fun addAnnotation(annotationKey: String, annotationValue: Any?): EventData = apply {
     annotations[annotationKey] = annotationValue
@@ -31,6 +33,4 @@ data class EventData(val startTimeNs: Long) {
   }
 
   fun getMarkers(): List<Pair<Long, String>> = markers
-
-  var endTimeNs: Long? = null
 }

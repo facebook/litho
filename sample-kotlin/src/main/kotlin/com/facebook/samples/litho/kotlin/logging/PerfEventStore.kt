@@ -25,7 +25,7 @@ import com.facebook.litho.PerfEvent
  * how to actually implement logging on the client.
  */
 object PerfEventStore {
-  private val events: MutableMap<PerfEvent, EventData> = HashMap()
+  private val events: MutableMap<PerfEvent, EventData> = hashMapOf()
 
   fun obtain(eventId: Int, instanceKey: Int): PerfEvent {
     val event = SamplePerfEvent(eventId, instanceKey)

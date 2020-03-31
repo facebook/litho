@@ -17,11 +17,8 @@
 package com.facebook.samples.litho.kotlin.logging
 
 data class LogContext(val s: String) {
-
   override fun toString(): String = s
-
-  companion object {
-    fun append(t: LogContext?, s: String): LogContext =
-        if (t == null) LogContext(s) else LogContext(t.s + ":" + s)
-  }
 }
+
+fun LogContext?.append(s: String): LogContext =
+    if (this == null) LogContext(s) else LogContext(this.s + ":" + s)

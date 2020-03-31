@@ -18,7 +18,7 @@ package com.facebook.samples.litho.kotlin.logging
 
 import com.facebook.litho.PerfEvent
 
-class SamplePerfEvent(private val markerId: Int, private val instanceKey: Int) : PerfEvent {
+data class SamplePerfEvent(private val markerId: Int, private val instanceKey: Int) : PerfEvent {
 
   override fun getInstanceKey(): Int = instanceKey
 
@@ -56,23 +56,5 @@ class SamplePerfEvent(private val markerId: Int, private val instanceKey: Int) :
 
   override fun markerPoint(eventName: String) {
     PerfEventStore.markerPoint(this, eventName)
-  }
-
-  override fun equals(other: Any?): Boolean {
-    if (this === other) return true
-    if (javaClass != other?.javaClass) return false
-
-    other as SamplePerfEvent
-
-    if (markerId != other.markerId) return false
-    if (instanceKey != other.instanceKey) return false
-
-    return true
-  }
-
-  override fun hashCode(): Int {
-    var result = markerId
-    result = 31 * result + instanceKey
-    return result
   }
 }

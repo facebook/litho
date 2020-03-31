@@ -32,5 +32,5 @@ object ChildComponentSpec {
 
   @OnCreateTreeProp
   fun onCreateTreeProp(c: ComponentContext, @TreeProp parent: LogContext?): LogContext =
-      LogContext.append(parent, "child")
+      parent.append("child")
 }
