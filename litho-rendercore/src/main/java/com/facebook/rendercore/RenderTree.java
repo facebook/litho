@@ -16,6 +16,8 @@
 
 package com.facebook.rendercore;
 
+import androidx.annotation.Nullable;
+
 /** TODO add javadoc */
 public class RenderTree {
 
@@ -23,6 +25,7 @@ public class RenderTree {
   private final RenderTreeNode[] mFlatList;
   private final int mWidthSpec;
   private final int mHeightSpec;
+  private @Nullable Object mRenderTreeData;
 
   public RenderTree(RenderTreeNode root, RenderTreeNode[] flatList, int widthSpec, int heightSpec) {
     mRoot = root;
@@ -63,5 +66,14 @@ public class RenderTree {
 
   public int getMountableOutputCount() {
     return mFlatList.length;
+  }
+
+  @Nullable
+  public Object getRenderTreeData() {
+    return mRenderTreeData;
+  }
+
+  public void setRenderTreeData(Object renderTreeData) {
+    mRenderTreeData = renderTreeData;
   }
 }

@@ -41,6 +41,8 @@ public class MountDelegate {
 
     boolean needsRemount();
 
+    void mount(RenderTree renderTree);
+
     boolean isRootItem(int position);
 
     Object getContentAt(int position);

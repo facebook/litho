@@ -64,6 +64,7 @@ import com.facebook.litho.stats.LithoStats;
 import com.facebook.rendercore.MountDelegate;
 import com.facebook.rendercore.MountDelegate.MountDelegateTarget;
 import com.facebook.rendercore.MountDelegateExtension;
+import com.facebook.rendercore.RenderTree;
 import com.facebook.rendercore.RenderTreeNode;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -473,6 +474,13 @@ class MountState implements TransitionManager.OnAnimationCompleteListener, Mount
       processVisibilityOutputs(
           layoutState, localVisibleRect, previousLocalVisibleRect, wasDirty, null);
     }
+  }
+
+  @Override
+  public void mount(RenderTree renderTree) {
+    final LayoutState layoutState = (LayoutState) renderTree.getRenderTreeData();
+
+    mount(layoutState);
   }
 
   /**
