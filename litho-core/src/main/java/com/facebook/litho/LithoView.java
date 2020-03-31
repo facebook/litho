@@ -408,6 +408,12 @@ public class LithoView extends Host {
     mIsMeasuring = false;
   }
 
+  void maybeCollectAllTransitions(LayoutState layoutState, ComponentTree componentTree) {
+    if (mMountState.isDirty()) {
+      mMountState.collectAllTransitions(layoutState, componentTree);
+    }
+  }
+
   @Override
   protected void performLayout(boolean changed, int left, int top, int right, int bottom) {
     if (mComponentTree != null) {

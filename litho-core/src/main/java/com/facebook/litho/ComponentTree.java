@@ -626,10 +626,7 @@ public class ComponentTree {
       return;
     }
 
-    final MountState mountState = mLithoView.getMountState();
-    if (mountState.isDirty()) {
-      mountState.collectAllTransitions(layoutState, this);
-    }
+    mLithoView.maybeCollectAllTransitions(layoutState, this);
   }
 
   void attach() {
