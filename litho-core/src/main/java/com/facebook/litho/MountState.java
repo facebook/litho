@@ -218,7 +218,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener, Mount
    * may not have a new LayoutState, the mounted content does not match what the viewport for the
    * LithoView may be.
    */
-  boolean needsRemount() {
+  @Override
+  public boolean needsRemount() {
     assertMainThread();
 
     return mNeedsRemount;

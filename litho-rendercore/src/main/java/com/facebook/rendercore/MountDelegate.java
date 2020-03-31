@@ -39,6 +39,8 @@ public class MountDelegate {
 
     void notifyUnmount(int position);
 
+    boolean needsRemount();
+
     boolean isRootItem(int position);
 
     Object getContentAt(int position);
