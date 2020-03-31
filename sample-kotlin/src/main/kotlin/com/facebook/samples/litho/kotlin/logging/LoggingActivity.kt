@@ -27,6 +27,6 @@ class LoggingActivity : NavigatableDemoActivity() {
     super.onCreate(savedInstanceState)
 
     val c = ComponentContext(this, "LITHOSAMPLE", SampleComponentsLogger())
-    setContentView(LithoView.create(c, LoggingRootComponent.create(c).build()))
+    setContentView(LithoView.create(c, LoggingRootComponent()))
   }
 }

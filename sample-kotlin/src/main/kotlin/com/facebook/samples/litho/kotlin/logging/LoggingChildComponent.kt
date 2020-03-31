@@ -16,19 +16,14 @@
 
 package com.facebook.samples.litho.kotlin.logging
 
-import com.facebook.litho.Component
-import com.facebook.litho.ComponentContext
-import com.facebook.litho.annotations.LayoutSpec
-import com.facebook.litho.annotations.OnCreateLayout
-import com.facebook.litho.annotations.OnCreateTreeProp
+import com.facebook.litho.KComponent
+import com.facebook.litho.createTreeProp
+import com.facebook.litho.useTreeProp
+import com.facebook.litho.widget.Text
 
-@LayoutSpec
-object LoggingRootComponentSpec {
-  @OnCreateLayout
-  fun onCreateLayout(c: ComponentContext): Component =
-      ChildComponent.create(c).build()
+class LoggingChildComponent : KComponent({
+  val parent = useTreeProp<LogContext>()
+  createTreeProp { parent.append("child") }
 
-  @OnCreateTreeProp
-  fun onCreateTreeProp(c: ComponentContext): LogContext =
-      LogContext("root")
-}
+  Text(text = "Hello, Logger.")
+})
