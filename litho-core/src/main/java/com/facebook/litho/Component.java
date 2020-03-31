@@ -29,6 +29,7 @@ import static com.facebook.litho.DynamicPropsManager.KEY_TRANSLATION_Y;
 
 import android.animation.AnimatorInflater;
 import android.animation.StateListAnimator;
+import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.SparseArray;
@@ -130,6 +131,9 @@ public abstract class Component extends ComponentLifecycle
   // Keep hold of the layout that we resolved during will render
   // in order to use it again in createLayout.
   @Nullable private InternalNode mLayoutCreatedInWillRender;
+
+  @ThreadConfined(ThreadConfined.ANY)
+  private @Nullable Context mBuilderContext;
 
   protected Component() {
     mSimpleName = getClass().getSimpleName();
@@ -824,6 +828,15 @@ public abstract class Component extends ComponentLifecycle
     }
 
     return true;
+  }
+
+  @Nullable
+  Context getBuilderContext() {
+    return mBuilderContext;
+  }
+
+  void setBuilderContext(Context context) {
+    mBuilderContext = context;
   }
 
   /**
@@ -2006,6 +2019,7 @@ public abstract class Component extends ComponentLifecycle
         mComponent.getOrCreateCommonProps().setStyle(defStyleAttr, defStyleRes);
         component.loadStyle(c, defStyleAttr, defStyleRes);
       }
+      mComponent.setBuilderContext(c.getAndroidContext());
     }
 
     private Component getOwner() {

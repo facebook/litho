@@ -95,6 +95,8 @@ public class ComponentTree {
   private static final String REENTRANT_MOUNTS_EXCEED_MAX_ATTEMPTS =
       "ComponentTree:ReentrantMountsExceedMaxAttempts";
   private static final int REENTRANT_MOUNTS_MAX_ATTEMPTS = 25;
+  private static final String CT_CONTEXT_IS_DIFFERENT_FROM_ROOT_BUILDER_CONTEXT =
+      "ComponentTree:CTContextIsDifferentFromRootBuilderContext";
 
   private static final int SCHEDULE_NONE = 0;
   private static final int SCHEDULE_LAYOUT_ASYNC = 1;
@@ -2475,6 +2477,19 @@ public class ComponentTree {
         localLayoutStateFuture.release();
         mLayoutStateFutures.remove(localLayoutStateFuture);
       }
+    }
+
+    if (context.getAndroidContext() != root.getBuilderContext()) {
+      final String message =
+          "ComponentTree context is different from root builder context"
+              + ", ComponentTree context="
+              + context.getAndroidContext()
+              + ", root builder context="
+              + root.getBuilderContext();
+      ComponentsReporter.emitMessage(
+          ComponentsReporter.LogLevel.ERROR,
+          CT_CONTEXT_IS_DIFFERENT_FROM_ROOT_BUILDER_CONTEXT,
+          message);
     }
 
     return layoutState;
