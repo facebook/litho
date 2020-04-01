@@ -238,12 +238,6 @@ class LayoutState
   private final LongSparseArray<Integer> mOutputsIdToPositionMap = new LongSparseArray<>(8);
   private final ArrayList<RenderTreeNode> mMountableOutputTops = new ArrayList<>();
   private final ArrayList<RenderTreeNode> mMountableOutputBottoms = new ArrayList<>();
-  /*private ArrayList<IncrementalModuleItem> mIncrementalVisibilityItemsTops;
-  private ArrayList<IncrementalModuleItem> mIncrementalVisibilitytemsBottoms;
-  private ArrayList<IncrementalModuleItem> mIncrementalFullImpressionItemsTops;
-  private ArrayList<IncrementalModuleItem> mIncrementalFullImpressionItemsBottoms;
-  private ArrayList<FocusedIncrementalModuleItem> mIncrementalFocusedItems;
-  private ArrayList<VisibilityOutput> mVisibilityChangedOutputs;*/
   private final @Nullable VisibilityModuleInput mVisibilityModuleInput;
 
   private final @Nullable Map<Integer, InternalNode> mLastMeasuredLayouts;
@@ -1989,32 +1983,6 @@ class LayoutState
   public List<VisibilityOutput> getVisibilityOutputs() {
     return mVisibilityOutputs;
   }
-
-  /*
-  ArrayList<IncrementalModuleItem> getIncrementalVisibilityItemsTops() {
-    return mIncrementalVisibilityItemsTops;
-  }
-
-  ArrayList<IncrementalModuleItem> getIncrementalVisibilityItemsBottoms() {
-    return mIncrementalVisibilitytemsBottoms;
-  }
-
-  ArrayList<IncrementalModuleItem> getFullImpressionItemsTops() {
-    return mIncrementalFullImpressionItemsTops;
-  }
-
-  ArrayList<IncrementalModuleItem> getFullImpressionItemsBottoms() {
-    return mIncrementalFullImpressionItemsBottoms;
-  }
-
-  ArrayList<FocusedIncrementalModuleItem> getIncrementalFocusedItems() {
-    return mIncrementalFocusedItems;
-  }
-
-  ArrayList<VisibilityOutput> getVisibilityChangedOutputs() {
-    return mVisibilityChangedOutputs;
-  }
-   */
 
   @Override
   public VisibilityModuleInput getVisibilityModuleInput() {
