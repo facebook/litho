@@ -328,7 +328,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener, Mount
       final MountItem rootMountItem = mIndexToItemMap.get(ROOT_HOST_ID);
 
       for (int i = 0, size = layoutState.getMountableOutputCount(); i < size; i++) {
-        final LayoutOutput layoutOutput = getLayoutOutput(layoutState.getMountableOutputAt(i));
+        final RenderTreeNode node = layoutState.getMountableOutputAt(i);
+        final LayoutOutput layoutOutput = getLayoutOutput(node);
         final Component component = layoutOutput.getComponent();
         if (isTracing) {
           ComponentsSystrace.beginSection(component.getSimpleName());
@@ -344,7 +345,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener, Mount
                 || (currentMountItem != null && currentMountItem == rootMountItem);
 
         if (isMountable && !isMounted) {
-          mountLayoutOutput(i, layoutOutput, layoutState);
+          mountLayoutOutput(i, node, layoutOutput, layoutState);
 
           if (isAnimationLocked(i) && isIncrementalMountEnabled && component.hasChildLithoViews()) {
             // If the component is locked for animation then we need to make sure that all the
@@ -366,7 +367,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener, Mount
             final TransitionId transitionId = currentMountItem.getTransitionId();
             final boolean itemUpdated =
                 updateMountItemIfNeeded(
-                    layoutOutput,
+                    node,
                     layoutState,
                     currentMountItem,
                     useUpdateValueFromLayoutOutput,
@@ -565,7 +566,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener, Mount
       }
 
       if (!isMounted) {
-        mountLayoutOutput(i, layoutOutput, layoutState);
+        mountLayoutOutput(i, renderTreeNode, layoutOutput, layoutState);
       } else {
         final boolean useUpdateValueFromLayoutOutput =
             mLastMountedLayoutState != null
@@ -575,7 +576,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener, Mount
         final TransitionId transitionId = currentMountItem.getTransitionId();
         final boolean itemUpdated =
             updateMountItemIfNeeded(
-                layoutOutput,
+                renderTreeNode,
                 layoutState,
                 currentMountItem,
                 useUpdateValueFromLayoutOutput,
@@ -652,7 +653,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener, Mount
     // RenderTreeNode.
     if (input instanceof LayoutState) {
       LayoutState layoutState = (LayoutState) input;
-      mountLayoutOutput(position, getLayoutOutput(renderTreeNode), layoutState);
+      mountLayoutOutput(position, renderTreeNode, getLayoutOutput(renderTreeNode), layoutState);
     } else {
       throw new IllegalStateException("This is not supported for now");
     }
@@ -1232,12 +1233,13 @@ class MountState implements TransitionManager.OnAnimationCompleteListener, Mount
   }
 
   private boolean updateMountItemIfNeeded(
-      LayoutOutput layoutOutput,
+      RenderTreeNode node,
       LayoutState layoutState,
       MountItem currentMountItem,
       boolean useUpdateValueFromLayoutOutput,
       int componentTreeId,
       int index) {
+    final LayoutOutput layoutOutput = getLayoutOutput(node);
     final Component layoutOutputComponent = layoutOutput.getComponent();
     final Component itemComponent = currentMountItem.getComponent();
     if (layoutOutputComponent == null) {
@@ -1518,9 +1520,9 @@ class MountState implements TransitionManager.OnAnimationCompleteListener, Mount
             // Item is already mounted - skip
             continue;
           }
-          final LayoutOutput layoutOutput =
-              getLayoutOutput(mLastMountedLayoutState.getMountableOutputAt(j));
-          mountLayoutOutput(j, layoutOutput, mLastMountedLayoutState);
+          final RenderTreeNode node = mLastMountedLayoutState.getMountableOutputAt(j);
+          final LayoutOutput layoutOutput = getLayoutOutput(node);
+          mountLayoutOutput(j, node, layoutOutput, mLastMountedLayoutState);
         }
 
         // Reference to the root of the disappearing subtree
@@ -1723,7 +1725,11 @@ class MountState implements TransitionManager.OnAnimationCompleteListener, Mount
     newComponent.mount(getContextForComponent(newComponent), previousContent);
   }
 
-  private void mountLayoutOutput(int index, LayoutOutput layoutOutput, LayoutState layoutState) {
+  private void mountLayoutOutput(
+      final int index,
+      final RenderTreeNode node,
+      final LayoutOutput layoutOutput,
+      final LayoutState layoutState) {
     // 1. Resolve the correct host to mount our content to.
     final long startTime = System.nanoTime();
     final long hostMarker = layoutOutput.getHostMarker();
@@ -1732,9 +1738,9 @@ class MountState implements TransitionManager.OnAnimationCompleteListener, Mount
     if (host == null) {
       // Host has not yet been mounted - mount it now.
       final int hostMountIndex = layoutState.getLayoutOutputPositionForId(hostMarker);
-      final LayoutOutput hostLayoutOutput =
-          getLayoutOutput(layoutState.getMountableOutputAt(hostMountIndex));
-      mountLayoutOutput(hostMountIndex, hostLayoutOutput, layoutState);
+      final RenderTreeNode hostNode = layoutState.getMountableOutputAt(hostMountIndex);
+      final LayoutOutput hostLayoutOutput = getLayoutOutput(node);
+      mountLayoutOutput(hostMountIndex, hostNode, hostLayoutOutput, layoutState);
 
       host = mHostsByMarker.get(hostMarker);
     }
@@ -1758,7 +1764,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener, Mount
     }
 
     // 4. Mount the content into the selected host.
-    final MountItem item = mountContent(index, component, content, host, layoutOutput);
+    final MountItem item = mountContent(index, component, content, host, node, layoutOutput);
 
     // 5. Notify the component that mounting has completed
     bindComponentToContent(component, content);
@@ -1792,6 +1798,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener, Mount
       Component component,
       Object content,
       ComponentHost host,
+      RenderTreeNode node,
       LayoutOutput layoutOutput) {
 
     final MountItem item = new MountItem(component, host, content, layoutOutput);
@@ -3437,6 +3444,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener, Mount
         if (getItemAt(layoutOutputIndex) == null) {
           mountLayoutOutput(
               layoutState.getLayoutOutputPositionForId(layoutOutput.getId()),
+              node,
               layoutOutput,
               layoutState);
           mComponentIdsMountedInThisFrame.add(layoutOutput.getId());
@@ -3457,6 +3465,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener, Mount
         if (getItemAt(layoutOutputIndex) == null) {
           mountLayoutOutput(
               layoutState.getLayoutOutputPositionForId(layoutOutput.getId()),
+              node,
               layoutOutput,
               layoutState);
           mComponentIdsMountedInThisFrame.add(layoutOutput.getId());
