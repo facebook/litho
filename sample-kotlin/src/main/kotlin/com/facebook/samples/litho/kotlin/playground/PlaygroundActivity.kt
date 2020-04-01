@@ -39,7 +39,7 @@ class PlaygroundActivity : NavigatableDemoActivity() {
       val counter by useState { 1 }
 
       Clickable(onClick = {
-        updateState { counter.value = counter.value + 1 }
+        updateState { counter.value++ }
       }) {
         Padding(all = 16.dp) {
           Column {

@@ -32,11 +32,11 @@ import com.facebook.litho.value
 class FavouriteButton : KComponent({
 
   val isFavourite by useState { false }
-  val background = drawableRes(if (isFavourite.value) star_on else star_off)
+  val star = drawableRes(if (isFavourite.value) star_on else star_off)
 
   Clickable(onClick = { updateState { isFavourite.value = !isFavourite.value } }) {
     FixedSize(width = 32.dp, height = 32.dp) {
-      Decoration(background = background) {
+      Decoration(background = star) {
         Row()
       }
     }

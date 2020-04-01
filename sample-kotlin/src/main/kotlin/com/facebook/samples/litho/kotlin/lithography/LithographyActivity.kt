@@ -20,6 +20,7 @@ import android.os.Bundle
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.facebook.litho.Component
+import com.facebook.litho.ComponentContext
 import com.facebook.litho.LithoView
 import com.facebook.litho.sections.SectionContext
 import com.facebook.litho.sections.widget.RecyclerCollectionComponent
@@ -28,13 +29,14 @@ import com.facebook.samples.litho.kotlin.lithography.data.DataFetcher
 import com.facebook.samples.litho.kotlin.lithography.data.DecadeViewModel
 import com.facebook.samples.litho.kotlin.lithography.data.Model
 import com.facebook.samples.litho.kotlin.lithography.sections.LithoFeedSection
+import kotlin.LazyThreadSafetyMode.NONE
 
 class LithographyActivity : NavigatableDemoActivity() {
 
-  private val sectionContext: SectionContext by lazy { SectionContext(this) }
-  private val lithoView: LithoView by lazy { LithoView(sectionContext) }
-  private val fetcher: DataFetcher by lazy { DataFetcher(viewModel.model) }
-  private val viewModel: DecadeViewModel by lazy {
+  private val c by lazy(NONE) { ComponentContext(this) }
+  private val lithoView by lazy(NONE) { LithoView(c) }
+  private val fetcher by lazy(NONE) { DataFetcher(viewModel.model) }
+  private val viewModel by lazy(NONE) {
     ViewModelProviders.of(this).get(DecadeViewModel::class.java)
   }
 
@@ -47,19 +49,15 @@ class LithographyActivity : NavigatableDemoActivity() {
 
   private fun setList(model: Model?) {
     model?.let {
-      if (lithoView.componentTree == null) {
-        lithoView.setComponent(createRecyclerComponent(it))
-      } else {
-        lithoView.setComponentAsync(createRecyclerComponent(it))
-      }
+      lithoView.setComponentAsync(createRecyclerComponent(it))
     }
   }
 
   private fun createRecyclerComponent(model: Model): Component =
       RecyclerCollectionComponent
-          .create(sectionContext)
+          .create(c)
           .section(
-              LithoFeedSection.create(sectionContext)
+              LithoFeedSection.create(SectionContext(c))
                   .decades(model.decades)
                   .fetcher(fetcher)
                   .loading(model.isLoading)

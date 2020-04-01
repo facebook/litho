@@ -47,10 +47,8 @@ object DecadeSectionSpec {
           .child(
               DataDiffSection.create<Artist>(c)
                   .data(decade.artists)
-                  .renderEventHandler(
-                      DecadeSection.render(c))
-                  .onCheckIsSameItemEventHandler(
-                      DecadeSection.isSameItem(c)))
+                  .renderEventHandler(DecadeSection.render(c))
+                  .onCheckIsSameItemEventHandler(DecadeSection.isSameItem(c)))
           .build()
 
   @OnEvent(RenderEvent::class)
