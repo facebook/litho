@@ -412,20 +412,24 @@ class MountState implements TransitionManager.OnAnimationCompleteListener, Mount
       mTransitionManager.runTransitions();
     }
 
-    if (processVisibilityOutputs) {
-      if (isTracing) {
-        ComponentsSystrace.beginSection("processVisibilityOutputs");
-      }
-      if (mountPerfEvent != null) {
-        mountPerfEvent.markerPoint("EVENT_PROCESS_VISIBILITY_OUTPUTS_START");
-      }
-      processVisibilityOutputs(
-          layoutState, localVisibleRect, mPreviousLocalVisibleRect, mIsDirty, mountPerfEvent);
-      if (mountPerfEvent != null) {
-        mountPerfEvent.markerPoint("EVENT_PROCESS_VISIBILITY_OUTPUTS_END");
-      }
-      if (isTracing) {
-        ComponentsSystrace.endSection();
+    if (mVisibilityOutputsExtension != null) {
+      processVisibilityOutputsWithExtension(layoutState, mIsDirty);
+    } else {
+      if (processVisibilityOutputs) {
+        if (isTracing) {
+          ComponentsSystrace.beginSection("processVisibilityOutputs");
+        }
+        if (mountPerfEvent != null) {
+          mountPerfEvent.markerPoint("EVENT_PROCESS_VISIBILITY_OUTPUTS_START");
+        }
+        processVisibilityOutputs(
+            layoutState, localVisibleRect, mPreviousLocalVisibleRect, mIsDirty, mountPerfEvent);
+        if (mountPerfEvent != null) {
+          mountPerfEvent.markerPoint("EVENT_PROCESS_VISIBILITY_OUTPUTS_END");
+        }
+        if (isTracing) {
+          ComponentsSystrace.endSection();
+        }
       }
     }
 
@@ -471,9 +475,13 @@ class MountState implements TransitionManager.OnAnimationCompleteListener, Mount
       mIncrementalMountExtension.onViewOffset();
     }
 
-    if (processVisibilityOutputs) {
-      processVisibilityOutputs(
-          layoutState, localVisibleRect, previousLocalVisibleRect, wasDirty, null);
+    if (mVisibilityOutputsExtension != null) {
+      processVisibilityOutputsWithExtension(layoutState, wasDirty);
+    } else {
+      if (processVisibilityOutputs) {
+        processVisibilityOutputs(
+            layoutState, localVisibleRect, previousLocalVisibleRect, wasDirty, null);
+      }
     }
   }
 
@@ -779,22 +787,20 @@ class MountState implements TransitionManager.OnAnimationCompleteListener, Mount
     }
   }
 
+  private void processVisibilityOutputsWithExtension(LayoutState layoutState, boolean isDirty) {
+    if (isDirty) {
+      mVisibilityOutputsExtension.beforeMount(layoutState);
+    } else {
+      mVisibilityOutputsExtension.onViewOffset();
+    }
+  }
+
   void processVisibilityOutputs(
       LayoutState layoutState,
       @Nullable Rect localVisibleRect,
       Rect previousLocalVisibleRect,
       boolean isDirty,
       @Nullable PerfEvent mountPerfEvent) {
-
-    if (mVisibilityOutputsExtension != null) {
-      if (isDirty) {
-        mVisibilityOutputsExtension.beforeMount(layoutState);
-      } else {
-        mVisibilityOutputsExtension.onViewOffset();
-      }
-      return;
-    }
-
     final boolean isTracing = ComponentsSystrace.isTracing();
 
     try {

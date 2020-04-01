@@ -21,6 +21,7 @@ import static com.facebook.litho.testing.helper.ComponentTestHelper.measureAndLa
 import static com.facebook.litho.testing.helper.ComponentTestHelper.mountComponent;
 import static com.facebook.litho.testing.helper.ComponentTestHelper.unbindComponent;
 import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 import android.graphics.Rect;
 import android.view.ViewGroup;
@@ -972,6 +973,21 @@ public class VisibilityEventsTestWithExtensionInMountStateTest {
 
     lithoView.setHasTransientState(false);
     assertThat(content.getDispatchedEventHandlers()).contains(visibleEventHandler);
+  }
+
+  // This should not be crashing when calling mount with visibility output processing disabled
+  // then enabled.
+  @Test
+  public void testMountWithoutWithVisibility() {
+    final TestComponent content = create(mContext).build();
+
+    final LithoView lithoView = new LithoView(mContext);
+    lithoView.setComponent(content);
+    final LayoutState layoutState = mock(LayoutState.class);
+    final MountState mountState = new MountState(lithoView);
+
+    mountState.mount(layoutState, new Rect(0, 10, 10, 10), false);
+    mountState.mount(layoutState, new Rect(0, 10, 10, 10), true);
   }
 
   @Test
