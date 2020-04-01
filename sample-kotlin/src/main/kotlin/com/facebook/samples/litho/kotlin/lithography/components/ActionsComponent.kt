@@ -16,32 +16,19 @@
 
 package com.facebook.samples.litho.kotlin.lithography.components
 
-import android.graphics.Color.GRAY
-import android.graphics.Typeface.ITALIC
-import com.facebook.litho.Column
-import com.facebook.litho.Component
-import com.facebook.litho.ComponentContext
+import com.facebook.litho.Decoration
+import com.facebook.litho.KComponent
 import com.facebook.litho.Padding
-import com.facebook.litho.annotations.LayoutSpec
-import com.facebook.litho.annotations.OnCreateLayout
-import com.facebook.litho.annotations.Prop
-import com.facebook.litho.annotations.ResType.STRING
-import com.facebook.litho.build
+import com.facebook.litho.Row
 import com.facebook.litho.dp
-import com.facebook.litho.widget.Text
+import com.facebook.litho.drawableColor
 
-@LayoutSpec
-object FooterComponentSpec {
-
-  @OnCreateLayout
-  fun onCreateLayout(
-      c: ComponentContext,
-      @Prop(resType = STRING) text: String
-  ): Component? = build(c) {
-    Padding(8.dp) {
-      Column {
-        +Text(text = text, textColor = GRAY, textStyle = ITALIC)
+class ActionsComponent : KComponent({
+  Decoration(background = drawableColor(0xddffffff)) {
+    Padding(2.dp) {
+      Row {
+        +FavouriteButton()
       }
     }
   }
-}
+})

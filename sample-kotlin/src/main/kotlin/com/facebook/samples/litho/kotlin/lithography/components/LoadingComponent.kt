@@ -16,31 +16,18 @@
 
 package com.facebook.samples.litho.kotlin.lithography.components
 
-import com.facebook.litho.Component
-import com.facebook.litho.ComponentContext
-import com.facebook.litho.Decoration
-import com.facebook.litho.Padding
-import com.facebook.litho.Position
+import android.graphics.Color
+import com.facebook.litho.FixedSize
+import com.facebook.litho.KComponent
 import com.facebook.litho.Row
-import com.facebook.litho.annotations.LayoutSpec
-import com.facebook.litho.annotations.OnCreateLayout
-import com.facebook.litho.build
 import com.facebook.litho.dp
-import com.facebook.litho.drawableColor
+import com.facebook.litho.widget.Progress
+import com.facebook.yoga.YogaJustify.CENTER
 
-@LayoutSpec
-object ActionsComponentSpec {
-
-  @OnCreateLayout
-  fun onCreateLayout(c: ComponentContext): Component? = build(c) {
-    Position(top = 4.dp, right = 4.dp) {
-      Decoration(background = drawableColor(0xddffffff)) {
-        Padding(2.dp) {
-          Row {
-            +FavouriteButton()
-          }
-        }
-      }
+class LoadingComponent : KComponent({
+  Row(justifyContent = CENTER) {
+    +FixedSize(width = 50.dp) {
+      Progress(color = Color.DKGRAY)
     }
   }
-}
+})

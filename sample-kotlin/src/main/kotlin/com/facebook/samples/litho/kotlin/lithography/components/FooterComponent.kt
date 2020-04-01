@@ -16,27 +16,18 @@
 
 package com.facebook.samples.litho.kotlin.lithography.components
 
-import android.graphics.Color
-import com.facebook.litho.Component
-import com.facebook.litho.ComponentContext
-import com.facebook.litho.FixedSize
-import com.facebook.litho.Row
-import com.facebook.litho.annotations.LayoutSpec
-import com.facebook.litho.annotations.OnCreateLayout
-import com.facebook.litho.build
+import android.graphics.Color.GRAY
+import android.graphics.Typeface.ITALIC
+import com.facebook.litho.Column
+import com.facebook.litho.KComponent
+import com.facebook.litho.Padding
 import com.facebook.litho.dp
-import com.facebook.litho.widget.Progress
-import com.facebook.yoga.YogaJustify.CENTER
+import com.facebook.litho.widget.Text
 
-@LayoutSpec
-object LoadingComponentSpec {
-
-  @OnCreateLayout
-  fun onCreateLayout(c: ComponentContext): Component? = build(c) {
-    Row(justifyContent = CENTER) {
-      +FixedSize(width = 50.dp) {
-        Progress(color = Color.DKGRAY)
-      }
+class FooterComponent(text: String) : KComponent({
+  Padding(8.dp) {
+    Column {
+      +Text(text = text, textColor = GRAY, textStyle = ITALIC)
     }
   }
-}
+})

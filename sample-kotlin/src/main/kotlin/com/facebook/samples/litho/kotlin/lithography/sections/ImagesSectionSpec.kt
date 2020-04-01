@@ -44,6 +44,6 @@ object ImagesSectionSpec {
   @OnEvent(RenderEvent::class)
   fun onRender(c: SectionContext, @FromEvent model: String): RenderInfo =
       ComponentRenderInfo.create()
-          .component(SingleImageComponent.create(c).imageUri(model).imageAspectRatio(2f).build())
+          .component(SingleImageComponent(imageUri = model, imageAspectRatio = 2f))
           .build()
 }

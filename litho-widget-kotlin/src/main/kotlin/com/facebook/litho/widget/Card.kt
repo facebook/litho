@@ -39,7 +39,7 @@ inline fun DslScope.Card(
     disableClipTopRight: Boolean = false,
     disableClipBottomLeft: Boolean = false,
     disableClipBottomRight: Boolean = false,
-    child: DslScope.() -> Component.Builder<*>
+    child: DslScope.() -> Component
 ): Card =
     Card.create(context)
         .cardBackgroundColor(cardBackgroundColor)

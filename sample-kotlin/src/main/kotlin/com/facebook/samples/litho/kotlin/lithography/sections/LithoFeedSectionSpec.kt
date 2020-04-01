@@ -49,7 +49,7 @@ object LithoFeedSectionSpec {
     if (loading) {
       children.child(
           SingleComponentSection.create(c)
-              .component(LoadingComponent.create(c).build()))
+              .component(LoadingComponent()))
     }
 
     return children.build()

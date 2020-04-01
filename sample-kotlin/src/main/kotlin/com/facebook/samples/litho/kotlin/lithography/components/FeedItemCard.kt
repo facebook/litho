@@ -27,7 +27,7 @@ class FeedItemCard(artist: Artist) : KComponent({
   Padding(horizontal = 16.dp, vertical = 8.dp) {
     Column {
       +Card {
-        FeedItemComponent.create(context).artist(artist)
+        FeedItemComponent(artist = artist)
       }
     }
   }

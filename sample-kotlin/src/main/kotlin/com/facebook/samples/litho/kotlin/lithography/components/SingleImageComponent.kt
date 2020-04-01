@@ -17,30 +17,15 @@
 package com.facebook.samples.litho.kotlin.lithography.components
 
 import com.facebook.drawee.backends.pipeline.Fresco
-import com.facebook.litho.Component
-import com.facebook.litho.ComponentContext
-import com.facebook.litho.annotations.LayoutSpec
-import com.facebook.litho.annotations.OnCreateLayout
-import com.facebook.litho.annotations.Prop
-import com.facebook.litho.annotations.PropDefault
-import com.facebook.litho.build
+import com.facebook.litho.KComponent
 import com.facebook.litho.fresco.FrescoImage
 
-@LayoutSpec
-object SingleImageComponentSpec {
-
-  @PropDefault
-  val imageAspectRatio = 1f
-
-  @OnCreateLayout
-  fun onCreateLayout(
-      c: ComponentContext,
-      @Prop imageUri: String,
-      @Prop(optional = true) imageAspectRatio: Float
-  ): Component? = build(c) {
-    FrescoImage(
-        controller = Fresco.newDraweeControllerBuilder().setUri(imageUri).build(),
-        imageAspectRatio = imageAspectRatio
-    )
-  }
-}
+class SingleImageComponent(
+    imageUri: String,
+    imageAspectRatio: Float = 1f
+) : KComponent({
+  FrescoImage(
+      controller = Fresco.newDraweeControllerBuilder().setUri(imageUri).build(),
+      imageAspectRatio = imageAspectRatio
+  )
+})
