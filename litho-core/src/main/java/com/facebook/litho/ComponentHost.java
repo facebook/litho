@@ -18,6 +18,7 @@ package com.facebook.litho;
 
 import static com.facebook.litho.AccessibilityUtils.isAccessibilityEnabled;
 import static com.facebook.litho.ComponentHostUtils.maybeInvalidateAccessibilityState;
+import static com.facebook.litho.LayoutOutput.getLayoutOutput;
 import static com.facebook.litho.MountItem.isTouchableDisabled;
 import static com.facebook.litho.ThreadUtils.assertMainThread;
 
@@ -143,7 +144,7 @@ public class ComponentHost extends ViewGroup {
     } else if (content instanceof View) {
       ensureViewMountItems();
       mViewMountItems.put(index, mountItem);
-      mountView((View) content, mountItem.getLayoutFlags());
+      mountView((View) content, getLayoutOutput(mountItem).getFlags());
       maybeRegisterTouchExpansion(index, mountItem);
     }
 
@@ -235,7 +236,7 @@ public class ComponentHost extends ViewGroup {
   void unmountDisappearingItem(MountItem disappearingItem) {
     ensureDisappearingItems();
     if (!mDisappearingItems.remove(disappearingItem)) {
-      final TransitionId transitionId = disappearingItem.getTransitionId();
+      final TransitionId transitionId = getLayoutOutput(disappearingItem).getTransitionId();
       throw new RuntimeException(
           "Tried to remove non-existent disappearing item, transitionId: " + transitionId);
     }
@@ -261,14 +262,14 @@ public class ComponentHost extends ViewGroup {
     }
     final List<TransitionId> ids = new ArrayList<>();
     for (int i = 0, size = mDisappearingItems.size(); i < size; i++) {
-      ids.add(mDisappearingItems.get(i).getTransitionId());
+      ids.add(getLayoutOutput(mDisappearingItems.get(i)).getTransitionId());
     }
 
     return ids;
   }
 
   private void maybeMoveTouchExpansionIndexes(MountItem item, int oldIndex, int newIndex) {
-    final ViewNodeInfo viewNodeInfo = item.getViewNodeInfo();
+    final ViewNodeInfo viewNodeInfo = getLayoutOutput(item).getViewNodeInfo();
     if (viewNodeInfo == null) {
       return;
     }
@@ -282,7 +283,7 @@ public class ComponentHost extends ViewGroup {
   }
 
   void maybeRegisterTouchExpansion(int index, MountItem mountItem) {
-    final ViewNodeInfo viewNodeInfo = mountItem.getViewNodeInfo();
+    final ViewNodeInfo viewNodeInfo = getLayoutOutput(mountItem).getViewNodeInfo();
     if (viewNodeInfo == null) {
       return;
     }
@@ -307,7 +308,7 @@ public class ComponentHost extends ViewGroup {
   }
 
   void maybeUnregisterTouchExpansion(int index, MountItem mountItem) {
-    final ViewNodeInfo viewNodeInfo = mountItem.getViewNodeInfo();
+    final ViewNodeInfo viewNodeInfo = getLayoutOutput(mountItem).getViewNodeInfo();
     if (viewNodeInfo == null) {
       return;
     }
@@ -345,7 +346,7 @@ public class ComponentHost extends ViewGroup {
     for (int i = 0; i < getMountItemCount(); i++) {
       MountItem item = getMountItemAt(i);
       // For inexplicable reason, item is null sometimes.
-      if (item != null && item.isAccessible()) {
+      if (item != null && getLayoutOutput(item).isAccessible()) {
         return item;
       }
     }
@@ -660,7 +661,7 @@ public class ComponentHost extends ViewGroup {
 
   private boolean implementsVirtualViews() {
     MountItem item = getAccessibleMountItem();
-    return item != null && item.getComponent().implementsExtraAccessibilityNodes();
+    return item != null && getLayoutOutput(item).getComponent().implementsExtraAccessibilityNodes();
   }
 
   public List<CharSequence> getContentDescriptions() {
@@ -668,7 +669,7 @@ public class ComponentHost extends ViewGroup {
     for (int i = 0, size = mDrawableMountItems == null ? 0 : mDrawableMountItems.size();
         i < size;
         i++) {
-      final NodeInfo nodeInfo = mDrawableMountItems.valueAt(i).getNodeInfo();
+      final NodeInfo nodeInfo = getLayoutOutput(mDrawableMountItems.valueAt(i)).getNodeInfo();
       if (nodeInfo == null) {
         continue;
       }
@@ -788,7 +789,8 @@ public class ComponentHost extends ViewGroup {
           i--) {
         final MountItem item = mDrawableMountItems.valueAt(i);
 
-        if (item.getContent() instanceof Touchable && !isTouchableDisabled(item.getLayoutFlags())) {
+        if (item.getContent() instanceof Touchable
+            && !isTouchableDisabled(getLayoutOutput(item).getFlags())) {
           final Touchable t = (Touchable) item.getContent();
           if (t.shouldHandleTouchEvent(event) && t.onTouchEvent(event, this)) {
             handled = true;
@@ -853,11 +855,9 @@ public class ComponentHost extends ViewGroup {
         i < size;
         i++) {
       final MountItem mountItem = mDrawableMountItems.valueAt(i);
+      final LayoutOutput output = getLayoutOutput(mountItem);
       ComponentHostUtils.maybeSetDrawableState(
-          this,
-          (Drawable) mountItem.getContent(),
-          mountItem.getLayoutFlags(),
-          mountItem.getNodeInfo());
+          this, (Drawable) mountItem.getContent(), output.getFlags(), output.getNodeInfo());
     }
   }
 
@@ -1235,7 +1235,7 @@ public class ComponentHost extends ViewGroup {
         i < size;
         i++) {
       final MountItem mountItem = mDrawableMountItems.valueAt(i);
-      if ((mountItem.getLayoutFlags() & MountItem.LAYOUT_FLAG_MATCH_HOST_BOUNDS) != 0) {
+      if ((getLayoutOutput(mountItem).getFlags() & MountItem.LAYOUT_FLAG_MATCH_HOST_BOUNDS) != 0) {
         if (drawables == null) {
           drawables = new ArrayList<>();
         }
@@ -1304,8 +1304,9 @@ public class ComponentHost extends ViewGroup {
     mDrawableMountItems.put(index, mountItem);
     final Drawable drawable = (Drawable) mountItem.getContent();
 
+    final LayoutOutput output = getLayoutOutput(mountItem);
     ComponentHostUtils.mountDrawable(
-        this, drawable, bounds, mountItem.getLayoutFlags(), mountItem.getNodeInfo());
+        this, drawable, bounds, output.getFlags(), output.getNodeInfo());
   }
 
   private void unmountDrawable(MountItem mountItem) {
@@ -1426,7 +1427,7 @@ public class ComponentHost extends ViewGroup {
   }
 
   private static String getMountItemName(MountItem mountItem) {
-    return mountItem.getComponent().getSimpleName();
+    return getLayoutOutput(mountItem).getComponent().getSimpleName();
   }
 
   @Override

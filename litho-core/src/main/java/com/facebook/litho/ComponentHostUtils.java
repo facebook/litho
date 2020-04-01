@@ -16,6 +16,8 @@
 
 package com.facebook.litho;
 
+import static com.facebook.litho.LayoutOutput.getLayoutOutput;
+
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.view.View;
@@ -177,7 +179,7 @@ class ComponentHostUtils {
   }
 
   static void maybeInvalidateAccessibilityState(MountItem mountItem) {
-    if (mountItem.isAccessible()) {
+    if (getLayoutOutput(mountItem).isAccessible()) {
       mountItem.getHost().invalidateAccessibilityState();
     }
   }

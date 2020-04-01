@@ -360,15 +360,16 @@ public class TransitionsExtension extends MountDelegateExtension
 
     for (int i = 0, size = mIndexToItemMap.size(); i < size; i++) {
       final MountItem mountItem = mIndexToItemMap.valueAt(i);
-      if (!mountItem.hasTransitionId()) {
+      final LayoutOutput output = getLayoutOutput(mountItem);
+      if (output.getTransitionId() == null) {
         continue;
       }
       final long layoutOutputId = mIndexToItemMap.keyAt(i);
       final @OutputUnitType int type = LayoutStateOutputIdCalculator.getTypeFromId(layoutOutputId);
-      OutputUnitsAffinityGroup<Object> group = animatingContent.get(mountItem.getTransitionId());
+      OutputUnitsAffinityGroup<Object> group = animatingContent.get(output.getTransitionId());
       if (group == null) {
         group = new OutputUnitsAffinityGroup<>();
-        animatingContent.put(mountItem.getTransitionId(), group);
+        animatingContent.put(output.getTransitionId(), group);
       }
       group.replace(type, mountItem.getContent());
     }
@@ -401,9 +402,10 @@ public class TransitionsExtension extends MountDelegateExtension
   @Override
   public void onUmountItem(Object item, long layoutOutputId) {
     MountItem mountItem = (MountItem) item;
-    if (mountItem.hasTransitionId()) {
+    final LayoutOutput output = getLayoutOutput(mountItem);
+    if (output.getTransitionId() != null) {
       final @OutputUnitType int type = LayoutStateOutputIdCalculator.getTypeFromId(layoutOutputId);
-      maybeRemoveAnimatingMountContent(mountItem.getTransitionId(), type);
+      maybeRemoveAnimatingMountContent(output.getTransitionId(), type);
     }
   }
 

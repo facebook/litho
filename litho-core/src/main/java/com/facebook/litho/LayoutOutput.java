@@ -16,6 +16,8 @@
 
 package com.facebook.litho;
 
+import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO;
+
 import android.graphics.Rect;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
@@ -206,6 +208,15 @@ class LayoutOutput implements Cloneable, AnimatableItem {
     return mImportantForAccessibility;
   }
 
+  boolean isAccessible() {
+    if (mImportantForAccessibility == IMPORTANT_FOR_ACCESSIBILITY_NO) {
+      return false;
+    }
+
+    return (mNodeInfo != null && mNodeInfo.needsAccessibilityDelegate())
+        || mComponent.implementsAccessibility();
+  }
+
   int getOrientation() {
     return mOrientation;
   }
@@ -232,5 +243,9 @@ class LayoutOutput implements Cloneable, AnimatableItem {
 
   static LayoutOutput getLayoutOutput(RenderTreeNode node) {
     return (LayoutOutput) node.getLayoutData();
+  }
+
+  static LayoutOutput getLayoutOutput(MountItem item) {
+    return getLayoutOutput(item.getRenderTreeNode());
   }
 }

@@ -96,7 +96,7 @@ public class DebugHierarchy {
   }
 
   public static @Nullable Node getMountItemHierarchy(ComponentHost host, int mountItemIndex) {
-    return host.getMountItemAt(mountItemIndex).getHierarchy();
+    return LayoutOutput.getLayoutOutput(host.getMountItemAt(mountItemIndex)).getHierarchy();
   }
 
   public static @Nullable String getOutputUnitTypeName(@OutputUnitType int type) {

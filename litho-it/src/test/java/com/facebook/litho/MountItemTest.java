@@ -309,7 +309,7 @@ public class MountItemTest {
 
     view.setClickable(true);
 
-    mountItem.update(layoutOutput);
+    mountItem.update(LayoutOutput.create(layoutOutput, null));
     assertThat(mountItem.isViewClickable()).isFalse();
   }
 }

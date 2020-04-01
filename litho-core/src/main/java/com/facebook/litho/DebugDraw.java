@@ -18,6 +18,7 @@ package com.facebook.litho;
 
 import static com.facebook.litho.Component.isHostSpec;
 import static com.facebook.litho.Component.isMountViewSpec;
+import static com.facebook.litho.LayoutOutput.getLayoutOutput;
 
 import android.content.res.Resources;
 import android.graphics.Canvas;
@@ -76,7 +77,7 @@ class DebugDraw {
     for (int i = host.getMountItemCount() - 1; i >= 0; i--) {
       final MountItem item = host.getMountItemAt(i);
 
-      final Component component = item.getComponent();
+      final Component component = getLayoutOutput(item).getComponent();
       if (!isMountViewSpec(component) || isHostSpec(component)) {
         continue;
       }
@@ -119,7 +120,7 @@ class DebugDraw {
     for (int i = host.getMountItemCount() - 1; i >= 0; i--) {
       final MountItem item = host.getMountItemAt(i);
 
-      final Component component = item.getComponent();
+      final Component component = getLayoutOutput(item).getComponent();
       final Object content = item.getContent();
 
       if (!shouldHighlight(component)) {

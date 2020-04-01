@@ -40,6 +40,7 @@ import static com.facebook.yoga.YogaMeasureOutput.getWidth;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.junit.Assert.assertNotEquals;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import android.graphics.Color;
 import android.graphics.Rect;
@@ -52,6 +53,7 @@ import com.facebook.litho.testing.TestSizeDependentComponent;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
+import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.yoga.YogaMeasureFunction;
 import org.junit.Before;
 import org.junit.Test;
@@ -407,9 +409,22 @@ public class TreeDiffingTest {
   @Test
   public void testComponentHostMoveItem() {
     ComponentHost hostHolder = new ComponentHost(mContext);
+
     MountItem mountItem = mock(MountItem.class);
+    RenderTreeNode node = mock(RenderTreeNode.class);
+    when(mountItem.getRenderTreeNode()).thenReturn(node);
+    when(node.getLayoutData()).thenReturn(mock(LayoutOutput.class));
+
     MountItem mountItem1 = mock(MountItem.class);
+    RenderTreeNode node1 = mock(RenderTreeNode.class);
+    when(mountItem1.getRenderTreeNode()).thenReturn(node1);
+    when(node1.getLayoutData()).thenReturn(mock(LayoutOutput.class));
+
     MountItem mountItem2 = mock(MountItem.class);
+    RenderTreeNode node2 = mock(RenderTreeNode.class);
+    when(mountItem2.getRenderTreeNode()).thenReturn(node2);
+    when(node2.getLayoutData()).thenReturn(mock(LayoutOutput.class));
+
     hostHolder.mount(0, mountItem, new Rect());
     hostHolder.mount(1, mountItem1, new Rect());
     hostHolder.mount(2, mountItem2, new Rect());
@@ -426,9 +441,22 @@ public class TreeDiffingTest {
   @Test
   public void testComponentHostMoveItemPartial() {
     ComponentHost hostHolder = new ComponentHost(mContext);
+
     MountItem mountItem = mock(MountItem.class);
+    RenderTreeNode node = mock(RenderTreeNode.class);
+    when(mountItem.getRenderTreeNode()).thenReturn(node);
+    when(node.getLayoutData()).thenReturn(mock(LayoutOutput.class));
+
     MountItem mountItem1 = mock(MountItem.class);
+    RenderTreeNode node1 = mock(RenderTreeNode.class);
+    when(mountItem1.getRenderTreeNode()).thenReturn(node1);
+    when(node1.getLayoutData()).thenReturn(mock(LayoutOutput.class));
+
     MountItem mountItem2 = mock(MountItem.class);
+    RenderTreeNode node2 = mock(RenderTreeNode.class);
+    when(mountItem2.getRenderTreeNode()).thenReturn(node2);
+    when(node2.getLayoutData()).thenReturn(mock(LayoutOutput.class));
+
     hostHolder.mount(0, mountItem, new Rect());
     hostHolder.mount(1, mountItem1, new Rect());
     hostHolder.mount(2, mountItem2, new Rect());

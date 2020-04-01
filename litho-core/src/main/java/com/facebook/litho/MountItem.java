@@ -18,11 +18,13 @@ package com.facebook.litho;
 
 import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
 import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO;
+import static com.facebook.litho.LayoutOutput.getLayoutOutput;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import androidx.annotation.Nullable;
+import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.yoga.YogaDirection;
 
 /**
@@ -63,23 +65,31 @@ class MountItem {
   // Flags that track view-related behaviour of mounted view content.
   private int mMountViewFlags;
 
+  private RenderTreeNode mRenderTreeNode;
+
   /** This mountItem represents the top-level root host (LithoView) which is always mounted. */
   static MountItem createRootHostMountItem(LithoView lithoView) {
     final ViewNodeInfo viewNodeInfo = new ViewNodeInfo();
     viewNodeInfo.setLayoutDirection(YogaDirection.INHERIT);
-    MountItem item =
-        new MountItem(
-            HostComponent.create(),
-            lithoView,
-            lithoView,
-            null,
+    LayoutOutput output =
+        new LayoutOutput(
             null,
             viewNodeInfo,
+            HostComponent.create(),
+            lithoView.getPreviousMountBounds(),
+            0,
+            0,
+            0,
             0,
             IMPORTANT_FOR_ACCESSIBILITY_AUTO,
             lithoView.getContext().getResources().getConfiguration().orientation,
             null);
-    return item;
+    return new MountItem(lithoView, lithoView, LayoutOutput.create(output, null));
+  }
+
+  MountItem(ComponentHost host, Object content, RenderTreeNode node) {
+    this(getLayoutOutput(node).getComponent(), host, content, getLayoutOutput(node));
+    this.mRenderTreeNode = node;
   }
 
   MountItem(Component component, ComponentHost host, Object content, LayoutOutput layoutOutput) {
@@ -163,7 +173,9 @@ class MountItem {
    * again now some of the values may be wrong (e.g. the Litho framework may add a click listener to
    * a view that was not originally clickable.
    */
-  void update(LayoutOutput layoutOutput) {
+  void update(RenderTreeNode node) {
+    mRenderTreeNode = node;
+    LayoutOutput layoutOutput = getLayoutOutput(node);
     mComponent = layoutOutput.getComponent();
     if (mComponent == null) {
       throw new RuntimeException("Trying to update a MountItem with a null Component!");
@@ -207,6 +219,10 @@ class MountItem {
       throw new RuntimeException("Trying to access released mount content!");
     }
     return mContent;
+  }
+
+  public RenderTreeNode getRenderTreeNode() {
+    return mRenderTreeNode;
   }
 
   int getLayoutFlags() {

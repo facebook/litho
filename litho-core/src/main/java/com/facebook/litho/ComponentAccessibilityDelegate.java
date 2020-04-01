@@ -16,6 +16,8 @@
 
 package com.facebook.litho;
 
+import static com.facebook.litho.LayoutOutput.getLayoutOutput;
+
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -85,7 +87,7 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
       // Coalesce the accessible mount item's information with the
       // the root host view's as they are meant to behave as a single
       // node in the accessibility framework.
-      final Component component = mountItem.getComponent();
+      final Component component = getLayoutOutput(mountItem).getComponent();
       component.onPopulateAccessibilityNode(host, node);
     } else {
       super.onInitializeAccessibilityNodeInfo(host, node);
@@ -122,7 +124,7 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
       return;
     }
 
-    final Component component = mountItem.getComponent();
+    final Component component = getLayoutOutput(mountItem).getComponent();
 
     final int extraAccessibilityNodesCount = component.getExtraAccessibilityNodesCount();
 
@@ -149,7 +151,7 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
     final Drawable drawable = (Drawable) mountItem.getContent();
     final Rect bounds = drawable.getBounds();
 
-    final Component component = mountItem.getComponent();
+    final Component component = getLayoutOutput(mountItem).getComponent();
     final ComponentLifecycle lifecycle = component;
 
     node.setClassName(lifecycle.getClass().getName());
@@ -177,7 +179,7 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
       return INVALID_ID;
     }
 
-    final Component component = mountItem.getComponent();
+    final Component component = getLayoutOutput(mountItem).getComponent();
     final ComponentLifecycle lifecycle = component;
 
     if (lifecycle.getExtraAccessibilityNodesCount() == 0) {
@@ -215,7 +217,8 @@ class ComponentAccessibilityDelegate extends ExploreByTouchHelper {
   @Override
   public @Nullable AccessibilityNodeProviderCompat getAccessibilityNodeProvider(View host) {
     final MountItem mountItem = getAccessibleMountItem(mView);
-    if (mountItem != null && mountItem.getComponent().implementsExtraAccessibilityNodes()) {
+    if (mountItem != null
+        && getLayoutOutput(mountItem).getComponent().implementsExtraAccessibilityNodes()) {
       return super.getAccessibilityNodeProvider(host);
     }
 

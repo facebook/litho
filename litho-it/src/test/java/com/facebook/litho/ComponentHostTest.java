@@ -935,14 +935,17 @@ public class ComponentHostTest {
     nodeInfo.setContentDescription(contentDescription);
 
     MountItem mountItem =
-        new MountItem(
+        MountItemTestHelper.create(
             content instanceof Drawable ? mDrawableComponent : mViewComponent,
             null,
             content,
-            null,
             nodeInfo,
             null,
+            null,
+            0,
+            0,
             flags,
+            0,
             IMPORTANT_FOR_ACCESSIBILITY_AUTO,
             ORIENTATION_PORTRAIT,
             null);
@@ -968,13 +971,16 @@ public class ComponentHostTest {
     viewNodeInfo.setExpandedTouchBounds(node, 1, 1, 1, 1);
 
     MountItem viewMountItem =
-        new MountItem(
+        MountItemTestHelper.create(
             mViewComponent,
             null,
             content,
             null,
-            null,
             viewNodeInfo,
+            null,
+            0,
+            0,
+            0,
             0,
             IMPORTANT_FOR_ACCESSIBILITY_AUTO,
             ORIENTATION_PORTRAIT,
