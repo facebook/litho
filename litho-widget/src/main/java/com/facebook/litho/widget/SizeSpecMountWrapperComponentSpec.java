@@ -33,12 +33,14 @@ import com.facebook.litho.annotations.OnBind;
 import com.facebook.litho.annotations.OnBoundsDefined;
 import com.facebook.litho.annotations.OnCreateInitialState;
 import com.facebook.litho.annotations.OnCreateMountContent;
+import com.facebook.litho.annotations.OnDetached;
 import com.facebook.litho.annotations.OnMeasure;
 import com.facebook.litho.annotations.OnMount;
 import com.facebook.litho.annotations.OnUnbind;
 import com.facebook.litho.annotations.OnUnmount;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.State;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * A {@link MountSpec} implementation to provide width and height information to the wrapped
@@ -52,9 +54,11 @@ import com.facebook.litho.annotations.State;
 public class SizeSpecMountWrapperComponentSpec {
 
   @OnCreateInitialState
-  static void onCreateInitialState(ComponentContext c, StateValue<ComponentTree> componentTree) {
+  static void onCreateInitialState(
+      ComponentContext c, StateValue<AtomicReference<ComponentTree>> componentTreeRef) {
+    componentTreeRef.set(new AtomicReference<ComponentTree>());
     // This is the component tree to be added to the LithoView.
-    componentTree.set(ComponentTree.create(c).build());
+    getOrCreateComponentTree(c, componentTreeRef.get());
   }
 
   @OnCreateMountContent
@@ -69,8 +73,10 @@ public class SizeSpecMountWrapperComponentSpec {
   @UiThread
   @OnMount
   static void onMount(
-      ComponentContext c, FrameLayout wrapperView, @State ComponentTree componentTree) {
-    ((LithoView) wrapperView.getChildAt(0)).setComponentTree(componentTree);
+      ComponentContext c,
+      FrameLayout wrapperView,
+      @State AtomicReference<ComponentTree> componentTreeRef) {
+    ((LithoView) wrapperView.getChildAt(0)).setComponentTree(componentTreeRef.get());
   }
 
   @UiThread
@@ -87,9 +93,15 @@ public class SizeSpecMountWrapperComponentSpec {
       int heightSpec,
       Size size,
       @Prop Component component,
-      @State ComponentTree componentTree) {
-    componentTree.setRootAndSizeSpec(
-        component, widthSpec, heightSpec, size, getTreePropWithSize(c, widthSpec, heightSpec));
+      @State AtomicReference<ComponentTree> componentTreeRef) {
+    final ComponentTree componentTree = getOrCreateComponentTree(c, componentTreeRef);
+    componentTree.setVersionedRootAndSizeSpec(
+        component,
+        widthSpec,
+        heightSpec,
+        size,
+        getTreePropWithSize(c, widthSpec, heightSpec),
+        c.getLayoutVersion());
   }
 
   @OnBoundsDefined
@@ -97,16 +109,32 @@ public class SizeSpecMountWrapperComponentSpec {
       ComponentContext c,
       ComponentLayout layout,
       @Prop Component component,
-      @State ComponentTree componentTree) {
+      @State AtomicReference<ComponentTree> componentTreeRef) {
     // the updated width and height is passed down.
     int widthSpec = SizeSpec.makeSizeSpec(layout.getWidth(), SizeSpec.EXACTLY);
     int heightSpec = SizeSpec.makeSizeSpec(layout.getHeight(), SizeSpec.EXACTLY);
+    final ComponentTree componentTree = getOrCreateComponentTree(c, componentTreeRef);
     // This check is also done in the setRootAndSizeSpec method, but we need to do this here since
     // it will fail if a ErrorBoundariesConfiguration.rootWrapperComponentFactory was set.
     // TODO: T60426216
     if (!componentTree.hasCompatibleLayout(widthSpec, heightSpec)) {
-      componentTree.setRootAndSizeSpec(
-          component, widthSpec, heightSpec, null, getTreePropWithSize(c, widthSpec, heightSpec));
+      componentTree.setVersionedRootAndSizeSpec(
+          component,
+          widthSpec,
+          heightSpec,
+          null,
+          getTreePropWithSize(c, widthSpec, heightSpec),
+          c.getLayoutVersion());
+    }
+  }
+
+  @OnDetached
+  static void onDetached(
+      ComponentContext c, @State AtomicReference<ComponentTree> componentTreeRef) {
+    if (componentTreeRef.get() != null) {
+      // We need to release the component tree here to allow for a proper memory deallocation
+      componentTreeRef.get().release();
+      componentTreeRef.set(null);
     }
   }
 
@@ -138,5 +166,22 @@ public class SizeSpecMountWrapperComponentSpec {
     }
     tp.put(Size.class, new Size(widthSpec, heightSpec));
     return tp;
+  }
+
+  /**
+   * We create get a componentTree, we have to create it in case it's been released.
+   *
+   * @param c
+   * @param componentTreeRef
+   * @return
+   */
+  private static ComponentTree getOrCreateComponentTree(
+      ComponentContext c, AtomicReference<ComponentTree> componentTreeRef) {
+    ComponentTree ct = componentTreeRef.get();
+    if (ct == null) {
+      ct = ComponentTree.create(c).build();
+      componentTreeRef.set(ct);
+    }
+    return ct;
   }
 }
