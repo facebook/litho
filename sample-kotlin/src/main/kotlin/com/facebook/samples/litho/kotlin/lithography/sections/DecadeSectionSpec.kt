@@ -42,7 +42,7 @@ object DecadeSectionSpec {
       Children.create()
           .child(
               SingleComponentSection.create(c)
-                  .component(DecadeSeparator.create(c).decade(decade))
+                  .component(DecadeSeparator(decade = decade))
                   .sticky(true))
           .child(
               DataDiffSection.create<Artist>(c)

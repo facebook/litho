@@ -18,7 +18,15 @@ package com.facebook.litho
 
 inline class Px(val value: Int)
 
-inline class Dp(val value: Float)
+inline class Dp(val value: Float) {
+  companion object {
+    /**
+     * Used to represent dimension of an element that should be drawn with 1px size (typically,
+     * dividers). Is respected only for sizing and not spacing.
+     */
+    val Hairline = Dp(0f)
+  }
+}
 
 inline class Sp(val value: Float)
 

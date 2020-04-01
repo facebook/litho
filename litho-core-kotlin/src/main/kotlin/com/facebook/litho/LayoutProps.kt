@@ -144,8 +144,8 @@ inline fun DslScope.FixedSize(
 ): Component =
     content().apply {
       getOrCreateCommonProps.apply {
-        width?.let { widthPx(it.toPx().value) }
-        height?.let { heightPx(it.toPx().value) }
+        width?.let { widthPx(if (it == Dp.Hairline) 1 else it.toPx().value) }
+        height?.let { heightPx(if (it == Dp.Hairline) 1 else it.toPx().value) }
       }
     }
 
