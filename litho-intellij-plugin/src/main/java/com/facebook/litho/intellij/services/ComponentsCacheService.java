@@ -44,9 +44,8 @@ import org.jetbrains.annotations.Nullable;
  * #getComponentAndMaybeUpdate(PsiClass, boolean)} call.
  */
 public class ComponentsCacheService {
-  private final Map<String, PsiClass> specToComponent = new ConcurrentHashMap<>();
+  private final Map<String, PsiClass> componentNameToClass = new ConcurrentHashMap<>();
   private final Map<String, Long> componentToTimestamp = new ConcurrentHashMap<>();
-  // We store project instance to keep files created within that project
   private final Project project;
   private static final Logger LOG = Logger.getInstance(ComponentsCacheService.class);
 
@@ -56,37 +55,49 @@ public class ComponentsCacheService {
 
   @Nullable
   public PsiClass getComponentAndMaybeUpdate(PsiClass specClass, boolean forceUpdate) {
-    final String specQualifiedName = specClass.getQualifiedName();
+    if (!LithoPluginUtils.isLayoutSpec(specClass)) return null;
+
     final String componentQualifiedName =
-        LithoPluginUtils.getLithoComponentNameFromSpec(specQualifiedName);
-    if (componentQualifiedName == null) {
-      return null;
-    }
+        LithoPluginUtils.getLithoComponentNameFromSpec(specClass.getQualifiedName());
+    if (componentQualifiedName == null) return null;
+
     final ShouldUpdateChecker checker =
         new ShouldUpdateChecker(forceUpdate, componentQualifiedName);
 
-    maybeUpdateAsync(specClass, specQualifiedName, componentQualifiedName, checker);
+    maybeUpdateAsync(specClass, componentQualifiedName, checker);
 
-    return getComponentFromCache(specQualifiedName);
+    return getComponentFromCache(componentQualifiedName);
   }
 
+  /**
+   * @return component already present in the cache by its full-qualified name or null if it's
+   *     absent.
+   * @see #getComponentAndMaybeUpdate(PsiClass, boolean)
+   */
   @Nullable
-  public PsiClass getComponentFromCache(String specQualifiedName) {
-    return specToComponent.get(specQualifiedName);
+  public PsiClass getComponentFromCache(String componentQualifiedName) {
+    final PsiClass component = componentNameToClass.get(componentQualifiedName);
+    if (component != null) return component;
+
+    // Check if it's a builder qualified name, as in AndroidPsiElementFinder
+    final String parentName = StringUtil.getPackageName(componentQualifiedName);
+    final PsiClass parentClass = componentNameToClass.get(parentName);
+    if (parentClass == null) return null;
+
+    return parentClass.findInnerClassByName(StringUtil.getShortName(componentQualifiedName), false);
   }
 
   private void maybeUpdateAsync(
-      PsiClass specClass,
-      String specQualifiedName,
-      String componentQualifiedName,
-      ShouldUpdateChecker checker) {
+      PsiClass specClass, String componentQualifiedName, ShouldUpdateChecker checker) {
+    final String componentShortName = StringUtil.getShortName(componentQualifiedName);
+    if (componentShortName.isEmpty()) return;
 
     final ThrowableRunnable<RuntimeException> job =
         () -> {
           final long modelTimestamp = System.currentTimeMillis();
-          IntervalLogger logger = new IntervalLogger(LOG);
           checker.setModelTimestamp(modelTimestamp);
           if (checker.shouldStopUpdate()) return;
+          IntervalLogger logger = new IntervalLogger(LOG);
 
           final LayoutSpecModel layoutModel;
           try {
@@ -94,7 +105,6 @@ public class ComponentsCacheService {
           } catch (RuntimeException e) {
             return;
           }
-          final String componentShortName = StringUtil.getShortName(componentQualifiedName);
           Optional.ofNullable(layoutModel)
               .map(
                   specModel -> {
@@ -104,10 +114,10 @@ public class ComponentsCacheService {
 
                     logger.logStep("typeSpec generation " + typeSpec.name);
                     if (checker.shouldStopUpdate()) return null;
-                    final String specPackageName = StringUtil.getPackageName(specQualifiedName);
                     // TODO T56876413 share methods with ComponentGenerator?
                     String fileContent =
-                        JavaFile.builder(specPackageName, typeSpec)
+                        JavaFile.builder(
+                                StringUtil.getPackageName(componentQualifiedName), typeSpec)
                             .skipJavaLangImports(true)
                             .build()
                             .toString();
@@ -123,11 +133,8 @@ public class ComponentsCacheService {
                           file, cls -> componentShortName.equals(cls.getName())))
               .ifPresent(
                   inMemory -> {
-                    logger.logStep("file creation " + inMemory.getName());
-                    synchronized (specToComponent) {
-                      specToComponent.put(specQualifiedName, inMemory);
-                      componentToTimestamp.put(inMemory.getQualifiedName(), modelTimestamp);
-                    }
+                    logger.logStep("file creation " + componentShortName);
+                    updateCache(componentQualifiedName, inMemory, modelTimestamp);
                   });
         };
     if (ApplicationManager.getApplication().isUnitTestMode()) {
@@ -137,26 +144,26 @@ public class ComponentsCacheService {
     }
   }
 
+  private void updateCache(
+      String componentQualifiedName, PsiClass inMemoryComponent, long componentTimestamp) {
+    synchronized (componentNameToClass) {
+      componentNameToClass.put(componentQualifiedName, inMemoryComponent);
+      componentToTimestamp.put(componentQualifiedName, componentTimestamp);
+    }
+  }
+
   /** Verifies that the update for the cached Component is needed. */
   class ShouldUpdateChecker {
     private final boolean forceUpdate;
-    @Nullable private final String componentQualifiedName;
+    private final String componentQualifiedName;
     private long modelTimestamp = Long.MAX_VALUE;
-    private long start;
 
-    /**
-     * @param componentQualifiedName name of the component. If it's null {@link #shouldStopUpdate()}
-     *     always returns true.
-     */
-    ShouldUpdateChecker(boolean forceUpdate, @Nullable String componentQualifiedName) {
+    ShouldUpdateChecker(boolean forceUpdate, String componentQualifiedName) {
       this.forceUpdate = forceUpdate;
       this.componentQualifiedName = componentQualifiedName;
     }
 
     boolean shouldStopUpdate() {
-      if (componentQualifiedName == null) {
-        return true;
-      }
       final Long cachedTimestamp = componentToTimestamp.get(componentQualifiedName);
       if (cachedTimestamp == null) {
         return false;
