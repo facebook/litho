@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import static com.facebook.litho.LayoutOutput.getLayoutOutput;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import android.util.Pair;
@@ -73,7 +74,8 @@ public class ComponentGlobalKeyTest {
     final LithoView lithoView = getLithoView(component);
 
     Assert.assertEquals(
-        lithoView.getMountItemAt(0).getComponent().getGlobalKey(), component.getKey());
+        getLayoutOutput(lithoView.getMountItemAt(0)).getComponent().getGlobalKey(),
+        component.getKey());
   }
 
   @Test
@@ -82,7 +84,8 @@ public class ComponentGlobalKeyTest {
         TestDrawableComponent.create(mContext).widthDip(10).heightDip(10).key("someKey").build();
     final LithoView lithoView = getLithoView(component);
 
-    Assert.assertEquals(lithoView.getMountItemAt(0).getComponent().getGlobalKey(), "someKey");
+    Assert.assertEquals(
+        getLayoutOutput(lithoView.getMountItemAt(0)).getComponent().getGlobalKey(), "someKey");
   }
 
   @Test
@@ -447,7 +450,7 @@ public class ComponentGlobalKeyTest {
   }
 
   private static Component getComponentAt(LithoView lithoView, int index) {
-    return lithoView.getMountItemAt(index).getComponent();
+    return getLayoutOutput(lithoView.getMountItemAt(index)).getComponent();
   }
 
   private LithoView getLithoView(Component component) {

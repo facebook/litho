@@ -20,6 +20,7 @@ import static android.content.res.Configuration.ORIENTATION_PORTRAIT;
 import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
 import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO;
 import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_YES;
+import static com.facebook.litho.LayoutOutput.getLayoutOutput;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import android.graphics.Rect;
@@ -28,6 +29,7 @@ import android.view.View;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
+import com.facebook.rendercore.RenderTreeNode;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -83,19 +85,24 @@ public class MountItemTest {
     mNodeInfo.setTouchHandler(mTouchHandler);
     mNodeInfo.setViewTag(mViewTag);
     mNodeInfo.setViewTags(mViewTags);
+    mMountItem = create(mContent);
+  }
 
-    mMountItem =
-        new MountItem(
-            mComponent,
-            mComponentHost,
-            mContent,
-            null,
-            mNodeInfo,
-            null,
-            mFlags,
-            IMPORTANT_FOR_ACCESSIBILITY_YES,
-            ORIENTATION_PORTRAIT,
-            null);
+  MountItem create(Object content) {
+    return MountItemTestHelper.create(
+        mComponent,
+        mComponentHost,
+        content,
+        mNodeInfo,
+        null,
+        null,
+        0,
+        0,
+        mFlags,
+        0,
+        IMPORTANT_FOR_ACCESSIBILITY_YES,
+        ORIENTATION_PORTRAIT,
+        null);
   }
 
   @Test
@@ -109,15 +116,17 @@ public class MountItemTest {
 
   @Test
   public void testGetters() {
-    assertThat(mMountItem.getComponent()).isSameAs((Component) mComponent);
+    assertThat(getLayoutOutput(mMountItem).getComponent()).isSameAs((Component) mComponent);
     assertThat(mMountItem.getHost()).isSameAs(mComponentHost);
     assertThat(mMountItem.getContent()).isSameAs(mContent);
-    assertThat(mMountItem.getNodeInfo().getContentDescription()).isSameAs(mContentDescription);
-    assertThat(mMountItem.getNodeInfo().getClickHandler()).isSameAs(mClickHandler);
-    assertThat(mMountItem.getNodeInfo().getFocusChangeHandler()).isSameAs(mFocusChangeHandler);
-    assertThat(mMountItem.getNodeInfo().getTouchHandler()).isSameAs(mTouchHandler);
-    assertThat(mMountItem.getLayoutFlags()).isEqualTo(mFlags);
-    assertThat(mMountItem.getImportantForAccessibility())
+    assertThat(getLayoutOutput(mMountItem).getNodeInfo().getContentDescription())
+        .isSameAs(mContentDescription);
+    assertThat(getLayoutOutput(mMountItem).getNodeInfo().getClickHandler()).isSameAs(mClickHandler);
+    assertThat(getLayoutOutput(mMountItem).getNodeInfo().getFocusChangeHandler())
+        .isSameAs(mFocusChangeHandler);
+    assertThat(getLayoutOutput(mMountItem).getNodeInfo().getTouchHandler()).isSameAs(mTouchHandler);
+    assertThat(getLayoutOutput(mMountItem).getFlags()).isEqualTo(mFlags);
+    assertThat(getLayoutOutput(mMountItem).getImportantForAccessibility())
         .isEqualTo(IMPORTANT_FOR_ACCESSIBILITY_YES);
   }
 
@@ -125,38 +134,16 @@ public class MountItemTest {
   public void testFlags() {
     mFlags = MountItem.LAYOUT_FLAG_DUPLICATE_PARENT_STATE | MountItem.LAYOUT_FLAG_DISABLE_TOUCHABLE;
 
-    mMountItem =
-        new MountItem(
-            mComponent,
-            mComponentHost,
-            mContent,
-            null,
-            mNodeInfo,
-            null,
-            mFlags,
-            IMPORTANT_FOR_ACCESSIBILITY_YES,
-            ORIENTATION_PORTRAIT,
-            null);
+    mMountItem = create(mContent);
 
-    assertThat(MountItem.isDuplicateParentState(mMountItem.getLayoutFlags())).isTrue();
-    assertThat(MountItem.isTouchableDisabled(mMountItem.getLayoutFlags())).isTrue();
+    assertThat(MountItem.isDuplicateParentState(getLayoutOutput(mMountItem).getFlags())).isTrue();
+    assertThat(MountItem.isTouchableDisabled(getLayoutOutput(mMountItem).getFlags())).isTrue();
 
     mFlags = 0;
-    mMountItem =
-        new MountItem(
-            mComponent,
-            mComponentHost,
-            mContent,
-            null,
-            mNodeInfo,
-            null,
-            mFlags,
-            IMPORTANT_FOR_ACCESSIBILITY_YES,
-            ORIENTATION_PORTRAIT,
-            null);
+    mMountItem = create(mContent);
 
-    assertThat(MountItem.isDuplicateParentState(mMountItem.getLayoutFlags())).isFalse();
-    assertThat(MountItem.isTouchableDisabled(mMountItem.getLayoutFlags())).isFalse();
+    assertThat(MountItem.isDuplicateParentState(getLayoutOutput(mMountItem).getFlags())).isFalse();
+    assertThat(MountItem.isTouchableDisabled(getLayoutOutput(mMountItem).getFlags())).isFalse();
   }
 
   @Test
@@ -168,18 +155,7 @@ public class MountItemTest {
     view.setFocusable(false);
     view.setSelected(false);
 
-    mMountItem =
-        new MountItem(
-            mComponent,
-            mComponentHost,
-            view,
-            null,
-            mNodeInfo,
-            null,
-            mFlags,
-            IMPORTANT_FOR_ACCESSIBILITY_YES,
-            ORIENTATION_PORTRAIT,
-            null);
+    mMountItem = create(view);
 
     assertThat(mMountItem.isViewClickable()).isTrue();
     assertThat(mMountItem.isViewEnabled()).isTrue();
@@ -193,18 +169,7 @@ public class MountItemTest {
     view.setFocusable(true);
     view.setSelected(true);
 
-    mMountItem =
-        new MountItem(
-            mComponent,
-            mComponentHost,
-            view,
-            null,
-            mNodeInfo,
-            null,
-            mFlags,
-            IMPORTANT_FOR_ACCESSIBILITY_YES,
-            ORIENTATION_PORTRAIT,
-            null);
+    mMountItem = create(view);
 
     assertThat(mMountItem.isViewClickable()).isFalse();
     assertThat(mMountItem.isViewEnabled()).isFalse();
@@ -215,101 +180,100 @@ public class MountItemTest {
 
   @Test
   public void testIsAccessibleWithNullComponent() {
-    final MountItem mountItem =
-        new MountItem(
-            mComponent,
-            mComponentHost,
-            mContent,
-            null,
-            mNodeInfo,
-            null,
-            mFlags,
-            IMPORTANT_FOR_ACCESSIBILITY_AUTO,
-            ORIENTATION_PORTRAIT,
-            null);
+    final MountItem mountItem = create(mContent);
 
-    assertThat(mountItem.isAccessible()).isFalse();
+    assertThat(getLayoutOutput(mountItem).isAccessible()).isFalse();
   }
 
   @Test
   public void testIsAccessibleWithAccessibleComponent() {
     final MountItem mountItem =
-        new MountItem(
+        MountItemTestHelper.create(
             TestDrawableComponent.create(
                     mContext, true, true, true, true /* implementsAccessibility */)
                 .build(),
             mComponentHost,
             mContent,
-            null,
             mNodeInfo,
             null,
+            null,
             mFlags,
+            0,
+            0,
+            0,
             IMPORTANT_FOR_ACCESSIBILITY_AUTO,
             ORIENTATION_PORTRAIT,
             null);
 
-    assertThat(mountItem.isAccessible()).isTrue();
+    assertThat(getLayoutOutput(mountItem).isAccessible()).isTrue();
   }
 
   @Test
   public void testIsAccessibleWithDisabledAccessibleComponent() {
     final MountItem mountItem =
-        new MountItem(
+        MountItemTestHelper.create(
             TestDrawableComponent.create(
                     mContext, true, true, true, true /* implementsAccessibility */)
                 .build(),
             mComponentHost,
             mContent,
-            null,
             mNodeInfo,
             null,
+            null,
             mFlags,
+            0,
+            0,
+            0,
             IMPORTANT_FOR_ACCESSIBILITY_NO,
             ORIENTATION_PORTRAIT,
             null);
 
-    assertThat(mountItem.isAccessible()).isFalse();
+    assertThat(getLayoutOutput(mountItem).isAccessible()).isFalse();
   }
 
   @Test
   public void testIsAccessibleWithAccessibilityEventHandler() {
     final MountItem mountItem =
-        new MountItem(
+        MountItemTestHelper.create(
             TestDrawableComponent.create(
                     mContext, true, true, true, true /* implementsAccessibility */)
                 .build(),
             mComponentHost,
             mContent,
-            null,
             mNodeInfo,
             null,
+            null,
             mFlags,
+            0,
+            0,
+            0,
             IMPORTANT_FOR_ACCESSIBILITY_AUTO,
             ORIENTATION_PORTRAIT,
             null);
 
-    assertThat(mountItem.isAccessible()).isTrue();
+    assertThat(getLayoutOutput(mountItem).isAccessible()).isTrue();
   }
 
   @Test
   public void testIsAccessibleWithNonAccessibleComponent() {
-    assertThat(mMountItem.isAccessible()).isFalse();
+    assertThat(getLayoutOutput(mMountItem).isAccessible()).isFalse();
   }
 
   @Test
   public void testUpdateDoesntChangeFlags() {
-    LayoutOutput layoutOutput =
+    LayoutOutput output =
         new LayoutOutput(mNodeInfo, null, mComponent, new Rect(0, 0, 0, 0), 0, 0, 0, 0, 0, 0, null);
+    RenderTreeNode node = LayoutOutput.create(output, null);
 
     View view = new View(RuntimeEnvironment.application);
 
-    final MountItem mountItem = new MountItem(mComponent, mComponentHost, view, layoutOutput);
+    final MountItem mountItem = new MountItem(mComponentHost, view, node);
 
     assertThat(mountItem.isViewClickable()).isFalse();
 
     view.setClickable(true);
 
-    mountItem.update(LayoutOutput.create(layoutOutput, null));
+    mountItem.update(node);
     assertThat(mountItem.isViewClickable()).isFalse();
   }
 }
