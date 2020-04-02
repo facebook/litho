@@ -1749,7 +1749,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener, Mount
       // Host has not yet been mounted - mount it now.
       final int hostMountIndex = layoutState.getLayoutOutputPositionForId(hostMarker);
       final RenderTreeNode hostNode = layoutState.getMountableOutputAt(hostMountIndex);
-      final LayoutOutput hostLayoutOutput = getLayoutOutput(node);
+      final LayoutOutput hostLayoutOutput = getLayoutOutput(hostNode);
       mountLayoutOutput(hostMountIndex, hostNode, hostLayoutOutput, layoutState);
 
       host = mHostsByMarker.get(hostMarker);
