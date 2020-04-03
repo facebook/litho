@@ -2375,7 +2375,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener, Mount
   }
 
   private static void unsetSelected(View view, MountItem mountItem) {
-    view.setSelected(mountItem.isViewSelected());
+    view.setSelected(getMountData(mountItem).isViewSelected());
   }
 
   private static void setScale(View view, NodeInfo nodeInfo) {
