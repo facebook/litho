@@ -24,6 +24,7 @@ import android.graphics.Rect;
 import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import com.facebook.litho.stats.LithoStats;
 import com.facebook.rendercore.MountDelegate.MountDelegateInput;
 import com.facebook.rendercore.MountDelegateExtension;
@@ -87,8 +88,9 @@ public class IncrementalMountExtension extends MountDelegateExtension
 
     final Rect localVisibleRect = mLithoView.getVisibleRect();
 
-    // Horizontally scrolling, can't incrementally mount.
-    if (localVisibleRect.left != mPreviousLocalVisibleRect.left
+    // Horizontally scrolling or no visible rect. Can't incrementally mount.
+    if (localVisibleRect.isEmpty()
+        || localVisibleRect.left != mPreviousLocalVisibleRect.left
         || localVisibleRect.right != mPreviousLocalVisibleRect.right) {
       initIncrementalMount(localVisibleRect, true);
     } else {
@@ -124,7 +126,7 @@ public class IncrementalMountExtension extends MountDelegateExtension
       // TODO (T64830748): extract animations logic out of this.
       final boolean isMountable =
           isMountedHostWithChildContent(content)
-              || Rect.intersects(localVisibleRect, layoutOutput.getBounds())
+              || Rect.intersects(localVisibleRect, renderTreeNode.getBounds())
               || isAnimationLocked(renderTreeNode)
               || isRootItem(i);
       final boolean hasAcquiredMountRef = ownsReference(renderTreeNode);
@@ -314,5 +316,15 @@ public class IncrementalMountExtension extends MountDelegateExtension
   @Override
   public boolean canPreventMount() {
     return true;
+  }
+
+  @VisibleForTesting
+  int getPreviousTopsIndex() {
+    return mPreviousTopsIndex;
+  }
+
+  @VisibleForTesting
+  int getPreviousBottomsIndex() {
+    return mPreviousBottomsIndex;
   }
 }
