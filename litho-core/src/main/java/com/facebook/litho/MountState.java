@@ -2343,7 +2343,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener, Mount
   }
 
   private static void unsetFocusable(View view, MountItem mountItem) {
-    view.setFocusable(mountItem.isViewFocusable());
+    view.setFocusable(getMountData(mountItem).isViewFocusable());
   }
 
   private static void setClickable(View view, @NodeInfo.FocusState int clickableState) {

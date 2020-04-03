@@ -98,11 +98,6 @@ class MountItem {
     mReleaseCause = releaseCause;
   }
 
-  /** @return Whether the view associated with this MountItem is setFocusable. */
-  boolean isViewFocusable() {
-    return mMountData.isViewFocusable();
-  }
-
   /** @return Whether the view associated with this MountItem is setEnabled. */
   boolean isViewEnabled() {
     return mMountData.isViewEnabled();
