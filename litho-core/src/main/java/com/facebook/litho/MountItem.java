@@ -98,11 +98,6 @@ class MountItem {
     mReleaseCause = releaseCause;
   }
 
-  /** @return Whether the view associated with this MountItem is clickable. */
-  boolean isViewClickable() {
-    return mMountData.isViewClickable();
-  }
-
   /** @return Whether the view associated with this MountItem is long clickable. */
   boolean isViewLongClickable() {
     return mMountData.isViewLongClickable();
