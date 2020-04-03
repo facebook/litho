@@ -103,7 +103,7 @@ public class LithoMountData {
     if (mIsReleased) {
       final String componentName = mComponent != null ? mComponent.getSimpleName() : "<null>";
       final String globalKey = mComponent != null ? mComponent.getGlobalKey() : "<null>";
-      throw new MountItem.ReleasingReleasedMountContentException(
+      throw new ReleasingReleasedMountContentException(
           "Releasing released mount content! component: "
               + componentName
               + ", globalKey: "
@@ -144,5 +144,12 @@ public class LithoMountData {
       throw new RuntimeException("MountData should not be null when using Litho's MountState.");
     }
     return (LithoMountData) item.getMountData();
+  }
+
+  public static class ReleasingReleasedMountContentException extends RuntimeException {
+
+    public ReleasingReleasedMountContentException(String message) {
+      super(message);
+    }
   }
 }

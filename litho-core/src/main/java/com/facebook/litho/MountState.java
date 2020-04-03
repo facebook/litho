@@ -2682,7 +2682,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener, Mount
       getMountData(item)
           .releaseMountContent(
               context.getAndroidContext(), item, "unmountDisappearingItemChild", mRecyclingMode);
-    } catch (MountItem.ReleasingReleasedMountContentException e) {
+    } catch (LithoMountData.ReleasingReleasedMountContentException e) {
       throw new RuntimeException(e.getMessage() + " " + getMountItemDebugMessage(item));
     }
   }
@@ -2866,7 +2866,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener, Mount
     try {
       getMountData(item)
           .releaseMountContent(mContext.getAndroidContext(), item, "unmountItem", mRecyclingMode);
-    } catch (MountItem.ReleasingReleasedMountContentException e) {
+    } catch (LithoMountData.ReleasingReleasedMountContentException e) {
       throw new RuntimeException(e.getMessage() + " " + getMountItemDebugMessage(item));
     }
 
@@ -2935,7 +2935,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener, Mount
         getMountData(item)
             .releaseMountContent(
                 mContext.getAndroidContext(), item, "endUnmountDisappearingItem", mRecyclingMode);
-      } catch (MountItem.ReleasingReleasedMountContentException e) {
+      } catch (LithoMountData.ReleasingReleasedMountContentException e) {
         throw new RuntimeException(e.getMessage() + " " + getMountItemDebugMessage(item));
       }
     }

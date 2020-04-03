@@ -88,11 +88,4 @@ class MountItem {
   Object getMountData() {
     return mMountData;
   }
-
-  public static class ReleasingReleasedMountContentException extends RuntimeException {
-
-    public ReleasingReleasedMountContentException(String message) {
-      super(message);
-    }
-  }
 }
