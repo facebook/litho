@@ -176,7 +176,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener, Mount
 
     // The mount item representing the top-level root host (LithoView) which
     // is always automatically mounted.
-    mRootHostMountItem = MountItem.createRootHostMountItem(mLithoView);
+    mRootHostMountItem = LithoMountData.createRootHostMountItem(mLithoView);
     if (!ComponentsConfiguration.useRenderCoreMount) {
       if (ComponentsConfiguration.useIncrementalMountExtension) {
         mIncrementalMountExtension = new IncrementalMountExtension(mLithoView);

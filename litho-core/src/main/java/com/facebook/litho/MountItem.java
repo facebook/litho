@@ -16,14 +16,12 @@
 
 package com.facebook.litho;
 
-import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
 import static com.facebook.litho.LayoutOutput.getLayoutOutput;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import com.facebook.rendercore.RenderTreeNode;
-import com.facebook.yoga.YogaDirection;
 
 /**
  * Represents a mounted UI element in a {@link MountState}. It holds a key and a content instance
@@ -48,26 +46,6 @@ class MountItem {
 
   // Flags that track view-related behaviour of mounted view content.
   private int mMountViewFlags;
-
-  /** This mountItem represents the top-level root host (LithoView) which is always mounted. */
-  static MountItem createRootHostMountItem(LithoView lithoView) {
-    final ViewNodeInfo viewNodeInfo = new ViewNodeInfo();
-    viewNodeInfo.setLayoutDirection(YogaDirection.INHERIT);
-    LayoutOutput output =
-        new LayoutOutput(
-            null,
-            viewNodeInfo,
-            HostComponent.create(),
-            lithoView.getPreviousMountBounds(),
-            0,
-            0,
-            0,
-            0,
-            IMPORTANT_FOR_ACCESSIBILITY_AUTO,
-            lithoView.getContext().getResources().getConfiguration().orientation,
-            null);
-    return new MountItem(lithoView, lithoView, LayoutOutput.create(output, null));
-  }
 
   MountItem(ComponentHost host, Object content, RenderTreeNode node) {
     mContent = content;
