@@ -232,12 +232,6 @@ public class ComponentsConfiguration {
 
   public static boolean useRenderCoreMount = false;
 
-  /**
-   * Enabling this will guarantee that onCreateInitialState cannot execute more than once per
-   * component
-   */
-  public static boolean createInitialStateOncePerThread = false;
-
   public static boolean shouldDisableDrawableOutputs = false;
 
   public static boolean useIncrementalMountExtension = false;

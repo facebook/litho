@@ -117,9 +117,7 @@ public class ComponentTree {
   private final boolean mIncrementalVisibility;
   private final @RecyclingMode int mRecyclingMode;
 
-  @VisibleForTesting
-  InitialStateContainer mInitialStateContainer =
-      ComponentsConfiguration.createInitialStateOncePerThread ? new InitialStateContainer() : null;
+  private final InitialStateContainer mInitialStateContainer = new InitialStateContainer();
 
   @IntDef({SCHEDULE_NONE, SCHEDULE_LAYOUT_ASYNC, SCHEDULE_LAYOUT_SYNC})
   @Retention(RetentionPolicy.SOURCE)
@@ -1119,9 +1117,7 @@ public class ComponentTree {
         attachables = localLayoutState.consumeAttachables();
         if (layoutStateStateHandler != null) {
           mStateHandler.commit(layoutStateStateHandler);
-          if (mInitialStateContainer != null) {
-            mInitialStateContainer.unregisterStateHandler(layoutStateStateHandler);
-          }
+          mInitialStateContainer.unregisterStateHandler(layoutStateStateHandler);
         }
 
         components = localLayoutState.consumeComponents();
@@ -2126,7 +2122,7 @@ public class ComponentTree {
         layoutStateUpdated = true;
       }
 
-      if (layoutStateStateHandler != null && mInitialStateContainer != null) {
+      if (layoutStateStateHandler != null) {
         mInitialStateContainer.unregisterStateHandler(layoutStateStateHandler);
       }
       // Resetting the count after layout calculation is complete and it was triggered from within
@@ -2634,9 +2630,7 @@ public class ComponentTree {
             StateHandler.createNewInstance(ComponentTree.this.mStateHandler);
         previousLayoutState = mLatestLayoutState;
         contextWithStateHandler = new ComponentContext(context, stateHandler, treeProps, null);
-        if (mInitialStateContainer != null) {
-          mInitialStateContainer.registerStateHandler(stateHandler);
-        }
+        mInitialStateContainer.registerStateHandler(stateHandler);
       }
 
       return LayoutState.calculate(

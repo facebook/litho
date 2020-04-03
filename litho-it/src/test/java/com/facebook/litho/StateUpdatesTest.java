@@ -366,7 +366,6 @@ public class StateUpdatesTest {
   @Test
   public void testStateContainerDrained() {
     ComponentTree componentTree = ComponentTree.create(mContext).build();
-    componentTree.mInitialStateContainer = new InitialStateContainer();
 
     final CountDownLatch check = new CountDownLatch(2);
     final CountDownLatch waitForFirstLayoutToStart = new CountDownLatch(1);
