@@ -164,9 +164,8 @@ class MountItem {
     return (flags & LAYOUT_FLAG_DISABLE_TOUCHABLE) == LAYOUT_FLAG_DISABLE_TOUCHABLE;
   }
 
-  public boolean areDrawableOutputsDisabled() {
-    final LayoutOutput output = getLayoutOutput(mRenderTreeNode);
-    return (output.getFlags() & LAYOUT_FLAG_DRAWABLE_OUTPUTS_DISABLED) != 0;
+  static boolean areDrawableOutputsDisabled(int flags) {
+    return (flags & LAYOUT_FLAG_DRAWABLE_OUTPUTS_DISABLED) != 0;
   }
 
   /** @return Whether the view associated with this MountItem is clickable. */
