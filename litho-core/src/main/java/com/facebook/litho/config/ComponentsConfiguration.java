@@ -237,4 +237,8 @@ public class ComponentsConfiguration {
   public static boolean useIncrementalMountExtension = false;
 
   public static boolean useVisibilityExtension = false;
+
+  public static boolean keepComponentTreeForRecyclerView = false;
+
+  public static boolean disableUnmountAllItemsForRecycledView = false;
 }
