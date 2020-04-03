@@ -17,8 +17,11 @@
 package com.facebook.litho;
 
 import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
+import static com.facebook.litho.LayoutOutput.getLayoutOutput;
 
+import android.content.Context;
 import android.view.View;
+import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.yoga.YogaDirection;
 
 /** This class hosts any extra mount data related to MountItem. */
@@ -32,6 +35,9 @@ public class LithoMountData {
 
   // Flags that track view-related behaviour of mounted view content.
   final int mDefaultAttributeValuesFlags;
+
+  boolean mIsReleased;
+  String mReleaseCause;
 
   public LithoMountData(Object content) {
     int flags = 0;
@@ -84,6 +90,32 @@ public class LithoMountData {
   /** @return Whether the view associated with this MountItem is setSelected. */
   boolean isViewSelected() {
     return (mDefaultAttributeValuesFlags & FLAG_VIEW_SELECTED) == FLAG_VIEW_SELECTED;
+  }
+
+  void releaseMountContent(
+      final Context context,
+      final MountItem item,
+      final String releaseCause,
+      final int recyclingMode) {
+    final RenderTreeNode node = item.getRenderTreeNode();
+    final LayoutOutput output = getLayoutOutput(node);
+    final Component mComponent = output.getComponent();
+    if (mIsReleased) {
+      final String componentName = mComponent != null ? mComponent.getSimpleName() : "<null>";
+      final String globalKey = mComponent != null ? mComponent.getGlobalKey() : "<null>";
+      throw new MountItem.ReleasingReleasedMountContentException(
+          "Releasing released mount content! component: "
+              + componentName
+              + ", globalKey: "
+              + globalKey
+              + ", transitionId: "
+              + output.getTransitionId()
+              + ", previousReleaseCause: "
+              + mReleaseCause);
+    }
+    ComponentsPools.release(context, mComponent, item.getContent(), recyclingMode);
+    mIsReleased = true;
+    mReleaseCause = releaseCause;
   }
 
   /** This mountItem represents the top-level root host (LithoView) which is always mounted. */

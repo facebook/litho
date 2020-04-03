@@ -2679,8 +2679,9 @@ class MountState implements TransitionManager.OnAnimationCompleteListener, Mount
     assertNoDanglingMountContent(item);
 
     try {
-      item.releaseMountContent(
-          context.getAndroidContext(), "unmountDisappearingItemChild", mRecyclingMode);
+      getMountData(item)
+          .releaseMountContent(
+              context.getAndroidContext(), item, "unmountDisappearingItemChild", mRecyclingMode);
     } catch (MountItem.ReleasingReleasedMountContentException e) {
       throw new RuntimeException(e.getMessage() + " " + getMountItemDebugMessage(item));
     }
@@ -2863,7 +2864,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener, Mount
     }
 
     try {
-      item.releaseMountContent(mContext.getAndroidContext(), "unmountItem", mRecyclingMode);
+      getMountData(item)
+          .releaseMountContent(mContext.getAndroidContext(), item, "unmountItem", mRecyclingMode);
     } catch (MountItem.ReleasingReleasedMountContentException e) {
       throw new RuntimeException(e.getMessage() + " " + getMountItemDebugMessage(item));
     }
@@ -2930,8 +2932,9 @@ class MountState implements TransitionManager.OnAnimationCompleteListener, Mount
       }
       assertNoDanglingMountContent(item);
       try {
-        item.releaseMountContent(
-            mContext.getAndroidContext(), "endUnmountDisappearingItem", mRecyclingMode);
+        getMountData(item)
+            .releaseMountContent(
+                mContext.getAndroidContext(), item, "endUnmountDisappearingItem", mRecyclingMode);
       } catch (MountItem.ReleasingReleasedMountContentException e) {
         throw new RuntimeException(e.getMessage() + " " + getMountItemDebugMessage(item));
       }

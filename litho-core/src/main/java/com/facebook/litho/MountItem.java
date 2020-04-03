@@ -16,9 +16,7 @@
 
 package com.facebook.litho;
 
-import static com.facebook.litho.LayoutOutput.getLayoutOutput;
 
-import android.content.Context;
 import android.graphics.drawable.Drawable;
 import com.facebook.rendercore.RenderTreeNode;
 
@@ -33,9 +31,6 @@ class MountItem {
   private ComponentHost mHost;
   private RenderTreeNode mRenderTreeNode;
   private boolean mIsBound;
-
-  private boolean mIsReleased;
-  private String mReleaseCause;
 
   private final LithoMountData mMountData;
 
@@ -67,7 +62,7 @@ class MountItem {
 
   /** @return Mount content created by the component. */
   Object getContent() {
-    if (mIsReleased) {
+    if (mMountData.mIsReleased) {
       throw new RuntimeException("Trying to access released mount content!");
     }
     return mContent;
@@ -75,27 +70,6 @@ class MountItem {
 
   public RenderTreeNode getRenderTreeNode() {
     return mRenderTreeNode;
-  }
-
-  void releaseMountContent(Context context, String releaseCause, int recyclingMode) {
-    final LayoutOutput output = getLayoutOutput(mRenderTreeNode);
-    final Component mComponent = output.getComponent();
-    if (mIsReleased) {
-      final String componentName = mComponent != null ? mComponent.getSimpleName() : "<null>";
-      final String globalKey = mComponent != null ? mComponent.getGlobalKey() : "<null>";
-      throw new ReleasingReleasedMountContentException(
-          "Releasing released mount content! component: "
-              + componentName
-              + ", globalKey: "
-              + globalKey
-              + ", transitionId: "
-              + output.getTransitionId()
-              + ", previousReleaseCause: "
-              + mReleaseCause);
-    }
-    ComponentsPools.release(context, mComponent, mContent, recyclingMode);
-    mIsReleased = true;
-    mReleaseCause = releaseCause;
   }
 
   /**
