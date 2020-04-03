@@ -160,7 +160,7 @@ public class MountItemTest {
 
     assertThat(getMountData(mMountItem).isViewClickable()).isTrue();
     assertThat(mMountItem.isViewEnabled()).isTrue();
-    assertThat(mMountItem.isViewLongClickable()).isTrue();
+    assertThat(getMountData(mMountItem).isViewLongClickable()).isTrue();
     assertThat(mMountItem.isViewFocusable()).isFalse();
     assertThat(mMountItem.isViewSelected()).isFalse();
 
@@ -174,7 +174,7 @@ public class MountItemTest {
 
     assertThat(getMountData(mMountItem).isViewClickable()).isFalse();
     assertThat(mMountItem.isViewEnabled()).isFalse();
-    assertThat(mMountItem.isViewLongClickable()).isFalse();
+    assertThat(getMountData(mMountItem).isViewLongClickable()).isFalse();
     assertThat(mMountItem.isViewFocusable()).isTrue();
     assertThat(mMountItem.isViewSelected()).isTrue();
   }

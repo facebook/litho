@@ -1962,7 +1962,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener, Mount
     }
 
     view.setClickable(getMountData(item).isViewClickable());
-    view.setLongClickable(item.isViewLongClickable());
+    view.setLongClickable(getMountData(item).isViewLongClickable());
 
     unsetFocusable(view, item);
     unsetEnabled(view, item);
