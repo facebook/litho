@@ -132,18 +132,18 @@ public class MountItemTest {
 
   @Test
   public void testFlags() {
-    mFlags = MountItem.LAYOUT_FLAG_DUPLICATE_PARENT_STATE | MountItem.LAYOUT_FLAG_DISABLE_TOUCHABLE;
+    mFlags = LayoutOutput.LAYOUT_FLAG_DUPLICATE_PARENT_STATE | LayoutOutput.LAYOUT_FLAG_DISABLE_TOUCHABLE;
 
     mMountItem = create(mContent);
 
-    assertThat(MountItem.isDuplicateParentState(getLayoutOutput(mMountItem).getFlags())).isTrue();
-    assertThat(MountItem.isTouchableDisabled(getLayoutOutput(mMountItem).getFlags())).isTrue();
+    assertThat(LayoutOutput.isDuplicateParentState(getLayoutOutput(mMountItem).getFlags())).isTrue();
+    assertThat(LayoutOutput.isTouchableDisabled(getLayoutOutput(mMountItem).getFlags())).isTrue();
 
     mFlags = 0;
     mMountItem = create(mContent);
 
-    assertThat(MountItem.isDuplicateParentState(getLayoutOutput(mMountItem).getFlags())).isFalse();
-    assertThat(MountItem.isTouchableDisabled(getLayoutOutput(mMountItem).getFlags())).isFalse();
+    assertThat(LayoutOutput.isDuplicateParentState(getLayoutOutput(mMountItem).getFlags())).isFalse();
+    assertThat(LayoutOutput.isTouchableDisabled(getLayoutOutput(mMountItem).getFlags())).isFalse();
   }
 
   @Test

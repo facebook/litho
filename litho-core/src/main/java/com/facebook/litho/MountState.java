@@ -1888,7 +1888,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener, Mount
     final ViewNodeInfo viewNodeInfo = output.getViewNodeInfo();
     if (viewNodeInfo != null) {
       setViewStateListAnimator(view, viewNodeInfo);
-      if (MountItem.areDrawableOutputsDisabled(output.getFlags())) {
+      if (LayoutOutput.areDrawableOutputsDisabled(output.getFlags())) {
         setViewBackground(view, viewNodeInfo);
         setViewForeground(view, viewNodeInfo);
       }
@@ -1978,7 +1978,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener, Mount
       unsetViewStateListAnimator(view, viewNodeInfo);
       // Host view doesn't set its own padding, but gets absolute positions for inner content from
       // Yoga. Also bg/fg is used as separate drawables instead of using View's bg/fg attribute.
-      if (MountItem.areDrawableOutputsDisabled(output.getFlags())) {
+      if (LayoutOutput.areDrawableOutputsDisabled(output.getFlags())) {
         unsetViewBackground(view, viewNodeInfo);
         unsetViewForeground(view, viewNodeInfo);
       }

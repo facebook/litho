@@ -25,8 +25,8 @@ import static android.view.View.INVISIBLE;
 import static android.view.View.MeasureSpec.EXACTLY;
 import static android.view.View.MeasureSpec.makeMeasureSpec;
 import static android.view.View.VISIBLE;
-import static com.facebook.litho.MountItem.LAYOUT_FLAG_DUPLICATE_PARENT_STATE;
-import static com.facebook.litho.MountItem.LAYOUT_FLAG_MATCH_HOST_BOUNDS;
+import static com.facebook.litho.LayoutOutput.LAYOUT_FLAG_DUPLICATE_PARENT_STATE;
+import static com.facebook.litho.LayoutOutput.LAYOUT_FLAG_MATCH_HOST_BOUNDS;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
@@ -228,14 +228,14 @@ public class ComponentHostTest {
 
     MountItem mountItem1 = mount(0, new ColorDrawable());
     MountItem mountItem2 =
-        mount(1, new TouchableDrawable(), MountItem.LAYOUT_FLAG_DISABLE_TOUCHABLE);
+        mount(1, new TouchableDrawable(), LayoutOutput.LAYOUT_FLAG_DISABLE_TOUCHABLE);
     MountItem mountItem3 = mount(2, new View(mContext.getAndroidContext()));
     MountItem mountItem4 = mount(4, spy(new TouchableDrawable()));
     MountItem mountItem5 =
-        mount(5, new TouchableDrawable(), MountItem.LAYOUT_FLAG_DISABLE_TOUCHABLE);
+        mount(5, new TouchableDrawable(), LayoutOutput.LAYOUT_FLAG_DISABLE_TOUCHABLE);
     MountItem mountItem6 = mount(7, new View(mContext.getAndroidContext()));
     MountItem mountItem7 =
-        mount(8, new TouchableDrawable(), MountItem.LAYOUT_FLAG_DISABLE_TOUCHABLE);
+        mount(8, new TouchableDrawable(), LayoutOutput.LAYOUT_FLAG_DISABLE_TOUCHABLE);
 
     assertThat(mHost.getMountItemAt(0)).isEqualTo(mountItem1);
     assertThat(mHost.getMountItemAt(1)).isEqualTo(mountItem2);

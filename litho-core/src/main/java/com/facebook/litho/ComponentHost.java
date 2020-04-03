@@ -19,7 +19,7 @@ package com.facebook.litho;
 import static com.facebook.litho.AccessibilityUtils.isAccessibilityEnabled;
 import static com.facebook.litho.ComponentHostUtils.maybeInvalidateAccessibilityState;
 import static com.facebook.litho.LayoutOutput.getLayoutOutput;
-import static com.facebook.litho.MountItem.isTouchableDisabled;
+import static com.facebook.litho.LayoutOutput.isTouchableDisabled;
 import static com.facebook.litho.ThreadUtils.assertMainThread;
 
 import android.annotation.SuppressLint;
@@ -688,7 +688,7 @@ public class ComponentHost extends ViewGroup {
   }
 
   private void mountView(View view, int flags) {
-    view.setDuplicateParentStateEnabled(MountItem.isDuplicateParentState(flags));
+    view.setDuplicateParentStateEnabled(LayoutOutput.isDuplicateParentState(flags));
 
     mIsChildDrawingOrderDirty = true;
 
@@ -1235,7 +1235,7 @@ public class ComponentHost extends ViewGroup {
         i < size;
         i++) {
       final MountItem mountItem = mDrawableMountItems.valueAt(i);
-      if ((getLayoutOutput(mountItem).getFlags() & MountItem.LAYOUT_FLAG_MATCH_HOST_BOUNDS) != 0) {
+      if ((getLayoutOutput(mountItem).getFlags() & LayoutOutput.LAYOUT_FLAG_MATCH_HOST_BOUNDS) != 0) {
         if (drawables == null) {
           drawables = new ArrayList<>();
         }

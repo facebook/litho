@@ -1395,7 +1395,7 @@ public class LayoutStateCalculateTest {
     assertThat(getLayoutOutput(layoutState.getMountableOutputAt(1)).getComponent().getSimpleName())
         .isEqualTo("TestDrawableComponent");
     assertThat(
-            MountItem.isTouchableDisabled(
+            LayoutOutput.isTouchableDisabled(
                 getLayoutOutput(layoutState.getMountableOutputAt(1)).getFlags()))
         .isTrue();
   }
@@ -1431,7 +1431,7 @@ public class LayoutStateCalculateTest {
     assertThat(getLayoutOutput(layoutState.getMountableOutputAt(1)).getComponent())
         .isInstanceOf(TestDrawableComponent.class);
     assertThat(
-            MountItem.isTouchableDisabled(
+            LayoutOutput.isTouchableDisabled(
                 getLayoutOutput(layoutState.getMountableOutputAt(1)).getFlags()))
         .isTrue();
   }
@@ -1504,7 +1504,7 @@ public class LayoutStateCalculateTest {
         .isInstanceOf(TestDrawableComponent.class);
     assertThat(getLayoutOutput(layoutState.getMountableOutputAt(2)).getNodeInfo()).isNull();
     assertThat(
-            MountItem.isTouchableDisabled(
+            LayoutOutput.isTouchableDisabled(
                 getLayoutOutput(layoutState.getMountableOutputAt(2)).getFlags()))
         .isTrue();
 
@@ -1512,7 +1512,7 @@ public class LayoutStateCalculateTest {
         .isInstanceOf(TestDrawableComponent.class);
     assertThat(getLayoutOutput(layoutState.getMountableOutputAt(3)).getNodeInfo()).isNull();
     assertThat(
-            MountItem.isTouchableDisabled(
+            LayoutOutput.isTouchableDisabled(
                 getLayoutOutput(layoutState.getMountableOutputAt(3)).getFlags()))
         .isTrue();
 
@@ -1523,7 +1523,7 @@ public class LayoutStateCalculateTest {
         .isInstanceOf(TestDrawableComponent.class);
     assertThat(getLayoutOutput(layoutState.getMountableOutputAt(5)).getNodeInfo()).isNull();
     assertThat(
-            MountItem.isTouchableDisabled(
+            LayoutOutput.isTouchableDisabled(
                 getLayoutOutput(layoutState.getMountableOutputAt(5)).getFlags()))
         .isFalse();
   }

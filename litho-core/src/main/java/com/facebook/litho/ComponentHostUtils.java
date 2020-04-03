@@ -78,7 +78,7 @@ class ComponentHostUtils {
   static void maybeSetDrawableState(View view, Drawable drawable, int flags, NodeInfo nodeInfo) {
     final boolean shouldSetState =
         (nodeInfo != null && nodeInfo.hasTouchEventHandlers())
-            || MountItem.isDuplicateParentState(flags);
+            || LayoutOutput.isDuplicateParentState(flags);
 
     if (shouldSetState && drawable.isStateful()) {
       drawable.setState(view.getDrawableState());
