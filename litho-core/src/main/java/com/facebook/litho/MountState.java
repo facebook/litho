@@ -2363,7 +2363,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener, Mount
   }
 
   private static void unsetEnabled(View view, MountItem mountItem) {
-    view.setEnabled(mountItem.isViewEnabled());
+    view.setEnabled(getMountData(mountItem).isViewEnabled());
   }
 
   private static void setSelected(View view, @NodeInfo.SelectedState int selectedState) {

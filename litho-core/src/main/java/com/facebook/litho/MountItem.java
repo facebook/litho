@@ -98,11 +98,6 @@ class MountItem {
     mReleaseCause = releaseCause;
   }
 
-  /** @return Whether the view associated with this MountItem is setEnabled. */
-  boolean isViewEnabled() {
-    return mMountData.isViewEnabled();
-  }
-
   /** @return Whether the view associated with this MountItem is setSelected. */
   boolean isViewSelected() {
     return mMountData.isViewSelected();
