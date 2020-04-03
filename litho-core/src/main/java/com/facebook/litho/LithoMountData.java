@@ -18,10 +18,73 @@ package com.facebook.litho;
 
 import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
 
+import android.view.View;
 import com.facebook.yoga.YogaDirection;
 
 /** This class hosts any extra mount data related to MountItem. */
 public class LithoMountData {
+
+  private static final int FLAG_VIEW_CLICKABLE = 1 << 0;
+  private static final int FLAG_VIEW_LONG_CLICKABLE = 1 << 1;
+  private static final int FLAG_VIEW_FOCUSABLE = 1 << 2;
+  private static final int FLAG_VIEW_ENABLED = 1 << 3;
+  private static final int FLAG_VIEW_SELECTED = 1 << 4;
+
+  // Flags that track view-related behaviour of mounted view content.
+  final int mDefaultAttributeValuesFlags;
+
+  public LithoMountData(Object content) {
+    int flags = 0;
+    if (content instanceof View) {
+      final View view = (View) content;
+
+      if (view.isClickable()) {
+        flags |= FLAG_VIEW_CLICKABLE;
+      }
+
+      if (view.isLongClickable()) {
+        flags |= FLAG_VIEW_LONG_CLICKABLE;
+      }
+
+      if (view.isFocusable()) {
+        flags |= FLAG_VIEW_FOCUSABLE;
+      }
+
+      if (view.isEnabled()) {
+        flags |= FLAG_VIEW_ENABLED;
+      }
+
+      if (view.isSelected()) {
+        flags |= FLAG_VIEW_SELECTED;
+      }
+    }
+    mDefaultAttributeValuesFlags = flags;
+  }
+
+  /** @return Whether the view associated with this MountItem is clickable. */
+  boolean isViewClickable() {
+    return (mDefaultAttributeValuesFlags & FLAG_VIEW_CLICKABLE) == FLAG_VIEW_CLICKABLE;
+  }
+
+  /** @return Whether the view associated with this MountItem is long clickable. */
+  boolean isViewLongClickable() {
+    return (mDefaultAttributeValuesFlags & FLAG_VIEW_LONG_CLICKABLE) == FLAG_VIEW_LONG_CLICKABLE;
+  }
+
+  /** @return Whether the view associated with this MountItem is setFocusable. */
+  boolean isViewFocusable() {
+    return (mDefaultAttributeValuesFlags & FLAG_VIEW_FOCUSABLE) == FLAG_VIEW_FOCUSABLE;
+  }
+
+  /** @return Whether the view associated with this MountItem is setEnabled. */
+  boolean isViewEnabled() {
+    return (mDefaultAttributeValuesFlags & FLAG_VIEW_ENABLED) == FLAG_VIEW_ENABLED;
+  }
+
+  /** @return Whether the view associated with this MountItem is setSelected. */
+  boolean isViewSelected() {
+    return (mDefaultAttributeValuesFlags & FLAG_VIEW_SELECTED) == FLAG_VIEW_SELECTED;
+  }
 
   /** This mountItem represents the top-level root host (LithoView) which is always mounted. */
   static MountItem createRootHostMountItem(LithoView lithoView) {

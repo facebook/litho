@@ -20,7 +20,6 @@ import static com.facebook.litho.LayoutOutput.getLayoutOutput;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.view.View;
 import com.facebook.rendercore.RenderTreeNode;
 
 /**
@@ -28,12 +27,6 @@ import com.facebook.rendercore.RenderTreeNode;
  * which might be any type of UI element supported by the framework e.g. {@link Drawable}.
  */
 class MountItem {
-
-  private static final int FLAG_VIEW_CLICKABLE = 1 << 0;
-  private static final int FLAG_VIEW_LONG_CLICKABLE = 1 << 1;
-  private static final int FLAG_VIEW_FOCUSABLE = 1 << 2;
-  private static final int FLAG_VIEW_ENABLED = 1 << 3;
-  private static final int FLAG_VIEW_SELECTED = 1 << 4;
 
   private final Object mContent;
 
@@ -44,37 +37,13 @@ class MountItem {
   private boolean mIsReleased;
   private String mReleaseCause;
 
-  // Flags that track view-related behaviour of mounted view content.
-  private int mMountViewFlags;
+  private final LithoMountData mMountData;
 
   MountItem(ComponentHost host, Object content, RenderTreeNode node) {
     mContent = content;
     mHost = host;
     mRenderTreeNode = node;
-
-    if (content instanceof View) {
-      final View view = (View) content;
-
-      if (view.isClickable()) {
-        mMountViewFlags |= FLAG_VIEW_CLICKABLE;
-      }
-
-      if (view.isLongClickable()) {
-        mMountViewFlags |= FLAG_VIEW_LONG_CLICKABLE;
-      }
-
-      if (view.isFocusable()) {
-        mMountViewFlags |= FLAG_VIEW_FOCUSABLE;
-      }
-
-      if (view.isEnabled()) {
-        mMountViewFlags |= FLAG_VIEW_ENABLED;
-      }
-
-      if (view.isSelected()) {
-        mMountViewFlags |= FLAG_VIEW_SELECTED;
-      }
-    }
+    mMountData = new LithoMountData(content);
   }
 
   /**
@@ -131,27 +100,27 @@ class MountItem {
 
   /** @return Whether the view associated with this MountItem is clickable. */
   boolean isViewClickable() {
-    return (mMountViewFlags & FLAG_VIEW_CLICKABLE) == FLAG_VIEW_CLICKABLE;
+    return mMountData.isViewClickable();
   }
 
   /** @return Whether the view associated with this MountItem is long clickable. */
   boolean isViewLongClickable() {
-    return (mMountViewFlags & FLAG_VIEW_LONG_CLICKABLE) == FLAG_VIEW_LONG_CLICKABLE;
+    return mMountData.isViewLongClickable();
   }
 
   /** @return Whether the view associated with this MountItem is setFocusable. */
   boolean isViewFocusable() {
-    return (mMountViewFlags & FLAG_VIEW_FOCUSABLE) == FLAG_VIEW_FOCUSABLE;
+    return mMountData.isViewFocusable();
   }
 
   /** @return Whether the view associated with this MountItem is setEnabled. */
   boolean isViewEnabled() {
-    return (mMountViewFlags & FLAG_VIEW_ENABLED) == FLAG_VIEW_ENABLED;
+    return mMountData.isViewEnabled();
   }
 
   /** @return Whether the view associated with this MountItem is setSelected. */
   boolean isViewSelected() {
-    return (mMountViewFlags & FLAG_VIEW_SELECTED) == FLAG_VIEW_SELECTED;
+    return mMountData.isViewSelected();
   }
 
   /**
