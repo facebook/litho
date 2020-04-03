@@ -28,16 +28,18 @@ inline fun DslScope.Column(
     justifyContent: YogaJustify? = null,
     wrap: YogaWrap? = null,
     reverse: Boolean = false,
-    content: DslColumnBuilder.() -> Unit = {}
+    content: DslContainerScope.() -> Unit = {}
 ): Column =
-    DslColumnBuilder(context).apply {
-      alignContent(alignContent)
-      alignItems(alignItems)
-      justifyContent(justifyContent)
-      wrap(wrap)
-      reverse(reverse)
-      content()
-    }.build()
+    Column.create(context)
+        .alignContent(alignContent)
+        .alignItems(alignItems)
+        .justifyContent(justifyContent)
+        .wrap(wrap)
+        .reverse(reverse)
+        .apply {
+          DslContainerScope(this).content()
+        }
+        .build()
 
 inline fun DslScope.Row(
     alignContent: YogaAlign? = null,
@@ -45,43 +47,29 @@ inline fun DslScope.Row(
     justifyContent: YogaJustify? = null,
     wrap: YogaWrap? = null,
     reverse: Boolean = false,
-    content: DslRowBuilder.() -> Unit = {}
+    content: DslContainerScope.() -> Unit = {}
 ): Row =
-    DslRowBuilder(context).apply {
-      alignContent(alignContent)
-      alignItems(alignItems)
-      justifyContent(justifyContent)
-      wrap(wrap)
-      reverse(reverse)
-      content()
-    }.build()
+    Row.create(context)
+        .alignContent(alignContent)
+        .alignItems(alignItems)
+        .justifyContent(justifyContent)
+        .wrap(wrap)
+        .reverse(reverse)
+        .apply {
+          DslContainerScope(this).content()
+        }
+        .build()
 
-/** Custom [Row.Builder] that exposes [unaryPlus] operator in its context for adding children. */
-class DslRowBuilder(c: ComponentContext) : Row.Builder() {
-  init {
-    init(c, 0, 0, Row("Row"))
+/**
+ * A scope that exposes only [unaryPlus] operator in the context of [Component.ContainerBuilder]
+ * containers for adding children.
+ */
+inline class DslContainerScope(private val container: Component.ContainerBuilder<*>) {
+  operator fun Component.Builder<*>?.unaryPlus() {
+    container.child(this)
   }
 
-  inline operator fun Component.Builder<*>?.unaryPlus() {
-    child(this)
-  }
-
-  inline operator fun Component?.unaryPlus() {
-    child(this)
-  }
-}
-
-/** Custom [Column.Builder] that exposes [unaryPlus] operator in its context for adding children. */
-class DslColumnBuilder(c: ComponentContext) : Column.Builder() {
-  init {
-    init(c, 0, 0, Column("Column"))
-  }
-
-  inline operator fun Component.Builder<*>?.unaryPlus() {
-    child(this)
-  }
-
-  inline operator fun Component?.unaryPlus() {
-    child(this)
+  operator fun Component?.unaryPlus() {
+    container.child(this)
   }
 }
