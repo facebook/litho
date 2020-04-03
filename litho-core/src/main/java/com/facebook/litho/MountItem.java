@@ -136,6 +136,10 @@ class MountItem {
     mIsBound = bound;
   }
 
+  Object getMountData() {
+    return mMountData;
+  }
+
   public static class ReleasingReleasedMountContentException extends RuntimeException {
 
     public ReleasingReleasedMountContentException(String message) {

@@ -105,4 +105,12 @@ public class LithoMountData {
             null);
     return new MountItem(lithoView, lithoView, LayoutOutput.create(output, null));
   }
+
+  static LithoMountData getMountData(MountItem item) {
+    Object data = item.getMountData();
+    if (!(data instanceof LithoMountData)) {
+      throw new RuntimeException("MountData should not be null when using Litho's MountState.");
+    }
+    return (LithoMountData) item.getMountData();
+  }
 }
