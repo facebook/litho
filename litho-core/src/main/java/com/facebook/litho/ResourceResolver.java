@@ -16,10 +16,10 @@
 
 package com.facebook.litho;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import androidx.annotation.ArrayRes;
 import androidx.annotation.AttrRes;
 import androidx.annotation.BoolRes;
@@ -30,15 +30,18 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.IntegerRes;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.core.content.ContextCompat;
 
 public class ResourceResolver {
   private final Resources mResources;
   private final Resources.Theme mTheme;
   private final ResourceCache mResourceCache;
+  private final Context mAndroidContext;
 
   ResourceResolver(ComponentContext context) {
-    mResources = context.getAndroidContext().getResources();
-    mTheme = context.getAndroidContext().getTheme();
+    mAndroidContext = context.getAndroidContext();
+    mResources = mAndroidContext.getResources();
+    mTheme = mAndroidContext.getTheme();
     mResourceCache = context.getResourceCache();
   }
 
@@ -228,11 +231,7 @@ public class ResourceResolver {
     if (resId == 0) {
       return null;
     }
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      return mResources.getDrawable(resId, mTheme);
-    } else {
-      return mResources.getDrawable(resId);
-    }
+    return ContextCompat.getDrawable(mAndroidContext, resId);
   }
 
   public String resolveStringAttr(@AttrRes int attrResId, @StringRes int defResId) {
