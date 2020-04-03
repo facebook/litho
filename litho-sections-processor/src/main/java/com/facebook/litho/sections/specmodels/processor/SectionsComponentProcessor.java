@@ -19,7 +19,6 @@ package com.facebook.litho.sections.specmodels.processor;
 import com.facebook.litho.sections.specmodels.model.SectionClassNames;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.processor.AbstractComponentsProcessor;
-import com.facebook.litho.specmodels.processor.SpecModelFactory;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -31,8 +30,7 @@ public class SectionsComponentProcessor extends AbstractComponentsProcessor {
 
   public SectionsComponentProcessor() {
     super(
-        ImmutableList.<SpecModelFactory>of(
-            new GroupSectionSpecModelFactory(), new DiffSectionSpecModelFactory()),
+        ImmutableList.of(new GroupSectionSpecModelFactory(), new DiffSectionSpecModelFactory()),
         null);
   }
 
