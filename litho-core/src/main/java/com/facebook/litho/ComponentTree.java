@@ -2251,7 +2251,9 @@ public class ComponentTree {
       }
 
       mReleased = true;
-      mReleasedComponent = mRoot.getSimpleName();
+      if (mRoot != null) {
+        mReleasedComponent = mRoot.getSimpleName();
+      }
       if (mLithoView != null) {
         mLithoView.setComponentTree(null);
       }
