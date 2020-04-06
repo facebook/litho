@@ -27,32 +27,13 @@ import com.facebook.rendercore.RenderState.LayoutContext;
  */
 public abstract class Node implements Copyable {
 
-  private Copyable mProps;
   private Copyable mLayoutParams;
   private RenderUnit mRenderUnit;
-
-  public Node() {
-    this(null);
-  }
-
-  public Node(Copyable props) {
-    mProps = props;
-  }
 
   /** @return a RenderUnit that represents the rendering content of this Node. */
   @Nullable
   public final RenderUnit getRenderUnit() {
     return mRenderUnit;
-  }
-
-  /** @return the Props associated with this node. */
-  @Nullable
-  public final Copyable getProps() {
-    return mProps;
-  }
-
-  public void setProps(Copyable props) {
-    mProps = props;
   }
 
   public final void setRenderUnit(RenderUnit content) {
@@ -166,15 +147,11 @@ public abstract class Node implements Copyable {
 
   @Override
   public Node makeCopy() {
-    Node clone = null;
+    final Node clone;
     try {
       clone = (Node) super.clone();
       if (mRenderUnit != null) {
         clone.mRenderUnit = mRenderUnit.makeCopy();
-      }
-
-      if (mProps != null) {
-        clone.mProps = mProps.makeCopy();
       }
 
       if (mLayoutParams != null) {
