@@ -27,6 +27,7 @@ import com.intellij.codeInsight.completion.CompletionResult;
 import com.intellij.codeInsight.completion.CompletionResultSet;
 import com.intellij.codeInsight.completion.CompletionType;
 import com.intellij.codeInsight.lookup.LookupElement;
+import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiMethod;
@@ -77,17 +78,11 @@ public class RequiredPropMethodContributor extends CompletionContributor {
                 replacingCompletion = CompletionUtils.wrap(suggestedCompletion, newLookupElement);
 
               } else if (isComponentCreateMethod(suggestedMethod)) {
-                Optional.of(suggestedMethod.getParent())
-                    .map(cls -> findRequiredPropSetterNames((PsiClass) cls))
-                    .filter(methodNames -> !methodNames.isEmpty())
-                    .map(
-                        methodNames ->
-                            MethodChainLookupElement.create(
-                                suggestedLookup,
-                                suggestedMethod.getName(),
-                                methodNames,
-                                parameters.getPosition().getPrevSibling(),
-                                parameters.getEditor().getProject()))
+                createMethodLookup(
+                        suggestedMethod,
+                        suggestedLookup,
+                        parameters.getPosition().getPrevSibling(),
+                        parameters.getEditor().getProject())
                     .map(
                         newLookupElement ->
                             CompletionUtils.wrap(suggestedCompletion, newLookupElement))
@@ -97,6 +92,18 @@ public class RequiredPropMethodContributor extends CompletionContributor {
             result.passResult(
                 replacingCompletion == null ? suggestedCompletion : replacingCompletion);
           });
+    }
+
+    @VisibleForTesting
+    static Optional<LookupElement> createMethodLookup(
+        PsiMethod createMethod, LookupElement delegate, PsiElement placeholder, Project project) {
+      return Optional.of(createMethod.getParent())
+          .map(cls -> findRequiredPropSetterNames((PsiClass) cls))
+          .filter(methodNames -> !methodNames.isEmpty())
+          .map(
+              methodNames ->
+                  MethodChainLookupElement.create(
+                      delegate, createMethod.getName(), methodNames, placeholder, project));
     }
 
     /**

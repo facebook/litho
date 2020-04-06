@@ -16,23 +16,24 @@
 
 package com.facebook.litho.intellij.completion;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import com.facebook.litho.intellij.LithoPluginIntellijTest;
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementPresentation;
-import com.intellij.lang.jvm.JvmParameter;
+import com.intellij.openapi.command.WriteCommandAction;
+import com.intellij.openapi.editor.Document;
+import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiClass;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiMethod;
+import com.intellij.testFramework.fixtures.CodeInsightTestFixture;
 import com.intellij.testFramework.fixtures.TestLookupElementPresentation;
+import java.io.IOException;
 import java.util.List;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 public class RequiredPropMethodContributorTest extends LithoPluginIntellijTest {
 
@@ -41,58 +42,95 @@ public class RequiredPropMethodContributorTest extends LithoPluginIntellijTest {
   }
 
   @Test
-  public void renderElement() {
+  public void handleInsert() throws IOException {
+    String clsName = "RequiredPropMethodContributorTest.java";
+    // Setup caret
+    testHelper.configure(clsName);
+    testHelper.getPsiClass(
+        psiClasses -> {
+          final PsiClass componentCls = getComponent(psiClasses);
+          final PsiMethod createMethod = componentCls.getMethods()[0];
+          final LookupElement testDelegate = new MethodChainLookupElementTest.TestLookupElement("");
+
+          final CodeInsightTestFixture fixture = testHelper.getFixture();
+          final int endOffset = fixture.getCaretOffset();
+          final int startOffsetBeforeDot = endOffset - 10;
+          final PsiElement placeholder = psiClasses.get(0).findElementAt(endOffset).getParent();
+          final Project project = fixture.getProject();
+          final Editor editor = fixture.getEditor();
+          final Document document = editor.getDocument();
+
+          final MethodChainLookupElement methodLookup =
+              (MethodChainLookupElement)
+                  RequiredPropMethodContributor.RequiredPropMethodProvider.createMethodLookup(
+                          createMethod, testDelegate, placeholder, project)
+                      .get();
+          WriteCommandAction.runWriteCommandAction(
+              project,
+              () -> {
+                methodLookup.handleInsertInternal(
+                    editor, document, startOffsetBeforeDot, endOffset, project);
+              });
+
+          assertThat(document.getText())
+              .contains("MyComponent.create(c)\n        .one()\n        .three()");
+
+          return true;
+        },
+        clsName);
+  }
+
+  @Test
+  public void renderElement_addTail() {
     LookupElementPresentation testPresentation = new TestLookupElementPresentation();
 
     // Excluding input parameters influence on the render result
     RequiredPropLookupElement.create(mock(LookupElement.class), true)
         .renderElement(testPresentation);
 
-    assertEquals(" - required Prop", testPresentation.getTailText());
+    assertThat(testPresentation.getTailText()).isEqualTo(" - required Prop");
   }
 
   @Test
   public void isComponentCreateMethod() {
-    PsiMethod mockedMethod = mock(PsiMethod.class);
-    PsiClass component = mockComponent();
-    when(mockedMethod.getParent()).thenReturn(component);
-    when(mockedMethod.getParameters()).thenReturn(new JvmParameter[1]);
+    testHelper.getPsiClass(
+        psiClasses -> {
+          final PsiClass componentCls = getComponent(psiClasses);
+          final PsiMethod[] methods = componentCls.getMethods();
 
-    assertFalse(
-        RequiredPropMethodContributor.RequiredPropMethodProvider.isComponentCreateMethod(
-            mockedMethod));
+          assertThat(
+                  RequiredPropMethodContributor.RequiredPropMethodProvider.isComponentCreateMethod(
+                      methods[0]))
+              .isTrue();
+          assertThat(
+                  RequiredPropMethodContributor.RequiredPropMethodProvider.isComponentCreateMethod(
+                      methods[1]))
+              .isFalse();
 
-    when(mockedMethod.getName()).thenReturn("create");
-    assertTrue(
-        RequiredPropMethodContributor.RequiredPropMethodProvider.isComponentCreateMethod(
-            mockedMethod));
+          return true;
+        },
+        "RequiredPropMethodContributorTest.java");
   }
 
   @Test
   public void findRequiredPropSetterNames() {
     testHelper.getPsiClass(
         psiClasses -> {
-          PsiClass cls = psiClasses.get(0);
+          final PsiClass componentCls = getComponent(psiClasses);
           String[] expected = {"one", "three"};
 
           List<String> names =
               RequiredPropMethodContributor.RequiredPropMethodProvider.findRequiredPropSetterNames(
-                  cls);
-          assertEquals(2, names.size());
-          assertArrayEquals(expected, names.toArray());
+                  componentCls);
+          assertThat(names.size()).isEqualTo(2);
+          assertThat(names.toArray()).isEqualTo(expected);
           return true;
         },
         "RequiredPropMethodContributorTest.java");
   }
 
-  static PsiClass mockComponent() {
-    // We can't get PsiFile with super parent for testing, thant's why mocking whole hierarchy
-    PsiClass mockedComponentLifecycle = mock(PsiClass.class);
-    Mockito.when(mockedComponentLifecycle.getName()).thenReturn("ComponentLifecycle");
-
-    PsiClass mockedSubComponent = mock(PsiClass.class);
-    Mockito.when(mockedSubComponent.getSuperClass()).thenReturn(mockedComponentLifecycle);
-
-    return mockedSubComponent;
+  private static PsiClass getComponent(List<PsiClass> psiClasses) {
+    PsiClass cls = psiClasses.get(0);
+    return cls.findInnerClassByName("MyComponent", false);
   }
 }

@@ -28,6 +28,8 @@ import com.intellij.codeInsight.template.Template;
 import com.intellij.codeInsight.template.TemplateBuilderImpl;
 import com.intellij.codeInsight.template.TemplateManager;
 import com.intellij.codeInsight.template.impl.TextExpression;
+import com.intellij.openapi.editor.Document;
+import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.JavaPsiFacade;
@@ -107,7 +109,6 @@ public class MethodChainLookupElement extends LookupElementDecorator<LookupEleme
           return true;
         });
     Template template = templateBuilder.buildTemplate();
-    template.setToReformat(true);
     return template;
   }
 
@@ -119,23 +120,25 @@ public class MethodChainLookupElement extends LookupElementDecorator<LookupEleme
 
   @Override
   public void handleInsert(InsertionContext context) {
-    // Copied from LiveTemplateLookupElementImpl
-    context.getDocument().deleteString(findOffsetAfterDot(context), context.getTailOffset());
     context.setAddCompletionChar(false);
-    TemplateManager.getInstance(context.getProject())
-        .startTemplate(context.getEditor(), fromTemplate);
+    handleInsertInternal(
+        context.getEditor(),
+        context.getDocument(),
+        context.getStartOffset(),
+        context.getTailOffset(),
+        context.getProject());
     LithoLoggerProvider.getEventLogger()
         .log(EventLogger.EVENT_COMPLETION_REQUIRED_PROP + ".builder");
   }
 
-  private static int findOffsetAfterDot(InsertionContext context) {
-    final int startOffset = context.getStartOffset();
-    return context
-            .getDocument()
-            .getText(TextRange.create(startOffset, context.getTailOffset()))
-            .indexOf('.')
-        + 1
-        + startOffset;
+  @VisibleForTesting
+  void handleInsertInternal(
+      Editor editor, Document document, int startOffset, int tailOffset, Project project) {
+    // Copied from LiveTemplateLookupElementImpl
+    final int offsetAfterDot =
+        document.getText(TextRange.create(startOffset, tailOffset)).indexOf('.') + 1 + startOffset;
+    document.deleteString(offsetAfterDot, tailOffset);
+    TemplateManager.getInstance(project).startTemplate(editor, fromTemplate);
   }
 
   @Override

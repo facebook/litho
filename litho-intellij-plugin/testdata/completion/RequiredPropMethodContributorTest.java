@@ -16,19 +16,30 @@
 
 class RequiredPropMethodContributorTest {
 
-  void second() {}
+  void testCompletion() {
+    MyComponent.crea<caret>
+  }
 
-  static class Builder {
+  static class ComponentLifecycle {}
 
-    @com.facebook.litho.annotations.RequiredProp(value="one")
-    void one() {}
+  static class MyComponent extends ComponentLifecycle {
 
-    void two() {}
+    static void create(com.facebook.litho.ComponentContext c) {}
 
-    @com.facebook.litho.annotations.RequiredProp(value="three")
-    void three() {}
+    void second() {}
+
+    static class Builder {
+
+      @com.facebook.litho.annotations.RequiredProp(value="one")
+      void one() {}
+
+      void two() {}
+
+      @com.facebook.litho.annotations.RequiredProp(value="three")
+      void three() {}
 
       @com.facebook.litho.annotations.RequiredProp(value="three")
       void threeRes() {}
+    }
   }
 }
