@@ -31,12 +31,14 @@ inline fun DslScope.Column(
     content: DslContainerScope.() -> Unit = {}
 ): Column =
     Column.create(context)
-        .alignContent(alignContent)
-        .alignItems(alignItems)
-        .justifyContent(justifyContent)
-        .wrap(wrap)
-        .reverse(reverse)
         .apply {
+          alignContent?.let { alignContent(it) }
+          alignItems?.let { alignItems(it) }
+          justifyContent?.let { justifyContent(it) }
+          wrap?.let { wrap(it) }
+          if (reverse) {
+            reverse(reverse)
+          }
           DslContainerScope(this).content()
         }
         .build()
@@ -50,12 +52,14 @@ inline fun DslScope.Row(
     content: DslContainerScope.() -> Unit = {}
 ): Row =
     Row.create(context)
-        .alignContent(alignContent)
-        .alignItems(alignItems)
-        .justifyContent(justifyContent)
-        .wrap(wrap)
-        .reverse(reverse)
         .apply {
+          alignContent?.let { alignContent(it) }
+          alignItems?.let { alignItems(it) }
+          justifyContent?.let { justifyContent(it) }
+          wrap?.let { wrap(it) }
+          if (reverse) {
+            reverse(reverse)
+          }
           DslContainerScope(this).content()
         }
         .build()
