@@ -876,18 +876,19 @@ public class ComponentTree {
     }
 
     // currentVisibleArea null or empty => mount all
-    mLithoView.mount(layoutState, currentVisibleArea, processVisibilityOutputs);
+    try {
+      mLithoView.mount(layoutState, currentVisibleArea, processVisibilityOutputs);
+      if (isDirtyMount) {
+        recordRenderData(layoutState);
+      }
+    } finally {
+      mIsMounting = false;
+      mRootHeightAnimation = null;
+      mRootWidthAnimation = null;
 
-    if (isDirtyMount) {
-      recordRenderData(layoutState);
-    }
-
-    mIsMounting = false;
-    mRootHeightAnimation = null;
-    mRootWidthAnimation = null;
-
-    if (isDirtyMount) {
-      mLithoView.onDirtyMountComplete();
+      if (isDirtyMount) {
+        mLithoView.onDirtyMountComplete();
+      }
     }
   }
 
