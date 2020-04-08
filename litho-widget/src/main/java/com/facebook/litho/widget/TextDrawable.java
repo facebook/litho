@@ -95,8 +95,8 @@ public class TextDrawable extends Drawable implements Touchable, TextContent, Dr
     canvas.translate(bounds.left, bounds.top + mLayoutTranslationY);
     try {
       mLayout.draw(canvas, getSelectionPath(), mHighlightPaint, 0);
-    } catch (ArrayIndexOutOfBoundsException e) {
-      throw new ArrayIndexOutOfBoundsException(e.getMessage() + getDebugInfo());
+    } catch (IndexOutOfBoundsException e) {
+      throw new IndexOutOfBoundsException(e.getMessage() + getDebugInfo());
     }
 
     canvas.restoreToCount(saveCount);
