@@ -565,6 +565,10 @@ public class LithoView extends Host {
       mComponentTree.clearLithoView();
     }
 
+    if (componentTree != null) {
+      mMountState.setRecyclingMode(componentTree.getRecyclingMode());
+    }
+
     mComponentTree = componentTree;
 
     if (ComponentsConfiguration.useRenderCoreMount) {
@@ -581,7 +585,6 @@ public class LithoView extends Host {
                 + mComponentTree.getReleasedComponent());
       }
       mComponentTree.setLithoView(this);
-      mMountState.setRecyclingMode(mComponentTree.getRecyclingMode());
 
       if (mIsAttached) {
         mComponentTree.attach();
