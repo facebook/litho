@@ -21,6 +21,7 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiClassOwner;
+import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiFileFactory;
 import com.intellij.psi.PsiJavaFile;
 import com.intellij.testFramework.fixtures.CodeInsightTestFixture;
@@ -91,8 +92,8 @@ public class LithoPluginIntellijTest {
       fixture.tearDown();
     }
 
-    public void configure(String clsName) throws IOException {
-      fixture.configureByText(clsName, getContent(clsName));
+    public PsiFile configure(String clsName) throws IOException {
+      return fixture.configureByText(clsName, getContent(clsName));
     }
 
     public String getTestDataPath(String clsName) {

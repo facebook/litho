@@ -15,4 +15,4 @@
  */
 
 @com.facebook.litho.annotations.LayoutSpec
-class ComponentSpec {}
+class LayoutSpec {}
