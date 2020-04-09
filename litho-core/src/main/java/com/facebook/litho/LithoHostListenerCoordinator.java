@@ -107,6 +107,14 @@ public class LithoHostListenerCoordinator implements HostListenerExtension<Objec
     registerListener(mTransitionsExtension);
   }
 
+  void collectAllTransitions(LayoutState layoutState, ComponentTree componentTree) {
+    if (mTransitionsExtension == null) {
+      return;
+    }
+
+    mTransitionsExtension.collectAllTransitions(layoutState, componentTree);
+  }
+
   private void registerListener(HostListenerExtension mountListenerExtension) {
     mMountExtensions.add(mountListenerExtension);
   }

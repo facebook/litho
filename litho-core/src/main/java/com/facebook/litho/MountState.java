@@ -2744,7 +2744,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener, Mount
         + (mHostsByMarker.get(ROOT_HOST_ID) == item.getHost());
   }
 
-  void unmountAllItems() {
+  @Override
+  public void unmountAllItems() {
     assertMainThread();
     if (mLayoutOutputsIds == null) {
       return;
@@ -3368,9 +3369,15 @@ class MountState implements TransitionManager.OnAnimationCompleteListener, Mount
     }
   }
 
-  void detach() {
+  @Override
+  public void detach() {
     assertMainThread();
     unbind();
+  }
+
+  @Override
+  public void attach() {
+    rebind();
   }
 
   /**

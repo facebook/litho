@@ -43,6 +43,12 @@ public class MountDelegate {
 
     void mount(RenderTree renderTree);
 
+    void attach();
+
+    void detach();
+
+    void unmountAllItems();
+
     boolean isRootItem(int position);
 
     Object getContentAt(int position);

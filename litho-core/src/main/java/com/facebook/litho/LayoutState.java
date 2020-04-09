@@ -1630,7 +1630,9 @@ class LayoutState
       flatList[i] = mMountableOutputs.get(i);
     }
 
-    return new RenderTree(root, flatList, mWidthSpec, mHeightSpec);
+    final RenderTree renderTree = new RenderTree(root, flatList, mWidthSpec, mHeightSpec);
+    renderTree.setRenderTreeData(this);
+    return renderTree;
   }
 
   private static void setSizeAfterMeasureAndCollectResults(

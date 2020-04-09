@@ -48,6 +48,8 @@ public class LithoView extends Host {
   public static final String SET_ALREADY_ATTACHED_COMPONENT_TREE =
       "LithoView:SetAlreadyAttachedComponentTree";
   private boolean mIsMountStateDirty;
+  private final boolean mUseExtensions;
+  private final @Nullable MountDelegateTarget mMountDelegateTarget;
 
   public interface OnDirtyMountListener {
     /**
@@ -62,7 +64,7 @@ public class LithoView extends Host {
   }
 
   @Nullable private ComponentTree mComponentTree;
-  private final MountState mMountState;
+  private final @Nullable MountState mMountState;
   private final ComponentContext mComponentContext;
   private boolean mIsAttached;
   // The bounds of the visible rect that was used for the previous incremental mount.
@@ -177,7 +179,17 @@ public class LithoView extends Host {
   public LithoView(ComponentContext context, AttributeSet attrs) {
     super(context, attrs);
     mComponentContext = context;
-    mMountState = new MountState(this);
+
+    mUseExtensions = ComponentsConfiguration.useRenderCoreMount;
+
+    if (mUseExtensions) {
+      mMountDelegateTarget = new MountState(this);
+      mMountState = null;
+    } else {
+      mMountDelegateTarget = null;
+      mMountState = new MountState(this);
+    }
+
     mAccessibilityManager =
         (AccessibilityManager) context.getAndroidContext().getSystemService(ACCESSIBILITY_SERVICE);
   }
@@ -257,10 +269,14 @@ public class LithoView extends Host {
   private void onDetach() {
     if (mIsAttached) {
       mIsAttached = false;
-      mMountState.detach();
 
-      if (mLithoHostListenerCoordinator != null) {
-        mLithoHostListenerCoordinator.onUnbind();
+      if (mUseExtensions) {
+        mMountDelegateTarget.detach();
+        if (mLithoHostListenerCoordinator != null) {
+          mLithoHostListenerCoordinator.onUnbind();
+        }
+      } else {
+        mMountState.detach();
       }
 
       if (mComponentTree != null) {
@@ -409,8 +425,15 @@ public class LithoView extends Host {
   }
 
   void maybeCollectAllTransitions(LayoutState layoutState, ComponentTree componentTree) {
-    if (mMountState.isDirty()) {
-      mMountState.collectAllTransitions(layoutState, componentTree);
+    if (mUseExtensions) {
+      if (mIsMountStateDirty) {
+        // TODO: can this be a generic callback?
+        mLithoHostListenerCoordinator.collectAllTransitions(layoutState, componentTree);
+      }
+    } else {
+      if (mMountState.isDirty()) {
+        mMountState.collectAllTransitions(layoutState, componentTree);
+      }
     }
   }
 
@@ -565,16 +588,14 @@ public class LithoView extends Host {
       mComponentTree.clearLithoView();
     }
 
-    if (componentTree != null) {
+    if (componentTree != null && !mUseExtensions) {
       mMountState.setRecyclingMode(componentTree.getRecyclingMode());
     }
 
     mComponentTree = componentTree;
 
-    if (ComponentsConfiguration.useRenderCoreMount) {
-      if (mHasNewComponentTree) {
-        setupMountExtensions(mComponentTree);
-      }
+    if (mHasNewComponentTree && mUseExtensions) {
+      setupMountExtensions(mComponentTree);
     }
 
     if (mComponentTree != null) {
@@ -596,8 +617,8 @@ public class LithoView extends Host {
   }
 
   private void setupMountExtensions(ComponentTree componentTree) {
-    if (mMountState == null) {
-      throw new IllegalStateException("Cannot set mount extensions on a null MountState");
+    if (!mUseExtensions) {
+      throw new IllegalStateException("Using mount extensions is disabled on this LithoView.");
     }
 
     if (mLithoHostListenerCoordinator == null) {
@@ -605,11 +626,16 @@ public class LithoView extends Host {
 
       mLithoHostListenerCoordinator.enableVisibilityProcessing(this);
 
-      if (componentTree != null && componentTree.isIncrementalMountEnabled()) {
-        mLithoHostListenerCoordinator.enableIncrementalMount(this, mMountState);
+      if (mMountDelegateTarget == null) {
+        throw new IllegalStateException(
+            "Cannot enable transitions extension or incremental mount extension without a MountDelegateTarget.");
       }
 
-      mLithoHostListenerCoordinator.enableTransitions(this, mMountState);
+      if (componentTree != null && componentTree.isIncrementalMountEnabled()) {
+        mLithoHostListenerCoordinator.enableIncrementalMount(this, mMountDelegateTarget);
+      }
+
+      mLithoHostListenerCoordinator.enableTransitions(this, mMountDelegateTarget);
     }
   }
 
@@ -693,7 +719,11 @@ public class LithoView extends Host {
   }
 
   public void rebind() {
-    mMountState.rebind();
+    if (mUseExtensions) {
+      mMountDelegateTarget.attach();
+    } else {
+      mMountState.rebind();
+    }
   }
 
   /**
@@ -701,9 +731,13 @@ public class LithoView extends Host {
    * view is about to be recycled or moved off-screen.
    */
   public void unbind() {
-    mMountState.unbind();
-    if (mLithoHostListenerCoordinator != null) {
-      mLithoHostListenerCoordinator.onUnbind();
+    if (mUseExtensions) {
+      mMountDelegateTarget.detach();
+      if (mLithoHostListenerCoordinator != null) {
+        mLithoHostListenerCoordinator.onUnbind();
+      }
+    } else {
+      mMountState.unbind();
     }
   }
 
@@ -737,8 +771,10 @@ public class LithoView extends Host {
 
     if (isVisible) {
       if (getLocalVisibleRect(new Rect())) {
-        if (ComponentsConfiguration.useRenderCoreMount) {
-          mLithoHostListenerCoordinator.onHostVisibilityChanged(true);
+        if (mUseExtensions) {
+          if (mLithoHostListenerCoordinator != null) {
+            mLithoHostListenerCoordinator.onHostVisibilityChanged(true);
+          }
         } else {
           mComponentTree.processVisibilityOutputs();
         }
@@ -747,8 +783,8 @@ public class LithoView extends Host {
       // if false: no-op, doesn't have visible area, is not ready or not attached
     } else {
       recursivelySetVisibleHint(false);
-      if (ComponentsConfiguration.useRenderCoreMount) {
-        if (getLocalVisibleRect(mRect)) {
+      if (mUseExtensions) {
+        if (getLocalVisibleRect(mRect) && mLithoHostListenerCoordinator != null) {
           mLithoHostListenerCoordinator.onHostVisibilityChanged(false);
         }
       } else {
@@ -973,7 +1009,7 @@ public class LithoView extends Host {
     final boolean loggedLastMount =
         MountStartupLoggingInfo.maybeLogLastMountStart(mMountStartupLoggingInfo, this);
 
-    if (ComponentsConfiguration.useRenderCoreMount) {
+    if (mUseExtensions) {
 
       if (currentVisibleArea != null && !isMountStateDirty()) {
         mLithoHostListenerCoordinator.onViewOffset();
@@ -981,7 +1017,7 @@ public class LithoView extends Host {
         if (mLithoHostListenerCoordinator != null) {
           mLithoHostListenerCoordinator.beforeMount(layoutState);
         }
-        mMountState.mount(layoutState);
+        mMountDelegateTarget.mount(layoutState.toRenderTree());
         if (mLithoHostListenerCoordinator != null) {
           mLithoHostListenerCoordinator.afterMount();
         }
@@ -1037,6 +1073,10 @@ public class LithoView extends Host {
   }
 
   private List<LithoView> getChildLithoViewsFromCurrentlyMountedItems() {
+    if (mUseExtensions) {
+      return getChildLithoViewsFromCurrentlyMountedItems(mMountDelegateTarget);
+    }
+
     return mMountState.getChildLithoViewsFromCurrentlyMountedItems();
   }
 
@@ -1080,7 +1120,12 @@ public class LithoView extends Host {
     }
   }
 
+  // This only gets called if extensions are disabled.
   void processVisibilityOutputs(LayoutState layoutState, Rect currentVisibleArea) {
+    if (mUseExtensions) {
+      throw new IllegalStateException();
+    }
+
     mMountState.processVisibilityOutputs(
         layoutState,
         currentVisibleArea,
@@ -1090,10 +1135,13 @@ public class LithoView extends Host {
   }
 
   public void unmountAllItems() {
-    mMountState.unmountAllItems();
-
-    if (mLithoHostListenerCoordinator != null) {
-      mLithoHostListenerCoordinator.onUnmount();
+    if (mUseExtensions) {
+      mMountDelegateTarget.unmountAllItems();
+      if (mLithoHostListenerCoordinator != null) {
+        mLithoHostListenerCoordinator.onUnmount();
+      }
+    } else {
+      mMountState.unmountAllItems();
     }
 
     mPreviousMountVisibleRectBounds.setEmpty();
@@ -1104,25 +1152,41 @@ public class LithoView extends Host {
   }
 
   void setMountStateDirty() {
-    mMountState.setDirty();
+    if (mUseExtensions) {
+      mIsMountStateDirty = true;
+    } else {
+      mMountState.setDirty();
+    }
+
     mPreviousMountVisibleRectBounds.setEmpty();
-    mIsMountStateDirty = true;
   }
 
   boolean isMountStateDirty() {
+    if (mUseExtensions) {
+      return mIsMountStateDirty;
+    }
+
     return mMountState.isDirty();
   }
 
   boolean mountStateNeedsRemount() {
+    if (mUseExtensions) {
+      return mMountDelegateTarget.needsRemount();
+    }
+
     return mMountState.needsRemount();
   }
 
   MountState getMountState() {
-    return mMountState;
+    return mUseExtensions ? (MountState) mMountDelegateTarget : mMountState;
   }
 
+  // Used for Transitions - When using extensions, TransitionsExtension gets this information
+  // from the LayoutState directly.
   void setIsFirstMountOfComponentTree() {
-    mMountState.setIsFirstMountOfComponentTree();
+    if (!mUseExtensions) {
+      mMountState.setIsFirstMountOfComponentTree();
+    }
   }
 
   public void setMountStartupLoggingInfo(
