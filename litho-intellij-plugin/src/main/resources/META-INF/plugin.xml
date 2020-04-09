@@ -83,6 +83,8 @@
 
     <java.elementFinder implementation="com.facebook.litho.intellij.file.ComponentFinder" id="java" order="last"/>
 
+    <java.shortNamesCache implementation="com.facebook.litho.intellij.file.ComponentShortNamesCache"/>
+
     <lang.foldingBuilder language="JAVA" implementationClass="com.facebook.litho.intellij.foldings.DefaultPropertyFoldingBuilder"/>
 
     <localInspection groupName="Litho" language="JAVA"
