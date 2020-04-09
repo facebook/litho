@@ -183,7 +183,11 @@ public class LithoView extends Host {
     mUseExtensions = ComponentsConfiguration.useRenderCoreMount;
 
     if (mUseExtensions) {
-      mMountDelegateTarget = new MountState(this);
+      if (ComponentsConfiguration.delegateToRenderCoreMount) {
+        mMountDelegateTarget = new com.facebook.rendercore.MountState(this);
+      } else {
+        mMountDelegateTarget = new MountState(this);
+      }
       mMountState = null;
     } else {
       mMountDelegateTarget = null;
@@ -1178,7 +1182,9 @@ public class LithoView extends Host {
   }
 
   MountState getMountState() {
-    return mUseExtensions ? (MountState) mMountDelegateTarget : mMountState;
+    return mUseExtensions && !ComponentsConfiguration.delegateToRenderCoreMount
+        ? (MountState) mMountDelegateTarget
+        : mMountState;
   }
 
   // Used for Transitions - When using extensions, TransitionsExtension gets this information
