@@ -27,6 +27,7 @@ import static com.facebook.litho.StateContainer.StateUpdate;
 import static com.facebook.litho.ThreadUtils.assertHoldsLock;
 import static com.facebook.litho.ThreadUtils.assertMainThread;
 import static com.facebook.litho.ThreadUtils.isMainThread;
+import static com.facebook.litho.WorkContinuationInstrumenter.markFailure;
 import static com.facebook.litho.WorkContinuationInstrumenter.onBeginWorkContinuation;
 import static com.facebook.litho.WorkContinuationInstrumenter.onEndWorkContinuation;
 import static com.facebook.litho.WorkContinuationInstrumenter.onOfferWorkForContinuation;
@@ -2794,6 +2795,9 @@ public class ComponentTree {
             continuationToken = null;
             try {
               result = resolvePartialInternalNodeAndCalculateLayout(result);
+            } catch (Throwable th) {
+              markFailure(token, th);
+              throw th;
             } finally {
               onEndWorkContinuation(token);
             }

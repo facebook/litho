@@ -76,6 +76,9 @@ public interface ChoreographerCompat {
               "ChoreographerCompat_doFrame", mTokenReference.getAndSet(null));
       try {
         doFrame(frameTimeNanos);
+      } catch (Throwable th) {
+        WorkContinuationInstrumenter.markFailure(continuationToken, th);
+        throw th;
       } finally {
         WorkContinuationInstrumenter.onEndWorkContinuation(continuationToken);
       }

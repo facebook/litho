@@ -78,6 +78,18 @@ public final class WorkContinuationInstrumenter {
      * @param token returned by {@link Instrumenter#onBeginWorkContinuation}.
      */
     void onEndWorkContinuation(Object token);
+
+    /**
+     * Reports a failure while executing work.
+     *
+     * <p><note>{@link Instrumenter#onEndWorkContinuation(Object)} (Object)} still needs to be
+     * invoked.
+     *
+     * @param token returned by {@link Instrumenter#onBeginWorkContinuation(String, Object)}
+     *     (Object, String)}.
+     * @param th containing the failure.
+     */
+    void markFailure(Object token, Throwable th);
   }
 
   @Nullable private static volatile Instrumenter sInstance;
@@ -141,5 +153,13 @@ public final class WorkContinuationInstrumenter {
       return;
     }
     instrumenter.onEndWorkContinuation(token);
+  }
+
+  public static void markFailure(@Nullable Object token, Throwable th) {
+    final Instrumenter instrumenter = sInstance;
+    if (instrumenter == null || token == null) {
+      return;
+    }
+    instrumenter.markFailure(token, th);
   }
 }
