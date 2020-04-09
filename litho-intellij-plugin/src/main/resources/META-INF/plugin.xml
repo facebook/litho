@@ -62,20 +62,6 @@
   <depends>com.intellij.modules.java</depends>
 
   <extensions defaultExtensionNs="com.intellij">
-    <projectService serviceImplementation="com.facebook.litho.intellij.services.ComponentsCacheService"/>
-
-    <gotoDeclarationHandler implementation="com.facebook.litho.intellij.navigation.SectionDeclarationHandler"/>
-    <gotoDeclarationHandler implementation="com.facebook.litho.intellij.navigation.ComponentDeclarationHandler"/>
-
-    <lang.foldingBuilder language="JAVA" implementationClass="com.facebook.litho.intellij.foldings.DefaultPropertyFoldingBuilder"/>
-
-    <localInspection groupName="Litho" language="JAVA"
-      shortName="UppercaseStatePropInspection"
-      displayName="Param name begin with uppercase letter"
-      hasStaticDescription="true"
-      enabledByDefault="true"
-      implementationClass="com.facebook.litho.intellij.inspections.UppercaseStatePropInspection"/>
-
     <annotator language="JAVA" implementationClass="com.facebook.litho.intellij.inspections.LayoutSpecAnnotator"/>
     <annotator language="JAVA" implementationClass="com.facebook.litho.intellij.inspections.RequiredPropAnnotator"/>
     <annotator language="JAVA" implementationClass="com.facebook.litho.intellij.inspections.EventHandlerAnnotator"/>
@@ -91,6 +77,22 @@
     <fileDocumentManagerListener implementation="com.facebook.litho.intellij.file.ComponentFileListener"/>
 
     <findUsagesHandlerFactory language="JAVA" implementation="com.facebook.litho.intellij.file.LithoFindUsagesHandlerFactory" />
+
+    <gotoDeclarationHandler implementation="com.facebook.litho.intellij.navigation.SectionDeclarationHandler"/>
+    <gotoDeclarationHandler implementation="com.facebook.litho.intellij.navigation.ComponentDeclarationHandler"/>
+
+    <lang.foldingBuilder language="JAVA" implementationClass="com.facebook.litho.intellij.foldings.DefaultPropertyFoldingBuilder"/>
+
+    <localInspection groupName="Litho" language="JAVA"
+      shortName="UppercaseStatePropInspection"
+      displayName="Param name begin with uppercase letter"
+      hasStaticDescription="true"
+      enabledByDefault="true"
+      implementationClass="com.facebook.litho.intellij.inspections.UppercaseStatePropInspection"/>
+
+    <projectService serviceImplementation="com.facebook.litho.intellij.services.ComponentsCacheService"/>
+
+    <resolveScopeEnlarger implementation="com.facebook.litho.intellij.file.ComponentResolveScopeEnlarger"/>
   </extensions>
 
   <actions>
