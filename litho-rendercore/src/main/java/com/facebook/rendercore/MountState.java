@@ -24,9 +24,10 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.collection.LongSparseArray;
+import com.facebook.rendercore.MountDelegate.MountDelegateTarget;
 import java.util.List;
 
-class MountState {
+public class MountState implements MountDelegateTarget {
 
   static final long ROOT_HOST_ID = 0L;
 
@@ -42,6 +43,7 @@ class MountState {
   private boolean mIsMounting;
   private boolean mNeedsRemount;
   private RenderTree mRenderTree;
+  private @Nullable MountDelegate mMountDelegate;
 
   public MountState(Host rootHost) {
     mIndexToMountedItemMap = new LongSparseArray<>();
@@ -67,8 +69,24 @@ class MountState {
    * may not have a new RenderTree, the mounted content does not match what the viewport for the
    * LithoView may be.
    */
-  boolean needsRemount() {
+  @Override
+  public boolean needsRemount() {
     return mNeedsRemount;
+  }
+
+  @Override
+  public void notifyMount(
+      MountDelegate.MountDelegateInput input, RenderTreeNode renderTreeNode, int position) {
+    if (getItemAt(position) != null) {
+      return;
+    }
+
+    mountRenderUnit(position, renderTreeNode);
+  }
+
+  @Override
+  public void notifyUnmount(int position) {
+    unmountItem(getItemAt(position));
   }
 
   /**
@@ -76,7 +94,8 @@ class MountState {
    *
    * @param renderTree a new {@link RenderTree} to mount
    */
-  void mount(RenderTree renderTree) {
+  @Override
+  public void mount(RenderTree renderTree) {
     if (renderTree == null) {
       throw new IllegalStateException("Trying to mount a null RenderTreeNode");
     }
@@ -113,7 +132,8 @@ class MountState {
     mIsMounting = false;
   }
 
-  void unmountAllItems() {
+  @Override
+  public void unmountAllItems() {
     if (mRenderUnitIds == null) {
       return;
     }
@@ -125,12 +145,46 @@ class MountState {
     mNeedsRemount = true;
   }
 
+  @Override
+  public boolean isRootItem(int position) {
+    final MountItem mountItem = getItemAt(position);
+    if (mountItem == null) {
+      return false;
+    }
+
+    return mountItem == mIndexToMountedItemMap.get(ROOT_HOST_ID);
+  }
+
+  @Override
+  public Object getContentAt(int position) {
+    final MountItem mountItem = getItemAt(position);
+    if (mountItem == null) {
+      return null;
+    }
+
+    return mountItem.getContent();
+  }
+
+  @Override
+  public int getContentCount() {
+    return mRenderUnitIds == null ? 0 : mRenderUnitIds.length;
+  }
+
+  @Override
+  public void registerMountDelegateExtension(MountDelegateExtension mountDelegateExtension) {
+    if (mMountDelegate == null) {
+      mMountDelegate = new MountDelegate(this);
+    }
+    mMountDelegate.addExtension(mountDelegateExtension);
+  }
+
   /**
    * This is called when the {@link MountItem}s mounted on this {@link MountState} need to be
    * re-bound with the same RenderUnit. This happens when a detach/attach happens on the root {@link
    * Host} that owns the MountState.
    */
-  void attach() {
+  @Override
+  public void attach() {
     if (mRenderUnitIds == null) {
       return;
     }
@@ -154,7 +208,8 @@ class MountState {
   }
 
   /** Unbinds all the MountItems currently mounted on this MountState. */
-  void detach() {
+  @Override
+  public void detach() {
     if (mRenderUnitIds == null) {
       return;
     }
@@ -383,6 +438,14 @@ class MountState {
   }
 
   private MountItem getItemAt(int i) {
+    if (mIndexToMountedItemMap == null || mRenderUnitIds == null) {
+      return null;
+    }
+
+    if (i >= mRenderUnitIds.length) {
+      return null;
+    }
+
     return mIndexToMountedItemMap.get(mRenderUnitIds[i]);
   }
 
