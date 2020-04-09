@@ -62,6 +62,7 @@ import com.facebook.litho.annotations.ImportantForAccessibility;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.drawable.BorderColorDrawable;
 import com.facebook.litho.stats.LithoStats;
+import com.facebook.rendercore.RenderTree;
 import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
@@ -1620,6 +1621,16 @@ class LayoutState
     }
 
     return layoutState;
+  }
+
+  RenderTree toRenderTree() {
+    RenderTreeNode root = mMountableOutputs.get(0);
+    RenderTreeNode[] flatList = new RenderTreeNode[mMountableOutputs.size()];
+    for (int i = 0, size = mMountableOutputs.size(); i < size; i++) {
+      flatList[i] = mMountableOutputs.get(i);
+    }
+
+    return new RenderTree(root, flatList, mWidthSpec, mHeightSpec);
   }
 
   private static void setSizeAfterMeasureAndCollectResults(
