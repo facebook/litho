@@ -81,7 +81,7 @@ public class ComponentHostTest {
 
     mHost = new TestableComponentHost(mContext);
 
-    mViewGroupHost = HostComponent.create();
+    mViewGroupHost = HostComponent.create(mContext);
   }
 
   @Test
