@@ -43,6 +43,8 @@ import androidx.collection.SparseArrayCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.view.ViewCompat;
 import com.facebook.proguard.annotations.DoNotStrip;
+import com.facebook.rendercore.Host;
+import com.facebook.rendercore.MountItem;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -53,7 +55,7 @@ import java.util.List;
  * accordingly.
  */
 @DoNotStrip
-public class ComponentHost extends ViewGroup {
+public class ComponentHost extends Host {
 
   private static final int SCRAP_ARRAY_INITIAL_SIZE = 4;
 
@@ -111,6 +113,11 @@ public class ComponentHost extends ViewGroup {
 
   public ComponentHost(Context context, AttributeSet attrs) {
     this(new ComponentContext(context), attrs);
+  }
+
+  @Override
+  public void mount(int index, MountItem mountItem) {
+    mount(index, mountItem, mountItem.getRenderTreeNode().getBounds());
   }
 
   public ComponentHost(ComponentContext context) {
@@ -178,7 +185,8 @@ public class ComponentHost extends ViewGroup {
     }
   }
 
-  void unmount(MountItem item) {
+  @Override
+  public void unmount(MountItem item) {
     ensureMountItems();
     final int index = mMountItems.keyAt(mMountItems.indexOfValue(item));
     unmount(index, item);
@@ -191,6 +199,7 @@ public class ComponentHost extends ViewGroup {
    *     the corresponding {@code mount(index, mountItem)} call.
    * @param mountItem item to be unmounted from the host.
    */
+  @Override
   public void unmount(int index, MountItem mountItem) {
     final Object content = mountItem.getContent();
     if (content instanceof Drawable) {
@@ -326,12 +335,14 @@ public class ComponentHost extends ViewGroup {
   }
 
   /** @return number of {@link MountItem}s that are currently mounted in the host. */
-  int getMountItemCount() {
+  @Override
+  public int getMountItemCount() {
     return mMountItems == null ? 0 : mMountItems.size();
   }
 
   /** @return the {@link MountItem} that was mounted with the given index. */
-  MountItem getMountItemAt(int index) {
+  @Override
+  public MountItem getMountItemAt(int index) {
     return mMountItems.valueAt(index);
   }
 
@@ -446,7 +457,8 @@ public class ComponentHost extends ViewGroup {
    * @param oldIndex The current index of the MountItem.
    * @param newIndex The new index of the MountItem.
    */
-  void moveItem(MountItem item, int oldIndex, int newIndex) {
+  @Override
+  public void moveItem(MountItem item, int oldIndex, int newIndex) {
     if (item == null && mScrapMountItemsArray != null) {
       item = mScrapMountItemsArray.get(oldIndex);
     }

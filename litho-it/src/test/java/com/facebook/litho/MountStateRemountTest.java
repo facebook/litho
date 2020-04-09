@@ -37,6 +37,7 @@ import com.facebook.litho.testing.helper.ComponentTestHelper;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.widget.EditText;
 import com.facebook.litho.widget.Text;
+import com.facebook.rendercore.MountItem;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Before;
@@ -51,6 +52,27 @@ public class MountStateRemountTest {
   @Before
   public void setup() {
     mContext = new ComponentContext(RuntimeEnvironment.application);
+  }
+
+  @Test
+  public void testMountItemsHaveMountData() {
+    final TestComponent component1 = create(mContext).build();
+    final TestComponent component2 = create(mContext).build();
+
+    final LithoView lithoView =
+        mountComponent(
+            mContext, Column.create(mContext).child(component1).child(component2).build());
+
+    assertThat(component1.isMounted()).isTrue();
+    assertThat(component2.isMounted()).isTrue();
+
+    final MountState mountState = getInternalState(lithoView, "mMountState");
+    final LongSparseArray<MountItem> items = getInternalState(mountState, "mIndexToItemMap");
+
+    for (int i = 0; i < items.size(); i++) {
+      MountItem item = items.valueAt(i);
+      assertThat(item.getMountData()).isOfAnyClassIn(LithoMountData.class);
+    }
   }
 
   @Test

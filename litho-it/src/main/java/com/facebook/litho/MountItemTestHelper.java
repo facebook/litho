@@ -17,6 +17,7 @@
 package com.facebook.litho;
 
 import android.graphics.Rect;
+import com.facebook.rendercore.MountItem;
 import com.facebook.rendercore.RenderTreeNode;
 
 public class MountItemTestHelper {
@@ -49,6 +50,7 @@ public class MountItemTestHelper {
             transitionId);
     RenderTreeNode node = LayoutOutput.create(output, null);
     MountItem item = new MountItem(node, host, content);
+    item.setMountData(new LithoMountData(content));
     return item;
   }
 }

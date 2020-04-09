@@ -21,6 +21,7 @@ import static com.facebook.litho.LayoutOutput.getLayoutOutput;
 
 import android.content.Context;
 import android.view.View;
+import com.facebook.rendercore.MountItem;
 import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.yoga.YogaDirection;
 
@@ -135,7 +136,9 @@ public class LithoMountData {
             IMPORTANT_FOR_ACCESSIBILITY_AUTO,
             lithoView.getContext().getResources().getConfiguration().orientation,
             null);
-    return new MountItem(LayoutOutput.create(output, null), lithoView, lithoView);
+    MountItem item = new MountItem(LayoutOutput.create(output, null), lithoView, lithoView);
+    item.setMountData(new LithoMountData(lithoView));
+    return item;
   }
 
   static LithoMountData getMountData(MountItem item) {

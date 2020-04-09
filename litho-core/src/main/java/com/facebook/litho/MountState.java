@@ -65,6 +65,7 @@ import com.facebook.litho.stats.LithoStats;
 import com.facebook.rendercore.MountDelegate;
 import com.facebook.rendercore.MountDelegate.MountDelegateTarget;
 import com.facebook.rendercore.MountDelegateExtension;
+import com.facebook.rendercore.MountItem;
 import com.facebook.rendercore.RenderTree;
 import com.facebook.rendercore.RenderTreeNode;
 import java.util.ArrayList;
@@ -1813,6 +1814,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener, Mount
       LayoutOutput layoutOutput) {
 
     final MountItem item = new MountItem(node, host, content);
+    item.setMountData(new LithoMountData(content));
 
     // Create and keep a MountItem even for the layoutSpec with null content
     // that sets the root host interactions.

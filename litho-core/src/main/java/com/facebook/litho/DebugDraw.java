@@ -28,6 +28,7 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.rendercore.MountItem;
 
 /** Draw operations used in developer options. */
 class DebugDraw {

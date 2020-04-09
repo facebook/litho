@@ -52,6 +52,7 @@ import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestViewComponent;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.rendercore.MountItem;
 import com.facebook.yoga.YogaDirection;
 import java.util.List;
 import org.junit.Before;

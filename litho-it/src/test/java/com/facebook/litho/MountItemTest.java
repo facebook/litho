@@ -30,6 +30,7 @@ import android.view.View;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
+import com.facebook.rendercore.MountItem;
 import com.facebook.rendercore.RenderTreeNode;
 import org.junit.Before;
 import org.junit.Test;
@@ -273,6 +274,7 @@ public class MountItemTest {
     View view = new View(RuntimeEnvironment.application);
 
     final MountItem mountItem = new MountItem(node, mComponentHost, view);
+    mountItem.setMountData(new LithoMountData(view));
 
     assertThat(getMountData(mountItem).isViewClickable()).isFalse();
 
