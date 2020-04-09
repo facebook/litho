@@ -388,17 +388,18 @@ class VisibilityOutputsExtension
 
   @Override
   public void beforeMount(VisibilityOutputsExtensionInput input) {
-    boolean processVisibilityOutputs = !mHost.isInTransientState();
-    if (!processVisibilityOutputs) {
-      return;
-    }
 
     mVisibilityOutputs = input.getVisibilityOutputs();
     mIncrementalVisibilityEnabled = input.isIncrementalVisibilityEnabled();
     mVisibilityModuleInput = input.getVisibilityModuleInput();
     mPreviousLocalVisibleRect.setEmpty();
-    final Rect localVisibleRect = mHost.getVisibleRect();
-    processVisibilityOutputs(localVisibleRect, null, true);
+
+    boolean processVisibilityOutputs = !mHost.isInTransientState();
+
+    if (processVisibilityOutputs) {
+      final Rect localVisibleRect = mHost.getVisibleRect();
+      processVisibilityOutputs(localVisibleRect, null, true);
+    }
   }
 
   @Override
