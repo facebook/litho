@@ -272,7 +272,7 @@ public class MountItemTest {
 
     View view = new View(RuntimeEnvironment.application);
 
-    final MountItem mountItem = new MountItem(mComponentHost, view, node);
+    final MountItem mountItem = new MountItem(node, mComponentHost, view);
 
     assertThat(getMountData(mountItem).isViewClickable()).isFalse();
 

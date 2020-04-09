@@ -1812,7 +1812,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener, Mount
       RenderTreeNode node,
       LayoutOutput layoutOutput) {
 
-    final MountItem item = new MountItem(host, content, node);
+    final MountItem item = new MountItem(node, host, content);
 
     // Create and keep a MountItem even for the layoutSpec with null content
     // that sets the root host interactions.

@@ -33,7 +33,7 @@ class MountItem {
 
   private final LithoMountData mMountData;
 
-  MountItem(ComponentHost host, Object content, RenderTreeNode node) {
+  MountItem(RenderTreeNode node, ComponentHost host, Object content) {
     mContent = content;
     mHost = host;
     mRenderTreeNode = node;

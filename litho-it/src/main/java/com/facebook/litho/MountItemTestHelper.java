@@ -48,7 +48,7 @@ public class MountItemTestHelper {
             orientation,
             transitionId);
     RenderTreeNode node = LayoutOutput.create(output, null);
-    MountItem item = new MountItem(host, content, node);
+    MountItem item = new MountItem(node, host, content);
     return item;
   }
 }
