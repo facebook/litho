@@ -333,7 +333,7 @@ public final class DebugComponent {
       final Component mountItemComponent =
           mountItem == null ? null : getLayoutOutput(mountItem).getComponent();
       if (mountItemComponent != null && mountItemComponent.isEquivalentTo(component)) {
-        return mountItem.getHost();
+        return (ComponentHost) mountItem.getHost();
       }
     }
 

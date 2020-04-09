@@ -180,7 +180,7 @@ class ComponentHostUtils {
 
   static void maybeInvalidateAccessibilityState(MountItem mountItem) {
     if (getLayoutOutput(mountItem).isAccessible()) {
-      mountItem.getHost().invalidateAccessibilityState();
+      ((ComponentHost) mountItem.getHost()).invalidateAccessibilityState();
     }
   }
 }

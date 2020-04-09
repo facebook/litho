@@ -1277,12 +1277,12 @@ class MountState implements TransitionManager.OnAnimationCompleteListener, Mount
 
       maybeUnsetViewAttributes(currentMountItem);
 
-      final ComponentHost host = currentMountItem.getHost();
+      final ComponentHost host = (ComponentHost) currentMountItem.getHost();
       host.maybeUnregisterTouchExpansion(index, currentMountItem);
     } else if (shouldUpdateViewInfo) {
       maybeUnsetViewAttributes(currentMountItem);
 
-      final ComponentHost host = currentMountItem.getHost();
+      final ComponentHost host = (ComponentHost) currentMountItem.getHost();
       host.maybeUnregisterTouchExpansion(index, currentMountItem);
     }
 
@@ -1297,13 +1297,13 @@ class MountState implements TransitionManager.OnAnimationCompleteListener, Mount
 
     // 5. If the mount item is not valid for this component update its content and view attributes.
     if (shouldUpdate) {
-      final ComponentHost host = currentMountItem.getHost();
+      final ComponentHost host = (ComponentHost) currentMountItem.getHost();
       host.maybeRegisterTouchExpansion(index, currentMountItem);
 
       updateMountedContent(currentMountItem, layoutOutput, itemComponent);
       setViewAttributes(currentMountItem);
     } else if (shouldUpdateViewInfo) {
-      final ComponentHost host = currentMountItem.getHost();
+      final ComponentHost host = (ComponentHost) currentMountItem.getHost();
       host.maybeRegisterTouchExpansion(index, currentMountItem);
 
       setViewAttributes(currentMountItem);
@@ -1578,7 +1578,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener, Mount
     int right;
     int bottom;
     // Get left/top position of the item's host first
-    ComponentHost componentHost = item.getHost();
+    ComponentHost componentHost = (ComponentHost) item.getHost();
     while (componentHost != rootHost) {
       left += componentHost.getLeft();
       top += componentHost.getTop();
@@ -1650,7 +1650,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener, Mount
         LayoutStateOutputIdCalculator.getTypeFromId(mLayoutOutputsIds[index]);
     disappearingGroup.add(type, item);
 
-    final ComponentHost host = item.getHost();
+    final ComponentHost host = (ComponentHost) item.getHost();
     host.startUnmountDisappearingItem(index, item);
   }
 
@@ -2663,7 +2663,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener, Mount
       }
     }
 
-    final ComponentHost host = item.getHost();
+    final ComponentHost host = (ComponentHost) item.getHost();
     host.unmount(item);
 
     maybeUnsetViewAttributes(item);
@@ -2830,7 +2830,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener, Mount
       }
     }
 
-    final ComponentHost host = item.getHost();
+    final ComponentHost host = (ComponentHost) item.getHost();
     host.unmount(index, item);
 
     maybeUnsetViewAttributes(item);
@@ -2918,7 +2918,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener, Mount
         }
       }
 
-      final ComponentHost host = item.getHost();
+      final ComponentHost host = (ComponentHost) item.getHost();
       host.unmountDisappearingItem(item);
       maybeUnsetViewAttributes(item);
 
