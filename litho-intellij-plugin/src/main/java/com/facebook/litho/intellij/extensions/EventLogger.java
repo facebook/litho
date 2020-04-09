@@ -37,6 +37,7 @@ public interface EventLogger {
   String EVENT_NEW_TEMPLATE = "file.template";
   String EVENT_ON_EVENT_COMPLETION = "event.completion";
   String EVENT_ON_EVENT_GENERATION = "event.generation";
+  String EVENT_RED_SYMBOLS = "resolve.redsymbols";
 
   /**
    * Logs given event.
