@@ -102,6 +102,11 @@ public class SizeSpecMountWrapperComponentSpec {
         size,
         getTreePropWithSize(c, widthSpec, heightSpec),
         c.getLayoutVersion());
+    if (size.width < 0 || size.height < 0) {
+      // if this happens it means that the componentTree was probably released in the UI Thread so
+      // this measurement is not needed.
+      size.width = size.height = 0;
+    }
   }
 
   @OnBoundsDefined
@@ -177,11 +182,11 @@ public class SizeSpecMountWrapperComponentSpec {
    */
   private static ComponentTree getOrCreateComponentTree(
       ComponentContext c, AtomicReference<ComponentTree> componentTreeRef) {
-    ComponentTree ct = componentTreeRef.get();
-    if (ct == null) {
-      ct = ComponentTree.create(c).build();
-      componentTreeRef.set(ct);
+    ComponentTree componentTree = componentTreeRef.get();
+    if (componentTree == null || componentTree.isReleased()) {
+      componentTree = ComponentTree.create(c).build();
+      componentTreeRef.set(componentTree);
     }
-    return ct;
+    return componentTree;
   }
 }
