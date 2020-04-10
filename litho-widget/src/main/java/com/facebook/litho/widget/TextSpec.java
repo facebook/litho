@@ -974,16 +974,20 @@ class TextSpec {
     node.setFocusable(true);
     node.setEnabled(true);
     node.setVisibleToUser(true);
+    node.setText(spanned.subSequence(start, end));
     if (span instanceof AccessibleClickableSpan) {
       AccessibleClickableSpan accessibleClickableSpan = (AccessibleClickableSpan) span;
-      node.setText(accessibleClickableSpan.getAccessibilityDescription());
-      if (accessibleClickableSpan.getAccessibilityRole() != null) {
-        node.setClassName(accessibleClickableSpan.getAccessibilityRole());
+      String contentDescription = accessibleClickableSpan.getAccessibilityDescription();
+      String role = accessibleClickableSpan.getAccessibilityRole();
+      if (contentDescription != null) {
+        node.setContentDescription(contentDescription);
+      }
+      if (role != null) {
+        node.setClassName(role);
       } else {
         node.setClassName(AccessibilityRole.BUTTON);
       }
     } else {
-      node.setText(spanned.subSequence(start, end));
       node.setClassName(AccessibilityRole.BUTTON);
     }
   }
