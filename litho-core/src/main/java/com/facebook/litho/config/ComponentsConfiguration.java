@@ -243,4 +243,6 @@ public class ComponentsConfiguration {
   public static boolean keepComponentTreeForRecyclerView = false;
 
   public static boolean disableUnmountAllItemsForRecycledView = false;
+
+  public static boolean disableOverridingLayoutRequestInRV = false;
 }

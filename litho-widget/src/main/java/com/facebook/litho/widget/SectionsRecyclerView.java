@@ -26,6 +26,7 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.HasLithoViewChildren;
 import com.facebook.litho.LithoView;
+import com.facebook.litho.config.ComponentsConfiguration;
 import java.util.List;
 import javax.annotation.Nullable;
 
@@ -170,8 +171,10 @@ public class SectionsRecyclerView extends SwipeRefreshLayout implements HasLitho
    */
   @Override
   public boolean isLayoutRequested() {
-    if (getParent() != null) {
-      return getParent().isLayoutRequested() || super.isLayoutRequested();
+    if (!ComponentsConfiguration.disableOverridingLayoutRequestInRV) {
+      if (getParent() != null) {
+        return getParent().isLayoutRequested() || super.isLayoutRequested();
+      }
     }
     return super.isLayoutRequested();
   }
