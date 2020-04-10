@@ -40,11 +40,11 @@ public class ComponentFinderTest extends LithoPluginIntellijTest {
   public void findClass() throws IOException {
     final Project project = testHelper.getFixture().getProject();
     final PsiFile file = testHelper.configure("LayoutSpec.java");
-    final ComponentFinder finder = new ComponentFinder(project);
 
     ApplicationManager.getApplication()
         .invokeAndWait(
             () -> {
+              final ComponentFinder finder = new ComponentFinder(project);
               // Add file to cache
               final PsiClass cls = PsiTreeUtil.findChildOfType(file, PsiClass.class);
               ServiceManager.getService(project, ComponentsCacheService.class)

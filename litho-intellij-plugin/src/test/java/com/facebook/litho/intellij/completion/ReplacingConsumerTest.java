@@ -24,6 +24,7 @@ import com.intellij.codeInsight.completion.CompletionContributor;
 import com.intellij.codeInsight.completion.CompletionResult;
 import com.intellij.codeInsight.completion.CompletionResultSet;
 import com.intellij.codeInsight.completion.CompletionSorter;
+import com.intellij.codeInsight.completion.InsertionContext;
 import com.intellij.codeInsight.completion.PrefixMatcher;
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.patterns.ElementPattern;
@@ -98,7 +99,7 @@ public class ReplacingConsumerTest extends LithoPluginIntellijTest {
                   namesToReplace, mutate, (context, item) -> inserts.add(item.getLookupString()));
 
           replacingConsumer.consume(createCompletionResultFor(OneCls));
-          mutate.elements.get(0).handleInsert(null);
+          mutate.elements.get(0).handleInsert(Mockito.mock(InsertionContext.class));
 
           assertThat(inserts).hasSize(1);
           assertThat(inserts.get(0)).isEqualTo("One");

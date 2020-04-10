@@ -40,11 +40,11 @@ public class ComponentShortNamesCacheTest extends LithoPluginIntellijTest {
     // Add file to cache
     final Project project = testHelper.getFixture().getProject();
     final PsiFile file = testHelper.configure("LayoutSpec.java");
-    final ComponentShortNamesCache namesCache = new ComponentShortNamesCache(project);
 
     ApplicationManager.getApplication()
         .invokeAndWait(
             () -> {
+              final ComponentShortNamesCache namesCache = new ComponentShortNamesCache(project);
               // Add file to cache
               final PsiClass cls = PsiTreeUtil.findChildOfType(file, PsiClass.class);
               ServiceManager.getService(project, ComponentsCacheService.class)
