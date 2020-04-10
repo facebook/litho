@@ -16,7 +16,6 @@
 
 package com.facebook.litho.intellij.file;
 
-
 import com.facebook.litho.intellij.services.ComponentsCacheService;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
