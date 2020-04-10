@@ -2,7 +2,15 @@
 #
 # This source code is licensed under the Apache 2.0 license found in the
 # LICENSE file in the root directory of this source tree.
-load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_ANDROIDSUPPORT_TARGET", "LITHO_JAVAPOET_TARGET", "LITHO_JSR_TARGET", "LITHO_VISIBILITY", "fb_java_library", "make_dep_path")
+load(
+    "//tools/build_defs/oss:litho_defs.bzl",
+    "LITHO_ANDROIDSUPPORT_TARGET",
+    "LITHO_JAVAPOET_TARGET",
+    "LITHO_JSR_TARGET",
+    "LITHO_VISIBILITY",
+    "fb_java_library",
+    "make_dep_path",
+)
 
 fb_java_library(
     name = "testing",
@@ -16,9 +24,9 @@ fb_java_library(
     ],
     visibility = LITHO_VISIBILITY,
     deps = [
+        LITHO_ANDROIDSUPPORT_TARGET,
         LITHO_JAVAPOET_TARGET,
         LITHO_JSR_TARGET,
-        LITHO_ANDROIDSUPPORT_TARGET,
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels:specmodels-bare"),
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/generator/testing:testing"),
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/internal:internal"),

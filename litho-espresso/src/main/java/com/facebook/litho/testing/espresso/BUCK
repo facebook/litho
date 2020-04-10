@@ -22,11 +22,11 @@ fb_core_android_library(
         "PUBLIC",
     ],
     deps = [
+        LITHO_ANDROIDSUPPORT_TESTING_TARGET,
         LITHO_ESPRESSO_TARGET,
         LITHO_HAMCREST_LIBRARY_TARGET,
         LITHO_JAVA_TARGET,
         LITHO_JUNIT_TARGET,
         LITHO_SOLOADER_TARGET,
-        LITHO_ANDROIDSUPPORT_TESTING_TARGET,
     ],
 )

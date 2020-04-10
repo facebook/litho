@@ -3,7 +3,13 @@
 # This source code is licensed under the Apache 2.0 license found in the
 # LICENSE file in the root directory of this source tree.
 
-load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_ASSERTJ_TARGET", "LITHO_JUNIT_TARGET", "components_robolectric_test", "make_dep_path")
+load(
+    "//tools/build_defs/oss:litho_defs.bzl",
+    "LITHO_ASSERTJ_TARGET",
+    "LITHO_JUNIT_TARGET",
+    "components_robolectric_test",
+    "make_dep_path",
+)
 
 components_robolectric_test(
     name = "internal",
@@ -11,8 +17,8 @@ components_robolectric_test(
     source = "8",
     target = "8",
     deps = [
-        make_dep_path("litho-core/src/main/java/com/facebook/litho/internal:internal"),
-        LITHO_JUNIT_TARGET,
         LITHO_ASSERTJ_TARGET,
+        LITHO_JUNIT_TARGET,
+        make_dep_path("litho-core/src/main/java/com/facebook/litho/internal:internal"),
     ],
 )

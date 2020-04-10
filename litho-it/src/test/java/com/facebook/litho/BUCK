@@ -3,7 +3,29 @@
 # This source code is licensed under the Apache 2.0 license found in the
 # LICENSE file in the root directory of this source tree.
 
-load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_ANDROIDSUPPORT_TARGET", "LITHO_ASSERTJ_TARGET", "LITHO_BUILD_CONFIG_TARGET", "LITHO_JAVA_TARGET", "LITHO_JSR_TARGET", "LITHO_JUNIT_TARGET", "LITHO_MOCKITO_TARGET", "LITHO_ROBOLECTRIC_V3_TARGET", "LITHO_SOLOADER_TARGET", "LITHO_STATS_TARGET", "LITHO_TESTING_CORE_V3_TARGET", "LITHO_TESTING_V3_TARGET", "LITHO_TESTING_WHITEBOX_TARGET", "LITHO_TEST_RES", "LITHO_VIEWCOMPAT_TARGET", "LITHO_WIDGET_TARGET", "LITHO_YOGA_TARGET", "components_robolectric_test", "litho_android_library", "make_dep_path")
+load(
+    "//tools/build_defs/oss:litho_defs.bzl",
+    "LITHO_ANDROIDSUPPORT_TARGET",
+    "LITHO_ASSERTJ_TARGET",
+    "LITHO_BUILD_CONFIG_TARGET",
+    "LITHO_JAVA_TARGET",
+    "LITHO_JSR_TARGET",
+    "LITHO_JUNIT_TARGET",
+    "LITHO_MOCKITO_TARGET",
+    "LITHO_ROBOLECTRIC_V3_TARGET",
+    "LITHO_SOLOADER_TARGET",
+    "LITHO_STATS_TARGET",
+    "LITHO_TESTING_CORE_V3_TARGET",
+    "LITHO_TESTING_V3_TARGET",
+    "LITHO_TESTING_WHITEBOX_TARGET",
+    "LITHO_TEST_RES",
+    "LITHO_VIEWCOMPAT_TARGET",
+    "LITHO_WIDGET_TARGET",
+    "LITHO_YOGA_TARGET",
+    "components_robolectric_test",
+    "litho_android_library",
+    "make_dep_path",
+)
 
 components_robolectric_test(
     name = "litho",
@@ -38,8 +60,8 @@ components_robolectric_test(
         LITHO_WIDGET_TARGET,
         LITHO_YOGA_TARGET,
         make_dep_path("litho-core/src/main/java/com/facebook/litho/utils:utils"),
-        make_dep_path("litho-it/src/main/java/com/facebook/litho/components:components"),
         make_dep_path("litho-it/src/main/java/com/facebook/litho:litho-testing"),
+        make_dep_path("litho-it/src/main/java/com/facebook/litho/components:components"),
         make_dep_path("litho-it/src/main/java/com/facebook/litho/testing/drawable:drawable"),
         make_dep_path("litho-it/src/main/java/com/facebook/litho/testing/error:error"),
         make_dep_path("litho-it/src/main/java/com/facebook/litho/widget:widget"),

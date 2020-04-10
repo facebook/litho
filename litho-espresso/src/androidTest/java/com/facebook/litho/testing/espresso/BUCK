@@ -3,7 +3,22 @@
 # This source code is licensed under the Apache 2.0 license found in the
 # LICENSE file in the root directory of this source tree.
 
-load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_ANDROIDSUPPORT_TARGET", "LITHO_ANDROIDSUPPORT_TESTING_TARGET", "LITHO_ANNOTATIONS_TARGET", "LITHO_ESPRESSO_TARGET", "LITHO_JAVA_TARGET", "LITHO_JUNIT_TARGET", "LITHO_PROCESSOR_TARGET", "LITHO_SCREENSHOT_TARGET", "LITHO_WIDGET_TARGET", "LITHO_YOGA_TARGET", "fb_core_android_library", "instrumentation_test", "make_dep_path")
+load(
+    "//tools/build_defs/oss:litho_defs.bzl",
+    "LITHO_ANDROIDSUPPORT_TARGET",
+    "LITHO_ANDROIDSUPPORT_TESTING_TARGET",
+    "LITHO_ANNOTATIONS_TARGET",
+    "LITHO_ESPRESSO_TARGET",
+    "LITHO_JAVA_TARGET",
+    "LITHO_JUNIT_TARGET",
+    "LITHO_PROCESSOR_TARGET",
+    "LITHO_SCREENSHOT_TARGET",
+    "LITHO_WIDGET_TARGET",
+    "LITHO_YOGA_TARGET",
+    "fb_core_android_library",
+    "instrumentation_test",
+    "make_dep_path",
+)
 
 instrumentation_test(
     name = "espresso",
@@ -12,14 +27,14 @@ instrumentation_test(
     is_androidx = True,
     deps = [
         ":testutil",
-        make_dep_path("litho-espresso/src/main/java/com/facebook/litho/testing/espresso:espresso"),
-        LITHO_JAVA_TARGET,
-        LITHO_WIDGET_TARGET,
-        LITHO_ESPRESSO_TARGET,
-        LITHO_JUNIT_TARGET,
-        LITHO_YOGA_TARGET,
         LITHO_ANDROIDSUPPORT_TESTING_TARGET,
+        LITHO_ESPRESSO_TARGET,
+        LITHO_JAVA_TARGET,
+        LITHO_JUNIT_TARGET,
         LITHO_SCREENSHOT_TARGET,
+        LITHO_WIDGET_TARGET,
+        LITHO_YOGA_TARGET,
+        make_dep_path("litho-espresso/src/main/java/com/facebook/litho/testing/espresso:espresso"),
     ],
 )
 
@@ -31,8 +46,8 @@ fb_core_android_library(
         LITHO_PROCESSOR_TARGET,
     ],
     provided_deps = [
-        LITHO_ANNOTATIONS_TARGET,
         LITHO_ANDROIDSUPPORT_TARGET,
+        LITHO_ANNOTATIONS_TARGET,
     ],
     deps = [
         LITHO_JAVA_TARGET,

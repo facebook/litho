@@ -3,7 +3,29 @@
 # This source code is licensed under the Apache 2.0 license found in the
 # LICENSE file in the root directory of this source tree.
 
-load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_ANDROIDSUPPORT_RECYCLERVIEW_TARGET", "LITHO_ANDROIDSUPPORT_TARGET", "LITHO_ANNOTATIONS_TARGET", "LITHO_ASSERTJ_TARGET", "LITHO_HAMCREST_CORE_TARGET", "LITHO_HAMCREST_LIBRARY_TARGET", "LITHO_JAVA_TARGET", "LITHO_JSR_TARGET", "LITHO_JUNIT_TARGET", "LITHO_MOCKITO_TARGET", "LITHO_PROCESSOR_LIB_TARGET", "LITHO_ROBOLECTRIC_V3_TARGET", "LITHO_SECTIONS_WIDGET_TARGET", "LITHO_TESTING_ASSERTJ_V3_TARGET", "LITHO_TESTING_V3_TARGET", "LITHO_TESTING_WIDGET_TARGET", "LITHO_WIDGET_TARGET", "components_robolectric_test", "fb_core_android_library", "make_dep_path")
+load(
+    "//tools/build_defs/oss:litho_defs.bzl",
+    "LITHO_ANDROIDSUPPORT_RECYCLERVIEW_TARGET",
+    "LITHO_ANDROIDSUPPORT_TARGET",
+    "LITHO_ANNOTATIONS_TARGET",
+    "LITHO_ASSERTJ_TARGET",
+    "LITHO_HAMCREST_CORE_TARGET",
+    "LITHO_HAMCREST_LIBRARY_TARGET",
+    "LITHO_JAVA_TARGET",
+    "LITHO_JSR_TARGET",
+    "LITHO_JUNIT_TARGET",
+    "LITHO_MOCKITO_TARGET",
+    "LITHO_PROCESSOR_LIB_TARGET",
+    "LITHO_ROBOLECTRIC_V3_TARGET",
+    "LITHO_SECTIONS_WIDGET_TARGET",
+    "LITHO_TESTING_ASSERTJ_V3_TARGET",
+    "LITHO_TESTING_V3_TARGET",
+    "LITHO_TESTING_WIDGET_TARGET",
+    "LITHO_WIDGET_TARGET",
+    "components_robolectric_test",
+    "fb_core_android_library",
+    "make_dep_path",
+)
 
 components_robolectric_test(
     name = "litho",
@@ -13,20 +35,20 @@ components_robolectric_test(
     target = "8",
     deps = [
         ":testspecs",
-        make_dep_path("sample/src/main/java/com/facebook/samples/litho:litho"),
-        make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/testrunner:testrunner"),
-        make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/assertj:assertj"),
+        LITHO_ANDROIDSUPPORT_RECYCLERVIEW_TARGET,
+        LITHO_ASSERTJ_TARGET,
         LITHO_HAMCREST_LIBRARY_TARGET,
         LITHO_JAVA_TARGET,
+        LITHO_JUNIT_TARGET,
+        LITHO_MOCKITO_TARGET,
+        LITHO_ROBOLECTRIC_V3_TARGET,
+        LITHO_SECTIONS_WIDGET_TARGET,
         LITHO_TESTING_V3_TARGET,
         LITHO_TESTING_WIDGET_TARGET,
-        LITHO_JUNIT_TARGET,
-        LITHO_ROBOLECTRIC_V3_TARGET,
-        LITHO_ASSERTJ_TARGET,
-        LITHO_ANDROIDSUPPORT_RECYCLERVIEW_TARGET,
         LITHO_WIDGET_TARGET,
-        LITHO_MOCKITO_TARGET,
-        LITHO_SECTIONS_WIDGET_TARGET,
+        make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/assertj:assertj"),
+        make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/testrunner:testrunner"),
+        make_dep_path("sample/src/main/java/com/facebook/samples/litho:litho"),
     ],
 )
 
@@ -40,15 +62,15 @@ fb_core_android_library(
         "com.facebook.litho.specmodels.processor.testing.ComponentsTestingProcessor",
     ],
     deps = [
-        make_dep_path("sample/src/main/java/com/facebook/samples/litho:litho"),
-        LITHO_JAVA_TARGET,
-        LITHO_ANNOTATIONS_TARGET,
         LITHO_ANDROIDSUPPORT_TARGET,
-        LITHO_TESTING_V3_TARGET,
-        LITHO_TESTING_ASSERTJ_V3_TARGET,
-        LITHO_JSR_TARGET,
+        LITHO_ANNOTATIONS_TARGET,
         LITHO_HAMCREST_CORE_TARGET,
         LITHO_HAMCREST_LIBRARY_TARGET,
+        LITHO_JAVA_TARGET,
+        LITHO_JSR_TARGET,
+        LITHO_TESTING_ASSERTJ_V3_TARGET,
+        LITHO_TESTING_V3_TARGET,
+        make_dep_path("sample/src/main/java/com/facebook/samples/litho:litho"),
     ],
     exported_deps = [
         make_dep_path("litho-testing/src/main/java/com/facebook/litho:litho"),

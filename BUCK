@@ -30,8 +30,8 @@ litho_android_library(
         LITHO_BUILD_CONFIG_TARGET,
     ],
     exported_deps = [
-        LITHO_JAVA_TARGET,
         LITHO_ANDROIDSUPPORT_TARGET,
+        LITHO_JAVA_TARGET,
         LITHO_YOGA_TARGET,
     ],
 )
@@ -43,8 +43,8 @@ litho_android_library(
     ],
     exported_deps = [
         ":components",
-        LITHO_SECTIONS_TARGET,
         LITHO_SECTIONS_ANNOTATIONS_TARGET,
+        LITHO_SECTIONS_TARGET,
     ],
 )
 

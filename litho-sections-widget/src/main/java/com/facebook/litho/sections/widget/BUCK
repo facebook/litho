@@ -4,7 +4,22 @@
 # LICENSE file in the root directory of this source tree.
 # of patent rights can be found in the PATENTS file in the same directory.
 
-load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_ANDROIDSUPPORT_RECYCLERVIEW_TARGET", "LITHO_ANDROIDSUPPORT_TARGET", "LITHO_ANNOTATIONS_TARGET", "LITHO_JAVA_TARGET", "LITHO_JSR_TARGET", "LITHO_PROCESSOR_TARGET", "LITHO_SECTIONS_ANNOTATIONS_TARGET", "LITHO_SECTIONS_CONFIG_TARGET", "LITHO_SECTIONS_PROCESSOR_TARGET", "LITHO_SECTIONS_TARGET", "LITHO_WIDGET_TARGET", "LITHO_YOGA_TARGET", "fb_core_android_library")
+load(
+    "//tools/build_defs/oss:litho_defs.bzl",
+    "LITHO_ANDROIDSUPPORT_RECYCLERVIEW_TARGET",
+    "LITHO_ANDROIDSUPPORT_TARGET",
+    "LITHO_ANNOTATIONS_TARGET",
+    "LITHO_JAVA_TARGET",
+    "LITHO_JSR_TARGET",
+    "LITHO_PROCESSOR_TARGET",
+    "LITHO_SECTIONS_ANNOTATIONS_TARGET",
+    "LITHO_SECTIONS_CONFIG_TARGET",
+    "LITHO_SECTIONS_PROCESSOR_TARGET",
+    "LITHO_SECTIONS_TARGET",
+    "LITHO_WIDGET_TARGET",
+    "LITHO_YOGA_TARGET",
+    "fb_core_android_library",
+)
 
 fb_core_android_library(
     name = "widget",
@@ -18,21 +33,21 @@ fb_core_android_library(
         LITHO_SECTIONS_PROCESSOR_TARGET,
     ],
     provided_deps = [
-        LITHO_SECTIONS_ANNOTATIONS_TARGET,
         LITHO_ANNOTATIONS_TARGET,
+        LITHO_SECTIONS_ANNOTATIONS_TARGET,
     ],
     required_for_source_only_abi = True,
     visibility = [
         "PUBLIC",
     ],
     deps = [
-        LITHO_SECTIONS_TARGET,
-        LITHO_SECTIONS_CONFIG_TARGET,
         LITHO_ANDROIDSUPPORT_RECYCLERVIEW_TARGET,
         LITHO_ANDROIDSUPPORT_TARGET,
+        LITHO_JAVA_TARGET,
         LITHO_JSR_TARGET,
+        LITHO_SECTIONS_CONFIG_TARGET,
+        LITHO_SECTIONS_TARGET,
         LITHO_WIDGET_TARGET,
         LITHO_YOGA_TARGET,
-        LITHO_JAVA_TARGET,
     ],
 )

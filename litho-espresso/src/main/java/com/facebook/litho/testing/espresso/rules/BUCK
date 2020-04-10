@@ -3,7 +3,17 @@
 # This source code is licensed under the Apache 2.0 license found in the
 # LICENSE file in the root directory of this source tree.
 
-load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_ANDROIDSUPPORT_APPCOMPAT_TARGET", "LITHO_ANDROIDSUPPORT_TARGET", "LITHO_ANDROIDSUPPORT_TESTING_TARGET", "LITHO_ESPRESSO_TARGET", "LITHO_JAVA_TARGET", "LITHO_JUNIT_TARGET", "LITHO_ROOT", "fb_core_android_library")
+load(
+    "//tools/build_defs/oss:litho_defs.bzl",
+    "LITHO_ANDROIDSUPPORT_APPCOMPAT_TARGET",
+    "LITHO_ANDROIDSUPPORT_TARGET",
+    "LITHO_ANDROIDSUPPORT_TESTING_TARGET",
+    "LITHO_ESPRESSO_TARGET",
+    "LITHO_JAVA_TARGET",
+    "LITHO_JUNIT_TARGET",
+    "LITHO_ROOT",
+    "fb_core_android_library",
+)
 
 fb_core_android_library(
     name = "rules",
@@ -13,8 +23,8 @@ fb_core_android_library(
         "PUBLIC",
     ],
     deps = [
-        LITHO_ANDROIDSUPPORT_TARGET,
         LITHO_ANDROIDSUPPORT_APPCOMPAT_TARGET,
+        LITHO_ANDROIDSUPPORT_TARGET,
         LITHO_ANDROIDSUPPORT_TESTING_TARGET,
         LITHO_ESPRESSO_TARGET,
         LITHO_JAVA_TARGET,

@@ -3,7 +3,21 @@
 # This source code is licensed under the Apache 2.0 license found in the
 # LICENSE file in the root directory of this source tree.
 
-load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_ANDROIDSUPPORT_TARGET", "LITHO_ANNOTATIONS_TARGET", "LITHO_ASSERTJ_TARGET", "LITHO_COMPILE_TESTING_TARGET", "LITHO_JAVAC_TOOLS_TARGET", "LITHO_JAVA_TARGET", "LITHO_MOCKITO_TARGET", "LITHO_PROCESSOR_LIB_TARGET", "LITHO_ROBOLECTRIC_V3_TARGET", "LITHO_SECTIONS_TARGET", "fb_java_test", "make_dep_path")
+load(
+    "//tools/build_defs/oss:litho_defs.bzl",
+    "LITHO_ANDROIDSUPPORT_TARGET",
+    "LITHO_ANNOTATIONS_TARGET",
+    "LITHO_ASSERTJ_TARGET",
+    "LITHO_COMPILE_TESTING_TARGET",
+    "LITHO_JAVAC_TOOLS_TARGET",
+    "LITHO_JAVA_TARGET",
+    "LITHO_MOCKITO_TARGET",
+    "LITHO_PROCESSOR_LIB_TARGET",
+    "LITHO_ROBOLECTRIC_V3_TARGET",
+    "LITHO_SECTIONS_TARGET",
+    "fb_java_test",
+    "make_dep_path",
+)
 
 fb_java_test(
     name = "specmodels",
@@ -17,8 +31,8 @@ fb_java_test(
     source = "8",
     target = "8",
     deps = [
-        LITHO_ANNOTATIONS_TARGET,
         LITHO_ANDROIDSUPPORT_TARGET,
+        LITHO_ANNOTATIONS_TARGET,
         LITHO_ASSERTJ_TARGET,
         LITHO_COMPILE_TESTING_TARGET,
         LITHO_JAVAC_TOOLS_TARGET,

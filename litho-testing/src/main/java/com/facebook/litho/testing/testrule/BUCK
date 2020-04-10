@@ -2,7 +2,12 @@
 #
 # This source code is licensed under the Apache 2.0 license found in the
 # LICENSE file in the root directory of this source tree.
-load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_CONFIG_TARGET", "LITHO_JUNIT_TARGET", "fb_core_android_library")
+load(
+    "//tools/build_defs/oss:litho_defs.bzl",
+    "LITHO_CONFIG_TARGET",
+    "LITHO_JUNIT_TARGET",
+    "fb_core_android_library",
+)
 
 fb_core_android_library(
     name = "testrule",

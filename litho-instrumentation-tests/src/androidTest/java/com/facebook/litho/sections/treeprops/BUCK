@@ -16,13 +16,12 @@ instrumentation_test(
     apk_under_test = "litho",
     is_androidx = True,
     deps = [
-        make_dep_path("litho-instrumentation-tests/src/main/java/com/facebook/litho/sections/treeprops:treeprops"),
-        LITHO_JAVA_TARGET,
-        LITHO_ESPRESSO_TARGET,
-        LITHO_JUNIT_TARGET,
-        LITHO_JUNIT_TARGET,
         LITHO_ANDROIDSUPPORT_TESTING_TARGET,
-        LITHO_TESTING_ESPRESSO_TARGET,
         LITHO_BUILD_CONFIG_TARGET,
+        LITHO_ESPRESSO_TARGET,
+        LITHO_JAVA_TARGET,
+        LITHO_JUNIT_TARGET,
+        LITHO_TESTING_ESPRESSO_TARGET,
+        make_dep_path("litho-instrumentation-tests/src/main/java/com/facebook/litho/sections/treeprops:treeprops"),
     ],
 )

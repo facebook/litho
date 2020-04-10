@@ -4,7 +4,14 @@
 # LICENSE file in the root directory of this source tree.
 
 load("//tools/build_defs/oss:fb_native_wrapper.bzl", "fb_native")
-load("//tools/build_defs/oss:litho_defs.bzl", "LITHO_ANNOTATIONS_TARGET", "LITHO_PROCESSOR_LIB_TARGET", "LITHO_SECTIONS_ANNOTATIONS_TARGET", "fb_java_library", "make_dep_path")
+load(
+    "//tools/build_defs/oss:litho_defs.bzl",
+    "LITHO_ANNOTATIONS_TARGET",
+    "LITHO_PROCESSOR_LIB_TARGET",
+    "LITHO_SECTIONS_ANNOTATIONS_TARGET",
+    "fb_java_library",
+    "make_dep_path",
+)
 
 fb_native.java_annotation_processor(
     name = "processor",
@@ -29,12 +36,12 @@ fb_java_library(
     target = "8",
     visibility = ["PUBLIC"],
     deps = [
-        LITHO_SECTIONS_ANNOTATIONS_TARGET,
         LITHO_ANNOTATIONS_TARGET,
         LITHO_PROCESSOR_LIB_TARGET,
-        make_dep_path("litho-sections-processor/src/main/java/com/facebook/litho/sections/specmodels/model:model"),
+        LITHO_SECTIONS_ANNOTATIONS_TARGET,
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels:specmodels"),
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/internal:internal"),
+        make_dep_path("litho-sections-processor/src/main/java/com/facebook/litho/sections/specmodels/model:model"),
     ],
     exported_deps = [
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/processor:processor-lib"),

@@ -27,8 +27,8 @@ fb_java_library(
         LITHO_JAVAPOET_TARGET,
         LITHO_SECTIONS_ANNOTATIONS_TARGET,
         make_dep_path("litho-intellij-plugin/src/main/java/com/facebook/litho/intellij/extensions:lib"),
-        make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/processor:processor-lib-bare"),
-        make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/internal:internal"),
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels:specmodels-bare"),
+        make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/internal:internal"),
+        make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/processor:processor-lib-bare"),
     ],
 )
