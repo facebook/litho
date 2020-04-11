@@ -18,14 +18,19 @@ package com.facebook.litho.intellij.services;
 
 import com.facebook.litho.intellij.IntervalLogger;
 import com.facebook.litho.intellij.LithoPluginUtils;
+import com.facebook.litho.intellij.PsiSearchUtils;
 import com.facebook.litho.intellij.completion.ComponentGenerateUtils;
 import com.facebook.litho.intellij.file.ComponentScope;
 import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.LayoutSpecModel;
+import com.intellij.openapi.Disposable;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.fileTypes.StdFileTypes;
+import com.intellij.openapi.progress.ProgressIndicator;
+import com.intellij.openapi.progress.ProgressManager;
+import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.text.StringUtil;
@@ -34,16 +39,19 @@ import com.intellij.psi.PsiFileFactory;
 import com.intellij.util.ThrowableRunnable;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeSpec;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.jetbrains.annotations.Nullable;
 
 /**
  * Stores generated in-memory components. Cache could be updated via {@link #maybeUpdate(PsiClass,
  * boolean)} call.
  */
-public class ComponentsCacheService {
+public class ComponentsCacheService implements Disposable {
   private static final Logger LOG = Logger.getInstance(ComponentsCacheService.class);
 
   private final Map<String, PsiClass> componentNameToClass = new ConcurrentHashMap<>();
@@ -51,6 +59,11 @@ public class ComponentsCacheService {
 
   public ComponentsCacheService(Project project) {
     this.project = project;
+  }
+
+  @Override
+  public void dispose() {
+    componentNameToClass.clear();
   }
 
   public void maybeUpdate(PsiClass specClass, boolean forceUpdate) {
@@ -73,24 +86,43 @@ public class ComponentsCacheService {
    */
   @Nullable
   public PsiClass getComponent(String componentQualifiedName) {
-    final PsiClass component = componentNameToClass.get(componentQualifiedName);
-    if (component == null) return null;
-
-    if (isPresentOnDisk(componentQualifiedName)) {
-      componentNameToClass.remove(componentQualifiedName);
-      return null;
-    }
-    return component;
+    return componentNameToClass.get(componentQualifiedName);
   }
 
   public PsiClass[] getAllComponents() {
-    componentNameToClass.values().removeIf(cls -> isPresentOnDisk(cls.getQualifiedName()));
     return componentNameToClass.values().toArray(PsiClass.EMPTY_ARRAY);
   }
 
-  private boolean isPresentOnDisk(String qualifiedName) {
-    // TODO: T56876413 clean-up to avoid conflicts with on-disk
-    return false;
+  void invalidate() {
+    final List<String> componentNames = new ArrayList<>(componentNameToClass.keySet());
+    if (componentNames.isEmpty()) return;
+    IntervalLogger logger = new IntervalLogger(LOG);
+
+    ProgressManager.getInstance()
+        .run(
+            new Task.Backgroundable(project, "Invalidating In-Memory Files") {
+              @Override
+              public void run(ProgressIndicator indicator) {
+                indicator.setIndeterminate(false);
+                for (int i = 0, size = componentNames.size(); i < size; i++) {
+                  indicator.setFraction(((double) i + 1) / size);
+                  indicator.setText2(i + 1 + "/" + size);
+                  String clsName = componentNames.get(i);
+                  AtomicBoolean found = new AtomicBoolean(false);
+                  ReadAction.run(
+                      () -> {
+                        final PsiClass foundCls = PsiSearchUtils.findClass(project, clsName);
+                        found.set(foundCls != null);
+                      });
+                  if (found.get()) {
+                    logger.logStep("removing " + clsName);
+                    componentNameToClass.remove(clsName);
+                  } else {
+                    logger.logStep("keeping " + clsName);
+                  }
+                }
+              }
+            });
   }
 
   private void maybeUpdateAsync(
@@ -162,6 +194,9 @@ public class ComponentsCacheService {
     }
 
     boolean shouldStopUpdate() {
+      if (project.isDisposed()) {
+        return true;
+      }
       if (!componentNameToClass.containsKey(componentQualifiedName)) {
         return false;
       }

@@ -97,6 +97,8 @@
     <projectService serviceImplementation="com.facebook.litho.intellij.services.ComponentsCacheService"/>
 
     <resolveScopeEnlarger implementation="com.facebook.litho.intellij.file.ComponentResolveScopeEnlarger"/>
+
+    <postStartupActivity implementation="com.facebook.litho.intellij.services.LithoStartupActivity"/>
   </extensions>
 
   <actions>
