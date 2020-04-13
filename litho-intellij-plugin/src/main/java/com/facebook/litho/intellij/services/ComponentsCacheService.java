@@ -40,6 +40,7 @@ import com.intellij.util.ThrowableRunnable;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeSpec;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -95,6 +96,7 @@ public class ComponentsCacheService implements Disposable {
 
   void invalidate() {
     final List<String> componentNames = new ArrayList<>(componentNameToClass.keySet());
+    LOG.debug("Invalidating " + componentNames);
     if (componentNames.isEmpty()) return;
     IntervalLogger logger = new IntervalLogger(LOG);
 
@@ -111,8 +113,10 @@ public class ComponentsCacheService implements Disposable {
                   AtomicBoolean found = new AtomicBoolean(false);
                   ReadAction.run(
                       () -> {
-                        final PsiClass foundCls = PsiSearchUtils.findClass(project, clsName);
-                        found.set(foundCls != null);
+                        final boolean foundCls =
+                            Arrays.stream(PsiSearchUtils.findClasses(project, clsName))
+                                .anyMatch(cls -> !ComponentScope.contains(cls.getContainingFile()));
+                        found.set(foundCls);
                       });
                   if (found.get()) {
                     logger.logStep("removing " + clsName);

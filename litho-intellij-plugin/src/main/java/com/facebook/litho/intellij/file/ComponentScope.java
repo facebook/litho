@@ -52,9 +52,24 @@ public class ComponentScope extends GlobalSearchScope {
    * file.
    */
   public static VirtualFile include(PsiFile file) {
-    final VirtualFile vf = file.getViewProvider().getVirtualFile();
+    final VirtualFile vf = getVirtualFile(file);
     vf.putUserData(KEY, true);
     return vf;
+  }
+
+  public static boolean contains(PsiFile file) {
+    return containsInternal(getVirtualFile(file));
+  }
+
+  private static boolean containsInternal(VirtualFile file) {
+    return StdFileTypes.JAVA.equals(file.getFileType()) && file.getUserData(KEY) != null;
+  }
+
+  private static VirtualFile getVirtualFile(PsiFile file) {
+    final VirtualFile vf = file.getVirtualFile();
+    if (vf != null) return vf;
+
+    return file.getViewProvider().getVirtualFile();
   }
 
   @Override
@@ -78,10 +93,9 @@ public class ComponentScope extends GlobalSearchScope {
 
   @Override
   public boolean contains(VirtualFile file) {
-    final boolean isIncluded =
-        StdFileTypes.JAVA.equals(file.getFileType()) && file.getUserData(KEY) != null;
-    LOG.debug("contains " + file.getName() + " " + isIncluded);
-    return isIncluded;
+    final boolean contains = containsInternal(file);
+    LOG.debug("contains " + file.getName() + " " + contains);
+    return contains;
   }
 
   static class Holder {
