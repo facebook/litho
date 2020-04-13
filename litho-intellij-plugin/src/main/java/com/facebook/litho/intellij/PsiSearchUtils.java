@@ -25,10 +25,9 @@ import org.jetbrains.annotations.Nullable;
 public class PsiSearchUtils {
 
   /**
-   * Searches global project scope for a class with the specified full-qualified name and returns
-   * one if it is found.
+   * Searches everywhere for a class with the specified full-qualified name and returns one if it is
+   * found. This method might return classes out of project scope.
    *
-   * @param project to find the class in.
    * @param qualifiedName the full-qualified name of the class to find.
    * @return the PSI class, or null if no class with such name is found.
    */
@@ -36,5 +35,17 @@ public class PsiSearchUtils {
   public static PsiClass findClass(Project project, String qualifiedName) {
     return JavaPsiFacade.getInstance(project)
         .findClass(qualifiedName, GlobalSearchScope.everythingScope(project));
+  }
+
+  /**
+   * Searches everywhere for classes with the specified full-qualified name and returns all found
+   * classes.
+   *
+   * @param qualifiedName the full-qualified name of the class to find.
+   * @return the array of found classes, or an empty array if no classes are found.
+   */
+  public static PsiClass[] findClasses(Project project, String qualifiedName) {
+    return JavaPsiFacade.getInstance(project)
+        .findClasses(qualifiedName, GlobalSearchScope.everythingScope(project));
   }
 }
