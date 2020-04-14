@@ -54,8 +54,8 @@ public class LithoMountData {
   }
 
   /** @return Whether the view associated with this MountItem is long clickable. */
-  boolean isViewLongClickable() {
-    return (mDefaultAttributeValuesFlags & FLAG_VIEW_LONG_CLICKABLE) == FLAG_VIEW_LONG_CLICKABLE;
+  static boolean isViewLongClickable(int flags) {
+    return (flags & FLAG_VIEW_LONG_CLICKABLE) == FLAG_VIEW_LONG_CLICKABLE;
   }
 
   /** @return Whether the view associated with this MountItem is setFocusable. */

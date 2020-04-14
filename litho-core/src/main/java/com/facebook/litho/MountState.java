@@ -42,6 +42,7 @@ import static com.facebook.litho.FrameworkLogEvents.PARAM_VISIBILITY_HANDLER_TIM
 import static com.facebook.litho.LayoutOutput.getLayoutOutput;
 import static com.facebook.litho.LithoMountData.getMountData;
 import static com.facebook.litho.LithoMountData.isViewClickable;
+import static com.facebook.litho.LithoMountData.isViewLongClickable;
 import static com.facebook.litho.ThreadUtils.assertMainThread;
 
 import android.animation.AnimatorInflater;
@@ -1965,7 +1966,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener, Mount
     }
 
     view.setClickable(isViewClickable(getMountData(item).getDefaultAttributeValuesFlags()));
-    view.setLongClickable(getMountData(item).isViewLongClickable());
+    view.setLongClickable(isViewLongClickable(getMountData(item).getDefaultAttributeValuesFlags()));
 
     unsetFocusable(view, item);
     unsetEnabled(view, item);
