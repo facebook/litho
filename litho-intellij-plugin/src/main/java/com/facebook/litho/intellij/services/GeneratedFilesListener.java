@@ -34,7 +34,7 @@ import java.util.List;
 /** Listens for files created in file system and removes their in-memory copies from the cache. */
 class GeneratedFilesListener implements BulkFileListener, Disposable {
   private static final Logger LOG = Logger.getInstance(GeneratedFilesListener.class);
-  private static final String BUCK_OUT_BASE = "/buck-out/annotation/";
+  static final String BUCK_OUT_BASE = "/buck-out/annotation/";
   private static final String GRADLE_OUTPUT_BASE = "/build/generated/source/apt/debug/";
   private Project project;
   private MessageBusConnection connection;

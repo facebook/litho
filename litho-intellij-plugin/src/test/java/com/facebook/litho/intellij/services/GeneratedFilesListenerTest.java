@@ -20,6 +20,7 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 import com.facebook.litho.intellij.LithoPluginIntellijTest;
+import com.facebook.litho.intellij.PsiSearchUtils;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
@@ -34,16 +35,16 @@ import java.util.Collections;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-public class GeneratedFileListenerTest extends LithoPluginIntellijTest {
+public class GeneratedFilesListenerTest extends LithoPluginIntellijTest {
 
-  public GeneratedFileListenerTest() {
+  public GeneratedFilesListenerTest() {
     super("testdata/services");
   }
 
   @Test
   public void after_Remove() throws IOException {
     final Project project = testHelper.getFixture().getProject();
-    final LithoStartupActivity listener = new LithoStartupActivity(project);
+    final GeneratedFilesListener listener = new GeneratedFilesListener(project);
     final PsiFile file = testHelper.configure("LayoutSpec.java");
     ApplicationManager.getApplication()
         .invokeAndWait(
@@ -56,9 +57,11 @@ public class GeneratedFileListenerTest extends LithoPluginIntellijTest {
               final PsiClass component = service.getComponent("Layout");
               assertThat(component).isNotNull();
 
-              listener.after(Collections.singletonList(mockEvent()));
-              // Ensure cache is cleaned (we use test PsiSearchUtil to always 'find' the class on
-              // disk)
+              // Mock file created and found on disk
+              final VFileEvent mockEvent = mockEvent();
+              PsiSearchUtils.addMock("Layout", cls);
+              listener.after(Collections.singletonList(mockEvent));
+              // Ensure cache is cleaned
               final PsiClass component2 = service.getComponent("Layout");
               assertThat(component2).isNull();
             });
@@ -68,7 +71,7 @@ public class GeneratedFileListenerTest extends LithoPluginIntellijTest {
     final VFileEvent event = Mockito.mock(VFileCreateEvent.class);
     VirtualFile mockFile = Mockito.mock(VirtualFile.class);
     when(mockFile.isValid()).thenReturn(true);
-    when(mockFile.getPath()).thenReturn(LithoStartupActivity.BUCK_OUTPUT);
+    when(mockFile.getPath()).thenReturn(GeneratedFilesListener.BUCK_OUT_BASE);
     when(event.getFile()).thenReturn(mockFile);
     return event;
   }

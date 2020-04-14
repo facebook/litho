@@ -16,14 +16,23 @@
 
 package com.facebook.litho.intellij;
 
-import static org.mockito.Mockito.mock;
-
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiClass;
+import java.util.HashMap;
+import java.util.Map;
 
 public class PsiSearchUtils {
+  static Map<String, PsiClass> mockMap = new HashMap<>();
+
+  public static void addMock(String name, PsiClass cls) {
+    mockMap.put(name, cls);
+  }
 
   public static PsiClass findClass(Project project, String name) {
-    return mock(PsiClass.class);
+    return mockMap.get(name);
+  }
+
+  public static PsiClass[] findClasses(Project project, String qualifiedName) {
+    return new PsiClass[] {findClass(project, qualifiedName)};
   }
 }
