@@ -64,7 +64,7 @@ public class ComponentsPools {
    */
   static boolean sIsManualCallbacks;
 
-  static Object acquireMountContent(
+  public static Object acquireMountContent(
       Context context,
       ComponentLifecycle lifecycle,
       @ComponentTree.RecyclingMode int recyclingMode) {
@@ -82,7 +82,7 @@ public class ComponentsPools {
     return content;
   }
 
-  static void release(
+  public static void release(
       Context context, ComponentLifecycle lifecycle, Object mountContent, int recyclingMode) {
     final MountContentPool pool = getMountContentPool(context, lifecycle, recyclingMode);
     if (pool != null) {
