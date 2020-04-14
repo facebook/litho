@@ -41,31 +41,7 @@ public class LithoMountData {
   String mReleaseCause;
 
   public LithoMountData(Object content) {
-    int flags = 0;
-    if (content instanceof View) {
-      final View view = (View) content;
-
-      if (view.isClickable()) {
-        flags |= FLAG_VIEW_CLICKABLE;
-      }
-
-      if (view.isLongClickable()) {
-        flags |= FLAG_VIEW_LONG_CLICKABLE;
-      }
-
-      if (view.isFocusable()) {
-        flags |= FLAG_VIEW_FOCUSABLE;
-      }
-
-      if (view.isEnabled()) {
-        flags |= FLAG_VIEW_ENABLED;
-      }
-
-      if (view.isSelected()) {
-        flags |= FLAG_VIEW_SELECTED;
-      }
-    }
-    mDefaultAttributeValuesFlags = flags;
+    mDefaultAttributeValuesFlags = getViewAttributeFlags(content);
   }
 
   /** @return Whether the view associated with this MountItem is clickable. */
@@ -147,6 +123,36 @@ public class LithoMountData {
       throw new RuntimeException("MountData should not be null when using Litho's MountState.");
     }
     return (LithoMountData) item.getMountData();
+  }
+
+  static int getViewAttributeFlags(Object content) {
+    int flags = 0;
+
+    if (content instanceof View) {
+      final View view = (View) content;
+
+      if (view.isClickable()) {
+        flags |= FLAG_VIEW_CLICKABLE;
+      }
+
+      if (view.isLongClickable()) {
+        flags |= FLAG_VIEW_LONG_CLICKABLE;
+      }
+
+      if (view.isFocusable()) {
+        flags |= FLAG_VIEW_FOCUSABLE;
+      }
+
+      if (view.isEnabled()) {
+        flags |= FLAG_VIEW_ENABLED;
+      }
+
+      if (view.isSelected()) {
+        flags |= FLAG_VIEW_SELECTED;
+      }
+    }
+
+    return flags;
   }
 
   public static class ReleasingReleasedMountContentException extends RuntimeException {
