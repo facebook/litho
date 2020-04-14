@@ -26,6 +26,7 @@ import static com.facebook.litho.LithoMountData.isViewClickable;
 import static com.facebook.litho.LithoMountData.isViewEnabled;
 import static com.facebook.litho.LithoMountData.isViewFocusable;
 import static com.facebook.litho.LithoMountData.isViewLongClickable;
+import static com.facebook.litho.LithoMountData.isViewSelected;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import android.graphics.Rect;
@@ -172,7 +173,7 @@ public class MountItemTest {
     assertThat(isViewLongClickable(getMountData(mMountItem).getDefaultAttributeValuesFlags()))
         .isTrue();
     assertThat(isViewFocusable(getMountData(mMountItem).getDefaultAttributeValuesFlags())).isFalse();
-    assertThat(getMountData(mMountItem).isViewSelected()).isFalse();
+    assertThat(isViewSelected(getMountData(mMountItem).getDefaultAttributeValuesFlags())).isFalse();
 
     view.setClickable(false);
     view.setEnabled(false);
@@ -188,7 +189,7 @@ public class MountItemTest {
     assertThat(isViewLongClickable(getMountData(mMountItem).getDefaultAttributeValuesFlags()))
         .isFalse();
     assertThat(isViewFocusable(getMountData(mMountItem).getDefaultAttributeValuesFlags())).isTrue();
-    assertThat(getMountData(mMountItem).isViewSelected()).isTrue();
+    assertThat(isViewSelected(getMountData(mMountItem).getDefaultAttributeValuesFlags())).isTrue();
   }
 
   @Test

@@ -45,6 +45,7 @@ import static com.facebook.litho.LithoMountData.isViewClickable;
 import static com.facebook.litho.LithoMountData.isViewEnabled;
 import static com.facebook.litho.LithoMountData.isViewFocusable;
 import static com.facebook.litho.LithoMountData.isViewLongClickable;
+import static com.facebook.litho.LithoMountData.isViewSelected;
 import static com.facebook.litho.ThreadUtils.assertMainThread;
 
 import android.animation.AnimatorInflater;
@@ -2381,7 +2382,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener, Mount
   }
 
   private static void unsetSelected(View view, MountItem mountItem) {
-    view.setSelected(getMountData(mountItem).isViewSelected());
+    view.setSelected(isViewSelected(getMountData(mountItem).getDefaultAttributeValuesFlags()));
   }
 
   private static void setScale(View view, NodeInfo nodeInfo) {

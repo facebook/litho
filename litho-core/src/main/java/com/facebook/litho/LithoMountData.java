@@ -69,8 +69,8 @@ public class LithoMountData {
   }
 
   /** @return Whether the view associated with this MountItem is setSelected. */
-  boolean isViewSelected() {
-    return (mDefaultAttributeValuesFlags & FLAG_VIEW_SELECTED) == FLAG_VIEW_SELECTED;
+  static boolean isViewSelected(int flags) {
+    return (flags & FLAG_VIEW_SELECTED) == FLAG_VIEW_SELECTED;
   }
 
   void releaseMountContent(
