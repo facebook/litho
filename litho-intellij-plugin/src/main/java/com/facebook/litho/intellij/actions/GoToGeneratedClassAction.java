@@ -17,11 +17,13 @@
 package com.facebook.litho.intellij.actions;
 
 import com.facebook.litho.intellij.LithoPluginUtils;
+import com.facebook.litho.intellij.PsiSearchUtils;
 import com.facebook.litho.intellij.extensions.EventLogger;
 import com.facebook.litho.intellij.logging.LithoLoggerProvider;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
+import com.intellij.openapi.project.Project;
 import com.intellij.pom.Navigatable;
 import com.intellij.psi.PsiClass;
 import java.util.Optional;
@@ -41,12 +43,14 @@ public class GoToGeneratedClassAction extends AnAction {
   }
 
   private static Optional<PsiClass> getNavigatableComponent(AnActionEvent e) {
+    final Project project = e.getProject();
+    if (project == null) return Optional.empty();
+
     return Optional.ofNullable(e.getData(CommonDataKeys.PSI_FILE))
         .flatMap(psiFile -> LithoPluginUtils.getFirstClass(psiFile, LithoPluginUtils::isLithoSpec))
-        .map(
-            specCls ->
-                LithoPluginUtils.findGeneratedClass(
-                    specCls.getQualifiedName(), specCls.getProject()))
+        .map(PsiClass::getQualifiedName)
+        .map(LithoPluginUtils::getLithoComponentNameFromSpec)
+        .map(qualifiedComponentName -> PsiSearchUtils.findClass(project, qualifiedComponentName))
         // Copied from the GotoDeclarationAction#gotoTargetElement
         .filter(Navigatable::canNavigate);
   }

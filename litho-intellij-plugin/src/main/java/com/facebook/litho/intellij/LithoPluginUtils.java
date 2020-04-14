@@ -191,23 +191,6 @@ public class LithoPluginUtils {
     return t -> seen.add(key.apply(t));
   }
 
-  /**
-   * Finds Generated Class from the given Spec name. Access is allowed from event dispatch thread or
-   * inside read-action only.
-   *
-   * @param qualifiedSpecName Name of the Spec to search generated class for. For example
-   *     com.package.MySpec.java. If it's a simple name MySpec.java returned class could be found in
-   *     a wrong package.
-   * @param project Project to find generated class in.
-   */
-  @Nullable
-  public static PsiClass findGeneratedClass(String qualifiedSpecName, Project project) {
-    return Optional.of(qualifiedSpecName)
-        .map(LithoPluginUtils::getLithoComponentNameFromSpec)
-        .map(qualifiedComponentName -> PsiSearchUtils.findClass(project, qualifiedComponentName))
-        .orElse(null);
-  }
-
   /** Finds LayoutSpec class in the given file. */
   public static Optional<PsiClass> getFirstLayoutSpec(PsiFile psiFile) {
     return getFirstClass(psiFile, LithoPluginUtils::isLayoutSpec);

@@ -17,6 +17,7 @@
 package com.facebook.litho.intellij.file;
 
 import com.facebook.litho.intellij.LithoPluginUtils;
+import com.facebook.litho.intellij.PsiSearchUtils;
 import com.facebook.litho.intellij.extensions.EventLogger;
 import com.facebook.litho.intellij.logging.LithoLoggerProvider;
 import com.google.common.annotations.VisibleForTesting;
@@ -56,8 +57,14 @@ public class LithoFindUsagesHandlerFactory extends FindUsagesHandlerFactory {
       this(
           psiElement,
           specCls ->
-              LithoPluginUtils.findGeneratedClass(
-                  specCls.getQualifiedName(), specCls.getProject()));
+              Optional.of(specCls)
+                  .filter(LithoPluginUtils::isLayoutSpec)
+                  .map(PsiClass::getQualifiedName)
+                  .map(LithoPluginUtils::getLithoComponentNameFromSpec)
+                  .map(
+                      qualifiedComponentName ->
+                          PsiSearchUtils.findClass(specCls.getProject(), qualifiedComponentName))
+                  .orElse(null));
     }
 
     @VisibleForTesting

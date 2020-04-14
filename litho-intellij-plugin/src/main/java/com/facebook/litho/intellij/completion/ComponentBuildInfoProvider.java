@@ -17,6 +17,7 @@
 package com.facebook.litho.intellij.completion;
 
 import com.facebook.litho.intellij.LithoPluginUtils;
+import com.facebook.litho.intellij.PsiSearchUtils;
 import com.facebook.litho.intellij.extensions.BuildInfoProvider;
 import com.google.common.annotations.VisibleForTesting;
 import com.intellij.openapi.extensions.ExtensionPointName;
@@ -64,7 +65,12 @@ class ComponentBuildInfoProvider {
     String specPackageName = StringUtil.getPackageName(specQualifiedName);
     VirtualFile baseDir = project.getBaseDir();
     PsiManager psiManager = PsiManager.getInstance(project);
-    PsiClass generatedClass = LithoPluginUtils.findGeneratedClass(specQualifiedName, project);
+    PsiClass generatedClass =
+        Optional.of(specQualifiedName)
+            .map(LithoPluginUtils::getLithoComponentNameFromSpec)
+            .map(
+                qualifiedComponentName -> PsiSearchUtils.findClass(project, qualifiedComponentName))
+            .orElse(null);
     return Stream.concat(
         getContainingDirectory(generatedClass),
         provideGeneratedComponentDirs(
