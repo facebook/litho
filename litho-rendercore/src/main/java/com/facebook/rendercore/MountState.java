@@ -45,6 +45,18 @@ public class MountState implements MountDelegateTarget {
   private RenderTree mRenderTree;
   private @Nullable MountDelegate mMountDelegate;
 
+  /**
+   * This boolean array is used to record the attach {@link RenderUnit.Binder} which were unbound in
+   * {@link #updateMountItemIfNeeded(Context, RenderTreeNode, MountItem)}.
+   */
+  private boolean[] mTempUnboundAttachBinders = new boolean[4];
+
+  /**
+   * This boolean array is used to record the mount {@link RenderUnit.Binder} which were unbound in
+   * {@link #updateMountItemIfNeeded(Context, RenderTreeNode, MountItem)}.
+   */
+  private boolean[] mTempUnboundMountBinders = new boolean[4];
+
   public MountState(Host rootHost) {
     mIndexToMountedItemMap = new LongSparseArray<>();
     mContext = rootHost.getContext();
@@ -530,58 +542,139 @@ public class MountState implements MountDelegateTarget {
     item.setIsBound(true);
   }
 
-  private static void updateMountItemIfNeeded(
+  private void updateMountItemIfNeeded(
       Context context, RenderTreeNode renderTreeNode, MountItem currentMountItem) {
     final RenderUnit renderUnit = renderTreeNode.getRenderUnit();
-    final RenderUnit currentRenderUnit = currentMountItem.getRenderUnit();
+    final RenderTreeNode currentNode = currentMountItem.getRenderTreeNode();
+    final RenderUnit currentRenderUnit = currentNode.getRenderUnit();
     final Object content = currentMountItem.getContent();
-
-    if (currentRenderUnit != renderUnit) {
-      // Let's check which attach/detach bindings need to happen with the new data.
-      final List<RenderUnit.Binder> attachDetachFunctions = renderUnit.attachDetachFunctions();
-      if (attachDetachFunctions != null) {
-        for (RenderUnit.Binder binder : attachDetachFunctions) {
-          if (binder.shouldUpdate(
-              currentRenderUnit,
-              renderUnit,
-              currentMountItem.getRenderTreeNode().getLayoutData(),
-              renderTreeNode.getLayoutData())) {
-            binder.unbind(
-                context,
-                content,
-                currentRenderUnit,
-                currentMountItem.getRenderTreeNode().getLayoutData());
-            binder.bind(context, content, renderUnit, renderTreeNode.getLayoutData());
-          }
-        }
-      }
-
-      // And then let's do the same thing with mount funtions.
-      final List<RenderUnit.Binder> mountUnmountFunctions = renderUnit.mountUnmountFunctions();
-      if (mountUnmountFunctions != null) {
-        for (RenderUnit.Binder binder : mountUnmountFunctions) {
-          if (binder.shouldUpdate(
-              currentRenderUnit,
-              renderUnit,
-              currentMountItem.getRenderTreeNode().getLayoutData(),
-              renderTreeNode.getLayoutData())) {
-            binder.unbind(
-                context,
-                content,
-                currentRenderUnit,
-                currentMountItem.getRenderTreeNode().getLayoutData());
-            binder.bind(context, content, renderUnit, renderTreeNode.getLayoutData());
-          }
-        }
-      }
-    }
 
     // Re initialize the MountItem internal state with the new attributes from RenderTreeNode
     currentMountItem.update(renderTreeNode);
+
+    if (currentRenderUnit != renderUnit) {
+
+      final List<RenderUnit.Binder> attachBinders = renderUnit.attachDetachFunctions();
+      final List<RenderUnit.Binder> mountBinders = renderUnit.mountUnmountFunctions();
+      final int numberOfAttachBinders;
+      final int numberOfMountBinders;
+
+      if (attachBinders != null) {
+        numberOfAttachBinders = attachBinders.size();
+        if (mTempUnboundAttachBinders.length < numberOfAttachBinders) {
+          mTempUnboundAttachBinders = new boolean[numberOfAttachBinders];
+        }
+      } else {
+        numberOfAttachBinders = 0;
+      }
+
+      if (mountBinders != null) {
+        numberOfMountBinders = mountBinders.size();
+        if (mTempUnboundMountBinders.length < numberOfMountBinders) {
+          mTempUnboundMountBinders = new boolean[numberOfMountBinders];
+        }
+      } else {
+        numberOfMountBinders = 0;
+      }
+
+      // 1. unbind all attach binders which should update.
+      unbind(
+          context,
+          content,
+          currentNode,
+          renderTreeNode,
+          attachBinders,
+          mTempUnboundAttachBinders,
+          numberOfAttachBinders);
+
+      // 2. unbind all mount binders which should update.
+      unbind(
+          context,
+          content,
+          currentNode,
+          renderTreeNode,
+          mountBinders,
+          mTempUnboundMountBinders,
+          numberOfMountBinders);
+
+      // 3. rebind all mount binder which did update.
+      rebind(
+          context,
+          content,
+          renderTreeNode,
+          mountBinders,
+          mTempUnboundMountBinders,
+          numberOfMountBinders);
+
+      // 4. rebind all attach binder which did update.
+      rebind(
+          context,
+          content,
+          renderTreeNode,
+          attachBinders,
+          mTempUnboundAttachBinders,
+          numberOfAttachBinders);
+    }
 
     // Update the bounds of the mounted content. This needs to be done regardless of whether
     // the RenderUnit has been updated or not since the mounted item might might have the same
     // size and content but a different position.
     updateBoundsForMountedRenderTreeNode(renderTreeNode, currentMountItem);
+  }
+
+  private static void unbind(
+      final Context context,
+      final Object content,
+      final RenderTreeNode currentNode,
+      final RenderTreeNode newNode,
+      final List<RenderUnit.Binder> binders,
+      final boolean[] unbound,
+      final int size) {
+
+    if (size == 0) {
+      return;
+    }
+
+    final RenderUnit currentRenderUnit = currentNode.getRenderUnit();
+    final Object currentLayoutData = currentNode.getLayoutData();
+    final RenderUnit newRenderUnit = newNode.getRenderUnit();
+    final Object newLayoutData = newNode.getLayoutData();
+
+    // unbind should be called in the reverse order.
+    for (int i = size - 1; i >= 0; i--) {
+      final RenderUnit.Binder binder = binders.get(i);
+      final boolean shouldUpdate =
+          binder.shouldUpdate(currentRenderUnit, newRenderUnit, currentLayoutData, newLayoutData);
+      if (shouldUpdate) {
+        binder.unbind(context, content, currentRenderUnit, currentLayoutData);
+        unbound[i] = true;
+      } else {
+        unbound[i] = false;
+      }
+    }
+  }
+
+  private static void rebind(
+      final Context context,
+      final Object content,
+      final RenderTreeNode newNode,
+      final List<RenderUnit.Binder> binders,
+      final boolean[] toRebind,
+      final int size) {
+
+    if (size == 0) {
+      return;
+    }
+
+    final RenderUnit newRenderUnit = newNode.getRenderUnit();
+    final Object newLayoutData = newNode.getLayoutData();
+
+    for (int i = 0; i < size; i++) {
+      final boolean shouldUpdate = toRebind[i];
+      if (shouldUpdate) {
+        final RenderUnit.Binder binder = binders.get(i);
+        binder.bind(context, content, newRenderUnit, newLayoutData);
+      }
+    }
   }
 }
