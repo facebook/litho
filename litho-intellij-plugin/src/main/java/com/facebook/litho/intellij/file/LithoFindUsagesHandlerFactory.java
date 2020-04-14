@@ -101,7 +101,9 @@ public class LithoFindUsagesHandlerFactory extends FindUsagesHandlerFactory {
           .ifPresent(
               generatedCls -> {
                 findUsagesOptions.searchScope =
-                    new ExcludingScope(findUsagesOptions.searchScope, generatedCls);
+                    new ExcludingScope(
+                        findUsagesOptions.searchScope,
+                        ComponentScope.getVirtualFile(generatedCls.getContainingFile()));
               });
       return findUsagesOptions;
     }
@@ -114,9 +116,9 @@ public class LithoFindUsagesHandlerFactory extends FindUsagesHandlerFactory {
       private final SearchScope searchScope;
       private final VirtualFile excluded;
 
-      ExcludingScope(SearchScope searchScope, PsiClass excluded) {
+      ExcludingScope(SearchScope searchScope, VirtualFile excluded) {
         this.searchScope = searchScope;
-        this.excluded = excluded.getContainingFile().getVirtualFile();
+        this.excluded = excluded;
       }
 
       @Override
@@ -140,7 +142,7 @@ public class LithoFindUsagesHandlerFactory extends FindUsagesHandlerFactory {
       }
 
       private boolean excluded(VirtualFile file) {
-        return excluded.equals(file);
+        return file.equals(excluded);
       }
     }
   }

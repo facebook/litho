@@ -35,7 +35,7 @@ public class ComponentScope extends GlobalSearchScope {
   private static final Key<Boolean> KEY = Key.create("com.facebook.litho.intellij.file.Component");
   private static final Logger LOG = Logger.getInstance(ComponentScope.class);
 
-  static ComponentScope getInstance() {
+  public static ComponentScope getInstance() {
     return Holder.INSTANCE;
   }
 
@@ -65,7 +65,7 @@ public class ComponentScope extends GlobalSearchScope {
     return StdFileTypes.JAVA.equals(file.getFileType()) && file.getUserData(KEY) != null;
   }
 
-  private static VirtualFile getVirtualFile(PsiFile file) {
+  static VirtualFile getVirtualFile(PsiFile file) {
     final VirtualFile vf = file.getVirtualFile();
     if (vf != null) return vf;
 
