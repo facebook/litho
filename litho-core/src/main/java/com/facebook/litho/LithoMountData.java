@@ -64,8 +64,8 @@ public class LithoMountData {
   }
 
   /** @return Whether the view associated with this MountItem is setEnabled. */
-  boolean isViewEnabled() {
-    return (mDefaultAttributeValuesFlags & FLAG_VIEW_ENABLED) == FLAG_VIEW_ENABLED;
+  static boolean isViewEnabled(int flags) {
+    return (flags & FLAG_VIEW_ENABLED) == FLAG_VIEW_ENABLED;
   }
 
   /** @return Whether the view associated with this MountItem is setSelected. */

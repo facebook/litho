@@ -42,6 +42,7 @@ import static com.facebook.litho.FrameworkLogEvents.PARAM_VISIBILITY_HANDLER_TIM
 import static com.facebook.litho.LayoutOutput.getLayoutOutput;
 import static com.facebook.litho.LithoMountData.getMountData;
 import static com.facebook.litho.LithoMountData.isViewClickable;
+import static com.facebook.litho.LithoMountData.isViewEnabled;
 import static com.facebook.litho.LithoMountData.isViewFocusable;
 import static com.facebook.litho.LithoMountData.isViewLongClickable;
 import static com.facebook.litho.ThreadUtils.assertMainThread;
@@ -2368,7 +2369,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener, Mount
   }
 
   private static void unsetEnabled(View view, MountItem mountItem) {
-    view.setEnabled(getMountData(mountItem).isViewEnabled());
+    view.setEnabled(isViewEnabled(getMountData(mountItem).getDefaultAttributeValuesFlags()));
   }
 
   private static void setSelected(View view, @NodeInfo.SelectedState int selectedState) {
