@@ -44,9 +44,13 @@ public class LithoMountData {
     mDefaultAttributeValuesFlags = getViewAttributeFlags(content);
   }
 
+  public int getDefaultAttributeValuesFlags() {
+    return mDefaultAttributeValuesFlags;
+  }
+
   /** @return Whether the view associated with this MountItem is clickable. */
-  boolean isViewClickable() {
-    return (mDefaultAttributeValuesFlags & FLAG_VIEW_CLICKABLE) == FLAG_VIEW_CLICKABLE;
+  static boolean isViewClickable(int flags) {
+    return (flags & FLAG_VIEW_CLICKABLE) == FLAG_VIEW_CLICKABLE;
   }
 
   /** @return Whether the view associated with this MountItem is long clickable. */
