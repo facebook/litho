@@ -23,6 +23,7 @@ import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_YES;
 import static com.facebook.litho.LayoutOutput.getLayoutOutput;
 import static com.facebook.litho.LithoMountData.getMountData;
 import static com.facebook.litho.LithoMountData.isViewClickable;
+import static com.facebook.litho.LithoMountData.isViewFocusable;
 import static com.facebook.litho.LithoMountData.isViewLongClickable;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
@@ -169,7 +170,7 @@ public class MountItemTest {
     assertThat(getMountData(mMountItem).isViewEnabled()).isTrue();
     assertThat(isViewLongClickable(getMountData(mMountItem).getDefaultAttributeValuesFlags()))
         .isTrue();
-    assertThat(getMountData(mMountItem).isViewFocusable()).isFalse();
+    assertThat(isViewFocusable(getMountData(mMountItem).getDefaultAttributeValuesFlags())).isFalse();
     assertThat(getMountData(mMountItem).isViewSelected()).isFalse();
 
     view.setClickable(false);
@@ -185,7 +186,7 @@ public class MountItemTest {
     assertThat(getMountData(mMountItem).isViewEnabled()).isFalse();
     assertThat(isViewLongClickable(getMountData(mMountItem).getDefaultAttributeValuesFlags()))
         .isFalse();
-    assertThat(getMountData(mMountItem).isViewFocusable()).isTrue();
+    assertThat(isViewFocusable(getMountData(mMountItem).getDefaultAttributeValuesFlags())).isTrue();
     assertThat(getMountData(mMountItem).isViewSelected()).isTrue();
   }
 

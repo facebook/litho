@@ -59,8 +59,8 @@ public class LithoMountData {
   }
 
   /** @return Whether the view associated with this MountItem is setFocusable. */
-  boolean isViewFocusable() {
-    return (mDefaultAttributeValuesFlags & FLAG_VIEW_FOCUSABLE) == FLAG_VIEW_FOCUSABLE;
+  static boolean isViewFocusable(int flags) {
+    return (flags & FLAG_VIEW_FOCUSABLE) == FLAG_VIEW_FOCUSABLE;
   }
 
   /** @return Whether the view associated with this MountItem is setEnabled. */
