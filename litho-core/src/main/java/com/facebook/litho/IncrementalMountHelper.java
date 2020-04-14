@@ -105,6 +105,7 @@ class IncrementalMountHelper {
     }
 
     private void release() {
+      mComponentTree.clear();
       final ViewPager viewPager = mViewPager.get();
       if (viewPager != null) {
         ViewCompat.postOnAnimation(
