@@ -85,20 +85,9 @@ public final class RequiredPropAnnotator implements Annotator {
     this.generatedClassResolver = generatedClassResolver;
   }
 
-  @Override
-  public void annotate(PsiElement element, AnnotationHolder holder) {
-    annotate(
-        element,
-        (missingRequiredProps, methodExpression) -> {
-          LOGGER.log(EventLogger.EVENT_ANNOTATOR + ".required_prop");
-          AnnotatorUtils.addError(
-              holder,
-              new SpecModelValidationError(
-                  methodExpression,
-                  "The following props are not marked as optional and were not supplied: "
-                      + StringUtil.join(missingRequiredProps, ", ")));
-        },
-        generatedClassResolver);
+  static String createErrorMessage(Collection<String> missingRequiredProps) {
+    return "The following props are not marked as optional and were not supplied: "
+        + StringUtil.join(missingRequiredProps, ", ");
   }
 
   /**
@@ -231,5 +220,19 @@ public final class RequiredPropAnnotator implements Annotator {
       }
     }
     return inversed;
+  }
+
+  @Override
+  public void annotate(PsiElement element, AnnotationHolder holder) {
+    annotate(
+        element,
+        (missingRequiredProps, methodExpression) -> {
+          LOGGER.log(EventLogger.EVENT_ANNOTATOR + ".required_prop");
+          AnnotatorUtils.addError(
+              holder,
+              new SpecModelValidationError(
+                  methodExpression, createErrorMessage(missingRequiredProps)));
+        },
+        generatedClassResolver);
   }
 }

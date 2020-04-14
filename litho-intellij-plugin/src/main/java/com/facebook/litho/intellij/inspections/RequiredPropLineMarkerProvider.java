@@ -48,15 +48,20 @@ public class RequiredPropLineMarkerProvider implements LineMarkerProvider {
   @Override
   public LineMarkerInfo getLineMarkerInfo(PsiElement element) {
     final List<PsiReferenceExpression> methodCalls = new ArrayList<>();
+    final List<Collection<String>> missingPropNames = new ArrayList<>();
     // One annotation per statement
     RequiredPropAnnotator.annotate(
         element,
-        (missingRequiredPropNames, createMethodCall) -> methodCalls.add(createMethodCall),
+        (missingRequiredPropNames, createMethodCall) -> {
+          methodCalls.add(createMethodCall);
+          missingPropNames.add(missingRequiredPropNames);
+        },
         generatedClassResolver);
     if (methodCalls.isEmpty()) {
       return null;
     }
     PsiElement leaf = methodCalls.get(0);
+    final Collection<String> missingProps = missingPropNames.get(0);
     while (leaf.getFirstChild() != null) {
       leaf = leaf.getFirstChild();
     }
@@ -65,7 +70,7 @@ public class RequiredPropLineMarkerProvider implements LineMarkerProvider {
         leaf.getTextRange(),
         LithoPluginIcons.ERROR_ACTION,
         0,
-        ignored -> "Missing Required Prop",
+        ignored -> RequiredPropAnnotator.createErrorMessage(missingProps),
         null,
         GutterIconRenderer.Alignment.CENTER);
   }
