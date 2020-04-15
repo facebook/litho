@@ -394,13 +394,6 @@ public class RenderState<State> {
                       mPreviousResult != null ? mPreviousResult.mNodeTree : null;
                   final State previousState =
                       mPreviousResult != null ? mPreviousResult.mState : null;
-                  final LayoutCache layoutCache =
-                      mPreviousResult != null
-                          ? new LayoutCache(mPreviousResult.mLayoutCache.getWriteCache())
-                          : new LayoutCache(null);
-
-                  final LayoutContext layoutContext =
-                      new LayoutContext(context, setRootId, layoutCache);
 
                   Systrace.sInstance.beginSection("RC Create Tree");
                   final Pair<Node, State> result;
@@ -410,24 +403,53 @@ public class RenderState<State> {
                   } else {
                     result = mLazyTree.resolve();
                   }
+                  final RenderResult renderResult;
+
+                  if (mPreviousResult != null
+                      && result.first == mPreviousResult.mNodeTree
+                      && MeasureSpecUtils.isMeasureSpecCompatible(
+                          mPreviousResult.mRenderTree.getWidthSpec(),
+                          widthSpec,
+                          mPreviousResult.mRenderTree.getWidth())
+                      && MeasureSpecUtils.isMeasureSpecCompatible(
+                          mPreviousResult.mRenderTree.getHeightSpec(),
+                          heightSpec,
+                          mPreviousResult.mRenderTree.getHeight())) {
+                    renderResult =
+                        new RenderResult<>(
+                            mPreviousResult.mRenderTree,
+                            mLazyTree,
+                            result.first,
+                            mPreviousResult.mLayoutCache,
+                            result.second);
+                  } else {
+                    Systrace.sInstance.beginSection("RC Layout");
+
+                    final LayoutCache layoutCache =
+                        mPreviousResult != null
+                            ? new LayoutCache(mPreviousResult.mLayoutCache.getWriteCache())
+                            : new LayoutCache(null);
+                    final LayoutContext layoutContext =
+                        new LayoutContext(context, setRootId, layoutCache);
+
+                    final LayoutResult layoutResult =
+                        layout(layoutContext, result.first, widthSpec, heightSpec, layoutCache);
+                    Systrace.sInstance.endSection();
+
+                    Systrace.sInstance.beginSection("RC Reduce");
+                    renderResult =
+                        new RenderResult<>(
+                            reduce(context, widthSpec, heightSpec, layoutResult),
+                            mLazyTree,
+                            result.first,
+                            layoutCache,
+                            result.second);
+                    Systrace.sInstance.endSection();
+                    layoutContext.layoutCache = null;
+                  }
 
                   Systrace.sInstance.endSection();
 
-                  Systrace.sInstance.beginSection("RC Layout");
-                  final LayoutResult layoutResult =
-                      layout(layoutContext, result.first, widthSpec, heightSpec, layoutCache);
-                  Systrace.sInstance.endSection();
-
-                  Systrace.sInstance.beginSection("RC Reduce");
-                  final RenderResult renderResult =
-                      new RenderResult<>(
-                          reduce(context, widthSpec, heightSpec, layoutResult),
-                          mLazyTree,
-                          result.first,
-                          layoutCache,
-                          result.second);
-                  Systrace.sInstance.endSection();
-                  layoutContext.layoutCache = null;
                   return renderResult;
                 }
               });
