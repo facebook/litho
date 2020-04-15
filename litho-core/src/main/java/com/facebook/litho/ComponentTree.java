@@ -2424,7 +2424,7 @@ public class ComponentTree {
     release();
   }
 
-  protected @Nullable LayoutState calculateLayoutState(
+  private @Nullable LayoutState calculateLayoutState(
       ComponentContext context,
       Component root,
       int widthSpec,

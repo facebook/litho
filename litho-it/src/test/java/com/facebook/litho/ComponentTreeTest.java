@@ -957,16 +957,7 @@ public class ComponentTreeTest {
             new Runnable() {
               @Override
               public void run() {
-                componentTree.calculateLayoutState(
-                    mContext,
-                    root3,
-                    mWidthSpec,
-                    mHeightSpec,
-                    -1,
-                    true,
-                    null,
-                    LayoutState.CalculateLayoutSource.TEST,
-                    null);
+                componentTree.setRoot(root3);
 
                 // At this point, the current thread is unblocked after waiting for the first to
                 // finish layout.
@@ -1026,16 +1017,7 @@ public class ComponentTreeTest {
             new Runnable() {
               @Override
               public void run() {
-                componentTree.calculateLayoutState(
-                    mContext,
-                    root3,
-                    mWidthSpec,
-                    mHeightSpec,
-                    -1,
-                    true,
-                    null,
-                    LayoutState.CalculateLayoutSource.TEST,
-                    null);
+                componentTree.setRoot(root3);
 
                 // At this point, the current thread is unblocked after waiting for the first to
                 // finish layout.

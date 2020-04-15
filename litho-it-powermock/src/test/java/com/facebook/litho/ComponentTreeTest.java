@@ -115,19 +115,9 @@ public class ComponentTreeTest {
             new Runnable() {
               @Override
               public void run() {
-                LayoutState result =
-                    componentTree.calculateLayoutState(
-                        mContext,
-                        mainComponent,
-                        mWidthSpec,
-                        mHeightSpec,
-                        -1,
-                        false,
-                        null,
-                        LayoutState.CalculateLayoutSource.SET_ROOT_SYNC,
-                        null);
+                componentTree.setRootAndSizeSpec(mainComponent, mWidthSpec, mHeightSpec);
 
-                mainLS[0] = result;
+                mainLS[0] = componentTree.getMainThreadLayoutState();
                 // We have a result for UI thread, which was unblocked after BG thread finished
                 // execution. That means we can go back to main thread and make assertions.
                 lockWaitForResults.countDown();
@@ -152,19 +142,9 @@ public class ComponentTreeTest {
                 }
 
                 // Schedule the bg layout while UI layout is still in progress.
-                LayoutState result =
-                    componentTree.calculateLayoutState(
-                        mContext,
-                        bgComponent,
-                        mWidthSpec,
-                        mHeightSpec,
-                        -1,
-                        false,
-                        null,
-                        LayoutState.CalculateLayoutSource.SET_ROOT_ASYNC,
-                        null);
+                componentTree.setRootAndSizeSpec(bgComponent, mWidthSpec, mHeightSpec);
 
-                bgLS[0] = result;
+                bgLS[0] = componentTree.getBackgroundLayoutState();
                 // BG LayoutStateFuture finished, let the UI thread complete layout.
                 // Countdown happens here if test is successful. Otherwise it will happen when
                 // the bg thread computes layout, which means UI thread still gets unblocked but

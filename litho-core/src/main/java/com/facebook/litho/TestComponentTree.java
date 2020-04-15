@@ -43,33 +43,6 @@ public class TestComponentTree extends ComponentTree {
     return extractSubComponents(getMainThreadLayoutState().getDiffTree());
   }
 
-  @Override
-  protected LayoutState calculateLayoutState(
-      ComponentContext context,
-      Component root,
-      int widthSpec,
-      int heightSpec,
-      int layoutVersion,
-      boolean diffingEnabled,
-      TreeProps treeProps,
-      @LayoutState.CalculateLayoutSource int source,
-      String extraAttribution) {
-    return LayoutState.calculate(
-        new TestComponentContext(
-            ComponentContext.withComponentTree(new TestComponentContext(context), this),
-            new StateHandler()),
-        root,
-        null,
-        mId,
-        widthSpec,
-        heightSpec,
-        layoutVersion,
-        diffingEnabled,
-        null,
-        source,
-        extraAttribution);
-  }
-
   @VisibleForTesting
   @Override
   public void setLithoView(@NonNull LithoView view) {

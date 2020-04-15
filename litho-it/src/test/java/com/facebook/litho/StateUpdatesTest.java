@@ -21,13 +21,7 @@ import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
 import static com.facebook.litho.StateContainer.StateUpdate;
 import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
 
 import com.facebook.litho.StateUpdateTestComponent.TestStateContainer;
 import com.facebook.litho.components.StateUpdateTestLayout;
@@ -266,17 +260,20 @@ public class StateUpdatesTest {
   }
 
   @Test
-  public void testLazyUpdateState_doesNotTriggerRelayout() throws Exception {
+  public void testLazyUpdateState_doesNotTriggerRelayout() {
     setup(true);
-    reset(mComponentTree);
 
+    mComponentTree.addMeasureListener(
+        new ComponentTree.MeasureListener() {
+          @Override
+          public void onSetRootAndSizeSpec(
+              int layoutVersion, int width, int height, boolean stateUpdate) {
+            throw new RuntimeException("Should not have computed a new layout!");
+          }
+        });
     mComponentTree.updateStateLazy(
         mTestComponent.getGlobalKey(), StateUpdateTestComponent.createIncrementStateUpdate());
     mLayoutThreadShadowLooper.runToEndOfTasks();
-
-    verify(mComponentTree, never())
-        .calculateLayoutState(
-            any(), any(), anyInt(), anyInt(), anyInt(), anyBoolean(), any(), anyInt(), any());
   }
 
   @Test
