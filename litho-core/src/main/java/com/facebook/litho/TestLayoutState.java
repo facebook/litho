@@ -58,7 +58,6 @@ public class TestLayoutState {
     return root;
   }
 
-  /** Replacement for the deprecated TestComponentContext#newLayoutBuilder() */
   public static InternalNode newImmediateLayoutBuilder(
       final ComponentContext c, Component component) {
     if (component.canResolve()) {
