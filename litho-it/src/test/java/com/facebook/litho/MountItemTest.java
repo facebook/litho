@@ -172,7 +172,8 @@ public class MountItemTest {
     assertThat(isViewEnabled(getMountData(mMountItem).getDefaultAttributeValuesFlags())).isTrue();
     assertThat(isViewLongClickable(getMountData(mMountItem).getDefaultAttributeValuesFlags()))
         .isTrue();
-    assertThat(isViewFocusable(getMountData(mMountItem).getDefaultAttributeValuesFlags())).isFalse();
+    assertThat(isViewFocusable(getMountData(mMountItem).getDefaultAttributeValuesFlags()))
+        .isFalse();
     assertThat(isViewSelected(getMountData(mMountItem).getDefaultAttributeValuesFlags())).isFalse();
 
     view.setClickable(false);
