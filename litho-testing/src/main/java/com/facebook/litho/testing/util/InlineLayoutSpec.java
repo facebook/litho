@@ -21,6 +21,11 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.Transition;
 
+/**
+ * @deprecated create a new Component instead. Since this is missing code gen it can cause subtle
+ *     bugs.
+ */
+@Deprecated
 public abstract class InlineLayoutSpec extends Component {
 
   protected InlineLayoutSpec() {
