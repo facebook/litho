@@ -29,18 +29,24 @@ import android.widget.FrameLayout;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
+import com.facebook.litho.DefaultInternalNode;
+import com.facebook.litho.DiffNode;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.FocusedVisibleEvent;
 import com.facebook.litho.FullImpressionVisibleEvent;
+import com.facebook.litho.InternalNode;
 import com.facebook.litho.InvisibleEvent;
 import com.facebook.litho.LithoView;
-import com.facebook.litho.TestComponentTree;
+import com.facebook.litho.NodeConfig;
+import com.facebook.litho.TestComponent;
+import com.facebook.litho.TestLayoutState;
 import com.facebook.litho.TreeProps;
 import com.facebook.litho.UnfocusedVisibleEvent;
 import com.facebook.litho.VisibleEvent;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.subcomponents.SubComponent;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import org.robolectric.shadows.ShadowLooper;
 
@@ -338,13 +344,13 @@ public final class ComponentTestHelper {
    * @param widthSpec The width to measure the component with
    * @param heightSpec The height to measure the component with
    * @return The subcomponents of the given component
-   * @deprecated Use {@link #extractingSubComponents()} instead.
+   * @deprecated Use ComponentAssert#extractingSubComponents instead.
    */
   @Deprecated
   private static List<SubComponent> getImmediateSubComponents(
       ComponentContext context, Component component, int widthSpec, int heightSpec) {
     final List<Component> components =
-        TestComponentTree.extractImmediateSubComponents(context, component, widthSpec, heightSpec);
+        extractImmediateSubComponents(context, component, widthSpec, heightSpec);
     final List<SubComponent> subComponents = new ArrayList<>(components.size());
     for (Component lifecycle : components) {
       subComponents.add(SubComponent.of(lifecycle));
@@ -373,6 +379,84 @@ public final class ComponentTestHelper {
     }
 
     return null;
+  }
+
+  @Deprecated
+  private static List<Component> extractSubComponents(DiffNode root) {
+    if (root == null) {
+      return Collections.emptyList();
+    }
+
+    final List<Component> output = new ArrayList<>();
+
+    if (root.getChildCount() == 0) {
+      if (root.getComponent() != null && root.getComponent() instanceof TestComponent) {
+        TestComponent testSubcomponent = (TestComponent) root.getComponent();
+        output.add(testSubcomponent.getWrappedComponent());
+      }
+
+      return output;
+    }
+
+    for (DiffNode child : root.getChildren()) {
+      output.addAll(extractSubComponents(child));
+    }
+
+    return output;
+  }
+
+  @Deprecated
+  private static InternalNode resolveImmediateSubtree(
+      ComponentContext c, Component component, int widthSpec, int heightSpec) {
+    c.setLayoutStateContextForTesting();
+
+    InternalNode node =
+        TestLayoutState.createAndMeasureTreeForComponent(c, component, widthSpec, heightSpec);
+
+    return node;
+  }
+
+  @Deprecated
+  private static List<Component> extractImmediateSubComponents(InternalNode root) {
+    if (root == null || root == ComponentContext.NULL_LAYOUT) {
+      return Collections.emptyList();
+    }
+
+    final List<Component> output = new ArrayList<>();
+
+    if (root.getChildCount() == 0) {
+      if (root.getTailComponent() != null && root.getTailComponent() instanceof TestComponent) {
+        TestComponent testSubcomponent = (TestComponent) root.getTailComponent();
+        output.add(testSubcomponent.getWrappedComponent());
+      }
+
+      return output;
+    }
+
+    for (int i = 0; i < root.getChildCount(); i++) {
+      InternalNode child = root.getChildAt(i);
+      output.addAll(extractImmediateSubComponents(child));
+    }
+
+    return output;
+  }
+
+  @Deprecated
+  private static List<Component> extractImmediateSubComponents(
+      ComponentContext context, Component component, int widthSpec, int heightSpec) {
+
+    NodeConfig.sInternalNodeFactory = new TestInternalNodeFactory();
+
+    ComponentTree tree = ComponentTree.create(context).build();
+    ComponentContext c =
+        new ComponentContext(
+            ComponentContext.withComponentTree(new ComponentContext(context), tree));
+
+    InternalNode root = resolveImmediateSubtree(c, component, widthSpec, heightSpec);
+
+    NodeConfig.sInternalNodeFactory = null;
+
+    return extractImmediateSubComponents(root);
   }
 
   /**
@@ -516,5 +600,30 @@ public final class ComponentTestHelper {
   /** Access the shadow of the default layout thread looper for testing purposes only. */
   public static ShadowLooper getDefaultLayoutThreadShadowLooper() {
     return shadowOf(getDefaultLayoutThreadLooper());
+  }
+
+  @Deprecated
+  private static class TestDefaultInternalNode extends DefaultInternalNode {
+
+    public TestDefaultInternalNode(ComponentContext c) {
+      super(c);
+    }
+
+    @Override
+    public InternalNode child(Component child) {
+      if (child != null) {
+        return child(TestLayoutState.newImmediateLayoutBuilder(getContext(), child));
+      }
+      return this;
+    }
+  }
+
+  @Deprecated
+  private static class TestInternalNodeFactory implements NodeConfig.InternalNodeFactory {
+
+    @Override
+    public InternalNode create(ComponentContext c) {
+      return new TestDefaultInternalNode(c);
+    }
   }
 }

@@ -19,8 +19,12 @@ package com.facebook.litho;
 /**
  * A {@link Component} that wraps another component for testing purposes. This component has a
  * lifecycle that doesn't override any methods except for isEquivalentTo().
+ *
+ * @deprecated Use ComponentAssert APIs instead. Because this isn't generated with codegen, it can
+ *     have subtle issues in tests.
  */
-class TestComponent extends Component {
+@Deprecated
+public class TestComponent extends Component {
 
   private final Component mWrappedComponent;
 
@@ -30,7 +34,7 @@ class TestComponent extends Component {
     mWrappedComponent = component;
   }
 
-  Component getWrappedComponent() {
+  public Component getWrappedComponent() {
     return mWrappedComponent;
   }
 

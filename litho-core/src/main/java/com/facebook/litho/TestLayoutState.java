@@ -59,7 +59,8 @@ public class TestLayoutState {
   }
 
   /** Replacement for the deprecated TestComponentContext#newLayoutBuilder() */
-  static InternalNode newImmediateLayoutBuilder(final ComponentContext c, Component component) {
+  public static InternalNode newImmediateLayoutBuilder(
+      final ComponentContext c, Component component) {
     if (component.canResolve()) {
       if (component instanceof Wrapper) {
         return createImmediateLayout(c, component);
