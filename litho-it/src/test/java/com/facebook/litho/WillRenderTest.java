@@ -23,7 +23,6 @@ import android.view.View;
 import com.facebook.litho.LayoutState.LayoutStateContext;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.util.InlineLayoutSpec;
-import com.facebook.litho.testing.util.InlineLayoutWithSizeSpec;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -50,8 +49,8 @@ public class WillRenderTest {
         }
       };
 
-  private final InlineLayoutWithSizeSpec mLayoutWithSizeSpec =
-      new InlineLayoutWithSizeSpec() {
+  private final InlineLayoutSpec mLayoutWithSizeSpec =
+      new InlineLayoutSpec() {
 
         @Override
         protected Component onCreateLayoutWithSizeSpec(
@@ -60,6 +59,11 @@ public class WillRenderTest {
               .widthDip(View.MeasureSpec.getSize(widthSpec))
               .heightDip(View.MeasureSpec.getSize(heightSpec))
               .build();
+        }
+
+        @Override
+        protected boolean canMeasure() {
+          return true;
         }
       };
 
