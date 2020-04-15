@@ -279,7 +279,7 @@ public class VerticalScrollSpec {
       super.onScrollChanged(l, t, oldl, oldt);
 
       if (mIsIncrementalMountEnabled) {
-        mLithoView.performIncrementalMount();
+        mLithoView.notifyVisibleBoundsChanged();
       }
 
       if (mScrollPosition != null) {

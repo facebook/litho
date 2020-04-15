@@ -470,7 +470,7 @@ public class LithoView extends Host {
       // If this happens the LithoView might have moved on Screen without a scroll event
       // triggering incremental mount. We trigger one here to be sure all the content is visible.
       if (!wasMountTriggered && isIncrementalMountEnabled()) {
-        performIncrementalMount();
+        notifyVisibleBoundsChanged();
       }
 
       if (!wasMountTriggered || shouldAlwaysLayoutChildren()) {
@@ -813,7 +813,7 @@ public class LithoView extends Host {
       if (mTransientStateCount == 0
           && mComponentTree != null
           && mComponentTree.isIncrementalMountEnabled()) {
-        performIncrementalMount(new Rect(0, 0, getWidth(), getHeight()), false);
+        notifyVisibleBoundsChanged(new Rect(0, 0, getWidth(), getHeight()), false);
       }
       mTransientStateCount++;
     } else {
@@ -824,7 +824,7 @@ public class LithoView extends Host {
         // We mounted everything when the transient state was set on this view. We need to do this
         // partly to unmount content that is not visible but mostly to get the correct visibility
         // events to be fired.
-        performIncrementalMount();
+        notifyVisibleBoundsChanged();
       }
       if (mTransientStateCount < 0) {
         mTransientStateCount = 0;
@@ -918,7 +918,7 @@ public class LithoView extends Host {
       return;
     }
 
-    performIncrementalMount(rect, true);
+    notifyVisibleBoundsChanged(rect, true);
   }
 
   /**
@@ -941,7 +941,7 @@ public class LithoView extends Host {
     return false;
   }
 
-  public void performIncrementalMount(Rect visibleRect, boolean processVisibilityOutputs) {
+  public void notifyVisibleBoundsChanged(Rect visibleRect, boolean processVisibilityOutputs) {
     if (mComponentTree == null || !checkMainThreadLayoutStateForIncrementalMount()) {
       return;
     }
@@ -955,7 +955,7 @@ public class LithoView extends Host {
     }
   }
 
-  public void performIncrementalMount() {
+  public void notifyVisibleBoundsChanged() {
     if (mComponentTree == null || mComponentTree.getMainThreadLayoutState() == null) {
       return;
     }

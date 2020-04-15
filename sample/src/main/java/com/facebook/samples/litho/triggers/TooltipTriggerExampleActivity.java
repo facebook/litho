@@ -30,7 +30,7 @@ public class TooltipTriggerExampleActivity extends NavigatableDemoActivity {
     final ComponentContext componentContext = new ComponentContext(this);
     LithoView content =
         LithoView.create(this, TooltipTriggerExampleComponent.create(componentContext).build());
-    content.performIncrementalMount();
+    content.notifyVisibleBoundsChanged();
     setContentView(content);
   }
 }

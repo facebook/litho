@@ -71,7 +71,7 @@ public class IncrementalMountUtilsTest {
               }
             })
         .when(mLithoView)
-        .performIncrementalMount(any(Rect.class), eq(true));
+        .notifyVisibleBoundsChanged(any(Rect.class), eq(true));
   }
 
   @Test
@@ -100,7 +100,7 @@ public class IncrementalMountUtilsTest {
 
     IncrementalMountUtils.performIncrementalMount(mViewGroup);
 
-    verify(mLithoView, never()).performIncrementalMount(any(Rect.class), eq(true));
+    verify(mLithoView, never()).notifyVisibleBoundsChanged(any(Rect.class), eq(true));
   }
 
   @Test
@@ -120,7 +120,7 @@ public class IncrementalMountUtilsTest {
 
     IncrementalMountUtils.performIncrementalMount(mViewGroup);
 
-    verify(mLithoView, never()).performIncrementalMount(any(Rect.class), eq(true));
+    verify(mLithoView, never()).notifyVisibleBoundsChanged(any(Rect.class), eq(true));
   }
 
   @Test
@@ -170,7 +170,7 @@ public class IncrementalMountUtilsTest {
 
     IncrementalMountUtils.performIncrementalMount(mViewGroup);
 
-    verify(mLithoView, never()).performIncrementalMount(any(Rect.class), eq(true));
+    verify(mLithoView, never()).notifyVisibleBoundsChanged(any(Rect.class), eq(true));
   }
 
   @Test
@@ -181,7 +181,7 @@ public class IncrementalMountUtilsTest {
 
     IncrementalMountUtils.performIncrementalMount(mViewGroup);
 
-    verify(mLithoView, never()).performIncrementalMount(any(Rect.class), eq(true));
+    verify(mLithoView, never()).notifyVisibleBoundsChanged(any(Rect.class), eq(true));
   }
 
   @Test
@@ -232,7 +232,7 @@ public class IncrementalMountUtilsTest {
 
     IncrementalMountUtils.performIncrementalMount(mViewGroup);
 
-    verify(mLithoView, never()).performIncrementalMount(any(Rect.class), eq(true));
+    verify(mLithoView, never()).notifyVisibleBoundsChanged(any(Rect.class), eq(true));
   }
 
   private static void setupViewBounds(View view, int l, int t, int r, int b) {

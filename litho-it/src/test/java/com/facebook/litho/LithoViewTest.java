@@ -138,7 +138,7 @@ public class LithoViewTest {
 
     mLithoView.setComponentTree(mockComponentTree);
     mLithoView.requestLayout();
-    mLithoView.performIncrementalMount();
+    mLithoView.notifyVisibleBoundsChanged();
   }
 
   /** This verifies that the width is 0 with normal layout params. */

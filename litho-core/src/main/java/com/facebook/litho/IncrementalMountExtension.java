@@ -297,10 +297,10 @@ public class IncrementalMountExtension extends MountDelegateExtension
       final LithoView lithoView = (LithoView) view;
       if (lithoView.isIncrementalMountEnabled()) {
         if (mountingAll) {
-          lithoView.performIncrementalMount(
+          lithoView.notifyVisibleBoundsChanged(
               new Rect(0, 0, view.getWidth(), view.getHeight()), false);
         } else {
-          lithoView.performIncrementalMount();
+          lithoView.notifyVisibleBoundsChanged();
         }
       }
     } else if (view instanceof ViewGroup) {

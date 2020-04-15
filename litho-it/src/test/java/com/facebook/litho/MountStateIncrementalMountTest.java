@@ -412,9 +412,9 @@ public class MountStateIncrementalMountTest {
 
     lithoView.getComponentTree().mountComponent(new Rect(15, 15, 40, 40), true);
 
-    verify(childView1).performIncrementalMount();
-    verify(childView2).performIncrementalMount();
-    verify(childView3).performIncrementalMount();
+    verify(childView1).notifyVisibleBoundsChanged();
+    verify(childView2).notifyVisibleBoundsChanged();
+    verify(childView3).notifyVisibleBoundsChanged();
   }
 
   @Test
@@ -455,7 +455,7 @@ public class MountStateIncrementalMountTest {
               }
             })
         .when(childView1)
-        .performIncrementalMount(any(Rect.class), eq(true));
+        .notifyVisibleBoundsChanged(any(Rect.class), eq(true));
 
     doAnswer(
             new Answer<Object>() {
@@ -469,7 +469,7 @@ public class MountStateIncrementalMountTest {
               }
             })
         .when(childView2)
-        .performIncrementalMount(any(Rect.class), eq(true));
+        .notifyVisibleBoundsChanged(any(Rect.class), eq(true));
 
     doAnswer(
             new Answer<Object>() {
@@ -483,13 +483,13 @@ public class MountStateIncrementalMountTest {
               }
             })
         .when(childView3)
-        .performIncrementalMount(any(Rect.class), eq(true));
+        .notifyVisibleBoundsChanged(any(Rect.class), eq(true));
 
     lithoView.getComponentTree().mountComponent(new Rect(0, 0, 100, 100), false);
 
-    verify(childView1).performIncrementalMount(any(Rect.class), eq(false));
-    verify(childView2).performIncrementalMount(any(Rect.class), eq(false));
-    verify(childView3).performIncrementalMount(any(Rect.class), eq(false));
+    verify(childView1).notifyVisibleBoundsChanged(any(Rect.class), eq(false));
+    verify(childView2).notifyVisibleBoundsChanged(any(Rect.class), eq(false));
+    verify(childView3).notifyVisibleBoundsChanged(any(Rect.class), eq(false));
   }
 
   /** Tests incremental mount behaviour of a vertical stack of components with a View mount type. */
@@ -571,8 +571,8 @@ public class MountStateIncrementalMountTest {
 
   /**
    * Tests incremental mount behaviour of a nested Litho View. We want to ensure that when a child
-   * view is first mounted due to a layout pass it does not also have performIncrementalMount called
-   * on it.
+   * view is first mounted due to a layout pass it does not also have notifyVisibleBoundsChanged
+   * called on it.
    */
   @Test
   public void testIncrementalMountAfterLithoViewIsMounted() {
@@ -589,22 +589,23 @@ public class MountStateIncrementalMountTest {
 
     // Mount views with visible rect
     lithoViewParent.getComponentTree().mountComponent(new Rect(0, 0, 100, 1000), false);
-    verify(lithoView).performIncrementalMount(any(Rect.class), eq(false));
+    verify(lithoView).notifyVisibleBoundsChanged(any(Rect.class), eq(false));
     reset(lithoView);
     when(lithoView.isIncrementalMountEnabled()).thenReturn(true);
 
     // Unmount views with visible rect outside
     lithoViewParent.getComponentTree().mountComponent(new Rect(0, -10, 100, -5), false);
-    verify(lithoView, never()).performIncrementalMount(any(Rect.class), eq(false));
+    verify(lithoView, never()).notifyVisibleBoundsChanged(any(Rect.class), eq(false));
     reset(lithoView);
     when(lithoView.isIncrementalMountEnabled()).thenReturn(true);
 
     // Mount again with visible rect
     lithoViewParent.getComponentTree().mountComponent(new Rect(0, 0, 100, 1000), false);
 
-    // Now LithoView performIncrementalMount should not be called as the LithoView is mounted when
+    // Now LithoView notifyVisibleBoundsChanged should not be called as the LithoView is mounted
+    // when
     // it is laid out and therefore doesn't need mounting again in the same frame
-    verify(lithoView, never()).performIncrementalMount(any(Rect.class), eq(false));
+    verify(lithoView, never()).notifyVisibleBoundsChanged(any(Rect.class), eq(false));
   }
 
   private void verifyLoggingAndResetLogger(int mountedCount, int unmountedCount) {
@@ -660,7 +661,7 @@ public class MountStateIncrementalMountTest {
     }
 
     @Override
-    public void performIncrementalMount(Rect visibleRect, boolean processVisibilityOutputs) {
+    public void notifyVisibleBoundsChanged(Rect visibleRect, boolean processVisibilityOutputs) {
       System.out.println("performIncMount on TestLithoView");
       mPreviousIncrementalMountBounds.set(visibleRect);
     }

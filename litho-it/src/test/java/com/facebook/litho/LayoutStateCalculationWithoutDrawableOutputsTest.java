@@ -214,6 +214,6 @@ public class LayoutStateCalculationWithoutDrawableOutputsTest {
     mLithoView.onAttachedToWindow();
     mLithoView.measure(makeMeasureSpec(1080, EXACTLY), makeMeasureSpec(1920, UNSPECIFIED));
     mLithoView.layout(0, 0, 1080, 1920);
-    mLithoView.performIncrementalMount();
+    mLithoView.notifyVisibleBoundsChanged();
   }
 }

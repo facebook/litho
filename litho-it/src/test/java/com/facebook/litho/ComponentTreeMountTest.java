@@ -97,6 +97,6 @@ public class ComponentTreeMountTest {
                     .build())
             .visibleHandler(visibleEventHandler)
             .build());
-    lithoView.performIncrementalMount(new Rect(0, 0, 100, 100), true);
+    lithoView.notifyVisibleBoundsChanged(new Rect(0, 0, 100, 100), true);
   }
 }

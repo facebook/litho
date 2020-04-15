@@ -2633,10 +2633,10 @@ class MountState implements TransitionManager.OnAnimationCompleteListener, Mount
       final LithoView lithoView = (LithoView) view;
       if (lithoView.isIncrementalMountEnabled()) {
         if (!processVisibilityOutputs) {
-          lithoView.performIncrementalMount(
+          lithoView.notifyVisibleBoundsChanged(
               new Rect(0, 0, view.getWidth(), view.getHeight()), false);
         } else {
-          lithoView.performIncrementalMount();
+          lithoView.notifyVisibleBoundsChanged();
         }
       }
     } else if (view instanceof ViewGroup) {

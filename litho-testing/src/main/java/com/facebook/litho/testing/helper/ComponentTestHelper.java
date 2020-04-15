@@ -263,7 +263,7 @@ public final class ComponentTestHelper {
     // Unmounting the component by running incremental mount to a Rect that we certain won't
     // contain the component.
     Rect rect = new Rect(99999, 99999, 999999, 999999);
-    lithoView.performIncrementalMount(rect, true);
+    lithoView.notifyVisibleBoundsChanged(rect, true);
   }
 
   /**
@@ -545,7 +545,7 @@ public final class ComponentTestHelper {
 
     mountComponent(context, lithoView, component, true, 100, 100);
 
-    lithoView.performIncrementalMount();
+    lithoView.notifyVisibleBoundsChanged();
 
     eventHandler.mHasEventDispatcher = component;
 
