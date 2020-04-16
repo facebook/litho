@@ -18,6 +18,7 @@ package com.facebook.litho.intellij;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiClass;
+import com.intellij.psi.search.GlobalSearchScope;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,5 +35,10 @@ public class PsiSearchUtils {
 
   public static PsiClass[] findClasses(Project project, String qualifiedName) {
     return new PsiClass[] {findClass(project, qualifiedName)};
+  }
+
+  public static PsiClass[] findClassesByShortName(
+      Project project, GlobalSearchScope searchScope, String name) {
+    return findClasses(project, name);
   }
 }

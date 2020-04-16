@@ -20,6 +20,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.JavaPsiFacade;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.search.GlobalSearchScope;
+import com.intellij.psi.search.PsiShortNamesCache;
 import org.jetbrains.annotations.Nullable;
 
 public class PsiSearchUtils {
@@ -47,5 +48,18 @@ public class PsiSearchUtils {
   public static PsiClass[] findClasses(Project project, String qualifiedName) {
     return JavaPsiFacade.getInstance(project)
         .findClasses(qualifiedName, GlobalSearchScope.everythingScope(project));
+  }
+
+  /**
+   * Returns the list of all classes with the specified name in the specified scope
+   *
+   * @param project the project that includes scope.
+   * @param searchScope the scope in which classes are searched.
+   * @param name the non-qualified name of the classes to find.
+   * @return the list of found classes.
+   */
+  public static PsiClass[] findClassesByShortName(
+      Project project, GlobalSearchScope searchScope, String name) {
+    return PsiShortNamesCache.getInstance(project).getClassesByName(name, searchScope);
   }
 }

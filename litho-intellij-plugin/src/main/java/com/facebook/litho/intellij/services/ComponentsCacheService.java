@@ -36,6 +36,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiFileFactory;
+import com.intellij.util.Consumer;
 import com.intellij.util.ThrowableRunnable;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeSpec;
@@ -68,6 +69,12 @@ public class ComponentsCacheService implements Disposable {
   }
 
   public void maybeUpdate(PsiClass specClass, boolean forceUpdate) {
+    maybeUpdate(specClass, forceUpdate, null);
+  }
+
+  /** @param onUpdatedListener listener is triggered iff the class was updated. */
+  public void maybeUpdate(
+      PsiClass specClass, boolean forceUpdate, @Nullable Consumer<PsiClass> onUpdatedListener) {
     if (!LithoPluginUtils.isLayoutSpec(specClass)) return;
 
     final String componentQualifiedName =
@@ -77,7 +84,7 @@ public class ComponentsCacheService implements Disposable {
     final ShouldUpdateChecker checker =
         new ShouldUpdateChecker(forceUpdate, componentQualifiedName);
 
-    maybeUpdateAsync(specClass, componentQualifiedName, checker);
+    maybeUpdateAsync(specClass, componentQualifiedName, checker, onUpdatedListener);
   }
 
   /**
@@ -130,7 +137,10 @@ public class ComponentsCacheService implements Disposable {
   }
 
   private void maybeUpdateAsync(
-      PsiClass specClass, String componentQualifiedName, ShouldUpdateChecker checker) {
+      PsiClass specClass,
+      String componentQualifiedName,
+      ShouldUpdateChecker checker,
+      @Nullable Consumer<PsiClass> onUpdatedListener) {
     final String componentShortName = StringUtil.getShortName(componentQualifiedName);
     if (componentShortName.isEmpty()) return;
 
@@ -178,6 +188,9 @@ public class ComponentsCacheService implements Disposable {
                   inMemory -> {
                     logger.logStep("file creation " + componentShortName);
                     componentNameToClass.put(componentQualifiedName, inMemory);
+                    if (onUpdatedListener != null) {
+                      onUpdatedListener.consume(inMemory);
+                    }
                   });
         };
     if (ApplicationManager.getApplication().isUnitTestMode()) {

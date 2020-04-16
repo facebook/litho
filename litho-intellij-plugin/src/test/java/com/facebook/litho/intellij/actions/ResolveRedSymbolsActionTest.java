@@ -19,11 +19,20 @@ package com.facebook.litho.intellij.actions;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import com.facebook.litho.intellij.LithoPluginIntellijTest;
+import com.facebook.litho.intellij.PsiSearchUtils;
+import com.facebook.litho.intellij.services.ComponentsCacheService;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.components.ServiceManager;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiFile;
+import com.intellij.psi.search.GlobalSearchScope;
+import com.intellij.psi.util.PsiTreeUtil;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 import org.junit.Test;
 
 public class ResolveRedSymbolsActionTest extends LithoPluginIntellijTest {
@@ -42,10 +51,40 @@ public class ResolveRedSymbolsActionTest extends LithoPluginIntellijTest {
               final VirtualFile vf = file.getViewProvider().getVirtualFile();
               final Collection<String> symbols =
                   ResolveRedSymbolsAction.collectRedSymbols(
-                      vf, testHelper.getFixture().getProject());
+                          vf, testHelper.getFixture().getProject())
+                      .keySet();
 
               assertThat(symbols.size()).isOne();
               assertThat(symbols.contains("Layout")).isTrue();
+            });
+  }
+
+  @Test
+  public void resolveRedSymbols() throws IOException {
+    final PsiFile pf = testHelper.configure("ResolveRedSymbolsActionTest.java");
+    final VirtualFile vf = pf.getViewProvider().getVirtualFile();
+
+    final PsiFile specPf = testHelper.configure("LayoutSpec.java");
+
+    ApplicationManager.getApplication()
+        .invokeAndWait(
+            () -> {
+              PsiSearchUtils.addMock(
+                  "LayoutSpec", PsiTreeUtil.findChildOfType(specPf, PsiClass.class));
+              final Project project = testHelper.getFixture().getProject();
+              final Map<String, List<Integer>> symbols =
+                  ResolveRedSymbolsAction.collectRedSymbols(vf, project);
+              final List<String> resolved =
+                  ResolveRedSymbolsAction.addToCache(
+                      symbols, pf, project, GlobalSearchScope.allScope(project));
+              assertThat(resolved.size()).isOne();
+              assertThat(resolved.get(0)).isEqualTo("LayoutSpec");
+
+              final PsiClass cached =
+                  ServiceManager.getService(project, ComponentsCacheService.class)
+                      .getComponent("Layout");
+              assertThat(cached).isNotNull();
+              assertThat(cached.getName()).isEqualTo("Layout");
             });
   }
 }

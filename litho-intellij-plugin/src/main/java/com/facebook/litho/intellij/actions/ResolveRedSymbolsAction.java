@@ -17,6 +17,7 @@
 package com.facebook.litho.intellij.actions;
 
 import com.facebook.litho.intellij.LithoPluginUtils;
+import com.facebook.litho.intellij.PsiSearchUtils;
 import com.facebook.litho.intellij.extensions.EventLogger;
 import com.facebook.litho.intellij.logging.LithoLoggerProvider;
 import com.facebook.litho.intellij.services.ComponentsCacheService;
@@ -25,18 +26,25 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.actionSystem.Presentation;
+import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.FileIndexFacade;
+import com.intellij.openapi.util.TextRange;
 import com.intellij.openapi.vcs.CodeSmellDetector;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.psi.PsiClass;
+import com.intellij.psi.PsiFile;
+import com.intellij.psi.PsiJavaCodeReferenceElement;
 import com.intellij.psi.search.GlobalSearchScope;
-import com.intellij.psi.search.PsiShortNamesCache;
+import com.intellij.psi.util.PsiTreeUtil;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -49,18 +57,15 @@ public class ResolveRedSymbolsAction extends AnAction {
   @Override
   public void update(AnActionEvent e) {
     super.update(e);
-    final VirtualFile file = e.getData(CommonDataKeys.VIRTUAL_FILE);
-    final Presentation presentation = e.getPresentation();
-    if (file == null) {
-      presentation.setEnabledAndVisible(false);
-      return;
-    }
     final Project project = e.getProject();
-    if (project == null) {
+    final VirtualFile virtualFile = e.getData(CommonDataKeys.VIRTUAL_FILE);
+    final PsiFile psiFile = e.getData(CommonDataKeys.PSI_FILE);
+    final Presentation presentation = e.getPresentation();
+    if (project == null || virtualFile == null || psiFile == null) {
       presentation.setEnabledAndVisible(false);
       return;
     }
-    final Module currentModule = FileIndexFacade.getInstance(project).getModuleForFile(file);
+    final Module currentModule = FileIndexFacade.getInstance(project).getModuleForFile(virtualFile);
     if (currentModule == null) {
       presentation.setEnabledAndVisible(false);
       return;
@@ -74,11 +79,11 @@ public class ResolveRedSymbolsAction extends AnAction {
     // Verified nonNull in #update
     final Project project = e.getProject();
     final VirtualFile virtualFile = e.getData(CommonDataKeys.VIRTUAL_FILE);
+    final PsiFile psiFile = e.getData(CommonDataKeys.PSI_FILE);
 
     LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_RED_SYMBOLS + ".invoke");
 
-    final Collection<String> allRedSymbols = collectRedSymbols(virtualFile, project);
-    final List<String> specs = addToCache(allRedSymbols, virtualFile, project);
+    final List<String> specs = resolveRedSymbols(project, virtualFile, psiFile);
     LithoPluginUtils.showInfo(getMessage(virtualFile, specs), project);
 
     if (!specs.isEmpty()) {
@@ -86,34 +91,82 @@ public class ResolveRedSymbolsAction extends AnAction {
     }
   }
 
+  private static List<String> resolveRedSymbols(
+      Project project, VirtualFile virtualFile, PsiFile psiFile) {
+    final Map<String, List<Integer>> allRedSymbols = collectRedSymbols(virtualFile, project);
+    return addToCache(allRedSymbols, virtualFile, psiFile, project);
+  }
+
   @VisibleForTesting
-  static Collection<String> collectRedSymbols(VirtualFile virtualFile, Project project) {
-    return CodeSmellDetector.getInstance(project)
-        .findCodeSmells(Collections.singletonList(virtualFile)).stream()
-        .map(error -> error.getDocument().getText(error.getTextRange()))
-        .collect(Collectors.toSet());
+  static Map<String, List<Integer>> collectRedSymbols(VirtualFile virtualFile, Project project) {
+    Map<String, List<Integer>> redSymbols = new HashMap<>();
+    CodeSmellDetector.getInstance(project)
+        .findCodeSmells(Collections.singletonList(virtualFile))
+        .forEach(
+            error -> {
+              final TextRange textRange = error.getTextRange();
+              final String redSymbol = error.getDocument().getText(textRange);
+              redSymbols.putIfAbsent(redSymbol, new ArrayList<>());
+              redSymbols.get(redSymbol).add(textRange.getStartOffset());
+            });
+    return redSymbols;
   }
 
   private static List<String> addToCache(
-      Collection<String> allRedSymbols, VirtualFile virtualFile, Project project) {
+      Map<String, List<Integer>> allRedSymbols,
+      VirtualFile virtualFile,
+      PsiFile psiFile,
+      Project project) {
     final Module currentModule = FileIndexFacade.getInstance(project).getModuleForFile(virtualFile);
     final GlobalSearchScope symbolsScope =
         GlobalSearchScope.moduleWithDependenciesAndLibrariesScope(currentModule);
-    return allRedSymbols.stream()
+    return addToCache(allRedSymbols, psiFile, project, symbolsScope);
+  }
+
+  @VisibleForTesting
+  static List<String> addToCache(
+      Map<String, List<Integer>> allRedSymbols,
+      PsiFile psiFile,
+      Project project,
+      GlobalSearchScope symbolsScope) {
+    return allRedSymbols.keySet().stream()
         .flatMap(
             symbol ->
                 Arrays.stream(
-                        PsiShortNamesCache.getInstance(project)
-                            .getClassesByName(symbol + "Spec", symbolsScope))
+                        PsiSearchUtils.findClassesByShortName(
+                            project, symbolsScope, symbol + "Spec"))
                     .filter(LithoPluginUtils::isLayoutSpec)
                     .map(
                         specCls -> {
                           ServiceManager.getService(project, ComponentsCacheService.class)
-                              .maybeUpdate(specCls, true);
+                              .maybeUpdate(
+                                  specCls,
+                                  true,
+                                  updatedCls ->
+                                      bindExpressions(
+                                          allRedSymbols.get(symbol), updatedCls, psiFile, project));
                           return specCls.getName();
                         })
                     .filter(Objects::nonNull))
         .collect(Collectors.toList());
+  }
+
+  private static void bindExpressions(
+      List<Integer> symbolOffsets, PsiClass symbolCls, PsiFile containingFile, Project project) {
+    symbolOffsets.stream()
+        .map(
+            offset ->
+                PsiTreeUtil.findElementOfClassAtOffset(
+                    containingFile, offset, PsiJavaCodeReferenceElement.class, false))
+        .filter(Objects::nonNull)
+        .forEach(
+            expression -> {
+              WriteCommandAction.runWriteCommandAction(
+                  project,
+                  () -> {
+                    expression.bindToElement(symbolCls);
+                  });
+            });
   }
 
   private static String getMessage(VirtualFile virtualFile, List<String> specs) {
