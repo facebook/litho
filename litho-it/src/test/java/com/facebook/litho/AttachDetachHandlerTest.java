@@ -32,7 +32,7 @@ import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.testing.TestAttachDetachComponent;
 import com.facebook.litho.testing.TestWrappedComponentProp;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
-import com.facebook.litho.testing.util.InlineLayoutSpec;
+import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.widget.Text;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;

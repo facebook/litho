@@ -27,7 +27,7 @@ import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.assertj.LithoAssertions;
 import com.facebook.litho.testing.assertj.LithoRepresentation;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
-import com.facebook.litho.testing.util.InlineLayoutSpec;
+import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.widget.Text;
 import org.assertj.core.api.Assertions;
 import org.junit.Before;

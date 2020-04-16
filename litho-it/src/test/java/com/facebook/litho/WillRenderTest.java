@@ -22,7 +22,7 @@ import static org.robolectric.RuntimeEnvironment.application;
 import android.view.View;
 import com.facebook.litho.LayoutState.LayoutStateContext;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
-import com.facebook.litho.testing.util.InlineLayoutSpec;
+import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;

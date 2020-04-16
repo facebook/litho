@@ -10,7 +10,7 @@ load(
 )
 
 fb_core_android_library(
-    name = "util",
+    name = "inlinelayoutspec",
     srcs = glob(["*.java"]),
     labels = ["supermodule:android/default/litho.core"],
     visibility = LITHO_TESTING_UTIL_VISIBILITY,

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.testing.util;
+package com.facebook.litho.testing.inlinelayoutspec;
 
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;

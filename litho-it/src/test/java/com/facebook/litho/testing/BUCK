@@ -33,6 +33,6 @@ components_robolectric_test(
         LITHO_TESTING_V3_TARGET,
         LITHO_WIDGET_TARGET,
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/testrunner:testrunner"),
-        make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/util:util"),
+        make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/inlinelayoutspec:inlinelayoutspec"),
     ],
 )

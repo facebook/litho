@@ -24,7 +24,7 @@ import android.util.SparseArray;
 import android.view.View;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
-import com.facebook.litho.testing.util.InlineLayoutSpec;
+import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

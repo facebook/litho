@@ -72,7 +72,7 @@ components_robolectric_test(
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/logging:logging"),
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/shadows:shadows"),
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/testrunner:testrunner"),
-        make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/util:util"),
+        make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/inlinelayoutspec:inlinelayoutspec"),
     ],
 )
 
