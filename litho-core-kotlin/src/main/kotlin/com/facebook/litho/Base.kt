@@ -19,10 +19,10 @@ package com.facebook.litho
 import android.app.Activity
 import android.content.Context
 
-/*inline*/ class DslScope(c: ComponentContext) {
-  val context: ComponentContext = c
-  val androidContext: Context = c.androidContext
-  val resourceResolver: ResourceResolver = c.resourceResolver
+inline class DslScope(val c: ComponentContext) {
+  val context: ComponentContext get() = c
+  val androidContext: Context get() = c.androidContext
+  val resourceResolver: ResourceResolver get() = c.resourceResolver
 
   /*inline*/ fun Dp.toPx(): Px = Px(resourceResolver.dipsToPixels(value))
   /*inline*/ fun Sp.toPx(): Px = Px(resourceResolver.sipsToPixels(value))
