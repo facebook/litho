@@ -41,7 +41,6 @@ public class MountItem {
     return mBound;
   }
 
-  @Nullable
   RenderUnit getRenderUnit() {
     return mRenderTreeNode.getRenderUnit();
   }
