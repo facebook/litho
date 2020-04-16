@@ -16,9 +16,10 @@
 
 package com.facebook.litho;
 
-import static android.view.View.MeasureSpec.EXACTLY;
-import static android.view.View.MeasureSpec.UNSPECIFIED;
 import static android.view.View.MeasureSpec.makeMeasureSpec;
+import static com.facebook.litho.SizeSpec.EXACTLY;
+import static com.facebook.litho.SizeSpec.UNSPECIFIED;
+import static com.facebook.litho.SizeSpec.makeSizeSpec;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
@@ -40,7 +41,7 @@ public class MountSpecLifecycleTest {
   LithoView mLithoView;
 
   @Before
-  public void setup() {
+  public void before() {
     mContext = new ComponentContext(RuntimeEnvironment.application);
     mLithoView = new LithoView(mContext);
     mComponentTree = ComponentTree.create(mContext).build();
@@ -153,12 +154,85 @@ public class MountSpecLifecycleTest {
 
     info.clear();
 
-    measure(800, 600);
+    measureWithSpec(makeSizeSpec(800, EXACTLY), makeSizeSpec(600, UNSPECIFIED));
 
     assertThat(getSteps(info))
         .describedAs("Should call the lifecycle methods in expected order")
         .containsExactly(
             LifecycleStep.ON_PREPARE, LifecycleStep.ON_MEASURE, LifecycleStep.ON_BOUNDS_DEFINED);
+  }
+
+  @Test
+  public void lifecycle_onRemeasureWithExactSize_shouldNotCallLifecycleMethods() {
+    final List<LifecycleStep.StepInfo> info = new ArrayList<>();
+    final Component component = MountSpecLifecycleTester.create(mContext).steps(info).build();
+    mLithoView.setComponent(component);
+
+    attach();
+    measure();
+    layout();
+
+    info.clear();
+
+    measureWithSize(800, 600);
+
+    assertThat(getSteps(info))
+        .describedAs(
+            "No lifecycle methods should be called because EXACT measures should skip layout calculation.")
+        .isEmpty();
+  }
+
+  @Test
+  public void lifecycle_onReLayoutAfterMeasureWithExactSize_shouldCallLifecycleMethods() {
+    final List<LifecycleStep.StepInfo> info = new ArrayList<>();
+    final Component component = MountSpecLifecycleTester.create(mContext).steps(info).build();
+    mLithoView.setComponent(component);
+
+    attach();
+    measure();
+    layout();
+
+    info.clear();
+
+    measureWithSize(800, 600);
+    layout();
+
+    assertThat(getSteps(info))
+        .describedAs("Should call the lifecycle methods in expected order")
+        .containsExactly(
+            LifecycleStep.ON_PREPARE,
+            LifecycleStep.ON_BOUNDS_DEFINED,
+            LifecycleStep.ON_UNBIND,
+            LifecycleStep.ON_UNMOUNT,
+            LifecycleStep.ON_MOUNT,
+            LifecycleStep.ON_BIND);
+  }
+
+  @Test
+  public void lifecycle_onReLayoutAfterMeasureWithExactSizeAsNonRoot_shouldCallLifecycleMethods() {
+    final List<LifecycleStep.StepInfo> info = new ArrayList<>();
+    final Component component = MountSpecLifecycleTester.create(mContext).steps(info).build();
+    mLithoView.setComponent(Column.create(mContext).child(component).build());
+
+    attach();
+    measure();
+    layout();
+
+    info.clear();
+
+    measureWithSize(800, 600);
+    layout();
+
+    assertThat(getSteps(info))
+        .describedAs("Should call the lifecycle methods in expected order")
+        .containsExactly(
+            LifecycleStep.ON_PREPARE,
+            LifecycleStep.ON_MEASURE,
+            LifecycleStep.ON_BOUNDS_DEFINED,
+            LifecycleStep.ON_UNBIND,
+            LifecycleStep.ON_UNMOUNT,
+            LifecycleStep.ON_MOUNT,
+            LifecycleStep.ON_BIND);
   }
 
   @Test
@@ -215,11 +289,15 @@ public class MountSpecLifecycleTest {
   }
 
   void measure() {
-    mLithoView.measure(makeMeasureSpec(1080, EXACTLY), makeMeasureSpec(1920, UNSPECIFIED));
+    mLithoView.measure(makeMeasureSpec(1080, UNSPECIFIED), makeMeasureSpec(1920, UNSPECIFIED));
   }
 
-  void measure(int width, int height) {
-    mLithoView.measure(makeMeasureSpec(width, EXACTLY), makeMeasureSpec(height, UNSPECIFIED));
+  void measureWithSize(int width, int height) {
+    mLithoView.measure(makeMeasureSpec(width, EXACTLY), makeMeasureSpec(height, EXACTLY));
+  }
+
+  void measureWithSpec(int widthSpec, int heightSpec) {
+    mLithoView.measure(widthSpec, heightSpec);
   }
 
   void layout() {
