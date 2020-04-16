@@ -245,4 +245,6 @@ public class ComponentsConfiguration {
   public static boolean disableUnmountAllItemsForRecycledView = false;
 
   public static boolean disableOverridingLayoutRequestInRV = false;
+
+  public static boolean callShouldUpdateOnMount = false;
 }

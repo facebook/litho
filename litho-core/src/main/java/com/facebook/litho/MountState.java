@@ -1389,7 +1389,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener, Mount
       }
     }
 
-    if (!currentComponent.callsShouldUpdateOnMount()) {
+    if (!ComponentsConfiguration.callShouldUpdateOnMount
+        && !currentComponent.callsShouldUpdateOnMount()) {
       return true;
     }
 
