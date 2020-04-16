@@ -20,9 +20,6 @@ package com.facebook.litho
 
 import android.graphics.drawable.Drawable
 
-inline fun <reified T> eventHandler(crossinline onEvent: () -> Unit): EventHandler<T> =
-    EventHandler({ EventDispatcher { _, _ -> onEvent() } }, 0, null)
-
 /**
  * Builder for setting an [onClick] event handler for component.
  *
@@ -30,7 +27,7 @@ inline fun <reified T> eventHandler(crossinline onEvent: () -> Unit): EventHandl
  *  This will work for core Litho, but may break Sections.
  */
 inline fun DslScope.Clickable(
-    crossinline onClick: () -> Unit,
+    noinline onClick: () -> Unit,
     content: DslScope.() -> Component
 ): Component =
     content().apply {
