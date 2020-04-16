@@ -23,6 +23,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
+import com.facebook.litho.LifecycleStep;
+import com.facebook.litho.LifecycleStep.StepInfo;
 import com.facebook.litho.Size;
 import com.facebook.litho.annotations.MountSpec;
 import com.facebook.litho.annotations.OnAttached;
@@ -37,7 +39,6 @@ import com.facebook.litho.annotations.OnPrepare;
 import com.facebook.litho.annotations.OnUnbind;
 import com.facebook.litho.annotations.OnUnmount;
 import com.facebook.litho.annotations.Prop;
-import com.facebook.litho.widget.LifecycleStep.StepInfo;
 import java.util.List;
 
 @MountSpec

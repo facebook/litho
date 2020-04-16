@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.widget;
+package com.facebook.litho;
 
 public enum LifecycleStep {
   ON_CREATE_INITIAL_STATE,

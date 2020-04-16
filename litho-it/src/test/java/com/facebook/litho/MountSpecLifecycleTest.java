@@ -22,7 +22,6 @@ import static android.view.View.MeasureSpec.makeMeasureSpec;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
-import com.facebook.litho.widget.LifecycleStep;
 import com.facebook.litho.widget.MountSpecLifecycleTester;
 import com.facebook.litho.widget.MountSpecLifecycleTesterSpec;
 import java.util.ArrayList;
