@@ -24,8 +24,8 @@ import android.graphics.Rect;
 import com.facebook.litho.animation.AnimatedProperties;
 import com.facebook.litho.animation.DimensionValue;
 import com.facebook.litho.testing.TestDrawableComponent;
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
+import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 

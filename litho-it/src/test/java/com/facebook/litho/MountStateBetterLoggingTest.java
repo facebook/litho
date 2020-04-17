@@ -22,9 +22,9 @@ import static com.facebook.litho.testing.helper.ComponentTestHelper.mountCompone
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import com.facebook.litho.testing.TestComponent;
+import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.logging.TestComponentsLogger;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
-import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
