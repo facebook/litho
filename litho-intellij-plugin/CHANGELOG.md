@@ -1,5 +1,20 @@
 # CHANGELOG
 
+## Version 1.4.0
+
+_2020-04-18_
+
+* New: Litho red symbols resolution.
+  - New menu action to trigger in-memory component creation.
+  - Update red symbols in the file after triggered action.
+  - Enable method completion for in-memory components.
+  - Enable FindUsages action to work with created in-memory components.
+  - Enable RegenerateComponent action to create in-memory component if it doesn't exist.
+  - Clean-up in-memory components when file system changes are detected.
+  - New AddImportFix for in-memory components.
+* New: Add details to the line marker message about missing required prop.
+* Fix: Builder formatting when it is inserted in a nested method.
+
 ## Version 1.3.1
 
 _2020-01-07_
