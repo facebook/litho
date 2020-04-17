@@ -37,14 +37,6 @@ public class GenerateComponentAction extends AnAction {
     super.update(e);
     Optional<PsiClass> specCls = getValidSpec(e);
     e.getPresentation().setEnabledAndVisible(specCls.isPresent());
-
-    specCls.ifPresent(
-        cls ->
-            e.getPresentation()
-                .setText(
-                    "Regenerate "
-                        + LithoPluginUtils.getLithoComponentNameFromSpec(cls.getName())
-                        + " Component"));
   }
 
   @Override

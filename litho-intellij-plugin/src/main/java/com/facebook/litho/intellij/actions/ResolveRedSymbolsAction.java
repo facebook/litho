@@ -70,7 +70,6 @@ public class ResolveRedSymbolsAction extends AnAction {
       presentation.setEnabledAndVisible(false);
       return;
     }
-    presentation.setText("Resolve Litho red symbols in current file");
     presentation.setEnabledAndVisible(true);
   }
 

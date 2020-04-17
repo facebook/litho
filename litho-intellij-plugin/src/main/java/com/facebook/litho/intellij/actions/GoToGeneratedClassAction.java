@@ -38,8 +38,6 @@ public class GoToGeneratedClassAction extends AnAction {
   public void update(AnActionEvent e) {
     Optional<PsiClass> component = getNavigatableComponent(e);
     e.getPresentation().setEnabledAndVisible(component.isPresent());
-    component.ifPresent(
-        cls -> e.getPresentation().setText("Go To " + cls.getName() + " Component"));
   }
 
   private static Optional<PsiClass> getNavigatableComponent(AnActionEvent e) {
