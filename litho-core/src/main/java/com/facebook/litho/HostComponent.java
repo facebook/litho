@@ -78,10 +78,8 @@ class HostComponent extends Component {
     return MountType.VIEW;
   }
 
-  public static HostComponent create(ComponentContext context) {
-    HostComponent component = new HostComponent();
-    component.setScopedContext(context);
-    return component;
+  static HostComponent create() {
+    return new HostComponent();
   }
 
   @Override

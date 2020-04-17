@@ -107,7 +107,7 @@ public class LithoMountData {
         new LayoutOutput(
             null,
             viewNodeInfo,
-            HostComponent.create(lithoView.getComponentContext()),
+            HostComponent.create(),
             lithoView.getPreviousMountBounds(),
             0,
             0,

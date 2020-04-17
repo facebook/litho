@@ -395,7 +395,7 @@ class LayoutState
 
   private static LayoutOutput createHostLayoutOutput(LayoutState layoutState, InternalNode node) {
 
-    final HostComponent hostComponent = HostComponent.create(node.getContext());
+    final HostComponent hostComponent = HostComponent.create();
 
     // We need to pass common dynamic props to the host component, as they only could be applied to
     // views, so we'll need to set them up, when binding HostComponent to ComponentHost. At the same
