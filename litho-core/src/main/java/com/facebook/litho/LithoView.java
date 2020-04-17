@@ -23,6 +23,7 @@ import static com.facebook.litho.ThreadUtils.assertMainThread;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Rect;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,6 +48,7 @@ public class LithoView extends Host {
   public static final String ZERO_HEIGHT_LOG = "LithoView:0-height";
   public static final String SET_ALREADY_ATTACHED_COMPONENT_TREE =
       "LithoView:SetAlreadyAttachedComponentTree";
+  private static final int TOO_BIG_TEXTURE_SIZE = 4096;
   private boolean mIsMountStateDirty;
   private final boolean mUseExtensions;
   private final @Nullable MountDelegateTarget mMountDelegateTarget;
@@ -447,6 +449,25 @@ public class LithoView extends Host {
       if (mComponentTree.isReleased()) {
         throw new IllegalStateException(
             "Trying to layout a LithoView holding onto a released ComponentTree");
+      }
+
+      if (bottom - top >= TOO_BIG_TEXTURE_SIZE || right - left >= TOO_BIG_TEXTURE_SIZE) {
+        if (isDeviceThatCantHandleTooBigTextures()) {
+          ComponentsReporter.emitMessage(
+              ComponentsReporter.LogLevel.ERROR,
+              "TextureTooBig",
+              "LithoView has measured greater than "
+                  + TOO_BIG_TEXTURE_SIZE
+                  + " in one dimension. Size: "
+                  + (right - left)
+                  + "x"
+                  + (bottom - top)
+                  + ", component: "
+                  + (mComponentTree.getRoot() != null
+                      ? mComponentTree.getRoot().getSimpleName()
+                      : null),
+              100);
+        }
       }
 
       if (mDoMeasureInLayout || mComponentTree.getMainThreadLayoutState() == null) {
@@ -1325,6 +1346,20 @@ public class LithoView extends Host {
     refreshAccessibilityDelegatesIfNeeded(enabled);
     // must force (not just request)
     forceRelayout();
+  }
+
+  private static boolean isDeviceThatCantHandleTooBigTextures() {
+    switch (Build.MODEL) {
+      case "SM-J610F":
+      case "SM-J415F":
+      case "SM-J415FN":
+      case "SM-J610G":
+      case "SM-J610FN":
+      case "SM-J415G":
+        return true;
+      default:
+        return false;
+    }
   }
 
   /**
