@@ -17,31 +17,33 @@
 package com.facebook.litho.intellij.completion;
 
 import com.facebook.litho.annotations.LayoutSpec;
+import com.facebook.litho.intellij.IntervalLogger;
 import com.facebook.litho.intellij.LithoPluginUtils;
+import com.facebook.litho.intellij.PsiSearchUtils;
 import com.facebook.litho.intellij.extensions.EventLogger;
+import com.facebook.litho.intellij.file.ComponentScope;
 import com.facebook.litho.intellij.logging.LithoLoggerProvider;
+import com.facebook.litho.intellij.services.ComponentsCacheService;
 import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.LayoutSpecModel;
-import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.processor.PsiLayoutSpecModelFactory;
-import com.google.common.annotations.VisibleForTesting;
-import com.intellij.ide.actions.ElementCreator;
-import com.intellij.ide.fileTemplates.JavaCreateFromTemplateHandler;
+import com.intellij.openapi.application.WriteAction;
+import com.intellij.openapi.components.ServiceManager;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Document;
+import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.fileTypes.StdFileTypes;
+import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiClass;
-import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiDocumentManager;
-import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
+import com.intellij.psi.PsiFileFactory;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeSpec;
-import java.util.Deque;
-import java.util.LinkedList;
-import org.jetbrains.annotations.Contract;
+import java.util.Arrays;
+import java.util.Optional;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -49,6 +51,7 @@ import org.jetbrains.annotations.Nullable;
  * Component files with the new model.
  */
 public class ComponentGenerateUtils {
+  private static final Logger LOG = Logger.getInstance(ComponentGenerateUtils.class);
   private static final String TAG = EventLogger.EVENT_GENERATE_COMPONENT + ".method";
 
   private static final PsiLayoutSpecModelFactory MODEL_FACTORY = new PsiLayoutSpecModelFactory();
@@ -63,49 +66,62 @@ public class ComponentGenerateUtils {
    */
   public static void updateLayoutComponent(PsiClass layoutSpecCls) {
     LithoLoggerProvider.getEventLogger().log(TAG + ".invoke");
-    String specName = layoutSpecCls.getQualifiedName();
-    if (specName == null) {
-      return;
-    }
-    SpecModel model = createLayoutModel(layoutSpecCls);
-    if (model == null) {
-      return;
-    }
-    String dirPath = getDirectoryPath(layoutSpecCls.getContainingFile().getContainingDirectory());
-    if (dirPath == null) {
-      return;
-    }
+    final String componentName =
+        LithoPluginUtils.getLithoComponentNameFromSpec(layoutSpecCls.getQualifiedName());
+    if (componentName == null) return;
+
     final Project project = layoutSpecCls.getProject();
-    final int created =
-        new ComponentUpdater(specName, model, dirPath, project).tryCreate(specName).length;
-    final String componentName = model.getComponentName();
-    // TODO: T56876413 improve notifications
-    if (created > 0) {
-      LithoPluginUtils.showInfo(componentName + " component was regenerated", project);
-      LithoLoggerProvider.getEventLogger().log(TAG + ".success");
+    DumbService.getInstance(project)
+        .smartInvokeLater(
+            () -> {
+              updateLayoutSpecInternal(componentName, layoutSpecCls, project);
+            });
+  }
+
+  private static void updateLayoutSpecInternal(
+      String componentQualifiedName, PsiClass layoutSpecCls, Project project) {
+    IntervalLogger logger = new IntervalLogger(LOG);
+    Optional<PsiClass> generatedClass =
+        Arrays.stream(PsiSearchUtils.findClasses(project, componentQualifiedName))
+            .filter(cls -> !ComponentScope.contains(cls.getContainingFile()))
+            .findAny();
+    final boolean isPresent = generatedClass.isPresent();
+    logger.logStep("finding generated class: " + isPresent);
+    if (isPresent) {
+      final LayoutSpecModel model = createLayoutModel(layoutSpecCls);
+      if (model == null) return;
+
+      logger.logStep("creating in-memory class");
+      final String newContent = createFileContentFromModel(componentQualifiedName, model);
+      final Document document =
+          PsiDocumentManager.getInstance(project)
+              .getDocument(generatedClass.get().getContainingFile());
+      if (document != null) {
+        // Write access is allowed inside write-action only
+        WriteAction.run(
+            () -> {
+              document.setText(newContent);
+              logger.logStep("updating document");
+            });
+        FileDocumentManager.getInstance().saveDocument(document);
+        logger.logStep("saving document");
+        showSuccess(StringUtil.getShortName(componentQualifiedName), project);
+      }
     } else {
-      LithoPluginUtils.showWarning(componentName + " component was not found", project);
+      ServiceManager.getService(project, ComponentsCacheService.class)
+          .maybeUpdate(
+              layoutSpecCls,
+              true,
+              psiClass -> {
+                logger.logStep("creating in-memory class");
+                showSuccess(psiClass.getName(), project);
+              });
     }
   }
 
-  @VisibleForTesting
-  @Contract("null->null")
-  @Nullable
-  static String getDirectoryPath(@Nullable PsiDirectory directory) {
-    if (directory == null) {
-      return null;
-    }
-    VirtualFile currentDir = directory.getVirtualFile();
-    VirtualFile root = directory.getProject().getBaseDir();
-    Deque<String> path = new LinkedList<>();
-    while (!currentDir.equals(root)) {
-      path.addFirst(currentDir.getName());
-      currentDir = currentDir.getParent();
-      if (currentDir == null) {
-        return null;
-      }
-    }
-    return StringUtil.join(path, "/");
+  private static void showSuccess(String componentName, Project project) {
+    LithoPluginUtils.showInfo(componentName + " was regenerated", project);
+    LithoLoggerProvider.getEventLogger().log(TAG + ".success");
   }
 
   /**
@@ -119,81 +135,20 @@ public class ComponentGenerateUtils {
     return MODEL_FACTORY.createWithPsi(layoutSpecCls.getProject(), layoutSpecCls, null);
   }
 
-  /**
-   * Access is allowed from event dispatch thread only. Example usage: new
-   * ComponentUpdater(..).tryCreate(..);
-   */
-  private static class ComponentUpdater extends ElementCreator {
-    private final Project project;
-    private final SpecModel model;
-    private final String specDirectoryPath;
-    private final String specQualifiedName;
+  public static PsiFile createFileFromModel(
+      String clsQualifiedName, LayoutSpecModel specModel, Project project) {
+    String fileContent = createFileContentFromModel(clsQualifiedName, specModel);
+    return PsiFileFactory.getInstance(project)
+        .createFileFromText(
+            StringUtil.getShortName(clsQualifiedName) + ".java", StdFileTypes.JAVA, fileContent);
+  }
 
-    ComponentUpdater(
-        String specQualifiedName, SpecModel specModel, String specDirectoryPath, Project project) {
-      super(project, "Couldn't update generated Component file");
-      this.project = project;
-      this.model = specModel;
-      this.specQualifiedName = specQualifiedName;
-      this.specDirectoryPath = specDirectoryPath;
-    }
-
-    @Override
-    protected PsiElement[] create(String qualifiedSpecName) {
-      String specPackageName = StringUtil.getPackageName(specQualifiedName);
-      return ComponentBuildInfoProvider.getInstance()
-          .provideGeneratedComponentDirs(specDirectoryPath, specQualifiedName, project)
-          .findFirst()
-          .map(
-              targetDirectory ->
-                  createFileWithModel(targetDirectory, specPackageName, project, model))
-          .map(createdClass -> doPostponedOperationsAndUnblockDocument(createdClass, project))
-          .map(createdClass -> new PsiElement[] {createdClass})
-          .orElse(PsiElement.EMPTY_ARRAY);
-    }
-
-    private static PsiClass createFileWithModel(
-        PsiDirectory targetDirectory, String packageName, Project project, SpecModel model) {
-      TypeSpec typeSpec = model.generate(RunMode.normal());
-      String content =
-          JavaFile.builder(packageName, typeSpec).skipJavaLangImports(true).build().toString();
-
-      String extension = StdFileTypes.JAVA.getDefaultExtension();
-      PsiFile oldFile = targetDirectory.findFile(model.getComponentName() + "." + extension);
-      if (oldFile != null) {
-        oldFile.delete();
-      }
-      // Invokes PsiDirectory#add method, shouldn't be called on EventDispatch Thread
-      return JavaCreateFromTemplateHandler.createClassOrInterface(
-          project, targetDirectory, content, true, extension);
-    }
-
-    /**
-     * Applies pending changes made through the PSI to the document.
-     *
-     * @param createdClass the PSI class for which the Document is requested.
-     * @param project the project for which the document manager is requested.
-     * @return createdClass.
-     */
-    @Contract("_, _ -> param1")
-    private static PsiClass doPostponedOperationsAndUnblockDocument(
-        PsiClass createdClass, Project project) {
-      PsiDocumentManager psiDocumentManager = PsiDocumentManager.getInstance(project);
-      Document document = psiDocumentManager.getDocument(createdClass.getContainingFile());
-      if (document != null) {
-        psiDocumentManager.doPostponedOperationsAndUnblockDocument(document);
-      }
-      return createdClass;
-    }
-
-    @Override
-    public boolean startInWriteAction() {
-      return true;
-    }
-
-    @Override
-    protected String getActionName(String newName) {
-      return "GenerateComponentAction";
-    }
+  private static String createFileContentFromModel(
+      String clsQualifiedName, LayoutSpecModel specModel) {
+    TypeSpec typeSpec = specModel.generate(RunMode.normal());
+    return JavaFile.builder(StringUtil.getPackageName(clsQualifiedName), typeSpec)
+        .skipJavaLangImports(true)
+        .build()
+        .toString();
   }
 }

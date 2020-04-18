@@ -21,13 +21,11 @@ import com.facebook.litho.intellij.LithoPluginUtils;
 import com.facebook.litho.intellij.PsiSearchUtils;
 import com.facebook.litho.intellij.completion.ComponentGenerateUtils;
 import com.facebook.litho.intellij.file.ComponentScope;
-import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.LayoutSpecModel;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.fileTypes.StdFileTypes;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
@@ -35,11 +33,8 @@ import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.PsiClass;
-import com.intellij.psi.PsiFileFactory;
 import com.intellij.util.Consumer;
 import com.intellij.util.ThrowableRunnable;
-import com.squareup.javapoet.JavaFile;
-import com.squareup.javapoet.TypeSpec;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -160,23 +155,9 @@ public class ComponentsCacheService implements Disposable {
                   specModel -> {
                     logger.logStep("model creation " + componentShortName);
                     if (checker.shouldStopUpdate()) return null;
-                    TypeSpec typeSpec = specModel.generate(RunMode.normal());
 
-                    logger.logStep("typeSpec generation " + typeSpec.name);
-                    if (checker.shouldStopUpdate()) return null;
-                    // TODO T56876413 share methods with ComponentGenerator?
-                    String fileContent =
-                        JavaFile.builder(
-                                StringUtil.getPackageName(componentQualifiedName), typeSpec)
-                            .skipJavaLangImports(true)
-                            .build()
-                            .toString();
-
-                    logger.logStep("component's fileContent build " + componentShortName);
-                    if (checker.shouldStopUpdate()) return null;
-                    return PsiFileFactory.getInstance(project)
-                        .createFileFromText(
-                            componentShortName + ".java", StdFileTypes.JAVA, fileContent);
+                    return ComponentGenerateUtils.createFileFromModel(
+                        componentQualifiedName, specModel, project);
                   })
               .flatMap(
                   file -> {
