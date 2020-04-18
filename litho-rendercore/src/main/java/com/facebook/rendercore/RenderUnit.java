@@ -45,14 +45,20 @@ public abstract class RenderUnit<MOUNT_CONTENT> implements Copyable {
       mMountUnmountFunctionsWithExtensions;
 
   public RenderUnit(RenderType renderType) {
-    this(renderType, Collections.EMPTY_LIST, Collections.EMPTY_LIST);
+    this(
+        renderType,
+        Collections.<Binder<? extends RenderUnit<MOUNT_CONTENT>, MOUNT_CONTENT>>emptyList(),
+        Collections.<Binder<? extends RenderUnit<MOUNT_CONTENT>, MOUNT_CONTENT>>emptyList());
   }
 
   public RenderUnit(
       RenderType renderType,
       List<? extends Binder<? extends RenderUnit<MOUNT_CONTENT>, MOUNT_CONTENT>>
           mountUnmountFunctions) {
-    this(renderType, mountUnmountFunctions, Collections.EMPTY_LIST);
+    this(
+        renderType,
+        mountUnmountFunctions,
+        Collections.<Binder<? extends RenderUnit<MOUNT_CONTENT>, MOUNT_CONTENT>>emptyList());
   }
 
   public RenderUnit(

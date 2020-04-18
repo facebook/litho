@@ -29,7 +29,7 @@ public interface TextContent {
       new TextContent() {
         @Override
         public List<CharSequence> getTextItems() {
-          return Collections.EMPTY_LIST;
+          return Collections.emptyList();
         }
       };
 

@@ -28,7 +28,7 @@ public interface ImageContent {
       new ImageContent() {
         @Override
         public List<Drawable> getImageItems() {
-          return Collections.EMPTY_LIST;
+          return Collections.emptyList();
         }
       };
 
