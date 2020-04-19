@@ -286,8 +286,8 @@ public class ComponentUtils {
       }
 
       // StateContainers have also fields that we need to check for being equivalent.
-    } else if (shouldCompareStateContainers && StateContainer.class.isAssignableFrom(classType)) {
-      if (!hasEquivalentFields(val1, val2)) {
+    } else if (StateContainer.class.isAssignableFrom(classType)) {
+      if (shouldCompareStateContainers && !hasEquivalentFields(val1, val2, true)) {
         return false;
       }
 
