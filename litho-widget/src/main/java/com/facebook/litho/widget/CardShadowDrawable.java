@@ -30,8 +30,6 @@ import android.graphics.drawable.Drawable;
 
 public class CardShadowDrawable extends Drawable {
 
-  static final float SHADOW_MULTIPLIER = 1.5f;
-
   private int mShadowStartColor;
   private int mShadowEndColor;
 
@@ -44,7 +42,6 @@ public class CardShadowDrawable extends Drawable {
 
   private float mCornerRadius;
   private float mShadowSize;
-  private float mRawShadowSize;
 
   private boolean mHideTopShadow;
   private boolean mHideBottomShadow;
@@ -65,20 +62,96 @@ public class CardShadowDrawable extends Drawable {
     mEdgeShadowPaint.setAlpha(alpha);
   }
 
-  public static int getShadowHorizontal(float shadowSize) {
-    return (int) Math.ceil(toEven(shadowSize));
+  /**
+   * @param shadowSize
+   * @param shadowDx Light source offset applied horizontally, i.e. if shadowDx is 0, the shadows on
+   *     the left and right sides are both equal to shadowSize. If shadowDx is positive, the light
+   *     source moves to the left side, hence left shadow is decreased by shadowDx while right
+   *     shadow is increased by shadowDx. If shadowDx is negative, light source moves to the right
+   *     side and left and right shadows are adjusted accordingly.
+   * @return Shadow applied to the left side of the element.
+   */
+  public static int getShadowLeft(float shadowSize, float shadowDx) {
+    return (int) Math.ceil(toEven(shadowSize) - shadowDx);
   }
 
-  public static int getShadowTop(float shadowSize) {
-    return (int) Math.ceil(toEven(shadowSize) / 2);
+  /**
+   * @param shadowSize
+   * @return Shadow applied to the left side of the element. Shadow offset is 0.
+   */
+  public static int getShadowLeft(float shadowSize) {
+    return getShadowLeft(shadowSize, 0);
   }
 
+  /**
+   * @param shadowSize
+   * @param shadowDx Light source offset applied horizontally, i.e. if shadowDx is 0, the shadows on
+   *     the left and right sides are both equal to shadowSize. If shadowDx is positive, the light
+   *     source moves to the left side, hence left shadow is decreased by shadowDx while right
+   *     shadow is increased by shadowDx. If shadowDx is negative, light source moves to the right
+   *     side and left and right shadows are adjusted accordingly.
+   * @return Shadow applied to the right side of the element.
+   */
+  public static int getShadowRight(float shadowSize, float shadowDx) {
+    return (int) Math.ceil(toEven(shadowSize) + shadowDx);
+  }
+
+  /**
+   * @param shadowSize
+   * @return Shadow applied to the right side of the element. Shadow offset is 0.
+   */
   public static int getShadowRight(float shadowSize) {
-    return (int) Math.ceil(toEven(shadowSize));
+    return getShadowRight(shadowSize, 0);
   }
 
+  /**
+   * @param shadowSize
+   * @param shadowDy Light source offset applied vertically, i.e. if shadowDy is 0, the shadows on
+   *     the top and bottom sides are both equal to shadowSize. If shadowDy is positive, the light
+   *     source moves to the top side, hence top shadow is decreased by shadowDy while bottom shadow
+   *     is increased by shadowDy. If shadowDy is negative, light source moves to the bottom side
+   *     and top and bottom shadows are adjusted accordingly.
+   * @return Shadow applied to the top side of the element.
+   */
+  public static int getShadowTop(float shadowSize, float shadowDy) {
+    return (int) Math.ceil(toEven(shadowSize) - shadowDy);
+  }
+
+  /**
+   * @param shadowSize
+   * @return Shadow applied to the top side of the element. Shadow offset equals to half of
+   *     shadowSize.
+   */
+  public static int getShadowTop(float shadowSize) {
+    float shadowDy = getDefaultShadowDy(shadowSize);
+    return getShadowTop(shadowSize, shadowDy);
+  }
+
+  private static float getDefaultShadowDy(float shadowSize) {
+    return toEven(shadowSize) * 0.5f;
+  }
+
+  /**
+   * @param shadowSize
+   * @param shadowDy Light source offset applied vertically, i.e. if shadowDy is 0, the shadows on
+   *     the top and bottom sides are both equal to shadowSize. If shadowDy is positive, the light
+   *     source moves to the top side, hence top shadow is decreased by shadowDy while bottom shadow
+   *     is increased by shadowDy. If shadowDy is negative, light source moves to the bottom side
+   *     and top and bottom shadows are adjusted accordingly.
+   * @return Shadow applied to the bottom side of the element.
+   */
+  public static int getShadowBottom(float shadowSize, float shadowDy) {
+    return (int) Math.ceil(toEven(shadowSize) + shadowDy);
+  }
+
+  /**
+   * @param shadowSize
+   * @return Shadow applied to the bottom side of the element. Shadow offset equals to half of
+   *     shadowSize.
+   */
   public static int getShadowBottom(float shadowSize) {
-    return (int) Math.ceil(toEven(shadowSize) * SHADOW_MULTIPLIER);
+    float shadowDy = getDefaultShadowDy(shadowSize);
+    return getShadowBottom(shadowSize, shadowDy);
   }
 
   @Override
@@ -145,15 +218,22 @@ public class CardShadowDrawable extends Drawable {
     }
 
     shadowSize = toEven(shadowSize);
-    if (mRawShadowSize == shadowSize) {
+    if (mShadowSize == shadowSize) {
       return;
     }
 
-    mRawShadowSize = shadowSize;
-    mShadowSize = (int) (shadowSize * SHADOW_MULTIPLIER + .5f);
+    mShadowSize = shadowSize;
 
     mDirty = true;
     invalidateSelf();
+  }
+
+  void setShadowDx(float shadowDx) {
+    // no-op
+  }
+
+  void setShadowDy(float shadowDy) {
+    // no-op
   }
 
   void setHideTopShadow(boolean hideTopShadow) {
@@ -165,9 +245,9 @@ public class CardShadowDrawable extends Drawable {
   }
 
   private void buildShadow() {
-    final int shadowHorizontal = getShadowHorizontal(mRawShadowSize);
-    final int shadowTop = getShadowTop(mRawShadowSize);
-    final int shadowBottom = getShadowBottom(mRawShadowSize);
+    final int shadowHorizontal = getShadowLeft(mShadowSize);
+    final int shadowTop = getShadowTop(mShadowSize);
+    final int shadowBottom = getShadowBottom(mShadowSize);
     final float shadowCornerRadius = shadowHorizontal + mCornerRadius;
 
     mCornerShadowPaint.setShader(
@@ -201,10 +281,10 @@ public class CardShadowDrawable extends Drawable {
 
     final RectF bottomInnerBounds =
         new RectF(
-            getShadowHorizontal(mRawShadowSize),
-            getShadowBottom(mRawShadowSize),
-            getShadowHorizontal(mRawShadowSize) + 2 * mCornerRadius,
-            getShadowBottom(mRawShadowSize) + 2 * mCornerRadius);
+            getShadowLeft(mShadowSize),
+            getShadowBottom(mShadowSize),
+            getShadowRight(mShadowSize) + 2 * mCornerRadius,
+            getShadowBottom(mShadowSize) + 2 * mCornerRadius);
 
     final RectF bottomOuterBounds = new RectF(0, 0, 2 * mCornerRadius, 2 * mCornerRadius);
 
@@ -269,10 +349,10 @@ public class CardShadowDrawable extends Drawable {
   }
 
   private void drawShadowEdges(Canvas canvas, Rect bounds) {
-    final int paddingLeft = getShadowHorizontal(mRawShadowSize);
-    final int paddingTop = getShadowTop(mRawShadowSize);
-    final int paddingRight = getShadowRight(mRawShadowSize);
-    final int paddingBottom = getShadowBottom(mRawShadowSize);
+    final int paddingLeft = getShadowLeft(mShadowSize);
+    final int paddingTop = getShadowTop(mShadowSize);
+    final int paddingRight = getShadowRight(mShadowSize);
+    final int paddingBottom = getShadowBottom(mShadowSize);
 
     int saved = canvas.save();
 

@@ -17,11 +17,13 @@
 package com.facebook.litho.widget;
 
 import static com.facebook.litho.widget.CardShadowDrawable.getShadowBottom;
-import static com.facebook.litho.widget.CardShadowDrawable.getShadowHorizontal;
+import static com.facebook.litho.widget.CardShadowDrawable.getShadowLeft;
+import static com.facebook.litho.widget.CardShadowDrawable.getShadowRight;
 import static com.facebook.litho.widget.CardShadowDrawable.getShadowTop;
 import static com.facebook.yoga.YogaEdge.ALL;
 import static com.facebook.yoga.YogaEdge.BOTTOM;
-import static com.facebook.yoga.YogaEdge.HORIZONTAL;
+import static com.facebook.yoga.YogaEdge.LEFT;
+import static com.facebook.yoga.YogaEdge.RIGHT;
 import static com.facebook.yoga.YogaEdge.TOP;
 import static com.facebook.yoga.YogaPositionType.ABSOLUTE;
 
@@ -103,12 +105,14 @@ class CardSpec {
     final int shadowTop = getShadowTop(elevation);
     final int shadowBottom =
         shadowBottomOverride == -1 ? getShadowBottom(elevation) : shadowBottomOverride;
-    final int shadowHorizontal = getShadowHorizontal(elevation);
+    final int shadowLeft = getShadowLeft(elevation);
+    final int shadowRight = getShadowRight(elevation);
 
     return Column.create(c)
         .child(
             Column.create(c)
-                .marginPx(HORIZONTAL, shadowHorizontal)
+                .marginPx(LEFT, shadowLeft)
+                .marginPx(RIGHT, shadowRight)
                 .marginPx(TOP, disableClipTopLeft && disableClipTopRight ? 0 : shadowTop)
                 .marginPx(
                     BOTTOM, disableClipBottomLeft && disableClipBottomRight ? 0 : shadowBottom)
