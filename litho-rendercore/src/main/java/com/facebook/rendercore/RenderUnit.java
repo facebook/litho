@@ -164,13 +164,21 @@ public abstract class RenderUnit<MOUNT_CONTENT> implements Copyable {
    */
   public interface Binder<RENDER_UNIT, CONTENT> {
     boolean shouldUpdate(
-        RENDER_UNIT currentValue,
-        RENDER_UNIT newValue,
-        Object currentLayoutData,
-        Object nextLayoutData);
+        final RENDER_UNIT currentValue,
+        final RENDER_UNIT newValue,
+        final @Nullable Object currentLayoutData,
+        final @Nullable Object nextLayoutData);
 
-    void bind(Context context, CONTENT content, RENDER_UNIT renderUnit, Object layoutData);
+    void bind(
+        final Context context,
+        final CONTENT content,
+        final RENDER_UNIT renderUnit,
+        final @Nullable Object layoutData);
 
-    void unbind(Context context, CONTENT content, RENDER_UNIT renderUnit, Object layoutData);
+    void unbind(
+        final Context context,
+        final CONTENT content,
+        final RENDER_UNIT renderUnit,
+        final @Nullable Object layoutData);
   }
 }
