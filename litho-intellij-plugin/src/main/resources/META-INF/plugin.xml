@@ -22,7 +22,7 @@
   <description>
   <![CDATA[
     <p><a href='https://fblitho.com/'>Litho</a> is a declarative UI framework for Android.
-    This plugin provides better Litho integration in IntelliJ IDEA.
+    This plugin provides better Litho integration in Android Studio.
     <p>The following features are available:
     <ul>
       <li>Command-click on a Section or Component takes you to Spec</li>
@@ -36,18 +36,16 @@
       <li><code>@DefaultProp</code> value near the <code>@Prop</code> parameter as a folding</li>
       <li>Regenerate Component action in Editor menu</li>
     </ul>
+    <h2>Change Notes</h2>
+    <h3>1.4.0</h3>
+      <ul>
+        <li>New: Litho red symbols resolution Action.</li>
+      </ul>
+    <h3>Older Versions</h3>
+    <p>Check the <a href='https://github.com/facebook/litho/blob/master/litho-intellij-plugin/CHANGELOG.md'>Changelog</a> for full version history.
   ]]>
   </description>
-  <version>1.3.2-SNAPSHOT</version>
-  <change-notes><![CDATA[
-    <h2>1.3.1</h2>
-      <ul>
-        <li>New: Line marker for missing required prop</li>
-      </ul>
-    <h2>Older Versions</h2>
-    <p>Check the <a href='https://github.com/facebook/litho/blob/master/litho-intellij-plugin/CHANGELOG.md'>Changelog</a> for full version history.
-  ]]></change-notes>
-
+  <version>1.4.0-SNAPSHOT</version>
   <vendor url="https://github.com/facebook/litho/tree/master/litho-intellij-plugin">
         Facebook,Inc.
   </vendor>

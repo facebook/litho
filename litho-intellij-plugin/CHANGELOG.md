@@ -2,7 +2,7 @@
 
 ## Version 1.4.0
 
-_2020-04-18_
+_2020-04-20_
 
 * New: Litho red symbols resolution.
   - New menu action to trigger in-memory component creation.
