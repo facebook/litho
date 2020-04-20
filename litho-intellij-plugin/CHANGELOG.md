@@ -14,6 +14,7 @@ _2020-04-20_
   - New AddImportFix for in-memory components.
 * New: Add details to the line marker message about missing required prop.
 * Fix: Builder formatting when it is inserted in a nested method.
+* Fix: Double Spec suffix when creating new file from a template.
 
 ## Version 1.3.1
 

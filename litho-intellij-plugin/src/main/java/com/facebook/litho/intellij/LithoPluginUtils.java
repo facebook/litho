@@ -104,9 +104,8 @@ public class LithoPluginUtils {
   }
 
   /** @return true if given name ends with "Spec". */
-  @VisibleForTesting
   @Contract("null -> false")
-  static boolean isSpecName(@Nullable String clsName) {
+  public static boolean isSpecName(@Nullable String clsName) {
     return clsName != null && clsName.endsWith(SPEC_SUFFIX);
   }
 

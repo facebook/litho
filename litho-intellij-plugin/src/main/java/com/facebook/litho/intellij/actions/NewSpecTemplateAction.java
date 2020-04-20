@@ -29,7 +29,6 @@ import com.intellij.psi.PsiFile;
 import java.util.Map;
 
 public class NewSpecTemplateAction extends CreateFileFromTemplateAction {
-
   private static final String TITLE = "New Litho Component";
 
   public NewSpecTemplateAction() {
@@ -49,6 +48,15 @@ public class NewSpecTemplateAction extends CreateFileFromTemplateAction {
         .addKind("Layout Component", AllIcons.Nodes.AbstractClass, "LayoutSpec")
         .addKind("GroupSection Component", AllIcons.Nodes.AbstractClass, "GroupSectionSpec")
         .addKind("Mount Component", AllIcons.Nodes.AbstractClass, "MountSpec");
+  }
+
+  @Override
+  protected PsiFile createFile(String name, String templateName, PsiDirectory dir) {
+    // Template adds Spec suffix, avoiding SpecSpec
+    if (LithoPluginUtils.isSpecName(name)) {
+      name = LithoPluginUtils.getLithoComponentNameFromSpec(name);
+    }
+    return super.createFile(name, templateName, dir);
   }
 
   @Override
