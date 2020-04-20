@@ -55,7 +55,6 @@ class LayoutOutput implements Cloneable, AnimatableItem {
   private final int mFlags;
 
   private final int mImportantForAccessibility;
-  private final int mOrientation;
   private final @Nullable TransitionId mTransitionId;
   private final long mHostMarker;
 
@@ -73,7 +72,6 @@ class LayoutOutput implements Cloneable, AnimatableItem {
       int flags,
       long hostMarker,
       int importantForAccessibility,
-      int orientation,
       @Nullable TransitionId transitionId) {
 
     if (component == null) {
@@ -89,7 +87,6 @@ class LayoutOutput implements Cloneable, AnimatableItem {
     mFlags = flags;
     mHostMarker = hostMarker;
     mImportantForAccessibility = importantForAccessibility;
-    mOrientation = orientation;
     mTransitionId = transitionId;
   }
 
@@ -221,10 +218,6 @@ class LayoutOutput implements Cloneable, AnimatableItem {
 
     return (mNodeInfo != null && mNodeInfo.needsAccessibilityDelegate())
         || mComponent.implementsAccessibility();
-  }
-
-  int getOrientation() {
-    return mOrientation;
   }
 
   @Nullable

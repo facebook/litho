@@ -16,7 +16,6 @@
 
 package com.facebook.litho;
 
-import static android.content.res.Configuration.ORIENTATION_PORTRAIT;
 import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
 import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO;
 import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_YES;
@@ -108,7 +107,6 @@ public class MountItemTest {
         mFlags,
         0,
         IMPORTANT_FOR_ACCESSIBILITY_YES,
-        ORIENTATION_PORTRAIT,
         null);
   }
 
@@ -217,7 +215,6 @@ public class MountItemTest {
             0,
             0,
             IMPORTANT_FOR_ACCESSIBILITY_AUTO,
-            ORIENTATION_PORTRAIT,
             null);
 
     assertThat(getLayoutOutput(mountItem).isAccessible()).isTrue();
@@ -240,7 +237,6 @@ public class MountItemTest {
             0,
             0,
             IMPORTANT_FOR_ACCESSIBILITY_NO,
-            ORIENTATION_PORTRAIT,
             null);
 
     assertThat(getLayoutOutput(mountItem).isAccessible()).isFalse();
@@ -263,7 +259,6 @@ public class MountItemTest {
             0,
             0,
             IMPORTANT_FOR_ACCESSIBILITY_AUTO,
-            ORIENTATION_PORTRAIT,
             null);
 
     assertThat(getLayoutOutput(mountItem).isAccessible()).isTrue();
@@ -277,7 +272,7 @@ public class MountItemTest {
   @Test
   public void testUpdateDoesntChangeFlags() {
     LayoutOutput output =
-        new LayoutOutput(mNodeInfo, null, mComponent, new Rect(0, 0, 0, 0), 0, 0, 0, 0, 0, 0, null);
+        new LayoutOutput(mNodeInfo, null, mComponent, new Rect(0, 0, 0, 0), 0, 0, 0, 0, 0, null);
     RenderTreeNode node = LayoutOutput.create(output, null);
 
     View view = new View(RuntimeEnvironment.application);

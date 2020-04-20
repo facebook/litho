@@ -124,11 +124,6 @@ public class LithoRenderUnit extends RenderUnit<Object> {
   }
 
   public static boolean shouldUpdate(final LayoutOutput current, final LayoutOutput next) {
-    // If the orientation has changed, we should definitely update.
-    if (next.getOrientation() != current.getOrientation()) {
-      return true;
-    }
-
     final Component nextComponent = next.getComponent();
     final Component currentComponent = current.getComponent();
 

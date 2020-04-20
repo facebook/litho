@@ -80,7 +80,7 @@ public class MountStateRemountInPlaceTest {
   }
 
   @Test
-  public void testMountUnmountWithNoShouldUpdate() {
+  public void testRebindWithNoShouldUpdate() {
     final TestComponent firstComponent = create(mContext).build();
 
     final LithoView lithoView =
@@ -100,7 +100,7 @@ public class MountStateRemountInPlaceTest {
   }
 
   @Test
-  public void testMountUnmountWithNewOrientation() {
+  public void mountState_onNoShouldUpdateAndNewOrientation_shouldNotRemount() {
     mContext.getResources().getConfiguration().orientation = ORIENTATION_PORTRAIT;
     final TestComponent firstComponent = create(mContext).build();
 
@@ -116,10 +116,39 @@ public class MountStateRemountInPlaceTest {
 
     lithoView.getComponentTree().setRoot(Column.create(mContext).child(secondComponent).build());
 
-    assertThat(secondComponent.wasOnMountCalled()).isTrue();
+    assertThat(secondComponent.wasOnMountCalled()).isFalse();
     assertThat(secondComponent.wasOnBindCalled()).isTrue();
     assertThat(firstComponent.wasOnUnbindCalled()).isTrue();
-    assertThat(firstComponent.wasOnUnmountCalled()).isTrue();
+    assertThat(firstComponent.wasOnUnmountCalled()).isFalse();
+  }
+
+  @Test
+  public void mountState_onNewOrientationAndSameSize_shouldNotRemount() {
+    mContext.getResources().getConfiguration().orientation = ORIENTATION_PORTRAIT;
+    final TestComponent firstComponent =
+        create(mContext, 0, 0, true, true, true, false, true /*isMountSizeDependent*/)
+            .measuredHeight(10)
+            .build();
+
+    final LithoView lithoView =
+        mountComponent(mContext, Column.create(mContext).child(firstComponent).build());
+
+    assertThat(firstComponent.wasOnMountCalled()).isTrue();
+    assertThat(firstComponent.wasOnBindCalled()).isTrue();
+    assertThat(firstComponent.wasOnUnmountCalled()).isFalse();
+
+    mContext.getResources().getConfiguration().orientation = ORIENTATION_LANDSCAPE;
+    final TestComponent secondComponent =
+        create(mContext, 0, 0, true, true, true, false, true /*isMountSizeDependent*/)
+            .measuredHeight(10)
+            .build();
+
+    lithoView.getComponentTree().setRoot(Column.create(mContext).child(secondComponent).build());
+
+    assertThat(secondComponent.wasOnMountCalled()).isFalse();
+    assertThat(secondComponent.wasOnBindCalled()).isTrue();
+    assertThat(firstComponent.wasOnUnbindCalled()).isTrue();
+    assertThat(firstComponent.wasOnUnmountCalled()).isFalse();
   }
 
   @Test
