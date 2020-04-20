@@ -27,6 +27,7 @@ import com.facebook.litho.intellij.services.ComponentsCacheService;
 import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.LayoutSpecModel;
 import com.facebook.litho.specmodels.processor.PsiLayoutSpecModelFactory;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.WriteAction;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.diagnostic.Logger;
@@ -71,11 +72,15 @@ public class ComponentGenerateUtils {
     if (componentName == null) return;
 
     final Project project = layoutSpecCls.getProject();
-    DumbService.getInstance(project)
-        .smartInvokeLater(
-            () -> {
-              updateLayoutSpecInternal(componentName, layoutSpecCls, project);
-            });
+    final Runnable job =
+        () -> {
+          updateLayoutSpecInternal(componentName, layoutSpecCls, project);
+        };
+    if (ApplicationManager.getApplication().isUnitTestMode()) {
+      job.run();
+    } else {
+      DumbService.getInstance(project).smartInvokeLater(job);
+    }
   }
 
   private static void updateLayoutSpecInternal(

@@ -16,6 +16,8 @@
 
 package com.facebook.litho.intellij.actions;
 
+import com.facebook.litho.intellij.LithoPluginUtils;
+import com.facebook.litho.intellij.completion.ComponentGenerateUtils;
 import com.facebook.litho.intellij.extensions.EventLogger;
 import com.facebook.litho.intellij.logging.LithoLoggerProvider;
 import com.intellij.icons.AllIcons;
@@ -24,6 +26,7 @@ import com.intellij.ide.actions.CreateFileFromTemplateDialog;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiFile;
+import java.util.Map;
 
 public class NewSpecTemplateAction extends CreateFileFromTemplateAction {
 
@@ -49,8 +52,11 @@ public class NewSpecTemplateAction extends CreateFileFromTemplateAction {
   }
 
   @Override
-  protected PsiFile createFile(String name, String templateName, PsiDirectory dir) {
+  protected void postProcess(
+      PsiFile createdElement, String templateName, Map<String, String> customProperties) {
+    super.postProcess(createdElement, templateName, customProperties);
     LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_NEW_TEMPLATE + "." + templateName);
-    return super.createFile(name, templateName, dir);
+    LithoPluginUtils.getFirstClass(createdElement, LithoPluginUtils::isLayoutSpec)
+        .ifPresent(ComponentGenerateUtils::updateLayoutComponent);
   }
 }

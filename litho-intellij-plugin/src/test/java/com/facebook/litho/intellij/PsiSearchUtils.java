@@ -34,7 +34,11 @@ public class PsiSearchUtils {
   }
 
   public static PsiClass[] findClasses(Project project, String qualifiedName) {
-    return new PsiClass[] {findClass(project, qualifiedName)};
+    final PsiClass found = findClass(project, qualifiedName);
+    if (found == null) {
+      return PsiClass.EMPTY_ARRAY;
+    }
+    return new PsiClass[] {found};
   }
 
   public static PsiClass[] findClassesByShortName(
