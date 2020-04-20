@@ -16,6 +16,8 @@
 
 package com.facebook.litho.intellij.inspections;
 
+import com.facebook.litho.intellij.IntervalLogger;
+import com.facebook.litho.intellij.LithoPluginUtils;
 import com.facebook.litho.intellij.completion.ComponentGenerateUtils;
 import com.facebook.litho.intellij.extensions.EventLogger;
 import com.facebook.litho.intellij.logging.DebounceEventLogger;
@@ -24,6 +26,7 @@ import com.facebook.litho.specmodels.model.LayoutSpecModel;
 import com.facebook.litho.specmodels.model.SpecModelValidationError;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
 import java.util.Collections;
@@ -35,20 +38,26 @@ import java.util.Optional;
  * This re-uses Litho compile-time check.
  */
 public class LayoutSpecAnnotator implements Annotator {
+  private static final IntervalLogger DEBUG_LOGGER =
+      new IntervalLogger(Logger.getInstance(LayoutSpecAnnotator.class));
   private static final EventLogger LOGGER = new DebounceEventLogger(60_000);
 
   @Override
   public void annotate(PsiElement element, AnnotationHolder holder) {
-    List<SpecModelValidationError> errors =
-        Optional.of(element)
-            .filter(PsiClass.class::isInstance)
-            .map(PsiClass.class::cast)
-            .map(ComponentGenerateUtils::createLayoutModel)
+    DEBUG_LOGGER.logStep("start " + element);
+    if (!(element instanceof PsiClass)) return;
+
+    final PsiClass cls = (PsiClass) element;
+    if (!LithoPluginUtils.isLayoutSpec(cls)) return;
+
+    final List<SpecModelValidationError> errors =
+        Optional.ofNullable(ComponentGenerateUtils.createLayoutModel(cls))
             .map(model -> model.validate(RunMode.normal()))
             .orElse(Collections.emptyList());
     if (!errors.isEmpty()) {
       LOGGER.log(EventLogger.EVENT_ANNOTATOR + ".layout_spec");
       errors.forEach(error -> AnnotatorUtils.addError(holder, error));
     }
+    DEBUG_LOGGER.logStep("end " + element);
   }
 }
