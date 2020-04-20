@@ -22,6 +22,7 @@ import com.facebook.litho.annotations.MountSpec;
 import com.facebook.litho.annotations.OnCreateMountContent;
 import com.facebook.litho.annotations.OnMount;
 import com.facebook.litho.annotations.Prop;
+import com.facebook.litho.annotations.PropDefault;
 import com.facebook.litho.annotations.ResType;
 
 /**
@@ -37,6 +38,9 @@ import com.facebook.litho.annotations.ResType;
  */
 @MountSpec(isPureRender = true)
 class CardShadowSpec {
+
+  @PropDefault static final float shadowDx = CardShadowDrawable.UNDEFINED;
+  @PropDefault static final float shadowDy = CardShadowDrawable.UNDEFINED;
 
   @OnCreateMountContent
   static CardShadowDrawable onCreateMountContent(Context c) {

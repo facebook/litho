@@ -8,7 +8,7 @@ _release-date_
 * **Breaking: `MeasureListener` now takes two extra parameters, layoutVersion and stateUpdate. These are safe to ignore for clients that don't need them. The javadoc was updated with all the relevant information.
 * **Breaking: `performIncrementalMount()` method in LithoView was renamed `notifyVisibleBoundsChanged()`.
 * **Breaking: Rename `getShadowHorizontal` to `getShadowLeft` in `CardShadowDrawable`**.
-
+* New: Add ability to customize shadow x/y offsets of `CardShadowDrawable` and `CardShadowSpec`.
 
 For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.34.0...master).
 
