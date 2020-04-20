@@ -21,7 +21,6 @@ import com.facebook.litho.intellij.LithoPluginUtils;
 import com.facebook.litho.intellij.PsiSearchUtils;
 import com.facebook.litho.intellij.completion.ComponentGenerateUtils;
 import com.facebook.litho.intellij.file.ComponentScope;
-import com.facebook.litho.specmodels.model.LayoutSpecModel;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ReadAction;
@@ -143,14 +142,7 @@ public class ComponentsCacheService implements Disposable {
         () -> {
           if (checker.shouldStopUpdate()) return;
           IntervalLogger logger = new IntervalLogger(LOG);
-
-          final LayoutSpecModel layoutModel;
-          try {
-            layoutModel = ComponentGenerateUtils.createLayoutModel(specClass);
-          } catch (RuntimeException e) {
-            return;
-          }
-          Optional.ofNullable(layoutModel)
+          Optional.ofNullable(ComponentGenerateUtils.createLayoutModel(specClass))
               .map(
                   specModel -> {
                     logger.logStep("model creation " + componentShortName);
