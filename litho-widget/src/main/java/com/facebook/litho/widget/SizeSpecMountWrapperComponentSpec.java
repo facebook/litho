@@ -17,6 +17,8 @@
 package com.facebook.litho.widget;
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 import android.widget.FrameLayout;
 import androidx.annotation.UiThread;
 import com.facebook.litho.Component;
@@ -27,6 +29,7 @@ import com.facebook.litho.LithoView;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
 import com.facebook.litho.StateValue;
+import com.facebook.litho.ThreadUtils;
 import com.facebook.litho.TreeProps;
 import com.facebook.litho.annotations.MountSpec;
 import com.facebook.litho.annotations.OnBind;
@@ -52,6 +55,7 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 @MountSpec(hasChildLithoViews = true)
 public class SizeSpecMountWrapperComponentSpec {
+  private static final Handler sMainThreadHandler = new Handler(Looper.getMainLooper());
 
   @OnCreateInitialState
   static void onCreateInitialState(
@@ -136,10 +140,21 @@ public class SizeSpecMountWrapperComponentSpec {
   @OnDetached
   static void onDetached(
       ComponentContext c, @State AtomicReference<ComponentTree> componentTreeRef) {
-    if (componentTreeRef.get() != null) {
-      // We need to release the component tree here to allow for a proper memory deallocation
-      componentTreeRef.get().release();
+    // We need to release the component tree here to allow for a proper memory deallocation
+    final ComponentTree componentTree = componentTreeRef.get();
+    if (componentTree != null) {
       componentTreeRef.set(null);
+      if (ThreadUtils.isMainThread()) {
+        componentTree.release();
+      } else {
+        sMainThreadHandler.post(
+            new Runnable() {
+              @Override
+              public void run() {
+                componentTree.release();
+              }
+            });
+      }
     }
   }
 
