@@ -120,7 +120,7 @@ public class PsiMethodExtractorUtils {
 
       PsiNameValuePair[] paramAttributes = annotationOnParam.getParameterList().getAttributes();
       for (PsiNameValuePair attribute : paramAttributes) {
-        annotationSpec.addMember(attribute.getName(), attribute.getLiteralValue());
+        annotationSpec.addMember(attribute.getName(), attribute.getDetachedValue().getText());
       }
 
       annotations.add(annotationSpec.build());
