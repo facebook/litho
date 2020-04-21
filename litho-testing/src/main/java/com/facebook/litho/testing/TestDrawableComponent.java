@@ -152,9 +152,23 @@ public class TestDrawableComponent extends TestComponent {
     mTestComponentListener = listener;
   }
 
+  public static Builder create(ComponentContext context) {
+    return create(context, 0, 0, true, true, true, false, false);
+  }
+
   public static Builder create(
       ComponentContext context, @AttrRes int defStyleAttr, @StyleRes int defStyleRes) {
     return create(context, defStyleAttr, defStyleRes, true, true, true, false);
+  }
+
+  public static Builder create(
+      ComponentContext context,
+      boolean callsShouldUpdateOnMount,
+      boolean isPureRender,
+      boolean canMeasure,
+      boolean implementsAccessibility) {
+    return create(
+        context, 0, 0, callsShouldUpdateOnMount, isPureRender, canMeasure, implementsAccessibility);
   }
 
   public static Builder create(
@@ -205,20 +219,6 @@ public class TestDrawableComponent extends TestComponent {
     }
 
     return newBuilder(context, defStyleAttr, defStyleRes, new TestDrawableComponent(properties));
-  }
-
-  public static Builder create(ComponentContext context) {
-    return create(context, 0, 0, true, true, true, false, false);
-  }
-
-  public static Builder create(
-      ComponentContext context,
-      boolean callsShouldUpdateOnMount,
-      boolean isPureRender,
-      boolean canMeasure,
-      boolean implementsAccessibility) {
-    return create(
-        context, 0, 0, callsShouldUpdateOnMount, isPureRender, canMeasure, implementsAccessibility);
   }
 
   private static Builder newBuilder(
