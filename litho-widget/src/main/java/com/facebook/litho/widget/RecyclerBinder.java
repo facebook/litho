@@ -3921,7 +3921,7 @@ public class RecyclerBinder
         int initialPosition,
         int numberOfItemsToProcess,
         boolean traverseLayoutBackwards) {
-      mHolders = holders;
+      mHolders = new ArrayList<>(holders);
       mCurrentPosition = traverseLayoutBackwards ? initialPosition - 1 : initialPosition + 1;
       mNumberOfItemsToProcess = numberOfItemsToProcess;
       mTraverseLayoutBackwards = traverseLayoutBackwards;
