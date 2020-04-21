@@ -16,7 +16,6 @@
 
 package com.facebook.litho.testing.viewtree;
 
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import com.facebook.litho.ComponentHost;
@@ -88,11 +87,6 @@ class ComponentQueries {
   private static boolean hasDrawable(Drawable containingDrawable, Drawable drawable) {
     while (containingDrawable instanceof MatrixDrawable) {
       containingDrawable = ((MatrixDrawable) containingDrawable).getMountedDrawable();
-    }
-
-    // Workaround a bug in Robolectric's BitmapDrawable implementation.
-    if (drawable instanceof BitmapDrawable && !(containingDrawable instanceof BitmapDrawable)) {
-      return false;
     }
 
     final String drawnDrawableDescription = ViewPredicates.getDrawnDrawableDescription(drawable);

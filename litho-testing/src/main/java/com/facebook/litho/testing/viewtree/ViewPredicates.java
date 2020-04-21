@@ -18,11 +18,9 @@ package com.facebook.litho.testing.viewtree;
 
 import android.annotation.TargetApi;
 import android.graphics.Canvas;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.TextView;
 import com.facebook.litho.ComponentHost;
 import com.google.common.base.Predicate;
@@ -167,14 +165,9 @@ final class ViewPredicates {
     return new Predicate<View>() {
       @Override
       public boolean apply(@Nullable final View input) {
-        if (input instanceof ImageView) {
-          final Drawable imageDrawable = ((ImageView) input).getDrawable();
-
-          if (drawable instanceof BitmapDrawable && !(imageDrawable instanceof BitmapDrawable)) {
-            return false;
-          }
+        if (input == null) {
+          return false;
         }
-
         if (input instanceof ComponentHost) {
           return ComponentQueries.hasDrawable((ComponentHost) input, drawable);
         }
