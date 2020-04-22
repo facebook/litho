@@ -62,7 +62,6 @@ components_robolectric_test(
         make_dep_path("litho-core/src/main/java/com/facebook/litho/utils:utils"),
         make_dep_path("litho-it/src/main/java/com/facebook/litho:litho-testing"),
         make_dep_path("litho-it/src/main/java/com/facebook/litho/components:components"),
-        make_dep_path("litho-it/src/main/java/com/facebook/litho/testing/drawable:drawable"),
         make_dep_path("litho-it/src/main/java/com/facebook/litho/testing/error:error"),
         make_dep_path("litho-it/src/main/java/com/facebook/litho/widget:widget"),
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/internal:internal"),
