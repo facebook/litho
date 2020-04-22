@@ -44,5 +44,8 @@ com.facebook.litho.utils
 com.facebook.litho.viewcompat
 com.facebook.litho.widget
 com.facebook.litho.yoga
+com.facebook.rendercore
+com.facebook.rendercore.annotations
+com.facebook.rendercore.utils
 com.facebook.widget.accessibility.delegates
 com.facebook.yoga
