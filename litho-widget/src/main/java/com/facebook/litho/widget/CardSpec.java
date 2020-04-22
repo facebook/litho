@@ -86,6 +86,7 @@ class CardSpec {
       @Prop(optional = true, resType = ResType.COLOR) int shadowEndColor,
       @Prop(optional = true, resType = ResType.DIMEN_OFFSET) float cornerRadius,
       @Prop(optional = true, resType = ResType.DIMEN_OFFSET) float elevation,
+      @Prop(optional = true, resType = ResType.DIMEN_OFFSET) int shadowTopOverride,
       @Prop(optional = true, resType = ResType.DIMEN_OFFSET) int shadowBottomOverride,
       @Prop(optional = true) boolean disableClipTopLeft,
       @Prop(optional = true) boolean disableClipTopRight,
@@ -102,7 +103,7 @@ class CardSpec {
       elevation = pixels(resources, DEFAULT_SHADOW_SIZE_DP);
     }
 
-    final int shadowTop = getShadowTop(elevation);
+    final int shadowTop = shadowTopOverride == -1 ? getShadowTop(elevation) : shadowTopOverride;
     final int shadowBottom =
         shadowBottomOverride == -1 ? getShadowBottom(elevation) : shadowBottomOverride;
     final int shadowLeft = getShadowLeft(elevation);
