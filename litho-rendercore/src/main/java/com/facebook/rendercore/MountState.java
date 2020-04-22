@@ -33,7 +33,6 @@ public class MountState implements MountDelegateTarget {
 
   private final LongSparseArray<MountItem> mIndexToMountedItemMap;
   private final Context mContext;
-  private final LongSparseArray<Host> mHostsById = new LongSparseArray<>();
   private final Host mRootHost;
 
   // Updated in prepareMount(), thus during mounting they hold the information
@@ -257,9 +256,7 @@ public class MountState implements MountDelegateTarget {
   private void prepareMount(RenderTree newRenderTree) {
     unmountOrMoveOldItems(newRenderTree);
 
-    if (mHostsById.get(ROOT_HOST_ID) == null) {
-      // Mounting always starts with the root host.
-      registerHost(ROOT_HOST_ID, mRootHost);
+    if (mIndexToMountedItemMap.get(ROOT_HOST_ID) == null) {
       // Root host is implicitly marked as mounted.
       mIndexToMountedItemMap.put(
           ROOT_HOST_ID, new MountItem(newRenderTree.getRenderTreeNodeAtIndex(0), null, mRootHost));
@@ -304,9 +301,13 @@ public class MountState implements MountDelegateTarget {
             renderTreeNode.getParent() == null
                 ? 0L
                 : renderTreeNode.getParent().getRenderUnit().getId();
+        final Host newHost =
+            mIndexToMountedItemMap.get(newHostMarker) == null
+                ? null
+                : (Host) mIndexToMountedItemMap.get(newHostMarker).getContent();
         if (oldItem == null) {
           // This was previously unmounted.
-        } else if (oldItem.getHost() != mHostsById.get(newHostMarker)) {
+        } else if (oldItem.getHost() != newHost) {
           // If the id is the same but the parent host is different we simply unmount the item and
           // re-mount it later. If the item to unmount is a ComponentHost, all the children will be
           // recursively unmounted.
@@ -343,13 +344,16 @@ public class MountState implements MountDelegateTarget {
   private void mountRenderUnit(int index, RenderTreeNode renderTreeNode) {
     // 1. Resolve the correct host to mount our content to.
     final RenderTreeNode hostTreeNode = renderTreeNode.getParent();
-    Host host = mHostsById.get(hostTreeNode.getRenderUnit().getId());
+
+    final Host host =
+        (Host) mIndexToMountedItemMap.get(hostTreeNode.getRenderUnit().getId()).getContent();
+
+    if (host == null) {
+      throw new RuntimeException("Trying to mount a RenderTreeNode but its host is not mounted.");
+    }
 
     // 2. call the RenderUnit's Mount bindings.
     final RenderUnit renderUnit = renderTreeNode.getRenderUnit();
-    if (renderUnit == null) {
-      throw new RuntimeException("Trying to mount a RenderTreeNode with a null Component.");
-    }
 
     final Object content = MountItemsPool.acquireMountContent(mContext, renderUnit);
     final List<RenderUnit.Binder> mountUnmountFunctions = renderUnit.mountUnmountFunctions();
@@ -359,19 +363,13 @@ public class MountState implements MountDelegateTarget {
       }
     }
 
-    // 3. If it's a ComponentHost, add the mounted View to the list of Hosts.
-    if (content instanceof Host) {
-      Host hostContent = (Host) content;
-      registerHost(renderUnit.getId(), hostContent);
-    }
-
-    // 4. Mount the content into the selected host.
+    // 3. Mount the content into the selected host.
     final MountItem item = mountContentInHost(index, content, host, renderTreeNode);
 
-    // 5. Call attach binding functions
+    // 4. Call attach binding functions
     bindRenderUnitToContent(mContext, item);
 
-    // 6. Apply the bounds to the Mount content now. It's important to do so after bind as calling
+    // 5. Apply the bounds to the Mount content now. It's important to do so after bind as calling
     // bind might have triggered a layout request within a View.
     applyBoundsToMountContent(renderTreeNode, item.getContent(), true /* force */);
   }
@@ -414,9 +412,7 @@ public class MountState implements MountDelegateTarget {
     final Host host = item.getHost();
     host.unmount(item.getRenderTreeNode().getPositionInParent(), item);
 
-    if (content instanceof Host) {
-      mHostsById.remove(item.getRenderUnit().getId());
-    } else if (content instanceof View) {
+    if (content instanceof View) {
       ((View) content).setPadding(0, 0, 0, 0);
     }
 
@@ -438,14 +434,17 @@ public class MountState implements MountDelegateTarget {
     item.releaseMountContent(mContext);
   }
 
-  private void registerHost(long id, Host host) {
-    host.suppressInvalidations(true);
-    mHostsById.put(id, host);
-  }
-
   private void suppressInvalidationsOnHosts(boolean suppressInvalidations) {
-    for (int i = mHostsById.size() - 1; i >= 0; i--) {
-      mHostsById.valueAt(i).suppressInvalidations(suppressInvalidations);
+    for (int i = 0; i < mRenderTree.getMountableOutputCount(); i++) {
+      final RenderTreeNode renderTreeNode = mRenderTree.getRenderTreeNodeAtIndex(i);
+      // If this RenderUnit has children it means that it's mounting a Host and therefore we need
+      // to suppress invalidations on it.
+      if (renderTreeNode.getChildrenCount() > 0) {
+        final MountItem item = mIndexToMountedItemMap.get(renderTreeNode.getRenderUnit().getId());
+        if (item != null) {
+          ((Host) item.getContent()).suppressInvalidations(suppressInvalidations);
+        }
+      }
     }
   }
 
