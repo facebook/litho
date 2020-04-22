@@ -975,18 +975,17 @@ public class ComponentTree {
   void setLithoView(@NonNull LithoView view) {
     assertMainThread();
 
-    // It's possible that the view associated with this ComponentTree was recycled but was
-    // never detached. In all cases we have to make sure that the old references between
-    // lithoView and componentTree are reset.
-    if (mIsAttached) {
-      if (mLithoView != null) {
-        mLithoView.setComponentTree(null);
-      } else {
-        detach();
-      }
-    } else if (mLithoView != null) {
-      // Remove the ComponentTree reference from a previous view if any.
-      mLithoView.clearComponentTree();
+    if (mLithoView == view) {
+      return;
+    }
+
+    if (mLithoView != null) {
+      mLithoView.setComponentTree(null);
+    } else if (mIsAttached) {
+      // It's possible that the view associated with this ComponentTree was recycled but was
+      // never detached. In all cases we have to make sure that the old references between
+      // lithoView and componentTree are reset.
+      detach();
     }
 
     // TODO t58734935 revert this.

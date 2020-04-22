@@ -766,18 +766,6 @@ public class LithoView extends Host {
     }
   }
 
-  /** Called from the ComponentTree when a new view want to use the same ComponentTree. */
-  void clearComponentTree() {
-    assertMainThread();
-
-    if (mIsAttached) {
-      throw new IllegalStateException("Trying to clear the ComponentTree while attached.");
-    }
-
-    mComponentTree = null;
-    mNullComponentCause = "clear_CT";
-  }
-
   /**
    * Call this to tell the LithoView whether it is visible or not. In general, you shouldn't require
    * this as the system will do this for you. However, when a new activity/fragment is added on top
