@@ -1157,6 +1157,8 @@ public class VisibilityEventsTest {
     lithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 10), true);
     lithoView.release();
 
+    assertThat(content.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler);
+    unbindComponent(lithoView);
     assertThat(content.getDispatchedEventHandlers()).contains(invisibleEventHandler);
   }
 
@@ -1211,84 +1213,6 @@ public class VisibilityEventsTest {
     assertThat(component1.getDispatchedEventHandlers()).contains(invisibleEventHandler1);
     assertThat(component1.getDispatchedEventHandlers()).contains(unfocusedEventHandler1);
     assertThat(component2.getDispatchedEventHandlers()).contains(visibleEventHandler2);
-  }
-
-  @Test
-  public void testSetDifferentComponentTreeWithSameKeysStillCallsInvisibleAndVisibleEvents() {
-    final TestComponent firstComponent = create(mContext).build();
-    final TestComponent secondComponent = create(mContext).build();
-    final EventHandler<VisibleEvent> visibleEventHandler1 = new EventHandler<>(firstComponent, 1);
-    final EventHandler<InvisibleEvent> invisibleEventHandler1 =
-        new EventHandler<>(firstComponent, 2);
-    final EventHandler<VisibleEvent> visibleEventHandler2 = new EventHandler<>(secondComponent, 1);
-    final EventHandler<InvisibleEvent> invisibleEventHandler2 =
-        new EventHandler<>(secondComponent, 2);
-
-    final LithoView lithoView =
-        mountComponent(
-            mContext,
-            Column.create(mContext)
-                .child(
-                    Wrapper.create(mContext)
-                        .delegate(firstComponent)
-                        .visibleHandler(visibleEventHandler1)
-                        .invisibleHandler(invisibleEventHandler1)
-                        .widthPx(10)
-                        .heightPx(10))
-                .build(),
-            true);
-
-    assertThat(firstComponent.getDispatchedEventHandlers()).containsExactly(visibleEventHandler1);
-
-    firstComponent.getDispatchedEventHandlers().clear();
-
-    mountComponent(
-        mContext,
-        lithoView,
-        Column.create(mContext)
-            .child(
-                Wrapper.create(mContext)
-                    .delegate(secondComponent)
-                    .visibleHandler(visibleEventHandler2)
-                    .invisibleHandler(invisibleEventHandler2)
-                    .widthPx(10)
-                    .heightPx(10))
-            .build(),
-        true,
-        100,
-        100);
-
-    assertThat(firstComponent.getDispatchedEventHandlers()).containsExactly(invisibleEventHandler1);
-    assertThat(secondComponent.getDispatchedEventHandlers()).containsExactly(visibleEventHandler2);
-  }
-
-  @Test
-  public void testSetComponentTreeToNullDispatchesInvisibilityEvents() {
-    final TestComponent component = create(mContext).build();
-    final EventHandler<VisibleEvent> visibleEventHandler = new EventHandler<>(component, 1);
-    final EventHandler<InvisibleEvent> invisibleEventHandler = new EventHandler<>(component, 2);
-
-    final LithoView lithoView =
-        mountComponent(
-            mContext,
-            Column.create(mContext)
-                .child(
-                    Wrapper.create(mContext)
-                        .delegate(component)
-                        .visibleHandler(visibleEventHandler)
-                        .invisibleHandler(invisibleEventHandler)
-                        .widthPx(10)
-                        .heightPx(10))
-                .build(),
-            true);
-
-    assertThat(component.getDispatchedEventHandlers()).containsExactly(visibleEventHandler);
-
-    component.getDispatchedEventHandlers().clear();
-
-    lithoView.setComponentTree(null);
-
-    assertThat(component.getDispatchedEventHandlers()).containsExactly(invisibleEventHandler);
   }
 
   @Test
