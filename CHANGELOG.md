@@ -6,8 +6,7 @@ _release-date_
 
 * **Breaking: `LayoutInfo` implementations are required to implement `scrollToPositionWithOffset()`.** To avoid special casing for LinearLayoutManager and StaggeredGridLayoutManager in RecyclerBinder and other internal logic, a LayoutInfo implementation must now delegate to the underlying LayoutManager's scrolling by implementing `scrollToPositionWithOffset()`. Typical cases should call the LayoutManager's own implementation of `scrollToPositionWithOffset()`, or an equivalent. This creates a common interface for programmatic scrolling.
 * **Breaking: `MeasureListener` now takes two extra parameters, layoutVersion and stateUpdate. These are safe to ignore for clients that don't need them. The javadoc was updated with all the relevant information.
-* **Breaking:** `performIncrementalMount()` method in LithoView was renamed `notifyVisibleBoundsChanged()`.
-* **Breaking:** Visibility events get processed even if incremental mount is turned off.
+* **Breaking: `performIncrementalMount()` method in LithoView was renamed `notifyVisibleBoundsChanged()`.
 * **Breaking: Rename `getShadowHorizontal` to `getShadowLeft` in `CardShadowDrawable`**.
 * New: Add ability to customize shadow x/y offsets of `CardShadowDrawable` and `CardShadowSpec`.
 

@@ -137,7 +137,6 @@ public class MountStateViewClickTest {
                 .longClickHandler(scopedContext.newEventHandler(2))
                 .child(TestDrawableComponent.create(scopedContext))
                 .build(),
-            true,
             true);
 
     assertThat(lithoView.isClickable()).isTrue();

@@ -260,10 +260,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener, Mount
    */
   void mount(
       LayoutState layoutState, @Nullable Rect localVisibleRect, boolean processVisibilityOutputs) {
-    final ComponentTree componentTree = mLithoView.getComponentTree();
-    final boolean isIncrementalMountEnabled = componentTree.isIncrementalMountEnabled();
-    final boolean isVisibilityProcessingEnabled = componentTree.isVisibilityProcessingEnabled();
-
+    final boolean isIncrementalMountEnabled = localVisibleRect != null;
     if (mIncrementalMountExtension != null && isIncrementalMountEnabled) {
       mountWithIncrementalMountExtension(layoutState, localVisibleRect, processVisibilityOutputs);
       return;
@@ -284,6 +281,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener, Mount
     }
     mIsMounting = true;
 
+    final ComponentTree componentTree = mLithoView.getComponentTree();
     final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
       final StringBuilder sectionName =
@@ -421,25 +419,23 @@ class MountState implements TransitionManager.OnAnimationCompleteListener, Mount
       mTransitionManager.runTransitions();
     }
 
-    if (isVisibilityProcessingEnabled) {
-      if (mVisibilityOutputsExtension != null) {
-        processVisibilityOutputsWithExtension(layoutState, mIsDirty);
-      } else {
-        if (processVisibilityOutputs) {
-          if (isTracing) {
-            ComponentsSystrace.beginSection("processVisibilityOutputs");
-          }
-          if (mountPerfEvent != null) {
-            mountPerfEvent.markerPoint("EVENT_PROCESS_VISIBILITY_OUTPUTS_START");
-          }
-          processVisibilityOutputs(
-              layoutState, localVisibleRect, mPreviousLocalVisibleRect, mIsDirty, mountPerfEvent);
-          if (mountPerfEvent != null) {
-            mountPerfEvent.markerPoint("EVENT_PROCESS_VISIBILITY_OUTPUTS_END");
-          }
-          if (isTracing) {
-            ComponentsSystrace.endSection();
-          }
+    if (mVisibilityOutputsExtension != null) {
+      processVisibilityOutputsWithExtension(layoutState, mIsDirty);
+    } else {
+      if (processVisibilityOutputs) {
+        if (isTracing) {
+          ComponentsSystrace.beginSection("processVisibilityOutputs");
+        }
+        if (mountPerfEvent != null) {
+          mountPerfEvent.markerPoint("EVENT_PROCESS_VISIBILITY_OUTPUTS_START");
+        }
+        processVisibilityOutputs(
+            layoutState, localVisibleRect, mPreviousLocalVisibleRect, mIsDirty, mountPerfEvent);
+        if (mountPerfEvent != null) {
+          mountPerfEvent.markerPoint("EVENT_PROCESS_VISIBILITY_OUTPUTS_END");
+        }
+        if (isTracing) {
+          ComponentsSystrace.endSection();
         }
       }
     }
@@ -486,16 +482,12 @@ class MountState implements TransitionManager.OnAnimationCompleteListener, Mount
       mIncrementalMountExtension.onViewOffset();
     }
 
-    final ComponentTree componentTree = mLithoView.getComponentTree();
-    boolean isVisibilityProcessingEnabled = componentTree.isVisibilityProcessingEnabled();
-    if (isVisibilityProcessingEnabled) {
-      if (mVisibilityOutputsExtension != null) {
-        processVisibilityOutputsWithExtension(layoutState, wasDirty);
-      } else {
-        if (processVisibilityOutputs) {
-          processVisibilityOutputs(
-              layoutState, localVisibleRect, previousLocalVisibleRect, wasDirty, null);
-        }
+    if (mVisibilityOutputsExtension != null) {
+      processVisibilityOutputsWithExtension(layoutState, wasDirty);
+    } else {
+      if (processVisibilityOutputs) {
+        processVisibilityOutputs(
+            layoutState, localVisibleRect, previousLocalVisibleRect, wasDirty, null);
       }
     }
   }

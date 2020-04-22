@@ -25,7 +25,6 @@ import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.os.Build;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityManager;
@@ -50,7 +49,6 @@ public class LithoView extends Host {
   public static final String SET_ALREADY_ATTACHED_COMPONENT_TREE =
       "LithoView:SetAlreadyAttachedComponentTree";
   private static final int TOO_BIG_TEXTURE_SIZE = 4096;
-  private static final String TAG = LithoView.class.getSimpleName();
   private boolean mIsMountStateDirty;
   private final boolean mUseExtensions;
   private final @Nullable MountDelegateTarget mMountDelegateTarget;
@@ -492,7 +490,7 @@ public class LithoView extends Host {
 
       // If this happens the LithoView might have moved on Screen without a scroll event
       // triggering incremental mount. We trigger one here to be sure all the content is visible.
-      if (!wasMountTriggered) {
+      if (!wasMountTriggered && isIncrementalMountEnabled()) {
         notifyVisibleBoundsChanged();
       }
 
@@ -780,16 +778,18 @@ public class LithoView extends Host {
   public void setVisibilityHint(boolean isVisible) {
     assertMainThread();
 
-    if (mComponentTree == null) {
+    if (mComponentTree == null || !mComponentTree.isIncrementalMountEnabled()) {
       return;
     }
 
     if (isVisible) {
-      if (getLocalVisibleRect(mRect)) {
+      if (getLocalVisibleRect(new Rect())) {
         if (mUseExtensions) {
-          mLithoHostListenerCoordinator.onHostVisibilityChanged(true);
+          if (mLithoHostListenerCoordinator != null) {
+            mLithoHostListenerCoordinator.onHostVisibilityChanged(true);
+          }
         } else {
-          processVisibilityOutputs(mRect);
+          mComponentTree.processVisibilityOutputs();
         }
         recursivelySetVisibleHint(true);
       }
@@ -819,13 +819,17 @@ public class LithoView extends Host {
     super.setHasTransientState(hasTransientState);
 
     if (hasTransientState) {
-      if (mTransientStateCount == 0 && mComponentTree != null) {
+      if (mTransientStateCount == 0
+          && mComponentTree != null
+          && mComponentTree.isIncrementalMountEnabled()) {
         notifyVisibleBoundsChanged(new Rect(0, 0, getWidth(), getHeight()), false);
       }
       mTransientStateCount++;
     } else {
       mTransientStateCount--;
-      if (mTransientStateCount == 0 && mComponentTree != null) {
+      if (mTransientStateCount == 0
+          && mComponentTree != null
+          && mComponentTree.isIncrementalMountEnabled()) {
         // We mounted everything when the transient state was set on this view. We need to do this
         // partly to unmount content that is not visible but mostly to get the correct visibility
         // events to be fired.
@@ -841,14 +845,14 @@ public class LithoView extends Host {
   public void offsetTopAndBottom(int offset) {
     super.offsetTopAndBottom(offset);
 
-    onOffsetOrTranslationChange();
+    maybePerformIncrementalMountOnOffsetOrTranslationChange();
   }
 
   @Override
   public void offsetLeftAndRight(int offset) {
     super.offsetLeftAndRight(offset);
 
-    onOffsetOrTranslationChange();
+    maybePerformIncrementalMountOnOffsetOrTranslationChange();
   }
 
   @Override
@@ -858,7 +862,7 @@ public class LithoView extends Host {
     }
     super.setTranslationX(translationX);
 
-    onOffsetOrTranslationChange();
+    maybePerformIncrementalMountOnOffsetOrTranslationChange();
   }
 
   @Override
@@ -868,7 +872,7 @@ public class LithoView extends Host {
     }
     super.setTranslationY(translationY);
 
-    onOffsetOrTranslationChange();
+    maybePerformIncrementalMountOnOffsetOrTranslationChange();
   }
 
   @Override
@@ -890,8 +894,10 @@ public class LithoView extends Host {
     }
   }
 
-  private void onOffsetOrTranslationChange() {
-    if (mComponentTree == null || !(getParent() instanceof View)) {
+  private void maybePerformIncrementalMountOnOffsetOrTranslationChange() {
+    if (mComponentTree == null
+        || !mComponentTree.isIncrementalMountEnabled()
+        || !(getParent() instanceof View)) {
       return;
     }
 
@@ -952,13 +958,9 @@ public class LithoView extends Host {
     if (mComponentTree.isIncrementalMountEnabled()) {
       mComponentTree.mountComponent(visibleRect, processVisibilityOutputs);
     } else {
-      if (mLithoHostListenerCoordinator != null) {
-        mLithoHostListenerCoordinator.onViewOffset();
-      } else {
-        if (processVisibilityOutputs && mComponentTree.isVisibilityProcessingEnabled()) {
-          processVisibilityOutputs(visibleRect);
-        }
-      }
+      throw new IllegalStateException(
+          "To perform incremental mounting, you need first to enable"
+              + " it when creating the ComponentTree.");
     }
   }
 
@@ -970,13 +972,9 @@ public class LithoView extends Host {
     if (mComponentTree.isIncrementalMountEnabled()) {
       mComponentTree.incrementalMountComponent();
     } else {
-      if (mLithoHostListenerCoordinator != null) {
-        mLithoHostListenerCoordinator.onViewOffset();
-      } else {
-        if (mComponentTree.isVisibilityProcessingEnabled()) {
-          processVisibilityOutputs();
-        }
-      }
+      throw new IllegalStateException(
+          "To perform incremental mounting, you need first to enable"
+              + " it when creating the ComponentTree.");
     }
   }
 
@@ -1136,27 +1134,9 @@ public class LithoView extends Host {
   }
 
   // This only gets called if extensions are disabled.
-  private void processVisibilityOutputs() {
-    final Rect currentVisibleArea = new Rect();
-    final boolean visible = getLocalVisibleRect(currentVisibleArea);
-    if (!visible) {
-      currentVisibleArea.setEmpty();
-    }
-
-    processVisibilityOutputs(currentVisibleArea);
-  }
-
-  @VisibleForTesting
-  void processVisibilityOutputs(Rect currentVisibleArea) {
+  void processVisibilityOutputs(LayoutState layoutState, Rect currentVisibleArea) {
     if (mUseExtensions) {
       throw new IllegalStateException();
-    }
-
-    final LayoutState layoutState = mComponentTree.getMainThreadLayoutState();
-
-    if (layoutState == null) {
-      Log.w(TAG, "Main Thread Layout state is not found");
-      return;
     }
 
     mMountState.processVisibilityOutputs(
