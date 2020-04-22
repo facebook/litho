@@ -97,7 +97,10 @@ public class MountState implements MountDelegateTarget {
 
   @Override
   public void notifyUnmount(int position) {
-    unmountItem(getItemAt(position));
+    final MountItem mountItem = getItemAt(position);
+    if (mountItem != null) {
+      unmountItemRecursively(mountItem.getRenderTreeNode());
+    }
   }
 
   /**
@@ -123,7 +126,7 @@ public class MountState implements MountDelegateTarget {
     mIsMounting = true;
 
     suppressInvalidationsOnHosts(true);
-    prepareMount(renderTree);
+    prepareMount();
 
     // Let's start from 1 as the RenderTreeNode in position 0 always represents the root.
     for (int i = 1, size = renderTree.getMountableOutputCount(); i < size; i++) {
@@ -150,8 +153,10 @@ public class MountState implements MountDelegateTarget {
     }
     // Let's unmount all the content from the Root host. Everything else will be recursively
     // unmounted from there.
-    for (int i = mRootHost.getMountItemCount() - 1; i >= 0; i--) {
-      unmountItem(mRootHost.getMountItemAt(i));
+    final RenderTreeNode rootRenderTreeNode = mRenderTree.getRoot();
+
+    for (int i = 0; i < rootRenderTreeNode.getChildrenCount(); i++) {
+      unmountItemRecursively(rootRenderTreeNode.getChildAt(i));
     }
     mNeedsRemount = true;
   }
@@ -253,22 +258,22 @@ public class MountState implements MountDelegateTarget {
   }
 
   /** Prepare the {@link MountState} to mount a new {@link RenderTree}. */
-  private void prepareMount(RenderTree newRenderTree) {
-    unmountOrMoveOldItems(newRenderTree);
+  private void prepareMount() {
+    unmountOrMoveOldItems();
 
     if (mIndexToMountedItemMap.get(ROOT_HOST_ID) == null) {
       // Root host is implicitly marked as mounted.
       mIndexToMountedItemMap.put(
-          ROOT_HOST_ID, new MountItem(newRenderTree.getRenderTreeNodeAtIndex(0), null, mRootHost));
+          ROOT_HOST_ID, new MountItem(mRenderTree.getRenderTreeNodeAtIndex(0), null, mRootHost));
     }
 
-    final int outputCount = newRenderTree.getMountableOutputCount();
+    final int outputCount = mRenderTree.getMountableOutputCount();
     if (mRenderUnitIds == null || outputCount != mRenderUnitIds.length) {
       mRenderUnitIds = new long[outputCount];
     }
 
     for (int i = 0; i < outputCount; i++) {
-      mRenderUnitIds[i] = newRenderTree.getRenderTreeNodeAtIndex(i).getRenderUnit().getId();
+      mRenderUnitIds[i] = mRenderTree.getRenderTreeNodeAtIndex(i).getRenderUnit().getId();
     }
   }
 
@@ -279,7 +284,7 @@ public class MountState implements MountDelegateTarget {
    * treatment here since we mark them as removed and re-added when calculating the new
    * LayoutOutputs
    */
-  private void unmountOrMoveOldItems(RenderTree newRenderTree) {
+  private void unmountOrMoveOldItems() {
     if (mRenderUnitIds == null) {
       return;
     }
@@ -289,13 +294,16 @@ public class MountState implements MountDelegateTarget {
     // recursively
     // all its mounted children.
     for (int i = 0; i < mRenderUnitIds.length; i++) {
-      final int newPosition = newRenderTree.getRenderTreeNodeIndex(mRenderUnitIds[i]);
+      final int newPosition = mRenderTree.getRenderTreeNodeIndex(mRenderUnitIds[i]);
       final RenderTreeNode renderTreeNode =
-          newPosition > -1 ? newRenderTree.getRenderTreeNodeAtIndex(newPosition) : null;
+          newPosition > -1 ? mRenderTree.getRenderTreeNodeAtIndex(newPosition) : null;
       final MountItem oldItem = getItemAt(i);
 
       if (newPosition == -1) {
-        unmountItem(oldItem);
+        // if oldItem is null it was previously unmounted so there is nothing we need to do.
+        if (oldItem != null) {
+          unmountItemRecursively(oldItem.getRenderTreeNode());
+        }
       } else {
         final long newHostMarker =
             renderTreeNode.getParent() == null
@@ -311,7 +319,7 @@ public class MountState implements MountDelegateTarget {
           // If the id is the same but the parent host is different we simply unmount the item and
           // re-mount it later. If the item to unmount is a ComponentHost, all the children will be
           // recursively unmounted.
-          unmountItem(oldItem);
+          unmountItemRecursively(oldItem.getRenderTreeNode());
         } else if (newPosition != i) {
           // If a MountItem for this id exists and the hostMarker has not changed but its position
           // in the outputs array has changed we need to update the position in the Host to ensure
@@ -374,11 +382,14 @@ public class MountState implements MountDelegateTarget {
     applyBoundsToMountContent(renderTreeNode, item.getContent(), true /* force */);
   }
 
-  private void unmountItem(MountItem item) {
+  private void unmountItemRecursively(RenderTreeNode node) {
+
+    final MountItem item = mIndexToMountedItemMap.get(node.getRenderUnit().getId());
     // Already has been unmounted.
     if (item == null) {
       return;
     }
+
     final Object content = item.getContent();
 
     // The root host item should never be unmounted as it's a reference
@@ -393,13 +404,12 @@ public class MountState implements MountDelegateTarget {
     // sub tree. However, traversing the tree bottom-up, it needs to unmount a node holding that
     // sub tree, that will still have mounted items. (Different sequence number on RenderTreeNode
     // id)
-    if (content instanceof Host) {
+    if (node.getChildrenCount() > 0) {
       final Host host = (Host) content;
 
       // Concurrently remove items therefore traverse backwards.
-      for (int i = host.getMountItemCount() - 1; i >= 0; i--) {
-        final MountItem mountItem = host.getMountItemAt(i);
-        unmountItem(mountItem);
+      for (int i = 0; i < node.getChildrenCount(); i++) {
+        unmountItemRecursively(node.getChildAt(i));
       }
 
       if (host.getMountItemCount() > 0) {
@@ -448,7 +458,7 @@ public class MountState implements MountDelegateTarget {
     }
   }
 
-  private MountItem getItemAt(int i) {
+  private @Nullable MountItem getItemAt(int i) {
     if (mIndexToMountedItemMap == null || mRenderUnitIds == null) {
       return null;
     }

@@ -80,6 +80,10 @@ public class RenderTreeNode {
     return mChildren != null ? mChildren.size() : 0;
   }
 
+  public RenderTreeNode getChildAt(int idx) {
+    return mChildren.get(idx);
+  }
+
   public int getPositionInParent() {
     return mPositionInParent;
   }

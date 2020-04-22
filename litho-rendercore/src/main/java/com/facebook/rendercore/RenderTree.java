@@ -76,4 +76,8 @@ public class RenderTree {
   public void setRenderTreeData(Object renderTreeData) {
     mRenderTreeData = renderTreeData;
   }
+
+  public RenderTreeNode getRoot() {
+    return mRoot;
+  }
 }
