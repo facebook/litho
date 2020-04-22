@@ -132,6 +132,7 @@ public class RecyclerBinder
   private final int mRecyclingMode;
   private final boolean mKeepComponentTreeForRecycledView;
   private final boolean mDisableUnmountAllForRecycledView;
+  private final boolean mVisibilityProcessingEnabled;
   private @Nullable List<ComponentLogParams> mInvalidStateLogParamsList;
   private final RecyclerRangeTraverser mRangeTraverser;
   private final boolean mHScrollAsyncMode;
@@ -368,6 +369,7 @@ public class RecyclerBinder
         LithoHandler layoutHandler,
         ComponentTreeMeasureListenerFactory measureListenerFactory,
         boolean incrementalMountEnabled,
+        boolean visibilityProcessingEnabled,
         boolean canInterruptAndMoveLayoutsBetweenThreads,
         boolean useCancelableLayoutFutures,
         boolean isReconciliationEnabled,
@@ -386,6 +388,7 @@ public class RecyclerBinder
             LithoHandler layoutHandler,
             ComponentTreeMeasureListenerFactory measureListenerFactory,
             boolean incrementalMountEnabled,
+            boolean visibilityProcessingEnabled,
             boolean canInterruptAndMoveLayoutsBetweenThreads,
             boolean useCancelableLayoutFutures,
             boolean isReconciliationEnabled,
@@ -399,6 +402,7 @@ public class RecyclerBinder
               .layoutHandler(layoutHandler)
               .componentTreeMeasureListenerFactory(measureListenerFactory)
               .incrementalMount(incrementalMountEnabled)
+              .visibilityProcessingEnabled(visibilityProcessingEnabled)
               .canInterruptAndMoveLayoutsBetweenThreads(canInterruptAndMoveLayoutsBetweenThreads)
               .useCancelableLayoutFutures(useCancelableLayoutFutures)
               .isReconciliationEnabled(isReconciliationEnabled)
@@ -454,6 +458,7 @@ public class RecyclerBinder
         ComponentsConfiguration.keepComponentTreeForRecyclerView;
     private boolean mDisableUnmountAllForRecycledView =
         ComponentsConfiguration.disableUnmountAllItemsForRecycledView;
+    private boolean visibilityProcessing = true;
 
     /**
      * @param rangeRatio specifies how big a range this binder should try to compute. The range is
@@ -765,6 +770,8 @@ public class RecyclerBinder
       // Incremental mount will not work if this ComponentTree is nested in a parent with it turned
       // off, so always disable it in that case
       incrementalMount = incrementalMount && ComponentContext.isIncrementalMountEnabled(c);
+      visibilityProcessing =
+          visibilityProcessing && ComponentContext.isVisibilityProcessingEnabled(c);
 
       if (recyclingMode == ComponentTree.RecyclingMode.DEFAULT) {
         // Only override from parent if recycling mode is not explicitly set.
@@ -952,6 +959,7 @@ public class RecyclerBinder
 
     mHScrollAsyncMode = builder.hscrollAsyncMode;
     mIncrementalMountEnabled = builder.incrementalMount;
+    mVisibilityProcessingEnabled = builder.visibilityProcessing;
     mStickyHeaderControllerFactory = builder.stickyHeaderControllerFactory;
     mEnableDetach = builder.enableDetach;
     mUseCancelableLayoutFutures = builder.useCancelableLayoutFutures;
@@ -3759,6 +3767,7 @@ public class RecyclerBinder
         layoutHandler,
         mComponentTreeMeasureListenerFactory,
         mIncrementalMountEnabled,
+        mVisibilityProcessingEnabled,
         mMoveLayoutsBetweenThreads,
         mUseCancelableLayoutFutures,
         mIsReconciliationEnabled,

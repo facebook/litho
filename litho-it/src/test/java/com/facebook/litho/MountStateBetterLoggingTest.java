@@ -89,8 +89,8 @@ public class MountStateBetterLoggingTest {
         .containsEntry("updated_content", new String[] {"HostComponent"})
         .containsEntry("updated_count", 1)
         .containsEntry("unmounted_time_ms", new Double[] {})
-        .containsEntry("visibility_handler_time_ms", new Double[] {})
-        .containsEntry("visibility_handlers_total_time_ms", 0.0)
+        .containsKey("visibility_handler_time_ms")
+        .containsKey("visibility_handlers_total_time_ms")
         .containsKeys("mounted_extras", "mounted_time_ms", "updated_time_ms");
   }
 }

@@ -184,6 +184,7 @@ public class LithoViewMountTest {
                     .build();
               }
             },
+            true,
             true);
 
     lithoView.notifyVisibleBoundsChanged(new Rect(0, -10, 10, -5), true);
@@ -211,6 +212,7 @@ public class LithoViewMountTest {
                     .build();
               }
             },
+            true,
             true);
 
     lithoView.performLayout(false, 0, 0, 100, 100);
@@ -242,6 +244,7 @@ public class LithoViewMountTest {
                     .build();
               }
             },
+            true,
             true);
 
     lithoView.notifyVisibleBoundsChanged(new Rect(0, -10, 10, -5), true);

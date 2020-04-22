@@ -260,6 +260,7 @@ public class RecyclerCollectionComponentSpecTest {
                                 .widthDip(100))
                         .build())
                 .build(),
+            false,
             false);
 
     final LithoView childView = (LithoView) findViewWithTag(view, "rv_row");
@@ -282,6 +283,7 @@ public class RecyclerCollectionComponentSpecTest {
                                 .widthDip(100))
                         .build())
                 .build(),
+            true,
             true);
 
     final LithoView childView = (LithoView) findViewWithTag(view, "rv_row");

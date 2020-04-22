@@ -90,6 +90,7 @@ public class MountStateWithExtensionsIncrementalMountTest {
                     .build();
               }
             },
+            true,
             true);
 
     lithoView.getComponentTree().mountComponent(new Rect(0, -10, 10, -5), true);
@@ -129,6 +130,7 @@ public class MountStateWithExtensionsIncrementalMountTest {
                     .build();
               }
             },
+            true,
             true);
 
     lithoView.getComponentTree().mountComponent(new Rect(0, 20, 10, 30), true);
@@ -171,6 +173,7 @@ public class MountStateWithExtensionsIncrementalMountTest {
                     .build();
               }
             },
+            true,
             true);
 
     lithoView.getComponentTree().mountComponent(new Rect(-10, 0, -5, 10), true);
@@ -213,6 +216,7 @@ public class MountStateWithExtensionsIncrementalMountTest {
                     .build();
               }
             },
+            true,
             true);
 
     lithoView.getComponentTree().mountComponent(new Rect(0, -10, 10, -5), true);
@@ -254,6 +258,7 @@ public class MountStateWithExtensionsIncrementalMountTest {
                     .build();
               }
             },
+            true,
             true);
 
     lithoView.getComponentTree().mountComponent(new Rect(0, 0, 50, 20), true);
@@ -290,6 +295,7 @@ public class MountStateWithExtensionsIncrementalMountTest {
                     .build();
               }
             },
+            true,
             true);
 
     lithoView.getComponentTree().mountComponent(new Rect(0, -10, 10, -5), true);
@@ -327,6 +333,7 @@ public class MountStateWithExtensionsIncrementalMountTest {
                     .build();
               }
             },
+            true,
             true);
 
     lithoView.getComponentTree().mountComponent(new Rect(0, 0, 5, 5), true);
@@ -362,7 +369,7 @@ public class MountStateWithExtensionsIncrementalMountTest {
 
     final LithoView lithoView =
         ComponentTestHelper.mountComponent(
-            TestViewComponent.create(mContext).testView(mountedView), true);
+            TestViewComponent.create(mContext).testView(mountedView), true, true);
 
     lithoView.getComponentTree().mountComponent(new Rect(15, 15, 40, 40), true);
 
@@ -393,7 +400,7 @@ public class MountStateWithExtensionsIncrementalMountTest {
 
     final LithoView lithoView =
         ComponentTestHelper.mountComponent(
-            TestViewComponent.create(mContext).testView(mountedView), true);
+            TestViewComponent.create(mContext).testView(mountedView), true, true);
 
     // Can't verify directly as the object will have changed by the time we get the chance to
     // verify it.
@@ -461,6 +468,7 @@ public class MountStateWithExtensionsIncrementalMountTest {
                     .build();
               }
             },
+            true,
             true);
 
     lithoView.getComponentTree().mountComponent(new Rect(0, -10, 10, -5), true);
@@ -502,6 +510,7 @@ public class MountStateWithExtensionsIncrementalMountTest {
                     .build();
               }
             },
+            true,
             true);
 
     lithoView.getComponentTree().mountComponent(new Rect(0, -10, 10, -5), true);
@@ -541,7 +550,7 @@ public class MountStateWithExtensionsIncrementalMountTest {
 
     final LithoView lithoViewParent =
         ComponentTestHelper.mountComponent(
-            TestViewComponent.create(mContext, true, true, true, true).testView(viewGroup), true);
+            TestViewComponent.create(mContext, true, true, true, true).testView(viewGroup), true, true);
 
     // Mount views with visible rect
     lithoViewParent.getComponentTree().mountComponent(new Rect(0, 0, 100, 1000), true);

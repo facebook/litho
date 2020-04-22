@@ -534,6 +534,10 @@ public class ComponentContext {
     return c.mComponentTree == null || c.mComponentTree.isIncrementalMountEnabled();
   }
 
+  public static boolean isVisibilityProcessingEnabled(ComponentContext c) {
+    return c.mComponentTree == null || c.mComponentTree.isVisibilityProcessingEnabled();
+  }
+
   boolean wasLayoutCanceled() {
     return mLayoutStateContext == null ? false : mLayoutStateContext.isLayoutReleased();
   }
