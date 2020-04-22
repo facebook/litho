@@ -2751,6 +2751,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener, Mount
     if (mLayoutOutputsIds == null) {
       return;
     }
+
     for (int i = mLayoutOutputsIds.length - 1; i >= 0; i--) {
       unmountItem(i, mHostsByMarker);
     }
@@ -2768,6 +2769,8 @@ class MountState implements TransitionManager.OnAnimationCompleteListener, Mount
     if (mVisibilityOutputsExtension != null) {
       mVisibilityOutputsExtension.onUnmount();
     }
+
+    clearVisibilityItems();
   }
 
   private void unmountItem(int index, LongSparseArray<ComponentHost> hostsByMarker) {

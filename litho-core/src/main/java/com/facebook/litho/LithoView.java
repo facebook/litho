@@ -592,6 +592,12 @@ public class LithoView extends Host {
     if (mComponentTree != null) {
       if (ComponentsConfiguration.unmountAllWhenComponentTreeSetToNull && componentTree == null) {
         unmountAllItems();
+      } else {
+        if (mUseExtensions) {
+          mLithoHostListenerCoordinator.onHostVisibilityChanged(false);
+        } else {
+          mMountState.clearVisibilityItems();
+        }
       }
 
       if (mInvalidStateLogParams != null) {
