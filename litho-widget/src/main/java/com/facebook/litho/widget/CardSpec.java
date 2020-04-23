@@ -69,6 +69,7 @@ class CardSpec {
   @PropDefault static final int shadowEndColor = 0x03000000;
   @PropDefault static final float cornerRadius = -1;
   @PropDefault static final float elevation = -1;
+  @PropDefault static final int shadowTopOverride = -1;
   @PropDefault static final int shadowBottomOverride = -1;
 
   private static float pixels(Resources resources, int dips) {
