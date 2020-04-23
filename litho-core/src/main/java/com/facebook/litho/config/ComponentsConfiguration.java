@@ -191,6 +191,8 @@ public class ComponentsConfiguration {
    */
   public static boolean disableGetAnnotationUsage;
 
+  public static boolean ignoreStateUpdatesForScreenshotTest;
+
   public static boolean isRenderInfoDebuggingEnabled() {
     return isDebugModeEnabled && enableRenderInfoDebugging;
   }

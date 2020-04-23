@@ -69,6 +69,7 @@ public class ComponentTreeHolder {
   private final boolean mCanPreallocateOnDefaultHandler;
   private final boolean mShouldPreallocatePerMountSpec;
   private final boolean mIncrementalMount;
+  private final boolean mVisibilityProcessingEnabled;
 
   @GuardedBy("this")
   private boolean mIsTreeValid;
@@ -122,6 +123,7 @@ public class ComponentTreeHolder {
     private boolean isLayoutDiffingEnabled = ComponentsConfiguration.isLayoutDiffingEnabled;
     private boolean incrementalVisibility;
     private int recyclingMode;
+    private boolean visibilityProcessingEnabled;
 
     private Builder() {}
 
@@ -159,6 +161,11 @@ public class ComponentTreeHolder {
 
     public Builder incrementalMount(boolean incrementalMount) {
       this.incrementalMount = incrementalMount;
+      return this;
+    }
+
+    public Builder visibilityProcessingEnabled(boolean visibilityProcessingEnabled) {
+      this.visibilityProcessingEnabled = visibilityProcessingEnabled;
       return this;
     }
 
@@ -217,6 +224,7 @@ public class ComponentTreeHolder {
     mCanInterruptAndMoveLayoutsBetweenThreads = builder.canInterruptAndMoveLayoutsBetweenThreads;
     mId = sIdGenerator.getAndIncrement();
     mIncrementalMount = builder.incrementalMount;
+    mVisibilityProcessingEnabled = builder.visibilityProcessingEnabled;
     mIsReconciliationEnabled = builder.isReconciliationEnabled;
     mIsLayoutDiffingEnabled = builder.isLayoutDiffingEnabled;
     mIncrementalVisibilityEnabled = builder.incrementalVisibility;
@@ -462,6 +470,7 @@ public class ComponentTreeHolder {
                       : mComponentTreeMeasureListenerFactory.create(this))
               .hasMounted(mHasMounted)
               .incrementalMount(mIncrementalMount)
+              .visibilityProcessing(mVisibilityProcessingEnabled)
               .canInterruptAndMoveLayoutsBetweenThreads(mCanInterruptAndMoveLayoutsBetweenThreads)
               .useCancelableLayoutFutures(mUseCancelableLayoutFutures)
               .incrementalVisibility(mIncrementalVisibilityEnabled)

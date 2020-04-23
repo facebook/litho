@@ -63,7 +63,7 @@ public class ComponentTreeMountTest {
   @Test
   public void testReentrantMounts() {
     final LithoView lithoView =
-        mountComponent(mContext, EmptyComponent.create(mContext).build(), true);
+        mountComponent(mContext, EmptyComponent.create(mContext).build(), true, true);
     final EventHandler<VisibleEvent> visibleEventHandler =
         EventHandlerTestHelper.createMockEventHandler(
             VisibleEvent.class,
