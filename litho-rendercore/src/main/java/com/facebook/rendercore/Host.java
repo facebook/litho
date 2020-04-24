@@ -22,6 +22,7 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 public abstract class Host extends ViewGroup {
 
@@ -146,5 +147,10 @@ public abstract class Host extends ViewGroup {
         mWasRequestedFocusWhileSuppressed = false;
       }
     }
+  }
+
+  @VisibleForTesting
+  public boolean getSuppressInvalidations() {
+    return mSuppressInvalidations;
   }
 }

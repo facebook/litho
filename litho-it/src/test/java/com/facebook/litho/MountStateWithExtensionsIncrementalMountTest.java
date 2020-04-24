@@ -45,7 +45,11 @@ import com.facebook.litho.testing.helper.ComponentTestHelper;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.logging.TestComponentsLogger;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.rendercore.Host;
+import com.facebook.rendercore.RenderTree;
+import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.yoga.YogaEdge;
+import java.util.ArrayList;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -562,6 +566,66 @@ public class MountStateWithExtensionsIncrementalMountTest {
     // when
     // it is laid out and therefore doesn't need mounting again in the same frame
     verify(lithoView, never()).notifyVisibleBoundsChanged();
+  }
+
+  @Test
+  public void testSupressInvalidationOnHosts() {
+    final LayoutState layoutState = mock(LayoutState.class);
+    final NodeInfo nodeInfo = new DefaultNodeInfo();
+    final ArrayList<RenderTreeNode> mountables = new ArrayList<>();
+
+    // Root host
+    final LayoutOutput layoutOutputRoot =
+        new LayoutOutput(
+            nodeInfo, null, new HostComponent(), new Rect(0, 0, 10, 30), 0, 0, 0, 0, 0, null);
+    layoutOutputRoot.setId(0);
+    final RenderTreeNode root = LayoutOutput.create(layoutOutputRoot, null);
+
+    // Child host 1
+    final LayoutOutput layoutOutput1 =
+        new LayoutOutput(
+            nodeInfo, null, new HostComponent(), new Rect(0, 10, 10, 30), 0, 0, 0, 0, 0, null);
+    layoutOutput1.setId(1);
+    final RenderTreeNode child1 = LayoutOutput.create(layoutOutput1, root);
+
+    mountables.add(root);
+    mountables.add(child1);
+
+    final RenderTree renderTree = mock(RenderTree.class);
+    when(renderTree.getRenderTreeData()).thenReturn(layoutState);
+    when(layoutState.toRenderTree()).thenReturn(renderTree);
+    when(layoutState.getMountableOutputTops()).thenReturn(mountables);
+    when(layoutState.getMountableOutputBottoms()).thenReturn(mountables);
+
+    when(layoutState.getMountableOutputCount()).thenReturn(2);
+
+    when(layoutState.getMountableOutputAt(0)).thenReturn(root);
+    when(layoutState.getLayoutOutputPositionForId(1)).thenReturn(1);
+    when(layoutState.getMountableOutputAt(1)).thenReturn(child1);
+
+    final LithoView lithoView = new LithoView(mContext);
+    lithoView.setComponentTree(ComponentTree.create(mContext).build());
+    lithoView.setBottom(30);
+    lithoView.setRight(10);
+
+    lithoView.mount(layoutState, new Rect(0, 0, 10, 9), false);
+
+    final MountState mountState = lithoView.getMountState();
+    ArrayList<com.facebook.rendercore.Host> hosts = mountState.getHosts();
+
+    assertThat(hosts.size()).isEqualTo(1);
+    for (int i = 0, size = hosts.size(); i < size; i++) {
+      final com.facebook.rendercore.Host host = hosts.get(i);
+      assertThat(host.getSuppressInvalidations()).isFalse();
+    }
+
+    lithoView.mount(layoutState, new Rect(0, 0, 10, 11), false);
+    hosts = mountState.getHosts();
+    assertThat(hosts.size()).isEqualTo(2);
+    for (int i = 0, size = hosts.size(); i < size; i++) {
+      final Host host = hosts.get(i);
+      assertThat(host.getSuppressInvalidations()).isFalse();
+    }
   }
 
   private static LithoView getMockLithoViewWithBounds(Rect bounds) {

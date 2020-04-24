@@ -67,6 +67,7 @@ import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.animation.AnimatedProperties;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.stats.LithoStats;
+import com.facebook.rendercore.Host;
 import com.facebook.rendercore.MountDelegate;
 import com.facebook.rendercore.MountDelegate.MountDelegateTarget;
 import com.facebook.rendercore.MountDelegateExtension;
@@ -669,6 +670,7 @@ class MountState implements TransitionManager.OnAnimationCompleteListener, Mount
     if (input instanceof LayoutState) {
       LayoutState layoutState = (LayoutState) input;
       mountLayoutOutput(position, renderTreeNode, getLayoutOutput(renderTreeNode), layoutState);
+      suppressInvalidationsOnHosts(false);
     } else {
       throw new IllegalStateException("This is not supported for now");
     }
@@ -1031,6 +1033,17 @@ class MountState implements TransitionManager.OnAnimationCompleteListener, Mount
   @VisibleForTesting
   Map<String, VisibilityItem> getVisibilityIdToItemMap() {
     return mVisibilityIdToItemMap;
+  }
+
+  @VisibleForTesting
+  @Override
+  public ArrayList<Host> getHosts() {
+    final ArrayList<Host> hosts = new ArrayList<>();
+    for (int i = 0, size = mHostsByMarker.size(); i < size; i++) {
+      hosts.add(mHostsByMarker.valueAt(i));
+    }
+
+    return hosts;
   }
 
   /** Clears and re-populates the test item map if we are in e2e test mode. */

@@ -25,6 +25,7 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.collection.LongSparseArray;
 import com.facebook.rendercore.MountDelegate.MountDelegateTarget;
+import java.util.ArrayList;
 import java.util.List;
 
 public class MountState implements MountDelegateTarget {
@@ -93,6 +94,7 @@ public class MountState implements MountDelegateTarget {
     }
 
     mountRenderUnit(position, renderTreeNode);
+    suppressInvalidationsOnHosts(false);
   }
 
   @Override
@@ -192,6 +194,20 @@ public class MountState implements MountDelegateTarget {
       mMountDelegate = new MountDelegate(this);
     }
     mMountDelegate.addExtension(mountDelegateExtension);
+  }
+
+  @Override
+  public ArrayList<Host> getHosts() {
+    final ArrayList<Host> hosts = new ArrayList<>();
+    for (int i = 0, size = mIndexToMountedItemMap.size(); i < size; i++) {
+      final MountItem item = mIndexToMountedItemMap.valueAt(i);
+      final Object content = item.getContent();
+      if (content instanceof Host) {
+        hosts.add((Host) content);
+      }
+    }
+
+    return hosts;
   }
 
   /**

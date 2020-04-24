@@ -16,8 +16,8 @@
 
 package com.facebook.rendercore;
 
-import android.util.LongSparseArray;
 import androidx.annotation.VisibleForTesting;
+import androidx.collection.LongSparseArray;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,6 +56,8 @@ public class MountDelegate {
     int getContentCount();
 
     void registerMountDelegateExtension(MountDelegateExtension mountDelegateExtension);
+
+    ArrayList<Host> getHosts();
   }
 
   // IGNORE - Will be removed. Check out D4182567 for context.

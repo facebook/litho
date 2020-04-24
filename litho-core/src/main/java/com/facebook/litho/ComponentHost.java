@@ -647,6 +647,12 @@ public class ComponentHost extends Host {
     }
   }
 
+  @VisibleForTesting
+  @Override
+  public boolean getSuppressInvalidations() {
+    return mSuppressInvalidations;
+  }
+
   /** Invalidates the accessibility node tree in this host. */
   void invalidateAccessibilityState() {
     if (!mIsComponentAccessibilityDelegateSet) {
