@@ -287,7 +287,6 @@ class LayoutState
       new LinkedHashMap<>();
   private final Set<TransitionId> mDuplicatedTransitionIds = new HashSet<>();
   private List<Transition> mTransitions;
-  private final int mOrientation;
   // If true, the LayoutState calculate call was interrupted and will need to be resumed to finish
   // creating and measuring the InternalNode of the LayoutState.
   private volatile boolean mIsPartialLayoutState;
@@ -309,7 +308,6 @@ class LayoutState
     mId = sIdGenerator.getAndIncrement();
     mStateHandler = mContext.getStateHandler();
     mTestOutputs = ComponentsConfiguration.isEndToEndTestRun ? new ArrayList<TestOutput>(8) : null;
-    mOrientation = context.getResources().getConfiguration().orientation;
     mLastMeasuredLayouts = new HashMap<>();
     mComponents = new ArrayList<>();
 
@@ -557,7 +555,6 @@ class LayoutState
         flags,
         hostMarker,
         importantForAccessibility,
-        layoutState.mOrientation,
         transitionId);
   }
 

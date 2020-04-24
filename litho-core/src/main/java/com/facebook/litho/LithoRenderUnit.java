@@ -20,7 +20,6 @@ import static java.util.Collections.singletonList;
 
 import android.content.Context;
 import android.graphics.Rect;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.rendercore.RenderUnit;
 import java.util.List;
 
@@ -125,11 +124,6 @@ public class LithoRenderUnit extends RenderUnit<Object> {
   }
 
   public static boolean shouldUpdate(final LayoutOutput current, final LayoutOutput next) {
-    if (ComponentsConfiguration.shouldForceComponentUpdateOnOrientationChange
-        && next.getOrientation() != current.getOrientation()) {
-      return true;
-    }
-
     final Component nextComponent = next.getComponent();
     final Component currentComponent = current.getComponent();
 

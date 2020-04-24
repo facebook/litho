@@ -32,7 +32,6 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
 import android.graphics.Color;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.helper.ComponentTestHelper;
@@ -101,32 +100,7 @@ public class MountStateRemountInPlaceTest {
   }
 
   @Test
-  public void testMountUnmountWithNewOrientation() {
-    mContext.getResources().getConfiguration().orientation = ORIENTATION_PORTRAIT;
-    final TestComponent firstComponent = create(mContext).build();
-
-    final LithoView lithoView =
-        mountComponent(mContext, Column.create(mContext).child(firstComponent).build());
-
-    assertThat(firstComponent.wasOnMountCalled()).isTrue();
-    assertThat(firstComponent.wasOnBindCalled()).isTrue();
-    assertThat(firstComponent.wasOnUnmountCalled()).isFalse();
-
-    mContext.getResources().getConfiguration().orientation = ORIENTATION_LANDSCAPE;
-    final TestComponent secondComponent = create(mContext).build();
-
-    lithoView.getComponentTree().setRoot(Column.create(mContext).child(secondComponent).build());
-
-    assertThat(secondComponent.wasOnMountCalled()).isTrue();
-    assertThat(secondComponent.wasOnBindCalled()).isTrue();
-    assertThat(firstComponent.wasOnUnbindCalled()).isTrue();
-    assertThat(firstComponent.wasOnUnmountCalled()).isTrue();
-  }
-
-  @Test
-  public void mountState_onNoForceShouldUpdateAndNewOrientation_shouldNotRemount() {
-    ComponentsConfiguration.shouldForceComponentUpdateOnOrientationChange = false;
-
+  public void mountState_onNoShouldUpdateAndNewOrientation_shouldNotRemount() {
     mContext.getResources().getConfiguration().orientation = ORIENTATION_PORTRAIT;
     final TestComponent firstComponent = create(mContext).build();
 
@@ -146,14 +120,10 @@ public class MountStateRemountInPlaceTest {
     assertThat(secondComponent.wasOnBindCalled()).isTrue();
     assertThat(firstComponent.wasOnUnbindCalled()).isTrue();
     assertThat(firstComponent.wasOnUnmountCalled()).isFalse();
-
-    ComponentsConfiguration.shouldForceComponentUpdateOnOrientationChange = true;
   }
 
   @Test
-  public void mountState_onNoForceShouldUpdateAndNewOrientationAndSameSize_shouldNotRemount() {
-    ComponentsConfiguration.shouldForceComponentUpdateOnOrientationChange = false;
-
+  public void mountState_onNewOrientationAndSameSize_shouldNotRemount() {
     mContext.getResources().getConfiguration().orientation = ORIENTATION_PORTRAIT;
     final TestComponent firstComponent =
         create(mContext, 0, 0, true, true, true, false, true /*isMountSizeDependent*/)
@@ -179,8 +149,6 @@ public class MountStateRemountInPlaceTest {
     assertThat(secondComponent.wasOnBindCalled()).isTrue();
     assertThat(firstComponent.wasOnUnbindCalled()).isTrue();
     assertThat(firstComponent.wasOnUnmountCalled()).isFalse();
-
-    ComponentsConfiguration.shouldForceComponentUpdateOnOrientationChange = true;
   }
 
   @Test
