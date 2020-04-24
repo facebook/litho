@@ -21,24 +21,21 @@ import static com.facebook.litho.SizeSpec.UNSPECIFIED;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
+import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.widget.MountSpecLifecycleTester;
 import com.facebook.litho.widget.MountSpecLifecycleTesterSpec;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.After;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(ComponentsTestRunner.class)
-public class MountSpecLifecycleTest extends BaseLithoComponentTest {
+public class MountSpecLifecycleTest {
 
-  @Override
-  protected void overrideDefaults() {
-    mShouldAttachBeforeTest = false;
-    mShouldMeasureBeforeTest = false;
-    mShouldLayoutBeforeTest = false;
-  }
+  public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
 
   @After
   public void after() {
@@ -48,8 +45,9 @@ public class MountSpecLifecycleTest extends BaseLithoComponentTest {
   @Test
   public void lifecycle_onSetComponentWithoutLayout_shouldNotCallLifecycleMethods() {
     final List<LifecycleStep.StepInfo> info = new ArrayList<>();
-    final Component component = MountSpecLifecycleTester.create(mContext).steps(info).build();
-    mLithoView.setComponent(component);
+    final Component component =
+        MountSpecLifecycleTester.create(mLithoViewRule.getContext()).steps(info).build();
+    mLithoViewRule.setRoot(component);
 
     assertThat(getSteps(info)).describedAs("No lifecycle methods should be called").isEmpty();
   }
@@ -57,12 +55,11 @@ public class MountSpecLifecycleTest extends BaseLithoComponentTest {
   @Test
   public void lifecycle_onLayout_shouldCallLifecycleMethods() {
     final List<LifecycleStep.StepInfo> info = new ArrayList<>();
-    final Component component = MountSpecLifecycleTester.create(mContext).steps(info).build();
-    mLithoView.setComponent(component);
+    final Component component =
+        MountSpecLifecycleTester.create(mLithoViewRule.getContext()).steps(info).build();
+    mLithoViewRule.setRoot(component);
 
-    attachLithoView();
-    measureLithoView();
-    layoutLithoView();
+    mLithoViewRule.attachToWindow().measure().layout();
 
     assertThat(getSteps(info))
         .describedAs("Should call the lifecycle methods in expected order")
@@ -77,18 +74,37 @@ public class MountSpecLifecycleTest extends BaseLithoComponentTest {
   }
 
   @Test
+  public void lifecycle_onLayoutWithExactSize_shouldCallLifecycleMethodsExceptMeasure() {
+    final List<LifecycleStep.StepInfo> info = new ArrayList<>();
+    final Component component =
+        MountSpecLifecycleTester.create(mLithoViewRule.getContext()).steps(info).build();
+    mLithoViewRule.setRoot(component);
+
+    mLithoViewRule.setSizePx(600, 800).attachToWindow().measure().layout();
+
+    assertThat(getSteps(info))
+        .describedAs("Should call the lifecycle methods in expected order")
+        .containsExactly(
+            LifecycleStep.ON_PREPARE,
+            LifecycleStep.ON_BOUNDS_DEFINED,
+            LifecycleStep.ON_ATTACHED,
+            LifecycleStep.ON_CREATE_MOUNT_CONTENT,
+            LifecycleStep.ON_MOUNT,
+            LifecycleStep.ON_BIND);
+  }
+
+  @Test
   public void lifecycle_onDetach_shouldCallLifecycleMethods() {
     final List<LifecycleStep.StepInfo> info = new ArrayList<>();
-    final Component component = MountSpecLifecycleTester.create(mContext).steps(info).build();
-    mLithoView.setComponent(component);
+    final Component component =
+        MountSpecLifecycleTester.create(mLithoViewRule.getContext()).steps(info).build();
+    mLithoViewRule.setRoot(component);
 
-    attachLithoView();
-    measureLithoView();
-    layoutLithoView();
+    mLithoViewRule.attachToWindow().measure().layout();
 
     info.clear();
 
-    detachLithoView();
+    mLithoViewRule.detachFromWindow();
 
     assertThat(getSteps(info))
         .describedAs("Should only call")
@@ -98,19 +114,15 @@ public class MountSpecLifecycleTest extends BaseLithoComponentTest {
   @Test
   public void lifecycle_onReAttach_shouldCallLifecycleMethods() {
     final List<LifecycleStep.StepInfo> info = new ArrayList<>();
-    final Component component = MountSpecLifecycleTester.create(mContext).steps(info).build();
-    mLithoView.setComponent(component);
+    final Component component =
+        MountSpecLifecycleTester.create(mLithoViewRule.getContext()).steps(info).build();
+    mLithoViewRule.setRoot(component);
 
-    attachLithoView();
-    measureLithoView();
-    layoutLithoView();
-    detachLithoView();
+    mLithoViewRule.attachToWindow().measure().layout().detachFromWindow();
 
     info.clear();
 
-    attachLithoView();
-    measureLithoView();
-    layoutLithoView();
+    mLithoViewRule.attachToWindow().measure().layout();
 
     assertThat(getSteps(info))
         .describedAs("Should only call")
@@ -120,16 +132,15 @@ public class MountSpecLifecycleTest extends BaseLithoComponentTest {
   @Test
   public void lifecycle_onRemeasureWithSameSpecs_shouldNotCallLifecycleMethods() {
     final List<LifecycleStep.StepInfo> info = new ArrayList<>();
-    final Component component = MountSpecLifecycleTester.create(mContext).steps(info).build();
-    mLithoView.setComponent(component);
+    final Component component =
+        MountSpecLifecycleTester.create(mLithoViewRule.getContext()).steps(info).build();
+    mLithoViewRule.setRoot(component);
 
-    attachLithoView();
-    measureLithoView();
-    layoutLithoView();
+    mLithoViewRule.attachToWindow().measure().layout();
 
     info.clear();
 
-    measureLithoView();
+    mLithoViewRule.measure();
 
     assertThat(getSteps(info)).describedAs("No lifecycle methods should be called").isEmpty();
   }
@@ -137,16 +148,17 @@ public class MountSpecLifecycleTest extends BaseLithoComponentTest {
   @Test
   public void lifecycle_onRemeasureWithDifferentSpecs_shouldCallLifecycleMethods() {
     final List<LifecycleStep.StepInfo> info = new ArrayList<>();
-    final Component component = MountSpecLifecycleTester.create(mContext).steps(info).build();
-    mLithoView.setComponent(component);
+    final Component component =
+        MountSpecLifecycleTester.create(mLithoViewRule.getContext()).steps(info).build();
+    mLithoViewRule.setRoot(component);
 
-    attachLithoView();
-    measureLithoView();
-    layoutLithoView();
+    mLithoViewRule.attachToWindow().measure().layout();
 
     info.clear();
 
-    measureLithoViewWithSizeSpec(makeSizeSpec(800, EXACTLY), makeSizeSpec(600, UNSPECIFIED));
+    mLithoViewRule
+        .setSizeSpecs(makeSizeSpec(800, EXACTLY), makeSizeSpec(600, UNSPECIFIED))
+        .measure();
 
     assertThat(getSteps(info))
         .describedAs("Should call the lifecycle methods in expected order")
@@ -157,16 +169,15 @@ public class MountSpecLifecycleTest extends BaseLithoComponentTest {
   @Test
   public void lifecycle_onRemeasureWithExactSize_shouldNotCallLifecycleMethods() {
     final List<LifecycleStep.StepInfo> info = new ArrayList<>();
-    final Component component = MountSpecLifecycleTester.create(mContext).steps(info).build();
-    mLithoView.setComponent(component);
+    final Component component =
+        MountSpecLifecycleTester.create(mLithoViewRule.getContext()).steps(info).build();
+    mLithoViewRule.setRoot(component);
 
-    attachLithoView();
-    measureLithoView();
-    layoutLithoView();
+    mLithoViewRule.attachToWindow().measure().layout();
 
     info.clear();
 
-    measureLithoViewWithSize(800, 600);
+    mLithoViewRule.setSizePx(800, 600).measure();
 
     assertThat(getSteps(info))
         .describedAs(
@@ -177,17 +188,15 @@ public class MountSpecLifecycleTest extends BaseLithoComponentTest {
   @Test
   public void lifecycle_onReLayoutAfterMeasureWithExactSize_shouldCallLifecycleMethods() {
     final List<LifecycleStep.StepInfo> info = new ArrayList<>();
-    final Component component = MountSpecLifecycleTester.create(mContext).steps(info).build();
-    mLithoView.setComponent(component);
+    final Component component =
+        MountSpecLifecycleTester.create(mLithoViewRule.getContext()).steps(info).build();
+    mLithoViewRule.setRoot(component);
 
-    attachLithoView();
-    measureLithoView();
-    layoutLithoView();
+    mLithoViewRule.attachToWindow().measure().layout();
 
     info.clear();
 
-    measureLithoViewWithSize(800, 600);
-    layoutLithoView();
+    mLithoViewRule.setSizePx(800, 600).measure().layout();
 
     assertThat(getSteps(info))
         .describedAs("Should call the lifecycle methods in expected order")
@@ -203,17 +212,15 @@ public class MountSpecLifecycleTest extends BaseLithoComponentTest {
   @Test
   public void lifecycle_onReLayoutAfterMeasureWithExactSizeAsNonRoot_shouldCallLifecycleMethods() {
     final List<LifecycleStep.StepInfo> info = new ArrayList<>();
-    final Component component = MountSpecLifecycleTester.create(mContext).steps(info).build();
-    mLithoView.setComponent(Column.create(mContext).child(component).build());
+    final Component component =
+        MountSpecLifecycleTester.create(mLithoViewRule.getContext()).steps(info).build();
+    mLithoViewRule.setRoot(Column.create(mLithoViewRule.getContext()).child(component).build());
 
-    attachLithoView();
-    measureLithoView();
-    layoutLithoView();
+    mLithoViewRule.attachToWindow().measure().layout();
 
     info.clear();
 
-    measureLithoViewWithSize(800, 600);
-    layoutLithoView();
+    mLithoViewRule.setSizePx(800, 600).measure().layout();
 
     assertThat(getSteps(info))
         .describedAs("Should call the lifecycle methods in expected order")
@@ -230,16 +237,15 @@ public class MountSpecLifecycleTest extends BaseLithoComponentTest {
   @Test
   public void lifecycle_onSetShallowCopy_shouldNotCallLifecycleMethods() {
     final List<LifecycleStep.StepInfo> info = new ArrayList<>();
-    final Component component = MountSpecLifecycleTester.create(mContext).steps(info).build();
-    mLithoView.setComponent(component);
+    final Component component =
+        MountSpecLifecycleTester.create(mLithoViewRule.getContext()).steps(info).build();
+    mLithoViewRule.setRoot(component);
 
-    attachLithoView();
-    measureLithoView();
-    layoutLithoView();
+    mLithoViewRule.attachToWindow().measure().layout();
 
     info.clear();
 
-    mLithoView.setComponent(component.makeShallowCopy());
+    mLithoViewRule.setRoot(component.makeShallowCopy());
 
     assertThat(getSteps(info)).describedAs("No lifecycle methods should be called").isEmpty();
   }
@@ -247,20 +253,19 @@ public class MountSpecLifecycleTest extends BaseLithoComponentTest {
   @Test
   public void lifecycle_onSetSemanticallySimilarComponent_shouldCallLifecycleMethods() {
     final List<LifecycleStep.StepInfo> info = new ArrayList<>();
-    final Component component = MountSpecLifecycleTester.create(mContext).steps(info).build();
-    mLithoView.setComponent(component);
+    final Component component =
+        MountSpecLifecycleTester.create(mLithoViewRule.getContext()).steps(info).build();
+    mLithoViewRule.setRoot(component);
 
-    attachLithoView();
-    measureLithoView();
-    layoutLithoView();
+    mLithoViewRule.attachToWindow().measure().layout();
 
     info.clear();
 
     List<LifecycleStep.StepInfo> newInfo = new ArrayList<>();
-    mLithoView.setComponent(MountSpecLifecycleTester.create(mContext).steps(newInfo).build());
+    mLithoViewRule.setRoot(
+        MountSpecLifecycleTester.create(mLithoViewRule.getContext()).steps(newInfo).build());
 
-    measureLithoView();
-    layoutLithoView();
+    mLithoViewRule.measure().layout();
 
     assertThat(getSteps(info))
         .describedAs("Should call the lifecycle methods on old instance in expected order")

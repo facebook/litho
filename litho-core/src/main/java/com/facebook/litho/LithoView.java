@@ -240,6 +240,16 @@ public class LithoView extends Host {
     onDetach();
   }
 
+  @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+  public void onAttachedToWindowForTest() {
+    onAttachedToWindow();
+  }
+
+  @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+  public void onDetachedFromWindowForTest() {
+    onDetachedFromWindow();
+  }
+
   @Override
   public void onStartTemporaryDetach() {
     super.onStartTemporaryDetach();
