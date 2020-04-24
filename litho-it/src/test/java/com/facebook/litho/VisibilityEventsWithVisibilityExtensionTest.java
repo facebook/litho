@@ -93,7 +93,6 @@ public class VisibilityEventsWithVisibilityExtensionTest {
                         .marginPx(YogaEdge.TOP, 5))
                 .build(),
             true,
-            true,
             10,
             5);
 
@@ -122,7 +121,6 @@ public class VisibilityEventsWithVisibilityExtensionTest {
                         .heightPx(5)
                         .marginPx(YogaEdge.TOP, 5))
                 .build(),
-            true,
             true,
             10,
             10);
@@ -171,7 +169,6 @@ public class VisibilityEventsWithVisibilityExtensionTest {
                         .marginPx(YogaEdge.TOP, 5))
                 .build(),
             true,
-            true,
             10,
             5);
 
@@ -204,7 +201,6 @@ public class VisibilityEventsWithVisibilityExtensionTest {
                         .heightPx(5)
                         .marginPx(YogaEdge.TOP, 5))
                 .build(),
-            true,
             true,
             10,
             10);
@@ -246,7 +242,6 @@ public class VisibilityEventsWithVisibilityExtensionTest {
                         .heightPx(10))
                 .build(),
             true,
-            true,
             10,
             10);
 
@@ -276,7 +271,6 @@ public class VisibilityEventsWithVisibilityExtensionTest {
                         .widthPx(10)
                         .heightPx(3))
                 .build(),
-            true,
             true,
             10,
             10);
@@ -310,7 +304,6 @@ public class VisibilityEventsWithVisibilityExtensionTest {
                         .heightPx(7)
                         .marginPx(YogaEdge.TOP, 3))
                 .build(),
-            true,
             true,
             100,
             100);
@@ -357,7 +350,6 @@ public class VisibilityEventsWithVisibilityExtensionTest {
                     .marginPx(YogaEdge.TOP, 5))
             .build(),
         true,
-        true,
         10,
         10);
 
@@ -383,7 +375,6 @@ public class VisibilityEventsWithVisibilityExtensionTest {
                     .marginPx(YogaEdge.TOP, 5))
             .build(),
         true,
-        true,
         10,
         10);
 
@@ -407,7 +398,6 @@ public class VisibilityEventsWithVisibilityExtensionTest {
                     .widthPx(10)
                     .heightPx(5))
             .build(),
-        true,
         true,
         10,
         10);
@@ -433,7 +423,6 @@ public class VisibilityEventsWithVisibilityExtensionTest {
                         .heightPx(5)
                         .marginPx(YogaEdge.TOP, 5))
                 .build(),
-            true,
             true,
             10,
             10);
@@ -462,7 +451,6 @@ public class VisibilityEventsWithVisibilityExtensionTest {
                         .widthPx(10)
                         .heightPx(10))
                 .build(),
-            true,
             true,
             10,
             10);
@@ -519,7 +507,6 @@ public class VisibilityEventsWithVisibilityExtensionTest {
                         .marginPx(YogaEdge.TOP, 5))
                 .build(),
             true,
-            true,
             10,
             10);
 
@@ -555,7 +542,6 @@ public class VisibilityEventsWithVisibilityExtensionTest {
                         .widthPx(10)
                         .heightPx(10))
                 .build(),
-            true,
             true,
             10,
             1000);
@@ -612,7 +598,6 @@ public class VisibilityEventsWithVisibilityExtensionTest {
                         .heightPx(5)
                         .marginPx(YogaEdge.TOP, 5))
                 .build(),
-            true,
             true,
             10,
             10);
@@ -672,7 +657,6 @@ public class VisibilityEventsWithVisibilityExtensionTest {
                         .widthPx(10)
                         .heightPx(5))
                 .build(),
-            true,
             true,
             10,
             10);
@@ -748,7 +732,6 @@ public class VisibilityEventsWithVisibilityExtensionTest {
                         .widthPx(10)
                         .heightPx(5))
                 .build(),
-            true,
             true,
             15,
             15);
@@ -878,7 +861,6 @@ public class VisibilityEventsWithVisibilityExtensionTest {
                         .widthPx(10)
                         .heightPx(5))
                 .build(),
-            true,
             true,
             15,
             15);
@@ -1105,7 +1087,6 @@ public class VisibilityEventsWithVisibilityExtensionTest {
                         .heightPx(5))
                 .build(),
             true,
-            true,
             10,
             15);
 
@@ -1166,7 +1147,6 @@ public class VisibilityEventsWithVisibilityExtensionTest {
                         .widthPx(10)
                         .heightPx(10))
                 .build(),
-            true,
             true);
 
     lithoView.notifyVisibleBoundsChanged(new Rect(LEFT, 0, RIGHT, 10), true);
@@ -1199,7 +1179,6 @@ public class VisibilityEventsWithVisibilityExtensionTest {
                         .widthPx(10)
                         .heightPx(10))
                 .build(),
-            true,
             true);
 
     assertThat(component1.getDispatchedEventHandlers()).contains(visibleEventHandler1);
@@ -1251,7 +1230,6 @@ public class VisibilityEventsWithVisibilityExtensionTest {
                         .widthPx(10)
                         .heightPx(10))
                 .build(),
-            true,
             true);
 
     assertThat(firstComponent.getDispatchedEventHandlers()).containsExactly(visibleEventHandler1);
@@ -1270,7 +1248,6 @@ public class VisibilityEventsWithVisibilityExtensionTest {
                     .widthPx(10)
                     .heightPx(10))
             .build(),
-        true,
         true,
         100,
         100);
@@ -1297,7 +1274,6 @@ public class VisibilityEventsWithVisibilityExtensionTest {
                         .widthPx(10)
                         .heightPx(10))
                 .build(),
-            true,
             true);
 
     assertThat(component.getDispatchedEventHandlers()).containsExactly(visibleEventHandler);
@@ -1325,7 +1301,6 @@ public class VisibilityEventsWithVisibilityExtensionTest {
                         .widthPx(10)
                         .heightPx(10))
                 .build(),
-            true,
             true);
 
     lithoView.notifyVisibleBoundsChanged(new Rect(0, -10, 10, -5), true);
@@ -1361,7 +1336,6 @@ public class VisibilityEventsWithVisibilityExtensionTest {
             mContext,
             mLithoView,
             Column.create(mContext).child(wrappedContent).build(),
-            true,
             true,
             10,
             10);
@@ -1439,7 +1413,6 @@ public class VisibilityEventsWithVisibilityExtensionTest {
                         .fullImpressionHandler(fullImpressionVisibleEventHandler3))
                 .build(),
             true,
-            true,
             10,
             10);
 
@@ -1490,7 +1463,6 @@ public class VisibilityEventsWithVisibilityExtensionTest {
                         .widthPx(10)
                         .heightPx(10))
                 .build(),
-            true,
             true);
 
     assertThat(component.getDispatchedEventHandlers()).contains(visibleEventHandler);
@@ -1534,7 +1506,7 @@ public class VisibilityEventsWithVisibilityExtensionTest {
                 .build();
           }
         };
-    final LithoView child = mountComponent(mContext, mountedTestComponentInner, true, true);
+    final LithoView child = mountComponent(mContext, mountedTestComponentInner, true);
 
     assertThat(testComponentInner.getDispatchedEventHandlers().size()).isEqualTo(1);
     assertThat(testComponentInner.getDispatchedEventHandlers().contains(visibleEventHandlerInner));
@@ -1549,7 +1521,7 @@ public class VisibilityEventsWithVisibilityExtensionTest {
 
     final LithoView parentView =
         mountComponent(
-            mContext, TestViewComponent.create(mContext).testView(viewGroup).build(), true, true);
+            mContext, TestViewComponent.create(mContext).testView(viewGroup).build(), true);
 
     parentView.setVisibilityHint(false);
 

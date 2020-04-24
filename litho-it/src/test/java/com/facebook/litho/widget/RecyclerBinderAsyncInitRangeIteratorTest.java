@@ -78,7 +78,6 @@ public class RecyclerBinderAsyncInitRangeIteratorTest {
               ComponentTreeHolder.ComponentTreeMeasureListenerFactory
                   componentTreeMeasureListenerFactory,
               boolean incrementalMountEnabled,
-              boolean visibilityProcessing,
               boolean canInterruptAndMoveLayoutsBetweenThreads,
               boolean useCancelableLayoutFutures,
               boolean isReconciliationEnabled,
