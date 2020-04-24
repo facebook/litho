@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import static android.content.res.Configuration.ORIENTATION_PORTRAIT;
 import static android.graphics.Color.BLACK;
 import static android.view.MotionEvent.obtain;
 import static android.view.View.GONE;
@@ -947,6 +948,7 @@ public class ComponentHostTest {
             flags,
             0,
             IMPORTANT_FOR_ACCESSIBILITY_AUTO,
+            ORIENTATION_PORTRAIT,
             null);
 
     mHost.mount(
@@ -982,6 +984,7 @@ public class ComponentHostTest {
             0,
             0,
             IMPORTANT_FOR_ACCESSIBILITY_AUTO,
+            ORIENTATION_PORTRAIT,
             null);
     mHost.mount(index, viewMountItem, new Rect());
 
