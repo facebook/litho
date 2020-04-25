@@ -79,8 +79,8 @@ public class AccessibilityUtils {
 
     for (AccessibilityServiceInfo serviceInfo : enabledServices) {
       int eventTypes = serviceInfo.eventTypes;
-      if ((eventTypes & AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED)
-          != AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED) {
+      if ((eventTypes & AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED)
+          != AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED) {
         continue;
       }
       int capabilities = AccessibilityServiceInfoCompat.getCapabilities(serviceInfo);
