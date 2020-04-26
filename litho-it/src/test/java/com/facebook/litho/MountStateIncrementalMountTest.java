@@ -620,14 +620,14 @@ public class MountStateIncrementalMountTest {
     // Root host
     final LayoutOutput layoutOutputRoot =
         new LayoutOutput(
-            nodeInfo, null, new HostComponent(), new Rect(0, 0, 10, 30), 0, 0, 0, 0, 0, null);
+            nodeInfo, null, new HostComponent(), new Rect(0, 0, 10, 30), 0, 0, 0, 0, 0, 0, null);
     layoutOutputRoot.setId(0);
     final RenderTreeNode root = LayoutOutput.create(layoutOutputRoot, null);
 
     // Child host 1
     final LayoutOutput layoutOutput1 =
         new LayoutOutput(
-            nodeInfo, null, new HostComponent(), new Rect(0, 10, 10, 30), 0, 0, 0, 0, 0, null);
+            nodeInfo, null, new HostComponent(), new Rect(0, 10, 10, 30), 0, 0, 0, 0, 0, 0, null);
     layoutOutput1.setId(1);
     final RenderTreeNode child1 = LayoutOutput.create(layoutOutput1, root);
 
