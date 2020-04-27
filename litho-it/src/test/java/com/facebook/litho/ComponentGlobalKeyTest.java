@@ -34,6 +34,7 @@ import com.facebook.litho.widget.TextInput;
 import com.facebook.litho.widget.TreePropTestContainerComponentSpec;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
@@ -441,6 +442,7 @@ public class ComponentGlobalKeyTest {
   }
 
   @Test
+  @Ignore("T65213042") // Investigate, fix or remove
   public void nestedTreeRemeasureKeyStabilityTest() {
     final Component componentWithoutRemeasure = TreePropTestContainerComponentSpec.create(mContext);
     final LithoView lithoView = getLithoView(componentWithoutRemeasure);
