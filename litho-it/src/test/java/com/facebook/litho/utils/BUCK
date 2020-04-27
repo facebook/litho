@@ -11,11 +11,11 @@ load(
     "LITHO_JUNIT_TARGET",
     "LITHO_MOCKITO_V2_TARGET",
     "LITHO_ROBOLECTRIC_V4_TARGET",
-    "components_robolectric_test",
+    "components_robolectric4_test",
     "make_dep_path",
 )
 
-components_robolectric_test(
+components_robolectric4_test(
     name = "utils",
     srcs = glob(["*Test.java"]),
     provided_deps = [

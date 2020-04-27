@@ -22,12 +22,12 @@ load(
     "LITHO_VIEWCOMPAT_TARGET",
     "LITHO_WIDGET_TARGET",
     "LITHO_YOGA_TARGET",
-    "components_robolectric_test",
+    "components_robolectric4_test",
     "litho_android_library",
     "make_dep_path",
 )
 
-components_robolectric_test(
+components_robolectric4_test(
     name = "litho",
     srcs = glob([
         "*Test.java",

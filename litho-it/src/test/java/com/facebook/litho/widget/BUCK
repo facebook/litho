@@ -19,11 +19,11 @@ load(
     "LITHO_TESTING_WHITEBOX_TARGET",
     "LITHO_VIEWCOMPAT_TARGET",
     "LITHO_YOGA_TARGET",
-    "components_robolectric_test",
+    "components_robolectric4_test",
     "make_dep_path",
 )
 
-components_robolectric_test(
+components_robolectric4_test(
     name = "widget",
     srcs = glob([
         "*Test.java",

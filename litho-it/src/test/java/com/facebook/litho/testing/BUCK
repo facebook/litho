@@ -13,11 +13,11 @@ load(
     "LITHO_TESTING_ASSERTJ_V4_TARGET",
     "LITHO_TESTING_V4_TARGET",
     "LITHO_WIDGET_TARGET",
-    "components_robolectric_test",
+    "components_robolectric4_test",
     "make_dep_path",
 )
 
-components_robolectric_test(
+components_robolectric4_test(
     name = "testing",
     srcs = glob(["*Test.java"]),
     contacts = ["oncall+components_for_android@xmail.facebook.com"],
