@@ -54,7 +54,7 @@ import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.annotation.Config;
 
 @PrepareForTest({LayoutState.class})
-@PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*"})
+@PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*", "com.facebook.yoga.*"})
 @Config(sdk = Build.VERSION_CODES.LOLLIPOP)
 @RunWith(ComponentsTestRunner.class)
 public class LayoutStateCalculateTest {
