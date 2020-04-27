@@ -103,7 +103,9 @@ public class MountStateIncrementalMountTest {
                     .child(Wrapper.create(c).delegate(child2).widthPx(10).heightPx(10))
                     .build();
               }
-            });
+            },
+            true,
+            true);
 
     verifyLoggingAndResetLogger(2, 0);
 
@@ -148,7 +150,9 @@ public class MountStateIncrementalMountTest {
                     .child(Wrapper.create(c).delegate(child2).widthPx(10).heightPx(10))
                     .build();
               }
-            });
+            },
+            true,
+            true);
 
     verifyLoggingAndResetLogger(2, 0);
 
@@ -196,7 +200,9 @@ public class MountStateIncrementalMountTest {
                     .child(Wrapper.create(c).delegate(child2).widthPx(10).heightPx(10))
                     .build();
               }
-            });
+            },
+            true,
+            true);
 
     verifyLoggingAndResetLogger(2, 0);
 
@@ -244,7 +250,9 @@ public class MountStateIncrementalMountTest {
                     .child(Wrapper.create(c).delegate(child2).widthPx(10).heightPx(10))
                     .build();
               }
-            });
+            },
+            true,
+            true);
 
     verifyLoggingAndResetLogger(2, 0);
 
@@ -291,7 +299,9 @@ public class MountStateIncrementalMountTest {
                     .child(TestDrawableComponent.create(c))
                     .build();
               }
-            });
+            },
+            true,
+            true);
 
     verifyLoggingAndResetLogger(2, 0);
 
@@ -370,7 +380,9 @@ public class MountStateIncrementalMountTest {
                     .child(TestDrawableComponent.create(c))
                     .build();
               }
-            });
+            },
+            true,
+            true);
 
     verifyLoggingAndResetLogger(3, 0);
 
@@ -411,7 +423,7 @@ public class MountStateIncrementalMountTest {
 
     final LithoView lithoView =
         ComponentTestHelper.mountComponent(
-            TestViewComponent.create(mContext).testView(mountedView));
+            TestViewComponent.create(mContext).testView(mountedView), true, true);
 
     lithoView.getComponentTree().mountComponent(new Rect(15, 15, 40, 40), true);
 
@@ -442,7 +454,7 @@ public class MountStateIncrementalMountTest {
 
     final LithoView lithoView =
         ComponentTestHelper.mountComponent(
-            TestViewComponent.create(mContext).testView(mountedView));
+            TestViewComponent.create(mContext).testView(mountedView), true, true);
 
     // Can't verify directly as the object will have changed by the time we get the chance to
     // verify it.
@@ -509,7 +521,9 @@ public class MountStateIncrementalMountTest {
                     .child(Wrapper.create(c).delegate(child1).widthPx(10).heightPx(10))
                     .build();
               }
-            });
+            },
+            true,
+            true);
 
     lithoView.getComponentTree().mountComponent(new Rect(0, -10, 10, -5), true);
     assertThat(child1.isMounted()).isFalse();
@@ -549,7 +563,9 @@ public class MountStateIncrementalMountTest {
                     .child(Wrapper.create(c).delegate(child2).widthPx(10).heightPx(10))
                     .build();
               }
-            });
+            },
+            true,
+            true);
 
     lithoView.getComponentTree().mountComponent(new Rect(0, -10, 10, -5), true);
     assertThat(child1.isMounted()).isFalse();
@@ -588,7 +604,9 @@ public class MountStateIncrementalMountTest {
 
     final LithoView lithoViewParent =
         ComponentTestHelper.mountComponent(
-            TestViewComponent.create(mContext, true, true, true, true).testView(viewGroup), true);
+            TestViewComponent.create(mContext, true, true, true, true).testView(viewGroup),
+            true,
+            true);
 
     // Mount views with visible rect
     lithoViewParent.getComponentTree().mountComponent(new Rect(0, 0, 100, 1000), false);

@@ -194,6 +194,9 @@ public class ComponentTree {
   private final boolean mIncrementalMountEnabled;
 
   @ThreadConfined(ThreadConfined.UI)
+  private final boolean mVisibilityProcessingEnabled;
+
+  @ThreadConfined(ThreadConfined.UI)
   private final boolean mIsLayoutDiffingEnabled;
 
   @ThreadConfined(ThreadConfined.UI)
@@ -340,6 +343,7 @@ public class ComponentTree {
     mContext = ComponentContext.withComponentTree(builder.context, this);
     mRoot = wrapRootInErrorBoundary(builder.root);
     mIncrementalMountEnabled = builder.incrementalMountEnabled;
+    mVisibilityProcessingEnabled = builder.visibilityProcessingEnabled;
     mIsLayoutDiffingEnabled = builder.isLayoutDiffingEnabled;
     mLayoutThreadHandler = builder.layoutThreadHandler;
     mShouldPreallocatePerMountSpec = builder.shouldPreallocatePerMountSpec;
@@ -699,7 +703,9 @@ public class ComponentTree {
       if (mIncrementalMountEnabled) {
         incrementalMountComponent();
       } else {
-        mountComponent(null, true);
+        final Rect visibleRect = new Rect();
+        mLithoView.getLocalVisibleRect(visibleRect);
+        mountComponent(visibleRect, true);
       }
 
       return true;
@@ -745,30 +751,6 @@ public class ComponentTree {
       }
       // if false: no-op, doesn't have visible area, is not ready or not attached
     }
-  }
-
-  void processVisibilityOutputs() {
-    assertMainThread();
-
-    if (!mIncrementalMountEnabled) {
-      throw new IllegalStateException(
-          "Calling processVisibilityOutputs() but incremental mount is not enabled");
-    }
-
-    if (mLithoView == null) {
-      return;
-    }
-
-    if (mMainThreadLayoutState == null) {
-      Log.w(TAG, "Main Thread Layout state is not found");
-      return;
-    }
-
-    final Rect currentVisibleArea = new Rect();
-    if (mLithoView.getLocalVisibleRect(currentVisibleArea)) {
-      mLithoView.processVisibilityOutputs(mMainThreadLayoutState, currentVisibleArea);
-    }
-    // if false: no-op, doesn't have visible area, is not ready or not attached
   }
 
   private boolean animatingRootBoundsFromZero(Rect currentVisibleArea) {
@@ -1189,6 +1171,11 @@ public class ComponentTree {
   public boolean isIncrementalMountEnabled() {
     return mIncrementalMountEnabled;
   }
+
+  boolean isVisibilityProcessingEnabled() {
+    return mVisibilityProcessingEnabled;
+  }
+
   /** Returns the recycling mode. Please see {@link RecyclingMode for details of different modes} */
   public @RecyclingMode int getRecyclingMode() {
     return mRecyclingMode;
@@ -1400,6 +1387,9 @@ public class ComponentTree {
   }
 
   void updateStateInternal(boolean isAsync, String attribution, boolean isCreateLayoutInProgress) {
+    if (ComponentsConfiguration.ignoreStateUpdatesForScreenshotTest) {
+      return;
+    }
 
     final Component root;
     final @Nullable TreeProps rootTreeProps;
@@ -2970,6 +2960,7 @@ public class ComponentTree {
 
     // required
     private final ComponentContext context;
+    private boolean visibilityProcessingEnabled = true;
     private @RecyclingMode int recyclingMode = RecyclingMode.DEFAULT;
     private Component root;
 
@@ -3023,6 +3014,11 @@ public class ComponentTree {
      */
     public Builder incrementalMount(boolean isEnabled) {
       incrementalMountEnabled = isEnabled;
+      return this;
+    }
+
+    public Builder visibilityProcessing(boolean isEnabled) {
+      visibilityProcessingEnabled = isEnabled;
       return this;
     }
 

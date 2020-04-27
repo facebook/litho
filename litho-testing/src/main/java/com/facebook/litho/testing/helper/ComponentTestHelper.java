@@ -78,10 +78,18 @@ public final class ComponentTestHelper {
    * @return A LithoView with the component mounted in it.
    */
   public static LithoView mountComponent(
-      Component.Builder component, boolean incrementalMountEnabled) {
+      Component.Builder component,
+      boolean incrementalMountEnabled,
+      boolean visibilityProcessingEnabled) {
     ComponentContext context = getContext(component);
     return mountComponent(
-        context, new LithoView(context), component.build(), incrementalMountEnabled, 100, 100);
+        context,
+        new LithoView(context),
+        component.build(),
+        incrementalMountEnabled,
+        visibilityProcessingEnabled,
+        100,
+        100);
   }
 
   /**
@@ -104,9 +112,18 @@ public final class ComponentTestHelper {
    * @return A LithoView with the component mounted in it.
    */
   public static LithoView mountComponent(
-      ComponentContext context, Component component, boolean incrementalMountEnabled) {
+      ComponentContext context,
+      Component component,
+      boolean incrementalMountEnabled,
+      boolean visibilityProcessingEnabled) {
     return mountComponent(
-        context, new LithoView(context), component, incrementalMountEnabled, 100, 100);
+        context,
+        new LithoView(context),
+        component,
+        incrementalMountEnabled,
+        visibilityProcessingEnabled,
+        100,
+        100);
   }
 
   /**
@@ -148,7 +165,7 @@ public final class ComponentTestHelper {
    */
   public static LithoView mountComponent(
       ComponentContext context, LithoView lithoView, Component component, int width, int height) {
-    return mountComponent(context, lithoView, component, false, width, height);
+    return mountComponent(context, lithoView, component, false, false, width, height);
   }
 
   /**
@@ -167,6 +184,7 @@ public final class ComponentTestHelper {
       LithoView lithoView,
       Component component,
       boolean incrementalMountEnabled,
+      boolean visibilityProcessingEnabled,
       int width,
       int height) {
     return mountComponent(
@@ -174,6 +192,7 @@ public final class ComponentTestHelper {
         ComponentTree.create(context, component)
             .incrementalMount(incrementalMountEnabled)
             .layoutDiffing(false)
+            .visibilityProcessing(visibilityProcessingEnabled)
             .build(),
         makeMeasureSpec(width, EXACTLY),
         makeMeasureSpec(height, EXACTLY));
@@ -543,7 +562,7 @@ public final class ComponentTestHelper {
 
     parent.addView(lithoView);
 
-    mountComponent(context, lithoView, component, true, 100, 100);
+    mountComponent(context, lithoView, component, true, true, 100, 100);
 
     lithoView.notifyVisibleBoundsChanged();
 

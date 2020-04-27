@@ -52,7 +52,7 @@ public final class StateUpdatesTestHelper {
       ShadowLooper layoutThreadShadowLooper)
       throws Exception {
     return getViewAfterStateUpdate(
-        context, component, stateUpdater, layoutThreadShadowLooper, false);
+        context, component, stateUpdater, layoutThreadShadowLooper, false, false);
   }
 
   /**
@@ -72,6 +72,7 @@ public final class StateUpdatesTestHelper {
           public void performStateUpdate(ComponentContext ignored) {}
         },
         ComponentTestHelper.getDefaultLayoutThreadShadowLooper(),
+        false,
         false);
   }
 
@@ -91,6 +92,7 @@ public final class StateUpdatesTestHelper {
         component,
         stateUpdater,
         ComponentTestHelper.getDefaultLayoutThreadShadowLooper(),
+        false,
         false);
   }
 
@@ -108,14 +110,16 @@ public final class StateUpdatesTestHelper {
       ComponentContext context,
       Component component,
       StateUpdater stateUpdater,
-      boolean incrementalMountEnabled)
+      boolean incrementalMountEnabled,
+      boolean visibilityProcessingEnabled)
       throws Exception {
     return getViewAfterStateUpdate(
         context,
         component,
         stateUpdater,
         new ShadowLooper[] {ComponentTestHelper.getDefaultLayoutThreadShadowLooper()},
-        incrementalMountEnabled);
+        incrementalMountEnabled,
+        visibilityProcessingEnabled);
   }
 
   /**
@@ -134,14 +138,16 @@ public final class StateUpdatesTestHelper {
       Component component,
       StateUpdater stateUpdater,
       ShadowLooper layoutThreadShadowLooper,
-      boolean incrementalMountEnabled)
+      boolean incrementalMountEnabled,
+      boolean visibilityProcessingEnabled)
       throws Exception {
     return getViewAfterStateUpdate(
         context,
         component,
         stateUpdater,
         new ShadowLooper[] {layoutThreadShadowLooper},
-        incrementalMountEnabled);
+        incrementalMountEnabled,
+        visibilityProcessingEnabled);
   }
 
   /**
@@ -161,7 +167,8 @@ public final class StateUpdatesTestHelper {
       Component component,
       StateUpdater stateUpdater,
       ShadowLooper[] loopers,
-      boolean incrementalMountEnabled)
+      boolean incrementalMountEnabled,
+      boolean visibilityProcessingEnabled)
       throws Exception {
     // This is for working around component immutability, to be able to retrieve the updated
     // instance of the component.
@@ -169,6 +176,7 @@ public final class StateUpdatesTestHelper {
     final ComponentTree componentTree =
         ComponentTree.create(context, component)
             .incrementalMount(incrementalMountEnabled)
+            .visibilityProcessing(visibilityProcessingEnabled)
             .layoutDiffing(false)
             .build();
 

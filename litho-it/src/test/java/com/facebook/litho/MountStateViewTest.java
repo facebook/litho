@@ -144,8 +144,8 @@ public class MountStateViewTest {
                 .build();
           }
         };
-    final LithoView child1 = mountComponent(mContext, mountedTestComponent1, true);
-    final LithoView child2 = mountComponent(mContext, mountedTestComponent2, true);
+    final LithoView child1 = mountComponent(mContext, mountedTestComponent1, true, true);
+    final LithoView child2 = mountComponent(mContext, mountedTestComponent2, true, true);
 
     assertThat(testComponent1.isMounted()).isTrue();
     assertThat(testComponent2.isMounted()).isTrue();
@@ -159,7 +159,7 @@ public class MountStateViewTest {
 
     final LithoView parentView =
         mountComponent(
-            mContext, TestViewComponent.create(mContext).testView(viewGroup).build(), true);
+            mContext, TestViewComponent.create(mContext).testView(viewGroup).build(), true, true);
 
     ComponentTestHelper.unmountComponent(parentView);
 

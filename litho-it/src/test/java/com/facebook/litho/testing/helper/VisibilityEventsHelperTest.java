@@ -18,6 +18,7 @@ package com.facebook.litho.testing.helper;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 
 import com.facebook.litho.Component;
@@ -50,18 +51,23 @@ public class VisibilityEventsHelperTest {
   @Mock public EventHandler<FullImpressionVisibleEvent> mFullImpressionEventEventHandler;
 
   private ComponentContext mContext;
+  private ComponentTree mComponentTree;
 
   @Before
   public void setup() {
     MockitoAnnotations.initMocks(this);
     mContext = new ComponentContext(RuntimeEnvironment.application);
+    mComponentTree = getComponentTreeWithHandlers();
+    reset(mVisibleEventEventHandler);
+    reset(mInvisibleEventEventHandler);
+    reset(mFocusedVisibleEventEventHandler);
+    reset(mUnfocusedVisibleEventEventHandler);
+    reset(mFullImpressionEventEventHandler);
   }
 
   @Test
   public void triggerVisibleEventForEventsShouldDispatchHandler() {
-    assertThat(
-            VisibilityEventsHelper.triggerVisibilityEvent(
-                getComponentTreeWithHandlers(), VisibleEvent.class))
+    assertThat(VisibilityEventsHelper.triggerVisibilityEvent(mComponentTree, VisibleEvent.class))
         .isTrue();
 
     verify(mVisibleEventEventHandler).dispatchEvent(any(VisibleEvent.class));
@@ -69,9 +75,7 @@ public class VisibilityEventsHelperTest {
 
   @Test
   public void triggerInvisibleEventForEventsShouldDispatchHandler() {
-    assertThat(
-            VisibilityEventsHelper.triggerVisibilityEvent(
-                getComponentTreeWithHandlers(), InvisibleEvent.class))
+    assertThat(VisibilityEventsHelper.triggerVisibilityEvent(mComponentTree, InvisibleEvent.class))
         .isTrue();
 
     verify(mInvisibleEventEventHandler).dispatchEvent(any(InvisibleEvent.class));
@@ -81,7 +85,7 @@ public class VisibilityEventsHelperTest {
   public void triggerFocusedEventForEventsShouldDispatchHandler() {
     assertThat(
             VisibilityEventsHelper.triggerVisibilityEvent(
-                getComponentTreeWithHandlers(), FocusedVisibleEvent.class))
+                mComponentTree, FocusedVisibleEvent.class))
         .isTrue();
 
     verify(mFocusedVisibleEventEventHandler).dispatchEvent(any(FocusedVisibleEvent.class));
@@ -91,7 +95,7 @@ public class VisibilityEventsHelperTest {
   public void triggerUnfocusedEventForEventsShouldDispatchHandler() {
     assertThat(
             VisibilityEventsHelper.triggerVisibilityEvent(
-                getComponentTreeWithHandlers(), UnfocusedVisibleEvent.class))
+                mComponentTree, UnfocusedVisibleEvent.class))
         .isTrue();
 
     verify(mUnfocusedVisibleEventEventHandler).dispatchEvent(any(UnfocusedVisibleEvent.class));
@@ -101,7 +105,7 @@ public class VisibilityEventsHelperTest {
   public void triggerFullImpressionEventForEventsShouldDispatchHandler() {
     assertThat(
             VisibilityEventsHelper.triggerVisibilityEvent(
-                getComponentTreeWithHandlers(), FullImpressionVisibleEvent.class))
+                mComponentTree, FullImpressionVisibleEvent.class))
         .isTrue();
 
     verify(mFullImpressionEventEventHandler).dispatchEvent(any(FullImpressionVisibleEvent.class));
@@ -110,9 +114,9 @@ public class VisibilityEventsHelperTest {
   @Test
   public void triggerEventWithoutHandlerShouldNotDispatchHandler() {
     Component component = TestLayoutComponent.create(mContext).build();
-    assertThat(
-            VisibilityEventsHelper.triggerVisibilityEvent(
-                getComponentTree(component), VisibleEvent.class))
+    final ComponentTree componentTree = getComponentTree(component);
+    reset(mVisibleEventEventHandler);
+    assertThat(VisibilityEventsHelper.triggerVisibilityEvent(componentTree, VisibleEvent.class))
         .isFalse();
   }
 
@@ -123,9 +127,10 @@ public class VisibilityEventsHelperTest {
             .child(Row.create(mContext).build())
             .child(Row.create(mContext).visibleHandler(mVisibleEventEventHandler).build())
             .build();
-    assertThat(
-            VisibilityEventsHelper.triggerVisibilityEvent(
-                getComponentTree(component), VisibleEvent.class))
+    final ComponentTree componentTree = getComponentTree(component);
+    reset(mVisibleEventEventHandler);
+
+    assertThat(VisibilityEventsHelper.triggerVisibilityEvent(componentTree, VisibleEvent.class))
         .isTrue();
 
     verify(mVisibleEventEventHandler).dispatchEvent(any(VisibleEvent.class));
