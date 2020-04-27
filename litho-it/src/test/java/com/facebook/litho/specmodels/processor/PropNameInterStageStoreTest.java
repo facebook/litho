@@ -16,6 +16,7 @@
 
 package com.facebook.litho.specmodels.processor;
 
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -26,7 +27,6 @@ import com.facebook.litho.annotations.ResType;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.model.InjectPropModel;
 import com.facebook.litho.specmodels.model.PropModel;
-import com.facebook.litho.testing.assertj.LithoAssertions;
 import com.facebook.litho.testing.specmodels.MockMethodParamModel;
 import com.facebook.litho.testing.specmodels.MockSpecModel;
 import com.squareup.javapoet.ClassName;
@@ -66,8 +66,8 @@ public class PropNameInterStageStoreTest {
 
     final Optional<ImmutableList<String>> strings =
         store.loadNames(new MockName("com.example.MyComponentSpec"));
-    LithoAssertions.assertThat(strings.isPresent()).isTrue();
-    LithoAssertions.assertThat(strings.get()).containsExactly("arg0", "arg1");
+    assertThat(strings.isPresent()).isTrue();
+    assertThat(strings.get()).containsExactly("arg0", "arg1");
 
     verify(mFiler)
         .getResource(
