@@ -16,8 +16,6 @@
 
 package com.facebook.litho.testing.shadows;
 
-import static org.robolectric.internal.Shadow.directlyOn;
-
 import android.graphics.Canvas;
 import android.graphics.ColorFilter;
 import android.graphics.drawable.ColorDrawable;
@@ -44,14 +42,14 @@ public class ColorDrawableShadow extends ShadowDrawable {
 
   @Implementation
   public void setColorFilter(ColorFilter colorFilter) {
-    directlyOn(mRealColorDrawable, ColorDrawable.class).setColorFilter(colorFilter);
+    mRealColorDrawable.setColorFilter(colorFilter);
   }
 
   @Override
   @Implementation
   public void setAlpha(int alpha) {
     mAlpha = alpha;
-    directlyOn(mRealColorDrawable, ColorDrawable.class).setAlpha(alpha);
+    mRealColorDrawable.setAlpha(alpha);
   }
 
   @Override
