@@ -6,6 +6,7 @@
 load(
     "//tools/build_defs/oss:litho_defs.bzl",
     "LITHO_ROBOLECTRIC_V3_TARGET",
+    "LITHO_ROBOLECTRIC_V4_TARGET",
     "litho_android_library",
 )
 
@@ -17,5 +18,16 @@ litho_android_library(
     ],
     deps = [
         LITHO_ROBOLECTRIC_V3_TARGET,
+    ],
+)
+
+litho_android_library(
+    name = "testrunner-v4",
+    srcs = glob(["*.java"]),
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = [
+        LITHO_ROBOLECTRIC_V4_TARGET,
     ],
 )
