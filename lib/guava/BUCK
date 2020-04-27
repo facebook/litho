@@ -16,6 +16,6 @@ fb_native.prebuilt_jar(
 
 fb_native.remote_file(
     name = "guava.jar",
-    sha1 = "89507701249388e1ed5ddcf8c41f4ce1be7831ef",
-    url = "mvn:com.google.guava:guava:jar:20.0",
+    sha1 = "ef69663836b339db335fde0df06fb3cd84e3742b",
+    url = "mvn:com.google.guava:guava:jar:26.0-android",
 )

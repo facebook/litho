@@ -70,6 +70,8 @@ LITHO_TESTING_SUBCOMPONENTS_TARGET = make_dep_path("litho-testing/src/main/java/
 
 LITHO_TESTING_WIDGET_TARGET = make_dep_path("litho-testing/src/main/java/com/facebook/litho/widget:widget")
 
+LITHO_TESTING_WIDGET_V4_TARGET = make_dep_path("litho-testing/src/main/java/com/facebook/litho/widget:widget-v4")
+
 LITHO_TESTING_ESPRESSO_TARGET = make_dep_path("litho-espresso/src/main/java/com/facebook/litho/testing/espresso:espresso")
 
 LITHO_TEST_RES = make_dep_path("litho-it/src/main:res")
@@ -114,13 +116,13 @@ LITHO_ANDROIDSUPPORT_LIFECYCLE_EXT_TARGET = make_dep_path("lib/androidx:androidx
 
 LITHO_ANDROIDSUPPORT_TESTING_TARGET = make_dep_path("lib/androidx:androidx-testing")
 
+LITHO_BUILD_CONFIG_TARGET = make_dep_path(":build_config")
+
 LITHO_YOGA_TARGET = make_dep_path("lib/yoga:yoga")
 
 LITHO_YOGAJNI_TARGET = make_dep_path("lib/yogajni:jni")
 
 LITHO_PROGUARD_ANNOTATIONS_TARGET = make_dep_path("lib/yoga:proguard-annotations")
-
-LITHO_BUILD_CONFIG_TARGET = make_dep_path(":build_config")
 
 LITHO_COMMONS_CLI_TARGET = make_dep_path("lib/commons-cli:commons-cli")
 
@@ -142,9 +144,15 @@ LITHO_TRUTH_TARGET = make_dep_path("lib/truth:truth")
 
 LITHO_MOCKITO_TARGET = make_dep_path("lib/mockito:mockito")
 
+LITHO_MOCKITO_V2_TARGET = make_dep_path("lib/mockito2:mockito2")
+
 LITHO_POWERMOCK_MOCKITO_TARGET = make_dep_path("lib/powermock:powermock-mockito")
 
+LITHO_POWERMOCK_MOCKITO_V2_TARGET = make_dep_path("lib/powermock2:powermock-mockito2")
+
 LITHO_JNI_TARGET = make_dep_path("lib/jni-hack:jni-hack")
+
+LITHO_JAVAC_TOOLS_TARGET = make_dep_path("lib/javac-tools:javac-tools")
 
 LITHO_GUAVA_TARGET = make_dep_path("lib/guava:guava")
 
@@ -158,8 +166,6 @@ LITHO_ESPRESSO_TARGET = make_dep_path("lib/espresso:espresso")
 
 LITHO_SCREENSHOT_TARGET = make_dep_path("lib/screenshot:screenshot")
 
-LITHO_JAVAC_TOOLS_TARGET = make_dep_path("lib/javac-tools:javac-tools")
-
 LITHO_RENDERCORE_TARGET = make_dep_path("litho-rendercore:rendercore-stub")
 
 # Fresco
@@ -171,9 +177,9 @@ LITHO_ROBOLECTRIC_V4_TARGET = make_dep_path("lib/robolectric4:robolectric4")
 
 LITHO_JUNIT_TARGET = make_dep_path("lib/junit:junit")
 
-LITHO_HAMCREST_LIBRARY_TARGET = make_dep_path("lib/hamcrest:hamcrest")
-
 LITHO_HAMCREST_CORE_TARGET = make_dep_path("lib/hamcrest:hamcrest")
+
+LITHO_HAMCREST_LIBRARY_TARGET = make_dep_path("lib/hamcrest:hamcrest")
 
 # Annotation processors
 LITHO_PROCESSOR_TARGET = make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/processor:processor")
@@ -239,6 +245,36 @@ def components_robolectric_test(
         **kwargs
     )
 
+components_robolectric_powermock_test = components_robolectric_test
+
+def components_robolectric4_test(
+        name,
+        *args,
+        **kwargs):
+    """Tests that can successfully run from the library root folder."""
+    extra_vm_args = [
+        "-Drobolectric.dependency.dir=lib/android-all",
+        "-Drobolectric.require.all.resources=true",
+        "-Dcom.facebook.litho.is_oss=true",
+    ]
+    kwargs["vm_args"] = extra_vm_args
+    kwargs["use_cxx_libraries"] = True
+    kwargs["use_old_styleable_format"] = True
+    kwargs["cxx_library_whitelist"] = [
+        "//lib/yogajni:jni",
+    ]
+
+    # T41117446 Remove after AndroidX conversion is done.
+    kwargs.pop("is_androidx", False)
+
+    native.robolectric_test(
+        name = name,
+        *args,
+        **kwargs
+    )
+
+components_robolectric4_powermock_test = components_robolectric4_test
+
 def fb_java_test(*args, **kwargs):
     """Uses native java_test for OSS project."""
 
@@ -255,8 +291,6 @@ def litho_android_library(name, srcs = None, *args, **kwargs):
     # T41117446 Remove after AndroidX conversion is done.
     kwargs.pop("is_androidx", False)
     native.android_library(name, srcs = srcs, *args, **kwargs)
-
-components_robolectric_powermock_test = components_robolectric_test
 
 def fb_xplat_cxx_library(*args, **kwargs):
     """Delegates to cxx_library for OSS project."""

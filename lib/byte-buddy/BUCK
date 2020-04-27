@@ -1,0 +1,37 @@
+# Copyright (c) 2017-present, Facebook, Inc.
+#
+# This source code is licensed under the Apache 2.0 license found in the
+# LICENSE file in the root directory of this source tree.
+load("//tools/build_defs/oss:fb_native_wrapper.bzl", "fb_native")
+load("//tools/build_defs/oss:litho_defs.bzl", "fb_java_library")
+
+fb_java_library(
+    name = "byte-buddy",
+    visibility = ["PUBLIC"],
+    exported_deps = [
+        ":byte-buddy-agent-prebuilt",
+        ":byte-buddy-prebuilt",
+    ],
+)
+
+fb_native.prebuilt_jar(
+    name = "byte-buddy-prebuilt",
+    binary_jar = ":byte-buddy.jar",
+)
+
+fb_native.remote_file(
+    name = "byte-buddy.jar",
+    sha1 = "211a2b4d3df1eeef2a6cacf78d74a1f725e7a840",
+    url = "mvn:net.bytebuddy:byte-buddy:jar:1.9.10",
+)
+
+fb_native.prebuilt_jar(
+    name = "byte-buddy-agent-prebuilt",
+    binary_jar = ":byte-buddy-agent.jar",
+)
+
+fb_native.remote_file(
+    name = "byte-buddy-agent.jar",
+    sha1 = "9674aba5ee793e54b864952b001166848da0f26b",
+    url = "mvn:net.bytebuddy:byte-buddy-agent:jar:1.9.10",
+)

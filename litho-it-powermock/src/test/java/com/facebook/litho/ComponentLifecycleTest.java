@@ -515,7 +515,7 @@ public class ComponentLifecycleTest {
   }
 
   @OkToExtend
-  private static class TestBaseComponent extends Component {
+  static class TestBaseComponent extends Component {
 
     private final boolean mCanMeasure;
     private final MountType mMountType;

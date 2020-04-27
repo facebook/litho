@@ -20,6 +20,6 @@ fb_native.prebuilt_jar(
 
 fb_native.remote_file(
     name = "objenesis.jar",
-    sha1 = "9b473564e792c2bdf1449da1f0b1b5bff9805704",
-    url = "mvn:org.objenesis:objenesis:jar:1.0",
+    sha1 = "11cfac598df9dc48bb9ed9357ed04212694b7808",
+    url = "mvn:org.objenesis:objenesis:jar:3.0.1",
 )

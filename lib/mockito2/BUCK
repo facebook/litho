@@ -1,0 +1,27 @@
+# Copyright (c) 2017-present, Facebook, Inc.
+#
+# This source code is licensed under the Apache 2.0 license found in the
+# LICENSE file in the root directory of this source tree.
+load("//tools/build_defs/oss:fb_native_wrapper.bzl", "fb_native")
+load("//tools/build_defs/oss:litho_defs.bzl", "fb_java_library", "make_dep_path")
+
+fb_java_library(
+    name = "mockito2",
+    visibility = ["PUBLIC"],
+    exported_deps = [
+        ":mockito-core-prebuilt",
+        make_dep_path("lib/byte-buddy:byte-buddy"),
+        make_dep_path("lib/objenesis:objenesis"),
+    ],
+)
+
+fb_native.prebuilt_jar(
+    name = "mockito-core-prebuilt",
+    binary_jar = ":mockito-core.jar",
+)
+
+fb_native.remote_file(
+    name = "mockito-core.jar",
+    sha1 = "17fb1bf75af4f5a18d8dec73b3aa55f18e6fa21a",
+    url = "mvn:org.mockito:mockito-core:jar:2.26.0",
+)
