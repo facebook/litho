@@ -18,7 +18,6 @@ package com.facebook.samples.litho;
 
 import static com.facebook.litho.ComponentContext.withComponentScope;
 import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.robolectric.Shadows.shadowOf;
 
 import android.content.Intent;
 import com.facebook.litho.ClickEvent;
@@ -32,6 +31,7 @@ import com.facebook.samples.litho.playground.PlaygroundActivity;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.shadows.ShadowApplication;
 
 @RunWith(ComponentsTestRunner.class)
 public class DemoListItemComponentTest {
@@ -50,10 +50,7 @@ public class DemoListItemComponentTest {
 
     lithoView.performClick();
 
-    final Intent nextIntent =
-        shadowOf(mComponentsRule.getContext().getAndroidContext())
-            .getShadowApplication()
-            .getNextStartedActivity();
+    final Intent nextIntent = ShadowApplication.getInstance().getNextStartedActivity();
     assertThat(nextIntent.getComponent().getClassName()).isSameAs(activityClassToLaunch.getName());
   }
 
@@ -73,10 +70,7 @@ public class DemoListItemComponentTest {
         .getEventDispatcher()
         .dispatchOnEvent(DemoListItemComponent.onClick(componentContext), new ClickEvent());
 
-    final Intent nextIntent =
-        shadowOf(mComponentsRule.getContext().getAndroidContext())
-            .getShadowApplication()
-            .getNextStartedActivity();
+    final Intent nextIntent = ShadowApplication.getInstance().getNextStartedActivity();
     assertThat(nextIntent.getComponent().getClassName()).isSameAs(activityClassToLaunch.getName());
   }
 }
