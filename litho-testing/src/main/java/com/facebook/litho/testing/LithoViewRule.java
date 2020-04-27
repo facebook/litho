@@ -22,9 +22,12 @@ import static android.view.View.MeasureSpec.EXACTLY;
 import static android.view.View.MeasureSpec.UNSPECIFIED;
 import static android.view.View.MeasureSpec.makeMeasureSpec;
 
+import androidx.annotation.Nullable;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
+import com.facebook.litho.InternalNode;
+import com.facebook.litho.LayoutState;
 import com.facebook.litho.LithoView;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
@@ -143,5 +146,13 @@ public class LithoViewRule implements TestRule {
   public LithoViewRule detachFromWindow() {
     getLithoView().onDetachedFromWindowForTest();
     return this;
+  }
+
+  protected @Nullable LayoutState getCurrentLayoutState() {
+    return getComponentTree().getLatestLayoutState();
+  }
+
+  protected @Nullable InternalNode getCurrentRootNode() {
+    return getCurrentLayoutState() != null ? getCurrentLayoutState().getLayoutRoot() : null;
   }
 }

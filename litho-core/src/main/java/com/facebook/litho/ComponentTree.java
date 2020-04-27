@@ -461,6 +461,12 @@ public class ComponentTree {
     return mBackgroundLayoutState;
   }
 
+  @VisibleForTesting
+  @Nullable
+  public LayoutState getLatestLayoutState() {
+    return mLatestLayoutState;
+  }
+
   /**
    * Picks the best LayoutState and sets it in mMainThreadLayoutState. The return value is a
    * LayoutState that must be released (after the lock is released). This awkward contract is

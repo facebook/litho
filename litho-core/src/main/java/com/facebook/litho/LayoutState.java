@@ -87,7 +87,7 @@ import javax.annotation.CheckReturnValue;
  */
 // This needs to be accessible to statically mock the class in tests.
 @VisibleForTesting
-class LayoutState
+public class LayoutState
     implements IncrementalMountExtensionInput,
         VisibilityOutputsExtensionInput,
         TransitionsExtensionInput {
@@ -2052,7 +2052,8 @@ class LayoutState
     return stateHandler;
   }
 
-  InternalNode getLayoutRoot() {
+  @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+  public InternalNode getLayoutRoot() {
     return mLayoutRoot;
   }
 
