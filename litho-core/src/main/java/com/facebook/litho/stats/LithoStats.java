@@ -226,7 +226,7 @@ public final class LithoStats {
   }
 
   @VisibleForTesting
-  public synchronized void resetAllCounters() {
+  public static synchronized void resetAllCounters() {
     sComponentAppliedStateUpdateCount.set(0);
     sComponentTriggeredSyncStateUpdateCount.set(0);
     sComponentTriggeredAsyncStateUpdateCount.set(0);

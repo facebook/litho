@@ -21,6 +21,7 @@ import static com.facebook.litho.SizeSpec.UNSPECIFIED;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
+import com.facebook.litho.testing.LithoStatsRule;
 import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.widget.MountSpecLifecycleTester;
@@ -36,6 +37,7 @@ import org.junit.runner.RunWith;
 public class MountSpecLifecycleTest {
 
   public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
+  public final @Rule LithoStatsRule mLithoStatsRule = new LithoStatsRule();
 
   @After
   public void after() {
