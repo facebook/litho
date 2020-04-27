@@ -12,7 +12,7 @@ load(
 
 litho_android_library(
     name = "testrunner",
-    srcs = glob(["*.java"]),
+    srcs = ["v3/ComponentsTestRunner.java"],
     visibility = [
         "PUBLIC",
     ],
@@ -23,7 +23,7 @@ litho_android_library(
 
 litho_android_library(
     name = "testrunner-v4",
-    srcs = glob(["*.java"]),
+    srcs = ["ComponentsTestRunner.java"],
     visibility = [
         "PUBLIC",
     ],

@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.testing.testrunner;
+package com.facebook.litho.testing.testrunner.v3;
 
+import java.lang.reflect.Method;
 import org.junit.runners.model.InitializationError;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
+import org.robolectric.internal.SdkConfig;
+import org.robolectric.manifest.AndroidManifest;
 
 public class ComponentsTestRunner extends RobolectricTestRunner {
   /**
@@ -70,10 +73,34 @@ public class ComponentsTestRunner extends RobolectricTestRunner {
   }
 
   @Override
-  protected Config buildGlobalConfig() {
-    Config config = super.buildGlobalConfig();
+  protected AndroidManifest getAppManifest(Config config) {
+    final AndroidManifest appManifest = super.getAppManifest(config);
+    if (appManifest == null) return null;
+
+    // Overriding default manifest to set default TargetSdk version, because normal Robolectric
+    // fallback in org.robolectric.RobolectricTestRunner.pickSdkVersion doesn't work.
+    return new AndroidManifest(
+        appManifest.getAndroidManifestFile(),
+        appManifest.getResDirectory(),
+        appManifest.getAssetsDirectory(),
+        appManifest.getPackageName()) {
+      @Override
+      public int getTargetSdkVersion() {
+        return SdkConfig.FALLBACK_SDK_VERSION;
+      }
+    };
+  }
+
+  @Override
+  public Config getConfig(final Method method) {
+    final Config config = super.getConfig(method);
     // We are hard-coding the path here instead of relying on BUCK internals
     // to allow for building with gradle in the Open Source version.
-    return new Config.Builder().setManifest(getResPrefix() + "AndroidManifest.xml").build();
+    return new Config.Implementation(config) {
+      @Override
+      public String manifest() {
+        return getResPrefix() + "AndroidManifest.xml";
+      }
+    };
   }
 }
