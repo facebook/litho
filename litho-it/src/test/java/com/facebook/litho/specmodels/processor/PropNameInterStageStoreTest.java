@@ -61,7 +61,7 @@ public class PropNameInterStageStoreTest {
     final PropNameInterStageStore store = new PropNameInterStageStore(mFiler);
 
     final FileObject fileObject = makeFileObjectForString("arg0\narg1\n");
-    when(mFiler.getResource(any(JavaFileManager.Location.class), anyString(), anyString()))
+    when(mFiler.getResource((JavaFileManager.Location) any(), anyString(), anyString()))
         .thenReturn(fileObject);
 
     final Optional<ImmutableList<String>> strings =

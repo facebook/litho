@@ -81,7 +81,7 @@ public class ComponentTreeNewLayoutStateReadyListenerTest {
     mComponentTree.setNewLayoutStateReadyListener(mListener);
     mComponentTree.setSizeSpecAsync(mWidthSpec, mHeightSpec);
 
-    verify(mListener, never()).onNewLayoutStateReady(any(ComponentTree.class));
+    verify(mListener, never()).onNewLayoutStateReady((ComponentTree) any());
 
     // Now the background thread run the queued task.
     mLayoutThreadShadowLooper.runToEndOfTasks();
@@ -95,7 +95,7 @@ public class ComponentTreeNewLayoutStateReadyListenerTest {
     mComponentTree.setSizeSpecAsync(mWidthSpec, mHeightSpec);
     mComponentTree.setSizeSpecAsync(mWidthSpec2, mHeightSpec2);
 
-    verify(mListener, never()).onNewLayoutStateReady(any(ComponentTree.class));
+    verify(mListener, never()).onNewLayoutStateReady((ComponentTree) any());
 
     // Now the background thread run the queued task.
     mLayoutThreadShadowLooper.runToEndOfTasks();
@@ -110,7 +110,7 @@ public class ComponentTreeNewLayoutStateReadyListenerTest {
     mComponentTree.setLithoView(new LithoView(mContext));
     mComponentTree.attach();
 
-    verify(mListener, never()).onNewLayoutStateReady(any(ComponentTree.class));
+    verify(mListener, never()).onNewLayoutStateReady((ComponentTree) any());
 
     // Now the background thread run the queued task.
     mLayoutThreadShadowLooper.runToEndOfTasks();

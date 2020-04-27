@@ -17,7 +17,7 @@
 package com.facebook.litho;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.mockito.Matchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
@@ -589,7 +589,7 @@ public class LayoutStateCreateTreeTest {
 
     final InternalNode root =
         Layout.createAndMeasureComponent(mComponentContext, component, 800, 600);
-    verify(root).flexGrow(anyInt());
+    verify(root).flexGrow(anyFloat());
   }
 
   private static class TestDrawableComponentWithMockInternalNode extends TestComponent {

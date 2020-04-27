@@ -128,7 +128,7 @@ public class LithoViewTest {
     mLithoView.suppressMeasureComponentTree(true);
     mLithoView.measure(makeMeasureSpec(width, EXACTLY), makeMeasureSpec(height, EXACTLY));
 
-    verify(mockComponentTree, never()).measure(anyInt(), anyInt(), any(int[].class), anyBoolean());
+    verify(mockComponentTree, never()).measure(anyInt(), anyInt(), (int[]) any(), anyBoolean());
     LithoViewAssert.assertThat(mLithoView).hasMeasuredWidthOf(width).hasMeasuredHeightOf(height);
   }
 

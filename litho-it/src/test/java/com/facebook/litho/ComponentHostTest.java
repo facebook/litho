@@ -198,8 +198,8 @@ public class ComponentHostTest {
     // The n.4 is the first parsed, and returning false means the n.2 will be parsed too.
     TouchableDrawable touchableDrawableOnItem2 = spy(new TouchableDrawable());
     TouchableDrawable touchableDrawableOnItem4 = spy(new TouchableDrawable());
-    when(touchableDrawableOnItem2.shouldHandleTouchEvent(any(MotionEvent.class))).thenReturn(true);
-    when(touchableDrawableOnItem4.shouldHandleTouchEvent(any(MotionEvent.class))).thenReturn(false);
+    when(touchableDrawableOnItem2.shouldHandleTouchEvent((MotionEvent) any())).thenReturn(true);
+    when(touchableDrawableOnItem4.shouldHandleTouchEvent((MotionEvent) any())).thenReturn(false);
 
     MountItem mountItem1 = mount(0, new ColorDrawable());
     MountItem mountItem2 = mount(1, touchableDrawableOnItem2);
@@ -213,12 +213,11 @@ public class ComponentHostTest {
 
     mHost.onTouchEvent(mock(MotionEvent.class));
 
-    verify(touchableDrawableOnItem4, times(1)).shouldHandleTouchEvent(any(MotionEvent.class));
-    verify(touchableDrawableOnItem4, never()).onTouchEvent(any(MotionEvent.class), any(View.class));
+    verify(touchableDrawableOnItem4, times(1)).shouldHandleTouchEvent((MotionEvent) any());
+    verify(touchableDrawableOnItem4, never()).onTouchEvent((MotionEvent) any(), (View) any());
 
-    verify(touchableDrawableOnItem2, times(1)).shouldHandleTouchEvent(any(MotionEvent.class));
-    verify(touchableDrawableOnItem2, times(1))
-        .onTouchEvent(any(MotionEvent.class), any(View.class));
+    verify(touchableDrawableOnItem2, times(1)).shouldHandleTouchEvent((MotionEvent) any());
+    verify(touchableDrawableOnItem2, times(1)).onTouchEvent((MotionEvent) any(), (View) any());
   }
 
   @Test
@@ -249,8 +248,8 @@ public class ComponentHostTest {
     mHost.onTouchEvent(mock(MotionEvent.class));
 
     TouchableDrawable touchableDrawable = (TouchableDrawable) mountItem4.getContent();
-    verify(touchableDrawable, times(1)).shouldHandleTouchEvent(any(MotionEvent.class));
-    verify(touchableDrawable, times(1)).onTouchEvent(any(MotionEvent.class), any(View.class));
+    verify(touchableDrawable, times(1)).shouldHandleTouchEvent((MotionEvent) any());
+    verify(touchableDrawable, times(1)).onTouchEvent((MotionEvent) any(), (View) any());
   }
 
   @Test
@@ -306,7 +305,7 @@ public class ComponentHostTest {
     when(d1.isStateful()).thenReturn(false);
 
     MountItem mountItem1 = mount(0, d1);
-    verify(d1, never()).setState(any(int[].class));
+    verify(d1, never()).setState((int[]) any());
 
     unmount(0, mountItem1);
 

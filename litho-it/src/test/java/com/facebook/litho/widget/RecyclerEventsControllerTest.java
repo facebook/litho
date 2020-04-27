@@ -73,7 +73,7 @@ public class RecyclerEventsControllerTest {
 
   @Test
   public void testOnRecyclerListener() {
-    verify(mOnRecyclerUpdateListener, never()).onUpdate(any(RecyclerView.class));
+    verify(mOnRecyclerUpdateListener, never()).onUpdate((RecyclerView) any());
 
     mRecyclerEventsController.setOnRecyclerUpdateListener(mOnRecyclerUpdateListener);
     mRecyclerEventsController.setSectionsRecyclerView(null);

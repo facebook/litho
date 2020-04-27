@@ -260,7 +260,7 @@ public class PropValidationTest {
   @Test
   public void testOptionalPropWithDefault() {
     when(mPropModel1.isOptional()).thenReturn(false);
-    when(mPropModel1.hasDefault(any(ImmutableList.class))).thenReturn(true);
+    when(mPropModel1.hasDefault((ImmutableList) any())).thenReturn(true);
 
     List<SpecModelValidationError> validationErrors =
         PropValidation.validate(

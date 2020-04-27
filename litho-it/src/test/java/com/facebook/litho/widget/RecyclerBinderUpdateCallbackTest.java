@@ -79,7 +79,7 @@ public class RecyclerBinderUpdateCallbackTest {
             })
         .when(mOperationExecutor)
         .executeOperations(
-            any(ComponentContext.class), anyListOf(RecyclerBinderUpdateCallback.Operation.class));
+            (ComponentContext) any(), anyListOf(RecyclerBinderUpdateCallback.Operation.class));
 
     mReporter = mock(ComponentsReporter.Reporter.class);
     doAnswer(
@@ -106,7 +106,7 @@ public class RecyclerBinderUpdateCallbackTest {
     callback.onInserted(0, OLD_DATA_SIZE);
     callback.applyChangeset(mComponentContext);
     verify(mReporter, never())
-        .emitMessage(any(ComponentsReporter.LogLevel.class), anyString(), anyString());
+        .emitMessage((ComponentsReporter.LogLevel) any(), anyString(), anyString());
 
     final List<RecyclerBinderUpdateCallback.Operation> operations = callback.getOperations();
     assertThat(operations.size()).isEqualTo(1);
@@ -138,7 +138,7 @@ public class RecyclerBinderUpdateCallbackTest {
     callback.onInserted(0, 12);
     callback.applyChangeset(mComponentContext);
     verify(mReporter, never())
-        .emitMessage(any(ComponentsReporter.LogLevel.class), anyString(), anyString());
+        .emitMessage((ComponentsReporter.LogLevel) any(), anyString(), anyString());
 
     final RecyclerBinderUpdateCallback callback2 =
         new RecyclerBinderUpdateCallback(oldData, newData, mComponentRenderer, mOperationExecutor);
@@ -178,7 +178,7 @@ public class RecyclerBinderUpdateCallbackTest {
     callback1.onInserted(0, OLD_DATA_SIZE);
     callback1.applyChangeset(mComponentContext);
     verify(mReporter, never())
-        .emitMessage(any(ComponentsReporter.LogLevel.class), anyString(), anyString());
+        .emitMessage((ComponentsReporter.LogLevel) any(), anyString(), anyString());
     final RecyclerBinderUpdateCallback.Operation operation =
         (RecyclerBinderUpdateCallback.Operation) callback1.getOperations().get(0);
     assertOperationComponentContainer(operation, mOldData);

@@ -20,7 +20,7 @@ import static com.facebook.litho.testing.sections.TestSectionCreator.TestSection
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
@@ -106,7 +106,7 @@ public class SectionTreeTest {
     final TestSectionCreator.ChildrenSectionTest section =
         spy(TestSectionCreator.createSectionComponent("root", leaf1, leaf2));
     when(section.makeShallowCopy()).thenReturn(section);
-    when(section.makeShallowCopy(any(Boolean.class))).thenReturn(section);
+    when(section.makeShallowCopy(nullable(Boolean.class))).thenReturn(section);
 
     final TestTarget changeSetHandler = new TestTarget();
     SectionTree tree = SectionTree.create(mSectionContext, changeSetHandler).build();

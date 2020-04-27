@@ -263,9 +263,9 @@ public class RecyclerBinderTest {
     when(layoutInfo.approximateRangeSize(anyInt(), anyInt(), anyInt(), anyInt()))
         .thenReturn(RANGE_SIZE);
 
-    when(layoutInfo.getChildHeightSpec(anyInt(), any(RenderInfo.class)))
+    when(layoutInfo.getChildHeightSpec(anyInt(), (RenderInfo) any()))
         .thenReturn(SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY));
-    when(layoutInfo.getChildWidthSpec(anyInt(), any(RenderInfo.class)))
+    when(layoutInfo.getChildWidthSpec(anyInt(), (RenderInfo) any()))
         .thenReturn(SizeSpec.makeSizeSpec(100, SizeSpec.EXACTLY));
   }
 
@@ -402,9 +402,9 @@ public class RecyclerBinderTest {
     mRecyclerBinder.mount(recyclerView);
 
     verify(recyclerView).setLayoutManager(mLayoutInfo.getLayoutManager());
-    verify(recyclerView).setAdapter(any(RecyclerView.Adapter.class));
+    verify(recyclerView).setAdapter((RecyclerView.Adapter) any());
     verify(mLayoutInfo).setRenderInfoCollection(mRecyclerBinder);
-    verify(recyclerView).addOnScrollListener(any(OnScrollListener.class));
+    verify(recyclerView).addOnScrollListener((OnScrollListener) any());
   }
 
   @Test
@@ -413,19 +413,19 @@ public class RecyclerBinderTest {
     mRecyclerBinder.mount(recyclerView);
 
     verify(recyclerView).setLayoutManager(mLayoutInfo.getLayoutManager());
-    verify(recyclerView).setAdapter(any(RecyclerView.Adapter.class));
-    verify(recyclerView).addOnScrollListener(any(OnScrollListener.class));
+    verify(recyclerView).setAdapter((RecyclerView.Adapter) any());
+    verify(recyclerView).addOnScrollListener((OnScrollListener) any());
 
     RecyclerView secondRecyclerView = mock(RecyclerView.class);
     mRecyclerBinder.mount(secondRecyclerView);
 
     verify(recyclerView).setLayoutManager(null);
     verify(recyclerView).setAdapter(null);
-    verify(recyclerView).removeOnScrollListener(any(OnScrollListener.class));
+    verify(recyclerView).removeOnScrollListener((OnScrollListener) any());
 
     verify(secondRecyclerView).setLayoutManager(mLayoutInfo.getLayoutManager());
-    verify(secondRecyclerView).setAdapter(any(RecyclerView.Adapter.class));
-    verify(secondRecyclerView).addOnScrollListener(any(OnScrollListener.class));
+    verify(secondRecyclerView).setAdapter((RecyclerView.Adapter) any());
+    verify(secondRecyclerView).addOnScrollListener((OnScrollListener) any());
   }
 
   @Test
@@ -434,15 +434,15 @@ public class RecyclerBinderTest {
     mRecyclerBinder.mount(recyclerView);
 
     verify(recyclerView).setLayoutManager(mLayoutInfo.getLayoutManager());
-    verify(recyclerView).setAdapter(any(RecyclerView.Adapter.class));
-    verify(recyclerView).addOnScrollListener(any(OnScrollListener.class));
+    verify(recyclerView).setAdapter((RecyclerView.Adapter) any());
+    verify(recyclerView).addOnScrollListener((OnScrollListener) any());
 
     mRecyclerBinder.unmount(recyclerView);
 
     verify(recyclerView).setLayoutManager(null);
     verify(recyclerView).setAdapter(null);
     verify(mLayoutInfo).setRenderInfoCollection(null);
-    verify(recyclerView).removeOnScrollListener(any(OnScrollListener.class));
+    verify(recyclerView).removeOnScrollListener((OnScrollListener) any());
   }
 
   @Test
@@ -537,8 +537,8 @@ public class RecyclerBinderTest {
 
     mRecyclerBinder.mount(recyclerView);
 
-    verify(recyclerView).setAdapter(any(RecyclerView.Adapter.class));
-    verify(recyclerView, times(2)).addOnScrollListener(any(OnScrollListener.class));
+    verify(recyclerView).setAdapter((RecyclerView.Adapter) any());
+    verify(recyclerView, times(2)).addOnScrollListener((OnScrollListener) any());
   }
 
   @Test
@@ -589,7 +589,7 @@ public class RecyclerBinderTest {
     }
     mRecyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
-    when(mLayoutInfo.getChildWidthSpec(anyInt(), any(RenderInfo.class)))
+    when(mLayoutInfo.getChildWidthSpec(anyInt(), (RenderInfo) any()))
         .thenAnswer(
             new Answer<Integer>() {
               @Override
@@ -3756,7 +3756,7 @@ public class RecyclerBinderTest {
     assertThat(holder.getRenderState()).isEqualTo(ComponentTreeHolder.RENDER_UNINITIALIZED);
 
     recyclerBinder.notifyItemRenderCompleteAt(0, 0);
-    verify(recyclerView).postOnAnimation(any(RenderCompleteRunnable.class));
+    verify(recyclerView).postOnAnimation((RenderCompleteRunnable) any());
 
     assertThat(holder.getRenderState()).isEqualTo(ComponentTreeHolder.RENDER_DRAWN);
   }
@@ -4024,7 +4024,7 @@ public class RecyclerBinderTest {
     when(recyclerView.getWindowVisibility()).thenReturn(View.VISIBLE);
     when(recyclerView.getAlpha()).thenReturn(1f);
     when(recyclerView.getVisibility()).thenReturn(View.VISIBLE);
-    when(recyclerView.getGlobalVisibleRect(any(Rect.class))).thenReturn(true);
+    when(recyclerView.getGlobalVisibleRect((Rect) any())).thenReturn(true);
     recyclerBinder.mount(recyclerView);
 
     recyclerBinder.insertRangeAt(0, renderInfos);
@@ -4052,7 +4052,7 @@ public class RecyclerBinderTest {
     when(recyclerView.getWindowVisibility()).thenReturn(View.VISIBLE);
     when(recyclerView.getAlpha()).thenReturn(1f);
     when(recyclerView.getVisibility()).thenReturn(View.VISIBLE);
-    when(recyclerView.getGlobalVisibleRect(any(Rect.class))).thenReturn(true);
+    when(recyclerView.getGlobalVisibleRect((Rect) any())).thenReturn(true);
     recyclerBinder.mount(recyclerView);
 
     recyclerBinder.insertRangeAt(0, renderInfos);
@@ -4080,7 +4080,7 @@ public class RecyclerBinderTest {
     when(recyclerView.getWindowVisibility()).thenReturn(View.GONE);
     when(recyclerView.getAlpha()).thenReturn(1f);
     when(recyclerView.getVisibility()).thenReturn(View.GONE);
-    when(recyclerView.getGlobalVisibleRect(any(Rect.class))).thenReturn(false);
+    when(recyclerView.getGlobalVisibleRect((Rect) any())).thenReturn(false);
     recyclerBinder.mount(recyclerView);
 
     recyclerBinder.insertRangeAt(0, renderInfos);
@@ -4335,9 +4335,9 @@ public class RecyclerBinderTest {
     final int widthSpec = makeSizeSpec(100, AT_MOST);
     final int heightSpec = makeSizeSpec(100, EXACTLY);
 
-    when(mLayoutInfo.getChildHeightSpec(anyInt(), any(RenderInfo.class)))
+    when(mLayoutInfo.getChildHeightSpec(anyInt(), (RenderInfo) any()))
         .thenReturn(SizeSpec.makeSizeSpec(0, SizeSpec.EXACTLY));
-    when(mLayoutInfo.getChildWidthSpec(anyInt(), any(RenderInfo.class)))
+    when(mLayoutInfo.getChildWidthSpec(anyInt(), (RenderInfo) any()))
         .thenReturn(SizeSpec.makeSizeSpec(0, SizeSpec.EXACTLY));
     when(mLayoutInfo.approximateRangeSize(anyInt(), anyInt(), anyInt(), anyInt())).thenReturn(0);
 
@@ -4361,9 +4361,9 @@ public class RecyclerBinderTest {
     final CountDownLatch lockInitRangeFinishes2 = new CountDownLatch(1);
     final CountDownLatch lockTest = new CountDownLatch(2);
 
-    when(mLayoutInfo.getChildHeightSpec(anyInt(), any(RenderInfo.class)))
+    when(mLayoutInfo.getChildHeightSpec(anyInt(), (RenderInfo) any()))
         .thenReturn(SizeSpec.makeSizeSpec(0, SizeSpec.EXACTLY));
-    when(mLayoutInfo.getChildWidthSpec(anyInt(), any(RenderInfo.class)))
+    when(mLayoutInfo.getChildWidthSpec(anyInt(), (RenderInfo) any()))
         .thenReturn(SizeSpec.makeSizeSpec(0, SizeSpec.EXACTLY));
     when(mLayoutInfo.approximateRangeSize(anyInt(), anyInt(), anyInt(), anyInt())).thenReturn(0);
 
@@ -4483,9 +4483,9 @@ public class RecyclerBinderTest {
     final CountDownLatch lockInitRangeLayout = new CountDownLatch(2);
     final CountDownLatch lockTest = new CountDownLatch(1);
 
-    when(mLayoutInfo.getChildHeightSpec(anyInt(), any(RenderInfo.class)))
+    when(mLayoutInfo.getChildHeightSpec(anyInt(), (RenderInfo) any()))
         .thenReturn(SizeSpec.makeSizeSpec(0, SizeSpec.EXACTLY));
-    when(mLayoutInfo.getChildWidthSpec(anyInt(), any(RenderInfo.class)))
+    when(mLayoutInfo.getChildWidthSpec(anyInt(), (RenderInfo) any()))
         .thenReturn(SizeSpec.makeSizeSpec(0, SizeSpec.EXACTLY));
     when(mLayoutInfo.approximateRangeSize(anyInt(), anyInt(), anyInt(), anyInt())).thenReturn(0);
 
@@ -4598,7 +4598,7 @@ public class RecyclerBinderTest {
     when(recyclerView.getWindowVisibility()).thenReturn(View.VISIBLE);
     when(recyclerView.getAlpha()).thenReturn(1f);
     when(recyclerView.getVisibility()).thenReturn(View.VISIBLE);
-    when(recyclerView.getGlobalVisibleRect(any(Rect.class))).thenReturn(true);
+    when(recyclerView.getGlobalVisibleRect((Rect) any())).thenReturn(true);
     recyclerBinder.mount(recyclerView);
 
     recyclerBinder.notifyChangeSetComplete(true, changeSetCompleteCallback);

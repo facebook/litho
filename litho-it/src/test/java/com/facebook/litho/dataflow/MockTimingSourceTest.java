@@ -17,7 +17,7 @@
 package com.facebook.litho.dataflow;
 
 import static org.junit.Assert.fail;
-import static org.mockito.Matchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -54,7 +54,7 @@ public class MockTimingSourceTest {
     mTimingSource.step(1);
 
     for (int i = 0; i < callbacks.size(); i++) {
-      Mockito.verify(callbacks.get(i)).doFrame(anyInt());
+      Mockito.verify(callbacks.get(i)).doFrame(anyLong());
     }
   }
 
@@ -70,13 +70,13 @@ public class MockTimingSourceTest {
 
     mTimingSource.step(1);
 
-    verify(callback1).doFrame(anyInt());
-    verify(callback2).doFrame(anyInt());
-    verify(delayedCallback, never()).doFrame(anyInt());
+    verify(callback1).doFrame(anyLong());
+    verify(callback2).doFrame(anyLong());
+    verify(delayedCallback, never()).doFrame(anyLong());
 
     mTimingSource.step(1);
 
-    verify(delayedCallback).doFrame(anyInt());
+    verify(delayedCallback).doFrame(anyLong());
   }
 
   @Test

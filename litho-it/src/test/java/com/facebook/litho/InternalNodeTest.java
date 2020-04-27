@@ -432,7 +432,7 @@ public class InternalNodeTest {
   public void testContextSpecificComponentAssertionFailFormatting() {
     final ComponentsLogger componentsLogger = mock(ComponentsLogger.class);
     final PerfEvent perfEvent = mock(PerfEvent.class);
-    when(componentsLogger.newPerformanceEvent(any(ComponentContext.class), anyInt()))
+    when(componentsLogger.newPerformanceEvent((ComponentContext) any(), anyInt()))
         .thenReturn(perfEvent);
 
     InternalNode node = acquireInternalNodeWithLogger(componentsLogger);

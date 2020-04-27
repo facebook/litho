@@ -67,8 +67,8 @@ public class AttachDetachHandlerTest {
     final AttachDetachHandler attachDetachHandler =
         lithoView.getComponentTree().getAttachDetachHandler();
 
-    verify(component).onAttached(any(ComponentContext.class));
-    verify(component, never()).onDetached(any(ComponentContext.class));
+    verify(component).onAttached((ComponentContext) any());
+    verify(component, never()).onDetached((ComponentContext) any());
 
     assertThat(attachDetachHandler.getAttached().size()).isEqualTo(1);
   }
@@ -90,8 +90,8 @@ public class AttachDetachHandlerTest {
 
     lithoView.release();
 
-    verify(component).onAttached(any(ComponentContext.class));
-    verify(component).onDetached(any(ComponentContext.class));
+    verify(component).onAttached((ComponentContext) any());
+    verify(component).onDetached((ComponentContext) any());
 
     assertThat(attachDetachHandler.getAttached().size()).isEqualTo(0);
   }
@@ -107,11 +107,11 @@ public class AttachDetachHandlerTest {
     final AttachDetachHandler attachDetachHandler =
         lithoView.getComponentTree().getAttachDetachHandler();
 
-    verify(r1).onAttached(any(ComponentContext.class));
-    verify(c1).onAttached(any(ComponentContext.class));
-    verify(c2).onAttached(any(ComponentContext.class));
-    verify(c3).onAttached(any(ComponentContext.class));
-    verify(c4).onAttached(any(ComponentContext.class));
+    verify(r1).onAttached((ComponentContext) any());
+    verify(c1).onAttached((ComponentContext) any());
+    verify(c2).onAttached((ComponentContext) any());
+    verify(c3).onAttached((ComponentContext) any());
+    verify(c4).onAttached((ComponentContext) any());
 
     assertThat(attachDetachHandler.getAttached().size()).isEqualTo(5);
 
@@ -128,12 +128,12 @@ public class AttachDetachHandlerTest {
     final Component r2 = spy(TestAttachDetachComponent.create(mContext, c5, c6).build());
     lithoView.setComponent(Column.create(mContext).child(r2).build());
 
-    verify(c3).onDetached(any(ComponentContext.class));
-    verify(c4).onDetached(any(ComponentContext.class));
-    verify(c7).onAttached(any(ComponentContext.class));
-    verify(r1, never()).onDetached(any(ComponentContext.class));
-    verify(c1, never()).onDetached(any(ComponentContext.class));
-    verify(c2, never()).onDetached(any(ComponentContext.class));
+    verify(c3).onDetached((ComponentContext) any());
+    verify(c4).onDetached((ComponentContext) any());
+    verify(c7).onAttached((ComponentContext) any());
+    verify(r1, never()).onDetached((ComponentContext) any());
+    verify(c1, never()).onDetached((ComponentContext) any());
+    verify(c2, never()).onDetached((ComponentContext) any());
     assertThat(attachDetachHandler.getAttached().size()).isEqualTo(4);
 
     /*
@@ -147,10 +147,10 @@ public class AttachDetachHandlerTest {
     final Component r3 = spy(TestAttachDetachComponent.create(mContext, c8).build());
     lithoView.setComponent(Column.create(mContext).child(r3).build());
 
-    verify(c6).onDetached(any(ComponentContext.class));
-    verify(c7).onDetached(any(ComponentContext.class));
-    verify(r2, never()).onDetached(any(ComponentContext.class));
-    verify(c8, never()).onDetached(any(ComponentContext.class));
+    verify(c6).onDetached((ComponentContext) any());
+    verify(c7).onDetached((ComponentContext) any());
+    verify(r2, never()).onDetached((ComponentContext) any());
+    verify(c8, never()).onDetached((ComponentContext) any());
     assertThat(attachDetachHandler.getAttached().size()).isEqualTo(2);
   }
 
@@ -165,11 +165,11 @@ public class AttachDetachHandlerTest {
     final AttachDetachHandler attachDetachHandler =
         lithoView.getComponentTree().getAttachDetachHandler();
 
-    verify(r1).onAttached(any(ComponentContext.class));
-    verify(c1).onAttached(any(ComponentContext.class));
-    verify(c2).onAttached(any(ComponentContext.class));
-    verify(c3).onAttached(any(ComponentContext.class));
-    verify(c4).onAttached(any(ComponentContext.class));
+    verify(r1).onAttached((ComponentContext) any());
+    verify(c1).onAttached((ComponentContext) any());
+    verify(c2).onAttached((ComponentContext) any());
+    verify(c3).onAttached((ComponentContext) any());
+    verify(c4).onAttached((ComponentContext) any());
 
     assertThat(attachDetachHandler.getAttached().size()).isEqualTo(5);
 
@@ -187,15 +187,15 @@ public class AttachDetachHandlerTest {
         TestWrappedComponentProp.create(mContext).componentList(ImmutableList.of(c5, c6)).build();
     lithoView.setComponent(Column.create(mContext).child(r2).build());
 
-    verify(r1).onDetached(any(ComponentContext.class));
-    verify(c1).onDetached(any(ComponentContext.class));
-    verify(c2).onDetached(any(ComponentContext.class));
-    verify(c3).onDetached(any(ComponentContext.class));
-    verify(c4).onDetached(any(ComponentContext.class));
+    verify(r1).onDetached((ComponentContext) any());
+    verify(c1).onDetached((ComponentContext) any());
+    verify(c2).onDetached((ComponentContext) any());
+    verify(c3).onDetached((ComponentContext) any());
+    verify(c4).onDetached((ComponentContext) any());
 
-    verify(c5).onAttached(any(ComponentContext.class));
-    verify(c6).onAttached(any(ComponentContext.class));
-    verify(c7).onAttached(any(ComponentContext.class));
+    verify(c5).onAttached((ComponentContext) any());
+    verify(c6).onAttached((ComponentContext) any());
+    verify(c7).onAttached((ComponentContext) any());
     assertThat(attachDetachHandler.getAttached().size()).isEqualTo(3);
   }
 
@@ -203,12 +203,12 @@ public class AttachDetachHandlerTest {
   public void testReplaceNoAttachableComponent() {
     final Component r1 = spy(TestAttachDetachComponent.create(mContext).build());
     final LithoView lithoView = mountComponent(mContext, Column.create(mContext).child(r1).build());
-    verify(r1).onAttached(any(ComponentContext.class));
+    verify(r1).onAttached((ComponentContext) any());
 
     final Component newRoot =
         Column.create(mContext).child(Text.create(mContext).text("new root")).build();
     lithoView.setComponent(newRoot);
-    verify(r1).onDetached(any(ComponentContext.class));
+    verify(r1).onDetached((ComponentContext) any());
   }
 
   @Test
@@ -332,8 +332,8 @@ public class AttachDetachHandlerTest {
     assertThat(latch1.await(5000, TimeUnit.MILLISECONDS)).isTrue();
     assertThat(latch2.await(5000, TimeUnit.MILLISECONDS)).isTrue();
 
-    verify(component).onAttached(any(ComponentContext.class));
-    verify(component, never()).onDetached(any(ComponentContext.class));
+    verify(component).onAttached((ComponentContext) any());
+    verify(component, never()).onDetached((ComponentContext) any());
   }
 
   @Test
@@ -364,15 +364,15 @@ public class AttachDetachHandlerTest {
     final int heightSpec = SizeSpec.makeSizeSpec(1024, AT_MOST);
     componentTree.setRootAndSizeSpec(container, widthSpec, heightSpec);
 
-    verify(root, times(1)).onAttached(any(ComponentContext.class));
-    verify(root, never()).onDetached(any(ComponentContext.class));
+    verify(root, times(1)).onAttached((ComponentContext) any());
+    verify(root, never()).onDetached((ComponentContext) any());
 
     LithoView lithoView = new LithoView(mContext);
     lithoView.setComponentTree(componentTree);
     lithoView.measure(widthSpec, heightSpec);
 
-    verify(root, times(1)).onAttached(any(ComponentContext.class));
-    verify(root, never()).onDetached(any(ComponentContext.class));
+    verify(root, times(1)).onAttached((ComponentContext) any());
+    verify(root, never()).onDetached((ComponentContext) any());
   }
 
   private static void testSetSizeSpec(ComponentContext c, Component component, int times) {
@@ -421,7 +421,7 @@ public class AttachDetachHandlerTest {
   }
 
   private static int verifyOnAttached(Component component, int num) {
-    verify(component, times(num)).onAttached(any(ComponentContext.class));
+    verify(component, times(num)).onAttached((ComponentContext) any());
     int attachedCount = num;
 
     if (component instanceof TestAttachDetachComponent) {
@@ -442,7 +442,7 @@ public class AttachDetachHandlerTest {
   }
 
   private static void verifyOnDetached(Component component, VerificationMode mode) {
-    verify(component, mode).onDetached(any(ComponentContext.class));
+    verify(component, mode).onDetached((ComponentContext) any());
 
     if (component instanceof TestAttachDetachComponent) {
       final Component[] children = ((TestAttachDetachComponent) component).getChildren();

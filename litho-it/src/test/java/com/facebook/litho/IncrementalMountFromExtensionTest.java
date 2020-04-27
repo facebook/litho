@@ -421,7 +421,7 @@ public class IncrementalMountFromExtensionTest {
               }
             })
         .when(childView1)
-        .notifyVisibleBoundsChanged(any(Rect.class), eq(true));
+        .notifyVisibleBoundsChanged((Rect) any(), eq(true));
 
     doAnswer(
             new Answer<Object>() {
@@ -435,7 +435,7 @@ public class IncrementalMountFromExtensionTest {
               }
             })
         .when(childView2)
-        .notifyVisibleBoundsChanged(any(Rect.class), eq(true));
+        .notifyVisibleBoundsChanged((Rect) any(), eq(true));
 
     doAnswer(
             new Answer<Object>() {
@@ -449,7 +449,7 @@ public class IncrementalMountFromExtensionTest {
               }
             })
         .when(childView3)
-        .notifyVisibleBoundsChanged(any(Rect.class), eq(true));
+        .notifyVisibleBoundsChanged((Rect) any(), eq(true));
 
     lithoView.getComponentTree().mountComponent(new Rect(0, 0, 100, 100), true);
 

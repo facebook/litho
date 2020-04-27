@@ -470,7 +470,7 @@ public class MountStateIncrementalMountTest {
               }
             })
         .when(childView1)
-        .notifyVisibleBoundsChanged(any(Rect.class), eq(true));
+        .notifyVisibleBoundsChanged((Rect) any(), eq(true));
 
     doAnswer(
             new Answer<Object>() {
@@ -484,7 +484,7 @@ public class MountStateIncrementalMountTest {
               }
             })
         .when(childView2)
-        .notifyVisibleBoundsChanged(any(Rect.class), eq(true));
+        .notifyVisibleBoundsChanged((Rect) any(), eq(true));
 
     doAnswer(
             new Answer<Object>() {
@@ -498,13 +498,13 @@ public class MountStateIncrementalMountTest {
               }
             })
         .when(childView3)
-        .notifyVisibleBoundsChanged(any(Rect.class), eq(true));
+        .notifyVisibleBoundsChanged((Rect) any(), eq(true));
 
     lithoView.getComponentTree().mountComponent(new Rect(0, 0, 100, 100), false);
 
-    verify(childView1).notifyVisibleBoundsChanged(any(Rect.class), eq(false));
-    verify(childView2).notifyVisibleBoundsChanged(any(Rect.class), eq(false));
-    verify(childView3).notifyVisibleBoundsChanged(any(Rect.class), eq(false));
+    verify(childView1).notifyVisibleBoundsChanged((Rect) any(), eq(false));
+    verify(childView2).notifyVisibleBoundsChanged((Rect) any(), eq(false));
+    verify(childView3).notifyVisibleBoundsChanged((Rect) any(), eq(false));
   }
 
   /** Tests incremental mount behaviour of a vertical stack of components with a View mount type. */
@@ -610,13 +610,13 @@ public class MountStateIncrementalMountTest {
 
     // Mount views with visible rect
     lithoViewParent.getComponentTree().mountComponent(new Rect(0, 0, 100, 1000), false);
-    verify(lithoView).notifyVisibleBoundsChanged(any(Rect.class), eq(false));
+    verify(lithoView).notifyVisibleBoundsChanged((Rect) any(), eq(false));
     reset(lithoView);
     when(lithoView.isIncrementalMountEnabled()).thenReturn(true);
 
     // Unmount views with visible rect outside
     lithoViewParent.getComponentTree().mountComponent(new Rect(0, -10, 100, -5), false);
-    verify(lithoView, never()).notifyVisibleBoundsChanged(any(Rect.class), eq(false));
+    verify(lithoView, never()).notifyVisibleBoundsChanged((Rect) any(), eq(false));
     reset(lithoView);
     when(lithoView.isIncrementalMountEnabled()).thenReturn(true);
 
@@ -626,7 +626,7 @@ public class MountStateIncrementalMountTest {
     // Now LithoView notifyVisibleBoundsChanged should not be called as the LithoView is mounted
     // when
     // it is laid out and therefore doesn't need mounting again in the same frame
-    verify(lithoView, never()).notifyVisibleBoundsChanged(any(Rect.class), eq(false));
+    verify(lithoView, never()).notifyVisibleBoundsChanged((Rect) any(), eq(false));
   }
 
   @Test

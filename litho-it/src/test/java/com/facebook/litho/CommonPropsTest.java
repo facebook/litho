@@ -244,7 +244,7 @@ public class CommonPropsTest {
     verify(mNode).paddingPercent(YogaEdge.RIGHT, 6);
     verify(mNode).paddingPercent(YogaEdge.ALL, 5);
 
-    verify(mNode).border(any(Border.class));
+    verify(mNode).border((Border) any());
 
     verify(mNode).positionPx(YogaEdge.ALL, 11);
     verify(mNode).positionPx(YogaEdge.RIGHT, 12);

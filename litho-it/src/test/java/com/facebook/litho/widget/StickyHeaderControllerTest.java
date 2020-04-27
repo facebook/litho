@@ -16,7 +16,7 @@
 
 package com.facebook.litho.widget;
 
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Matchers.anyFloat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -124,7 +124,7 @@ public class StickyHeaderControllerTest {
 
     mStickyHeaderController.onScrolled(null, 0, 0);
 
-    verify(recycler).setStickyHeaderVerticalOffset(any(Integer.class));
+    verify(recycler).setStickyHeaderVerticalOffset(nullable(Integer.class));
   }
 
   @Test
@@ -147,7 +147,7 @@ public class StickyHeaderControllerTest {
 
     mStickyHeaderController.onScrolled(null, 0, 0);
 
-    verify(lithoView, never()).setTranslationY(any(Integer.class));
+    verify(lithoView, never()).setTranslationY(nullable(Integer.class));
     verify(recycler, times(2)).hideStickyHeader();
   }
 }

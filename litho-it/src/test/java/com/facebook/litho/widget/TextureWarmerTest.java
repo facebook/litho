@@ -52,7 +52,7 @@ public class TextureWarmerTest {
     Layout layout = mock(Layout.class);
     mTextureWarmer.warmLayout(layout);
     mShadowLooper.runOneTask();
-    verify(layout).draw(any(Canvas.class));
+    verify(layout).draw((Canvas) any());
   }
 
   @Test
@@ -61,7 +61,7 @@ public class TextureWarmerTest {
     TextureWarmer.WarmDrawable warmDrawable = new TextureWarmer.WarmDrawable(drawable, 1, 1);
     mTextureWarmer.warmDrawable(warmDrawable);
     mShadowLooper.runOneTask();
-    verify(drawable).draw(any(Canvas.class));
+    verify(drawable).draw((Canvas) any());
   }
 
   @Implements(Picture.class)

@@ -154,12 +154,12 @@ public class TouchExpansionDelegateTest {
   public void testDrawingOrder() {
     final View view1 = mock(View.class);
     when(view1.getContext()).thenReturn(RuntimeEnvironment.application);
-    when(view1.dispatchTouchEvent(any(MotionEvent.class))).thenReturn(true);
+    when(view1.dispatchTouchEvent((MotionEvent) any())).thenReturn(true);
     mTouchDelegate.registerTouchExpansion(0, view1, new Rect(0, 0, 10, 10));
 
     final View view2 = mock(View.class);
     when(view2.getContext()).thenReturn(RuntimeEnvironment.application);
-    when(view2.dispatchTouchEvent(any(MotionEvent.class))).thenReturn(true);
+    when(view2.dispatchTouchEvent((MotionEvent) any())).thenReturn(true);
     mTouchDelegate.registerTouchExpansion(1, view2, new Rect(0, 0, 10, 10));
 
     MotionEvent event =
