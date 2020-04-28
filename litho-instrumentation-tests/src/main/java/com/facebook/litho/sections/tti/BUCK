@@ -14,10 +14,10 @@ load(
     "LITHO_SECTIONS_TARGET",
     "LITHO_SECTIONS_WIDGET_TARGET",
     "LITHO_WIDGET_TARGET",
-    "fb_core_android_library",
+    "litho_android_test_library",
 )
 
-fb_core_android_library(
+litho_android_test_library(
     name = "tti",
     srcs = glob(["*.java"]),
     manifest = "AndroidManifest.xml",

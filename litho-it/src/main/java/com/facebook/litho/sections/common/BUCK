@@ -12,11 +12,11 @@ load(
     "LITHO_SECTIONS_PROCESSOR_TARGET",
     "LITHO_SECTIONS_TARGET",
     "LITHO_WIDGET_TARGET",
-    "fb_core_android_library",
+    "litho_android_test_library",
     "make_dep_path",
 )
 
-fb_core_android_library(
+litho_android_test_library(
     name = "common",
     srcs = glob(["*.java"]),
     plugins = [
