@@ -30,6 +30,7 @@ fb_java_library(
     name = "powermock-mockito2",
     visibility = ["PUBLIC"],
     exported_deps = [
+        ":javassist-prebuilt",
         ":powermock-api-mockito2",
         ":powermock-api-support",
         ":powermock-classloading-base",
@@ -38,7 +39,6 @@ fb_java_library(
         ":powermock-module-junit-common-prebuilt",
         ":powermock-module-junit-rule-prebuilt",
         ":powermock-reflect",
-        ":javassist-prebuilt",
         ":xstream-prebuilt",
     ],
 )

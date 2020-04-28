@@ -9,6 +9,8 @@ fb_java_library(
     name = "robolectric4",
     visibility = ["PUBLIC"],
     exported_deps = [
+        ":javax-annotation-api",
+        ":javax-inject",
         ":robolectric4-annotations-prebuilt",
         ":robolectric4-junit-prebuilt",
         ":robolectric4-pluginapi-prebuilt",
@@ -20,8 +22,6 @@ fb_java_library(
         ":robolectric4-shadows-framework-prebuilt",
         ":robolectric4-utils-prebuilt",
         ":robolectric4-utils-reflector-prebuilt",
-        ":javax-annotation-api",
-        ":javax-inject",
         make_dep_path("lib/androidx:androidx-testing"),
         make_dep_path("lib/asm:asm"),
         make_dep_path("lib/bcprov-jdk16:bcprov-jdk16"),
