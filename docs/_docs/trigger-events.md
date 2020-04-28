@@ -62,7 +62,7 @@ Create a trigger for your event inside your spec using the `@OnTrigger` annotati
 
 ```java
 @LayoutSpec
-public class CompnentWithCustomEventTriggerComponentSpec {
+public class ComponentWithCustomEventTriggerComponentSpec {
 
   ...
 
@@ -87,13 +87,13 @@ public class CustomEventTriggerExampleComponentSpec {
             Text.create(c)
                 .text("Trigger custom event")
                 .clickHandler(CustomEventTriggerExampleComponent.onClick(c, textInputHandle)))
-        .child(CompnentWithCustomEventTriggerComponent.create(c).handle(textInputHandle))
+        .child(ComponentWithCustomEventTriggerComponent.create(c).handle(textInputHandle))
         .build();
   }
 
   @OnEvent(ClickEvent.class)
   static void onClick(ComponentContext c, @Param Handle textInputHandle) {
-    CompnentWithCustomEventTriggerComponent.triggerCustomEvent(c, textInputHandle, 2);
+    ComponentWithCustomEventTriggerComponent.triggerCustomEvent(c, textInputHandle, 2);
   }
 }
 ```
