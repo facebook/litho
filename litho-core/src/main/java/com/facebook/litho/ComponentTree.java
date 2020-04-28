@@ -295,9 +295,6 @@ public class ComponentTree {
   @ThreadConfined(ThreadConfined.UI)
   private RenderState mPreviousRenderState;
 
-  @ThreadConfined(ThreadConfined.UI)
-  private boolean mPreviousRenderStateSetFromBuilder = false;
-
   protected final int mId;
 
   @GuardedBy("this")
@@ -368,7 +365,6 @@ public class ComponentTree {
 
     if (builder.previousRenderState != null) {
       mPreviousRenderState = builder.previousRenderState;
-      mPreviousRenderStateSetFromBuilder = true;
     }
 
     if (builder.overrideComponentTreeId != -1) {
@@ -1714,7 +1710,6 @@ public class ComponentTree {
     final RenderState previousRenderState = mPreviousRenderState;
 
     mPreviousRenderState = null;
-    mPreviousRenderStateSetFromBuilder = false;
     return previousRenderState;
   }
 
@@ -2265,7 +2260,6 @@ public class ComponentTree {
       mLatestLayoutState = null;
       mStateHandler = null;
       mPreviousRenderState = null;
-      mPreviousRenderStateSetFromBuilder = false;
       mMeasureListeners = null;
     }
 
