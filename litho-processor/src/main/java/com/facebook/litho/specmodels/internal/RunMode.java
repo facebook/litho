@@ -20,7 +20,7 @@ import java.util.EnumSet;
 
 public enum RunMode {
   ABI,
-  ;
+  TESTING;
 
   public static EnumSet<RunMode> normal() {
     return EnumSet.noneOf(RunMode.class);

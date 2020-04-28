@@ -239,8 +239,18 @@ def components_robolectric_test(
     # T41117446 Remove after AndroidX conversion is done.
     kwargs.pop("is_androidx", False)
 
+    annotation_processor_params = kwargs.pop("annotation_processor_params", [])
+    found = False
+    for param in annotation_processor_params:
+        if (param.find("com.facebook.litho.testing=") == 0):
+            found = True
+
+    if (not found):
+        annotation_processor_params.append("com.facebook.litho.testing=true")
+
     native.robolectric_test(
         name = name,
+        annotation_processor_params = annotation_processor_params,
         *args,
         **kwargs
     )
@@ -267,8 +277,18 @@ def components_robolectric4_test(
     # T41117446 Remove after AndroidX conversion is done.
     kwargs.pop("is_androidx", False)
 
+    annotation_processor_params = kwargs.pop("annotation_processor_params", [])
+    found = False
+    for param in annotation_processor_params:
+        if (param.find("com.facebook.litho.testing=") == 0):
+            found = True
+
+    if (not found):
+        annotation_processor_params.append("com.facebook.litho.testing=true")
+
     native.robolectric_test(
         name = name,
+        annotation_processor_params = annotation_processor_params,
         *args,
         **kwargs
     )
@@ -291,6 +311,21 @@ def litho_android_library(name, srcs = None, *args, **kwargs):
     # T41117446 Remove after AndroidX conversion is done.
     kwargs.pop("is_androidx", False)
     native.android_library(name, srcs = srcs, *args, **kwargs)
+
+def litho_android_test_library(**kwargs):
+    annotation_processor_params = kwargs.pop("annotation_processor_params", [])
+    found = False
+    for param in annotation_processor_params:
+        if (param.find("com.facebook.litho.testing=") == 0):
+            found = True
+
+    if (not found):
+        annotation_processor_params.append("com.facebook.litho.testing=true")
+
+    litho_android_library(
+        annotation_processor_params = annotation_processor_params,
+        **kwargs
+    )
 
 def fb_xplat_cxx_library(*args, **kwargs):
     """Delegates to cxx_library for OSS project."""

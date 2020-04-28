@@ -23,7 +23,7 @@ load(
     "LITHO_TESTING_WIDGET_V4_TARGET",
     "LITHO_WIDGET_TARGET",
     "components_robolectric4_test",
-    "fb_core_android_library",
+    "litho_android_test_library",
     "make_dep_path",
 )
 
@@ -52,7 +52,7 @@ components_robolectric4_test(
     ],
 )
 
-fb_core_android_library(
+litho_android_test_library(
     name = "testspecs",
     srcs = glob(["**/Test*ComponentSpec.java"]),
     annotation_processor_deps = [
@@ -61,6 +61,7 @@ fb_core_android_library(
     annotation_processors = [
         "com.facebook.litho.specmodels.processor.testing.ComponentsTestingProcessor",
     ],
+    fblite = False,
     deps = [
         LITHO_ANDROIDSUPPORT_TARGET,
         LITHO_ANNOTATIONS_TARGET,

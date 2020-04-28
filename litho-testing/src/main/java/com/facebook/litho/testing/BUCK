@@ -25,11 +25,11 @@ load(
     "LITHO_TESTING_WHITEBOX_TARGET",
     "LITHO_WIDGET_TARGET",
     "LITHO_YOGA_TARGET",
-    "litho_android_library",
+    "litho_android_test_library",
     "make_dep_path",
 )
 
-litho_android_library(
+litho_android_test_library(
     name = "whitebox",
     srcs = glob(["Whitebox.java"]),
     visibility = [
@@ -52,7 +52,7 @@ COMMON_DEPS = [
     LITHO_STATS_TARGET,
 ]
 
-litho_android_library(
+litho_android_test_library(
     name = "testing",
     srcs = glob(
         ["*.java"],
@@ -80,7 +80,7 @@ litho_android_library(
     ],
 )
 
-litho_android_library(
+litho_android_test_library(
     name = "testing-v4",
     srcs = glob(
         ["*.java"],

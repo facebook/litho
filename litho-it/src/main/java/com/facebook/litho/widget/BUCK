@@ -11,11 +11,11 @@ load(
     "LITHO_PROCESSOR_TARGET",
     "LITHO_WIDGET_TARGET",
     "LITHO_YOGA_TARGET",
-    "litho_android_library",
+    "litho_android_test_library",
     "make_dep_path",
 )
 
-litho_android_library(
+litho_android_test_library(
     name = "widget",
     srcs = glob(["**/*.java"]),
     is_androidx = True,

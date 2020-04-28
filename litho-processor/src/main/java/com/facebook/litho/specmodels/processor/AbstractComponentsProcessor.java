@@ -80,6 +80,9 @@ public abstract class AbstractComponentsProcessor extends AbstractProcessor {
     if (isGeneratingAbi) {
       mRunMode.add(RunMode.ABI);
     }
+    if (Boolean.parseBoolean(options.getOrDefault("com.facebook.litho.testing", "false"))) {
+      mRunMode.add(RunMode.TESTING);
+    }
   }
 
   @Override
