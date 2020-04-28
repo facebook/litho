@@ -42,5 +42,6 @@ dependencies {
     // Testing deps
     implementation deps.jsr305
     implementation deps.assertjCore
+    implementation deps.hamcrestLibrary
     implementation deps.mockitoCore
 }
