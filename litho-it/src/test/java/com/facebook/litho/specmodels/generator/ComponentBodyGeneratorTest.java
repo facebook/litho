@@ -40,6 +40,7 @@ import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.ClassNames;
 import com.facebook.litho.specmodels.model.EventDeclarationModel;
+import com.facebook.litho.specmodels.model.LayoutSpecModel;
 import com.facebook.litho.specmodels.model.PropModel;
 import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.model.SpecModelUtils;
@@ -49,11 +50,17 @@ import com.facebook.litho.specmodels.model.TypeSpec.DeclaredTypeSpec;
 import com.facebook.litho.specmodels.processor.LayoutSpecModelFactory;
 import com.facebook.litho.specmodels.processor.MountSpecModelFactory;
 import com.google.testing.compile.CompilationRule;
+import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.FieldSpec;
+import com.squareup.javapoet.MethodSpec;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
@@ -158,6 +165,19 @@ public class ComponentBodyGeneratorTest {
     public final Component onCreateLayout(
         ComponentContext c,
         @Prop(varArg = "number") java.util.List<? extends java.lang.Number> numbers) {
+      return null;
+    }
+  }
+
+  @LayoutSpec
+  static class PropsTestingComponentSpec {
+
+    @OnCreateLayout
+    static Component onCreateLayout(
+        ComponentContext c,
+        @Prop int intProp,
+        @Prop(optional = true) int optionIntProp,
+        @Nullable @TreeProp String treeProp) {
       return null;
     }
   }
@@ -273,6 +293,40 @@ public class ComponentBodyGeneratorTest {
 
     assertThat(dataHolder.getFieldSpecs().get(5).toString())
         .isEqualTo("private com.facebook.litho.DynamicValue[] mDynamicProps;\n");
+  }
+
+  @Test
+  public void whenComponentIsGeneratedFromTest_shouldHavePublicProps() {
+    final Elements elements = mCompilationRule.getElements();
+    final Types types = mCompilationRule.getTypes();
+    final TypeElement type =
+        elements.getTypeElement(PropsTestingComponentSpec.class.getCanonicalName());
+    final LayoutSpecModel model =
+        mLayoutSpecModelFactory.create(
+            elements, types, type, mMessager, RunMode.testing(), null, null);
+    final TypeSpecDataHolder holder =
+        ComponentBodyGenerator.generate(model, null, RunMode.testing());
+
+    final Predicate<AnnotationSpec> matcher =
+        annotation ->
+            annotation.type.equals(ClassName.get(Prop.class))
+                || annotation.type.equals(ClassName.get(TreeProp.class));
+
+    final FieldSpec[] props =
+        holder.getFieldSpecs().stream()
+            .filter(field -> field.annotations.stream().anyMatch(matcher))
+            .toArray(FieldSpec[]::new);
+    final MethodSpec[] getters =
+        holder.getMethodSpecs().stream()
+            .filter(method -> method.annotations.stream().anyMatch(matcher))
+            .toArray(MethodSpec[]::new);
+
+    assertThat(getters.length)
+        .describedAs("number of getters should be equal to the number of props")
+        .isEqualTo(props.length);
+
+    Arrays.stream(getters)
+        .forEach(methodSpec -> assertThat(methodSpec.modifiers).contains(Modifier.PUBLIC));
   }
 
   @Test

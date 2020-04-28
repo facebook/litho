@@ -252,7 +252,17 @@ public class ComponentBodyGenerator {
             "($T) $T.EMPTY_LIST", propFieldTypeName, ClassName.get(Collections.class));
       }
 
-      typeSpecDataHolder.addField(fieldBuilder.build());
+      FieldSpec field = fieldBuilder.build();
+      typeSpecDataHolder.addField(field);
+
+      if (runMode.contains(RunMode.TESTING)) {
+        MethodSpec getter =
+            GeneratorUtils.getter(field)
+                .addModifiers(Modifier.PUBLIC)
+                .addAnnotations(field.annotations)
+                .build();
+        typeSpecDataHolder.addMethod(getter);
+      }
 
       if (prop.isDynamic()) {
         hasDynamicProps = true;
@@ -313,14 +323,23 @@ public class ComponentBodyGenerator {
     final ImmutableList<TreePropModel> treeProps = specModel.getTreeProps();
 
     for (TreePropModel treeProp : treeProps) {
-      typeSpecDataHolder.addField(
+      final FieldSpec field =
           FieldSpec.builder(treeProp.getTypeName(), treeProp.getName())
               .addAnnotation(TreeProp.class)
               .addAnnotation(
                   AnnotationSpec.builder(Comparable.class)
                       .addMember("type", "$L", getComparableType(treeProp, runMode))
                       .build())
-              .build());
+              .build();
+      if (runMode.contains(RunMode.TESTING)) {
+        MethodSpec getter =
+            GeneratorUtils.getter(field)
+                .addModifiers(Modifier.PUBLIC)
+                .addAnnotations(field.annotations)
+                .build();
+        typeSpecDataHolder.addMethod(getter);
+      }
+      typeSpecDataHolder.addField(field);
     }
 
     return typeSpecDataHolder.build();

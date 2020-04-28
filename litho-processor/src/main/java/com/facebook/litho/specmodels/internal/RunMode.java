@@ -25,4 +25,8 @@ public enum RunMode {
   public static EnumSet<RunMode> normal() {
     return EnumSet.noneOf(RunMode.class);
   }
+
+  public static EnumSet<RunMode> testing() {
+    return EnumSet.of(TESTING);
+  }
 }

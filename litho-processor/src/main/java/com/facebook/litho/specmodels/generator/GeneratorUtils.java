@@ -19,9 +19,12 @@ package com.facebook.litho.specmodels.generator;
 import com.facebook.litho.specmodels.model.MethodParamModel;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.FieldSpec;
+import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.TypeName;
 import java.util.List;
+import java.util.Locale;
 
 public final class GeneratorUtils {
 
@@ -56,5 +59,19 @@ public final class GeneratorUtils {
 
   public static AnnotationSpec annotation(final ClassName className) {
     return AnnotationSpec.builder(className).build();
+  }
+
+  public static MethodSpec.Builder getter(FieldSpec field) {
+    return MethodSpec.methodBuilder("get" + capitalize(field.name))
+        .returns(field.type)
+        .addStatement("return this.$N", field.name);
+  }
+
+  public static String capitalize(String str) {
+    if (str == null || str.trim().equals("")) {
+      return str;
+    }
+
+    return str.substring(0, 1).toUpperCase(Locale.US) + str.substring(1);
   }
 }
