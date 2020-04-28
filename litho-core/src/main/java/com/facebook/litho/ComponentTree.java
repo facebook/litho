@@ -312,8 +312,6 @@ public class ComponentTree {
   private final WorkingRangeStatusHandler mWorkingRangeStatusHandler =
       new WorkingRangeStatusHandler();
 
-  private boolean mForceLayout;
-
   private final boolean isReconciliationEnabled;
 
   private final boolean mMoveLayoutsBetweenThreads;
@@ -997,19 +995,6 @@ public class ComponentTree {
     mLithoView = null;
   }
 
-  void forceMainThreadLayout() {
-    assertMainThread();
-
-    LithoView lithoView = mLithoView;
-    if (lithoView != null) {
-      // If we are attached to a LithoView, then force a relayout immediately. Otherwise, we'll
-      // relayout next time we are measured.
-      lithoView.forceRelayout();
-    } else {
-      mForceLayout = true;
-    }
-  }
-
   @GuardedBy("this")
   private boolean isPendingLayoutCompatible() {
     synchronized (mCurrentCalculateLayoutRunnableLock) {
@@ -1056,14 +1041,13 @@ public class ComponentTree {
               || (!mMainThreadLayoutState.isForComponentId(mRoot.getId())
                   && !isPendingLayoutCompatible());
 
-      if (mForceLayout || forceLayout || shouldCalculateNewLayout) {
+      if (forceLayout || shouldCalculateNewLayout) {
         // Neither layout was compatible and we have to perform a layout.
         // Since outputs get set on the same object during the lifecycle calls,
         // we need to copy it in order to use it concurrently.
         component = mRoot.makeShallowCopy();
         layoutVersion = ++mLayoutVersion;
         treeProps = TreeProps.copy(mRootTreeProps);
-        mForceLayout = false;
       }
     }
 
