@@ -49,6 +49,12 @@ dependencies {
 
     // Android Support Library
     compileOnly deps.supportAnnotations
+
+    testImplementation project(':litho-widget-kotlin')
+    testImplementation project(':litho-testing')
+    testImplementation deps.assertjCore
+    testImplementation deps.junit
+    testImplementation deps.robolectric
 }
 
 apply from: rootProject.file('gradle/release.gradle')
