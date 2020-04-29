@@ -32,12 +32,16 @@ public class SynchronizedTypefaceHelper {
    * alleviate this issue, we override the typeface cache with a synchronized version.
    */
   public static void setupSynchronizedTypeface() {
-    if (sIsInitialized.getAndSet(true)) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
+      // sTypefaceCache was introduced in API level 16.
+      return;
+    }
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+      // sTypefaceCache was removed and Typeface is thread-safe since Android 9.
       return;
     }
 
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
-      // sTypefaceCache was introduced in API level 16.
+    if (sIsInitialized.getAndSet(true)) {
       return;
     }
 
