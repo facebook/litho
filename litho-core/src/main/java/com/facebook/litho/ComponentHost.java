@@ -42,6 +42,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.collection.SparseArrayCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.view.ViewCompat;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.rendercore.Host;
 import com.facebook.rendercore.MountItem;
@@ -620,6 +621,10 @@ public class ComponentHost extends Host {
    * single invalidation will be triggered on the affected hosts.
    */
   void suppressInvalidations(boolean suppressInvalidations) {
+    if (ComponentsConfiguration.disableHostSuppressInvalidations) {
+      return;
+    }
+
     if (mSuppressInvalidations == suppressInvalidations) {
       return;
     }

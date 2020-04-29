@@ -255,4 +255,6 @@ public class ComponentsConfiguration {
    * its size change.
    */
   public static boolean shouldForceComponentUpdateOnOrientationChange = true;
+
+  public static boolean disableHostSuppressInvalidations = false;
 }
