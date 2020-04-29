@@ -49,8 +49,7 @@ public final class StateUpdatesTestHelper {
       ComponentContext context,
       Component component,
       StateUpdater stateUpdater,
-      ShadowLooper layoutThreadShadowLooper)
-      throws Exception {
+      ShadowLooper layoutThreadShadowLooper) {
     return getViewAfterStateUpdate(
         context, component, stateUpdater, layoutThreadShadowLooper, false, false);
   }
@@ -62,8 +61,7 @@ public final class StateUpdatesTestHelper {
    * @param component the component to update
    * @return the updated LithoView after the state update was applied
    */
-  public static LithoView getViewAfterStateUpdate(ComponentContext context, Component component)
-      throws Exception {
+  public static LithoView getViewAfterStateUpdate(ComponentContext context, Component component) {
     return getViewAfterStateUpdate(
         context,
         component,
@@ -86,7 +84,7 @@ public final class StateUpdatesTestHelper {
    * @return the updated LithoView after the state update was applied
    */
   public static LithoView getViewAfterStateUpdate(
-      ComponentContext context, Component component, StateUpdater stateUpdater) throws Exception {
+      ComponentContext context, Component component, StateUpdater stateUpdater) {
     return getViewAfterStateUpdate(
         context,
         component,
@@ -111,8 +109,7 @@ public final class StateUpdatesTestHelper {
       Component component,
       StateUpdater stateUpdater,
       boolean incrementalMountEnabled,
-      boolean visibilityProcessingEnabled)
-      throws Exception {
+      boolean visibilityProcessingEnabled) {
     return getViewAfterStateUpdate(
         context,
         component,
@@ -139,8 +136,7 @@ public final class StateUpdatesTestHelper {
       StateUpdater stateUpdater,
       ShadowLooper layoutThreadShadowLooper,
       boolean incrementalMountEnabled,
-      boolean visibilityProcessingEnabled)
-      throws Exception {
+      boolean visibilityProcessingEnabled) {
     return getViewAfterStateUpdate(
         context,
         component,
@@ -168,8 +164,7 @@ public final class StateUpdatesTestHelper {
       StateUpdater stateUpdater,
       ShadowLooper[] loopers,
       boolean incrementalMountEnabled,
-      boolean visibilityProcessingEnabled)
-      throws Exception {
+      boolean visibilityProcessingEnabled) {
     // This is for working around component immutability, to be able to retrieve the updated
     // instance of the component.
     Whitebox.invokeMethod(component, "setKey", "bogusKeyForTest");

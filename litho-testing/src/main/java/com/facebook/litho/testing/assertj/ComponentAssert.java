@@ -58,13 +58,12 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
   }
 
   /** Performs a state update and returns the new view. */
-  public LithoViewAssert afterStateUpdate() throws Exception {
+  public LithoViewAssert afterStateUpdate() {
     return LithoViewAssert.assertThat(
         StateUpdatesTestHelper.getViewAfterStateUpdate(mComponentContext, actual));
   }
 
-  public LithoViewAssert withStateUpdate(final StateUpdatesTestHelper.StateUpdater updater)
-      throws Exception {
+  public LithoViewAssert withStateUpdate(final StateUpdatesTestHelper.StateUpdater updater) {
     return LithoViewAssert.assertThat(
         StateUpdatesTestHelper.getViewAfterStateUpdate(mComponentContext, actual, updater));
   }
