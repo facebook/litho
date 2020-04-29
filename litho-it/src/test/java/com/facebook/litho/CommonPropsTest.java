@@ -16,11 +16,12 @@
 
 package com.facebook.litho;
 
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.facebook.litho.it.R.drawable.background_with_padding;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyFloat;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyFloat;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
@@ -47,7 +48,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
-import org.robolectric.RuntimeEnvironment;
 
 @RunWith(ComponentsTestRunner.class)
 public class CommonPropsTest {
@@ -63,7 +63,7 @@ public class CommonPropsTest {
     mNodeInfo = mock(NodeInfo.class);
     when(mNode.getOrCreateNodeInfo()).thenReturn(mNodeInfo);
     mCommonProps = new CommonPropsHolder();
-    mComponentContext = new ComponentContext(RuntimeEnvironment.application);
+    mComponentContext = new ComponentContext(getApplicationContext());
   }
 
   @Test

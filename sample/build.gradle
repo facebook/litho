@@ -77,6 +77,7 @@ dependencies {
     testImplementation deps.junit
     testImplementation deps.hamcrestLibrary
     testImplementation deps.robolectric
+    testImplementation deps.supportTestCore
     testImplementation deps.assertjCore
     testImplementation deps.mockitoCore
 }

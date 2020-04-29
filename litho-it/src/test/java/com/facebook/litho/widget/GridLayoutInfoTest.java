@@ -18,6 +18,7 @@ package com.facebook.litho.widget;
 
 import static androidx.recyclerview.widget.OrientationHelper.HORIZONTAL;
 import static androidx.recyclerview.widget.OrientationHelper.VERTICAL;
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.UNSPECIFIED;
 import static org.assertj.core.api.Java6Assertions.assertThat;
@@ -31,7 +32,6 @@ import java.util.ArrayList;
 import java.util.List;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
 
 @RunWith(ComponentsTestRunner.class)
 public class GridLayoutInfoTest {
@@ -384,6 +384,6 @@ public class GridLayoutInfoTest {
   }
 
   private static GridLayoutInfo createGridLayoutInfo(int direction, int spanCount) {
-    return new GridLayoutInfo(RuntimeEnvironment.application, spanCount, direction, false);
+    return new GridLayoutInfo(getApplicationContext(), spanCount, direction, false);
   }
 }

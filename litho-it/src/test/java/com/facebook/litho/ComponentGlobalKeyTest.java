@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.facebook.litho.LayoutOutput.getLayoutOutput;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
@@ -37,7 +38,6 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
 
 @RunWith(ComponentsTestRunner.class)
 public class ComponentGlobalKeyTest {
@@ -50,7 +50,7 @@ public class ComponentGlobalKeyTest {
   @Before
   public void setup() {
     mComponentsReporter = new TestComponentsReporter();
-    mContext = new ComponentContext(RuntimeEnvironment.application);
+    mContext = new ComponentContext(getApplicationContext());
     ComponentsReporter.provide(mComponentsReporter);
   }
 

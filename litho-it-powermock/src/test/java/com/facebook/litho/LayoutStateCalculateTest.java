@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.facebook.litho.Column.create;
 import static com.facebook.litho.LayoutOutput.getLayoutOutput;
 import static com.facebook.litho.SizeSpec.EXACTLY;
@@ -31,11 +32,9 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.validateMockitoUsage;
 import static org.mockito.Mockito.verify;
 import static org.powermock.api.mockito.PowerMockito.whenNew;
-import static org.robolectric.RuntimeEnvironment.application;
 
 import android.animation.StateListAnimator;
 import android.annotation.TargetApi;
-import android.content.Context;
 import android.graphics.Rect;
 import android.os.Build;
 import com.facebook.litho.LayoutState.LayoutStateContext;
@@ -45,6 +44,7 @@ import com.facebook.litho.testing.TestSizeDependentComponent;
 import com.facebook.litho.testing.TestViewComponent;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -54,12 +54,25 @@ import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.annotation.Config;
 
 @PrepareForTest({LayoutState.class})
-@PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*", "com.facebook.yoga.*"})
+@PowerMockIgnore({
+  "org.mockito.*",
+  "org.robolectric.*",
+  "android.*",
+  "androidx.*",
+  "com.facebook.yoga.*"
+})
 @Config(sdk = Build.VERSION_CODES.LOLLIPOP)
 @RunWith(ComponentsTestRunner.class)
 public class LayoutStateCalculateTest {
 
   @Rule public PowerMockRule mPowerMockRule = new PowerMockRule();
+
+  private ComponentContext mBaseContext;
+
+  @Before
+  public void setup() {
+    mBaseContext = new ComponentContext(getApplicationContext());
+  }
 
   @Test
   @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -81,7 +94,7 @@ public class LayoutStateCalculateTest {
 
     final LayoutState layoutState =
         calculateLayoutState(
-            application, component, -1, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));
+            mBaseContext, component, -1, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));
 
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(3);
 
@@ -99,9 +112,9 @@ public class LayoutStateCalculateTest {
 
   @Test
   public void testLayoutOutputWithCachedLayoutSpecDelegate() throws Exception {
-    final ComponentContext baseContext = new ComponentContext(application);
     final ComponentContext c =
-        ComponentContext.withComponentTree(baseContext, ComponentTree.create(baseContext).build());
+        ComponentContext.withComponentTree(
+            mBaseContext, ComponentTree.create(mBaseContext).build());
     final LayoutState layoutState = new LayoutState(c);
     c.setLayoutStateContext(new LayoutStateContext(layoutState));
 
@@ -137,7 +150,7 @@ public class LayoutStateCalculateTest {
     // spy(ComponentsPools.class);
     whenNew(LayoutState.class).withAnyArguments().thenReturn(layoutStateSpy);
 
-    calculateLayoutState(baseContext, rootContainer, -1, widthSpecContainer, heightSpec);
+    calculateLayoutState(mBaseContext, rootContainer, -1, widthSpecContainer, heightSpec);
 
     // Make sure we reused the cached layout and it wasn't released.
     verify(layoutStateSpy, times(1)).clearCachedLayout(component);
@@ -158,9 +171,9 @@ public class LayoutStateCalculateTest {
 
   @Test
   public void testLayoutOutputWithCachedLayoutSpecWithMeasureDelegate() throws Exception {
-    final ComponentContext baseContext = new ComponentContext(application);
     final ComponentContext c =
-        ComponentContext.withComponentTree(baseContext, ComponentTree.create(baseContext).build());
+        ComponentContext.withComponentTree(
+            mBaseContext, ComponentTree.create(mBaseContext).build());
     final LayoutState layoutState = new LayoutState(c);
     c.setLayoutStateContext(new LayoutStateContext(layoutState));
 
@@ -200,7 +213,7 @@ public class LayoutStateCalculateTest {
     final LayoutState layoutStateSpy = spy(layoutState);
     whenNew(LayoutState.class).withAnyArguments().thenReturn(layoutStateSpy);
 
-    calculateLayoutState(baseContext, rootContainer, -1, widthSpecContainer, heightSpec);
+    calculateLayoutState(mBaseContext, rootContainer, -1, widthSpecContainer, heightSpec);
 
     verify(sizeDependentComponentSpy, times(1)).makeShallowCopy();
 
@@ -227,9 +240,9 @@ public class LayoutStateCalculateTest {
 
   @Test
   public void testLayoutOutputWithCachedLayoutSpecWithMeasure() throws Exception {
-    final ComponentContext baseContext = new ComponentContext(application);
     final ComponentContext c =
-        ComponentContext.withComponentTree(baseContext, ComponentTree.create(baseContext).build());
+        ComponentContext.withComponentTree(
+            mBaseContext, ComponentTree.create(mBaseContext).build());
     final LayoutState layoutState = new LayoutState(c);
     c.setLayoutStateContext(new LayoutStateContext(layoutState));
 
@@ -273,7 +286,7 @@ public class LayoutStateCalculateTest {
     final LayoutState layoutStateSpy = spy(layoutState);
     whenNew(LayoutState.class).withAnyArguments().thenReturn(layoutStateSpy);
 
-    calculateLayoutState(baseContext, rootContainer, -1, widthSpecContainer, heightSpec);
+    calculateLayoutState(mBaseContext, rootContainer, -1, widthSpecContainer, heightSpec);
 
     verify(sizeDependentComponentSpy, times(1)).makeShallowCopy();
 
@@ -303,9 +316,9 @@ public class LayoutStateCalculateTest {
 
   @Test
   public void testLayoutOutputWithCachedLayoutSpec() throws Exception {
-    final ComponentContext baseContext = new ComponentContext(application);
     final ComponentContext c =
-        ComponentContext.withComponentTree(baseContext, ComponentTree.create(baseContext).build());
+        ComponentContext.withComponentTree(
+            mBaseContext, ComponentTree.create(mBaseContext).build());
     final LayoutState layoutState = new LayoutState(c);
     c.setLayoutStateContext(new LayoutStateContext(layoutState));
 
@@ -343,7 +356,7 @@ public class LayoutStateCalculateTest {
     final LayoutState layoutStateSpy = spy(layoutState);
     whenNew(LayoutState.class).withAnyArguments().thenReturn(layoutStateSpy);
 
-    calculateLayoutState(baseContext, rootContainer, -1, widthSpecContainer, heightSpec);
+    calculateLayoutState(mBaseContext, rootContainer, -1, widthSpecContainer, heightSpec);
 
     verify(componentSpy, times(1)).makeShallowCopy();
 
@@ -362,17 +375,6 @@ public class LayoutStateCalculateTest {
     assertThat(mountBounds).isEqualTo(new Rect(20, 0, 280, 0));
 
     validateMockitoUsage();
-  }
-
-  private static LayoutState calculateLayoutState(
-      final Context context,
-      final Component component,
-      final int componentTreeId,
-      final int widthSpec,
-      final int heightSpec) {
-
-    return calculateLayoutState(
-        new ComponentContext(context), component, componentTreeId, widthSpec, heightSpec);
   }
 
   private static LayoutState calculateLayoutState(

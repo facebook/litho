@@ -92,6 +92,7 @@ dependencies {
     testImplementation deps.soloader
     testImplementation deps.supportAppCompat
     testImplementation deps.supportRecyclerView
+    testImplementation deps.supportTestCore
     testImplementation deps.khronos
     testImplementation files(Jvm.current().getToolsJar())
     testImplementation files(Jvm.current().getJre().homeDir.getAbsolutePath() + '/lib/rt.jar')

@@ -18,6 +18,7 @@ package com.facebook.litho;
 
 import static android.graphics.Color.BLUE;
 import static android.graphics.Color.RED;
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.facebook.litho.Column.create;
 import static com.facebook.litho.LayoutOutput.getLayoutOutput;
 import static com.facebook.litho.LayoutOutput.isDuplicateParentState;
@@ -25,7 +26,6 @@ import static com.facebook.litho.LayoutState.calculate;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.robolectric.RuntimeEnvironment.application;
 
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
@@ -81,7 +81,7 @@ public class DuplicateParentStateTest {
 
     LayoutState layoutState =
         calculate(
-            new ComponentContext(application),
+            new ComponentContext(getApplicationContext()),
             component,
             -1,
             mUnspecifiedSizeSpec,

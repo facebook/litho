@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.facebook.litho.Column.create;
 import static com.facebook.litho.LayoutState.sBottomsComparator;
 import static com.facebook.litho.LayoutState.sTopsComparator;
@@ -26,7 +27,6 @@ import static com.facebook.yoga.YogaEdge.BOTTOM;
 import static com.facebook.yoga.YogaEdge.TOP;
 import static com.facebook.yoga.YogaPositionType.ABSOLUTE;
 import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.robolectric.RuntimeEnvironment.application;
 
 import android.content.Context;
 import android.graphics.Rect;
@@ -60,7 +60,11 @@ public class LayoutStateCalculateTopsAndBottomsTest {
 
     LayoutState layoutState =
         calculateLayoutState(
-            application, component, -1, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, AT_MOST));
+            getApplicationContext(),
+            component,
+            -1,
+            makeSizeSpec(100, EXACTLY),
+            makeSizeSpec(100, AT_MOST));
 
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(5);
 
@@ -115,7 +119,11 @@ public class LayoutStateCalculateTopsAndBottomsTest {
 
     LayoutState layoutState =
         calculateLayoutState(
-            application, component, -1, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, AT_MOST));
+            getApplicationContext(),
+            component,
+            -1,
+            makeSizeSpec(100, EXACTLY),
+            makeSizeSpec(100, AT_MOST));
 
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(4);
 

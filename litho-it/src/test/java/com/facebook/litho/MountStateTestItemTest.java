@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.facebook.litho.testing.assertj.LithoViewAssert.times;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -31,7 +32,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
 
 @RunWith(ComponentsTestRunner.class)
 public class MountStateTestItemTest {
@@ -46,7 +46,7 @@ public class MountStateTestItemTest {
 
   @Before
   public void setup() {
-    mContext = new ComponentContext(RuntimeEnvironment.application);
+    mContext = new ComponentContext(getApplicationContext());
     ComponentsConfiguration.isEndToEndTestRun = true;
   }
 

@@ -16,8 +16,9 @@
 
 package com.facebook.litho.testing.helper;
 
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 
@@ -38,7 +39,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.robolectric.RuntimeEnvironment;
 
 /** Tests {@link VisibilityEventsHelper} */
 @RunWith(ComponentsTestRunner.class)
@@ -56,7 +56,7 @@ public class VisibilityEventsHelperTest {
   @Before
   public void setup() {
     MockitoAnnotations.initMocks(this);
-    mContext = new ComponentContext(RuntimeEnvironment.application);
+    mContext = new ComponentContext(getApplicationContext());
     mComponentTree = getComponentTreeWithHandlers();
     reset(mVisibleEventEventHandler);
     reset(mInvisibleEventEventHandler);

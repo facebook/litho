@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import com.facebook.litho.LayoutState.LayoutStateContext;
@@ -24,7 +25,6 @@ import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
 
 @RunWith(ComponentsTestRunner.class)
 public class ComponentTest {
@@ -33,7 +33,7 @@ public class ComponentTest {
 
   @Before
   public void setup() {
-    mContext = new ComponentContext(RuntimeEnvironment.application);
+    mContext = new ComponentContext(getApplicationContext());
   }
 
   @Test

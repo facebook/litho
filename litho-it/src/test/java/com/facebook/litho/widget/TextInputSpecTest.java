@@ -16,6 +16,7 @@
 
 package com.facebook.litho.widget;
 
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
@@ -39,7 +40,6 @@ import java.lang.reflect.Field;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
 
 /** Tests {@link TextInput} component. */
 @RunWith(ComponentsTestRunner.class)
@@ -48,7 +48,7 @@ public class TextInputSpecTest {
 
   @Before
   public void setup() {
-    mContext = new ComponentContext(RuntimeEnvironment.application);
+    mContext = new ComponentContext(getApplicationContext());
   }
 
   @Test
@@ -144,7 +144,7 @@ public class TextInputSpecTest {
     Component.Builder component = TextInput.create(mContext);
     final android.widget.EditText editText = getEditText(component);
     assertThat(editText.getMovementMethod()).isInstanceOf(ArrowKeyMovementMethod.class);
-    assertThat(new EditText(RuntimeEnvironment.application).getMovementMethod())
+    assertThat(new EditText(getApplicationContext()).getMovementMethod())
         .isInstanceOf(ArrowKeyMovementMethod.class);
   }
 

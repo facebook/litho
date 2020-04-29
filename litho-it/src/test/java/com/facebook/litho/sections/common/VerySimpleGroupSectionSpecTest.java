@@ -16,6 +16,7 @@
 
 package com.facebook.litho.sections.common;
 
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import com.facebook.litho.ClickEvent;
@@ -28,7 +29,6 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
 
 /** Tests {@link VerySimpleGroupSectionSpec} */
 @RunWith(ComponentsTestRunner.class)
@@ -38,7 +38,7 @@ public class VerySimpleGroupSectionSpecTest {
 
   @Before
   public void setup() throws Exception {
-    mTester = new SectionsTestHelper(RuntimeEnvironment.application);
+    mTester = new SectionsTestHelper(getApplicationContext());
   }
 
   @Test

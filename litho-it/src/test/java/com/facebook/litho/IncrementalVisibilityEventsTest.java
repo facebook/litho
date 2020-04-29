@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.facebook.litho.testing.TestViewComponent.create;
 import static com.facebook.litho.testing.helper.ComponentTestHelper.measureAndLayout;
 import static com.facebook.litho.testing.helper.ComponentTestHelper.mountComponent;
@@ -38,7 +39,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
 
 @RunWith(ComponentsTestRunner.class)
 public class IncrementalVisibilityEventsTest {
@@ -52,7 +52,7 @@ public class IncrementalVisibilityEventsTest {
   @Before
   public void setup() {
     ComponentsConfiguration.incrementalVisibilityHandling = true;
-    mContext = new ComponentContext(RuntimeEnvironment.application);
+    mContext = new ComponentContext(getApplicationContext());
 
     mLithoView = new LithoView(mContext);
     mParent = new FrameLayout(mContext.getAndroidContext());

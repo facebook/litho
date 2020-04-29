@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.facebook.litho.testing.assertj.LithoAssertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -31,7 +32,6 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
 
 @RunWith(ComponentsTestRunner.class)
 public class LogTreePopulatorTest {
@@ -39,8 +39,7 @@ public class LogTreePopulatorTest {
 
   @Before
   public void setup() throws Exception {
-    mContext =
-        new ComponentContext(RuntimeEnvironment.application, "test", new TestComponentsLogger());
+    mContext = new ComponentContext(getApplicationContext(), "test", new TestComponentsLogger());
   }
 
   @Test
@@ -90,7 +89,7 @@ public class LogTreePopulatorTest {
     treeProps.put(MyKey.class, 1337);
     mContext.setTreeProps(treeProps);
 
-    final ComponentContext noLogTagContext = new ComponentContext(RuntimeEnvironment.application);
+    final ComponentContext noLogTagContext = new ComponentContext(getApplicationContext());
     final PerfEvent perfEvent =
         LogTreePopulator.populatePerfEventFromLogger(noLogTagContext, logger, event);
 

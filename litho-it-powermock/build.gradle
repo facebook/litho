@@ -59,4 +59,5 @@ dependencies {
     testImplementation deps.robolectric
     testImplementation deps.soloader
     testImplementation deps.supportRecyclerView
+    testImplementation deps.supportTestCore
 }

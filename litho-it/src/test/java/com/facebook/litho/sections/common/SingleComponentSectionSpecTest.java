@@ -16,8 +16,9 @@
 
 package com.facebook.litho.sections.common;
 
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -33,7 +34,6 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
 
 /** Tests {@link SingleComponentSectionSpec} */
 @RunWith(ComponentsTestRunner.class)
@@ -44,7 +44,7 @@ public class SingleComponentSectionSpecTest {
 
   @Before
   public void setup() throws Exception {
-    mSectionContext = new SectionContext(RuntimeEnvironment.application);
+    mSectionContext = new SectionContext(getApplicationContext());
     mChangeSet = ChangeSet.acquireChangeSet(null, false);
   }
 

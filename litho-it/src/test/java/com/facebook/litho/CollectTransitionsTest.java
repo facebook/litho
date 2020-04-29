@@ -16,8 +16,8 @@
 
 package com.facebook.litho;
 
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.robolectric.RuntimeEnvironment.application;
 
 import android.view.View;
 import com.facebook.litho.animation.AnimatedProperties;
@@ -74,7 +74,7 @@ public class CollectTransitionsTest {
     boolean originalValue = ComponentsConfiguration.isAnimationDisabled;
     ComponentsConfiguration.isAnimationDisabled = false;
 
-    ComponentContext c = new ComponentContext(application);
+    ComponentContext c = new ComponentContext(getApplicationContext());
     LayoutState layoutState =
         LayoutState.calculate(
             c,

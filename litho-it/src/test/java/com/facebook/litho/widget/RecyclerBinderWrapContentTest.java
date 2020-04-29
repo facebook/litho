@@ -16,13 +16,14 @@
 
 package com.facebook.litho.widget;
 
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.facebook.litho.SizeSpec.AT_MOST;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
 import static com.facebook.litho.widget.RecyclerBinderTest.NO_OP_CHANGE_SET_COMPLETE_CALLBACK;
 import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.mockito.Matchers.anyLong;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
@@ -44,7 +45,6 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
 import org.robolectric.shadows.ShadowLooper;
 
@@ -61,7 +61,7 @@ public class RecyclerBinderWrapContentTest {
 
   @Before
   public void setup() {
-    mComponentContext = new ComponentContext(RuntimeEnvironment.application);
+    mComponentContext = new ComponentContext(getApplicationContext());
     mRecyclerView = new TestRecyclerView(mComponentContext.getAndroidContext());
 
     mLayoutThreadShadowLooper =

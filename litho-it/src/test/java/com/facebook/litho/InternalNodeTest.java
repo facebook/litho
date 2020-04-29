@@ -17,6 +17,7 @@
 package com.facebook.litho;
 
 import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.facebook.litho.Layout.createAndMeasureComponent;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.UNSPECIFIED;
@@ -34,12 +35,11 @@ import static com.facebook.yoga.YogaEdge.RIGHT;
 import static com.facebook.yoga.YogaEdge.TOP;
 import static com.facebook.yoga.YogaPositionType.ABSOLUTE;
 import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.robolectric.RuntimeEnvironment.application;
 
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -55,7 +55,6 @@ import com.facebook.yoga.YogaNode;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
 
 @RunWith(ComponentsTestRunner.class)
 public class InternalNodeTest {
@@ -79,7 +78,7 @@ public class InternalNodeTest {
   }
 
   private static InternalNode acquireInternalNode() {
-    final ComponentContext context = new ComponentContext(RuntimeEnvironment.application);
+    final ComponentContext context = new ComponentContext(getApplicationContext());
     context.setLayoutStateContextForTesting();
 
     return createAndMeasureComponent(
@@ -90,8 +89,7 @@ public class InternalNodeTest {
   }
 
   private static InternalNode acquireInternalNodeWithLogger(ComponentsLogger logger) {
-    final ComponentContext context =
-        new ComponentContext(RuntimeEnvironment.application, "TEST", logger);
+    final ComponentContext context = new ComponentContext(getApplicationContext(), "TEST", logger);
     context.setLayoutStateContextForTesting();
 
     return createAndMeasureComponent(
@@ -378,7 +376,7 @@ public class InternalNodeTest {
   public void testPaddingIsSetFromDrawable() {
     YogaNode yogaNode = mock(YogaNode.class);
     InternalNode node =
-        new DefaultInternalNode(new ComponentContext(RuntimeEnvironment.application), yogaNode);
+        new DefaultInternalNode(new ComponentContext(getApplicationContext()), yogaNode);
 
     node.backgroundRes(background_with_padding);
 
@@ -401,7 +399,7 @@ public class InternalNodeTest {
 
   @Test
   public void testComponentCreateAndRetrieveCachedLayoutLS() {
-    final ComponentContext baseContext = new ComponentContext(application);
+    final ComponentContext baseContext = new ComponentContext(getApplicationContext());
     final ComponentContext c =
         ComponentContext.withComponentTree(baseContext, ComponentTree.create(baseContext).build());
     final LayoutState layoutState = new LayoutState(c);
@@ -449,7 +447,7 @@ public class InternalNodeTest {
 
   @Test
   public void testDeepClone() {
-    final ComponentContext context = new ComponentContext(RuntimeEnvironment.application);
+    final ComponentContext context = new ComponentContext(getApplicationContext());
     context.setLayoutStateContextForTesting();
 
     InternalNode layout =

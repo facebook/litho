@@ -16,9 +16,10 @@
 
 package com.facebook.litho.widget;
 
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -43,7 +44,6 @@ import javax.annotation.Nullable;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
 
 /** Tests {@link Text} component. */
 @RunWith(ComponentsTestRunner.class)
@@ -57,7 +57,7 @@ public class TextSpecTest {
 
   @Before
   public void setup() {
-    mContext = new ComponentContext(RuntimeEnvironment.application);
+    mContext = new ComponentContext(getApplicationContext());
   }
 
   private static class TestMountableCharSequence implements MountableCharSequence {

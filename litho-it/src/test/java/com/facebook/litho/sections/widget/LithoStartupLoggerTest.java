@@ -16,6 +16,7 @@
 
 package com.facebook.litho.sections.widget;
 
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
 import static org.assertj.core.api.Java6Assertions.assertThat;
@@ -37,7 +38,6 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
 
 /** Tests {@link com.facebook.litho.LithoStartupLogger} */
 @RunWith(ComponentsTestRunner.class)
@@ -54,7 +54,7 @@ public class LithoStartupLoggerTest {
   public void setup() {
     mTestLithoStartupLogger = new TestLithoStartupLogger();
 
-    mComponentContext = new ComponentContext(RuntimeEnvironment.application);
+    mComponentContext = new ComponentContext(getApplicationContext());
     mRecyclerBinder =
         new RecyclerBinder.Builder()
             .startupLogger(mTestLithoStartupLogger)

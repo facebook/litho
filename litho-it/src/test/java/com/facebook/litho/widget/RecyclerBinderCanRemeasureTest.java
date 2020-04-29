@@ -17,6 +17,7 @@
 package com.facebook.litho.widget;
 
 import static android.view.View.MeasureSpec.UNSPECIFIED;
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
 import static com.facebook.litho.widget.RecyclerBinderTest.NO_OP_CHANGE_SET_COMPLETE_CALLBACK;
@@ -34,7 +35,6 @@ import java.util.ArrayList;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
 
 /** Tests for {@link RecyclerBinder} with canRemeasure enabled. */
 @RunWith(ComponentsTestRunner.class)
@@ -45,7 +45,7 @@ public class RecyclerBinderCanRemeasureTest {
 
   @Before
   public void setup() {
-    mComponentContext = new ComponentContext(RuntimeEnvironment.application);
+    mComponentContext = new ComponentContext(getApplicationContext());
     mRecyclerView = new TestRecyclerView(mComponentContext.getAndroidContext());
   }
 

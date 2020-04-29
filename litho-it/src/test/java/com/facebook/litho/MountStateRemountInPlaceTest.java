@@ -23,6 +23,7 @@ import static android.graphics.Color.WHITE;
 import static android.view.View.MeasureSpec.AT_MOST;
 import static android.view.View.MeasureSpec.EXACTLY;
 import static android.view.View.MeasureSpec.makeMeasureSpec;
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_MOVED_COUNT;
 import static com.facebook.litho.testing.TestDrawableComponent.create;
 import static com.facebook.litho.testing.helper.ComponentTestHelper.mountComponent;
@@ -47,7 +48,6 @@ import java.util.stream.Collectors;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
 
 @RunWith(ComponentsTestRunner.class)
 public class MountStateRemountInPlaceTest {
@@ -57,7 +57,7 @@ public class MountStateRemountInPlaceTest {
   @Before
   public void setup() {
     mComponentsLogger = new TestComponentsLogger();
-    mContext = new ComponentContext(RuntimeEnvironment.application, "tag", mComponentsLogger);
+    mContext = new ComponentContext(getApplicationContext(), "tag", mComponentsLogger);
   }
 
   @Test

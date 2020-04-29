@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.isA;
 
@@ -31,7 +32,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
 
 @RunWith(ComponentsTestRunner.class)
 public class SizeSpecMountWrapperComponentSpecTest {
@@ -42,7 +42,7 @@ public class SizeSpecMountWrapperComponentSpecTest {
 
   @Before
   public void setup() {
-    mContext = new ComponentContext(RuntimeEnvironment.application, new StateHandler());
+    mContext = new ComponentContext(getApplicationContext(), new StateHandler());
     ErrorBoundariesConfiguration.rootWrapperComponentFactory = null;
   }
 

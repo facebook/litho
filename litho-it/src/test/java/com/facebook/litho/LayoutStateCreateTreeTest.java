@@ -16,10 +16,11 @@
 
 package com.facebook.litho;
 
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyFloat;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -45,7 +46,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 @RunWith(ComponentsTestRunner.class)
@@ -54,7 +54,7 @@ public class LayoutStateCreateTreeTest {
 
   @Before
   public void setup() throws Exception {
-    mComponentContext = new ComponentContext(RuntimeEnvironment.application);
+    mComponentContext = new ComponentContext(getApplicationContext());
     mComponentContext.setLayoutStateContextForTesting();
   }
 

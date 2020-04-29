@@ -16,8 +16,8 @@
 
 package com.facebook.litho;
 
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.robolectric.RuntimeEnvironment.application;
 
 import android.graphics.ComposePathEffect;
 import android.graphics.DashPathEffect;
@@ -33,7 +33,7 @@ import org.junit.runner.RunWith;
 public class BorderTest {
   @Test
   public void testIndividualColorSetting() {
-    final ComponentContext c = new ComponentContext(application);
+    final ComponentContext c = new ComponentContext(getApplicationContext());
     Border border =
         Border.create(c)
             .color(YogaEdge.LEFT, 0xFFFF0000)
@@ -49,7 +49,7 @@ public class BorderTest {
 
   @Test
   public void testAllColorSetting() {
-    final ComponentContext c = new ComponentContext(application);
+    final ComponentContext c = new ComponentContext(getApplicationContext());
     Border border = Border.create(c).color(YogaEdge.ALL, 0xFFFF0000).build();
     assertThat(border.mEdgeColors[Border.EDGE_LEFT]).isEqualTo(0xFFFF0000);
     assertThat(border.mEdgeColors[Border.EDGE_TOP]).isEqualTo(0xFFFF0000);
@@ -59,7 +59,7 @@ public class BorderTest {
 
   @Test
   public void testHorizontalColorSetting() {
-    final ComponentContext c = new ComponentContext(application);
+    final ComponentContext c = new ComponentContext(getApplicationContext());
     Border border =
         Border.create(c)
             .color(YogaEdge.ALL, 0xFFFF0000)
@@ -73,7 +73,7 @@ public class BorderTest {
 
   @Test
   public void testVerticalColorSetting() {
-    final ComponentContext c = new ComponentContext(application);
+    final ComponentContext c = new ComponentContext(getApplicationContext());
     Border border =
         Border.create(c)
             .color(YogaEdge.ALL, 0xFFFF0000)
@@ -87,7 +87,7 @@ public class BorderTest {
 
   @Test
   public void testStartEndResolving() {
-    final ComponentContext c = new ComponentContext(application);
+    final ComponentContext c = new ComponentContext(getApplicationContext());
     Border border =
         Border.create(c)
             .color(YogaEdge.START, 0xFFFF0000)
@@ -103,7 +103,7 @@ public class BorderTest {
 
   @Test
   public void testIndividualWidthSetting() {
-    final ComponentContext c = new ComponentContext(application);
+    final ComponentContext c = new ComponentContext(getApplicationContext());
     Border border =
         Border.create(c)
             .widthPx(YogaEdge.LEFT, 1)
@@ -119,7 +119,7 @@ public class BorderTest {
 
   @Test
   public void testAllWidthSetting() {
-    final ComponentContext c = new ComponentContext(application);
+    final ComponentContext c = new ComponentContext(getApplicationContext());
     Border border = Border.create(c).widthPx(YogaEdge.ALL, 5).build();
     assertThat(border.mEdgeWidths[Border.EDGE_LEFT]).isEqualTo(5);
     assertThat(border.mEdgeWidths[Border.EDGE_TOP]).isEqualTo(5);
@@ -129,7 +129,7 @@ public class BorderTest {
 
   @Test
   public void testHorizontalWidthSetting() {
-    final ComponentContext c = new ComponentContext(application);
+    final ComponentContext c = new ComponentContext(getApplicationContext());
     Border border =
         Border.create(c).widthPx(YogaEdge.ALL, 1).widthPx(YogaEdge.HORIZONTAL, 5).build();
     assertThat(border.mEdgeWidths[Border.EDGE_LEFT]).isEqualTo(5);
@@ -140,7 +140,7 @@ public class BorderTest {
 
   @Test
   public void testVerticalWidthSetting() {
-    final ComponentContext c = new ComponentContext(application);
+    final ComponentContext c = new ComponentContext(getApplicationContext());
     Border border = Border.create(c).widthPx(YogaEdge.ALL, 1).widthPx(YogaEdge.VERTICAL, 5).build();
     assertThat(border.mEdgeWidths[Border.EDGE_LEFT]).isEqualTo(1);
     assertThat(border.mEdgeWidths[Border.EDGE_TOP]).isEqualTo(5);
@@ -150,7 +150,7 @@ public class BorderTest {
 
   @Test
   public void testAllColorWidthSetting() {
-    final ComponentContext c = new ComponentContext(application);
+    final ComponentContext c = new ComponentContext(getApplicationContext());
     Border border =
         Border.create(c)
             .color(YogaEdge.LEFT, 0xFFFF0000)
@@ -175,7 +175,7 @@ public class BorderTest {
 
   @Test
   public void testBothRadiiSetting() {
-    final ComponentContext c = new ComponentContext(application);
+    final ComponentContext c = new ComponentContext(getApplicationContext());
     Border border = Border.create(c).radiusPx(1337).build();
     assertThat(border.mRadius[Border.Corner.BOTTOM_LEFT]).isEqualTo(1337);
     assertThat(border.mRadius[Border.Corner.BOTTOM_RIGHT]).isEqualTo(1337);
@@ -185,7 +185,7 @@ public class BorderTest {
 
   @Test
   public void testIndividualRadiiSetting() {
-    final ComponentContext c = new ComponentContext(application);
+    final ComponentContext c = new ComponentContext(getApplicationContext());
     Border border =
         Border.create(c)
             .radiusPx(Border.Corner.TOP_LEFT, 1)
@@ -201,7 +201,7 @@ public class BorderTest {
 
   @Test
   public void testEffectSetting() {
-    final ComponentContext c = new ComponentContext(application);
+    final ComponentContext c = new ComponentContext(getApplicationContext());
     Border border = Border.create(c).dashEffect(new float[] {1f, 1f}, 0f).build();
     assertThat(border.mPathEffect).isInstanceOf(DashPathEffect.class);
 
@@ -220,7 +220,7 @@ public class BorderTest {
 
   @Test(expected = IllegalArgumentException.class)
   public void testTooManyEffectsThrows() {
-    final ComponentContext c = new ComponentContext(application);
+    final ComponentContext c = new ComponentContext(getApplicationContext());
     Border.create(c)
         .pathDashEffect(new Path(), 1f, 1f, PathDashPathEffect.Style.MORPH)
         .dashEffect(new float[] {1f, 2f}, 1f)
@@ -230,7 +230,7 @@ public class BorderTest {
 
   @Test(expected = IllegalArgumentException.class)
   public void testDifferentWidthWithEffectThrows() {
-    final ComponentContext c = new ComponentContext(application);
+    final ComponentContext c = new ComponentContext(getApplicationContext());
     Border.create(c)
         .widthPx(YogaEdge.ALL, 10)
         .widthPx(YogaEdge.LEFT, 5)

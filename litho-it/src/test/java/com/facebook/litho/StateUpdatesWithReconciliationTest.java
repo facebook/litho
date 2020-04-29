@@ -16,8 +16,9 @@
 
 package com.facebook.litho;
 
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -41,7 +42,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
 import org.robolectric.shadows.ShadowLooper;
 
@@ -78,7 +78,7 @@ public class StateUpdatesWithReconciliationTest {
           }
         };
     mComponentsLogger = new TestComponentsLogger();
-    mContext = new ComponentContext(RuntimeEnvironment.application, mLogTag, mComponentsLogger);
+    mContext = new ComponentContext(getApplicationContext(), mLogTag, mComponentsLogger);
     mLayoutThreadShadowLooper =
         Shadows.shadowOf(
             (Looper) Whitebox.invokeMethod(ComponentTree.class, "getDefaultLayoutThreadLooper"));
@@ -263,7 +263,7 @@ public class StateUpdatesWithReconciliationTest {
   public void testMultipleBackgroundStateUpdates() {
     after();
 
-    ComponentContext c = new ComponentContext(RuntimeEnvironment.application);
+    ComponentContext c = new ComponentContext(getApplicationContext());
     LithoView lithoView = new LithoView(c);
     ComponentTree componentTree = ComponentTree.create(c).build();
     lithoView.setComponentTree(componentTree);

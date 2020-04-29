@@ -16,6 +16,7 @@
 
 package com.facebook.litho.widget;
 
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import android.os.HandlerThread;
@@ -39,7 +40,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
 import org.robolectric.shadows.ShadowLooper;
 
@@ -55,7 +55,7 @@ public class ComponentWarmerTest {
 
   @Before
   public void setup() {
-    mContext = new ComponentContext(RuntimeEnvironment.application);
+    mContext = new ComponentContext(getApplicationContext());
     mComponentRenderInfo =
         ComponentRenderInfo.create()
             .component(TestDrawableComponent.create(mContext).build())

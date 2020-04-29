@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static org.mockito.Mockito.verify;
 
 import android.view.View;
@@ -30,7 +31,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.robolectric.RuntimeEnvironment;
 
 @RunWith(ComponentsTestRunner.class)
 public class DeprecatedLithoTooltipTest {
@@ -55,7 +55,7 @@ public class DeprecatedLithoTooltipTest {
   public void setup() {
     MockitoAnnotations.initMocks(this);
 
-    mContext = new ComponentContext(RuntimeEnvironment.application);
+    mContext = new ComponentContext(getApplicationContext());
     mComponent =
         new InlineLayoutSpec() {
           @Override

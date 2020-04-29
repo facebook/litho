@@ -71,7 +71,6 @@ public class ComponentsTestRunner extends RobolectricTestRunner {
 
   @Override
   protected Config buildGlobalConfig() {
-    Config config = super.buildGlobalConfig();
     // We are hard-coding the path here instead of relying on BUCK internals
     // to allow for building with gradle in the Open Source version.
     return new Config.Builder().setManifest(getResPrefix() + "AndroidManifest.xml").build();

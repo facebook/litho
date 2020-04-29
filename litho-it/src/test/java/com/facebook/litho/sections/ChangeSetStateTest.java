@@ -16,6 +16,7 @@
 
 package com.facebook.litho.sections;
 
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.facebook.litho.sections.Change.MOVE;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -27,7 +28,6 @@ import com.facebook.litho.widget.ComponentRenderInfo;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
 
 /** Tests {@link ChangeSetState} */
 @RunWith(ComponentsTestRunner.class)
@@ -40,7 +40,7 @@ public class ChangeSetStateTest {
 
   @Before
   public void setup() {
-    mSectionContext = new SectionContext(RuntimeEnvironment.application);
+    mSectionContext = new SectionContext(getApplicationContext());
     mSectionsDebugLogger = mock(SectionsDebugLogger.class);
     mSectionTreeTag = "";
     mCurrentPrefix = "";

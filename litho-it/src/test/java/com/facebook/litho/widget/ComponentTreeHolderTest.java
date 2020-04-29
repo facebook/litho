@@ -16,6 +16,7 @@
 
 package com.facebook.litho.widget;
 
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -36,7 +37,6 @@ import com.facebook.litho.viewcompat.ViewCreator;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
 import org.robolectric.shadows.ShadowLooper;
 
@@ -57,7 +57,7 @@ public class ComponentTreeHolderTest {
 
   @Before
   public void setUp() throws Exception {
-    mContext = new ComponentContext(RuntimeEnvironment.application);
+    mContext = new ComponentContext(getApplicationContext());
     mComponent = TestDrawableComponent.create(mContext).build();
     mRenderCompleteEventHandler = (EventHandler<RenderCompleteEvent>) mock(EventHandler.class);
     mComponentRenderInfo =

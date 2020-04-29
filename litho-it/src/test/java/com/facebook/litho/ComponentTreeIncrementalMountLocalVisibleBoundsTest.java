@@ -16,9 +16,10 @@
 
 package com.facebook.litho;
 
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -37,7 +38,6 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.robolectric.RuntimeEnvironment;
 
 @RunWith(ComponentsTestRunner.class)
 public class ComponentTreeIncrementalMountLocalVisibleBoundsTest {
@@ -48,7 +48,7 @@ public class ComponentTreeIncrementalMountLocalVisibleBoundsTest {
 
   @Before
   public void setup() {
-    ComponentContext context = new ComponentContext(RuntimeEnvironment.application);
+    ComponentContext context = new ComponentContext(getApplicationContext());
     mComponentTree =
         ComponentTree.create(
                 context, TestDrawableComponent.create(context).color(Color.BLACK).build())

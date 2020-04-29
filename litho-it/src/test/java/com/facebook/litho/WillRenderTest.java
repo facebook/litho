@@ -16,8 +16,8 @@
 
 package com.facebook.litho;
 
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.facebook.litho.testing.assertj.LithoAssertions.assertThat;
-import static org.robolectric.RuntimeEnvironment.application;
 
 import android.view.View;
 import com.facebook.litho.LayoutState.LayoutStateContext;
@@ -71,14 +71,14 @@ public class WillRenderTest {
 
   @Test
   public void testWillRenderForComponentThatReturnsNull() {
-    ComponentContext c = new ComponentContext(application);
+    ComponentContext c = new ComponentContext(getApplicationContext());
     c.setLayoutStateContext(LayoutStateContext.getTestInstance(c));
     assertThat(c, Wrapper.create(c).delegate(mNullSpec).build()).wontRender();
   }
 
   @Test
   public void testWillRenderForComponentThatReturnsNonNull() {
-    ComponentContext c = new ComponentContext(application);
+    ComponentContext c = new ComponentContext(getApplicationContext());
     c.setLayoutStateContext(LayoutStateContext.getTestInstance(c));
     assertThat(c, Wrapper.create(c).delegate(mNonNullSpec).build()).willRender();
   }
@@ -88,7 +88,7 @@ public class WillRenderTest {
     mExpectedException.expect(IllegalArgumentException.class);
     mExpectedException.expectMessage("@OnCreateLayoutWithSizeSpec");
 
-    ComponentContext c = new ComponentContext(application);
+    ComponentContext c = new ComponentContext(getApplicationContext());
     c.setLayoutStateContext(LayoutStateContext.getTestInstance(c));
     Component.willRender(c, Wrapper.create(c).delegate(mLayoutWithSizeSpec).build());
   }

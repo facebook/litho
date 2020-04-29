@@ -16,6 +16,7 @@
 
 package com.facebook.litho.sections.common;
 
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
@@ -28,7 +29,6 @@ import org.assertj.core.util.Lists;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
 
 @RunWith(ComponentsTestRunner.class)
 public class DataDiffSectionSpecTest {
@@ -37,7 +37,7 @@ public class DataDiffSectionSpecTest {
 
   @Before
   public void setup() {
-    mComponentContext = new ComponentContext(RuntimeEnvironment.application);
+    mComponentContext = new ComponentContext(getApplicationContext());
   }
 
   @Test

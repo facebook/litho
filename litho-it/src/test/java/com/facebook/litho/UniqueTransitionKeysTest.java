@@ -16,8 +16,8 @@
 
 package com.facebook.litho;
 
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.facebook.litho.testing.assertj.LithoAssertions.assertThat;
-import static org.robolectric.RuntimeEnvironment.application;
 
 import android.view.View;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
@@ -70,7 +70,7 @@ public class UniqueTransitionKeysTest {
 
   @Test
   public void testGetTransitionKeyMapping() {
-    ComponentContext c = new ComponentContext(application);
+    ComponentContext c = new ComponentContext(getApplicationContext());
     LayoutState layoutState =
         LayoutState.calculate(
             c,
@@ -88,7 +88,7 @@ public class UniqueTransitionKeysTest {
     mExpectedException.expectMessage(
         "The transitionId 'TransitionId{\"test\", GLOBAL}' is defined multiple times in the same layout.");
 
-    ComponentContext c = new ComponentContext(application);
+    ComponentContext c = new ComponentContext(getApplicationContext());
     LayoutState layoutState =
         LayoutState.calculate(
             c,

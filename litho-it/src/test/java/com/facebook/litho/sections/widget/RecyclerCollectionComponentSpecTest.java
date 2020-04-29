@@ -16,6 +16,7 @@
 
 package com.facebook.litho.sections.widget;
 
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.facebook.litho.sections.widget.RecyclerCollectionComponentSpec.LoadingState.EMPTY;
 import static com.facebook.litho.sections.widget.RecyclerCollectionComponentSpec.LoadingState.ERROR;
 import static com.facebook.litho.sections.widget.RecyclerCollectionComponentSpec.LoadingState.LOADED;
@@ -52,7 +53,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
 
 /** Tests {@link RecyclerCollectionComponentSpec} */
 @RunWith(ComponentsTestRunner.class)
@@ -77,7 +77,7 @@ public class RecyclerCollectionComponentSpecTest {
 
   @Before
   public void setup() throws Exception {
-    mComponentContext = new ComponentContext(RuntimeEnvironment.application);
+    mComponentContext = new ComponentContext(getApplicationContext());
 
     mLoadingComponent =
         new InlineLayoutSpec() {

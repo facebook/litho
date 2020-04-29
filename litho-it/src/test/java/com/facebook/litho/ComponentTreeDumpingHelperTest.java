@@ -18,6 +18,7 @@ package com.facebook.litho;
 
 import static android.view.View.MeasureSpec.UNSPECIFIED;
 import static android.view.View.MeasureSpec.makeMeasureSpec;
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import com.facebook.litho.config.ComponentsConfiguration;
@@ -28,7 +29,6 @@ import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
 
 @RunWith(ComponentsTestRunner.class)
 public class ComponentTreeDumpingHelperTest {
@@ -50,12 +50,12 @@ public class ComponentTreeDumpingHelperTest {
           }
         };
 
-    ComponentContext componentContext = new ComponentContext(RuntimeEnvironment.application);
+    ComponentContext componentContext = new ComponentContext(getApplicationContext());
     final ComponentTree componentTree = ComponentTree.create(componentContext, component).build();
 
     componentContext = ComponentContext.withComponentTree(componentContext, componentTree);
 
-    final LithoView lithoView = new LithoView(RuntimeEnvironment.application);
+    final LithoView lithoView = new LithoView(getApplicationContext());
     lithoView.setComponentTree(componentTree);
     lithoView.measure(makeMeasureSpec(0, UNSPECIFIED), makeMeasureSpec(0, UNSPECIFIED));
 

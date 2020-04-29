@@ -18,8 +18,11 @@ package com.facebook.samples.litho;
 
 import static com.facebook.litho.ComponentContext.withComponentScope;
 import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.robolectric.Shadows.shadowOf;
 
+import android.app.Application;
 import android.content.Intent;
+import androidx.test.core.app.ApplicationProvider;
 import com.facebook.litho.ClickEvent;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
@@ -31,7 +34,6 @@ import com.facebook.samples.litho.playground.PlaygroundActivity;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.shadows.ShadowApplication;
 
 @RunWith(ComponentsTestRunner.class)
 public class DemoListItemComponentTest {
@@ -50,7 +52,8 @@ public class DemoListItemComponentTest {
 
     lithoView.performClick();
 
-    final Intent nextIntent = ShadowApplication.getInstance().getNextStartedActivity();
+    final Intent nextIntent =
+        shadowOf(ApplicationProvider.<Application>getApplicationContext()).getNextStartedActivity();
     assertThat(nextIntent.getComponent().getClassName()).isSameAs(activityClassToLaunch.getName());
   }
 
@@ -66,11 +69,10 @@ public class DemoListItemComponentTest {
     // Here, we make use of Litho's internal event infrastructure and manually dispatch the event.
     final ComponentContext componentContext =
         withComponentScope(mComponentsRule.getContext(), component);
-    component
-        .getEventDispatcher()
-        .dispatchOnEvent(DemoListItemComponent.onClick(componentContext), new ClickEvent());
+    component.dispatchOnEvent(DemoListItemComponent.onClick(componentContext), new ClickEvent());
 
-    final Intent nextIntent = ShadowApplication.getInstance().getNextStartedActivity();
+    final Intent nextIntent =
+        shadowOf(ApplicationProvider.<Application>getApplicationContext()).getNextStartedActivity();
     assertThat(nextIntent.getComponent().getClassName()).isSameAs(activityClassToLaunch.getName());
   }
 }

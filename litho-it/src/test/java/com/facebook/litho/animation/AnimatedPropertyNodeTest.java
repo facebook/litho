@@ -16,10 +16,10 @@
 
 package com.facebook.litho.animation;
 
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.facebook.litho.animation.AnimatedProperties.SCALE;
 import static com.facebook.litho.dataflow.GraphBinding.create;
 import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.robolectric.RuntimeEnvironment.application;
 
 import android.view.View;
 import com.facebook.litho.OutputUnitType;
@@ -49,7 +49,7 @@ public class AnimatedPropertyNodeTest {
 
   @Test
   public void testViewPropertyNodeWithInput() {
-    View view = new View(application);
+    View view = new View(getApplicationContext());
     OutputUnitsAffinityGroup<Object> group = new OutputUnitsAffinityGroup<>();
     group.add(OutputUnitType.HOST, view);
     SettableNode source = new SettableNode();
@@ -73,7 +73,7 @@ public class AnimatedPropertyNodeTest {
 
   @Test
   public void testViewPropertyNodeWithInputAndOutput() {
-    View view = new View(application);
+    View view = new View(getApplicationContext());
     OutputUnitsAffinityGroup<Object> group = new OutputUnitsAffinityGroup<>();
     group.add(OutputUnitType.HOST, view);
     SettableNode source = new SettableNode();
@@ -99,11 +99,11 @@ public class AnimatedPropertyNodeTest {
 
   @Test
   public void testSettingMountContentOnNodeWithValue() {
-    View view1 = new View(application);
+    View view1 = new View(getApplicationContext());
     OutputUnitsAffinityGroup<Object> group1 = new OutputUnitsAffinityGroup<>();
     group1.add(OutputUnitType.HOST, view1);
 
-    View view2 = new View(application);
+    View view2 = new View(getApplicationContext());
     OutputUnitsAffinityGroup<Object> group2 = new OutputUnitsAffinityGroup<>();
     group2.add(OutputUnitType.HOST, view2);
 

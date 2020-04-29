@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static org.junit.Assert.assertTrue;
 
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
@@ -23,7 +24,6 @@ import com.facebook.litho.widget.Text;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
 
 @RunWith(ComponentsTestRunner.class)
 public class RequiredPropsTest {
@@ -32,7 +32,7 @@ public class RequiredPropsTest {
 
   @Before
   public void setup() throws Exception {
-    mContext = new ComponentContext(RuntimeEnvironment.application);
+    mContext = new ComponentContext(getApplicationContext());
   }
 
   @Test

@@ -18,6 +18,7 @@ package com.facebook.litho;
 
 import static android.graphics.Color.BLACK;
 import static android.graphics.Color.YELLOW;
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.facebook.litho.testing.TestDrawableComponent.create;
 import static com.facebook.litho.testing.helper.ComponentTestHelper.mountComponent;
 import static org.assertj.core.api.Java6Assertions.assertThat;
@@ -35,7 +36,6 @@ import com.facebook.litho.widget.Text;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
 
 @RunWith(ComponentsTestRunner.class)
 public class ComponentTreeMountTest {
@@ -44,7 +44,7 @@ public class ComponentTreeMountTest {
 
   @Before
   public void setup() {
-    mContext = new ComponentContext(RuntimeEnvironment.application);
+    mContext = new ComponentContext(getApplicationContext());
   }
 
   @Test

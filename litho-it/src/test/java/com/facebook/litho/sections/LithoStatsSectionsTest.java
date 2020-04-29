@@ -16,6 +16,7 @@
 
 package com.facebook.litho.sections;
 
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
@@ -34,7 +35,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
 import org.robolectric.shadows.ShadowLooper;
 
@@ -46,7 +46,7 @@ public class LithoStatsSectionsTest {
 
   @Before
   public void setup() {
-    mSectionContext = new SectionContext(RuntimeEnvironment.application);
+    mSectionContext = new SectionContext(getApplicationContext());
     mChangeSetThreadShadowLooper =
         Shadows.shadowOf(
             (Looper) Whitebox.invokeMethod(SectionTree.class, "getDefaultChangeSetThreadLooper"));

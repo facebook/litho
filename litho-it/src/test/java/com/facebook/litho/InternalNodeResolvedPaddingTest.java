@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.facebook.litho.Layout.createAndMeasureComponent;
 import static com.facebook.litho.SizeSpec.UNSPECIFIED;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
@@ -32,7 +33,6 @@ import com.facebook.yoga.YogaDirection;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
 
 @RunWith(ComponentsTestRunner.class)
 public class InternalNodeResolvedPaddingTest {
@@ -40,7 +40,7 @@ public class InternalNodeResolvedPaddingTest {
 
   @Before
   public void setup() {
-    final ComponentContext context = new ComponentContext(RuntimeEnvironment.application);
+    final ComponentContext context = new ComponentContext(getApplicationContext());
     context.setLayoutStateContextForTesting();
 
     mInternalNode =

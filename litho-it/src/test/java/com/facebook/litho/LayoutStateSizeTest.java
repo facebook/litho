@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import com.facebook.litho.testing.TestLayoutComponent;
@@ -24,7 +25,6 @@ import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
 
 @RunWith(ComponentsTestRunner.class)
 public class LayoutStateSizeTest {
@@ -38,7 +38,7 @@ public class LayoutStateSizeTest {
 
   @Before
   public void setup() {
-    mContext = new ComponentContext(RuntimeEnvironment.application);
+    mContext = new ComponentContext(getApplicationContext());
     mComponent = TestLayoutComponent.create(mContext).build();
     Whitebox.setInternalState(mComponent, "mId", COMPONENT_ID);
 

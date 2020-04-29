@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.facebook.litho.testing.TestViewComponent.create;
 import static com.facebook.litho.testing.helper.ComponentTestHelper.mountComponent;
 import static com.facebook.yoga.YogaEdge.ALL;
@@ -24,8 +25,8 @@ import static com.facebook.yoga.YogaEdge.TOP;
 import static com.facebook.yoga.YogaPositionType.ABSOLUTE;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -56,7 +57,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.robolectric.RuntimeEnvironment;
 
 @RunWith(ComponentsTestRunner.class)
 public class MountStateWithExtensionsIncrementalMountTest {
@@ -67,7 +67,7 @@ public class MountStateWithExtensionsIncrementalMountTest {
   @Before
   public void setup() {
     mComponentsLogger = new TestComponentsLogger();
-    mContext = new ComponentContext(RuntimeEnvironment.application, "tag", mComponentsLogger);
+    mContext = new ComponentContext(getApplicationContext(), "tag", mComponentsLogger);
     configValue = ComponentsConfiguration.useRenderCoreMount;
     ComponentsConfiguration.useRenderCoreMount = true;
   }

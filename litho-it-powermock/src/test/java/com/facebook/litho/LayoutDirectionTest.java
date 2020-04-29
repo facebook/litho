@@ -18,6 +18,7 @@ package com.facebook.litho;
 
 import static android.os.Build.VERSION_CODES.LOLLIPOP;
 import static android.view.View.LAYOUT_DIRECTION_RTL;
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.facebook.litho.testing.TestViewComponent.create;
 import static com.facebook.litho.testing.helper.ComponentTestHelper.mountComponent;
 import static com.facebook.yoga.YogaDirection.LTR;
@@ -38,7 +39,6 @@ import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 @Config(
@@ -51,7 +51,7 @@ public class LayoutDirectionTest {
 
   @Before
   public void setup() {
-    mContext = new ComponentContext(RuntimeEnvironment.application);
+    mContext = new ComponentContext(getApplicationContext());
   }
 
   /**

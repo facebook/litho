@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import android.content.res.Configuration;
@@ -24,21 +25,20 @@ import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import java.util.Locale;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
 
 @RunWith(ComponentsTestRunner.class)
 public class ResourceCacheTest {
 
   @Test
   public void testSameConfigurationDoesNotUpdateResourceCache() {
-    Configuration configuration = RuntimeEnvironment.application.getResources().getConfiguration();
+    Configuration configuration = getApplicationContext().getResources().getConfiguration();
     ResourceCache cache = ResourceCache.getLatest(configuration);
     assertThat(cache).isEqualTo(ResourceCache.getLatest(configuration));
   }
 
   @Test
   public void testSameConfigurationNewInstanceDoesNotUpdateResourceCache() {
-    Configuration configuration = RuntimeEnvironment.application.getResources().getConfiguration();
+    Configuration configuration = getApplicationContext().getResources().getConfiguration();
     ResourceCache cache = ResourceCache.getLatest(configuration);
     assertThat(cache).isEqualTo(ResourceCache.getLatest(new Configuration(configuration)));
   }
@@ -46,7 +46,7 @@ public class ResourceCacheTest {
   @Test
   public void testDifferentLocaleUpdatesResourceCache() {
     Configuration configuration =
-        new Configuration(RuntimeEnvironment.application.getResources().getConfiguration());
+        new Configuration(getApplicationContext().getResources().getConfiguration());
     setLocale(configuration, new Locale("en"));
 
     ResourceCache cache = ResourceCache.getLatest(configuration);

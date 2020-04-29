@@ -6,6 +6,7 @@
 load(
     "//tools/build_defs/oss:litho_defs.bzl",
     "LITHO_ANDROIDSUPPORT_TARGET",
+    "LITHO_ANDROIDSUPPORT_TESTING_CORE_TARGET",
     "LITHO_ASSERTJ_TARGET",
     "LITHO_BUILD_CONFIG_TARGET",
     "LITHO_JAVA_TARGET",
@@ -45,6 +46,7 @@ components_robolectric4_test(
     target = "8",
     deps = [
         ":testutil",
+        LITHO_ANDROIDSUPPORT_TESTING_CORE_TARGET,
         LITHO_ANDROIDSUPPORT_TARGET,
         LITHO_ASSERTJ_TARGET,
         LITHO_BUILD_CONFIG_TARGET,

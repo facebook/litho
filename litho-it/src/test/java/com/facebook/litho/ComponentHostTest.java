@@ -25,12 +25,13 @@ import static android.view.View.INVISIBLE;
 import static android.view.View.MeasureSpec.EXACTLY;
 import static android.view.View.MeasureSpec.makeMeasureSpec;
 import static android.view.View.VISIBLE;
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.facebook.litho.LayoutOutput.LAYOUT_FLAG_DUPLICATE_PARENT_STATE;
 import static com.facebook.litho.LayoutOutput.LAYOUT_FLAG_MATCH_HOST_BOUNDS;
 import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
@@ -59,7 +60,6 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 /** Tests {@link ComponentHost} */
@@ -75,7 +75,7 @@ public class ComponentHostTest {
 
   @Before
   public void setup() throws Exception {
-    mContext = new ComponentContext(RuntimeEnvironment.application);
+    mContext = new ComponentContext(getApplicationContext());
     mViewComponent = TestViewComponent.create(mContext).build();
     mDrawableComponent = TestDrawableComponent.create(mContext).build();
 
@@ -324,7 +324,7 @@ public class ComponentHostTest {
   @Test
   public void testMoveTouchExpansionItem() {
     View view = mock(View.class);
-    when(view.getContext()).thenReturn(RuntimeEnvironment.application);
+    when(view.getContext()).thenReturn(getApplicationContext());
 
     MountItem mountItem = mountTouchExpansionItem(0, view);
     mHost.moveItem(mountItem, 0, 1);
@@ -335,7 +335,7 @@ public class ComponentHostTest {
   @Test
   public void testTouchExpansionItemShouldAddTouchDelegate() {
     View view = mock(View.class);
-    when(view.getContext()).thenReturn(RuntimeEnvironment.application);
+    when(view.getContext()).thenReturn(getApplicationContext());
 
     MountItem mountItem = mountTouchExpansionItem(0, view);
 
@@ -356,7 +356,7 @@ public class ComponentHostTest {
   @Test
   public void testRecursiveTouchExpansionItemSecondShouldNotCrash() {
     View view = mock(View.class);
-    when(view.getContext()).thenReturn(RuntimeEnvironment.application);
+    when(view.getContext()).thenReturn(getApplicationContext());
     MountItem mountItem1 = mountTouchExpansionItem(0, view);
 
     assertThat(mHost.getTouchExpansionDelegate()).isNotNull();

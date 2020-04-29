@@ -16,6 +16,7 @@
 
 package com.facebook.litho.triggers;
 
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.facebook.litho.testing.assertj.LithoAssertions.assertThat;
 
 import com.facebook.litho.ComponentContext;
@@ -26,7 +27,6 @@ import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
 
 @RunWith(ComponentsTestRunner.class)
 public class EventTriggerTest {
@@ -34,8 +34,8 @@ public class EventTriggerTest {
   private ComponentContext mComponentContext;
 
   @Before
-  public void setup() throws Exception {
-    mComponentContext = new ComponentContext(RuntimeEnvironment.application);
+  public void setup() {
+    mComponentContext = new ComponentContext(getApplicationContext());
   }
 
   @Test

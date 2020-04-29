@@ -116,6 +116,8 @@ LITHO_ANDROIDSUPPORT_LIFECYCLE_EXT_TARGET = make_dep_path("lib/androidx:androidx
 
 LITHO_ANDROIDSUPPORT_TESTING_TARGET = make_dep_path("lib/androidx:androidx-testing")
 
+LITHO_ANDROIDSUPPORT_TESTING_CORE_TARGET = make_dep_path("lib/androidx:androidx-testing-core")
+
 LITHO_BUILD_CONFIG_TARGET = make_dep_path(":build_config")
 
 LITHO_YOGA_TARGET = make_dep_path("lib/yoga:yoga")

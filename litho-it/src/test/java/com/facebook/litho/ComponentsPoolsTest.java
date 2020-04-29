@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.facebook.litho.ComponentsPools.acquireMountContent;
 import static com.facebook.litho.ComponentsPools.maybePreallocateContent;
 import static com.facebook.litho.ComponentsPools.release;
@@ -33,7 +34,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
-import org.robolectric.RuntimeEnvironment;
 import org.robolectric.android.controller.ActivityController;
 
 @RunWith(ComponentsTestRunner.class)
@@ -85,8 +85,8 @@ public class ComponentsPoolsTest {
 
   @Before
   public void setup() {
-    mContext1 = RuntimeEnvironment.application;
-    mContext2 = new ContextWrapper(RuntimeEnvironment.application);
+    mContext1 = getApplicationContext();
+    mContext2 = new ContextWrapper(getApplicationContext());
     mActivityController = Robolectric.buildActivity(Activity.class).create();
     mActivity = mActivityController.get();
     mMountContent = new ColorDrawable(Color.RED);

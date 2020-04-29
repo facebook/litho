@@ -16,6 +16,7 @@
 
 package com.facebook.litho.sections;
 
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -27,7 +28,6 @@ import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
 
 @RunWith(ComponentsTestRunner.class)
 public class SectionTreeEventHandlerTest {
@@ -39,8 +39,7 @@ public class SectionTreeEventHandlerTest {
   @Before
   public void setup() {
     when(mSection.getGlobalKey()).thenReturn("section1");
-    mContext =
-        SectionContext.withScope(new SectionContext(RuntimeEnvironment.application), mSection);
+    mContext = SectionContext.withScope(new SectionContext(getApplicationContext()), mSection);
     mTestTarget = new TestTarget();
   }
 

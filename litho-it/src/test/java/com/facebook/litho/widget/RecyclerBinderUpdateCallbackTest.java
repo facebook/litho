@@ -16,11 +16,12 @@
 
 package com.facebook.litho.widget;
 
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyListOf;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -38,7 +39,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.robolectric.RuntimeEnvironment;
 
 /** Tests for {@link RecyclerBinderUpdateCallback} */
 @RunWith(ComponentsTestRunner.class)
@@ -67,7 +67,7 @@ public class RecyclerBinderUpdateCallbackTest {
       mNewData.add(new Object());
     }
 
-    mComponentContext = new ComponentContext(RuntimeEnvironment.application);
+    mComponentContext = new ComponentContext(getApplicationContext());
     mComponentRenderer = new TestObjectRenderer(mComponentContext);
     mOperationExecutor = mock(RecyclerBinderUpdateCallback.OperationExecutor.class);
     doAnswer(
@@ -78,8 +78,7 @@ public class RecyclerBinderUpdateCallbackTest {
               }
             })
         .when(mOperationExecutor)
-        .executeOperations(
-            (ComponentContext) any(), anyListOf(RecyclerBinderUpdateCallback.Operation.class));
+        .executeOperations((ComponentContext) any(), anyList());
 
     mReporter = mock(ComponentsReporter.Reporter.class);
     doAnswer(

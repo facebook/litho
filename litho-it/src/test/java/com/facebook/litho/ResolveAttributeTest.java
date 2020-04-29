@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.facebook.litho.it.R.attr.testAttrDimen;
 import static com.facebook.litho.it.R.attr.testAttrDrawable;
 import static com.facebook.litho.it.R.attr.undefinedAttrDimen;
@@ -24,6 +25,7 @@ import static com.facebook.litho.it.R.dimen.default_dimen;
 import static com.facebook.litho.it.R.dimen.test_dimen;
 import static com.facebook.litho.it.R.dimen.test_dimen_float;
 import static com.facebook.litho.it.R.drawable.test_bg;
+import static com.facebook.litho.it.R.style.TestTheme;
 import static com.facebook.yoga.YogaEdge.LEFT;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.robolectric.Shadows.shadowOf;
@@ -35,7 +37,6 @@ import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
 
 @RunWith(ComponentsTestRunner.class)
 public class ResolveAttributeTest {
@@ -43,9 +44,7 @@ public class ResolveAttributeTest {
 
   @Before
   public void setup() {
-    mContext =
-        new ComponentContext(
-            new ContextThemeWrapper(RuntimeEnvironment.application, R.style.TestTheme));
+    mContext = new ComponentContext(new ContextThemeWrapper(getApplicationContext(), TestTheme));
   }
 
   @Test

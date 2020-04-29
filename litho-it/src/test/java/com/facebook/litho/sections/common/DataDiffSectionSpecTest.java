@@ -16,6 +16,7 @@
 
 package com.facebook.litho.sections.common;
 
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.facebook.litho.testing.sections.TestTarget.DELETE;
 import static com.facebook.litho.testing.sections.TestTarget.DELETE_RANGE;
 import static com.facebook.litho.testing.sections.TestTarget.INSERT;
@@ -44,7 +45,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.robolectric.RuntimeEnvironment;
 
 /** Tests {@link DataDiffSectionSpec} */
 @RunWith(ComponentsTestRunner.class)
@@ -60,7 +60,7 @@ public class DataDiffSectionSpecTest {
   @Before
   public void setup() throws Exception {
     MockitoAnnotations.initMocks(this);
-    mSectionContext = new SectionContext(RuntimeEnvironment.application);
+    mSectionContext = new SectionContext(getApplicationContext());
     mTestTarget = new TestTarget();
     mSectionTree = SectionTree.create(mSectionContext, mTestTarget).build();
   }

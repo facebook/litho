@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.facebook.litho.ComponentTree.STATE_UPDATES_IN_LOOP_THRESHOLD;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
@@ -39,7 +40,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
 import org.robolectric.shadows.ShadowLooper;
 
 @RunWith(ComponentsTestRunner.class)
@@ -64,7 +64,7 @@ public class StateUpdatesTest {
 
   public void setup(boolean enableComponentTreeSpy) {
     mComponentsLogger = new TestComponentsLogger();
-    mContext = new ComponentContext(RuntimeEnvironment.application, LOG_TAG, mComponentsLogger);
+    mContext = new ComponentContext(getApplicationContext(), LOG_TAG, mComponentsLogger);
     mWidthSpec = makeSizeSpec(39, EXACTLY);
     mHeightSpec = makeSizeSpec(41, EXACTLY);
 

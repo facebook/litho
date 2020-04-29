@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -36,7 +37,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
 import org.robolectric.shadows.ShadowLooper;
 
@@ -67,7 +67,7 @@ public class NestedComponentStateUpdatesWithReconciliationTest {
           }
         };
     mComponentsLogger = new TestComponentsLogger();
-    c = new ComponentContext(RuntimeEnvironment.application, mLogTag, mComponentsLogger);
+    c = new ComponentContext(getApplicationContext(), mLogTag, mComponentsLogger);
     mLayoutThreadShadowLooper =
         Shadows.shadowOf(
             (Looper) Whitebox.invokeMethod(ComponentTree.class, "getDefaultLayoutThreadLooper"));

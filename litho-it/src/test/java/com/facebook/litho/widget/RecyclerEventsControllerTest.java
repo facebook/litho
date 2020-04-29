@@ -16,8 +16,9 @@
 
 package com.facebook.litho.widget;
 
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -31,7 +32,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
 
 @RunWith(ComponentsTestRunner.class)
 public class RecyclerEventsControllerTest {
@@ -44,7 +44,7 @@ public class RecyclerEventsControllerTest {
 
   @Before
   public void setup() {
-    mComponentContext = new ComponentContext(RuntimeEnvironment.application);
+    mComponentContext = new ComponentContext(getApplicationContext());
     mRecyclerView = new RecyclerView(mComponentContext.getAndroidContext());
     mSectionsRecyclerView =
         new TestSectionsRecyclerView(mComponentContext.getAndroidContext(), mRecyclerView);

@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.facebook.litho.ViewCompatComponent.get;
 import static com.facebook.litho.testing.helper.ComponentTestHelper.mountComponent;
 import static com.facebook.litho.testing.helper.ComponentTestHelper.unbindComponent;
@@ -31,7 +32,6 @@ import com.facebook.litho.viewcompat.ViewCreator;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
 
 /** Tests {@link ViewCompatComponent} */
 @RunWith(ComponentsTestRunner.class)
@@ -84,7 +84,7 @@ public class ViewCompatComponentTest {
 
   @Before
   public void setUp() throws Exception {
-    mContext = new ComponentContext(RuntimeEnvironment.application);
+    mContext = new ComponentContext(getApplicationContext());
   }
 
   @Test

@@ -16,6 +16,7 @@
 
 package com.facebook.litho.sections;
 
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.facebook.litho.testing.sections.TestSectionCreator.TestSection;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
@@ -49,7 +50,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
 import org.robolectric.shadows.ShadowLooper;
 
@@ -62,7 +62,7 @@ public class SectionTreeTest {
 
   @Before
   public void setup() throws Exception {
-    mSectionContext = new SectionContext(RuntimeEnvironment.application);
+    mSectionContext = new SectionContext(getApplicationContext());
     mChangeSetThreadShadowLooper =
         Shadows.shadowOf(
             (Looper) Whitebox.invokeMethod(SectionTree.class, "getDefaultChangeSetThreadLooper"));

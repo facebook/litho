@@ -16,12 +16,12 @@
 
 package com.facebook.litho;
 
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.facebook.litho.Column.create;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
 import static com.facebook.yoga.YogaEdge.ALL;
 import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.robolectric.RuntimeEnvironment.application;
 
 import android.content.Context;
 import com.facebook.litho.testing.TestDrawableComponent;
@@ -60,7 +60,11 @@ public class LayoutStateCalculateVisibilityOutputsTest {
 
     LayoutState layoutState =
         calculateLayoutState(
-            application, component, -1, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));
+            getApplicationContext(),
+            component,
+            -1,
+            makeSizeSpec(100, EXACTLY),
+            makeSizeSpec(100, EXACTLY));
 
     assertThat(layoutState.getVisibilityOutputCount()).isEqualTo(2);
   }
@@ -84,7 +88,11 @@ public class LayoutStateCalculateVisibilityOutputsTest {
 
     LayoutState layoutState =
         calculateLayoutState(
-            application, component, -1, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));
+            getApplicationContext(),
+            component,
+            -1,
+            makeSizeSpec(100, EXACTLY),
+            makeSizeSpec(100, EXACTLY));
 
     assertThat(layoutState.getVisibilityOutputCount()).isEqualTo(2);
   }
@@ -108,7 +116,11 @@ public class LayoutStateCalculateVisibilityOutputsTest {
 
     LayoutState layoutState =
         calculateLayoutState(
-            application, component, -1, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));
+            getApplicationContext(),
+            component,
+            -1,
+            makeSizeSpec(100, EXACTLY),
+            makeSizeSpec(100, EXACTLY));
 
     assertThat(layoutState.getVisibilityOutputCount()).isEqualTo(2);
   }
@@ -131,7 +143,11 @@ public class LayoutStateCalculateVisibilityOutputsTest {
 
     LayoutState layoutState =
         calculateLayoutState(
-            application, component, -1, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));
+            getApplicationContext(),
+            component,
+            -1,
+            makeSizeSpec(100, EXACTLY),
+            makeSizeSpec(100, EXACTLY));
 
     assertThat(layoutState.getVisibilityOutputCount()).isEqualTo(1);
   }
@@ -158,7 +174,11 @@ public class LayoutStateCalculateVisibilityOutputsTest {
 
     LayoutState layoutState =
         calculateLayoutState(
-            application, component, -1, makeSizeSpec(350, EXACTLY), makeSizeSpec(200, EXACTLY));
+            getApplicationContext(),
+            component,
+            -1,
+            makeSizeSpec(350, EXACTLY),
+            makeSizeSpec(200, EXACTLY));
 
     // Check total layout outputs.
     assertThat(layoutState.getVisibilityOutputCount()).isEqualTo(4);
@@ -191,7 +211,11 @@ public class LayoutStateCalculateVisibilityOutputsTest {
 
     final LayoutState layoutState =
         calculateLayoutState(
-            application, component, -1, makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));
+            getApplicationContext(),
+            component,
+            -1,
+            makeSizeSpec(100, EXACTLY),
+            makeSizeSpec(100, EXACTLY));
 
     assertThat(layoutState.getVisibilityOutputCount()).isEqualTo(1);
   }
@@ -208,7 +232,7 @@ public class LayoutStateCalculateVisibilityOutputsTest {
 
     LayoutState layoutState =
         calculateLayoutState(
-            application,
+            getApplicationContext(),
             componentWithNullLayout,
             -1,
             makeSizeSpec(350, EXACTLY),
@@ -233,7 +257,11 @@ public class LayoutStateCalculateVisibilityOutputsTest {
 
     LayoutState layoutState =
         calculateLayoutState(
-            application, component, -1, makeSizeSpec(350, EXACTLY), makeSizeSpec(200, EXACTLY));
+            getApplicationContext(),
+            component,
+            -1,
+            makeSizeSpec(350, EXACTLY),
+            makeSizeSpec(200, EXACTLY));
 
     assertThat(layoutState.getVisibilityOutputCount()).isEqualTo(1);
   }

@@ -20,6 +20,7 @@ import static android.content.res.Configuration.ORIENTATION_PORTRAIT;
 import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
 import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO;
 import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_YES;
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.facebook.litho.LayoutOutput.getLayoutOutput;
 import static com.facebook.litho.LithoMountData.getMountData;
 import static com.facebook.litho.LithoMountData.isViewClickable;
@@ -40,7 +41,6 @@ import com.facebook.rendercore.RenderTreeNode;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
 
 /** Tests {@link MountItem} */
 @RunWith(ComponentsTestRunner.class)
@@ -63,7 +63,7 @@ public class MountItemTest {
 
   @Before
   public void setup() throws Exception {
-    mContext = new ComponentContext(RuntimeEnvironment.application);
+    mContext = new ComponentContext(getApplicationContext());
 
     mComponent =
         new InlineLayoutSpec() {
@@ -72,8 +72,8 @@ public class MountItemTest {
             return TestDrawableComponent.create(c).build();
           }
         };
-    mComponentHost = new ComponentHost(RuntimeEnvironment.application);
-    mContent = new View(RuntimeEnvironment.application);
+    mComponentHost = new ComponentHost(getApplicationContext());
+    mContent = new View(getApplicationContext());
     mContentDescription = "contentDescription";
     mViewTag = "tag";
     mViewTags = new SparseArray<>();
@@ -159,7 +159,7 @@ public class MountItemTest {
 
   @Test
   public void testViewFlags() {
-    View view = new View(RuntimeEnvironment.application);
+    View view = new View(getApplicationContext());
     view.setClickable(true);
     view.setEnabled(true);
     view.setLongClickable(true);
@@ -280,7 +280,7 @@ public class MountItemTest {
         new LayoutOutput(mNodeInfo, null, mComponent, new Rect(0, 0, 0, 0), 0, 0, 0, 0, 0, 0, null);
     RenderTreeNode node = LayoutOutput.create(output, null);
 
-    View view = new View(RuntimeEnvironment.application);
+    View view = new View(getApplicationContext());
 
     final MountItem mountItem = new MountItem(node, mComponentHost, view);
     mountItem.setMountData(new LithoMountData(view));

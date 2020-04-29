@@ -16,6 +16,7 @@
 
 package com.facebook.litho.testing.viewtree;
 
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import com.facebook.litho.ComponentContext;
@@ -28,7 +29,6 @@ import com.google.common.collect.ImmutableList;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
 
 /** Tests {@link ComponentQueries} */
 @RunWith(ComponentsTestRunner.class)
@@ -37,7 +37,7 @@ public class ComponentQueriesTest {
 
   @Before
   public void setup() {
-    mContext = new ComponentContext(RuntimeEnvironment.application);
+    mContext = new ComponentContext(getApplicationContext());
   }
 
   @Test

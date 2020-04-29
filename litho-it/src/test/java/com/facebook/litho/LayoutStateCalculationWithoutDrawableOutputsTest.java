@@ -19,6 +19,7 @@ package com.facebook.litho;
 import static android.view.View.MeasureSpec.EXACTLY;
 import static android.view.View.MeasureSpec.UNSPECIFIED;
 import static android.view.View.MeasureSpec.makeMeasureSpec;
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.facebook.litho.LayoutOutput.getLayoutOutput;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
@@ -30,7 +31,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
 
 @RunWith(ComponentsTestRunner.class)
 public class LayoutStateCalculationWithoutDrawableOutputsTest {
@@ -43,7 +43,7 @@ public class LayoutStateCalculationWithoutDrawableOutputsTest {
   @Before
   public void before() {
     cachedConfigValue = ComponentsConfiguration.shouldDisableDrawableOutputs;
-    mContext = new ComponentContext(RuntimeEnvironment.application);
+    mContext = new ComponentContext(getApplicationContext());
     mLithoView = new LithoView(mContext);
     mComponentTree = ComponentTree.create(mContext).build();
     mLithoView.setComponentTree(mComponentTree);

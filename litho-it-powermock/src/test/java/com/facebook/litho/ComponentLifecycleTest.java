@@ -16,13 +16,14 @@
 
 package com.facebook.litho;
 
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.facebook.yoga.YogaMeasureMode.EXACTLY;
 import static junit.framework.Assert.fail;
 import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -50,7 +51,6 @@ import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.powermock.reflect.Whitebox;
-import org.robolectric.RuntimeEnvironment;
 
 /** Tests {@link ComponentLifecycle} */
 @PrepareForTest({
@@ -116,7 +116,7 @@ public class ComponentLifecycleTest {
 
     StateHandler stateHandler = mock(StateHandler.class);
 
-    final ComponentContext c = new ComponentContext(RuntimeEnvironment.application, stateHandler);
+    final ComponentContext c = new ComponentContext(getApplicationContext(), stateHandler);
     c.setLayoutStateContextForTesting();
     mContext = spy(c);
     when(mNode.getContext()).thenReturn(mContext);
@@ -389,7 +389,7 @@ public class ComponentLifecycleTest {
   }
 
   @Test
-  public void testOnMeasureNotOverriden() {
+  public void testOnMeasureNotOverridden() {
     Component component = setUpSpyComponentForCreateLayout(true, true);
     YogaMeasureFunction measureFunction = getMeasureFunction(component);
 

@@ -16,6 +16,7 @@
 
 package com.facebook.litho.widget;
 
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.facebook.litho.SizeSpec.AT_MOST;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.UNSPECIFIED;
@@ -23,11 +24,11 @@ import static com.facebook.litho.SizeSpec.makeSizeSpec;
 import static com.facebook.litho.widget.ComponentRenderInfo.create;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.assertj.core.api.Java6Assertions.fail;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyLong;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.isNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
@@ -94,7 +95,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
 import org.robolectric.shadows.ShadowLooper;
 
@@ -158,7 +158,7 @@ public class RecyclerBinderTest {
   public void setup() throws Exception {
     mHoldersForComponents.clear();
 
-    mComponentContext = new ComponentContext(RuntimeEnvironment.application);
+    mComponentContext = new ComponentContext(getApplicationContext());
     mComponentContext.getAndroidContext().setTheme(0);
 
     mComponentTreeHolderFactory =
@@ -1185,7 +1185,7 @@ public class RecyclerBinderTest {
 
     binder.measure(size, widthSpec, heightSpec, null);
 
-    RecyclerView recyclerView = new RecyclerView(RuntimeEnvironment.application);
+    RecyclerView recyclerView = new RecyclerView(getApplicationContext());
     binder.mount(recyclerView);
 
     assertThat(binder.getComponentTreeHolderAt(0).isTreeValid()).isTrue();
@@ -1234,7 +1234,7 @@ public class RecyclerBinderTest {
   @Test
   public void testRemoveRangeAboveTheViewport() {
     final List<ComponentRenderInfo> components = prepareLoadedBinder();
-    RecyclerView recyclerView = new RecyclerView(RuntimeEnvironment.application);
+    RecyclerView recyclerView = new RecyclerView(getApplicationContext());
     mRecyclerBinder.mount(recyclerView);
 
     final int firstVisible = 40;
@@ -1260,7 +1260,7 @@ public class RecyclerBinderTest {
   @Test
   public void testRemoveRangeBelowTheViewport() {
     final List<ComponentRenderInfo> components = prepareLoadedBinder();
-    RecyclerView recyclerView = new RecyclerView(RuntimeEnvironment.application);
+    RecyclerView recyclerView = new RecyclerView(getApplicationContext());
     mRecyclerBinder.mount(recyclerView);
 
     final int firstVisible = 40;
@@ -2176,7 +2176,7 @@ public class RecyclerBinderTest {
     recyclerBinder.insertRangeAt(0, components);
     mRecyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
-    RecyclerView rv = new RecyclerView(RuntimeEnvironment.application);
+    RecyclerView rv = new RecyclerView(getApplicationContext());
     recyclerBinder.mount(rv);
     rv.measure(makeSizeSpec(200, EXACTLY), makeSizeSpec(200, EXACTLY));
     recyclerBinder.setSize(200, 200);
@@ -2219,7 +2219,7 @@ public class RecyclerBinderTest {
     recyclerBinder.insertRangeAt(0, components);
     mRecyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
-    RecyclerView rv = new RecyclerView(RuntimeEnvironment.application);
+    RecyclerView rv = new RecyclerView(getApplicationContext());
     recyclerBinder.mount(rv);
     rv.measure(makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY));
     recyclerBinder.setSize(100, 100);
@@ -3941,7 +3941,7 @@ public class RecyclerBinderTest {
     recyclerBinder.notifyChangeSetComplete(true, changeSetCompleteCallback);
 
     // Mount view after insertions
-    final LithoRecylerView recyclerView = new LithoRecylerView(RuntimeEnvironment.application);
+    final LithoRecylerView recyclerView = new LithoRecylerView(getApplicationContext());
     recyclerBinder.mount(recyclerView);
 
     // Simulate calling ViewGroup#dispatchDraw(Canvas).
@@ -3972,7 +3972,7 @@ public class RecyclerBinderTest {
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     // Mount view after insertions
-    final LithoRecylerView recyclerView = new LithoRecylerView(RuntimeEnvironment.application);
+    final LithoRecylerView recyclerView = new LithoRecylerView(getApplicationContext());
     recyclerBinder.mount(recyclerView);
 
     // Simulate calling ViewGroup#dispatchDraw(Canvas).
@@ -4115,7 +4115,7 @@ public class RecyclerBinderTest {
     verify(changeSetCompleteCallback2, never()).onDataRendered(eq(true), anyLong());
 
     // Mount view after insertions
-    final LithoRecylerView recyclerView = new LithoRecylerView(RuntimeEnvironment.application);
+    final LithoRecylerView recyclerView = new LithoRecylerView(getApplicationContext());
     recyclerBinder.mount(recyclerView);
 
     // Simulate calling ViewGroup#dispatchDraw(Canvas).
@@ -4151,7 +4151,7 @@ public class RecyclerBinderTest {
     verify(changeSetCompleteCallback2, never()).onDataRendered(eq(true), anyLong());
 
     // Mount view after insertions
-    final LithoRecylerView recyclerView = new LithoRecylerView(RuntimeEnvironment.application);
+    final LithoRecylerView recyclerView = new LithoRecylerView(getApplicationContext());
 
     recyclerBinder.measure(
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
@@ -4585,7 +4585,7 @@ public class RecyclerBinderTest {
     ComponentsReporter.provide(reporter);
     final ChangeSetCompleteCallback changeSetCompleteCallback =
         mock(ChangeSetCompleteCallback.class);
-    final ComponentContext componentContext = new ComponentContext(RuntimeEnvironment.application);
+    final ComponentContext componentContext = new ComponentContext(getApplicationContext());
     final RecyclerBinder recyclerBinder =
         new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(componentContext);
     for (int i = 0; i < 40; i++) {

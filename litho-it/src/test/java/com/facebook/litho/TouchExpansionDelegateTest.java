@@ -19,14 +19,14 @@ package com.facebook.litho;
 import static android.os.SystemClock.uptimeMillis;
 import static android.view.MotionEvent.ACTION_DOWN;
 import static android.view.MotionEvent.obtain;
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.robolectric.RuntimeEnvironment.application;
 
 import android.graphics.Rect;
 import android.os.SystemClock;
@@ -36,7 +36,6 @@ import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
 
 @RunWith(ComponentsTestRunner.class)
 public class TouchExpansionDelegateTest {
@@ -44,7 +43,7 @@ public class TouchExpansionDelegateTest {
 
   @Before
   public void setup() {
-    mTouchDelegate = new TouchExpansionDelegate(new ComponentHost(RuntimeEnvironment.application));
+    mTouchDelegate = new TouchExpansionDelegate(new ComponentHost(getApplicationContext()));
   }
 
   @Test
@@ -62,7 +61,7 @@ public class TouchExpansionDelegateTest {
   @Test
   public void testTouchWithinBounds() {
     final View view = mock(View.class);
-    when(view.getContext()).thenReturn(application);
+    when(view.getContext()).thenReturn(getApplicationContext());
     when(view.getWidth()).thenReturn(4);
     when(view.getHeight()).thenReturn(6);
 
@@ -80,7 +79,7 @@ public class TouchExpansionDelegateTest {
   @Test
   public void testTouchOutsideBounds() {
     final View view = mock(View.class);
-    when(view.getContext()).thenReturn(RuntimeEnvironment.application);
+    when(view.getContext()).thenReturn(getApplicationContext());
 
     mTouchDelegate.registerTouchExpansion(0, view, new Rect(0, 0, 10, 10));
 
@@ -101,7 +100,7 @@ public class TouchExpansionDelegateTest {
   @Test
   public void testUnregister() {
     final View view = mock(View.class);
-    when(view.getContext()).thenReturn(RuntimeEnvironment.application);
+    when(view.getContext()).thenReturn(getApplicationContext());
 
     mTouchDelegate.registerTouchExpansion(0, view, new Rect(0, 0, 10, 10));
     mTouchDelegate.unregisterTouchExpansion(0);
@@ -125,8 +124,8 @@ public class TouchExpansionDelegateTest {
     final View firstView = mock(View.class);
     final View secondView = mock(View.class);
 
-    when(firstView.getContext()).thenReturn(RuntimeEnvironment.application);
-    when(secondView.getContext()).thenReturn(RuntimeEnvironment.application);
+    when(firstView.getContext()).thenReturn(getApplicationContext());
+    when(secondView.getContext()).thenReturn(getApplicationContext());
 
     mTouchDelegate.registerTouchExpansion(0, firstView, new Rect(0, 0, 10, 10));
     mTouchDelegate.registerTouchExpansion(4, secondView, new Rect(0, 0, 10, 10));
@@ -140,8 +139,8 @@ public class TouchExpansionDelegateTest {
     final View firstView = mock(View.class);
     final View secondView = mock(View.class);
 
-    when(firstView.getContext()).thenReturn(RuntimeEnvironment.application);
-    when(secondView.getContext()).thenReturn(RuntimeEnvironment.application);
+    when(firstView.getContext()).thenReturn(getApplicationContext());
+    when(secondView.getContext()).thenReturn(getApplicationContext());
 
     mTouchDelegate.registerTouchExpansion(0, firstView, new Rect(0, 0, 10, 10));
     mTouchDelegate.registerTouchExpansion(4, secondView, new Rect(0, 0, 10, 10));
@@ -153,12 +152,12 @@ public class TouchExpansionDelegateTest {
   @Test
   public void testDrawingOrder() {
     final View view1 = mock(View.class);
-    when(view1.getContext()).thenReturn(RuntimeEnvironment.application);
+    when(view1.getContext()).thenReturn(getApplicationContext());
     when(view1.dispatchTouchEvent((MotionEvent) any())).thenReturn(true);
     mTouchDelegate.registerTouchExpansion(0, view1, new Rect(0, 0, 10, 10));
 
     final View view2 = mock(View.class);
-    when(view2.getContext()).thenReturn(RuntimeEnvironment.application);
+    when(view2.getContext()).thenReturn(getApplicationContext());
     when(view2.dispatchTouchEvent((MotionEvent) any())).thenReturn(true);
     mTouchDelegate.registerTouchExpansion(1, view2, new Rect(0, 0, 10, 10));
 

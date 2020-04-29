@@ -16,6 +16,7 @@
 
 package com.facebook.litho.testing.viewtree;
 
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import android.app.Activity;
@@ -39,7 +40,6 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
-import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 /** Tests {@link ViewPredicates} */
@@ -151,7 +151,7 @@ public class ViewPredicatesTest {
 
   @Test
   public void testHasDrawable() {
-    final Resources resources = RuntimeEnvironment.application.getResources();
+    final Resources resources = getApplicationContext().getResources();
     final Drawable noAvatar = resources.getDrawable(R.drawable.custom_drawable);
     final Predicate<View> hasDrawable = ViewPredicates.hasDrawable(noAvatar);
 
@@ -180,7 +180,7 @@ public class ViewPredicatesTest {
 
   @Test
   public void testHasVisibleDrawable() {
-    final Resources resources = RuntimeEnvironment.application.getResources();
+    final Resources resources = getApplicationContext().getResources();
     final Drawable noAvatar = resources.getDrawable(R.drawable.litho);
     final Predicate<View> hasVisibleDrawable = ViewPredicates.hasVisibleDrawable(noAvatar);
 
@@ -191,7 +191,7 @@ public class ViewPredicatesTest {
 
   @Test
   public void testHasVisibleCustomDrawable() {
-    final Resources resources = RuntimeEnvironment.application.getResources();
+    final Resources resources = getApplicationContext().getResources();
     final Drawable customDrawable = resources.getDrawable(R.drawable.custom_drawable);
     final Predicate<View> hasVisibleDrawable = ViewPredicates.hasVisibleDrawable(customDrawable);
 

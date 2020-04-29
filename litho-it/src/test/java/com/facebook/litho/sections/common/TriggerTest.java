@@ -16,6 +16,7 @@
 
 package com.facebook.litho.sections.common;
 
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import com.facebook.litho.sections.Section;
@@ -29,7 +30,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
-import org.robolectric.RuntimeEnvironment;
 
 @RunWith(ComponentsTestRunner.class)
 public class TriggerTest {
@@ -41,7 +41,7 @@ public class TriggerTest {
   @Before
   public void setup() throws Exception {
     MockitoAnnotations.initMocks(this);
-    mSectionContext = new SectionContext(RuntimeEnvironment.application);
+    mSectionContext = new SectionContext(getApplicationContext());
     mTestTarget = new TestTarget();
     mSectionTree = SectionTree.create(mSectionContext, mTestTarget).build();
   }

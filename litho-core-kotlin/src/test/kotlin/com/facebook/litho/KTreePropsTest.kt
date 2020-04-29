@@ -16,7 +16,9 @@
 
 package com.facebook.litho
 
+import android.content.Context
 import android.graphics.Rect
+import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import com.facebook.litho.testing.helper.ComponentTestHelper
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner
 import com.facebook.litho.util.TreePropHolder
@@ -24,7 +26,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.robolectric.RuntimeEnvironment
 
 /** Unit tests for KTreeProps. */
 @Suppress("MagicNumber")
@@ -35,7 +36,7 @@ class KTreePropsTest {
 
   @Before
   fun setUp() {
-    context = ComponentContext(RuntimeEnvironment.application)
+    context = ComponentContext(getApplicationContext<Context>())
   }
 
   @Test

@@ -19,6 +19,7 @@ package com.facebook.litho;
 import static android.R.drawable.btn_default;
 import static android.graphics.Color.BLACK;
 import static android.graphics.Color.TRANSPARENT;
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.facebook.litho.Column.create;
 import static com.facebook.litho.LayoutOutput.STATE_DIRTY;
 import static com.facebook.litho.LayoutOutput.STATE_UNKNOWN;
@@ -59,7 +60,6 @@ import com.facebook.yoga.YogaMeasureFunction;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
 
 @RunWith(ComponentsTestRunner.class)
 public class TreeDiffingTest {
@@ -74,7 +74,7 @@ public class TreeDiffingTest {
 
   @Before
   public void setup() throws Exception {
-    mContext = new ComponentContext(RuntimeEnvironment.application);
+    mContext = new ComponentContext(getApplicationContext());
     mUnspecifiedSpec = SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED);
     sRedDrawable = ComparableColorDrawable.create(Color.RED);
     sBlackDrawable = ComparableColorDrawable.create(Color.BLACK);

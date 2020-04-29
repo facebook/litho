@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import com.facebook.litho.stats.LithoStats;
@@ -26,7 +27,6 @@ import java.util.concurrent.CountDownLatch;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
 import org.robolectric.shadows.ShadowLooper;
 
 @RunWith(ComponentsTestRunner.class)
@@ -44,7 +44,7 @@ public class LithoStatsTest {
   @Before
   public void setup() {
     mComponentsLogger = new TestComponentsLogger();
-    mContext = new ComponentContext(RuntimeEnvironment.application, LOG_TAG, mComponentsLogger);
+    mContext = new ComponentContext(getApplicationContext(), LOG_TAG, mComponentsLogger);
 
     mLayoutThreadShadowLooper = ComponentTestHelper.getDefaultLayoutThreadShadowLooper();
     mTestComponent = new StateUpdateTestComponent();

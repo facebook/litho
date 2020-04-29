@@ -18,12 +18,12 @@
 
 package com.facebook.litho;
 
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
 
 @RunWith(ComponentsTestRunner.class)
 public class NoOpEventHandlerTest {
@@ -45,7 +45,7 @@ public class NoOpEventHandlerTest {
 
   @Test(expected = RuntimeException.class)
   public void testComponentContextThrowsExceptionWithoutComponentScope() {
-    ComponentContext componentContext = new ComponentContext(RuntimeEnvironment.application);
+    ComponentContext componentContext = new ComponentContext(getApplicationContext());
     assertThat(
             componentContext
                 .newEventHandler(1, new Object[1])
@@ -55,7 +55,7 @@ public class NoOpEventHandlerTest {
 
   @Test(expected = RuntimeException.class)
   public void testComponentLifeCycleThrowsExceptionWithoutComponentScope() {
-    ComponentContext componentContext = new ComponentContext(RuntimeEnvironment.application);
+    ComponentContext componentContext = new ComponentContext(getApplicationContext());
     Component component = null;
     assertThat(
             ComponentLifecycle.newEventHandler(

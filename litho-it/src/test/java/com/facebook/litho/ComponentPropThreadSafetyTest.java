@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
 import static org.mockito.Mockito.times;
@@ -34,7 +35,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
 import org.robolectric.shadows.ShadowLooper;
 
@@ -46,7 +46,7 @@ public class ComponentPropThreadSafetyTest {
 
   @Before
   public void setup() throws Exception {
-    mContext = new ComponentContext(new ContextWrapper(RuntimeEnvironment.application));
+    mContext = new ComponentContext(new ContextWrapper(getApplicationContext()));
 
     mLayoutThreadShadowLooper =
         Shadows.shadowOf(

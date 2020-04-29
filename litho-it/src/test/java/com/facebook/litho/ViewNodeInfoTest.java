@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import android.graphics.Rect;
@@ -23,7 +24,6 @@ import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
 
 /** Tests {@link ViewNodeInfo} */
 @RunWith(ComponentsTestRunner.class)
@@ -39,7 +39,7 @@ public class ViewNodeInfoTest {
   @Test
   public void testTouchBoundsNoHostTranslation() {
     final InternalNode node =
-        new TouchExpansionTestInternalNode(new ComponentContext(RuntimeEnvironment.application));
+        new TouchExpansionTestInternalNode(new ComponentContext(getApplicationContext()));
 
     mViewNodeInfo.setExpandedTouchBounds(node, 10, 10, 20, 20);
 

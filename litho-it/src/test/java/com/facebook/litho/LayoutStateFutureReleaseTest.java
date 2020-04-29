@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
 import static org.junit.Assert.assertEquals;
@@ -38,7 +39,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
 import org.robolectric.shadows.ShadowLooper;
 
@@ -53,7 +53,7 @@ public class LayoutStateFutureReleaseTest {
 
   @Before
   public void setup() {
-    mContext = new ComponentContext(RuntimeEnvironment.application, null, null, null, null);
+    mContext = new ComponentContext(getApplicationContext(), null, null, null, null);
     ComponentsConfiguration.useCancelableLayoutFutures = true;
 
     mWidthSpec = makeSizeSpec(40, EXACTLY);

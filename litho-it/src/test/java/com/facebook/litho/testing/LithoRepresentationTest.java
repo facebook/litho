@@ -16,6 +16,7 @@
 
 package com.facebook.litho.testing;
 
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.facebook.litho.testing.assertj.ComponentConditions.textEquals;
 import static com.facebook.litho.testing.assertj.SubComponentExtractor.subComponentWith;
 import static org.hamcrest.core.Is.is;
@@ -33,7 +34,6 @@ import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
 
 @RunWith(ComponentsTestRunner.class)
 public class LithoRepresentationTest {
@@ -48,7 +48,7 @@ public class LithoRepresentationTest {
 
   @Test
   public void testLithoRepresentation() {
-    final ComponentContext c = new ComponentContext(RuntimeEnvironment.application);
+    final ComponentContext c = new ComponentContext(getApplicationContext());
 
     Assertions.useRepresentation(new LithoRepresentation(c));
 

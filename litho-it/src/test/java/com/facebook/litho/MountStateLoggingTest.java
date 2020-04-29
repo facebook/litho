@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_MOUNTED_CONTENT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_MOUNTED_COUNT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_UNMOUNTED_CONTENT;
@@ -37,7 +38,6 @@ import java.util.function.Predicate;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
 
 /** Tests that Mount events are only logged when tracing is enabled. */
 @RunWith(ComponentsTestRunner.class)
@@ -48,7 +48,7 @@ public class MountStateLoggingTest {
   @Before
   public void setup() {
     mComponentsLogger = new TestComponentsLogger();
-    mContext = new ComponentContext(RuntimeEnvironment.application, "tag", mComponentsLogger);
+    mContext = new ComponentContext(getApplicationContext(), "tag", mComponentsLogger);
   }
 
   @Test
@@ -79,7 +79,7 @@ public class MountStateLoggingTest {
   public void testNoLogWhenTracingDisabled() {
     mContext =
         new ComponentContext(
-            RuntimeEnvironment.application,
+            getApplicationContext(),
             "tag",
             new TestComponentsLogger() {
               @Override

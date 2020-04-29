@@ -16,9 +16,11 @@
 
 package com.facebook.litho;
 
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.facebook.litho.it.R.attr.testAttrLargePadding;
 import static com.facebook.litho.it.R.attr.testAttrLargeText;
 import static com.facebook.litho.it.R.style.PaddingStyle;
+import static com.facebook.litho.it.R.style.TestTheme;
 import static com.facebook.litho.it.R.style.TextSizeStyle;
 import static com.facebook.litho.testing.Whitebox.getInternalState;
 import static com.facebook.yoga.YogaEdge.ALL;
@@ -33,7 +35,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
 
 @RunWith(ComponentsTestRunner.class)
 @org.junit.Ignore("t16280359")
@@ -46,9 +47,7 @@ public class ComponentStyleTest {
 
   @Before
   public void setup() {
-    mContext =
-        new ComponentContext(
-            new ContextThemeWrapper(RuntimeEnvironment.application, R.style.TestTheme));
+    mContext = new ComponentContext(new ContextThemeWrapper(getApplicationContext(), TestTheme));
     mDimen = mContext.getResources().getDimensionPixelSize(R.dimen.test_dimen);
     mLargeDimen = mContext.getResources().getDimensionPixelSize(R.dimen.test_large_dimen);
   }

@@ -16,6 +16,7 @@
 
 package com.facebook.litho.widget;
 
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.facebook.litho.widget.ComponentRenderInfo.create;
 import static com.facebook.litho.widget.RecyclerBinderTest.*;
 import static org.assertj.core.api.Java6Assertions.assertThat;
@@ -34,7 +35,6 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
 
 /** Sub adapter mode tests for {@link RecyclerBinder} */
 @RunWith(ComponentsTestRunner.class)
@@ -44,7 +44,7 @@ public class RecyclerBinderSubAdapterTest {
 
   @Before
   public void setup() {
-    mComponentContext = new ComponentContext(RuntimeEnvironment.application);
+    mComponentContext = new ComponentContext(getApplicationContext());
     mComponentContext.getAndroidContext().setTheme(0);
   }
 

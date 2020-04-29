@@ -20,16 +20,16 @@ import static android.view.View.MeasureSpec.AT_MOST;
 import static android.view.View.MeasureSpec.EXACTLY;
 import static android.view.View.MeasureSpec.UNSPECIFIED;
 import static android.view.View.MeasureSpec.makeMeasureSpec;
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.anyInt;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
-import static org.robolectric.RuntimeEnvironment.application;
 import static org.robolectric.Shadows.shadowOf;
 
 import android.content.Context;
@@ -50,7 +50,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
 import org.robolectric.shadows.ShadowView;
 
 @RunWith(ComponentsTestRunner.class)
@@ -69,7 +68,7 @@ public class LithoViewTest {
           }
         };
 
-    mLithoView = new LithoView(RuntimeEnvironment.application);
+    mLithoView = new LithoView(getApplicationContext());
     mLithoView.setComponent(component);
   }
 
@@ -109,7 +108,7 @@ public class LithoViewTest {
           }
         };
 
-    LithoView nullLithoView = new LithoView(application);
+    LithoView nullLithoView = new LithoView(getApplicationContext());
     nullLithoView.setComponent(component);
 
     nullLithoView.measure(makeMeasureSpec(0, UNSPECIFIED), makeMeasureSpec(0, UNSPECIFIED));
@@ -152,7 +151,7 @@ public class LithoViewTest {
           }
         };
 
-    mLithoView = new LithoView(RuntimeEnvironment.application);
+    mLithoView = new LithoView(getApplicationContext());
     mLithoView.setComponent(component);
 
     mLithoView.setLayoutParams(new ViewGroup.LayoutParams(0, 200));
@@ -181,7 +180,7 @@ public class LithoViewTest {
           }
         };
 
-    mLithoView = new LithoView(RuntimeEnvironment.application);
+    mLithoView = new LithoView(getApplicationContext());
     mLithoView.setComponent(component);
 
     mLithoView.setLayoutParams(
@@ -240,7 +239,7 @@ public class LithoViewTest {
 
   @Test
   public void testMeasureDoesNotComputeLayoutStateWhenSpecsAreExact() {
-    mLithoView = new LithoView(RuntimeEnvironment.application);
+    mLithoView = new LithoView(getApplicationContext());
     mLithoView.setComponent(TestDrawableComponent.create(mLithoView.getComponentContext()).build());
     mLithoView.measure(makeMeasureSpec(100, EXACTLY), makeMeasureSpec(100, EXACTLY));
 
@@ -257,7 +256,7 @@ public class LithoViewTest {
 
   @Test
   public void testMeasureComputesLayoutStateWhenSpecsAreNotExact() {
-    mLithoView = new LithoView(RuntimeEnvironment.application);
+    mLithoView = new LithoView(getApplicationContext());
     mLithoView.setComponent(
         TestDrawableComponent.create(mLithoView.getComponentContext()).heightPx(100).build());
     mLithoView.measure(makeMeasureSpec(100, EXACTLY), makeMeasureSpec(100, AT_MOST));
@@ -269,7 +268,7 @@ public class LithoViewTest {
 
   private LithoView setupLithoViewForDoubleMeasureTest(
       int screenWidthDp, float density, int screenWidthPx) {
-    final Context context = spy(new ContextWrapper(RuntimeEnvironment.application));
+    final Context context = spy(new ContextWrapper(getApplicationContext()));
     final Resources resources = spy(context.getResources());
 
     doReturn(resources).when(context).getResources();

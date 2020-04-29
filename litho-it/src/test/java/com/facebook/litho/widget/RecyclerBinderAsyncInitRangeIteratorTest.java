@@ -16,6 +16,7 @@
 
 package com.facebook.litho.widget;
 
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.facebook.litho.widget.RecyclerBinder.findInitialComponentPosition;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -42,7 +43,6 @@ import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
 
 /** Tests for {@link RecyclerBinder.ComponentAsyncInitRangeIterator} */
 @RunWith(ComponentsTestRunner.class)
@@ -67,7 +67,7 @@ public class RecyclerBinderAsyncInitRangeIteratorTest {
 
   @Before
   public void setup() throws Exception {
-    mComponentContext = new ComponentContext(RuntimeEnvironment.application);
+    mComponentContext = new ComponentContext(getApplicationContext());
 
     final RecyclerBinder.ComponentTreeHolderFactory componentTreeHolderFactory =
         new RecyclerBinder.ComponentTreeHolderFactory() {

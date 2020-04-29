@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_MOUNT;
 import static com.facebook.litho.testing.TestViewComponent.create;
 import static com.facebook.litho.testing.helper.ComponentTestHelper.mountComponent;
@@ -32,7 +33,6 @@ import java.util.stream.Collectors;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
 
 /** Tests that Mount events are only logged when tracing is enabled. */
 @RunWith(ComponentsTestRunner.class)
@@ -44,7 +44,7 @@ public class MountStateBetterLoggingTest {
   @Before
   public void setup() {
     mLogger = new TestComponentsLogger();
-    mContext = new ComponentContext(RuntimeEnvironment.application, "tag", mLogger);
+    mContext = new ComponentContext(getApplicationContext(), "tag", mLogger);
   }
 
   @Test

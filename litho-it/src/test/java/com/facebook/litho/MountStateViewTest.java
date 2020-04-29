@@ -16,7 +16,9 @@
 
 package com.facebook.litho;
 
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.facebook.litho.Column.create;
+import static com.facebook.litho.it.R.style;
 import static com.facebook.litho.testing.helper.ComponentTestHelper.mountComponent;
 import static com.facebook.yoga.YogaEdge.ALL;
 import static com.facebook.yoga.YogaEdge.BOTTOM;
@@ -30,7 +32,6 @@ import android.graphics.drawable.Drawable;
 import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.view.ViewGroup;
-import com.facebook.litho.it.R;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestViewComponent;
@@ -41,7 +42,6 @@ import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
 
 @RunWith(ComponentsTestRunner.class)
 public class MountStateViewTest {
@@ -50,7 +50,7 @@ public class MountStateViewTest {
 
   @Before
   public void setup() {
-    mContext = new ComponentContext(RuntimeEnvironment.application);
+    mContext = new ComponentContext(getApplicationContext());
   }
 
   @Test
@@ -90,7 +90,7 @@ public class MountStateViewTest {
     final ComponentContext c =
         new ComponentContext(
             new ContextThemeWrapper(
-                RuntimeEnvironment.application, R.style.TestTheme_BackgroundWithPadding));
+                getApplicationContext(), style.TestTheme_BackgroundWithPadding));
 
     final LithoView lithoView =
         mountComponent(c, TestViewComponent.create(c).paddingPx(ALL, 0).build());
@@ -108,7 +108,7 @@ public class MountStateViewTest {
     final ComponentContext c =
         new ComponentContext(
             new ContextThemeWrapper(
-                RuntimeEnvironment.application, R.style.TestTheme_BackgroundWithPadding));
+                getApplicationContext(), style.TestTheme_BackgroundWithPadding));
 
     final LithoView lithoView =
         mountComponent(c, TestViewComponent.create(c).paddingPx(LEFT, 12).build());

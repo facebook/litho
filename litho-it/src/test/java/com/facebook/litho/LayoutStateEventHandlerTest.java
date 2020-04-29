@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import com.facebook.litho.testing.TestLayoutComponent;
@@ -24,7 +25,6 @@ import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
 
 @RunWith(ComponentsTestRunner.class)
 public class LayoutStateEventHandlerTest {
@@ -69,7 +69,7 @@ public class LayoutStateEventHandlerTest {
   @Test
   public void testNestedEventHandlerInput() {
     LayoutState.calculate(
-        new ComponentContext(RuntimeEnvironment.application),
+        new ComponentContext(getApplicationContext()),
         mRootComponent,
         -1,
         mUnspecifiedSizeSpec,

@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.facebook.litho.testing.Whitebox.getInternalState;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -27,7 +28,6 @@ import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
 
 /** Tests for {@link ComponentTree.Builder} */
 @RunWith(ComponentsTestRunner.class)
@@ -45,7 +45,7 @@ public class ComponentTreeBuilderTest {
   public void setup() throws Exception {
     mLooper = mock(Looper.class);
     mComponentsLogger = mock(ComponentsLogger.class);
-    mContext = new ComponentContext(RuntimeEnvironment.application, mLogTag, mComponentsLogger);
+    mContext = new ComponentContext(getApplicationContext(), mLogTag, mComponentsLogger);
     mRoot = TestLayoutComponent.create(mContext).build();
 
     mComponentTreeBuilder = ComponentTree.create(mContext, mRoot);

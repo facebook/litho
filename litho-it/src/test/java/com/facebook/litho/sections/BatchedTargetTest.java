@@ -19,8 +19,8 @@ package com.facebook.litho.sections;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assume.assumeThat;
-import static org.mockito.Matchers.anyListOf;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -218,8 +218,8 @@ public class BatchedTargetTest {
 
     executeOperations(ops);
 
-    verify(mMockTarget).insertRange(eq(99), eq(3), anyListOf(RenderInfo.class));
-    verify(mMockTarget).insertRange(eq(102), eq(20), anyListOf(RenderInfo.class));
+    verify(mMockTarget).insertRange(eq(99), eq(3), anyList());
+    verify(mMockTarget).insertRange(eq(102), eq(20), anyList());
   }
 
   @Test
@@ -234,8 +234,8 @@ public class BatchedTargetTest {
 
     executeOperations(ops);
 
-    verify(mMockTarget).updateRange(eq(99), eq(3), anyListOf(RenderInfo.class));
-    verify(mMockTarget).updateRange(eq(102), eq(20), anyListOf(RenderInfo.class));
+    verify(mMockTarget).updateRange(eq(99), eq(3), anyList());
+    verify(mMockTarget).updateRange(eq(102), eq(20), anyList());
   }
 
   @Test
@@ -269,8 +269,8 @@ public class BatchedTargetTest {
     executeOperations(ops);
 
     verify(mMockTarget).deleteRange(1, 2);
-    verify(mMockTarget).updateRange(eq(99), eq(2), anyListOf(RenderInfo.class));
-    verify(mMockTarget).insertRange(eq(0), eq(2), anyListOf(RenderInfo.class));
+    verify(mMockTarget).updateRange(eq(99), eq(2), anyList());
+    verify(mMockTarget).insertRange(eq(0), eq(2), anyList());
     verify(mMockTarget).update(101, ops[6].getRenderInfo());
     verify(mMockTarget).update(99, ops[7].getRenderInfo());
     verify(mMockTarget).move(14, 55);

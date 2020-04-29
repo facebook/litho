@@ -16,6 +16,8 @@
 
 package com.facebook.litho;
 
+import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
+
 import android.view.View;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.logging.TestComponentsReporter;
@@ -25,7 +27,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
 
 @RunWith(ComponentsTestRunner.class)
 public class ComponentTreePropWithReconciliationTest {
@@ -36,7 +37,7 @@ public class ComponentTreePropWithReconciliationTest {
   public void setup() {
     ComponentsConfiguration.isReconciliationEnabled = true;
     TestComponentsReporter componentsReporter = new TestComponentsReporter();
-    c = new ComponentContext(RuntimeEnvironment.application);
+    c = new ComponentContext(getApplicationContext());
     ComponentsReporter.provide(componentsReporter);
   }
 

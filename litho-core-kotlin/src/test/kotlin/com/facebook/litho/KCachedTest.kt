@@ -16,6 +16,8 @@
 
 package com.facebook.litho
 
+import android.content.Context
+import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import com.facebook.litho.testing.helper.ComponentTestHelper
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner
 import com.facebook.litho.widget.EmptyComponent
@@ -25,7 +27,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.robolectric.RuntimeEnvironment
 
 /** Unit tests for KCached. */
 @Suppress("MagicNumber")
@@ -37,7 +38,7 @@ class KCachedTest {
 
   @Before
   fun setUp() {
-    context = ComponentContext(RuntimeEnvironment.application)
+    context = ComponentContext(getApplicationContext<Context>())
     emptyComponent = EmptyComponent.create(context).build()
   }
 
