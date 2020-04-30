@@ -48,7 +48,7 @@ public class LithoStatsRule implements TestRule {
    * @return the global count of all applied state updates (async, lazy and sync) in Litho
    *     components that have happened in the process.
    */
-  public static long getComponentAppliedStateUpdateCount() {
+  public long getComponentAppliedStateUpdateCount() {
     return LithoStats.getComponentAppliedStateUpdateCount();
   }
 
@@ -56,7 +56,7 @@ public class LithoStatsRule implements TestRule {
    * @return the global count of all triggered synchronous state updates in Litho components that
    *     have happened in the process.
    */
-  public static long getComponentTriggeredSyncStateUpdateCount() {
+  public long getComponentTriggeredSyncStateUpdateCount() {
     return LithoStats.getComponentTriggeredSyncStateUpdateCount();
   }
 
@@ -64,7 +64,7 @@ public class LithoStatsRule implements TestRule {
    * @return the global count of all triggered asynchronous state updates in Litho components that
    *     have happened in the process.
    */
-  public static long getComponentTriggeredAsyncStateUpdateCount() {
+  public long getComponentTriggeredAsyncStateUpdateCount() {
     return LithoStats.getComponentTriggeredAsyncStateUpdateCount();
   }
 
@@ -72,7 +72,7 @@ public class LithoStatsRule implements TestRule {
    * @return the global count of all layout calculations in Litho components that have happened in
    *     the process.
    */
-  public static long getComponentCalculateLayoutCount() {
+  public long getComponentCalculateLayoutCount() {
     return LithoStats.getComponentCalculateLayoutCount();
   }
 
@@ -80,12 +80,12 @@ public class LithoStatsRule implements TestRule {
    * @return the global count of all UI Thread executed layout calculations in Litho components that
    *     have happened in the process.
    */
-  public static long getComponentCalculateLayoutOnUICount() {
+  public long getComponentCalculateLayoutOnUICount() {
     return LithoStats.getComponentCalculateLayoutOnUICount();
   }
 
   /** @return the global count of all mount operations that have happened in the process. */
-  public static long getComponentMountCount() {
+  public long getComponentMountCount() {
     return LithoStats.getComponentMountCount();
   }
 
@@ -93,7 +93,7 @@ public class LithoStatsRule implements TestRule {
    * @return the global count of all applied state updates (async, lazy and sync) in Litho sections
    *     that have happened in the process.
    */
-  public static long getSectionAppliedStateUpdateCount() {
+  public long getSectionAppliedStateUpdateCount() {
     return LithoStats.getSectionAppliedStateUpdateCount();
   }
 
@@ -101,7 +101,7 @@ public class LithoStatsRule implements TestRule {
    * @return the global count of all triggered synchronous state updates in Litho sections that have
    *     happened in the process.
    */
-  public static long getSectionTriggeredSyncStateUpdateCount() {
+  public long getSectionTriggeredSyncStateUpdateCount() {
     return LithoStats.getSectionTriggeredSyncStateUpdateCount();
   }
 
@@ -109,7 +109,7 @@ public class LithoStatsRule implements TestRule {
    * @return the global count of all triggered asynchronous state updates in Litho sections that
    *     have happened in the process.
    */
-  public static long getSectionTriggeredAsyncStateUpdateCount() {
+  public long getSectionTriggeredAsyncStateUpdateCount() {
     return LithoStats.getSectionTriggeredAsyncStateUpdateCount();
   }
 
@@ -117,7 +117,7 @@ public class LithoStatsRule implements TestRule {
    * @return the global count of all new changeset calculations in Litho sections that have happened
    *     in the process.
    */
-  public static long getSectionCalculateNewChangesetCount() {
+  public long getSectionCalculateNewChangesetCount() {
     return LithoStats.getSectionCalculateNewChangesetCount();
   }
 
@@ -125,12 +125,12 @@ public class LithoStatsRule implements TestRule {
    * @return the global count of all UI Thread executed new changeset calculations in Litho sections
    *     that have happened in the process.
    */
-  public static long getSectionCalculateNewChangesetOnUICount() {
+  public long getSectionCalculateNewChangesetOnUICount() {
     return LithoStats.getSectionCalculateNewChangesetOnUICount();
   }
 
   /** Resets all the counter. */
-  public static synchronized void resetAllCounters() {
+  public synchronized void resetAllCounters() {
     LithoStats.resetAllCounters();
   }
 }
