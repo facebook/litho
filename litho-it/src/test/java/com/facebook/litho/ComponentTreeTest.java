@@ -39,6 +39,7 @@ import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -1208,6 +1209,80 @@ public class ComponentTreeTest {
         .describedAs(
             "We expect one initial layout, the async layout (thrown away), and a final layout after measure.")
         .isEqualTo(3);
+  }
+
+  @Test
+  public void testLayoutStateNotCommittedTwiceWithLayoutStateFutures() throws InterruptedException {
+    TestDrawableComponent component =
+        TestDrawableComponent.create(mContext).flexGrow(1).color(1234).build();
+    int widthSpec = SizeSpec.makeSizeSpec(1000, SizeSpec.EXACTLY);
+    int heightSpec = SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED);
+    ComponentTree componentTree = ComponentTree.create(mContext, component).build();
+    componentTree.setLithoView(new LithoView(mContext));
+
+    // It's called a measure listener, but it is invoked every time a new layout is committed.
+    AtomicInteger commitCount = new AtomicInteger(0);
+    componentTree.addMeasureListener(
+        new ComponentTree.MeasureListener() {
+          @Override
+          public void onSetRootAndSizeSpec(
+              int layoutVersion, int width, int height, boolean stateUpdate) {
+            commitCount.incrementAndGet();
+          }
+        });
+    componentTree.attach();
+
+    final TestDrawableComponent.BlockInPrepareComponentListener blockInPrepare =
+        new TestDrawableComponent.BlockInPrepareComponentListener();
+    component.setTestComponentListener(blockInPrepare);
+
+    final CountDownLatch asyncLayout1Finish =
+        runOnBackgroundThread(
+            new Runnable() {
+              @Override
+              public void run() {
+                componentTree.setSizeSpec(widthSpec, heightSpec, new Size());
+              }
+            });
+
+    blockInPrepare.awaitPrepareStart();
+
+    final CountDownLatch asyncLayout2Finish =
+        runOnBackgroundThread(
+            new Runnable() {
+              @Override
+              public void run() {
+                componentTree.setSizeSpec(widthSpec, heightSpec, new Size());
+              }
+            });
+
+    ComponentTree.LayoutStateFuture future = componentTree.getLayoutStateFutures().get(0);
+
+    int timeSpentWaiting = 0;
+    while (future.getWaitingCount() != 2 && timeSpentWaiting < 5000) {
+      Thread.sleep(10);
+      timeSpentWaiting += 10;
+    }
+
+    assertThat(future.getWaitingCount())
+        .describedAs("Make sure the second thread is waiting on the first Future")
+        .isEqualTo(2);
+
+    blockInPrepare.allowPrepareToComplete();
+    if (!asyncLayout1Finish.await(5, TimeUnit.SECONDS)) {
+      throw new RuntimeException("Timeout!");
+    }
+
+    blockInPrepare.allowPrepareToComplete();
+    if (!asyncLayout2Finish.await(5, TimeUnit.SECONDS)) {
+      // Timing out here probably means we didn't use LayoutStateFutures and we are blocking on the
+      // "block in prepare" semaphore.
+      throw new RuntimeException("Timeout!");
+    }
+
+    assertThat(componentTree.getRoot()).isEqualTo(component);
+    assertThat(componentTree.hasCompatibleLayout(widthSpec, heightSpec)).isTrue();
+    assertThat(commitCount.get()).isEqualTo(1);
   }
 
   @Test
