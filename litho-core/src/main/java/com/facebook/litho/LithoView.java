@@ -184,7 +184,7 @@ public class LithoView extends Host {
     super(context, attrs);
     mComponentContext = context;
 
-    mUseExtensions = ComponentsConfiguration.useRenderCoreMount;
+    mUseExtensions = ComponentsConfiguration.useExtensionsWithMountDelegate;
 
     if (mUseExtensions) {
       if (ComponentsConfiguration.delegateToRenderCoreMount) {

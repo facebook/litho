@@ -53,9 +53,9 @@ public class VisibilityEventsTest {
 
   @Before
   public void setup() {
-    configWithExtensions = ComponentsConfiguration.useRenderCoreMount;
+    configWithExtensions = ComponentsConfiguration.useExtensionsWithMountDelegate;
     configVisExtension = ComponentsConfiguration.useVisibilityExtension;
-    ComponentsConfiguration.useRenderCoreMount = false;
+    ComponentsConfiguration.useExtensionsWithMountDelegate = false;
     ComponentsConfiguration.useVisibilityExtension = false;
     mContext = new ComponentContext(getApplicationContext());
 
@@ -70,7 +70,7 @@ public class VisibilityEventsTest {
 
   @After
   public void cleanup() {
-    ComponentsConfiguration.useRenderCoreMount = configWithExtensions;
+    ComponentsConfiguration.useExtensionsWithMountDelegate = configWithExtensions;
     ComponentsConfiguration.useVisibilityExtension = configVisExtension;
   }
 

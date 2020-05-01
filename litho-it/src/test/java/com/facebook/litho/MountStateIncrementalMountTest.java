@@ -75,15 +75,15 @@ public class MountStateIncrementalMountTest {
   public void setup() {
     mComponentsLogger = new TestComponentsLogger();
     mContext = new ComponentContext(getApplicationContext(), "tag", mComponentsLogger);
-    useMountWithExtensions = ComponentsConfiguration.useRenderCoreMount;
+    useMountWithExtensions = ComponentsConfiguration.useExtensionsWithMountDelegate;
     useIncMountOnlyExtension = ComponentsConfiguration.useIncrementalMountExtension;
-    ComponentsConfiguration.useRenderCoreMount = false;
+    ComponentsConfiguration.useExtensionsWithMountDelegate = false;
     ComponentsConfiguration.useIncrementalMountExtension = false;
   }
 
   @After
   public void cleanup() {
-    ComponentsConfiguration.useRenderCoreMount = useMountWithExtensions;
+    ComponentsConfiguration.useExtensionsWithMountDelegate = useMountWithExtensions;
     ComponentsConfiguration.useIncrementalMountExtension = useIncMountOnlyExtension;
   }
 

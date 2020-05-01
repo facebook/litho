@@ -56,8 +56,8 @@ public class VisibilityEventsWithVisibilityExtensionTest {
 
   @Before
   public void setup() {
-    configValue = ComponentsConfiguration.useRenderCoreMount;
-    ComponentsConfiguration.useRenderCoreMount = true;
+    configValue = ComponentsConfiguration.useExtensionsWithMountDelegate;
+    ComponentsConfiguration.useExtensionsWithMountDelegate = true;
     mContext = new ComponentContext(getApplicationContext());
 
     mLithoView = new LithoView(mContext);
@@ -71,7 +71,7 @@ public class VisibilityEventsWithVisibilityExtensionTest {
 
   @After
   public void cleanup() {
-    ComponentsConfiguration.useRenderCoreMount = configValue;
+    ComponentsConfiguration.useExtensionsWithMountDelegate = configValue;
   }
 
   @Test

@@ -68,13 +68,13 @@ public class MountStateWithExtensionsIncrementalMountTest {
   public void setup() {
     mComponentsLogger = new TestComponentsLogger();
     mContext = new ComponentContext(getApplicationContext(), "tag", mComponentsLogger);
-    configValue = ComponentsConfiguration.useRenderCoreMount;
-    ComponentsConfiguration.useRenderCoreMount = true;
+    configValue = ComponentsConfiguration.useExtensionsWithMountDelegate;
+    ComponentsConfiguration.useExtensionsWithMountDelegate = true;
   }
 
   @After
   public void cleanup() {
-    ComponentsConfiguration.useRenderCoreMount = configValue;
+    ComponentsConfiguration.useExtensionsWithMountDelegate = configValue;
   }
 
   /** Tests incremental mount behaviour of a vertical stack of components with a View mount type. */
