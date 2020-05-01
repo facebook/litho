@@ -33,7 +33,7 @@ public class TimeOutSemaphore {
 
   public void acquire() {
     try {
-      if (!mSemaphore.tryAcquire(500, TimeUnit.SECONDS)) {
+      if (!mSemaphore.tryAcquire(5, TimeUnit.SECONDS)) {
         throw new RuntimeException("Timed out!");
       }
     } catch (InterruptedException e) {

@@ -26,6 +26,7 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
+import com.facebook.litho.ThreadUtils;
 
 public class TestDrawableComponent extends TestComponent {
 
@@ -305,6 +306,40 @@ public class TestDrawableComponent extends TestComponent {
     @Override
     public Builder getThis() {
       return this;
+    }
+  }
+
+  /**
+   * A listener that will block in prepare until allowPrepareToComplete is called from another
+   * thread.
+   */
+  public static class BlockInPrepareComponentListener implements TestComponentListener {
+
+    private final TimeOutSemaphore mOnAsyncPrepareStartSemaphore = new TimeOutSemaphore(0);
+    private final TimeOutSemaphore mAllowPrepareToCompleteSemaphore = new TimeOutSemaphore(0);
+
+    @Override
+    public void onPrepare() {
+      // We only want to block/wait for the component instance that is created async
+      if (ThreadUtils.isMainThread()) {
+        return;
+      }
+
+      mOnAsyncPrepareStartSemaphore.release();
+      mAllowPrepareToCompleteSemaphore.acquire();
+
+      mOnAsyncPrepareStartSemaphore.drainPermits();
+      mAllowPrepareToCompleteSemaphore.drainPermits();
+    }
+
+    /** Blocks from another thread until prepare() is called. */
+    public void awaitPrepareStart() {
+      mOnAsyncPrepareStartSemaphore.acquire();
+    }
+
+    /** Allows prepare to complete. */
+    public void allowPrepareToComplete() {
+      mAllowPrepareToCompleteSemaphore.release();
     }
   }
 }

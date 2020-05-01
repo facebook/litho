@@ -30,6 +30,8 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.fail;
 
 import android.os.Looper;
+import com.facebook.litho.testing.BackgroundLayoutLooperRule;
+import com.facebook.litho.testing.LithoStatsRule;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestLayoutComponent;
 import com.facebook.litho.testing.Whitebox;
@@ -41,6 +43,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Shadows;
@@ -48,6 +51,10 @@ import org.robolectric.shadows.ShadowLooper;
 
 @RunWith(ComponentsTestRunner.class)
 public class ComponentTreeTest {
+
+  public @Rule BackgroundLayoutLooperRule mBackgroundLayoutLooperRule =
+      new BackgroundLayoutLooperRule();
+  public @Rule LithoStatsRule mLithoStatsRule = new LithoStatsRule();
 
   private int mWidthSpec;
   private int mWidthSpec2;
@@ -674,19 +681,26 @@ public class ComponentTreeTest {
     mLayoutThreadShadowLooper.runToEndOfTasks();
   }
 
+  /*
+   * Context for the test:
+   * - The original component mComponent will measure to height 1000 with heightSpec1 and to 0 with
+   *   heightSpec2
+   * - newComponent will measure to height 1000 with heightSpec1 and to 0 with heightSpec2
+   *
+   * In this test, we setRootAsync but before any of its code runs, we measure with new width/height
+   * specs that both the original component and the new component are incompatible with.
+   */
   @Test
-  public void testMeasureWithIncompatibleSetRootAsyncBeforeStart() {
+  public void testSetRootAsyncWithIncompatibleMeasureBeforeStart() {
     ComponentTree componentTree = ComponentTree.create(mContext, mComponent).build();
     componentTree.setLithoView(new LithoView(mContext));
 
     int widthSpec1 = SizeSpec.makeSizeSpec(1000, SizeSpec.EXACTLY);
-    int heightSpec1 = SizeSpec.makeSizeSpec(1000, SizeSpec.AT_MOST);
+    int heightSpec1 = SizeSpec.makeSizeSpec(1000, SizeSpec.EXACTLY);
     int widthSpec2 = SizeSpec.makeSizeSpec(1000, SizeSpec.EXACTLY);
     int heightSpec2 = SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED);
 
-    componentTree.measure(widthSpec2, heightSpec2, new int[2], false);
     componentTree.attach();
-
     componentTree.measure(widthSpec1, heightSpec1, new int[2], false);
 
     Component newComponent = TestDrawableComponent.create(mContext).color(1234).build();
@@ -699,16 +713,10 @@ public class ComponentTreeTest {
 
     assertThat(componentTree.getRoot()).isEqualTo(newComponent);
     assertThat(componentTree.hasCompatibleLayout(widthSpec2, heightSpec2)).isTrue();
-    assertThat(componentTree.getMainThreadLayoutState().isForComponentId(mComponent.getId()))
+    assertThat(componentTree.getMainThreadLayoutState().isForComponentId(newComponent.getId()))
         .isTrue();
 
-    runOnBackgroundThreadSync(
-        new Runnable() {
-          @Override
-          public void run() {
-            mLayoutThreadShadowLooper.runToEndOfTasks();
-          }
-        });
+    mBackgroundLayoutLooperRule.runToEndOfTasksSync();
     ShadowLooper.runUiThreadTasks();
 
     // Once the async layout finishes, the main thread should have the updated layout.
@@ -716,34 +724,144 @@ public class ComponentTreeTest {
     assertThat(componentTree.hasCompatibleLayout(widthSpec2, heightSpec2)).isTrue();
     assertThat(componentTree.getMainThreadLayoutState().isForComponentId(newComponent.getId()))
         .isTrue();
+    assertThat(componentTree.getMainThreadLayoutState().getHeight()).isEqualTo(0);
+
+    assertThat(mLithoStatsRule.getComponentCalculateLayoutCount())
+        .describedAs(
+            "We expect one initial layout and one layout after measure. The async layout shouldn't happen.")
+        .isEqualTo(2);
   }
 
+  /*
+   * Context for the test:
+   * - oldComponent will measure to height 100 with heightSpec1 and to 100 with heightSpec2
+   * - newComponent will measure to height 100 with heightSpec1 and to 100 with heightSpec2
+   *
+   * In this test, we setRootAsync but before any of its code runs, we measure with new width/height
+   * specs that both the original component and the new component are compatible with.
+   */
   @Test
-  public void testMeasureWithIncompatibleSetRootAsyncThatFinishes() {
+  public void testSetRootAsyncWithCompatibleMeasureBeforeStart() {
+    Component oldComponent =
+        TestDrawableComponent.create(mContext).widthPx(100).heightPx(100).color(1234).build();
+    ComponentTree componentTree = ComponentTree.create(mContext, oldComponent).build();
+    componentTree.setLithoView(new LithoView(mContext));
+
+    int widthSpec1 = SizeSpec.makeSizeSpec(1000, SizeSpec.EXACTLY);
+    int heightSpec1 = SizeSpec.makeSizeSpec(500, SizeSpec.AT_MOST);
+    int widthSpec2 = SizeSpec.makeSizeSpec(1000, SizeSpec.EXACTLY);
+    int heightSpec2 = SizeSpec.makeSizeSpec(1000, SizeSpec.AT_MOST);
+
+    componentTree.attach();
+    componentTree.measure(widthSpec1, heightSpec1, new int[2], false);
+
+    Component newComponent =
+        TestDrawableComponent.create(mContext).widthPx(100).heightPx(100).color(1234).build();
+    componentTree.setRootAsync(newComponent);
+
+    componentTree.measure(widthSpec2, heightSpec2, new int[2], false);
+
+    // Since the layout thread hasn't started the async layout, we know it will capture the updated
+    // size specs when it does run
+
+    assertThat(componentTree.getRoot()).isEqualTo(newComponent);
+    assertThat(componentTree.hasCompatibleLayout(widthSpec2, heightSpec2)).isTrue();
+    assertThat(componentTree.getMainThreadLayoutState().isForComponentId(newComponent.getId()))
+        .isTrue();
+
+    mBackgroundLayoutLooperRule.runToEndOfTasksSync();
+    ShadowLooper.runUiThreadTasks();
+
+    // Once the async layout finishes, the main thread should have the updated layout.
+
+    assertThat(componentTree.hasCompatibleLayout(widthSpec2, heightSpec2)).isTrue();
+    assertThat(componentTree.getMainThreadLayoutState().isForComponentId(newComponent.getId()))
+        .isTrue();
+    assertThat(componentTree.getMainThreadLayoutState().getHeight()).isEqualTo(100);
+
+    assertThat(mLithoStatsRule.getComponentCalculateLayoutCount())
+        .describedAs(
+            "We expect one initial layout and one layout after measure. The async layout shouldn't happen.")
+        .isEqualTo(2);
+  }
+
+  /*
+   * Context for the test:
+   * - oldComponent will measure to height 100 with heightSpec1 and to 100 with heightSpec2
+   * - newComponent will measure to height 500 with heightSpec1 and to 1000 with heightSpec2
+   *
+   * In this test, we setRootAsync but before any of its code runs, we measure with new width/height
+   * specs the original component is compatible with but the new component is incompatible with.
+   */
+  @Test
+  public void
+      testSetRootAsyncWithIncompatibleMeasureButCompatibleMeasureForExistingLayoutBeforeStart() {
+    Component oldComponent =
+        TestDrawableComponent.create(mContext).widthPx(100).heightPx(100).color(1234).build();
+    ComponentTree componentTree = ComponentTree.create(mContext, oldComponent).build();
+    componentTree.setLithoView(new LithoView(mContext));
+
+    int widthSpec1 = SizeSpec.makeSizeSpec(1000, SizeSpec.EXACTLY);
+    int heightSpec1 = SizeSpec.makeSizeSpec(500, SizeSpec.AT_MOST);
+    int widthSpec2 = SizeSpec.makeSizeSpec(1000, SizeSpec.EXACTLY);
+    int heightSpec2 = SizeSpec.makeSizeSpec(1000, SizeSpec.AT_MOST);
+
+    componentTree.attach();
+    componentTree.measure(widthSpec1, heightSpec1, new int[2], false);
+
+    Component newComponent = TestDrawableComponent.create(mContext).flexGrow(1).color(1234).build();
+    componentTree.setRootAsync(newComponent);
+
+    componentTree.measure(widthSpec2, heightSpec2, new int[2], false);
+
+    assertThat(componentTree.getRoot()).isEqualTo(newComponent);
+    assertThat(componentTree.hasCompatibleLayout(widthSpec2, heightSpec2)).isTrue();
+    assertThat(componentTree.getMainThreadLayoutState().isForComponentId(newComponent.getId()))
+        .describedAs(
+            "Because the new measure specs are not compatible with the current measure specs and the root has changed, we should compute a new layout synchronously.")
+        .isTrue();
+
+    mBackgroundLayoutLooperRule.runToEndOfTasksSync();
+    ShadowLooper.runUiThreadTasks();
+
+    assertThat(componentTree.hasCompatibleLayout(widthSpec2, heightSpec2)).isTrue();
+    assertThat(componentTree.getMainThreadLayoutState().isForComponentId(newComponent.getId()))
+        .isTrue();
+    assertThat(componentTree.getMainThreadLayoutState().getHeight()).isEqualTo(1000);
+
+    assertThat(mLithoStatsRule.getComponentCalculateLayoutCount())
+        .describedAs(
+            "We expect one initial layout and one layout after measure. The async layout shouldn't happen.")
+        .isEqualTo(2);
+  }
+
+  /*
+   * Context for the test:
+   * - The original component mComponent will measure to height 1000 with heightSpec1 and to 0 with
+   *   heightSpec2
+   * - newComponent will measure to height 1000 with heightSpec1 and to 0 with heightSpec2
+   *
+   * In this test, we setRootAsync and let its code run, but before it is promoted on the main
+   * thread, we measure with new width/height specs both the original component and the new
+   * component are incompatible with.
+   */
+  @Test
+  public void testSetRootAsyncWithIncompatibleMeasureAfterFinish() {
     ComponentTree componentTree = ComponentTree.create(mContext, mComponent).build();
     componentTree.setLithoView(new LithoView(mContext));
 
     int widthSpec1 = SizeSpec.makeSizeSpec(1000, SizeSpec.EXACTLY);
-    int heightSpec1 = SizeSpec.makeSizeSpec(1000, SizeSpec.AT_MOST);
+    int heightSpec1 = SizeSpec.makeSizeSpec(1000, SizeSpec.EXACTLY);
     int widthSpec2 = SizeSpec.makeSizeSpec(1000, SizeSpec.EXACTLY);
     int heightSpec2 = SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED);
 
-    componentTree.measure(widthSpec2, heightSpec2, new int[2], false);
     componentTree.attach();
-
     componentTree.measure(widthSpec1, heightSpec1, new int[2], false);
 
     Component newComponent = TestDrawableComponent.create(mContext).color(1234).build();
     componentTree.setRootAsync(newComponent);
 
-    runOnBackgroundThreadSync(
-        new Runnable() {
-          @Override
-          public void run() {
-            // "Commit" layout (it will fail since it doesn't have compatible size specs)
-            mLayoutThreadShadowLooper.runToEndOfTasks();
-          }
-        });
+    mBackgroundLayoutLooperRule.runToEndOfTasksSync();
 
     componentTree.measure(widthSpec2, heightSpec2, new int[2], false);
 
@@ -753,46 +871,133 @@ public class ComponentTreeTest {
         .isTrue()
         .withFailMessage(
             "The main thread should calculate a new layout synchronously because the async layout will not be used once it completes");
+    assertThat(componentTree.getMainThreadLayoutState().getHeight()).isEqualTo(0);
+
+    assertThat(mLithoStatsRule.getComponentCalculateLayoutCount())
+        .describedAs(
+            "We expect one initial layout, the async layout (thrown away), and a final layout after measure.")
+        .isEqualTo(3);
   }
 
+  /*
+   * Context for the test:
+   * - oldComponent will measure to height 100 with heightSpec1 and to 100 with heightSpec2
+   * - newComponent will measure to height 100 with heightSpec1 and to 100 with heightSpec2
+   *
+   * In this test, we setRootAsync and let its code run, but before it is promoted on the main
+   * thread, we measure with new width/height specs both the original component and the new
+   * component are compatible with.
+   */
   @Test
-  public void testMeasureWithIncompatibleSetRootAsync() throws InterruptedException {
+  public void testSetRootAsyncWithCompatibleMeasureAfterFinish() {
+    Component oldComponent =
+        TestDrawableComponent.create(mContext).widthPx(100).heightPx(100).color(1234).build();
+    ComponentTree componentTree = ComponentTree.create(mContext, oldComponent).build();
+    componentTree.setLithoView(new LithoView(mContext));
+
+    int widthSpec1 = SizeSpec.makeSizeSpec(1000, SizeSpec.EXACTLY);
+    int heightSpec1 = SizeSpec.makeSizeSpec(500, SizeSpec.AT_MOST);
+    int widthSpec2 = SizeSpec.makeSizeSpec(1000, SizeSpec.EXACTLY);
+    int heightSpec2 = SizeSpec.makeSizeSpec(1000, SizeSpec.AT_MOST);
+
+    componentTree.attach();
+    componentTree.measure(widthSpec1, heightSpec1, new int[2], false);
+
+    Component newComponent =
+        TestDrawableComponent.create(mContext).widthPx(100).heightPx(100).color(1234).build();
+    componentTree.setRootAsync(newComponent);
+
+    mBackgroundLayoutLooperRule.runToEndOfTasksSync();
+
+    componentTree.measure(widthSpec2, heightSpec2, new int[2], false);
+
+    assertThat(componentTree.getRoot()).isEqualTo(newComponent);
+    assertThat(componentTree.hasCompatibleLayout(widthSpec2, heightSpec2)).isTrue();
+    assertThat(componentTree.getMainThreadLayoutState().isForComponentId(newComponent.getId()))
+        .isTrue()
+        .withFailMessage(
+            "The main thread should promote the committed layout to the UI thread in measure.");
+    assertThat(componentTree.getMainThreadLayoutState().getHeight()).isEqualTo(100);
+
+    assertThat(mLithoStatsRule.getComponentCalculateLayoutCount())
+        .describedAs(
+            "We expect one initial layout, the async layout (thrown away), and a final layout after measure.")
+        .isEqualTo(3);
+  }
+
+  /*
+   * Context for the test:
+   * - oldComponent will measure to height 100 with heightSpec1 and to 100 with heightSpec2
+   * - newComponent will measure to height 500 with heightSpec1 and to 1000 with heightSpec2
+   *
+   * In this test, we setRootAsync and let its code run, but before it is promoted on the main
+   * thread, we measure with new width/height specs both the original component and the new
+   * component are compatible with.
+   */
+  @Test
+  public void
+      testSetRootAsyncWithIncompatibleMeasureButCompatibleMeasureForExistingLayoutAfterFinish() {
+    Component oldComponent =
+        TestDrawableComponent.create(mContext).widthPx(100).heightPx(100).color(1234).build();
+    ComponentTree componentTree = ComponentTree.create(mContext, oldComponent).build();
+    componentTree.setLithoView(new LithoView(mContext));
+
+    int widthSpec1 = SizeSpec.makeSizeSpec(1000, SizeSpec.EXACTLY);
+    int heightSpec1 = SizeSpec.makeSizeSpec(500, SizeSpec.AT_MOST);
+    int widthSpec2 = SizeSpec.makeSizeSpec(1000, SizeSpec.EXACTLY);
+    int heightSpec2 = SizeSpec.makeSizeSpec(1000, SizeSpec.AT_MOST);
+
+    componentTree.attach();
+    componentTree.measure(widthSpec1, heightSpec1, new int[2], false);
+
+    Component newComponent = TestDrawableComponent.create(mContext).flexGrow(1).color(1234).build();
+    componentTree.setRootAsync(newComponent);
+
+    mBackgroundLayoutLooperRule.runToEndOfTasksSync();
+
+    componentTree.measure(widthSpec2, heightSpec2, new int[2], false);
+
+    assertThat(componentTree.getRoot()).isEqualTo(newComponent);
+    assertThat(componentTree.hasCompatibleLayout(widthSpec2, heightSpec2)).isTrue();
+    assertThat(componentTree.getMainThreadLayoutState().isForComponentId(newComponent.getId()))
+        .isTrue()
+        .withFailMessage(
+            "The main thread will calculate a new layout synchronously because the background layout isn't compatible.");
+    assertThat(componentTree.getMainThreadLayoutState().getHeight()).isEqualTo(1000);
+
+    assertThat(mLithoStatsRule.getComponentCalculateLayoutCount())
+        .describedAs(
+            "We expect one initial layout, the async layout (thrown away), and a final layout after measure.")
+        .isEqualTo(3);
+  }
+
+  /*
+   * Context for the test:
+   * - The original component mComponent will measure to height 1000 with heightSpec1 and to 0 with
+   *   heightSpec2
+   * - newComponent will measure to height 1000 with heightSpec1 and to 0 with heightSpec2
+   *
+   * In this test, we setRootAsync and let its code run but before it can commit on the background
+   * thread, we measure with new width/height specs both the original component and the new
+   * component are incompatible with.
+   */
+  @Test
+  public void testSetRootAsyncWithIncompatibleMeasureDuringLayout() throws InterruptedException {
     ComponentTree componentTree = ComponentTree.create(mContext, mComponent).build();
     componentTree.setLithoView(new LithoView(mContext));
 
     int widthSpec1 = SizeSpec.makeSizeSpec(1000, SizeSpec.EXACTLY);
-    int heightSpec1 = SizeSpec.makeSizeSpec(1000, SizeSpec.AT_MOST);
+    int heightSpec1 = SizeSpec.makeSizeSpec(1000, SizeSpec.EXACTLY);
     int widthSpec2 = SizeSpec.makeSizeSpec(1000, SizeSpec.EXACTLY);
     int heightSpec2 = SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED);
 
-    componentTree.measure(widthSpec2, heightSpec2, new int[2], false);
     componentTree.attach();
-
     componentTree.measure(widthSpec1, heightSpec1, new int[2], false);
 
-    final CountDownLatch unblockAsyncPrepare = new CountDownLatch(1);
-    final CountDownLatch onAsyncPrepareStart = new CountDownLatch(1);
+    final TestDrawableComponent.BlockInPrepareComponentListener blockInPrepare =
+        new TestDrawableComponent.BlockInPrepareComponentListener();
     TestDrawableComponent newComponent = TestDrawableComponent.create(mContext).color(1234).build();
-    newComponent.setTestComponentListener(
-        new TestDrawableComponent.TestComponentListener() {
-          @Override
-          public void onPrepare() {
-            // We only want to block/wait for the component instance that is created async
-            if (ThreadUtils.isMainThread()) {
-              return;
-            }
-
-            onAsyncPrepareStart.countDown();
-
-            try {
-              if (!unblockAsyncPrepare.await(5, TimeUnit.SECONDS)) {
-                throw new RuntimeException("Timed out waiting for prepare to unblock!");
-              }
-            } catch (InterruptedException e) {
-              throw new RuntimeException(e);
-            }
-          }
-        });
+    newComponent.setTestComponentListener(blockInPrepare);
 
     componentTree.setRootAsync(newComponent);
 
@@ -805,9 +1010,7 @@ public class ComponentTreeTest {
               }
             });
 
-    if (!onAsyncPrepareStart.await(5, TimeUnit.SECONDS)) {
-      throw new RuntimeException("Timeout!");
-    }
+    blockInPrepare.awaitPrepareStart();
 
     // At this point, the Layout thread is blocked in prepare (waiting for unblockAsyncPrepare) and
     // will have already captured the "bad" specs, but not completed its layout. We expect the main
@@ -822,18 +1025,189 @@ public class ComponentTreeTest {
         .isTrue()
         .withFailMessage(
             "The main thread should calculate a new layout synchronously because the async layout will not have compatible size specs");
+    assertThat(componentTree.getMainThreadLayoutState().getHeight()).isEqualTo(0);
 
     // Finally, let the async layout finish and make sure it doesn't replace the layout from measure
 
-    unblockAsyncPrepare.countDown();
+    blockInPrepare.allowPrepareToComplete();
     if (!asyncLayoutFinish.await(5, TimeUnit.SECONDS)) {
       throw new RuntimeException("Timeout!");
     }
+
+    ShadowLooper.runUiThreadTasks();
 
     assertThat(componentTree.getRoot()).isEqualTo(newComponent);
     assertThat(componentTree.hasCompatibleLayout(widthSpec2, heightSpec2)).isTrue();
     assertThat(componentTree.getMainThreadLayoutState().isForComponentId(newComponent.getId()))
         .isTrue();
+    assertThat(componentTree.getMainThreadLayoutState().getHeight()).isEqualTo(0);
+
+    assertThat(mLithoStatsRule.getComponentCalculateLayoutCount())
+        .describedAs(
+            "We expect one initial layout, the async layout (thrown away), and a final layout after measure.")
+        .isEqualTo(3);
+  }
+
+  /*
+   * Context for the test:
+   * - oldComponent will measure to height 100 with heightSpec1 and to 100 with heightSpec2
+   * - newComponent will measure to height 100 with heightSpec1 and to 100 with heightSpec2
+   *
+   * In this test, we setRootAsync and let its code run but before it can commit on the background
+   * thread, we measure with new width/height specs both the original component and the new
+   * component are compatible with.
+   */
+  @Test
+  public void testSetRootAsyncWithCompatibleMeasureDuringLayout() throws InterruptedException {
+    Component oldComponent =
+        TestDrawableComponent.create(mContext).widthPx(100).heightPx(100).color(1234).build();
+    ComponentTree componentTree = ComponentTree.create(mContext, oldComponent).build();
+    componentTree.setLithoView(new LithoView(mContext));
+
+    int widthSpec1 = SizeSpec.makeSizeSpec(1000, SizeSpec.EXACTLY);
+    int heightSpec1 = SizeSpec.makeSizeSpec(500, SizeSpec.AT_MOST);
+    int widthSpec2 = SizeSpec.makeSizeSpec(1000, SizeSpec.EXACTLY);
+    int heightSpec2 = SizeSpec.makeSizeSpec(1000, SizeSpec.AT_MOST);
+
+    componentTree.measure(widthSpec2, heightSpec2, new int[2], false);
+    componentTree.attach();
+
+    componentTree.measure(widthSpec1, heightSpec1, new int[2], false);
+
+    final TestDrawableComponent.BlockInPrepareComponentListener blockInPrepare =
+        new TestDrawableComponent.BlockInPrepareComponentListener();
+    TestDrawableComponent newComponent =
+        TestDrawableComponent.create(mContext).widthPx(100).heightPx(100).color(1234).build();
+    newComponent.setTestComponentListener(blockInPrepare);
+
+    componentTree.setRootAsync(newComponent);
+
+    final CountDownLatch asyncLayoutFinish =
+        runOnBackgroundThread(
+            new Runnable() {
+              @Override
+              public void run() {
+                mLayoutThreadShadowLooper.runToEndOfTasks();
+              }
+            });
+
+    blockInPrepare.awaitPrepareStart();
+
+    // At this point, the Layout thread is blocked in prepare (waiting for unblockAsyncPrepare) and
+    // will have already captured the "bad" specs, but not completed its layout. We expect the main
+    // thread to determine that this async layout will not be correct and that it needs to compute
+    // one in measure
+
+    componentTree.measure(widthSpec2, heightSpec2, new int[2], false);
+
+    assertThat(componentTree.getRoot()).isEqualTo(newComponent);
+    assertThat(componentTree.hasCompatibleLayout(widthSpec2, heightSpec2)).isTrue();
+    assertThat(componentTree.getMainThreadLayoutState().isForComponentId(newComponent.getId()))
+        .isTrue()
+        .withFailMessage(
+            "The main thread should calculate a new layout synchronously because the async layout will not have compatible size specs");
+    assertThat(componentTree.getMainThreadLayoutState().getHeight()).isEqualTo(100);
+
+    // Finally, let the async layout finish and make sure it doesn't replace the layout from measure
+
+    blockInPrepare.allowPrepareToComplete();
+    if (!asyncLayoutFinish.await(5, TimeUnit.SECONDS)) {
+      throw new RuntimeException("Timeout!");
+    }
+
+    ShadowLooper.runUiThreadTasks();
+
+    assertThat(componentTree.getRoot()).isEqualTo(newComponent);
+    assertThat(componentTree.hasCompatibleLayout(widthSpec2, heightSpec2)).isTrue();
+    assertThat(componentTree.getMainThreadLayoutState().isForComponentId(newComponent.getId()))
+        .isTrue();
+    assertThat(componentTree.getMainThreadLayoutState().getHeight()).isEqualTo(100);
+
+    assertThat(mLithoStatsRule.getComponentCalculateLayoutCount())
+        .describedAs(
+            "We expect one initial layout, the async layout (thrown away), and a final layout after measure.")
+        .isEqualTo(3);
+  }
+
+  /*
+   * Context for the test:
+   * - oldComponent will measure to height 100 with heightSpec1 and to 100 with heightSpec2
+   * - newComponent will measure to height 500 with heightSpec1 and to 1000 with heightSpec2
+   *
+   * In this test, we setRootAsync and let its code run but before it can commit on the background
+   * thread, we measure with new width/height specs that the original component is compatible with
+   * but and the new component isn't.
+   */
+  @Test
+  public void
+      testSetRootAsyncWithIncompatibleMeasureButCompatibleMeasureForExistingLayoutDuringLayout()
+          throws InterruptedException {
+    Component oldComponent =
+        TestDrawableComponent.create(mContext).widthPx(100).heightPx(100).color(1234).build();
+    ComponentTree componentTree = ComponentTree.create(mContext, oldComponent).build();
+    componentTree.setLithoView(new LithoView(mContext));
+
+    int widthSpec1 = SizeSpec.makeSizeSpec(1000, SizeSpec.EXACTLY);
+    int heightSpec1 = SizeSpec.makeSizeSpec(500, SizeSpec.AT_MOST);
+    int widthSpec2 = SizeSpec.makeSizeSpec(1000, SizeSpec.EXACTLY);
+    int heightSpec2 = SizeSpec.makeSizeSpec(1000, SizeSpec.AT_MOST);
+
+    componentTree.attach();
+    componentTree.measure(widthSpec1, heightSpec1, new int[2], false);
+
+    final TestDrawableComponent.BlockInPrepareComponentListener blockInPrepare =
+        new TestDrawableComponent.BlockInPrepareComponentListener();
+    TestDrawableComponent newComponent =
+        TestDrawableComponent.create(mContext).flexGrow(1).color(1234).build();
+    newComponent.setTestComponentListener(blockInPrepare);
+
+    componentTree.setRootAsync(newComponent);
+
+    final CountDownLatch asyncLayoutFinish =
+        runOnBackgroundThread(
+            new Runnable() {
+              @Override
+              public void run() {
+                mLayoutThreadShadowLooper.runToEndOfTasks();
+              }
+            });
+
+    blockInPrepare.awaitPrepareStart();
+
+    // At this point, the Layout thread is blocked in prepare (waiting for unblockAsyncPrepare) and
+    // will have already captured the "bad" specs, but not completed its layout. We expect the main
+    // thread to determine that this async layout will not be correct and that it needs to compute
+    // one in measure
+
+    componentTree.measure(widthSpec2, heightSpec2, new int[2], false);
+
+    assertThat(componentTree.getRoot()).isEqualTo(newComponent);
+    assertThat(componentTree.hasCompatibleLayout(widthSpec2, heightSpec2)).isTrue();
+    assertThat(componentTree.getMainThreadLayoutState().isForComponentId(newComponent.getId()))
+        .isTrue()
+        .withFailMessage(
+            "The main thread should calculate a new layout synchronously because the async layout will not have compatible size specs");
+    assertThat(componentTree.getMainThreadLayoutState().getHeight()).isEqualTo(1000);
+
+    // Finally, let the async layout finish and make sure it doesn't replace the layout from measure
+
+    blockInPrepare.allowPrepareToComplete();
+    if (!asyncLayoutFinish.await(5, TimeUnit.SECONDS)) {
+      throw new RuntimeException("Timeout!");
+    }
+
+    ShadowLooper.runUiThreadTasks();
+
+    assertThat(componentTree.getRoot()).isEqualTo(newComponent);
+    assertThat(componentTree.hasCompatibleLayout(widthSpec2, heightSpec2)).isTrue();
+    assertThat(componentTree.getMainThreadLayoutState().isForComponentId(newComponent.getId()))
+        .isTrue();
+    assertThat(componentTree.getMainThreadLayoutState().getHeight()).isEqualTo(1000);
+
+    assertThat(mLithoStatsRule.getComponentCalculateLayoutCount())
+        .describedAs(
+            "We expect one initial layout, the async layout (thrown away), and a final layout after measure.")
+        .isEqualTo(3);
   }
 
   @Test
@@ -1150,26 +1524,6 @@ public class ComponentTreeTest {
       return hasCssSpec;
     } catch (Exception e) {
       throw new IllegalArgumentException("Failed to invoke hasSizeSpec on ComponentTree for: " + e);
-    }
-  }
-
-  private static void runOnBackgroundThreadSync(final Runnable runnable) {
-    final CountDownLatch latch = new CountDownLatch(1);
-
-    new Thread(
-            new Runnable() {
-              @Override
-              public void run() {
-                runnable.run();
-                latch.countDown();
-              }
-            })
-        .start();
-
-    try {
-      assertThat(latch.await(5000, TimeUnit.MILLISECONDS)).isTrue();
-    } catch (InterruptedException e) {
-      throw new RuntimeException(e);
     }
   }
 
