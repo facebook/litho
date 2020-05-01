@@ -214,7 +214,7 @@ Then, it is the responsibility of the framework to invoke these methods to keep 
 Dynamic Props values can be used with Android Animators to create custom animations.
 In the following example we define a click event that starts an animation. As this is using Android's animation api we can easily set properties like duration and interpolation. We can also register for callbacks using `Animator.addListener(..)`.
 
-```
+```java
 @LayoutSpec
 class CallbackExampleComponentSpec {
 
