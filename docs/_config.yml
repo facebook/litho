@@ -35,7 +35,7 @@ ghrepo: "facebook/litho"
 repository: "facebook/litho"
 
 # These can be used in documentation with e.g. {{site.litho-version}}
-litho-version: 0.34.0
+litho-version: 0.35.0
 litho-snapshot-version: 0.34.1-SNAPSHOT
 soloader-version: 0.5.1
 
@@ -97,4 +97,3 @@ plugins:
   - jekyll-feed
   - jekyll-seo-tag
   - jekyll-sitemap
-  
