@@ -4,12 +4,27 @@
 
 _release-date_
 
-* **Breaking: `LayoutInfo` implementations are required to implement `scrollToPositionWithOffset()`.** To avoid special casing for LinearLayoutManager and StaggeredGridLayoutManager in RecyclerBinder and other internal logic, a LayoutInfo implementation must now delegate to the underlying LayoutManager's scrolling by implementing `scrollToPositionWithOffset()`. Typical cases should call the LayoutManager's own implementation of `scrollToPositionWithOffset()`, or an equivalent. This creates a common interface for programmatic scrolling.
-* **Breaking: `MeasureListener` now takes two extra parameters, layoutVersion and stateUpdate. These are safe to ignore for clients that don't need them. The javadoc was updated with all the relevant information.
-* **Breaking:** `performIncrementalMount()` method in LithoView was renamed `notifyVisibleBoundsChanged()`.
-* **Breaking:** Visibility events get processed even if incremental mount is turned off.
-* **Breaking: Rename `getShadowHorizontal` to `getShadowLeft` in `CardShadowDrawable`**.
-* New: Add ability to customize shadow x/y offsets of `CardShadowDrawable` and `CardShadowSpec`.
+* **Experimental: Process Visibility events without Incremental Mount turned on.** If you used Incremental Mount only for Visibility events before, now you can turn it off!
+* **Breaking: `LayoutInfo` implementations are required to implement `scrollToPositionWithOffset()`.** To avoid special casing for `LinearLayoutManager` and `StaggeredGridLayoutManager` in `RecyclerBinder` and other internal logic, a LayoutInfo implementation must now delegate to the underlying LayoutManager's scrolling by implementing `scrollToPositionWithOffset()`. Typical cases should call the LayoutManager's own implementation of `scrollToPositionWithOffset()`, or an equivalent. This creates a common interface for programmatic scrolling [a61e409](https://github.com/facebook/litho/commit/a61e409558f82a115d9c21d91c18d5cc8396d385).
+* **Breaking: `MeasureListener` now takes two extra parameters**, `layoutVersion` and `stateUpdate`. These are safe to ignore for clients that don't need them. Check [javadoc](https://fblitho.com/javadoc/com/facebook/litho/ComponentTree.MeasureListener.html#onSetRootAndSizeSpec-int-int-int-boolean-) for all the relevant information.
+* **Breaking:** Rename `LithoView.performIncrementalMount()` method to `LithoView.notifyVisibleBoundsChanged()`.
+* **Breaking:** Rename `getShadowHorizontal()` to `getShadowLeft()` in `CardShadowDrawable`.
+* **New:** `@OnCreateInitialState` method in Specs is now guaranteed to be called only once.
+* New: Add ability to customize `shadowDx`/`shadowDy` offsets for `CardShadowDrawable` and `CardShadowSpec`.
+* New: Add more [Animations](https://github.com/facebook/litho/tree/master/sample/src/main/java/com/facebook/samples/litho/animations/commondynamicprops) [examples](https://github.com/facebook/litho/tree/master/sample/src/main/java/com/facebook/samples/litho/animations/transitions) and Animations [Cookbook](https://github.com/facebook/litho/tree/master/sample/src/main/java/com/facebook/samples/litho/animations/animationcookbook) in the sample app. Check out [docs for more info](https://fblitho.com/docs/dynamic-props#animating-common-dynamic-props).
+* New: Update accessibility utils to support newer version of Talkback.
+* New: Replace Litho's `MountItem` with RenderCore's and wrap `LayoutOutput` with `RenderTreeNode`.
+* New: Litho tests are now migrated to Robolectric 4 and Mockito 2!
+* New: New testing utilities: `LithoViewRule`, `LithoStatsRule`, `BackgroundLayoutLooperRule`.
+* Fix: Remove 1px white margin between content and shadow for `CardSpec` [00f2bdb](https://github.com/facebook/litho/commit/00f2bdb852a7e0ded29494b909f0c65d1c7c7dc8).
+* Fix: Fix Sections not updating layout for sticky items with indices outside range ratio.
+* Fix: Fix `RecyclerSpec` not respecting RTL for padding.
+* Fix: Add missing `@Nullable` to every method accepting `EventHandler`.
+* Fix: Propagate class-level annotations from `SectionSpec`s class to generated Section class.
+* FIx: Don't crash on missing `@OnCreateMountContent` method for `MountSpec`s during code generation.
+* Fix: Don't crash when comparing `ComparableGradientDrawable`s on API<=15.
+* Fix: Fixes a bug in `ComponentUtils.isEquivalentTo()`.
+* Fix: Correctly release `ComponentTree` on the main thread after `@OnDetached`.
 
 For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.34.0...master).
 
@@ -26,7 +41,6 @@ _2020-02-09_
 * **Breaking:** Merge `BaseLithoStartupLogging` abstract class, `LithoStartupLoggerUtil` helper class and `LithoStartupLogger` interface into single `LithoStartupLogger` abstract class.
 * **Breaking:** Consolidate two layout calculation `PerfEvent`s into one: remove `FrameworkLogEvents.EVENT_LAYOUT_CALCULATE` and move some of its annotations to `FrameworkLogEvents.CALCULATE_LAYOUT_STATE` which will be used instead.
 * **Breaking:** Make `varArg` props effectively optional with a `Collections.EMPTY_LIST` as a default value.
-
 
 For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.33.0...v0.34.0).
 
