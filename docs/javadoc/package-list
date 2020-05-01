@@ -39,6 +39,7 @@ com.facebook.litho.testing.state
 com.facebook.litho.testing.subcomponents
 com.facebook.litho.testing.testrule
 com.facebook.litho.testing.testrunner
+com.facebook.litho.testing.testrunner.v3
 com.facebook.litho.testing.viewtree
 com.facebook.litho.utils
 com.facebook.litho.viewcompat
