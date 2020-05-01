@@ -1624,7 +1624,7 @@ public class LayoutState
   }
 
   RenderTree toRenderTree() {
-    RenderTreeNode root = mMountableOutputs.get(0);
+    RenderTreeNode root = mMountableOutputs.isEmpty() ? null : mMountableOutputs.get(0);
     RenderTreeNode[] flatList = new RenderTreeNode[mMountableOutputs.size()];
     for (int i = 0, size = mMountableOutputs.size(); i < size; i++) {
       flatList[i] = mMountableOutputs.get(i);
