@@ -479,15 +479,24 @@ class MountState implements TransitionManager.OnAnimationCompleteListener, Mount
       LayoutState layoutState, @Nullable Rect localVisibleRect, boolean processVisibilityOutputs) {
     final Rect previousLocalVisibleRect = mPreviousLocalVisibleRect;
     final boolean wasDirty = mIsDirty;
+    final boolean shouldAnimateTransitions = shouldAnimateTransitions(layoutState);
+    final ComponentTree componentTree = mLithoView.getComponentTree();
 
     if (mIsDirty) {
+      updateTransitions(layoutState, componentTree);
       mIncrementalMountExtension.beforeMount(layoutState);
       mount(layoutState);
     } else {
       mIncrementalMountExtension.onViewOffset();
     }
 
-    final ComponentTree componentTree = mLithoView.getComponentTree();
+    maybeUpdateAnimatingMountContent();
+    if (shouldAnimateTransitions && hasTransitionsToAnimate()) {
+      mTransitionManager.runTransitions();
+    }
+
+    cleanupTransitionsAfterMount();
+
     boolean isVisibilityProcessingEnabled = componentTree.isVisibilityProcessingEnabled();
     if (isVisibilityProcessingEnabled) {
       if (mVisibilityOutputsExtension != null) {
@@ -499,6 +508,11 @@ class MountState implements TransitionManager.OnAnimationCompleteListener, Mount
         }
       }
     }
+  }
+
+  private void cleanupTransitionsAfterMount() {
+    mRootTransition = null;
+    mTransitionsHasBeenCollected = false;
   }
 
   @Override
@@ -630,8 +644,6 @@ class MountState implements TransitionManager.OnAnimationCompleteListener, Mount
       }
     }
 
-    mRootTransition = null;
-    mTransitionsHasBeenCollected = false;
     final boolean wasDirty = mIsDirty;
     mIsDirty = false;
     mNeedsRemount = false;
