@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import static com.facebook.litho.LifecycleStep.getSteps;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.UNSPECIFIED;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
@@ -281,13 +282,5 @@ public class MountSpecLifecycleTest {
             LifecycleStep.ON_BOUNDS_DEFINED,
             LifecycleStep.ON_MOUNT,
             LifecycleStep.ON_BIND);
-  }
-
-  public static List<LifecycleStep> getSteps(List<LifecycleStep.StepInfo> infos) {
-    List<LifecycleStep> steps = new ArrayList<>(infos.size());
-    for (LifecycleStep.StepInfo info : infos) {
-      steps.add(info.step);
-    }
-    return steps;
   }
 }

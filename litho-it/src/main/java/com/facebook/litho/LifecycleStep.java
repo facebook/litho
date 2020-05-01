@@ -16,6 +16,9 @@
 
 package com.facebook.litho;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public enum LifecycleStep {
   ON_CREATE_INITIAL_STATE,
   ON_CREATE_LAYOUT,
@@ -55,5 +58,13 @@ public enum LifecycleStep {
     public StepInfo(LifecycleStep step) {
       this.step = step;
     }
+  }
+
+  public static List<LifecycleStep> getSteps(List<LifecycleStep.StepInfo> infos) {
+    List<LifecycleStep> steps = new ArrayList<>(infos.size());
+    for (LifecycleStep.StepInfo info : infos) {
+      steps.add(info.step);
+    }
+    return steps;
   }
 }
