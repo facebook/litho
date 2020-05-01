@@ -18,6 +18,7 @@ package com.facebook.litho.testing.assertj;
 
 import android.graphics.drawable.Drawable;
 import androidx.annotation.DrawableRes;
+import androidx.annotation.StringRes;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
@@ -177,6 +178,13 @@ public final class ComponentAssert extends AbstractAssert<ComponentAssert, Compo
   /** Assert that the given component has the exact text provided. */
   public ComponentAssert hasVisibleText(String text) {
     assertThatLithoView().hasVisibleText(text);
+
+    return this;
+  }
+
+  /** Assert that the given component has the exact text identified by resource id. */
+  public ComponentAssert hasVisibleText(@StringRes int resourceId) {
+    assertThatLithoView().hasVisibleText(resourceId);
 
     return this;
   }
