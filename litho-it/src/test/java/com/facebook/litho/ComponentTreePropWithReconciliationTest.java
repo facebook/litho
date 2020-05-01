@@ -19,11 +19,9 @@ package com.facebook.litho;
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 
 import android.view.View;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.logging.TestComponentsReporter;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.litho.widget.TreePropTestContainerComponent;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,15 +33,9 @@ public class ComponentTreePropWithReconciliationTest {
 
   @Before
   public void setup() {
-    ComponentsConfiguration.isReconciliationEnabled = true;
     TestComponentsReporter componentsReporter = new TestComponentsReporter();
     c = new ComponentContext(getApplicationContext());
     ComponentsReporter.provide(componentsReporter);
-  }
-
-  @After
-  public void after() {
-    ComponentsConfiguration.isReconciliationEnabled = false;
   }
 
   @Test
@@ -54,7 +46,9 @@ public class ComponentTreePropWithReconciliationTest {
 
   private LithoView getLithoView(Component component) {
     LithoView lithoView = new LithoView(c);
-    lithoView.setComponent(component);
+    ComponentTree componentTree =
+        ComponentTree.create(c, component).isReconciliationEnabled(true).build();
+    lithoView.setComponentTree(componentTree);
     lithoView.measure(
         View.MeasureSpec.makeMeasureSpec(640, View.MeasureSpec.UNSPECIFIED),
         View.MeasureSpec.makeMeasureSpec(480, View.MeasureSpec.UNSPECIFIED));
