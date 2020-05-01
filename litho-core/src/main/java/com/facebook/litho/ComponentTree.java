@@ -255,7 +255,7 @@ public class ComponentTree {
   // be useful for stateful objects shared across layouts that need to check whether for example
   // a measure/onCreateLayout call is being executed in the context of an old layout calculation.
   @GuardedBy("this")
-  private int mLayoutVersion;
+  private int mNextLayoutVersion;
 
   @Nullable
   @GuardedBy("this")
@@ -284,10 +284,10 @@ public class ComponentTree {
   @Nullable
   private LayoutState mBackgroundLayoutState;
 
-  // TODO(t64511317): Merge mLatestLayoutState and mBackgroundLayoutState
+  // TODO(t64511317): Merge mCommittedLayoutState and mBackgroundLayoutState
   @GuardedBy("this")
   @Nullable
-  private LayoutState mLatestLayoutState;
+  private LayoutState mCommittedLayoutState;
 
   @GuardedBy("this")
   private StateHandler mStateHandler;
@@ -459,10 +459,10 @@ public class ComponentTree {
     return mBackgroundLayoutState;
   }
 
-  @VisibleForTesting
+  @VisibleForTesting(otherwise = VisibleForTesting.NONE)
   @Nullable
-  public LayoutState getLatestLayoutState() {
-    return mLatestLayoutState;
+  public LayoutState getCommittedLayoutState() {
+    return mCommittedLayoutState;
   }
 
   /**
@@ -1046,7 +1046,7 @@ public class ComponentTree {
         // Since outputs get set on the same object during the lifecycle calls,
         // we need to copy it in order to use it concurrently.
         component = mRoot.makeShallowCopy();
-        layoutVersion = ++mLayoutVersion;
+        layoutVersion = mNextLayoutVersion++;
         treeProps = TreeProps.copy(mRootTreeProps);
       }
     }
@@ -1091,7 +1091,7 @@ public class ComponentTree {
 
         components = localLayoutState.consumeComponents();
         mMainThreadLayoutState = localLayoutState;
-        mLatestLayoutState = localLayoutState;
+        mCommittedLayoutState = localLayoutState;
       }
 
       if (attachables != null) {
@@ -2032,7 +2032,7 @@ public class ComponentTree {
       mPendingLayoutWidthSpec = widthSpec;
       mPendingLayoutHeightSpec = heightSpec;
       root = mRoot.makeShallowCopy();
-      layoutVersion = ++mLayoutVersion;
+      layoutVersion = mNextLayoutVersion++;
     }
 
     final LayoutState localLayoutState =
@@ -2094,7 +2094,7 @@ public class ComponentTree {
 
         // Set the new layout state.
         mBackgroundLayoutState = localLayoutState;
-        mLatestLayoutState = localLayoutState;
+        mCommittedLayoutState = localLayoutState;
         layoutStateUpdated = true;
       }
 
@@ -2241,7 +2241,7 @@ public class ComponentTree {
 
       mMainThreadLayoutState = null;
       mBackgroundLayoutState = null;
-      mLatestLayoutState = null;
+      mCommittedLayoutState = null;
       mStateHandler = null;
       mPreviousRenderState = null;
       mMeasureListeners = null;
@@ -2605,7 +2605,7 @@ public class ComponentTree {
       synchronized (ComponentTree.this) {
         final StateHandler stateHandler =
             StateHandler.createNewInstance(ComponentTree.this.mStateHandler);
-        previousLayoutState = mLatestLayoutState;
+        previousLayoutState = mCommittedLayoutState;
         contextWithStateHandler = new ComponentContext(context, stateHandler, treeProps, null);
         mInitialStateContainer.registerStateHandler(stateHandler);
       }

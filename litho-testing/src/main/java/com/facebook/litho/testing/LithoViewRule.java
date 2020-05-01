@@ -148,11 +148,11 @@ public class LithoViewRule implements TestRule {
     return this;
   }
 
-  protected @Nullable LayoutState getCurrentLayoutState() {
-    return getComponentTree().getLatestLayoutState();
+  protected @Nullable LayoutState getCommittedLayoutState() {
+    return getComponentTree().getCommittedLayoutState();
   }
 
   protected @Nullable InternalNode getCurrentRootNode() {
-    return getCurrentLayoutState() != null ? getCurrentLayoutState().getLayoutRoot() : null;
+    return getCommittedLayoutState() != null ? getCommittedLayoutState().getLayoutRoot() : null;
   }
 }
