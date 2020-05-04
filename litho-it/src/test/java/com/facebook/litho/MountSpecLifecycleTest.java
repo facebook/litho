@@ -67,6 +67,7 @@ public class MountSpecLifecycleTest {
     assertThat(getSteps(info))
         .describedAs("Should call the lifecycle methods in expected order")
         .containsExactly(
+            LifecycleStep.ON_CALCULATE_CACHED_VALUE,
             LifecycleStep.ON_PREPARE,
             LifecycleStep.ON_MEASURE,
             LifecycleStep.ON_BOUNDS_DEFINED,
@@ -88,6 +89,7 @@ public class MountSpecLifecycleTest {
     assertThat(getSteps(info))
         .describedAs("Should call the lifecycle methods in expected order")
         .containsExactly(
+            LifecycleStep.ON_CALCULATE_CACHED_VALUE,
             LifecycleStep.ON_PREPARE,
             LifecycleStep.ON_BOUNDS_DEFINED,
             LifecycleStep.ON_ATTACHED,
@@ -166,7 +168,10 @@ public class MountSpecLifecycleTest {
     assertThat(getSteps(info))
         .describedAs("Should call the lifecycle methods in expected order")
         .containsExactly(
-            LifecycleStep.ON_PREPARE, LifecycleStep.ON_MEASURE, LifecycleStep.ON_BOUNDS_DEFINED);
+            LifecycleStep.ON_CALCULATE_CACHED_VALUE,
+            LifecycleStep.ON_PREPARE,
+            LifecycleStep.ON_MEASURE,
+            LifecycleStep.ON_BOUNDS_DEFINED);
   }
 
   @Test
@@ -204,6 +209,7 @@ public class MountSpecLifecycleTest {
     assertThat(getSteps(info))
         .describedAs("Should call the lifecycle methods in expected order")
         .containsExactly(
+            LifecycleStep.ON_CALCULATE_CACHED_VALUE,
             LifecycleStep.ON_PREPARE,
             LifecycleStep.ON_BOUNDS_DEFINED,
             LifecycleStep.ON_UNBIND,
@@ -228,6 +234,7 @@ public class MountSpecLifecycleTest {
     assertThat(getSteps(info))
         .describedAs("Should call the lifecycle methods in expected order")
         .containsExactly(
+            LifecycleStep.ON_CALCULATE_CACHED_VALUE,
             LifecycleStep.ON_PREPARE,
             LifecycleStep.ON_MEASURE,
             LifecycleStep.ON_BOUNDS_DEFINED,
@@ -277,6 +284,7 @@ public class MountSpecLifecycleTest {
     assertThat(getSteps(newInfo))
         .describedAs("Should call the lifecycle methods on new instance in expected order")
         .containsExactly(
+            LifecycleStep.ON_CALCULATE_CACHED_VALUE,
             LifecycleStep.ON_PREPARE,
             LifecycleStep.ON_MEASURE,
             LifecycleStep.ON_BOUNDS_DEFINED,

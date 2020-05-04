@@ -54,6 +54,9 @@ public class LayoutSpecLifecycleTest {
 
     assertThat(getSteps(info))
         .describedAs("Should call the lifecycle methods in expected order")
-        .containsExactly(LifecycleStep.ON_CREATE_INITIAL_STATE, LifecycleStep.ON_CREATE_LAYOUT);
+        .containsExactly(
+            LifecycleStep.ON_CREATE_INITIAL_STATE,
+            LifecycleStep.ON_CALCULATE_CACHED_VALUE,
+            LifecycleStep.ON_CREATE_LAYOUT);
   }
 }

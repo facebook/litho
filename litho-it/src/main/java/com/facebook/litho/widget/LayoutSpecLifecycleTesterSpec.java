@@ -22,7 +22,9 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LifecycleStep;
 import com.facebook.litho.LifecycleStep.StepInfo;
 import com.facebook.litho.StateValue;
+import com.facebook.litho.annotations.CachedValue;
 import com.facebook.litho.annotations.LayoutSpec;
+import com.facebook.litho.annotations.OnCalculateCachedValue;
 import com.facebook.litho.annotations.OnCreateInitialState;
 import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.Prop;
@@ -41,11 +43,20 @@ class LayoutSpecLifecycleTesterSpec {
 
   @OnCreateLayout
   static Component onCreateLayout(
-      ComponentContext c, @Prop List<LifecycleStep.StepInfo> steps, @State String state) {
+      ComponentContext c,
+      @Prop List<LifecycleStep.StepInfo> steps,
+      @State String state,
+      @CachedValue int expensiveValue) {
     steps.add(new StepInfo(LifecycleStep.ON_CREATE_LAYOUT));
     if (state == null) {
       throw new IllegalStateException("OnCreateLayout called without initialised state.");
     }
     return Column.create(c).build();
+  }
+
+  @OnCalculateCachedValue(name = "expensiveValue")
+  static int onCalculateExpensiveValue(@Prop List<LifecycleStep.StepInfo> steps) {
+    steps.add(new StepInfo(LifecycleStep.ON_CALCULATE_CACHED_VALUE));
+    return 0;
   }
 }

@@ -26,10 +26,12 @@ import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.LifecycleStep;
 import com.facebook.litho.LifecycleStep.StepInfo;
 import com.facebook.litho.Size;
+import com.facebook.litho.annotations.CachedValue;
 import com.facebook.litho.annotations.MountSpec;
 import com.facebook.litho.annotations.OnAttached;
 import com.facebook.litho.annotations.OnBind;
 import com.facebook.litho.annotations.OnBoundsDefined;
+import com.facebook.litho.annotations.OnCalculateCachedValue;
 import com.facebook.litho.annotations.OnCreateInitialState;
 import com.facebook.litho.annotations.OnCreateMountContent;
 import com.facebook.litho.annotations.OnDetached;
@@ -51,7 +53,10 @@ public class MountSpecLifecycleTesterSpec {
   }
 
   @OnPrepare
-  static void onPrepare(ComponentContext c, @Prop List<LifecycleStep.StepInfo> steps) {
+  static void onPrepare(
+      ComponentContext c,
+      @Prop List<LifecycleStep.StepInfo> steps,
+      @CachedValue int expensiveValue) {
     steps.add(new StepInfo(LifecycleStep.ON_PREPARE));
   }
 
@@ -121,6 +126,12 @@ public class MountSpecLifecycleTesterSpec {
   @OnDetached
   static void onDetached(ComponentContext c, @Prop List<LifecycleStep.StepInfo> steps) {
     steps.add(new StepInfo(LifecycleStep.ON_DETACHED));
+  }
+
+  @OnCalculateCachedValue(name = "expensiveValue")
+  static int onCalculateExpensiveValue(@Prop List<LifecycleStep.StepInfo> steps) {
+    steps.add(new StepInfo(LifecycleStep.ON_CALCULATE_CACHED_VALUE));
+    return 0;
   }
 
   public static class StaticContainer {
