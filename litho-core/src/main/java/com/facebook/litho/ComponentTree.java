@@ -552,6 +552,11 @@ public class ComponentTree {
   }
 
   @VisibleForTesting
+  public LithoHandler getLayoutThreadHandler() {
+    return (LithoHandler) mLayoutThreadHandler;
+  }
+
+  @VisibleForTesting
   public NewLayoutStateReadyListener getNewLayoutStateReadyListener() {
     return mNewLayoutStateReadyListener;
   }

@@ -37,6 +37,8 @@ import com.facebook.litho.testing.TestLayoutComponent;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.widget.SimpleStateUpdateEmulator;
+import com.facebook.litho.widget.SimpleStateUpdateEmulatorSpec;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -997,6 +999,7 @@ public class ComponentTreeTest {
 
     final TestDrawableComponent.BlockInPrepareComponentListener blockInPrepare =
         new TestDrawableComponent.BlockInPrepareComponentListener();
+    blockInPrepare.setDoNotBlockOnThisThread();
     TestDrawableComponent newComponent = TestDrawableComponent.create(mContext).color(1234).build();
     newComponent.setTestComponentListener(blockInPrepare);
 
@@ -1077,6 +1080,7 @@ public class ComponentTreeTest {
 
     final TestDrawableComponent.BlockInPrepareComponentListener blockInPrepare =
         new TestDrawableComponent.BlockInPrepareComponentListener();
+    blockInPrepare.setDoNotBlockOnThisThread();
     TestDrawableComponent newComponent =
         TestDrawableComponent.create(mContext).widthPx(100).heightPx(100).color(1234).build();
     newComponent.setTestComponentListener(blockInPrepare);
@@ -1158,6 +1162,7 @@ public class ComponentTreeTest {
 
     final TestDrawableComponent.BlockInPrepareComponentListener blockInPrepare =
         new TestDrawableComponent.BlockInPrepareComponentListener();
+    blockInPrepare.setDoNotBlockOnThisThread();
     TestDrawableComponent newComponent =
         TestDrawableComponent.create(mContext).flexGrow(1).color(1234).build();
     newComponent.setTestComponentListener(blockInPrepare);
@@ -1212,6 +1217,148 @@ public class ComponentTreeTest {
   }
 
   @Test
+  public void testMeasureWithUpdateStateThatCompletesFirst() throws InterruptedException {
+    SimpleStateUpdateEmulatorSpec.Caller caller = new SimpleStateUpdateEmulatorSpec.Caller();
+    TestDrawableComponent blockingComponent =
+        TestDrawableComponent.create(mContext).flexGrow(1).color(1234).build();
+    Component rootComponent =
+        Column.create(mContext)
+            .child(SimpleStateUpdateEmulator.create(mContext).caller(caller).tagPrefix("counter:"))
+            .child(blockingComponent)
+            .minHeightPx(100)
+            .build();
+    LithoView lithoView = new LithoView(mContext);
+    ComponentTree componentTree =
+        ComponentTree.create(mContext, rootComponent).isReconciliationEnabled(true).build();
+    lithoView.setComponentTree(componentTree);
+
+    int widthSpec1 = SizeSpec.makeSizeSpec(1000, SizeSpec.AT_MOST);
+    int heightSpec1 = SizeSpec.makeSizeSpec(500, SizeSpec.EXACTLY);
+    int widthSpec2 = SizeSpec.makeSizeSpec(1000, SizeSpec.AT_MOST);
+    int heightSpec2 = SizeSpec.makeSizeSpec(1000, SizeSpec.EXACTLY);
+
+    componentTree.attach();
+    lithoView.measure(widthSpec1, heightSpec1);
+
+    final TestDrawableComponent.BlockInPrepareComponentListener blockInPrepare =
+        new TestDrawableComponent.BlockInPrepareComponentListener();
+    blockingComponent.setTestComponentListener(blockInPrepare);
+
+    // This is necessary because we end up posting the synchronous state update to the layout looper
+    componentTree
+        .getLayoutThreadHandler()
+        .post(
+            new Runnable() {
+              @Override
+              public void run() {
+                blockInPrepare.setDoNotBlockOnThisThread();
+              }
+            },
+            "test");
+
+    final CountDownLatch asyncStateUpdate =
+        runOnBackgroundThread(
+            new Runnable() {
+              @Override
+              public void run() {
+                blockInPrepare.awaitPrepareStart();
+                blockInPrepare.setDoNotBlockOnThisThread();
+                caller.increment();
+                mBackgroundLayoutLooperRule.runToEndOfTasksSync();
+                blockInPrepare.allowPrepareToComplete();
+              }
+            });
+
+    lithoView.measure(widthSpec2, heightSpec2);
+    if (!asyncStateUpdate.await(5, TimeUnit.SECONDS)) {
+      throw new RuntimeException("Timeout!");
+    }
+    ShadowLooper.runUiThreadTasks();
+
+    lithoView.layout(0, 0, lithoView.getMeasuredWidth(), lithoView.getMeasuredHeight());
+
+    // We now want to assert that we are the right size and also the state update was applied.
+    assertThat(componentTree.hasCompatibleLayout(widthSpec2, heightSpec2)).isTrue();
+    assertThat(componentTree.getMainThreadLayoutState().getHeight()).isEqualTo(1000);
+    assertThat(lithoView.getHeight()).isEqualTo(1000);
+    assertThat(lithoView.getChildCount()).isEqualTo(1);
+    assertThat(lithoView.getChildAt(0).getTag()).isEqualTo("counter:2");
+
+    assertThat(mLithoStatsRule.getComponentCalculateLayoutCount())
+        .describedAs(
+            "We expect one layout during setup, one from measure that will be thrown away and one from the state update.")
+        .isEqualTo(3);
+  }
+
+  @Test
+  public void testUpdateStateWithMeasureThatStartsBeforeUpdateStateCompletes()
+      throws InterruptedException {
+    SimpleStateUpdateEmulatorSpec.Caller caller = new SimpleStateUpdateEmulatorSpec.Caller();
+    TestDrawableComponent blockingComponent =
+        TestDrawableComponent.create(mContext).flexGrow(1).color(1234).build();
+    Component rootComponent =
+        Column.create(mContext)
+            .child(SimpleStateUpdateEmulator.create(mContext).caller(caller).tagPrefix("counter:"))
+            .child(blockingComponent)
+            .minHeightPx(100)
+            .build();
+    LithoView lithoView = new LithoView(mContext);
+
+    // We need to turn reconciliation off so that the BlockInPrepare always executes
+    ComponentTree componentTree =
+        ComponentTree.create(mContext, rootComponent).isReconciliationEnabled(false).build();
+    lithoView.setComponentTree(componentTree);
+
+    int widthSpec1 = SizeSpec.makeSizeSpec(1000, SizeSpec.AT_MOST);
+    int heightSpec1 = SizeSpec.makeSizeSpec(500, SizeSpec.EXACTLY);
+    int widthSpec2 = SizeSpec.makeSizeSpec(1000, SizeSpec.AT_MOST);
+    int heightSpec2 = SizeSpec.makeSizeSpec(1000, SizeSpec.EXACTLY);
+
+    componentTree.attach();
+    lithoView.measure(widthSpec1, heightSpec1);
+
+    final TestDrawableComponent.BlockInPrepareComponentListener blockInPrepare =
+        new TestDrawableComponent.BlockInPrepareComponentListener();
+    blockInPrepare.setDoNotBlockOnThisThread();
+    blockingComponent.setTestComponentListener(blockInPrepare);
+
+    final CountDownLatch asyncStateUpdate =
+        runOnBackgroundThread(
+            new Runnable() {
+              @Override
+              public void run() {
+                caller.increment();
+
+                // The sync state update will be posted to the layout thread
+                mBackgroundLayoutLooperRule.runToEndOfTasksSync();
+              }
+            });
+
+    blockInPrepare.awaitPrepareStart();
+    lithoView.measure(widthSpec2, heightSpec2);
+    blockInPrepare.allowPrepareToComplete();
+
+    if (!asyncStateUpdate.await(5, TimeUnit.SECONDS)) {
+      throw new RuntimeException("Timeout!");
+    }
+    ShadowLooper.runUiThreadTasks();
+
+    lithoView.layout(0, 0, lithoView.getMeasuredWidth(), lithoView.getMeasuredHeight());
+
+    // We now want to assert that we are the right size and also the state update was applied.
+    assertThat(componentTree.hasCompatibleLayout(widthSpec2, heightSpec2)).isTrue();
+    assertThat(componentTree.getMainThreadLayoutState().getHeight()).isEqualTo(1000);
+    assertThat(lithoView.getHeight()).isEqualTo(1000);
+    assertThat(lithoView.getChildCount()).isEqualTo(1);
+    assertThat(lithoView.getChildAt(0).getTag()).isEqualTo("counter:2");
+
+    assertThat(mLithoStatsRule.getComponentCalculateLayoutCount())
+        .describedAs(
+            "We expect one layout during setup, one from measure and one from the state update that will be thrown away.")
+        .isEqualTo(3);
+  }
+
+  @Test
   public void testLayoutStateNotCommittedTwiceWithLayoutStateFutures() throws InterruptedException {
     TestDrawableComponent component =
         TestDrawableComponent.create(mContext).flexGrow(1).color(1234).build();
@@ -1234,6 +1381,7 @@ public class ComponentTreeTest {
 
     final TestDrawableComponent.BlockInPrepareComponentListener blockInPrepare =
         new TestDrawableComponent.BlockInPrepareComponentListener();
+    blockInPrepare.setDoNotBlockOnThisThread();
     component.setTestComponentListener(blockInPrepare);
 
     final CountDownLatch asyncLayout1Finish =
