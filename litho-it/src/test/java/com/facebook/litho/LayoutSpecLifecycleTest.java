@@ -56,6 +56,7 @@ public class LayoutSpecLifecycleTest {
         .describedAs("Should call the lifecycle methods in expected order")
         .containsExactly(
             LifecycleStep.ON_CREATE_INITIAL_STATE,
+            LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CALCULATE_CACHED_VALUE,
             LifecycleStep.ON_CREATE_LAYOUT);
   }

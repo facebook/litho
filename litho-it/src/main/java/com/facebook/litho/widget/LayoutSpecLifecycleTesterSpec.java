@@ -16,6 +16,7 @@
 
 package com.facebook.litho.widget;
 
+import android.graphics.Rect;
 import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
@@ -27,6 +28,7 @@ import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.annotations.OnCalculateCachedValue;
 import com.facebook.litho.annotations.OnCreateInitialState;
 import com.facebook.litho.annotations.OnCreateLayout;
+import com.facebook.litho.annotations.OnCreateTreeProp;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.State;
 import java.util.List;
@@ -58,5 +60,11 @@ class LayoutSpecLifecycleTesterSpec {
   static int onCalculateExpensiveValue(@Prop List<LifecycleStep.StepInfo> steps) {
     steps.add(new StepInfo(LifecycleStep.ON_CALCULATE_CACHED_VALUE));
     return 0;
+  }
+
+  @OnCreateTreeProp
+  static Rect onCreateTreePropRect(ComponentContext c, @Prop List<LifecycleStep.StepInfo> steps) {
+    steps.add(new StepInfo(LifecycleStep.ON_CREATE_TREE_PROP));
+    return new Rect();
   }
 }

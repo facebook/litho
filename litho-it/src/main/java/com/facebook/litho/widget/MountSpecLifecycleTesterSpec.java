@@ -18,6 +18,7 @@ package com.facebook.litho.widget;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Rect;
 import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
@@ -34,6 +35,7 @@ import com.facebook.litho.annotations.OnBoundsDefined;
 import com.facebook.litho.annotations.OnCalculateCachedValue;
 import com.facebook.litho.annotations.OnCreateInitialState;
 import com.facebook.litho.annotations.OnCreateMountContent;
+import com.facebook.litho.annotations.OnCreateTreeProp;
 import com.facebook.litho.annotations.OnDetached;
 import com.facebook.litho.annotations.OnMeasure;
 import com.facebook.litho.annotations.OnMount;
@@ -132,6 +134,12 @@ public class MountSpecLifecycleTesterSpec {
   static int onCalculateExpensiveValue(@Prop List<LifecycleStep.StepInfo> steps) {
     steps.add(new StepInfo(LifecycleStep.ON_CALCULATE_CACHED_VALUE));
     return 0;
+  }
+
+  @OnCreateTreeProp
+  static Rect onCreateTreePropRect(ComponentContext c, @Prop List<LifecycleStep.StepInfo> steps) {
+    steps.add(new StepInfo(LifecycleStep.ON_CREATE_TREE_PROP));
+    return new Rect();
   }
 
   public static class StaticContainer {

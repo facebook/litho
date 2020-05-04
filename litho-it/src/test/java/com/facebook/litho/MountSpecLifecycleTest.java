@@ -67,6 +67,7 @@ public class MountSpecLifecycleTest {
     assertThat(getSteps(info))
         .describedAs("Should call the lifecycle methods in expected order")
         .containsExactly(
+            LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CALCULATE_CACHED_VALUE,
             LifecycleStep.ON_PREPARE,
             LifecycleStep.ON_MEASURE,
@@ -89,6 +90,7 @@ public class MountSpecLifecycleTest {
     assertThat(getSteps(info))
         .describedAs("Should call the lifecycle methods in expected order")
         .containsExactly(
+            LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CALCULATE_CACHED_VALUE,
             LifecycleStep.ON_PREPARE,
             LifecycleStep.ON_BOUNDS_DEFINED,
@@ -168,6 +170,7 @@ public class MountSpecLifecycleTest {
     assertThat(getSteps(info))
         .describedAs("Should call the lifecycle methods in expected order")
         .containsExactly(
+            LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CALCULATE_CACHED_VALUE,
             LifecycleStep.ON_PREPARE,
             LifecycleStep.ON_MEASURE,
@@ -209,6 +212,7 @@ public class MountSpecLifecycleTest {
     assertThat(getSteps(info))
         .describedAs("Should call the lifecycle methods in expected order")
         .containsExactly(
+            LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CALCULATE_CACHED_VALUE,
             LifecycleStep.ON_PREPARE,
             LifecycleStep.ON_BOUNDS_DEFINED,
@@ -234,6 +238,7 @@ public class MountSpecLifecycleTest {
     assertThat(getSteps(info))
         .describedAs("Should call the lifecycle methods in expected order")
         .containsExactly(
+            LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CALCULATE_CACHED_VALUE,
             LifecycleStep.ON_PREPARE,
             LifecycleStep.ON_MEASURE,
@@ -284,6 +289,7 @@ public class MountSpecLifecycleTest {
     assertThat(getSteps(newInfo))
         .describedAs("Should call the lifecycle methods on new instance in expected order")
         .containsExactly(
+            LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CALCULATE_CACHED_VALUE,
             LifecycleStep.ON_PREPARE,
             LifecycleStep.ON_MEASURE,
