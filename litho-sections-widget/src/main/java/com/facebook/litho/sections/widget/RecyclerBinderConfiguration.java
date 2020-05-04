@@ -26,6 +26,7 @@ import com.facebook.litho.sections.SectionTree;
 import com.facebook.litho.sections.config.SectionsConfiguration;
 import com.facebook.litho.widget.ComponentWarmer;
 import com.facebook.litho.widget.LayoutHandlerFactory;
+import com.facebook.litho.widget.LithoViewFactory;
 import com.facebook.litho.widget.RecyclerBinder;
 import java.util.List;
 
@@ -39,6 +40,7 @@ public class RecyclerBinderConfiguration {
   private final boolean mUseCancelableLayoutFutures;
   private final @Nullable ComponentWarmer mComponentWarmer;
   private final @ComponentTree.RecyclingMode int mRecyclingMode;
+  private final @Nullable LithoViewFactory mLithoViewFactory;
   // TODO T34627443 make all fields final after removing setters
   private boolean mHasDynamicItemHeight;
   private boolean mUseBackgroundChangeSets = SectionsConfiguration.useBackgroundChangeSets;
@@ -82,7 +84,8 @@ public class RecyclerBinderConfiguration {
       boolean isLayoutDiffingEnabled,
       boolean postToFrontOfQueueForFirstChangeset,
       @Nullable ComponentWarmer componentWarmer,
-      int estimatedViewportCount) {
+      int estimatedViewportCount,
+      @Nullable LithoViewFactory lithoViewFactory) {
     mRangeRatio = rangeRatio;
     mLayoutHandlerFactory = layoutHandlerFactory;
     mIsCircular = circular;
@@ -103,6 +106,7 @@ public class RecyclerBinderConfiguration {
     mPostToFrontOfQueueForFirstChangeset = postToFrontOfQueueForFirstChangeset;
     mComponentWarmer = componentWarmer;
     mEstimatedViewportCount = estimatedViewportCount;
+    mLithoViewFactory = lithoViewFactory;
   }
 
   public float getRangeRatio() {
@@ -181,6 +185,10 @@ public class RecyclerBinderConfiguration {
     return mComponentWarmer;
   }
 
+  public @Nullable LithoViewFactory getLithoViewFactory() {
+    return mLithoViewFactory;
+  }
+
   public int getEstimatedViewportCount() {
     return mEstimatedViewportCount;
   }
@@ -213,6 +221,7 @@ public class RecyclerBinderConfiguration {
     private @Nullable ComponentWarmer mComponentWarmer;
     private int mEstimatedViewportCount = UNSET;
     private @ComponentTree.RecyclingMode int mRecyclingMode = ComponentTree.RecyclingMode.DEFAULT;
+    private LithoViewFactory mLithoViewFactory;
 
     Builder() {}
 
@@ -238,6 +247,7 @@ public class RecyclerBinderConfiguration {
           configuration.mPostToFrontOfQueueForFirstChangeset;
       this.mComponentWarmer = configuration.mComponentWarmer;
       this.mEstimatedViewportCount = configuration.mEstimatedViewportCount;
+      this.mLithoViewFactory = configuration.mLithoViewFactory;
     }
 
     /**
@@ -378,6 +388,11 @@ public class RecyclerBinderConfiguration {
       return this;
     }
 
+    public Builder lithoViewFactory(LithoViewFactory lithoViewFactory) {
+      mLithoViewFactory = lithoViewFactory;
+      return this;
+    }
+
     /**
      * This is a temporary hack that allows a surface to manually provide an estimated range. It
      * will go away so don't depend on it.
@@ -413,7 +428,8 @@ public class RecyclerBinderConfiguration {
           mIsLayoutDiffingEnabled,
           mPostToFrontOfQueueForFirstChangeset,
           mComponentWarmer,
-          mEstimatedViewportCount);
+          mEstimatedViewportCount,
+          mLithoViewFactory);
     }
   }
 }

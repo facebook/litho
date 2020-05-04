@@ -320,6 +320,7 @@ public class RecyclerCollectionComponentSpec {
             .recyclingMode(binderConfiguration.getRecyclingMode())
             .isLayoutDiffingEnabled(binderConfiguration.isLayoutDiffingEnabled())
             .componentWarmer(binderConfiguration.getComponentWarmer())
+            .lithoViewFactory(binderConfiguration.getLithoViewFactory())
             .startupLogger(startupLogger);
 
     if (binderConfiguration.getEstimatedViewportCount()

@@ -53,6 +53,7 @@ public class LithoView extends Host {
   private static final String TAG = LithoView.class.getSimpleName();
   private boolean mIsMountStateDirty;
   private final boolean mUseExtensions;
+  private final boolean mDelegateToRenderCore;
   private final @Nullable MountDelegateTarget mMountDelegateTarget;
 
   public interface OnDirtyMountListener {
@@ -180,14 +181,31 @@ public class LithoView extends Host {
     this(context, null);
   }
 
+  public LithoView(ComponentContext context, boolean useExtensions, boolean delegateToRenderCore) {
+    this(context, null, useExtensions, delegateToRenderCore);
+  }
+
   public LithoView(ComponentContext context, AttributeSet attrs) {
+    this(
+        context,
+        attrs,
+        ComponentsConfiguration.useExtensionsWithMountDelegate,
+        ComponentsConfiguration.delegateToRenderCoreMount);
+  }
+
+  public LithoView(
+      ComponentContext context,
+      AttributeSet attrs,
+      final boolean useExtensions,
+      final boolean delegateToRenderCore) {
     super(context, attrs);
     mComponentContext = context;
 
-    mUseExtensions = ComponentsConfiguration.useExtensionsWithMountDelegate;
+    mUseExtensions = useExtensions;
+    mDelegateToRenderCore = delegateToRenderCore;
 
     if (mUseExtensions) {
-      if (ComponentsConfiguration.delegateToRenderCoreMount) {
+      if (mDelegateToRenderCore) {
         mMountDelegateTarget = new com.facebook.rendercore.MountState(this);
       } else {
         mMountDelegateTarget = new MountState(this);
@@ -1227,7 +1245,7 @@ public class LithoView extends Host {
   }
 
   MountState getMountState() {
-    return mUseExtensions && !ComponentsConfiguration.delegateToRenderCoreMount
+    return mUseExtensions && !mDelegateToRenderCore
         ? (MountState) mMountDelegateTarget
         : mMountState;
   }
