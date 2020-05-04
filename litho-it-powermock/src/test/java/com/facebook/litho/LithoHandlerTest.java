@@ -25,7 +25,7 @@ import static org.robolectric.Shadows.shadowOf;
 import android.os.Build;
 import android.os.HandlerThread;
 import android.os.Process;
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import org.junit.Ignore;
@@ -43,7 +43,7 @@ import org.robolectric.shadows.ShadowLooper;
 @PrepareForTest({Process.class})
 @PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*"})
 @Config(sdk = Build.VERSION_CODES.LOLLIPOP)
-@RunWith(ComponentsTestRunner.class)
+@RunWith(LithoTestRunner.class)
 public class LithoHandlerTest {
 
   @Rule public PowerMockRule mPowerMockRule = new PowerMockRule();

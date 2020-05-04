@@ -25,13 +25,13 @@ import com.facebook.litho.sections.SectionTree;
 import com.facebook.litho.testing.sections.TestTarget;
 import com.facebook.litho.testing.sections.TestTriggerChildSection;
 import com.facebook.litho.testing.sections.TestTriggerParentSection;
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
 
-@RunWith(ComponentsTestRunner.class)
+@RunWith(LithoTestRunner.class)
 public class TriggerTest {
 
   private SectionContext mSectionContext;

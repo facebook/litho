@@ -27,7 +27,7 @@ import static org.mockito.Mockito.verify;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.sections.SectionTree.Target;
 import com.facebook.litho.sections.logger.SectionsDebugLogger;
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.ChangeSetCompleteCallback;
 import com.facebook.litho.widget.ComponentRenderInfo;
 import com.facebook.litho.widget.RenderInfo;
@@ -41,7 +41,7 @@ import org.mockito.Captor;
 import org.mockito.MockitoAnnotations;
 
 /** Tests {@link BatchedTarget} */
-@RunWith(ComponentsTestRunner.class)
+@RunWith(LithoTestRunner.class)
 public class BatchedTargetTest {
 
   private Target mMockTarget;

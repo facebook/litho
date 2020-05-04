@@ -33,7 +33,7 @@ import com.facebook.litho.Row;
 import com.facebook.litho.UnfocusedVisibleEvent;
 import com.facebook.litho.VisibleEvent;
 import com.facebook.litho.testing.TestLayoutComponent;
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,7 +41,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 /** Tests {@link VisibilityEventsHelper} */
-@RunWith(ComponentsTestRunner.class)
+@RunWith(LithoTestRunner.class)
 public class VisibilityEventsHelperTest {
 
   @Mock public EventHandler<VisibleEvent> mVisibleEventEventHandler;

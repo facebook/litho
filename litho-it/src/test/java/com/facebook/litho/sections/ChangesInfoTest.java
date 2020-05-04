@@ -18,14 +18,14 @@ package com.facebook.litho.sections;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 /** Tests {@link ChangesInfo} */
-@RunWith(ComponentsTestRunner.class)
+@RunWith(LithoTestRunner.class)
 public class ChangesInfoTest {
 
   @Test

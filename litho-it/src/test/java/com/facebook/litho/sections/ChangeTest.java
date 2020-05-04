@@ -19,7 +19,7 @@ package com.facebook.litho.sections;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import com.facebook.litho.specmodels.internal.ImmutableList;
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.ComponentRenderInfo;
 import com.facebook.litho.widget.RenderInfo;
 import java.util.ArrayList;
@@ -28,7 +28,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 /** Tests {@link Change} */
-@RunWith(ComponentsTestRunner.class)
+@RunWith(LithoTestRunner.class)
 public class ChangeTest {
 
   @Test

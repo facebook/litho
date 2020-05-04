@@ -20,7 +20,7 @@ import android.content.Context
 import android.graphics.Rect
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import com.facebook.litho.testing.helper.ComponentTestHelper
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner
+import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.util.TreePropHolder
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -29,7 +29,7 @@ import org.junit.runner.RunWith
 
 /** Unit tests for KTreeProps. */
 @Suppress("MagicNumber")
-@RunWith(ComponentsTestRunner::class)
+@RunWith(LithoTestRunner::class)
 class KTreePropsTest {
 
   private lateinit var context: ComponentContext

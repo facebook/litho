@@ -28,7 +28,7 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.logging.TestComponentsLogger;
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -40,7 +40,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 /** Tests that Mount events are only logged when tracing is enabled. */
-@RunWith(ComponentsTestRunner.class)
+@RunWith(LithoTestRunner.class)
 public class MountStateLoggingTest {
   private ComponentContext mContext;
   private TestComponentsLogger mComponentsLogger;

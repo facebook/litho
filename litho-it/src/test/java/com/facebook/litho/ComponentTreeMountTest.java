@@ -29,7 +29,7 @@ import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import com.facebook.litho.testing.TestTransitionComponent;
 import com.facebook.litho.testing.eventhandler.EventHandlerTestHelper;
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.EmptyComponent;
 import com.facebook.litho.widget.SolidColor;
 import com.facebook.litho.widget.Text;
@@ -37,7 +37,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-@RunWith(ComponentsTestRunner.class)
+@RunWith(LithoTestRunner.class)
 public class ComponentTreeMountTest {
 
   private ComponentContext mContext;

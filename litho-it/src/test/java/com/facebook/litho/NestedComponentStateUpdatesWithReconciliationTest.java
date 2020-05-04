@@ -28,7 +28,7 @@ import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.helper.ComponentTestHelper;
 import com.facebook.litho.testing.logging.TestComponentsLogger;
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.SolidColor;
 import java.util.HashSet;
 import java.util.Set;
@@ -40,7 +40,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.Shadows;
 import org.robolectric.shadows.ShadowLooper;
 
-@RunWith(ComponentsTestRunner.class)
+@RunWith(LithoTestRunner.class)
 public class NestedComponentStateUpdatesWithReconciliationTest {
 
   private static final String mLogTag = "logTag";

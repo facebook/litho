@@ -27,13 +27,13 @@ import static org.mockito.Mockito.when;
 
 import androidx.recyclerview.widget.GridLayoutManager;
 import com.facebook.litho.SizeSpec;
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-@RunWith(ComponentsTestRunner.class)
+@RunWith(LithoTestRunner.class)
 public class GridLayoutInfoTest {
 
   @Test

@@ -20,12 +20,12 @@ import static com.facebook.litho.dataflow.GraphBinding.create;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import android.view.animation.Interpolator;
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-@RunWith(ComponentsTestRunner.class)
+@RunWith(LithoTestRunner.class)
 public class InterpolatorNodeTest {
 
   private MockTimingSource mTestTimingSource;

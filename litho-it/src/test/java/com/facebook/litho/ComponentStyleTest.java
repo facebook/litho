@@ -29,14 +29,14 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 import android.view.ContextThemeWrapper;
 import com.facebook.litho.it.R;
 import com.facebook.litho.testing.ComponentsRule;
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.Text;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-@RunWith(ComponentsTestRunner.class)
+@RunWith(LithoTestRunner.class)
 @org.junit.Ignore("t16280359")
 public class ComponentStyleTest {
   private int mDimen;

@@ -24,7 +24,7 @@ import static org.assertj.core.api.ThrowableAssert.catchThrowable;
 
 import android.util.Pair;
 import com.facebook.litho.testing.logging.TestComponentsReporter;
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import org.assertj.core.api.ThrowableAssert;
 import org.junit.After;
 import org.junit.Before;
@@ -32,7 +32,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 /** Tests {@link ComponentsReporterTest} */
-@RunWith(ComponentsTestRunner.class)
+@RunWith(LithoTestRunner.class)
 public class ComponentsReporterTest {
 
   private static final String FATAL_MSG = "fatal";

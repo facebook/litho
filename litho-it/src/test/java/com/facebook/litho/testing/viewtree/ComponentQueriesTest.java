@@ -22,7 +22,7 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.testing.helper.ComponentTestHelper;
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.Text;
 import com.google.common.base.Predicates;
 import com.google.common.collect.ImmutableList;
@@ -31,7 +31,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 /** Tests {@link ComponentQueries} */
-@RunWith(ComponentsTestRunner.class)
+@RunWith(LithoTestRunner.class)
 public class ComponentQueriesTest {
   private ComponentContext mContext;
 

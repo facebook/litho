@@ -19,7 +19,7 @@ package com.facebook.litho
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import com.facebook.litho.testing.helper.ComponentTestHelper
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner
+import com.facebook.litho.testing.testrunner.LithoTestRunner
 import com.facebook.litho.widget.EmptyComponent
 import com.facebook.litho.widget.Text
 import java.util.concurrent.atomic.AtomicInteger
@@ -30,7 +30,7 @@ import org.junit.runner.RunWith
 
 /** Unit tests for KCached. */
 @Suppress("MagicNumber")
-@RunWith(ComponentsTestRunner::class)
+@RunWith(LithoTestRunner::class)
 class KCachedTest {
 
   private lateinit var context: ComponentContext

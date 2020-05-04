@@ -24,7 +24,7 @@ import android.view.View;
 import android.widget.FrameLayout;
 import com.facebook.litho.IncrementalModule.IncrementalModuleItem;
 import com.facebook.litho.testing.helper.ComponentTestHelper;
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -32,7 +32,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-@RunWith(ComponentsTestRunner.class)
+@RunWith(LithoTestRunner.class)
 public class IncrementalModuleTest {
 
   private ComponentContext mContext;

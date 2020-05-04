@@ -23,7 +23,7 @@ litho_android_library(
 
 litho_android_library(
     name = "testrunner-v4",
-    srcs = ["ComponentsTestRunner.java"],
+    srcs = ["LithoTestRunner.java"],
     visibility = [
         "PUBLIC",
     ],

@@ -30,12 +30,12 @@ import com.facebook.litho.dataflow.MockTimingSource;
 import com.facebook.litho.dataflow.OutputOnlyNode;
 import com.facebook.litho.dataflow.SettableNode;
 import com.facebook.litho.dataflow.SimpleNode;
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-@RunWith(ComponentsTestRunner.class)
+@RunWith(LithoTestRunner.class)
 public class AnimatedPropertyNodeTest {
 
   private MockTimingSource mTestTimingSource;

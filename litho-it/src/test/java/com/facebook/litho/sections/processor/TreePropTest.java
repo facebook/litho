@@ -25,7 +25,7 @@ import android.app.Activity;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.testing.treeprop.TreePropNumberType;
 import com.facebook.litho.testing.treeprop.TreePropStringType;
 import com.facebook.litho.testing.treeprop.TreePropTestParent;
@@ -36,7 +36,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 
 /** Tests passing {@link TreeProp}s down a Component tree. */
-@RunWith(ComponentsTestRunner.class)
+@RunWith(LithoTestRunner.class)
 public class TreePropTest {
 
   private ComponentContext mContext;

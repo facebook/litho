@@ -21,13 +21,13 @@ import static org.mockito.Mockito.mock;
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.viewcompat.SimpleViewBinder;
 import com.facebook.litho.viewcompat.ViewCreator;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-@RunWith(ComponentsTestRunner.class)
+@RunWith(LithoTestRunner.class)
 public class ViewRenderInfoTest {
 
   private static final ViewCreator VIEW_CREATOR_1 =

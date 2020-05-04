@@ -33,7 +33,7 @@ import com.facebook.litho.SizeSpec;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -43,7 +43,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.Shadows;
 import org.robolectric.shadows.ShadowLooper;
 
-@RunWith(ComponentsTestRunner.class)
+@RunWith(LithoTestRunner.class)
 public class ComponentWarmerTest {
 
   private ComponentContext mContext;

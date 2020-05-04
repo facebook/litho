@@ -23,12 +23,12 @@ import static java.lang.Long.toBinaryString;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import android.graphics.Rect;
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-@RunWith(ComponentsTestRunner.class)
+@RunWith(LithoTestRunner.class)
 public class LayoutOutputTest {
 
   private static final int LIFECYCLE_TEST_ID = 1;

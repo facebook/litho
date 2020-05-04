@@ -30,7 +30,7 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.ComponentsRule;
 import com.facebook.litho.testing.subcomponents.InspectableComponent;
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.Card;
 import com.facebook.litho.widget.TestCard;
 import com.facebook.litho.widget.Text;
@@ -40,7 +40,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-@RunWith(ComponentsTestRunner.class)
+@RunWith(LithoTestRunner.class)
 public class FeedItemCardSpecTest {
   @Rule public ComponentsRule mComponentsRule = new ComponentsRule();
 

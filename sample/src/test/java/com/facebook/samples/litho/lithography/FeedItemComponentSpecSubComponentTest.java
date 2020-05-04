@@ -28,7 +28,7 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.ComponentsRule;
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import org.hamcrest.core.IsNull;
 import org.junit.Before;
 import org.junit.Rule;
@@ -39,7 +39,7 @@ import org.junit.runner.RunWith;
  * Demonstrates testing sub components based on {@link FeedItemComponentSpec}'s {@link
  * FooterComponentSpec} use.
  */
-@RunWith(ComponentsTestRunner.class)
+@RunWith(LithoTestRunner.class)
 public class FeedItemComponentSpecSubComponentTest {
   @Rule public ComponentsRule mComponentsRule = new ComponentsRule();
 

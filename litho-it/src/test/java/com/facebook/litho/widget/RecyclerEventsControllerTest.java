@@ -27,13 +27,13 @@ import static org.mockito.Mockito.verify;
 import androidx.recyclerview.widget.RecyclerView;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ThreadUtils;
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-@RunWith(ComponentsTestRunner.class)
+@RunWith(LithoTestRunner.class)
 public class RecyclerEventsControllerTest {
 
   private TestSectionsRecyclerView mSectionsRecyclerView;

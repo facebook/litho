@@ -23,7 +23,7 @@ import com.facebook.litho.ClickEvent;
 import com.facebook.litho.sections.Section;
 import com.facebook.litho.testing.sections.SectionsTestHelper;
 import com.facebook.litho.testing.sections.SubSection;
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.Text;
 import java.util.List;
 import org.junit.Before;
@@ -31,7 +31,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 /** Tests {@link VerySimpleGroupSectionSpec} */
-@RunWith(ComponentsTestRunner.class)
+@RunWith(LithoTestRunner.class)
 public class VerySimpleGroupSectionSpecTest {
 
   private SectionsTestHelper mTester;

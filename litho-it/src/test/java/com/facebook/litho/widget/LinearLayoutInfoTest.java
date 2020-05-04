@@ -28,14 +28,14 @@ import static org.mockito.Mockito.when;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import com.facebook.litho.SizeSpec;
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 /** Tests for {@link LinearLayoutInfo} */
-@RunWith(ComponentsTestRunner.class)
+@RunWith(LithoTestRunner.class)
 public class LinearLayoutInfoTest {
 
   @Test

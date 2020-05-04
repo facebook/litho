@@ -26,11 +26,11 @@ import static org.mockito.Mockito.when;
 
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import com.facebook.litho.SizeSpec;
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-@RunWith(ComponentsTestRunner.class)
+@RunWith(LithoTestRunner.class)
 public class StaggeredGridLayoutInfoTest {
 
   @Test

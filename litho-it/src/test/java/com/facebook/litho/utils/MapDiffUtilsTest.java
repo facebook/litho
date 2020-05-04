@@ -18,12 +18,12 @@ package com.facebook.litho.utils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import java.util.HashMap;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-@RunWith(ComponentsTestRunner.class)
+@RunWith(LithoTestRunner.class)
 public class MapDiffUtilsTest {
 
   @Test

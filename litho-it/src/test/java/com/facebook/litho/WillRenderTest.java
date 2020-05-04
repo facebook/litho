@@ -22,13 +22,13 @@ import static com.facebook.litho.testing.assertj.LithoAssertions.assertThat;
 import android.view.View;
 import com.facebook.litho.LayoutState.LayoutStateContext;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
-@RunWith(ComponentsTestRunner.class)
+@RunWith(LithoTestRunner.class)
 public class WillRenderTest {
 
   private final InlineLayoutSpec mNullSpec =

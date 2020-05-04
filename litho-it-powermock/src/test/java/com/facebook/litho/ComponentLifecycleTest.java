@@ -36,7 +36,7 @@ import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import com.facebook.infer.annotation.OkToExtend;
 import com.facebook.litho.ComponentLifecycle.MountType;
 import com.facebook.litho.config.ComponentsConfiguration;
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.yoga.YogaMeasureFunction;
 import com.facebook.yoga.YogaMeasureOutput;
 import com.facebook.yoga.YogaNode;
@@ -64,7 +64,7 @@ import org.powermock.reflect.Whitebox;
   "android.*",
   "com.facebook.yoga.*"
 })
-@RunWith(ComponentsTestRunner.class)
+@RunWith(LithoTestRunner.class)
 public class ComponentLifecycleTest {
 
   @Rule public PowerMockRule mPowerMockRule = new PowerMockRule();

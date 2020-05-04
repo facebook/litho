@@ -20,13 +20,13 @@ import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 
 import android.view.View;
 import com.facebook.litho.testing.logging.TestComponentsReporter;
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.TreePropTestContainerComponent;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-@RunWith(ComponentsTestRunner.class)
+@RunWith(LithoTestRunner.class)
 public class ComponentTreePropWithReconciliationTest {
 
   private ComponentContext c;

@@ -18,7 +18,7 @@ package com.facebook.litho.widget;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import java.util.ArrayList;
 import java.util.Arrays;
 import org.junit.Before;
@@ -26,7 +26,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 /** Test for {@link RecyclerRangeTraverser} */
-@RunWith(ComponentsTestRunner.class)
+@RunWith(LithoTestRunner.class)
 public class RecyclerRangeTraverserTest implements RecyclerRangeTraverser.Processor {
   private ArrayList<Integer> mCollectedIndices;
 

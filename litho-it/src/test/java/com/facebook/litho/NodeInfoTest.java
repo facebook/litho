@@ -33,12 +33,12 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import android.util.SparseArray;
 import com.facebook.litho.testing.Whitebox;
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-@RunWith(ComponentsTestRunner.class)
+@RunWith(LithoTestRunner.class)
 public class NodeInfoTest {
 
   private DefaultNodeInfo mNodeInfo;

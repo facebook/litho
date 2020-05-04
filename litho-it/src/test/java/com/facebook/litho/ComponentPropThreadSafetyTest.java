@@ -28,7 +28,7 @@ import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestWrappedComponentProp;
 import com.facebook.litho.testing.TestWrappedComponentPropSpec;
 import com.facebook.litho.testing.Whitebox;
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Before;
@@ -38,7 +38,7 @@ import org.mockito.Mockito;
 import org.robolectric.Shadows;
 import org.robolectric.shadows.ShadowLooper;
 
-@RunWith(ComponentsTestRunner.class)
+@RunWith(LithoTestRunner.class)
 public class ComponentPropThreadSafetyTest {
 
   private ComponentContext mContext;

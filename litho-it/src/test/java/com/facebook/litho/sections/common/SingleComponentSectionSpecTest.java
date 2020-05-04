@@ -28,7 +28,7 @@ import com.facebook.litho.sections.Change;
 import com.facebook.litho.sections.ChangeSet;
 import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.specmodels.internal.ImmutableList;
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.Before;
@@ -36,7 +36,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 /** Tests {@link SingleComponentSectionSpec} */
-@RunWith(ComponentsTestRunner.class)
+@RunWith(LithoTestRunner.class)
 public class SingleComponentSectionSpecTest {
 
   private SectionContext mSectionContext;

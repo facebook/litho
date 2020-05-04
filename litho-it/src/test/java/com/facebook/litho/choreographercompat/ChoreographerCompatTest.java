@@ -19,7 +19,7 @@ package com.facebook.litho.choreographercompat;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.facebook.litho.choreographercompat.ChoreographerCompat.FrameCallback;
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -28,7 +28,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.shadows.ShadowLooper;
 
-@RunWith(ComponentsTestRunner.class)
+@RunWith(LithoTestRunner.class)
 public class ChoreographerCompatTest {
 
   @Test

@@ -24,7 +24,7 @@ import android.graphics.Canvas;
 import android.graphics.Picture;
 import android.graphics.drawable.Drawable;
 import android.text.Layout;
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,7 +35,7 @@ import org.robolectric.annotation.Implements;
 import org.robolectric.shadows.ShadowLooper;
 
 /** Tests {@link TextureWarmer}. */
-@RunWith(ComponentsTestRunner.class)
+@RunWith(LithoTestRunner.class)
 @Config(shadows = TextureWarmerTest.ShadowPicture.class)
 public class TextureWarmerTest {
   private ShadowLooper mShadowLooper;

@@ -27,7 +27,7 @@ import com.facebook.litho.testing.error.TestCrasherOnCreateLayoutWithSizeSpec;
 import com.facebook.litho.testing.error.TestCrasherOnMount;
 import com.facebook.litho.testing.error.TestErrorBoundary;
 import com.facebook.litho.testing.helper.ComponentTestHelper;
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -39,7 +39,7 @@ import org.junit.runner.RunWith;
  * com.facebook.litho.testing.error.TestErrorBoundarySpec} against components crashing in various
  * different lifecycle methods.
  */
-@RunWith(ComponentsTestRunner.class)
+@RunWith(LithoTestRunner.class)
 public class ComponentLifecycleErrorTest {
   @Rule public ComponentsRule mComponentsRule = new ComponentsRule();
   private boolean mPreviousOnErrorConfig;

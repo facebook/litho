@@ -22,7 +22,7 @@ import android.app.Activity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.google.common.base.Function;
 import com.google.common.base.Predicates;
 import javax.annotation.Nullable;
@@ -32,7 +32,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 
 /** Tests {@link ViewTree} */
-@RunWith(ComponentsTestRunner.class)
+@RunWith(LithoTestRunner.class)
 public class ViewTreeTest {
 
   private ViewGroup mRoot;

@@ -18,12 +18,12 @@ package com.facebook.litho.testing.viewtree;
 
 import static com.facebook.litho.testing.assertj.LithoAssertions.assertThat;
 
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 /** Test for {@link ViewTreeUtil} */
-@RunWith(ComponentsTestRunner.class)
+@RunWith(LithoTestRunner.class)
 public class ViewTreeUtilTest {
   @Test
   public void testResourceFound() {

@@ -24,13 +24,13 @@ import static org.mockito.Mockito.mock;
 import android.os.Handler;
 import android.os.Looper;
 import com.facebook.litho.testing.TestLayoutComponent;
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 /** Tests for {@link ComponentTree.Builder} */
-@RunWith(ComponentsTestRunner.class)
+@RunWith(LithoTestRunner.class)
 public class ComponentTreeBuilderTest {
   private static final String mLogTag = "logTag";
   private final Object mLayoutLock = new Object();

@@ -43,7 +43,7 @@ import com.facebook.litho.testing.TestLayoutComponent;
 import com.facebook.litho.testing.TestSizeDependentComponent;
 import com.facebook.litho.testing.TestViewComponent;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -62,7 +62,7 @@ import org.robolectric.annotation.Config;
   "com.facebook.yoga.*"
 })
 @Config(sdk = Build.VERSION_CODES.LOLLIPOP)
-@RunWith(ComponentsTestRunner.class)
+@RunWith(LithoTestRunner.class)
 public class LayoutStateCalculateTest {
 
   @Rule public PowerMockRule mPowerMockRule = new PowerMockRule();

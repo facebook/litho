@@ -52,7 +52,7 @@ import androidx.collection.SparseArrayCompat;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestViewComponent;
 import com.facebook.litho.testing.Whitebox;
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.rendercore.MountItem;
 import com.facebook.yoga.YogaDirection;
 import java.util.List;
@@ -63,7 +63,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
 /** Tests {@link ComponentHost} */
-@RunWith(ComponentsTestRunner.class)
+@RunWith(LithoTestRunner.class)
 public class ComponentHostTest {
 
   private Component mViewGroupHost;
@@ -674,10 +674,9 @@ public class ComponentHostTest {
 
   /**
    * {@link ViewGroup#getClipChildren()} method was only added in API 18, but plays important role
-   * here, so will need to run this test for two SDK versions. And since {@link
-   * ComponentsTestRunner} does not support multiple values for @Config.sdk, there are two separated
-   * test methods {@see #testTemporaryChildClippingDisablingJB} {@see
-   * #testTemporaryChildClippingDisablingLollipop}
+   * here, so will need to run this test for two SDK versions. And since {@link LithoTestRunner}
+   * does not support multiple values for @Config.sdk, there are two separated test methods {@see
+   * #testTemporaryChildClippingDisablingJB} {@see #testTemporaryChildClippingDisablingLollipop}
    */
   private void testTemporaryChildClippingDisabling() {
     ComponentHost componentHost = new ComponentHost(mContext);

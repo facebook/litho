@@ -23,14 +23,14 @@ import static org.mockito.Mockito.mock;
 
 import com.facebook.litho.sections.logger.SectionsDebugLogger;
 import com.facebook.litho.testing.sections.TestSectionCreator;
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.ComponentRenderInfo;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 /** Tests {@link ChangeSetState} */
-@RunWith(ComponentsTestRunner.class)
+@RunWith(LithoTestRunner.class)
 public class ChangeSetStateTest {
   private SectionContext mSectionContext;
   private SectionsDebugLogger mSectionsDebugLogger;

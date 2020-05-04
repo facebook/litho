@@ -23,7 +23,7 @@ import static org.hamcrest.CoreMatchers.isA;
 import android.graphics.Color;
 import android.widget.FrameLayout;
 import com.facebook.litho.testing.helper.ComponentTestHelper;
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.SizeSpecMountWrapperComponent;
 import com.facebook.litho.widget.SizeTreePropComponent;
 import com.facebook.litho.widget.SolidColor;
@@ -33,7 +33,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
-@RunWith(ComponentsTestRunner.class)
+@RunWith(LithoTestRunner.class)
 public class SizeSpecMountWrapperComponentSpecTest {
 
   @Rule public ExpectedException thrown = ExpectedException.none();

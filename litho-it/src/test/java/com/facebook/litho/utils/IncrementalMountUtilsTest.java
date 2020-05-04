@@ -30,7 +30,7 @@ import android.graphics.Rect;
 import android.view.View;
 import android.view.ViewGroup;
 import com.facebook.litho.LithoView;
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.utils.IncrementalMountUtils.WrapperView;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,7 +39,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 /** Tests {@link IncrementalMountUtils} */
-@RunWith(ComponentsTestRunner.class)
+@RunWith(LithoTestRunner.class)
 public class IncrementalMountUtilsTest {
   private static final int SCROLLING_VIEW_WIDTH = 100;
   private static final int SCROLLING_VIEW_HEIGHT = 1000;

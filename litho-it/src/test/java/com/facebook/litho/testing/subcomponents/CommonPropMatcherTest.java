@@ -27,7 +27,7 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.Row;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.ComponentsRule;
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.Card;
 import com.facebook.litho.widget.TestCard;
 import org.junit.Before;
@@ -35,7 +35,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-@RunWith(ComponentsTestRunner.class)
+@RunWith(LithoTestRunner.class)
 public class CommonPropMatcherTest {
   @Rule public ComponentsRule mComponentsRule = new ComponentsRule();
 

@@ -23,7 +23,7 @@ import com.facebook.litho.annotations.TreeProp;
 import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.SectionTree;
 import com.facebook.litho.testing.sections.TestTarget;
-import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
+import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.testing.treeprop.TreePropNumberType;
 import com.facebook.litho.testing.treeprop.TreePropSectionTestLeafGroupSpec.Result;
 import com.facebook.litho.testing.treeprop.TreePropSectionTestParentGroup;
@@ -34,7 +34,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 
 /** Tests passing {@link TreeProp}s down a Section tree. */
-@RunWith(ComponentsTestRunner.class)
+@RunWith(LithoTestRunner.class)
 public class TreePropSectionTest {
 
   private SectionContext mContext;
