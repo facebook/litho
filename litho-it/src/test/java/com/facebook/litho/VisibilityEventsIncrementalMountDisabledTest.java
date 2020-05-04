@@ -23,6 +23,7 @@ import static com.facebook.litho.testing.helper.ComponentTestHelper.unbindCompon
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import android.graphics.Rect;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import com.facebook.litho.config.ComponentsConfiguration;
@@ -30,6 +31,7 @@ import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestViewComponent;
 import com.facebook.litho.testing.ViewGroupWithLithoViewChildren;
+import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.testrunner.ComponentsTestRunner;
 import com.facebook.yoga.YogaEdge;
@@ -42,6 +44,7 @@ import org.robolectric.RuntimeEnvironment;
 
 @RunWith(ComponentsTestRunner.class)
 public class VisibilityEventsIncrementalMountDisabledTest {
+
   private static final int LEFT = 0;
   private static final int RIGHT = 10;
 
@@ -1616,5 +1619,59 @@ public class VisibilityEventsIncrementalMountDisabledTest {
     lithoView.performLayout(true, 0, 0, RIGHT, 10);
 
     assertThat(content.getDispatchedEventHandlers()).contains(visibleEventHandler);
+  }
+
+  @Test
+  public void
+      visibilityProcessing_WhenViewIsFullyTranslatedOntoScreen_DispatchesFullImpressionEvent() {
+    final TestComponent content = create(mContext).build();
+    final EventHandler<FullImpressionVisibleEvent> fullImpressionHandler =
+        new EventHandler<>(content, 2);
+
+    final FrameLayout parent = new FrameLayout(mContext.getAndroidContext());
+    LithoView lithoView = new LithoView(mContext);
+    ComponentTree componentTree =
+        ComponentTree.create(
+                mContext,
+                Column.create(mContext)
+                    .child(
+                        Wrapper.create(mContext)
+                            .delegate(content)
+                            .fullImpressionHandler(fullImpressionHandler)
+                            .widthPx(100)
+                            .heightPx(100))
+                    .build())
+            .incrementalMount(false)
+            .layoutDiffing(false)
+            .visibilityProcessing(true)
+            .build();
+    lithoView.setComponentTree(componentTree);
+    parent.addView(
+        lithoView,
+        new FrameLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+    lithoView.setTranslationY(-10);
+    parent.measure(
+        View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
+        View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY));
+    parent.layout(0, 0, 100, 100);
+    try {
+      Whitebox.invokeMethod(lithoView, "onAttach");
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+
+    assertThat(content.getDispatchedEventHandlers()).doesNotContain(fullImpressionHandler);
+
+    lithoView.setTranslationY(-5);
+    assertThat(content.getDispatchedEventHandlers()).doesNotContain(fullImpressionHandler);
+
+    // Note: there seems to be some bug where the local visible rect is off by 1px when using
+    // translation, thus this check will not work with -1
+    lithoView.setTranslationY(-2);
+    assertThat(content.getDispatchedEventHandlers()).doesNotContain(fullImpressionHandler);
+
+    lithoView.setTranslationY(0);
+    assertThat(content.getDispatchedEventHandlers()).contains(fullImpressionHandler);
   }
 }

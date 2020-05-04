@@ -938,13 +938,18 @@ public class LithoView extends Host {
     final int bottom = getBottom() + translationY;
     final int left = getLeft() + translationX;
     final int right = getRight() + translationX;
+    final Rect previousRect = mPreviousMountVisibleRectBounds;
 
     if (left >= 0
         && top >= 0
         && right <= parentWidth
         && bottom <= parentHeight
-        && mPreviousMountVisibleRectBounds.width() == getWidth()
-        && mPreviousMountVisibleRectBounds.height() == getHeight()) {
+        && previousRect.left >= 0
+        && previousRect.top >= 0
+        && previousRect.right <= parentWidth
+        && previousRect.bottom <= parentHeight
+        && previousRect.width() == getWidth()
+        && previousRect.height() == getHeight()) {
       // View is fully visible, and has already been completely mounted.
       return;
     }
@@ -1199,6 +1204,8 @@ public class LithoView extends Host {
         mPreviousMountVisibleRectBounds,
         isMountStateDirty(),
         null);
+
+    mPreviousMountVisibleRectBounds.set(currentVisibleArea);
   }
 
   public void unmountAllItems() {
