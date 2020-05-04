@@ -98,10 +98,6 @@ public class LithoViewRule implements TestRule {
   public LithoViewRule useComponentTree(ComponentTree componentTree) {
     mComponentTree = componentTree;
     getLithoView().setComponentTree(componentTree);
-    if (mComponentTree.getContext() != mContext) {
-      throw new RuntimeException(
-          "You must use the same ComponentContext for the ComponentTree as what is on the LithoViewRule @Rule!");
-    }
     return this;
   }
 
