@@ -974,7 +974,7 @@ public class LithoView extends Host {
       return true;
     }
 
-    if (!isLayoutRequested()) {
+    if (mComponentTree.isIncrementalMountEnabled() && !isLayoutRequested()) {
       throw new RuntimeException(
           "Trying to incrementally mount a component with a null main thread LayoutState on a "
               + "LithoView that hasn't requested layout!");
