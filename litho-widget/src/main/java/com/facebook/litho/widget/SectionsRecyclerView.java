@@ -26,7 +26,6 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
 import com.facebook.litho.HasLithoViewChildren;
 import com.facebook.litho.LithoView;
-import com.facebook.litho.config.ComponentsConfiguration;
 import java.util.List;
 import javax.annotation.Nullable;
 
@@ -164,19 +163,6 @@ public class SectionsRecyclerView extends SwipeRefreshLayout implements HasLitho
   protected void onDetachedFromWindow() {
     super.onDetachedFromWindow();
     mHasBeenDetachedFromWindow = true;
-  }
-
-  /**
-   * This is needed to solve a launch-blocker t14789523 and work around a framework bug t14809560.
-   */
-  @Override
-  public boolean isLayoutRequested() {
-    if (!ComponentsConfiguration.disableOverridingLayoutRequestInRV) {
-      if (getParent() != null) {
-        return getParent().isLayoutRequested() || super.isLayoutRequested();
-      }
-    }
-    return super.isLayoutRequested();
   }
 
   boolean hasBeenDetachedFromWindow() {
