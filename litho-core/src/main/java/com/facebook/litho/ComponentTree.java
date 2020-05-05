@@ -1956,6 +1956,8 @@ public class ComponentTree {
 
       if (treePropsInitialized) {
         mRootTreeProps = treeProps;
+      } else {
+        treeProps = mRootTreeProps;
       }
     }
 

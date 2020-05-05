@@ -507,9 +507,95 @@ public class ComponentTreeTest {
         makeSizeSpec(100, EXACTLY),
         treeProps);
 
-    assertThat(componentTree.getBackgroundLayoutState()).isNull();
+    assertThat(componentTree.getCommittedLayoutState()).isNull();
 
-    componentTree.measure(makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY), new int[2], true);
+    componentTree.measure(
+        makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY), new int[2], false);
+
+    final ComponentContext c =
+        getInternalState(componentTree.getMainThreadLayoutState(), "mContext");
+    assertThat(c.getTreeProps()).isNotNull();
+    assertThat(c.getTreeProps().get(Object.class)).isEqualTo(treeProps.get(Object.class));
+  }
+
+  @Test
+  public void testSetRootWithTreePropsThenSetSizeSpec() {
+    ComponentTree componentTree = create(mContext, mComponent).build();
+    componentTree.setLithoView(new LithoView(mContext));
+    componentTree.attach();
+
+    final TreeProps treeProps = new TreeProps();
+    treeProps.put(Object.class, "hello world");
+
+    componentTree.setRootAndSizeSpecAsync(
+        TestDrawableComponent.create(mContext).build(),
+        makeSizeSpec(100, EXACTLY),
+        makeSizeSpec(100, EXACTLY),
+        treeProps);
+
+    assertThat(componentTree.getCommittedLayoutState()).isNull();
+
+    componentTree.setSizeSpec(makeSizeSpec(200, EXACTLY), makeSizeSpec(200, EXACTLY));
+
+    final ComponentContext c =
+        getInternalState(componentTree.getMainThreadLayoutState(), "mContext");
+    assertThat(c.getTreeProps()).isNotNull();
+    assertThat(c.getTreeProps().get(Object.class)).isEqualTo(treeProps.get(Object.class));
+  }
+
+  @Test
+  public void testSetRootWithTreePropsThenSetNewRoot() {
+    ComponentTree componentTree = create(mContext, mComponent).build();
+    componentTree.setLithoView(new LithoView(mContext));
+    componentTree.attach();
+
+    final TreeProps treeProps = new TreeProps();
+    treeProps.put(Object.class, "hello world");
+
+    componentTree.setRootAndSizeSpecAsync(
+        TestDrawableComponent.create(mContext).build(),
+        makeSizeSpec(100, EXACTLY),
+        makeSizeSpec(100, EXACTLY),
+        treeProps);
+
+    assertThat(componentTree.getCommittedLayoutState()).isNull();
+
+    componentTree.setRootAndSizeSpec(
+        TestDrawableComponent.create(mContext).build(),
+        makeSizeSpec(200, EXACTLY),
+        makeSizeSpec(200, EXACTLY));
+
+    final ComponentContext c =
+        getInternalState(componentTree.getMainThreadLayoutState(), "mContext");
+    assertThat(c.getTreeProps()).isNotNull();
+    assertThat(c.getTreeProps().get(Object.class)).isEqualTo(treeProps.get(Object.class));
+  }
+
+  @Test
+  public void testSetRootWithTreePropsThenUpdateState() {
+    SimpleStateUpdateEmulatorSpec.Caller caller = new SimpleStateUpdateEmulatorSpec.Caller();
+    ComponentTree componentTree =
+        create(mContext, SimpleStateUpdateEmulator.create(mContext).caller(caller).build()).build();
+    componentTree.setLithoView(new LithoView(mContext));
+    componentTree.attach();
+
+    componentTree.setRootAndSizeSpec(
+        SimpleStateUpdateEmulator.create(mContext).caller(caller).build(),
+        makeSizeSpec(100, EXACTLY),
+        makeSizeSpec(100, EXACTLY),
+        new Size());
+
+    final TreeProps treeProps = new TreeProps();
+    treeProps.put(Object.class, "hello world");
+
+    componentTree.setRootAndSizeSpecAsync(
+        SimpleStateUpdateEmulator.create(mContext).caller(caller).build(),
+        makeSizeSpec(100, EXACTLY),
+        makeSizeSpec(100, EXACTLY),
+        treeProps);
+
+    caller.increment();
+    ShadowLooper.runUiThreadTasks();
 
     final ComponentContext c =
         getInternalState(componentTree.getMainThreadLayoutState(), "mContext");
