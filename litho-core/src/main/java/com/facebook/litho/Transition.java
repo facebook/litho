@@ -314,18 +314,21 @@ public abstract class Transition {
     private final RuntimeValue mDisappearTo;
     @Nullable private final String mTraceName;
     @Nullable private String mOwnerKey;
+    @Nullable private EventHandler<TransitionEndEvent> mTransitionEndHandler;
 
     TransitionUnit(
         AnimationTarget animationTarget,
         TransitionAnimator transitionAnimator,
         RuntimeValue appearFrom,
         RuntimeValue disappearTo,
-        @Nullable String traceName) {
+        @Nullable String traceName,
+        @Nullable EventHandler<TransitionEndEvent> transitionEndHandler) {
       mAnimationTarget = animationTarget;
       mTransitionAnimator = transitionAnimator;
       mAppearFrom = appearFrom;
       mDisappearTo = disappearTo;
       mTraceName = traceName;
+      mTransitionEndHandler = transitionEndHandler;
     }
 
     AnimationTarget getAnimationTarget() {
@@ -346,6 +349,11 @@ public abstract class Transition {
 
     RuntimeValue getDisappearTo() {
       return mDisappearTo;
+    }
+
+    @Nullable
+    EventHandler<TransitionEndEvent> getTransitionEndHandler() {
+      return mTransitionEndHandler;
     }
 
     AnimationBinding createAnimation(PropertyHandle propertyHandle, float targetValue) {
@@ -481,6 +489,18 @@ public abstract class Transition {
     }
 
     /**
+     * Add a transition end handler that would get a callback whenever the transition finishes.
+     *
+     * @param transitionEndHandler
+     * @return
+     */
+    public TransitionUnitsBuilder transitionEndHandler(
+        EventHandler<TransitionEndEvent> transitionEndHandler) {
+      mTransitionEndHandler = transitionEndHandler;
+      return this;
+    }
+
+    /**
      * Define where appear animations should start from.
      *
      * @see FloatValue
@@ -550,6 +570,18 @@ public abstract class Transition {
       mTransitionAnimator = animator;
       return this;
     }
+
+    /**
+     * Add a transition end handler that would get a callback whenever the transition finishes.
+     *
+     * @param transitionEndHandler
+     * @return
+     */
+    public AutoBoundsTransitionBuilder transitionEndHandler(
+        EventHandler<TransitionEndEvent> transitionEndHandler) {
+      mTransitionEndHandler = transitionEndHandler;
+      return this;
+    }
   }
 
   public abstract static class BaseTransitionUnitsBuilder extends Transition {
@@ -561,6 +593,7 @@ public abstract class Transition {
     RuntimeValue mAppearFrom;
     RuntimeValue mDisappearTo;
     String mTraceName;
+    @Nullable EventHandler<TransitionEndEvent> mTransitionEndHandler;
 
     void maybeCommitCurrentBuilder() {
       if (mPropertyTarget == null) {
@@ -572,12 +605,14 @@ public abstract class Transition {
               mTransitionAnimator,
               mAppearFrom,
               mDisappearTo,
-              mTraceName));
+              mTraceName,
+              mTransitionEndHandler));
       mPropertyTarget = null;
       mTransitionAnimator = DEFAULT_ANIMATOR;
       mAppearFrom = null;
       mDisappearTo = null;
       mTraceName = null;
+      mTransitionEndHandler = null;
     }
 
     ArrayList<TransitionUnit> getTransitionUnits() {

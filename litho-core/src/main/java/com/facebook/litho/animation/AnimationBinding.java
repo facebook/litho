@@ -16,6 +16,7 @@
 
 package com.facebook.litho.animation;
 
+import androidx.annotation.Nullable;
 import java.util.ArrayList;
 
 /**
@@ -59,4 +60,13 @@ public interface AnimationBinding {
 
   /** Removes a previously added {@link AnimationBindingListener}. */
   void removeListener(AnimationBindingListener animationBindingListener);
+
+  /**
+   * Allows adding a tags that can also be used to store data without resorting to another data
+   * structure. *
+   */
+  @Nullable
+  Object getTag();
+
+  void setTag(@Nullable Object tag);
 }

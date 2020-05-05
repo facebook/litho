@@ -23,6 +23,7 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.collection.LongSparseArray;
 import com.facebook.litho.animation.AnimatedProperties;
+import com.facebook.litho.animation.PropertyHandle;
 import com.facebook.rendercore.MountDelegate.MountDelegateInput;
 import com.facebook.rendercore.MountDelegateExtension;
 import com.facebook.rendercore.MountItem;
@@ -36,7 +37,7 @@ import java.util.Map;
 /** Extension for performing transitions. */
 public class TransitionsExtension extends MountDelegateExtension
     implements HostListenerExtension<TransitionsExtension.TransitionsExtensionInput>,
-        TransitionManager.OnAnimationCompleteListener {
+        TransitionManager.OnAnimationCompleteListener<EventHandler<TransitionEndEvent>> {
 
   private final Host mLithoView;
   private TransitionsExtensionInput mInput;
@@ -338,6 +339,16 @@ public class TransitionsExtension extends MountDelegateExtension
     }
     // TODO (T64352474): Handle disappearing items
     //    }
+  }
+
+  @Override
+  public void onAnimationUnitComplete(
+      PropertyHandle propertyHandle, EventHandler transitionEndHandler) {
+    if (transitionEndHandler != null) {
+      transitionEndHandler.dispatchEvent(
+          new TransitionEndEvent(
+              propertyHandle.getTransitionId().mReference, propertyHandle.getProperty()));
+    }
   }
 
   private void maybeUpdateAnimatingMountContent() {

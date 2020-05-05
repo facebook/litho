@@ -21,6 +21,7 @@ import androidx.annotation.Nullable;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
 import com.facebook.samples.litho.animations.animatedbadge.AnimatedBadgeActivity;
+import com.facebook.samples.litho.animations.animationcallbacks.AnimationCallbacksActivity;
 import com.facebook.samples.litho.animations.animationcomposition.ComposedAnimationsActivity;
 import com.facebook.samples.litho.animations.animationcookbook.AnimationCookBookActivity;
 import com.facebook.samples.litho.animations.bounds.BoundsAnimationActivity;
@@ -75,6 +76,7 @@ public class DemoListActivity extends NavigatableDemoActivity {
                   new DemoListDataModel(
                       "Common Dynamic Props Animations", CommonDynamicPropsAnimationActivity.class),
                   new DemoListDataModel("Animation Cookbook", AnimationCookBookActivity.class),
+                  new DemoListDataModel("Animation Callbacks", AnimationCallbacksActivity.class),
                   new DemoListDataModel("Transitions", TransitionsActivity.class))),
           new DemoListDataModel("Dynamic Props", DynamicPropsActivity.class),
           new DemoListDataModel("Fast Scroll Handle", FastScrollHandleActivity.class),

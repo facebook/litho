@@ -65,6 +65,7 @@ import androidx.collection.LongSparseArray;
 import androidx.core.view.ViewCompat;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.litho.animation.AnimatedProperties;
+import com.facebook.litho.animation.PropertyHandle;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.stats.LithoStats;
 import com.facebook.rendercore.Host;
@@ -94,7 +95,8 @@ import java.util.Set;
  * @see LayoutState
  */
 @ThreadConfined(ThreadConfined.UI)
-class MountState implements TransitionManager.OnAnimationCompleteListener, MountDelegateTarget {
+class MountState
+    implements TransitionManager.OnAnimationCompleteListener<EventHandler>, MountDelegateTarget {
 
   static final long ROOT_HOST_ID = 0L;
   private static final String DISAPPEAR_ANIM_TARGETING_ROOT =
@@ -3248,6 +3250,16 @@ class MountState implements TransitionManager.OnAnimationCompleteListener, Mount
    */
   private boolean hasTransitionsToAnimate() {
     return mRootTransition != null;
+  }
+
+  @Override
+  public void onAnimationUnitComplete(
+      PropertyHandle propertyHandle, EventHandler transitionEndHandler) {
+    if (transitionEndHandler != null) {
+      transitionEndHandler.dispatchEvent(
+          new TransitionEndEvent(
+              propertyHandle.getTransitionId().mReference, propertyHandle.getProperty()));
+    }
   }
 
   @Override

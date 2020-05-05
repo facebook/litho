@@ -110,8 +110,10 @@ public class TransitionManager {
   }
 
   /** A listener that will be invoked when a mount content has stopped animating. */
-  public interface OnAnimationCompleteListener {
+  public interface OnAnimationCompleteListener<T> {
     void onAnimationComplete(TransitionId transitionId);
+
+    void onAnimationUnitComplete(PropertyHandle propertyHandle, T data);
   }
 
   /** The animation state of a single property (e.g. X, Y, ALPHA) on a piece of mount content. */
@@ -715,6 +717,8 @@ public class TransitionManager {
 
     final AnimationBinding animation = transition.createAnimation(propertyHandle, endValue);
     animation.addListener(mAnimationBindingListener);
+    // We add this transition handler to the binding
+    animation.setTag(transition.getTransitionEndHandler());
 
     PropertyState propertyState = existingState;
     if (propertyState == null) {
@@ -923,6 +927,13 @@ public class TransitionManager {
 
     @Override
     public void onFinish(AnimationBinding binding) {
+      final List<PropertyHandle> keys = mAnimationsToPropertyHandles.get(binding);
+      if (keys != null && mOnAnimationCompleteListener != null) {
+        // We loop through all the properties that were animated by this animation
+        for (PropertyHandle propertyHandle : keys) {
+          mOnAnimationCompleteListener.onAnimationUnitComplete(propertyHandle, binding.getTag());
+        }
+      }
       finishAnimation(binding);
     }
 
