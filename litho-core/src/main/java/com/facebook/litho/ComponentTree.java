@@ -1659,11 +1659,14 @@ public class ComponentTree {
         treeProps);
   }
 
-  /** @return the {@link LithoView} associated with this ComponentTree if any. */
+  /**
+   * @return the {@link LithoView} associated with this ComponentTree if any. Since this is modified
+   *     on the main thread, it is racy to get the current LithoView off the main thread.
+   */
   @Keep
   @Nullable
+  @UiThread
   public LithoView getLithoView() {
-    assertMainThread();
     return mLithoView;
   }
 
