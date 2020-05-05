@@ -2271,7 +2271,12 @@ public class LayoutState
   }
 
   @Override
-  public boolean hasMounted() {
-    return mContext.getComponentTree().hasMounted();
+  public boolean needsToRerunTransitions() {
+    return mContext.getComponentTree().isFirstMount();
+  }
+
+  @Override
+  public void setNeedsToRerunTransitions(boolean needsToRerunTransitions) {
+    mContext.getComponentTree().setIsFirstMount(needsToRerunTransitions);
   }
 }

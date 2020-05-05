@@ -233,6 +233,7 @@ public class ComponentTree {
   private final List<LayoutStateFuture> mLayoutStateFutures = new ArrayList<>();
 
   private volatile boolean mHasMounted;
+  private volatile boolean mIsFirstMount;
 
   /** Transition that animates width of root component (LithoView). */
   @ThreadConfined(ThreadConfined.UI)
@@ -345,6 +346,7 @@ public class ComponentTree {
     mPreAllocateMountContentHandler = builder.preAllocateMountContentHandler;
     mIsAsyncUpdateStateEnabled = builder.asyncStateUpdates;
     mHasMounted = builder.hasMounted;
+    mIsFirstMount = builder.isFirstMount;
     addMeasureListener(builder.mMeasureListener);
     mUseCancelableLayoutFutures = builder.useCancelableLayoutFutures;
     mMoveLayoutsBetweenThreads = builder.canInterruptAndMoveLayoutsBetweenThreads;
@@ -527,6 +529,14 @@ public class ComponentTree {
   /** Whether this ComponentTree has been mounted at least once. */
   public boolean hasMounted() {
     return mHasMounted;
+  }
+
+  public boolean isFirstMount() {
+    return mIsFirstMount;
+  }
+
+  public void setIsFirstMount(boolean isFirstMount) {
+    mIsFirstMount = isFirstMount;
   }
 
   public void setNewLayoutStateReadyListener(NewLayoutStateReadyListener listener) {
@@ -860,6 +870,7 @@ public class ComponentTree {
 
     if (!mHasMounted) {
       mLithoView.setIsFirstMountOfComponentTree();
+      mIsFirstMount = true;
       mHasMounted = true;
     }
 
@@ -2962,6 +2973,7 @@ public class ComponentTree {
     private boolean asyncStateUpdates = true;
     private int overrideComponentTreeId = -1;
     private boolean hasMounted = false;
+    private boolean isFirstMount = false;
     private @Nullable MeasureListener mMeasureListener;
     private boolean shouldPreallocatePerMountSpec;
     private boolean canPreallocateOnDefaultHandler;
@@ -3111,6 +3123,11 @@ public class ComponentTree {
      */
     public Builder hasMounted(boolean hasMounted) {
       this.hasMounted = hasMounted;
+      return this;
+    }
+
+    public Builder isFirstMount(boolean isFirstMount) {
+      this.isFirstMount = isFirstMount;
       return this;
     }
 

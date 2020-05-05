@@ -50,7 +50,9 @@ public class TransitionsExtension extends MountDelegateExtension
   private LayoutState mLastMountedLayoutState;
 
   public interface TransitionsExtensionInput extends MountDelegateInput {
-    boolean hasMounted();
+    boolean needsToRerunTransitions();
+
+    void setNeedsToRerunTransitions(boolean needsToRerunTransitions);
   }
 
   public TransitionsExtension(Host lithoView) {
@@ -85,7 +87,7 @@ public class TransitionsExtension extends MountDelegateExtension
     if (shouldAnimateTransitions(layoutState) && hasTransitionsToAnimate()) {
       mTransitionManager.runTransitions();
     }
-
+    mInput.setNeedsToRerunTransitions(false);
     mLastMountedLayoutState = layoutState;
     mTransitionsHasBeenCollected = false;
   }
@@ -137,7 +139,7 @@ public class TransitionsExtension extends MountDelegateExtension
       final int componentTreeId = layoutState.getComponentTreeId();
       if (mLastMountedComponentTreeId != componentTreeId) {
         resetAnimationState();
-        if (mInput.hasMounted()) {
+        if (!mInput.needsToRerunTransitions()) {
           // Don't re-trigger appear animations were scrolled back onto the screen
           return;
         }
@@ -207,7 +209,7 @@ public class TransitionsExtension extends MountDelegateExtension
    */
   private boolean shouldAnimateTransitions(LayoutState newLayoutState) {
     return (mLastMountedComponentTreeId == newLayoutState.getComponentTreeId()
-        || !mInput.hasMounted());
+        || mInput.needsToRerunTransitions());
   }
 
   /**
