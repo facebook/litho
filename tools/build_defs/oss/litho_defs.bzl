@@ -223,42 +223,6 @@ LITHO_FLIPPER_TARGETS = [
 
 LITHO_FRESCO_PIPELINE_TARGET = [make_dep_path("lib/fresco:imagepipeline")]
 
-def components_robolectric_test(
-        name,
-        *args,
-        **kwargs):
-    """Tests that can successfully run from the library root folder."""
-    extra_vm_args = [
-        "-Drobolectric.dependency.dir=lib/android-all",
-        "-Dcom.facebook.litho.is_oss=true",
-    ]
-    kwargs["vm_args"] = extra_vm_args
-    kwargs["use_cxx_libraries"] = True
-    kwargs["cxx_library_whitelist"] = [
-        "//lib/yogajni:jni",
-    ]
-
-    # T41117446 Remove after AndroidX conversion is done.
-    kwargs.pop("is_androidx", False)
-
-    annotation_processor_params = kwargs.pop("annotation_processor_params", [])
-    found = False
-    for param in annotation_processor_params:
-        if (param.find("com.facebook.litho.testing=") == 0):
-            found = True
-
-    if (not found):
-        annotation_processor_params.append("com.facebook.litho.testing=true")
-
-    native.robolectric_test(
-        name = name,
-        annotation_processor_params = annotation_processor_params,
-        *args,
-        **kwargs
-    )
-
-components_robolectric_powermock_test = components_robolectric_test
-
 def litho_robolectric4_test(
         name,
         *args,
