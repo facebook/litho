@@ -53,7 +53,7 @@ implementing the business logic, but technical documentation is not the place to
 start religious wars.
 
 ```java
-@RunWith(ComponentsTestRunner.class)
+@RunWith(LithoTestRunner.class)
 public class TruncatingComponentSpecTest {
 ```
 
@@ -175,7 +175,7 @@ public class WrappingComponentSpec {
 The setup boilerplate will look just like in our previous example.
 
 ```java
-@RunWith(ComponentsTestRunner.class)
+@RunWith(LithoTestRunner.class)
 public class WrappingComponentSpecTest {
   @Rule
   public ComponentsRule mComponentsRule = new ComponentsRule();

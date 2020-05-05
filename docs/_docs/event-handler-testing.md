@@ -89,7 +89,7 @@ to limit ourselves to checking if a handler is set or not. For that we can use
 the TestSpec matchers we have learned about before.
 
 ```java
-@RunWith(ComponentsTestRunner.class)
+@RunWith(LithoTestRunner.class)
 public class LearningStateComponentSpecTest {
   @Rule public ComponentsRule mComponentsRule = new ComponentsRule();
 

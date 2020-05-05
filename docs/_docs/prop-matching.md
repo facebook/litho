@@ -66,7 +66,7 @@ However, if you remember the `SubComponent.of` API, we need to specify all
 non-optional props for it to succeed. Let's see what this would look like:
 
 ```java
-@RunWith(ComponentsTestRunner.class)
+@RunWith(LithoTestRunner.class)
 public class FeedWithComplexItemsTest {
   @Rule
   public ComponentsRule mComponentsRule = new ComponentsRule();
@@ -75,7 +75,7 @@ public class FeedWithComplexItemsTest {
 <img src="/static/images/complex-component-0.svg" style="float: right; width: 200px;" />
 
 As always, we create a standard JUnit test suite and run it with a
-`RobolectricTestRunner`-compatible implementation like `ComponentsTestRunner`.
+`RobolectricTestRunner`-compatible implementation like `LithoTestRunner`.
 
 For the purpose of this article, we assume that we have a `FeedItemComponent`
 that contains our `ComplexComponent`. The `FeedItemComponent` contains the logic
