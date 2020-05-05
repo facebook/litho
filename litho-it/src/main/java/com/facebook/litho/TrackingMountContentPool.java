@@ -16,34 +16,35 @@
 
 package com.facebook.litho;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
-import java.util.HashMap;
-import java.util.Map;
 
-public final class TrackingMountContentPool extends RecyclePool implements MountContentPool {
-  private static final Map<Class, Integer> sCounter = new HashMap<>();
+public class TrackingMountContentPool extends DefaultMountContentPool {
 
-  @SuppressLint("NewApi")
-  public TrackingMountContentPool(Class<? extends Component> clazz) {
-    super(clazz.getSimpleName(), 3, true);
-    sCounter.put(clazz, sCounter.getOrDefault(clazz, 0) + 1);
-  }
+  private int mAcquireCount = 0;
+  private int mReleaseCount = 0;
 
-  @SuppressLint("NewApi")
-  public static int getCounter(Class<? extends Component> clazz) {
-    return sCounter.getOrDefault(clazz, 0);
-  }
-
-  public static void clearCounter() {
-    sCounter.clear();
+  public TrackingMountContentPool(String name, int maxSize, boolean sync) {
+    super(name, maxSize, sync);
   }
 
   @Override
   public Object acquire(Context c, ComponentLifecycle lifecycle) {
-    return lifecycle.onCreateMountContent(c);
+    Object item = super.acquire(c, lifecycle);
+    mAcquireCount++;
+    return item;
   }
 
   @Override
-  public void maybePreallocateContent(Context c, ComponentLifecycle lifecycle) {}
+  public void release(Object item) {
+    super.release(item);
+    mReleaseCount++;
+  }
+
+  public int getAcquireCount() {
+    return mAcquireCount;
+  }
+
+  public int getReleaseCount() {
+    return mReleaseCount;
+  }
 }

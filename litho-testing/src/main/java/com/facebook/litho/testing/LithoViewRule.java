@@ -26,6 +26,7 @@ import androidx.annotation.Nullable;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
+import com.facebook.litho.ComponentsPools;
 import com.facebook.litho.InternalNode;
 import com.facebook.litho.LayoutState;
 import com.facebook.litho.LithoView;
@@ -54,6 +55,7 @@ public class LithoViewRule implements TestRule {
           mContext = new ComponentContext(RuntimeEnvironment.application);
           base.evaluate();
         } finally {
+          ComponentsPools.clearMountContentPools();
           mContext = null;
           mComponentTree = null;
           mLithoView = null;

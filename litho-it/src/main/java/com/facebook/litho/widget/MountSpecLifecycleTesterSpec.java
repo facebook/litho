@@ -94,7 +94,7 @@ public class MountSpecLifecycleTesterSpec {
 
   @OnCreateMountContentPool
   static MountContentPool onCreateMountContentPool() {
-    return new TrackingMountContentPool(MountSpecLifecycleTester.class);
+    return new TrackingMountContentPool("MountSpecLifecycleTester", 1, true);
   }
 
   @UiThread
