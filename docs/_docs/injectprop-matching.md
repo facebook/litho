@@ -61,7 +61,7 @@ public interface TestMyInjectPropSpec {}
 And can write our test once this is done.
 
 ```java
-@RunWith(ComponentsTestRunner.class)
+@RunWith(LithoTestRunner.class)
 public class InjectPropMatcherGenerationTest {
   @Rule public ComponentsRule mComponentsRule = new ComponentsRule();
 
