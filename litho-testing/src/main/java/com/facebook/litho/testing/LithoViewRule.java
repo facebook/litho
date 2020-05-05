@@ -1,5 +1,3 @@
-// (c) Facebook, Inc. and its affiliates. Confidential and proprietary.
-
 /*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -144,6 +142,14 @@ public class LithoViewRule implements TestRule {
   public LithoViewRule detachFromWindow() {
     getLithoView().onDetachedFromWindowForTest();
     return this;
+  }
+
+  public int getWidthSpec() {
+    return mWidthSpec;
+  }
+
+  public int getHeightSpec() {
+    return mHeightSpec;
   }
 
   protected @Nullable LayoutState getCommittedLayoutState() {

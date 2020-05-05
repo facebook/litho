@@ -22,17 +22,20 @@ import static com.facebook.litho.SizeSpec.UNSPECIFIED;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
+import android.os.Looper;
 import com.facebook.litho.testing.LithoStatsRule;
 import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.MountSpecLifecycleTester;
 import com.facebook.litho.widget.MountSpecLifecycleTesterSpec;
+import com.facebook.litho.widget.PreallocatedMountSpecLifecycleTester;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.shadows.ShadowLooper;
 
 @RunWith(LithoTestRunner.class)
 public class MountSpecLifecycleTest {
@@ -303,5 +306,53 @@ public class MountSpecLifecycleTest {
             LifecycleStep.ON_BOUNDS_DEFINED,
             LifecycleStep.ON_MOUNT,
             LifecycleStep.ON_BIND);
+
+    assertThat(ComponentsPools.getMountContentPools().size())
+        .describedAs("Should still contain only 1 content pool")
+        .isEqualTo(1);
+    assertThat(ComponentsPools.getMountContentPools().get(0).getName())
+        .describedAs("Should still contain content pool from MountSpecLifecycleTester")
+        .isEqualTo("MountSpecLifecycleTester");
+  }
+
+  @Test
+  public void onSetRootWithPreallocatedMountContent_shouldCallLifecycleMethods() {
+    final Looper looper = ShadowLooper.getLooperForThread(Thread.currentThread());
+    final ComponentTree tree =
+        ComponentTree.create(mLithoViewRule.getContext())
+            .shouldPreallocateMountContentPerMountSpec(true)
+            .preAllocateMountContentHandler(new LithoHandler.DefaultLithoHandler(looper))
+            .build();
+    mLithoViewRule.useComponentTree(tree);
+
+    final List<LifecycleStep.StepInfo> info = new ArrayList<>();
+    final Component component =
+        PreallocatedMountSpecLifecycleTester.create(mLithoViewRule.getContext())
+            .steps(info)
+            .build();
+
+    mLithoViewRule
+        .getComponentTree()
+        .setRootAndSizeSpec(
+            component, mLithoViewRule.getWidthSpec(), mLithoViewRule.getHeightSpec());
+
+    mLithoViewRule.measure();
+
+    ShadowLooper.runUiThreadTasks();
+
+    assertThat(getSteps(info))
+        .describedAs("Should call the lifecycle methods on new instance in expected order")
+        .containsExactly(
+            LifecycleStep.ON_PREPARE,
+            LifecycleStep.ON_MEASURE,
+            LifecycleStep.ON_BOUNDS_DEFINED,
+            LifecycleStep.ON_ATTACHED);
+
+    assertThat(ComponentsPools.getMountContentPools().size())
+        .describedAs("Should contain only 1 content pool")
+        .isEqualTo(1);
+    assertThat(ComponentsPools.getMountContentPools().get(0).getName())
+        .describedAs("Should contain content pool from PreallocatedMountSpecLifecycleTester")
+        .isEqualTo("PreallocatedMountSpecLifecycleTester");
   }
 }
