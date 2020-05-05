@@ -1329,8 +1329,7 @@ class MountState
 
     // 3. We will re-bind this later in 7 regardless so let's make sure it's currently unbound.
     if (currentMountItem.isBound()) {
-      itemComponent.onUnbind(getContextForComponent(itemComponent), currentMountItem.getContent());
-      currentMountItem.setIsBound(false);
+      unbindComponentFromContent(currentMountItem, itemComponent, currentMountItem.getContent());
     }
 
     // 4. Re initialize the MountItem internal state with the new attributes from LayoutOutput
@@ -1353,8 +1352,7 @@ class MountState
     final Object currentContent = currentMountItem.getContent();
 
     // 6. Set the mounted content on the Component and call the bind callback.
-    bindComponentToContent(layoutOutputComponent, currentContent);
-    currentMountItem.setIsBound(true);
+    bindComponentToContent(currentMountItem, layoutOutputComponent, currentContent);
 
     // 7. Update the bounds of the mounted content. This needs to be done regardless of whether
     // the component has been updated or not since the mounted item might might have the same
@@ -1820,8 +1818,7 @@ class MountState
     final MountItem item = mountContent(index, component, content, host, node, layoutOutput);
 
     // 5. Notify the component that mounting has completed
-    bindComponentToContent(component, content);
-    item.setIsBound(true);
+    bindComponentToContent(item, component, content);
 
     // 6. Apply the bounds to the Mount content now. It's important to do so after bind as calling
     // bind might have triggered a layout request within a View.
@@ -2931,8 +2928,7 @@ class MountState
 
     // Call the component's unmount() method.
     if (item.isBound()) {
-      component.onUnbind(context, content);
-      item.setIsBound(false);
+      unbindComponentFromContent(item, component, content);
     }
     if (mRecyclingMode != ComponentTree.RecyclingMode.NO_UNMOUNTING) {
       component.unmount(context, content);
@@ -3404,8 +3400,8 @@ class MountState
         continue;
       }
 
-      unbindComponentFromContent(getLayoutOutput(mountItem).getComponent(), mountItem.getContent());
-      mountItem.setIsBound(false);
+      unbindComponentFromContent(
+          mountItem, getLayoutOutput(mountItem).getComponent(), mountItem.getContent());
     }
 
     clearVisibilityItems();
@@ -3455,8 +3451,7 @@ class MountState
       final Component component = getLayoutOutput(mountItem).getComponent();
       final Object content = mountItem.getContent();
 
-      bindComponentToContent(component, content);
-      mountItem.setIsBound(true);
+      bindComponentToContent(mountItem, component, content);
 
       if (content instanceof View
           && !(content instanceof ComponentHost)
@@ -3694,13 +3689,16 @@ class MountState
     return c == null ? mContext : c;
   }
 
-  private void bindComponentToContent(Component component, Object content) {
+  private void bindComponentToContent(MountItem mountItem, Component component, Object content) {
     component.bind(getContextForComponent(component), content);
     mDynamicPropsManager.onBindComponentToContent(component, content);
+    mountItem.setIsBound(true);
   }
 
-  private void unbindComponentFromContent(Component component, Object content) {
+  private void unbindComponentFromContent(
+      MountItem mountItem, Component component, Object content) {
     mDynamicPropsManager.onUnbindComponent(component);
     component.unbind(getContextForComponent(component), content);
+    mountItem.setIsBound(false);
   }
 }
