@@ -7,11 +7,11 @@ load(
     "//tools/build_defs/oss:litho_defs.bzl",
     "LITHO_ASSERTJ_TARGET",
     "LITHO_JUNIT_TARGET",
-    "components_robolectric4_test",
+    "litho_robolectric4_test",
     "make_dep_path",
 )
 
-components_robolectric4_test(
+litho_robolectric4_test(
     name = "internal",
     srcs = glob(["*Test.java"]),
     source = "8",

@@ -23,11 +23,11 @@ load(
     "LITHO_VIEWCOMPAT_TARGET",
     "LITHO_WIDGET_TARGET",
     "LITHO_YOGA_TARGET",
-    "components_robolectric4_powermock_test",
+    "litho_robolectric4_powermock_test",
     "make_dep_path",
 )
 
-components_robolectric4_powermock_test(
+litho_robolectric4_powermock_test(
     name = "litho",
     srcs = glob([
         "*Test.java",

@@ -20,11 +20,11 @@ load(
     "LITHO_SECTIONS_TARGET",
     "LITHO_UTILS_TARGET",
     "LITHO_WIDGET_TARGET",
-    "components_robolectric4_test",
+    "litho_robolectric4_test",
     "make_dep_path",
 )
 
-components_robolectric4_test(
+litho_robolectric4_test(
     name = "common",
     srcs = glob(["*.java"]),
     plugins = [

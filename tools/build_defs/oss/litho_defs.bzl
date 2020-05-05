@@ -259,7 +259,7 @@ def components_robolectric_test(
 
 components_robolectric_powermock_test = components_robolectric_test
 
-def components_robolectric4_test(
+def litho_robolectric4_test(
         name,
         *args,
         **kwargs):
@@ -295,7 +295,7 @@ def components_robolectric4_test(
         **kwargs
     )
 
-components_robolectric4_powermock_test = components_robolectric4_test
+litho_robolectric4_powermock_test = litho_robolectric4_test
 
 def fb_java_test(*args, **kwargs):
     """Uses native java_test for OSS project."""

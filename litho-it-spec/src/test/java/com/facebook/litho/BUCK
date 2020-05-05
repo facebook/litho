@@ -18,11 +18,11 @@ load(
     "LITHO_SECTIONS_WIDGET_TARGET",
     "LITHO_TESTING_V4_TARGET",
     "LITHO_WIDGET_TARGET",
-    "components_robolectric4_test",
+    "litho_robolectric4_test",
     "make_dep_path",
 )
 
-components_robolectric4_test(
+litho_robolectric4_test(
     name = "litho",
     srcs = glob([
         "**/*.java",

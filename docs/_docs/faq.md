@@ -51,8 +51,8 @@ If you are getting this error when running a Litho unit test, go through these s
 
 **For Buck**
 
-- Make sure your tests use the `components_robolectric_test` which sets up the necessary dependencies on the native libraries.
-- If your tests use PowerMock, use the `components_robolectric_powermock_test` or set the `fork_mode` manually to `per_test` which
+- Make sure your tests use the `litho_robolectric4_test` which sets up the necessary dependencies on the native libraries.
+- If your tests use PowerMock, use the `litho_robolectric4_powermock_test` or set the `fork_mode` manually to `per_test` which
   ensures that class loaders aren't reused across threads.
 - Try `buck kill` and `buck clean`.
 - If everything else fails, reboot.
