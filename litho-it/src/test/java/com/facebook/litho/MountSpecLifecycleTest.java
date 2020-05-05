@@ -43,6 +43,7 @@ public class MountSpecLifecycleTest {
   @After
   public void after() {
     MountSpecLifecycleTesterSpec.StaticContainer.sLastCreatedView = null;
+    TrackingMountContentPool.clearCounter();
   }
 
   @Test
@@ -76,6 +77,20 @@ public class MountSpecLifecycleTest {
             LifecycleStep.ON_CREATE_MOUNT_CONTENT,
             LifecycleStep.ON_MOUNT,
             LifecycleStep.ON_BIND);
+  }
+
+  @Test
+  public void lifecycle_onLayout_shouldCallOnCreateMountContentPool() {
+    final List<LifecycleStep.StepInfo> info = new ArrayList<>();
+    final Component component =
+        MountSpecLifecycleTester.create(mLithoViewRule.getContext()).steps(info).build();
+    mLithoViewRule.setRoot(component);
+
+    mLithoViewRule.attachToWindow().measure().layout();
+
+    assertThat(TrackingMountContentPool.getCounter(component.getClass()))
+        .describedAs("OnCreateMountContentPool should be called exactly once")
+        .isEqualTo(1);
   }
 
   @Test

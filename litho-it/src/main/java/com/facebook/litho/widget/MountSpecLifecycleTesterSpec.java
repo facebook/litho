@@ -26,7 +26,9 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.LifecycleStep;
 import com.facebook.litho.LifecycleStep.StepInfo;
+import com.facebook.litho.MountContentPool;
 import com.facebook.litho.Size;
+import com.facebook.litho.TrackingMountContentPool;
 import com.facebook.litho.annotations.CachedValue;
 import com.facebook.litho.annotations.MountSpec;
 import com.facebook.litho.annotations.OnAttached;
@@ -35,6 +37,7 @@ import com.facebook.litho.annotations.OnBoundsDefined;
 import com.facebook.litho.annotations.OnCalculateCachedValue;
 import com.facebook.litho.annotations.OnCreateInitialState;
 import com.facebook.litho.annotations.OnCreateMountContent;
+import com.facebook.litho.annotations.OnCreateMountContentPool;
 import com.facebook.litho.annotations.OnCreateTreeProp;
 import com.facebook.litho.annotations.OnDetached;
 import com.facebook.litho.annotations.OnMeasure;
@@ -87,6 +90,11 @@ public class MountSpecLifecycleTesterSpec {
   static View onCreateMountContent(Context c) {
     StaticContainer.sLastCreatedView = new View(c);
     return StaticContainer.sLastCreatedView;
+  }
+
+  @OnCreateMountContentPool
+  static MountContentPool onCreateMountContentPool() {
+    return new TrackingMountContentPool(MountSpecLifecycleTester.class);
   }
 
   @UiThread
