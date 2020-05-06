@@ -102,7 +102,7 @@ public class ComponentTreeTest {
 
   private void creationCommonChecks(ComponentTree componentTree) {
     // Not view or attached yet
-    Assert.assertNull(getLithoView(componentTree));
+    Assert.assertNull(componentTree.getLithoView());
     Assert.assertFalse(isAttached(componentTree));
 
     // The component input should be the one we passed in
@@ -649,19 +649,19 @@ public class ComponentTreeTest {
     Component component2 = TestDrawableComponent.create(mContext).build();
     ComponentTree componentTree2 = ComponentTree.create(mContext, component2).build();
 
-    Assert.assertNull(getLithoView(componentTree1));
-    Assert.assertNull(getLithoView(componentTree2));
+    Assert.assertNull(componentTree1.getLithoView());
+    Assert.assertNull(componentTree2.getLithoView());
 
     LithoView lithoView = new LithoView(mContext);
     lithoView.setComponentTree(componentTree1);
 
-    Assert.assertNotNull(getLithoView(componentTree1));
-    Assert.assertNull(getLithoView(componentTree2));
+    Assert.assertNotNull(componentTree1.getLithoView());
+    Assert.assertNull(componentTree2.getLithoView());
 
     lithoView.setComponentTree(componentTree2);
 
-    Assert.assertNull(getLithoView(componentTree1));
-    Assert.assertNotNull(getLithoView(componentTree2));
+    Assert.assertNull(componentTree1.getLithoView());
+    Assert.assertNotNull(componentTree2.getLithoView());
   }
 
   @Test
@@ -709,20 +709,20 @@ public class ComponentTreeTest {
     LithoView lithoView1 = new LithoView(mContext);
     lithoView1.setComponentTree(componentTree);
 
-    assertThat(getLithoView(componentTree)).isEqualTo(lithoView1);
-    assertThat(getComponentTree(lithoView1)).isEqualTo(componentTree);
+    assertThat(componentTree.getLithoView()).isEqualTo(lithoView1);
+    assertThat(lithoView1.getComponentTree()).isEqualTo(componentTree);
 
     // Attach second view.
     LithoView lithoView2 = new LithoView(mContext);
 
-    Assert.assertNull(getComponentTree(lithoView2));
+    Assert.assertNull(lithoView2.getComponentTree());
 
     lithoView2.setComponentTree(componentTree);
 
-    assertThat(getLithoView(componentTree)).isEqualTo(lithoView2);
-    assertThat(getComponentTree(lithoView2)).isEqualTo(componentTree);
+    assertThat(componentTree.getLithoView()).isEqualTo(lithoView2);
+    assertThat(lithoView2.getComponentTree()).isEqualTo(componentTree);
 
-    Assert.assertNull(getComponentTree(lithoView1));
+    Assert.assertNull(lithoView1.getComponentTree());
   }
 
   @Test
@@ -1538,16 +1538,8 @@ public class ComponentTreeTest {
     assertThat(componentTree.getCachedValue("key2")).isNull();
   }
 
-  private static LithoView getLithoView(ComponentTree componentTree) {
-    return Whitebox.getInternalState(componentTree, "mLithoView");
-  }
-
   private static boolean isAttached(ComponentTree componentTree) {
     return Whitebox.getInternalState(componentTree, "mIsAttached");
-  }
-
-  private static ComponentTree getComponentTree(LithoView lithoView) {
-    return Whitebox.getInternalState(lithoView, "mComponentTree");
   }
 
   // TODO(T37885964): Fix me
