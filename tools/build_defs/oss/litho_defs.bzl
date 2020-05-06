@@ -169,6 +169,7 @@ LITHO_ESPRESSO_TARGET = make_dep_path("lib/espresso:espresso")
 LITHO_SCREENSHOT_TARGET = make_dep_path("lib/screenshot:screenshot")
 
 LITHO_RENDERCORE_TARGET = make_dep_path("litho-rendercore:rendercore-stub")
+LITHO_RENDERCORE_TESTING_TARGET = make_dep_path("litho-rendercore-testing:litho-rendercore-testing")
 
 # Fresco
 LITHO_FRESCO_TARGET = make_dep_path("lib/fresco:fresco")
