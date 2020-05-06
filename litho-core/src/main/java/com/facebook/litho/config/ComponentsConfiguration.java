@@ -17,7 +17,6 @@
 package com.facebook.litho.config;
 
 import static android.os.Build.VERSION.SDK_INT;
-import static android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH;
 import static android.os.Build.VERSION_CODES.JELLY_BEAN_MR1;
 import static android.os.Build.VERSION_CODES.LOLLIPOP_MR1;
 
@@ -45,9 +44,6 @@ public class ComponentsConfiguration {
   /** Indicates that the incremental mount helper is required for this build. */
   public static final boolean USE_INCREMENTAL_MOUNT_HELPER =
       BuildConfig.USE_INCREMENTAL_MOUNT_HELPER;
-
-  /** Whether transitions are supported for this API version. */
-  public static final boolean ARE_TRANSITIONS_SUPPORTED = (SDK_INT >= ICE_CREAM_SANDWICH);
 
   /** Whether we can access properties in Settings.Global for animations. */
   public static final boolean CAN_CHECK_GLOBAL_ANIMATOR_SETTINGS = (SDK_INT >= JELLY_BEAN_MR1);

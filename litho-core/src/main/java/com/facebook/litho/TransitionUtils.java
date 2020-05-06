@@ -65,11 +65,6 @@ class TransitionUtils {
   }
 
   static boolean areTransitionsEnabled(@Nullable Context context) {
-    if (!ComponentsConfiguration.ARE_TRANSITIONS_SUPPORTED) {
-      // Transitions use some APIs that are not available before ICS.
-      return false;
-    }
-
     if (ComponentsConfiguration.isAnimationDisabled) {
       // mostly for unit tests
       return false;
