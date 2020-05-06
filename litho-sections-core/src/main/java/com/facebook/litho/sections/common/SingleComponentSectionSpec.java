@@ -129,8 +129,8 @@ public class SingleComponentSectionSpec {
     if (isPrevSticky != isNextSticky
         || prevSpanSize != nextSpanSize
         || isPrevFullSpan != isNextFullSpan
-        || !prevComponent.isEquivalentTo(nextComponent)
-        || !customAttributesEqual) {
+        || !customAttributesEqual
+        || !prevComponent.isEquivalentTo(nextComponent)) {
       changeSet.update(
           0,
           addCustomAttributes(
