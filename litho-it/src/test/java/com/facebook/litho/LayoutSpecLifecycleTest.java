@@ -19,6 +19,7 @@ package com.facebook.litho;
 import static com.facebook.litho.LifecycleStep.getSteps;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.LayoutSpecLifecycleTester;
@@ -45,6 +46,7 @@ public class LayoutSpecLifecycleTest {
 
   @Test
   public void lifecycle_onSetRootWithLayout_shouldCallLifecycleMethods() {
+    ComponentsConfiguration.isAnimationDisabled = false;
     final List<LifecycleStep.StepInfo> info = new ArrayList<>();
     final Component component =
         LayoutSpecLifecycleTester.create(mLithoViewRule.getContext()).steps(info).build();
@@ -56,6 +58,47 @@ public class LayoutSpecLifecycleTest {
         .describedAs("Should call the lifecycle methods in expected order")
         .containsExactly(
             LifecycleStep.ON_CREATE_INITIAL_STATE,
+            LifecycleStep.ON_CREATE_TREE_PROP,
+            LifecycleStep.ON_CALCULATE_CACHED_VALUE,
+            LifecycleStep.ON_CREATE_LAYOUT,
+            LifecycleStep.ON_CREATE_TRANSITION,
+            LifecycleStep.ON_ATTACHED);
+    ComponentsConfiguration.isAnimationDisabled = true;
+  }
+
+  @Test
+  public void lifecycle_release_shouldCallLifecycleMethodOnDetach() {
+    final List<LifecycleStep.StepInfo> info = new ArrayList<>();
+    final Component component =
+        LayoutSpecLifecycleTester.create(mLithoViewRule.getContext()).steps(info).build();
+    mLithoViewRule.setRoot(component);
+
+    mLithoViewRule.attachToWindow().measure().layout();
+    info.clear();
+    mLithoViewRule.release();
+
+    assertThat(getSteps(info))
+        .describedAs("Should call onDetached")
+        .containsExactly(LifecycleStep.ON_DETACHED);
+  }
+
+  @Test
+  public void lifecycle_subsequentSetRoot_shouldCallLifecycleMethod() {
+    final List<LifecycleStep.StepInfo> info = new ArrayList<>();
+    final LayoutSpecLifecycleTester component =
+        LayoutSpecLifecycleTester.create(mLithoViewRule.getContext()).steps(info).build();
+    mLithoViewRule.setRoot(component);
+    mLithoViewRule.attachToWindow().measure().layout();
+    info.clear();
+
+    final LayoutSpecLifecycleTester newComponent =
+        LayoutSpecLifecycleTester.create(mLithoViewRule.getContext()).steps(info).build();
+    mLithoViewRule.setRoot(newComponent);
+    mLithoViewRule.attachToWindow().measure().layout();
+
+    assertThat(getSteps(info))
+        .describedAs("Should call the lifecycle methods in expected order")
+        .containsExactly(
             LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CALCULATE_CACHED_VALUE,
             LifecycleStep.ON_CREATE_LAYOUT);

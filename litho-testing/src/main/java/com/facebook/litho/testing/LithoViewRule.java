@@ -144,6 +144,11 @@ public class LithoViewRule implements TestRule {
     return this;
   }
 
+  public LithoViewRule release() {
+    getLithoView().release();
+    return this;
+  }
+
   public int getWidthSpec() {
     return mWidthSpec;
   }
