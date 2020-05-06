@@ -37,8 +37,10 @@ import android.content.ContextWrapper;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.util.DisplayMetrics;
+import android.view.View;
 import android.view.ViewGroup;
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.litho.testing.LithoStatsRule;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.assertj.LithoViewAssert;
@@ -57,6 +59,7 @@ public class LithoViewTest {
   private LithoView mLithoView;
 
   @Rule public ExpectedException mExpectedException = ExpectedException.none();
+  @Rule public LithoStatsRule mLithoStatsRule = new LithoStatsRule();
 
   @Before
   public void setup() {
@@ -264,6 +267,46 @@ public class LithoViewTest {
     assertThat(mLithoView.getMeasuredWidth()).isEqualTo(100);
     assertThat(mLithoView.getMeasuredHeight()).isEqualTo(100);
     assertThat(mLithoView.getComponentTree().getMainThreadLayoutState()).isNotNull();
+  }
+
+  @Test
+  public void forceLayout_whenForceLayoutIsSet_recomputesLayout() {
+    mLithoView.measure(
+        View.MeasureSpec.makeMeasureSpec(100, EXACTLY),
+        View.MeasureSpec.makeMeasureSpec(100, AT_MOST));
+    mLithoView.forceRelayout();
+    mLithoView.measure(
+        View.MeasureSpec.makeMeasureSpec(100, EXACTLY),
+        View.MeasureSpec.makeMeasureSpec(100, AT_MOST));
+
+    assertThat(mLithoStatsRule.getComponentCalculateLayoutCount())
+        .describedAs("Should force layout.")
+        .isEqualTo(2);
+
+    mLithoView.measure(
+        View.MeasureSpec.makeMeasureSpec(100, EXACTLY),
+        View.MeasureSpec.makeMeasureSpec(100, AT_MOST));
+
+    assertThat(mLithoStatsRule.getComponentCalculateLayoutCount())
+        .describedAs("Should only force layout one time.")
+        .isEqualTo(2);
+  }
+
+  @Test
+  public void forceLayout_whenForceLayoutIsNotSet_doesNotRecomputeLayout() {
+    mLithoView.measure(
+        View.MeasureSpec.makeMeasureSpec(100, EXACTLY),
+        View.MeasureSpec.makeMeasureSpec(100, AT_MOST));
+    mLithoView.measure(
+        View.MeasureSpec.makeMeasureSpec(100, EXACTLY),
+        View.MeasureSpec.makeMeasureSpec(100, AT_MOST));
+    mLithoView.measure(
+        View.MeasureSpec.makeMeasureSpec(100, EXACTLY),
+        View.MeasureSpec.makeMeasureSpec(100, AT_MOST));
+
+    assertThat(mLithoStatsRule.getComponentCalculateLayoutCount())
+        .describedAs("Should only compute the first layout as other layouts are not forced.")
+        .isEqualTo(1);
   }
 
   private LithoView setupLithoViewForDoubleMeasureTest(
