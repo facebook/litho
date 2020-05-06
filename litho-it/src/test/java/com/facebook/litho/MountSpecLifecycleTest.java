@@ -23,12 +23,14 @@ import static com.facebook.litho.SizeSpec.makeSizeSpec;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import android.os.Looper;
+import androidx.collection.LongSparseArray;
 import com.facebook.litho.testing.LithoStatsRule;
 import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.MountSpecLifecycleTester;
 import com.facebook.litho.widget.MountSpecLifecycleTesterSpec;
 import com.facebook.litho.widget.PreallocatedMountSpecLifecycleTester;
+import com.facebook.rendercore.MountItem;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.After;
@@ -354,5 +356,44 @@ public class MountSpecLifecycleTest {
     assertThat(ComponentsPools.getMountContentPools().get(0).getName())
         .describedAs("Should contain content pool from PreallocatedMountSpecLifecycleTester")
         .isEqualTo("PreallocatedMountSpecLifecycleTester");
+  }
+
+  @Test
+  public void unmountAll_unmountAllItemsExceptRoot() {
+    final List<LifecycleStep.StepInfo> info_child1 = new ArrayList<>();
+    final List<LifecycleStep.StepInfo> info_child2 = new ArrayList<>();
+
+    final Component root =
+        Column.create(mLithoViewRule.getContext())
+            .child(
+                MountSpecLifecycleTester.create(mLithoViewRule.getContext())
+                    .steps(info_child1)
+                    .build())
+            .child(
+                MountSpecLifecycleTester.create(mLithoViewRule.getContext())
+                    .steps(info_child2)
+                    .build())
+            .build();
+
+    mLithoViewRule.setRoot(root).attachToWindow().measure().layout();
+
+    final MountState mountState = mLithoViewRule.getLithoView().getMountState();
+    LongSparseArray<MountItem> mountedItems = mountState.getIndexToItemMap();
+    assertThat(mountedItems.size()).isGreaterThan(1);
+
+    info_child1.clear();
+    info_child2.clear();
+    mLithoViewRule.getLithoView().unmountAllItems();
+
+    assertThat(mountState.getIndexToItemMap().size()).isEqualTo(1);
+    assertThat(mountState.getIndexToItemMap().get(0)).isNotNull();
+
+    assertThat(LifecycleStep.getSteps(info_child1))
+        .describedAs("Should call the following lifecycle methods in the following order:")
+        .containsExactly(LifecycleStep.ON_UNBIND, LifecycleStep.ON_UNMOUNT);
+
+    assertThat(LifecycleStep.getSteps(info_child2))
+        .describedAs("Should call the following lifecycle methods in the following order:")
+        .containsExactly(LifecycleStep.ON_UNBIND, LifecycleStep.ON_UNMOUNT);
   }
 }
