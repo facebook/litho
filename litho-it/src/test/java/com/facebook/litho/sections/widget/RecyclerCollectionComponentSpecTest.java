@@ -16,7 +16,10 @@
 
 package com.facebook.litho.sections.widget;
 
+import static android.view.View.MeasureSpec.EXACTLY;
+import static android.view.View.MeasureSpec.makeMeasureSpec;
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
+import static com.facebook.litho.LifecycleStep.getSteps;
 import static com.facebook.litho.sections.widget.RecyclerCollectionComponentSpec.LoadingState.EMPTY;
 import static com.facebook.litho.sections.widget.RecyclerCollectionComponentSpec.LoadingState.ERROR;
 import static com.facebook.litho.sections.widget.RecyclerCollectionComponentSpec.LoadingState.LOADED;
@@ -36,19 +39,25 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
+import com.facebook.litho.LifecycleStep;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.Row;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.sections.SectionContext;
 import com.facebook.litho.sections.common.SingleComponentSection;
 import com.facebook.litho.testing.ComponentsRule;
+import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.helper.ComponentTestHelper;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.state.StateUpdatesTestHelper;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.testing.viewtree.ViewTree;
 import com.facebook.litho.testing.viewtree.ViewTreeAssert;
+import com.facebook.litho.widget.LayoutSpecWorkingRangeTester;
+import com.facebook.litho.widget.MountSpecWorkingRangeTester;
 import com.facebook.litho.widget.Text;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -58,7 +67,8 @@ import org.junit.runner.RunWith;
 @RunWith(LithoTestRunner.class)
 public class RecyclerCollectionComponentSpecTest {
 
-  @Rule public ComponentsRule componentsRule = new ComponentsRule();
+  @Rule public final ComponentsRule componentsRule = new ComponentsRule();
+  @Rule public final LithoViewRule mLithoViewRule = new LithoViewRule();
 
   private ComponentContext mComponentContext;
   private Component mLoadingComponent;
@@ -289,6 +299,56 @@ public class RecyclerCollectionComponentSpecTest {
     final LithoView childView = (LithoView) findViewWithTag(view, "rv_row");
     assertThat(childView).isNotNull();
     assertThat(childView.getComponentTree().isIncrementalMountEnabled()).isTrue();
+  }
+
+  @Test
+  public void rcc_insertLayoutSpecWorkingRangeTester_workingRangeIsRegisteredAndEntered() {
+    final ComponentContext componentContext = mLithoViewRule.getContext();
+    final List<LifecycleStep.StepInfo> info = new ArrayList<>();
+    final Component component =
+        LayoutSpecWorkingRangeTester.create(componentContext).steps(info).heightPx(100).build();
+    final RecyclerCollectionComponent rcc =
+        RecyclerCollectionComponent.create(componentContext)
+            .recyclerConfiguration(ListRecyclerConfiguration.create().build())
+            .section(
+                SingleComponentSection.create(new SectionContext(componentContext))
+                    .component(component)
+                    .build())
+            .build();
+    mLithoViewRule
+        .setRoot(rcc)
+        .setSizeSpecs(makeMeasureSpec(100, EXACTLY), makeMeasureSpec(100, EXACTLY));
+
+    mLithoViewRule.attachToWindow().measure().layout();
+
+    assertThat(getSteps(info))
+        .describedAs("Should register and enter working range in expected order")
+        .containsExactly(LifecycleStep.ON_REGISTER_RANGES, LifecycleStep.ON_ENTERED_RANGE);
+  }
+
+  @Test
+  public void rcc_insertMountSpecWorkingRangeTester_workingRangeIsRegisteredAndEntered() {
+    final ComponentContext componentContext = mLithoViewRule.getContext();
+    final List<LifecycleStep.StepInfo> info = new ArrayList<>();
+    final Component component =
+        MountSpecWorkingRangeTester.create(componentContext).steps(info).heightPx(100).build();
+    final RecyclerCollectionComponent rcc =
+        RecyclerCollectionComponent.create(componentContext)
+            .recyclerConfiguration(ListRecyclerConfiguration.create().build())
+            .section(
+                SingleComponentSection.create(new SectionContext(componentContext))
+                    .component(component)
+                    .build())
+            .build();
+    mLithoViewRule
+        .setRoot(rcc)
+        .setSizeSpecs(makeMeasureSpec(100, EXACTLY), makeMeasureSpec(100, EXACTLY));
+
+    mLithoViewRule.attachToWindow().measure().layout();
+
+    assertThat(getSteps(info))
+        .describedAs("Should register and enter working range in expected order")
+        .containsExactly(LifecycleStep.ON_REGISTER_RANGES, LifecycleStep.ON_ENTERED_RANGE);
   }
 
   @Nullable
