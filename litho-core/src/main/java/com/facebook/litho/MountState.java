@@ -3701,4 +3701,9 @@ class MountState
     component.unbind(getContextForComponent(component), content);
     mountItem.setIsBound(false);
   }
+
+  @VisibleForTesting
+  DynamicPropsManager getDynamicPropsManager() {
+    return mDynamicPropsManager;
+  }
 }

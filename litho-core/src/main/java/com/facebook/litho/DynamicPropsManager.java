@@ -19,6 +19,7 @@ package com.facebook.litho;
 import android.os.Build;
 import android.util.SparseArray;
 import android.view.View;
+import androidx.annotation.VisibleForTesting;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -215,5 +216,10 @@ class DynamicPropsManager implements DynamicValue.OnValueChangeListener {
    */
   private static boolean hasCommonDynamicPropsToBind(Component component) {
     return component.hasCommonDynamicProps() && Component.isMountViewSpec(component);
+  }
+
+  @VisibleForTesting
+  boolean hasCachedContent(Component component) {
+    return mContents.containsKey(component);
   }
 }
