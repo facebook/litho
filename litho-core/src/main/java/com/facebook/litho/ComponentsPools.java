@@ -26,6 +26,7 @@ import android.os.Bundle;
 import android.util.SparseArray;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import com.facebook.litho.config.ComponentsConfiguration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -106,6 +107,10 @@ public class ComponentsPools {
       Context context, ComponentLifecycle lifecycle, int recyclingMode) {
     if (lifecycle.poolSize() == 0 || !shouldCreateMountContentPool(recyclingMode)) {
       return null;
+    }
+
+    if (ComponentsConfiguration.isGlobalComponentsPoolEnabled && lifecycle.shouldUseGlobalPool()) {
+      context = context.getApplicationContext();
     }
 
     synchronized (sMountContentLock) {

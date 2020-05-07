@@ -251,4 +251,6 @@ public class ComponentsConfiguration {
   public static boolean shouldForceComponentUpdateOnOrientationChange = true;
 
   public static boolean disableHostSuppressInvalidations = false;
+
+  public static boolean isGlobalComponentsPoolEnabled = false;
 }

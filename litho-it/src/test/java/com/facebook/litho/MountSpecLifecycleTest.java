@@ -22,14 +22,19 @@ import static com.facebook.litho.SizeSpec.UNSPECIFIED;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
+import android.content.ContextWrapper;
 import android.os.Looper;
+import android.view.View;
 import androidx.collection.LongSparseArray;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.LithoStatsRule;
 import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.MountSpecLifecycleTester;
 import com.facebook.litho.widget.MountSpecLifecycleTesterSpec;
 import com.facebook.litho.widget.PreallocatedMountSpecLifecycleTester;
+import com.facebook.litho.widget.ShouldUseGlobalPoolFalseMountSpecLifecycleTester;
+import com.facebook.litho.widget.ShouldUseGlobalPoolTrueMountSpecLifecycleTester;
 import com.facebook.rendercore.MountItem;
 import java.util.ArrayList;
 import java.util.List;
@@ -395,5 +400,123 @@ public class MountSpecLifecycleTest {
     assertThat(LifecycleStep.getSteps(info_child2))
         .describedAs("Should call the following lifecycle methods in the following order:")
         .containsExactly(LifecycleStep.ON_UNBIND, LifecycleStep.ON_UNMOUNT);
+  }
+
+  @Test
+  public void lifecycle_shouldUseGlobalPoolTrue_createsViewWithAppicationContext() {
+    boolean isGlobalComponentsPoolEnabled = ComponentsConfiguration.isGlobalComponentsPoolEnabled;
+    ComponentsConfiguration.isGlobalComponentsPoolEnabled = true;
+
+    final Component component =
+        ShouldUseGlobalPoolTrueMountSpecLifecycleTester.create(mLithoViewRule.getContext()).build();
+
+    mLithoViewRule.setRoot(component);
+    mLithoViewRule.attachToWindow().measure().layout();
+
+    Object content =
+        ComponentsPools.getMountContentPools()
+            .get(0)
+            .acquire(mLithoViewRule.getContext().getAndroidContext(), component);
+    View view = null;
+    if (content instanceof View) {
+      view = (View) content;
+    }
+
+    assertThat(view != null).describedAs("Content pool should contain valid view").isEqualTo(true);
+
+    assertThat(view.getContext() == mLithoViewRule.getContext().getApplicationContext())
+        .describedAs("View acquired from the pool should have application context")
+        .isEqualTo(true);
+
+    ComponentsConfiguration.isGlobalComponentsPoolEnabled = isGlobalComponentsPoolEnabled;
+  }
+
+  @Test
+  public void lifecycle_shouldUseGlobalPoolTrue_usesSamePoolForDifferentActivityContexts() {
+    boolean isGlobalComponentsPoolEnabled = ComponentsConfiguration.isGlobalComponentsPoolEnabled;
+    ComponentsConfiguration.isGlobalComponentsPoolEnabled = true;
+
+    final Component componentOne =
+        ShouldUseGlobalPoolTrueMountSpecLifecycleTester.create(mLithoViewRule.getContext()).build();
+
+    ComponentsPools.maybePreallocateContent(
+        mLithoViewRule.getContext().getAndroidContext(),
+        componentOne,
+        mLithoViewRule.getContext().getRecyclingMode());
+
+    ComponentContext differentContext =
+        new ComponentContext(new ContextWrapper(mLithoViewRule.getContext().getAndroidContext()));
+
+    final Component componentTwo =
+        ShouldUseGlobalPoolTrueMountSpecLifecycleTester.create(differentContext).build();
+
+    ComponentsPools.maybePreallocateContent(
+        differentContext.getAndroidContext(), componentTwo, differentContext.getRecyclingMode());
+
+    assertThat(ComponentsPools.getMountContentPools().size())
+        .describedAs("Should still contain only 1 content pool")
+        .isEqualTo(1);
+
+    ComponentsConfiguration.isGlobalComponentsPoolEnabled = isGlobalComponentsPoolEnabled;
+  }
+
+  @Test
+  public void lifecycle_shouldUseGlobalPoolFalse_createsViewWithActivityContext() {
+    boolean isGlobalComponentsPoolEnabled = ComponentsConfiguration.isGlobalComponentsPoolEnabled;
+    ComponentsConfiguration.isGlobalComponentsPoolEnabled = true;
+
+    final Component component =
+        ShouldUseGlobalPoolFalseMountSpecLifecycleTester.create(mLithoViewRule.getContext())
+            .build();
+
+    mLithoViewRule.setRoot(component);
+    mLithoViewRule.attachToWindow().measure().layout();
+
+    Object content =
+        ComponentsPools.getMountContentPools()
+            .get(0)
+            .acquire(mLithoViewRule.getContext().getAndroidContext(), component);
+    View view = null;
+    if (content instanceof View) {
+      view = (View) content;
+    }
+
+    assertThat(view != null).describedAs("Content pool should contain valid view").isEqualTo(true);
+
+    assertThat(view.getContext() == mLithoViewRule.getContext().getApplicationContext())
+        .describedAs("View acquired from the pool should have activity context")
+        .isEqualTo(true);
+
+    ComponentsConfiguration.isGlobalComponentsPoolEnabled = isGlobalComponentsPoolEnabled;
+  }
+
+  @Test
+  public void lifecycle_shouldUseGlobalPoolFalse_usesDifferentPoolsForDifferentActivityContexts() {
+    boolean isGlobalComponentsPoolEnabled = ComponentsConfiguration.isGlobalComponentsPoolEnabled;
+    ComponentsConfiguration.isGlobalComponentsPoolEnabled = true;
+
+    final Component componentOne =
+        ShouldUseGlobalPoolFalseMountSpecLifecycleTester.create(mLithoViewRule.getContext())
+            .build();
+
+    ComponentsPools.maybePreallocateContent(
+        mLithoViewRule.getContext().getAndroidContext(),
+        componentOne,
+        mLithoViewRule.getContext().getRecyclingMode());
+
+    ComponentContext differentContext =
+        new ComponentContext(new ContextWrapper(mLithoViewRule.getContext().getAndroidContext()));
+
+    final Component componentTwo =
+        ShouldUseGlobalPoolFalseMountSpecLifecycleTester.create(differentContext).build();
+
+    ComponentsPools.maybePreallocateContent(
+        differentContext.getAndroidContext(), componentTwo, differentContext.getRecyclingMode());
+
+    assertThat(ComponentsPools.getMountContentPools().size())
+        .describedAs("Should contain 2 content pools")
+        .isEqualTo(2);
+
+    ComponentsConfiguration.isGlobalComponentsPoolEnabled = isGlobalComponentsPoolEnabled;
   }
 }

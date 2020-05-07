@@ -59,6 +59,7 @@ import com.facebook.litho.annotations.OnUnbind;
 import com.facebook.litho.annotations.OnUnmount;
 import com.facebook.litho.annotations.ShouldAlwaysRemeasure;
 import com.facebook.litho.annotations.ShouldUpdate;
+import com.facebook.litho.annotations.ShouldUseGlobalPool;
 import com.facebook.litho.specmodels.internal.ImmutableList;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.MethodSpec;
@@ -474,6 +475,16 @@ public final class DelegateMethodDescriptions {
               ImmutableList.of(PROP, TREE_PROP, STATE, INJECT_PROP, CACHED_VALUE))
           .build();
 
+  public static final DelegateMethodDescription SHOULD_USE_GLOBAL_POOL =
+      DelegateMethodDescription.newBuilder()
+          .annotations(ImmutableList.of(AnnotationSpec.builder(Override.class).build()))
+          .accessType(Modifier.PROTECTED)
+          .returnType(TypeName.BOOLEAN)
+          .name("shouldUseGlobalPool")
+          .definedParameterTypes(ImmutableList.of())
+          .optionalParameterTypes(ImmutableList.of(INJECT_PROP))
+          .build();
+
   public static final Map<Class<? extends Annotation>, DelegateMethodDescription>
       LAYOUT_SPEC_DELEGATE_METHODS_MAP;
 
@@ -539,6 +550,7 @@ public final class DelegateMethodDescriptions {
     mountSpecDelegateMethodsMap.put(ShouldAlwaysRemeasure.class, SHOULD_ALWAYS_REMEASURE);
     mountSpecDelegateMethodsMap.put(OnAttached.class, ON_ATTACHED);
     mountSpecDelegateMethodsMap.put(OnDetached.class, ON_DETACHED);
+    mountSpecDelegateMethodsMap.put(ShouldUseGlobalPool.class, SHOULD_USE_GLOBAL_POOL);
     MOUNT_SPEC_DELEGATE_METHODS_MAP = Collections.unmodifiableMap(mountSpecDelegateMethodsMap);
 
     Map<Class<? extends Annotation>, Class<? extends Annotation>> interStageInputsMap =

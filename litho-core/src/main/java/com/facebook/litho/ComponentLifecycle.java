@@ -104,6 +104,9 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
       ComponentsSystrace.beginSection("createMountContent:" + ((Component) this).getSimpleName());
     }
     try {
+      if (ComponentsConfiguration.isGlobalComponentsPoolEnabled && shouldUseGlobalPool()) {
+        c = c.getApplicationContext();
+      }
       return onCreateMountContent(c);
     } finally {
       if (isTracing) {
@@ -556,6 +559,14 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
    */
   protected boolean shouldUpdate(Component previous, Component next) {
     return !previous.isEquivalentTo(next);
+  }
+
+  /**
+   * @return true this component may be allocated with application context and placed in the global
+   *     component pool.
+   */
+  protected boolean shouldUseGlobalPool() {
+    return false;
   }
 
   /**
