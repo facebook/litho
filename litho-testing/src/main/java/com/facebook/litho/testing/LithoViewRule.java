@@ -115,6 +115,13 @@ public class LithoViewRule implements TestRule {
     return this;
   }
 
+  public LithoViewRule setRootAndSizeSpec(Component component, int widthSpec, int heightSpec) {
+    mWidthSpec = widthSpec;
+    mHeightSpec = heightSpec;
+    getComponentTree().setRootAndSizeSpec(component, mWidthSpec, mHeightSpec);
+    return this;
+  }
+
   public LithoViewRule setSizePx(int widthPx, int heightPx) {
     mWidthSpec = makeMeasureSpec(widthPx, EXACTLY);
     mHeightSpec = makeMeasureSpec(heightPx, EXACTLY);

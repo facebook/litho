@@ -53,7 +53,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.AdapterDataObserver;
 import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
-import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentTree;
@@ -67,8 +66,6 @@ import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
 import com.facebook.litho.ThreadUtils;
 import com.facebook.litho.config.ComponentsConfiguration;
-import com.facebook.litho.testing.TestAttachDetachComponent;
-import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
@@ -81,6 +78,7 @@ import com.facebook.litho.widget.ComponentTreeHolder.ComponentTreeMeasureListene
 import com.facebook.litho.widget.RecyclerBinder.RenderCompleteRunnable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -5129,7 +5127,7 @@ public class RecyclerBinderTest {
   }
 
   @Test
-  public void testOnAttachedOnDetachedWithViewportChanged() {
+  public void binder_changeViewPort_onAttachedAndOnDetachedAreCalled() {
     final int childHeightPx = 20;
     final int widthPx = 200;
     final int heightPx = 200;
@@ -5139,13 +5137,15 @@ public class RecyclerBinderTest {
     mRecyclerBinder.mount(rv);
 
     final List<RenderInfo> renderInfos = new ArrayList<>();
-    final List<TestComponent> components = new ArrayList<>();
+    final List<String> steps = new ArrayList<>();
     for (int i = 0; i < 200; i++) {
-      final TestComponent component =
-          TestAttachDetachComponent.create(mComponentContext).heightPx(childHeightPx).build();
-      components.add(component);
-      final Component child = Column.create(mComponentContext).child(component).build();
-      renderInfos.add(ComponentRenderInfo.create().component(child).build());
+      final Component component =
+          AttachDetachTester.create(mComponentContext)
+              .name("root:" + i)
+              .steps(steps)
+              .heightPx(childHeightPx)
+              .build();
+      renderInfos.add(ComponentRenderInfo.create().component(component).build());
     }
     mRecyclerBinder.insertRangeAt(0, renderInfos);
     mRecyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
@@ -5162,32 +5162,40 @@ public class RecyclerBinderTest {
     mLayoutThreadShadowLooper.runToEndOfTasks();
     ShadowLooper.runUiThreadTasks();
 
+    final List<String> expectedSteps = new ArrayList<>();
     for (int i = rangeStart; i <= rangeStart + rangeTotal; i++) {
-      final TestComponent component = components.get(i);
-      assertThat(component.wasOnAttachedCalled()).isTrue();
+      expectedSteps.add("root:" + i + ":" + AttachDetachTesterSpec.ON_ATTACHED);
     }
+    assertThat(steps)
+        .describedAs("Should call @OnAttached method for components in visible range")
+        .isEqualTo(expectedSteps);
+
+    steps.clear();
 
     // Change viewport and check @OnDetached methods are called for components out of layout range.
     final int newRangeStart = 100;
-    final int newRangeEnd = newRangeStart + rangeSize - 1;
+    final int newRangeEnd = newRangeStart + rangeSize;
     mRecyclerBinder.onNewVisibleRange(newRangeStart, newRangeEnd);
 
     mLayoutThreadShadowLooper.runToEndOfTasks();
     ShadowLooper.runUiThreadTasks();
 
-    for (int i = newRangeStart; i <= newRangeStart + rangeTotal; i++) {
-      final TestComponent component = components.get(i);
-      assertThat(component.wasOnAttachedCalled()).isTrue();
-    }
-
+    expectedSteps.clear();
     for (int i = rangeStart; i <= rangeStart + rangeTotal; i++) {
-      final TestComponent component = components.get(i);
-      assertThat(component.wasOnDetachedCalled()).isTrue();
+      expectedSteps.add("root:" + i + ":" + AttachDetachTesterSpec.ON_DETACHED);
     }
+    final int offset = (int) (RANGE_RATIO * rangeSize);
+    for (int i = newRangeStart - offset; i <= newRangeEnd + offset; i++) {
+      expectedSteps.add("root:" + i + ":" + AttachDetachTesterSpec.ON_ATTACHED);
+    }
+    assertThat(steps)
+        .describedAs(
+            "Should call @OnDetached for components not in visible range and call @OnAttached method for components in visible range")
+        .isEqualTo(expectedSteps);
   }
 
   @Test
-  public void testItemsOnDetached() {
+  public void binder_detach_onDetachedIsCalled() {
     final int childHeightPx = 20;
     final int widthPx = 200;
     final int heightPx = 200;
@@ -5201,13 +5209,15 @@ public class RecyclerBinderTest {
     mRecyclerBinder.mount(rv);
 
     final List<RenderInfo> renderInfos = new ArrayList<>();
-    final List<TestComponent> components = new ArrayList<>();
+    final List<String> steps = new ArrayList<>();
     for (int i = 0; i < 200; i++) {
-      final TestComponent component =
-          TestAttachDetachComponent.create(mComponentContext).heightPx(childHeightPx).build();
-      components.add(component);
-      final Component child = Column.create(mComponentContext).child(component).build();
-      renderInfos.add(ComponentRenderInfo.create().component(child).build());
+      final Component component =
+          AttachDetachTester.create(mComponentContext)
+              .name("root:" + i)
+              .steps(steps)
+              .heightPx(childHeightPx)
+              .build();
+      renderInfos.add(ComponentRenderInfo.create().component(component).build());
     }
     mRecyclerBinder.insertRangeAt(0, renderInfos);
     mRecyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
@@ -5220,21 +5230,24 @@ public class RecyclerBinderTest {
     mLayoutThreadShadowLooper.runToEndOfTasks();
     ShadowLooper.runUiThreadTasks();
 
+    steps.clear();
+
     mRecyclerBinder.detach();
 
     final int rangeSize = heightPx / childHeightPx;
     final int rangeStart = 0;
     final int rangeTotal = (int) (rangeSize + (RANGE_RATIO * rangeSize));
+    final List<String> expectedSteps = new ArrayList<>();
     for (int i = rangeStart; i <= rangeStart + rangeTotal; i++) {
-      assertThat(components.get(i).wasOnDetachedCalled()).isTrue();
+      expectedSteps.add("root:" + i + ":" + AttachDetachTesterSpec.ON_DETACHED);
     }
-    for (int i = rangeStart + rangeTotal + 1; i < 200; i++) {
-      assertThat(components.get(i).wasOnDetachedCalled()).isFalse();
-    }
+    assertThat(steps)
+        .describedAs("Should call @OnDetached for components when binder is detached")
+        .isEqualTo(expectedSteps);
   }
 
   @Test
-  public void testOnDetachedWithRemoveItemAt() {
+  public void binder_removeItem_onDetachedIsCalled() {
     final int childHeightPx = 20;
     final int widthPx = 200;
     final int heightPx = 200;
@@ -5244,13 +5257,15 @@ public class RecyclerBinderTest {
     mRecyclerBinder.mount(rv);
 
     final List<RenderInfo> renderInfos = new ArrayList<>();
-    final List<TestComponent> components = new ArrayList<>();
+    final List<String> steps = new ArrayList<>();
     for (int i = 0; i < 200; i++) {
-      final TestComponent component =
-          TestAttachDetachComponent.create(mComponentContext).heightPx(childHeightPx).build();
-      components.add(component);
-      final Component child = Column.create(mComponentContext).child(component).build();
-      renderInfos.add(ComponentRenderInfo.create().component(child).build());
+      final Component component =
+          AttachDetachTester.create(mComponentContext)
+              .name("root:" + i)
+              .steps(steps)
+              .heightPx(childHeightPx)
+              .build();
+      renderInfos.add(ComponentRenderInfo.create().component(component).build());
     }
     mRecyclerBinder.insertRangeAt(0, renderInfos);
     mRecyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
@@ -5262,6 +5277,8 @@ public class RecyclerBinderTest {
 
     mLayoutThreadShadowLooper.runToEndOfTasks();
     ShadowLooper.runUiThreadTasks();
+
+    steps.clear();
 
     // Remove item at index 0.
     mRecyclerBinder.removeItemAt(0);
@@ -5269,11 +5286,13 @@ public class RecyclerBinderTest {
     mLayoutThreadShadowLooper.runToEndOfTasks();
     ShadowLooper.runUiThreadTasks();
 
-    assertThat(components.get(0).wasOnDetachedCalled()).isTrue();
+    assertThat(steps)
+        .describedAs("Should call @OnDetached for component when it's removed")
+        .isEqualTo(Collections.singletonList("root:0:" + AttachDetachTesterSpec.ON_DETACHED));
   }
 
   @Test
-  public void testOnDetachedWithRemoveRangeAt() {
+  public void binder_removeRange_onDetachedIsCalled() {
     final int childHeightPx = 20;
     final int widthPx = 200;
     final int heightPx = 200;
@@ -5283,13 +5302,15 @@ public class RecyclerBinderTest {
     mRecyclerBinder.mount(rv);
 
     final List<RenderInfo> renderInfos = new ArrayList<>();
-    final List<TestComponent> components = new ArrayList<>();
+    final List<String> steps = new ArrayList<>();
     for (int i = 0; i < 200; i++) {
-      final TestComponent component =
-          TestAttachDetachComponent.create(mComponentContext).heightPx(childHeightPx).build();
-      components.add(component);
-      final Component child = Column.create(mComponentContext).child(component).build();
-      renderInfos.add(ComponentRenderInfo.create().component(child).build());
+      final Component component =
+          AttachDetachTester.create(mComponentContext)
+              .name("root:" + i)
+              .steps(steps)
+              .heightPx(childHeightPx)
+              .build();
+      renderInfos.add(ComponentRenderInfo.create().component(component).build());
     }
     mRecyclerBinder.insertRangeAt(0, renderInfos);
     mRecyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
@@ -5301,6 +5322,8 @@ public class RecyclerBinderTest {
 
     mLayoutThreadShadowLooper.runToEndOfTasks();
     ShadowLooper.runUiThreadTasks();
+
+    steps.clear();
 
     // Remove first 5 items.
     final int removeItemCount = 5;
@@ -5309,13 +5332,17 @@ public class RecyclerBinderTest {
     mLayoutThreadShadowLooper.runToEndOfTasks();
     ShadowLooper.runUiThreadTasks();
 
+    final List<String> expectedSteps = new ArrayList<>();
     for (int i = 0; i < removeItemCount; i++) {
-      assertThat(components.get(i).wasOnDetachedCalled()).isTrue();
+      expectedSteps.add("root:" + i + ":" + AttachDetachTesterSpec.ON_DETACHED);
     }
+    assertThat(steps)
+        .describedAs("Should call @OnDetached for components when they're removed")
+        .isEqualTo(expectedSteps);
   }
 
   @Test
-  public void testOnDetachedWithReplaceAll() {
+  public void binder_replaceAll_onDetachedIsCalled() {
     final int childHeightPx = 20;
     final int widthPx = 200;
     final int heightPx = 200;
@@ -5325,13 +5352,15 @@ public class RecyclerBinderTest {
     mRecyclerBinder.mount(rv);
 
     final List<RenderInfo> renderInfos = new ArrayList<>();
-    final List<TestComponent> components = new ArrayList<>();
+    final List<String> steps = new ArrayList<>();
     for (int i = 0; i < 200; i++) {
-      final TestComponent component =
-          TestAttachDetachComponent.create(mComponentContext).heightPx(childHeightPx).build();
-      components.add(component);
-      final Component child = Column.create(mComponentContext).child(component).build();
-      renderInfos.add(ComponentRenderInfo.create().component(child).build());
+      final Component component =
+          AttachDetachTester.create(mComponentContext)
+              .name("root:" + i)
+              .steps(steps)
+              .heightPx(childHeightPx)
+              .build();
+      renderInfos.add(ComponentRenderInfo.create().component(component).build());
     }
     mRecyclerBinder.insertRangeAt(0, renderInfos);
     mRecyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
@@ -5344,13 +5373,18 @@ public class RecyclerBinderTest {
     mLayoutThreadShadowLooper.runToEndOfTasks();
     ShadowLooper.runUiThreadTasks();
 
+    steps.clear();
+
     // Replace all items.
     final List<RenderInfo> newRenderInfos = new ArrayList<>();
     for (int i = 0; i < 200; i++) {
-      final TestComponent component =
-          TestAttachDetachComponent.create(mComponentContext).heightPx(childHeightPx).build();
-      final Component child = Column.create(mComponentContext).child(component).build();
-      newRenderInfos.add(ComponentRenderInfo.create().component(child).build());
+      final Component component =
+          AttachDetachTester.create(mComponentContext)
+              .name("newRoot:" + i)
+              .steps(steps)
+              .heightPx(childHeightPx)
+              .build();
+      newRenderInfos.add(ComponentRenderInfo.create().component(component).build());
     }
     mRecyclerBinder.replaceAll(newRenderInfos);
 
@@ -5360,12 +5394,13 @@ public class RecyclerBinderTest {
     final int rangeSize = heightPx / childHeightPx;
     final int rangeStart = 0;
     final int rangeTotal = (int) (rangeSize + (RANGE_RATIO * rangeSize));
+    final List<String> expectedSteps = new ArrayList<>();
     for (int i = rangeStart; i <= rangeStart + rangeTotal; i++) {
-      assertThat(components.get(i).wasOnDetachedCalled()).isTrue();
+      expectedSteps.add("root:" + i + ":" + AttachDetachTesterSpec.ON_DETACHED);
     }
-    for (int i = rangeStart + rangeTotal + 1; i < 200; i++) {
-      assertThat(components.get(i).wasOnDetachedCalled()).isFalse();
-    }
+    assertThat(steps)
+        .describedAs("Should call @OnDetached for components when they're replaced")
+        .isEqualTo(expectedSteps);
   }
 
   @Test
