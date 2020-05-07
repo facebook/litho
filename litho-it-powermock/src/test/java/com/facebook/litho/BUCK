@@ -29,10 +29,7 @@ load(
 
 litho_robolectric4_powermock_test(
     name = "litho",
-    srcs = glob([
-        "*Test.java",
-        "widget/*Test.java",
-    ]),
+    srcs = glob(["*.java"]),
     contacts = ["oncall+components_for_android@xmail.facebook.com"],
     # This is our secret sauce for PowerMock.
     fork_mode = "per_test",
@@ -61,5 +58,6 @@ litho_robolectric4_powermock_test(
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/inlinelayoutspec:inlinelayoutspec"),
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/shadows:shadows-v4"),
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/testrunner:testrunner-v4"),
+        make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/viewtree:viewtree-v4"),
     ],
 )

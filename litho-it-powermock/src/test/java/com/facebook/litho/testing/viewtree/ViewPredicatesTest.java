@@ -36,7 +36,6 @@ import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.Text;
 import com.google.common.base.Predicate;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
@@ -44,7 +43,6 @@ import org.robolectric.annotation.Config;
 
 /** Tests {@link ViewPredicates} */
 @RunWith(LithoTestRunner.class)
-@Ignore("T65213042") // Investigate and fix
 @Config(shadows = ColorDrawableShadow.class)
 public class ViewPredicatesTest {
 
