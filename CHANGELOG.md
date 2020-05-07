@@ -4,6 +4,8 @@
 
 _TBA_
 
+* **Breaking:** RenderThreadTransition removed.
+
 For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.35.0...master).
 
 ## Version 0.35.0

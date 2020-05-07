@@ -30,7 +30,6 @@ import com.facebook.litho.animation.DimensionValue;
 import com.facebook.litho.animation.FloatValue;
 import com.facebook.litho.animation.PropertyAnimation;
 import com.facebook.litho.animation.PropertyHandle;
-import com.facebook.litho.animation.RenderThreadTransition;
 import com.facebook.litho.animation.Resolver;
 import com.facebook.litho.animation.RuntimeValue;
 import com.facebook.litho.animation.SpringTransition;
@@ -267,43 +266,6 @@ public abstract class Transition {
   /** Creates a {@link TimingTransition} with the given duration and {@link Interpolator}. */
   public static TransitionAnimator timing(final int durationMs, Interpolator interpolator) {
     return new TimingTransitionAnimator(durationMs, interpolator);
-  }
-
-  /** Creates a {@link RenderThreadTransition} that runs on the Render Thread. */
-  public static TransitionAnimator renderThread() {
-    return new RenderThreadAnimator(0, DEFAULT_DURATION, DEFAULT_INTERPOLATOR);
-  }
-
-  /** Creates a {@link RenderThreadTransition} that runs on the Render Thread. */
-  public static TransitionAnimator renderThread(int delayMs, int durationMs) {
-    return new RenderThreadAnimator(delayMs, durationMs, DEFAULT_INTERPOLATOR);
-  }
-
-  /**
-   * Creates a {@link RenderThreadTransition} with the given duration that runs on the Render
-   * Thread.
-   */
-  public static TransitionAnimator renderThread(int durationMs) {
-    return new RenderThreadAnimator(0, durationMs, DEFAULT_INTERPOLATOR);
-  }
-
-  /**
-   * Creates a {@link RenderThreadTransition} with the given duration and {@link
-   * android.animation.TimeInterpolator} that runs on the Render Thread.
-   */
-  public static TransitionAnimator renderThread(int durationMs, TimeInterpolator interpolator) {
-    return new RenderThreadAnimator(0, durationMs, interpolator);
-  }
-
-  /**
-   * Creates a {@link RenderThreadTransition} with the given duration, delay and {@link
-   * android.animation.TimeInterpolator} that runs on the Render Thread. Warning: the delay will be
-   * considered as a part of the animation, you may consider using {@link Transition#delay(int,
-   * Transition)} ()} instead, but this way the delay will be handled on the UI thread)
-   */
-  public static TransitionAnimator renderThread(
-      int delayMs, int durationMs, Interpolator interpolator) {
-    return new RenderThreadAnimator(delayMs, durationMs, interpolator);
   }
 
   public static class TransitionUnit extends Transition {
@@ -682,23 +644,6 @@ public abstract class Transition {
     @Override
     public TransitionAnimationBinding createAnimation(PropertyAnimation propertyAnimation) {
       return new TimingTransition(mDurationMs, propertyAnimation, mInterpolator);
-    }
-  }
-
-  private static class RenderThreadAnimator implements Transition.TransitionAnimator {
-    final int mDelayMs;
-    final int mDurationMs;
-    final TimeInterpolator mInterpolator;
-
-    RenderThreadAnimator(int mDelayMs, int mDurationMs, TimeInterpolator mInterpolator) {
-      this.mDelayMs = mDelayMs;
-      this.mDurationMs = mDurationMs;
-      this.mInterpolator = mInterpolator;
-    }
-
-    @Override
-    public TransitionAnimationBinding createAnimation(PropertyAnimation propertyAnimation) {
-      return new RenderThreadTransition(propertyAnimation, mDelayMs, mDurationMs, mInterpolator);
     }
   }
 
