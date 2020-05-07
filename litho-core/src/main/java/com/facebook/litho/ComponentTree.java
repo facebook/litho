@@ -1927,10 +1927,15 @@ public class ComponentTree {
                       heightSpec,
                       mostRecentLayoutState.getWidth(),
                       mostRecentLayoutState.getHeight()));
+
+      // In addition to checking the specs are compatible, we need to make sure they are compatible
+      // for the most recent root as well. We want to prevent the case that there's an async layout
+      // in flight with incompatible specs which won't be committed when it finishes.
+      final Component rootToCheck = root != null ? root : mRoot;
       final boolean rootDidntChange =
-          !rootInitialized
-              || (mostRecentLayoutState != null
-                  && root.getId() == mostRecentLayoutState.getRootComponent().getId());
+          mostRecentLayoutState != null
+              && rootToCheck != null
+              && rootToCheck.getId() == mostRecentLayoutState.getRootComponent().getId();
 
       if (rootDidntChange && sizeSpecsAreCompatible) {
         // The spec and the root haven't changed. Either we have a layout already, or we're

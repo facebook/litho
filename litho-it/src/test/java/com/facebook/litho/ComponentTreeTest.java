@@ -1458,6 +1458,64 @@ public class ComponentTreeTest {
   }
 
   @Test
+  public void testSetRootAndSetSizeSpecInParallelProduceCorrectResult()
+      throws InterruptedException {
+    Component oldComponent =
+        TestDrawableComponent.create(mContext).widthPx(100).heightPx(100).color(1234).build();
+    ComponentTree componentTree = ComponentTree.create(mContext, oldComponent).build();
+    componentTree.setLithoView(new LithoView(mContext));
+
+    int widthSpec1 = SizeSpec.makeSizeSpec(1000, SizeSpec.EXACTLY);
+    int heightSpec1 = SizeSpec.makeSizeSpec(1000, SizeSpec.AT_MOST);
+    int widthSpec2 = SizeSpec.makeSizeSpec(1000, SizeSpec.EXACTLY);
+    int heightSpec2 = SizeSpec.makeSizeSpec(500, SizeSpec.AT_MOST);
+
+    componentTree.attach();
+    componentTree.measure(widthSpec1, heightSpec1, new int[2], false);
+
+    // This new component will produce a layout compatible with the first specs but not the second
+    // specs.
+    TestDrawableComponent newComponent =
+        TestDrawableComponent.create(mContext).flexGrow(1).color(1234).build();
+    TestDrawableComponent.BlockInPrepareComponentListener blockInPrepare =
+        new TestDrawableComponent.BlockInPrepareComponentListener();
+    blockInPrepare.setDoNotBlockOnThisThread();
+    newComponent.setTestComponentListener(blockInPrepare);
+
+    componentTree.setRootAsync(newComponent);
+
+    final CountDownLatch asyncLayout =
+        runOnBackgroundThread(
+            new Runnable() {
+              @Override
+              public void run() {
+                mBackgroundLayoutLooperRule.runToEndOfTasksSync();
+              }
+            });
+    blockInPrepare.awaitPrepareStart();
+
+    assertThat(componentTree.hasCompatibleLayout(widthSpec2, heightSpec2))
+        .describedAs("Asserting test setup, second set of specs should be compatible.")
+        .isTrue();
+    componentTree.setSizeSpec(widthSpec2, heightSpec2);
+
+    blockInPrepare.allowPrepareToComplete();
+    assertTrue(asyncLayout.await(5, TimeUnit.SECONDS));
+    ShadowLooper.runUiThreadTasks();
+
+    assertThat(componentTree.getRoot()).isEqualTo(newComponent);
+    assertThat(componentTree.hasCompatibleLayout(widthSpec2, heightSpec2)).isTrue();
+    assertThat(componentTree.getMainThreadLayoutState().isForComponentId(newComponent.getId()))
+        .isTrue();
+    assertThat(componentTree.getMainThreadLayoutState().getHeight()).isEqualTo(500);
+
+    assertThat(mLithoStatsRule.getComponentCalculateLayoutCount())
+        .describedAs(
+            "We expect one initial layout, the async layout (thrown away), and a layout from setSizeSpec.")
+        .isEqualTo(3);
+  }
+
+  @Test
   public void testLayoutStateNotCommittedTwiceWithLayoutStateFutures() throws InterruptedException {
     TestDrawableComponent component =
         TestDrawableComponent.create(mContext).flexGrow(1).color(1234).build();
