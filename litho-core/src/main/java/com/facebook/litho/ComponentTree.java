@@ -2470,7 +2470,8 @@ public class ComponentTree {
       }
     }
 
-    if (context.getAndroidContext() != root.getBuilderContext()) {
+    if (root.getBuilderContext() != null
+        && root.getBuilderContext() != context.getAndroidContext()) {
       final String message =
           "ComponentTree context is different from root builder context"
               + ", ComponentTree context="
