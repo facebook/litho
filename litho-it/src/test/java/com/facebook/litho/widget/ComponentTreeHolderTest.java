@@ -91,12 +91,50 @@ public class ComponentTreeHolderTest {
     Whitebox.setInternalState(holder.getComponentTree(), "mHasMounted", true);
 
     // component goes out of range
-    holder.acquireStateAndReleaseTree();
+    holder.acquireStateAndReleaseTree(true);
     assertThat(holder.getComponentTree()).isNull();
 
     // component comes back within range
     holder.computeLayoutSync(mContext, mWidthSpec, mHeightSpec, new Size());
     assertThat(holder.getComponentTree().hasMounted()).isTrue();
+  }
+
+  @Test
+  public void testRetainStateHandlerAfterExitingRange() {
+    ComponentTreeHolder holder = createComponentTreeHolder(mComponentRenderInfo);
+    holder.computeLayoutSync(mContext, mWidthSpec, mHeightSpec, new Size());
+
+    // component goes out of range
+    holder.acquireStateAndReleaseTree(true);
+    assertThat(holder.getComponentTree()).isNull();
+    assertThat(holder.getStateHandler()).isNotNull();
+  }
+
+  @Test
+  public void testDropStateHandlerAfterExitingRange() {
+    ComponentTreeHolder holder = createComponentTreeHolder(mComponentRenderInfo);
+    holder.computeLayoutSync(mContext, mWidthSpec, mHeightSpec, new Size());
+
+    // component goes out of range
+    holder.acquireStateAndReleaseTree(false);
+    assertThat(holder.getComponentTree()).isNull();
+    assertThat(holder.getStateHandler()).isNull();
+  }
+
+  @Test
+  public void testForceKeepStateHandlerAfterExitingRange() {
+    final ComponentRenderInfo renderInfo =
+        ComponentRenderInfo.create()
+            .customAttribute(ComponentTreeHolder.ACQUIRE_STATE_HANDLER_ON_RELEASE, true)
+            .component(mComponent)
+            .build();
+    ComponentTreeHolder holder = createComponentTreeHolder(renderInfo);
+    holder.computeLayoutSync(mContext, mWidthSpec, mHeightSpec, new Size());
+
+    // component goes out of range
+    holder.acquireStateAndReleaseTree(false);
+    assertThat(holder.getComponentTree()).isNull();
+    assertThat(holder.getStateHandler()).isNotNull();
   }
 
   @Test

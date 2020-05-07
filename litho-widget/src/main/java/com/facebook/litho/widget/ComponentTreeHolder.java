@@ -48,6 +48,7 @@ public class ComponentTreeHolder {
   private final boolean mIsLayoutDiffingEnabled;
   private final boolean mIncrementalVisibilityEnabled;
   public static final String PREVENT_RELEASE_TAG = "prevent_release";
+  public static final String ACQUIRE_STATE_HANDLER_ON_RELEASE = "acquire_state_handler";
   private final int mRecyclingMode;
 
   @IntDef({RENDER_UNINITIALIZED, RENDER_ADDED, RENDER_DRAWN})
@@ -231,8 +232,12 @@ public class ComponentTreeHolder {
     mRecyclingMode = builder.recyclingMode;
   }
 
-  public synchronized void acquireStateAndReleaseTree() {
-    acquireStateHandler();
+  @VisibleForTesting
+  public synchronized void acquireStateAndReleaseTree(boolean acquireStateHandlerOnRelease) {
+    if (acquireStateHandlerOnRelease || shouldAcquireStateHandlerOnRelease()) {
+      acquireStateHandler();
+    }
+
     acquireAnimationState();
     releaseTree();
   }
@@ -369,6 +374,12 @@ public class ComponentTreeHolder {
     return mComponentTree;
   }
 
+  @VisibleForTesting
+  @Nullable
+  StateHandler getStateHandler() {
+    return mStateHandler;
+  }
+
   public synchronized void setRenderInfo(RenderInfo renderInfo) {
     invalidateTree();
     mRenderInfo = renderInfo;
@@ -495,6 +506,16 @@ public class ComponentTreeHolder {
     final Object preventRelease = mRenderInfo.getCustomAttribute(PREVENT_RELEASE_TAG);
     if (preventRelease instanceof Boolean) {
       return (Boolean) preventRelease;
+    }
+
+    return false;
+  }
+
+  private boolean shouldAcquireStateHandlerOnRelease() {
+    final Object acquireStateHandler =
+        mRenderInfo.getCustomAttribute(ACQUIRE_STATE_HANDLER_ON_RELEASE);
+    if (acquireStateHandler instanceof Boolean) {
+      return (Boolean) acquireStateHandler;
     }
 
     return false;

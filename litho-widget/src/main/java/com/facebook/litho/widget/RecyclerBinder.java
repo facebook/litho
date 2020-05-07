@@ -133,6 +133,7 @@ public class RecyclerBinder
   private final boolean mKeepComponentTreeForRecycledView;
   private final boolean mDisableUnmountAllForRecycledView;
   private final boolean mVisibilityProcessingEnabled;
+  private final boolean mAcquireStateHandlerOnRelease;
   private @Nullable List<ComponentLogParams> mInvalidStateLogParamsList;
   private final RecyclerRangeTraverser mRangeTraverser;
   private final boolean mHScrollAsyncMode;
@@ -459,6 +460,7 @@ public class RecyclerBinder
     private boolean mDisableUnmountAllForRecycledView =
         ComponentsConfiguration.disableUnmountAllItemsForRecycledView;
     private boolean visibilityProcessing = true;
+    private boolean acquireStateHandlerOnRelease = true;
 
     /**
      * @param rangeRatio specifies how big a range this binder should try to compute. The range is
@@ -470,6 +472,16 @@ public class RecyclerBinder
      */
     public Builder rangeRatio(float rangeRatio) {
       this.rangeRatio = rangeRatio;
+      return this;
+    }
+
+    /**
+     * Defaults to true. If false, when a ComponentTreeHolder is released because it exists the
+     * prepared range, the StateHandler of the ComponentTree will not be cached and restored when
+     * re-entering the range, so previous state will be lost.
+     */
+    public Builder acquireStateHandlerOnRelease(boolean acquireStateHandlerOnRelease) {
+      this.acquireStateHandlerOnRelease = acquireStateHandlerOnRelease;
       return this;
     }
 
@@ -889,6 +901,7 @@ public class RecyclerBinder
     mIncrementalVisibility = builder.mIncrementalVisibility;
     mKeepComponentTreeForRecycledView = builder.mKeepComponentTreeForRecycledView;
     mDisableUnmountAllForRecycledView = builder.mDisableUnmountAllForRecycledView;
+    mAcquireStateHandlerOnRelease = builder.acquireStateHandlerOnRelease;
 
     if (mLayoutHandlerFactory == null) {
 
@@ -1710,7 +1723,7 @@ public class RecyclerBinder
     final boolean isTreeValid = holder.isTreeValid();
 
     if (isTreeValid && !isNewPositionInRange) {
-      holder.acquireStateAndReleaseTree();
+      holder.acquireStateAndReleaseTree(mAcquireStateHandlerOnRelease);
     }
     mInternalAdapter.notifyItemMoved(fromPosition, toPosition);
 
@@ -3229,7 +3242,7 @@ public class RecyclerBinder
       }
     } else {
       if (ThreadUtils.isMainThread()) {
-        maybeAcquireStateAndReleaseTree(holder);
+        maybeAcquireStateAndReleaseTree(holder, mAcquireStateHandlerOnRelease);
       } else {
         mMainThreadHandler.post(getMaybeAcquireStateAndReleaseTreeRunnable(holder));
       }
@@ -3242,18 +3255,19 @@ public class RecyclerBinder
     return new Runnable() {
       @Override
       public void run() {
-        maybeAcquireStateAndReleaseTree(holder);
+        maybeAcquireStateAndReleaseTree(holder, mAcquireStateHandlerOnRelease);
       }
     };
   }
 
-  private static void maybeAcquireStateAndReleaseTree(ComponentTreeHolder holder) {
+  private static void maybeAcquireStateAndReleaseTree(
+      ComponentTreeHolder holder, boolean acquireStateAndReleaseTree) {
     if (holder.isTreeValid()
         && !holder.shouldPreventRelease()
         && !holder.getRenderInfo().isSticky()
         && (holder.getComponentTree() != null
             && holder.getComponentTree().getLithoView() == null)) {
-      holder.acquireStateAndReleaseTree();
+      holder.acquireStateAndReleaseTree(acquireStateAndReleaseTree);
     }
   }
 
