@@ -1,10 +1,10 @@
 load(
     "//tools/build_defs/oss:litho_defs.bzl",
-    "LITHO_RENDERCORE_TARGET",
     "LITHO_ANDROIDSUPPORT_TARGET",
     "LITHO_ASSERTJ_TARGET",
     "LITHO_INFERANNOTATIONS_TARGET",
     "LITHO_JUNIT_TARGET",
+    "LITHO_RENDERCORE_TARGET",
     "litho_android_library",
 )
 
