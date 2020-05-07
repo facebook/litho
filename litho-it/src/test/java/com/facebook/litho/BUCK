@@ -5,6 +5,7 @@
 
 load(
     "//tools/build_defs/oss:litho_defs.bzl",
+    "LITHO_ANDROIDSUPPORT_RECYCLERVIEW_TARGET",
     "LITHO_ANDROIDSUPPORT_TARGET",
     "LITHO_ANDROIDSUPPORT_TESTING_CORE_TARGET",
     "LITHO_ASSERTJ_TARGET",
@@ -30,13 +31,18 @@ load(
 
 litho_robolectric4_test(
     name = "litho",
-    srcs = glob([
-        "*Test.java",
-        "animation/*.java",
-        "choreographercompat/*.java",
-        "dataflow/*.java",
-        "drawable/*.java",
-    ]),
+    srcs = glob(
+        [
+            "**/*.java",
+        ],
+        exclude = [
+            "intellij/**/*.java",
+            "sections/specmodels/**/*.java",
+            "processor/**/*.java",
+            "specmodels/**/*.java",
+            "testing/**/*.java",
+        ],
+    ),
     contacts = ["oncall+components_for_android@xmail.facebook.com"],
     is_androidx = True,
     provided_deps = [
@@ -46,11 +52,13 @@ litho_robolectric4_test(
     target = "8",
     deps = [
         ":testutil",
+        LITHO_ANDROIDSUPPORT_RECYCLERVIEW_TARGET,
         LITHO_ANDROIDSUPPORT_TESTING_CORE_TARGET,
         LITHO_ANDROIDSUPPORT_TARGET,
         LITHO_ASSERTJ_TARGET,
         LITHO_BUILD_CONFIG_TARGET,
         LITHO_JAVA_TARGET,
+        LITHO_JSR_TARGET,
         LITHO_JUNIT_TARGET,
         LITHO_MOCKITO_V2_TARGET,
         LITHO_SOLOADER_TARGET,
@@ -64,16 +72,24 @@ litho_robolectric4_test(
         make_dep_path("litho-core/src/main/java/com/facebook/litho/utils:utils"),
         make_dep_path("litho-it/src/main/java/com/facebook/litho:litho-testing"),
         make_dep_path("litho-it/src/main/java/com/facebook/litho/components:components"),
+        make_dep_path("litho-it/src/main/java/com/facebook/litho/sections/common:common"),
         make_dep_path("litho-it/src/main/java/com/facebook/litho/testing/error:error"),
+        make_dep_path("litho-it/src/main/java/com/facebook/litho/testing/treeprop:treeprop"),
         make_dep_path("litho-it/src/main/java/com/facebook/litho/widget:widget"),
         make_dep_path("litho-processor/src/main/java/com/facebook/litho/specmodels/internal:internal"),
+        make_dep_path("litho-sections-core/src/main/java/com/facebook/litho/sections:sections"),
+        make_dep_path("litho-sections-core/src/main/java/com/facebook/litho/sections/common:common"),
+        make_dep_path("litho-sections-core/src/main/java/com/facebook/litho/sections/logger:logger"),
+        make_dep_path("litho-sections-widget/src/main/java/com/facebook/litho/sections/widget:widget"),
         make_dep_path("litho-testing/src/main/java/com/facebook/litho:litho-v4"),
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/assertj:assertj-v4"),
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/eventhandler:eventhandler-v4"),
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/inlinelayoutspec:inlinelayoutspec"),
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/logging:logging-v4"),
+        make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/sections:sections-v4"),
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/shadows:shadows-v4"),
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/testrunner:testrunner-v4"),
+        make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/viewtree:viewtree-v4"),
     ],
 )
 

@@ -43,6 +43,8 @@ litho_android_library(
     required_for_source_only_abi = True,
     tests = [
         LITHO_TEST_TARGET,
+        make_dep_path("litho-it-powermock/src/test/java/com/facebook/litho:litho"),
+        make_dep_path("litho-it-spec/src/test/java/com/facebook/litho:litho"),
     ],
     visibility = LITHO_VISIBILITY,
     deps = [

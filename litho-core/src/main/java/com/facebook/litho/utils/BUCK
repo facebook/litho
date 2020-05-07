@@ -19,7 +19,7 @@ litho_android_library(
     is_androidx = True,
     labels = ["supermodule:android/default/litho.core"],
     tests = [
-        make_dep_path("litho-it/src/test/java/com/facebook/litho/utils:utils"),
+        make_dep_path("litho-it/src/test/java/com/facebook/litho:litho"),
     ],
     visibility = [
         "PUBLIC",
