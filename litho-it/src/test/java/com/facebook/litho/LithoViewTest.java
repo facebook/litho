@@ -309,6 +309,56 @@ public class LithoViewTest {
         .isEqualTo(1);
   }
 
+  @Test
+  public void forceLayout_whenForceLayoutIsSetAndHasExactMeasurements_recomputesLayout() {
+    mLithoView.measure(
+        View.MeasureSpec.makeMeasureSpec(100, EXACTLY),
+        View.MeasureSpec.makeMeasureSpec(100, EXACTLY));
+    mLithoView.layout(0, 0, 100, 100);
+
+    mLithoView.forceRelayout();
+
+    mLithoView.measure(
+        View.MeasureSpec.makeMeasureSpec(100, EXACTLY),
+        View.MeasureSpec.makeMeasureSpec(100, EXACTLY));
+    mLithoView.layout(0, 0, 100, 100);
+
+    assertThat(mLithoStatsRule.getComponentCalculateLayoutCount())
+        .describedAs("Should force layout.")
+        .isEqualTo(2);
+
+    mLithoView.measure(
+        View.MeasureSpec.makeMeasureSpec(100, EXACTLY),
+        View.MeasureSpec.makeMeasureSpec(100, EXACTLY));
+    mLithoView.layout(0, 0, 100, 100);
+
+    assertThat(mLithoStatsRule.getComponentCalculateLayoutCount())
+        .describedAs("Should only force layout one time.")
+        .isEqualTo(2);
+  }
+
+  @Test
+  public void forceLayout_whenForceLayoutIsNotSetAndHasExactMeasurements_doesNotRecomputeLayout() {
+    mLithoView.measure(
+        View.MeasureSpec.makeMeasureSpec(100, EXACTLY),
+        View.MeasureSpec.makeMeasureSpec(100, EXACTLY));
+    mLithoView.layout(0, 0, 100, 100);
+
+    mLithoView.measure(
+        View.MeasureSpec.makeMeasureSpec(100, EXACTLY),
+        View.MeasureSpec.makeMeasureSpec(100, EXACTLY));
+    mLithoView.layout(0, 0, 100, 100);
+
+    mLithoView.measure(
+        View.MeasureSpec.makeMeasureSpec(100, EXACTLY),
+        View.MeasureSpec.makeMeasureSpec(100, EXACTLY));
+    mLithoView.layout(0, 0, 100, 100);
+
+    assertThat(mLithoStatsRule.getComponentCalculateLayoutCount())
+        .describedAs("Should only force layout one time.")
+        .isEqualTo(1);
+  }
+
   private LithoView setupLithoViewForDoubleMeasureTest(
       int screenWidthDp, float density, int screenWidthPx) {
     final Context context = spy(new ContextWrapper(getApplicationContext()));
