@@ -71,8 +71,12 @@ public class LithoViewRule implements TestRule {
   public LithoView getLithoView() {
     if (mLithoView == null) {
       mLithoView = new LithoView(mContext);
+    }
+
+    if (mLithoView.getComponentTree() == null) {
       mLithoView.setComponentTree(getComponentTree());
     }
+
     return mLithoView;
   }
 

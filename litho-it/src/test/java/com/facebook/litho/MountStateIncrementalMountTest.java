@@ -16,11 +16,9 @@
 
 package com.facebook.litho;
 
-import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
-import static com.facebook.litho.FrameworkLogEvents.PARAM_MOUNTED_COUNT;
-import static com.facebook.litho.FrameworkLogEvents.PARAM_UNMOUNTED_COUNT;
+import static com.facebook.litho.SizeSpec.EXACTLY;
+import static com.facebook.litho.SizeSpec.makeSizeSpec;
 import static com.facebook.litho.testing.TestViewComponent.create;
-import static com.facebook.litho.testing.helper.ComponentTestHelper.mountComponent;
 import static com.facebook.yoga.YogaEdge.ALL;
 import static com.facebook.yoga.YogaEdge.LEFT;
 import static com.facebook.yoga.YogaEdge.TOP;
@@ -39,52 +37,47 @@ import static org.mockito.Mockito.when;
 import android.content.Context;
 import android.graphics.Rect;
 import android.view.ViewGroup;
-import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestViewComponent;
 import com.facebook.litho.testing.ViewGroupWithLithoViewChildren;
-import com.facebook.litho.testing.helper.ComponentTestHelper;
-import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
-import com.facebook.litho.testing.logging.TestComponentsLogger;
-import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.rendercore.Host;
 import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.yoga.YogaEdge;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import org.junit.After;
+import java.util.Arrays;
+import java.util.Collection;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.robolectric.ParameterizedRobolectricTestRunner;
 
-@RunWith(LithoTestRunner.class)
+@RunWith(ParameterizedRobolectricTestRunner.class)
 public class MountStateIncrementalMountTest {
   private ComponentContext mContext;
-  private TestComponentsLogger mComponentsLogger;
   boolean useMountWithExtensions;
   boolean useIncMountOnlyExtension;
+  final boolean mUseMountDelegateTarget;
+
+  public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
+
+  @ParameterizedRobolectricTestRunner.Parameters(name = "{0}")
+  public static Collection data() {
+    return Arrays.asList(new Object[][] {{false}, {true}});
+  }
+
+  public MountStateIncrementalMountTest(boolean useMountDelegateTarget) {
+    mUseMountDelegateTarget = useMountDelegateTarget;
+  }
 
   @Before
   public void setup() {
-    mComponentsLogger = new TestComponentsLogger();
-    mContext = new ComponentContext(getApplicationContext(), "tag", mComponentsLogger);
-    useMountWithExtensions = ComponentsConfiguration.useExtensionsWithMountDelegate;
-    useIncMountOnlyExtension = ComponentsConfiguration.useIncrementalMountExtension;
-    ComponentsConfiguration.useExtensionsWithMountDelegate = false;
-    ComponentsConfiguration.useIncrementalMountExtension = false;
-  }
-
-  @After
-  public void cleanup() {
-    ComponentsConfiguration.useExtensionsWithMountDelegate = useMountWithExtensions;
-    ComponentsConfiguration.useIncrementalMountExtension = useIncMountOnlyExtension;
+    mContext = mLithoViewRule.getContext();
+    mLithoViewRule.useLithoView(new LithoView(mContext, mUseMountDelegateTarget, false));
   }
 
   /** Tests incremental mount behaviour of a vertical stack of components with a View mount type. */
@@ -92,94 +85,80 @@ public class MountStateIncrementalMountTest {
   public void testIncrementalMountVerticalViewStackScrollUp() {
     final TestComponent child1 = create(mContext).build();
     final TestComponent child2 = create(mContext).build();
-    final LithoView lithoView =
-        mountComponent(
-            mContext,
-            new InlineLayoutSpec() {
-              @Override
-              protected Component onCreateLayout(ComponentContext c) {
-                return Column.create(c)
-                    .child(Wrapper.create(c).delegate(child1).widthPx(10).heightPx(10))
-                    .child(Wrapper.create(c).delegate(child2).widthPx(10).heightPx(10))
-                    .build();
-              }
-            },
-            true,
-            true);
+    final Component root =
+        Column.create(mContext)
+            .child(Wrapper.create(mContext).delegate(child1).widthPx(10).heightPx(10))
+            .child(Wrapper.create(mContext).delegate(child2).widthPx(10).heightPx(10))
+            .build();
 
-    verifyLoggingAndResetLogger(2, 0);
+    mLithoViewRule
+        .setRoot(root)
+        .attachToWindow()
+        .setSizeSpecs(makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY))
+        .measure()
+        .layout();
+
+    final LithoView lithoView = mLithoViewRule.getLithoView();
 
     lithoView.getComponentTree().mountComponent(new Rect(0, -10, 10, -5), true);
     assertThat(child1.isMounted()).isFalse();
     assertThat(child2.isMounted()).isFalse();
-    verifyLoggingAndResetLogger(0, 2);
 
     lithoView.getComponentTree().mountComponent(new Rect(0, 0, 10, 5), true);
     assertThat(child1.isMounted()).isTrue();
     assertThat(child2.isMounted()).isFalse();
-    verifyLoggingAndResetLogger(1, 0);
 
     lithoView.getComponentTree().mountComponent(new Rect(0, 5, 10, 15), true);
     assertThat(child1.isMounted()).isTrue();
     assertThat(child2.isMounted()).isTrue();
-    verifyLoggingAndResetLogger(1, 0);
 
     lithoView.getComponentTree().mountComponent(new Rect(0, 15, 10, 25), true);
     assertThat(child1.isMounted()).isFalse();
     assertThat(child2.isMounted()).isTrue();
-    verifyLoggingAndResetLogger(0, 1);
 
     lithoView.getComponentTree().mountComponent(new Rect(0, 20, 10, 30), true);
     assertThat(child1.isMounted()).isFalse();
     assertThat(child2.isMounted()).isFalse();
-    verifyLoggingAndResetLogger(0, 1);
   }
 
   @Test
   public void testIncrementalMountVerticalViewStackScrollDown() {
     final TestComponent child1 = create(mContext).build();
     final TestComponent child2 = create(mContext).build();
-    final LithoView lithoView =
-        mountComponent(
-            mContext,
-            new InlineLayoutSpec() {
-              @Override
-              protected Component onCreateLayout(ComponentContext c) {
-                return Column.create(c)
-                    .child(Wrapper.create(c).delegate(child1).widthPx(10).heightPx(10))
-                    .child(Wrapper.create(c).delegate(child2).widthPx(10).heightPx(10))
-                    .build();
-              }
-            },
-            true,
-            true);
+    final Component root =
+        Column.create(mContext)
+            .child(Wrapper.create(mContext).delegate(child1).widthPx(10).heightPx(10))
+            .child(Wrapper.create(mContext).delegate(child2).widthPx(10).heightPx(10))
+            .build();
 
-    verifyLoggingAndResetLogger(2, 0);
+    mLithoViewRule
+        .setRoot(root)
+        .attachToWindow()
+        .setSizeSpecs(makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY))
+        .measure()
+        .layout();
+
+    final LithoView lithoView = mLithoViewRule.getLithoView();
 
     lithoView.getComponentTree().mountComponent(new Rect(0, 20, 10, 30), true);
     assertThat(child1.isMounted()).isFalse();
     assertThat(child2.isMounted()).isFalse();
-    verifyLoggingAndResetLogger(0, 2);
 
     lithoView.getComponentTree().mountComponent(new Rect(0, 15, 10, 25), true);
     assertThat(child1.isMounted()).isFalse();
     assertThat(child2.isMounted()).isTrue();
-    verifyLoggingAndResetLogger(1, 0);
 
     lithoView.getComponentTree().mountComponent(new Rect(0, 5, 10, 15), true);
     assertThat(child1.isMounted()).isTrue();
     assertThat(child2.isMounted()).isTrue();
-    verifyLoggingAndResetLogger(1, 0);
 
     lithoView.getComponentTree().mountComponent(new Rect(0, 0, 10, 10), true);
     assertThat(child1.isMounted()).isTrue();
     assertThat(child2.isMounted()).isFalse();
-    verifyLoggingAndResetLogger(0, 1);
 
     lithoView.getComponentTree().mountComponent(new Rect(0, -10, 10, -5), true);
     assertThat(child1.isMounted()).isFalse();
     assertThat(child2.isMounted()).isFalse();
-    verifyLoggingAndResetLogger(0, 1);
   }
 
   /**
@@ -189,47 +168,40 @@ public class MountStateIncrementalMountTest {
   public void testIncrementalMountHorizontalViewStack() {
     final TestComponent child1 = create(mContext).build();
     final TestComponent child2 = create(mContext).build();
-    final LithoView lithoView =
-        mountComponent(
-            mContext,
-            new InlineLayoutSpec() {
-              @Override
-              protected Component onCreateLayout(ComponentContext c) {
-                return Row.create(c)
-                    .child(Wrapper.create(c).delegate(child1).widthPx(10).heightPx(10))
-                    .child(Wrapper.create(c).delegate(child2).widthPx(10).heightPx(10))
-                    .build();
-              }
-            },
-            true,
-            true);
+    final Component root =
+        Row.create(mContext)
+            .child(Wrapper.create(mContext).delegate(child1).widthPx(10).heightPx(10))
+            .child(Wrapper.create(mContext).delegate(child2).widthPx(10).heightPx(10))
+            .build();
 
-    verifyLoggingAndResetLogger(2, 0);
+    mLithoViewRule
+        .setRoot(root)
+        .attachToWindow()
+        .setSizeSpecs(makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY))
+        .measure()
+        .layout();
+
+    final LithoView lithoView = mLithoViewRule.getLithoView();
 
     lithoView.getComponentTree().mountComponent(new Rect(-10, 0, -5, 10), true);
     assertThat(child1.isMounted()).isFalse();
     assertThat(child2.isMounted()).isFalse();
-    verifyLoggingAndResetLogger(0, 2);
 
     lithoView.getComponentTree().mountComponent(new Rect(0, 0, 5, 10), true);
     assertThat(child1.isMounted()).isTrue();
     assertThat(child2.isMounted()).isFalse();
-    verifyLoggingAndResetLogger(1, 0);
 
     lithoView.getComponentTree().mountComponent(new Rect(5, 0, 15, 10), true);
     assertThat(child1.isMounted()).isTrue();
     assertThat(child2.isMounted()).isTrue();
-    verifyLoggingAndResetLogger(1, 0);
 
     lithoView.getComponentTree().mountComponent(new Rect(15, 0, 25, 10), true);
     assertThat(child1.isMounted()).isFalse();
     assertThat(child2.isMounted()).isTrue();
-    verifyLoggingAndResetLogger(0, 1);
 
     lithoView.getComponentTree().mountComponent(new Rect(20, 0, 30, 10), true);
     assertThat(child1.isMounted()).isFalse();
     assertThat(child2.isMounted()).isFalse();
-    verifyLoggingAndResetLogger(0, 1);
   }
 
   /**
@@ -239,83 +211,73 @@ public class MountStateIncrementalMountTest {
   public void testIncrementalMountVerticalDrawableStack() {
     final TestComponent child1 = TestDrawableComponent.create(mContext).build();
     final TestComponent child2 = TestDrawableComponent.create(mContext).build();
-    final LithoView lithoView =
-        mountComponent(
-            mContext,
-            new InlineLayoutSpec() {
-              @Override
-              protected Component onCreateLayout(ComponentContext c) {
-                return Column.create(c)
-                    .child(Wrapper.create(c).delegate(child1).widthPx(10).heightPx(10))
-                    .child(Wrapper.create(c).delegate(child2).widthPx(10).heightPx(10))
-                    .build();
-              }
-            },
-            true,
-            true);
 
-    verifyLoggingAndResetLogger(2, 0);
+    final Component root =
+        Column.create(mContext)
+            .child(Wrapper.create(mContext).delegate(child1).widthPx(10).heightPx(10))
+            .child(Wrapper.create(mContext).delegate(child2).widthPx(10).heightPx(10))
+            .build();
+
+    mLithoViewRule
+        .setRoot(root)
+        .attachToWindow()
+        .setSizeSpecs(makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY))
+        .measure()
+        .layout();
+
+    final LithoView lithoView = mLithoViewRule.getLithoView();
 
     lithoView.getComponentTree().mountComponent(new Rect(0, -10, 10, -5), true);
     assertThat(child1.isMounted()).isFalse();
     assertThat(child2.isMounted()).isFalse();
-    verifyLoggingAndResetLogger(0, 2);
 
     lithoView.getComponentTree().mountComponent(new Rect(0, 0, 10, 5), true);
     assertThat(child1.isMounted()).isTrue();
     assertThat(child2.isMounted()).isFalse();
-    verifyLoggingAndResetLogger(1, 0);
 
     lithoView.getComponentTree().mountComponent(new Rect(0, 5, 10, 15), true);
     assertThat(child1.isMounted()).isTrue();
     assertThat(child2.isMounted()).isTrue();
-    verifyLoggingAndResetLogger(1, 0);
 
     lithoView.getComponentTree().mountComponent(new Rect(0, 15, 10, 25), true);
     assertThat(child1.isMounted()).isFalse();
     assertThat(child2.isMounted()).isTrue();
-    verifyLoggingAndResetLogger(0, 1);
 
     lithoView.getComponentTree().mountComponent(new Rect(0, 20, 10, 30), true);
     assertThat(child1.isMounted()).isFalse();
     assertThat(child2.isMounted()).isFalse();
-    verifyLoggingAndResetLogger(0, 1);
   }
 
   /** Tests incremental mount behaviour of a view mount item in a nested hierarchy. */
   @Test
   public void testIncrementalMountNestedView() {
     final TestComponent child = create(mContext).build();
-    final LithoView lithoView =
-        mountComponent(
-            mContext,
-            new InlineLayoutSpec() {
-              @Override
-              protected Component onCreateLayout(ComponentContext c) {
-                return Column.create(c)
-                    .wrapInView()
-                    .paddingPx(ALL, 20)
-                    .child(Wrapper.create(c).delegate(child).widthPx(10).heightPx(10))
-                    .child(TestDrawableComponent.create(c))
-                    .build();
-              }
-            },
-            true,
-            true);
 
-    verifyLoggingAndResetLogger(2, 0);
+    final Component root =
+        Column.create(mContext)
+            .wrapInView()
+            .paddingPx(ALL, 20)
+            .child(Wrapper.create(mContext).delegate(child).widthPx(10).heightPx(10))
+            .child(TestDrawableComponent.create(mContext))
+            .build();
+
+    mLithoViewRule
+        .setRoot(root)
+        .attachToWindow()
+        .setSizeSpecs(makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY))
+        .measure()
+        .layout();
+
+    final LithoView lithoView = mLithoViewRule.getLithoView();
 
     lithoView.getComponentTree().mountComponent(new Rect(0, 0, 50, 20), true);
     assertThat(child.isMounted()).isFalse();
-    verifyLoggingAndResetLogger(0, 2);
 
     lithoView.getComponentTree().mountComponent(new Rect(0, 0, 50, 40), true);
     assertThat(child.isMounted()).isTrue();
-    verifyLoggingAndResetLogger(2, 0);
 
     lithoView.getComponentTree().mountComponent(new Rect(30, 0, 50, 40), true);
     assertThat(child.isMounted()).isFalse();
-    verifyLoggingAndResetLogger(0, 1);
   }
 
   /**
@@ -324,29 +286,29 @@ public class MountStateIncrementalMountTest {
    */
   @Test
   public void testIncrementalMountVerticalDrawableStackNegativeMargin() {
+    final EventHandler eventHandler = mock(EventHandler.class);
     final TestComponent child1 = TestDrawableComponent.create(mContext).build();
-    final LithoView lithoView =
-        ComponentTestHelper.mountComponent(
-            mContext,
-            new InlineLayoutSpec() {
-              @Override
-              protected Component onCreateLayout(ComponentContext c) {
-                return Column.create(c)
-                    .child(
-                        Wrapper.create(c)
-                            .delegate(child1)
-                            .widthPx(10)
-                            .heightPx(10)
-                            .clickHandler(c.newEventHandler(1))
-                            .marginDip(YogaEdge.TOP, -10))
-                    .build();
-              }
-            });
+    final Component root =
+        Column.create(mContext)
+            .child(
+                Wrapper.create(mContext)
+                    .delegate(child1)
+                    .widthPx(10)
+                    .heightPx(10)
+                    .clickHandler(eventHandler)
+                    .marginDip(YogaEdge.TOP, -10))
+            .build();
 
-    verifyLoggingAndResetLogger(2, 0);
+    mLithoViewRule
+        .setRoot(root)
+        .attachToWindow()
+        .setSizeSpecs(makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY))
+        .measure()
+        .layout();
+
+    final LithoView lithoView = mLithoViewRule.getLithoView();
 
     lithoView.getComponentTree().mountComponent(new Rect(0, -10, 10, -5), true);
-    verifyLoggingAndResetLogger(0, 0);
   }
 
   /** Tests incremental mount behaviour of overlapping view mount items. */
@@ -354,57 +316,51 @@ public class MountStateIncrementalMountTest {
   public void testIncrementalMountOverlappingView() {
     final TestComponent child1 = create(mContext).build();
     final TestComponent child2 = create(mContext).build();
-    final LithoView lithoView =
-        mountComponent(
-            mContext,
-            new InlineLayoutSpec() {
-              @Override
-              protected Component onCreateLayout(ComponentContext c) {
-                return Column.create(c)
-                    .child(
-                        Wrapper.create(c)
-                            .delegate(child1)
-                            .positionType(ABSOLUTE)
-                            .positionPx(TOP, 0)
-                            .positionPx(LEFT, 0)
-                            .widthPx(10)
-                            .heightPx(10))
-                    .child(
-                        Wrapper.create(c)
-                            .delegate(child2)
-                            .positionType(ABSOLUTE)
-                            .positionPx(TOP, 5)
-                            .positionPx(LEFT, 5)
-                            .widthPx(10)
-                            .heightPx(10))
-                    .child(TestDrawableComponent.create(c))
-                    .build();
-              }
-            },
-            true,
-            true);
+    final Component root =
+        Column.create(mContext)
+            .child(
+                Wrapper.create(mContext)
+                    .delegate(child1)
+                    .positionType(ABSOLUTE)
+                    .positionPx(TOP, 0)
+                    .positionPx(LEFT, 0)
+                    .widthPx(10)
+                    .heightPx(10))
+            .child(
+                Wrapper.create(mContext)
+                    .delegate(child2)
+                    .positionType(ABSOLUTE)
+                    .positionPx(TOP, 5)
+                    .positionPx(LEFT, 5)
+                    .widthPx(10)
+                    .heightPx(10))
+            .child(TestDrawableComponent.create(mContext))
+            .build();
 
-    verifyLoggingAndResetLogger(3, 0);
+    mLithoViewRule
+        .setRoot(root)
+        .attachToWindow()
+        .setSizeSpecs(makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY))
+        .measure()
+        .layout();
+
+    final LithoView lithoView = mLithoViewRule.getLithoView();
 
     lithoView.getComponentTree().mountComponent(new Rect(0, 0, 5, 5), true);
     assertThat(child1.isMounted()).isTrue();
     assertThat(child2.isMounted()).isFalse();
-    verifyLoggingAndResetLogger(0, 1);
 
     lithoView.getComponentTree().mountComponent(new Rect(5, 5, 10, 10), true);
     assertThat(child1.isMounted()).isTrue();
     assertThat(child2.isMounted()).isTrue();
-    verifyLoggingAndResetLogger(1, 0);
 
     lithoView.getComponentTree().mountComponent(new Rect(10, 10, 15, 15), true);
     assertThat(child1.isMounted()).isFalse();
     assertThat(child2.isMounted()).isTrue();
-    verifyLoggingAndResetLogger(0, 1);
 
     lithoView.getComponentTree().mountComponent(new Rect(15, 15, 20, 20), true);
     assertThat(child1.isMounted()).isFalse();
     assertThat(child2.isMounted()).isFalse();
-    verifyLoggingAndResetLogger(0, 1);
   }
 
   @Test
@@ -421,9 +377,15 @@ public class MountStateIncrementalMountTest {
     final LithoView childView3 = getMockLithoViewWithBounds(new Rect(30, 35, 50, 60));
     when(mountedView.getChildAt(2)).thenReturn(childView3);
 
-    final LithoView lithoView =
-        ComponentTestHelper.mountComponent(
-            TestViewComponent.create(mContext).testView(mountedView), true, true);
+    final Component root = TestViewComponent.create(mContext).testView(mountedView).build();
+    mLithoViewRule
+        .setRoot(root)
+        .attachToWindow()
+        .setSizeSpecs(makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY))
+        .measure()
+        .layout();
+
+    final LithoView lithoView = mLithoViewRule.getLithoView();
 
     lithoView.getComponentTree().mountComponent(new Rect(15, 15, 40, 40), true);
 
@@ -452,9 +414,15 @@ public class MountStateIncrementalMountTest {
     final LithoView childView3 = getMockLithoViewWithBounds(new Rect(30, 35, 50, 60));
     when(mountedView.getChildAt(2)).thenReturn(childView3);
 
-    final LithoView lithoView =
-        ComponentTestHelper.mountComponent(
-            TestViewComponent.create(mContext).testView(mountedView), true, true);
+    final Component root = TestViewComponent.create(mContext).testView(mountedView).build();
+    mLithoViewRule
+        .setRoot(root)
+        .attachToWindow()
+        .setSizeSpecs(makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY))
+        .measure()
+        .layout();
+
+    final LithoView lithoView = mLithoViewRule.getLithoView();
 
     // Can't verify directly as the object will have changed by the time we get the chance to
     // verify it.
@@ -500,30 +468,30 @@ public class MountStateIncrementalMountTest {
         .when(childView3)
         .notifyVisibleBoundsChanged((Rect) any(), eq(true));
 
-    lithoView.getComponentTree().mountComponent(new Rect(0, 0, 100, 100), false);
+    lithoView.getComponentTree().mountComponent(new Rect(0, 0, 100, 100), true);
 
-    verify(childView1).notifyVisibleBoundsChanged((Rect) any(), eq(false));
-    verify(childView2).notifyVisibleBoundsChanged((Rect) any(), eq(false));
-    verify(childView3).notifyVisibleBoundsChanged((Rect) any(), eq(false));
+    verify(childView1).notifyVisibleBoundsChanged();
+    verify(childView2).notifyVisibleBoundsChanged();
+    verify(childView3).notifyVisibleBoundsChanged();
   }
 
   /** Tests incremental mount behaviour of a vertical stack of components with a View mount type. */
   @Test
   public void testIncrementalMountDoesNotCauseMultipleUpdates() {
     final TestComponent child1 = create(mContext).build();
-    final LithoView lithoView =
-        mountComponent(
-            mContext,
-            new InlineLayoutSpec() {
-              @Override
-              protected Component onCreateLayout(ComponentContext c) {
-                return Column.create(c)
-                    .child(Wrapper.create(c).delegate(child1).widthPx(10).heightPx(10))
-                    .build();
-              }
-            },
-            true,
-            true);
+    final Component root =
+        Column.create(mContext)
+            .child(Wrapper.create(mContext).delegate(child1).widthPx(10).heightPx(10))
+            .build();
+
+    mLithoViewRule
+        .setRoot(root)
+        .attachToWindow()
+        .setSizeSpecs(makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY))
+        .measure()
+        .layout();
+
+    final LithoView lithoView = mLithoViewRule.getLithoView();
 
     lithoView.getComponentTree().mountComponent(new Rect(0, -10, 10, -5), true);
     assertThat(child1.isMounted()).isFalse();
@@ -552,20 +520,20 @@ public class MountStateIncrementalMountTest {
   public void testIncrementalMountAfterUnmountAllItemsCall() {
     final TestComponent child1 = TestDrawableComponent.create(mContext).build();
     final TestComponent child2 = TestDrawableComponent.create(mContext).build();
-    final LithoView lithoView =
-        mountComponent(
-            mContext,
-            new InlineLayoutSpec() {
-              @Override
-              protected Component onCreateLayout(ComponentContext c) {
-                return Column.create(c)
-                    .child(Wrapper.create(c).delegate(child1).widthPx(10).heightPx(10))
-                    .child(Wrapper.create(c).delegate(child2).widthPx(10).heightPx(10))
-                    .build();
-              }
-            },
-            true,
-            true);
+    final Component root =
+        Column.create(mContext)
+            .child(Wrapper.create(mContext).delegate(child1).widthPx(10).heightPx(10))
+            .child(Wrapper.create(mContext).delegate(child2).widthPx(10).heightPx(10))
+            .build();
+
+    mLithoViewRule
+        .setRoot(root)
+        .attachToWindow()
+        .setSizeSpecs(makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY))
+        .measure()
+        .layout();
+
+    final LithoView lithoView = mLithoViewRule.getLithoView();
 
     lithoView.getComponentTree().mountComponent(new Rect(0, -10, 10, -5), true);
     assertThat(child1.isMounted()).isFalse();
@@ -602,31 +570,36 @@ public class MountStateIncrementalMountTest {
         new ViewGroupWithLithoViewChildren(mContext.getAndroidContext());
     viewGroup.addView(lithoView);
 
-    final LithoView lithoViewParent =
-        ComponentTestHelper.mountComponent(
-            TestViewComponent.create(mContext, true, true, true, true).testView(viewGroup),
-            true,
-            true);
+    final Component root =
+        TestViewComponent.create(mContext, true, true, true, true).testView(viewGroup).build();
+    mLithoViewRule
+        .setRoot(root)
+        .attachToWindow()
+        .setSizeSpecs(makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY))
+        .measure()
+        .layout();
+
+    final LithoView lithoViewParent = mLithoViewRule.getLithoView();
 
     // Mount views with visible rect
-    lithoViewParent.getComponentTree().mountComponent(new Rect(0, 0, 100, 1000), false);
-    verify(lithoView).notifyVisibleBoundsChanged((Rect) any(), eq(false));
+    lithoViewParent.getComponentTree().mountComponent(new Rect(0, 0, 100, 1000), true);
+    verify(lithoView).notifyVisibleBoundsChanged();
     reset(lithoView);
     when(lithoView.isIncrementalMountEnabled()).thenReturn(true);
 
     // Unmount views with visible rect outside
-    lithoViewParent.getComponentTree().mountComponent(new Rect(0, -10, 100, -5), false);
-    verify(lithoView, never()).notifyVisibleBoundsChanged((Rect) any(), eq(false));
+    lithoViewParent.getComponentTree().mountComponent(new Rect(0, -10, 100, -5), true);
+    verify(lithoView, never()).notifyVisibleBoundsChanged();
     reset(lithoView);
     when(lithoView.isIncrementalMountEnabled()).thenReturn(true);
 
     // Mount again with visible rect
-    lithoViewParent.getComponentTree().mountComponent(new Rect(0, 0, 100, 1000), false);
+    lithoViewParent.getComponentTree().mountComponent(new Rect(0, 0, 100, 1000), true);
 
     // Now LithoView notifyVisibleBoundsChanged should not be called as the LithoView is mounted
     // when
     // it is laid out and therefore doesn't need mounting again in the same frame
-    verify(lithoView, never()).notifyVisibleBoundsChanged((Rect) any(), eq(false));
+    verify(lithoView, never()).notifyVisibleBoundsChanged();
   }
 
   @Test
@@ -684,38 +657,6 @@ public class MountStateIncrementalMountTest {
       final Host host = hosts.get(i);
       assertThat(host.getSuppressInvalidations()).isFalse();
     }
-  }
-
-  private void verifyLoggingAndResetLogger(int mountedCount, int unmountedCount) {
-    final List<PerfEvent> loggedPerfEvents = mComponentsLogger.getLoggedPerfEvents();
-    final Optional<TestPerfEvent> perfEvent =
-        loggedPerfEvents.stream()
-            .filter(
-                new Predicate<PerfEvent>() {
-                  @Override
-                  public boolean test(PerfEvent e) {
-                    return e.getMarkerId() == FrameworkLogEvents.EVENT_MOUNT;
-                  }
-                })
-            .map(
-                new Function<PerfEvent, TestPerfEvent>() {
-                  @Override
-                  public TestPerfEvent apply(PerfEvent e) {
-                    return (TestPerfEvent) e;
-                  }
-                })
-            .findFirst();
-
-    // Disabled as part of T31729233.
-    if (mountedCount > 0) {
-      assertThat(perfEvent.isPresent()).isTrue();
-
-      final Map<String, Object> annotations = perfEvent.get().getAnnotations();
-      assertThat(annotations).containsEntry(PARAM_MOUNTED_COUNT, mountedCount);
-      assertThat(annotations).containsEntry(PARAM_UNMOUNTED_COUNT, unmountedCount);
-    }
-
-    mComponentsLogger.reset();
   }
 
   private static LithoView getMockLithoViewWithBounds(Rect bounds) {
