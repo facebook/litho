@@ -16,7 +16,7 @@
 
 package com.facebook.litho.testing.viewtree;
 
-import static com.facebook.litho.testing.assertj.LithoAssertions.assertThat;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

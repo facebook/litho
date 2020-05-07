@@ -21,13 +21,9 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.StateValue;
 import javax.annotation.CheckReturnValue;
-import org.assertj.core.api.Java6Assertions;
 
-/**
- * Common entry point for Litho assertions. Can be statically imported instead of {@link
- * Java6Assertions#assertThat}.
- */
-public class LithoAssertions extends Java6Assertions {
+/** Common entry point for Litho assertions. */
+public class LithoAssertions {
   @CheckReturnValue
   public static ComponentAssert assertThat(ComponentContext c, Component component) {
     return ComponentAssert.assertThat(c, component);

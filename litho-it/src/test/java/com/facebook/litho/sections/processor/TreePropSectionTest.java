@@ -16,7 +16,7 @@
 
 package com.facebook.litho.sections.processor;
 
-import static com.facebook.litho.testing.assertj.LithoAssertions.assertThat;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import android.app.Activity;
 import com.facebook.litho.annotations.TreeProp;

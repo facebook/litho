@@ -19,13 +19,13 @@ package com.facebook.litho.testing;
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.facebook.litho.testing.assertj.ComponentConditions.textEquals;
 import static com.facebook.litho.testing.assertj.SubComponentExtractor.subComponentWith;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assume.assumeThat;
 
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.config.ComponentsConfiguration;
-import com.facebook.litho.testing.assertj.LithoAssertions;
 import com.facebook.litho.testing.assertj.LithoRepresentation;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
@@ -61,20 +61,18 @@ public class LithoRepresentationTest {
         };
 
     try {
-      LithoAssertions.assertThat(layout).has(subComponentWith(c, textEquals("Doesn't match.")));
+      assertThat(layout).has(subComponentWith(c, textEquals("Doesn't match.")));
     } catch (final AssertionError assertionError) {
-      LithoAssertions.assertThat(assertionError)
-          .hasMessageContaining(" 0,0-100,100 text=\"Hello, World!\"");
+      assertThat(assertionError).hasMessageContaining(" 0,0-100,100 text=\"Hello, World!\"");
     }
 
     // Verify that resetting the representation in the same
     Assertions.useDefaultRepresentation();
 
     try {
-      LithoAssertions.assertThat(layout).has(subComponentWith(c, textEquals("Doesn't match.")));
+      assertThat(layout).has(subComponentWith(c, textEquals("Doesn't match.")));
     } catch (final AssertionError assertionError) {
-      LithoAssertions.assertThat(assertionError.getMessage())
-          .doesNotContain(" 0,0-100,100 text=\"Hello, World!\"");
+      assertThat(assertionError.getMessage()).doesNotContain(" 0,0-100,100 text=\"Hello, World!\"");
     }
   }
 }
