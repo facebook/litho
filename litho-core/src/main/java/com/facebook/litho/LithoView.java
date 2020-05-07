@@ -984,6 +984,7 @@ public class LithoView extends Host {
   }
 
   public void notifyVisibleBoundsChanged(Rect visibleRect, boolean processVisibilityOutputs) {
+    mPreviousMountVisibleRectBounds.set(visibleRect);
     if (mComponentTree == null || !checkMainThreadLayoutStateForIncrementalMount()) {
       return;
     }
@@ -1002,6 +1003,7 @@ public class LithoView extends Host {
   }
 
   public void notifyVisibleBoundsChanged() {
+    getLocalVisibleRect(mPreviousMountVisibleRectBounds);
     if (mComponentTree == null || mComponentTree.getMainThreadLayoutState() == null) {
       return;
     }
