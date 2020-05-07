@@ -22,7 +22,7 @@ import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.annotations.OnAttached;
 import com.facebook.litho.annotations.OnDetached;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.concurrent.GuardedBy;
@@ -57,7 +57,7 @@ public class AttachDetachHandler {
       toDetach = composeDetach(attachable, mAttached);
 
       if (attachable != null) {
-        mAttached = new HashMap<>(attachable);
+        mAttached = new LinkedHashMap<>(attachable);
       } else {
         mAttached = null;
       }
@@ -102,7 +102,7 @@ public class AttachDetachHandler {
       @Nullable Map<String, Component> attachable, @Nullable Map<String, Component> attached) {
     Map<String, Component> toAttach = null;
     if (attachable != null) {
-      toAttach = new HashMap<>(attachable);
+      toAttach = new LinkedHashMap<>(attachable);
       if (attached != null) {
         toAttach.keySet().removeAll(attached.keySet());
       }
@@ -116,7 +116,7 @@ public class AttachDetachHandler {
       @Nullable Map<String, Component> attachable, @Nullable Map<String, Component> attached) {
     Map<String, Component> toDetach = null;
     if (attached != null) {
-      toDetach = new HashMap<>(attached);
+      toDetach = new LinkedHashMap<>(attached);
       if (attachable != null) {
         toDetach.keySet().removeAll(attachable.keySet());
       }

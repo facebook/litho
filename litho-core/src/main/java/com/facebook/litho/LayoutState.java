@@ -1070,7 +1070,7 @@ public class LayoutState
           }
           if (delegate.hasAttachDetachCallback()) {
             if (layoutState.mAttachableContainer == null) {
-              layoutState.mAttachableContainer = new HashMap<>();
+              layoutState.mAttachableContainer = new LinkedHashMap<>();
             }
             layoutState.mAttachableContainer.put(delegate.getGlobalKey(), delegate);
           }
