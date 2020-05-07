@@ -171,9 +171,7 @@ public class ComponentTreeTest {
     ComponentTree componentTree = ComponentTree.create(mContext, mComponent).build();
     componentTree.setSizeSpec(mWidthSpec, mHeightSpec);
 
-    // Since this happens post creation, it's not in general safe to update the main thread layout
-    // state synchronously, so the result should be in the background layout state
-    postSizeSpecChecks(componentTree, "mBackgroundLayoutState");
+    postSizeSpecChecks(componentTree, "mMainThreadLayoutState");
   }
 
   @Test
@@ -192,9 +190,7 @@ public class ComponentTreeTest {
     // Now the background thread run the queued task.
     mLayoutThreadShadowLooper.runOneTask();
 
-    // Since this happens post creation, it's not in general safe to update the main thread layout
-    // state synchronously, so the result should be in the background layout state
-    postSizeSpecChecks(componentTree, "mBackgroundLayoutState");
+    postSizeSpecChecks(componentTree, "mMainThreadLayoutState");
   }
 
   @Test
@@ -209,8 +205,8 @@ public class ComponentTreeTest {
 
     mLayoutThreadShadowLooper.runOneTask();
 
-    LayoutState layoutState = getInternalState(componentTree, "mBackgroundLayoutState");
-    ComponentContext c = getInternalState(componentTree, "mContext");
+    LayoutState layoutState = componentTree.getMainThreadLayoutState();
+    ComponentContext c = componentTree.getContext();
     assertThat(c).isNotEqualTo(scopedContext);
     Assert.assertNull(c.getComponentScope());
     assertThat(layoutState.getRootComponent().getScopedContext()).isNotEqualTo(scopedContext);
@@ -229,7 +225,7 @@ public class ComponentTreeTest {
   }
 
   @Test
-  public void testRacyLayouts() {
+  public void testRacyLayouts() throws InterruptedException {
     final CountDownLatch asyncLatch = new CountDownLatch(1);
     final CountDownLatch syncLatch = new CountDownLatch(1);
     final CountDownLatch endOfTest = new CountDownLatch(1);
@@ -258,10 +254,10 @@ public class ComponentTreeTest {
         new InlineLayoutSpec() {
           @Override
           protected Component onCreateLayout(ComponentContext c) {
-            // TODO
+
             try {
               syncLatch.countDown();
-              asyncLatch.await();
+              assertThat(asyncLatch.await(5, TimeUnit.SECONDS)).describedAs("Timeout!").isTrue();
             } catch (InterruptedException e) {
               e.printStackTrace();
             }
@@ -284,11 +280,8 @@ public class ComponentTreeTest {
       }
     }.start();
 
-    try {
-      syncLatch.await();
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    }
+    assertThat(syncLatch.await(5, TimeUnit.SECONDS)).describedAs("Timeout!").isTrue();
+
     componentTree.setRootAndSizeSpec(component, 0, 0);
     assertEquals(measureListener.mWidth, 100);
     assertEquals(measureListener.mHeight, 100);
@@ -297,11 +290,8 @@ public class ComponentTreeTest {
 
     componentTree.setRootAsync(component);
 
-    try {
-      endOfTest.await();
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    }
+    assertThat(endOfTest.await(5, TimeUnit.SECONDS)).describedAs("Timeout!").isTrue();
+
     // Verify your stuff at this point
     assertEquals(measureListener.mWidth, 100);
     assertEquals(measureListener.mHeight, 100);
@@ -316,9 +306,7 @@ public class ComponentTreeTest {
 
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
-    // Since this happens post creation, it's not in general safe to update the main thread layout
-    // state synchronously, so the result should be in the background layout state
-    postSizeSpecChecks(componentTree, "mBackgroundLayoutState", mWidthSpec2, mHeightSpec2);
+    postSizeSpecChecks(componentTree, "mMainThreadLayoutState", mWidthSpec2, mHeightSpec2);
   }
 
   @Test
@@ -357,9 +345,7 @@ public class ComponentTreeTest {
 
     componentTree.setSizeSpec(mWidthSpec2, mHeightSpec2);
 
-    // Since this happens post creation, it's not in general safe to update the main thread layout
-    // state synchronously, so the result should be in the background layout state
-    postSizeSpecChecks(componentTree, "mBackgroundLayoutState", mWidthSpec2, mHeightSpec2);
+    postSizeSpecChecks(componentTree, "mMainThreadLayoutState", mWidthSpec2, mHeightSpec2);
   }
 
   @Test
@@ -373,9 +359,7 @@ public class ComponentTreeTest {
     assertEquals(SizeSpec.getSize(mWidthSpec), size.width, 0.0);
     assertEquals(SizeSpec.getSize(mHeightSpec), size.height, 0.0);
 
-    // Since this happens post creation, it's not in general safe to update the main thread layout
-    // state synchronously, so the result should be in the background layout state
-    postSizeSpecChecks(componentTree, "mBackgroundLayoutState");
+    postSizeSpecChecks(componentTree, "mMainThreadLayoutState");
   }
 
   @Test
@@ -425,7 +409,7 @@ public class ComponentTreeTest {
     assertEquals(100, size.width, 0.0);
     assertEquals(100, size.height, 0.0);
 
-    LayoutState firstLayoutState = componentTree.getBackgroundLayoutState();
+    LayoutState firstLayoutState = componentTree.getMainThreadLayoutState();
     assertThat(firstLayoutState).isNotNull();
 
     componentTree.setSizeSpec(makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY), size);
@@ -433,7 +417,7 @@ public class ComponentTreeTest {
     assertEquals(100, size.width, 0.0);
     assertEquals(100, size.height, 0.0);
 
-    assertThat(componentTree.getBackgroundLayoutState()).isEqualTo(firstLayoutState);
+    assertThat(componentTree.getMainThreadLayoutState()).isEqualTo(firstLayoutState);
   }
 
   @Test
@@ -447,7 +431,7 @@ public class ComponentTreeTest {
     assertEquals(100, size.width, 0.0);
     assertEquals(100, size.height, 0.0);
 
-    LayoutState firstLayoutState = componentTree.getBackgroundLayoutState();
+    LayoutState firstLayoutState = componentTree.getMainThreadLayoutState();
     assertThat(firstLayoutState).isNotNull();
 
     componentTree.setRootAndSizeSpec(
@@ -456,7 +440,7 @@ public class ComponentTreeTest {
         makeSizeSpec(100, EXACTLY),
         size);
 
-    assertNotEquals(firstLayoutState, componentTree.getBackgroundLayoutState());
+    assertNotEquals(firstLayoutState, componentTree.getMainThreadLayoutState());
   }
 
   @Test
@@ -475,7 +459,7 @@ public class ComponentTreeTest {
         treeProps);
 
     final ComponentContext c =
-        getInternalState(componentTree.getBackgroundLayoutState(), "mContext");
+        getInternalState(componentTree.getMainThreadLayoutState(), "mContext");
     assertThat(c.getTreeProps()).isSameAs(treeProps);
   }
 
@@ -617,9 +601,7 @@ public class ComponentTreeTest {
 
     componentTree.setSizeSpec(mWidthSpec, mHeightSpec);
 
-    // Since this happens post creation, it's not in general safe to update the main thread layout
-    // state synchronously, so the result should be in the background layout state
-    postSizeSpecChecks(componentTree, "mBackgroundLayoutState");
+    postSizeSpecChecks(componentTree, "mMainThreadLayoutState");
   }
 
   @Test
@@ -1750,8 +1732,8 @@ public class ComponentTreeTest {
 
     componentTree.setVersionedRootAndSizeSpec(root1, mWidthSpec, mHeightSpec, new Size(), null, 0);
 
-    LayoutState backgroundLayoutState = getInternalState(componentTree, "mBackgroundLayoutState");
-    assertEquals(root1.testId, backgroundLayoutState.getRootComponent().getId());
+    LayoutState layoutState = componentTree.getMainThreadLayoutState();
+    assertEquals(root1.testId, layoutState.getRootComponent().getId());
 
     MyTestComponent root2 = new MyTestComponent("MyTestComponent");
     root2.testId = 2;
@@ -1761,13 +1743,13 @@ public class ComponentTreeTest {
 
     componentTree.setVersionedRootAndSizeSpec(root3, mWidthSpec, mHeightSpec, new Size(), null, 2);
 
-    backgroundLayoutState = getInternalState(componentTree, "mBackgroundLayoutState");
-    assertEquals(root3.testId, backgroundLayoutState.getRootComponent().getId());
+    layoutState = componentTree.getMainThreadLayoutState();
+    assertEquals(root3.testId, layoutState.getRootComponent().getId());
 
     componentTree.setVersionedRootAndSizeSpec(root2, mWidthSpec, mHeightSpec, new Size(), null, 1);
 
-    backgroundLayoutState = getInternalState(componentTree, "mBackgroundLayoutState");
-    assertEquals(root3.testId, backgroundLayoutState.getRootComponent().getId());
+    layoutState = componentTree.getMainThreadLayoutState();
+    assertEquals(root3.testId, layoutState.getRootComponent().getId());
   }
 
   @Test

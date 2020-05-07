@@ -582,13 +582,6 @@ public class ComponentTree {
   private void backgroundLayoutStateUpdated() {
     assertMainThread();
 
-    // If we aren't attached, then we have nothing to do. We'll handle
-    // everything in onAttach.
-    if (!mIsAttached) {
-      dispatchNewLayoutStateReady();
-      return;
-    }
-
     final boolean layoutStateUpdated;
     final int componentRootId;
     synchronized (this) {
@@ -609,7 +602,6 @@ public class ComponentTree {
 
     dispatchNewLayoutStateReady();
 
-    // Dispatching the listener may have detached us -- verify that's not the case
     if (!mIsAttached) {
       return;
     }
