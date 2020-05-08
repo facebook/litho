@@ -18,7 +18,6 @@ package com.facebook.litho;
 
 import static com.facebook.litho.LayoutOutput.getLayoutOutput;
 
-import android.animation.TimeInterpolator;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Interpolator;
 import com.facebook.infer.annotation.ThreadSafe;

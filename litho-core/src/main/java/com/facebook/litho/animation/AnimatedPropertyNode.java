@@ -17,7 +17,6 @@
 package com.facebook.litho.animation;
 
 import android.graphics.drawable.Drawable;
-import android.view.View;
 import com.facebook.litho.OutputUnitsAffinityGroup;
 import com.facebook.litho.dataflow.ValueNode;
 import java.lang.ref.WeakReference;
