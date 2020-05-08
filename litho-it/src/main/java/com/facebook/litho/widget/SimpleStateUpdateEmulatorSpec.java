@@ -41,12 +41,11 @@ public class SimpleStateUpdateEmulatorSpec {
   static Component onCreateLayout(
       ComponentContext c,
       @Prop Caller caller,
-      @Prop(optional = true) String tagPrefix,
+      @Prop(optional = true) String prefix,
       @State int count) {
     caller.set(c);
     return Column.create(c)
-        .child(Text.create(c).text("Text: " + count))
-        .viewTag((tagPrefix != null ? tagPrefix : "") + count)
+        .child(Text.create(c).text((prefix != null ? prefix : "Text: ") + count))
         .build();
   }
 

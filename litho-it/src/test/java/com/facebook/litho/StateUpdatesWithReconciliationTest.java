@@ -23,11 +23,8 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Looper;
 import android.view.View;
-import android.view.ViewGroup;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.BackgroundLayoutLooperRule;
 import com.facebook.litho.testing.Whitebox;
@@ -37,6 +34,10 @@ import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.SameManualKeyRootComponentSpec;
 import com.facebook.litho.widget.SimpleStateUpdateEmulator;
 import com.facebook.litho.widget.SimpleStateUpdateEmulatorSpec;
+import com.facebook.litho.widget.TextDrawable;
+import com.facebook.rendercore.testing.ViewAssertions;
+import com.facebook.rendercore.testing.match.MatchNode;
+import com.facebook.rendercore.testing.match.ViewMatchNode;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -287,15 +288,13 @@ public class StateUpdatesWithReconciliationTest {
                             .caller(stateUpdater1)
                             .widthPx(100)
                             .heightPx(100)
-                            .tagPrefix("First:")
-                            .background(new ColorDrawable(Color.RED)))
+                            .prefix("First: "))
                     .child(
                         SimpleStateUpdateEmulator.create(c)
                             .caller(stateUpdater2)
                             .widthPx(100)
                             .heightPx(100)
-                            .tagPrefix("Second:")
-                            .background(new ColorDrawable(Color.RED))))
+                            .prefix("Second: ")))
             .build());
 
     mBackgroundLayoutLooperRule.runToEndOfTasksSync();
@@ -314,15 +313,14 @@ public class StateUpdatesWithReconciliationTest {
     ShadowLooper.idleMainLooper();
     lithoView.layout(0, 0, 100, 100);
 
-    // We're using the fact that SimpleStateUpdateEmulator will write the state to a view tag
-    // TODO(t64502673): This is a really ugly way to do this, fix after we upgrade to robolectric 4
-    // by just checking against mounted text
-    assertThat(findViewWithTag(lithoView, "First:" + 2))
-        .describedAs("Expected first state update to be applied in final result.")
-        .isNotNull();
-    assertThat(findViewWithTag(lithoView, "Second:" + 2))
-        .describedAs("Expected second state update to be applied in final result.")
-        .isNotNull();
+    ViewAssertions.assertThat(lithoView)
+        .matches(
+            ViewMatchNode.forType(LithoView.class)
+                .prop(
+                    "drawables",
+                    MatchNode.list(
+                        MatchNode.forType(TextDrawable.class).prop("text", "First: 2"),
+                        MatchNode.forType(TextDrawable.class).prop("text", "Second: 2"))));
   }
 
   static class DummyComponent extends Component {
@@ -373,23 +371,5 @@ public class StateUpdatesWithReconciliationTest {
 
   private StateContainer.StateUpdate createStateUpdate() {
     return new StateContainer.StateUpdate(0);
-  }
-
-  private static View findViewWithTag(View root, String tag) {
-    if (tag.equals(root.getTag())) {
-      return root;
-    }
-
-    if (root instanceof ViewGroup) {
-      ViewGroup vg = (ViewGroup) root;
-      for (int i = 0; i < vg.getChildCount(); i++) {
-        View v = findViewWithTag(vg.getChildAt(i), tag);
-        if (v != null) {
-          return v;
-        }
-      }
-    }
-
-    return null;
   }
 }

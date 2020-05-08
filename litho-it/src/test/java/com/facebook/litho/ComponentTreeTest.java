@@ -29,6 +29,7 @@ import static junit.framework.Assert.fail;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.junit.Assert.assertNotEquals;
 
+import android.graphics.drawable.ColorDrawable;
 import android.os.Looper;
 import com.facebook.litho.testing.BackgroundLayoutLooperRule;
 import com.facebook.litho.testing.LithoStatsRule;
@@ -39,6 +40,10 @@ import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.SimpleStateUpdateEmulator;
 import com.facebook.litho.widget.SimpleStateUpdateEmulatorSpec;
+import com.facebook.litho.widget.TextDrawable;
+import com.facebook.rendercore.testing.ViewAssertions;
+import com.facebook.rendercore.testing.match.MatchNode;
+import com.facebook.rendercore.testing.match.ViewMatchNode;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -1316,7 +1321,7 @@ public class ComponentTreeTest {
         TestDrawableComponent.create(mContext).flexGrow(1).color(1234).build();
     Component rootComponent =
         Column.create(mContext)
-            .child(SimpleStateUpdateEmulator.create(mContext).caller(caller).tagPrefix("counter:"))
+            .child(SimpleStateUpdateEmulator.create(mContext).caller(caller).prefix("Counter: "))
             .child(blockingComponent)
             .minHeightPx(100)
             .build();
@@ -1377,8 +1382,15 @@ public class ComponentTreeTest {
     assertThat(componentTree.hasCompatibleLayout(widthSpec2, heightSpec2)).isTrue();
     assertThat(componentTree.getMainThreadLayoutState().getHeight()).isEqualTo(1000);
     assertThat(lithoView.getHeight()).isEqualTo(1000);
-    assertThat(lithoView.getChildCount()).isEqualTo(1);
-    assertThat(lithoView.getChildAt(0).getTag()).isEqualTo("counter:2");
+
+    ViewAssertions.assertThat(lithoView)
+        .matches(
+            ViewMatchNode.forType(LithoView.class)
+                .prop(
+                    "drawables",
+                    MatchNode.list(
+                        MatchNode.forType(TextDrawable.class).prop("text", "Counter: 2"),
+                        MatchNode.forType(ColorDrawable.class))));
 
     assertThat(mLithoStatsRule.getComponentCalculateLayoutCount())
         .describedAs(
@@ -1394,7 +1406,7 @@ public class ComponentTreeTest {
         TestDrawableComponent.create(mContext).flexGrow(1).color(1234).build();
     Component rootComponent =
         Column.create(mContext)
-            .child(SimpleStateUpdateEmulator.create(mContext).caller(caller).tagPrefix("counter:"))
+            .child(SimpleStateUpdateEmulator.create(mContext).caller(caller).prefix("Counter: "))
             .child(blockingComponent)
             .minHeightPx(100)
             .build();
@@ -1448,8 +1460,15 @@ public class ComponentTreeTest {
     assertThat(componentTree.hasCompatibleLayout(widthSpec2, heightSpec2)).isTrue();
     assertThat(componentTree.getMainThreadLayoutState().getHeight()).isEqualTo(1000);
     assertThat(lithoView.getHeight()).isEqualTo(1000);
-    assertThat(lithoView.getChildCount()).isEqualTo(1);
-    assertThat(lithoView.getChildAt(0).getTag()).isEqualTo("counter:2");
+
+    ViewAssertions.assertThat(lithoView)
+        .matches(
+            ViewMatchNode.forType(LithoView.class)
+                .prop(
+                    "drawables",
+                    MatchNode.list(
+                        MatchNode.forType(TextDrawable.class).prop("text", "Counter: 2"),
+                        MatchNode.forType(ColorDrawable.class))));
 
     assertThat(mLithoStatsRule.getComponentCalculateLayoutCount())
         .describedAs(
