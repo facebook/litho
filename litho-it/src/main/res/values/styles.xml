@@ -14,7 +14,7 @@
   ~ limitations under the License.
   -->
 
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <style name="TestTheme" parent="android:style/Theme">
         <item name="testAttrDimen">@dimen/test_dimen</item>
         <item name="testAttrDrawable">@drawable/test_bg</item>
@@ -40,6 +40,68 @@
 
     <style name="PaddingStyle">
         <item name="android:padding">@dimen/test_dimen</item>
+    </style>
+
+    <style name="ApplyStylesTest" />
+
+    <style name="ApplyStylesTest.WidthHeight">
+          <item name="android:layout_width">37px</item>
+          <item name="android:layout_height">100px</item>
+    </style>
+
+    <style name="ApplyStylesTest.MinWidthHeight">
+          <item name="android:minWidth">50px</item>
+          <item name="android:minHeight">75px</item>
+    </style>
+
+    <style name="ApplyStylesTest.PaddingLeftTopRightBottom">
+          <item name="android:paddingLeft">10px</item>
+          <item name="android:paddingTop">20px</item>
+          <item name="android:paddingRight">30px</item>
+          <item name="android:paddingBottom">40px</item>
+    </style>
+
+    <style name="ApplyStylesTest.PaddingAll">
+          <item name="android:padding">15px</item>
+    </style>
+
+    <style name="ApplyStylesTest.PaddingStartEnd">
+          <item name="android:paddingStart"
+                tools:targetApi="jelly_bean_mr1">20px</item>
+          <item name="android:paddingEnd"
+                tools:targetApi="jelly_bean_mr1">40px</item>
+    </style>
+
+    <style name="ApplyStylesTest.MarginLeftTopRightBottom">
+          <item name="android:layout_marginLeft">10px</item>
+          <item name="android:layout_marginTop">20px</item>
+          <item name="android:layout_marginRight">30px</item>
+          <item name="android:layout_marginBottom">40px</item>
+    </style>
+
+    <style name="ApplyStylesTest.MarginAll">
+          <item name="android:layout_margin">15px</item>
+    </style>
+
+    <style name="ApplyStylesTest.MarginStartEnd">
+          <item name="android:layout_marginStart"
+                tools:targetApi="jelly_bean_mr1">10px</item>
+          <item name="android:layout_marginEnd"
+                tools:targetApi="jelly_bean_mr1">30px</item>
+    </style>
+
+    <style name="ApplyStylesTest.BackgroundForeground">
+          <item name="android:background">@android:color/white</item>
+          <item name="android:foreground">@android:color/black</item>
+    </style>
+
+    <style name="ApplyStylesTest.AccessibilityAndContentDescription">
+          <item name="android:contentDescription">Test Content Description</item>
+          <item name="android:importantForAccessibility">yes</item>
+    </style>
+
+    <style name="ApplyStylesTest.DuplicateParentState">
+          <item name="android:duplicateParentState">true</item>
     </style>
 
 </resources>
