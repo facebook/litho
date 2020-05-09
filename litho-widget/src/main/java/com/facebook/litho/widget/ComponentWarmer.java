@@ -16,6 +16,7 @@
 
 package com.facebook.litho.widget;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.collection.LruCache;
 import com.facebook.litho.ComponentContext;
@@ -98,6 +99,10 @@ public class ComponentWarmer {
     void onInstanceReadyToPrepare();
   }
 
+  public interface CacheListener {
+    void onEntryEvicted(String tag, ComponentTreeHolder holder);
+  }
+
   public interface Cache {
     @Nullable
     ComponentTreeHolder remove(String tag);
@@ -108,34 +113,56 @@ public class ComponentWarmer {
     ComponentTreeHolder get(String tag);
 
     void evictAll();
+
+    void setCacheListener(CacheListener cacheListener);
   }
 
   private static class DefaultCache implements Cache {
-    private final LruCache<String, ComponentTreeHolder> cache;
+    private final LruCache<String, ComponentTreeHolder> mCache;
+    private final CacheListener mCacheListener;
 
-    DefaultCache(int maxSize) {
-      cache = new LruCache<>(maxSize);
+    DefaultCache(int maxSize, CacheListener cacheListener) {
+      mCacheListener = cacheListener;
+      mCache =
+          new LruCache<String, ComponentTreeHolder>(maxSize) {
+
+            @Override
+            protected void entryRemoved(
+                boolean evicted,
+                @NonNull String key,
+                @NonNull ComponentTreeHolder oldValue,
+                @Nullable ComponentTreeHolder newValue) {
+              if (evicted && mCacheListener != null) {
+                mCacheListener.onEntryEvicted(key, oldValue);
+              }
+            }
+          };
     }
 
     @Override
     public @Nullable ComponentTreeHolder remove(String tag) {
-      return cache.remove(tag);
+      return mCache.remove(tag);
     }
 
     @Override
     public void put(String tag, ComponentTreeHolder holder) {
-      cache.put(tag, holder);
+      mCache.put(tag, holder);
     }
 
     @Override
     @Nullable
     public ComponentTreeHolder get(String tag) {
-      return cache.get(tag);
+      return mCache.get(tag);
     }
 
     @Override
     public void evictAll() {
-      cache.evictAll();
+      mCache.evictAll();
+    }
+
+    @Override
+    public void setCacheListener(CacheListener cacheListener) {
+      // Already set from the constructor, so there is nothing to do here
     }
   }
 
@@ -145,6 +172,7 @@ public class ComponentWarmer {
   private @Nullable ComponentWarmerReadyListener mReadyListener;
   private BlockingQueue<ComponentRenderInfo> mPendingRenderInfos;
   private boolean mSkipAlreadyPreparedKeys;
+  private volatile boolean mReleaseEvictedEntries;
 
   /**
    * Sets up a {@link ComponentTreeHolderPreparerWithSizeImpl} as the {@link
@@ -221,12 +249,31 @@ public class ComponentWarmer {
     this.mSkipAlreadyPreparedKeys = skipAlreadyPreparedKeys;
   }
 
+  public void setReleaseEvictedEntries(boolean releaseEvictedEntries) {
+    mReleaseEvictedEntries = releaseEvictedEntries;
+  }
+
   public synchronized boolean isReady() {
     return mIsReady;
   }
 
   private void init(@Nullable ComponentTreeHolderPreparer factory, @Nullable Cache cache) {
-    mCache = cache == null ? new DefaultCache(DEFAULT_MAX_SIZE) : cache;
+    CacheListener cacheListener =
+        new CacheListener() {
+          @Override
+          public void onEntryEvicted(String tag, ComponentTreeHolder holder) {
+            if (mReleaseEvictedEntries) {
+              holder.releaseTree();
+            }
+          }
+        };
+
+    if (cache != null) {
+      mCache = cache;
+      mCache.setCacheListener(cacheListener);
+    } else {
+      mCache = new DefaultCache(DEFAULT_MAX_SIZE, cacheListener);
+    }
 
     if (factory != null) {
       mIsReady = true;
