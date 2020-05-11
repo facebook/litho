@@ -37,6 +37,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiJavaCodeReferenceElement;
+import com.intellij.psi.PsiJavaFile;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.util.PsiTreeUtil;
 import java.util.ArrayList;
@@ -61,7 +62,7 @@ public class ResolveRedSymbolsAction extends AnAction {
     final VirtualFile virtualFile = e.getData(CommonDataKeys.VIRTUAL_FILE);
     final PsiFile psiFile = e.getData(CommonDataKeys.PSI_FILE);
     final Presentation presentation = e.getPresentation();
-    if (project == null || virtualFile == null || psiFile == null) {
+    if (project == null || virtualFile == null || !(psiFile instanceof PsiJavaFile)) {
       presentation.setEnabledAndVisible(false);
       return;
     }
@@ -78,22 +79,53 @@ public class ResolveRedSymbolsAction extends AnAction {
     // Verified nonNull in #update
     final Project project = e.getProject();
     final VirtualFile virtualFile = e.getData(CommonDataKeys.VIRTUAL_FILE);
-    final PsiFile psiFile = e.getData(CommonDataKeys.PSI_FILE);
+    final PsiJavaFile psiFile = (PsiJavaFile) e.getData(CommonDataKeys.PSI_FILE);
 
     LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_RED_SYMBOLS + ".invoke");
+    Map<String, String> eventMetadata = new HashMap<>();
 
-    final List<String> specs = resolveRedSymbols(project, virtualFile, psiFile);
+    final List<String> specs = resolveRedSymbols(project, virtualFile, psiFile, eventMetadata);
+
     LithoPluginUtils.showInfo(getMessage(virtualFile, specs), project);
-
-    if (!specs.isEmpty()) {
-      LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_RED_SYMBOLS + ".success");
-    }
+    String result = specs.isEmpty() ? ".fail" : ".success";
+    LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_RED_SYMBOLS + result, eventMetadata);
   }
 
-  private static List<String> resolveRedSymbols(
-      Project project, VirtualFile virtualFile, PsiFile psiFile) {
+  /**
+   * Searches red symbols in the given file and tries generating missing classes.
+   *
+   * @param project project to resolve red symbols.
+   * @param virtualFile file to search red symbols. Should be same as psiFile.
+   * @param psiFile file to search red symbols. Should be same as virtualFile.
+   * @param eventMetadata mutable map to store event data.
+   * @return resolved red symbols.
+   */
+  public static List<String> resolveRedSymbols(
+      Project project,
+      VirtualFile virtualFile,
+      PsiJavaFile psiFile,
+      Map<String, String> eventMetadata) {
+    long startTime = System.currentTimeMillis();
+    eventMetadata.put(EventLogger.KEY_FILE, psiFile.getPackageName() + "." + psiFile.getName());
     final Map<String, List<Integer>> allRedSymbols = collectRedSymbols(virtualFile, project);
-    return addToCache(allRedSymbols, virtualFile, psiFile, project);
+    final long collectedTime = System.currentTimeMillis();
+    eventMetadata.put(
+        EventLogger.KEY_TIME_COLLECT_RED_SYMBOLS, String.valueOf(collectedTime - startTime));
+    eventMetadata.put(EventLogger.KEY_RED_SYMBOLS_ALL, allRedSymbols.keySet().toString());
+    final GlobalSearchScope symbolsScope =
+        moduleWithDependenciesAndLibrariesScope(virtualFile, project);
+    final List<String> resolved = addToCache(allRedSymbols, psiFile, project, symbolsScope);
+    final long endTime = System.currentTimeMillis();
+    eventMetadata.put(
+        EventLogger.KEY_TIME_RESOLVE_RED_SYMBOLS, String.valueOf(endTime - collectedTime));
+    eventMetadata.put(EventLogger.KEY_RED_SYMBOLS_RESOLVED, resolved.toString());
+    return resolved;
+  }
+
+  private static GlobalSearchScope moduleWithDependenciesAndLibrariesScope(
+      VirtualFile virtualFile, Project project) {
+    final Module currentModule = FileIndexFacade.getInstance(project).getModuleForFile(virtualFile);
+    return GlobalSearchScope.moduleWithDependenciesAndLibrariesScope(currentModule);
   }
 
   @VisibleForTesting
@@ -111,29 +143,18 @@ public class ResolveRedSymbolsAction extends AnAction {
     return redSymbols;
   }
 
-  private static List<String> addToCache(
-      Map<String, List<Integer>> allRedSymbols,
-      VirtualFile virtualFile,
-      PsiFile psiFile,
-      Project project) {
-    final Module currentModule = FileIndexFacade.getInstance(project).getModuleForFile(virtualFile);
-    final GlobalSearchScope symbolsScope =
-        GlobalSearchScope.moduleWithDependenciesAndLibrariesScope(currentModule);
-    return addToCache(allRedSymbols, psiFile, project, symbolsScope);
-  }
-
   @VisibleForTesting
   static List<String> addToCache(
       Map<String, List<Integer>> allRedSymbols,
       PsiFile psiFile,
       Project project,
       GlobalSearchScope symbolsScope) {
-    return allRedSymbols.keySet().stream()
+    return allRedSymbols.entrySet().stream()
         .flatMap(
-            symbol ->
+            entry ->
                 Arrays.stream(
                         PsiSearchUtils.findClassesByShortName(
-                            project, symbolsScope, symbol + "Spec"))
+                            project, symbolsScope, entry.getKey() + "Spec"))
                     .filter(LithoPluginUtils::isLayoutSpec)
                     .map(
                         specCls -> {
@@ -143,7 +164,7 @@ public class ResolveRedSymbolsAction extends AnAction {
                                   true,
                                   updatedCls ->
                                       bindExpressions(
-                                          allRedSymbols.get(symbol), updatedCls, psiFile, project));
+                                          entry.getValue(), updatedCls, psiFile, project));
                           return specCls.getName();
                         })
                     .filter(Objects::nonNull))

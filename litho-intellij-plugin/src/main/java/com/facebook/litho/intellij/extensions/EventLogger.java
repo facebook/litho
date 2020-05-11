@@ -28,6 +28,11 @@ public interface EventLogger {
   String PLUGIN_ID = "com.facebook.litho.intellij";
   // Metadata keys
   String KEY_PLUGIN_VERSION = "version";
+  String KEY_FILE = "file";
+  String KEY_RED_SYMBOLS_ALL = "all_red_symbols";
+  String KEY_RED_SYMBOLS_RESOLVED = "resolved_red_symbols";
+  String KEY_TIME_COLLECT_RED_SYMBOLS = "time_collect";
+  String KEY_TIME_RESOLVE_RED_SYMBOLS = "time_resolve";
 
   // Event types
   String EVENT_ANNOTATOR = "error.annotation";
