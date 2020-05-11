@@ -56,8 +56,6 @@
   <extensionPoints>
     <extensionPoint name="eventLogger"
         interface="com.facebook.litho.intellij.extensions.EventLogger"/>
-    <extensionPoint name="buildInfoProvider"
-        interface="com.facebook.litho.intellij.extensions.BuildInfoProvider"/>
   </extensionPoints>
 
   <depends>com.intellij.modules.java</depends>
