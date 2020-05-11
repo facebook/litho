@@ -137,6 +137,8 @@
         id="GroupSectionSpecTemplate" text="GroupSectionSpec" />
       <action class="com.facebook.litho.intellij.actions.templates.MountSpecTemplateAction"
         id="MountSpecTemplate" text="MountSpec" />
+      <action class="com.facebook.litho.intellij.actions.templates.EventTemplateAction"
+        id="EventTemplate" text="Event" />
       <add-to-group anchor="after" group-id="NewGroup" relative-to-action="NewGroup1" />
     </group>
   </actions>
