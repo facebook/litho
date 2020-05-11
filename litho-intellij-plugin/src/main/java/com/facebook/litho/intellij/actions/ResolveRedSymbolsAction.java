@@ -21,11 +21,11 @@ import com.facebook.litho.intellij.PsiSearchUtils;
 import com.facebook.litho.intellij.extensions.EventLogger;
 import com.facebook.litho.intellij.logging.LithoLoggerProvider;
 import com.facebook.litho.intellij.services.ComponentsCacheService;
-import com.google.common.annotations.VisibleForTesting;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.actionSystem.Presentation;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.module.Module;
@@ -124,12 +124,15 @@ public class ResolveRedSymbolsAction extends AnAction {
 
   private static GlobalSearchScope moduleWithDependenciesAndLibrariesScope(
       VirtualFile virtualFile, Project project) {
+    if (ApplicationManager.getApplication().isUnitTestMode()) {
+      return GlobalSearchScope.projectScope(project);
+    }
     final Module currentModule = FileIndexFacade.getInstance(project).getModuleForFile(virtualFile);
     return GlobalSearchScope.moduleWithDependenciesAndLibrariesScope(currentModule);
   }
 
-  @VisibleForTesting
-  static Map<String, List<Integer>> collectRedSymbols(VirtualFile virtualFile, Project project) {
+  private static Map<String, List<Integer>> collectRedSymbols(
+      VirtualFile virtualFile, Project project) {
     Map<String, List<Integer>> redSymbols = new HashMap<>();
     CodeSmellDetector.getInstance(project)
         .findCodeSmells(Collections.singletonList(virtualFile))
@@ -143,8 +146,7 @@ public class ResolveRedSymbolsAction extends AnAction {
     return redSymbols;
   }
 
-  @VisibleForTesting
-  static List<String> addToCache(
+  private static List<String> addToCache(
       Map<String, List<Integer>> allRedSymbols,
       PsiFile psiFile,
       Project project,
