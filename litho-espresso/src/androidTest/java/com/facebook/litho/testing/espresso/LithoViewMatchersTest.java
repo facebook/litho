@@ -24,7 +24,7 @@ import static org.junit.Assert.assertThat;
 
 import android.widget.TextView;
 import androidx.test.InstrumentationRegistry;
-import androidx.test.rule.UiThreadTestRule;
+import androidx.test.annotation.UiThreadTest;
 import androidx.test.runner.AndroidJUnit4;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
@@ -32,7 +32,6 @@ import com.facebook.litho.LithoView;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.testing.screenshot.ViewHelpers;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -40,20 +39,12 @@ import org.junit.runner.RunWith;
 @RunWith(AndroidJUnit4.class)
 public class LithoViewMatchersTest {
 
-  @Rule public UiThreadTestRule mUiThreadRule = new UiThreadTestRule();
-
   private LithoView mView;
 
+  @UiThreadTest
   @Before
   public void before() throws Throwable {
-    mUiThreadRule.runOnUiThread(
-        new Runnable() {
-          @Override
-          public void run() {
-            ComponentsConfiguration.isEndToEndTestRun = true;
-          }
-        });
-
+    ComponentsConfiguration.isEndToEndTestRun = true;
     final ComponentContext mComponentContext =
         new ComponentContext(InstrumentationRegistry.getTargetContext());
     final Component mTextComponent = MyComponent.create(mComponentContext).text("foobar").build();

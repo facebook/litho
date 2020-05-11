@@ -29,7 +29,7 @@ import static org.junit.Assert.assertThat;
 
 import android.widget.TextView;
 import androidx.test.InstrumentationRegistry;
-import androidx.test.rule.UiThreadTestRule;
+import androidx.test.annotation.UiThreadTest;
 import androidx.test.runner.AndroidJUnit4;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
@@ -38,7 +38,6 @@ import com.facebook.litho.LithoView;
 import com.facebook.litho.widget.Text;
 import com.facebook.testing.screenshot.ViewHelpers;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -46,10 +45,9 @@ import org.junit.runner.RunWith;
 @RunWith(AndroidJUnit4.class)
 public class ComponentHostMatchersTest {
 
-  @Rule public UiThreadTestRule mUiThreadRule = new UiThreadTestRule();
-
   private LithoView mView;
 
+  @UiThreadTest
   @Before
   public void before() throws Throwable {
     final ComponentContext mComponentContext =
@@ -58,14 +56,8 @@ public class ComponentHostMatchersTest {
         MyComponent.create(mComponentContext).text("foobar").customViewTag("zoidberg").build();
     final ComponentTree tree = ComponentTree.create(mComponentContext, mTextComponent).build();
     mView = new LithoView(mComponentContext);
-    mUiThreadRule.runOnUiThread(
-        new Runnable() {
-          @Override
-          public void run() {
-            mView.setComponentTree(tree);
-            ViewHelpers.setupView(mView).setExactWidthPx(200).setExactHeightPx(100).layout();
-          }
-        });
+    mView.setComponentTree(tree);
+    ViewHelpers.setupView(mView).setExactWidthPx(200).setExactHeightPx(100).layout();
   }
 
   @Test
