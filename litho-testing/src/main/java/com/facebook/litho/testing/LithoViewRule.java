@@ -20,6 +20,8 @@ import static android.view.View.MeasureSpec.EXACTLY;
 import static android.view.View.MeasureSpec.UNSPECIFIED;
 import static android.view.View.MeasureSpec.makeMeasureSpec;
 
+import android.view.View;
+import android.view.ViewGroup;
 import androidx.annotation.Nullable;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
@@ -173,6 +175,31 @@ public class LithoViewRule implements TestRule {
 
   public int getHeightSpec() {
     return mHeightSpec;
+  }
+
+  @Nullable
+  public View findViewWithTag(Object tag) {
+    if (tag == null) {
+      return null;
+    }
+    return findViewWithTagTransversal(mLithoView, tag);
+  }
+
+  @Nullable
+  private View findViewWithTagTransversal(View view, Object tag) {
+    if (view.getTag() != null && view.getTag().equals(tag)) {
+      return view;
+    }
+    if (view instanceof ViewGroup) {
+      ViewGroup viewGroup = ((ViewGroup) view);
+      for (int i = 0; i < viewGroup.getChildCount(); i++) {
+        View child = findViewWithTagTransversal(viewGroup.getChildAt(i), tag);
+        if (child != null) {
+          return child;
+        }
+      }
+    }
+    return null;
   }
 
   protected @Nullable LayoutState getCommittedLayoutState() {

@@ -47,12 +47,15 @@ public class ChoreographerCompatImpl implements ChoreographerCompat {
    *     API<16).
    */
   public static ChoreographerCompat getInstance() {
+    if (sInstance == null) {
+      sInstance = new ChoreographerCompatImpl();
+    }
     return sInstance;
   }
 
   /** Set the ChoreographerCompat instance for tests. */
   @VisibleForTesting
-  public static void setInstance(ChoreographerCompat choreographerCompat) {
+  public static void setInstance(@Nullable ChoreographerCompat choreographerCompat) {
     sInstance = choreographerCompat;
   }
 

@@ -16,6 +16,7 @@
 
 package com.facebook.litho.dataflow;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.collection.SimpleArrayMap;
 import com.facebook.litho.internal.ArraySet;
@@ -58,7 +59,7 @@ public class DataFlowGraph {
    * that can, for example, have a mocked TimingSource.
    */
   @VisibleForTesting
-  public static void setInstance(DataFlowGraph dataFlowGraph) {
+  public static void setInstance(@Nullable DataFlowGraph dataFlowGraph) {
     sInstance = dataFlowGraph;
   }
 
