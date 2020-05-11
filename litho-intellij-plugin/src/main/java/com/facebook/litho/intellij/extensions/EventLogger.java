@@ -25,7 +25,11 @@ import java.util.Map;
  * @see "plugin.xml"
  */
 public interface EventLogger {
+  String PLUGIN_ID = "com.facebook.litho.intellij";
+  // Metadata keys
+  String KEY_PLUGIN_VERSION = "version";
 
+  // Event types
   String EVENT_ANNOTATOR = "error.annotation";
   String EVENT_COMPLETION_ANNOTATION = "completion.annotation";
   String EVENT_COMPLETION_REQUIRED_PROP = "completion.required";
