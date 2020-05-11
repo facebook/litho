@@ -16,8 +16,11 @@
 
 package com.facebook.litho.testing.testrunner;
 
+import com.facebook.litho.ComponentsSystrace;
 import org.junit.runners.model.InitializationError;
+import org.robolectric.DefaultTestLifecycle;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.TestLifecycle;
 import org.robolectric.annotation.Config;
 
 public class LithoTestRunner extends RobolectricTestRunner {
@@ -74,5 +77,16 @@ public class LithoTestRunner extends RobolectricTestRunner {
     // We are hard-coding the path here instead of relying on BUCK internals
     // to allow for building with gradle in the Open Source version.
     return new Config.Builder().setManifest(getResPrefix() + "AndroidManifest.xml").build();
+  }
+
+  @Override
+  protected Class<? extends TestLifecycle> getTestLifecycleClass() {
+    return LithoTestLifecycle.class;
+  }
+
+  public static class LithoTestLifecycle extends DefaultTestLifecycle {
+    public LithoTestLifecycle() {
+      ComponentsSystrace.provide(NoOpComponentsSystrace.sInstance);
+    }
   }
 }

@@ -91,6 +91,10 @@ public class ComponentsSystrace {
     sInstance = instance;
   }
 
+  public static Systrace getSystrace() {
+    return sInstance;
+  }
+
   /**
    * Writes a trace message to indicate that a given section of code has begun. This call must be
    * followed by a corresponding call to {@link #endSection()} on the same thread.

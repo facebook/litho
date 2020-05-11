@@ -7,15 +7,17 @@ load(
     "//tools/build_defs/oss:litho_defs.bzl",
     "LITHO_ROBOLECTRIC_V4_TARGET",
     "litho_android_library",
+    "make_dep_path",
 )
 
 litho_android_library(
     name = "testrunner-v4",
-    srcs = ["LithoTestRunner.java"],
+    srcs = glob(["*.java"]),
     visibility = [
         "PUBLIC",
     ],
     deps = [
         LITHO_ROBOLECTRIC_V4_TARGET,
+        make_dep_path("litho-core/src/main/java/com/facebook/litho:litho"),
     ],
 )
