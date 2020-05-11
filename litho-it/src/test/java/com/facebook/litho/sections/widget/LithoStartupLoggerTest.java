@@ -26,13 +26,13 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.LithoStartupLogger;
 import com.facebook.litho.LithoView;
 import com.facebook.litho.Size;
-import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.helper.ComponentTestHelper;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.ChangeSetCompleteCallback;
 import com.facebook.litho.widget.ComponentRenderInfo;
 import com.facebook.litho.widget.RecyclerBinder;
 import com.facebook.litho.widget.RenderInfo;
+import com.facebook.litho.widget.SimpleMountSpecTester;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Before;
@@ -103,7 +103,7 @@ public class LithoStartupLoggerTest {
       components.add(
           ComponentRenderInfo.create()
               .component(
-                  TestDrawableComponent.create(mComponentContext)
+                  SimpleMountSpecTester.create(mComponentContext)
                       .widthPx(100)
                       .heightPx(100)
                       .build())
@@ -127,7 +127,7 @@ public class LithoStartupLoggerTest {
       components.add(
           ComponentRenderInfo.create()
               .component(
-                  TestDrawableComponent.create(mComponentContext)
+                  SimpleMountSpecTester.create(mComponentContext)
                       .widthPx(100)
                       .heightPx(100)
                       .build())
@@ -154,7 +154,7 @@ public class LithoStartupLoggerTest {
       components.add(
           ComponentRenderInfo.create()
               .component(
-                  TestDrawableComponent.create(mComponentContext)
+                  SimpleMountSpecTester.create(mComponentContext)
                       .widthPx(100)
                       .heightPx(100)
                       .build())
@@ -179,7 +179,7 @@ public class LithoStartupLoggerTest {
       components.add(
           ComponentRenderInfo.create()
               .component(
-                  TestDrawableComponent.create(mComponentContext)
+                  SimpleMountSpecTester.create(mComponentContext)
                       .widthPx(100)
                       .heightPx(100)
                       .build())
@@ -208,7 +208,7 @@ public class LithoStartupLoggerTest {
       components.add(
           ComponentRenderInfo.create()
               .component(
-                  TestDrawableComponent.create(mComponentContext)
+                  SimpleMountSpecTester.create(mComponentContext)
                       .widthPx(100)
                       .heightPx(100)
                       .build())
@@ -241,7 +241,7 @@ public class LithoStartupLoggerTest {
       components.add(
           ComponentRenderInfo.create()
               .component(
-                  TestDrawableComponent.create(mComponentContext)
+                  SimpleMountSpecTester.create(mComponentContext)
                       .widthPx(100)
                       .heightPx(100)
                       .build())
