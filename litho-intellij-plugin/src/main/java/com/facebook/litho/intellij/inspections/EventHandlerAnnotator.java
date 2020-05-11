@@ -85,9 +85,6 @@ public class EventHandlerAnnotator implements Annotator {
     final PsiElementFactory elementFactory = JavaPsiFacade.getInstance(project).getElementFactory();
     final String message = "Add " + AddArgumentFix.getCapitalizedMethoName(eventHandlerSetter);
     final SpecModelValidationError error = new SpecModelValidationError(list, message);
-    final SpecModelValidationError biggerError =
-        new SpecModelValidationError(
-            eventHandlerSetter.getMethodExpression().getReferenceNameElement(), message);
 
     final List<IntentionAction> fixes =
         implementedEventHandlers.stream()
@@ -107,7 +104,6 @@ public class EventHandlerAnnotator implements Annotator {
               eventHandlerSetter, componentQualifiedName, event, parentCls));
     }
     AnnotatorUtils.addError(holder, error, fixes);
-    AnnotatorUtils.addError(holder, biggerError, fixes);
     DEBUG_LOGGER.logStep("end " + element);
   }
 
