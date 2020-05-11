@@ -73,6 +73,7 @@ dependencies {
     // Test project dependencies
     testCompileOnly project(':litho-sections-annotations')
     testImplementation project(':litho-testing')
+    testImplementation project(':litho-rendercore-testing')
     testImplementation project(':litho-widget')
     testImplementation project(':litho-processor')
     testImplementation project(':litho-sections-core')

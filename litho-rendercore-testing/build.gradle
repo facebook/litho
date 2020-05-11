@@ -46,17 +46,21 @@ android {
 }
 
 dependencies {
-  api project(':litho-rendercore')
+    api project(':litho-rendercore')
 
-  // Annotations
-  compileOnly deps.jsr305
-  implementation deps.inferAnnotations
+    // Annotations
+    compileOnly deps.jsr305
+    implementation deps.inferAnnotations
 
-  compileOnly deps.proguardAnnotations
+    compileOnly deps.proguardAnnotations
 
-  // Android Support Library
-  compileOnly deps.supportAnnotations
-  implementation deps.supportCore
+    // Android Support Library
+    compileOnly deps.supportAnnotations
+    implementation deps.supportCore
+
+    // Testing deps
+    implementation deps.assertjCore
+    implementation deps.junit
 }
 
 apply from: rootProject.file('gradle/release.gradle')
