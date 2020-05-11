@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.intellij.actions;
+package com.facebook.litho.intellij.actions.templates;
 
 import com.facebook.litho.intellij.LithoPluginUtils;
 import com.facebook.litho.intellij.completion.ComponentGenerateUtils;
@@ -27,38 +27,46 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiFile;
 import java.util.Map;
+import javax.swing.Icon;
 
-public class NewSpecTemplateAction extends CreateFileFromTemplateAction {
+public abstract class NewTemplateAction extends CreateFileFromTemplateAction {
   private static final String TITLE = "New Litho Component";
+  private static final Icon ICON = AllIcons.Nodes.AbstractClass;
 
-  public NewSpecTemplateAction() {
-    super(null, TITLE, null);
+  NewTemplateAction() {
+    super(TITLE, TITLE, ICON);
   }
 
   @Override
   protected String getActionName(PsiDirectory directory, String newName, String templateName) {
-    return "NewSpecTemplateAction";
+    return "Creating " + templateName;
   }
 
   @Override
   protected void buildDialog(
       Project project, PsiDirectory directory, CreateFileFromTemplateDialog.Builder builder) {
     builder
-        .setTitle(TITLE)
-        .addKind("Layout Component", AllIcons.Nodes.AbstractClass, "LayoutSpec")
-        .addKind("GroupSection Component", AllIcons.Nodes.AbstractClass, "GroupSectionSpec")
-        .addKind("Mount Component", AllIcons.Nodes.AbstractClass, "MountSpec");
+        .setTitle("New " + getTemplateName())
+        .addKind(getTemplateName(), ICON, getTemplateName());
   }
+
+  abstract String getTemplateName();
+
+  abstract String getSuffix();
 
   @Override
   protected PsiFile createFile(String name, String templateName, PsiDirectory dir) {
     // Template adds Spec suffix, avoiding SpecSpec
-    if (LithoPluginUtils.isSpecName(name)) {
+    final String suffix = getSuffix();
+    if (!suffix.isEmpty() && name.endsWith(suffix)) {
+      name = name.substring(0, name.length() - suffix.length());
+    } else if (LithoPluginUtils.isSpecName(name)) {
       name = LithoPluginUtils.getLithoComponentNameFromSpec(name);
     }
     return super.createFile(name, templateName, dir);
   }
 
+  /** Generates component for createdElement */
   @Override
   protected void postProcess(
       PsiFile createdElement, String templateName, Map<String, String> customProperties) {

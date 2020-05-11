@@ -129,15 +129,15 @@
           class="com.facebook.litho.intellij.actions.OnEventGenerateAction"
           text="Litho @OnEvent..."/>
     </group>
-    <group id="litho.NewGroup">
-      <add-to-group group-id="NewGroup" anchor="after" relative-to-action="NewGroup1"/>
-      <action
-          id="LithoSpecTemplate"
-          class="com.facebook.litho.intellij.actions.NewSpecTemplateAction"
-          text="Litho Class"
-          description="Create new Litho class"
-          icon="LithoPluginIcons.BASE_ACTION"
-      />
+    <group description="Create new Litho class" icon="LithoPluginIcons.BASE_ACTION" id="litho.NewGroup"
+      popup="true" text="Litho Component">
+      <action class="com.facebook.litho.intellij.actions.templates.LayoutSpecTemplateAction"
+        id="LayoutSpecTemplate" text="LayoutSpec" />
+      <action class="com.facebook.litho.intellij.actions.templates.GroupSectionSpecTemplateAction"
+        id="GroupSectionSpecTemplate" text="GroupSectionSpec" />
+      <action class="com.facebook.litho.intellij.actions.templates.MountSpecTemplateAction"
+        id="MountSpecTemplate" text="MountSpec" />
+      <add-to-group anchor="after" group-id="NewGroup" relative-to-action="NewGroup1" />
     </group>
   </actions>
 </idea-plugin>
