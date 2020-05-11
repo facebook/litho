@@ -1422,11 +1422,6 @@ class MountState
       }
     }
 
-    if (!ComponentsConfiguration.callShouldUpdateOnMount
-        && !currentComponent.callsShouldUpdateOnMount()) {
-      return true;
-    }
-
     return currentComponent.shouldComponentUpdate(currentComponent, nextComponent);
   }
 

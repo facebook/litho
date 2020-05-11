@@ -242,8 +242,6 @@ public class ComponentsConfiguration {
 
   public static boolean disableUnmountAllItemsForRecycledView = false;
 
-  public static boolean callShouldUpdateOnMount = false;
-
   /**
    * If {@code false} we won't force Component to update when Device Orientation change, and rely on
    * its size change.

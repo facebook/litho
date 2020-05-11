@@ -32,6 +32,8 @@ public @interface ShouldUpdate {
    *     provided by the layout process. As a rule of thumb this should only be set to true when for
    *     a Component the cost of calling Mount/Unmount greatly exceeds the cost of calling
    *     ShouldUpdate.
+   * @deprecated this param is ignored. MountSpecs with pureRender will now always check
+   *     shouldUpdate on the main thread if the information from layout isn't able to be used.
    */
   boolean onMount() default false;
 }
