@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,9 +55,16 @@ public enum LifecycleStep {
 
   public static class StepInfo {
     public final LifecycleStep step;
+    public final @Nullable Object[] args;
 
     public StepInfo(LifecycleStep step) {
       this.step = step;
+      this.args = null;
+    }
+
+    public StepInfo(LifecycleStep step, Object... args) {
+      this.step = step;
+      this.args = args;
     }
   }
 

@@ -27,6 +27,7 @@ import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
 
+/** @deprecated Use MountSpecLifecycleTesterSpec instead. */
 public class TestDrawableComponent extends TestComponent {
 
   public interface TestComponentListener {

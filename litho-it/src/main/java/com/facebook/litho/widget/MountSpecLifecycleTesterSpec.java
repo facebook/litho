@@ -25,9 +25,10 @@ import androidx.annotation.UiThread;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.LifecycleStep;
-import com.facebook.litho.LifecycleStep.StepInfo;
+import com.facebook.litho.LifecycleTracker;
 import com.facebook.litho.MountContentPool;
 import com.facebook.litho.Size;
+import com.facebook.litho.SizeSpec;
 import com.facebook.litho.TrackingMountContentPool;
 import com.facebook.litho.annotations.CachedValue;
 import com.facebook.litho.annotations.MountSpec;
@@ -46,23 +47,22 @@ import com.facebook.litho.annotations.OnPrepare;
 import com.facebook.litho.annotations.OnUnbind;
 import com.facebook.litho.annotations.OnUnmount;
 import com.facebook.litho.annotations.Prop;
-import java.util.List;
 
 @MountSpec
 public class MountSpecLifecycleTesterSpec {
 
   @OnCreateInitialState
   static void onCreateInitialState(
-      ComponentContext context, @Prop List<LifecycleStep.StepInfo> steps) {
-    steps.add(new StepInfo(LifecycleStep.ON_CREATE_INITIAL_STATE));
+      ComponentContext context, @Prop LifecycleTracker lifecycleTracker) {
+    lifecycleTracker.addStep(LifecycleStep.ON_CREATE_INITIAL_STATE);
   }
 
   @OnPrepare
   static void onPrepare(
       ComponentContext c,
-      @Prop List<LifecycleStep.StepInfo> steps,
+      @Prop LifecycleTracker lifecycleTracker,
       @CachedValue int expensiveValue) {
-    steps.add(new StepInfo(LifecycleStep.ON_PREPARE));
+    lifecycleTracker.addStep(LifecycleStep.ON_PREPARE);
   }
 
   @OnMeasure
@@ -72,17 +72,33 @@ public class MountSpecLifecycleTesterSpec {
       int widthSpec,
       int heightSpec,
       Size size,
-      @Prop List<LifecycleStep.StepInfo> steps) {
+      @Prop LifecycleTracker lifecycleTracker,
+      @Prop(optional = true) Size intrinsicSize) {
 
-    steps.add(new StepInfo(LifecycleStep.ON_MEASURE));
-    size.width = 600;
-    size.height = 800;
+    int width = SizeSpec.getSize(widthSpec);
+    int height = SizeSpec.getSize(heightSpec);
+
+    if (intrinsicSize != null) {
+      size.width = SizeSpec.resolveSize(widthSpec, intrinsicSize.width);
+      size.height = SizeSpec.resolveSize(heightSpec, intrinsicSize.height);
+    } else {
+      size.width = width;
+      size.height = height;
+    }
+
+    lifecycleTracker.addStep(LifecycleStep.ON_MEASURE, size);
   }
 
   @OnBoundsDefined
   static void onBoundsDefined(
-      ComponentContext c, ComponentLayout layout, @Prop List<LifecycleStep.StepInfo> steps) {
-    steps.add(new StepInfo(LifecycleStep.ON_BOUNDS_DEFINED));
+      ComponentContext c, ComponentLayout layout, @Prop LifecycleTracker lifecycleTracker) {
+    final Rect bounds =
+        new Rect(
+            layout.getX(),
+            layout.getY(),
+            layout.getX() + layout.getWidth(),
+            layout.getY() + layout.getHeight());
+    lifecycleTracker.addStep(LifecycleStep.ON_BOUNDS_DEFINED, bounds);
   }
 
   @UiThread
@@ -100,53 +116,53 @@ public class MountSpecLifecycleTesterSpec {
   @UiThread
   @OnMount
   static void onMount(
-      ComponentContext context, View view, @Prop List<LifecycleStep.StepInfo> steps) {
+      ComponentContext context, View view, @Prop LifecycleTracker lifecycleTracker) {
     // TODO: (T64290961) Remove the StaticContainer hack for tracing OnCreateMountContent callback.
     if (view == StaticContainer.sLastCreatedView) {
-      steps.add(new StepInfo(LifecycleStep.ON_CREATE_MOUNT_CONTENT));
+      lifecycleTracker.addStep(LifecycleStep.ON_CREATE_MOUNT_CONTENT);
       StaticContainer.sLastCreatedView = null;
     }
-    steps.add(new StepInfo(LifecycleStep.ON_MOUNT));
+    lifecycleTracker.addStep(LifecycleStep.ON_MOUNT);
   }
 
   @UiThread
   @OnUnmount
   static void onUnmount(
-      ComponentContext context, View view, @Prop List<LifecycleStep.StepInfo> steps) {
-    steps.add(new StepInfo(LifecycleStep.ON_UNMOUNT));
+      ComponentContext context, View view, @Prop LifecycleTracker lifecycleTracker) {
+    lifecycleTracker.addStep(LifecycleStep.ON_UNMOUNT);
   }
 
   @UiThread
   @OnBind
-  static void onBind(ComponentContext c, View view, @Prop List<LifecycleStep.StepInfo> steps) {
-    steps.add(new StepInfo(LifecycleStep.ON_BIND));
+  static void onBind(ComponentContext c, View view, @Prop LifecycleTracker lifecycleTracker) {
+    lifecycleTracker.addStep(LifecycleStep.ON_BIND);
   }
 
   @UiThread
   @OnUnbind
-  static void onUnbind(ComponentContext c, View view, @Prop List<LifecycleStep.StepInfo> steps) {
-    steps.add(new StepInfo(LifecycleStep.ON_UNBIND));
+  static void onUnbind(ComponentContext c, View view, @Prop LifecycleTracker lifecycleTracker) {
+    lifecycleTracker.addStep(LifecycleStep.ON_UNBIND);
   }
 
   @OnAttached
-  static void onAttached(ComponentContext c, @Prop List<LifecycleStep.StepInfo> steps) {
-    steps.add(new StepInfo(LifecycleStep.ON_ATTACHED));
+  static void onAttached(ComponentContext c, @Prop LifecycleTracker lifecycleTracker) {
+    lifecycleTracker.addStep(LifecycleStep.ON_ATTACHED);
   }
 
   @OnDetached
-  static void onDetached(ComponentContext c, @Prop List<LifecycleStep.StepInfo> steps) {
-    steps.add(new StepInfo(LifecycleStep.ON_DETACHED));
+  static void onDetached(ComponentContext c, @Prop LifecycleTracker lifecycleTracker) {
+    lifecycleTracker.addStep(LifecycleStep.ON_DETACHED);
   }
 
   @OnCalculateCachedValue(name = "expensiveValue")
-  static int onCalculateExpensiveValue(@Prop List<LifecycleStep.StepInfo> steps) {
-    steps.add(new StepInfo(LifecycleStep.ON_CALCULATE_CACHED_VALUE));
+  static int onCalculateExpensiveValue(@Prop LifecycleTracker lifecycleTracker) {
+    lifecycleTracker.addStep(LifecycleStep.ON_CALCULATE_CACHED_VALUE);
     return 0;
   }
 
   @OnCreateTreeProp
-  static Rect onCreateTreePropRect(ComponentContext c, @Prop List<LifecycleStep.StepInfo> steps) {
-    steps.add(new StepInfo(LifecycleStep.ON_CREATE_TREE_PROP));
+  static Rect onCreateTreePropRect(ComponentContext c, @Prop LifecycleTracker lifecycleTracker) {
+    lifecycleTracker.addStep(LifecycleStep.ON_CREATE_TREE_PROP);
     return new Rect();
   }
 
