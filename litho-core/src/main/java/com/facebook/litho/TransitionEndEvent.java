@@ -40,10 +40,10 @@ import com.facebook.litho.annotations.Event;
 @Event
 public class TransitionEndEvent {
   public String transitionKey;
-  public AnimatedProperty animatedProperty;
+  public AnimatedProperty property;
 
-  public TransitionEndEvent(String transitionKey, AnimatedProperty animatedProperty) {
+  public TransitionEndEvent(String transitionKey, AnimatedProperty property) {
     this.transitionKey = transitionKey;
-    this.animatedProperty = animatedProperty;
+    this.property = property;
   }
 }

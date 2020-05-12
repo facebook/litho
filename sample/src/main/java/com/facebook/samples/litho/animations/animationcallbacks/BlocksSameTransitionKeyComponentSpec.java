@@ -89,8 +89,8 @@ public class BlocksSameTransitionKeyComponentSpec {
       ComponentContext c,
       @State Set<String> runningAnimations,
       @FromEvent String transitionKey,
-      @FromEvent AnimatedProperty animatedProperty) {
-    if (animatedProperty == AnimatedProperties.X) {
+      @FromEvent AnimatedProperty property) {
+    if (property == AnimatedProperties.X) {
       BlocksSameTransitionKeyComponent.updateRunningAnimations(c, ANIM_X);
       BlocksSameTransitionKeyComponent.updateStateSync(c, false);
     } else {

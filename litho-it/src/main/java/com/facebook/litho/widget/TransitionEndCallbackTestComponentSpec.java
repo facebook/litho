@@ -83,12 +83,12 @@ public class TransitionEndCallbackTestComponentSpec {
   static void onTransitionEnd(
       ComponentContext c,
       @FromEvent String transitionKey,
-      @FromEvent AnimatedProperty animatedProperty,
+      @FromEvent AnimatedProperty property,
       @State boolean state,
       @Prop Caller caller) {
     switch (caller.testType) {
       case SAME_KEY:
-        if (animatedProperty == AnimatedProperties.X) {
+        if (property == AnimatedProperties.X) {
           caller.transitionEndMessage = ANIM_X;
         } else {
           caller.transitionEndMessage = ANIM_ALPHA;
