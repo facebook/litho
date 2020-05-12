@@ -35,6 +35,7 @@ import com.facebook.litho.annotations.OnCreateTransition;
 import com.facebook.litho.annotations.OnCreateTreeProp;
 import com.facebook.litho.annotations.OnDetached;
 import com.facebook.litho.annotations.OnUpdateState;
+import com.facebook.litho.annotations.OnUpdateStateWithTransition;
 import com.facebook.litho.annotations.Param;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.State;
@@ -101,6 +102,12 @@ public class LayoutSpecLifecycleTesterSpec {
     stepsAsParam.add(new StepInfo(LifecycleStep.ON_UPDATE_STATE));
   }
 
+  @OnUpdateStateWithTransition
+  static Transition updateStateWithTransition(@Param List<LifecycleStep.StepInfo> stepsAsParam) {
+    stepsAsParam.add(new StepInfo(LifecycleStep.ON_UPDATE_STATE_WITH_TRANSITION));
+    return Transition.allLayout();
+  }
+
   public static class Caller {
     ComponentContext c;
     List<LifecycleStep.StepInfo> steps;
@@ -112,6 +119,10 @@ public class LayoutSpecLifecycleTesterSpec {
 
     public void updateStateSync() {
       LayoutSpecLifecycleTester.updateStateSync(c, steps);
+    }
+
+    public void updateStateWithTransition() {
+      LayoutSpecLifecycleTester.updateStateWithTransitionWithTransition(c, steps);
     }
   }
 }

@@ -20,6 +20,7 @@ import static com.facebook.litho.LifecycleStep.getSteps;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import com.facebook.litho.config.ComponentsConfiguration;
+import com.facebook.litho.testing.BackgroundLayoutLooperRule;
 import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.LayoutSpecLifecycleTester;
@@ -34,6 +35,8 @@ import org.junit.runner.RunWith;
 public class LayoutSpecLifecycleTest {
 
   public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
+  public @Rule BackgroundLayoutLooperRule mBackgroundLayoutLooperRule =
+      new BackgroundLayoutLooperRule();
 
   @Test
   public void lifecycle_onSetRootWithoutLayout_shouldNotCallLifecycleMethods() {
@@ -124,6 +127,32 @@ public class LayoutSpecLifecycleTest {
         .describedAs("Should call the lifecycle methods in expected order")
         .containsExactly(
             LifecycleStep.ON_UPDATE_STATE,
+            LifecycleStep.ON_CREATE_TREE_PROP,
+            LifecycleStep.ON_CALCULATE_CACHED_VALUE,
+            LifecycleStep.ON_CREATE_LAYOUT);
+    ComponentsConfiguration.isReconciliationEnabled = true;
+  }
+
+  @Test
+  public void lifecycle_updateStateWithTransition_shouldCallLifecycleMethod() {
+    // TODO: T66662176 Remove code to disable and enable reconciliation.
+    ComponentsConfiguration.isReconciliationEnabled = false;
+    final List<LifecycleStep.StepInfo> info = new ArrayList<>();
+    LayoutSpecLifecycleTesterSpec.Caller caller = new LayoutSpecLifecycleTesterSpec.Caller();
+    final Component component =
+        LayoutSpecLifecycleTester.create(mLithoViewRule.getContext())
+            .steps(info)
+            .caller(caller)
+            .build();
+    mLithoViewRule.setRoot(component);
+    mLithoViewRule.attachToWindow().measure().layout();
+    info.clear();
+    caller.updateStateWithTransition();
+    mBackgroundLayoutLooperRule.runToEndOfTasksSync();
+    assertThat(getSteps(info))
+        .describedAs("Should call the lifecycle methods in expected order")
+        .containsExactly(
+            LifecycleStep.ON_UPDATE_STATE_WITH_TRANSITION,
             LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CALCULATE_CACHED_VALUE,
             LifecycleStep.ON_CREATE_LAYOUT);
