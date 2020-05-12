@@ -17,6 +17,7 @@
 package com.facebook.litho.widget;
 
 import android.graphics.Rect;
+import androidx.annotation.Nullable;
 import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
@@ -33,12 +34,14 @@ import com.facebook.litho.annotations.OnCreateLayout;
 import com.facebook.litho.annotations.OnCreateTransition;
 import com.facebook.litho.annotations.OnCreateTreeProp;
 import com.facebook.litho.annotations.OnDetached;
+import com.facebook.litho.annotations.OnUpdateState;
+import com.facebook.litho.annotations.Param;
 import com.facebook.litho.annotations.Prop;
 import com.facebook.litho.annotations.State;
 import java.util.List;
 
 @LayoutSpec
-class LayoutSpecLifecycleTesterSpec {
+public class LayoutSpecLifecycleTesterSpec {
 
   @OnCreateInitialState
   static void onCreateInitialState(
@@ -51,11 +54,15 @@ class LayoutSpecLifecycleTesterSpec {
   static Component onCreateLayout(
       ComponentContext c,
       @Prop List<LifecycleStep.StepInfo> steps,
+      @Prop(optional = true) @Nullable Caller caller,
       @State String state,
       @CachedValue int expensiveValue) {
     steps.add(new StepInfo(LifecycleStep.ON_CREATE_LAYOUT));
     if (state == null) {
       throw new IllegalStateException("OnCreateLayout called without initialised state.");
+    }
+    if (caller != null) {
+      caller.set(c, steps);
     }
     return Column.create(c).build();
   }
@@ -87,5 +94,24 @@ class LayoutSpecLifecycleTesterSpec {
   @OnDetached
   static void onDetached(ComponentContext c, @Prop List<LifecycleStep.StepInfo> steps) {
     steps.add(new StepInfo(LifecycleStep.ON_DETACHED));
+  }
+
+  @OnUpdateState
+  static void updateState(@Param List<LifecycleStep.StepInfo> stepsAsParam) {
+    stepsAsParam.add(new StepInfo(LifecycleStep.ON_UPDATE_STATE));
+  }
+
+  public static class Caller {
+    ComponentContext c;
+    List<LifecycleStep.StepInfo> steps;
+
+    void set(ComponentContext c, List<LifecycleStep.StepInfo> steps) {
+      this.c = c;
+      this.steps = steps;
+    }
+
+    public void updateStateSync() {
+      LayoutSpecLifecycleTester.updateStateSync(c, steps);
+    }
   }
 }

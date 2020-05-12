@@ -23,6 +23,7 @@ import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.LayoutSpecLifecycleTester;
+import com.facebook.litho.widget.LayoutSpecLifecycleTesterSpec;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Rule;
@@ -102,5 +103,30 @@ public class LayoutSpecLifecycleTest {
             LifecycleStep.ON_CREATE_TREE_PROP,
             LifecycleStep.ON_CALCULATE_CACHED_VALUE,
             LifecycleStep.ON_CREATE_LAYOUT);
+  }
+
+  @Test
+  public void lifecycle_updateState_shouldCallLifecycleMethod() {
+    // TODO: T66662176 Remove code to disable and enable reconciliation.
+    ComponentsConfiguration.isReconciliationEnabled = false;
+    final List<LifecycleStep.StepInfo> info = new ArrayList<>();
+    LayoutSpecLifecycleTesterSpec.Caller caller = new LayoutSpecLifecycleTesterSpec.Caller();
+    final Component component =
+        LayoutSpecLifecycleTester.create(mLithoViewRule.getContext())
+            .steps(info)
+            .caller(caller)
+            .build();
+    mLithoViewRule.setRoot(component);
+    mLithoViewRule.attachToWindow().measure().layout();
+    info.clear();
+    caller.updateStateSync();
+    assertThat(getSteps(info))
+        .describedAs("Should call the lifecycle methods in expected order")
+        .containsExactly(
+            LifecycleStep.ON_UPDATE_STATE,
+            LifecycleStep.ON_CREATE_TREE_PROP,
+            LifecycleStep.ON_CALCULATE_CACHED_VALUE,
+            LifecycleStep.ON_CREATE_LAYOUT);
+    ComponentsConfiguration.isReconciliationEnabled = true;
   }
 }
