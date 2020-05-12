@@ -4,7 +4,8 @@
 
 _TBA_
 
-* **Breaking:** RenderThreadTransition removed.
+* **Breaking:** Remove unused obsolete RenderThreadTransition.
+* New: Add `TransitionEndEvent` event to receive callbacks when a transition ends. [Docs](https://fblitho.com/docs/transition-choreography#transition-end-callback)
 
 For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.35.0...master).
 
