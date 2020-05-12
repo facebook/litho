@@ -162,6 +162,87 @@ public class MountStateIncrementalMountTest {
     assertThat(child2.isMounted()).isFalse();
   }
 
+  @Test
+  public void incrementalMount_visibleTopIntersectsItemBottom_unmountItem() {
+    final TestComponent child1 = create(mContext).build();
+    final TestComponent child2 = create(mContext).build();
+    final TestComponent child3 = create(mContext).build();
+    final Component root =
+        Column.create(mContext)
+            .child(Wrapper.create(mContext).delegate(child1).widthPx(10).heightPx(10))
+            .child(Wrapper.create(mContext).delegate(child2).widthPx(10).heightPx(10))
+            .child(Wrapper.create(mContext).delegate(child3).widthPx(10).heightPx(10))
+            .build();
+
+    mLithoViewRule
+        .setRoot(root)
+        .attachToWindow()
+        .setSizeSpecs(makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY))
+        .measure()
+        .layout();
+
+    final LithoView lithoView = mLithoViewRule.getLithoView();
+
+    lithoView.getComponentTree().mountComponent(new Rect(0, 10, 10, 30), true);
+    assertThat(child1.isMounted()).isFalse();
+    assertThat(child2.isMounted()).isTrue();
+    assertThat(child3.isMounted()).isTrue();
+  }
+
+  @Test
+  public void incrementalMount_visibleBottomIntersectsItemTop_unmountItem() {
+    final TestComponent child1 = create(mContext).build();
+    final TestComponent child2 = create(mContext).build();
+    final TestComponent child3 = create(mContext).build();
+    final Component root =
+        Column.create(mContext)
+            .child(Wrapper.create(mContext).delegate(child1).widthPx(10).heightPx(10))
+            .child(Wrapper.create(mContext).delegate(child2).widthPx(10).heightPx(10))
+            .child(Wrapper.create(mContext).delegate(child3).widthPx(10).heightPx(10))
+            .build();
+
+    mLithoViewRule
+        .setRoot(root)
+        .attachToWindow()
+        .setSizeSpecs(makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY))
+        .measure()
+        .layout();
+
+    final LithoView lithoView = mLithoViewRule.getLithoView();
+
+    lithoView.getComponentTree().mountComponent(new Rect(0, 0, 10, 20), true);
+    assertThat(child1.isMounted()).isTrue();
+    assertThat(child2.isMounted()).isTrue();
+    assertThat(child3.isMounted()).isFalse();
+  }
+
+  @Test
+  public void incrementalMount_visibleRectIntersectsItemBounds_mountItem() {
+    final TestComponent child1 = create(mContext).build();
+    final TestComponent child2 = create(mContext).build();
+    final TestComponent child3 = create(mContext).build();
+    final Component root =
+        Column.create(mContext)
+            .child(Wrapper.create(mContext).delegate(child1).widthPx(10).heightPx(10))
+            .child(Wrapper.create(mContext).delegate(child2).widthPx(10).heightPx(10))
+            .child(Wrapper.create(mContext).delegate(child3).widthPx(10).heightPx(10))
+            .build();
+
+    mLithoViewRule
+        .setRoot(root)
+        .attachToWindow()
+        .setSizeSpecs(makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY))
+        .measure()
+        .layout();
+
+    final LithoView lithoView = mLithoViewRule.getLithoView();
+
+    lithoView.getComponentTree().mountComponent(new Rect(0, 10, 10, 20), true);
+    assertThat(child1.isMounted()).isFalse();
+    assertThat(child2.isMounted()).isTrue();
+    assertThat(child3.isMounted()).isFalse();
+  }
+
   /**
    * Tests incremental mount behaviour of a horizontal stack of components with a View mount type.
    */
