@@ -1535,6 +1535,101 @@ public class ComponentTreeTest {
   }
 
   @Test
+  public void testSetSizeSpecAsyncFollowedBySetSizeSpecSyncBeforeCompletionReturnsCorrectSize()
+      throws InterruptedException {
+    TestDrawableComponent component =
+        TestDrawableComponent.create(mContext).flexGrow(1).color(1234).build();
+    ComponentTree componentTree = ComponentTree.create(mContext, component).build();
+    componentTree.setLithoView(new LithoView(mContext));
+
+    int widthSpec1 = SizeSpec.makeSizeSpec(1000, SizeSpec.EXACTLY);
+    int heightSpec1 = SizeSpec.makeSizeSpec(1000, SizeSpec.AT_MOST);
+    int widthSpec2 = SizeSpec.makeSizeSpec(500, SizeSpec.EXACTLY);
+    int heightSpec2 = SizeSpec.makeSizeSpec(500, SizeSpec.AT_MOST);
+
+    componentTree.attach();
+    componentTree.measure(widthSpec1, heightSpec1, new int[2], false);
+
+    TestDrawableComponent.BlockInPrepareComponentListener blockInPrepare =
+        new TestDrawableComponent.BlockInPrepareComponentListener();
+    blockInPrepare.setDoNotBlockOnThisThread();
+    component.setTestComponentListener(blockInPrepare);
+
+    componentTree.setSizeSpecAsync(widthSpec2, heightSpec2);
+
+    final CountDownLatch setSizeSpecAsync =
+        runOnBackgroundThread(
+            new Runnable() {
+              @Override
+              public void run() {
+                mBackgroundLayoutLooperRule.runToEndOfTasksSync();
+              }
+            });
+    blockInPrepare.awaitPrepareStart();
+
+    Size size = new Size();
+    final CountDownLatch setSizeSpecSync =
+        runOnBackgroundThread(
+            new Runnable() {
+              @Override
+              public void run() {
+                componentTree.setSizeSpec(widthSpec2, heightSpec2, size);
+              }
+            });
+
+    waitForLayoutToAttachToFuture(componentTree);
+
+    blockInPrepare.allowPrepareToComplete();
+    assertTrue(setSizeSpecAsync.await(5, TimeUnit.SECONDS));
+    assertTrue(setSizeSpecSync.await(5, TimeUnit.SECONDS));
+    ShadowLooper.runUiThreadTasks();
+
+    assertThat(size).isEqualToComparingFieldByField(new Size(500, 500));
+    assertThat(componentTree.getRoot()).isEqualTo(component);
+    assertThat(componentTree.hasCompatibleLayout(widthSpec2, heightSpec2)).isTrue();
+    assertThat(componentTree.getMainThreadLayoutState().getHeight()).isEqualTo(500);
+    assertThat(componentTree.getMainThreadLayoutState().getWidth()).isEqualTo(500);
+
+    assertThat(mLithoStatsRule.getComponentCalculateLayoutCount())
+        .describedAs("We expect one initial layout and the async layout.")
+        .isEqualTo(2);
+  }
+
+  @Test
+  public void testSetSizeSpecAsyncFollowedBySetSizeSpecSyncBeforeStartReturnsCorrectSize() {
+    TestDrawableComponent component =
+        TestDrawableComponent.create(mContext).flexGrow(1).color(1234).build();
+    ComponentTree componentTree = ComponentTree.create(mContext, component).build();
+    componentTree.setLithoView(new LithoView(mContext));
+
+    int widthSpec1 = SizeSpec.makeSizeSpec(1000, SizeSpec.EXACTLY);
+    int heightSpec1 = SizeSpec.makeSizeSpec(1000, SizeSpec.AT_MOST);
+    int widthSpec2 = SizeSpec.makeSizeSpec(500, SizeSpec.EXACTLY);
+    int heightSpec2 = SizeSpec.makeSizeSpec(500, SizeSpec.AT_MOST);
+
+    componentTree.attach();
+    componentTree.measure(widthSpec1, heightSpec1, new int[2], false);
+
+    componentTree.setSizeSpecAsync(widthSpec2, heightSpec2);
+
+    Size size = new Size();
+    componentTree.setSizeSpec(widthSpec2, heightSpec2, size);
+    assertThat(size).isEqualToComparingFieldByField(new Size(500, 500));
+
+    mBackgroundLayoutLooperRule.runToEndOfTasksSync();
+    ShadowLooper.runUiThreadTasks();
+
+    assertThat(componentTree.getRoot()).isEqualTo(component);
+    assertThat(componentTree.hasCompatibleLayout(widthSpec2, heightSpec2)).isTrue();
+    assertThat(componentTree.getMainThreadLayoutState().getHeight()).isEqualTo(500);
+    assertThat(componentTree.getMainThreadLayoutState().getWidth()).isEqualTo(500);
+
+    assertThat(mLithoStatsRule.getComponentCalculateLayoutCount())
+        .describedAs("We expect one initial layout and the async layout.")
+        .isEqualTo(2);
+  }
+
+  @Test
   public void testLayoutStateNotCommittedTwiceWithLayoutStateFutures() throws InterruptedException {
     TestDrawableComponent component =
         TestDrawableComponent.create(mContext).flexGrow(1).color(1234).build();
@@ -1580,17 +1675,7 @@ public class ComponentTreeTest {
               }
             });
 
-    ComponentTree.LayoutStateFuture future = componentTree.getLayoutStateFutures().get(0);
-
-    int timeSpentWaiting = 0;
-    while (future.getWaitingCount() != 2 && timeSpentWaiting < 5000) {
-      Thread.sleep(10);
-      timeSpentWaiting += 10;
-    }
-
-    assertThat(future.getWaitingCount())
-        .describedAs("Make sure the second thread is waiting on the first Future")
-        .isEqualTo(2);
+    waitForLayoutToAttachToFuture(componentTree);
 
     blockInPrepare.allowPrepareToComplete();
     if (!asyncLayout1Finish.await(5, TimeUnit.SECONDS)) {
@@ -1932,5 +2017,22 @@ public class ComponentTreeTest {
         .start();
 
     return latch;
+  }
+
+  private static void waitForLayoutToAttachToFuture(ComponentTree componentTree) {
+    ComponentTree.LayoutStateFuture future = componentTree.getLayoutStateFutures().get(0);
+    int timeSpentWaiting = 0;
+    while (future.getWaitingCount() != 2 && timeSpentWaiting < 5000) {
+      try {
+      Thread.sleep(10);
+      } catch (InterruptedException e) {
+        throw new RuntimeException(e);
+      }
+      timeSpentWaiting += 10;
+    }
+
+    assertThat(future.getWaitingCount())
+        .describedAs("Make sure the second thread is waiting on the first Future")
+        .isEqualTo(2);
   }
 }

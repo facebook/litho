@@ -1905,39 +1905,16 @@ public class ComponentTree {
       final boolean treePropsInitialized = treeProps != null;
       final boolean widthSpecInitialized = widthSpec != SIZE_UNINITIALIZED;
       final boolean heightSpecInitialized = heightSpec != SIZE_UNINITIALIZED;
-
-      final boolean widthSpecDidntChange = !widthSpecInitialized || widthSpec == mWidthSpec;
-      final boolean heightSpecDidntChange = !heightSpecInitialized || heightSpec == mHeightSpec;
-      final boolean sizeSpecDidntChange = widthSpecDidntChange && heightSpecDidntChange;
+      final Component resolvedRoot = root != null ? root : mRoot;
+      final int resolvedWidthSpec = widthSpecInitialized ? widthSpec : mWidthSpec;
+      final int resolvedHeightSpec = heightSpecInitialized ? heightSpec : mHeightSpec;
       final LayoutState mostRecentLayoutState =
           mBackgroundLayoutState != null ? mBackgroundLayoutState : mMainThreadLayoutState;
-      final boolean allSpecsWereInitialized =
-          widthSpecInitialized
-              && heightSpecInitialized
-              && mWidthSpec != SIZE_UNINITIALIZED
-              && mHeightSpec != SIZE_UNINITIALIZED;
-      final boolean sizeSpecsAreCompatible =
-          sizeSpecDidntChange
-              || (allSpecsWereInitialized
-                  && mostRecentLayoutState != null
-                  && Layout.hasCompatibleSizeSpec(
-                      mWidthSpec,
-                      mHeightSpec,
-                      widthSpec,
-                      heightSpec,
-                      mostRecentLayoutState.getWidth(),
-                      mostRecentLayoutState.getHeight()));
 
-      // In addition to checking the specs are compatible, we need to make sure they are compatible
-      // for the most recent root as well. We want to prevent the case that there's an async layout
-      // in flight with incompatible specs which won't be committed when it finishes.
-      final Component rootToCheck = root != null ? root : mRoot;
-      final boolean rootDidntChange =
-          mostRecentLayoutState != null
-              && rootToCheck != null
-              && rootToCheck.getId() == mostRecentLayoutState.getRootComponent().getId();
-
-      if (rootDidntChange && sizeSpecsAreCompatible) {
+      if (resolvedRoot != null
+          && mostRecentLayoutState != null
+          && mostRecentLayoutState.isCompatibleComponentAndSpec(
+              resolvedRoot.getId(), resolvedWidthSpec, resolvedHeightSpec)) {
         // The spec and the root haven't changed. Either we have a layout already, or we're
         // currently computing one on another thread.
         if (output == null) {
