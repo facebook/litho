@@ -233,6 +233,7 @@ def litho_robolectric4_test(
         "-Drobolectric.dependency.dir=lib/android-all",
         "-Drobolectric.require.all.resources=true",
         "-Dcom.facebook.litho.is_oss=true",
+        "-Dlitho.animation.disabled=true",
     ]
     kwargs["vm_args"] = extra_vm_args
     kwargs["use_cxx_libraries"] = True
