@@ -136,12 +136,6 @@ public class ComponentsConfiguration {
   public static boolean enableThreadTracingStacktrace = false;
 
   /**
-   * Whether incremental mount should also be done when the LithoView is not visible at all (i.e. so
-   * that all of the mount items should be unmounted).
-   */
-  public static boolean incrementalMountWhenNotVisible = false;
-
-  /**
    * Whether the background thread that's currently running the layout should have its priority
    * raised to the thread priority of the UI thread.
    */
