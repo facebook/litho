@@ -175,7 +175,6 @@ class MountState
 
   public MountState(LithoView view) {
     mIndexToItemMap = new LongSparseArray<>();
-    mVisibilityIdToItemMap = new HashMap<>();
     mCanMountIncrementallyMountItems = new LongSparseArray<>();
     mContext = view.getComponentContext();
     mLithoView = view;
@@ -192,10 +191,14 @@ class MountState
         mIncrementalMountExtension = new IncrementalMountExtension(mLithoView);
         registerMountDelegateExtension(mIncrementalMountExtension);
       }
+    }
 
-      if (ComponentsConfiguration.useVisibilityExtension) {
-        mVisibilityOutputsExtension = new VisibilityOutputsExtension(mLithoView);
-      }
+    if (!ComponentsConfiguration.useExtensionsWithMountDelegate
+        && ComponentsConfiguration.useVisibilityExtension) {
+      mVisibilityOutputsExtension = new VisibilityOutputsExtension(mLithoView);
+      mVisibilityIdToItemMap = null;
+    } else {
+      mVisibilityIdToItemMap = new HashMap<>();
     }
   }
 
@@ -424,25 +427,21 @@ class MountState
       mTransitionManager.runTransitions();
     }
 
-    if (isVisibilityProcessingEnabled) {
-      if (mVisibilityOutputsExtension != null) {
-        processVisibilityOutputsWithExtension(layoutState, mIsDirty);
-      } else {
-        if (processVisibilityOutputs) {
-          if (isTracing) {
-            ComponentsSystrace.beginSection("processVisibilityOutputs");
-          }
-          if (mountPerfEvent != null) {
-            mountPerfEvent.markerPoint("EVENT_PROCESS_VISIBILITY_OUTPUTS_START");
-          }
-          processVisibilityOutputs(
-              layoutState, localVisibleRect, mPreviousLocalVisibleRect, mIsDirty, mountPerfEvent);
-          if (mountPerfEvent != null) {
-            mountPerfEvent.markerPoint("EVENT_PROCESS_VISIBILITY_OUTPUTS_END");
-          }
-          if (isTracing) {
-            ComponentsSystrace.endSection();
-          }
+    if (isVisibilityProcessingEnabled && processVisibilityOutputs) {
+      if (processVisibilityOutputs) {
+        if (isTracing) {
+          ComponentsSystrace.beginSection("processVisibilityOutputs");
+        }
+        if (mountPerfEvent != null) {
+          mountPerfEvent.markerPoint("EVENT_PROCESS_VISIBILITY_OUTPUTS_START");
+        }
+        processVisibilityOutputs(
+            layoutState, localVisibleRect, mPreviousLocalVisibleRect, mIsDirty, mountPerfEvent);
+        if (mountPerfEvent != null) {
+          mountPerfEvent.markerPoint("EVENT_PROCESS_VISIBILITY_OUTPUTS_END");
+        }
+        if (isTracing) {
+          ComponentsSystrace.endSection();
         }
       }
     }
@@ -500,15 +499,9 @@ class MountState
     cleanupTransitionsAfterMount();
 
     boolean isVisibilityProcessingEnabled = componentTree.isVisibilityProcessingEnabled();
-    if (isVisibilityProcessingEnabled) {
-      if (mVisibilityOutputsExtension != null) {
-        processVisibilityOutputsWithExtension(layoutState, wasDirty);
-      } else {
-        if (processVisibilityOutputs) {
-          processVisibilityOutputs(
-              layoutState, localVisibleRect, previousLocalVisibleRect, wasDirty, null);
-        }
-      }
+    if (isVisibilityProcessingEnabled && processVisibilityOutputs) {
+      processVisibilityOutputs(
+          layoutState, localVisibleRect, previousLocalVisibleRect, wasDirty, null);
     }
   }
 
@@ -818,20 +811,21 @@ class MountState
     }
   }
 
-  private void processVisibilityOutputsWithExtension(LayoutState layoutState, boolean isDirty) {
-    if (isDirty) {
-      mVisibilityOutputsExtension.beforeMount(layoutState);
-    } else {
-      mVisibilityOutputsExtension.onViewOffset();
-    }
-  }
-
   void processVisibilityOutputs(
       LayoutState layoutState,
       @Nullable Rect localVisibleRect,
       Rect previousLocalVisibleRect,
       boolean isDirty,
       @Nullable PerfEvent mountPerfEvent) {
+    if (mVisibilityOutputsExtension != null) {
+      if (isDirty) {
+        mVisibilityOutputsExtension.beforeMount(layoutState);
+      } else {
+        mVisibilityOutputsExtension.onViewOffset();
+      }
+      return;
+    }
+
     final boolean isTracing = ComponentsSystrace.isTracing();
 
     try {
@@ -1054,6 +1048,10 @@ class MountState
 
   @VisibleForTesting
   Map<String, VisibilityItem> getVisibilityIdToItemMap() {
+    if (mVisibilityOutputsExtension != null) {
+      return mVisibilityOutputsExtension.getVisibilityIdToItemMap();
+    }
+
     return mVisibilityIdToItemMap;
   }
 

@@ -54,23 +54,34 @@ public class VisibilityEventsTest {
   private ComponentContext mContext;
   private LithoView mLithoView;
   private FrameLayout mParent;
-  private boolean configWithExtensions;
   private boolean configVisExtension;
   final boolean mUseMountDelegateTarget;
+  final boolean mUseVisibilityExtensionInMountState;
 
   public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
 
-  @ParameterizedRobolectricTestRunner.Parameters(name = "{0}")
+  @ParameterizedRobolectricTestRunner.Parameters(
+      name = "useMountDelegateTarget={0}, useVisibilityExtensionInMountState={1}")
   public static Collection data() {
-    return Arrays.asList(new Object[][] {{false}, {true}});
+    return Arrays.asList(
+        new Object[][] {
+          {false, false},
+          {true, false},
+          {false, true},
+          {true, true}
+        });
   }
 
-  public VisibilityEventsTest(boolean useMountDelegateTarget) {
+  public VisibilityEventsTest(
+      boolean useMountDelegateTarget, boolean useVisibilityExtensionInMountState) {
     mUseMountDelegateTarget = useMountDelegateTarget;
+    mUseVisibilityExtensionInMountState = useVisibilityExtensionInMountState;
   }
 
   @Before
   public void setup() {
+    configVisExtension = ComponentsConfiguration.useVisibilityExtension;
+    ComponentsConfiguration.useVisibilityExtension = mUseVisibilityExtensionInMountState;
     mContext = mLithoViewRule.getContext();
     mLithoView = new LithoView(mContext, mUseMountDelegateTarget, false);
     mLithoViewRule.useLithoView(mLithoView);
@@ -85,7 +96,6 @@ public class VisibilityEventsTest {
 
   @After
   public void cleanup() {
-    ComponentsConfiguration.useExtensionsWithMountDelegate = configWithExtensions;
     ComponentsConfiguration.useVisibilityExtension = configVisExtension;
   }
 
