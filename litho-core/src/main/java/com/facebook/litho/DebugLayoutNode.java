@@ -57,8 +57,7 @@ public final class DebugLayoutNode {
     mNode.backgroundColor(color);
   }
 
-  @Nullable
-  public Integer getImportantForAccessibility() {
+  public int getImportantForAccessibility() {
     return mNode.getImportantForAccessibility();
   }
 

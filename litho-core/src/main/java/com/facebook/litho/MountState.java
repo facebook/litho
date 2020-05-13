@@ -149,7 +149,7 @@ class MountState
   private int mPreviousTopsIndex;
   private int mPreviousBottomsIndex;
   private int mLastMountedComponentTreeId = ComponentTree.INVALID_ID;
-  private LayoutState mLastMountedLayoutState;
+  private @Nullable LayoutState mLastMountedLayoutState;
   private boolean mIsFirstMountOfComponentTree = false;
   private int mLastDisappearRangeStart = -1;
   private int mLastDisappearRangeEnd = -1;
@@ -292,9 +292,8 @@ class MountState
 
     final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
-      final StringBuilder sectionName =
-          new StringBuilder(isIncrementalMountEnabled ? "incrementalMount" : "mount");
-      ComponentsSystrace.beginSectionWithArgs(sectionName.toString())
+      ComponentsSystrace.beginSectionWithArgs(
+              isIncrementalMountEnabled ? "incrementalMount" : "mount")
           .arg("treeId", layoutState.getComponentTreeId())
           .arg("component", componentTree.getSimpleName())
           .arg("logTag", componentTree.getContext().getLogTag())
@@ -540,8 +539,7 @@ class MountState
     final ComponentTree componentTree = mLithoView.getComponentTree();
     final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
-      final StringBuilder sectionName = new StringBuilder("mount");
-      ComponentsSystrace.beginSectionWithArgs(sectionName.toString())
+      ComponentsSystrace.beginSectionWithArgs("mount")
           .arg("treeId", layoutState.getComponentTreeId())
           .arg("component", componentTree.getSimpleName())
           .arg("logTag", componentTree.getContext().getLogTag())
@@ -1092,7 +1090,7 @@ class MountState
     }
   }
 
-  private boolean isMountedHostWithChildContent(MountItem mountItem) {
+  private static boolean isMountedHostWithChildContent(MountItem mountItem) {
     if (mountItem == null) {
       return false;
     }
@@ -1233,7 +1231,7 @@ class MountState
     mHostsByMarker.put(id, host);
   }
 
-  private boolean isInVisibleRange(
+  private static boolean isInVisibleRange(
       VisibilityOutput visibilityOutput, Rect bounds, Rect visibleBounds) {
     float heightRatio = visibilityOutput.getVisibleHeightRatio();
     float widthRatio = visibilityOutput.getVisibleWidthRatio();
@@ -1467,7 +1465,6 @@ class MountState
   }
 
   /** Prepare the {@link MountState} to mount a new {@link LayoutState}. */
-  @SuppressWarnings("unchecked")
   private void prepareMount(LayoutState layoutState, @Nullable PerfEvent perfEvent) {
     final boolean isTracing = ComponentsSystrace.isTracing();
 
@@ -2412,89 +2409,69 @@ class MountState
   }
 
   private static void setScale(View view, NodeInfo nodeInfo) {
-    if (Build.VERSION.SDK_INT >= 11) {
-      if (nodeInfo.isScaleSet()) {
-        final float scale = nodeInfo.getScale();
-        view.setScaleX(scale);
-        view.setScaleY(scale);
-      }
+    if (nodeInfo.isScaleSet()) {
+      final float scale = nodeInfo.getScale();
+      view.setScaleX(scale);
+      view.setScaleY(scale);
     }
   }
 
   private static void unsetScale(View view, NodeInfo nodeInfo) {
-    if (Build.VERSION.SDK_INT >= 11) {
-      if (nodeInfo.isScaleSet()) {
-        if (view.getScaleX() != 1) {
-          view.setScaleX(1);
-        }
-        if (view.getScaleY() != 1) {
-          view.setScaleY(1);
-        }
+    if (nodeInfo.isScaleSet()) {
+      if (view.getScaleX() != 1) {
+        view.setScaleX(1);
+      }
+      if (view.getScaleY() != 1) {
+        view.setScaleY(1);
       }
     }
   }
 
   private static void setAlpha(View view, NodeInfo nodeInfo) {
-    if (Build.VERSION.SDK_INT >= 11) {
-      if (nodeInfo.isAlphaSet()) {
-        view.setAlpha(nodeInfo.getAlpha());
-      }
+    if (nodeInfo.isAlphaSet()) {
+      view.setAlpha(nodeInfo.getAlpha());
     }
   }
 
   private static void unsetAlpha(View view, NodeInfo nodeInfo) {
-    if (Build.VERSION.SDK_INT >= 11) {
-      if (nodeInfo.isAlphaSet() && view.getAlpha() != 1) {
-        view.setAlpha(1);
-      }
+    if (nodeInfo.isAlphaSet() && view.getAlpha() != 1) {
+      view.setAlpha(1);
     }
   }
 
   private static void setRotation(View view, NodeInfo nodeInfo) {
-    if (Build.VERSION.SDK_INT >= 11) {
-      if (nodeInfo.isRotationSet()) {
-        view.setRotation(nodeInfo.getRotation());
-      }
+    if (nodeInfo.isRotationSet()) {
+      view.setRotation(nodeInfo.getRotation());
     }
   }
 
   private static void unsetRotation(View view, NodeInfo nodeInfo) {
-    if (Build.VERSION.SDK_INT >= 11) {
-      if (nodeInfo.isRotationSet() && view.getRotation() != 0) {
-        view.setRotation(0);
-      }
+    if (nodeInfo.isRotationSet() && view.getRotation() != 0) {
+      view.setRotation(0);
     }
   }
 
   private static void setRotationX(View view, NodeInfo nodeInfo) {
-    if (Build.VERSION.SDK_INT >= 11) {
-      if (nodeInfo.isRotationXSet()) {
-        view.setRotationX(nodeInfo.getRotationX());
-      }
+    if (nodeInfo.isRotationXSet()) {
+      view.setRotationX(nodeInfo.getRotationX());
     }
   }
 
   private static void unsetRotationX(View view, NodeInfo nodeInfo) {
-    if (Build.VERSION.SDK_INT >= 11) {
-      if (nodeInfo.isRotationXSet() && view.getRotationX() != 0) {
-        view.setRotationX(0);
-      }
+    if (nodeInfo.isRotationXSet() && view.getRotationX() != 0) {
+      view.setRotationX(0);
     }
   }
 
   private static void setRotationY(View view, NodeInfo nodeInfo) {
-    if (Build.VERSION.SDK_INT >= 11) {
-      if (nodeInfo.isRotationYSet()) {
-        view.setRotationY(nodeInfo.getRotationY());
-      }
+    if (nodeInfo.isRotationYSet()) {
+      view.setRotationY(nodeInfo.getRotationY());
     }
   }
 
   private static void unsetRotationY(View view, NodeInfo nodeInfo) {
-    if (Build.VERSION.SDK_INT >= 11) {
-      if (nodeInfo.isRotationYSet() && view.getRotationY() != 0) {
-        view.setRotationY(0);
-      }
+    if (nodeInfo.isRotationYSet() && view.getRotationY() != 0) {
+      view.setRotationY(0);
     }
   }
 
@@ -2519,14 +2496,14 @@ class MountState
       view.setPadding(0, 0, 0, 0);
     } catch (NullPointerException e) {
       // T53931759 Gathering extra info around this NPE
-      final StringBuilder sb = new StringBuilder();
-      sb.append("Component: ");
-      sb.append(getLayoutOutput(item).getComponent().getSimpleName());
-      sb.append(", view: ");
-      sb.append(view.getClass().getSimpleName());
-      sb.append(", message: ");
-      sb.append(e.getMessage());
-      throw new NullPointerException(sb.toString());
+      final String message =
+          "Component: "
+              + getLayoutOutput(item).getComponent().getSimpleName()
+              + ", view: "
+              + view.getClass().getSimpleName()
+              + ", message: "
+              + e.getMessage();
+      throw new NullPointerException(message);
     }
   }
 
@@ -3160,7 +3137,7 @@ class MountState
     }
   }
 
-  private int findLastDescendantIndex(LayoutState layoutState, int index) {
+  private static int findLastDescendantIndex(LayoutState layoutState, int index) {
     final LayoutOutput host = getLayoutOutput(layoutState.getMountableOutputAt(index));
     final long hostId = host.getId();
 
@@ -3641,7 +3618,7 @@ class MountState
     mTransitionsHasBeenCollected = true;
   }
 
-  private static @Nullable void collectMountTimeTransitions(
+  private static void collectMountTimeTransitions(
       LayoutState layoutState, List<Transition> outList) {
     final List<Component> componentsNeedingPreviousRenderData =
         layoutState.getComponentsNeedingPreviousRenderData();
