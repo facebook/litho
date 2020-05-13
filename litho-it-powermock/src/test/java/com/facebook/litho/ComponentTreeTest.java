@@ -144,7 +144,7 @@ public class ComponentTreeTest {
                 // Schedule the bg layout while UI layout is still in progress.
                 componentTree.setRootAndSizeSpec(bgComponent, mWidthSpec, mHeightSpec);
 
-                bgLS[0] = componentTree.getBackgroundLayoutState();
+                bgLS[0] = componentTree.getCommittedLayoutState();
                 // BG LayoutStateFuture finished, let the UI thread complete layout.
                 // Countdown happens here if test is successful. Otherwise it will happen when
                 // the bg thread computes layout, which means UI thread still gets unblocked but
