@@ -318,6 +318,28 @@ public class MountSpecLifecycleTest {
   }
 
   @Test
+  public void lifecycle_onRemeasureWithCompatibleSpecs_shouldNotRemount() {
+    final LifecycleTracker lifecycleTracker = new LifecycleTracker();
+    final Component component =
+        MountSpecLifecycleTester.create(mLithoViewRule.getContext())
+            .intrinsicSize(new Size(800, 600))
+            .lifecycleTracker(lifecycleTracker)
+            .build();
+
+    mLithoViewRule.setRoot(component).measure().layout().attachToWindow();
+
+    lifecycleTracker.reset();
+
+    // Force measure call to propagate to ComponentTree
+    mLithoViewRule.getLithoView().requestLayout();
+    mLithoViewRule.measure().layout();
+
+    assertThat(lifecycleTracker.getSteps())
+        .describedAs("No lifecycle methods should be called because measure was compatible")
+        .isEmpty();
+  }
+
+  @Test
   public void lifecycle_onSetSemanticallySimilarComponent_shouldCallLifecycleMethods() {
     final LifecycleTracker lifecycleTracker = new LifecycleTracker();
     final Component component =
