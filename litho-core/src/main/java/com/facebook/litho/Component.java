@@ -17,7 +17,6 @@
 package com.facebook.litho;
 
 import static androidx.annotation.Dimension.DP;
-import static com.facebook.litho.ComponentKeyUtils.getKeyForChildPosition;
 import static com.facebook.litho.DynamicPropsManager.KEY_ALPHA;
 import static com.facebook.litho.DynamicPropsManager.KEY_BACKGROUND_COLOR;
 import static com.facebook.litho.DynamicPropsManager.KEY_ELEVATION;
@@ -77,9 +76,7 @@ import javax.annotation.Nullable;
 public abstract class Component extends ComponentLifecycle
     implements Cloneable, HasEventDispatcher, HasEventTrigger, Equivalence<Component> {
 
-  private static final String DUPLICATE_MANUAL_KEY = "Component:DuplicateManualKey";
   private static final String MISMATCHING_BASE_CONTEXT = "Component:MismatchingBaseContext";
-  private static final String NULL_PARENT_KEY = "Component:NullParentKey";
   private static final String NULL_KEY_SET = "Component:NullKeySet";
 
   private static final AtomicInteger sIdGenerator = new AtomicInteger(1);
@@ -548,7 +545,7 @@ public abstract class Component extends ComponentLifecycle
         if (ComponentsConfiguration.useNewGenerateMechanismForGlobalKeys) {
           globalKey = LayoutState.generateGlobalKey(parentContext, this);
         } else {
-          globalKey = generateKey(parentContext);
+          globalKey = ComponentKeyUtils.generateGlobalKey(parentContext.getComponentScope(), this);
         }
         setGlobalKey(globalKey);
       }
@@ -594,60 +591,6 @@ public abstract class Component extends ComponentLifecycle
     }
   }
 
-  private String generateKey(ComponentContext parentContext) {
-    final Component parentScope = parentContext.getComponentScope();
-    final String key = getKey();
-    final String globalKey;
-
-    if (parentScope == null) {
-      globalKey = key;
-    } else {
-      if (parentScope.getGlobalKey() == null) {
-        ComponentsReporter.emitMessage(
-            ComponentsReporter.LogLevel.ERROR,
-            NULL_PARENT_KEY,
-            "Trying to generate parent-based key for component "
-                + getSimpleName()
-                + " , but parent "
-                + parentScope.getSimpleName()
-                + " has a null global key \"."
-                + " This is most likely a configuration mistake,"
-                + " check the value of ComponentsConfiguration.useGlobalKeys.");
-        globalKey = "null" + key;
-      } else {
-        globalKey = parentScope.generateUniqueGlobalKeyForChild(this, key);
-      }
-    }
-
-    return globalKey;
-  }
-
-  /**
-   * Generate a global key for the given component that is unique among all of this component's
-   * children of the same type. If a manual key has been set on the child component using the .key()
-   * method, return the manual key.
-   *
-   * <p>TODO: (T38237241) remove the usage of the key handler post the nested tree experiment
-   *
-   * @param component the child component for which we're finding a unique global key
-   * @param key the key of the child component as determined by its lifecycle id or manual setting
-   * @return a unique global key for this component relative to its siblings.
-   */
-  private String generateUniqueGlobalKeyForChild(Component component, String key) {
-    final String childKey = ComponentKeyUtils.getKeyWithSeparator(getGlobalKey(), key);
-
-    if (component.mHasManualKey) {
-      final int manualKeyIndex = getManualKeyUsagesCountAndIncrement(childKey);
-      if (manualKeyIndex != 0) {
-        logDuplicateManualKeyWarning(component, key);
-      }
-      return getKeyForChildPosition(childKey, manualKeyIndex);
-    }
-
-    final int childIndex = getChildCountAndIncrement(component);
-    return getKeyForChildPosition(childKey, childIndex);
-  }
-
   /**
    * Returns the number of children of a given type {@code this} component has and then increments
    * it by 1.
@@ -655,7 +598,7 @@ public abstract class Component extends ComponentLifecycle
    * @param component the child component
    * @return the number of children of {@param component} type
    */
-  private int getChildCountAndIncrement(Component component) {
+  synchronized int getChildCountAndIncrement(Component component) {
     if (mChildCounters == null) {
       mChildCounters = new SparseIntArray();
     }
@@ -667,10 +610,11 @@ public abstract class Component extends ComponentLifecycle
     return count;
   }
 
-  private int getManualKeyUsagesCountAndIncrement(String manualKey) {
+  synchronized int getManualKeyUsagesCountAndIncrement(String manualKey) {
     if (mManualKeysCounter == null) {
       mManualKeysCounter = new HashMap<>();
     }
+
     int manualKeyIndex =
         mManualKeysCounter.containsKey(manualKey) ? mManualKeysCounter.get(manualKey) : 0;
 
@@ -708,18 +652,6 @@ public abstract class Component extends ComponentLifecycle
     }
 
     return false;
-  }
-
-  private void logDuplicateManualKeyWarning(Component component, String key) {
-    ComponentsReporter.emitMessage(
-        ComponentsReporter.LogLevel.WARNING,
-        DUPLICATE_MANUAL_KEY,
-        "The manual key "
-            + key
-            + " you are setting on this "
-            + component.getSimpleName()
-            + " is a duplicate and will be changed into a unique one. "
-            + "This will result in unexpected behavior if you don't change it.");
   }
 
   /**
