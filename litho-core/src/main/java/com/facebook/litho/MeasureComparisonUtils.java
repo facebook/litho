@@ -25,15 +25,13 @@ import static com.facebook.litho.SizeSpec.UNSPECIFIED;
  * measureSpec.
  */
 public class MeasureComparisonUtils {
-  private static final float DELTA = 0.5f;
-
   private static boolean newSizeIsExactAndMatchesOldMeasuredSize(
-      int newSizeSpecMode, int newSizeSpecSize, float oldMeasuredSize) {
-    return (newSizeSpecMode == EXACTLY) && (Math.abs(newSizeSpecSize - oldMeasuredSize) < DELTA);
+      int newSizeSpecMode, int newSizeSpecSize, int oldMeasuredSize) {
+    return newSizeSpecMode == EXACTLY && newSizeSpecSize == oldMeasuredSize;
   }
 
   private static boolean oldSizeIsUnspecifiedAndStillFits(
-      int oldSizeSpecMode, int newSizeSpecMode, int newSizeSpecSize, float oldMeasuredSize) {
+      int oldSizeSpecMode, int newSizeSpecMode, int newSizeSpecSize, int oldMeasuredSize) {
     return newSizeSpecMode == AT_MOST
         && oldSizeSpecMode == UNSPECIFIED
         && newSizeSpecSize >= oldMeasuredSize;
@@ -44,7 +42,7 @@ public class MeasureComparisonUtils {
       int newSizeSpecMode,
       int oldSizeSpecSize,
       int newSizeSpecSize,
-      float oldMeasuredSize) {
+      int oldMeasuredSize) {
     return oldSizeSpecMode == AT_MOST
         && newSizeSpecMode == AT_MOST
         && oldSizeSpecSize > newSizeSpecSize
