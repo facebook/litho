@@ -18,6 +18,7 @@ package com.facebook.litho;
 
 import static com.facebook.litho.LayoutOutput.getLayoutOutput;
 import static com.facebook.litho.ThreadUtils.assertMainThread;
+import static com.facebook.rendercore.MountState.ROOT_HOST_ID;
 
 import android.util.Log;
 import androidx.annotation.Nullable;
@@ -455,7 +456,7 @@ public class TransitionsExtension extends MountDelegateExtension
 
     // Update parents
     long hostId = getLayoutOutput(layoutState.getMountableOutputAt(index)).getHostMarker();
-    while (hostId != MountState.ROOT_HOST_ID) {
+    while (hostId != ROOT_HOST_ID) {
       final int hostIndex = layoutState.getLayoutOutputPositionForId(hostId);
       final RenderTreeNode renderTreeNode = layoutState.getMountableOutputAt(hostIndex);
       if (increment) {
@@ -482,7 +483,7 @@ public class TransitionsExtension extends MountDelegateExtension
       // reach the root, then it's not a descendant and we can stop.
       long curentHostId = layoutOutput.getHostMarker();
       while (curentHostId != hostId) {
-        if (curentHostId == MountState.ROOT_HOST_ID) {
+        if (curentHostId == ROOT_HOST_ID) {
           return i - 1;
         }
 

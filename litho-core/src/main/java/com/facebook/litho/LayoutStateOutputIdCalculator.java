@@ -16,6 +16,8 @@
 
 package com.facebook.litho;
 
+import static com.facebook.rendercore.MountState.ROOT_HOST_ID;
+
 import androidx.annotation.Nullable;
 import androidx.collection.LongSparseArray;
 
@@ -150,7 +152,7 @@ class LayoutStateOutputIdCalculator {
 
   /** @return the type part of an id. */
   static @OutputUnitType int getTypeFromId(long id) {
-    if (id == MountState.ROOT_HOST_ID) {
+    if (id == ROOT_HOST_ID) {
       // special case
       return OutputUnitType.HOST;
     }

@@ -47,6 +47,7 @@ import static com.facebook.litho.LithoMountData.isViewFocusable;
 import static com.facebook.litho.LithoMountData.isViewLongClickable;
 import static com.facebook.litho.LithoMountData.isViewSelected;
 import static com.facebook.litho.ThreadUtils.assertMainThread;
+import static com.facebook.rendercore.MountState.ROOT_HOST_ID;
 
 import android.animation.AnimatorInflater;
 import android.animation.StateListAnimator;
@@ -98,7 +99,6 @@ import java.util.Set;
 class MountState
     implements TransitionManager.OnAnimationCompleteListener<EventHandler>, MountDelegateTarget {
 
-  static final long ROOT_HOST_ID = 0L;
   private static final String DISAPPEAR_ANIM_TARGETING_ROOT =
       "MountState:DisappearAnimTargetingRoot";
   private static final String DANGLING_CONTENT_DURING_ANIM = "MountState:DanglingContentDuringAnim";

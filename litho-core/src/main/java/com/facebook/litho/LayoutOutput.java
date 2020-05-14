@@ -22,7 +22,6 @@ import android.graphics.Rect;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import com.facebook.rendercore.MountItem;
-import com.facebook.rendercore.Reducer;
 import com.facebook.rendercore.RenderTreeNode;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -240,7 +239,7 @@ class LayoutOutput implements Cloneable, AnimatableItem {
   static RenderTreeNode create(final LayoutOutput output, final @Nullable RenderTreeNode parent) {
     return new RenderTreeNode(
         parent,
-        parent != null ? new LithoRenderUnit(output) : Reducer.sRootHostRenderUnit,
+        new LithoRenderUnit(output),
         output,
         output.getBounds(),
         output.mHostTranslationX,

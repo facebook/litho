@@ -30,7 +30,7 @@ import java.util.List;
 
 public class MountState implements MountDelegateTarget {
 
-  static final long ROOT_HOST_ID = 0L;
+  public static final long ROOT_HOST_ID = 0L;
 
   private final LongSparseArray<MountItem> mIndexToMountedItemMap;
   private final Context mContext;
@@ -532,7 +532,7 @@ public class MountState implements MountDelegateTarget {
    */
   private static void applyBoundsToView(View view, RenderTreeNode renderTreeNode, boolean force) {
     final Rect bounds = new Rect();
-    renderTreeNode.getMountBounds(bounds);  // Gets the relative bounds of the Render Tree Node.
+    renderTreeNode.getMountBounds(bounds); // Gets the relative bounds of the Render Tree Node.
     final int width = bounds.right - bounds.left;
     final int height = bounds.bottom - bounds.top;
 

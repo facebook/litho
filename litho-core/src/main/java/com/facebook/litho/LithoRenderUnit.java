@@ -31,16 +31,10 @@ public class LithoRenderUnit extends RenderUnit<Object> {
   static final List<LithoBindBinder> sBindBinders = singletonList(LithoBindBinder.INSTANCE);
 
   private final LayoutOutput output;
-  private final long id;
 
   public LithoRenderUnit(LayoutOutput output) {
-    this(output, output.getId());
-  }
-
-  public LithoRenderUnit(LayoutOutput output, long id) {
     super(getRenderType(output), sMountBinder, sBindBinders);
     this.output = output;
-    this.id = id;
   }
 
   @Override
@@ -50,7 +44,7 @@ public class LithoRenderUnit extends RenderUnit<Object> {
 
   @Override
   public long getId() {
-    return id;
+    return output.getId();
   }
 
   private static RenderType getRenderType(LayoutOutput output) {
