@@ -507,7 +507,8 @@ public class MountState implements MountDelegateTarget {
     if (content instanceof View) {
       applyBoundsToView((View) content, renderTreeNode, force);
     } else if (content instanceof Drawable) {
-      final Rect bounds = renderTreeNode.getBounds();
+      final Rect bounds = new Rect();
+      renderTreeNode.getMountBounds(bounds); // Gets the relative bounds of the Render Tree Node.
       final Rect padding = renderTreeNode.getResolvedPadding();
       int left = bounds.left;
       int top = bounds.top;
@@ -530,7 +531,8 @@ public class MountState implements MountDelegateTarget {
    * is supplied).
    */
   private static void applyBoundsToView(View view, RenderTreeNode renderTreeNode, boolean force) {
-    final Rect bounds = renderTreeNode.getBounds();
+    final Rect bounds = new Rect();
+    renderTreeNode.getMountBounds(bounds);  // Gets the relative bounds of the Render Tree Node.
     final int width = bounds.right - bounds.left;
     final int height = bounds.bottom - bounds.top;
 
