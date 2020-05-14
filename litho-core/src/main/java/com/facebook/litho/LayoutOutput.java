@@ -243,6 +243,8 @@ class LayoutOutput implements Cloneable, AnimatableItem {
         parent != null ? new LithoRenderUnit(output) : Reducer.sRootHostRenderUnit,
         output,
         output.getBounds(),
+        output.mHostTranslationX,
+        output.mHostTranslationY,
         output.getViewNodeInfo() != null ? output.getViewNodeInfo().getPadding() : null,
         parent != null ? parent.getChildrenCount() : 0);
   }

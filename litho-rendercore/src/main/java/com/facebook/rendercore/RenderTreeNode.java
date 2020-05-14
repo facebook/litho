@@ -29,6 +29,8 @@ public class RenderTreeNode {
   private final RenderUnit mRenderUnit;
   private final @Nullable Object mLayoutData;
   private final Rect mBounds;
+  private final int mHostTranslationX;
+  private final int mHostTranslationY;
   private final @Nullable Rect mResolvedPadding;
 
   final int mPositionInParent;
@@ -40,12 +42,16 @@ public class RenderTreeNode {
       RenderUnit renderUnit,
       @Nullable Object layoutData,
       Rect bounds,
+      int hostTranslationX,
+      int hostTranslationY,
       @Nullable Rect resolvedPadding,
       int positionInParent) {
     mParent = parent;
     mRenderUnit = renderUnit;
     mLayoutData = layoutData;
     mBounds = bounds;
+    mHostTranslationX = hostTranslationX;
+    mHostTranslationY = hostTranslationY;
     mResolvedPadding = resolvedPadding;
     mPositionInParent = positionInParent;
   }
@@ -60,6 +66,28 @@ public class RenderTreeNode {
 
   public Rect getBounds() {
     return mBounds;
+  }
+
+  public int getHostTranslationX() {
+    return mHostTranslationX;
+  }
+
+  public int getHostTranslationY() {
+    return mHostTranslationY;
+  }
+
+  /**
+   * Sets the relative bounds of this render tree node in {@param outRect}; i.e. returns the bounds
+   * of this render tree node within its host view. This method should be used during mounting
+   * because {@link #mBounds} can be the absolute bounds.
+   *
+   * @param outRect the calculated relative bounds.
+   */
+  public void getMountBounds(Rect outRect) {
+    outRect.left = mBounds.left - mHostTranslationX;
+    outRect.top = mBounds.top - mHostTranslationY;
+    outRect.right = mBounds.right - mHostTranslationX;
+    outRect.bottom = mBounds.bottom - mHostTranslationY;
   }
 
   @Nullable
