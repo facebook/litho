@@ -381,12 +381,7 @@ class MountState
             final TransitionId transitionId = getLayoutOutput(currentMountItem).getTransitionId();
             final boolean itemUpdated =
                 updateMountItemIfNeeded(
-                    node,
-                    layoutState,
-                    currentMountItem,
-                    useUpdateValueFromLayoutOutput,
-                    componentTreeId,
-                    i);
+                    node, currentMountItem, useUpdateValueFromLayoutOutput, componentTreeId, i);
 
             if (itemUpdated) {
               // This mount content might be animating and we may be remounting it as a different
@@ -608,7 +603,6 @@ class MountState
         final boolean itemUpdated =
             updateMountItemIfNeeded(
                 renderTreeNode,
-                layoutState,
                 currentMountItem,
                 useUpdateValueFromLayoutOutput,
                 componentTreeId,
@@ -1279,7 +1273,6 @@ class MountState
 
   private boolean updateMountItemIfNeeded(
       RenderTreeNode node,
-      LayoutState layoutState,
       MountItem currentMountItem,
       boolean useUpdateValueFromLayoutOutput,
       int componentTreeId,
@@ -1353,7 +1346,7 @@ class MountState
     // 7. Update the bounds of the mounted content. This needs to be done regardless of whether
     // the component has been updated or not since the mounted item might might have the same
     // size and content but a different position.
-    updateBoundsForMountedLayoutOutput(layoutOutput, layoutState, currentMountItem);
+    updateBoundsForMountedLayoutOutput(layoutOutput, currentMountItem);
 
     maybeInvalidateAccessibilityState(currentMountItem);
     if (currentMountItem.getContent() instanceof Drawable) {
@@ -1442,7 +1435,7 @@ class MountState
   }
 
   private static void updateBoundsForMountedLayoutOutput(
-      LayoutOutput layoutOutput, LayoutState layoutState, MountItem item) {
+      LayoutOutput layoutOutput, MountItem item) {
     // MountState should never update the bounds of the top-level host as this
     // should be done by the ViewGroup containing the LithoView.
     if (layoutOutput.getId() == ROOT_HOST_ID) {
