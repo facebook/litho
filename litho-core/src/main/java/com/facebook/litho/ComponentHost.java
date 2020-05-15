@@ -161,7 +161,7 @@ public class ComponentHost extends Host {
     ensureMountItems();
     mMountItems.put(index, mountItem);
 
-    maybeInvalidateAccessibilityState(mountItem);
+    maybeInvalidateAccessibilityState(getLayoutOutput(mountItem), this);
   }
 
   private void ensureMountItems() {
@@ -222,7 +222,7 @@ public class ComponentHost extends Host {
     ensureMountItems();
     ComponentHostUtils.removeItem(index, mMountItems, mScrapMountItemsArray);
     releaseScrapDataStructuresIfNeeded();
-    maybeInvalidateAccessibilityState(mountItem);
+    maybeInvalidateAccessibilityState(getLayoutOutput(mountItem), this);
   }
 
   void startUnmountDisappearingItem(int index, MountItem mountItem) {
@@ -260,7 +260,7 @@ public class ComponentHost extends Host {
       unmountView((View) content);
     }
 
-    maybeInvalidateAccessibilityState(disappearingItem);
+    maybeInvalidateAccessibilityState(getLayoutOutput(disappearingItem), this);
   }
 
   boolean hasDisappearingItems() {

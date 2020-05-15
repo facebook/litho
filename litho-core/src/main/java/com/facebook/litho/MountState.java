@@ -1348,7 +1348,7 @@ class MountState
     // size and content but a different position.
     updateBoundsForMountedLayoutOutput(nextLayoutOutput, currentMountItem);
 
-    maybeInvalidateAccessibilityState(currentMountItem);
+    maybeInvalidateAccessibilityState(currentLayoutOutput, currentMountItem.getHost());
     if (currentMountItem.getContent() instanceof Drawable) {
       final LayoutOutput output = getLayoutOutput(currentMountItem);
       maybeSetDrawableState(
