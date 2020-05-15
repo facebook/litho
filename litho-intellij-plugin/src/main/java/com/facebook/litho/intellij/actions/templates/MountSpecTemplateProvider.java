@@ -16,14 +16,17 @@
 
 package com.facebook.litho.intellij.actions.templates;
 
-public class EventTemplateAction extends NewTemplateAction {
+import com.facebook.litho.intellij.extensions.TemplateProvider;
+
+public class MountSpecTemplateProvider implements TemplateProvider {
+
   @Override
-  String getTemplateName() {
-    return "Event";
+  public String getTemplateName() {
+    return "MountSpec";
   }
 
   @Override
-  String getSuffix() {
-    return "Event";
+  public String getClassNameSuffix() {
+    return "Spec";
   }
 }

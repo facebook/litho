@@ -16,14 +16,14 @@
 
 package com.facebook.litho.intellij.actions.templates;
 
-public class LayoutSpecTemplateAction extends NewTemplateAction {
-  @Override
-  String getTemplateName() {
-    return "LayoutSpec";
-  }
+import com.intellij.openapi.actionSystem.ActionGroup;
+import com.intellij.openapi.actionSystem.AnAction;
+import com.intellij.openapi.actionSystem.AnActionEvent;
+import org.jetbrains.annotations.Nullable;
 
+public class LithoTemplateActionGroup extends ActionGroup {
   @Override
-  String getSuffix() {
-    return "Spec";
+  public AnAction[] getChildren(@Nullable AnActionEvent e) {
+    return LithoTemplateAction.getTemplateActions();
   }
 }

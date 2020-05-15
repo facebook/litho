@@ -16,14 +16,17 @@
 
 package com.facebook.litho.intellij.actions.templates;
 
-public class MountSpecTemplateAction extends NewTemplateAction {
+import com.facebook.litho.intellij.extensions.TemplateProvider;
+
+public class GroupSectionSpecTemplateProvider implements TemplateProvider {
+
   @Override
-  String getTemplateName() {
-    return "MountSpec";
+  public String getTemplateName() {
+    return "GroupSectionSpec";
   }
 
   @Override
-  String getSuffix() {
-    return "Spec";
+  public String getClassNameSuffix() {
+    return "SectionSpec";
   }
 }

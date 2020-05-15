@@ -28,9 +28,9 @@ import java.io.IOException;
 import java.util.Collections;
 import org.junit.Test;
 
-public class NewTemplateActionTest extends LithoPluginIntellijTest {
+public class LithoTemplateActionTest extends LithoPluginIntellijTest {
 
-  public NewTemplateActionTest() {
+  public LithoTemplateActionTest() {
     super("testdata/actions");
   }
 
@@ -57,11 +57,10 @@ public class NewTemplateActionTest extends LithoPluginIntellijTest {
         .invokeAndWait(
             () -> {
               final TestTemplateAction templateAction = new TestTemplateAction();
+              final String nameWithProvidedSuffix = "AnySectionSpec";
               final PsiFile created =
                   templateAction.createFile(
-                      "AnySectionSpec",
-                      templateAction.getTemplateName(),
-                      specCls.getContainingDirectory());
+                      nameWithProvidedSuffix, "GroupSectionSpec", specCls.getContainingDirectory());
               assertThat(created.getName()).isEqualTo("AnySectionSpec.java");
             });
   }
@@ -73,23 +72,17 @@ public class NewTemplateActionTest extends LithoPluginIntellijTest {
         .invokeAndWait(
             () -> {
               final TestTemplateAction templateAction = new TestTemplateAction();
+              final String nameWithoutSuffix = "Any";
               final PsiFile created =
                   templateAction.createFile(
-                      "Any", templateAction.getTemplateName(), specCls.getContainingDirectory());
+                      nameWithoutSuffix, "GroupSectionSpec", specCls.getContainingDirectory());
               assertThat(created.getName()).isEqualTo("AnySectionSpec.java");
             });
   }
 
-  static class TestTemplateAction extends NewTemplateAction {
-
-    @Override
-    protected String getTemplateName() {
-      return "GroupSectionSpec";
-    }
-
-    @Override
-    String getSuffix() {
-      return "SectionSpec";
+  static class TestTemplateAction extends LithoTemplateAction {
+    TestTemplateAction() {
+      super("GroupSectionSpec", "SectionSpec");
     }
   }
 }

@@ -19,22 +19,39 @@ package com.facebook.litho.intellij.actions.templates;
 import com.facebook.litho.intellij.LithoPluginUtils;
 import com.facebook.litho.intellij.completion.ComponentGenerateUtils;
 import com.facebook.litho.intellij.extensions.EventLogger;
+import com.facebook.litho.intellij.extensions.TemplateProvider;
 import com.facebook.litho.intellij.logging.LithoLoggerProvider;
 import com.intellij.icons.AllIcons;
 import com.intellij.ide.actions.CreateFileFromTemplateAction;
 import com.intellij.ide.actions.CreateFileFromTemplateDialog;
+import com.intellij.openapi.actionSystem.AnAction;
+import com.intellij.openapi.extensions.ExtensionPointName;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiFile;
+import java.util.Arrays;
 import java.util.Map;
 import javax.swing.Icon;
 
-public abstract class NewTemplateAction extends CreateFileFromTemplateAction {
-  private static final String TITLE = "New Litho Component";
+public class LithoTemplateAction extends CreateFileFromTemplateAction {
+  private static final ExtensionPointName<TemplateProvider> EP_NAME =
+      ExtensionPointName.create("com.facebook.litho.intellij.templateProvider");
   private static final Icon ICON = AllIcons.Nodes.AbstractClass;
+  private final String templateName;
+  private final String classNameSuffix;
 
-  NewTemplateAction() {
-    super(TITLE, TITLE, ICON);
+  static AnAction[] getTemplateActions() {
+    return Arrays.stream(EP_NAME.getExtensions())
+        .map(
+            provider ->
+                new LithoTemplateAction(provider.getTemplateName(), provider.getClassNameSuffix()))
+        .toArray(AnAction[]::new);
+  }
+
+  LithoTemplateAction(String templateName, String classNameSuffix) {
+    super(templateName, templateName, ICON);
+    this.templateName = templateName;
+    this.classNameSuffix = classNameSuffix;
   }
 
   @Override
@@ -45,21 +62,14 @@ public abstract class NewTemplateAction extends CreateFileFromTemplateAction {
   @Override
   protected void buildDialog(
       Project project, PsiDirectory directory, CreateFileFromTemplateDialog.Builder builder) {
-    builder
-        .setTitle("New " + getTemplateName())
-        .addKind(getTemplateName(), ICON, getTemplateName());
+    builder.setTitle("New " + templateName).addKind(templateName, ICON, templateName);
   }
-
-  abstract String getTemplateName();
-
-  abstract String getSuffix();
 
   @Override
   protected PsiFile createFile(String name, String templateName, PsiDirectory dir) {
     // Template adds Spec suffix, avoiding SpecSpec
-    final String suffix = getSuffix();
-    if (!suffix.isEmpty() && name.endsWith(suffix)) {
-      name = name.substring(0, name.length() - suffix.length());
+    if (!classNameSuffix.isEmpty() && name.endsWith(classNameSuffix)) {
+      name = name.substring(0, name.length() - classNameSuffix.length());
     } else if (LithoPluginUtils.isSpecName(name)) {
       name = LithoPluginUtils.getLithoComponentNameFromSpec(name);
     }

@@ -16,14 +16,17 @@
 
 package com.facebook.litho.intellij.actions.templates;
 
-public class GroupSectionSpecTemplateAction extends NewTemplateAction {
+import com.facebook.litho.intellij.extensions.TemplateProvider;
+
+public class LayoutSpecTemplateProvider implements TemplateProvider {
+
   @Override
-  String getTemplateName() {
-    return "GroupSectionSpec";
+  public String getTemplateName() {
+    return "LayoutSpec";
   }
 
   @Override
-  String getSuffix() {
-    return "SectionSpec";
+  public String getClassNameSuffix() {
+    return "Spec";
   }
 }

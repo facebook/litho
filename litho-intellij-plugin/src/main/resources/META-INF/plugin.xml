@@ -55,10 +55,19 @@
 
   <extensionPoints>
     <extensionPoint name="eventLogger"
-        interface="com.facebook.litho.intellij.extensions.EventLogger"/>
+      interface="com.facebook.litho.intellij.extensions.EventLogger" />
+    <extensionPoint name="templateProvider"
+      interface="com.facebook.litho.intellij.extensions.TemplateProvider" />
   </extensionPoints>
 
   <depends>com.intellij.modules.java</depends>
+
+  <extensions defaultExtensionNs="com.facebook.litho.intellij">
+    <templateProvider implementation="com.facebook.litho.intellij.actions.templates.LayoutSpecTemplateProvider"/>
+    <templateProvider implementation="com.facebook.litho.intellij.actions.templates.MountSpecTemplateProvider"/>
+    <templateProvider implementation="com.facebook.litho.intellij.actions.templates.GroupSectionSpecTemplateProvider"/>
+    <templateProvider implementation="com.facebook.litho.intellij.actions.templates.EventTemplateProvider"/>
+  </extensions>
 
   <extensions defaultExtensionNs="com.intellij">
     <annotator language="JAVA" implementationClass="com.facebook.litho.intellij.inspections.LayoutSpecAnnotator"/>
@@ -129,16 +138,9 @@
           class="com.facebook.litho.intellij.actions.OnEventGenerateAction"
           text="Litho @OnEvent..."/>
     </group>
-    <group description="Create new Litho class" icon="LithoPluginIcons.BASE_ACTION" id="litho.NewGroup"
+    <group class="com.facebook.litho.intellij.actions.templates.LithoTemplateActionGroup"
+      description="Create new Litho class" icon="LithoPluginIcons.BASE_ACTION" id="litho.NewGroup"
       popup="true" text="Litho Component">
-      <action class="com.facebook.litho.intellij.actions.templates.LayoutSpecTemplateAction"
-        id="LayoutSpecTemplate" text="LayoutSpec" />
-      <action class="com.facebook.litho.intellij.actions.templates.GroupSectionSpecTemplateAction"
-        id="GroupSectionSpecTemplate" text="GroupSectionSpec" />
-      <action class="com.facebook.litho.intellij.actions.templates.MountSpecTemplateAction"
-        id="MountSpecTemplate" text="MountSpec" />
-      <action class="com.facebook.litho.intellij.actions.templates.EventTemplateAction"
-        id="EventTemplate" text="Event" />
       <add-to-group anchor="after" group-id="NewGroup" relative-to-action="NewGroup1" />
     </group>
   </actions>
