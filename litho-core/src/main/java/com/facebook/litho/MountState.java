@@ -1292,7 +1292,7 @@ class MountState
             nextLayoutOutput, currentLayoutOutput, currentContent, useUpdateValueFromLayoutOutput);
 
     final boolean shouldUpdateViewInfo =
-        shouldUpdate || shouldUpdateViewInfo(nextLayoutOutput, currentMountItem);
+        shouldUpdate || shouldUpdateViewInfo(nextLayoutOutput, currentLayoutOutput);
 
     // 2. Reset all the properties like click handler, content description and tags related to
     // this item if it needs to be updated. the update mount item will re-set the new ones.
@@ -1362,10 +1362,9 @@ class MountState
   }
 
   private static boolean shouldUpdateViewInfo(
-      LayoutOutput layoutOutput, MountItem currentMountItem) {
+      final LayoutOutput nextLayoutOutput, final LayoutOutput currentLayoutOutput) {
 
-    final ViewNodeInfo nextViewNodeInfo = layoutOutput.getViewNodeInfo();
-    final LayoutOutput currentLayoutOutput = getLayoutOutput(currentMountItem);
+    final ViewNodeInfo nextViewNodeInfo = nextLayoutOutput.getViewNodeInfo();
     final ViewNodeInfo currentViewNodeInfo = currentLayoutOutput.getViewNodeInfo();
     if ((currentViewNodeInfo == null && nextViewNodeInfo != null)
         || (currentViewNodeInfo != null && !currentViewNodeInfo.isEquivalentTo(nextViewNodeInfo))) {
@@ -1373,7 +1372,7 @@ class MountState
       return true;
     }
 
-    final NodeInfo nextNodeInfo = layoutOutput.getNodeInfo();
+    final NodeInfo nextNodeInfo = nextLayoutOutput.getNodeInfo();
     final NodeInfo currentNodeInfo = currentLayoutOutput.getNodeInfo();
     return (currentNodeInfo == null && nextNodeInfo != null)
         || (currentNodeInfo != null && !currentNodeInfo.isEquivalentTo(nextNodeInfo));
