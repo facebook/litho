@@ -21,16 +21,15 @@ import static com.facebook.litho.ComponentTree.create;
 import static com.facebook.litho.SizeSpec.AT_MOST;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
-import static com.facebook.litho.config.ComponentsConfiguration.DEFAULT_BACKGROUND_THREAD_PRIORITY;
 import static com.facebook.litho.testing.Whitebox.getInternalState;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.fail;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.junit.Assert.assertNotEquals;
 
 import android.graphics.drawable.ColorDrawable;
-import android.os.HandlerThread;
 import android.os.Looper;
 import com.facebook.litho.testing.BackgroundLayoutLooperRule;
 import com.facebook.litho.testing.LithoStatsRule;
@@ -115,11 +114,12 @@ public class ComponentTreeTest {
     Assert.assertSame(mComponent, Whitebox.getInternalState(componentTree, "mRoot"));
   }
 
-  private void postSizeSpecChecks(ComponentTree componentTree) {
-    postSizeSpecChecks(componentTree, mWidthSpec, mHeightSpec);
+  private void postSizeSpecChecks(ComponentTree componentTree, String layoutStateVariableName) {
+    postSizeSpecChecks(componentTree, layoutStateVariableName, mWidthSpec, mHeightSpec);
   }
 
-  private void postSizeSpecChecks(ComponentTree componentTree, int widthSpec, int heightSpec) {
+  private void postSizeSpecChecks(
+      ComponentTree componentTree, String layoutStateVariableName, int widthSpec, int heightSpec) {
     // Spec specified in create
 
     assertThat(componentTreeHasSizeSpec(componentTree)).isTrue();
@@ -127,13 +127,24 @@ public class ComponentTreeTest {
 
     assertThat((int) getInternalState(componentTree, "mHeightSpec")).isEqualTo(heightSpec);
 
-    LayoutState mainThreadLayoutState = componentTree.getMainThreadLayoutState();
-    LayoutState committedLayoutState = componentTree.getCommittedLayoutState();
+    LayoutState mainThreadLayoutState = getInternalState(componentTree, "mMainThreadLayoutState");
 
-    assertThat(mainThreadLayoutState).isEqualTo(committedLayoutState);
-    assertThat(
-            mainThreadLayoutState.isCompatibleComponentAndSpec(
-                mComponent.getId(), widthSpec, heightSpec))
+    LayoutState backgroundLayoutState = getInternalState(componentTree, "mBackgroundLayoutState");
+
+    LayoutState layoutState = null;
+    LayoutState nullLayoutState = null;
+    if ("mMainThreadLayoutState".equals(layoutStateVariableName)) {
+      layoutState = mainThreadLayoutState;
+      nullLayoutState = backgroundLayoutState;
+    } else if ("mBackgroundLayoutState".equals(layoutStateVariableName)) {
+      layoutState = backgroundLayoutState;
+      nullLayoutState = mainThreadLayoutState;
+    } else {
+      fail("Incorrect variable name: " + layoutStateVariableName);
+    }
+
+    Assert.assertNull(nullLayoutState);
+    assertThat(layoutState.isCompatibleComponentAndSpec(mComponent.getId(), widthSpec, heightSpec))
         .isTrue();
   }
 
@@ -144,8 +155,8 @@ public class ComponentTreeTest {
     creationCommonChecks(componentTree);
 
     // Both the main thread and the background layout state shouldn't be calculated yet.
-    Assert.assertNull(componentTree.getMainThreadLayoutState());
-    Assert.assertNull(componentTree.getCommittedLayoutState());
+    Assert.assertNull(Whitebox.getInternalState(componentTree, "mMainThreadLayoutState"));
+    Assert.assertNull(Whitebox.getInternalState(componentTree, "mBackgroundLayoutState"));
 
     Assert.assertFalse(componentTreeHasSizeSpec(componentTree));
   }
@@ -165,7 +176,7 @@ public class ComponentTreeTest {
     ComponentTree componentTree = ComponentTree.create(mContext, mComponent).build();
     componentTree.setSizeSpec(mWidthSpec, mHeightSpec);
 
-    postSizeSpecChecks(componentTree);
+    postSizeSpecChecks(componentTree, "mMainThreadLayoutState");
   }
 
   @Test
@@ -179,12 +190,12 @@ public class ComponentTreeTest {
     assertThat((int) getInternalState(componentTree, "mWidthSpec")).isEqualTo(mWidthSpec);
     assertThat((int) getInternalState(componentTree, "mHeightSpec")).isEqualTo(mHeightSpec);
     Assert.assertNull(getInternalState(componentTree, "mMainThreadLayoutState"));
-    Assert.assertNull(getInternalState(componentTree, "mCommittedLayoutState"));
+    Assert.assertNull(getInternalState(componentTree, "mBackgroundLayoutState"));
 
     // Now the background thread run the queued task.
     mLayoutThreadShadowLooper.runOneTask();
 
-    postSizeSpecChecks(componentTree);
+    postSizeSpecChecks(componentTree, "mMainThreadLayoutState");
   }
 
   @Test
@@ -300,7 +311,7 @@ public class ComponentTreeTest {
 
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
-    postSizeSpecChecks(componentTree, mWidthSpec2, mHeightSpec2);
+    postSizeSpecChecks(componentTree, "mMainThreadLayoutState", mWidthSpec2, mHeightSpec2);
   }
 
   @Test
@@ -339,7 +350,7 @@ public class ComponentTreeTest {
 
     componentTree.setSizeSpec(mWidthSpec2, mHeightSpec2);
 
-    postSizeSpecChecks(componentTree, mWidthSpec2, mHeightSpec2);
+    postSizeSpecChecks(componentTree, "mMainThreadLayoutState", mWidthSpec2, mHeightSpec2);
   }
 
   @Test
@@ -353,7 +364,7 @@ public class ComponentTreeTest {
     assertEquals(SizeSpec.getSize(mWidthSpec), size.width, 0.0);
     assertEquals(SizeSpec.getSize(mHeightSpec), size.height, 0.0);
 
-    postSizeSpecChecks(componentTree);
+    postSizeSpecChecks(componentTree, "mMainThreadLayoutState");
   }
 
   @Test
@@ -591,11 +602,11 @@ public class ComponentTreeTest {
 
     creationCommonChecks(componentTree);
     Assert.assertNull(Whitebox.getInternalState(componentTree, "mMainThreadLayoutState"));
-    Assert.assertNull(Whitebox.getInternalState(componentTree, "mCommittedLayoutState"));
+    Assert.assertNull(Whitebox.getInternalState(componentTree, "mBackgroundLayoutState"));
 
     componentTree.setSizeSpec(mWidthSpec, mHeightSpec);
 
-    postSizeSpecChecks(componentTree);
+    postSizeSpecChecks(componentTree, "mMainThreadLayoutState");
   }
 
   @Test
@@ -1042,18 +1053,10 @@ public class ComponentTreeTest {
 
     assertThat(componentTree.getRoot()).isEqualTo(newComponent);
     assertThat(componentTree.hasCompatibleLayout(widthSpec2, heightSpec2)).isTrue();
-    assertThat(componentTree.getMainThreadLayoutState().isForComponentId(oldComponent.getId()))
+    assertThat(componentTree.getMainThreadLayoutState().isForComponentId(newComponent.getId()))
         .isTrue()
         .withFailMessage(
-            "We can use the main thread layout until the background layout completes.");
-
-    mBackgroundLayoutLooperRule.runToEndOfTasksSync();
-    ShadowLooper.runUiThreadTasks();
-
-    assertThat(componentTree.getRoot()).isEqualTo(newComponent);
-    assertThat(componentTree.hasCompatibleLayout(widthSpec2, heightSpec2)).isTrue();
-    assertThat(componentTree.getMainThreadLayoutState().isForComponentId(newComponent.getId()))
-        .isTrue();
+            "The main thread will calculate a new layout synchronously because the background layout isn't compatible.");
     assertThat(componentTree.getMainThreadLayoutState().getHeight()).isEqualTo(500);
 
     assertThat(mLithoStatsRule.getComponentCalculateLayoutCount())
@@ -1188,17 +1191,9 @@ public class ComponentTreeTest {
     blockInPrepare.awaitPrepareStart();
 
     // At this point, the Layout thread is blocked in prepare (waiting for unblockAsyncPrepare) and
-    // will have already captured the "bad" specs, but not completed its layout.
-
-    // This is a bit of a hack: Robolectric's ShadowLegacyLooper implementation is synchronized
-    // on runToEndOfTasks and post(). Since we are simulating being in the middle of calculating a
-    // layout, this means that we can't post() to the same Handler (as we will try to do in measure)
-    // The "fix" here is to update the layout thread to a new handler/looper that can be controlled
-    // separately.
-    HandlerThread newHandlerThread = createAndStartNewHandlerThread();
-    componentTree.updateLayoutThreadHandler(
-        new LithoHandler.DefaultLithoHandler(newHandlerThread.getLooper()));
-    ShadowLooper newThreadLooper = Shadows.shadowOf(newHandlerThread.getLooper());
+    // will have already captured the "bad" specs, but not completed its layout. We expect the main
+    // thread to determine that this async layout will not be correct and that it needs to compute
+    // one in measure
 
     assertThat(componentTree.hasCompatibleLayout(widthSpec2, heightSpec2))
         .describedAs("Asserting test setup, second set of specs should be compatible already.")
@@ -1207,9 +1202,10 @@ public class ComponentTreeTest {
 
     assertThat(componentTree.getRoot()).isEqualTo(newComponent);
     assertThat(componentTree.hasCompatibleLayout(widthSpec2, heightSpec2)).isTrue();
-    assertThat(componentTree.getMainThreadLayoutState().isForComponentId(oldComponent.getId()))
+    assertThat(componentTree.getMainThreadLayoutState().isForComponentId(newComponent.getId()))
         .isTrue()
-        .withFailMessage("The main thread can re-use the existing layout on the main thread.");
+        .withFailMessage(
+            "The main thread should calculate a new layout synchronously because the async layout will not have compatible size specs");
     assertThat(componentTree.getMainThreadLayoutState().getHeight()).isEqualTo(100);
 
     // Finally, let the async layout finish and make sure it doesn't replace the layout from measure
@@ -1219,9 +1215,6 @@ public class ComponentTreeTest {
       throw new RuntimeException("Timeout!");
     }
 
-    newComponent.setTestComponentListener(null);
-    newThreadLooper.runToEndOfTasks();
-    mLayoutThreadShadowLooper.runToEndOfTasks();
     ShadowLooper.runUiThreadTasks();
 
     assertThat(componentTree.getRoot()).isEqualTo(newComponent);
@@ -1232,10 +1225,8 @@ public class ComponentTreeTest {
 
     assertThat(mLithoStatsRule.getComponentCalculateLayoutCount())
         .describedAs(
-            "We expect one initial layout and the async layout. The setSizeSpecAsync in measure should be compatible with the already committed layout state.")
-        .isEqualTo(2);
-
-    newHandlerThread.quit();
+            "We expect one initial layout, the async layout (thrown away), and a final layout after measure.")
+        .isEqualTo(3);
   }
 
   /*
@@ -1285,17 +1276,9 @@ public class ComponentTreeTest {
     blockInPrepare.awaitPrepareStart();
 
     // At this point, the Layout thread is blocked in prepare (waiting for unblockAsyncPrepare) and
-    // will have already captured the "bad" specs, but not completed its layout.
-
-    // This is a bit of a hack: Robolectric's ShadowLegacyLooper implementation is synchronized
-    // on runToEndOfTasks and post(). Since we are simulating being in the middle of calculating a
-    // layout, this means that we can't post() to the same Handler (as we will try to do in measure)
-    // The "fix" here is to update the layout thread to a new handler/looper that can be controlled
-    // separately.
-    HandlerThread newHandlerThread = createAndStartNewHandlerThread();
-    componentTree.updateLayoutThreadHandler(
-        new LithoHandler.DefaultLithoHandler(newHandlerThread.getLooper()));
-    ShadowLooper newThreadLooper = Shadows.shadowOf(newHandlerThread.getLooper());
+    // will have already captured the "bad" specs, but not completed its layout. We expect the main
+    // thread to determine that this async layout will not be correct and that it needs to compute
+    // one in measure
 
     assertThat(componentTree.hasCompatibleLayout(widthSpec2, heightSpec2))
         .describedAs("Asserting test setup, second set of specs should be compatible already.")
@@ -1304,10 +1287,11 @@ public class ComponentTreeTest {
 
     assertThat(componentTree.getRoot()).isEqualTo(newComponent);
     assertThat(componentTree.hasCompatibleLayout(widthSpec2, heightSpec2)).isTrue();
-    assertThat(componentTree.getMainThreadLayoutState().isForComponentId(oldComponent.getId()))
+    assertThat(componentTree.getMainThreadLayoutState().isForComponentId(newComponent.getId()))
         .isTrue()
-        .withFailMessage("The old component is compatible so we can use it.");
-    assertThat(componentTree.getMainThreadLayoutState().getHeight()).isEqualTo(100);
+        .withFailMessage(
+            "The main thread should calculate a new layout synchronously because the async layout will not have compatible size specs");
+    assertThat(componentTree.getMainThreadLayoutState().getHeight()).isEqualTo(500);
 
     // Finally, let the async layout finish and make sure it doesn't replace the layout from measure
 
@@ -1316,9 +1300,6 @@ public class ComponentTreeTest {
       throw new RuntimeException("Timeout!");
     }
 
-    newComponent.setTestComponentListener(null);
-    newThreadLooper.runToEndOfTasks();
-    mLayoutThreadShadowLooper.runToEndOfTasks();
     ShadowLooper.runUiThreadTasks();
 
     assertThat(componentTree.getRoot()).isEqualTo(newComponent);
@@ -1331,8 +1312,6 @@ public class ComponentTreeTest {
         .describedAs(
             "We expect one initial layout, the async layout (thrown away), and a final layout from measure.")
         .isEqualTo(3);
-
-    newHandlerThread.quit();
   }
 
   @Test
@@ -2055,12 +2034,5 @@ public class ComponentTreeTest {
     assertThat(future.getWaitingCount())
         .describedAs("Make sure the second thread is waiting on the first Future")
         .isEqualTo(2);
-  }
-
-  private static HandlerThread createAndStartNewHandlerThread() {
-    final HandlerThread newHandlerThread =
-        new HandlerThread("test_handler_thread", DEFAULT_BACKGROUND_THREAD_PRIORITY);
-    newHandlerThread.start();
-    return newHandlerThread;
   }
 }
