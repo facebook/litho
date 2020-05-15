@@ -1395,7 +1395,8 @@ class MountState
 
     // If the two components have different sizes and the mounted content depends on the size we
     // just return true immediately.
-    if (!sameSize(layoutOutput, currentMountItem) && nextComponent.isMountSizeDependent()) {
+    final Object content = currentMountItem.getContent();
+    if (!sameSize(layoutOutput, content) && nextComponent.isMountSizeDependent()) {
       return true;
     }
 
@@ -1414,9 +1415,8 @@ class MountState
     return currentComponent.shouldComponentUpdate(currentComponent, nextComponent);
   }
 
-  private static boolean sameSize(LayoutOutput layoutOutput, MountItem item) {
+  private static boolean sameSize(final LayoutOutput layoutOutput, final Object mountedContent) {
     final Rect layoutOutputBounds = layoutOutput.getBounds();
-    final Object mountedContent = item.getContent();
 
     return layoutOutputBounds.width() == getWidthForMountedContent(mountedContent)
         && layoutOutputBounds.height() == getHeightForMountedContent(mountedContent);
