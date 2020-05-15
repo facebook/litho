@@ -24,6 +24,8 @@ import javax.annotation.Nullable;
 
 class HostComponent extends Component {
 
+  private static final String SIMPLE_NAME = "HostComponent";
+
   /**
    * We duplicate mComponentDynamicProps here, in order to provide {@link
    * #setCommonDynamicProps(SparseArray)} to HostComponent only, which is used in LayoutState to
@@ -32,7 +34,7 @@ class HostComponent extends Component {
   @Nullable private SparseArray<DynamicValue<?>> mCommonDynamicProps;
 
   protected HostComponent() {
-    super("HostComponent");
+    super(SIMPLE_NAME);
   }
 
   @Override
@@ -46,6 +48,39 @@ class HostComponent extends Component {
   @Override
   protected Object onCreateMountContent(Context c) {
     return new ComponentHost(c);
+  }
+
+  @Override
+  void bind(ComponentContext c, Object mountedContent) {
+    final boolean isTracing = ComponentsSystrace.isTracing();
+    if (isTracing) {
+      ComponentsSystrace.beginSection("onBind:" + SIMPLE_NAME);
+    }
+    try {
+      onBind(c, mountedContent);
+    } finally {
+      if (isTracing) {
+        ComponentsSystrace.endSection();
+      }
+    }
+  }
+
+  @Override
+  void mount(ComponentContext c, Object convertContent) {
+    final boolean isTracing = ComponentsSystrace.isTracing();
+    if (isTracing) {
+      ComponentsSystrace.beginSection("onMount:" + SIMPLE_NAME);
+    }
+    try {
+      onMount(c, convertContent);
+    } catch (Exception e) {
+      c.exitNoStateUpdatesMethod();
+      dispatchErrorEvent(c, e);
+    } finally {
+      if (isTracing) {
+        ComponentsSystrace.endSection();
+      }
+    }
   }
 
   @Override
