@@ -160,6 +160,18 @@ public class MountState implements MountDelegateTarget {
     for (int i = 0; i < rootRenderTreeNode.getChildrenCount(); i++) {
       unmountItemRecursively(rootRenderTreeNode.getChildAt(i));
     }
+
+    // Let's unbind and unmount the root host.
+    MountItem item = mIndexToMountedItemMap.get(ROOT_HOST_ID);
+    if (item != null) {
+      if (item.isBound()) {
+        unbindRenderUnitFromContent(mContext, item);
+      }
+      mIndexToMountedItemMap.remove(ROOT_HOST_ID);
+      unmountRenderUnitFromContent(
+          mContext, rootRenderTreeNode, rootRenderTreeNode.getRenderUnit(), item.getContent());
+    }
+
     mNeedsRemount = true;
   }
 
@@ -254,7 +266,6 @@ public class MountState implements MountDelegateTarget {
       }
 
       unbindRenderUnitFromContent(mContext, mountItem);
-      mountItem.setIsBound(false);
     }
   }
 
@@ -277,10 +288,29 @@ public class MountState implements MountDelegateTarget {
   private void prepareMount() {
     unmountOrMoveOldItems();
 
-    if (mIndexToMountedItemMap.get(ROOT_HOST_ID) == null) {
-      // Root host is implicitly marked as mounted.
-      mIndexToMountedItemMap.put(
-          ROOT_HOST_ID, new MountItem(mRenderTree.getRenderTreeNodeAtIndex(0), null, mRootHost));
+    final MountItem rootItem = mIndexToMountedItemMap.get(ROOT_HOST_ID);
+    final RenderTreeNode rootNode = mRenderTree.getRenderTreeNodeAtIndex(0);
+    final RenderUnit rootRenderUnit = rootNode.getRenderUnit();
+
+    // If root mount item is null then mounting root node for the first time.
+    if (rootItem == null) {
+
+      // Run mount callbacks.
+      mountRenderUnitToContent(mContext, rootNode, rootRenderUnit, mRootHost);
+
+      // Create root mount item.
+      final MountItem item = new MountItem(rootNode, null, mRootHost);
+
+      // Adds root mount item to map.
+      mIndexToMountedItemMap.put(ROOT_HOST_ID, item);
+
+      // Run binder callbacks
+      bindRenderUnitToContent(mContext, item);
+
+    } else {
+
+      // If root mount item is present then update it.
+      updateMountItemIfNeeded(mContext, rootNode, rootItem);
     }
 
     final int outputCount = mRenderTree.getMountableOutputCount();
@@ -378,14 +408,9 @@ public class MountState implements MountDelegateTarget {
 
     // 2. call the RenderUnit's Mount bindings.
     final RenderUnit renderUnit = renderTreeNode.getRenderUnit();
-
     final Object content = MountItemsPool.acquireMountContent(mContext, renderUnit);
-    final List<RenderUnit.Binder> mountUnmountFunctions = renderUnit.mountUnmountFunctions();
-    if (mountUnmountFunctions != null) {
-      for (RenderUnit.Binder binder : mountUnmountFunctions) {
-        binder.bind(mContext, content, renderUnit, renderTreeNode.getLayoutData());
-      }
-    }
+
+    mountRenderUnitToContent(mContext, renderTreeNode, renderUnit, content);
 
     // 3. Mount the content into the selected host.
     final MountItem item = mountContentInHost(index, content, host, renderTreeNode);
@@ -400,7 +425,8 @@ public class MountState implements MountDelegateTarget {
 
   private void unmountItemRecursively(RenderTreeNode node) {
 
-    final MountItem item = mIndexToMountedItemMap.get(node.getRenderUnit().getId());
+    final RenderUnit unit = node.getRenderUnit();
+    final MountItem item = mIndexToMountedItemMap.get(unit.getId());
     // Already has been unmounted.
     if (item == null) {
       return;
@@ -410,10 +436,10 @@ public class MountState implements MountDelegateTarget {
 
     // The root host item should never be unmounted as it's a reference
     // to the top-level LithoView.
-    if (item.getRenderUnit().getId() == ROOT_HOST_ID) {
+    if (unit.getId() == ROOT_HOST_ID) {
       return;
     }
-    mIndexToMountedItemMap.remove(item.getRenderUnit().getId());
+    mIndexToMountedItemMap.remove(unit.getId());
 
     // Recursively unmount mounted children items.
     // This is the case when mountDiffing is enabled and unmountOrMoveOldItems() has a matching
@@ -436,7 +462,7 @@ public class MountState implements MountDelegateTarget {
     }
 
     final Host host = item.getHost();
-    host.unmount(item.getRenderTreeNode().getPositionInParent(), item);
+    host.unmount(node.getPositionInParent(), item);
 
     if (content instanceof View) {
       ((View) content).setPadding(0, 0, 0, 0);
@@ -446,16 +472,7 @@ public class MountState implements MountDelegateTarget {
       unbindRenderUnitFromContent(mContext, item);
     }
 
-    final RenderUnit renderUnit = item.getRenderUnit();
-    final List<RenderUnit.Binder> mountUnmountFunctions = renderUnit.mountUnmountFunctions();
-    if (mountUnmountFunctions != null) {
-      int size = mountUnmountFunctions.size();
-      for (int i = size - 1; i >= 0; i--) {
-        RenderUnit.Binder binder = mountUnmountFunctions.get(i);
-        binder.unbind(
-            mContext, item.getContent(), renderUnit, item.getRenderTreeNode().getLayoutData());
-      }
-    }
+    unmountRenderUnitFromContent(mContext, node, unit, content);
 
     item.releaseMountContent(mContext);
   }
@@ -484,21 +501,6 @@ public class MountState implements MountDelegateTarget {
     }
 
     return mIndexToMountedItemMap.get(mRenderUnitIds[i]);
-  }
-
-  private static void unbindRenderUnitFromContent(Context context, MountItem item) {
-    final RenderUnit renderUnit = item.getRenderUnit();
-    final List<RenderUnit.Binder> bindingFunctions = renderUnit.attachDetachFunctions();
-    if (bindingFunctions != null) {
-      int size = bindingFunctions.size();
-      for (int i = size - 1; i >= 0; i--) {
-        RenderUnit.Binder binder = bindingFunctions.get(i);
-        binder.unbind(
-            context, item.getContent(), renderUnit, item.getRenderTreeNode().getLayoutData());
-      }
-    }
-
-    item.setIsBound(false);
   }
 
   private static void applyBoundsToMountContent(
@@ -557,6 +559,34 @@ public class MountState implements MountDelegateTarget {
     }
   }
 
+  private static void mountRenderUnitToContent(
+      final Context context,
+      final RenderTreeNode node,
+      final RenderUnit unit,
+      final Object content) {
+    final List<RenderUnit.Binder> mountUnmountFunctions = unit.mountUnmountFunctions();
+    if (mountUnmountFunctions != null) {
+      for (RenderUnit.Binder binder : mountUnmountFunctions) {
+        binder.bind(context, content, unit, node.getLayoutData());
+      }
+    }
+  }
+
+  private static void unmountRenderUnitFromContent(
+      final Context context,
+      final RenderTreeNode node,
+      final RenderUnit unit,
+      final Object content) {
+    final List<RenderUnit.Binder> mountUnmountFunctions = unit.mountUnmountFunctions();
+    if (mountUnmountFunctions != null) {
+      int size = mountUnmountFunctions.size();
+      for (int i = size - 1; i >= 0; i--) {
+        RenderUnit.Binder binder = mountUnmountFunctions.get(i);
+        binder.unbind(context, content, unit, node.getLayoutData());
+      }
+    }
+  }
+
   private static void bindRenderUnitToContent(Context context, MountItem item) {
     final RenderUnit renderUnit = item.getRenderUnit();
     final List<RenderUnit.Binder> bindingFunctions = renderUnit.attachDetachFunctions();
@@ -567,6 +597,20 @@ public class MountState implements MountDelegateTarget {
       }
     }
     item.setIsBound(true);
+  }
+
+  private static void unbindRenderUnitFromContent(Context context, MountItem item) {
+    final RenderUnit renderUnit = item.getRenderUnit();
+    final List<RenderUnit.Binder> bindingFunctions = renderUnit.attachDetachFunctions();
+    if (bindingFunctions != null) {
+      int size = bindingFunctions.size();
+      for (int i = size - 1; i >= 0; i--) {
+        RenderUnit.Binder binder = bindingFunctions.get(i);
+        binder.unbind(
+            context, item.getContent(), renderUnit, item.getRenderTreeNode().getLayoutData());
+      }
+    }
+    item.setIsBound(false);
   }
 
   private void updateMountItemIfNeeded(
