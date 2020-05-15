@@ -1277,20 +1277,22 @@ class MountState
       boolean useUpdateValueFromLayoutOutput,
       int componentTreeId,
       int index) {
-    final LayoutOutput layoutOutput = getLayoutOutput(node);
-    final Component layoutOutputComponent = layoutOutput.getComponent();
+    final LayoutOutput nextLayoutOutput = getLayoutOutput(node);
+    final Component layoutOutputComponent = nextLayoutOutput.getComponent();
     final LayoutOutput currentLayoutOutput = getLayoutOutput(currentMountItem);
     final Component itemComponent = currentLayoutOutput.getComponent();
+    final Object currentContent = currentMountItem.getContent();
     if (layoutOutputComponent == null) {
       throw new RuntimeException("Trying to update a MountItem with a null Component.");
     }
 
     // 1. Check if the mount item generated from the old component should be updated.
     final boolean shouldUpdate =
-        shouldUpdateMountItem(layoutOutput, currentMountItem, useUpdateValueFromLayoutOutput);
+        shouldUpdateMountItem(
+            nextLayoutOutput, currentLayoutOutput, currentContent, useUpdateValueFromLayoutOutput);
 
     final boolean shouldUpdateViewInfo =
-        shouldUpdate || shouldUpdateViewInfo(layoutOutput, currentMountItem);
+        shouldUpdate || shouldUpdateViewInfo(nextLayoutOutput, currentMountItem);
 
     // 2. Reset all the properties like click handler, content description and tags related to
     // this item if it needs to be updated. the update mount item will re-set the new ones.
@@ -1329,7 +1331,7 @@ class MountState
       final ComponentHost host = (ComponentHost) currentMountItem.getHost();
       host.maybeRegisterTouchExpansion(index, currentMountItem);
 
-      updateMountedContent(currentMountItem, layoutOutput, itemComponent);
+      updateMountedContent(currentMountItem, nextLayoutOutput, itemComponent);
       setViewAttributes(currentMountItem);
     } else if (shouldUpdateViewInfo) {
       final ComponentHost host = (ComponentHost) currentMountItem.getHost();
@@ -1338,15 +1340,13 @@ class MountState
       setViewAttributes(currentMountItem);
     }
 
-    final Object currentContent = currentMountItem.getContent();
-
     // 6. Set the mounted content on the Component and call the bind callback.
     bindComponentToContent(currentMountItem, layoutOutputComponent, currentContent);
 
     // 7. Update the bounds of the mounted content. This needs to be done regardless of whether
     // the component has been updated or not since the mounted item might might have the same
     // size and content but a different position.
-    updateBoundsForMountedLayoutOutput(layoutOutput, currentMountItem);
+    updateBoundsForMountedLayoutOutput(nextLayoutOutput, currentMountItem);
 
     maybeInvalidateAccessibilityState(currentMountItem);
     if (currentMountItem.getContent() instanceof Drawable) {
@@ -1380,23 +1380,22 @@ class MountState
   }
 
   private static boolean shouldUpdateMountItem(
-      LayoutOutput layoutOutput,
-      MountItem currentMountItem,
-      boolean useUpdateValueFromLayoutOutput) {
-    @LayoutOutput.UpdateState final int updateState = layoutOutput.getUpdateState();
-    final LayoutOutput currentLayoutOutput = getLayoutOutput(currentMountItem);
+      final LayoutOutput nextLayoutOutput,
+      final LayoutOutput currentLayoutOutput,
+      final Object content,
+      final boolean useUpdateValueFromLayoutOutput) {
+    @LayoutOutput.UpdateState final int updateState = nextLayoutOutput.getUpdateState();
     final Component currentComponent = currentLayoutOutput.getComponent();
-    final Component nextComponent = layoutOutput.getComponent();
+    final Component nextComponent = nextLayoutOutput.getComponent();
 
     if (ComponentsConfiguration.shouldForceComponentUpdateOnOrientationChange
-        && layoutOutput.getOrientation() != currentLayoutOutput.getOrientation()) {
+        && nextLayoutOutput.getOrientation() != currentLayoutOutput.getOrientation()) {
       return true;
     }
 
     // If the two components have different sizes and the mounted content depends on the size we
     // just return true immediately.
-    final Object content = currentMountItem.getContent();
-    if (!sameSize(layoutOutput, content) && nextComponent.isMountSizeDependent()) {
+    if (!sameSize(nextLayoutOutput, content) && nextComponent.isMountSizeDependent()) {
       return true;
     }
 
