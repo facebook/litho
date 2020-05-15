@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## Version 1.4.1
+
+_2020-05-16_
+
+* New: Add template for `Event`.
+* New: NewTemplate actions are divided into separate menu items.
+* New: Remove `BuildInfoProvider` extension point.
+* New: Add `TemplateProvider` extension point.
+* New: Add more logs to `ResolveRedSymbols` Action.
+
 ## Version 1.4.0
 
 _2020-04-20_
