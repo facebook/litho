@@ -155,7 +155,7 @@ public class ComponentHost extends Host {
       ensureViewMountItems();
       mViewMountItems.put(index, mountItem);
       mountView((View) content, getLayoutOutput(mountItem).getFlags());
-      maybeRegisterTouchExpansion(index, mountItem);
+      maybeRegisterTouchExpansion(index, getLayoutOutput(mountItem), content);
     }
 
     ensureMountItems();
@@ -216,7 +216,7 @@ public class ComponentHost extends Host {
       ensureViewMountItems();
       ComponentHostUtils.removeItem(index, mViewMountItems, mScrapViewMountItemsArray);
       mIsChildDrawingOrderDirty = true;
-      maybeUnregisterTouchExpansion(index, mountItem);
+      maybeUnregisterTouchExpansion(index, getLayoutOutput(mountItem), content);
     }
 
     ensureMountItems();
@@ -236,7 +236,7 @@ public class ComponentHost extends Host {
       ensureViewMountItems();
       ComponentHostUtils.removeItem(index, mViewMountItems, mScrapViewMountItemsArray);
       mIsChildDrawingOrderDirty = true;
-      maybeUnregisterTouchExpansion(index, mountItem);
+      maybeUnregisterTouchExpansion(index, getLayoutOutput(mountItem), content);
     }
     ensureMountItems();
     ComponentHostUtils.removeItem(index, mMountItems, mScrapMountItemsArray);
@@ -294,8 +294,8 @@ public class ComponentHost extends Host {
     mTouchExpansionDelegate.moveTouchExpansionIndexes(oldIndex, newIndex);
   }
 
-  void maybeRegisterTouchExpansion(int index, MountItem mountItem) {
-    final ViewNodeInfo viewNodeInfo = getLayoutOutput(mountItem).getViewNodeInfo();
+  void maybeRegisterTouchExpansion(int index, LayoutOutput output, Object content) {
+    final ViewNodeInfo viewNodeInfo = output.getViewNodeInfo();
     if (viewNodeInfo == null) {
       return;
     }
@@ -305,7 +305,7 @@ public class ComponentHost extends Host {
       return;
     }
 
-    if (this.equals(mountItem.getContent())) {
+    if (this.equals(content)) {
       // Don't delegate to ourselves or we'll cause a StackOverflowError
       return;
     }
@@ -315,12 +315,11 @@ public class ComponentHost extends Host {
       setTouchDelegate(mTouchExpansionDelegate);
     }
 
-    mTouchExpansionDelegate.registerTouchExpansion(
-        index, (View) mountItem.getContent(), expandedTouchBounds);
+    mTouchExpansionDelegate.registerTouchExpansion(index, (View) content, expandedTouchBounds);
   }
 
-  void maybeUnregisterTouchExpansion(int index, MountItem mountItem) {
-    final ViewNodeInfo viewNodeInfo = getLayoutOutput(mountItem).getViewNodeInfo();
+  void maybeUnregisterTouchExpansion(int index, LayoutOutput output, Object content) {
+    final ViewNodeInfo viewNodeInfo = output.getViewNodeInfo();
     if (viewNodeInfo == null) {
       return;
     }
@@ -329,7 +328,7 @@ public class ComponentHost extends Host {
       return;
     }
 
-    if (this.equals(mountItem.getContent())) {
+    if (this.equals(content)) {
       // Recursive delegation is never registered
       return;
     }

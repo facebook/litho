@@ -1310,12 +1310,12 @@ class MountState
       maybeUnsetViewAttributes(currentMountItem);
 
       final ComponentHost host = (ComponentHost) currentMountItem.getHost();
-      host.maybeUnregisterTouchExpansion(index, currentMountItem);
+      host.maybeUnregisterTouchExpansion(index, currentLayoutOutput, currentContent);
     } else if (shouldUpdateViewInfo) {
       maybeUnsetViewAttributes(currentMountItem);
 
       final ComponentHost host = (ComponentHost) currentMountItem.getHost();
-      host.maybeUnregisterTouchExpansion(index, currentMountItem);
+      host.maybeUnregisterTouchExpansion(index, currentLayoutOutput, currentContent);
     }
 
     // 3. We will re-bind this later in 7 regardless so let's make sure it's currently unbound.
@@ -1329,13 +1329,13 @@ class MountState
     // 5. If the mount item is not valid for this component update its content and view attributes.
     if (shouldUpdate) {
       final ComponentHost host = (ComponentHost) currentMountItem.getHost();
-      host.maybeRegisterTouchExpansion(index, currentMountItem);
+      host.maybeRegisterTouchExpansion(index, nextLayoutOutput, currentContent);
 
       updateMountedContent(currentMountItem, nextLayoutOutput, itemComponent);
       setViewAttributes(currentMountItem);
     } else if (shouldUpdateViewInfo) {
       final ComponentHost host = (ComponentHost) currentMountItem.getHost();
-      host.maybeRegisterTouchExpansion(index, currentMountItem);
+      host.maybeRegisterTouchExpansion(index, nextLayoutOutput, currentContent);
 
       setViewAttributes(currentMountItem);
     }
