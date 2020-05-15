@@ -2045,7 +2045,7 @@ public class ComponentTreeTest {
     int timeSpentWaiting = 0;
     while (future.getWaitingCount() != 2 && timeSpentWaiting < 5000) {
       try {
-      Thread.sleep(10);
+        Thread.sleep(10);
       } catch (InterruptedException e) {
         throw new RuntimeException(e);
       }
