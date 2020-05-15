@@ -29,6 +29,7 @@ import com.facebook.litho.LifecycleTracker;
 import com.facebook.litho.MountContentPool;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
+import com.facebook.litho.StateValue;
 import com.facebook.litho.TrackingMountContentPool;
 import com.facebook.litho.annotations.CachedValue;
 import com.facebook.litho.annotations.MountSpec;
@@ -47,13 +48,17 @@ import com.facebook.litho.annotations.OnPrepare;
 import com.facebook.litho.annotations.OnUnbind;
 import com.facebook.litho.annotations.OnUnmount;
 import com.facebook.litho.annotations.Prop;
+import com.facebook.litho.annotations.State;
 
 @MountSpec
 public class MountSpecLifecycleTesterSpec {
 
   @OnCreateInitialState
   static void onCreateInitialState(
-      ComponentContext context, @Prop LifecycleTracker lifecycleTracker) {
+      ComponentContext context,
+      StateValue<Object> dummyState,
+      @Prop LifecycleTracker lifecycleTracker) {
+    dummyState.set(new Object());
     lifecycleTracker.addStep(LifecycleStep.ON_CREATE_INITIAL_STATE);
   }
 
@@ -61,6 +66,7 @@ public class MountSpecLifecycleTesterSpec {
   static void onPrepare(
       ComponentContext c,
       @Prop LifecycleTracker lifecycleTracker,
+      @State Object dummyState,
       @CachedValue int expensiveValue) {
     lifecycleTracker.addStep(LifecycleStep.ON_PREPARE);
   }
