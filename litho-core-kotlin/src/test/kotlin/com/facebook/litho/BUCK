@@ -38,6 +38,7 @@ litho_robolectric4_test(
         LITHO_WIDGET_KOTLIN_TARGET,
         LITHO_SOLOADER_TARGET,
         LITHO_YOGA_TARGET,
+        make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing:testing-v4"),
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/helper:helper-v4"),
         make_dep_path("litho-testing/src/main/java/com/facebook/litho/testing/testrunner:testrunner-v4"),
     ],

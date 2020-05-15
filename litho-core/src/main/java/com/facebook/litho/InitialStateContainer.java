@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import java.util.Collections;
 import java.util.HashMap;
@@ -42,6 +43,8 @@ public class InitialStateContainer {
   @VisibleForTesting
   final Map<String, StateContainer> mInitialStates =
       Collections.synchronizedMap(new HashMap<String, StateContainer>());
+
+  @Nullable @VisibleForTesting Map<String, Object> mInitialHookStates;
 
   @GuardedBy("this")
   private final Map<String, Object> mCreateInitialStateLocks = new HashMap<>();
@@ -85,6 +88,35 @@ public class InitialStateContainer {
   }
 
   /**
+   * If an initial state for this component has already been created just return it, otherwise
+   * execute the initializer and cache the result.
+   */
+  @SuppressWarnings("unchecked")
+  <T> T createOrGetInitialHookState(String hookStateKey, HookStateInitializer<T> initializer) {
+    Object stateLock;
+    synchronized (this) {
+      stateLock = mCreateInitialStateLocks.get(hookStateKey);
+      if (stateLock == null) {
+        stateLock = new Object();
+        mCreateInitialStateLocks.put(hookStateKey, stateLock);
+      }
+      if (mInitialHookStates == null) {
+        mInitialHookStates = Collections.synchronizedMap(new HashMap<String, Object>());
+      }
+    }
+
+    T initialState;
+    synchronized (stateLock) {
+      initialState = (T) mInitialHookStates.get(hookStateKey);
+      if (initialState == null) {
+        initialState = initializer.init();
+        mInitialHookStates.put(hookStateKey, initialState);
+      }
+    }
+    return initialState;
+  }
+
+  /**
    * Called when the ComponentTree commits a new StateHandler or discards one for a discarded layout
    * computation.
    */
@@ -93,9 +125,17 @@ public class InitialStateContainer {
     if (mPendingStateHandlers.isEmpty()) {
       mCreateInitialStateLocks.clear();
       // This is safe as we have a guarantee that by this point there is no layout happening
-      // and therefore we can not be executing createOrGetInitialStateForComponent from any
-      // thread.
+      // and therefore we can not be executing createOrGetInitialStateForComponent or
+      // createOrGetInitialHookState from any thread.
       mInitialStates.clear();
+
+      if (mInitialHookStates != null) {
+        mInitialHookStates.clear();
+      }
     }
+  }
+
+  interface HookStateInitializer<T> {
+    T init();
   }
 }

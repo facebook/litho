@@ -33,9 +33,11 @@ class StateDelegate<T>(private val c: ComponentContext, private val initializer:
   operator fun getValue(nothing: Nothing?, property: KProperty<*>): State<T> {
     val hookStateKey = "${c.componentScope.globalKey}:${property.name}"
     @Suppress("UNCHECKED_CAST")
-    val value = c.stateHandler!!.hookState.getOrPut(
-        hookStateKey,
-        initializer) as T
+    val value = c.stateHandler!!.hookState.getOrPut(hookStateKey) {
+      c.componentTree.initialStateContainer.createOrGetInitialHookState(hookStateKey) {
+        initializer()
+      }
+    } as T
     return State(hookStateKey, value)
   }
 }
