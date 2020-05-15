@@ -18,8 +18,8 @@ package com.facebook.litho;
 
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.facebook.yoga.YogaMeasureMode.EXACTLY;
-import static junit.framework.Assert.fail;
 import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.assertj.core.api.Java6Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -395,7 +395,7 @@ public class ComponentLifecycleTest {
 
     try {
       measureFunction.measure(mYogaNode, 0, EXACTLY, 0, EXACTLY);
-      fail();
+      fail("Should have failed without overridden onMeasure() when canMeasure() returns true.");
     } catch (Exception e) {
       assertThat(e).isExactlyInstanceOf(IllegalStateException.class);
       assertThat(e.getMessage()).contains("canMeasure()");
@@ -409,7 +409,7 @@ public class ComponentLifecycleTest {
 
     try {
       measureFunction.measure(mYogaNode, 0, EXACTLY, 0, EXACTLY);
-      fail();
+      fail("Should have failed when onMeasure() is empty.");
     } catch (Exception e) {
       assertThat(e).isExactlyInstanceOf(IllegalStateException.class);
       assertThat(e.getMessage()).contains("MeasureOutput not set");
