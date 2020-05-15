@@ -1875,13 +1875,16 @@ class MountState
   }
 
   private static void setViewAttributes(MountItem item) {
-    final LayoutOutput output = getLayoutOutput(item);
+    setViewAttributes(item.getContent(), getLayoutOutput(item));
+  }
+
+  static void setViewAttributes(Object content, LayoutOutput output) {
     final Component component = output.getComponent();
     if (!isMountViewSpec(component)) {
       return;
     }
 
-    final View view = (View) item.getContent();
+    final View view = (View) content;
     final NodeInfo nodeInfo = output.getNodeInfo();
 
     if (nodeInfo != null) {
@@ -1938,17 +1941,21 @@ class MountState
   }
 
   private static void maybeUnsetViewAttributes(MountItem item) {
-    final Component component = getLayoutOutput(item).getComponent();
+    final LayoutOutput output = getLayoutOutput(item);
+    final int flags = getMountData(item).getDefaultAttributeValuesFlags();
+    unsetViewAttributes(item.getContent(), output, flags);
+  }
+
+  static void unsetViewAttributes(
+      final Object content, final LayoutOutput output, final int mountFlags) {
+    final Component component = output.getComponent();
+    final boolean isHostView = isHostSpec(component);
+
     if (!isMountViewSpec(component)) {
       return;
     }
 
-    unsetViewAttributes(item, isHostSpec(component));
-  }
-
-  private static void unsetViewAttributes(MountItem item, boolean isHostView) {
-    final View view = (View) item.getContent();
-    final LayoutOutput output = getLayoutOutput(item);
+    final View view = (View) content;
     final NodeInfo nodeInfo = output.getNodeInfo();
 
     if (nodeInfo != null) {
@@ -1991,12 +1998,12 @@ class MountState
       unsetRotationY(view, nodeInfo);
     }
 
-    view.setClickable(isViewClickable(getMountData(item).getDefaultAttributeValuesFlags()));
-    view.setLongClickable(isViewLongClickable(getMountData(item).getDefaultAttributeValuesFlags()));
+    view.setClickable(isViewClickable(mountFlags));
+    view.setLongClickable(isViewLongClickable(mountFlags));
 
-    unsetFocusable(view, item);
-    unsetEnabled(view, item);
-    unsetSelected(view, item);
+    unsetFocusable(view, mountFlags);
+    unsetEnabled(view, mountFlags);
+    unsetSelected(view, mountFlags);
 
     if (output.getImportantForAccessibility() != IMPORTANT_FOR_ACCESSIBILITY_AUTO) {
       unsetImportantForAccessibility(view);
@@ -2014,7 +2021,7 @@ class MountState
         unsetViewForeground(view, viewNodeInfo);
       }
       if (!isHostView) {
-        unsetViewPadding(view, item, viewNodeInfo);
+        unsetViewPadding(view, output, viewNodeInfo);
         unsetViewBackground(view, viewNodeInfo);
         unsetViewForeground(view, viewNodeInfo);
         unsetViewLayoutDirection(view);
@@ -2372,8 +2379,8 @@ class MountState
     }
   }
 
-  private static void unsetFocusable(View view, MountItem mountItem) {
-    view.setFocusable(isViewFocusable(getMountData(mountItem).getDefaultAttributeValuesFlags()));
+  private static void unsetFocusable(View view, int flags) {
+    view.setFocusable(isViewFocusable(flags));
   }
 
   private static void setClickable(View view, @NodeInfo.FocusState int clickableState) {
@@ -2392,8 +2399,8 @@ class MountState
     }
   }
 
-  private static void unsetEnabled(View view, MountItem mountItem) {
-    view.setEnabled(isViewEnabled(getMountData(mountItem).getDefaultAttributeValuesFlags()));
+  private static void unsetEnabled(View view, int flags) {
+    view.setEnabled(isViewEnabled(flags));
   }
 
   private static void setSelected(View view, @NodeInfo.SelectedState int selectedState) {
@@ -2404,8 +2411,8 @@ class MountState
     }
   }
 
-  private static void unsetSelected(View view, MountItem mountItem) {
-    view.setSelected(isViewSelected(getMountData(mountItem).getDefaultAttributeValuesFlags()));
+  private static void unsetSelected(View view, int flags) {
+    view.setSelected(isViewSelected(flags));
   }
 
   private static void setScale(View view, NodeInfo nodeInfo) {
@@ -2487,7 +2494,7 @@ class MountState
         viewNodeInfo.getPaddingBottom());
   }
 
-  private static void unsetViewPadding(View view, MountItem item, ViewNodeInfo viewNodeInfo) {
+  private static void unsetViewPadding(View view, LayoutOutput output, ViewNodeInfo viewNodeInfo) {
     if (!viewNodeInfo.hasPadding()) {
       return;
     }
@@ -2498,7 +2505,7 @@ class MountState
       // T53931759 Gathering extra info around this NPE
       final String message =
           "Component: "
-              + getLayoutOutput(item).getComponent().getSimpleName()
+              + output.getComponent().getSimpleName()
               + ", view: "
               + view.getClass().getSimpleName()
               + ", message: "
@@ -2792,7 +2799,7 @@ class MountState
     // The root host item should never be unmounted as it's a reference
     // to the top-level LithoView.
     if (mLayoutOutputsIds[index] == ROOT_HOST_ID) {
-      unsetViewAttributes(item, true);
+      maybeUnsetViewAttributes(item);
       return;
     }
 

@@ -32,6 +32,8 @@ public class LithoRenderUnit extends RenderUnit<Object> {
 
   private final LayoutOutput output;
 
+  private int mDefaultViewAttributeFlags = -1;
+
   public LithoRenderUnit(LayoutOutput output) {
     super(getRenderType(output), sMountBinder, sBindBinders);
     this.output = output;
@@ -45,6 +47,18 @@ public class LithoRenderUnit extends RenderUnit<Object> {
   @Override
   public long getId() {
     return output.getId();
+  }
+
+  private boolean hasDefaultViewAttributeFlags() {
+    return mDefaultViewAttributeFlags != -1;
+  }
+
+  private void setDefaultViewAttributeFlags(int flags) {
+    mDefaultViewAttributeFlags = flags;
+  }
+
+  public int getDefaultViewAttributeFLags() {
+    return mDefaultViewAttributeFlags;
   }
 
   private static RenderType getRenderType(LayoutOutput output) {
@@ -73,7 +87,11 @@ public class LithoRenderUnit extends RenderUnit<Object> {
         final LithoRenderUnit unit,
         final Object data) {
       LayoutOutput output = unit.output;
+      if (!unit.hasDefaultViewAttributeFlags()) {
+        unit.setDefaultViewAttributeFlags(LithoMountData.getViewAttributeFlags(content));
+      }
       output.getComponent().mount(output.getComponent().getScopedContext(), content);
+      MountState.setViewAttributes(content, output);
     }
 
     @Override
@@ -114,6 +132,8 @@ public class LithoRenderUnit extends RenderUnit<Object> {
         final LithoRenderUnit unit,
         final Object data) {
       LayoutOutput output = unit.output;
+      int flags = unit.getDefaultViewAttributeFLags();
+      MountState.unsetViewAttributes(content, output, flags);
       output.getComponent().unbind(output.getComponent().getScopedContext(), content);
     }
   }
