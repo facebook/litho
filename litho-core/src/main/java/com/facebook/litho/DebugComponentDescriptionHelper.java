@@ -31,15 +31,19 @@ public class DebugComponentDescriptionHelper {
   /**
    * Appends a compact description of a {@link DebugComponent} for debugging purposes.
    *
-   * @param left The left coordinate of the {@link DebugComponent}
-   * @param top The top coordinate of the {@link DebugComponent}
    * @param debugComponent The {@link DebugComponent}
    * @param sb The {@link StringBuilder} to which the description is appended
+   * @param leftOffset Offset of the parent component relative to litho view
+   * @param topOffset Offset of the parent component relative to litho view
    * @param embedded Whether the call is embedded in "adb dumpsys activity"
    */
   @DoNotStrip
   public static void addViewDescription(
-      int left, int top, DebugComponent debugComponent, StringBuilder sb, boolean embedded) {
+      DebugComponent debugComponent,
+      StringBuilder sb,
+      int leftOffset,
+      int topOffset,
+      boolean embedded) {
     sb.append("litho.");
     sb.append(debugComponent.getComponent().getSimpleName());
 
@@ -58,14 +62,16 @@ public class DebugComponentDescriptionHelper {
     sb.append(layout != null && layout.getClickHandler() != null ? "C" : ".");
     sb.append(". .. ");
 
-    final Rect bounds = debugComponent.getBounds();
-    sb.append(left + bounds.left);
+    // using position relative to litho view host to handle relative position issues
+    // the offset is for the parent component to create proper relative coordinates
+    final Rect bounds = debugComponent.getBoundsInLithoView();
+    sb.append(bounds.left - leftOffset);
     sb.append(",");
-    sb.append(top + bounds.top);
+    sb.append(bounds.top - topOffset);
     sb.append("-");
-    sb.append(left + bounds.right);
+    sb.append(bounds.right - leftOffset);
     sb.append(",");
-    sb.append(top + bounds.bottom);
+    sb.append(bounds.bottom - topOffset);
 
     final String testKey = debugComponent.getTestKey();
     if (testKey != null && !TextUtils.isEmpty(testKey)) {

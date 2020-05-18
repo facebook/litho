@@ -1440,7 +1440,8 @@ public class LithoView extends Host {
 
   @Override
   public String toString() {
-    return LithoViewTestHelper.viewToString(this, true);
+    // dump this view and include litho internal UI data
+    return super.toString() + LithoViewTestHelper.viewToString(this, true);
   }
 
   static class MountStartupLoggingInfo {

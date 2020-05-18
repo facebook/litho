@@ -16,8 +16,8 @@
 
 package com.facebook.litho;
 
+import android.graphics.Rect;
 import android.text.TextUtils;
-import android.view.View;
 import android.view.ViewParent;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -101,7 +101,7 @@ public class LithoViewTestHelper {
 
   @DoNotStrip
   public static String viewToString(LithoView view) {
-    return viewToString(view, false);
+    return viewToString(view, false).trim();
   }
 
   /**
@@ -119,56 +119,32 @@ public class LithoViewTestHelper {
     }
 
     final StringBuilder sb = new StringBuilder();
-
-    int[] rootLoc = getLithoRootViewLocation(view);
-    DebugComponentDescriptionHelper.addViewDescription(rootLoc[0], rootLoc[1], root, sb, embedded);
-
-    viewToString(root, sb, embedded, embedded ? getLithoViewDepthInAndroid(view) : 0);
+    int depth = embedded ? getLithoViewDepthInAndroid(view) : 0;
+    viewToString(root, sb, embedded, depth, 0, 0);
     return sb.toString();
   }
 
-  /**
-   * Calculate the location of the litho view relative to the parent view. This will handle
-   * scrolling of the litho view inside tha prent scrollable container.
-   */
-  private static int[] getLithoRootViewLocation(LithoView view) {
-    int[] location = new int[2];
-
-    ViewParent parent = view.getParent();
-    if (!(parent instanceof View)) {
-      location[0] = view.getLeft();
-      location[1] = view.getTop();
-      return location;
-    }
-
-    view.getLocationOnScreen(location);
-
-    int[] parentLocation = new int[2];
-    ((View) parent).getLocationOnScreen(parentLocation);
-
-    location[0] -= parentLocation[0];
-    location[1] -= parentLocation[1];
-    return location;
-  }
-
-  /** For E2E tests we remove non-layout components because they break view-hierarchy parsing. */
+  /** For E2E tests */
   private static void viewToString(
-      DebugComponent component, StringBuilder sb, boolean embedded, int depth) {
-    for (DebugComponent child : component.getChildComponents()) {
-      // if the component shares the same node with the child the position will be incorrect as
-      // bounds retrieved from the node instance
-      int left = component.isSameNode(child) ? -component.getBounds().left : 0;
-      int top = component.isSameNode(child) ? -component.getBounds().top : 0;
-      writeNewLineWithIndentByDepth(sb, depth);
-      DebugComponentDescriptionHelper.addViewDescription(left, top, child, sb, embedded);
+      DebugComponent component,
+      StringBuilder sb,
+      boolean embedded,
+      int depth,
+      int leftOffset,
+      int topOffset) {
+    writeNewLineWithIndentByDepth(sb, depth);
+    DebugComponentDescriptionHelper.addViewDescription(
+        component, sb, leftOffset, topOffset, embedded);
 
-      viewToString(child, sb, embedded, depth + 1);
+    final Rect bounds = component.getBoundsInLithoView();
+    for (DebugComponent child : component.getChildComponents()) {
+      viewToString(child, sb, embedded, depth + 1, bounds.left, bounds.top);
     }
   }
 
   /** calculate the depth on the litho components in general android view hierarchy */
   private static int getLithoViewDepthInAndroid(LithoView view) {
-    int depth = 2;
+    int depth = 3;
     ViewParent parent = view.getParent();
     while (parent != null) {
       depth++;
@@ -180,7 +156,7 @@ public class LithoViewTestHelper {
   /** Add new line and two-space indent for each level to match android view hierarchy dump */
   private static void writeNewLineWithIndentByDepth(StringBuilder sb, int depth) {
     sb.append("\n");
-    for (int i = 0; i <= depth; i++) {
+    for (int i = 0; i < depth; i++) {
       sb.append("  ");
     }
   }
