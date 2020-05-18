@@ -266,6 +266,33 @@ public class TextInputSpecTest {
         .isEqualTo("set text in test");
   }
 
+  @Test
+  public void textInput_updateWithNewTextInputAndUseGetTextTrigger_returnsCurrentText() {
+    mLithoViewRule
+        .setRoot(
+            Column.create(mLithoViewRule.getContext())
+                .child(TextInput.create(mLithoViewRule.getContext())))
+        .measure()
+        .layout()
+        .attachToWindow();
+
+    final Handle handle = new Handle();
+    mLithoViewRule
+        .setRoot(
+            Column.create(mLithoViewRule.getContext())
+                .child(
+                    TextInput.create(mLithoViewRule.getContext())
+                        .key("different_key")
+                        .handle(handle)))
+        .layout();
+
+    getEditText(mLithoViewRule.getLithoView()).setText("text for test");
+
+    CharSequence text = TextInput.getText(mLithoViewRule.getComponentTree().getContext(), handle);
+    assertThat(text).isNotNull();
+    assertThat(text.toString()).isEqualTo("text for test");
+  }
+
   private static EditText getEditText(Component.Builder component) {
     return getEditText(ComponentTestHelper.mountComponent(component));
   }

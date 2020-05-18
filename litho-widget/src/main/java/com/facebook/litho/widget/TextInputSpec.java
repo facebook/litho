@@ -467,7 +467,9 @@ class TextInputSpec {
       @Prop(optional = true) Diff<Integer> cursorDrawableRes,
       @Prop(optional = true) Diff<MovementMethod> movementMethod,
       @Prop(optional = true, resType = ResType.STRING) Diff<CharSequence> error,
-      @State Diff<Integer> measureSeqNumber) {
+      @State Diff<Integer> measureSeqNumber,
+      @State Diff<AtomicReference<EditTextWithEventHandlers>> mountedView,
+      @State Diff<AtomicReference<CharSequence>> savedText) {
     if (!equals(measureSeqNumber.getPrevious(), measureSeqNumber.getNext())) {
       return true;
     }
@@ -546,6 +548,15 @@ class TextInputSpec {
     if (!equals(error.getPrevious(), error.getNext())) {
       return true;
     }
+
+    // Note, these are purposefully just comparing the containers, not the contents!
+    if (mountedView.getPrevious() != mountedView.getNext()) {
+      return true;
+    }
+    if (savedText.getPrevious() != savedText.getNext()) {
+      return true;
+    }
+
     // Save the nastiest for last: trying to diff drawables.
     Drawable previousBackground = inputBackground.getPrevious();
     Drawable nextBackground = inputBackground.getNext();
