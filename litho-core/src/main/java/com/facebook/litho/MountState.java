@@ -1138,7 +1138,7 @@ class MountState
 
   void clearVisibilityItems() {
     if (mVisibilityOutputsExtension != null) {
-      mVisibilityOutputsExtension.onHostVisibilityChanged(false, new Rect());
+      mVisibilityOutputsExtension.clearVisibilityItems();
       return;
     }
 

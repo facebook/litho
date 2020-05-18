@@ -106,9 +106,6 @@ public class TransitionsExtension extends MountDelegateExtension
     resetAcquiredReferences();
   }
 
-  @Override
-  public void onHostVisibilityChanged(boolean isVisible, Rect localVisibleRect) {}
-
   /**
    * Creates and updates transitions for a new LayoutState. The steps are as follows:
    *

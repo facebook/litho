@@ -304,6 +304,7 @@ class VisibilityOutputsExtension
     } else {
       clearVisibilityItemsNonincremental();
     }
+    mPreviousLocalVisibleRect.setEmpty();
   }
 
   private void clearVisibilityItemsIncremental() {
@@ -415,20 +416,6 @@ class VisibilityOutputsExtension
   @Override
   public void onUnbind() {
     clearVisibilityItems();
-  }
-
-  @Override
-  public void onHostVisibilityChanged(boolean isVisible, Rect localVisibleRect) {
-    boolean processVisOutputs = !mHost.isInTransientState();
-    if (!processVisOutputs) {
-      return;
-    }
-
-    if (isVisible) {
-      processVisibilityOutputs(localVisibleRect, null, false);
-    } else {
-      clearVisibilityItems();
-    }
   }
 
   public void notifyOnUnbind() {

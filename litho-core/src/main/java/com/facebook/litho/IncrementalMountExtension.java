@@ -110,9 +110,6 @@ public class IncrementalMountExtension extends MountDelegateExtension
   @Override
   public void onUnbind() {}
 
-  @Override
-  public void onHostVisibilityChanged(boolean isVisible, Rect localVisibleRect) {}
-
   private void initIncrementalMount(Rect localVisibleRect, boolean isMounting) {
     for (int i = 0, size = mInput.getMountableOutputCount(); i < size; i++) {
       final RenderTreeNode renderTreeNode = mInput.getMountableOutputAt(i);

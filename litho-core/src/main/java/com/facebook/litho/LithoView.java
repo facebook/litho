@@ -619,7 +619,7 @@ public class LithoView extends Host {
         unmountAllItems();
       } else {
         if (mUseExtensions) {
-          mLithoHostListenerCoordinator.onHostVisibilityChanged(false, new Rect());
+          mLithoHostListenerCoordinator.onVisibleBoundsChanged(new Rect());
         } else {
           mMountState.clearVisibilityItems();
         }
@@ -816,7 +816,7 @@ public class LithoView extends Host {
     if (isVisible) {
       if (getLocalVisibleRect(mRect)) {
         if (mUseExtensions) {
-          mLithoHostListenerCoordinator.onHostVisibilityChanged(true);
+          mLithoHostListenerCoordinator.onVisibleBoundsChanged(mRect);
         } else {
           processVisibilityOutputs(mRect);
         }
@@ -827,7 +827,11 @@ public class LithoView extends Host {
       recursivelySetVisibleHint(false);
       if (mUseExtensions) {
         if (getLocalVisibleRect(mRect) && mLithoHostListenerCoordinator != null) {
-          mLithoHostListenerCoordinator.onHostVisibilityChanged(false);
+          final VisibilityOutputsExtension visibilityOutputsExtension =
+              mLithoHostListenerCoordinator.getVisibilityOutputsExtension();
+          if (visibilityOutputsExtension != null) {
+            visibilityOutputsExtension.clearVisibilityItems();
+          }
         }
       } else {
         mMountState.clearVisibilityItems();

@@ -39,7 +39,4 @@ public interface HostListenerExtension<T> {
 
   /** Called after all the Host's children have been unbound. */
   void onUnbind();
-
-  /** Called when the Host's visibility changes. */
-  void onHostVisibilityChanged(boolean isVisible, Rect localVisibleRect);
 }

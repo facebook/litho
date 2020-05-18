@@ -17,6 +17,7 @@
 package com.facebook.litho;
 
 import android.graphics.Rect;
+import androidx.annotation.Nullable;
 import com.facebook.rendercore.MountDelegate.MountDelegateTarget;
 import java.util.ArrayList;
 import java.util.List;
@@ -70,13 +71,6 @@ public class LithoHostListenerCoordinator implements HostListenerExtension<Objec
     }
   }
 
-  @Override
-  public void onHostVisibilityChanged(boolean isVisible, Rect localVisibleRect) {
-    for (int i = 0, size = mMountExtensions.size(); i < size; i++) {
-      mMountExtensions.get(i).onHostVisibilityChanged(isVisible, localVisibleRect);
-    }
-  }
-
   void enableIncrementalMount(LithoView lithoView, MountDelegateTarget mountDelegateTarget) {
     if (mIncrementalMountExtension != null) {
       throw new IllegalStateException(
@@ -96,6 +90,11 @@ public class LithoHostListenerCoordinator implements HostListenerExtension<Objec
 
     mVisibilityOutputsExtension = new VisibilityOutputsExtension(lithoView);
     registerListener(mVisibilityOutputsExtension);
+  }
+
+  @Nullable
+  VisibilityOutputsExtension getVisibilityOutputsExtension() {
+    return mVisibilityOutputsExtension;
   }
 
   void enableTransitions(LithoView lithoView, MountDelegateTarget mountDelegateTarget) {
