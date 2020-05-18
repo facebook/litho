@@ -27,7 +27,7 @@ import android.graphics.drawable.Drawable
  *  This will work for core Litho, but may break Sections.
  */
 inline fun DslScope.Clickable(
-    noinline onClick: () -> Unit,
+    noinline onClick: (ClickEvent) -> Unit,
     content: DslScope.() -> Component
 ): Component =
     content().apply {
@@ -35,8 +35,8 @@ inline fun DslScope.Clickable(
     }
 
 /**
- * Builder for setting a [ClickEvent] [EventHandler] for a component. Can be used to provide an [EventHandler]
- * generated from a Spec.
+ * Builder for setting a [ClickEvent] [EventHandler] for a component. Can be used to provide an
+ * [EventHandler] generated from a Spec.
  */
 inline fun DslScope.Clickable(
     clickHandler: EventHandler<ClickEvent>,
