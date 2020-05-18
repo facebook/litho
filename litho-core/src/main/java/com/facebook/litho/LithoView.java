@@ -815,11 +815,7 @@ public class LithoView extends Host {
 
     if (isVisible) {
       if (getLocalVisibleRect(mRect)) {
-        if (mUseExtensions) {
-          mLithoHostListenerCoordinator.onVisibleBoundsChanged(mRect);
-        } else {
-          processVisibilityOutputs(mRect);
-        }
+        processVisibilityOutputs(mRect);
         recursivelySetVisibleHint(true);
       }
       // if false: no-op, doesn't have visible area, is not ready or not attached
@@ -983,26 +979,18 @@ public class LithoView extends Host {
   }
 
   public void notifyVisibleBoundsChanged(Rect visibleRect, boolean processVisibilityOutputs) {
-    mPreviousMountVisibleRectBounds.set(visibleRect);
     if (mComponentTree == null || !checkMainThreadLayoutStateForIncrementalMount()) {
       return;
     }
 
     if (mComponentTree.isIncrementalMountEnabled()) {
       mComponentTree.mountComponent(visibleRect, processVisibilityOutputs);
-    } else {
-      if (mLithoHostListenerCoordinator != null) {
-        mLithoHostListenerCoordinator.onVisibleBoundsChanged(visibleRect);
-      } else {
-        if (processVisibilityOutputs && mComponentTree.isVisibilityProcessingEnabled()) {
-          processVisibilityOutputs(visibleRect);
-        }
-      }
+    } else if (processVisibilityOutputs) {
+      processVisibilityOutputs(visibleRect);
     }
   }
 
   public void notifyVisibleBoundsChanged() {
-    getLocalVisibleRect(mPreviousMountVisibleRectBounds);
     if (mComponentTree == null || mComponentTree.getMainThreadLayoutState() == null) {
       return;
     }
@@ -1010,15 +998,7 @@ public class LithoView extends Host {
     if (mComponentTree.isIncrementalMountEnabled()) {
       mComponentTree.incrementalMountComponent();
     } else {
-      if (mLithoHostListenerCoordinator != null) {
-        final Rect currentVisibleRect = new Rect();
-        getLocalVisibleRect(currentVisibleRect);
-        mLithoHostListenerCoordinator.onVisibleBoundsChanged(currentVisibleRect);
-      } else {
-        if (mComponentTree.isVisibilityProcessingEnabled()) {
-          processVisibilityOutputs();
-        }
-      }
+      processVisibilityOutputs();
     }
   }
 
@@ -1190,23 +1170,27 @@ public class LithoView extends Host {
 
   @VisibleForTesting
   void processVisibilityOutputs(Rect currentVisibleArea) {
-    if (mUseExtensions) {
-      throw new IllegalStateException();
-    }
-
-    final LayoutState layoutState = mComponentTree.getMainThreadLayoutState();
-
-    if (layoutState == null) {
-      Log.w(TAG, "Main Thread Layout state is not found");
+    if (mComponentTree == null || !mComponentTree.isVisibilityProcessingEnabled()) {
       return;
     }
 
-    mMountState.processVisibilityOutputs(
-        layoutState,
-        currentVisibleArea,
-        mPreviousMountVisibleRectBounds,
-        isMountStateDirty(),
-        null);
+    if (mLithoHostListenerCoordinator != null) {
+      mLithoHostListenerCoordinator.onVisibleBoundsChanged(currentVisibleArea);
+    } else {
+      final LayoutState layoutState = mComponentTree.getMainThreadLayoutState();
+
+      if (layoutState == null) {
+        Log.w(TAG, "Main Thread Layout state is not found");
+        return;
+      }
+
+      mMountState.processVisibilityOutputs(
+          layoutState,
+          currentVisibleArea,
+          mPreviousMountVisibleRectBounds,
+          isMountStateDirty(),
+          null);
+    }
 
     mPreviousMountVisibleRectBounds.set(currentVisibleArea);
   }
