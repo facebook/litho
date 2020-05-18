@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import android.graphics.Rect;
 import com.facebook.rendercore.MountDelegate.MountDelegateTarget;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,10 +35,10 @@ public class LithoHostListenerCoordinator implements HostListenerExtension<Objec
 
   // TODO figure out how to better enforce the input type here.
   @Override
-  public void beforeMount(Object input) {
+  public void beforeMount(Object input, Rect localVisibleRect) {
     for (int i = 0, size = mMountExtensions.size(); i < size; i++) {
       HostListenerExtension hostListenerExtension = mMountExtensions.get(i);
-      hostListenerExtension.beforeMount(input);
+      hostListenerExtension.beforeMount(input, localVisibleRect);
     }
   }
 
@@ -49,9 +50,9 @@ public class LithoHostListenerCoordinator implements HostListenerExtension<Objec
   }
 
   @Override
-  public void onVisibleBoundsChanged() {
+  public void onVisibleBoundsChanged(Rect localVisibleRect) {
     for (int i = 0, size = mMountExtensions.size(); i < size; i++) {
-      mMountExtensions.get(i).onVisibleBoundsChanged();
+      mMountExtensions.get(i).onVisibleBoundsChanged(localVisibleRect);
     }
   }
 
@@ -70,9 +71,9 @@ public class LithoHostListenerCoordinator implements HostListenerExtension<Objec
   }
 
   @Override
-  public void onHostVisibilityChanged(boolean isVisible) {
+  public void onHostVisibilityChanged(boolean isVisible, Rect localVisibleRect) {
     for (int i = 0, size = mMountExtensions.size(); i < size; i++) {
-      mMountExtensions.get(i).onHostVisibilityChanged(isVisible);
+      mMountExtensions.get(i).onHostVisibilityChanged(isVisible, localVisibleRect);
     }
   }
 

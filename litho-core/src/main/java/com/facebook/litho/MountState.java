@@ -479,10 +479,10 @@ class MountState
 
     if (mIsDirty) {
       updateTransitions(layoutState, componentTree);
-      mIncrementalMountExtension.beforeMount(layoutState);
+      mIncrementalMountExtension.beforeMount(layoutState, localVisibleRect);
       mount(layoutState);
     } else {
-      mIncrementalMountExtension.onVisibleBoundsChanged();
+      mIncrementalMountExtension.onVisibleBoundsChanged(localVisibleRect);
     }
 
     maybeUpdateAnimatingMountContent();
@@ -811,9 +811,9 @@ class MountState
       @Nullable PerfEvent mountPerfEvent) {
     if (mVisibilityOutputsExtension != null) {
       if (isDirty) {
-        mVisibilityOutputsExtension.beforeMount(layoutState);
+        mVisibilityOutputsExtension.beforeMount(layoutState, localVisibleRect);
       } else {
-        mVisibilityOutputsExtension.onVisibleBoundsChanged();
+        mVisibilityOutputsExtension.onVisibleBoundsChanged(localVisibleRect);
       }
       return;
     }
@@ -1138,7 +1138,7 @@ class MountState
 
   void clearVisibilityItems() {
     if (mVisibilityOutputsExtension != null) {
-      mVisibilityOutputsExtension.onHostVisibilityChanged(false);
+      mVisibilityOutputsExtension.onHostVisibilityChanged(false, new Rect());
       return;
     }
 

@@ -59,12 +59,11 @@ public class IncrementalMountExtension extends MountDelegateExtension
   }
 
   @Override
-  public void beforeMount(IncrementalMountExtensionInput input) {
+  public void beforeMount(IncrementalMountExtensionInput input, Rect localVisibleRect) {
     mInput = input;
     mPreviousLocalVisibleRect.setEmpty();
     resetAcquiredReferences();
 
-    final Rect localVisibleRect = mLithoView.getVisibleRect();
     initIncrementalMount(localVisibleRect, false);
     setVisibleRect(localVisibleRect);
   }
@@ -81,12 +80,12 @@ public class IncrementalMountExtension extends MountDelegateExtension
   /**
    * Called when LithoView visible bounds change to perform incremental mount. This is always called
    * on a non-dirty mount with a non-null localVisibleRect.
+   *
+   * @param localVisibleRect
    */
   @Override
-  public void onVisibleBoundsChanged() {
+  public void onVisibleBoundsChanged(Rect localVisibleRect) {
     assertMainThread();
-
-    final Rect localVisibleRect = mLithoView.getVisibleRect();
 
     // Horizontally scrolling or no visible rect. Can't incrementally mount.
     if (localVisibleRect.isEmpty()
@@ -112,7 +111,7 @@ public class IncrementalMountExtension extends MountDelegateExtension
   public void onUnbind() {}
 
   @Override
-  public void onHostVisibilityChanged(boolean isVisible) {}
+  public void onHostVisibilityChanged(boolean isVisible, Rect localVisibleRect) {}
 
   private void initIncrementalMount(Rect localVisibleRect, boolean isMounting) {
     for (int i = 0, size = mInput.getMountableOutputCount(); i < size; i++) {

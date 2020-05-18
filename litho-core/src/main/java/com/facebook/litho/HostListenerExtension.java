@@ -16,6 +16,8 @@
 
 package com.facebook.litho;
 
+import android.graphics.Rect;
+
 /** Mount extension which can subscribe to a Host to receive event notifications. */
 public interface HostListenerExtension<T> {
 
@@ -24,13 +26,13 @@ public interface HostListenerExtension<T> {
    *
    * @param input
    */
-  void beforeMount(T input);
+  void beforeMount(T input, Rect localVisibleRect);
 
   /** Called immediately after mounting. */
   void afterMount();
 
   /** Called when the visible bounds of the Host change. */
-  void onVisibleBoundsChanged();
+  void onVisibleBoundsChanged(Rect localVisibleRect);
 
   /** Called after all the Host's children have been unmounted. */
   void onUnmount();
@@ -39,5 +41,5 @@ public interface HostListenerExtension<T> {
   void onUnbind();
 
   /** Called when the Host's visibility changes. */
-  void onHostVisibilityChanged(boolean isVisible);
+  void onHostVisibilityChanged(boolean isVisible, Rect localVisibleRect);
 }

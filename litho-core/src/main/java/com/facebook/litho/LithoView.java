@@ -282,11 +282,6 @@ public class LithoView extends Host {
     onAttach();
   }
 
-  @Override
-  public Rect getVisibleRect() {
-    return mPreviousMountVisibleRectBounds;
-  }
-
   private void onAttach() {
     if (!mIsAttached) {
       mIsAttached = true;
@@ -624,7 +619,7 @@ public class LithoView extends Host {
         unmountAllItems();
       } else {
         if (mUseExtensions) {
-          mLithoHostListenerCoordinator.onHostVisibilityChanged(false);
+          mLithoHostListenerCoordinator.onHostVisibilityChanged(false, new Rect());
         } else {
           mMountState.clearVisibilityItems();
         }
@@ -993,7 +988,7 @@ public class LithoView extends Host {
       mComponentTree.mountComponent(visibleRect, processVisibilityOutputs);
     } else {
       if (mLithoHostListenerCoordinator != null) {
-        mLithoHostListenerCoordinator.onVisibleBoundsChanged();
+        mLithoHostListenerCoordinator.onVisibleBoundsChanged(visibleRect);
       } else {
         if (processVisibilityOutputs && mComponentTree.isVisibilityProcessingEnabled()) {
           processVisibilityOutputs(visibleRect);
@@ -1012,7 +1007,9 @@ public class LithoView extends Host {
       mComponentTree.incrementalMountComponent();
     } else {
       if (mLithoHostListenerCoordinator != null) {
-        mLithoHostListenerCoordinator.onVisibleBoundsChanged();
+        final Rect currentVisibleRect = new Rect();
+        getLocalVisibleRect(currentVisibleRect);
+        mLithoHostListenerCoordinator.onVisibleBoundsChanged(currentVisibleRect);
       } else {
         if (mComponentTree.isVisibilityProcessingEnabled()) {
           processVisibilityOutputs();
@@ -1068,10 +1065,10 @@ public class LithoView extends Host {
     if (mUseExtensions) {
 
       if (currentVisibleArea != null && !isMountStateDirty()) {
-        mLithoHostListenerCoordinator.onVisibleBoundsChanged();
+        mLithoHostListenerCoordinator.onVisibleBoundsChanged(currentVisibleArea);
       } else {
         if (mLithoHostListenerCoordinator != null) {
-          mLithoHostListenerCoordinator.beforeMount(layoutState);
+          mLithoHostListenerCoordinator.beforeMount(layoutState, currentVisibleArea);
         }
         mMountDelegateTarget.mount(layoutState.toRenderTree());
         if (mLithoHostListenerCoordinator != null) {

@@ -20,6 +20,7 @@ import static com.facebook.litho.LayoutOutput.getLayoutOutput;
 import static com.facebook.litho.ThreadUtils.assertMainThread;
 import static com.facebook.rendercore.MountState.ROOT_HOST_ID;
 
+import android.graphics.Rect;
 import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.collection.LongSparseArray;
@@ -61,7 +62,7 @@ public class TransitionsExtension extends MountDelegateExtension
   }
 
   @Override
-  public void beforeMount(TransitionsExtensionInput input) {
+  public void beforeMount(TransitionsExtensionInput input, Rect localVisibleRect) {
     resetAcquiredReferences();
     mInput = input;
 
@@ -93,7 +94,7 @@ public class TransitionsExtension extends MountDelegateExtension
     mTransitionsHasBeenCollected = false;
   }
 
-  public void onVisibleBoundsChanged() {}
+  public void onVisibleBoundsChanged(Rect localVisibleRect) {}
 
   @Override
   public void onUnmount() {
@@ -106,7 +107,7 @@ public class TransitionsExtension extends MountDelegateExtension
   }
 
   @Override
-  public void onHostVisibilityChanged(boolean isVisible) {}
+  public void onHostVisibilityChanged(boolean isVisible, Rect localVisibleRect) {}
 
   /**
    * Creates and updates transitions for a new LayoutState. The steps are as follows:

@@ -387,7 +387,7 @@ class VisibilityOutputsExtension
   }
 
   @Override
-  public void beforeMount(VisibilityOutputsExtensionInput input) {
+  public void beforeMount(VisibilityOutputsExtensionInput input, Rect localVisibleRect) {
 
     mVisibilityOutputs = input.getVisibilityOutputs();
     mIncrementalVisibilityEnabled = input.isIncrementalVisibilityEnabled();
@@ -397,7 +397,6 @@ class VisibilityOutputsExtension
     boolean processVisibilityOutputs = !mHost.isInTransientState();
 
     if (processVisibilityOutputs) {
-      final Rect localVisibleRect = mHost.getVisibleRect();
       processVisibilityOutputs(localVisibleRect, null, true);
     }
   }
@@ -406,10 +405,9 @@ class VisibilityOutputsExtension
   public void afterMount() {}
 
   @Override
-  public void onVisibleBoundsChanged() {
+  public void onVisibleBoundsChanged(Rect localVisibleRect) {
     boolean processVisibilityOutputs = !mHost.isInTransientState();
     if (processVisibilityOutputs) {
-      final Rect localVisibleRect = mHost.getVisibleRect();
       processVisibilityOutputs(localVisibleRect, null, false);
     }
   }
@@ -420,14 +418,13 @@ class VisibilityOutputsExtension
   }
 
   @Override
-  public void onHostVisibilityChanged(boolean isVisible) {
+  public void onHostVisibilityChanged(boolean isVisible, Rect localVisibleRect) {
     boolean processVisOutputs = !mHost.isInTransientState();
     if (!processVisOutputs) {
       return;
     }
 
     if (isVisible) {
-      final Rect localVisibleRect = mHost.getVisibleRect();
       processVisibilityOutputs(localVisibleRect, null, false);
     } else {
       clearVisibilityItems();

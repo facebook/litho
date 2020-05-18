@@ -44,21 +44,18 @@ public class IncrementalMountExtensionTest {
 
     final IncrementalMountExtension.IncrementalMountExtensionInput incrementalMountExtensionInput =
         new TestInput(10);
-    when(lithoView.getVisibleRect()).thenReturn(new Rect(0, 0, 10, 50));
 
-    extension.beforeMount(incrementalMountExtensionInput);
+    extension.beforeMount(incrementalMountExtensionInput, new Rect(0, 0, 10, 50));
     assertThat(extension.getPreviousBottomsIndex()).isEqualTo(0);
     assertThat(extension.getPreviousTopsIndex()).isEqualTo(5);
 
     final IncrementalMountExtension.IncrementalMountExtensionInput incrementalMountExtensionInput2 =
         new TestInput(3);
-    when(lithoView.getVisibleRect()).thenReturn(new Rect(0, 0, 0, 0));
-    extension.beforeMount(incrementalMountExtensionInput2);
+    extension.beforeMount(incrementalMountExtensionInput2, new Rect(0, 0, 0, 0));
 
     // extension.onViewOffset();
 
-    when(lithoView.getVisibleRect()).thenReturn(new Rect(0, 0, 10, 50));
-    extension.onVisibleBoundsChanged();
+    extension.onVisibleBoundsChanged(new Rect(0, 0, 10, 50));
 
     assertThat(extension.getPreviousBottomsIndex()).isEqualTo(0);
     assertThat(extension.getPreviousTopsIndex()).isEqualTo(3);

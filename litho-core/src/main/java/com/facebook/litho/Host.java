@@ -17,7 +17,6 @@
 package com.facebook.litho;
 
 import android.content.Context;
-import android.graphics.Rect;
 import android.util.AttributeSet;
 
 // TODO: merge with Host in RenderCore - temp until we merge with OS repo.
@@ -30,8 +29,6 @@ public abstract class Host extends ComponentHost {
   public Host(ComponentContext context, AttributeSet attrs) {
     super(context, attrs);
   }
-
-  abstract Rect getVisibleRect();
 
   abstract boolean isInTransientState();
 }
