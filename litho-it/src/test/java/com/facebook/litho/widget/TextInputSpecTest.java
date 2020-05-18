@@ -29,15 +29,19 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
 import android.widget.EditText;
 import android.widget.TextView;
+import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.EventHandler;
+import com.facebook.litho.Handle;
 import com.facebook.litho.LithoView;
+import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.eventhandler.EventHandlerTestHelper;
 import com.facebook.litho.testing.helper.ComponentTestHelper;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import java.lang.reflect.Field;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -45,6 +49,8 @@ import org.junit.runner.RunWith;
 @RunWith(LithoTestRunner.class)
 public class TextInputSpecTest {
   private ComponentContext mContext;
+
+  public @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
 
   @Before
   public void setup() {
@@ -178,8 +184,93 @@ public class TextInputSpecTest {
     assertThat(editTextInputConnection).isEqualTo(inputConnection);
   }
 
-  private static android.widget.EditText getEditText(Component.Builder component) {
-    final LithoView lithoView = ComponentTestHelper.mountComponent(component);
-    return (android.widget.EditText) lithoView.getChildAt(0);
+  @Test
+  public void textInput_getTextTrigger_returnsCurrentText() {
+    final Handle handle = new Handle();
+    mLithoViewRule
+        .setRoot(
+            Column.create(mLithoViewRule.getContext())
+                .child(TextInput.create(mLithoViewRule.getContext()).handle(handle)))
+        .measure()
+        .layout()
+        .attachToWindow();
+
+    getEditText(mLithoViewRule.getLithoView()).setText("text for test");
+
+    // We need a context with a ComponentTree on it for the Handle to properly resolve
+    final CharSequence text = TextInput.getText(mLithoViewRule.getComponentTree().getContext(), handle);
+    assertThat(text).isNotNull();
+    assertThat(text.toString()).isEqualTo("text for test");
+  }
+
+  @Test
+  public void textInput_setTextTrigger_setsText() {
+    final Handle handle = new Handle();
+    mLithoViewRule
+        .setRoot(
+            Column.create(mLithoViewRule.getContext())
+                .child(TextInput.create(mLithoViewRule.getContext()).handle(handle)))
+        .measure()
+        .layout()
+        .attachToWindow();
+
+    // We need a context with a ComponentTree on it for the Handle to properly resolve
+    TextInput.setText(mLithoViewRule.getComponentTree().getContext(), handle, "set text in test");
+    assertThat(getEditText(mLithoViewRule.getLithoView()).getText().toString())
+        .isEqualTo("set text in test");
+  }
+
+  @Test
+  public void textInput_getTextTriggerFromUnmountedView_returnsCurrentText() {
+    final Handle handle = new Handle();
+    mLithoViewRule
+        .setRoot(
+            Column.create(mLithoViewRule.getContext())
+                .child(TextInput.create(mLithoViewRule.getContext()).handle(handle)))
+        .measure()
+        .layout()
+        .attachToWindow();
+
+    getEditText(mLithoViewRule.getLithoView()).setText("text for test");
+    mLithoViewRule.getLithoView().unmountAllItems();
+
+    // We need a context with a ComponentTree on it for the Handle to properly resolve
+    final CharSequence text = TextInput.getText(mLithoViewRule.getComponentTree().getContext(), handle);
+    assertThat(text).isNotNull();
+    assertThat(text.toString()).isEqualTo("text for test");
+  }
+
+  @Test
+  public void textInput_setTextTriggerForUnmountedView_setsTextAfterMount() {
+    final Handle handle = new Handle();
+    mLithoViewRule
+        .setRoot(
+            Column.create(mLithoViewRule.getContext())
+                .child(TextInput.create(mLithoViewRule.getContext()).handle(handle)))
+        .measure()
+        .layout()
+        .attachToWindow();
+
+    mLithoViewRule.getLithoView().unmountAllItems();
+
+    // We need a context with a ComponentTree on it for the Handle to properly resolve
+    TextInput.setText(mLithoViewRule.getComponentTree().getContext(), handle, "set text in test");
+    final CharSequence text = TextInput.getText(mLithoViewRule.getComponentTree().getContext(), handle);
+    assertThat(text).isNotNull();
+    assertThat(text.toString()).isEqualTo("set text in test");
+
+    // Mount the view again
+    mLithoViewRule.layout();
+
+    assertThat(getEditText(mLithoViewRule.getLithoView()).getText().toString())
+        .isEqualTo("set text in test");
+  }
+
+  private static EditText getEditText(Component.Builder component) {
+    return getEditText(ComponentTestHelper.mountComponent(component));
+  }
+
+  private static EditText getEditText(LithoView lithoView) {
+    return (EditText) lithoView.getChildAt(0);
   }
 }
