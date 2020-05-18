@@ -16,6 +16,7 @@
 
 package com.facebook.litho;
 
+import static com.facebook.litho.LifecycleStep.ON_CREATE_INITIAL_STATE;
 import static com.facebook.litho.LifecycleStep.getSteps;
 import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.UNSPECIFIED;
@@ -36,6 +37,8 @@ import com.facebook.litho.widget.PreallocatedMountSpecLifecycleTester;
 import com.facebook.litho.widget.RecordsShouldUpdate;
 import com.facebook.litho.widget.ShouldUseGlobalPoolFalseMountSpecLifecycleTester;
 import com.facebook.litho.widget.ShouldUseGlobalPoolTrueMountSpecLifecycleTester;
+import com.facebook.litho.widget.SimpleStateUpdateEmulator;
+import com.facebook.litho.widget.SimpleStateUpdateEmulatorSpec;
 import com.facebook.rendercore.MountItem;
 import java.util.ArrayList;
 import java.util.List;
@@ -497,6 +500,57 @@ public class MountSpecLifecycleTest {
     assertThat(info_child2.getSteps())
         .describedAs("Should call the following lifecycle methods in the following order:")
         .containsExactly(LifecycleStep.ON_UNBIND, LifecycleStep.ON_UNMOUNT);
+  }
+
+  /*
+   * This case comes from a specific bug where when we shallow-copy components (which we do when we
+   * update state) we were setting mHasManualKey to false even if there was a manual key which would
+   * cause us to generate different keys between layouts.
+   */
+  @Test
+  public void
+      lifecycle_stateUpdateWithMultipleChildrenOfSameTypeAndManualKeys_doesNotRecreateInitialState() {
+    final LifecycleTracker info_child1 = new LifecycleTracker();
+    final LifecycleTracker info_child2 = new LifecycleTracker();
+    final SimpleStateUpdateEmulatorSpec.Caller stateUpdater =
+        new SimpleStateUpdateEmulatorSpec.Caller();
+
+    final Component root =
+        Column.create(mLithoViewRule.getContext())
+            .child(
+                MountSpecLifecycleTester.create(mLithoViewRule.getContext())
+                    .intrinsicSize(new Size(800, 600))
+                    .lifecycleTracker(info_child1)
+                    .key("some_key"))
+            .child(
+                MountSpecLifecycleTester.create(mLithoViewRule.getContext())
+                    .intrinsicSize(new Size(800, 600))
+                    .lifecycleTracker(info_child2)
+                    .key("other_key"))
+            .child(
+                SimpleStateUpdateEmulator.create(mLithoViewRule.getContext()).caller(stateUpdater))
+            .build();
+
+    mLithoViewRule.useComponentTree(
+        ComponentTree.create(mLithoViewRule.getContext()).isReconciliationEnabled(false).build());
+    mLithoViewRule.setRoot(root).attachToWindow().measure().layout();
+
+    final MountState mountState = mLithoViewRule.getLithoView().getMountState();
+    LongSparseArray<MountItem> mountedItems = mountState.getIndexToItemMap();
+    assertThat(mountedItems.size()).isGreaterThan(1);
+
+    info_child1.reset();
+    info_child2.reset();
+
+    stateUpdater.increment();
+
+    assertThat(info_child1.getSteps())
+        .describedAs("Should not recreate initial state.")
+        .doesNotContain(ON_CREATE_INITIAL_STATE);
+
+    assertThat(info_child2.getSteps())
+        .describedAs("Should not recreate initial state.")
+        .doesNotContain(ON_CREATE_INITIAL_STATE);
   }
 
   @Test

@@ -22,12 +22,13 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 import com.facebook.litho.LayoutState.LayoutStateContext;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
+import com.facebook.litho.widget.Text;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(LithoTestRunner.class)
-public class ComponentTest {
+public class ComponentShallowCopyTest {
 
   private ComponentContext mContext;
 
@@ -74,5 +75,16 @@ public class ComponentTest {
 
     Component copyComponent = component.makeShallowCopy();
     assertThat(layoutState2.getCachedLayout(copyComponent)).isNull();
+  }
+
+  @Test
+  public void shallowCopy_withManualKey_preservesManualKeyInformation() {
+    Component component = Text.create(mContext).text("test").key("manual_key").build();
+    assertThat(component.getKey()).isEqualTo("manual_key");
+    assertThat(component.hasManualKey()).isTrue();
+
+    Component shallowCopy = component.makeShallowCopy();
+    assertThat(shallowCopy.getKey()).isEqualTo("manual_key");
+    assertThat(shallowCopy.hasManualKey()).isTrue();
   }
 }

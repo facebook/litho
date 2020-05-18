@@ -239,7 +239,6 @@ public abstract class Component extends ComponentLifecycle
 
       component.mGlobalKey = null;
       component.mIsLayoutStarted = false;
-      component.mHasManualKey = false;
       component.mLayoutVersionGenerator = new AtomicBoolean();
       component.mScopedContext = null;
       component.mChildCounters = null;
