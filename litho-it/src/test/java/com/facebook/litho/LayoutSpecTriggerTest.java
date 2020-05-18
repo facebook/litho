@@ -51,14 +51,10 @@ public class LayoutSpecTriggerTest {
     mLithoViewRule.attachToWindow().measure().layout();
 
     final Object bazObject = new Object();
-    mLithoViewRule.triggerEvent(
-        component,
-        new LithoViewRule.TriggerDispatcher() {
-          @Override
-          public void dispatch(ComponentContext c) {
-            LayoutSpecTriggerTester.triggerTestEvent(c, triggerHandle, bazObject);
-          }
-        });
+
+    // We need to use a ComponentContext with a ComponentTree on it
+    LayoutSpecTriggerTester.triggerTestEvent(
+        mLithoViewRule.getComponentTree().getContext(), triggerHandle, bazObject);
 
     assertThat(getSteps(info))
         .describedAs("Should call @OnTrigger method")

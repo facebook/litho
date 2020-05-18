@@ -32,7 +32,7 @@ import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
 
 @RunWith(LithoTestRunner.class)
-public class TriggerTest {
+public class SectionsTriggersTest {
 
   private SectionContext mSectionContext;
   private SectionTree mSectionTree;

@@ -112,8 +112,18 @@ public class LithoViewRule implements TestRule {
     return this;
   }
 
+  public LithoViewRule setRoot(Component.Builder builder) {
+    getComponentTree().setRoot(builder.build());
+    return this;
+  }
+
   public LithoViewRule setRootAsync(Component component) {
     getComponentTree().setRootAsync(component);
+    return this;
+  }
+
+  public LithoViewRule setRootAsync(Component.Builder builder) {
+    getComponentTree().setRootAsync(builder.build());
     return this;
   }
 
@@ -162,13 +172,6 @@ public class LithoViewRule implements TestRule {
     return this;
   }
 
-  public LithoViewRule triggerEvent(Component component, TriggerDispatcher triggerDispatcher) {
-    final ComponentContext c =
-        ComponentContext.withComponentScope(mComponentTree.getContext(), component);
-    triggerDispatcher.dispatch(c);
-    return this;
-  }
-
   public int getWidthSpec() {
     return mWidthSpec;
   }
@@ -208,9 +211,5 @@ public class LithoViewRule implements TestRule {
 
   protected @Nullable InternalNode getCurrentRootNode() {
     return getCommittedLayoutState() != null ? getCommittedLayoutState().getLayoutRoot() : null;
-  }
-
-  public interface TriggerDispatcher {
-    void dispatch(ComponentContext c);
   }
 }

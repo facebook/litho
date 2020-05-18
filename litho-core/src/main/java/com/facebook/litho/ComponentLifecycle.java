@@ -627,7 +627,7 @@ public abstract class ComponentLifecycle implements EventDispatcher, EventTrigge
 
   @Nullable
   protected static EventTrigger getEventTrigger(ComponentContext c, int id, Handle handle) {
-    if (c.getComponentScope() == null || c.getComponentTree() == null) {
+    if (c.getComponentTree() == null) {
       return null;
     }
 

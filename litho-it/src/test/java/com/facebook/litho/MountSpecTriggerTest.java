@@ -51,14 +51,8 @@ public class MountSpecTriggerTest {
     mLithoViewRule.attachToWindow().measure().layout();
 
     final Object bazObject = new Object();
-    mLithoViewRule.triggerEvent(
-        component,
-        new LithoViewRule.TriggerDispatcher() {
-          @Override
-          public void dispatch(ComponentContext c) {
-            MountSpecTriggerTester.triggerTestEvent(c, triggerHandle, bazObject);
-          }
-        });
+    MountSpecTriggerTester.triggerTestEvent(
+        mLithoViewRule.getComponentTree().getContext(), triggerHandle, bazObject);
 
     assertThat(getSteps(info))
         .describedAs("Should call @OnTrigger method")
