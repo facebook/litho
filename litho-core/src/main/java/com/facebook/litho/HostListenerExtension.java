@@ -30,7 +30,7 @@ public interface HostListenerExtension<T> {
   void afterMount();
 
   /** Called when the visible bounds of the Host change. */
-  void onViewOffset();
+  void onVisibleBoundsChanged();
 
   /** Called after all the Host's children have been unmounted. */
   void onUnmount();

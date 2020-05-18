@@ -83,7 +83,7 @@ public class IncrementalMountExtension extends MountDelegateExtension
    * on a non-dirty mount with a non-null localVisibleRect.
    */
   @Override
-  public void onViewOffset() {
+  public void onVisibleBoundsChanged() {
     assertMainThread();
 
     final Rect localVisibleRect = mLithoView.getVisibleRect();

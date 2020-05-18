@@ -406,7 +406,7 @@ class VisibilityOutputsExtension
   public void afterMount() {}
 
   @Override
-  public void onViewOffset() {
+  public void onVisibleBoundsChanged() {
     boolean processVisibilityOutputs = !mHost.isInTransientState();
     if (processVisibilityOutputs) {
       final Rect localVisibleRect = mHost.getVisibleRect();

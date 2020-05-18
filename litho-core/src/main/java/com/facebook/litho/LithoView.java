@@ -993,7 +993,7 @@ public class LithoView extends Host {
       mComponentTree.mountComponent(visibleRect, processVisibilityOutputs);
     } else {
       if (mLithoHostListenerCoordinator != null) {
-        mLithoHostListenerCoordinator.onViewOffset();
+        mLithoHostListenerCoordinator.onVisibleBoundsChanged();
       } else {
         if (processVisibilityOutputs && mComponentTree.isVisibilityProcessingEnabled()) {
           processVisibilityOutputs(visibleRect);
@@ -1012,7 +1012,7 @@ public class LithoView extends Host {
       mComponentTree.incrementalMountComponent();
     } else {
       if (mLithoHostListenerCoordinator != null) {
-        mLithoHostListenerCoordinator.onViewOffset();
+        mLithoHostListenerCoordinator.onVisibleBoundsChanged();
       } else {
         if (mComponentTree.isVisibilityProcessingEnabled()) {
           processVisibilityOutputs();
@@ -1068,7 +1068,7 @@ public class LithoView extends Host {
     if (mUseExtensions) {
 
       if (currentVisibleArea != null && !isMountStateDirty()) {
-        mLithoHostListenerCoordinator.onViewOffset();
+        mLithoHostListenerCoordinator.onVisibleBoundsChanged();
       } else {
         if (mLithoHostListenerCoordinator != null) {
           mLithoHostListenerCoordinator.beforeMount(layoutState);

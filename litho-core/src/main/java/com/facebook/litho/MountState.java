@@ -482,7 +482,7 @@ class MountState
       mIncrementalMountExtension.beforeMount(layoutState);
       mount(layoutState);
     } else {
-      mIncrementalMountExtension.onViewOffset();
+      mIncrementalMountExtension.onVisibleBoundsChanged();
     }
 
     maybeUpdateAnimatingMountContent();
@@ -813,7 +813,7 @@ class MountState
       if (isDirty) {
         mVisibilityOutputsExtension.beforeMount(layoutState);
       } else {
-        mVisibilityOutputsExtension.onViewOffset();
+        mVisibilityOutputsExtension.onVisibleBoundsChanged();
       }
       return;
     }

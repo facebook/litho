@@ -58,7 +58,7 @@ public class IncrementalMountExtensionTest {
     // extension.onViewOffset();
 
     when(lithoView.getVisibleRect()).thenReturn(new Rect(0, 0, 10, 50));
-    extension.onViewOffset();
+    extension.onVisibleBoundsChanged();
 
     assertThat(extension.getPreviousBottomsIndex()).isEqualTo(0);
     assertThat(extension.getPreviousTopsIndex()).isEqualTo(3);

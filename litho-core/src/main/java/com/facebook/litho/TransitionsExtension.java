@@ -93,7 +93,7 @@ public class TransitionsExtension extends MountDelegateExtension
     mTransitionsHasBeenCollected = false;
   }
 
-  public void onViewOffset() {}
+  public void onVisibleBoundsChanged() {}
 
   @Override
   public void onUnmount() {

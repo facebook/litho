@@ -49,9 +49,9 @@ public class LithoHostListenerCoordinator implements HostListenerExtension<Objec
   }
 
   @Override
-  public void onViewOffset() {
+  public void onVisibleBoundsChanged() {
     for (int i = 0, size = mMountExtensions.size(); i < size; i++) {
-      mMountExtensions.get(i).onViewOffset();
+      mMountExtensions.get(i).onVisibleBoundsChanged();
     }
   }
 
