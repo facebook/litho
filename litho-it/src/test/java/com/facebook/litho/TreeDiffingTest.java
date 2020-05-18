@@ -322,8 +322,7 @@ public class TreeDiffingTest {
 
   @Test
   public void testIsEquivalentToCalled() {
-    final Component component1 = new TestMountComponent();
-
+    final TestComponent component1 = new TestMountComponent();
     final TestComponent component2 = new TestMountComponent();
 
     LayoutState prevLayoutState =
@@ -342,7 +341,7 @@ public class TreeDiffingTest {
             makeSizeSpec(200, SizeSpec.EXACTLY),
             prevLayoutState);
 
-    assertThat(component2.isEquivalentToCalled()).isTrue();
+    assertThat(component1.isEquivalentToCalled()).isTrue();
   }
 
   @Test

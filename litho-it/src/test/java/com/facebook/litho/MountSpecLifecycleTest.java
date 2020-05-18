@@ -33,6 +33,7 @@ import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.MountSpecLifecycleTester;
 import com.facebook.litho.widget.MountSpecLifecycleTesterSpec;
 import com.facebook.litho.widget.PreallocatedMountSpecLifecycleTester;
+import com.facebook.litho.widget.RecordsShouldUpdate;
 import com.facebook.litho.widget.ShouldUseGlobalPoolFalseMountSpecLifecycleTester;
 import com.facebook.litho.widget.ShouldUseGlobalPoolTrueMountSpecLifecycleTester;
 import com.facebook.rendercore.MountItem;
@@ -426,6 +427,35 @@ public class MountSpecLifecycleTest {
     assertThat(ComponentsPools.getMountContentPools().get(0).getName())
         .describedAs("Should contain content pool from PreallocatedMountSpecLifecycleTester")
         .isEqualTo("PreallocatedMountSpecLifecycleTester");
+  }
+
+  @Test
+  public void shouldUpdate_shouldUpdateIsCalled_prevAndNextAreInRightOrder() {
+    final Object firstObject = new Object();
+    final List<Diff<Object>> shouldUpdateCalls = new ArrayList<>();
+    mLithoViewRule
+        .setRoot(
+            RecordsShouldUpdate.create(mLithoViewRule.getContext())
+                .shouldUpdateCalls(shouldUpdateCalls)
+                .testProp(firstObject)
+                .build())
+        .measure()
+        .layout()
+        .attachToWindow();
+
+    final Object secondObject = new Object();
+    mLithoViewRule
+        .setRoot(
+            RecordsShouldUpdate.create(mLithoViewRule.getContext())
+                .shouldUpdateCalls(shouldUpdateCalls)
+                .testProp(secondObject)
+                .build())
+        .measure()
+        .layout();
+
+    assertThat(shouldUpdateCalls).hasSize(1);
+    assertThat(shouldUpdateCalls.get(0).getPrevious()).isEqualTo(firstObject);
+    assertThat(shouldUpdateCalls.get(0).getNext()).isEqualTo(secondObject);
   }
 
   @Test
