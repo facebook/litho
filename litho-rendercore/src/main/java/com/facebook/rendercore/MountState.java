@@ -94,7 +94,6 @@ public class MountState implements MountDelegateTarget {
     }
 
     mountRenderUnit(position, renderTreeNode);
-    suppressInvalidationsOnHosts(false);
   }
 
   @Override
@@ -127,7 +126,6 @@ public class MountState implements MountDelegateTarget {
     mRenderTree = renderTree;
     mIsMounting = true;
 
-    suppressInvalidationsOnHosts(true);
     prepareMount();
 
     // Let's start from 1 as the RenderTreeNode in position 0 always represents the root.
@@ -144,7 +142,6 @@ public class MountState implements MountDelegateTarget {
     }
 
     mNeedsRemount = false;
-    suppressInvalidationsOnHosts(false);
     mIsMounting = false;
   }
 
@@ -475,20 +472,6 @@ public class MountState implements MountDelegateTarget {
     unmountRenderUnitFromContent(mContext, node, unit, content);
 
     item.releaseMountContent(mContext);
-  }
-
-  private void suppressInvalidationsOnHosts(boolean suppressInvalidations) {
-    for (int i = 0; i < mRenderTree.getMountableOutputCount(); i++) {
-      final RenderTreeNode renderTreeNode = mRenderTree.getRenderTreeNodeAtIndex(i);
-      // If this RenderUnit has children it means that it's mounting a Host and therefore we need
-      // to suppress invalidations on it.
-      if (renderTreeNode.getChildrenCount() > 0) {
-        final MountItem item = mIndexToMountedItemMap.get(renderTreeNode.getRenderUnit().getId());
-        if (item != null) {
-          ((Host) item.getContent()).suppressInvalidations(suppressInvalidations);
-        }
-      }
-    }
   }
 
   private @Nullable MountItem getItemAt(int i) {

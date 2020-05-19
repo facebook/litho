@@ -42,7 +42,6 @@ import androidx.annotation.VisibleForTesting;
 import androidx.collection.SparseArrayCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.view.ViewCompat;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.rendercore.Host;
 import com.facebook.rendercore.MountItem;
@@ -75,10 +74,6 @@ public class ComponentHost extends Host {
   private Object mViewTag;
   private SparseArray<Object> mViewTags;
 
-  private boolean mWasInvalidatedWhileSuppressed;
-  private boolean mWasInvalidatedForAccessibilityWhileSuppressed;
-  private boolean mWasRequestedFocusWhileSuppressed;
-  private boolean mSuppressInvalidations;
   private boolean mDisallowIntercept;
 
   private final InterleavedDispatchDraw mDispatchDraw = new InterleavedDispatchDraw();
@@ -618,57 +613,9 @@ public class ComponentHost extends Host {
     return mOnTouchListener;
   }
 
-  /**
-   * This is used to collapse all invalidation calls on hosts during mount. While invalidations are
-   * suppressed, the hosts will simply bail on invalidations. Once the suppression is turned off, a
-   * single invalidation will be triggered on the affected hosts.
-   */
-  void suppressInvalidations(boolean suppressInvalidations) {
-    if (ComponentsConfiguration.disableHostSuppressInvalidations) {
-      return;
-    }
-
-    if (mSuppressInvalidations == suppressInvalidations) {
-      return;
-    }
-
-    mSuppressInvalidations = suppressInvalidations;
-
-    if (!mSuppressInvalidations) {
-      if (mWasInvalidatedWhileSuppressed) {
-        this.invalidate();
-        mWasInvalidatedWhileSuppressed = false;
-      }
-
-      if (mWasInvalidatedForAccessibilityWhileSuppressed) {
-        this.invalidateAccessibilityState();
-        mWasInvalidatedForAccessibilityWhileSuppressed = false;
-      }
-
-      if (mWasRequestedFocusWhileSuppressed) {
-        final View root = getRootView();
-        if (root != null) {
-          root.requestFocus();
-        }
-        mWasRequestedFocusWhileSuppressed = false;
-      }
-    }
-  }
-
-  @VisibleForTesting
-  @Override
-  public boolean getSuppressInvalidations() {
-    return mSuppressInvalidations;
-  }
-
   /** Invalidates the accessibility node tree in this host. */
   void invalidateAccessibilityState() {
     if (!mIsComponentAccessibilityDelegateSet) {
-      return;
-    }
-
-    if (mSuppressInvalidations) {
-      mWasInvalidatedForAccessibilityWhileSuppressed = true;
       return;
     }
 
@@ -932,49 +879,6 @@ public class ComponentHost extends Host {
     }
 
     return super.getTag(key);
-  }
-
-  @Override
-  public void invalidate(Rect dirty) {
-    if (mSuppressInvalidations) {
-      mWasInvalidatedWhileSuppressed = true;
-      return;
-    }
-
-    super.invalidate(dirty);
-  }
-
-  @Override
-  public void invalidate(int l, int t, int r, int b) {
-    if (mSuppressInvalidations) {
-      mWasInvalidatedWhileSuppressed = true;
-      return;
-    }
-
-    super.invalidate(l, t, r, b);
-  }
-
-  @Override
-  public void invalidate() {
-    if (mSuppressInvalidations) {
-      mWasInvalidatedWhileSuppressed = true;
-      return;
-    }
-
-    super.invalidate();
-  }
-
-  @Override
-  public boolean requestFocus(int direction, Rect previouslyFocusedRect) {
-    // Arguments for equivalent call to View.requestFocus().
-    final boolean nullArgumentsRequestFocusCall =
-        (direction == View.FOCUS_DOWN && previouslyFocusedRect == null);
-    if (nullArgumentsRequestFocusCall && mSuppressInvalidations) {
-      mWasRequestedFocusWhileSuppressed = true;
-      return false;
-    }
-
-    return super.requestFocus(direction, previouslyFocusedRect);
   }
 
   protected void refreshAccessibilityDelegatesIfNeeded(boolean isAccessibilityEnabled) {

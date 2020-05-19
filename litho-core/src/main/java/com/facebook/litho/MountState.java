@@ -319,8 +319,6 @@ class MountState
     if (mIsDirty) {
       updateTransitions(layoutState, componentTree);
 
-      suppressInvalidationsOnHosts(true);
-
       // Prepare the data structure for the new LayoutState and removes mountItems
       // that are not present anymore if isUpdateMountInPlace is enabled.
       if (mountPerfEvent != null) {
@@ -456,8 +454,6 @@ class MountState
 
     processTestOutputs(layoutState);
 
-    suppressInvalidationsOnHosts(false);
-
     if (mountPerfEvent != null) {
       logMountPerfEvent(logger, mountPerfEvent, wasDirty);
     }
@@ -557,8 +553,6 @@ class MountState
                 logger,
                 logger.newPerformanceEvent(componentTree.getContext(), EVENT_MOUNT));
 
-    suppressInvalidationsOnHosts(true);
-
     // Prepare the data structure for the new LayoutState and removes mountItems
     // that are not present anymore if isUpdateMountInPlace is enabled.
     if (mountPerfEvent != null) {
@@ -642,8 +636,6 @@ class MountState
 
     processTestOutputs(layoutState);
 
-    suppressInvalidationsOnHosts(false);
-
     if (mountPerfEvent != null) {
       logMountPerfEvent(logger, mountPerfEvent, wasDirty);
     }
@@ -677,7 +669,6 @@ class MountState
     if (input instanceof LayoutState) {
       LayoutState layoutState = (LayoutState) input;
       mountLayoutOutput(position, renderTreeNode, getLayoutOutput(renderTreeNode), layoutState);
-      suppressInvalidationsOnHosts(false);
     } else {
       throw new IllegalStateException("This is not supported for now");
     }
@@ -1221,7 +1212,6 @@ class MountState
   }
 
   private void registerHost(long id, ComponentHost host) {
-    host.suppressInvalidations(true);
     mHostsByMarker.put(id, host);
   }
 
@@ -1263,12 +1253,6 @@ class MountState
 
   private static int computeRectArea(Rect rect) {
     return rect.isEmpty() ? 0 : (rect.width() * rect.height());
-  }
-
-  private void suppressInvalidationsOnHosts(boolean suppressInvalidations) {
-    for (int i = mHostsByMarker.size() - 1; i >= 0; i--) {
-      mHostsByMarker.valueAt(i).suppressInvalidations(suppressInvalidations);
-    }
   }
 
   private boolean updateMountItemIfNeeded(

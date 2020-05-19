@@ -17,18 +17,11 @@
 package com.facebook.rendercore;
 
 import android.content.Context;
-import android.graphics.Rect;
 import android.util.AttributeSet;
-import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 public abstract class Host extends ViewGroup {
-
-  private boolean mWasInvalidatedWhileSuppressed;
-  private boolean mWasRequestedFocusWhileSuppressed;
-  private boolean mSuppressInvalidations;
 
   public Host(Context context, @Nullable AttributeSet attrs) {
     super(context, attrs);
@@ -77,80 +70,4 @@ public abstract class Host extends ViewGroup {
    * @param newIndex The new index of the MountItem.
    */
   public abstract void moveItem(MountItem item, int oldIndex, int newIndex);
-
-  @Override
-  public void invalidate(Rect dirty) {
-    if (mSuppressInvalidations) {
-      mWasInvalidatedWhileSuppressed = true;
-      return;
-    }
-
-    super.invalidate(dirty);
-  }
-
-  @Override
-  public void invalidate(int l, int t, int r, int b) {
-    if (mSuppressInvalidations) {
-      mWasInvalidatedWhileSuppressed = true;
-      return;
-    }
-
-    super.invalidate(l, t, r, b);
-  }
-
-  @Override
-  public void invalidate() {
-    if (mSuppressInvalidations) {
-      mWasInvalidatedWhileSuppressed = true;
-      return;
-    }
-
-    super.invalidate();
-  }
-
-  @Override
-  public boolean requestFocus(int direction, Rect previouslyFocusedRect) {
-    // Arguments for equivalent call to View.requestFocus().
-    final boolean nullArgumentsRequestFocusCall =
-        (direction == View.FOCUS_DOWN && previouslyFocusedRect == null);
-    if (nullArgumentsRequestFocusCall && mSuppressInvalidations) {
-      mWasRequestedFocusWhileSuppressed = true;
-      return false;
-    }
-
-    return super.requestFocus(direction, previouslyFocusedRect);
-  }
-
-  /**
-   * This is used to collapse all invalidation calls on hosts during mount. While invalidations are
-   * suppressed, the hosts will simply bail on invalidations. Once the suppression is turned off, a
-   * single invalidation will be triggered on the affected hosts.
-   */
-  void suppressInvalidations(boolean suppressInvalidations) {
-    if (mSuppressInvalidations == suppressInvalidations) {
-      return;
-    }
-
-    mSuppressInvalidations = suppressInvalidations;
-
-    if (!mSuppressInvalidations) {
-      if (mWasInvalidatedWhileSuppressed) {
-        this.invalidate();
-        mWasInvalidatedWhileSuppressed = false;
-      }
-
-      if (mWasRequestedFocusWhileSuppressed) {
-        final View root = getRootView();
-        if (root != null) {
-          root.requestFocus();
-        }
-        mWasRequestedFocusWhileSuppressed = false;
-      }
-    }
-  }
-
-  @VisibleForTesting
-  public boolean getSuppressInvalidations() {
-    return mSuppressInvalidations;
-  }
 }
