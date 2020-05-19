@@ -18,6 +18,7 @@ package com.facebook.litho;
 
 import android.graphics.Rect;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import com.facebook.rendercore.MountDelegate.MountDelegateTarget;
 import java.util.ArrayList;
 import java.util.List;
@@ -117,5 +118,11 @@ public class LithoHostListenerCoordinator implements HostListenerExtension<Objec
 
   private void registerListener(HostListenerExtension mountListenerExtension) {
     mMountExtensions.add(mountListenerExtension);
+  }
+
+  @VisibleForTesting
+  void useVisibilityExtension(VisibilityOutputsExtension extension) {
+    mVisibilityOutputsExtension = extension;
+    registerListener(mVisibilityOutputsExtension);
   }
 }

@@ -391,6 +391,12 @@ class VisibilityOutputsExtension
   public void beforeMount(VisibilityOutputsExtensionInput input, Rect localVisibleRect) {
 
     mVisibilityOutputs = input.getVisibilityOutputs();
+
+    // Guard against the input being null.
+    if (mVisibilityOutputs == null) {
+      mVisibilityOutputs = new ArrayList<>();
+    }
+
     mIncrementalVisibilityEnabled = input.isIncrementalVisibilityEnabled();
     mVisibilityModuleInput = input.getVisibilityModuleInput();
     mPreviousLocalVisibleRect.setEmpty();
@@ -433,5 +439,10 @@ class VisibilityOutputsExtension
   @VisibleForTesting
   Map<String, VisibilityItem> getVisibilityIdToItemMap() {
     return mVisibilityIdToItemMap;
+  }
+
+  @VisibleForTesting
+  int getInputCount() {
+    return mVisibilityOutputs.size();
   }
 }

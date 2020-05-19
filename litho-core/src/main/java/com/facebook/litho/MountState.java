@@ -419,22 +419,25 @@ class MountState
       mTransitionManager.runTransitions();
     }
 
-    if (isVisibilityProcessingEnabled && processVisibilityOutputs) {
-      if (processVisibilityOutputs) {
-        if (isTracing) {
-          ComponentsSystrace.beginSection("processVisibilityOutputs");
-        }
-        if (mountPerfEvent != null) {
-          mountPerfEvent.markerPoint("EVENT_PROCESS_VISIBILITY_OUTPUTS_START");
-        }
-        processVisibilityOutputs(
-            layoutState, localVisibleRect, mPreviousLocalVisibleRect, mIsDirty, mountPerfEvent);
-        if (mountPerfEvent != null) {
-          mountPerfEvent.markerPoint("EVENT_PROCESS_VISIBILITY_OUTPUTS_END");
-        }
-        if (isTracing) {
-          ComponentsSystrace.endSection();
-        }
+    if (isVisibilityProcessingEnabled) {
+      if (isTracing) {
+        ComponentsSystrace.beginSection("processVisibilityOutputs");
+      }
+      if (mountPerfEvent != null) {
+        mountPerfEvent.markerPoint("EVENT_PROCESS_VISIBILITY_OUTPUTS_START");
+      }
+      processVisibilityOutputsInternal(
+          layoutState,
+          localVisibleRect,
+          mPreviousLocalVisibleRect,
+          mIsDirty,
+          mountPerfEvent,
+          processVisibilityOutputs);
+      if (mountPerfEvent != null) {
+        mountPerfEvent.markerPoint("EVENT_PROCESS_VISIBILITY_OUTPUTS_END");
+      }
+      if (isTracing) {
+        ComponentsSystrace.endSection();
       }
     }
 
@@ -489,9 +492,14 @@ class MountState
     cleanupTransitionsAfterMount();
 
     boolean isVisibilityProcessingEnabled = componentTree.isVisibilityProcessingEnabled();
-    if (isVisibilityProcessingEnabled && processVisibilityOutputs) {
-      processVisibilityOutputs(
-          layoutState, localVisibleRect, previousLocalVisibleRect, wasDirty, null);
+    if (isVisibilityProcessingEnabled) {
+      processVisibilityOutputsInternal(
+          layoutState,
+          localVisibleRect,
+          previousLocalVisibleRect,
+          wasDirty,
+          null,
+          processVisibilityOutputs);
     }
   }
 
@@ -800,12 +808,27 @@ class MountState
       Rect previousLocalVisibleRect,
       boolean isDirty,
       @Nullable PerfEvent mountPerfEvent) {
+    processVisibilityOutputsInternal(
+        layoutState, localVisibleRect, previousLocalVisibleRect, isDirty, mountPerfEvent, true);
+  }
+
+  private void processVisibilityOutputsInternal(
+      LayoutState layoutState,
+      @Nullable Rect localVisibleRect,
+      Rect previousLocalVisibleRect,
+      boolean isDirty,
+      @Nullable PerfEvent mountPerfEvent,
+      boolean processVisibilityOutputs) {
     if (mVisibilityOutputsExtension != null) {
       if (isDirty) {
         mVisibilityOutputsExtension.beforeMount(layoutState, localVisibleRect);
       } else {
         mVisibilityOutputsExtension.onVisibleBoundsChanged(localVisibleRect);
       }
+      return;
+    }
+
+    if (!processVisibilityOutputs) {
       return;
     }
 
