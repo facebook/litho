@@ -65,7 +65,7 @@ class MyGroupSection {
 
 The framework implementation of the DataDiffSection uses the Android [DiffUtil](https://developer.android.com/reference/android/support/v7/util/DiffUtil.html) class for determining the minimal set of operations that is needed to update the UI given the current and new lists of data.
 
-By default, DataDiffSection will detect data changes by checking instance equality and subsequently calling `equals()` on the objects in the data list. Most of the times however, your data model is more complex and you need a custom way of declaring how to items should be compared and based on that, deciding when to update them.
+By default, DataDiffSection will detect data changes by checking instance equality and subsequently calling `equals()` on the objects in the data list. Most of the times however, your data model is more complex and you need a custom way of declaring how two items should be compared and based on that, deciding when to update them.
 This can easily be done by implementing and passing to the `DataDiffSection` handlers for two events: `OnCheckIsSameItemEvent` and `OnCheckIsSameContentEvent`.
 
 When the `DataDiffSection` calculates the delta between its current and new list of data, it will check whether two items represent the same piece of data, and only if that's true it will check whether the content of that item is unchanged.
