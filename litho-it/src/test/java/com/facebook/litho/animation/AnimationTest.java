@@ -23,6 +23,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.view.View;
+import android.view.animation.AccelerateInterpolator;
 import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
@@ -592,5 +593,127 @@ public class AnimationTest {
 
     view = mLithoViewRule.findViewWithTag(TRANSITION_KEY);
     assertThat(view).describedAs("view after last re-measure and re-layout").isNull();
+  }
+
+  @Test
+  public void animationProperties_differentInterpolator_elementShouldAnimateInTheXAxis() {
+    final TestAnimationsComponent component =
+        TestAnimationsComponent.create(mLithoViewRule.getContext())
+            .stateCaller(mStateCaller)
+            .transition(
+                Transition.create(TRANSITION_KEY)
+                    .animator(Transition.timing(144, new AccelerateInterpolator()))
+                    .animate(AnimatedProperties.X))
+            .testComponent(
+                new TestAnimationsComponentSpec
+                    .TestComponent() { // This could be a lambda but it fails ci.
+                  @Override
+                  public Component getComponent(ComponentContext componentContext, boolean state) {
+                    return Row.create(componentContext)
+                        .heightDip(200)
+                        .widthDip(200)
+                        .justifyContent(state ? YogaJustify.FLEX_START : YogaJustify.FLEX_END)
+                        .alignItems(state ? YogaAlign.FLEX_START : YogaAlign.FLEX_END)
+                        .child(
+                            Row.create(componentContext)
+                                .heightDip(40)
+                                .widthDip(40)
+                                .backgroundColor(Color.parseColor("#ee1111"))
+                                .transitionKey(TRANSITION_KEY)
+                                .viewTag(TRANSITION_KEY)
+                                .build())
+                        .build();
+                  }
+                })
+            .build();
+    mLithoViewRule.setRoot(component);
+    mActivityController.get().setContentView(mLithoViewRule.getLithoView());
+    mActivityController.resume().visible();
+
+    View view = mLithoViewRule.findViewWithTag(TRANSITION_KEY);
+
+    // 160 is equal to height and width of 200 - 40 for the size of the row.
+    assertThat(view.getX()).describedAs("view X axis should be at start position").isEqualTo(160);
+    assertThat(view.getY()).describedAs("view Y axis should be at start position").isEqualTo(160);
+
+    mStateCaller.update();
+
+    // X after state update should be at 160 because is going to be animated.
+    assertThat(view.getX()).describedAs("view X axis after toggle").isEqualTo(160);
+    // Y moves without animating
+    assertThat(view.getY()).describedAs("view Y axis after toggle").isEqualTo(0);
+
+    mTransitionTestRule.step(5);
+
+    // Check java doc for how we calculate this value. NOTE: this is using a different interpolator
+    // so the fraction is different, check AccelerateInterpolator class
+    assertThat(view.getX()).describedAs("view X axis after 5 frames").isEqualTo(128.39507f);
+    assertThat(view.getY()).describedAs("view Y axis after 5 frames").isEqualTo(0);
+
+    mTransitionTestRule.step(5);
+
+    assertThat(view.getX()).describedAs("view X axis after 10 frames").isEqualTo(0);
+    assertThat(view.getY()).describedAs("view Y axis after 10 frames").isEqualTo(0);
+  }
+
+  @Test
+  public void animationProperties_nullInterpolator_elementShouldAnimateInTheXAxis() {
+    final TestAnimationsComponent component =
+        TestAnimationsComponent.create(mLithoViewRule.getContext())
+            .stateCaller(mStateCaller)
+            .transition(
+                Transition.create(TRANSITION_KEY)
+                    .animator(Transition.timing(144, null))
+                    .animate(AnimatedProperties.X))
+            .testComponent(
+                new TestAnimationsComponentSpec
+                    .TestComponent() { // This could be a lambda but it fails ci.
+                  @Override
+                  public Component getComponent(ComponentContext componentContext, boolean state) {
+                    return Row.create(componentContext)
+                        .heightDip(200)
+                        .widthDip(200)
+                        .justifyContent(state ? YogaJustify.FLEX_START : YogaJustify.FLEX_END)
+                        .alignItems(state ? YogaAlign.FLEX_START : YogaAlign.FLEX_END)
+                        .child(
+                            Row.create(componentContext)
+                                .heightDip(40)
+                                .widthDip(40)
+                                .backgroundColor(Color.parseColor("#ee1111"))
+                                .transitionKey(TRANSITION_KEY)
+                                .viewTag(TRANSITION_KEY)
+                                .build())
+                        .build();
+                  }
+                })
+            .build();
+    mLithoViewRule.setRoot(component);
+    mActivityController.get().setContentView(mLithoViewRule.getLithoView());
+    mActivityController.resume().visible();
+
+    View view = mLithoViewRule.findViewWithTag(TRANSITION_KEY);
+
+    // 160 is equal to height and width of 200 - 40 for the size of the row.
+    assertThat(view.getX()).describedAs("view X axis should be at start position").isEqualTo(160);
+    assertThat(view.getY()).describedAs("view Y axis should be at start position").isEqualTo(160);
+
+    mStateCaller.update();
+
+    // X after state update should be at 160 because is going to be animated.
+    assertThat(view.getX()).describedAs("view X axis after toggle").isEqualTo(160);
+    // Y moves without animating
+    assertThat(view.getY()).describedAs("view Y axis after toggle").isEqualTo(0);
+
+    mTransitionTestRule.step(5);
+
+    // This is not using any interpolator so after 5 frames
+    // 160(movement)/144(time_frame)*5(frames)*16(frame_time)
+    assertThat(view.getX()).describedAs("view X axis after 5 frames").isEqualTo(88.888885f);
+    assertThat(view.getY()).describedAs("view Y axis after 5 frames").isEqualTo(0);
+
+    mTransitionTestRule.step(5);
+
+    assertThat(view.getX()).describedAs("view X axis after 10 frames").isEqualTo(0);
+    assertThat(view.getY()).describedAs("view Y axis after 10 frames").isEqualTo(0);
   }
 }

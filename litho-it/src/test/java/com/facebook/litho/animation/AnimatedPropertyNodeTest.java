@@ -32,7 +32,9 @@ import com.facebook.litho.dataflow.SettableNode;
 import com.facebook.litho.dataflow.SimpleNode;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
 @RunWith(LithoTestRunner.class)
@@ -40,6 +42,7 @@ public class AnimatedPropertyNodeTest {
 
   private MockTimingSource mTestTimingSource;
   private DataFlowGraph mDataFlowGraph;
+  @Rule public ExpectedException thrown = ExpectedException.none();
 
   @Before
   public void setUp() throws Exception {
@@ -128,5 +131,22 @@ public class AnimatedPropertyNodeTest {
     animatedNode.setMountContentGroup(group2);
 
     assertThat(view2.getScaleX()).isEqualTo(123f);
+  }
+
+  @Test
+  public void propertyNode_useRandomObject_failWhenIsNotView() {
+    Object view = new Object();
+    OutputUnitsAffinityGroup<Object> group = new OutputUnitsAffinityGroup<>();
+    group.add(OutputUnitType.HOST, view);
+
+    SettableNode source = new SettableNode();
+    AnimatedPropertyNode animatedNode = new AnimatedPropertyNode(group, SCALE);
+
+    GraphBinding binding = create(mDataFlowGraph);
+    binding.addBinding(source, animatedNode);
+    binding.activate();
+
+    thrown.expect(RuntimeException.class);
+    mTestTimingSource.step(1);
   }
 }
