@@ -1282,6 +1282,7 @@ class MountState
     final LayoutOutput currentLayoutOutput = getLayoutOutput(currentMountItem);
     final Component itemComponent = currentLayoutOutput.getComponent();
     final Object currentContent = currentMountItem.getContent();
+    final ComponentHost host = (ComponentHost) currentMountItem.getHost();
     if (layoutOutputComponent == null) {
       throw new RuntimeException("Trying to update a MountItem with a null Component.");
     }
@@ -1302,19 +1303,16 @@ class MountState
       // ComponentTree
       if (mLastMountedComponentTreeId != componentTreeId) {
         if (isHostSpec(itemComponent)) {
-          final ComponentHost componentHost = (ComponentHost) currentMountItem.getContent();
-          removeDisappearingMountContentFromComponentHost(componentHost);
+          removeDisappearingMountContentFromComponentHost((ComponentHost) currentContent);
         }
       }
 
       maybeUnsetViewAttributes(currentMountItem);
 
-      final ComponentHost host = (ComponentHost) currentMountItem.getHost();
       host.maybeUnregisterTouchExpansion(index, currentLayoutOutput, currentContent);
     } else if (shouldUpdateViewInfo) {
       maybeUnsetViewAttributes(currentMountItem);
 
-      final ComponentHost host = (ComponentHost) currentMountItem.getHost();
       host.maybeUnregisterTouchExpansion(index, currentLayoutOutput, currentContent);
     }
 
@@ -1328,13 +1326,11 @@ class MountState
 
     // 5. If the mount item is not valid for this component update its content and view attributes.
     if (shouldUpdate) {
-      final ComponentHost host = (ComponentHost) currentMountItem.getHost();
       host.maybeRegisterTouchExpansion(index, nextLayoutOutput, currentContent);
 
       updateMountedContent(currentMountItem, nextLayoutOutput, itemComponent);
       setViewAttributes(currentMountItem);
     } else if (shouldUpdateViewInfo) {
-      final ComponentHost host = (ComponentHost) currentMountItem.getHost();
       host.maybeRegisterTouchExpansion(index, nextLayoutOutput, currentContent);
 
       setViewAttributes(currentMountItem);
@@ -1350,12 +1346,11 @@ class MountState
 
     maybeInvalidateAccessibilityState(currentLayoutOutput, currentMountItem.getHost());
     if (currentMountItem.getContent() instanceof Drawable) {
-      final LayoutOutput output = getLayoutOutput(currentMountItem);
       maybeSetDrawableState(
-          currentMountItem.getHost(),
-          (Drawable) currentMountItem.getContent(),
-          output.getFlags(),
-          output.getNodeInfo());
+          host,
+          (Drawable) currentContent,
+          currentLayoutOutput.getFlags(),
+          currentLayoutOutput.getNodeInfo());
     }
 
     return shouldUpdate;
