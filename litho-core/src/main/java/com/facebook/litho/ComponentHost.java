@@ -149,19 +149,20 @@ public class ComponentHost extends Host {
    */
   public void mount(int index, MountItem mountItem, Rect bounds) {
     final Object content = mountItem.getContent();
+    final LayoutOutput output = getLayoutOutput(mountItem);
     if (content instanceof Drawable) {
       mountDrawable(index, mountItem, bounds);
     } else if (content instanceof View) {
       ensureViewMountItems();
       mViewMountItems.put(index, mountItem);
-      mountView((View) content, getLayoutOutput(mountItem).getFlags());
-      maybeRegisterTouchExpansion(index, getLayoutOutput(mountItem), content);
+      mountView((View) content, output.getFlags());
+      maybeRegisterTouchExpansion(index, output, content);
     }
 
     ensureMountItems();
     mMountItems.put(index, mountItem);
 
-    maybeInvalidateAccessibilityState(getLayoutOutput(mountItem), this);
+    maybeInvalidateAccessibilityState(output, this);
   }
 
   private void ensureMountItems() {
@@ -205,6 +206,7 @@ public class ComponentHost extends Host {
   @Override
   public void unmount(int index, MountItem mountItem) {
     final Object content = mountItem.getContent();
+    final LayoutOutput output = getLayoutOutput(mountItem);
     if (content instanceof Drawable) {
       ensureDrawableMountItems();
 
@@ -216,13 +218,13 @@ public class ComponentHost extends Host {
       ensureViewMountItems();
       ComponentHostUtils.removeItem(index, mViewMountItems, mScrapViewMountItemsArray);
       mIsChildDrawingOrderDirty = true;
-      maybeUnregisterTouchExpansion(index, getLayoutOutput(mountItem), content);
+      maybeUnregisterTouchExpansion(index, output, content);
     }
 
     ensureMountItems();
     ComponentHostUtils.removeItem(index, mMountItems, mScrapMountItemsArray);
     releaseScrapDataStructuresIfNeeded();
-    maybeInvalidateAccessibilityState(getLayoutOutput(mountItem), this);
+    maybeInvalidateAccessibilityState(output, this);
   }
 
   void startUnmountDisappearingItem(int index, MountItem mountItem) {
