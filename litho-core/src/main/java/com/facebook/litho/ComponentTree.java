@@ -124,6 +124,9 @@ public class ComponentTree {
   @Retention(RetentionPolicy.SOURCE)
   private @interface PendingLayoutCalculation {}
 
+  @GuardedBy("this")
+  private @Nullable HooksHandler mHooksHandler;
+
   public interface MeasureListener {
 
     /**
@@ -362,6 +365,9 @@ public class ComponentTree {
     final StateHandler builderStateHandler = builder.stateHandler;
     mStateHandler =
         builderStateHandler == null ? StateHandler.createNewInstance(null) : builderStateHandler;
+    if (ComponentsConfiguration.isHooksImplEnabled) {
+      mHooksHandler = new HooksHandler();
+    }
 
     if (builder.previousRenderState != null) {
       mPreviousRenderState = builder.previousRenderState;
@@ -1075,6 +1081,14 @@ public class ComponentTree {
         if (layoutStateStateHandler != null) {
           mStateHandler.commit(layoutStateStateHandler);
           mInitialStateContainer.unregisterStateHandler(layoutStateStateHandler);
+        }
+
+        if (ComponentsConfiguration.isHooksImplEnabled) {
+          final HooksHandler layoutStateHooksHandler = localLayoutState.getHooksHandler();
+          if (layoutStateHooksHandler != null
+              && mHooksHandler != null) { // we could have been released
+            mHooksHandler.commit(layoutStateHooksHandler);
+          }
         }
 
         components = localLayoutState.consumeComponents();
@@ -2058,6 +2072,13 @@ public class ComponentTree {
             mStateHandler.commit(layoutStateStateHandler);
           }
         }
+        if (ComponentsConfiguration.isHooksImplEnabled) {
+          final HooksHandler layoutStateHooksHandler = localLayoutState.getHooksHandler();
+          if (layoutStateHooksHandler != null
+              && mHooksHandler != null) { // we could have been released
+            mHooksHandler.commit(layoutStateHooksHandler);
+          }
+        }
 
         if (mMeasureListeners != null) {
           rootWidth = localLayoutState.getWidth();
@@ -2218,6 +2239,7 @@ public class ComponentTree {
       mBackgroundLayoutState = null;
       mCommittedLayoutState = null;
       mStateHandler = null;
+      mHooksHandler = null;
       mPreviousRenderState = null;
       mMeasureListeners = null;
     }
@@ -2581,8 +2603,15 @@ public class ComponentTree {
       synchronized (ComponentTree.this) {
         final StateHandler stateHandler =
             StateHandler.createNewInstance(ComponentTree.this.mStateHandler);
+
+        final HooksHandler hooksHandler =
+            (ComponentsConfiguration.isHooksImplEnabled)
+                ? new HooksHandler(ComponentTree.this.mHooksHandler)
+                : null;
+
         previousLayoutState = mCommittedLayoutState;
-        contextWithStateHandler = new ComponentContext(context, stateHandler, treeProps, null);
+        contextWithStateHandler =
+            new ComponentContext(context, stateHandler, hooksHandler, treeProps, null);
         mInitialStateContainer.registerStateHandler(stateHandler);
       }
 

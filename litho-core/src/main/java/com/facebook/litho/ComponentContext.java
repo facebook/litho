@@ -86,6 +86,9 @@ public class ComponentContext {
   @ThreadConfined(ThreadConfined.ANY)
   private @Nullable LayoutStateContext mLayoutStateContext;
 
+  @ThreadConfined(ThreadConfined.ANY)
+  private @Nullable HooksHandler mHooksHandler;
+
   public ComponentContext(Context context) {
     this(context, null, null, null);
   }
@@ -124,6 +127,16 @@ public class ComponentContext {
       @Nullable ComponentsLogger logger,
       @Nullable StateHandler stateHandler,
       @Nullable TreeProps treeProps) {
+    this(context, logTag, logger, stateHandler, null, treeProps);
+  }
+
+  public ComponentContext(
+      Context context,
+      @Nullable String logTag,
+      @Nullable ComponentsLogger logger,
+      @Nullable StateHandler stateHandler,
+      @Nullable HooksHandler hooksHandler,
+      @Nullable TreeProps treeProps) {
 
     if (logger != null && logTag == null) {
       throw new IllegalStateException("When a ComponentsLogger is set, a LogTag must be set");
@@ -136,15 +149,30 @@ public class ComponentContext {
     mLogger = logger;
     mLogTag = logTag;
     mStateHandler = stateHandler;
+    mHooksHandler = hooksHandler;
   }
 
   public ComponentContext(ComponentContext context) {
-    this(context, context.mStateHandler, context.mTreeProps, context.mLayoutStateContext);
+    this(
+        context,
+        context.mStateHandler,
+        context.mHooksHandler,
+        context.mTreeProps,
+        context.mLayoutStateContext);
   }
 
   public ComponentContext(
       ComponentContext context,
       @Nullable StateHandler stateHandler,
+      @Nullable TreeProps treeProps,
+      @Nullable LayoutStateContext layoutStateContext) {
+    this(context, stateHandler, null, treeProps, layoutStateContext);
+  }
+
+  public ComponentContext(
+      ComponentContext context,
+      @Nullable StateHandler stateHandler,
+      @Nullable HooksHandler hooksHandler,
       @Nullable TreeProps treeProps,
       @Nullable LayoutStateContext layoutStateContext) {
 
@@ -163,6 +191,9 @@ public class ComponentContext {
             : mComponentTree.getSimpleName();
 
     mStateHandler = stateHandler != null ? stateHandler : context.mStateHandler;
+    if (ComponentsConfiguration.isHooksImplEnabled) {
+      mHooksHandler = hooksHandler != null ? hooksHandler : context.mHooksHandler;
+    }
     mTreeProps = treeProps != null ? treeProps : context.mTreeProps;
   }
 
@@ -471,6 +502,11 @@ public class ComponentContext {
   @Nullable
   StateHandler getStateHandler() {
     return mStateHandler;
+  }
+
+  @Nullable
+  HooksHandler getHooksHandler() {
+    return mHooksHandler;
   }
 
   /**
