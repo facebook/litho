@@ -114,7 +114,7 @@ The Sections hierarchy becomes a “data source” for the `RecyclerCollectionCo
 
 ```java
 final Component listComponent = RecyclerCollectionComponent.create(c)
-    .section(MyGroupSection.create(new SectionContent(c))
+    .section(MyGroupSection.create(new SectionContext(c))
         .dataModel(...)
         .build())
     .build();
