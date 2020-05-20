@@ -1627,6 +1627,54 @@ public class ComponentTreeTest {
   }
 
   @Test
+  public void testComponentTreeHasLatestMainThreadLayoutStateAfterMeasure() {
+    TestDrawableComponent.BlockInPrepareComponentListener blockInPrepare =
+        new TestDrawableComponent.BlockInPrepareComponentListener();
+    TestDrawableComponent blockingComponent =
+        TestDrawableComponent.create(mContext).flexGrow(1).color(1234).build();
+    blockingComponent.setTestComponentListener(blockInPrepare);
+
+    LithoView lithoView = new LithoView(mContext);
+    ComponentTree componentTree = ComponentTree.create(mContext, blockingComponent).build();
+    lithoView.setComponentTree(componentTree);
+
+    int widthSpec = SizeSpec.makeSizeSpec(1000, SizeSpec.AT_MOST);
+    int heightSpec = SizeSpec.makeSizeSpec(500, SizeSpec.EXACTLY);
+
+    Component newRoot = Row.create(mContext).flexGrow(1).build();
+    final TimeOutSemaphore backgroundLayout =
+        runOnBackgroundThread(
+            new Runnable() {
+              @Override
+              public void run() {
+                blockInPrepare.setDoNotBlockOnThisThread();
+                blockInPrepare.awaitPrepareStart();
+
+                componentTree.setRoot(newRoot);
+
+                blockInPrepare.allowPrepareToComplete();
+              }
+            });
+
+    componentTree.attach();
+    lithoView.measure(widthSpec, heightSpec);
+
+    backgroundLayout.acquire();
+
+    // In this case, because the background layout completed before the measure layout, the
+    // measure layout won't be committed. We want to ensure that we still have a non-null and
+    // compatible main thread LayoutState at the end of measure.
+    assertThat(componentTree.hasCompatibleLayout(widthSpec, heightSpec)).isTrue();
+    assertThat(componentTree.getMainThreadLayoutState()).isNotNull();
+    assertThat(componentTree.getMainThreadLayoutState().getHeight()).isEqualTo(500);
+
+    assertThat(mLithoStatsRule.getComponentCalculateLayoutCount())
+        .describedAs(
+            "One from measure that will be thrown away and one from the background setRoot")
+        .isEqualTo(2);
+  }
+
+  @Test
   public void testSetSizeSpecAsyncFollowedBySetSizeSpecSyncBeforeStartReturnsCorrectSize() {
     TestDrawableComponent component =
         TestDrawableComponent.create(mContext).flexGrow(1).color(1234).build();
