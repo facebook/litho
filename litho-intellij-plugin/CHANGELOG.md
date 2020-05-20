@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## Version 1.4.2
+
+_2020-05-DD_
+
+* Fix: Sending Events without metadata
+
 ## Version 1.4.1
 
 _2020-05-16_

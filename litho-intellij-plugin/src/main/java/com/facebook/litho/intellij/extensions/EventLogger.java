@@ -16,7 +16,7 @@
 
 package com.facebook.litho.intellij.extensions;
 
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -54,7 +54,7 @@ public interface EventLogger {
    * @param event given event name
    */
   default void log(String event) {
-    log(event, Collections.emptyMap());
+    log(event, new HashMap<>());
   }
 
   void log(String event, Map<String, String> metadata);

@@ -16,12 +16,13 @@
 
 package com.facebook.litho.intellij.logging;
 
+import static org.assertj.core.api.Java6Assertions.assertThat;
+
 import com.facebook.litho.intellij.LithoPluginIntellijTest;
 import com.facebook.litho.intellij.extensions.EventLogger;
-import com.intellij.openapi.extensions.Extensions;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
-import org.junit.Assert;
 import org.junit.Test;
 
 public class EventLoggerTest extends LithoPluginIntellijTest {
@@ -31,31 +32,17 @@ public class EventLoggerTest extends LithoPluginIntellijTest {
   }
 
   @Test
-  public void noTestLogging() {
-    EventLogger[] extensions =
-        Extensions.getExtensions(LithoLoggerProvider.LithoEventLogger.EP_NAME);
-    Assert.assertEquals(0, extensions.length);
-  }
-
-  @Test
-  public void nameTest() {
-    Assert.assertEquals(
-        "com.facebook.litho.intellij.eventLogger",
-        LithoLoggerProvider.LithoEventLogger.EP_NAME.getName());
-  }
-
-  @Test
-  public void logSyncTest() {
+  public void log_syncLogged() {
     TestLogger testLogger = new TestLogger();
     EventLogger[] loggers = {testLogger};
 
     String event = "hello";
     new LithoLoggerProvider.LithoEventLogger(loggers, Runnable::run).log(event);
-    Assert.assertEquals(event, testLogger.event);
+    assertThat(testLogger.event).isEqualTo(event);
   }
 
   @Test
-  public void logAsyncTest() throws InterruptedException {
+  public void log_asyncBlockingLogged() throws InterruptedException {
     CountDownLatch countDownLatch = new CountDownLatch(1);
     TestLogger testLogger = new TestLogger(countDownLatch);
     EventLogger[] loggers = {testLogger};
@@ -63,22 +50,36 @@ public class EventLoggerTest extends LithoPluginIntellijTest {
     String event = "hello";
     new LithoLoggerProvider.LithoEventLogger(loggers).log(event);
     countDownLatch.await();
-    Assert.assertEquals(event, testLogger.event);
+    assertThat(testLogger.event).isEqualTo(event);
   }
 
   @Test
-  public void nonBlockingTest() {
+  public void log_asyncNotBlockingNotLogged() {
     TestLogger testLogger = new TestLogger();
     EventLogger[] loggers = {testLogger};
 
     String event = "hello";
     new LithoLoggerProvider.LithoEventLogger(loggers).log(event);
-    Assert.assertNotEquals(event, testLogger.event);
+    assertThat(testLogger.event).isNull();
+  }
+
+  @Test
+  public void log_withMetadata() {
+    TestLogger testLogger = new TestLogger();
+    EventLogger[] loggers = {testLogger};
+
+    String event = "hello";
+    Map<String, String> data = new HashMap<>();
+    data.put("TEST2", "test2");
+    new LithoLoggerProvider.LithoEventLogger(loggers).log(event, data);
+    assertThat(data).containsKey("TEST2");
+    assertThat(data).containsKey("TEST1");
   }
 
   static class TestLogger implements EventLogger {
     private final CountDownLatch lock;
     String event;
+    private Map<String, String> metadata;
 
     TestLogger(CountDownLatch lock) {
       this.lock = lock;
@@ -96,6 +97,8 @@ public class EventLoggerTest extends LithoPluginIntellijTest {
 
     @Override
     public void log(String event, Map<String, String> metadata) {
+      metadata.put("TEST1", event);
+      this.metadata = metadata;
       log(event);
     }
   }
