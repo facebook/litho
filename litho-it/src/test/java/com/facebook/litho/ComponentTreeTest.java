@@ -35,6 +35,7 @@ import com.facebook.litho.testing.BackgroundLayoutLooperRule;
 import com.facebook.litho.testing.LithoStatsRule;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestLayoutComponent;
+import com.facebook.litho.testing.TimeOutSemaphore;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
@@ -1096,7 +1097,7 @@ public class ComponentTreeTest {
 
     componentTree.setRootAsync(newComponent);
 
-    final CountDownLatch asyncLayoutFinish =
+    final TimeOutSemaphore asyncLayoutFinish =
         runOnBackgroundThread(
             new Runnable() {
               @Override
@@ -1128,9 +1129,7 @@ public class ComponentTreeTest {
     // Finally, let the async layout finish and make sure it doesn't replace the layout from measure
 
     blockInPrepare.allowPrepareToComplete();
-    if (!asyncLayoutFinish.await(5, TimeUnit.SECONDS)) {
-      throw new RuntimeException("Timeout!");
-    }
+    asyncLayoutFinish.acquire();
 
     ShadowLooper.runUiThreadTasks();
 
@@ -1179,7 +1178,7 @@ public class ComponentTreeTest {
 
     componentTree.setRootAsync(newComponent);
 
-    final CountDownLatch asyncLayoutFinish =
+    final TimeOutSemaphore asyncLayoutFinish =
         runOnBackgroundThread(
             new Runnable() {
               @Override
@@ -1211,9 +1210,7 @@ public class ComponentTreeTest {
     // Finally, let the async layout finish and make sure it doesn't replace the layout from measure
 
     blockInPrepare.allowPrepareToComplete();
-    if (!asyncLayoutFinish.await(5, TimeUnit.SECONDS)) {
-      throw new RuntimeException("Timeout!");
-    }
+    asyncLayoutFinish.acquire();
 
     ShadowLooper.runUiThreadTasks();
 
@@ -1264,7 +1261,7 @@ public class ComponentTreeTest {
 
     componentTree.setRootAsync(newComponent);
 
-    final CountDownLatch asyncLayoutFinish =
+    final TimeOutSemaphore asyncLayoutFinish =
         runOnBackgroundThread(
             new Runnable() {
               @Override
@@ -1296,9 +1293,7 @@ public class ComponentTreeTest {
     // Finally, let the async layout finish and make sure it doesn't replace the layout from measure
 
     blockInPrepare.allowPrepareToComplete();
-    if (!asyncLayoutFinish.await(5, TimeUnit.SECONDS)) {
-      throw new RuntimeException("Timeout!");
-    }
+    asyncLayoutFinish.acquire();
 
     ShadowLooper.runUiThreadTasks();
 
@@ -1354,7 +1349,7 @@ public class ComponentTreeTest {
             },
             "test");
 
-    final CountDownLatch asyncStateUpdate =
+    final TimeOutSemaphore asyncStateUpdate =
         runOnBackgroundThread(
             new Runnable() {
               @Override
@@ -1371,9 +1366,7 @@ public class ComponentTreeTest {
         .describedAs("Asserting test setup, second set of specs should not be compatible.")
         .isFalse();
     lithoView.measure(widthSpec2, heightSpec2);
-    if (!asyncStateUpdate.await(5, TimeUnit.SECONDS)) {
-      throw new RuntimeException("Timeout!");
-    }
+    asyncStateUpdate.acquire();
     ShadowLooper.runUiThreadTasks();
 
     lithoView.layout(0, 0, lithoView.getMeasuredWidth(), lithoView.getMeasuredHeight());
@@ -1430,17 +1423,8 @@ public class ComponentTreeTest {
     blockInPrepare.setDoNotBlockOnThisThread();
     blockingComponent.setTestComponentListener(blockInPrepare);
 
-    final CountDownLatch asyncStateUpdate =
-        runOnBackgroundThread(
-            new Runnable() {
-              @Override
-              public void run() {
-                caller.increment();
-
-                // The sync state update will be posted to the layout thread
-                mBackgroundLayoutLooperRule.runToEndOfTasksSync();
-              }
-            });
+    caller.incrementAsync();
+    final TimeOutSemaphore asyncStateUpdate = mBackgroundLayoutLooperRule.runToEndOfTasksAsync();
 
     blockInPrepare.awaitPrepareStart();
     assertThat(componentTree.hasCompatibleLayout(widthSpec2, heightSpec2))
@@ -1449,9 +1433,7 @@ public class ComponentTreeTest {
     lithoView.measure(widthSpec2, heightSpec2);
     blockInPrepare.allowPrepareToComplete();
 
-    if (!asyncStateUpdate.await(5, TimeUnit.SECONDS)) {
-      throw new RuntimeException("Timeout!");
-    }
+    asyncStateUpdate.acquire();
     ShadowLooper.runUiThreadTasks();
 
     lithoView.layout(0, 0, lithoView.getMeasuredWidth(), lithoView.getMeasuredHeight());
@@ -1503,14 +1485,7 @@ public class ComponentTreeTest {
 
     componentTree.setRootAsync(newComponent);
 
-    final CountDownLatch asyncLayout =
-        runOnBackgroundThread(
-            new Runnable() {
-              @Override
-              public void run() {
-                mBackgroundLayoutLooperRule.runToEndOfTasksSync();
-              }
-            });
+    final TimeOutSemaphore asyncLayout = mBackgroundLayoutLooperRule.runToEndOfTasksAsync();
     blockInPrepare.awaitPrepareStart();
 
     assertThat(componentTree.hasCompatibleLayout(widthSpec2, heightSpec2))
@@ -1519,7 +1494,7 @@ public class ComponentTreeTest {
     componentTree.setSizeSpec(widthSpec2, heightSpec2);
 
     blockInPrepare.allowPrepareToComplete();
-    assertTrue(asyncLayout.await(5, TimeUnit.SECONDS));
+    asyncLayout.acquire();
     ShadowLooper.runUiThreadTasks();
 
     assertThat(componentTree.getRoot()).isEqualTo(newComponent);
@@ -1557,18 +1532,11 @@ public class ComponentTreeTest {
 
     componentTree.setSizeSpecAsync(widthSpec2, heightSpec2);
 
-    final CountDownLatch setSizeSpecAsync =
-        runOnBackgroundThread(
-            new Runnable() {
-              @Override
-              public void run() {
-                mBackgroundLayoutLooperRule.runToEndOfTasksSync();
-              }
-            });
+    final TimeOutSemaphore setSizeSpecAsync = mBackgroundLayoutLooperRule.runToEndOfTasksAsync();
     blockInPrepare.awaitPrepareStart();
 
     Size size = new Size();
-    final CountDownLatch setSizeSpecSync =
+    final TimeOutSemaphore setSizeSpecSync =
         runOnBackgroundThread(
             new Runnable() {
               @Override
@@ -1580,8 +1548,8 @@ public class ComponentTreeTest {
     waitForLayoutToAttachToFuture(componentTree);
 
     blockInPrepare.allowPrepareToComplete();
-    assertTrue(setSizeSpecAsync.await(5, TimeUnit.SECONDS));
-    assertTrue(setSizeSpecSync.await(5, TimeUnit.SECONDS));
+    setSizeSpecAsync.acquire();
+    setSizeSpecSync.acquire();
     ShadowLooper.runUiThreadTasks();
 
     assertThat(size).isEqualToComparingFieldByField(new Size(500, 500));
@@ -1655,7 +1623,7 @@ public class ComponentTreeTest {
     blockInPrepare.setDoNotBlockOnThisThread();
     component.setTestComponentListener(blockInPrepare);
 
-    final CountDownLatch asyncLayout1Finish =
+    final TimeOutSemaphore asyncLayout1Finish =
         runOnBackgroundThread(
             new Runnable() {
               @Override
@@ -1666,7 +1634,7 @@ public class ComponentTreeTest {
 
     blockInPrepare.awaitPrepareStart();
 
-    final CountDownLatch asyncLayout2Finish =
+    final TimeOutSemaphore asyncLayout2Finish =
         runOnBackgroundThread(
             new Runnable() {
               @Override
@@ -1678,16 +1646,12 @@ public class ComponentTreeTest {
     waitForLayoutToAttachToFuture(componentTree);
 
     blockInPrepare.allowPrepareToComplete();
-    if (!asyncLayout1Finish.await(5, TimeUnit.SECONDS)) {
-      throw new RuntimeException("Timeout!");
-    }
+    asyncLayout1Finish.acquire();
 
     blockInPrepare.allowPrepareToComplete();
-    if (!asyncLayout2Finish.await(5, TimeUnit.SECONDS)) {
-      // Timing out here probably means we didn't use LayoutStateFutures and we are blocking on the
-      // "block in prepare" semaphore.
-      throw new RuntimeException("Timeout!");
-    }
+    // Timing out here probably means we didn't use LayoutStateFutures and we are blocking on the
+    // "block in prepare" semaphore.
+    asyncLayout2Finish.acquire();
 
     assertThat(componentTree.getRoot()).isEqualTo(component);
     assertThat(componentTree.hasCompatibleLayout(widthSpec, heightSpec)).isTrue();
@@ -2003,15 +1967,15 @@ public class ComponentTreeTest {
     }
   }
 
-  private static CountDownLatch runOnBackgroundThread(final Runnable runnable) {
-    final CountDownLatch latch = new CountDownLatch(1);
+  private static TimeOutSemaphore runOnBackgroundThread(final Runnable runnable) {
+    final TimeOutSemaphore latch = new TimeOutSemaphore(0);
 
     new Thread(
             new Runnable() {
               @Override
               public void run() {
                 runnable.run();
-                latch.countDown();
+                latch.release();
               }
             })
         .start();

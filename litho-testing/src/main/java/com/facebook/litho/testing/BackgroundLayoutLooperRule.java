@@ -33,7 +33,6 @@ import org.robolectric.shadows.ShadowLooper;
  */
 public class BackgroundLayoutLooperRule implements TestRule {
 
-  private final TimeOutSemaphore mTimeOutSemaphore = new TimeOutSemaphore(0);
   private BlockingQueue<Message> mMessageQueue;
 
   @Override
@@ -51,7 +50,7 @@ public class BackgroundLayoutLooperRule implements TestRule {
         try {
           base.evaluate();
         } finally {
-          mMessageQueue.add(Message.QUIT);
+          mMessageQueue.add(new Message(MessageType.QUIT));
         }
       }
     };
@@ -59,20 +58,42 @@ public class BackgroundLayoutLooperRule implements TestRule {
 
   /** Runs one task on the background thread, blocking until it completes. */
   public void runOneTaskSync() {
-    mMessageQueue.add(Message.DRAIN_ONE);
-    mTimeOutSemaphore.acquire();
+    final TimeOutSemaphore semaphore = new TimeOutSemaphore(0);
+    mMessageQueue.add(new Message(MessageType.DRAIN_ONE, semaphore));
+    semaphore.acquire();
   }
 
   /** Runs through all tasks on the background thread, blocking until it completes. */
   public void runToEndOfTasksSync() {
-    mMessageQueue.add(Message.DRAIN_ALL);
-    mTimeOutSemaphore.acquire();
+    final TimeOutSemaphore semaphore = new TimeOutSemaphore(0);
+    mMessageQueue.add(new Message(MessageType.DRAIN_ALL, semaphore));
+    semaphore.acquire();
   }
 
-  private enum Message {
+  public TimeOutSemaphore runToEndOfTasksAsync() {
+    final TimeOutSemaphore semaphore = new TimeOutSemaphore(0);
+    mMessageQueue.add(new Message(MessageType.DRAIN_ALL, semaphore));
+    return semaphore;
+  }
+
+  private enum MessageType {
     DRAIN_ONE,
     DRAIN_ALL,
     QUIT,
+  }
+
+  private static class Message {
+    private final MessageType mMessageType;
+    private final TimeOutSemaphore mSemaphore;
+
+    private Message(MessageType messageType) {
+      this(messageType, null);
+    }
+
+    private Message(MessageType messageType, TimeOutSemaphore semaphore) {
+      mMessageType = messageType;
+      mSemaphore = semaphore;
+    }
   }
 
   private class LayoutLooperThread extends Thread {
@@ -83,21 +104,25 @@ public class BackgroundLayoutLooperRule implements TestRule {
           new Runnable() {
             @Override
             public void run() {
-              while (true) {
+              boolean keepGoing = true;
+              while (keepGoing) {
                 final Message message;
                 try {
                   message = messages.take();
                 } catch (InterruptedException e) {
                   throw new RuntimeException(e);
                 }
-                switch (message) {
+                switch (message.mMessageType) {
                   case DRAIN_ONE:
                     layoutLooper.runOneTask();
-                    mTimeOutSemaphore.release();
+                    message.mSemaphore.release();
+                    break;
                   case DRAIN_ALL:
                     layoutLooper.runToEndOfTasks();
-                    mTimeOutSemaphore.release();
+                    message.mSemaphore.release();
+                    break;
                   case QUIT:
+                    keepGoing = false;
                     break;
                 }
               }
