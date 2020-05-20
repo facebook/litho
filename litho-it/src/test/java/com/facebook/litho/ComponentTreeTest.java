@@ -29,8 +29,11 @@ import static junit.framework.Assert.fail;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.junit.Assert.assertNotEquals;
 
+import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Looper;
+import android.view.View;
+import android.view.ViewGroup;
 import com.facebook.litho.testing.BackgroundLayoutLooperRule;
 import com.facebook.litho.testing.LithoStatsRule;
 import com.facebook.litho.testing.TestDrawableComponent;
@@ -756,6 +759,66 @@ public class ComponentTreeTest {
 
     // Clear tasks
     mLayoutThreadShadowLooper.runToEndOfTasks();
+  }
+
+  /*
+   * This test is meant to simulate a LithoView in a LinearLayout or RelativeLayout where it gets
+   * measured twice in a single layout pass with the second measurement depending on the result
+   * of the first (e.g. if the LithoView measures to be 500px in the first measure pass, the parent
+   * remeasures with AT_MOST 500). We need to make sure we end up showing the correct root and
+   * respecting the size it would have within its parent.
+   *
+   * In this test, the first component has fixed size 100x100 and will produce a layout compatible
+   * with any specs that have AT_MOST >=100. In the test, we expect the initial measure with
+   * AT_MOST 2000, an async setRoot call, and then a double measure from the parent, first with
+   * AT_MOST 1000 (compatible with the old root) and then with AT_MOST <result of first measure>.
+   * We need to make sure the second component (which unlike the first component will take up the
+   * full size of the parent) ends up being allocated AT_MOST 1000 and not constrained to the 100px
+   * the first component measured to.
+   */
+  @Test
+  public void testSetRootAsyncFollowedByMeasurementInParentWithDoubleMeasure() {
+    ComponentTree componentTree =
+        ComponentTree.create(mContext, Row.create(mContext).minWidthPx(100).minHeightPx(100))
+            .build();
+    LithoView lithoView = new LithoView(mContext);
+    lithoView.setComponentTree(componentTree);
+
+    DoubleMeasureViewGroup parent = new DoubleMeasureViewGroup(mContext.getAndroidContext());
+    parent.addView(lithoView);
+    lithoView.measure(
+        View.MeasureSpec.makeMeasureSpec(2000, View.MeasureSpec.AT_MOST),
+        View.MeasureSpec.makeMeasureSpec(2000, View.MeasureSpec.AT_MOST));
+
+    final TestDrawableComponent.BlockInPrepareComponentListener blockInPrepare =
+        new TestDrawableComponent.BlockInPrepareComponentListener();
+    final TestDrawableComponent newComponent = TestDrawableComponent.create(mContext).build();
+    blockInPrepare.setDoNotBlockOnThisThread();
+    newComponent.setTestComponentListener(blockInPrepare);
+    componentTree.setRootAsync(newComponent);
+    TimeOutSemaphore asyncLayout = mBackgroundLayoutLooperRule.runToEndOfTasksAsync();
+    blockInPrepare.awaitPrepareStart();
+
+    parent.requestLayout();
+    parent.measure(
+        View.MeasureSpec.makeMeasureSpec(1000, View.MeasureSpec.EXACTLY),
+        View.MeasureSpec.makeMeasureSpec(1000, View.MeasureSpec.EXACTLY));
+    parent.layout(0, 0, 1000, 1000);
+
+    blockInPrepare.allowPrepareToComplete();
+    asyncLayout.acquire();
+
+    assertThat(lithoView.getWidth()).isEqualTo(1000);
+    assertThat(lithoView.getHeight()).isEqualTo(1000);
+    assertThat(componentTree.getRoot()).isEqualTo(newComponent);
+    assertThat(componentTree.getMainThreadLayoutState().isForComponentId(newComponent.getId()))
+        .isTrue();
+    assertThat(componentTree.getMainThreadLayoutState().getHeight()).isEqualTo(1000);
+
+    assertThat(mLithoStatsRule.getComponentCalculateLayoutCount())
+        .describedAs(
+            "We expect one initial layout, the async layout (thrown away), and a layout from measure.")
+        .isEqualTo(3);
   }
 
   /*
@@ -1998,5 +2061,44 @@ public class ComponentTreeTest {
     assertThat(future.getWaitingCount())
         .describedAs("Make sure the second thread is waiting on the first Future")
         .isEqualTo(2);
+  }
+
+  private static class DoubleMeasureViewGroup extends ViewGroup {
+
+    public DoubleMeasureViewGroup(Context context) {
+      super(context);
+    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+      if (getChildCount() == 0) {
+        throw new RuntimeException("Missing child!");
+      }
+
+      if (View.MeasureSpec.getMode(widthMeasureSpec) == MeasureSpec.UNSPECIFIED
+          || View.MeasureSpec.getMode(heightMeasureSpec) == MeasureSpec.UNSPECIFIED) {
+        throw new RuntimeException("Must give AT_MOST or EXACT measurements");
+      }
+
+      final View child = getChildAt(0);
+      child.measure(
+          View.MeasureSpec.makeMeasureSpec(
+              View.MeasureSpec.getSize(widthMeasureSpec), MeasureSpec.AT_MOST),
+          View.MeasureSpec.makeMeasureSpec(
+              View.MeasureSpec.getSize(heightMeasureSpec), MeasureSpec.AT_MOST));
+      child.measure(
+          View.MeasureSpec.makeMeasureSpec(child.getMeasuredWidth(), MeasureSpec.AT_MOST),
+          View.MeasureSpec.makeMeasureSpec(child.getMeasuredHeight(), MeasureSpec.AT_MOST));
+
+      setMeasuredDimension(child.getMeasuredWidth(), child.getMeasuredHeight());
+    }
+
+    @Override
+    protected void onLayout(boolean changed, int l, int t, int r, int b) {
+      if (getChildCount() > 0) {
+        final View child = getChildAt(0);
+        child.layout(0, 0, child.getMeasuredWidth(), child.getMeasuredHeight());
+      }
+    }
   }
 }
