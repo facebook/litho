@@ -1723,6 +1723,38 @@ public class VisibilityEventsTest {
     assertThat(content.getDispatchedEventHandlers()).contains(visibleEventHandler);
   }
 
+  @Test
+  public void setNewComponentTree_noMount_noVisibilityEventsDispatched() {
+    final TestComponent content = create(mContext).build();
+    final EventHandler<VisibleEvent> visibleEventHandler = new EventHandler<>(content, 2);
+    final EventHandler<InvisibleEvent> invisibleEventHandler = new EventHandler<>(content, 1);
+
+    final Component root =
+        Column.create(mContext)
+            .child(
+                Wrapper.create(mContext)
+                    .delegate(content)
+                    .visibleHandler(visibleEventHandler)
+                    .invisibleHandler(invisibleEventHandler)
+                    .widthPx(10)
+                    .heightPx(5)
+                    .marginPx(YogaEdge.TOP, 5))
+            .build();
+
+    final ComponentTree componentTree = ComponentTree.create(mContext, root).build();
+    mLithoView.setComponentTree(componentTree);
+
+    assertThat(content.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler);
+
+    content.getDispatchedEventHandlers().clear();
+
+    final ComponentTree newComponentTree = ComponentTree.create(mContext, root).build();
+    mLithoView.setComponentTree(newComponentTree);
+
+    assertThat(content.getDispatchedEventHandlers()).doesNotContain(invisibleEventHandler);
+    assertThat(content.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler);
+  }
+
   private Map<String, VisibilityItem> getVisibilityIdToItemMap() {
     if (!mUseMountDelegateTarget) {
       return mLithoView.getMountState().getVisibilityIdToItemMap();
