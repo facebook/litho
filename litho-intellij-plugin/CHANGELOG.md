@@ -2,7 +2,7 @@
 
 ## Version 1.4.2
 
-_2020-05-DD_
+_2020-05-20_
 
 * Fix: Sending Events without metadata
 
