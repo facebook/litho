@@ -198,7 +198,8 @@ public class TextInputSpecTest {
     getEditText(mLithoViewRule.getLithoView()).setText("text for test");
 
     // We need a context with a ComponentTree on it for the Handle to properly resolve
-    final CharSequence text = TextInput.getText(mLithoViewRule.getComponentTree().getContext(), handle);
+    final CharSequence text =
+        TextInput.getText(mLithoViewRule.getComponentTree().getContext(), handle);
     assertThat(text).isNotNull();
     assertThat(text.toString()).isEqualTo("text for test");
   }
@@ -235,7 +236,8 @@ public class TextInputSpecTest {
     mLithoViewRule.getLithoView().unmountAllItems();
 
     // We need a context with a ComponentTree on it for the Handle to properly resolve
-    final CharSequence text = TextInput.getText(mLithoViewRule.getComponentTree().getContext(), handle);
+    final CharSequence text =
+        TextInput.getText(mLithoViewRule.getComponentTree().getContext(), handle);
     assertThat(text).isNotNull();
     assertThat(text.toString()).isEqualTo("text for test");
   }
@@ -255,7 +257,8 @@ public class TextInputSpecTest {
 
     // We need a context with a ComponentTree on it for the Handle to properly resolve
     TextInput.setText(mLithoViewRule.getComponentTree().getContext(), handle, "set text in test");
-    final CharSequence text = TextInput.getText(mLithoViewRule.getComponentTree().getContext(), handle);
+    final CharSequence text =
+        TextInput.getText(mLithoViewRule.getComponentTree().getContext(), handle);
     assertThat(text).isNotNull();
     assertThat(text.toString()).isEqualTo("set text in test");
 
