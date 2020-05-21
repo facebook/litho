@@ -366,7 +366,7 @@ public class ComponentTree {
     mStateHandler =
         builderStateHandler == null ? StateHandler.createNewInstance(null) : builderStateHandler;
     if (ComponentsConfiguration.isHooksImplEnabled) {
-      mHooksHandler = new HooksHandler();
+      mHooksHandler = builder.hooksHandler == null ? new HooksHandler() : builder.hooksHandler;
     }
 
     if (builder.previousRenderState != null) {
@@ -1687,6 +1687,11 @@ public class ComponentTree {
     return StateHandler.createNewInstance(mStateHandler);
   }
 
+  @Nullable
+  public synchronized HooksHandler acquireHooksHandlerIfNecessary() {
+    return mHooksHandler != null ? new HooksHandler(mHooksHandler) : null;
+  }
+
   synchronized @Nullable void consumeStateUpdateTransitions(
       List<Transition> outList, @Nullable String logContext) {
     if (mStateHandler != null) {
@@ -2966,6 +2971,7 @@ public class ComponentTree {
     private LithoHandler layoutThreadHandler;
     private LithoHandler preAllocateMountContentHandler;
     private StateHandler stateHandler;
+    private @Nullable HooksHandler hooksHandler;
     private RenderState previousRenderState;
     private boolean asyncStateUpdates = true;
     private int overrideComponentTreeId = -1;
@@ -3086,6 +3092,11 @@ public class ComponentTree {
      */
     public Builder stateHandler(StateHandler stateHandler) {
       this.stateHandler = stateHandler;
+      return this;
+    }
+
+    public Builder hooksHandler(HooksHandler hooksHandler) {
+      this.hooksHandler = hooksHandler;
       return this;
     }
 
