@@ -17,7 +17,10 @@
 package com.facebook.litho.widget
 
 import android.graphics.Color
+import android.graphics.Typeface
+import android.graphics.Typeface.DEFAULT
 import android.graphics.Typeface.NORMAL
+import android.text.TextUtils
 import androidx.annotation.ColorInt
 import com.facebook.litho.DslScope
 import com.facebook.litho.Sp
@@ -30,13 +33,27 @@ import com.facebook.litho.sp
 @Suppress("NOTHING_TO_INLINE", "FunctionName")
 inline fun DslScope.Text(
     text: CharSequence,
-    textSize: Sp = 14.sp,
     @ColorInt textColor: Int = Color.BLACK,
-    textStyle: Int = NORMAL
+    textSize: Sp = 14.sp,
+    textStyle: Int = NORMAL,
+    typeface: Typeface = DEFAULT,
+    alignment: TextAlignment = TextAlignment.TEXT_START,
+    isSingleLine: Boolean = false,
+    ellipsize: TextUtils.TruncateAt? = null,
+    minLines: Int = 0,
+    maxLines: Int = Int.MAX_VALUE
 ): Text =
     Text.create(context)
         .text(text)
-        .textSizeSp(textSize.value)
         .textColor(textColor)
+        .textSizeSp(textSize.value)
         .textStyle(textStyle)
+        .typeface(typeface)
+        .alignment(alignment)
+        .isSingleLine(isSingleLine)
+        .minLines(minLines)
+        .maxLines(maxLines)
+        .apply {
+          ellipsize?.let { ellipsize(it) }
+        }
         .build()
