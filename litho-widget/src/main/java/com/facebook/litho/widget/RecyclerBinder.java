@@ -130,8 +130,6 @@ public class RecyclerBinder
   private final boolean mEnableStableIds;
   private final @Nullable LithoHandler mAsyncInsertHandler;
   private final int mRecyclingMode;
-  private final boolean mKeepComponentTreeForRecycledView;
-  private final boolean mDisableUnmountAllForRecycledView;
   private final boolean mVisibilityProcessingEnabled;
   private final boolean mAcquireStateHandlerOnRelease;
   private @Nullable List<ComponentLogParams> mInvalidStateLogParamsList;
@@ -455,10 +453,6 @@ public class RecyclerBinder
     private LithoHandler mAsyncInsertLayoutHandler;
     private boolean mIncrementalVisibility = ComponentsConfiguration.incrementalVisibilityHandling;
     private @ComponentTree.RecyclingMode int recyclingMode = ComponentTree.RecyclingMode.DEFAULT;
-    private boolean mKeepComponentTreeForRecycledView =
-        ComponentsConfiguration.keepComponentTreeForRecyclerView;
-    private boolean mDisableUnmountAllForRecycledView =
-        ComponentsConfiguration.disableUnmountAllItemsForRecycledView;
     private boolean visibilityProcessing = true;
     private boolean acquireStateHandlerOnRelease = true;
 
@@ -763,16 +757,6 @@ public class RecyclerBinder
       return this;
     }
 
-    public Builder shouldKeepComponentTreeForRecycledView(boolean shouldKeep) {
-      mKeepComponentTreeForRecycledView = shouldKeep;
-      return this;
-    }
-
-    public Builder shouldDisableUnmountALlForRecycledView(boolean shouldDisableUnmount) {
-      mDisableUnmountAllForRecycledView = shouldDisableUnmount;
-      return this;
-    }
-
     /** @param c The {@link ComponentContext} the RecyclerBinder will use. */
     public RecyclerBinder build(ComponentContext c) {
       componentContext =
@@ -899,8 +883,6 @@ public class RecyclerBinder
     mAsyncInsertHandler = builder.mAsyncInsertLayoutHandler;
     mLithoViewFactory = builder.lithoViewFactory;
     mIncrementalVisibility = builder.mIncrementalVisibility;
-    mKeepComponentTreeForRecycledView = builder.mKeepComponentTreeForRecycledView;
-    mDisableUnmountAllForRecycledView = builder.mDisableUnmountAllForRecycledView;
     mAcquireStateHandlerOnRelease = builder.acquireStateHandlerOnRelease;
 
     if (mLayoutHandlerFactory == null) {
@@ -3641,12 +3623,8 @@ public class RecyclerBinder
     public void onViewRecycled(BaseViewHolder holder) {
       if (holder.isLithoViewType) {
         final LithoView lithoView = (LithoView) holder.itemView;
-        if (!mDisableUnmountAllForRecycledView) {
-          lithoView.unmountAllItems();
-        }
-        if (!mKeepComponentTreeForRecycledView) {
-          lithoView.setComponentTree(null);
-        }
+        lithoView.unmountAllItems();
+        lithoView.setComponentTree(null);
         lithoView.setInvalidStateLogParamsList(null);
         lithoView.resetMountStartupLoggingInfo();
       } else {
