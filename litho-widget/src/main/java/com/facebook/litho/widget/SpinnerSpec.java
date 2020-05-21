@@ -107,7 +107,6 @@ public class SpinnerSpec {
       @Prop(resType = ResType.DIMEN_TEXT, optional = true) float selectedTextSize,
       @Prop(resType = ResType.COLOR, optional = true) int selectedTextColor,
       @Prop(resType = ResType.DRAWABLE, optional = true) @Nullable Drawable caret) {
-    assertAPI11orHigher();
     caret = caret == null ? new CaretDrawable(c.getAndroidContext(), DEFAULT_CARET_COLOR) : caret;
     selectedTextSize =
         selectedTextSize == -1
@@ -124,12 +123,6 @@ public class SpinnerSpec {
         .child(createCaret(c, caret, isShowingDropDown))
         .accessibilityRole(AccessibilityRole.DROP_DOWN_LIST)
         .build();
-  }
-
-  private static void assertAPI11orHigher() {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-      throw new RuntimeException("Spinner requires API 11 (HONEYCOMB) or greater");
-    }
   }
 
   private static Component createCaret(
@@ -226,7 +219,7 @@ public class SpinnerSpec {
     private final Point mP2 = new Point();
     private final Point mP3 = new Point();
 
-    public CaretDrawable(Context context, @ColorInt int caretColor) {
+    CaretDrawable(Context context, @ColorInt int caretColor) {
       paint.setColor(caretColor);
       paint.setFlags(Paint.ANTI_ALIAS_FLAG);
       mWidth = (int) dpToPx(context, CARET_WIDTH_DP);
