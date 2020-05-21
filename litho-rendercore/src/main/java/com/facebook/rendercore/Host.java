@@ -62,8 +62,8 @@ public abstract class Host extends ViewGroup {
    * Moves the MountItem associated to oldIndex in the newIndex position. This happens when a
    * RootHostView needs to re-arrange the internal order of its items. If an item is already present
    * in newIndex the item is guaranteed to be either unmounted or moved to a different index by
-   * subsequent calls to either {@link HostView#unmount(int, MountItem)} or {@link
-   * HostView#moveItem(MountItem, int, int)}.
+   * subsequent calls to either {@link #unmount(int, MountItem)} or {@link #moveItem(MountItem, int,
+   * int)}.
    *
    * @param item The item that has been moved.
    * @param oldIndex The current index of the MountItem.
