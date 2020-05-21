@@ -1088,6 +1088,7 @@ public class ComponentTree {
           if (layoutStateHooksHandler != null
               && mHooksHandler != null) { // we could have been released
             mHooksHandler.commit(layoutStateHooksHandler);
+            mInitialStateContainer.unregisterHooksHandler(layoutStateHooksHandler);
           }
         }
 
@@ -1361,7 +1362,11 @@ public class ComponentTree {
         return;
       }
 
-      mStateHandler.queueHookStateUpdate(updater);
+      if (ComponentsConfiguration.isHooksImplEnabled) {
+        mHooksHandler.queueHookStateUpdate(updater);
+      } else {
+        mStateHandler.queueHookStateUpdate(updater);
+      }
     }
 
     LithoStats.incrementComponentStateUpdateAsyncCount();
@@ -1891,8 +1896,11 @@ public class ComponentTree {
         mExternalRootVersion = externalRootVersion;
       }
 
-      if (mStateHandler.hasPendingUpdates() && root != null) {
-        root = root.makeShallowCopyWithNewId();
+      if (root != null) {
+        if (mStateHandler.hasPendingUpdates()
+            || (mHooksHandler != null && mHooksHandler.hasPendingUpdates())) {
+          root = root.makeShallowCopyWithNewId();
+        }
       }
 
       final boolean rootInitialized = root != null;
@@ -2066,18 +2074,17 @@ public class ComponentTree {
           !hasCompatibleComponentAndSpec()
               && isCompatibleSpec(localLayoutState, mWidthSpec, mHeightSpec);
       final StateHandler layoutStateStateHandler = localLayoutState.consumeStateHandler();
+      final HooksHandler layoutStateHooksHandler =
+          ComponentsConfiguration.isHooksImplEnabled ? localLayoutState.getHooksHandler() : null;
       if (noCompatibleComponent) {
         if (layoutStateStateHandler != null) {
           if (mStateHandler != null) { // we could have been released
             mStateHandler.commit(layoutStateStateHandler);
           }
         }
-        if (ComponentsConfiguration.isHooksImplEnabled) {
-          final HooksHandler layoutStateHooksHandler = localLayoutState.getHooksHandler();
-          if (layoutStateHooksHandler != null
-              && mHooksHandler != null) { // we could have been released
-            mHooksHandler.commit(layoutStateHooksHandler);
-          }
+        if (layoutStateHooksHandler != null
+            && mHooksHandler != null) { // we could have been released
+          mHooksHandler.commit(layoutStateHooksHandler);
         }
 
         if (mMeasureListeners != null) {
@@ -2096,6 +2103,9 @@ public class ComponentTree {
 
       if (layoutStateStateHandler != null) {
         mInitialStateContainer.unregisterStateHandler(layoutStateStateHandler);
+      }
+      if (layoutStateHooksHandler != null) {
+        mInitialStateContainer.unregisterHooksHandler(layoutStateHooksHandler);
       }
       // Resetting the count after layout calculation is complete and it was triggered from within
       // layout creation
@@ -2613,6 +2623,9 @@ public class ComponentTree {
         contextWithStateHandler =
             new ComponentContext(context, stateHandler, hooksHandler, treeProps, null);
         mInitialStateContainer.registerStateHandler(stateHandler);
+        if (hooksHandler != null) {
+          mInitialStateContainer.registerHooksHandler(hooksHandler);
+        }
       }
 
       return LayoutState.calculate(

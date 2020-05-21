@@ -16,6 +16,7 @@
 
 package com.facebook.litho
 
+import com.facebook.litho.config.ComponentsConfiguration
 import kotlin.reflect.KProperty
 
 /**
@@ -30,20 +31,39 @@ fun <T> DslScope.useState(initializer: () -> T): StateDelegate<T> =
 
 /** Delegate to access and initialize a state variable. */
 class StateDelegate<T>(private val c: ComponentContext, private val initializer: () -> T) {
-  operator fun getValue(nothing: Nothing?, property: KProperty<*>): State<T> {
-    val hookStateKey = "${c.componentScope.globalKey}:${property.name}"
-    @Suppress("UNCHECKED_CAST")
-    val value = c.stateHandler!!.hookState.getOrPut(hookStateKey) {
-      c.componentTree.initialStateContainer.createOrGetInitialHookState(hookStateKey) {
-        initializer()
-      }
-    } as T
-    return State(hookStateKey, value)
+
+  // TODO: remove lateinit after Hooks experiment(with isHooksImplEnabled config) is complete.
+  private lateinit var hooks: Hooks
+  private lateinit var hookStateKey: String
+  private var hookIndex: Int = 0
+
+  init {
+    if (ComponentsConfiguration.isHooksImplEnabled) {
+      hooks = c.hooksHandler!!.getOrCreate(c.componentScope.globalKey)
+      hookIndex = hooks.getAndIncrementHookIndex()
+      hookStateKey = "${c.componentScope.globalKey}:$hookIndex"
+    }
   }
+
+  operator fun getValue(nothing: Nothing?, property: KProperty<*>): State<T> {
+    @Suppress("UNCHECKED_CAST")
+    return if (ComponentsConfiguration.isHooksImplEnabled) {
+      val value =
+          c.hooksHandler!!.getOrPut(c.componentScope.globalKey, hookIndex) { getInitialState() }
+      State(c.componentScope.globalKey, value, hookIndex)
+    } else {
+      hookStateKey = "${c.componentScope.globalKey}:${property.name}"
+      val value = c.stateHandler!!.hookState.getOrPut(hookStateKey) { getInitialState() } as T
+      State(hookStateKey, value)
+    }
+  }
+
+  private fun getInitialState(): T =
+      c.componentTree.initialStateContainer.createOrGetInitialHookState(hookStateKey) { initializer() }
 }
 
 /** Interface with which a component gets the value from a state or updates it. */
-class State<T>(internal val key: String, private val value: T) {
+class State<T>(internal val key: String, private val value: T, internal val hookIndex: Int = -1) {
 
   fun get() = value
 }
@@ -52,10 +72,15 @@ class State<T>(internal val key: String, private val value: T) {
 val <T> State<T>.value: T
   get() = this.get()
 
-/** Scope object for updating state - while in a StateUpdater block, State.value may be set. */
-class StateUpdater(private val stateHandler: StateHandler) {
-
+/** Common interface for [StateUpdater] and [HookStateUpdater]. */
+interface Updater {
   var <T> State<T>.value: T
+}
+
+/** Scope object for updating state - while in a StateUpdater block, State.value may be set. */
+class StateUpdater(private val stateHandler: StateHandler) : Updater {
+
+  override var <T> State<T>.value: T
     @Suppress("UNCHECKED_CAST")
     get() = stateHandler.hookState[key] as T
     set(value) {
@@ -63,12 +88,27 @@ class StateUpdater(private val stateHandler: StateHandler) {
     }
 }
 
+class HookStateUpdater(private val hooksHandler: HooksHandler) : Updater {
+
+  override var <T> State<T>.value: T
+    get() = hooksHandler.getOrCreate(key).get(hookIndex)
+    set(value) {
+      hooksHandler.getOrCreate(key).set(hookIndex, value)
+    }
+}
+
 /**
  * Enqueues a state update block to be run before the next layout in order to update hook state.
  * Assignments to the state variables, created by [useState], are only allowed inside this block.
  */
-fun DslScope.updateState(block: StateUpdater.() -> Unit) {
-  context.updateHookStateAsync { stateHandler: StateHandler ->
-    StateUpdater(stateHandler).block()
+fun DslScope.updateState(block: Updater.() -> Unit) {
+  if (ComponentsConfiguration.isHooksImplEnabled) {
+    context.updateHookStateAsync<HooksHandler> { hooksHandler ->
+      HookStateUpdater(hooksHandler).block()
+    }
+  } else {
+    context.updateHookStateAsync<StateHandler> { stateHandler ->
+      StateUpdater(stateHandler).block()
+    }
   }
 }

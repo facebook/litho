@@ -547,6 +547,7 @@ public class StateHandler {
    * @param other the ComponentTree's source-of-truth StateHandler where pending state updates are
    *     collected
    */
+  @SuppressWarnings("unchecked")
   private void copyAndRunHooks(StateHandler other) {
     if (other.mHookState != null) {
       mHookState = new HashMap<>(other.mHookState);

@@ -324,7 +324,7 @@ public class ComponentContext {
    * EXPERIMENTAL - called to enqueue a HookUpdater that will update State that was created via
    * useState.
    */
-  public void updateHookStateAsync(HookUpdater updateBlock) {
+  public <T> void updateHookStateAsync(HookUpdater<T> updateBlock) {
     checkIfNoStateUpdatesMethod();
 
     if (mComponentTree == null) {

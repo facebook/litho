@@ -16,12 +16,8 @@
 
 package com.facebook.litho;
 
-/**
- * EXPERIMENTAL - interface for a block of code that will update state created with useState. See
- * KState.kt for more details.
- */
-public interface HookUpdater<T> {
+/** Interface for a block of code that will initialize a hook value. */
+public interface HookInitializer<T> {
 
-  /** Apply updates to the given {@link StateHandler} or {@link HooksHandler}. */
-  void apply(T handler);
+  T init();
 }

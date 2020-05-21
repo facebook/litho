@@ -26,7 +26,7 @@ import org.junit.runner.RunWith;
 public class HooksStateHandlerTest {
 
   @Test
-  public void testCopyStateHandlerWithoutHooks() {
+  public void copyHandler_copyingEmptyStateHandler_createsEmptyStateHandler() {
     final StateHandler first = new StateHandler();
     final StateHandler second = new StateHandler(first);
 
@@ -35,7 +35,7 @@ public class HooksStateHandlerTest {
   }
 
   @Test
-  public void testCopyStateHandlerWithHooks() {
+  public void copyHandler_copyingStateHandler_copiesAllStateValues() {
     final Object bazState = new Object();
     final StateHandler first = new StateHandler();
     first.getHookState().put("foo", "test");
@@ -53,14 +53,15 @@ public class HooksStateHandlerTest {
   }
 
   @Test
-  public void testCopyStateHandlerWithPendingStateUpdate() {
+  public void
+      commit_copyingHandlerWithPendingStateUpdateAndCommittingIt_copiesAllOldStateValuesAndAppliesStateUpdate() {
     final Object bazState = new Object();
     final StateHandler first = new StateHandler();
     first.getHookState().put("foo", "test");
     first.getHookState().put("bar", 4);
     first.getHookState().put("baz", bazState);
     first.queueHookStateUpdate(
-        new HookUpdater() {
+        new HookUpdater<StateHandler>() {
           @Override
           public void apply(StateHandler stateHandler) {
             stateHandler.getHookState().put("newKey", "newValue");
@@ -90,14 +91,15 @@ public class HooksStateHandlerTest {
   }
 
   @Test
-  public void testMultipleStateUpdates() {
+  public void
+      commit_copyingHandlerWithMultiplePendingStateUpdatesAndCommittingIt_copiesAllOldStateValuesAndAppliesAllStateUpdates() {
     final Object bazState = new Object();
     final StateHandler first = new StateHandler();
     first.getHookState().put("foo", "test");
     first.getHookState().put("bar", 4);
     first.getHookState().put("baz", bazState);
     first.queueHookStateUpdate(
-        new HookUpdater() {
+        new HookUpdater<StateHandler>() {
           @Override
           public void apply(StateHandler stateHandler) {
             stateHandler.getHookState().put("newKey", "newValue");
@@ -106,7 +108,7 @@ public class HooksStateHandlerTest {
         });
 
     first.queueHookStateUpdate(
-        new HookUpdater() {
+        new HookUpdater<StateHandler>() {
           @Override
           public void apply(StateHandler stateHandler) {
             stateHandler
@@ -137,14 +139,15 @@ public class HooksStateHandlerTest {
   }
 
   @Test
-  public void testMultipleCommits() {
+  public void
+      commit_committingHandlerFirstWithPartOfStateUpdatesAndSecondTimeWithAllStateUpdates_atFirstAppliesOnlyStateUpdatesFromFirstCommitAndKeepOthersPendingAndThenAppliesAllStateUpdates() {
     final Object bazState = new Object();
     final StateHandler first = new StateHandler();
     first.getHookState().put("foo", "test");
     first.getHookState().put("bar", 4);
     first.getHookState().put("baz", bazState);
     first.queueHookStateUpdate(
-        new HookUpdater() {
+        new HookUpdater<StateHandler>() {
           @Override
           public void apply(StateHandler stateHandler) {
             stateHandler.getHookState().put("newKey", "newValue");
@@ -153,7 +156,7 @@ public class HooksStateHandlerTest {
         });
 
     first.queueHookStateUpdate(
-        new HookUpdater() {
+        new HookUpdater<StateHandler>() {
           @Override
           public void apply(StateHandler stateHandler) {
             stateHandler
@@ -165,7 +168,7 @@ public class HooksStateHandlerTest {
     final StateHandler second = new StateHandler(first);
 
     first.queueHookStateUpdate(
-        new HookUpdater() {
+        new HookUpdater<StateHandler>() {
           @Override
           public void apply(StateHandler stateHandler) {
             stateHandler
