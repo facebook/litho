@@ -129,7 +129,6 @@ import javax.annotation.Nullable;
  * @prop initialText Initial text to display. If set, the value is set on the EditText exactly once:
  *     on initial mount. From then on, the EditText's text property is not modified.
  * @prop hint Hint text to display.
- * @prop shadowRadius Blur radius of the shadow.
  * @prop inputBackground The background of the EditText itself; this is subtly distinct from the
  *     Litho background prop. The padding of the inputBackground drawable will be applied to the
  *     EditText itself, insetting the cursor and text field.
@@ -153,7 +152,6 @@ import javax.annotation.Nullable;
  * @prop inputFilters Used to filter the input to e.g. a max character count.
  * @prop multiline If set to true, type of the input will be changed to multiline TEXT. Because
  *     passwords or numbers couldn't be multiline by definition.
- * @prop textWatchers Used to register text watchers e.g. mentions detection.
  * @prop ellipsize If set, specifies the position of the text to be ellipsized. See <a
  *     href="https://developer.android.com/reference/android/widget/TextView.html#setEllipsize(android.text.TextUtils.TruncateAt)">android
  *     documentation</a> for behavior description.
