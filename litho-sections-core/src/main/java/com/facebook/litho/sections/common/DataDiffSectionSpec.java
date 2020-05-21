@@ -25,6 +25,7 @@ import androidx.recyclerview.widget.DiffUtil;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentsLogger;
+import com.facebook.litho.ComponentsReporter;
 import com.facebook.litho.ComponentsSystrace;
 import com.facebook.litho.Diff;
 import com.facebook.litho.EventHandler;
@@ -44,6 +45,7 @@ import com.facebook.litho.widget.RecyclerBinderUpdateCallback.Operation;
 import com.facebook.litho.widget.RenderInfo;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 
 /**
  * A {@link DiffSectionSpec} that creates a changeSet diffing a generic {@link List<T>} of data.
@@ -109,12 +111,16 @@ import java.util.List;
     events = {OnCheckIsSameContentEvent.class, OnCheckIsSameItemEvent.class, RenderEvent.class})
 public class DataDiffSectionSpec<T> {
 
+  public static final String DUPLICATES_EXIST_MSG =
+      "Detected duplicates in data passed to DataDiffSection. Read more here: https://bit.ly/2WPviOR";
+
   @OnDiff
   public static <T> void onCreateChangeSet(
       SectionContext c,
       ChangeSet changeSet,
       @Prop Diff<List<? extends T>> data,
-      @Prop(optional = true) @Nullable Diff<Boolean> detectMoves) {
+      @Prop(optional = true) @Nullable Diff<Boolean> detectMoves,
+      @Prop(optional = true) @Nullable Diff<Boolean> alwaysDetectDuplicates) {
 
     final List<? extends T> previousData = data.getPrevious();
     final List<? extends T> nextData = data.getNext();
@@ -134,6 +140,9 @@ public class DataDiffSectionSpec<T> {
             : LogTreePopulator.populatePerfEventFromLogger(
                 c, logger, logger.newPerformanceEvent(c, EVENT_SECTIONS_DATA_DIFF_CALCULATE_DIFF));
 
+    if (nextData != null && isDetectDuplicatesEnabled(alwaysDetectDuplicates)) {
+      detectDuplicates(c, nextData, callback);
+    }
     if (isTracing) {
       ComponentsSystrace.beginSection("DiffUtil.calculateDiff");
     }
@@ -155,12 +164,45 @@ public class DataDiffSectionSpec<T> {
     updatesCallback.applyChangeset(c);
   }
 
+  private static <T> void detectDuplicates(
+      SectionContext c, List<? extends T> data, Callback<T> callback) {
+    for (ListIterator<? extends T> it = data.listIterator(); it.hasNext(); ) {
+      int nextIdx = it.nextIndex() + 1;
+      T item = it.next();
+      for (ListIterator<? extends T> jt = data.listIterator(nextIdx); jt.hasNext(); ) {
+        T other = jt.next();
+        if (callback.areItemsTheSame(item, other)) {
+          ComponentsReporter.emitMessage(
+              ComponentsReporter.LogLevel.ERROR,
+              "sections_duplicate_item",
+              DUPLICATES_EXIST_MSG
+                  + ", type: "
+                  + item.getClass().getSimpleName()
+                  + ", hash: "
+                  + System.identityHashCode(item));
+          return; /* we don't need to know how many, just that there is at least one duplicate */
+        }
+      }
+    }
+  }
+
   /**
    * @return true if detect moves should be enabled when performing the Diff. Detect moves is
    *     enabled by default
    */
   private static boolean isDetectMovesEnabled(@Nullable Diff<Boolean> detectMoves) {
     return detectMoves == null || detectMoves.getNext() == null || detectMoves.getNext();
+  }
+
+  /**
+   * @return true if duplicates detection should be enabled when performing the Diff. Always on on
+   *     debug. Default to false on release.
+   */
+  private static boolean isDetectDuplicatesEnabled(@Nullable Diff<Boolean> alwaysDetectDuplicates) {
+    if (alwaysDetectDuplicates == null || alwaysDetectDuplicates.getNext() == null) {
+      return ComponentsConfiguration.isDebugModeEnabled;
+    }
+    return alwaysDetectDuplicates.getNext();
   }
 
   private static class DiffSectionOperationExecutor
