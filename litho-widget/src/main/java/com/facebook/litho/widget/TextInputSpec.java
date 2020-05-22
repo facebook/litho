@@ -51,6 +51,7 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.Diff;
 import com.facebook.litho.EventHandler;
+import com.facebook.litho.Output;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
 import com.facebook.litho.StateValue;
@@ -60,6 +61,7 @@ import com.facebook.litho.annotations.MountSpec;
 import com.facebook.litho.annotations.OnBind;
 import com.facebook.litho.annotations.OnCreateInitialState;
 import com.facebook.litho.annotations.OnCreateMountContent;
+import com.facebook.litho.annotations.OnLoadStyle;
 import com.facebook.litho.annotations.OnMeasure;
 import com.facebook.litho.annotations.OnMount;
 import com.facebook.litho.annotations.OnTrigger;
@@ -229,6 +231,16 @@ class TextInputSpec {
     savedText.set(new AtomicReference<>(initialText));
   }
 
+  @OnLoadStyle
+  static void onLoadStyle(ComponentContext c, Output<Integer> highlightColor) {
+    TypedArray a = c.obtainStyledAttributes(new int[] {android.R.attr.textColorHighlight}, 0);
+    try {
+      highlightColor.set(a.getColor(0, 0));
+    } finally {
+      a.recycle();
+    }
+  }
+
   @OnMeasure
   static void onMeasure(
       ComponentContext c,
@@ -244,7 +256,7 @@ class TextInputSpec {
       @Prop(optional = true, resType = ResType.COLOR) int shadowColor,
       @Prop(optional = true) ColorStateList textColorStateList,
       @Prop(optional = true) ColorStateList hintColorStateList,
-      @Prop(optional = true, resType = ResType.COLOR) int highlightColor,
+      @Prop(optional = true, resType = ResType.COLOR) Integer highlightColor,
       @Prop(optional = true, resType = ResType.DIMEN_TEXT) int textSize,
       @Prop(optional = true) Typeface typeface,
       @Prop(optional = true) int textAlignment,
@@ -325,7 +337,7 @@ class TextInputSpec {
       int shadowColor,
       ColorStateList textColorStateList,
       ColorStateList hintColorStateList,
-      int highlightColor,
+      Integer highlightColor,
       int textSize,
       Typeface typeface,
       int textAlignment,
@@ -391,7 +403,9 @@ class TextInputSpec {
     editText.setCursorVisible(editable);
     editText.setTextColor(textColorStateList);
     editText.setHintTextColor(hintColorStateList);
-    editText.setHighlightColor(highlightColor);
+    if (highlightColor != null) {
+      editText.setHighlightColor(highlightColor);
+    }
     editText.setMovementMethod(movementMethod);
 
     /**
@@ -638,7 +652,7 @@ class TextInputSpec {
       @Prop(optional = true, resType = ResType.COLOR) int shadowColor,
       @Prop(optional = true) ColorStateList textColorStateList,
       @Prop(optional = true) ColorStateList hintColorStateList,
-      @Prop(optional = true, resType = ResType.COLOR) int highlightColor,
+      @Prop(optional = true, resType = ResType.COLOR) Integer highlightColor,
       @Prop(optional = true, resType = ResType.DIMEN_TEXT) int textSize,
       @Prop(optional = true) Typeface typeface,
       @Prop(optional = true) int textAlignment,
