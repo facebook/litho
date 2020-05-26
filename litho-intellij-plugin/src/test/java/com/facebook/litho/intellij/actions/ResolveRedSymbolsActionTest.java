@@ -23,6 +23,7 @@ import com.facebook.litho.intellij.PsiSearchUtils;
 import com.facebook.litho.intellij.services.ComponentsCacheService;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.ServiceManager;
+import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiClass;
@@ -30,7 +31,6 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiJavaFile;
 import com.intellij.psi.util.PsiTreeUtil;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.HashMap;
 import org.junit.Test;
 
@@ -45,6 +45,7 @@ public class ResolveRedSymbolsActionTest extends LithoPluginIntellijTest {
     final Project project = testHelper.getFixture().getProject();
     final PsiJavaFile pf = (PsiJavaFile) testHelper.configure("ResolveRedSymbolsActionTest.java");
     final VirtualFile vf = pf.getViewProvider().getVirtualFile();
+    final Document document = testHelper.getFixture().getDocument(pf);
 
     final PsiFile specPsiFile = testHelper.configure("LayoutSpec.java");
     ApplicationManager.getApplication()
@@ -53,9 +54,7 @@ public class ResolveRedSymbolsActionTest extends LithoPluginIntellijTest {
               PsiSearchUtils.addMock(
                   "LayoutSpec", PsiTreeUtil.findChildOfType(specPsiFile, PsiClass.class));
 
-              final Collection<String> resolved =
-                  ResolveRedSymbolsAction.resolveRedSymbols(project, vf, pf, new HashMap<>());
-              assertThat(resolved.size()).isOne();
+              ResolveRedSymbolsAction.resolveRedSymbols(pf, vf, document, project, new HashMap<>());
 
               final PsiClass cached =
                   ServiceManager.getService(project, ComponentsCacheService.class)

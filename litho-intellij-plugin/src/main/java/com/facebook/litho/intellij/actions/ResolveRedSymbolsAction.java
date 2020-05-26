@@ -21,6 +21,11 @@ import com.facebook.litho.intellij.PsiSearchUtils;
 import com.facebook.litho.intellij.extensions.EventLogger;
 import com.facebook.litho.intellij.logging.LithoLoggerProvider;
 import com.facebook.litho.intellij.services.ComponentsCacheService;
+import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer;
+import com.intellij.codeInsight.daemon.impl.DaemonCodeAnalyzerImpl;
+import com.intellij.codeInsight.daemon.impl.DaemonProgressIndicator;
+import com.intellij.codeInsight.daemon.impl.HighlightInfo;
+import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
@@ -28,12 +33,17 @@ import com.intellij.openapi.actionSystem.Presentation;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.editor.Document;
+import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.module.Module;
+import com.intellij.openapi.progress.ProgressIndicator;
+import com.intellij.openapi.progress.ProgressManager;
+import com.intellij.openapi.progress.Task;
+import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.FileIndexFacade;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.openapi.vcs.CodeSmellDetector;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
@@ -45,7 +55,6 @@ import com.intellij.psi.util.PsiTreeUtil;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,6 +66,7 @@ import java.util.Objects;
  */
 public class ResolveRedSymbolsAction extends AnAction {
   private static final Logger LOG = Logger.getInstance(ResolveRedSymbolsAction.class);
+  private static final String ACTION = "Resolving Red Symbols";
 
   @Override
   public void update(AnActionEvent e) {
@@ -64,8 +74,12 @@ public class ResolveRedSymbolsAction extends AnAction {
     final Project project = e.getProject();
     final VirtualFile virtualFile = e.getData(CommonDataKeys.VIRTUAL_FILE);
     final PsiFile psiFile = e.getData(CommonDataKeys.PSI_FILE);
+    final Editor editor = e.getData(CommonDataKeys.EDITOR);
     final Presentation presentation = e.getPresentation();
-    if (project == null || virtualFile == null || !(psiFile instanceof PsiJavaFile)) {
+    if (project == null
+        || virtualFile == null
+        || editor == null
+        || !(psiFile instanceof PsiJavaFile)) {
       presentation.setEnabledAndVisible(false);
       return;
     }
@@ -83,38 +97,76 @@ public class ResolveRedSymbolsAction extends AnAction {
     final Project project = e.getProject();
     final VirtualFile virtualFile = e.getData(CommonDataKeys.VIRTUAL_FILE);
     final PsiJavaFile psiFile = (PsiJavaFile) e.getData(CommonDataKeys.PSI_FILE);
+    final Editor editor = e.getData(CommonDataKeys.EDITOR);
 
     LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_RED_SYMBOLS + ".invoke");
     Map<String, String> eventMetadata = new HashMap<>();
 
-    final Collection<String> specs =
-        resolveRedSymbols(project, virtualFile, psiFile, eventMetadata);
+    resolveRedSymbols(psiFile, virtualFile, editor.getDocument(), project, eventMetadata);
 
-    LithoPluginUtils.showInfo(getMessage(virtualFile.getNameWithoutExtension(), specs), project);
-    String result = specs.isEmpty() ? ".fail" : ".success";
-    LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_RED_SYMBOLS + result, eventMetadata);
+    //    String result = specs.isEmpty() ? ".fail" : ".success";
+    //    LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_RED_SYMBOLS + result,
+    // eventMetadata);
   }
 
   /**
    * Searches red symbols in the given file and tries generating missing classes.
    *
-   * @param project project to resolve red symbols.
-   * @param virtualFile file to search red symbols. Should be same as psiFile.
    * @param psiFile file to search red symbols. Should be same as virtualFile.
+   * @param virtualFile file to search red symbols. Should be same as psiFile.
+   * @param document document corresponding to files.
+   * @param project project to resolve red symbols.
    * @param eventMetadata mutable map to store event data.
-   * @return resolved red symbols.
    */
-  public static Collection<String> resolveRedSymbols(
-      Project project,
-      VirtualFile virtualFile,
+  public static void resolveRedSymbols(
       PsiJavaFile psiFile,
+      VirtualFile virtualFile,
+      Document document,
+      Project project,
       Map<String, String> eventMetadata) {
+    ProgressManager.getInstance()
+        .run(
+            new Task.Backgroundable(project, ACTION, false) {
+              @Override
+              public void run(ProgressIndicator indicator) {
+                final ProgressIndicator daemonIndicator = new DaemonProgressIndicator();
+                ProgressManager.getInstance()
+                    .runProcess(
+                        () ->
+                            DumbService.getInstance(project)
+                                .runReadActionInSmartMode(
+                                    () -> {
+                                      try {
+                                        collectAndAddToCache(
+                                            psiFile,
+                                            virtualFile,
+                                            document,
+                                            project,
+                                            eventMetadata,
+                                            daemonIndicator);
+                                      } catch (Exception e) {
+                                        LOG.debug(e);
+                                      }
+                                    }),
+                        daemonIndicator);
+                indicator.setFraction(1);
+              }
+            });
+  }
+
+  private static Collection<String> collectAndAddToCache(
+      PsiJavaFile psiFile,
+      VirtualFile virtualFile,
+      Document document,
+      Project project,
+      Map<String, String> eventMetadata,
+      ProgressIndicator progress) {
     LOG.debug("Invoked");
     long startTime = System.currentTimeMillis();
     eventMetadata.put(EventLogger.KEY_FILE, psiFile.getPackageName() + "." + psiFile.getName());
 
     final Map<String, List<PsiElement>> allRedSymbols =
-        collectRedSymbols(psiFile, virtualFile, project);
+        collectRedSymbols(psiFile, document, project, progress);
 
     final long collectedTime = System.currentTimeMillis();
     final long collectDelta = collectedTime - startTime;
@@ -132,6 +184,11 @@ public class ResolveRedSymbolsAction extends AnAction {
     eventMetadata.put(EventLogger.KEY_TIME_RESOLVE_RED_SYMBOLS, String.valueOf(updatedDelta));
     eventMetadata.put(EventLogger.KEY_RED_SYMBOLS_RESOLVED, resolved.toString());
     LOG.debug("Symbols are updated in " + updatedDelta + ", " + resolved);
+
+    if (!resolved.isEmpty()) {
+      LithoPluginUtils.showInfo(
+          getMessage(virtualFile.getNameWithoutExtension(), resolved), project);
+    }
     return resolved;
   }
 
@@ -145,28 +202,25 @@ public class ResolveRedSymbolsAction extends AnAction {
   }
 
   private static Map<String, List<PsiElement>> collectRedSymbols(
-      PsiFile psiFile, VirtualFile virtualFile, Project project) {
+      PsiFile psiFile, Document document, Project project, ProgressIndicator daemonIndicator) {
     Map<String, List<PsiElement>> redSymbolToElements = new HashMap<>();
-    CodeSmellDetector.getInstance(project)
-        .findCodeSmells(Collections.singletonList(virtualFile))
-        .forEach(
-            error -> {
-              final TextRange textRange = error.getTextRange();
-              final String redSymbol = error.getDocument().getText(textRange);
-              if (!StringUtil.isJavaIdentifier(redSymbol) || !StringUtil.isCapitalized(redSymbol))
-                return;
+    List<HighlightInfo> infos =
+        ((DaemonCodeAnalyzerImpl) DaemonCodeAnalyzer.getInstance(project))
+            .runMainPasses(psiFile, document, daemonIndicator);
+    for (HighlightInfo info : infos) {
+      if (!info.getSeverity().equals(HighlightSeverity.ERROR)) continue;
 
-              final PsiJavaCodeReferenceElement ref =
-                  PsiTreeUtil.findElementOfClassAtOffset(
-                      psiFile,
-                      textRange.getStartOffset(),
-                      PsiJavaCodeReferenceElement.class,
-                      false);
-              if (ref == null) return;
+      final String redSymbol = document.getText(new TextRange(info.startOffset, info.endOffset));
+      if (!StringUtil.isJavaIdentifier(redSymbol) || !StringUtil.isCapitalized(redSymbol)) continue;
 
-              redSymbolToElements.putIfAbsent(redSymbol, new ArrayList<>());
-              redSymbolToElements.get(redSymbol).add(ref);
-            });
+      final PsiJavaCodeReferenceElement ref =
+          PsiTreeUtil.findElementOfClassAtOffset(
+              psiFile, info.startOffset, PsiJavaCodeReferenceElement.class, false);
+      if (ref == null) continue;
+
+      redSymbolToElements.putIfAbsent(redSymbol, new ArrayList<>());
+      redSymbolToElements.get(redSymbol).add(ref);
+    }
     return redSymbolToElements;
   }
 
