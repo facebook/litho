@@ -48,7 +48,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
  * Finds errors in the current file, tries to resolve them to Litho Specs, and updates generated
@@ -85,7 +84,8 @@ public class ResolveRedSymbolsAction extends AnAction {
     LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_RED_SYMBOLS + ".invoke");
     Map<String, String> eventMetadata = new HashMap<>();
 
-    final List<String> specs = resolveRedSymbols(project, virtualFile, psiFile, eventMetadata);
+    final Collection<String> specs =
+        resolveRedSymbols(project, virtualFile, psiFile, eventMetadata);
 
     LithoPluginUtils.showInfo(getMessage(virtualFile.getNameWithoutExtension(), specs), project);
     String result = specs.isEmpty() ? ".fail" : ".success";
@@ -101,7 +101,7 @@ public class ResolveRedSymbolsAction extends AnAction {
    * @param eventMetadata mutable map to store event data.
    * @return resolved red symbols.
    */
-  public static List<String> resolveRedSymbols(
+  public static Collection<String> resolveRedSymbols(
       Project project,
       VirtualFile virtualFile,
       PsiJavaFile psiFile,
@@ -115,7 +115,8 @@ public class ResolveRedSymbolsAction extends AnAction {
     eventMetadata.put(EventLogger.KEY_RED_SYMBOLS_ALL, allRedSymbols.keySet().toString());
     final GlobalSearchScope symbolsScope =
         moduleWithDependenciesAndLibrariesScope(virtualFile, project);
-    final List<String> resolved = addToCache(allRedSymbols, psiFile, project, symbolsScope);
+    final Collection<String> resolved =
+        addToCache(allRedSymbols.keySet(), project, symbolsScope).keySet();
     final long endTime = System.currentTimeMillis();
     eventMetadata.put(
         EventLogger.KEY_TIME_RESOLVE_RED_SYMBOLS, String.valueOf(endTime - collectedTime));
@@ -147,28 +148,22 @@ public class ResolveRedSymbolsAction extends AnAction {
     return redSymbols;
   }
 
-  private static List<String> addToCache(
-      Map<String, List<Integer>> allRedSymbols,
-      PsiFile psiFile,
-      Project project,
-      GlobalSearchScope symbolsScope) {
-    final ComponentsCacheService componentsCache =
+  private static Map<String, PsiClass> addToCache(
+      Collection<String> allRedSymbols, Project project, GlobalSearchScope symbolsScope) {
+    Map<String, PsiClass> redSymbolToClass = new HashMap<>();
+    ComponentsCacheService componentsCache =
         ServiceManager.getService(project, ComponentsCacheService.class);
-    return allRedSymbols.entrySet().stream()
-        .flatMap(
-            entry ->
-                Arrays.stream(
-                        PsiSearchUtils.findClassesByShortName(
-                            project, symbolsScope, entry.getKey() + "Spec"))
-                    .filter(LithoPluginUtils::isLayoutSpec)
-                    .map(
-                        specCls -> {
-                          final PsiClass updatedCls = componentsCache.maybeUpdate(specCls, true);
-                          bindExpressions(entry.getValue(), updatedCls, psiFile, project);
-                          return specCls.getName();
-                        })
-                    .filter(Objects::nonNull))
-        .collect(Collectors.toList());
+    for (String redSymbol : allRedSymbols) {
+      Arrays.stream(
+              PsiSearchUtils.findClassesByShortName(project, symbolsScope, redSymbol + "Spec"))
+          .filter(LithoPluginUtils::isLayoutSpec)
+          .forEach(
+              specCls -> {
+                final PsiClass resolved = componentsCache.maybeUpdate(specCls, false);
+                redSymbolToClass.put(redSymbol, resolved);
+              });
+    }
+    return redSymbolToClass;
   }
 
   private static void bindExpressions(

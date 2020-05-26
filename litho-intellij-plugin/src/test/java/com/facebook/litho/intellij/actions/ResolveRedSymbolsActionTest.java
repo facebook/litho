@@ -30,8 +30,8 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiJavaFile;
 import com.intellij.psi.util.PsiTreeUtil;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import org.junit.Test;
 
 public class ResolveRedSymbolsActionTest extends LithoPluginIntellijTest {
@@ -53,10 +53,9 @@ public class ResolveRedSymbolsActionTest extends LithoPluginIntellijTest {
               PsiSearchUtils.addMock(
                   "LayoutSpec", PsiTreeUtil.findChildOfType(specPsiFile, PsiClass.class));
 
-              final List<String> resolved =
+              final Collection<String> resolved =
                   ResolveRedSymbolsAction.resolveRedSymbols(project, vf, pf, new HashMap<>());
               assertThat(resolved.size()).isOne();
-              assertThat(resolved.get(0)).isEqualTo("LayoutSpec");
 
               final PsiClass cached =
                   ServiceManager.getService(project, ComponentsCacheService.class)
