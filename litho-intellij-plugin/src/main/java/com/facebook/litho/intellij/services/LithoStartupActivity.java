@@ -24,7 +24,9 @@ public class LithoStartupActivity implements StartupActivity {
 
   @Override
   public void runActivity(Project project) {
-    final GeneratedFilesListener listener = new GeneratedFilesListener(project);
-    Disposer.register(project, listener);
+    final GeneratedFilesListener listener1 = new GeneratedFilesListener(project);
+    Disposer.register(project, listener1);
+    final OnCodeAnalysisFinishedListener listener2 = new OnCodeAnalysisFinishedListener(project);
+    Disposer.register(project, listener2);
   }
 }

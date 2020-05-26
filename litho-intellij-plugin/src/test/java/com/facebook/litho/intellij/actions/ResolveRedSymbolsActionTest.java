@@ -23,7 +23,6 @@ import com.facebook.litho.intellij.PsiSearchUtils;
 import com.facebook.litho.intellij.services.ComponentsCacheService;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.ServiceManager;
-import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -46,7 +45,6 @@ public class ResolveRedSymbolsActionTest extends LithoPluginIntellijTest {
     final Project project = testHelper.getFixture().getProject();
     final PsiJavaFile pf = (PsiJavaFile) testHelper.configure("ResolveRedSymbolsActionTest.java");
     final VirtualFile vf = pf.getViewProvider().getVirtualFile();
-    final Document document = testHelper.getFixture().getDocument(pf);
     final Editor editor = testHelper.getFixture().getEditor();
 
     final PsiFile specPsiFile = testHelper.configure("LayoutSpec.java");

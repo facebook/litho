@@ -102,9 +102,7 @@ public class ResolveRedSymbolsAction extends AnAction {
     final PsiJavaFile psiFile = (PsiJavaFile) e.getData(CommonDataKeys.PSI_FILE);
     final Editor editor = e.getData(CommonDataKeys.EDITOR);
 
-    LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_RED_SYMBOLS + ".invoke");
     Map<String, String> eventMetadata = new HashMap<>();
-
     resolveRedSymbols(
         psiFile,
         virtualFile,
@@ -112,9 +110,9 @@ public class ResolveRedSymbolsAction extends AnAction {
         project,
         eventMetadata,
         finished -> {
-          String result = finished ? ".success" : ".fail";
+          String result = finished ? "success" : "fail";
           LithoLoggerProvider.getEventLogger()
-              .log(EventLogger.EVENT_RED_SYMBOLS + result, eventMetadata);
+              .log(EventLogger.EVENT_RED_SYMBOLS + ".action." + result, eventMetadata);
         });
   }
 
