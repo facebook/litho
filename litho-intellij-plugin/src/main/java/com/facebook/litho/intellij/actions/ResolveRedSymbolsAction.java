@@ -27,6 +27,7 @@ import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.actionSystem.Presentation;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.components.ServiceManager;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.FileIndexFacade;
@@ -55,6 +56,7 @@ import java.util.Objects;
  * components.
  */
 public class ResolveRedSymbolsAction extends AnAction {
+  private static final Logger LOG = Logger.getInstance(ResolveRedSymbolsAction.class);
 
   @Override
   public void update(AnActionEvent e) {
@@ -107,22 +109,29 @@ public class ResolveRedSymbolsAction extends AnAction {
       VirtualFile virtualFile,
       PsiJavaFile psiFile,
       Map<String, String> eventMetadata) {
+    LOG.debug("Invoked");
     long startTime = System.currentTimeMillis();
     eventMetadata.put(EventLogger.KEY_FILE, psiFile.getPackageName() + "." + psiFile.getName());
+
     final Map<String, List<PsiElement>> allRedSymbols =
         collectRedSymbols(psiFile, virtualFile, project);
+
     final long collectedTime = System.currentTimeMillis();
-    eventMetadata.put(
-        EventLogger.KEY_TIME_COLLECT_RED_SYMBOLS, String.valueOf(collectedTime - startTime));
+    final long collectDelta = collectedTime - startTime;
+    eventMetadata.put(EventLogger.KEY_TIME_COLLECT_RED_SYMBOLS, String.valueOf(collectDelta));
     eventMetadata.put(EventLogger.KEY_RED_SYMBOLS_ALL, allRedSymbols.keySet().toString());
+    LOG.debug("Collected in " + collectDelta + ", " + allRedSymbols.keySet());
     final GlobalSearchScope symbolsScope =
         moduleWithDependenciesAndLibrariesScope(virtualFile, project);
+
     final Collection<String> resolved =
         addToCache(allRedSymbols.keySet(), project, symbolsScope).keySet();
-    final long endTime = System.currentTimeMillis();
-    eventMetadata.put(
-        EventLogger.KEY_TIME_RESOLVE_RED_SYMBOLS, String.valueOf(endTime - collectedTime));
+
+    final long updatedTime = System.currentTimeMillis();
+    final long updatedDelta = updatedTime - collectedTime;
+    eventMetadata.put(EventLogger.KEY_TIME_RESOLVE_RED_SYMBOLS, String.valueOf(updatedDelta));
     eventMetadata.put(EventLogger.KEY_RED_SYMBOLS_RESOLVED, resolved.toString());
+    LOG.debug("Symbols are updated in " + updatedDelta + ", " + resolved);
     return resolved;
   }
 
