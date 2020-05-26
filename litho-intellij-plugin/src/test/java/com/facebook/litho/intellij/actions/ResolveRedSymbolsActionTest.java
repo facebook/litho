@@ -58,8 +58,14 @@ public class ResolveRedSymbolsActionTest extends LithoPluginIntellijTest {
 
               final HashMap<String, String> eventMetadata = new HashMap<>();
               ResolveRedSymbolsAction.resolveRedSymbols(
-                  pf, vf, document, editor, project, eventMetadata);
-              assertThat(eventMetadata).isNotEmpty();
+                  pf,
+                  vf,
+                  editor,
+                  project,
+                  eventMetadata,
+                  ignore -> {
+                    assertThat(eventMetadata).isNotEmpty();
+                  });
               assertThat(eventMetadata.get("resolved_red_symbols")).isEqualTo("[Layout]");
 
               final PsiClass cached =

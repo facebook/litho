@@ -60,6 +60,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 
 /**
  * Finds errors in the current file, tries to resolve them to Litho Specs, and updates generated
@@ -103,11 +105,17 @@ public class ResolveRedSymbolsAction extends AnAction {
     LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_RED_SYMBOLS + ".invoke");
     Map<String, String> eventMetadata = new HashMap<>();
 
-    resolveRedSymbols(psiFile, virtualFile, editor.getDocument(), editor, project, eventMetadata);
-
-    //    String result = specs.isEmpty() ? ".fail" : ".success";
-    //    LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_RED_SYMBOLS + result,
-    // eventMetadata);
+    resolveRedSymbols(
+        psiFile,
+        virtualFile,
+        editor,
+        project,
+        eventMetadata,
+        finished -> {
+          String result = finished ? ".success" : ".fail";
+          LithoLoggerProvider.getEventLogger()
+              .log(EventLogger.EVENT_RED_SYMBOLS + result, eventMetadata);
+        });
   }
 
   /**
@@ -115,18 +123,19 @@ public class ResolveRedSymbolsAction extends AnAction {
    *
    * @param psiFile file to search red symbols. Should be same as virtualFile.
    * @param virtualFile file to search red symbols. Should be same as psiFile.
-   * @param document document corresponding to files.
    * @param editor editor containing document.
    * @param project project to resolve red symbols.
    * @param eventMetadata mutable map to store event data.
+   * @param onFinished accepts true, iff analysis was finished, false otherwise. May be called
+   *     before symbols binding.
    */
   public static void resolveRedSymbols(
       PsiJavaFile psiFile,
       VirtualFile virtualFile,
-      Document document,
       Editor editor,
       Project project,
-      Map<String, String> eventMetadata) {
+      Map<String, String> eventMetadata,
+      Consumer<Boolean> onFinished) {
     ProgressManager.getInstance()
         .run(
             new Task.Backgroundable(project, ACTION, false) {
@@ -134,6 +143,7 @@ public class ResolveRedSymbolsAction extends AnAction {
               public void run(ProgressIndicator indicator) {
                 final Map<PsiClass, List<PsiElement>> resolved = new HashMap<>();
                 final ProgressIndicator daemonIndicator = new DaemonProgressIndicator();
+                AtomicBoolean success = new AtomicBoolean(false);
                 ProgressManager.getInstance()
                     .runProcess(
                         () ->
@@ -145,16 +155,18 @@ public class ResolveRedSymbolsAction extends AnAction {
                                             collectAndAddToCache(
                                                 psiFile,
                                                 virtualFile,
-                                                document,
+                                                editor.getDocument(),
                                                 project,
                                                 eventMetadata,
                                                 daemonIndicator));
+                                        success.set(true);
                                       } catch (Exception e) {
                                         LOG.debug(e);
                                       }
                                     }),
                         daemonIndicator);
                 indicator.setFraction(1);
+                onFinished.accept(success.get());
                 if (resolved.isEmpty()) return;
 
                 DumbService.getInstance(project)
