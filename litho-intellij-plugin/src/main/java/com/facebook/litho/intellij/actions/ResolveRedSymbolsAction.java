@@ -42,6 +42,7 @@ import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.util.PsiTreeUtil;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -86,7 +87,7 @@ public class ResolveRedSymbolsAction extends AnAction {
 
     final List<String> specs = resolveRedSymbols(project, virtualFile, psiFile, eventMetadata);
 
-    LithoPluginUtils.showInfo(getMessage(virtualFile, specs), project);
+    LithoPluginUtils.showInfo(getMessage(virtualFile.getNameWithoutExtension(), specs), project);
     String result = specs.isEmpty() ? ".fail" : ".success";
     LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_RED_SYMBOLS + result, eventMetadata);
   }
@@ -188,11 +189,12 @@ public class ResolveRedSymbolsAction extends AnAction {
             });
   }
 
-  private static String getMessage(VirtualFile virtualFile, List<String> specs) {
-    return specs.size()
-        + " red symbol(s) found in "
-        + virtualFile.getNameWithoutExtension()
+  private static String getMessage(
+      String containingFileName, Collection<String> foundRedSymbolNames) {
+    return foundRedSymbolNames.size()
+        + " red symbol(s) resolved in "
+        + containingFileName
         + " "
-        + (specs.isEmpty() ? "" : specs.toString());
+        + (foundRedSymbolNames.isEmpty() ? "" : foundRedSymbolNames.toString());
   }
 }
