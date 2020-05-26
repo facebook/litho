@@ -151,6 +151,8 @@ public class ResolveRedSymbolsAction extends AnAction {
       PsiFile psiFile,
       Project project,
       GlobalSearchScope symbolsScope) {
+    final ComponentsCacheService componentsCache =
+        ServiceManager.getService(project, ComponentsCacheService.class);
     return allRedSymbols.entrySet().stream()
         .flatMap(
             entry ->
@@ -160,13 +162,8 @@ public class ResolveRedSymbolsAction extends AnAction {
                     .filter(LithoPluginUtils::isLayoutSpec)
                     .map(
                         specCls -> {
-                          ServiceManager.getService(project, ComponentsCacheService.class)
-                              .maybeUpdate(
-                                  specCls,
-                                  true,
-                                  updatedCls ->
-                                      bindExpressions(
-                                          entry.getValue(), updatedCls, psiFile, project));
+                          final PsiClass updatedCls = componentsCache.maybeUpdate(specCls, true);
+                          bindExpressions(entry.getValue(), updatedCls, psiFile, project);
                           return specCls.getName();
                         })
                     .filter(Objects::nonNull))

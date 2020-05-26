@@ -113,14 +113,13 @@ public class ComponentGenerateUtils {
         showSuccess(StringUtil.getShortName(componentQualifiedName), project);
       }
     } else {
-      ServiceManager.getService(project, ComponentsCacheService.class)
-          .maybeUpdate(
-              layoutSpecCls,
-              true,
-              psiClass -> {
-                logger.logStep("creating in-memory class");
-                showSuccess(psiClass.getName(), project);
-              });
+      final PsiClass component =
+          ServiceManager.getService(project, ComponentsCacheService.class)
+              .maybeUpdate(layoutSpecCls, true);
+      logger.logStep("creating in-memory class");
+      if (component != null) {
+        showSuccess(component.getName(), project);
+      }
     }
   }
 

@@ -28,11 +28,9 @@ import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
-import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.PsiClass;
-import com.intellij.util.Consumer;
 import com.intellij.util.ThrowableRunnable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -62,23 +60,18 @@ public class ComponentsCacheService implements Disposable {
     componentNameToClass.clear();
   }
 
-  public void maybeUpdate(PsiClass specClass, boolean forceUpdate) {
-    maybeUpdate(specClass, forceUpdate, null);
-  }
-
-  /** @param onUpdatedListener listener is triggered iff the class was updated. */
-  public void maybeUpdate(
-      PsiClass specClass, boolean forceUpdate, @Nullable Consumer<PsiClass> onUpdatedListener) {
-    if (!LithoPluginUtils.isLayoutSpec(specClass)) return;
+  @Nullable("returns null if component was not created")
+  public PsiClass maybeUpdate(PsiClass specClass, boolean forceUpdate) {
+    if (!LithoPluginUtils.isLayoutSpec(specClass)) return null;
 
     final String componentQualifiedName =
         LithoPluginUtils.getLithoComponentNameFromSpec(specClass.getQualifiedName());
-    if (componentQualifiedName == null) return;
+    if (componentQualifiedName == null) return null;
 
     final ShouldUpdateChecker checker =
         new ShouldUpdateChecker(forceUpdate, componentQualifiedName);
-
-    maybeUpdateAsync(specClass, componentQualifiedName, checker, onUpdatedListener);
+    maybeUpdateInReadAction(specClass, componentQualifiedName, checker);
+    return getComponent(componentQualifiedName);
   }
 
   /**
@@ -130,11 +123,8 @@ public class ComponentsCacheService implements Disposable {
             });
   }
 
-  private void maybeUpdateAsync(
-      PsiClass specClass,
-      String componentQualifiedName,
-      ShouldUpdateChecker checker,
-      @Nullable Consumer<PsiClass> onUpdatedListener) {
+  private void maybeUpdateInReadAction(
+      PsiClass specClass, String componentQualifiedName, ShouldUpdateChecker checker) {
     final String componentShortName = StringUtil.getShortName(componentQualifiedName);
     if (componentShortName.isEmpty()) return;
 
@@ -161,15 +151,12 @@ public class ComponentsCacheService implements Disposable {
                   inMemory -> {
                     logger.logStep("file creation " + componentShortName);
                     componentNameToClass.put(componentQualifiedName, inMemory);
-                    if (onUpdatedListener != null) {
-                      onUpdatedListener.consume(inMemory);
-                    }
                   });
         };
-    if (ApplicationManager.getApplication().isUnitTestMode()) {
+    if (ApplicationManager.getApplication().isReadAccessAllowed()) {
       job.run();
     } else {
-      DumbService.getInstance(project).smartInvokeLater(() -> ReadAction.run(job));
+      ReadAction.run(job);
     }
   }
 
