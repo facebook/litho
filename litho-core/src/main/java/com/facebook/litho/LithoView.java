@@ -51,6 +51,7 @@ public class LithoView extends Host {
       "LithoView:SetAlreadyAttachedComponentTree";
   private static final int TOO_BIG_TEXTURE_SIZE = 4096;
   private static final String TAG = LithoView.class.getSimpleName();
+  private final boolean mDisableTransitionsExtension;
   private boolean mIsMountStateDirty;
   private final boolean mUseExtensions;
   private final boolean mDelegateToRenderCore;
@@ -218,6 +219,8 @@ public class LithoView extends Host {
 
     mAccessibilityManager =
         (AccessibilityManager) context.getAndroidContext().getSystemService(ACCESSIBILITY_SERVICE);
+    mDisableTransitionsExtension =
+        ComponentsConfiguration.disableTransitionsExtensionForMountDelegate;
   }
 
   private static void performLayoutOnChildrenIfNecessary(ComponentHost host) {
@@ -687,7 +690,9 @@ public class LithoView extends Host {
         mLithoHostListenerCoordinator.enableIncrementalMount(this, mMountDelegateTarget);
       }
 
-      mLithoHostListenerCoordinator.enableTransitions(this, mMountDelegateTarget);
+      if (!mDisableTransitionsExtension) {
+        mLithoHostListenerCoordinator.enableTransitions(this, mMountDelegateTarget);
+      }
     }
   }
 
