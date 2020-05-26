@@ -281,26 +281,28 @@ public class DataDiffSectionSpec<T> {
     private static List<RenderInfo> extractComponentInfos(
         int opSize, List<ComponentContainer> components) {
       final List<RenderInfo> renderInfos = new ArrayList<>(opSize);
-      for (int i = 0; i < opSize; i++) {
-        renderInfos.add(components.get(i).getRenderInfo());
+      int i = 0;
+      for (ComponentContainer container : components) {
+        if (i++ == opSize) {
+          break;
+        }
+        renderInfos.add(container.getRenderInfo());
       }
       return renderInfos;
     }
 
     private static List<Object> extractPrevData(List<Diff> dataHolders) {
-      final int size = dataHolders.size();
-      final List<Object> data = new ArrayList<>(size);
-      for (int i = 0; i < size; i++) {
-        data.add(dataHolders.get(i).getPrevious());
+      final List<Object> data = new ArrayList<>(dataHolders.size());
+      for (Diff diff : dataHolders) {
+        data.add(diff.getPrevious());
       }
       return data;
     }
 
     private static List<Object> extractNextData(List<Diff> dataHolders) {
-      final int size = dataHolders.size();
-      final List<Object> data = new ArrayList<>(size);
-      for (int i = 0; i < size; i++) {
-        data.add(dataHolders.get(i).getNext());
+      final List<Object> data = new ArrayList<>(dataHolders.size());
+      for (Diff diff : dataHolders) {
+        data.add(diff.getNext());
       }
       return data;
     }
