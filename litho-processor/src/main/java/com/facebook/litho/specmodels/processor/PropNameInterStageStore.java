@@ -47,7 +47,7 @@ import javax.tools.StandardLocation;
 public class PropNameInterStageStore {
   private final Filer mFiler;
 
-  private static final String BASE_PATH = "META-INF/litho/";
+  private static final String BASE_PATH = "_STRIPPED_RESOURCES/litho/";
   private static final String FILE_EXT = ".props";
 
   public PropNameInterStageStore(Filer filer) {

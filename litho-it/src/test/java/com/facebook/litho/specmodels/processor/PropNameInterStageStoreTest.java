@@ -71,7 +71,9 @@ public class PropNameInterStageStoreTest {
 
     verify(mFiler)
         .getResource(
-            StandardLocation.CLASS_PATH, "", "META-INF/litho/com.example.MyComponentSpec.props");
+            StandardLocation.CLASS_PATH,
+            "",
+            "_STRIPPED_RESOURCES/litho/com.example.MyComponentSpec.props");
   }
 
   @Test
@@ -90,7 +92,7 @@ public class PropNameInterStageStoreTest {
         .createResource(
             StandardLocation.CLASS_OUTPUT,
             "",
-            "META-INF/litho/com.facebook.litho.specmodels.processor.PropNameInterStageStoreTest.MyTestSpec.props");
+            "_STRIPPED_RESOURCES/litho/com.facebook.litho.specmodels.processor.PropNameInterStageStoreTest.MyTestSpec.props");
 
     // Not checking the actually written values here because Java IO is a horrible mess.
   }
