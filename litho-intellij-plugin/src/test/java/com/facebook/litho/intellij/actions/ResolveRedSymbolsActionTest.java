@@ -24,6 +24,7 @@ import com.facebook.litho.intellij.services.ComponentsCacheService;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.editor.Document;
+import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiClass;
@@ -46,6 +47,7 @@ public class ResolveRedSymbolsActionTest extends LithoPluginIntellijTest {
     final PsiJavaFile pf = (PsiJavaFile) testHelper.configure("ResolveRedSymbolsActionTest.java");
     final VirtualFile vf = pf.getViewProvider().getVirtualFile();
     final Document document = testHelper.getFixture().getDocument(pf);
+    final Editor editor = testHelper.getFixture().getEditor();
 
     final PsiFile specPsiFile = testHelper.configure("LayoutSpec.java");
     ApplicationManager.getApplication()
@@ -54,7 +56,11 @@ public class ResolveRedSymbolsActionTest extends LithoPluginIntellijTest {
               PsiSearchUtils.addMock(
                   "LayoutSpec", PsiTreeUtil.findChildOfType(specPsiFile, PsiClass.class));
 
-              ResolveRedSymbolsAction.resolveRedSymbols(pf, vf, document, project, new HashMap<>());
+              final HashMap<String, String> eventMetadata = new HashMap<>();
+              ResolveRedSymbolsAction.resolveRedSymbols(
+                  pf, vf, document, editor, project, eventMetadata);
+              assertThat(eventMetadata).isNotEmpty();
+              assertThat(eventMetadata.get("resolved_red_symbols")).isEqualTo("[Layout]");
 
               final PsiClass cached =
                   ServiceManager.getService(project, ComponentsCacheService.class)
