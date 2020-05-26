@@ -25,7 +25,6 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.actionSystem.Presentation;
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.module.Module;
@@ -126,10 +125,10 @@ public class ResolveRedSymbolsAction extends AnAction {
 
   private static GlobalSearchScope moduleWithDependenciesAndLibrariesScope(
       VirtualFile virtualFile, Project project) {
-    if (ApplicationManager.getApplication().isUnitTestMode()) {
+    final Module currentModule = FileIndexFacade.getInstance(project).getModuleForFile(virtualFile);
+    if (currentModule == null) {
       return GlobalSearchScope.projectScope(project);
     }
-    final Module currentModule = FileIndexFacade.getInstance(project).getModuleForFile(virtualFile);
     return GlobalSearchScope.moduleWithDependenciesAndLibrariesScope(currentModule);
   }
 
