@@ -31,9 +31,11 @@ import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.FileIndexFacade;
 import com.intellij.openapi.util.TextRange;
+import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vcs.CodeSmellDetector;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiClass;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiJavaCodeReferenceElement;
 import com.intellij.psi.PsiJavaFile;
@@ -107,7 +109,8 @@ public class ResolveRedSymbolsAction extends AnAction {
       Map<String, String> eventMetadata) {
     long startTime = System.currentTimeMillis();
     eventMetadata.put(EventLogger.KEY_FILE, psiFile.getPackageName() + "." + psiFile.getName());
-    final Map<String, List<Integer>> allRedSymbols = collectRedSymbols(virtualFile, project);
+    final Map<String, List<PsiElement>> allRedSymbols =
+        collectRedSymbols(psiFile, virtualFile, project);
     final long collectedTime = System.currentTimeMillis();
     eventMetadata.put(
         EventLogger.KEY_TIME_COLLECT_RED_SYMBOLS, String.valueOf(collectedTime - startTime));
@@ -132,19 +135,30 @@ public class ResolveRedSymbolsAction extends AnAction {
     return GlobalSearchScope.moduleWithDependenciesAndLibrariesScope(currentModule);
   }
 
-  private static Map<String, List<Integer>> collectRedSymbols(
-      VirtualFile virtualFile, Project project) {
-    Map<String, List<Integer>> redSymbols = new HashMap<>();
+  private static Map<String, List<PsiElement>> collectRedSymbols(
+      PsiFile psiFile, VirtualFile virtualFile, Project project) {
+    Map<String, List<PsiElement>> redSymbolToElements = new HashMap<>();
     CodeSmellDetector.getInstance(project)
         .findCodeSmells(Collections.singletonList(virtualFile))
         .forEach(
             error -> {
               final TextRange textRange = error.getTextRange();
               final String redSymbol = error.getDocument().getText(textRange);
-              redSymbols.putIfAbsent(redSymbol, new ArrayList<>());
-              redSymbols.get(redSymbol).add(textRange.getStartOffset());
+              if (!StringUtil.isJavaIdentifier(redSymbol) || !StringUtil.isCapitalized(redSymbol))
+                return;
+
+              final PsiJavaCodeReferenceElement ref =
+                  PsiTreeUtil.findElementOfClassAtOffset(
+                      psiFile,
+                      textRange.getStartOffset(),
+                      PsiJavaCodeReferenceElement.class,
+                      false);
+              if (ref == null) return;
+
+              redSymbolToElements.putIfAbsent(redSymbol, new ArrayList<>());
+              redSymbolToElements.get(redSymbol).add(ref);
             });
-    return redSymbols;
+    return redSymbolToElements;
   }
 
   private static Map<String, PsiClass> addToCache(
