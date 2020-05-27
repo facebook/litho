@@ -104,7 +104,6 @@ public interface ClassNames {
   ClassName HAS_EVENT_DISPATCHER_CLASSNAME =
       ClassName.bestGuess("com.facebook.litho.HasEventDispatcher");
   ClassName EVENT_HANDLER = ClassName.bestGuess("com.facebook.litho.EventHandler");
-  ClassName LIFECYCLE_PHASE = ClassName.bestGuess("com.facebook.litho.LifecyclePhase");
 
   ClassName EVENT_TRIGGER_TARGET = ClassName.bestGuess("com.facebook.litho.EventTriggerTarget");
   ClassName EVENT_TRIGGER = ClassName.bestGuess("com.facebook.litho.EventTrigger");
@@ -130,10 +129,6 @@ public interface ClassNames {
   ClassName NON_EXISTENT_CLASS = ClassName.bestGuess("error.NonExistentClass");
 
   ClassName WORKING_RANGE = ClassName.bestGuess("com.facebook.litho.WorkingRange");
-
-  ClassName HOTSWAP_MANAGER = ClassName.bestGuess("com.facebook.litho.HotswapManager");
-  ClassName CLASS_LOADER = ClassName.bestGuess("java.lang.ClassLoader");
-  ClassName JAVA_METHOD = ClassName.bestGuess("java.lang.reflect.Method");
 
   ClassName DYNAMIC_VALUE = ClassName.bestGuess("com.facebook.litho.DynamicValue");
 
