@@ -34,7 +34,7 @@ import java.util.concurrent.FutureTask;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /** todo: javadocs * */
-public class RenderState<State> {
+public class RenderState<State, RenderContext> {
 
   private static final int UNSET = -1;
   private static final int PROMOTION_MESSAGE = 99;
@@ -94,6 +94,7 @@ public class RenderState<State> {
   private final RenderStateHandler mUIHandler = new RenderStateHandler(Looper.getMainLooper());
   private final Context mContext;
   private final Delegate<State> mDelegate;
+  private final @Nullable RenderContext mRenderContext;
   private final int mId = ID_GENERATOR.incrementAndGet();
 
   @ThreadConfined(ThreadConfined.UI)
@@ -103,15 +104,21 @@ public class RenderState<State> {
   private @Nullable RenderResult<State> mCommittedRenderResult;
   private @Nullable LazyTree<State> mLatestLazyTree;
   private int mExternalRootVersion = -1;
-  private @Nullable RenderResultFuture<State> mRenderResultFuture;
+  private @Nullable RenderResultFuture<State, RenderContext> mRenderResultFuture;
   private int mNextSetRootId = 0;
   private int mCommittedSetRootId = UNSET;
   private int mWidthSpec = UNSET;
   private int mHeightSpec = UNSET;
 
   public RenderState(Context context, Delegate<State> delegate) {
+    this(context, null, delegate);
+  }
+
+  public RenderState(
+      Context context, @Nullable RenderContext renderContext, Delegate<State> delegate) {
     mContext = context;
     mDelegate = delegate;
+    mRenderContext = renderContext;
   }
 
   @ThreadConfined(ThreadConfined.ANY)
@@ -136,7 +143,7 @@ public class RenderState<State> {
       int heightSpec,
       @Nullable int[] measureOutput) {
     final int setRootId;
-    final RenderResultFuture<State> future;
+    final RenderResultFuture<State, RenderContext> future;
     final RenderResult<State> previousRenderResult;
 
     synchronized (this) {
@@ -173,7 +180,13 @@ public class RenderState<State> {
       setRootId = mNextSetRootId++;
       future =
           new RenderResultFuture<>(
-              mContext, lazyTree, mCommittedRenderResult, setRootId, mWidthSpec, mHeightSpec);
+              mContext,
+              mRenderContext,
+              lazyTree,
+              mCommittedRenderResult,
+              setRootId,
+              mWidthSpec,
+              mHeightSpec);
       mRenderResultFuture = future;
     }
 
@@ -251,7 +264,7 @@ public class RenderState<State> {
 
   private void measureImpl(int widthSpec, int heightSpec, @Nullable int[] measureOutput) {
     final int setRootId;
-    final RenderResultFuture<State> future;
+    final RenderResultFuture<State, RenderContext> future;
     final RenderResult<State> previousResult;
     synchronized (this) {
       mWidthSpec = widthSpec;
@@ -274,6 +287,7 @@ public class RenderState<State> {
         future =
             new RenderResultFuture<>(
                 mContext,
+                mRenderContext,
                 mLatestLazyTree,
                 mCommittedRenderResult,
                 setRootId,
@@ -354,7 +368,8 @@ public class RenderState<State> {
             tree.getHeightSpec(), heightSpec, tree.getHeight());
   }
 
-  private boolean hasSameSpecs(RenderResultFuture<State> future, int widthSpec, int heightSpec) {
+  private boolean hasSameSpecs(
+      RenderResultFuture<State, RenderContext> future, int widthSpec, int heightSpec) {
     return MeasureSpecUtils.areMeasureSpecsEquivalent(future.getWidthSpec(), widthSpec)
         && MeasureSpecUtils.areMeasureSpecsEquivalent(future.getHeightSpec(), heightSpec);
   }
@@ -363,7 +378,7 @@ public class RenderState<State> {
     return mId;
   }
 
-  private static class RenderResultFuture<State> {
+  private static class RenderResultFuture<State, RenderContext> {
 
     private final LazyTree<State> mLazyTree;
     private final RenderResult<State> mPreviousResult;
@@ -375,6 +390,7 @@ public class RenderState<State> {
 
     private RenderResultFuture(
         final Context context,
+        final @Nullable RenderContext renderContext,
         LazyTree<State> lazyTree,
         final RenderResult<State> previousResult,
         final int setRootId,
@@ -430,7 +446,7 @@ public class RenderState<State> {
                             ? new LayoutCache(mPreviousResult.mLayoutCache.getWriteCache())
                             : new LayoutCache(null);
                     final LayoutContext layoutContext =
-                        new LayoutContext(context, setRootId, layoutCache);
+                        new LayoutContext(context, renderContext, setRootId, layoutCache);
 
                     final LayoutResult layoutResult =
                         layout(layoutContext, result.first, widthSpec, heightSpec, layoutCache);
@@ -507,16 +523,26 @@ public class RenderState<State> {
    * calculation. - The LayoutCache for this layout calculation. Access to the cache is only valid
    * during the execution of the Node's calculateLayout function.
    */
-  public static class LayoutContext {
+  public static class LayoutContext<RenderContext> {
     private final Context androidContext;
     private final int layoutVersion;
     private @Nullable LayoutCache layoutCache;
+    private final @Nullable RenderContext mRenderContext;
 
     @VisibleForTesting
-    LayoutContext(Context androidContext, int layoutVersion, LayoutCache layoutCache) {
+    LayoutContext(
+        Context androidContext,
+        @Nullable RenderContext renderContext,
+        int layoutVersion,
+        LayoutCache layoutCache) {
       this.androidContext = androidContext;
       this.layoutVersion = layoutVersion;
       this.layoutCache = layoutCache;
+      this.mRenderContext = renderContext;
+    }
+
+    public @Nullable RenderContext getRenderContext() {
+      return mRenderContext;
     }
 
     public Context getAndroidContext() {
