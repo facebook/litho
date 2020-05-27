@@ -1072,6 +1072,16 @@ class MountState
     return hosts;
   }
 
+  @Override
+  public int getMountItemCount() {
+    return getItemCount();
+  }
+
+  @Override
+  public @Nullable MountItem getMountItemAt(int position) {
+    return getItemAt(position);
+  }
+
   /** Clears and re-populates the test item map if we are in e2e test mode. */
   private void processTestOutputs(LayoutState layoutState) {
     if (mTestItemMap == null) {

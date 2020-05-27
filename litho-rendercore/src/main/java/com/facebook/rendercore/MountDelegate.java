@@ -20,6 +20,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.collection.LongSparseArray;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.Nullable;
 
 /**
  * Can be passed to a MountState to override default mounting behaviour and control which items get
@@ -58,6 +59,11 @@ public class MountDelegate {
     void registerMountDelegateExtension(MountDelegateExtension mountDelegateExtension);
 
     ArrayList<Host> getHosts();
+
+    @Nullable
+    MountItem getMountItemAt(int position);
+
+    int getMountItemCount();
   }
 
   // IGNORE - Will be removed. Check out D4182567 for context.

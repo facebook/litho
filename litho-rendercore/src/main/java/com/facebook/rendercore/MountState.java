@@ -219,6 +219,16 @@ public class MountState implements MountDelegateTarget {
     return hosts;
   }
 
+  @Override
+  public @Nullable MountItem getMountItemAt(int position) {
+    return getItemAt(position);
+  }
+
+  @Override
+  public int getMountItemCount() {
+    return mRenderUnitIds != null ? mRenderUnitIds.length : 0;
+  }
+
   /**
    * This is called when the {@link MountItem}s mounted on this {@link MountState} need to be
    * re-bound with the same RenderUnit. This happens when a detach/attach happens on the root {@link

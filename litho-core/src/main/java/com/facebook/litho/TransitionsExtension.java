@@ -23,7 +23,6 @@ import static com.facebook.rendercore.MountState.ROOT_HOST_ID;
 import android.graphics.Rect;
 import android.util.Log;
 import androidx.annotation.Nullable;
-import androidx.collection.LongSparseArray;
 import com.facebook.litho.animation.AnimatedProperties;
 import com.facebook.litho.animation.PropertyHandle;
 import com.facebook.rendercore.MountDelegate.MountDelegateInput;
@@ -52,6 +51,10 @@ public class TransitionsExtension extends MountDelegateExtension
   private LayoutState mLastMountedLayoutState;
 
   public interface TransitionsExtensionInput extends MountDelegateInput {
+    int getMountableOutputCount();
+
+    RenderTreeNode getMountableOutputAt(int index);
+
     boolean needsToRerunTransitions();
 
     void setNeedsToRerunTransitions(boolean needsToRerunTransitions);
@@ -367,22 +370,18 @@ public class TransitionsExtension extends MountDelegateExtension
     final Map<TransitionId, OutputUnitsAffinityGroup<Object>> animatingContent =
         new LinkedHashMap<>(mAnimatingTransitionIds.size());
 
-    // TODO (T64352474): Remove dependency on MountState
-    LongSparseArray<MountItem> mIndexToItemMap =
-        ((MountState) getMountTarget()).getIndexToItemMap();
-
-    for (int i = 0, size = mIndexToItemMap.size(); i < size; i++) {
-      final MountItem mountItem = mIndexToItemMap.valueAt(i);
-      final LayoutOutput output = getLayoutOutput(mountItem);
-      if (output.getTransitionId() == null) {
+    for (int i = 0, size = getMountTarget().getMountItemCount(); i < size; i++) {
+      final MountItem mountItem = getMountTarget().getMountItemAt(i);
+      final LayoutOutput layoutOutput = getLayoutOutput(mountItem);
+      if (layoutOutput.getTransitionId() == null) {
         continue;
       }
-      final long layoutOutputId = mIndexToItemMap.keyAt(i);
-      final @OutputUnitType int type = LayoutStateOutputIdCalculator.getTypeFromId(layoutOutputId);
-      OutputUnitsAffinityGroup<Object> group = animatingContent.get(output.getTransitionId());
+      final @OutputUnitType int type =
+          LayoutStateOutputIdCalculator.getTypeFromId(layoutOutput.getId());
+      OutputUnitsAffinityGroup<Object> group = animatingContent.get(layoutOutput.getTransitionId());
       if (group == null) {
         group = new OutputUnitsAffinityGroup<>();
-        animatingContent.put(output.getTransitionId(), group);
+        animatingContent.put(layoutOutput.getTransitionId(), group);
       }
       group.replace(type, mountItem.getContent());
     }
