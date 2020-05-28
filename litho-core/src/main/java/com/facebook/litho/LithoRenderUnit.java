@@ -16,10 +16,10 @@
 
 package com.facebook.litho;
 
+import static com.facebook.litho.MountState.sameSize;
 import static java.util.Collections.singletonList;
 
 import android.content.Context;
-import android.graphics.Rect;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.rendercore.RenderUnit;
 import java.util.List;
@@ -163,11 +163,5 @@ public class LithoRenderUnit extends RenderUnit<Object> {
     }
 
     return nextComponent.shouldComponentUpdate(currentComponent, nextComponent);
-  }
-
-  public static boolean sameSize(final LayoutOutput current, final LayoutOutput next) {
-    Rect c = current.getBounds();
-    Rect n = next.getBounds();
-    return c.width() == n.width() && c.height() == n.height();
   }
 }

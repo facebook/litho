@@ -1424,7 +1424,7 @@ class MountState
     return currentComponent.shouldComponentUpdate(currentComponent, nextComponent);
   }
 
-  private static boolean sameSize(final LayoutOutput nextOutput, final LayoutOutput currentOutput) {
+  static boolean sameSize(final LayoutOutput nextOutput, final LayoutOutput currentOutput) {
     final Rect nextBounds = nextOutput.getBounds();
     final Rect currentBounds = currentOutput.getBounds();
 
