@@ -78,7 +78,7 @@ public class IncrementalMountExtensionTest {
         when(renderTreeNode.getBounds()).thenReturn(bounds);
         when(layoutOutput.getComponent()).thenReturn(mock(Component.class));
 
-        RenderUnit renderUnit = mock(RenderUnit.class);
+        RenderUnit renderUnit = new LithoRenderUnit(layoutOutput);
         when(renderUnit.getId()).thenReturn((i + 1) * 1L);
         when(renderTreeNode.getRenderUnit()).thenReturn(renderUnit);
 

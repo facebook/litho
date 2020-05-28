@@ -30,7 +30,7 @@ public class LithoRenderUnit extends RenderUnit<Object> {
   static final List<LithoMountBinder> sMountBinder = singletonList(LithoMountBinder.INSTANCE);
   static final List<LithoBindBinder> sBindBinders = singletonList(LithoBindBinder.INSTANCE);
 
-  private final LayoutOutput output;
+  final LayoutOutput output;
 
   private int mDefaultViewAttributeFlags = -1;
 

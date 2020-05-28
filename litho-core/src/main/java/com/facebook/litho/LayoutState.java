@@ -95,6 +95,10 @@ public class LayoutState
   private static final String DUPLICATE_TRANSITION_IDS = "LayoutState:DuplicateTransitionIds";
   private static final String DUPLICATE_MANUAL_KEY = "LayoutState:DuplicateManualKey";
   private static final String NULL_PARENT_KEY = "LayoutState:NullParentKey";
+
+  static final String KEY_LAYOUT_STATE_ID = "layoutId";
+  static final String KEY_PREVIOUS_LAYOUT_STATE_ID = "previousLayoutId";
+
   private final boolean mIncrementalVisibility;
 
   @IntDef({
@@ -273,7 +277,7 @@ public class LayoutState
   int mLayoutVersion;
   private final int mId;
   // Id of the layout state (if any) that was used in comparisons with this layout state.
-  private int mPreviousLayoutStateId = NO_PREVIOUS_LAYOUT_STATE_ID;
+  private final int mPreviousLayoutStateId;
   private boolean mIsCreateLayoutInProgress;
 
   private AccessibilityManager mAccessibilityManager;
@@ -304,9 +308,16 @@ public class LayoutState
   final boolean mShouldDisableDrawableOutputs =
       ComponentsConfiguration.shouldDisableDrawableOutputs;
 
+  final Map<String, Object> mLayoutData = new HashMap<>();
+
   LayoutState(ComponentContext context) {
+    this(context, null);
+  }
+
+  LayoutState(ComponentContext context, final @Nullable LayoutState current) {
     mContext = context;
     mId = sIdGenerator.getAndIncrement();
+    mPreviousLayoutStateId = current != null ? current.mId : NO_PREVIOUS_LAYOUT_STATE_ID;
     mStateHandler = mContext.getStateHandler();
     mTestOutputs = ComponentsConfiguration.isEndToEndTestRun ? new ArrayList<TestOutput>(8) : null;
     mOrientation = context.getResources().getConfiguration().orientation;
@@ -321,6 +332,9 @@ public class LayoutState
 
     mVisibilityModuleInput = mIncrementalVisibility ? new VisibilityModuleInput() : null;
     mVisibilityOutputs = new ArrayList<>(8);
+
+    mLayoutData.put(KEY_LAYOUT_STATE_ID, mId);
+    mLayoutData.put(KEY_PREVIOUS_LAYOUT_STATE_ID, mPreviousLayoutStateId);
   }
 
   @Override
@@ -1459,15 +1473,13 @@ public class LayoutState
       // Detect errors internal to components
       component.markLayoutStarted();
 
-      layoutState = new LayoutState(c);
+      layoutState = new LayoutState(c, currentLayoutState);
       layoutStateContext = new LayoutStateContext(layoutState, layoutStateFuture);
       c.setLayoutStateContext(layoutStateContext);
 
       layoutState.mShouldGenerateDiffTree = shouldGenerateDiffTree;
       layoutState.mComponentTreeId = componentTreeId;
       layoutState.mLayoutVersion = layoutVersion;
-      layoutState.mPreviousLayoutStateId =
-          currentLayoutState != null ? currentLayoutState.mId : NO_PREVIOUS_LAYOUT_STATE_ID;
       layoutState.mAccessibilityManager =
           (AccessibilityManager) c.getAndroidContext().getSystemService(ACCESSIBILITY_SERVICE);
       layoutState.mAccessibilityEnabled =
@@ -2159,7 +2171,7 @@ public class LayoutState
 
     layoutOutput.setIndex(layoutState.mMountableOutputs.size());
 
-    final RenderTreeNode node = LayoutOutput.create(layoutOutput, parent);
+    final RenderTreeNode node = LayoutOutput.create(layoutOutput, parent, layoutState.mLayoutData);
 
     if (parent != null) {
       parent.child(node);

@@ -57,6 +57,7 @@ import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.rendercore.MountItem;
 import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.yoga.YogaMeasureFunction;
+import java.util.HashMap;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -411,19 +412,13 @@ public class TreeDiffingTest {
     ComponentHost hostHolder = new ComponentHost(mContext);
 
     MountItem mountItem = mock(MountItem.class);
-    RenderTreeNode node = mock(RenderTreeNode.class);
-    when(mountItem.getRenderTreeNode()).thenReturn(node);
-    when(node.getLayoutData()).thenReturn(mock(LayoutOutput.class));
+    when(mountItem.getRenderTreeNode()).thenReturn(createNode(Column.create(mContext).build()));
 
     MountItem mountItem1 = mock(MountItem.class);
-    RenderTreeNode node1 = mock(RenderTreeNode.class);
-    when(mountItem1.getRenderTreeNode()).thenReturn(node1);
-    when(node1.getLayoutData()).thenReturn(mock(LayoutOutput.class));
+    when(mountItem1.getRenderTreeNode()).thenReturn(createNode(Column.create(mContext).build()));
 
     MountItem mountItem2 = mock(MountItem.class);
-    RenderTreeNode node2 = mock(RenderTreeNode.class);
-    when(mountItem2.getRenderTreeNode()).thenReturn(node2);
-    when(node2.getLayoutData()).thenReturn(mock(LayoutOutput.class));
+    when(mountItem2.getRenderTreeNode()).thenReturn(createNode(Column.create(mContext).build()));
 
     hostHolder.mount(0, mountItem, new Rect());
     hostHolder.mount(1, mountItem1, new Rect());
@@ -443,19 +438,13 @@ public class TreeDiffingTest {
     ComponentHost hostHolder = new ComponentHost(mContext);
 
     MountItem mountItem = mock(MountItem.class);
-    RenderTreeNode node = mock(RenderTreeNode.class);
-    when(mountItem.getRenderTreeNode()).thenReturn(node);
-    when(node.getLayoutData()).thenReturn(mock(LayoutOutput.class));
+    when(mountItem.getRenderTreeNode()).thenReturn(createNode(Column.create(mContext).build()));
 
     MountItem mountItem1 = mock(MountItem.class);
-    RenderTreeNode node1 = mock(RenderTreeNode.class);
-    when(mountItem1.getRenderTreeNode()).thenReturn(node1);
-    when(node1.getLayoutData()).thenReturn(mock(LayoutOutput.class));
+    when(mountItem1.getRenderTreeNode()).thenReturn(createNode(Column.create(mContext).build()));
 
     MountItem mountItem2 = mock(MountItem.class);
-    RenderTreeNode node2 = mock(RenderTreeNode.class);
-    when(mountItem2.getRenderTreeNode()).thenReturn(node2);
-    when(node2.getLayoutData()).thenReturn(mock(LayoutOutput.class));
+    when(mountItem2.getRenderTreeNode()).thenReturn(createNode(Column.create(mContext).build()));
 
     hostHolder.mount(0, mountItem, new Rect());
     hostHolder.mount(1, mountItem1, new Rect());
@@ -822,6 +811,12 @@ public class TreeDiffingTest {
           .child(mAddThirdChild ? TestDrawableComponent.create(c) : null)
           .build();
     }
+  }
+
+  private static RenderTreeNode createNode(final Component component) {
+    LayoutOutput output =
+        new LayoutOutput(null, null, component, new Rect(), 0, 0, 0, 0, 0, 0, null);
+    return LayoutOutput.create(output, null, new HashMap<>());
   }
 
   private static class TestSimpleContainerLayout extends InlineLayoutSpec {

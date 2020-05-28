@@ -25,6 +25,7 @@ import com.facebook.rendercore.MountItem;
 import com.facebook.rendercore.RenderTreeNode;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.Map;
 
 /**
  * The output of a layout pass for a given {@link Component}. It's used by {@link MountState} to
@@ -236,11 +237,15 @@ class LayoutOutput implements Cloneable, AnimatableItem {
     return mTransitionId;
   }
 
-  static RenderTreeNode create(final LayoutOutput output, final @Nullable RenderTreeNode parent) {
+  static RenderTreeNode create(
+      final LayoutOutput output,
+      final @Nullable RenderTreeNode parent,
+      final @Nullable Map<String, Object> data) {
+
     return new RenderTreeNode(
         parent,
         new LithoRenderUnit(output),
-        output,
+        data,
         output.getBounds(),
         output.mHostTranslationX,
         output.mHostTranslationY,
@@ -249,7 +254,7 @@ class LayoutOutput implements Cloneable, AnimatableItem {
   }
 
   static LayoutOutput getLayoutOutput(RenderTreeNode node) {
-    return (LayoutOutput) node.getLayoutData();
+    return ((LithoRenderUnit) node.getRenderUnit()).output;
   }
 
   static LayoutOutput getLayoutOutput(MountItem item) {

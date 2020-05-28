@@ -179,7 +179,7 @@ public class IncrementalMountExtension extends MountDelegateExtension
               < layoutOutputBottoms.get(mPreviousBottomsIndex - 1).getBounds().bottom) {
         mPreviousBottomsIndex--;
         final RenderTreeNode node = layoutOutputBottoms.get(mPreviousBottomsIndex);
-        final LayoutOutput layoutOutput = (LayoutOutput) node.getLayoutData();
+        final LayoutOutput layoutOutput = getLayoutOutput(node);
         if (!ownsReference(node)) {
           acquireMountReference(
               node, mInput.getLayoutOutputPositionForId(layoutOutput.getId()), mInput, true);
@@ -195,7 +195,7 @@ public class IncrementalMountExtension extends MountDelegateExtension
       while (mPreviousTopsIndex < count
           && localVisibleRect.bottom > layoutOutputTops.get(mPreviousTopsIndex).getBounds().top) {
         final RenderTreeNode node = layoutOutputTops.get(mPreviousTopsIndex);
-        final LayoutOutput layoutOutput = (LayoutOutput) node.getLayoutData();
+        final LayoutOutput layoutOutput = getLayoutOutput(node);
         if (!ownsReference(node)) {
           acquireMountReference(
               node, mInput.getLayoutOutputPositionForId(layoutOutput.getId()), mInput, true);
