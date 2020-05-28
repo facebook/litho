@@ -48,16 +48,22 @@ import android.util.SparseArray;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import androidx.collection.SparseArrayCompat;
+import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestViewComponent;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
+import com.facebook.litho.widget.Text;
+import com.facebook.litho.widget.TextInput;
 import com.facebook.rendercore.MountItem;
 import com.facebook.yoga.YogaDirection;
+import com.facebook.yoga.YogaEdge;
 import java.util.List;
 import org.junit.Before;
 import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
@@ -73,9 +79,11 @@ public class ComponentHostTest {
   private Component mViewComponent;
   private ComponentContext mContext;
 
+  public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
+
   @Before
   public void setup() throws Exception {
-    mContext = new ComponentContext(getApplicationContext());
+    mContext = mLithoViewRule.getContext();
     mViewComponent = TestViewComponent.create(mContext).build();
     mDrawableComponent = TestDrawableComponent.create(mContext).build();
 
@@ -333,43 +341,12 @@ public class ComponentHostTest {
   }
 
   @Test
-  public void testTouchExpansionItemShouldAddTouchDelegate() {
-    View view = mock(View.class);
-    when(view.getContext()).thenReturn(getApplicationContext());
-
-    MountItem mountItem = mountTouchExpansionItem(0, view);
-
-    assertThat(mHost.getTouchExpansionDelegate()).isNotNull();
-
-    unmount(0, mountItem);
-  }
-
-  @Test
   public void testRecursiveTouchExpansionItemShouldNotAddTouchDelegate() {
     MountItem mountItem = mountTouchExpansionItem(0, mHost);
 
     assertThat(mHost.getTouchExpansionDelegate()).isNull();
 
     unmount(0, mountItem);
-  }
-
-  @Test
-  public void testRecursiveTouchExpansionItemSecondShouldNotCrash() {
-    View view = mock(View.class);
-    when(view.getContext()).thenReturn(getApplicationContext());
-    MountItem mountItem1 = mountTouchExpansionItem(0, view);
-
-    assertThat(mHost.getTouchExpansionDelegate()).isNotNull();
-
-    MountItem mountItem2 = mountTouchExpansionItem(1, mHost);
-
-    assertThat(mHost.getTouchExpansionDelegate()).isNotNull();
-
-    unmount(1, mountItem2);
-
-    assertThat(mHost.getTouchExpansionDelegate()).isNotNull();
-
-    unmount(0, mountItem1);
   }
 
   @Test
@@ -844,6 +821,47 @@ public class ComponentHostTest {
     drawables = mHost.getDrawables();
     assertThat(drawables).hasSize(1);
     assertThat(drawables).contains(d3);
+  }
+
+  @Test
+  public void whenTouchExpansionSetOnComponent_shouldHaveTouchDelegateOnParentOfHostView() {
+    final Component component =
+        Column.create(mContext)
+            .paddingPx(YogaEdge.ALL, 15)
+            .widthPx(100)
+            .heightPx(100)
+            .child(
+                Text.create(mContext)
+                    .text("hello-world")
+                    .touchExpansionPx(YogaEdge.ALL, 5)
+                    .clickHandler(NoOpEventHandler.getNoOpEventHandler()))
+            .child(
+                Row.create(mContext)
+                    .wrapInView()
+                    .child(
+                        TextInput.create(mContext)
+                            .touchExpansionPx(YogaEdge.ALL, 5)
+                            .clickHandler(NoOpEventHandler.getNoOpEventHandler())))
+            .build();
+
+    mLithoViewRule.setRoot(component).attachToWindow().measure().layout();
+
+    TouchExpansionDelegate delegate = mLithoViewRule.getLithoView().getTouchExpansionDelegate();
+    assertThat(delegate)
+        .describedAs("Should be not null for the host view of the Text")
+        .isNotNull();
+
+    final View child1 = mLithoViewRule.getLithoView().getChildAt(0);
+    assertThat(child1).isInstanceOf(ComponentHost.class);
+    assertThat(((ComponentHost) child1).getTouchExpansionDelegate())
+        .describedAs("should be null for the Text")
+        .isNull();
+
+    final View child2 = mLithoViewRule.getLithoView().getChildAt(1);
+    assertThat(child2).isInstanceOf(ComponentHost.class);
+    assertThat(((ComponentHost) child2).getTouchExpansionDelegate())
+        .describedAs("Should be not null for the host view of the Text Input")
+        .isNotNull();
   }
 
   private int getDrawableItemsSize() throws Exception {

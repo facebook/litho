@@ -1586,7 +1586,8 @@ class MountState
   private void remountComponentHostToRootIfNeeded(int index) {
     final ComponentHost rootHost = mHostsByMarker.get(ROOT_HOST_ID);
     final MountItem item = getItemAt(index);
-    if (item.getHost() == rootHost) {
+    final ComponentHost host = (ComponentHost) item.getHost();
+    if (host == rootHost) {
       // Already mounted to the root
       return;
     }
@@ -1620,14 +1621,16 @@ class MountState
       bottom = top + bounds.height();
     }
 
+    final LayoutOutput output = getLayoutOutput(item);
+
     // Unmount from the current host
-    item.getHost().unmount(index, item);
+    unmount(host, index, content, item, output);
 
     // Apply new bounds to the content as it will be mounted in the root now
     applyBoundsToMountContent(content, left, top, right, bottom, false);
 
     // Mount to the root
-    rootHost.mount(index, item, sTempRect);
+    mount(rootHost, index, content, item, output);
 
     // Set new host to the MountItem
     item.setHost(rootHost);
@@ -1843,13 +1846,31 @@ class MountState
       mCanMountIncrementallyMountItems.put(mLayoutOutputsIds[index], item);
     }
 
-    layoutOutput.getMountBounds(sTempRect);
-
-    host.mount(index, item, sTempRect);
-
+    mount(host, index, content, item, layoutOutput);
     setViewAttributes(item);
 
     return item;
+  }
+
+  private static void mount(
+      final ComponentHost host,
+      final int index,
+      final Object content,
+      final MountItem item,
+      final LayoutOutput output) {
+    output.getMountBounds(sTempRect);
+    host.mount(index, item, sTempRect);
+    host.maybeRegisterTouchExpansion(index, output, content);
+  }
+
+  private static void unmount(
+      final ComponentHost host,
+      final int index,
+      final Object content,
+      final MountItem item,
+      final LayoutOutput output) {
+    host.unmount(index, item);
+    host.maybeUnregisterTouchExpansion(index, output, content);
   }
 
   private static void applyBoundsToMountContent(
@@ -2651,7 +2672,8 @@ class MountState
   }
 
   private void unmountDisappearingItemChild(ComponentContext context, MountItem item) {
-    maybeRemoveAnimatingMountContent(getLayoutOutput(item).getTransitionId());
+    final LayoutOutput output = getLayoutOutput(item);
+    maybeRemoveAnimatingMountContent(output.getTransitionId());
 
     final Object content = item.getContent();
 
@@ -2672,7 +2694,8 @@ class MountState
     }
 
     final ComponentHost host = (ComponentHost) item.getHost();
-    host.unmount(item);
+
+    unmount(host, output.getIndex(), content, item, output);
 
     maybeUnsetViewAttributes(item);
 
@@ -2843,11 +2866,12 @@ class MountState
     }
 
     final ComponentHost host = (ComponentHost) item.getHost();
-    host.unmount(index, item);
+    final LayoutOutput output = getLayoutOutput(item);
+
+    unmount(host, index, content, item, output);
 
     maybeUnsetViewAttributes(item);
 
-    final LayoutOutput output = getLayoutOutput(item);
     final Component component = output.getComponent();
 
     if (isHostSpec(component)) {

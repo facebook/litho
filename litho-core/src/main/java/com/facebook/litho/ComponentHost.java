@@ -151,7 +151,6 @@ public class ComponentHost extends Host {
       ensureViewMountItems();
       mViewMountItems.put(index, mountItem);
       mountView((View) content, output.getFlags());
-      maybeRegisterTouchExpansion(index, output, content);
     }
 
     ensureMountItems();
@@ -213,7 +212,6 @@ public class ComponentHost extends Host {
       ensureViewMountItems();
       ComponentHostUtils.removeItem(index, mViewMountItems, mScrapViewMountItemsArray);
       mIsChildDrawingOrderDirty = true;
-      maybeUnregisterTouchExpansion(index, output, content);
     }
 
     ensureMountItems();
