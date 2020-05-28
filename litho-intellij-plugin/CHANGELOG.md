@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## Version 1.5.0
+
+_2020-05-29_
+
+* New: Add Settings to resolve Litho red symbols automatically.
+
 ## Version 1.4.2
 
 _2020-05-20_
