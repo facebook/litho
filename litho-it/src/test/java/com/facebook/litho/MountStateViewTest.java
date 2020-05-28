@@ -18,6 +18,7 @@ package com.facebook.litho;
 
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.facebook.litho.Column.create;
+import static com.facebook.litho.LayoutOutput.getLayoutOutput;
 import static com.facebook.litho.it.R.style;
 import static com.facebook.litho.testing.helper.ComponentTestHelper.mountComponent;
 import static com.facebook.yoga.YogaEdge.ALL;
@@ -27,11 +28,14 @@ import static com.facebook.yoga.YogaEdge.RIGHT;
 import static com.facebook.yoga.YogaEdge.TOP;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
+import android.graphics.Color;
+import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.view.ViewGroup;
+import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestViewComponent;
@@ -39,18 +43,25 @@ import com.facebook.litho.testing.ViewGroupWithLithoViewChildren;
 import com.facebook.litho.testing.helper.ComponentTestHelper;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
+import com.facebook.litho.widget.SolidColor;
+import com.facebook.litho.widget.Text;
+import com.facebook.litho.widget.TextInput;
+import com.facebook.rendercore.MountItem;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(LithoTestRunner.class)
 public class MountStateViewTest {
 
+  public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
+
   private ComponentContext mContext;
 
   @Before
   public void setup() {
-    mContext = new ComponentContext(getApplicationContext());
+    mContext = mLithoViewRule.getContext();
   }
 
   @Test
@@ -165,6 +176,50 @@ public class MountStateViewTest {
 
     assertThat(testComponent1.isMounted()).isFalse();
     assertThat(testComponent2.isMounted()).isFalse();
+  }
+
+  @Test
+  public void onMountedContentSize_shouldBeEqualToLayoutOutputSize() {
+    final Component component =
+        Column.create(mContext)
+            .child(TextInput.create(mContext).widthPx(100).heightPx(100))
+            .child(SolidColor.create(mContext).color(Color.BLACK).widthPx(100).heightPx(100))
+            .child(
+                Text.create(mContext)
+                    .text("hello world")
+                    .widthPx(80)
+                    .heightPx(80)
+                    .paddingPx(ALL, 10)
+                    .marginPx(ALL, 10))
+            .build();
+
+    mLithoViewRule.setRoot(component);
+    mLithoViewRule.attachToWindow().measure().layout();
+
+    final LithoView root = mLithoViewRule.getLithoView();
+
+    final View view = root.getChildAt(0);
+    final LayoutOutput viewOutput = getLayoutOutput(root.getMountItemAt(0));
+    final Rect viewBounds = viewOutput.getBounds();
+
+    assertThat(view.getWidth()).isEqualTo(viewBounds.width());
+    assertThat(view.getHeight()).isEqualTo(viewBounds.height());
+
+    final MountItem item1 = root.getMountItemAt(1);
+    final LayoutOutput drawableOutput = getLayoutOutput(item1);
+    final Rect drawableOutputBounds = drawableOutput.getBounds();
+    final Rect drawablesActualBounds = ((Drawable) item1.getContent()).getBounds();
+
+    assertThat(drawablesActualBounds.width()).isEqualTo(drawableOutputBounds.width());
+    assertThat(drawablesActualBounds.height()).isEqualTo(drawableOutputBounds.height());
+
+    final MountItem item2 = root.getMountItemAt(2);
+    final LayoutOutput textOutput = getLayoutOutput(item2);
+    final Rect textOutputBounds = textOutput.getBounds();
+    final Rect textActualBounds = ((Drawable) item2.getContent()).getBounds();
+
+    assertThat(textActualBounds.width()).isEqualTo(textOutputBounds.width());
+    assertThat(textActualBounds.height()).isEqualTo(textOutputBounds.height());
   }
 
   private void removeParent(View child) {

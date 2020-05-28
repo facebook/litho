@@ -1307,7 +1307,7 @@ class MountState
     // 1. Check if the mount item generated from the old component should be updated.
     final boolean shouldUpdate =
         shouldUpdateMountItem(
-            nextLayoutOutput, currentLayoutOutput, currentContent, useUpdateValueFromLayoutOutput);
+            nextLayoutOutput, currentLayoutOutput, useUpdateValueFromLayoutOutput);
 
     final boolean shouldUpdateViewInfo =
         shouldUpdate || shouldUpdateViewInfo(nextLayoutOutput, currentLayoutOutput);
@@ -1393,7 +1393,6 @@ class MountState
   private static boolean shouldUpdateMountItem(
       final LayoutOutput nextLayoutOutput,
       final LayoutOutput currentLayoutOutput,
-      final Object content,
       final boolean useUpdateValueFromLayoutOutput) {
     @LayoutOutput.UpdateState final int updateState = nextLayoutOutput.getUpdateState();
     final Component currentComponent = currentLayoutOutput.getComponent();
@@ -1406,7 +1405,7 @@ class MountState
 
     // If the two components have different sizes and the mounted content depends on the size we
     // just return true immediately.
-    if (!sameSize(nextLayoutOutput, content) && nextComponent.isMountSizeDependent()) {
+    if (nextComponent.isMountSizeDependent() && !sameSize(nextLayoutOutput, currentLayoutOutput)) {
       return true;
     }
 
@@ -1425,23 +1424,12 @@ class MountState
     return currentComponent.shouldComponentUpdate(currentComponent, nextComponent);
   }
 
-  private static boolean sameSize(final LayoutOutput layoutOutput, final Object mountedContent) {
-    final Rect layoutOutputBounds = layoutOutput.getBounds();
+  private static boolean sameSize(final LayoutOutput nextOutput, final LayoutOutput currentOutput) {
+    final Rect nextBounds = nextOutput.getBounds();
+    final Rect currentBounds = currentOutput.getBounds();
 
-    return layoutOutputBounds.width() == getWidthForMountedContent(mountedContent)
-        && layoutOutputBounds.height() == getHeightForMountedContent(mountedContent);
-  }
-
-  private static int getWidthForMountedContent(Object content) {
-    return content instanceof Drawable
-        ? ((Drawable) content).getBounds().width()
-        : ((View) content).getWidth();
-  }
-
-  private static int getHeightForMountedContent(Object content) {
-    return content instanceof Drawable
-        ? ((Drawable) content).getBounds().height()
-        : ((View) content).getHeight();
+    return nextBounds.width() == currentBounds.width()
+        && nextBounds.height() == currentBounds.height();
   }
 
   private static void updateBoundsForMountedLayoutOutput(
