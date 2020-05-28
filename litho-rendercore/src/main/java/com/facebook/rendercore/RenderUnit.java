@@ -171,12 +171,14 @@ public abstract class RenderUnit<MOUNT_CONTENT> implements Copyable {
 
     void bind(
         final Context context,
+        final Host host,
         final CONTENT content,
         final RENDER_UNIT renderUnit,
         final @Nullable Object layoutData);
 
     void unbind(
         final Context context,
+        final Host host,
         final CONTENT content,
         final RENDER_UNIT renderUnit,
         final @Nullable Object layoutData);

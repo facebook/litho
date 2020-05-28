@@ -166,7 +166,11 @@ public class MountState implements MountDelegateTarget {
       }
       mIndexToMountedItemMap.remove(ROOT_HOST_ID);
       unmountRenderUnitFromContent(
-          mContext, rootRenderTreeNode, rootRenderTreeNode.getRenderUnit(), item.getContent());
+          mContext,
+          item.getHost(),
+          rootRenderTreeNode,
+          rootRenderTreeNode.getRenderUnit(),
+          item.getContent());
     }
 
     mNeedsRemount = true;
@@ -303,10 +307,10 @@ public class MountState implements MountDelegateTarget {
     if (rootItem == null) {
 
       // Run mount callbacks.
-      mountRenderUnitToContent(mContext, rootNode, rootRenderUnit, mRootHost);
+      mountRenderUnitToContent(mContext, mRootHost, rootNode, rootRenderUnit, mRootHost);
 
       // Create root mount item.
-      final MountItem item = new MountItem(rootNode, null, mRootHost);
+      final MountItem item = new MountItem(rootNode, mRootHost, mRootHost);
 
       // Adds root mount item to map.
       mIndexToMountedItemMap.put(ROOT_HOST_ID, item);
@@ -417,7 +421,7 @@ public class MountState implements MountDelegateTarget {
     final RenderUnit renderUnit = renderTreeNode.getRenderUnit();
     final Object content = MountItemsPool.acquireMountContent(mContext, renderUnit);
 
-    mountRenderUnitToContent(mContext, renderTreeNode, renderUnit, content);
+    mountRenderUnitToContent(mContext, host, renderTreeNode, renderUnit, content);
 
     // 3. Mount the content into the selected host.
     final MountItem item = mountContentInHost(index, content, host, renderTreeNode);
@@ -479,7 +483,7 @@ public class MountState implements MountDelegateTarget {
       ((View) content).setPadding(0, 0, 0, 0);
     }
 
-    unmountRenderUnitFromContent(mContext, node, unit, content);
+    unmountRenderUnitFromContent(mContext, host, node, unit, content);
 
     item.releaseMountContent(mContext);
   }
@@ -554,19 +558,21 @@ public class MountState implements MountDelegateTarget {
 
   private static void mountRenderUnitToContent(
       final Context context,
+      final Host host,
       final RenderTreeNode node,
       final RenderUnit unit,
       final Object content) {
     final List<RenderUnit.Binder> mountUnmountFunctions = unit.mountUnmountFunctions();
     if (mountUnmountFunctions != null) {
       for (RenderUnit.Binder binder : mountUnmountFunctions) {
-        binder.bind(context, content, unit, node.getLayoutData());
+        binder.bind(context, host, content, unit, node.getLayoutData());
       }
     }
   }
 
   private static void unmountRenderUnitFromContent(
       final Context context,
+      final Host host,
       final RenderTreeNode node,
       final RenderUnit unit,
       final Object content) {
@@ -575,7 +581,7 @@ public class MountState implements MountDelegateTarget {
       int size = mountUnmountFunctions.size();
       for (int i = size - 1; i >= 0; i--) {
         RenderUnit.Binder binder = mountUnmountFunctions.get(i);
-        binder.unbind(context, content, unit, node.getLayoutData());
+        binder.unbind(context, host, content, unit, node.getLayoutData());
       }
     }
   }
@@ -586,7 +592,11 @@ public class MountState implements MountDelegateTarget {
     if (bindingFunctions != null) {
       for (RenderUnit.Binder binder : bindingFunctions) {
         binder.bind(
-            context, item.getContent(), renderUnit, item.getRenderTreeNode().getLayoutData());
+            context,
+            item.getHost(),
+            item.getContent(),
+            renderUnit,
+            item.getRenderTreeNode().getLayoutData());
       }
     }
     item.setIsBound(true);
@@ -600,7 +610,11 @@ public class MountState implements MountDelegateTarget {
       for (int i = size - 1; i >= 0; i--) {
         RenderUnit.Binder binder = bindingFunctions.get(i);
         binder.unbind(
-            context, item.getContent(), renderUnit, item.getRenderTreeNode().getLayoutData());
+            context,
+            item.getHost(),
+            item.getContent(),
+            renderUnit,
+            item.getRenderTreeNode().getLayoutData());
       }
     }
     item.setIsBound(false);
@@ -608,6 +622,7 @@ public class MountState implements MountDelegateTarget {
 
   private void updateMountItemIfNeeded(
       Context context, RenderTreeNode renderTreeNode, MountItem currentMountItem) {
+    final Host host = currentMountItem.getHost();
     final RenderUnit renderUnit = renderTreeNode.getRenderUnit();
     final RenderTreeNode currentNode = currentMountItem.getRenderTreeNode();
     final RenderUnit currentRenderUnit = currentNode.getRenderUnit();
@@ -644,6 +659,7 @@ public class MountState implements MountDelegateTarget {
       // 1. unbind all attach binders which should update.
       unbind(
           context,
+          host,
           content,
           currentNode,
           renderTreeNode,
@@ -654,6 +670,7 @@ public class MountState implements MountDelegateTarget {
       // 2. unbind all mount binders which should update.
       unbind(
           context,
+          host,
           content,
           currentNode,
           renderTreeNode,
@@ -664,6 +681,7 @@ public class MountState implements MountDelegateTarget {
       // 3. rebind all mount binder which did update.
       rebind(
           context,
+          host,
           content,
           renderTreeNode,
           mountBinders,
@@ -673,6 +691,7 @@ public class MountState implements MountDelegateTarget {
       // 4. rebind all attach binder which did update.
       rebind(
           context,
+          host,
           content,
           renderTreeNode,
           attachBinders,
@@ -688,6 +707,7 @@ public class MountState implements MountDelegateTarget {
 
   private static void unbind(
       final Context context,
+      final Host host,
       final Object content,
       final RenderTreeNode currentNode,
       final RenderTreeNode newNode,
@@ -710,7 +730,7 @@ public class MountState implements MountDelegateTarget {
       final boolean shouldUpdate =
           binder.shouldUpdate(currentRenderUnit, newRenderUnit, currentLayoutData, newLayoutData);
       if (shouldUpdate) {
-        binder.unbind(context, content, currentRenderUnit, currentLayoutData);
+        binder.unbind(context, host, content, currentRenderUnit, currentLayoutData);
         unbound[i] = true;
       } else {
         unbound[i] = false;
@@ -720,6 +740,7 @@ public class MountState implements MountDelegateTarget {
 
   private static void rebind(
       final Context context,
+      final Host host,
       final Object content,
       final RenderTreeNode newNode,
       final List<RenderUnit.Binder> binders,
@@ -737,7 +758,7 @@ public class MountState implements MountDelegateTarget {
       final boolean shouldUpdate = toRebind[i];
       if (shouldUpdate) {
         final RenderUnit.Binder binder = binders.get(i);
-        binder.bind(context, content, newRenderUnit, newLayoutData);
+        binder.bind(context, host, content, newRenderUnit, newLayoutData);
       }
     }
   }

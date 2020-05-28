@@ -22,6 +22,7 @@ import static com.facebook.litho.MountState.shouldUpdateMountItem;
 import static java.util.Collections.singletonList;
 
 import android.content.Context;
+import com.facebook.rendercore.Host;
 import com.facebook.rendercore.RenderUnit;
 import java.util.List;
 import java.util.Map;
@@ -91,6 +92,7 @@ public class LithoRenderUnit extends RenderUnit<Object> {
     @Override
     public void bind(
         final Context context,
+        final Host host,
         final Object content,
         final LithoRenderUnit unit,
         final Object data) {
@@ -105,6 +107,7 @@ public class LithoRenderUnit extends RenderUnit<Object> {
     @Override
     public void unbind(
         final Context context,
+        final Host host,
         final Object content,
         final LithoRenderUnit unit,
         final Object data) {
@@ -128,6 +131,7 @@ public class LithoRenderUnit extends RenderUnit<Object> {
     @Override
     public void bind(
         final Context context,
+        final Host host,
         final Object content,
         final LithoRenderUnit unit,
         final Object data) {
@@ -138,6 +142,7 @@ public class LithoRenderUnit extends RenderUnit<Object> {
     @Override
     public void unbind(
         final Context context,
+        final Host host,
         final Object content,
         final LithoRenderUnit unit,
         final Object data) {
