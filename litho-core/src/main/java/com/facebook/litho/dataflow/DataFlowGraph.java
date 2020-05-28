@@ -19,6 +19,7 @@ package com.facebook.litho.dataflow;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.collection.SimpleArrayMap;
+import com.facebook.litho.ComponentsReporter;
 import com.facebook.litho.internal.ArraySet;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -37,6 +38,8 @@ import javax.annotation.concurrent.GuardedBy;
  */
 public class DataFlowGraph {
 
+  private static final String STATE_NOT_INTIALIZED_FOR_VALUE_NODE =
+      "DataFlowGraph:StateNotInitializedForValueNode";
   private static DataFlowGraph sInstance;
 
   public static DataFlowGraph getInstance() {
@@ -176,6 +179,14 @@ public class DataFlowGraph {
     while (!nodesToProcess.isEmpty()) {
       final ValueNode next = nodesToProcess.pollFirst();
       mSortedNodes.add(next);
+      NodeState nodeState = mNodeStates.get(next);
+      if (nodeState == null) {
+        String message =
+            next.getClass().getSimpleName() + " : InputNames " + next.buildDebugInputsString();
+        // Added for debugging T67342661
+        ComponentsReporter.emitMessage(
+            ComponentsReporter.LogLevel.ERROR, STATE_NOT_INTIALIZED_FOR_VALUE_NODE, message);
+      }
       for (ValueNode input : next.getAllInputs()) {
         final int outputsLeft = nodesToOutputsLeft.get(input) - 1;
         nodesToOutputsLeft.put(input, outputsLeft);
@@ -208,7 +219,7 @@ public class DataFlowGraph {
     for (int i = 0, size = mSortedNodes.size(); i < size; i++) {
       final ValueNode node = mSortedNodes.get(i);
       final NodeState nodeState = mNodeStates.get(node);
-      if (nodeState.isFinished || !areInputsFinished(node)) {
+      if (nodeState == null || nodeState.isFinished || !areInputsFinished(node)) {
         continue;
       }
 

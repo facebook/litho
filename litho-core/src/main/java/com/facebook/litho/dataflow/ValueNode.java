@@ -106,7 +106,7 @@ public abstract class ValueNode {
     return hasInput(DEFAULT_INPUT);
   }
 
-  private String buildDebugInputsString() {
+  String buildDebugInputsString() {
     if (mInputs == null) {
       return "[]";
     }
