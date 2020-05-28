@@ -468,15 +468,15 @@ public class MountState implements MountDelegateTarget {
       }
     }
 
+    if (item.isBound()) {
+      unbindRenderUnitFromContent(mContext, item);
+    }
+
     final Host host = item.getHost();
     host.unmount(node.getPositionInParent(), item);
 
     if (content instanceof View) {
       ((View) content).setPadding(0, 0, 0, 0);
-    }
-
-    if (item.isBound()) {
-      unbindRenderUnitFromContent(mContext, item);
     }
 
     unmountRenderUnitFromContent(mContext, node, unit, content);
