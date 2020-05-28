@@ -341,7 +341,8 @@ public class ComponentTree {
   protected ComponentTree(Builder builder) {
     mContext = ComponentContext.withComponentTree(builder.context, this);
     mRoot = wrapRootInErrorBoundary(builder.root);
-    mIncrementalMountEnabled = builder.incrementalMountEnabled;
+    mIncrementalMountEnabled =
+        builder.incrementalMountEnabled && !incrementalMountGloballyDisabled();
     mVisibilityProcessingEnabled = builder.visibilityProcessingEnabled;
     mIsLayoutDiffingEnabled = builder.isLayoutDiffingEnabled;
     mLayoutThreadHandler = builder.layoutThreadHandler;
@@ -394,6 +395,10 @@ public class ComponentTree {
     mLogTag = builder.logTag;
     mAreTransitionsEnabled = TransitionUtils.areTransitionsEnabled(mContext.getAndroidContext());
     mIncrementalVisibility = builder.incrementalVisibility;
+  }
+
+  private static boolean incrementalMountGloballyDisabled() {
+    return ComponentsConfiguration.isIncrementalMountGloballyDisabled;
   }
 
   /**
