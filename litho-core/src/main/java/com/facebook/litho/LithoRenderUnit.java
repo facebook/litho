@@ -177,6 +177,7 @@ public class LithoRenderUnit extends RenderUnit<Object> {
         unit.setDefaultViewAttributeFlags(LithoMountData.getViewAttributeFlags(content));
       }
       MountState.setViewAttributes(content, output);
+      ((ComponentHost) host).maybeRegisterTouchExpansion(output.getIndex(), output, content);
     }
 
     @Override
@@ -189,6 +190,7 @@ public class LithoRenderUnit extends RenderUnit<Object> {
       final LayoutOutput output = unit.output;
       final int flags = unit.getDefaultViewAttributeFLags();
       MountState.unsetViewAttributes(content, output, flags);
+      ((ComponentHost) host).maybeUnregisterTouchExpansion(output.getIndex(), output, content);
     }
   }
 }
