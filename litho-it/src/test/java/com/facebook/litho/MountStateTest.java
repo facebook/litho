@@ -20,9 +20,12 @@ import static com.facebook.litho.SizeSpec.EXACTLY;
 import static com.facebook.litho.SizeSpec.makeSizeSpec;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
+import android.graphics.Color;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.DynamicPropsComponentTester;
+import com.facebook.litho.widget.SolidColor;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -88,5 +91,39 @@ public class MountStateTest {
 
     mLithoViewRule.setRoot(Column.create(mContext).build());
     assertThat(dynamicPropsManager.hasCachedContent(child1)).isFalse();
+  }
+
+  @Test
+  public void onSetRootWithNoOutputsWithRenderCore_shouldSuccessfullyCompleteMount() {
+    final boolean delegateToRenderCoreMount = ComponentsConfiguration.delegateToRenderCoreMount;
+    final boolean useExtensions = ComponentsConfiguration.useExtensionsWithMountDelegate;
+    final boolean useVisibilityExtension = ComponentsConfiguration.useVisibilityExtension;
+    final boolean incrementalMountExtension = ComponentsConfiguration.useIncrementalMountExtension;
+
+    ComponentsConfiguration.delegateToRenderCoreMount = true;
+    ComponentsConfiguration.useExtensionsWithMountDelegate = true;
+    ComponentsConfiguration.useIncrementalMountExtension = true;
+    ComponentsConfiguration.useVisibilityExtension = true;
+
+    final Component root =
+        Wrapper.create(mContext)
+            .delegate(SolidColor.create(mContext).color(Color.BLACK).build())
+            .build();
+
+    mLithoViewRule
+        .setRoot(root)
+        .attachToWindow()
+        .setSizeSpecs(makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY))
+        .measure()
+        .layout();
+
+    final Component emptyRoot = Wrapper.create(mContext).delegate(null).build();
+
+    mLithoViewRule.setRoot(emptyRoot);
+
+    ComponentsConfiguration.delegateToRenderCoreMount = delegateToRenderCoreMount;
+    ComponentsConfiguration.useExtensionsWithMountDelegate = useExtensions;
+    ComponentsConfiguration.useVisibilityExtension = useVisibilityExtension;
+    ComponentsConfiguration.useIncrementalMountExtension = incrementalMountExtension;
   }
 }
