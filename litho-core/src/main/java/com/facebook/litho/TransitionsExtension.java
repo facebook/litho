@@ -372,6 +372,9 @@ public class TransitionsExtension extends MountDelegateExtension
 
     for (int i = 0, size = getMountTarget().getMountItemCount(); i < size; i++) {
       final MountItem mountItem = getMountTarget().getMountItemAt(i);
+      if (mountItem == null) {
+        continue;
+      }
       final LayoutOutput layoutOutput = getLayoutOutput(mountItem);
       if (layoutOutput.getTransitionId() == null) {
         continue;

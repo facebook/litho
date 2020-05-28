@@ -16,11 +16,11 @@
 
 package com.facebook.rendercore;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.collection.LongSparseArray;
 import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.Nullable;
 
 /**
  * Can be passed to a MountState to override default mounting behaviour and control which items get
