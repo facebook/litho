@@ -16,12 +16,16 @@
 
 package com.facebook.litho;
 
+import static com.facebook.litho.ComponentHostUtils.maybeInvalidateAccessibilityState;
+import static com.facebook.litho.ComponentHostUtils.maybeSetDrawableState;
 import static com.facebook.litho.LayoutState.KEY_LAYOUT_STATE_ID;
 import static com.facebook.litho.LayoutState.KEY_PREVIOUS_LAYOUT_STATE_ID;
 import static com.facebook.litho.MountState.shouldUpdateMountItem;
 import static com.facebook.litho.MountState.shouldUpdateViewInfo;
 
 import android.content.Context;
+import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import com.facebook.rendercore.Host;
 import com.facebook.rendercore.RenderUnit;
 import java.util.ArrayList;
@@ -137,6 +141,15 @@ public class LithoRenderUnit extends RenderUnit<Object> {
         final LithoRenderUnit unit,
         final Object data) {
       final LayoutOutput output = unit.output;
+
+      // TODO: Remove excess call from ComponentHost#mountDrawable() on first mount.
+      if (content instanceof Drawable) {
+        maybeSetDrawableState(host, (Drawable) content, output.getFlags(), output.getNodeInfo());
+        Rect rect = new Rect();
+        output.getMountBounds(rect);
+        host.invalidate(rect);
+      }
+
       output.getComponent().bind(output.getComponent().getScopedContext(), content);
     }
 
@@ -178,6 +191,7 @@ public class LithoRenderUnit extends RenderUnit<Object> {
       }
       MountState.setViewAttributes(content, output);
       ((ComponentHost) host).maybeRegisterTouchExpansion(output.getIndex(), output, content);
+      maybeInvalidateAccessibilityState(output, host);
     }
 
     @Override
@@ -191,6 +205,7 @@ public class LithoRenderUnit extends RenderUnit<Object> {
       final int flags = unit.getDefaultViewAttributeFLags();
       MountState.unsetViewAttributes(content, output, flags);
       ((ComponentHost) host).maybeUnregisterTouchExpansion(output.getIndex(), output, content);
+      maybeInvalidateAccessibilityState(output, host);
     }
   }
 }
