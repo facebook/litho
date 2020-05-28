@@ -102,11 +102,11 @@
       enabledByDefault="true"
       implementationClass="com.facebook.litho.intellij.inspections.UppercaseStatePropInspection"/>
 
+    <postStartupActivity implementation="com.facebook.litho.intellij.services.LithoStartupActivity"/>
+
     <projectService serviceImplementation="com.facebook.litho.intellij.services.ComponentsCacheService"/>
 
     <resolveScopeEnlarger implementation="com.facebook.litho.intellij.file.ComponentResolveScopeEnlarger"/>
-
-    <postStartupActivity implementation="com.facebook.litho.intellij.services.LithoStartupActivity"/>
   </extensions>
 
   <actions>

@@ -183,7 +183,6 @@ public class ResolveRedSymbolsAction extends AnAction {
       Project project,
       Map<String, String> eventMetadata,
       ProgressIndicator progress) {
-    LOG.debug("Invoked");
     long startTime = System.currentTimeMillis();
     eventMetadata.put(EventLogger.KEY_FILE, psiFile.getPackageName() + "." + psiFile.getName());
 
