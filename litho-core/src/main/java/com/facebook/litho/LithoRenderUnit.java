@@ -16,13 +16,15 @@
 
 package com.facebook.litho;
 
-import static com.facebook.litho.MountState.sameSize;
+import static com.facebook.litho.LayoutState.KEY_LAYOUT_STATE_ID;
+import static com.facebook.litho.LayoutState.KEY_PREVIOUS_LAYOUT_STATE_ID;
+import static com.facebook.litho.MountState.shouldUpdateMountItem;
 import static java.util.Collections.singletonList;
 
 import android.content.Context;
-import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.rendercore.RenderUnit;
 import java.util.List;
+import java.util.Map;
 
 /** This {@link RenderUnit} encapsulates a Litho output to be mounted using Render Core. */
 public class LithoRenderUnit extends RenderUnit<Object> {
@@ -76,8 +78,14 @@ public class LithoRenderUnit extends RenderUnit<Object> {
 
     @Override
     public boolean shouldUpdate(
-        final LithoRenderUnit current, final LithoRenderUnit next, final Object c, final Object n) {
-      return LithoRenderUnit.shouldUpdate(current.output, next.output);
+        final LithoRenderUnit current,
+        final LithoRenderUnit next,
+        final Object currentData,
+        final Object nextData) {
+      final int previousIdFromNextOutput = (int) ((Map) nextData).get(KEY_PREVIOUS_LAYOUT_STATE_ID);
+      final int idFromCurrentOutput = (int) ((Map) currentData).get(KEY_LAYOUT_STATE_ID);
+      final boolean updateValueFromLayoutOutput = previousIdFromNextOutput == idFromCurrentOutput;
+      return shouldUpdateMountItem(next.output, current.output, updateValueFromLayoutOutput);
     }
 
     @Override
@@ -112,7 +120,7 @@ public class LithoRenderUnit extends RenderUnit<Object> {
     @Override
     public boolean shouldUpdate(
         final LithoRenderUnit current, final LithoRenderUnit next, final Object c, final Object n) {
-      return LithoRenderUnit.shouldUpdate(current.output, next.output);
+      return true;
     }
 
     @Override
@@ -136,32 +144,5 @@ public class LithoRenderUnit extends RenderUnit<Object> {
       MountState.unsetViewAttributes(content, output, flags);
       output.getComponent().unbind(output.getComponent().getScopedContext(), content);
     }
-  }
-
-  public static boolean shouldUpdate(final LayoutOutput current, final LayoutOutput next) {
-    if (ComponentsConfiguration.shouldForceComponentUpdateOnOrientationChange
-        && next.getOrientation() != current.getOrientation()) {
-      return true;
-    }
-
-    final Component nextComponent = next.getComponent();
-    final Component currentComponent = current.getComponent();
-
-    // If the mounted content depends on the size
-    // and if the size has changed then
-    // return true immediately.
-    if (nextComponent.isMountSizeDependent() && !sameSize(current, next)) {
-      return true;
-    }
-
-    if (next.getUpdateState() == LayoutOutput.STATE_DIRTY) {
-      return true;
-    }
-
-    if (!nextComponent.callsShouldUpdateOnMount()) {
-      return true;
-    }
-
-    return nextComponent.shouldComponentUpdate(currentComponent, nextComponent);
   }
 }

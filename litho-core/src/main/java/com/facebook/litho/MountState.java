@@ -1390,7 +1390,7 @@ class MountState
         || (currentNodeInfo != null && !currentNodeInfo.isEquivalentTo(nextNodeInfo));
   }
 
-  private static boolean shouldUpdateMountItem(
+  static boolean shouldUpdateMountItem(
       final LayoutOutput nextLayoutOutput,
       final LayoutOutput currentLayoutOutput,
       final boolean useUpdateValueFromLayoutOutput) {
