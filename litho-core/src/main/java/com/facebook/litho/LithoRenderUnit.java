@@ -19,19 +19,26 @@ package com.facebook.litho;
 import static com.facebook.litho.LayoutState.KEY_LAYOUT_STATE_ID;
 import static com.facebook.litho.LayoutState.KEY_PREVIOUS_LAYOUT_STATE_ID;
 import static com.facebook.litho.MountState.shouldUpdateMountItem;
-import static java.util.Collections.singletonList;
+import static com.facebook.litho.MountState.shouldUpdateViewInfo;
 
 import android.content.Context;
 import com.facebook.rendercore.Host;
 import com.facebook.rendercore.RenderUnit;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 /** This {@link RenderUnit} encapsulates a Litho output to be mounted using Render Core. */
 public class LithoRenderUnit extends RenderUnit<Object> {
 
-  static final List<LithoMountBinder> sMountBinder = singletonList(LithoMountBinder.INSTANCE);
-  static final List<LithoBindBinder> sBindBinders = singletonList(LithoBindBinder.INSTANCE);
+  static final List<Binder<LithoRenderUnit, Object>> sMountBinder = new ArrayList<>(1);
+  static final List<Binder<LithoRenderUnit, Object>> sBindBinders = new ArrayList<>(2);
+
+  static {
+    sMountBinder.add(LithoMountBinder.INSTANCE);
+    sMountBinder.add(LithoViewAttributeBinder.INSTANCE);
+    sBindBinders.add(LithoBindBinder.INSTANCE);
+  }
 
   final LayoutOutput output;
 
@@ -96,12 +103,8 @@ public class LithoRenderUnit extends RenderUnit<Object> {
         final Object content,
         final LithoRenderUnit unit,
         final Object data) {
-      LayoutOutput output = unit.output;
-      if (!unit.hasDefaultViewAttributeFlags()) {
-        unit.setDefaultViewAttributeFlags(LithoMountData.getViewAttributeFlags(content));
-      }
+      final LayoutOutput output = unit.output;
       output.getComponent().mount(output.getComponent().getScopedContext(), content);
-      MountState.setViewAttributes(content, output);
     }
 
     @Override
@@ -111,9 +114,7 @@ public class LithoRenderUnit extends RenderUnit<Object> {
         final Object content,
         final LithoRenderUnit unit,
         final Object data) {
-      final int flags = unit.getDefaultViewAttributeFLags();
       final LayoutOutput output = unit.output;
-      MountState.unsetViewAttributes(content, output, flags);
       output.getComponent().unmount(output.getComponent().getScopedContext(), content);
     }
   }
@@ -135,7 +136,7 @@ public class LithoRenderUnit extends RenderUnit<Object> {
         final Object content,
         final LithoRenderUnit unit,
         final Object data) {
-      LayoutOutput output = unit.output;
+      final LayoutOutput output = unit.output;
       output.getComponent().bind(output.getComponent().getScopedContext(), content);
     }
 
@@ -146,8 +147,48 @@ public class LithoRenderUnit extends RenderUnit<Object> {
         final Object content,
         final LithoRenderUnit unit,
         final Object data) {
-      LayoutOutput output = unit.output;
+      final LayoutOutput output = unit.output;
       output.getComponent().unbind(output.getComponent().getScopedContext(), content);
+    }
+  }
+
+  public static class LithoViewAttributeBinder implements Binder<LithoRenderUnit, Object> {
+
+    public static final LithoViewAttributeBinder INSTANCE = new LithoViewAttributeBinder();
+
+    @Override
+    public boolean shouldUpdate(
+        final LithoRenderUnit current,
+        final LithoRenderUnit next,
+        final Object currentData,
+        final Object nextData) {
+      return shouldUpdateViewInfo(next.output, current.output);
+    }
+
+    @Override
+    public void bind(
+        final Context context,
+        final Host host,
+        final Object content,
+        final LithoRenderUnit unit,
+        final Object data) {
+      final LayoutOutput output = unit.output;
+      if (!unit.hasDefaultViewAttributeFlags()) {
+        unit.setDefaultViewAttributeFlags(LithoMountData.getViewAttributeFlags(content));
+      }
+      MountState.setViewAttributes(content, output);
+    }
+
+    @Override
+    public void unbind(
+        final Context context,
+        final Host host,
+        final Object content,
+        final LithoRenderUnit unit,
+        final Object data) {
+      final LayoutOutput output = unit.output;
+      final int flags = unit.getDefaultViewAttributeFLags();
+      MountState.unsetViewAttributes(content, output, flags);
     }
   }
 }

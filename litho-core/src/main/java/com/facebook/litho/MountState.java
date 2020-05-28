@@ -1373,7 +1373,7 @@ class MountState
     return shouldUpdate;
   }
 
-  private static boolean shouldUpdateViewInfo(
+  static boolean shouldUpdateViewInfo(
       final LayoutOutput nextLayoutOutput, final LayoutOutput currentLayoutOutput) {
 
     final ViewNodeInfo nextViewNodeInfo = nextLayoutOutput.getViewNodeInfo();
