@@ -108,7 +108,9 @@ public class LithoRenderUnit extends RenderUnit<Object> {
         final Object content,
         final LithoRenderUnit unit,
         final Object data) {
-      LayoutOutput output = unit.output;
+      final int flags = unit.getDefaultViewAttributeFLags();
+      final LayoutOutput output = unit.output;
+      MountState.unsetViewAttributes(content, output, flags);
       output.getComponent().unmount(output.getComponent().getScopedContext(), content);
     }
   }
@@ -140,8 +142,6 @@ public class LithoRenderUnit extends RenderUnit<Object> {
         final LithoRenderUnit unit,
         final Object data) {
       LayoutOutput output = unit.output;
-      int flags = unit.getDefaultViewAttributeFLags();
-      MountState.unsetViewAttributes(content, output, flags);
       output.getComponent().unbind(output.getComponent().getScopedContext(), content);
     }
   }
