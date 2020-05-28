@@ -104,6 +104,9 @@
 
     <postStartupActivity implementation="com.facebook.litho.intellij.services.LithoStartupActivity"/>
 
+    <projectConfigurable parentId="tools" instance="com.facebook.litho.intellij.settings.AppSettingsController"
+      id="com.facebook.litho.intellij.settings.AppSettingsController" nonDefaultProject="false" />
+    <projectService serviceImplementation="com.facebook.litho.intellij.settings.AppSettingsState"/>
     <projectService serviceImplementation="com.facebook.litho.intellij.services.ComponentsCacheService"/>
 
     <resolveScopeEnlarger implementation="com.facebook.litho.intellij.file.ComponentResolveScopeEnlarger"/>

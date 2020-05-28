@@ -20,6 +20,7 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import com.facebook.litho.intellij.LithoPluginIntellijTest;
 import com.facebook.litho.intellij.PsiSearchUtils;
+import com.facebook.litho.intellij.settings.AppSettingsState;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
@@ -36,10 +37,11 @@ public class OnCodeAnalysisFinishedListenerTest extends LithoPluginIntellijTest 
   }
 
   @Test
-  public void daemonFinished() throws IOException {
+  public void daemonFinished_settingsTrue_resolved() throws IOException {
     final PsiFile specPsiFile = testHelper.configure("LayoutSpec.java");
     testHelper.configure("ResolveRedSymbolsActionTest.java");
     final Project project = testHelper.getFixture().getProject();
+    AppSettingsState.getInstance(project).getState().resolveRedSymbols = true;
     ApplicationManager.getApplication()
         .invokeAndWait(
             () -> {
@@ -50,5 +52,23 @@ public class OnCodeAnalysisFinishedListenerTest extends LithoPluginIntellijTest 
     final PsiClass cached =
         ServiceManager.getService(project, ComponentsCacheService.class).getComponent("Layout");
     assertThat(cached).isNotNull();
+  }
+
+  @Test
+  public void daemonFinished_settingsFalse_notResolved() throws IOException {
+    final PsiFile specPsiFile = testHelper.configure("LayoutSpec.java");
+    testHelper.configure("ResolveRedSymbolsActionTest.java");
+    final Project project = testHelper.getFixture().getProject();
+    AppSettingsState.getInstance(project).getState().resolveRedSymbols = false;
+    ApplicationManager.getApplication()
+        .invokeAndWait(
+            () -> {
+              PsiSearchUtils.addMock(
+                  "LayoutSpec", PsiTreeUtil.findChildOfType(specPsiFile, PsiClass.class));
+              new OnCodeAnalysisFinishedListener(project).daemonFinished();
+            });
+    final PsiClass cached =
+        ServiceManager.getService(project, ComponentsCacheService.class).getComponent("Layout");
+    assertThat(cached).isNull();
   }
 }

@@ -19,6 +19,7 @@ package com.facebook.litho.intellij.services;
 import com.facebook.litho.intellij.actions.ResolveRedSymbolsAction;
 import com.facebook.litho.intellij.extensions.EventLogger;
 import com.facebook.litho.intellij.logging.LithoLoggerProvider;
+import com.facebook.litho.intellij.settings.AppSettingsState;
 import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.diagnostic.Logger;
@@ -65,6 +66,9 @@ public class OnCodeAnalysisFinishedListener
   @Override
   public void daemonFinished() {
     LOG.debug("Daemon finished");
+    final AppSettingsState.Model state = AppSettingsState.getInstance(project).getState();
+    if (!state.resolveRedSymbols) return;
+
     // As in com.intellij.codeInsight.daemon.impl.StatusBarUpdater.java
     Editor editor = FileEditorManager.getInstance(project).getSelectedTextEditor();
     if (editor == null) return;
