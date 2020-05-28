@@ -155,8 +155,6 @@ public class ComponentHost extends Host {
 
     ensureMountItems();
     mMountItems.put(index, mountItem);
-
-    maybeInvalidateAccessibilityState(output, this);
   }
 
   private void ensureMountItems() {
@@ -217,7 +215,6 @@ public class ComponentHost extends Host {
     ensureMountItems();
     ComponentHostUtils.removeItem(index, mMountItems, mScrapMountItemsArray);
     releaseScrapDataStructuresIfNeeded();
-    maybeInvalidateAccessibilityState(output, this);
   }
 
   void startUnmountDisappearingItem(int index, MountItem mountItem) {

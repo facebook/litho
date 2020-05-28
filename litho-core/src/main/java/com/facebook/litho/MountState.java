@@ -1861,6 +1861,7 @@ class MountState
     output.getMountBounds(sTempRect);
     host.mount(index, item, sTempRect);
     host.maybeRegisterTouchExpansion(index, output, content);
+    maybeInvalidateAccessibilityState(output, host);
   }
 
   private static void unmount(
@@ -1871,6 +1872,7 @@ class MountState
       final LayoutOutput output) {
     host.unmount(index, item);
     host.maybeUnregisterTouchExpansion(index, output, content);
+    maybeInvalidateAccessibilityState(output, host);
   }
 
   private static void applyBoundsToMountContent(
