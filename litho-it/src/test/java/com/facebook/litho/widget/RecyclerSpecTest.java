@@ -25,9 +25,9 @@ import static org.mockito.Mockito.when;
 import android.content.Context;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SnapHelper;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
+import com.facebook.litho.EventHandler;
 import com.facebook.litho.StateContainer;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import java.util.ArrayList;
@@ -55,7 +55,7 @@ public class RecyclerSpecTest {
 
   @Test
   public void testRecyclerSpecOnBind() {
-    OnRefreshListener onRefreshListener = mock(OnRefreshListener.class);
+    EventHandler refreshHandler = mock(EventHandler.class);
     Binder<RecyclerView> binder = mock(Binder.class);
 
     SnapHelper snapHelper = mock(SnapHelper.class);
@@ -75,10 +75,9 @@ public class RecyclerSpecTest {
         snapHelper,
         true,
         touchInterceptor,
-        onRefreshListener);
+        refreshHandler);
 
     assertThat(mSectionsRecyclerView.isEnabled()).isTrue();
-    assertThat(mSectionsRecyclerView.getOnRefreshListener()).isEqualTo(onRefreshListener);
 
     assertThat(mSectionsRecyclerView.getRecyclerView()).isSameAs(mRecyclerView);
 

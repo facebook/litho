@@ -32,10 +32,8 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.ComponentLayout;
 import com.facebook.litho.Diff;
 import com.facebook.litho.EventHandler;
-import com.facebook.litho.Output;
 import com.facebook.litho.Size;
 import com.facebook.litho.StateValue;
-import com.facebook.litho.annotations.FromPrepare;
 import com.facebook.litho.annotations.MountSpec;
 import com.facebook.litho.annotations.OnBind;
 import com.facebook.litho.annotations.OnBoundsDefined;
@@ -44,7 +42,6 @@ import com.facebook.litho.annotations.OnCreateMountContent;
 import com.facebook.litho.annotations.OnEvent;
 import com.facebook.litho.annotations.OnMeasure;
 import com.facebook.litho.annotations.OnMount;
-import com.facebook.litho.annotations.OnPrepare;
 import com.facebook.litho.annotations.OnUnbind;
 import com.facebook.litho.annotations.OnUnmount;
 import com.facebook.litho.annotations.OnUpdateState;
@@ -126,22 +123,6 @@ class RecyclerSpec {
     return new SectionsRecyclerView(c, new LithoRecylerView(c));
   }
 
-  @OnPrepare
-  static void onPrepare(
-      ComponentContext c,
-      @Nullable @Prop(optional = true) final EventHandler refreshHandler,
-      Output<OnRefreshListener> onRefreshListener) {
-    if (refreshHandler != null) {
-      onRefreshListener.set(
-          new OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-              Recycler.dispatchPTRRefreshEvent(refreshHandler);
-            }
-          });
-    }
-  }
-
   @OnMount
   static void onMount(
       ComponentContext c,
@@ -215,13 +196,19 @@ class RecyclerSpec {
       @Prop(optional = true) SnapHelper snapHelper,
       @Prop(optional = true) boolean pullToRefresh,
       @Prop(optional = true) LithoRecylerView.TouchInterceptor touchInterceptor,
-      @FromPrepare OnRefreshListener onRefreshListener) {
+      @Nullable @Prop(optional = true) final EventHandler refreshHandler) {
 
     // contentDescription should be set on the recyclerView itself, and not the sectionsRecycler.
     sectionsRecycler.setContentDescription(null);
 
-    sectionsRecycler.setEnabled(pullToRefresh && onRefreshListener != null);
-    sectionsRecycler.setOnRefreshListener(onRefreshListener);
+    sectionsRecycler.setEnabled(pullToRefresh && refreshHandler != null);
+    sectionsRecycler.setOnRefreshListener(
+        new OnRefreshListener() {
+          @Override
+          public void onRefresh() {
+            Recycler.dispatchPTRRefreshEvent(refreshHandler);
+          }
+        });
 
     final LithoRecylerView recyclerView = (LithoRecylerView) sectionsRecycler.getRecyclerView();
 
