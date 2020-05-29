@@ -89,7 +89,7 @@ public class MountDelegateExtension {
     return mMountDelegate.getMountDelegateTarget();
   }
 
-  protected boolean isAnimationLocked(RenderTreeNode renderTreeNode) {
-    return mMountDelegate.isAnimationLocked(renderTreeNode);
+  protected boolean isAnimationLocked(RenderTreeNode renderTreeNode, int position) {
+    return mMountDelegate.isAnimationLocked(renderTreeNode, position);
   }
 }
