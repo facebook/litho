@@ -48,7 +48,6 @@ import android.util.SparseArray;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import androidx.collection.SparseArrayCompat;
 import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.TestDrawableComponent;
