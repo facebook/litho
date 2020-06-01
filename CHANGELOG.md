@@ -1,5 +1,12 @@
 # Changelog
 
+## Version 0.36.1-SNAPSHOT
+
+_TBA_
+
+For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.36.0...master).
+
+
 ## Version 0.36.0
 
 _2020-06-01_
