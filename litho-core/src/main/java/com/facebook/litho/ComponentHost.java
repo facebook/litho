@@ -71,7 +71,6 @@ public class ComponentHost extends Host {
   private ArrayList<MountItem> mDisappearingItems;
 
   private CharSequence mContentDescription;
-  private Object mViewTag;
   private SparseArray<Object> mViewTags;
 
   private boolean mDisallowIntercept;
@@ -501,15 +500,6 @@ public class ComponentHost extends Host {
   }
 
   /**
-   * Sets view tag on this host.
-   *
-   * @param viewTag the object to set as tag.
-   */
-  public void setViewTag(Object viewTag) {
-    mViewTag = viewTag;
-  }
-
-  /**
    * Sets view tags on this host.
    *
    * @param viewTags the map containing the tags by id.
@@ -852,16 +842,6 @@ public class ComponentHost extends Host {
       final Drawable drawable = (Drawable) mDrawableMountItems.valueAt(i).getContent();
       drawable.setVisible(visibility == View.VISIBLE, false);
     }
-  }
-
-  @DoNotStrip
-  @Override
-  public Object getTag() {
-    if (mViewTag != null) {
-      return mViewTag;
-    }
-
-    return super.getTag();
   }
 
   @Override

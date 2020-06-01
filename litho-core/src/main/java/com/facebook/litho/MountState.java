@@ -2265,12 +2265,7 @@ class MountState
   }
 
   private static void setViewTag(View view, Object viewTag) {
-    if (view instanceof ComponentHost) {
-      final ComponentHost host = (ComponentHost) view;
-      host.setViewTag(viewTag);
-    } else {
-      view.setTag(viewTag);
-    }
+    view.setTag(viewTag);
   }
 
   private static void setViewTags(View view, SparseArray<Object> viewTags) {
@@ -2289,12 +2284,7 @@ class MountState
   }
 
   private static void unsetViewTag(View view) {
-    if (view instanceof ComponentHost) {
-      final ComponentHost host = (ComponentHost) view;
-      host.setViewTag(null);
-    } else {
-      view.setTag(null);
-    }
+    view.setTag(null);
   }
 
   private static void unsetViewTags(View view, SparseArray<Object> viewTags) {

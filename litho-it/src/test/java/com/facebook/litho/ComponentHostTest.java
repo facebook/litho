@@ -28,6 +28,7 @@ import static android.view.View.VISIBLE;
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static com.facebook.litho.LayoutOutput.LAYOUT_FLAG_DUPLICATE_PARENT_STATE;
 import static com.facebook.litho.LayoutOutput.LAYOUT_FLAG_MATCH_HOST_BOUNDS;
+import static com.facebook.litho.testing.helper.ComponentTestHelper.mountComponent;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -437,14 +438,12 @@ public class ComponentHostTest {
 
   @Test
   public void testViewTag() {
-    assertThat(mHost.getTag()).isNull();
-
-    Object tag = new Object();
-    mHost.setViewTag(tag);
-    assertThat(mHost.getTag()).isEqualTo(tag);
-
-    mHost.setViewTag(null);
-    assertThat(mHost.getTag()).isNull();
+    final Component rootComponent =
+        Column.create(mContext)
+            .child(TestDrawableComponent.create(mContext).viewTag("test_tag"))
+            .build();
+    final LithoView lithoView = mountComponent(mContext, rootComponent, false, false);
+    assertThat((View) lithoView.findViewWithTag("test_tag")).isNotNull();
   }
 
   @Test
