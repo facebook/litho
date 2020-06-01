@@ -110,7 +110,8 @@ public class LayoutState
     CalculateLayoutSource.SET_SIZE_SPEC_ASYNC,
     CalculateLayoutSource.UPDATE_STATE_SYNC,
     CalculateLayoutSource.UPDATE_STATE_ASYNC,
-    CalculateLayoutSource.MEASURE
+    CalculateLayoutSource.MEASURE_SET_SIZE_SPEC,
+    CalculateLayoutSource.MEASURE_SET_SIZE_SPEC_ASYNC
   })
   public @interface CalculateLayoutSource {
     int TEST = -2;
@@ -121,7 +122,8 @@ public class LayoutState
     int SET_SIZE_SPEC_ASYNC = 3;
     int UPDATE_STATE_SYNC = 4;
     int UPDATE_STATE_ASYNC = 5;
-    int MEASURE = 6;
+    int MEASURE_SET_SIZE_SPEC = 6;
+    int MEASURE_SET_SIZE_SPEC_ASYNC = 7;
   }
 
   static final Comparator<RenderTreeNode> sTopsComparator =
@@ -309,6 +311,10 @@ public class LayoutState
       ComponentsConfiguration.shouldDisableDrawableOutputs;
 
   final Map<String, Object> mLayoutData = new HashMap<>();
+
+  // TODO(t66287929): Remove mIsCommitted from LayoutState by matching RenderState logic around
+  // Futures.
+  private boolean mIsCommitted;
 
   LayoutState(ComponentContext context) {
     this(context, null);
@@ -1791,8 +1797,10 @@ public class LayoutState
         return "setSizeSpecAsync";
       case CalculateLayoutSource.UPDATE_STATE_ASYNC:
         return "updateStateAsync";
-      case CalculateLayoutSource.MEASURE:
-        return "measure";
+      case CalculateLayoutSource.MEASURE_SET_SIZE_SPEC:
+        return "measure_setSizeSpec";
+      case CalculateLayoutSource.MEASURE_SET_SIZE_SPEC_ASYNC:
+        return "measure_setSizeSpecAsync";
       case CalculateLayoutSource.TEST:
         return "test";
       case CalculateLayoutSource.NONE:
@@ -2058,6 +2066,14 @@ public class LayoutState
     return mHeight;
   }
 
+  int getWidthSpec() {
+    return mWidthSpec;
+  }
+
+  int getHeightSpec() {
+    return mHeightSpec;
+  }
+
   /** @return The id of the {@link ComponentTree} that generated this {@link LayoutState} */
   int getComponentTreeId() {
     return mComponentTreeId;
@@ -2318,5 +2334,13 @@ public class LayoutState
   @Override
   public void setNeedsToRerunTransitions(boolean needsToRerunTransitions) {
     mContext.getComponentTree().setIsFirstMount(needsToRerunTransitions);
+  }
+
+  boolean isCommitted() {
+    return mIsCommitted;
+  }
+
+  void markCommitted() {
+    mIsCommitted = true;
   }
 }
