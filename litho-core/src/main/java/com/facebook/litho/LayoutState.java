@@ -674,24 +674,27 @@ public class LayoutState
                 || (nodeInfo != null && !TextUtils.isEmpty(nodeInfo.getContentDescription()))
                 || importantForAccessibility != IMPORTANT_FOR_ACCESSIBILITY_AUTO);
 
-    final boolean hasFocusChangeHandler = (nodeInfo != null && nodeInfo.hasFocusChangeHandler());
-    final boolean hasEnabledTouchEventHandlers =
-        nodeInfo != null
-            && nodeInfo.hasTouchEventHandlers()
-            && nodeInfo.getEnabledState() != ENABLED_SET_FALSE;
-    final boolean hasViewTag = (nodeInfo != null && nodeInfo.getViewTag() != null);
-    final boolean hasViewTags = (nodeInfo != null && nodeInfo.getViewTags() != null);
-    final boolean hasShadowElevation = (nodeInfo != null && nodeInfo.getShadowElevation() != 0);
-    final boolean hasOutlineProvider = (nodeInfo != null && nodeInfo.getOutlineProvider() != null);
-    final boolean hasClipToOutline = (nodeInfo != null && nodeInfo.getClipToOutline());
-    final boolean isFocusableSetTrue =
-        (nodeInfo != null && nodeInfo.getFocusState() == FOCUS_SET_TRUE);
-    final boolean isClickableSetTrue =
-        (nodeInfo != null && nodeInfo.getClickableState() == CLICKABLE_SET_TRUE);
-    final boolean hasClipChildrenSet = (nodeInfo != null && nodeInfo.isClipChildrenSet());
+    return hasBackgroundOrForeground || hasAccessibilityContent || hasViewAttributes(nodeInfo);
+  }
 
-    return hasBackgroundOrForeground
-        || hasFocusChangeHandler
+  private static boolean hasViewAttributes(@Nullable NodeInfo nodeInfo) {
+    if (nodeInfo == null) {
+      return false;
+    }
+
+    final boolean hasFocusChangeHandler = nodeInfo.hasFocusChangeHandler();
+    final boolean hasEnabledTouchEventHandlers =
+        nodeInfo.hasTouchEventHandlers() && nodeInfo.getEnabledState() != ENABLED_SET_FALSE;
+    final boolean hasViewTag = nodeInfo.getViewTag() != null;
+    final boolean hasViewTags = nodeInfo.getViewTags() != null;
+    final boolean hasShadowElevation = nodeInfo.getShadowElevation() != 0;
+    final boolean hasOutlineProvider = nodeInfo.getOutlineProvider() != null;
+    final boolean hasClipToOutline = nodeInfo.getClipToOutline();
+    final boolean isFocusableSetTrue = nodeInfo.getFocusState() == FOCUS_SET_TRUE;
+    final boolean isClickableSetTrue = nodeInfo.getClickableState() == CLICKABLE_SET_TRUE;
+    final boolean hasClipChildrenSet = nodeInfo.isClipChildrenSet();
+
+    return hasFocusChangeHandler
         || hasEnabledTouchEventHandlers
         || hasViewTag
         || hasViewTags
@@ -699,7 +702,6 @@ public class LayoutState
         || hasOutlineProvider
         || hasClipToOutline
         || hasClipChildrenSet
-        || hasAccessibilityContent
         || isFocusableSetTrue
         || isClickableSetTrue;
   }
@@ -2150,12 +2152,8 @@ public class LayoutState
       return true;
     }
 
-    final List<Component> components = node.getComponents();
-    for (Component comp : components) {
-      if (comp != null && comp.hasCommonDynamicProps()) {
-        // Need a host View to apply the dynamic props to
-        return true;
-      }
+    if (needsHostViewForCommonDynamicProps(node)) {
+      return true;
     }
 
     if (needsHostViewForTransition(node)) {
@@ -2165,8 +2163,34 @@ public class LayoutState
     return false;
   }
 
+  private static boolean needsHostViewForCommonDynamicProps(InternalNode node) {
+    final List<Component> components = node.getComponents();
+    for (Component comp : components) {
+      if (comp != null && comp.hasCommonDynamicProps()) {
+        // Need a host View to apply the dynamic props to
+        return true;
+      }
+    }
+    return false;
+  }
+
   private static boolean needsHostViewForTransition(InternalNode node) {
     return !TextUtils.isEmpty(node.getTransitionKey()) && !isMountViewSpec(node.getTailComponent());
+  }
+
+  /**
+   * Similar to {@link #needsHostView(InternalNode, LayoutState)} but without dependency to {@link
+   * LayoutState} instance. This will be used for debugging tools to indicate whether the mountable
+   * output is a wrapped View or View MountSpec. Unlike {@link #needsHostView(InternalNode,
+   * LayoutState)} this does not consider accessibility also does not consider root component, but
+   * this approximation is good enough for debugging purposes.
+   */
+  static boolean hasViewOutput(InternalNode node) {
+    return node.isForceViewWrapping()
+        || isMountViewSpec(node.getTailComponent())
+        || hasViewAttributes(node.getNodeInfo())
+        || needsHostViewForCommonDynamicProps(node)
+        || needsHostViewForTransition(node);
   }
 
   /**
