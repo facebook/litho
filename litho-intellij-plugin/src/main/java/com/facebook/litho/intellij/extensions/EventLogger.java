@@ -36,6 +36,7 @@ public interface EventLogger {
 
   // Event types
   String EVENT_ANNOTATOR = "error.annotation";
+  String EVENT_COMPLETION_METHOD = "completion.method";
   String EVENT_COMPLETION_ANNOTATION = "completion.annotation";
   String EVENT_COMPLETION_REQUIRED_PROP = "completion.required";
   String EVENT_FIND_USAGES = "find.usages";

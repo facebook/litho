@@ -16,51 +16,49 @@
 
 package com.facebook.litho.intellij.completion;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 
-import com.facebook.litho.intellij.LithoClassNames;
 import com.facebook.litho.intellij.LithoPluginIntellijTest;
 import com.intellij.testFramework.fixtures.CodeInsightTestFixture;
 import java.io.IOException;
 import java.util.List;
 import org.junit.Test;
 
-public class LayoutSpecAnnotationsContributorTest extends LithoPluginIntellijTest {
+public class OnEventCompletionProviderTest extends LithoPluginIntellijTest {
 
-  public LayoutSpecAnnotationsContributorTest() {
+  public OnEventCompletionProviderTest() {
     super("testdata/completion");
   }
 
   @Test
-  public void addCompletions_inLayoutSpec() throws IOException {
-    String clsName = "LayoutSpecAnnotationsContributorSpec.java";
+  public void eventInLithoClass_completes() throws IOException {
+    String clsName = "OnClickEventCompletionSpec.java";
 
     testHelper.configure(clsName);
     CodeInsightTestFixture fixture = testHelper.getFixture();
     fixture.completeBasic();
     List<String> completion = fixture.getLookupElementStrings();
-    assertNotNull(completion);
-
-    for (String name : LayoutSpecMethodAnnotationsProvider.ANNOTATION_QUALIFIED_NAMES) {
-      assertTrue(completion.contains(LithoClassNames.shortName(name)));
-    }
+    assertThat(completion.contains("onClickEvent")).isTrue();
   }
 
   @Test
-  public void addCompletions_notInLayoutSpec() throws IOException {
-    String clsName = "NotLayoutSpecAnnotationsContributor.java";
+  public void eventNotInLithoClass_notCompletes() throws IOException {
+    String clsName = "OnClickEventNotLithoCompletionTest.java";
 
     testHelper.configure(clsName);
     CodeInsightTestFixture fixture = testHelper.getFixture();
     fixture.completeBasic();
+    List<String> completion = fixture.getLookupElementStrings();
+    assertThat(completion).isEmpty();
+  }
+
+  @Test
+  public void eventAboveMethod_completes() throws IOException {
+    testHelper.configure("OnClickEventAboveMethodCompletionSpec.java");
+    CodeInsightTestFixture fixture = testHelper.getFixture();
+    fixture.completeBasic();
     fixture.completeBasic();
     List<String> completion = fixture.getLookupElementStrings();
-    assertNotNull(completion);
-
-    for (String name : LayoutSpecMethodAnnotationsProvider.ANNOTATION_QUALIFIED_NAMES) {
-      assertFalse(completion.contains(LithoClassNames.shortName(name)));
-    }
+    assertThat(completion.contains("onClickEvent")).isTrue();
   }
 }

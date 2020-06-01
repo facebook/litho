@@ -77,9 +77,8 @@
     <codeInsight.lineMarkerProvider language="JAVA" implementationClass="com.facebook.litho.intellij.inspections.RequiredPropLineMarkerProvider"/>
 
     <completion.contributor language="JAVA" implementationClass="com.facebook.litho.intellij.completion.StatePropCompletionContributor"/>
-    <completion.contributor language="JAVA" implementationClass="com.facebook.litho.intellij.completion.OnEventCompletionContributor"/>
+    <completion.contributor language="JAVA" implementationClass="com.facebook.litho.intellij.completion.MethodCompletionContributor"/>
     <completion.contributor language="JAVA" implementationClass="com.facebook.litho.intellij.completion.RequiredPropMethodContributor" order="first"/>
-    <completion.contributor language="JAVA" implementationClass="com.facebook.litho.intellij.completion.LayoutSpecAnnotationsContributor" order="first"/>
     <completion.contributor language="JAVA" implementationClass="com.facebook.litho.intellij.completion.LayoutSpecMethodParameterAnnotationsContributor" order="first"/>
 
     <fileDocumentManagerListener implementation="com.facebook.litho.intellij.file.ComponentFileListener"/>
