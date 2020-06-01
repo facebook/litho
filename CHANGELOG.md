@@ -1,8 +1,8 @@
 # Changelog
 
-## Version 0.35.1-SNAPSHOT
+## Version 0.36.0
 
-_TBA_
+_2020-06-01_
 
 * **Breaking:** Remove unused obsolete `RenderThreadTransition`.
 * **Breaking:** Ordering of params in `@ShouldUpdate` callback is fixed (`getNext()`  was previous and `getPrevious()` was next).
@@ -22,8 +22,8 @@ _TBA_
 * Fix: Remove host invalidation suppression during mount.
 * Fix: Move setting `PTRRefreshEvent` from `onPrepare` to `onBind` in `RecyclerSpec`.
 
+For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.35.0...v0.36.0).
 
-For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.35.0...master).
 
 ## Version 0.35.0
 
