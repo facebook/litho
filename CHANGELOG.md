@@ -6,9 +6,20 @@ _TBA_
 
 * **Breaking:** Remove unused obsolete `RenderThreadTransition`.
 * **Breaking:** Ordering of params in `@ShouldUpdate` callback is fixed (`getNext()`  was previous and `getPrevious()` was next).
+* **Breaking:** Rename `ComponentsTestRunner` to `LithoTestRunner`.
 * New: Add `TransitionEndEvent` event callback to receive events when a transition ends. Read more about it in [the documentation](https://fblitho.com/docs/transition-choreography#transition-end-callback).
+* New: Add `acquireStateHandlerOnRelease` flag for `RecyclerBinder` to opt out of caching `StateHandler`s.
+* New: Improved testing APIs: `MountSpecLifecycleTester`, `LifecycleTracker` to track basic lifecycle methods which would replace custom component implementations like `TestDrawable`, `TestComponent`, etc.
+* Fix: Ensure `@OnAttached` and `@OnDetached` methods are called in the same order.
+* Fix: Remove overriding `isLayoutRequested()` in `SectionsRecyclerView`.
+* Fix: Deprecate and ignore `ShouldUpdate#onMount` param. `MountSpec`s with `pureRender` will now always check `shouldUpdate` on the main thread if the information from layout isn't able to be used.
+* Fix: Fixup `BackgroundLayoutLooperRule` and improve threading APIs in `ComponentTreeTest`.
+* Fix: Fix incorrect key generation after shallow copy.
+* Fix: Remove host invalidation suppression during mount.
+* Fix: Move setting `PTRRefreshEvent` from `onPrepare` to `onBind` in `RecyclerSpec`.
 
 For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.35.0...master).
+
 
 ## Version 0.35.0
 
@@ -31,7 +42,7 @@ _2020-05-01_
 * Fix: Fix `RecyclerSpec` not respecting RTL for padding.
 * Fix: Add missing `@Nullable` to every method accepting `EventHandler`.
 * Fix: Propagate class-level annotations from `SectionSpec`s class to generated Section class.
-* FIx: Don't crash on missing `@OnCreateMountContent` method for `MountSpec`s during code generation.
+* Fix: Don't crash on missing `@OnCreateMountContent` method for `MountSpec`s during code generation.
 * Fix: Don't crash when comparing `ComparableGradientDrawable`s on API<=15.
 * Fix: Fixes a bug in `ComponentUtils.isEquivalentTo()`.
 * Fix: Correctly release `ComponentTree` on the main thread after `@OnDetached`.
