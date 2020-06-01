@@ -108,9 +108,3 @@ static Transition onCreateTransition(ComponentContext c) {
     return Transition.allLayout().transitionEndHandler(ThisComponent.onTransitionEndEvent(c));
 }
 ```
-
-
-<video loop autoplay class="video" style="width: 100%; height: 500px;">
-  <source type="video/webm" src="/static/videos/transitions/animators.webm"></source>
-  <p>Your browser does not support the video element.</p>
-</video>
