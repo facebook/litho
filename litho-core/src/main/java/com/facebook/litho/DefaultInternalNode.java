@@ -162,6 +162,8 @@ public class DefaultInternalNode extends Node implements InternalNode, Cloneable
   private boolean mForceViewWrapping;
   private boolean mCachedMeasuresValid;
 
+  private boolean mIsWrappedWithView;
+
   private int mImportantForAccessibility = ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
   private @DrawableRes int mStateListAnimatorRes;
 
@@ -1987,6 +1989,16 @@ public class DefaultInternalNode extends Node implements InternalNode, Cloneable
   @Override
   public void setHostOutput(@Nullable LayoutOutput host) {
     getOrCreateOutputs().hostOutput = host;
+  }
+
+  @Override
+  public void setWrappedWithView(boolean isWrappedWithView) {
+    mIsWrappedWithView = isWrappedWithView;
+  }
+
+  @Override
+  public boolean isWrappedWithView() {
+    return mIsWrappedWithView;
   }
 
   private @Nullable static <T> EventHandler<T> addVisibilityHandler(

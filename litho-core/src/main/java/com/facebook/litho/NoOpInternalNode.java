@@ -968,4 +968,12 @@ class NoOpInternalNode implements InternalNode {
   public InternalNode reconcile(ComponentContext c, Component next) {
     return this;
   }
+
+  @Override
+  public boolean isWrappedWithView() {
+    return false;
+  }
+
+  @Override
+  public void setWrappedWithView(boolean isWrappedWithView) {}
 }

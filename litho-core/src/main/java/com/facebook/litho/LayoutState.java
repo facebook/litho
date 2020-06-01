@@ -1379,6 +1379,9 @@ public class LayoutState
       diffNode.setHostOutput(hostLayoutOutput);
     }
 
+    // For debugging purposes
+    node.setWrappedWithView(true);
+
     calculateAndSetHostOutputIdAndUpdateState(node, hostLayoutOutput, layoutState, hierarchy);
 
     // The component of the hostLayoutOutput will be set later after all the

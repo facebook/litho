@@ -57,6 +57,55 @@ public final class DebugLayoutNode {
     mNode.backgroundColor(color);
   }
 
+  public boolean isWrappedWithView() {
+    return mNode.isWrappedWithView();
+  }
+
+  public float getRotation() {
+    final NodeInfo nodeInfo = mNode.getNodeInfo();
+    if (nodeInfo != null) {
+      return nodeInfo.getRotation();
+    }
+    return 0f;
+  }
+
+  public void setRotation(float value) {
+    final NodeInfo nodeInfo = mNode.getNodeInfo();
+    if (nodeInfo != null) {
+      nodeInfo.setRotation(value);
+    }
+  }
+
+  public float getAlpha() {
+    final NodeInfo nodeInfo = mNode.getNodeInfo();
+    if (nodeInfo != null) {
+      return nodeInfo.getAlpha();
+    }
+    return 1f;
+  }
+
+  public void setAlpha(float value) {
+    final NodeInfo nodeInfo = mNode.getNodeInfo();
+    if (nodeInfo != null) {
+      nodeInfo.setAlpha(value);
+    }
+  }
+
+  public float getScale() {
+    final NodeInfo nodeInfo = mNode.getNodeInfo();
+    if (nodeInfo != null) {
+      return nodeInfo.getScale();
+    }
+    return 1f;
+  }
+
+  public void setScale(float value) {
+    final NodeInfo nodeInfo = mNode.getNodeInfo();
+    if (nodeInfo != null) {
+      nodeInfo.setScale(value);
+    }
+  }
+
   public int getImportantForAccessibility() {
     return mNode.getImportantForAccessibility();
   }

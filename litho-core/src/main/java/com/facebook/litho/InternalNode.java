@@ -401,6 +401,10 @@ public interface InternalNode
    */
   InternalNode reconcile(ComponentContext c, Component next);
 
+  void setWrappedWithView(boolean isWrappedWithView);
+
+  boolean isWrappedWithView();
+
   class NestedTreeProps {
     boolean mIsNestedTreeHolder;
     @Nullable InternalNode mNestedTree;
