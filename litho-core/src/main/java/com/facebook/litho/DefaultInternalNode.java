@@ -53,6 +53,7 @@ import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.drawable.ComparableColorDrawable;
 import com.facebook.rendercore.Node;
 import com.facebook.rendercore.RenderState;
+import com.facebook.rendercore.RenderUnit;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaBaselineFunction;
 import com.facebook.yoga.YogaConstants;
@@ -180,6 +181,7 @@ public class DefaultInternalNode extends Node implements InternalNode, Cloneable
   private float mLastMeasuredHeight = DiffNode.UNSPECIFIED;
 
   private long mPrivateFlags;
+  private RenderUnit mRenderUnit;
 
   protected DefaultInternalNode(ComponentContext componentContext) {
     this(componentContext, true);
@@ -2200,6 +2202,16 @@ public class DefaultInternalNode extends Node implements InternalNode, Cloneable
     }
 
     return ReconciliationMode.COPY;
+  }
+
+  @Nullable
+  @Override
+  public RenderUnit getRenderUnit() {
+    return mRenderUnit;
+  }
+
+  public void setRenderUnit(RenderUnit renderUnit) {
+    mRenderUnit = renderUnit;
   }
 
   @IntDef({ReconciliationMode.COPY, ReconciliationMode.RECONCILE, ReconciliationMode.RECREATE})

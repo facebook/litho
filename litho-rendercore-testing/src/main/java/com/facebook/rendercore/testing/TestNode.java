@@ -16,8 +16,10 @@
 
 package com.facebook.rendercore.testing;
 
+import androidx.annotation.Nullable;
 import com.facebook.rendercore.Node;
 import com.facebook.rendercore.RenderState.LayoutContext;
+import com.facebook.rendercore.RenderUnit;
 import java.util.ArrayList;
 
 public class TestNode extends Node implements Node.Container {
@@ -28,6 +30,7 @@ public class TestNode extends Node implements Node.Container {
   private int mWidth = 100;
   private int mHeight = 100;
   private Object mLayoutData;
+  private RenderUnit mRenderUnit;
 
   public TestNode() {
     super();
@@ -41,6 +44,16 @@ public class TestNode extends Node implements Node.Container {
     mWidth = width;
     mHeight = height;
     mChildren = new ArrayList<>();
+  }
+
+  public void setRenderUnit(RenderUnit renderUnit) {
+    mRenderUnit = renderUnit;
+  }
+
+  @Nullable
+  @Override
+  public RenderUnit getRenderUnit() {
+    return mRenderUnit;
   }
 
   @Override

@@ -28,17 +28,10 @@ import com.facebook.rendercore.RenderState.LayoutContext;
 public abstract class Node implements Copyable {
 
   private Copyable mLayoutParams;
-  private RenderUnit mRenderUnit;
 
   /** @return a RenderUnit that represents the rendering content of this Node. */
   @Nullable
-  public final RenderUnit getRenderUnit() {
-    return mRenderUnit;
-  }
-
-  public final void setRenderUnit(RenderUnit content) {
-    mRenderUnit = content;
-  }
+  public abstract RenderUnit getRenderUnit();
 
   /**
    * Implementations of Node are responsible to calculate a layout based on the width/height
@@ -150,9 +143,6 @@ public abstract class Node implements Copyable {
     final Node clone;
     try {
       clone = (Node) super.clone();
-      if (mRenderUnit != null) {
-        clone.mRenderUnit = mRenderUnit.makeCopy();
-      }
 
       if (mLayoutParams != null) {
         clone.mLayoutParams = mLayoutParams.makeCopy();
