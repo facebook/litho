@@ -22,6 +22,7 @@ import static com.facebook.litho.SizeSpec.UNSPECIFIED;
 
 import android.content.Context;
 import android.os.Build;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.ViewTreeObserver;
 import androidx.annotation.Nullable;
@@ -188,7 +189,8 @@ public class VerticalScrollSpec {
 
   @OnCreateMountContent
   static LithoScrollView onCreateMountContent(Context context) {
-    return new LithoScrollView(context);
+    return (LithoScrollView) LayoutInflater.from(context)
+        .inflate(R.layout.litho_scroll_view, null, false);
   }
 
   @OnMount
@@ -247,95 +249,6 @@ public class VerticalScrollSpec {
         || !incrementalMountEnabled.getPrevious().equals(incrementalMountEnabled.getNext());
   }
 
-  static class LithoScrollView extends NestedScrollView {
-    private final LithoView mLithoView;
-
-    @Nullable private ScrollPosition mScrollPosition;
-    @Nullable private ViewTreeObserver.OnPreDrawListener mOnPreDrawListener;
-    @Nullable private OnInterceptTouchListener mOnInterceptTouchListener;
-    private boolean mIsIncrementalMountEnabled;
-
-    LithoScrollView(Context context) {
-      super(context);
-      mLithoView = new LithoView(context);
-
-      addView(mLithoView);
-    }
-
-    @Override
-    public boolean onInterceptTouchEvent(MotionEvent ev) {
-      boolean result = false;
-      if (mOnInterceptTouchListener != null) {
-        result = mOnInterceptTouchListener.onInterceptTouch(this, ev);
-      }
-      if (!result && super.onInterceptTouchEvent(ev)) {
-        result = true;
-      }
-      return result;
-    }
-
-    @Override
-    protected void onScrollChanged(int l, int t, int oldl, int oldt) {
-      super.onScrollChanged(l, t, oldl, oldt);
-
-      if (mIsIncrementalMountEnabled) {
-        mLithoView.notifyVisibleBoundsChanged();
-      }
-
-      if (mScrollPosition != null) {
-        mScrollPosition.y = getScrollY();
-      }
-    }
-
-    /**
-     * NestedScrollView does not automatically consume the fling event. However, RecyclerView
-     * consumes this event if it's either vertically or horizontally scrolling. {@link
-     * RecyclerView#fling} Since this view is specifically made for vertically scrolling components,
-     * we always consume the nested fling event just like recycler view.
-     */
-    @Override
-    public boolean dispatchNestedFling(float velocityX, float velocityY, boolean consumed) {
-      return super.dispatchNestedFling(velocityX, velocityY, true);
-    }
-
-    public void setOnInterceptTouchListener(
-        @Nullable OnInterceptTouchListener onInterceptTouchListener) {
-      mOnInterceptTouchListener = onInterceptTouchListener;
-    }
-
-    private void mount(
-        ComponentTree contentComponentTree,
-        final ScrollPosition scrollPosition,
-        boolean isIncrementalMountEnabled) {
-      mLithoView.setComponentTree(contentComponentTree);
-
-      mIsIncrementalMountEnabled = isIncrementalMountEnabled;
-      mScrollPosition = scrollPosition;
-      final ViewTreeObserver.OnPreDrawListener onPreDrawListener =
-          new ViewTreeObserver.OnPreDrawListener() {
-            @Override
-            public boolean onPreDraw() {
-              setScrollY(scrollPosition.y);
-              ViewTreeObserver currentViewTreeObserver = getViewTreeObserver();
-              if (currentViewTreeObserver.isAlive()) {
-                currentViewTreeObserver.removeOnPreDrawListener(this);
-              }
-              return true;
-            }
-          };
-      getViewTreeObserver().addOnPreDrawListener(onPreDrawListener);
-
-      mOnPreDrawListener = onPreDrawListener;
-    }
-
-    private void unmount() {
-      mLithoView.setComponentTree(null);
-
-      mScrollPosition = null;
-      getViewTreeObserver().removeOnPreDrawListener(mOnPreDrawListener);
-      mOnPreDrawListener = null;
-    }
-  }
 
   static class ScrollPosition {
     int y;
@@ -345,3 +258,4 @@ public class VerticalScrollSpec {
     boolean onInterceptTouch(NestedScrollView nestedScrollView, MotionEvent event);
   }
 }
+

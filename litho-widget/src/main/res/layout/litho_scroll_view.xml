@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.facebook.litho.widget.LithoScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="0dp"
+    android:layout_width="0dp"
+    android:scrollbars="vertical">
+</com.facebook.litho.widget.LithoScrollView>
+
