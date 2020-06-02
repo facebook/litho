@@ -25,7 +25,7 @@ import com.facebook.rendercore.RenderState.LayoutContext;
  * Represents a single node in a RenderCore Tree. A Node has children, base layout information, and
  * whether it needs to be rendered.
  */
-public abstract class Node implements Copyable {
+public abstract class Node<RenderContext> implements Copyable {
 
   private Copyable mLayoutParams;
 
@@ -50,7 +50,7 @@ public abstract class Node implements Copyable {
    * @param heightSpec a measure spec for the height in the format of {@link View.MeasureSpec}
    */
   public abstract LayoutResult calculateLayout(
-      LayoutContext context, int widthSpec, int heightSpec);
+      LayoutContext<RenderContext> context, int widthSpec, int heightSpec);
 
   public Copyable getLayoutParams() {
     return mLayoutParams;
