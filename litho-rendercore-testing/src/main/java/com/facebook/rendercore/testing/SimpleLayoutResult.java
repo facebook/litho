@@ -25,7 +25,7 @@ import java.util.List;
 
 public class SimpleLayoutResult implements Node.LayoutResult {
 
-  private final Node mNode;
+  private final @Nullable RenderUnit mRenderUnit;
   private final int mX;
   private final int mY;
   private final int mWidth;
@@ -33,8 +33,9 @@ public class SimpleLayoutResult implements Node.LayoutResult {
   private final List<Node.LayoutResult> mChildren;
   private final Object mLayoutData;
 
-  public SimpleLayoutResult(Node node, Object layoutData, int x, int y, int width, int height) {
-    mNode = node;
+  public SimpleLayoutResult(
+      @Nullable RenderUnit renderUnit, Object layoutData, int x, int y, int width, int height) {
+    mRenderUnit = renderUnit;
     mX = x;
     mY = y;
     mWidth = width;
@@ -43,13 +44,13 @@ public class SimpleLayoutResult implements Node.LayoutResult {
     mLayoutData = layoutData;
   }
 
-  public SimpleLayoutResult(Node node, int x, int y, int width, int height) {
-    this(node, null, x, y, width, height);
+  public SimpleLayoutResult(RenderUnit renderUnit, int x, int y, int width, int height) {
+    this(renderUnit, null, x, y, width, height);
   }
 
   @Override
-  public RenderUnit getRenderUnit() {
-    return mNode.getRenderUnit();
+  public @Nullable RenderUnit getRenderUnit() {
+    return mRenderUnit;
   }
 
   @Nullable

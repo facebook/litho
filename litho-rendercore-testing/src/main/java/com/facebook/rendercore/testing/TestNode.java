@@ -50,16 +50,11 @@ public class TestNode extends Node {
     mRenderUnit = renderUnit;
   }
 
-  @Nullable
-  @Override
-  public RenderUnit getRenderUnit() {
-    return mRenderUnit;
-  }
-
   @Override
   public LayoutResult calculateLayout(LayoutContext context, int widthSpec, int heightSpec) {
 
-    SimpleLayoutResult result = new SimpleLayoutResult(this, mLayoutData, mX, mY, mWidth, mHeight);
+    SimpleLayoutResult result =
+        new SimpleLayoutResult(mRenderUnit, mLayoutData, mX, mY, mWidth, mHeight);
     for (int i = 0; i < getChildrenCount(); i++) {
       result.getChildren().add(getChildAt(i).calculateLayout(context, widthSpec, heightSpec));
     }

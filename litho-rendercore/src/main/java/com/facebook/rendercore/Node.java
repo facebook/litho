@@ -29,10 +29,6 @@ public abstract class Node implements Copyable {
 
   private Copyable mLayoutParams;
 
-  /** @return a RenderUnit that represents the rendering content of this Node. */
-  @Nullable
-  public abstract RenderUnit getRenderUnit();
-
   /**
    * Implementations of Node are responsible to calculate a layout based on the width/height
    * constraints provided. A Node could decide to implement its own layout function or to delegate
