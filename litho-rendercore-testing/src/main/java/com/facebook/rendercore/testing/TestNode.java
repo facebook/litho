@@ -22,7 +22,7 @@ import com.facebook.rendercore.RenderState.LayoutContext;
 import com.facebook.rendercore.RenderUnit;
 import java.util.ArrayList;
 
-public class TestNode extends Node implements Node.Container {
+public class TestNode extends Node {
 
   private final ArrayList<Node> mChildren;
   private int mX;
@@ -67,12 +67,10 @@ public class TestNode extends Node implements Node.Container {
     return result;
   }
 
-  @Override
   public int getChildrenCount() {
     return mChildren.size();
   }
 
-  @Override
   public Node getChildAt(int index) {
     return mChildren.get(index);
   }

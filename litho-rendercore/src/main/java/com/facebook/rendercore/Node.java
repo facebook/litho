@@ -65,18 +65,6 @@ public abstract class Node implements Copyable {
   }
 
   /**
-   * Interface to be implemented by a Node with children. This interface can be used by layout
-   * functions that need access to the Node's children.
-   */
-  public interface Container<T extends Node> {
-    /** @return the number of children this Node has */
-    int getChildrenCount();
-
-    /** @return the child of this node at position index */
-    T getChildAt(int index);
-  }
-
-  /**
    * Represents the result of a Layout pass. A LayoutResult has a reference to its originating Node
    * and all the layout information needed to position the content of such Node.
    */
