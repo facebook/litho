@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## Version 1.5.1
+
+_2020-06-04_
+
+* New: Add navigation from Component method to Spec method.
+* New: FindUsages of Spec method include Component method.
+* New: Add method completion for LayoutSpec methods: OnAttached, OnCreateInitialState, OnCreateLayout, OnCreateLayoutWithSizeSpec, OnCreateTransition, OnDetached, OnUpdateState, OnUpdateStateWithTransition.
+
 ## Version 1.5.0
 
 _2020-05-29_
@@ -10,7 +18,7 @@ _2020-05-29_
 
 _2020-05-20_
 
-* Fix: Sending Events without metadata
+* Fix: Sending Events without metadata.
 
 ## Version 1.4.1
 
