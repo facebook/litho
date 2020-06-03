@@ -16,7 +16,6 @@
 
 package com.facebook.rendercore.testing;
 
-import androidx.annotation.Nullable;
 import com.facebook.rendercore.Node;
 import com.facebook.rendercore.RenderState.LayoutContext;
 import com.facebook.rendercore.RenderUnit;
