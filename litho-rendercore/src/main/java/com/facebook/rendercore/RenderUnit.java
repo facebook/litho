@@ -41,6 +41,8 @@ public abstract class RenderUnit<MOUNT_CONTENT> implements Copyable {
   private final List<Binder<RenderUnit<MOUNT_CONTENT>, MOUNT_CONTENT>> mBaseAttachDetachFunctions;
   private List<Binder<RenderUnit<MOUNT_CONTENT>, MOUNT_CONTENT>>
       mMountUnmountFunctionsWithExtensions;
+  private List<Binder<RenderUnit<MOUNT_CONTENT>, MOUNT_CONTENT>>
+      mAttachDetachFunctionsWithExtensions;
 
   public RenderUnit(RenderType renderType) {
     this(
@@ -94,7 +96,9 @@ public abstract class RenderUnit<MOUNT_CONTENT> implements Copyable {
    */
   @Nullable
   public final List<Binder<RenderUnit<MOUNT_CONTENT>, MOUNT_CONTENT>> attachDetachFunctions() {
-    return mBaseAttachDetachFunctions;
+    return mAttachDetachFunctionsWithExtensions != null
+        ? mAttachDetachFunctionsWithExtensions
+        : mBaseAttachDetachFunctions;
   }
 
   /** @return a unique id identifying this RenderUnit in the tree of Node it is part of. */
@@ -132,9 +136,27 @@ public abstract class RenderUnit<MOUNT_CONTENT> implements Copyable {
         (Binder<RenderUnit<MOUNT_CONTENT>, MOUNT_CONTENT>) binder);
   }
 
+  /**
+   * Adds an extension function that will be invoked with the other attach/detach binders. Can be
+   * used to add generic functionality (e.g. Dynamic Props) to a RenderUnit.
+   */
+  public void adAttachDetachExtension(Binder binder) {
+    if (mAttachDetachFunctionsWithExtensions == null) {
+      mAttachDetachFunctionsWithExtensions = new ArrayList<>(mBaseAttachDetachFunctions.size() + 4);
+      mAttachDetachFunctionsWithExtensions.addAll(mBaseAttachDetachFunctions);
+    }
+    mAttachDetachFunctionsWithExtensions.add(
+        (Binder<RenderUnit<MOUNT_CONTENT>, MOUNT_CONTENT>) binder);
+  }
+
   /** removes an extension function previously added with addMountUnmountExtension */
   public void removeMountUnmountExtension(Binder binder) {
     mMountUnmountFunctionsWithExtensions.remove(binder);
+  }
+
+  /** removes an extension function previously added with addMountUnmountExtension */
+  public void removeAttachDetachExtension(Binder binder) {
+    mAttachDetachFunctionsWithExtensions.remove(binder);
   }
 
   /**
