@@ -65,7 +65,7 @@ public class ComponentScope extends GlobalSearchScope {
     return StdFileTypes.JAVA.equals(file.getFileType()) && file.getUserData(KEY) != null;
   }
 
-  static VirtualFile getVirtualFile(PsiFile file) {
+  public static VirtualFile getVirtualFile(PsiFile file) {
     final VirtualFile vf = file.getVirtualFile();
     if (vf != null) return vf;
 

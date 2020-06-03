@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.intellij.file;
+package com.facebook.litho.intellij.navigation;
 
 import com.facebook.litho.intellij.LithoPluginUtils;
 import com.facebook.litho.intellij.PsiSearchUtils;
 import com.facebook.litho.intellij.extensions.EventLogger;
+import com.facebook.litho.intellij.file.ComponentScope;
 import com.facebook.litho.intellij.logging.LithoLoggerProvider;
 import com.google.common.annotations.VisibleForTesting;
 import com.intellij.find.findUsages.FindUsagesHandler;

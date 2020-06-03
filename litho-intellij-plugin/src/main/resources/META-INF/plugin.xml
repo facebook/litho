@@ -83,7 +83,7 @@
 
     <fileDocumentManagerListener implementation="com.facebook.litho.intellij.file.ComponentFileListener"/>
 
-    <findUsagesHandlerFactory language="JAVA" implementation="com.facebook.litho.intellij.file.LithoFindUsagesHandlerFactory" />
+    <findUsagesHandlerFactory language="JAVA" implementation="com.facebook.litho.intellij.navigation.LithoFindUsagesHandlerFactory" />
 
     <gotoDeclarationHandler implementation="com.facebook.litho.intellij.navigation.SectionDeclarationHandler"/>
     <gotoDeclarationHandler implementation="com.facebook.litho.intellij.navigation.ComponentDeclarationHandler"/>

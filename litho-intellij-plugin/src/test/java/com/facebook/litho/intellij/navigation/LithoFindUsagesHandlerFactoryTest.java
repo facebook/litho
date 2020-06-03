@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.facebook.litho.intellij.file;
+package com.facebook.litho.intellij.navigation;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
