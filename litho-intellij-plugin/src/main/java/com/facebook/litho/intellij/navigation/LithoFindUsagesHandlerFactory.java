@@ -18,133 +18,43 @@ package com.facebook.litho.intellij.navigation;
 
 import com.facebook.litho.intellij.LithoPluginUtils;
 import com.facebook.litho.intellij.PsiSearchUtils;
-import com.facebook.litho.intellij.extensions.EventLogger;
-import com.facebook.litho.intellij.file.ComponentScope;
-import com.facebook.litho.intellij.logging.LithoLoggerProvider;
-import com.google.common.annotations.VisibleForTesting;
 import com.intellij.find.findUsages.FindUsagesHandler;
 import com.intellij.find.findUsages.FindUsagesHandlerFactory;
-import com.intellij.find.findUsages.FindUsagesOptions;
-import com.intellij.openapi.actionSystem.DataContext;
-import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.search.SearchScope;
-import com.intellij.util.ArrayUtil;
 import java.util.Optional;
 import java.util.function.Function;
 import org.jetbrains.annotations.Nullable;
 
 public class LithoFindUsagesHandlerFactory extends FindUsagesHandlerFactory {
+  private final Function<PsiClass, PsiClass> findGeneratedClass;
+
+  public LithoFindUsagesHandlerFactory() {
+    findGeneratedClass =
+        cls ->
+            Optional.of(cls)
+                .filter(LithoPluginUtils::isLithoSpec)
+                .map(
+                    specCls -> {
+                      final String specFQN = specCls.getQualifiedName();
+                      final String componentFQN =
+                          LithoPluginUtils.getLithoComponentNameFromSpec(specFQN);
+                      return PsiSearchUtils.findClass(specCls.getProject(), componentFQN);
+                    })
+                .orElse(null);
+  }
 
   @Override
   public boolean canFindUsages(PsiElement element) {
-    return element instanceof PsiClass && LithoPluginUtils.isLithoSpec((PsiClass) element);
+    return GeneratedClassFindUsagesHandler.canFindUsages(element);
   }
 
+  @Nullable
   @Override
   public FindUsagesHandler createFindUsagesHandler(PsiElement element, boolean forHighlightUsages) {
-    return new GeneratedClassFindUsagesHandler(element);
-  }
-
-  /**
-   * Adds usages of corresponding Generated class to the search results of the Spec class, and
-   * excludes this generated class itself from the places to search.
-   */
-  static class GeneratedClassFindUsagesHandler extends FindUsagesHandler {
-    private final Function<PsiClass, PsiClass> findGeneratedClass;
-
-    GeneratedClassFindUsagesHandler(PsiElement psiElement) {
-      this(
-          psiElement,
-          specCls ->
-              Optional.of(specCls)
-                  .filter(LithoPluginUtils::isLayoutSpec)
-                  .map(PsiClass::getQualifiedName)
-                  .map(LithoPluginUtils::getLithoComponentNameFromSpec)
-                  .map(
-                      qualifiedComponentName ->
-                          PsiSearchUtils.findClass(specCls.getProject(), qualifiedComponentName))
-                  .orElse(null));
+    if (GeneratedClassFindUsagesHandler.canFindUsages(element)) {
+      return new GeneratedClassFindUsagesHandler(element, findGeneratedClass);
     }
-
-    @VisibleForTesting
-    GeneratedClassFindUsagesHandler(
-        PsiElement psiElement, Function<PsiClass, PsiClass> findGeneratedClass) {
-      super(psiElement);
-      this.findGeneratedClass = findGeneratedClass;
-    }
-
-    @Override
-    public PsiElement[] getPrimaryElements() {
-      LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_FIND_USAGES + ".invoke");
-
-      return Optional.of(getPsiElement())
-          .filter(PsiClass.class::isInstance)
-          .map(PsiClass.class::cast)
-          .map(findGeneratedClass)
-          .map(
-              psiClass -> {
-                LithoLoggerProvider.getEventLogger()
-                    .log(EventLogger.EVENT_FIND_USAGES + ".success");
-                return ArrayUtil.insert(super.getPrimaryElements(), 0, psiClass);
-              })
-          .orElseGet(super::getPrimaryElements);
-    }
-
-    @Override
-    public FindUsagesOptions getFindUsagesOptions(@Nullable DataContext dataContext) {
-      FindUsagesOptions findUsagesOptions = super.getFindUsagesOptions(dataContext);
-      Optional.of(getPsiElement())
-          .filter(PsiClass.class::isInstance)
-          .map(PsiClass.class::cast)
-          .map(findGeneratedClass)
-          .ifPresent(
-              generatedCls -> {
-                findUsagesOptions.searchScope =
-                    new ExcludingScope(
-                        findUsagesOptions.searchScope,
-                        ComponentScope.getVirtualFile(generatedCls.getContainingFile()));
-              });
-      return findUsagesOptions;
-    }
-
-    /**
-     * Scope delegates functions to the underlying {@link #searchScope}, but excludes passed {@link
-     * #excluded} from the search.
-     */
-    static class ExcludingScope extends SearchScope {
-      private final SearchScope searchScope;
-      private final VirtualFile excluded;
-
-      ExcludingScope(SearchScope searchScope, VirtualFile excluded) {
-        this.searchScope = searchScope;
-        this.excluded = excluded;
-      }
-
-      @Override
-      public SearchScope intersectWith(SearchScope scope2) {
-        return searchScope.intersectWith(scope2);
-      }
-
-      @Override
-      public SearchScope union(SearchScope scope) {
-        return searchScope.union(scope);
-      }
-
-      @Override
-      public boolean contains(VirtualFile file) {
-        return searchScope.contains(file) && !excluded(file);
-      }
-
-      @Override
-      public String getDisplayName() {
-        return "Litho Spec Usages";
-      }
-
-      private boolean excluded(VirtualFile file) {
-        return file.equals(excluded);
-      }
-    }
+    return null;
   }
 }
