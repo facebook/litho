@@ -46,7 +46,8 @@ public class LithoFindUsagesHandlerFactory extends FindUsagesHandlerFactory {
 
   @Override
   public boolean canFindUsages(PsiElement element) {
-    return GeneratedClassFindUsagesHandler.canFindUsages(element);
+    return GeneratedClassFindUsagesHandler.canFindUsages(element)
+        || SpecMethodFindUsagesHandler.canFindUsages(element);
   }
 
   @Nullable
@@ -54,6 +55,9 @@ public class LithoFindUsagesHandlerFactory extends FindUsagesHandlerFactory {
   public FindUsagesHandler createFindUsagesHandler(PsiElement element, boolean forHighlightUsages) {
     if (GeneratedClassFindUsagesHandler.canFindUsages(element)) {
       return new GeneratedClassFindUsagesHandler(element, findGeneratedClass);
+    }
+    if (SpecMethodFindUsagesHandler.canFindUsages(element)) {
+      return new SpecMethodFindUsagesHandler(element, findGeneratedClass);
     }
     return null;
   }

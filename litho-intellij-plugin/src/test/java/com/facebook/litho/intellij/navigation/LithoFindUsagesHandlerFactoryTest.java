@@ -22,6 +22,7 @@ import static org.junit.Assert.assertTrue;
 
 import com.facebook.litho.intellij.LithoPluginIntellijTest;
 import com.intellij.psi.PsiClass;
+import com.intellij.psi.PsiMethod;
 import org.junit.Test;
 
 public class LithoFindUsagesHandlerFactoryTest extends LithoPluginIntellijTest {
@@ -31,7 +32,7 @@ public class LithoFindUsagesHandlerFactoryTest extends LithoPluginIntellijTest {
   }
 
   @Test
-  public void canFindUsages() {
+  public void canFindUsages_classes() {
     testHelper.getPsiClass(
         psiClasses -> {
           assertNotNull(psiClasses);
@@ -49,5 +50,22 @@ public class LithoFindUsagesHandlerFactoryTest extends LithoPluginIntellijTest {
         "LayoutSpec.java",
         "MountSpec.java",
         "NotSpec.java");
+  }
+
+  @Test
+  public void canFindUsages_methods() {
+    testHelper.getPsiClass(
+        psiClasses -> {
+          final PsiMethod[] methods = psiClasses.get(0).getMethods();
+          final PsiMethod staticMethod = methods[0];
+          final PsiMethod nonStaticMethod = methods[1];
+
+          LithoFindUsagesHandlerFactory factory = new LithoFindUsagesHandlerFactory();
+          assertTrue(factory.canFindUsages(staticMethod));
+          assertFalse(factory.canFindUsages(nonStaticMethod));
+
+          return true;
+        },
+        "WithMethods.java");
   }
 }
