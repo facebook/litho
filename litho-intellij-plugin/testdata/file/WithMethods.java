@@ -18,7 +18,7 @@
 class LayoutSpec {
   static void staticMethod() {}
 
-  void nonStaticMethod() {
+  void nonStaticMethod() {}
 
   static class Component {
     static void staticMethod() {}

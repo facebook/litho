@@ -51,14 +51,15 @@ class GeneratedClassFindUsagesHandler extends FindUsagesHandler {
 
   @Override
   public PsiElement[] getPrimaryElements() {
-    LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_FIND_USAGES + ".invoke");
+    LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_FIND_USAGES + ".class.invoke");
     return Optional.of(getPsiElement())
         .filter(PsiClass.class::isInstance)
         .map(PsiClass.class::cast)
         .map(findGeneratedClass)
         .map(
             psiClass -> {
-              LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_FIND_USAGES + ".success");
+              LithoLoggerProvider.getEventLogger()
+                  .log(EventLogger.EVENT_FIND_USAGES + ".class.success");
               return ArrayUtil.insert(super.getPrimaryElements(), 0, psiClass);
             })
         .orElseGet(super::getPrimaryElements);

@@ -16,6 +16,8 @@
 
 package com.facebook.litho.intellij.navigation;
 
+import com.facebook.litho.intellij.extensions.EventLogger;
+import com.facebook.litho.intellij.logging.LithoLoggerProvider;
 import com.intellij.find.findUsages.FindUsagesHandler;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
@@ -50,7 +52,11 @@ public class SpecMethodFindUsagesHandler extends FindUsagesHandler {
         .filter(PsiMethod.class::isInstance)
         .map(PsiMethod.class::cast)
         .map(this::findComponentMethods)
-        .map(methods -> ArrayUtil.mergeArrays(methods, super.getPrimaryElements()))
+        .map(
+            methods -> {
+              LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_FIND_USAGES + ".method");
+              return ArrayUtil.mergeArrays(methods, super.getPrimaryElements());
+            })
         .orElseGet(super::getPrimaryElements);
   }
 

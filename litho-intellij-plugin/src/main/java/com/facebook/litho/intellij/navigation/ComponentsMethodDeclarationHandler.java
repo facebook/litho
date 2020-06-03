@@ -18,6 +18,8 @@ package com.facebook.litho.intellij.navigation;
 
 import com.facebook.litho.intellij.LithoPluginUtils;
 import com.facebook.litho.intellij.PsiSearchUtils;
+import com.facebook.litho.intellij.extensions.EventLogger;
+import com.facebook.litho.intellij.logging.LithoLoggerProvider;
 import com.intellij.codeInsight.navigation.actions.GotoDeclarationHandlerBase;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.Editor;
@@ -56,6 +58,12 @@ public class ComponentsMethodDeclarationHandler extends GotoDeclarationHandlerBa
         .map(PsiMethod.class::cast)
         .map(method -> findSpecMethods(method, project))
         .findFirst()
+        .map(
+            result -> {
+              LithoLoggerProvider.getEventLogger()
+                  .log(EventLogger.EVENT_GOTO_NAVIGATION + ".method");
+              return result;
+            })
         .orElse(PsiMethod.EMPTY_ARRAY);
   }
 
