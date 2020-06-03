@@ -87,6 +87,7 @@
 
     <gotoDeclarationHandler implementation="com.facebook.litho.intellij.navigation.SectionDeclarationHandler"/>
     <gotoDeclarationHandler implementation="com.facebook.litho.intellij.navigation.ComponentDeclarationHandler"/>
+    <gotoDeclarationHandler implementation="com.facebook.litho.intellij.navigation.ComponentsMethodDeclarationHandler"/>
 
     <java.elementFinder implementation="com.facebook.litho.intellij.file.ComponentFinder" id="java" order="last"/>
 

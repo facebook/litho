@@ -62,4 +62,7 @@ public class PsiSearchUtils {
       Project project, GlobalSearchScope searchScope, String name) {
     return PsiShortNamesCache.getInstance(project).getClassesByName(name, searchScope);
   }
+
+  /** For testing */
+  public static void addMock(String s, PsiClass cls) {}
 }
