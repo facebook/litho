@@ -107,6 +107,7 @@
       id="com.facebook.litho.intellij.settings.AppSettingsController" nonDefaultProject="false" />
     <projectService serviceImplementation="com.facebook.litho.intellij.settings.AppSettingsState"/>
     <projectService serviceImplementation="com.facebook.litho.intellij.services.ComponentsCacheService"/>
+    <projectService serviceImplementation="com.facebook.litho.intellij.services.TemplateService"/>
 
     <resolveScopeEnlarger implementation="com.facebook.litho.intellij.file.ComponentResolveScopeEnlarger"/>
   </extensions>

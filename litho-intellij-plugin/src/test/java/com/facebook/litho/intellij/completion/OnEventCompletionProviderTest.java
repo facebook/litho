@@ -37,6 +37,7 @@ public class OnEventCompletionProviderTest extends LithoPluginIntellijTest {
     testHelper.configure(clsName);
     CodeInsightTestFixture fixture = testHelper.getFixture();
     fixture.completeBasic();
+    fixture.completeBasic();
     List<String> completion = fixture.getLookupElementStrings();
     assertThat(completion.contains("onClickEvent")).isTrue();
   }

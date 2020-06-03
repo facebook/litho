@@ -20,6 +20,9 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import com.facebook.litho.intellij.LithoClassNames;
 import com.facebook.litho.intellij.LithoPluginIntellijTest;
+import com.facebook.litho.intellij.services.TemplateService;
+import com.intellij.openapi.components.ServiceManager;
+import com.intellij.openapi.project.Project;
 import com.intellij.testFramework.fixtures.CodeInsightTestFixture;
 import java.io.IOException;
 import java.util.List;
@@ -40,8 +43,14 @@ public class LayoutSpecMethodAnnotationsProviderTest extends LithoPluginIntellij
     fixture.completeBasic();
     List<String> completion = fixture.getLookupElementStrings();
 
+    final Project project = fixture.getProject();
     for (String name : LayoutSpecMethodAnnotationsProvider.ANNOTATION_QUALIFIED_NAMES) {
-      assertThat(completion.contains(LithoClassNames.shortName(name))).isTrue();
+      final String shortName = LithoClassNames.shortName(name);
+      if (ServiceManager.getService(project, TemplateService.class)
+              .getMethodTemplate(shortName, project)
+          != null) continue;
+
+      assertThat(completion.contains(shortName)).describedAs("Doesn't contain %s", name).isTrue();
     }
   }
 

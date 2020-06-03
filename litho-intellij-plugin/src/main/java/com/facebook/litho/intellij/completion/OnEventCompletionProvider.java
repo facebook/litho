@@ -26,6 +26,7 @@ import com.facebook.litho.intellij.logging.LithoLoggerProvider;
 import com.intellij.codeInsight.completion.CompletionParameters;
 import com.intellij.codeInsight.completion.CompletionProvider;
 import com.intellij.codeInsight.completion.CompletionResultSet;
+import com.intellij.codeInsight.completion.PrioritizedLookupElement;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiMethod;
 import com.intellij.util.ProcessingContext;
@@ -46,20 +47,22 @@ class OnEventCompletionProvider extends CompletionProvider<CompletionParameters>
 
     final PsiClass lithoSpecCls = maybeCls.get();
     final PsiClass clickEventCls =
-        getOrCreateClass(lithoSpecCls.getProject(), LithoClassNames.CLICK_EVENT_CLASS_NAME);
+        getOrCreateClass(LithoClassNames.CLICK_EVENT_CLASS_NAME, lithoSpecCls.getProject());
     final PsiMethod onEventMethod =
         OnEventGenerateUtils.createOnEventMethod(
             lithoSpecCls, clickEventCls, Collections.emptyList());
     result.addElement(
-        createMethodLookup(
-            onEventMethod,
-            clickEventCls,
-            OnEventGenerateUtils.createOnEventLookupString(clickEventCls),
-            () -> {
-              LithoLoggerProvider.getEventLogger()
-                  .log(EventLogger.EVENT_COMPLETION_METHOD + ".OnEvent");
-              LithoPluginUtils.getFirstLayoutSpec(parameters.getOriginalFile())
-                  .ifPresent(ComponentGenerateUtils::updateLayoutComponent);
-            }));
+        PrioritizedLookupElement.withPriority(
+            createMethodLookup(
+                onEventMethod,
+                clickEventCls,
+                OnEventGenerateUtils.createOnEventLookupString(clickEventCls),
+                () -> {
+                  LithoLoggerProvider.getEventLogger()
+                      .log(EventLogger.EVENT_COMPLETION_METHOD + ".OnEvent");
+                  LithoPluginUtils.getFirstLayoutSpec(parameters.getOriginalFile())
+                      .ifPresent(ComponentGenerateUtils::updateLayoutComponent);
+                }),
+            Integer.MAX_VALUE));
   }
 }

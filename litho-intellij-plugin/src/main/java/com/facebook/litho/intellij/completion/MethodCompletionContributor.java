@@ -36,7 +36,7 @@ public class MethodCompletionContributor extends CompletionContributor {
     extend(CompletionType.BASIC, METHOD_ANNOTATION, LayoutSpecMethodAnnotationsProvider.INSTANCE);
   }
 
-  static PsiClass getOrCreateClass(Project project, String qualifiedClassName) {
+  static PsiClass getOrCreateClass(String qualifiedClassName, Project project) {
     PsiClass cls = PsiSearchUtils.findClass(project, qualifiedClassName);
     if (cls == null) {
       cls =
