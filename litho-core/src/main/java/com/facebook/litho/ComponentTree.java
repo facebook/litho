@@ -959,13 +959,16 @@ public class ComponentTree {
         // not immediately promote the committed layout state since that needs to happen on the main
         // thread). Ensure we have the latest LayoutState before exiting.
         synchronized (this) {
+          if (mReleased) {
+            throw new RuntimeException("Tree is released during measure!");
+          }
           if (mCommittedLayoutState != mMainThreadLayoutState) {
             promoteCommittedLayoutStateToUI();
           }
-        }
 
-        measureOutput[0] = mMainThreadLayoutState.getWidth();
-        measureOutput[1] = mMainThreadLayoutState.getHeight();
+          measureOutput[0] = mMainThreadLayoutState.getWidth();
+          measureOutput[1] = mMainThreadLayoutState.getHeight();
+        }
       } else {
         setSizeSpecForMeasureAsync(widthSpec, heightSpec);
       }
