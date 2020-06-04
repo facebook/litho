@@ -34,6 +34,8 @@ LITHO_WIDGET_ACCESSIBILITIES_TARGET = make_dep_path("litho-widget/src/main/java/
 
 LITHO_WIDGET_TARGET = make_dep_path("litho-widget/src/main/java/com/facebook/litho/widget:widget")
 
+LITHO_WIDGET_RES_TARGET = make_dep_path("litho-widget:res")
+
 LITHO_LITHO_FRESCO_TARGET = make_dep_path("litho-fresco/src/main/java/com/facebook/litho/fresco:fresco")
 
 LITHO_STATS_TARGET = make_dep_path("litho-core/src/main/java/com/facebook/litho/stats:stats")
@@ -169,6 +171,7 @@ LITHO_ESPRESSO_TARGET = make_dep_path("lib/espresso:espresso")
 LITHO_SCREENSHOT_TARGET = make_dep_path("lib/screenshot:screenshot")
 
 LITHO_RENDERCORE_TARGET = make_dep_path("litho-rendercore:rendercore-stub")
+
 LITHO_RENDERCORE_TESTING_TARGET = make_dep_path("litho-rendercore-testing:litho-rendercore-testing")
 
 # Fresco

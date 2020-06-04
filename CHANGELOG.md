@@ -4,6 +4,8 @@
 
 _TBA_
 
+* Fix: Fix showing vertical scrollbar with `VerticalScrollSpec`.
+
 For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.36.0...master).
 
 

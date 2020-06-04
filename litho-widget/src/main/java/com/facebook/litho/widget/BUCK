@@ -17,6 +17,7 @@ load(
     "LITHO_UTILS_TARGET",
     "LITHO_VIEWCOMPAT_TARGET",
     "LITHO_WIDGET_ACCESSIBILITIES_TARGET",
+    "LITHO_WIDGET_RES_TARGET",
     "LITHO_YOGA_TARGET",
     "litho_android_library",
     "make_dep_path",
@@ -63,6 +64,7 @@ litho_android_library(
     deps =
         LITHO_TEXTLAYOUTBUILDER_UTILS_TARGET + [
             LITHO_RES_TARGET,
+            LITHO_WIDGET_RES_TARGET,
             LITHO_WIDGET_ACCESSIBILITIES_TARGET,
         ],
 )

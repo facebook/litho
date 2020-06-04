@@ -4,7 +4,17 @@
 # LICENSE file in the root directory of this source tree.
 
 load("//tools/build_defs/oss:fb_native_wrapper.bzl", "fb_native")
-load("//tools/build_defs/oss:litho_defs.bzl", "make_dep_path")
+load("//tools/build_defs/oss:litho_defs.bzl", "fb_android_resource", "make_dep_path")
+
+fb_android_resource(
+    name = "res",
+    labels = ["supermodule:android/default/litho.core"],
+    package = "com.facebook.litho.widget",
+    res = "src/main/res",
+    visibility = [
+        "PUBLIC",
+    ],
+)
 
 fb_native.android_aar(
     name = "litho-widget",
