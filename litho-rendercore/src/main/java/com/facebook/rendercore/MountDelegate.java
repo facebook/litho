@@ -54,6 +54,8 @@ public class MountDelegate {
 
     Object getContentAt(int position);
 
+    Object getContentById(long id);
+
     int getContentCount();
 
     void registerMountDelegateExtension(MountDelegateExtension mountDelegateExtension);

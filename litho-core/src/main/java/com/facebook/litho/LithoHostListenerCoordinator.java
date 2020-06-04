@@ -30,6 +30,7 @@ public class LithoHostListenerCoordinator implements HostListenerExtension<Objec
   private IncrementalMountExtension mIncrementalMountExtension;
   private VisibilityOutputsExtension mVisibilityOutputsExtension;
   private TransitionsExtension mTransitionsExtension;
+  private EndToEndTestingExtension mEndToEndTestingExtension;
 
   public LithoHostListenerCoordinator() {
     mMountExtensions = new ArrayList<>();
@@ -93,9 +94,24 @@ public class LithoHostListenerCoordinator implements HostListenerExtension<Objec
     registerListener(mVisibilityOutputsExtension);
   }
 
+  void enableEndToEndTestProcessing(MountDelegateTarget mountDelegateTarget) {
+    if (mEndToEndTestingExtension != null) {
+      throw new IllegalStateException(
+          "End to end test processing has already been enabled on this coordinator");
+    }
+
+    mEndToEndTestingExtension = new EndToEndTestingExtension(mountDelegateTarget);
+    registerListener(mEndToEndTestingExtension);
+  }
+
   @Nullable
   VisibilityOutputsExtension getVisibilityOutputsExtension() {
     return mVisibilityOutputsExtension;
+  }
+
+  @Nullable
+  EndToEndTestingExtension getEndToEndTestingExtension() {
+    return mEndToEndTestingExtension;
   }
 
   void enableTransitions(LithoView lithoView, MountDelegateTarget mountDelegateTarget) {

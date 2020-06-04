@@ -501,6 +501,8 @@ class MountState
           null,
           processVisibilityOutputs);
     }
+
+    processTestOutputs(layoutState);
   }
 
   private void cleanupTransitionsAfterMount() {
@@ -641,8 +643,6 @@ class MountState
     mLastMountedLayoutState = null;
     mLastMountedComponentTreeId = componentTreeId;
     mLastMountedLayoutState = layoutState;
-
-    processTestOutputs(layoutState);
 
     if (mountPerfEvent != null) {
       logMountPerfEvent(logger, mountPerfEvent, wasDirty);
@@ -3001,6 +3001,21 @@ class MountState
   @Override
   public Object getContentAt(int i) {
     final MountItem mountItem = getItemAt(i);
+    if (mountItem == null) {
+      return null;
+    }
+
+    return mountItem.getContent();
+  }
+
+  @Override
+  public Object getContentById(long id) {
+    if (mIndexToItemMap == null) {
+      return null;
+    }
+
+    final MountItem mountItem = mIndexToItemMap.get(id);
+
     if (mountItem == null) {
       return null;
     }

@@ -197,6 +197,21 @@ public class MountState implements MountDelegateTarget {
   }
 
   @Override
+  public Object getContentById(long id) {
+    if (mIndexToMountedItemMap == null) {
+      return null;
+    }
+
+    final MountItem mountItem = mIndexToMountedItemMap.get(id);
+
+    if (mountItem == null) {
+      return null;
+    }
+
+    return mountItem.getContent();
+  }
+
+  @Override
   public int getContentCount() {
     return mRenderUnitIds == null ? 0 : mRenderUnitIds.length;
   }

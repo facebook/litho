@@ -55,6 +55,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.collection.LongSparseArray;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.ComponentTree.LayoutStateFuture;
+import com.facebook.litho.EndToEndTestingExtension.EndToEndTestingExtensionInput;
 import com.facebook.litho.IncrementalMountExtension.IncrementalMountExtensionInput;
 import com.facebook.litho.TransitionsExtension.TransitionsExtensionInput;
 import com.facebook.litho.VisibilityOutputsExtension.VisibilityOutputsExtensionInput;
@@ -90,7 +91,8 @@ import javax.annotation.CheckReturnValue;
 public class LayoutState
     implements IncrementalMountExtensionInput,
         VisibilityOutputsExtensionInput,
-        TransitionsExtensionInput {
+        TransitionsExtensionInput,
+        EndToEndTestingExtensionInput {
 
   private static final String DUPLICATE_TRANSITION_IDS = "LayoutState:DuplicateTransitionIds";
   private static final String DUPLICATE_MANUAL_KEY = "LayoutState:DuplicateManualKey";
@@ -2047,12 +2049,14 @@ public class LayoutState
     return mVisibilityModuleInput;
   }
 
-  int getTestOutputCount() {
+  @Override
+  public int getTestOutputCount() {
     return mTestOutputs == null ? 0 : mTestOutputs.size();
   }
 
   @Nullable
-  TestOutput getTestOutputAt(int index) {
+  @Override
+  public TestOutput getTestOutputAt(int index) {
     return mTestOutputs == null ? null : mTestOutputs.get(index);
   }
 

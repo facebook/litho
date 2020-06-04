@@ -693,6 +693,10 @@ public class LithoView extends Host {
       if (!mDisableTransitionsExtension) {
         mLithoHostListenerCoordinator.enableTransitions(this, mMountDelegateTarget);
       }
+
+      if (ComponentsConfiguration.isEndToEndTestRun) {
+        mLithoHostListenerCoordinator.enableEndToEndTestProcessing(mMountDelegateTarget);
+      }
     }
   }
 
@@ -1358,7 +1362,17 @@ public class LithoView extends Host {
   @DoNotStrip
   @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
   Deque<TestItem> findTestItems(String testKey) {
-    return mMountState.findTestItems(testKey);
+    if (mUseExtensions && mLithoHostListenerCoordinator != null) {
+      if (mLithoHostListenerCoordinator.getEndToEndTestingExtension() == null) {
+        throw new IllegalStateException(
+            "Trying to access TestItems while "
+                + "ComponentsConfiguration.isEndToEndTestRun is false.");
+      }
+
+      return mLithoHostListenerCoordinator.getEndToEndTestingExtension().findTestItems(testKey);
+    } else {
+      return mMountState.findTestItems(testKey);
+    }
   }
 
   private static class AccessibilityStateChangeListener
