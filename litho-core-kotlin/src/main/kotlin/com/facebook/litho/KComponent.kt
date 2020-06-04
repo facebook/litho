@@ -18,9 +18,16 @@ package com.facebook.litho
 
 /** Base class for Kotlin Components. */
 open class KComponent(
-    private val content: DslScope.() -> Component?
+    private val content: (DslScope.() -> Component?)? = null
 ) : Component() {
   override fun onCreateLayout(c: ComponentContext): Component? {
-    return DslScope(c).content()
+    return DslScope(c).render()
+  }
+
+  open fun DslScope.render(): Component? {
+    val render = requireNotNull(content) {
+      "You should override `render()` method or provide `content` lambda via constructor."
+    }
+    return render()
   }
 }
