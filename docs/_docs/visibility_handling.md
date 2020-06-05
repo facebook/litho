@@ -81,6 +81,28 @@ class MyLayoutSpec {
 ```
 > VisibilityChangedEvents should be used with particular care since they will be dispatched on every frame while scrolling. No heavy work should be done inside the VisibilityChangedEvents handlers. Visible, Invisible, Focused, Unfocused and Full Impression events are the recommended over VisibilityChanged events whenever possible.
 
+### Custom visibility percentage
+By default, a visibility event is triggered when a Component is fully visible. In some cases you may want to listen to custom visibility events and perform an action when the Component is only partially visible.
+You can specify a ratio of the Component width or height for when the visibility event is dispatched by using `visibleHeightRatio` and `visibleWidthRatio` props when specifying a visibility handler.
+
+```java
+@OnCreateLayout
+  static Component onCreateLayout(ComponentContext c) {
+
+    return Column.create(c)
+        .alignItems(YogaAlign.STRETCH)
+        .child(Text.create(c)
+            .text("This is MY layout spec")
+            .visibleHandler(MyLayout.onTitleVisible(c))
+            .visibleHeightRatio(0.8f)
+            .visibleWidthRatio(0.1f)
+        .build();
+}
+```
+For the example above, a VisibilityEvent is dispatched when at least 80% of the Component's height and 10% of the Component's width is visible.
+When the Component's visible percentage changes to less than 80% of total height, an invisible event will be dispatched.
+If not specified, the default width or height ratio is 1f.
+
 ### Changing LithoView visibility
 There are cases when you need to trigger visibility events on the LithoView components because the UI visibility changed, but the UI did not receive any callback to inform it of this change. An example is when a new activity is added to the back stack, covering the UI. In such cases you can call `setVisibilityHint` on the `LithoView` to tell the UI whether it is visible or not. You may want to do this when `Fragment#setUserVisibleHint` or `onResume/onPause` are called.
 An example is when `Fragment#setUserVisibleHint` or `onResume/onPaused` are called.
