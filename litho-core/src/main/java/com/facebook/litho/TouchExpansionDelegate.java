@@ -16,6 +16,8 @@
 
 package com.facebook.litho;
 
+import static com.facebook.litho.LayoutOutput.getLayoutOutput;
+
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
@@ -23,8 +25,11 @@ import android.view.MotionEvent;
 import android.view.TouchDelegate;
 import android.view.View;
 import android.view.ViewConfiguration;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.collection.SparseArrayCompat;
 import androidx.core.util.Pools;
+import com.facebook.rendercore.MountItem;
 
 /** Compound touch delegate that forward touch events to recyclable inner touch delegates. */
 class TouchExpansionDelegate extends TouchDelegate {
@@ -46,10 +51,10 @@ class TouchExpansionDelegate extends TouchDelegate {
    *
    * @param index The drawing order index of the given view.
    * @param view The view to which touch expansion should be applied.
-   * @param touchExpansion The expansion to be applied to each edge of the given view.
+   * @param item The mount item which requires touch expansion.
    */
-  void registerTouchExpansion(int index, View view, Rect touchExpansion) {
-    mDelegates.put(index, InnerTouchDelegate.acquire(view, touchExpansion));
+  void registerTouchExpansion(int index, View view, MountItem item) {
+    mDelegates.put(index, InnerTouchDelegate.acquire(view, item));
   }
 
   /**
@@ -63,10 +68,11 @@ class TouchExpansionDelegate extends TouchDelegate {
     }
 
     final int valueIndex = mDelegates.indexOfKey(index);
-    final InnerTouchDelegate touchDelegate = mDelegates.valueAt(valueIndex);
-
-    mDelegates.removeAt(valueIndex);
-    touchDelegate.release();
+    if (valueIndex >= 0) {
+      final InnerTouchDelegate touchDelegate = mDelegates.valueAt(valueIndex);
+      mDelegates.removeAt(valueIndex);
+      touchDelegate.release();
+    }
   }
 
   private boolean maybeUnregisterFromScrap(int index) {
@@ -86,7 +92,10 @@ class TouchExpansionDelegate extends TouchDelegate {
 
   void draw(Canvas canvas, Paint paint) {
     for (int i = mDelegates.size() - 1; i >= 0; i--) {
-      canvas.drawRect(mDelegates.valueAt(i).mDelegateBounds, paint);
+      final Rect bounds = mDelegates.valueAt(i).getDelegateBounds();
+      if (bounds != null) {
+        canvas.drawRect(bounds, paint);
+      }
     }
   }
 
@@ -123,6 +132,11 @@ class TouchExpansionDelegate extends TouchDelegate {
     }
   }
 
+  @VisibleForTesting
+  public int size() {
+    return mDelegates.size();
+  }
+
   private static SparseArrayCompat<InnerTouchDelegate> acquireScrapTouchDelegatesArray() {
     SparseArrayCompat<InnerTouchDelegate> sparseArray = sInnerTouchDelegateScrapArrayPool.acquire();
     if (sparseArray == null) {
@@ -149,25 +163,37 @@ class TouchExpansionDelegate extends TouchDelegate {
     private static final Pools.SimplePool<InnerTouchDelegate> sPool = new Pools.SimplePool<>(4);
 
     private View mDelegateView;
+    private MountItem mItem;
     private boolean mIsHandlingTouch;
-    private int mSlop;
 
-    private final Rect mDelegateBounds = new Rect();
-    private final Rect mDelegateSlopBounds = new Rect();
-
-    void init(View delegateView, Rect delegateBounds) {
+    void init(View delegateView, MountItem item) {
       mDelegateView = delegateView;
-      mSlop = ViewConfiguration.get(delegateView.getContext()).getScaledTouchSlop();
+      mItem = item;
+    }
 
-      mDelegateBounds.set(delegateBounds);
+    @Nullable
+    Rect getDelegateBounds() {
+      final ViewNodeInfo info = getLayoutOutput(mItem).getViewNodeInfo();
+      if (info == null) {
+        return null;
+      }
 
-      mDelegateSlopBounds.set(delegateBounds);
-      mDelegateSlopBounds.inset(-mSlop, -mSlop);
+      return info.getExpandedTouchBounds();
     }
 
     boolean onTouchEvent(MotionEvent event) {
       final int x = (int) event.getX();
       final int y = (int) event.getY();
+      final Rect delegateBounds = getDelegateBounds();
+      if (delegateBounds == null) {
+        return false;
+      }
+
+      final int slop = ViewConfiguration.get(mDelegateView.getContext()).getScaledTouchSlop();
+      final Rect delegateSlopBounds = new Rect();
+
+      delegateSlopBounds.set(delegateBounds);
+      delegateSlopBounds.inset(-slop, -slop);
 
       boolean shouldDelegateTouchEvent = false;
       boolean touchWithinViewBounds = true;
@@ -175,7 +201,7 @@ class TouchExpansionDelegate extends TouchDelegate {
 
       switch (event.getAction()) {
         case MotionEvent.ACTION_DOWN:
-          mIsHandlingTouch = mDelegateBounds.contains(x, y);
+          mIsHandlingTouch = delegateBounds.contains(x, y);
           shouldDelegateTouchEvent = mIsHandlingTouch;
 
           break;
@@ -184,7 +210,7 @@ class TouchExpansionDelegate extends TouchDelegate {
         case MotionEvent.ACTION_MOVE:
           shouldDelegateTouchEvent = mIsHandlingTouch;
           if (mIsHandlingTouch) {
-            if (!mDelegateSlopBounds.contains(x, y)) {
+            if (!delegateSlopBounds.contains(x, y)) {
               touchWithinViewBounds = false;
             }
           }
@@ -206,7 +232,7 @@ class TouchExpansionDelegate extends TouchDelegate {
         } else {
           // Offset event coordinates to be outside the target view (in case it does
           // something like tracking pressed state).
-          event.setLocation(-(mSlop * 2), -(mSlop * 2));
+          event.setLocation(-(slop * 2), -(slop * 2));
         }
 
         handled = mDelegateView.dispatchTouchEvent(event);
@@ -215,24 +241,21 @@ class TouchExpansionDelegate extends TouchDelegate {
       return handled;
     }
 
-    static InnerTouchDelegate acquire(View delegateView, Rect bounds) {
+    static InnerTouchDelegate acquire(View delegateView, MountItem item) {
       InnerTouchDelegate touchDelegate = sPool.acquire();
       if (touchDelegate == null) {
         touchDelegate = new InnerTouchDelegate();
       }
 
-      touchDelegate.init(delegateView, bounds);
+      touchDelegate.init(delegateView, item);
 
       return touchDelegate;
     }
 
     void release() {
       mDelegateView = null;
-      mDelegateBounds.setEmpty();
-      mDelegateSlopBounds.setEmpty();
+      mItem = null;
       mIsHandlingTouch = false;
-      mSlop = 0;
-
       sPool.release(this);
     }
   }

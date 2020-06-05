@@ -1326,11 +1326,8 @@ class MountState
 
       maybeUnsetViewAttributes(currentMountItem);
 
-      host.maybeUnregisterTouchExpansion(index, currentLayoutOutput, currentContent);
     } else if (shouldUpdateViewInfo) {
       maybeUnsetViewAttributes(currentMountItem);
-
-      host.maybeUnregisterTouchExpansion(index, currentLayoutOutput, currentContent);
     }
 
     // 3. We will re-bind this later in 7 regardless so let's make sure it's currently unbound.
@@ -1343,13 +1340,9 @@ class MountState
 
     // 5. If the mount item is not valid for this component update its content and view attributes.
     if (shouldUpdate) {
-      host.maybeRegisterTouchExpansion(index, nextLayoutOutput, currentContent);
-
       updateMountedContent(currentMountItem, nextLayoutOutput, itemComponent);
       setViewAttributes(currentMountItem);
     } else if (shouldUpdateViewInfo) {
-      host.maybeRegisterTouchExpansion(index, nextLayoutOutput, currentContent);
-
       setViewAttributes(currentMountItem);
     }
 
@@ -1860,7 +1853,6 @@ class MountState
       final LayoutOutput output) {
     output.getMountBounds(sTempRect);
     host.mount(index, item, sTempRect);
-    host.maybeRegisterTouchExpansion(index, output, content);
     maybeInvalidateAccessibilityState(output, host);
   }
 
@@ -1871,7 +1863,6 @@ class MountState
       final MountItem item,
       final LayoutOutput output) {
     host.unmount(index, item);
-    host.maybeUnregisterTouchExpansion(index, output, content);
     maybeInvalidateAccessibilityState(output, host);
   }
 

@@ -18,161 +18,251 @@ package com.facebook.litho;
 
 import static android.os.SystemClock.uptimeMillis;
 import static android.view.MotionEvent.ACTION_DOWN;
+import static android.view.MotionEvent.ACTION_UP;
 import static android.view.MotionEvent.obtain;
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static org.assertj.core.api.Java6Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
-import android.graphics.Rect;
 import android.os.SystemClock;
 import android.view.MotionEvent;
 import android.view.View;
+import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
+import com.facebook.litho.widget.OnClickCallbackComponent;
+import com.facebook.litho.widget.Text;
+import com.facebook.yoga.YogaEdge;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(LithoTestRunner.class)
 public class TouchExpansionDelegateTest {
-  private TouchExpansionDelegate mTouchDelegate;
+
+  public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
+
+  private ComponentContext mContext;
 
   @Before
   public void setup() {
-    mTouchDelegate = new TouchExpansionDelegate(new ComponentHost(getApplicationContext()));
+    mContext = mLithoViewRule.getContext();
   }
 
   @Test
-  public void testEmptyOnTouchEvent() {
-    mTouchDelegate.onTouchEvent(
-        MotionEvent.obtain(
-            SystemClock.uptimeMillis(),
-            SystemClock.uptimeMillis(),
-            MotionEvent.ACTION_DOWN,
-            0,
-            0,
-            0));
+  public void onTouchEventOnEmptyDelegate_shouldNoOp() {
+    final ComponentHost host = new ComponentHost(getApplicationContext());
+    final TouchExpansionDelegate delegate = new TouchExpansionDelegate(host);
+    final boolean handled =
+        delegate.onTouchEvent(
+            MotionEvent.obtain(
+                SystemClock.uptimeMillis(),
+                SystemClock.uptimeMillis(),
+                MotionEvent.ACTION_DOWN,
+                0,
+                0,
+                0));
+
+    assertThat(handled)
+        .describedAs("TouchEvent on empty delegate should not handle event")
+        .isFalse();
   }
 
   @Test
-  public void testTouchWithinBounds() {
-    final View view = mock(View.class);
-    when(view.getContext()).thenReturn(getApplicationContext());
-    when(view.getWidth()).thenReturn(4);
-    when(view.getHeight()).thenReturn(6);
+  public void onTouchEventWithinBounds_shouldBeHandled() {
+    final ClickListenerCallback callback = new ClickListenerCallback();
+    final Component component =
+        Column.create(mContext)
+            .child(
+                OnClickCallbackComponent.create(mContext)
+                    .widthPx(10)
+                    .heightPx(10)
+                    .callback(callback)
+                    .touchExpansionPx(YogaEdge.ALL, 5))
+            .paddingPx(YogaEdge.ALL, 10)
+            .build();
 
-    mTouchDelegate.registerTouchExpansion(0, view, new Rect(0, 0, 10, 10));
+    mLithoViewRule.setRoot(component).attachToWindow().measure().layout();
 
-    MotionEvent event = obtain(uptimeMillis(), uptimeMillis(), ACTION_DOWN, 5, 5, 0);
+    emulateClickEvent(mLithoViewRule.getLithoView(), 7, 7);
 
-    mTouchDelegate.onTouchEvent(event);
+    assertThat(callback.handled)
+        .describedAs("TouchEvent within bounds bounds should be handled")
+        .isTrue();
 
-    verify(view, times(1)).dispatchTouchEvent(event);
-    assertThat(event.getX()).isEqualTo(2f);
-    assertThat(event.getY()).isEqualTo(3f);
+    assertThat(callback.count)
+        .describedAs("TouchEvent within bounds bounds should be handled only once")
+        .isEqualTo(1);
   }
 
   @Test
-  public void testTouchOutsideBounds() {
-    final View view = mock(View.class);
-    when(view.getContext()).thenReturn(getApplicationContext());
+  public void onTouchEventOutsideBounds_shouldNotBeHandled() {
+    final ClickListenerCallback callback = new ClickListenerCallback();
+    final Component component =
+        Column.create(mContext)
+            .child(
+                OnClickCallbackComponent.create(mContext)
+                    .widthPx(10)
+                    .heightPx(10)
+                    .callback(callback)
+                    .touchExpansionPx(YogaEdge.ALL, 5))
+            .paddingPx(YogaEdge.ALL, 10)
+            .build();
 
-    mTouchDelegate.registerTouchExpansion(0, view, new Rect(0, 0, 10, 10));
+    mLithoViewRule.setRoot(component).attachToWindow().measure().layout();
 
-    MotionEvent event =
-        MotionEvent.obtain(
-            SystemClock.uptimeMillis(),
-            SystemClock.uptimeMillis(),
-            MotionEvent.ACTION_DOWN,
-            100,
-            100,
-            0);
+    emulateClickEvent(mLithoViewRule.getLithoView(), 2, 2);
 
-    mTouchDelegate.onTouchEvent(event);
-
-    verify(view, never()).dispatchTouchEvent(event);
+    assertThat(callback.handled)
+        .describedAs("TouchEvent within bounds bounds should not be handled")
+        .isFalse();
   }
 
   @Test
-  public void testUnregister() {
-    final View view = mock(View.class);
-    when(view.getContext()).thenReturn(getApplicationContext());
+  public void onTouchEventOnUnmount_shouldNotBeHandled() {
+    final ClickListenerCallback callback = new ClickListenerCallback();
+    final Component component =
+        Column.create(mContext)
+            .child(
+                OnClickCallbackComponent.create(mContext)
+                    .widthPx(10)
+                    .heightPx(10)
+                    .callback(callback)
+                    .touchExpansionPx(YogaEdge.ALL, 5))
+            .paddingPx(YogaEdge.ALL, 10)
+            .build();
 
-    mTouchDelegate.registerTouchExpansion(0, view, new Rect(0, 0, 10, 10));
-    mTouchDelegate.unregisterTouchExpansion(0);
+    mLithoViewRule.setRoot(component).attachToWindow().measure().layout();
+    mLithoViewRule.getLithoView().unmountAllItems();
 
-    MotionEvent event =
-        MotionEvent.obtain(
-            SystemClock.uptimeMillis(),
-            SystemClock.uptimeMillis(),
-            MotionEvent.ACTION_DOWN,
-            5,
-            5,
-            0);
+    emulateClickEvent(mLithoViewRule.getLithoView(), 7, 7);
 
-    mTouchDelegate.onTouchEvent(event);
+    assertThat(callback.handled)
+        .describedAs("TouchEvent within bounds bounds should not be handled")
+        .isFalse();
 
-    verify(view, never()).dispatchTouchEvent(event);
+    assertThat(mLithoViewRule.getLithoView().getTouchExpansionDelegate().size())
+        .describedAs("all touch expansion delegates should be released")
+        .isEqualTo(0);
   }
 
   @Test
-  public void testMove() {
-    final View firstView = mock(View.class);
-    final View secondView = mock(View.class);
+  public void onTouchEventOnUpdatedComponentWithoutTouchExpansion_shouldNotBeHandled() {
+    final ClickListenerCallback callback = new ClickListenerCallback();
+    final Component component =
+        Column.create(mContext)
+            .child(
+                OnClickCallbackComponent.create(mContext)
+                    .widthPx(10)
+                    .heightPx(10)
+                    .callback(callback)
+                    .touchExpansionPx(YogaEdge.ALL, 5))
+            .paddingPx(YogaEdge.ALL, 10)
+            .build();
 
-    when(firstView.getContext()).thenReturn(getApplicationContext());
-    when(secondView.getContext()).thenReturn(getApplicationContext());
+    mLithoViewRule.setRoot(component).attachToWindow().measure().layout();
 
-    mTouchDelegate.registerTouchExpansion(0, firstView, new Rect(0, 0, 10, 10));
-    mTouchDelegate.registerTouchExpansion(4, secondView, new Rect(0, 0, 10, 10));
-    mTouchDelegate.moveTouchExpansionIndexes(0, 2);
+    final Component updated =
+        Column.create(mContext)
+            .child(
+                OnClickCallbackComponent.create(mContext)
+                    .widthPx(10)
+                    .heightPx(10)
+                    .callback(callback))
+            .paddingPx(YogaEdge.ALL, 10)
+            .build();
 
-    mTouchDelegate.unregisterTouchExpansion(2);
+    mLithoViewRule.setRoot(updated);
+
+    emulateClickEvent(mLithoViewRule.getLithoView(), 7, 7);
+
+    assertThat(callback.handled)
+        .describedAs("TouchEvent within bounds bounds should not be handled")
+        .isFalse();
+
+    emulateClickEvent(mLithoViewRule.getLithoView(), 11, 11);
+
+    assertThat(callback.handled)
+        .describedAs("TouchEvent within bounds bounds should be handled")
+        .isTrue();
+
+    assertThat(callback.count)
+        .describedAs("TouchEvent within bounds bounds should be handled only once")
+        .isEqualTo(1);
+
+    mLithoViewRule.getLithoView().unmountAllItems();
+
+    assertThat(mLithoViewRule.getLithoView().getTouchExpansionDelegate().size())
+        .describedAs("all touch expansion delegates should be released")
+        .isEqualTo(0);
   }
 
   @Test
-  public void testComplexMove() {
-    final View firstView = mock(View.class);
-    final View secondView = mock(View.class);
+  public void onTouchEventOnComponentMoved_shouldBeHandled() {
+    final ClickListenerCallback callback = new ClickListenerCallback();
+    final Component component =
+        Column.create(mContext)
+            .child(
+                OnClickCallbackComponent.create(mContext)
+                    .widthPx(10)
+                    .heightPx(10)
+                    .callback(callback)
+                    .touchExpansionPx(YogaEdge.ALL, 5))
+            .paddingPx(YogaEdge.ALL, 10)
+            .build();
 
-    when(firstView.getContext()).thenReturn(getApplicationContext());
-    when(secondView.getContext()).thenReturn(getApplicationContext());
+    mLithoViewRule.setRoot(component).attachToWindow().measure().layout();
 
-    mTouchDelegate.registerTouchExpansion(0, firstView, new Rect(0, 0, 10, 10));
-    mTouchDelegate.registerTouchExpansion(4, secondView, new Rect(0, 0, 10, 10));
-    mTouchDelegate.moveTouchExpansionIndexes(0, 4);
-    mTouchDelegate.unregisterTouchExpansion(4);
-    mTouchDelegate.unregisterTouchExpansion(4);
+    final Component updated =
+        Column.create(mContext)
+            .child(Text.create(mContext).text("hello world").widthPx(10).heightPx(10))
+            .child(
+                OnClickCallbackComponent.create(mContext)
+                    .widthPx(10)
+                    .heightPx(10)
+                    .callback(callback)
+                    .touchExpansionPx(YogaEdge.ALL, 5))
+            .paddingPx(YogaEdge.ALL, 10)
+            .build();
+
+    mLithoViewRule.setRoot(updated).measure().layout();
+
+    emulateClickEvent(mLithoViewRule.getLithoView(), 7, 7);
+
+    assertThat(callback.handled)
+        .describedAs("TouchEvent within bounds bounds should not be handled")
+        .isFalse();
+
+    emulateClickEvent(mLithoViewRule.getLithoView(), 7, 21);
+
+    assertThat(callback.handled)
+        .describedAs("TouchEvent within bounds bounds should be handled")
+        .isTrue();
+
+    assertThat(callback.count)
+        .describedAs("TouchEvent within bounds bounds should be handled only once")
+        .isEqualTo(1);
   }
 
-  @Test
-  public void testDrawingOrder() {
-    final View view1 = mock(View.class);
-    when(view1.getContext()).thenReturn(getApplicationContext());
-    when(view1.dispatchTouchEvent((MotionEvent) any())).thenReturn(true);
-    mTouchDelegate.registerTouchExpansion(0, view1, new Rect(0, 0, 10, 10));
+  public static void emulateClickEvent(View view, int x, int y) {
+    MotionEvent down = obtain(uptimeMillis(), uptimeMillis(), ACTION_DOWN, x, y, 0);
+    MotionEvent up = obtain(uptimeMillis() + 10, uptimeMillis() + 10, ACTION_UP, x, y, 0);
+    view.dispatchTouchEvent(down);
+    view.dispatchTouchEvent(up);
+  }
 
-    final View view2 = mock(View.class);
-    when(view2.getContext()).thenReturn(getApplicationContext());
-    when(view2.dispatchTouchEvent((MotionEvent) any())).thenReturn(true);
-    mTouchDelegate.registerTouchExpansion(1, view2, new Rect(0, 0, 10, 10));
+  public static class ClickListenerCallback implements View.OnClickListener {
+    boolean handled = false;
+    int count = 0;
 
-    MotionEvent event =
-        MotionEvent.obtain(
-            SystemClock.uptimeMillis(),
-            SystemClock.uptimeMillis(),
-            MotionEvent.ACTION_DOWN,
-            5,
-            5,
-            0);
+    @Override
+    public void onClick(View v) {
+      handled = true;
+      count++;
+    }
 
-    mTouchDelegate.onTouchEvent(event);
-
-    verify(view1, never()).dispatchTouchEvent(event);
-    verify(view2, times(1)).dispatchTouchEvent(event);
+    void reset() {
+      handled = false;
+      count = 0;
+    }
   }
 }
