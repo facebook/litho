@@ -43,7 +43,6 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiFileFactory;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeSpec;
-import java.util.Arrays;
 import java.util.Optional;
 import org.jetbrains.annotations.Nullable;
 
@@ -87,9 +86,8 @@ public class ComponentGenerateUtils {
       String componentQualifiedName, PsiClass layoutSpecCls, Project project) {
     IntervalLogger logger = new IntervalLogger(LOG);
     Optional<PsiClass> generatedClass =
-        Arrays.stream(PsiSearchUtils.findClasses(project, componentQualifiedName))
-            .filter(cls -> !ComponentScope.contains(cls.getContainingFile()))
-            .findAny();
+        Optional.ofNullable(PsiSearchUtils.findOriginalClass(project, componentQualifiedName))
+            .filter(cls -> !ComponentScope.contains(cls.getContainingFile()));
     final boolean isPresent = generatedClass.isPresent();
     logger.logStep("finding generated class: " + isPresent);
     if (isPresent) {

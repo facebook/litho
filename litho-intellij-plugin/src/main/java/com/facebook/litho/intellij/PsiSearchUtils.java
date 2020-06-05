@@ -19,15 +19,31 @@ package com.facebook.litho.intellij;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.JavaPsiFacade;
 import com.intellij.psi.PsiClass;
+import com.intellij.psi.impl.compiled.ClsClassImpl;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.search.PsiShortNamesCache;
+import java.util.Arrays;
 import org.jetbrains.annotations.Nullable;
 
 public class PsiSearchUtils {
 
   /**
+   * Searches everywhere for a java class with the specified full-qualified name and returns one if
+   * it is found (excluding .class). This method might return classes out of project scope.
+   *
+   * @see #findClass(Project, String)
+   */
+  @Nullable
+  public static PsiClass findOriginalClass(Project project, String qualifiedName) {
+    return Arrays.stream(findClasses(project, qualifiedName))
+        .filter(cls -> !(cls instanceof ClsClassImpl))
+        .findAny()
+        .orElse(null);
+  }
+
+  /**
    * Searches everywhere for a class with the specified full-qualified name and returns one if it is
-   * found. This method might return classes out of project scope.
+   * found (including .class). This method might return classes out of project scope.
    *
    * @param qualifiedName the full-qualified name of the class to find.
    * @return the PSI class, or null if no class with such name is found.
@@ -40,7 +56,7 @@ public class PsiSearchUtils {
 
   /**
    * Searches everywhere for classes with the specified full-qualified name and returns all found
-   * classes.
+   * classes (including .class).
    *
    * @param qualifiedName the full-qualified name of the class to find.
    * @return the array of found classes, or an empty array if no classes are found.

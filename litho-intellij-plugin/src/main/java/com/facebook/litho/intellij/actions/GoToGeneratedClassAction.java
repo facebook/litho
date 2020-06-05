@@ -48,7 +48,9 @@ public class GoToGeneratedClassAction extends AnAction {
         .flatMap(psiFile -> LithoPluginUtils.getFirstClass(psiFile, LithoPluginUtils::isLithoSpec))
         .map(PsiClass::getQualifiedName)
         .map(LithoPluginUtils::getLithoComponentNameFromSpec)
-        .map(qualifiedComponentName -> PsiSearchUtils.findClass(project, qualifiedComponentName))
+        .map(
+            qualifiedComponentName ->
+                PsiSearchUtils.findOriginalClass(project, qualifiedComponentName))
         // Copied from the GotoDeclarationAction#gotoTargetElement
         .filter(Navigatable::canNavigate);
   }

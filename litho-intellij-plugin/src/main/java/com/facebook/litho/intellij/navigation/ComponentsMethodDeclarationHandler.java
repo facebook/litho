@@ -84,7 +84,7 @@ public class ComponentsMethodDeclarationHandler extends GotoDeclarationHandlerBa
             ? containingCls.getName()
             : containingCls.getQualifiedName();
     final PsiClass specCls =
-        PsiSearchUtils.findClass(
+        PsiSearchUtils.findOriginalClass(
             project, LithoPluginUtils.getLithoComponentSpecNameFromComponent(containingClsName));
     if (specCls == null) return PsiMethod.EMPTY_ARRAY;
 

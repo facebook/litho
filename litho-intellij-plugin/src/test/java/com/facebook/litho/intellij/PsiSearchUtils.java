@@ -29,6 +29,10 @@ public class PsiSearchUtils {
     mockMap.put(name, cls);
   }
 
+  public static PsiClass findOriginalClass(Project project, String qualifiedName) {
+    return findClass(project, qualifiedName);
+  }
+
   public static PsiClass findClass(Project project, String name) {
     return mockMap.get(name);
   }

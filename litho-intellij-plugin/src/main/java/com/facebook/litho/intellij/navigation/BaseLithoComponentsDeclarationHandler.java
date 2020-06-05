@@ -26,7 +26,6 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiIdentifier;
 import com.intellij.psi.PsiImportStatement;
 import com.intellij.psi.PsiJavaCodeReferenceElement;
-import com.intellij.psi.PsiJavaFile;
 import com.intellij.psi.PsiReference;
 import com.intellij.psi.util.PsiTreeUtil;
 import java.util.Objects;
@@ -70,9 +69,8 @@ class BaseLithoComponentsDeclarationHandler {
         .map(PsiClass::getQualifiedName)
         .filter(Objects::nonNull)
         .map(LithoPluginUtils::getLithoComponentSpecNameFromComponent)
-        .map(specName -> PsiSearchUtils.findClass(project, specName))
+        .map(specName -> PsiSearchUtils.findOriginalClass(project, specName))
         .filter(Objects::nonNull)
-        .filter(psiClass -> psiClass.getContainingFile() instanceof PsiJavaFile)
         // Filter Spec classes by implementation
         .filter(hasComponentSpecAnnotation)
         .limit(1)

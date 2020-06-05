@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## Version 1.5.2
+
+_2020-06-06_
+
+* Fix: Omit `.class` during Component generation.
+
 ## Version 1.5.1
 
 _2020-06-04_
