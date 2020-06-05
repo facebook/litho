@@ -31,7 +31,7 @@ import com.facebook.litho.px
 @Suppress("FunctionName")
 inline fun DslScope.VerticalScroll(
     initialScrollPosition: Px = 0.px,
-    scrollbarEnabled: Boolean = true,
+    scrollbarEnabled: Boolean = false,
     scrollbarFadingEnabled: Boolean = true,
     verticalFadingEdgeEnabled: Boolean = false,
     nestedScrollingEnabled: Boolean = false,

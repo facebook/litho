@@ -71,7 +71,6 @@ import com.facebook.litho.annotations.State;
 @MountSpec(hasChildLithoViews = true, isPureRender = true)
 public class VerticalScrollSpec {
 
-  @PropDefault static final boolean scrollbarEnabled = true;
   @PropDefault static final boolean scrollbarFadingEnabled = true;
 
   @OnCreateInitialState
