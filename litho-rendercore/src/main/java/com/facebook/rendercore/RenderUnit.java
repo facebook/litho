@@ -39,9 +39,9 @@ public abstract class RenderUnit<MOUNT_CONTENT> implements Copyable {
   private final RenderType mRenderType;
   private final List<Binder<RenderUnit<MOUNT_CONTENT>, MOUNT_CONTENT>> mBaseMountUnmountFunctions;
   private final List<Binder<RenderUnit<MOUNT_CONTENT>, MOUNT_CONTENT>> mBaseAttachDetachFunctions;
-  private List<Binder<RenderUnit<MOUNT_CONTENT>, MOUNT_CONTENT>>
+  private @Nullable List<Binder<RenderUnit<MOUNT_CONTENT>, MOUNT_CONTENT>>
       mMountUnmountFunctionsWithExtensions;
-  private List<Binder<RenderUnit<MOUNT_CONTENT>, MOUNT_CONTENT>>
+  private @Nullable List<Binder<RenderUnit<MOUNT_CONTENT>, MOUNT_CONTENT>>
       mAttachDetachFunctionsWithExtensions;
 
   public RenderUnit(RenderType renderType) {
@@ -151,12 +151,16 @@ public abstract class RenderUnit<MOUNT_CONTENT> implements Copyable {
 
   /** removes an extension function previously added with addMountUnmountExtension */
   public void removeMountUnmountExtension(Binder binder) {
-    mMountUnmountFunctionsWithExtensions.remove(binder);
+    if (mMountUnmountFunctionsWithExtensions != null) {
+      mMountUnmountFunctionsWithExtensions.remove(binder);
+    }
   }
 
   /** removes an extension function previously added with addMountUnmountExtension */
   public void removeAttachDetachExtension(Binder binder) {
-    mAttachDetachFunctionsWithExtensions.remove(binder);
+    if (mAttachDetachFunctionsWithExtensions != null) {
+      mAttachDetachFunctionsWithExtensions.remove(binder);
+    }
   }
 
   /**
