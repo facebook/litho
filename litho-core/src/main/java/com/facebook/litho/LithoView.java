@@ -697,6 +697,8 @@ public class LithoView extends Host {
       if (ComponentsConfiguration.isEndToEndTestRun) {
         mLithoHostListenerCoordinator.enableEndToEndTestProcessing(mMountDelegateTarget);
       }
+
+      mLithoHostListenerCoordinator.enableDynamicPropsExtension();
     }
   }
 

@@ -55,6 +55,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.collection.LongSparseArray;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.ComponentTree.LayoutStateFuture;
+import com.facebook.litho.DynamicPropsExtension.DynamicPropsExtensionInput;
 import com.facebook.litho.EndToEndTestingExtension.EndToEndTestingExtensionInput;
 import com.facebook.litho.IncrementalMountExtension.IncrementalMountExtensionInput;
 import com.facebook.litho.TransitionsExtension.TransitionsExtensionInput;
@@ -92,7 +93,8 @@ public class LayoutState
     implements IncrementalMountExtensionInput,
         VisibilityOutputsExtensionInput,
         TransitionsExtensionInput,
-        EndToEndTestingExtensionInput {
+        EndToEndTestingExtensionInput,
+        DynamicPropsExtensionInput {
 
   private static final String DUPLICATE_TRANSITION_IDS = "LayoutState:DuplicateTransitionIds";
   private static final String DUPLICATE_MANUAL_KEY = "LayoutState:DuplicateManualKey";

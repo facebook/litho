@@ -31,6 +31,7 @@ public class LithoHostListenerCoordinator implements HostListenerExtension<Objec
   private VisibilityOutputsExtension mVisibilityOutputsExtension;
   private TransitionsExtension mTransitionsExtension;
   private EndToEndTestingExtension mEndToEndTestingExtension;
+  private DynamicPropsExtension mDynamicPropsExtension;
 
   public LithoHostListenerCoordinator() {
     mMountExtensions = new ArrayList<>();
@@ -140,5 +141,10 @@ public class LithoHostListenerCoordinator implements HostListenerExtension<Objec
   void useVisibilityExtension(VisibilityOutputsExtension extension) {
     mVisibilityOutputsExtension = extension;
     registerListener(mVisibilityOutputsExtension);
+  }
+
+  public void enableDynamicPropsExtension() {
+    mDynamicPropsExtension = new DynamicPropsExtension();
+    registerListener(mDynamicPropsExtension);
   }
 }
