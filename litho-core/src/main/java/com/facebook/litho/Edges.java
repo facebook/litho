@@ -34,9 +34,9 @@ public class Edges {
   private static final int ALIASES_MASK = 0xFFF;
   private static final int ALIASES_RIGHT_SHIFT = 6 * 4;
 
-  private static final int ALL_INTVALUT = YogaEdge.ALL.intValue();
+  private static final int ALL_INTVALUE = YogaEdge.ALL.intValue();
   private static final int HORIZONTAL_INTVALUE = YogaEdge.HORIZONTAL.intValue();
-  private static final int VERTICAL_INTVALUT = YogaEdge.VERTICAL.intValue();
+  private static final int VERTICAL_INTVALUE = YogaEdge.VERTICAL.intValue();
 
   // This long maps the indexes of the YogaEdges within the mValue array.
   // Each group of 4 bits represent an index and the position of these 4 bits is related to the
@@ -112,14 +112,14 @@ public class Edges {
 
     if (mHasAliasesSet) {
       final int secondTypeEdgeValue =
-          edge == YogaEdge.TOP || edge == YogaEdge.BOTTOM ? VERTICAL_INTVALUT : HORIZONTAL_INTVALUE;
+          edge == YogaEdge.TOP || edge == YogaEdge.BOTTOM ? VERTICAL_INTVALUE : HORIZONTAL_INTVALUE;
       final byte secondTypeEdgeIndex = getIndex(secondTypeEdgeValue);
 
       if (secondTypeEdgeIndex != UNDEFINED_INDEX) {
         return mValues[secondTypeEdgeIndex];
 
-      } else if (getIndex(ALL_INTVALUT) != UNDEFINED_INDEX) {
-        return mValues[getIndex(ALL_INTVALUT)];
+      } else if (getIndex(ALL_INTVALUE) != UNDEFINED_INDEX) {
+        return mValues[getIndex(ALL_INTVALUE)];
       }
     }
 
