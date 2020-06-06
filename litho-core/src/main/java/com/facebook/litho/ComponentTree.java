@@ -40,6 +40,7 @@ import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Process;
 import android.util.Log;
+import android.view.View;
 import androidx.annotation.IntDef;
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
@@ -265,6 +266,9 @@ public class ComponentTree {
 
   @GuardedBy("this")
   private int mHeightSpec = SIZE_UNINITIALIZED;
+
+  @GuardedBy("this")
+  private @CalculateLayoutSource int mLastLayoutSource = CalculateLayoutSource.NONE;
 
   // This is written to only by the main thread with the lock held, read from the main thread with
   // no lock held, or read from any other thread with the lock held.
@@ -966,8 +970,31 @@ public class ComponentTree {
             promoteCommittedLayoutStateToUI();
           }
 
-          measureOutput[0] = mMainThreadLayoutState.getWidth();
-          measureOutput[1] = mMainThreadLayoutState.getHeight();
+          if (mMainThreadLayoutState != null) {
+            measureOutput[0] = mMainThreadLayoutState.getWidth();
+            measureOutput[1] = mMainThreadLayoutState.getHeight();
+          } else {
+            measureOutput[0] = output.width;
+            measureOutput[1] = output.height;
+
+            ComponentsReporter.emitMessage(
+                ComponentsReporter.LogLevel.ERROR,
+                "NullLayoutStateInMeasure",
+                "Measure Specs: ["
+                    + View.MeasureSpec.toString(widthSpec)
+                    + ", "
+                    + View.MeasureSpec.toString(heightSpec)
+                    + "], Current Specs: ["
+                    + View.MeasureSpec.toString(mWidthSpec)
+                    + ", "
+                    + View.MeasureSpec.toString(mHeightSpec)
+                    + "], Output [W: "
+                    + output.width
+                    + ", H:"
+                    + output.height
+                    + "], Last Layout Source: "
+                    + LayoutState.layoutSourceToString(mLastLayoutSource));
+          }
         }
       } else {
         setSizeSpecForMeasureAsync(widthSpec, heightSpec);
@@ -1814,6 +1841,8 @@ public class ComponentTree {
       } else {
         treeProps = mRootTreeProps;
       }
+
+      mLastLayoutSource = source;
     }
 
     if (isAsync && output != null) {

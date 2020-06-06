@@ -1454,7 +1454,7 @@ public class LayoutState
               new StringBuilder("LayoutState.calculate_")
                   .append(component.getSimpleName())
                   .append("_")
-                  .append(sourceToString(source))
+                  .append(layoutSourceToString(source))
                   .toString())
           .arg("treeId", componentTreeId)
           .arg("rootId", component.getId())
@@ -1476,7 +1476,7 @@ public class LayoutState
               : null;
       if (logLayoutState != null) {
         logLayoutState.markerAnnotate(PARAM_COMPONENT, component.getSimpleName());
-        logLayoutState.markerAnnotate(PARAM_LAYOUT_STATE_SOURCE, sourceToString(source));
+        logLayoutState.markerAnnotate(PARAM_LAYOUT_STATE_SOURCE, layoutSourceToString(source));
         logLayoutState.markerAnnotate(PARAM_IS_BACKGROUND_LAYOUT, !ThreadUtils.isMainThread());
         logLayoutState.markerAnnotate(PARAM_TREE_DIFF_ENABLED, diffTreeRoot != null);
         logLayoutState.markerAnnotate(PARAM_ATTRIBUTION, extraAttribution);
@@ -1598,7 +1598,7 @@ public class LayoutState
               new StringBuilder("LayoutState.resumeCalculate_")
                   .append(component.getSimpleName())
                   .append("_")
-                  .append(sourceToString(source))
+                  .append(layoutSourceToString(source))
                   .toString())
           .arg("treeId", componentTreeId)
           .arg("rootId", component.getId())
@@ -1615,7 +1615,7 @@ public class LayoutState
               : null;
       if (logLayoutState != null) {
         logLayoutState.markerAnnotate(PARAM_COMPONENT, component.getSimpleName());
-        logLayoutState.markerAnnotate(PARAM_LAYOUT_STATE_SOURCE, sourceToString(source));
+        logLayoutState.markerAnnotate(PARAM_LAYOUT_STATE_SOURCE, layoutSourceToString(source));
       }
 
       // If we already have a LayoutState but the InternalNode is only partially resolved,
@@ -1789,7 +1789,7 @@ public class LayoutState
     return true;
   }
 
-  private static String sourceToString(@CalculateLayoutSource int source) {
+  static String layoutSourceToString(@CalculateLayoutSource int source) {
     switch (source) {
       case CalculateLayoutSource.SET_ROOT_SYNC:
         return "setRoot";
