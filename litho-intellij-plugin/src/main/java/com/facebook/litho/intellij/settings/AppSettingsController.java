@@ -16,8 +16,12 @@
 
 package com.facebook.litho.intellij.settings;
 
+import com.facebook.litho.intellij.extensions.EventLogger;
+import com.facebook.litho.intellij.logging.LithoLoggerProvider;
 import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.project.Project;
+import java.util.HashMap;
+import java.util.Map;
 import javax.swing.JComponent;
 import org.jetbrains.annotations.Nls;
 
@@ -44,19 +48,23 @@ public class AppSettingsController implements Configurable {
 
   @Override
   public boolean isModified() {
-    AppSettingsState.Model model = AppSettingsState.getInstance(project).getState();
+    final AppSettingsState.Model model = AppSettingsState.getInstance(project).getState();
     return view.isResolveRedSymbols() != model.resolveRedSymbols;
   }
 
   @Override
   public void apply() {
-    AppSettingsState.Model model = AppSettingsState.getInstance(project).getState();
-    model.resolveRedSymbols = view.isResolveRedSymbols();
+    final AppSettingsState.Model model = AppSettingsState.getInstance(project).getState();
+    final boolean resolveRedSymbols = view.isResolveRedSymbols();
+    model.resolveRedSymbols = resolveRedSymbols;
+    final Map<String, String> eventData = new HashMap<>(1);
+    eventData.put(EventLogger.KEY_RED_SYMBOLS, String.valueOf(resolveRedSymbols));
+    LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_SETTINGS, eventData);
   }
 
   @Override
   public void reset() {
-    AppSettingsState.Model model = AppSettingsState.getInstance(project).getState();
+    final AppSettingsState.Model model = AppSettingsState.getInstance(project).getState();
     view.setResolveRedSymbols(model.resolveRedSymbols);
   }
 

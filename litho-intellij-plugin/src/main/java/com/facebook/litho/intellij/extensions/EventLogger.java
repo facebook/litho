@@ -29,6 +29,7 @@ public interface EventLogger {
   // Metadata keys
   String KEY_PLUGIN_VERSION = "version";
   String KEY_FILE = "file";
+  String KEY_RED_SYMBOLS = "red_symbols";
   String KEY_RED_SYMBOLS_ALL = "all_red_symbols";
   String KEY_RED_SYMBOLS_RESOLVED = "resolved_red_symbols";
   String KEY_TIME_COLLECT_RED_SYMBOLS = "time_collect";
@@ -47,6 +48,7 @@ public interface EventLogger {
   String EVENT_NEW_TEMPLATE = "file.template";
   String EVENT_ON_EVENT_GENERATION = "event.generation";
   String EVENT_RED_SYMBOLS = "resolve.redsymbols";
+  String EVENT_SETTINGS = "settings.update";
 
   /**
    * Logs given event.
