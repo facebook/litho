@@ -19,7 +19,7 @@ package com.facebook.litho.intellij.navigation;
 import com.facebook.litho.intellij.LithoPluginUtils;
 import com.facebook.litho.intellij.PsiSearchUtils;
 import com.facebook.litho.intellij.extensions.EventLogger;
-import com.facebook.litho.intellij.logging.LithoLoggerProvider;
+import com.facebook.litho.intellij.logging.DebounceEventLogger;
 import com.intellij.codeInsight.navigation.actions.GotoDeclarationHandlerBase;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.Editor;
@@ -34,6 +34,8 @@ import org.jetbrains.annotations.Nullable;
 
 /** Navigates from Component method to Spec method(s) with the same name. */
 public class ComponentsMethodDeclarationHandler extends GotoDeclarationHandlerBase {
+  private static final EventLogger LOGGER = new DebounceEventLogger(4_000);
+
   @Nullable
   @Override
   public PsiElement getGotoDeclarationTarget(@Nullable PsiElement sourceElement, Editor editor) {
@@ -60,8 +62,7 @@ public class ComponentsMethodDeclarationHandler extends GotoDeclarationHandlerBa
         .findFirst()
         .map(
             result -> {
-              LithoLoggerProvider.getEventLogger()
-                  .log(EventLogger.EVENT_GOTO_NAVIGATION + ".method");
+              LOGGER.log(EventLogger.EVENT_GOTO_NAVIGATION + ".method");
               return result;
             })
         .orElse(PsiMethod.EMPTY_ARRAY);
