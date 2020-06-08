@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## Version 1.5.3
+
+_2020-06-09_
+
+* New: Increase logging interval for method navigation.
+* New: Add logging for Settings update.
+
 ## Version 1.5.2
 
 _2020-06-06_
