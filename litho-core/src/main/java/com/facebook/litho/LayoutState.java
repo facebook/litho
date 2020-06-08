@@ -1082,9 +1082,6 @@ public class LayoutState
       }
 
       for (Component delegate : node.getComponents()) {
-        final Rect copyRect = new Rect();
-        copyRect.set(rect);
-
         // Keep a list of the components we created during this layout calculation. If the layout is
         // valid, the ComponentTree will update the event handlers that have been created in the
         // previous ComponentTree with the new component dispatched, otherwise Section children
@@ -1103,11 +1100,14 @@ public class LayoutState
             layoutState.mAttachableContainer.put(delegate.getGlobalKey(), delegate);
           }
         }
-        if (delegate.getGlobalKey() != null) {
-          layoutState.mComponentKeyToBounds.put(delegate.getGlobalKey(), copyRect);
-        }
-        if (delegate.hasHandle()) {
-          layoutState.mComponentHandleToBounds.put(delegate.getHandle(), copyRect);
+        if (delegate.getGlobalKey() != null || delegate.hasHandle()) {
+          Rect copyRect = new Rect(rect);
+          if (delegate.getGlobalKey() != null) {
+            layoutState.mComponentKeyToBounds.put(delegate.getGlobalKey(), copyRect);
+          }
+          if (delegate.hasHandle()) {
+            layoutState.mComponentHandleToBounds.put(delegate.getHandle(), copyRect);
+          }
         }
       }
     }
