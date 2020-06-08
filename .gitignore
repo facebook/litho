@@ -6,6 +6,8 @@ docs/_site/
 /buck-out/
 /.buckconfig.local
 /.buckd
+/.lsp.buckd
+/.lsp-buck-out
 /gentest/test.html
 .buckversion
 
