@@ -439,6 +439,11 @@ class CommonPropsHolder implements CommonProps {
   }
 
   @Override
+  public void transitionName(@Nullable String transitionName) {
+    getOrCreateNodeInfo().setTransitionName(transitionName);
+  }
+
+  @Override
   public void shadowElevationPx(float shadowElevation) {
     getOrCreateNodeInfo().setShadowElevation(shadowElevation);
   }

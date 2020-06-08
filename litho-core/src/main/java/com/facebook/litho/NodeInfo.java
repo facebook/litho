@@ -83,6 +83,11 @@ public interface NodeInfo {
 
   void setViewTag(@Nullable Object viewTag);
 
+  void setTransitionName(@Nullable String transitionName);
+
+  @Nullable
+  String getTransitionName();
+
   @Nullable
   Object getViewTag();
 

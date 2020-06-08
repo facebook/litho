@@ -80,6 +80,7 @@ class DefaultNodeInfo implements NodeInfo {
 
   private @Nullable CharSequence mContentDescription;
   private @Nullable Object mViewTag;
+  private @Nullable String mTransitionName;
   private @Nullable SparseArray<Object> mViewTags;
   private float mShadowElevation;
   private @Nullable ViewOutlineProvider mOutlineProvider;
@@ -136,6 +137,16 @@ class DefaultNodeInfo implements NodeInfo {
   public void setViewTag(@Nullable Object viewTag) {
     mPrivateFlags |= PFLAG_VIEW_TAG_IS_SET;
     mViewTag = viewTag;
+  }
+
+  @Override
+  public void setTransitionName(@Nullable String transitionName) {
+    mTransitionName = transitionName;
+  }
+
+  @Override
+  public @Nullable String getTransitionName() {
+    return mTransitionName;
   }
 
   @Override
@@ -662,6 +673,9 @@ class DefaultNodeInfo implements NodeInfo {
     }
     if (mViewTags != null) {
       target.setViewTags(mViewTags);
+    }
+    if (mTransitionName != null) {
+      target.setTransitionName(mTransitionName);
     }
     if (getFocusState() != FOCUS_UNSET) {
       target.setFocusable(getFocusState() == FOCUS_SET_TRUE);

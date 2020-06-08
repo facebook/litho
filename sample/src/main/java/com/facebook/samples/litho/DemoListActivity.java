@@ -28,6 +28,7 @@ import com.facebook.samples.litho.animations.bounds.BoundsAnimationActivity;
 import com.facebook.samples.litho.animations.commondynamicprops.CommonDynamicPropsAnimationActivity;
 import com.facebook.samples.litho.animations.expandableelement.ExpandableElementActivity;
 import com.facebook.samples.litho.animations.pageindicators.PageIndicatorsActivity;
+import com.facebook.samples.litho.animations.sharedelements.SharedElementsActivity;
 import com.facebook.samples.litho.animations.transitions.TransitionsActivity;
 import com.facebook.samples.litho.bordereffects.BorderEffectsActivity;
 import com.facebook.samples.litho.changesetdebug.ItemsRerenderingActivity;
@@ -75,6 +76,7 @@ public class DemoListActivity extends NavigatableDemoActivity {
                       "Common Dynamic Props Animations", CommonDynamicPropsAnimationActivity.class),
                   new DemoListDataModel("Animation Cookbook", AnimationCookBookActivity.class),
                   new DemoListDataModel("Animation Callbacks", AnimationCallbacksActivity.class),
+                  new DemoListDataModel("Shared elements", SharedElementsActivity.class),
                   new DemoListDataModel("Transitions", TransitionsActivity.class))),
           new DemoListDataModel("Dynamic Props", DynamicPropsActivity.class),
           new DemoListDataModel("Fast Scroll Handle", FastScrollHandleActivity.class),

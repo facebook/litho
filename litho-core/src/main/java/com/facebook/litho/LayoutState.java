@@ -697,6 +697,7 @@ public class LayoutState
     final boolean isFocusableSetTrue = nodeInfo.getFocusState() == FOCUS_SET_TRUE;
     final boolean isClickableSetTrue = nodeInfo.getClickableState() == CLICKABLE_SET_TRUE;
     final boolean hasClipChildrenSet = nodeInfo.isClipChildrenSet();
+    final boolean hasTransitionName = nodeInfo.getTransitionName() != null;
 
     return hasFocusChangeHandler
         || hasEnabledTouchEventHandlers
@@ -707,7 +708,8 @@ public class LayoutState
         || hasClipToOutline
         || hasClipChildrenSet
         || isFocusableSetTrue
-        || isClickableSetTrue;
+        || isClickableSetTrue
+        || hasTransitionName;
   }
 
   /**

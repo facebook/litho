@@ -121,6 +121,8 @@ public interface CommonProps extends CommonPropsCopyable, LayoutProps {
 
   void viewTags(@Nullable SparseArray<Object> viewTags);
 
+  void transitionName(@Nullable String transitionName);
+
   void shadowElevationPx(float shadowElevation);
 
   void outlineProvider(@Nullable ViewOutlineProvider outlineProvider);

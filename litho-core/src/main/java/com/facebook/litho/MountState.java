@@ -1920,6 +1920,7 @@ class MountState
       setRotation(view, nodeInfo);
       setRotationX(view, nodeInfo);
       setRotationY(view, nodeInfo);
+      setTransitionName(view, nodeInfo.getTransitionName());
     }
 
     setImportantForAccessibility(view, output.getImportantForAccessibility());
@@ -2376,6 +2377,10 @@ class MountState
 
   private static void unsetFocusable(View view, int flags) {
     view.setFocusable(isViewFocusable(flags));
+  }
+
+  private static void setTransitionName(View view, @Nullable String transitionName) {
+    ViewCompat.setTransitionName(view, transitionName);
   }
 
   private static void setClickable(View view, @NodeInfo.FocusState int clickableState) {
