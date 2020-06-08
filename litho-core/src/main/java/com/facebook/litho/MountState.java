@@ -76,6 +76,7 @@ import com.facebook.rendercore.MountDelegateExtension;
 import com.facebook.rendercore.MountItem;
 import com.facebook.rendercore.RenderTree;
 import com.facebook.rendercore.RenderTreeNode;
+import com.facebook.rendercore.UnmountDelegateExtension;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Deque;
@@ -168,6 +169,7 @@ class MountState
   private final DynamicPropsManager mDynamicPropsManager = new DynamicPropsManager();
   private @Nullable VisibilityModule mVisibilityModule;
   private @Nullable MountDelegate mMountDelegate;
+  private @Nullable UnmountDelegateExtension mUnmountDelegateExtension;
   private @Nullable IncrementalMountExtension mIncrementalMountExtension;
   private @Nullable VisibilityOutputsExtension mVisibilityOutputsExtension;
 
@@ -1080,6 +1082,11 @@ class MountState
   @Override
   public @Nullable MountItem getMountItemAt(int position) {
     return getItemAt(position);
+  }
+
+  @Override
+  public void setUnmountDelegateExtension(UnmountDelegateExtension unmountDelegateExtension) {
+    mUnmountDelegateExtension = unmountDelegateExtension;
   }
 
   /** Clears and re-populates the test item map if we are in e2e test mode. */
@@ -2855,12 +2862,11 @@ class MountState
 
     final ComponentHost host = (ComponentHost) item.getHost();
     final LayoutOutput output = getLayoutOutput(item);
-
-    unmount(host, index, content, item, output);
-
-    maybeUnsetViewAttributes(item);
-
     final Component component = output.getComponent();
+
+    if (component.hasChildLithoViews()) {
+      mCanMountIncrementallyMountItems.delete(mLayoutOutputsIds[index]);
+    }
 
     if (isHostSpec(component)) {
       final ComponentHost componentHost = (ComponentHost) content;
@@ -2868,36 +2874,48 @@ class MountState
       removeDisappearingMountContentFromComponentHost(componentHost);
     }
 
-    unbindAndUnmountLifecycle(item);
-
-    if (ComponentsConfiguration.useExtensionsWithMountDelegate) {
-      if (mMountDelegate != null) {
-        // TODO (T64352474): Use a RenderUnit instead of a callback from MountState
-        mMountDelegate.onUmountItem(item, layoutOutputId);
-      }
+    if (mUnmountDelegateExtension != null
+        && mUnmountDelegateExtension.shouldDelegateUnmount(item)) {
+      mUnmountDelegateExtension.unmount(index, item, host);
     } else {
-      if (getLayoutOutput(item).getTransitionId() != null) {
-        final @OutputUnitType int type =
-            LayoutStateOutputIdCalculator.getTypeFromId(layoutOutputId);
-        maybeRemoveAnimatingMountContent(output.getTransitionId(), type);
-      }
-    }
-
-    if (component.hasChildLithoViews()) {
-      mCanMountIncrementallyMountItems.delete(mLayoutOutputsIds[index]);
-    }
-
-    try {
-      getMountData(item)
-          .releaseMountContent(mContext.getAndroidContext(), item, "unmountItem", mRecyclingMode);
-    } catch (LithoMountData.ReleasingReleasedMountContentException e) {
-      throw new RuntimeException(e.getMessage() + " " + getMountItemDebugMessage(item));
+      unmount(host, index, content, item, output);
+      unbindMountItem(item);
     }
 
     if (mMountStats.isLoggingEnabled) {
       mMountStats.unmountedTimes.add((System.nanoTime() - startTime) / NS_IN_MS);
       mMountStats.unmountedNames.add(component.getSimpleName());
       mMountStats.unmountedCount++;
+    }
+  }
+
+  @Override
+  public void unbindMountItem(MountItem mountItem) {
+    final LayoutOutput output = getLayoutOutput(mountItem);
+    final long layoutOutputId = output.getId();
+    maybeUnsetViewAttributes(mountItem);
+
+    unbindAndUnmountLifecycle(mountItem);
+
+    if (ComponentsConfiguration.useExtensionsWithMountDelegate) {
+      if (mMountDelegate != null) {
+        // TODO (T64352474): Use a RenderUnit instead of a callback from MountState
+        mMountDelegate.onUmountItem(mountItem, layoutOutputId);
+      }
+    } else {
+      if (getLayoutOutput(mountItem).getTransitionId() != null) {
+        final @OutputUnitType int type =
+            LayoutStateOutputIdCalculator.getTypeFromId(layoutOutputId);
+        maybeRemoveAnimatingMountContent(output.getTransitionId(), type);
+      }
+    }
+
+    try {
+      getMountData(mountItem)
+          .releaseMountContent(
+              mContext.getAndroidContext(), mountItem, "unmountItem", mRecyclingMode);
+    } catch (LithoMountData.ReleasingReleasedMountContentException e) {
+      throw new RuntimeException(e.getMessage() + " " + getMountItemDebugMessage(mountItem));
     }
   }
 
@@ -3583,7 +3601,7 @@ class MountState
   }
 
   private void removeDisappearingMountContentFromComponentHost(ComponentHost componentHost) {
-    if (componentHost.hasDisappearingItems()) {
+    if (mTransitionManager != null && componentHost.hasDisappearingItems()) {
       List<TransitionId> ids = componentHost.getDisappearingItemTransitionIds();
       for (int i = 0, size = ids.size(); i < size; i++) {
         mTransitionManager.setMountContent(ids.get(i), null);

@@ -44,6 +44,7 @@ public class MountState implements MountDelegateTarget {
   private boolean mNeedsRemount;
   private RenderTree mRenderTree;
   private @Nullable MountDelegate mMountDelegate;
+  private @Nullable UnmountDelegateExtension mUnmountDelegateExtension;
 
   /**
    * This boolean array is used to record the attach {@link RenderUnit.Binder} which were unbound in
@@ -246,6 +247,11 @@ public class MountState implements MountDelegateTarget {
   @Override
   public int getMountItemCount() {
     return mRenderUnitIds != null ? mRenderUnitIds.length : 0;
+  }
+
+  @Override
+  public void setUnmountDelegateExtension(UnmountDelegateExtension unmountDelegateExtension) {
+    mUnmountDelegateExtension = unmountDelegateExtension;
   }
 
   @Override
@@ -492,20 +498,45 @@ public class MountState implements MountDelegateTarget {
       }
     }
 
-    if (item.isBound()) {
-      unbindRenderUnitFromContent(mContext, item);
-    }
-
     final Host host = item.getHost();
-    host.unmount(node.getPositionInParent(), item);
 
+    if (mUnmountDelegateExtension != null
+        && mUnmountDelegateExtension.shouldDelegateUnmount(item)) {
+      mUnmountDelegateExtension.unmount(node.getPositionInParent(), item, host);
+    } else {
+      if (item.isBound()) {
+        unbindRenderUnitFromContent(mContext, item);
+      }
+      host.unmount(node.getPositionInParent(), item);
+
+      if (content instanceof View) {
+        ((View) content).setPadding(0, 0, 0, 0);
+      }
+
+      unmountRenderUnitFromContent(mContext, host, node, unit, content);
+
+      item.releaseMountContent(mContext);
+    }
+  }
+
+  @Override
+  public void unbindMountItem(MountItem mountItem) {
+    if (mountItem.isBound()) {
+      unbindRenderUnitFromContent(mContext, mountItem);
+    }
+    final Object content = mountItem.getContent();
     if (content instanceof View) {
       ((View) content).setPadding(0, 0, 0, 0);
     }
 
-    unmountRenderUnitFromContent(mContext, host, node, unit, content);
+    unmountRenderUnitFromContent(
+        mContext,
+        mountItem.getHost(),
+        mountItem.getRenderTreeNode(),
+        mountItem.getRenderTreeNode().getRenderUnit(),
+        content);
 
-    item.releaseMountContent(mContext);
+    mountItem.releaseMountContent(mContext);
   }
 
   private @Nullable MountItem getItemAt(int i) {

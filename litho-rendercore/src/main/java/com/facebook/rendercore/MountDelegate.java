@@ -50,6 +50,8 @@ public class MountDelegate {
 
     void unmountAllItems();
 
+    void unbindMountItem(MountItem mountItem);
+
     boolean isRootItem(int position);
 
     Object getContentAt(int position);
@@ -66,6 +68,8 @@ public class MountDelegate {
     MountItem getMountItemAt(int position);
 
     int getMountItemCount();
+
+    void setUnmountDelegateExtension(UnmountDelegateExtension unmountDelegateExtension);
 
     // TODO: REMOVE
     // Temporary solution so we can test incremental mount extension on its own directly inside
