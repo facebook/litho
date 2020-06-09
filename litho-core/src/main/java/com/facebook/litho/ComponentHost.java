@@ -201,7 +201,7 @@ public class ComponentHost extends Host {
     if (content instanceof Drawable) {
       ensureDrawableMountItems();
 
-      unmountDrawable(mountItem);
+      unmountDrawable((Drawable) content);
       ComponentHostUtils.removeItem(index, mDrawableMountItems, mScrapDrawableMountItems);
     } else if (content instanceof View) {
       unmountView((View) content);
@@ -247,7 +247,7 @@ public class ComponentHost extends Host {
 
     final Object content = disappearingItem.getContent();
     if (content instanceof Drawable) {
-      unmountDrawable(disappearingItem);
+      unmountDrawable((Drawable) content);
     } else if (content instanceof View) {
       unmountView((View) content);
     }
@@ -1214,10 +1214,9 @@ public class ComponentHost extends Host {
         this, drawable, bounds, output.getFlags(), output.getNodeInfo());
   }
 
-  private void unmountDrawable(MountItem mountItem) {
+  private void unmountDrawable(Drawable drawable) {
     assertMainThread();
 
-    final Drawable drawable = (Drawable) mountItem.getContent();
     drawable.setCallback(null);
     invalidate(drawable.getBounds());
 
