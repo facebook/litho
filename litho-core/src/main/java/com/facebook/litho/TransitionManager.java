@@ -372,7 +372,7 @@ public class TransitionManager {
    * to set content when content is incrementally mounted during an animation.
    */
   void setMountContent(
-      TransitionId transitionId, OutputUnitsAffinityGroup<Object> mountContentGroup) {
+      TransitionId transitionId, @Nullable OutputUnitsAffinityGroup<Object> mountContentGroup) {
     final AnimationState animationState = mAnimationStates.get(transitionId);
     if (animationState != null) {
       setMountContentInner(transitionId, animationState, mountContentGroup);
@@ -762,7 +762,7 @@ public class TransitionManager {
   private void setMountContentInner(
       TransitionId transitionId,
       AnimationState animationState,
-      OutputUnitsAffinityGroup<Object> newMountContentGroup) {
+      @Nullable OutputUnitsAffinityGroup<Object> newMountContentGroup) {
     // If the mount content changes, this means this transition key will be rendered with a
     // different mount content (View or Drawable) than it was during the last mount, so we need to
     // migrate animation state from the old mount content to the new one.

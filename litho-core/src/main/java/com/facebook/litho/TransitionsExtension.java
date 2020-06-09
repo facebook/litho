@@ -21,25 +21,35 @@ import static com.facebook.litho.ThreadUtils.assertMainThread;
 import static com.facebook.rendercore.MountState.ROOT_HOST_ID;
 
 import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.util.Log;
+import android.view.View;
 import androidx.annotation.Nullable;
 import com.facebook.litho.animation.AnimatedProperties;
 import com.facebook.litho.animation.PropertyHandle;
+import com.facebook.rendercore.MountDelegate;
 import com.facebook.rendercore.MountDelegate.MountDelegateInput;
 import com.facebook.rendercore.MountDelegateExtension;
 import com.facebook.rendercore.MountItem;
 import com.facebook.rendercore.RenderTreeNode;
+import com.facebook.rendercore.UnmountDelegateExtension;
+import com.facebook.rendercore.utils.BoundsUtils;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /** Extension for performing transitions. */
 public class TransitionsExtension extends MountDelegateExtension
     implements HostListenerExtension<TransitionsExtension.TransitionsExtensionInput>,
-        TransitionManager.OnAnimationCompleteListener<EventHandler<TransitionEndEvent>> {
+        TransitionManager.OnAnimationCompleteListener<EventHandler<TransitionEndEvent>>,
+        UnmountDelegateExtension {
 
+  private final Map<TransitionId, OutputUnitsAffinityGroup<MountItem>> mDisappearingMountItems =
+      new LinkedHashMap<>();
+  private final Set<MountItem> mLockedDisappearingMountitems = new HashSet<>();
   private final Host mLithoView;
   private TransitionsExtensionInput mInput;
   private int mLastMountedComponentTreeId = ComponentTree.INVALID_ID;
@@ -49,6 +59,16 @@ public class TransitionsExtension extends MountDelegateExtension
   private boolean mTransitionsHasBeenCollected = false;
   private @Nullable Transition mRootTransition;
   private LayoutState mLastMountedLayoutState;
+
+  @Override
+  public boolean shouldDelegateUnmount(MountItem mountItem) {
+    return mLockedDisappearingMountitems.contains(mountItem);
+  }
+
+  @Override
+  public void unmount(int index, MountItem mountItem, com.facebook.rendercore.Host host) {
+    ((ComponentHost) host).startUnmountDisappearingItem(index, mountItem);
+  }
 
   public interface TransitionsExtensionInput extends MountDelegateInput {
     int getMountableOutputCount();
@@ -65,6 +85,12 @@ public class TransitionsExtension extends MountDelegateExtension
   }
 
   @Override
+  public void registerToDelegate(MountDelegate mountDelegate) {
+    super.registerToDelegate(mountDelegate);
+    getMountTarget().setUnmountDelegateExtension(this);
+  }
+
+  @Override
   public void beforeMount(TransitionsExtensionInput input, Rect localVisibleRect) {
     resetAcquiredReferences();
     mInput = input;
@@ -77,7 +103,8 @@ public class TransitionsExtension extends MountDelegateExtension
       mLastMountedLayoutState = null;
     }
 
-    updateTransitions((LayoutState) mInput, ((LithoView) mLithoView).getComponentTree());
+    updateTransitions(layoutState, ((LithoView) mLithoView).getComponentTree());
+    extractDisappearingItems(layoutState);
 
     final int componentTreeId = layoutState.getComponentTreeId();
     mLastMountedComponentTreeId = componentTreeId;
@@ -147,10 +174,9 @@ public class TransitionsExtension extends MountDelegateExtension
         }
       }
 
-      // TODO (T64352474): Handle disappearing items
-      //      if (!mDisappearingMountItems.isEmpty()) {
-      //        updateDisappearingMountItems(layoutState);
-      //      }
+      if (!mDisappearingMountItems.isEmpty()) {
+        updateDisappearingMountItems(layoutState);
+      }
 
       if (shouldAnimateTransitions(layoutState)) {
         collectAllTransitions(layoutState, componentTree);
@@ -173,15 +199,27 @@ public class TransitionsExtension extends MountDelegateExtension
     }
   }
 
+  private void updateDisappearingMountItems(LayoutState newLayoutState) {
+    final Map<TransitionId, ?> nextMountedTransitionIds = newLayoutState.getTransitionIdMapping();
+    for (TransitionId transitionId : nextMountedTransitionIds.keySet()) {
+      final OutputUnitsAffinityGroup<MountItem> disappearingItem =
+          mDisappearingMountItems.remove(transitionId);
+      if (disappearingItem != null) {
+        endUnmountDisappearingItem(disappearingItem);
+      }
+    }
+  }
+
   private void resetAnimationState() {
     if (mTransitionManager == null) {
       return;
     }
-    // TODO (T64352474): Handle disappearing items
-    //    for (OutputUnitsAffinityGroup<MountItem> group : mDisappearingMountItems.values()) {
-    //      endUnmountDisappearingItem(group);
-    //    }
-    //    mDisappearingMountItems.clear();
+
+    for (OutputUnitsAffinityGroup<MountItem> group : mDisappearingMountItems.values()) {
+      endUnmountDisappearingItem(group);
+    }
+    mDisappearingMountItems.clear();
+    mLockedDisappearingMountitems.clear();
     mAnimatingTransitionIds.clear();
     mTransitionManager.reset();
   }
@@ -314,35 +352,215 @@ public class TransitionsExtension extends MountDelegateExtension
 
   @Override
   public void onAnimationComplete(TransitionId transitionId) {
-    // TODO (T64352474): Handle disappearing items
-    //    final OutputUnitsAffinityGroup<MountItem> disappearingGroup =
-    //        mDisappearingMountItems.remove(transitionId);
-    //    if (disappearingGroup != null) {
-    //      endUnmountDisappearingItem(disappearingGroup);
-    //    } else {
-    if (!mAnimatingTransitionIds.remove(transitionId)) {
-      if (AnimationsDebug.ENABLED) {
-        Log.e(
-            AnimationsDebug.TAG,
-            "Ending animation for id " + transitionId + " but it wasn't recorded as animating!");
+    final OutputUnitsAffinityGroup<MountItem> disappearingGroup =
+        mDisappearingMountItems.remove(transitionId);
+    if (disappearingGroup != null) {
+      endUnmountDisappearingItem(disappearingGroup);
+    } else {
+      if (!mAnimatingTransitionIds.remove(transitionId)) {
+        if (AnimationsDebug.ENABLED) {
+          Log.e(
+              AnimationsDebug.TAG,
+              "Ending animation for id " + transitionId + " but it wasn't recorded as animating!");
+        }
+      }
+
+      final OutputUnitsAffinityGroup<LayoutOutput> layoutOutputGroup =
+          mLastMountedLayoutState.getLayoutOutputsForTransitionId(transitionId);
+      if (layoutOutputGroup == null) {
+        // This can happen if the component was unmounted without animation or the transitionId
+        // was removed from the component.
+        return;
+      }
+
+      for (int i = 0, size = layoutOutputGroup.size(); i < size; i++) {
+        final LayoutOutput layoutOutput = layoutOutputGroup.getAt(i);
+        final int position = layoutOutput.getIndex();
+        updateAnimationLockCount(mLastMountedLayoutState, position, false, false);
       }
     }
+  }
 
-    final OutputUnitsAffinityGroup<LayoutOutput> layoutOutputGroup =
-        mLastMountedLayoutState.getLayoutOutputsForTransitionId(transitionId);
-    if (layoutOutputGroup == null) {
-      // This can happen if the component was unmounted without animation or the transitionId
-      // was removed from the component.
+  /** Determine whether to apply disappear animation to the given {@link MountItem} */
+  private boolean isItemDisappearing(LayoutState layoutState, int index) {
+    if (!shouldAnimateTransitions(layoutState) || !hasTransitionsToAnimate()) {
+      return false;
+    }
+
+    if (mTransitionManager == null || mLastMountedLayoutState == null) {
+      return false;
+    }
+
+    final LayoutOutput layoutOutput =
+        getLayoutOutput(mLastMountedLayoutState.getMountableOutputAt(index));
+    final TransitionId transitionId = layoutOutput.getTransitionId();
+    if (transitionId == null) {
+      return false;
+    }
+
+    return mTransitionManager.isDisappearing(transitionId);
+  }
+
+  /**
+   * This is where we go through the new layout state and compare it to the previous one. If we find
+   * we do a couple of things:
+   *
+   * <p>- Loop trough the disappearing tree making sure it is mounted (we mounted if it's not).
+   *
+   * <p>- Add all the items to a set to be able to hook the unmount delegate.
+   *
+   * <p>- Move the disappearing mount item to the root host.
+   *
+   * <p>- Finally map the disappearing mount item to the transition id
+   */
+  private void extractDisappearingItems(LayoutState newLayoutState) {
+    int mountItemCount = getMountTarget().getMountItemCount();
+    if (mLastMountedLayoutState == null || mountItemCount == 0) {
       return;
     }
 
-    for (int i = 0, size = layoutOutputGroup.size(); i < size; i++) {
-      final LayoutOutput layoutOutput = layoutOutputGroup.getAt(i);
-      final int position = layoutOutput.getIndex();
-      updateAnimationLockCount(mLastMountedLayoutState, position, false, false);
+    for (int i = 1; i < mountItemCount; i++) {
+      if (isItemDisappearing(newLayoutState, i)) {
+        final int lastDescendantIndex = findLastDescendantIndex(mLastMountedLayoutState, i);
+        // Go though disappearing subtree, mount everything that is not mounted yet
+        // That's okay to mount here *before* we call the mount target actually process the
+        // move/unmount and only passing last mount LayoutState.
+        for (int j = i; j <= lastDescendantIndex; j++) {
+          MountItem mountedItem = getMountTarget().getMountItemAt(j);
+          if (mountedItem == null) {
+            acquireMountReference(mLastMountedLayoutState.getMountableOutputAt(j), j, mInput, true);
+          }
+          mLockedDisappearingMountitems.add(mountedItem);
+        }
+
+        // Reference to the root of the disappearing subtree
+        final MountItem disappearingItem = getMountTarget().getMountItemAt(i);
+
+        if (disappearingItem == null) {
+          throw new IllegalStateException(
+              "The root of the disappearing subtree should not be null,"
+                  + " acquireMountReference on this index should be called before this. Index: "
+                  + i);
+        }
+
+        // Moving item to the root if needed.
+        remountHostToRootIfNeeded(i, disappearingItem);
+
+        mapDisappearingItemWithTransitionId(disappearingItem);
+        i = lastDescendantIndex;
+      }
     }
-    // TODO (T64352474): Handle disappearing items
-    //    }
+  }
+
+  private void unmountDisappearingItem(MountItem mountItem) {
+    mLockedDisappearingMountitems.remove(mountItem);
+    final ComponentHost content = (ComponentHost) mountItem.getContent();
+    if ((content instanceof ComponentHost) && !(content instanceof LithoView)) {
+      // Unmount descendant items in reverse order.
+      for (int j = content.getMountItemCount() - 1; j >= 0; j--) {
+        unmountDisappearingItem(content.getMountItemAt(j));
+      }
+
+      if (content.getMountItemCount() > 0) {
+        throw new IllegalStateException(
+            "Recursively unmounting items from a Host, left"
+                + " some items behind, this should never happen.");
+      }
+    }
+
+    final ComponentHost host = (ComponentHost) mountItem.getHost();
+    if (host == null) {
+      throw new IllegalStateException("Disappearing mountItem has no host, can not be unmounted.");
+    }
+    host.unmountDisappearingItem(mountItem);
+
+    getMountTarget().unbindMountItem(mountItem);
+  }
+
+  private void endUnmountDisappearingItem(OutputUnitsAffinityGroup<MountItem> group) {
+    maybeRemoveAnimatingMountContent(
+        getLayoutOutput(group.getMostSignificantUnit()).getTransitionId());
+
+    for (int i = 0, size = group.size(); i < size; i++) {
+      unmountDisappearingItem(group.getAt(i));
+    }
+  }
+
+  private void mapDisappearingItemWithTransitionId(MountItem item) {
+    final TransitionId transitionId = getLayoutOutput(item).getTransitionId();
+    OutputUnitsAffinityGroup<MountItem> disappearingGroup =
+        mDisappearingMountItems.get(transitionId);
+    if (disappearingGroup == null) {
+      disappearingGroup = new OutputUnitsAffinityGroup<>();
+      mDisappearingMountItems.put(transitionId, disappearingGroup);
+    }
+    final @OutputUnitType int type =
+        LayoutStateOutputIdCalculator.getTypeFromId(getLayoutOutput(item).getId());
+    disappearingGroup.add(type, item);
+  }
+
+  private static void remountHostToRootIfNeeded(int index, MountItem mountItem) {
+    final Object content = mountItem.getContent();
+    final com.facebook.rendercore.Host host = mountItem.getHost();
+
+    if (host == null) {
+      throw new IllegalStateException(
+          "Disappearing item host should never be null. Index: " + index);
+    }
+    if (content == null) {
+      throw new IllegalStateException(
+          "Disappearing item content should never be null. Index: " + index);
+    }
+
+    if (!(host.getParent() instanceof com.facebook.rendercore.Host)) {
+      // Already mounted to the root
+      return;
+    }
+
+    // Before unmounting item get its position inside the root
+    int left = 0;
+    int top = 0;
+    int right;
+    int bottom;
+    com.facebook.rendercore.Host itemHost = host;
+    com.facebook.rendercore.Host rootHost = host;
+    // Get left/top position of the item's host first
+    while (itemHost != null) {
+      left += itemHost.getLeft();
+      top += itemHost.getTop();
+      if (itemHost.getParent() instanceof com.facebook.rendercore.Host) {
+        itemHost = (com.facebook.rendercore.Host) itemHost.getParent();
+      } else {
+        rootHost = itemHost;
+        itemHost = null;
+      }
+    }
+
+    if (content instanceof View) {
+      final View view = (View) content;
+      left += view.getLeft();
+      top += view.getTop();
+      right = left + view.getWidth();
+      bottom = top + view.getHeight();
+    } else {
+      final Rect bounds = ((Drawable) content).getBounds();
+      left += bounds.left;
+      right = left + bounds.width();
+      top += bounds.top;
+      bottom = top + bounds.height();
+    }
+
+    // Unmount from the current host
+    host.unmount(index, mountItem);
+
+    // Apply new bounds to the content as it will be mounted in the root now
+    BoundsUtils.applyBoundsToMountContent(new Rect(left, top, right, bottom), null, content, false);
+
+    // Mount to the root
+    rootHost.mount(index, mountItem);
+
+    // Set new host to the MountItem
+    mountItem.setHost(rootHost);
   }
 
   @Override
@@ -393,21 +611,18 @@ public class TransitionsExtension extends MountDelegateExtension
       mTransitionManager.setMountContent(content.getKey(), content.getValue());
     }
 
-    // TODO (T64352474): Handle disappearing items
-    //    // Retrieve mount content from disappearing mount items and pass it to the
-    // TransitionManager
-    //    for (Map.Entry<TransitionId, OutputUnitsAffinityGroup<MountItem>> entry :
-    //        mDisappearingMountItems.entrySet()) {
-    //      final OutputUnitsAffinityGroup<MountItem> mountItemsGroup = entry.getValue();
-    //      final OutputUnitsAffinityGroup<Object> mountContentGroup = new
-    // OutputUnitsAffinityGroup<>();
-    //      for (int j = 0, sz = mountItemsGroup.size(); j < sz; j++) {
-    //        final @OutputUnitType int type = mountItemsGroup.typeAt(j);
-    //        final MountItem mountItem = mountItemsGroup.getAt(j);
-    //        mountContentGroup.add(type, mountItem.getContent());
-    //      }
-    //      mTransitionManager.setMountContent(entry.getKey(), mountContentGroup);
-    //    }
+    // Retrieve mount content from disappearing mount items and pass it to the TransitionManager
+    for (Map.Entry<TransitionId, OutputUnitsAffinityGroup<MountItem>> entry :
+        mDisappearingMountItems.entrySet()) {
+      final OutputUnitsAffinityGroup<MountItem> mountItemsGroup = entry.getValue();
+      final OutputUnitsAffinityGroup<Object> mountContentGroup = new OutputUnitsAffinityGroup<>();
+      for (int j = 0, sz = mountItemsGroup.size(); j < sz; j++) {
+        final @OutputUnitType int type = mountItemsGroup.typeAt(j);
+        final MountItem mountItem = mountItemsGroup.getAt(j);
+        mountContentGroup.add(type, mountItem.getContent());
+      }
+      mTransitionManager.setMountContent(entry.getKey(), mountContentGroup);
+    }
 
     if (isTracing) {
       ComponentsSystrace.endSection();
@@ -422,6 +637,14 @@ public class TransitionsExtension extends MountDelegateExtension
       final @OutputUnitType int type = LayoutStateOutputIdCalculator.getTypeFromId(layoutOutputId);
       maybeRemoveAnimatingMountContent(output.getTransitionId(), type);
     }
+  }
+
+  private void maybeRemoveAnimatingMountContent(@Nullable TransitionId transitionId) {
+    if (mTransitionManager == null || transitionId == null) {
+      return;
+    }
+
+    mTransitionManager.setMountContent(transitionId, null);
   }
 
   private void maybeRemoveAnimatingMountContent(
@@ -473,23 +696,22 @@ public class TransitionsExtension extends MountDelegateExtension
   }
 
   private static int findLastDescendantIndex(LayoutState layoutState, int index) {
-    final LayoutOutput host = getLayoutOutput(layoutState.getMountableOutputAt(index));
-    final long hostId = host.getId();
+    final long hostId = getLayoutOutput(layoutState.getMountableOutputAt(index)).getId();
 
     for (int i = index + 1, size = layoutState.getMountableOutputCount(); i < size; i++) {
       final LayoutOutput layoutOutput = getLayoutOutput(layoutState.getMountableOutputAt(i));
 
       // Walk up the parents looking for the host's id: if we find it, it's a descendant. If we
       // reach the root, then it's not a descendant and we can stop.
-      long curentHostId = layoutOutput.getHostMarker();
-      while (curentHostId != hostId) {
-        if (curentHostId == ROOT_HOST_ID) {
+      long currentHostId = layoutOutput.getHostMarker();
+      while (currentHostId != hostId) {
+        if (currentHostId == ROOT_HOST_ID) {
           return i - 1;
         }
 
-        final int parentIndex = layoutState.getLayoutOutputPositionForId(curentHostId);
+        final int parentIndex = layoutState.getLayoutOutputPositionForId(currentHostId);
         final LayoutOutput parent = getLayoutOutput(layoutState.getMountableOutputAt(parentIndex));
-        curentHostId = parent.getHostMarker();
+        currentHostId = parent.getHostMarker();
       }
     }
 
