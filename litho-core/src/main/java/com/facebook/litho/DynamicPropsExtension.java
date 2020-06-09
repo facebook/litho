@@ -38,7 +38,7 @@ public class DynamicPropsExtension
   public void beforeMount(DynamicPropsExtensionInput input, Rect localVisibleRect) {
     for (int i = 0, size = input.getMountableOutputCount(); i < size; i++) {
       final RenderTreeNode renderTreeNode = input.getMountableOutputAt(i);
-      renderTreeNode.getRenderUnit().adAttachDetachExtension(this);
+      renderTreeNode.getRenderUnit().addAttachDetachExtension(this);
     }
   }
 

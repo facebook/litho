@@ -140,7 +140,7 @@ public abstract class RenderUnit<MOUNT_CONTENT> implements Copyable {
    * Adds an extension function that will be invoked with the other attach/detach binders. Can be
    * used to add generic functionality (e.g. Dynamic Props) to a RenderUnit.
    */
-  public void adAttachDetachExtension(Binder binder) {
+  public void addAttachDetachExtension(Binder binder) {
     if (mAttachDetachFunctionsWithExtensions == null) {
       mAttachDetachFunctionsWithExtensions = new ArrayList<>(mBaseAttachDetachFunctions.size() + 4);
       mAttachDetachFunctionsWithExtensions.addAll(mBaseAttachDetachFunctions);
