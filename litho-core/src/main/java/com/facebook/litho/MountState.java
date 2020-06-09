@@ -77,6 +77,7 @@ import com.facebook.rendercore.MountItem;
 import com.facebook.rendercore.RenderTree;
 import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.UnmountDelegateExtension;
+import com.facebook.rendercore.utils.BoundsUtils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Deque;
@@ -1877,13 +1878,7 @@ class MountState
       Object content, int left, int top, int right, int bottom, boolean force) {
     assertMainThread();
 
-    if (content instanceof View) {
-      BoundsHelper.applyBoundsToView((View) content, left, top, right, bottom, force);
-    } else if (content instanceof Drawable) {
-      ((Drawable) content).setBounds(left, top, right, bottom);
-    } else {
-      throw new IllegalStateException("Unsupported mounted content " + content);
-    }
+    BoundsUtils.applyBoundsToMountContent(left, top, right, bottom, null, content, force);
   }
 
   private static void setViewAttributes(MountItem item) {

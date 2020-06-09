@@ -22,6 +22,7 @@ import com.facebook.litho.AnimatableItem;
 import com.facebook.litho.BoundsHelper;
 import com.facebook.litho.ComponentHost;
 import com.facebook.litho.LithoView;
+import com.facebook.rendercore.utils.BoundsUtils;
 import java.util.List;
 import javax.annotation.Nullable;
 
@@ -241,8 +242,8 @@ public final class AnimatedProperties {
           ((LithoView) view).setAnimatedWidth((int) value);
         } else {
           final int left = view.getLeft();
-          BoundsHelper.applyBoundsToView(
-              view, left, view.getTop(), (int) (left + value), view.getBottom(), false);
+          BoundsUtils.applyBoundsToMountContent(
+              left, view.getTop(), (int) (left + value), view.getBottom(), null, view, false);
         }
 
         final List<Drawable> animatingDrawables = view.getLinkedDrawablesForAnimation();
@@ -258,7 +259,8 @@ public final class AnimatedProperties {
         final View view = (View) mountContent;
         final int left = view.getLeft();
         final int right = (int) (left + value);
-        BoundsHelper.applyBoundsToView(view, left, view.getTop(), right, view.getBottom(), false);
+        BoundsUtils.applyBoundsToMountContent(
+            left, view.getTop(), right, view.getBottom(), null, view, false);
       } else if (mountContent instanceof Drawable) {
         final Drawable drawable = (Drawable) mountContent;
         final int width = (int) value;
@@ -307,8 +309,8 @@ public final class AnimatedProperties {
           ((LithoView) view).setAnimatedHeight((int) value);
         } else {
           final int top = view.getTop();
-          BoundsHelper.applyBoundsToView(
-              view, view.getLeft(), top, view.getRight(), (int) (top + value), false);
+          BoundsUtils.applyBoundsToMountContent(
+              view.getLeft(), top, view.getRight(), (int) (top + value), null, view, false);
         }
 
         final List<Drawable> animatingDrawables = view.getLinkedDrawablesForAnimation();
@@ -324,7 +326,8 @@ public final class AnimatedProperties {
         final View view = (View) mountContent;
         final int top = view.getTop();
         final int bottom = (int) (top + value);
-        BoundsHelper.applyBoundsToView(view, view.getLeft(), top, view.getRight(), bottom, false);
+        BoundsUtils.applyBoundsToMountContent(
+            view.getLeft(), top, view.getRight(), bottom, null, view, false);
       } else if (mountContent instanceof Drawable) {
         final Drawable drawable = (Drawable) mountContent;
         final int width = drawable.getBounds().width();

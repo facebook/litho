@@ -16,15 +16,12 @@
 
 package com.facebook.rendercore;
 
-import static android.view.View.MeasureSpec.makeMeasureSpec;
-
 import android.content.Context;
-import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
 import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.collection.LongSparseArray;
 import com.facebook.rendercore.MountDelegate.MountDelegateTarget;
+import com.facebook.rendercore.utils.BoundsUtils;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -283,7 +280,8 @@ public class MountState implements MountDelegateTarget {
           && !(content instanceof Host)
           && ((View) content).isLayoutRequested()) {
         final View view = (View) content;
-        applyBoundsToMountContent(mountItem.getRenderTreeNode(), view, true);
+
+        BoundsUtils.applyBoundsToMountContent(mountItem.getRenderTreeNode(), view, true);
       }
     }
   }
@@ -317,7 +315,7 @@ public class MountState implements MountDelegateTarget {
     final Object content = item.getContent();
     final boolean forceTraversal = content instanceof View && ((View) content).isLayoutRequested();
 
-    applyBoundsToMountContent(
+    BoundsUtils.applyBoundsToMountContent(
         item.getRenderTreeNode(), item.getContent(), forceTraversal /* force */);
   }
 
@@ -457,7 +455,7 @@ public class MountState implements MountDelegateTarget {
 
     // 5. Apply the bounds to the Mount content now. It's important to do so after bind as calling
     // bind might have triggered a layout request within a View.
-    applyBoundsToMountContent(renderTreeNode, item.getContent(), true /* force */);
+    BoundsUtils.applyBoundsToMountContent(renderTreeNode, item.getContent(), true /* force */);
   }
 
   private void unmountItemRecursively(RenderTreeNode node) {
@@ -549,62 +547,6 @@ public class MountState implements MountDelegateTarget {
     }
 
     return mIndexToMountedItemMap.get(mRenderUnitIds[i]);
-  }
-
-  private static void applyBoundsToMountContent(
-      RenderTreeNode renderTreeNode, Object content, boolean force) {
-
-    if (content instanceof View) {
-      applyBoundsToView((View) content, renderTreeNode, force);
-    } else if (content instanceof Drawable) {
-      final Rect bounds = new Rect();
-      renderTreeNode.getMountBounds(bounds); // Gets the relative bounds of the Render Tree Node.
-      final Rect padding = renderTreeNode.getResolvedPadding();
-      int left = bounds.left;
-      int top = bounds.top;
-      int right = bounds.right;
-      int bottom = bounds.bottom;
-      if (padding != null) {
-        left += padding.left;
-        top += padding.top;
-        right -= padding.right;
-        bottom -= padding.bottom;
-      }
-      ((Drawable) content).setBounds(left, top, right, bottom);
-    } else {
-      throw new IllegalStateException("Unsupported mounted content " + content);
-    }
-  }
-
-  /**
-   * Sets the bounds on the given view if the view doesn't already have those bounds (or if 'force'
-   * is supplied).
-   */
-  private static void applyBoundsToView(View view, RenderTreeNode renderTreeNode, boolean force) {
-    final Rect bounds = new Rect();
-    renderTreeNode.getMountBounds(bounds); // Gets the relative bounds of the Render Tree Node.
-    final int width = bounds.right - bounds.left;
-    final int height = bounds.bottom - bounds.top;
-
-    final Rect padding = renderTreeNode.getResolvedPadding();
-
-    if (padding != null && !(view instanceof Host)) {
-      view.setPadding(padding.left, padding.top, padding.right, padding.bottom);
-    }
-
-    if (force || view.getMeasuredHeight() != height || view.getMeasuredWidth() != width) {
-      view.measure(
-          makeMeasureSpec(width, View.MeasureSpec.EXACTLY),
-          makeMeasureSpec(height, View.MeasureSpec.EXACTLY));
-    }
-
-    if (force
-        || view.getLeft() != bounds.left
-        || view.getTop() != bounds.top
-        || view.getRight() != bounds.right
-        || view.getBottom() != bounds.bottom) {
-      view.layout(bounds.left, bounds.top, bounds.right, bounds.bottom);
-    }
   }
 
   private static void mountRenderUnitToContent(
