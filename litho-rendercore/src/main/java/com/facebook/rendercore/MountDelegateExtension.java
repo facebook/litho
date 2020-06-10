@@ -18,7 +18,6 @@ package com.facebook.rendercore;
 
 import androidx.annotation.VisibleForTesting;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -75,8 +74,7 @@ public class MountDelegateExtension {
     return mMountDelegate.isLockedForMount(renderTreeNode);
   }
 
-  // TODO make protected when removing isAnimationLocked.
-  public boolean ownsReference(RenderTreeNode renderTreeNode) {
+  protected boolean ownsReference(RenderTreeNode renderTreeNode) {
     return ownsReference(renderTreeNode.getRenderUnit().getId());
   }
 
@@ -93,13 +91,5 @@ public class MountDelegateExtension {
 
   public MountDelegate.MountDelegateTarget getMountTarget() {
     return mMountDelegate.getMountDelegateTarget();
-  }
-
-  protected boolean isAnimationLocked(RenderTreeNode renderTreeNode, int position) {
-    return mMountDelegate.isAnimationLocked(renderTreeNode, position);
-  }
-
-  protected List<MountDelegateExtension> getMountDelegateExtensions() {
-    return mMountDelegate.getMountDelegateExtensions();
   }
 }

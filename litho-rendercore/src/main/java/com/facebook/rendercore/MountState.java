@@ -251,11 +251,6 @@ public class MountState implements MountDelegateTarget {
     mUnmountDelegateExtension = unmountDelegateExtension;
   }
 
-  @Override
-  public boolean isAnimationLocked(int position) {
-    return false;
-  }
-
   /**
    * This is called when the {@link MountItem}s mounted on this {@link MountState} need to be
    * re-bound with the same RenderUnit. This happens when a detach/attach happens on the root {@link

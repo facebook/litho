@@ -43,8 +43,6 @@ public class IncrementalMountExtension extends MountDelegateExtension
   private final Rect mPreviousLocalVisibleRect = new Rect();
   private final Set<Long> mComponentIdsMountedInThisFrame = new HashSet<>();
   private IncrementalMountExtensionInput mInput;
-  private @Nullable TransitionsExtension mTransitionsExtension;
-  private boolean mHasAcquiredTransition;
 
   public interface IncrementalMountExtensionInput extends MountDelegateInput {
     int getMountableOutputCount();
@@ -315,34 +313,5 @@ public class IncrementalMountExtension extends MountDelegateExtension
   @VisibleForTesting
   int getPreviousBottomsIndex() {
     return mPreviousBottomsIndex;
-  }
-
-  @Override
-  protected boolean isAnimationLocked(RenderTreeNode renderTreeNode, int position) {
-    if (hasTransitionsExtension()) {
-      return mTransitionsExtension.ownsReference(renderTreeNode);
-    }
-
-    return super.isAnimationLocked(renderTreeNode, position);
-  }
-
-  private TransitionsExtension acquireTransitionsExtension() {
-    final List<MountDelegateExtension> extensions = getMountDelegateExtensions();
-    for (int i = 0, size = extensions.size(); i < size; i++) {
-      if (extensions.get(i) instanceof TransitionsExtension) {
-        return (TransitionsExtension) extensions.get(i);
-      }
-    }
-
-    return null;
-  }
-
-  private boolean hasTransitionsExtension() {
-    if (!mHasAcquiredTransition) {
-      mTransitionsExtension = acquireTransitionsExtension();
-      mHasAcquiredTransition = true;
-    }
-
-    return mTransitionsExtension != null;
   }
 }

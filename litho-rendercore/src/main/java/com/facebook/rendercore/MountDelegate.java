@@ -69,11 +69,6 @@ public class MountDelegate {
     int getMountItemCount();
 
     void setUnmountDelegateExtension(UnmountDelegateExtension unmountDelegateExtension);
-
-    // TODO: REMOVE
-    // Temporary solution so we can test incremental mount extension on its own directly inside
-    // MountState, until the transitions extension is ready.
-    boolean isAnimationLocked(int position);
   }
 
   // IGNORE - Will be removed. Check out D4182567 for context.
@@ -92,16 +87,6 @@ public class MountDelegate {
     mountDelegateExtension.registerToDelegate(this);
     mReferenceCountingEnabled =
         mReferenceCountingEnabled || mountDelegateExtension.canPreventMount();
-  }
-
-  // TODO remove this
-  boolean isAnimationLocked(RenderTreeNode renderTreeNode, int position) {
-    return mMountDelegateTarget.isAnimationLocked(position);
-  }
-
-  // TODO remove when isAnimationLocked is completely removed.
-  List<MountDelegateExtension> getMountDelegateExtensions() {
-    return mMountDelegateExtensions;
   }
 
   Object getContentAt(int position) {
