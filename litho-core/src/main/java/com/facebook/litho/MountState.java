@@ -173,6 +173,7 @@ class MountState
   private @Nullable UnmountDelegateExtension mUnmountDelegateExtension;
   private @Nullable IncrementalMountExtension mIncrementalMountExtension;
   private @Nullable VisibilityOutputsExtension mVisibilityOutputsExtension;
+  private @Nullable TransitionsExtension mTransitionsExtension;
 
   private @ComponentTree.RecyclingMode int mRecyclingMode = ComponentTree.RecyclingMode.DEFAULT;
 
@@ -211,6 +212,11 @@ class MountState
       mMountDelegate = new MountDelegate(this);
     }
     mMountDelegate.addExtension(mountDelegateExtension);
+
+    // Used for testing incremental mount extension until TransitionsExtension is testable.
+    if (mountDelegateExtension instanceof TransitionsExtension) {
+      mTransitionsExtension = (TransitionsExtension) mountDelegateExtension;
+    }
   }
 
   /**
@@ -591,7 +597,7 @@ class MountState
 
       final MountItem currentMountItem = getItemAt(i);
       final boolean isMounted = currentMountItem != null;
-      final boolean isMountable = isMountable(renderTreeNode);
+      final boolean isMountable = isMountable(renderTreeNode, i);
 
       if (!isMountable) {
         ComponentsSystrace.endSection();
@@ -659,12 +665,23 @@ class MountState
     mIsMounting = false;
   }
 
-  private boolean isMountable(RenderTreeNode renderTreeNode) {
+  private boolean isMountable(RenderTreeNode renderTreeNode, int position) {
     if (mMountDelegate == null) {
       return true;
     }
 
-    return mMountDelegate.isLockedForMount(renderTreeNode);
+    final boolean isLockedForMount = mMountDelegate.isLockedForMount(renderTreeNode);
+
+    if (mTransitionsExtension == null) {
+      if (mIncrementalMountExtension == null) {
+        throw new IllegalStateException(
+            "Only for testing incremental mount extension inside MountState until TransitionsExtension is ready.");
+      }
+
+      return isLockedForMount || isAnimationLocked(position);
+    }
+
+    return isLockedForMount;
   }
 
   @Override
@@ -3479,6 +3496,11 @@ class MountState
    */
   @Override
   public boolean isAnimationLocked(int index) {
+    if (mTransitionsExtension != null) {
+      throw new IllegalStateException(
+          "Should not need to be called when using a TransitionsExtension");
+    }
+
     if (mAnimationLockedIndices == null) {
       return false;
     }

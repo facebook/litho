@@ -125,7 +125,6 @@ public class IncrementalMountExtension extends MountDelegateExtension
       final boolean isMountable =
           isMountedHostWithChildContent(content)
               || Rect.intersects(localVisibleRect, renderTreeNode.getBounds())
-              || isAnimationLocked(renderTreeNode, i)
               || isRootItem(i);
       final boolean hasAcquiredMountRef = ownsReference(renderTreeNode);
       if (isMountable && !hasAcquiredMountRef) {

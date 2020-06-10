@@ -37,6 +37,7 @@ import static org.mockito.Mockito.when;
 import android.content.Context;
 import android.graphics.Rect;
 import android.view.ViewGroup;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.TestDrawableComponent;
@@ -46,6 +47,7 @@ import com.facebook.litho.widget.MountSpecLifecycleTester;
 import com.facebook.yoga.YogaEdge;
 import java.util.Arrays;
 import java.util.Collection;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -56,26 +58,44 @@ import org.robolectric.ParameterizedRobolectricTestRunner;
 
 @RunWith(ParameterizedRobolectricTestRunner.class)
 public class MountStateIncrementalMountTest {
+
+  private final boolean mUseIncrementalMountExtensionInMountState;
   private ComponentContext mContext;
   boolean useMountWithExtensions;
   boolean useIncMountOnlyExtension;
   final boolean mUseMountDelegateTarget;
+  private boolean configUseIncrementalMountExtension;
 
   public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
 
-  @ParameterizedRobolectricTestRunner.Parameters(name = "{0}")
+  @ParameterizedRobolectricTestRunner.Parameters(
+      name = "useMountDelegateTarget={0}, useIncrementalMountExtensionInMountState={1}")
   public static Collection data() {
-    return Arrays.asList(new Object[][] {{false}, {true}});
+    return Arrays.asList(
+        new Object[][] {
+          {false, false},
+          {true, false},
+          {false, true}
+        });
   }
 
-  public MountStateIncrementalMountTest(boolean useMountDelegateTarget) {
+  public MountStateIncrementalMountTest(
+      boolean useMountDelegateTarget, boolean useIncrementalMountExtensionInMountState) {
     mUseMountDelegateTarget = useMountDelegateTarget;
+    mUseIncrementalMountExtensionInMountState = useIncrementalMountExtensionInMountState;
   }
 
   @Before
   public void setup() {
+    ComponentsConfiguration.useIncrementalMountExtension =
+        mUseIncrementalMountExtensionInMountState;
     mContext = mLithoViewRule.getContext();
     mLithoViewRule.useLithoView(new LithoView(mContext, mUseMountDelegateTarget, false));
+  }
+
+  @After
+  public void cleanup() {
+    ComponentsConfiguration.useIncrementalMountExtension = configUseIncrementalMountExtension;
   }
 
   /** Tests incremental mount behaviour of a vertical stack of components with a View mount type. */
