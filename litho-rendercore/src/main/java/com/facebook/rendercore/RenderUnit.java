@@ -25,9 +25,13 @@ import java.util.List;
 /**
  * A RenderUnit represents a single rendering primitive for RenderCore. Every RenderUnit has to
  * define at least a createContent method to allocate the RenderUnit content (View or Drawable).
- * RenderUnits will be automatically recycled by RenderCore based on their concrete type. A
- * RenderUnit should in most cases declare how it intends to bind data returning Binders from its
- * mountUnmountFunctions callback or from the attachDetachFunctions callback.
+ * That content will be automatically recycled by RenderCore based on their concrete type.
+ *
+ * <p>A RenderUnit should in most cases declare how it intends to bind data returning Binders from
+ * its mountUnmountFunctions callback or from the attachDetachFunctions callback.
+ *
+ * <p>Immutability: RenderUnits should be immutable! Continuing to change them after they are built
+ * and given to RenderCore (e.g. via RenderState) is not safe.
  */
 public abstract class RenderUnit<MOUNT_CONTENT> implements Copyable {
 
@@ -126,6 +130,9 @@ public abstract class RenderUnit<MOUNT_CONTENT> implements Copyable {
   /**
    * Adds an extension function that will be invoked with the other mount/unmount binders. Can be
    * used to add generic functionality (e.g. accessibility) to a RenderUnit.
+   *
+   * <p>NB: This method should only be called while initially configuring the RenderUnit. See the
+   * class-level javadocs about immutability.
    */
   public void addMountUnmountExtension(Binder binder) {
     if (mMountUnmountFunctionsWithExtensions == null) {
@@ -138,7 +145,10 @@ public abstract class RenderUnit<MOUNT_CONTENT> implements Copyable {
 
   /**
    * Adds an extension function that will be invoked with the other attach/detach binders. Can be
-   * used to add generic functionality (e.g. Dynamic Props) to a RenderUnit.
+   * used to add generic functionality (e.g. Dynamic Props) to a RenderUnit
+   *
+   * <p>NB: This method should only be called while initially configuring the RenderUnit. See the
+   * class-level javadocs about immutability.
    */
   public void addAttachDetachExtension(Binder binder) {
     if (mAttachDetachFunctionsWithExtensions == null) {
