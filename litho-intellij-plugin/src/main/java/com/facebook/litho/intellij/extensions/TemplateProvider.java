@@ -29,7 +29,7 @@ package com.facebook.litho.intellij.extensions;
  *       ClassNameSuffix</code>.
  *   <li>Register class in <code>plugin.xml</code> using tag <code>
  *       &lt;templateProvider implementation="yourImpl"/&gt;</code>
- * </ul>
+ * </ol>
  */
 public interface TemplateProvider {
   String getTemplateName();
