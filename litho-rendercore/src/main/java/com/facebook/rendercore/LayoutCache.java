@@ -26,14 +26,14 @@ import java.util.Map;
  * given node. Values put in the LayoutCache will only be available in the next layout pass.
  */
 public class LayoutCache {
-  private final Map<Node, Node.LayoutResult> mWriteCache;
-  private final Map<Node, Node.LayoutResult> mReadCache;
+  private final Map mWriteCache;
+  private final Map mReadCache;
 
   LayoutCache() {
     this(new HashMap<Node, Node.LayoutResult>());
   }
 
-  LayoutCache(@Nullable Map<Node, Node.LayoutResult> cacheResult) {
+  LayoutCache(@Nullable Map cacheResult) {
     mWriteCache = new HashMap<>();
     if (cacheResult == null) {
       mReadCache = new HashMap<>();
@@ -47,7 +47,15 @@ public class LayoutCache {
   }
 
   public Node.LayoutResult get(Node node) {
-    return mReadCache.get(node);
+    return (Node.LayoutResult) mReadCache.get(node);
+  }
+
+  public <T> void put(long uniqueId, T value) {
+    mWriteCache.put(uniqueId, value);
+  }
+
+  public <T> T get(long uniqueId) {
+    return (T) mReadCache.get(uniqueId);
   }
 
   Map<Node, Node.LayoutResult> getWriteCache() {
