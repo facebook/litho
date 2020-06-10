@@ -32,7 +32,6 @@ public class MountDelegate {
   private final List<MountDelegateExtension> mMountDelegateExtensions = new ArrayList<>();
   private final MountDelegateTarget mMountDelegateTarget;
   private boolean mReferenceCountingEnabled = false;
-  private MountDelegateExtension mTransitionsExtension;
 
   // RenderCore MountState API
   public interface MountDelegateTarget {
@@ -95,18 +94,14 @@ public class MountDelegate {
         mReferenceCountingEnabled || mountDelegateExtension.canPreventMount();
   }
 
-  public void addTransitionsExtension(MountDelegateExtension mountDelegateExtension) {
-    addExtension(mountDelegateExtension);
-    mTransitionsExtension = mountDelegateExtension;
-  }
-
   // TODO remove this
   boolean isAnimationLocked(RenderTreeNode renderTreeNode, int position) {
-    if (mTransitionsExtension == null) {
-      return mMountDelegateTarget.isAnimationLocked(position);
-    }
+    return mMountDelegateTarget.isAnimationLocked(position);
+  }
 
-    return mTransitionsExtension.ownsReference(renderTreeNode);
+  // TODO remove when isAnimationLocked is completely removed.
+  List<MountDelegateExtension> getMountDelegateExtensions() {
+    return mMountDelegateExtensions;
   }
 
   Object getContentAt(int position) {
