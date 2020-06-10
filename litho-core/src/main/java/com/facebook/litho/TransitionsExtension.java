@@ -20,6 +20,7 @@ import static com.facebook.litho.LayoutOutput.getLayoutOutput;
 import static com.facebook.litho.ThreadUtils.assertMainThread;
 import static com.facebook.rendercore.MountState.ROOT_HOST_ID;
 
+import android.content.Context;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
@@ -32,6 +33,7 @@ import com.facebook.rendercore.MountDelegate.MountDelegateInput;
 import com.facebook.rendercore.MountDelegateExtension;
 import com.facebook.rendercore.MountItem;
 import com.facebook.rendercore.RenderTreeNode;
+import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.UnmountDelegateExtension;
 import com.facebook.rendercore.utils.BoundsUtils;
 import java.util.ArrayList;
@@ -45,7 +47,8 @@ import java.util.Set;
 public class TransitionsExtension extends MountDelegateExtension
     implements HostListenerExtension<TransitionsExtension.TransitionsExtensionInput>,
         TransitionManager.OnAnimationCompleteListener<EventHandler<TransitionEndEvent>>,
-        UnmountDelegateExtension {
+        UnmountDelegateExtension,
+        RenderUnit.Binder<LithoRenderUnit, Object> {
 
   private final Map<TransitionId, OutputUnitsAffinityGroup<MountItem>> mDisappearingMountItems =
       new LinkedHashMap<>();
@@ -103,7 +106,11 @@ public class TransitionsExtension extends MountDelegateExtension
       mLastMountedLayoutState = null;
     }
 
-    updateTransitions(layoutState, ((LithoView) mLithoView).getComponentTree());
+    for (int i = 0, size = mInput.getMountableOutputCount(); i < size; i++) {
+      mInput.getMountableOutputAt(i).getRenderUnit().addAttachDetachExtension(this);
+    }
+
+    updateTransitions((LayoutState) mInput, ((LithoView) mLithoView).getComponentTree());
     extractDisappearingItems(layoutState);
 
     final int componentTreeId = layoutState.getComponentTreeId();
@@ -135,6 +142,37 @@ public class TransitionsExtension extends MountDelegateExtension
   public void onUnbind() {
     resetAcquiredReferences();
   }
+
+  @Override
+  public boolean shouldUpdate(
+      LithoRenderUnit currentValue,
+      LithoRenderUnit newValue,
+      @Nullable Object currentLayoutData,
+      @Nullable Object nextLayoutData) {
+    return true;
+  }
+
+  @Override
+  public void bind(
+      Context context,
+      com.facebook.rendercore.Host host,
+      Object content,
+      LithoRenderUnit lithoRenderUnit,
+      @Nullable Object layoutData) {
+    final LayoutOutput output = lithoRenderUnit.output;
+    if (ownsReference(lithoRenderUnit.getId()) && output.getComponent().hasChildLithoViews()) {
+      final View view = (View) content;
+      MountUtils.ensureAllLithoViewChildrenAreMounted(view);
+    }
+  }
+
+  @Override
+  public void unbind(
+      Context context,
+      com.facebook.rendercore.Host host,
+      Object o,
+      LithoRenderUnit lithoRenderUnit,
+      @Nullable Object layoutData) {}
 
   /**
    * Creates and updates transitions for a new LayoutState. The steps are as follows:

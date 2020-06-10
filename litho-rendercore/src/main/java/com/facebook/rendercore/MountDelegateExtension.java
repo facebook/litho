@@ -77,7 +77,11 @@ public class MountDelegateExtension {
 
   // TODO make protected when removing isAnimationLocked.
   public boolean ownsReference(RenderTreeNode renderTreeNode) {
-    return mLayoutOutputMountRefs.contains(renderTreeNode.getRenderUnit().getId());
+    return ownsReference(renderTreeNode.getRenderUnit().getId());
+  }
+
+  protected boolean ownsReference(long id) {
+    return mLayoutOutputMountRefs.contains(id);
   }
 
   @VisibleForTesting(otherwise = 4)

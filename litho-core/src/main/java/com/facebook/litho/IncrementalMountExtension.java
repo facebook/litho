@@ -129,14 +129,6 @@ public class IncrementalMountExtension extends MountDelegateExtension
       final boolean hasAcquiredMountRef = ownsReference(renderTreeNode);
       if (isMountable && !hasAcquiredMountRef) {
         acquireMountReference(renderTreeNode, i, mInput, isMounting);
-        if (isAnimationLocked(renderTreeNode, i) && component.hasChildLithoViews()) {
-          // If the component is locked for animation then we need to make sure that all the
-          // children are also mounted.
-          final View view = (View) content;
-          // We're mounting everything, don't process visibility outputs as they will not be
-          // accurate.
-          mountViewIncrementally(view, true);
-        }
       } else if (!isMountable && hasAcquiredMountRef) {
         releaseMountReference(renderTreeNode, i, isMounting);
       } else if (isMountable && hasAcquiredMountRef) {

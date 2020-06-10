@@ -129,6 +129,98 @@ public class MountStateIncrementalMountWithTransitionsTest {
     assertThat(lifecycleTracker3.getSteps()).contains(LifecycleStep.ON_MOUNT);
   }
 
+  @Test
+  public void incrementalMount_animatingComponentWithChildrenLithoView_mountLithoViewsOffScreen() {
+    final LifecycleTracker lifecycleTracker0 = new LifecycleTracker();
+    final LifecycleTracker lifecycleTracker1 = new LifecycleTracker();
+
+    final MountSpecLifecycleTester component0 =
+        MountSpecLifecycleTester.create(mLithoViewRule.getContext())
+            .lifecycleTracker(lifecycleTracker0)
+            .intrinsicSize(new Size(10, 40))
+            .build();
+
+    List<Component> animatingComponents = new ArrayList<>();
+    animatingComponents.add(
+        MountSpecLifecycleTester.create(mLithoViewRule.getContext())
+            .lifecycleTracker(lifecycleTracker1)
+            .intrinsicSize(new Size(40, 40))
+            .widthPx(40)
+            .heightPx(40)
+            .build());
+
+    final SectionContext sectionContext = new SectionContext(mLithoViewRule.getContext());
+    final RecyclerBinderConfiguration binderConfig =
+        RecyclerBinderConfiguration.create().lithoViewFactory(getLithoViewFactory()).build();
+    RecyclerConfiguration config =
+        ListRecyclerConfiguration.create()
+            .orientation(0)
+            .recyclerBinderConfiguration(binderConfig)
+            .build();
+
+    final Component childOfAnimatingComponent =
+        RecyclerCollectionComponent.create(mLithoViewRule.getContext())
+            .heightPx(40)
+            .topPaddingPx(40)
+            .section(
+                TestSingleComponentListSection.create(sectionContext)
+                    .data(animatingComponents)
+                    .build())
+            .recyclerConfiguration(config)
+            .build();
+
+    TestAnimationsComponentSpec.TestComponent partiallyVisibleAnimatingComponent =
+        new TestAnimationsComponentSpec.TestComponent() {
+          @Override
+          public Component getComponent(ComponentContext componentContext, boolean state) {
+            if (!state) {
+              return Column.create(componentContext)
+                  .alignItems(state ? YogaAlign.FLEX_START : YogaAlign.FLEX_END)
+                  .child(
+                      Column.create(componentContext)
+                          .flexGrow(1)
+                          .child(component0)
+                          .transitionKey("transitionkey_root")
+                          .build())
+                  .build();
+            }
+
+            return Column.create(componentContext)
+                .alignItems(state ? YogaAlign.FLEX_START : YogaAlign.FLEX_END)
+                .child(
+                    Column.create(componentContext)
+                        .flexGrow(1)
+                        .child(component0)
+                        .child(childOfAnimatingComponent)
+                        .transitionKey("transitionkey_root")
+                        .build())
+                .build();
+          }
+        };
+
+    final TestAnimationsComponent root =
+        TestAnimationsComponent.create(mLithoViewRule.getContext())
+            .stateCaller(mStateCaller)
+            .transition(
+                Transition.sequence(
+                    Transition.create("transitionkey_root")
+                        .animator(Transition.timing(144))
+                        .animate(AnimatedProperties.X)))
+            .testComponent(partiallyVisibleAnimatingComponent)
+            .build();
+
+    mLithoViewRule
+        .setRoot(root)
+        .setSizeSpecs(SizeSpec.makeSizeSpec(40, EXACTLY), SizeSpec.makeSizeSpec(80, EXACTLY));
+    mLithoViewRule.attachToWindow().measure().layout();
+
+    assertThat(lifecycleTracker0.isMounted()).isTrue();
+    assertThat(lifecycleTracker1.isMounted()).isFalse();
+    mStateCaller.update();
+
+    assertThat(lifecycleTracker1.isMounted()).isTrue();
+  }
+
   final Component getPartiallyVisibleRootWithAnimatingComponents(
       List<LifecycleTracker> animatingComponentTrackers) {
 

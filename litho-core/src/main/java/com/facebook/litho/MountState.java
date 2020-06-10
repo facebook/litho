@@ -606,6 +606,7 @@ class MountState
 
       if (!isMounted) {
         mountLayoutOutput(i, renderTreeNode, layoutOutput, layoutState);
+        mountComponentToContentApplyBinders(i, component, getItemAt(i).getContent());
       } else {
         final boolean useUpdateValueFromLayoutOutput =
             mLastMountedLayoutState != null
@@ -663,6 +664,25 @@ class MountState
     LithoStats.incrementComponentMountCount();
 
     mIsMounting = false;
+  }
+
+  private void mountComponentToContentApplyBinders(
+      int position, Component component, Object content) {
+    if (mTransitionsExtension == null) {
+      if (isAnimationLocked(position) && component.hasChildLithoViews()) {
+        // If the component is locked for animation then we need to make sure that all the
+        // children are also mounted.
+        final View view = (View) content;
+        // We're mounting everything, don't process visibility outputs as they will not be
+        // accurate.
+        mountViewIncrementally(view, false);
+      }
+    } else {
+      final MountItem mountItem = getItemAt(position);
+      final LithoRenderUnit renderUnit =
+          (LithoRenderUnit) mountItem.getRenderTreeNode().getRenderUnit();
+      mTransitionsExtension.bind(mContext.getAndroidContext(), null, content, renderUnit, content);
+    }
   }
 
   private boolean isMountable(RenderTreeNode renderTreeNode, int position) {
