@@ -159,20 +159,6 @@ public abstract class RenderUnit<MOUNT_CONTENT> implements Copyable {
         (Binder<RenderUnit<MOUNT_CONTENT>, MOUNT_CONTENT>) binder);
   }
 
-  /** removes an extension function previously added with addMountUnmountExtension */
-  public void removeMountUnmountExtension(Binder binder) {
-    if (mMountUnmountFunctionsWithExtensions != null) {
-      mMountUnmountFunctionsWithExtensions.remove(binder);
-    }
-  }
-
-  /** removes an extension function previously added with addMountUnmountExtension */
-  public void removeAttachDetachExtension(Binder binder) {
-    if (mAttachDetachFunctionsWithExtensions != null) {
-      mAttachDetachFunctionsWithExtensions.remove(binder);
-    }
-  }
-
   /**
    * Represents a single bind function. Every bind has an equivalent unbind and a shouldUpdate
    * callback
