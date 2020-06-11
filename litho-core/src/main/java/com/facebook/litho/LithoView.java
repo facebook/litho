@@ -704,16 +704,7 @@ public class LithoView extends Host {
 
   @Override
   boolean isInTransientState() {
-    if (hasTransientState()) {
-      return true;
-    }
-
-    if (getParent() instanceof View) {
-      View parent = (View) getParent();
-      return parent.hasTransientState();
-    }
-
-    return false;
+    return hasTransientState();
   }
 
   /** Change the root component synchronously. */

@@ -25,6 +25,7 @@ import static com.facebook.litho.testing.helper.ComponentTestHelper.unbindCompon
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import android.graphics.Rect;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import com.facebook.litho.config.ComponentsConfiguration;
@@ -1335,6 +1336,47 @@ public class VisibilityEventsTest {
 
     mLithoView.setHasTransientState(false);
     assertThat(content.getDispatchedEventHandlers()).contains(visibleEventHandler);
+  }
+
+  @Test
+  public void
+      visibilityOutputs_setTransientStateFalse_parentInTransientState_processVisibilityOutputs() {
+    final TestComponent content = create(mContext).build();
+    final EventHandler<VisibleEvent> visibleEventHandler = new EventHandler<>(content, 2);
+    final Component root =
+        Column.create(mContext)
+            .child(
+                Wrapper.create(mContext)
+                    .delegate(content)
+                    .visibleHandler(visibleEventHandler)
+                    .widthPx(10)
+                    .heightPx(10))
+            .build();
+
+    final View view = (View) mLithoView.getParent();
+    view.setHasTransientState(true);
+
+    mLithoViewRule
+        .useComponentTree(ComponentTree.create(mContext).build())
+        .setRoot(root)
+        .attachToWindow()
+        .setSizeSpecs(makeSizeSpec(100, EXACTLY), makeSizeSpec(100, EXACTLY))
+        .measure()
+        .layout();
+
+    mLithoView.notifyVisibleBoundsChanged(new Rect(0, -10, 10, -5), true);
+    content.getDispatchedEventHandlers().clear();
+
+    mLithoView.setHasTransientState(true);
+    assertThat(content.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler);
+
+    mLithoView.setMountStateDirty();
+    mLithoView.notifyVisibleBoundsChanged(new Rect(0, -10, 10, -5), true);
+    assertThat(content.getDispatchedEventHandlers()).doesNotContain(visibleEventHandler);
+
+    mLithoView.setHasTransientState(false);
+    assertThat(content.getDispatchedEventHandlers()).contains(visibleEventHandler);
+    view.setHasTransientState(false);
   }
 
   @Test
