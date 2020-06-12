@@ -30,7 +30,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-/** Unit tests for KState. */
+/** Unit tests for [useState]. */
 @RunWith(LithoTestRunner::class)
 class KStateTest {
 

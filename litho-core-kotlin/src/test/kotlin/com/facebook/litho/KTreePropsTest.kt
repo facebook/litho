@@ -27,7 +27,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 
-/** Unit tests for KTreeProps. */
+/** Unit tests for [useTreeProp] and [createTreeProp]. */
 @Suppress("MagicNumber")
 @RunWith(LithoTestRunner::class)
 class KTreePropsTest {

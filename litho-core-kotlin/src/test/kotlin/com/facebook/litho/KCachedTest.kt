@@ -28,7 +28,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 
-/** Unit tests for KCached. */
+/** Unit tests for [useCached]. */
 @Suppress("MagicNumber")
 @RunWith(LithoTestRunner::class)
 class KCachedTest {
