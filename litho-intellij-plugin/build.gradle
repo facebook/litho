@@ -43,5 +43,5 @@ dependencies {
 }
 
 intellij {
-    version '2018.1'
+    version '2019.1'
 }
