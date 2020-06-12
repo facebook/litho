@@ -105,7 +105,6 @@ If not specified, the default width or height ratio is 1f.
 
 ### Changing LithoView visibility
 There are cases when you need to trigger visibility events on the LithoView components because the UI visibility changed, but the UI did not receive any callback to inform it of this change. An example is when a new activity is added to the back stack, covering the UI. In such cases you can call `setVisibilityHint` on the `LithoView` to tell the UI whether it is visible or not. You may want to do this when `Fragment#setUserVisibleHint` or `onResume/onPause` are called.
-An example is when `Fragment#setUserVisibleHint` or `onResume/onPaused` are called.
 
 Example usage:
 ```java
