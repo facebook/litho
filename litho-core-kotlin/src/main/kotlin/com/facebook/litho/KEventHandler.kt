@@ -44,4 +44,13 @@ class KEventHandler<E : Any>(
   override fun getEventDispatcher(): EventDispatcher {
     return this
   }
+
+  override fun isEquivalentTo(other: EventHandler<*>?): Boolean {
+    if (this === other) return true
+    if (javaClass != other?.javaClass) return false
+
+    other as KEventHandler<*>
+
+    return onEvent == other.onEvent
+  }
 }
