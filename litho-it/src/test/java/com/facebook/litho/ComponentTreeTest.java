@@ -113,10 +113,9 @@ public class ComponentTreeTest {
   private void creationCommonChecks(ComponentTree componentTree) {
     // Not view or attached yet
     Assert.assertNull(componentTree.getLithoView());
-    Assert.assertFalse(isAttached(componentTree));
 
     // The component input should be the one we passed in
-    Assert.assertSame(mComponent, Whitebox.getInternalState(componentTree, "mRoot"));
+    Assert.assertSame(mComponent, componentTree.getRoot());
   }
 
   private void postSizeSpecChecks(ComponentTree componentTree) {
@@ -127,9 +126,6 @@ public class ComponentTreeTest {
     // Spec specified in create
 
     assertThat(componentTreeHasSizeSpec(componentTree)).isTrue();
-    assertThat((int) getInternalState(componentTree, "mWidthSpec")).isEqualTo(widthSpec);
-
-    assertThat((int) getInternalState(componentTree, "mHeightSpec")).isEqualTo(heightSpec);
 
     LayoutState mainThreadLayoutState = componentTree.getMainThreadLayoutState();
     LayoutState committedLayoutState = componentTree.getCommittedLayoutState();
@@ -160,7 +156,7 @@ public class ComponentTreeTest {
         ComponentContext.withComponentScope(mContext, Row.create(mContext).build());
     ComponentTree componentTree = ComponentTree.create(scopedContext, mComponent).build();
 
-    ComponentContext c = Whitebox.getInternalState(componentTree, "mContext");
+    ComponentContext c = componentTree.getContext();
     Assert.assertNull(c.getComponentScope());
   }
 
@@ -180,10 +176,8 @@ public class ComponentTreeTest {
     // Only fields changed but no layout is done yet.
 
     assertThat(componentTreeHasSizeSpec(componentTree)).isTrue();
-    assertThat((int) getInternalState(componentTree, "mWidthSpec")).isEqualTo(mWidthSpec);
-    assertThat((int) getInternalState(componentTree, "mHeightSpec")).isEqualTo(mHeightSpec);
-    Assert.assertNull(getInternalState(componentTree, "mMainThreadLayoutState"));
-    Assert.assertNull(getInternalState(componentTree, "mCommittedLayoutState"));
+    Assert.assertNull(componentTree.getMainThreadLayoutState());
+    Assert.assertNull(componentTree.getCommittedLayoutState());
 
     // Now the background thread run the queued task.
     mLayoutThreadShadowLooper.runOneTask();
@@ -594,8 +588,8 @@ public class ComponentTreeTest {
     componentTree.setRoot(mComponent);
 
     creationCommonChecks(componentTree);
-    Assert.assertNull(Whitebox.getInternalState(componentTree, "mMainThreadLayoutState"));
-    Assert.assertNull(Whitebox.getInternalState(componentTree, "mCommittedLayoutState"));
+    Assert.assertNull(componentTree.getMainThreadLayoutState());
+    Assert.assertNull(componentTree.getCommittedLayoutState());
 
     componentTree.setSizeSpec(mWidthSpec, mHeightSpec);
 
@@ -1804,10 +1798,6 @@ public class ComponentTreeTest {
     componentTree.putCachedValue("key1", "value1");
     assertThat(componentTree.getCachedValue("key1")).isEqualTo("value1");
     assertThat(componentTree.getCachedValue("key2")).isNull();
-  }
-
-  private static boolean isAttached(ComponentTree componentTree) {
-    return Whitebox.getInternalState(componentTree, "mIsAttached");
   }
 
   // TODO(T37885964): Fix me
