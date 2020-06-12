@@ -64,6 +64,8 @@ public interface CommonProps extends CommonPropsCopyable, LayoutProps {
 
   void duplicateParentState(boolean duplicateParentState);
 
+  void duplicateChildrenStates(boolean duplicateChildrenStates);
+
   void border(Border border);
 
   void stateListAnimator(@Nullable StateListAnimator stateListAnimator);

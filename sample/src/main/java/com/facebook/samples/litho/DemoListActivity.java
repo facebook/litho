@@ -35,6 +35,7 @@ import com.facebook.samples.litho.changesetdebug.ItemsRerenderingActivity;
 import com.facebook.samples.litho.changesetdebug.PropUpdatingActivity;
 import com.facebook.samples.litho.changesetdebug.ScrollingToBottomActivity;
 import com.facebook.samples.litho.changesetdebug.StateResettingActivity;
+import com.facebook.samples.litho.duplicatestate.DuplicateStateActivity;
 import com.facebook.samples.litho.dynamicprops.DynamicPropsActivity;
 import com.facebook.samples.litho.errors.ErrorHandlingActivity;
 import com.facebook.samples.litho.fastscroll.FastScrollHandleActivity;
@@ -97,7 +98,8 @@ public class DemoListActivity extends NavigatableDemoActivity {
                   new DemoListDataModel(
                       "Custom Event Trigger", CustomEventTriggerExampleActivity.class),
                   new DemoListDataModel("Tooltip Trigger", TooltipTriggerExampleActivity.class))),
-          new DemoListDataModel("Component Lifecycle Example", LifecycleDelegateActivity.class));
+          new DemoListDataModel("Component Lifecycle Example", LifecycleDelegateActivity.class),
+          new DemoListDataModel("Duplicate Parent/Child State", DuplicateStateActivity.class));
 
   @Override
   public void onCreate(Bundle savedInstanceState) {

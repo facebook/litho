@@ -27,15 +27,16 @@ import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
-import com.facebook.litho.testing.TestDrawableComponent;
+import com.facebook.litho.testing.helper.ComponentTestHelper;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
+import com.facebook.litho.widget.SimpleMountSpecTester;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(LithoTestRunner.class)
-public class DuplicateParentStateTest {
+public class DuplicateParentChildrenStateTest {
 
   private int mUnspecifiedSizeSpec;
 
@@ -45,7 +46,7 @@ public class DuplicateParentStateTest {
   }
 
   @Test
-  public void testDuplicateParentStateAvoidedIfRedundant() {
+  public void duplicateParentState_avoidedIfRedundant() {
     final Component component =
         new InlineLayoutSpec() {
           @Override
@@ -56,19 +57,19 @@ public class DuplicateParentStateTest {
                 .child(
                     create(c)
                         .duplicateParentState(false)
-                        .child(TestDrawableComponent.create(c).duplicateParentState(true)))
+                        .child(SimpleMountSpecTester.create(c).duplicateParentState(true)))
                 .child(
                     create(c)
                         .duplicateParentState(true)
-                        .child(TestDrawableComponent.create(c).duplicateParentState(true)))
+                        .child(SimpleMountSpecTester.create(c).duplicateParentState(true)))
                 .child(
                     create(c)
                         .clickHandler(c.newEventHandler(2))
-                        .child(TestDrawableComponent.create(c).duplicateParentState(true)))
+                        .child(SimpleMountSpecTester.create(c).duplicateParentState(true)))
                 .child(
                     create(c)
                         .clickHandler(c.newEventHandler(3))
-                        .child(TestDrawableComponent.create(c).duplicateParentState(false)))
+                        .child(SimpleMountSpecTester.create(c).duplicateParentState(false)))
                 .child(
                     create(c)
                         .clickHandler(c.newEventHandler(3))
@@ -123,5 +124,30 @@ public class DuplicateParentStateTest {
     assertFalse(
         "Foreground should duplicate non-clickable node state",
         isDuplicateParentState(getLayoutOutput(layoutState.getMountableOutputAt(11)).getFlags()));
+  }
+
+  @Test
+  public void duplicateChildrenStates_passedToView() {
+    final Component component =
+        new InlineLayoutSpec() {
+          @Override
+          protected Component onCreateLayout(ComponentContext c) {
+            return Row.create(c)
+                .child(
+                    Row.create(c)
+                        .duplicateChildrenStates(true)
+                        .child(SimpleMountSpecTester.create(c).focusable(true))
+                        .child(SimpleMountSpecTester.create(c).clickable(true)))
+                .build();
+          }
+        };
+
+    LithoView lv =
+        ComponentTestHelper.mountComponent(
+            new ComponentContext(getApplicationContext()), component);
+
+    final Object secondMountedItem = lv.getMountState().getMountItemAt(1).getContent();
+    assertTrue(secondMountedItem instanceof ComponentHost);
+    assertTrue(((ComponentHost) secondMountedItem).addStatesFromChildren());
   }
 }

@@ -646,6 +646,10 @@ public class ComponentHost extends Host {
 
   private void mountView(View view, int flags) {
     view.setDuplicateParentStateEnabled(LayoutOutput.isDuplicateParentState(flags));
+    if (view instanceof ComponentHost) {
+      ((ComponentHost) view)
+          .setAddStatesFromChildren(LayoutOutput.isDuplicateChildrenStates(flags));
+    }
 
     mIsChildDrawingOrderDirty = true;
 

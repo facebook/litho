@@ -123,6 +123,7 @@ public class DefaultInternalNode extends Node implements InternalNode, Cloneable
   private static final long PFLAG_STATE_LIST_ANIMATOR_RES_SET = 1L << 30;
   private static final long PFLAG_VISIBLE_RECT_CHANGED_HANDLER_IS_SET = 1L << 31;
   private static final long PFLAG_TRANSITION_KEY_TYPE_IS_SET = 1L << 32;
+  private static final long PFLAG_DUPLICATE_CHILDREN_STATES_IS_SET = 1L << 33;
 
   private YogaNode mYogaNode;
   private ComponentContext mComponentContext;
@@ -160,6 +161,7 @@ public class DefaultInternalNode extends Node implements InternalNode, Cloneable
   private @Nullable List<Component> mUnresolvedComponents;
 
   private boolean mDuplicateParentState;
+  private boolean mDuplicateChildrenStates;
   private boolean mForceViewWrapping;
   private boolean mCachedMeasuresValid;
 
@@ -376,6 +378,13 @@ public class DefaultInternalNode extends Node implements InternalNode, Cloneable
   public InternalNode duplicateParentState(boolean duplicateParentState) {
     mPrivateFlags |= PFLAG_DUPLICATE_PARENT_STATE_IS_SET;
     mDuplicateParentState = duplicateParentState;
+    return this;
+  }
+
+  @Override
+  public InternalNode duplicateChildrenStates(boolean duplicateChildrenStates) {
+    mPrivateFlags |= PFLAG_DUPLICATE_CHILDREN_STATES_IS_SET;
+    mDuplicateChildrenStates = duplicateChildrenStates;
     return this;
   }
 
@@ -979,6 +988,11 @@ public class DefaultInternalNode extends Node implements InternalNode, Cloneable
   }
 
   @Override
+  public boolean isDuplicateChildrenStatesEnabled() {
+    return mDuplicateChildrenStates;
+  }
+
+  @Override
   public boolean isForceViewWrapping() {
     return mForceViewWrapping;
   }
@@ -1476,6 +1490,9 @@ public class DefaultInternalNode extends Node implements InternalNode, Cloneable
     }
     if ((mPrivateFlags & PFLAG_DUPLICATE_PARENT_STATE_IS_SET) != 0L) {
       target.duplicateParentState(mDuplicateParentState);
+    }
+    if ((mPrivateFlags & PFLAG_DUPLICATE_CHILDREN_STATES_IS_SET) != 0L) {
+      target.duplicateChildrenStates(mDuplicateChildrenStates);
     }
     if ((mPrivateFlags & PFLAG_BACKGROUND_IS_SET) != 0L) {
       target.background(mBackground);

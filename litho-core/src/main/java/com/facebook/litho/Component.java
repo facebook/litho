@@ -980,7 +980,7 @@ public abstract class Component extends ComponentLifecycle
      * parent.
      *
      * <p>In the following example, when {@code Row} gets pressed state, its child {@code
-     * OtherStatefulDrawable} will get that pressed state within itself, too:
+     * OtherStatefulDrawable} will get that pressed state within itself too:
      *
      * <pre>{@code
      * Row.create(c)
@@ -990,9 +990,34 @@ public abstract class Component extends ComponentLifecycle
      *         OtherStatefulDrawable.create(c)
      *             .duplicateParentState(true))
      * }</pre>
+     *
+     * @see {@link android.view.View#setDuplicateParentStateEnabled(boolean)}
      */
     public T duplicateParentState(boolean duplicateParentState) {
       mComponent.getOrCreateCommonProps().duplicateParentState(duplicateParentState);
+      return getThis();
+    }
+
+    /**
+     * If true, component applies all of its children's drawable states (focused, pressed, etc.) to
+     * itself.
+     *
+     * <p>In the following example, when {@code OtherStatefulDrawable} gets pressed state, its
+     * parent {@code Row} will also get that pressed state within itself:
+     *
+     * <pre>{@code
+     * Row.create(c)
+     *     .drawable(stateListDrawable)
+     *     .duplicateChildrenStates(true)
+     *     .child(
+     *         OtherStatefulDrawable.create(c)
+     *             .clickable(true))
+     * }</pre>
+     *
+     * @see {@link ViewGroup#setAddStatesFromChildren(boolean)}
+     */
+    public T duplicateChildrenStates(boolean duplicateChildrenStates) {
+      mComponent.getOrCreateCommonProps().duplicateChildrenStates(duplicateChildrenStates);
       return getThis();
     }
 

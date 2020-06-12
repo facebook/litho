@@ -3,6 +3,7 @@
 ## Version 0.36.1-SNAPSHOT
 
 _TBA_
+* New: Add `.duplicateChildrenStates(boolean)` method to `Component` which passes the flag to [`ViewGroup#setAddStatesFromChildren(boolean)`](https://developer.android.com/reference/android/view/ViewGroup#setAddStatesFromChildren(boolean)). When this flag is set to true, the component applies all of its children's drawable states (focused, pressed, etc.) to itself.
 * Fix: Fix showing vertical scrollbar with `VerticalScrollSpec`. Default behaviour is scrollbars disabled.
 
 For more details, see the [full diff](https://github.com/facebook/litho/compare/v0.36.0...master).

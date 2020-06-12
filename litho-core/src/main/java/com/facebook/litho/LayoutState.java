@@ -35,6 +35,7 @@ import static com.facebook.litho.FrameworkLogEvents.PARAM_LAYOUT_STATE_SOURCE;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_TREE_DIFF_ENABLED;
 import static com.facebook.litho.LayoutOutput.LAYOUT_FLAG_DISABLE_TOUCHABLE;
 import static com.facebook.litho.LayoutOutput.LAYOUT_FLAG_DRAWABLE_OUTPUTS_DISABLED;
+import static com.facebook.litho.LayoutOutput.LAYOUT_FLAG_DUPLICATE_CHILDREN_STATES;
 import static com.facebook.litho.LayoutOutput.LAYOUT_FLAG_DUPLICATE_PARENT_STATE;
 import static com.facebook.litho.LayoutOutput.LAYOUT_FLAG_MATCH_HOST_BOUNDS;
 import static com.facebook.litho.NodeInfo.CLICKABLE_SET_TRUE;
@@ -395,6 +396,7 @@ public class LayoutState
         true /* useNodePadding */,
         node.getImportantForAccessibility(),
         layoutState.mShouldDuplicateParentState,
+        false,
         hasHostView);
   }
 
@@ -439,6 +441,7 @@ public class LayoutState
             false /* useNodePadding */,
             node.getImportantForAccessibility(),
             node.isDuplicateParentStateEnabled(),
+            node.isDuplicateChildrenStatesEnabled(),
             false);
 
     ViewNodeInfo viewNodeInfo = hostOutput.getViewNodeInfo();
@@ -467,6 +470,7 @@ public class LayoutState
         false /* useNodePadding */,
         IMPORTANT_FOR_ACCESSIBILITY_NO,
         layoutState.mShouldDuplicateParentState,
+        false,
         hasHostView);
   }
 
@@ -478,6 +482,7 @@ public class LayoutState
       boolean useNodePadding,
       int importantForAccessibility,
       boolean duplicateParentState,
+      boolean duplicateChildrenStates,
       boolean hasHostView) {
     final boolean isMountViewSpec = isMountViewSpec(component);
 
@@ -556,6 +561,10 @@ public class LayoutState
 
     if (duplicateParentState) {
       flags |= LAYOUT_FLAG_DUPLICATE_PARENT_STATE;
+    }
+
+    if (duplicateChildrenStates) {
+      flags |= LAYOUT_FLAG_DUPLICATE_CHILDREN_STATES;
     }
 
     final TransitionId transitionId;
@@ -678,7 +687,10 @@ public class LayoutState
                 || (nodeInfo != null && !TextUtils.isEmpty(nodeInfo.getContentDescription()))
                 || importantForAccessibility != IMPORTANT_FOR_ACCESSIBILITY_AUTO);
 
-    return hasBackgroundOrForeground || hasAccessibilityContent || hasViewAttributes(nodeInfo);
+    return hasBackgroundOrForeground
+        || hasAccessibilityContent
+        || node.isDuplicateChildrenStatesEnabled()
+        || hasViewAttributes(nodeInfo);
   }
 
   private static boolean hasViewAttributes(@Nullable NodeInfo nodeInfo) {

@@ -170,6 +170,11 @@ class CommonPropsHolder implements CommonProps {
   }
 
   @Override
+  public void duplicateChildrenStates(boolean duplicateChildrenStates) {
+    getOrCreateOtherProps().duplicateChildrenStates(duplicateChildrenStates);
+  }
+
+  @Override
   public void marginPx(YogaEdge edge, @Px int margin) {
     getOrCreateLayoutProps().marginPx(edge, margin);
   }
@@ -668,6 +673,7 @@ class CommonPropsHolder implements CommonProps {
     private static final int PFLAG_STATE_LIST_ANIMATOR_RES_IS_SET = 1 << 15;
     private static final int PFLAG_VISIBILITY_CHANGED_HANDLER_IS_SET = 1 << 16;
     private static final int PFLAG_TRANSITION_KEY_TYPE_IS_SET = 1 << 17;
+    private static final int PFLAG_DUPLICATE_CHILDREN_STATES_IS_SET = 1 << 18;
 
     private int mPrivateFlags;
 
@@ -681,6 +687,7 @@ class CommonPropsHolder implements CommonProps {
     @Nullable private EventHandler<VisibilityChangedEvent> mVisibilityChangedHandler;
     private int mImportantForAccessibility;
     private boolean mDuplicateParentState;
+    private boolean mDuplicateChildrenStates;
     @Nullable private Edges mTouchExpansions;
     @Nullable private Drawable mForeground;
     @Nullable private String mTransitionOwnerKey;
@@ -698,6 +705,11 @@ class CommonPropsHolder implements CommonProps {
     private void duplicateParentState(boolean duplicateParentState) {
       mPrivateFlags |= PFLAG_DUPLICATE_PARENT_STATE_IS_SET;
       mDuplicateParentState = duplicateParentState;
+    }
+
+    private void duplicateChildrenStates(boolean duplicateChildrenStates) {
+      mPrivateFlags |= PFLAG_DUPLICATE_CHILDREN_STATES_IS_SET;
+      mDuplicateChildrenStates = duplicateChildrenStates;
     }
 
     private void border(@Nullable Border border) {
@@ -789,6 +801,9 @@ class CommonPropsHolder implements CommonProps {
       }
       if ((mPrivateFlags & PFLAG_DUPLICATE_PARENT_STATE_IS_SET) != 0L) {
         node.duplicateParentState(mDuplicateParentState);
+      }
+      if ((mPrivateFlags & PFLAG_DUPLICATE_CHILDREN_STATES_IS_SET) != 0L) {
+        node.duplicateChildrenStates(mDuplicateChildrenStates);
       }
       if ((mPrivateFlags & PFLAG_FOREGROUND_IS_SET) != 0L) {
         node.foreground(mForeground);

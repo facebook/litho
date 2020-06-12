@@ -40,6 +40,7 @@ class LayoutOutput implements Cloneable, AnimatableItem {
   static final int LAYOUT_FLAG_DISABLE_TOUCHABLE = 1 << 1;
   static final int LAYOUT_FLAG_MATCH_HOST_BOUNDS = 1 << 2;
   static final int LAYOUT_FLAG_DRAWABLE_OUTPUTS_DISABLED = 1 << 3;
+  static final int LAYOUT_FLAG_DUPLICATE_CHILDREN_STATES = 1 << 4;
 
   @IntDef({STATE_UPDATED, STATE_UNKNOWN, STATE_DIRTY})
   @Retention(RetentionPolicy.SOURCE)
@@ -263,6 +264,10 @@ class LayoutOutput implements Cloneable, AnimatableItem {
 
   static boolean isDuplicateParentState(int flags) {
     return (flags & LAYOUT_FLAG_DUPLICATE_PARENT_STATE) == LAYOUT_FLAG_DUPLICATE_PARENT_STATE;
+  }
+
+  static boolean isDuplicateChildrenStates(int flags) {
+    return (flags & LAYOUT_FLAG_DUPLICATE_CHILDREN_STATES) == LAYOUT_FLAG_DUPLICATE_CHILDREN_STATES;
   }
 
   static boolean isTouchableDisabled(int flags) {

@@ -129,6 +129,11 @@ class NoOpInternalNode implements InternalNode {
   }
 
   @Override
+  public @Nullable InternalNode duplicateChildrenStates(boolean duplicateChildState) {
+    return null;
+  }
+
+  @Override
   public @Nullable InternalNode flexBasisAuto() {
     return null;
   }
@@ -710,6 +715,11 @@ class NoOpInternalNode implements InternalNode {
 
   @Override
   public boolean isDuplicateParentStateEnabled() {
+    return false;
+  }
+
+  @Override
+  public boolean isDuplicateChildrenStatesEnabled() {
     return false;
   }
 

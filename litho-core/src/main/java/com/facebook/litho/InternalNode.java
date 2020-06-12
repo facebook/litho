@@ -82,6 +82,8 @@ public interface InternalNode
 
   InternalNode duplicateParentState(boolean duplicateParentState);
 
+  InternalNode duplicateChildrenStates(boolean duplicateChildState);
+
   /** Used by stetho to re-set auto value */
   InternalNode flexBasisAuto();
 
@@ -305,6 +307,8 @@ public interface InternalNode
   InternalNode invisibleHandler(@Nullable EventHandler<InvisibleEvent> invisibleHandler);
 
   boolean isDuplicateParentStateEnabled();
+
+  boolean isDuplicateChildrenStatesEnabled();
 
   boolean isForceViewWrapping();
 
