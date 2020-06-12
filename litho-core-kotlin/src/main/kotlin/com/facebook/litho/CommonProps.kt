@@ -47,6 +47,27 @@ inline fun DslScope.Clickable(
     }
 
 /**
+ * Builder for setting [onVisible], [onFocused], and [onFullImpressionVisible] event handlers for
+ * component.
+ *
+ * TODO Currently lambda captures possibly old props. Find a better option.
+ *  This will work for core Litho, but may break Sections.
+ */
+inline fun DslScope.VisibilityHandler(
+    noinline onVisible: ((VisibleEvent) -> Unit)? = null,
+    noinline onFocused: ((FocusedVisibleEvent) -> Unit)? = null,
+    noinline onFullImpression: ((FullImpressionVisibleEvent) -> Unit)? = null,
+    content: DslScope.() -> Component
+): Component =
+    content().apply {
+      getOrCreateCommonProps.apply {
+        onVisible?.let { visibleHandler(eventHandler(it)) }
+        onFocused?.let { focusedHandler(eventHandler(it)) }
+        onFullImpression?.let { fullImpressionHandler(eventHandler(it)) }
+      }
+    }
+
+/**
  * Builder for decorating a child component with [background] or [foreground].
  */
 inline fun DslScope.Decoration(
