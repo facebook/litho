@@ -36,7 +36,9 @@ import com.facebook.litho.testing.TransitionTestRule;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.TestAnimationsComponent;
 import com.facebook.litho.widget.TestAnimationsComponentSpec;
+import com.facebook.litho.widget.Text;
 import com.facebook.yoga.YogaAlign;
+import com.facebook.yoga.YogaEdge;
 import com.facebook.yoga.YogaJustify;
 import org.junit.Before;
 import org.junit.Rule;
@@ -593,6 +595,149 @@ public class AnimationTest {
 
     view = mLithoViewRule.findViewWithTag(TRANSITION_KEY);
     assertThat(view).describedAs("view after last re-measure and re-layout").isNull();
+  }
+
+  @Test
+  public void
+      animation_disappearAnimationWithRemountToRoot_elementShouldDisappearWithoutCrashing() {
+    final TestAnimationsComponent component =
+        TestAnimationsComponent.create(mLithoViewRule.getContext())
+            .stateCaller(mStateCaller)
+            .transition(
+                Transition.parallel(
+                    Transition.create("comment_editText")
+                        .animate(AnimatedProperties.ALPHA)
+                        .appearFrom(0)
+                        .disappearTo(0)
+                        .animate(AnimatedProperties.X)
+                        .appearFrom(DimensionValue.widthPercentageOffset(-50))
+                        .disappearTo(DimensionValue.widthPercentageOffset(-50)),
+                    Transition.create("cont_comment")
+                        .animate(AnimatedProperties.ALPHA)
+                        .appearFrom(0)
+                        .disappearTo(0),
+                    Transition.create("icon_like", "icon_share").animate(AnimatedProperties.X),
+                    Transition.create("text_like", "text_share")
+                        .animate(AnimatedProperties.ALPHA)
+                        .appearFrom(0)
+                        .disappearTo(0)
+                        .animate(AnimatedProperties.X)
+                        .appearFrom(DimensionValue.widthPercentageOffset(50))
+                        .disappearTo(DimensionValue.widthPercentageOffset(50))))
+            .testComponent(
+                new TestAnimationsComponentSpec
+                    .TestComponent() { // This could be a lambda but it fails ci.
+                  @Override
+                  public Component getComponent(ComponentContext c, boolean state) {
+                    return !state
+                        ? Row.create(c)
+                            .backgroundColor(Color.WHITE)
+                            .heightDip(56)
+                            .child(
+                                Row.create(c)
+                                    .widthPercent(33.3f)
+                                    .alignItems(YogaAlign.CENTER)
+                                    .justifyContent(YogaJustify.CENTER)
+                                    .wrapInView()
+                                    .testKey("like_button")
+                                    .child(
+                                        Column.create(c)
+                                            .heightDip(24)
+                                            .widthDip(24)
+                                            .backgroundColor(Color.RED)
+                                            .transitionKey("icon_like"))
+                                    .child(
+                                        Text.create(c)
+                                            .textSizeSp(16)
+                                            .text("Like")
+                                            .transitionKey("text_like")
+                                            .marginDip(YogaEdge.LEFT, 8)))
+                            .child(
+                                Row.create(c)
+                                    .transitionKey("cont_comment")
+                                    .widthPercent(33.3f)
+                                    .alignItems(YogaAlign.CENTER)
+                                    .justifyContent(YogaJustify.CENTER)
+                                    .child(
+                                        Column.create(c)
+                                            .heightDip(24)
+                                            .widthDip(24)
+                                            .backgroundColor(Color.RED))
+                                    .child(
+                                        Text.create(c)
+                                            .textSizeSp(16)
+                                            .text("Comment")
+                                            .marginDip(YogaEdge.LEFT, 8)))
+                            .child(
+                                Row.create(c)
+                                    .widthPercent(33.3f)
+                                    .alignItems(YogaAlign.CENTER)
+                                    .justifyContent(YogaJustify.CENTER)
+                                    .child(
+                                        Column.create(c)
+                                            .transitionKey("icon_share")
+                                            .heightDip(24)
+                                            .widthDip(24)
+                                            .backgroundColor(Color.RED))
+                                    .child(
+                                        Text.create(c)
+                                            .textSizeSp(16)
+                                            .text("Share")
+                                            .transitionKey("text_share")
+                                            .marginDip(YogaEdge.LEFT, 8)))
+                            .build()
+                        : Row.create(c)
+                            .backgroundColor(Color.WHITE)
+                            .heightDip(56)
+                            .child(
+                                Row.create(c)
+                                    .alignItems(YogaAlign.CENTER)
+                                    .justifyContent(YogaJustify.CENTER)
+                                    .wrapInView()
+                                    .paddingDip(YogaEdge.HORIZONTAL, 16)
+                                    .testKey("like_button")
+                                    .child(
+                                        Column.create(c)
+                                            .transitionKey("icon_like")
+                                            .heightDip(24)
+                                            .widthDip(24)
+                                            .backgroundColor(Color.RED)))
+                            .child(
+                                Column.create(c)
+                                    .flexGrow(1)
+                                    .transitionKey("comment_editText")
+                                    .child(Text.create(c).text("Input here").textSizeSp(16)))
+                            .child(
+                                Row.create(c)
+                                    .transitionKey("cont_share")
+                                    .alignItems(YogaAlign.CENTER)
+                                    .wrapInView()
+                                    .paddingDip(YogaEdge.ALL, 16)
+                                    .backgroundColor(0xff0000ff)
+                                    .child(
+                                        Column.create(c)
+                                            .transitionKey("icon_share")
+                                            .heightDip(24)
+                                            .widthDip(24)
+                                            .backgroundColor(Color.RED)))
+                            .build();
+                  }
+                })
+            .build();
+    mLithoViewRule.setRoot(component);
+    mActivityController.get().setContentView(mLithoViewRule.getLithoView());
+    mActivityController.resume().visible();
+
+    // We move 100 frames to be sure any appearing animation finished.
+    mTransitionTestRule.step(100);
+
+    mStateCaller.update();
+    // We move an other 100 frames to be sure disappearing animations are done.
+    mTransitionTestRule.step(100);
+
+    mTransitionTestRule.step(100);
+
+    // Do not crash.
   }
 
   @Test

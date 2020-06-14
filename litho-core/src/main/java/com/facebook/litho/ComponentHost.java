@@ -217,6 +217,22 @@ public class ComponentHost extends Host {
     releaseScrapDataStructuresIfNeeded();
   }
 
+  /**
+   * This method is needed because if the disappearing item ended up being remounted to the root,
+   * then the index can be different than the one it was created with.
+   *
+   * @param mountItem
+   */
+  void startUnmountDisappearingItem(MountItem mountItem) {
+    final int index;
+    if (mountItem.getContent() instanceof Drawable) {
+      index = mDrawableMountItems.keyAt(mDrawableMountItems.indexOfValue(mountItem));
+    } else {
+      index = mMountItems.keyAt(mMountItems.indexOfValue(mountItem));
+    }
+    startUnmountDisappearingItem(index, mountItem);
+  }
+
   void startUnmountDisappearingItem(int index, MountItem mountItem) {
     final Object content = mountItem.getContent();
 

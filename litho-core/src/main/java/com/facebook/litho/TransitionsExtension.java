@@ -70,7 +70,7 @@ public class TransitionsExtension extends MountDelegateExtension
 
   @Override
   public void unmount(int index, MountItem mountItem, com.facebook.rendercore.Host host) {
-    ((ComponentHost) host).startUnmountDisappearingItem(index, mountItem);
+    ((ComponentHost) host).startUnmountDisappearingItem(mountItem);
   }
 
   public interface TransitionsExtensionInput extends MountDelegateInput {
@@ -590,7 +590,7 @@ public class TransitionsExtension extends MountDelegateExtension
     }
 
     // Unmount from the current host
-    host.unmount(index, mountItem);
+    host.unmount(mountItem);
 
     // Apply new bounds to the content as it will be mounted in the root now
     BoundsUtils.applyBoundsToMountContent(new Rect(left, top, right, bottom), null, content, false);
