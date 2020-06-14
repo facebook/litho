@@ -492,14 +492,15 @@ public class TransitionsExtension extends MountDelegateExtension
 
   private void unmountDisappearingItem(MountItem mountItem) {
     mLockedDisappearingMountitems.remove(mountItem);
-    final ComponentHost content = (ComponentHost) mountItem.getContent();
+    final Object content = mountItem.getContent();
     if ((content instanceof ComponentHost) && !(content instanceof LithoView)) {
+      final com.facebook.rendercore.Host contentHost = (com.facebook.rendercore.Host) content;
       // Unmount descendant items in reverse order.
-      for (int j = content.getMountItemCount() - 1; j >= 0; j--) {
-        unmountDisappearingItem(content.getMountItemAt(j));
+      for (int j = contentHost.getMountItemCount() - 1; j >= 0; j--) {
+        unmountDisappearingItem(contentHost.getMountItemAt(j));
       }
 
-      if (content.getMountItemCount() > 0) {
+      if (contentHost.getMountItemCount() > 0) {
         throw new IllegalStateException(
             "Recursively unmounting items from a Host, left"
                 + " some items behind, this should never happen.");

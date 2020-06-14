@@ -1741,6 +1741,10 @@ class MountState
       final int newPosition = newLayoutOutput == null ? -1 : newLayoutOutput.getIndex();
 
       final MountItem oldItem = getItemAt(i);
+      final boolean hasUnmountDelegate =
+          mUnmountDelegateExtension != null && oldItem != null
+              ? mUnmountDelegateExtension.shouldDelegateUnmount(oldItem)
+              : false;
 
       // Just skip disappearing items here
       if (disappearingItems.size() > disappearingItemsPointer
@@ -1752,7 +1756,7 @@ class MountState
         continue;
       }
 
-      if (newPosition == -1) {
+      if (newPosition == -1 || hasUnmountDelegate) {
         unmountItem(i, mHostsByMarker);
         mPrepareMountStats.unmountedCount++;
       } else {

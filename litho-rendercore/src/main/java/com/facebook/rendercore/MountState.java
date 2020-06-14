@@ -375,7 +375,12 @@ public class MountState implements MountDelegateTarget {
           newPosition > -1 ? mRenderTree.getRenderTreeNodeAtIndex(newPosition) : null;
       final MountItem oldItem = getItemAt(i);
 
-      if (newPosition == -1) {
+      final boolean hasUnmountDelegate =
+          mUnmountDelegateExtension != null && oldItem != null
+              ? mUnmountDelegateExtension.shouldDelegateUnmount(oldItem)
+              : false;
+
+      if (newPosition == -1 || hasUnmountDelegate) {
         // if oldItem is null it was previously unmounted so there is nothing we need to do.
         if (oldItem != null) {
           unmountItemRecursively(oldItem.getRenderTreeNode());
