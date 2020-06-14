@@ -467,6 +467,7 @@ public class TransitionsExtension extends MountDelegateExtension
           MountItem mountedItem = getMountTarget().getMountItemAt(j);
           if (mountedItem == null) {
             acquireMountReference(mLastMountedLayoutState.getMountableOutputAt(j), j, mInput, true);
+            mountedItem = getMountTarget().getMountItemAt(j);
           }
           mLockedDisappearingMountitems.add(mountedItem);
         }
