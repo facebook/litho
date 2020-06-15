@@ -2097,7 +2097,8 @@ public class LayoutState
   }
 
   /** @return The id of the {@link ComponentTree} that generated this {@link LayoutState} */
-  int getComponentTreeId() {
+  @Override
+  public int getComponentTreeId() {
     return mComponentTreeId;
   }
 
@@ -2230,19 +2231,22 @@ public class LayoutState
     return position < 0 ? null : LayoutOutput.getLayoutOutput(getMountableOutputAt(position));
   }
 
+  @Override
   @Nullable
-  List<Transition> getTransitions() {
+  public List<Transition> getTransitions() {
     return mTransitions;
   }
 
   /** Gets a mapping from transition ids to a group of LayoutOutput. */
-  Map<TransitionId, OutputUnitsAffinityGroup<LayoutOutput>> getTransitionIdMapping() {
+  @Override
+  public Map<TransitionId, OutputUnitsAffinityGroup<LayoutOutput>> getTransitionIdMapping() {
     return mTransitionIdMapping;
   }
 
   /** Gets a group of LayoutOutput given transition key */
+  @Override
   @Nullable
-  OutputUnitsAffinityGroup<LayoutOutput> getLayoutOutputsForTransitionId(
+  public OutputUnitsAffinityGroup<LayoutOutput> getLayoutOutputsForTransitionId(
       TransitionId transitionId) {
     return mTransitionIdMapping.get(transitionId);
   }
@@ -2269,13 +2273,15 @@ public class LayoutState
    * @return the list of Components in this LayoutState that care about the previously mounted
    *     versions of their @Prop/@State params.
    */
+  @Override
   @Nullable
-  List<Component> getComponentsNeedingPreviousRenderData() {
+  public List<Component> getComponentsNeedingPreviousRenderData() {
     return mComponentsNeedingPreviousRenderData;
   }
 
+  @Override
   @Nullable
-  TransitionId getRootTransitionId() {
+  public TransitionId getRootTransitionId() {
     return mRootTransitionId;
   }
 
@@ -2386,5 +2392,10 @@ public class LayoutState
 
   void markCommitted() {
     mIsCommitted = true;
+  }
+
+  @Override
+  public @Nullable String getRootComponentName() {
+    return mRootComponentName;
   }
 }

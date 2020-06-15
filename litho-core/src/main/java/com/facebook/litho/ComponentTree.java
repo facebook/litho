@@ -829,6 +829,10 @@ public class ComponentTree {
 
   void applyPreviousRenderData(LayoutState layoutState) {
     final List<Component> components = layoutState.getComponentsNeedingPreviousRenderData();
+    applyPreviousRenderData(components);
+  }
+
+  void applyPreviousRenderData(@Nullable List<Component> components) {
     if (components == null || components.isEmpty()) {
       return;
     }

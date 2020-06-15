@@ -61,7 +61,7 @@ public class TransitionsExtension extends MountDelegateExtension
 
   private boolean mTransitionsHasBeenCollected = false;
   private @Nullable Transition mRootTransition;
-  private LayoutState mLastMountedLayoutState;
+  private @Nullable TransitionsExtensionInput mLastTransitionsExtensionInput;
 
   @Override
   public boolean shouldDelegateUnmount(MountItem mountItem) {
@@ -81,6 +81,26 @@ public class TransitionsExtension extends MountDelegateExtension
     boolean needsToRerunTransitions();
 
     void setNeedsToRerunTransitions(boolean needsToRerunTransitions);
+
+    int getComponentTreeId();
+
+    Map<TransitionId, OutputUnitsAffinityGroup<LayoutOutput>> getTransitionIdMapping();
+
+    @Nullable
+    OutputUnitsAffinityGroup<LayoutOutput> getLayoutOutputsForTransitionId(
+        TransitionId transitionId);
+
+    @Nullable
+    List<Component> getComponentsNeedingPreviousRenderData();
+
+    @Nullable
+    String getRootComponentName();
+
+    @Nullable
+    List<Transition> getTransitions();
+
+    @Nullable
+    TransitionId getRootTransitionId();
   }
 
   public TransitionsExtension(Host lithoView) {
@@ -98,36 +118,30 @@ public class TransitionsExtension extends MountDelegateExtension
     resetAcquiredReferences();
     mInput = input;
 
-    LayoutState layoutState = (LayoutState) input;
-
-    if (layoutState.getComponentTreeId() != mLastMountedComponentTreeId) {
-      // If we're mounting a new ComponentTree, don't keep around and use the previous LayoutState
-      // since things like transition animations aren't relevant.
-      mLastMountedLayoutState = null;
+    if (input.getComponentTreeId() != mLastMountedComponentTreeId) {
+      mLastTransitionsExtensionInput = null;
     }
 
     for (int i = 0, size = mInput.getMountableOutputCount(); i < size; i++) {
       mInput.getMountableOutputAt(i).getRenderUnit().addAttachDetachExtension(this);
     }
 
-    updateTransitions((LayoutState) mInput, ((LithoView) mLithoView).getComponentTree());
-    extractDisappearingItems(layoutState);
+    updateTransitions(input, ((LithoView) mLithoView).getComponentTree());
+    extractDisappearingItems(input);
 
-    final int componentTreeId = layoutState.getComponentTreeId();
+    final int componentTreeId = input.getComponentTreeId();
     mLastMountedComponentTreeId = componentTreeId;
   }
 
   @Override
   public void afterMount() {
-    LayoutState layoutState = (LayoutState) mInput;
-
     maybeUpdateAnimatingMountContent();
 
-    if (shouldAnimateTransitions(layoutState) && hasTransitionsToAnimate()) {
+    if (shouldAnimateTransitions(mInput) && hasTransitionsToAnimate()) {
       mTransitionManager.runTransitions();
     }
     mInput.setNeedsToRerunTransitions(false);
-    mLastMountedLayoutState = layoutState;
+    mLastTransitionsExtensionInput = mInput;
     mTransitionsHasBeenCollected = false;
   }
 
@@ -175,7 +189,7 @@ public class TransitionsExtension extends MountDelegateExtension
       @Nullable Object layoutData) {}
 
   /**
-   * Creates and updates transitions for a new LayoutState. The steps are as follows:
+   * Creates and updates transitions for a new TransitionsExtensionInput. The steps are as follows:
    *
    * <p>1. Disappearing items: Update disappearing mount items that are no longer disappearing (e.g.
    * because they came back). This means canceling the animation and cleaning up the corresponding
@@ -187,7 +201,7 @@ public class TransitionsExtension extends MountDelegateExtension
    * want to make sure are not unmounted due to incremental mount and being outside of visibility
    * bounds.
    */
-  private void updateTransitions(LayoutState layoutState, ComponentTree componentTree) {
+  private void updateTransitions(TransitionsExtensionInput input, ComponentTree componentTree) {
     final boolean isTracing = ComponentsSystrace.isTracing();
     if (isTracing) {
       String logTag = componentTree.getContext().getLogTag();
@@ -203,7 +217,7 @@ public class TransitionsExtension extends MountDelegateExtension
       // shouldn't
       // do any transition animations for changed mount content as it's just being remounted on a
       // new LithoView.
-      final int componentTreeId = layoutState.getComponentTreeId();
+      final int componentTreeId = componentTree.mId;
       if (mLastMountedComponentTreeId != componentTreeId) {
         resetAnimationState();
         if (!mInput.needsToRerunTransitions()) {
@@ -213,13 +227,13 @@ public class TransitionsExtension extends MountDelegateExtension
       }
 
       if (!mDisappearingMountItems.isEmpty()) {
-        updateDisappearingMountItems(layoutState);
+        updateDisappearingMountItems(input);
       }
 
-      if (shouldAnimateTransitions(layoutState)) {
-        collectAllTransitions(layoutState, componentTree);
+      if (shouldAnimateTransitions(input)) {
+        collectAllTransitions(input, componentTree);
         if (hasTransitionsToAnimate()) {
-          createNewTransitions(layoutState, mRootTransition);
+          createNewTransitions(input, mRootTransition);
         }
       }
 
@@ -228,7 +242,7 @@ public class TransitionsExtension extends MountDelegateExtension
       }
 
       if (!mAnimatingTransitionIds.isEmpty()) {
-        regenerateAnimationLockedIndices(layoutState);
+        regenerateAnimationLockedIndices(input);
       }
     } finally {
       if (isTracing) {
@@ -237,8 +251,8 @@ public class TransitionsExtension extends MountDelegateExtension
     }
   }
 
-  private void updateDisappearingMountItems(LayoutState newLayoutState) {
-    final Map<TransitionId, ?> nextMountedTransitionIds = newLayoutState.getTransitionIdMapping();
+  private void updateDisappearingMountItems(TransitionsExtensionInput input) {
+    final Map<TransitionId, ?> nextMountedTransitionIds = input.getTransitionIdMapping();
     for (TransitionId transitionId : nextMountedTransitionIds.keySet()) {
       final OutputUnitsAffinityGroup<MountItem> disappearingItem =
           mDisappearingMountItems.remove(transitionId);
@@ -262,9 +276,9 @@ public class TransitionsExtension extends MountDelegateExtension
     mTransitionManager.reset();
   }
 
-  private void regenerateAnimationLockedIndices(LayoutState newLayoutState) {
+  private void regenerateAnimationLockedIndices(TransitionsExtensionInput input) {
     final Map<TransitionId, OutputUnitsAffinityGroup<LayoutOutput>> transitionMapping =
-        newLayoutState.getTransitionIdMapping();
+        input.getTransitionIdMapping();
     if (transitionMapping != null) {
       for (Map.Entry<TransitionId, OutputUnitsAffinityGroup<LayoutOutput>> transition :
           transitionMapping.entrySet()) {
@@ -275,25 +289,20 @@ public class TransitionsExtension extends MountDelegateExtension
         final OutputUnitsAffinityGroup<LayoutOutput> group = transition.getValue();
         for (int j = 0, sz = group.size(); j < sz; j++) {
           final LayoutOutput layoutOutput = group.getAt(j);
-          final int position = newLayoutState.getLayoutOutputPositionForId(layoutOutput.getId());
-          updateAnimationLockCount(newLayoutState, position, true, true);
+          final int position = input.getLayoutOutputPositionForId(layoutOutput.getId());
+          updateAnimationLockCount(input, position, true, true);
         }
       }
     }
   }
 
-  /**
-   * @return whether we should animate transitions if we have any when mounting the new LayoutState.
-   */
-  private boolean shouldAnimateTransitions(LayoutState newLayoutState) {
-    return (mLastMountedComponentTreeId == newLayoutState.getComponentTreeId()
+  /** @return whether we should animate transitions. */
+  private boolean shouldAnimateTransitions(TransitionsExtensionInput input) {
+    return (mLastMountedComponentTreeId == input.getComponentTreeId()
         || mInput.needsToRerunTransitions());
   }
 
-  /**
-   * @return whether we have any transitions to animate for the current mount of the given
-   *     LayoutState
-   */
+  /** @return whether we have any transitions to animate for the current mount */
   private boolean hasTransitionsToAnimate() {
     return mRootTransition != null;
   }
@@ -301,9 +310,9 @@ public class TransitionsExtension extends MountDelegateExtension
   /**
    * Collect transitions from layout time, mount time and from state updates.
    *
-   * @param layoutState that is going to be mounted.
+   * @param input provides transitions information for the current mount.
    */
-  void collectAllTransitions(LayoutState layoutState, ComponentTree componentTree) {
+  void collectAllTransitions(TransitionsExtensionInput input, ComponentTree componentTree) {
     assertMainThread();
     if (mTransitionsHasBeenCollected) {
       return;
@@ -311,17 +320,17 @@ public class TransitionsExtension extends MountDelegateExtension
 
     final ArrayList<Transition> allTransitions = new ArrayList<>();
 
-    if (layoutState.getTransitions() != null) {
-      allTransitions.addAll(layoutState.getTransitions());
+    if (input.getTransitions() != null) {
+      allTransitions.addAll(input.getTransitions());
     }
-    componentTree.applyPreviousRenderData(layoutState);
-    collectMountTimeTransitions(layoutState, allTransitions);
-    componentTree.consumeStateUpdateTransitions(allTransitions, layoutState.mRootComponentName);
+    componentTree.applyPreviousRenderData(input.getComponentsNeedingPreviousRenderData());
+    collectMountTimeTransitions(input, allTransitions);
+    componentTree.consumeStateUpdateTransitions(allTransitions, input.getRootComponentName());
 
     Transition.RootBoundsTransition rootWidthTransition = new Transition.RootBoundsTransition();
     Transition.RootBoundsTransition rootHeightTransition = new Transition.RootBoundsTransition();
 
-    final TransitionId rootTransitionId = layoutState.getRootTransitionId();
+    final TransitionId rootTransitionId = input.getRootTransitionId();
 
     if (rootTransitionId != null) {
       for (int i = 0, size = allTransitions.size(); i < size; i++) {
@@ -329,7 +338,7 @@ public class TransitionsExtension extends MountDelegateExtension
         if (transition == null) {
           throw new IllegalStateException(
               "NULL_TRANSITION when collecting root bounds anim. Root: "
-                  + layoutState.mRootComponentName
+                  + input.getRootComponentName()
                   + ", root TransitionId: "
                   + rootTransitionId);
         }
@@ -352,9 +361,9 @@ public class TransitionsExtension extends MountDelegateExtension
   }
 
   private static @Nullable void collectMountTimeTransitions(
-      LayoutState layoutState, List<Transition> outList) {
+      TransitionsExtensionInput input, List<Transition> outList) {
     final List<Component> componentsNeedingPreviousRenderData =
-        layoutState.getComponentsNeedingPreviousRenderData();
+        input.getComponentsNeedingPreviousRenderData();
 
     if (componentsNeedingPreviousRenderData == null) {
       return;
@@ -364,7 +373,7 @@ public class TransitionsExtension extends MountDelegateExtension
       final Component component = componentsNeedingPreviousRenderData.get(i);
       final Transition transition = component.createTransition(component.getScopedContext());
       if (transition != null) {
-        TransitionUtils.addTransitions(transition, outList, layoutState.mRootComponentName);
+        TransitionUtils.addTransitions(transition, outList, input.getRootComponentName());
       }
     }
   }
@@ -375,12 +384,17 @@ public class TransitionsExtension extends MountDelegateExtension
     }
   }
 
-  private void createNewTransitions(LayoutState newLayoutState, Transition rootTransition) {
+  private void createNewTransitions(TransitionsExtensionInput input, Transition rootTransition) {
     prepareTransitionManager();
 
-    mTransitionManager.setupTransitions(mLastMountedLayoutState, newLayoutState, rootTransition);
+    Map<TransitionId, OutputUnitsAffinityGroup<LayoutOutput>> lastTransitions =
+        mLastTransitionsExtensionInput == null
+            ? null
+            : mLastTransitionsExtensionInput.getTransitionIdMapping();
+    mTransitionManager.setupTransitions(
+        lastTransitions, input.getTransitionIdMapping(), rootTransition);
 
-    final Map<TransitionId, ?> nextTransitionIds = newLayoutState.getTransitionIdMapping();
+    final Map<TransitionId, ?> nextTransitionIds = input.getTransitionIdMapping();
     for (TransitionId transitionId : nextTransitionIds.keySet()) {
       if (mTransitionManager.isAnimating(transitionId)) {
         mAnimatingTransitionIds.add(transitionId);
@@ -404,7 +418,7 @@ public class TransitionsExtension extends MountDelegateExtension
       }
 
       final OutputUnitsAffinityGroup<LayoutOutput> layoutOutputGroup =
-          mLastMountedLayoutState.getLayoutOutputsForTransitionId(transitionId);
+          mLastTransitionsExtensionInput.getLayoutOutputsForTransitionId(transitionId);
       if (layoutOutputGroup == null) {
         // This can happen if the component was unmounted without animation or the transitionId
         // was removed from the component.
@@ -414,23 +428,23 @@ public class TransitionsExtension extends MountDelegateExtension
       for (int i = 0, size = layoutOutputGroup.size(); i < size; i++) {
         final LayoutOutput layoutOutput = layoutOutputGroup.getAt(i);
         final int position = layoutOutput.getIndex();
-        updateAnimationLockCount(mLastMountedLayoutState, position, false, false);
+        updateAnimationLockCount(mLastTransitionsExtensionInput, position, false, false);
       }
     }
   }
 
   /** Determine whether to apply disappear animation to the given {@link MountItem} */
-  private boolean isItemDisappearing(LayoutState layoutState, int index) {
-    if (!shouldAnimateTransitions(layoutState) || !hasTransitionsToAnimate()) {
+  private boolean isItemDisappearing(TransitionsExtensionInput input, int index) {
+    if (!shouldAnimateTransitions(input) || !hasTransitionsToAnimate()) {
       return false;
     }
 
-    if (mTransitionManager == null || mLastMountedLayoutState == null) {
+    if (mTransitionManager == null || mLastTransitionsExtensionInput == null) {
       return false;
     }
 
     final LayoutOutput layoutOutput =
-        getLayoutOutput(mLastMountedLayoutState.getMountableOutputAt(index));
+        getLayoutOutput(mLastTransitionsExtensionInput.getMountableOutputAt(index));
     final TransitionId transitionId = layoutOutput.getTransitionId();
     if (transitionId == null) {
       return false;
@@ -451,22 +465,21 @@ public class TransitionsExtension extends MountDelegateExtension
    *
    * <p>- Finally map the disappearing mount item to the transition id
    */
-  private void extractDisappearingItems(LayoutState newLayoutState) {
+  private void extractDisappearingItems(TransitionsExtensionInput newTransitionsExtensionInput) {
     int mountItemCount = getMountTarget().getMountItemCount();
-    if (mLastMountedLayoutState == null || mountItemCount == 0) {
+    if (mLastTransitionsExtensionInput == null || mountItemCount == 0) {
       return;
     }
 
     for (int i = 1; i < mountItemCount; i++) {
-      if (isItemDisappearing(newLayoutState, i)) {
-        final int lastDescendantIndex = findLastDescendantIndex(mLastMountedLayoutState, i);
-        // Go though disappearing subtree, mount everything that is not mounted yet
-        // That's okay to mount here *before* we call the mount target actually process the
-        // move/unmount and only passing last mount LayoutState.
+      if (isItemDisappearing(newTransitionsExtensionInput, i)) {
+        final int lastDescendantIndex = findLastDescendantIndex(mLastTransitionsExtensionInput, i);
+        // Go though disappearing subtree. Acquire a reference for everything that is not mounted.
         for (int j = i; j <= lastDescendantIndex; j++) {
           MountItem mountedItem = getMountTarget().getMountItemAt(j);
           if (mountedItem == null) {
-            acquireMountReference(mLastMountedLayoutState.getMountableOutputAt(j), j, mInput, true);
+            acquireMountReference(
+                mLastTransitionsExtensionInput.getMountableOutputAt(j), j, mInput, true);
             mountedItem = getMountTarget().getMountItemAt(j);
           }
           mLockedDisappearingMountitems.add(mountedItem);
@@ -701,11 +714,11 @@ public class TransitionsExtension extends MountDelegateExtension
    * items that have a lock count > 0 will not be unmounted during incremental mount.
    */
   private void updateAnimationLockCount(
-      LayoutState layoutState, int index, boolean increment, boolean isMounting) {
+      TransitionsExtensionInput input, int index, boolean increment, boolean isMounting) {
     // Update children
-    final int lastDescendantIndex = findLastDescendantIndex(layoutState, index);
+    final int lastDescendantIndex = findLastDescendantIndex(input, index);
     for (int i = index; i <= lastDescendantIndex; i++) {
-      final RenderTreeNode renderTreeNode = layoutState.getMountableOutputAt(i);
+      final RenderTreeNode renderTreeNode = input.getMountableOutputAt(i);
       if (increment) {
         if (!ownsReference(renderTreeNode)) {
           acquireMountReference(renderTreeNode, i, mInput, false);
@@ -718,10 +731,11 @@ public class TransitionsExtension extends MountDelegateExtension
     }
 
     // Update parents
-    long hostId = getLayoutOutput(layoutState.getMountableOutputAt(index)).getHostMarker();
+    long hostId = getLayoutOutput(input.getMountableOutputAt(index)).getHostMarker();
+
     while (hostId != ROOT_HOST_ID) {
-      final int hostIndex = layoutState.getLayoutOutputPositionForId(hostId);
-      final RenderTreeNode renderTreeNode = layoutState.getMountableOutputAt(hostIndex);
+      final int hostIndex = input.getLayoutOutputPositionForId(hostId);
+      final RenderTreeNode renderTreeNode = input.getMountableOutputAt(hostIndex);
       if (increment) {
         if (!ownsReference(renderTreeNode)) {
           acquireMountReference(renderTreeNode, hostIndex, mInput, false);
@@ -731,15 +745,15 @@ public class TransitionsExtension extends MountDelegateExtension
           releaseMountReference(renderTreeNode, hostIndex, false);
         }
       }
-      hostId = getLayoutOutput(layoutState.getMountableOutputAt(hostIndex)).getHostMarker();
+      hostId = getLayoutOutput(input.getMountableOutputAt(hostIndex)).getHostMarker();
     }
   }
 
-  private static int findLastDescendantIndex(LayoutState layoutState, int index) {
-    final long hostId = getLayoutOutput(layoutState.getMountableOutputAt(index)).getId();
+  private static int findLastDescendantIndex(TransitionsExtensionInput input, int index) {
+    final long hostId = getLayoutOutput(input.getMountableOutputAt(index)).getId();
 
-    for (int i = index + 1, size = layoutState.getMountableOutputCount(); i < size; i++) {
-      final LayoutOutput layoutOutput = getLayoutOutput(layoutState.getMountableOutputAt(i));
+    for (int i = index + 1, size = input.getMountableOutputCount(); i < size; i++) {
+      final LayoutOutput layoutOutput = getLayoutOutput(input.getMountableOutputAt(i));
 
       // Walk up the parents looking for the host's id: if we find it, it's a descendant. If we
       // reach the root, then it's not a descendant and we can stop.
@@ -749,12 +763,12 @@ public class TransitionsExtension extends MountDelegateExtension
           return i - 1;
         }
 
-        final int parentIndex = layoutState.getLayoutOutputPositionForId(currentHostId);
-        final LayoutOutput parent = getLayoutOutput(layoutState.getMountableOutputAt(parentIndex));
+        final int parentIndex = input.getLayoutOutputPositionForId(currentHostId);
+        final LayoutOutput parent = getLayoutOutput(input.getMountableOutputAt(parentIndex));
         currentHostId = parent.getHostMarker();
       }
     }
 
-    return layoutState.getMountableOutputCount() - 1;
+    return input.getMountableOutputCount() - 1;
   }
 }
