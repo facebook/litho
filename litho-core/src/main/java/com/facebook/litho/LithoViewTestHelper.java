@@ -78,8 +78,8 @@ public class LithoViewTestHelper {
    *         return Column.create(c)
    *             .child(
    *                 Column.create(c)
-   *                     .child(TestDrawableComponent.create(c))
-   *                     .child(TestDrawableComponent.create(c))
+   *                     .child(SimpleMountSpecTester.create(c))
+   *                     .child(SimpleMountSpecTester.create(c))
    *                     .testKey("mytestkey"))
    *             .build();
    *       }
