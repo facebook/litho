@@ -30,9 +30,9 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import android.content.Context;
 import android.graphics.Rect;
-import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
+import com.facebook.litho.widget.SimpleMountSpecTester;
 import com.facebook.rendercore.RenderTreeNode;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -47,10 +47,10 @@ public class LayoutStateCalculateTopsAndBottomsTest {
           @Override
           protected Component onCreateLayout(ComponentContext c) {
             return create(c)
-                .child(create(c).child(TestDrawableComponent.create(c).wrapInView().heightPx(50)))
-                .child(TestDrawableComponent.create(c).heightPx(20))
+                .child(create(c).child(SimpleMountSpecTester.create(c).wrapInView().heightPx(50)))
+                .child(SimpleMountSpecTester.create(c).heightPx(20))
                 .child(
-                    TestDrawableComponent.create(c)
+                    SimpleMountSpecTester.create(c)
                         .positionType(ABSOLUTE)
                         .positionPx(TOP, 10)
                         .positionPx(BOTTOM, 30))
@@ -106,9 +106,9 @@ public class LayoutStateCalculateTopsAndBottomsTest {
           @Override
           protected Component onCreateLayout(ComponentContext c) {
             return create(c)
-                .child(TestDrawableComponent.create(c).heightPx(50))
+                .child(SimpleMountSpecTester.create(c).heightPx(50))
                 .child(
-                    TestDrawableComponent.create(c)
+                    SimpleMountSpecTester.create(c)
                         .wrapInView()
                         .positionType(ABSOLUTE)
                         .positionPx(TOP, 0)
@@ -162,7 +162,7 @@ public class LayoutStateCalculateTopsAndBottomsTest {
         new InlineLayoutSpec() {
           @Override
           protected Component onCreateLayout(ComponentContext c) {
-            return TestDrawableComponent.create(c).build();
+            return SimpleMountSpecTester.create(c).build();
           }
         };
 
@@ -207,7 +207,7 @@ public class LayoutStateCalculateTopsAndBottomsTest {
         new InlineLayoutSpec() {
           @Override
           protected Component onCreateLayout(ComponentContext c) {
-            return TestDrawableComponent.create(c).build();
+            return SimpleMountSpecTester.create(c).build();
           }
         };
     ;

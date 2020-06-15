@@ -36,13 +36,12 @@ import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.view.ViewGroup;
 import com.facebook.litho.testing.LithoViewRule;
-import com.facebook.litho.testing.TestComponent;
-import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestViewComponent;
 import com.facebook.litho.testing.ViewGroupWithLithoViewChildren;
 import com.facebook.litho.testing.helper.ComponentTestHelper;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
+import com.facebook.litho.widget.MountSpecLifecycleTester;
 import com.facebook.litho.widget.SolidColor;
 import com.facebook.litho.widget.Text;
 import com.facebook.litho.widget.TextInput;
@@ -134,8 +133,12 @@ public class MountStateViewTest {
 
   @Test
   public void testComponentDeepUnmount() {
-    final TestComponent testComponent1 = TestDrawableComponent.create(mContext).build();
-    final TestComponent testComponent2 = TestDrawableComponent.create(mContext).build();
+    final LifecycleTracker lifecycleTracker1 = new LifecycleTracker();
+    final LifecycleTracker lifecycleTracker2 = new LifecycleTracker();
+    final Component testComponent1 =
+        MountSpecLifecycleTester.create(mContext).lifecycleTracker(lifecycleTracker1).build();
+    final Component testComponent2 =
+        MountSpecLifecycleTester.create(mContext).lifecycleTracker(lifecycleTracker2).build();
 
     final Component mountedTestComponent1 =
         new InlineLayoutSpec() {
@@ -158,8 +161,8 @@ public class MountStateViewTest {
     final LithoView child1 = mountComponent(mContext, mountedTestComponent1, true, true);
     final LithoView child2 = mountComponent(mContext, mountedTestComponent2, true, true);
 
-    assertThat(testComponent1.isMounted()).isTrue();
-    assertThat(testComponent2.isMounted()).isTrue();
+    assertThat(lifecycleTracker1.isMounted()).isTrue();
+    assertThat(lifecycleTracker2.isMounted()).isTrue();
 
     final ViewGroupWithLithoViewChildren viewGroup =
         new ViewGroupWithLithoViewChildren(mContext.getAndroidContext());
@@ -174,8 +177,8 @@ public class MountStateViewTest {
 
     ComponentTestHelper.unmountComponent(parentView);
 
-    assertThat(testComponent1.isMounted()).isFalse();
-    assertThat(testComponent2.isMounted()).isFalse();
+    assertThat(lifecycleTracker1.isMounted()).isFalse();
+    assertThat(lifecycleTracker2.isMounted()).isFalse();
   }
 
   @Test

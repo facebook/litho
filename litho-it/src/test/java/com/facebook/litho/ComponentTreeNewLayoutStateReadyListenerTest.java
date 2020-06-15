@@ -27,9 +27,9 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 
 import android.os.Looper;
-import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
+import com.facebook.litho.widget.SimpleMountSpecTester;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -53,7 +53,7 @@ public class ComponentTreeNewLayoutStateReadyListenerTest {
   @Before
   public void setup() throws Exception {
     mContext = new ComponentContext(getApplicationContext());
-    mComponent = TestDrawableComponent.create(mContext).build();
+    mComponent = SimpleMountSpecTester.create(mContext).build();
     mComponentTree = create(mContext, mComponent).build();
 
     mLayoutThreadShadowLooper =

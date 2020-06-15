@@ -51,10 +51,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import androidx.collection.SparseArrayCompat;
 import com.facebook.litho.testing.LithoViewRule;
-import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestViewComponent;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
+import com.facebook.litho.widget.SimpleMountSpecTester;
 import com.facebook.litho.widget.Text;
 import com.facebook.litho.widget.TextInput;
 import com.facebook.rendercore.MountItem;
@@ -85,7 +85,7 @@ public class ComponentHostTest {
   public void setup() throws Exception {
     mContext = mLithoViewRule.getContext();
     mViewComponent = TestViewComponent.create(mContext).build();
-    mDrawableComponent = TestDrawableComponent.create(mContext).build();
+    mDrawableComponent = SimpleMountSpecTester.create(mContext).build();
 
     mHost = new TestableComponentHost(mContext);
 
@@ -440,7 +440,7 @@ public class ComponentHostTest {
   public void testViewTag() {
     final Component rootComponent =
         Column.create(mContext)
-            .child(TestDrawableComponent.create(mContext).viewTag("test_tag"))
+            .child(SimpleMountSpecTester.create(mContext).viewTag("test_tag"))
             .build();
     final LithoView lithoView = mountComponent(mContext, rootComponent, false, false);
     assertThat((View) lithoView.findViewWithTag("test_tag")).isNotNull();

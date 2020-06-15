@@ -21,10 +21,10 @@ import static org.mockito.Mockito.verify;
 
 import android.view.View;
 import com.facebook.litho.annotations.OnCreateLayout;
-import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
+import com.facebook.litho.widget.SimpleMountSpecTester;
 import com.facebook.yoga.YogaEdge;
 import org.junit.Before;
 import org.junit.Test;
@@ -65,7 +65,7 @@ public class DeprecatedLithoTooltipTest {
                 .marginPx(YogaEdge.LEFT, MARGIN_LEFT)
                 .marginPx(YogaEdge.TOP, MARGIN_TOP)
                 .child(
-                    TestDrawableComponent.create(c)
+                    SimpleMountSpecTester.create(c)
                         .key(KEY_ANCHOR)
                         .widthPx(ANCHOR_WIDTH)
                         .heightPx(ANCHOR_HEIGHT))

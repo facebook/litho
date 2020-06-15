@@ -22,11 +22,11 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 import com.facebook.litho.config.ComponentsConfiguration;
-import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.assertj.LithoViewAssert;
 import com.facebook.litho.testing.helper.ComponentTestHelper;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
+import com.facebook.litho.widget.SimpleMountSpecTester;
 import com.facebook.litho.widget.Text;
 import org.junit.After;
 import org.junit.Before;
@@ -66,11 +66,11 @@ public class MountStateTestItemTest {
                 return Column.create(c)
                     .child(
                         Column.create(c)
-                            .child(TestDrawableComponent.create(c))
-                            .child(TestDrawableComponent.create(c))
+                            .child(SimpleMountSpecTester.create(c))
+                            .child(SimpleMountSpecTester.create(c))
                             .testKey(TEST_ID_1))
-                    .child(TestDrawableComponent.create(c))
-                    .child(TestDrawableComponent.create(c).testKey(TEST_ID_2))
+                    .child(SimpleMountSpecTester.create(c))
+                    .child(SimpleMountSpecTester.create(c).testKey(TEST_ID_2))
                     .build();
               }
             });
@@ -92,11 +92,11 @@ public class MountStateTestItemTest {
                 return Column.create(c)
                     .child(
                         Column.create(c)
-                            .child(TestDrawableComponent.create(c))
-                            .child(TestDrawableComponent.create(c))
+                            .child(SimpleMountSpecTester.create(c))
+                            .child(SimpleMountSpecTester.create(c))
                             .testKey(TEST_ID_1))
-                    .child(TestDrawableComponent.create(c))
-                    .child(TestDrawableComponent.create(c).testKey(TEST_ID_1))
+                    .child(SimpleMountSpecTester.create(c))
+                    .child(SimpleMountSpecTester.create(c).testKey(TEST_ID_1))
                     .build();
               }
             });
@@ -117,12 +117,12 @@ public class MountStateTestItemTest {
                 return Column.create(c)
                     .child(
                         Column.create(c)
-                            .child(TestDrawableComponent.create(c))
-                            .child(TestDrawableComponent.create(c))
+                            .child(SimpleMountSpecTester.create(c))
+                            .child(SimpleMountSpecTester.create(c))
                             .testKey(""))
-                    .child(TestDrawableComponent.create(c))
-                    .child(TestDrawableComponent.create(c).testKey(null))
-                    .child(TestDrawableComponent.create(c).testKey(TEST_ID_1))
+                    .child(SimpleMountSpecTester.create(c))
+                    .child(SimpleMountSpecTester.create(c).testKey(null))
+                    .child(SimpleMountSpecTester.create(c).testKey(TEST_ID_1))
                     .build();
               }
             });

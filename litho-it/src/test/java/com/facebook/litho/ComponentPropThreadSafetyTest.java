@@ -55,6 +55,7 @@ public class ComponentPropThreadSafetyTest {
 
   @Test
   public void testThreadSafeConcurrentPropComponentAccess() {
+    // TODO(festevezga, T68365308) - SimpleMountSpecTester is not spy-able
     TestDrawableComponent testComponent =
         Mockito.spy(TestDrawableComponent.create(mContext).build());
 
@@ -81,6 +82,7 @@ public class ComponentPropThreadSafetyTest {
 
   @Test
   public void testThreadSafeConcurrentPropListComponentAccess() {
+    // TODO(festevezga, T68365308) - SimpleMountSpecTester is not spy-able
     TestDrawableComponent testComponent =
         Mockito.spy(TestDrawableComponent.create(mContext).build());
     List<Component> componentList = new ArrayList<>();

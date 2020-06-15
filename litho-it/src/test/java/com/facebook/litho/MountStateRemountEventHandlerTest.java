@@ -25,9 +25,9 @@ import static com.facebook.litho.MountState.getComponentTouchListener;
 import static com.facebook.litho.testing.helper.ComponentTestHelper.mountComponent;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
-import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
+import com.facebook.litho.widget.SimpleMountSpecTester;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -52,8 +52,8 @@ public class MountStateRemountEventHandlerTest {
               protected Component onCreateLayout(ComponentContext c) {
                 return create(c)
                     .clickHandler(c.newEventHandler(1))
-                    .child(TestDrawableComponent.create(c))
-                    .child(TestDrawableComponent.create(c))
+                    .child(SimpleMountSpecTester.create(c))
+                    .child(SimpleMountSpecTester.create(c))
                     .build();
               }
             });
@@ -69,8 +69,8 @@ public class MountStateRemountEventHandlerTest {
               protected Component onCreateLayout(ComponentContext c) {
                 return create(c)
                     .clickHandler(c.newEventHandler(1))
-                    .child(TestDrawableComponent.create(c))
-                    .child(TestDrawableComponent.create(c))
+                    .child(SimpleMountSpecTester.create(c))
+                    .child(SimpleMountSpecTester.create(c))
                     .build();
               }
             });
@@ -88,8 +88,8 @@ public class MountStateRemountEventHandlerTest {
               protected Component onCreateLayout(ComponentContext c) {
                 return create(c)
                     .longClickHandler(c.newEventHandler(1))
-                    .child(TestDrawableComponent.create(c))
-                    .child(TestDrawableComponent.create(c))
+                    .child(SimpleMountSpecTester.create(c))
+                    .child(SimpleMountSpecTester.create(c))
                     .build();
               }
             });
@@ -105,8 +105,8 @@ public class MountStateRemountEventHandlerTest {
               protected Component onCreateLayout(ComponentContext c) {
                 return create(c)
                     .longClickHandler(c.newEventHandler(1))
-                    .child(TestDrawableComponent.create(c))
-                    .child(TestDrawableComponent.create(c))
+                    .child(SimpleMountSpecTester.create(c))
+                    .child(SimpleMountSpecTester.create(c))
                     .build();
               }
             });
@@ -124,8 +124,8 @@ public class MountStateRemountEventHandlerTest {
               protected Component onCreateLayout(ComponentContext c) {
                 return create(c)
                     .focusChangeHandler(c.newEventHandler(1))
-                    .child(TestDrawableComponent.create(c))
-                    .child(TestDrawableComponent.create(c))
+                    .child(SimpleMountSpecTester.create(c))
+                    .child(SimpleMountSpecTester.create(c))
                     .build();
               }
             });
@@ -141,8 +141,8 @@ public class MountStateRemountEventHandlerTest {
               protected Component onCreateLayout(ComponentContext c) {
                 return create(c)
                     .focusChangeHandler(c.newEventHandler(1))
-                    .child(TestDrawableComponent.create(c))
-                    .child(TestDrawableComponent.create(c))
+                    .child(SimpleMountSpecTester.create(c))
+                    .child(SimpleMountSpecTester.create(c))
                     .build();
               }
             });
@@ -160,8 +160,8 @@ public class MountStateRemountEventHandlerTest {
               protected Component onCreateLayout(ComponentContext c) {
                 return create(c)
                     .touchHandler(c.newEventHandler(1))
-                    .child(TestDrawableComponent.create(c))
-                    .child(TestDrawableComponent.create(c))
+                    .child(SimpleMountSpecTester.create(c))
+                    .child(SimpleMountSpecTester.create(c))
                     .build();
               }
             });
@@ -177,8 +177,8 @@ public class MountStateRemountEventHandlerTest {
               protected Component onCreateLayout(ComponentContext c) {
                 return create(c)
                     .touchHandler(c.newEventHandler(2))
-                    .child(TestDrawableComponent.create(c))
-                    .child(TestDrawableComponent.create(c))
+                    .child(SimpleMountSpecTester.create(c))
+                    .child(SimpleMountSpecTester.create(c))
                     .build();
               }
             });
@@ -196,8 +196,8 @@ public class MountStateRemountEventHandlerTest {
               protected Component onCreateLayout(ComponentContext c) {
                 return create(c)
                     .clickHandler(c.newEventHandler(1))
-                    .child(TestDrawableComponent.create(c))
-                    .child(TestDrawableComponent.create(c))
+                    .child(SimpleMountSpecTester.create(c))
+                    .child(SimpleMountSpecTester.create(c))
                     .build();
               }
             });
@@ -211,8 +211,8 @@ public class MountStateRemountEventHandlerTest {
               @Override
               protected Component onCreateLayout(ComponentContext c) {
                 return create(c)
-                    .child(TestDrawableComponent.create(c))
-                    .child(TestDrawableComponent.create(c))
+                    .child(SimpleMountSpecTester.create(c))
+                    .child(SimpleMountSpecTester.create(c))
                     .build();
               }
             });
@@ -232,8 +232,8 @@ public class MountStateRemountEventHandlerTest {
               protected Component onCreateLayout(ComponentContext c) {
                 return create(c)
                     .longClickHandler(c.newEventHandler(1))
-                    .child(TestDrawableComponent.create(c))
-                    .child(TestDrawableComponent.create(c))
+                    .child(SimpleMountSpecTester.create(c))
+                    .child(SimpleMountSpecTester.create(c))
                     .build();
               }
             });
@@ -247,8 +247,8 @@ public class MountStateRemountEventHandlerTest {
               @Override
               protected Component onCreateLayout(ComponentContext c) {
                 return create(c)
-                    .child(TestDrawableComponent.create(c))
-                    .child(TestDrawableComponent.create(c))
+                    .child(SimpleMountSpecTester.create(c))
+                    .child(SimpleMountSpecTester.create(c))
                     .build();
               }
             });
@@ -268,8 +268,8 @@ public class MountStateRemountEventHandlerTest {
               protected Component onCreateLayout(ComponentContext c) {
                 return create(c)
                     .focusChangeHandler(c.newEventHandler(1))
-                    .child(TestDrawableComponent.create(c))
-                    .child(TestDrawableComponent.create(c))
+                    .child(SimpleMountSpecTester.create(c))
+                    .child(SimpleMountSpecTester.create(c))
                     .build();
               }
             });
@@ -283,8 +283,8 @@ public class MountStateRemountEventHandlerTest {
               @Override
               protected Component onCreateLayout(ComponentContext c) {
                 return create(c)
-                    .child(TestDrawableComponent.create(c))
-                    .child(TestDrawableComponent.create(c))
+                    .child(SimpleMountSpecTester.create(c))
+                    .child(SimpleMountSpecTester.create(c))
                     .build();
               }
             });
@@ -304,8 +304,8 @@ public class MountStateRemountEventHandlerTest {
               protected Component onCreateLayout(ComponentContext c) {
                 return create(c)
                     .touchHandler(c.newEventHandler(1))
-                    .child(TestDrawableComponent.create(c))
-                    .child(TestDrawableComponent.create(c))
+                    .child(SimpleMountSpecTester.create(c))
+                    .child(SimpleMountSpecTester.create(c))
                     .build();
               }
             });
@@ -317,8 +317,8 @@ public class MountStateRemountEventHandlerTest {
               @Override
               protected Component onCreateLayout(ComponentContext c) {
                 return create(c)
-                    .child(TestDrawableComponent.create(c))
-                    .child(TestDrawableComponent.create(c))
+                    .child(SimpleMountSpecTester.create(c))
+                    .child(SimpleMountSpecTester.create(c))
                     .build();
               }
             });
@@ -336,8 +336,8 @@ public class MountStateRemountEventHandlerTest {
               @Override
               protected Component onCreateLayout(ComponentContext c) {
                 return create(c)
-                    .child(TestDrawableComponent.create(c))
-                    .child(TestDrawableComponent.create(c))
+                    .child(SimpleMountSpecTester.create(c))
+                    .child(SimpleMountSpecTester.create(c))
                     .build();
               }
             });
@@ -352,8 +352,8 @@ public class MountStateRemountEventHandlerTest {
               protected Component onCreateLayout(ComponentContext c) {
                 return create(c)
                     .clickHandler(c.newEventHandler(1))
-                    .child(TestDrawableComponent.create(c))
-                    .child(TestDrawableComponent.create(c))
+                    .child(SimpleMountSpecTester.create(c))
+                    .child(SimpleMountSpecTester.create(c))
                     .build();
               }
             });
@@ -372,8 +372,8 @@ public class MountStateRemountEventHandlerTest {
               @Override
               protected Component onCreateLayout(ComponentContext c) {
                 return create(c)
-                    .child(TestDrawableComponent.create(c))
-                    .child(TestDrawableComponent.create(c))
+                    .child(SimpleMountSpecTester.create(c))
+                    .child(SimpleMountSpecTester.create(c))
                     .build();
               }
             });
@@ -388,8 +388,8 @@ public class MountStateRemountEventHandlerTest {
               protected Component onCreateLayout(ComponentContext c) {
                 return create(c)
                     .longClickHandler(c.newEventHandler(1))
-                    .child(TestDrawableComponent.create(c))
-                    .child(TestDrawableComponent.create(c))
+                    .child(SimpleMountSpecTester.create(c))
+                    .child(SimpleMountSpecTester.create(c))
                     .build();
               }
             });
@@ -408,8 +408,8 @@ public class MountStateRemountEventHandlerTest {
               @Override
               protected Component onCreateLayout(ComponentContext c) {
                 return create(c)
-                    .child(TestDrawableComponent.create(c))
-                    .child(TestDrawableComponent.create(c))
+                    .child(SimpleMountSpecTester.create(c))
+                    .child(SimpleMountSpecTester.create(c))
                     .build();
               }
             });
@@ -424,8 +424,8 @@ public class MountStateRemountEventHandlerTest {
               protected Component onCreateLayout(ComponentContext c) {
                 return create(c)
                     .focusChangeHandler(c.newEventHandler(1))
-                    .child(TestDrawableComponent.create(c))
-                    .child(TestDrawableComponent.create(c))
+                    .child(SimpleMountSpecTester.create(c))
+                    .child(SimpleMountSpecTester.create(c))
                     .build();
               }
             });
@@ -444,8 +444,8 @@ public class MountStateRemountEventHandlerTest {
               @Override
               protected Component onCreateLayout(ComponentContext c) {
                 return create(c)
-                    .child(TestDrawableComponent.create(c))
-                    .child(TestDrawableComponent.create(c))
+                    .child(SimpleMountSpecTester.create(c))
+                    .child(SimpleMountSpecTester.create(c))
                     .build();
               }
             });
@@ -460,8 +460,8 @@ public class MountStateRemountEventHandlerTest {
               protected Component onCreateLayout(ComponentContext c) {
                 return create(c)
                     .touchHandler(c.newEventHandler(1))
-                    .child(TestDrawableComponent.create(c))
-                    .child(TestDrawableComponent.create(c))
+                    .child(SimpleMountSpecTester.create(c))
+                    .child(SimpleMountSpecTester.create(c))
                     .build();
               }
             });

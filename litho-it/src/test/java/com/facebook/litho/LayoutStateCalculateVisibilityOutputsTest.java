@@ -24,11 +24,11 @@ import static com.facebook.yoga.YogaEdge.ALL;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import android.content.Context;
-import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestLayoutComponent;
 import com.facebook.litho.testing.TestNullLayoutComponent;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
+import com.facebook.litho.widget.SimpleMountSpecTester;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -51,9 +51,9 @@ public class LayoutStateCalculateVisibilityOutputsTest {
                 .child(
                     create(c)
                         .child(
-                            TestDrawableComponent.create(c).visibleHandler(c.newEventHandler(1))))
-                .child(TestDrawableComponent.create(c).invisibleHandler(c.newEventHandler(2)))
-                .child(TestDrawableComponent.create(c))
+                            SimpleMountSpecTester.create(c).visibleHandler(c.newEventHandler(1))))
+                .child(SimpleMountSpecTester.create(c).invisibleHandler(c.newEventHandler(2)))
+                .child(SimpleMountSpecTester.create(c))
                 .build();
           }
         };
@@ -79,9 +79,9 @@ public class LayoutStateCalculateVisibilityOutputsTest {
                 .child(
                     create(c)
                         .child(
-                            TestDrawableComponent.create(c).visibleHandler(c.newEventHandler(1))))
-                .child(TestDrawableComponent.create(c).fullImpressionHandler(c.newEventHandler(3)))
-                .child(TestDrawableComponent.create(c))
+                            SimpleMountSpecTester.create(c).visibleHandler(c.newEventHandler(1))))
+                .child(SimpleMountSpecTester.create(c).fullImpressionHandler(c.newEventHandler(3)))
+                .child(SimpleMountSpecTester.create(c))
                 .build();
           }
         };
@@ -107,9 +107,9 @@ public class LayoutStateCalculateVisibilityOutputsTest {
                 .child(
                     create(c)
                         .child(
-                            TestDrawableComponent.create(c).visibleHandler(c.newEventHandler(1))))
-                .child(TestDrawableComponent.create(c).focusedHandler(c.newEventHandler(4)))
-                .child(TestDrawableComponent.create(c))
+                            SimpleMountSpecTester.create(c).visibleHandler(c.newEventHandler(1))))
+                .child(SimpleMountSpecTester.create(c).focusedHandler(c.newEventHandler(4)))
+                .child(SimpleMountSpecTester.create(c))
                 .build();
           }
         };
@@ -202,7 +202,7 @@ public class LayoutStateCalculateVisibilityOutputsTest {
           protected Component onCreateLayout(ComponentContext c) {
             return create(c)
                 .child(
-                    TestDrawableComponent.create(c)
+                    SimpleMountSpecTester.create(c)
                         .visibleHandler(c.newEventHandler(1))
                         .wrapInView())
                 .build();

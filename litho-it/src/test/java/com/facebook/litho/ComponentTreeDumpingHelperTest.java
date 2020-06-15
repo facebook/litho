@@ -22,9 +22,9 @@ import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import com.facebook.litho.config.ComponentsConfiguration;
-import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
+import com.facebook.litho.widget.SimpleMountSpecTester;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,7 +46,7 @@ public class ComponentTreeDumpingHelperTest {
         new InlineLayoutSpec() {
           @Override
           protected Component onCreateLayout(ComponentContext c) {
-            return TestDrawableComponent.create(c).widthPx(100).heightPx(100).build();
+            return SimpleMountSpecTester.create(c).widthPx(100).heightPx(100).build();
           }
         };
 
@@ -60,6 +60,6 @@ public class ComponentTreeDumpingHelperTest {
     lithoView.measure(makeMeasureSpec(0, UNSPECIFIED), makeMeasureSpec(0, UNSPECIFIED));
 
     final String string = ComponentTreeDumpingHelper.dumpContextTree(componentContext);
-    assertThat(string).containsPattern("InlineLayout\\{V}\n" + "  TestDrawableComponent\\{V}");
+    assertThat(string).containsPattern("InlineLayout\\{V}\n" + "  SimpleMountSpecTester\\{V}");
   }
 }

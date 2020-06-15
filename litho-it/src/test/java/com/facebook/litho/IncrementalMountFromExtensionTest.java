@@ -39,13 +39,14 @@ import android.graphics.Rect;
 import android.view.ViewGroup;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.TestComponent;
-import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestViewComponent;
 import com.facebook.litho.testing.ViewGroupWithLithoViewChildren;
 import com.facebook.litho.testing.helper.ComponentTestHelper;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.logging.TestComponentsLogger;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
+import com.facebook.litho.widget.MountSpecLifecycleTester;
+import com.facebook.litho.widget.SimpleMountSpecTester;
 import com.facebook.yoga.YogaEdge;
 import org.junit.After;
 import org.junit.Before;
@@ -202,8 +203,12 @@ public class IncrementalMountFromExtensionTest {
    */
   @Test
   public void testIncrementalMountVerticalDrawableStack() {
-    final TestComponent child1 = TestDrawableComponent.create(mContext).build();
-    final TestComponent child2 = TestDrawableComponent.create(mContext).build();
+    final LifecycleTracker lifecycleTracker1 = new LifecycleTracker();
+    final Component child1 =
+        MountSpecLifecycleTester.create(mContext).lifecycleTracker(lifecycleTracker1).build();
+    final LifecycleTracker lifecycleTracker2 = new LifecycleTracker();
+    final Component child2 =
+        MountSpecLifecycleTester.create(mContext).lifecycleTracker(lifecycleTracker2).build();
     final LithoView lithoView =
         mountComponent(
             mContext,
@@ -220,24 +225,24 @@ public class IncrementalMountFromExtensionTest {
             true);
 
     lithoView.getComponentTree().mountComponent(new Rect(0, -10, 10, -5), true);
-    assertThat(child1.isMounted()).isFalse();
-    assertThat(child2.isMounted()).isFalse();
+    assertThat(lifecycleTracker1.isMounted()).isFalse();
+    assertThat(lifecycleTracker2.isMounted()).isFalse();
 
     lithoView.getComponentTree().mountComponent(new Rect(0, 0, 10, 5), true);
-    assertThat(child1.isMounted()).isTrue();
-    assertThat(child2.isMounted()).isFalse();
+    assertThat(lifecycleTracker1.isMounted()).isTrue();
+    assertThat(lifecycleTracker2.isMounted()).isFalse();
 
     lithoView.getComponentTree().mountComponent(new Rect(0, 5, 10, 15), true);
-    assertThat(child1.isMounted()).isTrue();
-    assertThat(child2.isMounted()).isTrue();
+    assertThat(lifecycleTracker1.isMounted()).isTrue();
+    assertThat(lifecycleTracker2.isMounted()).isTrue();
 
     lithoView.getComponentTree().mountComponent(new Rect(0, 15, 10, 25), true);
-    assertThat(child1.isMounted()).isFalse();
-    assertThat(child2.isMounted()).isTrue();
+    assertThat(lifecycleTracker1.isMounted()).isFalse();
+    assertThat(lifecycleTracker2.isMounted()).isTrue();
 
     lithoView.getComponentTree().mountComponent(new Rect(0, 20, 10, 30), true);
-    assertThat(child1.isMounted()).isFalse();
-    assertThat(child2.isMounted()).isFalse();
+    assertThat(lifecycleTracker1.isMounted()).isFalse();
+    assertThat(lifecycleTracker2.isMounted()).isFalse();
   }
 
   /** Tests incremental mount behaviour of a view mount item in a nested hierarchy. */
@@ -254,7 +259,7 @@ public class IncrementalMountFromExtensionTest {
                     .wrapInView()
                     .paddingPx(ALL, 20)
                     .child(Wrapper.create(c).delegate(child).widthPx(10).heightPx(10))
-                    .child(TestDrawableComponent.create(c))
+                    .child(SimpleMountSpecTester.create(c))
                     .build();
               }
             },
@@ -277,7 +282,7 @@ public class IncrementalMountFromExtensionTest {
    */
   @Test
   public void testIncrementalMountVerticalDrawableStackNegativeMargin() {
-    final TestComponent child1 = TestDrawableComponent.create(mContext).build();
+    final SimpleMountSpecTester child1 = SimpleMountSpecTester.create(mContext).build();
     final LithoView lithoView =
         ComponentTestHelper.mountComponent(
             mContext,
@@ -329,7 +334,7 @@ public class IncrementalMountFromExtensionTest {
                             .positionPx(LEFT, 5)
                             .widthPx(10)
                             .heightPx(10))
-                    .child(TestDrawableComponent.create(c))
+                    .child(SimpleMountSpecTester.create(c))
                     .build();
               }
             },
@@ -496,8 +501,12 @@ public class IncrementalMountFromExtensionTest {
    */
   @Test
   public void testIncrementalMountAfterUnmountAllItemsCall() {
-    final TestComponent child1 = TestDrawableComponent.create(mContext).build();
-    final TestComponent child2 = TestDrawableComponent.create(mContext).build();
+    final LifecycleTracker lifecycleTracker1 = new LifecycleTracker();
+    final Component child1 =
+        MountSpecLifecycleTester.create(mContext).lifecycleTracker(lifecycleTracker1).build();
+    final LifecycleTracker lifecycleTracker2 = new LifecycleTracker();
+    final Component child2 =
+        MountSpecLifecycleTester.create(mContext).lifecycleTracker(lifecycleTracker2).build();
     final LithoView lithoView =
         mountComponent(
             mContext,
@@ -514,24 +523,24 @@ public class IncrementalMountFromExtensionTest {
             true);
 
     lithoView.getComponentTree().mountComponent(new Rect(0, -10, 10, -5), true);
-    assertThat(child1.isMounted()).isFalse();
-    assertThat(child2.isMounted()).isFalse();
+    assertThat(lifecycleTracker1.isMounted()).isFalse();
+    assertThat(lifecycleTracker2.isMounted()).isFalse();
 
     lithoView.getComponentTree().mountComponent(new Rect(0, 0, 10, 5), true);
-    assertThat(child1.isMounted()).isTrue();
-    assertThat(child2.isMounted()).isFalse();
+    assertThat(lifecycleTracker1.isMounted()).isTrue();
+    assertThat(lifecycleTracker2.isMounted()).isFalse();
 
     lithoView.getComponentTree().mountComponent(new Rect(0, 5, 10, 15), true);
-    assertThat(child1.isMounted()).isTrue();
-    assertThat(child2.isMounted()).isTrue();
+    assertThat(lifecycleTracker1.isMounted()).isTrue();
+    assertThat(lifecycleTracker2.isMounted()).isTrue();
 
     lithoView.unmountAllItems();
-    assertThat(child1.isMounted()).isFalse();
-    assertThat(child2.isMounted()).isFalse();
+    assertThat(lifecycleTracker1.isMounted()).isFalse();
+    assertThat(lifecycleTracker2.isMounted()).isFalse();
 
     lithoView.getComponentTree().mountComponent(new Rect(0, 5, 10, 15), true);
-    assertThat(child1.isMounted()).isTrue();
-    assertThat(child2.isMounted()).isTrue();
+    assertThat(lifecycleTracker1.isMounted()).isTrue();
+    assertThat(lifecycleTracker2.isMounted()).isTrue();
   }
 
   /**

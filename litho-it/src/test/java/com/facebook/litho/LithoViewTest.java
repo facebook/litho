@@ -41,11 +41,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.LithoStatsRule;
-import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.assertj.LithoViewAssert;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
+import com.facebook.litho.widget.SimpleMountSpecTester;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -67,7 +67,7 @@ public class LithoViewTest {
         new InlineLayoutSpec() {
           @Override
           protected Component onCreateLayout(ComponentContext c) {
-            return TestDrawableComponent.create(c).widthPx(100).heightPx(100).build();
+            return SimpleMountSpecTester.create(c).widthPx(100).heightPx(100).build();
           }
         };
 
@@ -150,7 +150,7 @@ public class LithoViewTest {
         new InlineLayoutSpec() {
           @Override
           protected Component onCreateLayout(ComponentContext c) {
-            return TestDrawableComponent.create(c).widthPercent(100).heightPx(100).build();
+            return SimpleMountSpecTester.create(c).widthPercent(100).heightPx(100).build();
           }
         };
 
@@ -179,7 +179,7 @@ public class LithoViewTest {
         new InlineLayoutSpec() {
           @Override
           protected Component onCreateLayout(ComponentContext c) {
-            return TestDrawableComponent.create(c).widthPercent(50).heightPercent(10).build();
+            return SimpleMountSpecTester.create(c).widthPercent(50).heightPercent(10).build();
           }
         };
 
@@ -243,7 +243,7 @@ public class LithoViewTest {
   @Test
   public void testMeasureDoesNotComputeLayoutStateWhenSpecsAreExact() {
     mLithoView = new LithoView(getApplicationContext());
-    mLithoView.setComponent(TestDrawableComponent.create(mLithoView.getComponentContext()).build());
+    mLithoView.setComponent(SimpleMountSpecTester.create(mLithoView.getComponentContext()).build());
     mLithoView.measure(makeMeasureSpec(100, EXACTLY), makeMeasureSpec(100, EXACTLY));
 
     assertThat(mLithoView.getMeasuredWidth()).isEqualTo(100);
@@ -261,7 +261,7 @@ public class LithoViewTest {
   public void testMeasureComputesLayoutStateWhenSpecsAreNotExact() {
     mLithoView = new LithoView(getApplicationContext());
     mLithoView.setComponent(
-        TestDrawableComponent.create(mLithoView.getComponentContext()).heightPx(100).build());
+        SimpleMountSpecTester.create(mLithoView.getComponentContext()).heightPx(100).build());
     mLithoView.measure(makeMeasureSpec(100, EXACTLY), makeMeasureSpec(100, AT_MOST));
 
     assertThat(mLithoView.getMeasuredWidth()).isEqualTo(100);

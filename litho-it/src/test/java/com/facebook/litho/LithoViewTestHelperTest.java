@@ -22,9 +22,9 @@ import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import com.facebook.litho.config.ComponentsConfiguration;
-import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
+import com.facebook.litho.widget.SimpleMountSpecTester;
 import com.facebook.litho.widget.Text;
 import org.junit.Assume;
 import org.junit.Before;
@@ -46,7 +46,7 @@ public class LithoViewTestHelperTest {
         new InlineLayoutSpec() {
           @Override
           protected Component onCreateLayout(ComponentContext c) {
-            return TestDrawableComponent.create(c).widthPx(100).heightPx(100).build();
+            return SimpleMountSpecTester.create(c).widthPx(100).heightPx(100).build();
           }
         };
 
@@ -59,7 +59,7 @@ public class LithoViewTestHelperTest {
     assertThat(string)
         .containsPattern(
             "litho.InlineLayout\\{\\w+ V.E..... .. 0,0-100,100\\}\n"
-                + "  litho.TestDrawableComponent\\{\\w+ V.E..... .. 0,0-100,100\\}");
+                + "  litho.SimpleMountSpecTester\\{\\w+ V.E..... .. 0,0-100,100\\}");
   }
 
   @Test
@@ -70,7 +70,7 @@ public class LithoViewTestHelperTest {
           protected Component onCreateLayout(ComponentContext c) {
             return Column.create(c)
                 .child(
-                    TestDrawableComponent.create(c)
+                    SimpleMountSpecTester.create(c)
                         .testKey("test-drawable")
                         .widthPx(100)
                         .heightPx(100))
@@ -89,7 +89,7 @@ public class LithoViewTestHelperTest {
         .containsPattern(
             "litho.InlineLayout\\{\\w+ V.E..... .. 0,0-100,200\\}\n"
                 + "  litho.Column\\{\\w+ V.E..... .. 0,0-100,200\\}\n"
-                + "    litho.TestDrawableComponent\\{\\w+ V.E..... .. 0,0-100,100 litho:id/test-drawable\\}\n"
+                + "    litho.SimpleMountSpecTester\\{\\w+ V.E..... .. 0,0-100,100 litho:id/test-drawable\\}\n"
                 + "    litho.Text\\{\\w+ V.E..... .. 0,100-100,200 text=\"Hello, World\"\\}");
   }
 }

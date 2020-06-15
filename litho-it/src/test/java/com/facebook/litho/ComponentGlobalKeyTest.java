@@ -23,13 +23,13 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 import android.util.Pair;
 import android.view.View;
 import com.facebook.litho.annotations.OnCreateLayout;
-import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestViewComponent;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.logging.TestComponentsReporter;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.CardClip;
 import com.facebook.litho.widget.EditText;
+import com.facebook.litho.widget.SimpleMountSpecTester;
 import com.facebook.litho.widget.Text;
 import com.facebook.litho.widget.TextInput;
 import com.facebook.litho.widget.TreePropTestContainerComponentSpec;
@@ -56,14 +56,14 @@ public class ComponentGlobalKeyTest {
 
   @Test
   public void testComponentKey() {
-    Component component = TestDrawableComponent.create(mContext).build();
+    Component component = SimpleMountSpecTester.create(mContext).build();
     Assert.assertEquals(component.getKey(), component.getTypeId() + "");
     Assert.assertNull(component.getGlobalKey());
   }
 
   @Test
   public void testComponentManualKey() {
-    Component component = TestDrawableComponent.create(mContext).key("someKey").build();
+    Component component = SimpleMountSpecTester.create(mContext).key("someKey").build();
     Assert.assertEquals(component.getKey(), "someKey");
     Assert.assertNull(component.getGlobalKey());
   }
@@ -71,7 +71,7 @@ public class ComponentGlobalKeyTest {
   @Test
   public void testRootComponentGlobalKey() {
     final Component component =
-        TestDrawableComponent.create(mContext).widthDip(10).heightDip(10).build();
+        SimpleMountSpecTester.create(mContext).widthDip(10).heightDip(10).build();
     final LithoView lithoView = getLithoView(component);
 
     Assert.assertEquals(
@@ -82,7 +82,7 @@ public class ComponentGlobalKeyTest {
   @Test
   public void testRootComponentGlobalKeyManualKey() {
     final Component component =
-        TestDrawableComponent.create(mContext).widthDip(10).heightDip(10).key("someKey").build();
+        SimpleMountSpecTester.create(mContext).widthDip(10).heightDip(10).key("someKey").build();
     final LithoView lithoView = getLithoView(component);
 
     Assert.assertEquals(

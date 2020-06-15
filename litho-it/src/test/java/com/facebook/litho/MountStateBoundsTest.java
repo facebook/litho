@@ -17,7 +17,6 @@
 package com.facebook.litho;
 
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
-import static com.facebook.litho.testing.TestDrawableComponent.create;
 import static com.facebook.litho.testing.helper.ComponentTestHelper.mountComponent;
 import static com.facebook.yoga.YogaAlign.FLEX_END;
 import static com.facebook.yoga.YogaEdge.ALL;
@@ -25,6 +24,7 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import android.graphics.Rect;
 import android.view.View;
+import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestViewComponent;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
@@ -51,7 +51,7 @@ public class MountStateBoundsTest {
             new InlineLayoutSpec() {
               @Override
               protected Component onCreateLayout(ComponentContext c) {
-                return create(c).widthPx(10).heightPx(10).build();
+                return TestDrawableComponent.create(c).widthPx(10).heightPx(10).build();
               }
             });
 
@@ -94,7 +94,7 @@ public class MountStateBoundsTest {
                             .widthPx(20)
                             .heightPx(20)
                             .wrapInView()
-                            .child(create(c).widthPx(10).heightPx(10)))
+                            .child(TestDrawableComponent.create(c).widthPx(10).heightPx(10)))
                     .build();
               }
             });
@@ -127,7 +127,11 @@ public class MountStateBoundsTest {
                                     .widthPx(60)
                                     .heightPx(60)
                                     .wrapInView()
-                                    .child(create(c).widthPx(20).heightPx(20).marginPx(ALL, 20))))
+                                    .child(
+                                        TestDrawableComponent.create(c)
+                                            .widthPx(20)
+                                            .heightPx(20)
+                                            .marginPx(ALL, 20))))
                     .build();
               }
             },

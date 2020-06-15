@@ -29,9 +29,9 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Rect;
 import androidx.viewpager.widget.ViewPager;
-import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
+import com.facebook.litho.widget.SimpleMountSpecTester;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -51,7 +51,7 @@ public class ComponentTreeIncrementalMountLocalVisibleBoundsTest {
     ComponentContext context = new ComponentContext(getApplicationContext());
     mComponentTree =
         ComponentTree.create(
-                context, TestDrawableComponent.create(context).color(Color.BLACK).build())
+                context, SimpleMountSpecTester.create(context).color(Color.BLACK).build())
             .layoutDiffing(false)
             .build();
 

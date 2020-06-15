@@ -20,8 +20,8 @@ import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import com.facebook.litho.LayoutState.LayoutStateContext;
-import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
+import com.facebook.litho.widget.SimpleMountSpecTester;
 import com.facebook.litho.widget.Text;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,7 +46,7 @@ public class ComponentShallowCopyTest {
     final ComponentContext c = new ComponentContext(mContext);
     c.setLayoutStateContext(new LayoutStateContext(layoutState));
 
-    Component component = TestDrawableComponent.create(mContext).unique().build();
+    Component component = SimpleMountSpecTester.create(mContext).build();
     component.measure(c, 100, 100, new Size());
     assertThat(layoutState.getCachedLayout(component)).isNotNull();
 
@@ -69,7 +69,7 @@ public class ComponentShallowCopyTest {
     final ComponentContext c2 = new ComponentContext(mContext);
     c2.setLayoutStateContext(new LayoutStateContext(layoutState2));
 
-    Component component = TestDrawableComponent.create(mContext).unique().build();
+    Component component = SimpleMountSpecTester.create(mContext).build();
     component.measure(c1, 100, 100, new Size());
     assertThat(layoutState1.getCachedLayout(component)).isNotNull();
 

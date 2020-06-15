@@ -19,8 +19,8 @@ package com.facebook.litho;
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
-import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
+import com.facebook.litho.widget.SimpleMountSpecTester;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -52,23 +52,23 @@ public class GetSimpleNameTest {
 
   @Test
   public void testGetSimpleName() {
-    TestDrawableComponent testComponent = TestDrawableComponent.create(mContext).build();
-    assertThat(testComponent.getSimpleName()).isEqualTo("TestDrawableComponent");
+    final Component testComponent = SimpleMountSpecTester.create(mContext).build();
+    assertThat(testComponent.getSimpleName()).isEqualTo("SimpleMountSpecTester");
   }
 
   @Test
   public void testGetSimpleNameWithOneWrapper() {
-    TestDrawableComponent inner = TestDrawableComponent.create(mContext).build();
+    final Component inner = SimpleMountSpecTester.create(mContext).build();
     TestWrapperComponent wrapper = new TestWrapperComponent(inner);
-    assertThat(wrapper.getSimpleName()).isEqualTo("TestWrapper(TestDrawableComponent)");
+    assertThat(wrapper.getSimpleName()).isEqualTo("TestWrapper(SimpleMountSpecTester)");
   }
 
   @Test
   public void testGetSimpleNameWithMultipleWrapper() {
-    TestDrawableComponent inner = TestDrawableComponent.create(mContext).build();
+    final Component inner = SimpleMountSpecTester.create(mContext).build();
     TestWrapperComponent wrapper = new TestWrapperComponent(inner);
     TestWrapperComponent wrapper2 = new TestWrapperComponent(wrapper);
     TestWrapperComponent wrapper3 = new TestWrapperComponent(wrapper2);
-    assertThat(wrapper3.getSimpleName()).isEqualTo("TestWrapper(TestDrawableComponent)");
+    assertThat(wrapper3.getSimpleName()).isEqualTo("TestWrapper(SimpleMountSpecTester)");
   }
 }

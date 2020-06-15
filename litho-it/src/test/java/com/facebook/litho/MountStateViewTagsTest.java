@@ -23,9 +23,9 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import android.util.SparseArray;
 import android.view.View;
-import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
+import com.facebook.litho.widget.SimpleMountSpecTester;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -61,10 +61,10 @@ public class MountStateViewTagsTest {
                     .child(
                         create(c)
                             .viewTags(tags1)
-                            .child(TestDrawableComponent.create(c))
-                            .child(TestDrawableComponent.create(c)))
-                    .child(TestDrawableComponent.create(c))
-                    .child(TestDrawableComponent.create(c).viewTags(tags2))
+                            .child(SimpleMountSpecTester.create(c))
+                            .child(SimpleMountSpecTester.create(c)))
+                    .child(SimpleMountSpecTester.create(c))
+                    .child(SimpleMountSpecTester.create(c).viewTags(tags2))
                     .build();
               }
             });
@@ -90,8 +90,8 @@ public class MountStateViewTagsTest {
               protected Component onCreateLayout(ComponentContext c) {
                 return create(c)
                     .viewTags(tags)
-                    .child(TestDrawableComponent.create(c))
-                    .child(TestDrawableComponent.create(c))
+                    .child(SimpleMountSpecTester.create(c))
+                    .child(SimpleMountSpecTester.create(c))
                     .build();
               }
             });

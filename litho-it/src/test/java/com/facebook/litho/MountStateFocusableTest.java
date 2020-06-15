@@ -21,10 +21,10 @@ import static com.facebook.litho.Column.create;
 import static com.facebook.litho.testing.helper.ComponentTestHelper.mountComponent;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
-import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestViewComponent;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
+import com.facebook.litho.widget.SimpleMountSpecTester;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -73,7 +73,7 @@ public class MountStateFocusableTest {
             new InlineLayoutSpec() {
               @Override
               protected Component onCreateLayout(ComponentContext c) {
-                return create(c).focusable(true).child(TestDrawableComponent.create(c)).build();
+                return create(c).focusable(true).child(SimpleMountSpecTester.create(c)).build();
               }
             });
 

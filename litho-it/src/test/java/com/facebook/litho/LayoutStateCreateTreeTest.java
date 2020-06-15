@@ -34,10 +34,10 @@ import android.util.SparseArray;
 import com.facebook.litho.annotations.ImportantForAccessibility;
 import com.facebook.litho.drawable.ComparableColorDrawable;
 import com.facebook.litho.testing.TestComponent;
-import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestSizeDependentComponent;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
+import com.facebook.litho.widget.SimpleMountSpecTester;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaDirection;
 import com.facebook.yoga.YogaEdge;
@@ -70,7 +70,7 @@ public class LayoutStateCreateTreeTest {
           @Override
           protected Component onCreateLayout(final ComponentContext c) {
             return Column.create(c)
-                .child(Column.create(c).child(TestDrawableComponent.create(c)))
+                .child(Column.create(c).child(SimpleMountSpecTester.create(c)))
                 .build();
           }
         };
@@ -84,7 +84,7 @@ public class LayoutStateCreateTreeTest {
     assertThat(node.getTailComponent()).isInstanceOf(Column.class);
     node = node.getChildAt(0);
     assertThat(node.getChildCount()).isEqualTo(0);
-    assertThat(node.getTailComponent()).isInstanceOf(TestDrawableComponent.class);
+    assertThat(node.getTailComponent()).isInstanceOf(SimpleMountSpecTester.class);
   }
 
   @Test
@@ -113,7 +113,7 @@ public class LayoutStateCreateTreeTest {
                 .child(
                     Column.create(c)
                         .child(
-                            TestDrawableComponent.create(c)
+                            SimpleMountSpecTester.create(c)
                                 .clickHandler(clickHandler1)
                                 .longClickHandler(longClickHandler1)
                                 .touchHandler(touchHandler1)
@@ -245,7 +245,7 @@ public class LayoutStateCreateTreeTest {
                     new InlineLayoutSpec() {
                       @Override
                       protected Component onCreateLayout(ComponentContext c) {
-                        return TestDrawableComponent.create(c)
+                        return SimpleMountSpecTester.create(c)
                             .clickHandler(clickHandler1)
                             .longClickHandler(longClickHandler1)
                             .touchHandler(touchHandler1)
@@ -265,7 +265,7 @@ public class LayoutStateCreateTreeTest {
 
     InternalNode node = Layout.create(mComponentContext, component);
     assertThat(node.getChildCount()).isEqualTo(0);
-    assertThat(node.getTailComponent()).isInstanceOf(TestDrawableComponent.class);
+    assertThat(node.getTailComponent()).isInstanceOf(SimpleMountSpecTester.class);
     assertThat(node.getNodeInfo().getClickHandler()).isEqualTo(clickHandler2);
     assertThat(node.getNodeInfo().getLongClickHandler()).isEqualTo(longClickHandler2);
     assertThat(node.getNodeInfo().getTouchHandler()).isEqualTo(touchHandler2);

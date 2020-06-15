@@ -1554,6 +1554,7 @@ public class VisibilityEventsTest {
 
   @Test
   public void testSetVisibilityHintRecursive() {
+    // TODO(festevezga, T68365308) - replace with SimpleMountSpecTesterSpec
     final TestComponent testComponentInner = TestDrawableComponent.create(mContext).build();
     final EventHandler<VisibleEvent> visibleEventHandlerInner =
         new EventHandler<>(testComponentInner, 1);

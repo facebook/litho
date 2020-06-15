@@ -36,6 +36,7 @@ import android.view.View;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
+import com.facebook.litho.widget.SimpleMountSpecTester;
 import com.facebook.rendercore.MountItem;
 import com.facebook.rendercore.RenderTreeNode;
 import org.junit.Before;
@@ -69,7 +70,7 @@ public class MountItemTest {
         new InlineLayoutSpec() {
           @Override
           protected Component onCreateLayout(ComponentContext c) {
-            return TestDrawableComponent.create(c).build();
+            return SimpleMountSpecTester.create(c).build();
           }
         };
     mComponentHost = new ComponentHost(getApplicationContext());

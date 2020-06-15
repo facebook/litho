@@ -21,10 +21,10 @@ import static com.facebook.litho.Column.create;
 import static com.facebook.litho.testing.helper.ComponentTestHelper.mountComponent;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
-import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestViewComponent;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
+import com.facebook.litho.widget.SimpleMountSpecTester;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -97,7 +97,7 @@ public class MountStateViewClickTest {
               protected Component onCreateLayout(ComponentContext c) {
                 return create(c)
                     .clickHandler(c.newEventHandler(1))
-                    .child(TestDrawableComponent.create(c))
+                    .child(SimpleMountSpecTester.create(c))
                     .build();
               }
             });
@@ -116,7 +116,7 @@ public class MountStateViewClickTest {
               protected Component onCreateLayout(ComponentContext c) {
                 return create(c)
                     .longClickHandler(c.newEventHandler(1))
-                    .child(TestDrawableComponent.create(c))
+                    .child(SimpleMountSpecTester.create(c))
                     .build();
               }
             });
@@ -135,7 +135,7 @@ public class MountStateViewClickTest {
             Column.create(scopedContext)
                 .clickHandler(scopedContext.newEventHandler(1))
                 .longClickHandler(scopedContext.newEventHandler(2))
-                .child(TestDrawableComponent.create(scopedContext))
+                .child(SimpleMountSpecTester.create(scopedContext))
                 .build(),
             true,
             true);

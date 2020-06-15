@@ -43,6 +43,7 @@ import com.facebook.litho.testing.TimeOutSemaphore;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
+import com.facebook.litho.widget.SimpleMountSpecTester;
 import com.facebook.litho.widget.SimpleStateUpdateEmulator;
 import com.facebook.litho.widget.SimpleStateUpdateEmulatorSpec;
 import com.facebook.litho.widget.TextDrawable;
@@ -82,7 +83,7 @@ public class ComponentTreeTest {
   @Before
   public void setup() throws Exception {
     mContext = new ComponentContext(getApplicationContext());
-    mComponent = TestDrawableComponent.create(mContext).build();
+    mComponent = SimpleMountSpecTester.create(mContext).build();
 
     mLayoutThreadShadowLooper =
         Shadows.shadowOf(
@@ -305,12 +306,12 @@ public class ComponentTreeTest {
   public void testSetRootSynchThenAsyncThenSync() {
     ComponentTree componentTree = ComponentTree.create(mContext).build();
     componentTree.setRootAndSizeSpec(
-        TestDrawableComponent.create(mContext).measuredWidth(200).measuredHeight(200).build(),
+        SimpleMountSpecTester.create(mContext).widthPx(200).heightPx(200).build(),
         SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED),
         SizeSpec.makeSizeSpec(0, SizeSpec.UNSPECIFIED));
 
-    TestDrawableComponent newComponent =
-        TestDrawableComponent.create(mContext).measuredWidth(100).measuredHeight(100).build();
+    SimpleMountSpecTester newComponent =
+        SimpleMountSpecTester.create(mContext).widthPx(100).heightPx(100).build();
 
     componentTree.setRootAndSizeSpecAsync(
         newComponent,
@@ -427,7 +428,7 @@ public class ComponentTreeTest {
     assertThat(firstLayoutState).isNotNull();
 
     componentTree.setRootAndSizeSpec(
-        TestDrawableComponent.create(mContext).build(),
+        SimpleMountSpecTester.create(mContext).build(),
         makeSizeSpec(100, EXACTLY),
         makeSizeSpec(100, EXACTLY),
         size);
@@ -444,7 +445,7 @@ public class ComponentTreeTest {
     treeProps.put(Object.class, "hello world");
 
     componentTree.setRootAndSizeSpec(
-        TestDrawableComponent.create(mContext).build(),
+        SimpleMountSpecTester.create(mContext).build(),
         makeSizeSpec(100, EXACTLY),
         makeSizeSpec(100, EXACTLY),
         size,
@@ -478,7 +479,7 @@ public class ComponentTreeTest {
     treeProps.put(Object.class, "hello world");
 
     componentTree.setRootAndSizeSpecAsync(
-        TestDrawableComponent.create(mContext).build(),
+        SimpleMountSpecTester.create(mContext).build(),
         makeSizeSpec(100, EXACTLY),
         makeSizeSpec(100, EXACTLY),
         treeProps);
@@ -504,7 +505,7 @@ public class ComponentTreeTest {
     treeProps.put(Object.class, "hello world");
 
     componentTree.setRootAndSizeSpecAsync(
-        TestDrawableComponent.create(mContext).build(),
+        SimpleMountSpecTester.create(mContext).build(),
         makeSizeSpec(100, EXACTLY),
         makeSizeSpec(100, EXACTLY),
         treeProps);
@@ -529,7 +530,7 @@ public class ComponentTreeTest {
     treeProps.put(Object.class, "hello world");
 
     componentTree.setRootAndSizeSpecAsync(
-        TestDrawableComponent.create(mContext).build(),
+        SimpleMountSpecTester.create(mContext).build(),
         makeSizeSpec(100, EXACTLY),
         makeSizeSpec(100, EXACTLY),
         treeProps);
@@ -537,7 +538,7 @@ public class ComponentTreeTest {
     assertThat(componentTree.getCommittedLayoutState()).isNull();
 
     componentTree.setRootAndSizeSpec(
-        TestDrawableComponent.create(mContext).build(),
+        SimpleMountSpecTester.create(mContext).build(),
         makeSizeSpec(200, EXACTLY),
         makeSizeSpec(200, EXACTLY));
 
@@ -617,10 +618,10 @@ public class ComponentTreeTest {
 
   @Test
   public void testSetComponentFromView() {
-    Component component1 = TestDrawableComponent.create(mContext).build();
+    Component component1 = SimpleMountSpecTester.create(mContext).build();
     ComponentTree componentTree1 = ComponentTree.create(mContext, component1).build();
 
-    Component component2 = TestDrawableComponent.create(mContext).build();
+    Component component2 = SimpleMountSpecTester.create(mContext).build();
     ComponentTree componentTree2 = ComponentTree.create(mContext, component2).build();
 
     Assert.assertNull(componentTree1.getLithoView());
@@ -640,7 +641,7 @@ public class ComponentTreeTest {
 
   @Test
   public void testComponentTreeReleaseClearsView() {
-    Component component = TestDrawableComponent.create(mContext).build();
+    Component component = SimpleMountSpecTester.create(mContext).build();
     ComponentTree componentTree = create(mContext, component).build();
 
     LithoView lithoView = new LithoView(mContext);
@@ -655,7 +656,7 @@ public class ComponentTreeTest {
 
   @Test
   public void testSetTreeToTwoViewsBothAttached() {
-    Component component = TestDrawableComponent.create(mContext).build();
+    Component component = SimpleMountSpecTester.create(mContext).build();
 
     ComponentTree componentTree = ComponentTree.create(mContext, component).build();
 
@@ -675,7 +676,7 @@ public class ComponentTreeTest {
 
   @Test
   public void testSettingNewViewToTree() {
-    Component component = TestDrawableComponent.create(mContext).build();
+    Component component = SimpleMountSpecTester.create(mContext).build();
 
     ComponentTree componentTree = create(mContext, component).build();
 
@@ -707,7 +708,7 @@ public class ComponentTreeTest {
     componentTree.measure(mWidthSpec, mHeightSpec, new int[2], false);
     componentTree.attach();
 
-    Component newComponent = TestDrawableComponent.create(mContext).color(1234).build();
+    Component newComponent = SimpleMountSpecTester.create(mContext).color(1234).build();
     componentTree.setRootAsync(newComponent);
     assertThat(componentTree.getRoot()).isEqualTo(newComponent);
 
@@ -730,7 +731,7 @@ public class ComponentTreeTest {
     componentTree.measure(mWidthSpec, mHeightSpec, new int[2], false);
     componentTree.attach();
 
-    Component newComponent = TestDrawableComponent.create(mContext).color(1234).build();
+    Component newComponent = SimpleMountSpecTester.create(mContext).color(1234).build();
     componentTree.setRootAsync(newComponent);
 
     componentTree.measure(mWidthSpec2, mHeightSpec2, new int[2], false);
@@ -834,7 +835,7 @@ public class ComponentTreeTest {
     componentTree.attach();
     componentTree.measure(widthSpec1, heightSpec1, new int[2], false);
 
-    Component newComponent = TestDrawableComponent.create(mContext).color(1234).build();
+    Component newComponent = SimpleMountSpecTester.create(mContext).color(1234).build();
     componentTree.setRootAsync(newComponent);
 
     assertThat(componentTree.hasCompatibleLayout(widthSpec2, heightSpec2))
@@ -879,7 +880,7 @@ public class ComponentTreeTest {
   @Test
   public void testSetRootAsyncWithCompatibleMeasureBeforeStart() {
     Component oldComponent =
-        TestDrawableComponent.create(mContext).widthPx(100).heightPx(100).color(1234).build();
+        SimpleMountSpecTester.create(mContext).widthPx(100).heightPx(100).color(1234).build();
     ComponentTree componentTree = ComponentTree.create(mContext, oldComponent).build();
     componentTree.setLithoView(new LithoView(mContext));
 
@@ -892,7 +893,7 @@ public class ComponentTreeTest {
     componentTree.measure(widthSpec1, heightSpec1, new int[2], false);
 
     Component newComponent =
-        TestDrawableComponent.create(mContext).widthPx(100).heightPx(100).color(1234).build();
+        SimpleMountSpecTester.create(mContext).widthPx(100).heightPx(100).color(1234).build();
     componentTree.setRootAsync(newComponent);
 
     assertThat(componentTree.hasCompatibleLayout(widthSpec2, heightSpec2))
@@ -930,7 +931,7 @@ public class ComponentTreeTest {
   public void
       testSetRootAsyncWithIncompatibleMeasureButCompatibleMeasureForExistingLayoutBeforeStart() {
     Component oldComponent =
-        TestDrawableComponent.create(mContext).widthPx(100).heightPx(100).color(1234).build();
+        SimpleMountSpecTester.create(mContext).widthPx(100).heightPx(100).color(1234).build();
     ComponentTree componentTree = ComponentTree.create(mContext, oldComponent).build();
     componentTree.setLithoView(new LithoView(mContext));
 
@@ -942,7 +943,7 @@ public class ComponentTreeTest {
     componentTree.attach();
     componentTree.measure(widthSpec1, heightSpec1, new int[2], false);
 
-    Component newComponent = TestDrawableComponent.create(mContext).flexGrow(1).color(1234).build();
+    Component newComponent = SimpleMountSpecTester.create(mContext).flexGrow(1).color(1234).build();
     componentTree.setRootAsync(newComponent);
 
     assertThat(componentTree.hasCompatibleLayout(widthSpec2, heightSpec2))
@@ -993,7 +994,7 @@ public class ComponentTreeTest {
     componentTree.attach();
     componentTree.measure(widthSpec1, heightSpec1, new int[2], false);
 
-    Component newComponent = TestDrawableComponent.create(mContext).color(1234).build();
+    Component newComponent = SimpleMountSpecTester.create(mContext).color(1234).build();
     componentTree.setRootAsync(newComponent);
 
     mBackgroundLayoutLooperRule.runToEndOfTasksSync();
@@ -1029,7 +1030,7 @@ public class ComponentTreeTest {
   @Test
   public void testSetRootAsyncWithCompatibleMeasureAfterFinish() {
     Component oldComponent =
-        TestDrawableComponent.create(mContext).widthPx(100).heightPx(100).color(1234).build();
+        SimpleMountSpecTester.create(mContext).widthPx(100).heightPx(100).color(1234).build();
     ComponentTree componentTree = ComponentTree.create(mContext, oldComponent).build();
     componentTree.setLithoView(new LithoView(mContext));
 
@@ -1042,7 +1043,7 @@ public class ComponentTreeTest {
     componentTree.measure(widthSpec1, heightSpec1, new int[2], false);
 
     Component newComponent =
-        TestDrawableComponent.create(mContext).widthPx(100).heightPx(100).color(1234).build();
+        SimpleMountSpecTester.create(mContext).widthPx(100).heightPx(100).color(1234).build();
     componentTree.setRootAsync(newComponent);
 
     mBackgroundLayoutLooperRule.runToEndOfTasksSync();
@@ -1078,7 +1079,7 @@ public class ComponentTreeTest {
   public void
       testSetRootAsyncWithIncompatibleMeasureButCompatibleMeasureForExistingLayoutAfterFinish() {
     Component oldComponent =
-        TestDrawableComponent.create(mContext).widthPx(100).heightPx(100).color(1234).build();
+        SimpleMountSpecTester.create(mContext).widthPx(100).heightPx(100).color(1234).build();
     ComponentTree componentTree = ComponentTree.create(mContext, oldComponent).build();
     componentTree.setLithoView(new LithoView(mContext));
 
@@ -1090,7 +1091,7 @@ public class ComponentTreeTest {
     componentTree.attach();
     componentTree.measure(widthSpec1, heightSpec1, new int[2], false);
 
-    Component newComponent = TestDrawableComponent.create(mContext).flexGrow(1).color(1234).build();
+    Component newComponent = SimpleMountSpecTester.create(mContext).flexGrow(1).color(1234).build();
     componentTree.setRootAsync(newComponent);
 
     mBackgroundLayoutLooperRule.runToEndOfTasksSync();
@@ -1205,7 +1206,7 @@ public class ComponentTreeTest {
   @Test
   public void testSetRootAsyncWithCompatibleMeasureDuringLayout() throws InterruptedException {
     Component oldComponent =
-        TestDrawableComponent.create(mContext).widthPx(100).heightPx(100).color(1234).build();
+        SimpleMountSpecTester.create(mContext).widthPx(100).heightPx(100).color(1234).build();
     ComponentTree componentTree = ComponentTree.create(mContext, oldComponent).build();
     componentTree.setLithoView(new LithoView(mContext));
 
@@ -1301,7 +1302,7 @@ public class ComponentTreeTest {
       testSetRootAsyncWithIncompatibleMeasureButCompatibleMeasureForExistingLayoutDuringLayout()
           throws InterruptedException {
     Component oldComponent =
-        TestDrawableComponent.create(mContext).widthPx(100).heightPx(100).color(1234).build();
+        SimpleMountSpecTester.create(mContext).widthPx(100).heightPx(100).color(1234).build();
     ComponentTree componentTree = ComponentTree.create(mContext, oldComponent).build();
     componentTree.setLithoView(new LithoView(mContext));
 
@@ -1536,7 +1537,7 @@ public class ComponentTreeTest {
   public void testSetRootAndSetSizeSpecInParallelProduceCorrectResult()
       throws InterruptedException {
     Component oldComponent =
-        TestDrawableComponent.create(mContext).widthPx(100).heightPx(100).color(1234).build();
+        SimpleMountSpecTester.create(mContext).widthPx(100).heightPx(100).color(1234).build();
     ComponentTree componentTree = ComponentTree.create(mContext, oldComponent).build();
     componentTree.setLithoView(new LithoView(mContext));
 
@@ -1688,8 +1689,8 @@ public class ComponentTreeTest {
 
   @Test
   public void testSetSizeSpecAsyncFollowedBySetSizeSpecSyncBeforeStartReturnsCorrectSize() {
-    TestDrawableComponent component =
-        TestDrawableComponent.create(mContext).flexGrow(1).color(1234).build();
+    final Component component =
+        SimpleMountSpecTester.create(mContext).flexGrow(1).color(1234).build();
     ComponentTree componentTree = ComponentTree.create(mContext, component).build();
     componentTree.setLithoView(new LithoView(mContext));
 
@@ -1788,7 +1789,7 @@ public class ComponentTreeTest {
     componentTree.release();
 
     // Verify we don't crash
-    componentTree.setRoot(TestDrawableComponent.create(mContext).build());
+    componentTree.setRoot(SimpleMountSpecTester.create(mContext).build());
   }
 
   @Test

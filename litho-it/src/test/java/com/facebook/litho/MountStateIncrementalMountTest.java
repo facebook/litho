@@ -40,10 +40,10 @@ import android.view.ViewGroup;
 import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.TestComponent;
-import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestViewComponent;
 import com.facebook.litho.testing.ViewGroupWithLithoViewChildren;
 import com.facebook.litho.widget.MountSpecLifecycleTester;
+import com.facebook.litho.widget.SimpleMountSpecTester;
 import com.facebook.yoga.YogaEdge;
 import java.util.Arrays;
 import java.util.Collection;
@@ -436,7 +436,7 @@ public class MountStateIncrementalMountTest {
             .wrapInView()
             .paddingPx(ALL, 20)
             .child(Wrapper.create(mContext).delegate(child).widthPx(10).heightPx(10))
-            .child(TestDrawableComponent.create(mContext))
+            .child(SimpleMountSpecTester.create(mContext))
             .build();
 
     mLithoViewRule
@@ -465,7 +465,7 @@ public class MountStateIncrementalMountTest {
   @Test
   public void testIncrementalMountVerticalDrawableStackNegativeMargin() {
     final EventHandler eventHandler = mock(EventHandler.class);
-    final TestComponent child1 = TestDrawableComponent.create(mContext).build();
+    final Component child1 = SimpleMountSpecTester.create(mContext).build();
     final Component root =
         Column.create(mContext)
             .child(
@@ -512,7 +512,7 @@ public class MountStateIncrementalMountTest {
                     .positionPx(LEFT, 5)
                     .widthPx(10)
                     .heightPx(10))
-            .child(TestDrawableComponent.create(mContext))
+            .child(SimpleMountSpecTester.create(mContext))
             .build();
 
     mLithoViewRule
@@ -696,8 +696,12 @@ public class MountStateIncrementalMountTest {
    */
   @Test
   public void testIncrementalMountAfterUnmountAllItemsCall() {
-    final TestComponent child1 = TestDrawableComponent.create(mContext).build();
-    final TestComponent child2 = TestDrawableComponent.create(mContext).build();
+    final LifecycleTracker lifecycleTracker1 = new LifecycleTracker();
+    final LifecycleTracker lifecycleTracker2 = new LifecycleTracker();
+    final Component child1 =
+        MountSpecLifecycleTester.create(mContext).lifecycleTracker(lifecycleTracker1).build();
+    final Component child2 =
+        MountSpecLifecycleTester.create(mContext).lifecycleTracker(lifecycleTracker2).build();
     final Component root =
         Column.create(mContext)
             .child(Wrapper.create(mContext).delegate(child1).widthPx(10).heightPx(10))
@@ -714,24 +718,24 @@ public class MountStateIncrementalMountTest {
     final LithoView lithoView = mLithoViewRule.getLithoView();
 
     lithoView.getComponentTree().mountComponent(new Rect(0, -10, 10, -5), true);
-    assertThat(child1.isMounted()).isFalse();
-    assertThat(child2.isMounted()).isFalse();
+    assertThat(lifecycleTracker1.isMounted()).isFalse();
+    assertThat(lifecycleTracker2.isMounted()).isFalse();
 
     lithoView.getComponentTree().mountComponent(new Rect(0, 0, 10, 5), true);
-    assertThat(child1.isMounted()).isTrue();
-    assertThat(child2.isMounted()).isFalse();
+    assertThat(lifecycleTracker1.isMounted()).isTrue();
+    assertThat(lifecycleTracker2.isMounted()).isFalse();
 
     lithoView.getComponentTree().mountComponent(new Rect(0, 5, 10, 15), true);
-    assertThat(child1.isMounted()).isTrue();
-    assertThat(child2.isMounted()).isTrue();
+    assertThat(lifecycleTracker1.isMounted()).isTrue();
+    assertThat(lifecycleTracker2.isMounted()).isTrue();
 
     lithoView.unmountAllItems();
-    assertThat(child1.isMounted()).isFalse();
-    assertThat(child2.isMounted()).isFalse();
+    assertThat(lifecycleTracker1.isMounted()).isFalse();
+    assertThat(lifecycleTracker2.isMounted()).isFalse();
 
     lithoView.getComponentTree().mountComponent(new Rect(0, 5, 10, 15), true);
-    assertThat(child1.isMounted()).isTrue();
-    assertThat(child2.isMounted()).isTrue();
+    assertThat(lifecycleTracker1.isMounted()).isTrue();
+    assertThat(lifecycleTracker2.isMounted()).isTrue();
   }
 
   /**

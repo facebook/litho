@@ -23,9 +23,9 @@ import static org.mockito.Mockito.when;
 import android.graphics.Rect;
 import com.facebook.litho.animation.AnimatedProperties;
 import com.facebook.litho.animation.DimensionValue;
-import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
+import com.facebook.litho.widget.SimpleMountSpecTester;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -118,7 +118,7 @@ public class TransitionTest {
         new InlineLayoutSpec() {
           @Override
           protected Component onCreateLayout(ComponentContext c) {
-            return TestDrawableComponent.create(c).build();
+            return SimpleMountSpecTester.create(c).build();
           }
         };
 
@@ -158,7 +158,7 @@ public class TransitionTest {
         new InlineLayoutSpec() {
           @Override
           protected Component onCreateLayout(ComponentContext c) {
-            return TestDrawableComponent.create(c).build();
+            return SimpleMountSpecTester.create(c).build();
           }
         };
 

@@ -19,7 +19,6 @@ package com.facebook.litho;
 import static android.graphics.Color.BLACK;
 import static android.graphics.Color.YELLOW;
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
-import static com.facebook.litho.testing.TestDrawableComponent.create;
 import static com.facebook.litho.testing.helper.ComponentTestHelper.mountComponent;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.robolectric.Shadows.shadowOf;
@@ -31,6 +30,7 @@ import com.facebook.litho.testing.TestTransitionComponent;
 import com.facebook.litho.testing.eventhandler.EventHandlerTestHelper;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.widget.EmptyComponent;
+import com.facebook.litho.widget.SimpleMountSpecTester;
 import com.facebook.litho.widget.SolidColor;
 import com.facebook.litho.widget.Text;
 import org.junit.Before;
@@ -49,13 +49,16 @@ public class ComponentTreeMountTest {
 
   @Test
   public void testRemountsWithNewInputOnSameLayout() {
-    final LithoView lithoView = mountComponent(mContext, create(mContext).color(BLACK).build());
+    final LithoView lithoView =
+        mountComponent(mContext, SimpleMountSpecTester.create(mContext).color(BLACK).build());
     shadowOf(lithoView).callOnAttachedToWindow();
 
     assertThat(lithoView.getDrawables()).hasSize(1);
     assertThat(((ColorDrawable) lithoView.getDrawables().get(0)).getColor()).isEqualTo(BLACK);
 
-    lithoView.getComponentTree().setRoot(create(mContext).color(YELLOW).build());
+    lithoView
+        .getComponentTree()
+        .setRoot(SimpleMountSpecTester.create(mContext).color(YELLOW).build());
     assertThat(lithoView.getDrawables()).hasSize(1);
     assertThat(((ColorDrawable) lithoView.getDrawables().get(0)).getColor()).isEqualTo(YELLOW);
   }
