@@ -31,7 +31,6 @@ import com.facebook.litho.ComponentTree;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
-import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import java.util.ArrayList;
@@ -85,7 +84,7 @@ public class RecyclerBinderManualRangeTest {
       initialComponents.add(
           create()
               .component(
-                  TestDrawableComponent.create(mComponentContext)
+                  SimpleMountSpecTester.create(mComponentContext)
                       .widthPx(100)
                       .heightPx(100)
                       .build())
@@ -136,7 +135,7 @@ public class RecyclerBinderManualRangeTest {
       initialComponents.add(
           create()
               .component(
-                  TestDrawableComponent.create(mComponentContext)
+                  SimpleMountSpecTester.create(mComponentContext)
                       .widthPx(100)
                       .heightPx(100)
                       .build())

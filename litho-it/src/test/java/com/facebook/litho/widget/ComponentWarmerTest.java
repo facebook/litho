@@ -30,7 +30,6 @@ import com.facebook.litho.LithoHandler;
 import com.facebook.litho.Row;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
-import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
@@ -58,12 +57,12 @@ public class ComponentWarmerTest {
     mContext = new ComponentContext(getApplicationContext());
     mComponentRenderInfo =
         ComponentRenderInfo.create()
-            .component(TestDrawableComponent.create(mContext).build())
+            .component(SimpleMountSpecTester.create(mContext).build())
             .customAttribute(ComponentWarmer.COMPONENT_WARMER_TAG, "tag1")
             .build();
     mPrepareComponentRenderInfo =
         ComponentRenderInfo.create()
-            .component(TestDrawableComponent.create(mContext).build())
+            .component(SimpleMountSpecTester.create(mContext).build())
             .build();
     mLayoutThreadShadowLooper =
         Shadows.shadowOf(
@@ -296,7 +295,7 @@ public class ComponentWarmerTest {
     final ComponentWarmer warmer = new ComponentWarmer();
     final ComponentRenderInfo renderInfo =
         ComponentRenderInfo.create()
-            .component(TestDrawableComponent.create(mContext).build())
+            .component(SimpleMountSpecTester.create(mContext).build())
             .customAttribute(ComponentWarmer.COMPONENT_WARMER_TAG, "tag1")
             .build();
 
@@ -314,7 +313,7 @@ public class ComponentWarmerTest {
     final ComponentWarmer warmer = new ComponentWarmer();
     final ComponentRenderInfo renderInfo =
         ComponentRenderInfo.create()
-            .component(TestDrawableComponent.create(mContext).build())
+            .component(SimpleMountSpecTester.create(mContext).build())
             .customAttribute(ComponentWarmer.COMPONENT_WARMER_TAG, "tag1")
             .build();
     final LithoHandler handler = new LithoHandler.DefaultLithoHandler(Looper.myLooper());
@@ -335,7 +334,7 @@ public class ComponentWarmerTest {
 
     final ComponentRenderInfo renderInfo =
         ComponentRenderInfo.create()
-            .component(TestDrawableComponent.create(mContext).build())
+            .component(SimpleMountSpecTester.create(mContext).build())
             .customAttribute(ComponentWarmer.COMPONENT_WARMER_TAG, "tag1")
             .build();
 

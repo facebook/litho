@@ -30,7 +30,6 @@ import com.facebook.litho.RenderCompleteEvent;
 import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
 import com.facebook.litho.config.ComponentsConfiguration;
-import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import com.facebook.litho.viewcompat.ViewBinder;
@@ -59,7 +58,7 @@ public class ComponentTreeHolderTest {
   @Before
   public void setUp() throws Exception {
     mContext = new ComponentContext(getApplicationContext());
-    mComponent = TestDrawableComponent.create(mContext).build();
+    mComponent = SimpleMountSpecTester.create(mContext).build();
     mRenderCompleteEventHandler = (EventHandler<RenderCompleteEvent>) mock(EventHandler.class);
     mComponentRenderInfo =
         ComponentRenderInfo.create()

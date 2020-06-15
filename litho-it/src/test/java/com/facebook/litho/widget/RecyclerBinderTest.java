@@ -66,7 +66,6 @@ import com.facebook.litho.Size;
 import com.facebook.litho.SizeSpec;
 import com.facebook.litho.ThreadUtils;
 import com.facebook.litho.config.ComponentsConfiguration;
-import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.logging.TestComponentsReporter;
@@ -2165,7 +2164,7 @@ public class RecyclerBinderTest {
           new InlineLayoutSpec() {
             @Override
             protected Component onCreateLayout(ComponentContext c) {
-              return TestDrawableComponent.create(c).widthPx(100).heightPx(100).build();
+              return SimpleMountSpecTester.create(c).widthPx(100).heightPx(100).build();
             }
           };
 
@@ -2208,7 +2207,7 @@ public class RecyclerBinderTest {
           new InlineLayoutSpec() {
             @Override
             protected Component onCreateLayout(ComponentContext c) {
-              return TestDrawableComponent.create(c).widthPercent(50).heightPercent(25).build();
+              return SimpleMountSpecTester.create(c).widthPercent(50).heightPercent(25).build();
             }
           };
 
@@ -2244,7 +2243,7 @@ public class RecyclerBinderTest {
           new InlineLayoutSpec() {
             @Override
             protected Component onCreateLayout(ComponentContext c) {
-              return TestDrawableComponent.create(c).widthPx(100).heightPx(100).build();
+              return SimpleMountSpecTester.create(c).widthPx(100).heightPx(100).build();
             }
           };
 
@@ -2257,7 +2256,7 @@ public class RecyclerBinderTest {
     recyclerBinder.mount(rv);
 
     recyclerBinder.updateItemAt(
-        0, TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build());
+        0, SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build());
     mRecyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     verify(observer, never()).onItemRangeChanged(anyInt(), anyInt());
@@ -2286,7 +2285,7 @@ public class RecyclerBinderTest {
           new InlineLayoutSpec() {
             @Override
             protected Component onCreateLayout(ComponentContext c) {
-              return TestDrawableComponent.create(c).widthPx(100).heightPx(100).build();
+              return SimpleMountSpecTester.create(c).widthPx(100).heightPx(100).build();
             }
           };
 
@@ -2304,7 +2303,7 @@ public class RecyclerBinderTest {
           new InlineLayoutSpec() {
             @Override
             protected Component onCreateLayout(ComponentContext c) {
-              return TestDrawableComponent.create(c).widthPx(100).heightPx(100).build();
+              return SimpleMountSpecTester.create(c).widthPx(100).heightPx(100).build();
             }
           };
       newComponents.add(ComponentRenderInfo.create().component(component).build());
@@ -2362,7 +2361,7 @@ public class RecyclerBinderTest {
     final RecyclerBinder recyclerBinder =
         spy(new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext));
     final Component component =
-        TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+        SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
 
     final ComponentRenderInfo renderInfoWarmer =
         ComponentRenderInfo.create().component(component).build();
@@ -2398,7 +2397,7 @@ public class RecyclerBinderTest {
     final RecyclerBinder recyclerBinder =
         new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
     final Component component =
-        TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+        SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
     final ComponentRenderInfo renderInfo =
         ComponentRenderInfo.create().component(component).build();
 
@@ -2411,7 +2410,7 @@ public class RecyclerBinderTest {
     assertThat(recyclerBinder.getItemCount()).isEqualTo(1);
 
     final ComponentTreeHolder holder = recyclerBinder.getComponentTreeHolderAt(0);
-    assertThat(holder.getRenderInfo().getComponent()).isEqualTo(component);
+    assertThat(holder.getRenderInfo().getComponent().isEquivalentTo(component)).isTrue();
 
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
@@ -2424,7 +2423,7 @@ public class RecyclerBinderTest {
     final RecyclerBinder recyclerBinder =
         new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
     final Component component =
-        TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+        SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
     final ComponentRenderInfo renderInfo =
         ComponentRenderInfo.create().component(component).build();
 
@@ -2450,7 +2449,7 @@ public class RecyclerBinderTest {
     assertThat(recyclerBinder.getRangeCalculationResult()).isNotNull();
 
     final ComponentTreeHolder holder = recyclerBinder.getComponentTreeHolderAt(0);
-    assertThat(holder.getRenderInfo().getComponent()).isEqualTo(component);
+    assertThat(holder.getRenderInfo().getComponent().isEquivalentTo(component)).isTrue();
     assertThat(holder.hasCompletedLatestLayout()).isTrue();
     assertThat(holder.isTreeValid()).isTrue();
   }
@@ -2460,7 +2459,7 @@ public class RecyclerBinderTest {
     final RecyclerBinder recyclerBinder =
         new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
     final Component component =
-        TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+        SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
     final ComponentRenderInfo renderInfo =
         ComponentRenderInfo.create().component(component).build();
 
@@ -2486,7 +2485,7 @@ public class RecyclerBinderTest {
     assertThat(recyclerBinder.getRangeCalculationResult()).isNotNull();
 
     final Component component2 =
-        TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+        SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
     final ComponentRenderInfo renderInfo2 =
         ComponentRenderInfo.create().component(component2).build();
 
@@ -2509,12 +2508,12 @@ public class RecyclerBinderTest {
     assertThat(recyclerBinder.getRangeCalculationResult()).isNotNull();
 
     final ComponentTreeHolder holder = recyclerBinder.getComponentTreeHolderAt(0);
-    assertThat(holder.getRenderInfo().getComponent()).isEqualTo(component);
+    assertThat(holder.getRenderInfo().getComponent().isEquivalentTo(component)).isTrue();
     assertThat(holder.hasCompletedLatestLayout()).isTrue();
     assertThat(holder.isTreeValid()).isTrue();
 
     final ComponentTreeHolder holder2 = recyclerBinder.getComponentTreeHolderAt(1);
-    assertThat(holder2.getRenderInfo().getComponent()).isEqualTo(component2);
+    assertThat(holder2.getRenderInfo().getComponent().isEquivalentTo(component2)).isTrue();
     assertThat(holder2.hasCompletedLatestLayout()).isTrue();
     assertThat(holder2.isTreeValid()).isTrue();
   }
@@ -2524,7 +2523,7 @@ public class RecyclerBinderTest {
     final RecyclerBinder recyclerBinder =
         new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
     final Component component =
-        TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+        SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
     final ComponentRenderInfo renderInfo =
         ComponentRenderInfo.create().component(component).build();
 
@@ -2553,7 +2552,7 @@ public class RecyclerBinderTest {
     assertThat(recyclerBinder.getItemCount()).isEqualTo(1);
 
     final ComponentTreeHolder holder = recyclerBinder.getComponentTreeHolderAt(0);
-    assertThat(holder.getRenderInfo().getComponent()).isEqualTo(component);
+    assertThat(holder.getRenderInfo().getComponent().isEquivalentTo(component)).isTrue();
     assertThat(holder.hasCompletedLatestLayout()).isTrue();
     assertThat(holder.isTreeValid()).isTrue();
   }
@@ -2613,7 +2612,7 @@ public class RecyclerBinderTest {
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
     for (int i = 0; i < NUM_TO_INSERT; i++) {
       final Component component =
-          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+          SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
       components.add(component);
       renderInfos.add(ComponentRenderInfo.create().component(component).build());
     }
@@ -2641,7 +2640,7 @@ public class RecyclerBinderTest {
 
     for (int i = 0; i < NUM_TO_INSERT; i++) {
       final ComponentTreeHolder holder = recyclerBinder.getComponentTreeHolderAt(i);
-      assertThat(holder.getRenderInfo().getComponent()).isEqualTo(components.get(i));
+      assertThat(holder.getRenderInfo().getComponent().isEquivalentTo(components.get(i))).isTrue();
       assertThat(holder.hasCompletedLatestLayout()).isTrue();
       assertThat(holder.isTreeValid()).isTrue();
     }
@@ -2656,7 +2655,7 @@ public class RecyclerBinderTest {
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
     for (int i = 0; i < NUM_TO_INSERT; i++) {
       final Component component =
-          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+          SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
       components.add(component);
       renderInfos.add(ComponentRenderInfo.create().component(component).build());
     }
@@ -2685,7 +2684,7 @@ public class RecyclerBinderTest {
 
     for (int i = 0; i < NUM_TO_INSERT; i++) {
       final ComponentTreeHolder holder = recyclerBinder.getComponentTreeHolderAt(i);
-      assertThat(holder.getRenderInfo().getComponent()).isEqualTo(components.get(i));
+      assertThat(holder.getRenderInfo().getComponent().isEquivalentTo(components.get(i))).isTrue();
       assertThat(holder.hasCompletedLatestLayout()).isTrue();
       assertThat(holder.isTreeValid()).isTrue();
     }
@@ -2697,7 +2696,7 @@ public class RecyclerBinderTest {
         new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
     recyclerBinder.setCommitPolicy(RecyclerBinder.CommitPolicy.LAYOUT_BEFORE_INSERT);
     final Component component =
-        TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+        SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
     final ComponentRenderInfo renderInfo =
         ComponentRenderInfo.create().component(component).build();
 
@@ -2715,7 +2714,7 @@ public class RecyclerBinderTest {
     assertThat(recyclerBinder.getRangeCalculationResult()).isNotNull();
 
     final ComponentTreeHolder holder = recyclerBinder.getComponentTreeHolderAt(0);
-    assertThat(holder.getRenderInfo().getComponent()).isEqualTo(component);
+    assertThat(holder.getRenderInfo().getComponent().isEquivalentTo(component)).isTrue();
     assertThat(holder.hasCompletedLatestLayout()).isTrue();
     assertThat(holder.isTreeValid()).isTrue();
   }
@@ -2727,7 +2726,7 @@ public class RecyclerBinderTest {
     recyclerBinder.setCommitPolicy(RecyclerBinder.CommitPolicy.LAYOUT_BEFORE_INSERT);
 
     final Component component =
-        TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+        SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
     final ComponentRenderInfo renderInfo =
         ComponentRenderInfo.create().component(component).build();
 
@@ -2736,7 +2735,7 @@ public class RecyclerBinderTest {
     recyclerBinder.insertItemAtAsync(0, renderInfo);
 
     final Component secondComponent =
-        TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+        SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
     final ComponentRenderInfo secondRenderInfo =
         ComponentRenderInfo.create().component(secondComponent).build();
     recyclerBinder.setCommitPolicy(RecyclerBinder.CommitPolicy.IMMEDIATE);
@@ -2753,12 +2752,12 @@ public class RecyclerBinderTest {
     assertThat(recyclerBinder.getRangeCalculationResult()).isNotNull();
 
     final ComponentTreeHolder holder = recyclerBinder.getComponentTreeHolderAt(0);
-    assertThat(holder.getRenderInfo().getComponent()).isEqualTo(component);
+    assertThat(holder.getRenderInfo().getComponent().isEquivalentTo(component)).isTrue();
     assertThat(holder.hasCompletedLatestLayout()).isTrue();
     assertThat(holder.isTreeValid()).isTrue();
 
     final Component thirdComponent =
-        TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+        SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
     final ComponentRenderInfo thirdRenderInfo =
         ComponentRenderInfo.create().component(thirdComponent).build();
     recyclerBinder.insertItemAtAsync(2, thirdRenderInfo);
@@ -2772,7 +2771,7 @@ public class RecyclerBinderTest {
         new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
     recyclerBinder.setCommitPolicy(RecyclerBinder.CommitPolicy.LAYOUT_BEFORE_INSERT);
     final Component component =
-        TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+        SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
     final ComponentRenderInfo renderInfo =
         ComponentRenderInfo.create().component(component).build();
 
@@ -2790,7 +2789,7 @@ public class RecyclerBinderTest {
     assertThat(recyclerBinder.getRangeCalculationResult()).isNotNull();
 
     final Component component2 =
-        TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+        SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
     final ComponentRenderInfo renderInfo2 =
         ComponentRenderInfo.create().component(component2).build();
 
@@ -2806,12 +2805,12 @@ public class RecyclerBinderTest {
     assertThat(recyclerBinder.getRangeCalculationResult()).isNotNull();
 
     final ComponentTreeHolder holder = recyclerBinder.getComponentTreeHolderAt(0);
-    assertThat(holder.getRenderInfo().getComponent()).isEqualTo(component);
+    assertThat(holder.getRenderInfo().getComponent().isEquivalentTo(component)).isTrue();
     assertThat(holder.hasCompletedLatestLayout()).isTrue();
     assertThat(holder.isTreeValid()).isTrue();
 
     final ComponentTreeHolder holder2 = recyclerBinder.getComponentTreeHolderAt(1);
-    assertThat(holder2.getRenderInfo().getComponent()).isEqualTo(component2);
+    assertThat(holder2.getRenderInfo().getComponent().isEquivalentTo(component2)).isTrue();
     assertThat(holder2.hasCompletedLatestLayout()).isTrue();
     assertThat(holder2.isTreeValid()).isTrue();
   }
@@ -2822,7 +2821,7 @@ public class RecyclerBinderTest {
         new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
     recyclerBinder.setCommitPolicy(RecyclerBinder.CommitPolicy.LAYOUT_BEFORE_INSERT);
     final Component component =
-        TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+        SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
     final ComponentRenderInfo renderInfo =
         ComponentRenderInfo.create().component(component).build();
 
@@ -2839,7 +2838,7 @@ public class RecyclerBinderTest {
     assertThat(recyclerBinder.getRangeCalculationResult()).isNotNull();
 
     final ComponentTreeHolder holder = recyclerBinder.getComponentTreeHolderAt(0);
-    assertThat(holder.getRenderInfo().getComponent()).isEqualTo(component);
+    assertThat(holder.getRenderInfo().getComponent().isEquivalentTo(component)).isTrue();
     assertThat(holder.hasCompletedLatestLayout()).isTrue();
     assertThat(holder.isTreeValid()).isTrue();
   }
@@ -2854,7 +2853,7 @@ public class RecyclerBinderTest {
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
     for (int i = 0; i < NUM_TO_INSERT; i++) {
       final Component component =
-          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+          SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
       components.add(component);
       renderInfos.add(ComponentRenderInfo.create().component(component).build());
     }
@@ -2874,7 +2873,7 @@ public class RecyclerBinderTest {
 
     for (int i = 0; i < NUM_TO_INSERT; i++) {
       final ComponentTreeHolder holder = recyclerBinder.getComponentTreeHolderAt(i);
-      assertThat(holder.getRenderInfo().getComponent()).isEqualTo(components.get(i));
+      assertThat(holder.getRenderInfo().getComponent().isEquivalentTo(components.get(i))).isTrue();
       assertThat(holder.hasCompletedLatestLayout()).isTrue();
       assertThat(holder.isTreeValid()).isTrue();
     }
@@ -2890,7 +2889,7 @@ public class RecyclerBinderTest {
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
     for (int i = 0; i < NUM_TO_INSERT; i++) {
       final Component component =
-          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+          SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
       components.add(component);
       renderInfos.add(ComponentRenderInfo.create().component(component).build());
     }
@@ -2913,7 +2912,7 @@ public class RecyclerBinderTest {
 
     for (int i = 0; i < NUM_TO_INSERT; i++) {
       final ComponentTreeHolder holder = recyclerBinder.getComponentTreeHolderAt(i);
-      assertThat(holder.getRenderInfo().getComponent()).isEqualTo(components.get(i));
+      assertThat(holder.getRenderInfo().getComponent().isEquivalentTo(components.get(i))).isTrue();
       assertThat(holder.hasCompletedLatestLayout()).isTrue();
       assertThat(holder.isTreeValid()).isTrue();
     }
@@ -2929,7 +2928,7 @@ public class RecyclerBinderTest {
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
     for (int i = 0; i < NUM_TO_INSERT; i++) {
       final Component component =
-          TestDrawableComponent.create(mComponentContext).widthPx(600).heightPx(600).build();
+          SimpleMountSpecTester.create(mComponentContext).widthPx(600).heightPx(600).build();
       components.add(component);
       renderInfos.add(ComponentRenderInfo.create().component(component).build());
     }
@@ -2957,7 +2956,7 @@ public class RecyclerBinderTest {
 
     for (int i = 0; i < NUM_TO_INSERT; i++) {
       final ComponentTreeHolder holder = recyclerBinder.getComponentTreeHolderAt(i);
-      assertThat(holder.getRenderInfo().getComponent()).isEqualTo(components.get(i));
+      assertThat(holder.getRenderInfo().getComponent().isEquivalentTo(components.get(i))).isTrue();
       assertThat(holder.hasCompletedLatestLayout()).isTrue();
       assertThat(holder.isTreeValid()).isTrue();
     }
@@ -2973,7 +2972,7 @@ public class RecyclerBinderTest {
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
     for (int i = 0; i < NUM_TO_INSERT; i++) {
       final Component component =
-          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+          SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
       components.add(component);
       renderInfos.add(ComponentRenderInfo.create().component(component).build());
     }
@@ -3012,7 +3011,7 @@ public class RecyclerBinderTest {
     final RecyclerBinder recyclerBinder =
         new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
     final Component component =
-        TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+        SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
     final ComponentRenderInfo renderInfo =
         ComponentRenderInfo.create().component(component).build();
 
@@ -3030,7 +3029,7 @@ public class RecyclerBinderTest {
     assertThat(recyclerBinder.getRangeCalculationResult()).isNotNull();
 
     final ComponentTreeHolder holder = recyclerBinder.getComponentTreeHolderAt(0);
-    assertThat(holder.getRenderInfo().getComponent()).isEqualTo(component);
+    assertThat(holder.getRenderInfo().getComponent().isEquivalentTo(component)).isTrue();
     assertThat(holder.hasCompletedLatestLayout()).isTrue();
     assertThat(holder.isTreeValid()).isTrue();
     assertHasCompatibleLayout(
@@ -3042,7 +3041,7 @@ public class RecyclerBinderTest {
     final RecyclerBinder recyclerBinder =
         new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
     final Component component =
-        TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+        SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
     final ComponentRenderInfo renderInfo =
         ComponentRenderInfo.create().component(component).build();
 
@@ -3061,7 +3060,7 @@ public class RecyclerBinderTest {
     assertThat(recyclerBinder.getRangeCalculationResult()).isNotNull();
 
     final ComponentTreeHolder holder = recyclerBinder.getComponentTreeHolderAt(0);
-    assertThat(holder.getRenderInfo().getComponent()).isEqualTo(component);
+    assertThat(holder.getRenderInfo().getComponent().isEquivalentTo(component)).isTrue();
     assertThat(holder.hasCompletedLatestLayout()).isTrue();
     assertThat(holder.isTreeValid()).isTrue();
     assertHasCompatibleLayout(
@@ -3094,7 +3093,7 @@ public class RecyclerBinderTest {
     final RecyclerBinder recyclerBinder =
         new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
     final Component component =
-        TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+        SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
     final ComponentRenderInfo renderInfo =
         ComponentRenderInfo.create().component(component).build();
 
@@ -3123,7 +3122,7 @@ public class RecyclerBinderTest {
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
     for (int i = 0; i < 4; i++) {
       final Component component =
-          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+          SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
       components.add(component);
       renderInfos.add(ComponentRenderInfo.create().component(component).build());
     }
@@ -3157,7 +3156,7 @@ public class RecyclerBinderTest {
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
     for (int i = 0; i < 4; i++) {
       final Component component =
-          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+          SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
       components.add(component);
       renderInfos.add(ComponentRenderInfo.create().component(component).build());
     }
@@ -3189,7 +3188,7 @@ public class RecyclerBinderTest {
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
     for (int i = 0; i < 4; i++) {
       final Component component =
-          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+          SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
       components.add(component);
       renderInfos.add(ComponentRenderInfo.create().component(component).build());
     }
@@ -3223,7 +3222,7 @@ public class RecyclerBinderTest {
     adapter.registerAdapterDataObserver(observer);
     final RecyclerBinder recyclerBinder = createRecyclerBinderWithMockAdapter(adapter);
     final Component component =
-        TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+        SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
     final RenderInfo renderInfo = ComponentRenderInfo.create().component(component).build();
 
     recyclerBinder.measure(
@@ -3235,7 +3234,7 @@ public class RecyclerBinderTest {
     final ComponentRenderInfo newRenderInfo =
         ComponentRenderInfo.create()
             .component(
-                TestDrawableComponent.create(mComponentContext).widthPx(50).heightPx(50).build())
+                SimpleMountSpecTester.create(mComponentContext).widthPx(50).heightPx(50).build())
             .build();
     recyclerBinder.updateItemAtAsync(0, newRenderInfo);
     recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
@@ -3256,7 +3255,7 @@ public class RecyclerBinderTest {
     adapter.registerAdapterDataObserver(observer);
     final RecyclerBinder recyclerBinder = createRecyclerBinderWithMockAdapter(adapter);
     final Component component =
-        TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+        SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
     final RenderInfo renderInfo = ComponentRenderInfo.create().component(component).build();
 
     recyclerBinder.measure(
@@ -3269,7 +3268,7 @@ public class RecyclerBinderTest {
     final ComponentRenderInfo newRenderInfo =
         ComponentRenderInfo.create()
             .component(
-                TestDrawableComponent.create(mComponentContext).widthPx(50).heightPx(50).build())
+                SimpleMountSpecTester.create(mComponentContext).widthPx(50).heightPx(50).build())
             .build();
     recyclerBinder.updateItemAtAsync(0, newRenderInfo);
     recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
@@ -3293,7 +3292,7 @@ public class RecyclerBinderTest {
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
     for (int i = 0; i < 4; i++) {
       final Component component =
-          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+          SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
       components.add(component);
       renderInfos.add(ComponentRenderInfo.create().component(component).build());
     }
@@ -3310,12 +3309,12 @@ public class RecyclerBinderTest {
     final ComponentRenderInfo newRenderInfo0 =
         ComponentRenderInfo.create()
             .component(
-                TestDrawableComponent.create(mComponentContext).widthPx(50).heightPx(50).build())
+                SimpleMountSpecTester.create(mComponentContext).widthPx(50).heightPx(50).build())
             .build();
     final ComponentRenderInfo newRenderInfo1 =
         ComponentRenderInfo.create()
             .component(
-                TestDrawableComponent.create(mComponentContext).widthPx(50).heightPx(50).build())
+                SimpleMountSpecTester.create(mComponentContext).widthPx(50).heightPx(50).build())
             .build();
 
     recyclerBinder.insertItemAtAsync(0, renderInfos.get(2));
@@ -3340,7 +3339,7 @@ public class RecyclerBinderTest {
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
     for (int i = 0; i < 7; i++) {
       final Component component =
-          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+          SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
       components.add(component);
       renderInfos.add(ComponentRenderInfo.create().component(component).build());
     }
@@ -3357,17 +3356,17 @@ public class RecyclerBinderTest {
     final ComponentRenderInfo newRenderInfo0 =
         ComponentRenderInfo.create()
             .component(
-                TestDrawableComponent.create(mComponentContext).widthPx(50).heightPx(50).build())
+                SimpleMountSpecTester.create(mComponentContext).widthPx(50).heightPx(50).build())
             .build();
     final ComponentRenderInfo newRenderInfo1 =
         ComponentRenderInfo.create()
             .component(
-                TestDrawableComponent.create(mComponentContext).widthPx(50).heightPx(50).build())
+                SimpleMountSpecTester.create(mComponentContext).widthPx(50).heightPx(50).build())
             .build();
     final ComponentRenderInfo newRenderInfo2 =
         ComponentRenderInfo.create()
             .component(
-                TestDrawableComponent.create(mComponentContext).widthPx(50).heightPx(50).build())
+                SimpleMountSpecTester.create(mComponentContext).widthPx(50).heightPx(50).build())
             .build();
 
     recyclerBinder.insertItemAtAsync(0, renderInfos.get(2));
@@ -3397,7 +3396,7 @@ public class RecyclerBinderTest {
     adapter.registerAdapterDataObserver(observer);
     final RecyclerBinder recyclerBinder = createRecyclerBinderWithMockAdapter(adapter);
     final Component component =
-        TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+        SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
     final RenderInfo renderInfo = ComponentRenderInfo.create().component(component).build();
 
     recyclerBinder.measure(
@@ -3442,7 +3441,7 @@ public class RecyclerBinderTest {
     final ComponentRenderInfo newRenderInfo =
         ComponentRenderInfo.create()
             .component(
-                TestDrawableComponent.create(mComponentContext).widthPx(50).heightPx(50).build())
+                SimpleMountSpecTester.create(mComponentContext).widthPx(50).heightPx(50).build())
             .build();
     recyclerBinder.updateItemAtAsync(0, newRenderInfo);
     recyclerBinder.notifyChangeSetCompleteAsync(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
@@ -3464,7 +3463,7 @@ public class RecyclerBinderTest {
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
     for (int i = 0; i < 7; i++) {
       final Component component =
-          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+          SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
       components.add(component);
       renderInfos.add(ComponentRenderInfo.create().component(component).build());
     }
@@ -3481,7 +3480,7 @@ public class RecyclerBinderTest {
     final ArrayList<RenderInfo> newRenderInfos = new ArrayList<>();
     for (int i = 0; i < 4; i++) {
       final Component component =
-          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+          SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
       newComponents.add(component);
       newRenderInfos.add(ComponentRenderInfo.create().component(component).build());
     }
@@ -3510,7 +3509,7 @@ public class RecyclerBinderTest {
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
     for (int i = 0; i < 7; i++) {
       final Component component =
-          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+          SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
       components.add(component);
       renderInfos.add(ComponentRenderInfo.create().component(component).build());
     }
@@ -3544,7 +3543,7 @@ public class RecyclerBinderTest {
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
     for (int i = 0; i < 7; i++) {
       final Component component =
-          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+          SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
       components.add(component);
       renderInfos.add(ComponentRenderInfo.create().component(component).build());
     }
@@ -3577,13 +3576,13 @@ public class RecyclerBinderTest {
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
     for (int i = 0; i < 7; i++) {
       final Component component =
-          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+          SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
       components.add(component);
       renderInfos.add(ComponentRenderInfo.create().component(component).build());
     }
 
     final Component updatedIndex3 =
-        TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+        SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
 
     recyclerBinder.insertRangeAtAsync(0, renderInfos);
     recyclerBinder.removeRangeAtAsync(1, 3);
@@ -3612,7 +3611,7 @@ public class RecyclerBinderTest {
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
     for (int i = 0; i < 7; i++) {
       final Component component =
-          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+          SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
       components.add(component);
       renderInfos.add(ComponentRenderInfo.create().component(component).build());
     }
@@ -3637,7 +3636,7 @@ public class RecyclerBinderTest {
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
     for (int i = 0; i < 7; i++) {
       final Component component =
-          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+          SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
       components.add(component);
       renderInfos.add(ComponentRenderInfo.create().component(component).build());
     }
@@ -3662,7 +3661,7 @@ public class RecyclerBinderTest {
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
     for (int i = 0; i < 6; i++) {
       final Component component =
-          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+          SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
       components.add(component);
       renderInfos.add(ComponentRenderInfo.create().component(component).build());
     }
@@ -3685,11 +3684,11 @@ public class RecyclerBinderTest {
     assertThat(recyclerBinder.getRenderInfoAt(2)).isEqualTo(renderInfos.get(2));
 
     final Component component0 =
-        TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+        SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
     final Component component1 =
-        TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+        SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
     final Component component2 =
-        TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+        SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
 
     recyclerBinder.updateItemAtAsync(0, ComponentRenderInfo.create().component(component0).build());
     recyclerBinder.updateItemAtAsync(1, ComponentRenderInfo.create().component(component1).build());
@@ -3698,9 +3697,12 @@ public class RecyclerBinderTest {
     mLayoutThreadShadowLooper.runToEndOfTasks();
 
     assertThat(recyclerBinder.getItemCount()).isEqualTo(3);
-    assertThat(recyclerBinder.getRenderInfoAt(0).getComponent()).isEqualTo(component0);
-    assertThat(recyclerBinder.getRenderInfoAt(1).getComponent()).isEqualTo(component1);
-    assertThat(recyclerBinder.getRenderInfoAt(2).getComponent()).isEqualTo(component2);
+    assertThat(recyclerBinder.getRenderInfoAt(0).getComponent().isEquivalentTo(component0))
+        .isTrue();
+    assertThat(recyclerBinder.getRenderInfoAt(1).getComponent().isEquivalentTo(component1))
+        .isTrue();
+    assertThat(recyclerBinder.getRenderInfoAt(2).getComponent().isEquivalentTo(component2))
+        .isTrue();
   }
 
   @Test
@@ -3711,7 +3713,7 @@ public class RecyclerBinderTest {
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
     for (int i = 0; i < 6; i++) {
       final Component component =
-          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+          SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
       components.add(component);
       renderInfos.add(ComponentRenderInfo.create().component(component).build());
     }
@@ -3738,7 +3740,7 @@ public class RecyclerBinderTest {
     final RecyclerView recyclerView = mock(RecyclerView.class);
     recyclerBinder.mount(recyclerView);
 
-    final Component component = TestDrawableComponent.create(mComponentContext).build();
+    final Component component = SimpleMountSpecTester.create(mComponentContext).build();
     final EventHandler<RenderCompleteEvent> renderCompleteEventHandler =
         (EventHandler<RenderCompleteEvent>) mock(EventHandler.class);
     final ComponentRenderInfo renderInfo =
@@ -3771,7 +3773,7 @@ public class RecyclerBinderTest {
     final ArrayList<RenderInfo> renderInfos2 = new ArrayList<>();
     for (int i = 0; i < 5; i++) {
       final Component component =
-          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+          SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
       renderInfos1.add(ComponentRenderInfo.create().component(component).build());
       renderInfos2.add(ComponentRenderInfo.create().component(component).build());
     }
@@ -3804,7 +3806,7 @@ public class RecyclerBinderTest {
     final ArrayList<RenderInfo> renderInfos2 = new ArrayList<>();
     for (int i = 0; i < 5; i++) {
       final Component component =
-          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+          SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
       renderInfos1.add(ComponentRenderInfo.create().component(component).build());
       renderInfos2.add(ComponentRenderInfo.create().component(component).build());
     }
@@ -3863,7 +3865,7 @@ public class RecyclerBinderTest {
     final ArrayList<RenderInfo> renderInfos2 = new ArrayList<>();
     for (int i = 0; i < 5; i++) {
       final Component component =
-          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+          SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
       renderInfos1.add(ComponentRenderInfo.create().component(component).build());
       renderInfos2.add(ComponentRenderInfo.create().component(component).build());
     }
@@ -3906,7 +3908,7 @@ public class RecyclerBinderTest {
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
     for (int i = 0; i < 5; i++) {
       final Component component =
-          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+          SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
       renderInfos.add(ComponentRenderInfo.create().component(component).build());
     }
 
@@ -3931,7 +3933,7 @@ public class RecyclerBinderTest {
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
     for (int i = 0; i < 5; i++) {
       final Component component =
-          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+          SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
       renderInfos.add(ComponentRenderInfo.create().component(component).build());
     }
 
@@ -3957,7 +3959,7 @@ public class RecyclerBinderTest {
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
     for (int i = 0; i < 5; i++) {
       final Component component =
-          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+          SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
       renderInfos.add(ComponentRenderInfo.create().component(component).build());
     }
 
@@ -3988,7 +3990,7 @@ public class RecyclerBinderTest {
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
     for (int i = 0; i < 5; i++) {
       final Component component =
-          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+          SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
       renderInfos.add(ComponentRenderInfo.create().component(component).build());
     }
 
@@ -4012,7 +4014,7 @@ public class RecyclerBinderTest {
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
     for (int i = 0; i < 5; i++) {
       final Component component =
-          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+          SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
       renderInfos.add(ComponentRenderInfo.create().component(component).build());
     }
 
@@ -4040,7 +4042,7 @@ public class RecyclerBinderTest {
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
     for (int i = 0; i < 5; i++) {
       final Component component =
-          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+          SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
       renderInfos.add(ComponentRenderInfo.create().component(component).build());
     }
 
@@ -4068,7 +4070,7 @@ public class RecyclerBinderTest {
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
     for (int i = 0; i < 5; i++) {
       final Component component =
-          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+          SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
       renderInfos.add(ComponentRenderInfo.create().component(component).build());
     }
 
@@ -4099,7 +4101,7 @@ public class RecyclerBinderTest {
     final ArrayList<RenderInfo> renderInfos2 = new ArrayList<>();
     for (int i = 0; i < 5; i++) {
       final Component component =
-          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+          SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
       renderInfos1.add(ComponentRenderInfo.create().component(component).build());
       renderInfos2.add(ComponentRenderInfo.create().component(component).build());
     }
@@ -4135,7 +4137,7 @@ public class RecyclerBinderTest {
     final ArrayList<RenderInfo> renderInfos2 = new ArrayList<>();
     for (int i = 0; i < 5; i++) {
       final Component component =
-          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+          SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
       renderInfos1.add(ComponentRenderInfo.create().component(component).build());
       renderInfos2.add(ComponentRenderInfo.create().component(component).build());
     }
@@ -4176,7 +4178,7 @@ public class RecyclerBinderTest {
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
     for (int i = 0; i < 5; i++) {
       final Component component =
-          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+          SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
       renderInfos.add(ComponentRenderInfo.create().component(component).build());
     }
 
@@ -4208,7 +4210,7 @@ public class RecyclerBinderTest {
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
     for (int i = 0; i < 5; i++) {
       final Component component =
-          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+          SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
       renderInfos.add(ComponentRenderInfo.create().component(component).build());
     }
 
@@ -4231,7 +4233,7 @@ public class RecyclerBinderTest {
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
     for (int i = 0; i < 5; i++) {
       final Component component =
-          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+          SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
       renderInfos.add(ComponentRenderInfo.create().component(component).build());
     }
 
@@ -4263,7 +4265,7 @@ public class RecyclerBinderTest {
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
     for (int i = 0; i < 5; i++) {
       final Component component =
-          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+          SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
       renderInfos.add(ComponentRenderInfo.create().component(component).build());
     }
 
@@ -4287,7 +4289,7 @@ public class RecyclerBinderTest {
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
     for (int i = 0; i < 5; i++) {
       final Component component =
-          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+          SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
       renderInfos.add(ComponentRenderInfo.create().component(component).build());
     }
 
@@ -4313,7 +4315,7 @@ public class RecyclerBinderTest {
           new InlineLayoutSpec() {
             @Override
             protected Component onCreateLayout(ComponentContext c) {
-              return TestDrawableComponent.create(c).widthPx(0).heightPx(0).build();
+              return SimpleMountSpecTester.create(c).widthPx(0).heightPx(0).build();
             }
           };
 
@@ -4615,9 +4617,9 @@ public class RecyclerBinderTest {
       final RecyclerBinder recyclerBinder =
           new RecyclerBinder.Builder().rangeRatio(RANGE_RATIO).build(mComponentContext);
       final Component component1 =
-          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+          SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
       final Component component2 =
-          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+          SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
       final ComponentRenderInfo renderInfo1 =
           ComponentRenderInfo.create().component(component1).build();
       final ComponentRenderInfo renderInfo2 =
@@ -4662,9 +4664,9 @@ public class RecyclerBinderTest {
     final ArrayList<RenderInfo> renderInfos2 = new ArrayList<>();
     for (int i = 0; i < 5; i++) {
       final Component component =
-          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+          SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
       final Component component2 =
-          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+          SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
       renderInfos.add(ComponentRenderInfo.create().component(component).build());
       renderInfos2.add(ComponentRenderInfo.create().component(component2).build());
     }
@@ -4712,9 +4714,9 @@ public class RecyclerBinderTest {
     final ArrayList<RenderInfo> renderInfos2 = new ArrayList<>();
     for (int i = 0; i < 5; i++) {
       final Component component =
-          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+          SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
       final Component component2 =
-          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+          SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
       renderInfos.add(ComponentRenderInfo.create().component(component).build());
       renderInfos2.add(ComponentRenderInfo.create().component(component2).build());
     }
@@ -4768,7 +4770,7 @@ public class RecyclerBinderTest {
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
     for (int i = 0; i < 5; i++) {
       final Component component =
-          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+          SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
       renderInfos.add(ComponentRenderInfo.create().component(component).build());
     }
 
@@ -4816,9 +4818,9 @@ public class RecyclerBinderTest {
     final ArrayList<RenderInfo> renderInfos2 = new ArrayList<>();
     for (int i = 0; i < 5; i++) {
       final Component component =
-          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+          SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
       final Component component2 =
-          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+          SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
       renderInfos.add(ComponentRenderInfo.create().component(component).build());
       renderInfos2.add(ComponentRenderInfo.create().component(component2).build());
     }
@@ -4878,7 +4880,7 @@ public class RecyclerBinderTest {
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
     for (int i = 0; i < 5; i++) {
       final Component component =
-          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+          SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
       renderInfos.add(ComponentRenderInfo.create().component(component).build());
     }
 
@@ -4916,7 +4918,7 @@ public class RecyclerBinderTest {
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
     for (int i = 0; i < 5; i++) {
       final Component component =
-          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+          SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
       renderInfos.add(ComponentRenderInfo.create().component(component).build());
     }
 
@@ -4984,7 +4986,7 @@ public class RecyclerBinderTest {
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
     for (int i = 0; i < 5; i++) {
       final Component component =
-          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+          SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
       renderInfos.add(ComponentRenderInfo.create().component(component).build());
     }
     recyclerBinder.measure(
@@ -5025,7 +5027,7 @@ public class RecyclerBinderTest {
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
     for (int i = 0; i < 5; i++) {
       final Component component =
-          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+          SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
       renderInfos.add(ComponentRenderInfo.create().component(component).build());
     }
     recyclerBinder.measure(
@@ -5050,7 +5052,7 @@ public class RecyclerBinderTest {
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
     for (int i = 0; i < NUM_TO_INSERT; i++) {
       final Component component =
-          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+          SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
       components.add(component);
       renderInfos.add(ComponentRenderInfo.create().component(component).build());
     }
@@ -5092,7 +5094,7 @@ public class RecyclerBinderTest {
     final ArrayList<RenderInfo> renderInfos = new ArrayList<>();
     for (int i = 0; i < NUM_TO_INSERT; i++) {
       final Component component =
-          TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build();
+          SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build();
       components.add(component);
       renderInfos.add(ComponentRenderInfo.create().component(component).build());
     }
@@ -5426,7 +5428,7 @@ public class RecyclerBinderTest {
     final ComponentContext parentContext =
         new ComponentContext(mComponentContext.getAndroidContext());
     final ComponentTree parent =
-        ComponentTree.create(mComponentContext, TestDrawableComponent.create(parentContext).build())
+        ComponentTree.create(mComponentContext, SimpleMountSpecTester.create(parentContext).build())
             .incrementalMount(false)
             .build();
 
@@ -5441,7 +5443,7 @@ public class RecyclerBinderTest {
 
     recyclerBinder.measure(
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
-    recyclerBinder.insertItemAt(0, TestDrawableComponent.create(parent.getContext()).build());
+    recyclerBinder.insertItemAt(0, SimpleMountSpecTester.create(parent.getContext()).build());
     recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     final ComponentTree childTree = recyclerBinder.getComponentAt(0);
@@ -5454,7 +5456,7 @@ public class RecyclerBinderTest {
     final ComponentContext parentContext =
         new ComponentContext(mComponentContext.getAndroidContext());
     final ComponentTree parent =
-        ComponentTree.create(mComponentContext, TestDrawableComponent.create(parentContext).build())
+        ComponentTree.create(mComponentContext, SimpleMountSpecTester.create(parentContext).build())
             .incrementalMount(true)
             .build();
 
@@ -5469,7 +5471,7 @@ public class RecyclerBinderTest {
 
     recyclerBinder.measure(
         new Size(), makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY), null);
-    recyclerBinder.insertItemAt(0, TestDrawableComponent.create(parent.getContext()).build());
+    recyclerBinder.insertItemAt(0, SimpleMountSpecTester.create(parent.getContext()).build());
     recyclerBinder.notifyChangeSetComplete(true, NO_OP_CHANGE_SET_COMPLETE_CALLBACK);
 
     final ComponentTree childTree = recyclerBinder.getComponentAt(0);
@@ -5521,7 +5523,7 @@ public class RecyclerBinderTest {
   private RenderInfo createTestComponentRenderInfo() {
     return ComponentRenderInfo.create()
         .component(
-            TestDrawableComponent.create(mComponentContext).widthPx(100).heightPx(100).build())
+            SimpleMountSpecTester.create(mComponentContext).widthPx(100).heightPx(100).build())
         .build();
   }
 

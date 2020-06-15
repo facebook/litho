@@ -29,7 +29,6 @@ import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
 import com.facebook.litho.EventHandler;
 import com.facebook.litho.Size;
-import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
 import java.util.ArrayList;
 import org.junit.Before;
@@ -71,7 +70,7 @@ public class RecyclerBinderCanRemeasureTest {
     final ArrayList<RenderInfo> newRenderInfos = new ArrayList<>();
     for (int i = 0; i < NUM_TO_INSERT; i++) {
       final Component component =
-          TestDrawableComponent.create(mComponentContext)
+          SimpleMountSpecTester.create(mComponentContext)
               .measuredWidth(400)
               .measuredHeight(100)
               .build();
