@@ -28,12 +28,16 @@ public class LifecycleTracker {
   private boolean isMounted = false;
   private boolean isBound = false;
   private boolean isAttached = false;
+  private boolean isMeasured = false;
 
   private final List<LifecycleStep.StepInfo> steps = new ArrayList<>();
 
   public void addStep(LifecycleStep step, Object... args) {
     steps.add(new LifecycleStep.StepInfo(step, args));
     switch (step) {
+      case ON_MEASURE:
+        isMeasured = true;
+        break;
       case ON_MOUNT:
         isMounted = true;
         break;
@@ -60,6 +64,7 @@ public class LifecycleTracker {
     isMounted = false;
     isBound = false;
     isAttached = false;
+    isMeasured = false;
   }
 
   public List<LifecycleStep> getSteps() {
@@ -76,6 +81,10 @@ public class LifecycleTracker {
 
   public boolean isAttached() {
     return isAttached;
+  }
+
+  public boolean isMeasured() {
+    return isMeasured;
   }
 
   public Size getIntrinsicSize() {
