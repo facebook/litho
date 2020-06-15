@@ -44,6 +44,7 @@ import com.facebook.litho.testing.TestSizeDependentComponent;
 import com.facebook.litho.testing.TestViewComponent;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
+import com.facebook.litho.widget.SimpleMountSpecTester;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -86,7 +87,7 @@ public class LayoutStateCalculateTest {
             return create(c)
                 .child(
                     create(c)
-                        .child(TestDrawableComponent.create(c))
+                        .child(SimpleMountSpecTester.create(c))
                         .stateListAnimator(stateListAnimator))
                 .build();
           }
@@ -107,7 +108,7 @@ public class LayoutStateCalculateTest {
         .isSameAs(stateListAnimator);
 
     assertThat(getLayoutOutput(layoutState.getMountableOutputAt(2)).getComponent())
-        .isExactlyInstanceOf(TestDrawableComponent.class);
+        .isExactlyInstanceOf(SimpleMountSpecTester.class);
   }
 
   @Test

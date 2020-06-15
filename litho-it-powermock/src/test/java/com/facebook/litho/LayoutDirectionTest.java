@@ -31,11 +31,11 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import com.facebook.litho.testing.TestComponent;
-import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.shadows.LayoutDirectionViewGroupShadow;
 import com.facebook.litho.testing.shadows.LayoutDirectionViewShadow;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
+import com.facebook.litho.widget.SimpleMountSpecTester;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -120,8 +120,8 @@ public class LayoutDirectionTest {
    */
   @Test
   public void testDrawableChildrenLayoutDirection() {
-    final TestComponent child1 = TestDrawableComponent.create(mContext).build();
-    final TestComponent child2 = TestDrawableComponent.create(mContext).build();
+    final SimpleMountSpecTester child1 = SimpleMountSpecTester.create(mContext).build();
+    final SimpleMountSpecTester child2 = SimpleMountSpecTester.create(mContext).build();
 
     final LithoView lithoView =
         mountComponent(
@@ -174,8 +174,8 @@ public class LayoutDirectionTest {
    */
   @Test
   public void testInheritLayoutDirection() {
-    final TestComponent child1 = TestDrawableComponent.create(mContext).build();
-    final TestComponent child2 = TestDrawableComponent.create(mContext).build();
+    final SimpleMountSpecTester child1 = SimpleMountSpecTester.create(mContext).build();
+    final SimpleMountSpecTester child2 = SimpleMountSpecTester.create(mContext).build();
 
     final LithoView lithoView =
         mountComponent(
@@ -210,8 +210,8 @@ public class LayoutDirectionTest {
    */
   @Test
   public void testNestedComponentWithDifferentLayoutDirection() {
-    final TestComponent child1 = TestDrawableComponent.create(mContext).build();
-    final TestComponent child2 = TestDrawableComponent.create(mContext).build();
+    final SimpleMountSpecTester child1 = SimpleMountSpecTester.create(mContext).build();
+    final SimpleMountSpecTester child2 = SimpleMountSpecTester.create(mContext).build();
 
     final LithoView lithoView =
         mountComponent(
@@ -247,7 +247,7 @@ public class LayoutDirectionTest {
    */
   @Test
   public void testMargin() {
-    final TestComponent child = TestDrawableComponent.create(mContext).build();
+    final SimpleMountSpecTester child = SimpleMountSpecTester.create(mContext).build();
 
     final LithoView lithoView =
         mountComponent(
@@ -304,7 +304,7 @@ public class LayoutDirectionTest {
    */
   @Test
   public void testPadding() {
-    final TestComponent child = TestDrawableComponent.create(mContext).build();
+    final SimpleMountSpecTester child = SimpleMountSpecTester.create(mContext).build();
 
     final LithoView lithoView =
         mountComponent(
