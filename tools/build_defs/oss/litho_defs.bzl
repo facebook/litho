@@ -97,6 +97,8 @@ LITHO_SECTIONS_DEBUG_WIDGET_TARGET = make_dep_path("litho-sections-debug/src/mai
 # Test source
 LITHO_TEST_TARGET = make_dep_path("litho-it/src/test/java/com/facebook/litho:litho")
 
+LITHO_TEST_WIDGET_TARGET = make_dep_path("litho-it/src/main/java/com/facebook/litho/widget:widget")
+
 # Java source with local upstream
 LITHO_PROGUARDANNOTATIONS_TARGET = make_dep_path("litho-annotations/src/main/java/com/facebook/proguard/annotations:annotations")
 
