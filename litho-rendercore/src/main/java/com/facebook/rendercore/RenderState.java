@@ -25,7 +25,6 @@ import android.util.Pair;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.infer.annotation.ThreadConfined;
-import com.facebook.rendercore.Node.LayoutResult;
 import com.facebook.rendercore.utils.MeasureSpecUtils;
 import com.facebook.rendercore.utils.ThreadUtils;
 import java.util.concurrent.Callable;
@@ -68,27 +67,6 @@ public class RenderState<State, RenderContext> {
 
   public interface HostListener {
     void onUIRenderTreeUpdated(RenderTree newRenderTree);
-  }
-
-  private static class RenderResult<State> {
-    private final RenderTree mRenderTree;
-    private final LazyTree mLazyTree;
-    private final Node mNodeTree;
-    private final LayoutCache mLayoutCache;
-    private final State mState;
-
-    public RenderResult(
-        RenderTree renderTree,
-        LazyTree lazyTree,
-        Node nodeTree,
-        LayoutCache layoutCache,
-        State state) {
-      mRenderTree = renderTree;
-      mLazyTree = lazyTree;
-      mNodeTree = nodeTree;
-      mLayoutCache = layoutCache;
-      mState = state;
-    }
   }
 
   private final RenderStateHandler mUIHandler = new RenderStateHandler(Looper.getMainLooper());
@@ -205,8 +183,8 @@ public class RenderState<State, RenderContext> {
       }
 
       if (measureOutput != null && mCommittedRenderResult != null) {
-        measureOutput[0] = mCommittedRenderResult.mRenderTree.getWidth();
-        measureOutput[1] = mCommittedRenderResult.mRenderTree.getHeight();
+        measureOutput[0] = mCommittedRenderResult.getRenderTree().getWidth();
+        measureOutput[1] = mCommittedRenderResult.getRenderTree().getHeight();
       }
 
       if (mRenderResultFuture == future) {
@@ -217,10 +195,10 @@ public class RenderState<State, RenderContext> {
     if (committedNewLayout) {
       mDelegate.commit(
           setRootId,
-          previousRenderResult != null ? previousRenderResult.mRenderTree : null,
-          result.mRenderTree,
-          previousRenderResult != null ? previousRenderResult.mState : null,
-          result.mState);
+          previousRenderResult != null ? previousRenderResult.getRenderTree() : null,
+          result.getRenderTree(),
+          previousRenderResult != null ? previousRenderResult.getState() : null,
+          result.getState());
       schedulePromoteCommittedTreeToUI();
     }
   }
@@ -228,10 +206,10 @@ public class RenderState<State, RenderContext> {
   @ThreadConfined(ThreadConfined.UI)
   public void measure(int widthSpec, int heightSpec, @Nullable int[] measureOutput) {
     if (mUIRenderResult != null
-        && hasCompatibleSize(mUIRenderResult.mRenderTree, widthSpec, heightSpec)) {
+        && hasCompatibleSize(mUIRenderResult.getRenderTree(), widthSpec, heightSpec)) {
       if (measureOutput != null) {
-        measureOutput[0] = mUIRenderResult.mRenderTree.getWidth();
-        measureOutput[1] = mUIRenderResult.mRenderTree.getHeight();
+        measureOutput[0] = mUIRenderResult.getRenderTree().getWidth();
+        measureOutput[1] = mUIRenderResult.getRenderTree().getHeight();
       }
       return;
     }
@@ -259,7 +237,7 @@ public class RenderState<State, RenderContext> {
 
   @ThreadConfined(ThreadConfined.UI)
   public @Nullable RenderTree getUIRenderTree() {
-    return mUIRenderResult != null ? mUIRenderResult.mRenderTree : null;
+    return mUIRenderResult != null ? mUIRenderResult.getRenderTree() : null;
   }
 
   private void measureImpl(int widthSpec, int heightSpec, @Nullable int[] measureOutput) {
@@ -272,10 +250,10 @@ public class RenderState<State, RenderContext> {
       previousResult = mCommittedRenderResult;
 
       if (mCommittedRenderResult != null
-          && hasCompatibleSize(mCommittedRenderResult.mRenderTree, widthSpec, heightSpec)
+          && hasCompatibleSize(mCommittedRenderResult.getRenderTree(), widthSpec, heightSpec)
           && measureOutput != null) {
-        measureOutput[0] = mCommittedRenderResult.mRenderTree.getWidth();
-        measureOutput[1] = mCommittedRenderResult.mRenderTree.getHeight();
+        measureOutput[0] = mCommittedRenderResult.getRenderTree().getWidth();
+        measureOutput[1] = mCommittedRenderResult.getRenderTree().getHeight();
         return;
       }
 
@@ -312,18 +290,18 @@ public class RenderState<State, RenderContext> {
       }
 
       if (measureOutput != null) {
-        measureOutput[0] = mCommittedRenderResult.mRenderTree.getWidth();
-        measureOutput[1] = mCommittedRenderResult.mRenderTree.getHeight();
+        measureOutput[0] = mCommittedRenderResult.getRenderTree().getWidth();
+        measureOutput[1] = mCommittedRenderResult.getRenderTree().getHeight();
       }
     }
 
     if (committedNewLayout) {
       mDelegate.commit(
           setRootId,
-          previousResult != null ? previousResult.mRenderTree : null,
-          result.mRenderTree,
-          previousResult != null ? previousResult.mState : null,
-          result.mState);
+          previousResult != null ? previousResult.getRenderTree() : null,
+          result.getRenderTree(),
+          previousResult != null ? previousResult.getState() : null,
+          result.getState());
       schedulePromoteCommittedTreeToUI();
     }
   }
@@ -341,25 +319,15 @@ public class RenderState<State, RenderContext> {
   @ThreadConfined(ThreadConfined.UI)
   private void promoteCommittedTreeToUI() {
     synchronized (this) {
-      mDelegate.commitToUI(mCommittedRenderResult.mRenderTree, mCommittedRenderResult.mState);
+      mDelegate.commitToUI(
+          mCommittedRenderResult.getRenderTree(), mCommittedRenderResult.getState());
 
       mUIRenderResult = mCommittedRenderResult;
     }
 
     if (mHostListener != null) {
-      mHostListener.onUIRenderTreeUpdated(mUIRenderResult.mRenderTree);
+      mHostListener.onUIRenderTreeUpdated(mUIRenderResult.getRenderTree());
     }
-  }
-
-  private static LayoutResult layout(
-      LayoutContext context, Node newTree, int widthSpec, int heightSpec, LayoutCache layoutCache) {
-
-    return newTree.calculateLayout(context, widthSpec, heightSpec);
-  }
-
-  private static RenderTree reduce(
-      Context context, int widthSpec, int heightSpec, LayoutResult layoutRoot) {
-    return Reducer.getReducedTree(context, layoutRoot, widthSpec, heightSpec);
   }
 
   private boolean hasCompatibleSize(RenderTree tree, int widthSpec, int heightSpec) {
@@ -406,67 +374,14 @@ public class RenderState<State, RenderContext> {
               new Callable<RenderResult<State>>() {
                 @Override
                 public RenderResult<State> call() {
-                  final Node previousTree =
-                      mPreviousResult != null ? mPreviousResult.mNodeTree : null;
-                  final State previousState =
-                      mPreviousResult != null ? mPreviousResult.mState : null;
-
-                  Systrace.sInstance.beginSection("RC Create Tree");
-                  final Pair<Node, State> result;
-
-                  if (mPreviousResult != null && mLazyTree == mPreviousResult.mLazyTree) {
-                    result = new Pair<>(previousTree, previousState);
-                  } else {
-                    result = mLazyTree.resolve();
-                  }
-                  final RenderResult renderResult;
-
-                  if (mPreviousResult != null
-                      && result.first == mPreviousResult.mNodeTree
-                      && MeasureSpecUtils.isMeasureSpecCompatible(
-                          mPreviousResult.mRenderTree.getWidthSpec(),
-                          widthSpec,
-                          mPreviousResult.mRenderTree.getWidth())
-                      && MeasureSpecUtils.isMeasureSpecCompatible(
-                          mPreviousResult.mRenderTree.getHeightSpec(),
-                          heightSpec,
-                          mPreviousResult.mRenderTree.getHeight())) {
-                    renderResult =
-                        new RenderResult<>(
-                            mPreviousResult.mRenderTree,
-                            mLazyTree,
-                            result.first,
-                            mPreviousResult.mLayoutCache,
-                            result.second);
-                  } else {
-                    Systrace.sInstance.beginSection("RC Layout");
-
-                    final LayoutCache layoutCache =
-                        mPreviousResult != null
-                            ? new LayoutCache(mPreviousResult.mLayoutCache.getWriteCache())
-                            : new LayoutCache(null);
-                    final LayoutContext layoutContext =
-                        new LayoutContext(context, renderContext, setRootId, layoutCache);
-
-                    final LayoutResult layoutResult =
-                        layout(layoutContext, result.first, widthSpec, heightSpec, layoutCache);
-                    Systrace.sInstance.endSection();
-
-                    Systrace.sInstance.beginSection("RC Reduce");
-                    renderResult =
-                        new RenderResult<>(
-                            reduce(context, widthSpec, heightSpec, layoutResult),
-                            mLazyTree,
-                            result.first,
-                            layoutCache,
-                            result.second);
-                    Systrace.sInstance.endSection();
-                    layoutContext.layoutCache = null;
-                  }
-
-                  Systrace.sInstance.endSection();
-
-                  return renderResult;
+                  return RenderResult.resolve(
+                      context,
+                      mLazyTree,
+                      renderContext,
+                      mPreviousResult,
+                      mSetRootId,
+                      mWidthSpec,
+                      mHeightSpec);
                 }
               });
     }
@@ -560,6 +475,10 @@ public class RenderState<State, RenderContext> {
       }
 
       return layoutCache;
+    }
+
+    void clearCache() {
+      layoutCache = null;
     }
   }
 }

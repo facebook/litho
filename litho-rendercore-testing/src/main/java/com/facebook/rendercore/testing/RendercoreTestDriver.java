@@ -16,11 +16,15 @@
 
 package com.facebook.rendercore.testing;
 
+import android.content.Context;
 import android.util.Pair;
 import android.view.View;
+import androidx.annotation.Nullable;
 import com.facebook.rendercore.Node;
+import com.facebook.rendercore.RenderResult;
 import com.facebook.rendercore.RenderState;
 import com.facebook.rendercore.RenderTree;
+import com.facebook.rendercore.RenderTreeHost;
 import com.facebook.rendercore.RootHost;
 
 /**
@@ -44,6 +48,10 @@ public class RendercoreTestDriver {
     return new Builder(rootHost);
   }
 
+  public static NodeBuilderPart forHost(RenderTreeHost renderTreeHost) {
+    return new Builder(renderTreeHost);
+  }
+
   public interface NodeBuilderPart {
 
     /** Supply the root Node of the tree. */
@@ -63,17 +71,26 @@ public class RendercoreTestDriver {
 
     /** Render into the RootHost using the supplied configuration. */
     void render();
+
+    void renderWithRenderTree();
   }
 
   private static class Builder implements NodeBuilderPart, LayoutBuilderPart, RenderBuilderPart {
 
-    private final RootHost mRootHost;
+    @Nullable private final RootHost mRootHost;
+    @Nullable private final RenderTreeHost mRenderTreeHost;
     private Node mRootNode;
     private int mWidthSpec;
     private int mHeightSpec;
 
     private Builder(RootHost rootHost) {
       mRootHost = rootHost;
+      mRenderTreeHost = null;
+    }
+
+    private Builder(RenderTreeHost renderTreeHost) {
+      mRootHost = null;
+      mRenderTreeHost = renderTreeHost;
     }
 
     @Override
@@ -98,6 +115,11 @@ public class RendercoreTestDriver {
 
     @Override
     public void render() {
+      if (mRootHost == null) {
+        throw new IllegalArgumentException(
+            "RootHost is null. If you're using RenderTreeHost, call renderWithRenderTree() instead.");
+      }
+
       View rootHostAsView = (View) mRootHost;
 
       RenderState renderState =
@@ -118,17 +140,41 @@ public class RendercoreTestDriver {
 
       mRootHost.setRenderState(renderState);
 
-      renderState.setTree(
-          new RenderState.LazyTree() {
-            @Override
-            public Pair resolve() {
-              return new Pair(mRootNode, null);
-            }
-          });
+      renderState.setTree(createLazyTree(mRootNode));
 
       rootHostAsView.measure(mWidthSpec, mHeightSpec);
       rootHostAsView.layout(
           0, 0, rootHostAsView.getMeasuredWidth(), rootHostAsView.getMeasuredHeight());
+    }
+
+    @Override
+    public void renderWithRenderTree() {
+      if (mRenderTreeHost == null) {
+        throw new IllegalArgumentException(
+            "RenderTreeHost is null. If you're using RootHost, call render() instead.");
+      }
+
+      View rootHostAsView = (View) mRenderTreeHost;
+
+      Context context = rootHostAsView.getContext();
+      RenderResult renderResult =
+          RenderResult.resolve(
+              context, createLazyTree(mRootNode), null, null, -1, mWidthSpec, mHeightSpec);
+
+      mRenderTreeHost.setRenderTree(renderResult.getRenderTree());
+
+      rootHostAsView.measure(mWidthSpec, mHeightSpec);
+      rootHostAsView.layout(
+          0, 0, rootHostAsView.getMeasuredWidth(), rootHostAsView.getMeasuredHeight());
+    }
+
+    private static RenderState.LazyTree createLazyTree(final Node rootNode) {
+      return new RenderState.LazyTree() {
+        @Override
+        public Pair<Node, Object> resolve() {
+          return new Pair<>(rootNode, null);
+        }
+      };
     }
   }
 }
