@@ -17,6 +17,7 @@
 package com.facebook.rendercore;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,7 +30,8 @@ public class LayoutCache {
   private final Map mWriteCache;
   private final Map mReadCache;
 
-  LayoutCache() {
+  @VisibleForTesting
+  public LayoutCache() {
     this(new HashMap<Node, Node.LayoutResult>());
   }
 

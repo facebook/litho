@@ -445,7 +445,7 @@ public class RenderState<State, RenderContext> {
     private final @Nullable RenderContext mRenderContext;
 
     @VisibleForTesting
-    LayoutContext(
+    public LayoutContext(
         Context androidContext,
         @Nullable RenderContext renderContext,
         int layoutVersion,
