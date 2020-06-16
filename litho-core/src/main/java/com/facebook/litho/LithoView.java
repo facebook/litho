@@ -286,6 +286,10 @@ public class LithoView extends Host {
     onAttach();
   }
 
+  boolean usingExtensionsWithMountDelegate() {
+    return mUseExtensions;
+  }
+
   private void onAttach() {
     if (!mIsAttached) {
       mIsAttached = true;

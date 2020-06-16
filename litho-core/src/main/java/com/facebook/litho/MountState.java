@@ -190,14 +190,14 @@ class MountState
     // The mount item representing the top-level root host (LithoView) which
     // is always automatically mounted.
     mRootHostMountItem = LithoMountData.createRootHostMountItem(mLithoView);
-    if (!ComponentsConfiguration.useExtensionsWithMountDelegate) {
+    if (!mLithoView.usingExtensionsWithMountDelegate()) {
       if (ComponentsConfiguration.useIncrementalMountExtension) {
         mIncrementalMountExtension = new IncrementalMountExtension(mLithoView);
         registerMountDelegateExtension(mIncrementalMountExtension);
       }
     }
 
-    if (!ComponentsConfiguration.useExtensionsWithMountDelegate
+    if (!mLithoView.usingExtensionsWithMountDelegate()
         && ComponentsConfiguration.useVisibilityExtension) {
       mVisibilityOutputsExtension = new VisibilityOutputsExtension(mLithoView);
       mVisibilityIdToItemMap = null;
@@ -2933,7 +2933,7 @@ class MountState
 
     unbindAndUnmountLifecycle(mountItem);
 
-    if (ComponentsConfiguration.useExtensionsWithMountDelegate) {
+    if (mLithoView.usingExtensionsWithMountDelegate()) {
       if (mMountDelegate != null) {
         // TODO (T64352474): Use a RenderUnit instead of a callback from MountState
         mMountDelegate.onUmountItem(mountItem, layoutOutputId);
