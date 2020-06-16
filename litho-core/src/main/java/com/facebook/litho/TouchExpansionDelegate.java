@@ -28,18 +28,15 @@ import android.view.ViewConfiguration;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.collection.SparseArrayCompat;
-import androidx.core.util.Pools;
 import com.facebook.rendercore.MountItem;
 
 /** Compound touch delegate that forward touch events to recyclable inner touch delegates. */
 class TouchExpansionDelegate extends TouchDelegate {
 
   private static final Rect IGNORED_RECT = new Rect();
-  private static final Pools.SimplePool<SparseArrayCompat<InnerTouchDelegate>>
-      sInnerTouchDelegateScrapArrayPool = new Pools.SimplePool<>(4);
 
   private final SparseArrayCompat<InnerTouchDelegate> mDelegates = new SparseArrayCompat<>();
-  private SparseArrayCompat<InnerTouchDelegate> mScrapDelegates;
+  private @Nullable SparseArrayCompat<InnerTouchDelegate> mScrapDelegates;
 
   TouchExpansionDelegate(ComponentHost host) {
     super(IGNORED_RECT, host);
@@ -54,7 +51,7 @@ class TouchExpansionDelegate extends TouchDelegate {
    * @param item The mount item which requires touch expansion.
    */
   void registerTouchExpansion(int index, View view, MountItem item) {
-    mDelegates.put(index, InnerTouchDelegate.acquire(view, item));
+    mDelegates.put(index, new InnerTouchDelegate(view, item));
   }
 
   /**
@@ -66,27 +63,14 @@ class TouchExpansionDelegate extends TouchDelegate {
     if (maybeUnregisterFromScrap(index)) {
       return;
     }
-
-    final int valueIndex = mDelegates.indexOfKey(index);
-    if (valueIndex >= 0) {
-      final InnerTouchDelegate touchDelegate = mDelegates.valueAt(valueIndex);
-      mDelegates.removeAt(valueIndex);
-      if (touchDelegate != null) {
-        touchDelegate.release();
-      }
-    }
+    mDelegates.remove(index);
   }
 
   private boolean maybeUnregisterFromScrap(int index) {
     if (mScrapDelegates != null) {
-      final int valueIndex = mScrapDelegates.indexOfKey(index);
-      if (valueIndex >= 0) {
-        final InnerTouchDelegate touchDelegate = mScrapDelegates.valueAt(valueIndex);
-        mScrapDelegates.removeAt(valueIndex);
-        if (touchDelegate != null) {
-          touchDelegate.release();
-        }
-
+      final InnerTouchDelegate touchDelegate = mScrapDelegates.get(index);
+      if (touchDelegate != null) {
+        mScrapDelegates.remove(index);
         return true;
       }
     }
@@ -96,12 +80,9 @@ class TouchExpansionDelegate extends TouchDelegate {
 
   void draw(Canvas canvas, Paint paint) {
     for (int i = mDelegates.size() - 1; i >= 0; i--) {
-      final InnerTouchDelegate delegate = mDelegates.valueAt(i);
-      if (delegate != null) {
-        final Rect bounds = delegate.getDelegateBounds();
-        if (bounds != null) {
-          canvas.drawRect(bounds, paint);
-        }
+      final Rect bounds = mDelegates.valueAt(i).getDelegateBounds();
+      if (bounds != null) {
+        canvas.drawRect(bounds, paint);
       }
     }
   }
@@ -110,7 +91,7 @@ class TouchExpansionDelegate extends TouchDelegate {
   public boolean onTouchEvent(MotionEvent event) {
     for (int i = mDelegates.size() - 1; i >= 0; i--) {
       final InnerTouchDelegate touchDelegate = mDelegates.valueAt(i);
-      if (touchDelegate != null && touchDelegate.onTouchEvent(event)) {
+      if (touchDelegate.onTouchEvent(event)) {
         return true;
       }
     }
@@ -135,7 +116,7 @@ class TouchExpansionDelegate extends TouchDelegate {
 
   private void ensureScrapDelegates() {
     if (mScrapDelegates == null) {
-      mScrapDelegates = acquireScrapTouchDelegatesArray();
+      mScrapDelegates = new SparseArrayCompat<>(4);
     }
   }
 
@@ -144,36 +125,19 @@ class TouchExpansionDelegate extends TouchDelegate {
     return mDelegates.size();
   }
 
-  private static SparseArrayCompat<InnerTouchDelegate> acquireScrapTouchDelegatesArray() {
-    SparseArrayCompat<InnerTouchDelegate> sparseArray = sInnerTouchDelegateScrapArrayPool.acquire();
-    if (sparseArray == null) {
-      sparseArray = new SparseArrayCompat<>(4);
-    }
-
-    return sparseArray;
-  }
-
   private void releaseScrapDelegatesIfNeeded() {
     if (mScrapDelegates != null && mScrapDelegates.size() == 0) {
-      releaseScrapTouchDelegatesArray(mScrapDelegates);
       mScrapDelegates = null;
     }
   }
 
-  private static void releaseScrapTouchDelegatesArray(
-      SparseArrayCompat<InnerTouchDelegate> sparseArray) {
-    sInnerTouchDelegateScrapArrayPool.release(sparseArray);
-  }
-
   private static class InnerTouchDelegate {
 
-    private static final Pools.SimplePool<InnerTouchDelegate> sPool = new Pools.SimplePool<>(4);
-
-    private View mDelegateView;
-    private MountItem mItem;
+    private final View mDelegateView;
+    private final MountItem mItem;
     private boolean mIsHandlingTouch;
 
-    void init(View delegateView, MountItem item) {
+    InnerTouchDelegate(View delegateView, MountItem item) {
       mDelegateView = delegateView;
       mItem = item;
     }
@@ -210,7 +174,6 @@ class TouchExpansionDelegate extends TouchDelegate {
         case MotionEvent.ACTION_DOWN:
           mIsHandlingTouch = delegateBounds.contains(x, y);
           shouldDelegateTouchEvent = mIsHandlingTouch;
-
           break;
 
         case MotionEvent.ACTION_UP:
@@ -246,24 +209,6 @@ class TouchExpansionDelegate extends TouchDelegate {
       }
 
       return handled;
-    }
-
-    static InnerTouchDelegate acquire(View delegateView, MountItem item) {
-      InnerTouchDelegate touchDelegate = sPool.acquire();
-      if (touchDelegate == null) {
-        touchDelegate = new InnerTouchDelegate();
-      }
-
-      touchDelegate.init(delegateView, item);
-
-      return touchDelegate;
-    }
-
-    void release() {
-      mDelegateView = null;
-      mItem = null;
-      mIsHandlingTouch = false;
-      sPool.release(this);
     }
   }
 }
