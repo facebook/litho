@@ -60,6 +60,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
@@ -164,14 +165,28 @@ public class ResolveRedSymbolsAction extends AnAction {
                                     }),
                         daemonIndicator);
                 indicator.setFraction(1);
-                onFinished.accept(success.get());
-                if (resolved.isEmpty()) return;
+                final boolean analysisFinished = success.get();
+                if (resolved.isEmpty()) {
+                  onFinished.accept(analysisFinished);
+                  return;
+                }
 
+                final CountDownLatch latch = new CountDownLatch(1);
                 DumbService.getInstance(project)
                     .smartInvokeLater(
                         () -> {
+                          long bindStart = System.currentTimeMillis();
                           bindExpressions(resolved, virtualFile, editor, project);
+                          final long bindDelta = System.currentTimeMillis() - bindStart;
+                          eventMetadata.put(
+                              EventLogger.KEY_TIME_BIND_RED_SYMBOLS, String.valueOf(bindDelta));
+                          latch.countDown();
                         });
+                try {
+                  latch.await();
+                } catch (InterruptedException ignore) {
+                }
+                onFinished.accept(analysisFinished);
               }
             });
   }

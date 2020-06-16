@@ -32,6 +32,7 @@ public interface EventLogger {
   String KEY_RED_SYMBOLS = "red_symbols";
   String KEY_RED_SYMBOLS_ALL = "all_red_symbols";
   String KEY_RED_SYMBOLS_RESOLVED = "resolved_red_symbols";
+  String KEY_TIME_BIND_RED_SYMBOLS = "time_bind";
   String KEY_TIME_COLLECT_RED_SYMBOLS = "time_collect";
   String KEY_TIME_RESOLVE_RED_SYMBOLS = "time_resolve";
 
