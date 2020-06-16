@@ -70,7 +70,7 @@ import java.util.function.Consumer;
  */
 public class ResolveRedSymbolsAction extends AnAction {
   private static final Logger LOG = Logger.getInstance(ResolveRedSymbolsAction.class);
-  private static final String ACTION = "Resolving Red Symbols";
+  private static final String ACTION = "Resolving Litho Red Symbols";
 
   @Override
   public void update(AnActionEvent e) {
