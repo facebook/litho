@@ -21,6 +21,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.intellij.codeInsight.completion.CompletionResult;
 import com.intellij.codeInsight.completion.CompletionResultSet;
 import com.intellij.codeInsight.completion.InsertHandler;
+import com.intellij.codeInsight.completion.PrioritizedLookupElement;
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiClass;
@@ -82,7 +83,9 @@ class ReplacingConsumer implements Consumer<CompletionResult> {
   /** Adds {@link LookupElement} for the {@link #replacedQualifiedNames} unseen before. */
   void addRemainingCompletions(Project project) {
     for (String qualifiedName : replacedQualifiedNames) {
-      result.addElement(SpecLookupElement.create(qualifiedName, project, insertHandler));
+      result.addElement(
+          PrioritizedLookupElement.withPriority(
+              SpecLookupElement.create(qualifiedName, project, insertHandler), Integer.MAX_VALUE));
     }
   }
 }
