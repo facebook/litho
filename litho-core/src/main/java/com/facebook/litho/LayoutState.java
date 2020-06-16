@@ -56,7 +56,6 @@ import androidx.annotation.VisibleForTesting;
 import androidx.collection.LongSparseArray;
 import com.facebook.infer.annotation.ThreadSafe;
 import com.facebook.litho.ComponentTree.LayoutStateFuture;
-import com.facebook.litho.DynamicPropsExtension.DynamicPropsExtensionInput;
 import com.facebook.litho.EndToEndTestingExtension.EndToEndTestingExtensionInput;
 import com.facebook.litho.IncrementalMountExtension.IncrementalMountExtensionInput;
 import com.facebook.litho.TransitionsExtension.TransitionsExtensionInput;
@@ -94,8 +93,7 @@ public class LayoutState
     implements IncrementalMountExtensionInput,
         VisibilityOutputsExtensionInput,
         TransitionsExtensionInput,
-        EndToEndTestingExtensionInput,
-        DynamicPropsExtensionInput {
+        EndToEndTestingExtensionInput {
 
   private static final String DUPLICATE_TRANSITION_IDS = "LayoutState:DuplicateTransitionIds";
   private static final String DUPLICATE_MANUAL_KEY = "LayoutState:DuplicateManualKey";
@@ -105,6 +103,7 @@ public class LayoutState
   static final String KEY_PREVIOUS_LAYOUT_STATE_ID = "previousLayoutId";
 
   private final boolean mIncrementalVisibility;
+  private final @Nullable LithoRenderUnitFactory mLithoRenderUnitFactory;
 
   @IntDef({
     CalculateLayoutSource.TEST,
@@ -337,8 +336,10 @@ public class LayoutState
 
     if (context.getComponentTree() != null) {
       mIncrementalVisibility = context.getComponentTree().hasIncrementalVisibility();
+      mLithoRenderUnitFactory = context.getComponentTree().getLithoRenderUnitFactory();
     } else {
       mIncrementalVisibility = false;
+      mLithoRenderUnitFactory = null;
     }
 
     mVisibilityModuleInput = mIncrementalVisibility ? new VisibilityModuleInput() : null;
@@ -2258,7 +2259,9 @@ public class LayoutState
 
     layoutOutput.setIndex(layoutState.mMountableOutputs.size());
 
-    final RenderTreeNode node = LayoutOutput.create(layoutOutput, parent, layoutState.mLayoutData);
+    final RenderTreeNode node =
+        LayoutOutput.create(
+            layoutOutput, layoutState.mLithoRenderUnitFactory, parent, layoutState.mLayoutData);
 
     if (parent != null) {
       parent.child(node);

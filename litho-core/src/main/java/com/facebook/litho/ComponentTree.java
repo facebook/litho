@@ -117,6 +117,8 @@ public class ComponentTree {
   @GuardedBy("this")
   private @Nullable HooksHandler mHooksHandler;
 
+  private @Nullable LithoRenderUnitFactory mLithoRenderUnitFactory;
+
   public interface MeasureListener {
 
     /**
@@ -902,6 +904,7 @@ public class ComponentTree {
     }
 
     mLithoView = view;
+    mLithoRenderUnitFactory = view.getLithoRenderUnitFactory();
   }
 
   void clearLithoView() {
@@ -913,6 +916,7 @@ public class ComponentTree {
     }
 
     mLithoView = null;
+    mLithoRenderUnitFactory = null;
   }
 
   @UiThread
@@ -1022,6 +1026,11 @@ public class ComponentTree {
 
   boolean isVisibilityProcessingEnabled() {
     return mVisibilityProcessingEnabled;
+  }
+
+  @Nullable
+  LithoRenderUnitFactory getLithoRenderUnitFactory() {
+    return mLithoRenderUnitFactory;
   }
 
   /** Returns the recycling mode. Please see {@link RecyclingMode for details of different modes} */

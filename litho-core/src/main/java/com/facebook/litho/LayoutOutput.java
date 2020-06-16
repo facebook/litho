@@ -240,12 +240,18 @@ class LayoutOutput implements Cloneable, AnimatableItem {
 
   static RenderTreeNode create(
       final LayoutOutput output,
+      final @Nullable LithoRenderUnitFactory lithoRenderUnitFactory,
       final @Nullable RenderTreeNode parent,
       final @Nullable Map<String, Object> data) {
 
+    final LithoRenderUnit lithoRenderUnit =
+        lithoRenderUnitFactory == null
+            ? new LithoRenderUnit(output)
+            : lithoRenderUnitFactory.getRenderUnit(output);
+
     return new RenderTreeNode(
         parent,
-        new LithoRenderUnit(output),
+        lithoRenderUnit,
         data,
         output.getBounds(),
         output.mHostTranslationX,

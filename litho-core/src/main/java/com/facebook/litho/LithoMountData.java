@@ -116,7 +116,12 @@ public class LithoMountData {
             IMPORTANT_FOR_ACCESSIBILITY_AUTO,
             lithoView.getContext().getResources().getConfiguration().orientation,
             null);
-    MountItem item = new MountItem(LayoutOutput.create(output, null, null), lithoView, lithoView);
+
+    MountItem item =
+        new MountItem(
+            LayoutOutput.create(output, lithoView.getLithoRenderUnitFactory(), null, null),
+            lithoView,
+            lithoView);
     item.setMountData(new LithoMountData(lithoView));
     return item;
   }

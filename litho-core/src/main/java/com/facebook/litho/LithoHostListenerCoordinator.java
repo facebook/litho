@@ -20,6 +20,7 @@ import android.graphics.Rect;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import com.facebook.rendercore.MountDelegate.MountDelegateTarget;
+import com.facebook.rendercore.RenderUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,7 +32,11 @@ public class LithoHostListenerCoordinator implements HostListenerExtension<Objec
   private VisibilityOutputsExtension mVisibilityOutputsExtension;
   private TransitionsExtension mTransitionsExtension;
   private EndToEndTestingExtension mEndToEndTestingExtension;
-  private DynamicPropsExtension mDynamicPropsExtension;
+  private DynamicPropsBinder mDynamicPropsBinder;
+
+  private @Nullable List<RenderUnit.Binder<LithoRenderUnit, Object>> mMountUnmountExtensions;
+  private @Nullable List<RenderUnit.Binder<LithoRenderUnit, Object>> mAttachDetachExtensions;
+  private @Nullable LithoRenderUnitFactory mLithoRenderUnitFactory;
 
   public LithoHostListenerCoordinator() {
     mMountExtensions = new ArrayList<>();
@@ -123,6 +128,7 @@ public class LithoHostListenerCoordinator implements HostListenerExtension<Objec
     mTransitionsExtension = new TransitionsExtension(lithoView);
     mountDelegateTarget.registerMountDelegateExtension(mTransitionsExtension);
     registerListener(mTransitionsExtension);
+    addAttachDetachExtension(mTransitionsExtension);
   }
 
   void collectAllTransitions(LayoutState layoutState, ComponentTree componentTree) {
@@ -143,8 +149,37 @@ public class LithoHostListenerCoordinator implements HostListenerExtension<Objec
     registerListener(mVisibilityOutputsExtension);
   }
 
-  public void enableDynamicPropsExtension() {
-    mDynamicPropsExtension = new DynamicPropsExtension();
-    registerListener(mDynamicPropsExtension);
+  public void enableDynamicProps() {
+    if (mDynamicPropsBinder != null) {
+      return;
+    }
+
+    mDynamicPropsBinder = new DynamicPropsBinder();
+    addAttachDetachExtension(mDynamicPropsBinder);
+  }
+
+  private void addAttachDetachExtension(RenderUnit.Binder attachDetachExtension) {
+    if (mAttachDetachExtensions == null) {
+      mAttachDetachExtensions = new ArrayList<>(2);
+    }
+
+    mAttachDetachExtensions.add(attachDetachExtension);
+  }
+
+  private void addMountUnmountExtension(RenderUnit.Binder mountUnmountExtension) {
+    if (mMountUnmountExtensions == null) {
+      mMountUnmountExtensions = new ArrayList<>(2);
+    }
+
+    mMountUnmountExtensions.add(mountUnmountExtension);
+  }
+
+  public @Nullable LithoRenderUnitFactory getLithoRenderUnitFactory() {
+    if (mLithoRenderUnitFactory == null) {
+      mLithoRenderUnitFactory =
+          new LithoRenderUnitFactory(mMountUnmountExtensions, mAttachDetachExtensions);
+    }
+
+    return mLithoRenderUnitFactory;
   }
 }

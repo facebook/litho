@@ -17,42 +17,12 @@
 package com.facebook.litho;
 
 import android.content.Context;
-import android.graphics.Rect;
 import com.facebook.rendercore.Host;
-import com.facebook.rendercore.RenderTreeNode;
 import com.facebook.rendercore.RenderUnit;
 
-public class DynamicPropsExtension
-    implements HostListenerExtension<DynamicPropsExtension.DynamicPropsExtensionInput>,
-        RenderUnit.Binder<LithoRenderUnit, Object> {
+public class DynamicPropsBinder implements RenderUnit.Binder<LithoRenderUnit, Object> {
 
   private final DynamicPropsManager mDynamicPropsManager = new DynamicPropsManager();
-
-  public interface DynamicPropsExtensionInput {
-    int getMountableOutputCount();
-
-    RenderTreeNode getMountableOutputAt(int position);
-  }
-
-  @Override
-  public void beforeMount(DynamicPropsExtensionInput input, Rect localVisibleRect) {
-    for (int i = 0, size = input.getMountableOutputCount(); i < size; i++) {
-      final RenderTreeNode renderTreeNode = input.getMountableOutputAt(i);
-      renderTreeNode.getRenderUnit().addAttachDetachExtension(this);
-    }
-  }
-
-  @Override
-  public void afterMount() {}
-
-  @Override
-  public void onVisibleBoundsChanged(Rect localVisibleRect) {}
-
-  @Override
-  public void onUnmount() {}
-
-  @Override
-  public void onUnbind() {}
 
   @Override
   public boolean shouldUpdate(

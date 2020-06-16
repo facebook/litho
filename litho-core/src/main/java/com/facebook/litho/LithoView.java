@@ -56,6 +56,7 @@ public class LithoView extends Host {
   private final boolean mUseExtensions;
   private final boolean mDelegateToRenderCore;
   private final @Nullable MountDelegateTarget mMountDelegateTarget;
+  private @Nullable LithoRenderUnitFactory mLithoRenderUnitFactory;
 
   public interface OnDirtyMountListener {
     /**
@@ -698,8 +699,13 @@ public class LithoView extends Host {
         mLithoHostListenerCoordinator.enableEndToEndTestProcessing(mMountDelegateTarget);
       }
 
-      mLithoHostListenerCoordinator.enableDynamicPropsExtension();
+      mLithoHostListenerCoordinator.enableDynamicProps();
+      mLithoRenderUnitFactory = mLithoHostListenerCoordinator.getLithoRenderUnitFactory();
     }
+  }
+
+  LithoRenderUnitFactory getLithoRenderUnitFactory() {
+    return mLithoRenderUnitFactory;
   }
 
   @Override

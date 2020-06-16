@@ -122,10 +122,6 @@ public class TransitionsExtension extends MountDelegateExtension
       mLastTransitionsExtensionInput = null;
     }
 
-    for (int i = 0, size = mInput.getMountableOutputCount(); i < size; i++) {
-      mInput.getMountableOutputAt(i).getRenderUnit().addAttachDetachExtension(this);
-    }
-
     updateTransitions(input, ((LithoView) mLithoView).getComponentTree());
     extractDisappearingItems(input);
 
