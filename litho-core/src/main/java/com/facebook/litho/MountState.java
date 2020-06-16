@@ -205,6 +205,13 @@ class MountState
     } else {
       mVisibilityIdToItemMap = new HashMap<>();
     }
+
+    // Using Incremental Mount Extension and the Transition Extension here is not allowed.
+    if (!ComponentsConfiguration.useExtensionsWithMountDelegate
+        && !ComponentsConfiguration.useIncrementalMountExtension
+        && ComponentsConfiguration.useTransitionsExtension) {
+      registerMountDelegateExtension(new TransitionsExtension(mLithoView));
+    }
   }
 
   @Override
@@ -284,7 +291,6 @@ class MountState
       mountWithIncrementalMountExtension(layoutState, localVisibleRect, processVisibilityOutputs);
       return;
     }
-
     assertMainThread();
 
     if (layoutState == null) {
@@ -327,7 +333,7 @@ class MountState
                 logger.newPerformanceEvent(componentTree.getContext(), EVENT_MOUNT));
 
     if (mIsDirty) {
-      updateTransitions(layoutState, componentTree);
+      updateTransitions(layoutState, componentTree, localVisibleRect);
 
       // Prepare the data structure for the new LayoutState and removes mountItems
       // that are not present anymore if isUpdateMountInPlace is enabled.
@@ -363,19 +369,12 @@ class MountState
             !isIncrementalMountEnabled
                 || isMountedHostWithChildContent(currentMountItem)
                 || Rect.intersects(localVisibleRect, layoutOutput.getBounds())
-                || isAnimationLocked(i)
+                || isAnimationLocked(node, i)
                 || (currentMountItem != null && currentMountItem == rootMountItem);
-
         if (isMountable && !isMounted) {
           mountLayoutOutput(i, node, layoutOutput, layoutState);
-
-          if (isAnimationLocked(i) && isIncrementalMountEnabled && component.hasChildLithoViews()) {
-            // If the component is locked for animation then we need to make sure that all the
-            // children are also mounted.
-            final View view = (View) getItemAt(i).getContent();
-            // We're mounting everything, don't process visibility outputs as they will not be
-            // accurate.
-            mountViewIncrementally(view, false);
+          if (isIncrementalMountEnabled) {
+            mountComponentToContentApplyBinders(i, component, getItemAt(i).getContent());
           }
         } else if (!isMountable && isMounted) {
           unmountItem(i, mHostsByMarker);
@@ -424,10 +423,7 @@ class MountState
       }
     }
 
-    maybeUpdateAnimatingMountContent();
-    if (shouldAnimateTransitions(layoutState) && hasTransitionsToAnimate()) {
-      mTransitionManager.runTransitions();
-    }
+    afterMountMaybeUpdateAnimations(layoutState);
 
     if (isVisibilityProcessingEnabled) {
       if (isTracing) {
@@ -479,6 +475,17 @@ class MountState
     mIsMounting = false;
   }
 
+  private void afterMountMaybeUpdateAnimations(LayoutState layoutState) {
+    if (mTransitionsExtension != null && mIsDirty) {
+      mTransitionsExtension.afterMount();
+    } else {
+      maybeUpdateAnimatingMountContent();
+      if (shouldAnimateTransitions(layoutState) && hasTransitionsToAnimate()) {
+        mTransitionManager.runTransitions();
+      }
+    }
+  }
+
   private void mountWithIncrementalMountExtension(
       LayoutState layoutState, @Nullable Rect localVisibleRect, boolean processVisibilityOutputs) {
     final Rect previousLocalVisibleRect = mPreviousLocalVisibleRect;
@@ -487,17 +494,14 @@ class MountState
     final ComponentTree componentTree = mLithoView.getComponentTree();
 
     if (mIsDirty) {
-      updateTransitions(layoutState, componentTree);
+      updateTransitions(layoutState, componentTree, localVisibleRect);
       mIncrementalMountExtension.beforeMount(layoutState, localVisibleRect);
       mount(layoutState);
     } else {
       mIncrementalMountExtension.onVisibleBoundsChanged(localVisibleRect);
     }
 
-    maybeUpdateAnimatingMountContent();
-    if (shouldAnimateTransitions && hasTransitionsToAnimate()) {
-      mTransitionManager.runTransitions();
-    }
+    afterMountMaybeUpdateAnimations(layoutState);
 
     cleanupTransitionsAfterMount();
 
@@ -1560,7 +1564,7 @@ class MountState
    * descendant of that subtree]
    */
   private List<Integer> extractDisappearingItems(LayoutState newLayoutState) {
-    if (mLayoutOutputsIds == null) {
+    if (mTransitionsExtension != null || mLayoutOutputsIds == null) {
       return Collections.emptyList();
     }
 
@@ -2830,6 +2834,10 @@ class MountState
       mVisibilityOutputsExtension.onUnmount();
     }
 
+    if (mTransitionsExtension != null) {
+      mTransitionsExtension.onUnmount();
+    }
+
     clearVisibilityItems();
   }
 
@@ -2949,10 +2957,14 @@ class MountState
         }
       }
     } else {
-      if (getLayoutOutput(mountItem).getTransitionId() != null) {
-        final @OutputUnitType int type =
-            LayoutStateOutputIdCalculator.getTypeFromId(layoutOutputId);
-        maybeRemoveAnimatingMountContent(output.getTransitionId(), type);
+      if (mTransitionsExtension != null) {
+        mTransitionsExtension.onUnmountItem(mContext.getAndroidContext(), mountItem);
+      } else {
+        if (getLayoutOutput(mountItem).getTransitionId() != null) {
+          final @OutputUnitType int type =
+              LayoutStateOutputIdCalculator.getTypeFromId(layoutOutputId);
+          maybeRemoveAnimatingMountContent(output.getTransitionId(), type);
+        }
       }
     }
 
@@ -3105,9 +3117,15 @@ class MountState
    * want to make sure are not unmounted due to incremental mount and being outside of visibility
    * bounds.
    */
-  public void updateTransitions(LayoutState layoutState, ComponentTree componentTree) {
+  private void updateTransitions(
+      LayoutState layoutState, ComponentTree componentTree, Rect localVisibleRect) {
     if (!mIsDirty) {
       throw new RuntimeException("Should only process transitions on dirty mounts");
+    }
+
+    if (mTransitionsExtension != null) {
+      mTransitionsExtension.beforeMount(layoutState, localVisibleRect);
+      return;
     }
 
     final boolean isTracing = ComponentsSystrace.isTracing();
@@ -3473,6 +3491,10 @@ class MountState
       mVisibilityOutputsExtension.onUnbind();
     }
 
+    if (mTransitionsExtension != null) {
+      mTransitionsExtension.onUnbind();
+    }
+
     if (isTracing) {
       ComponentsSystrace.endSection();
     }
@@ -3540,6 +3562,13 @@ class MountState
     return mAnimationLockedIndices[index] > 0;
   }
 
+  private boolean isAnimationLocked(RenderTreeNode renderTreeNode, int index) {
+    if (mTransitionsExtension != null) {
+      return mTransitionsExtension.ownsReference(renderTreeNode);
+    }
+    return isAnimationLocked(index);
+  }
+
   /**
    * @return true if this method did all the work that was necessary and there is no other content
    *     that needs mounting/unmounting in this mount step. If false then a full mount step should
@@ -3569,7 +3598,7 @@ class MountState
         final RenderTreeNode node = layoutOutputBottoms.get(mPreviousBottomsIndex);
         final long id = getLayoutOutput(node).getId();
         final int layoutOutputIndex = layoutState.getLayoutOutputPositionForId(id);
-        if (!isAnimationLocked(layoutOutputIndex)) {
+        if (!isAnimationLocked(node, layoutOutputIndex)) {
           unmountItem(layoutOutputIndex, mHostsByMarker);
         }
         mPreviousBottomsIndex++;
@@ -3622,7 +3651,7 @@ class MountState
         final RenderTreeNode node = layoutOutputTops.get(mPreviousTopsIndex);
         final long id = getLayoutOutput(node).getId();
         final int layoutOutputIndex = layoutState.getLayoutOutputPositionForId(id);
-        if (!isAnimationLocked(layoutOutputIndex)) {
+        if (!isAnimationLocked(node, layoutOutputIndex)) {
           unmountItem(layoutOutputIndex, mHostsByMarker);
         }
       }
@@ -3666,6 +3695,12 @@ class MountState
    */
   void collectAllTransitions(LayoutState layoutState, ComponentTree componentTree) {
     assertMainThread();
+
+    if (mTransitionsExtension != null) {
+      mTransitionsExtension.collectAllTransitions(layoutState, componentTree);
+      return;
+    }
+
     if (mTransitionsHasBeenCollected) {
       return;
     }

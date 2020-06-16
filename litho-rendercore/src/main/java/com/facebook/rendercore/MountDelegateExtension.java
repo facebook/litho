@@ -74,7 +74,9 @@ public class MountDelegateExtension {
     return mMountDelegate.isLockedForMount(renderTreeNode);
   }
 
-  protected boolean ownsReference(RenderTreeNode renderTreeNode) {
+  // TODO: T68620328 This method should be roll back to being protected once the transition
+  // extension test ends.
+  public boolean ownsReference(RenderTreeNode renderTreeNode) {
     return ownsReference(renderTreeNode.getRenderUnit().getId());
   }
 

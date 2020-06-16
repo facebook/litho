@@ -61,8 +61,8 @@ public class TransitionsExtension extends MountDelegateExtension
   private boolean mTransitionsHasBeenCollected = false;
   private @Nullable Transition mRootTransition;
   private @Nullable TransitionsExtensionInput mLastTransitionsExtensionInput;
-  private AttachDetachBinder mAttachDetachBinder = new AttachDetachBinder();
-  private MountUnmountBinder mMountUnmountBinder = new MountUnmountBinder();
+  private final AttachDetachBinder mAttachDetachBinder = new AttachDetachBinder();
+  private final MountUnmountBinder mMountUnmountBinder = new MountUnmountBinder();
 
   @Override
   public boolean shouldDelegateUnmount(MountItem mountItem) {
@@ -137,6 +137,7 @@ public class TransitionsExtension extends MountDelegateExtension
     if (shouldAnimateTransitions(mInput) && hasTransitionsToAnimate()) {
       mTransitionManager.runTransitions();
     }
+
     mInput.setNeedsToRerunTransitions(false);
     mLastTransitionsExtensionInput = mInput;
     mTransitionsHasBeenCollected = false;
@@ -728,6 +729,7 @@ public class TransitionsExtension extends MountDelegateExtension
     return input.getMountableOutputCount() - 1;
   }
 
+  // TODO: T68620328 Remove after test is done.
   public void bind(
       Context context,
       com.facebook.rendercore.Host host,
@@ -735,6 +737,17 @@ public class TransitionsExtension extends MountDelegateExtension
       LithoRenderUnit lithoRenderUnit,
       @Nullable Object layoutData) {
     mAttachDetachBinder.bind(context, host, content, lithoRenderUnit, layoutData);
+  }
+
+  // TODO: T68620328 Remove after test is done.
+  public void onUnmountItem(Context context, MountItem mountItem) {
+    final RenderUnit renderUnit = mountItem.getRenderTreeNode().getRenderUnit();
+    mMountUnmountBinder.unbind(
+        context,
+        mountItem.getHost(),
+        mountItem.getContent(),
+        (LithoRenderUnit) renderUnit,
+        mountItem.getRenderTreeNode());
   }
 
   public RenderUnit.Binder getAttachDetachBinder() {
@@ -787,7 +800,7 @@ public class TransitionsExtension extends MountDelegateExtension
         LithoRenderUnit newValue,
         @Nullable Object currentLayoutData,
         @Nullable Object nextLayoutData) {
-      return true;
+      return false;
     }
 
     @Override
