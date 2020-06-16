@@ -49,6 +49,7 @@ public interface EventLogger {
   String EVENT_ON_EVENT_GENERATION = "event.generation";
   String EVENT_RED_SYMBOLS = "resolve.redsymbols";
   String EVENT_SETTINGS = "settings.update";
+  String EVENT_TOOLWINDOW_UPDATE = "toolwindow.update";
 
   /**
    * Logs given event.
