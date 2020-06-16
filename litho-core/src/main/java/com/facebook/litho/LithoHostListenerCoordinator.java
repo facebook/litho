@@ -128,7 +128,8 @@ public class LithoHostListenerCoordinator implements HostListenerExtension<Objec
     mTransitionsExtension = new TransitionsExtension(lithoView);
     mountDelegateTarget.registerMountDelegateExtension(mTransitionsExtension);
     registerListener(mTransitionsExtension);
-    addAttachDetachExtension(mTransitionsExtension);
+    addAttachDetachExtension(mTransitionsExtension.getAttachDetachBinder());
+    addMountUnmountExtension(mTransitionsExtension.getMountUnmountBinder());
   }
 
   void collectAllTransitions(LayoutState layoutState, ComponentTree componentTree) {

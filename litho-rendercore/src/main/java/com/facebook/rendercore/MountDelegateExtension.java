@@ -87,8 +87,6 @@ public class MountDelegateExtension {
     return false;
   }
 
-  public void onUmountItem(Object item, long layoutOutputId) {}
-
   public MountDelegate.MountDelegateTarget getMountTarget() {
     return mMountDelegate.getMountDelegateTarget();
   }

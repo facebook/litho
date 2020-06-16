@@ -30,6 +30,7 @@ import com.facebook.litho.ComponentContext;
 import com.facebook.litho.Row;
 import com.facebook.litho.StateCaller;
 import com.facebook.litho.Transition;
+import com.facebook.litho.config.ComponentsConfiguration;
 import com.facebook.litho.dataflow.MockTimingSource;
 import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.TransitionTestRule;
@@ -860,5 +861,76 @@ public class AnimationTest {
 
     assertThat(view.getX()).describedAs("view X axis after 10 frames").isEqualTo(0);
     assertThat(view.getY()).describedAs("view Y axis after 10 frames").isEqualTo(0);
+  }
+
+  @Test
+  public void
+      animationRenderCore_animatingPropertyXAndUnmountingLithoViewMidAnimation_shouldNotCrash() {
+    final boolean useExtensionsWithMountDelegate =
+        ComponentsConfiguration.useExtensionsWithMountDelegate;
+    final boolean delegateToRenderCoreMount = ComponentsConfiguration.delegateToRenderCoreMount;
+    ComponentsConfiguration.useExtensionsWithMountDelegate = true;
+    ComponentsConfiguration.delegateToRenderCoreMount = true;
+
+    final TestAnimationsComponent component =
+        TestAnimationsComponent.create(mLithoViewRule.getContext())
+            .stateCaller(mStateCaller)
+            .transition(
+                Transition.create(TRANSITION_KEY)
+                    .animator(Transition.timing(144))
+                    .animate(AnimatedProperties.X))
+            .testComponent(
+                new TestAnimationsComponentSpec
+                    .TestComponent() { // This could be a lambda but it fails ci.
+                  @Override
+                  public Component getComponent(ComponentContext componentContext, boolean state) {
+                    return Row.create(componentContext)
+                        .heightDip(200)
+                        .widthDip(200)
+                        .justifyContent(state ? YogaJustify.FLEX_START : YogaJustify.FLEX_END)
+                        .alignItems(state ? YogaAlign.FLEX_START : YogaAlign.FLEX_END)
+                        .child(
+                            Row.create(componentContext)
+                                .heightDip(40)
+                                .widthDip(40)
+                                .backgroundColor(Color.parseColor("#ee1111"))
+                                .transitionKey(TRANSITION_KEY)
+                                .viewTag(TRANSITION_KEY)
+                                .build())
+                        .build();
+                  }
+                })
+            .build();
+    mLithoViewRule.setRoot(component);
+    mActivityController.get().setContentView(mLithoViewRule.getLithoView());
+    mActivityController.resume().visible();
+
+    View view = mLithoViewRule.findViewWithTag(TRANSITION_KEY);
+
+    // 160 is equal to height and width of 200 - 40 for the size of the row.
+    assertThat(view.getX()).describedAs("view X axis should be at start position").isEqualTo(160);
+    assertThat(view.getY()).describedAs("view Y axis should be at start position").isEqualTo(160);
+
+    mStateCaller.update();
+
+    // X after state update should be at 160 because is going to be animated.
+    assertThat(view.getX()).describedAs("view X axis after toggle").isEqualTo(160);
+    // Y moves without animating
+    assertThat(view.getY()).describedAs("view Y axis after toggle").isEqualTo(0);
+
+    mTransitionTestRule.step(5);
+
+    // Check java doc for how we calculate this value.
+    assertThat(view.getX()).describedAs("view X axis after 5 frames").isEqualTo(93.89186f);
+    assertThat(view.getY()).describedAs("view Y axis after 5 frames").isEqualTo(0);
+
+    // This line would unmount the animating mountitem and the framework should stop the animation.
+    mLithoViewRule.getLithoView().unmountAllItems();
+
+    // After unmounting all items it should not crash.
+    mTransitionTestRule.step(5);
+
+    ComponentsConfiguration.useExtensionsWithMountDelegate = useExtensionsWithMountDelegate;
+    ComponentsConfiguration.delegateToRenderCoreMount = delegateToRenderCoreMount;
   }
 }

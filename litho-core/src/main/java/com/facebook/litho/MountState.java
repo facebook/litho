@@ -76,6 +76,7 @@ import com.facebook.rendercore.MountDelegateExtension;
 import com.facebook.rendercore.MountItem;
 import com.facebook.rendercore.RenderTree;
 import com.facebook.rendercore.RenderTreeNode;
+import com.facebook.rendercore.RenderUnit;
 import com.facebook.rendercore.UnmountDelegateExtension;
 import com.facebook.rendercore.utils.BoundsUtils;
 import java.util.ArrayList;
@@ -2934,9 +2935,18 @@ class MountState
     unbindAndUnmountLifecycle(mountItem);
 
     if (mLithoView.usingExtensionsWithMountDelegate()) {
-      if (mMountDelegate != null) {
-        // TODO (T64352474): Use a RenderUnit instead of a callback from MountState
-        mMountDelegate.onUmountItem(mountItem, layoutOutputId);
+      final RenderUnit renderUnit = mountItem.getRenderTreeNode().getRenderUnit();
+      final List<RenderUnit.Binder> mountBinders = renderUnit.mountUnmountFunctions();
+      if (mountBinders != null) {
+        for (int i = mountBinders.size() - 1; i >= 0; i--) {
+          final RenderUnit.Binder binder = mountBinders.get(i);
+          binder.unbind(
+              mContext.getAndroidContext(),
+              mountItem.getHost(),
+              mountItem.getContent(),
+              renderUnit,
+              mountItem.getRenderTreeNode());
+        }
       }
     } else {
       if (getLayoutOutput(mountItem).getTransitionId() != null) {
