@@ -22,7 +22,6 @@ import com.facebook.litho.intellij.LithoPluginIntellijTest;
 import com.facebook.litho.intellij.PsiSearchUtils;
 import com.facebook.litho.intellij.settings.AppSettingsState;
 import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiFile;
@@ -49,8 +48,7 @@ public class OnCodeAnalysisFinishedListenerTest extends LithoPluginIntellijTest 
                   "LayoutSpec", PsiTreeUtil.findChildOfType(specPsiFile, PsiClass.class));
               new OnCodeAnalysisFinishedListener(project).daemonFinished();
             });
-    final PsiClass cached =
-        ServiceManager.getService(project, ComponentsCacheService.class).getComponent("Layout");
+    final PsiClass cached = ComponentsCacheService.getInstance(project).getComponent("Layout");
     assertThat(cached).isNotNull();
   }
 
@@ -67,8 +65,7 @@ public class OnCodeAnalysisFinishedListenerTest extends LithoPluginIntellijTest 
                   "LayoutSpec", PsiTreeUtil.findChildOfType(specPsiFile, PsiClass.class));
               new OnCodeAnalysisFinishedListener(project).daemonFinished();
             });
-    final PsiClass cached =
-        ServiceManager.getService(project, ComponentsCacheService.class).getComponent("Layout");
+    final PsiClass cached = ComponentsCacheService.getInstance(project).getComponent("Layout");
     assertThat(cached).isNull();
   }
 }

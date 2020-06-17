@@ -17,7 +17,6 @@
 package com.facebook.litho.intellij.file;
 
 import com.facebook.litho.intellij.services.ComponentsCacheService;
-import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -43,8 +42,7 @@ public class ComponentShortNamesCache extends PsiShortNamesCache {
   public PsiClass[] getClassesByName(String name, GlobalSearchScope scope) {
     if (!scope.contains(dummyFile)) return PsiClass.EMPTY_ARRAY;
 
-    return Arrays.stream(
-            ServiceManager.getService(project, ComponentsCacheService.class).getAllComponents())
+    return Arrays.stream(ComponentsCacheService.getInstance(project).getAllComponents())
         .filter(
             cls -> {
               final String shortName = StringUtil.getShortName(cls.getQualifiedName());
@@ -55,8 +53,7 @@ public class ComponentShortNamesCache extends PsiShortNamesCache {
 
   @Override
   public String[] getAllClassNames() {
-    return Arrays.stream(
-            ServiceManager.getService(project, ComponentsCacheService.class).getAllComponents())
+    return Arrays.stream(ComponentsCacheService.getInstance(project).getAllComponents())
         .map(cls -> StringUtil.getShortName(cls.getQualifiedName()))
         .toArray(String[]::new);
   }

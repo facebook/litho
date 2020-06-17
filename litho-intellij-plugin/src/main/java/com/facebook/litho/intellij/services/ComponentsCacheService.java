@@ -24,6 +24,7 @@ import com.facebook.litho.intellij.file.ComponentScope;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ReadAction;
+import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
@@ -53,6 +54,10 @@ public class ComponentsCacheService implements Disposable {
 
   public ComponentsCacheService(Project project) {
     this.project = project;
+  }
+
+  public static ComponentsCacheService getInstance(Project project) {
+    return ServiceManager.getService(project, ComponentsCacheService.class);
   }
 
   @Override

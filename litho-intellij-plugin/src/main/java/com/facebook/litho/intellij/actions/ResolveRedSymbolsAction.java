@@ -31,7 +31,6 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.actionSystem.Presentation;
-import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
@@ -263,8 +262,7 @@ public class ResolveRedSymbolsAction extends AnAction {
   private static Map<String, PsiClass> addToCache(
       Collection<String> allRedSymbols, Project project, GlobalSearchScope symbolsScope) {
     Map<String, PsiClass> redSymbolToClass = new HashMap<>();
-    ComponentsCacheService componentsCache =
-        ServiceManager.getService(project, ComponentsCacheService.class);
+    ComponentsCacheService componentsCache = ComponentsCacheService.getInstance(project);
     for (String redSymbol : allRedSymbols) {
       Arrays.stream(
               PsiSearchUtils.findClassesByShortName(project, symbolsScope, redSymbol + "Spec"))

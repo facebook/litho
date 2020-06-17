@@ -19,7 +19,6 @@ package com.facebook.litho.intellij.services;
 import com.facebook.litho.intellij.IntervalLogger;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
@@ -70,7 +69,7 @@ class GeneratedFilesListener implements BulkFileListener, Disposable {
     final Runnable job =
         () -> {
           logger.logStep("start of removing files");
-          ServiceManager.getService(project, ComponentsCacheService.class).invalidate();
+          ComponentsCacheService.getInstance(project).invalidate();
         };
     if (ApplicationManager.getApplication().isUnitTestMode()) {
       job.run();

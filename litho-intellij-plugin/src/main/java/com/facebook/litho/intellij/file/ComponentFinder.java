@@ -17,7 +17,6 @@
 package com.facebook.litho.intellij.file;
 
 import com.facebook.litho.intellij.services.ComponentsCacheService;
-import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -59,8 +58,7 @@ public class ComponentFinder extends PsiElementFinder {
 
     // We don't create own package, but provide additional classes to existing one
     final String packageQN = psiPackage.getQualifiedName();
-    return Arrays.stream(
-            ServiceManager.getService(project, ComponentsCacheService.class).getAllComponents())
+    return Arrays.stream(ComponentsCacheService.getInstance(project).getAllComponents())
         .filter(cls -> StringUtil.getPackageName(cls.getQualifiedName()).equals(packageQN))
         .toArray(PsiClass[]::new);
   }
@@ -73,8 +71,7 @@ public class ComponentFinder extends PsiElementFinder {
     if (!StringUtil.isJavaIdentifier(StringUtil.getShortName(qualifiedName))) return null;
 
     final PsiClass componentFromCache =
-        ServiceManager.getService(project, ComponentsCacheService.class)
-            .getComponent(qualifiedName);
+        ComponentsCacheService.getInstance(project).getComponent(qualifiedName);
 
     return componentFromCache;
   }

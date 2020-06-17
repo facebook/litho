@@ -22,7 +22,6 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import com.facebook.litho.intellij.LithoPluginIntellijTest;
 import com.facebook.litho.intellij.LithoPluginUtils;
-import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiClass;
 import org.junit.Test;
@@ -36,8 +35,7 @@ public class ComponentsCacheServiceTest extends LithoPluginIntellijTest {
   @Test
   public void getComponentAndMaybeUpdate() {
     final Project project = testHelper.getFixture().getProject();
-    final ComponentsCacheService service =
-        ServiceManager.getService(project, ComponentsCacheService.class);
+    final ComponentsCacheService service = ComponentsCacheService.getInstance(project);
     testHelper.getPsiClass(
         psiClasses -> {
           assertNotNull(psiClasses);

@@ -22,7 +22,6 @@ import static org.mockito.Mockito.when;
 import com.facebook.litho.intellij.LithoPluginIntellijTest;
 import com.facebook.litho.intellij.PsiSearchUtils;
 import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.newvfs.events.VFileCreateEvent;
@@ -51,8 +50,7 @@ public class GeneratedFilesListenerTest extends LithoPluginIntellijTest {
             () -> {
               final PsiClass cls = PsiTreeUtil.findChildOfType(file, PsiClass.class);
               // Add file to cache
-              final ComponentsCacheService service =
-                  ServiceManager.getService(project, ComponentsCacheService.class);
+              final ComponentsCacheService service = ComponentsCacheService.getInstance(project);
               service.maybeUpdate(cls, false);
               final PsiClass component = service.getComponent("Layout");
               assertThat(component).isNotNull();

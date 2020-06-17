@@ -21,7 +21,6 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 import com.facebook.litho.intellij.LithoPluginIntellijTest;
 import com.facebook.litho.intellij.services.ComponentsCacheService;
 import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiFile;
@@ -47,8 +46,7 @@ public class ComponentFinderTest extends LithoPluginIntellijTest {
               final ComponentFinder finder = new ComponentFinder(project);
               // Add file to cache
               final PsiClass cls = PsiTreeUtil.findChildOfType(file, PsiClass.class);
-              ServiceManager.getService(project, ComponentsCacheService.class)
-                  .maybeUpdate(cls, false);
+              ComponentsCacheService.getInstance(project).maybeUpdate(cls, false);
 
               // No result with project scope
               final PsiClass result1 =

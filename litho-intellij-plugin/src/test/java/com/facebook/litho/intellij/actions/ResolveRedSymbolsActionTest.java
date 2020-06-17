@@ -22,7 +22,6 @@ import com.facebook.litho.intellij.LithoPluginIntellijTest;
 import com.facebook.litho.intellij.PsiSearchUtils;
 import com.facebook.litho.intellij.services.ComponentsCacheService;
 import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -67,8 +66,7 @@ public class ResolveRedSymbolsActionTest extends LithoPluginIntellijTest {
               assertThat(eventMetadata.get("resolved_red_symbols")).isEqualTo("[Layout]");
 
               final PsiClass cached =
-                  ServiceManager.getService(project, ComponentsCacheService.class)
-                      .getComponent("Layout");
+                  ComponentsCacheService.getInstance(project).getComponent("Layout");
               assertThat(cached).isNotNull();
               assertThat(cached.getName()).isEqualTo("Layout");
             });
