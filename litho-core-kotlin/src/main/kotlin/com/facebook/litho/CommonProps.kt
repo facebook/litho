@@ -27,11 +27,15 @@ import android.graphics.drawable.Drawable
  *  This will work for core Litho, but may break Sections.
  */
 inline fun DslScope.Clickable(
-    noinline onClick: (ClickEvent) -> Unit,
+    noinline onClick: ((ClickEvent) -> Unit)? = null,
+    noinline onLongClick: ((LongClickEvent) -> Unit)? = null,
     content: DslScope.() -> Component
 ): Component =
     content().apply {
-      getOrCreateCommonProps.clickHandler(eventHandler(onClick))
+      getOrCreateCommonProps.apply {
+        onClick?.let { clickHandler(eventHandler(it)) }
+        onLongClick?.let { longClickHandler(eventHandler(it)) }
+      }
     }
 
 /**
@@ -39,15 +43,19 @@ inline fun DslScope.Clickable(
  * [EventHandler] generated from a Spec.
  */
 inline fun DslScope.Clickable(
-    clickHandler: EventHandler<ClickEvent>,
+    clickHandler: EventHandler<ClickEvent>? = null,
+    longClickHandler: EventHandler<LongClickEvent>? = null,
     content: DslScope.() -> Component
 ): Component =
     content().apply {
-      getOrCreateCommonProps.clickHandler(clickHandler)
+      getOrCreateCommonProps.apply {
+        clickHandler?.let { clickHandler(it) }
+        longClickHandler?.let { longClickHandler(it) }
+      }
     }
 
 /**
- * Builder for setting [onVisible], [onFocused], and [onFullImpressionVisible] event handlers for
+ * Builder for setting [onVisible], [onFocused], and [onFullImpression] event handlers for
  * component.
  *
  * TODO Currently lambda captures possibly old props. Find a better option.
