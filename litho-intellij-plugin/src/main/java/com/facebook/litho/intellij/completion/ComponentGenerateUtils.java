@@ -17,7 +17,6 @@
 package com.facebook.litho.intellij.completion;
 
 import com.facebook.litho.annotations.LayoutSpec;
-import com.facebook.litho.intellij.IntervalLogger;
 import com.facebook.litho.intellij.LithoPluginUtils;
 import com.facebook.litho.intellij.PsiSearchUtils;
 import com.facebook.litho.intellij.extensions.EventLogger;
@@ -26,10 +25,10 @@ import com.facebook.litho.intellij.logging.LithoLoggerProvider;
 import com.facebook.litho.intellij.services.ComponentsCacheService;
 import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.LayoutSpecModel;
+import com.facebook.litho.specmodels.model.SpecModel;
 import com.facebook.litho.specmodels.processor.PsiLayoutSpecModelFactory;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.WriteAction;
-import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
@@ -59,8 +58,8 @@ public class ComponentGenerateUtils {
   private ComponentGenerateUtils() {}
 
   /**
-   * Updates existing generated Component file from the given Spec class or do nothing if provided
-   * class doesn't contain {@link LayoutSpec}.
+   * Updates generated Component file from the given Spec class or do nothing if provided class
+   * doesn't contain {@link LayoutSpec}.
    *
    * @param layoutSpecCls class containing {@link LayoutSpec} class.
    */
@@ -73,7 +72,8 @@ public class ComponentGenerateUtils {
     final Project project = layoutSpecCls.getProject();
     final Runnable job =
         () -> {
-          updateLayoutSpecInternal(componentName, layoutSpecCls, project);
+          final LayoutSpecModel model = createLayoutModel(layoutSpecCls);
+          updateComponent(componentName, model, project);
         };
     if (ApplicationManager.getApplication().isUnitTestMode()) {
       job.run();
@@ -82,19 +82,16 @@ public class ComponentGenerateUtils {
     }
   }
 
-  private static void updateLayoutSpecInternal(
-      String componentQualifiedName, PsiClass layoutSpecCls, Project project) {
-    IntervalLogger logger = new IntervalLogger(LOG);
-    Optional<PsiClass> generatedClass =
+  /** Updates generated Component file from the given Spec model. */
+  private static void updateComponent(
+      String componentQualifiedName, @Nullable SpecModel model, Project project) {
+    if (model == null) return;
+
+    final Optional<PsiClass> generatedClass =
         Optional.ofNullable(PsiSearchUtils.findOriginalClass(project, componentQualifiedName))
             .filter(cls -> !ComponentScope.contains(cls.getContainingFile()));
     final boolean isPresent = generatedClass.isPresent();
-    logger.logStep("finding generated class: " + isPresent);
     if (isPresent) {
-      final LayoutSpecModel model = createLayoutModel(layoutSpecCls);
-      if (model == null) return;
-
-      logger.logStep("creating in-memory class");
       final String newContent = createFileContentFromModel(componentQualifiedName, model);
       final Document document =
           PsiDocumentManager.getInstance(project)
@@ -104,17 +101,13 @@ public class ComponentGenerateUtils {
         WriteAction.run(
             () -> {
               document.setText(newContent);
-              logger.logStep("updating document");
             });
         FileDocumentManager.getInstance().saveDocument(document);
-        logger.logStep("saving document");
         showSuccess(StringUtil.getShortName(componentQualifiedName), project);
       }
     } else {
       final PsiClass component =
-          ServiceManager.getService(project, ComponentsCacheService.class)
-              .maybeUpdate(layoutSpecCls, true);
-      logger.logStep("creating in-memory class");
+          ComponentsCacheService.getInstance(project).update(componentQualifiedName, model);
       if (component != null) {
         showSuccess(component.getName(), project);
       }
@@ -138,15 +131,14 @@ public class ComponentGenerateUtils {
   }
 
   public static PsiFile createFileFromModel(
-      String clsQualifiedName, LayoutSpecModel specModel, Project project) {
-    String fileContent = createFileContentFromModel(clsQualifiedName, specModel);
+      String clsQualifiedName, SpecModel model, Project project) {
+    String fileContent = createFileContentFromModel(clsQualifiedName, model);
     return PsiFileFactory.getInstance(project)
         .createFileFromText(
             StringUtil.getShortName(clsQualifiedName) + ".java", StdFileTypes.JAVA, fileContent);
   }
 
-  private static String createFileContentFromModel(
-      String clsQualifiedName, LayoutSpecModel specModel) {
+  private static String createFileContentFromModel(String clsQualifiedName, SpecModel specModel) {
     TypeSpec typeSpec = specModel.generate(RunMode.normal());
     return JavaFile.builder(StringUtil.getPackageName(clsQualifiedName), typeSpec)
         .skipJavaLangImports(true)

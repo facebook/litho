@@ -21,6 +21,8 @@ import com.facebook.litho.intellij.LithoPluginUtils;
 import com.facebook.litho.intellij.PsiSearchUtils;
 import com.facebook.litho.intellij.completion.ComponentGenerateUtils;
 import com.facebook.litho.intellij.file.ComponentScope;
+import com.facebook.litho.specmodels.model.LayoutSpecModel;
+import com.facebook.litho.specmodels.model.SpecModel;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ReadAction;
@@ -32,12 +34,12 @@ import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.PsiClass;
+import com.intellij.psi.PsiFile;
 import com.intellij.util.ThrowableRunnable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.jetbrains.annotations.Nullable;
@@ -130,39 +132,38 @@ public class ComponentsCacheService implements Disposable {
 
   private void maybeUpdateInReadAction(
       PsiClass specClass, String componentQualifiedName, ShouldUpdateChecker checker) {
-    final String componentShortName = StringUtil.getShortName(componentQualifiedName);
-    if (componentShortName.isEmpty()) return;
-
     final ThrowableRunnable<RuntimeException> job =
         () -> {
           if (checker.shouldStopUpdate()) return;
-          IntervalLogger logger = new IntervalLogger(LOG);
-          Optional.ofNullable(ComponentGenerateUtils.createLayoutModel(specClass))
-              .map(
-                  specModel -> {
-                    logger.logStep("model creation " + componentShortName);
-                    if (checker.shouldStopUpdate()) return null;
 
-                    return ComponentGenerateUtils.createFileFromModel(
-                        componentQualifiedName, specModel, project);
-                  })
-              .flatMap(
-                  file -> {
-                    ComponentScope.include(file);
-                    return LithoPluginUtils.getFirstClass(
-                        file, cls -> componentShortName.equals(cls.getName()));
-                  })
-              .ifPresent(
-                  inMemory -> {
-                    logger.logStep("file creation " + componentShortName);
-                    componentNameToClass.put(componentQualifiedName, inMemory);
-                  });
+          final LayoutSpecModel layoutModel = ComponentGenerateUtils.createLayoutModel(specClass);
+          update(componentQualifiedName, layoutModel);
         };
     if (ApplicationManager.getApplication().isReadAccessAllowed()) {
       job.run();
     } else {
       ReadAction.run(job);
     }
+  }
+
+  /** Updates cached class with provided model. Do nothing if name or model are invalid. */
+  @Nullable
+  public PsiClass update(String componentQualifiedName, @Nullable SpecModel model) {
+    if (model == null) return null;
+
+    final String componentShortName = StringUtil.getShortName(componentQualifiedName);
+    if (componentShortName.isEmpty()) return null;
+
+    final PsiFile file =
+        ComponentGenerateUtils.createFileFromModel(componentQualifiedName, model, project);
+    ComponentScope.include(file);
+    final PsiClass inMemory =
+        LithoPluginUtils.getFirstClass(file, cls -> componentShortName.equals(cls.getName()))
+            .orElse(null);
+    if (inMemory == null) return null;
+
+    componentNameToClass.put(componentQualifiedName, inMemory);
+    return inMemory;
   }
 
   /** Verifies that the update for the cached Component is needed. */
