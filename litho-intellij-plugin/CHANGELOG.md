@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## Version 1.5.4
+
+_2020-06-17_
+
+* New: Add tool window to show `@LayoutSpec` Structure.
+* New: Log red symbols binding time.
+* New: Increase supported version to 1.9.1.
+
 ## Version 1.5.3
 
 _2020-06-09_
