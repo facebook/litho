@@ -83,7 +83,7 @@ public class ComponentGenerateUtils {
   }
 
   /** Updates generated Component file from the given Spec model. */
-  private static void updateComponent(
+  public static void updateComponent(
       String componentQualifiedName, @Nullable SpecModel model, Project project) {
     if (model == null) return;
 

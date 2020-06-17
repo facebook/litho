@@ -33,6 +33,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.wm.ToolWindow;
+import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.ui.content.Content;
@@ -94,10 +95,10 @@ class ComponentStructureView implements Disposable {
         Optional.ofNullable(selectedFile)
             .flatMap(file -> LithoPluginUtils.getFirstClass(file, LithoPluginUtils::isLayoutSpec))
             .map(ComponentGenerateUtils::createLayoutModel)
-            .map(model -> createStructureView(model, selectedEditor, selectedFile, project))
             .map(
-                view -> {
-                  structureView = view;
+                model -> {
+                  updateComponent(model, selectedFile);
+                  structureView = createStructureView(model, selectedEditor, selectedFile, project);
                   return structureView.getComponent();
                 })
             .orElse(STUB);
@@ -107,6 +108,14 @@ class ComponentStructureView implements Disposable {
     contentManager.setSelectedContent(contentContainer);
     dispose(oldStructure);
     LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_TOOLWINDOW_UPDATE);
+  }
+
+  private void updateComponent(LayoutSpecModel model, PsiFile file) {
+    LithoPluginUtils.getFirstClass(file, cls -> cls.getName().equals(model.getSpecName()))
+        .map(PsiClass::getQualifiedName)
+        .map(LithoPluginUtils::getLithoComponentNameFromSpec)
+        .ifPresent(
+            componentQN -> ComponentGenerateUtils.updateComponent(componentQN, model, project));
   }
 
   private void dispose(@Nullable StructureView oldStructure) {
