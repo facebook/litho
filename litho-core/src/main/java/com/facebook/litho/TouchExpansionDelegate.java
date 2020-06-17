@@ -80,9 +80,12 @@ class TouchExpansionDelegate extends TouchDelegate {
 
   void draw(Canvas canvas, Paint paint) {
     for (int i = mDelegates.size() - 1; i >= 0; i--) {
-      final Rect bounds = mDelegates.valueAt(i).getDelegateBounds();
-      if (bounds != null) {
-        canvas.drawRect(bounds, paint);
+      final InnerTouchDelegate delegate = mDelegates.valueAt(i);
+      if (delegate != null) {
+        final Rect bounds = delegate.getDelegateBounds();
+        if (bounds != null) {
+          canvas.drawRect(bounds, paint);
+        }
       }
     }
   }
@@ -91,7 +94,7 @@ class TouchExpansionDelegate extends TouchDelegate {
   public boolean onTouchEvent(MotionEvent event) {
     for (int i = mDelegates.size() - 1; i >= 0; i--) {
       final InnerTouchDelegate touchDelegate = mDelegates.valueAt(i);
-      if (touchDelegate.onTouchEvent(event)) {
+      if (touchDelegate != null && touchDelegate.onTouchEvent(event)) {
         return true;
       }
     }
