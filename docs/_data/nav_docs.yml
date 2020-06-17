@@ -96,6 +96,7 @@
   - id: glossary
 - title: Tools
   items:
+  - id: flipper-plugins
   - id: debugging
   - id: dev-options
 - title: Contributing
