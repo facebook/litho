@@ -8,6 +8,7 @@ load(
     "//tools/build_defs/oss:litho_defs.bzl",
     "LITHO_ANDROIDSUPPORT_TARGET",
     "LITHO_BUILD_CONFIG_TARGET",
+    "LITHO_COMPONENTS_TARGET_VISIBILITY",
     "LITHO_JAVA_TARGET",
     "LITHO_KOTLIN_TARGET",
     "LITHO_SECTIONS_ANNOTATIONS_TARGET",
@@ -23,9 +24,7 @@ load(
 
 litho_android_library(
     name = "components",
-    visibility = [
-        "PUBLIC",
-    ],
+    visibility = LITHO_COMPONENTS_TARGET_VISIBILITY,
     deps = [
         LITHO_BUILD_CONFIG_TARGET,
     ],

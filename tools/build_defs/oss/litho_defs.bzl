@@ -8,6 +8,10 @@ LITHO_TESTING_UTIL_VISIBILITY = [
     "PUBLIC",
 ]
 
+LITHO_COMPONENTS_TARGET_VISIBILITY = [
+    "PUBLIC",
+]
+
 LITHO_IS_OSS_BUILD = True
 
 def make_dep_path(pth):
