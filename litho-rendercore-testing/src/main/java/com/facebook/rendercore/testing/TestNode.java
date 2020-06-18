@@ -20,9 +20,11 @@ import com.facebook.rendercore.Node;
 import com.facebook.rendercore.RenderState.LayoutContext;
 import com.facebook.rendercore.RenderUnit;
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class TestNode extends Node {
 
+  static final AtomicLong sIdGenerator = new AtomicLong();
   private final ArrayList<Node> mChildren;
   private int mX;
   private int mY;
@@ -30,6 +32,7 @@ public class TestNode extends Node {
   private int mHeight = 100;
   private Object mLayoutData;
   private RenderUnit mRenderUnit;
+  private long mId = sIdGenerator.getAndIncrement();
 
   public TestNode() {
     super();
@@ -75,5 +78,9 @@ public class TestNode extends Node {
 
   public void setLayoutData(Object layoutData) {
     mLayoutData = layoutData;
+  }
+
+  public long getId() {
+    return mId;
   }
 }
