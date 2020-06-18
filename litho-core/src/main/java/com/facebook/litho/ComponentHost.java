@@ -17,7 +17,6 @@
 package com.facebook.litho;
 
 import static com.facebook.litho.AccessibilityUtils.isAccessibilityEnabled;
-import static com.facebook.litho.ComponentHostUtils.maybeInvalidateAccessibilityState;
 import static com.facebook.litho.LayoutOutput.getLayoutOutput;
 import static com.facebook.litho.LayoutOutput.isTouchableDisabled;
 import static com.facebook.litho.ThreadUtils.assertMainThread;
@@ -102,6 +101,12 @@ public class ComponentHost extends Host {
   private boolean mClippingTemporaryDisabled = false;
   private boolean mClippingToRestore = false;
 
+  /**
+   * Is {@code true} if and only if any accessible mounted child content has extra A11Y nodes. This
+   * is {@code false} by default, and is set for every mount, unmount, and update call.
+   */
+  private boolean mImplementsVirtualViews = false;
+
   public ComponentHost(Context context) {
     this(context, null);
   }
@@ -155,6 +160,7 @@ public class ComponentHost extends Host {
 
     ensureMountItems();
     mMountItems.put(index, mountItem);
+    updateAccessibilityState(output);
   }
 
   private void ensureMountItems() {
@@ -215,6 +221,7 @@ public class ComponentHost extends Host {
     ensureMountItems();
     ComponentHostUtils.removeItem(index, mMountItems, mScrapMountItemsArray);
     releaseScrapDataStructuresIfNeeded();
+    updateAccessibilityState(getLayoutOutput(mountItem));
   }
 
   /**
@@ -268,7 +275,7 @@ public class ComponentHost extends Host {
       unmountView((View) content);
     }
 
-    maybeInvalidateAccessibilityState(getLayoutOutput(disappearingItem), this);
+    updateAccessibilityState(getLayoutOutput(disappearingItem));
   }
 
   boolean hasDisappearingItems() {
@@ -439,7 +446,7 @@ public class ComponentHost extends Host {
       ViewCompat.setImportantForAccessibility(this, ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_YES);
     }
 
-    invalidateAccessibilityState();
+    maybeInvalidateAccessibilityState();
   }
 
   @Override
@@ -613,28 +620,48 @@ public class ComponentHost extends Host {
     return mOnTouchListener;
   }
 
-  /** Invalidates the accessibility node tree in this host. */
-  void invalidateAccessibilityState() {
-    if (!mIsComponentAccessibilityDelegateSet) {
-      return;
+  private void updateAccessibilityState(final LayoutOutput output) {
+    // If the item has extra A11Y nodes then virtual views are implemented.
+    if (output.isAccessible() && output.getComponent().implementsExtraAccessibilityNodes()) {
+      setImplementsVirtualViews(true);
     }
 
-    if (mComponentAccessibilityDelegate != null && implementsVirtualViews()) {
+    maybeInvalidateAccessibilityState();
+
+    // If there are no more mounted items then virtual views are implemented.
+    if (getMountItemCount() == 0) {
+      setImplementsVirtualViews(false);
+    }
+  }
+
+  /**
+   * Invalidates the accessibility tree of this host if an AccessibilityDelegate is set and any
+   * children implement virtual views.
+   */
+  void maybeInvalidateAccessibilityState() {
+    if (hasAccessibilityDelegateAndVirtualViews() && mComponentAccessibilityDelegate != null) {
       mComponentAccessibilityDelegate.invalidateRoot();
     }
+  }
+
+  boolean implementsVirtualViews() {
+    return mImplementsVirtualViews;
+  }
+
+  void setImplementsVirtualViews(boolean implementsVirtualViews) {
+    mImplementsVirtualViews = implementsVirtualViews;
+  }
+
+  private boolean hasAccessibilityDelegateAndVirtualViews() {
+    return mIsComponentAccessibilityDelegateSet && mImplementsVirtualViews;
   }
 
   @Override
   public boolean dispatchHoverEvent(MotionEvent event) {
     return (mComponentAccessibilityDelegate != null
-            && implementsVirtualViews()
+            && mImplementsVirtualViews
             && mComponentAccessibilityDelegate.dispatchHoverEvent(event))
         || super.dispatchHoverEvent(event);
-  }
-
-  private boolean implementsVirtualViews() {
-    MountItem item = getAccessibleMountItem();
-    return item != null && getLayoutOutput(item).getComponent().implementsExtraAccessibilityNodes();
   }
 
   public List<CharSequence> getContentDescriptions() {

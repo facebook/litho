@@ -20,7 +20,6 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import androidx.collection.SparseArrayCompat;
-import com.facebook.rendercore.Host;
 import com.facebook.rendercore.MountItem;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -176,11 +175,5 @@ class ComponentHostUtils {
         return imageContent;
       }
     };
-  }
-
-  static void maybeInvalidateAccessibilityState(final LayoutOutput output, final Host host) {
-    if (output.isAccessible()) {
-      ((ComponentHost) host).invalidateAccessibilityState();
-    }
   }
 }

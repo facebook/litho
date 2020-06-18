@@ -2267,6 +2267,13 @@ public class LayoutState
       parent.child(node);
     }
 
+    if (layoutOutput.getComponent().implementsExtraAccessibilityNodes()
+        && layoutOutput.isAccessible()
+        && parent != null) {
+      final LayoutOutput output = LayoutOutput.getLayoutOutput(parent);
+      ((HostComponent) output.getComponent()).setImplementsVirtualViews();
+    }
+
     layoutState.mMountableOutputs.add(node);
     layoutState.mMountableOutputTops.add(node);
     layoutState.mMountableOutputBottoms.add(node);

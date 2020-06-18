@@ -33,6 +33,8 @@ class HostComponent extends Component {
    */
   @Nullable private SparseArray<DynamicValue<?>> mCommonDynamicProps;
 
+  private boolean mImplementsVirtualViews = false;
+
   protected HostComponent() {
     super(SIMPLE_NAME);
   }
@@ -92,6 +94,8 @@ class HostComponent extends Component {
       // to 0, which will mean that it won't draw anything.
       host.setAlpha(1.0f);
     }
+
+    host.setImplementsVirtualViews(mImplementsVirtualViews);
   }
 
   @Override
@@ -106,6 +110,14 @@ class HostComponent extends Component {
     if (host.isPressed()) {
       host.setPressed(false);
     }
+
+    host.setImplementsVirtualViews(false);
+  }
+
+  @Override
+  protected void onBind(ComponentContext c, Object mountedContent) {
+    final ComponentHost host = (ComponentHost) mountedContent;
+    host.maybeInvalidateAccessibilityState();
   }
 
   @Override
@@ -152,5 +164,9 @@ class HostComponent extends Component {
    */
   void setCommonDynamicProps(SparseArray<DynamicValue<?>> commonDynamicProps) {
     mCommonDynamicProps = commonDynamicProps;
+  }
+
+  void setImplementsVirtualViews() {
+    mImplementsVirtualViews = true;
   }
 }

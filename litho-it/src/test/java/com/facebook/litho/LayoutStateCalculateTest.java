@@ -54,11 +54,13 @@ import static org.mockito.Mockito.validateMockitoUsage;
 import static org.mockito.Mockito.verify;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Rect;
 import android.util.SparseArray;
 import android.view.accessibility.AccessibilityManager;
 import androidx.annotation.Nullable;
 import com.facebook.litho.LayoutState.LayoutStateContext;
+import com.facebook.litho.testing.LithoViewRule;
 import com.facebook.litho.testing.TestComponent;
 import com.facebook.litho.testing.TestDrawableComponent;
 import com.facebook.litho.testing.TestLayoutComponent;
@@ -69,11 +71,13 @@ import com.facebook.litho.testing.Whitebox;
 import com.facebook.litho.testing.inlinelayoutspec.InlineLayoutSpec;
 import com.facebook.litho.testing.logging.TestComponentsLogger;
 import com.facebook.litho.testing.testrunner.LithoTestRunner;
+import com.facebook.litho.widget.SolidColor;
 import com.facebook.litho.widget.Text;
 import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaEdge;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Shadows;
@@ -82,12 +86,17 @@ import org.robolectric.shadows.ShadowAccessibilityManager;
 @RunWith(LithoTestRunner.class)
 public class LayoutStateCalculateTest {
 
+  public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
+
+  private ComponentContext mContext;
+
   @Before
   public void setup() throws Exception {
     // invdalidate the cached accessibility value before each test runs so that we don't
     // have a value already cached.  If we don't do this, accessibility tests will fail when run
     // after non-accessibility tests, and vice-versa.
     AccessibilityUtils.invalidateCachedIsAccessibilityEnabled();
+    mContext = mLithoViewRule.getContext();
   }
 
   @After
@@ -2589,6 +2598,80 @@ public class LayoutStateCalculateTest {
             LayoutState.CalculateLayoutSource.TEST);
 
     assertThat(layoutState.getMountableOutputCount()).isEqualTo(2);
+  }
+
+  @Test
+  public void whenAccessibleChildNodeExists_ParentNodeShouldImplementVirtualViews() {
+    enableAccessibility();
+
+    final Component component = Text.create(mContext).text("hello world").build();
+
+    mLithoViewRule.setRoot(component).attachToWindow().measure().layout();
+
+    assertThat(mLithoViewRule.getLithoView().implementsVirtualViews())
+        .describedAs("The parent output of the Text must implement virtual views")
+        .isTrue();
+  }
+
+  @Test
+  public void whenNoAccessibleChildNodeExists_ParentNodeShouldNotImplementVirtualViews() {
+    enableAccessibility();
+
+    final Component component = SolidColor.create(mContext).color(Color.BLACK).build();
+
+    mLithoViewRule.setRoot(component).attachToWindow().measure().layout();
+
+    assertThat(mLithoViewRule.getLithoView().implementsVirtualViews())
+        .describedAs("The parent output of the drawable must not implement virtual views")
+        .isFalse();
+  }
+
+  @Test
+  public void onMountItemUpdatesImplementVirtualViews_ComponentHostShouldAlsoUpdate() {
+    enableAccessibility();
+
+    mLithoViewRule
+        .setRoot(Text.create(mContext).text("hello world").build())
+        .attachToWindow()
+        .measure()
+        .layout();
+
+    assertThat(mLithoViewRule.getLithoView().implementsVirtualViews())
+        .describedAs("The parent output of the Text must implement virtual views")
+        .isTrue();
+
+    mLithoViewRule
+        .setRootAndSizeSpec(
+            SolidColor.create(mContext).color(Color.BLACK).build(),
+            SizeSpec.makeSizeSpec(100, EXACTLY),
+            SizeSpec.makeSizeSpec(100, EXACTLY))
+        .measure()
+        .layout();
+
+    assertThat(mLithoViewRule.getLithoView().implementsVirtualViews())
+        .describedAs("The parent output of the drawable must not implement virtual views")
+        .isFalse();
+
+    mLithoViewRule
+        .setRootAndSizeSpec(
+            Column.create(mContext)
+                .child(Text.create(mContext).text("hello world").build())
+                .child(SolidColor.create(mContext).color(Color.BLACK).build())
+                .build(),
+            SizeSpec.makeSizeSpec(100, EXACTLY),
+            SizeSpec.makeSizeSpec(200, EXACTLY))
+        .attachToWindow()
+        .measure()
+        .layout();
+
+    assertThat(mLithoViewRule.getLithoView().implementsVirtualViews())
+        .describedAs("The root output must not implement virtual views")
+        .isFalse();
+
+    final ComponentHost host = (ComponentHost) mLithoViewRule.getLithoView().getChildAt(0);
+    assertThat(host.implementsVirtualViews())
+        .describedAs("The parent output of the Text must implement virtual views")
+        .isTrue();
   }
 
   private void enableAccessibility() {

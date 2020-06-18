@@ -16,7 +16,6 @@
 
 package com.facebook.litho;
 
-import static com.facebook.litho.ComponentHostUtils.maybeInvalidateAccessibilityState;
 import static com.facebook.litho.ComponentHostUtils.maybeSetDrawableState;
 import static com.facebook.litho.LayoutState.KEY_LAYOUT_STATE_ID;
 import static com.facebook.litho.LayoutState.KEY_PREVIOUS_LAYOUT_STATE_ID;
@@ -190,7 +189,6 @@ public class LithoRenderUnit extends RenderUnit<Object> {
         unit.setDefaultViewAttributeFlags(LithoMountData.getViewAttributeFlags(content));
       }
       MountState.setViewAttributes(content, output);
-      maybeInvalidateAccessibilityState(output, host);
     }
 
     @Override
@@ -203,7 +201,6 @@ public class LithoRenderUnit extends RenderUnit<Object> {
       final LayoutOutput output = unit.output;
       final int flags = unit.getDefaultViewAttributeFLags();
       MountState.unsetViewAttributes(content, output, flags);
-      maybeInvalidateAccessibilityState(output, host);
     }
   }
 }

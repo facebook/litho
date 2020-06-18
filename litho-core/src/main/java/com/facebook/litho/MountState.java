@@ -19,7 +19,6 @@ package com.facebook.litho;
 import static androidx.core.view.ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO;
 import static com.facebook.litho.Component.isHostSpec;
 import static com.facebook.litho.Component.isMountViewSpec;
-import static com.facebook.litho.ComponentHostUtils.maybeInvalidateAccessibilityState;
 import static com.facebook.litho.ComponentHostUtils.maybeSetDrawableState;
 import static com.facebook.litho.FrameworkLogEvents.EVENT_MOUNT;
 import static com.facebook.litho.FrameworkLogEvents.PARAM_IS_DIRTY;
@@ -1404,7 +1403,6 @@ class MountState
     // size and content but a different position.
     updateBoundsForMountedLayoutOutput(nextLayoutOutput, currentMountItem);
 
-    maybeInvalidateAccessibilityState(currentLayoutOutput, currentMountItem.getHost());
     if (currentMountItem.getContent() instanceof Drawable) {
       maybeSetDrawableState(
           host,
@@ -1907,7 +1905,6 @@ class MountState
       final LayoutOutput output) {
     output.getMountBounds(sTempRect);
     host.mount(index, item, sTempRect);
-    maybeInvalidateAccessibilityState(output, host);
   }
 
   private static void unmount(
@@ -1917,7 +1914,6 @@ class MountState
       final MountItem item,
       final LayoutOutput output) {
     host.unmount(index, item);
-    maybeInvalidateAccessibilityState(output, host);
   }
 
   private static void applyBoundsToMountContent(
