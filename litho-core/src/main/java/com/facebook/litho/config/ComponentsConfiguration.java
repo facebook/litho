@@ -164,9 +164,6 @@ public class ComponentsConfiguration {
    */
   public static boolean isLayoutDiffingEnabled = true;
 
-  /** specifies if the ComparableAnimatedColorDrawable should be initialized in a lazy way */
-  public static boolean lazyComparableAnimatedColorDrawable = false;
-
   // TODO T39526148 Remove once Flipper plugin is usable.
   /** If true, information about RenderInfos will be passed to Flipper's layout inspector. */
   public static boolean enableRenderInfoDebugging = false;
