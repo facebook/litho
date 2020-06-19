@@ -37,8 +37,8 @@ import org.robolectric.RuntimeEnvironment;
 
 public class LithoViewRule implements TestRule {
 
-  private static final int DEFAULT_WIDTH_SPEC = makeMeasureSpec(1080, EXACTLY);
-  private static final int DEFAULT_HEIGHT_SPEC = makeMeasureSpec(0, UNSPECIFIED);
+  public static final int DEFAULT_WIDTH_SPEC = makeMeasureSpec(1080, EXACTLY);
+  public static final int DEFAULT_HEIGHT_SPEC = makeMeasureSpec(0, UNSPECIFIED);
 
   private ComponentContext mContext;
   private ComponentTree mComponentTree;

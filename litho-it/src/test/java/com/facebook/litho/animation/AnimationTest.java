@@ -27,6 +27,8 @@ import android.view.animation.AccelerateInterpolator;
 import com.facebook.litho.Column;
 import com.facebook.litho.Component;
 import com.facebook.litho.ComponentContext;
+import com.facebook.litho.ComponentTree;
+import com.facebook.litho.LithoView;
 import com.facebook.litho.Row;
 import com.facebook.litho.StateCaller;
 import com.facebook.litho.Transition;
@@ -46,6 +48,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
+import org.robolectric.RuntimeEnvironment;
 import org.robolectric.android.controller.ActivityController;
 
 /**
@@ -941,6 +944,46 @@ public class AnimationTest {
     ComponentsConfiguration.useTransitionsExtension = useTransitionsExtension;
   }
 
+  @Test
+  public void
+      animationTransitionsExtension_reUsingLithoViewWithDifferentComponentTrees_shouldNotCrash() {
+    final boolean useExtensionsWithMountDelegate =
+        ComponentsConfiguration.useExtensionsWithMountDelegate;
+    ComponentsConfiguration.useExtensionsWithMountDelegate = true;
+
+    ComponentContext componentContext = new ComponentContext(RuntimeEnvironment.application);
+
+    mLithoViewRule.setRoot(getNonAnimatingComponent());
+    // We measure and layout this non animating component to initialize the transition extension.
+    mLithoViewRule.measure().layout();
+
+    // We need an other litho view where we are going to measure and layout an other similar tree
+    // (the real difference here is that the root components are not animating)
+    LithoView lithoView = new LithoView(componentContext);
+    ComponentTree nonAnimatingComponentTree = ComponentTree.create(componentContext).build();
+    nonAnimatingComponentTree.setRoot(getNonAnimatingComponent());
+    lithoView.setComponentTree(nonAnimatingComponentTree);
+    lithoView.measure(LithoViewRule.DEFAULT_WIDTH_SPEC, LithoViewRule.DEFAULT_HEIGHT_SPEC);
+    lithoView.layout(0, 0, lithoView.getMeasuredWidth(), lithoView.getMeasuredHeight());
+
+    // Now we need a new component tree that will hold a component tree that holds an animating root
+    // component.
+    ComponentTree animatingComponentTree = ComponentTree.create(componentContext).build();
+    animatingComponentTree.setRoot(getAnimatingXPropertyComponent());
+
+    mLithoViewRule.useComponentTree(animatingComponentTree);
+    // We measure this component tree so we initialize the mRootTransition in the extension, but we
+    // end up not running a layout here.
+    mLithoViewRule.measure();
+
+    // Finally we set a new animating component tree to the initial litho view and run measure and
+    // layout.
+    mLithoViewRule.useComponentTree(nonAnimatingComponentTree);
+    mLithoViewRule.measure().layout();
+    // Should not crash.
+    ComponentsConfiguration.useExtensionsWithMountDelegate = useExtensionsWithMountDelegate;
+  }
+
   private Component getAnimatingXPropertyComponent() {
     return TestAnimationsComponent.create(mLithoViewRule.getContext())
         .stateCaller(mStateCaller)
@@ -965,6 +1008,32 @@ public class AnimationTest {
                             .backgroundColor(Color.parseColor("#ee1111"))
                             .transitionKey(TRANSITION_KEY)
                             .viewTag(TRANSITION_KEY)
+                            .build())
+                    .build();
+              }
+            })
+        .build();
+  }
+
+  private Component getNonAnimatingComponent() {
+    return TestAnimationsComponent.create(mLithoViewRule.getContext())
+        .stateCaller(mStateCaller)
+        .transition(null)
+        .testComponent(
+            new TestAnimationsComponentSpec
+                .TestComponent() { // This could be a lambda but it fails ci.
+              @Override
+              public Component getComponent(ComponentContext componentContext, boolean state) {
+                return Row.create(componentContext)
+                    .heightDip(200)
+                    .widthDip(200)
+                    .justifyContent(state ? YogaJustify.FLEX_START : YogaJustify.FLEX_END)
+                    .alignItems(state ? YogaAlign.FLEX_START : YogaAlign.FLEX_END)
+                    .child(
+                        Row.create(componentContext)
+                            .heightDip(40)
+                            .widthDip(40)
+                            .backgroundColor(Color.parseColor("#ee1111"))
                             .build())
                     .build();
               }
