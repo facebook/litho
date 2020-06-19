@@ -16,11 +16,11 @@
 
 package com.facebook.rendercore;
 
-/** This delegate allows to overtake the unmount responsibility of a {@link MountItem}. */
+/** This delegate allows overriding a {@link MountItem}'s unmount responsibility. */
 public interface UnmountDelegateExtension {
 
   /**
-   * This method is called to check if this item unmount needs to be delegated.
+   * This method is called to check if this item's unmount needs to be delegated.
    *
    * @param mountItem
    * @return
@@ -28,7 +28,7 @@ public interface UnmountDelegateExtension {
   boolean shouldDelegateUnmount(MountItem mountItem);
 
   /**
-   * This method is responsable of unmounting the item from the {@link Host} and unbinding the item
+   * This method is responsible for unmounting the item from the {@link Host} and unbinding the item
    * from the {@link MountDelegate.MountDelegateTarget}.
    *
    * @param index
