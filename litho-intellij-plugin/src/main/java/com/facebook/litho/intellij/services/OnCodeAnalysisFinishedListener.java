@@ -106,9 +106,9 @@ public class OnCodeAnalysisFinishedListener
               analyzedFiles.add(path);
             }
           }
-          String result = finished ? "success" : "fail";
-          LithoLoggerProvider.getEventLogger()
-              .log(EventLogger.EVENT_RED_SYMBOLS + ".daemon." + result, eventMetadata);
+          eventMetadata.put(EventLogger.KEY_TYPE, "daemon");
+          eventMetadata.put(EventLogger.KEY_RESULT, finished ? "success" : "fail");
+          LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_RED_SYMBOLS, eventMetadata);
         });
   }
 

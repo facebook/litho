@@ -38,7 +38,9 @@ import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiMethod;
 import com.intellij.util.ProcessingContext;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -95,7 +97,8 @@ class LayoutSpecMethodAnnotationsProvider extends CompletionProvider<CompletionP
   }
 
   private static void log(String annotation) {
-    LithoLoggerProvider.getEventLogger()
-        .log(EventLogger.EVENT_COMPLETION_METHOD + "." + annotation);
+    final Map<String, String> data = new HashMap<>();
+    data.put(EventLogger.KEY_TYPE, annotation);
+    LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_COMPLETION_METHOD, data);
   }
 }

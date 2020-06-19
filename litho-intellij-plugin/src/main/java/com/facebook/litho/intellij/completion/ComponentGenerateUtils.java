@@ -19,9 +19,7 @@ package com.facebook.litho.intellij.completion;
 import com.facebook.litho.annotations.LayoutSpec;
 import com.facebook.litho.intellij.LithoPluginUtils;
 import com.facebook.litho.intellij.PsiSearchUtils;
-import com.facebook.litho.intellij.extensions.EventLogger;
 import com.facebook.litho.intellij.file.ComponentScope;
-import com.facebook.litho.intellij.logging.LithoLoggerProvider;
 import com.facebook.litho.intellij.services.ComponentsCacheService;
 import com.facebook.litho.specmodels.internal.RunMode;
 import com.facebook.litho.specmodels.model.LayoutSpecModel;
@@ -51,8 +49,6 @@ import org.jetbrains.annotations.Nullable;
  */
 public class ComponentGenerateUtils {
   private static final Logger LOG = Logger.getInstance(ComponentGenerateUtils.class);
-  private static final String TAG = EventLogger.EVENT_GENERATE_COMPONENT + ".method";
-
   private static final PsiLayoutSpecModelFactory MODEL_FACTORY = new PsiLayoutSpecModelFactory();
 
   private ComponentGenerateUtils() {}
@@ -64,7 +60,6 @@ public class ComponentGenerateUtils {
    * @param layoutSpecCls class containing {@link LayoutSpec} class.
    */
   public static void updateLayoutComponent(PsiClass layoutSpecCls) {
-    LithoLoggerProvider.getEventLogger().log(TAG + ".invoke");
     final String componentName =
         LithoPluginUtils.getLithoComponentNameFromSpec(layoutSpecCls.getQualifiedName());
     if (componentName == null) return;
@@ -116,7 +111,6 @@ public class ComponentGenerateUtils {
 
   private static void showSuccess(String componentName, Project project) {
     LithoPluginUtils.showInfo(componentName + " was regenerated", project);
-    LithoLoggerProvider.getEventLogger().log(TAG + ".success");
   }
 
   /**

@@ -40,7 +40,6 @@ import java.util.function.Consumer;
  * @see FileDocumentManagerListener
  */
 public class ComponentFileListener implements FileDocumentManagerListener {
-  private static final String TAG = EventLogger.EVENT_GENERATE_COMPONENT + ".saving";
   private static final EventLogger logger =
       new DebounceEventLogger(60 /*minutes*/ * 60 /*seconds*/ * 1000);
   private final Consumer<PsiClass> savingFileConsumer;

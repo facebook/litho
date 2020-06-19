@@ -30,6 +30,8 @@ import com.intellij.psi.PsiImportStatement;
 import com.intellij.psi.PsiMethod;
 import com.intellij.psi.PsiModifier;
 import com.intellij.psi.util.PsiTreeUtil;
+import java.util.HashMap;
+import java.util.Map;
 import org.jetbrains.annotations.Nullable;
 
 /** Navigates from Component method to Spec method(s) with the same name. */
@@ -62,7 +64,9 @@ public class ComponentsMethodDeclarationHandler extends GotoDeclarationHandlerBa
         .findFirst()
         .map(
             result -> {
-              LOGGER.log(EventLogger.EVENT_GOTO_NAVIGATION + ".method");
+              final Map<String, String> data = new HashMap<>();
+              data.put(EventLogger.KEY_TYPE, "method");
+              LOGGER.log(EventLogger.EVENT_GOTO_NAVIGATION, data);
               return result;
             })
         .orElse(PsiMethod.EMPTY_ARRAY);

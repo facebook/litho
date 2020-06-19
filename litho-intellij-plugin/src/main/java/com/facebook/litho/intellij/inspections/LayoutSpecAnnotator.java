@@ -30,7 +30,9 @@ import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -55,7 +57,9 @@ public class LayoutSpecAnnotator implements Annotator {
             .map(model -> model.validate(RunMode.normal()))
             .orElse(Collections.emptyList());
     if (!errors.isEmpty()) {
-      LOGGER.log(EventLogger.EVENT_ANNOTATOR + ".layout_spec");
+      final Map<String, String> data = new HashMap<>();
+      data.put(EventLogger.KEY_TYPE, "layout_spec");
+      LOGGER.log(EventLogger.EVENT_ANNOTATOR, data);
       errors.forEach(error -> AnnotatorUtils.addError(holder, error));
     }
     DEBUG_LOGGER.logStep("end " + element);

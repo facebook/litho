@@ -39,7 +39,9 @@ import com.intellij.psi.PsiExpression;
 import com.intellij.psi.PsiIdentifier;
 import com.intellij.psi.codeStyle.CodeStyleManager;
 import com.intellij.psi.util.PsiTreeUtil;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /** Completes suggestion with a chain of method calls. */
@@ -127,8 +129,9 @@ public class MethodChainLookupElement extends LookupElementDecorator<LookupEleme
         context.getStartOffset(),
         context.getTailOffset(),
         context.getProject());
-    LithoLoggerProvider.getEventLogger()
-        .log(EventLogger.EVENT_COMPLETION_REQUIRED_PROP + ".builder");
+    final Map<String, String> data = new HashMap<>();
+    data.put(EventLogger.KEY_TYPE, "required_builder");
+    LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_COMPLETION_METHOD_CALL, data);
   }
 
   @VisibleForTesting

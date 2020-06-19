@@ -32,25 +32,26 @@ public interface EventLogger {
   String KEY_RED_SYMBOLS = "red_symbols";
   String KEY_RED_SYMBOLS_ALL = "all_red_symbols";
   String KEY_RED_SYMBOLS_RESOLVED = "resolved_red_symbols";
+  String KEY_RESULT = "result";
   String KEY_TIME_BIND_RED_SYMBOLS = "time_bind";
   String KEY_TIME_COLLECT_RED_SYMBOLS = "time_collect";
   String KEY_TIME_RESOLVE_RED_SYMBOLS = "time_resolve";
+  String KEY_TYPE = "type";
 
   // Event types
-  String EVENT_ANNOTATOR = "error.annotation";
+  String EVENT_ANNOTATOR = "warning";
+  String EVENT_COMPLETION_METHOD_CALL = "completion.call";
   String EVENT_COMPLETION_METHOD = "completion.method";
-  String EVENT_COMPLETION_ANNOTATION = "completion.annotation";
-  String EVENT_COMPLETION_REQUIRED_PROP = "completion.required";
-  String EVENT_FIND_USAGES = "find.usages";
+  String EVENT_COMPLETION_PARAMETER = "completion.parameter";
+  String EVENT_FIND_USAGES = "find_usages";
   String EVENT_FIX_EVENT_HANDLER = "fix.event_handler";
-  String EVENT_GENERATE_COMPONENT = "generate.component";
-  String EVENT_GOTO_NAVIGATION = "goto.navigation";
-  String EVENT_GOTO_GENERATED = "goto.generated";
-  String EVENT_NEW_TEMPLATE = "file.template";
+  String EVENT_GOTO_NAVIGATION = "goto_navigation";
+  String EVENT_GOTO_GENERATED = "goto_generated";
+  String EVENT_NEW_TEMPLATE = "file_template";
   String EVENT_ON_EVENT_GENERATION = "event.generation";
-  String EVENT_RED_SYMBOLS = "resolve.redsymbols";
+  String EVENT_RED_SYMBOLS = "resolve_redsymbols";
   String EVENT_SETTINGS = "settings.update";
-  String EVENT_TOOLWINDOW_UPDATE = "toolwindow.update";
+  String EVENT_TOOLWINDOW = "toolwindow";
 
   /**
    * Logs given event.
