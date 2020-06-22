@@ -7,7 +7,7 @@ module.exports = {
   organizationName: 'facebook', // Usually your GitHub org/user name.
   projectName: 'docusaurus', // Usually your repo name.
   themeConfig: {
-    defaultDarkMode: true,
+    defaultDarkMode: false,
     disableDarkMode: true,
     navbar: {
       links: [
@@ -67,7 +67,6 @@ module.exports = {
           // It is recommended to set document id as docs home page (`docs/` path).
           homePageId: 'getting-started',
           sidebarPath: require.resolve('./sidebars.js'),
-          // Please change this to your repo.
           editUrl:
             'https://github.com/facebook/litho/edit/master/website/',
         },
