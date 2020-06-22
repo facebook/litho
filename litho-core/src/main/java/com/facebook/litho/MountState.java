@@ -2945,7 +2945,6 @@ class MountState
           final RenderUnit.Binder binder = mountBinders.get(i);
           binder.unbind(
               mContext.getAndroidContext(),
-              mountItem.getHost(),
               mountItem.getContent(),
               renderUnit,
               mountItem.getRenderTreeNode());
