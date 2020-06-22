@@ -68,6 +68,7 @@ module.exports = {
       additionalLanguages: ['groovy', 'kotlin'],
     },
   },
+  plugins: ['docusaurus-plugin-sass'],
   presets: [
     [
       '@docusaurus/preset-classic',
@@ -80,7 +81,7 @@ module.exports = {
             'https://github.com/facebook/litho/edit/master/website/',
         },
         theme: {
-          customCss: require.resolve('./src/css/custom.css'),
+          customCss: require.resolve('./src/css/custom.scss'),
         },
       },
     ],
