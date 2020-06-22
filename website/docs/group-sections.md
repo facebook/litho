@@ -3,7 +3,9 @@ id: group-sections
 title: GroupSection Specs
 ---
 
-A *group section spec* is used to structure your data into a hierarchy of Sections, each responsible for rendering its own chunk of data.
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+A _group section spec_ is used to structure your data into a hierarchy of Sections, each responsible for rendering its own chunk of data.
 
 Group section specs are classes annotated with `@GroupSectionSpec`.
 Implementing a `GroupSectionSpec` is very simple: you only need to write one method annotated with @OnCreateChildren. This method returns a tree of Sections that will have root in this `GroupSectionSpec`. The children can be Section instances created from other `GroupSectionSpec` classes or from [DiffSectionSpec](/docs/diff-sections) classes.
@@ -75,7 +77,6 @@ class BarSectionSpec {
 Below is a representation of the tree of Sections that has the root in `BarSection`. Each node in the tree is a Section, and the leaves are Components that can be rendered on screen.
 Each one of the sections in the tree acts as a data source. Its responsibilities are to describe what data it needs and how that data should be rendered.
 
-
-<!-- <img src="/static/images/group-section-spec.png" style="width: 800px;" /> -->
+<img src={useBaseUrl('/static/images/group-section-spec.png')} width="800" />
 
 ![GroupSection Spec lifecycle flowchart](/static/images/flow-chart-v0.24.0-group-section-spec.svg)

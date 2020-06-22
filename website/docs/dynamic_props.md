@@ -2,6 +2,7 @@
 id: dynamic-props
 title: Dynamic Props
 ---
+import useBaseUrl from '@docusaurus/useBaseUrl';
 
 Normally, when the value of a `@Prop` within a `ComponentTree` changes, the framework needs to compute layout and mount the `Component` again.
 However, there is a category of `@Props` that do not affect layout, thus when the value of the `@Prop` changes, the framework can take a "shortcut": apply the new value to the mounted UI element that represents the `Component` right away.
@@ -24,8 +25,8 @@ Normally, you would hold on to this object, and use its [`set()`](/javadoc/com/f
 In the following sample we have a `Component` that renders a yellow square in the middle of the screen.
 We also have two regular Android `SeekBars` "outside" of the `Components` hierarchy that control the alpha and the scale levels of the square.
 
-<video loop autoplay class="video" style="width: 100%; height: 500px;">
-  <source type="video/webm" src="/static/videos/common_dynamic_props.webm"></source>
+<video loop autoplay class="video" width="100%" height="500px">
+  <source type="video/webm" src={useBaseUrl("/static/videos/common_dynamic_props.webm")}></source>
   <p>Your browser does not support the video element.</p>
 </video>
 
@@ -150,7 +151,7 @@ class ClockComponentSpec {
 }
 ```
 
-<!-- <img src="/static/images/clock_view.png" style="height: 500px;" /> -->
+<img src={useBaseUrl("/static/images/clock_view.png")} height="500" />
 
 Notice that the value of the `time` property does not affect layout, it only controls how the `ClockView` draws clock hands.
 However, every time you want to update it the framework will have to go through `LayoutState` and `MountState`.
@@ -199,12 +200,12 @@ At the same time it will keep the version of this method that takes "static" val
 **Second thing** is to create a [`@OnBindDynamicValue`](/javadoc/com/facebook/litho/annotations/OnBindDynamicValue) method - *lines 12-17* in `ClockComponentSpec.java` - that should set the value to the mounted content.
 This method should always takes 2 arguments - mounted content, and the `@Prop` itself. You need to create one such method for every dynamic `@Prop` you define.
 Then, it is the responsibility of the framework to invoke these methods to keep changes to the `DynamicValue`.
-
+<!--
 <video loop autoplay class="video" style="width: 100%; height: 500px;">
   <source type="video/webm" src="/static/videos/custom_dynamic_props.webm"></source>
   <p>Your browser does not support the video element.</p>
 </video>
-
+-->
 [Here](https://github.com/facebook/litho/tree/master/sample/src/main/java/com/facebook/samples/litho/dynamicprops) you find the full implementation of the sample above.
 
 ### Animating Common Dynamic Props
