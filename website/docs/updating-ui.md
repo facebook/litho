@@ -76,7 +76,10 @@ val timer = object: CountDownTimer(30000, 1000) {
 Under the hood, when `lithoView.setComponentAsync` is called, the framework triggers a new layout calculation which will recreate the underlying ComponentTree with new Component instances based on the new data.
 The `@OnCreateLayout` methods for all the Components in the hierarchy will be invoked again - basically calling the pure function that the component represents with new params corresponding to the new prop values.
 
-> One important thing to note is that we are using the async option for setting a new root component (`setComponentAync`) - which tells the framework to perform the layout calculation on a background thread.
+:::caution IMPORTANT
+ One important thing to note is that we are using the async option for setting a new root component (`setComponentAync`) - which tells the framework to perform the layout calculation on a background thread.
+:::
+
 For updating UI it's strongly recommended to always use the async methods - this will make your app feel more responsive. If you set a new root synchronously from the UI thread (by calling `setComponent`) the layout computation will be posted to be executed on the UI thread, which is rarely necessary.
 
 ## Updating state

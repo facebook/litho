@@ -54,6 +54,41 @@ Blur Radius:
   onMouseOver="this.style.backgroundColor='#f5445f'"
   onMouseOut="this.style.backgroundColor='#f36b7f'">Recycler</a>
 
+<!--
+<a href="#text"
+  background-color="#f36b7f" -moz-border-radius="20px" -webkit-border-radius="20px" border-radius="20px" display="inline-block" color="#ffffff" font-family="Arial" 
+  font-size="20px" padding="14px 30px" margin-bottom="10px" margin-top="10px" margin-right="6px" text-decoration="none"
+  onMouseOver="this.style.backgroundColor='#f5445f'"
+  onMouseOut="this.style.backgroundColor='#f36b7f'">Text</a>  <a href="#textinput"
+  style={{background-color:"#f36b7f", -moz-border-radius:"20px", -webkit-border-radius:"20px",	border-radius:"20px", display:"inline-block", color:"#ffffff", font-family:"Arial", font-size:"20px", padding:"14px 30px", margin-bottom:"10px", margin-top:"10px", margin-right:"6px", text-decoration:"none"}}
+  onMouseOver="this.style.backgroundColor='#f5445f'"
+  onMouseOut="this.style.backgroundColor='#f36b7f'">TextInput</a>  <a href="#image"
+  style={{background-color:"#f36b7f", -moz-border-radius:"20px", -webkit-border-radius:"20px",	border-radius:"20px", display:"inline-block", color:"#ffffff", font-family:"Arial", font-size:"20px", padding:"14px 30px", margin-bottom:"10px", margin-top:"10px", margin-right:"6px", text-decoration:"none"}}
+  onMouseOver="this.style.backgroundColor='#f5445f'"
+  onMouseOut="this.style.backgroundColor='#f36b7f'">Image</a>  <a href="#card"
+  style={{background-color:"#f36b7f", -moz-border-radius:"20px", -webkit-border-radius:"20px",	border-radius:"20px", display:"inline-block", color:"#ffffff", font-family:"Arial", font-size:"20px", padding:"14px 30px", margin-bottom:"10px", margin-top:"10px", margin-right:"6px", text-decoration:"none"}}
+  onMouseOver="this.style.backgroundColor='#f5445f'"
+  onMouseOut="this.style.backgroundColor='#f36b7f'">Card</a>  <a href="#solidcolor"
+  style={{background-color:"#f36b7f", -moz-border-radius:"20px", -webkit-border-radius:"20px",	border-radius:"20px", display:"inline-block", color:"#ffffff", font-family:"Arial", font-size:"20px", padding:"14px 30px", margin-bottom:"10px", margin-top:"10px", margin-right:"6px", text-decoration:"none"}}
+  onMouseOver="this.style.backgroundColor='#f5445f'"
+  onMouseOut="this.style.backgroundColor='#f36b7f'">SolidColor</a>  <a href="#progress"
+  style={{background-color:"#f36b7f", -moz-border-radius:"20px", -webkit-border-radius:"20px",	border-radius:"20px", display:"inline-block", color:"#ffffff", font-family:"Arial", font-size:"20px", padding:"14px 30px", margin-bottom:"10px", margin-top:"10px", margin-right:"6px", text-decoration:"none"}}
+  onMouseOver="this.style.backgroundColor='#f5445f'"
+  onMouseOut="this.style.backgroundColor='#f36b7f'">Progress</a>  <a href="#spinner"
+  style={{background-color:"#f36b7f", -moz-border-radius:"20px", -webkit-border-radius:"20px",	border-radius:"20px", display:"inline-block", color:"#ffffff", font-family:"Arial", font-size:"20px", padding:"14px 30px", margin-bottom:"10px", margin-top:"10px", margin-right:"6px", text-decoration:"none"}}
+  onMouseOver="this.style.backgroundColor='#f5445f'"
+  onMouseOut="this.style.backgroundColor='#f36b7f'">Spinner</a>  <a href="#verticalscroll"
+  style={{background-color:"#f36b7f", -moz-border-radius:"20px", -webkit-border-radius:"20px",	border-radius:"20px", display:"inline-block", color:"#ffffff", font-family:"Arial", font-size:"20px", padding:"14px 30px", margin-bottom:"10px", margin-top:"10px", margin-right:"6px", text-decoration:"none"}}
+  onMouseOver="this.style.backgroundColor='#f5445f'"
+  onMouseOut="this.style.backgroundColor='#f36b7f'">VerticalScroll</a>  <a href="#horizontalscroll"
+  style={{background-color:"#f36b7f", -moz-border-radius:"20px", -webkit-border-radius:"20px",	border-radius:"20px", display:"inline-block", color:"#ffffff", font-family:"Arial", font-size:"20px", padding:"14px 30px", margin-bottom:"10px", margin-top:"10px", margin-right:"6px", text-decoration:"none"}}
+  onMouseOver="this.style.backgroundColor='#f5445f'"
+  onMouseOut="this.style.backgroundColor='#f36b7f'">HorizontalScroll</a>  <a href="#recycler"
+  style={{background-color:"#f36b7f", -moz-border-radius:"20px", -webkit-border-radius:"20px",	border-radius:"20px", display:"inline-block", color:"#ffffff", font-family:"Arial", font-size:"20px", padding:"14px 30px", margin-bottom:"10px", margin-top:"10px", margin-right:"6px", text-decoration:"none"}}
+  onMouseOver="this.style.backgroundColor='#f5445f'"
+  onMouseOut="this.style.backgroundColor='#f36b7f'">Recycler</a>
+-->
+
 ## Text
 
 This is the most basic Litho component to show simple text. It's the equivalent of an Android `TextView` within Litho.

@@ -16,7 +16,9 @@ The framework currently supports six types of Visibility Event:
 
 ### Usage
 
-> IMPORTANT: Visibility ranges require [incremental mount](inc-mount#manual-incremental-mount) to be enabled on the relevant Component.
+:::caution IMPORTANT
+Visibility ranges require [incremental mount](inc-mount#manual-incremental-mount) to be enabled on the relevant Component.
+:::
 
 To register visibility event handlers for a component you can follow the same [steps](events-overview) as for setting any other event handler. 
 
@@ -77,7 +79,10 @@ class MyLayoutSpec {
 
 }
 ```
-> VisibilityChangedEvents should be used with particular care since they will be dispatched on every frame while scrolling. No heavy work should be done inside the VisibilityChangedEvents handlers. Visible, Invisible, Focused, Unfocused and Full Impression events are the recommended over VisibilityChanged events whenever possible.
+
+:::info
+VisibilityChangedEvents should be used with particular care since they will be dispatched on every frame while scrolling. No heavy work should be done inside the VisibilityChangedEvents handlers. Visible, Invisible, Focused, Unfocused and Full Impression events are the recommended over VisibilityChanged events whenever possible.
+:::
 
 ### Custom visibility percentage
 By default, a visibility event is triggered when a Component is fully visible. In some cases you may want to listen to custom visibility events and perform an action when the Component is only partially visible.
