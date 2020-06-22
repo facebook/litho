@@ -8,7 +8,13 @@
 /* You can override the default Infima variables here. */
 :root {
   --ifm-color-primary: #F36B7F;
+  --ifm-navbar-link-color: #F6F7F9;
   --ifm-code-font-size: 95%;
+}
+
+.navbar {
+  background-color: #F36B7F;
+  box-shadow: none;
 }
 
 .docusaurus-highlight-code-line {
