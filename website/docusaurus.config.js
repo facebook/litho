@@ -10,6 +10,11 @@ module.exports = {
     defaultDarkMode: false,
     disableDarkMode: true,
     navbar: {
+      title: 'Litho',
+      logo: {
+        alt: 'Litho Logo',
+        src: 'logo.png',
+      },
       links: [
         {
           to: 'docs/',
