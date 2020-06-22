@@ -5,7 +5,7 @@ title: Event Handler Testing
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
 This document provides a quick example of how to write tests for your event
-handlers. You should be familiar with [TestSpecs](/docs/subcomponent-testing)
+handlers. You should be familiar with [TestSpecs](subcomponent-testing)
 before diving into this topic.
 
 ## Prerequisites
@@ -157,5 +157,5 @@ container to compare values.
 
 ## Next
 
-Either head back to the [testing overview](/docs/testing-overview.html) or
-continue with the next section, [Espresso](/docs/espresso-testing).
+Either head back to the [testing overview](testing-overview) or
+continue with the next section, [Espresso](espresso-testing).

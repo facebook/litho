@@ -251,4 +251,4 @@ You can find the [completed tutorial here](https://github.com/facebook/litho/tre
 
 ### Looking for more?
 
-We briefly talked about Sections in this tutorial when building the list.  The Sections framework makes it easy to build complex lists in a declarative, composable way.  Learn more in an optional part 2 of this tutorial [here](/docs/sections-tutorial).
+We briefly talked about Sections in this tutorial when building the list.  The Sections framework makes it easy to build complex lists in a declarative, composable way.  Learn more in an optional part 2 of this tutorial [here](sections-tutorial).

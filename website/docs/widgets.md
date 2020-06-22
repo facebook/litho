@@ -228,5 +228,5 @@ Component component =
 
 ## Recycler
 
-`Recycler` is the equivalent of Android's `RecyclerView`. We suggest you to use [Sections](/docs/sections-intro) for efficient lists rendering, which is using `Recycler` under the hood.
-However, if you really want to use `Recycler` directly, we have an [advanced guide dedicated to it](/docs/recycler-component).
+`Recycler` is the equivalent of Android's `RecyclerView`. We suggest you to use [Sections](sections-intro) for efficient lists rendering, which is using `Recycler` under the hood.
+However, if you really want to use `Recycler` directly, we have an [advanced guide dedicated to it](recycler-component).

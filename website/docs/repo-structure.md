@@ -18,7 +18,7 @@ A number of external libraries can be found in this sub-folder.  Roughly, they c
 
 ### `/sample-barebones/`
 
-The source for the finished product of the [barebones tutorial](/docs/tutorial) is found here.  If you change the tutorial, you must update the code here.
+The source for the finished product of the [barebones tutorial](tutorial) is found here.  If you change the tutorial, you must update the code here.
 
 ### `/sample-barebones-kotlin/`
 

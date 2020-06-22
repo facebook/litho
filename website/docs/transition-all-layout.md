@@ -16,8 +16,8 @@ static Transition onCreateTransition(ComponentContext c) {
 Note, that `Transition.allLayout()`:
 
 1. Targets `AnimatedProperty.X`, `Y`, `HEIGHT` and `WIDTH` of all `Component`s present in layout tree.
-2. Could be used to define transitions of [*change* type](/docs/transition-types#change-transitions) only. For defining [*appearing*](/docs/transition-types#appear-transitions) and [*disappearing*](/docs/transition-types#disappear-transitions) transitions, `transitionKey`s still need to be assigned.
-3. Could be used as a part of more [complex choreography](/docs/transition-choreography).
+2. Could be used to define transitions of [*change* type](transition-types#change-transitions) only. For defining [*appearing*](transition-types#appear-transitions) and [*disappearing*](transition-types#disappear-transitions) transitions, `transitionKey`s still need to be assigned.
+3. Could be used as a part of more [complex choreography](transition-choreography).
 
 
 ```java

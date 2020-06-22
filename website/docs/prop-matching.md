@@ -6,7 +6,7 @@ title: Matching Props
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
 We have already learned about matching [sub-components in the
-hierarchy](/docs/subcomponent-testing). In this article, we will drill a bit
+hierarchy](subcomponent-testing). In this article, we will drill a bit
 deeper and explore TestSpecs as a way to test individual props of those
 components, even if we don't know all of them.
 
@@ -402,5 +402,5 @@ public void testComplexTestSpecAdvancedProps() {
 
 ## Next
 
-Either head back to the [testing overview](/docs/testing-overview.html) or
-continue with the next section, [Testing InjectProps](/docs/injectprops-matching).
+Either head back to the [testing overview](testing-overview) or
+continue with the next section, [Testing InjectProps](injectprops-matching).

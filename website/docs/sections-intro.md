@@ -19,4 +19,4 @@ As part of Litho, the Sections API shares the same main concepts such as annotat
 
 For easy integration with Litho, the framework provides a built-in Component that can render a hierarchy of Sections, called [RecyclerCollectionComponent](/javadoc/com/facebook/litho/sections/widget/RecyclerCollectionComponent.html). The Sections hierarchy becomes a “data source” for the RecyclerCollectionComponent, and the Components that render your data will become items in the RecyclerView adapter under the hood.  All the complexity of handling operations on your adapter, such as inserts or removes, is hidden away and handled by the infrastructure.
 
-The [Litho tutorial](/docs/tutorial) shows a glimpse on how to integrate a Section to render inside a LithoView. Follow our more detailed [Sections tutorial](/docs/sections-tutorial) for a guide on how to create and compose Sections.
+The [Litho tutorial](tutorial) shows a glimpse on how to integrate a Section to render inside a LithoView. Follow our more detailed [Sections tutorial](sections-tutorial) for a guide on how to create and compose Sections.

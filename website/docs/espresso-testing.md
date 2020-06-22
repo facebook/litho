@@ -93,8 +93,8 @@ public void testButtonIsDisplayedAndClickableByTestKey() {
 
 ## Next
 
-Either head back to the [testing overview](/docs/testing-overview.html) or
-continue with the next section, [Running Tests in Android Studio](/docs/tests-in-android-studio).
+Either head back to the [testing overview](testing-overview) or
+continue with the next section, [Running Tests in Android Studio](tests-in-android-studio).
 
 ## Additional Resources
 

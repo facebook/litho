@@ -367,8 +367,8 @@ public void testSubComponentLegacyBridge() {
 
 ## Next
 
-Either head back to the [testing overview](/docs/testing-overview.html) or
-continue with the next section, [Matching Props](/docs/prop-matching).
+Either head back to the [testing overview](testing-overview) or
+continue with the next section, [Matching Props](prop-matching).
 
 ## Resources
 

@@ -8,9 +8,9 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
 A _group section spec_ is used to structure your data into a hierarchy of Sections, each responsible for rendering its own chunk of data.
 
 Group section specs are classes annotated with `@GroupSectionSpec`.
-Implementing a `GroupSectionSpec` is very simple: you only need to write one method annotated with @OnCreateChildren. This method returns a tree of Sections that will have root in this `GroupSectionSpec`. The children can be Section instances created from other `GroupSectionSpec` classes or from [DiffSectionSpec](/docs/diff-sections) classes.
+Implementing a `GroupSectionSpec` is very simple: you only need to write one method annotated with @OnCreateChildren. This method returns a tree of Sections that will have root in this `GroupSectionSpec`. The children can be Section instances created from other `GroupSectionSpec` classes or from [DiffSectionSpec](diff-sections) classes.
 
-Let's have a look at how you would declare a simple list that contains a header followed by a list of Strings. We'll use a [SingleComponentSection](/docs/sections-building-blocks#singlecomponentsection) for the header and a [DataDiffSection](/docs/sections-building-blocks#datadiffsection) for the list of Strings and we'll combine these in a hierarchy.
+Let's have a look at how you would declare a simple list that contains a header followed by a list of Strings. We'll use a [SingleComponentSection](sections-building-blocks#singlecomponentsection) for the header and a [DataDiffSection](sections-building-blocks#datadiffsection) for the list of Strings and we'll combine these in a hierarchy.
 
 ```java
 @GroupSectionSpec

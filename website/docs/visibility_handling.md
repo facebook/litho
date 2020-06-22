@@ -16,9 +16,9 @@ The framework currently supports six types of Visibility Event:
 
 ### Usage
 
-> IMPORTANT: Visibility ranges require [incremental mount](/docs/inc-mount#manual-incremental-mount) to be enabled on the relevant Component.
+> IMPORTANT: Visibility ranges require [incremental mount](inc-mount#manual-incremental-mount) to be enabled on the relevant Component.
 
-To register visibility event handlers for a component you can follow the same [steps](/docs/events-overview) as for setting any other event handler. 
+To register visibility event handlers for a component you can follow the same [steps](events-overview) as for setting any other event handler. 
 
 Here is an example:
 

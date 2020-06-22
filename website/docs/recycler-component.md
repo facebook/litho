@@ -6,7 +6,9 @@ title: Recycler
 If you choose to use Litho without using Sections, you can still use the
 [Recycler](/javadoc/com/facebook/litho/widget/Recycler.html) component to create lists.  `RecyclerCollectionComponent` uses `Recycler` under the hood.
 
-> Using the Recycler directly is not encouraged. Litho provides a utility component called [RecyclerCollectionComponent](/docs/recycler-collection-component) for writing lists, which abstracts all the complexity of using `Recycler` and `RecyclerBinder`.
+:::note
+Using the Recycler directly is not encouraged. Litho provides a utility component called [RecyclerCollectionComponent](recycler-collection-component) for writing lists, which abstracts all the complexity of using `Recycler` and `RecyclerBinder`.
+:::
 
 ### Create a Recycler component
 
