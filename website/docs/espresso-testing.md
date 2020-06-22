@@ -2,6 +2,7 @@
 id: espresso-testing
 title: Espresso
 ---
+import useBaseUrl from '@docusaurus/useBaseUrl';
 
 Litho provides basic support for the
 [Espresso UI Testing](https://developer.android.com/training/testing/ui-testing/espresso-testing.html)
@@ -11,7 +12,7 @@ framework. For the time being, we only provide shallow selectors that will match
 
 ## Getting Started
 
-<!-- <img src="/static/images/espresso-logo.png" style="width: 150px; float: right; margin-left: 50px;" /> -->
+<img src={useBaseUrl("/static/images/espresso-logo.png")} width="150px" float="right" margin-left="50px" /> 
 
 We ship with a bunch of custom matchers, which will hopefully make your life easier.
 
@@ -27,7 +28,7 @@ dependencies {
 }
 ```
 
-<br style="clear: both; overflow: hidden;" />
+<br clear="both" overflow="hidden" />
 
 ## Matching
 
