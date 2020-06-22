@@ -2726,8 +2726,7 @@ class MountState
     }
 
     final ComponentHost host = (ComponentHost) item.getHost();
-
-    unmount(host, output.getIndex(), content, item, output);
+    host.unmount(item);
 
     maybeUnsetViewAttributes(item);
 
