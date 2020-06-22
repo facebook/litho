@@ -3,7 +3,208 @@ id: getting-started
 title: Getting Started
 ---
 
-## Adding Litho to your Project (Buck)
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+<Tabs
+  defaultValue="gradel-java"
+  values={[
+    {label: 'Gradel/Java', value: 'gradel-java'},
+    {label: 'Gradel/Kotlin', value: 'gradel-kotlin'},
+    {label: 'Buck/Java', value: 'buck-java'},
+    {label: 'Testing/Java', value: 'testing-java'},
+    {label: 'Testing/Kotlin', value: 'testing-kotlin'},
+  ]}>
+  <TabItem value="gradel-java">
+
+## Adding Litho to your Project
+
+We publish the Litho artifacts to Bintray's JCenter. To include Litho to your
+Android project, make sure you include the reference to the repository in your `build.gradle` file:
+
+```groovy
+repositories {
+  jcenter()
+}
+```
+
+Then add the dependencies like this:
+
+```groovy
+dependencies {
+  // ...
+  // Litho
+  implementation 'com.facebook.litho:litho-core:{{site.litho-version}}'
+  implementation 'com.facebook.litho:litho-widget:{{site.litho-version}}'
+
+  annotationProcessor 'com.facebook.litho:litho-processor:{{site.litho-version}}'
+
+  // SoLoader
+  implementation 'com.facebook.soloader:soloader:{{site.soloader-version}}'
+
+  // For integration with Fresco
+  implementation 'com.facebook.litho:litho-fresco:{{site.litho-version}}'
+
+  // For testing
+  testImplementation 'com.facebook.litho:litho-testing:{{site.litho-version}}'
+}
+```
+
+## Adding Sections to your Project
+
+Litho comes with an optional library called Sections for declaratively building lists. You can include Sections by adding the following additional dependencies to your `build.gradle` file:
+```groovy
+dependencies {
+
+  // Sections
+  implementation 'com.facebook.litho:litho-sections-core:{{site.litho-version}}'
+  implementation 'com.facebook.litho:litho-sections-widget:{{site.litho-version}}'
+  compileOnly 'com.facebook.litho:litho-sections-annotations:{{site.litho-version}}'
+
+  annotationProcessor 'com.facebook.litho:litho-sections-processor:{{site.litho-version}}'
+}
+```
+
+## Using Snapshot releases
+
+:::caution
+This will break and may set your house on fire. Snapshots are unsigned and automatically published by our CI system. Use them for testing purposes only.
+:::
+
+First, add the Sonatype Snapshots repository to your gradle config:
+
+```groovy
+repositories {
+  maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+}
+```
+
+Then you can access the snapshot versions of all Litho artifacts that we
+publish:
+
+```groovy
+dependencies {
+  // ...
+  // Litho
+  implementation 'com.facebook.litho:litho-core:{{site.litho-snapshot-version}}'
+  implementation 'com.facebook.litho:litho-widget:{{site.litho-snapshot-version}}'
+
+  annotationProcessor 'com.facebook.litho:litho-processor:{{site.litho-snapshot-version}}'
+
+  // SoLoader
+  implementation 'com.facebook.soloader:soloader:{{site.soloader-version}}'
+
+  // For integration with Fresco
+  implementation 'com.facebook.litho:litho-fresco:{{site.litho-snapshot-version}}'
+
+  // For testing
+  testImplementation 'com.facebook.litho:litho-testing:{{site.litho-snapshot-version}}'
+}
+```
+
+  </TabItem>
+  <TabItem value="gradel-kotlin">
+
+## Adding Litho to your Kotlin Project
+
+:::caution
+Kotlin support for Litho is experimental at this point.
+:::
+
+In order to use Litho's annotation processor, you need to opt in to the Kotlin KAPT plugin at the
+top of your application's `build.gradle` file:
+
+```groovy
+apply plugin: 'kotlin-kapt'
+```
+
+We publish the Litho artifacts to Bintray's JCenter. To include Litho to your
+Android project, make sure you include the reference to the repository in your `build.gradle` file:
+
+```groovy
+repositories {
+  jcenter()
+}
+```
+
+Then add the dependencies like this:
+
+```groovy
+dependencies {
+  // ...
+  // Litho
+  implementation 'com.facebook.litho:litho-core:{{site.litho-version}}'
+  implementation 'com.facebook.litho:litho-widget:{{site.litho-version}}'
+
+  kapt 'com.facebook.litho:litho-processor:{{site.litho-version}}'
+
+  // SoLoader
+  implementation 'com.facebook.soloader:soloader:{{site.soloader-version}}'
+
+  // For integration with Fresco
+  implementation 'com.facebook.litho:litho-fresco:{{site.litho-version}}'
+
+  // For testing
+  testImplementation 'com.facebook.litho:litho-testing:{{site.litho-version}}'
+}
+```
+
+## Adding Sections to your Project
+
+Litho comes with an optional library called Sections for declaratively building lists. You can include Sections by adding the following additional dependencies to your `build.gradle` file:
+```groovy
+dependencies {
+
+  // Sections
+  implementation 'com.facebook.litho:litho-sections-core:{{site.litho-version}}'
+  implementation 'com.facebook.litho:litho-sections-widget:{{site.litho-version}}'
+  compileOnly 'com.facebook.litho:litho-sections-annotations:{{site.litho-version}}'
+
+  kapt 'com.facebook.litho:litho-sections-processor:{{site.litho-version}}'
+}
+```
+
+## Using Snapshot releases
+
+:::caution
+This will break and may set your house on fire. Snapshots are unsigned and automatically published by our CI system. Use them for testing purposes only.
+:::
+
+First, add the Sonatype Snapshots repository to your gradle config:
+
+```groovy
+repositories {
+  maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+}
+```
+
+Then you can access the snapshot versions of all Litho artifacts that we
+publish:
+
+```groovy
+dependencies {
+  // ...
+  // Litho
+  implementation 'com.facebook.litho:litho-core:{{site.litho-snapshot-version}}'
+  implementation 'com.facebook.litho:litho-widget:{{site.litho-snapshot-version}}'
+
+  kapt 'com.facebook.litho:litho-processor:{{site.litho-snapshot-version}}'
+
+  // SoLoader
+  implementation 'com.facebook.soloader:soloader:{{site.soloader-version}}'
+
+  // For integration with Fresco
+  implementation 'com.facebook.litho:litho-fresco:{{site.litho-snapshot-version}}'
+
+  // For testing
+  testImplementation 'com.facebook.litho:litho-testing:{{site.litho-snapshot-version}}'
+}
+```
+  
+  </TabItem>
+  <TabItem value="buck-java">
+
+## Adding Litho to your Project
 
 You can include Litho to your Android project via Buck by adding the following to your `BUCK` file:
 
@@ -164,184 +365,10 @@ android_library(
 )
 ```
 
-## Adding Litho to your Project (Gradle Java)
+  </TabItem>
+  <TabItem value="testing-java">
 
-We publish the Litho artifacts to Bintray's JCenter. To include Litho to your
-Android project, make sure you include the reference to the repository in your `build.gradle` file:
-
-```groovy
-repositories {
-  jcenter()
-}
-```
-
-Then add the dependencies like this:
-
-```groovy
-dependencies {
-  // ...
-  // Litho
-  implementation 'com.facebook.litho:litho-core:{{site.litho-version}}'
-  implementation 'com.facebook.litho:litho-widget:{{site.litho-version}}'
-
-  annotationProcessor 'com.facebook.litho:litho-processor:{{site.litho-version}}'
-
-  // SoLoader
-  implementation 'com.facebook.soloader:soloader:{{site.soloader-version}}'
-
-  // For integration with Fresco
-  implementation 'com.facebook.litho:litho-fresco:{{site.litho-version}}'
-
-  // For testing
-  testImplementation 'com.facebook.litho:litho-testing:{{site.litho-version}}'
-}
-```
-
-## Adding Sections to your Project
-
-Litho comes with an optional library called Sections for declaratively building lists. You can include Sections by adding the following additional dependencies to your `build.gradle` file:
-```groovy
-dependencies {
-
-  // Sections
-  implementation 'com.facebook.litho:litho-sections-core:{{site.litho-version}}'
-  implementation 'com.facebook.litho:litho-sections-widget:{{site.litho-version}}'
-  compileOnly 'com.facebook.litho:litho-sections-annotations:{{site.litho-version}}'
-
-  annotationProcessor 'com.facebook.litho:litho-sections-processor:{{site.litho-version}}'
-}
-```
-
-## Using Snapshot releases
-
-> IMPORTANT: This will break and may set your house on fire. Snapshots are unsigned and
-  automatically published by our CI system. Use them for testing purposes only.
-
-First, add the Sonatype Snapshots repository to your gradle config:
-
-```groovy
-repositories {
-  maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
-}
-```
-
-Then you can access the snapshot versions of all Litho artifacts that we
-publish:
-
-```groovy
-dependencies {
-  // ...
-  // Litho
-  implementation 'com.facebook.litho:litho-core:{{site.litho-snapshot-version}}'
-  implementation 'com.facebook.litho:litho-widget:{{site.litho-snapshot-version}}'
-
-  annotationProcessor 'com.facebook.litho:litho-processor:{{site.litho-snapshot-version}}'
-
-  // SoLoader
-  implementation 'com.facebook.soloader:soloader:{{site.soloader-version}}'
-
-  // For integration with Fresco
-  implementation 'com.facebook.litho:litho-fresco:{{site.litho-snapshot-version}}'
-
-  // For testing
-  testImplementation 'com.facebook.litho:litho-testing:{{site.litho-snapshot-version}}'
-}
-```
-
-## Adding Litho to your Kotlin Project (Gradel Kotlin)
-
-> IMPORTANT: Kotlin support for Litho is experimental at this point.
-
-In order to use Litho's annotation processor, you need to opt in to the Kotlin KAPT plugin at the
-top of your application's `build.gradle` file:
-
-```groovy
-apply plugin: 'kotlin-kapt'
-```
-
-We publish the Litho artifacts to Bintray's JCenter. To include Litho to your
-Android project, make sure you include the reference to the repository in your `build.gradle` file:
-
-```groovy
-repositories {
-  jcenter()
-}
-```
-
-Then add the dependencies like this:
-
-```groovy
-dependencies {
-  // ...
-  // Litho
-  implementation 'com.facebook.litho:litho-core:{{site.litho-version}}'
-  implementation 'com.facebook.litho:litho-widget:{{site.litho-version}}'
-
-  kapt 'com.facebook.litho:litho-processor:{{site.litho-version}}'
-
-  // SoLoader
-  implementation 'com.facebook.soloader:soloader:{{site.soloader-version}}'
-
-  // For integration with Fresco
-  implementation 'com.facebook.litho:litho-fresco:{{site.litho-version}}'
-
-  // For testing
-  testImplementation 'com.facebook.litho:litho-testing:{{site.litho-version}}'
-}
-```
-
-## Adding Sections to your Project
-
-Litho comes with an optional library called Sections for declaratively building lists. You can include Sections by adding the following additional dependencies to your `build.gradle` file:
-```groovy
-dependencies {
-
-  // Sections
-  implementation 'com.facebook.litho:litho-sections-core:{{site.litho-version}}'
-  implementation 'com.facebook.litho:litho-sections-widget:{{site.litho-version}}'
-  compileOnly 'com.facebook.litho:litho-sections-annotations:{{site.litho-version}}'
-
-  kapt 'com.facebook.litho:litho-sections-processor:{{site.litho-version}}'
-}
-```
-
-## Using Snapshot releases
-
-> IMPORTANT: This will break and may set your house on fire. Snapshots are unsigned and
-  automatically published by our CI system. Use them for testing purposes only.
-
-First, add the Sonatype Snapshots repository to your gradle config:
-
-```groovy
-repositories {
-  maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
-}
-```
-
-Then you can access the snapshot versions of all Litho artifacts that we
-publish:
-
-```groovy
-dependencies {
-  // ...
-  // Litho
-  implementation 'com.facebook.litho:litho-core:{{site.litho-snapshot-version}}'
-  implementation 'com.facebook.litho:litho-widget:{{site.litho-snapshot-version}}'
-
-  kapt 'com.facebook.litho:litho-processor:{{site.litho-snapshot-version}}'
-
-  // SoLoader
-  implementation 'com.facebook.soloader:soloader:{{site.soloader-version}}'
-
-  // For integration with Fresco
-  implementation 'com.facebook.litho:litho-fresco:{{site.litho-snapshot-version}}'
-
-  // For testing
-  testImplementation 'com.facebook.litho:litho-testing:{{site.litho-snapshot-version}}'
-}
-```
-
-## Testing your Installation (Java)
+## Testing your Installation
 
 You can test your install by adding a view created with Litho to an activity.
 
@@ -389,7 +416,10 @@ public class MyActivity extends Activity {
 
 Now, when you run the app you should see "Hello World!" displayed on the screen.
 
-## Testing your Installation (Kotlin)
+  </TabItem>
+  <TabItem value="testing-kotlin">
+
+## Testing your Installation
 
 You can test your install by adding a view created with Litho to an activity.
 
@@ -433,4 +463,14 @@ class MyActivity : AppCompatActivity() {
 ```
 
 Now, when you run the app you should see "Hello World!" displayed on the screen.
+
+  </TabItem>
+</Tabs>
+
+
+
+
+
+
+
 
