@@ -58,6 +58,9 @@ module.exports = {
         },
       ],
     },
+    prism: {
+      additionalLanguages: ['groovy', 'kotlin'],
+    },
   },
   presets: [
     [
