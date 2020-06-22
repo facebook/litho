@@ -17,7 +17,7 @@ title: Architecture Overview
 
 We recommend you start by watching this video: it covers most of the core concepts above, as well as the fundamentals of how a Litho component gets turned into a `View` on screen.
 
-<iframe style="padding-top: 10px" width="560" height="315" src="https://www.youtube-nocookie.com/embed/t9wTHnCx5RM" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe padding-top="10px" width="560" height="315" src="https://www.youtube-nocookie.com/embed/t9wTHnCx5RM" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 ## Layout
 
