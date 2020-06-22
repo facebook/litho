@@ -43,25 +43,25 @@ module.exports = {
     },
     footer: {
       style: 'dark',
-      logo: {
-        alt: 'Facebook Open Source Logo',
-        src: 'img/oss_logo.png',
-        href: 'https://opensource.facebook.com',
-      },
       links: [
         {
           label: 'Open Source Projects',
-          to: '#',
+          to: 'https://opensource.facebook.com/',
         },
         {
           label: 'Github',
-          to: '#',
+          to: 'https://github.com/facebook/litho',
         },
         {
           label: 'Twitter',
-          to: '#',
+          to: 'https://twitter.com/fblitho',
         },
       ],
+      logo: {
+        alt: 'Facebook Open Source Logo',
+        src: 'static/oss_logo.png',
+        href: 'https://opensource.facebook.com',
+      },
     },
     prism: {
       theme: require('prism-react-renderer/themes/github'),
