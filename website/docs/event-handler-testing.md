@@ -65,7 +65,7 @@ public class LearningStateComponentSpec {
 }
 ```
 
-<video loop autoplay class="video" float="right" width="300px">
+<video loop="true" autoplay="true" class="video" float="right" width="300px">
   <source type="video/mp4" src={useBaseUrl("/static/videos/state_taps.mp4")}></source>
 </video>
 

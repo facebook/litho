@@ -25,7 +25,7 @@ Normally, you would hold on to this object, and use its [`set()`](/javadoc/com/f
 In the following sample we have a `Component` that renders a yellow square in the middle of the screen.
 We also have two regular Android `SeekBars` "outside" of the `Components` hierarchy that control the alpha and the scale levels of the square.
 
-<video loop autoplay class="video" width="100%" height="500px">
+<video loop="true" autoplay="true" class="video" width="100%" height="500px">
   <source type="video/webm" src={useBaseUrl("/static/videos/common_dynamic_props.webm")}></source>
   <p>Your browser does not support the video element.</p>
 </video>
@@ -201,7 +201,7 @@ At the same time it will keep the version of this method that takes "static" val
 This method should always takes 2 arguments - mounted content, and the `@Prop` itself. You need to create one such method for every dynamic `@Prop` you define.
 Then, it is the responsibility of the framework to invoke these methods to keep changes to the `DynamicValue`.
 
-<video loop autoplay class="video" width="100%" height="500px">
+<video loop="true" autoplay="true" class="video" width="100%" height="500px">
   <source type="video/webm" src={useBaseUrl("/static/videos/custom_dynamic_props.webm")}></source>
   <p>Your browser does not support the video element.</p>
 </video>
