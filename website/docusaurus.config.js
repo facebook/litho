@@ -35,7 +35,7 @@ module.exports = {
           position: 'right',
         },
         {
-          href: 'https://github.com/facebook/docusaurus',
+          href: 'https://github.com/facebook/litho',
           label: 'GitHub',
           position: 'right',
         },
