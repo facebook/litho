@@ -28,6 +28,8 @@ import com.intellij.psi.PsiImportStatement;
 import com.intellij.psi.PsiJavaCodeReferenceElement;
 import com.intellij.psi.PsiReference;
 import com.intellij.psi.util.PsiTreeUtil;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
@@ -74,7 +76,12 @@ class BaseLithoComponentsDeclarationHandler {
         // Filter Spec classes by implementation
         .filter(hasComponentSpecAnnotation)
         .limit(1)
-        .peek(psiClass -> logger.log(event))
+        .peek(
+            psiClass -> {
+              final Map<String, String> data = new HashMap<>();
+              data.put(EventLogger.KEY_TYPE, event);
+              logger.log(EventLogger.EVENT_GOTO_NAVIGATION, data);
+            })
         .findFirst()
         .orElse(null);
   }

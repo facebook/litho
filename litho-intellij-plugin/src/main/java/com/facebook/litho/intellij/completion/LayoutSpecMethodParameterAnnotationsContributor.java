@@ -108,7 +108,7 @@ public class LayoutSpecMethodParameterAnnotationsContributor extends CompletionC
           .map(
               annotations ->
                   new ReplacingConsumer(
-                      annotations, result, EventLogger.EVENT_COMPLETION_ANNOTATION + ".parameter"))
+                      annotations, result, EventLogger.EVENT_COMPLETION_PARAMETER))
           .ifPresent(
               replacingConsumer -> {
                 // We want our suggestions at the top, that's why adding them first

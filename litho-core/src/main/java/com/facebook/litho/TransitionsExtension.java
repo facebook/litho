@@ -125,9 +125,6 @@ public class TransitionsExtension extends MountDelegateExtension
 
     updateTransitions(input, ((LithoView) mLithoView).getComponentTree());
     extractDisappearingItems(input);
-
-    final int componentTreeId = input.getComponentTreeId();
-    mLastMountedComponentTreeId = componentTreeId;
   }
 
   @Override
@@ -141,6 +138,7 @@ public class TransitionsExtension extends MountDelegateExtension
     mInput.setNeedsToRerunTransitions(false);
     mLastTransitionsExtensionInput = mInput;
     mTransitionsHasBeenCollected = false;
+    mLastMountedComponentTreeId = mInput.getComponentTreeId();
   }
 
   public void onVisibleBoundsChanged(Rect localVisibleRect) {}

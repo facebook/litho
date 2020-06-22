@@ -110,9 +110,9 @@ public class ResolveRedSymbolsAction extends AnAction {
         project,
         eventMetadata,
         finished -> {
-          String result = finished ? "success" : "fail";
-          LithoLoggerProvider.getEventLogger()
-              .log(EventLogger.EVENT_RED_SYMBOLS + ".action." + result, eventMetadata);
+          eventMetadata.put(EventLogger.KEY_TYPE, "action");
+          eventMetadata.put(EventLogger.KEY_RESULT, finished ? "success" : "fail");
+          LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_RED_SYMBOLS, eventMetadata);
         });
   }
 

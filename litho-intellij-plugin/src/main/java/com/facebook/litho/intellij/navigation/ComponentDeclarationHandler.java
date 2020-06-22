@@ -17,14 +17,13 @@
 package com.facebook.litho.intellij.navigation;
 
 import com.facebook.litho.intellij.LithoPluginUtils;
-import com.facebook.litho.intellij.extensions.EventLogger;
 import com.intellij.codeInsight.navigation.actions.GotoDeclarationHandlerBase;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.Nullable;
 
 public class ComponentDeclarationHandler extends GotoDeclarationHandlerBase {
-  private static final String EVENT = EventLogger.EVENT_GOTO_NAVIGATION + ".component";
+  private static final String EVENT = "component";
 
   @Nullable
   @Override

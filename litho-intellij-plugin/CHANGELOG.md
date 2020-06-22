@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## Version 1.5.5
+
+_2020-06-19_
+
+* New: Change log tags.
+
 ## Version 1.5.4
 
 _2020-06-17_

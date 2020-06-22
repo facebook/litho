@@ -227,7 +227,9 @@ public final class RequiredPropAnnotator implements Annotator {
     annotate(
         element,
         (missingRequiredProps, methodExpression) -> {
-          LOGGER.log(EventLogger.EVENT_ANNOTATOR + ".required_prop");
+          final Map<String, String> data = new HashMap<>();
+          data.put(EventLogger.KEY_TYPE, "required_prop");
+          LOGGER.log(EventLogger.EVENT_ANNOTATOR, data);
           AnnotatorUtils.addError(
               holder,
               new SpecModelValidationError(

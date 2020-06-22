@@ -30,6 +30,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiFile;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 import javax.swing.Icon;
 
@@ -81,7 +82,9 @@ public class LithoTemplateAction extends CreateFileFromTemplateAction {
   protected void postProcess(
       PsiFile createdElement, String templateName, Map<String, String> customProperties) {
     super.postProcess(createdElement, templateName, customProperties);
-    LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_NEW_TEMPLATE + "." + templateName);
+    final Map<String, String> data = new HashMap<>();
+    data.put(EventLogger.KEY_TYPE, templateName);
+    LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_NEW_TEMPLATE, data);
     LithoPluginUtils.getFirstClass(createdElement, LithoPluginUtils::isLayoutSpec)
         .ifPresent(ComponentGenerateUtils::updateLayoutComponent);
   }

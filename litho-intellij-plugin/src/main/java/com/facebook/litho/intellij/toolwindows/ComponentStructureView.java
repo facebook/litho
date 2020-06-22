@@ -42,6 +42,8 @@ import com.intellij.ui.content.ContentManager;
 import com.intellij.util.ui.FormBuilder;
 import com.siyeh.ig.ui.BlankFiller;
 import java.awt.event.ActionEvent;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
@@ -91,6 +93,8 @@ class ComponentStructureView implements Disposable {
     final FileEditor selectedEditor = FileEditorManager.getInstance(project).getSelectedEditor();
     final PsiFile selectedFile = getSelectedFile(selectedEditor, project);
     final StructureView oldStructure = structureView;
+    final Map<String, String> data = new HashMap<>();
+    data.put(EventLogger.KEY_TYPE, "update");
     final JComponent mainView =
         Optional.ofNullable(selectedFile)
             .flatMap(file -> LithoPluginUtils.getFirstClass(file, LithoPluginUtils::isLayoutSpec))
@@ -99,6 +103,7 @@ class ComponentStructureView implements Disposable {
                 model -> {
                   updateComponent(model, selectedFile);
                   structureView = createStructureView(model, selectedEditor, selectedFile, project);
+                  data.put(EventLogger.KEY_RESULT, "success");
                   return structureView.getComponent();
                 })
             .orElse(STUB);
@@ -107,7 +112,7 @@ class ComponentStructureView implements Disposable {
     // View wasn't updating without this step
     contentManager.setSelectedContent(contentContainer);
     dispose(oldStructure);
-    LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_TOOLWINDOW_UPDATE);
+    LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_TOOLWINDOW, data);
   }
 
   private void updateComponent(LayoutSpecModel model, PsiFile file) {

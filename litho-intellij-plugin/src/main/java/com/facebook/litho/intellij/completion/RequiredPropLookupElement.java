@@ -23,6 +23,8 @@ import com.intellij.codeInsight.completion.PrioritizedLookupElement;
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementDecorator;
 import com.intellij.codeInsight.lookup.LookupElementPresentation;
+import java.util.HashMap;
+import java.util.Map;
 
 /** Emphasizes the lookup element passed as a delegate by adding "required Prop" tail text. */
 class RequiredPropLookupElement extends LookupElementDecorator<LookupElement> {
@@ -47,6 +49,8 @@ class RequiredPropLookupElement extends LookupElementDecorator<LookupElement> {
   @Override
   public void handleInsert(InsertionContext context) {
     super.handleInsert(context);
-    LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_COMPLETION_REQUIRED_PROP);
+    final Map<String, String> data = new HashMap<>();
+    data.put(EventLogger.KEY_TYPE, "required_prop");
+    LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_COMPLETION_METHOD_CALL, data);
   }
 }

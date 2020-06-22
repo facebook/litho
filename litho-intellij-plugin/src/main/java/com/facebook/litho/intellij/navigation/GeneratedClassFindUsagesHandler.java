@@ -28,6 +28,8 @@ import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.search.SearchScope;
 import com.intellij.util.ArrayUtil;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import org.jetbrains.annotations.Nullable;
@@ -51,18 +53,21 @@ class GeneratedClassFindUsagesHandler extends FindUsagesHandler {
 
   @Override
   public PsiElement[] getPrimaryElements() {
-    LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_FIND_USAGES + ".class.invoke");
-    return Optional.of(getPsiElement())
-        .filter(PsiClass.class::isInstance)
-        .map(PsiClass.class::cast)
-        .map(findGeneratedClass)
-        .map(
-            psiClass -> {
-              LithoLoggerProvider.getEventLogger()
-                  .log(EventLogger.EVENT_FIND_USAGES + ".class.success");
-              return ArrayUtil.insert(super.getPrimaryElements(), 0, psiClass);
-            })
-        .orElseGet(super::getPrimaryElements);
+    final Map<String, String> data = new HashMap<>();
+    final PsiElement[] results =
+        Optional.of(getPsiElement())
+            .filter(PsiClass.class::isInstance)
+            .map(PsiClass.class::cast)
+            .map(findGeneratedClass)
+            .map(
+                psiClass -> {
+                  data.put(EventLogger.KEY_RESULT, "success");
+                  return ArrayUtil.insert(super.getPrimaryElements(), 0, psiClass);
+                })
+            .orElseGet(super::getPrimaryElements);
+    data.put(EventLogger.KEY_TYPE, "class");
+    LithoLoggerProvider.getEventLogger().log(EventLogger.EVENT_FIND_USAGES, data);
+    return results;
   }
 
   @Override

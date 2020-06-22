@@ -31,6 +31,8 @@ import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiMethod;
 import com.intellij.util.ProcessingContext;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 /** Provider suggests completion for the Click event in the Litho Spec. */
@@ -58,8 +60,10 @@ class OnEventCompletionProvider extends CompletionProvider<CompletionParameters>
                 clickEventCls,
                 OnEventGenerateUtils.createOnEventLookupString(clickEventCls),
                 () -> {
+                  final Map<String, String> data = new HashMap<>();
+                  data.put(EventLogger.KEY_TYPE, "OnEvent");
                   LithoLoggerProvider.getEventLogger()
-                      .log(EventLogger.EVENT_COMPLETION_METHOD + ".OnEvent");
+                      .log(EventLogger.EVENT_COMPLETION_METHOD, data);
                   LithoPluginUtils.getFirstLayoutSpec(parameters.getOriginalFile())
                       .ifPresent(ComponentGenerateUtils::updateLayoutComponent);
                 }),
