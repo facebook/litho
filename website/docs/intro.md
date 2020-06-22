@@ -2,6 +2,7 @@
 id: intro
 title: What is Litho?
 ---
+import useBaseUrl from '@docusaurus/useBaseUrl';
 
 Litho is a declarative framework for building efficient user interfaces (UI) on
 Android. It allows you to write highly-optimized Android views through a simple
@@ -40,9 +41,9 @@ rendering](/docs/inc-mount-architecture) complex components.
 
 ## Watch the F8 presentation
 
-<!-- <a href="https://developers.facebook.com/videos/f8-2017/litho-a-declarative-framework-for-efficient-uis/" target="_blank">
-  <img src="{{ '/static/images/f8-intro.png' | relative_url }}" />
-</a> -->
+<a href="https://developers.facebook.com/videos/f8-2017/litho-a-declarative-framework-for-efficient-uis/" target="_blank">
+  <img src={useBaseUrl("/static/images/f8-intro.png")}></img>
+</a>
 
 ## Continue exploring
 
