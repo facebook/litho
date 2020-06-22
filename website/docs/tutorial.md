@@ -65,11 +65,7 @@ The `Text` component is added as a single child component to the `LithoView` in 
 
 That's it! Run the app, you should see something like this:
 
-<<<<<<< HEAD
 <img src={useBaseUrl("/static/images/barebones1.png")} style={{width: "300px"}}/>
-=======
-<img src={useBaseUrl("/static/images/barebones1.png")} width="300px" /> 
->>>>>>> fix tutorial
 
 Not pretty, but this is certainly a start!
 
