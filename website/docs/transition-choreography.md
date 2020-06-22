@@ -2,6 +2,7 @@
 id: transition-choreography
 title: Choreography
 ---
+import useBaseUrl from '@docusaurus/useBaseUrl';
 
 ### Staggers, Sequences, and Parallel Sets
 
@@ -18,8 +19,8 @@ static Transition onCreateTransition(ComponentContext c) {
 }
 ```
 
-<video loop autoplay class="video" style="width: 100%; height: 500px;">
-  <source type="video/webm" src="/static/videos/transitions/stagger.webm"></source>
+<video loop="true" autoplay="true" class="video" width="100%" height="500px">
+  <source type="video/webm" src={useBaseUrl("/static/videos/transitions/stagger.webm")}></source>
   <p>Your browser does not support the video element.</p>
 </video>
 

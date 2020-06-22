@@ -2,6 +2,7 @@
 id: event-handler-testing
 title: Event Handler Testing
 ---
+import useBaseUrl from '@docusaurus/useBaseUrl';
 
 This document provides a quick example of how to write tests for your event
 handlers. You should be familiar with [TestSpecs](/docs/subcomponent-testing)
@@ -64,8 +65,8 @@ public class LearningStateComponentSpec {
 }
 ```
 
-<video loop autoplay class="video" style="float: right; width: 300px;">
-  <source type="video/mp4" src="/static/videos/state_taps.mp4"></source>
+<video loop="true" autoplay="true" class="video" float="right" width="300px">
+  <source type="video/mp4" src={useBaseUrl("/static/videos/state_taps.mp4")}></source>
 </video>
 
 When testing event handlers, it is important to remember what you actually want
@@ -76,7 +77,7 @@ spend your time on. While writing high-level end-to-end tests ensuring that your
 touch events have the right effects, this is not what you should concern
 yourself with for unit tests.
 
-<div style="clear:both;"></div>
+<div clear="both"></div>
 
 ## Testing handler presence
 

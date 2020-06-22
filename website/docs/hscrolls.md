@@ -2,6 +2,7 @@
 id: hscrolls
 title: Horizontal scrolls and height
 ---
+import useBaseUrl from '@docusaurus/useBaseUrl';
 
 Vertical scrolling lists usually fill the width of the screen so it's easy to measure them with a fixed size.
 In this guide we'll talk about ways of measuring the height of a horizontal scrolling list (we'll call it h-scroll), which is not as trivial and different height settings have different performance implications.
@@ -47,6 +48,7 @@ To do this, just set the height through the `height` prop on your `RecyclerColle
    }
 ```
 ![fixedheight](/static/images/fixed-height-hscroll.png)
+
 Notice the gray background is the actual bounds of the h-scroll, and the children have smaller heights.
 
 **2) Height is not known when component is created: Let the h-scroll set its height to the height of the first item.**
@@ -124,7 +126,7 @@ RecyclerCollectionComponent.create(c)
 
 In the video below you can see that the h-scroll will remeasure to always adjust height to accommodate the tallest item, but it won't collapse to fit a smaller maximum height.
 
-<video loop autoplay controls class="video" style="width: 600px; height: 100%;">
-  <source type="video/mp4" src="/static/videos/dynamicheight.mov"></source>
+<video loop="true" autoplay="true" controls="true" class="video" width="600px" height="100%">
+  <source type="video/mp4" src={useBaseUrl("/static/videos/dynamicheight.mov")}></source>
   <p>Your browser does not support the video element.</p>
 </video>

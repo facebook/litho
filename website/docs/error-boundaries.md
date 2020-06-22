@@ -14,13 +14,15 @@ contains a full example of using error boundaries in a Sections-powered list.
 
 ## Conceptual Overview
 
-> NOTE: Error boundaries are still considered experimental and disabled by
-> default. To use them, you have to enable `ComponentsConfiguration.enableOnErrorHandling`.
-> The supported delegate methods are currently limited to:
-> - `onCreateLayout`
-> - `onCreateLayoutWithSizeSpec`
-> - `onMount`
-> We plan to expand them to more delegates in the future.
+:::note
+ Error boundaries are still considered experimental and disabled by
+default. To use them, you have to enable `ComponentsConfiguration.enableOnErrorHandling`.
+The supported delegate methods are currently limited to:
+- `onCreateLayout`
+- `onCreateLayoutWithSizeSpec`
+- `onMount`
+We plan to expand them to more delegates in the future.
+:::
 
 A component becomes an error boundary when it defines an
 [`OnError`](/javadoc/com/facebook/litho/annotations/OnError.html) delegate method.
