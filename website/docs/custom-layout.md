@@ -6,7 +6,9 @@ Litho relies on [Yoga](https://yogalayout.com/docs/), a powerful layout engine t
 
 Litho provides a custom layout API for accessing size information while the [`ComponentTree`](/javadoc/com/facebook/litho/ComponentTree) is being created and measured, as well as the possibility to measure a component in isolation.
 
-> **IMPORTANT**: This API comes with a **non-negligible** performance overhead. Therefore, it is advisable to only use it when it is absolutely necessary.
+:::caution IMPORTANT
+ This API comes with a **non-negligible** performance overhead. Therefore, it is advisable to only use it when it is absolutely necessary.
+:::
 
 ## Use cases
 
