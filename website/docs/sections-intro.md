@@ -2,6 +2,7 @@
 id: sections-intro
 title: What are Sections?
 ---
+import useBaseUrl from '@docusaurus/useBaseUrl';
 
 **The Sections API is a declarative, composable, and thread-safe API for writing highly-optimized list screens, built on top of Litho.** It tries to address issues we've had at Facebook when writing complex lists, such as maintaining many view types, handling multiple data sources and composing lists together.
 
@@ -11,7 +12,7 @@ Instead, the Sections API looks a lot like the Components API: your list is defi
 
 While Litho Components are used for displaying pieces of UI, Sections are a way of composing data into a list of Litho Components or Views. If you visualize your screen as being a tree of components, the nodes for the root of the tree and the subtrees are Sections, while the leaves are Litho Components that represent individual items that will be displayed on screen.
 
-<!-- <img src="/static/images/sections-intro.png" style="width: 800px;" /> -->
+<img src={useBaseUrl("/static/images/sections-intro.png")} width="800px" />
 
 Sections use the same declarative data model as Litho and under the hood transparently handles things like calculating minimal sets of changes for data updates and doing granular UI refreshes.
 As part of Litho, the Sections API shares the same main concepts such as annotation-based code generation, event handling, props and state updates.

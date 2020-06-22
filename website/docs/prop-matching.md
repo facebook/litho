@@ -3,6 +3,8 @@ id: prop-matching
 title: Matching Props
 ---
 
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
 We have already learned about matching [sub-components in the
 hierarchy](/docs/subcomponent-testing). In this article, we will drill a bit
 deeper and explore TestSpecs as a way to test individual props of those
@@ -70,7 +72,7 @@ public class FeedWithComplexItemsTest {
   public ComponentsRule mComponentsRule = new ComponentsRule();
 ```
 
-<!-- <img src="/static/images/complex-component-0.svg" style="float: right; width: 200px;" /> -->
+<img src={useBaseUrl("/static/images/complex-component-0.svg")} float="right" width="200px" />
 
 As always, we create a standard JUnit test suite and run it with a
 `RobolectricTestRunner`-compatible implementation like `LithoTestRunner`.
@@ -79,7 +81,7 @@ For the purpose of this article, we assume that we have a `FeedItemComponent`
 that contains our `ComplexComponent`. The `FeedItemComponent` contains the logic
 for populating our complex props which we want to verify.
 
-<div style="clear: right; margin-bottom: 1em;"></div>
+<div clear="right" margin-bottom="1em"></div>
 
 ```java
 @Test
@@ -132,7 +134,7 @@ Clearly, having this test is better than nothing. In the same way that
 having some Starbucks coffee after a cross-Atlantic flight is better than no
 coffee at all ... but I digress.
 
-What if there was a way to match just *some* of our props?
+What if there was a way to match just _some_ of our props?
 
 ## Partial Props Matching
 
@@ -237,7 +239,8 @@ public void testComplexTestSpecAdvancedProps() {
 
 ## Matching Matchers
 
-<!-- <img src="/static/images/yo_dawg.jpg" style="float: right; width: 200px;" /> -->
+<img src={useBaseUrl("/static/images/yo_dawg.jpg")} float="right" width="200px" />
+
 There is one type of prop that requires some special treatment: components.
 While we could just match against child components via normal equality (and
 there is indeed support for this), it is not particularly helpful. We rarely
@@ -245,7 +248,7 @@ know what exact instance of a component is passed down to the props and we face
 many of the same problems we discussed before: The props of the Component may
 not be known in full or perhaps we don't want to provide them all.
 
-<!-- <img src="/static/images/complex-component-0.svg" style="float: left; margin-right: 1em; width: 200px;" /> -->
+<img src={useBaseUrl("/static/images/complex-component-0.svg")} float="left" margin-right="1em" width="200px" />
 The solution to this is obvious: We match matchers! For any prop that takes a
 Component, the TestSpec generates a matcher that takes another matcher. This
 allows for **declarative matching against entire trees of components**.
@@ -253,7 +256,7 @@ allows for **declarative matching against entire trees of components**.
 For our example, let's suppose that our `FeedItemComponent` wraps the
 `ComplexComponent` in a `Card`.
 
-<!-- <div style="clear: right; margin-bottom: 1em;"></div> -->
+<div clear="right" margin-bottom="1em"></div>
 
 ```java
 @Test

@@ -2,6 +2,7 @@
 id: sections-tutorial
 title: Sections Tutorial
 ---
+import useBaseUrl from '@docusaurus/useBaseUrl';
 
 *NOTE* This part builds on the work you did in [the litho tutorial](/docs/tutorial). Make sure you've read through that tutorial before returning to this one.
 
@@ -69,7 +70,7 @@ Here's a quick explanation of what's going on:
 
 Run the app. You should see the same thing as before.
 
-<!-- <img src="/static/images/barebones4.png" style="width: 300px;" /> -->
+<img src={useBaseUrl("/static/images/barebones4.png")} width="300px" />
 
 ## 2. Adding an H-scroll
 
@@ -108,8 +109,7 @@ We're seeing a couple new props for `RecyclerCollectionComponent` here.
 
 Run the app now, you should see something like this:
 
-<!-- <img src="/static/images/barebones5.gif" style="width: 300px;" /> -->
-
+<img src={useBaseUrl("/static/images/barebones5.gif")} width="300px" />
 
 ## Summary
 
