@@ -2,6 +2,7 @@
 id: tutorial
 title: Tutorial
 ---
+import useBaseUrl from '@docusaurus/useBaseUrl';
 
 This tutorial assumes you've gone through the [Getting Started](getting-started) guide to set up Litho.  Make sure you set up Litho's core libraries and Sections' libraries.
 
@@ -64,7 +65,7 @@ The `Text` component is added as a single child component to the `LithoView` in 
 
 That's it! Run the app, you should see something like this:
 
-<!-- <img src="/static/images/barebones1.png" style="width: 300px;" /> -->
+<img src={useBaseUrl("/static/images/barebones1.png")} style={{width: "300px"}}/>
 
 Not pretty, but this is certainly a start!
 
@@ -107,8 +108,9 @@ How do you render this component? In your activity, simply change the `Component
 ```java
 final Component component = ListItem.create(c).build();
 ```
-
-**Note:** That's `ListItem` you're using, not `ListItemSpec`.
+:::note
+That's `ListItem` you're using, not `ListItemSpec`.
+:::
 
 Where did `ListItem` come from?  Where are `create` and `build` defined?  This is the magic of Litho _Specs_.
 
@@ -117,7 +119,7 @@ This runs an annotation processor over your code.  It looks for `FooSpec` class 
 
 It's as simple as that. Run your app. You should see something like this:
 
-<!-- <img src="/static/images/barebones2.png" style="width: 300px;" /> -->
+<img src={useBaseUrl("/static/images/barebones2.png")} style={{width: "300px"}}/>
 
 ## 3. Creating a List of Items
 
@@ -158,14 +160,15 @@ final Component component =
 
 ```
 
-**Note:** That's `ListSection` you're using, not `ListSectionSpec`.
+:::note
+That's `ListSection` you're using, not `ListSectionSpec`.
+:::
 
 `ListSectionSpec` should look familiar to the `ListItemSpec` you wrote in the last step! Litho runs annotation processors over your code to find `ListSectionSpec` and generates `ListSection` just like how it finds `ListItemSpec` and generates `ListItem` in the same package as your spec.
 
-Run the app. You should see a scrollable list of 32 ListItem components:
+Run the app. You should see a scrollable list of 32 `ListItem` components:
 
-<!-- <img src="/static/images/barebones3.png" style="width: 300px;" /> -->
-
+<img src={useBaseUrl("/static/images/barebones3.png")} style={{width: "300px"}}/>
 
 ## 4. Defining a Component's properties
 
@@ -225,7 +228,7 @@ Now when `ListItem` is constructed, the `color`, `title` and `subtitle` props ar
 
 Run the app. You should see something like this:
 
-<!-- <img src="/static/images/barebones4.png" style="width: 300px;" /> -->
+<img src={useBaseUrl("/static/images/barebones4.png")} style={{width: "300px"}}/>
 
 You can specify more options to the `@Prop` annotation.  For example, consider the property:
 
