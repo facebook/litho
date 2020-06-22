@@ -2,6 +2,7 @@
 id: tree-props
 title: TreeProps
 ---
+import useBaseUrl from '@docusaurus/useBaseUrl';
 
 A TreeProp is a special type of [prop](/docs/props) which transparently passed
 from a parent component to its children. It provides a convenient way to share
@@ -132,7 +133,7 @@ pattern whenever possible.
 
 We now create a component hierarchy that looks like this:
 
-<!-- <img src="/static/images/treeprop-sections.png" /> -->
+<img src={useBaseUrl("/static/images/treeprop-sections.png")} />
 
 We start by setting up the RootComponent and the RecyclerComponent sitting
 inside:
@@ -205,9 +206,9 @@ public class LeafComponentSpec {
 
 The result on screen will be three rows of text that read
 
-- "root:leaf"
-- "root:top:leaf"
-- "root:top:bottom:leaf"
+- `"root:leaf"`
+- `"root:top:leaf"`
+- `"root:top:bottom:leaf"`
 
 This illustrates how TreeProps propagate through both component and section
 trees and can be used to selectively share information with their children.
