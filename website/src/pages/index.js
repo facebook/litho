@@ -59,7 +59,6 @@ function Home() {
   const {siteConfig = {}} = context;
   return (
     <Layout
-      title={`Litho | A declaritive UI framework for Android`}
       description="Home page of Litho: A declaritive UI framework for Android">
       <header className={clsx('hero hero--primary', styles.heroBanner)}>
         <div className="container">
