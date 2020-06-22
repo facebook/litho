@@ -119,11 +119,7 @@ This runs an annotation processor over your code.  It looks for `FooSpec` class 
 
 It's as simple as that. Run your app. You should see something like this:
 
-<<<<<<< HEAD
-<img src={useBaseUrl("/static/images/barebones2.png")} style={{width: "300px"}}/>
-=======
 <img src={useBaseUrl("/static/images/barebones2.png")} width="300px" />
->>>>>>> fix tutorial
 
 ## 3. Creating a List of Items
 
