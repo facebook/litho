@@ -29,7 +29,7 @@ import com.facebook.litho.annotations.ResType;
 
 /**
  * A component that paints a card with rounded edges to perform a clipping operation on the
- * component being rendered below it. Used in {@link TransparencyEnabledCardSpec}.
+ * component being rendered below it. Used in {@link CardSpec} when transparencyEnabled(true).
  *
  * @prop clippingColor Color for corner clipping.
  * @prop cornerRadius Radius for corner clipping.

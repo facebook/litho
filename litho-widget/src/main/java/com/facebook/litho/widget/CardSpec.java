@@ -96,8 +96,8 @@ class CardSpec {
                   "[UNPERFORMANT WARNING] if you do not need to render your corners transparently please set to false. It is more expensive to perform rounded corners with transparent\n"
                       + "clipping due to antialiasing operations.\n\n"
                       + "<p>A component that renders a given component into a card border with shadow, and allows for\n"
-                      + "transparent corners. With transparencyEnabled = false {@link * com.facebook.litho.widget.Card} uses imitation clipped corners that\n"
-                      + "draw in a solid color to mimic the background. transparencyEnabled = true is useful if you are\n"
+                      + "transparent corners. With transparencyEnabled(false) {@link * com.facebook.litho.widget.Card} uses imitation clipped corners that\n"
+                      + "draw in a solid color to mimic the background. transparencyEnabled(true) is useful if you are\n"
                       + "rendering your pill over a gradient or dynamic background.\n")
           boolean transparencyEnabled,
       @Prop(optional = true) boolean disableClipTopLeft,
