@@ -9,7 +9,7 @@ At it's core, the Sections framework is responsible for producing a [ChangeSet](
 
 Using the Sections framework begins with creating a [SectionTree](/javadoc/com/facebook/litho/sections/SectionTree). `SectionTree` instances are responsible for:
    - Computing/Recomputing changes whenever state & props values change.
-   - Communicat with a [Target](/javadoc/com/facebook/litho/sections/SectionTree.Target) implementation that can update UI (including telling the `Target` about new changes).
+   - Communicate with a [Target](/javadoc/com/facebook/litho/sections/SectionTree.Target) implementation that can update UI (including telling the `Target` about new changes).
 
 SectionTrees must be created with a `Target` implementation. The [Target](/javadoc/com/facebook/litho/sections/SectionTree.Target) interface is the API between `SectionTree` and UI. After computing a ChangeSet from a section hierarchy, a `SectionTree` instance will relay the changes to it's `Target`. You can create a target for whatever custom UI you want but the Sections framework has already implemented some `Targets` for you. [SectionBinderTarget](/javadoc/com/facebook/litho/sections/widget/SectionBinderTarget) is one a `Target` implementation that relays changes to a `RecyclerBinder` for rendering.
 

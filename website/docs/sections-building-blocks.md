@@ -23,7 +23,7 @@ final Section loadingSection = SingleComponentSection.create(c)
 
 If you're new to using `DataDiffSection`, we recommend you watch this Litho Lesson which covers the basics of how to do diffing:
 
-<iframe style="padding-top: 10px" width="560" height="315" src="https://www.youtube-nocookie.com/embed/-Ahskig2Lw0" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe padding-top="10px" width="560" height="315" src="https://www.youtube-nocookie.com/embed/-Ahskig2Lw0" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 ### How to Use DataDiffSection
 
