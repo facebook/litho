@@ -18,6 +18,14 @@
   box-shadow: none;
 }
 
+.navbar__brand:hover {
+  color: #fff;
+}
+
+.navbar-sidebar__brand {
+  background-color: #F36B7F;
+}
+
 .docusaurus-highlight-code-line {
   background-color: rgb(72, 77, 91);
   display: block;
