@@ -50,10 +50,11 @@
 .widget-button {
   background-color: --ifm-color-primary;
   border-radius: 20px;
-  font-size: 20px;
-  padding: 12px 26px;
+  font-size: 18px;
+  padding: 10px 26px;
   margin-top: 10px;
-  margin-right: 6px;
+  margin-right: 8px;
+  margin-bottom: 10px;
   font-family: Arial;
   &:hover {
     background-color: --ifm-color-dark;
