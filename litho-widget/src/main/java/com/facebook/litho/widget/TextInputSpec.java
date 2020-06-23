@@ -867,12 +867,12 @@ class TextInputSpec {
     @Override
     protected void onTextChanged(CharSequence text, int start, int lengthBefore, int lengthAfter) {
       super.onTextChanged(text, start, lengthBefore, lengthAfter);
+      if (mTextState != null) {
+        mTextState.set(text);
+      }
       if (mTextChangedEventHandler != null) {
         TextInput.dispatchTextChangedEvent(
             mTextChangedEventHandler, EditTextWithEventHandlers.this, text.toString());
-      }
-      if (mTextState != null) {
-        mTextState.set(text);
       }
       // Line count of changed text.
       int lineCount = getLineCount();
