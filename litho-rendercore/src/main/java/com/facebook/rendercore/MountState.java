@@ -129,6 +129,12 @@ public class MountState implements MountDelegateTarget {
     // Let's start from 1 as the RenderTreeNode in position 0 always represents the root.
     for (int i = 1, size = renderTree.getMountableOutputCount(); i < size; i++) {
       final RenderTreeNode renderTreeNode = renderTree.getRenderTreeNodeAtIndex(i);
+
+      final boolean isMountable = isMountable(renderTreeNode);
+      if (!isMountable) {
+        continue;
+      }
+
       final MountItem currentMountItem = getItemAt(i);
       final boolean isMounted = currentMountItem != null;
 
@@ -169,6 +175,10 @@ public class MountState implements MountDelegateTarget {
           rootRenderTreeNode,
           rootRenderTreeNode.getRenderUnit(),
           item.getContent());
+    }
+
+    if (mMountDelegate != null) {
+      mMountDelegate.resetExtensionReferenceCount();
     }
 
     mNeedsRemount = true;
@@ -297,6 +307,10 @@ public class MountState implements MountDelegateTarget {
 
       unbindRenderUnitFromContent(mContext, mountItem);
     }
+  }
+
+  private boolean isMountable(RenderTreeNode renderTreeNode) {
+    return mMountDelegate == null ? true : mMountDelegate.isLockedForMount(renderTreeNode);
   }
 
   private static void updateBoundsForMountedRenderTreeNode(

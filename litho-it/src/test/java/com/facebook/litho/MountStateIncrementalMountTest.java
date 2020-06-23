@@ -67,24 +67,30 @@ public class MountStateIncrementalMountTest {
   boolean useMountWithExtensions;
   boolean useIncMountOnlyExtension;
   final boolean mUseMountDelegateTarget;
+  final boolean mDelegateToRenderCoreMount;
   private boolean configUseIncrementalMountExtension;
 
   public final @Rule LithoViewRule mLithoViewRule = new LithoViewRule();
 
   @ParameterizedRobolectricTestRunner.Parameters(
-      name = "useMountDelegateTarget={0}, useIncrementalMountExtensionInMountState={1}")
+      name =
+          "useMountDelegateTarget={0}, delegateToRenderCoreMount={1}, useIncrementalMountExtensionInMountState={2}")
   public static Collection data() {
     return Arrays.asList(
         new Object[][] {
-          {false, false},
-          {true, false},
-          {false, true}
+          {false, false, false},
+          {true, false, false},
+          {true, true, false},
+          {false, false, true}
         });
   }
 
   public MountStateIncrementalMountTest(
-      boolean useMountDelegateTarget, boolean useIncrementalMountExtensionInMountState) {
+      boolean useMountDelegateTarget,
+      boolean delegateToRenderCoreMount,
+      boolean useIncrementalMountExtensionInMountState) {
     mUseMountDelegateTarget = useMountDelegateTarget;
+    mDelegateToRenderCoreMount = delegateToRenderCoreMount;
     mUseIncrementalMountExtensionInMountState = useIncrementalMountExtensionInMountState;
   }
 
@@ -93,7 +99,8 @@ public class MountStateIncrementalMountTest {
     ComponentsConfiguration.useIncrementalMountExtension =
         mUseIncrementalMountExtensionInMountState;
     mContext = mLithoViewRule.getContext();
-    mLithoViewRule.useLithoView(new LithoView(mContext, mUseMountDelegateTarget, false));
+    mLithoViewRule.useLithoView(
+        new LithoView(mContext, mUseMountDelegateTarget, mDelegateToRenderCoreMount));
   }
 
   @After
