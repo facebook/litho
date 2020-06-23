@@ -12,9 +12,18 @@
   overflow: hidden;
 }
 
+.heroImage {
+  width: 300px;
+  margin-right: 5%;
+}
+
 @media screen and (max-width: 966px) {
   .heroBanner {
     padding: 2rem;
+  }
+  .heroImage {
+    width: 100px;
+    margin-right: 0;
   }
 }
 
@@ -27,11 +36,25 @@
 .features {
   display: flex;
   align-items: center;
-  padding: 2rem 0;
   width: 100%;
+}
+
+.feature {
+  height: 500px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+}
+
+.darkFeature {
+  background-color: #5F6673;
+}
+
+.featureContent {
+  display: flex;
 }
 
 .featureImage {
   height: 200px;
-  width: 200px;
 }
