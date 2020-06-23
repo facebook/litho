@@ -681,8 +681,7 @@ public final class MatcherGenerator {
 
     final String getterName =
         diHelper.generateTestingFieldAccessor(
-                fieldExtractorSpec.specModel,
-                new InjectPropModel(fieldExtractorSpec.propModel, true))
+                fieldExtractorSpec.specModel, new InjectPropModel(fieldExtractorSpec.propModel))
             .name;
     return CodeBlock.builder()
         .addStatement(

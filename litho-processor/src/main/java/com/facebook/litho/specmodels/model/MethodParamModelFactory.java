@@ -74,7 +74,7 @@ public final class MethodParamModelFactory {
       }
 
       if (annotation instanceof InjectProp) {
-        return new InjectPropModel(simpleMethodParamModel, true);
+        return new InjectPropModel(simpleMethodParamModel);
       }
 
       if (annotation instanceof State) {

@@ -124,7 +124,7 @@ public class SpecModelImplTest {
             "");
 
     mInjectPropModel =
-        new InjectPropModel(MockMethodParamModel.newBuilder().name("injectProp").build(), true);
+        new InjectPropModel(MockMethodParamModel.newBuilder().name("injectProp").build());
 
     mTreePropModel1 =
         new TreePropModel(MockMethodParamModel.newBuilder().name("treeprop1").build());

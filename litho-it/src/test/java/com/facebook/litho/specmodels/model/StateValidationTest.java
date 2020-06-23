@@ -359,11 +359,6 @@ public class StateValidationTest {
           public Class<? extends Annotation> annotationType() {
             return InjectProp.class;
           }
-
-          @Override
-          public boolean isLazy() {
-            return false;
-          }
         };
     when(injectProp.getAnnotations())
         .thenReturn(ImmutableList.<Annotation>of(injectPropAnnotation));
