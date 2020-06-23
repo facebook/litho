@@ -364,12 +364,14 @@ class MountState
 
         final MountItem currentMountItem = getItemAt(i);
         final boolean isMounted = currentMountItem != null;
+        final boolean isRoot = currentMountItem != null && currentMountItem == rootMountItem;
         final boolean isMountable =
             !isIncrementalMountEnabled
                 || isMountedHostWithChildContent(currentMountItem)
                 || Rect.intersects(localVisibleRect, layoutOutput.getBounds())
                 || isAnimationLocked(node, i)
-                || (currentMountItem != null && currentMountItem == rootMountItem);
+                || isRoot;
+
         if (isMountable && !isMounted) {
           mountLayoutOutput(i, node, layoutOutput, layoutState);
           if (isIncrementalMountEnabled) {
@@ -378,7 +380,7 @@ class MountState
         } else if (!isMountable && isMounted) {
           unmountItem(i, mHostsByMarker);
         } else if (isMounted) {
-          if (mIsDirty) {
+          if (mIsDirty || (isRoot && mNeedsRemount)) {
             final boolean useUpdateValueFromLayoutOutput =
                 mLastMountedLayoutState != null
                     && mLastMountedLayoutState.getId() == layoutState.getPreviousLayoutStateId();

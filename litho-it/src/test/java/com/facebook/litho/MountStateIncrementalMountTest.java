@@ -44,6 +44,7 @@ import com.facebook.litho.testing.TestViewComponent;
 import com.facebook.litho.testing.ViewGroupWithLithoViewChildren;
 import com.facebook.litho.widget.MountSpecLifecycleTester;
 import com.facebook.litho.widget.SimpleMountSpecTester;
+import com.facebook.litho.widget.Text;
 import com.facebook.yoga.YogaEdge;
 import java.util.Arrays;
 import java.util.Collection;
@@ -767,6 +768,27 @@ public class MountStateIncrementalMountTest {
 
     lithoView.getComponentTree().mountComponent(new Rect(0, 5, 10, 15), true);
     assertThat(lithoView.mountStateNeedsRemount()).isFalse();
+  }
+
+  @Test
+  public void testRootViewAttributes_incrementalMountAfterUnmount_setViewAttributes() {
+    final Component root = Text.create(mContext).text("Test").contentDescription("testcd").build();
+
+    mLithoViewRule
+        .setRoot(root)
+        .attachToWindow()
+        .setSizeSpecs(makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY))
+        .measure()
+        .layout();
+
+    final LithoView lithoView = mLithoViewRule.getLithoView();
+    assertThat(lithoView.getContentDescription()).isEqualTo("testcd");
+
+    lithoView.unmountAllItems();
+    assertThat(lithoView.getContentDescription()).isNull();
+
+    lithoView.getComponentTree().mountComponent(new Rect(0, 5, 10, 15), true);
+    assertThat(lithoView.getContentDescription()).isEqualTo("testcd");
   }
 
   /**
