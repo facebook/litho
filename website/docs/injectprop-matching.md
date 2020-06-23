@@ -6,7 +6,7 @@ title: Testing InjectProps
 `@InjectProp` is a pluggable mechanism for letting your dependency injection
 container take care of providing the props to your components. Testing them can
 be achieved with TestSpecs, which we learned about in the [Prop
-Matching](/docs/prop-matching) section.
+Matching](prop-matching) section.
 
 ## Prerequisites
 
@@ -149,5 +149,5 @@ type of the prop is a concrete instance of a component rather than the generic
 
 ## Next
 
-Either head back to the [testing overview](/docs/testing-overview.html) or
-continue with the next section, [Testing Event Handlers](/docs/event-handler-testing).
+Either head back to the [testing overview](testing-overview) or
+continue with the next section, [Testing Event Handlers](event-handler-testing).

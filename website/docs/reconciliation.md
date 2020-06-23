@@ -5,9 +5,13 @@ title: Reconciliation
 
 ## Introduction
 
-**Within the framework reconciliation is enabled by default.**
+:::tip
+Within the framework reconciliation is enabled by default.
+:::
 
-**Note: As of January 2020 reconciliation is only implemented for state updates.**
+:::note
+As of January 2020 reconciliation is only implemented for state updates.
+:::
 
 Reconciliation is an implementation detail in Litho’s layout calculation process. Instead of
 recreating the entire layout tree for every update reconciliation enables Litho to clone the

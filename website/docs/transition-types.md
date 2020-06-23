@@ -11,7 +11,7 @@ When defining transitions you need to indicate to the framework what `Component`
 
 A transition where the target `Component` is present in both *before* and *after* layouts is called a *change* transition.
 
-The sample from the [Basics section](/docs/transition-basics) features a *change* transition, since the `"square"` `Component` is always present in the layout, but it changes its position - `X` property.
+The sample from the [Basics section](transition-basics) features a *change* transition, since the `"square"` `Component` is always present in the layout, but it changes its position - `X` property.
 
 It is the simplest type from a user's perspective, so following is the explanation of how change type transitions work internally.
 

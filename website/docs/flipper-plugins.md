@@ -34,7 +34,7 @@ You can read more about Layout Inspector on [Flipper website](https://fbflipper.
 
 ## Sections plugin
 
-Another Litho plugin that is very useful for debugging Litho is Sections. It can uncover the flow of state changes for the list backed by [Litho Sections](/docs/sections-intro), visualise these changes such as which items were added, reused or deleted, and show the data corresponding to the specific Section.
+Another Litho plugin that is very useful for debugging Litho is Sections. It can uncover the flow of state changes for the list backed by [Litho Sections](sections-intro), visualise these changes such as which items were added, reused or deleted, and show the data corresponding to the specific Section.
 
 ![Flipper Sections plugin](/static/images/flipper-sections-plugin.png)
 

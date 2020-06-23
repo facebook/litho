@@ -39,12 +39,13 @@ class TruncatingComponentSpec {
   }
 }
 ```
+:::note
+As a quick aside, please note that for trivial components like these it
+is often more appropriate to exploit the fact that these are pure functions
+that can be statically invoked. Whenever possible, test your business logic in
+isolation.
+:::
 
-> NOTE: As a quick aside, please note that for trivial components like these it
-  is often more appropriate to exploit the fact that these are pure functions
-  that can be statically invoked. Whenever possible, test your business logic in
-  isolation.
-  
 Now we want to test that the two cases the component is set out to handle are
 correctly implemented. Some people may prefer to write the tests before
 implementing the business logic, but technical documentation is not the place to
@@ -164,12 +165,13 @@ public class WrappingComponentSpec {
   }
 }
 ```
+:::note
+Time for another quick aside to remind you that this is a contrived
+example and it would be way better to keep our previous
+`TruncatingComponentSpec` around and use this LayoutSpec to wrap it. But
+tutorials - and sometimes the real world - can be stinkers.
+:::
 
-> NOTE: Time for another quick aside to remind you that this is a contrived
-  example and it would be way better to keep our previous
-  `TruncatingComponentSpec` around and use this LayoutSpec to wrap it. But
-  tutorials - and sometimes the real world - can be stinkers.
-  
 The setup boilerplate will look just like in our previous example.
 
 ```java
@@ -367,8 +369,8 @@ public void testSubComponentLegacyBridge() {
 
 ## Next
 
-Either head back to the [testing overview](/docs/testing-overview.html) or
-continue with the next section, [Matching Props](/docs/prop-matching).
+Either head back to the [testing overview](testing-overview) or
+continue with the next section, [Matching Props](prop-matching).
 
 ## Resources
 

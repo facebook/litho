@@ -19,7 +19,9 @@ static Transition onCreateTransition(
 }
 ```
 
-> Note that in order to make this happen, the framework needs to postpone collection of `Transition`s until `MountState` (always on UI thread), while normally this would be done on `LayoutState` (which may be processed on a background thread).
+:::note
+In order to make this happen, the framework needs to postpone collection of `Transition`s until `MountState` (always on UI thread), while normally this would be done on `LayoutState` (which may be processed on a background thread).
+:::
 
 ### @Prop `Diff<T>` and @State `Diff<T>`
 

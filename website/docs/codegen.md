@@ -3,7 +3,7 @@ id: codegen
 title: Code Generation
 ---
 
-As explained in [Writing Components](/docs/writing-components), Litho relies on code generation in order to create *Components* from *Component Specs*. This process utilises intermediate *ComponentSpec* representations called [SpecModels](/javadoc/com/facebook/litho/specmodels/model/SpecModel), which are immutable java objects. 
+As explained in [Writing Components](writing-components), Litho relies on code generation in order to create *Components* from *Component Specs*. This process utilises intermediate *ComponentSpec* representations called [SpecModels](/javadoc/com/facebook/litho/specmodels/model/SpecModel), which are immutable java objects. 
 
 Code generation comprises three main steps: 
 
@@ -23,4 +23,4 @@ Spec Models have a method called `validate()`, which returns a list of [SpecMode
 If the validation step on a Spec Model is successful, then the `generate` method may be called. This will create a [Javapoet](https://github.com/square/javapoet) `TypeSpec` which can then be easily used to create a Component class file. 
 
 #### Setting up Code Generation for your project
-If you set up your project using the instructions in the [Getting Started](/docs/getting-started) section, then code generation will automatically take place on your project.
+If you set up your project using the instructions in the [Getting Started](getting-started) section, then code generation will automatically take place on your project.

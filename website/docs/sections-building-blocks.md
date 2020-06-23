@@ -23,7 +23,7 @@ final Section loadingSection = SingleComponentSection.create(c)
 
 If you're new to using `DataDiffSection`, we recommend you watch this Litho Lesson which covers the basics of how to do diffing:
 
-<iframe style="padding-top: 10px" width="560" height="315" src="https://www.youtube-nocookie.com/embed/-Ahskig2Lw0" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe padding-top="10px" width="560" height="315" src="https://www.youtube-nocookie.com/embed/-Ahskig2Lw0" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 ### How to Use DataDiffSection
 
@@ -106,7 +106,7 @@ boolean onCheckIsSameContent(
 
 For easy integration with Litho, the framework provides a built-in Component that can render a hierarchy of Sections, called `RecyclerCollectionComponent`.
 
-This is a regular Litho Component that takes a Section prop and has logic for creating the infrastructure for rendering the Components encapsulated in the Section hierarchy in a [Recycler](/docs/recycler-component) managed by a [RecyclerBinder](/javadoc/com/facebook/litho/widget/RecyclerBinder).
+This is a regular Litho Component that takes a Section prop and has logic for creating the infrastructure for rendering the Components encapsulated in the Section hierarchy in a [Recycler](recycler-component) managed by a [RecyclerBinder](/javadoc/com/facebook/litho/widget/RecyclerBinder).
 
 The Sections hierarchy becomes a “data source” for the `RecyclerCollectionComponent`, and the complexity of handling operations on your list, such as inserts or removes, is hidden away and handled by the infrastructure.
 

@@ -4,13 +4,13 @@ title: Sections Tutorial
 ---
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
-*NOTE* This part builds on the work you did in [the litho tutorial](/docs/tutorial). Make sure you've read through that tutorial before returning to this one.
+*NOTE* This part builds on the work you did in [the litho tutorial](tutorial). Make sure you've read through that tutorial before returning to this one.
 
-Recall in [the litho tutorial](/docs/tutorial) that we left off with a vertically scrolling list with alternating background colors. In this optional part of this tutorial, we will add an horizontal scrolling unit at the top of the list by modifying `ListSectionSpec` to leverage the composability of the Litho and Sections API.
+Recall in [the litho tutorial](tutorial) that we left off with a vertically scrolling list with alternating background colors. In this optional part of this tutorial, we will add an horizontal scrolling unit at the top of the list by modifying `ListSectionSpec` to leverage the composability of the Litho and Sections API.
 
 
 ## 1. Refactoring ListSectionSpec
-Let us revisit [ListSectionSpec](/docs/tutorial#3-creating-a-list-of-items).  Each `SingleComponentSection` inside the for loop renders almost the same component, only the number changes.  In other words, each of our `ListItem` components are backed by a model object of the same type: `int`.
+Let us revisit [ListSectionSpec](tutorial#3-creating-a-list-of-items).  Each `SingleComponentSection` inside the for loop renders almost the same component, only the number changes.  In other words, each of our `ListItem` components are backed by a model object of the same type: `int`.
 
 Litho provides another core section `DataDiffSection` that is specifically used to render components backed by a list of models. In this step we will refactor `ListSectionSpec` to use `DataDiffSection`.
 

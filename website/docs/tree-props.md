@@ -4,7 +4,7 @@ title: TreeProps
 ---
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
-A TreeProp is a special type of [prop](/docs/props) which transparently passed
+A TreeProp is a special type of [prop](props) which transparently passed
 from a parent component to its children. It provides a convenient way to share
 contextual data or utilities in a tree without having to explicitly pass `@Prop`
 to every component in your hierarchy.

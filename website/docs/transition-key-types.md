@@ -52,7 +52,9 @@ The reason is that, by default, transition keys are only visible within the scop
 * [**`LOCAL`**](/javadoc/com/facebook/litho/Transition.TransitionKeyType.html#LOCAL) - the default type, only visible within `ComponentSpec` where it is used
 * [**`GLOBAL`**](/javadoc/com/facebook/litho/Transition.TransitionKeyType.html#GLOBAL) - makes a transition key visible through the whole `ComponentTree`. The drawback here is that the keys should be unique within the tree. Thus it usually takes an extra effort to use several component of the same type that assign `GLOBAL` transition keys within one tree and avoid transition keys collisions.
 
-> Note that Litho throws an exception when a transition keys collision occurs, which may not be trivial to debug and resolve in case of `GLOBAL` transition keys. Thus we encourage you to use `LOCAL` transition keys and assign transition keys within the same Spec that defines transitions that target those keys.
+:::note
+Litho throws an exception when a transition keys collision occurs, which may not be trivial to debug and resolve in case of `GLOBAL` transition keys. Thus we encourage you to use `LOCAL` transition keys and assign transition keys within the same Spec that defines transitions that target those keys.
+:::
 
 There are two steps to take to change transition key type:
 

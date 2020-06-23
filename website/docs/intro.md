@@ -6,7 +6,7 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
 
 Litho is a declarative framework for building efficient user interfaces (UI) on
 Android. It allows you to write highly-optimized Android views through a simple
-functional API based on Java annotations. It was [primarily built](/docs/uses)
+functional API based on Java annotations. It was [primarily built](uses)
 to implement complex scrollable UIs based on RecyclerView.
 
 With Litho, you build your UI in terms of *components* instead of interacting
@@ -35,9 +35,9 @@ class HelloComponentSpec {
 
 You simply declare what you want to display and Litho takes care of rendering
 it in the most efficient way by computing [layout in a background
-thread](/docs/asynchronous-layout), automatically [flattening your view
-hierarchy](/docs/view-flattening), and [incrementally
-rendering](/docs/inc-mount-architecture) complex components.
+thread](asynchronous-layout), automatically [flattening your view
+hierarchy](view-flattening), and [incrementally
+rendering](inc-mount-architecture) complex components.
 
 ## Watch the F8 presentation
 
@@ -47,7 +47,7 @@ rendering](/docs/inc-mount-architecture) complex components.
 
 ## Continue exploring
 
-Have a look at our [Tutorial](/docs/tutorial) for a step-by-step guide on using
+Have a look at our [Tutorial](tutorial) for a step-by-step guide on using
 Litho in your app. You can also read the quick start guide on how to
-[write](/docs/writing-components) and [use](/docs/using-components) your own
+[write](writing-components) and [use](using-components) your own
 Litho components.

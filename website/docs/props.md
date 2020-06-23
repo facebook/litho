@@ -207,7 +207,7 @@ MyComponent2.create(c)
 ## Immutability
 
 The props of a Component are read-only. The Component's parent passes down values for the props when it creates the Component and they cannot change throughout the lifecycle of the Component. If the props values must be updated, the parent has to create a new Component and pass down new values for the props.
-The props objects should be made immutable. Due to [background layout](/docs/asynchronous-layout), props may be accessed on multiple threads. Props immutability ensures that no thread safety issues can happen during the component's lifecycle.
+The props objects should be made immutable. Due to [background layout](asynchronous-layout), props may be accessed on multiple threads. Props immutability ensures that no thread safety issues can happen during the component's lifecycle.
 
 ## Common Props
 

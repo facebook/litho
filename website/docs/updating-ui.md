@@ -5,10 +5,10 @@ title: Updating the UI
 
 ## Components and immutability
 Conceptually, components are like pure functions. They accept arbitrary immutable inputs (called “props”) and return a description of the layout that should appear on the screen.
-Components are immutable objects and the framework views the props of a component as read-only attributes. Once a component is created, its props cannot be mutated during its lifecycle without breaking the assumption that components must be immutable for [asynchronous layout](/docs/asynchronous-layout) to be performed safely and correctly.
+Components are immutable objects and the framework views the props of a component as read-only attributes. Once a component is created, its props cannot be mutated during its lifecycle without breaking the assumption that components must be immutable for [asynchronous layout](asynchronous-layout) to be performed safely and correctly.
 
 Of course, application UIs are dynamic and change over time as a result of network changes or user input, so you need a way of informing the framework when these changes occur. So without mutating the props, how do you update a component?
-There are two ways of updating the UI: passing new [props](/docs/props) or updating the internal [state](/docs/state) of a component.
+There are two ways of updating the UI: passing new [props](props) or updating the internal [state](state) of a component.
 
 Every time something needs to be updated on screen, the framework will recreate the ComponentTree that represents the UI, which will be made up of new instances of Components created with the new data values that reflect the desired changes.
 
@@ -76,7 +76,10 @@ val timer = object: CountDownTimer(30000, 1000) {
 Under the hood, when `lithoView.setComponentAsync` is called, the framework triggers a new layout calculation which will recreate the underlying ComponentTree with new Component instances based on the new data.
 The `@OnCreateLayout` methods for all the Components in the hierarchy will be invoked again - basically calling the pure function that the component represents with new params corresponding to the new prop values.
 
-> One important thing to note is that we are using the async option for setting a new root component (`setComponentAync`) - which tells the framework to perform the layout calculation on a background thread.
+:::caution IMPORTANT
+ One important thing to note is that we are using the async option for setting a new root component (`setComponentAync`) - which tells the framework to perform the layout calculation on a background thread.
+:::
+
 For updating UI it's strongly recommended to always use the async methods - this will make your app feel more responsive. If you set a new root synchronously from the UI thread (by calling `setComponent`) the layout computation will be posted to be executed on the UI thread, which is rarely necessary.
 
 ## Updating state
@@ -85,7 +88,7 @@ A toggle component will internally maintain a click handler which needs to updat
 Updating the toggle through props as we've seen in the example above is not a pretty thing to do. When the toggle component receives the click event, it needs to propagate this information all the way outside of the component hierarchy so that a new root component can be set with the new value of the toggle state.
 This is problematic because it makes our toggle component not reusable - every time we want to add it to the UI, all the components in the hierarchy above it need to add the toggle state as a prop so that they can propagate the value down when there is a change.
 
-Luckily, the framework exposes an API which maintains component encapsulation and hides all this nastiness away: component [state](/docs/state).
+Luckily, the framework exposes an API which maintains component encapsulation and hides all this nastiness away: component [state](state).
 Components can maintain internal state data and trigger updates when necessary. The state data is private to the component and cannot be accessed by any other component in the hierarchy.
 
 ```
@@ -121,7 +124,7 @@ object RootComponentSpec {
 }
 ```
 
-The [state docs](/docs/state) describe this API in more detail.
+The [state docs](state) describe this API in more detail.
 One important thing to note is that under the hood, for the performance of your app setting new props and updating state are not much different - the framework will always recreate the entire ComponentTree with new Component instances.
 The same observations about sync and async operations as for setting a new component root apply when updating state.
 

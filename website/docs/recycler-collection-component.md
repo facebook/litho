@@ -4,7 +4,7 @@ title: RecyclerCollectionComponent
 ---
 
 [RecyclerView](https://developer.android.com/reference/android/support/v7/widget/RecyclerView.html) is one of the fundamental building blocks for any Android application that contain a scrolling list of items.
-Litho recommends using [RecyclerCollectionComponent](/javadoc/com/facebook/litho/sections/widget/RecyclerCollectionComponent) and [Sections](/docs/sections-intro) to build scrolling lists easily.  With these apis you can builds everything from simple, homogeneous lists to complex, heterogeneous lists backed by multiple data sources while taking advantage of features such as background layout and incremental mount.
+Litho recommends using [RecyclerCollectionComponent](/javadoc/com/facebook/litho/sections/widget/RecyclerCollectionComponent) and [Sections](sections-intro) to build scrolling lists easily.  With these apis you can builds everything from simple, homogeneous lists to complex, heterogeneous lists backed by multiple data sources while taking advantage of features such as background layout and incremental mount.
 
 ### Create a RecyclerCollectionComponent
 
@@ -21,7 +21,7 @@ static Component onCreateLayout(
 ```
 
 This code will eventually render as a `RecyclerView` who's rows are backed by the contents of the section.
-You can learn more about how to create sections by checking out some of the [building blocks](/docs/sections-building-blocks) included in the library.
+You can learn more about how to create sections by checking out some of the [building blocks](sections-building-blocks) included in the library.
 
 ## Batteries Included
 
@@ -139,7 +139,7 @@ final Component component =
 
 ### Loading, Empty, and error screens
 
-With the sections API you can also integrate your data fetching through [Loading events](/docs/communicating-with-the-ui#null__loadingstate-loadingstate) and [Services](/docs/services).  `RecyclerCollectionComponent` can listen to these [loading events](/javadoc/com/facebook/litho/sections/LoadingEvent.html) and will respond accordingly.  Through the props `loadingComponent`, `emptyComponent`, and `errorComponent`, you can specify what to show when certain things happen when fetching data:
+With the sections API you can also integrate your data fetching through [Loading events](communicating-with-the-ui#null__loadingstate-loadingstate) and [Services](services).  `RecyclerCollectionComponent` can listen to these [loading events](/javadoc/com/facebook/litho/sections/LoadingEvent.html) and will respond accordingly.  Through the props `loadingComponent`, `emptyComponent`, and `errorComponent`, you can specify what to show when certain things happen when fetching data:
  - `loadingComponent`: data is being loaded and there's nothing in the list
  - `emptyComponent`: data has finished loading and there's nothing to show.
  - `errorComponent`: data loading has failed and there's nothing in the list.

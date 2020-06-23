@@ -121,7 +121,7 @@ Sometimes your section's behavior is based on both external props and internal s
 
 ## Testing events
 
-Sections heavily uses the [event handling system](/docs/events-overview) and `SectionComponentTestHelper` has helper methods to make testing events easier. Simply create an event handler using the scoped context and dispatch your event to execute the event handler.
+Sections heavily uses the [event handling system](events-overview) and `SectionComponentTestHelper` has helper methods to make testing events easier. Simply create an event handler using the scoped context and dispatch your event to execute the event handler.
 
 ```java
 

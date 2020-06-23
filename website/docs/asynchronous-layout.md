@@ -63,7 +63,7 @@ Our method is now completely thread safe as it never modifies any internal state
 
 In Litho we try to apply exactly the same concepts to layout computation. A `Component` is an immutable object that contains all the inputs for the layout function in form of `@Prop` and `@State` values. This also explains why we need `@Prop` and `@State` to be immutable. If they weren't, we would lose the property of having layout as a 'pure function'.
 
-Immutability in Java usually comes at the cost of having to do many more allocations. Even in our simple example we are now allocating a `Result` object for every invocation of our function. Litho uses pooling and [code generation](/docs/codegen) to minimize object allocations for you automatically.
+Immutability in Java usually comes at the cost of having to do many more allocations. Even in our simple example we are now allocating a `Result` object for every invocation of our function. Litho uses pooling and [code generation](codegen) to minimize object allocations for you automatically.
 
 ## Sync and Async operations
 
@@ -73,4 +73,4 @@ Synchronous layout calculation ensures that immediately after calling `setRoot()
 The main disadvantage of this is that the computation happens on the caller thread, therefore calling `setRoot()` from the main thread is not advisable. On the other hand there are situations in which you cannot wait for a background thread to compute a layout before showing something on screen, for example when the item you want to display is already in the viewport. In these cases calling `setRoot()` synchronously is the best route.
 Having synchronous operations also makes it very easy to integrate Litho with pre-existing threading models. If your application already has a complex and structured thread design you might want to fit the layout calculation into it without relying on Litho's built-in threads.
 
-Asynchronous layout calculation will use Litho's Layout Thread to compute the Component layout. This means that the work gets enqueued immediately on a separate thread and the layout result will not be visible immediately on the calling thread. Asynchronous layout operations are used widely for example from the [RecyclerBinder](/docs/recycler-component).
+Asynchronous layout calculation will use Litho's Layout Thread to compute the Component layout. This means that the work gets enqueued immediately on a separate thread and the layout result will not be visible immediately on the calling thread. Asynchronous layout operations are used widely for example from the [RecyclerBinder](recycler-component).

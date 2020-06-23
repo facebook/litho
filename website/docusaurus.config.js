@@ -89,6 +89,11 @@ module.exports = {
           ]
         },
       ],
+      logo: {
+        alt: 'Facebook Open Source Logo',
+        src: 'static/oss_logo.png',
+        href: 'https://opensource.facebook.com',
+      },
     },
     prism: {
       theme: require('prism-react-renderer/themes/github'),
