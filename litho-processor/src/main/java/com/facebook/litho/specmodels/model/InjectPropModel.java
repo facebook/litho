@@ -91,10 +91,6 @@ public class InjectPropModel implements MethodParamModel {
     };
   }
 
-  public boolean isLazy() {
-    return mIsLazy;
-  }
-
   /** @return a new {@link PropModel} instance with the given name overridden. */
   public InjectPropModel withName(String name) {
     return new InjectPropModel(mParamModel, mIsLazy) {

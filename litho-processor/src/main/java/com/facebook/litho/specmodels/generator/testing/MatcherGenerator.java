@@ -682,7 +682,7 @@ public final class MatcherGenerator {
     final String getterName =
         diHelper.generateTestingFieldAccessor(
                 fieldExtractorSpec.specModel,
-                new InjectPropModel(fieldExtractorSpec.propModel, fieldExtractorSpec.isLazy))
+                new InjectPropModel(fieldExtractorSpec.propModel, true))
             .name;
     return CodeBlock.builder()
         .addStatement(
@@ -794,20 +794,17 @@ public final class MatcherGenerator {
     public final SpecModel specModel;
     public final String varName;
     public final MethodParamModel propModel;
-    public final boolean isLazy;
 
     private FieldExtractorSpec(SpecModel specModel, MethodParamModel propModel, String varName) {
       this.specModel = specModel;
       this.propModel = propModel;
       this.varName = varName;
-      this.isLazy = false;
     }
 
     private FieldExtractorSpec(SpecModel specModel, InjectPropModel propModel, String varName) {
       this.specModel = specModel;
       this.propModel = propModel;
       this.varName = varName;
-      this.isLazy = propModel.isLazy();
     }
   }
 }
