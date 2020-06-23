@@ -21,7 +21,7 @@ The framework needs to do the following steps in order to run *change* animation
 
 1. Pick the current value of the `AnimatedProperty.P` from the mounted UI element (normally, a `View`) that represents `ComponentC` on the screen — this is going to be the *start* value for animation.
 2. Pick the animation *end* value of `AnimatedProperty.P` from the blueprint of layout *B*.
-3. When the layout *B* is mounted to the screen, we do not apply the new value of `P` right away, as we normally would, instead, we keep the previous value in place, but subscribe to the [`Choreographer`](javadoc/com/facebook/litho/choreographercompat/ChoreographerCompat.html), and start changing the value of `P` for the new mounted UI element on every frame until it reaches the end value.
+3. When the layout *B* is mounted to the screen, we do not apply the new value of `P` right away, as we normally would, instead, we keep the previous value in place, but subscribe to the [`Choreographer`](/javadoc/com/facebook/litho/choreographercompat/ChoreographerCompat.html), and start changing the value of `P` for the new mounted UI element on every frame until it reaches the end value.
 
 ### Appear Transitions
 

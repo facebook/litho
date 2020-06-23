@@ -35,7 +35,7 @@ However, when the value of the state changes, we re-render the `ComponentTree` w
 
 Here are the key elements you'll need to work with:
 
-* **`@OnCreateTransition`** method. You need to add a method annotated with `@OnCreateTransition` to your Spec, which is what we use to define the transition animations. It should return a [`Transition`](javadoc/com/facebook/litho/Transition.html), and its first argument should always be of `ComponentContext` type. As other lifecycle methods in a Spec, it could also have `@Prop` arguments, as well as arguments of `StateValue` type, although this comes at a cost - more on this later.
+* **`@OnCreateTransition`** method. You need to add a method annotated with `@OnCreateTransition` to your Spec, which is what we use to define the transition animations. It should return a [`Transition`](/javadoc/com/facebook/litho/Transition.html), and its first argument should always be of `ComponentContext` type. As other lifecycle methods in a Spec, it could also have `@Prop` arguments, as well as arguments of `StateValue` type, although this comes at a cost - more on this later.
 * **`Transition`** is a description of which Component/Property (mandatory) and how (optional) you want to animate. You will not use a constructor to create `Transition` instances, instead you will use one of the provided `Builder`s.
 * **`transitionKey`** is an identifier that you normally assign to a `Component` that you want to animate, and then use it when defining `Transition`.
 * **`AnimatedProperties`** are used to target the property of a `Component` that should be animated when its value changes.
@@ -73,10 +73,10 @@ class MyComponentSpec {
 </video>
 
 Notice that we:
-1. On *line 12* we assign a `transitionKey` to the `Rect` component using [`Component.Builder#transitionKey()`](javadoc/com/facebook/litho/Component.Builder.html#transitionKey-java.lang.String-) method.
-2. On *lines 19-20* we create a `Transition` using [`Transition.create()`](javadoc/com/facebook/litho/Transition.html#create-java.lang.String-) that takes a `transitionKey` and then specify the property of the component using [`.animate()`](javadoc/com/facebook/litho/Transition.TransitionUnitsBuilder.html#animate-com.facebook.litho.animation.AnimatedProperty-) method that takes an [`AnimatedProperty`](javadoc/com/facebook/litho/animation/AnimatedProperties.html).
+1. On *line 12* we assign a `transitionKey` to the `Rect` component using [`Component.Builder#transitionKey()`](/javadoc/com/facebook/litho/Component.Builder.html#transitionKey-java.lang.String-) method.
+2. On *lines 19-20* we create a `Transition` using [`Transition.create()`](/javadoc/com/facebook/litho/Transition.html#create-java.lang.String-) that takes a `transitionKey` and then specify the property of the component using [`.animate()`](/javadoc/com/facebook/litho/Transition.TransitionUnitsBuilder.html#animate-com.facebook.litho.animation.AnimatedProperty-) method that takes an [`AnimatedProperty`](/javadoc/com/facebook/litho/animation/AnimatedProperties.html).
 
-Both of these methods take [variable number of arguments](javadoc/com/facebook/litho/Transition.html#create-java.lang.String...-), so the description of the multiple `Transition`s may nicely be collapsed and it may look like this:
+Both of these methods take [variable number of arguments](/javadoc/com/facebook/litho/Transition.html#create-java.lang.String...-), so the description of the multiple `Transition`s may nicely be collapsed and it may look like this:
 
 ```java
 @OnCreateTransition

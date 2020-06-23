@@ -4,7 +4,7 @@ title: Unit Testing Sections
 ---
 
 
-[SectionComponentTestHelper](javadoc/com/facebook/litho/testing/sections/SectionComponentTestHelper.html) provides helper functions to easily test the output of GroupSectionSpecs and state updates.
+[SectionComponentTestHelper](/javadoc/com/facebook/litho/testing/sections/SectionComponentTestHelper.html) provides helper functions to easily test the output of GroupSectionSpecs and state updates.
 
 To demonstrate the testing functionality, consider this simple group section with a a list of text and an optional image header.
 
@@ -69,7 +69,7 @@ public class VerySimpleGroupSectionSpec {
 ## Testing Children
 
 `SectionComponentTestHelper` helps you test a group section spec's `@OnCreateChildren` method by returning
-the children of a section as a list of [SubSection](javadoc/com/facebook/litho/testing/sections/SubSection.html). SubSections can either be matched by exact props or by section class.  These are best used as existence checks.
+the children of a section as a list of [SubSection](/javadoc/com/facebook/litho/testing/sections/SubSection.html). SubSections can either be matched by exact props or by section class.  These are best used as existence checks.
 
 ```java
 

@@ -4,7 +4,7 @@ title: Custom Layout
 ---
 Litho relies on [Yoga](https://yogalayout.com/docs/), a powerful layout engine that is able to create very complex UIs, for layout calculations.  However, there are few exceptions where Yoga is not enough and you may need to implement your own measuring and layout. 
 
-Litho provides a custom layout API for accessing size information while the [`ComponentTree`](javadoc/com/facebook/litho/ComponentTree.html) is being created and measured, as well as the possibility to measure a component in isolation.
+Litho provides a custom layout API for accessing size information while the [`ComponentTree`](/javadoc/com/facebook/litho/ComponentTree.html) is being created and measured, as well as the possibility to measure a component in isolation.
 
 :::caution IMPORTANT
  This API comes with a **non-negligible** performance overhead. Therefore, it is advisable to only use it when it is absolutely necessary.
@@ -17,7 +17,7 @@ Litho provides a custom layout API for accessing size information while the [`Co
 * **Children of a container have to be absolutely positioned manually based on their/parent size.** Yoga can absolutely position children in a parent. However, the position itself might depend on the child sizes after being measured using the parent size constraints. Margins or paddings need to be manually taken into account if required.
 
 ## Size constraints
-Before diving into the API, you should be familiar with how the [`onMeasure`](https://developer.android.com/reference/android/view/View.html#onMeasure(int,%20int)) function works in a regular Android `View` and what a [`MeasureSpec`](https://developer.android.com/reference/android/view/View.MeasureSpec.html) is, since Litho uses an equivalent concept called [`SizeSpec`](javadoc/com/facebook/litho/SizeSpec.html). 
+Before diving into the API, you should be familiar with how the [`onMeasure`](https://developer.android.com/reference/android/view/View.html#onMeasure(int,%20int)) function works in a regular Android `View` and what a [`MeasureSpec`](https://developer.android.com/reference/android/view/View.MeasureSpec.html) is, since Litho uses an equivalent concept called [`SizeSpec`](/javadoc/com/facebook/litho/SizeSpec.html). 
 
 Similar to the Android `MeasureSpec` equivalent, Litho's `SizeSpec` is composed of a size and a mode. The possible modes, same as for `MeasureSpec`, are: `UNSPECIFIED`, `EXACTLY` and `AT_MOST`.
 
@@ -45,7 +45,7 @@ final int textComponentHeight = outputSize.height;
 ```
 
 ## SizeSpec information during layout
-During layout creation, the API can provide information about the `SizeSpecs` a component is going to be measured with. To access this information, the [`@OnCreateLayoutWithSizeSpec`](javadoc/com/facebook/litho/annotations/OnCreateLayoutWithSizeSpec.html) annotation needs to be used instead of `@OnCreateLayout`. The arguments of the annotated method, besides the standard ComponentContext, are two more integers representing the width spec and the height spec.
+During layout creation, the API can provide information about the `SizeSpecs` a component is going to be measured with. To access this information, the [`@OnCreateLayoutWithSizeSpec`](/javadoc/com/facebook/litho/annotations/OnCreateLayoutWithSizeSpec.html) annotation needs to be used instead of `@OnCreateLayout`. The arguments of the annotated method, besides the standard ComponentContext, are two more integers representing the width spec and the height spec.
 
 In the following example, a `Text` component is measured to check if the given text fits in the available space. An `Image` component is otherwise used.
 
@@ -85,7 +85,7 @@ class MyComponentSpec {
 
 `@CreateLayoutWithSizeSpec` can be called more than once in cases where Yoga calls measure.  If the previous layout can be used for the new size spec this call can be avoided. Implementing the `OnShouldCreateLayoutWithNewSizeSpec` allows the spec to specify when the previous layout can be reused.
 
-[`@OnShouldCreateLayoutWithNewSizeSpec`](javadoc/com/facebook/litho/annotations/OnShouldCreateLayoutWithNewSizeSpec.html) indicates that the annotated method will be called when the component checks if it can use the previous layout with a new size spec. This is used in conjunction with `@OnCreateLayoutWithSizeSpec`. The annotated method must have the following signature:
+[`@OnShouldCreateLayoutWithNewSizeSpec`](/javadoc/com/facebook/litho/annotations/OnShouldCreateLayoutWithNewSizeSpec.html) indicates that the annotated method will be called when the component checks if it can use the previous layout with a new size spec. This is used in conjunction with `@OnCreateLayoutWithSizeSpec`. The annotated method must have the following signature:
 
 ```java
 @OnShouldCreateLayoutWithNewSizeSpec

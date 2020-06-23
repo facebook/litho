@@ -58,7 +58,7 @@ MyComponent.create(c)
 
 ## Prop defaults
 
-[`PropDefault`](javadoc/com/facebook/litho/annotations/PropDefault.html) can be used for setting
+[`PropDefault`](/javadoc/com/facebook/litho/annotations/PropDefault.html) can be used for setting
 the default value of an optional `Prop` in a `LayoutSpec` or `MountSpec`. The annotated field must
 be a constant (i.e. `static final`) with the same name and type as the `Prop`. We'll often want to
 define explicit default values for our optional props instead of simply using Java's defaults.

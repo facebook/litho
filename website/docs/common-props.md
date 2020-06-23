@@ -112,7 +112,7 @@ This page contains a detailed API reference for the Litho's component common pro
 ### Background
 
 Sets the background of the component; pass a
-[ComparableDrawable](javadoc/com/facebook/litho/drawable/ComparableDrawable.html){:target="_blank"} to make
+[ComparableDrawable](/javadoc/com/facebook/litho/drawable/ComparableDrawable.html){:target="_blank"} to make
 subsequent mounting more efficient.
 
 ```
@@ -144,7 +144,7 @@ MyComponent.create(c)
   )
  ```
 
- See: [YogaEdge](javadoc/com/facebook/yoga/YogaEdge.html){:target="_blank"}, [Border](javadoc/com/facebook/litho/Border.Builder.html){:target="_blank"}
+ See: [YogaEdge](/javadoc/com/facebook/yoga/YogaEdge.html){:target="_blank"}, [Border](/javadoc/com/facebook/litho/Border.Builder.html){:target="_blank"}
 
 ### ClickHandler
 

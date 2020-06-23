@@ -99,7 +99,7 @@ continue with the next section, [Running Tests in Android Studio](tests-in-andro
 ## Additional Resources
 
 There are plenty of additional matchers available, which you can look up in the
-[API docs](javadoc/index.html):
+[API docs](/javadoc/index.html):
 
-- [LithoViewMatchers](javadoc/com/facebook/litho/testing/espresso/LithoViewMatchers.html)
-- [ComponentHostMatchers](javadoc/com/facebook/litho/testing/espresso/ComponentHostMatchers.html)
+- [LithoViewMatchers](/javadoc/com/facebook/litho/testing/espresso/LithoViewMatchers.html)
+- [ComponentHostMatchers](/javadoc/com/facebook/litho/testing/espresso/ComponentHostMatchers.html)

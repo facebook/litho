@@ -4,7 +4,7 @@ title: Animating All Layout
 ---
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
-[`Transition.allLayout()`](javadoc/com/facebook/litho/Transition.html#allLayout--) allows easily animating all layout changes, without having to assign `transitionKey`s to all `Component`s
+[`Transition.allLayout()`](/javadoc/com/facebook/litho/Transition.html#allLayout--) allows easily animating all layout changes, without having to assign `transitionKey`s to all `Component`s
 
 ```java
 @OnCreateTransition

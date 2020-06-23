@@ -7,11 +7,11 @@ A *diff section spec* defines a section that explicitly outputs insert, update, 
 
 Diff section specs explicitly manage insertions, removals, and updates that a section performs whenever its states and props change.  You will find Diff Sections at the leaves of every section tree as they are the sections that actually specify the changes to be made to a list.
 
-One example where you might want a custom diff section is if you receive the data you want to display in the form of incremental updates or diffs. This might happen if you're using something similar to [DiffUtil](https://developer.android.com/reference/android/support/v7/util/DiffUtil.html) to process your data. (If you are using `DiffUtil` though, consider using the prebuilt [DataDiffSection](javadoc/com/facebook/litho/sections/common/DataDiffSection.html) instead of rolling your own diff section.)
+One example where you might want a custom diff section is if you receive the data you want to display in the form of incremental updates or diffs. This might happen if you're using something similar to [DiffUtil](https://developer.android.com/reference/android/support/v7/util/DiffUtil.html) to process your data. (If you are using `DiffUtil` though, consider using the prebuilt [DataDiffSection](/javadoc/com/facebook/litho/sections/common/DataDiffSection.html) instead of rolling your own diff section.)
 
 In general, you should not need to write your own diff sections specs.  The `com.facebook.litho.sections.widget` package provides two diff sections that cover almost all use cases.
 
-Let's use the example of [SingleComponentSection](javadoc/com/facebook/litho/sections/common/SingleComponentSection.html) to describe how to write diff section specs.  Here is a snippet of `SingleComponentSectionSpec`:
+Let's use the example of [SingleComponentSection](/javadoc/com/facebook/litho/sections/common/SingleComponentSection.html) to describe how to write diff section specs.  Here is a snippet of `SingleComponentSectionSpec`:
 
 ```java
 @DiffSectionSpec
@@ -47,7 +47,7 @@ class SingleComponentSectionSpec {
 
 As you can see, diff section specs use the `@DiffSectionSpec` annotation. Implementing a diff section spec is simple. You only have to write one method annotated with `@OnDiff`.
 
-The method annotated with `@OnDiff` must have as its first and second argument a [SectionContext](javadoc/com/facebook/litho/sections/SectionContext.html) and a [ChangeSet](javadoc/com/facebook/litho/sections/ChangeSet.html) respectively. Following these two arguments, your `@OnDiff` method can also accept any number of arguments annotated with `@Prop` or `@State`.
+The method annotated with `@OnDiff` must have as its first and second argument a [SectionContext](/javadoc/com/facebook/litho/sections/SectionContext.html) and a [ChangeSet](/javadoc/com/facebook/litho/sections/ChangeSet.html) respectively. Following these two arguments, your `@OnDiff` method can also accept any number of arguments annotated with `@Prop` or `@State`.
 
 These props and state have a special type: `Diff<T>`.  If your prop is defined in another annotated method like `@Prop String prop1`, it must be defined as `@Prop Diff<String> prop1` when being used in the `@OnDiff` method. The reason for this `Diff<T>` type wrapper is so we can compare previous prop values with new prop values when computing changes.
 

@@ -5,7 +5,7 @@ title: Incremental Mount
 
 ## Manual incremental mount
 
-If you're not using the [Recycler](javadoc/com/facebook/litho/widget/Recycler.html) component, you can still integrate incremental mount in your existing UI implementation. You'll have to explicitly notify the framework every time the `LithoView`'s visible region changes, by calling:
+If you're not using the [Recycler](/javadoc/com/facebook/litho/widget/Recycler.html) component, you can still integrate incremental mount in your existing UI implementation. You'll have to explicitly notify the framework every time the `LithoView`'s visible region changes, by calling:
 
 ```java
 myLithoView.performIncrementalMount();
