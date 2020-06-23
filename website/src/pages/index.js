@@ -56,12 +56,12 @@ const features = [
 function Feature({imageUrl, title, description, dark}) {
   const imgUrl = useBaseUrl(imageUrl);
   return (
-    <div className={clsx("container", dark && styles.darkFeature, styles.feature)}>
+    <div className={clsx(styles.feature, dark && styles.darkFeature)}>
       <div className={styles.featureContent}>
         <img className={styles.featureImage} src={imgUrl} alt={title} />
         <div className={styles.featureText}>
-          <h3>{title}</h3>
-          <p>{description}</p>
+          <h3 className={styles.featureTitle}>{title}</h3>
+          <p className={styles.featureDescription}>{description}</p>
         </div>
       </div>
     </div>
@@ -81,11 +81,27 @@ function Home() {
           <div className={styles.buttons}>
             <Link
               className={clsx(
-                'button button--outline button--secondary button--lg',
-                styles.getStarted,
+                'button button--outline',
+                styles.button,
               )}
               to={useBaseUrl('docs/')}>
               Get Started
+            </Link>
+            <Link
+              className={clsx(
+                'button button--outline',
+                styles.button,
+              )}
+              to={useBaseUrl('docs/intro')}>
+              Learn More
+            </Link>
+            <Link
+              className={clsx(
+                'button button--outline',
+                styles.button,
+              )}
+              to={useBaseUrl('docs/tutorial')}>
+              Tutorial
             </Link>
           </div>
         </div>
@@ -93,7 +109,7 @@ function Home() {
       <main>
         {features && features.length > 0 && (
           <section className={styles.features}>
-              <div className="row">
+              <div className={clsx('row', styles.content)}>
                 {features.map((props, idx) => (
                   <Feature key={idx} {...props} />
                 ))}
