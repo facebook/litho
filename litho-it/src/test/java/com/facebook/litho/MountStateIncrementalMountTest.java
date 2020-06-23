@@ -738,6 +738,37 @@ public class MountStateIncrementalMountTest {
     assertThat(lifecycleTracker2.isMounted()).isTrue();
   }
 
+  @Test
+  public void testMountStateNeedsRemount_incrementalMountAfterUnmount_isFalse() {
+    final LifecycleTracker lifecycleTracker1 = new LifecycleTracker();
+    final LifecycleTracker lifecycleTracker2 = new LifecycleTracker();
+    final Component child1 =
+        MountSpecLifecycleTester.create(mContext).lifecycleTracker(lifecycleTracker1).build();
+    final Component child2 =
+        MountSpecLifecycleTester.create(mContext).lifecycleTracker(lifecycleTracker2).build();
+    final Component root =
+        Column.create(mContext)
+            .child(Wrapper.create(mContext).delegate(child1).widthPx(10).heightPx(10))
+            .child(Wrapper.create(mContext).delegate(child2).widthPx(10).heightPx(10))
+            .build();
+
+    mLithoViewRule
+        .setRoot(root)
+        .attachToWindow()
+        .setSizeSpecs(makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY))
+        .measure()
+        .layout();
+
+    final LithoView lithoView = mLithoViewRule.getLithoView();
+    assertThat(lithoView.mountStateNeedsRemount()).isFalse();
+
+    lithoView.unmountAllItems();
+    assertThat(lithoView.mountStateNeedsRemount()).isTrue();
+
+    lithoView.getComponentTree().mountComponent(new Rect(0, 5, 10, 15), true);
+    assertThat(lithoView.mountStateNeedsRemount()).isFalse();
+  }
+
   /**
    * Tests incremental mount behaviour of a nested Litho View. We want to ensure that when a child
    * view is first mounted due to a layout pass it does not also have notifyVisibleBoundsChanged

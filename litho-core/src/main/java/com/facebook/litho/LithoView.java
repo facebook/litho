@@ -1057,18 +1057,7 @@ public class LithoView extends Host {
         MountStartupLoggingInfo.maybeLogLastMountStart(mMountStartupLoggingInfo, this);
 
     if (mUseExtensions) {
-
-      if (currentVisibleArea != null && !isMountStateDirty()) {
-        mLithoHostListenerCoordinator.onVisibleBoundsChanged(currentVisibleArea);
-      } else {
-        if (mLithoHostListenerCoordinator != null) {
-          mLithoHostListenerCoordinator.beforeMount(layoutState, currentVisibleArea);
-        }
-        mMountDelegateTarget.mount(layoutState.toRenderTree());
-        if (mLithoHostListenerCoordinator != null) {
-          mLithoHostListenerCoordinator.afterMount();
-        }
-      }
+      mountWithMountDelegateTarget(layoutState, currentVisibleArea);
     } else {
       mMountState.mount(layoutState, currentVisibleArea, processVisibilityOutputs);
     }
@@ -1080,6 +1069,22 @@ public class LithoView extends Host {
     }
     if (loggedLastMount) {
       MountStartupLoggingInfo.logLastMountEnd(mMountStartupLoggingInfo);
+    }
+  }
+
+  private void mountWithMountDelegateTarget(
+      LayoutState layoutState, @Nullable Rect currentVisibleArea) {
+    final boolean needsMount = isMountStateDirty() || mountStateNeedsRemount();
+    if (currentVisibleArea != null && !needsMount) {
+      mLithoHostListenerCoordinator.onVisibleBoundsChanged(currentVisibleArea);
+    } else {
+      if (mLithoHostListenerCoordinator != null) {
+        mLithoHostListenerCoordinator.beforeMount(layoutState, currentVisibleArea);
+      }
+      mMountDelegateTarget.mount(layoutState.toRenderTree());
+      if (mLithoHostListenerCoordinator != null) {
+        mLithoHostListenerCoordinator.afterMount();
+      }
     }
   }
 

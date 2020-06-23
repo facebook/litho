@@ -494,6 +494,9 @@ class MountState
 
     if (mIsDirty) {
       updateTransitions(layoutState, componentTree, localVisibleRect);
+    }
+
+    if (mIsDirty || mNeedsRemount) {
       mIncrementalMountExtension.beforeMount(layoutState, localVisibleRect);
       mount(layoutState);
     } else {
