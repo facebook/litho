@@ -45,7 +45,9 @@ import com.facebook.litho.testing.ViewGroupWithLithoViewChildren;
 import com.facebook.litho.widget.MountSpecLifecycleTester;
 import com.facebook.litho.widget.SimpleMountSpecTester;
 import com.facebook.litho.widget.Text;
+import com.facebook.yoga.YogaAlign;
 import com.facebook.yoga.YogaEdge;
+import com.facebook.yoga.YogaPositionType;
 import java.util.Arrays;
 import java.util.Collection;
 import org.junit.After;
@@ -475,19 +477,33 @@ public class MountStateIncrementalMountTest {
                     .widthPx(10)
                     .heightPx(10)
                     .clickHandler(eventHandler)
+                    .positionType(YogaPositionType.ABSOLUTE)
+                    .alignSelf(YogaAlign.CENTER)
+                    .marginDip(YogaEdge.LEFT, -10)
                     .marginDip(YogaEdge.TOP, -10))
             .build();
 
+    final Component root2 =
+        Row.create(mContext)
+            .child(
+                Wrapper.create(mContext)
+                    .delegate(root)
+                    .clickHandler(eventHandler)
+                    .marginDip(YogaEdge.TOP, 100)
+                    .build())
+            .build();
+
     mLithoViewRule
-        .setRoot(root)
+        .setRoot(root2)
         .attachToWindow()
         .setSizeSpecs(makeSizeSpec(1000, EXACTLY), makeSizeSpec(1000, EXACTLY))
         .measure()
         .layout();
 
     final LithoView lithoView = mLithoViewRule.getLithoView();
+    lithoView.getComponentTree().mountComponent(new Rect(0, 0, 1000, 10), true);
 
-    lithoView.getComponentTree().mountComponent(new Rect(0, -10, 10, -5), true);
+    lithoView.getComponentTree().mountComponent(new Rect(0, 80, 1000, 1000), true);
   }
 
   /** Tests incremental mount behaviour of overlapping view mount items. */
