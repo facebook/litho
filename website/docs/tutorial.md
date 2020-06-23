@@ -166,13 +166,7 @@ That's `ListSection` you're using, not `ListSectionSpec`.
 
 `ListSectionSpec` should look familiar to the `ListItemSpec` you wrote in the last step! Litho runs annotation processors over your code to find `ListSectionSpec` and generates `ListSection` just like how it finds `ListItemSpec` and generates `ListItem` in the same package as your spec.
 
-<<<<<<< HEAD
 Run the app. You should see a scrollable list of 32 `ListItem` components:
-=======
-Run the app. You should see a scrollable list of 32 ListItem components:
-
-<img src={useBaseUrl("/static/images/barebones3.png")} width="300px" />
->>>>>>> fix tutorial
 
 <img src={useBaseUrl("/static/images/barebones3.png")} style={{width: "300px"}}/>
 

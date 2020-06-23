@@ -23,8 +23,7 @@ module.exports = {
           position: 'right',
         },
         {
-          to: '#',
-          activeBasePath: '#',
+          to: 'docs/javadoc',
           label: 'API',
           position: 'right',
         },
