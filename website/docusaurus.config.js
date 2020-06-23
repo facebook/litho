@@ -13,7 +13,7 @@ module.exports = {
       title: 'Litho',
       logo: {
         alt: 'Litho Logo',
-        src: 'logo.png',
+        src: 'logo.svg',
       },
       links: [
         {
@@ -45,21 +45,48 @@ module.exports = {
       style: 'dark',
       logo: {
         alt: 'Facebook Open Source Logo',
-        src: 'img/oss_logo.png',
+        src: 'oss_logo.png',
         href: 'https://opensource.facebook.com',
       },
       links: [
         {
-          label: 'Open Source Projects',
-          to: '#',
+          title: 'Learn',
+          items: [
+            {
+              label: 'Getting Started',
+              to: 'docs/',
+            },
+            {
+              label: 'API',
+              to: 'api/',
+            },
+          ]
         },
         {
-          label: 'Github',
-          to: '#',
+          title: 'Open Source',
+          items: [
+            {
+              label: 'How To Contribute',
+              to: 'docs/contributing',
+            },
+            {
+              label: 'Open Source Projects',
+              to: 'https://opensource.facebook.com',
+            },
+          ]
         },
         {
-          label: 'Twitter',
-          to: '#',
+          title: 'Social',
+          items: [
+            {
+              label: 'Github',
+              to: '#',
+            },
+            {
+              label: 'Twitter',
+              to: '#',
+            },
+          ]
         },
       ],
     },
