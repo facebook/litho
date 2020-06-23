@@ -25,7 +25,7 @@ In order to make this happen, the framework needs to postpone collection of `Tra
 
 ### @Prop `Diff<T>` and @State `Diff<T>`
 
-If your transitions should depend not only on the actual (updated) value of a `@Prop` or a `@State`, but rather ont the value change, you could use a generic [Diff](/javadoc/com/facebook/litho/Diff) for arguments, so you get access to both previous and next `@State`/`@Prop` values.
+If your transitions should depend not only on the actual (updated) value of a `@Prop` or a `@State`, but rather ont the value change, you could use a generic [Diff](javadoc/com/facebook/litho/Diff.html) for arguments, so you get access to both previous and next `@State`/`@Prop` values.
 
 Here's how we could change one of our samples to only animate expanding, but not collapsing.
 

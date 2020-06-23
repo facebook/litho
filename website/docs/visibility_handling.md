@@ -7,12 +7,12 @@ title: Visibility Handling
 
 The framework currently supports six types of Visibility Event:
 
-- [Visible Event](/javadoc/com/facebook/litho/VisibleEvent): this event is triggered when at least one pixel of the Component is visible.
-- [Invisible Event](/javadoc/com/facebook/litho/InvisibleEvent): this event is triggered when the Component no longer has any pixels on the screen.
-- [Focused Visible Event](/javadoc/com/facebook/litho/FocusedVisibleEvent): this event is triggered when either the Component occupies at least half of the viewport, or, if the Component is smaller than half the viewport, when it is fully visible.
-- [Unfocused Visible Event](/javadoc/com/facebook/litho/UnfocusedVisibleEvent): this event is triggered when the Component is no longer focused, i.e. it is not fully visible and does not occupy at least half the viewport.
-- [Full Impression Visible Event](/javadoc/com/facebook/litho/FullImpressionVisibleEvent): this event is triggered when the entire Component has passed through the viewport at some point.
-- [VisibilityChangedEvent](/javadoc/com/facebook/litho/VisibilityChangedEvent): this event is triggered when the visibility of the Component on the screen changes.
+- [Visible Event](javadoc/com/facebook/litho/VisibleEvent.html): this event is triggered when at least one pixel of the Component is visible.
+- [Invisible Event](javadoc/com/facebook/litho/InvisibleEvent.html): this event is triggered when the Component no longer has any pixels on the screen.
+- [Focused Visible Event](javadoc/com/facebook/litho/FocusedVisibleEvent.html): this event is triggered when either the Component occupies at least half of the viewport, or, if the Component is smaller than half the viewport, when it is fully visible.
+- [Unfocused Visible Event](javadoc/com/facebook/litho/UnfocusedVisibleEvent.html): this event is triggered when the Component is no longer focused, i.e. it is not fully visible and does not occupy at least half the viewport.
+- [Full Impression Visible Event](javadoc/com/facebook/litho/FullImpressionVisibleEvent.html): this event is triggered when the entire Component has passed through the viewport at some point.
+- [VisibilityChangedEvent](javadoc/com/facebook/litho/VisibilityChangedEvent.html): this event is triggered when the visibility of the Component on the screen changes.
 
 ### Usage
 

@@ -9,17 +9,17 @@ A Litho component can contain two types of data:
 *  **state**: encapsulated and managed within the component, and is transparent to the parent.
 
 States for a given Component are the union of all arguments annotated with
-[`State`](/javadoc/com/facebook/litho/annotations/State.html) in the spec. While both Prop and
+[`State`](javadoc/com/facebook/litho/annotations/State.html) in the spec. While both Prop and
 State hold information that influences the output of the component, they are different in one
 important way: props get passed to the component from its parent whereas states are managed
 within the component.
 
 The initial values of states can be set using the
-[OnCreateInitialState](/javadoc/com/facebook/litho/annotations/OnCreateInitialState.html) method
-and states can be updated in [OnUpdateState](/javadoc/com/facebook/litho/annotations/OnUpdateState.html)
-methods. Updating states in the [OnUpdateState](/javadoc/com/facebook/litho/annotations/OnUpdateState.html)
+[OnCreateInitialState](javadoc/com/facebook/litho/annotations/OnCreateInitialState.html) method
+and states can be updated in [OnUpdateState](javadoc/com/facebook/litho/annotations/OnUpdateState.html)
+methods. Updating states in the [OnUpdateState](javadoc/com/facebook/litho/annotations/OnUpdateState.html)
 methods will cause the component to invoke its
-[OnCreateLayout](/javadoc/com/facebook/litho/annotations/OnCreateLayout.html) method.
+[OnCreateLayout](javadoc/com/facebook/litho/annotations/OnCreateLayout.html) method.
 States should be immutable since the layout can be calculated on multiple threads. Immutability of
 the states ensures that no thread safety issues can occur in the component hierarchy.
 
@@ -68,7 +68,7 @@ This is what you need to know when writing an `@OnCreateInitialState` method:
 
 * The first parameter must be of type `ComponentContext`.
 * `@Prop` parameters are allowed.
-* All other parameters must have a corresponding parameter annotated with `@State` in the other lifecycle methods, and their type must be a [StateValue](/javadoc/com/facebook/litho/StateValue) that is parameterized with the type of the matching `@State` element.
+* All other parameters must have a corresponding parameter annotated with `@State` in the other lifecycle methods, and their type must be a [StateValue](javadoc/com/facebook/litho/StateValue.html) that is parameterized with the type of the matching `@State` element.
 * `@OnCreateInitialState` methods are not mandatory. If you do not define one or if you only initialize some states, the uninitialized ones will take Java defaults.
 * `@OnCreateInitialState` is called only once for each component, when it first gets added to the `ComponentTree`. Following layout recalculations of the same `ComponentTree` will not call this again if the key of the component doesn't change.
 * You should never need to call the `@OnCreateInitialState` method yourself.

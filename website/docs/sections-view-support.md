@@ -35,7 +35,7 @@ class MyGroupSectionSpec {
 
 When an item needs to be rendered on screen, the framework dispatches a `RenderEvent` and it calls the event handler passed as prop to the `DataDiffSection` to create a `RenderInfo` for that item. `RenderInfo` holds information that allows the framework to understand how a certain item should be rendered.
 
-`RenderInfo` has two implementations: [ComponentRenderInfo](/javadoc/com/facebook/litho/widget/ComponentRenderInfo.html) and [ViewRenderInfo](/javadoc/com/facebook/litho/widget/ViewRenderInfo.html).
+`RenderInfo` has two implementations: [ComponentRenderInfo](javadoc/com/facebook/litho/widget/ComponentRenderInfo.html) and [ViewRenderInfo](javadoc/com/facebook/litho/widget/ViewRenderInfo.html).
 
 We've seen in the previous example how to use `ComponentRenderInfo` to declare how an item should be rendered using Litho Components. If you want to render items with Views instead, all you have to do is return a `ViewRenderInfo` instance from the `RenderEvent` handler.
 
@@ -82,13 +82,13 @@ class MyGroupSectionSpec {
 }
 ```
 
-`ViewRenderInfo` has two mandatory props that need to be passed to it: a [ViewCreator](/javadoc/com/facebook/litho/viewcompat/ViewCreator.html) and a [ViewBinder](/javadoc/com/facebook/litho/viewcompat/ViewBinder.html).
+`ViewRenderInfo` has two mandatory props that need to be passed to it: a [ViewCreator](javadoc/com/facebook/litho/viewcompat/ViewCreator.html) and a [ViewBinder](javadoc/com/facebook/litho/viewcompat/ViewBinder.html).
 
 `ViewCreator` and `ViewBinder` are the logical equivalent of `onCreateViewHolder` and `onBindViewHolder` methods of the `RecyclerView.Adapter`.
 
 Views created by the same `ViewCreator` instance will be recycled in the same pool in RecyclerView. You can create a static instance of `ViewCreator` for different view types which you will use in the sections and pass static instance to `.viewCreator` method to ensure efficient recycling. You can use the `model` or the `index` to decide amongst multiple view types and return the appropriate `ViewCreator` instance. 
 
-The framework provides a no-op implementation of `ViewBinder`, called [SimpleViewBinder](/javadoc/com/facebook/litho/viewcompat/SimpleViewBinder.html), that you can use if only need to implement one of the `ViewBinder` methods, typically `bind(View)`.
+The framework provides a no-op implementation of `ViewBinder`, called [SimpleViewBinder](javadoc/com/facebook/litho/viewcompat/SimpleViewBinder.html), that you can use if only need to implement one of the `ViewBinder` methods, typically `bind(View)`.
 
 # Mixing Components and Views
 

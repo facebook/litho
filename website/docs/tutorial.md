@@ -6,7 +6,7 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
 
 This tutorial assumes you've gone through the [Getting Started](getting-started) guide to set up Litho.  Make sure you set up Litho's core libraries and Sections' libraries.
 
-In this tutorial, you'll start by building a basic "Hello World!" screen using Litho and work your way up to creating a list of "Hello World!" items on the screen. Along the way, you'll learn about the building blocks of Litho: [Component](/javadoc/com/facebook/litho/Component), and [LithoView](/javadoc/com/facebook/litho/LithoView). You will also learn how to create lists with [Section](/javadoc/com/facebook/litho/sections/Section) and how to set properties on components.
+In this tutorial, you'll start by building a basic "Hello World!" screen using Litho and work your way up to creating a list of "Hello World!" items on the screen. Along the way, you'll learn about the building blocks of Litho: [Component](javadoc/com/facebook/litho/Component.html), and [LithoView](javadoc/com/facebook/litho/LithoView.html). You will also learn how to create lists with [Section](javadoc/com/facebook/litho/sections/Section.html) and how to set properties on components.
 
 
 ## 1. Hello World
@@ -29,7 +29,7 @@ public class SampleApplication extends Application {
 
 Behind the scenes, Litho uses [Yoga](https://yogalayout.com/docs/) for layout. Yoga has native dependencies and [SoLoader](https://github.com/facebook/SoLoader) is brought in to take care of loading those. Initializing `SoLoader` here ensures that you're not referencing unloaded libraries later on.
 
-Next, add a predefined [Text](/javadoc/com/facebook/litho/widget/Text) Litho component to an activity:
+Next, add a predefined [Text](javadoc/com/facebook/litho/widget/Text.html) Litho component to an activity:
 
 ```java
 @Override
@@ -101,7 +101,7 @@ public class ListItemSpec {
 }
 ```
 
-You should recognize the `Text` component from the previous tutorial step. In this example, you're passing it in as a `child` property of a [Column](/javadoc/com/facebook/litho/Column). You can think of a `Column` as equivalent to a `<div>` in HTML.  It's a wrapper, used mainly for collating things together and perhaps adding some background styling.  Since Litho uses [Yoga](https://yogalayout.com/docs/), you can add flexbox attributes to set the layout for the children of a `Column` or a `Row`. Here, you simply set the padding and the background color.
+You should recognize the `Text` component from the previous tutorial step. In this example, you're passing it in as a `child` property of a [Column](javadoc/com/facebook/litho/Column.html). You can think of a `Column` as equivalent to a `<div>` in HTML.  It's a wrapper, used mainly for collating things together and perhaps adding some background styling.  Since Litho uses [Yoga](https://yogalayout.com/docs/), you can add flexbox attributes to set the layout for the children of a `Column` or a `Row`. Here, you simply set the padding and the background color.
 
 How do you render this component? In your activity, simply change the `Component` definition to:
 
@@ -123,7 +123,7 @@ It's as simple as that. Run your app. You should see something like this:
 
 ## 3. Creating a List of Items
 
-You can create lists in Litho by using the [RecyclerCollectionComponent](/javadoc/com/facebook/litho/sections/widget/RecyclerCollectionComponent) and the Sections library. `RecyclerCollectionComponent` is used for creating scrollable units in Litho and it hides some of the complexity of having to work directly with Android's `RecyclerView` and `Adapter` concepts.
+You can create lists in Litho by using the [RecyclerCollectionComponent](javadoc/com/facebook/litho/sections/widget/RecyclerCollectionComponent.html) and the Sections library. `RecyclerCollectionComponent` is used for creating scrollable units in Litho and it hides some of the complexity of having to work directly with Android's `RecyclerView` and `Adapter` concepts.
 
 With the Sections API, you group the items in your list into sections and write *GroupSectionSpec* classes to declare what each section renders and what data it uses.
 
@@ -148,7 +148,7 @@ public class ListSectionSpec {
 }
 ```
 
-`SingleComponentSection` is a core section defined in `com.facebook.litho.sections.widget` that renders a single component.  `ListSectionSpec` describes a section that has 32 child sections, each of which is responsible for rendering a `ListItem`.  We can use this section with `RecyclerCollectionComponent` to render our list. [RecyclerCollectionComponent](/javadoc/com/facebook/litho/sections/widget/RecyclerCollectionComponent) takes a section as a prop and renders a RecyclerView containing whatever UI the section outputs.  It also manages updates and changes from the section such as refreshing data and performing tail fetches. We're not using any data fetching here so lets disable PTR (pull to refresh) for this tutorial. In your activity, change the `component` definition to:
+`SingleComponentSection` is a core section defined in `com.facebook.litho.sections.widget` that renders a single component.  `ListSectionSpec` describes a section that has 32 child sections, each of which is responsible for rendering a `ListItem`.  We can use this section with `RecyclerCollectionComponent` to render our list. [RecyclerCollectionComponent](javadoc/com/facebook/litho/sections/widget/RecyclerCollectionComponent.html) takes a section as a prop and renders a RecyclerView containing whatever UI the section outputs.  It also manages updates and changes from the section such as refreshing data and performing tail fetches. We're not using any data fetching here so lets disable PTR (pull to refresh) for this tutorial. In your activity, change the `component` definition to:
 
 ```java
 
@@ -246,7 +246,7 @@ This tells the annotation processor to construct a number of functions, such as 
 
 ## Summary
 
-Congratulations on completing this tutorial! This basic tutorial should arm you with all the building blocks to start using Litho and building your own components. You can find the predefined widget components you can use in the [com.facebook.litho.widgets](/javadoc/com/facebook/litho/widget/package-frame) and [com.facebook.litho.sections.widget](/javadoc/com/facebook/litho/sections/widget/package-frame) packages.
+Congratulations on completing this tutorial! This basic tutorial should arm you with all the building blocks to start using Litho and building your own components. You can find the predefined widget components you can use in the [com.facebook.litho.widgets](javadoc/com/facebook/litho/widget/package-frame.html) and [com.facebook.litho.sections.widget](javadoc/com/facebook/litho/sections/widget/package-frame.html) packages.
 You can find the [completed tutorial here](https://github.com/facebook/litho/tree/master/sample-barebones). Be sure to check out [this sample](https://github.com/facebook/litho/tree/master/sample) for more in-depth code as well as the Litho API documentation.
 
 ### Looking for more?

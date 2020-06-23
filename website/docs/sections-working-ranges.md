@@ -36,7 +36,7 @@ public class MyWorkingRange implements WorkingRange {
 }
 ```
 
-The working range class needs to implement the [WorkingRange](/javadoc/com/facebook/litho/WorkingRange.html) interface. `shouldEnterRange` is used to check if the item at the given position is within a user-defined the range and `shouldExitRange` is used to check if the item is outside the range. The parameter `position` is the position of the item in the list, and the `firstVisibleIndex` / `lastVisibleIndex` / `firstFullyVisibleIndex` / `lastFullyVisibleIndex` parameters are current visible range of the viewport.
+The working range class needs to implement the [WorkingRange](javadoc/com/facebook/litho/WorkingRange.html) interface. `shouldEnterRange` is used to check if the item at the given position is within a user-defined the range and `shouldExitRange` is used to check if the item is outside the range. The parameter `position` is the position of the item in the list, and the `firstVisibleIndex` / `lastVisibleIndex` / `firstFullyVisibleIndex` / `lastFullyVisibleIndex` parameters are current visible range of the viewport.
 
 After defining a working range, now we implement the callback methods inside the components that should receive the exit and enter range events.
 
